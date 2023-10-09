@@ -1,5 +1,7 @@
 # PCB for zicBox
 
+![encoder pcb](encoder2-top.gcode.png "encoder pcb")
+
 ![encoder pcb](encoder-top.gcode.png "encoder pcb")
 
 ## gEDA pcb editor
