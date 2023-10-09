@@ -14,6 +14,8 @@ Export as gcode, uncheck all box (predrill, drill-mill, advanced-gcode)
 
 Fix gcode to work for laser engraver: `nodejs gcode4laser.js encoder-top.gcode`
 
+Increase the number of passes and update speed using: `nodejs gcodePasses.js encoder-top.gcode 500 3`
+
 > To flip/mirror the layout: 
 > - select all element
 > - buffer > cut to buffer
