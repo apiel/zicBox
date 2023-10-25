@@ -27,3 +27,11 @@ Increase the number of passes and update speed using: `nodejs gcodePasses.js enc
 
 - View > Enable visible grid
 - Set grid size to 100 mil (this is the specing between pin)
+
+## Raspberry
+
+If gpio 1 is used must update `/boot/config.txt`:
+
+```ini
+force_eeprom_read=0
+```
