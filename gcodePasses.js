@@ -2,6 +2,8 @@
 
 // preview gcode result https://ncviewer.com/
 
+// User to update speed and increase the number of passes
+
 const fs = require("fs");
 
 console.log(process.argv);

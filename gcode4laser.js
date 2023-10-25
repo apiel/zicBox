@@ -1,8 +1,34 @@
 #!/usr/bin/env node
 
+// Script used to fix gEda gcode to be able to be used with the laser engraver
+
 // preview gcode result https://ncviewer.com/
 //
 // use cam.openbuilds.com to convert SVG to gcode
+
+// ## gEDA pcb editor
+
+// gEDA editor, has builtin gcode export.
+
+// ```sh
+// sudo apt-get install pcb
+// ```
+
+// Export as gcode, uncheck all box (predrill, drill-mill, advanced-gcode)
+
+// Fix gcode to work for laser engraver: `nodejs gcode4laser.js encoder-top.gcode`
+
+// Increase the number of passes and update speed using: `nodejs gcodePasses.js encoder-top.gcode 500 3`
+
+// > To flip/mirror the layout: 
+// > - select all element
+// > - buffer > cut to buffer
+// > - buffer > mirror buffer (left/right) 
+
+// ### Settings
+
+// - View > Enable visible grid
+// - Set grid size to 100 mil (this is the specing between pin)
 
 const fs = require("fs");
 
