@@ -14,12 +14,6 @@ void encoderHandler(int id, int8_t direction)
     ViewManager::get().onEncoder(id, direction);
 }
 
-void midiHandler(std::vector<unsigned char> *message)
-{
-    // should there be a if statement or should midiHost have a default value
-    midiHost(message);
-}
-
 void loadPluginController(const char *path)
 {
     void *handle = dlopen(path, RTLD_LAZY);
