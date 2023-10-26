@@ -1,0 +1,13 @@
+{
+    "scripts": {
+        "start": "ts-node src/main.ts",
+        "dev": "ts-node-dev src/main.ts"
+    },
+    "devDependencies": {
+        "ts-node": "^10.9.1",
+        "ts-node-dev": "^2.0.0"
+    },
+    "dependencies": {
+        "osc": "^2.4.4"
+    }
+}

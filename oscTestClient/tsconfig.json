@@ -1,0 +1,19 @@
+{
+    "ts-node": {
+        "files": true
+    },
+    "include": ["src/**/*"],
+    "compilerOptions": {
+        "strict": true,
+        "target": "ES2020",
+        "esModuleInterop": true,
+        "moduleResolution": "node",
+        "module": "commonjs",
+        "declaration": true,
+        "outDir": "dist",
+        "paths": {
+            "*": [ "./src/*"]
+        },
+        "declarationMap": true
+    }
+}

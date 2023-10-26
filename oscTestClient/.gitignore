@@ -1,0 +1,13 @@
+build/
+node_modules/
+Debug/
+Release/
+*.lock
+*.log
+package-lock.json
+npm-debug.log*
+
+.idea/
+.vscode/
+.DS_Store
+.sshpassword

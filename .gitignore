@@ -1,7 +1,5 @@
 .vscode/*.log
 .note.local
-.freesound.key
-.freesound.oauth.key
 demo.json
 zicHost
 list_pulse
@@ -10,3 +8,4 @@ list_pulse
 test
 try_so
 methodptr
+zicUi
