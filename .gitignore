@@ -1,1 +1,12 @@
-*~
+.vscode/*.log
+.note.local
+.freesound.key
+.freesound.oauth.key
+demo.json
+zicHost
+list_pulse
+*.so
+*.o
+test
+try_so
+methodptr
