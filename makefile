@@ -8,6 +8,8 @@ all: libs build so run
 libs:
 	@echo "\n------------------ plugins ------------------\n"
 	make -C plugins/audio
+	make -C plugins/components
+	make -C plugins/controllers
 	@echo "\nbuild plugins done."
 
 so:
