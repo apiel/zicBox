@@ -2,24 +2,10 @@
 #define _HOST_CONFIG_H_
 
 #include "def.h"
-#include "../helpers/fs.h"
+#include "../helpers/config.h"
 #include "midi.h"
 
-#define CONFIG_FILE "./config.cfg"
-
-char* trimChar(char* str, char c = '\n')
-{
-    int len = strlen(str);
-    for (int i = 0; i < len; i++) {
-        if (str[i] == c) {
-            str[i] = '\0';
-            break;
-        }
-    }
-    return str;
-}
-
-void assignKeyValue(char* key, char* value)
+void hostConfigKeyValue(char* key, char* value, const char * filename)
 {
     if (strcmp(key, "MIDIIN") == 0) {
         loadMidiInput(midiController, value, &midiControllerCallback);
@@ -49,38 +35,9 @@ void assignKeyValue(char* key, char* value)
     }
 }
 
-void parseConfigLine(char* line)
+bool loadHostConfig()
 {
-    // ignore comments and empty lines
-    if (line[0] == '#' || line[0] == '\n') {
-        return;
-    }
-    // split by '='
-    char* key = strtok(line, "=");
-    char* value = strtok(NULL, "=");
-    if (key == NULL || value == NULL) {
-        APP_INFO("Invalid config line: %s\n", line);
-        return;
-    }
-    assignKeyValue(key, trimChar(value));
-}
-
-bool loadConfig()
-{
-    FILE* file = fopen(CONFIG_FILE, "r");
-    if (file == NULL) {
-        APP_INFO("Failed to load config file: %s\n", CONFIG_FILE);
-        return false;
-    }
-
-    char line[256];
-
-    while (fgets(line, sizeof(line), file)) {
-        parseConfigLine(line);
-    }
-    fclose(file);
-
-    return true;
+    return loadConfig("./config.cfg", hostConfigKeyValue);
 }
 
 #endif

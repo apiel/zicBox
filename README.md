@@ -136,7 +136,28 @@ In this example, we change the `overlay` color to `#00FFFF`.
 
 > TBD...
 
-## zicHost.so
+## zicHost
+
+ZicBox can  be used without used interface, either by using zicHost application or by loading zicHost shared library into another application.
+
+The zicHost application can be controlled by midi, by assigning a midi message to an audio plugin value.
+
+```ini
+# Here we define the Digitone as midi controller
+MIDIIN=Elektron Digitone MIDI 1
+
+AUDIO_PLUGIN=Distortion ./plugins/audio/build/libzic_EffectDistortion.so
+# Here we assign message to control the drive distortion
+# Where xx is the variable value that will be from 0 to 127
+# And b0 48 is the fixed part of message corresponding to CC channel 1 number 0x48 (or 72)
+DRIVE=b0 48 xx
+
+AUDIO_PLUGIN=MultiModeFilter ./plugins/audio/build/libzic_EffectFilterMultiMode.so
+CUTOFF=b0 4c xx
+RESONANCE=b0 4d xx
+```
+
+### zicHost.so
 
 Usage example:
 

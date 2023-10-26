@@ -7,7 +7,7 @@ AudioPluginHandlerInterface* init()
 {
     // TODO make config.cfg a parameter
     // make default config
-    if (!loadConfig()) {
+    if (!loadHostConfig()) {
         return NULL;
     }
     return &AudioPluginHandler::get();
