@@ -3,7 +3,7 @@
 
 #include "audioPluginHandler.h"
 #include "def.h"
-#include "../fs.h"
+#include "../helpers/fs.h"
 
 RtMidiIn midiController;
 RtMidiOut midiOut;

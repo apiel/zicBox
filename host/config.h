@@ -2,7 +2,7 @@
 #define _HOST_CONFIG_H_
 
 #include "def.h"
-#include "../fs.h"
+#include "../helpers/fs.h"
 #include "midi.h"
 
 #define CONFIG_FILE "./config.cfg"

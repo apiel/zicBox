@@ -1,7 +1,7 @@
 #ifndef _UI_CONFIG_H_
 #define _UI_CONFIG_H_
 
-#include "fs.h"
+#include "helpers/fs.h"
 #include "viewManager.h"
 #include "plugins.h"
 #include "helpers/getFullpath.h"
