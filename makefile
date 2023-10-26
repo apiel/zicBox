@@ -2,8 +2,8 @@ RTMIDI=`pkg-config --cflags --libs rtmidi`
 
 BUILD=-Wno-narrowing -ldl $(RTMIDI)
 
-host: build run
-all: libs build so run
+host: buildHost runHost
+all: libs buildHost soHost
 
 libs:
 	@echo "\n------------------ plugins ------------------\n"
@@ -12,16 +12,16 @@ libs:
 	make -C plugins/controllers
 	@echo "\nbuild plugins done."
 
-so:
+soHost:
 	@echo "\n------------------ build_so ------------------\n"
-	g++ -fPIC -shared -o zicHost.so zicHost.cpp -fopenmp $(BUILD)
+	g++ -fPIC -shared -o host/zicHost.so host/zicHost.cpp -fopenmp $(BUILD)
 	@echo "\nbuild zicHost.so done."
 
-build:
+buildHost:
 	@echo "\n------------------ build ------------------\n"
-	g++ -g -o zicHost -Wall zicHost.cpp -fopenmp $(BUILD)
-	@echo "\nbuild zicHost done."
+	g++ -g -o zicHost -Wall host/zicHost.cpp -fopenmp $(BUILD)
+	@echo "\nbuild host/zicHost done."
 
-run:
+runHost:
 	@echo "\n------------------ run ------------------\n"
-	./zicHost
+	./host/zicHost

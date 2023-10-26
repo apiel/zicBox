@@ -1,8 +1,8 @@
-#ifndef _CONFIG_H_
-#define _CONFIG_H_
+#ifndef _HOST_CONFIG_H_
+#define _HOST_CONFIG_H_
 
 #include "def.h"
-#include "fs.h"
+#include "../fs.h"
 #include "midi.h"
 
 #define CONFIG_FILE "./config.cfg"
