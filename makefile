@@ -41,3 +41,7 @@ build:
 run:
 	@echo "\n------------------ run zicBox ------------------\n"
 	./zicBox
+
+gpio:
+	@echo "\n------------------ gpio ------------------\n"
+	make -C hardware/gpio

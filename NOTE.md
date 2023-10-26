@@ -2,6 +2,12 @@
 
 - TODO documentation!!
 
+## Hardware
+
+- TODO make gpio interface run as service
+
+- TODO gpio interface use config file
+
 ## zicUi
 
 - TODO hidden view that can host shared component or second state view
