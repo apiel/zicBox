@@ -1,7 +1,7 @@
 #ifndef _EFFECT_FILTER_H_
 #define _EFFECT_FILTER_H_
 
-#include "../helpers/range.h"
+#include "../../helpers/range.h"
 #include "filter.h"
 #include "mapping.h"
 

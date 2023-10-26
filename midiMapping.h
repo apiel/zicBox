@@ -1,7 +1,7 @@
 #ifndef _MIDI_MAPPING_H_
 #define _MIDI_MAPPING_H_
 
-#include "plugins/audioPlugin.h"
+#include "plugins/audio/audioPlugin.h"
 #include <vector>
 
 class MidiMapping {

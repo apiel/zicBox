@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <vector>
 
-#include "../helpers/range.h"
+#include "../../helpers/range.h"
 
 #include "audioPlugin.h"
 

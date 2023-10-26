@@ -1,7 +1,7 @@
 #ifndef _EFFECT_DISTORTION_H_
 #define _EFFECT_DISTORTION_H_
 
-#include "../helpers/range.h"
+#include "../../helpers/range.h"
 #include "audioPlugin.h"
 #include "mapping.h"
 

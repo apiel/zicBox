@@ -1,7 +1,7 @@
 #ifndef FILE_BROWSER_H
 #define FILE_BROWSER_H
 
-#include "../helpers/range.h"
+#include "../../helpers/range.h"
 #include <dirent.h>
 #include <stdint.h>
 #include <stdio.h>
