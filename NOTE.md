@@ -8,6 +8,8 @@
 
 - TODO gpio interface use config file
 
+- TODO install file (make setup/prepare and make install ?)
+
 ## zicUi
 
 - TODO hidden view that can host shared component or second state view
