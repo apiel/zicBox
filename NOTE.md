@@ -2,8 +2,6 @@
 
 - TODO documentation!!
 
-- TODO bring zicHost and ZicUi together, still giving the possibility to extract zicHost in app or in shared lib
-
 ## zicUi
 
 - TODO hidden view that can host shared component or second state view
@@ -53,8 +51,10 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 
 ## zicHost
 
-- TODO sequencer cleanup? --> stepCount...
-- TODO save sequencer state
+- TODO sequencer 
+        - cleanup? --> stepCount...
+        - save sequencer state
+        - load patterns
 
 - TODO try to make granular synth more versatile
             - play sample (already do it but maybe there would be a way to lock spray or other thing like this)

@@ -10,7 +10,8 @@ BUILD=-Wno-narrowing -ldl $(RTMIDI)
 
 main: build run
 host: buildHost runHost
-all: libs buildHost soHost build run
+all: libs main
+allall: libs buildHost soHost main
 
 libs:
 	@echo "\n------------------ plugins ------------------\n"
