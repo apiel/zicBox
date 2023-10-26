@@ -3,7 +3,7 @@
 
 #include "helpers/config.h"
 #include "viewManager.h"
-#include "plugins.h"
+#include "controllers.h"
 
 void uiConfigKeyValue(char *key, char *value, const char *filename)
 {

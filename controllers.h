@@ -1,5 +1,5 @@
-#ifndef _PLUGINS_H_
-#define _PLUGINS_H_
+#ifndef _CONTROLLERS_H_
+#define _CONTROLLERS_H_
 
 #include "viewManager.h"
 #include "plugins/controllers/controllerInterface.h"
