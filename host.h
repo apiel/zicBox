@@ -1,7 +1,8 @@
 #ifndef _HOST_H_
 #define _HOST_H_
 
-// #include <dlfcn.h>
+#include <SDL2/SDL.h> // SDL_Log
+
 #include <vector>
 #include <stdexcept>
 
