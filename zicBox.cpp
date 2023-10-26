@@ -11,7 +11,7 @@
 
 int main()
 {
-    if (!loadConfig())
+    if (!loadUiConfig())
     {
         // FIXME here we should close audio stuff
         // however how come that it is loaded even before being called
