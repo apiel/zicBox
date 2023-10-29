@@ -61,6 +61,22 @@ public:
         return *this;
     }
 
+    UiPlugin &setView(char * value)
+    {
+        // printf("................... Set view to %s\n", value);
+        for (int i = 0; i < views.size(); i++)
+        {
+            if (strcmp(views[i]->name, value) == 0)
+            {
+                printf("................... Set view to %s at index %d\n", value, i);
+                setView((float)(i + 1));
+                break;
+            }
+        }
+        return *this;
+    }
+
+
     int getViewCount()
     {
         return views.size();
