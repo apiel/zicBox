@@ -130,7 +130,31 @@ In this example, we change the `overlay` color to `#00FFFF`.
 
 ## Components
 
-> TBD...
+TBD.: Every component can set a group
+
+### ButtonComponent
+
+TBD.
+
+Button component has 2 states, `pressed` and `release`. Those 2 states are optionals and can do different action. The default action is to set a plugin value:
+
+```ini
+COMPONENT=Button 600 0 100 50
+# ON_PRESS=PLUGIN_NAME VALUE_KEY 0.0
+ON_PRESS=DISTORTION DRIVE 40.0
+ON_RELEASE=DISTORTION DRIVE 0.0
+LABEL=My button
+```
+
+Button can set a view using `$SET_VIEW`:
+
+```ini
+COMPONENT=Button 600 0 100 50
+# ON_RELEASE=$SET_VIEW view_name
+ON_RELEASE=$SET_VIEW my_name
+LABEL=My button
+```
+
 
 ## Controllers
 

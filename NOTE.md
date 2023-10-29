@@ -19,7 +19,6 @@
       - A view can have multiple state (think about a shift mode view). While scrolling in `VIEW UI` state, to change from one view to the other, we dont want to scroll through those shifted views... Therefor, we need some hidden views, that's are not scrollable?
 
 - TODO button can trigger NOTE or should finish note component
-       button can easily set view base on name
        can button show a state
        can button show a value
 
