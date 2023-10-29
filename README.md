@@ -140,9 +140,9 @@ Button component has 2 states, `pressed` and `release`. Those 2 states are optio
 
 ```ini
 COMPONENT=Button 600 0 100 50
-# ON_PRESS=PLUGIN_NAME VALUE_KEY 0.0
-ON_PRESS=DISTORTION DRIVE 40.0
-ON_RELEASE=DISTORTION DRIVE 0.0
+# ON_PRESS=PluginName VALUE_KEY 0.0
+ON_PRESS=Distortion DRIVE 40.0
+ON_RELEASE=Distortion DRIVE 0.0
 LABEL=My button
 ```
 
@@ -154,6 +154,19 @@ COMPONENT=Button 600 0 100 50
 ON_RELEASE=$SET_VIEW my_name
 LABEL=My button
 ```
+
+Button can trigger a midi note with `$NOTE_ON` and `$NOTE_OFF`:
+
+```ini
+COMPONENT=Button 200 0 300 50
+# ON_PRESS=$NOTE_ON PluginName note velocity
+ON_PRESS=$NOTE_ON Kick23 48 127
+# ON_RELEASE=$NOTE_OFF PluginName note
+ON_RELEASE=$NOTE_OFF Kick23 48
+LABEL=Trigger
+```
+
+> Do not forget the `$NOTE_OFF` when synth have sustained notes, else the note will keep playing.
 
 
 ## Controllers
