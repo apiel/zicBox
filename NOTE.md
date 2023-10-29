@@ -12,6 +12,8 @@
 
 ## zicUi
 
+- TODO auto update...
+
 - INFO Should SDL in draw be injectable? What if we want to use those i2c 1306 display or similar...
 
 - TODO hidden view that can host shared component or second state view
