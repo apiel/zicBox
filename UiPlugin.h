@@ -10,63 +10,68 @@
 /**
  * Simulate audio plugin component to be usable within the UI component
  */
-class UiPlugin : public Mapping<UiPlugin>
-{
+class UiPlugin : public Mapping<UiPlugin> {
 protected:
-    struct SharedComponent
-    {
-        char *name;
-        ComponentInterface *component;
+    struct SharedComponent {
+        char* name;
+        ComponentInterface* component;
     };
     std::vector<SharedComponent> sharedComponents;
 
-    struct View
-    {
-        char *name;
-        std::vector<ComponentInterface *> view = {};
+    struct View {
+        char* name;
+        std::vector<ComponentInterface*> view = {};
+        bool hidden = false;
     };
 
-    std::vector<View *> views;
-    int viewIndex = -1;
+    View* lastView = NULL;
+    View* currentView = NULL;
 
-    static UiPlugin *instance;
-    AudioPlugin::Props props = {NULL, 0, 0, NULL, 0};
-    UiPlugin() : Mapping(props, (char *)"UI")
+    std::vector<View*> views;
+
+    static UiPlugin* instance;
+    AudioPlugin::Props props = { NULL, 0, 0, NULL, 0 };
+    UiPlugin()
+        : Mapping(props, (char*)"UI")
     {
     }
 
-public:
-    Val<UiPlugin> &viewSelector = val(this, 1.0f, "VIEW", &UiPlugin::setView, {"View", VALUE_STRING, .min = 1.0 });
-
-    static UiPlugin &get()
+    void setView(int index)
     {
-        if (!instance)
-        {
+        lastView = currentView;
+        currentView = views[index];
+
+        if (!currentView->hidden) {
+            // FIXME viewSelector.setFloat(getIndex());
+            viewSelector.setString(currentView->name);
+        }
+    }
+
+public:
+    Val<UiPlugin>& viewSelector = val(this, 1.0f, "VIEW", &UiPlugin::setView, { "View", VALUE_STRING, .min = 1.0 });
+
+    static UiPlugin& get()
+    {
+        if (!instance) {
             instance = new UiPlugin();
         }
         return *instance;
     }
 
-    void sample(float *buf) {}
+    void sample(float* buf) { }
 
-    UiPlugin &setView(float value)
+    UiPlugin& setView(float value)
     {
-        viewSelector.setFloat(value);
-        viewIndex = viewSelector.get() - 1;
-
-        // printf("................... Set view to %f (val %f)=> %d > %s\n", viewSelector.get(), value, viewIndex, views[viewIndex]->name);
-
-        viewSelector.setString(views[viewIndex]->name);
+        viewSelector.setFloat(value); // FIXME this should happem in setView(int index)
+        setView((int)viewSelector.get() - 1);
 
         return *this;
     }
 
-    UiPlugin &setView(char * value)
+    UiPlugin& setView(char* value)
     {
-        for (int i = 0; i < views.size(); i++)
-        {
-            if (strcmp(views[i]->name, value) == 0)
-            {
+        for (int i = 0; i < views.size(); i++) {
+            if (strcmp(views[i]->name, value) == 0) {
                 // printf("................... Set view to %s at index %d\n", value, i);
                 viewSelector.set((float)(i + 1));
                 break;
@@ -75,22 +80,20 @@ public:
         return *this;
     }
 
-
     int getViewCount()
     {
         return views.size();
     }
 
-    std::vector<ComponentInterface *> &getView()
+    std::vector<ComponentInterface*>& getView()
     {
-        return views[viewIndex]->view;
+        return currentView->view;
     }
 
-    bool config(char *key, char *value)
+    bool config(char* key, char* value)
     {
-        if (strcmp(key, "VIEW") == 0)
-        {
-            View *v = new View;
+        if (strcmp(key, "VIEW") == 0) {
+            View* v = new View;
             v->name = new char[strlen(value) + 1];
             strcpy(v->name, value);
 
@@ -102,22 +105,17 @@ public:
             return true;
         }
 
-        if (strcmp(key, "USE_SHARED_COMPONENT") == 0)
-        {
-            for (auto &shared : sharedComponents)
-            {
-                if (strcmp(shared.name, value) == 0)
-                {
+        if (strcmp(key, "USE_SHARED_COMPONENT") == 0) {
+            for (auto& shared : sharedComponents) {
+                if (strcmp(shared.name, value) == 0) {
                     views.back()->view.push_back(shared.component);
                     return true;
                 }
             }
         }
 
-        if (views.size() > 0 && views.back()->view.size() > 0)
-        {
-            if (strcmp(key, "SHARED_COMPONENT") == 0)
-            {
+        if (views.size() > 0 && views.back()->view.size() > 0) {
+            if (strcmp(key, "SHARED_COMPONENT") == 0) {
                 SharedComponent shared;
                 shared.name = new char[strlen(value) + 1];
                 strcpy(shared.name, value);
@@ -131,45 +129,35 @@ public:
         return false;
     }
 
-    void addComponent(ComponentInterface *component)
+    void addComponent(ComponentInterface* component)
     {
-        if (views.size() > 0)
-        {
+        if (views.size() > 0) {
             views.back()->view.push_back(component);
-        }
-        else
-        {
+        } else {
             printf("ERROR: No view to add component to. Create first a view to be able to add components.\n");
         }
     }
 
     void clearOnUpdate()
     {
-        for (auto &view : views)
-        {
-            for (auto &component : view->view)
-            {
-                for (auto *value : component->values)
-                {
-                    value->onUpdate([](float, void *data) {}, NULL);
-                }
+        for (auto& component : lastView->view) {
+            for (auto* value : component->values) {
+                value->onUpdate([](float, void* data) {}, NULL);
             }
         }
     }
 
-    void initActiveComponents(void (*callback)(float, void *data))
+    void initActiveComponents(void (*callback)(float, void* data))
     {
-        for (auto &component : getView())
-        {
+        for (auto& component : getView()) {
             component->renderNext();
-            for (auto *value : component->values)
-            {
+            for (auto* value : component->values) {
                 value->onUpdate(callback, value);
             }
         }
     }
 };
 
-UiPlugin *UiPlugin::instance = NULL;
+UiPlugin* UiPlugin::instance = NULL;
 
 #endif

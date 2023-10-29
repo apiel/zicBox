@@ -117,8 +117,7 @@ public:
         ui.clearOnUpdate();
         ui.initActiveComponents([](float, void* data) { ViewManager::get().onUpdate((ValueInterface*)data); });
 
-        ui.viewSelector.onUpdate([](float, void* data) { ViewManager::get().render(); },
-            NULL);
+        ui.viewSelector.onUpdate([](float, void* data) { ViewManager::get().render(); }, NULL);
 
         m.unlock();
 
