@@ -61,6 +61,7 @@ int main()
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not load host");
     }
 
+    viewManager.init();
     if (!viewManager.render())
     {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "No view were initialized to be rendered.");

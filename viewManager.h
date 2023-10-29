@@ -91,6 +91,11 @@ public:
         return *instance;
     }
 
+    void init()
+    {
+        ui.setUpdateCallback([]() { ViewManager::get().render(); });
+    }
+
     // TODO could this be optimized by creating mapping values to components?
     void onUpdate(ValueInterface* val)
     {
@@ -117,7 +122,7 @@ public:
         ui.clearOnUpdate();
         ui.initActiveComponents([](float, void* data) { ViewManager::get().onUpdate((ValueInterface*)data); });
 
-        ui.viewSelector.onUpdate([](float, void* data) { ViewManager::get().render(); }, NULL);
+        // ui.viewSelector.onUpdate([](float, void* data) { ViewManager::get().render(); }, NULL);
 
         m.unlock();
 
@@ -180,7 +185,6 @@ public:
 
     void config(const char* key, const char* value)
     {
-
         config((char*)key, (char*)value);
     }
 };

@@ -12,6 +12,8 @@
  */
 class UiPlugin : public Mapping<UiPlugin> {
 protected:
+    void (*onUpdatePtr)() = []() {};
+
     struct SharedComponent {
         char* name;
         ComponentInterface* component;
@@ -36,15 +38,29 @@ protected:
     {
     }
 
+
     void setView(int index)
     {
+        if (index < 0 || index >= views.size()) {
+            return;
+        }
+
         lastView = currentView;
         currentView = views[index];
 
         if (!currentView->hidden) {
-            // FIXME viewSelector.setFloat(getIndex());
             viewSelector.setString(currentView->name);
+
+            int value = 1;           
+            for (int i = 0; i < index; i++) {
+                if (!views[i]->hidden) {
+                    value++;
+                }
+            }
+            viewSelector.setFloat((float)value);
         }
+
+        onUpdatePtr();
     }
 
 public:
@@ -60,11 +76,14 @@ public:
 
     void sample(float* buf) { }
 
+    void setUpdateCallback(void (*callback)())
+    {
+        onUpdatePtr = callback;
+    }
+
     UiPlugin& setView(float value)
     {
-        viewSelector.setFloat(value); // FIXME this should happem in setView(int index)
-        setView((int)viewSelector.get() - 1);
-
+        setView((int)value - 1);
         return *this;
     }
 
@@ -72,8 +91,7 @@ public:
     {
         for (int i = 0; i < views.size(); i++) {
             if (strcmp(views[i]->name, value) == 0) {
-                // printf("................... Set view to %s at index %d\n", value, i);
-                viewSelector.set((float)(i + 1));
+                setView(i);
                 break;
             }
         }
