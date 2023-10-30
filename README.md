@@ -165,6 +165,16 @@ ON_RELEASE=$SET_VIEW my_name
 LABEL=My button
 ```
 
+To load set the previous view, use `$SET_VIEW $previous`
+
+```ini
+COMPONENT=Button 600 0 100 50
+ON_PRESS=$SET_VIEW my_name
+ON_RELEASE=$SET_VIEW $previous
+LABEL=Shifted view
+SHARED_COMPONENT=Test
+```
+
 Button can trigger a midi note with `$NOTE_ON` and `$NOTE_OFF`:
 
 ```ini

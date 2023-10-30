@@ -19,8 +19,6 @@
 - TODO can button show a state
        can button show a value
 
-- TODO button can load previous view
-
 - TODO Significantly improve sequencer UI
 
 - TODO oscEncoder use time to make bigger step...
