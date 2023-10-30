@@ -94,7 +94,7 @@ VIEW=Mixer
 # ...
 ```
 
-In some case, we need to create some hidden view. Those hidden views can be useful when defining a layout view that is re-used in multiple view. It might also be useful, when a view have multiple state (e.g. shifted view...). In all those case, we do not want those view to be iterable. To define a hidden view, set `HIDDEN` flag after the view name.
+In some case, we need to create some hidden view. Those hidden views can be useful when defining a layout that is re-used in multiple view. It might also be useful, when a view have multiple state (e.g. shifted view...). In all those case, we do not want those view to be iterable. To define a hidden view, set `HIDDEN` flag after the view name.
 
 ```ini
 VIEW=Layout HIDDEN

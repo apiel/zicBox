@@ -40,7 +40,9 @@ protected:
         strcpy(plugin.name, strtok(value, " "));
         char* path = strtok(NULL, " ");
 
-        void* handle = dlopen(getFullpath(path, filename), RTLD_LAZY);
+        char fullpath[512];
+        getFullpath(path, filename, fullpath);
+        void* handle = dlopen(fullpath, RTLD_LAZY);
 
         if (!handle) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot open library: %s\n", dlerror());

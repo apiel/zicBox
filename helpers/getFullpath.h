@@ -3,9 +3,7 @@
 
 #include <string.h>
 
-char fullpathBuffer[512];
-
-char *getFullpath(char *path, const char *parentFilename)
+char *getFullpath(char *path, const char *parentFilename, char *fullpathBuffer)
 {
     if (path[0] == '/')
     {

@@ -23,6 +23,8 @@ ENCODER_TARGET=0 7
 # SET_COLOR=red #FF0000
 # SET_COLOR=overlay #00FFFF
 
+INCLUDE=layout.view.ui
+
 INCLUDE=main/main.view.ui
 INCLUDE=granular.view.ui
 INCLUDE=kick/kick.view.ui

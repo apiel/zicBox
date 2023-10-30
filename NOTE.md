@@ -16,10 +16,10 @@
 
 - INFO Should SDL in draw be injectable? What if we want to use those i2c 1306 display or similar...
 
-- TODO include view
-
 - TODO can button show a state
        can button show a value
+
+- TODO button can load previous view
 
 - TODO Significantly improve sequencer UI
 
@@ -54,6 +54,8 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 - TODO should we show the grains???
 
 - NOTE should we use https://github.com/nlohmann/json for UI ?
+
+- TODO include view ??
 
 
 ## zicHost

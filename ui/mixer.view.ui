@@ -1,6 +1,8 @@
 ### Mixer view
 VIEW=Mixer
 
+INCLUDE=layout.ui
+
 COMPONENT=Encoder 0 0 100 50
 ENCODER_ID=0
 VALUE=Mixer4 MIX_A
@@ -25,7 +27,3 @@ GROUP=0
 ENCODER_ID=4
 VALUE=GainVolume VOLUME
 LABEL=Master volume
-
-COMPONENT=Encoder 700 0 100 50
-ENCODER_ID=7
-VALUE=UI VIEW
