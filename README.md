@@ -82,6 +82,8 @@ Some controller can get extra configuration. Any `KEY=VALUE` following `PLUGIN_C
 The user interface is composed of multiple views that contain the components. A view, represent a full screen layout. Use `VIEW=name_of_the_veiw` to create a view. All the following `COMPONENT=` will be assign to this view, till the next view.
 
 ```ini
+# VIEW=ViewName
+
 VIEW=Main
 
 # some components...
@@ -90,6 +92,14 @@ VIEW=Mixer
 
 # some components...
 # ...
+```
+
+In some case, we need to create some hidden view. Those hidden views can be useful when defining a layout view that is re-used in multiple view. It might also be useful, when a view have multiple state (e.g. shifted view...). In all those case, we do not want those view to be iterable. To define a hidden view, set `HIDDEN` flag after the view name.
+
+```ini
+VIEW=Layout HIDDEN
+
+# some components...
 ```
 
 ### COMPONENT=
