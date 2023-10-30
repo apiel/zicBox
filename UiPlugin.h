@@ -38,7 +38,6 @@ protected:
     {
     }
 
-
     void setView(int index)
     {
         if (index < 0 || index >= views.size()) {
@@ -51,7 +50,7 @@ protected:
         if (!currentView->hidden) {
             viewSelector.setString(currentView->name);
 
-            int value = 1;           
+            int value = 1;
             for (int i = 0; i < index; i++) {
                 if (!views[i]->hidden) {
                     value++;
@@ -83,7 +82,19 @@ public:
 
     UiPlugin& setView(float value)
     {
-        setView((int)value - 1);
+        if (value < viewSelector.props().min || value > viewSelector.props().max) {
+            return *this;
+        }
+        int i = 0;
+        for (auto& view : views) {
+            if (!view->hidden) {
+                i++;
+            }
+            if (i == (int)value) {
+                break;
+            }
+        }
+        setView(i - 1);
         return *this;
     }
 
@@ -123,7 +134,7 @@ public:
                     max++;
                 }
             }
-            viewSelector.props().max =(float)max;
+            viewSelector.props().max = (float)max;
 
             setView(1.0f);
 
