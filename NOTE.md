@@ -10,18 +10,18 @@
 
 - TODO install file (make setup/prepare and make install ?)
 
+- TODO update using makefile?
+
 ## zicUi
 
-- TODO auto update...
+- TODO oscEncoder use time to make bigger step...
+
+- TODO Significantly improve sequencer UI
 
 - INFO Should SDL in draw be injectable? What if we want to use those i2c 1306 display or similar...
 
 - TODO can button show a state
        can button show a value
-
-- TODO Significantly improve sequencer UI
-
-- TODO oscEncoder use time to make bigger step...
 
 - TODO slider, e.g. for mixer
 
@@ -50,6 +50,10 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 `blitRotated` is actually using `SDL_RenderCopyEx` https://www.parallelrealities.co.uk/tutorials/bad/bad2.php
 
 - TODO should we show the grains???
+
+- TODO auto update...
+    - from release
+    - from git repo?
 
 - NOTE should we use https://github.com/nlohmann/json for UI ?
 
