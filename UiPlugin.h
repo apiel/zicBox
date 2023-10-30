@@ -117,7 +117,14 @@ public:
 
             views.push_back(v);
 
-            viewSelector.props().max = views.size();
+            uint16_t max = 0;
+            for (auto& view : views) {
+                if (!view->hidden) {
+                    max++;
+                }
+            }
+            viewSelector.props().max =(float)max;
+
             setView(1.0f);
 
             return true;
