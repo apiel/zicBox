@@ -46,9 +46,9 @@ Those `.ui` files are simple configuration files using `KEY=VALUE`. Each lines i
 
 The user interface is composed of views and components. A view is composed of multiple components. A component is for example a button or a rotary encoder. Each of the UI components are external shared library that can be loaded dynamically when the application start.
 
-## Basic keys
+### Basic keys
 
-### INCLUDE=
+#### INCLUDE=
 
 A `.ui` file can include another `.ui` file, using `INCLUDE=path/of/the/file.ui`. As soon as this `INCLUDE` is called, it will continue into the child file till his end, to finally come back to the original file.
 
@@ -56,7 +56,7 @@ A `.ui` file can include another `.ui` file, using `INCLUDE=path/of/the/file.ui`
 INCLUDE=path/of/the/file.ui
 ```
 
-### PLUGIN_COMPONENT=
+#### PLUGIN_COMPONENT=
 
 A component must be load from a shared library (those `.so` files). To load those plugin components, use `PLUGIN_COMPONENT=given_name_to_component ../path/of/the/component.so`.
 
@@ -66,7 +66,7 @@ PLUGIN_COMPONENT=Encoder ../plugins/build/libzic_EncoderComponent.so
 
 In this example, we load the shared library `../plugins/build/libzic_EncoderComponent.so` and we give it the name of `Encoder`. The `Encoder` name will be used later to place the components in the view.
 
-### PLUGIN_CONTROLLER=
+#### PLUGIN_CONTROLLER=
 
 Beside the user interface, there is as well hardware controllers, like external midi controller or the builtin buttons and pots. To be able to interact with the user interface, those hardware controllers must also be loaded in the application, using `PLUGIN_CONTROLLER=../path/of/the/controller.so`
 
@@ -77,7 +77,7 @@ DEVICE=Arduino Leonardo:Arduino Leonardo MIDI 1
 
 Some controller can get extra configuration. Any `KEY=VALUE` following `PLUGIN_CONTROLLER=` will be forwarded to the controller. In this example, we say to the controller to load the midi device `Arduino Leonardo:Arduino Leonardo MIDI 1`.
 
-### VIEW=
+#### VIEW=
 
 The user interface is composed of multiple views that contain the components. A view, represent a full screen layout. Use `VIEW=name_of_the_veiw` to create a view. All the following `COMPONENT=` will be assign to this view, till the next view.
 
@@ -102,7 +102,7 @@ VIEW=Layout HIDDEN
 # some components...
 ```
 
-### COMPONENT=
+#### COMPONENT=
 
 To place previously loaded components inside a view, use `COMPONENT=given_name_to_component x y w h`.
 
@@ -115,7 +115,7 @@ VALUE=MultiModeFilter RESONANCE
 A component can get extra configuration settings and any `KEY=VALUE` following `COMPONENT=` will be forwarded to the component.
 In this example, we assign the hardware encoder id 1 to this component and we assign it to the resonance value from the multi mode filter audio plugin.
 
-### SET_COLOR=
+#### SET_COLOR=
 
 `SET_COLOR` give the possibility to customize the pre-defined color for the UI. To change a color, use `SET_COLOR=name_of_color #xxxxxx`.
 
@@ -138,11 +138,11 @@ In this example, we change the `overlay` color to `#00FFFF`.
 
 > This list might be outdated, to get the list of existing colors, look at `./styles.h`
 
-## Components
+### Components
 
 TBD.: Every component can set a group
 
-### ButtonComponent
+#### ButtonComponent
 
 TBD.
 
