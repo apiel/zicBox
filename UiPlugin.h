@@ -85,16 +85,16 @@ public:
         if (value < viewSelector.props().min || value > viewSelector.props().max) {
             return *this;
         }
-        int i = 0;
-        for (auto& view : views) {
-            if (!view->hidden) {
-                i++;
+        int visible = 0;
+        for (int i = 0; i < views.size(); i++) {
+            if (!views[i]->hidden) {
+                visible++;
             }
-            if (i == (int)value) {
+            if (visible == (int)value) {
+                setView(i);
                 break;
             }
         }
-        setView(i - 1);
         return *this;
     }
 
@@ -123,8 +123,15 @@ public:
     {
         if (strcmp(key, "VIEW") == 0) {
             View* v = new View;
-            v->name = new char[strlen(value) + 1];
-            strcpy(v->name, value);
+
+            char * name = strtok(value, " ");
+            v->name = new char[strlen(name) + 1];
+            strcpy(v->name, name);
+
+            char * hidden = strtok(NULL, " ");
+            if (hidden != NULL && strcmp(hidden, "HIDDEN") == 0) {
+                v->hidden = true;
+            }
 
             views.push_back(v);
 
@@ -135,6 +142,8 @@ public:
                 }
             }
             viewSelector.props().max = (float)max;
+
+            printf("Set VIEW: %s hidden=%s (max %d)\n", v->name, v->hidden ? "true" : "false", max);
 
             setView(1.0f);
 

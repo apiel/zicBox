@@ -1,6 +1,6 @@
 
 ### Granular view
-VIEW=Granular
+VIEW=Granular HIDDEN
 
 # COMPONENT=Button 600 0 100 50
 # ON_PRESS=UI VIEW 0.35
