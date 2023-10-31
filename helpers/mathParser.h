@@ -16,18 +16,18 @@ enum types { DELIMITER = 1,
     NUMBER,
     FUNCTION };
 
-char* exp_ptr; // points to the expression
+char* expPtr; // points to the expression
 char token[64]; // holds current token
-char tok_type; // holds token's type
+char tokenType; // holds token's type
 
-void eval_exp6(double& result);
+void evalExp6(double& result);
 
 char* getExpPtr()
 {
-    while (isspace(*exp_ptr)) { // skip over white space
-        exp_ptr++;
+    while (isspace(*expPtr)) { // skip over white space
+        expPtr++;
     }
-    return exp_ptr;
+    return expPtr;
 }
 
 bool isDelimiter()
@@ -38,7 +38,7 @@ bool isDelimiter()
 char* setTokenTillDelimiter(char* temp)
 {
     while (!isDelimiter() && (*getExpPtr()))
-        *temp++ = toupper(*exp_ptr++);
+        *temp++ = toupper(*expPtr++);
 
     *temp = '\0';
     return temp;
@@ -46,9 +46,9 @@ char* setTokenTillDelimiter(char* temp)
 
 void getToken()
 {
-    tok_type = 0;
+    tokenType = 0;
 
-    if (!*exp_ptr) { // at end of expression
+    if (!*expPtr) { // at end of expression
         return;
     }
 
@@ -56,71 +56,71 @@ void getToken()
     *temp = '\0';
 
     if (isDelimiter()) {
-        tok_type = DELIMITER;
-        *temp = *exp_ptr++; // advance to next char
+        tokenType = DELIMITER;
+        *temp = *expPtr++; // advance to next char
     } else if (isalpha(*getExpPtr())) {
-        tok_type = FUNCTION;
+        tokenType = FUNCTION;
         temp = setTokenTillDelimiter(temp);
     } else if (isdigit(*getExpPtr()) || *getExpPtr() == '.') {
-        tok_type = NUMBER;
+        tokenType = NUMBER;
         temp = setTokenTillDelimiter(temp);
     }
 }
 
-void eval_exp5(double& result)
+void evalExp5(double& result)
 {
     char op;
     op = 0;
-    if ((tok_type == DELIMITER) && *token == '+' || *token == '-') {
+    if ((tokenType == DELIMITER) && *token == '+' || *token == '-') {
         op = *token;
         getToken();
     }
-    eval_exp6(result);
+    evalExp6(result);
     if (op == '-')
         result = -result;
 }
 
-void eval_exp4(double& result)
+void evalExp4(double& result)
 {
     double temp;
-    eval_exp5(result);
+    evalExp5(result);
     while (*token == '^') {
         getToken();
-        eval_exp5(temp);
+        evalExp5(temp);
         result = pow(result, temp);
     }
 }
 
-void eval_exp3(double& result)
+void evalExp3(double& result)
 {
     double temp;
-    eval_exp4(result);
+    evalExp4(result);
     while (*token == '%') {
         getToken();
-        eval_exp4(temp);
+        evalExp4(temp);
         result = (int)result % (int)temp;
     }
 }
 
-void eval_exp2(double& result)
+void evalExp2(double& result)
 {
     char op;
     double temp;
-    eval_exp3(result);
+    evalExp3(result);
     while ((op = *token) == '*' || op == '/') {
         getToken();
-        eval_exp3(temp);
+        evalExp3(temp);
         result = op == '*' ? result * temp : result / temp;
     }
 }
-void eval_exp1(double& result)
+void evalExp1(double& result)
 {
     char op;
     double temp;
-    eval_exp2(result);
+    evalExp2(result);
     while ((op = *token) == '+' || op == '-') {
         getToken();
-        eval_exp2(temp);
+        evalExp2(temp);
         result = op == '+' ? result + temp : result - temp;
     }
 }
@@ -169,9 +169,9 @@ void applyFunction(double& result, char* func)
         throw std::runtime_error("Unknown Function " + std::string(func));
 }
 
-void eval_exp6(double& result)
+void evalExp6(double& result)
 {
-    bool isfunc = (tok_type == FUNCTION);
+    bool isfunc = (tokenType == FUNCTION);
     char temp_token[80];
     if (isfunc) {
         strcpy(temp_token, token);
@@ -179,14 +179,14 @@ void eval_exp6(double& result)
     }
     if ((*token == '(')) {
         getToken();
-        eval_exp1(result);
+        evalExp1(result);
         if (*token != ')')
             throw std::runtime_error("Unbalanced Parentheses");
         if (isfunc) {
             applyFunction(result, temp_token);
         }
         getToken();
-    } else if (tok_type == NUMBER) {
+    } else if (tokenType == NUMBER) {
         result = atof(token);
         getToken();
     } else {
@@ -194,18 +194,18 @@ void eval_exp6(double& result)
     }
 }
 
-double eval_exp(char* exp)
+double eval(char* exp)
 {
     try {
-        printf("eval_exp: %s\n", exp);
+        printf("evalExp: %s\n", exp);
         double result;
-        exp_ptr = exp;
+        expPtr = exp;
         getToken();
         if (!*token) {
             throw std::runtime_error("No Expression Present");
             return (double)0;
         }
-        eval_exp1(result);
+        evalExp1(result);
         return result;
     } catch (const std::exception& e) {
         throw std::runtime_error("MathParser Error: " + std::string(e.what()));
