@@ -3,17 +3,26 @@
 
 #include "fs.h"
 #include "getFullpath.h"
+#include "mathParser.h"
 #include "trimChar.h"
 
 #include <stdio.h> // printf
 #include <vector>
 
-char* removeLeadingSpaces(char* str)
+uint16_t countLeadingSpaces(char* str)
 {
+    uint16_t count = 0;
     while (str[0] == ' ') {
+        count++;
         str++;
     }
-    return str;
+    return count;
+}
+
+char* removeLeadingSpaces(char* str)
+{
+    uint16_t count = countLeadingSpaces(str);
+    return str + count;
 }
 
 namespace Script {
@@ -53,7 +62,6 @@ char* applyVariable(char* str)
 
     for (auto variable : variables) {
         int pos;
-
         std::string k(variable.key);
         while ((pos = target.find(k)) != std::string::npos) {
             target.replace(pos, k.length(), variable.value);
@@ -96,6 +104,8 @@ void parseScriptLine(char* line, const char* filename, void (*callback)(char* ke
     }
 
     line = trimChar(line);
+    uint16_t indentation = countLeadingSpaces(line);
+    line = line + indentation; // remove leading spaces
 
     if (line[0] == '$') {
         setVariable(line);
@@ -127,6 +137,10 @@ bool loadScript(const char* filename, void (*callback)(char* key, std::vector<ch
         Script::parseScriptLine(line, filename, callback);
     }
     fclose(file);
+
+    MathParser mathParser;
+    double res = mathParser.eval_exp((char*)"1 + 2 * (3 + 1) + 1 000");
+    printf("--------- Result: %f\n", res);
 
     return true;
 }
