@@ -79,7 +79,7 @@ createView: Granular, HIDDEN
     setEncoderId: 1
     value: Sequencer, STEP_NOTE
 
-  if: $with > 100
+  if: $width > 100
     addComponent: Encoder, 0, 430, $width, 50
       setEncoderId: 1
       value: Sequencer, STEP_NOTE

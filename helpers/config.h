@@ -3,22 +3,9 @@
 
 #include "fs.h"
 #include "getFullpath.h"
+#include "trimChar.h"
 
 #include <stdio.h> // printf
-
-char *trimChar(char *str, char c = '\n')
-{
-    int len = strlen(str);
-    for (int i = 0; i < len; i++)
-    {
-        if (str[i] == c)
-        {
-            str[i] = '\0';
-            break;
-        }
-    }
-    return str;
-}
 
 void parseConfigLine(char *line, const char *filename, void (*callback)(char *key, char *value, const char *filename))
 {

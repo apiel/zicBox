@@ -9,6 +9,19 @@
 #include "config.h"
 #include "styles.h"
 
+#include "helpers/script.h"
+
+// (char *key, std::vector<char *> params, const char *filename))
+
+void scriptCallback(char* key, std::vector<char *> params, const char* filename)
+{
+    printf("(%s) fn: %s\n", filename, key);
+    for (auto param : params)
+    {
+        printf("    - '%s'\n", param);
+    }
+}
+
 int main()
 {
     if (!loadUiConfig())
@@ -17,6 +30,8 @@ int main()
         // however how come that it is loaded even before being called
         return 1;
     }
+
+    loadScript("demo.script", scriptCallback);
 
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
 

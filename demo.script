@@ -1,0 +1,23 @@
+$width=100
+
+createView: Granular, HIDDEN
+  include: layout.ui
+  addComponent: Granular, 0, 50, 800, 330
+  
+  addComponent: Encoder, 0, 430, $width, 50
+    setEncoderId: 0
+    value: Sequencer, STEP_ENABLED
+  
+  addComponent: Encoder, 0, 430, $width, 50
+    setEncoderId: 1
+    value: Sequencer, STEP_NOTE
+
+  if: $width > 100
+    addComponent: Encoder, 0, 430, $width, 50
+      setEncoderId: 1
+      value: Sequencer, STEP_NOTE
+
+  $i=0
+  while: $i < 10
+    addComponent: Encoder, $i * 100, 430, $width, 50
+    $i=$i + 1
