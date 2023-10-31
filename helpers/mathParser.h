@@ -23,23 +23,34 @@ class MathParser {
     {
         char op;
         double temp;
-        eval_exp3(result);
+        eval_exp2(result);
         while ((op = *token) == '+' || op == '-') {
             getToken();
-            eval_exp3(temp);
+            eval_exp2(temp);
             result = op == '+' ? result + temp : result - temp;
+        }
+    }
+
+    void eval_exp2(double& result)
+    {
+        char op;
+        double temp;
+        eval_exp3(result);
+        while ((op = *token) == '*' || op == '/') {
+            getToken();
+            eval_exp3(temp);
+            result = op == '*' ? result * temp : result / temp;
         }
     }
 
     void eval_exp3(double& result)
     {
-        char op;
         double temp;
         eval_exp4(result);
-        while ((op = *token) == '*' || op == '/') {
+        while (*token == '%') {
             getToken();
             eval_exp4(temp);
-            result = op == '*' ? result * temp : result / temp;
+            result = (int)result % (int)temp;
         }
     }
 
@@ -179,16 +190,9 @@ class MathParser {
             tok_type = NUMBER;
             temp = setTokenTillDelimiter(temp);
         }
-
-        // printf("token: %s type: %d\n", token, tok_type);
     }
 
 public:
-    MathParser()
-    {
-        int i;
-        exp_ptr = NULL;
-    }
     double eval_exp(char* exp)
     {
         try {
