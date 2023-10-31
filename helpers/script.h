@@ -138,8 +138,7 @@ bool loadScript(const char* filename, void (*callback)(char* key, std::vector<ch
     }
     fclose(file);
 
-    MathParser mathParser;
-    double res = mathParser.eval_exp((char*)"1 + 2 * (3 + 1) + 1 000");
+    double res = MathParser::eval_exp((char*)"1 + 2 * (3 + 1) + 1 000");
     printf("--------- Result: %f\n", res);
 
     return true;
