@@ -55,7 +55,40 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
     - from release
     - from git repo?
 
-- NOTE should we use https://github.com/nlohmann/json for UI ?
+- NOTE should we use script or json for UI ?
+            - should config be load using a shared lib, so by default using this ini file style but could load another config loader...
+            - https://github.com/nlohmann/json
+            - https://github.com/ChaiScript/ChaiScript seem to be very nice and easy to bind but compile time very long, so we would have to use shared lib...
+            - duktape would allow to use JS but bind require some work compare to ChaiScript, and the same as chaiscript building time is too long...
+            - https://github.com/ccxvii/mujs seem to be pretty small js engine
+            - https://github.com/jerryscript-project/jerryscript
+    should we have custom language:
+
+```js
+$width=100
+
+createView: Granular, HIDDEN
+  include: layout.ui
+  addComponent: Granular, 0, 50, 800, 330
+  
+  addComponent: Encoder, 0, 430, $width, 50
+    setEncoderId: 0
+    value: Sequencer, STEP_ENABLED
+  
+  addComponent: Encoder, 0, 430, $width, 50
+    setEncoderId: 1
+    value: Sequencer, STEP_NOTE
+
+  if: $with > 100
+    addComponent: Encoder, 0, 430, $width, 50
+      setEncoderId: 1
+      value: Sequencer, STEP_NOTE
+
+  $i=0
+  while: $i < 10
+    addComponent: Encoder, $i * 100, 430, $width, 50
+    $i=$i + 1
+```
 
 - TODO include view ??
 
