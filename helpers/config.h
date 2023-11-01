@@ -3,7 +3,7 @@
 
 #include "fs.h"
 #include "getFullpath.h"
-#include "trimChar.h"
+#include "trim.h"
 
 #include <stdio.h> // printf
 
@@ -22,7 +22,7 @@ void parseConfigLine(char *line, const char *filename, void (*callback)(char *ke
         printf("Invalid config line: %s\n", line);
         return;
     }
-    callback(key, trimChar(value), filename);
+    callback(key, rtrim(value, '\n'), filename);
 }
 
 bool loadConfig(const char *filename, void (*callback)(char *key, char *value, const char *filename))

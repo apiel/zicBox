@@ -1,24 +1,40 @@
 #ifndef _TRIMCHAR_H_
 #define _TRIMCHAR_H_
 
+#include <string>
 #include <cstring>
 
-char* trimChar(char* str, char c = '\n')
+uint16_t countLeadingChar(char* str, char c)
 {
-    int len = strlen(str);
-    for (int i = 0; i < len; i++) {
-        if (str[i] == c) {
-            str[i] = '\0';
-            break;
-        }
+    uint16_t count = 0;
+    while (str[0] == c) {
+        count++;
+        str++;
     }
+    return count;
+}
 
-    // for (int i = strlen(str); i > 0; i--) {
-    //     if (str[i] != c) {
-    //         str[i] = '\0';
-    //         break;
-    //     }
-    // }
+char* ltrim(char* str, char c)
+{
+    uint16_t count = countLeadingChar(str, c);
+    return str + count;
+}
+
+uint16_t countTrailingChar(char* str, char c)
+{
+    uint16_t count = 0;
+    char * end = str + strlen(str);
+    while (end[-1] == c) {
+        count++;
+        end--;
+    }
+    return count;
+}
+
+char * rtrim(char* str, char c)
+{
+    uint16_t count = countTrailingChar(str, c);
+    str[strlen(str) - count] = '\0';
     return str;
 }
 

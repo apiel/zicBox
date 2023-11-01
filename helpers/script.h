@@ -4,26 +4,10 @@
 #include "fs.h"
 #include "getFullpath.h"
 #include "mathParser.h"
-#include "trimChar.h"
+#include "trim.h"
 
 #include <stdio.h> // printf
 #include <vector>
-
-uint16_t countLeadingSpaces(char* str)
-{
-    uint16_t count = 0;
-    while (str[0] == ' ') {
-        count++;
-        str++;
-    }
-    return count;
-}
-
-char* removeLeadingSpaces(char* str)
-{
-    uint16_t count = countLeadingSpaces(str);
-    return str + count;
-}
 
 namespace Script {
 
@@ -35,7 +19,7 @@ std::vector<Variable> variables;
 
 string parseValue(char* param)
 {
-    param = removeLeadingSpaces(param);
+    param = ltrim(param, ' ');
     try {
         double val = MathParser::eval(param);
         return rtrim(std::to_string(val), "0.");
@@ -104,8 +88,8 @@ void parseScriptLine(char* line, const char* filename, void (*callback)(char* ke
         return;
     }
 
-    line = trimChar(line);
-    uint16_t indentation = countLeadingSpaces(line);
+    line = rtrim(line, '\n');
+    uint16_t indentation = countLeadingChar(line, ' ');
     line = line + indentation; // remove leading spaces
 
     if (line[0] == '$') {
