@@ -9,14 +9,22 @@
 #include "config.h"
 #include "styles.h"
 
-#include "helpers/script.h"
+#include "dustscript/dustscript.h"
 
-void scriptCallback(char* key, std::vector<string> params, const char* filename)
+void scriptCallback(char* command, std::vector<string> params, const char* filename, uint8_t indentation)
 {
-    printf("(%s) fn: %s\n", filename, key);
-    for (auto param : params)
+    if (strcmp(command, "print") == 0)
     {
-        printf("    - '%s'\n", param.c_str());
+        printf(">> LOG: %s\n", params[0].c_str());
+    }
+    else
+    {
+        printf("(%s, %d) command: %s params:", filename, indentation, command);
+        for (auto param : params)
+        {
+            printf("'%s' ", param.c_str());
+        }
+        printf("\n");
     }
 }
 
@@ -29,7 +37,8 @@ int main()
         return 1;
     }
 
-    loadScript("demo.script", scriptCallback);
+    DustScript::load("demo.dust", scriptCallback);
+    return 0;
 
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
 
