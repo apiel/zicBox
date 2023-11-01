@@ -94,26 +94,26 @@ void evalExp5(double& result)
         result = -result;
 }
 
-void evalExp1(double& result, uint8_t operatorIndex);
+void evalOperator(double& result, uint8_t operatorIndex);
 
-void nextEvalExp(double& result, uint8_t operatorIndex)
+void evalNextOperator(double& result, uint8_t operatorIndex)
 {
     uint8_t next = operatorIndex + 1;
     if (next >= operatorCount) {
         evalExp5(result);
         return;
     }
-    evalExp1(result, next);
+    evalOperator(result, next);
 }
 
-void evalExp1(double& result, uint8_t operatorIndex = 0)
+void evalOperator(double& result, uint8_t operatorIndex = 0)
 {
-    nextEvalExp(result, operatorIndex);
+    evalNextOperator(result, operatorIndex);
     Operator op = operators[operatorIndex];
     while (*token == op.sign) {
         getToken();
         double valueB;
-        nextEvalExp(valueB, operatorIndex);
+        evalNextOperator(valueB, operatorIndex);
         result = op.calc(result, valueB);
     }
 }
@@ -172,7 +172,7 @@ void evalExp6(double& result)
     }
     if ((*token == '(')) {
         getToken();
-        evalExp1(result);
+        evalOperator(result);
         if (*token != ')')
             throw std::runtime_error("Unbalanced Parentheses");
         if (isfunc) {
@@ -198,7 +198,7 @@ double eval(char* exp)
             throw std::runtime_error("No Expression Present");
             return (double)0;
         }
-        evalExp1(result);
+        evalOperator(result);
         return result;
     } catch (const std::exception& e) {
         throw std::runtime_error("MathParser Error: " + std::string(e.what()));
