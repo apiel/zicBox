@@ -85,7 +85,8 @@ std::vector<string> getParams(char* paramsStr)
 enum ResultTypes {
     DEFAULT = 0,
     IF_FALSE,
-    LOOP
+    LOOP,
+    LOOP_FALSE,
 };
 
 bool evalIf(std::vector<string> params)
@@ -121,7 +122,7 @@ ResultTypes defaultCallback(char* key, std::vector<string> params, const char* f
     }
     if (strcmp(key, "while") == 0) {
         printf("while: %s %s %s = %s\n", params[0].c_str(), params[1].c_str(), params[2].c_str(), evalIf(params) ? "true" : "false");
-        return evalIf(params) ? ResultTypes::LOOP : ResultTypes::IF_FALSE;
+        return evalIf(params) ? ResultTypes::LOOP : ResultTypes::LOOP_FALSE;
     }
     callback(key, params, filename);
 
@@ -179,9 +180,11 @@ bool loadScript(const char* filename, void (*callback)(char* key, std::vector<st
         if (loopIndent != (uint8_t)-1 && indentation < loopIndent) {
             fseek(file, loopStartPos, SEEK_SET);
             continue;
-        } 
+        }
         Script::ResultTypes result = Script::parseScriptLine(line, filename, callback);
         if (result == Script::ResultTypes::IF_FALSE) {
+            skipTo = indentation;
+        } else if (result == Script::ResultTypes::LOOP_FALSE) {
             skipTo = indentation;
             loopIndent = -1;
         } else if (result == Script::ResultTypes::LOOP) {
