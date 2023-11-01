@@ -12,7 +12,12 @@ createView: Granular, HIDDEN
     setEncoderId: 1
     value: Sequencer, STEP_NOTE
 
-  if: $width > 100
+  if: $width, >, 50
+    addComponent: Encoder, 0, 430, $width, 50
+      setEncoderId: 1
+      value: Sequencer, STEP_NOTE
+
+  if: $width, <, 100
     addComponent: Encoder, 0, 430, $width, 50
       setEncoderId: 1
       value: Sequencer, STEP_NOTE
@@ -25,3 +30,5 @@ createView: Granular, HIDDEN
   $i=$i + 1
   addComponent: Yo, $i * 100, 50.5, 100.50
     label: Some string with var $i in the middle
+
+  # if: abc, ==, abc
