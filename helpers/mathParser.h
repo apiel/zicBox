@@ -188,7 +188,6 @@ double evalOperator(double value, uint8_t operatorIndex)
 double eval(char* exp)
 {
     try {
-        printf("evalExp: %s\n", exp);
         double result;
         expPtr = exp;
         setToken();

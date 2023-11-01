@@ -71,10 +71,30 @@ char* applyVariable(char* str)
     return str;
 }
 
-char* prepareParam(char* param)
+char * copyNewChar(char* str)
+{
+    char * copy = new char[strlen(str) + 1];
+    strcpy(copy, str);
+    return copy;
+}
+
+char* parseValue(char* param)
 {
     param = removeLeadingSpaces(param);
-    return param;
+    try {
+        double val = MathParser::eval(param);
+        return copyNewChar((char *)std::to_string(val).c_str());
+    } catch (const std::exception& e) {
+        // do nothing, it's just not a math expression
+    }
+    return copyNewChar(param);
+}
+
+void freeParams(std::vector<char*> params)
+{
+    for (auto param : params) {
+        delete[] param;
+    }
 }
 
 std::vector<char*> getParams(char* paramsStr)
@@ -84,7 +104,7 @@ std::vector<char*> getParams(char* paramsStr)
         applyVariable(paramsStr);
         char* param = strtok(paramsStr, ",");
         while (param != NULL) {
-            params.push_back(prepareParam(param));
+            params.push_back(parseValue(param));
             param = strtok(NULL, ",");
         }
     }
@@ -118,7 +138,9 @@ void parseScriptLine(char* line, const char* filename, void (*callback)(char* ke
     }
 
     char* paramsStr = strtok(NULL, ":");
-    callback(key, getParams(paramsStr), filename);
+    std::vector<char*> params = getParams(paramsStr);
+    callback(key, params, filename);
+    freeParams(params);
 }
 
 }
@@ -138,8 +160,8 @@ bool loadScript(const char* filename, void (*callback)(char* key, std::vector<ch
     }
     fclose(file);
 
-    double res = MathParser::eval((char*)"1 + 2 * (3 + 1) + 1 000 * (3%2) - 8 / INT(2.1) + sqr(2) + -1"); // 9 + 1000 * 1 - 4 + 4 - 1 = 1008
-    printf("--------- Result: %f\n", res);
+    // double res = MathParser::eval((char*)"1 + 2 * (3 + 1) + 1 000 * (3%2) - 8 / INT(2.1) + sqr(2) + -1"); // 9 + 1000 * 1 - 4 + 4 - 1 = 1008
+    // printf("--------- Result: %f\n", res);
 
     return true;
 }
