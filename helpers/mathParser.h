@@ -20,6 +20,20 @@ char* expPtr; // points to the expression
 char token[64]; // holds current token
 char tokenType; // holds token's type
 
+struct Operator {
+    char sign;
+    double (*calc)(double, double);
+};
+const uint8_t operatorCount = 6;
+Operator operators[operatorCount] = {
+    { '+', [](double a, double b) { return a + b; } },
+    { '-', [](double a, double b) { return a - b; } },
+    { '*', [](double a, double b) { return a * b; } },
+    { '/', [](double a, double b) { return a / b; } },
+    { '%', [](double a, double b) { return fmod(a, b); } },
+    { '^', [](double a, double b) { return pow(a, b); } },
+};
+
 void evalExp6(double& result);
 
 char* getExpPtr()
@@ -32,7 +46,7 @@ char* getExpPtr()
 
 bool isDelimiter()
 {
-    return strchr("+-/*%^=()", *getExpPtr());
+    return strchr("+-/*%^()", *getExpPtr());
 }
 
 char* setTokenTillDelimiter(char* temp)
@@ -80,48 +94,27 @@ void evalExp5(double& result)
         result = -result;
 }
 
-void evalExp4(double& result)
+void evalExp1(double& result, uint8_t operatorIndex);
+
+void nextEvalExp(double& result, uint8_t operatorIndex)
 {
-    double temp;
-    evalExp5(result);
-    while (*token == '^') {
-        getToken();
-        evalExp5(temp);
-        result = pow(result, temp);
+    uint8_t next = operatorIndex + 1;
+    if (next >= operatorCount) {
+        evalExp5(result);
+        return;
     }
+    evalExp1(result, next);
 }
 
-void evalExp3(double& result)
+void evalExp1(double& result, uint8_t operatorIndex = 0)
 {
-    double temp;
-    evalExp4(result);
-    while (*token == '%') {
+    nextEvalExp(result, operatorIndex);
+    Operator op = operators[operatorIndex];
+    while (*token == op.sign) {
         getToken();
-        evalExp4(temp);
-        result = (int)result % (int)temp;
-    }
-}
-
-void evalExp2(double& result)
-{
-    char op;
-    double temp;
-    evalExp3(result);
-    while ((op = *token) == '*' || op == '/') {
-        getToken();
-        evalExp3(temp);
-        result = op == '*' ? result * temp : result / temp;
-    }
-}
-void evalExp1(double& result)
-{
-    char op;
-    double temp;
-    evalExp2(result);
-    while ((op = *token) == '+' || op == '-') {
-        getToken();
-        evalExp2(temp);
-        result = op == '+' ? result + temp : result - temp;
+        double valueB;
+        nextEvalExp(valueB, operatorIndex);
+        result = op.calc(result, valueB);
     }
 }
 
