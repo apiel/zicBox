@@ -23,4 +23,5 @@ createView: Granular, HIDDEN
     $i=$i + 1
 
   $i=$i + 1
-  addComponent: Yo, $i * 100, 50
+  addComponent: Yo, $i * 100, 50.5, 100.50
+    label: Some string with var $i in the middle

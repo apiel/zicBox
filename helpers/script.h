@@ -38,7 +38,7 @@ string parseValue(char* param)
     param = removeLeadingSpaces(param);
     try {
         double val = MathParser::eval(param);
-        return std::to_string(val);
+        return rtrim(std::to_string(val), "0.");
     } catch (const std::exception& e) {
         // do nothing, it's just not a math expression
     }
