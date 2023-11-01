@@ -61,7 +61,7 @@ MathFunction mathFunctions[] = {
 };
 const uint8_t mathFunctionCount = sizeof(mathFunctions) / sizeof(MathFunction);
 
-double evalExp6(double result);
+double evalApply(double result);
 
 char* getExpPtr()
 {
@@ -123,30 +123,13 @@ void setToken()
     }
 }
 
-void evalExp5(double& result)
-{
-    // printf("evalExp5 result in: %f\n", result);
-    char op;
-    op = 0;
-    if (*token == '+' || *token == '-') {
-        op = *token;
-        setToken();
-    }
-    double val = result;
-    result = evalExp6(val);
-    if (op == '-') {
-        result = -result;
-    }
-    // printf("evalExp5 result out: %f\n", result);
-}
-
 void evalOperator(double& result, uint8_t operatorIndex);
 
 void evalNextOperator(double& result, uint8_t operatorIndex)
 {
     uint8_t next = operatorIndex + 1;
     if (next >= operatorCount) {
-        evalExp5(result);
+        result = evalApply(result);
         return;
     }
     evalOperator(result, next);
@@ -176,8 +159,14 @@ int8_t getFunctionIndex(char* func)
     throw std::runtime_error("Unknown Function " + std::string(func));
 }
 
-double evalExp6(double result)
+double evalApply(double result)
 {
+    char op = 0;
+    if (*token == '+' || *token == '-') {
+        op = *token;
+        setToken();
+    }
+
     int8_t funcIndex = -1;
     if (tokenType == FUNCTION) {
         funcIndex = getFunctionIndex(token);
@@ -198,8 +187,8 @@ double evalExp6(double result)
     } else {
         throw std::runtime_error("Syntax Error " + std::string(token));
     }
-    printf("evalExp6 result out: %f\n", result);
-    return result;
+
+    return (op == '-') ? -result : result;
 }
 
 double eval(char* exp)
