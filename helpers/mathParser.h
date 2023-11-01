@@ -61,7 +61,7 @@ MathFunction mathFunctions[] = {
 };
 const uint8_t mathFunctionCount = sizeof(mathFunctions) / sizeof(MathFunction);
 
-void evalOperator(double& result, uint8_t operatorIndex = 0);
+double evalOperator(double result, uint8_t operatorIndex = 0);
 
 int8_t getFunctionIndex(char* func)
 {
@@ -147,7 +147,7 @@ double evalApply(double result)
     }
     if ((*token == '(')) {
         setToken();
-        evalOperator(result);
+        result = evalOperator(result);
         if (*token != ')')
             throw std::runtime_error("Unbalanced Parentheses");
         if (funcIndex > -1) {
@@ -164,28 +164,25 @@ double evalApply(double result)
     return (isNegativeValue) ? -result : result;
 }
 
-void evalNextOperator(double& result, uint8_t operatorIndex)
+double evalNextOperator(double result, uint8_t operatorIndex)
 {
     uint8_t next = operatorIndex + 1;
     if (next >= operatorCount) {
-        result = evalApply(result);
-        return;
+        return evalApply(result);
     }
-    evalOperator(result, next);
+    return evalOperator(result, next);
 }
 
-void evalOperator(double& result, uint8_t operatorIndex)
+double evalOperator(double value, uint8_t operatorIndex)
 {
-    // printf("operatorIndex: %d result: %f\n", operatorIndex, result);
-    evalNextOperator(result, operatorIndex);
+    double valueA = evalNextOperator(value, operatorIndex);
     Operator op = operators[operatorIndex];
     while (*token == op.sign) {
         setToken();
-        double valueB;
-        evalNextOperator(valueB, operatorIndex);
-        // printf("operatorIndex: %d valueB: %f\n", operatorIndex, valueB);
-        result = op.calc(result, valueB);
+        double valueB = evalNextOperator(0, operatorIndex);
+        valueA = op.calc(valueA, valueB);
     }
+    return valueA;
 }
 
 double eval(char* exp)
@@ -199,8 +196,7 @@ double eval(char* exp)
             throw std::runtime_error("No Expression Present");
             return (double)0;
         }
-        evalOperator(result);
-        return result;
+        return evalOperator(result);
     } catch (const std::exception& e) {
         throw std::runtime_error("MathParser Error: " + std::string(e.what()));
     }
