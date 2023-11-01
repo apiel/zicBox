@@ -88,33 +88,40 @@ enum ResultTypes {
     LOOP
 };
 
+bool evalIf(std::vector<string> params)
+{
+    if (params.size() != 3) {
+        throw std::runtime_error("Invalid if statement, required 3 paremeters: if: $var1, =, $var3");
+    }
+
+    bool result = false;
+    if (params[1] == "==") {
+        result = params[0] == params[2];
+    } else if (params[1] == "!=") {
+        result = params[0] != params[2];
+    } else if (params[1] == ">") {
+        result = stod(params[0]) > stod(params[2]);
+    } else if (params[1] == "<") {
+        result = stod(params[0]) < stod(params[2]);
+    } else if (params[1] == ">=") {
+        result = stod(params[0]) >= stod(params[2]);
+    } else if (params[1] == "<=") {
+        result = stod(params[0]) <= stod(params[2]);
+    } else {
+        throw std::runtime_error("Invalid if statement operator: " + params[1]);
+    }
+
+    return result;
+}
+
 ResultTypes defaultCallback(char* key, std::vector<string> params, const char* filename, void (*callback)(char* key, std::vector<string> params, const char* filename))
 {
     if (strcmp(key, "if") == 0) {
-        if (params.size() != 3) {
-            throw std::runtime_error("Invalid if statement, required 3 paremeters: if: $var1, =, $var3");
-        }
-
-        bool result = false;
-        if (params[1] == "==") {
-            result = params[0] == params[2];
-        } else if (params[1] == "!=") {
-            result = params[0] != params[2];
-        } else if (params[1] == ">") {
-            result = stod(params[0]) > stod(params[2]);
-        } else if (params[1] == "<") {
-            result = stod(params[0]) < stod(params[2]);
-        } else if (params[1] == ">=") {
-            result = stod(params[0]) >= stod(params[2]);
-        } else if (params[1] == "<=") {
-            result = stod(params[0]) <= stod(params[2]);
-        } else {
-            throw std::runtime_error("Invalid if statement operator: " + params[1]);
-        }
-
-        printf("------ if %s %s %s = %s\n", params[0].c_str(), params[1].c_str(), params[2].c_str(), result ? "true" : "false");
-
-        return result ? ResultTypes::DEFAULT : ResultTypes::IF_FALSE;
+        return evalIf(params) ? ResultTypes::DEFAULT : ResultTypes::IF_FALSE;
+    }
+    if (strcmp(key, "while") == 0) {
+        printf("while: %s %s %s = %s\n", params[0].c_str(), params[1].c_str(), params[2].c_str(), evalIf(params) ? "true" : "false");
+        return evalIf(params) ? ResultTypes::LOOP : ResultTypes::IF_FALSE;
     }
     callback(key, params, filename);
 
@@ -160,15 +167,26 @@ bool loadScript(const char* filename, void (*callback)(char* key, std::vector<st
     char line[512];
 
     uint8_t skipTo = -1;
+    long loopStartPos;
+    uint8_t loopIndent = -1;
     while (fgets(line, sizeof(line), file)) {
+        long pos = ftell(file) - strlen(line);
         uint16_t indentation = countLeadingChar(line, ' ');
         if (indentation > skipTo) {
             continue;
         }
         skipTo = -1; // will set to max value
+        if (loopIndent != (uint8_t)-1 && indentation < loopIndent) {
+            fseek(file, loopStartPos, SEEK_SET);
+            continue;
+        } 
         Script::ResultTypes result = Script::parseScriptLine(line, filename, callback);
         if (result == Script::ResultTypes::IF_FALSE) {
             skipTo = indentation;
+            loopIndent = -1;
+        } else if (result == Script::ResultTypes::LOOP) {
+            loopStartPos = pos;
+            loopIndent = indentation;
         }
     }
     fclose(file);
