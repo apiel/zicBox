@@ -61,7 +61,17 @@ MathFunction mathFunctions[] = {
 };
 const uint8_t mathFunctionCount = sizeof(mathFunctions) / sizeof(MathFunction);
 
-double evalApply(double result);
+void evalOperator(double& result, uint8_t operatorIndex = 0);
+
+int8_t getFunctionIndex(char* func)
+{
+    for (int8_t i = 0; i < mathFunctionCount; i++) {
+        if (!strcmp(func, mathFunctions[i].name)) {
+            return i;
+        }
+    }
+    throw std::runtime_error("Unknown Function " + std::string(func));
+}
 
 char* getExpPtr()
 {
@@ -123,42 +133,6 @@ void setToken()
     }
 }
 
-void evalOperator(double& result, uint8_t operatorIndex);
-
-void evalNextOperator(double& result, uint8_t operatorIndex)
-{
-    uint8_t next = operatorIndex + 1;
-    if (next >= operatorCount) {
-        result = evalApply(result);
-        return;
-    }
-    evalOperator(result, next);
-}
-
-void evalOperator(double& result, uint8_t operatorIndex = 0)
-{
-    // printf("operatorIndex: %d result: %f\n", operatorIndex, result);
-    evalNextOperator(result, operatorIndex);
-    Operator op = operators[operatorIndex];
-    while (*token == op.sign) {
-        setToken();
-        double valueB;
-        evalNextOperator(valueB, operatorIndex);
-        // printf("operatorIndex: %d valueB: %f\n", operatorIndex, valueB);
-        result = op.calc(result, valueB);
-    }
-}
-
-int8_t getFunctionIndex(char* func)
-{
-    for (int8_t i = 0; i < mathFunctionCount; i++) {
-        if (!strcmp(func, mathFunctions[i].name)) {
-            return i;
-        }
-    }
-    throw std::runtime_error("Unknown Function " + std::string(func));
-}
-
 double evalApply(double result)
 {
     char isNegativeValue = *token == '-';
@@ -188,6 +162,30 @@ double evalApply(double result)
     }
 
     return (isNegativeValue) ? -result : result;
+}
+
+void evalNextOperator(double& result, uint8_t operatorIndex)
+{
+    uint8_t next = operatorIndex + 1;
+    if (next >= operatorCount) {
+        result = evalApply(result);
+        return;
+    }
+    evalOperator(result, next);
+}
+
+void evalOperator(double& result, uint8_t operatorIndex)
+{
+    // printf("operatorIndex: %d result: %f\n", operatorIndex, result);
+    evalNextOperator(result, operatorIndex);
+    Operator op = operators[operatorIndex];
+    while (*token == op.sign) {
+        setToken();
+        double valueB;
+        evalNextOperator(valueB, operatorIndex);
+        // printf("operatorIndex: %d valueB: %f\n", operatorIndex, valueB);
+        result = op.calc(result, valueB);
+    }
 }
 
 double eval(char* exp)
