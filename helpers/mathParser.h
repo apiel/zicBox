@@ -24,8 +24,7 @@ struct Operator {
     char sign;
     double (*calc)(double, double);
 };
-const uint8_t operatorCount = 6;
-Operator operators[operatorCount] = {
+Operator operators[] = {
     { '+', [](double a, double b) { return a + b; } },
     { '-', [](double a, double b) { return a - b; } },
     { '*', [](double a, double b) { return a * b; } },
@@ -33,8 +32,37 @@ Operator operators[operatorCount] = {
     { '%', [](double a, double b) { return fmod(a, b); } },
     { '^', [](double a, double b) { return pow(a, b); } },
 };
+const uint8_t operatorCount = sizeof(operators) / sizeof(Operator);
 
-void evalExp6(double& result);
+struct MathFunction
+{
+    const char *name;
+    double (*func)(double);
+};
+MathFunction mathFunctions[] = {
+    {"SIN", sin},
+    {"COS", cos},
+    {"TAN", tan},
+    {"ASIN", asin},
+    {"ACOS", acos},
+    {"ATAN", atan},
+    {"SINH", sinh},
+    {"COSH", cosh},
+    {"TANH", tanh},
+    {"ASINH", asinh},
+    {"ACOSH", acosh},
+    {"ATANH", atanh},
+    {"LN", log},
+    {"LOG", log10},
+    {"EXP", exp},
+    {"SQRT", sqrt},
+    {"SQR", [](double a) { return a * a; } },
+    {"ROUND", round},
+    {"INT", floor},
+};
+const uint8_t mathFunctionCount = sizeof(mathFunctions) / sizeof(MathFunction);
+
+double evalExp6(double result);
 
 char* getExpPtr()
 {
@@ -83,15 +111,19 @@ void getToken()
 
 void evalExp5(double& result)
 {
+    // printf("evalExp5 result in: %f\n", result);
     char op;
     op = 0;
-    if ((tokenType == DELIMITER) && *token == '+' || *token == '-') {
+    if (*token == '+' || *token == '-') {
         op = *token;
         getToken();
     }
-    evalExp6(result);
-    if (op == '-')
+    double val = result;
+    result = evalExp6(val);
+    if (op == '-') {
         result = -result;
+    }
+    // printf("evalExp5 result out: %f\n", result);
 }
 
 void evalOperator(double& result, uint8_t operatorIndex);
@@ -108,66 +140,33 @@ void evalNextOperator(double& result, uint8_t operatorIndex)
 
 void evalOperator(double& result, uint8_t operatorIndex = 0)
 {
+    // printf("operatorIndex: %d result: %f\n", operatorIndex, result);
     evalNextOperator(result, operatorIndex);
     Operator op = operators[operatorIndex];
     while (*token == op.sign) {
         getToken();
         double valueB;
         evalNextOperator(valueB, operatorIndex);
+        // printf("operatorIndex: %d valueB: %f\n", operatorIndex, valueB);
         result = op.calc(result, valueB);
     }
 }
 
-void applyFunction(double& result, char* func)
+int8_t getFunctionIndex(char* func)
 {
-    if (!strcmp(func, "SIN"))
-        result = sin(M_PI / 180 * result);
-    else if (!strcmp(func, "COS"))
-        result = cos(M_PI / 180 * result);
-    else if (!strcmp(func, "TAN"))
-        result = tan(M_PI / 180 * result);
-    else if (!strcmp(func, "ASIN"))
-        result = 180 / M_PI * asin(result);
-    else if (!strcmp(func, "ACOS"))
-        result = 180 / M_PI * acos(result);
-    else if (!strcmp(func, "ATAN"))
-        result = 180 / M_PI * atan(result);
-    else if (!strcmp(func, "SINH"))
-        result = sinh(result);
-    else if (!strcmp(func, "COSH"))
-        result = cosh(result);
-    else if (!strcmp(func, "TANH"))
-        result = tanh(result);
-    else if (!strcmp(func, "ASINH"))
-        result = asinh(result);
-    else if (!strcmp(func, "ACOSH"))
-        result = acosh(result);
-    else if (!strcmp(func, "ATANH"))
-        result = atanh(result);
-    else if (!strcmp(func, "LN"))
-        result = log(result);
-    else if (!strcmp(func, "LOG"))
-        result = log10(result);
-    else if (!strcmp(func, "EXP"))
-        result = exp(result);
-    else if (!strcmp(func, "SQRT"))
-        result = sqrt(result);
-    else if (!strcmp(func, "SQR"))
-        result = result * result;
-    else if (!strcmp(func, "ROUND"))
-        result = round(result);
-    else if (!strcmp(func, "INT"))
-        result = floor(result);
-    else
-        throw std::runtime_error("Unknown Function " + std::string(func));
+    for (int8_t i = 0; i < mathFunctionCount; i++) {
+        if (!strcmp(func, mathFunctions[i].name))
+            return i;
+    }
+    throw std::runtime_error("Unknown Function " + std::string(func));
 }
 
-void evalExp6(double& result)
+double evalExp6(double result)
 {
     bool isfunc = (tokenType == FUNCTION);
-    char temp_token[80];
+    int8_t funcIndex = -1;
     if (isfunc) {
-        strcpy(temp_token, token);
+        funcIndex = getFunctionIndex(token);
         getToken();
     }
     if ((*token == '(')) {
@@ -176,7 +175,7 @@ void evalExp6(double& result)
         if (*token != ')')
             throw std::runtime_error("Unbalanced Parentheses");
         if (isfunc) {
-            applyFunction(result, temp_token);
+            result = mathFunctions[funcIndex].func(result);
         }
         getToken();
     } else if (tokenType == NUMBER) {
@@ -185,6 +184,8 @@ void evalExp6(double& result)
     } else {
         throw std::runtime_error("Syntax Error " + std::string(token));
     }
+    printf("evalExp6 result out: %f\n", result);
+    return result;
 }
 
 double eval(char* exp)
