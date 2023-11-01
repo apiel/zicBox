@@ -34,31 +34,30 @@ Operator operators[] = {
 };
 const uint8_t operatorCount = sizeof(operators) / sizeof(Operator);
 
-struct MathFunction
-{
-    const char *name;
+struct MathFunction {
+    const char* name;
     double (*func)(double);
 };
 MathFunction mathFunctions[] = {
-    {"SIN", sin},
-    {"COS", cos},
-    {"TAN", tan},
-    {"ASIN", asin},
-    {"ACOS", acos},
-    {"ATAN", atan},
-    {"SINH", sinh},
-    {"COSH", cosh},
-    {"TANH", tanh},
-    {"ASINH", asinh},
-    {"ACOSH", acosh},
-    {"ATANH", atanh},
-    {"LN", log},
-    {"LOG", log10},
-    {"EXP", exp},
-    {"SQRT", sqrt},
-    {"SQR", [](double a) { return a * a; } },
-    {"ROUND", round},
-    {"INT", floor},
+    { "SIN", sin },
+    { "COS", cos },
+    { "TAN", tan },
+    { "ASIN", asin },
+    { "ACOS", acos },
+    { "ATAN", atan },
+    { "SINH", sinh },
+    { "COSH", cosh },
+    { "TANH", tanh },
+    { "ASINH", asinh },
+    { "ACOSH", acosh },
+    { "ATANH", atanh },
+    { "LN", log },
+    { "LOG", log10 },
+    { "EXP", exp },
+    { "SQRT", sqrt },
+    { "SQR", [](double a) { return a * a; } },
+    { "ROUND", round },
+    { "INT", floor },
 };
 const uint8_t mathFunctionCount = sizeof(mathFunctions) / sizeof(MathFunction);
 
@@ -72,21 +71,36 @@ char* getExpPtr()
     return expPtr;
 }
 
+bool isOperator()
+{
+    char c = *getExpPtr();
+    for (int8_t i = 0; i < operatorCount; i++) {
+        if (c == operators[i].sign) {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool isDelimiter()
 {
-    return strchr("+-/*%^()", *getExpPtr());
+    char c = *getExpPtr();
+    if (c == '(' || c == ')') {
+        return true;
+    }
+    return isOperator();
 }
 
 char* setTokenTillDelimiter(char* temp)
 {
-    while (!isDelimiter() && (*getExpPtr()))
+    while (*getExpPtr() && !isDelimiter()) {
         *temp++ = toupper(*expPtr++);
-
+    }
     *temp = '\0';
     return temp;
 }
 
-void getToken()
+void setToken()
 {
     tokenType = 0;
 
@@ -116,7 +130,7 @@ void evalExp5(double& result)
     op = 0;
     if (*token == '+' || *token == '-') {
         op = *token;
-        getToken();
+        setToken();
     }
     double val = result;
     result = evalExp6(val);
@@ -144,7 +158,7 @@ void evalOperator(double& result, uint8_t operatorIndex = 0)
     evalNextOperator(result, operatorIndex);
     Operator op = operators[operatorIndex];
     while (*token == op.sign) {
-        getToken();
+        setToken();
         double valueB;
         evalNextOperator(valueB, operatorIndex);
         // printf("operatorIndex: %d valueB: %f\n", operatorIndex, valueB);
@@ -155,32 +169,32 @@ void evalOperator(double& result, uint8_t operatorIndex = 0)
 int8_t getFunctionIndex(char* func)
 {
     for (int8_t i = 0; i < mathFunctionCount; i++) {
-        if (!strcmp(func, mathFunctions[i].name))
+        if (!strcmp(func, mathFunctions[i].name)) {
             return i;
+        }
     }
     throw std::runtime_error("Unknown Function " + std::string(func));
 }
 
 double evalExp6(double result)
 {
-    bool isfunc = (tokenType == FUNCTION);
     int8_t funcIndex = -1;
-    if (isfunc) {
+    if (tokenType == FUNCTION) {
         funcIndex = getFunctionIndex(token);
-        getToken();
+        setToken();
     }
     if ((*token == '(')) {
-        getToken();
+        setToken();
         evalOperator(result);
         if (*token != ')')
             throw std::runtime_error("Unbalanced Parentheses");
-        if (isfunc) {
+        if (funcIndex > -1) {
             result = mathFunctions[funcIndex].func(result);
         }
-        getToken();
+        setToken();
     } else if (tokenType == NUMBER) {
         result = atof(token);
-        getToken();
+        setToken();
     } else {
         throw std::runtime_error("Syntax Error " + std::string(token));
     }
@@ -194,7 +208,7 @@ double eval(char* exp)
         printf("evalExp: %s\n", exp);
         double result;
         expPtr = exp;
-        getToken();
+        setToken();
         if (!*token) {
             throw std::runtime_error("No Expression Present");
             return (double)0;
