@@ -11,14 +11,12 @@
 
 #include "helpers/script.h"
 
-// (char *key, std::vector<char *> params, const char *filename))
-
-void scriptCallback(char* key, std::vector<char *> params, const char* filename)
+void scriptCallback(char* key, std::vector<string> params, const char* filename)
 {
     printf("(%s) fn: %s\n", filename, key);
     for (auto param : params)
     {
-        printf("    - '%s'\n", param);
+        printf("    - '%s'\n", param.c_str());
     }
 }
 

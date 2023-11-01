@@ -28,32 +28,21 @@ char* removeLeadingSpaces(char* str)
 namespace Script {
 
 struct Variable {
-    // Could assign char size dynamically but for the moment let's keep it simple
-    char key[64];
-    char value[64];
+    string key;
+    string value;
 };
 std::vector<Variable> variables;
 
-void setVariable(char* line)
+string parseValue(char* param)
 {
-    char* key = strtok(line, "=");
-    char* value = strtok(NULL, "=");
-    if (key == NULL || value == NULL) {
-        printf("Invalid variable line: %s\n", line);
-        return;
+    param = removeLeadingSpaces(param);
+    try {
+        double val = MathParser::eval(param);
+        return std::to_string(val);
+    } catch (const std::exception& e) {
+        // do nothing, it's just not a math expression
     }
-    // search first if variable already exists
-    for (auto variable : variables) {
-        if (strcmp(variable.key, key) == 0) {
-            strcpy(variable.value, value);
-            return;
-        }
-    }
-    // else add new variable
-    Variable variable;
-    strcpy(variable.key, key);
-    strcpy(variable.value, value);
-    variables.push_back(variable);
+    return param;
 }
 
 char* applyVariable(char* str)
@@ -71,35 +60,32 @@ char* applyVariable(char* str)
     return str;
 }
 
-char * copyNewChar(char* str)
+void setVariable(char* line)
 {
-    char * copy = new char[strlen(str) + 1];
-    strcpy(copy, str);
-    return copy;
-}
-
-char* parseValue(char* param)
-{
-    param = removeLeadingSpaces(param);
-    try {
-        double val = MathParser::eval(param);
-        return copyNewChar((char *)std::to_string(val).c_str());
-    } catch (const std::exception& e) {
-        // do nothing, it's just not a math expression
+    char* key = strtok(line, "=");
+    char* value = strtok(NULL, "=");
+    if (key == NULL || value == NULL) {
+        printf("Invalid variable line: %s\n", line);
+        return;
     }
-    return copyNewChar(param);
-}
+    value = applyVariable(value);
 
-void freeParams(std::vector<char*> params)
-{
-    for (auto param : params) {
-        delete[] param;
+    // search first if variable already exists
+    for (int i = 0; i < variables.size(); i++) {
+        if (variables[i].key == key) {
+            variables[i].value = parseValue(value);
+            return;
+        }
     }
+    Variable variable;
+    variable.key = key;
+    variable.value = parseValue(value);
+    variables.push_back(variable);
 }
 
-std::vector<char*> getParams(char* paramsStr)
+std::vector<string> getParams(char* paramsStr)
 {
-    std::vector<char*> params;
+    std::vector<string> params;
     if (paramsStr != NULL) {
         applyVariable(paramsStr);
         char* param = strtok(paramsStr, ",");
@@ -111,12 +97,7 @@ std::vector<char*> getParams(char* paramsStr)
     return params;
 }
 
-char* prepareKey(char* key)
-{
-    return key;
-}
-
-void parseScriptLine(char* line, const char* filename, void (*callback)(char* key, std::vector<char*> params, const char* filename))
+void parseScriptLine(char* line, const char* filename, void (*callback)(char* key, std::vector<string> params, const char* filename))
 {
     // ignore comments and empty lines
     if (line[0] == '#' || line[0] == '\n') {
@@ -138,14 +119,12 @@ void parseScriptLine(char* line, const char* filename, void (*callback)(char* ke
     }
 
     char* paramsStr = strtok(NULL, ":");
-    std::vector<char*> params = getParams(paramsStr);
-    callback(key, params, filename);
-    freeParams(params);
+    callback(key, getParams(paramsStr), filename);
 }
 
 }
 
-bool loadScript(const char* filename, void (*callback)(char* key, std::vector<char*> params, const char* filename))
+bool loadScript(const char* filename, void (*callback)(char* key, std::vector<string> params, const char* filename))
 {
     FILE* file = fopen(filename, "r");
     if (file == NULL) {
@@ -159,9 +138,6 @@ bool loadScript(const char* filename, void (*callback)(char* key, std::vector<ch
         Script::parseScriptLine(line, filename, callback);
     }
     fclose(file);
-
-    // double res = MathParser::eval((char*)"1 + 2 * (3 + 1) + 1 000 * (3%2) - 8 / INT(2.1) + sqr(2) + -1"); // 9 + 1000 * 1 - 4 + 4 - 1 = 1008
-    // printf("--------- Result: %f\n", res);
 
     return true;
 }

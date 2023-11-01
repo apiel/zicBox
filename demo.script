@@ -21,3 +21,6 @@ createView: Granular, HIDDEN
   while: $i < 10
     addComponent: Encoder, $i * 100, 430, $width * 2, 50
     $i=$i + 1
+
+  $i=$i + 1
+  addComponent: Yo, $i * 100, 50
