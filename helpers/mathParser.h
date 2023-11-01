@@ -161,9 +161,8 @@ int8_t getFunctionIndex(char* func)
 
 double evalApply(double result)
 {
-    char op = 0;
-    if (*token == '+' || *token == '-') {
-        op = *token;
+    char isNegativeValue = *token == '-';
+    if (isNegativeValue) {
         setToken();
     }
 
@@ -188,7 +187,7 @@ double evalApply(double result)
         throw std::runtime_error("Syntax Error " + std::string(token));
     }
 
-    return (op == '-') ? -result : result;
+    return (isNegativeValue) ? -result : result;
 }
 
 double eval(char* exp)
