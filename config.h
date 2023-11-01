@@ -20,7 +20,7 @@ void scriptCallback(char* command, std::vector<string> params, const char* filen
         loadPluginController(fullpath);
     } else if (strcmp(command, "SET_COLOR") == 0) {
         ViewManager::get().draw.setColor((char*)params[0].c_str(), (char*)params[1].c_str());
-    } else if (lastPluginControllerInstance && lastPluginControllerInstance->config(command, (char*)params[0].c_str())) { // FIXME
+    } else if (pluginControllerConfig(command, params)) {
         return;
     } else {
         ViewManager::get().config(command, (char*)params[0].c_str(), filename); // FIXME

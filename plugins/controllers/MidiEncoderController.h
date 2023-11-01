@@ -26,15 +26,15 @@ protected:
         }
     }
 
-    void load(const char *portName)
+    void load(std::string portName)
     {
-        if (strcmp(portName, "") == 0)
+        if (portName == "")
         {
             printf("Midi input cannot be empty\n");
             return;
         }
 
-        printf("Search for midi input: %s\n", portName);
+        printf("Search for midi input: %s\n", portName.c_str());
 
         unsigned int portCount = midi.getPortCount();
         for (unsigned int i = 0; i < portCount; i++)
@@ -51,7 +51,7 @@ protected:
             }
         }
 
-        printf("Midi input %s not found\n", portName);
+        printf("Midi input %s not found\n", portName.c_str());
     }
 
 public:
@@ -78,19 +78,19 @@ public:
         list();
     }
 
-    bool config(char *key, char *value)
+    bool config(char *key, std::vector<std::string> params)
     {
         if (strcmp(key, "DEVICE") == 0)
         {
-            load(value);
+            load(params[0]);
             return true;
         }
         else if (strcmp(key, "ENCODER_TARGET") == 0)
         {
-            char *cc = strtok(value, " ");
-            char *encoderId = strtok(NULL, " ");
-            printf("ENCODER_TARGET: %s %s\n", cc, encoderId);
-            encoders[atoi(cc)].encoderId = atoi(encoderId);
+            int cc = stoi(params[0]);
+            int encoderId = stoi(params[1]);
+            printf("ENCODER_TARGET: %d %d\n", cc, encoderId);
+            encoders[cc].encoderId = encoderId;
             return true;
         }
         return false;

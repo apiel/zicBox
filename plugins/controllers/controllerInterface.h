@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <unistd.h>
 #include <vector>
+#include <string>
 
 class ControllerInterface
 {
@@ -21,7 +22,7 @@ public:
     {
     }
 
-    virtual bool config(char *key, char *value)
+    virtual bool config(char *key, std::vector<std::string> params)
     {
         return false;
     }

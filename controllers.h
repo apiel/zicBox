@@ -39,4 +39,13 @@ void loadPluginController(const char *path)
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "plugin interface loaded: %s\n", path);
 }
 
+bool pluginControllerConfig(char *key, std::vector<std::string> params)
+{
+    if (lastPluginControllerInstance)
+    {
+        return lastPluginControllerInstance->config(key, params);
+    }
+    return false;
+}
+
 #endif
