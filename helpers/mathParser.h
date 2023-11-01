@@ -66,18 +66,18 @@ void getToken()
         return;
     }
 
-    char* temp = token;
-    *temp = '\0';
+    char* tokenPtr = token;
+    *tokenPtr = '\0';
 
     if (isDelimiter()) {
         tokenType = DELIMITER;
-        *temp = *expPtr++; // advance to next char
+        *tokenPtr = *expPtr++; // advance to next char
     } else if (isalpha(*getExpPtr())) {
         tokenType = FUNCTION;
-        temp = setTokenTillDelimiter(temp);
+        tokenPtr = setTokenTillDelimiter(tokenPtr);
     } else if (isdigit(*getExpPtr()) || *getExpPtr() == '.') {
         tokenType = NUMBER;
-        temp = setTokenTillDelimiter(temp);
+        tokenPtr = setTokenTillDelimiter(tokenPtr);
     }
 }
 
