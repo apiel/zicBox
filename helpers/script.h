@@ -11,7 +11,6 @@
 #include <vector>
 
 namespace Script {
-
 struct Variable {
     string key;
     string value;
@@ -121,7 +120,6 @@ ResultTypes defaultCallback(char* key, std::vector<string> params, const char* f
         return evalIf(params) ? ResultTypes::DEFAULT : ResultTypes::IF_FALSE;
     }
     if (strcmp(key, "while") == 0) {
-        printf("while: %s %s %s = %s\n", params[0].c_str(), params[1].c_str(), params[2].c_str(), evalIf(params) ? "true" : "false");
         return evalIf(params) ? ResultTypes::LOOP : ResultTypes::LOOP_FALSE;
     }
     callback(key, params, filename);
@@ -154,7 +152,6 @@ ResultTypes parseScriptLine(char* line, const char* filename, void (*callback)(c
     std::vector<string> params = getParams(paramsStr);
     return defaultCallback(key, params, filename, callback);
 }
-
 }
 
 bool loadScript(const char* filename, void (*callback)(char* key, std::vector<string> params, const char* filename))
