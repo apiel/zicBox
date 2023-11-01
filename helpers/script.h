@@ -82,7 +82,13 @@ std::vector<string> getParams(char* paramsStr)
     return params;
 }
 
-void defaultCallback(char* key, std::vector<string> params, const char* filename, void (*callback)(char* key, std::vector<string> params, const char* filename))
+enum ResultTypes {
+    DEFAULT = 0,
+    IF_FALSE,
+    LOOP
+};
+
+ResultTypes defaultCallback(char* key, std::vector<string> params, const char* filename, void (*callback)(char* key, std::vector<string> params, const char* filename))
 {
     if (strcmp(key, "if") == 0) {
         if (params.size() != 3) {
@@ -108,36 +114,37 @@ void defaultCallback(char* key, std::vector<string> params, const char* filename
 
         printf("------ if %s %s %s = %s\n", params[0].c_str(), params[1].c_str(), params[2].c_str(), result ? "true" : "false");
 
-        return;
+        return result ? ResultTypes::DEFAULT : ResultTypes::IF_FALSE;
     }
     callback(key, params, filename);
+
+    return ResultTypes::DEFAULT;
 }
 
-void parseScriptLine(char* line, const char* filename, void (*callback)(char* key, std::vector<string> params, const char* filename))
+ResultTypes parseScriptLine(char* line, const char* filename, void (*callback)(char* key, std::vector<string> params, const char* filename))
 {
-    uint16_t indentation = countLeadingChar(line, ' ');
-    line = line + indentation; // remove leading spaces
+    line = ltrim(line, ' ');
 
     // ignore comments and empty lines
     if (line[0] == '#' || line[0] == '\n') {
-        return;
+        return ResultTypes::DEFAULT;
     }
 
     line = rtrim(line, '\n');
 
     if (line[0] == '$') {
         setVariable(line);
-        return;
+        return ResultTypes::DEFAULT;
     }
 
     char* key = strtok(line, ":");
     if (key == NULL) {
-        return;
+        return ResultTypes::DEFAULT;
     }
 
     char* paramsStr = strtok(NULL, ":");
     std::vector<string> params = getParams(paramsStr);
-    defaultCallback(key, params, filename, callback);
+    return defaultCallback(key, params, filename, callback);
 }
 
 }
@@ -152,8 +159,17 @@ bool loadScript(const char* filename, void (*callback)(char* key, std::vector<st
 
     char line[512];
 
+    uint8_t skipTo = -1;
     while (fgets(line, sizeof(line), file)) {
-        Script::parseScriptLine(line, filename, callback);
+        uint16_t indentation = countLeadingChar(line, ' ');
+        if (indentation > skipTo) {
+            continue;
+        }
+        skipTo = -1; // will set to max value
+        Script::ResultTypes result = Script::parseScriptLine(line, filename, callback);
+        if (result == Script::ResultTypes::IF_FALSE) {
+            skipTo = indentation;
+        }
     }
     fclose(file);
 

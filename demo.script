@@ -13,12 +13,12 @@ createView: Granular, HIDDEN
     value: Sequencer, STEP_NOTE
 
   if: $width, >, 50
-    addComponent: Encoder, 0, 430, $width, 50
+    addComponent: EncoderIsTrue, 0, 430, $width, 50
       setEncoderId: 1
       value: Sequencer, STEP_NOTE
 
   if: $width, <, 100
-    addComponent: Encoder, 0, 430, $width, 50
+    addComponent: EncoderIsFalse, 0, 430, $width, 50
       setEncoderId: 1
       value: Sequencer, STEP_NOTE
 
