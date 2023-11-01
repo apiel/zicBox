@@ -252,6 +252,7 @@ public:
         return styles.colors.white;
     }
 
+// TODO use string...
     void setColor(char *name, char *color)
     {
         Color *styleColor = getStyleColor(name);

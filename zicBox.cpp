@@ -9,36 +9,9 @@
 #include "config.h"
 #include "styles.h"
 
-#include "dustscript/dustscript.h"
-
-void scriptCallback(char* command, std::vector<string> params, const char* filename, uint8_t indentation)
-{
-    if (strcmp(command, "print") == 0)
-    {
-        printf(">> LOG: %s\n", params[0].c_str());
-    }
-    else
-    {
-        printf("(%s, %d) command: %s params:", filename, indentation, command);
-        for (auto param : params)
-        {
-            printf("'%s' ", param.c_str());
-        }
-        printf("\n");
-    }
-}
-
 int main()
 {
-    if (!loadUiConfig())
-    {
-        // FIXME here we should close audio stuff
-        // however how come that it is loaded even before being called
-        return 1;
-    }
-
-    DustScript::load("demo.dust", scriptCallback);
-    return 0;
+    loadUiConfig();
 
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
 

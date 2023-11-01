@@ -127,11 +127,11 @@ public:
         if (strcmp(key, "VIEW") == 0) {
             View* v = new View;
 
-            char * name = strtok(value, " ");
+            char* name = strtok(value, " ");
             v->name = new char[strlen(name) + 1];
             strcpy(v->name, name);
 
-            char * hidden = strtok(NULL, " ");
+            char* hidden = strtok(NULL, " ");
             if (hidden != NULL && strcmp(hidden, "HIDDEN") == 0) {
                 v->hidden = true;
             }
@@ -188,9 +188,11 @@ public:
 
     void clearOnUpdate()
     {
-        for (auto& component : lastView->view) {
-            for (auto* value : component->values) {
-                value->onUpdate([](float, void* data) {}, NULL);
+        if (lastView != NULL) {
+            for (auto& component : lastView->view) {
+                for (auto* value : component->values) {
+                    value->onUpdate([](float, void* data) {}, NULL);
+                }
             }
         }
     }

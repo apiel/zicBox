@@ -3,6 +3,7 @@
 
 #include <string.h>
 
+// TODO use string...
 char *getFullpath(char *path, const char *parentFilename, char *fullpathBuffer)
 {
     if (path[0] == '/')

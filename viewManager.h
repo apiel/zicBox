@@ -124,8 +124,6 @@ public:
         ui.clearOnUpdate();
         ui.initActiveComponents([](float, void* data) { ViewManager::get().onUpdate((ValueInterface*)data); });
 
-        // ui.viewSelector.onUpdate([](float, void* data) { ViewManager::get().render(); }, NULL);
-
         m.unlock();
 
         renderComponents();
@@ -171,6 +169,7 @@ public:
 
     bool config(char* key, char* value, const char* filename)
     {
+        printf("------ Config: '%s' = '%s'\n", key, value);
         if (strcmp(key, "PLUGIN_COMPONENT") == 0) {
             loadPlugin(value, filename);
             return true;

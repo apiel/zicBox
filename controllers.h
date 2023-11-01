@@ -7,7 +7,7 @@
 
 #include <dlfcn.h>
 
-ControllerInterface *lastPluginInstance = NULL;
+ControllerInterface *lastPluginControllerInstance = NULL;
 
 void encoderHandler(int id, int8_t direction)
 {
@@ -35,7 +35,7 @@ void loadPluginController(const char *path)
     }
 
     ControllerInterface::Props props = {midiHandler, encoderHandler};
-    lastPluginInstance = ((ControllerInterface * (*)(ControllerInterface::Props & props)) allocator)(props);
+    lastPluginControllerInstance = ((ControllerInterface * (*)(ControllerInterface::Props & props)) allocator)(props);
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "plugin interface loaded: %s\n", path);
 }
 
