@@ -42,53 +42,53 @@ UI is fully customizable using the `./ui/index.ui` file.
 
 > To get styling for .ui extension in VScode, use `Ctrl` + `Shift` + `P` and type `Change Language Mode`. Then select `Configure File Association for '.ui'...` and select `Properties`.
 
-Those `.ui` files are simple configuration files using `KEY=VALUE`. Each lines is parsed one after the other, to load the UI in memory, meaning that the order of each configuration steps matter. Comment can be applied by placing a `#` at the beginning of the line (a comment, cannot be done at the end of a line).
+Those `.ui` files are simple configuration files using `KEY: VALUE`. Each lines is parsed one after the other, to load the UI in memory, meaning that the order of each configuration steps matter. Comment can be applied by placing a `#` at the beginning of the line (a comment, cannot be done at the end of a line).
 
 The user interface is composed of views and components. A view is composed of multiple components. A component is for example a button or a rotary encoder. Each of the UI components are external shared library that can be loaded dynamically when the application start.
 
 ### Basic keys
 
-#### INCLUDE=
+#### INCLUDE
 
-A `.ui` file can include another `.ui` file, using `INCLUDE=path/of/the/file.ui`. As soon as this `INCLUDE` is called, it will continue into the child file till his end, to finally come back to the original file.
+A `.ui` file can include another `.ui` file, using `INCLUDE: path/of/the/file.ui`. As soon as this `INCLUDE` is called, it will continue into the child file till his end, to finally come back to the original file.
 
-```ini
-INCLUDE=path/of/the/file.ui
+```coffee
+INCLUDE: path/of/the/file.ui
 ```
 
-#### PLUGIN_COMPONENT=
+#### PLUGIN_COMPONENT
 
-A component must be load from a shared library (those `.so` files). To load those plugin components, use `PLUGIN_COMPONENT=given_name_to_component ../path/of/the/component.so`.
+A component must be load from a shared library (those `.so` files). To load those plugin components, use `PLUGIN_COMPONENT: given_name_to_component ../path/of/the/component.so`.
 
-```ini
-PLUGIN_COMPONENT=Encoder ../plugins/build/libzic_EncoderComponent.so
+```coffee
+PLUGIN_COMPONENT: Encoder ../plugins/build/libzic_EncoderComponent.so
 ```
 
 In this example, we load the shared library `../plugins/build/libzic_EncoderComponent.so` and we give it the name of `Encoder`. The `Encoder` name will be used later to place the components in the view.
 
-#### PLUGIN_CONTROLLER=
+#### PLUGIN_CONTROLLER
 
-Beside the user interface, there is as well hardware controllers, like external midi controller or the builtin buttons and pots. To be able to interact with the user interface, those hardware controllers must also be loaded in the application, using `PLUGIN_CONTROLLER=../path/of/the/controller.so`
+Beside the user interface, there is as well hardware controllers, like external midi controller or the builtin buttons and pots. To be able to interact with the user interface, those hardware controllers must also be loaded in the application, using `PLUGIN_CONTROLLER: ../path/of/the/controller.so`
 
-```ini
-PLUGIN_CONTROLLER=../plugins/build/libzic_MidiEncoderController.so
-DEVICE=Arduino Leonardo:Arduino Leonardo MIDI 1
+```coffee
+PLUGIN_CONTROLLER: ../plugins/build/libzic_MidiEncoderController.so
+DEVICE: Arduino Leonardo:Arduino Leonardo MIDI 1
 ```
 
-Some controller can get extra configuration. Any `KEY=VALUE` following `PLUGIN_CONTROLLER=` will be forwarded to the controller. In this example, we say to the controller to load the midi device `Arduino Leonardo:Arduino Leonardo MIDI 1`.
+Some controller can get extra configuration. Any `KEY: VALUE` following `PLUGIN_CONTROLLER: ` will be forwarded to the controller. In this example, we say to the controller to load the midi device `Arduino Leonardo:Arduino Leonardo MIDI 1`.
 
-#### VIEW=
+#### VIEW
 
-The user interface is composed of multiple views that contain the components. A view, represent a full screen layout. Use `VIEW=name_of_the_veiw` to create a view. All the following `COMPONENT=` will be assign to this view, till the next view.
+The user interface is composed of multiple views that contain the components. A view, represent a full screen layout. Use `VIEW: name_of_the_veiw` to create a view. All the following `COMPONENT: ` will be assign to this view, till the next view.
 
-```ini
-# VIEW=ViewName
+```coffee
+# VIEW: ViewName
 
-VIEW=Main
+VIEW: Main
 
 # some components...
 
-VIEW=Mixer
+VIEW: Mixer
 
 # some components...
 # ...
@@ -96,31 +96,31 @@ VIEW=Mixer
 
 In some case, we need to create some hidden view. Those hidden views can be useful when defining a layout that is re-used in multiple view. It might also be useful, when a view have multiple state (e.g. shifted view...). In all those case, we do not want those view to be iterable. To define a hidden view, set `HIDDEN` flag after the view name.
 
-```ini
-VIEW=Layout HIDDEN
+```coffee
+VIEW: Layout HIDDEN
 
 # some components...
 ```
 
-#### COMPONENT=
+#### COMPONENT
 
-To place previously loaded components inside a view, use `COMPONENT=given_name_to_component x y w h`.
+To place previously loaded components inside a view, use `COMPONENT: given_name_to_component x y w h`.
 
-```ini
-COMPONENT=Encoder 100 0 100 50
-ENCODER_ID=1
-VALUE=MultiModeFilter RESONANCE
+```coffee
+COMPONENT: Encoder 100 0 100 50
+ENCODER_ID: 1
+VALUE: MultiModeFilter RESONANCE
 ```
 
-A component can get extra configuration settings and any `KEY=VALUE` following `COMPONENT=` will be forwarded to the component.
+A component can get extra configuration settings and any `KEY: VALUE` following `COMPONENT: ` will be forwarded to the component.
 In this example, we assign the hardware encoder id 1 to this component and we assign it to the resonance value from the multi mode filter audio plugin.
 
-#### SET_COLOR=
+#### SET_COLOR
 
-`SET_COLOR` give the possibility to customize the pre-defined color for the UI. To change a color, use `SET_COLOR=name_of_color #xxxxxx`.
+`SET_COLOR` give the possibility to customize the pre-defined color for the UI. To change a color, use `SET_COLOR: name_of_color #xxxxxx`.
 
-```ini
-SET_COLOR=overlay #00FFFF
+```coffee
+SET_COLOR: overlay #00FFFF
 ```
 
 In this example, we change the `overlay` color to `#00FFFF`.
@@ -148,42 +148,42 @@ TBD.
 
 Button component has 2 states, `pressed` and `release`. Those 2 states are optionals and can do different action. The default action is to set a plugin value:
 
-```ini
-COMPONENT=Button 600 0 100 50
-# ON_PRESS=PluginName VALUE_KEY 0.0
-ON_PRESS=Distortion DRIVE 40.0
-ON_RELEASE=Distortion DRIVE 0.0
-LABEL=My button
+```coffee
+COMPONENT: Button 600 0 100 50
+# ON_PRESS: PluginName VALUE_KEY 0.0
+ON_PRESS: Distortion DRIVE 40.0
+ON_RELEASE: Distortion DRIVE 0.0
+LABEL: My button
 ```
 
 Button can set a view using `$SET_VIEW`:
 
-```ini
-COMPONENT=Button 600 0 100 50
-# ON_RELEASE=$SET_VIEW view_name
-ON_RELEASE=$SET_VIEW my_name
-LABEL=My button
+```coffee
+COMPONENT: Button 600 0 100 50
+# ON_RELEASE: $SET_VIEW view_name
+ON_RELEASE: $SET_VIEW my_name
+LABEL: My button
 ```
 
 To load set the previous view, use `$SET_VIEW $previous`
 
-```ini
-COMPONENT=Button 600 0 100 50
-ON_PRESS=$SET_VIEW my_name
-ON_RELEASE=$SET_VIEW $previous
-LABEL=Shifted view
-SHARED_COMPONENT=Test
+```coffee
+COMPONENT: Button 600 0 100 50
+ON_PRESS: $SET_VIEW my_name
+ON_RELEASE: $SET_VIEW $previous
+LABEL: Shifted view
+SHARED_COMPONENT: Test
 ```
 
 Button can trigger a midi note with `$NOTE_ON` and `$NOTE_OFF`:
 
-```ini
-COMPONENT=Button 200 0 300 50
-# ON_PRESS=$NOTE_ON PluginName note velocity
-ON_PRESS=$NOTE_ON Kick23 48 127
-# ON_RELEASE=$NOTE_OFF PluginName note
-ON_RELEASE=$NOTE_OFF Kick23 48
-LABEL=Trigger
+```coffee
+COMPONENT: Button 200 0 300 50
+# ON_PRESS: $NOTE_ON PluginName note velocity
+ON_PRESS: $NOTE_ON Kick23 48 127
+# ON_RELEASE: $NOTE_OFF PluginName note
+ON_RELEASE: $NOTE_OFF Kick23 48
+LABEL: Trigger
 ```
 
 > Do not forget the `$NOTE_OFF` when synth have sustained notes, else the note will keep playing.
@@ -199,22 +199,22 @@ ZicBox can be used without used interface, either by using zicHost application o
 
 The zicHost application can be controlled by midi, by assigning a midi message to an audio plugin value.
 
-```ini
+```coffee
 # Here we define the Digitone as midi controller
-MIDIIN=Elektron Digitone MIDI 1
+MIDIIN: Elektron Digitone MIDI 1
 
-AUDIO_PLUGIN=AudioInput ./plugins/audio/build/libzic_AudioInputPulse.so
-DEVICE=alsa_input.usb-Elektron_Music_Machines_Elektron_Digitone_000000000001-00.analog-stereo
+AUDIO_PLUGIN: AudioInput ./plugins/audio/build/libzic_AudioInputPulse.so
+DEVICE: alsa_input.usb-Elektron_Music_Machines_Elektron_Digitone_000000000001-00.analog-stereo
 
-AUDIO_PLUGIN=Distortion ./plugins/audio/build/libzic_EffectDistortion.so
+AUDIO_PLUGIN: Distortion ./plugins/audio/build/libzic_EffectDistortion.so
 # Here we assign message to control the drive distortion
 # Where xx is the variable value that will be from 0 to 127
 # And b0 48 is the fixed part of message corresponding to CC channel 1 number 0x48 (or 72)
-DRIVE=b0 48 xx
+DRIVE: b0 48 xx
 
-AUDIO_PLUGIN=MultiModeFilter ./plugins/audio/build/libzic_EffectFilterMultiMode.so
-CUTOFF=b0 4c xx
-RESONANCE=b0 4d xx
+AUDIO_PLUGIN: MultiModeFilter ./plugins/audio/build/libzic_EffectFilterMultiMode.so
+CUTOFF: b0 4c xx
+RESONANCE: b0 4d xx
 ```
 
 ### Audio plugins
