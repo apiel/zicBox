@@ -1,31 +1,31 @@
-PLUGIN_COMPONENT=Encoder ../plugins/components/build/libzic_EncoderComponent.so
-PLUGIN_COMPONENT=Pad ../plugins/components/build/libzic_PadComponent.so
-PLUGIN_COMPONENT=Granular ../plugins/components/build/libzic_GranularComponent.so
-PLUGIN_COMPONENT=Wave ../plugins/components/build/libzic_WaveComponent.so
-PLUGIN_COMPONENT=Sequencer ../plugins/components/build/libzic_SequencerComponent.so
-PLUGIN_COMPONENT=Button ../plugins/components/build/libzic_ButtonComponent.so
-PLUGIN_COMPONENT=TriggerNote ../plugins/components/build/libzic_TriggerNoteComponent.so
+PLUGIN_COMPONENT: Encoder ../plugins/components/build/libzic_EncoderComponent.so
+PLUGIN_COMPONENT: Pad ../plugins/components/build/libzic_PadComponent.so
+PLUGIN_COMPONENT: Granular ../plugins/components/build/libzic_GranularComponent.so
+PLUGIN_COMPONENT: Wave ../plugins/components/build/libzic_WaveComponent.so
+PLUGIN_COMPONENT: Sequencer ../plugins/components/build/libzic_SequencerComponent.so
+PLUGIN_COMPONENT: Button ../plugins/components/build/libzic_ButtonComponent.so
+PLUGIN_COMPONENT: TriggerNote ../plugins/components/build/libzic_TriggerNoteComponent.so
 
-PLUGIN_CONTROLLER=../plugins/controllers/build/libzic_OscController.so
+PLUGIN_CONTROLLER: ../plugins/controllers/build/libzic_OscController.so
 
-PLUGIN_CONTROLLER=../plugins/controllers/build/libzic_MidiEncoderController.so
-DEVICE=Arduino Leonardo:Arduino Leonardo MIDI 1
-ENCODER_TARGET=7 0
-ENCODER_TARGET=6 1
-ENCODER_TARGET=5 2
-ENCODER_TARGET=4 3
-ENCODER_TARGET=3 4
-ENCODER_TARGET=2 5
-ENCODER_TARGET=1 6
-ENCODER_TARGET=0 7
+PLUGIN_CONTROLLER: ../plugins/controllers/build/libzic_MidiEncoderController.so
+  DEVICE: Arduino Leonardo:Arduino Leonardo MIDI 1
+  ENCODER_TARGET: 7 0
+  ENCODER_TARGET: 6 1
+  ENCODER_TARGET: 5 2
+  ENCODER_TARGET: 4 3
+  ENCODER_TARGET: 3 4
+  ENCODER_TARGET: 2 5
+  ENCODER_TARGET: 1 6
+  ENCODER_TARGET: 0 7
 
-# SET_COLOR=blue #00FF00
-# SET_COLOR=red #FF0000
-# SET_COLOR=overlay #00FFFF
+# SET_COLOR: blue #00FF00
+# SET_COLOR: red #FF0000
+# SET_COLOR: overlay #00FFFF
 
-INCLUDE=layout.view.ui
+INCLUDE: layout.view.ui
 
-INCLUDE=main/main.view.ui
-INCLUDE=granular.view.ui
-INCLUDE=kick/kick.view.ui
-INCLUDE=mixer.view.ui
+INCLUDE: main/main.view.ui
+INCLUDE: granular.view.ui
+INCLUDE: kick/kick.view.ui
+INCLUDE: mixer.view.ui

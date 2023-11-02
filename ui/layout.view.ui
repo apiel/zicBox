@@ -1,8 +1,8 @@
-VIEW=layout_shared_components HIDDEN
+VIEW: layout_shared_components HIDDEN
 
-COMPONENT=Button 600 0 100 50
-ON_PRESS=$SET_VIEW Granular
-ON_RELEASE=$SET_VIEW $previous
-LABEL=Shifted view
-COLOR=#AAAAAA
-SHARED_COMPONENT=Test
+  COMPONENT: Button 600 0 100 50
+    ON_PRESS: $SET_VIEW Granular
+    ON_RELEASE: $SET_VIEW $previous
+    LABEL: Shifted view
+    COLOR: #AAAAAA
+    SHARED_COMPONENT: Test

@@ -31,7 +31,7 @@ void scriptCallback(char* key, char* value, const char* filename, uint8_t indent
 
 void loadUiConfig()
 {
-    DustScript::load("ui/index.dust", scriptCallback);
+    DustScript::load("ui/index.ui", scriptCallback);
 }
 
 #endif
