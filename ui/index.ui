@@ -4,7 +4,6 @@ PLUGIN_COMPONENT: Granular ../plugins/components/build/libzic_GranularComponent.
 PLUGIN_COMPONENT: Wave ../plugins/components/build/libzic_WaveComponent.so
 PLUGIN_COMPONENT: Sequencer ../plugins/components/build/libzic_SequencerComponent.so
 PLUGIN_COMPONENT: Button ../plugins/components/build/libzic_ButtonComponent.so
-PLUGIN_COMPONENT: TriggerNote ../plugins/components/build/libzic_TriggerNoteComponent.so
 
 PLUGIN_CONTROLLER: ../plugins/controllers/build/libzic_OscController.so
 

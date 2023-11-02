@@ -111,13 +111,13 @@ public:
     bool config(char* key, char* value)
     {
         if (strcmp(key, "ON_PRESS") == 0) {
-            printf("value: %s\n", value);
+            // printf("value: %s\n", value);
             set(onPress, value);
             return true;
         }
 
         if (strcmp(key, "ON_RELEASE") == 0) {
-            printf("value: %s\n", value);
+            // printf("value: %s\n", value);
             set(onRelease, value);
             return true;
         }

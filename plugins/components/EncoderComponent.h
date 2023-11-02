@@ -191,7 +191,7 @@ public:
     {
         if (strcmp(key, "VALUE") == 0)
         {
-            printf("value: %s\n", value);
+            // printf("value: %s\n", value);
             char *pluginName = strtok(value, " ");
             char *keyValue = strtok(NULL, " ");
             set(pluginName, keyValue);

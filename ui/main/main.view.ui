@@ -39,4 +39,4 @@ VIEW: Main
 
 # Sequencer
 
-  INCLUDE: sequencer.ui
+ INCLUDE: sequencer.ui
