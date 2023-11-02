@@ -6,14 +6,14 @@
 
 #include "dustscript/dustscript.h"
 
-void scriptCallback(char* key, char* value, const char* filename, uint8_t indentation)
+void uiScriptCallback(char* key, char* value, const char* filename, uint8_t indentation)
 {
     if (strcmp(key, "print") == 0) {
         printf(">> LOG: %s\n", value);
     } else if (strcmp(key, "INCLUDE") == 0) {
         char fullpath[512];
         getFullpath(value, filename, fullpath);
-        DustScript::load(fullpath, scriptCallback);
+        DustScript::load(fullpath, uiScriptCallback);
     } else if (strcmp(key, "PLUGIN_CONTROLLER") == 0) {
         char fullpath[512];
         getFullpath(value, filename, fullpath);
@@ -31,7 +31,7 @@ void scriptCallback(char* key, char* value, const char* filename, uint8_t indent
 
 void loadUiConfig()
 {
-    DustScript::load("ui/index.ui", scriptCallback);
+    DustScript::load("ui/index.ui", uiScriptCallback);
 }
 
 #endif

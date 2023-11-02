@@ -2,10 +2,10 @@
 #define _HOST_CONFIG_H_
 
 #include "def.h"
-#include "../helpers/config.h"
 #include "midi.h"
+#include "../dustscript/dustscript.h"
 
-void hostConfigKeyValue(char* key, char* value, const char * filename)
+void hostScriptCallback(char* key, char* value, const char * filename, uint8_t indentation)
 {
     if (strcmp(key, "MIDIIN") == 0) {
         loadMidiInput(midiController, value, &midiControllerCallback);
@@ -35,9 +35,9 @@ void hostConfigKeyValue(char* key, char* value, const char * filename)
     }
 }
 
-bool loadHostConfig()
+void loadHostConfig()
 {
-    return loadConfig("./config.cfg", hostConfigKeyValue);
+    DustScript::load("./config.cfg", hostScriptCallback);
 }
 
 #endif
