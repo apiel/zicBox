@@ -156,37 +156,37 @@ ON_RELEASE: Distortion DRIVE 0.0
 LABEL: My button
 ```
 
-Button can set a view using `$SET_VIEW`:
+Button can set a view using `&SET_VIEW`:
 
 ```coffee
 COMPONENT: Button 600 0 100 50
-# ON_RELEASE: $SET_VIEW view_name
-ON_RELEASE: $SET_VIEW my_name
+# ON_RELEASE: &SET_VIEW view_name
+ON_RELEASE: &SET_VIEW my_name
 LABEL: My button
 ```
 
-To load set the previous view, use `$SET_VIEW $previous`
+To load set the previous view, use `&SET_VIEW &previous`
 
 ```coffee
 COMPONENT: Button 600 0 100 50
-ON_PRESS: $SET_VIEW my_name
-ON_RELEASE: $SET_VIEW $previous
+ON_PRESS: &SET_VIEW my_name
+ON_RELEASE: &SET_VIEW &previous
 LABEL: Shifted view
 SHARED_COMPONENT: Test
 ```
 
-Button can trigger a midi note with `$NOTE_ON` and `$NOTE_OFF`:
+Button can trigger a midi note with `&NOTE_ON` and `&NOTE_OFF`:
 
 ```coffee
 COMPONENT: Button 200 0 300 50
-# ON_PRESS: $NOTE_ON PluginName note velocity
-ON_PRESS: $NOTE_ON Kick23 48 127
-# ON_RELEASE: $NOTE_OFF PluginName note
-ON_RELEASE: $NOTE_OFF Kick23 48
+# ON_PRESS: &NOTE_ON PluginName note velocity
+ON_PRESS: &NOTE_ON Kick23 48 127
+# ON_RELEASE: &NOTE_OFF PluginName note
+ON_RELEASE: &NOTE_OFF Kick23 48
 LABEL: Trigger
 ```
 
-> Do not forget the `$NOTE_OFF` when synth have sustained notes, else the note will keep playing.
+> Do not forget the `&NOTE_OFF` when synth have sustained notes, else the note will keep playing.
 
 
 ## Controllers

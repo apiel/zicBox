@@ -31,7 +31,7 @@ protected:
     {
         char* action = strtok(config, " ");
 
-        if (strcmp(action, "$SET_VIEW") == 0) {
+        if (strcmp(action, "&SET_VIEW") == 0) {
             char* name = strtok(NULL, " ");
             char* nameCopy = new char[strlen(name) + 1];
             strcpy(nameCopy, name);
@@ -41,7 +41,7 @@ protected:
             return;
         }
 
-        if (strcmp(action, "$NOTE_ON") == 0) {
+        if (strcmp(action, "&NOTE_ON") == 0) {
             char* pluginName = strtok(NULL, " ");
             AudioPlugin* plugin = &getPlugin(pluginName);
             char* noteStr = strtok(NULL, " ");
@@ -54,7 +54,7 @@ protected:
             return;
         }
 
-        if (strcmp(action, "$NOTE_OFF") == 0) {
+        if (strcmp(action, "&NOTE_OFF") == 0) {
             char* pluginName = strtok(NULL, " ");
             AudioPlugin* plugin = &getPlugin(pluginName);
             char* noteStr = strtok(NULL, " ");

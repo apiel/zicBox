@@ -1,5 +1,5 @@
 COMPONENT: Button 500 0 100 50
-  ON_RELEASE: $SET_VIEW Granular
+  ON_RELEASE: &SET_VIEW Granular
   LABEL: Granular
   COLOR: #AAAAAA
 

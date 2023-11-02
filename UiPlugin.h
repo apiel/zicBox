@@ -100,7 +100,7 @@ public:
 
     UiPlugin& setView(char* value)
     {
-        if (strcmp(value, "$previous") == 0) {
+        if (strcmp(value, "&previous") == 0) {
             value = lastView->name;
         }
         for (int i = 0; i < views.size(); i++) {
