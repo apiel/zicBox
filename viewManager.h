@@ -169,7 +169,6 @@ public:
 
     bool config(char* key, char* value, const char* filename)
     {
-        printf("------ Config: '%s' = '%s'\n", key, value);
         if (strcmp(key, "PLUGIN_COMPONENT") == 0) {
             loadPlugin(value, filename);
             return true;

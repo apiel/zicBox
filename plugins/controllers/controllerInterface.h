@@ -22,7 +22,7 @@ public:
     {
     }
 
-    virtual bool config(char *key, std::vector<std::string> params)
+    virtual bool config(char *key, char *params)
     {
         return false;
     }

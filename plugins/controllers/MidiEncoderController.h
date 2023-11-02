@@ -7,12 +7,11 @@
 
 #include "controllerInterface.h"
 
-void midiHandler(double timeStamp, std::vector<unsigned char> *message, void *userData);
+void midiHandler(double timeStamp, std::vector<unsigned char>* message, void* userData);
 
 // For the moment everything is hardcoded, might want to make this more configurable...
 
-class MidiEncoderController : public ControllerInterface
-{
+class MidiEncoderController : public ControllerInterface {
 protected:
     RtMidiIn midi;
 
@@ -20,16 +19,14 @@ protected:
     {
         unsigned int portCount = midi.getPortCount();
         printf("List midi input devices:\n");
-        for (unsigned int i = 0; i < portCount; i++)
-        {
+        for (unsigned int i = 0; i < portCount; i++) {
             printf("  - DEVICE=%s\n", midi.getPortName(i).c_str());
         }
     }
 
     void load(std::string portName)
     {
-        if (portName == "")
-        {
+        if (portName == "") {
             printf("Midi input cannot be empty\n");
             return;
         }
@@ -37,12 +34,9 @@ protected:
         printf("Search for midi input: %s\n", portName.c_str());
 
         unsigned int portCount = midi.getPortCount();
-        for (unsigned int i = 0; i < portCount; i++)
-        {
-            if (midi.getPortName(i).find(portName) != std::string::npos)
-            {
-                if (midi.isPortOpen())
-                {
+        for (unsigned int i = 0; i < portCount; i++) {
+            if (midi.getPortName(i).find(portName) != std::string::npos) {
+                if (midi.isPortOpen()) {
                     midi.closePort();
                 }
                 midi.openPort(i);
@@ -55,13 +49,13 @@ protected:
     }
 
 public:
-    struct Encoder
-    {
+    struct Encoder {
         uint8_t value = 0;
         uint8_t encoderId = -1;
     } encoders[127];
 
-    MidiEncoderController(Props &props) : ControllerInterface(props)
+    MidiEncoderController(Props& props)
+        : ControllerInterface(props)
     {
         midi.setCallback(midiHandler, this);
         midi.ignoreTypes(false, false, false);
@@ -78,32 +72,28 @@ public:
         list();
     }
 
-    bool config(char *key, std::vector<std::string> params)
+    bool config(char* key, char* value)
     {
-        if (strcmp(key, "DEVICE") == 0)
-        {
-            load(params[0]);
+        if (strcmp(key, "DEVICE") == 0) {
+            load(value);
             return true;
-        }
-        else if (strcmp(key, "ENCODER_TARGET") == 0)
-        {
-            int cc = stoi(params[0]);
-            int encoderId = stoi(params[1]);
-            printf("ENCODER_TARGET: %d %d\n", cc, encoderId);
-            encoders[cc].encoderId = encoderId;
+        } else if (strcmp(key, "ENCODER_TARGET") == 0) {
+            char* cc = strtok(value, " ");
+            char* encoderId = strtok(NULL, " ");
+            printf("ENCODER_TARGET: %s %s\n", cc, encoderId);
+            encoders[atoi(cc)].encoderId = atoi(encoderId);
             return true;
         }
         return false;
     }
 };
 
-void midiHandler(double timeStamp, std::vector<unsigned char> *message, void *userData)
+void midiHandler(double timeStamp, std::vector<unsigned char>* message, void* userData)
 {
-    MidiEncoderController *plugin = (MidiEncoderController *)userData;
+    MidiEncoderController* plugin = (MidiEncoderController*)userData;
 
     int8_t direction = 1;
-    if (message->at(2) < plugin->encoders[message->at(1)].value || message->at(2) == 0)
-    {
+    if (message->at(2) < plugin->encoders[message->at(1)].value || message->at(2) == 0) {
         direction = -1;
     }
     plugin->encoders[message->at(1)].value = message->at(2);
