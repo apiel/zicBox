@@ -22,6 +22,8 @@
 - TODO can button show a state
        can button show a value
 
+- TODO make pad possibility, like dual touch... same as resize in the granular synth ...
+
 - TODO slider, e.g. for mixer
 
 - TODO encoder responsive for small size
@@ -36,7 +38,10 @@
 
 - TODO optimized onUpdate value...?
 
-- TODO componentEncoder option rotate 90°
+- TODO ? SequencerBarComponent: Remove text info
+                                Make motion optional
+
+- TODO component option rotate 90°
 
 ```cpp
 float rotationAngle = 90.0f;

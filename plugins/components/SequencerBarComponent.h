@@ -6,7 +6,7 @@
 
 #include <string>
 
-class SequencerComponent : public Component
+class SequencerBarComponent : public Component
 {
 protected:
     AudioPlugin &plugin;
@@ -119,7 +119,7 @@ protected:
     uint8_t stepCount;
 
 public:
-    SequencerComponent(ComponentInterface::Props &props)
+    SequencerBarComponent(ComponentInterface::Props &props)
         : Component(props),
           colors(getColorsFromColor(styles.colors.blue)),
           margin(styles.margin),
