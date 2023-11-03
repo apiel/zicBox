@@ -1,3 +1,11 @@
+# ZicBox
+
+Customizable digital synth / groovebox...
+
+![demo1](https://github.com/apiel/zicBox/blob/main/images/demo1.png?raw=true)
+![demo2](https://github.com/apiel/zicBox/blob/main/images/demo2.png?raw=true)
+![proto1](https://github.com/apiel/zicBox/blob/main/images/proto1.jpg?raw=true)
+
 ## Installation
 
 Audio:
