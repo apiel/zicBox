@@ -1,13 +1,13 @@
 #ifndef _HOST_CONFIG_H_
 #define _HOST_CONFIG_H_
 
+#include "../dustscript/dustscript.h"
 #include "def.h"
 #include "midi.h"
-#include "../dustscript/dustscript.h"
 
-void hostScriptCallback(char* key, char* value, const char * filename, uint8_t indentation)
+void hostScriptCallback(char* key, char* value, const char* filename, uint8_t indentation)
 {
-        if (strcmp(key, "print") == 0) {
+    if (strcmp(key, "print") == 0) {
         printf(">> LOG: %s\n", value);
     } else if (strcmp(key, "INCLUDE") == 0) {
         char fullpath[512];

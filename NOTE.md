@@ -9,7 +9,6 @@
 - TODO gpio interface use config file
 
 - TODO install file (make setup/prepare and make install ?)
-
 - TODO update using makefile?
 
 ## zicUi
@@ -37,8 +36,6 @@
 
 - TODO optimized onUpdate value...?
 
-- TODO keyboard?
-
 - TODO componentEncoder option rotate 90°
 
 ```cpp
@@ -49,14 +46,9 @@ SDL_RenderCopyEx(renderer, texture, NULL, &destRect, rotationAngle , NULL, SDL_F
 See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 `blitRotated` is actually using `SDL_RenderCopyEx` https://www.parallelrealities.co.uk/tutorials/bad/bad2.php
 
-- TODO should we show the grains???
-
 - TODO auto update...
     - from release
     - from git repo?
-
-- TODO include view ??
-
 
 ## zicHost
 
