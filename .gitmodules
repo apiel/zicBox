@@ -4,3 +4,9 @@
 [submodule "dustscript"]
 	path = dustscript
 	url = git@github.com:apiel/dustscript.git
+[submodule "lvgl"]
+	path = lvgl
+	url = https://github.com/lvgl/lvgl.git
+[submodule "lv_drivers"]
+	path = lv_drivers
+	url = https://github.com/lvgl/lv_drivers.git
