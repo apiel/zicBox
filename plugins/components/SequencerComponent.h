@@ -10,6 +10,14 @@
 
 class SequencerComponent : public Component {
 protected:
+    enum Mode {
+        ModeStep,
+        ModeVelocity,
+        ModeLength,
+        ModeCondition,
+    } mode
+        = ModeStep;
+
     AudioPlugin& plugin;
 
     Size stepSize;
@@ -20,6 +28,18 @@ protected:
 
     int debounceSelectedStep = 0;
     float previousSelectedStep = 0.0;
+
+    const char *getStepText(uint8_t index)
+    {
+        if (mode == ModeVelocity) {
+            return std::to_string(steps[index].velocity).c_str();
+        } else if (mode == ModeLength) {
+            return std::to_string(steps[index].len).c_str();
+        } else if (mode == ModeCondition) {
+            return "Impair";
+        }
+        return MIDI_NOTES_STR[steps[index].note];
+    }
 
     void renderStep(uint8_t index)
     {
@@ -42,8 +62,8 @@ protected:
         };
 
         Color textColor = steps[index].enabled ? colors.textActive : colors.textInactive;
-        draw.textCentered(textPosition, MIDI_NOTES_STR[steps[index].note], textColor, fontSize);
-        // draw.textCentered(textPosition, "Impair", textColor, fontSize);
+        // draw.textCentered(textPosition, MIDI_NOTES_STR[steps[index].note], textColor, fontSize);
+        draw.textCentered(textPosition, getStepText(index), textColor, fontSize);
 
         // int sel = selectedStep->get();
         // if (index == sel)
