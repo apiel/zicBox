@@ -111,6 +111,18 @@ VIEW: Layout HIDDEN
 # some components...
 ```
 
+#### STARTUP_VIEW
+
+`STARTUP_VIEW` can be used to load a specific view on startup. This command should only be call at the end of the configuration file, once all the view has been initialised.
+
+```coffee
+#STARTUP_VIEW: ViewName
+
+STARTUP_VIEW: Mixer
+```
+
+If `STARTUP_VIEW` is not defined, the first defined view (not `HIDDEN`) will be displayed.
+
 #### COMPONENT
 
 To place previously loaded components inside a view, use `COMPONENT: given_name_to_component x y w h`.

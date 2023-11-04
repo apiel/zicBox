@@ -180,6 +180,9 @@ public:
             addComponent(name, position, size);
             return true;
         }
+        if (strcmp(key, "STARTUP_VIEW") == 0) {
+            ui.setView(value);
+        }
         return ui.config(key, value);
     }
 

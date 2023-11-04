@@ -4,26 +4,8 @@ VIEW: Granular HIDDEN
 
   INCLUDE: layout.ui
 
-  COMPONENT: Granular 0 50 800 330
+  COMPONENT: Granular 0 50 800 230
 
-  COMPONENT: Sequencer 0 380 800 50
+  COMPONENT: Sequencer 0 280 800 200
 
-  COMPONENT: Encoder 0 430 100 50
-    ENCODER_ID: 0
-    VALUE: Sequencer STEP_ENABLED
 
-  COMPONENT: Encoder 100 430 100 50
-    ENCODER_ID: 1
-    VALUE: Sequencer STEP_NOTE
-
-  COMPONENT: Encoder 200 430 100 50
-    ENCODER_ID: 2
-    VALUE: Sequencer STEP_LENGTH
-
-  COMPONENT: Encoder 300 430 100 50
-    ENCODER_ID: 3
-    VALUE: Sequencer STEP_VELOCITY
-
-  COMPONENT: Encoder 400 430 100 50
-    ENCODER_ID: 4
-    VALUE: Sequencer STEP_CONDITION
