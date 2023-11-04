@@ -8,7 +8,6 @@ INC = -I./ -I./lvgl/
 CFLAGS = -O0 -g
 
 SRC_DIR				:= ./
-# WORKING_DIR			:= ./build
 BUILD_DIR			:= obj
 
 COMPILE				= gcc $(CFLAGS) $(INC)
@@ -59,8 +58,6 @@ build: $(OBJECTS)
 	@echo "\n------------------ build zicBox ------------------\n"
 	g++ -g -fms-extensions -o zicBox zicBox.cpp -ldl $(SDL2) $(SDL2_ttf) $(RPI) $(RTMIDI) $(OBJECTS) ${LDLIBS}
 
-# g++ -g -fms-extensions -o zicBox zicBox.cpp -ldl $(SDL2) $(SDL2_ttf) $(RPI) $(RTMIDI)
-
 run:
 	@echo "\n------------------ run zicBox ------------------\n"
 	./zicBox
@@ -68,3 +65,7 @@ run:
 gpio:
 	@echo "\n------------------ gpio ------------------\n"
 	make -C hardware/gpio
+
+clean:
+	@echo "\n------------------ clean ------------------\n"
+	@rm -rf obj
