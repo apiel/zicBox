@@ -1,22 +1,36 @@
 // TODO make it configurable
 #define ENCODER_COUNT 8
 
-#include "draw.h"
-#include "state.h"
-#include "event.h"
-#include "viewManager.h"
-#include "host.h"
 #include "config.h"
+#include "draw.h"
+#include "event.h"
+#include "host.h"
+#include "state.h"
 #include "styles.h"
+#include "viewManager.h"
+
+#include "lv_hal_init.h"
+
+static void hal_init(void);
+static int tick_thread(void* data);
 
 int main()
 {
+    lv_init();
+    hal_init();
+
+    while (1) {
+        /* Periodically call the lv_task handler.
+         * It could be done in a timer interrupt or an OS task too.*/
+        lv_timer_handler();
+        usleep(5 * 1000);
+    }
+
     loadUiConfig();
 
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
 
-    if (SDL_Init(SDL_INIT_VIDEO) < 0)
-    {
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not initialize SDL: %s", SDL_GetError());
         return 1;
     }
@@ -37,8 +51,7 @@ int main()
 #endif
     );
 
-    if (window == NULL)
-    {
+    if (window == NULL) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not create window: %s", SDL_GetError());
         return 1;
     }
@@ -48,28 +61,24 @@ int main()
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
-    ViewManager &viewManager = ViewManager::get();
-    texture = (SDL_Texture *)viewManager.draw.setTextureRenderer(styles.screen);
+    ViewManager& viewManager = ViewManager::get();
+    texture = (SDL_Texture*)viewManager.draw.setTextureRenderer(styles.screen);
 
-    if (!loadHost())
-    {
+    if (!loadHost()) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not load host");
     }
 
     viewManager.init();
-    if (!viewManager.render())
-    {
+    if (!viewManager.render()) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "No view were initialized to be rendered.");
         return 1;
     }
 
-    EventHandler &event = EventHandler::get();
+    EventHandler& event = EventHandler::get();
     unsigned long lastUpdate = SDL_GetTicks();
-    while (event.handle())
-    {
+    while (event.handle()) {
         unsigned long now = SDL_GetTicks();
-        if (now - lastUpdate > 50)
-        {
+        if (now - lastUpdate > 50) {
             lastUpdate = now;
             viewManager.renderComponents();
         }
