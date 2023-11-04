@@ -1,6 +1,7 @@
 #ifndef _UI_COMPONENT_SEQUENCER_H_
 #define _UI_COMPONENT_SEQUENCER_H_
 
+#include "../../helpers/midiNote.h"
 #include "../audio/stepInterface.h"
 #include "component.h"
 
@@ -22,13 +23,6 @@ protected:
 
     void renderStep(uint8_t index)
     {
-        Color color = colors.stepBackground;
-        // if (steps[index].enabled) {
-        //     color = colors.stepEnabled;
-        // } else if (index % 4 != 0) {
-        //     color.a = 150;
-        // }
-
         uint8_t row = index / columnCount;
         uint8_t column = index % columnCount;
 
@@ -37,10 +31,19 @@ protected:
         int w = stepSize.w - 2 * margin;
         int h = stepSize.h - 2 * margin;
 
+        draw.filledRect({ x, y }, { w, h }, colors.stepBackground);
 
-        draw.filledRect({ x, y }, { w, h }, color);
+        draw.text({ x + 2, y + h - 12 }, std::to_string(index + 1).c_str(), colors.text, 9);
 
-        draw.textRight({ x + w - 1, y }, std::to_string(index + 1).c_str(), colors.textInfo, 10);
+        int stepIndexWidth = 12;
+        Point textPosition = {
+            (int)(x + stepIndexWidth + (w - stepIndexWidth) * 0.5),
+            (int)(y + (h - fontSize) * 0.5)
+        };
+
+        Color textColor = steps[index].enabled ? colors.textActive : colors.textInactive;
+        draw.textCentered(textPosition, MIDI_NOTES_STR[steps[index].note], textColor, fontSize);
+        // draw.textCentered(textPosition, "Impair", textColor, fontSize);
 
         // int sel = selectedStep->get();
         // if (index == sel)
@@ -74,7 +77,9 @@ protected:
         Color stepBackground;
         Color stepEnabled;
         Color activePosition;
-        Color textInfo;
+        Color text;
+        Color textActive;
+        Color textInactive;
     } colors;
 
     Colors getColorsFromColor(Color color)
@@ -83,7 +88,9 @@ protected:
             draw.darken(color, 0.55),
             color,
             styles.colors.on,
-            draw.darken(color, 0.3) });
+            draw.darken(color, 0.3),
+            color,
+            draw.darken(color, 0.4) });
     }
 
     const int margin = 4;
@@ -91,6 +98,8 @@ protected:
     uint8_t stepCount = 32;
     uint8_t rowCount = 4;
     uint8_t columnCount = stepCount / rowCount;
+
+    uint8_t fontSize = 9;
 
 public:
     SequencerComponent(ComponentInterface::Props& props)
@@ -103,6 +112,8 @@ public:
             (int)((props.size.w) / (float)columnCount),
             (int)((props.size.h) / (float)(rowCount + 1))
         };
+
+        fontSize = stepSize.h * 0.5;
 
         steps = (Step*)plugin.data(0);
         stepCounter = (uint8_t*)plugin.data(1);
