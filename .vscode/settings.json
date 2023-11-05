@@ -1,5 +1,7 @@
 {
     "makefile.extensionOutputFolder": "./.vscode",
+    "git.detectSubmodules": false,
+    "git.autoRepositoryDetection": false,
     "files.associations": {
         "typeinfo": "cpp",
         "cstring": "cpp",
