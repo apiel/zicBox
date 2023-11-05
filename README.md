@@ -9,6 +9,17 @@ Customizable digital synth / groovebox...
 
 ## Installation
 
+```ssh
+git clone --recurse-submodules git@github.com:apiel/zicBox.git
+```
+
+> If repo has already been cloned but submodule are missing, use `git submodule update --init` to pull them.
+
+Compiler:
+```sh
+sudo apt install build-essential
+```
+
 Audio:
 
 ```sh
@@ -20,6 +31,13 @@ User interface:
 ```sh
 sudo apt-get install fonts-roboto libsdl2-dev libsdl2-ttf-2.0-0 libsdl2-ttf-dev
 ```
+
+Controller:
+
+```sh
+sudo apt-get install liblo-dev
+```
+
 
 ### On RPi
 

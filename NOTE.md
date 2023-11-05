@@ -13,6 +13,8 @@
 
 ## zicUi
 
+- TODO make component child of other component
+
 - TODO oscEncoder use time to make bigger step...
 
 - TODO Significantly improve sequencer UI
