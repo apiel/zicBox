@@ -228,6 +228,18 @@ LABEL: Trigger
 > Do not forget the `&NOTE_OFF` when synth have sustained notes, else the note will keep playing.
 
 
+#### MonitoringComponent
+
+<img src='https://github.com/apiel/zicBox/blob/main/images/MonitoringComponent.png?raw=true'>
+
+`MonitoringComponent` display the average CPU load on an interval of 1 seconds.
+
+```coffee
+PLUGIN_COMPONENT: Cpu ../plugins/components/build/libzic_MonitoringComponent.so
+
+COMPONENT: Cpu 600 0 50 20
+```
+
 ## Controllers
 
 > TBD...
