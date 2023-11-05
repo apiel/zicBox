@@ -9,6 +9,12 @@ Customizable digital synth / groovebox...
 
 ## Installation
 
+```ssh
+git clone --recurse-submodules git@github.com:apiel/zicBox.git
+```
+
+> If repo has already been cloned but submodule are missing, use `git submodule update --init` to pull them.
+
 Compiler:
 ```sh
 sudo apt install build-essential
