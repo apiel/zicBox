@@ -32,6 +32,7 @@ protected:
     static const uint8_t columnCount = 8;
     uint8_t rowCount = stepCount / columnCount;
 
+    uint8_t selectedStep = 10;
     bool encoderActive = false;
     uint8_t encoderCount = 0;
     int8_t encoderIds[columnCount] = { -1, -1, -1, -1, -1, -1, -1, -1 };
@@ -80,9 +81,18 @@ protected:
             draw.filledRect({ x + w - w2, y - 3 }, { w2, 2 }, colors.activePosition);
         }
 
-        if (encoderActive && index < encoderCount) {
-            draw.filledRect({ x, y }, { 12, 12 }, c.id);
-            draw.textCentered({ x + 6, y }, std::to_string(encoderIds[index] + 1).c_str(), colors.background, 8);
+        if (encoderActive) {
+            uint8_t encoderRow = selectedStep / columnCount;
+            if (encoderRow == row) {
+                uint8_t encoderIndex = selectedStep % columnCount;
+                if (encoderIndex > encoderCount) {
+                    encoderIndex = columnCount - encoderCount;
+                }
+                if (column >= encoderIndex && column < encoderIndex + encoderCount) {
+                    draw.filledRect({ x, y }, { 12, 12 }, c.id);
+                    draw.textCentered({ x + 6, y }, std::to_string(encoderIds[column - encoderIndex] + 1).c_str(), colors.background, 8);
+                }
+            }
         }
     }
 
