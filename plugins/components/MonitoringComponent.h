@@ -104,8 +104,8 @@ public:
 
     void triggerRenderer(unsigned long now)
     {
-        // printf("triggerRender now: %ld\n", now);
-        if (now - lastRendering > 1000) {
+        if (needRendering || now - lastRendering > 1000) {
+            needRendering = false;
             lastRendering = now;
             render();
             draw.next();

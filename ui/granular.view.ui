@@ -4,8 +4,6 @@ VIEW: Granular HIDDEN
 
   INCLUDE: layout.ui
 
-  COMPONENT: Cpu 0 0 50 20
-
   COMPONENT: Granular 0 50 800 230
 
   COMPONENT: Sequencer 0 280 800 200
