@@ -28,6 +28,14 @@ protected:
     int debounceSelectedStep = 0;
     float previousSelectedStep = 0.0;
 
+    uint8_t stepCount = 32;
+    static const uint8_t columnCount = 8;
+    uint8_t rowCount = stepCount / columnCount;
+
+    bool encoderActive = false;
+    uint8_t encoderCount = 0;
+    int8_t encoderIds[columnCount] = { -1, -1, -1, -1, -1, -1, -1, -1 };
+
     const char* getStepText(uint8_t index)
     {
         if (mode == ModeVelocity) {
@@ -71,6 +79,11 @@ protected:
             int w2 = w * (steps[index].counter / (float)steps[index].len);
             draw.filledRect({ x + w - w2, y - 3 }, { w2, 2 }, colors.activePosition);
         }
+
+        if (encoderActive && index < encoderCount) {
+            draw.filledRect({ x, y }, { 12, 12 }, c.id);
+            draw.textCentered({ x + 6, y }, std::to_string(encoderIds[index] + 1).c_str(), colors.background, 8);
+        }
     }
 
     void render()
@@ -96,6 +109,7 @@ protected:
         Color text;
         Color textActive;
         Color textInactive;
+        Color id;
     } colorsActive, colorsInactive;
 
     Colors getColorsFromColor(Color color)
@@ -109,18 +123,13 @@ protected:
         return ColorsStep({ draw.darken(color, 0.55),
             draw.darken(color, 0.3),
             color,
-            draw.darken(color, 0.4) });
+            draw.darken(color, 0.4),
+            draw.darken(color, 0.3) });
     }
 
     const int stepMargin = 4;
-
     const int margin;
-
-    uint8_t stepCount = 32;
-    uint8_t rowCount = 4;
-    uint8_t columnCount = stepCount / rowCount;
-
-    uint8_t fontSize = 9;
+    uint8_t fontSize;
 
 public:
     SequencerComponent(ComponentInterface::Props& props)
@@ -172,7 +181,27 @@ public:
             return true;
         }
 
+        if (strcmp(key, "ENCODER_ID") == 0) {
+            if (encoderCount < columnCount) {
+                encoderIds[encoderCount] = atoi(value);
+                encoderCount++;
+            }
+            return true;
+        }
+
         return false;
+    }
+
+    void onGroupChanged(int8_t index) override
+    {
+        int8_t shouldActivate = false;
+        if (group == index || group == -1) {
+            shouldActivate = true;
+        }
+        if (shouldActivate != encoderActive) {
+            encoderActive = shouldActivate;
+            renderNext();
+        }
     }
 };
 

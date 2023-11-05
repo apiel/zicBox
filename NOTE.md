@@ -53,6 +53,8 @@ SDL_RenderCopyEx(renderer, texture, NULL, &destRect, rotationAngle , NULL, SDL_F
 See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 `blitRotated` is actually using `SDL_RenderCopyEx` https://www.parallelrealities.co.uk/tutorials/bad/bad2.php
 
+- NOTE for circle, rectangle with radius corners, see https://github.com/keera-studios/SDL2_gfx/blob/master/SDL2_gfxPrimitives.h
+
 - TODO auto update...
     - from release
     - from git repo?
