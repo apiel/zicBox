@@ -36,20 +36,15 @@ protected:
         return true;
     }
 
-    int getPercentage()
+    float getPercentage()
     {
-        // size_t idle_time, total_time;
-        // if (!getCpuTimes(idle_time, total_time))
-        //     return 0.0f;
-        // return 100.0f - 100.0f * idle_time / total_time;
-
         size_t idle_time, total_time;
         if (!getCpuTimes(idle_time, total_time)) {
             return 0.0f;
         }
         const float idle_time_delta = idle_time - previous_idle_time;
         const float total_time_delta = total_time - previous_total_time;
-        const float utilization = 100.0 * (1.0 - idle_time_delta / total_time_delta);
+        const float utilization = 1.0 - idle_time_delta / total_time_delta;
         previous_idle_time = idle_time;
         previous_total_time = total_time;
 
@@ -58,25 +53,28 @@ protected:
 
     void render()
     {
-        // printf("render cpu: %d%%\n", getPercentage());
-        draw.filledRect(
-            { position.x + margin, position.y + margin },
-            { size.w - 2 * margin, size.h - 2 * margin },
-            colors.background);
+        Point rectPos = { position.x + margin, position.y + margin };
+        Size rectSize = { size.w - 2 * margin, size.h - 2 * margin };
+        draw.filledRect(rectPos, rectSize, colors.background);
 
+        float percentage = getPercentage();
+        draw.filledRect(rectPos, { (int)(rectSize.w * percentage), rectSize.h }, colors.backgroundActive);
+
+        int pct = percentage * 100;
         int x = position.x + size.w * 0.5;
         int y = position.y + (size.h - fontSize) * 0.5;
-        draw.textCentered({ x, y }, std::string("cpu: " + std::to_string(getPercentage()) + "%").c_str(), colors.text, fontSize);
+        draw.textCentered({ x, y }, std::string("cpu: " + std::to_string(pct) + "%").c_str(), colors.text, fontSize);
     }
 
     struct Colors {
         Color background;
+        Color backgroundActive;
         Color text;
     } colors;
 
     Colors getColorsFromColor(Color color)
     {
-        return Colors({ draw.darken(color, 0.75), color });
+        return Colors({ draw.darken(color, 0.75), draw.darken(color, 0.65), color });
     }
 
     const int margin;
