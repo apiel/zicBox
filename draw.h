@@ -82,10 +82,6 @@ protected:
             return &styles.colors.turquoise;
         }
 
-        if (strcmp(color, "darkBlue") == 0) {
-            return &styles.colors.darkBlue;
-        }
-
         if (strcmp(color, "grey") == 0) {
             return &styles.colors.grey;
         }

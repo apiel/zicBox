@@ -45,12 +45,12 @@ protected:
         uint8_t row = index / columnCount;
         uint8_t column = index % columnCount;
 
-        int x = position.x + column * stepSize.w + margin;
-        int y = position.y + row * stepSize.h + margin;
-        int w = stepSize.w - 2 * margin;
-        int h = stepSize.h - 2 * margin;
+        int x = position.x + column * stepSize.w + stepMargin;
+        int y = position.y + row * stepSize.h + stepMargin;
+        int w = stepSize.w - 2 * stepMargin;
+        int h = stepSize.h - 2 * stepMargin;
 
-        ColorsStep &c = steps[index].enabled ? colorsActive : colorsInactive;
+        ColorsStep& c = steps[index].enabled ? colorsActive : colorsInactive;
 
         draw.filledRect({ x, y }, { w, h }, c.stepBackground);
 
@@ -65,18 +65,12 @@ protected:
         Color textColor = steps[index].enabled ? c.textActive : c.textInactive;
         draw.textCentered(textPosition, getStepText(index), textColor, fontSize);
 
-        // int sel = selectedStep->get();
-        // if (index == sel)
-        // {
-        //     draw.filledRect({x, stepPosition.y - 3}, {stepSize.w, 2}, colors.stepBackground);
-        // }
-
-        // if (index == *stepCounter) {
-        //     draw.filledRect({ x, stepPosition.y - 3 }, { stepSize.w, 2 }, colors.activePosition);
-        // } else if (steps[index].counter) {
-        //     int w = stepSize.w * (steps[index].counter / (float)steps[index].len);
-        //     draw.filledRect({ x + stepSize.w - w, stepPosition.y - 3 }, { w, 2 }, colors.activePosition);
-        // }
+        if (index == *stepCounter) {
+            draw.filledRect({ x, y - 3 }, { w, 2 }, colors.activePosition);
+        } else if (steps[index].counter) {
+            int w2 = w * (steps[index].counter / (float)steps[index].len);
+            draw.filledRect({ x + w - w2, y - 3 }, { w2, 2 }, colors.activePosition);
+        }
     }
 
     void render()
@@ -118,7 +112,9 @@ protected:
             draw.darken(color, 0.4) });
     }
 
-    const int margin = 4;
+    const int stepMargin = 4;
+
+    const int margin;
 
     uint8_t stepCount = 32;
     uint8_t rowCount = 4;
@@ -131,8 +127,9 @@ public:
         : Component(props)
         , colors(getColorsFromColor(styles.colors.blue))
         , colorsActive(getColorsStepFromColor(styles.colors.blue))
-        , colorsInactive(getColorsStepFromColor(styles.colors.darkBlue))
+        , colorsInactive(getColorsStepFromColor(draw.darken(styles.colors.blue, 0.5)))
         , plugin(getPlugin("Sequencer"))
+        , margin(styles.margin)
     {
 
         stepSize = {
@@ -146,12 +143,22 @@ public:
         stepCounter = (uint8_t*)plugin.data(1);
     }
 
+    void triggerRenderer(unsigned long now) override
+    {
+        if (previousStepCounter != *stepCounter) {
+            needRendering = true;
+            // TODO could only render necessary part
+            previousStepCounter = *stepCounter;
+        }
+        Component::triggerRenderer(now);
+    }
+
     bool config(char* key, char* value)
     {
         if (strcmp(key, "COLOR") == 0) {
             colors = getColorsFromColor(draw.getColor(value));
             colorsActive = getColorsStepFromColor(draw.getColor(value));
-            colorsInactive = getColorsStepFromColor(draw.getColor(value));
+            colorsInactive = getColorsStepFromColor(draw.darken(draw.getColor(value), 0.5));
             return true;
         }
 

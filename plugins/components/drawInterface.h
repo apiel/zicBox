@@ -47,7 +47,6 @@ struct Styles
         Color on;
         Color white;
         Color blue;
-        Color darkBlue;
         Color red;
         Color turquoise;
         Color grey;

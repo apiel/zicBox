@@ -16,7 +16,6 @@ Styles styles = {
         .on = { 0x00, 0xb3, 0x00, 255 }, // #00b300
         .white = { 0xff, 0xff, 0xff, 255 }, // #ffffff
         .blue = { 0xad, 0xcd, 0xff, 255 }, // #adcdff
-        .darkBlue = { 0x4f, 0x5f, 0x77, 255 }, // #4f5f77
         .red = { 0xff, 0x8d, 0x99, 255 }, // #ff8d99
         .turquoise = { 0x00, 0xFF, 0xEF, 255 }, // #00ffef
         .grey = { 0x80, 0x80, 0x80, 255 }, // #808080
