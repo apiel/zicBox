@@ -19,6 +19,13 @@ int main()
     lv_init();
     hal_init();
 
+    lv_obj_t * btn1 = lv_btn_create(lv_scr_act());
+    lv_obj_align(btn1, LV_ALIGN_CENTER, 0, -40);
+
+    lv_obj_t *label = lv_label_create(btn1);
+    lv_label_set_text(label, "Button");
+    lv_obj_center(label);
+
     while (1) {
         /* Periodically call the lv_task handler.
          * It could be done in a timer interrupt or an OS task too.*/

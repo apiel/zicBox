@@ -9,6 +9,11 @@ Customizable digital synth / groovebox...
 
 ## Installation
 
+Compiler:
+```sh
+sudo apt install build-essential
+```
+
 Audio:
 
 ```sh
@@ -19,6 +24,12 @@ User interface:
 
 ```sh
 sudo apt-get install fonts-roboto libsdl2-dev libsdl2-ttf-2.0-0 libsdl2-ttf-dev
+```
+
+Controller:
+
+```sh
+sudo apt-get install liblo-dev
 ```
 
 ### On RPi
