@@ -3,8 +3,8 @@
 
 #include <SDL2/SDL.h>
 
-#include "lv_drivers/sdl/sdl.h"
 #include "lvgl/lvgl.h"
+#include "lv_drivers/sdl/sdl.h"
 
 /**
  * A task to measure the elapsed time for LVGL

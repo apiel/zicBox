@@ -6,10 +6,6 @@ SDL2_ttf=`pkg-config --cflags --libs SDL2_ttf`
 
 INC = -I./ -I./lvgl/
 CFLAGS = -O0 -g
-
-SRC_DIR				:= ./
-BUILD_DIR			:= obj
-
 COMPILE				= gcc $(CFLAGS) $(INC)
 
 SRCS 	:= $(shell find ./ -type f -name '*.c' -not -path '*/\.*')
@@ -28,10 +24,12 @@ host: buildHost runHost
 all: libs main
 allall: libs buildHost soHost main
 
+# LVGL
 obj/%.o: .//%.c
 	@echo 'Building project file: $<'
 	@mkdir -p $(dir $@)
 	@$(COMPILE) -c -o "$@" "$<"
+# LVGL END
 
 libs:
 	@echo "\n------------------ plugins ------------------\n"
@@ -56,7 +54,7 @@ runHost:
 
 build: $(OBJECTS)
 	@echo "\n------------------ build zicBox ------------------\n"
-	g++ -g -fms-extensions -o zicBox zicBox.cpp -ldl $(SDL2) $(SDL2_ttf) $(RPI) $(RTMIDI) $(OBJECTS) ${LDLIBS}
+	g++ -g -fms-extensions -o zicBox zicBox.cpp -ldl $(SDL2) $(SDL2_ttf) $(RPI) $(RTMIDI) $(OBJECTS) ${LDLIBS} $(INC)
 
 run:
 	@echo "\n------------------ run zicBox ------------------\n"
