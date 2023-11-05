@@ -4,27 +4,24 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
-#include "state.h"
 #include "plugins/components/drawInterface.h"
+#include "state.h"
 
 #define PIXEL_FORMAT SDL_PIXELFORMAT_RGBA8888
 
-class Draw : public DrawInterface
-{
+class Draw : public DrawInterface {
 protected:
     bool needToRender = false;
 
-    SDL_Surface *getTextSurface(const char *text, Color color, uint32_t size, const char *fontPath)
+    SDL_Surface* getTextSurface(const char* text, Color color, uint32_t size, const char* fontPath)
     {
-        TTF_Font *font = TTF_OpenFont(fontPath, size);
-        if (font == NULL)
-        {
+        TTF_Font* font = TTF_OpenFont(fontPath, size);
+        if (font == NULL) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to open font\n");
             return 0;
         }
-        SDL_Surface *surface = TTF_RenderText_Solid(font, text, {color.r, color.g, color.b, color.a});
-        if (surface == NULL)
-        {
+        SDL_Surface* surface = TTF_RenderText_Solid(font, text, { color.r, color.g, color.b, color.a });
+        if (surface == NULL) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to render text\n");
             return 0;
         }
@@ -33,11 +30,10 @@ protected:
         return surface;
     }
 
-    void textToRenderer(Point position, SDL_Surface *surface, int maxWidth)
+    void textToRenderer(Point position, SDL_Surface* surface, int maxWidth)
     {
-        SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-        if (texture == NULL)
-        {
+        SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+        if (texture == NULL) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to create texture\n");
             return;
         }
@@ -45,8 +41,8 @@ protected:
         // SDL_RenderCopy(renderer, texture, NULL, &rect);
 
         int w = maxWidth < surface->w ? maxWidth : surface->w;
-        SDL_Rect rect1 = {0, 0, w, surface->h};
-        SDL_Rect rect2 = {position.x, position.y, w, surface->h};
+        SDL_Rect rect1 = { 0, 0, w, surface->h };
+        SDL_Rect rect2 = { position.x, position.y, w, surface->h };
         SDL_RenderCopy(renderer, texture, &rect1, &rect2);
         SDL_DestroyTexture(texture);
     }
@@ -56,42 +52,36 @@ protected:
         return a < b ? a : b;
     }
 
-    Color *getStyleColor(char *color)
+    Color* getStyleColor(char* color)
     {
-        if (strcmp(color, "background") == 0)
-        {
+        if (strcmp(color, "background") == 0) {
             return &styles.colors.background;
         }
 
-        if (strcmp(color, "overlay") == 0)
-        {
+        if (strcmp(color, "overlay") == 0) {
             return &styles.colors.overlay;
         }
 
-        if (strcmp(color, "on") == 0)
-        {
+        if (strcmp(color, "on") == 0) {
             return &styles.colors.on;
         }
 
-        if (strcmp(color, "white") == 0)
-        {
+        if (strcmp(color, "white") == 0) {
             return &styles.colors.white;
         }
 
-        if (strcmp(color, "blue") == 0)
-        {
+        if (strcmp(color, "blue") == 0) {
             return &styles.colors.blue;
         }
 
-        if (strcmp(color, "red") == 0)
-        {
+        if (strcmp(color, "red") == 0) {
             return &styles.colors.red;
         }
 
         return NULL;
     }
 
-    Color hex2rgb(char *hex)
+    Color hex2rgb(char* hex)
     {
 
         hex++;
@@ -120,8 +110,7 @@ public:
 
     void triggerRender()
     {
-        if (needToRender)
-        {
+        if (needToRender) {
             render();
             needToRender = false;
         }
@@ -132,22 +121,22 @@ public:
         needToRender = true;
     }
 
-    int textCentered(Point position, const char *text, Color color, uint32_t size, DrawTextOptions options = {})
+    int textCentered(Point position, const char* text, Color color, uint32_t size, DrawTextOptions options = {})
     {
         options = getDefaultTextOptions(options);
-        SDL_Surface *surface = getTextSurface(text, color, size, options.fontPath);
+        SDL_Surface* surface = getTextSurface(text, color, size, options.fontPath);
         int x = position.x - (surface->w * 0.5);
-        textToRenderer({x, position.y}, surface, options.maxWidth);
+        textToRenderer({ x, position.y }, surface, options.maxWidth);
         int xEnd = x + surface->w;
         SDL_FreeSurface(surface);
 
         return xEnd;
     }
 
-    int text(Point position, const char *text, Color color, uint32_t size, DrawTextOptions options = {})
+    int text(Point position, const char* text, Color color, uint32_t size, DrawTextOptions options = {})
     {
         options = getDefaultTextOptions(options);
-        SDL_Surface *surface = getTextSurface(text, color, size, options.fontPath);
+        SDL_Surface* surface = getTextSurface(text, color, size, options.fontPath);
         textToRenderer(position, surface, options.maxWidth);
         int xEnd = position.x + surface->w;
         SDL_FreeSurface(surface);
@@ -155,12 +144,12 @@ public:
         return xEnd;
     }
 
-    int textRight(Point position, const char *text, Color color, uint32_t size, DrawTextOptions options = {})
+    int textRight(Point position, const char* text, Color color, uint32_t size, DrawTextOptions options = {})
     {
         options = getDefaultTextOptions(options);
-        SDL_Surface *surface = getTextSurface(text, color, size, options.fontPath);
+        SDL_Surface* surface = getTextSurface(text, color, size, options.fontPath);
         int x = position.x - surface->w;
-        textToRenderer({x, position.y}, surface, options.maxWidth);
+        textToRenderer({ x, position.y }, surface, options.maxWidth);
         SDL_FreeSurface(surface);
 
         return x;
@@ -176,14 +165,14 @@ public:
     void filledRect(Point position, Size size, Color color)
     {
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-        SDL_Rect rect = {position.x, position.y, size.w, size.h};
+        SDL_Rect rect = { position.x, position.y, size.w, size.h };
         SDL_RenderFillRect(renderer, &rect);
     }
 
     void rect(Point position, Size size, Color color)
     {
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-        SDL_Rect rect = {position.x, position.y, size.w, size.h};
+        SDL_Rect rect = { position.x, position.y, size.w, size.h };
         SDL_RenderDrawRect(renderer, &rect);
     }
 
@@ -193,9 +182,15 @@ public:
         SDL_RenderDrawLine(renderer, start.x, start.y, end.x, end.y);
     }
 
-    void *setTextureRenderer(Size size)
+    void pixel(Point position, Color color)
     {
-        SDL_Texture *texture = SDL_CreateTexture(renderer, PIXEL_FORMAT, SDL_TEXTUREACCESS_TARGET, size.w, size.h);
+        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+        SDL_RenderDrawPoint(renderer, position.x, position.y);
+    }
+
+    void* setTextureRenderer(Size size)
+    {
+        SDL_Texture* texture = SDL_CreateTexture(renderer, PIXEL_FORMAT, SDL_TEXTUREACCESS_TARGET, size.w, size.h);
         SDL_SetRenderTarget(renderer, texture);
         return texture;
     }
@@ -205,15 +200,15 @@ public:
         SDL_SetRenderTarget(renderer, texture);
     }
 
-    void destroyTexture(void *texture)
+    void destroyTexture(void* texture)
     {
-        SDL_DestroyTexture((SDL_Texture *)texture);
+        SDL_DestroyTexture((SDL_Texture*)texture);
     }
 
-    void applyTexture(void *texture, Rect dest)
+    void applyTexture(void* texture, Rect dest)
     {
-        SDL_Rect rect = {dest.position.x, dest.position.y, dest.size.w, dest.size.h};
-        SDL_RenderCopy(renderer, (SDL_Texture *)texture, NULL, &rect);
+        SDL_Rect rect = { dest.position.x, dest.position.y, dest.size.w, dest.size.h };
+        SDL_RenderCopy(renderer, (SDL_Texture*)texture, NULL, &rect);
         SDL_RenderPresent(renderer);
     }
 
@@ -223,7 +218,8 @@ public:
             (uint8_t)(color.r * (1.0f - amount)),
             (uint8_t)(color.g * (1.0f - amount)),
             (uint8_t)(color.b * (1.0f - amount)),
-            color.a};
+            color.a
+        };
     }
 
     Color lighten(Color color, float amount)
@@ -232,32 +228,30 @@ public:
             (uint8_t)min(color.r * (1.0f + amount), 255.0f),
             (uint8_t)min(color.g * (1.0f + amount), 255.0f),
             (uint8_t)min(color.b * (1.0f + amount), 255.0f),
-            color.a};
+            color.a
+        };
     }
 
-    Color getColor(char *color)
+    Color getColor(char* color)
     {
         // if first char is # then call hex2rgb
-        if (color[0] == '#')
-        {
+        if (color[0] == '#') {
             return hex2rgb(color);
         }
 
-        Color *styleColor = getStyleColor(color);
-        if (styleColor != NULL)
-        {
+        Color* styleColor = getStyleColor(color);
+        if (styleColor != NULL) {
             return *styleColor;
         }
 
         return styles.colors.white;
     }
 
-// TODO use string...
-    void setColor(char *name, char *color)
+    // TODO use string...
+    void setColor(char* name, char* color)
     {
-        Color *styleColor = getStyleColor(name);
-        if (styleColor != NULL)
-        {
+        Color* styleColor = getStyleColor(name);
+        if (styleColor != NULL) {
             Color newColor = hex2rgb(color);
             //    *styleColor = newColor; // Dont do like this, to keep transparency
             styleColor->r = newColor.r;

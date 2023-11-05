@@ -155,3 +155,11 @@ int main()
     return 0;
 }
 ```
+
+## debug
+
+```sh
+gdb zicBox
+```
+
+then `bt`.

@@ -84,6 +84,8 @@ public:
     virtual void filledRect(Point position, Size size, Color color) = 0;
     virtual void rect(Point position, Size size, Color color) = 0;
     virtual void line(Point start, Point end, Color color) = 0;
+    virtual void pixel(Point position, Color color) = 0;
+
     virtual void *setTextureRenderer(Size size) = 0;
     virtual void setMainRenderer() = 0;
     virtual void destroyTexture(void *texture) = 0;
