@@ -78,6 +78,14 @@ protected:
             return &styles.colors.red;
         }
 
+        if (strcmp(color, "turquoise") == 0) {
+            return &styles.colors.turquoise;
+        }
+
+        if (strcmp(color, "darkBlue") == 0) {
+            return &styles.colors.darkBlue;
+        }
+
         return NULL;
     }
 

@@ -29,7 +29,7 @@ protected:
     int debounceSelectedStep = 0;
     float previousSelectedStep = 0.0;
 
-    const char *getStepText(uint8_t index)
+    const char* getStepText(uint8_t index)
     {
         if (mode == ModeVelocity) {
             return std::to_string(steps[index].velocity).c_str();
@@ -51,9 +51,11 @@ protected:
         int w = stepSize.w - 2 * margin;
         int h = stepSize.h - 2 * margin;
 
-        draw.filledRect({ x, y }, { w, h }, colors.stepBackground);
+        ColorsStep &c = steps[index].enabled ? colorsActive : colorsInactive;
 
-        draw.text({ x + 2, y + h - 12 }, std::to_string(index + 1).c_str(), colors.text, 9);
+        draw.filledRect({ x, y }, { w, h }, c.stepBackground);
+
+        draw.text({ x + 2, y + h - 12 }, std::to_string(index + 1).c_str(), c.text, 9);
 
         int stepIndexWidth = 12;
         Point textPosition = {
@@ -61,7 +63,7 @@ protected:
             (int)(y + (h - fontSize) * 0.5)
         };
 
-        Color textColor = steps[index].enabled ? colors.textActive : colors.textInactive;
+        Color textColor = steps[index].enabled ? c.textActive : c.textInactive;
         // draw.textCentered(textPosition, MIDI_NOTES_STR[steps[index].note], textColor, fontSize);
         draw.textCentered(textPosition, getStepText(index), textColor, fontSize);
 
@@ -94,20 +96,25 @@ protected:
 
     struct Colors {
         Color background;
-        Color stepBackground;
-        Color stepEnabled;
         Color activePosition;
+    } colors;
+
+    struct ColorsStep {
+        Color stepBackground;
         Color text;
         Color textActive;
         Color textInactive;
-    } colors;
+    } colorsActive, colorsInactive;
 
     Colors getColorsFromColor(Color color)
     {
         return Colors({ draw.darken(color, 0.75),
-            draw.darken(color, 0.55),
-            color,
-            styles.colors.on,
+            styles.colors.on });
+    }
+
+    ColorsStep getColorsStepFromColor(Color color)
+    {
+        return ColorsStep({ draw.darken(color, 0.55),
             draw.darken(color, 0.3),
             color,
             draw.darken(color, 0.4) });
@@ -125,6 +132,8 @@ public:
     SequencerComponent(ComponentInterface::Props& props)
         : Component(props)
         , colors(getColorsFromColor(styles.colors.blue))
+        , colorsActive(getColorsStepFromColor(styles.colors.blue))
+        , colorsInactive(getColorsStepFromColor(styles.colors.darkBlue))
         , plugin(getPlugin("Sequencer"))
     {
 
