@@ -98,7 +98,7 @@
 // #  define SDL_HOR_RES     1024
 // #  define SDL_VER_RES     1080
 #  define SDL_HOR_RES     800
-#  define SDL_VER_RES     600
+#  define SDL_VER_RES     480
 
 #define MONITOR_HOR_RES SDL_HOR_RES
 #define MONITOR_VER_RES SDL_VER_RES
