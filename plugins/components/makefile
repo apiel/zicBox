@@ -2,7 +2,7 @@
 
 all:
 	make clean_so PadComponent EncoderComponent GranularComponent SequencerComponent\
-				  ButtonComponent WaveComponent\
+				  ButtonComponent WaveComponent MonitoringComponent\
 				  clean_o
 
 clean:
@@ -35,3 +35,6 @@ SequencerComponent:
 
 ButtonComponent:
 	make compile LIBNAME=ButtonComponent EXTRA="-DPLUGIN_PROPS=ComponentInterface::Props"
+
+MonitoringComponent:
+	make compile LIBNAME=MonitoringComponent EXTRA="-DPLUGIN_PROPS=ComponentInterface::Props"

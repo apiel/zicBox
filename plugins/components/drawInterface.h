@@ -50,6 +50,7 @@ struct Styles
         Color darkBlue;
         Color red;
         Color turquoise;
+        Color grey;
     } colors;
 };
 

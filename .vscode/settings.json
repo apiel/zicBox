@@ -3,6 +3,10 @@
     "git.detectSubmodules": false,
     "git.autoRepositoryDetection": false,
     "files.associations": {
+        "*.ui": "coffeescript",
+        "*.script": "coffeescript",
+        "*.dust": "coffeescript",
+        "*.cfg": "coffeescript",
         "typeinfo": "cpp",
         "cstring": "cpp",
         "*.tcc": "cpp",
@@ -67,6 +71,7 @@
         "string.h": "c",
         "stdio.h": "c",
         "stdlib.h": "c",
-        "complex": "cpp"
+        "complex": "cpp",
+        "fstream": "cpp"
     }
 }

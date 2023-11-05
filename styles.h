@@ -19,6 +19,7 @@ Styles styles = {
         .darkBlue = { 0x4f, 0x5f, 0x77, 255 }, // #4f5f77
         .red = { 0xff, 0x8d, 0x99, 255 }, // #ff8d99
         .turquoise = { 0x00, 0xFF, 0xEF, 255 }, // #00ffef
+        .grey = { 0x80, 0x80, 0x80, 255 }, // #808080
     },
 };
 

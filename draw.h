@@ -86,6 +86,10 @@ protected:
             return &styles.colors.darkBlue;
         }
 
+        if (strcmp(color, "grey") == 0) {
+            return &styles.colors.grey;
+        }
+
         return NULL;
     }
 

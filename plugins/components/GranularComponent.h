@@ -105,7 +105,7 @@ public:
         textureSize = { size.w - 2 * margin, size.h - 2 * margin };
     }
 
-    virtual void triggerRenderer() override
+    virtual void triggerRenderer(unsigned long now) override
     {
         if (lastBrowser != browser->get()) {
             if (textureSampleWaveform != NULL) {
@@ -122,7 +122,7 @@ public:
             lastDensity = density->get();
             needRendering = true;
         }
-        Component::triggerRenderer();
+        Component::triggerRenderer(now);
     }
 
     float startOrigin = 0.0;

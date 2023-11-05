@@ -71,7 +71,7 @@ int main()
         if (now - lastUpdate > 50)
         {
             lastUpdate = now;
-            viewManager.renderComponents();
+            viewManager.renderComponents(now);
         }
         SDL_Delay(1);
     }

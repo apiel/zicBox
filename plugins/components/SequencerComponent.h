@@ -6,7 +6,6 @@
 #include "component.h"
 
 #include <string>
-// #include <cstring>
 
 class SequencerComponent : public Component {
 protected:
@@ -64,7 +63,6 @@ protected:
         };
 
         Color textColor = steps[index].enabled ? c.textActive : c.textInactive;
-        // draw.textCentered(textPosition, MIDI_NOTES_STR[steps[index].note], textColor, fontSize);
         draw.textCentered(textPosition, getStepText(index), textColor, fontSize);
 
         // int sel = selectedStep->get();
@@ -152,6 +150,18 @@ public:
     {
         if (strcmp(key, "COLOR") == 0) {
             colors = getColorsFromColor(draw.getColor(value));
+            colorsActive = getColorsStepFromColor(draw.getColor(value));
+            colorsInactive = getColorsStepFromColor(draw.getColor(value));
+            return true;
+        }
+
+        if (strcmp(key, "ACTIVE_COLOR") == 0) {
+            colorsActive = getColorsStepFromColor(draw.getColor(value));
+            return true;
+        }
+
+        if (strcmp(key, "INACTIVE_COLOR") == 0) {
+            colorsInactive = getColorsStepFromColor(draw.getColor(value));
             return true;
         }
 

@@ -89,7 +89,7 @@ public:
         wavePosition = {position.x + margin, position.y + margin};
     }
 
-    virtual void triggerRenderer() override
+    virtual void triggerRenderer(unsigned long now) override
     {
         int *last = (int *)plugin.data(0);
         if (*last != lastUpdateUi)
@@ -97,7 +97,7 @@ public:
             lastUpdateUi = *last + 0;
             needRendering = true;
         }
-        Component::triggerRenderer();
+        Component::triggerRenderer(now);
     }
 
     bool config(char *key, char *value)

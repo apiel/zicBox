@@ -131,14 +131,14 @@ public:
         return true;
     }
 
-    void renderComponents()
+    void renderComponents(unsigned long now = SDL_GetTicks())
     {
         m.lock();
         if (group != lastGroup) {
             changeGroup();
         }
         for (auto& component : ui.getView()) {
-            component->triggerRenderer();
+            component->triggerRenderer(now);
         }
         draw.triggerRender();
         m.unlock();

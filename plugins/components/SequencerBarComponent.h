@@ -139,7 +139,7 @@ public:
         stepCounter = (uint8_t *)plugin.data(1);
     }
 
-    void triggerRenderer() override
+    void triggerRenderer(unsigned long now) override
     {
         if (previousStepCounter != *stepCounter || previousSelectedStep != selectedStep->get())
         {
@@ -148,7 +148,7 @@ public:
             previousStepCounter = *stepCounter;
             previousSelectedStep = selectedStep->get();
         }
-        Component::triggerRenderer();
+        Component::triggerRenderer(now);
     }
 
     void onMotion(MotionInterface &motion)
