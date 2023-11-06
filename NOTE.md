@@ -68,6 +68,7 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
         - save sequencer state
         - load patterns
         - only refresh necessary part when rendering active step
+        - 1/2 step length
 
 - TODO try to make granular synth more versatile
             - play sample (already do it but maybe there would be a way to lock spray or other thing like this)

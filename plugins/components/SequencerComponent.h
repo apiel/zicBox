@@ -14,8 +14,16 @@ protected:
         ModeVelocity,
         ModeLength,
         ModeCondition,
+        ModeCount,
     } mode
         = ModeStep;
+
+    const char* modeName[ModeCount] = {
+        "Step",
+        "Velocity",
+        "Length",
+        "Condition",
+    };
 
     AudioPlugin& plugin;
 
@@ -41,7 +49,7 @@ protected:
     const char* getStepText(uint8_t index)
     {
         if (mode == ModeVelocity) {
-            return std::to_string(steps[index].velocity).c_str();
+            return (std::to_string((int)(steps[index].velocity * 100)) + "%").c_str();
         } else if (mode == ModeLength) {
             return std::to_string(steps[index].len).c_str();
         } else if (mode == ModeCondition) {
@@ -69,7 +77,7 @@ protected:
 
         ColorsStep& c = steps[index].enabled ? colorsActive : colorsInactive;
 
-        draw.filledRect({ x, y }, { w, h }, c.stepBackground);
+        draw.filledRect({ x, y }, { w, h }, c.background);
 
         draw.text({ x + 2, y + h - 12 }, std::to_string(index + 1).c_str(), c.text, 9);
 
@@ -104,6 +112,20 @@ protected:
         }
     }
 
+    void renderModeSelection()
+    {
+        for (int i = 0; i < ModeCount; i++) {
+            auto [x, y, w, h] = getStepRect(rowCount, i);
+
+            draw.filledRect({ x, y }, { w, h }, colorsMode.background);
+            Point textPosition = {
+                (int)(x + w * 0.5),
+                (int)(y + (h - fontSize) * 0.5)
+            };
+            draw.textCentered(textPosition, modeName[i], mode == i ? colorsMode.text : colorsMode.textInactive, fontSize);
+        }
+    }
+
     void render()
     {
         draw.filledRect(
@@ -113,8 +135,9 @@ protected:
 
         for (int i = 0; i < stepCount; i++) {
             renderStep(i);
-            // printf("step %d, note %d, enabled %d, len %d\n", i, steps[i].note, steps[i].enabled, steps[i].len);
         }
+
+        renderModeSelection();
     }
 
     struct Colors {
@@ -123,12 +146,18 @@ protected:
     } colors;
 
     struct ColorsStep {
-        Color stepBackground;
+        Color background;
         Color text;
         Color textActive;
         Color textInactive;
         Color id;
     } colorsActive, colorsInactive;
+
+    struct ColorsMode {
+        Color background;
+        Color text;
+        Color textInactive;
+    } colorsMode;
 
     Colors getColorsFromColor(Color color)
     {
@@ -145,6 +174,13 @@ protected:
             draw.darken(color, 0.3) });
     }
 
+    ColorsMode getColorsModeFromColor(Color color)
+    {
+        return ColorsMode({ draw.darken(color, 0.50),
+            color,
+            draw.darken(color, 0.4) });
+    }
+
     const int stepMargin = 4;
     const int margin;
     uint8_t fontSize;
@@ -155,6 +191,7 @@ public:
         , colors(getColorsFromColor(styles.colors.blue))
         , colorsActive(getColorsStepFromColor(styles.colors.blue))
         , colorsInactive(getColorsStepFromColor(draw.darken(styles.colors.blue, 0.5)))
+        , colorsMode(getColorsModeFromColor(styles.colors.grey))
         , plugin(getPlugin("Sequencer"))
         , margin(styles.margin)
     {
@@ -199,6 +236,11 @@ public:
             return true;
         }
 
+        if (strcmp(key, "MODE_COLOR") == 0) {
+            colorsMode = getColorsModeFromColor(draw.getColor(value));
+            return true;
+        }
+
         if (strcmp(key, "ENCODER_ID") == 0) {
             if (encoderCount < columnCount) {
                 encoderIds[encoderCount] = atoi(value);
@@ -232,12 +274,17 @@ public:
         int row = (motion.position.y - position.y) / stepSize.h;
         int column = (motion.position.x - position.x) / stepSize.w;
 
-        int index = row * columnCount + column;
-        if (roundEncoderSlection) {
-            index = (int)(index / encoderCount) * encoderCount;
+        if (row < rowCount) {
+            int index = row * columnCount + column;
+            if (roundEncoderSlection) {
+                index = (int)(index / encoderCount) * encoderCount;
+            }
+            selectedStep = index;
+            renderNext();
+        } else if (column < ModeCount) {
+            mode = (Mode)column;
+            renderNext();
         }
-        selectedStep = index;
-        renderNext();
     }
 };
 
