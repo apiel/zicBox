@@ -1,52 +1,14 @@
 #ifndef _SEQUENCER_H_
 #define _SEQUENCER_H_
 
-#include <math.h>
 #include <stdio.h> // file
 #include <sys/stat.h> // file exist
-#include <time.h>
 
 #include "../../helpers/midiNote.h"
 #include "audioPlugin.h"
 #include "mapping.h"
 #include "stepInterface.h"
 
-int randCounter = 0;
-int getRand()
-{
-    srand(time(NULL) + randCounter++);
-    return rand();
-}
-
-struct StepCondition {
-    const char* name;
-    bool (*conditionMet)(uint8_t loopCounter);
-} stepConditions[] = {
-    { "---", [](uint8_t loopCounter) { return true; } },
-    { "Pair", [](uint8_t loopCounter) { return loopCounter % 2 == 0; } },
-    { "4th", [](uint8_t loopCounter) { return loopCounter % 4 == 0; } },
-    { "6th", [](uint8_t loopCounter) { return loopCounter % 6 == 0; } },
-    { "8th", [](uint8_t loopCounter) { return loopCounter % 8 == 0; } },
-    { "Impair", [](uint8_t loopCounter) { return loopCounter % 2 == 1; } },
-    { "1%", [](uint8_t loopCounter) { return (getRand() % 100) == 0; } },
-    { "2%", [](uint8_t loopCounter) { return (getRand() % 100) < 2; } },
-    { "5%", [](uint8_t loopCounter) { return (getRand() % 100) < 5; } },
-    { "10%", [](uint8_t loopCounter) { return (getRand() % 100) < 10; } },
-    { "20%", [](uint8_t loopCounter) { return (getRand() % 100) < 20; } },
-    { "30%", [](uint8_t loopCounter) { return (getRand() % 100) < 30; } },
-    { "40%", [](uint8_t loopCounter) { return (getRand() % 100) < 40; } },
-    { "50%", [](uint8_t loopCounter) { return (getRand() % 100) < 50; } },
-    { "60%", [](uint8_t loopCounter) { return (getRand() % 100) < 60; } },
-    { "70%", [](uint8_t loopCounter) { return (getRand() % 100) < 70; } },
-    { "80%", [](uint8_t loopCounter) { return (getRand() % 100) < 80; } },
-    { "90%", [](uint8_t loopCounter) { return (getRand() % 100) < 90; } },
-    { "95%", [](uint8_t loopCounter) { return (getRand() % 100) < 95; } },
-    { "98%", [](uint8_t loopCounter) { return (getRand() % 100) < 98; } },
-    { "99%", [](uint8_t loopCounter) { return (getRand() % 100) < 99; } },
-};
-
-uint8_t STEP_CONDITIONS_COUNT = sizeof(stepConditions) / sizeof(stepConditions[0]);
-const uint8_t MAX_STEPS = 32;
 
 class Sequencer : public Mapping<Sequencer> {
 protected:
@@ -63,16 +25,6 @@ protected:
     bool active = false;
 
     AudioPlugin* targetPlugin = NULL;
-
-    void resetStep(Step& step)
-    {
-        step.enabled = false;
-        step.velocity = 0;
-        step.condition = 0;
-        step.len = 1;
-        step.counter = 0;
-        step.note = 60;
-    }
 
     bool conditionMet(Step& step)
     {
@@ -203,7 +155,7 @@ public:
             fclose(file);
         } else {
             for (int i = 0; i < MAX_STEPS; i++) {
-                resetStep(steps[i]);
+                steps[i].reset();
             }
         }
         return *this;

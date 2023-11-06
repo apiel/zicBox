@@ -55,7 +55,7 @@ protected:
         } else if (mode == ModeLength) {
             return std::to_string(steps[index].len).c_str();
         } else if (mode == ModeCondition) {
-            return (const char *)plugin.data(2, &steps[index].condition);
+            return (const char*)plugin.data(2, &steps[index].condition);
         }
         return MIDI_NOTES_STR[steps[index].note];
     }
@@ -279,6 +279,9 @@ public:
 
             if (row < rowCount) {
                 int index = row * columnCount + column;
+                if (mode == ModeStep) {
+                    steps[index].enabled = !steps[index].enabled;
+                }
                 if (roundEncoderSlection) {
                     index = (int)(index / encoderCount) * encoderCount;
                 }
@@ -287,6 +290,28 @@ public:
             } else if (column < ModeCount) {
                 mode = (Mode)column;
                 renderNext();
+            }
+        }
+    }
+
+    void onEncoder(int id, int8_t direction)
+    {
+        if (encoderActive) {
+            for (int i = 0; i < encoderCount; i++) {
+                if (id == encoderIds[i]) {
+                    Step& step = steps[selectedStep + i];
+                    if (mode == ModeVelocity) {
+                        step.setVelocity((step.velocity * 20 + direction) / 20.0); // equivalent to: step.velocity + direction * 0.05
+                    } else if (mode == ModeLength) {
+                        step.setLength(step.len + direction);
+                    } else if (mode == ModeCondition) {
+                        step.setCondition(step.condition + direction);
+                    } else {
+                        step.setNote(step.note + direction);
+                    }
+                    renderNext();
+                    return;
+                }
             }
         }
     }
