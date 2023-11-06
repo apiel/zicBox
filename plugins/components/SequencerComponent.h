@@ -11,6 +11,7 @@ class SequencerComponent : public Component {
 protected:
     enum Mode {
         ModeStep,
+        ModeNote,
         ModeVelocity,
         ModeLength,
         ModeCondition,
@@ -20,6 +21,7 @@ protected:
 
     const char* modeName[ModeCount] = {
         "Step",
+        "Note",
         "Velocity",
         "Length",
         "Condition",
@@ -271,19 +273,21 @@ public:
 
     void onMotionRelease(MotionInterface& motion)
     {
-        int row = (motion.position.y - position.y) / stepSize.h;
-        int column = (motion.position.x - position.x) / stepSize.w;
+        if (motion.in({ position, size })) {
+            int row = (motion.position.y - position.y) / stepSize.h;
+            int column = (motion.position.x - position.x) / stepSize.w;
 
-        if (row < rowCount) {
-            int index = row * columnCount + column;
-            if (roundEncoderSlection) {
-                index = (int)(index / encoderCount) * encoderCount;
+            if (row < rowCount) {
+                int index = row * columnCount + column;
+                if (roundEncoderSlection) {
+                    index = (int)(index / encoderCount) * encoderCount;
+                }
+                selectedStep = index;
+                renderNext();
+            } else if (column < ModeCount) {
+                mode = (Mode)column;
+                renderNext();
             }
-            selectedStep = index;
-            renderNext();
-        } else if (column < ModeCount) {
-            mode = (Mode)column;
-            renderNext();
         }
     }
 };

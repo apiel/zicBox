@@ -429,7 +429,7 @@ public:
         debug("noteOff: note not found %d %d\n", note, velocity);
     }
 
-    void* data(int id)
+    void* data(int id, void* userdata = NULL)
     {
         switch (id) {
         case 0:

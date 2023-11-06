@@ -277,7 +277,7 @@ public:
         envelopFreq.reset();
     }
 
-    void* data(int id)
+    void* data(int id, void* userdata = NULL)
     {
         switch (id) {
         case 0:

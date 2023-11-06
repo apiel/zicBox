@@ -1,10 +1,10 @@
 #ifndef _AUDIO_PLUGIN_H_
 #define _AUDIO_PLUGIN_H_
 
+#include <cstdlib>
 #include <stdint.h>
 #include <string.h>
 #include <vector>
-#include <cstdlib>
 
 #include "valueInterface.h"
 
@@ -47,7 +47,7 @@ public:
         strcpy(name, _name);
     }
 
-    virtual void sample(float * buf) = 0;
+    virtual void sample(float* buf) = 0;
 
     virtual ValueInterface* getValue(int valueIndex)
     {
@@ -88,7 +88,7 @@ public:
         return false;
     }
 
-    virtual void* data(int id)
+    virtual void* data(int id, void* userdata = NULL)
     {
         return NULL;
     }
