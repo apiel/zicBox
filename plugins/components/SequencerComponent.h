@@ -50,15 +50,22 @@ protected:
         return MIDI_NOTES_STR[steps[index].note];
     }
 
+    Xywh getStepRect(uint8_t row, uint8_t column)
+    {
+        return {
+            position.x + column * stepSize.w + stepMargin,
+            position.y + row * stepSize.h + stepMargin,
+            stepSize.w - 2 * stepMargin,
+            stepSize.h - 2 * stepMargin
+        };
+    }
+
     void renderStep(uint8_t index)
     {
         uint8_t row = index / columnCount;
         uint8_t column = index % columnCount;
 
-        int x = position.x + column * stepSize.w + stepMargin;
-        int y = position.y + row * stepSize.h + stepMargin;
-        int w = stepSize.w - 2 * stepMargin;
-        int h = stepSize.h - 2 * stepMargin;
+        auto [x, y, w, h] = getStepRect(row, column);
 
         ColorsStep& c = steps[index].enabled ? colorsActive : colorsInactive;
 
@@ -220,7 +227,7 @@ public:
         }
     }
 
-    void onMotionRelease(MotionInterface &motion)
+    void onMotionRelease(MotionInterface& motion)
     {
         int row = (motion.position.y - position.y) / stepSize.h;
         int column = (motion.position.x - position.x) / stepSize.w;

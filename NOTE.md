@@ -40,6 +40,8 @@
 
 - TODO optimized onUpdate value...?
 
+- TODO sequencer button can do something...
+
 - TODO ? SequencerBarComponent: Remove text info
                                 Make motion optional
 
