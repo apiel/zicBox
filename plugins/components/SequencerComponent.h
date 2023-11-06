@@ -32,10 +32,11 @@ protected:
     static const uint8_t columnCount = 8;
     uint8_t rowCount = stepCount / columnCount;
 
-    uint8_t selectedStep = 10;
+    uint8_t selectedStep = 0;
     bool encoderActive = false;
     uint8_t encoderCount = 0;
     int8_t encoderIds[columnCount] = { -1, -1, -1, -1, -1, -1, -1, -1 };
+    bool roundEncoderSlection = true;
 
     const char* getStepText(uint8_t index)
     {
@@ -199,6 +200,11 @@ public:
             return true;
         }
 
+        if (strcmp(key, "ENCODER_SPLITTED_SELECTION") == 0) {
+            roundEncoderSlection = strcmp(value, "true") == 0;
+            return true;
+        }
+
         return false;
     }
 
@@ -212,6 +218,19 @@ public:
             encoderActive = shouldActivate;
             renderNext();
         }
+    }
+
+    void onMotionRelease(MotionInterface &motion)
+    {
+        int row = (motion.position.y - position.y) / stepSize.h;
+        int column = (motion.position.x - position.x) / stepSize.w;
+
+        int index = row * columnCount + column;
+        if (roundEncoderSlection) {
+            index = (int)(index / encoderCount) * encoderCount;
+        }
+        selectedStep = index;
+        renderNext();
     }
 };
 
