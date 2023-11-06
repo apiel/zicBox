@@ -6,10 +6,10 @@
 #include <sys/stat.h> // file exist
 #include <time.h>
 
+#include "../../helpers/midiNote.h"
 #include "audioPlugin.h"
 #include "mapping.h"
 #include "stepInterface.h"
-#include "../../helpers/midiNote.h"
 
 int randCounter = 0;
 int getRand()
@@ -44,8 +44,6 @@ struct StepCondition {
     { "98%", [](uint8_t loopCounter) { return (getRand() % 100) < 98; } },
     { "99%", [](uint8_t loopCounter) { return (getRand() % 100) < 99; } },
 };
-
-
 
 uint8_t STEP_CONDITIONS_COUNT = sizeof(stepConditions) / sizeof(stepConditions[0]);
 const uint8_t MAX_STEPS = 32;
@@ -279,6 +277,10 @@ public:
             return &steps;
         case 1:
             return &stepCounter;
+        case 2: {
+            uint8_t* index = (uint8_t*)userdata;
+            return (void *)stepConditions[*index].name;
+        }
         }
         return NULL;
     }

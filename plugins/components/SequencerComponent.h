@@ -55,7 +55,7 @@ protected:
         } else if (mode == ModeLength) {
             return std::to_string(steps[index].len).c_str();
         } else if (mode == ModeCondition) {
-            return "Impair";
+            return (const char *)plugin.data(2, &steps[index].condition);
         }
         return MIDI_NOTES_STR[steps[index].note];
     }
