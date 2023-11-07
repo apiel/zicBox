@@ -36,7 +36,3 @@ VIEW: Main
 # Granular
 
   INCLUDE: granular.ui
-
-# Sequencer
-
- INCLUDE: sequencer.ui

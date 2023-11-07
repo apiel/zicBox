@@ -43,7 +43,6 @@ struct StepCondition {
 };
 
 uint8_t STEP_CONDITIONS_COUNT = sizeof(stepConditions) / sizeof(stepConditions[0]);
-const uint8_t MAX_STEPS = 32;
 
 class Step {
 public:
@@ -81,7 +80,7 @@ public:
 
     void setLength(int len)
     {
-        this->len = range(len, 0, MAX_STEPS);
+        this->len = range(len, 0, 255);
     }
 };
 

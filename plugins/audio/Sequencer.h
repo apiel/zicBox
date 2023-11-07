@@ -9,6 +9,7 @@
 #include "mapping.h"
 #include "stepInterface.h"
 
+const uint8_t MAX_STEPS = 32;
 
 class Sequencer : public Mapping<Sequencer> {
 protected:
@@ -65,12 +66,6 @@ protected:
 public:
     Val<Sequencer>& detune = val(this, 0.0f, "DETUNE", &Sequencer::setDetune, { "Detune", VALUE_CENTERED, -24.0f, 24.0f });
     Val<Sequencer>& pattern = val(this, 0.0f, "PATTERN", &Sequencer::setPattern, { "Pattern" });
-    Val<Sequencer>& selectedStep = val(this, 0.0f, "SELECTED_STEP", &Sequencer::setSelectedStep, { "Step", .min = 1.0f, .max = MAX_STEPS });
-    Val<Sequencer>& stepVelocity = val(this, 0.0f, "STEP_VELOCITY", &Sequencer::setStepVelocity, { "Velocity" });
-    Val<Sequencer>& stepLength = val(this, 0.0f, "STEP_LENGTH", &Sequencer::setStepLength, { "Len", .min = 1.0f, .max = MAX_STEPS });
-    Val<Sequencer>& stepCondition = val(this, 1.0f, "STEP_CONDITION", &Sequencer::setStepCondition, { "Condition", VALUE_STRING, .min = 1.0f, .max = (float)STEP_CONDITIONS_COUNT });
-    Val<Sequencer>& stepNote = val(this, 0.0f, "STEP_NOTE", &Sequencer::setStepNote, { "Note", VALUE_STRING, .min = 1.0f, .max = (float)MIDI_NOTE_COUNT });
-    Val<Sequencer>& stepEnabled = val(this, 0.0f, "STEP_ENABLED", &Sequencer::setStepEnabled, { "Enabled", VALUE_STRING, .max = 1 });
 
     Sequencer(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -100,8 +95,6 @@ public:
 
         // save();
         // load can be done using setPattern
-
-        setSelectedStep(selectedStep.get());
     }
 
     void onClockTick()
@@ -158,61 +151,6 @@ public:
                 steps[i].reset();
             }
         }
-        return *this;
-    }
-
-    Sequencer& setSelectedStep(float value)
-    {
-        selectedStep.setFloat(value);
-        uint8_t index = selectedStep.get();
-        selectedStepPtr = &steps[index];
-        // printf("Selected step: %d note: %d = %s\n", index, selectedStepPtr->note, (char*)MIDI_NOTES_STR[selectedStepPtr->note]);
-
-        stepVelocity.set(selectedStepPtr->velocity * 100);
-        stepLength.set(selectedStepPtr->len);
-        stepCondition.set(selectedStepPtr->condition + 1);
-        stepNote.set(selectedStepPtr->note);
-        stepEnabled.set(selectedStepPtr->enabled ? 1.0 : 0.0);
-
-        return *this;
-    }
-
-    Sequencer& setStepNote(float value)
-    {
-        stepNote.setFloat(value);
-        selectedStepPtr->note = stepNote.get();
-        stepNote.setString((char*)MIDI_NOTES_STR[selectedStepPtr->note]);
-        // printf("Note: %d = %s\n", selectedStepPtr->note, (char*)MIDI_NOTES_STR[selectedStepPtr->note]);
-        return *this;
-    }
-
-    Sequencer& setStepLength(float value)
-    {
-        stepLength.setFloat(value);
-        selectedStepPtr->len = stepLength.get();
-        return *this;
-    }
-
-    Sequencer& setStepVelocity(float value)
-    {
-        stepVelocity.setFloat(value);
-        selectedStepPtr->velocity = stepVelocity.pct();
-        return *this;
-    }
-
-    Sequencer& setStepCondition(float value)
-    {
-        stepCondition.setFloat(value);
-        selectedStepPtr->condition = stepCondition.get() - 1;
-        stepCondition.setString((char*)stepConditions[selectedStepPtr->condition].name);
-        return *this;
-    }
-
-    Sequencer& setStepEnabled(float value)
-    {
-        stepEnabled.setFloat(value);
-        selectedStepPtr->enabled = stepEnabled.get() > 0.5;
-        stepEnabled.setString(selectedStepPtr->enabled ? (char*)"ON" : (char*)"OFF");
         return *this;
     }
 
