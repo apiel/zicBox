@@ -48,6 +48,8 @@ protected:
     int8_t encoderIds[columnCount] = { -1, -1, -1, -1, -1, -1, -1, -1 };
     bool roundEncoderSlection = true;
 
+    bool fileMode = false;
+
     const char* getStepText(uint8_t index)
     {
         if (mode == ModeVelocity) {
@@ -114,18 +116,60 @@ protected:
         }
     }
 
-    void renderModeSelection()
+    void renderButton(const char* label, Color background, Color labelColor, int row, int column)
     {
-        for (int i = 0; i < ModeCount; i++) {
-            auto [x, y, w, h] = getStepRect(rowCount, i);
+        auto [x, y, w, h] = getStepRect(row, column);
 
-            draw.filledRect({ x, y }, { w, h }, colorsMode.background);
-            Point textPosition = {
-                (int)(x + w * 0.5),
-                (int)(y + (h - fontSize) * 0.5)
-            };
-            draw.textCentered(textPosition, modeName[i], mode == i ? colorsMode.text : colorsMode.textInactive, fontSize);
+        uint8_t fsize = fontSize * 0.8;
+
+        draw.filledRect({ x, y }, { w, h }, background);
+        Point textPosition = {
+            (int)(x + w * 0.5),
+            (int)(y + (h - fsize) * 0.5)
+        };
+        draw.textCentered(textPosition, label, labelColor, fsize);
+    }
+
+    const char* ABC[32] = {
+        // clang-format off
+        "A", "B", "C", "D", "E", "F", "G", "H",
+        "I", "J", "K", "L", "M", "N", "O", "P",
+        "Q", "R", "S", "T", "U", "V", "W", "X",
+        "Y", "Z", ".", "_", "-", "123!.?", "Lowercase", "Backspace",
+        // clang-format on
+    };
+
+    const char* abc[32] = {
+        // clang-format off
+        "a", "b", "c", "d", "e", "f", "g", "h",
+        "i", "j", "k", "l", "m", "n", "o", "p",
+        "q", "r", "s", "t", "u", "v", "w", "x",
+        "y", "z", ".", "_", "-", "123!.?", "Uppercase", "Backspace",
+        // clang-format on
+    };
+
+    const char* _123[32] = {
+        // clang-format off
+        "1", "2", "3", "4", "5", "6", "7", "8",
+        "9", "0", "!", "?", "#", "$", "%", "^",
+        "&", "*", "(", ")", "-", "+", "=", "@",
+        "[", "]", ":", ";", "~", "ABC", "abc", "Backspace",
+        // clang-format on
+    };
+
+    uint8_t keyboardLayout = 0;
+
+    const char **getKeyboard()
+    {
+        switch (keyboardLayout) {
+            case 0:
+                return ABC;
+            case 1:
+                return abc;
+            case 2:
+                return _123;
         }
+        return ABC;
     }
 
     void render()
@@ -135,11 +179,30 @@ protected:
             { size.w - 2 * margin, size.h - 2 * margin },
             colors.background);
 
-        for (int i = 0; i < stepCount; i++) {
-            renderStep(i);
-        }
+        if (fileMode) {
+            // Render keyboard
+            for (int i = 0; i < 32; i++) {
+                uint8_t row = i / columnCount;
+                uint8_t column = i % columnCount;
+                renderButton(getKeyboard()[i], colorsActive.background, colorsActive.text, row, column);
+            }
 
-        renderModeSelection();
+            // Render save button
+            renderButton("Save", colorsMode.background, colorsMode.text, rowCount, columnCount - 1);
+        } else {
+            // Render steps
+            for (int i = 0; i < stepCount; i++) {
+                renderStep(i);
+            }
+
+            // Render mode buttons
+            for (int i = 0; i < ModeCount; i++) {
+                renderButton(modeName[i], colorsMode.background, mode == i ? colorsMode.text : colorsMode.textInactive, rowCount, i);
+            }
+
+            // Render file button
+            renderButton("File", colorsMode.background, colorsMode.text, rowCount, columnCount - 1);
+        }
     }
 
     struct Colors {
@@ -289,6 +352,9 @@ public:
                 renderNext();
             } else if (column < ModeCount) {
                 mode = (Mode)column;
+                renderNext();
+            } else if (column == columnCount - 1) {
+                fileMode = !fileMode;
                 renderNext();
             }
         }
