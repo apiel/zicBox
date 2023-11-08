@@ -25,7 +25,7 @@ public:
     {
     }
 
-    virtual void triggerRenderer(unsigned long now)
+    virtual void triggerRenderer(unsigned long now = 0)
     {
         if (needRendering)
         {

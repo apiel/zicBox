@@ -46,7 +46,7 @@ public:
     {
     }
 
-    virtual void triggerRenderer(unsigned long now) = 0;
+    virtual void triggerRenderer(unsigned long now = 0) = 0;
     virtual void renderNext() = 0;
     virtual void onMotion(MotionInterface &motion) = 0;
     virtual void handleMotion(MotionInterface &motion) = 0;

@@ -3,6 +3,7 @@
 
 #include "../../helpers/midiNote.h"
 #include "../audio/stepInterface.h"
+#include "KeyboardComponent.h"
 #include "component.h"
 
 #include <string>
@@ -49,6 +50,7 @@ protected:
     bool roundEncoderSlection = true;
 
     bool fileMode = false;
+    KeyboardComponent keyboard;
 
     const char* getStepText(uint8_t index)
     {
@@ -130,48 +132,6 @@ protected:
         draw.textCentered(textPosition, label, labelColor, fsize);
     }
 
-    const char* ABC[32] = {
-        // clang-format off
-        "A", "B", "C", "D", "E", "F", "G", "H",
-        "I", "J", "K", "L", "M", "N", "O", "P",
-        "Q", "R", "S", "T", "U", "V", "W", "X",
-        "Y", "Z", ".", "_", "-", "123!.?", "Lowercase", "Backspace",
-        // clang-format on
-    };
-
-    const char* abc[32] = {
-        // clang-format off
-        "a", "b", "c", "d", "e", "f", "g", "h",
-        "i", "j", "k", "l", "m", "n", "o", "p",
-        "q", "r", "s", "t", "u", "v", "w", "x",
-        "y", "z", ".", "_", "-", "123!.?", "Uppercase", "Backspace",
-        // clang-format on
-    };
-
-    const char* _123[32] = {
-        // clang-format off
-        "1", "2", "3", "4", "5", "6", "7", "8",
-        "9", "0", "!", "?", "#", "$", "%", "^",
-        "&", "*", "(", ")", "-", "+", "=", "@",
-        "[", "]", ":", ";", "~", "ABC", "abc", "Backspace",
-        // clang-format on
-    };
-
-    uint8_t keyboardLayout = 0;
-
-    const char **getKeyboard()
-    {
-        switch (keyboardLayout) {
-            case 0:
-                return ABC;
-            case 1:
-                return abc;
-            case 2:
-                return _123;
-        }
-        return ABC;
-    }
-
     void render()
     {
         draw.filledRect(
@@ -180,12 +140,7 @@ protected:
             colors.background);
 
         if (fileMode) {
-            // Render keyboard
-            for (int i = 0; i < 32; i++) {
-                uint8_t row = i / columnCount;
-                uint8_t column = i % columnCount;
-                renderButton(getKeyboard()[i], colorsActive.background, colorsActive.text, row, column);
-            }
+            keyboard.render();
 
             // Render save button
             renderButton("Save", colorsMode.background, colorsMode.text, rowCount, columnCount - 1);
@@ -259,6 +214,7 @@ public:
         , colorsMode(getColorsModeFromColor(styles.colors.grey))
         , plugin(getPlugin("Sequencer"))
         , margin(styles.margin)
+        , keyboard(props)
     {
 
         stepSize = {
@@ -334,9 +290,24 @@ public:
         }
     }
 
+    void onMotion(MotionInterface& motion)
+    {
+        if (fileMode) {
+            keyboard.onMotion(motion);
+            if (keyboard.needRendering) {
+                renderNext();
+            }
+        }
+    }
+
     void onMotionRelease(MotionInterface& motion)
     {
-        if (motion.in({ position, size })) {
+        if (fileMode) {
+            keyboard.onMotionRelease(motion);
+            if (keyboard.needRendering) {
+                renderNext();
+            }
+        } else if (motion.in({ position, size })) {
             int row = (motion.position.y - position.y) / stepSize.h;
             int column = (motion.position.x - position.x) / stepSize.w;
 
