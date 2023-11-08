@@ -3,7 +3,7 @@
 
 #include "../../helpers/midiNote.h"
 #include "../audio/stepInterface.h"
-#include "KeyboardComponent.h"
+#include "base/KeyboardComponent.h"
 #include "component.h"
 
 #include <string>

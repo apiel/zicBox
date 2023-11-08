@@ -2,7 +2,7 @@
 #define _UI_COMPONENT_KEYBOARD_H_
 
 #include "ButtonBaseComponent.h"
-#include "component.h"
+#include "../component.h"
 
 class KeyboardComponent : public Component {
 protected:

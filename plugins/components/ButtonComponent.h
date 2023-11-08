@@ -1,7 +1,7 @@
 #ifndef _UI_COMPONENT_BUTTON_H_
 #define _UI_COMPONENT_BUTTON_H_
 
-#include "ButtonBaseComponent.h"
+#include "base/ButtonBaseComponent.h"
 
 class ButtonComponent : public ButtonBaseComponent {
 protected:
