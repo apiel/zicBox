@@ -45,22 +45,26 @@ protected:
             return;
         }
 
-        lastView = view;
-        view = views[index];
-
-        if (!view->hidden) {
-            viewSelector.setString(view->name);
-
-            int value = 1;
-            for (int i = 0; i < index; i++) {
-                if (!views[i]->hidden) {
-                    value++;
-                }
+        if (view != views[index]) {
+            if (lastView != view) {
+                lastView = view;
             }
-            viewSelector.setFloat((float)value);
-        }
+            view = views[index];
 
-        onUpdatePtr();
+            if (!view->hidden) {
+                viewSelector.setString(view->name);
+
+                int value = 1;
+                for (int i = 0; i < index; i++) {
+                    if (!views[i]->hidden) {
+                        value++;
+                    }
+                }
+                viewSelector.setFloat((float)value);
+            }
+
+            onUpdatePtr();
+        }
     }
 
 public:
