@@ -17,6 +17,7 @@ protected:
     AudioPlugin &(*getPlugin)(const char *name);
     void (*setGroup)(int8_t index);
     void (*setView)(char *name);
+    void (*pushToRenderingQueue)(ComponentInterface* component);
 
 public:
     std::vector<ValueInterface *> values;
@@ -33,6 +34,7 @@ public:
         AudioPlugin &(*getPlugin)(const char *name);
         void (*setGroup)(int8_t index);
         void (*setView)(char *name);
+        void (*pushToRenderingQueue)(ComponentInterface* component);
     };
 
     ComponentInterface(Props &props)
@@ -41,6 +43,7 @@ public:
           getPlugin(props.getPlugin),
           setGroup(props.setGroup),
           setView(props.setView),
+          pushToRenderingQueue(props.pushToRenderingQueue),
           position(props.position),
           size(props.size)
     {

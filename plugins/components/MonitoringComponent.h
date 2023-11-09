@@ -106,7 +106,7 @@ public:
             needRendering = false;
             lastRendering = now;
             render();
-            draw.next();
+            // draw.next(); // FIXME
         }
     }
 };

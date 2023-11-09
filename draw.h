@@ -11,8 +11,6 @@
 
 class Draw : public DrawInterface {
 protected:
-    bool needToRender = false;
-
     SDL_Surface* getTextSurface(const char* text, Color color, uint32_t size, const char* fontPath)
     {
         TTF_Font* font = TTF_OpenFont(fontPath, size);
@@ -114,19 +112,6 @@ public:
         SDL_RenderCopy(renderer, texture, NULL, NULL);
         SDL_RenderPresent(renderer);
         SDL_SetRenderTarget(renderer, texture);
-    }
-
-    void triggerRender()
-    {
-        if (needToRender) {
-            render();
-            needToRender = false;
-        }
-    }
-
-    void next()
-    {
-        needToRender = true;
     }
 
     int textCentered(Point position, const char* text, Color color, uint32_t size, DrawTextOptions options = {})

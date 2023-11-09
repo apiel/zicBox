@@ -23,6 +23,7 @@ protected:
     struct View {
         char* name;
         std::vector<ComponentInterface*> components = {};
+        std::vector<ComponentInterface*> componentsToRender = {};
         bool hidden = false;
     };
 
@@ -120,6 +121,16 @@ public:
     std::vector<ComponentInterface*>& getComponents()
     {
         return currentView->components;
+    }
+
+    std::vector<ComponentInterface*>& getComponentsToRender()
+    {
+        return currentView->componentsToRender;
+    }
+
+    void pushToRenderingQueue(ComponentInterface* component)
+    {
+        currentView->componentsToRender.push_back(component);
     }
 
     bool config(char* key, char* value)

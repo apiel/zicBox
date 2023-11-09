@@ -27,17 +27,18 @@ public:
 
     virtual void triggerRenderer(unsigned long now = 0)
     {
-        if (needRendering)
-        {
+        // if (needRendering)
+        // {
             render();
-            needRendering = false;
-            draw.next();
-        }
+            // needRendering = false;
+        //     draw.next();
+        // }
     }
 
     virtual void renderNext()
     {
-        needRendering = true;
+        // needRendering = true;
+        pushToRenderingQueue(this);
     }
 
     virtual void onUpdate(ValueInterface *value)

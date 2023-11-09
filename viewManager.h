@@ -62,7 +62,15 @@ protected:
 
     void addComponent(const char* name, Point position, Size size)
     {
-        ComponentInterface::Props props = { position, size, draw, getPlugin, setGroup, [](char* name) { UiPlugin::get().setView(name); } };
+        ComponentInterface::Props props = {
+            position,
+            size,
+            draw,
+            getPlugin,
+            setGroup,
+            [](char* name) { UiPlugin::get().setView(name); },
+            [](ComponentInterface* component) { UiPlugin::get().pushToRenderingQueue(component); }
+        };
 
         for (auto& plugin : plugins) {
             if (strcmp(plugin.name, name) == 0) {
@@ -110,7 +118,7 @@ public:
         }
     }
 
-    bool render(bool forceReRender = false)
+    bool render()
     {
         m.lock();
         if (!ui.getViewCount()) {
@@ -118,7 +126,6 @@ public:
         }
 
         draw.clear();
-        draw.next();
 
         changeGroup();
         ui.clearOnUpdate();
@@ -137,10 +144,14 @@ public:
         if (group != lastGroup) {
             changeGroup();
         }
-        for (auto& component : ui.getComponents()) {
-            component->triggerRenderer(now);
-        }
-        draw.triggerRender();
+        if (ui.getComponentsToRender().size()) {
+            printf("Rendering %lu components\n", ui.getComponentsToRender().size());
+            for (auto& component : ui.getComponentsToRender()) {
+                component->triggerRenderer(now);
+            }
+            ui.getComponentsToRender().clear();
+            draw.render();
+        } 
         m.unlock();
     }
 
