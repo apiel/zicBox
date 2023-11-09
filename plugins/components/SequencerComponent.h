@@ -132,34 +132,6 @@ protected:
         draw.textCentered(textPosition, label, labelColor, fsize);
     }
 
-    void render()
-    {
-        draw.filledRect(
-            { position.x + margin, position.y + margin },
-            { size.w - 2 * margin, size.h - 2 * margin },
-            colors.background);
-
-        if (fileMode) {
-            keyboard.render();
-
-            // Render save button
-            renderButton("Save", colorsMode.background, colorsMode.text, rowCount, columnCount - 1);
-        } else {
-            // Render steps
-            for (int i = 0; i < stepCount; i++) {
-                renderStep(i);
-            }
-
-            // Render mode buttons
-            for (int i = 0; i < ModeCount; i++) {
-                renderButton(modeName[i], colorsMode.background, mode == i ? colorsMode.text : colorsMode.textInactive, rowCount, i);
-            }
-
-            // Render file button
-            renderButton("File", colorsMode.background, colorsMode.text, rowCount, columnCount - 1);
-        }
-    }
-
     struct Colors {
         Color background;
         Color activePosition;
@@ -228,14 +200,40 @@ public:
         stepCounter = (uint8_t*)plugin.data(1);
     }
 
+    void render()
+    {
+        draw.filledRect(
+            { position.x + margin, position.y + margin },
+            { size.w - 2 * margin, size.h - 2 * margin },
+            colors.background);
+
+        if (fileMode) {
+            keyboard.render();
+
+            // Render save button
+            renderButton("Save", colorsMode.background, colorsMode.text, rowCount, columnCount - 1);
+        } else {
+            // Render steps
+            for (int i = 0; i < stepCount; i++) {
+                renderStep(i);
+            }
+
+            // Render mode buttons
+            for (int i = 0; i < ModeCount; i++) {
+                renderButton(modeName[i], colorsMode.background, mode == i ? colorsMode.text : colorsMode.textInactive, rowCount, i);
+            }
+
+            // Render file button
+            renderButton("File", colorsMode.background, colorsMode.text, rowCount, columnCount - 1);
+        }
+    }
+
     void triggerRenderer(unsigned long now) override
     {
         if (previousStepCounter != *stepCounter) {
-            needRendering = true;
             // TODO could only render necessary part
             previousStepCounter = *stepCounter;
         }
-        Component::triggerRenderer(now);
     }
 
     bool config(char* key, char* value)

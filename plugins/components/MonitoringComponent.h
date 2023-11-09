@@ -51,21 +51,6 @@ protected:
         return utilization;
     }
 
-    void render()
-    {
-        Point rectPos = { position.x + margin, position.y + margin };
-        Size rectSize = { size.w - 2 * margin, size.h - 2 * margin };
-        draw.filledRect(rectPos, rectSize, colors.background);
-
-        float percentage = getPercentage();
-        draw.filledRect(rectPos, { (int)(rectSize.w * percentage), rectSize.h }, colors.backgroundActive);
-
-        int pct = percentage * 100;
-        int x = position.x + size.w * 0.5;
-        int y = position.y + (size.h - fontSize) * 0.5;
-        draw.textCentered({ x, y }, std::string("cpu: " + std::to_string(pct) + "%").c_str(), colors.text, fontSize);
-    }
-
     struct Colors {
         Color background;
         Color backgroundActive;
@@ -100,13 +85,26 @@ public:
         return false;
     }
 
+    void render()
+    {
+        Point rectPos = { position.x + margin, position.y + margin };
+        Size rectSize = { size.w - 2 * margin, size.h - 2 * margin };
+        draw.filledRect(rectPos, rectSize, colors.background);
+
+        float percentage = getPercentage();
+        draw.filledRect(rectPos, { (int)(rectSize.w * percentage), rectSize.h }, colors.backgroundActive);
+
+        int pct = percentage * 100;
+        int x = position.x + size.w * 0.5;
+        int y = position.y + (size.h - fontSize) * 0.5;
+        draw.textCentered({ x, y }, std::string("cpu: " + std::to_string(pct) + "%").c_str(), colors.text, fontSize);
+    }
+
     void triggerRenderer(unsigned long now)
     {
-        if (needRendering || now - lastRendering > 1000) {
-            needRendering = false;
+        if (now - lastRendering > 1000) {
             lastRendering = now;
             render();
-            // draw.next(); // FIXME
         }
     }
 };

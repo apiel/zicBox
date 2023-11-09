@@ -145,9 +145,9 @@ public:
             changeGroup();
         }
         if (ui.getComponentsToRender().size()) {
-            printf("Rendering %lu components\n", ui.getComponentsToRender().size());
+            // printf("Rendering %lu components\n", ui.getComponentsToRender().size());
             for (auto& component : ui.getComponentsToRender()) {
-                component->triggerRenderer(now);
+                component->render();
             }
             ui.getComponentsToRender().clear();
             draw.render();

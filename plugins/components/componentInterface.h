@@ -12,7 +12,6 @@ class ComponentInterface
 protected:
     DrawInterface &draw;
     Styles &styles;
-    virtual void render() = 0;
 
     AudioPlugin &(*getPlugin)(const char *name);
     void (*setGroup)(int8_t index);
@@ -49,7 +48,8 @@ public:
     {
     }
 
-    virtual void triggerRenderer(unsigned long now = 0) = 0;
+    virtual void render() = 0;
+    virtual void triggerRenderer(unsigned long now = 0) = 0; // should be bool
     virtual void renderNext() = 0;
     virtual void onMotion(MotionInterface &motion) = 0;
     virtual void handleMotion(MotionInterface &motion) = 0;

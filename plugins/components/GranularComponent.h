@@ -71,13 +71,6 @@ protected:
         draw.text({ position.x + margin + 10, position.y + size.h - 20 - margin }, info, colors.info, 12);
     }
 
-    void render()
-    {
-        renderSampleWaveform();
-        renderInfo();
-        renderStartRange();
-    }
-
     struct Colors {
         Color background;
         Color info;
@@ -105,24 +98,17 @@ public:
         textureSize = { size.w - 2 * margin, size.h - 2 * margin };
     }
 
-    virtual void triggerRenderer(unsigned long now) override
+    void render()
     {
         if (lastBrowser != browser->get()) {
             if (textureSampleWaveform != NULL) {
                 draw.destroyTexture(textureSampleWaveform);
                 textureSampleWaveform = NULL;
             }
-            needRendering = true;
         }
-        // FIXME this might not anymore be necessary
-        if (lastStart != start->get() || lastGrainSize != grainSize->get() || lastSpray != spray->get() || lastDensity != density->get()) {
-            lastStart = start->get();
-            lastGrainSize = grainSize->get();
-            lastSpray = spray->get();
-            lastDensity = density->get();
-            needRendering = true;
-        }
-        Component::triggerRenderer(now);
+        renderSampleWaveform();
+        renderInfo();
+        renderStartRange();
     }
 
     float startOrigin = 0.0;

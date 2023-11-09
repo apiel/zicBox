@@ -1,39 +1,30 @@
 #ifndef _UI_COMPONENT_H_
 #define _UI_COMPONENT_H_
 
+#include "componentInterface.h"
 #include "drawInterface.h"
 #include "motionInterface.h"
 #include "valueInterface.h"
-#include "componentInterface.h"
 
 #include <stdlib.h>
 
-class Component : public ComponentInterface
-{
+class Component : public ComponentInterface {
 protected:
-    virtual void render() = 0;
-
-    ValueInterface *val(ValueInterface *value)
+    ValueInterface* val(ValueInterface* value)
     {
         values.push_back(value);
         return value;
     }
 
 public:
-    Component(ComponentInterface::Props &props)
+    Component(ComponentInterface::Props& props)
         : ComponentInterface(props)
     {
     }
 
-    virtual void triggerRenderer(unsigned long now = 0)
-    {
-        // if (needRendering)
-        // {
-            render();
-            // needRendering = false;
-        //     draw.next();
-        // }
-    }
+    virtual void render() { }
+
+    virtual void triggerRenderer(unsigned long now = 0) { }
 
     virtual void renderNext()
     {
@@ -41,37 +32,34 @@ public:
         pushToRenderingQueue(this);
     }
 
-    virtual void onUpdate(ValueInterface *value)
+    virtual void onUpdate(ValueInterface* value)
     {
         renderNext();
     }
 
-    virtual void onMotion(MotionInterface &motion)
+    virtual void onMotion(MotionInterface& motion)
     {
     }
 
-    virtual void handleMotion(MotionInterface &motion)
+    virtual void handleMotion(MotionInterface& motion)
     {
-        if (!motion.originIn({position, size}))
-        {
+        if (!motion.originIn({ position, size })) {
             return;
         }
 
-        if (motion.in({position, size}))
-        {
-            if (motion.isStarting() && group != -1)
-            {
+        if (motion.in({ position, size })) {
+            if (motion.isStarting() && group != -1) {
                 setGroup(group);
             }
             onMotion(motion);
         }
     }
 
-    virtual void onMotionRelease(MotionInterface &motion)
+    virtual void onMotionRelease(MotionInterface& motion)
     {
     }
 
-    virtual void handleMotionRelease(MotionInterface &motion)
+    virtual void handleMotionRelease(MotionInterface& motion)
     {
         onMotionRelease(motion);
     }
@@ -80,14 +68,13 @@ public:
     {
     }
 
-    virtual bool config(char *key, char *value)
+    virtual bool config(char* key, char* value)
     {
         return false;
     }
-    virtual bool baseConfig(char *key, char *value)
+    virtual bool baseConfig(char* key, char* value)
     {
-        if (strcmp(key, "GROUP") == 0)
-        {
+        if (strcmp(key, "GROUP") == 0) {
             group = atoi(value);
             return true;
         }
