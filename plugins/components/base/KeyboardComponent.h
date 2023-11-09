@@ -53,9 +53,9 @@ protected:
         return ABC;
     }
 
-    void setLayout(uint8_t value)
+    void setLayout(uint8_t val)
     {
-        layout = value;
+        layout = val;
         setButtonsLabel();
         renderNext();
     }
@@ -65,7 +65,7 @@ protected:
         for (int i = 0; i < 32; i++) {
             uint8_t row = i / columnCount;
             uint8_t column = i % columnCount;
-            const char *label = getLayout()[i];
+            const char* label = getLayout()[i];
             buttons[i]->label = label;
             if (strcmp(label, "ABC") == 0) {
                 buttons[i]->onRelease = [this]() { setLayout(0); };
@@ -73,11 +73,24 @@ protected:
                 buttons[i]->onRelease = [this]() { setLayout(1); };
             } else if (strcmp(label, "123!.?") == 0) {
                 buttons[i]->onRelease = [this]() { setLayout(2); };
+            } else if (strcmp(label, "Backspace") == 0) {
+                buttons[i]->onRelease = [this]() {
+                    value[strlen(value) - 1] = 0;
+                    onUpdate(value);
+                };
+            } else {
+                buttons[i]->onRelease = [this, label]() {
+                    strcat(value, label);
+                    onUpdate(value);
+                };
             }
         }
     }
 
 public:
+    char value[256] = "";
+    std::function<void(char* value)> onUpdate = [](char* value) {};
+
     KeyboardComponent(ComponentInterface::Props& props)
         : Component(props)
     {

@@ -206,6 +206,8 @@ public:
                 renderNext();
             }
         };
+
+        keyboard.onUpdate = [](char* value) { printf("keyboard: %s\n", value); };
     }
 
     void render()
