@@ -15,6 +15,10 @@
 
 - TODO make component child of other component
 
+- TODO pad motion recorder
+
+- TODO button shift can change encoder resolution
+
 - TODO oscEncoder use time to make bigger step...
 
 - TODO Significantly improve sequencer UI
