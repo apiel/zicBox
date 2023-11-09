@@ -24,7 +24,7 @@ public:
     const Size size;
     int8_t group = -1;
 
-    std::function<bool(unsigned long now)> jobRendering;
+    std::function<void(unsigned long now)> jobRendering;
 
     struct Props {
         Point position;

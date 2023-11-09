@@ -100,9 +100,8 @@ public:
             if (previousStepCounter != *stepCounter || previousSelectedStep != selectedStep->get()) {
                 previousStepCounter = *stepCounter;
                 previousSelectedStep = selectedStep->get();
-                return true;
+                renderNext();
             }
-            return false;
         };
     }
 

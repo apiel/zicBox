@@ -26,7 +26,6 @@ public:
 
     virtual void renderNext()
     {
-        // needRendering = true;
         pushToRenderingQueue(this);
     }
 

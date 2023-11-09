@@ -53,9 +53,8 @@ public:
             int* last = (int*)plugin.data(0);
             if (*last != lastUpdateUi) {
                 lastUpdateUi = *last + 0;
-                return true;
+                renderNext();
             }
-            return false;
         };
     }
 

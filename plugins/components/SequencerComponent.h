@@ -203,9 +203,8 @@ public:
             if (previousStepCounter != *stepCounter) {
                 // TODO could only render necessary part
                 previousStepCounter = *stepCounter;
-                return true;
+                renderNext();
             }
-            return false;
         };
     }
 

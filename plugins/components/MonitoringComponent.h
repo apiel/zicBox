@@ -77,9 +77,8 @@ public:
         jobRendering = [this](unsigned long now) {
             if (now - lastRendering > 1000) {
                 lastRendering = now;
-                return true;
+                renderNext();
             }
-            return false;
         };
     }
 
