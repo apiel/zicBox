@@ -198,6 +198,15 @@ public:
 
         steps = (Step*)plugin.data(0);
         stepCounter = (uint8_t*)plugin.data(1);
+
+        jobRendering = [this](unsigned long now) {
+            if (previousStepCounter != *stepCounter) {
+                // TODO could only render necessary part
+                previousStepCounter = *stepCounter;
+                return true;
+            }
+            return false;
+        };
     }
 
     void render()
@@ -225,14 +234,6 @@ public:
 
             // Render file button
             renderButton("File", colorsMode.background, colorsMode.text, rowCount, columnCount - 1);
-        }
-    }
-
-    void triggerRenderer(unsigned long now)
-    {
-        if (previousStepCounter != *stepCounter) {
-            // TODO could only render necessary part
-            previousStepCounter = *stepCounter;
         }
     }
 
@@ -293,7 +294,7 @@ public:
         if (fileMode) {
             keyboard.onMotion(motion);
             // if (keyboard.needRendering) {
-                renderNext();
+            renderNext();
             // }
         }
     }
@@ -303,7 +304,7 @@ public:
         if (fileMode) {
             keyboard.onMotionRelease(motion);
             // if (keyboard.needRendering) {
-                renderNext();
+            renderNext();
             // }
         } else if (motion.in({ position, size })) {
             int row = (motion.position.y - position.y) / stepSize.h;

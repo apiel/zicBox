@@ -95,6 +95,15 @@ public:
 
         steps = (Step*)plugin.data(0);
         stepCounter = (uint8_t*)plugin.data(1);
+
+        jobRendering = [this](unsigned long now) {
+            if (previousStepCounter != *stepCounter || previousSelectedStep != selectedStep->get()) {
+                previousStepCounter = *stepCounter;
+                previousSelectedStep = selectedStep->get();
+                return true;
+            }
+            return false;
+        };
     }
 
     void render()
@@ -128,14 +137,6 @@ public:
 
         snprintf(info, 24, "condition: %s", stepCondition->string());
         draw.text({ stepPosition.x + 180, position.y }, info, colors.textInfo, 9);
-    }
-
-    void triggerRenderer(unsigned long now) override
-    {
-        if (previousStepCounter != *stepCounter || previousSelectedStep != selectedStep->get()) {
-            previousStepCounter = *stepCounter;
-            previousSelectedStep = selectedStep->get();
-        }
     }
 
     void onMotion(MotionInterface& motion)

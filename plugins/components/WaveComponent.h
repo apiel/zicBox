@@ -48,6 +48,15 @@ public:
     {
         waveSize = { size.w - 2 * margin, size.h - 2 * margin };
         wavePosition = { position.x + margin, position.y + margin };
+
+        jobRendering = [this](unsigned long now) {
+            int* last = (int*)plugin.data(0);
+            if (*last != lastUpdateUi) {
+                lastUpdateUi = *last + 0;
+                return true;
+            }
+            return false;
+        };
     }
 
     void render()
@@ -80,14 +89,6 @@ public:
                         (int)(wavePosition.y + waveSize.h - waveSize.h * data2.modulation) },
                     colors.env);
             }
-        }
-    }
-
-    void triggerRenderer(unsigned long now)
-    {
-        int* last = (int*)plugin.data(0);
-        if (*last != lastUpdateUi) {
-            lastUpdateUi = *last + 0;
         }
     }
 
