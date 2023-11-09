@@ -13,6 +13,8 @@
 
 ## zicUi
 
+- BUG fix distortion
+
 - TODO make component child of other component
 
 - TODO pad motion recorder
