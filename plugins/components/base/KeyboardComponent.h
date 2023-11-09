@@ -1,8 +1,8 @@
 #ifndef _UI_COMPONENT_KEYBOARD_H_
 #define _UI_COMPONENT_KEYBOARD_H_
 
-#include "ButtonBaseComponent.h"
 #include "../component.h"
+#include "ButtonBaseComponent.h"
 
 class KeyboardComponent : public Component {
 protected:
@@ -99,10 +99,11 @@ public:
         }
     }
 
-    void render()
+    void renderNext()
     {
+        // Component::renderNext();
         for (int i = 0; i < 32; i++) {
-            buttons[i]->render();
+            buttons[i]->renderNext();
         }
     }
 
@@ -110,9 +111,6 @@ public:
     {
         for (int i = 0; i < 32; i++) {
             buttons[i]->handleMotion(motion);
-            // if (buttons[i]->needRendering) {
-                renderNext();
-            // }
         }
     }
 
@@ -120,9 +118,6 @@ public:
     {
         for (int i = 0; i < 32; i++) {
             buttons[i]->handleMotionRelease(motion);
-            // if (buttons[i]->needRendering) {
-                renderNext();
-            // }
         }
     }
 };

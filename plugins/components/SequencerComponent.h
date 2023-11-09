@@ -216,8 +216,6 @@ public:
             colors.background);
 
         if (fileMode) {
-            keyboard.render();
-
             // Render save button
             renderButton("Save", colorsMode.background, colorsMode.text, rowCount, columnCount - 1);
         } else {
@@ -276,6 +274,14 @@ public:
         return false;
     }
 
+    void renderNext()
+    {
+        Component::renderNext();
+        if (fileMode) {
+            keyboard.renderNext();
+        }
+    }
+
     void onGroupChanged(int8_t index) override
     {
         int8_t shouldActivate = false;
@@ -292,9 +298,6 @@ public:
     {
         if (fileMode) {
             keyboard.onMotion(motion);
-            // if (keyboard.needRendering) {
-            renderNext();
-            // }
         }
     }
 
@@ -302,9 +305,6 @@ public:
     {
         if (fileMode) {
             keyboard.onMotionRelease(motion);
-            // if (keyboard.needRendering) {
-            renderNext();
-            // }
         } else if (motion.in({ position, size })) {
             int row = (motion.position.y - position.y) / stepSize.h;
             int column = (motion.position.x - position.x) / stepSize.w;
