@@ -83,7 +83,7 @@ public:
         }
     }
 
-    virtual void triggerRenderer(unsigned long now) override
+    void triggerRenderer(unsigned long now)
     {
         int* last = (int*)plugin.data(0);
         if (*last != lastUpdateUi) {

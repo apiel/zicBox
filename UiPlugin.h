@@ -24,6 +24,7 @@ protected:
         char* name;
         std::vector<ComponentInterface*> components = {};
         std::vector<ComponentInterface*> componentsToRender = {};
+        std::vector<ComponentInterface*> componentsJob = {};
         bool hidden = false;
     };
 
@@ -128,6 +129,11 @@ public:
         return currentView->componentsToRender;
     }
 
+    std::vector<ComponentInterface*>& getJobs()
+    {
+        return currentView->componentsJob;
+    }
+
     void pushToRenderingQueue(ComponentInterface* component)
     {
         currentView->componentsToRender.push_back(component);
@@ -192,6 +198,9 @@ public:
     {
         if (views.size() > 0) {
             views.back()->components.push_back(component);
+            if (component->jobRendering) {
+                views.back()->componentsJob.push_back(component);
+            }
         } else {
             printf("ERROR: No view to add component to. Create first a view to be able to add components.\n");
         }

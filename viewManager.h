@@ -144,14 +144,28 @@ public:
         if (group != lastGroup) {
             changeGroup();
         }
+        bool needRendering = false;
         if (ui.getComponentsToRender().size()) {
             // printf("Rendering %lu components\n", ui.getComponentsToRender().size());
             for (auto& component : ui.getComponentsToRender()) {
                 component->render();
             }
             ui.getComponentsToRender().clear();
-            draw.render();
+            needRendering = true;
         } 
+
+        if (ui.getJobs().size()) {
+            for (auto& component : ui.getJobs()) {
+                if (component->jobRendering(now)) {
+                    component->render();
+                    needRendering = true;
+                }
+            }
+        }
+
+        if (needRendering) {
+            draw.render();
+        }
         m.unlock();
     }
 

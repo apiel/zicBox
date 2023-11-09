@@ -73,6 +73,14 @@ public:
         , margin(styles.margin)
     {
         fontSize = props.size.h * 0.5;
+
+        jobRendering = [this](unsigned long now) {
+            if (now - lastRendering > 1000) {
+                lastRendering = now;
+                return true;
+            }
+            return false;
+        };
     }
 
     bool config(char* key, char* value)
@@ -98,14 +106,6 @@ public:
         int x = position.x + size.w * 0.5;
         int y = position.y + (size.h - fontSize) * 0.5;
         draw.textCentered({ x, y }, std::string("cpu: " + std::to_string(pct) + "%").c_str(), colors.text, fontSize);
-    }
-
-    void triggerRenderer(unsigned long now)
-    {
-        if (now - lastRendering > 1000) {
-            lastRendering = now;
-            render();
-        }
     }
 };
 

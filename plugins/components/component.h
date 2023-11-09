@@ -24,8 +24,6 @@ public:
 
     virtual void render() { }
 
-    virtual void triggerRenderer(unsigned long now = 0) { }
-
     virtual void renderNext()
     {
         // needRendering = true;

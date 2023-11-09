@@ -228,7 +228,7 @@ public:
         }
     }
 
-    void triggerRenderer(unsigned long now) override
+    void triggerRenderer(unsigned long now)
     {
         if (previousStepCounter != *stepCounter) {
             // TODO could only render necessary part
@@ -292,9 +292,9 @@ public:
     {
         if (fileMode) {
             keyboard.onMotion(motion);
-            if (keyboard.needRendering) {
+            // if (keyboard.needRendering) {
                 renderNext();
-            }
+            // }
         }
     }
 
@@ -302,9 +302,9 @@ public:
     {
         if (fileMode) {
             keyboard.onMotionRelease(motion);
-            if (keyboard.needRendering) {
+            // if (keyboard.needRendering) {
                 renderNext();
-            }
+            // }
         } else if (motion.in({ position, size })) {
             int row = (motion.position.y - position.y) / stepSize.h;
             int column = (motion.position.x - position.x) / stepSize.w;

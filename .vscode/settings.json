@@ -72,6 +72,7 @@
         "stdio.h": "c",
         "stdlib.h": "c",
         "complex": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "optional": "cpp"
     }
 }

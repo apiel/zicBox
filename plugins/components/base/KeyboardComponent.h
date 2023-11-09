@@ -110,9 +110,9 @@ public:
     {
         for (int i = 0; i < 32; i++) {
             buttons[i]->handleMotion(motion);
-            if (buttons[i]->needRendering) {
+            // if (buttons[i]->needRendering) {
                 renderNext();
-            }
+            // }
         }
     }
 
@@ -120,9 +120,9 @@ public:
     {
         for (int i = 0; i < 32; i++) {
             buttons[i]->handleMotionRelease(motion);
-            if (buttons[i]->needRendering) {
+            // if (buttons[i]->needRendering) {
                 renderNext();
-            }
+            // }
         }
     }
 };
