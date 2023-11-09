@@ -22,7 +22,7 @@ protected:
 
     struct View {
         char* name;
-        std::vector<ComponentInterface*> view = {};
+        std::vector<ComponentInterface*> components = {};
         bool hidden = false;
     };
 
@@ -117,9 +117,9 @@ public:
         return views.size();
     }
 
-    std::vector<ComponentInterface*>& getView()
+    std::vector<ComponentInterface*>& getComponents()
     {
-        return currentView->view;
+        return currentView->components;
     }
 
     bool config(char* key, char* value)
@@ -156,22 +156,22 @@ public:
         if (strcmp(key, "USE_SHARED_COMPONENT") == 0) {
             for (auto& shared : sharedComponents) {
                 if (strcmp(shared.name, value) == 0) {
-                    views.back()->view.push_back(shared.component);
+                    views.back()->components.push_back(shared.component);
                     return true;
                 }
             }
         }
 
-        if (views.size() > 0 && views.back()->view.size() > 0) {
+        if (views.size() > 0 && views.back()->components.size() > 0) {
             if (strcmp(key, "SHARED_COMPONENT") == 0) {
                 SharedComponent shared;
                 shared.name = new char[strlen(value) + 1];
                 strcpy(shared.name, value);
-                shared.component = views.back()->view.back();
+                shared.component = views.back()->components.back();
                 sharedComponents.push_back(shared);
             }
 
-            return views.back()->view.back()->baseConfig(key, value);
+            return views.back()->components.back()->baseConfig(key, value);
         }
 
         return false;
@@ -180,7 +180,7 @@ public:
     void addComponent(ComponentInterface* component)
     {
         if (views.size() > 0) {
-            views.back()->view.push_back(component);
+            views.back()->components.push_back(component);
         } else {
             printf("ERROR: No view to add component to. Create first a view to be able to add components.\n");
         }
@@ -189,7 +189,7 @@ public:
     void clearOnUpdate()
     {
         if (lastView != NULL) {
-            for (auto& component : lastView->view) {
+            for (auto& component : lastView->components) {
                 for (auto* value : component->values) {
                     value->onUpdate([](float, void* data) {}, NULL);
                 }
@@ -199,7 +199,7 @@ public:
 
     void initActiveComponents(void (*callback)(float, void* data))
     {
-        for (auto& component : getView()) {
+        for (auto& component : getComponents()) {
             component->renderNext();
             for (auto* value : component->values) {
                 value->onUpdate(callback, value);

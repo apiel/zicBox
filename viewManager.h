@@ -77,7 +77,7 @@ protected:
     void changeGroup()
     {
         lastGroup = group;
-        for (auto& component : ui.getView()) {
+        for (auto& component : ui.getComponents()) {
             component->onGroupChanged(group);
         }
     }
@@ -101,7 +101,7 @@ public:
     // TODO could this be optimized by creating mapping values to components?
     void onUpdate(ValueInterface* val)
     {
-        for (auto& component : ui.getView()) {
+        for (auto& component : ui.getComponents()) {
             for (auto* value : component->values) {
                 if (value == val) {
                     component->onUpdate(value);
@@ -137,7 +137,7 @@ public:
         if (group != lastGroup) {
             changeGroup();
         }
-        for (auto& component : ui.getView()) {
+        for (auto& component : ui.getComponents()) {
             component->triggerRenderer(now);
         }
         draw.triggerRender();
@@ -146,14 +146,14 @@ public:
 
     void onMotion(MotionInterface& motion)
     {
-        for (auto& component : ui.getView()) {
+        for (auto& component : ui.getComponents()) {
             component->handleMotion(motion);
         }
     }
 
     void onMotionRelease(MotionInterface& motion)
     {
-        for (auto& component : ui.getView()) {
+        for (auto& component : ui.getComponents()) {
             component->handleMotionRelease(motion);
         }
     }
@@ -161,7 +161,7 @@ public:
     void onEncoder(int id, int8_t direction)
     {
         m2.lock();
-        for (auto& component : ui.getView()) {
+        for (auto& component : ui.getComponents()) {
             component->onEncoder(id, direction);
         }
         m2.unlock();

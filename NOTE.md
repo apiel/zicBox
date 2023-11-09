@@ -17,6 +17,8 @@
 
 - TODO pad motion recorder
 
+- TODO button icon
+
 - TODO button shift can change encoder resolution
 
 - TODO oscEncoder use time to make bigger step...
