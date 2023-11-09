@@ -38,11 +38,11 @@ protected:
         // clang-format on
     };
 
-    uint8_t keyboardLayout = 0;
+    uint8_t layout = 0;
 
-    const char** getKeyboard()
+    const char** getLayout()
     {
-        switch (keyboardLayout) {
+        switch (layout) {
         case 0:
             return ABC;
         case 1:
@@ -53,12 +53,27 @@ protected:
         return ABC;
     }
 
+    void setLayout(uint8_t value)
+    {
+        layout = value;
+        setButtonsLabel();
+        renderNext();
+    }
+
     void setButtonsLabel()
     {
         for (int i = 0; i < 32; i++) {
             uint8_t row = i / columnCount;
             uint8_t column = i % columnCount;
-            buttons[i]->label = getKeyboard()[i];
+            const char *label = getLayout()[i];
+            buttons[i]->label = label;
+            if (strcmp(label, "ABC") == 0) {
+                buttons[i]->onRelease = [this]() { setLayout(0); };
+            } else if (strcmp(label, "abc") == 0) {
+                buttons[i]->onRelease = [this]() { setLayout(1); };
+            } else if (strcmp(label, "123!.?") == 0) {
+                buttons[i]->onRelease = [this]() { setLayout(2); };
+            }
         }
     }
 

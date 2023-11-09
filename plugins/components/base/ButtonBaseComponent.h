@@ -13,9 +13,6 @@ protected:
 
     bool isPressed = false;
 
-    std::function<void()> onPress = []() {};
-    std::function<void()> onRelease = []() {};
-
     void handlePress(std::function<void()>& event, bool pressed)
     {
         isPressed = pressed;
@@ -37,6 +34,9 @@ protected:
     const int margin;
 
 public:
+    std::function<void()> onPress = []() {};
+    std::function<void()> onRelease = []() {};
+    
     std::string label = "";
 
     ButtonBaseComponent(ComponentInterface::Props& props)
