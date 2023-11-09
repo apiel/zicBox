@@ -85,7 +85,7 @@ protected:
     void changeGroup()
     {
         lastGroup = group;
-        for (auto& component : ui.getComponents()) {
+        for (auto& component : ui.view->components) {
             component->onGroupChanged(group);
         }
     }
@@ -109,7 +109,7 @@ public:
     // TODO could this be optimized by creating mapping values to components?
     void onUpdate(ValueInterface* val)
     {
-        for (auto& component : ui.getComponents()) {
+        for (auto& component : ui.view->components) {
             for (auto* value : component->values) {
                 if (value == val) {
                     component->onUpdate(value);
@@ -145,18 +145,17 @@ public:
             changeGroup();
         }
 
-        if (ui.getJobs().size()) {
-            for (auto& component : ui.getJobs()) {
+        if (ui.view->componentsJob.size()) {
+            for (auto& component : ui.view->componentsJob) {
                 component->jobRendering(now);
             }
         }
 
-        if (ui.getComponentsToRender().size()) {
-            // printf("Rendering %lu components\n", ui.getComponentsToRender().size());
-            for (auto& component : ui.getComponentsToRender()) {
+        if (ui.view->componentsToRender.size()) {
+            for (auto& component : ui.view->componentsToRender) {
                 component->render();
             }
-            ui.getComponentsToRender().clear();
+            ui.view->componentsToRender.clear();
             draw.render();
         }
         m.unlock();
@@ -164,14 +163,14 @@ public:
 
     void onMotion(MotionInterface& motion)
     {
-        for (auto& component : ui.getComponents()) {
+        for (auto& component : ui.view->components) {
             component->handleMotion(motion);
         }
     }
 
     void onMotionRelease(MotionInterface& motion)
     {
-        for (auto& component : ui.getComponents()) {
+        for (auto& component : ui.view->components) {
             component->handleMotionRelease(motion);
         }
     }
@@ -179,7 +178,7 @@ public:
     void onEncoder(int id, int8_t direction)
     {
         m2.lock();
-        for (auto& component : ui.getComponents()) {
+        for (auto& component : ui.view->components) {
             component->onEncoder(id, direction);
         }
         m2.unlock();

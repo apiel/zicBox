@@ -29,7 +29,6 @@ protected:
     };
 
     View* lastView = NULL;
-    View* currentView = NULL;
 
     std::vector<View*> views;
 
@@ -46,11 +45,11 @@ protected:
             return;
         }
 
-        lastView = currentView;
-        currentView = views[index];
+        lastView = view;
+        view = views[index];
 
-        if (!currentView->hidden) {
-            viewSelector.setString(currentView->name);
+        if (!view->hidden) {
+            viewSelector.setString(view->name);
 
             int value = 1;
             for (int i = 0; i < index; i++) {
@@ -65,6 +64,8 @@ protected:
     }
 
 public:
+    View* view = NULL;
+
     Val<UiPlugin>& viewSelector = val(this, 1.0f, "VIEW", &UiPlugin::setView, { "View", VALUE_STRING, .min = 1.0 });
 
     static UiPlugin& get()
@@ -119,24 +120,9 @@ public:
         return views.size();
     }
 
-    std::vector<ComponentInterface*>& getComponents()
-    {
-        return currentView->components;
-    }
-
-    std::vector<ComponentInterface*>& getComponentsToRender()
-    {
-        return currentView->componentsToRender;
-    }
-
-    std::vector<ComponentInterface*>& getJobs()
-    {
-        return currentView->componentsJob;
-    }
-
     void pushToRenderingQueue(ComponentInterface* component)
     {
-        currentView->componentsToRender.push_back(component);
+        view->componentsToRender.push_back(component);
     }
 
     bool config(char* key, char* value)
@@ -219,7 +205,7 @@ public:
 
     void initActiveComponents(void (*callback)(float, void* data))
     {
-        for (auto& component : getComponents()) {
+        for (auto& component : view->components) {
             component->renderNext();
             for (auto* value : component->values) {
                 value->onUpdate(callback, value);
