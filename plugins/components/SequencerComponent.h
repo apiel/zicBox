@@ -205,6 +205,7 @@ protected:
     }
 
 public:
+
     SequencerComponent(ComponentInterface::Props props)
         : Component(props)
         , colors(getColorsFromColor(styles.colors.blue))

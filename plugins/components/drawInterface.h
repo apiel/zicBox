@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <vector>
 
 struct Size {
     int w;
@@ -86,6 +87,7 @@ public:
     virtual void filledRect(Point position, Size size, Color color) = 0;
     virtual void rect(Point position, Size size, Color color) = 0;
     virtual void line(Point start, Point end, Color color) = 0;
+    virtual void lines(std::vector<Point> points, Color color) = 0;
     virtual void pixel(Point position, Color color) = 0;
 
     virtual void* setTextureRenderer(Size size) = 0;

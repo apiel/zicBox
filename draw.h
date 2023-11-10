@@ -190,6 +190,12 @@ public:
         SDL_RenderDrawLine(renderer, start.x, start.y, end.x, end.y);
     }
 
+    void lines(std::vector<Point> points, Color color)
+    {
+        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+        SDL_RenderDrawLines(renderer, (SDL_Point *)points.data(), points.size());
+    }
+
     void pixel(Point position, Color color)
     {
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
