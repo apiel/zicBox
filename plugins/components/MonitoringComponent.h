@@ -67,7 +67,7 @@ protected:
     uint8_t fontSize = 9;
 
 public:
-    MonitoringComponent(ComponentInterface::Props& props)
+    MonitoringComponent(ComponentInterface::Props props)
         : Component(props)
         , colors(getColorsFromColor(styles.colors.grey))
         , margin(styles.margin)

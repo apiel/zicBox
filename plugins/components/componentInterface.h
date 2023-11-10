@@ -36,7 +36,7 @@ public:
         void (*pushToRenderingQueue)(ComponentInterface* component);
     };
 
-    ComponentInterface(Props& props)
+    ComponentInterface(Props props)
         : draw(props.draw)
         , styles(props.draw.styles)
         , getPlugin(props.getPlugin)
@@ -46,6 +46,7 @@ public:
         , position(props.position)
         , size(props.size)
     {
+        printf("ComponentInterface: %d x %d\n", props.position.x, props.position.y);
     }
 
     virtual void render() = 0;

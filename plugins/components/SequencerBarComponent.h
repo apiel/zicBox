@@ -75,7 +75,7 @@ protected:
     uint8_t stepCount;
 
 public:
-    SequencerBarComponent(ComponentInterface::Props& props)
+    SequencerBarComponent(ComponentInterface::Props props)
         : Component(props)
         , colors(getColorsFromColor(styles.colors.blue))
         , margin(styles.margin)

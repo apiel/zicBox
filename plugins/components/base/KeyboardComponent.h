@@ -91,7 +91,7 @@ public:
     char value[256] = "";
     std::function<void(char* value)> onUpdate = [](char* value) {};
 
-    KeyboardComponent(ComponentInterface::Props& props)
+    KeyboardComponent(ComponentInterface::Props props)
         : Component(props)
     {
         uint8_t rowCount = keyCount / columnCount;

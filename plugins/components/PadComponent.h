@@ -54,7 +54,7 @@ protected:
     const int margin;
 
 public:
-    PadComponent(ComponentInterface::Props& props)
+    PadComponent(ComponentInterface::Props props)
         : Component(props)
         , colors(getColorsFromColor(styles.colors.blue))
         , margin(styles.margin)

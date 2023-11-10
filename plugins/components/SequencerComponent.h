@@ -4,6 +4,7 @@
 #include "../../helpers/midiNote.h"
 #include "../audio/stepInterface.h"
 #include "base/KeyboardComponent.h"
+#include "base/InputComponent.h"
 #include "component.h"
 
 #include <string>
@@ -22,10 +23,10 @@ protected:
 
     const char* modeName[ModeCount] = {
         "Step",
-        "Note",
         "Velocity",
         "Length",
         "Condition",
+        "Note",
     };
 
     AudioPlugin& plugin;
@@ -51,6 +52,7 @@ protected:
 
     bool fileMode = false;
     KeyboardComponent keyboard;
+    // InputComponent input;
 
     const char* getStepText(uint8_t index)
     {
@@ -132,6 +134,13 @@ protected:
         draw.textCentered(textPosition, label, labelColor, fsize);
     }
 
+    ComponentInterface::Props getNewProps(ComponentInterface::Props props, Point pos, Size _size)
+    {
+        props.position = pos;
+        props.size = _size;
+        return props;
+    }
+
     struct Colors {
         Color background;
         Color activePosition;
@@ -178,7 +187,7 @@ protected:
     uint8_t fontSize;
 
 public:
-    SequencerComponent(ComponentInterface::Props& props)
+    SequencerComponent(ComponentInterface::Props props)
         : Component(props)
         , colors(getColorsFromColor(styles.colors.blue))
         , colorsActive(getColorsStepFromColor(styles.colors.blue))
@@ -187,6 +196,7 @@ public:
         , plugin(getPlugin("Sequencer"))
         , margin(styles.margin)
         , keyboard(props)
+        // , input(getNewProps(props, { props.position.x, props.position.y + props.size.h - 20 }, { props.size.w, 20 }))
     {
 
         stepSize = {

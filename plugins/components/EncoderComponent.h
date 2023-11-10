@@ -134,7 +134,7 @@ protected:
 public:
     // margin left 15
     // margin right 10
-    EncoderComponent(ComponentInterface::Props& props)
+    EncoderComponent(ComponentInterface::Props props)
         : Component(props)
         , colors(getColorsFromColor(styles.colors.blue))
         , margin(styles.margin)

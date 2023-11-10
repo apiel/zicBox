@@ -89,7 +89,7 @@ protected:
     const int margin;
 
 public:
-    GranularComponent(ComponentInterface::Props& props)
+    GranularComponent(ComponentInterface::Props props)
         : Component(props)
         , colors(getColorsFromColor(styles.colors.blue))
         , margin(styles.margin)

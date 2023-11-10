@@ -39,7 +39,7 @@ public:
     
     std::string label = "";
 
-    ButtonBaseComponent(ComponentInterface::Props& props)
+    ButtonBaseComponent(ComponentInterface::Props props)
         : Component(props)
         , colors(getColorsFromColor(styles.colors.blue))
         , margin(styles.margin)

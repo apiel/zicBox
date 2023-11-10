@@ -17,7 +17,7 @@ protected:
     }
 
 public:
-    Component(ComponentInterface::Props& props)
+    Component(ComponentInterface::Props props)
         : ComponentInterface(props)
     {
     }

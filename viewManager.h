@@ -30,7 +30,7 @@ protected:
 
     struct Plugin {
         char name[64];
-        ComponentInterface* (*allocator)(ComponentInterface::Props& props);
+        ComponentInterface* (*allocator)(ComponentInterface::Props props);
     };
     std::vector<Plugin> plugins;
 
@@ -50,7 +50,7 @@ protected:
         }
 
         dlerror();
-        plugin.allocator = (ComponentInterface * (*)(ComponentInterface::Props & props)) dlsym(handle, "allocator");
+        plugin.allocator = (ComponentInterface * (*)(ComponentInterface::Props props)) dlsym(handle, "allocator");
         const char* dlsym_error = dlerror();
         if (dlsym_error) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot load symbol: %s\n", dlsym_error);
@@ -71,6 +71,8 @@ protected:
             [](char* name) { UiPlugin::get().setView(name); },
             [](ComponentInterface* component) { UiPlugin::get().pushToRenderingQueue(component); }
         };
+
+printf("addComponent: %s pos %d %d size %d %d\n", name, position.x, position.y, size.w, size.h);
 
         for (auto& plugin : plugins) {
             if (strcmp(plugin.name, name) == 0) {

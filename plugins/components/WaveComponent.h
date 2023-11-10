@@ -40,7 +40,7 @@ protected:
     int lastUpdateUi = -1;
 
 public:
-    WaveComponent(ComponentInterface::Props& props)
+    WaveComponent(ComponentInterface::Props props)
         : Component(props)
         , colors(getColorsFromColor(styles.colors.blue))
         , margin(styles.margin)

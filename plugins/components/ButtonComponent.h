@@ -58,7 +58,7 @@ protected:
     }
 
 public:
-    ButtonComponent(ComponentInterface::Props& props)
+    ButtonComponent(ComponentInterface::Props props)
         : ButtonBaseComponent(props)
     {
     }
