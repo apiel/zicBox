@@ -12,6 +12,8 @@ public:
     } colors;
 
 protected:
+    unsigned long lastRendering = 0;
+
     int fontSize = 12;
     Point textPosition;
 
@@ -24,7 +26,6 @@ protected:
 
 public:
     char value[256] = "";
-    // std::function<void()> onUpdate = []() {};
 
     InputComponent(ComponentInterface::Props props)
         : Component(props)
@@ -33,6 +34,14 @@ public:
         , margin(styles.margin)
     {
         setFontSize(fontSize);
+
+        // jobRendering = [this](unsigned long now) {
+        //     if (now - lastRendering > 1000) {
+        //         printf("InputComponent::jobRendering\n");
+        //         lastRendering = now;
+        //         renderNext();
+        //     }
+        // };
     }
 
     void render()
@@ -48,7 +57,6 @@ public:
             colors.line);
 
         if (strlen(value) > 0) {
-            printf("InputComponent::render %s\n", value);
             draw.text(textPosition, value, colors.text, fontSize);
         }
     }
