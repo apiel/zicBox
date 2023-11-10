@@ -67,6 +67,8 @@ public:
     }
 
     virtual void render() = 0;
+    virtual void renderNext() = 0;
+    virtual void triggerRendering() = 0;
 
     DrawTextOptions getDefaultTextOptions(DrawTextOptions options)
     {

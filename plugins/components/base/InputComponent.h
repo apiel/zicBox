@@ -16,6 +16,9 @@ protected:
 
     int fontSize = 12;
     Point textPosition;
+    int cursorX = 0;
+
+    bool cursorStateShown = false;
 
     Colors getColorsFromColor(Color color)
     {
@@ -34,14 +37,7 @@ public:
         , margin(styles.margin)
     {
         setFontSize(fontSize);
-
-        // jobRendering = [this](unsigned long now) {
-        //     if (now - lastRendering > 1000) {
-        //         printf("InputComponent::jobRendering\n");
-        //         lastRendering = now;
-        //         renderNext();
-        //     }
-        // };
+        cursorX = textPosition.x;
     }
 
     void render()
@@ -57,7 +53,22 @@ public:
             colors.line);
 
         if (strlen(value) > 0) {
-            draw.text(textPosition, value, colors.text, fontSize);
+            cursorX = draw.text(textPosition, value, colors.text, fontSize);
+        } else {
+            cursorX = textPosition.x;
+        }
+    }
+
+    void renderCursor(unsigned long now)
+    {
+        if (now - lastRendering > 500) {
+            lastRendering = now;
+            draw.line(
+                { cursorX + 1, textPosition.y },
+                { cursorX + 1, textPosition.y + fontSize },
+                cursorStateShown ? colors.background : colors.text);
+            cursorStateShown = !cursorStateShown;
+            draw.renderNext(); // call draw.renderNext instead renderNext, so the whole component is not rendered
         }
     }
 

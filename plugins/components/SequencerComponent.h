@@ -235,6 +235,9 @@ public:
                 previousStepCounter = *stepCounter;
                 renderNext();
             }
+            if (fileMode) {
+                input.renderCursor(now);
+            }
         };
 
         keyboard.onUpdate = [this](char* value) { input.renderNext(); };

@@ -158,8 +158,9 @@ public:
                 component->render();
             }
             ui.view->componentsToRender.clear();
-            draw.render();
+            draw.renderNext();
         }
+        draw.triggerRendering();
         m.unlock();
     }
 

@@ -11,6 +11,8 @@
 
 class Draw : public DrawInterface {
 protected:
+    bool needRendering = false;
+
     SDL_Surface* getTextSurface(const char* text, Color color, uint32_t size, const char* fontPath)
     {
         TTF_Font* font = TTF_OpenFont(fontPath, size);
@@ -104,6 +106,19 @@ public:
     Draw(Styles styles)
         : DrawInterface(styles)
     {
+    }
+
+    void renderNext()
+    {
+        needRendering = true;
+    }
+
+    void triggerRendering()
+    {
+        if (needRendering) {
+            render();
+            needRendering = false;
+        }
     }
 
     void render()
