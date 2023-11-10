@@ -3,8 +3,8 @@
 
 #include "../../helpers/midiNote.h"
 #include "../audio/stepInterface.h"
-#include "base/KeyboardComponent.h"
 #include "base/InputComponent.h"
+#include "base/KeyboardComponent.h"
 #include "component.h"
 
 #include <string>
@@ -32,6 +32,7 @@ protected:
     AudioPlugin& plugin;
 
     Size stepSize;
+    Size btnSize;
 
     Step* steps;
     uint8_t* stepCounter;
@@ -51,8 +52,8 @@ protected:
     bool roundEncoderSlection = true;
 
     bool fileMode = false;
+    InputComponent input;
     KeyboardComponent keyboard;
-    // InputComponent input;
 
     const char* getStepText(uint8_t index)
     {
@@ -71,8 +72,8 @@ protected:
         return {
             position.x + column * stepSize.w + stepMargin,
             position.y + row * stepSize.h + stepMargin,
-            stepSize.w - 2 * stepMargin,
-            stepSize.h - 2 * stepMargin
+            btnSize.w,
+            btnSize.h
         };
     }
 
@@ -134,13 +135,6 @@ protected:
         draw.textCentered(textPosition, label, labelColor, fsize);
     }
 
-    ComponentInterface::Props getNewProps(ComponentInterface::Props props, Point pos, Size _size)
-    {
-        props.position = pos;
-        props.size = _size;
-        return props;
-    }
-
     struct Colors {
         Color background;
         Color activePosition;
@@ -182,9 +176,33 @@ protected:
             draw.darken(color, 0.4) });
     }
 
-    const int stepMargin = 4;
+    static const int stepMargin = 4;
     const int margin;
     uint8_t fontSize;
+
+    Size getStepSize(ComponentInterface::Props props)
+    {
+        return {
+            (int)((props.size.w) / (float)columnCount),
+            (int)((props.size.h) / (float)(rowCount + 1))
+        };
+    }
+
+    Size getBtnSize(ComponentInterface::Props props)
+    {
+        auto [w, h] = getStepSize(props);
+        return {
+            w - 2 * stepMargin,
+            h - 2 * stepMargin
+        };
+    }
+
+    ComponentInterface::Props getNewPropsPosition(ComponentInterface::Props props, Point pos, Size _size)
+    {
+        props.position = pos;
+        props.size = _size;
+        return props;
+    }
 
 public:
     SequencerComponent(ComponentInterface::Props props)
@@ -195,16 +213,18 @@ public:
         , colorsMode(getColorsModeFromColor(styles.colors.grey))
         , plugin(getPlugin("Sequencer"))
         , margin(styles.margin)
+        , input(getNewPropsPosition(props,
+              { props.position.x + stepMargin, props.position.y + props.size.h - getBtnSize(props).h - stepMargin },
+              { (getBtnSize(props).w + stepMargin) * 4 + stepMargin * 2, getBtnSize(props).h }))
         , keyboard(props)
-        // , input(getNewProps(props, { props.position.x, props.position.y + props.size.h - 20 }, { props.size.w, 20 }))
     {
+        keyboard.value = input.value;
 
-        stepSize = {
-            (int)((props.size.w) / (float)columnCount),
-            (int)((props.size.h) / (float)(rowCount + 1))
-        };
+        stepSize = getStepSize(props);
+        btnSize = getBtnSize(props);
 
-        fontSize = stepSize.h * 0.5;
+        fontSize
+            = stepSize.h * 0.5;
 
         steps = (Step*)plugin.data(0);
         stepCounter = (uint8_t*)plugin.data(1);
@@ -217,7 +237,12 @@ public:
             }
         };
 
-        keyboard.onUpdate = [](char* value) { printf("keyboard: %s\n", value); };
+        keyboard.onUpdate = [this](char* value) { input.renderNext(); };
+        input.colors = {
+            colors.background,
+            draw.darken(colorsActive.text, 0.3),
+            colorsActive.text,
+        };
     }
 
     void render()
@@ -291,6 +316,7 @@ public:
         Component::renderNext();
         if (fileMode) {
             keyboard.renderNext();
+            input.renderNext();
         }
     }
 

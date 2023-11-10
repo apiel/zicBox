@@ -75,20 +75,24 @@ protected:
                 buttons[i]->onRelease = [this]() { setLayout(2); };
             } else if (strcmp(label, "Backspace") == 0) {
                 buttons[i]->onRelease = [this]() {
-                    value[strlen(value) - 1] = 0;
-                    onUpdate(value);
+                    if (value && strlen(value) > 0) {
+                        value[strlen(value) - 1] = 0;
+                        onUpdate(value);
+                    }
                 };
             } else {
                 buttons[i]->onRelease = [this, label]() {
-                    strcat(value, label);
-                    onUpdate(value);
+                    if (value) {
+                        strcat(value, label);
+                        onUpdate(value);
+                    }
                 };
             }
         }
     }
 
 public:
-    char value[256] = "";
+    char* value = NULL;
     std::function<void(char* value)> onUpdate = [](char* value) {};
 
     KeyboardComponent(ComponentInterface::Props props)
