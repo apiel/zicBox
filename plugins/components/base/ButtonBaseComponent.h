@@ -2,6 +2,7 @@
 #define _UI_COMPONENT_BUTTON_BASE_H_
 
 #include "../component.h"
+#include "Icon.h"
 #include <string>
 
 #include <functional>
@@ -10,6 +11,8 @@ class ButtonBaseComponent : public Component {
 protected:
     Point labelPosition;
     int fontSize = 12;
+
+    Icon icon;
 
     bool isPressed = false;
 
@@ -41,6 +44,7 @@ public:
 
     ButtonBaseComponent(ComponentInterface::Props props)
         : Component(props)
+        , icon(props.draw)
         , colors(getColorsFromColor(styles.colors.blue))
         , margin(styles.margin)
     {
@@ -54,7 +58,10 @@ public:
             { size.w - 2 * margin, size.h - 2 * margin },
             isPressed ? colors.pressedBackground : colors.background);
 
-        draw.textCentered(labelPosition, label.c_str(), colors.title, fontSize);
+// TODO optimize using function pointer
+        if (!icon.render(label, labelPosition, fontSize, colors.title, Icon::CENTER)) {
+            draw.textCentered(labelPosition, label.c_str(), colors.title, fontSize);
+        }
     }
 
     void setFontSize(int _fontSize)

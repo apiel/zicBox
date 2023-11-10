@@ -16,7 +16,7 @@ protected:
         "A", "B", "C", "D", "E", "F", "G", "H",
         "I", "J", "K", "L", "M", "N", "O", "P",
         "Q", "R", "S", "T", "U", "V", "W", "X",
-        "Y", "Z", ".", "_", "-", "123!.?", "abc", "Backspace",
+        "Y", "Z", ".", "_", "-", "123!.?", "abc", "&icon::backspace",
         // clang-format on
     };
 
@@ -25,7 +25,7 @@ protected:
         "a", "b", "c", "d", "e", "f", "g", "h",
         "i", "j", "k", "l", "m", "n", "o", "p",
         "q", "r", "s", "t", "u", "v", "w", "x",
-        "y", "z", ".", "_", "-", "123!.?", "ABC", "Backspace",
+        "y", "z", ".", "_", "-", "123!.?", "ABC", "&icon::backspace",
         // clang-format on
     };
 
@@ -34,7 +34,7 @@ protected:
         "1", "2", "3", "4", "5", "6", "7", "8",
         "9", "0", "!", "?", "#", "$", "%", "^",
         "&", "*", "(", ")", "-", "+", "=", "@",
-        "[", "]", ":", ";", "~", "ABC", "abc", "Backspace",
+        "[", "]", ":", ";", "~", "ABC", "abc", "&icon::backspace",
         // clang-format on
     };
 
@@ -73,7 +73,7 @@ protected:
                 buttons[i]->onRelease = [this]() { setLayout(1); };
             } else if (strcmp(label, "123!.?") == 0) {
                 buttons[i]->onRelease = [this]() { setLayout(2); };
-            } else if (strcmp(label, "Backspace") == 0) {
+            } else if (strcmp(label, "&icon::backspace") == 0) {
                 buttons[i]->onRelease = [this]() {
                     if (value && strlen(value) > 0) {
                         value[strlen(value) - 1] = 0;
