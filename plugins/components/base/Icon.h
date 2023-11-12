@@ -15,16 +15,37 @@ public:
         CENTER,
         RIGHT
     };
-    
+
     Icon(DrawInterface& draw)
         : draw(draw)
     {
     }
 
-    bool render(std::string name, Point position, uint8_t size, Color color, Align align = LEFT)
+    std::function<void(Point, uint8_t, Color, Align)> get(std::string name)
     {
         if (name == "&icon::backspace") {
-            backspace(position, size, color, align);
+            return [&](Point position, uint8_t size, Color color, Align align) {
+                backspace(position, size, color, align);
+            };
+        }
+        return nullptr;
+    }
+
+    std::function<void()> get(std::string name, Point position, uint8_t size, Color color, Align align = LEFT)
+    {
+        if (name == "&icon::backspace") {
+            return [this, position, size, color, align]() {
+                backspace(position, size, color, align);
+            };
+        }
+        return nullptr;
+    }
+
+    bool render(std::string name, Point position, uint8_t size, Color color, Align align = LEFT)
+    {
+        std::function<void(Point, uint8_t, Color, Align)> func = get(name);
+        if (func) {
+            func(position, size, color, align);
             return true;
         }
         return false;

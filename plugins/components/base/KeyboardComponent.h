@@ -66,7 +66,7 @@ protected:
             uint8_t row = i / columnCount;
             uint8_t column = i % columnCount;
             const char* label = getLayout()[i];
-            buttons[i]->label = label;
+            buttons[i]->setLabel(label);
             if (strcmp(label, "ABC") == 0) {
                 buttons[i]->onRelease = [this]() { setLayout(0); };
             } else if (strcmp(label, "abc") == 0) {

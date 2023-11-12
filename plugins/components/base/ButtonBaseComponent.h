@@ -16,6 +16,10 @@ protected:
 
     bool isPressed = false;
 
+    std::string label = "";
+
+    std::function<void()> renderLabel = []() {};
+
     void handlePress(std::function<void()>& event, bool pressed)
     {
         isPressed = pressed;
@@ -40,8 +44,6 @@ public:
     std::function<void()> onPress = []() {};
     std::function<void()> onRelease = []() {};
     
-    std::string label = "";
-
     ButtonBaseComponent(ComponentInterface::Props props)
         : Component(props)
         , icon(props.draw)
@@ -58,9 +60,17 @@ public:
             { size.w - 2 * margin, size.h - 2 * margin },
             isPressed ? colors.pressedBackground : colors.background);
 
-// TODO optimize using function pointer
-        if (!icon.render(label, labelPosition, fontSize, colors.title, Icon::CENTER)) {
-            draw.textCentered(labelPosition, label.c_str(), colors.title, fontSize);
+        renderLabel();
+    }
+
+    void setLabel(std::string _label)
+    {
+        label = _label;
+        renderLabel = icon.get(label, labelPosition, fontSize, colors.title, Icon::CENTER);
+        if (!renderLabel) {
+            renderLabel = [&]() {
+                draw.textCentered(labelPosition, label.c_str(), colors.title, fontSize);
+            };
         }
     }
 
@@ -73,7 +83,7 @@ public:
     bool config(char* key, char* value)
     {
         if (strcmp(key, "LABEL") == 0) {
-            label = value;
+            setLabel(value);
             return true;
         }
 
