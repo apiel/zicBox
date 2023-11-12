@@ -14,7 +14,7 @@ const uint8_t MAX_STEPS = 32;
 class Sequencer : public Mapping<Sequencer> {
 protected:
     AudioPlugin::Props& props;
-    const char* folder = "../zicHost/patterns/";
+    const char* folder = "./patterns";
     char patternFilename[255];
     Step steps[MAX_STEPS];
     Step* selectedStepPtr = &steps[0];
@@ -71,27 +71,27 @@ public:
         : Mapping(props, _name)
         , props(props)
     {
-        // steps[0].setVelocity(1.0).setLen(8).enabled = true;
-        // steps[16].setVelocity(1.0).setNote(52).setLen(16).enabled = true;
-        steps[0].velocity = 1.0;
-        steps[0].len = 8;
-        steps[0].enabled = true;
+        // steps[0].velocity = 1.0;
+        // steps[0].len = 8;
+        // steps[0].enabled = true;
 
-        steps[9].velocity = 1.0;
-        steps[9].len = 2;
-        steps[9].note = 70;
-        steps[9].enabled = true;
+        // steps[9].velocity = 1.0;
+        // steps[9].len = 2;
+        // steps[9].note = 70;
+        // steps[9].enabled = true;
 
-        steps[16].velocity = 1.0;
-        steps[16].note = 52;
-        steps[16].len = 16;
-        steps[16].enabled = true;
+        // steps[16].velocity = 1.0;
+        // steps[16].note = 52;
+        // steps[16].len = 16;
+        // steps[16].enabled = true;
 
-        steps[31].velocity = 1.0;
-        steps[31].len = 8;
-        steps[31].note = 40;
-        steps[31].enabled = true;
-        steps[31].condition = 1;
+        // steps[31].velocity = 1.0;
+        // steps[31].len = 8;
+        // steps[31].note = 40;
+        // steps[31].enabled = true;
+        // steps[31].condition = 1;
+
+        setPattern(pattern.get());
 
         // save();
         // load can be done using setPattern
@@ -140,7 +140,7 @@ public:
 
     Sequencer& setPattern(float value)
     {
-        pattern.set(value);
+        pattern.setFloat(value);
         sprintf(patternFilename, "%s/%d.bin", folder, (uint)(pattern.get()));
         if (fileExists(patternFilename)) {
             FILE* file = fopen(patternFilename, "rb");
@@ -156,7 +156,7 @@ public:
 
     Sequencer& setDetune(float value)
     {
-        detune.set(value);
+        detune.setFloat(value);
         return *this;
     }
 
@@ -169,7 +169,7 @@ public:
             return &stepCounter;
         case 2: {
             uint8_t* index = (uint8_t*)userdata;
-            return (void *)stepConditions[*index].name;
+            return (void*)stepConditions[*index].name;
         }
         }
         return NULL;
@@ -177,6 +177,8 @@ public:
 
     void save()
     {
+        printf("-------------------------- Saving %s\n", patternFilename);
+
         FILE* file = fopen(patternFilename, "wb");
         fwrite(steps, sizeof(Step), MAX_STEPS, file);
         fclose(file);
