@@ -88,7 +88,7 @@ public:
         // steps[31].enabled = true;
         // steps[31].condition = 1;
 
-        pattern.props().max = patternList.size();
+        pattern.props().max = patternList.size() - 1;
         setPattern(pattern.get());
 
         // std::vector<std::filesystem::path> list = getDirectoryList(folder);
@@ -144,16 +144,23 @@ public:
     Sequencer& setPattern(float value)
     {
         pattern.setFloat(value);
-        pattern.setString(patternList[(int)pattern.get()].filename());
+        std::filesystem::path path = patternList[(int)pattern.get()];
+        pattern.setString(path.filename());
         sprintf(patternFilename, "%s/%d.bin", folder, (uint)(pattern.get()));
         if (std::filesystem::exists(patternFilename)) {
-            FILE* file = fopen(patternFilename, "rb");
-            fread(steps, sizeof(Step), MAX_STEPS, file);
-            fclose(file);
-        } else {
-            for (int i = 0; i < MAX_STEPS; i++) {
-                steps[i].reset();
+            if (std::filesystem::file_size(patternFilename) != sizeof(Step) * MAX_STEPS) {
+                printf("File %s is not the correct format (should be %ld bytes)\n", patternFilename, sizeof(Step) * MAX_STEPS);
+            } else {
+                // printf("Loading %s\n", patternFilename);
+                FILE* file = fopen(patternFilename, "rb");
+                fread(steps, sizeof(Step), MAX_STEPS, file);
+                fclose(file);
+                return *this;
             }
+        }
+
+        for (int i = 0; i < MAX_STEPS; i++) {
+            steps[i].reset();
         }
         return *this;
     }
