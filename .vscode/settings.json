@@ -73,6 +73,8 @@
         "stdlib.h": "c",
         "complex": "cpp",
         "fstream": "cpp",
-        "optional": "cpp"
+        "optional": "cpp",
+        "codecvt": "cpp",
+        "iomanip": "cpp"
     }
 }

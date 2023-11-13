@@ -2,7 +2,7 @@
 #define _SEQUENCER_H_
 
 #include <stdio.h> // file
-#include <sys/stat.h> // file exist
+#include <filesystem>
 
 #include "../../helpers/midiNote.h"
 #include "audioPlugin.h"
@@ -55,12 +55,6 @@ protected:
                 targetPlugin->noteOn(step.note, step.velocity);
             }
         }
-    }
-
-    bool fileExists(const char* filename)
-    {
-        struct stat buffer;
-        return (stat(filename, &buffer) == 0);
     }
 
 public:
@@ -142,7 +136,7 @@ public:
     {
         pattern.setFloat(value);
         sprintf(patternFilename, "%s/%d.bin", folder, (uint)(pattern.get()));
-        if (fileExists(patternFilename)) {
+        if (std::filesystem::exists(patternFilename)) {
             FILE* file = fopen(patternFilename, "rb");
             fread(steps, sizeof(Step), MAX_STEPS, file);
             fclose(file);
