@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <stdio.h> // file
 
-#include "../../helpers/fs/directorySet.h"
+#include "../../helpers/fs/directoryList.h"
 #include "../../helpers/midiNote.h"
 #include "audioPlugin.h"
 #include "mapping.h"
@@ -16,7 +16,7 @@ class Sequencer : public Mapping<Sequencer> {
 protected:
     AudioPlugin::Props& props;
     const char* folder = "./patterns";
-    std::set<std::filesystem::path> patternList = getDirectorySet(folder);
+    std::vector<std::filesystem::path> patternList = getDirectoryList(folder);
 
     char patternFilename[255];
     Step steps[MAX_STEPS];
@@ -91,7 +91,8 @@ public:
         pattern.props().max = patternList.size();
         setPattern(pattern.get());
 
-        // for (const auto& entry : patternList) {
+        // std::vector<std::filesystem::path> list = getDirectoryList(folder);
+        // for (const auto& entry : list) {
         //     printf(" - %s\n", entry.c_str());
         // }
 
@@ -143,8 +144,7 @@ public:
     Sequencer& setPattern(float value)
     {
         pattern.setFloat(value);
-        std::string name = *std::next(patternList.begin(), (uint)pattern.get());
-        pattern.setString(name);
+        pattern.setString(patternList[(int)pattern.get()].filename());
         sprintf(patternFilename, "%s/%d.bin", folder, (uint)(pattern.get()));
         if (std::filesystem::exists(patternFilename)) {
             FILE* file = fopen(patternFilename, "rb");

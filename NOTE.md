@@ -13,6 +13,8 @@
 
 ## zicUi
 
+- use string instead of char...
+
 - BUG fix distortion
 
 - TODO pad ARP, y is taking care of semi tone and x change ARP pattern. Could it even be multi touch?
