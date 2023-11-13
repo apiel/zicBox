@@ -1,9 +1,10 @@
 #ifndef _SEQUENCER_H_
 #define _SEQUENCER_H_
 
-#include <stdio.h> // file
 #include <filesystem>
+#include <stdio.h> // file
 
+#include "../../helpers/fs/directorySet.h"
 #include "../../helpers/midiNote.h"
 #include "audioPlugin.h"
 #include "mapping.h"
@@ -86,6 +87,14 @@ public:
         // steps[31].condition = 1;
 
         setPattern(pattern.get());
+
+        // std::string path = "/path/to/directory";
+        // for (const auto& entry : std::filesystem::directory_iterator(folder)) {
+        //     printf(" - %s\n", entry.path().string().c_str());
+        // }
+        for (const auto& entry : getDirectorySet(folder)) {
+            printf(" - %s\n", entry.c_str());
+        }
 
         // save();
         // load can be done using setPattern
