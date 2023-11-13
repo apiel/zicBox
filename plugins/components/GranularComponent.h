@@ -47,7 +47,7 @@ protected:
                 }
             }
 
-            draw.text({ 10, 5 }, browser->string(), colors.info, 12);
+            draw.text({ 10, 5 }, browser->string().c_str(), colors.info, 12);
             draw.setMainRenderer();
         }
         draw.applyTexture(textureSampleWaveform, { { position.x + margin, position.y + margin }, textureSize });

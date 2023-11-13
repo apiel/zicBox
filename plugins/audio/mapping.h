@@ -15,7 +15,7 @@ protected:
     T* instance;
     float value_f;
     float value_pct;
-    char* value_s = NULL;
+    std::string value_s;
 
     void (*onUpdatePtr)(float, void* data) = [](float, void* data) {};
     void* onUpdateData = NULL;
@@ -60,12 +60,12 @@ public:
         set(get() + ((float)steps * _props.step));
     }
 
-    char* string()
+    std::string string()
     {
         return value_s;
     }
 
-    void setString(char* value)
+    void setString(std::string value)
     {
         value_s = value;
     }

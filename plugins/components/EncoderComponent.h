@@ -95,13 +95,13 @@ protected:
     void drawStringEncoder()
     {
         if (type == 1) {
-            draw.text({ area.x, area.y + 5 }, value->string(), colors.value, 12, { .maxWidth = area.w });
+            draw.text({ area.x, area.y + 5 }, value->string().c_str(), colors.value, 12, { .maxWidth = area.w });
             char valueStr[20];
             sprintf(valueStr, "%d / %d", (int)(value->get()), (int)value->props().max);
             draw.textRight({ area.x + area.w, area.y + 25 }, valueStr, colors.title, 10);
         } else {
             drawLabel();
-            draw.text({ area.x, area.y + 18 }, value->string(), colors.value, 12, { .maxWidth = area.w });
+            draw.text({ area.x, area.y + 18 }, value->string().c_str(), colors.value, 12, { .maxWidth = area.w });
         }
         drawBar();
     }

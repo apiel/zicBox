@@ -16,6 +16,8 @@ class Sequencer : public Mapping<Sequencer> {
 protected:
     AudioPlugin::Props& props;
     const char* folder = "./patterns";
+    std::set<std::filesystem::path> patternList = getDirectorySet(folder);
+
     char patternFilename[255];
     Step steps[MAX_STEPS];
     Step* selectedStepPtr = &steps[0];
@@ -60,7 +62,7 @@ protected:
 
 public:
     Val<Sequencer>& detune = val(this, 0.0f, "DETUNE", &Sequencer::setDetune, { "Detune", VALUE_CENTERED, -24.0f, 24.0f });
-    Val<Sequencer>& pattern = val(this, 0.0f, "PATTERN", &Sequencer::setPattern, { "Pattern" });
+    Val<Sequencer>& pattern = val(this, 0.0f, "PATTERN", &Sequencer::setPattern, { "Pattern", .type = VALUE_STRING });
 
     Sequencer(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -86,11 +88,12 @@ public:
         // steps[31].enabled = true;
         // steps[31].condition = 1;
 
+        pattern.props().max = patternList.size();
         setPattern(pattern.get());
 
-        for (const auto& entry : getDirectorySet(folder)) {
-            printf(" - %s\n", entry.c_str());
-        }
+        // for (const auto& entry : patternList) {
+        //     printf(" - %s\n", entry.c_str());
+        // }
 
         // save();
         // load can be done using setPattern
@@ -140,6 +143,8 @@ public:
     Sequencer& setPattern(float value)
     {
         pattern.setFloat(value);
+        std::string name = *std::next(patternList.begin(), (uint)pattern.get());
+        pattern.setString(name);
         sprintf(patternFilename, "%s/%d.bin", folder, (uint)(pattern.get()));
         if (std::filesystem::exists(patternFilename)) {
             FILE* file = fopen(patternFilename, "rb");

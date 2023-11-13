@@ -4,6 +4,10 @@ VIEW: Granular HIDDEN
 
   INCLUDE: layout.ui
 
+  COMPONENT: Encoder 0 0 100 50
+    ENCODER_ID: 4
+    VALUE: Sequencer PATTERN
+
   COMPONENT: Granular 0 50 800 230
 
   COMPONENT: Sequencer 0 280 800 200

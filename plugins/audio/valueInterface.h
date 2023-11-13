@@ -2,6 +2,7 @@
 #define _MAPPING_INTERFACE_H_
 
 #include <stdint.h>
+#include <string>
 
 enum ValueType {
     VALUE_BASIC,
@@ -27,7 +28,7 @@ public:
     virtual inline float get() = 0;
     virtual void increment(int8_t steps) = 0;
     virtual inline float pct() = 0;
-    virtual char* string() = 0;
+    virtual std::string string() = 0;
     virtual void set(float value) = 0;
     virtual void onUpdate(void (*callback)(float, void* data), void* data) = 0;
 };
