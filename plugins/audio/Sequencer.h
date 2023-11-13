@@ -88,10 +88,6 @@ public:
 
         setPattern(pattern.get());
 
-        // std::string path = "/path/to/directory";
-        // for (const auto& entry : std::filesystem::directory_iterator(folder)) {
-        //     printf(" - %s\n", entry.path().string().c_str());
-        // }
         for (const auto& entry : getDirectorySet(folder)) {
             printf(" - %s\n", entry.c_str());
         }

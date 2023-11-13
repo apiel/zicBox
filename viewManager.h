@@ -72,7 +72,7 @@ protected:
             [](ComponentInterface* component) { UiPlugin::get().pushToRenderingQueue(component); }
         };
 
-printf("addComponent: %s pos %d %d size %d %d\n", name, position.x, position.y, size.w, size.h);
+        // printf("addComponent: %s pos %d %d size %d %d\n", name, position.x, position.y, size.w, size.h);
 
         for (auto& plugin : plugins) {
             if (strcmp(plugin.name, name) == 0) {

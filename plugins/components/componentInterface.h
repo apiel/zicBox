@@ -46,7 +46,7 @@ public:
         , position(props.position)
         , size(props.size)
     {
-        printf("ComponentInterface: %d x %d\n", props.position.x, props.position.y);
+        // printf("ComponentInterface: %d x %d\n", props.position.x, props.position.y);
     }
 
     virtual void render() = 0;
