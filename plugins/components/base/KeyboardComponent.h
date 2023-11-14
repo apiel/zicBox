@@ -4,6 +4,8 @@
 #include "../component.h"
 #include "ButtonBaseComponent.h"
 
+#include <string>
+
 class KeyboardComponent : public Component {
 protected:
     static const uint8_t keyCount = 32;
@@ -75,15 +77,17 @@ protected:
                 buttons[i]->onRelease = [this]() { setLayout(2); };
             } else if (strcmp(label, "&icon::backspace") == 0) {
                 buttons[i]->onRelease = [this]() {
-                    if (value && strlen(value) > 0) {
-                        value[strlen(value) - 1] = 0;
+                    if (value && value->length() > 0) {
+                        // value[strlen(value) - 1] = 0;
+                        value->resize(value->length() - 1);
                         onUpdate(value);
                     }
                 };
             } else {
                 buttons[i]->onRelease = [this, label]() {
                     if (value) {
-                        strcat(value, label);
+                        // strcat(value, label);
+                        value->append(label);
                         onUpdate(value);
                     }
                 };
@@ -92,8 +96,8 @@ protected:
     }
 
 public:
-    char* value = NULL;
-    std::function<void(char* value)> onUpdate = [](char* value) {};
+    std::string * value = NULL;
+    std::function<void(std::string * value)> onUpdate = [](std::string * value) {};
 
     KeyboardComponent(ComponentInterface::Props props)
         : Component(props)

@@ -3,6 +3,8 @@
 
 #include "../component.h"
 
+#include <string>
+
 class InputComponent : public Component {
 public:
     struct Colors {
@@ -28,7 +30,7 @@ protected:
     const int margin;
 
 public:
-    char value[256] = "";
+    std::string value = "";
 
     InputComponent(ComponentInterface::Props props)
         : Component(props)
@@ -52,8 +54,8 @@ public:
             { position.x + size.w - margin, position.y + size.h - margin },
             colors.line);
 
-        if (strlen(value) > 0) {
-            cursorX = draw.text(textPosition, value, colors.text, fontSize);
+        if (value.size() > 0) {
+            cursorX = draw.text(textPosition, value.c_str(), colors.text, fontSize);
         } else {
             cursorX = textPosition.x;
         }

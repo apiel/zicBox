@@ -2,7 +2,7 @@
 #define _SEQUENCER_H_
 
 #include <filesystem>
-#include <stdio.h> // file
+#include <string>
 
 #include "../../helpers/fs/directoryList.h"
 #include "../../helpers/midiNote.h"
@@ -15,10 +15,9 @@ const uint8_t MAX_STEPS = 32;
 class Sequencer : public Mapping<Sequencer> {
 protected:
     AudioPlugin::Props& props;
-    const char* folder = "./patterns";
+    std::string folder = "./patterns";
     std::vector<std::filesystem::path> patternList = getDirectoryList(folder);
 
-    char patternFilename[255];
     Step steps[MAX_STEPS];
     Step* selectedStepPtr = &steps[0];
 
@@ -146,13 +145,12 @@ public:
         pattern.setFloat(value);
         std::filesystem::path path = patternList[(int)pattern.get()];
         pattern.setString(path.filename());
-        sprintf(patternFilename, "%s/%d.bin", folder, (uint)(pattern.get()));
-        if (std::filesystem::exists(patternFilename)) {
-            if (std::filesystem::file_size(patternFilename) != sizeof(Step) * MAX_STEPS) {
-                printf("File %s is not the correct format (should be %ld bytes)\n", patternFilename, sizeof(Step) * MAX_STEPS);
+        if (std::filesystem::exists(path)) {
+            if (std::filesystem::file_size(path) != sizeof(Step) * MAX_STEPS) {
+                printf("File %s is not the correct format (should be %ld bytes)\n", path.filename().c_str(), sizeof(Step) * MAX_STEPS);
             } else {
                 // printf("Loading %s\n", patternFilename);
-                FILE* file = fopen(patternFilename, "rb");
+                FILE* file = fopen(path.c_str(), "rb");
                 fread(steps, sizeof(Step), MAX_STEPS, file);
                 fclose(file);
                 return *this;
@@ -188,9 +186,7 @@ public:
 
     void save()
     {
-        printf("-------------------------- Saving %s\n", patternFilename);
-
-        FILE* file = fopen(patternFilename, "wb");
+        FILE* file = fopen("somefile", "wb");
         fwrite(steps, sizeof(Step), MAX_STEPS, file);
         fclose(file);
     }

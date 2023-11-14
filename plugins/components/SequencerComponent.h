@@ -205,7 +205,6 @@ protected:
     }
 
 public:
-
     SequencerComponent(ComponentInterface::Props props)
         : Component(props)
         , colors(getColorsFromColor(styles.colors.blue))
@@ -219,7 +218,7 @@ public:
               { (getBtnSize(props).w + stepMargin) * 4 + stepMargin * 2, getBtnSize(props).h }))
         , keyboard(props)
     {
-        keyboard.value = input.value;
+        keyboard.value = &input.value;
 
         stepSize = getStepSize(props);
         btnSize = getBtnSize(props);
@@ -241,7 +240,7 @@ public:
             }
         };
 
-        keyboard.onUpdate = [this](char* value) { input.renderNext(); };
+        keyboard.onUpdate = [this](std::string* value) { input.renderNext(); };
         input.colors = {
             colors.background,
             draw.darken(colorsActive.text, 0.3),
