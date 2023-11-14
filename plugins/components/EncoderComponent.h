@@ -4,6 +4,9 @@
 #include "component.h"
 #include <string>
 
+#include <sstream> // float precision
+#include <iomanip> // float precision
+
 // TODO use function pointer on encoder initialisation to assign draw function base on type
 
 class EncoderComponent : public Component {
@@ -25,6 +28,7 @@ protected:
 
     bool encoderActive = false;
     int8_t encoderId = -1;
+    uint8_t valueFloatPrecision = 0;
 
     ValueInterface* value = NULL;
 
@@ -48,8 +52,12 @@ protected:
 
     void drawValue()
     {
-        // fixme use floating point...
-        int x = draw.textCentered({ area.xCenter, area.y + valueMarginTop }, std::to_string((int)value->get()).c_str(),
+        // std::string valueStr = valueFloatPrecision == 0 ? std::to_string((int)value->get()) : std::to_string(value->get());
+
+std::stringstream stream;
+stream << std::fixed << std::setprecision(valueFloatPrecision) << value->get();
+
+        int x = draw.textCentered({ area.xCenter, area.y + valueMarginTop }, stream.str().c_str(),
             colors.value, 20, { styles.font.bold });
 
         if (value->props().unit != NULL) {
@@ -203,6 +211,11 @@ public:
 
         if (strcmp(key, "COLOR") == 0) {
             colors = getColorsFromColor(draw.getColor(value));
+            return true;
+        }
+
+        if (strcmp(key, "FLOAT_PRECISION") == 0) {
+            valueFloatPrecision = atoi(value);
             return true;
         }
 
