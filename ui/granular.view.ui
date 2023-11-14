@@ -4,14 +4,59 @@ VIEW: Granular HIDDEN
 
   INCLUDE: layout.ui
 
-  COMPONENT: Encoder 400 0 100 50
-    ENCODER_ID: 4
+  COMPONENT: Encoder 0 0 100 50
+    GROUP: 0
+    ENCODER_ID: 0
     VALUE: Sequencer PATTERN
 
-  COMPONENT: Granular 0 50 800 230
+
+  COMPONENT: Encoder 0 50 100 50
+    GROUP: 1
+    ENCODER_ID: 0
+    VALUE: Granular BROWSER
+    TYPE: BROWSE
+
+  COMPONENT: Encoder 100 50 100 50
+    GROUP: 1
+    ENCODER_ID: 1
+    VALUE: Granular DELAY
+
+  COMPONENT: Encoder 200 50 100 50
+    GROUP: 1
+    ENCODER_ID: 2
+    VALUE: Granular GRAIN_SIZE
+
+  COMPONENT: Encoder 300 50 100 50
+    GROUP: 1
+    ENCODER_ID: 3
+    VALUE: Granular DENSITY
+
+  COMPONENT: Encoder 400 50 100 50
+    GROUP: 1
+    ENCODER_ID: 4
+    VALUE: Granular SPRAY
+
+  COMPONENT: Encoder 500 50 100 50
+    GROUP: 1
+    ENCODER_ID: 5
+    VALUE: Granular PITCH
+
+  COMPONENT: Encoder 600 50 100 50
+    GROUP: 1
+    ENCODER_ID: 6
+    VALUE: Granular ATTACK
+
+  COMPONENT: Encoder 700 50 100 50
+    GROUP: 1
+    ENCODER_ID: 7
+    VALUE: Granular RELEASE
+
+  COMPONENT: Granular 0 100 800 180
+    GROUP: 1
 
   COMPONENT: Sequencer 0 280 800 200
-  ENCODER_ID: 0
-  ENCODER_ID: 1
-  ENCODER_ID: 2
-  ENCODER_ID: 3
+    GROUP: 2
+    ENCODER_ID: 0
+    ENCODER_ID: 1
+    ENCODER_ID: 2
+    ENCODER_ID: 3

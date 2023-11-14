@@ -2,6 +2,8 @@
 
 - TODO documentation!!
 
+- use string instead of char...
+
 ## Hardware
 
 - TODO make gpio interface run as service
@@ -13,23 +15,20 @@
 
 ## zicUi
 
-- use string instead of char...
+- TODO encoder show float
 
 - BUG fix distortion
 
-- TODO pattern selector
+- TODO pattern selector in sequencer
+       pattern category
 
 - TODO pad ARP, y is taking care of semi tone and x change ARP pattern. Could it even be multi touch?
 
 - TODO pad motion recorder
 
-- TODO button icon
-
 - TODO button shift can change encoder resolution
 
 - TODO oscEncoder use time to make bigger step...
-
-- TODO Significantly improve sequencer UI
 
 - INFO Should SDL in draw be injectable? What if we want to use those i2c 1306 display or similar...
 
@@ -52,8 +51,6 @@
 
 - TODO optimized onUpdate value...?
 
-- TODO sequencer button can do something...
-
 - TODO ? SequencerBarComponent: Remove text info
                                 Make motion optional
 
@@ -75,19 +72,15 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 
 ## zicHost
 
-- TODO sequencer 
-        - cleanup? --> stepCount...
-        - save sequencer state
-        - load patterns
-        - only refresh necessary part when rendering active step
-        - 1/2 step length
-        - if step len is 0 it should play infinite
-
 - TODO try to make granular synth more versatile
             - play sample (already do it but maybe there would be a way to lock spray or other thing like this)
             - play wavetable (give the possibility to give sample coutn instead of len, lock spray, and maybe morphing by bank)
 
 - TODO tempo plugin, that would shalow midi clock in favour of custom clock
+
+- TODO sequencer 
+        - 1/2 step length
+        - if step len is 0 it should play infinite
 
 - TODO MIXER track=1 vs track_b... should it be track_1 but ...?
 
@@ -106,7 +99,7 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
      - add lfo on time ratio
 
 - INFO could sequencer use track...?
-- TODO make sequencer being to have multiple target
+- TODO make sequencer being able to have multiple target
 
 - INFO IPC in order to have a main thread that is running all the time, even if the rest crash...
        https://en.wikipedia.org/wiki/Inter-process_communication
@@ -117,8 +110,6 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
     - make audio plugin following the same format so they might be compatible...
 
 - TODO jack audio plugin
-
-- TODO generate config file example
 
 - TODO handle note on/off from midi keyboard
 

@@ -20,12 +20,12 @@ VIEW: Kick
     LABEL: Trigger
 
   COMPONENT: Encoder 400 0 100 50
-    ENCODER_ID: 5
+    ENCODER_ID: 4
     GROUP: 0
     VALUE: Kick23 MORPH
 
   COMPONENT: Encoder 500 0 100 50
-    ENCODER_ID: 6
+    ENCODER_ID: 5
     GROUP: 0
     VALUE: Kick23 BROWSER
 

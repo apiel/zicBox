@@ -13,12 +13,10 @@ VIEW: Main
     VALUE: MultiModeFilter RESONANCE
 
   COMPONENT: Encoder 200 0 100 50
-    GROUP: 0
     ENCODER_ID: 2
     VALUE: SampleRateReducer SAMPLE_STEP
 
   COMPONENT: Encoder 300 0 100 50
-    GROUP: 0
     ENCODER_ID: 3
     VALUE: Distortion DRIVE
 
