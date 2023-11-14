@@ -16,7 +16,7 @@ class Sequencer : public Mapping<Sequencer> {
 protected:
     AudioPlugin::Props& props;
     std::filesystem::path folder = "./patterns";
-    std::vector<std::filesystem::path> patternList = getDirectoryList(folder);
+    std::vector<std::filesystem::path> patternList;
 
     Step steps[MAX_STEPS];
     Step* selectedStepPtr = &steps[0];
@@ -59,11 +59,17 @@ protected:
         }
     }
 
-    void refreshPatternList()
+    void refreshPatternList(std::filesystem::path pathNew = "")
     {
         patternList = getDirectoryList(folder);
         pattern.props().max = patternList.size() - 1;
-        pattern.set(pattern.get());
+        if (pathNew == "") {
+            pattern.set(pattern.get());
+        } else {
+            std::vector<std::filesystem::path>::iterator it = std::find(patternList.begin(), patternList.end(), pathNew);
+            int index = it - patternList.begin();
+            pattern.set(index);
+        }
     }
 
 public:
@@ -198,9 +204,9 @@ public:
 
     void rename(std::filesystem::path pathNew)
     {
-            std::filesystem::path path = patternList[(int)pattern.get()];
-            std::filesystem::rename(path, pathNew);
-            save(pathNew);
+        std::filesystem::path path = patternList[(int)pattern.get()];
+        std::filesystem::rename(path, pathNew);
+        save(pathNew);
     }
 
     void save(std::filesystem::path path)
@@ -209,8 +215,7 @@ public:
         fwrite(steps, sizeof(Step), MAX_STEPS, file);
         fclose(file);
 
-        patternList = getDirectoryList(folder);
-        pattern.set(pattern.get());
+        refreshPatternList(path);
     }
 
     bool config(char* key, char* value)

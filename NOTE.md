@@ -17,6 +17,8 @@
 
 - BUG fix distortion
 
+- TODO pattern selector
+
 - TODO pad ARP, y is taking care of semi tone and x change ARP pattern. Could it even be multi touch?
 
 - TODO pad motion recorder
