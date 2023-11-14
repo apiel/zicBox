@@ -13,10 +13,10 @@ class SequencerComponent : public Component {
 protected:
     enum Mode {
         ModeStep,
-        ModeNote,
         ModeVelocity,
         ModeLength,
         ModeCondition,
+        ModeNote,
         ModeCount,
     } mode
         = ModeStep;
@@ -344,12 +344,17 @@ public:
 
     void onMotionRelease(MotionInterface& motion)
     {
+        int row = (motion.position.y - position.y) / stepSize.h;
+        int column = (motion.position.x - position.x) / stepSize.w;
         if (fileMode) {
-            keyboard.onMotionRelease(motion);
+            if (row == rowCount && column == columnCount - 1) {
+                plugin.data(3, (void *)&input.value);
+                fileMode = false;
+                renderNext();
+            } else {
+                keyboard.onMotionRelease(motion);
+            }
         } else if (motion.in({ position, size })) {
-            int row = (motion.position.y - position.y) / stepSize.h;
-            int column = (motion.position.x - position.x) / stepSize.w;
-
             if (row < rowCount) {
                 int index = row * columnCount + column;
                 if (mode == ModeStep) {
@@ -364,7 +369,7 @@ public:
                 mode = (Mode)column;
                 renderNext();
             } else if (column == columnCount - 1) {
-                fileMode = !fileMode;
+                fileMode = true;
                 renderNext();
             }
         }

@@ -176,17 +176,21 @@ public:
             return &steps;
         case 1:
             return &stepCounter;
-        case 2: {
+        case 2: { // Get step condition name
             uint8_t* index = (uint8_t*)userdata;
             return (void*)stepConditions[*index].name;
         }
+        case 3: // Save pattern
+            save(*(std::string*)userdata);
+            return NULL;
         }
         return NULL;
     }
 
-    void save()
+    void save(std::string name)
     {
-        FILE* file = fopen("somefile", "wb");
+        std::string filepath = folder + "/" + name;
+        FILE* file = fopen(filepath.c_str(), "wb");
         fwrite(steps, sizeof(Step), MAX_STEPS, file);
         fclose(file);
     }
