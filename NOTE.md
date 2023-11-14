@@ -15,8 +15,6 @@
 
 ## zicUi
 
-- TODO encoder show float
-
 - BUG fix distortion
 
 - TODO pattern selector in sequencer
