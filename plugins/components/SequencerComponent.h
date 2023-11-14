@@ -205,6 +205,8 @@ protected:
     }
 
 public:
+    ValueInterface* patternValue;
+
     SequencerComponent(ComponentInterface::Props props)
         : Component(props)
         , colors(getColorsFromColor(styles.colors.blue))
@@ -230,13 +232,12 @@ public:
         stepCounter = (uint8_t*)plugin.data(1);
 
         jobRendering = [this](unsigned long now) {
-            if (previousStepCounter != *stepCounter) {
+            if (fileMode) {
+                input.renderCursor(now);
+            } else if (previousStepCounter != *stepCounter) {
                 // TODO could only render necessary part
                 previousStepCounter = *stepCounter;
                 renderNext();
-            }
-            if (fileMode) {
-                input.renderCursor(now);
             }
         };
 
@@ -246,6 +247,9 @@ public:
             draw.darken(colorsActive.text, 0.3),
             colorsActive.text,
         };
+
+        // register for pattern change
+        patternValue = val(plugin.getValue("PATTERN"));
     }
 
     void render()
@@ -348,7 +352,7 @@ public:
         int column = (motion.position.x - position.x) / stepSize.w;
         if (fileMode) {
             if (row == rowCount && column == columnCount - 1) {
-                plugin.data(3, (void *)&input.value);
+                plugin.data(3, (void*)&input.value);
                 fileMode = false;
                 renderNext();
             } else {
@@ -369,6 +373,7 @@ public:
                 mode = (Mode)column;
                 renderNext();
             } else if (column == columnCount - 1) {
+                input.value = patternValue->string();
                 fileMode = true;
                 renderNext();
             }
