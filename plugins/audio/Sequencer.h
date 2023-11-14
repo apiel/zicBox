@@ -15,7 +15,7 @@ const uint8_t MAX_STEPS = 32;
 class Sequencer : public Mapping<Sequencer> {
 protected:
     AudioPlugin::Props& props;
-    std::string folder = "./patterns";
+    std::filesystem::path folder = "./patterns";
     std::vector<std::filesystem::path> patternList = getDirectoryList(folder);
 
     Step steps[MAX_STEPS];
@@ -59,6 +59,13 @@ protected:
         }
     }
 
+    void refreshPatternList()
+    {
+        patternList = getDirectoryList(folder);
+        pattern.props().max = patternList.size() - 1;
+        pattern.set(pattern.get());
+    }
+
 public:
     Val<Sequencer>& detune = val(this, 0.0f, "DETUNE", &Sequencer::setDetune, { "Detune", VALUE_CENTERED, -24.0f, 24.0f });
     Val<Sequencer>& pattern = val(this, 0.0f, "PATTERN", &Sequencer::setPattern, { "Pattern", .type = VALUE_STRING });
@@ -87,8 +94,7 @@ public:
         // steps[31].enabled = true;
         // steps[31].condition = 1;
 
-        pattern.props().max = patternList.size() - 1;
-        setPattern(pattern.get());
+        refreshPatternList();
 
         // std::vector<std::filesystem::path> list = getDirectoryList(folder);
         // for (const auto& entry : list) {
@@ -181,18 +187,30 @@ public:
             return (void*)stepConditions[*index].name;
         }
         case 3: // Save pattern
-            save(*(std::string*)userdata);
+            save(folder / *(std::string*)userdata);
+            return NULL;
+        case 4: // Rename pattern
+            rename(folder / *(std::string*)userdata);
             return NULL;
         }
         return NULL;
     }
 
-    void save(std::string name)
+    void rename(std::filesystem::path pathNew)
     {
-        std::string filepath = folder + "/" + name;
-        FILE* file = fopen(filepath.c_str(), "wb");
+            std::filesystem::path path = patternList[(int)pattern.get()];
+            std::filesystem::rename(path, pathNew);
+            save(pathNew);
+    }
+
+    void save(std::filesystem::path path)
+    {
+        FILE* file = fopen(path.c_str(), "wb");
         fwrite(steps, sizeof(Step), MAX_STEPS, file);
         fclose(file);
+
+        patternList = getDirectoryList(folder);
+        pattern.set(pattern.get());
     }
 
     bool config(char* key, char* value)

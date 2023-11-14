@@ -75,6 +75,7 @@
         "fstream": "cpp",
         "optional": "cpp",
         "codecvt": "cpp",
-        "iomanip": "cpp"
+        "iomanip": "cpp",
+        "filesystem": "cpp"
     }
 }

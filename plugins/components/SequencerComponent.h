@@ -356,7 +356,12 @@ public:
         int row = (motion.position.y - position.y) / stepSize.h;
         int column = (motion.position.x - position.x) / stepSize.w;
         if (fileMode) {
-            if (row == rowCount && column == columnCount - 1) {
+            if (row == rowCount && column == columnCount - 2) {
+                plugin.data(4, (void*)&input.value);
+                fileMode = false;
+                renderNext();
+            }
+            else if (row == rowCount && column == columnCount - 1) {
                 plugin.data(3, (void*)&input.value);
                 fileMode = false;
                 renderNext();
