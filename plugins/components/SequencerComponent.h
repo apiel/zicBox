@@ -52,6 +52,7 @@ protected:
     bool roundEncoderSlection = true;
 
     bool fileMode = false;
+    bool filenameIsOriginal = true;
     InputComponent input;
     KeyboardComponent keyboard;
 
@@ -260,8 +261,12 @@ public:
             colors.background);
 
         if (fileMode) {
-            // Render save button
-            renderButton("Save", colorsMode.background, colorsMode.text, rowCount, columnCount - 1);
+            if (filenameIsOriginal) {
+                renderButton("Save", colorsMode.background, colorsMode.text, rowCount, columnCount - 1);
+            } else {
+                renderButton("Rename", colorsMode.background, colorsMode.text, rowCount, columnCount - 2);
+                renderButton("Save as", colorsMode.background, colorsMode.text, rowCount, columnCount - 1);
+            }
         } else {
             // Render steps
             for (int i = 0; i < stepCount; i++) {
@@ -357,6 +362,11 @@ public:
                 renderNext();
             } else {
                 keyboard.onMotionRelease(motion);
+                bool filenameState = input.value == patternValue->string();
+                if (filenameIsOriginal != filenameState) {
+                    filenameIsOriginal = filenameState;
+                    renderNext();
+                }
             }
         } else if (motion.in({ position, size })) {
             if (row < rowCount) {
@@ -374,6 +384,7 @@ public:
                 renderNext();
             } else if (column == columnCount - 1) {
                 input.value = patternValue->string();
+                filenameIsOriginal = true;
                 fileMode = true;
                 renderNext();
             }
