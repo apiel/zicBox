@@ -71,8 +71,14 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 ## zicHost
 
 - TODO try to make granular synth more versatile
-            - play sample (already do it but maybe there would be a way to lock spray or other thing like this)
-            - play wavetable (give the possibility to give sample coutn instead of len, lock spray, and maybe morphing by bank)
+            - play sample
+                - lock spray
+                - no repeat
+            - play wavetable
+                - lock spray
+                - set size locked to 2024 sample
+                - give possibility to morph per step of 2024 (maybe have a morphing step function)
+            - should those setting be saved in the .wav as meta data...?
 
 - TODO tempo plugin, that would shalow midi clock in favour of custom clock
 
