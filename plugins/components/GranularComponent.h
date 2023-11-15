@@ -20,6 +20,8 @@ protected:
     Size textureSize;
     void* textureSampleWaveform = NULL;
 
+    Rect sprayToggleRect;
+
     void renderSampleWaveform()
     {
         if (textureSampleWaveform == NULL) {
@@ -60,15 +62,21 @@ protected:
 
         // draw spray line
         int xSpray = x + (spray->pct() * w);
-        draw.line({ xSpray, position.y + margin }, { xSpray, position.y + textureSize.h }, colors.density);
+        draw.line({ xSpray, position.y + margin }, { xSpray, position.y + textureSize.h }, colors.spray);
     }
 
-    void renderInfo()
+    bool sprayControllerOn = true;
+
+    void renderSprayToggle()
     {
-        // char info[256];
-        // snprintf(info, sizeof(info), "Start %d%% Size %d%% Spray %d%% Density %d",
-        //     (int)(lastStart * 100), (int)(lastGrainSize * 100), (int)(lastSpray * 100), (int)density->get());
-        // draw.text({ position.x + margin + 10, position.y + size.h - 20 - margin }, info, colors.info, 12);
+        auto [x, y] = sprayToggleRect.position;
+        draw.rect(sprayToggleRect.position, sprayToggleRect.size, colors.spray);
+        draw.text({ x + 5, y }, "spray", colors.info, 10);
+        if (sprayControllerOn) {
+            draw.filledRect({ x + 37, y + 2 }, { 11, 11 }, colors.spray);
+        } else {
+            draw.filledRect({ x + 37, y + 2 }, { 11, 11 }, colors.spray);
+        }
     }
 
     struct Colors {
@@ -76,7 +84,7 @@ protected:
         Color info;
         Color samples;
         Color start;
-        Color density;
+        Color spray;
     } colors;
 
     Colors getColorsFromColor(Color color)
@@ -98,6 +106,7 @@ public:
         , plugin(getPlugin("Granular"))
     {
         textureSize = { size.w - 2 * margin, size.h - 2 * margin };
+        sprayToggleRect = { { position.x + size.w - 70, position.y + size.h - 30 }, { 50, 15 } };
     }
 
     void render()
@@ -109,8 +118,8 @@ public:
             }
         }
         renderSampleWaveform();
-        // renderInfo();
         renderStartRange();
+        renderSprayToggle();
     }
 
     float startOrigin = 0.0;
