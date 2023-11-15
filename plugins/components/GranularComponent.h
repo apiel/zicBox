@@ -10,13 +10,9 @@ protected:
     ValueInterface* browser = val(getPlugin("Granular").getValue("BROWSER"));
     float lastBrowser = -1.0f;
     ValueInterface* start = val(getPlugin("Granular").getValue("START"));
-    float lastStart = -1.0f;
     ValueInterface* grainSize = val(getPlugin("Granular").getValue("GRAIN_SIZE"));
-    float lastGrainSize = -1.0f;
     ValueInterface* spray = val(getPlugin("Granular").getValue("SPRAY"));
-    float lastSpray = -1.0f;
     ValueInterface* density = val(getPlugin("Granular").getValue("DENSITY"));
-    float lastDensity = -1.0f;
 
     MotionInterface* motion1 = NULL;
     MotionInterface* motion2 = NULL;
@@ -61,14 +57,18 @@ protected:
             w -= (x + w) - (position.x + textureSize.w);
         }
         draw.filledRect({ x, position.y + margin }, { w, textureSize.h }, colors.start);
+
+        // draw spray line
+        int xSpray = x + (spray->pct() * w);
+        draw.line({ xSpray, position.y + margin }, { xSpray, position.y + textureSize.h }, colors.density);
     }
 
     void renderInfo()
     {
-        char info[256];
-        snprintf(info, sizeof(info), "Start %d%% Size %d%% Spray %d%% Density %d",
-            (int)(lastStart * 100), (int)(lastGrainSize * 100), (int)(lastSpray * 100), (int)density->get()); // (int)(lastDensity * density->props().stepCount + density->props().stepStart
-        draw.text({ position.x + margin + 10, position.y + size.h - 20 - margin }, info, colors.info, 12);
+        // char info[256];
+        // snprintf(info, sizeof(info), "Start %d%% Size %d%% Spray %d%% Density %d",
+        //     (int)(lastStart * 100), (int)(lastGrainSize * 100), (int)(lastSpray * 100), (int)density->get());
+        // draw.text({ position.x + margin + 10, position.y + size.h - 20 - margin }, info, colors.info, 12);
     }
 
     struct Colors {
@@ -76,6 +76,7 @@ protected:
         Color info;
         Color samples;
         Color start;
+        Color density;
     } colors;
 
     Colors getColorsFromColor(Color color)
@@ -83,7 +84,8 @@ protected:
         return Colors({ draw.darken(color, 0.75),
             draw.darken(color, 0.3),
             draw.darken(color, 0.2),
-            styles.colors.overlay });
+            styles.colors.overlay,
+            draw.alpha(color, 0.2) });
     }
 
     const int margin;
@@ -107,7 +109,7 @@ public:
             }
         }
         renderSampleWaveform();
-        renderInfo();
+        // renderInfo();
         renderStartRange();
     }
 

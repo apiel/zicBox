@@ -246,6 +246,16 @@ public:
         };
     }
 
+    Color alpha(Color color, float amount)
+    {
+        return {
+            color.r,
+            color.g,
+            color.b,
+            (uint8_t)(amount * 255.0f),
+        };
+    }
+
     Color getColor(char* color)
     {
         // if first char is # then call hex2rgb

@@ -97,6 +97,7 @@ public:
 
     virtual Color darken(Color color, float amount) = 0;
     virtual Color lighten(Color color, float amount) = 0;
+    virtual Color alpha(Color color, float amount) = 0;
     virtual Color getColor(char* color) = 0;
     virtual void setColor(char* name, char* color) = 0;
 };
