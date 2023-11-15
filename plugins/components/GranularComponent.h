@@ -1,6 +1,7 @@
 #ifndef _UI_COMPONENT_GRANULAR_H_
 #define _UI_COMPONENT_GRANULAR_H_
 
+#include "../../helpers/inRect.h"
 #include "component.h"
 #include <string>
 
@@ -21,6 +22,7 @@ protected:
     void* textureSampleWaveform = NULL;
 
     Rect sprayToggleRect;
+    bool sprayControllerOn = true;
 
     void renderSampleWaveform()
     {
@@ -65,8 +67,6 @@ protected:
         draw.line({ xSpray, position.y + margin }, { xSpray, position.y + textureSize.h }, colors.spray);
     }
 
-    bool sprayControllerOn = true;
-
     void renderSprayToggle()
     {
         auto [x, y] = sprayToggleRect.position;
@@ -75,7 +75,7 @@ protected:
         if (sprayControllerOn) {
             draw.filledRect({ x + 37, y + 2 }, { 11, 11 }, colors.spray);
         } else {
-            draw.filledRect({ x + 37, y + 2 }, { 11, 11 }, colors.spray);
+            draw.rect({ x + 37, y + 2 }, { 11, 11 }, colors.spray);
         }
     }
 
@@ -126,6 +126,10 @@ public:
     float sizeOrigin = 0.0;
     void onMotion(MotionInterface& motion)
     {
+        if (inRect(sprayToggleRect, motion.origin)) {
+            return;
+        }
+
         if (motion1 == NULL) {
             plugin.noteOn(48, 127);
             motion1 = &motion;
@@ -138,10 +142,12 @@ public:
                 start->set(x * 100.0f);
             }
 
-            float rangeMargin = 40;
-            float y = 1.0 - (motion.position.y - position.y - margin - rangeMargin) / (float)(textureSize.h - (rangeMargin * 2));
-            if (y - spray->pct() > 0.01 || spray->pct() - y > 0.01) {
-                spray->set(y * 100.0f);
+            if (sprayControllerOn) {
+                float rangeMargin = 40;
+                float y = 1.0 - (motion.position.y - position.y - margin - rangeMargin) / (float)(textureSize.h - (rangeMargin * 2));
+                if (y - spray->pct() > 0.01 || spray->pct() - y > 0.01) {
+                    spray->set(y * 100.0f);
+                }
             }
         } else if (motion2 == NULL) {
             motion2 = &motion;
@@ -166,6 +172,13 @@ public:
     void onMotionRelease(MotionInterface& motion)
     {
         Component::onMotionRelease(motion);
+
+        if (inRect(sprayToggleRect, motion.origin) && inRect(sprayToggleRect, motion.position)) {
+            sprayControllerOn = !sprayControllerOn;
+            renderNext();
+            return;
+        }
+
         if (motion1 == &motion) {
             motion1 = NULL;
             plugin.noteOff(48, 0);
@@ -179,6 +192,11 @@ public:
     {
         if (strcmp(key, "COLOR") == 0) {
             colors = getColorsFromColor(draw.getColor(value));
+            return true;
+        }
+
+        if (strcmp(key, "SPRAY_CONTROLLER") == 0) {
+            sprayControllerOn = (strcmp(value, "ON") == 0);
             return true;
         }
 
