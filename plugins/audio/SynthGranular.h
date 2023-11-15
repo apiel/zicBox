@@ -140,6 +140,7 @@ protected:
             return sample;
         }
 
+        uint8_t grainOff = 0;
         for (uint8_t d = 0; d < densityUint8; d++) {
             Grain& grain = voice.grains[d];
             if (grain.delay > 0) {
@@ -151,8 +152,13 @@ protected:
                     sample += bufferSamples[samplePos] * env;
                 } else if (repeat.get()) {
                     initGrain(grain);
+                } else {
+                    grainOff++;
                 }
             }
+        }
+        if (grainOff == densityUint8) {
+            voice.note = -1;
         }
         return sample;
     }
