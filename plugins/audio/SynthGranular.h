@@ -149,7 +149,7 @@ protected:
                 if ((int64_t)grain.pos < grain.sampleCount) {
                     grain.pos += grain.sampleStep; // randomize? + (getRandPct() * grain.sampleStep - (grain.sampleStep * 0.5f));
                     sample += bufferSamples[samplePos] * env;
-                } else {
+                } else if (repeat.get()) {
                     initGrain(grain);
                 }
             }
@@ -197,6 +197,7 @@ public:
     Val<SynthGranular>& delay = val(this, 0.0f, "DELAY", &SynthGranular::setDelay, { "Delay", .max = 1000.0f, .step = 10.0f, .unit = "ms" });
     Val<SynthGranular>& pitch = val(this, 0.0f, "PITCH", &SynthGranular::setPitch, { "Pitch", VALUE_CENTERED, .min = -12.0, .max = 12.0 });
     Val<SynthGranular>& browser = val(this, 0.0f, "BROWSER", &SynthGranular::open, { "Browser", VALUE_STRING, .max = (float)fileBrowser.count });
+    Val<SynthGranular>& repeat = val(this, 1.0f, "REPEAT", &SynthGranular::setRepeat, { "Repeat", VALUE_STRING, .max = 1.0 });
 
     // TODO add pitch randomization per grain
 
@@ -209,6 +210,8 @@ public:
 
         setAttack(attack.get());
         setRelease(release.get());
+
+        setRepeat(repeat.get());
     }
 
     ~SynthGranular()
@@ -268,6 +271,13 @@ public:
     SynthGranular& open(float value)
     {
         open(value, false);
+        return *this;
+    }
+
+    SynthGranular& setRepeat(float value)
+    {
+        repeat.setFloat(value);
+        repeat.setString(repeat.get() ? "ON" : "OFF");
         return *this;
     }
 
@@ -417,6 +427,9 @@ public:
 
     void noteOff(uint8_t note, uint8_t velocity) override
     {
+        if (!repeat.get()) { // Play the whole sample if repeat is off
+            return;
+        }
         for (uint8_t v = 0; v < MAX_GRAIN_VOICES; v++) {
             Voice& voice = voices[v];
             if (voice.note == note) {

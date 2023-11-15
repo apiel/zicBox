@@ -72,10 +72,9 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 
 - TODO try to make granular synth more versatile
             - play sample
-                - lock spray
-                - no repeat
+                - no repeat, done
+                    -> but when all grain are finished it should note off...
             - play wavetable
-                - lock spray
                 - set size locked to 2024 sample
                 - give possibility to morph per step of 2024 (maybe have a morphing step function)
             - should those setting be saved in the .wav as meta data...?
