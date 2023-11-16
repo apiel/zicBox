@@ -35,7 +35,7 @@ protected:
 
     enum Mode {
         ModeGranular,
-        ModeWavetable2024,
+        ModeWavetable256,
         ModeCount,
     };
 
@@ -105,7 +105,7 @@ protected:
         grain.start = (start.pct() + sprayToAdd) * bufferSampleCount;
 
         // we deduct minGrainSampleCount to avoid grainSize to be too small
-        grain.sampleCount = (bufferSampleCount - (grain.start + minGrainSampleCount)) * grainSize.pct() + minGrainSampleCount;
+        grain.sampleCount = mode.get() == ModeWavetable256 ? 256 : (bufferSampleCount - (grain.start + minGrainSampleCount)) * grainSize.pct() + minGrainSampleCount;
 
         // delayInt = delay.get() * SAMPLE_RATE * 0.001f * 1000;
         // can be simplified to:
@@ -294,7 +294,12 @@ public:
     SynthGranular& setMode(float value)
     {
         mode.setFloat(value);
-        mode.setString(modeName[int(mode.get())]);
+        int modeKey = mode.get();
+        mode.setString(modeName[modeKey]);
+
+        if (modeKey == ModeWavetable256) {
+            grainSize.set(256.0 / (float)bufferSampleCount * 100);
+        }
         return *this;
     }
 
