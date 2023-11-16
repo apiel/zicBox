@@ -23,8 +23,7 @@ protected:
     uint64_t bufferSampleCount = 0;
     float bufferSamples[bufferSize];
 
-    FileBrowser fileBrowser = FileBrowser("../zicHost/samples");
-    // FileBrowser fileBrowser = FileBrowser("../zicHost/wavetables");
+    FileBrowser fileBrowser = FileBrowser("./samples");
     // FileBrowser fileBrowser;
 
     uint64_t voicePosition = 0;
@@ -194,9 +193,9 @@ public:
     SF_INFO sfinfo;
     SNDFILE* file = NULL;
 
-    Val<SynthGranular>& start = val(this, 0.0f, "START", &SynthGranular::setStart, { "Start" });
-    Val<SynthGranular>& spray = val(this, 0.0f, "SPRAY", &SynthGranular::setSpray, { "Spray" });
-    Val<SynthGranular>& grainSize = val(this, 100.0f, "GRAIN_SIZE", &SynthGranular::setGrainSize, { "Size" });
+    Val<SynthGranular>& start = val(this, 0.0f, "START", &SynthGranular::setStart, { "Start", .unit = "%" });
+    Val<SynthGranular>& spray = val(this, 0.0f, "SPRAY", &SynthGranular::setSpray, { "Spray", .unit = "%" });
+    Val<SynthGranular>& grainSize = val(this, 100.0f, "GRAIN_SIZE", &SynthGranular::setGrainSize, { "Size", .unit = "%" });
     Val<SynthGranular>& density = val(this, (float)densityUint8, "DENSITY", &SynthGranular::setDensity, { "Density", .min = 1.0, .max = MAX_GRAINS_PER_VOICE });
     Val<SynthGranular>& attack = val(this, 20, "ATTACK", &SynthGranular::setAttack, { "Attack", .min = 20.0, .max = 5000.0, .step = 20.0, .unit = "ms" });
     Val<SynthGranular>& release = val(this, 50, "RELEASE", &SynthGranular::setRelease, { "Release", .min = 50.0, .max = 10000.0, .step = 50.0, .unit = "ms" });

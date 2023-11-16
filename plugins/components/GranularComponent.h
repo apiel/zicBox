@@ -24,6 +24,9 @@ protected:
     Rect sprayToggleRect;
     bool sprayControllerOn = true;
 
+    Rect playToggleRect;
+    bool playControllerOn = true;
+
     void renderSampleWaveform()
     {
         if (textureSampleWaveform == NULL) {
@@ -67,15 +70,15 @@ protected:
         draw.line({ xSpray, position.y + margin }, { xSpray, position.y + textureSize.h }, colors.spray);
     }
 
-    void renderSprayToggle()
+    void renderToggle(Rect rect, const char* label, bool state)
     {
-        auto [x, y] = sprayToggleRect.position;
-        draw.rect(sprayToggleRect.position, sprayToggleRect.size, colors.spray);
-        draw.text({ x + 5, y }, "spray", colors.info, 10);
-        if (sprayControllerOn) {
-            draw.filledRect({ x + 37, y + 2 }, { 11, 11 }, colors.spray);
+        auto [x, y] = rect.position;
+        draw.rect(rect.position, rect.size, colors.toggle);
+        draw.text({ x + 5, y }, label, colors.info, 10);
+        if (state) {
+            draw.filledRect({ x + 37, y + 2 }, { 11, 11 }, colors.toggle);
         } else {
-            draw.rect({ x + 37, y + 2 }, { 11, 11 }, colors.spray);
+            draw.rect({ x + 37, y + 2 }, { 11, 11 }, colors.toggle);
         }
     }
 
@@ -84,6 +87,7 @@ protected:
         Color info;
         Color samples;
         Color start;
+        Color toggle;
         Color spray;
     } colors;
 
@@ -93,6 +97,7 @@ protected:
             draw.darken(color, 0.3),
             draw.darken(color, 0.2),
             styles.colors.overlay,
+            draw.alpha(color, 0.2),
             draw.alpha(color, 0.2) });
     }
 
@@ -107,6 +112,7 @@ public:
     {
         textureSize = { size.w - 2 * margin, size.h - 2 * margin };
         sprayToggleRect = { { position.x + size.w - 70, position.y + size.h - 30 }, { 50, 15 } };
+        playToggleRect = { { position.x + size.w - 130, position.y + size.h - 30 }, { 50, 15 } };
     }
 
     void render()
@@ -119,7 +125,8 @@ public:
         }
         renderSampleWaveform();
         renderStartRange();
-        renderSprayToggle();
+        renderToggle(sprayToggleRect, "spray", sprayControllerOn);
+        renderToggle(playToggleRect, "play", playControllerOn);
     }
 
     float startOrigin = 0.0;
@@ -130,8 +137,14 @@ public:
             return;
         }
 
+        if (inRect(playToggleRect, motion.position)) {
+            return;
+        }
+
         if (motion1 == NULL) {
-            plugin.noteOn(48, 127);
+            if (playControllerOn) {
+                plugin.noteOn(48, 127);
+            }
             motion1 = &motion;
             startOrigin = start->pct();
         }
@@ -179,9 +192,17 @@ public:
             return;
         }
 
+        if (inRect(playToggleRect, motion.origin) && inRect(playToggleRect, motion.position)) {
+            playControllerOn = !playControllerOn;
+            renderNext();
+            return;
+        }
+
         if (motion1 == &motion) {
             motion1 = NULL;
-            plugin.noteOff(48, 0);
+            if (playControllerOn) {
+                plugin.noteOff(48, 0);
+            }
         }
         if (motion2 == &motion) {
             motion2 = NULL;

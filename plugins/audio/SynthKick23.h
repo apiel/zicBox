@@ -27,7 +27,7 @@ protected:
     int updateUiState = 0;
     std::vector<Envelop::Data>* envelopUi = NULL;
 
-    FileBrowser fileBrowser = FileBrowser("../zicHost/wavetables");
+    FileBrowser fileBrowser = FileBrowser("./wavetables");
 
     float pitchMult = 1.0f;
 
