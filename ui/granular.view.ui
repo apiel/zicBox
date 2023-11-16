@@ -12,11 +12,6 @@ VIEW: Granular HIDDEN
   COMPONENT: Encoder 100 0 100 50
     GROUP: 0
     ENCODER_ID: 1
-    VALUE: Granular MODE
-
-  COMPONENT: Encoder 200 0 100 50
-    GROUP: 0
-    ENCODER_ID: 2
     VALUE: Granular REPEAT
 
 

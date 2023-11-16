@@ -33,17 +33,6 @@ protected:
     uint8_t densityUint8 = 4;
     int8_t pitchSemitone = 0;
 
-    enum Mode {
-        ModeGranular,
-        ModeWavetable256,
-        ModeCount,
-    };
-
-    const char* modeName[ModeCount] = {
-        "Granular",
-        "Wavetable256",
-    };
-
     struct Grain {
         float pos;
         int64_t start;
@@ -105,7 +94,7 @@ protected:
         grain.start = (start.pct() + sprayToAdd) * bufferSampleCount;
 
         // we deduct minGrainSampleCount to avoid grainSize to be too small
-        grain.sampleCount = mode.get() == ModeWavetable256 ? 256 : (bufferSampleCount - (grain.start + minGrainSampleCount)) * grainSize.pct() + minGrainSampleCount;
+        grain.sampleCount = (bufferSampleCount - (grain.start + minGrainSampleCount)) * grainSize.pct() + minGrainSampleCount;
 
         // delayInt = delay.get() * SAMPLE_RATE * 0.001f * 1000;
         // can be simplified to:
@@ -204,7 +193,6 @@ public:
     SF_INFO sfinfo;
     SNDFILE* file = NULL;
 
-    Val<SynthGranular>& mode = val(this, 0.0f, "MODE", &SynthGranular::setMode, { "Mode", VALUE_STRING, .max = ModeCount - 1 });
     Val<SynthGranular>& start = val(this, 0.0f, "START", &SynthGranular::setStart, { "Start", .unit = "%" });
     Val<SynthGranular>& spray = val(this, 0.0f, "SPRAY", &SynthGranular::setSpray, { "Spray", .unit = "%" });
     Val<SynthGranular>& grainSize = val(this, 100.0f, "GRAIN_SIZE", &SynthGranular::setGrainSize, { "Size", .unit = "%" });
@@ -227,8 +215,8 @@ public:
 
         setAttack(attack.get());
         setRelease(release.get());
+
         setRepeat(repeat.get());
-        setMode(mode.get());
     }
 
     ~SynthGranular()
@@ -288,18 +276,6 @@ public:
     SynthGranular& open(float value)
     {
         open(value, false);
-        return *this;
-    }
-
-    SynthGranular& setMode(float value)
-    {
-        mode.setFloat(value);
-        int modeKey = mode.get();
-        mode.setString(modeName[modeKey]);
-
-        if (modeKey == ModeWavetable256) {
-            grainSize.set(256.0 / (float)bufferSampleCount * 100);
-        }
         return *this;
     }
 
