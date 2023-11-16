@@ -71,7 +71,6 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 ## zicHost
 
 - TODO try to make granular synth more versatile
-            - trigger note toggle
             - play wavetable
                 - set size locked to 2024 sample
                 - give possibility to morph per step of 2024 (maybe have a morphing step function)

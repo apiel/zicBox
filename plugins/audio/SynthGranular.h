@@ -33,6 +33,17 @@ protected:
     uint8_t densityUint8 = 4;
     int8_t pitchSemitone = 0;
 
+    enum Mode {
+        ModeGranular,
+        ModeWavetable2024,
+        ModeCount,
+    };
+
+    const char* modeName[ModeCount] = {
+        "Granular",
+        "Wavetable256",
+    };
+
     struct Grain {
         float pos;
         int64_t start;
@@ -193,6 +204,7 @@ public:
     SF_INFO sfinfo;
     SNDFILE* file = NULL;
 
+    Val<SynthGranular>& mode = val(this, 0.0f, "MODE", &SynthGranular::setMode, { "Mode", VALUE_STRING, .max = ModeCount - 1 });
     Val<SynthGranular>& start = val(this, 0.0f, "START", &SynthGranular::setStart, { "Start", .unit = "%" });
     Val<SynthGranular>& spray = val(this, 0.0f, "SPRAY", &SynthGranular::setSpray, { "Spray", .unit = "%" });
     Val<SynthGranular>& grainSize = val(this, 100.0f, "GRAIN_SIZE", &SynthGranular::setGrainSize, { "Size", .unit = "%" });
@@ -215,8 +227,8 @@ public:
 
         setAttack(attack.get());
         setRelease(release.get());
-
         setRepeat(repeat.get());
+        setMode(mode.get());
     }
 
     ~SynthGranular()
@@ -276,6 +288,13 @@ public:
     SynthGranular& open(float value)
     {
         open(value, false);
+        return *this;
+    }
+
+    SynthGranular& setMode(float value)
+    {
+        mode.setFloat(value);
+        mode.setString(modeName[int(mode.get())]);
         return *this;
     }
 
