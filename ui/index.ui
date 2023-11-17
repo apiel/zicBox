@@ -30,4 +30,4 @@ INCLUDE: granular.view.ui
 INCLUDE: kick/kick.view.ui
 INCLUDE: mixer.view.ui
 
-# STARTUP_VIEW: Granular
+STARTUP_VIEW: Granular

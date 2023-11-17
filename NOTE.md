@@ -15,8 +15,6 @@
 
 ## zicUi
 
-- BUG fix distortion
-
 - TODO pattern selector in sequencer
        pattern category
 
@@ -71,6 +69,7 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 ## zicHost
 
 - TODO granular synth: save patch setting in the .wav as meta data...?
+       see zic_file_audio_custom.h in zic repo
 
 - TODO tempo plugin, that would shalow midi clock in favour of custom clock
 
