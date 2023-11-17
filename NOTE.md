@@ -70,10 +70,7 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 
 ## zicHost
 
-- TODO wavetable player as in granular it doesnt make sense
-
-- TODO try to make granular synth more versatile
-        - save patch setting in the .wav as meta data...?
+- TODO granular synth: save patch setting in the .wav as meta data...?
 
 - TODO tempo plugin, that would shalow midi clock in favour of custom clock
 
@@ -86,6 +83,8 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 - TODO Zic_Drum_Kick23 give possibility to play sample in the same time as the engine...
        Should it be also possible to record the generated kick inside a sample?
        Could it become a more generic drum engine...
+
+- TODO wavetable player as in granular it doesnt make sense
 
 - TODO puredata plugin
 

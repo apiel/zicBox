@@ -53,8 +53,9 @@ public:
             samplePtr = &EffectDistortion::skipSample;
             debug("Distortion: disabled\n");
         } else {
+            float pct = drive.get() / 103.0; // Dividing by 103 instead of 100 to have max 0.97
             samplePtr = &EffectDistortion::processSample;
-            shape = 2 * (drive.get() - 0.0001) / (1 - (drive.get() - 0.0001));
+            shape = 2 * pct / (1 - pct);
             debug("Distortion: drive=%f shape=%f\n", drive.get(), shape);
         }
         return *this;
