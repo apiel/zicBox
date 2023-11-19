@@ -1,24 +1,22 @@
-
+BUILD_DIR ?= build
+OBJ_DIR ?= $(BUILD_DIR)/obj
 
 all:
-	make clean_so OscController MidiEncoderController\
-		clean_o
-
-clean:
-	make clean_so clean_o
-
-clean_so:
-	rm -f build/*.so
-
-clean_o:
-	rm -f *.o
-
-compile:
-	g++ -g -c -o $(LIBNAME).o plugin.cpp -fPIC -DPLUGIN_NAME=$(LIBNAME) -DPLUGIN_INCLUDE=\"$(LIBNAME).h\" $(EXTRA)
-	g++ -g -shared -o build/libzic_$(LIBNAME).so $(LIBNAME).o $(EXTRA)
+	make OscController MidiEncoderController
 
 OscController:
 	make compile LIBNAME=OscController EXTRA="$(shell pkg-config --cflags --libs liblo)"
 
 MidiEncoderController:
 	make compile LIBNAME=MidiEncoderController EXTRA="$(shell pkg-config --cflags --libs rtmidi)"
+
+%Controller:
+	make compile LIBNAME=$@
+
+compile:
+	@mkdir -p $(OBJ_DIR)
+	g++ -g -c -o $(OBJ_DIR)/$(LIBNAME).o plugin.cpp -fPIC -DPLUGIN_NAME=$(LIBNAME) -DPLUGIN_INCLUDE=\"$(LIBNAME).h\" $(EXTRA)
+	g++ -g -shared -o $(BUILD_DIR)/libzic_$(LIBNAME).so $(OBJ_DIR)/$(LIBNAME).o $(EXTRA)
+
+clean:
+	rm -rf $(BUILD_DIR)
