@@ -234,6 +234,14 @@ public:
         return AudioPlugin::config(key, value);
     }
 
+    SynthGranular& save()
+    {
+        ValSerializeSndFile<SynthGranular> serialize(mapping);
+        char* filepath = fileBrowser.getFilePath(browser.get());
+        serialize.saveSetting(filepath);
+        return *this;
+    }
+
     SynthGranular& open(const char* filename)
     {
         if (!(file = sf_open(filename, SFM_READ, &sfinfo))) {
@@ -247,7 +255,6 @@ public:
         sf_close(file);
 
         ValSerializeSndFile<SynthGranular> serialize(mapping);
-        // serialize.saveSetting(filename);
         serialize.loadSetting(filename);
 
         return *this;

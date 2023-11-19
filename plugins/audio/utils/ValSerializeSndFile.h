@@ -10,7 +10,7 @@ class ValSerializeSndFile {
 protected:
     struct ValSerialize {
         const char* _key;
-        float initValue;
+        float value;
     };
 
     uint32_t findChunk(FILE* file)
@@ -54,8 +54,8 @@ public:
             fread(serialize, chunkSize, 1, file);
 
             for (int i = 0; i < mapping.size(); i++) {
-                // mapping[i]->set(serialize[i].initValue);
-                printf(">>>> val: %s %f\n", mapping[i]->key(), serialize[i].initValue);
+                mapping[i]->set(serialize[i].value);
+                // printf(">>>> val: %s %f\n", mapping[i]->key(), serialize[i].value);
             }
         }
 
@@ -87,7 +87,7 @@ public:
         ValSerialize serialize[mapping.size()];
         for (int i = 0; i < mapping.size(); i++) {
             serialize[i]._key = mapping[i]->key();
-            serialize[i].initValue = mapping[i]->get();
+            serialize[i].value = mapping[i]->get();
         }
         uint32_t serializeSize = mapping.size() * sizeof(ValSerialize);
 
