@@ -239,36 +239,35 @@ public:
         float initValue;
     };
 
-#define SETTING_CHUNK_ID "ZICG"
+#define SETTING_CHUNK_ID "ZIC_"
+// #define SETTING_CHUNK_ID "JUNK"
 
     // SynthGranular& saveSetting(const char* filename)
     // {
-    //     ValSerializeSndFile<SynthGranular> serialize(mapping);
+    //     if (!(file = sf_open(filename, SFM_WRITE, &sfinfo))) {
+    //         debug("Error: could not open file %s [%s]\n", filename, sf_strerror(file));
+    //         return *this;
+    //     }
 
-    //     // if (!(file = sf_open(filename, SFM_WRITE, &sfinfo))) {
-    //     //     debug("Error: could not open file %s [%s]\n", filename, sf_strerror(file));
-    //     //     return *this;
-    //     // }
+    //     ValSerialize serialize[mapping.size()];
+    //     SF_CHUNK_INFO chunk = {
+    //         SETTING_CHUNK_ID,
+    //         sizeof(SETTING_CHUNK_ID),
+    //         (unsigned int)sizeof(serialize),
+    //         &serialize
+    //     };
 
-    //     // ValSerialize serialize[mapping.size()];
-    //     // SF_CHUNK_INFO chunk = {
-    //     //     SETTING_CHUNK_ID,
-    //     //     sizeof(SETTING_CHUNK_ID),
-    //     //     (unsigned int)sizeof(serialize),
-    //     //     &serialize
-    //     // };
+    //     for (int i = 0; i < mapping.size(); i++) {
+    //         serialize[i]._key = mapping[i]->key();
+    //         serialize[i].initValue = mapping[i]->get();
+    //     }
 
-    //     // for (int i = 0; i < mapping.size(); i++) {
-    //     //     serialize[i]._key = mapping[i]->key();
-    //     //     serialize[i].initValue = mapping[i]->get();
-    //     // }
+    //     int res = sf_set_chunk(file, &chunk);
 
-    //     // int res = sf_set_chunk(file, &chunk);
+    //     printf("------- wrote %d bytes err: %s\n", res, sf_strerror(file));
+    //     printf("chunk len %d\n", chunk.datalen);
 
-    //     // printf("------- wrote %d bytes err: %s\n", res, sf_strerror(file));
-    //     // printf("chunk len %d\n", chunk.datalen);
-
-    //     // sf_close(file);
+    //     sf_close(file);
 
     //     return *this;
     // }
@@ -308,6 +307,83 @@ public:
     //     return *this;
     // }
 
+    SynthGranular& saveSetting(const char* filename)
+    {
+        if (!(file = sf_open(filename, SFM_WRITE, &sfinfo))) {
+            debug("Error: could not open file %s [%s]\n", filename, sf_strerror(file));
+            return *this;
+        }
+
+        char test[100] = "this is a test";
+        SF_CHUNK_INFO chunk = {
+            SETTING_CHUNK_ID,
+            sizeof(SETTING_CHUNK_ID),
+            (unsigned int)sizeof(test),
+            &test
+        };
+
+        int res = sf_set_chunk(file, &chunk);
+
+        printf("------- wrote %d bytes err: %s\n", res, sf_strerror(file));
+        printf("chunk len %d\n", chunk.datalen);
+
+        sf_close(file);
+
+        return *this;
+    }
+
+    // SynthGranular& loadSetting(const char* filename)
+    // {
+    //     if (!(file = sf_open(filename, SFM_READ, &sfinfo))) {
+    //         debug("Error: could not open file %s [%s]\n", filename, sf_strerror(file));
+    //         return *this;
+    //     }
+
+    //     char test[100];
+    //     SF_CHUNK_INFO chunk = {
+    //         SETTING_CHUNK_ID,
+    //         sizeof(SETTING_CHUNK_ID),
+    //         (unsigned int)sizeof(test),
+    //         &test
+    //     };
+
+    //     SF_CHUNK_ITERATOR* it = sf_get_chunk_iterator(file, &chunk);
+
+    //     int res = sf_get_chunk_data(it, &chunk);
+    //     printf("------- loaded %d bytes err: %s\n", res, sf_strerror(file));
+    //     printf("data: %s\n", test);
+
+    //     sf_close(file);
+
+    //     return *this;
+    // }
+
+    SynthGranular& loadSetting(const char* filename)
+    {
+        if (!(file = sf_open(filename, SFM_READ, &sfinfo))) {
+            debug("Error: could not open file %s [%s]\n", filename, sf_strerror(file));
+            return *this;
+        }
+
+        int test;
+        SF_CHUNK_INFO chunk = {
+            SETTING_CHUNK_ID,
+            sizeof(SETTING_CHUNK_ID),
+            (unsigned int)sizeof(test),
+            &test
+        };
+
+        SF_CHUNK_ITERATOR* it = sf_get_chunk_iterator(file, &chunk);
+
+        int res = sf_get_chunk_data(it, &chunk);
+        printf("------- loaded %d bytes err: %s\n", res, sf_strerror(file));
+        printf("data: %d\n", test);
+
+        sf_close(file);
+
+        return *this;
+    }
+
     SynthGranular& open(const char* filename)
     {
         if (!(file = sf_open(filename, SFM_READ, &sfinfo))) {
@@ -318,15 +394,17 @@ public:
 
         bufferSampleCount = sf_read_float(file, bufferSamples, bufferSize);
 
-        ValSerializeSndFile<SynthGranular> serialize(mapping);
-        serialize.loadSetting(file);
+        // ValSerializeSndFile<SynthGranular> serialize(mapping);
+        // serialize.loadSetting(file);
 
         sf_close(file);
 
         // saveSetting(filename);
         // loadSetting(filename);
 
+        ValSerializeSndFile<SynthGranular> serialize(mapping);
         // serialize.saveSetting(filename);
+        serialize.loadSetting(filename);
 
         return *this;
     }

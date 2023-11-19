@@ -2,36 +2,42 @@
 #define _VAL_SERIALIZE_SNDFILE_H_
 
 #include "../mapping.h"
-#include <sndfile.h>
 
-#define SETTING_CHUNK_ID "ZICG"
+#define VAL_SERIALIZE_CHUNK_ID "ZIC_"
 
 template <typename T>
 class ValSerializeSndFile {
 protected:
-    SF_INFO sfinfo;
-
     struct ValSerialize {
         const char* _key;
         float initValue;
     };
 
+    uint32_t findChunk(FILE* file)
+    {
+        uint32_t chunkID;
+        uint32_t chunkSize;
+        while (fread(&chunkID, 4, 1, file)) {
+            if (chunkID == *(uint32_t*)VAL_SERIALIZE_CHUNK_ID) {
+                fread(&chunkSize, 4, 1, file);
+                return chunkSize;
+            } else if (chunkID == *(uint32_t*)"data") {
+                fread(&chunkSize, 4, 1, file);
+                fseek(file, chunkSize, SEEK_CUR);
+            }
+        }
+
+        return 0;
+    }
+
 public:
     std::vector<Val<T>*>& mapping;
-    ValSerialize *serialize;
-    SF_CHUNK_INFO chunk;
+    ValSerialize* serialize;
 
     ValSerializeSndFile(std::vector<Val<T>*>& mapping)
         : mapping(mapping)
     {
         serialize = new ValSerialize[mapping.size()];
-
-        chunk = {
-            SETTING_CHUNK_ID,
-            sizeof(SETTING_CHUNK_ID),
-            (unsigned int)(mapping.size() * sizeof(ValSerialize)),
-            serialize
-        };
     }
 
     ~ValSerializeSndFile()
@@ -39,11 +45,34 @@ public:
         delete[] serialize;
     }
 
+    void loadSetting(const char* filename)
+    {
+        FILE* file = fopen(filename, "rb");
+        if (!file) {
+            printf("Error: could not open file %s for reading\n", filename);
+            return;
+        }
+        uint32_t chunkSize = findChunk(file);
+
+        printf("::::::::::::: chunkSize: %d\n", chunkSize);
+
+        if (chunkSize) {
+            fread(serialize, chunkSize, 1, file);
+
+            for (int i = 0; i < mapping.size(); i++) {
+                // mapping[i]->set(serialize[i].initValue);
+                printf(">>>> val: %s %f\n", mapping[i]->key(), serialize[i].initValue);
+            }
+        }
+
+        fclose(file);
+    }
+
     void saveSetting(const char* filename)
     {
-        SNDFILE* file = sf_open(filename, SFM_WRITE, &sfinfo);
+        FILE* file = fopen(filename, "ab");
         if (!file) {
-            printf("Error: could not open file %s [%s]\n", filename, sf_strerror(file));
+            printf("Error: could not open file %s for writing\n", filename);
             return;
         }
 
@@ -52,44 +81,23 @@ public:
             serialize[i].initValue = mapping[i]->get();
         }
 
-        int res = sf_set_chunk(file, &chunk);
+        fseek(file, 0, SEEK_END);
 
-        printf("------- wrote %d bytes err: %s\n", res, sf_strerror(file));
-        printf("chunk len %d\n", chunk.datalen);
+        fwrite(VAL_SERIALIZE_CHUNK_ID, 4, 1, file);
 
-        sf_close(file);
-    }
+        // uint32_t serializeSize = sizeof(serialize);
+        uint32_t serializeSize = mapping.size() * sizeof(ValSerialize);
+        fwrite(&serializeSize, 4, 1, file);
+        fwrite(serialize, serializeSize, 1, file);
 
-    void loadSetting(SNDFILE* file)
-    {
-        SF_CHUNK_ITERATOR* it = sf_get_chunk_iterator(file, &chunk);
-
-        // int err = sf_get_chunk_size (it, &chunk) ;
-        // printf("------- err %d bytes err: %s\n", err, sf_strerror(file));
-        // printf("chunk len %d\n", chunk.datalen);
-
-        int res = sf_get_chunk_data(it, &chunk);
-        if (!res) {
-            printf("No settings found in sample file.\n");
-            return;
+        // if serializeSize is not multiple of 4 bytes then add missing bytes
+        uint32_t padding = 4 - (serializeSize % 4);
+        if (padding != 4) {
+            printf("...................... write padding: %d\n", padding);
+            fwrite(&padding, 1, padding, file);
         }
 
-        printf("------- loaded %d bytes err: %s\n", res, sf_strerror(file));
-
-        for (int i = 0; i < mapping.size(); i++) {
-            // mapping[i]->set(serialize[i].initValue);
-            printf(">>>> val: %s %f\n", mapping[i]->key(), serialize[i].initValue);
-        }
-    }
-
-    void loadSetting(const char* filename)
-    {
-        SNDFILE* file = sf_open(filename, SFM_READ, &sfinfo);
-        if (!file) {
-            printf("Error: could not open file %s [%s]\n", filename, sf_strerror(file));
-            return;
-        }
-        loadSetting(file);
+        fclose(file);
     }
 };
 
