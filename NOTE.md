@@ -15,10 +15,10 @@
 
 ## zicUi
 
-- TODO popup message
-
 - TODO pattern selector in sequencer
        pattern category
+
+- TODO popup message
 
 - TODO pad ARP, y is taking care of semi tone and x change ARP pattern. Could it even be multi touch?
 
