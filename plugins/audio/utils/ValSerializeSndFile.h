@@ -34,17 +34,10 @@ protected:
 
 public:
     std::vector<Val<T>*>& mapping;
-    ValSerialize* serialize;
 
     ValSerializeSndFile(std::vector<Val<T>*>& mapping)
         : mapping(mapping)
     {
-        serialize = new ValSerialize[mapping.size()];
-    }
-
-    ~ValSerializeSndFile()
-    {
-        delete[] serialize;
     }
 
     void loadSetting(const char* filename)
@@ -57,6 +50,7 @@ public:
         uint32_t chunkSize = findChunk(file);
 
         if (chunkSize) {
+            ValSerialize serialize[mapping.size()];
             fread(serialize, chunkSize, 1, file);
 
             for (int i = 0; i < mapping.size(); i++) {
@@ -76,13 +70,7 @@ public:
             return;
         }
 
-        for (int i = 0; i < mapping.size(); i++) {
-            serialize[i]._key = mapping[i]->key();
-            serialize[i].initValue = mapping[i]->get();
-        }
-
         uint32_t chunkSize = findChunk(file);
-
         long chunkPos = ftell(file);
 
         char tmpFilename[256];
@@ -96,12 +84,18 @@ public:
             fwrite(&c, 1, 1, tmpFile);
         }
 
+        ValSerialize serialize[mapping.size()];
+        for (int i = 0; i < mapping.size(); i++) {
+            serialize[i]._key = mapping[i]->key();
+            serialize[i].initValue = mapping[i]->get();
+        }
         uint32_t serializeSize = mapping.size() * sizeof(ValSerialize);
+
         if (!chunkSize) {
             fwrite(VAL_SERIALIZE_CHUNK_ID, 4, 1, tmpFile);
             fwrite(&serializeSize, 4, 1, tmpFile);
         }
-        fwrite(serialize, serializeSize, 1, tmpFile);
+        fwrite(&serialize, serializeSize, 1, tmpFile);
         // if serializeSize is not multiple of 4 bytes then add missing bytes
         uint32_t padding = 4 - (serializeSize % 4);
         if (padding != 4) {
