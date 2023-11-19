@@ -28,6 +28,7 @@ protected:
     bool playControllerOn = true;
 
     Rect saveRect;
+    bool savePressed = false;
 
     void renderSampleWaveform()
     {
@@ -84,10 +85,13 @@ protected:
         }
     }
 
-    void renderButton(Rect rect, const char* label)
+    void renderButton(Rect rect, const char* label, bool pressed)
     {
         auto [x, y] = rect.position;
         draw.rect(rect.position, rect.size, colors.toggle);
+        if (pressed) {
+            draw.filledRect({ x + 2, y + 2 }, { rect.size.w - 4, rect.size.h - 4 }, colors.toggle);
+        }
         draw.textCentered({ (int)(x + rect.size.w * 0.5), y + 1 }, label, colors.info, 10);
     }
 
@@ -137,7 +141,7 @@ public:
         renderStartRange();
         renderToggle(sprayToggleRect, "spray", sprayControllerOn);
         renderToggle(playToggleRect, "play", playControllerOn);
-        renderButton(saveRect, "save");
+        renderButton(saveRect, "save", savePressed);
     }
 
     float startOrigin = 0.0;
@@ -148,11 +152,13 @@ public:
             return;
         }
 
-        if (inRect(playToggleRect, motion.position)) {
+        if (inRect(playToggleRect, motion.origin)) {
             return;
         }
 
-        if (inRect(saveRect, motion.position)) {
+        if (inRect(saveRect, motion.origin)) {
+            savePressed = true;
+            renderNext();
             return;
         }
 
@@ -213,8 +219,10 @@ public:
             return;
         }
 
-        if (inRect(saveRect, motion.origin) && inRect(saveRect, motion.position)) {
+        if (inRect(saveRect, motion.origin)) {
             plugin.data(2);
+            savePressed = false;
+            renderNext();
             return;
         }
 
