@@ -318,8 +318,6 @@ public:
 
         bufferSampleCount = sf_read_float(file, bufferSamples, bufferSize);
 
-        printf(">>>> bufferSampleCount %ld (err: %s)\n", (long)bufferSampleCount, sf_strerror(file));
-
         ValSerializeSndFile<SynthGranular> serialize(mapping);
         serialize.loadSetting(file);
 

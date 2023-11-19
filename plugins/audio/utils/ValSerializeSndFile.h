@@ -69,6 +69,11 @@ public:
         // printf("chunk len %d\n", chunk.datalen);
 
         int res = sf_get_chunk_data(it, &chunk);
+        if (!res) {
+            printf("No settings found in sample file.\n");
+            return;
+        }
+
         printf("------- loaded %d bytes err: %s\n", res, sf_strerror(file));
 
         for (int i = 0; i < mapping.size(); i++) {
