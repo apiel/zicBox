@@ -233,35 +233,66 @@ public:
     }
 
     struct Yo {
-        int i = 10;
-        float f = 5.0;
-        float g = 50.0;
-    } yo;
+        int i;
+        float f;
+        float g;
+    } yo = { 10, 23.0, 33.0 };
+
+#define SETTING_CHUNK_ID "ZICG"
 
     SynthGranular& saveSetting(const char* filename)
     {
-        // sf_seek(file, 0, SEEK_END);
-        // sf_write_raw(file, "ZICG", 4);
-        // int size = sizeof(yo);
-        // sf_write_raw(file, &size, 4);
-        // sf_count_t res = sf_write_raw(file, &yo, size);
-        // printf("------- wrote %ld bytes err: %d\n", res, psf->error);
+        if (!(file = sf_open(filename, SFM_WRITE, &sfinfo))) {
+            debug("Error: could not open file %s [%s]\n", filename, sf_strerror(file));
+            return *this;
+        }
 
-        // sf_set_string(file, SF_STR_COMMENT, name);
+        SF_CHUNK_INFO chunk = {
+            SETTING_CHUNK_ID,
+            sizeof(SETTING_CHUNK_ID),
+            sizeof(yo),
+            &yo
+        };
+        int res = sf_set_chunk(file, &chunk);
 
-        FILE* f = fopen(filename, "w");
-        fseek(f, 0, SEEK_END);
-        fwrite("ZICG", 4, 1, f);
-        int size = sizeof(yo);
-        fwrite(&size, 4, 1, f);
-        // fwrite(&yo, size, 1, f);
-        fclose(f);
+        printf("------- wrote %d bytes err: %s\n", res, sf_strerror(file));
+        printf("chunk len %d\n", chunk.datalen);
+        printf("yo: %d %f %f\n", yo.i, yo.f, yo.g);
+
+        sf_close(file);
 
         return *this;
     }
 
     SynthGranular& loadSetting(const char* filename)
     {
+        if (!(file = sf_open(filename, SFM_READ, &sfinfo))) {
+            debug("Error: could not open file %s [%s]\n", filename, sf_strerror(file));
+            return *this;
+        }
+
+        Yo yo2;
+
+        SF_CHUNK_INFO chunk = {
+            SETTING_CHUNK_ID,
+            sizeof(SETTING_CHUNK_ID),
+            sizeof(yo2),
+            &yo2
+        };
+
+        SF_CHUNK_ITERATOR* it = sf_get_chunk_iterator(file, &chunk);
+
+        // int err = sf_get_chunk_size (it, &chunk) ;
+        // printf("------- err %d bytes err: %s\n", err, sf_strerror(file));
+        // printf("chunk len %d\n", chunk.datalen);
+
+        int res = sf_get_chunk_data(it, &chunk);
+        printf("------- loaded %d bytes err: %s\n", res, sf_strerror(file));
+
+        printf("yo2: %d %f %f\n", yo2.i, yo2.f, yo2.g);
+
+        sf_close(file);
+
         return *this;
     }
 
@@ -279,8 +310,8 @@ public:
 
         sf_close(file);
 
-        // saveSetting(filename);
-        // loadSetting(filename);
+        saveSetting(filename);
+        loadSetting(filename);
 
         return *this;
     }
