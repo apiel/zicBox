@@ -219,11 +219,6 @@ public:
         setRepeat(repeat.get());
     }
 
-    ~SynthGranular()
-    {
-        close();
-    }
-
     bool config(char* key, char* value) override
     {
         if (strcmp(key, "SAMPLES_FOLDER") == 0) {
@@ -237,25 +232,55 @@ public:
         return AudioPlugin::config(key, value);
     }
 
-    SynthGranular& close()
+    struct Yo {
+        int i = 10;
+        float f = 5.0;
+        float g = 50.0;
+    } yo;
+
+    SynthGranular& saveSetting(const char* filename)
     {
-        if (file) {
-            sf_close(file);
-        }
+        // sf_seek(file, 0, SEEK_END);
+        // sf_write_raw(file, "ZICG", 4);
+        // int size = sizeof(yo);
+        // sf_write_raw(file, &size, 4);
+        // sf_count_t res = sf_write_raw(file, &yo, size);
+        // printf("------- wrote %ld bytes err: %d\n", res, psf->error);
+
+        // sf_set_string(file, SF_STR_COMMENT, name);
+
+        FILE* f = fopen(filename, "w");
+        fseek(f, 0, SEEK_END);
+        fwrite("ZICG", 4, 1, f);
+        int size = sizeof(yo);
+        fwrite(&size, 4, 1, f);
+        // fwrite(&yo, size, 1, f);
+        fclose(f);
+
+        return *this;
+    }
+
+    SynthGranular& loadSetting(const char* filename)
+    {
         return *this;
     }
 
     SynthGranular& open(const char* filename)
     {
-        close();
-
         if (!(file = sf_open(filename, SFM_READ, &sfinfo))) {
-            debug("Error: could not open file %s\n", filename);
+            debug("Error: could not open file %s [%s]\n", filename, sf_strerror(file));
             return *this;
         }
         debug("Audio file %s sampleCount %ld sampleRate %d\n", filename, (long)sfinfo.frames, sfinfo.samplerate);
 
         bufferSampleCount = sf_read_float(file, bufferSamples, bufferSize);
+
+        printf(">>>> bufferSampleCount %ld (err: %s)\n", (long)bufferSampleCount, sf_strerror(file));
+
+        sf_close(file);
+
+        // saveSetting(filename);
+        // loadSetting(filename);
 
         return *this;
     }
