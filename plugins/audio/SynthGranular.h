@@ -192,9 +192,6 @@ protected:
     }
 
 public:
-    SF_INFO sfinfo;
-    SNDFILE* file = NULL;
-
     Val<SynthGranular>& start = val(this, 0.0f, "START", &SynthGranular::setStart, { "Start", .unit = "%" });
     Val<SynthGranular>& spray = val(this, 0.0f, "SPRAY", &SynthGranular::setSpray, { "Spray", .unit = "%" });
     Val<SynthGranular>& grainSize = val(this, 100.0f, "GRAIN_SIZE", &SynthGranular::setGrainSize, { "Size", .unit = "%" });
@@ -212,7 +209,6 @@ public:
         : Mapping(props, _name)
     {
         setSampleRate(props.sampleRate);
-        memset(&sfinfo, 0, sizeof(sfinfo));
         open(0.0, true);
 
         setAttack(attack.get());
@@ -244,10 +240,13 @@ public:
 
     SynthGranular& open(const char* filename)
     {
-        if (!(file = sf_open(filename, SFM_READ, &sfinfo))) {
+        SF_INFO sfinfo;
+        SNDFILE* file = sf_open(filename, SFM_READ, &sfinfo);
+        if (!file) {
             debug("Error: could not open file %s [%s]\n", filename, sf_strerror(file));
             return *this;
         }
+
         debug("Audio file %s sampleCount %ld sampleRate %d\n", filename, (long)sfinfo.frames, sfinfo.samplerate);
 
         bufferSampleCount = sf_read_float(file, bufferSamples, bufferSize);
@@ -455,6 +454,10 @@ public:
 
         case 1:
             return &bufferSamples;
+
+        case 2:
+            save();
+            return NULL;
         }
         return NULL;
     }
