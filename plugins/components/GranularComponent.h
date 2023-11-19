@@ -27,6 +27,8 @@ protected:
     Rect playToggleRect;
     bool playControllerOn = true;
 
+    Rect saveRect;
+
     void renderSampleWaveform()
     {
         if (textureSampleWaveform == NULL) {
@@ -74,12 +76,19 @@ protected:
     {
         auto [x, y] = rect.position;
         draw.rect(rect.position, rect.size, colors.toggle);
-        draw.text({ x + 5, y }, label, colors.info, 10);
+        draw.text({ x + 5, y + 1 }, label, colors.info, 10);
         if (state) {
             draw.filledRect({ x + 37, y + 2 }, { 11, 11 }, colors.toggle);
         } else {
             draw.rect({ x + 37, y + 2 }, { 11, 11 }, colors.toggle);
         }
+    }
+
+    void renderButton(Rect rect, const char* label)
+    {
+        auto [x, y] = rect.position;
+        draw.rect(rect.position, rect.size, colors.toggle);
+        draw.textCentered({ (int)(x + rect.size.w * 0.5), y + 1 }, label, colors.info, 10);
     }
 
     struct Colors {
@@ -113,6 +122,7 @@ public:
         textureSize = { size.w - 2 * margin, size.h - 2 * margin };
         sprayToggleRect = { { position.x + size.w - 70, position.y + size.h - 30 }, { 50, 15 } };
         playToggleRect = { { position.x + size.w - 130, position.y + size.h - 30 }, { 50, 15 } };
+        saveRect = { { position.x + size.w - 190, position.y + size.h - 30 }, { 50, 15 } };
     }
 
     void render()
@@ -127,6 +137,7 @@ public:
         renderStartRange();
         renderToggle(sprayToggleRect, "spray", sprayControllerOn);
         renderToggle(playToggleRect, "play", playControllerOn);
+        renderButton(saveRect, "save");
     }
 
     float startOrigin = 0.0;
@@ -138,6 +149,10 @@ public:
         }
 
         if (inRect(playToggleRect, motion.position)) {
+            return;
+        }
+
+        if (inRect(saveRect, motion.position)) {
             return;
         }
 
@@ -195,6 +210,11 @@ public:
         if (inRect(playToggleRect, motion.origin) && inRect(playToggleRect, motion.position)) {
             playControllerOn = !playControllerOn;
             renderNext();
+            return;
+        }
+
+        if (inRect(saveRect, motion.origin) && inRect(saveRect, motion.position)) {
+            plugin.data(2);
             return;
         }
 

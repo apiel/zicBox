@@ -15,6 +15,8 @@
 
 ## zicUi
 
+- TODO popup message
+
 - TODO pattern selector in sequencer
        pattern category
 
@@ -37,6 +39,8 @@
 
 - TODO encoder responsive for small size
 - TODO use function pointer on encoder initialisation to assign draw function base on type
+
+- TODO button can call data? Example for saving granular synth...
 
 - TODO list of value, e.g.:
                 file1.wav
@@ -67,9 +71,6 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
     - from git repo?
 
 ## zicHost
-
-- TODO granular synth: save patch setting in the .wav as meta data...?
-       see zic_file_audio_custom.h in zic repo
 
 - TODO tempo plugin, that would shalow midi clock in favour of custom clock
 
