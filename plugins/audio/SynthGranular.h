@@ -232,11 +232,10 @@ public:
         return AudioPlugin::config(key, value);
     }
 
-    struct Yo {
-        int i;
-        float f;
-        float g;
-    } yo = { 10, 23.0, 33.0 };
+    struct ValSerialize {
+        const char* _key;
+        float initValue;
+    };
 
 #define SETTING_CHUNK_ID "ZICG"
 
@@ -247,17 +246,23 @@ public:
             return *this;
         }
 
+        ValSerialize serialize[mapping.size()];
         SF_CHUNK_INFO chunk = {
             SETTING_CHUNK_ID,
             sizeof(SETTING_CHUNK_ID),
-            sizeof(yo),
-            &yo
+            (unsigned int)sizeof(serialize),
+            &serialize
         };
+
+        for (int i = 0; i < mapping.size(); i++) {
+            serialize[i]._key = mapping[i]->key();
+            serialize[i].initValue = mapping[i]->get();
+        }
+
         int res = sf_set_chunk(file, &chunk);
 
         printf("------- wrote %d bytes err: %s\n", res, sf_strerror(file));
         printf("chunk len %d\n", chunk.datalen);
-        printf("yo: %d %f %f\n", yo.i, yo.f, yo.g);
 
         sf_close(file);
 
@@ -271,13 +276,12 @@ public:
             return *this;
         }
 
-        Yo yo2;
-
+        ValSerialize serialize[mapping.size()];
         SF_CHUNK_INFO chunk = {
             SETTING_CHUNK_ID,
             sizeof(SETTING_CHUNK_ID),
-            sizeof(yo2),
-            &yo2
+            (unsigned int)sizeof(serialize),
+            &serialize
         };
 
         SF_CHUNK_ITERATOR* it = sf_get_chunk_iterator(file, &chunk);
@@ -289,7 +293,11 @@ public:
         int res = sf_get_chunk_data(it, &chunk);
         printf("------- loaded %d bytes err: %s\n", res, sf_strerror(file));
 
-        printf("yo2: %d %f %f\n", yo2.i, yo2.f, yo2.g);
+        // printf("yo2: %d %f %f\n", yo2.i, yo2.f, yo2.g);
+        for (int i = 0; i < mapping.size(); i++) {
+            // mapping[i]->set(serialize[i].initValue);
+            printf(">>>> val: %s %f\n", mapping[i]->key(), serialize[i].initValue);
+        }
 
         sf_close(file);
 
