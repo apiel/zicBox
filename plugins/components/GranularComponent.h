@@ -29,6 +29,7 @@ protected:
 
     Rect saveRect;
     bool savePressed = false;
+    bool saved = false;
 
     void renderSampleWaveform()
     {
@@ -141,7 +142,10 @@ public:
         renderStartRange();
         renderToggle(sprayToggleRect, "spray", sprayControllerOn);
         renderToggle(playToggleRect, "play", playControllerOn);
-        renderButton(saveRect, "save", savePressed);
+        renderButton(saveRect, saved ? "saved" : "save", savePressed);
+        if (saved) {
+            saved = false;
+        }
     }
 
     float startOrigin = 0.0;
@@ -222,6 +226,7 @@ public:
         if (inRect(saveRect, motion.origin)) {
             plugin.data(2);
             savePressed = false;
+            saved = true;
             renderNext();
             return;
         }
