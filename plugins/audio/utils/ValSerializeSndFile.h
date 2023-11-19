@@ -15,6 +15,8 @@ protected:
 
     uint32_t findChunk(FILE* file)
     {
+        fseek(file, 0, SEEK_SET);
+
         uint32_t chunkID;
         uint32_t chunkSize;
         while (fread(&chunkID, 4, 1, file)) {
@@ -68,6 +70,22 @@ public:
         fclose(file);
     }
 
+    void saveSetting(FILE* file)
+    {
+        fwrite(VAL_SERIALIZE_CHUNK_ID, 4, 1, file);
+
+        // uint32_t serializeSize = sizeof(serialize);
+        uint32_t serializeSize = mapping.size() * sizeof(ValSerialize);
+        fwrite(&serializeSize, 4, 1, file);
+        fwrite(serialize, serializeSize, 1, file);
+
+        // if serializeSize is not multiple of 4 bytes then add missing bytes
+        uint32_t padding = 4 - (serializeSize % 4);
+        if (padding != 4) {
+            fwrite(&padding, 1, padding, file);
+        }
+    }
+
     void saveSetting(const char* filename)
     {
         FILE* file = fopen(filename, "ab");
@@ -81,20 +99,34 @@ public:
             serialize[i].initValue = mapping[i]->get();
         }
 
-        fseek(file, 0, SEEK_END);
+        uint32_t chunkSize = findChunk(file);
 
-        fwrite(VAL_SERIALIZE_CHUNK_ID, 4, 1, file);
+        printf("::::::::::::: chunkSize: %d\n", chunkSize);
+        if (chunkSize) {
+            printf(":::::::::::::copy\n");
+            // if file exist make a copy
+            char tmpFilename[256];
+            sprintf(tmpFilename, "%s.tmp", filename);
+            FILE* tmpFile = fopen(tmpFilename, "wb");
 
-        // uint32_t serializeSize = sizeof(serialize);
-        uint32_t serializeSize = mapping.size() * sizeof(ValSerialize);
-        fwrite(&serializeSize, 4, 1, file);
-        fwrite(serialize, serializeSize, 1, file);
+            long pos = ftell(file);
+            char c;
+            for (long i = 0; i < pos; i++) {
+                fread(&c, 1, 1, file);
+                fwrite(&c, 1, 1, tmpFile);
+            }
 
-        // if serializeSize is not multiple of 4 bytes then add missing bytes
-        uint32_t padding = 4 - (serializeSize % 4);
-        if (padding != 4) {
-            printf("...................... write padding: %d\n", padding);
-            fwrite(&padding, 1, padding, file);
+            saveSetting(tmpFile);
+            
+            fseek(file, chunkSize, SEEK_CUR);
+            while (fread(&c, 1, 1, file)) {
+                fwrite(&c, 1, 1, tmpFile);
+            }
+
+            fclose(tmpFile);
+        } else {
+            fseek(file, 0, SEEK_END);
+            saveSetting(file);
         }
 
         fclose(file);
