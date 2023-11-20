@@ -85,6 +85,7 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
        Could it become a more generic drum engine...
 
 - TODO wavetable player as in granular it doesnt make sense
+        pad one wavetable where X and Y morph on different wavetable...
 
 - TODO puredata plugin
 
