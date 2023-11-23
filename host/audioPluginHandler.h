@@ -160,7 +160,11 @@ public:
         // printf("-------------- noteOn %d %d %d\n", channel, note, velocity);
         for (MidiNoteEvent& target : midiNoteEvents) {
             if (target.channel == channel) {
-                target.plugin->noteOn(note, velocity);
+                if (velocity == 0) {
+                    target.plugin->noteOff(note, velocity);
+                } else {
+                    target.plugin->noteOn(note, velocity);
+                }
             }
         }
     }
