@@ -21,11 +21,11 @@ protected:
 
         if (strcmp(action, "&NOTE_ON") == 0) {
             char* pluginName = strtok(NULL, " ");
-            AudioPlugin* plugin = &getPlugin(pluginName);
             char* noteStr = strtok(NULL, " ");
             uint8_t note = atoi(noteStr);
             char* velocityStr = strtok(NULL, " ");
             uint8_t velocity = atoi(velocityStr);
+            AudioPlugin* plugin = &getPlugin(pluginName);
             event = [plugin, note, velocity]() {
                 plugin->noteOn(note, velocity);
             };
@@ -34,9 +34,9 @@ protected:
 
         if (strcmp(action, "&NOTE_OFF") == 0) {
             char* pluginName = strtok(NULL, " ");
-            AudioPlugin* plugin = &getPlugin(pluginName);
             char* noteStr = strtok(NULL, " ");
             uint8_t note = atoi(noteStr);
+            AudioPlugin* plugin = &getPlugin(pluginName);
             event = [plugin, note]() {
                 plugin->noteOff(note, 0);
             };

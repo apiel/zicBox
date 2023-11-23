@@ -43,7 +43,7 @@ protected:
 public:
     std::function<void()> onPress = []() {};
     std::function<void()> onRelease = []() {};
-    
+
     ButtonBaseComponent(ComponentInterface::Props props)
         : Component(props)
         , icon(props.draw)
@@ -102,7 +102,9 @@ public:
 
     void onMotion(MotionInterface& motion)
     {
-        handlePress(onPress, true);
+        if (!isPressed) {
+            handlePress(onPress, true);
+        }
     }
 
     void onMotionRelease(MotionInterface& motion)
