@@ -60,7 +60,6 @@ void enableDebug()
     APP_INFO("Debug mode enabled\n");
 }
 
-uint8_t midiNoteChannel = 0;
 char audioOutputName[255] = "";
 char audioInputName[255] = "";
 

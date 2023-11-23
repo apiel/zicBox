@@ -3,9 +3,9 @@
 
 #include <stdexcept>
 
+#include "../plugins/audio/audioPlugin.h"
 #include "def.h"
 #include "midiMapping.h"
-#include "../plugins/audio/audioPlugin.h"
 
 class AudioPluginHandler : public AudioPluginHandlerInterface {
 protected:
@@ -13,8 +13,26 @@ protected:
 
     std::vector<MidiMapping> midiMapping;
 
+    struct MidiNoteEvent {
+        uint8_t channel;
+        AudioPlugin* plugin;
+    };
+    std::vector<MidiNoteEvent> midiNoteEvents;
+
     static AudioPluginHandler* instance;
     AudioPluginHandler() { }
+
+    bool assignMidiNoteChannel(char* value)
+    {
+        uint8_t channel = atoi(value);
+        if (channel < 1 || channel > 16) {
+            APP_INFO("Invalid midi note channel, set to 1\n");
+            channel = 1;
+        }
+        midiNoteEvents.push_back({ (uint8_t)(channel - 1), plugins.back().instance });
+        APP_INFO("[%s] Midi note channel set to %d\n", plugins.back().instance->name, channel);
+        return true;
+    }
 
     bool assignMidiMapping(char* value)
     {
@@ -120,6 +138,8 @@ public:
                 return true;
             } else if (strcmp(key, "MIDI_CC") == 0) {
                 return assignMidiMapping(value);
+            } else if (strcmp(key, "MIDI_NOTE_CHANNEL") == 0) {
+                return assignMidiNoteChannel(value);
             }
         }
         return false;
@@ -133,6 +153,26 @@ public:
             }
         }
         return false;
+    }
+
+    void noteOn(uint8_t channel, uint8_t note, uint8_t velocity)
+    {
+        // printf("-------------- noteOn %d %d %d\n", channel, note, velocity);
+        for (MidiNoteEvent& target : midiNoteEvents) {
+            if (target.channel == channel) {
+                target.plugin->noteOn(note, velocity);
+            }
+        }
+    }
+
+    void noteOff(uint8_t channel, uint8_t note, uint8_t velocity)
+    {
+        // printf("------------- noteOff %d %d %d\n", channel, note, velocity);
+        for (MidiNoteEvent& target : midiNoteEvents) {
+            if (target.channel == channel) {
+                target.plugin->noteOff(note, velocity);
+            }
+        }
     }
 
     void clockTick()

@@ -29,9 +29,6 @@ void hostScriptCallback(char* key, char* value, const char* filename, uint8_t in
     } else if (strcmp(key, "GAIN_OUTPUT") == 0) {
         // float gain = AudioPluginHandler::get().gainVolume.setGain(atof(value)).gain;
         // APP_INFO("Gain output set: %f\n", gain);
-    } else if (strcmp(key, "MIDI_NOTE_CHANNEL") == 0) {
-        midiNoteChannel = atoi(value);
-        APP_INFO("Midi note channel set: %d\n", midiNoteChannel);
     } else if (strcmp(key, "DEBUG") == 0) {
         if (strcmp(value, "true") == 0) {
             enableDebug();
