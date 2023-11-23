@@ -2,6 +2,8 @@
 #define _UI_DRAW_H_
 
 #include <SDL2/SDL.h>
+// #include <SDL2/SDL2_gfxPrimitives.h>
+#include "drawGfx.h"
 #include <SDL2/SDL_ttf.h>
 
 #include "plugins/components/drawInterface.h"
@@ -175,6 +177,28 @@ public:
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
         SDL_Rect rect = { position.x, position.y, size.w, size.h };
         SDL_RenderFillRect(renderer, &rect);
+
+        // aacircleRGBA(renderer, position.x, position.y, 10, 255, 0, 0, color.a);
+        // circleRGBA(renderer, position.x, position.y, 10, 255, 0, 0, color.a);
+        // ellipseRGBA(renderer, position.x, position.y, 10, 30, 0, 0, 255, color.a);
+        // pieRGBA(renderer, position.x, position.y, 180, 10, 30, 255, 0, 0, color.a);
+
+        // filledPieRGBA(renderer, position.x, position.y, 16, 130, 50, 255, 0, 0, color.a);
+        // filledCircleRGBA(renderer, position.x, position.y, 10, color.r, color.g, color.b, color.a);
+
+        // arcRGBA(renderer, position.x, position.y, 16, 130, 50, 255, 0, 0, color.a);
+        // arcRGBA(renderer, position.x, position.y, 15, 130, 50, 255, 0, 0, color.a);
+        // arcRGBA(renderer, position.x, position.y, 14, 130, 50, 255, 0, 0, color.a);
+        // arcRGBA(renderer, position.x, position.y, 13, 130, 50, 255, 0, 0, color.a);
+        // arcRGBA(renderer, position.x, position.y, 12, 130, 50, 255, 0, 0, color.a);
+
+        // filledPieRGBA(renderer, position.x, position.y, 16, 130, 50, 255, 0, 0, color.a);
+        // filledCircleRGBA(renderer, position.x, position.y, 10, color.r, color.g, color.b, color.a);
+
+        // // https://github.com/rtrussell/BBCSDL/blob/master/include/SDL2_gfxPrimitives.h
+        // aaFilledPieRGBA(renderer, position.x, position.y, 16, 16, 130, 50, 0, 255, 0, 0, color.a);
+        // // aaFilledPieRGBA(renderer, position.x, position.y, 10, 10, 130, 50, 0, color.r, color.g, color.b, color.a);
+        // aaFilledEllipseRGBA(renderer, position.x, position.y, 10, 10, color.r, color.g, color.b, color.a);
     }
 
     void rect(Point position, Size size, Color color)
@@ -193,7 +217,7 @@ public:
     void lines(std::vector<Point> points, Color color)
     {
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-        SDL_RenderDrawLines(renderer, (SDL_Point *)points.data(), points.size());
+        SDL_RenderDrawLines(renderer, (SDL_Point*)points.data(), points.size());
     }
 
     void pixel(Point position, Color color)

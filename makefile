@@ -1,6 +1,7 @@
 RTMIDI=`pkg-config --cflags --libs rtmidi`
 SDL2=`sdl2-config --cflags --libs`
 SDL2_ttf=`pkg-config --cflags --libs SDL2_ttf`
+SDL2_gfx=`pkg-config --cflags --libs SDL2_gfx`
 
 ifneq ($(shell uname -m),x86_64)
 RPI := -DIS_RPI=1
@@ -36,7 +37,7 @@ runHost:
 
 build:
 	@echo "\n------------------ build zicBox ------------------\n"
-	g++ -g -fms-extensions -o zicBox zicBox.cpp -ldl $(SDL2) $(SDL2_ttf) $(RPI) $(RTMIDI)
+	g++ -g -fms-extensions -o zicBox zicBox.cpp -ldl $(SDL2) $(SDL2_ttf) $(SDL2_gfx) $(RPI) $(RTMIDI)
 
 run:
 	@echo "\n------------------ run zicBox ------------------\n"
