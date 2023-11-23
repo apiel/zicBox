@@ -9,8 +9,13 @@
 #include "config.h"
 #include "styles.h"
 
-int main()
+int main( int argc, char* argv[] )
 {
+    if (argc == 2)
+    {
+        configPath = argv[1];
+    }
+
     loadUiConfig();
 
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);

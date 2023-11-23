@@ -41,9 +41,9 @@ void hostScriptCallback(char* key, char* value, const char* filename, uint8_t in
     }
 }
 
-void loadHostConfig()
+void loadHostConfig(const char* filename)
 {
-    DustScript::load("./config.cfg", hostScriptCallback);
+    DustScript::load(filename, hostScriptCallback);
 }
 
 #endif
