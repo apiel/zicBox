@@ -16,10 +16,11 @@ protected:
     static AudioPluginHandler* instance;
     AudioPluginHandler() { }
 
-    bool assignMidiMapping(char* key, char* value)
+    bool assignMidiMapping(char* value)
     {
         // split value by space
-        char* msg0 = strtok(value, " ");
+        char* pluginKey = strtok(value, " ");
+        char* msg0 = strtok(NULL, " ");
         char* msg1 = strtok(NULL, " ");
         char* msg2 = strtok(NULL, " ");
 
@@ -34,10 +35,10 @@ protected:
         uint8_t msg1Int = strtol(msg1, NULL, 16);
 
         // try to assign value to last plugin
-        int valueIndex = plugins.back().instance->getValueIndex(key);
+        int valueIndex = plugins.back().instance->getValueIndex(pluginKey);
         if (valueIndex != -1) {
             midiMapping.push_back({ plugins.back().instance, valueIndex, size, valuePosition, msg0Int, msg1Int });
-            APP_INFO("[%s] Midi mapping assigned: %s\n", plugins.back().instance->name, key);
+            APP_INFO("[%s] Midi mapping assigned: %s\n", plugins.back().instance->name, pluginKey);
             return true;
         }
         return false;
@@ -117,8 +118,8 @@ public:
         if (plugins.size() > 0) {
             if (plugins.back().instance->config(key, value)) {
                 return true;
-            } else {
-                return assignMidiMapping(key, value);
+            } else if (strcmp(key, "MIDI_CC") == 0) {
+                return assignMidiMapping(value);
             }
         }
         return false;
