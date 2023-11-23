@@ -11,7 +11,7 @@
 #include "host/zicHost.h"
 
 AudioPluginHandlerInterface* audioPluginHandler = NULL;
-const char *configPath = "./config.cfg";
+char hostConfigPath[512] = "./config.cfg";
 
 bool loadHost();
 
@@ -47,7 +47,7 @@ bool loadHost()
     }
 
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Initializing host\n");
-    audioPluginHandler = initHost(configPath);
+    audioPluginHandler = initHost((const char *)hostConfigPath);
     if (!audioPluginHandler)
     {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Error initializing host\n");

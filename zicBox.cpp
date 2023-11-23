@@ -11,12 +11,7 @@
 
 int main( int argc, char* argv[] )
 {
-    if (argc == 2)
-    {
-        configPath = argv[1];
-    }
-
-    loadUiConfig();
+    loadUiConfig(argc == 2 ? argv[1] : "config.ui");
 
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
 

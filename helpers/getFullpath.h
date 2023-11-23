@@ -4,22 +4,20 @@
 #include <string.h>
 
 // TODO use string...
-char *getFullpath(char *path, const char *parentFilename, char *fullpathBuffer)
+char* getFullpath(char* path, const char* parentFilename, char* fullpathBuffer)
 {
-    if (path[0] == '/')
-    {
+    if (path[0] == '/') {
         return path;
     }
 
     strcpy(fullpathBuffer, parentFilename);
-    char *lastSlash = strrchr(fullpathBuffer, '/');
-    if (lastSlash)
-    {
+    char* lastSlash = strrchr(fullpathBuffer, '/');
+    if (lastSlash) {
         *lastSlash = '\0';
+        strcat(fullpathBuffer, "/");
     } else {
         fullpathBuffer[0] = '\0';
     }
-    strcat(fullpathBuffer, "/");
     strcat(fullpathBuffer, path);
     return fullpathBuffer;
 }

@@ -3,6 +3,7 @@
 
 #include "controllers.h"
 #include "viewManager.h"
+#include "host.h"
 
 #include "dustscript/dustscript.h"
 
@@ -14,6 +15,8 @@ void uiScriptCallback(char* key, char* value, const char* filename, uint8_t inde
         char fullpath[512];
         getFullpath(value, filename, fullpath);
         DustScript::load(fullpath, uiScriptCallback);
+    } else if (strcmp(key, "HOST_CONFIG") == 0) {
+        getFullpath(value, filename, hostConfigPath);
     } else if (strcmp(key, "PLUGIN_CONTROLLER") == 0) {
         char fullpath[512];
         getFullpath(value, filename, fullpath);
@@ -29,9 +32,9 @@ void uiScriptCallback(char* key, char* value, const char* filename, uint8_t inde
     }
 }
 
-void loadUiConfig()
+void loadUiConfig(const char* filename)
 {
-    DustScript::load("ui/index.ui", uiScriptCallback);
+    DustScript::load(filename, uiScriptCallback);
 }
 
 #endif
