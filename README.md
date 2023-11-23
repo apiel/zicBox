@@ -23,7 +23,7 @@ sudo apt install build-essential
 Audio:
 
 ```sh
-sudo apt install librtaudio-dev librtmidi-dev libsndfile1-dev
+sudo apt install librtmidi-dev libsndfile1-dev
 ```
 
 User interface:
