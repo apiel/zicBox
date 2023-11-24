@@ -22,7 +22,7 @@ protected:
         int h;
     } area;
 
-    const int valueMarginTop = 15;
+    const int valueMarginTop = 3;
 
     bool encoderActive = false;
     int8_t encoderId = -1;
@@ -32,7 +32,7 @@ protected:
 
     void drawLabel()
     {
-        draw.text({ area.x, area.y }, label, colors.title, 12);
+        draw.textCentered({ area.xCenter, area.yCenter + 15 }, label, colors.title, 12);
     }
 
     void drawBar()
@@ -45,13 +45,12 @@ protected:
         // printf("val: %d, endAngle: %d\n", val, endAngle);
 
         if (endAngle != 50) {
-            draw.filledPie({ area.xCenter, area.yCenter }, 20, 130, 50, colors.barBackground);
+            draw.filledPie({ area.xCenter, area.yCenter - valueMarginTop }, 20, 130, 50, colors.barBackground);
         }
         if (endAngle != 130) {
-            draw.filledPie({ area.xCenter, area.yCenter }, 20, 130, endAngle, colors.bar);
+            draw.filledPie({ area.xCenter, area.yCenter - valueMarginTop }, 20, 130, endAngle, colors.bar);
         }
-        // // draw.filledPie({ area.xCenter, area.yCenter }, 20, 195, 200, colors.barEdge);
-        draw.filledEllipse({ area.xCenter, area.yCenter }, 15, 15, colors.background);
+        draw.filledEllipse({ area.xCenter, area.yCenter - valueMarginTop }, 15, 15, colors.background);
     }
 
     void drawValue()
@@ -59,10 +58,10 @@ protected:
         std::string valStr = std::to_string(value->get());
         valStr = valStr.substr(0, valStr.find(".") + valueFloatPrecision + (valueFloatPrecision > 0 ? 1 : 0));
 
-        int x = draw.textCentered({ area.xCenter, area.yCenter - 5 }, valStr.c_str(), colors.value, 10);
+        int x = draw.textCentered({ area.xCenter, area.yCenter - 5 - valueMarginTop }, valStr.c_str(), colors.value, 10);
 
         if (value->props().unit != NULL) {
-            draw.textCentered({ area.xCenter, area.yCenter + 7 }, value->props().unit, colors.unit, 10);
+            draw.textCentered({ area.xCenter, area.yCenter + 7 - valueMarginTop }, value->props().unit, colors.unit, 10);
         }
     }
 
@@ -72,48 +71,6 @@ protected:
         drawBar();
         drawValue();
     }
-
-    // void drawCenteredBar()
-    // {
-    //     int x = area.x + (area.w * 0.5);
-    //     int y = area.y + area.h - 10;
-    //     int x2 = area.x + (area.w * value->pct());
-    //     draw.line({ x, y }, { x2, y }, colors.value);
-    //     draw.line({ x, y - 1 }, { x2, y - 1 }, colors.value);
-    // }
-
-    // void drawCenteredEncoder()
-    // {
-    //     if (type == 1) {
-    //         draw.textCentered({ area.xCenter, area.y }, label, colors.title, 12);
-
-    //         int val = value->get();
-    //         // fixme use floating point...
-    //         draw.textRight({ area.x + area.w, area.y + valueMarginTop }, std::to_string(val).c_str(),
-    //             colors.value, 20, { styles.font.bold });
-    //         draw.text({ area.x, area.y + valueMarginTop }, std::to_string((int)value->props().max - val).c_str(),
-    //             colors.value, 20, { styles.font.bold });
-    //     } else {
-    //         drawLabel();
-    //         drawValue();
-    //     }
-
-    //     drawCenteredBar();
-    // }
-
-    // void drawStringEncoder()
-    // {
-    //     if (type == 1) {
-    //         draw.text({ area.x, area.y + 5 }, value->string().c_str(), colors.value, 12, { .maxWidth = area.w });
-    //         char valueStr[20];
-    //         sprintf(valueStr, "%d / %d", (int)(value->get()), (int)value->props().max);
-    //         draw.textRight({ area.x + area.w, area.y + 25 }, valueStr, colors.title, 10);
-    //     } else {
-    //         drawLabel();
-    //         draw.text({ area.x, area.y + 18 }, value->string().c_str(), colors.value, 12, { .maxWidth = area.w });
-    //     }
-    //     drawBar();
-    // }
 
     void set(const char* pluginName, const char* key)
     {
@@ -146,6 +103,16 @@ public:
     {
         area.xCenter = (int)(area.x + (area.w * 0.5));
         area.yCenter = (int)(area.y + (area.h * 0.5));
+
+        if (size.h < 60) {
+            printf("Encoder component height too small: %dx%d. Min height is 60.\n", size.w, size.h);
+            size.h = 60;
+        }
+
+        if (size.w < 60) {
+            printf("Encoder component width too small: %dx%d. Min width is 60.\n", size.w, size.h);
+            size.w = 60;
+        }
     }
 
     void render()

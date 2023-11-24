@@ -14,11 +14,6 @@ VIEW: Granular HIDDEN
     ENCODER_ID: 1
     VALUE: Granular REPEAT
 
-  COMPONENT: Encoder2 200 0 100 50
-    GROUP: 0
-    ENCODER_ID: 2
-    VALUE: Granular GRAIN_SIZE
-
 
   COMPONENT: Encoder 0 50 100 50
     GROUP: 1
@@ -70,3 +65,15 @@ VIEW: Granular HIDDEN
     ENCODER_ID: 1
     ENCODER_ID: 2
     ENCODER_ID: 3
+
+
+
+  COMPONENT: Encoder2 200 0 100 50
+    GROUP: 0
+    ENCODER_ID: 2
+    VALUE: Granular GRAIN_SIZE
+
+  COMPONENT: Encoder2 300 0 100 50
+    GROUP: 0
+    ENCODER_ID: 3
+    VALUE: Granular RELEASE

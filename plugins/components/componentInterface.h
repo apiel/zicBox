@@ -21,7 +21,7 @@ protected:
 public:
     std::vector<ValueInterface*> values;
     Point position;
-    const Size size;
+    Size size;
     int8_t group = -1;
 
     std::function<void(unsigned long now)> jobRendering;
