@@ -82,7 +82,7 @@ protected:
             draw.textCentered({ area.xCenter, area.y }, label, colors.title, 12);
 
             int val = value->get();
-            // fixme use floating point...
+            // FIXME use floating point...
             draw.textRight({ area.x + area.w, area.y + valueMarginTop }, std::to_string(val).c_str(),
                 colors.value, 20, { styles.font.bold });
             draw.text({ area.x, area.y + valueMarginTop }, std::to_string((int)value->props().max - val).c_str(),

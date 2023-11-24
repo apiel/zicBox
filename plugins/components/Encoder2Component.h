@@ -38,38 +38,90 @@ protected:
     void drawBar()
     {
         int val = 280 * value->pct();
-        int endAngle = 130 + val;
-        if (endAngle > 360) {
-            endAngle = endAngle - 360;
-        }
+
         // printf("val: %d, endAngle: %d\n", val, endAngle);
 
-        if (endAngle != 50) {
+        if (val < 280) {
             draw.filledPie({ area.xCenter, area.yCenter - valueMarginTop }, 20, 130, 50, colors.barBackground);
         }
-        if (endAngle != 130) {
+        if (val > 0) {
+            int endAngle = 130 + val;
+            if (endAngle > 360) {
+                endAngle = endAngle - 360;
+            }
             draw.filledPie({ area.xCenter, area.yCenter - valueMarginTop }, 20, 130, endAngle, colors.bar);
+        }
+        draw.filledEllipse({ area.xCenter, area.yCenter - valueMarginTop }, 15, 15, colors.background);
+    }
+
+    void drawUnit()
+    {
+        if (value->props().unit != NULL) {
+            draw.textCentered({ area.xCenter, area.yCenter + 7 - valueMarginTop }, value->props().unit, colors.unit, 10);
+        }
+    }
+
+    void drawCenteredBar()
+    {
+        int val = 280 * value->pct();
+
+        draw.filledPie({ area.xCenter, area.yCenter - valueMarginTop }, 20, 130, 50, colors.barBackground);
+        if (val > 140) {
+            int endAngle = 130 + val;
+            if (endAngle > 360) {
+                endAngle = endAngle - 360;
+            }
+
+            draw.filledPie({ area.xCenter, area.yCenter - valueMarginTop }, 20, 270, endAngle, colors.bar);
+        } else if (val < 140) {
+            draw.filledPie({ area.xCenter, area.yCenter - valueMarginTop }, 20, 270 - (140 - val), 270, colors.bar);
         }
         draw.filledEllipse({ area.xCenter, area.yCenter - valueMarginTop }, 15, 15, colors.background);
     }
 
     void drawValue()
     {
-        std::string valStr = std::to_string(value->get());
+        float val = value->get();
+        if (type == 1) {
+            // val = value->props().max - val;
+        }
+        std::string valStr = std::to_string(val);
         valStr = valStr.substr(0, valStr.find(".") + valueFloatPrecision + (valueFloatPrecision > 0 ? 1 : 0));
 
         int x = draw.textCentered({ area.xCenter, area.yCenter - 5 - valueMarginTop }, valStr.c_str(), colors.value, 10);
+    }
 
-        if (value->props().unit != NULL) {
-            draw.textCentered({ area.xCenter, area.yCenter + 7 - valueMarginTop }, value->props().unit, colors.unit, 10);
-        }
+    void drawTwoSidedValue()
+    {
+        int val = value->get();
+        // FIXME use floating point...
+        draw.textRight({ area.xCenter - 2, area.yCenter - 5 - valueMarginTop }, std::to_string((int)value->props().max - val).c_str(),
+            colors.value, 7);
+        draw.text({ area.xCenter + 2, area.yCenter - 5 - valueMarginTop }, std::to_string(val).c_str(),
+            colors.value, 7);
+
+        draw.line({ area.xCenter, area.yCenter - 10 - valueMarginTop }, { area.xCenter, area.yCenter + 10 - valueMarginTop },
+            colors.barTwoSide);
+        draw.line({ area.xCenter - 1, area.yCenter - 10 - valueMarginTop }, { area.xCenter - 1, area.yCenter + 10 - valueMarginTop },
+            colors.barTwoSide);
     }
 
     void drawEncoder()
     {
         drawLabel();
-        drawBar();
-        drawValue();
+        if (value->props().type == VALUE_CENTERED) {
+            drawCenteredBar();
+        } else {
+            drawBar();
+        }
+
+        drawUnit();
+
+        if (value->props().type == VALUE_CENTERED && type == 1) {
+            drawTwoSidedValue();
+        } else {
+            drawValue();
+        }
     }
 
     void set(const char* pluginName, const char* key)
@@ -88,7 +140,7 @@ protected:
         Color unit;
         Color bar;
         Color barBackground;
-        Color barEdge;
+        Color barTwoSide;
     } colors;
 
     const int margin;
@@ -125,7 +177,7 @@ public:
             draw.alpha(styles.colors.white, 0.2),
             styles.colors.blue,
             draw.alpha(styles.colors.blue, 0.5),
-            styles.colors.white,
+            draw.alpha(styles.colors.blue, 0.2),
         };
 
         draw.filledRect(

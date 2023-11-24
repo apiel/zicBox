@@ -78,3 +78,8 @@ VIEW: Granular HIDDEN
     GROUP: 0
     ENCODER_ID: 3
     VALUE: Granular RELEASE
+
+  COMPONENT: Encoder2 400 0 100 50
+    GROUP: 0
+    ENCODER_ID: 4
+    VALUE: Granular PITCH
