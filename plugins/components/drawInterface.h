@@ -90,6 +90,9 @@ public:
     virtual void lines(std::vector<Point> points, Color color) = 0;
     virtual void pixel(Point position, Color color) = 0;
 
+    virtual void filledPie(Point position, int radius, int startAngle, int endAngle, Color color) = 0;
+    virtual void filledEllipse(Point position, int radiusX, int radiusY, Color color) = 0;
+
     virtual void* setTextureRenderer(Size size) = 0;
     virtual void setMainRenderer() = 0;
     virtual void destroyTexture(void* texture) = 0;

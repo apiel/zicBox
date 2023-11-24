@@ -1,4 +1,5 @@
 PLUGIN_COMPONENT: Encoder ./plugins/components/build/libzic_EncoderComponent.so
+PLUGIN_COMPONENT: Encoder2 ./plugins/components/build/libzic_Encoder2Component.so
 PLUGIN_COMPONENT: Pad ./plugins/components/build/libzic_PadComponent.so
 PLUGIN_COMPONENT: Granular ./plugins/components/build/libzic_GranularComponent.so
 PLUGIN_COMPONENT: Wave ./plugins/components/build/libzic_WaveComponent.so

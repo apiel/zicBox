@@ -176,11 +176,6 @@ public:
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
         SDL_Rect rect = { position.x, position.y, size.w, size.h };
         SDL_RenderFillRect(renderer, &rect);
-
-        // // https://github.com/rtrussell/BBCSDL/blob/master/include/SDL2_gfxPrimitives.h
-        // aaFilledPieRGBA(renderer, position.x, position.y, 16, 16, 130, 50, 0, 255, 0, 0, color.a);
-        // // aaFilledPieRGBA(renderer, position.x, position.y, 10, 10, 130, 50, 0, color.r, color.g, color.b, color.a);
-        // aaFilledEllipseRGBA(renderer, position.x, position.y, 10, 10, color.r, color.g, color.b, color.a);
     }
 
     void rect(Point position, Size size, Color color)
@@ -188,6 +183,18 @@ public:
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
         SDL_Rect rect = { position.x, position.y, size.w, size.h };
         SDL_RenderDrawRect(renderer, &rect);
+    }
+
+    void filledPie(Point position, int radius, int startAngle, int endAngle, Color color)
+    {
+        // https://github.com/rtrussell/BBCSDL/blob/master/include/SDL2_gfxPrimitives.h
+        aaFilledPieRGBA(renderer, position.x, position.y, radius, radius, startAngle, endAngle, 0, color.r, color.g, color.b, color.a);
+    }
+
+    void filledEllipse(Point position, int radiusX, int radiusY, Color color)
+    {
+        // https://github.com/rtrussell/BBCSDL/blob/master/include/SDL2_gfxPrimitives.h
+        aaFilledEllipseRGBA(renderer, position.x, position.y, radiusX, radiusY, color.r, color.g, color.b, color.a);
     }
 
     void line(Point start, Point end, Color color)
