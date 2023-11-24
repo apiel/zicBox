@@ -4,14 +4,14 @@
 #include "component.h"
 #include <string>
 
-// TODO use function pointer on encoder initialisation to assign draw function base on type
-
 class Encoder2Component : public Component {
 protected:
     const char* name = NULL;
     const char* label = NULL;
     char labelBuffer[32];
     uint8_t type = 0;
+    int radius = 20;
+    int insideRadius = 15;
 
     struct DrawArea {
         int x;
@@ -39,19 +39,17 @@ protected:
     {
         int val = 280 * value->pct();
 
-        // printf("val: %d, endAngle: %d\n", val, endAngle);
-
         if (val < 280) {
-            draw.filledPie({ area.xCenter, area.yCenter - valueMarginTop }, 20, 130, 50, colors.barBackground);
+            draw.filledPie({ area.xCenter, area.yCenter - valueMarginTop }, radius, 130, 50, colors.barBackground);
         }
         if (val > 0) {
             int endAngle = 130 + val;
             if (endAngle > 360) {
                 endAngle = endAngle - 360;
             }
-            draw.filledPie({ area.xCenter, area.yCenter - valueMarginTop }, 20, 130, endAngle, colors.bar);
+            draw.filledPie({ area.xCenter, area.yCenter - valueMarginTop }, radius, 130, endAngle, colors.bar);
         }
-        draw.filledEllipse({ area.xCenter, area.yCenter - valueMarginTop }, 15, 15, colors.background);
+        draw.filledEllipse({ area.xCenter, area.yCenter - valueMarginTop }, insideRadius, insideRadius, colors.background);
     }
 
     void drawUnit()
@@ -65,27 +63,23 @@ protected:
     {
         int val = 280 * value->pct();
 
-        draw.filledPie({ area.xCenter, area.yCenter - valueMarginTop }, 20, 130, 50, colors.barBackground);
+        draw.filledPie({ area.xCenter, area.yCenter - valueMarginTop }, radius, 130, 50, colors.barBackground);
         if (val > 140) {
             int endAngle = 130 + val;
             if (endAngle > 360) {
                 endAngle = endAngle - 360;
             }
 
-            draw.filledPie({ area.xCenter, area.yCenter - valueMarginTop }, 20, 270, endAngle, colors.bar);
+            draw.filledPie({ area.xCenter, area.yCenter - valueMarginTop }, radius, 270, endAngle, colors.bar);
         } else if (val < 140) {
-            draw.filledPie({ area.xCenter, area.yCenter - valueMarginTop }, 20, 270 - (140 - val), 270, colors.bar);
+            draw.filledPie({ area.xCenter, area.yCenter - valueMarginTop }, radius, 270 - (140 - val), 270, colors.bar);
         }
-        draw.filledEllipse({ area.xCenter, area.yCenter - valueMarginTop }, 15, 15, colors.background);
+        draw.filledEllipse({ area.xCenter, area.yCenter - valueMarginTop }, insideRadius, insideRadius, colors.background);
     }
 
     void drawValue()
     {
-        float val = value->get();
-        if (type == 1) {
-            // val = value->props().max - val;
-        }
-        std::string valStr = std::to_string(val);
+        std::string valStr = std::to_string(value->get());
         valStr = valStr.substr(0, valStr.find(".") + valueFloatPrecision + (valueFloatPrecision > 0 ? 1 : 0));
 
         int x = draw.textCentered({ area.xCenter, area.yCenter - 5 - valueMarginTop }, valStr.c_str(), colors.value, 10);
@@ -134,7 +128,6 @@ protected:
 
     struct Colors {
         Color background;
-        Color id;
         Color title;
         Color value;
         Color unit;
@@ -153,6 +146,16 @@ public:
         , margin(styles.margin)
         , area({ position.x, 0, position.y, 0, size.w, size.h })
     {
+        colors = {
+            styles.colors.background,
+            draw.alpha(styles.colors.white, 0.4),
+            draw.alpha(styles.colors.white, 0.4),
+            draw.alpha(styles.colors.white, 0.2),
+            styles.colors.blue,
+            draw.alpha(styles.colors.blue, 0.5),
+            draw.alpha(styles.colors.blue, 0.2),
+        };
+
         area.xCenter = (int)(area.x + (area.w * 0.5));
         area.yCenter = (int)(area.y + (area.h * 0.5));
 
@@ -165,49 +168,26 @@ public:
             printf("Encoder component width too small: %dx%d. Min width is 60.\n", size.w, size.h);
             size.w = 60;
         }
+
+        radius = size.h / 3.0;
+        insideRadius = radius - 5;
     }
 
     void render()
     {
-        colors = {
-            styles.colors.background,
-            draw.alpha(styles.colors.white, 0.6),
-            draw.alpha(styles.colors.white, 0.4),
-            draw.alpha(styles.colors.white, 0.4),
-            draw.alpha(styles.colors.white, 0.2),
-            styles.colors.blue,
-            draw.alpha(styles.colors.blue, 0.5),
-            draw.alpha(styles.colors.blue, 0.2),
-        };
-
         draw.filledRect(
             { position.x + margin, position.y + margin },
             { size.w - 2 * margin, size.h - 2 * margin },
             colors.background);
 
-        // if (encoderActive) {
-        //     draw.filledRect(
-        //         { position.x + margin, position.y + margin },
-        //         { 12, 12 },
-        //         colors.id);
-        //     draw.textCentered({ position.x + margin + 6, position.y + margin }, std::to_string(encoderId + 1).c_str(), colors.background, 8);
-        // }
-
         if (value != NULL) {
-            // if (value->props().type == VALUE_CENTERED) {
-            //     drawCenteredEncoder();
-            // } else if (value->props().type == VALUE_STRING) {
-            //     drawStringEncoder();
-            // } else {
             drawEncoder();
-            // }
         }
     }
 
     bool config(char* key, char* value)
     {
         if (strcmp(key, "VALUE") == 0) {
-            // printf("value: %s\n", value);
             char* pluginName = strtok(value, " ");
             char* keyValue = strtok(NULL, " ");
             set(pluginName, keyValue);
@@ -239,11 +219,19 @@ public:
         if (strcmp(key, "COLOR") == 0) {
             colors.bar = draw.getColor(value);
             colors.barBackground = draw.alpha(colors.bar, 0.5);
+            colors.barTwoSide = draw.alpha(colors.bar, 0.2);
             return true;
         }
 
         if (strcmp(key, "BACKGROUND_COLOR") == 0) {
             colors.background = draw.getColor(value);
+            return true;
+        }
+
+        if (strcmp(key, "TEXT_COLOR") == 0) {
+            colors.title = draw.alpha(draw.getColor(value), 0.4);
+            colors.value = draw.alpha(draw.getColor(value), 0.4);
+            colors.unit = draw.alpha(draw.getColor(value), 0.2);
             return true;
         }
 
