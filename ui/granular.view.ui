@@ -71,7 +71,8 @@ VIEW: Granular HIDDEN
   COMPONENT: Encoder2 200 0 100 50
     GROUP: 0
     ENCODER_ID: 2
-    VALUE: Granular GRAIN_SIZE
+    VALUE: MultiModeFilter CUTOFF
+    TYPE: TWO_SIDED
 
   COMPONENT: Encoder2 300 0 100 50
     GROUP: 0
