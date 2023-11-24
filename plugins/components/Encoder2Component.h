@@ -13,6 +13,9 @@ protected:
     int radius = 20;
     int insideRadius = 15;
 
+    int fontValueSize = 10;
+    int twoSideMargin = 2;
+
     struct DrawArea {
         int x;
         int xCenter;
@@ -32,7 +35,7 @@ protected:
 
     void drawLabel()
     {
-        draw.textCentered({ area.xCenter, area.yCenter + 15 }, label, colors.title, 12);
+        draw.textCentered({ area.xCenter, area.yCenter + insideRadius }, label, colors.title, 12);
     }
 
     void drawBar()
@@ -55,7 +58,7 @@ protected:
     void drawUnit()
     {
         if (value->props().unit != NULL) {
-            draw.textCentered({ area.xCenter, area.yCenter + 7 - valueMarginTop }, value->props().unit, colors.unit, 10);
+            draw.textCentered({ area.xCenter, area.yCenter + fontValueSize - 2 - valueMarginTop }, value->props().unit, colors.unit, 10);
         }
     }
 
@@ -82,17 +85,17 @@ protected:
         std::string valStr = std::to_string(value->get());
         valStr = valStr.substr(0, valStr.find(".") + valueFloatPrecision + (valueFloatPrecision > 0 ? 1 : 0));
 
-        int x = draw.textCentered({ area.xCenter, area.yCenter - 5 - valueMarginTop }, valStr.c_str(), colors.value, 10);
+        int x = draw.textCentered({ area.xCenter, area.yCenter - 5 - valueMarginTop }, valStr.c_str(), colors.value, fontValueSize);
     }
 
     void drawTwoSidedValue()
     {
         int val = value->get();
         // FIXME use floating point...
-        draw.textRight({ area.xCenter - 2, area.yCenter - 5 - valueMarginTop }, std::to_string((int)value->props().max - val).c_str(),
-            colors.value, 7);
-        draw.text({ area.xCenter + 2, area.yCenter - 5 - valueMarginTop }, std::to_string(val).c_str(),
-            colors.value, 7);
+        draw.textRight({ area.xCenter - twoSideMargin, area.yCenter - 5 - valueMarginTop }, std::to_string((int)value->props().max - val).c_str(),
+            colors.value, fontValueSize - 3);
+        draw.text({ area.xCenter + twoSideMargin, area.yCenter - 5 - valueMarginTop }, std::to_string(val).c_str(),
+            colors.value, fontValueSize - 3);
 
         draw.line({ area.xCenter, area.yCenter - 10 - valueMarginTop }, { area.xCenter, area.yCenter + 10 - valueMarginTop },
             colors.barTwoSide);
@@ -171,6 +174,17 @@ public:
 
         radius = size.h / 3.0;
         insideRadius = radius - 5;
+
+        if (radius > 35) {
+            fontValueSize = 15;
+            twoSideMargin = 5;
+        } else if (radius > 26) {
+            fontValueSize = 14;
+            twoSideMargin = 3;
+        } else if (radius > 24) {
+            fontValueSize = 12;
+        }
+        printf("....................font: %d\n", fontValueSize);
     }
 
     void render()
