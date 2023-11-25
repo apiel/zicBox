@@ -1,0 +1,30 @@
+
+VIEW: Demo
+
+  INCLUDE: layout.ui
+
+  COMPONENT: Encoder 0 50 100 50
+    GROUP: 0
+    ENCODER_ID: 0
+    VALUE: Granular BROWSER
+    TYPE: BROWSE
+
+  COMPONENT: Encoder2 200 0 110 110
+    GROUP: 0
+    ENCODER_ID: 2
+    VALUE: MultiModeFilter CUTOFF
+    TYPE: TWO_SIDED
+
+  COMPONENT: Encoder2 350 0 150 150
+    GROUP: 0
+    ENCODER_ID: 3
+    VALUE: Granular RELEASE
+
+  COMPONENT: Encoder2 500 0 60 60
+    GROUP: 0
+    ENCODER_ID: 3
+    VALUE: Granular RELEASE
+
+
+  COMPONENT: Wave2 0 200 800 180
+    GROUP: 1
