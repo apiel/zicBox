@@ -96,8 +96,8 @@ public:
         , margin(styles.margin)
         , plugin(getPlugin("Granular"))
         , wave(getNewPropsRect(props,
-              { 0, 20 },
-              { props.size.w - 2 * styles.margin, (int)(props.size.h - 2 * (20 + styles.margin)) }))
+              { { 0, 20 },
+                  { props.size.w - 2 * styles.margin, (int)(props.size.h - 2 * (20 + styles.margin)) } }))
     {
         textureSize = { size.w - 2 * margin, size.h - 2 * margin };
         sprayToggleRect = { { position.x + size.w - 70, position.y + size.h - 30 }, { 50, 15 } };

@@ -210,8 +210,8 @@ public:
         , plugin(getPlugin("Sequencer"))
         , margin(styles.margin)
         , input(getNewPropsRect(props,
-              { props.position.x + stepMargin, props.position.y + props.size.h - getBtnSize(props).h - stepMargin },
-              { (getBtnSize(props).w + stepMargin) * 4 + stepMargin * 2, getBtnSize(props).h }))
+              { { props.position.x + stepMargin, props.position.y + props.size.h - getBtnSize(props).h - stepMargin },
+                  { (getBtnSize(props).w + stepMargin) * 4 + stepMargin * 2, getBtnSize(props).h } }))
         , keyboard(props)
     {
         keyboard.value = &input.value;

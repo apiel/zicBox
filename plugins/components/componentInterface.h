@@ -29,10 +29,10 @@ protected:
     void (*setView)(char* name);
     void (*pushToRenderingQueue)(ComponentInterface* component);
 
-    Props getNewPropsRect(Props props, Point pos, Size _size)
+    Props getNewPropsRect(Props props, Rect rect)
     {
-        props.position = pos;
-        props.size = _size;
+        props.position = rect.position;
+        props.size = rect.size;
         return props;
     }
 

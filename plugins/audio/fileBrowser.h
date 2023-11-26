@@ -53,7 +53,7 @@ public:
             struct dirent* directory;
             count = 0;
             while ((directory = readdir(dir)) != NULL && count < FILE_BROWSER_FILES_MAX) {
-                if (strcmp(directory->d_name, ".") != 0 && strcmp(directory->d_name, "..") != 0) {
+                if (directory->d_name[0] != '.') { // Ignore all file starting with '.'
                     strncpy(files[count], directory->d_name, FILE_BROWSER_FILENAME_LEN);
                     count++;
                 }
