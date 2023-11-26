@@ -1,12 +1,12 @@
-#ifndef _UI_COMPONENT_KEYBOARD_H_
-#define _UI_COMPONENT_KEYBOARD_H_
+#ifndef _UI_BASE_COMPONENT_KEYBOARD_H_
+#define _UI_BASE_COMPONENT_KEYBOARD_H_
 
 #include "../component.h"
 #include "ButtonBaseComponent.h"
 
 #include <string>
 
-class KeyboardComponent : public Component {
+class KeyboardBaseComponent : public Component {
 protected:
     static const uint8_t keyCount = 32;
     const uint8_t columnCount = 8;
@@ -99,7 +99,7 @@ public:
     std::string * value = NULL;
     std::function<void(std::string * value)> onUpdate = [](std::string * value) {};
 
-    KeyboardComponent(ComponentInterface::Props props)
+    KeyboardBaseComponent(ComponentInterface::Props props)
         : Component(props)
     {
         uint8_t rowCount = keyCount / columnCount;
@@ -128,7 +128,7 @@ public:
         setButtonsLabel();
     }
 
-    ~KeyboardComponent()
+    ~KeyboardBaseComponent()
     {
         for (int i = 0; i < 32; i++) {
             delete buttons[i];

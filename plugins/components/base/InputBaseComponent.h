@@ -1,11 +1,11 @@
-#ifndef _UI_COMPONENT_INPUT_H_
-#define _UI_COMPONENT_INPUT_H_
+#ifndef _UI_BASE_COMPONENT_INPUT_H_
+#define _UI_BASE_COMPONENT_INPUT_H_
 
 #include "../component.h"
 
 #include <string>
 
-class InputComponent : public Component {
+class InputBaseComponent : public Component {
 public:
     struct Colors {
         Color background;
@@ -32,7 +32,7 @@ protected:
 public:
     std::string value = "";
 
-    InputComponent(ComponentInterface::Props props)
+    InputBaseComponent(ComponentInterface::Props props)
         : Component(props)
         , textPosition({ position.x + 2, (int)(position.y + size.h * 0.5f - (fontSize * 0.5f)) })
         , colors(getColorsFromColor(styles.colors.grey))

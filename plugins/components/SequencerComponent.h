@@ -3,8 +3,8 @@
 
 #include "../../helpers/midiNote.h"
 #include "../audio/stepInterface.h"
-#include "base/InputComponent.h"
-#include "base/KeyboardComponent.h"
+#include "base/InputBaseComponent.h"
+#include "base/KeyboardBaseComponent.h"
 #include "component.h"
 
 #include <string>
@@ -53,8 +53,8 @@ protected:
 
     bool fileMode = false;
     bool filenameIsOriginal = true;
-    InputComponent input;
-    KeyboardComponent keyboard;
+    InputBaseComponent input;
+    KeyboardBaseComponent keyboard;
 
     const char* getStepText(uint8_t index)
     {

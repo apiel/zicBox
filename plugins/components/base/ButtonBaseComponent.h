@@ -1,5 +1,5 @@
-#ifndef _UI_COMPONENT_BUTTON_BASE_H_
-#define _UI_COMPONENT_BUTTON_BASE_H_
+#ifndef _UI_BASE_COMPONENT_BUTTON_H_
+#define _UI_BASE_COMPONENT_BUTTON_H_
 
 #include "../component.h"
 #include "Icon.h"
