@@ -1,11 +1,11 @@
-#ifndef _UI_BASE_COMPONENT_WAVE_H_
-#define _UI_BASE_COMPONENT_WAVE_H_
+#ifndef _UI_BASE_COMPONENT_WAVE3_H_
+#define _UI_BASE_COMPONENT_WAVE3_H_
 
 #include "../../../helpers/inRect.h"
 #include "../component.h"
 #include <string>
 
-class WaveBaseComponent : public Component {
+class Wave3BaseComponent : public Component {
 protected:
     uint64_t samplesCount = 0;
     float* bufferSamples = NULL;
@@ -14,7 +14,6 @@ protected:
 
     struct Colors {
         Color wave;
-        Color waveMiddle;
         Color waveOutline;
     } colors;
 
@@ -22,13 +21,12 @@ protected:
     {
         return Colors({
             draw.darken(color, 0.4),
-            draw.darken(color, 0.2),
             color,
         });
     }
 
 public:
-    WaveBaseComponent(ComponentInterface::Props props)
+    Wave3BaseComponent(ComponentInterface::Props props)
         : Component(props)
         , colors(getColorsFromColor(styles.colors.blue))
     {
@@ -42,7 +40,7 @@ public:
         samplesCount = count;
     }
 
-    // Here we have 3 shades of colors.
+    // Here we have 2 shades of colors.
     // We draw based on the pixel width picking the sample relative to the index.
     // Doing this, we are jumping over some sample and miss some of them.
     void render(float* buffer, uint64_t count)
@@ -54,8 +52,7 @@ public:
                 int y1 = yCenter - graphH;
                 int y2 = yCenter + graphH;
                 draw.line({ i, y1 }, { i, y2 }, colors.wave);
-                draw.line({ i, (int)(y1 + graphH * 0.25) }, { i, (int)(y2 - graphH * 0.25) }, colors.waveMiddle);
-                draw.line({ i, (int)(y1 + graphH * 0.75) }, { i, (int)(y2 - graphH * 0.75) }, colors.waveOutline);
+                draw.line({ i, (int)(y1 + graphH * 0.5) }, { i, (int)(y2 - graphH * 0.5) }, colors.waveOutline);
             } else {
                 draw.pixel({ i, yCenter }, colors.waveOutline);
             }
@@ -71,6 +68,16 @@ public:
     {
         if (strcmp(key, "WAVE_COLOR") == 0) {
             colors = getColorsFromColor(draw.getColor(value));
+            return true;
+        }
+
+        if (strcmp(key, "WAVE_OUTLINE_COLOR") == 0) {
+            colors.waveOutline = draw.getColor(value);
+            return true;
+        }
+
+        if (strcmp(key, "WAVE_INLINE_COLOR") == 0) {
+            colors.wave = draw.getColor(value);
             return true;
         }
 
