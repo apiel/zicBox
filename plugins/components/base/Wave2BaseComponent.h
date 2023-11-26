@@ -64,10 +64,15 @@ public:
         render(bufferSamples, samplesCount);
     }
 
+    void setColors(Color color)
+    {
+        colors = getColorsFromColor(color);
+    }
+
     bool config(char* key, char* value)
     {
         if (strcmp(key, "WAVE_COLOR") == 0) {
-            colors = getColorsFromColor(draw.getColor(value));
+            setColors(draw.getColor(value));
             return true;
         }
 

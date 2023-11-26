@@ -184,7 +184,6 @@ public:
         } else if (radius > 24) {
             fontValueSize = 12;
         }
-        printf("....................font: %d\n", fontValueSize);
     }
 
     void render()

@@ -209,7 +209,7 @@ public:
         : Mapping(props, _name)
     {
         setSampleRate(props.sampleRate);
-        open(0.0, true);
+        open(browser.get(), true);
 
         setAttack(attack.get());
         setRelease(release.get());
@@ -450,7 +450,7 @@ public:
     {
         switch (id) {
         case 0:
-            return (void*)&bufferSampleCount;
+            return &bufferSampleCount;
 
         case 1:
             return &bufferSamples;

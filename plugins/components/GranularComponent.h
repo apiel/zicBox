@@ -228,6 +228,7 @@ public:
     {
         if (strcmp(key, "COLOR") == 0) {
             colors = getColorsFromColor(draw.getColor(value));
+            wave.setColors(draw.getColor(value));
             return true;
         }
 
@@ -236,7 +237,7 @@ public:
             return true;
         }
 
-        return false;
+        return wave.config(key, value);
     }
 };
 
