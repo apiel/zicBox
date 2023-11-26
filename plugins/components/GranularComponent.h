@@ -2,6 +2,7 @@
 #define _UI_COMPONENT_GRANULAR_H_
 
 #include "../../helpers/inRect.h"
+#include "./base/WaveBaseComponent.h"
 #include "component.h"
 #include <string>
 
@@ -31,34 +32,7 @@ protected:
     bool savePressed = false;
     bool saved = false;
 
-    void renderSampleWaveform()
-    {
-        if (textureSampleWaveform == NULL) {
-            lastBrowser = browser->get();
-            textureSampleWaveform = draw.setTextureRenderer(textureSize);
-
-            draw.filledRect({ 0, 0 }, { textureSize.w, textureSize.h }, colors.background);
-
-            uint64_t* samplesCount = (uint64_t*)plugin.data(0);
-            float* bufferSamples = (float*)plugin.data(1);
-            int h = textureSize.h * 0.5f;
-            for (int i = 0; i < *samplesCount; i++) {
-                int x = margin + (i * textureSize.w / *samplesCount);
-                int graphH = bufferSamples[i] * h;
-                if (graphH) {
-                    int y1 = margin + (h - graphH);
-                    int y2 = margin + (h + graphH);
-                    draw.line({ x, y1 }, { x, y2 }, colors.samples);
-                } else {
-                    draw.pixel({ x, margin + h }, colors.samples);
-                }
-            }
-
-            draw.text({ 10, 5 }, browser->string().c_str(), colors.info, 12);
-            draw.setMainRenderer();
-        }
-        draw.applyTexture(textureSampleWaveform, { { position.x + margin, position.y + margin }, textureSize });
-    }
+    WaveBaseComponent wave;
 
     void renderStartRange()
     {
@@ -99,7 +73,6 @@ protected:
     struct Colors {
         Color background;
         Color info;
-        Color samples;
         Color start;
         Color toggle;
         Color spray;
@@ -109,7 +82,6 @@ protected:
     {
         return Colors({ draw.darken(color, 0.75),
             draw.darken(color, 0.3),
-            draw.darken(color, 0.2),
             styles.colors.overlay,
             draw.alpha(color, 0.2),
             draw.alpha(color, 0.2) });
@@ -123,6 +95,9 @@ public:
         , colors(getColorsFromColor(styles.colors.blue))
         , margin(styles.margin)
         , plugin(getPlugin("Granular"))
+        , wave(getNewPropsRect(props,
+              { 0, 20 },
+              { props.size.w - 2 * styles.margin, (int)(props.size.h - 2 * (20 + styles.margin)) }))
     {
         textureSize = { size.w - 2 * margin, size.h - 2 * margin };
         sprayToggleRect = { { position.x + size.w - 70, position.y + size.h - 30 }, { 50, 15 } };
@@ -137,8 +112,15 @@ public:
                 draw.destroyTexture(textureSampleWaveform);
                 textureSampleWaveform = NULL;
             }
+            lastBrowser = browser->get();
+            textureSampleWaveform = draw.setTextureRenderer(textureSize);
+            draw.filledRect({ 0, 0 }, { textureSize.w, textureSize.h }, colors.background);
+            wave.render((float*)plugin.data(1), *(uint64_t*)plugin.data(0));
+            draw.text({ 10, 5 }, browser->string().c_str(), colors.info, 12);
+            draw.setMainRenderer();
         }
-        renderSampleWaveform();
+        draw.applyTexture(textureSampleWaveform, { { position.x + margin, position.y + margin }, textureSize });
+
         renderStartRange();
         renderToggle(sprayToggleRect, "spray", sprayControllerOn);
         renderToggle(playToggleRect, "play", playControllerOn);
