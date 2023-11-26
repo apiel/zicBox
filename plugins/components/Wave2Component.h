@@ -38,7 +38,9 @@ public:
         , colors(getColorsFromColor(styles.colors.blue))
         , margin(styles.margin)
         , plugin(getPlugin("Granular"))
-        , wave(props)
+        , wave(getNewPropsRect(props,
+              { 0, 20 },
+              { props.size.w - 2 * styles.margin, (int)(props.size.h - 2 * (20 + styles.margin)) }))
     {
         textureSize = { size.w - 2 * margin, size.h - 2 * margin };
     }

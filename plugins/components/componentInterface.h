@@ -5,27 +5,11 @@
 #include "motionInterface.h"
 #include "valueInterface.h"
 
-#include <vector>
 #include <functional>
+#include <vector>
 
 class ComponentInterface {
-protected:
-    DrawInterface& draw;
-    Styles& styles;
-
-    AudioPlugin& (*getPlugin)(const char* name);
-    void (*setGroup)(int8_t index);
-    void (*setView)(char* name);
-    void (*pushToRenderingQueue)(ComponentInterface* component);
-
 public:
-    std::vector<ValueInterface*> values;
-    Point position;
-    Size size;
-    int8_t group = -1;
-
-    std::function<void(unsigned long now)> jobRendering;
-
     struct Props {
         Point position;
         Size size;
@@ -35,6 +19,33 @@ public:
         void (*setView)(char* name);
         void (*pushToRenderingQueue)(ComponentInterface* component);
     };
+
+protected:
+    DrawInterface& draw;
+    Styles& styles;
+
+    AudioPlugin& (*getPlugin)(const char* name);
+    void (*setGroup)(int8_t index);
+    void (*setView)(char* name);
+    void (*pushToRenderingQueue)(ComponentInterface* component);
+
+    Props getNewPropsRect(Props props, Point pos, Size _size)
+    {
+        printf("pos %d %d size %d %d\n", props.position.x, props.position.y, props.size.w, props.size.h);
+        props.position = pos;
+        props.size = _size;
+        printf("received pos %d %d size %d %d\n", pos.x, pos.y, _size.w, _size.h);
+        printf("new pos %d %d size %d %d\n", props.position.x, props.position.y, props.size.w, props.size.h);
+        return props;
+    }
+
+public:
+    std::vector<ValueInterface*> values;
+    Point position;
+    Size size;
+    int8_t group = -1;
+
+    std::function<void(unsigned long now)> jobRendering;
 
     ComponentInterface(Props props)
         : draw(props.draw)

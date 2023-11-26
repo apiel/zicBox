@@ -7,7 +7,6 @@
 
 class WaveBaseComponent : public Component {
 protected:
-    Size textureSize;
     uint64_t samplesCount = 0;
     float* bufferSamples = NULL;
 
@@ -24,15 +23,11 @@ protected:
         });
     }
 
-    const int margin;
-
 public:
     WaveBaseComponent(ComponentInterface::Props props)
         : Component(props)
         , colors(getColorsFromColor(styles.colors.blue))
-        , margin(styles.margin)
     {
-        textureSize = { size.w - 2 * margin, size.h - 2 * margin };
     }
 
     void set(float* buffer, uint64_t count)
@@ -43,17 +38,17 @@ public:
 
     void render(float* buffer, uint64_t count)
     {
-        int h = textureSize.h * 0.5f;
+        int h = size.h * 0.5f;
         for (int i = 0; i < count; i++) {
-            int x = margin + (i * textureSize.w / count);
+            int x = i * size.w / count;
             int graphH = buffer[i] * h;
             if (graphH) {
-                int y1 = margin + (h - graphH);
-                int y2 = margin + (h + graphH);
+                int y1 = position.y + h - graphH;
+                int y2 = position.y + h + graphH;
                 draw.line({ x, y1 }, { x, y2 }, colors.wave);
                 draw.line({ x, (int)(y1 + graphH * 0.5) }, { x, (int)(y2 - graphH * 0.5) }, colors.waveOutline);
             } else {
-                draw.pixel({ x, margin + h }, colors.waveOutline);
+                draw.pixel({ x, position.y + h }, colors.waveOutline);
             }
         }
     }

@@ -198,13 +198,6 @@ protected:
         };
     }
 
-    ComponentInterface::Props getNewPropsPosition(ComponentInterface::Props props, Point pos, Size _size)
-    {
-        props.position = pos;
-        props.size = _size;
-        return props;
-    }
-
 public:
     ValueInterface* patternValue;
 
@@ -216,7 +209,7 @@ public:
         , colorsMode(getColorsModeFromColor(styles.colors.grey))
         , plugin(getPlugin("Sequencer"))
         , margin(styles.margin)
-        , input(getNewPropsPosition(props,
+        , input(getNewPropsRect(props,
               { props.position.x + stepMargin, props.position.y + props.size.h - getBtnSize(props).h - stepMargin },
               { (getBtnSize(props).w + stepMargin) * 4 + stepMargin * 2, getBtnSize(props).h }))
         , keyboard(props)
@@ -360,8 +353,7 @@ public:
                 plugin.data(4, (void*)&input.value);
                 fileMode = false;
                 renderNext();
-            }
-            else if (row == rowCount && column == columnCount - 1) {
+            } else if (row == rowCount && column == columnCount - 1) {
                 plugin.data(3, (void*)&input.value);
                 fileMode = false;
                 renderNext();
