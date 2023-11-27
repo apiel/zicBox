@@ -5,7 +5,6 @@
 
 #define VAL_SERIALIZE_CHUNK_ID "ZIC_"
 
-template <typename T>
 class ValSerializeSndFile {
 protected:
     struct ValSerialize {
@@ -33,9 +32,9 @@ protected:
     }
 
 public:
-    std::vector<Val<T>*>& mapping;
+    std::vector<Val*>& mapping;
 
-    ValSerializeSndFile(std::vector<Val<T>*>& mapping)
+    ValSerializeSndFile(std::vector<Val*>& mapping)
         : mapping(mapping)
     {
     }

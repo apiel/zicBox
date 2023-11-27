@@ -4,9 +4,9 @@
 #include "audioPlugin.h"
 #include "mapping.h"
 
-class Mixer2 : public Mapping<Mixer2> {
+class Mixer2 : public Mapping {
 public:
-    Val<Mixer2>& mix = val(this, 50.0f, "MIX", &Mixer2::setMix, { "Mix", .type = VALUE_CENTERED });
+    Val& mix = val(50.0f, "MIX", [&](float value) { setMix(value); }, { "Mix", .type = VALUE_CENTERED });
     uint16_t trackA = 0;
     uint16_t trackB = 1;
     uint16_t trackTarget = 0;

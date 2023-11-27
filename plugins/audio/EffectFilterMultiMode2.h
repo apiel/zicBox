@@ -9,15 +9,15 @@
 
 // another version of the same filter but with a small clicking at 0.5
 
-class EffectFilterMultiMode2 : public Mapping<EffectFilterMultiMode2> {
+class EffectFilterMultiMode2 : public Mapping {
 protected:
     EffectFilterData hpf;
     EffectFilterData lpf;
 
 public:
     // Cutoff mix
-    Val<EffectFilterMultiMode2>& mix = val(this, 50.0, "CUTOFF", &EffectFilterMultiMode2::setCutoff, { "LPF | HPF", .type = VALUE_CENTERED });
-    Val<EffectFilterMultiMode2>& resonance = val(this, 0.0, "RESONANCE", &EffectFilterMultiMode2::setResonance, { "Resonance" });
+    Val& mix = val(50.0, "CUTOFF", [&](float value) { setCutoff(value); }, { "LPF | HPF", .type = VALUE_CENTERED });
+    Val& resonance = val(0.0, "RESONANCE", [&](float value) { setResonance(value); }, { "Resonance" });
 
     EffectFilterMultiMode2(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)

@@ -7,7 +7,7 @@
 
 #include <math.h>
 
-class EffectDistortion : public Mapping<EffectDistortion> {
+class EffectDistortion : public Mapping {
 protected:
     float shape;
 
@@ -28,7 +28,7 @@ protected:
     }
 
 public:
-    Val<EffectDistortion>& drive = val(this, 0.0, "DRIVE", &EffectDistortion::setDrive, { "Distortion" });
+    Val& drive = val(0.0, "DRIVE", [&](float value) { setDrive(value); }, { "Distortion" });
 
     EffectDistortion(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -46,7 +46,7 @@ public:
         buf[track] = sample(buf[track]);
     }
 
-    EffectDistortion& setDrive(float value)
+    void setDrive(float value)
     {
         drive.setFloat(value);
         if (drive.get() == 0.0) {
@@ -58,7 +58,6 @@ public:
             shape = 2 * pct / (1 - pct);
             debug("Distortion: drive=%f shape=%f\n", drive.get(), shape);
         }
-        return *this;
     }
 };
 

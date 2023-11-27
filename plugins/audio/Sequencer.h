@@ -12,7 +12,7 @@
 
 const uint8_t MAX_STEPS = 32;
 
-class Sequencer : public Mapping<Sequencer> {
+class Sequencer : public Mapping {
 protected:
     AudioPlugin::Props& props;
     std::filesystem::path folder = "./patterns";
@@ -73,8 +73,8 @@ protected:
     }
 
 public:
-    Val<Sequencer>& detune = val(this, 0.0f, "DETUNE", &Sequencer::setDetune, { "Detune", VALUE_CENTERED, -24.0f, 24.0f });
-    Val<Sequencer>& pattern = val(this, 0.0f, "PATTERN", &Sequencer::setPattern, { "Pattern", .type = VALUE_STRING });
+    Val& detune = val(0.0f, "DETUNE", [&](float value) { setDetune(value); }, { "Detune", VALUE_CENTERED, -24.0f, 24.0f });
+    Val& pattern = val(0.0f, "PATTERN", [&](float value) { setPattern(value); }, { "Pattern", .type = VALUE_STRING });
 
     Sequencer(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)

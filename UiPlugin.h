@@ -10,7 +10,7 @@
 /**
  * Simulate audio plugin component to be usable within the UI component
  */
-class UiPlugin : public Mapping<UiPlugin> {
+class UiPlugin : public Mapping {
 protected:
     void (*onUpdatePtr)() = []() {};
 
@@ -70,7 +70,7 @@ protected:
 public:
     View* view = NULL;
 
-    Val<UiPlugin>& viewSelector = val(this, 1.0f, "VIEW", &UiPlugin::setView, { "View", VALUE_STRING, .min = 1.0 });
+    Val& viewSelector = val(1.0f, "VIEW", [&](float value) { setView(value); }, { "View", VALUE_STRING, .min = 1.0 });
 
     static UiPlugin& get()
     {

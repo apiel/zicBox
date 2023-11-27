@@ -4,16 +4,16 @@
 #include "audioPlugin.h"
 #include "mapping.h"
 
-class Mixer8 : public Mapping<Mixer8> {
+class Mixer8 : public Mapping {
 public:
-    Val<Mixer8>& mixA = val(this, 100.0f, "MIX_A", &Mixer8::setMixA, { "Mix A" });
-    Val<Mixer8>& mixB = val(this, 100.0f, "MIX_B", &Mixer8::setMixB, { "Mix B" });
-    Val<Mixer8>& mixC = val(this, 100.0f, "MIX_C", &Mixer8::setMixC, { "Mix C" });
-    Val<Mixer8>& mixD = val(this, 100.0f, "MIX_D", &Mixer8::setMixD, { "Mix D" });
-    Val<Mixer8>& mixE = val(this, 100.0f, "MIX_E", &Mixer8::setMixE, { "Mix E" });
-    Val<Mixer8>& mixF = val(this, 100.0f, "MIX_F", &Mixer8::setMixF, { "Mix F" });
-    Val<Mixer8>& mixG = val(this, 100.0f, "MIX_G", &Mixer8::setMixG, { "Mix G" });
-    Val<Mixer8>& mixH = val(this, 100.0f, "MIX_H", &Mixer8::setMixH, { "Mix H" });
+    Val& mixA = val(100.0f, "MIX_A", [&](float value) { setMixA(value); }, { "Mix A" });
+    Val& mixB = val(100.0f, "MIX_B", [&](float value) { setMixB(value); }, { "Mix B" });
+    Val& mixC = val(100.0f, "MIX_C", [&](float value) { setMixC(value); }, { "Mix C" });
+    Val& mixD = val(100.0f, "MIX_D", [&](float value) { setMixD(value); }, { "Mix D" });
+    Val& mixE = val(100.0f, "MIX_E", [&](float value) { setMixE(value); }, { "Mix E" });
+    Val& mixF = val(100.0f, "MIX_F", [&](float value) { setMixF(value); }, { "Mix F" });
+    Val& mixG = val(100.0f, "MIX_G", [&](float value) { setMixG(value); }, { "Mix G" });
+    Val& mixH = val(100.0f, "MIX_H", [&](float value) { setMixH(value); }, { "Mix H" });
     uint16_t trackA = 0;
     uint16_t trackB = 1;
     uint16_t trackC = 2;

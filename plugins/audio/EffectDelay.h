@@ -11,7 +11,7 @@
 // TODO load/save different kind of delay and reverb from a config file
 // TODO add lfo on time ratio
 
-class EffectDelay : public Mapping<EffectDelay> {
+class EffectDelay : public Mapping {
 protected:
     uint64_t sampleRate;
     AudioBuffer<> buffer;
@@ -39,53 +39,53 @@ protected:
 
     struct DelayVoice {
         uint64_t index;
-        Val<EffectDelay> amplitude;
-        Val<EffectDelay> feedback;
-        Val<EffectDelay> sec;
+        Val amplitude;
+        Val feedback;
+        Val sec;
     } voices[MAX_DELAY_VOICES] = {
         { 0,
-            { this, 0.0, "AMPLITUDE_0", &EffectDelay::setAmplitude0 },
-            { this, 0.0, "FEEDBACK_0", &EffectDelay::setFeedback0 },
-            { this, 10.0, "SEC_0", &EffectDelay::setSec0 } }, // FIXME this is not seconds...
+            { 0.0, "AMPLITUDE_0", [&](float value) { setAmplitude0(value); } },
+            { 0.0, "FEEDBACK_0",  [&](float value) {  setFeedback0(value); } },
+            { 10.0, "SEC_0", [&](float value) { setSec0(value); } } }, // FIXME this is not seconds...
         { 1,
-            { this, 0.0, "AMPLITUDE_1", &EffectDelay::setAmplitude1 },
-            { this, 0.0, "FEEDBACK_1", &EffectDelay::setFeedback1 },
-            { this, 10.0, "SEC_1", &EffectDelay::setSec1 } },
+            { 0.0, "AMPLITUDE_1", [&](float value) { setAmplitude1(value); } },
+            { 0.0, "FEEDBACK_1", [&](float value) { setFeedback1(value); } },
+            { 10.0, "SEC_1", [&](float value) { setSec1(value); } } },
         { 2,
-            { this, 0.0, "AMPLITUDE_2", &EffectDelay::setAmplitude2 },
-            { this, 0.0, "FEEDBACK_2", &EffectDelay::setFeedback2 },
-            { this, 10.0, "SEC_2", &EffectDelay::setSec2 } },
+            { 0.0, "AMPLITUDE_2", [&](float value) { setAmplitude2(value); } },
+            { 0.0, "FEEDBACK_2", [&](float value) { setFeedback2(value); } },
+            { 10.0, "SEC_2", [&](float value) { setSec2(value); } } },
         { 3,
-            { this, 0.0, "AMPLITUDE_3", &EffectDelay::setAmplitude3 },
-            { this, 0.0, "FEEDBACK_3", &EffectDelay::setFeedback3 },
-            { this, 10.0, "SEC_3", &EffectDelay::setSec3 } },
+            { 0.0, "AMPLITUDE_3", [&](float value) { setAmplitude3(value); } },
+            { 0.0, "FEEDBACK_3", [&](float value) { setFeedback3(value); } },
+            { 10.0, "SEC_3", [&](float value) { setSec3(value); } } },
         { 4,
-            { this, 0.0, "AMPLITUDE_4", &EffectDelay::setAmplitude4 },
-            { this, 0.0, "FEEDBACK_4", &EffectDelay::setFeedback4 },
-            { this, 10.0, "SEC_4", &EffectDelay::setSec4 } },
+            { 0.0, "AMPLITUDE_4", [&](float value) { setAmplitude4(value); } },
+            { 0.0, "FEEDBACK_4", [&](float value) { setFeedback4(value); } },
+            { 10.0, "SEC_4", [&](float value) { setSec4(value); } } },
         { 5,
-            { this, 0.0, "AMPLITUDE_5", &EffectDelay::setAmplitude5 },
-            { this, 0.0, "FEEDBACK_5", &EffectDelay::setFeedback5 },
-            { this, 10.0, "SEC_5", &EffectDelay::setSec5 } },
+            { 0.0, "AMPLITUDE_5", [&](float value) { setAmplitude5(value); } },
+            { 0.0, "FEEDBACK_5", [&](float value) { setFeedback5(value); } },
+            { 10.0, "SEC_5", [&](float value) { setSec5(value); } } },
         { 6,
-            { this, 0.0, "AMPLITUDE_6", &EffectDelay::setAmplitude6 },
-            { this, 0.0, "FEEDBACK_6", &EffectDelay::setFeedback6 },
-            { this, 10.0, "SEC_6", &EffectDelay::setSec6 } },
+            { 0.0, "AMPLITUDE_6", [&](float value) { setAmplitude6(value); } },
+            { 0.0, "FEEDBACK_6", [&](float value) { setFeedback6(value); } },
+            { 10.0, "SEC_6", [&](float value) { setSec6(value); } } },
         { 7,
-            { this, 0.0, "AMPLITUDE_7", &EffectDelay::setAmplitude7 },
-            { this, 0.0, "FEEDBACK_7", &EffectDelay::setFeedback7 },
-            { this, 10.0, "SEC_7", &EffectDelay::setSec7 } },
+            { 0.0, "AMPLITUDE_7", [&](float value) { setAmplitude7(value); } },
+            { 0.0, "FEEDBACK_7", [&](float value) { setFeedback7(value); } },
+            { 10.0, "SEC_7", [&](float value) { setSec7(value); } } },
     };
 
 public:
     // From 0.0 to 1.0 to apply time ratio to voice in seconds
-    Val<EffectDelay> timeRatio = { this, 100.0f, "TIME_RATIO", &EffectDelay::setTimeRatio, { "Time Ratio", .unit = "%" } };
-    Val<EffectDelay> masterAmplitude = { this, 0.0f, "MASTER_AMPLITUDE", &EffectDelay::setMasterAmplitude, { "Master Amplitude", .unit = "%" } };
+    Val timeRatio = { 100.0f, "TIME_RATIO", [&](float value) { setTimeRatio(value); }, { "Time Ratio", .unit = "%" } };
+    Val masterAmplitude = { 0.0f, "MASTER_AMPLITUDE", [&](float value) { setMasterAmplitude(value); }, { "Master Amplitude", .unit = "%" } };
 
     // should we inhirate filter so there is no need to defined this...
-    Val<EffectDelay> cutoff = { this, 0.0f, "CUTOFF", &EffectDelay::setCutoff, { "Cutoff" } };
-    Val<EffectDelay> resonance = { this, 0.0f, "RESONANCE", &EffectDelay::setResonance, { "Resonance", .unit = "%" } };
-    Val<EffectDelay> mode = { this, 0.0f, "MODE", &EffectDelay::setMode };
+    Val cutoff = { 0.0f, "CUTOFF", [&](float value) { setCutoff(value); }, { "Cutoff" } };
+    Val resonance = { 0.0f, "RESONANCE", [&](float value) { setResonance(value); }, { "Resonance", .unit = "%" } };
+    Val mode = { 0.0f, "MODE", [&](float value) { setMode(value); } };
 
     EffectFilter filter;
 
@@ -100,7 +100,8 @@ public:
             &voices[5].amplitude, &voices[5].feedback, &voices[5].sec, 
             &voices[6].amplitude, &voices[6].feedback, &voices[6].sec, 
             &voices[7].amplitude, &voices[7].feedback, &voices[7].sec,
-            &cutoff, &resonance, &mode})
+            &cutoff, &resonance, &mode
+        })
         // clang-format on
         , sampleRate(props.sampleRate)
         , filter(props, _name)

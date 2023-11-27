@@ -4,19 +4,19 @@
 #include "audioPlugin.h"
 #include "mapping.h"
 
-class EffectGainVolume : public Mapping<EffectGainVolume> {
+class EffectGainVolume : public Mapping {
 public:
-    Val<EffectGainVolume>& volume = val(this, 100.0f, "VOLUME", &EffectGainVolume::setVolume, { "Volume" });
-    Val<EffectGainVolume>& gain = val(this, 0.0f, "GAIN", &EffectGainVolume::setGain, { "Gain" });
+    Val& volume = val(100.0f, "VOLUME", [&](float value) { setVolume(value); }, { "Volume" });
+    Val& gain = val(0.0f, "GAIN", [&](float value) { setGain(value); }, { "Gain" });
     float volumeWithGain = volume.get();
 
-    EffectGainVolume(AudioPlugin::Props& props, char * _name)
+    EffectGainVolume(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
     {
         setVolumeWithGain(volume.get(), gain.get());
     }
 
-    void sample(float * buf)
+    void sample(float* buf)
     {
         buf[track] = buf[track] * volumeWithGain;
     }

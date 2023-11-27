@@ -16,7 +16,7 @@
 #define MAX_GRAIN_VOICES 4
 #define MIN_GRAIN_SIZE_MS 20
 
-class SynthGranular : public Mapping<SynthGranular> {
+class SynthGranular : public Mapping {
 protected:
     uint64_t sampleRate;
     uint16_t minGrainSampleCount;
@@ -192,16 +192,16 @@ protected:
     }
 
 public:
-    Val<SynthGranular>& start = val(this, 0.0f, "START", &SynthGranular::setStart, { "Start", .unit = "%" });
-    Val<SynthGranular>& spray = val(this, 0.0f, "SPRAY", &SynthGranular::setSpray, { "Spray", .unit = "%" });
-    Val<SynthGranular>& grainSize = val(this, 100.0f, "GRAIN_SIZE", &SynthGranular::setGrainSize, { "Size", .unit = "%" });
-    Val<SynthGranular>& density = val(this, (float)densityUint8, "DENSITY", &SynthGranular::setDensity, { "Density", .min = 1.0, .max = MAX_GRAINS_PER_VOICE });
-    Val<SynthGranular>& attack = val(this, 20, "ATTACK", &SynthGranular::setAttack, { "Attack", .min = 20.0, .max = 5000.0, .step = 20.0, .unit = "ms" });
-    Val<SynthGranular>& release = val(this, 50, "RELEASE", &SynthGranular::setRelease, { "Release", .min = 50.0, .max = 10000.0, .step = 50.0, .unit = "ms" });
-    Val<SynthGranular>& delay = val(this, 0.0f, "DELAY", &SynthGranular::setDelay, { "Delay", .max = 1000.0f, .step = 10.0f, .unit = "ms" });
-    Val<SynthGranular>& pitch = val(this, 0.0f, "PITCH", &SynthGranular::setPitch, { "Pitch", VALUE_CENTERED, .min = -12.0, .max = 12.0 });
-    Val<SynthGranular>& browser = val(this, 0.0f, "BROWSER", &SynthGranular::open, { "Browser", VALUE_STRING, .max = (float)fileBrowser.count });
-    Val<SynthGranular>& repeat = val(this, 1.0f, "REPEAT", &SynthGranular::setRepeat, { "Repeat", VALUE_STRING, .max = 1.0 });
+    Val& start = val(0.0f, "START", [&](float value) { setStart(value); }, { "Start", .unit = "%" });
+    Val& spray = val(0.0f, "SPRAY", [&](float value) { setSpray(value); }, { "Spray", .unit = "%" });
+    Val& grainSize = val(100.0f, "GRAIN_SIZE", [&](float value) { setGrainSize(value); }, { "Size", .unit = "%" });
+    Val& density = val((float)densityUint8, "DENSITY", [&](float value) { setDensity(value); }, { "Density", .min = 1.0, .max = MAX_GRAINS_PER_VOICE });
+    Val& attack = val(20, "ATTACK", [&](float value) { setAttack(value); }, { "Attack", .min = 20.0, .max = 5000.0, .step = 20.0, .unit = "ms" });
+    Val& release = val(50, "RELEASE", [&](float value) { setRelease(value); }, { "Release", .min = 50.0, .max = 10000.0, .step = 50.0, .unit = "ms" });
+    Val& delay = val(0.0f, "DELAY", [&](float value) { setDelay(value); }, { "Delay", .max = 1000.0f, .step = 10.0f, .unit = "ms" });
+    Val& pitch = val(0.0f, "PITCH", [&](float value) { setPitch(value); }, { "Pitch", VALUE_CENTERED, .min = -12.0, .max = 12.0 });
+    Val& browser = val(0.0f, "BROWSER", [&](float value) { open(value); }, { "Browser", VALUE_STRING, .max = (float)fileBrowser.count });
+    Val& repeat = val(1.0f, "REPEAT", [&](float value) { setRepeat(value); }, { "Repeat", VALUE_STRING, .max = 1.0 });
 
     // TODO add pitch randomization per grain
 
@@ -232,7 +232,7 @@ public:
 
     SynthGranular& save()
     {
-        ValSerializeSndFile<SynthGranular> serialize(mapping);
+        ValSerializeSndFile serialize(mapping);
         char* filepath = fileBrowser.getFilePath(browser.get());
         serialize.saveSetting(filepath);
         return *this;
@@ -253,7 +253,7 @@ public:
 
         sf_close(file);
 
-        ValSerializeSndFile<SynthGranular> serialize(mapping);
+        ValSerializeSndFile serialize(mapping);
         serialize.loadSetting(filename);
 
         return *this;

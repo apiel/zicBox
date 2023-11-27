@@ -13,7 +13,7 @@
 #define ZIC_KICK_ENV_FREQ_STEP 4
 #define ZIC_KICK_UI 1000
 
-class SynthKick23 : public Mapping<SynthKick23> {
+class SynthKick23 : public Mapping {
 protected:
     SF_INFO sfinfo;
     SNDFILE* file = NULL;
@@ -58,34 +58,34 @@ protected:
     }
 
 public:
-    Val<SynthKick23>& browser = val(this, 0.0f, "BROWSER", &SynthKick23::open, { "Browser", VALUE_STRING, .max = (float)fileBrowser.count });
-    Val<SynthKick23>& morph = val(this, 0.0f, "MORPH", &SynthKick23::setMorph, { "Morph", .min = 1.0, .max = ZIC_WAVETABLE_WAVEFORMS_COUNT, .step = 0.1, .floatingPoint = 1 });
-    Val<SynthKick23>& pitch = val(this, 0, "PITCH", &SynthKick23::setPitch, { "Pitch", .min = -12, .max = 12 });
-    Val<SynthKick23>& duration = val(this, 100.0f, "DURATION", &SynthKick23::setDuration, { "Duration", .min = 100.0, .max = 5000.0, .step = 100.0, .unit = "ms" });
+    Val& browser = val(0.0f, "BROWSER", [&](float value) { open(value); }, { "Browser", VALUE_STRING, .max = (float)fileBrowser.count });
+    Val& morph = val(0.0f, "MORPH", [&](float value) { setMorph(value); }, { "Morph", .min = 1.0, .max = ZIC_WAVETABLE_WAVEFORMS_COUNT, .step = 0.1, .floatingPoint = 1 });
+    Val& pitch = val(0, "PITCH", [&](float value) { setPitch(value); }, { "Pitch", .min = -12, .max = 12 });
+    Val& duration = val(100.0f, "DURATION", [&](float value) { setDuration(value); }, { "Duration", .min = 100.0, .max = 5000.0, .step = 100.0, .unit = "ms" });
 
-    Val<SynthKick23> envAmpMod[ZIC_KICK_ENV_AMP_STEP] = {
-        { this, 50.0f, "ENVELOP_AMP_MOD_1", &SynthKick23::setEnvAmpMod1, { "Amp.Mod.1", .unit = "%" } },
-        { this, 50.0f, "ENVELOP_AMP_MOD_2", &SynthKick23::setEnvAmpMod2, { "Amp.Mod.2", .unit = "%" } },
-        { this, 50.0f, "ENVELOP_AMP_MOD_3", &SynthKick23::setEnvAmpMod3, { "Amp.Mod.3", .unit = "%" } },
-        { this, 50.0f, "ENVELOP_AMP_MOD_4", &SynthKick23::setEnvAmpMod4, { "Amp.Mod.4", .unit = "%" } },
+    Val envAmpMod[ZIC_KICK_ENV_AMP_STEP] = {
+        { 50.0f, "ENVELOP_AMP_MOD_1", [&](float value) { setEnvAmpMod1(value); }, { "Amp.Mod.1", .unit = "%" } },
+        { 50.0f, "ENVELOP_AMP_MOD_2", [&](float value) { setEnvAmpMod2(value); }, { "Amp.Mod.2", .unit = "%" } },
+        { 50.0f, "ENVELOP_AMP_MOD_3", [&](float value) { setEnvAmpMod3(value); }, { "Amp.Mod.3", .unit = "%" } },
+        { 50.0f, "ENVELOP_AMP_MOD_4", [&](float value) { setEnvAmpMod4(value); }, { "Amp.Mod.4", .unit = "%" } },
     };
-    Val<SynthKick23> envAmpTime[ZIC_KICK_ENV_AMP_STEP] = {
-        { this, 50.0f, "ENVELOP_AMP_TIME_1", &SynthKick23::setEnvAmpTime1, { "Amp.Time 1", .unit = "%" } },
-        { this, 50.0f, "ENVELOP_AMP_TIME_2", &SynthKick23::setEnvAmpTime2, { "Amp.Time 2", .unit = "%" } },
-        { this, 50.0f, "ENVELOP_AMP_TIME_3", &SynthKick23::setEnvAmpTime3, { "Amp.Time 3", .unit = "%" } },
-        { this, 50.0f, "ENVELOP_AMP_TIME_4", &SynthKick23::setEnvAmpTime4, { "Amp.Time 4", .unit = "%" } },
+    Val envAmpTime[ZIC_KICK_ENV_AMP_STEP] = {
+        { 50.0f, "ENVELOP_AMP_TIME_1", [&](float value) { setEnvAmpTime1(value); }, { "Amp.Time 1", .unit = "%" } },
+        { 50.0f, "ENVELOP_AMP_TIME_2", [&](float value) { setEnvAmpTime2(value); }, { "Amp.Time 2", .unit = "%" } },
+        { 50.0f, "ENVELOP_AMP_TIME_3", [&](float value) { setEnvAmpTime3(value); }, { "Amp.Time 3", .unit = "%" } },
+        { 50.0f, "ENVELOP_AMP_TIME_4", [&](float value) { setEnvAmpTime4(value); }, { "Amp.Time 4", .unit = "%" } },
     };
-    Val<SynthKick23> envFreqMod[ZIC_KICK_ENV_FREQ_STEP] = {
-        { this, 50.0f, "ENVELOP_FREQ_MOD_1", &SynthKick23::setEnvFreqMod1, { "Freq.Mod.1", .unit = "%" } },
-        { this, 50.0f, "ENVELOP_FREQ_MOD_2", &SynthKick23::setEnvFreqMod2, { "Freq.Mod.2", .unit = "%" } },
-        { this, 50.0f, "ENVELOP_FREQ_MOD_3", &SynthKick23::setEnvFreqMod3, { "Freq.Mod.3", .unit = "%" } },
-        { this, 50.0f, "ENVELOP_FREQ_MOD_4", &SynthKick23::setEnvFreqMod4, { "Freq.Mod.4", .unit = "%" } },
+    Val envFreqMod[ZIC_KICK_ENV_FREQ_STEP] = {
+        { 50.0f, "ENVELOP_FREQ_MOD_1", [&](float value) { setEnvFreqMod1(value); }, { "Freq.Mod.1", .unit = "%" } },
+        { 50.0f, "ENVELOP_FREQ_MOD_2", [&](float value) { setEnvFreqMod2(value); }, { "Freq.Mod.2", .unit = "%" } },
+        { 50.0f, "ENVELOP_FREQ_MOD_3", [&](float value) { setEnvFreqMod3(value); }, { "Freq.Mod.3", .unit = "%" } },
+        { 50.0f, "ENVELOP_FREQ_MOD_4", [&](float value) { setEnvFreqMod4(value); }, { "Freq.Mod.4", .unit = "%" } },
     };
-    Val<SynthKick23> envFreqTime[ZIC_KICK_ENV_FREQ_STEP] = {
-        { this, 50.0f, "ENVELOP_FREQ_TIME_1", &SynthKick23::setEnvFreqTime1, { "Freq.Time 1", .unit = "%" } },
-        { this, 50.0f, "ENVELOP_FREQ_TIME_2", &SynthKick23::setEnvFreqTime2, { "Freq.Time 2", .unit = "%" } },
-        { this, 50.0f, "ENVELOP_FREQ_TIME_3", &SynthKick23::setEnvFreqTime3, { "Freq.Time 3", .unit = "%" } },
-        { this, 50.0f, "ENVELOP_FREQ_TIME_4", &SynthKick23::setEnvFreqTime4, { "Freq.Time 4", .unit = "%" } },
+    Val envFreqTime[ZIC_KICK_ENV_FREQ_STEP] = {
+        { 50.0f, "ENVELOP_FREQ_TIME_1", [&](float value) { setEnvFreqTime1(value); }, { "Freq.Time 1", .unit = "%" } },
+        { 50.0f, "ENVELOP_FREQ_TIME_2", [&](float value) { setEnvFreqTime2(value); }, { "Freq.Time 2", .unit = "%" } },
+        { 50.0f, "ENVELOP_FREQ_TIME_3", [&](float value) { setEnvFreqTime3(value); }, { "Freq.Time 3", .unit = "%" } },
+        { 50.0f, "ENVELOP_FREQ_TIME_4", [&](float value) { setEnvFreqTime4(value); }, { "Freq.Time 4", .unit = "%" } },
     };
 
     SynthKick23(AudioPlugin::Props& props, char* _name)

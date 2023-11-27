@@ -6,7 +6,7 @@
 
 #include <math.h>
 
-class EffectSampleRateReducer : public Mapping<EffectSampleRateReducer> {
+class EffectSampleRateReducer : public Mapping {
 protected:
     float sampleSqueeze;
     int samplePosition = 0;
@@ -35,9 +35,9 @@ protected:
     }
 
 public:
-    Val<EffectSampleRateReducer>& sampleStep = val(this, 0.0f, "SAMPLE_STEP", &EffectSampleRateReducer::setSampleStep, { "Step Reducer", .max = 256.0, .unit = "steps" });
+    Val& sampleStep = val(0.0f, "SAMPLE_STEP", [&](float value) { setSampleStep(value); }, { "Step Reducer", .max = 256.0, .unit = "steps" });
 
-    EffectSampleRateReducer(AudioPlugin::Props& props, char * _name)
+    EffectSampleRateReducer(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
     {
         setSampleStep(0.0);
@@ -57,7 +57,7 @@ public:
         return *this;
     }
 
-    void sample(float * buf)
+    void sample(float* buf)
     {
         buf[track] = (this->*samplePtr)(buf[track]);
     }

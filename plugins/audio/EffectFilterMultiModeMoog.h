@@ -9,7 +9,7 @@
 
 // Paul Kellet version of the classic Stilson/Smith "Moog" filter
 // https://www.kvraudio.com/forum/viewtopic.php?t=144625
-class EffectFilterMultiModeMoog : public Mapping<EffectFilterMultiModeMoog> {
+class EffectFilterMultiModeMoog : public Mapping {
 protected:
     float cutoff = 0.00;
     float f, p, q = 0.00;
@@ -27,8 +27,8 @@ protected:
 
 public:
     // Cutoff mix
-    Val<EffectFilterMultiModeMoog>& mix = val(this, 50.0, "CUTOFF", &EffectFilterMultiModeMoog::setCutoff, { "LPF | HPF", .type = VALUE_CENTERED });
-    Val<EffectFilterMultiModeMoog>& resonance = val(this, 0.0, "RESONANCE", &EffectFilterMultiModeMoog::setResonance, { "Resonance" });
+    Val& mix = val(50.0, "CUTOFF", [&](float value) { setCutoff(value); }, { "LPF | HPF", .type = VALUE_CENTERED });
+    Val& resonance = val(0.0, "RESONANCE", [&](float value) { setResonance(value); }, { "Resonance" });
 
     EffectFilterMultiModeMoog(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)

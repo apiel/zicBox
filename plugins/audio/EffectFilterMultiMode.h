@@ -5,15 +5,15 @@
 #include "filter.h"
 #include "mapping.h"
 
-class EffectFilterMultiMode : public Mapping<EffectFilterMultiMode> {
+class EffectFilterMultiMode : public Mapping {
 protected:
     EffectFilterData hpf;
     EffectFilterData lpf;
 
 public:
     // Cutoff mix
-    Val<EffectFilterMultiMode>& mix = val(this, 50.0, "CUTOFF", &EffectFilterMultiMode::setCutoff, { "LPF | HPF", .type = VALUE_CENTERED });
-    Val<EffectFilterMultiMode>& resonance = val(this, 0.0, "RESONANCE", &EffectFilterMultiMode::setResonance, { "Resonance", .unit = "%" });
+    Val& mix = val(50.0, "CUTOFF", [&](float value) { setCutoff(value); }, { "LPF | HPF", .type = VALUE_CENTERED });
+    Val& resonance = val(0.0, "RESONANCE", [&](float value) { setResonance(value); }, { "Resonance", .unit = "%" });
 
     EffectFilterMultiMode(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)

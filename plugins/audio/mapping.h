@@ -1,6 +1,7 @@
 #ifndef _MAPPING_H_
 #define _MAPPING_H_
 
+#include <functional>
 #include <math.h>
 #include <stdint.h>
 #include <vector>
@@ -9,10 +10,8 @@
 
 #include "audioPlugin.h"
 
-template <typename T>
 class Val : public ValueInterface {
 protected:
-    T* instance;
     float value_f;
     float value_pct;
     std::string value_s;
@@ -24,11 +23,11 @@ protected:
 
 public:
     const char* _key;
-    T& (T::*callback)(float value);
+    // T& (T::*callback)(float value);
+    std::function<void(float value)> callback;
 
-    Val(T* instance, float initValue, const char* _key, T& (T::*_callback)(float value), ValueInterface::Props props = {})
-        : instance(instance)
-        , _props(props)
+    Val(float initValue, const char* _key, std::function<void(float value)> _callback, ValueInterface::Props props = {})
+        : _props(props)
         , _key(_key)
         , callback(_callback)
     {
@@ -78,7 +77,7 @@ public:
 
     void set(float value)
     {
-        (instance->*(callback))(value);
+        callback(value);
         (*onUpdatePtr)(value, onUpdateData);
     }
 
@@ -94,21 +93,20 @@ public:
     }
 };
 
-template <typename T>
 class Mapping : public AudioPlugin {
 protected:
-    std::vector<Val<T>*> mapping;
+    std::vector<Val*> mapping;
 
-    Val<T>& val(T* instance, float initValue, const char* _key, T& (T::*_callback)(float value), ValueInterface::Props props = {})
+    Val& val(float initValue, const char* _key, std::function<void(float value)> _callback, ValueInterface::Props props = {})
     {
-        Val<T>* v = new Val<T>(instance, initValue, _key, _callback, props);
+        Val* v = new Val(initValue, _key, _callback, props);
         mapping.push_back(v);
         // debug("-------- Mapping: %s\n", v->key());
         return *v;
     }
 
 public:
-    Mapping(AudioPlugin::Props& props, char* _name, std::vector<Val<T>*> mapping = {})
+    Mapping(AudioPlugin::Props& props, char* _name, std::vector<Val*> mapping = {})
         : AudioPlugin(props, _name)
         , mapping(mapping)
     {

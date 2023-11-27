@@ -4,12 +4,12 @@
 #include "audioPlugin.h"
 #include "mapping.h"
 
-class Mixer4 : public Mapping<Mixer4> {
+class Mixer4 : public Mapping {
 public:
-    Val<Mixer4>& mixA = val(this, 100.0f, "MIX_A", &Mixer4::setMixA, { "Mix A" });
-    Val<Mixer4>& mixB = val(this, 100.0f, "MIX_B", &Mixer4::setMixB, { "Mix B" });
-    Val<Mixer4>& mixC = val(this, 100.0f, "MIX_C", &Mixer4::setMixC, { "Mix C" });
-    Val<Mixer4>& mixD = val(this, 100.0f, "MIX_D", &Mixer4::setMixD, { "Mix D" });
+    Val& mixA = val(100.0f, "MIX_A", [&](float value) { setMixA(value); }, { "Mix A" });
+    Val& mixB = val(100.0f, "MIX_B", [&](float value) { setMixB(value); }, { "Mix B" });
+    Val& mixC = val(100.0f, "MIX_C", [&](float value) { setMixC(value); }, { "Mix C" });
+    Val& mixD = val(100.0f, "MIX_D", [&](float value) { setMixD(value); }, { "Mix D" });
     uint16_t trackA = 0;
     uint16_t trackB = 1;
     uint16_t trackC = 2;

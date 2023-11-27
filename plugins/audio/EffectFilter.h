@@ -7,14 +7,14 @@
 
 // #include <math.h>
 
-class EffectFilter : public Mapping<EffectFilter> {
+class EffectFilter : public Mapping {
 protected:
     EffectFilterData data;
 
 public:
     // Cutoff mix
-    Val<EffectFilter>& cutoff = val(this, 50.0, "CUTOFF", &EffectFilter::setCutoff, { "Cutoff" });
-    Val<EffectFilter>& resonance = val(this, 0.0, "RESONANCE", &EffectFilter::setResonance, { "Resonance" });
+    Val& cutoff = val(50.0, "CUTOFF", [&](float value) { setCutoff(value); }, { "Cutoff" });
+    Val& resonance = val(0.0, "RESONANCE", [&](float value) { setResonance(value); }, { "Resonance" });
 
     enum Mode {
         OFF,
@@ -25,7 +25,7 @@ public:
     } mode
         = OFF;
     // TODO how to handle mode in a better way?
-    Val<EffectFilter>& mode_value = val(this, 0.0, "MODE", &EffectFilter::setMode, { "Mode" });
+    Val& mode_value = val(0.0, "MODE", [&](float value) { setMode(value); }, { "Mode" });
 
     EffectFilter(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
