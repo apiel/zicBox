@@ -95,7 +95,7 @@ public:
 
 class Mapping : public AudioPlugin {
 protected:
-    std::vector<Val*> mapping;
+    std::vector<ValueInterface*> mapping;
 
     Val& val(float initValue, const char* _key, std::function<void(float value)> _callback, ValueInterface::Props props = {})
     {
@@ -106,7 +106,7 @@ protected:
     }
 
 public:
-    Mapping(AudioPlugin::Props& props, char* _name, std::vector<Val*> mapping = {})
+    Mapping(AudioPlugin::Props& props, char* _name, std::vector<ValueInterface*> mapping = {})
         : AudioPlugin(props, _name)
         , mapping(mapping)
     {

@@ -32,9 +32,9 @@ protected:
     }
 
 public:
-    std::vector<Val*>& mapping;
+    std::vector<ValueInterface*>& mapping;
 
-    ValSerializeSndFile(std::vector<Val*>& mapping)
+    ValSerializeSndFile(std::vector<ValueInterface*>& mapping)
         : mapping(mapping)
     {
     }
