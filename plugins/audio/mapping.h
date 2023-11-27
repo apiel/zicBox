@@ -23,7 +23,6 @@ protected:
 
 public:
     const char* _key;
-    // T& (T::*callback)(float value);
     std::function<void(float value)> callback;
 
     Val(float initValue, const char* _key, std::function<void(float value)> _callback, ValueInterface::Props props = {})
