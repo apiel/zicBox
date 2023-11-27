@@ -83,6 +83,7 @@ protected:
     void drawValue()
     {
         std::string valStr = std::to_string(value->get());
+        printf("valStr: %s (valueFloatPrecision = %d)\n", valStr.c_str(), valueFloatPrecision);
         valStr = valStr.substr(0, valStr.find(".") + valueFloatPrecision + (valueFloatPrecision > 0 ? 1 : 0));
 
         int x = draw.textCentered({ area.xCenter, area.yCenter - 5 - valueMarginTop }, valStr.c_str(), colors.value, fontValueSize);
@@ -125,6 +126,7 @@ protected:
     {
         value = val(getPlugin(pluginName).getValue(key));
         if (value != NULL && label == NULL) {
+            valueFloatPrecision = value->props().floatingPoint;
             label = value->label();
         }
     }
