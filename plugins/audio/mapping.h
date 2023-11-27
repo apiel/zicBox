@@ -90,6 +90,8 @@ public:
     {
         return value_pct;
     }
+
+    void checkForUpdate() { }
 };
 
 class Mapping : public AudioPlugin {

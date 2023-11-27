@@ -31,6 +31,7 @@ public:
     virtual std::string string() = 0;
     virtual void set(float value) = 0;
     virtual void onUpdate(void (*callback)(float, void* data), void* data) = 0;
+    virtual void checkForUpdate() = 0;
 };
 
 #endif
