@@ -3,7 +3,7 @@ OBJ_DIR ?= $(BUILD_DIR)/obj
 
 all:
 	make PadComponent EncoderComponent Encoder2Component EncoderKnobComponent GranularComponent SequencerComponent\
-				  ButtonComponent WaveComponent Wave2Component MonitoringComponent\
+				  ButtonComponent WaveComponent Wave2Component MonitoringComponent AdsrComponent\
 
 %Component:
 	@mkdir -p $(OBJ_DIR)
