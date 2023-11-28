@@ -8,6 +8,8 @@ class AdsrComponent : public Component {
 protected:
     bool encoderActive = false;
 
+    Rect graphArea;
+
     struct Phase {
         ValueInterface* value;
         int8_t encoderId;
@@ -49,6 +51,10 @@ public:
         : Component(props)
         , colors(getColorsFromColor(styles.colors.blue))
     {
+        graphArea = {
+            { position.x + 4, position.y + 4 },
+            { size.w - 12, size.h - 12 }
+        };
     }
 
     void render()
@@ -59,37 +65,38 @@ public:
             return;
         }
 
-        int w = size.w - 1;
-        int h = size.h - 1;
+        int w = graphArea.size.w;
+        int h = graphArea.size.h;
         int a = w * adsr[0].value->pct() * 0.25;
         int d = w * adsr[1].value->pct() * 0.25;
         int r = w * adsr[3].value->pct() * 0.25;
         int s = w - a - d - r;
 
-        int sustainY = position.y + h * adsr[2].value->pct();
-
-        // draw.line({ position.x, position.y + h }, { position.x + a, position.y }, colors.line);
-        // draw.line({ position.x + a, position.y }, { position.x + a + d, sustainY }, colors.line);
-        // draw.line({ position.x + a + d, sustainY }, { position.x + a + d + s, sustainY }, colors.line);
-        // draw.line({ position.x + a + d + s, sustainY }, { position.x + w, position.y + h }, colors.line);
+        int sustainY = graphArea.position.y + h * adsr[2].value->pct();
 
         draw.filledPolygon({
-                               { position.x, position.y + h },
-                               { position.x + a, position.y },
-                               { position.x + a + d, sustainY },
-                               { position.x + a + d + s, sustainY },
-                               { position.x + w, position.y + h },
+                               { graphArea.position.x, graphArea.position.y + h },
+                               { graphArea.position.x + a, graphArea.position.y },
+                               { graphArea.position.x + a + d, sustainY },
+                               { graphArea.position.x + a + d + s, sustainY },
+                               { graphArea.position.x + w, graphArea.position.y + h },
                            },
             colors.filling);
 
         draw.aalines({
-                         { position.x, position.y + h },
-                         { position.x + a, position.y },
-                         { position.x + a + d, sustainY },
-                         { position.x + a + d + s, sustainY },
-                         { position.x + w, position.y + h },
+                         { graphArea.position.x, graphArea.position.y + h },
+                         { graphArea.position.x + a, graphArea.position.y },
+                         { graphArea.position.x + a + d, sustainY },
+                         { graphArea.position.x + a + d + s, sustainY },
+                         { graphArea.position.x + w, graphArea.position.y + h },
                      },
             colors.line);
+
+        draw.filledRect({ graphArea.position.x - 2, graphArea.position.y + h - 2 }, { 4, 4 }, colors.line);
+        draw.filledRect({ graphArea.position.x + a - 2, graphArea.position.y - 2 }, { 4, 4 }, colors.line);
+        draw.filledRect({ graphArea.position.x + a + d - 2, sustainY - 2 }, { 4, 4 }, colors.line);
+        draw.filledRect({ graphArea.position.x + a + d + s - 2, sustainY - 2 }, { 4, 4 }, colors.line);
+        draw.filledRect({ graphArea.position.x + w - 2, graphArea.position.y + h - 2 }, { 4, 4 }, colors.line);
     }
 
     bool config(char* key, char* value)
