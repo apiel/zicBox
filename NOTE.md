@@ -4,14 +4,11 @@
 
 - use string instead of char...
 
-## Hardware
+## groc
 
-- TODO make gpio interface run as service
+- TODO make side component to see active encoder function
 
-- TODO gpio interface use config file
-
-- TODO install file (make setup/prepare and make install ?)
-- TODO update using makefile?
+- TODO ADSR envelop visualisation instead of encoder2...
 
 ## zicUi
 
@@ -164,6 +161,15 @@ int main()
     return 0;
 }
 ```
+
+## Hardware
+
+- TODO make gpio interface run as service
+
+- TODO gpio interface use config file
+
+- TODO install file (make setup/prepare and make install ?)
+- TODO update using makefile?
 
 ## more
 
