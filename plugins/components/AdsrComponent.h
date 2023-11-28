@@ -53,7 +53,7 @@ public:
     {
         graphArea = {
             { position.x + 4, position.y + 4 },
-            { size.w - 12, size.h - 12 }
+            { size.w - 20, size.h - 20 }
         };
     }
 
@@ -97,6 +97,12 @@ public:
         draw.filledRect({ graphArea.position.x + a + d - 2, sustainY - 2 }, { 4, 4 }, colors.line);
         draw.filledRect({ graphArea.position.x + a + d + s - 2, sustainY - 2 }, { 4, 4 }, colors.line);
         draw.filledRect({ graphArea.position.x + w - 2, graphArea.position.y + h - 2 }, { 4, 4 }, colors.line);
+
+        // int textY = graphArea.position.y + h + 2;
+        // draw.textCentered({ (int)(graphArea.position.x + a * 0.5), textY }, "A", colors.line, 10);
+        // draw.textCentered({ (int)(graphArea.position.x + a + d * 0.5), textY }, "D", colors.line, 10);
+        // draw.textCentered({ (int)(graphArea.position.x + a + d + s * 0.5), textY }, "S", colors.line, 10);
+        // draw.textCentered({ (int)(graphArea.position.x + w * 0.5), textY }, "R", colors.line, 10);
     }
 
     bool config(char* key, char* value)
