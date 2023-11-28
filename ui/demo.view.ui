@@ -3,7 +3,7 @@ VIEW: Demo
 
   INCLUDE: layout.ui
 
-  COMPONENT: Encoder 0 50 100 50
+  COMPONENT: Encoder 0 0 100 50
     GROUP: 0
     ENCODER_ID: 0
     VALUE: Granular BROWSER
@@ -28,3 +28,10 @@ VIEW: Demo
 
   COMPONENT: Wave2 20 200 760 180
     GROUP: 1
+
+
+  COMPONENT: EncoderKnob 0 100 100 50
+    GROUP: 0
+    ENCODER_ID: 3
+    VALUE: Granular RELEASE
+    # KNOB_COLOR: #35373b

@@ -93,6 +93,7 @@ public:
 
     virtual void filledPie(Point position, int radius, int startAngle, int endAngle, Color color) = 0;
     virtual void filledEllipse(Point position, int radiusX, int radiusY, Color color) = 0;
+    virtual void ellipse(Point position, int radiusX, int radiusY, Color color) = 0;
 
     virtual void* setTextureRenderer(Size size) = 0;
     virtual void setMainRenderer() = 0;

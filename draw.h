@@ -197,6 +197,12 @@ public:
         aaFilledEllipseRGBA(renderer, position.x, position.y, radiusX, radiusY, color.r, color.g, color.b, color.a);
     }
 
+    void ellipse(Point position, int radiusX, int radiusY, Color color)
+    {
+        // https://github.com/rtrussell/BBCSDL/blob/master/include/SDL2_gfxPrimitives.h
+        aaellipseRGBA(renderer, position.x, position.y, radiusX, radiusY, color.r, color.g, color.b, color.a);
+    }
+
     void line(Point start, Point end, Color color)
     {
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);

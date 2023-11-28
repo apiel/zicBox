@@ -10,6 +10,8 @@
 
 - TODO ADSR envelop visualisation instead of encoder2...
 
+- TODO encoderKnob instead to show the value using text, just make a knob
+
 ## zicUi
 
 - TODO pattern selector in sequencer
