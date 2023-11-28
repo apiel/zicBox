@@ -32,13 +32,15 @@ protected:
     struct Colors {
         Color background;
         Color line;
+        Color filling;
     } colors;
 
     Colors getColorsFromColor(Color color)
     {
         return Colors({
-            draw.darken(color, 0.75),
-            draw.darken(color, 0.3),
+            styles.colors.background,
+            color,
+            draw.alpha(color, 0.2),
         });
     }
 
@@ -66,10 +68,28 @@ public:
 
         int sustainY = position.y + h * adsr[2].value->pct();
 
-        draw.line({ position.x, position.y + h }, { position.x + a, position.y }, colors.line);
-        draw.line({ position.x + a, position.y }, { position.x + a + d, sustainY }, colors.line);
-        draw.line({ position.x + a + d, sustainY }, { position.x + a + d + s, sustainY }, colors.line);
-        draw.line({ position.x + a + d + s, sustainY }, { position.x + w, position.y + h }, colors.line);
+        // draw.line({ position.x, position.y + h }, { position.x + a, position.y }, colors.line);
+        // draw.line({ position.x + a, position.y }, { position.x + a + d, sustainY }, colors.line);
+        // draw.line({ position.x + a + d, sustainY }, { position.x + a + d + s, sustainY }, colors.line);
+        // draw.line({ position.x + a + d + s, sustainY }, { position.x + w, position.y + h }, colors.line);
+
+        draw.filledPolygon({
+                               { position.x, position.y + h },
+                               { position.x + a, position.y },
+                               { position.x + a + d, sustainY },
+                               { position.x + a + d + s, sustainY },
+                               { position.x + w, position.y + h },
+                           },
+            colors.filling);
+
+        draw.aalines({
+                         { position.x, position.y + h },
+                         { position.x + a, position.y },
+                         { position.x + a + d, sustainY },
+                         { position.x + a + d + s, sustainY },
+                         { position.x + w, position.y + h },
+                     },
+            colors.line);
     }
 
     bool config(char* key, char* value)

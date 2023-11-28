@@ -203,6 +203,43 @@ public:
         aaellipseRGBA(renderer, position.x, position.y, radiusX, radiusY, color.r, color.g, color.b, color.a);
     }
 
+    void filledPolygon(std::vector<Point> points, Color color)
+    {
+        double x[points.size()];
+        double y[points.size()];
+        for (int i = 0; i < points.size(); i++) {
+            x[i] = points[i].x;
+            y[i] = points[i].y;
+        }
+        // https://github.com/rtrussell/BBCSDL/blob/master/include/SDL2_gfxPrimitives.h
+        aaFilledPolygonRGBA(renderer, x, y, points.size(), color.r, color.g, color.b, color.a);
+    }
+
+    void polygon(std::vector<Point> points, Color color)
+    {
+        Sint16 x[points.size()];
+        Sint16 y[points.size()];
+        for (int i = 0; i < points.size(); i++) {
+            x[i] = points[i].x;
+            y[i] = points[i].y;
+        }
+        // https://github.com/rtrussell/BBCSDL/blob/master/include/SDL2_gfxPrimitives.h
+        aapolygonRGBA(renderer, x, y, points.size(), color.r, color.g, color.b, color.a);
+    }
+
+    void aaline(Point start, Point end, Color color)
+    {
+        // https://github.com/rtrussell/BBCSDL/blob/master/include/SDL2_gfxPrimitives.h
+        aalineRGBA(renderer, start.x, start.y, end.x, end.y, color.r, color.g, color.b, color.a);
+    }
+
+    void aalines(std::vector<Point> points, Color color)
+    {
+        for (int i = 0; i < points.size() - 1; i++) {
+            aaline(points[i], points[i + 1], color);
+        }
+    }
+
     void line(Point start, Point end, Color color)
     {
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
