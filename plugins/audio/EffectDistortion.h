@@ -33,7 +33,7 @@ public:
     EffectDistortion(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
     {
-        setDrive(drive.get());
+        drive.set(drive.get());
     };
 
     float sample(float buf)

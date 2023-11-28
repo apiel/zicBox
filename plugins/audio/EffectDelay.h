@@ -44,37 +44,37 @@ protected:
         Val sec;
     } voices[MAX_DELAY_VOICES] = {
         { 0,
-            { 0.0, "AMPLITUDE_0", [&](float value) { setAmplitude0(value); } },
-            { 0.0, "FEEDBACK_0",  [&](float value) {  setFeedback0(value); } },
-            { 10.0, "SEC_0", [&](float value) { setSec0(value); } } }, // FIXME this is not seconds...
+            { 0.0, "AMPLITUDE_0", [&](float value) { setAmplitude(0,value); } },
+            { 0.0, "FEEDBACK_0",  [&](float value) {  setFeedback(0,value); } },
+            { 10.0, "SEC_0", [&](float value) { setSec(0, value); } } }, // FIXME this is not seconds...
         { 1,
-            { 0.0, "AMPLITUDE_1", [&](float value) { setAmplitude1(value); } },
-            { 0.0, "FEEDBACK_1", [&](float value) { setFeedback1(value); } },
-            { 10.0, "SEC_1", [&](float value) { setSec1(value); } } },
+            { 0.0, "AMPLITUDE_1", [&](float value) { setAmplitude(1,value); } },
+            { 0.0, "FEEDBACK_1", [&](float value) { setFeedback(1,value); } },
+            { 10.0, "SEC_1", [&](float value) { setSec(1,value); } } },
         { 2,
-            { 0.0, "AMPLITUDE_2", [&](float value) { setAmplitude2(value); } },
-            { 0.0, "FEEDBACK_2", [&](float value) { setFeedback2(value); } },
-            { 10.0, "SEC_2", [&](float value) { setSec2(value); } } },
+            { 0.0, "AMPLITUDE_2", [&](float value) { setAmplitude(2,value); } },
+            { 0.0, "FEEDBACK_2", [&](float value) { setFeedback(2,value); } },
+            { 10.0, "SEC_2", [&](float value) { setSec(2,value); } } },
         { 3,
-            { 0.0, "AMPLITUDE_3", [&](float value) { setAmplitude3(value); } },
-            { 0.0, "FEEDBACK_3", [&](float value) { setFeedback3(value); } },
-            { 10.0, "SEC_3", [&](float value) { setSec3(value); } } },
+            { 0.0, "AMPLITUDE_3", [&](float value) { setAmplitude(3,value); } },
+            { 0.0, "FEEDBACK_3", [&](float value) { setFeedback(3,value); } },
+            { 10.0, "SEC_3", [&](float value) { setSec(3,value); } } },
         { 4,
-            { 0.0, "AMPLITUDE_4", [&](float value) { setAmplitude4(value); } },
-            { 0.0, "FEEDBACK_4", [&](float value) { setFeedback4(value); } },
-            { 10.0, "SEC_4", [&](float value) { setSec4(value); } } },
+            { 0.0, "AMPLITUDE_4", [&](float value) { setAmplitude(4,value); } },
+            { 0.0, "FEEDBACK_4", [&](float value) { setFeedback(4, value); } },
+            { 10.0, "SEC_4", [&](float value) { setSec(4,value); } } },
         { 5,
-            { 0.0, "AMPLITUDE_5", [&](float value) { setAmplitude5(value); } },
-            { 0.0, "FEEDBACK_5", [&](float value) { setFeedback5(value); } },
-            { 10.0, "SEC_5", [&](float value) { setSec5(value); } } },
+            { 0.0, "AMPLITUDE_5", [&](float value) { setAmplitude(5,value); } },
+            { 0.0, "FEEDBACK_5", [&](float value) { setFeedback(5,value); } },
+            { 10.0, "SEC_5", [&](float value) { setSec(5,value); } } },
         { 6,
-            { 0.0, "AMPLITUDE_6", [&](float value) { setAmplitude6(value); } },
-            { 0.0, "FEEDBACK_6", [&](float value) { setFeedback6(value); } },
-            { 10.0, "SEC_6", [&](float value) { setSec6(value); } } },
+            { 0.0, "AMPLITUDE_6", [&](float value) { setAmplitude(6,value); } },
+            { 0.0, "FEEDBACK_6", [&](float value) { setFeedback(6,value); } },
+            { 10.0, "SEC_6", [&](float value) { setSec(6,value); } } },
         { 7,
-            { 0.0, "AMPLITUDE_7", [&](float value) { setAmplitude7(value); } },
-            { 0.0, "FEEDBACK_7", [&](float value) { setFeedback7(value); } },
-            { 10.0, "SEC_7", [&](float value) { setSec7(value); } } },
+            { 0.0, "AMPLITUDE_7", [&](float value) { setAmplitude(7,value); } },
+            { 0.0, "FEEDBACK_7", [&](float value) { setFeedback(7,value); } },
+            { 10.0, "SEC_7", [&](float value) { setSec(7,value); } } },
     };
 
 public:
@@ -130,15 +130,6 @@ public:
         buf[track] = sample(buf[track]);
     }
 
-    EffectDelay& setSec0(float sec) { return setSec(0, sec); }
-    EffectDelay& setSec1(float sec) { return setSec(1, sec); }
-    EffectDelay& setSec2(float sec) { return setSec(2, sec); }
-    EffectDelay& setSec3(float sec) { return setSec(3, sec); }
-    EffectDelay& setSec4(float sec) { return setSec(4, sec); }
-    EffectDelay& setSec5(float sec) { return setSec(5, sec); }
-    EffectDelay& setSec6(float sec) { return setSec(6, sec); }
-    EffectDelay& setSec7(float sec) { return setSec(7, sec); }
-
     EffectDelay& setSec(uint8_t voiceIndex, float sec)
     {
         voices[voiceIndex].sec.setFloat(sec);
@@ -146,29 +137,11 @@ public:
         return *this;
     }
 
-    EffectDelay& setAmplitude0(float amplitude) { return setAmplitude(0, amplitude); }
-    EffectDelay& setAmplitude1(float amplitude) { return setAmplitude(1, amplitude); }
-    EffectDelay& setAmplitude2(float amplitude) { return setAmplitude(2, amplitude); }
-    EffectDelay& setAmplitude3(float amplitude) { return setAmplitude(3, amplitude); }
-    EffectDelay& setAmplitude4(float amplitude) { return setAmplitude(4, amplitude); }
-    EffectDelay& setAmplitude5(float amplitude) { return setAmplitude(5, amplitude); }
-    EffectDelay& setAmplitude6(float amplitude) { return setAmplitude(6, amplitude); }
-    EffectDelay& setAmplitude7(float amplitude) { return setAmplitude(7, amplitude); }
-
     EffectDelay& setAmplitude(uint8_t voiceIndex, float amplitude)
     {
         voices[voiceIndex].amplitude.setFloat(amplitude);
         return *this;
     }
-
-    EffectDelay& setFeedback0(float feedback) { return setFeedback(0, feedback); }
-    EffectDelay& setFeedback1(float feedback) { return setFeedback(1, feedback); }
-    EffectDelay& setFeedback2(float feedback) { return setFeedback(2, feedback); }
-    EffectDelay& setFeedback3(float feedback) { return setFeedback(3, feedback); }
-    EffectDelay& setFeedback4(float feedback) { return setFeedback(4, feedback); }
-    EffectDelay& setFeedback5(float feedback) { return setFeedback(5, feedback); }
-    EffectDelay& setFeedback6(float feedback) { return setFeedback(6, feedback); }
-    EffectDelay& setFeedback7(float feedback) { return setFeedback(7, feedback); }
 
     EffectDelay& setFeedback(uint8_t voiceIndex, float feedback)
     {
