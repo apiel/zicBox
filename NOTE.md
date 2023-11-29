@@ -6,14 +6,17 @@
 
 ## groc
 
-- TODO make side component to see active encoder function
+- TODO subview to be able to switch a subset of view
 
-- TODO ADSR envelop visualisation instead of encoder2...
+- TODO make side component to see active encoder function
 
 - TODO when touching the screen, it could either play a note and change pitch base on Y
                               or start ARP change pitch with Y and change pattern with X
      --> maybe there should be a way to stop the motion populating, so a component could
          take over the motion, e.g. an invisible frame on top of the whole view that would trigger the notes.
+
+- NOTE ADSR envelop should we try to make the grain moving on the envelop...
+        or simply show the active phase
 
 ## zicUi
 

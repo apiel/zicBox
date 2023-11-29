@@ -10,6 +10,8 @@ protected:
 
     Rect graphArea;
 
+    std::string label = "Adsr";
+
     struct Phase {
         ValueInterface* value;
         int8_t encoderId;
@@ -35,6 +37,7 @@ protected:
         Color background;
         Color line;
         Color filling;
+        Color label;
     } colors;
 
     Colors getColorsFromColor(Color color)
@@ -43,6 +46,7 @@ protected:
             styles.colors.background,
             color,
             draw.alpha(color, 0.2),
+            draw.alpha(styles.colors.white, 0.4),
         });
     }
 
@@ -98,11 +102,13 @@ public:
         draw.filledRect({ graphArea.position.x + a + d + s - 2, sustainY - 2 }, { 4, 4 }, colors.line);
         draw.filledRect({ graphArea.position.x + w - 2, graphArea.position.y + h - 2 }, { 4, 4 }, colors.line);
 
-        // int textY = graphArea.position.y + h + 2;
+        int textY = graphArea.position.y + h + 2;
         // draw.textCentered({ (int)(graphArea.position.x + a * 0.5), textY }, "A", colors.line, 10);
         // draw.textCentered({ (int)(graphArea.position.x + a + d * 0.5), textY }, "D", colors.line, 10);
         // draw.textCentered({ (int)(graphArea.position.x + a + d + s * 0.5), textY }, "S", colors.line, 10);
         // draw.textCentered({ (int)(graphArea.position.x + w * 0.5), textY }, "R", colors.line, 10);
+
+        draw.textCentered({ (int)(graphArea.position.x + w * 0.5), textY }, label.c_str(), colors.label, 10);
     }
 
     bool config(char* key, char* value)
@@ -114,6 +120,16 @@ public:
 
         if (strcmp(key, "BACKGROUND_COLOR") == 0) {
             colors.background = draw.getColor(value);
+            return true;
+        }
+
+        if (strcmp(key, "LABEL_COLOR") == 0) {
+            colors.label = draw.getColor(value);
+            return true;
+        }
+
+        if (strcmp(key, "LABEL") == 0) {
+            label = value;
             return true;
         }
 
