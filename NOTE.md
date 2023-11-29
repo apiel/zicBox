@@ -16,7 +16,7 @@
          take over the motion, e.g. an invisible frame on top of the whole view that would trigger the notes.
 
 - NOTE ADSR envelop should we try to make the grain moving on the envelop...
-        or simply show the active phase
+        or simply show the active phase [see patch->oldest_voice_idx]
 
 ## zicUi
 
