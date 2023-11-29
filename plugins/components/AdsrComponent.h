@@ -4,6 +4,8 @@
 #include "component.h"
 #include <string>
 
+// #define ADSR_ANIMATION 1
+
 class AdsrComponent : public Component {
 protected:
     bool encoderActive = false;
@@ -12,10 +14,42 @@ protected:
 
     std::string label = "Adsr";
 
+#ifdef ADSR_ANIMATION
+    int dataId = -1;
+    AudioPlugin* plugin = NULL;
+#endif
+
     struct Phase {
         ValueInterface* value;
         int8_t encoderId;
     } adsr[4];
+
+#ifdef ADSR_ANIMATION
+    void renderStateProgression(std::vector<Point>& points)
+    {
+        // TODO to be implemented
+        if (plugin) {
+            struct AdsrState {
+                int8_t phase;
+                float position;
+            }* adsrState = (AdsrState*)plugin->data(dataId);
+            if (adsrState) {
+                // printf("adsrState %d %f\n", adsrState->phase, adsrState->position);
+                std::vector<Point> newPoints;
+                int8_t phase = adsrState->phase + 1;
+                for (int i = 0; i < points.size() && i < phase; i++) {
+                    newPoints.push_back(points[i]);
+                }
+                int x = points[phase - 1].x + (points[phase].x - points[phase - 1].x) * adsrState->position;
+                int y = points[phase - 1].y + (points[phase].y - points[phase - 1].y) * adsrState->position;
+                newPoints.push_back({ x, y });
+                newPoints.push_back({ x, graphArea.position.y + graphArea.size.h });
+
+                draw.filledPolygon(newPoints, colors.progression);
+            }
+        }
+    }
+#endif
 
     void set(uint8_t index, int8_t encoderId, const char* pluginName, const char* key)
     {
@@ -37,6 +71,7 @@ protected:
         Color background;
         Color line;
         Color filling;
+        Color progression;
         Color label;
     } colors;
 
@@ -46,6 +81,7 @@ protected:
             styles.colors.background,
             color,
             draw.alpha(color, 0.2),
+            draw.alpha(color, 0.3),
             draw.alpha(styles.colors.white, 0.4),
         });
     }
@@ -59,6 +95,13 @@ public:
             { position.x + 4, position.y + 4 },
             { size.w - 20, size.h - 20 }
         };
+#ifdef ADSR_ANIMATION
+        jobRendering = [this](unsigned long now) {
+            if (plugin && plugin->data(dataId) != NULL) {
+                renderNext();
+            }
+        };
+#endif
     }
 
     void render()
@@ -71,44 +114,32 @@ public:
 
         int w = graphArea.size.w;
         int h = graphArea.size.h;
-        int a = w * adsr[0].value->pct() * 0.25;
-        int d = w * adsr[1].value->pct() * 0.25;
-        int r = w * adsr[3].value->pct() * 0.25;
+        int a = w * adsr[0].value->pct() * 0.3;
+        int d = w * adsr[1].value->pct() * 0.3;
+        int r = w * adsr[3].value->pct() * 0.3;
         int s = w - a - d - r;
 
         int sustainY = graphArea.position.y + h * adsr[2].value->pct();
 
-        draw.filledPolygon({
-                               { graphArea.position.x, graphArea.position.y + h },
-                               { graphArea.position.x + a, graphArea.position.y },
-                               { graphArea.position.x + a + d, sustainY },
-                               { graphArea.position.x + a + d + s, sustainY },
-                               { graphArea.position.x + w, graphArea.position.y + h },
-                           },
-            colors.filling);
+        std::vector<Point> points = {
+            { graphArea.position.x, graphArea.position.y + h },
+            { graphArea.position.x + a, graphArea.position.y },
+            { graphArea.position.x + a + d, sustainY },
+            { graphArea.position.x + a + d + s, sustainY },
+            { graphArea.position.x + w, graphArea.position.y + h },
+        };
 
-        draw.aalines({
-                         { graphArea.position.x, graphArea.position.y + h },
-                         { graphArea.position.x + a, graphArea.position.y },
-                         { graphArea.position.x + a + d, sustainY },
-                         { graphArea.position.x + a + d + s, sustainY },
-                         { graphArea.position.x + w, graphArea.position.y + h },
-                     },
-            colors.line);
+        draw.filledPolygon(points, colors.filling);
+#ifdef ADSR_ANIMATION
+        renderStateProgression(points);
+#endif
+        draw.aalines(points, colors.line);
 
-        draw.filledRect({ graphArea.position.x - 2, graphArea.position.y + h - 2 }, { 4, 4 }, colors.line);
-        draw.filledRect({ graphArea.position.x + a - 2, graphArea.position.y - 2 }, { 4, 4 }, colors.line);
-        draw.filledRect({ graphArea.position.x + a + d - 2, sustainY - 2 }, { 4, 4 }, colors.line);
-        draw.filledRect({ graphArea.position.x + a + d + s - 2, sustainY - 2 }, { 4, 4 }, colors.line);
-        draw.filledRect({ graphArea.position.x + w - 2, graphArea.position.y + h - 2 }, { 4, 4 }, colors.line);
+        for (Point p : points) {
+            draw.filledRect({ p.x - 2, p.y - 2 }, { 4, 4 }, colors.line);
+        }
 
-        int textY = graphArea.position.y + h + 2;
-        // draw.textCentered({ (int)(graphArea.position.x + a * 0.5), textY }, "A", colors.line, 10);
-        // draw.textCentered({ (int)(graphArea.position.x + a + d * 0.5), textY }, "D", colors.line, 10);
-        // draw.textCentered({ (int)(graphArea.position.x + a + d + s * 0.5), textY }, "S", colors.line, 10);
-        // draw.textCentered({ (int)(graphArea.position.x + w * 0.5), textY }, "R", colors.line, 10);
-
-        draw.textCentered({ (int)(graphArea.position.x + w * 0.5), textY }, label.c_str(), colors.label, 10);
+        draw.textCentered({ (int)(graphArea.position.x + w * 0.5), graphArea.position.y + h + 2 }, label.c_str(), colors.label, 10);
     }
 
     bool config(char* key, char* value)
@@ -152,6 +183,15 @@ public:
             set(3, value);
             return true;
         }
+
+#ifdef ADSR_ANIMATION
+        if (strcmp(key, "DATA_STATE") == 0) {
+            char* pluginName = strtok(value, " ");
+            dataId = atoi(strtok(NULL, " "));
+            plugin = &getPlugin(pluginName);
+            return true;
+        }
+#endif
 
         return false;
     }

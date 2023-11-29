@@ -12,6 +12,7 @@
 
 - TODO when touching the screen, it could either play a note and change pitch base on Y
                               or start ARP change pitch with Y and change pattern with X
+                              or act as a chaos pad
      --> maybe there should be a way to stop the motion populating, so a component could
          take over the motion, e.g. an invisible frame on top of the whole view that would trigger the notes.
 
