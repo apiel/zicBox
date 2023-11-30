@@ -446,6 +446,15 @@ public:
         debug("noteOff: note not found %d %d\n", note, velocity);
     }
 
+protected:
+    struct GrainState {
+        int index;
+        float position;
+        float release;
+    };
+    std::vector<GrainState> grainStates;
+
+public:
     void* data(int id, void* userdata = NULL)
     {
         switch (id) {
@@ -458,6 +467,32 @@ public:
         case 2:
             save();
             return NULL;
+
+        case 3: {
+            grainStates.clear();
+            for (uint8_t v = 0; v < MAX_GRAIN_VOICES; v++) {
+                Voice& voice = voices[v];
+                if (voice.note != -1) {
+                    for (uint8_t g = 0; g < densityUint8; g++) {
+                        Grain& grain = voice.grains[g];
+                        grainStates.push_back({ v * g + g,
+                            (grain.start + grain.pos) / (float)bufferSampleCount,
+                            voice.envelop == &SynthGranular::envelopRelease ? voice.env : 1.0f });
+                    }
+                }
+            }
+            return &grainStates;
+        }
+
+        case 4: {
+            // This could be cache in envelopRelease
+            for (Voice& voice : voices) {
+                if (voice.note != -1) {
+                    return &voice;
+                }
+            }
+            return NULL;
+        }
         }
         return NULL;
     }

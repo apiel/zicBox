@@ -35,4 +35,5 @@ INCLUDE: ui/kick/kick.view.ui
 INCLUDE: ui/demo.view.ui
 INCLUDE: ui/mixer.view.ui
 
-STARTUP_VIEW: Demo
+# STARTUP_VIEW: Demo
+STARTUP_VIEW: Granular

@@ -34,7 +34,45 @@ protected:
 
     WaveBaseComponent wave;
 
-    void renderStartRange()
+    // void renderSampleStart()
+    // {
+    //     int w = textureSize.w * sampleStartPosition->pct();
+    //     draw.filledRect({ position.x, position.y }, { w, size.h }, colors.startOverlay);
+    //     draw.line(
+    //         { position.x + w, position.y }, { position.x + w, position.y + textureSize.h }, colors.startEndOverlayEdge);
+    // }
+
+    // void renderSampleEnd()
+    // {
+    //     int w = textureSize.w * sampleEndPosition->pct();
+    //     draw.filledRect({ position.x + w, position.y }, { textureSize.w - w, textureSize.h }, colors.startOverlay);
+    //     draw.line(
+    //         { position.x + w, position.y },
+    //         { position.x + w, position.y + textureSize.h },
+    //         colors.startEndOverlayEdge);
+    // }
+
+    void renderGrains()
+    {
+        struct GrainState {
+            int index;
+            float position;
+            float release;
+        };
+        std::vector<GrainState>* grainStates = (std::vector<GrainState>*)plugin.data(3);
+        int count = 0;
+        int y = position.y + 5; // + textureSize.h * 0.3;
+        for (auto& grain : *grainStates) {
+            int x = position.x + grain.position * textureSize.w;
+            Color color = colors.grain;
+            if (grain.release != 1.0) {
+                color = draw.alpha(color, grain.release);
+            }
+            draw.filledRect({ x, y + (grain.index * 13 % (textureSize.h - 10 )) }, { 4, 4 }, color);
+        }
+    }
+
+    void renderGrainStartRange()
     {
         int x = position.x + margin + (start->pct() * (textureSize.w));
         int w = (grainSize->pct() * (textureSize.w));
@@ -76,6 +114,9 @@ protected:
         Color start;
         Color toggle;
         Color spray;
+        // Color startEndOverlay;
+        // Color startEndOverlayEdge;
+        Color grain;
     } colors;
 
     Colors getColorsFromColor(Color color)
@@ -84,10 +125,15 @@ protected:
             draw.darken(color, 0.3),
             styles.colors.overlay,
             draw.alpha(color, 0.2),
-            draw.alpha(color, 0.2) });
+            draw.alpha(color, 0.2),
+            // draw.alpha(draw.darken(color, 0.80), 0.6),
+            // draw.alpha(draw.darken(color, 0.90), 0.3),
+            draw.lighten(draw.getColor((char*)"#9dfe86"), 0.3) });
     }
 
     const int margin;
+
+    bool jobDidRender = false;
 
 public:
     GranularComponent(ComponentInterface::Props props)
@@ -103,6 +149,16 @@ public:
         sprayToggleRect = { { position.x + size.w - 70, position.y + size.h - 30 }, { 50, 15 } };
         playToggleRect = { { position.x + size.w - 130, position.y + size.h - 30 }, { 50, 15 } };
         saveRect = { { position.x + size.w - 190, position.y + size.h - 30 }, { 50, 15 } };
+
+        jobRendering = [this](unsigned long now) {
+            if (plugin.data(4) != NULL) {
+                jobDidRender = true;
+                renderNext();
+            } else if (jobDidRender) {
+                jobDidRender = false;
+                renderNext();
+            }
+        };
     }
 
     void render()
@@ -121,10 +177,11 @@ public:
         }
         draw.applyTexture(textureSampleWaveform, { { position.x + margin, position.y + margin }, textureSize });
 
-        renderStartRange();
+        renderGrainStartRange();
         renderToggle(sprayToggleRect, "spray", sprayControllerOn);
         renderToggle(playToggleRect, "play", playControllerOn);
         renderButton(saveRect, saved ? "saved" : "save", savePressed);
+        renderGrains();
         if (saved) {
             saved = false;
         }

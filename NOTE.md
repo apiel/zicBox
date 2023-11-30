@@ -7,6 +7,7 @@
 ## groc
 
 - TODO subview to be able to switch a subset of view
+        or just show hide component ^^
 
 - TODO make side component to see active encoder function
 
@@ -16,8 +17,8 @@
      --> maybe there should be a way to stop the motion populating, so a component could
          take over the motion, e.g. an invisible frame on top of the whole view that would trigger the notes.
 
-- NOTE ADSR envelop should we try to make the grain moving on the envelop...
-        or simply show the active phase [see patch->oldest_voice_idx]
+- TODO ADSR exponential curve
+        For ADSR animation find optimal way to print triangle rectangle
 
 ## zicUi
 
