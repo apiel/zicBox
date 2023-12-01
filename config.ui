@@ -23,6 +23,9 @@ PLUGIN_CONTROLLER: ./plugins/controllers/build/libzic_MidiEncoderController.so
   ENCODER_TARGET: 1 6
   ENCODER_TARGET: 0 7
 
+$encoder=Encoder2
+# $encoder=EncoderKnob
+
 ### Default ###
 
 INCLUDE: ui/layout.view.ui

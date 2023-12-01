@@ -16,6 +16,7 @@ protected:
 
     int fontValueSize = 10;
     int twoSideMargin = 2;
+    int knobMargin = 2;
 
     struct DrawArea {
         int x;
@@ -34,12 +35,21 @@ protected:
 
     ValueInterface* value = NULL;
 
-    void drawLabel()
+    void renderLabel()
     {
         draw.textCentered({ area.xCenter, area.yCenter + insideRadius }, label, colors.title, 12);
     }
 
-    void drawBar()
+    void renderActiveGroup()
+    {
+        if (encoderActive) {
+            draw.filledRect({ position.x + margin, position.y + margin }, { 12, 12 }, colors.id);
+            // draw.filledEllipse({ position.x + margin + 6, position.y + margin + 6 }, 6, 6, colors.id);
+            draw.textCentered({ position.x + margin + 6, position.y + margin }, std::to_string(encoderId + 1).c_str(), colors.background, 8);
+        }
+    }
+
+    void renderBar()
     {
         int val = 280 * value->pct();
 
@@ -56,7 +66,7 @@ protected:
         draw.filledEllipse({ area.xCenter, area.yCenter - valueMarginTop }, insideRadius, insideRadius, colors.background);
     }
 
-    void drawCenteredBar()
+    void renderCenteredBar()
     {
         int val = 280 * value->pct();
 
@@ -74,9 +84,9 @@ protected:
         draw.filledEllipse({ area.xCenter, area.yCenter - valueMarginTop }, insideRadius, insideRadius, colors.background);
     }
 
-    void drawKnob()
+    void renderKnob()
     {
-        int knobRadius = insideRadius - 2;
+        int knobRadius = insideRadius - knobMargin;
         draw.filledEllipse({ area.xCenter, area.yCenter - valueMarginTop }, knobRadius, knobRadius, colors.knob);
 
         // draw dot at value position
@@ -91,15 +101,16 @@ protected:
         draw.filledEllipse({ x, y }, 2, 2, colors.knobDot);
     }
 
-    void drawEncoder()
+    void renderEncoder()
     {
-        drawLabel();
+        renderLabel();
         if (value->props().type == VALUE_CENTERED) {
-            drawCenteredBar();
+            renderCenteredBar();
         } else {
-            drawBar();
+            renderBar();
         }
-        drawKnob();
+        renderKnob();
+        renderActiveGroup();
     }
 
     void set(const char* pluginName, const char* key)
@@ -113,6 +124,7 @@ protected:
 
     struct Colors {
         Color background;
+        Color id;
         Color title;
         Color bar;
         Color barBackground;
@@ -133,11 +145,12 @@ public:
     {
         colors = {
             styles.colors.background,
+            draw.darken(styles.colors.grey, 0.3),
             draw.alpha(styles.colors.white, 0.4),
             styles.colors.blue,
             draw.alpha(styles.colors.blue, 0.5),
             draw.alpha(styles.colors.blue, 0.2),
-            draw.getColor((char *)"#35373b"),
+            draw.getColor((char*)"#35373b"),
             // draw.lighten(styles.colors.grey, 0.7),
             draw.alpha(styles.colors.white, 0.6),
         };
@@ -161,11 +174,14 @@ public:
         if (radius > 35) {
             fontValueSize = 15;
             twoSideMargin = 5;
+            knobMargin = 3;
         } else if (radius > 26) {
             fontValueSize = 14;
             twoSideMargin = 3;
+            knobMargin = 4;
         } else if (radius > 24) {
             fontValueSize = 12;
+            knobMargin = 4;
         }
     }
 
@@ -177,7 +193,7 @@ public:
             colors.background);
 
         if (value != NULL) {
-            drawEncoder();
+            renderEncoder();
         }
     }
 

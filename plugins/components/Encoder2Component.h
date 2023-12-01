@@ -33,12 +33,21 @@ protected:
 
     ValueInterface* value = NULL;
 
-    void drawLabel()
+    void renderLabel()
     {
         draw.textCentered({ area.xCenter, area.yCenter + insideRadius }, label, colors.title, 12);
     }
 
-    void drawBar()
+    void renderActiveGroup()
+    {
+        if (encoderActive) {
+            draw.filledRect({ position.x + margin, position.y + margin }, { 12, 12 }, colors.id);
+            // draw.filledEllipse({ position.x + margin + 6, position.y + margin + 6 }, 6, 6, colors.id);
+            draw.textCentered({ position.x + margin + 6, position.y + margin }, std::to_string(encoderId + 1).c_str(), colors.background, 8);
+        }
+    }
+
+    void renderBar()
     {
         int val = 280 * value->pct();
 
@@ -55,14 +64,14 @@ protected:
         draw.filledEllipse({ area.xCenter, area.yCenter - valueMarginTop }, insideRadius, insideRadius, colors.background);
     }
 
-    void drawUnit()
+    void renderUnit()
     {
         if (value->props().unit != NULL) {
             draw.textCentered({ area.xCenter, area.yCenter + fontValueSize - 2 - valueMarginTop }, value->props().unit, colors.unit, 10);
         }
     }
 
-    void drawCenteredBar()
+    void renderCenteredBar()
     {
         int val = 280 * value->pct();
 
@@ -80,7 +89,7 @@ protected:
         draw.filledEllipse({ area.xCenter, area.yCenter - valueMarginTop }, insideRadius, insideRadius, colors.background);
     }
 
-    void drawValue()
+    void renderValue()
     {
         std::string valStr = std::to_string(value->get());
         valStr = valStr.substr(0, valStr.find(".") + valueFloatPrecision + (valueFloatPrecision > 0 ? 1 : 0));
@@ -88,7 +97,7 @@ protected:
         int x = draw.textCentered({ area.xCenter, area.yCenter - 5 - valueMarginTop }, valStr.c_str(), colors.value, fontValueSize);
     }
 
-    void drawTwoSidedValue()
+    void renderTwoSidedValue()
     {
         int val = value->get();
         // FIXME use floating point...
@@ -103,21 +112,22 @@ protected:
             colors.barTwoSide);
     }
 
-    void drawEncoder()
+    void renderEncoder()
     {
-        drawLabel();
+        renderLabel();
         if (value->props().type == VALUE_CENTERED) {
-            drawCenteredBar();
+            renderCenteredBar();
         } else {
-            drawBar();
+            renderBar();
         }
 
-        drawUnit();
+        renderUnit();
+        renderActiveGroup();
 
         if (value->props().type == VALUE_CENTERED && type == 1) {
-            drawTwoSidedValue();
+            renderTwoSidedValue();
         } else {
-            drawValue();
+            renderValue();
         }
     }
 
@@ -132,6 +142,7 @@ protected:
 
     struct Colors {
         Color background;
+        Color id;
         Color title;
         Color value;
         Color unit;
@@ -152,6 +163,7 @@ public:
     {
         colors = {
             styles.colors.background,
+            draw.darken(styles.colors.grey, 0.3),
             draw.alpha(styles.colors.white, 0.4),
             draw.alpha(styles.colors.white, 0.4),
             draw.alpha(styles.colors.white, 0.2),
@@ -195,7 +207,7 @@ public:
             colors.background);
 
         if (value != NULL) {
-            drawEncoder();
+            renderEncoder();
         }
     }
 

@@ -3,31 +3,36 @@ VIEW: Main
 
   INCLUDE: ../layout.ui
 
-  COMPONENT: Encoder 0 0 100 50
+  COMPONENT: $encoder 0 0 100 100
     ENCODER_ID: 0
     VALUE: MultiModeFilter CUTOFF
+     COLOR: #a19ffc
     TYPE: TWO_SIDED
 
-  COMPONENT: Encoder 100 0 100 50
+  COMPONENT: $encoder 100 0 100 100
     ENCODER_ID: 1
     VALUE: MultiModeFilter RESONANCE
+    COLOR: #a19ffc
 
-  COMPONENT: Encoder 200 0 100 50
+  COMPONENT: $encoder 200 0 100 100
     ENCODER_ID: 2
+    COLOR: #fcc46d
     VALUE: SampleRateReducer SAMPLE_STEP
 
-  COMPONENT: Encoder 300 0 100 50
+  COMPONENT: $encoder 300 0 100 100
     ENCODER_ID: 3
+    COLOR: #fd3652
     VALUE: Distortion DRIVE
 
-  COMPONENT: Encoder 400 0 100 50
+  COMPONENT: $encoder 400 0 100 100
     GROUP: 0
     ENCODER_ID: 4
+    COLOR: #9dfe86
     VALUE: Delay TIME_RATIO
 
 # Pad
 
-  COMPONENT: Pad 0 50 400 380
+  COMPONENT: Pad 0 100 400 380
     VALUE_X: Delay CUTOFF
     VALUE_Y: Delay MASTER_AMPLITUDE
 
