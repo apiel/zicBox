@@ -18,6 +18,7 @@ VIEW: Main
     ENCODER_ID: 2
     COLOR: #fcc46d
     VALUE: SampleRateReducer SAMPLE_STEP
+    FONT_UNIT_SIZE: 8
 
   COMPONENT: $encoder 300 0 100 100
     ENCODER_ID: 3

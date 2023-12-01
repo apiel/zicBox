@@ -2,6 +2,7 @@
 #define _UI_COMPONENT2_ENCODER_H_
 
 #include "component.h"
+#include <math.h>
 #include <string>
 
 class Encoder2Component : public Component {
@@ -14,7 +15,9 @@ protected:
     int insideRadius = 15;
 
     int fontValueSize = 10;
+    int fontUnitSize = 9;
     int twoSideMargin = 2;
+    int knobMargin = 2;
 
     struct DrawArea {
         int x;
@@ -25,7 +28,14 @@ protected:
         int h;
     } area;
 
-    const int valueMarginTop = 3;
+    Point valuePosition;
+
+    bool showKnob = true;
+    bool showValue = true;
+    bool showGroup = true;
+    bool showUnit = true;
+
+    const int marginTop = 3;
 
     bool encoderActive = false;
     int8_t encoderId = -1;
@@ -40,10 +50,29 @@ protected:
 
     void renderActiveGroup()
     {
-        if (encoderActive) {
+        if (showGroup && encoderActive) {
             draw.filledRect({ position.x + margin, position.y + margin }, { 12, 12 }, colors.id);
             // draw.filledEllipse({ position.x + margin + 6, position.y + margin + 6 }, 6, 6, colors.id);
             draw.textCentered({ position.x + margin + 6, position.y + margin }, std::to_string(encoderId + 1).c_str(), colors.background, 8);
+        }
+    }
+
+    void renderKnob()
+    {
+        if (showKnob) {
+            int knobRadius = insideRadius - knobMargin;
+            draw.filledEllipse({ area.xCenter, area.yCenter - marginTop }, knobRadius, knobRadius, colors.knob);
+
+            // draw dot at value position
+            int cx = area.xCenter;
+            int cy = area.yCenter - marginTop;
+            int r = knobRadius - 3;
+            float angleDegrees = 280 * value->pct();
+            float angleRadians = angleDegrees * M_PI / 180.0 - 180;
+            int x = cx + r * cos(angleRadians);
+            int y = cy + r * sin(angleRadians);
+
+            draw.filledEllipse({ x, y }, 2, 2, colors.knobDot);
         }
     }
 
@@ -52,41 +81,41 @@ protected:
         int val = 280 * value->pct();
 
         if (val < 280) {
-            draw.filledPie({ area.xCenter, area.yCenter - valueMarginTop }, radius, 130, 50, colors.barBackground);
+            draw.filledPie({ area.xCenter, area.yCenter - marginTop }, radius, 130, 50, colors.barBackground);
         }
         if (val > 0) {
             int endAngle = 130 + val;
             if (endAngle > 360) {
                 endAngle = endAngle - 360;
             }
-            draw.filledPie({ area.xCenter, area.yCenter - valueMarginTop }, radius, 130, endAngle, colors.bar);
+            draw.filledPie({ area.xCenter, area.yCenter - marginTop }, radius, 130, endAngle, colors.bar);
         }
-        draw.filledEllipse({ area.xCenter, area.yCenter - valueMarginTop }, insideRadius, insideRadius, colors.background);
-    }
-
-    void renderUnit()
-    {
-        if (value->props().unit != NULL) {
-            draw.textCentered({ area.xCenter, area.yCenter + fontValueSize - 2 - valueMarginTop }, value->props().unit, colors.unit, 10);
-        }
+        draw.filledEllipse({ area.xCenter, area.yCenter - marginTop }, insideRadius, insideRadius, colors.background);
     }
 
     void renderCenteredBar()
     {
         int val = 280 * value->pct();
 
-        draw.filledPie({ area.xCenter, area.yCenter - valueMarginTop }, radius, 130, 50, colors.barBackground);
+        draw.filledPie({ area.xCenter, area.yCenter - marginTop }, radius, 130, 50, colors.barBackground);
         if (val > 140) {
             int endAngle = 130 + val;
             if (endAngle > 360) {
                 endAngle = endAngle - 360;
             }
 
-            draw.filledPie({ area.xCenter, area.yCenter - valueMarginTop }, radius, 270, endAngle, colors.bar);
+            draw.filledPie({ area.xCenter, area.yCenter - marginTop }, radius, 270, endAngle, colors.bar);
         } else if (val < 140) {
-            draw.filledPie({ area.xCenter, area.yCenter - valueMarginTop }, radius, 270 - (140 - val), 270, colors.bar);
+            draw.filledPie({ area.xCenter, area.yCenter - marginTop }, radius, 270 - (140 - val), 270, colors.bar);
         }
-        draw.filledEllipse({ area.xCenter, area.yCenter - valueMarginTop }, insideRadius, insideRadius, colors.background);
+        draw.filledEllipse({ area.xCenter, area.yCenter - marginTop }, insideRadius, insideRadius, colors.background);
+    }
+
+    void renderUnit()
+    {
+        if (showUnit && value->props().unit != NULL) {
+            draw.textCentered({ valuePosition.x, valuePosition.y + fontValueSize - 5 }, value->props().unit, colors.unit, fontUnitSize);
+        }
     }
 
     void renderValue()
@@ -94,26 +123,26 @@ protected:
         std::string valStr = std::to_string(value->get());
         valStr = valStr.substr(0, valStr.find(".") + valueFloatPrecision + (valueFloatPrecision > 0 ? 1 : 0));
 
-        int x = draw.textCentered({ area.xCenter, area.yCenter - 5 - valueMarginTop }, valStr.c_str(), colors.value, fontValueSize);
+        int x = draw.textCentered({ valuePosition.x, valuePosition.y - 5 }, valStr.c_str(), colors.value, fontValueSize);
     }
 
     void renderTwoSidedValue()
     {
         int val = value->get();
         // FIXME use floating point...
-        draw.textRight({ area.xCenter - twoSideMargin, area.yCenter - 5 - valueMarginTop }, std::to_string((int)value->props().max - val).c_str(),
+        draw.textRight({ valuePosition.x - twoSideMargin, valuePosition.y - 5 }, std::to_string((int)value->props().max - val).c_str(),
             colors.value, fontValueSize - 3);
-        draw.text({ area.xCenter + twoSideMargin, area.yCenter - 5 - valueMarginTop }, std::to_string(val).c_str(),
+        draw.text({ valuePosition.x + twoSideMargin, valuePosition.y - 5 }, std::to_string(val).c_str(),
             colors.value, fontValueSize - 3);
 
-        draw.line({ area.xCenter, area.yCenter - 10 - valueMarginTop }, { area.xCenter, area.yCenter + 10 - valueMarginTop },
-            colors.barTwoSide);
-        draw.line({ area.xCenter - 1, area.yCenter - 10 - valueMarginTop }, { area.xCenter - 1, area.yCenter + 10 - valueMarginTop },
-            colors.barTwoSide);
+        draw.line({ valuePosition.x, valuePosition.y - 10 }, { valuePosition.x, valuePosition.y + 10 }, colors.barTwoSide);
+        draw.line({ valuePosition.x - 1, valuePosition.y - 10 }, { valuePosition.x - 1, valuePosition.y + 10 }, colors.barTwoSide);
     }
 
     void renderEncoder()
     {
+        renderActiveGroup();
+
         renderLabel();
         if (value->props().type == VALUE_CENTERED) {
             renderCenteredBar();
@@ -121,13 +150,15 @@ protected:
             renderBar();
         }
 
-        renderUnit();
-        renderActiveGroup();
+        renderKnob();
 
-        if (value->props().type == VALUE_CENTERED && type == 1) {
-            renderTwoSidedValue();
-        } else {
-            renderValue();
+        if (showValue) {
+            renderUnit();
+            if (value->props().type == VALUE_CENTERED && type == 1) {
+                renderTwoSidedValue();
+            } else {
+                renderValue();
+            }
         }
     }
 
@@ -149,6 +180,8 @@ protected:
         Color bar;
         Color barBackground;
         Color barTwoSide;
+        Color knob;
+        Color knobDot;
     } colors;
 
     const int margin;
@@ -170,10 +203,14 @@ public:
             styles.colors.blue,
             draw.alpha(styles.colors.blue, 0.5),
             draw.alpha(styles.colors.blue, 0.2),
+            draw.getColor((char*)"#35373b"),
+            draw.alpha(styles.colors.white, 0.6),
         };
 
         area.xCenter = (int)(area.x + (area.w * 0.5));
         area.yCenter = (int)(area.y + (area.h * 0.5));
+
+        valuePosition = { area.xCenter, area.yCenter - marginTop };
 
         if (size.h < 60) {
             printf("Encoder component height too small: %dx%d. Min height is 60.\n", size.w, size.h);
@@ -190,12 +227,16 @@ public:
 
         if (radius > 35) {
             fontValueSize = 15;
+            fontUnitSize = 11;
             twoSideMargin = 5;
+            knobMargin = 4;
         } else if (radius > 26) {
             fontValueSize = 14;
             twoSideMargin = 3;
+            knobMargin = 4;
         } else if (radius > 24) {
             fontValueSize = 12;
+            knobMargin = 3;
         }
     }
 
@@ -261,8 +302,39 @@ public:
             return true;
         }
 
+        if (strcmp(key, "KNOB_COLOR") == 0) {
+            colors.knob = draw.getColor(value);
+            // colors.knobDot = draw.lighten(colors.knob, 0.7);
+            return true;
+        }
+
         if (strcmp(key, "FLOAT_PRECISION") == 0) {
             valueFloatPrecision = atoi(value);
+            return true;
+        }
+
+        if (strcmp(key, "SHOW_KNOB") == 0) {
+            showKnob = (strcmp(value, "TRUE") == 0);
+            return true;
+        }
+
+        if (strcmp(key, "SHOW_GROUP") == 0) {
+            showGroup = (strcmp(value, "TRUE") == 0);
+            return true;
+        }
+
+        if (strcmp(key, "SHOW_VALUE") == 0) {
+            showValue = (strcmp(value, "TRUE") == 0);
+            return true;
+        }
+
+        if (strcmp(key, "SHOW_UNIT") == 0) {
+            showUnit = (strcmp(value, "TRUE") == 0);
+            return true;
+        }
+
+        if (strcmp(key, "FONT_UNIT_SIZE") == 0) {
+            fontUnitSize = atoi(value);
             return true;
         }
 
