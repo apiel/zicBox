@@ -60,15 +60,20 @@ protected:
             float release;
         };
         std::vector<GrainState>* grainStates = (std::vector<GrainState>*)plugin.data(3);
-        int count = 0;
-        int y = position.y + 5; // + textureSize.h * 0.3;
+        int spacing = 13;
+        int totalHeight = grainStates->size() * spacing;
+        int marginTop = 5;
+        if (totalHeight < textureSize.h) {
+            marginTop = (textureSize.h - totalHeight) / 2;
+        }
+        int y = position.y + marginTop;
         for (auto& grain : *grainStates) {
             int x = position.x + grain.position * textureSize.w;
             Color color = colors.grain;
             if (grain.release != 1.0) {
                 color = draw.alpha(color, grain.release);
             }
-            draw.filledRect({ x, y + (grain.index * 13 % (textureSize.h - 10 )) }, { 4, 4 }, color);
+            draw.filledRect({ x, y + (grain.index * spacing % (textureSize.h - 10 )) }, { 4, 4 }, color);
         }
     }
 

@@ -1,0 +1,13 @@
+VIEW: Main
+
+  COMPONENT: Encoder2 0 0 110 110
+    GROUP: 0
+    ENCODER_ID: 0
+    VALUE: MultiModeFilter CUTOFF
+    TYPE: TWO_SIDED
+
+   COMPONENT: EncoderKnob 100 0 110 110
+    GROUP: 0
+    ENCODER_ID: 1
+    VALUE: MultiModeFilter CUTOFF
+    TYPE: TWO_SIDED

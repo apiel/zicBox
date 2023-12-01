@@ -23,9 +23,7 @@ PLUGIN_CONTROLLER: ./plugins/controllers/build/libzic_MidiEncoderController.so
   ENCODER_TARGET: 1 6
   ENCODER_TARGET: 0 7
 
-# SET_COLOR: blue #00FF00
-# SET_COLOR: red #FF0000
-# SET_COLOR: overlay #00FFFF
+### Default ###
 
 INCLUDE: ui/layout.view.ui
 
@@ -35,5 +33,12 @@ INCLUDE: ui/kick/kick.view.ui
 INCLUDE: ui/demo.view.ui
 INCLUDE: ui/mixer.view.ui
 
-# STARTUP_VIEW: Demo
 STARTUP_VIEW: Granular
+
+
+### 240x280 ###
+
+# # HOST_CONFIG: config_mini.cfg
+# SCREEN: 280 240
+
+# INCLUDE: ui_240x280/main.view.ui
