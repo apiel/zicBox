@@ -36,11 +36,11 @@ protected:
     int8_t pitchSemitone = 0;
 
     struct Grain {
-        float pos;
-        int64_t start;
-        int64_t sampleCount;
-        int64_t delay;
-        float sampleStep;
+        float pos = 0.0f;
+        int64_t start = 0;
+        int64_t sampleCount = 0;
+        int64_t delay = 0;
+        float sampleStep = 0.0f;
     };
 
     struct Voice {

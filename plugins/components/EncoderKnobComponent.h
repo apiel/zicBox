@@ -137,7 +137,7 @@ public:
             styles.colors.blue,
             draw.alpha(styles.colors.blue, 0.5),
             draw.alpha(styles.colors.blue, 0.2),
-            draw.getColor("#35373b"),
+            draw.getColor((char *)"#35373b"),
             // draw.lighten(styles.colors.grey, 0.7),
             draw.alpha(styles.colors.white, 0.6),
         };
