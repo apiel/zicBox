@@ -33,12 +33,19 @@ INCLUDE: ui/kick/kick.view.ui
 INCLUDE: ui/demo.view.ui
 INCLUDE: ui/mixer.view.ui
 
-STARTUP_VIEW: Granular
+# STARTUP_VIEW: Granular
 
 
-### 240x280 ###
+### mini ###
 
 # # HOST_CONFIG: config_mini.cfg
-# SCREEN: 280 240
 
-# INCLUDE: ui_240x280/main.view.ui
+# SCREEN: 280 240
+# $encoderSize=90
+# $encoderX1=0
+# $encoderX2=$encoderSize
+# $encoderX3=$encoderSize*2
+
+# # SCREEN: 172 320
+
+# INCLUDE: ui_mini/main.view.ui
