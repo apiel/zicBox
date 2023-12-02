@@ -9,6 +9,7 @@ PLUGIN_COMPONENT: Sequencer ./plugins/components/build/libzic_SequencerComponent
 PLUGIN_COMPONENT: Button ./plugins/components/build/libzic_ButtonComponent.so
 PLUGIN_COMPONENT: Cpu ./plugins/components/build/libzic_MonitoringComponent.so
 PLUGIN_COMPONENT: Adsr ./plugins/components/build/libzic_AdsrComponent.so
+PLUGIN_COMPONENT: Filter ./plugins/components/build/libzic_FilterComponent.so
 
 PLUGIN_CONTROLLER: ./plugins/controllers/build/libzic_OscController.so
 
@@ -25,7 +26,8 @@ PLUGIN_CONTROLLER: ./plugins/controllers/build/libzic_MidiEncoderController.so
 
 $encoder=Encoder2
 
-$screen=ui_320x172
+# $screen=ui_320x172
+$screen=ui_800x480
 
 ### Default ###
 
@@ -37,22 +39,11 @@ if: $screen == ui_800x480
   INCLUDE: ui/demo.view.ui
   INCLUDE: ui/mixer.view.ui
 
-  # STARTUP_VIEW: Granular
-
-### 280x240 ###
-
-# # HOST_CONFIG: config_mini.cfg
-
-if: $screen == ui_280x240
-  SCREEN: 280 240
-  $encoderSize=90
-  $encoderX1=0
-  $encoderX2=$encoderSize
-  $encoderX3=$encoderSize*2
-  INCLUDE: ui_280x240/main.view.ui
-
+  STARTUP_VIEW: Demo
 
 ## 320x172 ###
+
+# # HOST_CONFIG: config_mini.cfg
 
 if: $screen == ui_320x172
   SCREEN: 320 172
