@@ -25,29 +25,37 @@ PLUGIN_CONTROLLER: ./plugins/controllers/build/libzic_MidiEncoderController.so
 
 $encoder=Encoder2
 
+$screen=ui_320x172
+
 ### Default ###
 
-INCLUDE: ui/layout.view.ui
+if: $screen == ui_800x480
+  INCLUDE: ui/layout.view.ui
+  INCLUDE: ui/main/main.view.ui
+  INCLUDE: ui/granular.view.ui
+  INCLUDE: ui/kick/kick.view.ui
+  INCLUDE: ui/demo.view.ui
+  INCLUDE: ui/mixer.view.ui
 
-INCLUDE: ui/main/main.view.ui
-INCLUDE: ui/granular.view.ui
-INCLUDE: ui/kick/kick.view.ui
-INCLUDE: ui/demo.view.ui
-INCLUDE: ui/mixer.view.ui
+  # STARTUP_VIEW: Granular
 
-# STARTUP_VIEW: Granular
-
-
-### mini ###
+### 280x240 ###
 
 # # HOST_CONFIG: config_mini.cfg
 
-# SCREEN: 280 240
-# $encoderSize=90
-# $encoderX1=0
-# $encoderX2=$encoderSize
-# $encoderX3=$encoderSize*2
+if: $screen == ui_280x240
+  SCREEN: 280 240
+  $encoderSize=90
+  $encoderX1=0
+  $encoderX2=$encoderSize
+  $encoderX3=$encoderSize*2
+  INCLUDE: ui_280x240/main.view.ui
 
-# # SCREEN: 172 320
 
-# INCLUDE: ui_mini/main.view.ui
+## 320x172 ###
+
+if: $screen == ui_320x172
+  SCREEN: 320 172
+  $encoderSize=86
+  print: ....................the encoder size is $encoderSize
+  INCLUDE: ui_320x172/main.view.ui

@@ -210,7 +210,7 @@ public:
         area.xCenter = (int)(area.x + (area.w * 0.5));
         area.yCenter = (int)(area.y + (area.h * 0.5));
 
-        valuePosition = { area.xCenter, area.yCenter - marginTop };
+        valuePosition = { area.xCenter, area.yCenter - marginTop - 2 };
 
         if (size.h < 60) {
             printf("Encoder component height too small: %dx%d. Min height is 60.\n", size.w, size.h);
@@ -233,7 +233,7 @@ public:
         } else if (radius > 26) {
             fontValueSize = 14;
             twoSideMargin = 3;
-            knobMargin = 4;
+            knobMargin = 3;
         } else if (radius > 24) {
             fontValueSize = 12;
             knobMargin = 3;

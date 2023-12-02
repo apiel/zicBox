@@ -1,0 +1,19 @@
+VIEW: Main
+
+  COMPONENT: $encoder 0 0 $encoderSize $encoderSize
+    ENCODER_ID: 0
+    VALUE: MultiModeFilter CUTOFF
+    COLOR: #a19ffc
+    TYPE: TWO_SIDED
+
+  COMPONENT: $encoder $encoderSize 0 $encoderSize $encoderSize
+    ENCODER_ID: 1
+    COLOR: #a19ffc
+    VALUE: MultiModeFilter RESONANCE
+
+  COMPONENT: $encoder 0 $encoderSize $encoderSize $encoderSize
+    ENCODER_ID: 2
+    COLOR: #fd3652
+    VALUE: SampleRateReducer SAMPLE_STEP
+    # FONT_UNIT_SIZE: 7
+    SHOW_UNIT: false
