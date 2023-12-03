@@ -22,12 +22,15 @@ class SynthSample : public Mapping {
 protected:
     FileBrowser fileBrowser = FileBrowser("./samples");
 
+    // Use to restore sustain position in case it was move by another parameter
+    float sustainPositionOrigin = -1.0f;
+
 public:
-    Val& start = val(0.0f, "START", { "Start", .unit = "%" });
-    Val& end = val(100.0f, "END", { "End", .unit = "%" });
-    Val& sustain = val(0.0f, "SUSTAIN", { "Sustain", .unit = "%" });
+    Val& start = val(0.0f, "START", { "Start", .unit = "%" }, [&](float value) { setStart(value); });
+    Val& end = val(100.0f, "END", { "End", .unit = "%" }, [&](float value) { setEnd(value); });
+    Val& sustainPosition = val(0.0f, "SUSTAIN_POSITION", { "Sustain position", .unit = "%" }, [&](float value) { setSustainPosition(value); });
     // Where -1 is no sustain
-    Val& sustainLength = val(-1.0f, "SUSTAIN_LENGTH", { "Sustain length", .min = -1.0f, .unit = "%" });
+    Val& sustainLength = val(0.0f, "SUSTAIN_LENGTH", { "Sustain length", .unit = "%" });
 
 
     Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)fileBrowser.count }, [&](float value) { open(value); });
@@ -63,6 +66,49 @@ public:
             char* filepath = fileBrowser.getFilePath(position);
             browser.setString(fileBrowser.getFile(position));
             debug("SAMPLE_SELECTOR: %f %s\n", value, filepath);
+        }
+    }
+
+    void setStart(float value)
+    {
+        if (value >= end.get()) {
+            return;
+        }
+        start.setFloat(value);
+        setValueBoundaries();
+    }
+
+    void setEnd(float value)
+    {
+        if (value <= start.get()) {
+            return;
+        }
+        end.setFloat(value);
+        setValueBoundaries();
+    }
+
+    void setSustainPosition(float value)
+    {
+        if (value < start.get() || value + sustainLength.get() > end.get()) {
+            return;
+        }
+        sustainPosition.setFloat(value);
+    }
+
+    void setValueBoundaries()
+    {
+        float sustain = sustainPosition.get();
+        if (start.get() > sustain) {
+            sustainPosition.set(start.get());
+        }
+
+        if (sustain > end.get()) {
+            sustainPosition.set(end.get());
+        }
+
+        float sustainLen = sustainLength.get();
+        if (sustain + sustainLen > end.get()) {
+            sustainLength.set(end.get() - sustain);
         }
     }
 };

@@ -44,12 +44,9 @@ protected:
         int x = position.x + size.w * sustainPosition->pct();
         draw.line({ x, overlayYtop }, { x, overlayYbottom }, colors.loopLine);
 
-        float length = sustainPosition->pct();
-        if (length > 0.0f) {
-            int w = size.w * length;
-            // draw.filledRect({ x, position.y }, { w, size.h }, styles.colors.overlay);
-            draw.line({ x + w, overlayYtop }, { x + w, overlayYbottom }, colors.loopLine);
-        }
+        int w = size.w * sustainLength->pct();
+        // draw.filledRect({ x, position.y }, { w, size.h }, styles.colors.overlay);
+        draw.line({ x + w, overlayYtop }, { x + w, overlayYbottom }, colors.loopLine);
     }
 
     void renderSamples()
@@ -89,7 +86,7 @@ public:
         browser = val(plugin.getValue("BROWSER"));
         startPosition = val(plugin.getValue("START"));
         endPosition = val(plugin.getValue("END"));
-        sustainPosition = val(plugin.getValue("SUSTAIN"));
+        sustainPosition = val(plugin.getValue("SUSTAIN_POSITION"));
         sustainLength = val(plugin.getValue("SUSTAIN_LENGTH"));
 
         overlayYtop = position.y;
@@ -125,10 +122,12 @@ public:
             draw.setMainRenderer();
         }
         draw.applyTexture(textureSampleWaveform, { position, size });
-        // renderStartOverlay();
-        // renderEndOverlay();
-        // renderSustainOverlay();
-        // renderSamples();
+        renderStartOverlay();
+        renderEndOverlay();
+        if (sustainLength->get() > 0.0f) {
+            renderSustainOverlay();
+        }
+        renderSamples();
     }
 
     bool noteTriggered = false;
