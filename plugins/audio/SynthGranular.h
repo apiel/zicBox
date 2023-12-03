@@ -195,13 +195,13 @@ public:
     Val& start = val(0.0f, "START", { "Start", .unit = "%" });
     Val& spray = val(0.0f, "SPRAY", { "Spray", .unit = "%" });
     Val& grainSize = val(100.0f, "GRAIN_SIZE", { "Size", .unit = "%" });
-    Val& density = val((float)densityUint8, "DENSITY", { "Density", .min = 1.0, .max = MAX_GRAINS_PER_VOICE }, [&](float value) { setDensity(value); });
-    Val& attack = val(20, "ATTACK", { "Attack", .min = 20.0, .max = 5000.0, .step = 20.0, .unit = "ms" }, [&](float value) { setAttack(value); });
-    Val& release = val(50, "RELEASE", { "Release", .min = 50.0, .max = 10000.0, .step = 50.0, .unit = "ms" }, [&](float value) { setRelease(value); });
+    Val& density = val((float)densityUint8, "DENSITY", { "Density", .min = 1.0, .max = MAX_GRAINS_PER_VOICE }, [&](auto p) { setDensity(p.value); });
+    Val& attack = val(20, "ATTACK", { "Attack", .min = 20.0, .max = 5000.0, .step = 20.0, .unit = "ms" }, [&](auto p) { setAttack(p.value); });
+    Val& release = val(50, "RELEASE", { "Release", .min = 50.0, .max = 10000.0, .step = 50.0, .unit = "ms" }, [&](auto p) { setRelease(p.value); });
     Val& delay = val(0.0f, "DELAY", { "Delay", .max = 1000.0f, .step = 10.0f, .unit = "ms" });
-    Val& pitch = val(0.0f, "PITCH", { "Pitch", VALUE_CENTERED, .min = -12.0, .max = 12.0 }, [&](float value) { setPitch(value); });
-    Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)fileBrowser.count }, [&](float value) { open(value); });
-    Val& repeat = val(1.0f, "REPEAT", { "Repeat", VALUE_STRING, .max = 1.0 }, [&](float value) { setRepeat(value); });
+    Val& pitch = val(0.0f, "PITCH", { "Pitch", VALUE_CENTERED, .min = -12.0, .max = 12.0 }, [&](auto p) { setPitch(p.value); });
+    Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)fileBrowser.count }, [&](auto p) { open(p.value); });
+    Val& repeat = val(1.0f, "REPEAT", { "Repeat", VALUE_STRING, .max = 1.0 }, [&](auto p) { setRepeat(p.value); });
 
     // TODO add pitch randomization per grain
 

@@ -35,7 +35,7 @@ protected:
     }
 
 public:
-    Val& sampleStep = val(0.0f, "SAMPLE_STEP", { "Step Reducer", .max = 256.0, .unit = "steps" }, [&](float value) { setSampleStep(value); });
+    Val& sampleStep = val(0.0f, "SAMPLE_STEP", { "Step Reducer", .max = 256.0, .unit = "steps" }, [&](auto p) { setSampleStep(p.value); });
 
     EffectSampleRateReducer(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)

@@ -58,34 +58,34 @@ protected:
     }
 
 public:
-    Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)fileBrowser.count }, [&](float value) { open(value); });
-    Val& morph = val(0.0f, "MORPH", { "Morph", .min = 1.0, .max = ZIC_WAVETABLE_WAVEFORMS_COUNT, .step = 0.1, .floatingPoint = 1 }, [&](float value) { setMorph(value); });
-    Val& pitch = val(0, "PITCH", { "Pitch", .min = -12, .max = 12 }, [&](float value) { setPitch(value); });
-    Val& duration = val(100.0f, "DURATION", { "Duration", .min = 100.0, .max = 5000.0, .step = 100.0, .unit = "ms" }, [&](float value) { setDuration(value); });
+    Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)fileBrowser.count }, [&](auto p) { open(p.value); });
+    Val& morph = val(0.0f, "MORPH", { "Morph", .min = 1.0, .max = ZIC_WAVETABLE_WAVEFORMS_COUNT, .step = 0.1, .floatingPoint = 1 }, [&](auto p) { setMorph(p.value); });
+    Val& pitch = val(0, "PITCH", { "Pitch", .min = -12, .max = 12 }, [&](auto p) { setPitch(p.value); });
+    Val& duration = val(100.0f, "DURATION", { "Duration", .min = 100.0, .max = 5000.0, .step = 100.0, .unit = "ms" }, [&](auto p) { setDuration(p.value); });
 
     Val envAmpMod[ZIC_KICK_ENV_AMP_STEP] = {
-        { 50.0f, "ENVELOP_AMP_MOD_1", { "Amp.Mod.1", .unit = "%" }, [&](float value) { setEnvAmpMod1(value); } },
-        { 50.0f, "ENVELOP_AMP_MOD_2", { "Amp.Mod.2", .unit = "%" }, [&](float value) { setEnvAmpMod2(value); } },
-        { 50.0f, "ENVELOP_AMP_MOD_3", { "Amp.Mod.3", .unit = "%" }, [&](float value) { setEnvAmpMod3(value); } },
-        { 50.0f, "ENVELOP_AMP_MOD_4", { "Amp.Mod.4", .unit = "%" }, [&](float value) { setEnvAmpMod4(value); } },
+        { 50.0f, "ENVELOP_AMP_MOD_1", { "Amp.Mod.1", .unit = "%" }, [&](auto p) { setEnvAmpMod1(p.value); } },
+        { 50.0f, "ENVELOP_AMP_MOD_2", { "Amp.Mod.2", .unit = "%" }, [&](auto p) { setEnvAmpMod2(p.value); } },
+        { 50.0f, "ENVELOP_AMP_MOD_3", { "Amp.Mod.3", .unit = "%" }, [&](auto p) { setEnvAmpMod3(p.value); } },
+        { 50.0f, "ENVELOP_AMP_MOD_4", { "Amp.Mod.4", .unit = "%" }, [&](auto p) { setEnvAmpMod4(p.value); } },
     };
     Val envAmpTime[ZIC_KICK_ENV_AMP_STEP] = {
-        { 50.0f, "ENVELOP_AMP_TIME_1", { "Amp.Time 1", .unit = "%" }, [&](float value) { setEnvAmpTime1(value); } },
-        { 50.0f, "ENVELOP_AMP_TIME_2", { "Amp.Time 2", .unit = "%" }, [&](float value) { setEnvAmpTime2(value); } },
-        { 50.0f, "ENVELOP_AMP_TIME_3", { "Amp.Time 3", .unit = "%" }, [&](float value) { setEnvAmpTime3(value); } },
-        { 50.0f, "ENVELOP_AMP_TIME_4", { "Amp.Time 4", .unit = "%" }, [&](float value) { setEnvAmpTime4(value); } },
+        { 50.0f, "ENVELOP_AMP_TIME_1", { "Amp.Time 1", .unit = "%" }, [&](auto p) { setEnvAmpTime1(p.value); } },
+        { 50.0f, "ENVELOP_AMP_TIME_2", { "Amp.Time 2", .unit = "%" }, [&](auto p) { setEnvAmpTime2(p.value); } },
+        { 50.0f, "ENVELOP_AMP_TIME_3", { "Amp.Time 3", .unit = "%" }, [&](auto p) { setEnvAmpTime3(p.value); } },
+        { 50.0f, "ENVELOP_AMP_TIME_4", { "Amp.Time 4", .unit = "%" }, [&](auto p) { setEnvAmpTime4(p.value); } },
     };
     Val envFreqMod[ZIC_KICK_ENV_FREQ_STEP] = {
-        { 50.0f, "ENVELOP_FREQ_MOD_1", { "Freq.Mod.1", .unit = "%" }, [&](float value) { setEnvFreqMod1(value); } },
-        { 50.0f, "ENVELOP_FREQ_MOD_2", { "Freq.Mod.2", .unit = "%" }, [&](float value) { setEnvFreqMod2(value); } },
-        { 50.0f, "ENVELOP_FREQ_MOD_3", { "Freq.Mod.3", .unit = "%" }, [&](float value) { setEnvFreqMod3(value); } },
-        { 50.0f, "ENVELOP_FREQ_MOD_4", { "Freq.Mod.4", .unit = "%" }, [&](float value) { setEnvFreqMod4(value); } },
+        { 50.0f, "ENVELOP_FREQ_MOD_1", { "Freq.Mod.1", .unit = "%" }, [&](auto p) { setEnvFreqMod1(p.value); } },
+        { 50.0f, "ENVELOP_FREQ_MOD_2", { "Freq.Mod.2", .unit = "%" }, [&](auto p) { setEnvFreqMod2(p.value); } },
+        { 50.0f, "ENVELOP_FREQ_MOD_3", { "Freq.Mod.3", .unit = "%" }, [&](auto p) { setEnvFreqMod3(p.value); } },
+        { 50.0f, "ENVELOP_FREQ_MOD_4", { "Freq.Mod.4", .unit = "%" }, [&](auto p) { setEnvFreqMod4(p.value); } },
     };
     Val envFreqTime[ZIC_KICK_ENV_FREQ_STEP] = {
-        { 50.0f, "ENVELOP_FREQ_TIME_1", { "Freq.Time 1", .unit = "%" }, [&](float value) { setEnvFreqTime1(value); } },
-        { 50.0f, "ENVELOP_FREQ_TIME_2", { "Freq.Time 2", .unit = "%" }, [&](float value) { setEnvFreqTime2(value); } },
-        { 50.0f, "ENVELOP_FREQ_TIME_3", { "Freq.Time 3", .unit = "%" }, [&](float value) { setEnvFreqTime3(value); } },
-        { 50.0f, "ENVELOP_FREQ_TIME_4", { "Freq.Time 4", .unit = "%" }, [&](float value) { setEnvFreqTime4(value); } },
+        { 50.0f, "ENVELOP_FREQ_TIME_1", { "Freq.Time 1", .unit = "%" }, [&](auto p) { setEnvFreqTime1(p.value); } },
+        { 50.0f, "ENVELOP_FREQ_TIME_2", { "Freq.Time 2", .unit = "%" }, [&](auto p) { setEnvFreqTime2(p.value); } },
+        { 50.0f, "ENVELOP_FREQ_TIME_3", { "Freq.Time 3", .unit = "%" }, [&](auto p) { setEnvFreqTime3(p.value); } },
+        { 50.0f, "ENVELOP_FREQ_TIME_4", { "Freq.Time 4", .unit = "%" }, [&](auto p) { setEnvFreqTime4(p.value); } },
     };
 
     SynthKick23(AudioPlugin::Props& props, char* _name)

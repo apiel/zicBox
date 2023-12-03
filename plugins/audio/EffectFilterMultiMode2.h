@@ -16,8 +16,8 @@ protected:
 
 public:
     // Cutoff mix
-    Val& mix = val(50.0, "CUTOFF", { "LPF | HPF", .type = VALUE_CENTERED }, [&](float value) { setCutoff(value); });
-    Val& resonance = val(0.0, "RESONANCE", { "Resonance" }, [&](float value) { setResonance(value); });
+    Val& mix = val(50.0, "CUTOFF", { "LPF | HPF", .type = VALUE_CENTERED }, [&](auto p) { setCutoff(p.value); });
+    Val& resonance = val(0.0, "RESONANCE", { "Resonance" }, [&](auto p) { setResonance(p.value); });
 
     EffectFilterMultiMode2(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)

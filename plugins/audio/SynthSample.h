@@ -27,13 +27,13 @@ protected:
     float sustainLengthOrigin = -255.0f;
 
 public:
-    Val& start = val(0.0f, "START", { "Start", .unit = "%" }, [&](float value) { setStart(value); });
-    Val& end = val(100.0f, "END", { "End", .unit = "%" }, [&](float value) { setEnd(value); });
-    Val& sustainPosition = val(0.0f, "SUSTAIN_POSITION", { "Sustain position", .unit = "%" }, [&](float value) { setSustainPosition(value); });
+    Val& start = val(0.0f, "START", { "Start", .unit = "%" }, [&](auto p) { setStart(p.value); });
+    Val& end = val(100.0f, "END", { "End", .unit = "%" }, [&](auto p) { setEnd(p.value); });
+    Val& sustainPosition = val(0.0f, "SUSTAIN_POSITION", { "Sustain position", .unit = "%" }, [&](auto p) { setSustainPosition(p.value, true); });
     // Where -1 is no sustain
-    Val& sustainLength = val(0.0f, "SUSTAIN_LENGTH", { "Sustain length", .unit = "%" }, [&](float value) { setSustainLength(value); });
+    Val& sustainLength = val(0.0f, "SUSTAIN_LENGTH", { "Sustain length", .unit = "%" }, [&](auto p) { setSustainLength(p.value, true); });
 
-    Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)fileBrowser.count }, [&](float value) { open(value); });
+    Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)fileBrowser.count }, [&](auto p) { open(p.value); });
 
     SynthSample(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -87,38 +87,38 @@ public:
         setValueBoundaries();
     }
 
-    void setSustainPosition(float value)
+    void setSustainPosition(float value, bool setOrigin = false)
     {
         if (value < start.get() || value + sustainLength.get() > end.get()) {
             return;
         }
         sustainPosition.setFloat(value);
+        if (setOrigin) {
+            sustainPositionOrigin = sustainPosition.get();
+        }
     }
 
-    void setSustainLength(float value)
+    void setSustainLength(float value, bool setOrigin = false)
     {
         if (value + sustainPosition.get() > end.get()) {
             return;
         }
         sustainLength.setFloat(value);
+        if (setOrigin) {
+            sustainLengthOrigin = sustainLength.get();
+        }
     }
 
     void setValueBoundaries()
     {
         float sustain = sustainPosition.get();
         if (start.get() > sustain) {
-            if (sustainPositionOrigin == -255.0f) {
-                sustainPositionOrigin = sustain;
-            }
             sustainLength.set(sustainLength.get() - (start.get() - sustain));
             sustainPosition.set(start.get());
         }
 
         float sustainLen = sustainLength.get();
         if (sustain + sustainLen > end.get()) {
-            if (sustainLengthOrigin == -255.0f) {
-                sustainLengthOrigin = sustainLen;
-            }
             sustainLength.set(end.get() - sustain);
         }
 
@@ -128,11 +128,11 @@ public:
 
     void restoreSustainlength()
     {
-        if (sustainLengthOrigin != -255.0f) {
+        if (sustainLengthOrigin != sustainLength.get()) {
+            printf("restoreSustainlength\n");
             int sustainLen = end.get() - sustainPosition.get();
             if (sustainLen >= sustainLengthOrigin) {
                 sustainLength.set(sustainLengthOrigin);
-                sustainLengthOrigin = -255.0f;
             } else {
                 sustainLength.set(sustainLen);
             }

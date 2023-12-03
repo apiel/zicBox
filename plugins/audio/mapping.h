@@ -22,16 +22,21 @@ protected:
     ValueInterface::Props _props;
 
 public:
-    const char* _key;
-    std::function<void(float value)> callback;
+    struct CallbackProps {
+        float value;
+        void* data = NULL;
+    };
 
-    Val(float initValue, const char* _key, ValueInterface::Props props = {}, std::function<void(float value)> _callback = NULL)
+    const char* _key;
+    std::function<void(CallbackProps)> callback;
+
+    Val(float initValue, const char* _key, ValueInterface::Props props = {}, std::function<void(CallbackProps)> _callback = NULL)
         : _props(props)
         , _key(_key)
         , callback(_callback)
     {
         if (callback == NULL) {
-            callback = [this](float value) { setFloat(value); };
+            callback = [this](auto p) { setFloat(p.value); };
         }
         setFloat(initValue);
     }
@@ -77,9 +82,9 @@ public:
         value_pct = (value_f - _props.min) / (_props.max - _props.min);
     }
 
-    void set(float value)
+    void set(float value, void* data = NULL)
     {
-        callback(value);
+        callback({ value, data });
         (*onUpdatePtr)(value, onUpdateData);
     }
 
@@ -101,7 +106,7 @@ class Mapping : public AudioPlugin {
 protected:
     std::vector<ValueInterface*> mapping;
 
-    Val& val(float initValue, const char* _key, ValueInterface::Props props = {}, std::function<void(float value)> _callback = NULL)
+    Val& val(float initValue, const char* _key, ValueInterface::Props props = {}, std::function<void(Val::CallbackProps)> _callback = NULL)
     {
         Val* v = new Val(initValue, _key, props, _callback);
         mapping.push_back(v);

@@ -74,7 +74,7 @@ protected:
 
 public:
     Val& detune = val(0.0f, "DETUNE", { "Detune", VALUE_CENTERED, -24.0f, 24.0f });
-    Val& pattern = val(0.0f, "PATTERN", { "Pattern", .type = VALUE_STRING }, [&](float value) { setPattern(value); });
+    Val& pattern = val(0.0f, "PATTERN", { "Pattern", .type = VALUE_STRING }, [&](auto p) { setPattern(p.value); });
 
     Sequencer(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)

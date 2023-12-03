@@ -6,8 +6,8 @@
 
 class EffectGainVolume : public Mapping {
 public:
-    Val& volume = val(100.0f, "VOLUME", { "Volume" }, [&](float value) { setVolumeWithGain(value, gain.get()); });
-    Val& gain = val(0.0f, "GAIN", { "Gain" }, [&](float value) { setVolumeWithGain(volume.get(), value); });
+    Val& volume = val(100.0f, "VOLUME", { "Volume" }, [&](auto p) { setVolumeWithGain(p.value, gain.get()); });
+    Val& gain = val(0.0f, "GAIN", { "Gain" }, [&](auto p) { setVolumeWithGain(volume.get(), p.value); });
     float volumeWithGain = volume.get();
 
     EffectGainVolume(AudioPlugin::Props& props, char* _name)
