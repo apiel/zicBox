@@ -25,13 +25,14 @@ protected:
     // Use to restore sustain in case it was move by another parameter
     float sustainPositionOrigin = -255.0f;
     float sustainLengthOrigin = -255.0f;
+    bool skipOrigin = false; // Used as point to skip set origin
 
 public:
     Val& start = val(0.0f, "START", { "Start", .unit = "%" }, [&](auto p) { setStart(p.value); });
     Val& end = val(100.0f, "END", { "End", .unit = "%" }, [&](auto p) { setEnd(p.value); });
-    Val& sustainPosition = val(0.0f, "SUSTAIN_POSITION", { "Sustain position", .unit = "%" }, [&](auto p) { setSustainPosition(p.value, true); });
+    Val& sustainPosition = val(0.0f, "SUSTAIN_POSITION", { "Sustain position", .unit = "%" }, [&](auto p) { setSustainPosition(p.value, (bool *)p.data); });
     // Where -1 is no sustain
-    Val& sustainLength = val(0.0f, "SUSTAIN_LENGTH", { "Sustain length", .unit = "%" }, [&](auto p) { setSustainLength(p.value, true); });
+    Val& sustainLength = val(0.0f, "SUSTAIN_LENGTH", { "Sustain length", .unit = "%" }, [&](auto p) { setSustainLength(p.value, (bool *)p.data); });
 
     Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)fileBrowser.count }, [&](auto p) { open(p.value); });
 
@@ -87,24 +88,25 @@ public:
         setValueBoundaries();
     }
 
-    void setSustainPosition(float value, bool setOrigin = false)
+    void setSustainPosition(float value, bool * setOrigin)
     {
         if (value < start.get() || value + sustainLength.get() > end.get()) {
             return;
         }
         sustainPosition.setFloat(value);
-        if (setOrigin) {
+        if (setOrigin == NULL || *setOrigin) {
             sustainPositionOrigin = sustainPosition.get();
+            setValueBoundaries();
         }
     }
 
-    void setSustainLength(float value, bool setOrigin = false)
+    void setSustainLength(float value, bool * setOrigin)
     {
         if (value + sustainPosition.get() > end.get()) {
             return;
         }
         sustainLength.setFloat(value);
-        if (setOrigin) {
+        if (setOrigin == NULL || *setOrigin) {
             sustainLengthOrigin = sustainLength.get();
         }
     }
@@ -113,44 +115,41 @@ public:
     {
         float sustain = sustainPosition.get();
         if (start.get() > sustain) {
-            sustainLength.set(sustainLength.get() - (start.get() - sustain));
-            sustainPosition.set(start.get());
+            sustainLength.set(sustainLength.get() - (start.get() - sustain), &skipOrigin);
+            sustainPosition.set(start.get(), &skipOrigin);
         }
 
         float sustainLen = sustainLength.get();
         if (sustain + sustainLen > end.get()) {
-            sustainLength.set(end.get() - sustain);
+            sustainLength.set(end.get() - sustain, &skipOrigin);
         }
 
-        restoreSustainlength();
         restoreSustainPosition();
+        restoreSustainlength();
     }
 
     void restoreSustainlength()
     {
         if (sustainLengthOrigin != sustainLength.get()) {
-            printf("restoreSustainlength\n");
             int sustainLen = end.get() - sustainPosition.get();
             if (sustainLen >= sustainLengthOrigin) {
-                sustainLength.set(sustainLengthOrigin);
+                sustainLength.set(sustainLengthOrigin, &skipOrigin);
             } else {
-                sustainLength.set(sustainLen);
+                sustainLength.set(sustainLen, &skipOrigin);
             }
         }
     }
 
     void restoreSustainPosition()
     {
-        // if (sustainPositionOrigin != -255.0f) {
-        //     int sustainPos = start.get();
-        //     if (sustainPos <= sustainPositionOrigin) {
-        //         sustainPosition.set(sustainPositionOrigin);
-        //         sustainPositionOrigin = -255.0f;
-        //     } else {
-        //         sustainLength.set(sustainPositionOrigin - sustainPos);
-        //         sustainPosition.set(sustainPos);
-        //     }
-        // }
+        if (sustainPositionOrigin != sustainPosition.get()) {
+            int sustainPos = start.get();
+            if (sustainPos <= sustainPositionOrigin) {
+                sustainPosition.set(sustainPositionOrigin, &skipOrigin);
+            } else {
+                sustainPosition.set(sustainPos, &skipOrigin);
+            }
+        }
     }
 };
 
