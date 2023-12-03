@@ -109,10 +109,13 @@ protected:
     float getSampleStep(uint8_t note)
     {
         // https://gist.github.com/YuxiUx/ef84328d95b10d0fcbf537de77b936cd
-        // pow(2, ((note - 0) / 12.0)) = 1 for 0 semitone
-        // pow(2, ((note - 1) / 12.0)) = 1.059463094 for 1 semitone
-        // pow(2, ((note - 2) / 12.0)) = 1.122462048 for 2 semitone
+        // pow(2, ((0) / 12.0)) = 1 for 0 semitone
+        // pow(2, ((1) / 12.0)) = 1.059463094 for 1 semitone
+        // pow(2, ((2) / 12.0)) = 1.122462048 for 2 semitone
         // ...
+
+        // FIXME double speed sample playing
+        // printf("getSampleStep: %d >> %d = %f\n", note, note - baseNote, pow(2, (note - baseNote) / 12.0));
         return pow(2, ((note - baseNote) / 12.0));
     }
 
@@ -152,13 +155,6 @@ public:
             baseNote = range(baseNote, 0, 127);
             return true;
         }
-
-        // if (strcmp(key, "DATA_STATE") == 0) {
-        //     char* pluginName = strtok(value, " ");
-        //     dataId = atoi(strtok(NULL, " "));
-        //     plugin = &getPlugin(pluginName);
-        //     return true;
-        // }
 
         return AudioPlugin::config(key, value);
     }

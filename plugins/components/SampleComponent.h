@@ -8,9 +8,8 @@
 
 class SampleComponent : public Component {
 protected:
-    AudioPlugin& plugin;
-    // int bufferDataId = -1;
-    int bufferDataId = 0;
+    AudioPlugin* plugin;
+    int bufferDataId = -1;
     ValueInterface* browser;
     float lastBrowser = -1.0f;
     ValueInterface* startPosition;
@@ -57,7 +56,7 @@ protected:
             struct SampleBuffer {
                 uint64_t count;
                 float* data;
-            }* sampleBuffer = (struct SampleBuffer*)plugin.data(bufferDataId);
+            }* sampleBuffer = (struct SampleBuffer*)plugin->data(bufferDataId);
             wave.render(sampleBuffer->data, sampleBuffer->count);
         }
     }
@@ -89,15 +88,14 @@ public:
     SampleComponent(ComponentInterface::Props props)
         : Component(props)
         , colors(getColorsFromColor(styles.colors.blue))
-        , plugin(getPlugin("Sample"))
         , waveRect({ { 0, 20 }, { props.size.w, (int)(props.size.h - 2 * 20) } })
         , wave(getNewPropsRect(props, { { 0, 20 }, { props.size.w, (int)(props.size.h - 2 * 20) } }))
     {
-        browser = val(plugin.getValue("BROWSER"));
-        startPosition = val(plugin.getValue("START"));
-        endPosition = val(plugin.getValue("END"));
-        sustainPosition = val(plugin.getValue("SUSTAIN_POSITION"));
-        sustainLength = val(plugin.getValue("SUSTAIN_LENGTH"));
+        browser = val(getPlugin("Sample").getValue("BROWSER"));
+        startPosition = val(getPlugin("Sample").getValue("START"));
+        endPosition = val(getPlugin("Sample").getValue("END"));
+        sustainPosition = val(getPlugin("Sample").getValue("SUSTAIN_POSITION"));
+        sustainLength = val(getPlugin("Sample").getValue("SUSTAIN_LENGTH"));
 
         overlayYtop = position.y;
         overlayYbottom = position.y + size.h - 2;
@@ -144,7 +142,9 @@ public:
     {
         if (!noteTriggered) {
             noteTriggered = true;
-            plugin.noteOn(60, 127);
+            if (plugin) {
+                plugin->noteOn(60, 127);
+            }
         }
     }
 
@@ -152,7 +152,9 @@ public:
     {
         if (noteTriggered) {
             noteTriggered = false;
-            plugin.noteOff(60, 0);
+            if (plugin) {
+                plugin->noteOff(60, 0);
+            }
         }
     }
 
@@ -171,6 +173,13 @@ public:
 
         if (strcmp(key, "SAMPLE_CURSOR_COLOR") == 0) {
             colors.sampleCursor = draw.getColor(value);
+            return true;
+        }
+
+        if (strcmp(key, "DATA_SAMPLE") == 0) {
+            char* pluginName = strtok(value, " ");
+            bufferDataId = atoi(strtok(NULL, " "));
+            plugin = &getPlugin(pluginName);
             return true;
         }
 

@@ -31,4 +31,5 @@ VIEW: Demo
     TYPE: BROWSE
 
   COMPONENT: Sample 20 200 760 180
-    GROUP: 1
+    GROUP: 0
+    DATA_SAMPLE: Sample 0
