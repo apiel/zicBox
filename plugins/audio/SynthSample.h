@@ -21,6 +21,10 @@
 //              do we even want this???
 // There is 2 modulations...
 
+#ifndef MAX_SAMPLE_VOICES
+#define MAX_SAMPLE_VOICES 4
+#endif
+
 class SynthSample : public Mapping {
 protected:
     // We hardcode it to 48000, no matter the sample rate
@@ -28,7 +32,7 @@ protected:
     float sampleData[bufferSize];
     struct SampleBuffer {
         uint64_t count = 0;
-        float *data;
+        float* data;
     } sampleBuffer;
 
     FileBrowser fileBrowser = FileBrowser("./samples");
@@ -37,6 +41,80 @@ protected:
     float sustainPositionOrigin = 0.0f;
     float sustainLengthOrigin = -1.0f;
     bool skipOrigin = false; // Used as point to skip set origin
+
+    struct Voice {
+        int8_t note = -1;
+        uint64_t position = 0;
+        struct VoiceSample {
+            float pos = 0.0f;
+            int64_t start = 0;
+            int64_t count = 0;
+            float step = 0.0f;
+        } sample;
+    } voices[MAX_SAMPLE_VOICES];
+    uint64_t voicePosition = 0;
+    bool voiceAllowSameNote = true;
+
+    float sample(Voice& voice)
+    {
+        float sample = 0.0f;
+        int64_t samplePos = (uint64_t)voice.sample.pos + voice.sample.start;
+        if ((int64_t)voice.sample.pos < voice.sample.count) {
+            voice.sample.pos += voice.sample.step;
+            sample = sampleBuffer.data[samplePos];
+        } else {
+            voice.note = -1;
+        }
+        return sample;
+    }
+
+    void initVoiceSample(Voice::VoiceSample& sample, float step)
+    {
+        sample.step = step;
+        sample.pos = 0.0f;
+        sample.start = start.pct() * sampleBuffer.count;
+        sample.count = ((end.pct() * sampleBuffer.count) - sample.start);
+    }
+
+    Voice& getNextVoice(uint8_t note)
+    {
+        if (voiceAllowSameNote) {
+            // First, we should look if the voice is not already running, due to the envelopRelease
+            for (uint8_t v = 0; v < MAX_SAMPLE_VOICES; v++) {
+                Voice& voice = voices[v];
+                if (voice.note == note) {
+                    debug("getNextVoice: voice already running %d\n", note);
+                    return voice;
+                }
+            }
+        }
+
+        // Else, we should look for a free voice
+        uint8_t voiceToSteal = 0;
+        for (uint8_t v = 0; v < MAX_SAMPLE_VOICES; v++) {
+            Voice& voice = voices[v];
+            if (voice.note == -1) {
+                return voice;
+            }
+            if (voice.position < voices[voiceToSteal].position) {
+                voiceToSteal = v;
+            }
+        }
+
+        debug("getNextVoice: no voice available. Steal voice %d.\n", voiceToSteal);
+        return voices[voiceToSteal];
+    }
+
+    uint8_t baseNote = 60;
+    float getSampleStep(uint8_t note)
+    {
+        // https://gist.github.com/YuxiUx/ef84328d95b10d0fcbf537de77b936cd
+        // pow(2, ((note - 0) / 12.0)) = 1 for 0 semitone
+        // pow(2, ((note - 1) / 12.0)) = 1.059463094 for 1 semitone
+        // pow(2, ((note - 2) / 12.0)) = 1.122462048 for 2 semitone
+        // ...
+        return pow(2, ((note - baseNote) / 12.0));
+    }
 
 public:
     Val& start = val(0.0f, "START", { "Start", .unit = "%" }, [&](auto p) { setStart(p.value); });
@@ -64,6 +142,17 @@ public:
             return true;
         }
 
+        if (strcmp(key, "VOICE_ALLOW_SAME_NOTE") == 0) {
+            voiceAllowSameNote = strcmp(value, "true") == 0;
+            return true;
+        }
+
+        if (strcmp(key, "BASE_NOTE") == 0) {
+            baseNote = atoi(value);
+            baseNote = range(baseNote, 0, 127);
+            return true;
+        }
+
         // if (strcmp(key, "DATA_STATE") == 0) {
         //     char* pluginName = strtok(value, " ");
         //     dataId = atoi(strtok(NULL, " "));
@@ -76,6 +165,42 @@ public:
 
     void sample(float* buf)
     {
+        float s = 0.0f;
+        for (uint8_t v = 0; v < MAX_SAMPLE_VOICES; v++) {
+            Voice& voice = voices[v];
+            if (voice.note != -1) {
+                s += sample(voice);
+            }
+        }
+        buf[track] = s;
+    }
+
+    void noteOn(uint8_t note, uint8_t velocity) override
+    {
+        if (velocity == 0) {
+            return noteOff(note, velocity);
+        }
+
+        Voice& voice = getNextVoice(note);
+        voice.position = voicePosition++;
+        voice.note = note;
+        float sampleStep = getSampleStep(note);
+        initVoiceSample(voice.sample, sampleStep);
+        // TODO attack softly if start after beginning of file
+        debug("noteOn: %d %d\n", note, velocity);
+    }
+
+    void noteOff(uint8_t note, uint8_t velocity) override
+    {
+        for (uint8_t v = 0; v < MAX_SAMPLE_VOICES; v++) {
+            Voice& voice = voices[v];
+            if (voice.note == note) {
+                // TODO release softly if release before end of file
+                debug("noteOff set on to false: %d %d\n", note, velocity);
+                return;
+            }
+        }
+        debug("noteOff: note not found %d %d\n", note, velocity);
     }
 
     void open(const char* filename)
