@@ -13,7 +13,7 @@ public:
     EffectGainVolume(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
     {
-        setVolumeWithGain(volume.get(), gain.get());
+        initValues();
     }
 
     void sample(float* buf)

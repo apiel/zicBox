@@ -211,10 +211,7 @@ public:
         setSampleRate(props.sampleRate);
         open(browser.get(), true);
 
-        setAttack(attack.get());
-        setRelease(release.get());
-
-        setRepeat(repeat.get());
+        initValues();
     }
 
     bool config(char* key, char* value) override

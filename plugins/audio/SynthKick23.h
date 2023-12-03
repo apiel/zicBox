@@ -100,9 +100,7 @@ public:
     {
         memset(&sfinfo, 0, sizeof(sfinfo));
 
-        setPitch(pitch.get());
-        setDuration(duration.get());
-        open(0.0, true);
+        open(browser.get(), true);
 
         for (int i = 0; i < ZIC_KICK_ENV_AMP_STEP; i++) {
             envAmpMod[i].setFloat(envelopAmp.data[i + 2].modulation * 100.0f);
@@ -112,6 +110,8 @@ public:
             envFreqMod[i].setFloat(envelopFreq.data[i + 1].modulation * 100.0f);
             envFreqTime[i].setFloat(envelopFreq.data[i + 1].time * 100.0f);
         }
+
+        initValues();
     }
 
     void sample(float* buf)

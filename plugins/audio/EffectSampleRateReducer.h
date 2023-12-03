@@ -40,7 +40,7 @@ public:
     EffectSampleRateReducer(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
     {
-        setSampleStep(0.0);
+        initValues();
     };
 
     EffectSampleRateReducer& setSampleStep(float value)

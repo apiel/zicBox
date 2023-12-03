@@ -116,6 +116,13 @@ public:
     {
     }
 
+    void initValues()
+    {
+        for (ValueInterface* val : mapping) {
+            val->set(val->get());
+        }
+    }
+
     int getValueIndex(const char* key)
     {
         for (int i = 0; i < mapping.size(); i++) {

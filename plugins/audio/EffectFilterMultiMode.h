@@ -18,7 +18,7 @@ public:
     EffectFilterMultiMode(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
     {
-        setCutoff(50.0);
+        initValues();
     };
 
     float sample(float inputValue)
