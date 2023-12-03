@@ -103,74 +103,55 @@ public:
         sustainLength.setFloat(value);
     }
 
-
     void setValueBoundaries()
     {
         float sustain = sustainPosition.get();
         if (start.get() > sustain) {
+            if (sustainPositionOrigin == -255.0f) {
+                sustainPositionOrigin = sustain;
+            }
             sustainLength.set(sustainLength.get() - (start.get() - sustain));
             sustainPosition.set(start.get());
         }
 
         float sustainLen = sustainLength.get();
         if (sustain + sustainLen > end.get()) {
+            if (sustainLengthOrigin == -255.0f) {
+                sustainLengthOrigin = sustainLen;
+            }
             sustainLength.set(end.get() - sustain);
+        }
+
+        restoreSustainlength();
+        restoreSustainPosition();
+    }
+
+    void restoreSustainlength()
+    {
+        if (sustainLengthOrigin != -255.0f) {
+            int sustainLen = end.get() - sustainPosition.get();
+            if (sustainLen >= sustainLengthOrigin) {
+                sustainLength.set(sustainLengthOrigin);
+                sustainLengthOrigin = -255.0f;
+            } else {
+                sustainLength.set(sustainLen);
+            }
         }
     }
 
-    // void setValueBoundaries()
-    // {
-    //     float sustain = sustainPosition.get();
-    //     if (start.get() > sustain) {
-    //         if (sustainPositionOrigin == -255.0f) {
-    //             sustainPositionOrigin = sustain;
-    //         }
-    //         sustainPosition.set(start.get());
-    //     }
-
-    //     if (sustain > end.get()) {
-    //         if (sustainPositionOrigin == -255.0f) {
-    //             sustainPositionOrigin = sustain;
-    //         }
-    //         sustainPosition.set(end.get());
-    //     }
-
-    //     float sustainLen = sustainLength.get();
-    //     if (sustain + sustainLen > end.get()) {
-    //         if (sustainLengthOrigin == -255.0f) {
-    //             sustainLengthOrigin = sustainLen;
-    //         }
-    //         sustainLength.set(end.get() - sustain);
-    //     }
-    //     restoreSustainlength();
-    //     restoreSustainPosition();
-    // }
-
-    // void restoreSustainlength()
-    // {
-    //     if (sustainLengthOrigin != -255.0f) {
-    //         int sustainLen = end.get() - sustainPosition.get();
-    //         if (sustainLen >= sustainLengthOrigin) {
-    //             sustainLength.set(sustainLengthOrigin);
-    //             sustainLengthOrigin = -255.0f;
-    //         } else {
-    //             sustainLength.set(sustainLen);
-    //         }
-    //     }
-    // }
-
-    // void restoreSustainPosition()
-    // {
-    //     if (sustainPositionOrigin != -255.0f) {
-    //         int sustainPos = start.get();
-    //         if (sustainPos >= sustainPositionOrigin) {
-    //             sustainPosition.set(sustainPositionOrigin);
-    //             sustainPositionOrigin = -255.0f;
-    //         } else {
-    //             sustainPosition.set(sustainPos);
-    //         }
-    //     }
-    // }
+    void restoreSustainPosition()
+    {
+        // if (sustainPositionOrigin != -255.0f) {
+        //     int sustainPos = start.get();
+        //     if (sustainPos <= sustainPositionOrigin) {
+        //         sustainPosition.set(sustainPositionOrigin);
+        //         sustainPositionOrigin = -255.0f;
+        //     } else {
+        //         sustainLength.set(sustainPositionOrigin - sustainPos);
+        //         sustainPosition.set(sustainPos);
+        //     }
+        // }
+    }
 };
 
 #endif
