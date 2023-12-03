@@ -77,7 +77,16 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
     - from release
     - from git repo?
 
+- filter frequency response curve https://stackoverflow.com/questions/76193236/implement-2nd-order-low-pass-filter-in-c-how-to-compute-coefficients
+
 ## zicHost
+
+- TODO modulation that would be a mix of envelop and lfo:
+    - multiphase envelop (up to 8 or even more)
+    - each phase can configure time and amplitude (should it be ms or percentage of a global amount?)
+    - each phase can be linear or a curve to be able to simulate sin...
+    - a sustain point can be set at any point of the envelop, also in the middle of a phase
+    - to simulate an LFO, the sustain point can loop over a certain window, meaning that sustain as a starting point and a end point
 
 - TODO tempo plugin, that would shalow midi clock in favour of custom clock
 

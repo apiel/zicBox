@@ -9,7 +9,6 @@ PLUGIN_COMPONENT: Sequencer ./plugins/components/build/libzic_SequencerComponent
 PLUGIN_COMPONENT: Button ./plugins/components/build/libzic_ButtonComponent.so
 PLUGIN_COMPONENT: Cpu ./plugins/components/build/libzic_MonitoringComponent.so
 PLUGIN_COMPONENT: Adsr ./plugins/components/build/libzic_AdsrComponent.so
-PLUGIN_COMPONENT: Filter ./plugins/components/build/libzic_FilterComponent.so
 
 PLUGIN_CONTROLLER: ./plugins/controllers/build/libzic_OscController.so
 

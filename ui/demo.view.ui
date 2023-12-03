@@ -26,11 +26,6 @@ VIEW: Demo
     VALUE: Granular RELEASE
 
 
-  COMPONENT: Filter 500 100 280 90
-    CUTOFF: MultiModeFilter CUTOFF
-    RESONANCE: MultiModeFilter RESONANCE
-
-
   COMPONENT: Wave2 20 200 760 180
     GROUP: 1
 
