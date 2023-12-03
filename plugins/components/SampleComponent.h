@@ -17,6 +17,14 @@ protected:
     ValueInterface* sustainLength;
     ValueInterface* endPosition;
 
+    std::string valueKeys[5] = {
+        "BROWSER",
+        "START",
+        "END",
+        "SUSTAIN_POSITION",
+        "SUSTAIN_LENGTH",
+    };
+
     void* textureSampleWaveform = NULL;
 
     Rect waveRect;
@@ -52,13 +60,11 @@ protected:
 
     void renderWaveform()
     {
-        if (bufferDataId != -1) {
-            struct SampleBuffer {
-                uint64_t count;
-                float* data;
-            }* sampleBuffer = (struct SampleBuffer*)plugin->data(bufferDataId);
-            wave.render(sampleBuffer->data, sampleBuffer->count);
-        }
+        struct SampleBuffer {
+            uint64_t count;
+            float* data;
+        }* sampleBuffer = (struct SampleBuffer*)plugin->data(bufferDataId);
+        wave.render(sampleBuffer->data, sampleBuffer->count);
     }
 
     void renderActiveSamples() { }
@@ -91,12 +97,6 @@ public:
         , waveRect({ { 0, 20 }, { props.size.w, (int)(props.size.h - 2 * 20) } })
         , wave(getNewPropsRect(props, { { 0, 20 }, { props.size.w, (int)(props.size.h - 2 * 20) } }))
     {
-        browser = val(getPlugin("Sample").getValue("BROWSER"));
-        startPosition = val(getPlugin("Sample").getValue("START"));
-        endPosition = val(getPlugin("Sample").getValue("END"));
-        sustainPosition = val(getPlugin("Sample").getValue("SUSTAIN_POSITION"));
-        sustainLength = val(getPlugin("Sample").getValue("SUSTAIN_LENGTH"));
-
         overlayYtop = position.y;
         overlayYbottom = position.y + size.h - 2;
 
@@ -116,6 +116,10 @@ public:
 
     void render()
     {
+        if (plugin == NULL) {
+            return;
+        }
+
         if (lastBrowser != browser->get()) {
             if (textureSampleWaveform != NULL) {
                 draw.destroyTexture(textureSampleWaveform);
@@ -176,10 +180,24 @@ public:
             return true;
         }
 
-        if (strcmp(key, "DATA_SAMPLE") == 0) {
+        if (strcmp(key, "KEYS") == 0) {
+            valueKeys[0] = strtok(value, " ");
+            valueKeys[1] = strtok(NULL, " ");
+            valueKeys[2] = strtok(NULL, " ");
+            valueKeys[3] = strtok(NULL, " ");
+            valueKeys[4] = strtok(NULL, " ");
+            return true;
+        }
+
+        if (strcmp(key, "AUDIO_PLUGIN") == 0) {
             char* pluginName = strtok(value, " ");
             bufferDataId = atoi(strtok(NULL, " "));
             plugin = &getPlugin(pluginName);
+            browser = val(plugin->getValue(valueKeys[0].c_str()));
+            startPosition = val(plugin->getValue(valueKeys[1].c_str()));
+            endPosition = val(plugin->getValue(valueKeys[2].c_str()));
+            sustainPosition = val(plugin->getValue(valueKeys[3].c_str()));
+            sustainLength = val(plugin->getValue(valueKeys[4].c_str()));
             return true;
         }
 
