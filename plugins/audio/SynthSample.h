@@ -13,9 +13,12 @@
 
 // Each voice should hold his own wave file
 // Sequencer can play different wave files on each step
-//      ?? The sample is loaded on note on if it's not already loaded
-//      Wavefile contain patch settings
-//      Need to be able to edit patch while playing for a specific wave file
+//          Use a common cache to be able to load patch changes
+//          There would be 4 instance SynthSample for the sequencer
+//          + 1 instance SynthSample for patch editing
+//          each instance would have 4 voices
+//              voice load there own buffer of wave file and keep patch settings
+//              to allowed to keep playing sample till the end of the buffer even if change patch
 // There is 2 modulations...
 
 class SynthSample : public Mapping {
@@ -23,8 +26,8 @@ protected:
     FileBrowser fileBrowser = FileBrowser("./samples");
 
     // Use to restore sustain in case it was move by another parameter
-    float sustainPositionOrigin = -255.0f;
-    float sustainLengthOrigin = -255.0f;
+    float sustainPositionOrigin = 0.0f;
+    float sustainLengthOrigin = -1.0f;
     bool skipOrigin = false; // Used as point to skip set origin
 
 public:
