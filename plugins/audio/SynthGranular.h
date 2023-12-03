@@ -192,16 +192,16 @@ protected:
     }
 
 public:
-    Val& start = val(0.0f, "START", [&](float value) { setStart(value); }, { "Start", .unit = "%" });
-    Val& spray = val(0.0f, "SPRAY", [&](float value) { setSpray(value); }, { "Spray", .unit = "%" });
-    Val& grainSize = val(100.0f, "GRAIN_SIZE", [&](float value) { setGrainSize(value); }, { "Size", .unit = "%" });
-    Val& density = val((float)densityUint8, "DENSITY", [&](float value) { setDensity(value); }, { "Density", .min = 1.0, .max = MAX_GRAINS_PER_VOICE });
-    Val& attack = val(20, "ATTACK", [&](float value) { setAttack(value); }, { "Attack", .min = 20.0, .max = 5000.0, .step = 20.0, .unit = "ms" });
-    Val& release = val(50, "RELEASE", [&](float value) { setRelease(value); }, { "Release", .min = 50.0, .max = 10000.0, .step = 50.0, .unit = "ms" });
-    Val& delay = val(0.0f, "DELAY", [&](float value) { setDelay(value); }, { "Delay", .max = 1000.0f, .step = 10.0f, .unit = "ms" });
-    Val& pitch = val(0.0f, "PITCH", [&](float value) { setPitch(value); }, { "Pitch", VALUE_CENTERED, .min = -12.0, .max = 12.0 });
-    Val& browser = val(0.0f, "BROWSER", [&](float value) { open(value); }, { "Browser", VALUE_STRING, .max = (float)fileBrowser.count });
-    Val& repeat = val(1.0f, "REPEAT", [&](float value) { setRepeat(value); }, { "Repeat", VALUE_STRING, .max = 1.0 });
+    Val& start = val(0.0f, "START", { "Start", .unit = "%" });
+    Val& spray = val(0.0f, "SPRAY", { "Spray", .unit = "%" });
+    Val& grainSize = val(100.0f, "GRAIN_SIZE", { "Size", .unit = "%" });
+    Val& density = val((float)densityUint8, "DENSITY", { "Density", .min = 1.0, .max = MAX_GRAINS_PER_VOICE }, [&](float value) { setDensity(value); });
+    Val& attack = val(20, "ATTACK", { "Attack", .min = 20.0, .max = 5000.0, .step = 20.0, .unit = "ms" }, [&](float value) { setAttack(value); });
+    Val& release = val(50, "RELEASE", { "Release", .min = 50.0, .max = 10000.0, .step = 50.0, .unit = "ms" }, [&](float value) { setRelease(value); });
+    Val& delay = val(0.0f, "DELAY", { "Delay", .max = 1000.0f, .step = 10.0f, .unit = "ms" });
+    Val& pitch = val(0.0f, "PITCH", { "Pitch", VALUE_CENTERED, .min = -12.0, .max = 12.0 }, [&](float value) { setPitch(value); });
+    Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)fileBrowser.count }, [&](float value) { open(value); });
+    Val& repeat = val(1.0f, "REPEAT", { "Repeat", VALUE_STRING, .max = 1.0 }, [&](float value) { setRepeat(value); });
 
     // TODO add pitch randomization per grain
 
@@ -299,33 +299,6 @@ public:
     }
 
     /**
-     * @brief Set the Grain Size meaning the length duration of the grain.
-     *
-     * @param grainSize
-     * @return SynthGranular&
-     */
-    SynthGranular& setGrainSize(float value)
-    {
-        grainSize.setFloat(value);
-        debug("grainSize %f\n", grainSize.get());
-        return *this;
-    }
-
-    /**
-     * @brief Set the Spray of the grain start position, giving random position to
-     * the grain start position.
-     *
-     * @param spray
-     * @return SynthGranular&
-     */
-    SynthGranular& setSpray(float value)
-    {
-        spray.setFloat(value);
-        // debug("spray %f\n", spray.get());
-        return *this;
-    }
-
-    /**
      * @brief Set the Density meaning the number of grains that are played at the same time.
      *
      * @param density
@@ -336,33 +309,6 @@ public:
         density.setFloat(value);
         densityUint8 = density.get();
         debug("density %d\n", densityUint8);
-        return *this;
-    }
-
-    /**
-     * @brief Set the Start position of the sample to play
-     *
-     * @param _start position from 0.0 to 1.0, where 0.0 is the start of the sample
-     * and 1.0 the end of the sample
-     * @return SynthGranular&
-     */
-    SynthGranular& setStart(float value)
-    {
-        start.setFloat(value);
-        // debug("setStart %f\n", start.get());
-        return *this;
-    }
-
-    /**
-     * @brief Set the Delay before grain start to play
-     *
-     * @param delay where 0 is no delay and 1 is 1000ms
-     * @return SynthGranular&
-     */
-    SynthGranular& setDelay(float value)
-    {
-        delay.setFloat(value);
-        debug("delay %f ms\n", delay.get());
         return *this;
     }
 

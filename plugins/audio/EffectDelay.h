@@ -44,48 +44,48 @@ protected:
         Val sec;
     } voices[MAX_DELAY_VOICES] = {
         { 0,
-            { 0.0, "AMPLITUDE_0", [&](float value) { setAmplitude(0,value); } },
-            { 0.0, "FEEDBACK_0",  [&](float value) {  setFeedback(0,value); } },
-            { 10.0, "SEC_0", [&](float value) { setSec(0, value); } } }, // FIXME this is not seconds...
+            { 0.0, "AMPLITUDE_0", {}, [&](float value) { setAmplitude(0, value); } },
+            { 0.0, "FEEDBACK_0", {}, [&](float value) { setFeedback(0, value); } },
+            { 10.0, "SEC_0", {}, [&](float value) { setSec(0, value); } } }, // FIXME this is not seconds...
         { 1,
-            { 0.0, "AMPLITUDE_1", [&](float value) { setAmplitude(1,value); } },
-            { 0.0, "FEEDBACK_1", [&](float value) { setFeedback(1,value); } },
-            { 10.0, "SEC_1", [&](float value) { setSec(1,value); } } },
+            { 0.0, "AMPLITUDE_1", {}, [&](float value) { setAmplitude(1, value); } },
+            { 0.0, "FEEDBACK_1", {}, [&](float value) { setFeedback(1, value); } },
+            { 10.0, "SEC_1", {}, [&](float value) { setSec(1, value); } } },
         { 2,
-            { 0.0, "AMPLITUDE_2", [&](float value) { setAmplitude(2,value); } },
-            { 0.0, "FEEDBACK_2", [&](float value) { setFeedback(2,value); } },
-            { 10.0, "SEC_2", [&](float value) { setSec(2,value); } } },
+            { 0.0, "AMPLITUDE_2", {}, [&](float value) { setAmplitude(2, value); } },
+            { 0.0, "FEEDBACK_2", {}, [&](float value) { setFeedback(2, value); } },
+            { 10.0, "SEC_2", {}, [&](float value) { setSec(2, value); } } },
         { 3,
-            { 0.0, "AMPLITUDE_3", [&](float value) { setAmplitude(3,value); } },
-            { 0.0, "FEEDBACK_3", [&](float value) { setFeedback(3,value); } },
-            { 10.0, "SEC_3", [&](float value) { setSec(3,value); } } },
+            { 0.0, "AMPLITUDE_3", {}, [&](float value) { setAmplitude(3, value); } },
+            { 0.0, "FEEDBACK_3", {}, [&](float value) { setFeedback(3, value); } },
+            { 10.0, "SEC_3", {}, [&](float value) { setSec(3, value); } } },
         { 4,
-            { 0.0, "AMPLITUDE_4", [&](float value) { setAmplitude(4,value); } },
-            { 0.0, "FEEDBACK_4", [&](float value) { setFeedback(4, value); } },
-            { 10.0, "SEC_4", [&](float value) { setSec(4,value); } } },
+            { 0.0, "AMPLITUDE_4", {}, [&](float value) { setAmplitude(4, value); } },
+            { 0.0, "FEEDBACK_4", {}, [&](float value) { setFeedback(4, value); } },
+            { 10.0, "SEC_4", {}, [&](float value) { setSec(4, value); } } },
         { 5,
-            { 0.0, "AMPLITUDE_5", [&](float value) { setAmplitude(5,value); } },
-            { 0.0, "FEEDBACK_5", [&](float value) { setFeedback(5,value); } },
-            { 10.0, "SEC_5", [&](float value) { setSec(5,value); } } },
+            { 0.0, "AMPLITUDE_5", {}, [&](float value) { setAmplitude(5, value); } },
+            { 0.0, "FEEDBACK_5", {}, [&](float value) { setFeedback(5, value); } },
+            { 10.0, "SEC_5", {}, [&](float value) { setSec(5, value); } } },
         { 6,
-            { 0.0, "AMPLITUDE_6", [&](float value) { setAmplitude(6,value); } },
-            { 0.0, "FEEDBACK_6", [&](float value) { setFeedback(6,value); } },
-            { 10.0, "SEC_6", [&](float value) { setSec(6,value); } } },
+            { 0.0, "AMPLITUDE_6", {}, [&](float value) { setAmplitude(6, value); } },
+            { 0.0, "FEEDBACK_6", {}, [&](float value) { setFeedback(6, value); } },
+            { 10.0, "SEC_6", {}, [&](float value) { setSec(6, value); } } },
         { 7,
-            { 0.0, "AMPLITUDE_7", [&](float value) { setAmplitude(7,value); } },
-            { 0.0, "FEEDBACK_7", [&](float value) { setFeedback(7,value); } },
-            { 10.0, "SEC_7", [&](float value) { setSec(7,value); } } },
+            { 0.0, "AMPLITUDE_7", {}, [&](float value) { setAmplitude(7, value); } },
+            { 0.0, "FEEDBACK_7", {}, [&](float value) { setFeedback(7, value); } },
+            { 10.0, "SEC_7", {}, [&](float value) { setSec(7, value); } } },
     };
 
 public:
     // From 0.0 to 1.0 to apply time ratio to voice in seconds
-    Val timeRatio = { 100.0f, "TIME_RATIO", [&](float value) { setTimeRatio(value); }, { "Time Ratio", .unit = "%" } };
-    Val masterAmplitude = { 0.0f, "MASTER_AMPLITUDE", [&](float value) { setMasterAmplitude(value); }, { "Master Amplitude", .unit = "%" } };
+    Val timeRatio = { 100.0f, "TIME_RATIO", { "Time Ratio", .unit = "%" }, [&](float value) { setTimeRatio(value); } };
+    Val masterAmplitude = { 0.0f, "MASTER_AMPLITUDE", { "Master Amplitude", .unit = "%" }, [&](float value) { setMasterAmplitude(value); } };
 
     // should we inhirate filter so there is no need to defined this...
-    Val cutoff = { 0.0f, "CUTOFF", [&](float value) { setCutoff(value); }, { "Cutoff" } };
-    Val resonance = { 0.0f, "RESONANCE", [&](float value) { setResonance(value); }, { "Resonance", .unit = "%" } };
-    Val mode = { 0.0f, "MODE", [&](float value) { setMode(value); } };
+    Val cutoff = { 0.0f, "CUTOFF", { "Cutoff" }, [&](float value) { setCutoff(value); } };
+    Val resonance = { 0.0f, "RESONANCE", { "Resonance", .unit = "%" }, [&](float value) { setResonance(value); } };
+    Val mode = { 0.0f, "MODE", {}, [&](float value) { setMode(value); } };
 
     EffectFilter filter;
 

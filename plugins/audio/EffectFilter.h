@@ -13,8 +13,8 @@ protected:
 
 public:
     // Cutoff mix
-    Val& cutoff = val(50.0, "CUTOFF", [&](float value) { setCutoff(value); }, { "Cutoff" });
-    Val& resonance = val(0.0, "RESONANCE", [&](float value) { setResonance(value); }, { "Resonance" });
+    Val& cutoff = val(50.0, "CUTOFF", { "Cutoff" }, [&](float value) { setCutoff(value); });
+    Val& resonance = val(0.0, "RESONANCE", { "Resonance" }, [&](float value) { setResonance(value); });
 
     enum Mode {
         OFF,
@@ -25,7 +25,7 @@ public:
     } mode
         = OFF;
     // TODO how to handle mode in a better way?
-    Val& mode_value = val(0.0, "MODE", [&](float value) { setMode(value); }, { "Mode" });
+    Val& mode_value = val(0.0, "MODE", { "Mode" }, [&](float value) { setMode(value); });
 
     EffectFilter(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)

@@ -4,7 +4,7 @@ OBJ_DIR ?= $(BUILD_DIR)/obj
 all:
 	make PadComponent EncoderComponent Encoder2Component GranularComponent SequencerComponent\
 				  ButtonComponent WaveComponent Wave2Component MonitoringComponent AdsrComponent\
-				  FilterComponent
+				  SampleComponent
 
 %Component:
 	@mkdir -p $(OBJ_DIR)

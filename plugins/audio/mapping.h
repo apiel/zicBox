@@ -25,11 +25,14 @@ public:
     const char* _key;
     std::function<void(float value)> callback;
 
-    Val(float initValue, const char* _key, std::function<void(float value)> _callback, ValueInterface::Props props = {})
+    Val(float initValue, const char* _key, ValueInterface::Props props = {}, std::function<void(float value)> _callback = NULL)
         : _props(props)
         , _key(_key)
         , callback(_callback)
     {
+        if (callback == NULL) {
+            callback = [this](float value) { setFloat(value); };
+        }
         setFloat(initValue);
     }
 
@@ -98,9 +101,9 @@ class Mapping : public AudioPlugin {
 protected:
     std::vector<ValueInterface*> mapping;
 
-    Val& val(float initValue, const char* _key, std::function<void(float value)> _callback, ValueInterface::Props props = {})
+    Val& val(float initValue, const char* _key, ValueInterface::Props props = {}, std::function<void(float value)> _callback = NULL)
     {
-        Val* v = new Val(initValue, _key, _callback, props);
+        Val* v = new Val(initValue, _key, props, _callback);
         mapping.push_back(v);
         // debug("-------- Mapping: %s\n", v->key());
         return *v;

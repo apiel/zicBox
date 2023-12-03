@@ -70,7 +70,7 @@ protected:
 public:
     View* view = NULL;
 
-    Val& viewSelector = val(1.0f, "VIEW", [&](float value) { setView(value); }, { "View", VALUE_STRING, .min = 1.0 });
+    Val& viewSelector = val(1.0f, "VIEW", { "View", VALUE_STRING, .min = 1.0 }, [&](float value) { setView(value); });
 
     static UiPlugin& get()
     {

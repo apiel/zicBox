@@ -6,10 +6,10 @@
 
 class Mixer4 : public Mapping {
 public:
-    Val& mixA = val(100.0f, "MIX_A", [&](float value) { setMixA(value); }, { "Mix A" });
-    Val& mixB = val(100.0f, "MIX_B", [&](float value) { setMixB(value); }, { "Mix B" });
-    Val& mixC = val(100.0f, "MIX_C", [&](float value) { setMixC(value); }, { "Mix C" });
-    Val& mixD = val(100.0f, "MIX_D", [&](float value) { setMixD(value); }, { "Mix D" });
+    Val& mixA = val(100.0f, "MIX_A", { "Mix A" });
+    Val& mixB = val(100.0f, "MIX_B", { "Mix B" });
+    Val& mixC = val(100.0f, "MIX_C", { "Mix C" });
+    Val& mixD = val(100.0f, "MIX_D", { "Mix D" });
     uint16_t trackA = 0;
     uint16_t trackB = 1;
     uint16_t trackC = 2;
@@ -28,30 +28,6 @@ public:
             + mixB.pct() * buf[trackB] * divider
             + mixC.pct() * buf[trackC] * divider
             + mixD.pct() * buf[trackD] * divider;
-    }
-
-    Mixer4& setMixA(float value)
-    {
-        mixA.setFloat(value);
-        return *this;
-    }
-
-    Mixer4& setMixB(float value)
-    {
-        mixB.setFloat(value);
-        return *this;
-    }
-
-    Mixer4& setMixC(float value)
-    {
-        mixC.setFloat(value);
-        return *this;
-    }
-
-    Mixer4& setMixD(float value)
-    {
-        mixD.setFloat(value);
-        return *this;
     }
 
     bool config(char* key, char* value)

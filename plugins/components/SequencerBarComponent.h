@@ -125,8 +125,8 @@ public:
         snprintf(info, 24, "Step: %.2d/%d", stepIndex, stepCount);
         draw.text({ stepPosition.x, position.y }, info, colors.textInfo, 9);
 
-        draw.text({ stepPosition.x + 50, position.y }, stepEnabled->string(), colors.textInfo, 9);
-        draw.text({ stepPosition.x + 70, position.y }, stepNote->string(), colors.textInfo, 9);
+        draw.text({ stepPosition.x + 50, position.y }, stepEnabled->string().c_str(), colors.textInfo, 9);
+        draw.text({ stepPosition.x + 70, position.y }, stepNote->string().c_str(), colors.textInfo, 9);
 
         snprintf(info, 24, "len: %2d", (int)stepLength->get());
         draw.text({ stepPosition.x + 90, position.y }, info, colors.textInfo, 9);

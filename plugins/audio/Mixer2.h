@@ -6,7 +6,7 @@
 
 class Mixer2 : public Mapping {
 public:
-    Val& mix = val(50.0f, "MIX", [&](float value) { setMix(value); }, { "Mix", .type = VALUE_CENTERED });
+    Val& mix = val(50.0f, "MIX", { "Mix", .type = VALUE_CENTERED });
     uint16_t trackA = 0;
     uint16_t trackB = 1;
     uint16_t trackTarget = 0;
@@ -19,12 +19,6 @@ public:
     void sample(float* buf)
     {
         buf[trackTarget] = buf[trackA] * (1.0f - mix.pct()) + buf[trackB] * mix.pct();
-    }
-
-    Mixer2& setMix(float value)
-    {
-        mix.setFloat(value);
-        return *this;
     }
 
     bool config(char* key, char* value)

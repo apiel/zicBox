@@ -28,7 +28,7 @@ protected:
     }
 
 public:
-    Val& drive = val(0.0, "DRIVE", [&](float value) { setDrive(value); }, { "Distortion" });
+    Val& drive = val(0.0, "DRIVE", { "Distortion" }, [&](float value) { setDrive(value); });
 
     EffectDistortion(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)

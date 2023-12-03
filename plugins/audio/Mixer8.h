@@ -6,14 +6,14 @@
 
 class Mixer8 : public Mapping {
 public:
-    Val& mixA = val(100.0f, "MIX_A", [&](float value) { setMixA(value); }, { "Mix A" });
-    Val& mixB = val(100.0f, "MIX_B", [&](float value) { setMixB(value); }, { "Mix B" });
-    Val& mixC = val(100.0f, "MIX_C", [&](float value) { setMixC(value); }, { "Mix C" });
-    Val& mixD = val(100.0f, "MIX_D", [&](float value) { setMixD(value); }, { "Mix D" });
-    Val& mixE = val(100.0f, "MIX_E", [&](float value) { setMixE(value); }, { "Mix E" });
-    Val& mixF = val(100.0f, "MIX_F", [&](float value) { setMixF(value); }, { "Mix F" });
-    Val& mixG = val(100.0f, "MIX_G", [&](float value) { setMixG(value); }, { "Mix G" });
-    Val& mixH = val(100.0f, "MIX_H", [&](float value) { setMixH(value); }, { "Mix H" });
+    Val& mixA = val(100.0f, "MIX_A", { "Mix A" });
+    Val& mixB = val(100.0f, "MIX_B", { "Mix B" });
+    Val& mixC = val(100.0f, "MIX_C", { "Mix C" });
+    Val& mixD = val(100.0f, "MIX_D", { "Mix D" });
+    Val& mixE = val(100.0f, "MIX_E", { "Mix E" });
+    Val& mixF = val(100.0f, "MIX_F", { "Mix F" });
+    Val& mixG = val(100.0f, "MIX_G", { "Mix G" });
+    Val& mixH = val(100.0f, "MIX_H", { "Mix H" });
     uint16_t trackA = 0;
     uint16_t trackB = 1;
     uint16_t trackC = 2;
@@ -40,54 +40,6 @@ public:
             + mixF.pct() * buf[trackF] * divider
             + mixG.pct() * buf[trackG] * divider
             + mixH.pct() * buf[trackH] * divider;
-    }
-
-    Mixer8& setMixA(float value)
-    {
-        mixA.setFloat(value);
-        return *this;
-    }
-
-    Mixer8& setMixB(float value)
-    {
-        mixB.setFloat(value);
-        return *this;
-    }
-
-    Mixer8& setMixC(float value)
-    {
-        mixC.setFloat(value);
-        return *this;
-    }
-
-    Mixer8& setMixD(float value)
-    {
-        mixD.setFloat(value);
-        return *this;
-    }
-
-    Mixer8& setMixE(float value)
-    {
-        mixE.setFloat(value);
-        return *this;
-    }
-
-    Mixer8& setMixF(float value)
-    {
-        mixF.setFloat(value);
-        return *this;
-    }
-
-    Mixer8& setMixG(float value)
-    {
-        mixG.setFloat(value);
-        return *this;
-    }
-
-    Mixer8& setMixH(float value)
-    {
-        mixH.setFloat(value);
-        return *this;
     }
 
     bool config(char* key, char* value)

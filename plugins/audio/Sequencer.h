@@ -73,8 +73,8 @@ protected:
     }
 
 public:
-    Val& detune = val(0.0f, "DETUNE", [&](float value) { setDetune(value); }, { "Detune", VALUE_CENTERED, -24.0f, 24.0f });
-    Val& pattern = val(0.0f, "PATTERN", [&](float value) { setPattern(value); }, { "Pattern", .type = VALUE_STRING });
+    Val& detune = val(0.0f, "DETUNE", { "Detune", VALUE_CENTERED, -24.0f, 24.0f });
+    Val& pattern = val(0.0f, "PATTERN", { "Pattern", .type = VALUE_STRING }, [&](float value) { setPattern(value); });
 
     Sequencer(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -172,12 +172,6 @@ public:
         for (int i = 0; i < MAX_STEPS; i++) {
             steps[i].reset();
         }
-        return *this;
-    }
-
-    Sequencer& setDetune(float value)
-    {
-        detune.setFloat(value);
         return *this;
     }
 
