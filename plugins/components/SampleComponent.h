@@ -9,6 +9,8 @@
 class SampleComponent : public Component {
 protected:
     AudioPlugin& plugin;
+    // int bufferDataId = -1;
+    int bufferDataId = 0;
     ValueInterface* browser;
     float lastBrowser = -1.0f;
     ValueInterface* startPosition;
@@ -49,9 +51,18 @@ protected:
         draw.line({ x + w, overlayYtop }, { x + w, overlayYbottom }, colors.loopLine);
     }
 
-    void renderSamples()
+    void renderWaveform()
     {
+        if (bufferDataId != -1) {
+            struct SampleBuffer {
+                uint64_t count;
+                float* data;
+            }* sampleBuffer = (struct SampleBuffer*)plugin.data(bufferDataId);
+            wave.render(sampleBuffer->data, sampleBuffer->count);
+        }
     }
+
+    void renderActiveSamples() { }
 
     struct Colors {
         Color background;
@@ -79,9 +90,8 @@ public:
         : Component(props)
         , colors(getColorsFromColor(styles.colors.blue))
         , plugin(getPlugin("Sample"))
-        , waveRect({ { 0, 20 },
-              { props.size.w, (int)(props.size.h - 2 * 20) } })
-        , wave(getNewPropsRect(props, waveRect))
+        , waveRect({ { 0, 20 }, { props.size.w, (int)(props.size.h - 2 * 20) } })
+        , wave(getNewPropsRect(props, { { 0, 20 }, { props.size.w, (int)(props.size.h - 2 * 20) } }))
     {
         browser = val(plugin.getValue("BROWSER"));
         startPosition = val(plugin.getValue("START"));
@@ -116,8 +126,7 @@ public:
             lastBrowser = browser->get();
             textureSampleWaveform = draw.setTextureRenderer(size);
             draw.filledRect({ 0, 0 }, size, colors.background);
-            // int count = *(uint64_t*)plugin.data(0);
-            // wave.render((float*)plugin.data(1), count);
+            renderWaveform();
             draw.text({ 10, 5 }, browser->string().c_str(), colors.info, 12);
             draw.setMainRenderer();
         }
@@ -127,7 +136,7 @@ public:
         if (sustainLength->get() > 0.0f) {
             renderSustainOverlay();
         }
-        renderSamples();
+        renderActiveSamples();
     }
 
     bool noteTriggered = false;

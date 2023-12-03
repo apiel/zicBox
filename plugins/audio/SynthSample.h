@@ -11,7 +11,6 @@
 
 #include "utils/ValSerializeSndFile.h"
 
-// Each voice should hold his own wave file
 // Sequencer can play different wave files on each step
 //          Use a common cache to be able to load patch changes
 //          There would be 4 instance SynthSample for the sequencer
@@ -19,10 +18,19 @@
 //          each instance would have 4 voices
 //              voice load there own buffer of wave file and keep patch settings
 //              to allowed to keep playing sample till the end of the buffer even if change patch
+//              do we even want this???
 // There is 2 modulations...
 
 class SynthSample : public Mapping {
 protected:
+    // We hardcode it to 48000, no matter the sample rate
+    static const uint64_t bufferSize = 48000 * 30; // 30sec at 48000Hz, 32sec at 44100Hz...
+    float sampleData[bufferSize];
+    struct SampleBuffer {
+        uint64_t count = 0;
+        float *data;
+    } sampleBuffer;
+
     FileBrowser fileBrowser = FileBrowser("./samples");
 
     // Use to restore sustain in case it was move by another parameter
@@ -33,9 +41,9 @@ protected:
 public:
     Val& start = val(0.0f, "START", { "Start", .unit = "%" }, [&](auto p) { setStart(p.value); });
     Val& end = val(100.0f, "END", { "End", .unit = "%" }, [&](auto p) { setEnd(p.value); });
-    Val& sustainPosition = val(0.0f, "SUSTAIN_POSITION", { "Sustain position", .unit = "%" }, [&](auto p) { setSustainPosition(p.value, (bool *)p.data); });
+    Val& sustainPosition = val(0.0f, "SUSTAIN_POSITION", { "Sustain position", .unit = "%" }, [&](auto p) { setSustainPosition(p.value, (bool*)p.data); });
     // Where -1 is no sustain
-    Val& sustainLength = val(0.0f, "SUSTAIN_LENGTH", { "Sustain length", .unit = "%" }, [&](auto p) { setSustainLength(p.value, (bool *)p.data); });
+    Val& sustainLength = val(0.0f, "SUSTAIN_LENGTH", { "Sustain length", .unit = "%" }, [&](auto p) { setSustainLength(p.value, (bool*)p.data); });
 
     Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)fileBrowser.count }, [&](auto p) { open(p.value); });
 
@@ -55,11 +63,39 @@ public:
 
             return true;
         }
+
+        // if (strcmp(key, "DATA_STATE") == 0) {
+        //     char* pluginName = strtok(value, " ");
+        //     dataId = atoi(strtok(NULL, " "));
+        //     plugin = &getPlugin(pluginName);
+        //     return true;
+        // }
+
         return AudioPlugin::config(key, value);
     }
 
     void sample(float* buf)
     {
+    }
+
+    void open(const char* filename)
+    {
+        SF_INFO sfinfo;
+        SNDFILE* file = sf_open(filename, SFM_READ, &sfinfo);
+        if (!file) {
+            debug("Error: could not open file %s [%s]\n", filename, sf_strerror(file));
+            return;
+        }
+        // debug("Audio file %s sampleCount %ld sampleRate %d\n", filename, (long)sfinfo.frames, sfinfo.samplerate);
+
+        sampleBuffer.count = sf_read_float(file, sampleData, bufferSize);
+        sampleBuffer.data = sampleData;
+
+        sf_close(file);
+
+        // FIXME
+        // ValSerializeSndFile serialize(mapping);
+        // serialize.loadSetting(filename);
     }
 
     void open(float value, bool force = false)
@@ -69,7 +105,8 @@ public:
         if (force || position != fileBrowser.position) {
             char* filepath = fileBrowser.getFilePath(position);
             browser.setString(fileBrowser.getFile(position));
-            debug("SAMPLE_SELECTOR: %f %s\n", value, filepath);
+            // debug("SAMPLE_SELECTOR: %f %s\n", value, filepath);
+            open(filepath);
         }
     }
 
@@ -91,7 +128,7 @@ public:
         setValueBoundaries();
     }
 
-    void setSustainPosition(float value, bool * setOrigin)
+    void setSustainPosition(float value, bool* setOrigin)
     {
         if (value < start.get() || value + sustainLength.get() > end.get()) {
             return;
@@ -103,7 +140,7 @@ public:
         }
     }
 
-    void setSustainLength(float value, bool * setOrigin)
+    void setSustainLength(float value, bool* setOrigin)
     {
         if (value + sustainPosition.get() > end.get()) {
             return;
@@ -153,6 +190,15 @@ public:
                 sustainPosition.set(sustainPos, &skipOrigin);
             }
         }
+    }
+
+    void* data(int id, void* userdata = NULL)
+    {
+        switch (id) {
+        case 0:
+            return &sampleBuffer;
+        }
+        return NULL;
     }
 };
 
