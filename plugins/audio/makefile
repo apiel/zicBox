@@ -4,7 +4,7 @@ OBJ_DIR ?= $(BUILD_DIR)/obj
 all:
 	make EffectGainVolume EffectSampleRateReducer EffectFilter EffectDistortion EffectDelay\
 		EffectFilter EffectFilterMultiMode EffectFilterMultiMode2 EffectFilterMultiModeMoog\
-		SynthKick23 SynthGranular\
+		SynthKick23 SynthGranular SynthSample\
 		Sequencer\
 		Mixer2 Mixer4 Mixer8\
 		AudioInputPulse AudioOutputPulse AudioInputAlsa AudioOutputAlsa

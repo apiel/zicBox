@@ -21,6 +21,7 @@ VIEW: Mixer
   COMPONENT: Encoder 300 0 100 50
     ENCODER_ID: 3
     VALUE: Mixer4 MIX_D
+    LABEL: Sample
 
   COMPONENT: Encoder 400 0 100 50
     GROUP: 0

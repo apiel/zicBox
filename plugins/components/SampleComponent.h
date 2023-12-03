@@ -11,7 +11,6 @@ protected:
     AudioPlugin& plugin;
     ValueInterface* browser;
     float lastBrowser = -1.0f;
-
     ValueInterface* startPosition;
     ValueInterface* sustainPosition;
     ValueInterface* sustainLength;
@@ -88,11 +87,10 @@ public:
         , wave(getNewPropsRect(props, waveRect))
     {
         browser = val(plugin.getValue("BROWSER"));
-
         startPosition = val(plugin.getValue("START"));
+        endPosition = val(plugin.getValue("END"));
         sustainPosition = val(plugin.getValue("SUSTAIN"));
         sustainLength = val(plugin.getValue("SUSTAIN_LENGTH"));
-        endPosition = val(plugin.getValue("END"));
 
         overlayYtop = position.y;
         overlayYbottom = position.y + size.h - 2;
@@ -121,16 +119,16 @@ public:
             lastBrowser = browser->get();
             textureSampleWaveform = draw.setTextureRenderer(size);
             draw.filledRect({ 0, 0 }, size, colors.background);
-            int count = *(uint64_t*)plugin.data(0);
-            wave.render((float*)plugin.data(1), count);
+            // int count = *(uint64_t*)plugin.data(0);
+            // wave.render((float*)plugin.data(1), count);
             draw.text({ 10, 5 }, browser->string().c_str(), colors.info, 12);
             draw.setMainRenderer();
         }
         draw.applyTexture(textureSampleWaveform, { position, size });
-        renderStartOverlay();
-        renderEndOverlay();
-        renderSustainOverlay();
-        renderSamples();
+        // renderStartOverlay();
+        // renderEndOverlay();
+        // renderSustainOverlay();
+        // renderSamples();
     }
 
     bool noteTriggered = false;

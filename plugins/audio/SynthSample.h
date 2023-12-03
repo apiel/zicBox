@@ -24,12 +24,19 @@ protected:
 
 public:
     Val& start = val(0.0f, "START", { "Start", .unit = "%" });
+    Val& end = val(100.0f, "END", { "End", .unit = "%" });
+    Val& sustain = val(0.0f, "SUSTAIN", { "Sustain", .unit = "%" });
+    // Where -1 is no sustain
+    Val& sustainLength = val(-1.0f, "SUSTAIN_LENGTH", { "Sustain length", .min = -1.0f, .unit = "%" });
+
 
     Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)fileBrowser.count }, [&](float value) { open(value); });
 
     SynthSample(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
     {
+        open(browser.get(), true);
+        initValues();
     }
 
     bool config(char* key, char* value) override
