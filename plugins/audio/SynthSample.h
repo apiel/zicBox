@@ -22,16 +22,16 @@ class SynthSample : public Mapping {
 protected:
     FileBrowser fileBrowser = FileBrowser("./samples");
 
-    // Use to restore sustain position in case it was move by another parameter
-    float sustainPositionOrigin = -1.0f;
+    // Use to restore sustain in case it was move by another parameter
+    float sustainPositionOrigin = -255.0f;
+    float sustainLengthOrigin = -255.0f;
 
 public:
     Val& start = val(0.0f, "START", { "Start", .unit = "%" }, [&](float value) { setStart(value); });
     Val& end = val(100.0f, "END", { "End", .unit = "%" }, [&](float value) { setEnd(value); });
     Val& sustainPosition = val(0.0f, "SUSTAIN_POSITION", { "Sustain position", .unit = "%" }, [&](float value) { setSustainPosition(value); });
     // Where -1 is no sustain
-    Val& sustainLength = val(0.0f, "SUSTAIN_LENGTH", { "Sustain length", .unit = "%" });
-
+    Val& sustainLength = val(0.0f, "SUSTAIN_LENGTH", { "Sustain length", .unit = "%" }, [&](float value) { setSustainLength(value); });
 
     Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)fileBrowser.count }, [&](float value) { open(value); });
 
@@ -95,15 +95,21 @@ public:
         sustainPosition.setFloat(value);
     }
 
+    void setSustainLength(float value)
+    {
+        if (value + sustainPosition.get() > end.get()) {
+            return;
+        }
+        sustainLength.setFloat(value);
+    }
+
+
     void setValueBoundaries()
     {
         float sustain = sustainPosition.get();
         if (start.get() > sustain) {
+            sustainLength.set(sustainLength.get() - (start.get() - sustain));
             sustainPosition.set(start.get());
-        }
-
-        if (sustain > end.get()) {
-            sustainPosition.set(end.get());
         }
 
         float sustainLen = sustainLength.get();
@@ -111,6 +117,60 @@ public:
             sustainLength.set(end.get() - sustain);
         }
     }
+
+    // void setValueBoundaries()
+    // {
+    //     float sustain = sustainPosition.get();
+    //     if (start.get() > sustain) {
+    //         if (sustainPositionOrigin == -255.0f) {
+    //             sustainPositionOrigin = sustain;
+    //         }
+    //         sustainPosition.set(start.get());
+    //     }
+
+    //     if (sustain > end.get()) {
+    //         if (sustainPositionOrigin == -255.0f) {
+    //             sustainPositionOrigin = sustain;
+    //         }
+    //         sustainPosition.set(end.get());
+    //     }
+
+    //     float sustainLen = sustainLength.get();
+    //     if (sustain + sustainLen > end.get()) {
+    //         if (sustainLengthOrigin == -255.0f) {
+    //             sustainLengthOrigin = sustainLen;
+    //         }
+    //         sustainLength.set(end.get() - sustain);
+    //     }
+    //     restoreSustainlength();
+    //     restoreSustainPosition();
+    // }
+
+    // void restoreSustainlength()
+    // {
+    //     if (sustainLengthOrigin != -255.0f) {
+    //         int sustainLen = end.get() - sustainPosition.get();
+    //         if (sustainLen >= sustainLengthOrigin) {
+    //             sustainLength.set(sustainLengthOrigin);
+    //             sustainLengthOrigin = -255.0f;
+    //         } else {
+    //             sustainLength.set(sustainLen);
+    //         }
+    //     }
+    // }
+
+    // void restoreSustainPosition()
+    // {
+    //     if (sustainPositionOrigin != -255.0f) {
+    //         int sustainPos = start.get();
+    //         if (sustainPos >= sustainPositionOrigin) {
+    //             sustainPosition.set(sustainPositionOrigin);
+    //             sustainPositionOrigin = -255.0f;
+    //         } else {
+    //             sustainPosition.set(sustainPos);
+    //         }
+    //     }
+    // }
 };
 
 #endif
