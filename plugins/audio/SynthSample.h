@@ -55,6 +55,8 @@ protected:
     uint64_t voicePosition = 0;
     bool voiceAllowSameNote = true;
 
+    float stepMultiplier = 1.0f;
+
     float sample(Voice& voice)
     {
         float sample = 0.0f;
@@ -116,7 +118,7 @@ protected:
 
         // FIXME double speed sample playing
         // printf("getSampleStep: %d >> %d = %f\n", note, note - baseNote, pow(2, (note - baseNote) / 12.0));
-        return pow(2, ((note - baseNote) / 12.0));
+        return pow(2, ((note - baseNote) / 12.0)) * stepMultiplier;
     }
 
 public:
@@ -215,6 +217,14 @@ public:
 
         sf_close(file);
 
+        if (sfinfo.channels < props.channels) {
+            stepMultiplier = 0.5f;
+        } else if (sfinfo.channels > props.channels) {
+            stepMultiplier = 2.0f;
+        } else {
+            stepMultiplier = 1.0f;
+        }
+        
         // FIXME
         // ValSerializeSndFile serialize(mapping);
         // serialize.loadSetting(filename);
