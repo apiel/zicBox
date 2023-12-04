@@ -11,6 +11,7 @@
 
 #include "utils/ValSerializeSndFile.h"
 
+// Should all sample be converted to the same format when zicBox starts?
 // Sequencer can play different wave files on each step
 //          Use a common cache to be able to load patch changes
 //          There would be 4 instance SynthSample for the sequencer
@@ -48,6 +49,7 @@ protected:
         uint64_t position = 0;
         bool release = false;
         float velocity = 1.0f;
+        int sustainReleaseLoopCount = 0;
         struct VoiceSample {
             float pos = 0.0f;
             float step = 0.0f;
@@ -57,6 +59,15 @@ protected:
     bool voiceAllowSameNote = true;
 
     float stepMultiplier = 1.0f;
+
+    int sustainReleaseLoopCount = 0;
+    void setSustainReleaseLoopCount()
+    {
+        // uint64_t releaseSamples = sustainRelease.pct() * SAMPLE_RATE * 0.001f * 5000;
+        // can be simplified to:
+        uint64_t releaseSamples = sustainRelease.pct() * props.sampleRate * 5;
+        sustainReleaseLoopCount = releaseSamples / (float)(sampleProps.sustainEndPos - sampleProps.sustainPos);
+    }
 
     struct SampleProps {
         float start = 0.0f;
@@ -76,8 +87,13 @@ protected:
     float sample(Voice& voice)
     {
         float sample = 0.0f;
-        if (voice.release == false && sustainLength.get() > 0.0f && voice.sample.pos >= sampleProps.sustainEndPos) {
+        if (
+            (voice.release == false || voice.sustainReleaseLoopCount < sustainReleaseLoopCount)
+            && sustainLength.get() > 0.0f && voice.sample.pos >= sampleProps.sustainEndPos) {
             voice.sample.pos = sampleProps.sustainPos;
+            if (voice.release) {
+                voice.sustainReleaseLoopCount++;
+            }
         }
 
         if ((int64_t)voice.sample.pos < sampleProps.count) {
@@ -146,7 +162,7 @@ public:
     // Where -1 is no sustain
     Val& sustainLength = val(0.0f, "SUSTAIN_LENGTH", { "Sustain length", .unit = "%" }, [&](auto p) { setSustainLength(p.value, (bool*)p.data); });
     // Sustain release set a time before the sustain ends when note off is triggered
-    Val& sustainRelease = val(10.0f, "SUSTAIN_RELEASE", { "Sustain Release", .min = 0.0, .max = 10000.0, .step = 50.0, .unit = "ms" }, [&](auto p) { setSustainRelease(p.value); });
+    Val& sustainRelease = val(0.0f, "SUSTAIN_RELEASE", { "Sustain Release", .min = 0.0, .max = 5000.0, .step = 50.0, .unit = "ms" }, [&](auto p) { setSustainRelease(p.value); });
     // Density would have more voice in the sustain phase (should there be as well a general density for the whole sample?)
     // density voice could be added step by step on every loop
     // density voice should not start at the same time
@@ -225,6 +241,7 @@ public:
             Voice& voice = voices[v];
             if (voice.note == note) {
                 voice.release = true;
+                voice.sustainReleaseLoopCount = 0;
                 // TODO release softly if release before end of file
                 debug("noteOff set on to false: %d %d\n", note, velocity);
                 return;
@@ -236,11 +253,7 @@ public:
     void setSustainRelease(float value)
     {
         sustainRelease.setFloat(value);
-        // // uint64_t releaseSamples = release.pct() * SAMPLE_RATE * 0.001f * 10000;
-        // // can be simplified to:
-        // uint64_t releaseSamples = release.pct() * props.sampleRate * 10;
-        // releaseStep = 1.0f / releaseSamples;
-        // debug("release %ld samples %f step\n", releaseSamples, releaseStep);
+        setSustainReleaseLoopCount();
     }
 
     void open(const char* filename)
@@ -329,6 +342,7 @@ public:
             sustainLengthOrigin = sustainLength.get();
         }
         setSampleProps();
+        setSustainReleaseLoopCount();
     }
 
     void setValueBoundaries()
