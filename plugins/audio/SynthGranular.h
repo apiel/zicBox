@@ -8,6 +8,7 @@
 #include "audioPlugin.h"
 #include "fileBrowser.h"
 #include "mapping.h"
+#include "utils/AsrEnvelop.h"
 
 #include "utils/ValSerializeSndFile.h"
 
@@ -44,12 +45,16 @@ protected:
     };
 
     struct Voice {
+        AsrEnvelop envelop;
         int8_t note = -1;
         Grain grains[MAX_GRAINS_PER_VOICE];
-        float (SynthGranular::*envelop)(Voice& voice) = &SynthGranular::envelopSustain;
-        float env = 0.0f;
         uint64_t position = 0;
-    } voices[MAX_GRAIN_VOICES];
+    } voices[MAX_GRAIN_VOICES] = {
+        { AsrEnvelop(&attackStep, &releaseStep, [&]() { voices[0].note = -1; }) },
+        { AsrEnvelop(&attackStep, &releaseStep, [&]() { voices[1].note = -1; }) },
+        { AsrEnvelop(&attackStep, &releaseStep, [&]() { voices[2].note = -1; }) },
+        { AsrEnvelop(&attackStep, &releaseStep, [&]() { voices[3].note = -1; }) },
+    };
 
     uint8_t baseNote = 60;
     float getSampleStep(uint8_t note)
@@ -106,41 +111,14 @@ protected:
         // debug("initGrain: grain.start %d grain.sampleCount %d grain.delay %d\n", grain.start, grain.sampleCount, grain.delay);
     }
 
-    float envelopAttack(Voice& voice)
-    {
-        voice.env += attackStep;
-        if (voice.env >= 1.0f) {
-            voice.env = 1.0f;
-            voice.envelop = &SynthGranular::envelopSustain;
-            // debug("envelopAttack finished, set env to %f\n", voice.env);
-        }
-        return voice.env;
-    }
-
-    float envelopSustain(Voice& voice)
-    {
-        return voice.env;
-    }
-
-    float envelopRelease(Voice& voice)
-    {
-        voice.env -= releaseStep;
-        if (voice.env <= 0.0f) {
-            voice.env = 0.0f;
-            voice.note = -1;
-            // debug("envelopRelease finished, set env to %f\n", voice.env);
-        }
-        return voice.env;
-    }
-
     float sample(Voice& voice)
     {
-        float sample = 0.0f;
-        float env = (this->*voice.envelop)(voice);
+        float env = voice.envelop.next();
         if (env <= 0.0f) {
-            return sample;
+            return 0.0f;
         }
 
+        float sample = 0.0f;
         uint8_t grainOff = 0;
         for (uint8_t d = 0; d < densityUint8; d++) {
             Grain& grain = voice.grains[d];
@@ -364,7 +342,7 @@ public:
         Voice& voice = getNextVoice(note);
         voice.position = voicePosition++;
         voice.note = note;
-        voice.envelop = &SynthGranular::envelopAttack;
+        voice.envelop.attack();
         float sampleStep = getSampleStep(note + pitchSemitone);
         for (uint8_t g = 0; g < densityUint8; g++) {
             initGrain(voice.grains[g], sampleStep);
@@ -380,7 +358,7 @@ public:
         for (uint8_t v = 0; v < MAX_GRAIN_VOICES; v++) {
             Voice& voice = voices[v];
             if (voice.note == note) {
-                voice.envelop = &SynthGranular::envelopRelease;
+                voice.envelop.release();
                 debug("noteOff set on to false: %d %d\n", note, velocity);
                 return;
             }
@@ -420,7 +398,7 @@ public:
                         Grain& grain = voice.grains[g];
                         grainStates.push_back({ v * g + g,
                             (grain.start + grain.pos) / (float)bufferSampleCount,
-                            voice.envelop == &SynthGranular::envelopRelease ? voice.env : 1.0f });
+                            voice.envelop.isRelease() ? voice.envelop.get() : 1.0f });
                     }
                 }
             }

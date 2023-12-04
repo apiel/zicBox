@@ -6,7 +6,7 @@
 #include "audioPlugin.h"
 #include "fileBrowser.h"
 #include "mapping.h"
-#include "utils/envelop.h"
+#include "utils/Envelop.h"
 
 #define ZIC_WAVETABLE_WAVEFORMS_COUNT 64
 #define ZIC_KICK_ENV_AMP_STEP 4

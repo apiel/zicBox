@@ -9,6 +9,7 @@
 #include "fileBrowser.h"
 #include "mapping.h"
 
+#include "utils/AsrEnvelop.h"
 #include "utils/ValSerializeSndFile.h"
 
 // Sequencer can play different wave files on each step
@@ -42,7 +43,11 @@ protected:
     float sustainLengthOrigin = -1.0f;
     bool skipOrigin = false; // Used as point to skip set origin
 
+    float attackStep = 1.0f / 0.050 * 48000; // 50ms at 48000Hz
+    float releaseStep = 0.0f;
+
     struct Voice {
+        AsrEnvelop envelop;
         int8_t note = -1;
         uint64_t position = 0;
         bool release = false;
@@ -50,7 +55,12 @@ protected:
             float pos = 0.0f;
             float step = 0.0f;
         } sample;
-    } voices[MAX_SAMPLE_VOICES];
+    } voices[MAX_SAMPLE_VOICES] = {
+        { AsrEnvelop(&attackStep, &releaseStep) },
+        { AsrEnvelop(&attackStep, &releaseStep) },
+        { AsrEnvelop(&attackStep, &releaseStep) },
+        { AsrEnvelop(&attackStep, &releaseStep) },
+    };
     uint64_t voicePosition = 0;
     bool voiceAllowSameNote = true;
 
@@ -81,7 +91,7 @@ protected:
         if ((int64_t)voice.sample.pos < sampleProps.count) {
             int64_t samplePos = (uint64_t)voice.sample.pos + sampleProps.start;
             voice.sample.pos += voice.sample.step;
-            sample = sampleBuffer.data[samplePos];
+            sample = sampleBuffer.data[samplePos] * voice.envelop.next();
         } else {
             voice.note = -1;
         }
@@ -143,6 +153,7 @@ public:
     Val& sustainPosition = val(0.0f, "SUSTAIN_POSITION", { "Sustain position", .unit = "%" }, [&](auto p) { setSustainPosition(p.value, (bool*)p.data); });
     // Where -1 is no sustain
     Val& sustainLength = val(0.0f, "SUSTAIN_LENGTH", { "Sustain length", .unit = "%" }, [&](auto p) { setSustainLength(p.value, (bool*)p.data); });
+    Val& release = val(10.0f, "RELEASE", { "Release", .min = 50.0, .max = 10000.0, .step = 50.0, .unit = "ms" }, [&](auto p) { setRelease(p.value); });
 
     Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)fileBrowser.count }, [&](auto p) { open(p.value); });
 
@@ -199,6 +210,7 @@ public:
         voice.position = voicePosition++;
         voice.note = note;
         voice.release = false;
+        voice.envelop.attack();
         float sampleStep = getSampleStep(note);
         initVoiceSample(voice.sample, sampleStep);
         // TODO attack softly if start after beginning of file
@@ -211,12 +223,23 @@ public:
             Voice& voice = voices[v];
             if (voice.note == note) {
                 voice.release = true;
+                voice.envelop.release();
                 // TODO release softly if release before end of file
                 debug("noteOff set on to false: %d %d\n", note, velocity);
                 return;
             }
         }
         debug("noteOff: note not found %d %d\n", note, velocity);
+    }
+
+    void setRelease(float value)
+    {
+        release.setFloat(value);
+        // uint64_t releaseSamples = release.pct() * SAMPLE_RATE * 0.001f * 10000;
+        // can be simplified to:
+        uint64_t releaseSamples = release.pct() * props.sampleRate * 10;
+        releaseStep = 1.0f / releaseSamples;
+        debug("release %ld samples %f step\n", releaseSamples, releaseStep);
     }
 
     void open(const char* filename)
