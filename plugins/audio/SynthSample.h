@@ -56,22 +56,30 @@ protected:
 
     float stepMultiplier = 1.0f;
 
+    struct SampleProps {
+        float start = 0.0f;
+        float count = 0.0f;
+        float sustainPos = 0.0f;
+        float sustainEndPos = 0.0f;
+    } sampleProps;
+
+    void setSampleProps()
+    {
+        sampleProps.start = start.pct() * sampleBuffer.count;
+        sampleProps.count = ((end.pct() * sampleBuffer.count) - sampleProps.start);
+        sampleProps.sustainPos = sustainPosition.pct() * sampleProps.count;
+        sampleProps.sustainEndPos = sampleProps.sustainPos + (sustainLength.pct() * sampleBuffer.count);
+    }
+
     float sample(Voice& voice)
     {
         float sample = 0.0f;
-        
-        // TODO maybe we could cache this...
-        int64_t _start = start.pct() * sampleBuffer.count;
-        int64_t _count = ((end.pct() * sampleBuffer.count) - _start);
-        int64_t _sustainPos = sustainPosition.pct() * _count;
-        int64_t _sustainEndPos = _sustainPos + (sustainLength.pct() * sampleBuffer.count);
-
-        if (voice.release == false && sustainLength.get() > 0.0f && voice.sample.pos >= _sustainEndPos) {
-            voice.sample.pos = _sustainPos;
+        if (voice.release == false && sustainLength.get() > 0.0f && voice.sample.pos >= sampleProps.sustainEndPos) {
+            voice.sample.pos = sampleProps.sustainPos;
         }
 
-        int64_t samplePos = (uint64_t)voice.sample.pos + _start;
-        if ((int64_t)voice.sample.pos < _count) {
+        if ((int64_t)voice.sample.pos < sampleProps.count) {
+            int64_t samplePos = (uint64_t)voice.sample.pos + sampleProps.start;
             voice.sample.pos += voice.sample.step;
             sample = sampleBuffer.data[samplePos];
         } else {
@@ -259,6 +267,7 @@ public:
         }
         start.setFloat(value);
         setValueBoundaries();
+        setSampleProps();
     }
 
     void setEnd(float value)
@@ -268,6 +277,7 @@ public:
         }
         end.setFloat(value);
         setValueBoundaries();
+        setSampleProps();
     }
 
     void setSustainPosition(float value, bool* setOrigin)
@@ -280,6 +290,7 @@ public:
             sustainPositionOrigin = sustainPosition.get();
             setValueBoundaries();
         }
+        setSampleProps();
     }
 
     void setSustainLength(float value, bool* setOrigin)
@@ -291,6 +302,7 @@ public:
         if (setOrigin == NULL || *setOrigin) {
             sustainLengthOrigin = sustainLength.get();
         }
+        setSampleProps();
     }
 
     void setValueBoundaries()
