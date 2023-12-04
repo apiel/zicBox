@@ -24,13 +24,6 @@ public:
 
 class AudioPlugin {
 public:
-    char name[64];
-    uint16_t maxTracks;
-    uint16_t track = 0;
-
-    AudioPluginHandlerInterface* audioPluginHandler;
-    int (*debug)(const char* format, ...);
-
     struct Props {
         int (*debug)(const char* format, ...);
         uint64_t sampleRate;
@@ -39,9 +32,17 @@ public:
         uint16_t maxTracks;
     };
 
+protected:
+    Props props;
+
+public:
+    char name[64];
+    uint16_t track = 0;
+
+    int (*debug)(const char* format, ...);
+
     AudioPlugin(Props& props, char* _name)
-        : maxTracks(props.maxTracks)
-        , audioPluginHandler(props.audioPluginHandler)
+        : props(props)
         , debug(props.debug)
     {
         strcpy(name, _name);
@@ -81,8 +82,8 @@ public:
     {
         if (strcmp(key, "TRACK") == 0) {
             track = atoi(value);
-            if (track >= maxTracks) {
-                track = maxTracks - 1;
+            if (track >= props.maxTracks) {
+                track = props.maxTracks - 1;
             }
         }
         return false;
