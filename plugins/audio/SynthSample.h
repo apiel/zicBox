@@ -45,10 +45,9 @@ protected:
     struct Voice {
         int8_t note = -1;
         uint64_t position = 0;
+        bool release = false;
         struct VoiceSample {
             float pos = 0.0f;
-            int64_t start = 0;
-            int64_t count = 0;
             float step = 0.0f;
         } sample;
     } voices[MAX_SAMPLE_VOICES];
@@ -60,8 +59,19 @@ protected:
     float sample(Voice& voice)
     {
         float sample = 0.0f;
-        int64_t samplePos = (uint64_t)voice.sample.pos + voice.sample.start;
-        if ((int64_t)voice.sample.pos < voice.sample.count) {
+        
+        // TODO maybe we could cache this...
+        int64_t _start = start.pct() * sampleBuffer.count;
+        int64_t _count = ((end.pct() * sampleBuffer.count) - _start);
+        int64_t _sustainPos = sustainPosition.pct() * _count;
+        int64_t _sustainEndPos = _sustainPos + (sustainLength.pct() * sampleBuffer.count);
+
+        if (voice.release == false && sustainLength.get() > 0.0f && voice.sample.pos >= _sustainEndPos) {
+            voice.sample.pos = _sustainPos;
+        }
+
+        int64_t samplePos = (uint64_t)voice.sample.pos + _start;
+        if ((int64_t)voice.sample.pos < _count) {
             voice.sample.pos += voice.sample.step;
             sample = sampleBuffer.data[samplePos];
         } else {
@@ -74,8 +84,6 @@ protected:
     {
         sample.step = step;
         sample.pos = 0.0f;
-        sample.start = start.pct() * sampleBuffer.count;
-        sample.count = ((end.pct() * sampleBuffer.count) - sample.start);
     }
 
     Voice& getNextVoice(uint8_t note)
@@ -182,6 +190,7 @@ public:
         Voice& voice = getNextVoice(note);
         voice.position = voicePosition++;
         voice.note = note;
+        voice.release = false;
         float sampleStep = getSampleStep(note);
         initVoiceSample(voice.sample, sampleStep);
         // TODO attack softly if start after beginning of file
@@ -193,6 +202,7 @@ public:
         for (uint8_t v = 0; v < MAX_SAMPLE_VOICES; v++) {
             Voice& voice = voices[v];
             if (voice.note == note) {
+                voice.release = true;
                 // TODO release softly if release before end of file
                 debug("noteOff set on to false: %d %d\n", note, velocity);
                 return;
@@ -224,7 +234,7 @@ public:
         } else {
             stepMultiplier = 1.0f;
         }
-        
+
         // FIXME
         // ValSerializeSndFile serialize(mapping);
         // serialize.loadSetting(filename);
