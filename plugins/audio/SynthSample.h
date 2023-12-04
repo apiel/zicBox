@@ -20,6 +20,7 @@
 //              to allowed to keep playing sample till the end of the buffer even if change patch
 //              do we even want this???
 // There is 2 modulations...
+// Could add density step by step on every loop
 
 #ifndef MAX_SAMPLE_VOICES
 #define MAX_SAMPLE_VOICES 4
@@ -144,7 +145,17 @@ public:
     Val& sustainPosition = val(0.0f, "SUSTAIN_POSITION", { "Sustain position", .unit = "%" }, [&](auto p) { setSustainPosition(p.value, (bool*)p.data); });
     // Where -1 is no sustain
     Val& sustainLength = val(0.0f, "SUSTAIN_LENGTH", { "Sustain length", .unit = "%" }, [&](auto p) { setSustainLength(p.value, (bool*)p.data); });
-    Val& releaseSustain = val(10.0f, "RELEASE_SUSTAIN", { "Release Sustain", .min = 0.0, .max = 10000.0, .step = 50.0, .unit = "ms" }, [&](auto p) { setReleaseSustain(p.value); });
+    // Sustain release set a time before the sustain ends when note off is triggered
+    Val& sustainRelease = val(10.0f, "SUSTAIN_RELEASE", { "Sustain Release", .min = 0.0, .max = 10000.0, .step = 50.0, .unit = "ms" }, [&](auto p) { setSustainRelease(p.value); });
+    // Density would have more voice in the sustain phase (should there be as well a general density for the whole sample?)
+    // density voice could be added step by step on every loop
+    // density voice should not start at the same time
+    //       - if randomize is 0, then the sustain length should be devided by the density making an equal distance for each starting point
+    //       - if randomize is set, a starting delay is randomly set between each density voice
+    Val& sustainDensity = val(0.0f, "SUSTAIN_DENSITY", { "Sustain Density", .min = 1.0, .max = 12 });
+    Val& sustainRandomize = val(0.0f, "SUSTAIN_RANDOMIZE", { "Sustain Randomize", .unit = "%" });
+    // Spray allows the sustain to get out of the boundary windows of the sustain loop
+    Val& sustainSpray = val(0.0f, "SUSTAIN_SPRAY", { "Sustain Spray", .unit = "%" });
 
     Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)fileBrowser.count }, [&](auto p) { open(p.value); });
 
@@ -222,9 +233,9 @@ public:
         debug("noteOff: note not found %d %d\n", note, velocity);
     }
 
-    void setReleaseSustain(float value)
+    void setSustainRelease(float value)
     {
-        releaseSustain.setFloat(value);
+        sustainRelease.setFloat(value);
         // // uint64_t releaseSamples = release.pct() * SAMPLE_RATE * 0.001f * 10000;
         // // can be simplified to:
         // uint64_t releaseSamples = release.pct() * props.sampleRate * 10;
