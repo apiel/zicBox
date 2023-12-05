@@ -386,11 +386,43 @@ public:
         }
     }
 
+protected:
+    struct SampleState {
+        float position;
+        int index = 0;
+        float release = 1.0f;
+    };
+    std::vector<SampleState> sampleStates;
+
+public:
     void* data(int id, void* userdata = NULL)
     {
         switch (id) {
         case 0:
             return &sampleBuffer;
+        case 1: {
+            // This could be cache in envelopRelease
+            for (Voice& voice : voices) {
+                if (voice.note != -1) {
+                    return &voice;
+                }
+            }
+            return NULL;
+        }
+        case 2: {
+            sampleStates.clear();
+            for (uint8_t v = 0; v < MAX_SAMPLE_VOICES; v++) {
+                Voice& voice = voices[v];
+                if (voice.note != -1) {
+                    SampleState sampleState;
+                    sampleState.index = v;
+                    sampleState.position = voice.sample.pos / sampleProps.count;
+                    sampleState.release = voice.release ? 1 - voice.sample.pos / sampleProps.count : 1.0f;
+                    sampleStates.push_back(sampleState);
+                }
+            }
+            return &sampleStates;
+        }
         }
         return NULL;
     }

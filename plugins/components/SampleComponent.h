@@ -67,7 +67,30 @@ protected:
         wave.render(sampleBuffer->data, sampleBuffer->count);
     }
 
-    void renderActiveSamples() { }
+    void renderActiveSamples()
+    {
+        struct SampleState {
+            float position;
+            int index;
+            float release;
+        };
+        std::vector<SampleState>* sampleStates = (std::vector<SampleState>*)plugin->data(2);
+        int spacing = 13;
+        int totalHeight = sampleStates->size() * spacing;
+        int marginTop = 5;
+        if (totalHeight < wave.size.h) {
+            marginTop = (wave.size.h - totalHeight) / 2;
+        }
+        int y = position.y + marginTop;
+        for (auto& sample : *sampleStates) {
+            int x = position.x + sample.position * wave.size.w;
+            Color color = colors.sample;
+            if (sample.release != 1.0) {
+                color = draw.alpha(color, sample.release);
+            }
+            draw.filledRect({ x, y + (sample.index * spacing % (wave.size.h - 10)) }, { 4, 4 }, color);
+        }
+    }
 
     struct Colors {
         Color background;
@@ -75,7 +98,7 @@ protected:
         Color overlay;
         Color overlayEdge;
         Color loopLine;
-        Color sampleCursor;
+        Color sample;
     } colors;
 
     Colors getColorsFromColor(Color color)
@@ -85,7 +108,7 @@ protected:
             draw.alpha(draw.darken(color, 0.80), 0.6),
             draw.alpha(draw.darken(color, 0.90), 0.3),
             draw.alpha(styles.colors.white, 0.3),
-            draw.lighten(color, 0.3) });
+            draw.lighten(draw.getColor((char*)"#9dfe86"), 0.3) });
     }
 
     bool jobDidRender = false;
@@ -101,16 +124,18 @@ public:
         overlayYbottom = position.y + size.h - 2;
 
         jobRendering = [this](unsigned long now) {
-            // bool* active = (active*)plugin.data(2);
-            // if (*active) {
-            //     jobDidRender = true;
-            //     renderNext();
-            //     return;
-            // }
-            // if (jobDidRender) {
-            //     jobDidRender = false;
-            //     renderNext();
-            // }
+            if (plugin) {
+                void* active = (void*)plugin->data(1);
+                if (active) {
+                    jobDidRender = true;
+                    renderNext();
+                    return;
+                }
+                if (jobDidRender) {
+                    jobDidRender = false;
+                    renderNext();
+                }
+            }
         };
     }
 
@@ -175,8 +200,8 @@ public:
             return true;
         }
 
-        if (strcmp(key, "SAMPLE_CURSOR_COLOR") == 0) {
-            colors.sampleCursor = draw.getColor(value);
+        if (strcmp(key, "SAMPLE_COLOR") == 0) {
+            colors.sample = draw.getColor(value);
             return true;
         }
 
