@@ -10,6 +10,8 @@ class SampleComponent : public Component {
 protected:
     AudioPlugin* plugin;
     int bufferDataId = -1;
+    int sampleDataId = -1;
+    int activeDataId = -1;
     ValueInterface* browser;
     float lastBrowser = -1.0f;
     ValueInterface* startPosition;
@@ -69,26 +71,28 @@ protected:
 
     void renderActiveSamples()
     {
-        struct SampleState {
-            float position;
-            int index;
-            float release;
-        };
-        std::vector<SampleState>* sampleStates = (std::vector<SampleState>*)plugin->data(2);
-        int spacing = 13;
-        int totalHeight = sampleStates->size() * spacing;
-        int marginTop = 5;
-        if (totalHeight < wave.size.h) {
-            marginTop = (wave.size.h - totalHeight) / 2;
-        }
-        int y = position.y + marginTop;
-        for (auto& sample : *sampleStates) {
-            int x = position.x + sample.position * wave.size.w;
-            Color color = colors.sample;
-            if (sample.release != 1.0) {
-                color = draw.alpha(color, sample.release);
+        if (sampleDataId != -1) {
+            struct SampleState {
+                float position;
+                int index;
+                float release;
+            };
+            std::vector<SampleState>* sampleStates = (std::vector<SampleState>*)plugin->data(sampleDataId);
+            int spacing = 13;
+            int totalHeight = sampleStates->size() * spacing;
+            int marginTop = 5;
+            if (totalHeight < wave.size.h) {
+                marginTop = (wave.size.h - totalHeight) / 2;
             }
-            draw.filledRect({ x, y + (sample.index * spacing % (wave.size.h - 10)) }, { 4, 4 }, color);
+            int y = position.y + marginTop;
+            for (auto& sample : *sampleStates) {
+                int x = position.x + sample.position * wave.size.w;
+                Color color = colors.sample;
+                if (sample.release != 1.0) {
+                    color = draw.alpha(color, sample.release);
+                }
+                draw.filledRect({ x, y + (sample.index * spacing % (wave.size.h - 10)) }, { 4, 4 }, color);
+            }
         }
     }
 
@@ -124,8 +128,8 @@ public:
         overlayYbottom = position.y + size.h - 2;
 
         jobRendering = [this](unsigned long now) {
-            if (plugin) {
-                void* active = (void*)plugin->data(1);
+            if (plugin && activeDataId != -1) {
+                void* active = (void*)plugin->data(activeDataId);
                 if (active) {
                     jobDidRender = true;
                     renderNext();
@@ -223,6 +227,12 @@ public:
             endPosition = val(plugin->getValue(valueKeys[2].c_str()));
             sustainPosition = val(plugin->getValue(valueKeys[3].c_str()));
             sustainLength = val(plugin->getValue(valueKeys[4].c_str()));
+            return true;
+        }
+
+        if (strcmp(key, "DATA_STATE") == 0) {
+            sampleDataId = atoi(strtok(value, " "));
+            activeDataId = atoi(strtok(NULL, " "));
             return true;
         }
 

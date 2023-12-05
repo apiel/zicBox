@@ -38,3 +38,5 @@ VIEW: Demo
   COMPONENT: Sample 20 200 760 180
     GROUP: 0
     AUDIO_PLUGIN: Sample 0
+    DATA_STATE: 2 1
+
