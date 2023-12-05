@@ -2,6 +2,7 @@
 #define _UI_COMPONENT_SAMPLE_H_
 
 #include "../../helpers/inRect.h"
+#include "./base/SamplePositionBaseComponent.h"
 #include "./base/WaveBaseComponent.h"
 #include "./component.h"
 #include <string>
@@ -31,6 +32,8 @@ protected:
 
     Rect waveRect;
     WaveBaseComponent wave;
+
+    SamplePositionBaseComponent samplePosition;
 
     int overlayYtop = 0;
     int overlayYbottom = 0;
@@ -72,27 +75,7 @@ protected:
     void renderActiveSamples()
     {
         if (sampleDataId != -1) {
-            struct SampleState {
-                float position;
-                int index;
-                float release;
-            };
-            std::vector<SampleState>* sampleStates = (std::vector<SampleState>*)plugin->data(sampleDataId);
-            int spacing = 13;
-            int totalHeight = sampleStates->size() * spacing;
-            int marginTop = 5;
-            if (totalHeight < wave.size.h) {
-                marginTop = (wave.size.h - totalHeight) / 2;
-            }
-            int y = position.y + marginTop;
-            for (auto& sample : *sampleStates) {
-                int x = position.x + sample.position * wave.size.w;
-                Color color = colors.sample;
-                if (sample.release != 1.0) {
-                    color = draw.alpha(color, sample.release);
-                }
-                draw.filledRect({ x, y + (sample.index * spacing % (wave.size.h - 10)) }, { 4, 4 }, color);
-            }
+            samplePosition.render((std::vector<SamplePositionBaseComponent::SampleState>*)plugin->data(sampleDataId));
         }
     }
 
@@ -102,7 +85,6 @@ protected:
         Color overlay;
         Color overlayEdge;
         Color loopLine;
-        Color sample;
     } colors;
 
     Colors getColorsFromColor(Color color)
@@ -111,11 +93,8 @@ protected:
             draw.darken(color, 0.3),
             draw.alpha(draw.darken(color, 0.80), 0.6),
             draw.alpha(draw.darken(color, 0.90), 0.3),
-            draw.alpha(styles.colors.white, 0.3),
-            draw.lighten(draw.getColor((char*)"#9dfe86"), 0.3) });
+            draw.alpha(styles.colors.white, 0.3) });
     }
-
-    bool jobDidRender = false;
 
 public:
     SampleComponent(ComponentInterface::Props props)
@@ -123,20 +102,14 @@ public:
         , colors(getColorsFromColor(styles.colors.blue))
         , waveRect({ { 0, 20 }, { props.size.w, (int)(props.size.h - 2 * 20) } })
         , wave(getNewPropsRect(props, { { 0, 20 }, { props.size.w, (int)(props.size.h - 2 * 20) } }))
+        , samplePosition(getNewPropsRect(props, { { props.position.x, props.position.y + 20 }, { props.size.w, (int)(props.size.h - 2 * 20) } }))
     {
         overlayYtop = position.y;
         overlayYbottom = position.y + size.h - 2;
 
         jobRendering = [this](unsigned long now) {
             if (plugin && activeDataId != -1) {
-                void* active = (void*)plugin->data(activeDataId);
-                if (active) {
-                    jobDidRender = true;
-                    renderNext();
-                    return;
-                }
-                if (jobDidRender) {
-                    jobDidRender = false;
+                if (samplePosition.shouldRender(plugin->data(activeDataId))) {
                     renderNext();
                 }
             }
@@ -204,11 +177,6 @@ public:
             return true;
         }
 
-        if (strcmp(key, "SAMPLE_COLOR") == 0) {
-            colors.sample = draw.getColor(value);
-            return true;
-        }
-
         if (strcmp(key, "KEYS") == 0) {
             valueKeys[0] = strtok(value, " ");
             valueKeys[1] = strtok(NULL, " ");
@@ -236,7 +204,7 @@ public:
             return true;
         }
 
-        return wave.config(key, value);
+        return samplePosition.config(key, value) || wave.config(key, value);
     }
 };
 

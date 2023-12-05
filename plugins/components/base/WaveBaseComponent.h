@@ -1,7 +1,6 @@
 #ifndef _UI_BASE_COMPONENT_WAVE_H_
 #define _UI_BASE_COMPONENT_WAVE_H_
 
-#include "../../../helpers/inRect.h"
 #include "../component.h"
 #include <string>
 
