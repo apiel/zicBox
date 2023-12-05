@@ -2,6 +2,7 @@
 #define _UI_COMPONENT_GRANULAR_H_
 
 #include "../../helpers/inRect.h"
+#include "./base/SamplePositionBaseComponent.h"
 #include "./base/WaveBaseComponent.h"
 #include "component.h"
 #include <string>
@@ -33,6 +34,7 @@ protected:
     bool saved = false;
 
     WaveBaseComponent wave;
+    SamplePositionBaseComponent samplePosition;
 
     // void renderSampleStart()
     // {
@@ -54,27 +56,7 @@ protected:
 
     void renderGrains()
     {
-        struct GrainState {
-            int index;
-            float position;
-            float release;
-        };
-        std::vector<GrainState>* grainStates = (std::vector<GrainState>*)plugin.data(3);
-        int spacing = 13;
-        int totalHeight = grainStates->size() * spacing;
-        int marginTop = 5;
-        if (totalHeight < textureSize.h) {
-            marginTop = (textureSize.h - totalHeight) / 2;
-        }
-        int y = position.y + marginTop;
-        for (auto& grain : *grainStates) {
-            int x = position.x + grain.position * textureSize.w;
-            Color color = colors.grain;
-            if (grain.release != 1.0) {
-                color = draw.alpha(color, grain.release);
-            }
-            draw.filledRect({ x, y + (grain.index * spacing % (textureSize.h - 10 )) }, { 4, 4 }, color);
-        }
+        samplePosition.render((std::vector<SamplePositionBaseComponent::SampleState>*)plugin.data(3));
     }
 
     void renderGrainStartRange()
@@ -121,24 +103,22 @@ protected:
         Color spray;
         // Color startEndOverlay;
         // Color startEndOverlayEdge;
-        Color grain;
     } colors;
 
     Colors getColorsFromColor(Color color)
     {
-        return Colors({ draw.darken(color, 0.75),
+        return Colors({
+            draw.darken(color, 0.75),
             draw.darken(color, 0.3),
             styles.colors.overlay,
             draw.alpha(color, 0.2),
             draw.alpha(color, 0.2),
             // draw.alpha(draw.darken(color, 0.80), 0.6),
             // draw.alpha(draw.darken(color, 0.90), 0.3),
-            draw.lighten(draw.getColor((char*)"#9dfe86"), 0.3) });
+        });
     }
 
     const int margin;
-
-    bool jobDidRender = false;
 
 public:
     GranularComponent(ComponentInterface::Props props)
@@ -146,9 +126,8 @@ public:
         , colors(getColorsFromColor(styles.colors.blue))
         , margin(styles.margin)
         , plugin(getPlugin("Granular"))
-        , wave(getNewPropsRect(props,
-              { { 0, 20 },
-                  { props.size.w - 2 * styles.margin, (int)(props.size.h - 2 * (20 + styles.margin)) } }))
+        , wave(getNewPropsRect(props, { { 0, 20 }, { props.size.w - 2 * styles.margin, (int)(props.size.h - 2 * (20 + styles.margin)) } }))
+        , samplePosition(getNewPropsRect(props, { { props.position.x, props.position.y + 20 }, { props.size.w, (int)(props.size.h - 2 * 20) } }))
     {
         textureSize = { size.w - 2 * margin, size.h - 2 * margin };
         sprayToggleRect = { { position.x + size.w - 70, position.y + size.h - 30 }, { 50, 15 } };
@@ -156,11 +135,7 @@ public:
         saveRect = { { position.x + size.w - 190, position.y + size.h - 30 }, { 50, 15 } };
 
         jobRendering = [this](unsigned long now) {
-            if (plugin.data(4) != NULL) {
-                jobDidRender = true;
-                renderNext();
-            } else if (jobDidRender) {
-                jobDidRender = false;
+            if (samplePosition.shouldRender(plugin.data(4))) {
                 renderNext();
             }
         };
@@ -299,7 +274,7 @@ public:
             return true;
         }
 
-        return wave.config(key, value);
+        return samplePosition.config(key, value) || wave.config(key, value);
     }
 };
 

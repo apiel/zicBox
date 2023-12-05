@@ -369,8 +369,8 @@ public:
 
 protected:
     struct GrainState {
-        int index;
         float position;
+        int index;
         float release;
     };
     std::vector<GrainState> grainStates;
@@ -396,8 +396,8 @@ public:
                 if (voice.note != -1) {
                     for (uint8_t g = 0; g < densityUint8; g++) {
                         Grain& grain = voice.grains[g];
-                        grainStates.push_back({ v * g + g,
-                            (grain.start + grain.pos) / (float)bufferSampleCount,
+                        grainStates.push_back({ (grain.start + grain.pos) / (float)bufferSampleCount,
+                            v * g + g,
                             voice.envelop.isRelease() ? voice.envelop.get() : 1.0f });
                     }
                 }
