@@ -39,7 +39,7 @@
 #ifndef __FONTS_H
 #define __FONTS_H
 
-/*×î´ó×ÖÌåÎ¢ÈíÑÅºÚ24 (32x41) */
+/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î¢ï¿½ï¿½ï¿½Åºï¿½24 (32x41) */
 #define MAX_HEIGHT_FONT         41
 #define MAX_WIDTH_FONT          32
 #define OFFSET_BITMAP           
@@ -62,10 +62,10 @@ typedef struct _tFont
 
 
 //GB2312
-typedef struct                                          // ºº×Ö×ÖÄ£Êý¾Ý½á¹¹
+typedef struct                                          // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½Ý½á¹¹
 {
-  unsigned char index[2];                               // ºº×ÖÄÚÂëË÷Òý
-  const char matrix[MAX_HEIGHT_FONT*MAX_WIDTH_FONT/8];  // µãÕóÂëÊý¾Ý
+  unsigned char index[2];                               // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+  const char matrix[MAX_HEIGHT_FONT*MAX_WIDTH_FONT/8];  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 }CH_CN;
 
 
@@ -85,8 +85,6 @@ extern sFONT Font16;
 extern sFONT Font12;
 extern sFONT Font8;
 
-extern cFONT Font12CN;
-extern cFONT Font24CN;
 #ifdef __cplusplus
 }
 #endif
