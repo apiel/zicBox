@@ -13,13 +13,8 @@
 
 // Should all sample be converted to the same format when zicBox starts?
 // Sequencer can play different wave files on each step
-//          Use a common cache to be able to load patch changes
 //          There would be 4 instance SynthSample for the sequencer
 //          + 1 instance SynthSample for patch editing
-//          each instance would have 4 voices
-//              voice load there own buffer of wave file and keep patch settings
-//              to allowed to keep playing sample till the end of the buffer even if change patch
-//              do we even want this???
 // There is 2 modulations...
 // Could add density step by step on every loop
 
@@ -27,9 +22,13 @@
 #define MAX_SAMPLE_VOICES 4
 #endif
 
+#ifndef MAX_SAMPLE_DENSITY
+#define MAX_SAMPLE_DENSITY 12
+#endif
+
 class SynthSample : public Mapping {
 protected:
-    // We hardcode it to 48000, no matter the sample rate
+    // Hardcoded to 48000, no matter the sample rate
     static const uint64_t bufferSize = 48000 * 30; // 30sec at 48000Hz, 32sec at 44100Hz...
     float sampleData[bufferSize];
     struct SampleBuffer {
@@ -50,10 +49,10 @@ protected:
         bool release = false;
         float velocity = 1.0f;
         int sustainReleaseLoopCount = 0;
+        float step = 0.0f;
         struct VoiceSample {
             float pos = 0.0f;
-            float step = 0.0f;
-        } sample;
+        } sample[MAX_SAMPLE_DENSITY];
     } voices[MAX_SAMPLE_VOICES];
     uint64_t voicePosition = 0;
     bool voiceAllowSameNote = true;
@@ -84,32 +83,36 @@ protected:
         sampleProps.sustainEndPos = sampleProps.sustainPos + (sustainLength.pct() * sampleBuffer.count);
     }
 
-    float sample(Voice& voice)
+    float sample(Voice& voice, Voice::VoiceSample& sample)
     {
-        float sample = 0.0f;
+        float out = 0.0f;
         if (
             (voice.release == false || voice.sustainReleaseLoopCount < sustainReleaseLoopCount)
-            && sustainLength.get() > 0.0f && voice.sample.pos >= sampleProps.sustainEndPos) {
-            voice.sample.pos = sampleProps.sustainPos;
+            && sustainLength.get() > 0.0f && sample.pos >= sampleProps.sustainEndPos) {
+            sample.pos = sampleProps.sustainPos;
             if (voice.release) {
                 voice.sustainReleaseLoopCount++;
             }
         }
 
-        if ((int64_t)voice.sample.pos < sampleProps.count) {
-            int64_t samplePos = (uint64_t)voice.sample.pos + sampleProps.start;
-            sample = sampleBuffer.data[samplePos] * voice.velocity;
-            voice.sample.pos += voice.sample.step;
+        if ((int64_t)sample.pos < sampleProps.count) {
+            int64_t samplePos = (uint64_t)sample.pos + sampleProps.start;
+            out = sampleBuffer.data[samplePos] * voice.velocity;
+            sample.pos += voice.step;
         } else {
             voice.note = -1;
         }
-        return sample;
+        return out;
     }
 
-    void initVoiceSample(Voice::VoiceSample& sample, float step)
+    float sample(Voice& voice)
     {
-        sample.step = step;
-        sample.pos = 0.0f;
+        return sample(voice, voice.sample[0]);
+        // float out = 0.0f;
+        // for (uint8_t d = 0; d < MAX_SAMPLE_DENSITY; d++) {
+        //     out += sample(voice, voice.sample[d]);
+        // }
+        // return out;
     }
 
     Voice& getNextVoice(uint8_t note)
@@ -161,7 +164,7 @@ public:
     Val& sustainPosition = val(0.0f, "SUSTAIN_POSITION", { "Sustain position", .unit = "%" }, [&](auto p) { setSustainPosition(p.value, (bool*)p.data); });
     // Where -1 is no sustain
     Val& sustainLength = val(0.0f, "SUSTAIN_LENGTH", { "Sustain length", .unit = "%" }, [&](auto p) { setSustainLength(p.value, (bool*)p.data); });
-    // Sustain release set a time before the sustain ends when note off is triggered
+    // Sustain release set a delay before the sustain ends when note off is triggered
     Val& sustainRelease = val(0.0f, "SUSTAIN_RELEASE", { "Sustain Release", .min = 0.0, .max = 5000.0, .step = 50.0, .unit = "ms" }, [&](auto p) { setSustainRelease(p.value); });
     // Density would have more voice in the sustain phase (should there be as well a general density for the whole sample?)
     // density voice could be added step by step on every loop
@@ -208,14 +211,14 @@ public:
 
     void sample(float* buf)
     {
-        float s = 0.0f;
+        float out = 0.0f;
         for (uint8_t v = 0; v < MAX_SAMPLE_VOICES; v++) {
             Voice& voice = voices[v];
             if (voice.note != -1) {
-                s += sample(voice);
+                out += sample(voice);
             }
         }
-        buf[track] = s;
+        buf[track] = out;
     }
 
     void noteOn(uint8_t note, uint8_t velocity) override
@@ -229,8 +232,10 @@ public:
         voice.note = note;
         voice.velocity = velocity / 127.0f;
         voice.release = false;
-        float sampleStep = getSampleStep(note);
-        initVoiceSample(voice.sample, sampleStep);
+        voice.step = getSampleStep(note);
+        for (uint8_t v = 0; v < MAX_SAMPLE_DENSITY; v++) {
+            voice.sample[v].pos = 0.0f;
+        }
         // TODO attack softly if start after beginning of file
         debug("noteOn: %d %d\n", note, velocity);
     }
@@ -416,8 +421,8 @@ public:
                 if (voice.note != -1) {
                     SampleState sampleState;
                     sampleState.index = v;
-                    sampleState.position = voice.sample.pos / sampleProps.count;
-                    sampleState.release = voice.release ? 1 - voice.sample.pos / sampleProps.count : 1.0f;
+                    sampleState.position = voice.sample[0].pos / sampleProps.count;
+                    sampleState.release = voice.release ? 1 - voice.sample[0].pos / sampleProps.count : 1.0f;
                     sampleStates.push_back(sampleState);
                 }
             }

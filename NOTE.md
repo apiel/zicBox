@@ -4,28 +4,21 @@
 
 - use string instead of char...
 
-## groc
+## zicUi
 
 - TODO subview to be able to switch a subset of view
         or just show hide component ^^
 
-- TODO make side component to see active encoder function
+- TODO pattern selector in sequencer
+       pattern category
+
+- TODO popup message
 
 - TODO when touching the screen, it could either play a note and change pitch base on Y
                               or start ARP change pitch with Y and change pattern with X
                               or act as a chaos pad
      --> maybe there should be a way to stop the motion populating, so a component could
          take over the motion, e.g. an invisible frame on top of the whole view that would trigger the notes.
-
-- TODO ADSR exponential curve
-        For ADSR animation find optimal way to print triangle rectangle
-
-## zicUi
-
-- TODO pattern selector in sequencer
-       pattern category
-
-- TODO popup message
 
 - TODO pad ARP, y is taking care of semi tone and x change ARP pattern. Could it even be multi touch?
 
@@ -80,6 +73,8 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 - filter frequency response curve https://stackoverflow.com/questions/76193236/implement-2nd-order-low-pass-filter-in-c-how-to-compute-coefficients
 
 ## zicHost
+
+- TODO Sequencer Polyend play style
 
 - TODO modulation that would be a mix of envelop and lfo:
     - multiphase envelop (up to 8 or even more)
