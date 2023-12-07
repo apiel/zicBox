@@ -75,6 +75,8 @@ protected:
     void renderActiveSamples()
     {
         if (sampleDataId != -1) {
+            samplePosition.position.x = position.x + size.w * startPosition->pct();
+            samplePosition.size.w = size.w * endPosition->pct() - samplePosition.position.x;
             samplePosition.render((std::vector<SamplePositionBaseComponent::SampleState>*)plugin->data(sampleDataId));
         }
     }
