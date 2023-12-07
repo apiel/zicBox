@@ -167,9 +167,16 @@ public:
 
     void render()
     {
+        // During the whole rendering process, we render into a texture
+        // Only at the end, we push the texture to the screen
+        //
+        // Set renderer pointing to screen
         SDL_SetRenderTarget(renderer, NULL);
+        // Copy texture to renderer pointing on the screen
         SDL_RenderCopy(renderer, texture, NULL, NULL);
+        // Present renderer
         SDL_RenderPresent(renderer);
+        // Set renderer pointinng to texture
         SDL_SetRenderTarget(renderer, texture);
     }
 
