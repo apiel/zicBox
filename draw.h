@@ -205,16 +205,17 @@ public:
     void render()
     {
 #ifdef USE_WAVESHARE
+        // FIXME need to find a more efficient way to access pixel and draw them to the SPI display
         Uint32 r_mask, g_mask, b_mask, a_mask;
         int bbp;
         SDL_PixelFormatEnumToMasks(PIXEL_FORMAT, &bbp, &r_mask, &g_mask, &b_mask, &a_mask);
-        SDL_Surface* surface = SDL_CreateRGBSurface(0, SCREEN_WIDTH, SCREEN_HEIGHT, bbp, r_mask, g_mask, b_mask, a_mask);
+        SDL_Surface* surface = SDL_CreateRGBSurface(0, styles.screen.w, styles.screen.h, bbp, r_mask, g_mask, b_mask, a_mask);
         SDL_RenderReadPixels(renderer, NULL, PIXEL_FORMAT, (void*)surface->pixels, surface->pitch);
 
-        for (int x = 0; x < SCREEN_WIDTH; x++) {
-            for (int y = 0; y < SCREEN_HEIGHT; y++) {
+        for (int x = 0; x < styles.screen.w; x++) {
+            for (int y = 0; y < styles.screen.h; y++) {
                 SDL_Color color;
-                SDL_GetRGBA(((Uint32*)surface->pixels)[x + y * SCREEN_WIDTH], surface->format, &color.r, &color.g, &color.b, &color.a);
+                SDL_GetRGBA(((Uint32*)surface->pixels)[x + y * styles.screen.w], surface->format, &color.r, &color.g, &color.b, &color.a);
                 Paint_SetPixel(x, y, WAVESHARE_RGB(color.r, color.g, color.b));
             }
         }
