@@ -27,29 +27,8 @@ int main( int argc, char* argv[] )
     SDL_ShowCursor(SDL_DISABLE);
 #endif
 
-    window = SDL_CreateWindow(
-        "Zic",
-        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        styles.screen.w, styles.screen.h,
-        SDL_WINDOW_SHOWN
-#ifdef IS_RPI
-            | SDL_WINDOW_FULLSCREEN
-#endif
-    );
-
-    if (window == NULL)
-    {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not create window: %s", SDL_GetError());
-        return 1;
-    }
-
-    TTF_Init();
-
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-
     ViewManager &viewManager = ViewManager::get();
-    texture = (SDL_Texture *)viewManager.draw.setTextureRenderer(styles.screen);
+    viewManager.draw.init();
 
     if (!loadHost())
     {
@@ -75,9 +54,6 @@ int main( int argc, char* argv[] )
         }
         SDL_Delay(1);
     }
-
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
 
     SDL_Quit();
 

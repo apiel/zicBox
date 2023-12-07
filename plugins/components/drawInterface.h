@@ -62,8 +62,8 @@ struct DrawTextOptions {
 
 class DrawInterface {
 public:
-    Styles styles;
-    DrawInterface(Styles styles)
+    Styles& styles;
+    DrawInterface(Styles& styles)
         : styles(styles)
     {
     }

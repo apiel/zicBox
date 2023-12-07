@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <stdexcept>
 
 #include "drawGfx.h"
 #include "plugins/components/drawInterface.h"
@@ -12,6 +13,10 @@
 
 class Draw : public DrawInterface {
 protected:
+    SDL_Texture* texture = NULL;
+    SDL_Renderer* renderer = NULL;
+    SDL_Window* window = NULL;
+
     bool needRendering = false;
 
     SDL_Surface* getTextSurface(const char* text, Color color, uint32_t size, const char* fontPath)
@@ -104,9 +109,47 @@ protected:
     }
 
 public:
-    Draw(Styles styles)
+    Draw(Styles& styles)
         : DrawInterface(styles)
     {
+    }
+
+    ~Draw()
+    {
+        if (texture != NULL) {
+            SDL_DestroyTexture(texture);
+        }
+        if (renderer != NULL) {
+            SDL_DestroyRenderer(renderer);
+        }
+        if (window != NULL) {
+            SDL_DestroyWindow(window);
+        }
+    }
+
+    void init()
+    {
+        window = SDL_CreateWindow(
+            "Zic",
+            SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+            styles.screen.w, styles.screen.h,
+            SDL_WINDOW_SHOWN
+#ifdef IS_RPI
+                | SDL_WINDOW_FULLSCREEN
+#endif
+        );
+
+        if (window == NULL) {
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not create window: %s", SDL_GetError());
+            throw std::runtime_error("Could not create window");
+        }
+
+        TTF_Init();
+
+        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+        texture = (SDL_Texture*)setTextureRenderer(styles.screen);
     }
 
     void renderNext()
