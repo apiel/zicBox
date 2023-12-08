@@ -51,6 +51,7 @@ protected:
         int sustainReleaseLoopCount = 0;
         float step = 0.0f;
         float position = 0.0f;
+        uint8_t sustainDensity = 0;
     } voices[MAX_SAMPLE_VOICES];
     uint64_t voiceIndexCounter = 0;
     bool voiceAllowSameNote = true;
@@ -69,24 +70,28 @@ protected:
     struct SampleProps {
         float start = 0.0f;
         float end = 0.0f;
+        bool sustainActive = false;
         float sustainPos = 0.0f;
         float sustainEndPos = 0.0f;
+        int64_t sustainSampleCount = 0; 
     } sampleProps;
 
     void setSampleProps()
     {
         sampleProps.start = start.pct() * sampleBuffer.count;
         sampleProps.end = end.pct() * sampleBuffer.count;
+        sampleProps.sustainActive = sustainLength.get() > 0.0f;
         sampleProps.sustainPos = sustainPosition.pct() * sampleBuffer.count;
-        sampleProps.sustainEndPos = sampleProps.sustainPos + sustainLength.pct() * sampleBuffer.count;
+        sampleProps.sustainSampleCount = sustainLength.pct() * sampleBuffer.count;
+        sampleProps.sustainEndPos = sampleProps.sustainPos + sampleProps.sustainSampleCount;
     }
 
-    float sample(Voice& voice)
+    float sample(Voice& voice, int64_t posMod)
     {
         float out = 0.0f;
         if (
             (voice.release == false || voice.sustainReleaseLoopCount < sustainReleaseLoopCount)
-            && sustainLength.get() > 0.0f && voice.position >= sampleProps.sustainEndPos) {
+            && sampleProps.sustainActive && voice.position >= sampleProps.sustainEndPos) {
             voice.position = sampleProps.sustainPos;
             if (voice.release) {
                 voice.sustainReleaseLoopCount++;
@@ -94,12 +99,29 @@ protected:
         }
 
         if ((int64_t)voice.position < sampleProps.end) {
-            int64_t samplePos = (uint64_t)voice.position;
-            out = sampleBuffer.data[samplePos] * voice.velocity;
+            int64_t samplePos = voice.position + posMod;
+            if (voice.release == false && sampleProps.sustainActive && samplePos > sampleProps.sustainEndPos) {
+                samplePos = samplePos - sampleProps.sustainSampleCount;
+            }
+            if (samplePos < sampleProps.end) {
+                out = sampleBuffer.data[samplePos] * voice.velocity;
+            }
             voice.position += voice.step;
         } else {
             voice.note = -1;
         }
+        return out;
+    }
+
+    float sample(Voice& voice)
+    {
+        float out = 0.0f;
+
+        int density = sustainDensity.get();
+        for (uint8_t d = 0; d < density; d++) {
+            out += sample(voice, 0);
+        }
+
         return out;
     }
 
@@ -159,7 +181,7 @@ public:
     // density voice should not start at the same time
     //       - if randomize is 0, then the sustain length should be devided by the density making an equal distance for each starting point
     //       - if randomize is set, a starting delay is randomly set between each density voice
-    Val& sustainDensity = val(0.0f, "SUSTAIN_DENSITY", { "Sustain Density", .min = 1.0, .max = 12 });
+    Val& sustainDensity = val(1.0f, "SUSTAIN_DENSITY", { "Sustain Density", .min = 1.0, .max = 12 });
     Val& sustainRandomize = val(0.0f, "SUSTAIN_RANDOMIZE", { "Sustain Randomize", .unit = "%" });
     // Spray allows the sustain to get out of the boundary windows of the sustain loop
     Val& sustainSpray = val(0.0f, "SUSTAIN_SPRAY", { "Sustain Spray", .unit = "%" });
@@ -222,6 +244,7 @@ public:
         voice.release = false;
         voice.step = getSampleStep(note);
         voice.position = sampleProps.start;
+        voice.sustainDensity = 0;
         // TODO attack softly if start after beginning of file
         debug("noteOn: %d %d\n", note, velocity);
     }
