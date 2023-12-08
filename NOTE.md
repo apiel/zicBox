@@ -185,6 +185,14 @@ int main()
 - TODO install file (make setup/prepare and make install ?)
 - TODO update using makefile?
 
+## Audio app inspirations
+
+- http://samplr.net/
+
+- https://www.borderlands-granular.com/app/
+
+- https://www.bleass.com/samplewiz2/
+
 ## more
 
 - elektron overbridge https://github.com/dagargo/overwitch
