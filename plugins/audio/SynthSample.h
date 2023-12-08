@@ -45,7 +45,7 @@ protected:
 
     struct Voice {
         int8_t note = -1;
-        uint64_t position = 0;
+        uint64_t index = 0;
         bool release = false;
         float velocity = 1.0f;
         int sustainReleaseLoopCount = 0;
@@ -54,7 +54,7 @@ protected:
             float pos = 0.0f;
         } sample[MAX_SAMPLE_DENSITY];
     } voices[MAX_SAMPLE_VOICES];
-    uint64_t voicePosition = 0;
+    uint64_t voiceIndexCounter = 0;
     bool voiceAllowSameNote = true;
 
     float stepMultiplier = 1.0f;
@@ -135,7 +135,7 @@ protected:
             if (voice.note == -1) {
                 return voice;
             }
-            if (voice.position < voices[voiceToSteal].position) {
+            if (voice.index < voices[voiceToSteal].index) {
                 voiceToSteal = v;
             }
         }
@@ -228,7 +228,7 @@ public:
         }
 
         Voice& voice = getNextVoice(note);
-        voice.position = voicePosition++;
+        voice.index = voiceIndexCounter++;
         voice.note = note;
         voice.velocity = velocity / 127.0f;
         voice.release = false;
