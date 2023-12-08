@@ -73,7 +73,7 @@ protected:
         bool sustainActive = false;
         float sustainPos = 0.0f;
         float sustainEndPos = 0.0f;
-        int64_t sustainSampleCount = 0; 
+        int64_t sustainSampleCount = 0;
     } sampleProps;
 
     void setSampleProps()
@@ -96,6 +96,9 @@ protected:
             if (voice.release) {
                 voice.sustainReleaseLoopCount++;
             }
+            if (voice.sustainDensity < sustainDensity.get()) {
+                voice.sustainDensity++;
+            }
         }
 
         if ((int64_t)voice.position < sampleProps.end) {
@@ -106,7 +109,6 @@ protected:
             if (samplePos < sampleProps.end) {
                 out = sampleBuffer.data[samplePos] * voice.velocity;
             }
-            voice.position += voice.step;
         } else {
             voice.note = -1;
         }
@@ -116,10 +118,16 @@ protected:
     float sample(Voice& voice)
     {
         float out = 0.0f;
-
-        int density = sustainDensity.get();
-        for (uint8_t d = 0; d < density; d++) {
-            out += sample(voice, 0);
+        if (voice.sustainDensity > sustainDensity.get()) {
+            voice.sustainDensity = sustainDensity.get();
+        }
+        float densityRatio = 1.0f / voice.sustainDensity;
+        for (uint8_t d = 0; d < voice.sustainDensity; d++) {
+            int64_t posMod = d * sampleProps.sustainSampleCount * densityRatio;
+            out += sample(voice, posMod);
+        }
+        if (voice.note != -1) {
+            voice.position += voice.step;
         }
 
         return out;
@@ -244,7 +252,7 @@ public:
         voice.release = false;
         voice.step = getSampleStep(note);
         voice.position = sampleProps.start;
-        voice.sustainDensity = 0;
+        voice.sustainDensity = 1;
         // TODO attack softly if start after beginning of file
         debug("noteOn: %d %d\n", note, velocity);
     }
