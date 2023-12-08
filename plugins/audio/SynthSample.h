@@ -50,9 +50,7 @@ protected:
         float velocity = 1.0f;
         int sustainReleaseLoopCount = 0;
         float step = 0.0f;
-        struct VoiceSample {
-            float pos = 0.0f;
-        } sample[MAX_SAMPLE_DENSITY];
+        float position = 0.0f;
     } voices[MAX_SAMPLE_VOICES];
     uint64_t voiceIndexCounter = 0;
     bool voiceAllowSameNote = true;
@@ -83,36 +81,26 @@ protected:
         sampleProps.sustainEndPos = sampleProps.sustainPos + (sustainLength.pct() * sampleBuffer.count);
     }
 
-    float sample(Voice& voice, Voice::VoiceSample& sample)
+    float sample(Voice& voice)
     {
         float out = 0.0f;
         if (
             (voice.release == false || voice.sustainReleaseLoopCount < sustainReleaseLoopCount)
-            && sustainLength.get() > 0.0f && sample.pos >= sampleProps.sustainEndPos) {
-            sample.pos = sampleProps.sustainPos;
+            && sustainLength.get() > 0.0f && voice.position >= sampleProps.sustainEndPos) {
+            voice.position = sampleProps.sustainPos;
             if (voice.release) {
                 voice.sustainReleaseLoopCount++;
             }
         }
 
-        if ((int64_t)sample.pos < sampleProps.count) {
-            int64_t samplePos = (uint64_t)sample.pos + sampleProps.start;
+        if ((int64_t)voice.position < sampleProps.count) {
+            int64_t samplePos = (uint64_t)voice.position + sampleProps.start;
             out = sampleBuffer.data[samplePos] * voice.velocity;
-            sample.pos += voice.step;
+            voice.position += voice.step;
         } else {
             voice.note = -1;
         }
         return out;
-    }
-
-    float sample(Voice& voice)
-    {
-        return sample(voice, voice.sample[0]);
-        // float out = 0.0f;
-        // for (uint8_t d = 0; d < MAX_SAMPLE_DENSITY; d++) {
-        //     out += sample(voice, voice.sample[d]);
-        // }
-        // return out;
     }
 
     Voice& getNextVoice(uint8_t note)
@@ -233,9 +221,7 @@ public:
         voice.velocity = velocity / 127.0f;
         voice.release = false;
         voice.step = getSampleStep(note);
-        for (uint8_t v = 0; v < MAX_SAMPLE_DENSITY; v++) {
-            voice.sample[v].pos = 0.0f;
-        }
+        voice.position = 0.0f;
         // TODO attack softly if start after beginning of file
         debug("noteOn: %d %d\n", note, velocity);
     }
@@ -421,8 +407,8 @@ public:
                 if (voice.note != -1) {
                     SampleState sampleState;
                     sampleState.index = v;
-                    sampleState.position = voice.sample[0].pos / sampleProps.count;
-                    sampleState.release = voice.release ? 1 - voice.sample[0].pos / sampleProps.count : 1.0f;
+                    sampleState.position = voice.position / sampleProps.count;
+                    sampleState.release = voice.release ? 1 - voice.position / sampleProps.count : 1.0f;
                     sampleStates.push_back(sampleState);
                 }
             }
