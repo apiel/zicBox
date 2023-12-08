@@ -68,7 +68,7 @@ protected:
 
     struct SampleProps {
         float start = 0.0f;
-        float count = 0.0f;
+        float end = 0.0f;
         float sustainPos = 0.0f;
         float sustainEndPos = 0.0f;
     } sampleProps;
@@ -76,9 +76,9 @@ protected:
     void setSampleProps()
     {
         sampleProps.start = start.pct() * sampleBuffer.count;
-        sampleProps.count = ((end.pct() * sampleBuffer.count) - sampleProps.start);
-        sampleProps.sustainPos = sustainPosition.pct() * sampleProps.count;
-        sampleProps.sustainEndPos = sampleProps.sustainPos + (sustainLength.pct() * sampleBuffer.count);
+        sampleProps.end = end.pct() * sampleBuffer.count;
+        sampleProps.sustainPos = sustainPosition.pct() * sampleBuffer.count;
+        sampleProps.sustainEndPos = sampleProps.sustainPos + sustainLength.pct() * sampleBuffer.count;
     }
 
     float sample(Voice& voice)
@@ -93,8 +93,8 @@ protected:
             }
         }
 
-        if ((int64_t)voice.position < sampleProps.count) {
-            int64_t samplePos = (uint64_t)voice.position + sampleProps.start;
+        if ((int64_t)voice.position < sampleProps.end) {
+            int64_t samplePos = (uint64_t)voice.position;
             out = sampleBuffer.data[samplePos] * voice.velocity;
             voice.position += voice.step;
         } else {
@@ -221,7 +221,7 @@ public:
         voice.velocity = velocity / 127.0f;
         voice.release = false;
         voice.step = getSampleStep(note);
-        voice.position = 0.0f;
+        voice.position = sampleProps.start;
         // TODO attack softly if start after beginning of file
         debug("noteOn: %d %d\n", note, velocity);
     }
@@ -407,8 +407,8 @@ public:
                 if (voice.note != -1) {
                     SampleState sampleState;
                     sampleState.index = v;
-                    sampleState.position = voice.position / sampleProps.count;
-                    sampleState.release = voice.release ? 1 - voice.position / sampleProps.count : 1.0f;
+                    sampleState.position = voice.position / sampleProps.end;
+                    sampleState.release = voice.release ? 1 - voice.position / sampleProps.end : 1.0f;
                     sampleStates.push_back(sampleState);
                 }
             }
