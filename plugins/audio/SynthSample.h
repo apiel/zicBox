@@ -43,6 +43,8 @@ protected:
     float sustainLengthOrigin = -1.0f;
     bool skipOrigin = false; // Used as point to skip set origin
 
+    int densityDelaySampleCount = 48000 * 0.1; // 100ms at 48000Hz
+
     struct Voice {
         int8_t note = -1;
         uint64_t index = 0;
@@ -50,10 +52,9 @@ protected:
         float velocity = 1.0f;
         int sustainReleaseLoopCount = 0;
         float step = 0.0f;
-        float position = 0.0f;
+        float position[MAX_SAMPLE_DENSITY] = { 0.0f };
         uint8_t density = 0;
-        bool wasPlaying = false;
-        bool isInSustain = false;
+        bool finished = true;
     } voices[MAX_SAMPLE_VOICES];
     uint64_t voiceIndexCounter = 0;
     bool voiceAllowSameNote = true;
@@ -61,9 +62,10 @@ protected:
     void voiceStart(Voice& voice)
     {
         voice.release = false;
-        voice.position = sampleProps.start;
         voice.density = 1;
-        voice.isInSustain = false;
+        for (int d = 0; d < MAX_SAMPLE_DENSITY; d++) {
+            voice.position[d] = sampleProps.start - (d * densityDelaySampleCount);
+        }
     }
 
     float stepMultiplier = 1.0f;
@@ -102,29 +104,26 @@ protected:
         sampleProps.sustainEndPos = sampleProps.sustainPos + sampleProps.sustainSampleCount;
     }
 
-    float sample(Voice& voice, int64_t posMod)
+    float sample(Voice& voice, float& samplePosition)
     {
         float out = 0.0f;
 
         if (
             sampleProps.sustainActive
             && (voice.release == false || voice.sustainReleaseLoopCount < sustainReleaseLoopCount)
-            && voice.position >= sampleProps.sustainEndPos) {
-            voice.position = sampleProps.sustainPos;
-            voice.isInSustain = true;
+            && samplePosition >= sampleProps.sustainEndPos) {
+            samplePosition = sampleProps.sustainPos;
             if (voice.release) {
                 voice.sustainReleaseLoopCount++;
             }
         }
 
-        int64_t samplePos = voice.position + posMod  + (voice.isInSustain ? sampleProps.sustainSampleCount : 0);
-        if (voice.release == false && sampleProps.sustainActive && samplePos > sampleProps.sustainEndPos) {
-            samplePos = samplePos - sampleProps.sustainSampleCount;
-        }
-
-        if (samplePos >= sampleProps.start && samplePos < sampleProps.end) {
-            voice.wasPlaying = true;
-            out = sampleBuffer.data[samplePos] * voice.velocity;
+        if (samplePosition < sampleProps.end) {
+            if (samplePosition >= sampleProps.start) {
+                out = sampleBuffer.data[(uint64_t)samplePosition] * voice.velocity;
+            }
+            voice.finished = false;
+            samplePosition += voice.step;
         }
         return out;
     }
@@ -133,15 +132,11 @@ protected:
     {
         float out = 0.0f;
         uint8_t densityUint8 = density.get();
-        float densityRatio = 1.0f / densityUint8;
-        voice.wasPlaying = false;
+        voice.finished = true;
         for (uint8_t d = 0; d < densityUint8; d++) {
-            int64_t posMod = d * sampleProps.sampleCount * densityRatio;
-            out += sample(voice, -posMod);
+            out += sample(voice, voice.position[d]);
         }
-        if (voice.wasPlaying) {
-            voice.position += voice.step;
-        } else {
+        if (voice.finished) {
             voice.note = -1;
         }
 
@@ -449,8 +444,8 @@ public:
                 if (voice.note != -1) {
                     SampleState sampleState;
                     sampleState.index = v;
-                    sampleState.position = voice.position / sampleProps.end;
-                    sampleState.release = voice.release ? 1 - voice.position / sampleProps.end : 1.0f;
+                    sampleState.position = voice.position[0] / sampleProps.end;
+                    sampleState.release = voice.release ? 1 - voice.position[0] / sampleProps.end : 1.0f;
                     sampleStates.push_back(sampleState);
                 }
             }
