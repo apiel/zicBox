@@ -9,6 +9,7 @@
 #include "fileBrowser.h"
 #include "mapping.h"
 
+#include "../../helpers/random.h"
 #include "utils/ValSerializeSndFile.h"
 
 // Should all sample be converted to the same format when zicBox starts?
@@ -45,6 +46,8 @@ protected:
 
     int densityDelaySampleCount = 48000 * 0.1; // 100ms at 48000Hz
 
+    Random random;
+
     struct Voice {
         int8_t note = -1;
         uint64_t index = 0;
@@ -64,8 +67,16 @@ protected:
         voice.release = false;
         voice.density = 1;
         for (int d = 0; d < MAX_SAMPLE_DENSITY; d++) {
-            voice.position[d] = sampleProps.start - (d * densityDelaySampleCount);
+            int randValue = random.get();
+            int randDirection = randValue % 2 ? 1 : -1;
+            int randMod = getRanomDensity(randValue) * randDirection;
+            voice.position[d] = sampleProps.start - (d * densityDelaySampleCount) + randMod;
         }
+    }
+
+    float getRanomDensity(int randValue)
+    {
+        return random.toPct(randValue) * densityRandomize.pct() * densityDelaySampleCount;
     }
 
     float stepMultiplier = 1.0f;

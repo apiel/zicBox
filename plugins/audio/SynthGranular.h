@@ -3,14 +3,13 @@
 
 #include <math.h>
 #include <sndfile.h>
-#include <time.h>
 
 #include "audioPlugin.h"
 #include "fileBrowser.h"
 #include "mapping.h"
 #include "utils/AsrEnvelop.h"
-
 #include "utils/ValSerializeSndFile.h"
+#include "../../helpers/random.h"
 
 #define GRANULAR_BUFFER_SECONDS 30
 #define MAX_GRAINS_PER_VOICE 24
@@ -35,6 +34,8 @@ protected:
 
     uint8_t densityUint8 = 4;
     int8_t pitchSemitone = 0;
+
+    Random random;
 
     struct Grain {
         float pos = 0.0f;
@@ -78,26 +79,13 @@ protected:
         initGrain(grain, grain.sampleStep);
     }
 
-    int randCounter = 0;
-    int getRand()
-    {
-        // could create a lookup table ?
-        srand(time(NULL) + randCounter++);
-        return rand();
-    }
-
-    float getRandPct()
-    {
-        return getRand() / (float)RAND_MAX;
-    }
-
     void initGrain(Grain& grain, float sampleStep)
     {
         grain.sampleStep = sampleStep;
         grain.pos = 0.0f;
 
         // sprayToAdd is a random value between 0 and spray from starting point till end of file
-        float sprayToAdd = spray.pct() ? (getRandPct() * spray.pct() * (1 - start.pct())) : 0.0;
+        float sprayToAdd = spray.pct() ? (random.pct() * spray.pct() * (1 - start.pct())) : 0.0;
         grain.start = (start.pct() + sprayToAdd) * bufferSampleCount;
 
         // we deduct minGrainSampleCount to avoid grainSize to be too small
@@ -106,7 +94,7 @@ protected:
         // delayInt = delay.get() * SAMPLE_RATE * 0.001f * 1000;
         // can be simplified to:
         // delayInt = delay.get() * SAMPLE_RATE;
-        grain.delay = delay.pct() > 0 ? (getRand() % (int)(delay.pct() * sampleRate)) : 0;
+        grain.delay = delay.pct() > 0 ? (random.get() % (int)(delay.pct() * sampleRate)) : 0;
 
         // debug("initGrain: grain.start %d grain.sampleCount %d grain.delay %d\n", grain.start, grain.sampleCount, grain.delay);
     }
@@ -127,7 +115,7 @@ protected:
             } else {
                 int64_t samplePos = (uint64_t)grain.pos + grain.start;
                 if ((int64_t)grain.pos < grain.sampleCount) {
-                    grain.pos += grain.sampleStep; // randomize? + (getRandPct() * grain.sampleStep - (grain.sampleStep * 0.5f));
+                    grain.pos += grain.sampleStep; // randomize? + (randon.pct(() * grain.sampleStep - (grain.sampleStep * 0.5f));
                     sample += bufferSamples[samplePos] * env;
                 } else if (repeat.get()) {
                     initGrain(grain);
