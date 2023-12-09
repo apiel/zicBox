@@ -50,6 +50,7 @@ VIEW: Demo
     GROUP: 1
     ENCODER_ID: 5
     VALUE: Sample DENSITY_RANDOMIZE
+    LABEL: Density Rand
 
 
 

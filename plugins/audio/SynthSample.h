@@ -55,9 +55,11 @@ protected:
         float velocity = 1.0f;
         int sustainReleaseLoopCount = 0;
         float step = 0.0f;
-        float position[MAX_SAMPLE_DENSITY] = { 0.0f };
-        uint8_t density = 0;
         bool finished = true;
+        struct SubVoice {
+            float position = 0.0f;
+            int delay = 0;
+        } sub[MAX_SAMPLE_DENSITY];
     } voices[MAX_SAMPLE_VOICES];
     uint64_t voiceIndexCounter = 0;
     bool voiceAllowSameNote = true;
@@ -65,16 +67,16 @@ protected:
     void voiceStart(Voice& voice)
     {
         voice.release = false;
-        voice.density = 1;
         for (int d = 0; d < MAX_SAMPLE_DENSITY; d++) {
             int randValue = random.get();
             int randDirection = randValue % 2 ? 1 : -1;
-            int randMod = getRanomDensity(randValue) * randDirection;
-            voice.position[d] = sampleProps.start - (d * densityDelaySampleCount) + randMod;
+            int randMod = getRandomDensity(randValue) * randDirection;
+            voice.sub[d].position = sampleProps.start - (d * densityDelaySampleCount) + randMod;
+            voice.sub[d].delay = 0;
         }
     }
 
-    float getRanomDensity(int randValue)
+    float getRandomDensity(int randValue)
     {
         return random.toPct(randValue) * densityRandomize.pct() * densityDelaySampleCount;
     }
@@ -115,26 +117,32 @@ protected:
         sampleProps.sustainEndPos = sampleProps.sustainPos + sampleProps.sustainSampleCount;
     }
 
-    float sample(Voice& voice, float& samplePosition)
+    float sample(Voice& voice, Voice::SubVoice& sub)
     {
         float out = 0.0f;
+        if (sub.delay > 0) {
+            sub.delay--;
+            voice.finished = false;
+            return out;
+        }
 
         if (
             sampleProps.sustainActive
             && (voice.release == false || voice.sustainReleaseLoopCount < sustainReleaseLoopCount)
-            && samplePosition >= sampleProps.sustainEndPos) {
-            samplePosition = sampleProps.sustainPos;
+            && sub.position >= sampleProps.sustainEndPos) {
+            sub.position = sampleProps.sustainPos;
+            sub.delay = getRandomDensity(random.get());
             if (voice.release) {
                 voice.sustainReleaseLoopCount++;
             }
         }
 
-        if (samplePosition < sampleProps.end) {
-            if (samplePosition >= sampleProps.start) {
-                out = sampleBuffer.data[(uint64_t)samplePosition] * voice.velocity;
+        if (sub.position < sampleProps.end) {
+            if (sub.position >= sampleProps.start) {
+                out = sampleBuffer.data[(uint64_t)sub.position] * voice.velocity;
             }
             voice.finished = false;
-            samplePosition += voice.step;
+            sub.position += voice.step;
         }
         return out;
     }
@@ -145,7 +153,7 @@ protected:
         uint8_t densityUint8 = density.get();
         voice.finished = true;
         for (uint8_t d = 0; d < densityUint8; d++) {
-            out += sample(voice, voice.position[d]);
+            out += sample(voice, voice.sub[d]);
         }
         if (voice.finished) {
             voice.note = -1;
@@ -463,8 +471,8 @@ public:
                     for (uint8_t d = 0; d < densityUint8; d++) {
                         SampleState sampleState;
                         sampleState.index = v * densityUint8 + d;
-                        sampleState.position = range(voice.position[d] / sampleProps.end, 0.0f, 1.0f);
-                        sampleState.release = voice.release ? 1 - voice.position[d] / sampleProps.end : 1.0f;
+                        sampleState.position = range(voice.sub[d].position / sampleProps.end, 0.0f, 1.0f);
+                        sampleState.release = voice.release ? 1 - voice.sub[d].position / sampleProps.end : 1.0f;
                         sampleStates.push_back(sampleState);
                     }
                 }
