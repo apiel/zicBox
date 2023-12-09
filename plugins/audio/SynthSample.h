@@ -181,7 +181,6 @@ protected:
         // pow(2, ((2) / 12.0)) = 1.122462048 for 2 semitone
         // ...
 
-        // FIXME double speed sample playing
         // printf("getSampleStep: %d >> %d = %f\n", note, note - baseNote, pow(2, (note - baseNote) / 12.0));
         return pow(2, ((note - baseNote) / 12.0)) * stepMultiplier;
     }
@@ -194,10 +193,11 @@ public:
     Val& sustainLength = val(0.0f, "SUSTAIN_LENGTH", { "Sustain length", .unit = "%" }, [&](auto p) { setSustainLength(p.value, (bool*)p.data); });
     // Sustain release set a delay before the sustain ends when note off is triggered
     Val& sustainRelease = val(0.0f, "SUSTAIN_RELEASE", { "Sustain Release", .min = 0.0, .max = 5000.0, .step = 50.0, .unit = "ms" }, [&](auto p) { setSustainRelease(p.value); });
-    // Density would is adding more voice with a little delay on each voice
+    // Density would is adding more voice (sub voice) with a little delay on each added sub voice
     Val& density = val(1.0f, "DENSITY", { "Density", .min = 1.0, .max = 12 });
-    // Val& densityDelay // we might need to set a density delay between each voice
-    // If randomize is set, a density starting delay is randomly and while change on each sustain loop
+    // Density delay is the time between each sub voice
+    Val& densityDelay = val(0.0f, "DENSITY_DELAY", { "Density Delay", .min = 1.0, .max = 1000.0, .step = 1.0, .unit = "ms" }, [&](auto p) { setDensityDelay(p.value); });
+    // If randomize is set, the density starting delay is random and while change on each sustain loop
     Val& densityRandomize = val(0.0f, "DENSITY_RANDOMIZE", { "Density Randomize", .unit = "%" });
     // Spray allows density in the sustain loop to get out of the boundary windows
     Val& densitySpray = val(0.0f, "SUSTAIN_SPRAY", { "Sustain Spray", .unit = "%" });
@@ -276,6 +276,12 @@ public:
             }
         }
         debug("noteOff: note not found %d %d\n", note, velocity);
+    }
+
+    void setDensityDelay(float value)
+    {
+        densityDelay.setFloat(value);
+        densityDelaySampleCount = props.sampleRate * densityDelay.get() * 0.001f;
     }
 
     void setSustainRelease(float value)
