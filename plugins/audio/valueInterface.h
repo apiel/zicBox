@@ -10,6 +10,11 @@ enum ValueType {
     VALUE_STRING,
 };
 
+enum ValueIncrementationType {
+    VALUE_INCREMENTATION_BASIC,
+    VALUE_INCREMENTATION_EXP,
+};
+
 class ValueInterface {
 public:
     struct Props {
@@ -20,6 +25,7 @@ public:
         float step = 1.00f;
         uint8_t floatingPoint = 0;
         const char* unit = nullptr;
+        ValueIncrementationType incrementationType = VALUE_INCREMENTATION_BASIC;
     };
 
     virtual const char* key() = 0;

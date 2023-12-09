@@ -63,6 +63,14 @@ public:
 
     void increment(int8_t steps)
     {
+        if (_props.incrementationType == VALUE_INCREMENTATION_EXP) {
+            // use _props.step for base
+            float base = _props.step == 1.0f ? 2.0f : _props.step;
+            float incVal = log(get()) / log(base);
+            incVal += steps;
+            set(pow(base, incVal));
+            return;
+        }
         set(get() + ((float)steps * _props.step));
     }
 

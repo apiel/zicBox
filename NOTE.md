@@ -74,8 +74,6 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 
 ## zicHost
 
-- TODO need to be able to increment exponentially... (e.g. density delay)
-
 - TODO Sequencer Polyend play style
 
 - TODO modulation that would be a mix of envelop and lfo:
