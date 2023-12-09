@@ -218,8 +218,8 @@ public:
     Val& densityDelay = val(0.0f, "DENSITY_DELAY", { "Density Delay", .min = 1.0, .max = 1000.0, .step = 1.1, .unit = "ms", .incrementationType = VALUE_INCREMENTATION_EXP }, [&](auto p) { setDensityDelay(p.value); });
     // If randomize is set, the density starting delay is random and while change on each sustain loop
     Val& densityRandomize = val(0.0f, "DENSITY_RANDOMIZE", { "Density Randomize", .unit = "%" });
-    // Spray allows density in the sustain loop to get out of the boundary windows
-    Val& densitySpray = val(0.0f, "SUSTAIN_SPRAY", { "Sustain Spray", .unit = "%" });
+    // TODO Spray allows density in the sustain loop to get out of the boundary windows
+    // Val& sustainSpray = val(0.0f, "SUSTAIN_SPRAY", { "Sustain Spray", .unit = "%" });
 
     Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)fileBrowser.count }, [&](auto p) { open(p.value); });
 
