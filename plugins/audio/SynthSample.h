@@ -442,11 +442,14 @@ public:
             for (uint8_t v = 0; v < MAX_SAMPLE_VOICES; v++) {
                 Voice& voice = voices[v];
                 if (voice.note != -1) {
-                    SampleState sampleState;
-                    sampleState.index = v;
-                    sampleState.position = voice.position[0] / sampleProps.end;
-                    sampleState.release = voice.release ? 1 - voice.position[0] / sampleProps.end : 1.0f;
-                    sampleStates.push_back(sampleState);
+                    uint8_t densityUint8 = density.get();
+                    for (uint8_t d = 0; d < densityUint8; d++) {
+                        SampleState sampleState;
+                        sampleState.index = v * densityUint8 + d;
+                        sampleState.position = range(voice.position[d] / sampleProps.end, 0.0f, 1.0f);
+                        sampleState.release = voice.release ? 1 - voice.position[d] / sampleProps.end : 1.0f;
+                        sampleStates.push_back(sampleState);
+                    }
                 }
             }
             return &sampleStates;
