@@ -51,10 +51,20 @@ protected:
         int sustainReleaseLoopCount = 0;
         float step = 0.0f;
         float position = 0.0f;
-        uint8_t sustainDensity = 0;
+        uint8_t density = 0;
+        bool wasPlaying = false;
+        bool isInSustain = false;
     } voices[MAX_SAMPLE_VOICES];
     uint64_t voiceIndexCounter = 0;
     bool voiceAllowSameNote = true;
+
+    void voiceStart(Voice& voice)
+    {
+        voice.release = false;
+        voice.position = sampleProps.start;
+        voice.density = 1;
+        voice.isInSustain = false;
+    }
 
     float stepMultiplier = 1.0f;
 
@@ -64,12 +74,17 @@ protected:
         // uint64_t releaseSamples = sustainRelease.pct() * SAMPLE_RATE * 0.001f * 5000;
         // can be simplified to:
         uint64_t releaseSamples = sustainRelease.pct() * props.sampleRate * 5;
-        sustainReleaseLoopCount = releaseSamples / (float)(sampleProps.sustainEndPos - sampleProps.sustainPos);
+        if (sampleProps.sustainSampleCount) {
+            sustainReleaseLoopCount = releaseSamples / (float)(sampleProps.sustainSampleCount);
+        } else {
+            sustainReleaseLoopCount = 0;
+        }
     }
 
     struct SampleProps {
         float start = 0.0f;
         float end = 0.0f;
+        float sampleCount = 0.0f;
         bool sustainActive = false;
         float sustainPos = 0.0f;
         float sustainEndPos = 0.0f;
@@ -80,6 +95,7 @@ protected:
     {
         sampleProps.start = start.pct() * sampleBuffer.count;
         sampleProps.end = end.pct() * sampleBuffer.count;
+        sampleProps.sampleCount = sampleProps.end - sampleProps.start;
         sampleProps.sustainActive = sustainLength.get() > 0.0f;
         sampleProps.sustainPos = sustainPosition.pct() * sampleBuffer.count;
         sampleProps.sustainSampleCount = sustainLength.pct() * sampleBuffer.count;
@@ -89,28 +105,26 @@ protected:
     float sample(Voice& voice, int64_t posMod)
     {
         float out = 0.0f;
+
         if (
-            (voice.release == false || voice.sustainReleaseLoopCount < sustainReleaseLoopCount)
-            && sampleProps.sustainActive && voice.position >= sampleProps.sustainEndPos) {
+            sampleProps.sustainActive
+            && (voice.release == false || voice.sustainReleaseLoopCount < sustainReleaseLoopCount)
+            && voice.position >= sampleProps.sustainEndPos) {
             voice.position = sampleProps.sustainPos;
+            voice.isInSustain = true;
             if (voice.release) {
                 voice.sustainReleaseLoopCount++;
             }
-            if (voice.sustainDensity < sustainDensity.get()) {
-                voice.sustainDensity++;
-            }
         }
 
-        if ((int64_t)voice.position < sampleProps.end) {
-            int64_t samplePos = voice.position + posMod;
-            if (voice.release == false && sampleProps.sustainActive && samplePos > sampleProps.sustainEndPos) {
-                samplePos = samplePos - sampleProps.sustainSampleCount;
-            }
-            if (samplePos < sampleProps.end) {
-                out = sampleBuffer.data[samplePos] * voice.velocity;
-            }
-        } else {
-            voice.note = -1;
+        int64_t samplePos = voice.position + posMod  + (voice.isInSustain ? sampleProps.sustainSampleCount : 0);
+        if (voice.release == false && sampleProps.sustainActive && samplePos > sampleProps.sustainEndPos) {
+            samplePos = samplePos - sampleProps.sustainSampleCount;
+        }
+
+        if (samplePos >= sampleProps.start && samplePos < sampleProps.end) {
+            voice.wasPlaying = true;
+            out = sampleBuffer.data[samplePos] * voice.velocity;
         }
         return out;
     }
@@ -118,16 +132,17 @@ protected:
     float sample(Voice& voice)
     {
         float out = 0.0f;
-        if (voice.sustainDensity > sustainDensity.get()) {
-            voice.sustainDensity = sustainDensity.get();
+        uint8_t densityUint8 = density.get();
+        float densityRatio = 1.0f / densityUint8;
+        voice.wasPlaying = false;
+        for (uint8_t d = 0; d < densityUint8; d++) {
+            int64_t posMod = d * sampleProps.sampleCount * densityRatio;
+            out += sample(voice, -posMod);
         }
-        float densityRatio = 1.0f / voice.sustainDensity;
-        for (uint8_t d = 0; d < voice.sustainDensity; d++) {
-            int64_t posMod = d * sampleProps.sustainSampleCount * densityRatio;
-            out += sample(voice, posMod);
-        }
-        if (voice.note != -1) {
+        if (voice.wasPlaying) {
             voice.position += voice.step;
+        } else {
+            voice.note = -1;
         }
 
         return out;
@@ -184,15 +199,13 @@ public:
     Val& sustainLength = val(0.0f, "SUSTAIN_LENGTH", { "Sustain length", .unit = "%" }, [&](auto p) { setSustainLength(p.value, (bool*)p.data); });
     // Sustain release set a delay before the sustain ends when note off is triggered
     Val& sustainRelease = val(0.0f, "SUSTAIN_RELEASE", { "Sustain Release", .min = 0.0, .max = 5000.0, .step = 50.0, .unit = "ms" }, [&](auto p) { setSustainRelease(p.value); });
-    // Density would have more voice in the sustain phase (should there be as well a general density for the whole sample?)
-    // density voice could be added step by step on every loop
-    // density voice should not start at the same time
-    //       - if randomize is 0, then the sustain length should be devided by the density making an equal distance for each starting point
-    //       - if randomize is set, a starting delay is randomly set between each density voice
-    Val& sustainDensity = val(1.0f, "SUSTAIN_DENSITY", { "Sustain Density", .min = 1.0, .max = 12 });
-    Val& sustainRandomize = val(0.0f, "SUSTAIN_RANDOMIZE", { "Sustain Randomize", .unit = "%" });
-    // Spray allows the sustain to get out of the boundary windows of the sustain loop
-    Val& sustainSpray = val(0.0f, "SUSTAIN_SPRAY", { "Sustain Spray", .unit = "%" });
+    // Density would is adding more voice with a little delay on each voice
+    Val& density = val(1.0f, "DENSITY", { "Density", .min = 1.0, .max = 12 });
+    // Val& densityDelay // we might need to set a density delay between each voice
+    // If randomize is set, a density starting delay is randomly and while change on each sustain loop
+    Val& densityRandomize = val(0.0f, "DENSITY_RANDOMIZE", { "Density Randomize", .unit = "%" });
+    // Spray allows density in the sustain loop to get out of the boundary windows
+    Val& densitySpray = val(0.0f, "SUSTAIN_SPRAY", { "Sustain Spray", .unit = "%" });
 
     Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)fileBrowser.count }, [&](auto p) { open(p.value); });
 
@@ -248,11 +261,9 @@ public:
         Voice& voice = getNextVoice(note);
         voice.index = voiceIndexCounter++;
         voice.note = note;
-        voice.velocity = velocity / 127.0f;
-        voice.release = false;
         voice.step = getSampleStep(note);
-        voice.position = sampleProps.start;
-        voice.sustainDensity = 1;
+        voice.velocity = velocity / 127.0f;
+        voiceStart(voice);
         // TODO attack softly if start after beginning of file
         debug("noteOn: %d %d\n", note, velocity);
     }
