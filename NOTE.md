@@ -6,6 +6,8 @@
 
 ## zicUi
 
+- TODO get rid of most colors....?
+
 - TODO subview to be able to switch a subset of view
         or just show hide component ^^
 
