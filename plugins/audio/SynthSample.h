@@ -215,7 +215,7 @@ public:
     // Density would is adding more voice (sub voice) with a little delay on each added sub voice
     Val& density = val(1.0f, "DENSITY", { "Density", .min = 1.0, .max = 12 });
     // Density delay is the time between each sub voice
-    Val& densityDelay = val(0.0f, "DENSITY_DELAY", { "Density Delay", .min = 1.0, .max = 1000.0, .step = 1.1, .unit = "ms", .incrementationType = VALUE_INCREMENTATION_EXP }, [&](auto p) { setDensityDelay(p.value); });
+    Val& densityDelay = val(100.0f, "DENSITY_DELAY", { "Density Delay", .min = 0.1, .max = 1000.0, .step = 1.1, .unit = "ms", .incrementationType = VALUE_INCREMENTATION_EXP }, [&](auto p) { setDensityDelay(p.value); });
     // If randomize is set, the density starting delay is random and while change on each sustain loop
     Val& densityRandomize = val(0.0f, "DENSITY_RANDOMIZE", { "Density Randomize", .unit = "%" });
     // TODO Spray allows density in the sustain loop to get out of the boundary windows
