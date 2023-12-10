@@ -76,6 +76,10 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 
 ## zicHost
 
+- TODO SynthSample
+    - morph on wavetable
+    - spray window
+
 - TODO Sequencer Polyend play style
 
 - TODO modulation that would be a mix of envelop and lfo:

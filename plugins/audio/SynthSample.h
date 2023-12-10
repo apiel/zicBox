@@ -374,6 +374,10 @@ public:
 
     void setSustainPosition(float value, bool* setOrigin)
     {
+        // TODO if value < start.get() && value + sustainLength.get() > end.get()
+        //      if sustain is surrounded by start and end
+        //      we should then move start and end
+        //      to allow wavetable morphing...
         if (value < start.get() || value + sustainLength.get() > end.get()) {
             return;
         }
