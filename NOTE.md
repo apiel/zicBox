@@ -6,8 +6,6 @@
 
 ## zicUi
 
-- TODO get rid of most colors....?
-
 - TODO subview to be able to switch a subset of view
         or just show hide component ^^
 
@@ -66,8 +64,6 @@ SDL_RenderCopyEx(renderer, texture, NULL, &destRect, rotationAngle , NULL, SDL_F
 See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 `blitRotated` is actually using `SDL_RenderCopyEx` https://www.parallelrealities.co.uk/tutorials/bad/bad2.php
 
-- NOTE for circle, rectangle with radius corners, see https://github.com/keera-studios/SDL2_gfx/blob/master/SDL2_gfxPrimitives.h
-
 - TODO auto update...
     - from release
     - from git repo?
@@ -76,11 +72,13 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 
 ## zicHost
 
+- TODO save track patch
+
 - TODO SynthSample
-    - morph on wavetable
+    - morph on wavetable, start and end stick to sustain position when both are touching sustain window
     - spray window
 
-- TODO Sequencer Polyend play style
+- TODO tempo plugin, that would shalow midi clock in favour of custom clock
 
 - TODO modulation that would be a mix of envelop and lfo:
     - multiphase envelop (up to 8 or even more)
@@ -89,7 +87,7 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
     - a sustain point can be set at any point of the envelop, also in the middle of a phase
     - to simulate an LFO, the sustain point can loop over a certain window, meaning that sustain as a starting point and a end point
 
-- TODO tempo plugin, that would shalow midi clock in favour of custom clock
+- TODO Sequencer Polyend play style ???
 
 - TODO sequencer 
         - 1/2 step length
