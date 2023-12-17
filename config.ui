@@ -28,7 +28,9 @@ $encoder=Encoder2
 
 # $screen=ui_320x172
 # $screen=ui_800x480
-$screen=ui_640x480
+# $screen=ui_640x480
+$screen=ui_480x640
+
 
 ### Default ###
 
@@ -59,3 +61,18 @@ if: $screen == ui_640x480
   $encoderSize=100
   print: ....................the encoder size is $encoderSize
   INCLUDE: ui_640x480/main.view.ui
+
+## 480x640 ###
+
+if: $screen == ui_480x640
+  SCREEN: 480 640
+  $encSize=100
+  $encX1=30
+  $encX2=$encX1+160
+  $encX3=$encX2+160
+  $encY1=0
+  $encY2=$encY1+$encSize
+  $encY3=$encY2+$encSize
+
+  print: ....................the encoder size is $encSize
+  INCLUDE: ui_480x640/main.view.ui
