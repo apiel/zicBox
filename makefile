@@ -13,7 +13,7 @@ SDL2_ttf=`pkg-config --cflags --libs SDL2_ttf`
 
 ifneq ($(shell uname -m),x86_64)
 RPI := -DIS_RPI=1
-WAVESHARE := $(WAVESHARE_C) -DUSE_WAVESHARE=1 -lbcm2835 -lm -DUSE_BCM2835_LIB=1 -I $(WAVESHARE_Config) -I $(WAVESHARE_GUI) -I $(WAVESHARE_EPD)
+# WAVESHARE := $(WAVESHARE_C) -DUSE_WAVESHARE=1 -lbcm2835 -lm -DUSE_BCM2835_LIB=1 -I $(WAVESHARE_Config) -I $(WAVESHARE_GUI) -I $(WAVESHARE_EPD)
 endif
 
 BUILD=-Wno-narrowing -ldl $(RTMIDI)

@@ -1,5 +1,7 @@
 BUILD_DIR ?= build
 OBJ_DIR ?= $(BUILD_DIR)/obj
+# For raspberry std::filesystem is not found.
+PARAMS ?= --std=c++17 -lstdc++fs
 
 all:
 	make EffectGainVolume EffectSampleRateReducer EffectFilter EffectDistortion EffectDelay\
@@ -36,8 +38,8 @@ AudioOutputAlsa:
 
 compile:
 	@mkdir -p $(OBJ_DIR)
-	g++ -c -o $(OBJ_DIR)/$(LIBNAME).o audioPlugin.cpp -fPIC -DPLUGIN_NAME=$(LIBNAME) -DPLUGIN_INCLUDE=\"$(LIBNAME).h\"
-	g++ -shared -o build/libzic_$(LIBNAME).so $(OBJ_DIR)/$(LIBNAME).o $(EXTRA)
+	g++ -c -o $(OBJ_DIR)/$(LIBNAME).o audioPlugin.cpp -fPIC -DPLUGIN_NAME=$(LIBNAME) -DPLUGIN_INCLUDE=\"$(LIBNAME).h\" $(PARAMS)
+	g++ -shared -o build/libzic_$(LIBNAME).so $(OBJ_DIR)/$(LIBNAME).o $(EXTRA) $(PARAMS)
 
 clean:
 	rm -rf $(BUILD_DIR)

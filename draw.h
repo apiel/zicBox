@@ -149,7 +149,7 @@ public:
             styles.screen.w, styles.screen.h,
             SDL_WINDOW_SHOWN
 #ifdef IS_RPI
-                | SDL_WINDOW_FULLSCREEN
+                | SDL_WINDOW_FULLSCREEN_DESKTOP
 #endif
         );
 
