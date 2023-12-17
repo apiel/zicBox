@@ -6,6 +6,10 @@
 
 ## zicUi
 
+- TODO sequencer grid like zicSample
+            when 2 button color are pressed at the same time, Y get first value and X the second
+            when 1 button, Y +1, X +5
+
 - TODO subview to be able to switch a subset of view
         or just show hide component ^^
 
