@@ -27,7 +27,8 @@ PLUGIN_CONTROLLER: ./plugins/controllers/build/libzic_MidiEncoderController.so
 $encoder=Encoder2
 
 # $screen=ui_320x172
-$screen=ui_800x480
+# $screen=ui_800x480
+$screen=ui_640x480
 
 ### Default ###
 
@@ -50,3 +51,11 @@ if: $screen == ui_320x172
   $encoderSize=86
   print: ....................the encoder size is $encoderSize
   INCLUDE: ui_320x172/main.view.ui
+
+## 640x480 ###
+
+if: $screen == ui_640x480
+  SCREEN: 640 480
+  $encoderSize=100
+  print: ....................the encoder size is $encoderSize
+  INCLUDE: ui_640x480/main.view.ui
