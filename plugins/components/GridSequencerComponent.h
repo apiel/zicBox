@@ -38,6 +38,7 @@ protected:
     int itemW;
     int itemMargin = 2;
     int progressMarginY = 5;
+    int topMargin = 5;
 
     const static uint8_t trackCount = 12;
     const static uint8_t stepsCount = 32;
@@ -103,7 +104,7 @@ protected:
         } else if (step % 4 == 0) {
             color = colors.firstStep;
         }
-        draw.filledRect({ x, y }, { 10, 12 }, color);
+        draw.filledRect({ x, y }, itemSize, color);
     }
 
     Track tracks[trackCount]; // FIXME
@@ -130,7 +131,7 @@ protected:
 
     void renderTrackName(Track& track, int y)
     {
-        draw.filledRect({ 5, y }, { 84, 12 }, colors.step);
+        draw.filledRect({ 5, y }, { 84, itemSize.h }, colors.step);
 
         Color trackColor = colors.firstStep;
         Color trackText = colors.track;
@@ -139,10 +140,10 @@ protected:
             trackText = colors.active.selector;
         }
         trackColor.a = 50;
-        draw.filledRect({ 5, y }, { 84, 12 }, trackColor);
+        draw.filledRect({ 5, y }, { 84, itemSize.h }, trackColor);
         trackColor.a = 200;
         int width = 84.0 * track.volume;
-        draw.filledRect({ 5, y }, { width, 12 }, trackColor);
+        draw.filledRect({ 5, y }, { width, itemSize.h }, trackColor);
 
         draw.text({ 8, y }, track.name.c_str(), trackText, 10);
     }
@@ -168,10 +169,13 @@ protected:
         itemSize.w = (size.w - firstColumnWidth) / stepsCount - itemMargin;
         itemW = itemSize.w + itemMargin;
         progressItemSize.w = itemSize.w;
-        itemSize.h = (progressPosition.y - position.y - progressMarginY) / trackCount - itemMargin;
+        itemSize.h = (progressPosition.y - position.y - progressMarginY - topMargin) / trackCount - itemMargin;
+
+        printf("-------------------Yoooo: %d :: %d\n", progressPosition.y - position.y - progressMarginY - topMargin, itemSize.h);
+
 
         for (unsigned int track = 0; track < trackCount; track++) {
-            rowY[track] = position.y + (itemSize.h + itemMargin) * track;
+            rowY[track] = topMargin + position.y + (itemSize.h + itemMargin) * track;
         }
         rowY[trackCount] = progressPosition.y;
     }
