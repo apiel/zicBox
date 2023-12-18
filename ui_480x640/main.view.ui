@@ -66,3 +66,5 @@ VIEW: Demo
     AUDIO_PLUGIN: Sample 0
     DATA_STATE: 2 1
 
+
+  COMPONENT: GridSequencer 0 400 480 240

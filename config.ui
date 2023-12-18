@@ -10,6 +10,7 @@ PLUGIN_COMPONENT: Button ./plugins/components/build/libzic_ButtonComponent.so
 PLUGIN_COMPONENT: Cpu ./plugins/components/build/libzic_MonitoringComponent.so
 PLUGIN_COMPONENT: Adsr ./plugins/components/build/libzic_AdsrComponent.so
 PLUGIN_COMPONENT: Sample ./plugins/components/build/libzic_SampleComponent.so
+PLUGIN_COMPONENT: GridSequencer ./plugins/components/build/libzic_GridSequencerComponent.so
 
 PLUGIN_CONTROLLER: ./plugins/controllers/build/libzic_OscController.so
 
