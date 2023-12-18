@@ -4,58 +4,176 @@
 #include "base/Grid.h"
 #include "component.h"
 
+class Step {
+public:
+    bool enabled = false;
+    float velocity = 0;
+    uint8_t condition = 0;
+
+    Step()
+    {
+        enabled = rand() % 2;
+        velocity = rand() % 100 / 100.0f;
+        condition = rand() % 2 ? 0 : (rand() % 4);
+    }
+};
+
+class Track {
+public:
+    Step steps[32];
+};
+
 class GridSequencerComponent : public Component {
 protected:
     int firstColumnWidth = 92;
     Size itemSize;
+    int itemW;
     int itemMargin = 2;
     int progressMarginY = 5;
 
-    uint8_t trackCount = 12;
-    uint8_t stepsCount = 32;
+    const static uint8_t trackCount = 12;
+    const static uint8_t stepsCount = 32;
 
     Grid grid = Grid(trackCount + 1, stepsCount + 1);
 
     Point progressPosition = { 0, 0 };
     Size progressItemSize = { 0, 5 };
 
+    int rowY[trackCount + 1];
+
     void progressInit()
     {
         for (unsigned int step = 0; step < stepsCount; step++) {
-            int x = progressPosition.x + (itemSize.w + itemMargin) * step;
+            int x = progressPosition.x + itemW * step;
             draw.filledRect({ x, progressPosition.y }, progressItemSize, colors.progress.background);
         }
     }
 
-    void progressRender(uint8_t stepCounter)
+    void renderProgress(uint8_t stepCounter)
     {
-        int xPrevious = progressPosition.x + (itemSize.w + itemMargin) * ((stepCounter - 1 + stepsCount) % stepsCount);
+        int xPrevious = progressPosition.x + itemW * ((stepCounter - 1 + stepsCount) % stepsCount);
         draw.filledRect({ xPrevious, progressPosition.y }, progressItemSize, colors.progress.background);
-        int x = progressPosition.x + (itemSize.w + itemMargin) * stepCounter;
+        int x = progressPosition.x + itemW * stepCounter;
         draw.filledRect({ x, progressPosition.y }, progressItemSize, colors.progress.on);
+    }
+
+    void renderSelection(int8_t row, int8_t col, Color color)
+    {
+        int y = rowY[row];
+        uint8_t h = 14;
+        if (row == trackCount) { // Select volume/master
+            h = 7;
+            col = 0;
+        }
+
+        if (col == 0) {
+            draw.rect({ 4, y - 1 }, { 86, h }, color);
+        } else {
+            int selectW = itemSize.w + 2;
+            int x = firstColumnWidth + selectW * (col - 1);
+            draw.rect({ x - 1, y - 1 }, { selectW, h }, color);
+        }
+    }
+
+    void renderSelection()
+    {
+        renderSelection(grid.lastRow, grid.lastCol, colors.background);
+        renderSelection(grid.row, grid.col, colors.selector);
+    }
+
+    void renderStep(Track& track, unsigned int step, unsigned int row)
+    {
+        int y = rowY[row];
+        int x = firstColumnWidth + 12 * step;
+        Color color = colors.step;
+        if (track.steps[step].enabled) {
+            color = colors.activeStep;
+            if (track.steps[step].condition) {
+                color = colors.conditionStep;
+            }
+            color.a = 255 * track.steps[step].velocity;
+        } else if (step % 4 == 0) {
+            color = colors.firstStep;
+        }
+        draw.filledRect({ x, y }, { 10, 12 }, color);
+    }
+
+    Track tracks[trackCount]; // FIXME
+    void renderRow(unsigned int row)
+    {
+        Track& track = tracks[row];
+        // mainTrack.renderName(track, rowY[row]);
+
+        for (unsigned int step = 0; step < stepsCount; step++) {
+            renderStep(track, step, row);
+        }
+        renderSelection();
+    }
+
+    void renderRows(bool clear = false)
+    {
+        if (clear) {
+            draw.filledRect({ 0, rowY[0] }, { size.h, rowY[0] - progressPosition.y }, colors.background);
+        }
+        for (unsigned int row = 0; row < trackCount; row++) {
+            renderRow(row);
+        }
+    }
+
+    void renderMasterVolume(bool selected = false)
+    {
+        draw.filledRect({ 4, progressPosition.y - 1 }, { 86, progressItemSize.h + 2 }, colors.background);
+        Color color = colors.progress.on;
+        color.a = 100;
+        draw.filledRect({ 5, progressPosition.y }, { 84, progressItemSize.h }, color);
+        color.a = 200;
+        //  int width = 84.0 * master.getVolume() / APP_MAX_VOLUME;
+        int width = 84.0 * 0.9;
+        draw.filledRect({ 5, progressPosition.y }, { width, progressItemSize.h }, color);
+        if (selected) {
+            draw.rect({ 4, progressPosition.y - 1 }, { 86, progressItemSize.h + 2 }, colors.progress.selector);
+        }
     }
 
     void resize()
     {
         progressPosition = { firstColumnWidth, position.y + size.h - progressItemSize.h - progressMarginY };
         itemSize.w = (size.w - firstColumnWidth) / stepsCount - itemMargin;
+        itemW = itemSize.w + itemMargin;
         progressItemSize.w = itemSize.w;
         itemSize.h = (progressPosition.y - position.y - progressMarginY) / trackCount - itemMargin;
+
+        for (unsigned int track = 0; track < trackCount; track++) {
+            rowY[track] = position.y + (itemSize.h + itemMargin) * track;
+        }
+        rowY[trackCount] = progressPosition.y;
     }
 
     struct ColorsProgress {
         Color background;
         Color on;
+        Color selector;
     };
 
     struct Colors {
         Color background;
+        Color selector;
+        Color step;
+        Color firstStep;
+        Color activeStep;
+        Color conditionStep;
         ColorsProgress progress;
     } colors = {
         .background = { 0x21, 0x25, 0x2b, 255 }, // #21252b
+        .selector = { 0xBB, 0xBB, 0xBB, 255 }, // #bbbbbb
+        .step = { 0x2b, 0x2c, 0x2e, 255 }, // #2b2c2e
+        .firstStep = { 0x38, 0x3a, 0x3d, 255 }, // #383a3d
+        .activeStep = { 0x37, 0x61, 0xa1, 255 }, // #3761a1
+        .conditionStep = { 0x37, 0x91, 0xa1, 255 }, // #3791a1
         .progress = {
             .background = { 0x38, 0x3a, 0x3d, 255 }, // #383a3d
             .on = { 0x00, 0xb3, 0x00, 255 }, // #00b300
+            .selector = { 0xFF, 0xFF, 0xFF, 255 }, // #ffffff
         }
     };
 
@@ -70,6 +188,8 @@ public:
     {
         draw.filledRect(position, size, colors.background);
         progressInit();
+        renderMasterVolume();
+        renderRows();
     }
 
     bool config(char* key, char* value)
