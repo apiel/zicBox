@@ -37,7 +37,7 @@ protected:
     Size itemSize;
     int itemW;
     int itemMargin = 2;
-    int progressMarginY = 5;
+    int progressMarginY = 3;
     int topMargin = 5;
 
     const static uint8_t trackCount = 12;
@@ -171,12 +171,14 @@ protected:
         progressItemSize.w = itemSize.w;
         itemSize.h = (progressPosition.y - position.y - progressMarginY - topMargin) / trackCount - itemMargin;
 
-        printf("-------------------Yoooo: %d :: %d\n", progressPosition.y - position.y - progressMarginY - topMargin, itemSize.h);
-
-
         for (unsigned int track = 0; track < trackCount; track++) {
             rowY[track] = topMargin + position.y + (itemSize.h + itemMargin) * track;
         }
+
+        // Ajust progress bar size base itemSize.h round.
+        progressPosition.y = rowY[trackCount - 1] + itemSize.h + itemMargin + progressMarginY;
+        // progressItemSize.h = position.y + size.h - progressMarginY - progressPosition.y;
+
         rowY[trackCount] = progressPosition.y;
     }
 

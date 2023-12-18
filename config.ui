@@ -68,9 +68,10 @@ if: $screen == ui_640x480
 if: $screen == ui_480x640
   SCREEN: 480 640
   $encSize=100
-  $encX1=30
-  $encX2=$encX1+160
-  $encX3=$encX2+160
+  $encX1=10
+  $encX2=$encX1+120
+  $encX3=$encX2+120
+  $encX4=$encX3+120
   $encY1=0
   $encY2=$encY1+$encSize
   $encY3=$encY2+$encSize

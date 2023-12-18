@@ -20,6 +20,12 @@ VIEW: Demo
     VALUE: Sample BROWSER
     TYPE: BROWSE
 
+  COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize
+    GROUP: 0
+    ENCODER_ID: 3
+    VALUE: MultiModeFilter CUTOFF
+    TYPE: TWO_SIDED
+
 
   COMPONENT: Encoder2 $encX1 $encY2 $encSize $encSize
     GROUP: 1
@@ -39,6 +45,11 @@ VIEW: Demo
     ENCODER_ID: 2
     COLOR: #cffc9f
     VALUE: Sample SUSTAIN_RELEASE
+
+  COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
+    GROUP: 1
+    ENCODER_ID: 3
+    VALUE: MultiModeFilter RESONANCE
 
 
   COMPONENT: Encoder2 $encX1 $encY3 $encSize $encSize
@@ -60,6 +71,13 @@ VIEW: Demo
     VALUE: Sample DENSITY_RANDOMIZE
     LABEL: Density Rand
 
+  COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
+    ENCODER_ID: 3
+    GROUP: 2
+    COLOR: #fcc46d
+    VALUE: SampleRateReducer SAMPLE_STEP
+    FONT_UNIT_SIZE: 8
+
 
   COMPONENT: Sample 0 300 480 100
     GROUP: 0
@@ -67,4 +85,4 @@ VIEW: Demo
     DATA_STATE: 2 1
 
 
-  COMPONENT: GridSequencer 0 400 480 240
+  COMPONENT: GridSequencer 0 403 480 240
