@@ -34,6 +34,8 @@ public:
 class GridSequencerComponent : public Component {
 protected:
     int firstColumnWidth = 92;
+    int firstColumnMargin = 4;
+
     Size itemSize;
     int itemW;
     int itemMargin = 2;
@@ -69,14 +71,14 @@ protected:
     void renderSelection(int8_t row, int8_t col, Color color)
     {
         int y = rowY[row];
-        uint8_t h = 14;
+        uint8_t h = itemSize.h + 2;
         if (row == trackCount) { // Select volume/master
-            h = 7;
+            h = progressItemSize.h + 2;
             col = 0;
         }
 
         if (col == 0) {
-            draw.rect({ 4, y - 1 }, { 86, h }, color);
+            draw.rect({ firstColumnMargin, y - 1 }, { firstColumnWidth - 6, h }, color);
         } else {
             int selectW = itemSize.w + 2;
             int x = firstColumnWidth + selectW * (col - 1);
@@ -93,7 +95,7 @@ protected:
     void renderStep(Track& track, unsigned int step, unsigned int row)
     {
         int y = rowY[row];
-        int x = firstColumnWidth + 12 * step;
+        int x = firstColumnWidth + itemW * step;
         Color color = colors.step;
         if (track.steps[step].enabled) {
             color = colors.activeStep;
@@ -131,7 +133,8 @@ protected:
 
     void renderTrackName(Track& track, int y)
     {
-        draw.filledRect({ 5, y }, { 84, itemSize.h }, colors.step);
+        int w = firstColumnWidth - 8;
+        draw.filledRect({ 5, y }, { w, itemSize.h }, colors.step);
 
         Color trackColor = colors.firstStep;
         Color trackText = colors.track;
@@ -140,9 +143,9 @@ protected:
             trackText = colors.active.selector;
         }
         trackColor.a = 50;
-        draw.filledRect({ 5, y }, { 84, itemSize.h }, trackColor);
+        draw.filledRect({ 5, y }, { w, itemSize.h }, trackColor);
         trackColor.a = 200;
-        int width = 84.0 * track.volume;
+        int width = w * track.volume;
         draw.filledRect({ 5, y }, { width, itemSize.h }, trackColor);
 
         draw.text({ 8, y }, track.name.c_str(), trackText, 10);
@@ -150,16 +153,17 @@ protected:
 
     void renderMasterVolume(bool selected = false)
     {
-        draw.filledRect({ 4, progressPosition.y - 1 }, { 86, progressItemSize.h + 2 }, colors.background);
+        int w = firstColumnWidth - 8;
+        draw.filledRect({ firstColumnMargin, progressPosition.y - 1 }, { firstColumnWidth - 6, progressItemSize.h + 2 }, colors.background);
         Color color = colors.active.on;
         color.a = 100;
-        draw.filledRect({ 5, progressPosition.y }, { 84, progressItemSize.h }, color);
+        draw.filledRect({ 5, progressPosition.y }, { w, progressItemSize.h }, color);
         color.a = 200;
-        //  int width = 84.0 * master.getVolume() / APP_MAX_VOLUME;
-        int width = 84.0 * 0.9;
+        //  int width = w * master.getVolume() / APP_MAX_VOLUME;
+        int width = w * 0.9;
         draw.filledRect({ 5, progressPosition.y }, { width, progressItemSize.h }, color);
         if (selected) {
-            draw.rect({ 4, progressPosition.y - 1 }, { 86, progressItemSize.h + 2 }, colors.active.selector);
+            draw.rect({ firstColumnMargin, progressPosition.y - 1 }, { 86, progressItemSize.h + 2 }, colors.active.selector);
         }
     }
 
@@ -170,6 +174,8 @@ protected:
         itemW = itemSize.w + itemMargin;
         progressItemSize.w = itemSize.w;
         itemSize.h = (progressPosition.y - position.y - progressMarginY - topMargin) / trackCount - itemMargin;
+
+        firstColumnMargin = size.w - firstColumnWidth - itemW * stepsCount;
 
         for (unsigned int track = 0; track < trackCount; track++) {
             rowY[track] = topMargin + position.y + (itemSize.h + itemMargin) * track;

@@ -25,6 +25,7 @@ VIEW: Demo
     ENCODER_ID: 3
     VALUE: MultiModeFilter CUTOFF
     TYPE: TWO_SIDED
+    # BACKGROUND_COLOR: #2b2c2e
 
 
   COMPONENT: Encoder2 $encX1 $encY2 $encSize $encSize
@@ -50,6 +51,7 @@ VIEW: Demo
     GROUP: 1
     ENCODER_ID: 3
     VALUE: MultiModeFilter RESONANCE
+    # BACKGROUND_COLOR: #2b2c2e
 
 
   COMPONENT: Encoder2 $encX1 $encY3 $encSize $encSize
@@ -77,6 +79,7 @@ VIEW: Demo
     COLOR: #fcc46d
     VALUE: SampleRateReducer SAMPLE_STEP
     FONT_UNIT_SIZE: 8
+    # BACKGROUND_COLOR: #2b2c2e
 
 
   COMPONENT: Sample 0 300 480 100
