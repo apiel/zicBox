@@ -9,18 +9,26 @@ public:
     bool enabled = false;
     float velocity = 0;
     uint8_t condition = 0;
-
-    Step()
-    {
-        enabled = rand() % 2;
-        velocity = rand() % 100 / 100.0f;
-        condition = rand() % 2 ? 0 : (rand() % 4);
-    }
 };
 
 class Track {
 public:
+    std::string name = "Init";
+    float volume = rand() % 100 / 100.0f;
+    bool active = false;
     Step steps[32];
+
+    void randomize()
+    {
+        name = "Track " + std::to_string(rand() % 100);
+        active = rand() % 6 != 0;
+
+        for (unsigned int step = 0; step < 32; step++) {
+            steps[step].enabled = rand() % 4 == 0;
+            steps[step].velocity = steps[step].enabled && rand() % 4 == 0 ? 1.0f : 0.7f;
+            steps[step].condition = rand() % 2 ? 0 : (rand() % 4);
+        }
+    }
 };
 
 class GridSequencerComponent : public Component {
@@ -45,16 +53,16 @@ protected:
     {
         for (unsigned int step = 0; step < stepsCount; step++) {
             int x = progressPosition.x + itemW * step;
-            draw.filledRect({ x, progressPosition.y }, progressItemSize, colors.progress.background);
+            draw.filledRect({ x, progressPosition.y }, progressItemSize, colors.progressBg);
         }
     }
 
     void renderProgress(uint8_t stepCounter)
     {
         int xPrevious = progressPosition.x + itemW * ((stepCounter - 1 + stepsCount) % stepsCount);
-        draw.filledRect({ xPrevious, progressPosition.y }, progressItemSize, colors.progress.background);
+        draw.filledRect({ xPrevious, progressPosition.y }, progressItemSize, colors.progressBg);
         int x = progressPosition.x + itemW * stepCounter;
-        draw.filledRect({ x, progressPosition.y }, progressItemSize, colors.progress.on);
+        draw.filledRect({ x, progressPosition.y }, progressItemSize, colors.active.on);
     }
 
     void renderSelection(int8_t row, int8_t col, Color color)
@@ -102,7 +110,7 @@ protected:
     void renderRow(unsigned int row)
     {
         Track& track = tracks[row];
-        // mainTrack.renderName(track, rowY[row]);
+        renderTrackName(track, rowY[row]);
 
         for (unsigned int step = 0; step < stepsCount; step++) {
             renderStep(track, step, row);
@@ -120,10 +128,29 @@ protected:
         }
     }
 
+    void renderTrackName(Track& track, int y)
+    {
+        draw.filledRect({ 5, y }, { 84, 12 }, colors.step);
+
+        Color trackColor = colors.firstStep;
+        Color trackText = colors.track;
+        if (track.active) {
+            trackColor = colors.active.on;
+            trackText = colors.active.selector;
+        }
+        trackColor.a = 50;
+        draw.filledRect({ 5, y }, { 84, 12 }, trackColor);
+        trackColor.a = 200;
+        int width = 84.0 * track.volume;
+        draw.filledRect({ 5, y }, { width, 12 }, trackColor);
+
+        draw.text({ 8, y }, track.name.c_str(), trackText, 10);
+    }
+
     void renderMasterVolume(bool selected = false)
     {
         draw.filledRect({ 4, progressPosition.y - 1 }, { 86, progressItemSize.h + 2 }, colors.background);
-        Color color = colors.progress.on;
+        Color color = colors.active.on;
         color.a = 100;
         draw.filledRect({ 5, progressPosition.y }, { 84, progressItemSize.h }, color);
         color.a = 200;
@@ -131,7 +158,7 @@ protected:
         int width = 84.0 * 0.9;
         draw.filledRect({ 5, progressPosition.y }, { width, progressItemSize.h }, color);
         if (selected) {
-            draw.rect({ 4, progressPosition.y - 1 }, { 86, progressItemSize.h + 2 }, colors.progress.selector);
+            draw.rect({ 4, progressPosition.y - 1 }, { 86, progressItemSize.h + 2 }, colors.active.selector);
         }
     }
 
@@ -149,8 +176,7 @@ protected:
         rowY[trackCount] = progressPosition.y;
     }
 
-    struct ColorsProgress {
-        Color background;
+    struct ColorsActive {
         Color on;
         Color selector;
     };
@@ -162,7 +188,9 @@ protected:
         Color firstStep;
         Color activeStep;
         Color conditionStep;
-        ColorsProgress progress;
+        Color track;
+        Color progressBg;
+        ColorsActive active;
     } colors = {
         .background = { 0x21, 0x25, 0x2b, 255 }, // #21252b
         .selector = { 0xBB, 0xBB, 0xBB, 255 }, // #bbbbbb
@@ -170,8 +198,9 @@ protected:
         .firstStep = { 0x38, 0x3a, 0x3d, 255 }, // #383a3d
         .activeStep = { 0x37, 0x61, 0xa1, 255 }, // #3761a1
         .conditionStep = { 0x37, 0x91, 0xa1, 255 }, // #3791a1
-        .progress = {
-            .background = { 0x38, 0x3a, 0x3d, 255 }, // #383a3d
+        .track = { 0x88, 0x88, 0x88, 255 }, // #888888
+        .progressBg = { 0x38, 0x3a, 0x3d, 255 }, // #383a3d
+        .active = {
             .on = { 0x00, 0xb3, 0x00, 255 }, // #00b300
             .selector = { 0xFF, 0xFF, 0xFF, 255 }, // #ffffff
         }
@@ -182,6 +211,10 @@ public:
         : Component(props)
     {
         resize();
+
+        tracks[0].randomize();
+        tracks[1].randomize();
+        tracks[2].randomize();
     }
 
     void render()
