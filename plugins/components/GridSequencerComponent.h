@@ -6,28 +6,41 @@
 
 class GridSequencerComponent : public Component {
 protected:
+    int firstColumnWidth = 92;
+    Size itemSize;
+    int itemMargin = 2;
+    int progressMarginY = 5;
+
     uint8_t trackCount = 12;
     uint8_t stepsCount = 32;
 
     Grid grid = Grid(trackCount + 1, stepsCount + 1);
 
     Point progressPosition = { 0, 0 };
-    Size progressItemSize = { 10, 5 };
+    Size progressItemSize = { 0, 5 };
 
     void progressInit()
     {
         for (unsigned int step = 0; step < stepsCount; step++) {
-            int x = progressPosition.x + 12 * step;
+            int x = progressPosition.x + (itemSize.w + itemMargin) * step;
             draw.filledRect({ x, progressPosition.y }, progressItemSize, colors.progress.background);
         }
     }
 
     void progressRender(uint8_t stepCounter)
     {
-        int xPrevious = progressPosition.x + 12 * ((stepCounter - 1 + stepsCount) % stepsCount);
+        int xPrevious = progressPosition.x + (itemSize.w + itemMargin) * ((stepCounter - 1 + stepsCount) % stepsCount);
         draw.filledRect({ xPrevious, progressPosition.y }, progressItemSize, colors.progress.background);
-        int x = progressPosition.x + 12 * stepCounter;
+        int x = progressPosition.x + (itemSize.w + itemMargin) * stepCounter;
         draw.filledRect({ x, progressPosition.y }, progressItemSize, colors.progress.on);
+    }
+
+    void resize()
+    {
+        progressPosition = { firstColumnWidth, position.y + size.h - progressItemSize.h - progressMarginY };
+        itemSize.w = (size.w - firstColumnWidth) / stepsCount - itemMargin;
+        progressItemSize.w = itemSize.w;
+        itemSize.h = (progressPosition.y - position.y - progressMarginY) / trackCount - itemMargin;
     }
 
     struct ColorsProgress {
@@ -50,7 +63,7 @@ public:
     GridSequencerComponent(ComponentInterface::Props props)
         : Component(props)
     {
-        progressPosition = { 92, props.position.y + props.size.h - progressItemSize.h - 5 };
+        resize();
     }
 
     void render()
@@ -61,7 +74,11 @@ public:
 
     bool config(char* key, char* value)
     {
-
+        if (strcmp(key, "FIRST_COLUMN_WIDTH") == 0) {
+            firstColumnWidth = atoi(value);
+            resize();
+            return true;
+        }
         return false;
     }
 };
