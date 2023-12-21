@@ -41,25 +41,24 @@ protected:
         tty.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
 
         tty.c_cc[VMIN] = 1;
-        tty.c_cc[VTIME] = 5;
+        tty.c_cc[VTIME] = 0;
     }
 
     void readLoop()
     {
         loop = true;
         while (loop) {
-            // read 1 byte from serial port
             uint8_t byte;
             int bytesRead = read(port, &byte, 1);
-            if (bytesRead == 1) {
+            if (bytesRead) {
                 if (byte == '$') {
-                    uint8_t key = read(port, &byte, 1);
+                    uint8_t key;
+                    read(port, &key, 1);
                     printf("pressed: %d\n", key);
                 } else if (byte == '!') {
-                    uint8_t key = read(port, &byte, 1);
+                    uint8_t key;
+                    read(port, &key, 1);
                     printf("released: %d\n", key);
-                } else {
-                    printf("unknown: %d\n", byte);
                 }
             }
         }
