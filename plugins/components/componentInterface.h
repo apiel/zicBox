@@ -4,6 +4,7 @@
 #include "drawInterface.h"
 #include "motionInterface.h"
 #include "valueInterface.h"
+#include "../controllers/controllerInterface.h"
 
 #include <functional>
 #include <vector>
@@ -15,6 +16,7 @@ public:
         Size size;
         DrawInterface& draw;
         AudioPlugin& (*getPlugin)(const char* name);
+        ControllerInterface* (*getController)(const char* name);
         void (*setGroup)(int8_t index);
         void (*setView)(char* name);
         void (*pushToRenderingQueue)(ComponentInterface* component);
@@ -25,6 +27,7 @@ protected:
     Styles& styles;
 
     AudioPlugin& (*getPlugin)(const char* name);
+    ControllerInterface* (*getController)(const char* name);
     void (*setGroup)(int8_t index);
     void (*setView)(char* name);
     void (*pushToRenderingQueue)(ComponentInterface* component);
@@ -48,6 +51,7 @@ public:
         : draw(props.draw)
         , styles(props.draw.styles)
         , getPlugin(props.getPlugin)
+        , getController(props.getController)
         , setGroup(props.setGroup)
         , setView(props.setView)
         , pushToRenderingQueue(props.pushToRenderingQueue)

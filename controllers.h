@@ -4,15 +4,9 @@
 #include "host.h"
 #include "plugins/controllers/controllerInterface.h"
 #include "viewManager.h"
+#include "controllerList.h"
 
 #include <dlfcn.h>
-#include <vector>
-
-struct Controller {
-    char name[64];
-    ControllerInterface* instance;
-};
-std::vector<Controller> controllers;
 
 ControllerInterface* lastPluginControllerInstance = NULL;
 
@@ -24,16 +18,6 @@ void encoderHandler(int id, int8_t direction)
 void keyHandler(int id, int8_t state)
 {
     ViewManager::get().onKeyPad(id, state);
-}
-
-ControllerInterface* getController(const char* name)
-{
-    for (auto& controller : controllers) {
-        if (strcmp(controller.name, name) == 0) {
-            return controller.instance;
-        }
-    }
-    return NULL;
 }
 
 void loadPluginController(char* value, const char* filename)

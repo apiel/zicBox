@@ -12,6 +12,7 @@
 #include "plugins/components/componentInterface.h"
 #include "state.h"
 #include "styles.h"
+#include "controllerList.h"
 
 class ViewManager {
 protected:
@@ -67,6 +68,7 @@ protected:
             size,
             draw,
             getPlugin,
+            getController,
             setGroup,
             [](char* name) { UiPlugin::get().setView(name); },
             [](ComponentInterface* component) { UiPlugin::get().pushToRenderingQueue(component); }
