@@ -2,7 +2,7 @@ BUILD_DIR ?= build
 OBJ_DIR ?= $(BUILD_DIR)/obj
 
 all:
-	make OscController MidiEncoderController
+	make OscController MidiEncoderController NeotrellisController
 
 OscController:
 	make compile LIBNAME=OscController EXTRA="$(shell pkg-config --cflags --libs liblo)"
