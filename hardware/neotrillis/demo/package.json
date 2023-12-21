@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "start": "ts-node demo.ts"
+  },
+  "dependencies": {
+    "@types/serialport": "^8.0.5",
+    "serialport": "^12.0.0"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2"
+  }
+}
