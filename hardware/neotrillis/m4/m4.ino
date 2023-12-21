@@ -34,18 +34,18 @@ const uint8_t baseColorCount = sizeof(baseColors) / sizeof(uint32_t);
 const uint8_t colorCount = baseColorCount * 10;
 
 const uint8_t colorOff = 254;
+const uint8_t all = 254;
 
-uint32_t colors[255] = {0};
+uint32_t colors[255] = { 0 };
 
 const uint8_t keyCount = 48;
-uint8_t button[keyCount] = {colorOff};
+uint8_t button[keyCount] = { colorOff };
 uint8_t buttonScale = 3;
 
 uint32_t applyBrightness(uint32_t color, uint8_t brightness)
 {
     uint8_t r = (uint8_t)(color >> 16), g = (uint8_t)(color >> 8), b = (uint8_t)color;
-    if (brightness)
-    {
+    if (brightness) {
         r = (r * brightness) >> 8;
         g = (g * brightness) >> 8;
         b = (b * brightness) >> 8;
@@ -56,22 +56,18 @@ uint32_t applyBrightness(uint32_t color, uint8_t brightness)
 
 void initColors()
 {
-    for (uint8_t i = 0; i < 255; i++)
-    {
+    for (uint8_t i = 0; i < 255; i++) {
         colors[i] = 0;
     }
 
-    for (uint8_t i = 0; i < keyCount; i++)
-    {
+    for (uint8_t i = 0; i < keyCount; i++) {
         button[i] = colorOff;
     }
 
     const float brightnessRatio = 255.0 / 10.0;
 
-    for (uint8_t i = 0; i < baseColorCount; i++)
-    {
-        for (uint8_t j = 0; j < 10; j++)
-        {
+    for (uint8_t i = 0; i < baseColorCount; i++) {
+        for (uint8_t j = 0; j < 10; j++) {
             uint8_t brightness = (j % 10) * brightnessRatio + 5;
             colors[i * 10 + j] = applyBrightness(baseColors[i], brightness);
         }
@@ -84,12 +80,9 @@ void setColor(uint8_t key, uint32_t color)
 {
     uint8_t column = key % 12;
     uint8_t row = key / 12;
-    if (column < 8)
-    {
+    if (column < 8) {
         trellisM4.setPixelColor(column + row * 8, color);
-    }
-    else
-    {
+    } else {
         trellis.pixels.setPixelColor(column - 8 + row * 4, color);
         trellis.pixels.show();
     }
@@ -97,8 +90,7 @@ void setColor(uint8_t key, uint32_t color)
 
 void onKeyPressed(uint8_t key)
 {
-    if (button[key] != colorOff)
-    {
+    if (button[key] != colorOff) {
         setColor(key, colors[button[key] + buttonScale]);
     }
 
@@ -117,8 +109,7 @@ void onKeyReleased(uint8_t key)
 
     // Serial.printf("!%c\n", key);
 
-    if (button[key] != colorOff)
-    {
+    if (button[key] != colorOff) {
         setColor(key, colors[button[key]]);
     }
 }
@@ -127,12 +118,9 @@ void onKeyReleased(uint8_t key)
 TrellisCallback callback(keyEvent evt)
 {
     uint8_t key = evt.bit.NUM + (int)(evt.bit.NUM / 4.0 + 1) * 8;
-    if (evt.bit.EDGE == SEESAW_KEYPAD_EDGE_RISING)
-    {
+    if (evt.bit.EDGE == SEESAW_KEYPAD_EDGE_RISING) {
         onKeyPressed(key);
-    }
-    else if (evt.bit.EDGE == SEESAW_KEYPAD_EDGE_FALLING)
-    {
+    } else if (evt.bit.EDGE == SEESAW_KEYPAD_EDGE_FALLING) {
         onKeyReleased(key);
     }
 
@@ -147,14 +135,12 @@ void setup()
 
     trellisM4.begin();
 
-    if (!trellis.begin())
-    {
+    if (!trellis.begin()) {
         // Serial.println("failed to start trellis");
     }
 
     // activate all keys and set callbacks
-    for (int i = 0; i < NEO_TRELLIS_NUM_KEYS; i++)
-    {
+    for (int i = 0; i < NEO_TRELLIS_NUM_KEYS; i++) {
         trellis.activateKey(i, SEESAW_KEYPAD_EDGE_RISING);
         trellis.activateKey(i, SEESAW_KEYPAD_EDGE_FALLING);
         trellis.registerCallback(i, callback);
@@ -169,36 +155,44 @@ void loop()
     trellis.read();
 
     trellisM4.tick();
-    while (trellisM4.available())
-    {
+    while (trellisM4.available()) {
         keypadEvent e = trellisM4.read();
         uint8_t key = e.bit.KEY + (int)(e.bit.KEY / 8.0) * 4;
-        if (e.bit.EVENT == KEY_JUST_PRESSED)
-        {
+        if (e.bit.EVENT == KEY_JUST_PRESSED) {
             onKeyPressed(key);
-        }
-        else if (e.bit.EVENT == KEY_JUST_RELEASED)
-        {
+        } else if (e.bit.EVENT == KEY_JUST_RELEASED) {
             onKeyReleased(key);
         }
     }
 
-    while (Serial.available())
-    {
+    while (Serial.available()) {
         uint8_t cmd = Serial.read();
         if (cmd == 0x23) // equivalent to '#' command to set color
         {
             uint8_t key = Serial.read();
             uint32_t color = colors[Serial.read()];
             // Serial.printf("key %d color: rgb #%x\n", key, color);
-            setColor(key, color);
-        }
-        else if (cmd == 0x25) // equivalent to '%' command to enable button mode
+
+            if (key == all) {
+                for (uint8_t i = 0; i < keyCount; i++) {
+                    setColor(i, color);
+                }
+            } else {
+                setColor(key, color);
+            }
+        } else if (cmd == 0x25) // equivalent to '%' command to enable button mode
         {
             uint8_t key = Serial.read();
             uint8_t colorIndex = Serial.read();
-            button[key] = colorIndex;
-            setColor(key, colors[colorIndex]);
+            if (key == all) {
+                for (uint8_t i = 0; i < keyCount; i++) {
+                    button[i] = colorIndex;
+                    setColor(i, colors[colorIndex]);
+                }
+            } else {
+                button[key] = colorIndex;
+                setColor(key, colors[colorIndex]);
+            }
         }
     }
 
