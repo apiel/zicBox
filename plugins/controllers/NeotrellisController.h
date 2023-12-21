@@ -54,12 +54,10 @@ protected:
                 if (byte == '$') {
                     uint8_t key;
                     read(port, &key, 1);
-                    // printf("pressed: %d\n", key);
                     keypad(key, 1);
                 } else if (byte == '!') {
                     uint8_t key;
                     read(port, &key, 1);
-                    // printf("released: %d\n", key);
                     keypad(key, 0);
                 }
             }
@@ -68,7 +66,6 @@ protected:
 
     void openSerial(char* path)
     {
-        // "/dev/ttyACM0"
         port = open(path, O_RDWR | O_NOCTTY);
 
         // Read in existing settings, and handle any error

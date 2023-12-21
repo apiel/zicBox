@@ -16,7 +16,7 @@ void encoderHandler(int id, int8_t direction)
 
 void keyHandler(int id, int8_t state)
 {
-    ViewManager::get().onKey(id, state);
+    ViewManager::get().onKeyPad(id, state);
 }
 
 void loadPluginController(const char* path)

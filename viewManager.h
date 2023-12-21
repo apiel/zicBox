@@ -187,13 +187,12 @@ public:
         m2.unlock();
     }
 
-    void onKey(int id, int8_t state)
+    void onKeyPad(int id, int8_t state)
     {
         m2.lock();
-        printf("onKey: %d %d\n", id, state);
-        // for (auto& component : ui.view->components) {
-        //     // component->onKey(id, state);
-        // }
+        for (auto& component : ui.view->components) {
+            component->onKeyPad(id, state);
+        }
         m2.unlock();
     }
 

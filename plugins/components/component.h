@@ -65,6 +65,10 @@ public:
     {
     }
 
+    virtual void onKeyPad(int id, int8_t state)
+    {
+    }
+
     virtual bool config(char* key, char* value)
     {
         return false;
