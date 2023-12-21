@@ -1,6 +1,8 @@
 #ifndef _UI_COMPONENT_GRID_SEQUENCER_H_
 #define _UI_COMPONENT_GRID_SEQUENCER_H_
 
+#include "../controllers/keypadInterface.h"
+
 #include "base/Grid.h"
 #include "component.h"
 
@@ -33,6 +35,8 @@ public:
 
 class GridSequencerComponent : public Component {
 protected:
+    KeypadInterface* keypad;
+
     int firstColumnWidth = 92;
     int firstColumnMargin = 4;
 
@@ -188,6 +192,19 @@ protected:
         rowY[trackCount] = progressPosition.y;
     }
 
+    void renderKeypad()
+    {
+        if (keypad) {
+            keypad->setKeyColor(254, 254); // set all key off
+            keypad->setButton(254, 254); // set all button off
+
+            keypad->setButton(36, 10);
+            keypad->setButton(37, 10);
+            keypad->setButton(38, 10);
+            keypad->setButton(25, 10);
+        }
+    }
+
     struct ColorsActive {
         Color on;
         Color selector;
@@ -222,6 +239,8 @@ public:
     GridSequencerComponent(ComponentInterface::Props props)
         : Component(props)
     {
+        keypad = (KeypadInterface*)getController("Keypad");
+
         resize();
 
         tracks[0].randomize();
@@ -231,6 +250,8 @@ public:
 
     void render()
     {
+        renderKeypad(); // FIXME should only happen when necessary...
+
         draw.filledRect(position, size, colors.background);
         progressInit();
         renderMasterVolume();
@@ -245,6 +266,11 @@ public:
             return true;
         }
         return false;
+    }
+
+    void onKeyPad(int id, int8_t state)
+    {
+        printf("onKeypad(%d, %d)\n", id, state);
     }
 };
 

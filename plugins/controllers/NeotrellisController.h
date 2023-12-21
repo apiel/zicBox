@@ -1,7 +1,7 @@
 #ifndef _NEO_CONTROLLER_H_
 #define _NEO_CONTROLLER_H_
 
-#include "controllerInterface.h"
+#include "keypadInterface.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -13,7 +13,7 @@
 
 #include <thread>
 
-class NeotrellisController : public ControllerInterface {
+class NeotrellisController : public KeypadInterface {
 protected:
     struct termios tty;
     int port;
@@ -90,7 +90,7 @@ protected:
 
 public:
     NeotrellisController(Props& props)
-        : ControllerInterface(props)
+        : KeypadInterface(props)
     {
     }
 
@@ -112,6 +112,35 @@ public:
             return true;
         }
         return false;
+    }
+
+    void setKeyColor(int id, uint8_t color)
+    {
+        // uint8_t command = '#';
+        // write(port, &command, 1);
+        // uint8_t key = id;
+        // write(port, &key, 1);
+        // write(port, &color, 1);
+
+        uint8_t msg[3];
+        msg[0] = '#';
+        msg[1] = id;
+        msg[2] = color;
+        write(port, msg, 3);
+    }
+    void setButton(int id, uint8_t color)
+    {
+        // uint8_t command = '%';
+        // write(port, &command, 1);
+        // uint8_t key = id;
+        // write(port, &key, 1);
+        // write(port, &color, 1);
+
+        uint8_t msg[3];
+        msg[0] = '%';
+        msg[1] = id;
+        msg[2] = color;
+        write(port, msg, 3);
     }
 };
 

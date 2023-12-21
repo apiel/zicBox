@@ -14,7 +14,7 @@ PLUGIN_COMPONENT: GridSequencer ./plugins/components/build/libzic_GridSequencerC
 
 PLUGIN_CONTROLLER: Osc ./plugins/controllers/build/libzic_OscController.so
 
-PLUGIN_CONTROLLER: Neo ./plugins/controllers/build/libzic_NeotrellisController.so
+PLUGIN_CONTROLLER: Keypad ./plugins/controllers/build/libzic_NeotrellisController.so
   OPEN: /dev/ttyACM0
 
 PLUGIN_CONTROLLER: MidiEncoder ./plugins/controllers/build/libzic_MidiEncoderController.so

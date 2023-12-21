@@ -171,7 +171,7 @@ void loop()
         {
             uint8_t key = Serial.read();
             uint32_t color = colors[Serial.read()];
-            // Serial.printf("key %d color: rgb #%x\n", key, color);
+            // Serial.printf("key %d rgb %x\n", key, color);
 
             if (key == all) {
                 for (uint8_t i = 0; i < keyCount; i++) {
