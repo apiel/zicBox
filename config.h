@@ -22,9 +22,7 @@ void uiScriptCallback(char* key, char* value, const char* filename, uint8_t inde
         styles.screen.w = atoi(strtok(value, " "));
         styles.screen.h = atoi(strtok(NULL, " "));
     } else if (strcmp(key, "PLUGIN_CONTROLLER") == 0) {
-        char fullpath[512];
-        getFullpath(value, filename, fullpath);
-        loadPluginController(fullpath);
+        loadPluginController(value, filename);
     } else if (strcmp(key, "SET_COLOR") == 0) {
         char* name = strtok(value, " ");
         char* color = strtok(NULL, " ");

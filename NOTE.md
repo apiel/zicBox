@@ -76,6 +76,8 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 
 ## zicHost
 
+- TODO make audio input and output selectable with val...
+
 - TODO save track patch
 
 - TODO SynthSample

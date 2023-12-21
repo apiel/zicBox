@@ -6,6 +6,13 @@
 #include "viewManager.h"
 
 #include <dlfcn.h>
+#include <vector>
+
+struct Controller {
+    char name[64];
+    ControllerInterface* instance;
+};
+std::vector<Controller> controllers;
 
 ControllerInterface* lastPluginControllerInstance = NULL;
 
@@ -19,9 +26,25 @@ void keyHandler(int id, int8_t state)
     ViewManager::get().onKeyPad(id, state);
 }
 
-void loadPluginController(const char* path)
+ControllerInterface* getController(const char* name)
 {
-    void* handle = dlopen(path, RTLD_LAZY);
+    for (auto& controller : controllers) {
+        if (strcmp(controller.name, name) == 0) {
+            return controller.instance;
+        }
+    }
+    return NULL;
+}
+
+void loadPluginController(char* value, const char* filename)
+{
+    Controller plugin;
+    strcpy(plugin.name, strtok(value, " "));
+    char* path = strtok(NULL, " ");
+
+    char fullpath[512];
+    getFullpath(path, filename, fullpath);
+    void* handle = dlopen(fullpath, RTLD_LAZY);
 
     if (!handle) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot open library: %s\n", dlerror());
@@ -38,8 +61,11 @@ void loadPluginController(const char* path)
     }
 
     ControllerInterface::Props props = { midiHandler, encoderHandler, keyHandler };
-    lastPluginControllerInstance = ((ControllerInterface * (*)(ControllerInterface::Props & props)) allocator)(props);
+    plugin.instance = ((ControllerInterface * (*)(ControllerInterface::Props & props)) allocator)(props);
+    lastPluginControllerInstance = plugin.instance;
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "plugin interface loaded: %s\n", path);
+
+    controllers.push_back(plugin);
 }
 
 bool pluginControllerConfig(char* key, char* value)
