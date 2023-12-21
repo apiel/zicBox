@@ -54,11 +54,13 @@ protected:
                 if (byte == '$') {
                     uint8_t key;
                     read(port, &key, 1);
-                    printf("pressed: %d\n", key);
+                    // printf("pressed: %d\n", key);
+                    keypad(key, 1);
                 } else if (byte == '!') {
                     uint8_t key;
                     read(port, &key, 1);
-                    printf("released: %d\n", key);
+                    // printf("released: %d\n", key);
+                    keypad(key, 0);
                 }
             }
         }

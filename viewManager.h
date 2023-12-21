@@ -187,6 +187,16 @@ public:
         m2.unlock();
     }
 
+    void onKey(int id, int8_t state)
+    {
+        m2.lock();
+        printf("onKey: %d %d\n", id, state);
+        // for (auto& component : ui.view->components) {
+        //     // component->onKey(id, state);
+        // }
+        m2.unlock();
+    }
+
     bool config(char* key, char* value, const char* filename)
     {
         if (strcmp(key, "PLUGIN_COMPONENT") == 0) {
