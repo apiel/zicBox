@@ -23,6 +23,7 @@ public:
     }
 
     virtual void render() { }
+    virtual void initView() { }
 
     virtual void renderNext()
     {

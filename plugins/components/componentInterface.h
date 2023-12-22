@@ -63,6 +63,7 @@ public:
 
     virtual void render() = 0;
     virtual void renderNext() = 0;
+    virtual void initView() = 0;
     virtual void onMotion(MotionInterface& motion) = 0;
     virtual void handleMotion(MotionInterface& motion) = 0;
     virtual void onMotionRelease(MotionInterface& motion) = 0;

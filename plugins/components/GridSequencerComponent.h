@@ -192,16 +192,28 @@ protected:
         rowY[trackCount] = progressPosition.y;
     }
 
+    struct Keys {
+        uint8_t up = 25;
+        uint8_t down = 37;
+        uint8_t left = 36;
+        uint8_t right = 38;
+        uint8_t leftJump = 24;
+        uint8_t rightJump = 26;
+    } keys;
+
     void renderKeypad()
     {
         if (keypad) {
             keypad->setKeyColor(254, 254); // set all key off
             keypad->setButton(254, 254); // set all button off
 
-            keypad->setButton(36, 10);
-            keypad->setButton(37, 10);
-            keypad->setButton(38, 10);
-            keypad->setButton(25, 10);
+            keypad->setButton(keys.up, 20);
+            keypad->setButton(keys.down, 20);
+            keypad->setButton(keys.left, 20);
+            keypad->setButton(keys.right, 20);
+
+            keypad->setButton(keys.leftJump, 0);
+            keypad->setButton(keys.rightJump, 0);
         }
     }
 
@@ -248,10 +260,13 @@ public:
         tracks[2].randomize();
     }
 
+    void initView()
+    {
+        renderKeypad();
+    }
+
     void render()
     {
-        renderKeypad(); // FIXME should only happen when necessary...
-
         draw.filledRect(position, size, colors.background);
         progressInit();
         renderMasterVolume();
@@ -270,7 +285,39 @@ public:
 
     void onKeyPad(int id, int8_t state)
     {
-        printf("onKeypad(%d, %d)\n", id, state);
+        // printf("onKeypad(%d, %d)\n", id, state);
+        if (state == 1) {
+            if (id == keys.up) {
+                grid.up();
+                renderSelection();
+                draw.renderNext();
+            } else if (id == keys.down) {
+                grid.down();
+                renderSelection();
+                draw.renderNext();
+            } else if (id == keys.left) {
+                grid.left();
+                renderSelection();
+                draw.renderNext();
+            } else if (id == keys.right) {
+                grid.right();
+                renderSelection();
+                draw.renderNext();
+            } else if (id == keys.leftJump) {
+                int8_t step = ((grid.col - 1) % 4);
+                if (step < 1) {
+                    step = 4;
+                }
+                grid.selectNextCol(-step);
+                renderSelection();
+                draw.renderNext();
+            } else if (id == keys.rightJump) {
+                int8_t step = 4 - ((grid.col - 1) % 4);
+                grid.selectNextCol(step);
+                renderSelection();
+                draw.renderNext();
+            }
+        }
     }
 };
 

@@ -4,31 +4,6 @@
 #include <stdint.h>
 
 class Grid {
-protected:
-    void selectNextRow(int8_t dir)
-    {
-        lastRow = row;
-        lastCol = col;
-        row += dir;
-        if (row >= rows) {
-            row = rows - 1;
-        } else if (row < 0) {
-            row = 0;
-        }
-    }
-
-    void selectNextCol(int8_t dir)
-    {
-        lastRow = row;
-        lastCol = col;
-        col += dir;
-        if (col >= cols) {
-            col = cols - 1;
-        } else if (col < 0) {
-            col = 0;
-        }
-    }
-
 public:
     int8_t row = 0;
     int8_t col = 0;
@@ -93,6 +68,30 @@ public:
     void right()
     {
         selectNextCol(+1);
+    }
+
+    void selectNextRow(int8_t dir)
+    {
+        lastRow = row;
+        lastCol = col;
+        row += dir;
+        if (row >= rows) {
+            row = rows - 1;
+        } else if (row < 0) {
+            row = 0;
+        }
+    }
+
+    void selectNextCol(int8_t dir)
+    {
+        lastRow = row;
+        lastCol = col;
+        col += dir;
+        if (col >= cols) {
+            col = cols - 1;
+        } else if (col < 0) {
+            col = 0;
+        }
     }
 };
 

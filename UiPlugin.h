@@ -210,6 +210,7 @@ public:
     void initActiveComponents(void (*callback)(float, void* data))
     {
         for (auto& component : view->components) {
+            component->initView();
             component->renderNext();
             for (auto* value : component->values) {
                 value->onUpdate(callback, value);
