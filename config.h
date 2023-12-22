@@ -2,9 +2,9 @@
 #define _UI_CONFIG_H_
 
 #include "controllers.h"
-#include "viewManager.h"
 #include "host.h"
 #include "styles.h"
+#include "viewManager.h"
 
 #include "dustscript/dustscript.h"
 
@@ -36,7 +36,13 @@ void uiScriptCallback(char* key, char* value, const char* filename, uint8_t inde
 
 void loadUiConfig(const char* filename)
 {
-    DustScript::load(filename, uiScriptCallback);
+    DustScript::load(filename, uiScriptCallback, { .variables = { { "IS_RPI",
+#ifdef IS_RPI
+                                                       "true"
+#else
+                                                       "false"
+#endif
+                                                   } } });
 }
 
 #endif

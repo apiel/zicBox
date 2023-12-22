@@ -12,7 +12,7 @@ void hostScriptCallback(char* key, char* value, const char* filename, uint8_t in
     } else if (strcmp(key, "INCLUDE") == 0) {
         char fullpath[512];
         getFullpath(value, filename, fullpath);
-        DustScript::load(fullpath, hostScriptCallback);       
+        DustScript::load(fullpath, hostScriptCallback);
     } else if (strcmp(key, "MIDIIN") == 0) {
         loadMidiInput(midiController, value, &midiControllerCallback);
     } else if (strcmp(key, "MIDIOUT") == 0) {
@@ -40,7 +40,13 @@ void hostScriptCallback(char* key, char* value, const char* filename, uint8_t in
 
 void loadHostConfig(const char* filename)
 {
-    DustScript::load(filename, hostScriptCallback);
+    DustScript::load(filename, hostScriptCallback, { .variables = { { "IS_RPI",
+#ifdef IS_RPI
+                                                         "true"
+#else
+                                                         "false"
+#endif
+                                                     } } });
 }
 
 #endif
