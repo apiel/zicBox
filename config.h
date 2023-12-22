@@ -36,7 +36,7 @@ void uiScriptCallback(char* key, char* value, const char* filename, uint8_t inde
 
 void loadUiConfig(const char* filename)
 {
-    DustScript::load(filename, uiScriptCallback, { .variables = { { "IS_RPI",
+    DustScript::load(filename, uiScriptCallback, { .variables = { { "$IS_RPI",
 #ifdef IS_RPI
                                                        "true"
 #else
