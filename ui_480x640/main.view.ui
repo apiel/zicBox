@@ -4,19 +4,19 @@ VIEW: Demo
   COMPONENT: Encoder2 $encX1 $encY1 $encSize $encSize
     GROUP: 0
     ENCODER_ID: 0
-    COLOR: #a19ffc
+    COLOR: #9dfe86
     VALUE: Sample START
 
   COMPONENT: Encoder2 $encX2 $encY1 $encSize $encSize
     GROUP: 0
     ENCODER_ID: 1
-    COLOR: #9dfe86
+    COLOR: #3791a1
     VALUE: Sample END
 
   COMPONENT: Encoder2 $encX3 $encY1 $encSize $encSize
     GROUP: 0
     ENCODER_ID: 2
-    COLOR: #fd3652
+    COLOR: #ff8d99
     VALUE: Sample BROWSER
     TYPE: BROWSE
 
@@ -24,6 +24,7 @@ VIEW: Demo
     GROUP: 0
     ENCODER_ID: 3
     VALUE: MultiModeFilter CUTOFF
+    COLOR: #ff7700
     TYPE: TWO_SIDED
     # BACKGROUND_COLOR: #2b2c2e
 
@@ -31,39 +32,40 @@ VIEW: Demo
   COMPONENT: Encoder2 $encX1 $encY2 $encSize $encSize
     GROUP: 1
     ENCODER_ID: 0
-    COLOR: #fcc46d
+    COLOR: #9dfe86
     VALUE: Sample SUSTAIN_LENGTH
     LABEL: Sustain
 
   COMPONENT: Encoder2 $encX2 $encY2 $encSize $encSize
     GROUP: 1
     ENCODER_ID: 1
-    COLOR: #d09ff5
+    COLOR: #3791a1
     VALUE: Sample SUSTAIN_POSITION
 
   COMPONENT: Encoder2 $encX3 $encY2 $encSize $encSize
     GROUP: 1
     ENCODER_ID: 2
-    COLOR: #cffc9f
+    COLOR: #ff8d99
     VALUE: Sample SUSTAIN_RELEASE
 
   COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
     GROUP: 1
     ENCODER_ID: 3
     VALUE: MultiModeFilter RESONANCE
+    COLOR: #ff7700
     # BACKGROUND_COLOR: #2b2c2e
 
 
   COMPONENT: Encoder2 $encX1 $encY3 $encSize $encSize
     GROUP: 2
     ENCODER_ID: 0
-    COLOR: #f49ffc
+    COLOR: #9dfe86
     VALUE: Sample DENSITY
 
   COMPONENT: Encoder2 $encX2 $encY3 $encSize $encSize
     GROUP: 2
     ENCODER_ID: 1
-    COLOR: #9ffce6
+    COLOR: #3791a1
     VALUE: Sample DENSITY_DELAY
     FLOAT_PRECISION: 1
 
@@ -71,12 +73,13 @@ VIEW: Demo
     GROUP: 2
     ENCODER_ID: 2
     VALUE: Sample DENSITY_RANDOMIZE
+    COLOR: #ff8d99
     LABEL: Density Rand
 
   COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
     ENCODER_ID: 3
     GROUP: 2
-    COLOR: #fcc46d
+    COLOR: #ff7700
     VALUE: SampleRateReducer SAMPLE_STEP
     FONT_UNIT_SIZE: 8
     # BACKGROUND_COLOR: #2b2c2e

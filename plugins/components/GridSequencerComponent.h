@@ -193,19 +193,40 @@ protected:
     }
 
     struct Keys {
+        uint8_t menu = 11;
+
         uint8_t up = 25;
         uint8_t down = 37;
         uint8_t left = 36;
         uint8_t right = 38;
         uint8_t leftJump = 24;
         uint8_t rightJump = 26;
+
+        uint8_t enc1 = 20;
+        uint8_t enc2 = 21;
+        uint8_t enc3 = 22;
+        uint8_t enc4 = 23;
+
+        uint8_t enc5 = 32;
+        uint8_t enc6 = 33;
+        uint8_t enc7 = 34;
+        uint8_t enc8 = 35;
+
+        uint8_t enc9 = 44;
+        uint8_t enc10 = 45;
+        uint8_t enc11 = 46;
+        uint8_t enc12 = 47;
     } keys;
+
+    uint8_t columnColor[4] = { 50, 20, 60, 90 }; // or 90
 
     void renderKeypad()
     {
         if (keypad) {
             keypad->setKeyColor(254, 254); // set all key off
             keypad->setButton(254, 254); // set all button off
+
+            keypad->setButton(keys.menu, 0);
 
             keypad->setButton(keys.up, 20);
             keypad->setButton(keys.down, 20);
@@ -214,6 +235,23 @@ protected:
 
             keypad->setButton(keys.leftJump, 0);
             keypad->setButton(keys.rightJump, 0);
+
+            keypad->setButton(keys.enc1, columnColor[0]);
+            keypad->setButton(keys.enc2, columnColor[1]);
+            keypad->setButton(keys.enc3, columnColor[2]);
+            keypad->setButton(keys.enc4, columnColor[3]);
+
+            keypad->setButton(keys.enc5, columnColor[0]);
+            keypad->setButton(keys.enc6, columnColor[1]);
+            keypad->setButton(keys.enc7, columnColor[2]);
+            keypad->setButton(keys.enc8, columnColor[3]);
+
+            keypad->setButton(keys.enc9, columnColor[0]);
+            keypad->setButton(keys.enc10, columnColor[1]);
+            keypad->setButton(keys.enc11, columnColor[2]);
+            keypad->setButton(keys.enc12, columnColor[3]);
+
+            // TODO use first row of 8 (or even 2 row of 8) to select the clip
         }
     }
 
@@ -316,6 +354,8 @@ public:
                 grid.selectNextCol(step);
                 renderSelection();
                 draw.renderNext();
+            } else {
+                printf("unknown key %d\n", id);
             }
         }
     }

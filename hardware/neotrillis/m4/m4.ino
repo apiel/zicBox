@@ -12,22 +12,22 @@ Adafruit_NeoTrellis trellis;
 Adafruit_NeoTrellisM4 trellisM4 = Adafruit_NeoTrellisM4();
 
 uint32_t baseColors[] = {
-    0xffffff,
-    0x3761a1,
-    0x3791a1,
-    0x00ffef,
-    0x00b300,
-    0x9dfe86,
-    0xff8d99,
-    0xff0000,
-    0xff0077,
-    0xff7700,
-    0xd09ff5,
-    0xa19ffc,
-    0x800080,
-    0xa7194b,
-    0xffff00,
-    0x964B00,
+    0xffffff, // 0
+    0x3761a1, // 10
+    0x3791a1, // 20
+    0x00ffef, // 30
+    0x00b300, // 40
+    0x9dfe86, // 50
+    0xff8d99, // 60
+    0xff0000, // 70
+    0xff0077, // 80
+    0xff7700, // 90
+    0xd09ff5, // 100
+    0xa19ffc, // 110
+    0x800080, // 120
+    0xa7194b, // 130
+    0xffff00, // 140
+    0x964B00, // 150
 };
 
 const uint8_t baseColorCount = sizeof(baseColors) / sizeof(uint32_t);
@@ -76,6 +76,8 @@ void initColors()
     colors[colorOff] = 0; // Let's ensure that 255 is 0
 }
 
+
+bool needToShow = false;
 void setColor(uint8_t key, uint32_t color)
 {
     uint8_t column = key % 12;
@@ -84,7 +86,7 @@ void setColor(uint8_t key, uint32_t color)
         trellisM4.setPixelColor(column + row * 8, color);
     } else {
         trellis.pixels.setPixelColor(column - 8 + row * 4, color);
-        trellis.pixels.show();
+        needToShow = true;
     }
 }
 
@@ -194,6 +196,11 @@ void loop()
                 setColor(key, colors[colorIndex]);
             }
         }
+    }
+
+    if (needToShow) {
+        trellis.pixels.show();
+        needToShow = false;
     }
 
     delay(10);
