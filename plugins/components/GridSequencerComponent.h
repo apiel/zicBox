@@ -193,7 +193,9 @@ protected:
     }
 
     struct Keys {
-        uint8_t menu = 11;
+        // uint8_t menu = 11;
+
+        uint8_t tracks[12] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
 
         uint8_t up = 25;
         uint8_t down = 37;
@@ -216,6 +218,8 @@ protected:
         uint8_t enc10 = 45;
         uint8_t enc11 = 46;
         uint8_t enc12 = 47;
+
+        // TODO: 15 button from the middle should be clips/variations
     } keys;
 
     uint8_t columnColor[4] = { 50, 20, 60, 90 }; // or 90
@@ -226,7 +230,11 @@ protected:
             keypad->setKeyColor(254, 254); // set all key off
             keypad->setButton(254, 254); // set all button off
 
-            keypad->setButton(keys.menu, 0);
+            // keypad->setButton(keys.menu, 0);
+
+            for (int i = 0; i < 12; i++) {
+                keypad->setButton(keys.tracks[i], tracks[i].active ? 40 : 0);
+            }
 
             keypad->setButton(keys.up, 20);
             keypad->setButton(keys.down, 20);
