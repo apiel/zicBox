@@ -196,6 +196,7 @@ protected:
         // uint8_t menu = 11;
 
         uint8_t tracks[12] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
+        uint8_t clips[15] = {15, 16, 17, 18, 19, 27, 28, 29, 30, 31, 39, 40, 41, 42, 43 };
 
         uint8_t up = 25;
         uint8_t down = 37;
@@ -234,6 +235,11 @@ protected:
 
             for (int i = 0; i < 12; i++) {
                 keypad->setButton(keys.tracks[i], tracks[i].active ? 40 : 0);
+            }
+
+            for (int i = 0; i < 15; i++) {
+                // keypad->setButton(keys.clips[i], clips[i].active ? 70 : 60);
+                keypad->setButton(keys.clips[i], 60);
             }
 
             keypad->setButton(keys.up, 20);
