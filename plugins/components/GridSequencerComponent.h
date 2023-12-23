@@ -369,6 +369,15 @@ public:
                 renderSelection();
                 draw.renderNext();
             } else {
+                for (int i = 0; i < 12; i++) {
+                    if (keys.tracks[i] == id) {
+                        grid.select(i, 0);
+                        renderSelection();
+                        draw.renderNext();
+                        return;
+                    }
+                }
+
                 printf("unknown key %d\n", id);
             }
         }

@@ -70,6 +70,14 @@ public:
         selectNextCol(+1);
     }
 
+    void select(int8_t _row, int8_t _col)
+    {
+        lastRow = row;
+        lastCol = col;
+        row = _row;
+        col = _col;
+    }
+
     void selectNextRow(int8_t dir)
     {
         lastRow = row;
