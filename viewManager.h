@@ -140,13 +140,17 @@ public:
 
         if (ui.view->componentsJob.size()) {
             for (auto& component : ui.view->componentsJob) {
-                component->jobRendering(now);
+                if (component->active) {
+                    component->jobRendering(now);
+                }
             }
         }
 
         if (ui.view->componentsToRender.size()) {
             for (auto& component : ui.view->componentsToRender) {
-                component->render();
+                if (component->active) {
+                    component->render();
+                }
             }
             ui.view->componentsToRender.clear();
             draw.renderNext();

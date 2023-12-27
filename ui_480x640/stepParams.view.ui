@@ -5,6 +5,8 @@
       GROUP: 0
     COLOR: #9dfe86
     VALUE: Sample START
+    LABEL: Yoyo
+    VISIBILITY: 1
 
   COMPONENT: Encoder2 $encX2 $encY1 $encSize $encSize
     ENCODER_ID: 1
@@ -13,6 +15,8 @@
       GROUP: 0
     COLOR: #3791a1
     VALUE: Sample END
+    LABEL: Yoyo
+    VISIBILITY: 1
 
   COMPONENT: Encoder2 $encX3 $encY1 $encSize $encSize
     ENCODER_ID: 2
@@ -22,6 +26,8 @@
     COLOR: #ff8d99
     VALUE: Sample BROWSER
     TYPE: BROWSE
+    LABEL: Yoyo
+    VISIBILITY: 1
 
   COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize
     ENCODER_ID: 3
@@ -31,6 +37,8 @@
     VALUE: MultiModeFilter CUTOFF
     COLOR: #ff7700
     TYPE: TWO_SIDED
+    LABEL: Yoyo
+    VISIBILITY: 1
     # BACKGROUND_COLOR: #2b2c2e
 
 
@@ -42,7 +50,8 @@
       ENCODER_ID: 0
     COLOR: #9dfe86
     VALUE: Sample SUSTAIN_LENGTH
-    LABEL: Sustain
+    LABEL: Yoyo
+    VISIBILITY: 1
 
   COMPONENT: Encoder2 $encX2 $encY2 $encSize $encSize
     ENCODER_ID: 5
@@ -52,6 +61,8 @@
       ENCODER_ID: 1
     COLOR: #3791a1
     VALUE: Sample SUSTAIN_POSITION
+    LABEL: Yoyo
+    VISIBILITY: 1
 
   COMPONENT: Encoder2 $encX3 $encY2 $encSize $encSize
     ENCODER_ID: 6
@@ -61,6 +72,8 @@
       ENCODER_ID: 2
     COLOR: #ff8d99
     VALUE: Sample SUSTAIN_RELEASE
+    LABEL: Yoyo
+    VISIBILITY: 1
 
   COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
     ENCODER_ID: 7
@@ -70,6 +83,8 @@
       ENCODER_ID: 3
     VALUE: MultiModeFilter RESONANCE
     COLOR: #ff7700
+    LABEL: Yoyo
+    VISIBILITY: 1
     # BACKGROUND_COLOR: #2b2c2e
 
 
@@ -81,6 +96,8 @@
       ENCODER_ID: 0
     COLOR: #9dfe86
     VALUE: Sample DENSITY
+    LABEL: Yoyo
+    VISIBILITY: 1
 
   COMPONENT: Encoder2 $encX2 $encY3 $encSize $encSize
     ENCODER_ID: 9
@@ -91,6 +108,8 @@
     COLOR: #3791a1
     VALUE: Sample DENSITY_DELAY
     FLOAT_PRECISION: 1
+    LABEL: Yoyo
+    VISIBILITY: 1
 
   COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
     ENCODER_ID: 10
@@ -100,7 +119,8 @@
       ENCODER_ID: 2
     VALUE: Sample DENSITY_RANDOMIZE
     COLOR: #ff8d99
-    LABEL: Density Rand
+    LABEL: Yoyo
+    VISIBILITY: 1
 
   COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
     ENCODER_ID: 11
@@ -111,4 +131,6 @@
     COLOR: #ff7700
     VALUE: SampleRateReducer SAMPLE_STEP
     FONT_UNIT_SIZE: 8
+    LABEL: Yoyo
+    VISIBILITY: 1
     # BACKGROUND_COLOR: #2b2c2e

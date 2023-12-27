@@ -10,8 +10,6 @@
 
 class Component : public ComponentInterface {
 protected:
-    bool shouldRender = true;
-
     ValueInterface* val(ValueInterface* value)
     {
         values.push_back(value);
@@ -29,7 +27,9 @@ public:
 
     virtual void renderNext()
     {
-        pushToRenderingQueue(this);
+        if (active) {
+            pushToRenderingQueue(this);
+        }
     }
 
     virtual void onUpdate(ValueInterface* value)
@@ -85,6 +85,9 @@ public:
 
         if (strcmp(key, "VISIBILITY") == 0) {
             visibility = atoi(value);
+            if (visibility != 0) { // Maybe not the best...
+                active = false;
+            }
             return true;
         }
 
@@ -97,11 +100,8 @@ public:
 
     virtual void onVisibilityChanged(int8_t index)
     {
-        bool previousState = shouldRender;
         if (visibility == index || visibility == -1) {
-            shouldRender = true;
-        }
-        if (previousState != shouldRender) {
+            active = true;
             renderNext();
         }
     }

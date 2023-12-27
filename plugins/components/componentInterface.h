@@ -47,6 +47,7 @@ public:
     Size size;
     int8_t group = -1;
     int8_t visibility = -1;
+    bool active = true;
 
     std::function<void(unsigned long now)> jobRendering;
 

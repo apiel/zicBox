@@ -2,6 +2,7 @@
 VIEW: Demo
 
   INCLUDE: sampleParams.view.ui
+  INCLUDE: stepParams.view.ui
 
   COMPONENT: Sample 0 300 480 100
     GROUP: 0
