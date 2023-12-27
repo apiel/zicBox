@@ -6,13 +6,12 @@
 #include <vector>
 
 #include "UiPlugin.h"
+#include "controllerList.h"
 #include "draw.h"
 #include "helpers/getFullpath.h"
 #include "host.h"
 #include "plugins/components/componentInterface.h"
-#include "state.h"
 #include "styles.h"
-#include "controllerList.h"
 
 class ViewManager {
 protected:
@@ -21,6 +20,8 @@ protected:
 
     UiPlugin& ui = UiPlugin::get();
     int8_t lastGroup = -100;
+    int8_t group = 0;
+    int8_t visibility = 0;
 
     static ViewManager* instance;
 
@@ -69,8 +70,8 @@ protected:
             draw,
             getPlugin,
             getController,
-            setGroup,
-            setVisibility,
+            [](int8_t index) { ViewManager::get().setGroup(index); },
+            [](int8_t index) { ViewManager::get().setVisibility(index); },
             [](char* name) { UiPlugin::get().setView(name); },
             [](ComponentInterface* component) { UiPlugin::get().pushToRenderingQueue(component); }
         };
@@ -165,6 +166,16 @@ public:
         }
         draw.triggerRendering();
         m.unlock();
+    }
+
+    void setGroup(int8_t index)
+    {
+        group = index == -1 ? 0 : index;
+    }
+
+    void setVisibility(int8_t index)
+    {
+        visibility = index == -1 ? 0 : index;
     }
 
     void onMotion(MotionInterface& motion)

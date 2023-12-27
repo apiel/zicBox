@@ -2,7 +2,6 @@
 #define ENCODER_COUNT 8
 
 #include "draw.h"
-#include "state.h"
 #include "event.h"
 #include "viewManager.h"
 #include "host.h"

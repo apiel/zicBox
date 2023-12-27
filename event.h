@@ -1,7 +1,6 @@
 #ifndef _UI_EVENT_H_
 #define _UI_EVENT_H_
 
-#include "state.h"
 #include "viewManager.h"
 #include "motion.h"
 

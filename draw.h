@@ -7,7 +7,6 @@
 
 #include "drawGfx.h"
 #include "plugins/components/drawInterface.h"
-#include "state.h"
 
 #ifdef USE_WAVESHARE
 #include "DEV_Config.h"
