@@ -171,6 +171,9 @@ public:
     void setVisibility(int8_t index)
     {
         visibility = index == -1 ? 0 : index;
+        for (auto& component : ui.view->components) {
+            component->onVisibilityChanged(visibility);
+        }
     }
 
     void onMotion(MotionInterface& motion)

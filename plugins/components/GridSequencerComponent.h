@@ -157,6 +157,18 @@ protected:
         renderSelection(grid.row, grid.col, colors.selector);
     }
 
+    void updateSelection()
+    {
+        renderSelection();
+        if (grid.row == trackCount) {
+            setVisibility(2);
+        } else if (grid.col == 0) {
+            setVisibility(0);
+        } else {
+            setVisibility(1);
+        }
+    }
+
     void renderStep(Track& track, unsigned int step, unsigned int row)
     {
         int y = rowY[row];
@@ -402,19 +414,19 @@ public:
         if (state == 1) {
             if (id == keys.up) {
                 grid.up();
-                renderSelection();
+                updateSelection();
                 draw.renderNext();
             } else if (id == keys.down) {
                 grid.down();
-                renderSelection();
+                updateSelection();
                 draw.renderNext();
             } else if (id == keys.left) {
                 grid.left();
-                renderSelection();
+                updateSelection();
                 draw.renderNext();
             } else if (id == keys.right) {
                 grid.right();
-                renderSelection();
+                updateSelection();
                 draw.renderNext();
             } else if (id == keys.leftJump) {
                 int8_t step = ((grid.col - 1) % 4);
@@ -422,18 +434,18 @@ public:
                     step = 4;
                 }
                 grid.selectNextCol(-step);
-                renderSelection();
+                updateSelection();
                 draw.renderNext();
             } else if (id == keys.rightJump) {
                 int8_t step = 4 - ((grid.col - 1) % 4);
                 grid.selectNextCol(step);
-                renderSelection();
+                updateSelection();
                 draw.renderNext();
             } else {
                 for (int i = 0; i < 12; i++) {
                     if (keys.tracks[i] == id) {
                         grid.select(i, 0);
-                        renderSelection();
+                        updateSelection();
                         draw.renderNext();
                         return;
                     }
