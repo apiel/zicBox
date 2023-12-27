@@ -19,7 +19,6 @@ protected:
     std::mutex m2;
 
     UiPlugin& ui = UiPlugin::get();
-    int8_t lastGroup = -100;
     int8_t group = 0;
     int8_t visibility = 0;
 
@@ -88,14 +87,6 @@ protected:
         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Unknown component: %s", name);
     }
 
-    void changeGroup()
-    {
-        lastGroup = group;
-        for (auto& component : ui.view->components) {
-            component->onGroupChanged(group);
-        }
-    }
-
 public:
     Draw draw;
 
@@ -133,7 +124,6 @@ public:
 
         draw.clear();
 
-        changeGroup();
         ui.clearOnUpdate();
         ui.initActiveComponents([](float, void* data) { ViewManager::get().onUpdate((ValueInterface*)data); });
 
@@ -147,9 +137,6 @@ public:
     void renderComponents(unsigned long now = SDL_GetTicks())
     {
         m.lock();
-        if (group != lastGroup) {
-            changeGroup();
-        }
 
         if (ui.view->componentsJob.size()) {
             for (auto& component : ui.view->componentsJob) {
@@ -171,6 +158,10 @@ public:
     void setGroup(int8_t index)
     {
         group = index == -1 ? 0 : index;
+
+        for (auto& component : ui.view->components) {
+            component->onGroupChanged(group);
+        }
     }
 
     void setVisibility(int8_t index)
