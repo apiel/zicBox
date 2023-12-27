@@ -56,6 +56,67 @@ protected:
 
     int rowY[trackCount + 1];
 
+    // Could just create views / or subview...
+    // just need to find how to switch track or step...??
+    // Maybe component assignment could be track base...
+    //
+    // typedef enum {
+    //     None,
+    //     Encoder,
+    //     Switch
+    // } ComponentType;
+
+    // struct ComponentParams {
+    //     ComponentType type = ComponentType::None;
+    //     std::string pluginName;
+    //     std::string keyValue;
+    // };
+
+    // ComponentParams componentParams[3][12] = {
+    //     {
+    //         { ComponentType::Encoder, "Sample", "START" },
+    //         { ComponentType::Encoder, "Sample", "END" },
+    //         { ComponentType::Encoder, "Sample", "BROWSER" },
+    //         { ComponentType::Encoder, "", "" },
+    //         { ComponentType::Encoder, "Sample", "SUSTAIN_LENGTH" },
+    //         { ComponentType::Encoder, "Sample", "SUSTAIN_POSITION" },
+    //         { ComponentType::Encoder, "Sample", "" },
+    //         { ComponentType::Encoder, "", "" },
+    //         { ComponentType::Encoder, "Sample", "" },
+    //         { ComponentType::Encoder, "Sample", "" },
+    //         { ComponentType::Encoder, "Sample", "" },
+    //         { ComponentType::Encoder, "", "" },
+    //     },
+    //     {
+    //         { ComponentType::None, "", "" },
+    //         { ComponentType::None, "", "" },
+    //         { ComponentType::None, "", "" },
+    //         { ComponentType::None, "", "" },
+    //         { ComponentType::None, "", "" },
+    //         { ComponentType::None, "", "" },
+    //         { ComponentType::None, "", "" },
+    //         { ComponentType::None, "", "" },
+    //         { ComponentType::None, "", "" },
+    //         { ComponentType::None, "", "" },
+    //         { ComponentType::None, "", "" },
+    //         { ComponentType::None, "", "" },
+    //     },
+    //     {
+    //         { ComponentType::None, "", "" },
+    //         { ComponentType::None, "", "" },
+    //         { ComponentType::None, "", "" },
+    //         { ComponentType::None, "", "" },
+    //         { ComponentType::None, "", "" },
+    //         { ComponentType::None, "", "" },
+    //         { ComponentType::None, "", "" },
+    //         { ComponentType::None, "", "" },
+    //         { ComponentType::None, "", "" },
+    //         { ComponentType::None, "", "" },
+    //         { ComponentType::None, "", "" },
+    //         { ComponentType::None, "", "" },
+    //     }
+    // };
+
     void progressInit()
     {
         for (unsigned int step = 0; step < stepsCount; step++) {
@@ -196,7 +257,7 @@ protected:
         // uint8_t menu = 11;
 
         uint8_t tracks[12] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
-        uint8_t clips[15] = {15, 16, 17, 18, 19, 27, 28, 29, 30, 31, 39, 40, 41, 42, 43 };
+        uint8_t clips[15] = { 15, 16, 17, 18, 19, 27, 28, 29, 30, 31, 39, 40, 41, 42, 43 };
 
         uint8_t up = 25;
         uint8_t down = 37;

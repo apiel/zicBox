@@ -18,6 +18,7 @@ public:
         AudioPlugin& (*getPlugin)(const char* name);
         ControllerInterface* (*getController)(const char* name);
         void (*setGroup)(int8_t index);
+        void (*setVisibility)(int8_t index);
         void (*setView)(char* name);
         void (*pushToRenderingQueue)(ComponentInterface* component);
     };
@@ -29,6 +30,7 @@ protected:
     AudioPlugin& (*getPlugin)(const char* name);
     ControllerInterface* (*getController)(const char* name);
     void (*setGroup)(int8_t index);
+    void (*setVisibility)(int8_t index);
     void (*setView)(char* name);
     void (*pushToRenderingQueue)(ComponentInterface* component);
 
@@ -44,6 +46,7 @@ public:
     Point position;
     Size size;
     int8_t group = -1;
+    int8_t visibility = -1;
 
     std::function<void(unsigned long now)> jobRendering;
 
@@ -53,6 +56,7 @@ public:
         , getPlugin(props.getPlugin)
         , getController(props.getController)
         , setGroup(props.setGroup)
+        , setVisibility(props.setVisibility)
         , setView(props.setView)
         , pushToRenderingQueue(props.pushToRenderingQueue)
         , position(props.position)
@@ -74,6 +78,7 @@ public:
     virtual bool baseConfig(char* key, char* value) = 0;
     virtual void onGroupChanged(int8_t index) = 0;
     virtual void onUpdate(ValueInterface* value) = 0;
+    virtual void onVisibilityChanged(int8_t index) = 0;
 };
 
 #endif

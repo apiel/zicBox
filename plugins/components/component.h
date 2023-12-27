@@ -10,6 +10,8 @@
 
 class Component : public ComponentInterface {
 protected:
+    bool shouldRender = true;
+
     ValueInterface* val(ValueInterface* value)
     {
         values.push_back(value);
@@ -80,11 +82,28 @@ public:
             group = atoi(value);
             return true;
         }
+
+        if (strcmp(key, "VISIBILITY") == 0) {
+            visibility = atoi(value);
+            return true;
+        }
+
         return config(key, value);
     }
 
     virtual void onGroupChanged(int8_t index)
     {
+    }
+
+    virtual void onVisibilityChanged(int8_t index)
+    {
+        bool previousState = shouldRender;
+        if (visibility == index || visibility == -1) {
+            shouldRender = true;
+        }
+        if (previousState != shouldRender) {
+            renderNext();
+        }
     }
 };
 

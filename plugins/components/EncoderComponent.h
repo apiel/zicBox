@@ -226,7 +226,7 @@ public:
 
     void onGroupChanged(int8_t index) override
     {
-        int8_t shouldActivate = false;
+        bool shouldActivate = false;
         if (group == index || group == -1) {
             shouldActivate = true;
         }

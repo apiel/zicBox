@@ -4,10 +4,16 @@
 // TODO make this configurable
 uint8_t encoderCount = 4;
 int8_t group = 0;
+int8_t visibility = 0;
 
 void setGroup(int8_t index)
 {
     group = index == -1 ? 0 : index;
+}
+
+void setVisibility(int8_t index)
+{
+    visibility = index == -1 ? 0 : index;
 }
 
 #endif

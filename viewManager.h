@@ -70,6 +70,7 @@ protected:
             getPlugin,
             getController,
             setGroup,
+            setVisibility,
             [](char* name) { UiPlugin::get().setView(name); },
             [](ComponentInterface* component) { UiPlugin::get().pushToRenderingQueue(component); }
         };
