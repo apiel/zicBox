@@ -80,7 +80,8 @@ public:
         togglePosition.y = position.y + (size.h * 0.5);
         togglePosition.x = position.x + (size.w * 0.5);
 
-        labelPosition = { (int)(position.x + (size.w * 0.5)), position.y + size.h - 22 };
+        // labelPosition = { (int)(position.x + (size.w * 0.5)), position.y + size.h - 22 };
+        labelPosition = { (int)(position.x + (size.w * 0.5)), (int)(togglePosition.y + size.h / 3.0 - 5) }; // for size.h / 3.0 - 5 see encoder2
 
         radius = size.h * 0.1;
     }
