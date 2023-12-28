@@ -11,6 +11,7 @@ PLUGIN_COMPONENT: Cpu ./plugins/components/build/libzic_MonitoringComponent.so
 PLUGIN_COMPONENT: Adsr ./plugins/components/build/libzic_AdsrComponent.so
 PLUGIN_COMPONENT: Sample ./plugins/components/build/libzic_SampleComponent.so
 PLUGIN_COMPONENT: GridSequencer ./plugins/components/build/libzic_GridSequencerComponent.so
+PLUGIN_COMPONENT: Rect ./plugins/components/build/libzic_RectComponent.so
 
 PLUGIN_CONTROLLER: Osc ./plugins/controllers/build/libzic_OscController.so
 
