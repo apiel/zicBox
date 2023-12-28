@@ -5,7 +5,8 @@
       GROUP: 0
     TOGGLE_COLOR: #9dfe86
     VALUE: Sample START
-    LABEL: Enable
+    LABEL: Enabled
+    OFF_LABEL: Disabled
     VISIBILITY: 1
 
   COMPONENT: Encoder2 $encX2 $encY1 $encSize $encSize

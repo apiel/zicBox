@@ -10,17 +10,11 @@ protected:
     const char* label = NULL;
     char labelBuffer[32];
 
+    const char* offLabel = NULL;
+    char offLabelBuffer[32];
+
     int radius = 20;
     bool showGroup = true;
-
-    struct DrawArea {
-        int x;
-        int xCenter;
-        int y;
-        int yCenter;
-        int w;
-        int h;
-    } area;
 
     Size toggleSize;
     Point togglePosition;
@@ -33,7 +27,7 @@ protected:
 
     void renderLabel()
     {
-        draw.textCentered(labelPosition, label, colors.title, 12);
+        draw.textCentered(labelPosition, value->get() <= 0 && offLabel ? offLabel : label, colors.title, 12);
     }
 
     void renderActiveGroup()
@@ -67,7 +61,6 @@ public:
     ToggleComponent(ComponentInterface::Props props)
         : Component(props)
         , margin(styles.margin)
-        , area({ position.x, 0, position.y, 0, size.w, size.h })
     {
         colors = {
             styles.colors.background,
@@ -126,6 +119,12 @@ public:
         if (strcmp(key, "LABEL") == 0) {
             strcpy(labelBuffer, value);
             label = labelBuffer;
+            return true;
+        }
+
+        if (strcmp(key, "OFF_LABEL") == 0) {
+            strcpy(offLabelBuffer, value);
+            offLabel = offLabelBuffer;
             return true;
         }
 
