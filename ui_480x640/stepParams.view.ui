@@ -1,9 +1,9 @@
-  COMPONENT: Encoder2 $encX1 $encY1 $encSize $encSize
+  COMPONENT: Toggle $encX1 $encY1 $encSize $encSize
     ENCODER_ID: 0
     SHOW_GROUP: FALSE
     if: $IS_RPI == false
       GROUP: 0
-    COLOR: #9dfe86
+    TOGGLE_COLOR: #9dfe86
     VALUE: Sample START
     LABEL: Enable
     VISIBILITY: 1
@@ -50,10 +50,18 @@
       ENCODER_ID: 0
     COLOR: #9dfe86
     VALUE: Sample SUSTAIN_LENGTH
-    LABEL: Drive
+    LABEL: Velocity
     VISIBILITY: 1
 
-  COMPONENT: Rect $encX2 $encY2 $encSize $encSize
+  COMPONENT: Encoder2 $encX2 $encY2 $encSize $encSize
+    ENCODER_ID: 5
+    SHOW_GROUP: FALSE
+    if: $IS_RPI == false
+      GROUP: 1
+      ENCODER_ID: 1
+    COLOR: #3791a1
+    VALUE: Sample SUSTAIN_POSITION
+    LABEL: Drive
     VISIBILITY: 1
 
   COMPONENT: Rect $encX3 $encY2 $encSize $encSize
