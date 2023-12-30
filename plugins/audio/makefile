@@ -8,7 +8,7 @@ all:
 		EffectFilter EffectFilterMultiMode EffectFilterMultiMode2 EffectFilterMultiModeMoog\
 		SynthKick23 SynthGranular SynthSample\
 		Sequencer\
-		Mixer2 Mixer4 Mixer8\
+		Mixer2 Mixer4 Mixer8 Mixer12\
 		AudioInputPulse AudioOutputPulse AudioInputAlsa AudioOutputAlsa
 
 SynthGranular:

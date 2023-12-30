@@ -7,6 +7,9 @@
 
 class Encoder2Component : public Component {
 protected:
+    std::string pluginName;
+    std::string keyValue;
+
     const char* name = NULL;
     const char* label = NULL;
     char labelBuffer[32];
@@ -162,9 +165,9 @@ protected:
         }
     }
 
-    void set(const char* pluginName, const char* key)
+    void assignValue()
     {
-        value = val(getPlugin(pluginName, track).getValue(key));
+        value = val(getPlugin(pluginName.c_str(), track).getValue(keyValue.c_str()));
         if (value != NULL && label == NULL) {
             valueFloatPrecision = value->props().floatingPoint;
             label = value->label();
@@ -255,9 +258,9 @@ public:
     bool config(char* key, char* value)
     {
         if (strcmp(key, "VALUE") == 0) {
-            char* pluginName = strtok(value, " ");
-            char* keyValue = strtok(NULL, " ");
-            set(pluginName, keyValue);
+            pluginName = strtok(value, " ");
+            keyValue = strtok(NULL, " ");
+            assignValue();
             return true;
         }
 
@@ -359,6 +362,14 @@ public:
             renderNext();
         }
         // printf("current group: %d inccoming group: %d drawId: %d\n", group, index, drawId);
+    }
+
+    void updateActiveTrack(int16_t trackId) override
+    {
+        if (track != -1) {
+            track = trackId;
+            assignValue();
+        }
     }
 };
 
