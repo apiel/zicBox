@@ -56,67 +56,6 @@ protected:
 
     int rowY[trackCount + 1];
 
-    // Could just create views / or subview...
-    // just need to find how to switch track or step...??
-    // Maybe component assignment could be track base...
-    //
-    // typedef enum {
-    //     None,
-    //     Encoder,
-    //     Switch
-    // } ComponentType;
-
-    // struct ComponentParams {
-    //     ComponentType type = ComponentType::None;
-    //     std::string pluginName;
-    //     std::string keyValue;
-    // };
-
-    // ComponentParams componentParams[3][12] = {
-    //     {
-    //         { ComponentType::Encoder, "Sample", "START" },
-    //         { ComponentType::Encoder, "Sample", "END" },
-    //         { ComponentType::Encoder, "Sample", "BROWSER" },
-    //         { ComponentType::Encoder, "", "" },
-    //         { ComponentType::Encoder, "Sample", "SUSTAIN_LENGTH" },
-    //         { ComponentType::Encoder, "Sample", "SUSTAIN_POSITION" },
-    //         { ComponentType::Encoder, "Sample", "" },
-    //         { ComponentType::Encoder, "", "" },
-    //         { ComponentType::Encoder, "Sample", "" },
-    //         { ComponentType::Encoder, "Sample", "" },
-    //         { ComponentType::Encoder, "Sample", "" },
-    //         { ComponentType::Encoder, "", "" },
-    //     },
-    //     {
-    //         { ComponentType::None, "", "" },
-    //         { ComponentType::None, "", "" },
-    //         { ComponentType::None, "", "" },
-    //         { ComponentType::None, "", "" },
-    //         { ComponentType::None, "", "" },
-    //         { ComponentType::None, "", "" },
-    //         { ComponentType::None, "", "" },
-    //         { ComponentType::None, "", "" },
-    //         { ComponentType::None, "", "" },
-    //         { ComponentType::None, "", "" },
-    //         { ComponentType::None, "", "" },
-    //         { ComponentType::None, "", "" },
-    //     },
-    //     {
-    //         { ComponentType::None, "", "" },
-    //         { ComponentType::None, "", "" },
-    //         { ComponentType::None, "", "" },
-    //         { ComponentType::None, "", "" },
-    //         { ComponentType::None, "", "" },
-    //         { ComponentType::None, "", "" },
-    //         { ComponentType::None, "", "" },
-    //         { ComponentType::None, "", "" },
-    //         { ComponentType::None, "", "" },
-    //         { ComponentType::None, "", "" },
-    //         { ComponentType::None, "", "" },
-    //         { ComponentType::None, "", "" },
-    //     }
-    // };
-
     void progressInit()
     {
         for (unsigned int step = 0; step < stepsCount; step++) {
@@ -167,6 +106,12 @@ protected:
         } else {
             setVisibility(1);
         }
+    }
+
+    void updateTrackSelection()
+    {
+        setActiveTrack(grid.row);
+        updateSelection();
     }
 
     void renderStep(Track& track, unsigned int step, unsigned int row)
@@ -414,11 +359,11 @@ public:
         if (state == 1) {
             if (id == keys.up) {
                 grid.up();
-                updateSelection();
+                updateTrackSelection();
                 draw.renderNext();
             } else if (id == keys.down) {
                 grid.down();
-                updateSelection();
+                updateTrackSelection();
                 draw.renderNext();
             } else if (id == keys.left) {
                 grid.left();
@@ -445,7 +390,7 @@ public:
                 for (int i = 0; i < 12; i++) {
                     if (keys.tracks[i] == id) {
                         grid.select(i, 0);
-                        updateSelection();
+                        updateTrackSelection();
                         draw.renderNext();
                         return;
                     }

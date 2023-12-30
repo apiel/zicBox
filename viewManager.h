@@ -72,6 +72,7 @@ protected:
             [](int8_t index) { ViewManager::get().setGroup(index); },
             [](int8_t index) { ViewManager::get().setVisibility(index); },
             [](char* name) { UiPlugin::get().setView(name); },
+            [](int16_t track) { ViewManager::get().setActiveTrack(track); },
             [](ComponentInterface* component) { UiPlugin::get().pushToRenderingQueue(component); }
         };
 
@@ -173,6 +174,13 @@ public:
         visibility = index == -1 ? 0 : index;
         for (auto& component : ui.view->components) {
             component->onVisibilityChanged(visibility);
+        }
+    }
+
+    void setActiveTrack(int16_t track)
+    {
+        for (auto& component : ui.view->components) {
+            component->updateActiveTrack(track);
         }
     }
 

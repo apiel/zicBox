@@ -110,6 +110,10 @@ public:
             renderNext();
         }
     }
+
+    virtual void updateActiveTrack(int16_t track)
+    {
+    }
 };
 
 #endif
