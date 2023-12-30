@@ -1,10 +1,10 @@
 #ifndef _UI_COMPONENT_INTERFACE_H_
 #define _UI_COMPONENT_INTERFACE_H_
 
+#include "../controllers/controllerInterface.h"
 #include "drawInterface.h"
 #include "motionInterface.h"
 #include "valueInterface.h"
-#include "../controllers/controllerInterface.h"
 
 #include <functional>
 #include <vector>
@@ -15,7 +15,7 @@ public:
         Point position;
         Size size;
         DrawInterface& draw;
-        AudioPlugin& (*getPlugin)(GetPluginParams params);
+        AudioPlugin& (*getPlugin)(const char* name, int16_t track);
         ControllerInterface* (*getController)(const char* name);
         void (*setGroup)(int8_t index);
         void (*setVisibility)(int8_t index);
@@ -27,7 +27,7 @@ protected:
     DrawInterface& draw;
     Styles& styles;
 
-    AudioPlugin& (*getPlugin)(GetPluginParams params);
+    AudioPlugin& (*getPlugin)(const char* name, int16_t track);
     ControllerInterface* (*getController)(const char* name);
     void (*setGroup)(int8_t index);
     void (*setVisibility)(int8_t index);
@@ -45,6 +45,7 @@ public:
     std::vector<ValueInterface*> values;
     Point position;
     Size size;
+    int16_t track = -1;
     int8_t group = -1;
     int8_t visibility = -1;
     bool active = true;

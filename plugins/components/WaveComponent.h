@@ -44,7 +44,7 @@ public:
         : Component(props)
         , colors(getColorsFromColor(styles.colors.blue))
         , margin(styles.margin)
-        , plugin(getPlugin({ "Kick23" }))
+        , plugin(getPlugin("Kick23", track))
     {
         waveSize = { size.w - 2 * margin, size.h - 2 * margin };
         wavePosition = { position.x + margin, position.y + margin };

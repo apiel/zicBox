@@ -21,7 +21,7 @@ int hostThread(void* data)
     return 0;
 }
 
-AudioPlugin& getPlugin(GetPluginParams params)
+AudioPlugin& getPlugin(const char* name, int16_t track = -1)
 {
     if (!audioPluginHandler) {
         if (!loadHost()) {
@@ -29,10 +29,10 @@ AudioPlugin& getPlugin(GetPluginParams params)
         }
     }
 
-    if (strcmp(params.name, "UI") == 0) {
+    if (strcmp(name, "UI") == 0) {
         return UiPlugin::get();
     }
-    return audioPluginHandler->getPlugin(params.name, params.track);
+    return audioPluginHandler->getPlugin(name, track);
 }
 
 bool loadHost()

@@ -9,13 +9,13 @@
 class SequencerBarComponent : public Component {
 protected:
     AudioPlugin& plugin;
-    ValueInterface* selectedStep = val(getPlugin({ "Sequencer" }).getValue("SELECTED_STEP"));
-    ValueInterface* stepEnabled = val(getPlugin({ "Sequencer" }).getValue("STEP_ENABLED"));
-    ValueInterface* stepLength = val(getPlugin({ "Sequencer" }).getValue("STEP_LENGTH"));
-    ValueInterface* stepVelocity = val(getPlugin({ "Sequencer" }).getValue("STEP_VELOCITY"));
-    ValueInterface* stepNote = val(getPlugin({ "Sequencer" }).getValue("STEP_NOTE"));
-    ValueInterface* stepCondition = val(getPlugin({ "Sequencer" }).getValue("STEP_CONDITION"));
-    ValueInterface* pattern = val(getPlugin({ "Sequencer" }).getValue("PATTERN"));
+    ValueInterface* selectedStep = val(getPlugin("Sequencer", track).getValue("SELECTED_STEP"));
+    ValueInterface* stepEnabled = val(getPlugin("Sequencer", track).getValue("STEP_ENABLED"));
+    ValueInterface* stepLength = val(getPlugin("Sequencer", track).getValue("STEP_LENGTH"));
+    ValueInterface* stepVelocity = val(getPlugin("Sequencer", track).getValue("STEP_VELOCITY"));
+    ValueInterface* stepNote = val(getPlugin("Sequencer", track).getValue("STEP_NOTE"));
+    ValueInterface* stepCondition = val(getPlugin("Sequencer", track).getValue("STEP_CONDITION"));
+    ValueInterface* pattern = val(getPlugin("Sequencer", track).getValue("PATTERN"));
 
     Point stepPosition;
     Size stepSize;
@@ -79,7 +79,7 @@ public:
         : Component(props)
         , colors(getColorsFromColor(styles.colors.blue))
         , margin(styles.margin)
-        , plugin(getPlugin({ "Sequencer" }))
+        , plugin(getPlugin("Sequencer", track))
     {
         stepCount = selectedStep->props().max;
 

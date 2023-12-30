@@ -91,6 +91,11 @@ public:
             return true;
         }
 
+        if (strcmp(key, "TRACK") == 0) {
+            track = atoi(value);
+            return true;
+        }
+
         return config(key, value);
     }
 
