@@ -164,7 +164,7 @@ protected:
 
     void set(const char* pluginName, const char* key)
     {
-        value = val(getPlugin(pluginName).getValue(key));
+        value = val(getPlugin({ pluginName }).getValue(key));
         if (value != NULL && label == NULL) {
             valueFloatPrecision = value->props().floatingPoint;
             label = value->label();

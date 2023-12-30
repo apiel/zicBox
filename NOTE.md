@@ -4,6 +4,10 @@
 
 - use string instead of char...
 
+## keypad
+
+- TODO use keypad as a keyboard while configuring a patch...
+
 ## zicUi
 
 - TODO sequencer grid like zicSample

@@ -19,7 +19,7 @@ public:
 
     std::vector<Plugin> plugins;
 
-    virtual AudioPlugin& getPlugin(const char* name) = 0;
+    virtual AudioPlugin& getPlugin(const char* name, int16_t track = -1) = 0;
 };
 
 class AudioPlugin {
@@ -29,7 +29,7 @@ public:
         uint64_t sampleRate;
         uint8_t channels;
         AudioPluginHandlerInterface* audioPluginHandler;
-        uint16_t maxTracks;
+        int16_t maxTracks;
     };
 
 protected:
@@ -37,7 +37,7 @@ protected:
 
 public:
     char name[64];
-    uint16_t track = 0;
+    int16_t track = 0;
 
     int (*debug)(const char* format, ...);
 

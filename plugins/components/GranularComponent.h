@@ -10,12 +10,12 @@
 class GranularComponent : public Component {
 protected:
     AudioPlugin& plugin;
-    ValueInterface* browser = val(getPlugin("Granular").getValue("BROWSER"));
+    ValueInterface* browser = val(getPlugin({ "Granular" }).getValue("BROWSER"));
     float lastBrowser = -1.0f;
-    ValueInterface* start = val(getPlugin("Granular").getValue("START"));
-    ValueInterface* grainSize = val(getPlugin("Granular").getValue("GRAIN_SIZE"));
-    ValueInterface* spray = val(getPlugin("Granular").getValue("SPRAY"));
-    ValueInterface* density = val(getPlugin("Granular").getValue("DENSITY"));
+    ValueInterface* start = val(getPlugin({ "Granular" }).getValue("START"));
+    ValueInterface* grainSize = val(getPlugin({ "Granular" }).getValue("GRAIN_SIZE"));
+    ValueInterface* spray = val(getPlugin({ "Granular" }).getValue("SPRAY"));
+    ValueInterface* density = val(getPlugin({ "Granular" }).getValue("DENSITY"));
 
     MotionInterface* motion1 = NULL;
     MotionInterface* motion2 = NULL;
@@ -125,7 +125,7 @@ public:
         : Component(props)
         , colors(getColorsFromColor(styles.colors.blue))
         , margin(styles.margin)
-        , plugin(getPlugin("Granular"))
+        , plugin(getPlugin({ "Granular" }))
         , wave(getNewPropsRect(props, { { 0, 20 }, { props.size.w - 2 * styles.margin, (int)(props.size.h - 2 * (20 + styles.margin)) } }))
         , samplePosition(getNewPropsRect(props, { { props.position.x, props.position.y + 20 }, { props.size.w, (int)(props.size.h - 2 * 20) } }))
     {

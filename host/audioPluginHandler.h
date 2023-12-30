@@ -71,10 +71,10 @@ public:
         return *instance;
     }
 
-    AudioPlugin& getPlugin(const char* name)
+    AudioPlugin& getPlugin(const char* name, int16_t track = -1)
     {
         for (Plugin& plugin : plugins) {
-            if (strcmp(plugin.instance->name, name) == 0) {
+            if (strcmp(plugin.instance->name, name) == 0 && (track == -1 || plugin.instance->track == track)) {
                 return *plugin.instance;
             }
         }

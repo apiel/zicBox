@@ -53,7 +53,7 @@ protected:
 
     void set(uint8_t index, int8_t encoderId, const char* pluginName, const char* key)
     {
-        adsr[index].value = val(getPlugin(pluginName).getValue(key));
+        adsr[index].value = val(getPlugin({ pluginName }).getValue(key));
         adsr[index].encoderId = encoderId;
 
         printf("set: %s %s %d = label %s\n", pluginName, key, encoderId, adsr[index].value->label());
@@ -188,7 +188,7 @@ public:
         if (strcmp(key, "DATA_STATE") == 0) {
             char* pluginName = strtok(value, " ");
             dataId = atoi(strtok(NULL, " "));
-            plugin = &getPlugin(pluginName);
+            plugin = &getPlugin({ pluginName });
             return true;
         }
 #endif

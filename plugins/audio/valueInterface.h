@@ -15,6 +15,11 @@ enum ValueIncrementationType {
     VALUE_INCREMENTATION_EXP,
 };
 
+struct GetPluginParams {
+    const char* name;
+    int16_t track = -1;
+};
+
 class ValueInterface {
 public:
     struct Props {

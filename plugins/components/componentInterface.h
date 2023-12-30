@@ -15,7 +15,7 @@ public:
         Point position;
         Size size;
         DrawInterface& draw;
-        AudioPlugin& (*getPlugin)(const char* name);
+        AudioPlugin& (*getPlugin)(GetPluginParams params);
         ControllerInterface* (*getController)(const char* name);
         void (*setGroup)(int8_t index);
         void (*setVisibility)(int8_t index);
@@ -27,7 +27,7 @@ protected:
     DrawInterface& draw;
     Styles& styles;
 
-    AudioPlugin& (*getPlugin)(const char* name);
+    AudioPlugin& (*getPlugin)(GetPluginParams params);
     ControllerInterface* (*getController)(const char* name);
     void (*setGroup)(int8_t index);
     void (*setVisibility)(int8_t index);

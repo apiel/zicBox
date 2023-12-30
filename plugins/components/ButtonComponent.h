@@ -25,7 +25,7 @@ protected:
             uint8_t note = atoi(noteStr);
             char* velocityStr = strtok(NULL, " ");
             uint8_t velocity = atoi(velocityStr);
-            AudioPlugin* plugin = &getPlugin(pluginName);
+            AudioPlugin* plugin = &getPlugin({ pluginName });
             event = [plugin, note, velocity]() {
                 plugin->noteOn(note, velocity);
             };
@@ -36,7 +36,7 @@ protected:
             char* pluginName = strtok(NULL, " ");
             char* noteStr = strtok(NULL, " ");
             uint8_t note = atoi(noteStr);
-            AudioPlugin* plugin = &getPlugin(pluginName);
+            AudioPlugin* plugin = &getPlugin({ pluginName });
             event = [plugin, note]() {
                 plugin->noteOff(note, 0);
             };
@@ -46,7 +46,7 @@ protected:
         char* key = strtok(NULL, " ");
         char* targetValue = strtok(NULL, " ");
 
-        ValueInterface* value = val(getPlugin(action).getValue(key));
+        ValueInterface* value = val(getPlugin({ action }).getValue(key));
         if (value != NULL && label == "") {
             label = value->label();
         }

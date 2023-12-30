@@ -207,7 +207,7 @@ public:
         , colorsActive(getColorsStepFromColor(styles.colors.blue))
         , colorsInactive(getColorsStepFromColor(draw.darken(styles.colors.blue, 0.5)))
         , colorsMode(getColorsModeFromColor(styles.colors.grey))
-        , plugin(getPlugin("Sequencer"))
+        , plugin(getPlugin({"Sequencer"}))
         , margin(styles.margin)
         , input(getNewPropsRect(props,
               { { props.position.x + stepMargin, props.position.y + props.size.h - getBtnSize(props).h - stepMargin },

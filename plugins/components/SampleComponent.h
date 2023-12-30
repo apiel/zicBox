@@ -191,7 +191,7 @@ public:
         if (strcmp(key, "AUDIO_PLUGIN") == 0) {
             char* pluginName = strtok(value, " ");
             bufferDataId = atoi(strtok(NULL, " "));
-            plugin = &getPlugin(pluginName);
+            plugin = &getPlugin({ pluginName });
             browser = val(plugin->getValue(valueKeys[0].c_str()));
             startPosition = val(plugin->getValue(valueKeys[1].c_str()));
             endPosition = val(plugin->getValue(valueKeys[2].c_str()));

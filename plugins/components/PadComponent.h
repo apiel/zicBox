@@ -31,12 +31,12 @@ protected:
 
     void setValueX(const char* pluginName, const char* key)
     {
-        valueX = val(getPlugin(pluginName).getValue(key));
+        valueX = val(getPlugin({ pluginName }).getValue(key));
     }
 
     void setValueY(const char* pluginName, const char* key)
     {
-        valueY = val(getPlugin(pluginName).getValue(key));
+        valueY = val(getPlugin({ pluginName }).getValue(key));
     }
     struct Colors {
         Color background;
