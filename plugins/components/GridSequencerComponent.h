@@ -110,6 +110,13 @@ protected:
 
     void updateTrackSelection()
     {
+        // FIXME if track is over the number of tracks, it will throw
+        // instead we should return null
+        //
+        // or set active track to 0
+
+        // FIXME when assigValue / assignValues, we should delete the old assigned plugin...
+
         setActiveTrack(grid.row);
         updateSelection();
     }

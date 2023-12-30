@@ -369,6 +369,7 @@ public:
         if (track != -1) {
             track = trackId;
             assignValue();
+            renderNext();
         }
     }
 };
