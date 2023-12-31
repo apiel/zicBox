@@ -4,9 +4,9 @@
     if: $IS_RPI == false
       GROUP: 0
     COLOR: #9dfe86
+    TRACK: 0
     VALUE: Sample START
     VISIBILITY: 0
-    TRACK: 0
 
   COMPONENT: Encoder2 $encX2 $encY1 $encSize $encSize
     ENCODER_ID: 1
@@ -14,9 +14,9 @@
     if: $IS_RPI == false
       GROUP: 0
     COLOR: #3791a1
+    TRACK: 0
     VALUE: Sample END
     VISIBILITY: 0
-    TRACK: 0
 
   COMPONENT: Encoder2 $encX3 $encY1 $encSize $encSize
     ENCODER_ID: 2
@@ -24,10 +24,10 @@
     if: $IS_RPI == false
       GROUP: 0
     COLOR: #ff8d99
+    TRACK: 0
     VALUE: Sample BROWSER
     TYPE: BROWSE
     VISIBILITY: 0
-    TRACK: 0
 
   COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize
     ENCODER_ID: 3
@@ -48,10 +48,10 @@
       GROUP: 1
       ENCODER_ID: 0
     COLOR: #9dfe86
+    TRACK: 0
     VALUE: Sample SUSTAIN_LENGTH
     LABEL: Sustain
     VISIBILITY: 0
-    TRACK: 0
 
   COMPONENT: Encoder2 $encX2 $encY2 $encSize $encSize
     ENCODER_ID: 5
@@ -60,9 +60,9 @@
       GROUP: 1
       ENCODER_ID: 1
     COLOR: #3791a1
+    TRACK: 0
     VALUE: Sample SUSTAIN_POSITION
     VISIBILITY: 0
-    TRACK: 0
 
   COMPONENT: Encoder2 $encX3 $encY2 $encSize $encSize
     ENCODER_ID: 6
@@ -71,9 +71,9 @@
       GROUP: 1
       ENCODER_ID: 2
     COLOR: #ff8d99
+    TRACK: 0
     VALUE: Sample SUSTAIN_RELEASE
     VISIBILITY: 0
-    TRACK: 0
 
   COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
     ENCODER_ID: 7
@@ -94,9 +94,9 @@
       GROUP: 2
       ENCODER_ID: 0
     COLOR: #9dfe86
+    TRACK: 0
     VALUE: Sample DENSITY
     VISIBILITY: 0
-    TRACK: 0
 
   COMPONENT: Encoder2 $encX2 $encY3 $encSize $encSize
     ENCODER_ID: 9
@@ -105,10 +105,10 @@
       GROUP: 2
       ENCODER_ID: 1
     COLOR: #3791a1
+    TRACK: 0
     VALUE: Sample DENSITY_DELAY
     FLOAT_PRECISION: 1
     VISIBILITY: 0
-    TRACK: 0
 
   COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
     ENCODER_ID: 10
@@ -116,11 +116,11 @@
     if: $IS_RPI == false
       GROUP: 2
       ENCODER_ID: 2
+    TRACK: 0
     VALUE: Sample DENSITY_RANDOMIZE
     COLOR: #ff8d99
     LABEL: Density Rand
     VISIBILITY: 0
-    TRACK: 0
 
   COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
     ENCODER_ID: 11

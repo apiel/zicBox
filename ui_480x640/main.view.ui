@@ -6,6 +6,7 @@ VIEW: Demo
 
   COMPONENT: Sample 0 300 480 100
     GROUP: 0
+    TRACK: 0
     AUDIO_PLUGIN: Sample 0
     DATA_STATE: 2 1
 

@@ -167,6 +167,7 @@ protected:
 
     void assignValue()
     {
+        values.clear();
         value = val(getPlugin(pluginName.c_str(), track).getValue(keyValue.c_str()));
         if (value != NULL && label == NULL) {
             valueFloatPrecision = value->props().floatingPoint;

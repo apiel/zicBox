@@ -84,6 +84,11 @@ protected:
 
     void assignValues()
     {
+        if (textureSampleWaveform) {
+            draw.destroyTexture(textureSampleWaveform);
+            textureSampleWaveform = NULL;
+        }
+        values.clear();
         plugin = &getPlugin(pluginName.c_str(), track);
         browser = val(plugin->getValue(valueKeys[0].c_str()));
         startPosition = val(plugin->getValue(valueKeys[1].c_str()));
