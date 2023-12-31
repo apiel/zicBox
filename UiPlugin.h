@@ -167,6 +167,7 @@ public:
                     return true;
                 }
             }
+            printf("ERROR: Shared component not found: %s\n", value);
         }
 
         if (views.size() > 0 && views.back()->components.size() > 0) {
