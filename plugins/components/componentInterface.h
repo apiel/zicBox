@@ -20,7 +20,6 @@ public:
         void (*setGroup)(int8_t index);
         void (*setVisibility)(int8_t index);
         void (*setView)(char* name);
-        void (*setActiveTrack)(int16_t track);
         void (*pushToRenderingQueue)(ComponentInterface* component);
     };
 
@@ -33,7 +32,6 @@ protected:
     void (*setGroup)(int8_t index);
     void (*setVisibility)(int8_t index);
     void (*setView)(char* name);
-    void (*setActiveTrack)(int16_t track);
     void (*pushToRenderingQueue)(ComponentInterface* component);
 
     Props getNewPropsRect(Props props, Rect rect)
@@ -62,7 +60,6 @@ public:
         , setGroup(props.setGroup)
         , setVisibility(props.setVisibility)
         , setView(props.setView)
-        , setActiveTrack(props.setActiveTrack)
         , pushToRenderingQueue(props.pushToRenderingQueue)
         , position(props.position)
         , size(props.size)
@@ -84,7 +81,6 @@ public:
     virtual void onGroupChanged(int8_t index) = 0;
     virtual void onUpdate(ValueInterface* value) = 0;
     virtual void onVisibilityChanged(int8_t index) = 0;
-    virtual void updateActiveTrack(int16_t track) = 0;
 };
 
 #endif

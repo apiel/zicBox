@@ -117,7 +117,6 @@ protected:
 
         // FIXME when assigValue / assignValues, we should delete the old assigned plugin...
 
-        setActiveTrack(grid.row);
         updateSelection();
     }
 

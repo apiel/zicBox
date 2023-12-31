@@ -7,9 +7,6 @@
 
 class Encoder2Component : public Component {
 protected:
-    std::string pluginName;
-    std::string keyValue;
-
     const char* name = NULL;
     const char* label = NULL;
     char labelBuffer[32];
@@ -165,16 +162,6 @@ protected:
         }
     }
 
-    void assignValue()
-    {
-        values.clear();
-        value = val(getPlugin(pluginName.c_str(), track).getValue(keyValue.c_str()));
-        if (value != NULL && label == NULL) {
-            valueFloatPrecision = value->props().floatingPoint;
-            label = value->label();
-        }
-    }
-
     struct Colors {
         Color background;
         Color id;
@@ -256,89 +243,93 @@ public:
         }
     }
 
-    bool config(char* key, char* value)
+    bool config(char* key, char* params)
     {
         if (strcmp(key, "VALUE") == 0) {
-            pluginName = strtok(value, " ");
-            keyValue = strtok(NULL, " ");
-            assignValue();
+            char* pluginName = strtok(params, " ");
+            char* keyValue = strtok(NULL, " ");
+            value = val(getPlugin(pluginName, track).getValue(keyValue));
+            if (value != NULL && label == NULL) {
+                valueFloatPrecision = value->props().floatingPoint;
+                label = value->label();
+            }
             return true;
         }
 
         if (strcmp(key, "ENCODER_ID") == 0) {
-            encoderId = atoi(value);
+            encoderId = atoi(params);
             return true;
         }
 
         if (strcmp(key, "TYPE") == 0) {
-            if (strcmp(value, "BROWSE") == 0) {
+            if (strcmp(params, "BROWSE") == 0) {
                 type = 1;
-            } else if (strcmp(value, "TWO_SIDED") == 0) {
+            } else if (strcmp(params, "TWO_SIDED") == 0) {
                 type = 1;
             } else {
-                type = atoi(value);
+                type = atoi(params);
             }
             return true;
         }
 
         if (strcmp(key, "LABEL") == 0) {
-            strcpy(labelBuffer, value);
+            strcpy(labelBuffer, params);
             label = labelBuffer;
             return true;
         }
 
         if (strcmp(key, "COLOR") == 0) {
-            colors.bar = draw.getColor(value);
+            colors.bar = draw.getColor(params);
             colors.barBackground = draw.alpha(colors.bar, 0.5);
             colors.barTwoSide = draw.alpha(colors.bar, 0.2);
             return true;
         }
 
         if (strcmp(key, "BACKGROUND_COLOR") == 0) {
-            colors.background = draw.getColor(value);
+            colors.background = draw.getColor(params);
             return true;
         }
 
         if (strcmp(key, "TEXT_COLOR") == 0) {
-            colors.title = draw.alpha(draw.getColor(value), 0.4);
-            colors.value = draw.alpha(draw.getColor(value), 0.4);
-            colors.unit = draw.alpha(draw.getColor(value), 0.2);
+            colors.title = draw.alpha(draw.getColor(params), 0.4);
+            colors.value = draw.alpha(draw.getColor(params), 0.4);
+            colors.unit = draw.alpha(draw.getColor(params), 0.2);
             return true;
         }
 
         if (strcmp(key, "KNOB_COLOR") == 0) {
-            colors.knob = draw.getColor(value);
+            colors.knob = draw.getColor(params);
             // colors.knobDot = draw.lighten(colors.knob, 0.7);
             return true;
         }
 
         if (strcmp(key, "FLOAT_PRECISION") == 0) {
-            valueFloatPrecision = atoi(value);
+            valueFloatPrecision = atoi(params);
             return true;
         }
 
         if (strcmp(key, "SHOW_KNOB") == 0) {
-            showKnob = (strcmp(value, "TRUE") == 0);
+            showKnob = (strcmp(params, "TRUE") == 0);
             return true;
         }
 
         if (strcmp(key, "SHOW_GROUP") == 0) {
-            showGroup = (strcmp(value, "TRUE") == 0);
+            showGroup = (strcmp(params, "TRUE") == 0);
             return true;
         }
 
         if (strcmp(key, "SHOW_VALUE") == 0) {
-            showValue = (strcmp(value, "TRUE") == 0);
+            showValue = (strcmp(params, "TRUE") == 0);
             return true;
         }
 
         if (strcmp(key, "SHOW_UNIT") == 0) {
-            showUnit = (strcmp(value, "TRUE") == 0);
+            showUnit = (strcmp(params, "TRUE") == 0);
             return true;
         }
 
         if (strcmp(key, "FONT_UNIT_SIZE") == 0) {
-            fontUnitSize = atoi(value);
+            fontUnitSize = atoi(params);
             return true;
         }
 
@@ -363,15 +354,6 @@ public:
             renderNext();
         }
         // printf("current group: %d inccoming group: %d drawId: %d\n", group, index, drawId);
-    }
-
-    void updateActiveTrack(int16_t trackId) override
-    {
-        if (track != -1) {
-            track = trackId;
-            assignValue();
-            renderNext();
-        }
     }
 };
 

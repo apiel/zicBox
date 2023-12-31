@@ -9,7 +9,6 @@
 
 class SampleComponent : public Component {
 protected:
-    std::string pluginName;
     AudioPlugin* plugin;
     int bufferDataId = -1;
     int sampleDataId = -1;
@@ -80,21 +79,6 @@ protected:
             samplePosition.size.w = size.w * endPosition->pct() - samplePosition.position.x;
             samplePosition.render((std::vector<SamplePositionBaseComponent::SampleState>*)plugin->data(sampleDataId));
         }
-    }
-
-    void assignValues()
-    {
-        if (textureSampleWaveform) {
-            draw.destroyTexture(textureSampleWaveform);
-            textureSampleWaveform = NULL;
-        }
-        values.clear();
-        plugin = &getPlugin(pluginName.c_str(), track);
-        browser = val(plugin->getValue(valueKeys[0].c_str()));
-        startPosition = val(plugin->getValue(valueKeys[1].c_str()));
-        endPosition = val(plugin->getValue(valueKeys[2].c_str()));
-        sustainPosition = val(plugin->getValue(valueKeys[3].c_str()));
-        sustainLength = val(plugin->getValue(valueKeys[4].c_str()));
     }
 
     struct Colors {
@@ -205,10 +189,15 @@ public:
         }
 
         if (strcmp(key, "AUDIO_PLUGIN") == 0) {
-            pluginName = strtok(value, " ");
+            char* pluginName = strtok(value, " ");
             bufferDataId = atoi(strtok(NULL, " "));
-            plugin = &getPlugin(pluginName.c_str(), track);
-            assignValues();
+            plugin = &getPlugin(pluginName, track);
+
+            browser = val(plugin->getValue(valueKeys[0].c_str()));
+            startPosition = val(plugin->getValue(valueKeys[1].c_str()));
+            endPosition = val(plugin->getValue(valueKeys[2].c_str()));
+            sustainPosition = val(plugin->getValue(valueKeys[3].c_str()));
+            sustainLength = val(plugin->getValue(valueKeys[4].c_str()));
             return true;
         }
 
@@ -219,15 +208,6 @@ public:
         }
 
         return samplePosition.config(key, value) || wave.config(key, value);
-    }
-
-    void updateActiveTrack(int16_t trackId) override
-    {
-        if (track != -1) {
-            track = trackId;
-            assignValues();
-            renderNext();
-        }
     }
 };
 
