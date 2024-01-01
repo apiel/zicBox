@@ -19,7 +19,6 @@ protected:
     std::mutex m2;
 
     UiPlugin& ui = UiPlugin::get();
-    int8_t group = 0;
     int8_t visibility = 0;
 
     static ViewManager* instance;
@@ -161,8 +160,7 @@ public:
 
     void setGroup(int8_t index)
     {
-        group = index == -1 ? 0 : index;
-
+        int8_t group = index == -1 ? 0 : index;
         for (auto& component : ui.view->components) {
             component->onGroupChanged(group);
         }

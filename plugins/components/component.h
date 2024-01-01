@@ -80,6 +80,8 @@ public:
     {
         if (strcmp(key, "GROUP") == 0) {
             group = atoi(value);
+            // By default set active group to 0
+            onGroupChanged(0);
             return true;
         }
 
