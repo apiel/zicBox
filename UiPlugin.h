@@ -14,6 +14,8 @@ class UiPlugin : public Mapping {
 protected:
     void (*onUpdatePtr)() = []() {};
 
+    uint16_t initViewCounter = 0;
+
     struct SharedComponent {
         std::string name;
         ComponentInterface* component;
@@ -207,12 +209,13 @@ public:
     void initActiveComponents(void (*callback)(float, void* data))
     {
         for (auto& component : view->components) {
-            component->initView();
+            component->initView(initViewCounter);
             component->renderNext();
             for (auto* value : component->values) {
                 value->onUpdate(callback, value);
             }
         }
+        initViewCounter++;
     }
 };
 

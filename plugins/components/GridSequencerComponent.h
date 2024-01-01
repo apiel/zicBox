@@ -53,6 +53,8 @@ protected:
 
     int rowY[trackCount + 1];
 
+    uint16_t initViewCounter = -1;
+
     Track tracks[trackCount]; // FIXME
 
     void progressInit()
@@ -287,8 +289,6 @@ protected:
             keypad->setButton(keys.enc10, columnColor[1]);
             keypad->setButton(keys.enc11, columnColor[2]);
             keypad->setButton(keys.enc12, columnColor[3]);
-
-            // TODO use first row of 8 (or even 2 row of 8) to select the clip
         }
     }
 
@@ -335,9 +335,13 @@ public:
         }
     }
 
-    void initView()
+    void initView(uint16_t counter)
     {
-        renderKeypad();
+        // Do not initialize if it was previously initialized
+        if (initViewCounter != counter - 1) {
+            renderKeypad();
+        }
+        initViewCounter = counter;
     }
 
     void render()

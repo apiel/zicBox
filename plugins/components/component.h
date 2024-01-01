@@ -23,7 +23,7 @@ public:
     }
 
     virtual void render() { }
-    virtual void initView() { }
+    virtual void initView(uint16_t counter) { }
 
     virtual void renderNext()
     {
