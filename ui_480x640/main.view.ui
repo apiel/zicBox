@@ -6,13 +6,20 @@ VIEW: shared_components HIDDEN
 
 $track=0
 while: $track < 12
+  print: loooooooooooooooooooooooooooop $track
   VIEW: Main_$track
-    INCLUDE: sampleParams.view.ui
-    INCLUDE: stepParams.view.ui
+
+    # INCLUDE: sampleParams.view.ui
+    # INCLUDE: stepParams.view.ui
+  
     COMPONENT: Sample 0 300 480 100
       GROUP: 0
       # TRACK: $track
       AUDIO_PLUGIN: Sample 0
       DATA_STATE: 2 1
+  
     USE_SHARED_COMPONENT: SharedGridSequencer
+
   $track=$track + 1
+
+print: exiiiiiiiiiiiiiiiiiiiiiiiiiit loooooooooooooooooooooooooooop $track

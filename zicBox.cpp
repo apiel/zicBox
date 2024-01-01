@@ -29,11 +29,6 @@ int main( int argc, char* argv[] )
     ViewManager &viewManager = ViewManager::get();
     viewManager.draw.init();
 
-    if (!loadHost())
-    {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not load host");
-    }
-
     viewManager.init();
     if (!viewManager.render())
     {

@@ -30,6 +30,8 @@ PLUGIN_CONTROLLER: MidiEncoder ./plugins/controllers/build/libzic_MidiEncoderCon
   ENCODER_TARGET: 1 6
   ENCODER_TARGET: 0 7
 
+LOAD_HOST: config.cfg
+
 $encoder=Encoder2
 
 # $screen=ui_320x172
@@ -52,7 +54,7 @@ if: $screen == ui_800x480
 
 ## 320x172 ###
 
-# # HOST_CONFIG: config_mini.cfg
+# # LOAD_HOST: config_mini.cfg
 
 if: $screen == ui_320x172
   SCREEN: 320 172

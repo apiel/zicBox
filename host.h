@@ -11,9 +11,6 @@
 #include "plugins/audio/valueInterface.h"
 
 AudioPluginHandlerInterface* audioPluginHandler = NULL;
-char hostConfigPath[512] = "./config.cfg";
-
-bool loadHost();
 
 int hostThread(void* data)
 {
@@ -24,9 +21,7 @@ int hostThread(void* data)
 AudioPlugin& getPlugin(const char* name, int16_t track = -1)
 {
     if (!audioPluginHandler) {
-        if (!loadHost()) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not load host");
-        }
+        throw std::runtime_error("Host not loaded");
     }
 
     if (strcmp(name, "UI") == 0) {
@@ -35,7 +30,7 @@ AudioPlugin& getPlugin(const char* name, int16_t track = -1)
     return audioPluginHandler->getPlugin(name, track);
 }
 
-bool loadHost()
+bool loadHost(char* hostConfigPath)
 {
     if (audioPluginHandler) {
         SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Host already loaded\n");

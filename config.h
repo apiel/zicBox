@@ -16,8 +16,12 @@ void uiScriptCallback(char* key, char* value, const char* filename, uint8_t inde
         char fullpath[512];
         getFullpath(value, filename, fullpath);
         DustScript::load(fullpath, uiScriptCallback);
-    } else if (strcmp(key, "HOST_CONFIG") == 0) {
+    } else if (strcmp(key, "LOAD_HOST") == 0) {
+        char hostConfigPath[512];
         getFullpath(value, filename, hostConfigPath);
+        if (!loadHost(hostConfigPath)) {
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not load host");
+        }
     } else if (strcmp(key, "SCREEN") == 0) {
         styles.screen.w = atoi(strtok(value, " "));
         styles.screen.h = atoi(strtok(NULL, " "));

@@ -1,3 +1,5 @@
+  print: ................track in sample params $track
+  
   COMPONENT: Encoder2 $encX1 $encY1 $encSize $encSize
     ENCODER_ID: 0
     SHOW_GROUP: FALSE
