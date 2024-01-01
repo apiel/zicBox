@@ -7,7 +7,6 @@
     VALUE: Sample START
     LABEL: Enabled
     OFF_LABEL: Disabled
-    VISIBILITY: 1
 
   COMPONENT: Encoder2 $encX2 $encY1 $encSize $encSize
     ENCODER_ID: 1
@@ -17,7 +16,6 @@
     COLOR: #3791a1
     VALUE: Sample END
     LABEL: Note
-    VISIBILITY: 1
 
   COMPONENT: Encoder2 $encX3 $encY1 $encSize $encSize
     ENCODER_ID: 2
@@ -28,7 +26,6 @@
     VALUE: Sample BROWSER
     TYPE: BROWSE
     LABEL: Length
-    VISIBILITY: 1
 
   COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize
     ENCODER_ID: 3
@@ -39,7 +36,6 @@
     COLOR: #ff7700
     TYPE: TWO_SIDED
     LABEL: Condition
-    VISIBILITY: 1
     # BACKGROUND_COLOR: #2b2c2e
 
 
@@ -52,7 +48,6 @@
     COLOR: #9dfe86
     VALUE: Sample SUSTAIN_LENGTH
     LABEL: Velocity
-    VISIBILITY: 1
 
   COMPONENT: Encoder2 $encX2 $encY2 $encSize $encSize
     ENCODER_ID: 5
@@ -63,23 +58,16 @@
     COLOR: #3791a1
     VALUE: Sample SUSTAIN_POSITION
     LABEL: Drive
-    VISIBILITY: 1
 
   COMPONENT: Rect $encX3 $encY2 $encSize $encSize
-    VISIBILITY: 1
 
   COMPONENT: Rect $encX4 $encY2 $encSize $encSize
-    VISIBILITY: 1
 
 
   COMPONENT: Rect $encX1 $encY3 $encSize $encSize
-    VISIBILITY: 1
 
   COMPONENT: Rect $encX2 $encY3 $encSize $encSize
-    VISIBILITY: 1
 
   COMPONENT: Rect $encX3 $encY3 $encSize $encSize
-    VISIBILITY: 1
 
   COMPONENT: Rect $encX4 $encY3 $encSize $encSize
-    VISIBILITY: 1

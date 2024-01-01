@@ -4,19 +4,26 @@ VIEW: shared_components HIDDEN
   COMPONENT: GridSequencer 0 403 480 240
     SHARED_COMPONENT: SharedGridSequencer
 
-$track=0
-while: $track < 12
-  VIEW: SampleParams_track_$track
-
-    INCLUDE: sampleParams.view.ui
-    INCLUDE: stepParams.view.ui
-  
+  $track=0
+  while: $track < 12
     COMPONENT: Sample 0 300 480 100
       GROUP: 0
       TRACK: $track
       AUDIO_PLUGIN: Sample 0
       DATA_STATE: 2 1
-  
+      SHARED_COMPONENT: Sample_track_$track
+    $track=$track + 1
+
+$track=0
+while: $track < 12
+  VIEW: SampleParams_track_$track
+    INCLUDE: sampleParams.view.ui
+    USE_SHARED_COMPONENT: Sample_track_$track
+    USE_SHARED_COMPONENT: SharedGridSequencer
+
+  VIEW: StepParams_track_$track
+    INCLUDE: stepParams.view.ui
+    USE_SHARED_COMPONENT: Sample_track_$track
     USE_SHARED_COMPONENT: SharedGridSequencer
 
   $track=$track + 1

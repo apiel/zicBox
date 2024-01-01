@@ -38,6 +38,7 @@ protected:
     KeypadInterface* keypad;
 
     std::string prefixSampleParamsView = "SampleParams_track_";
+    std::string prefixStepParamsView = "StepParams_track_";
 
     int firstColumnWidth = 92;
     int firstColumnMargin = 4;
@@ -102,18 +103,12 @@ protected:
     {
         renderSelection();
         if (grid.row == trackCount) {
-            setVisibility(2);
+            // setView("Master");
         } else if (grid.col == 0) {
-            setVisibility(0);
+            setView(prefixSampleParamsView + std::to_string(grid.row));
         } else {
-            setVisibility(1);
+            setView(prefixStepParamsView + std::to_string(grid.row));
         }
-    }
-
-    void updateTrackSelection()
-    {
-        setView(prefixSampleParamsView + std::to_string(grid.row));
-        updateSelection();
     }
 
     void renderStep(Track& track, unsigned int step, unsigned int row)
@@ -361,11 +356,11 @@ public:
         if (state == 1) {
             if (id == keys.up) {
                 grid.up();
-                updateTrackSelection();
+                updateSelection();
                 draw.renderNext();
             } else if (id == keys.down) {
                 grid.down();
-                updateTrackSelection();
+                updateSelection();
                 draw.renderNext();
             } else if (id == keys.left) {
                 grid.left();
@@ -392,7 +387,7 @@ public:
                 for (int i = 0; i < 12; i++) {
                     if (keys.tracks[i] == id) {
                         grid.select(i, 0);
-                        updateTrackSelection();
+                        updateSelection();
                         draw.renderNext();
                         return;
                     }
