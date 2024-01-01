@@ -99,15 +99,22 @@ protected:
         renderSelection(grid.row, grid.col, colors.selector);
     }
 
+    std::string lastView;
     void updateSelection()
     {
         renderSelection();
+        std::string view;
         if (grid.row == trackCount) {
-            // setView("Master");
+            view = "Master";
         } else if (grid.col == 0) {
-            setView(prefixSampleParamsView + std::to_string(grid.row));
+            view = prefixSampleParamsView + std::to_string(grid.row);
         } else {
-            setView(prefixStepParamsView + std::to_string(grid.row));
+            view = prefixStepParamsView + std::to_string(grid.row);
+        }
+
+        if (view != lastView) {
+            lastView = view;
+            setView(view);
         }
     }
 
