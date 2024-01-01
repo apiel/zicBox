@@ -112,16 +112,7 @@ protected:
 
     void updateTrackSelection()
     {
-        // FIXME if track is over the number of tracks, it will throw
-        // instead we should return null
-        //
-        // or set active track to 0
-
-        // FIXME when assigValue / assignValues, we should delete the old assigned plugin...
-
-        std::string view = prefixSampleParamsView + std::to_string(grid.row);
-        setView((char *)view.c_str());
-
+        setView(prefixSampleParamsView + std::to_string(grid.row));
         updateSelection();
     }
 

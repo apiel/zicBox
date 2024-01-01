@@ -105,13 +105,14 @@ public:
         return *this;
     }
 
-    UiPlugin& setView(char* value)
+    UiPlugin& setView(std::string value)
     {
-        if (strcmp(value, "&previous") == 0) {
+        // if (strcmp(value, "&previous") == 0) {
+        if (value == "&previous") {
             value = lastView->name;
         }
         for (int i = 0; i < views.size(); i++) {
-            if (strcmp(views[i]->name, value) == 0) {
+            if (views[i]->name == value) {
                 setView(i);
                 break;
             }

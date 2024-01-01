@@ -71,7 +71,7 @@ protected:
             getController,
             [](int8_t index) { ViewManager::get().setGroup(index); },
             [](int8_t index) { ViewManager::get().setVisibility(index); },
-            [](char* name) { UiPlugin::get().setView(name); },
+            [](std::string name) { UiPlugin::get().setView(name); },
             [](ComponentInterface* component) { UiPlugin::get().pushToRenderingQueue(component); }
         };
 

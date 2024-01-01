@@ -19,7 +19,7 @@ public:
         ControllerInterface* (*getController)(const char* name);
         void (*setGroup)(int8_t index);
         void (*setVisibility)(int8_t index);
-        void (*setView)(char* name);
+        void (*setView)(std::string name);
         void (*pushToRenderingQueue)(ComponentInterface* component);
     };
 
@@ -31,7 +31,7 @@ protected:
     ControllerInterface* (*getController)(const char* name);
     void (*setGroup)(int8_t index);
     void (*setVisibility)(int8_t index);
-    void (*setView)(char* name);
+    void (*setView)(std::string name);
     void (*pushToRenderingQueue)(ComponentInterface* component);
 
     Props getNewPropsRect(Props props, Rect rect)
