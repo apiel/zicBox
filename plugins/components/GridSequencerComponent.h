@@ -37,6 +37,8 @@ class GridSequencerComponent : public Component {
 protected:
     KeypadInterface* keypad;
 
+    std::string prefixSampleParamsView = "SampleParams_track_";
+
     int firstColumnWidth = 92;
     int firstColumnMargin = 4;
 
@@ -116,6 +118,9 @@ protected:
         // or set active track to 0
 
         // FIXME when assigValue / assignValues, we should delete the old assigned plugin...
+
+        std::string view = prefixSampleParamsView + std::to_string(grid.row);
+        setView((char *)view.c_str());
 
         updateSelection();
     }

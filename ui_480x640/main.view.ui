@@ -6,7 +6,7 @@ VIEW: shared_components HIDDEN
 
 $track=0
 while: $track < 12
-  VIEW: Main_$track
+  VIEW: SampleParams_track_$track
 
     INCLUDE: sampleParams.view.ui
     INCLUDE: stepParams.view.ui
