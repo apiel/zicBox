@@ -1,12 +1,10 @@
-  print: ................track in sample params $track
-  
   COMPONENT: Encoder2 $encX1 $encY1 $encSize $encSize
     ENCODER_ID: 0
     SHOW_GROUP: FALSE
     if: $IS_RPI == false
       GROUP: 0
     COLOR: #9dfe86
-    # TRACK: $track
+    TRACK: $track
     VALUE: Sample START
     VISIBILITY: 0
 
@@ -16,7 +14,7 @@
     if: $IS_RPI == false
       GROUP: 0
     COLOR: #3791a1
-    # TRACK: $track
+    TRACK: $track
     VALUE: Sample END
     VISIBILITY: 0
 
@@ -26,7 +24,7 @@
     if: $IS_RPI == false
       GROUP: 0
     COLOR: #ff8d99
-    # TRACK: $track
+    TRACK: $track
     VALUE: Sample BROWSER
     TYPE: BROWSE
     VISIBILITY: 0
@@ -50,7 +48,7 @@
       GROUP: 1
       ENCODER_ID: 0
     COLOR: #9dfe86
-    # TRACK: $track
+    TRACK: $track
     VALUE: Sample SUSTAIN_LENGTH
     LABEL: Sustain
     VISIBILITY: 0
@@ -62,7 +60,7 @@
       GROUP: 1
       ENCODER_ID: 1
     COLOR: #3791a1
-    # TRACK: $track
+    TRACK: $track
     VALUE: Sample SUSTAIN_POSITION
     VISIBILITY: 0
 
@@ -73,7 +71,7 @@
       GROUP: 1
       ENCODER_ID: 2
     COLOR: #ff8d99
-    # TRACK: $track
+    TRACK: $track
     VALUE: Sample SUSTAIN_RELEASE
     VISIBILITY: 0
 
@@ -96,7 +94,7 @@
       GROUP: 2
       ENCODER_ID: 0
     COLOR: #9dfe86
-    # TRACK: $track
+    TRACK: $track
     VALUE: Sample DENSITY
     VISIBILITY: 0
 
@@ -107,7 +105,7 @@
       GROUP: 2
       ENCODER_ID: 1
     COLOR: #3791a1
-    # TRACK: $track
+    TRACK: $track
     VALUE: Sample DENSITY_DELAY
     FLOAT_PRECISION: 1
     VISIBILITY: 0
@@ -118,7 +116,7 @@
     if: $IS_RPI == false
       GROUP: 2
       ENCODER_ID: 2
-    # TRACK: $track
+    TRACK: $track
     VALUE: Sample DENSITY_RANDOMIZE
     COLOR: #ff8d99
     LABEL: Density Rand
