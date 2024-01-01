@@ -10,12 +10,16 @@ protected:
         char* action = strtok(config, " ");
 
         if (strcmp(action, "&SET_VIEW") == 0) {
-            char* name = strtok(NULL, " ");
-            // char* nameCopy = new char[strlen(name) + 1];
-            // strcpy(nameCopy, name);
-            std::string nameCopy(name);
-            event = [this, nameCopy]() {
-                this->setView(nameCopy);
+            // char* name = strtok(NULL, " ");
+            // // char* nameCopy = new char[strlen(name) + 1];
+            // // strcpy(nameCopy, name);
+            // std::string nameCopy(name);
+            // event = [this, nameCopy]() {
+            //     this->setView(nameCopy);
+            // };
+            std::string name = strtok(NULL, " ");
+            event = [this, name]() {
+                this->setView(name);
             };
             return;
         }

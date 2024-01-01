@@ -133,9 +133,7 @@ public:
     {
         if (strcmp(key, "VIEW") == 0) {
             View* v = new View;
-
-            char* name = strtok(value, " ");
-            v->name = name;
+            v->name = strtok(value, " ");
 
             char* hidden = strtok(NULL, " ");
             if (hidden != NULL && strcmp(hidden, "HIDDEN") == 0) {
