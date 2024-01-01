@@ -1,17 +1,11 @@
 #ifndef _UI_COMPONENT_GRID_SEQUENCER_H_
 #define _UI_COMPONENT_GRID_SEQUENCER_H_
 
+#include "../audio/stepInterface.h"
 #include "../controllers/keypadInterface.h"
 
 #include "base/Grid.h"
 #include "component.h"
-
-class Step {
-public:
-    bool enabled = false;
-    float velocity = 0;
-    uint8_t condition = 0;
-};
 
 class Track {
 public:
@@ -20,24 +14,15 @@ public:
     std::string name = "Init";
     float volume = rand() % 100 / 100.0f;
     bool active = false;
-    Step steps[32];
-
-    void randomize()
-    {
-        name = "Track " + std::to_string(rand() % 100);
-        active = rand() % 6 != 0;
-
-        for (unsigned int step = 0; step < 32; step++) {
-            steps[step].enabled = rand() % 4 == 0;
-            steps[step].velocity = steps[step].enabled && rand() % 4 == 0 ? 1.0f : 0.7f;
-            steps[step].condition = rand() % 2 ? 0 : (rand() % 4);
-        }
-    }
+    Step* steps;
+    ValueInterface* selectedStep;
 
     void load(int16_t id, AudioPlugin& _seqPlugin)
     {
         trackId = id;
         seqPlugin = &_seqPlugin;
+        selectedStep = _seqPlugin.getValue("SELECTED_STEP");
+        steps = (Step*)seqPlugin->data(0); // TODO make this configurable...
         name = "Track " + std::to_string(id + 1);
     }
 };
@@ -121,6 +106,11 @@ protected:
             view = prefixSampleParamsView + std::to_string(grid.row);
         } else {
             view = prefixStepParamsView + std::to_string(grid.row);
+            tracks[grid.row].selectedStep->set(grid.col - 1);
+            // printf("Selected step: %d enable %f = %s\n",
+            //     grid.col - 1,
+            //     tracks[grid.row].seqPlugin->getValue("STEP_ENABLED")->get(),
+            //     tracks[grid.row].steps[grid.col - 1].enabled ? "ON" : "OFF");
         }
 
         if (view != lastView) {
@@ -134,6 +124,7 @@ protected:
         int y = rowY[row];
         int x = firstColumnWidth + itemW * step;
         Color color = colors.step;
+        // printf("................[%d] step enabled: %d\n", step, track.steps[step].enabled);
         if (track.steps[step].enabled) {
             color = colors.activeStep;
             if (track.steps[step].condition) {
@@ -341,12 +332,7 @@ public:
 
         for (int16_t i = 0; i < 12; i++) {
             tracks[i].load(i, getPlugin("Sequencer", i));
-            // tracks[i].load(i, getPlugin("Sequencer", -1));
         }
-
-        // tracks[0].randomize();
-        // tracks[1].randomize();
-        // tracks[2].randomize();
     }
 
     void initView()
