@@ -120,7 +120,7 @@ public:
             mixH.set(atof(value));
             return true;
         }
-        return false;
+        return AudioPlugin::config(key, value);
     }
 };
 

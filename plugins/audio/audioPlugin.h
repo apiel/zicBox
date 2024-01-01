@@ -85,6 +85,7 @@ public:
             if (track >= props.maxTracks) {
                 track = props.maxTracks - 1;
             }
+            return true;
         }
         return false;
     }

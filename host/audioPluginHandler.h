@@ -74,11 +74,12 @@ public:
     AudioPlugin& getPlugin(const char* name, int16_t track = -1)
     {
         for (Plugin& plugin : plugins) {
+            printf("Plugin %s on track %d\n", plugin.instance->name, plugin.instance->track);
             if (strcmp(plugin.instance->name, name) == 0 && (track == -1 || plugin.instance->track == track)) {
                 return *plugin.instance;
             }
         }
-        throw std::runtime_error("Could not find plugin " + std::string(name));
+        throw std::runtime_error("Could not find plugin " + std::string(name) + " on track " + std::to_string(track));
     }
 
     void loop()

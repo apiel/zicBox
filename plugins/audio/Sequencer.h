@@ -215,10 +215,10 @@ public:
     bool config(char* key, char* value)
     {
         if (strcmp(key, "TARGET") == 0) {
-            targetPlugin = &props.audioPluginHandler->getPlugin(value);
+            targetPlugin = &props.audioPluginHandler->getPlugin(value, track);
             return true;
         }
-        return false;
+        return AudioPlugin::config(key, value);
     }
 };
 

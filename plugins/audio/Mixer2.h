@@ -43,7 +43,7 @@ public:
             mix.set(atof(value));
             return true;
         }
-        return false;
+        return AudioPlugin::config(key, value);
     }
 };
 

@@ -15,6 +15,8 @@ public:
 
 class Track {
 public:
+    int16_t trackId = -1;
+    AudioPlugin* seqPlugin;
     std::string name = "Init";
     float volume = rand() % 100 / 100.0f;
     bool active = false;
@@ -30,6 +32,13 @@ public:
             steps[step].velocity = steps[step].enabled && rand() % 4 == 0 ? 1.0f : 0.7f;
             steps[step].condition = rand() % 2 ? 0 : (rand() % 4);
         }
+    }
+
+    void load(int16_t id, AudioPlugin& _seqPlugin)
+    {
+        trackId = id;
+        seqPlugin = &_seqPlugin;
+        name = "Track " + std::to_string(id + 1);
     }
 };
 
@@ -58,6 +67,8 @@ protected:
     Size progressItemSize = { 0, 5 };
 
     int rowY[trackCount + 1];
+
+    Track tracks[trackCount]; // FIXME
 
     void progressInit()
     {
@@ -135,7 +146,6 @@ protected:
         draw.filledRect({ x, y }, itemSize, color);
     }
 
-    Track tracks[trackCount]; // FIXME
     void renderRow(unsigned int row)
     {
         Track& track = tracks[row];
@@ -329,9 +339,14 @@ public:
 
         resize();
 
-        tracks[0].randomize();
-        tracks[1].randomize();
-        tracks[2].randomize();
+        for (int16_t i = 0; i < 12; i++) {
+            tracks[i].load(i, getPlugin("Sequencer", i));
+            // tracks[i].load(i, getPlugin("Sequencer", -1));
+        }
+
+        // tracks[0].randomize();
+        // tracks[1].randomize();
+        // tracks[2].randomize();
     }
 
     void initView()
