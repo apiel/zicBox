@@ -2,6 +2,7 @@
 #define _HOST_CONFIG_H_
 
 #include "../dustscript/dustscript.h"
+#include "../helpers/getFullpath.h"
 #include "def.h"
 #include "midi.h"
 
