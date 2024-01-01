@@ -15,13 +15,13 @@ protected:
     void (*onUpdatePtr)() = []() {};
 
     struct SharedComponent {
-        char* name;
+        std::string name;
         ComponentInterface* component;
     };
     std::vector<SharedComponent> sharedComponents;
 
     struct View {
-        char* name;
+        std::string name;
         std::vector<ComponentInterface*> components = {};
         std::vector<ComponentInterface*> componentsToRender = {};
         std::vector<ComponentInterface*> componentsJob = {};
@@ -107,7 +107,6 @@ public:
 
     UiPlugin& setView(std::string value)
     {
-        // if (strcmp(value, "&previous") == 0) {
         if (value == "&previous") {
             value = lastView->name;
         }
@@ -136,8 +135,7 @@ public:
             View* v = new View;
 
             char* name = strtok(value, " ");
-            v->name = new char[strlen(name) + 1];
-            strcpy(v->name, name);
+            v->name = name;
 
             char* hidden = strtok(NULL, " ");
             if (hidden != NULL && strcmp(hidden, "HIDDEN") == 0) {
@@ -154,7 +152,7 @@ public:
             }
             viewSelector.props().max = (float)max;
 
-            printf("Set VIEW: %s hidden=%s (max %d)\n", v->name, v->hidden ? "true" : "false", max);
+            printf("Set VIEW: %s hidden=%s (max %d)\n", v->name.c_str(), v->hidden ? "true" : "false", max);
 
             setView(1.0f);
 
@@ -163,7 +161,7 @@ public:
 
         if (strcmp(key, "USE_SHARED_COMPONENT") == 0) {
             for (auto& shared : sharedComponents) {
-                if (strcmp(shared.name, value) == 0) {
+                if (shared.name == value) {
                     views.back()->components.push_back(shared.component);
                     return true;
                 }
@@ -174,8 +172,7 @@ public:
         if (views.size() > 0 && views.back()->components.size() > 0) {
             if (strcmp(key, "SHARED_COMPONENT") == 0) {
                 SharedComponent shared;
-                shared.name = new char[strlen(value) + 1];
-                strcpy(shared.name, value);
+                shared.name = value;
                 shared.component = views.back()->components.back();
                 sharedComponents.push_back(shared);
             }
