@@ -47,7 +47,7 @@ uint8_t STEP_CONDITIONS_COUNT = sizeof(stepConditions) / sizeof(stepConditions[0
 class Step {
 public:
     bool enabled = false;
-    float velocity = 0;
+    float velocity = 0.8f;
     uint8_t condition = 0;
     uint8_t len = 1; // len 0 is infinite?
     uint8_t counter = 0;
@@ -61,6 +61,15 @@ public:
         len = 1;
         counter = 0;
         note = 60;
+    }
+
+    bool equal(Step& other)
+    {
+        return enabled == other.enabled
+            && velocity == other.velocity
+            && condition == other.condition
+            && len == other.len
+            && note == other.note;
     }
 
     void setCondition(int condition)

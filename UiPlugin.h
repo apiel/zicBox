@@ -162,7 +162,7 @@ public:
         if (strcmp(key, "USE_SHARED_COMPONENT") == 0) {
             for (auto& shared : sharedComponents) {
                 if (shared.name == value) {
-                    views.back()->components.push_back(shared.component);
+                    addComponent(shared.component);
                     return true;
                 }
             }

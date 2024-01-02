@@ -57,6 +57,8 @@ protected:
 
     Track tracks[trackCount]; // FIXME
 
+    Step selectedStepCopy;
+
     void progressInit()
     {
         for (unsigned int step = 0; step < stepsCount; step++) {
@@ -109,6 +111,9 @@ protected:
         } else {
             view = prefixStepParamsView + std::to_string(grid.row);
             tracks[grid.row].selectedStep->set(grid.col - 1);
+
+            selectedStepCopy = tracks[grid.row].steps[grid.col - 1];
+
             // printf("Selected step: %d enable %f = %s\n",
             //     grid.col - 1,
             //     tracks[grid.row].seqPlugin->getValue("STEP_ENABLED")->get(),
@@ -333,6 +338,14 @@ public:
         for (int16_t i = 0; i < 12; i++) {
             tracks[i].load(i, getPlugin("Sequencer", i));
         }
+
+        jobRendering = [this](unsigned long now) {
+            if (grid.row < trackCount && grid.col > 0 && !tracks[grid.row].steps[grid.col - 1].equal(selectedStepCopy)) {
+                renderSelection(grid.row, grid.col, colors.selector);
+                renderNext();
+                selectedStepCopy = tracks[grid.row].steps[grid.col - 1];
+            }
+        };
     }
 
     void initView(uint16_t counter)
