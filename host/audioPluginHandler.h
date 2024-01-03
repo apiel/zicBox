@@ -219,7 +219,7 @@ public:
 
     void serialize(std::string filepath, int16_t track)
     {
-        FILE* file = fopen(filepath.c_str(), "wb");
+        FILE* file = fopen(filepath.c_str(), "w");
         for (Plugin& plugin : plugins) {
             if ((track == -1 || track == plugin.instance->track) && plugin.instance->serializable) {
                 fprintf(file, "# %s\n", plugin.instance->name);
@@ -231,7 +231,7 @@ public:
 
     void hydrate(std::string filepath, int16_t track)
     {
-        FILE* file = fopen(filepath.c_str(), "rb");
+        FILE* file = fopen(filepath.c_str(), "r");
         AudioPlugin* plugin = NULL;
         char _line[1024];
         while (fgets(_line, 1024, file)) {

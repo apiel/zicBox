@@ -4,6 +4,8 @@
 #include <math.h>
 #include <stdint.h>
 #include <time.h>
+#include <string>
+#include <cstring>
 
 // #include "../../helpers/midiNote.h"
 #include "../../helpers/range.h"
@@ -90,6 +92,30 @@ public:
     void setLength(int len)
     {
         this->len = range(len, 0, 255);
+    }
+
+    std::string serialize()
+    {
+        return std::to_string(enabled) + " "
+            + std::to_string(note) + " "
+            + std::to_string(velocity) + " "
+            + stepConditions[condition].name + " "
+            + std::to_string(len);
+    }
+
+    void hydrate(std::string value)
+    {
+        enabled = strtok((char*)value.c_str(), " ")[0] == '1';
+        note = atoi(strtok(NULL, " "));
+        velocity = atof(strtok(NULL, " "));
+        char* conditionName = strtok(NULL, " ");
+        for (int i = 0; i < STEP_CONDITIONS_COUNT; i++) {
+            if (strcmp(stepConditions[i].name, conditionName) == 0) {
+                condition = i;
+                break;
+            }
+        }
+        len = atoi(strtok(NULL, " "));
     }
 };
 

@@ -284,6 +284,25 @@ public:
         }
         return AudioPlugin::config(key, value);
     }
+
+    void serialize(FILE* file, std::string separator) override
+    {
+        for (int i = 0; i < MAX_STEPS; i++) {
+             fprintf(file, "STEP %d %s %s", i, steps[i].serialize().c_str(), separator.c_str());
+        }
+        // AudioPlugin::serialize(file, separator);
+    }
+
+    void hydrate(std::string value) override
+    {
+        char* key = strtok((char*)value.c_str(), " ");
+        if (strcmp(key, "STEP") == 0) {
+            int index = atoi(strtok(NULL, " "));
+            steps[index].hydrate(strtok(NULL, ""));
+            return;
+        }
+        // AudioPlugin::hydrate(value);
+    }
 };
 
 #endif
