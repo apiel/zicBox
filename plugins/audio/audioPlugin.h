@@ -38,6 +38,7 @@ protected:
 public:
     char name[64];
     int16_t track = 0;
+    bool serializable = true;
 
     int (*debug)(const char* format, ...);
 
@@ -87,6 +88,12 @@ public:
             }
             return true;
         }
+
+        if (strcmp(key, "SERIALIZABLE") == 0) {
+            serializable = strcmp(value, "true") == 0;
+            return true;
+        }
+
         return false;
     }
 

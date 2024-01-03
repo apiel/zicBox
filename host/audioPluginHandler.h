@@ -3,8 +3,8 @@
 
 #include <stdexcept>
 
-#include "../plugins/audio/audioPlugin.h"
 #include "../helpers/trim.h"
+#include "../plugins/audio/audioPlugin.h"
 #include "def.h"
 #include "midiMapping.h"
 
@@ -221,7 +221,7 @@ public:
     {
         FILE* file = fopen(filepath.c_str(), "wb");
         for (Plugin& plugin : plugins) {
-            if (track == -1 || track == plugin.instance->track) {
+            if ((track == -1 || track == plugin.instance->track) && plugin.instance->serializable) {
                 fprintf(file, "# %s\n", plugin.instance->name);
                 plugin.instance->serialize(file, "\n");
             }
@@ -231,7 +231,6 @@ public:
 
     void hydrate(std::string filepath, int16_t track)
     {
-        // printf("Hydrating: %s\n", filepath.c_str());
         FILE* file = fopen(filepath.c_str(), "rb");
         AudioPlugin* plugin = NULL;
         char _line[1024];
@@ -240,11 +239,10 @@ public:
             if (strlen(line) > 0) {
                 if (line[0] == '#') {
                     plugin = getPluginPtr(line + 2, track);
-                    // if (plugin) {
-                    //     printf("Hydrating plugin: %s\n", plugin->name);
-                    // } else {
-                    //     printf("Hydrating unknown plugin: '%s'\n", line + 2);
-                    // }
+                    if (plugin && !plugin->serializable) {
+                        printf("Cannot hydrate plugin: %s (not serializable)\n", plugin->name);
+                        plugin = NULL;
+                    }
                 } else if (plugin) {
                     plugin->hydrate(line);
                 }
