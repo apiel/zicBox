@@ -111,6 +111,23 @@ public:
     virtual void onStatus(Status status)
     {
     }
+
+    /**
+     * @brief Serialize the plugin values to a file
+     *
+     * @param file
+     * @param separator should be used as value separator
+     */
+    virtual void serialize(FILE* file, std::string separator)
+    {
+    }
+
+    /**
+     * @brief Hydrate the plugin values from a serialized file
+     */
+    virtual void hydrate(std::string value)
+    {
+    }
 };
 
 #endif

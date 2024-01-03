@@ -4,6 +4,7 @@
 #include <stdexcept>
 
 #include "../plugins/audio/audioPlugin.h"
+#include "../helpers/trim.h"
 #include "def.h"
 #include "midiMapping.h"
 
@@ -71,14 +72,23 @@ public:
         return *instance;
     }
 
-    AudioPlugin& getPlugin(const char* name, int16_t track = -1)
+    AudioPlugin* getPluginPtr(const char* name, int16_t track = -1)
     {
         for (Plugin& plugin : plugins) {
             if (strcmp(plugin.instance->name, name) == 0 && (track == -1 || plugin.instance->track == track)) {
-                return *plugin.instance;
+                return plugin.instance;
             }
         }
-        throw std::runtime_error("Could not find plugin " + std::string(name) + " on track " + std::to_string(track));
+        return NULL;
+    }
+
+    AudioPlugin& getPlugin(const char* name, int16_t track = -1)
+    {
+        AudioPlugin* plugin = getPluginPtr(name, track);
+        if (!plugin) {
+            throw std::runtime_error("Could not find plugin " + std::string(name) + " on track " + std::to_string(track));
+        }
+        return *plugin;
     }
 
     void loop()
@@ -205,6 +215,42 @@ public:
         for (Plugin& plugin : plugins) {
             plugin.instance->onStatus(AudioPlugin::Status::PAUSE);
         }
+    }
+
+    void serialize(std::string filepath, int16_t track)
+    {
+        FILE* file = fopen(filepath.c_str(), "wb");
+        for (Plugin& plugin : plugins) {
+            if (track == -1 || track == plugin.instance->track) {
+                fprintf(file, "# %s\n", plugin.instance->name);
+                plugin.instance->serialize(file, "\n");
+            }
+        }
+        fclose(file);
+    }
+
+    void hydrate(std::string filepath, int16_t track)
+    {
+        // printf("Hydrating: %s\n", filepath.c_str());
+        FILE* file = fopen(filepath.c_str(), "rb");
+        AudioPlugin* plugin = NULL;
+        char _line[1024];
+        while (fgets(_line, 1024, file)) {
+            char* line = rtrim(_line, '\n');
+            if (strlen(line) > 0) {
+                if (line[0] == '#') {
+                    plugin = getPluginPtr(line + 2, track);
+                    // if (plugin) {
+                    //     printf("Hydrating plugin: %s\n", plugin->name);
+                    // } else {
+                    //     printf("Hydrating unknown plugin: '%s'\n", line + 2);
+                    // }
+                } else if (plugin) {
+                    plugin->hydrate(line);
+                }
+            }
+        }
+        fclose(file);
     }
 };
 

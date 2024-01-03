@@ -167,6 +167,20 @@ public:
         }
         return NULL;
     }
+
+    void serialize(FILE* file, std::string separator)
+    {
+        for (ValueInterface* val : mapping) {
+            fprintf(file, "%s %f%s", val->key(), val->get(), separator.c_str());
+        }
+    }
+
+    void hydrate(std::string value)
+    {
+        char* key = strtok((char*)value.c_str(), " ");
+        float fValue = strtof(strtok(NULL, " "), NULL);
+        getValue(key)->set(fValue);
+    }
 };
 
 #endif
