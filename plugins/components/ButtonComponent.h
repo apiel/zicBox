@@ -48,6 +48,16 @@ protected:
             return;
         }
 
+        if (strcmp(action, "&DATA") == 0) {
+            char* pluginName = strtok(NULL, " ");
+            int dataId = atoi(strtok(NULL, " "));
+            AudioPlugin* plugin = &getPlugin(pluginName, track);
+            event = [plugin, dataId]() {
+                plugin->data(dataId);
+            };
+            return;
+        }
+
         char* key = strtok(NULL, " ");
         char* targetValue = strtok(NULL, " ");
 

@@ -8,14 +8,19 @@
 
 - TODO use keypad as a keyboard while configuring a patch...
 
+## zic sample
+
+- TODO save...
+    might need to auto save to be able to save clips
+    --> how to trigger save?? 
+
+- TODO save single track clip under a given name
+- TODO load a specific track clip
+
+- TODO ?? when 2 button color are pressed at the same time, Y get first value and X the second ??
+- TODO when 1 button, Y +1, X +5
+
 ## zicUi
-
-- TODO sequencer grid like zicSample
-            when 2 button color are pressed at the same time, Y get first value and X the second
-            when 1 button, Y +1, X +5
-
-- TODO subview to be able to switch a subset of view
-        or just show hide component ^^
 
 - TODO pattern selector in sequencer
        pattern category

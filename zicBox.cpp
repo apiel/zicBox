@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_INFO);
 
-    AudioPluginHandler::get().hydrate("serialized/track0.cfg", 0);
+    // AudioPluginHandler::get().hydrate("serialized/track0.cfg", 0);
 
     EventHandler& event = EventHandler::get();
     unsigned long lastUpdate = SDL_GetTicks();
@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
         SDL_Delay(1);
     }
 
-    AudioPluginHandler::get().serialize("serialized/track0.cfg", 0);
+    // AudioPluginHandler::get().serialize("serialized/track0.cfg", 0);
 
     SDL_Quit();
 
