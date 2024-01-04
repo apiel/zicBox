@@ -131,10 +131,10 @@ public:
         }
     }
 
-    void onStatus(Status status)
+    void onEvent(EventType event)
     {
-        switch (status) {
-        case AudioPlugin::Status::STOP: {
+        switch (event) {
+        case AudioPlugin::EventType::STOP: {
             active = false;
             for (int i = 0; i < MAX_STEPS; i++) {
                 if (targetPlugin && steps[i].counter) {
@@ -144,14 +144,14 @@ public:
             }
             break;
         }
-        case AudioPlugin::Status::START:
+        case AudioPlugin::EventType::START:
             clockCounter = 0;
             stepCounter = 0;
             loopCounter = 0;
             active = true;
             break;
 
-        case AudioPlugin::Status::PAUSE:
+        case AudioPlugin::EventType::PAUSE:
             active = !active;
             break;
         }

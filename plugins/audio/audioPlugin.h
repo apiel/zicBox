@@ -111,12 +111,13 @@ public:
     {
     }
 
-    enum Status {
+    enum EventType {
         STOP,
         START,
-        PAUSE
+        PAUSE,
+        AUTOSAVE
     };
-    virtual void onStatus(Status status)
+    virtual void onEvent(EventType event)
     {
     }
 

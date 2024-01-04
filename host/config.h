@@ -34,6 +34,10 @@ void hostScriptCallback(char* key, char* value, const char* filename, uint8_t in
         if (strcmp(value, "true") == 0) {
             enableDebug();
         }
+    } else if (strcmp(key, "AUTO_SAVE") == 0) {
+        if (strcmp(value, "true") == 0) {
+            AudioPluginHandler::get().startAutoSave();
+        }
     } else {
         AudioPluginHandler::get().config(key, value);
     }

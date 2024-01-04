@@ -6,7 +6,8 @@
 
 class SerializeTrack : public AudioPlugin {
 protected:
-    std::string filepath = "serialize/track.cfg";
+    std::string filepath = "serialized/track.cfg";
+    bool initialized = false;
 
 public:
     SerializeTrack(AudioPlugin::Props& props, char* _name)
@@ -27,6 +28,19 @@ public:
         return AudioPlugin::config(key, value);
     }
 
+    void onEvent(EventType event)
+    {
+        if (event == AudioPlugin::EventType::AUTOSAVE) {
+            // TODO serialize only if track has changed
+            // serialize();
+
+            if (!initialized) {
+                hydrate();
+                initialized = true;
+            }
+        }
+    }
+
     void serialize()
     {
         FILE* file = fopen(filepath.c_str(), "w");
@@ -42,6 +56,11 @@ public:
     void hydrate()
     {
         FILE* file = fopen(filepath.c_str(), "r");
+        if (!file) {
+            printf("Hydration file not found: %s\n", filepath.c_str());
+            return;
+        }
+
         AudioPlugin* plugin = NULL;
         char _line[1024];
         while (fgets(_line, 1024, file)) {
@@ -64,14 +83,19 @@ public:
     void* data(int id, void* userdata = NULL)
     {
         switch (id) {
-        case 0:
+        case 0: {
+            if (userdata) {
+                filepath = (char*)userdata;
+            }
+            return NULL;
+        }
+        case 1:
+            data(0, userdata);
             serialize();
             return NULL;
-        case 1:
-            hydrate();
-            return NULL;
         case 2:
-            filepath = (char *)userdata;
+            data(0, userdata);
+            hydrate();
             return NULL;
         }
         return NULL;
