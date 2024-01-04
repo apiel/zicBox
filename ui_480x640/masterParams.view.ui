@@ -1,10 +1,24 @@
-  COMPONENT: Rect $encX1 $encY1 $encSize $encSize
+  COMPONENT: Encoder2 $encX1 $encY1 $encSize $encSize
+    ENCODER_ID: 0
+    SHOW_GROUP: FALSE
+    if: $IS_RPI == false
+      GROUP: 0
+    COLOR: #9dfe86
+    VALUE: GainVolume VOLUME
 
   COMPONENT: Rect $encX2 $encY1 $encSize $encSize
 
   COMPONENT: Rect $encX3 $encY1 $encSize $encSize
 
-  COMPONENT: Rect $encX4 $encY1 $encSize $encSize
+  COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize
+    ENCODER_ID: 3
+    SHOW_GROUP: FALSE
+    if: $IS_RPI == false
+      GROUP: 0
+    VALUE: MultiModeFilter CUTOFF
+    COLOR: #ff7700
+    TYPE: TWO_SIDED
+    # BACKGROUND_COLOR: #2b2c2e
 
 
   COMPONENT: Rect $encX1 $encY2 $encSize $encSize
@@ -13,7 +27,15 @@
 
   COMPONENT: Rect $encX3 $encY2 $encSize $encSize
 
-  COMPONENT: Rect $encX4 $encY2 $encSize $encSize
+  COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
+    ENCODER_ID: 7
+    SHOW_GROUP: FALSE
+    if: $IS_RPI == false
+      GROUP: 1
+      ENCODER_ID: 3
+    VALUE: MultiModeFilter RESONANCE
+    COLOR: #ff7700
+    # BACKGROUND_COLOR: #2b2c2e
 
 
   COMPONENT: Rect $encX1 $encY3 $encSize $encSize
@@ -22,4 +44,13 @@
 
   COMPONENT: Rect $encX3 $encY3 $encSize $encSize
 
-  COMPONENT: Rect $encX4 $encY3 $encSize $encSize
+  COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
+    ENCODER_ID: 11
+    SHOW_GROUP: FALSE
+    if: $IS_RPI == false
+      GROUP: 2
+      ENCODER_ID: 3
+    COLOR: #ff7700
+    VALUE: SampleRateReducer SAMPLE_STEP
+    FONT_UNIT_SIZE: 8
+    # BACKGROUND_COLOR: #2b2c2e
