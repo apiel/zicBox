@@ -28,4 +28,8 @@ while: $track < 12
 
   $track=$track + 1
 
+VIEW: MasterParams
+  INCLUDE: masterParams.view.ui
+  USE_SHARED_COMPONENT: SharedGridSequencer
+
 # print: done ($track)

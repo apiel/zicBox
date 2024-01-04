@@ -105,7 +105,7 @@ protected:
         renderSelection();
         std::string view;
         if (grid.row == trackCount) {
-            view = "Master";
+            view = "MasterParams";
         } else if (grid.col == 0) {
             view = prefixSampleParamsView + std::to_string(grid.row);
         } else {
@@ -250,6 +250,8 @@ protected:
         uint8_t enc11 = 46;
         uint8_t enc12 = 47;
 
+        uint8_t master = 14;
+
         // TODO: 15 button from the middle should be clips/variations
     } keys;
 
@@ -294,6 +296,8 @@ protected:
             keypad->setButton(keys.enc10, columnColor[1]);
             keypad->setButton(keys.enc11, columnColor[2]);
             keypad->setButton(keys.enc12, columnColor[3]);
+
+            keypad->setButton(keys.master, 40);
         }
     }
 
@@ -379,7 +383,11 @@ public:
     {
         // printf("onKeypad(%d, %d)\n", id, state);
         if (state == 1) {
-            if (id == keys.up) {
+            if (id == keys.master) {
+                grid.select(trackCount, 0);
+                updateSelection();
+                draw.renderNext();
+            } else if (id == keys.up) {
                 grid.up();
                 updateSelection();
                 draw.renderNext();

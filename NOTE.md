@@ -12,7 +12,10 @@
 
 - TODO save...
     might need to auto save to be able to save clips
-    --> how to trigger save?? 
+    --> how to trigger save??
+        maybe AudioPluginHandler.serialize should became an audioPlugin, then could be trigger from components
+
+- TODO yellow button to select the view through the 12 params buttons...
 
 - TODO save single track clip under a given name
 - TODO load a specific track clip
