@@ -10,11 +10,6 @@
 
 ## zic sample
 
-- TODO save...
-    might need to auto save to be able to save clips
-    --> how to trigger save??
-        maybe AudioPluginHandler.serialize should became an audioPlugin, then could be trigger from components
-
 - TODO ?? auto save, instead to always save, only save if something changed
     to do this, would need the each plugin have a way to keep track change, either with keeping the time of the last update
     or simply with a boolean
