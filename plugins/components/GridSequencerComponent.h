@@ -107,9 +107,9 @@ protected:
         if (grid.row == trackCount) {
             view = "MasterParams";
         } else if (grid.col == 0) {
-            view = prefixSampleParamsView + std::to_string(grid.row);
+            view = prefixSampleParamsView + std::to_string(grid.row + 1);
         } else {
-            view = prefixStepParamsView + std::to_string(grid.row);
+            view = prefixStepParamsView + std::to_string(grid.row + 1);
             tracks[grid.row].selectedStep->set(grid.col - 1);
 
             selectedStepCopy = tracks[grid.row].steps[grid.col - 1];
@@ -340,7 +340,7 @@ public:
         resize();
 
         for (int16_t i = 0; i < 12; i++) {
-            tracks[i].load(i, getPlugin("Sequencer", i));
+            tracks[i].load(i, getPlugin("Sequencer", i + 1));
         }
 
         jobRendering = [this](unsigned long now) {

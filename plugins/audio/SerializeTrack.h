@@ -31,12 +31,11 @@ public:
     void onEvent(EventType event)
     {
         if (event == AudioPlugin::EventType::AUTOSAVE) {
-            // TODO serialize only if track has changed
-            // serialize();
-
             if (!initialized) {
                 hydrate();
                 initialized = true;
+            } else {
+                serialize();
             }
         }
     }

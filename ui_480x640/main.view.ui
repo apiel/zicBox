@@ -6,16 +6,19 @@ VIEW: shared_components HIDDEN
 
   $track=0
   while: $track < 12
+    $track=$track + 1
+
     COMPONENT: Sample 0 300 480 100
       GROUP: 0
       TRACK: $track
       AUDIO_PLUGIN: Sample 0
       DATA_STATE: 2 1
       SHARED_COMPONENT: Sample_track_$track
-    $track=$track + 1
 
 $track=0
 while: $track < 12
+  $track=$track + 1
+  
   VIEW: SampleParams_track_$track
     INCLUDE: sampleParams.view.ui
     USE_SHARED_COMPONENT: Sample_track_$track
@@ -26,7 +29,6 @@ while: $track < 12
     USE_SHARED_COMPONENT: Sample_track_$track
     USE_SHARED_COMPONENT: SharedGridSequencer
 
-  $track=$track + 1
 
 VIEW: MasterParams
   INCLUDE: masterParams.view.ui
