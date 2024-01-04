@@ -221,51 +221,24 @@ public:
         sendEvent(AudioPlugin::EventType::PAUSE);
     }
 
-    void startAutoSave()
+    void startAutoSave(uint32_t msInterval)
     {
-        APP_PRINT("Starting autosave thread\n");
+        if (msInterval < 50) {
+            msInterval = 50;
+        }
 
-        autoSaveThread = std::thread([this]() {
+        autoSaveThread = std::thread([this, msInterval]() {
+            APP_PRINT("Starting autosave thread with interval %d ms\n", msInterval);
+
             while (isRunning) {
                 sendEvent(AudioPlugin::EventType::AUTOSAVE);
-                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                std::this_thread::sleep_for(std::chrono::milliseconds(msInterval));
             }
         });
+
+        // Save a last time before to exit
+        sendEvent(AudioPlugin::EventType::AUTOSAVE);
     }
-
-    // void serialize(std::string filepath, int16_t track)
-    // {
-    //     FILE* file = fopen(filepath.c_str(), "w");
-    //     for (Plugin& plugin : plugins) {
-    //         if ((track == -1 || track == plugin.instance->track) && plugin.instance->serializable) {
-    //             fprintf(file, "# %s\n", plugin.instance->name);
-    //             plugin.instance->serialize(file, "\n");
-    //         }
-    //     }
-    //     fclose(file);
-    // }
-
-    // void hydrate(std::string filepath, int16_t track)
-    // {
-    //     FILE* file = fopen(filepath.c_str(), "r");
-    //     AudioPlugin* plugin = NULL;
-    //     char _line[1024];
-    //     while (fgets(_line, 1024, file)) {
-    //         char* line = rtrim(_line, '\n');
-    //         if (strlen(line) > 0) {
-    //             if (line[0] == '#') {
-    //                 plugin = getPluginPtr(line + 2, track);
-    //                 if (plugin && !plugin->serializable) {
-    //                     printf("Cannot hydrate plugin: %s (not serializable)\n", plugin->name);
-    //                     plugin = NULL;
-    //                 }
-    //             } else if (plugin) {
-    //                 plugin->hydrate(line);
-    //             }
-    //         }
-    //     }
-    //     fclose(file);
-    // }
 };
 
 AudioPluginHandler* AudioPluginHandler::instance = NULL;

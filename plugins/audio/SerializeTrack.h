@@ -1,11 +1,15 @@
 #ifndef _SERIALIZE_TRACK_H_
 #define _SERIALIZE_TRACK_H_
 
+#include <mutex>
+
 #include "../../helpers/trim.h"
 #include "audioPlugin.h"
 
 class SerializeTrack : public AudioPlugin {
 protected:
+    std::mutex m;
+
     std::string filepath = "serialized/track.cfg";
     bool initialized = false;
 
@@ -42,6 +46,8 @@ public:
 
     void serialize()
     {
+        m.lock();
+
         FILE* file = fopen(filepath.c_str(), "w");
         for (AudioPluginHandlerInterface::Plugin& plugin : props.audioPluginHandler->plugins) {
             if ((track == -1 || track == plugin.instance->track) && plugin.instance->serializable) {
@@ -50,13 +56,18 @@ public:
             }
         }
         fclose(file);
+
+        m.unlock();
     }
 
     void hydrate()
     {
+        m.lock();
+
         FILE* file = fopen(filepath.c_str(), "r");
         if (!file) {
             printf("Hydration file not found: %s\n", filepath.c_str());
+            m.unlock();
             return;
         }
 
@@ -77,6 +88,8 @@ public:
             }
         }
         fclose(file);
+
+        m.unlock();
     }
 
     void* data(int id, void* userdata = NULL)

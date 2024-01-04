@@ -35,8 +35,9 @@ void hostScriptCallback(char* key, char* value, const char* filename, uint8_t in
             enableDebug();
         }
     } else if (strcmp(key, "AUTO_SAVE") == 0) {
-        if (strcmp(value, "true") == 0) {
-            AudioPluginHandler::get().startAutoSave();
+        uint32_t msInterval = atoi(value);
+        if (msInterval > 0) {
+            AudioPluginHandler::get().startAutoSave(msInterval);
         }
     } else {
         AudioPluginHandler::get().config(key, value);
