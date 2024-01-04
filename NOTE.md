@@ -15,7 +15,9 @@
     --> how to trigger save??
         maybe AudioPluginHandler.serialize should became an audioPlugin, then could be trigger from components
 
-- TODO yellow button to select the view through the 12 params buttons...
+- TODO yellow button to select the views
+    - short click on yellow button will toggle to the next view
+    - long press, combine with the 12 params buttons give access directly to a given params view
 
 - TODO save single track clip under a given name
 - TODO load a specific track clip
