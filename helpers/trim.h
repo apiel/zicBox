@@ -1,6 +1,7 @@
 #ifndef _TRIMCHAR_H_
 #define _TRIMCHAR_H_
 
+#include <cstdint>
 #include <string>
 #include <cstring>
 

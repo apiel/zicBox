@@ -9,7 +9,8 @@ all:
 		SynthKick23 SynthGranular SynthSample\
 		Sequencer\
 		Mixer2 Mixer4 Mixer8 Mixer12\
-		AudioInputPulse AudioOutputPulse AudioInputAlsa AudioOutputAlsa
+		AudioInputPulse AudioOutputPulse AudioInputAlsa AudioOutputAlsa\
+		SerializeTrack
 
 SynthGranular:
 	make compile LIBNAME=SynthGranular EXTRA="$(shell pkg-config --cflags --libs sndfile)"
