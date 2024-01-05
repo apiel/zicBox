@@ -6,7 +6,7 @@
 #include "def.h"
 #include "midi.h"
 
-void hostScriptCallback(char* key, char* value, const char* filename, uint8_t indentation)
+void hostScriptCallback(char* key, char* value, const char* filename, uint8_t indentation, DustScript& instance)
 {
     if (strcmp(key, "print") == 0) {
         printf(">> LOG: %s\n", value);
