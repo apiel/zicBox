@@ -17,6 +17,7 @@ public:
         DrawInterface& draw;
         AudioPlugin& (*getPlugin)(const char* name, int16_t track);
         ControllerInterface* (*getController)(const char* name);
+        std::vector<ComponentInterface*> (*getViewComponents)();
         void (*setGroup)(int8_t index);
         void (*setVisibility)(int8_t index);
         void (*setView)(std::string name);
@@ -29,6 +30,7 @@ protected:
 
     AudioPlugin& (*getPlugin)(const char* name, int16_t track);
     ControllerInterface* (*getController)(const char* name);
+    std::vector<ComponentInterface*> (*getViewComponents)();
     void (*setGroup)(int8_t index);
     void (*setVisibility)(int8_t index);
     void (*setView)(std::string name);
@@ -57,6 +59,7 @@ public:
         , styles(props.draw.styles)
         , getPlugin(props.getPlugin)
         , getController(props.getController)
+        , getViewComponents(props.getViewComponents)
         , setGroup(props.setGroup)
         , setVisibility(props.setVisibility)
         , setView(props.setView)

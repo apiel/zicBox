@@ -68,6 +68,7 @@ protected:
             draw,
             getPlugin,
             getController,
+            []() { return UiPlugin::get().view->components; },
             [](int8_t index) { ViewManager::get().setGroup(index); },
             [](int8_t index) { ViewManager::get().setVisibility(index); },
             [](std::string name) { UiPlugin::get().setView(name); },
