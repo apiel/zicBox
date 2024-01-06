@@ -1,3 +1,6 @@
+// use https://ncviewer.com/ to preview gcode result
+//
+
 if (process.argv.length < 3) {
     console.log('Usage: node gerber2gcode.js <gerber-file> [speed] [passes]');
     process.exit(1);
