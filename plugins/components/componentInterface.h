@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <vector>
+#include <string.h>
 
 class ComponentInterface {
 public:
@@ -51,6 +52,7 @@ public:
     int8_t group = -1;
     int8_t visibility = -1;
     bool active = true;
+    std::string id = "";
 
     std::function<void(unsigned long now)> jobRendering;
 

@@ -222,10 +222,27 @@ protected:
         rowY[trackCount] = progressPosition.y;
     }
 
+    void paramKeyPressed(uint8_t param)
+    {
+        std::string paramId = "Param" + std::to_string(param);
+        std::vector<ComponentInterface*> components = getViewComponents();
+        for (ComponentInterface* component : components) {
+            if (component->id.find(paramId) == 0) {
+                // id end by _toggle
+                if (component->id.find("_toggle") != -1) {
+                    printf("toggle %s\n", component->id.c_str());
+                } else if (component->id.find("_enc") != -1) {
+                    printf("enc %s\n", component->id.c_str());
+                }
+            }
+        }
+    }
+
     struct Keys {
         // uint8_t menu = 11;
 
         uint8_t tracks[12] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
+        uint8_t params[12] = { 20, 21, 22, 23, 32, 33, 34, 35, 44, 45, 46, 47 };
         uint8_t clips[15] = { 15, 16, 17, 18, 19, 27, 28, 29, 30, 31, 39, 40, 41, 42, 43 };
 
         uint8_t up = 25;
@@ -234,21 +251,6 @@ protected:
         uint8_t right = 38;
         uint8_t leftJump = 24;
         uint8_t rightJump = 26;
-
-        uint8_t enc1 = 20;
-        uint8_t enc2 = 21;
-        uint8_t enc3 = 22;
-        uint8_t enc4 = 23;
-
-        uint8_t enc5 = 32;
-        uint8_t enc6 = 33;
-        uint8_t enc7 = 34;
-        uint8_t enc8 = 35;
-
-        uint8_t enc9 = 44;
-        uint8_t enc10 = 45;
-        uint8_t enc11 = 46;
-        uint8_t enc12 = 47;
 
         uint8_t master = 14;
 
@@ -282,20 +284,20 @@ protected:
             keypad->setButton(keys.leftJump, 0);
             keypad->setButton(keys.rightJump, 0);
 
-            keypad->setButton(keys.enc1, columnColor[0]);
-            keypad->setButton(keys.enc2, columnColor[1]);
-            keypad->setButton(keys.enc3, columnColor[2]);
-            keypad->setButton(keys.enc4, columnColor[3]);
+            keypad->setButton(keys.params[0], columnColor[0]);
+            keypad->setButton(keys.params[1], columnColor[1]);
+            keypad->setButton(keys.params[2], columnColor[2]);
+            keypad->setButton(keys.params[3], columnColor[3]);
 
-            keypad->setButton(keys.enc5, columnColor[0]);
-            keypad->setButton(keys.enc6, columnColor[1]);
-            keypad->setButton(keys.enc7, columnColor[2]);
-            keypad->setButton(keys.enc8, columnColor[3]);
+            keypad->setButton(keys.params[4], columnColor[0]);
+            keypad->setButton(keys.params[5], columnColor[1]);
+            keypad->setButton(keys.params[6], columnColor[2]);
+            keypad->setButton(keys.params[7], columnColor[3]);
 
-            keypad->setButton(keys.enc9, columnColor[0]);
-            keypad->setButton(keys.enc10, columnColor[1]);
-            keypad->setButton(keys.enc11, columnColor[2]);
-            keypad->setButton(keys.enc12, columnColor[3]);
+            keypad->setButton(keys.params[8], columnColor[0]);
+            keypad->setButton(keys.params[9], columnColor[1]);
+            keypad->setButton(keys.params[10], columnColor[2]);
+            keypad->setButton(keys.params[11], columnColor[3]);
 
             keypad->setButton(keys.master, 40);
         }
@@ -379,31 +381,31 @@ public:
         return false;
     }
 
-    void onKeyPad(int id, int8_t state)
+    void onKeyPad(int key, int8_t state)
     {
         // printf("onKeypad(%d, %d)\n", id, state);
         if (state == 1) {
-            if (id == keys.master) {
+            if (key == keys.master) {
                 grid.select(trackCount, 0);
                 updateSelection();
                 draw.renderNext();
-            } else if (id == keys.up) {
+            } else if (key == keys.up) {
                 grid.up();
                 updateSelection();
                 draw.renderNext();
-            } else if (id == keys.down) {
+            } else if (key == keys.down) {
                 grid.down();
                 updateSelection();
                 draw.renderNext();
-            } else if (id == keys.left) {
+            } else if (key == keys.left) {
                 grid.left();
                 updateSelection();
                 draw.renderNext();
-            } else if (id == keys.right) {
+            } else if (key == keys.right) {
                 grid.right();
                 updateSelection();
                 draw.renderNext();
-            } else if (id == keys.leftJump) {
+            } else if (key == keys.leftJump) {
                 int8_t step = ((grid.col - 1) % 4);
                 if (step < 1) {
                     step = 4;
@@ -411,22 +413,26 @@ public:
                 grid.selectNextCol(-step);
                 updateSelection();
                 draw.renderNext();
-            } else if (id == keys.rightJump) {
+            } else if (key == keys.rightJump) {
                 int8_t step = 4 - ((grid.col - 1) % 4);
                 grid.selectNextCol(step);
                 updateSelection();
                 draw.renderNext();
             } else {
                 for (int i = 0; i < 12; i++) {
-                    if (keys.tracks[i] == id) {
+                    if (keys.tracks[i] == key) {
                         grid.select(i, 0);
                         updateSelection();
                         draw.renderNext();
                         return;
+                    } else if (keys.params[i] == key) {
+                        // printf("param key pressed %d (%d)\n", i, key);
+                        paramKeyPressed(i);
+                        return;
                     }
                 }
 
-                printf("unknown key %d\n", id);
+                printf("unknown key %d\n", key);
             }
         }
     }

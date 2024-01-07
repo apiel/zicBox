@@ -6,6 +6,7 @@
     COLOR: #9dfe86
     TRACK: $track
     VALUE: Sequencer STEP_VELOCITY
+    ID: Param0_enc
 
   COMPONENT: Encoder2 $encX2 $encY1 $encSize $encSize
     ENCODER_ID: 1
@@ -15,6 +16,7 @@
     COLOR: #3791a1
     TRACK: $track
     VALUE: Sequencer STEP_NOTE
+    ID: Param1_enc
 
   COMPONENT: Encoder2 $encX3 $encY1 $encSize $encSize
     ENCODER_ID: 2
@@ -23,6 +25,7 @@
       GROUP: 0
     COLOR: #ff8d99
     VALUE: Sequencer STEP_LENGTH
+    ID: Param2_enc
 
   COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize
     ENCODER_ID: 3
@@ -32,6 +35,7 @@
     TRACK: $track
     VALUE: Sequencer STEP_CONDITION
     COLOR: #ff7700
+    ID: Param3_enc
 
 
   COMPONENT: Toggle $encX1 $encY2 $encSize $encSize
@@ -44,6 +48,7 @@
     TRACK: $track
     VALUE: Sequencer STEP_ENABLED
     OFF_LABEL: Disabled
+    ID: Param4_toggle
 
   COMPONENT: Rect $encX2 $encY2 $encSize $encSize
   # COMPONENT: Encoder2 $encX2 $encY2 $encSize $encSize

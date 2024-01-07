@@ -98,6 +98,11 @@ public:
             return true;
         }
 
+        if (strcmp(key, "ID") == 0) {
+            id = value;
+            return true;
+        }
+
         return config(key, value);
     }
 
