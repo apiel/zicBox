@@ -30,7 +30,11 @@ if (process.env.OUTPUT !== 'console') {
 
 out('M3; Constant Power Laser On');
 
-const speedMove = 1000;
+// Set MM mode to set speed rate, then it might switch to INCH if gerber file require it
+out('G21 ; mm-mode');
+out(`G0 F1000 ; set move speed rate to 1000 mm/min`);
+out(`G1 F${speed} ; set line speed rate to ${speed} mm/min`);
+// out(`G3 F${speed} ; set arc speed rate to ${speed} mm/min`);
 
 const Zsafe = 'Z10';
 const ZlaserOn = 'Z0';
@@ -51,9 +55,9 @@ for (let counter = 0; counter < passes; counter++) {
 
     for (const line of lines) {
         if (line === '%MOIN*%') {
-            out('G20');
+            out('G20 ; inch-mode');
         } else if (line === '%MOMM*%') {
-            out('G21');
+            out('G21 ; mm-mode');
         } else if (line.startsWith('%FSLAX')) {
             // %FSLAX36Y36*%
             const [x, y] = line.substring(6, line.length - 2).split('Y');
@@ -70,7 +74,7 @@ for (let counter = 0; counter < passes; counter++) {
                 origin = {x, y};
             }
             out(`\nG0 ${Zsafe}`);
-            out(`G0 F${speedMove} X${x * ratioX} Y${y * ratioY}`);
+            out(`G0 X${x * ratioX} Y${y * ratioY}`);
             out(`G0 ${ZlaserOn}`);
         } else if (line.endsWith('D01*')) {
             // X4975000Y475000D01*
@@ -82,16 +86,16 @@ for (let counter = 0; counter < passes; counter++) {
             const [i, j = ''] = restI.split('J');
             // out({ line, x, y, i, j });
             if (i !== '' && j !== '') {
-                out(`G3 F${speed} X${x * ratioX} Y${y * ratioY} I${i * ratioX} J${j * ratioY} ${ZlaserWork}`);
+                out(`G3 X${x * ratioX} Y${y * ratioY} I${i * ratioX} J${j * ratioY} ${ZlaserWork}`);
             } else {
-                out(`G1 F${speed} X${x * ratioX} Y${y * ratioY} ${ZlaserWork}`);
+                out(`G1 X${x * ratioX} Y${y * ratioY} ${ZlaserWork}`);
             }
         }
     }
 }
 
 out(`\nG0 ${Zsafe}`);
-out(`G0 F${speedMove} X${origin.x * ratioX} Y${origin.y * ratioY} ; go back to origin`);
+out(`G0 X${origin.x * ratioX} Y${origin.y * ratioY} ; go back to origin`);
 out(`M5; Laser Off`);
 
 outRelease();
