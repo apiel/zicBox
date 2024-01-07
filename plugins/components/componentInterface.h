@@ -7,8 +7,8 @@
 #include "valueInterface.h"
 
 #include <functional>
-#include <vector>
 #include <string.h>
+#include <vector>
 
 class ComponentInterface {
 public:
@@ -86,6 +86,10 @@ public:
     virtual void onGroupChanged(int8_t index) = 0;
     virtual void onUpdate(ValueInterface* value) = 0;
     virtual void onVisibilityChanged(int8_t index) = 0;
+    virtual void* data(int id, void* userdata = NULL)
+    {
+        return NULL;
+    }
 };
 
 #endif

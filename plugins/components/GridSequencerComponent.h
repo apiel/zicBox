@@ -230,7 +230,8 @@ protected:
             if (component->id.find(paramId) == 0) {
                 // id end by _toggle
                 if (component->id.find("_toggle") != -1) {
-                    printf("toggle %s\n", component->id.c_str());
+                    // printf("toggle %s\n", component->id.c_str());
+                    component->data(0);
                 } else if (component->id.find("_enc") != -1) {
                     printf("enc %s\n", component->id.c_str());
                 }
