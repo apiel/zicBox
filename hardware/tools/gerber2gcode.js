@@ -1,5 +1,5 @@
-// use https://ncviewer.com/ to preview gcode result
-//
+// https://ncviewer.com/ to preview gcode result
+// https://marlinfw.org/docs/gcode/ gcode doc
 
 if (process.argv.length < 3) {
     console.log('Usage: node gerber2gcode.js <gerber-file> [speed] [passes]');
@@ -30,16 +30,17 @@ if (process.env.OUTPUT !== 'console') {
 
 out('M3; Constant Power Laser On');
 
-// set speed
-out(`F${speed}`);
+const speedMove = 1000;
 
 const Zsafe = 'Z10';
 const ZlaserOn = 'Z0';
+const ZlaserWork = 'S1000';
 // const Zsafe = '';
 // const ZlaserOn = '';
 
 let ratioX = 0.000001;
 let ratioY = 0.000001;
+let origin; // use first coordinate as origin
 
 const lines = gerber.split('\n');
 
@@ -64,7 +65,13 @@ for (let counter = 0; counter < passes; counter++) {
         } else if (line.endsWith('D02*')) {
             // X4975000Y2200000D02*
             const [x, y] = line.substring(1, line.length - 4).split('Y');
-            out(`\nG0 X${x * ratioX} Y${y * ratioY} ${Zsafe}`);
+            if (!origin) {
+                out(`\nG92 X${x * ratioX} Y${y * ratioY} ; set current head position to first coordinate`);
+                origin = {x, y};
+            }
+            out(`\nG0 ${Zsafe}`);
+            out(`G0 F${speedMove} X${x * ratioX} Y${y * ratioY}`);
+            out(`G0 ${ZlaserOn}`);
         } else if (line.endsWith('D01*')) {
             // X4975000Y475000D01*
             // or
@@ -75,12 +82,16 @@ for (let counter = 0; counter < passes; counter++) {
             const [i, j = ''] = restI.split('J');
             // out({ line, x, y, i, j });
             if (i !== '' && j !== '') {
-                out(`G3 X${x * ratioX} Y${y * ratioY} I${i * ratioX} J${j * ratioY} ${ZlaserOn}`);
+                out(`G3 F${speed} X${x * ratioX} Y${y * ratioY} I${i * ratioX} J${j * ratioY} ${ZlaserWork}`);
             } else {
-                out(`G1 X${x * ratioX} Y${y * ratioY} ${ZlaserOn}`);
+                out(`G1 F${speed} X${x * ratioX} Y${y * ratioY} ${ZlaserWork}`);
             }
         }
     }
 }
+
+out(`\nG0 ${Zsafe}`);
+out(`G0 F${speedMove} X${origin.x * ratioX} Y${origin.y * ratioY} ; go back to origin`);
+out(`M5; Laser Off`);
 
 outRelease();
