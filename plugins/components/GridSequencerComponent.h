@@ -222,7 +222,10 @@ protected:
         rowY[trackCount] = progressPosition.y;
     }
 
-    void paramKeyPressed(uint8_t param)
+    int8_t paramKeyPressed = -1;
+    ComponentInterface* componentParam = NULL;
+
+    void onParamKeyPressed(uint8_t param)
     {
         std::string paramId = "Param" + std::to_string(param);
         std::vector<ComponentInterface*> components = getViewComponents();
@@ -233,15 +236,20 @@ protected:
                     // printf("toggle %s\n", component->id.c_str());
                     component->data(0);
                 } else if (component->id.find("_enc") != -1) {
-                    printf("enc %s\n", component->id.c_str());
+                    // printf("enc %s\n", component->id.c_str());
+                    paramKeyPressed = param;
+                    componentParam = component;
                 }
             }
         }
     }
 
-    struct Keys {
-        // uint8_t menu = 11;
+    void paramIncrement(uint8_t param, int8_t direction)
+    {
+        componentParam->data(0, &direction);
+    }
 
+    struct Keys {
         uint8_t tracks[12] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
         uint8_t params[12] = { 20, 21, 22, 23, 32, 33, 34, 35, 44, 45, 46, 47 };
         uint8_t clips[15] = { 15, 16, 17, 18, 19, 27, 28, 29, 30, 31, 39, 40, 41, 42, 43 };
@@ -254,8 +262,6 @@ protected:
         uint8_t rightJump = 26;
 
         uint8_t master = 14;
-
-        // TODO: 15 button from the middle should be clips/variations
     } keys;
 
     uint8_t columnColor[4] = { 50, 20, 60, 90 }; // or 90
@@ -382,30 +388,29 @@ public:
         return false;
     }
 
-    void onKeyPad(int key, int8_t state)
+    bool onKeyPadDirection(int key)
     {
-        // printf("onKeypad(%d, %d)\n", id, state);
-        if (state == 1) {
-            if (key == keys.master) {
-                grid.select(trackCount, 0);
-                updateSelection();
-                draw.renderNext();
-            } else if (key == keys.up) {
+        if (paramKeyPressed == -1) {
+            if (key == keys.up) {
                 grid.up();
                 updateSelection();
                 draw.renderNext();
+                return true;
             } else if (key == keys.down) {
                 grid.down();
                 updateSelection();
                 draw.renderNext();
+                return true;
             } else if (key == keys.left) {
                 grid.left();
                 updateSelection();
                 draw.renderNext();
+                return true;
             } else if (key == keys.right) {
                 grid.right();
                 updateSelection();
                 draw.renderNext();
+                return true;
             } else if (key == keys.leftJump) {
                 int8_t step = ((grid.col - 1) % 4);
                 if (step < 1) {
@@ -414,12 +419,50 @@ public:
                 grid.selectNextCol(-step);
                 updateSelection();
                 draw.renderNext();
+                return true;
             } else if (key == keys.rightJump) {
                 int8_t step = 4 - ((grid.col - 1) % 4);
                 grid.selectNextCol(step);
                 updateSelection();
                 draw.renderNext();
-            } else {
+                return true;
+            }
+        } else {
+            int8_t direction = 0;
+            if (key == keys.up) {
+                direction = 1;
+            } else if (key == keys.down) {
+                direction = -1;
+            } else if (key == keys.left) {
+                direction = -5;
+            } else if (key == keys.right) {
+                direction = 5;
+            } else if (key == keys.leftJump) {
+                direction = -10;
+            } else if (key == keys.rightJump) {
+                direction = 10;
+            }
+
+            if (direction != 0) {
+                paramIncrement(paramKeyPressed, direction);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void onKeyPad(int key, int8_t state)
+    {
+        // printf("onKeypad(%d, %d)\n", id, state);
+        if (state == 1) {
+            if (!onKeyPadDirection(key)) {
+                if (key == keys.master) {
+                    grid.select(trackCount, 0);
+                    updateSelection();
+                    draw.renderNext();
+                    return;
+                }
+
                 for (int i = 0; i < 12; i++) {
                     if (keys.tracks[i] == key) {
                         grid.select(i, 0);
@@ -427,13 +470,17 @@ public:
                         draw.renderNext();
                         return;
                     } else if (keys.params[i] == key) {
-                        // printf("param key pressed %d (%d)\n", i, key);
-                        paramKeyPressed(i);
+                        onParamKeyPressed(i);
                         return;
                     }
                 }
 
                 printf("unknown key %d\n", key);
+            }
+        } else {
+            if (paramKeyPressed != -1 && keys.params[paramKeyPressed] == key) {
+                paramKeyPressed = -1;
+                return;
             }
         }
     }

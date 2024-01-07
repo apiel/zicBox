@@ -355,6 +355,16 @@ public:
         }
         // printf("current group: %d inccoming group: %d drawId: %d\n", group, index, drawId);
     }
+
+    void* data(int id, void* userdata = NULL) override
+    {
+        if (id == 0) {
+            int8_t * direction = (int8_t*)userdata;
+            value->increment(*direction);
+            return NULL;
+        }
+        return NULL;
+    }
 };
 
 #endif
