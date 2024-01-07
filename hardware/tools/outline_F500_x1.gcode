@@ -1,8 +1,10 @@
-M3; Constant Power Laser On
-F500
-G20
+M3 ; Constant Power Laser On
+G21 ; mm-mode
+G0 F1000 ; set move speed rate to 1000 mm/min
+G1 F500 ; set line speed rate to 500 mm/min
 
-G92 X4.75 Y2.9; set origin to current position
+G92 X0 Y0 ; set current head position to X0 Y0
+G20 ; inch-mode
 
 G0 Z10
 G0 X4.75 Y2.9
@@ -92,4 +94,6 @@ G0 Z0
 G3 X4.3809 Y1.3 I-0.0559 J0 S1000
 
 G0 Z10
-M5; Laser Off
+
+G0 Z10
+M5 ; Laser Off

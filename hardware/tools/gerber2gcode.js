@@ -28,7 +28,7 @@ if (process.env.OUTPUT !== 'console') {
 // %MOMM*% -> G21
 // %FSLAX36Y36*% -> format X 3.6 Y 3.6
 
-out('M3; Constant Power Laser On');
+out('M3 ; Constant Power Laser On');
 
 // Set MM mode to set speed rate, then it might switch to INCH if gerber file require it
 out('G21 ; mm-mode');
@@ -46,11 +46,13 @@ let ratioX = 0.000001;
 let ratioY = 0.000001;
 let origin; // use first coordinate as origin
 
+out('\nG92 X0 Y0 ; set current head position to X0 Y0');
+
 const lines = gerber.split('\n');
 
 for (let counter = 0; counter < passes; counter++) {
     if (counter) {
-        out(`; Pass ${counter + 1}`);
+        out(`\n\n; Pass ${counter + 1}\n`);
     }
 
     for (const line of lines) {
@@ -69,10 +71,10 @@ for (let counter = 0; counter < passes; counter++) {
         } else if (line.endsWith('D02*')) {
             // X4975000Y2200000D02*
             const [x, y] = line.substring(1, line.length - 4).split('Y');
-            if (!origin) {
-                out(`\nG92 X${x * ratioX} Y${y * ratioY} ; set current head position to first coordinate`);
-                origin = {x, y};
-            }
+            // if (!origin) {
+            //     out(`\nG92 X${x * ratioX} Y${y * ratioY} ; set current head position to first coordinate`);
+            //     origin = {x, y};
+            // }
             out(`\nG0 ${Zsafe}`);
             out(`G0 X${x * ratioX} Y${y * ratioY}`);
             out(`G0 ${ZlaserOn}`);
@@ -92,10 +94,13 @@ for (let counter = 0; counter < passes; counter++) {
             }
         }
     }
+    out(`\nG0 ${Zsafe}`);
 }
 
 out(`\nG0 ${Zsafe}`);
-out(`G0 X${origin.x * ratioX} Y${origin.y * ratioY} ; go back to origin`);
-out(`M5; Laser Off`);
+// out(`G0 X${origin.x * ratioX} Y${origin.y * ratioY} ; go back to origin`);
+// out(`G0 X${(origin.x - 0.1) * ratioX} Y${(origin.y - 0.1) * ratioY}`);
+// out(`G0 X${origin.x * ratioX} Y${origin.y * ratioY}`);
+out(`M5 ; Laser Off`);
 
 outRelease();
