@@ -46,6 +46,8 @@ let ratioX = 0.000001;
 let ratioY = 0.000001;
 let origin; // use first coordinate as origin
 
+let arcG = 'G2';
+
 out('\nG92 X0 Y0 ; set current head position to X0 Y0');
 
 const lines = gerber.split('\n');
@@ -56,7 +58,11 @@ for (let counter = 0; counter < passes; counter++) {
     }
 
     for (const line of lines) {
-        if (line === '%MOIN*%') {
+        if (line.startsWith('G03*')) {
+            arcG = 'G3';
+        } else if (line.startsWith('G02*')) {
+            arcG = 'G2';
+        } else if (line === '%MOIN*%') {
             out('G20 ; inch-mode');
         } else if (line === '%MOMM*%') {
             out('G21 ; mm-mode');
@@ -88,7 +94,7 @@ for (let counter = 0; counter < passes; counter++) {
             const [i, j = ''] = restI.split('J');
             // out({ line, x, y, i, j });
             if (i !== '' && j !== '') {
-                out(`G3 X${x * ratioX} Y${y * ratioY} I${i * ratioX} J${j * ratioY} ${ZlaserWork}`);
+                out(`${arcG} X${x * ratioX} Y${y * ratioY} I${i * ratioX} J${j * ratioY} ${ZlaserWork}`);
             } else {
                 out(`G1 X${x * ratioX} Y${y * ratioY} ${ZlaserWork}`);
             }

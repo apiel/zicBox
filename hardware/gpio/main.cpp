@@ -11,8 +11,8 @@
 #include <unistd.h>
 #include <cstring>
 
-#define ENCODER_COUNT 8
-#define BUTTON_COUNT 9
+#define ENCODER_COUNT 12
+#define BUTTON_COUNT 0
 
 lo_address oscClient = lo_address_new(NULL, "8888");
 bool debug = false;
@@ -159,26 +159,30 @@ int main(int argc, char **argv)
     printf("Initialized OSC client on port 8888\n");
 
     RotaryEncoder encoders[ENCODER_COUNT] = {
-        {1, 7, 0},
-        {11, 8, 1},
-        {25, 9, 2},
-        {10, 24, 3},
-        {21, 20, 4},
-        {16, 12, 5},
-        {23, 18, 6},
-        {15, 14, 7},
+        {20, 19, 0},
+        {13, 6, 1},
+        {5, 7, 2},
+        {8, 11, 3},
+        {21, 26, 4},
+        {9, 10, 5},
+        {27, 17, 6},
+        {22, 4, 7},
+        {16, 12, 8},
+        {25, 24, 9},
+        {23, 18, 10},
+        {15, 14, 11},
     };
 
     Button buttons[BUTTON_COUNT] = {
-        {26, 0},
-        {19, 1},
-        {13, 2},
-        {6, 3},
-        {5, 4},
-        {22, 5},
-        {27, 6},
-        {17, 7},
-        {4, 8},
+        // {26, 0},
+        // {19, 1},
+        // {13, 2},
+        // {6, 3},
+        // {5, 4},
+        // {22, 5},
+        // {27, 6},
+        // {17, 7},
+        // {4, 8},
     };
 
     while (1)
