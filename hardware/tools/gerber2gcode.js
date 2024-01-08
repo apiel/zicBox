@@ -77,7 +77,7 @@ for (let counter = 0; counter < passes; counter++) {
             // X4975000Y2200000D02*
             const [x, y] = line.substring(1, line.length - 4).split('Y');
             out(`\nG0 ${Zsafe}`);
-            out(`G0 X${x * ratioX} Y${y * ratioY}`);
+            out(`G0 X${getX(x)} Y${getY(y)}`);
             out(`G0 ${ZlaserOn}`);
         } else if (line.endsWith('D01*')) {
             // X4975000Y475000D01*
@@ -89,9 +89,9 @@ for (let counter = 0; counter < passes; counter++) {
             const [i, j = ''] = restI.split('J');
             // out({ line, x, y, i, j });
             if (i !== '' && j !== '') {
-                out(`${arcG} X${x * ratioX} Y${y * ratioY} I${i * ratioX} J${j * ratioY} ${ZlaserWork}`);
+                out(`${arcG} X${getX(x)} Y${getY(y)} I${getX(i)} J${getY(j)} ${ZlaserWork}`);
             } else {
-                out(`G1 X${x * ratioX} Y${y * ratioY} ${ZlaserWork}`);
+                out(`G1 X${getX(x)} Y${getY(y)} ${ZlaserWork}`);
             }
         }
     }
@@ -102,3 +102,19 @@ out(`\nG0 ${Zsafe}`);
 out(`M5 ; Laser Off`);
 
 outRelease();
+
+function round4(x) {
+    if (process.env.SKIP_ROUNDING) {
+        return x;
+    }
+    return Math.round(x * 1000) / 1000;
+}
+
+function getX(x) {
+    return round4(x * ratioX);
+}
+
+function getY(y) {
+    return round4(y * ratioY);
+    I;
+}
