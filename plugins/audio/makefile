@@ -7,7 +7,7 @@ all:
 	make EffectGainVolume EffectSampleRateReducer EffectFilter EffectDistortion EffectDelay\
 		EffectFilter EffectFilterMultiMode EffectFilterMultiMode2 EffectFilterMultiModeMoog\
 		SynthKick23 SynthGranular SynthSample\
-		Sequencer\
+		Sequencer Tempo\
 		Mixer2 Mixer4 Mixer8 Mixer12\
 		AudioInputPulse AudioOutputPulse AudioInputAlsa AudioOutputAlsa\
 		SerializeTrack

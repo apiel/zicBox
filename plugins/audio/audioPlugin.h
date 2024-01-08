@@ -21,6 +21,7 @@ public:
 
     virtual AudioPlugin* getPluginPtr(const char* name, int16_t track = -1) = 0;
     virtual AudioPlugin& getPlugin(const char* name, int16_t track = -1) = 0;
+    virtual void clockTick() = 0;
 };
 
 class AudioPlugin {
