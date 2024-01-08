@@ -227,7 +227,7 @@ protected:
 
     void onParamKeyPressed(uint8_t param)
     {
-        std::string paramId = "Param" + std::to_string(param);
+        std::string paramId = "Param" + std::to_string(param) + "_";
         std::vector<ComponentInterface*> components = getViewComponents();
         for (ComponentInterface* component : components) {
             if (component->id.find(paramId) == 0) {

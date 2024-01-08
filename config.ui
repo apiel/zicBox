@@ -37,19 +37,18 @@ $encoder=Encoder2
 
 # $screen=ui_320x172
 # $screen=ui_800x480
-# $screen=ui_640x480
 $screen=ui_480x640
 
 
 ### Default ###
 
 if: $screen == ui_800x480
-  INCLUDE: ui/layout.view.ui
-  INCLUDE: ui/main/main.view.ui
-  INCLUDE: ui/granular.view.ui
-  INCLUDE: ui/kick/kick.view.ui
-  INCLUDE: ui/demo.view.ui
-  INCLUDE: ui/mixer.view.ui
+  INCLUDE: ui_800x480/layout.view.ui
+  INCLUDE: ui_800x480/main/main.view.ui
+  INCLUDE: ui_800x480/granular.view.ui
+  INCLUDE: ui_800x480/kick/kick.view.ui
+  INCLUDE: ui_800x480/demo.view.ui
+  INCLUDE: ui_800x480/mixer.view.ui
 
   STARTUP_VIEW: Demo
 
