@@ -46,7 +46,7 @@ protected:
     uint8_t rowCount = stepCount / columnCount;
 
     uint8_t selectedStep = 0;
-    bool encoderActive = false;
+    bool encoderActive = true;
     uint8_t encoderCount = 0;
     int8_t encoderIds[columnCount] = { -1, -1, -1, -1, -1, -1, -1, -1 };
     bool roundEncoderSlection = true;

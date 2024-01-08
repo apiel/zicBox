@@ -44,7 +44,6 @@ const ZlaserWork = 'S1000';
 
 let ratioX = 0.000001;
 let ratioY = 0.000001;
-let origin; // use first coordinate as origin
 
 let arcG = 'G2';
 
@@ -77,10 +76,6 @@ for (let counter = 0; counter < passes; counter++) {
         } else if (line.endsWith('D02*')) {
             // X4975000Y2200000D02*
             const [x, y] = line.substring(1, line.length - 4).split('Y');
-            // if (!origin) {
-            //     out(`\nG92 X${x * ratioX} Y${y * ratioY} ; set current head position to first coordinate`);
-            //     origin = {x, y};
-            // }
             out(`\nG0 ${Zsafe}`);
             out(`G0 X${x * ratioX} Y${y * ratioY}`);
             out(`G0 ${ZlaserOn}`);
@@ -104,9 +99,6 @@ for (let counter = 0; counter < passes; counter++) {
 }
 
 out(`\nG0 ${Zsafe}`);
-// out(`G0 X${origin.x * ratioX} Y${origin.y * ratioY} ; go back to origin`);
-// out(`G0 X${(origin.x - 0.1) * ratioX} Y${(origin.y - 0.1) * ratioY}`);
-// out(`G0 X${origin.x * ratioX} Y${origin.y * ratioY}`);
 out(`M5 ; Laser Off`);
 
 outRelease();

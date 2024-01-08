@@ -23,7 +23,7 @@ protected:
 
     const int valueMarginTop = 15;
 
-    bool encoderActive = false;
+    bool encoderActive = true;
     int8_t encoderId = -1;
     uint8_t valueFloatPrecision = 0;
 

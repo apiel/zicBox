@@ -8,7 +8,7 @@
 
 class AdsrComponent : public Component {
 protected:
-    bool encoderActive = false;
+    bool encoderActive = true;
 
     Rect graphArea;
 

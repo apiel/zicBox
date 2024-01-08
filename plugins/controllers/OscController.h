@@ -64,6 +64,7 @@ int encoderOscHandler(const char *path, const char *types, lo_arg **argv, int ar
 {
     OscController *plugin = (OscController *)user_data;
     plugin->encoder(argv[0]->i, argv[1]->i);
+    // printf("OSC encoder: %d %d\n", argv[0]->i, argv[1]->i);
 
     return 0;
 }

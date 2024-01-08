@@ -20,7 +20,7 @@ protected:
     Point togglePosition;
     Point labelPosition;
 
-    bool encoderActive = false;
+    bool encoderActive = true;
     int8_t encoderId = -1;
 
     ValueInterface* value = NULL;
