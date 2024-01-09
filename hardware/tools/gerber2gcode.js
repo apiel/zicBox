@@ -17,9 +17,7 @@ let out = console.log;
 let outRelease = () => {};
 
 if (process.env.OUTPUT !== 'console') {
-    console.log(
-        'Dont forget to optimize gcode with https://xyzbots.com/gcode-optimizer/'
-    );
+    console.log('Dont forget to optimize gcode with https://xyzbots.com/gcode-optimizer/');
 
     const outputFilepath = file.replace(/\.[^/.]+$/, '') + `_F${speed}_x${passes}.gcode`;
     const outputFile = require('fs').createWriteStream(outputFilepath);
@@ -37,7 +35,7 @@ out('M3 ; Constant Power Laser On');
 
 // Set MM mode to set speed rate, then it might switch to INCH if gerber file require it
 out('G21 ; mm-mode');
-out(`G0 F1000 ; set move speed rate to 1000 mm/min`);
+// out('G0 F3000 ; set move speed rate to 3000 mm/min');
 out(`G1 F${speed} ; set line speed rate to ${speed} mm/min`);
 // out(`G3 F${speed} ; set arc speed rate to ${speed} mm/min`);
 
@@ -109,10 +107,10 @@ out(`M5 ; Laser Off`);
 outRelease();
 
 function round4(x) {
-    if (process.env.SKIP_ROUNDING) {
-        return x;
+    if (process.env.ROUND) {
+        return Math.round(x * 1000) / 1000;
     }
-    return Math.round(x * 1000) / 1000;
+    return x;
 }
 
 function getX(x) {
