@@ -1,7 +1,23 @@
-const { copyFileSync, rmSync, readdirSync, lstatSync, readFileSync, writeFileSync, mkdirSync } = require('fs');
+const {
+    copyFileSync,
+    rmSync,
+    readdirSync,
+    lstatSync,
+    readFileSync,
+    writeFileSync,
+    mkdirSync,
+} = require('fs');
 const path = require('path');
 
-const ignore = ['README.md', 'NOTE.md', 'node_modules', 'waveshare/', 'hardware/neotrillis/.pio', '.git'];
+const ignore = [
+    'NOTE.md',
+    'node_modules',
+    'waveshare/',
+    'hardware/neotrillis/.pio',
+    '.git',
+    'hardware',
+    'dustscript',
+];
 const extensions = ['.c', '.h', '.cpp'];
 
 const docsFolder = 'docs';
@@ -45,12 +61,14 @@ function extractMdComment(content) {
     return result.join('\n\n');
 }
 
-function dirExists(folder) {
+function ensureDir(file) {
     try {
-        return lstatSync(folder).isDirectory();
-    } catch {
-        return false;
-    }
+        if (lstatSync(folder).isDirectory()) {
+            return;
+        }
+    } catch {}
+    const folder = path.dirname(file);
+    mkdirSync(folder, { recursive: true });
 }
 
 function docs(folder) {
@@ -64,6 +82,7 @@ function docs(folder) {
             docs(filepath);
         } else if (filepath.endsWith('.md')) {
             const distPath = path.join(docsFolder, filepath);
+            ensureDir(distPath);
             copyFileSync(filepath, distPath);
         } else if (isAllowedExtension(filepath)) {
             const content = readFileSync(filepath, 'utf8');
@@ -71,10 +90,7 @@ function docs(folder) {
             if (md) {
                 const mdFile = path.format({ ...path.parse(filepath), base: '', ext: '.md' });
                 const mdPath = path.join(docsFolder, mdFile);
-                const mdFolder = path.dirname(mdPath);
-                if (!dirExists(mdFolder)) {
-                    mkdirSync(mdFolder, { recursive: true });
-                }
+                ensureDir(mdPath);
                 writeFileSync(mdPath, md);
             }
         }
