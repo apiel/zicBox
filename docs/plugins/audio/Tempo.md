@@ -4,8 +4,10 @@ Tempo audio module is responsible for clocking events. The main purpose is to se
 A good example is the sequencer.
 
 
-bpm value in beats per minute
+### Values
 
-Config file:
+- `bpm` in beats per minute
 
-- Use `BPM: 120.0` to set default beat per minute
+### Config file
+
+- `BPM: 120.0` to set default beat per minute
