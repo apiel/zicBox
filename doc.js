@@ -1,10 +1,14 @@
-const { readdirSync, lstatSync, readFileSync, writeFileSync, mkdirSync } = require('fs');
+const { rmSync, readdirSync, lstatSync, readFileSync, writeFileSync, mkdirSync } = require('fs');
 const path = require('path');
 
 const ignoreFolder = ['node_modules', 'waveshare/', 'hardware/neotrillis/.pio', '.git'];
 const extensions = ['.c', '.h', '.cpp'];
 
 const docsFolder = 'docs';
+const rootFolder = process.argv[2] || '.';
+if (rootFolder === '.') {
+    rmSync(docsFolder, { recursive: true, force: true });
+}
 
 function isIgnored(file) {
     file = file.toLowerCase();
@@ -38,7 +42,7 @@ function extractMdComment(content) {
     while ((match = reg.exec(content)) !== null) {
         result.push(match[1]);
     }
-    return result.join('\n');
+    return result.join('\n\n');
 }
 
 function dirExists(folder) {
@@ -74,4 +78,4 @@ function docs(folder) {
     }
 }
 
-docs(process.argv[2]);
+docs(rootFolder);
