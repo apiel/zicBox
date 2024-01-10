@@ -4,12 +4,19 @@
 #include "audioPlugin.h"
 #include "mapping.h"
 
+/*md
+## Tempo
+
+Tempo audio module is responsible for clocking events. The main purpose is to send clock events to other plugins.
+A good example is the sequencer.
+*/
 class Tempo : public Mapping {
 protected:
     uint32_t sampleCounter = 0;
     uint32_t sampleCountTarget = 0;
 
 public:
+    /*md bpm value in beats per minute*/
     Val& bpm = val(120.0f, "bpm", { "Bpm", .min = 60.0f, .max = 240.0f }, [&](auto p) { setBpm(p.value); });
 
     Tempo(AudioPlugin::Props& props, char* _name)
@@ -35,8 +42,10 @@ public:
         }
     }
 
+    /*md Config file: */
     bool config(char* key, char* value)
     {
+        /*md - Use `BPM: 120.0` to set default beat per minute */
         if (strcmp(key, "BPM") == 0) {
             bpm.set(atof(value));
             return true;
