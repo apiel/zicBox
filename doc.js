@@ -1,7 +1,7 @@
-const { rmSync, readdirSync, lstatSync, readFileSync, writeFileSync, mkdirSync } = require('fs');
+const { copyFileSync, rmSync, readdirSync, lstatSync, readFileSync, writeFileSync, mkdirSync } = require('fs');
 const path = require('path');
 
-const ignoreFolder = ['node_modules', 'waveshare/', 'hardware/neotrillis/.pio', '.git'];
+const ignore = ['README.md', 'NOTE.md', 'node_modules', 'waveshare/', 'hardware/neotrillis/.pio', '.git'];
 const extensions = ['.c', '.h', '.cpp'];
 
 const docsFolder = 'docs';
@@ -12,8 +12,8 @@ if (rootFolder === '.') {
 
 function isIgnored(file) {
     file = file.toLowerCase();
-    for (const i of ignoreFolder) {
-        if (file.includes(i)) {
+    for (const i of ignore) {
+        if (file.includes(i.toLowerCase())) {
             return true;
         }
     }
@@ -62,6 +62,9 @@ function docs(folder) {
         }
         if (lstatSync(filepath).isDirectory()) {
             docs(filepath);
+        } else if (filepath.endsWith('.md')) {
+            const distPath = path.join(docsFolder, filepath);
+            copyFileSync(filepath, distPath);
         } else if (isAllowedExtension(filepath)) {
             const content = readFileSync(filepath, 'utf8');
             const md = extractMdComment(content);
