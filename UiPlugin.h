@@ -133,6 +133,32 @@ public:
 
     bool config(char* key, char* value)
     {
+/*md
+### VIEW
+
+The user interface is composed of multiple views that contain the components. A view, represent a full screen layout. Use `VIEW: name_of_the_veiw` to create a view. All the following `COMPONENT: ` will be assign to this view, till the next view.
+
+```coffee
+# VIEW: ViewName
+
+VIEW: Main
+
+# some components...
+
+VIEW: Mixer
+
+# some components...
+# ...
+```
+
+In some case, we need to create some hidden view. Those hidden views can be useful when defining a layout that is re-used in multiple view. It might also be useful, when a view have multiple state (e.g. shifted view...). In all those case, we do not want those view to be iterable. To define a hidden view, set `HIDDEN` flag after the view name.
+
+```coffee
+VIEW: Layout HIDDEN
+
+# some components...
+```
+*/
         if (strcmp(key, "VIEW") == 0) {
             View* v = new View;
             v->name = strtok(value, " ");
@@ -157,6 +183,23 @@ public:
             setView(1.0f);
 
             return true;
+        }
+
+/*md
+### STARTUP_VIEW
+
+`STARTUP_VIEW` can be used to load a specific view on startup. This command should only be call at the end of the configuration file, once all the view has been initialised.
+
+```coffee
+#STARTUP_VIEW: ViewName
+
+STARTUP_VIEW: Mixer
+```
+
+If `STARTUP_VIEW` is not defined, the first defined view (not `HIDDEN`) will be displayed.
+*/
+        if (strcmp(key, "STARTUP_VIEW") == 0) {
+            setView(value);
         }
 
         if (strcmp(key, "USE_SHARED_COMPONENT") == 0) {
