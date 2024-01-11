@@ -12,6 +12,15 @@ void uiScriptCallback(char* key, char* value, const char* filename, uint8_t inde
 {
     if (strcmp(key, "print") == 0) {
         printf(">> LOG: %s\n", value);
+/*md
+### INCLUDE
+
+A `.ui` file can include another `.ui` file, using `INCLUDE: path/of/the/file.ui`. As soon as this `INCLUDE` is called, it will continue into the child file till his end, to finally come back to the original file.
+
+```coffee
+INCLUDE: path/of/the/file.ui
+```
+*/
     } else if (strcmp(key, "INCLUDE") == 0) {
         char fullpath[512];
         getFullpath(value, filename, fullpath);
@@ -27,6 +36,30 @@ void uiScriptCallback(char* key, char* value, const char* filename, uint8_t inde
         styles.screen.h = atoi(strtok(NULL, " "));
     } else if (strcmp(key, "PLUGIN_CONTROLLER") == 0) {
         loadPluginController(value, filename);
+/*md
+### SET_COLOR
+
+`SET_COLOR` give the possibility to customize the pre-defined color for the UI. To change a color, use `SET_COLOR: name_of_color #xxxxxx`.
+
+```coffee
+SET_COLOR: overlay #00FFFF
+```
+
+In this example, we change the `overlay` color to `#00FFFF`.
+
+```cpp
+    .colors = {
+        .background = {0x21, 0x25, 0x2b, 255},  // #21252b
+        .overlay = {0xd1, 0xe3, 0xff, 0x1e},    // #d1e3ff1e
+        .on = {0x00, 0xb3, 0x00, 255},          // #00b300
+        .white = {0xff, 0xff, 0xff, 255},       // #ffffff
+        .blue = {0xad, 0xcd, 0xff, 255},        // #adcdff
+        .red = {0xff, 0x8d, 0x99, 255},         // #ff8d99
+    },
+```
+
+> This list might be outdated, to get the list of existing colors, look at `./styles.h`
+*/
     } else if (strcmp(key, "SET_COLOR") == 0) {
         char* name = strtok(value, " ");
         char* color = strtok(NULL, " ");

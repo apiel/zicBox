@@ -21,9 +21,26 @@ const ignore = [
 const extensions = ['.c', '.h', '.cpp'];
 
 const docsFolder = 'docs';
+const wikiFolder = '../zicBox.wiki';
+
 const rootFolder = process.argv[2] || '.';
 if (rootFolder === '.') {
     rmSync(docsFolder, { recursive: true, force: true });
+}
+
+function folderExists(folder) {
+    try {
+        if (lstatSync(folder).isDirectory()) {
+            return true;
+        }
+    } catch {}
+    return false;
+}
+
+
+const wiki = folderExists(wikiFolder);
+if (wiki) {
+    rmSync(path.join(wikiFolder, docsFolder), { recursive: true, force: true });
 }
 
 function isIgnored(file) {
@@ -101,6 +118,12 @@ function docs(folder) {
         const fileOutput = path.join(docsFolder, folder === '.' ? 'README.md' : `${folder}.md`);
         ensureDir(fileOutput);
         writeFileSync(fileOutput, content);
+        if (wiki) {
+            const dashFolder = folder.replace('/', '-');
+            const wikiFile = path.join(wikiFolder, docsFolder, dashFolder === '.' ? 'intro.md' : `${dashFolder}.md`);
+            ensureDir(wikiFile);
+            writeFileSync(wikiFile, content.split('\n').slice(1).join('\n'));
+        }
     }
 }
 

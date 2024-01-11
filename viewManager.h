@@ -209,19 +209,41 @@ public:
 
     bool config(char* key, char* value, const char* filename)
     {
+/*md
+### PLUGIN_COMPONENT
+
+A component must be load from a shared library (those `.so` files). To load those plugin components, use `PLUGIN_COMPONENT: given_name_to_component ../path/of/the/component.so`.
+
+```coffee
+PLUGIN_COMPONENT: Encoder ../plugins/build/libzic_EncoderComponent.so
+```
+
+In this example, we load the shared library `../plugins/build/libzic_EncoderComponent.so` and we give it the name of `Encoder`. The `Encoder` name will be used later to place the components in the view.
+*/
         if (strcmp(key, "PLUGIN_COMPONENT") == 0) {
             loadPlugin(value, filename);
             return true;
         }
+/*md
+### COMPONENT
+
+To place previously loaded components inside a view, use `COMPONENT: given_name_to_component x y w h`.
+
+```coffee
+COMPONENT: Encoder 100 0 100 50
+ENCODER_ID: 1
+VALUE: MultiModeFilter RESONANCE
+```
+
+A component can get extra configuration settings and any `KEY: VALUE` following `COMPONENT: ` will be forwarded to the component.
+In this example, we assign the hardware encoder id 1 to this component and we assign it to the resonance value from the multi mode filter audio plugin.
+*/
         if (strcmp(key, "COMPONENT") == 0) {
             char* name = strtok(value, " ");
             Point position = { atoi(strtok(NULL, " ")), atoi(strtok(NULL, " ")) };
             Size size = { atoi(strtok(NULL, " ")), atoi(strtok(NULL, " ")) };
             addComponent(name, position, size);
             return true;
-        }
-        if (strcmp(key, "STARTUP_VIEW") == 0) {
-            ui.setView(value);
         }
         return ui.config(key, value);
     }
