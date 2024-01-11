@@ -98,7 +98,7 @@ function docs(folder) {
     }
     const content = contents.join('\n\n');
     if (content) {
-        const fileOutput = path.join(docsFolder, folder, 'README.md');
+        const fileOutput = path.join(docsFolder, folder === '.' ? 'README.md' : `${folder}.md`);
         ensureDir(fileOutput);
         writeFileSync(fileOutput, content);
     }
