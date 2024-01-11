@@ -73,6 +73,7 @@ function ensureDir(file) {
 }
 
 function docs(folder) {
+    const contents = [];
     const files = readdirSync(folder);
     for (const file of files) {
         const filepath = path.join(folder, file);
@@ -81,20 +82,25 @@ function docs(folder) {
         }
         if (lstatSync(filepath).isDirectory()) {
             docs(filepath);
+        } else if (filepath.toLowerCase().endsWith('readme.md')) {
+            const content = readFileSync(filepath, 'utf8');
+            contents.unshift(content);
         } else if (filepath.endsWith('.md')) {
-            const distPath = path.join(docsFolder, filepath);
-            ensureDir(distPath);
-            copyFileSync(filepath, distPath);
+            const content = readFileSync(filepath, 'utf8');
+            contents.push(content);
         } else if (isAllowedExtension(filepath)) {
             const content = readFileSync(filepath, 'utf8');
             const md = extractMdComment(content);
             if (md) {
-                const mdFile = path.format({ ...path.parse(filepath), base: '', ext: '.md' });
-                const mdPath = path.join(docsFolder, mdFile);
-                ensureDir(mdPath);
-                writeFileSync(mdPath, md);
+                contents.push(md);
             }
         }
+    }
+    const content = contents.join('\n\n');
+    if (content) {
+        const fileOutput = path.join(docsFolder, folder, 'README.md');
+        ensureDir(fileOutput);
+        writeFileSync(fileOutput, content);
     }
 }
 
