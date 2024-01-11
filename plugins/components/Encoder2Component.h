@@ -287,12 +287,14 @@ public:
             return true;
         }
 
+        /*md - `LABEL: custom_label` overwrite the value label */
         if (strcmp(key, "LABEL") == 0) {
             strcpy(labelBuffer, params);
             label = labelBuffer;
             return true;
         }
 
+        /*md - `COLOR: #3791a1` set the ring color */
         if (strcmp(key, "COLOR") == 0) {
             colors.bar = draw.getColor(params);
             colors.barBackground = draw.alpha(colors.bar, 0.5);
@@ -300,11 +302,13 @@ public:
             return true;
         }
 
+        /*md - `BACKGROUND_COLOR: #000000` set the background color */
         if (strcmp(key, "BACKGROUND_COLOR") == 0) {
             colors.background = draw.getColor(params);
             return true;
         }
 
+        /*md - `TEXT_COLOR: #ffffff` set the text color */
         if (strcmp(key, "TEXT_COLOR") == 0) {
             colors.title = draw.alpha(draw.getColor(params), 0.4);
             colors.value = draw.alpha(draw.getColor(params), 0.4);
@@ -312,37 +316,44 @@ public:
             return true;
         }
 
+        /*md - `KNOB_COLOR: #888888` set the knob color (middle circle) */
         if (strcmp(key, "KNOB_COLOR") == 0) {
             colors.knob = draw.getColor(params);
             // colors.knobDot = draw.lighten(colors.knob, 0.7);
             return true;
         }
 
+        /*md - `FLOAT_PRECISION: 2` set how many digits after the decimal point (by default none) */
         if (strcmp(key, "FLOAT_PRECISION") == 0) {
             valueFloatPrecision = atoi(params);
             return true;
         }
 
+        /*md - `SHOW_KNOB: FALSE` show the knob (middle circle) (default TRUE) */
         if (strcmp(key, "SHOW_KNOB") == 0) {
             showKnob = (strcmp(params, "TRUE") == 0);
             return true;
         }
 
+        /*md - `SHOW_GROUP: TRUE` show group if the component is part of the current active group (default FALSE) */
         if (strcmp(key, "SHOW_GROUP") == 0) {
             showGroup = (strcmp(params, "TRUE") == 0);
             return true;
         }
 
+        /*md - `SHOW_VALUE: TRUE` show value (default TRUE) */
         if (strcmp(key, "SHOW_VALUE") == 0) {
             showValue = (strcmp(params, "TRUE") == 0);
             return true;
         }
 
+        /*md - `SHOW_UNIT: TRUE` show unit (default TRUE) */
         if (strcmp(key, "SHOW_UNIT") == 0) {
             showUnit = (strcmp(params, "TRUE") == 0);
             return true;
         }
 
+        /*md - `FONT_UNIT_SIZE: 12` set the unit font size */
         if (strcmp(key, "FONT_UNIT_SIZE") == 0) {
             fontUnitSize = atoi(params);
             return true;
