@@ -51,7 +51,8 @@ function isAllowedExtension(file) {
 /*md
 content
 */
-const reg = /\/\*md\s*((.*?\n)+|(.*?))\s*\*\//g;
+// use https://regexr.com/ to test
+const reg = /\/\*md\s*((.*?[^\*\/]\n)+|(.*?))\s*\*\//g;
 function extractMdComment(content) {
     const result = [];
     let match;
