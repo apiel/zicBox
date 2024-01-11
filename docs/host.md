@@ -1,6 +1,6 @@
 # zicHost
 
-ZicBox can be used without used interface, either by using zicHost application or by loading zicHost shared library into another application.
+ZicBox can be used without user interface, either by using zicHost application or by loading zicHost shared library into another application.
 
 The zicHost application can be controlled by midi, by assigning a midi message to an audio plugin value.
 

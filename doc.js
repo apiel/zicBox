@@ -10,6 +10,7 @@ const {
 const path = require('path');
 
 const ignore = [
+    './README.md',
     'NOTE.md',
     'node_modules',
     'waveshare/',
@@ -36,7 +37,6 @@ function folderExists(folder) {
     } catch {}
     return false;
 }
-
 
 const wiki = folderExists(wikiFolder);
 if (wiki) {
@@ -100,6 +100,10 @@ function docs(folder) {
         if (lstatSync(filepath).isDirectory()) {
             docs(filepath);
         } else if (filepath.toLowerCase().endsWith('readme.md')) {
+            // Ignore root readme
+            if (filepath.toLowerCase() === 'readme.md') {
+                continue;
+            }
             const content = readFileSync(filepath, 'utf8');
             contents.unshift(content);
         } else if (filepath.endsWith('.md')) {
@@ -120,7 +124,11 @@ function docs(folder) {
         writeFileSync(fileOutput, content);
         if (wiki) {
             const dashFolder = folder.replace('/', '-');
-            const wikiFile = path.join(wikiFolder, docsFolder, dashFolder === '.' ? 'intro.md' : `${dashFolder}.md`);
+            const wikiFile = path.join(
+                wikiFolder,
+                docsFolder,
+                dashFolder === '.' ? 'intro.md' : `${dashFolder}.md`
+            );
             ensureDir(wikiFile);
             writeFileSync(wikiFile, content.split('\n').slice(1).join('\n'));
         }
