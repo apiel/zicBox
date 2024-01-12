@@ -89,6 +89,8 @@ function ensureDir(file) {
     mkdirSync(folder, { recursive: true });
 }
 
+const fileList = [];
+
 function docs(folder) {
     const contents = [];
     const files = readdirSync(folder);
@@ -122,6 +124,7 @@ function docs(folder) {
         const header = lines.shift();
         const content = lines.join('\n');
         const filename = header.replace(/^#+\s+/, '').replaceAll(' ', '-');
+        fileList.push(filename);
         const wikiFile = path.join(docsFolder, `${filename}.md`);
         ensureDir(wikiFile);
         writeFileSync(wikiFile, content);
@@ -129,3 +132,6 @@ function docs(folder) {
 }
 
 docs(rootFolder);
+
+const sidebar = fileList.sort().map((filename) => ` - [${filename}](https://github.com/apiel/zicBox/wiki/${filename})`).join('\n');
+writeFileSync(path.join(docsFolder, '_Sidebar.md'), sidebar);
