@@ -4,3 +4,6 @@
 [submodule "dustscript"]
 	path = dustscript
 	url = git@github.com:apiel/dustscript.git
+[submodule "wiki"]
+	path = wiki
+	url = git@github.com:apiel/zicBox.wiki.git
