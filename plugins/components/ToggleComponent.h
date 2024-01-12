@@ -174,7 +174,7 @@ public:
 
     void* data(int id, void* userdata = NULL) override
     {
-        if (id == 0) {
+        if (id == 1) {
             if (value->get() == value->props().min) {
                 value->set(value->props().max);
             } else {

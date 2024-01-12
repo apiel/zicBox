@@ -28,6 +28,8 @@
 
 ## zicUi
 
+- TODO make label all at the same position...
+
 - TODO pattern selector in sequencer
        pattern category
 

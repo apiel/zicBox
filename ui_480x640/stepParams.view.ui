@@ -48,7 +48,7 @@
     TRACK: $track
     VALUE: Sequencer STEP_ENABLED
     OFF_LABEL: Disabled
-    ID: Param4_toggle
+    ID: Param4_button
 
   COMPONENT: Rect $encX2 $encY2 $encSize $encSize
   # COMPONENT: Encoder2 $encX2 $encY2 $encSize $encSize
