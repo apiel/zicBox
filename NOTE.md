@@ -10,6 +10,8 @@
 
 ## zic sample
 
+- FIXME fix autosave crashing when layout changed...
+
 - TODO ?? auto save, instead to always save, only save if something changed
     to do this, would need the each plugin have a way to keep track change, either with keeping the time of the last update
     or simply with a boolean

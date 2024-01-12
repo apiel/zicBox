@@ -3,6 +3,11 @@
 
 #include "base/ButtonBaseComponent.h"
 
+/*md
+## Button
+
+Push button component that trigger an action when pressed and released.
+*/
 class ButtonComponent : public ButtonBaseComponent {
 protected:
     void set(std::function<void()>& event, char* config)
@@ -64,6 +69,8 @@ protected:
         ValueInterface* value = val(getPlugin(action, track).getValue(key));
         if (value != NULL && label == "") {
             label = value->label();
+        } else {
+            // printf("No value %s %s found for button on track %d\n", action, key, track);
         }
 
         float target = atof(targetValue);
@@ -80,12 +87,21 @@ public:
 
     bool config(char* key, char* value)
     {
+/*md
+- `ON_PRESS: action` is used to set an action when the button is pressed
+    - `ON_PRESS: &SET_VIEW name` sets the specified view when the button is pressed
+    - `ON_PRESS: &NOTE_ON pluginName note velocity` send the note on the specified plugin when the button is pressed
+    - `ON_PRESS: &NOTE_OFF pluginName note` send the note off the specified plugin when the button is pressed
+    - `ON_PRESS: &DATA pluginName dataId` send the data to the specified plugin when the button is pressed
+    - `ON_PRESS: pluginName key value` sets the value of the specified plugin key when the button is pressed
+*/
         if (strcmp(key, "ON_PRESS") == 0) {
             // printf("value: %s\n", value);
             set(onPress, value);
             return true;
         }
 
+        /*md - `ON_RELEASE: action` is used to set an action when the button is released  (where action can be the same as ON_PRESS)*/
         if (strcmp(key, "ON_RELEASE") == 0) {
             // printf("value: %s\n", value);
             set(onRelease, value);
