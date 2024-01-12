@@ -121,7 +121,7 @@ function docs(folder) {
         const lines = contents.join('\n\n').split('\n');
         const header = lines.shift();
         const content = lines.join('\n');
-        const filename = header.replace(/^#+\s+/, '').replace(' ', '-');
+        const filename = header.replace(/^#+\s+/, '').replaceAll(' ', '-');
         const wikiFile = path.join(docsFolder, `${filename}.md`);
         ensureDir(wikiFile);
         writeFileSync(wikiFile, content);
