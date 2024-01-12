@@ -6,4 +6,4 @@ Customizable digital synth / groovebox...
 | :---:   | :---: | :---: | 
 
 
-See [Documentation](https://github.com/apiel/zicBox/tree/main/docs)
+See [Documentation](https://github.com/apiel/zicBox/wiki/01-Getting-started)
