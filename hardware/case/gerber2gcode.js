@@ -39,7 +39,7 @@ out('G21 ; mm-mode');
 out(`G1 F${speed} ; set line speed rate to ${speed} mm/min`);
 // out(`G3 F${speed} ; set arc speed rate to ${speed} mm/min`);
 
-const Zsafe = 'Z10';
+const Zsafe = 'Z1';
 const ZlaserOn = 'Z0';
 const ZlaserWork = 'S1000';
 // const Zsafe = '';
