@@ -133,5 +133,5 @@ function docs(folder) {
 
 docs(rootFolder);
 
-const sidebar = fileList.sort().map((filename) => ` - [${filename}](https://github.com/apiel/zicBox/wiki/${filename})`).join('\n');
-writeFileSync(path.join(docsFolder, '_Sidebar.md'), sidebar);
+const sidebar = fileList.sort().map((filename) => `[${filename}](https://github.com/apiel/zicBox/wiki/${filename})`).join('\n');
+writeFileSync(path.join(docsFolder, '..', '_Sidebar.md'), sidebar);
