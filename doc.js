@@ -18,16 +18,12 @@ const ignore = [
     '.git',
     'hardware',
     'dustscript',
+    'wiki',
 ];
 const extensions = ['.c', '.h', '.cpp'];
 
-const docsFolder = 'docs';
-const wikiFolder = '../zicBox.wiki';
-
-const rootFolder = process.argv[2] || '.';
-if (rootFolder === '.') {
-    rmSync(docsFolder, { recursive: true, force: true });
-}
+const docsFolder = 'wiki/docs';
+const rootFolder = '.';
 
 function folderExists(folder) {
     try {
@@ -38,9 +34,13 @@ function folderExists(folder) {
     return false;
 }
 
-const wiki = folderExists(wikiFolder);
-if (wiki) {
-    rmSync(path.join(wikiFolder, docsFolder), { recursive: true, force: true });
+if (folderExists(docsFolder)) {
+    rmSync(docsFolder, { recursive: true, force: true });
+} else {
+    console.error(`${docsFolder} not found. Are you sure you loaded wiki submodule?`);
+    if (!process.argv.includes('--force')) {
+        process.exit(1);
+    }
 }
 
 function isIgnored(file) {
@@ -117,21 +117,14 @@ function docs(folder) {
             }
         }
     }
-    const content = contents.join('\n\n');
-    if (content) {
-        const fileOutput = path.join(docsFolder, folder === '.' ? 'README.md' : `${folder}.md`);
-        ensureDir(fileOutput);
-        writeFileSync(fileOutput, content);
-        if (wiki) {
-            const dashFolder = folder.replace('/', '-');
-            const wikiFile = path.join(
-                wikiFolder,
-                docsFolder,
-                dashFolder === '.' ? 'intro.md' : `${dashFolder}.md`
-            );
-            ensureDir(wikiFile);
-            writeFileSync(wikiFile, content.split('\n').slice(1).join('\n'));
-        }
+    if (contents.length) {
+        const lines = contents.join('\n\n').split('\n');
+        const header = lines.shift();
+        const content = lines.join('\n');
+        const filename = header.replace(/^#+\s+/, '').replace(' ', '-');
+        const wikiFile = path.join(docsFolder, `${filename}.md`);
+        ensureDir(wikiFile);
+        writeFileSync(wikiFile, content);
     }
 }
 
