@@ -17,7 +17,7 @@ let out = console.log;
 let outRelease = () => {};
 
 if (process.env.OUTPUT !== 'console') {
-    console.log('Dont forget to optimize gcode with https://xyzbots.com/gcode-optimizer/');
+    // console.log('Dont forget to optimize gcode with https://xyzbots.com/gcode-optimizer/');
 
     const outputFilepath = file.replace(/\.[^/.]+$/, '') + `_F${speed}_x${passes}.gcode`;
     const outputFile = require('fs').createWriteStream(outputFilepath);
