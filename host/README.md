@@ -1,8 +1,8 @@
-# zicHost
+# 02 Audio host
 
-ZicBox can be used without user interface, either by using zicHost application or by loading zicHost shared library into another application.
+ZicBox can be used with or without user interface, either by using zicHost application or by loading zicHost shared library into another application. By default, zicHost is loaded as a shared library into zicBox to provide a UI on top of it.
 
-The zicHost application can be controlled by midi, by assigning a midi message to an audio plugin value.
+The audio host can be configured using a config file (by default `config.cfg`):
 
 ```coffee
 # Here we define the Digitone as midi controller
@@ -21,31 +21,3 @@ AUDIO_PLUGIN: MultiModeFilter ./plugins/audio/build/libzic_EffectFilterMultiMode
 CUTOFF: b0 4c xx
 RESONANCE: b0 4d xx
 ```
-
-## Audio plugins
-
-ZicHost take care to load and handle audio plugins. Each plugins have access to the 32 audio tracks buffer to manipulate them. Those plugins are called in loop in the same order as they have been instanciated. A plugin can be loaded multiple times under a different name.
-
-## zicHost.so
-
-Usage example:
-
-```cpp
-#include <dlfcn.h>
-#include <stdio.h>
-
-int main()
-{
-    const char* path = "./zicHost.so";
-    printf("Loading host from %s\n", path);
-    void* handle = dlopen(path, RTLD_LAZY);
-    if (handle == NULL) {
-        printf("Failed to load %s: %s\n", path, dlerror());
-        return 1;
-    }
-    printf("Loaded %s\n", path);
-    dlclose(handle);
-}
-```
-
-Build: `g++ -o demo demo.cpp`
