@@ -232,13 +232,28 @@ protected:
         for (ComponentInterface* component : components) {
             if (component->id.find(paramId) == 0) {
                 // id end by _toggle
-                if (component->id.find("_toggle") != -1) {
+                if (component->id.find("_button") != -1) {
                     // printf("toggle %s\n", component->id.c_str());
-                    component->data(0);
+                    component->data(1);
                 } else if (component->id.find("_enc") != -1) {
                     // printf("enc %s\n", component->id.c_str());
                     paramKeyPressed = param;
                     componentParam = component;
+                }
+            }
+        }
+    }
+
+    void onParamKeyReleased(uint8_t param)
+    {
+        std::string paramId = "Param" + std::to_string(param) + "_";
+        std::vector<ComponentInterface*> components = getViewComponents();
+        for (ComponentInterface* component : components) {
+            if (component->id.find(paramId) == 0) {
+                // id end by _toggle
+                if (component->id.find("_button") != -1) {
+                    // printf("toggle %s\n", component->id.c_str());
+                    component->data(0);
                 }
             }
         }

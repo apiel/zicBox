@@ -13,6 +13,7 @@ PLUGIN_COMPONENT: Sample ./plugins/components/build/libzic_SampleComponent.so
 PLUGIN_COMPONENT: GridSequencer ./plugins/components/build/libzic_GridSequencerComponent.so
 PLUGIN_COMPONENT: Rect ./plugins/components/build/libzic_RectComponent.so
 PLUGIN_COMPONENT: Toggle ./plugins/components/build/libzic_ToggleComponent.so
+PLUGIN_COMPONENT: Play ./plugins/components/build/libzic_PlayComponent.so
 
 PLUGIN_CONTROLLER: Osc ./plugins/controllers/build/libzic_OscController.so
 

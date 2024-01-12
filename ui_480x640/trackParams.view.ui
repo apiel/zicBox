@@ -29,29 +29,29 @@
     TYPE: BROWSE
     ID: Param2_enc
 
-  # COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize
-  #   ENCODER_ID: 3
-  #   SHOW_GROUP: FALSE
-  #   if: $IS_RPI == false
-  #     GROUP: 0
-  #   VALUE: MultiModeFilter CUTOFF
-  #   COLOR: #ff7700
-  #   TYPE: TWO_SIDED
-  #   # BACKGROUND_COLOR: #2b2c2e
-  #   ID: Param3_enc
-
-  COMPONENT: Toggle $encX4 $encY1 $encSize $encSize
+  COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize
     ENCODER_ID: 3
     SHOW_GROUP: FALSE
     if: $IS_RPI == false
-      GROUP: 1
-      ENCODER_ID: 0
-    TOGGLE_COLOR: #ff7700
-    TRACK: $track
-    VALUE: Sequencer PLAY_STOP
-    LABEL: Play
-    OFF_LABEL: Stop
-    ID: Param3_toggle
+      GROUP: 0
+    VALUE: MultiModeFilter CUTOFF
+    COLOR: #ff7700
+    TYPE: TWO_SIDED
+    # BACKGROUND_COLOR: #2b2c2e
+    ID: Param3_enc
+
+  # COMPONENT: Toggle $encX4 $encY1 $encSize $encSize
+  #   ENCODER_ID: 3
+  #   SHOW_GROUP: FALSE
+  #   if: $IS_RPI == false
+  #     GROUP: 1
+  #     ENCODER_ID: 0
+  #   TOGGLE_COLOR: #ff7700
+  #   TRACK: $track
+  #   VALUE: Sequencer PLAY_STOP
+  #   LABEL: Play
+  #   OFF_LABEL: Stop
+  #   ID: Param3_button
 
 
   COMPONENT: Encoder2 $encX1 $encY2 $encSize $encSize
