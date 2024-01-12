@@ -12,6 +12,57 @@
 
 const uint8_t MAX_STEPS = 32;
 
+    // { "---", [](uint8_t loopCounter) { return true; } },
+    // { "Pair", [](uint8_t loopCounter) { return loopCounter % 2 == 0; } },
+    // { "4th", [](uint8_t loopCounter) { return loopCounter % 4 == 0; } },
+    // { "6th", [](uint8_t loopCounter) { return loopCounter % 6 == 0; } },
+    // { "8th", [](uint8_t loopCounter) { return loopCounter % 8 == 0; } },
+    // { "Impair", [](uint8_t loopCounter) { return loopCounter % 2 == 1; } },
+    // { "1%", [](uint8_t loopCounter) { return (getRand() % 100) == 0; } },
+    // { "2%", [](uint8_t loopCounter) { return (getRand() % 100) < 2; } },
+    // { "5%", [](uint8_t loopCounter) { return (getRand() % 100) < 5; } },
+    // { "10%", [](uint8_t loopCounter) { return (getRand() % 100) < 10; } },
+    // { "20%", [](uint8_t loopCounter) { return (getRand() % 100) < 20; } },
+    // { "30%", [](uint8_t loopCounter) { return (getRand() % 100) < 30; } },
+    // { "40%", [](uint8_t loopCounter) { return (getRand() % 100) < 40; } },
+    // { "50%", [](uint8_t loopCounter) { return (getRand() % 100) < 50; } },
+    // { "60%", [](uint8_t loopCounter) { return (getRand() % 100) < 60; } },
+    // { "70%", [](uint8_t loopCounter) { return (getRand() % 100) < 70; } },
+    // { "80%", [](uint8_t loopCounter) { return (getRand() % 100) < 80; } },
+    // { "90%", [](uint8_t loopCounter) { return (getRand() % 100) < 90; } },
+    // { "95%", [](uint8_t loopCounter) { return (getRand() % 100) < 95; } },
+    // { "98%", [](uint8_t loopCounter) { return (getRand() % 100) < 98; } },
+    // { "99%", [](uint8_t loopCounter) { return (getRand() % 100) < 99; } },
+
+
+/*md
+## Sequencer
+
+Sequencer audio module can be used to sequence another audio plugin on 32 steps. Each step can be triggered by a condition:
+
+- `---` - always
+- `Pair` - every second step
+- `4th` - every fourth step
+- `6th` - every sixth step
+- `8th` - every eighth step
+- `Impair` - every impair step
+- `1%` - 1% probability, meaning that it has 1 chance over 100 to be triggered
+- `2%` - 2% probability
+- `5%` - 5% probability
+- `10%` - 10% probability
+- `20%` - 20% probability
+- `30%` - 30% probability
+- `40%` - 40% probability
+- `50%` - 50% probability
+- `60%` - 60% probability
+- `70%` - 70% probability
+- `80%` - 80% probability
+- `90%` - 90% probability
+- `95%` - 95% probability
+- `98%` - 98% probability
+- `99%` - 99% probability
+
+*/
 class Sequencer : public Mapping {
 protected:
     AudioPlugin::Props& props;
@@ -73,14 +124,25 @@ protected:
     }
 
 public:
+    /*md ### Values */
+    /*md - `DETUNE` detuning all playing step notes by semitones */
     Val& detune = val(0.0f, "DETUNE", { "Detune", VALUE_CENTERED, -24.0f, 24.0f });
+    /*md - `PATTERN` select the pattern to play */
     Val& pattern = val(0.0f, "PATTERN", { "Pattern", .type = VALUE_STRING }, [&](auto p) { setPattern(p.value); });
+    /*md - `PLAY_STOP` toggle play/stop event */
+    Val& playStop = val(0.0f, "PLAY_STOP", { "Play/Stop", .max = 1.0f }, [&](auto p) { setPlayStop(p.value); });
 
+    /*md - `SELECTED_STEP` select the step to edit */
     Val& selectedStep = val(0.0f, "SELECTED_STEP", { "Step", .max = MAX_STEPS }, [&](auto p) { setSelectedStep(p.value); });
+    /*md - `STEP_VELOCITY` set selected step velocity */
     Val& stepVelocity = val(0.0f, "STEP_VELOCITY", { "Velocity" }, [&](auto p) { setStepVelocity(p.value); });
+    /*md - `STEP_LENGTH` set selected step length */
     Val& stepLength = val(0.0f, "STEP_LENGTH", { "Len", .min = 1.0f, .max = MAX_STEPS }, [&](auto p) { setStepLength(p.value); });
+    /*md - `STEP_CONDITION` set selected step condition */
     Val& stepCondition = val(1.0f, "STEP_CONDITION", { "Condition", VALUE_STRING, .min = 1.0f, .max = (float)STEP_CONDITIONS_COUNT }, [&](auto p) { setStepCondition(p.value); });
+    /*md - `STEP_NOTE` set selected step note */
     Val& stepNote = val(0.0f, "STEP_NOTE", { "Note", VALUE_STRING, .min = 1.0f, .max = (float)MIDI_NOTE_COUNT }, [&](auto p) { setStepNote(p.value); });
+    /*md - `STEP_ENABLED` toggle selected step */
     Val& stepEnabled = val(0.0f, "STEP_ENABLED", { "Enabled", VALUE_STRING, .max = 1 }, [&](auto p) { setStepEnabled(p.value); });
 
     Sequencer(AudioPlugin::Props& props, char* _name)
@@ -159,6 +221,17 @@ public:
 
     void sample(float* buf)
     {
+    }
+
+    void setPlayStop(float value)
+    {
+        printf("setPlayStop %f\n", value);
+        playStop.setFloat(value);
+        if (playStop.get()) {
+            onEvent(EventType::START);
+        } else {
+            onEvent(EventType::STOP);
+        }
     }
 
     Sequencer& setPattern(float value)
@@ -256,6 +329,9 @@ public:
         case 4: // Rename pattern
             rename(folder / *(std::string*)userdata);
             return NULL;
+        // case 5: // Toggle play/pause
+        //     active = !active;
+        //     return NULL;
         }
         return NULL;
     }
@@ -288,7 +364,7 @@ public:
     void serialize(FILE* file, std::string separator) override
     {
         for (int i = 0; i < MAX_STEPS; i++) {
-             fprintf(file, "STEP %d %s %s", i, steps[i].serialize().c_str(), separator.c_str());
+            fprintf(file, "STEP %d %s %s", i, steps[i].serialize().c_str(), separator.c_str());
         }
         // AudioPlugin::serialize(file, separator);
     }

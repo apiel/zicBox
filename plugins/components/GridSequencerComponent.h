@@ -31,7 +31,7 @@ class GridSequencerComponent : public Component {
 protected:
     KeypadInterface* keypad;
 
-    std::string prefixSampleParamsView = "SampleParams_track_";
+    std::string prefixTrackParamsView = "TrackParams_track_";
     std::string prefixStepParamsView = "StepParams_track_";
 
     int firstColumnWidth = 92;
@@ -107,7 +107,7 @@ protected:
         if (grid.row == trackCount) {
             view = "MasterParams";
         } else if (grid.col == 0) {
-            view = prefixSampleParamsView + std::to_string(grid.row + 1);
+            view = prefixTrackParamsView + std::to_string(grid.row + 1);
         } else {
             view = prefixStepParamsView + std::to_string(grid.row + 1);
             tracks[grid.row].selectedStep->set(grid.col - 1);
