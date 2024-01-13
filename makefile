@@ -57,4 +57,5 @@ gpio:
 	make -C hardware/gpio
 
 push_wiki:
-	cd wiki && git add . && git commit -m "wiki" && git push && cd ..
+	node doc.js
+	cd wiki && git add . && git commit -m "wiki" && git push
