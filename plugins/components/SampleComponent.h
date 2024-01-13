@@ -7,6 +7,15 @@
 #include "./component.h"
 #include <string>
 
+/*md
+## Sample
+
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Sample.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Sample2.png" />
+
+Sample is used to display an audio sample, sustain position, and start/end position.
+The little green dot are the current playing positions of the sample.
+*/
 class SampleComponent : public Component {
 protected:
     AudioPlugin* plugin;
@@ -168,17 +177,20 @@ public:
 
     bool config(char* key, char* value)
     {
+        /*md - `COLOR: #FFFFFF` set color of the waveform */
         if (strcmp(key, "COLOR") == 0) {
             colors = getColorsFromColor(draw.getColor(value));
             wave.setColors(draw.getColor(value));
             return true;
         }
 
+        /*md - `BACKGROUND_COLOR: #000000` set background color */
         if (strcmp(key, "BACKGROUND_COLOR") == 0) {
             colors.background = draw.getColor(value);
             return true;
         }
 
+        /*md - `KEYS: BROWSER START END SUSTAIN LENGTH` set the key parameter to use from plugin */
         if (strcmp(key, "KEYS") == 0) {
             valueKeys[0] = strtok(value, " ");
             valueKeys[1] = strtok(NULL, " ");
@@ -188,6 +200,7 @@ public:
             return true;
         }
 
+        /*md - `AUDIO_PLUGIN: pluginName bufferDataId` set the plugin to use from plugin */
         if (strcmp(key, "AUDIO_PLUGIN") == 0) {
             char* pluginName = strtok(value, " ");
             bufferDataId = atoi(strtok(NULL, " "));
