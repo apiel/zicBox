@@ -223,24 +223,24 @@ public:
 
     void startAutoSave(uint32_t msInterval)
     {
-        // if (msInterval < 50) {
-        //     msInterval = 50;
-        // }
+        if (msInterval < 50) {
+            msInterval = 50;
+        }
 
-        // autoSaveThread = std::thread([this, msInterval]() {
-        //     APP_PRINT("Starting autosave thread with interval %d ms\n", msInterval);
+        autoSaveThread = std::thread([this, msInterval]() {
+            APP_PRINT("Starting autosave thread with interval %d ms\n", msInterval);
 
-        //     // Wait a bit first, else it crash...
-        //     std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            // Wait a bit first, else it crash...
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-        //     while (isRunning) {
-        //         sendEvent(AudioEventType::AUTOSAVE);
-        //         std::this_thread::sleep_for(std::chrono::milliseconds(msInterval));
-        //     }
-        // });
+            while (isRunning) {
+                sendEvent(AudioEventType::AUTOSAVE);
+                std::this_thread::sleep_for(std::chrono::milliseconds(msInterval));
+            }
+        });
 
-        // // Save a last time before to exit
-        // sendEvent(AudioEventType::AUTOSAVE);
+        // Save a last time before to exit
+        sendEvent(AudioEventType::AUTOSAVE);
     }
 };
 
