@@ -112,7 +112,7 @@ public:
         return NULL;
     }
 
-    virtual void onClockTick()
+    virtual void onClockTick(uint64_t clockCounter)
     {
     }
 
