@@ -32,9 +32,9 @@ public:
         return AudioPlugin::config(key, value);
     }
 
-    void onEvent(EventType event)
+    void onEvent(AudioEventType event)
     {
-        if (event == AudioPlugin::EventType::AUTOSAVE) {
+        if (event == AudioEventType::AUTOSAVE) {
             if (!initialized) {
                 hydrate();
                 initialized = true;

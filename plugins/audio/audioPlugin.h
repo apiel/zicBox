@@ -10,6 +10,13 @@
 
 class AudioPlugin;
 
+    enum AudioEventType {
+        STOP,
+        START,
+        PAUSE,
+        AUTOSAVE
+    };
+
 class AudioPluginHandlerInterface {
 public:
     struct Plugin {
@@ -22,6 +29,7 @@ public:
     virtual AudioPlugin* getPluginPtr(const char* name, int16_t track = -1) = 0;
     virtual AudioPlugin& getPlugin(const char* name, int16_t track = -1) = 0;
     virtual void clockTick() = 0;
+    virtual void sendEvent(AudioEventType event) = 0;
 };
 
 class AudioPlugin {
@@ -112,13 +120,7 @@ public:
     {
     }
 
-    enum EventType {
-        STOP,
-        START,
-        PAUSE,
-        AUTOSAVE
-    };
-    virtual void onEvent(EventType event)
+    virtual void onEvent(AudioEventType event)
     {
     }
 

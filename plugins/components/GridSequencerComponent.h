@@ -12,7 +12,7 @@ public:
     int16_t trackId = -1;
     AudioPlugin* seqPlugin;
     std::string name = "Init";
-    float volume = rand() % 100 / 100.0f;
+    float volume = 1.0f; //rand() % 100 / 100.0f;
     bool active = false;
     Step* steps;
     ValueInterface* selectedStep;

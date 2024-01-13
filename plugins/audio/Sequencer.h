@@ -193,10 +193,10 @@ public:
         }
     }
 
-    void onEvent(EventType event)
+    void onEvent(AudioEventType event)
     {
         switch (event) {
-        case AudioPlugin::EventType::STOP: {
+        case AudioEventType::STOP: {
             active = false;
             for (int i = 0; i < MAX_STEPS; i++) {
                 if (targetPlugin && steps[i].counter) {
@@ -206,14 +206,14 @@ public:
             }
             break;
         }
-        case AudioPlugin::EventType::START:
+        case AudioEventType::START:
             clockCounter = 0;
             stepCounter = 0;
             loopCounter = 0;
             active = true;
             break;
 
-        case AudioPlugin::EventType::PAUSE:
+        case AudioEventType::PAUSE:
             active = !active;
             break;
         }
@@ -228,9 +228,9 @@ public:
         printf("setPlayStop %f\n", value);
         playStop.setFloat(value);
         if (playStop.get()) {
-            onEvent(EventType::START);
+            onEvent(AudioEventType::START);
         } else {
-            onEvent(EventType::STOP);
+            onEvent(AudioEventType::STOP);
         }
     }
 

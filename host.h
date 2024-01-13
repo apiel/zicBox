@@ -30,6 +30,14 @@ AudioPlugin& getPlugin(const char* name, int16_t track = -1)
     return audioPluginHandler->getPlugin(name, track);
 }
 
+void sendAudioEvent(AudioEventType event)
+{
+    if (!audioPluginHandler) {
+        throw std::runtime_error("Host not loaded");
+    }
+    audioPluginHandler->sendEvent(event);
+}
+
 bool loadHost(char* hostConfigPath)
 {
     if (audioPluginHandler) {

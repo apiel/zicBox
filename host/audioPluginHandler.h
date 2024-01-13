@@ -199,7 +199,7 @@ public:
         }
     }
 
-    void sendEvent(AudioPlugin::EventType event)
+    void sendEvent(AudioEventType event)
     {
         for (Plugin& plugin : plugins) {
             plugin.instance->onEvent(event);
@@ -208,17 +208,17 @@ public:
 
     void start()
     {
-        sendEvent(AudioPlugin::EventType::START);
+        sendEvent(AudioEventType::START);
     }
 
     void stop()
     {
-        sendEvent(AudioPlugin::EventType::STOP);
+        sendEvent(AudioEventType::STOP);
     }
 
     void pause()
     {
-        sendEvent(AudioPlugin::EventType::PAUSE);
+        sendEvent(AudioEventType::PAUSE);
     }
 
     void startAutoSave(uint32_t msInterval)
@@ -234,13 +234,13 @@ public:
         //     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
         //     while (isRunning) {
-        //         sendEvent(AudioPlugin::EventType::AUTOSAVE);
+        //         sendEvent(AudioEventType::AUTOSAVE);
         //         std::this_thread::sleep_for(std::chrono::milliseconds(msInterval));
         //     }
         // });
 
         // // Save a last time before to exit
-        // sendEvent(AudioPlugin::EventType::AUTOSAVE);
+        // sendEvent(AudioEventType::AUTOSAVE);
     }
 };
 

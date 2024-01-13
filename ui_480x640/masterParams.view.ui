@@ -19,6 +19,7 @@
       GROUP: 0
     COLOR: #ff8d99
     VALUE: MasterVolume GAIN
+    FLOAT_PRECISION: 1
     ID: Param2_enc
 
   COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize

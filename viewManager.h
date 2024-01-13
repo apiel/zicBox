@@ -67,6 +67,7 @@ protected:
             size,
             draw,
             getPlugin,
+            sendAudioEvent,
             getController,
             []() { return UiPlugin::get().view->components; },
             [](int8_t index) { ViewManager::get().setGroup(index); },
