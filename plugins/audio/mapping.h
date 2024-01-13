@@ -179,7 +179,10 @@ public:
     {
         char* key = strtok((char*)value.c_str(), " ");
         float fValue = strtof(strtok(NULL, " "), NULL);
-        getValue(key)->set(fValue);
+        ValueInterface* val = getValue(key);
+        if (val) {
+            val->set(fValue);
+        }
     }
 };
 
