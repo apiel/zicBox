@@ -10,7 +10,7 @@ Since the end goal (at least for the front panel) is to make it out of PCB board
 
 ```sh
 # For plywood
-node gerber2gcode.js outline.GKO 350 8
+node gerber2gcode.js outline.GKO 350 10
 
 # For cardboard
 node gerber2gcode.js outline.GKO 400 3

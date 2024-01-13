@@ -95,6 +95,9 @@ public:
         return false;
     }
 
+    // TODO short press toggle play pause
+    // Long press stop...
+
     // void* data(int id, void* userdata = NULL) override
     // {
     //     if (id == 0) {

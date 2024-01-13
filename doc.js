@@ -89,6 +89,12 @@ function ensureDir(file) {
     mkdirSync(folder, { recursive: true });
 }
 
+function extractTitle2(lines) {
+    return lines
+        .filter((line) => line.trim().startsWith('## '))
+        .map((line) => line.replace('## ', ''));
+}
+
 const fileList = [];
 
 function docs(folder) {
@@ -123,8 +129,10 @@ function docs(folder) {
         const lines = contents.join('\n\n').split('\n');
         const header = lines.shift();
         const content = lines.join('\n');
+        const title2 = extractTitle2(lines);
+        console.log(title2);
         const filename = header.replace(/^#+\s+/, '').replaceAll(' ', '-');
-        fileList.push(filename);
+        fileList.push({ filename, title2 });
         const wikiFile = path.join(docsFolder, filename, `${filename}.md`);
         ensureDir(wikiFile);
         writeFileSync(wikiFile, content);
@@ -133,21 +141,31 @@ function docs(folder) {
 
 docs(rootFolder);
 
-fileList.sort();
+fileList.sort((a, b) => a.filename.localeCompare(b.filename));
 
-for (const filenameActive of fileList) {
+for (const fileActive of fileList) {
     const sidebar = fileList
-        .map(
-            (filename) =>
-                `${
-                    filenameActive === filename ? ' > ' : ''
-                }[${filename}](https://github.com/apiel/zicBox/wiki/${filename})`
-        )
+        .map((file) => {
+            const active = file.filename === fileActive.filename;
+            const title2 = !active
+                ? ''
+                : file.title2
+                      .map(
+                          (title) =>
+                              ` > [${title}](https://github.com/apiel/zicBox/wiki/${
+                                  file.filename
+                              }#${title.toLowerCase()})`
+                      )
+                      .join('\n>\n');
+            return `${active ? '**' : ''}[${file.filename}](https://github.com/apiel/zicBox/wiki/${
+                file.filename
+            })${active ? `**\n${title2}` : ''}`;
+        })
         .join('\n\n');
-    writeFileSync(path.join(docsFolder, filenameActive, '_Sidebar.md'), sidebar);
+    writeFileSync(path.join(docsFolder, fileActive.filename, '_Sidebar.md'), sidebar);
 }
 
 const sidebar = fileList
-    .map((filename) => `[${filename}](https://github.com/apiel/zicBox/wiki/${filename})`)
+    .map(({ filename }) => `[${filename}](https://github.com/apiel/zicBox/wiki/${filename})`)
     .join('\n\n');
 writeFileSync(path.join(docsFolder, '..', '_Sidebar.md'), sidebar);
