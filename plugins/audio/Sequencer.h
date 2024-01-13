@@ -12,28 +12,27 @@
 
 const uint8_t MAX_STEPS = 32;
 
-    // { "---", [](uint8_t loopCounter) { return true; } },
-    // { "Pair", [](uint8_t loopCounter) { return loopCounter % 2 == 0; } },
-    // { "4th", [](uint8_t loopCounter) { return loopCounter % 4 == 0; } },
-    // { "6th", [](uint8_t loopCounter) { return loopCounter % 6 == 0; } },
-    // { "8th", [](uint8_t loopCounter) { return loopCounter % 8 == 0; } },
-    // { "Impair", [](uint8_t loopCounter) { return loopCounter % 2 == 1; } },
-    // { "1%", [](uint8_t loopCounter) { return (getRand() % 100) == 0; } },
-    // { "2%", [](uint8_t loopCounter) { return (getRand() % 100) < 2; } },
-    // { "5%", [](uint8_t loopCounter) { return (getRand() % 100) < 5; } },
-    // { "10%", [](uint8_t loopCounter) { return (getRand() % 100) < 10; } },
-    // { "20%", [](uint8_t loopCounter) { return (getRand() % 100) < 20; } },
-    // { "30%", [](uint8_t loopCounter) { return (getRand() % 100) < 30; } },
-    // { "40%", [](uint8_t loopCounter) { return (getRand() % 100) < 40; } },
-    // { "50%", [](uint8_t loopCounter) { return (getRand() % 100) < 50; } },
-    // { "60%", [](uint8_t loopCounter) { return (getRand() % 100) < 60; } },
-    // { "70%", [](uint8_t loopCounter) { return (getRand() % 100) < 70; } },
-    // { "80%", [](uint8_t loopCounter) { return (getRand() % 100) < 80; } },
-    // { "90%", [](uint8_t loopCounter) { return (getRand() % 100) < 90; } },
-    // { "95%", [](uint8_t loopCounter) { return (getRand() % 100) < 95; } },
-    // { "98%", [](uint8_t loopCounter) { return (getRand() % 100) < 98; } },
-    // { "99%", [](uint8_t loopCounter) { return (getRand() % 100) < 99; } },
-
+// { "---", [](uint8_t loopCounter) { return true; } },
+// { "Pair", [](uint8_t loopCounter) { return loopCounter % 2 == 0; } },
+// { "4th", [](uint8_t loopCounter) { return loopCounter % 4 == 0; } },
+// { "6th", [](uint8_t loopCounter) { return loopCounter % 6 == 0; } },
+// { "8th", [](uint8_t loopCounter) { return loopCounter % 8 == 0; } },
+// { "Impair", [](uint8_t loopCounter) { return loopCounter % 2 == 1; } },
+// { "1%", [](uint8_t loopCounter) { return (getRand() % 100) == 0; } },
+// { "2%", [](uint8_t loopCounter) { return (getRand() % 100) < 2; } },
+// { "5%", [](uint8_t loopCounter) { return (getRand() % 100) < 5; } },
+// { "10%", [](uint8_t loopCounter) { return (getRand() % 100) < 10; } },
+// { "20%", [](uint8_t loopCounter) { return (getRand() % 100) < 20; } },
+// { "30%", [](uint8_t loopCounter) { return (getRand() % 100) < 30; } },
+// { "40%", [](uint8_t loopCounter) { return (getRand() % 100) < 40; } },
+// { "50%", [](uint8_t loopCounter) { return (getRand() % 100) < 50; } },
+// { "60%", [](uint8_t loopCounter) { return (getRand() % 100) < 60; } },
+// { "70%", [](uint8_t loopCounter) { return (getRand() % 100) < 70; } },
+// { "80%", [](uint8_t loopCounter) { return (getRand() % 100) < 80; } },
+// { "90%", [](uint8_t loopCounter) { return (getRand() % 100) < 90; } },
+// { "95%", [](uint8_t loopCounter) { return (getRand() % 100) < 95; } },
+// { "98%", [](uint8_t loopCounter) { return (getRand() % 100) < 98; } },
+// { "99%", [](uint8_t loopCounter) { return (getRand() % 100) < 99; } },
 
 /*md
 ## Sequencer
@@ -72,7 +71,6 @@ protected:
     Step steps[MAX_STEPS];
     Step* selectedStepPtr = &steps[0];
 
-    uint8_t clockCounter = 0;
     uint8_t stepCounter = 0;
     uint8_t loopCounter = 0;
 
@@ -182,13 +180,11 @@ public:
         setSelectedStep(selectedStep.get());
     }
 
-    void onClockTick()
+    void onClockTick(uint64_t clockCounter)
     {
-        clockCounter++;
         // Clock events are sent at a rate of 24 pulses per quarter note
         // (24/4 = 6)
-        if (clockCounter >= 6) {
-            clockCounter = 0;
+        if (clockCounter % 6 == 0) {
             onStep();
         }
     }
@@ -207,7 +203,6 @@ public:
             break;
         }
         case AudioEventType::START:
-            clockCounter = 0;
             stepCounter = 0;
             loopCounter = 0;
             active = true;
@@ -329,9 +324,9 @@ public:
         case 4: // Rename pattern
             rename(folder / *(std::string*)userdata);
             return NULL;
-        // case 5: // Toggle play/pause
-        //     active = !active;
-        //     return NULL;
+            // case 5: // Toggle play/pause
+            //     active = !active;
+            //     return NULL;
         }
         return NULL;
     }

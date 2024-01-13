@@ -10,7 +10,7 @@
 
 ## zic sample
 
-- FIXME fix autosave crashing when layout changed...
+- TODO enable track or play next, short press toggle play stop, long press trigger play next
 
 - TODO ?? auto save, instead to always save, only save if something changed
     to do this, would need the each plugin have a way to keep track change, either with keeping the time of the last update

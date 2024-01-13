@@ -15,6 +15,10 @@ protected:
 
     std::vector<MidiMapping> midiMapping;
 
+    // When reached the maximum, there might be a tempo issue
+    // However, to reach it, it is almost impossible...
+    uint64_t clockCounter = 0;
+
     struct MidiNoteEvent {
         uint8_t channel;
         AudioPlugin* plugin;
@@ -194,8 +198,9 @@ public:
 
     void clockTick()
     {
+        clockCounter++;
         for (Plugin& plugin : plugins) {
-            plugin.instance->onClockTick();
+            plugin.instance->onClockTick(clockCounter);
         }
     }
 
