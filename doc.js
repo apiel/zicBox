@@ -146,20 +146,19 @@ fileList.sort((a, b) => a.filename.localeCompare(b.filename));
 for (const fileActive of fileList) {
     const sidebar = fileList
         .map((file) => {
-            const active = file.filename === fileActive.filename;
-            const title2 = !active
-                ? ''
-                : file.title2
-                      .map(
-                          (title) =>
-                              ` > [${title}](https://github.com/apiel/zicBox/wiki/${
-                                  file.filename
-                              }#${title.toLowerCase()})`
-                      )
-                      .join('\n>\n');
-            return `${active ? '**' : ''}[${file.filename}](https://github.com/apiel/zicBox/wiki/${
-                file.filename
-            })${active ? `**\n${title2}` : ''}`;
+            if (file.filename === fileActive.filename) {
+                const title2 = file.title2
+                    .map(
+                        (title) =>
+                            ` > [${title}](https://github.com/apiel/zicBox/wiki/${
+                                file.filename
+                            }#${title.toLowerCase()})`
+                    )
+                    .join('\n>\n');
+
+                return `**${file.filename}**\n${title2}`;
+            }
+            return `[${file.filename}](https://github.com/apiel/zicBox/wiki/${file.filename})`;
         })
         .join('\n\n');
     writeFileSync(path.join(docsFolder, fileActive.filename, '_Sidebar.md'), sidebar);
