@@ -8,11 +8,14 @@
 /*md
 ## Play
 
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Play.png" />
+
 Play component toggle play and stop.
 */
 class PlayComponent : public Component {
 protected:
     bool playing = false;
+    bool stopped = true;
 
     Size iconSize = { 20, 20 };
     Point iconPosition;
@@ -53,21 +56,29 @@ public:
             { size.w - 2 * margin, size.h - 2 * margin },
             colors.background);
 
-        if (playing) {
-            // Draw triangle
+        if (stopped) {
+            // Stopped
+            draw.filledRect(iconPosition, iconSize, colors.icon);
+            draw.rect(iconPosition, iconSize, colors.border);
+            draw.rect({ iconPosition.x + 1, iconPosition.y + 1 }, { iconSize.w - 2, iconSize.h - 2 }, colors.border);
+            draw.textCentered(labelPosition, "Stopped", colors.title, 12);
+        } else if (playing) {
+            // Playing
             std::vector<Point> points = {
-                { iconPosition.x, iconPosition.y + iconSize.h },
-                { iconPosition.x + iconSize.w, iconPosition.y },
-                { iconPosition.x + iconSize.w, iconPosition.y + iconSize.h }
+                iconPosition,
+                { iconPosition.x + iconSize.w, (int)(iconPosition.y + iconSize.h * 0.5) },
+                { iconPosition.x, iconPosition.y + iconSize.h }
             };
             draw.filledPolygon(points, colors.icon);
             draw.polygon(points, colors.border);
             draw.textCentered(labelPosition, "Playing", colors.title, 12);
         } else {
-            draw.filledRect(iconPosition, iconSize, colors.icon);
-            draw.rect(iconPosition, iconSize, colors.border);
-            draw.rect({ iconPosition.x + 1, iconPosition.y + 1 }, { iconSize.w - 2, iconSize.h - 2 }, colors.border);
-            draw.textCentered(labelPosition, "Stopped", colors.title, 12);
+            // Paused
+            draw.filledRect(iconPosition, { (int)(iconSize.w * 0.3), iconSize.h }, colors.icon);
+            draw.rect(iconPosition, { (int)(iconSize.w * 0.3), iconSize.h }, colors.border);
+            draw.filledRect({ iconPosition.x + (int)(iconSize.w * 0.7), iconPosition.y }, { (int)(iconSize.w * 0.3), iconSize.h }, colors.icon);
+            draw.rect({ iconPosition.x + (int)(iconSize.w * 0.7), iconPosition.y }, { (int)(iconSize.w * 0.3), iconSize.h }, colors.border);
+            draw.textCentered(labelPosition, "Paused", colors.title, 12);
         }
     }
 
@@ -95,21 +106,21 @@ public:
         return false;
     }
 
-    // TODO short press toggle play pause
-    // Long press stop...
-
-    // void* data(int id, void* userdata = NULL) override
-    // {
-    //     if (id == 0) {
-    //         if (value->get() == value->props().min) {
-    //             value->set(value->props().max);
-    //         } else {
-    //             value->set(value->props().min);
-    //         }
-    //         return NULL;
-    //     }
-    //     return NULL;
-    // }
+    void* data(int id, void* userdata = NULL) override
+    {
+        if (id == 0) {
+            if (!playing) {
+                playing = true;
+                stopped = false;
+                renderNext();
+            } else {
+                playing = false;
+                renderNext();
+            }
+            return NULL;
+        }
+        return NULL;
+    }
 };
 
 #endif

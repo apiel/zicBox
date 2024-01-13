@@ -5,6 +5,13 @@
 #include <math.h>
 #include <string>
 
+/*md
+## Toggle
+
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Toggle.png" />
+
+Toggle an audio plugin value parameter between his minimum and maximum value.
+*/
 class ToggleComponent : public Component {
 protected:
     const char* label = NULL;
@@ -104,6 +111,7 @@ public:
 
     bool config(char* key, char* value)
     {
+        /*md - `VALUE: pluginName keyName` is used to set the value to control */
         if (strcmp(key, "VALUE") == 0) {
             char* pluginName = strtok(value, " ");
             char* keyValue = strtok(NULL, " ");
@@ -111,38 +119,45 @@ public:
             return true;
         }
 
+        /*md - `ENCODER_ID: 0` is used to set the encoder id that will interract with this component. Rotating left will turn of the toggle, rotating right will turn it on. */
         if (strcmp(key, "ENCODER_ID") == 0) {
             encoderId = atoi(value);
             return true;
         }
 
+        /*md - `LABEL: custom_label` overwrite the value label */
         if (strcmp(key, "LABEL") == 0) {
             strcpy(labelBuffer, value);
             label = labelBuffer;
             return true;
         }
 
+        /*md - `OFF_LABEL: custom_off_label` overwrite the label when status is off */
         if (strcmp(key, "OFF_LABEL") == 0) {
             strcpy(offLabelBuffer, value);
             offLabel = offLabelBuffer;
             return true;
         }
 
+        /*md - `BACKGROUND_COLOR: #000000` set the background color */
         if (strcmp(key, "BACKGROUND_COLOR") == 0) {
             colors.background = draw.getColor(value);
             return true;
         }
 
+        /*md - `TEXT_COLOR: #ffffff` set the text color */
         if (strcmp(key, "TEXT_COLOR") == 0) {
             colors.title = draw.alpha(draw.getColor(value), 0.4);
             return true;
         }
 
+        /*md - `TOGGLE_COLOR: #888888` set the toggle button color */
         if (strcmp(key, "TOGGLE_COLOR") == 0) {
             colors.toggle = draw.getColor(value);
             return true;
         }
 
+        /*md - `SHOW_GROUP: TRUE` show group if the component is part of the current active group (default FALSE) */
         if (strcmp(key, "SHOW_GROUP") == 0) {
             showGroup = (strcmp(value, "TRUE") == 0);
             return true;
@@ -171,7 +186,7 @@ public:
         // printf("current group: %d inccoming group: %d drawId: %d\n", group, index, drawId);
     }
 
-
+    /*md **Data**: */
     void* data(int id, void* userdata = NULL) override
     {
         if (id == 1) {

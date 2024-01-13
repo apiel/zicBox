@@ -231,13 +231,13 @@ protected:
         std::vector<ComponentInterface*> components = getViewComponents();
         for (ComponentInterface* component : components) {
             if (component->id.find(paramId) == 0) {
+                paramKeyPressed = param;
                 // id end by _toggle
                 if (component->id.find("_button") != -1) {
                     // printf("toggle %s\n", component->id.c_str());
                     component->data(1);
                 } else if (component->id.find("_enc") != -1) {
                     // printf("enc %s\n", component->id.c_str());
-                    paramKeyPressed = param;
                     componentParam = component;
                 }
             }
@@ -494,6 +494,7 @@ public:
             }
         } else {
             if (paramKeyPressed != -1 && keys.params[paramKeyPressed] == key) {
+                onParamKeyReleased(paramKeyPressed);
                 paramKeyPressed = -1;
                 return;
             }
