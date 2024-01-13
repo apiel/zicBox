@@ -125,7 +125,7 @@ function docs(folder) {
         const content = lines.join('\n');
         const filename = header.replace(/^#+\s+/, '').replaceAll(' ', '-');
         fileList.push(filename);
-        const wikiFile = path.join(docsFolder, `${filename}.md`);
+        const wikiFile = path.join(docsFolder, filename, `${filename}.md`);
         ensureDir(wikiFile);
         writeFileSync(wikiFile, content);
     }
@@ -133,5 +133,21 @@ function docs(folder) {
 
 docs(rootFolder);
 
-const sidebar = fileList.sort().map((filename) => `[${filename}](https://github.com/apiel/zicBox/wiki/${filename})`).join('\n\n');
+fileList.sort();
+
+for (const filenameActive of fileList) {
+    const sidebar = fileList
+        .map(
+            (filename) =>
+                `${
+                    filenameActive === filename ? ' > ' : ''
+                }[${filename}](https://github.com/apiel/zicBox/wiki/${filename})`
+        )
+        .join('\n\n');
+    writeFileSync(path.join(docsFolder, filenameActive, '_Sidebar.md'), sidebar);
+}
+
+const sidebar = fileList
+    .map((filename) => `[${filename}](https://github.com/apiel/zicBox/wiki/${filename})`)
+    .join('\n\n');
 writeFileSync(path.join(docsFolder, '..', '_Sidebar.md'), sidebar);
