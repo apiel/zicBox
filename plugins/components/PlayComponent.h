@@ -2,6 +2,7 @@
 #define _UI_COMPONENT_PLAY_H_
 
 #include "component.h"
+#include <chrono>
 #include <math.h>
 #include <string>
 
@@ -10,12 +11,14 @@
 
 <img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Play.png" />
 
-Play component toggle play and stop.
+Play component toggle play and pause, or stop on long press.
 */
 class PlayComponent : public Component {
 protected:
     bool playing = false;
     bool stopped = true;
+
+    std::chrono::_V2::system_clock::duration pressedTime = std::chrono::system_clock::now().time_since_epoch();
 
     Size iconSize = { 20, 20 };
     Point iconPosition;
@@ -109,14 +112,23 @@ public:
     void* data(int id, void* userdata = NULL) override
     {
         if (id == 0) {
-            if (!playing) {
+            std::chrono::_V2::system_clock::duration duration = std::chrono::system_clock::now().time_since_epoch() - pressedTime;
+            if (duration.count() > 500000000) {
+                playing = false;
+                stopped = true;
+                sendAudioEvent(AudioEventType::STOP);
+            } else if (!playing) {
                 playing = true;
                 stopped = false;
-                renderNext();
+                sendAudioEvent(AudioEventType::START);
             } else {
                 playing = false;
-                renderNext();
+                sendAudioEvent(AudioEventType::PAUSE);
             }
+            renderNext();
+            return NULL;
+        } else if (id == 1) {
+            pressedTime = std::chrono::system_clock::now().time_since_epoch();
             return NULL;
         }
         return NULL;
