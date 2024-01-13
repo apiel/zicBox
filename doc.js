@@ -130,7 +130,6 @@ function docs(folder) {
         const header = lines.shift();
         const content = lines.join('\n');
         const title2 = extractTitle2(lines);
-        console.log(title2);
         const filename = header.replace(/^#+\s+/, '').replaceAll(' ', '-');
         fileList.push({ filename, title2 });
         const wikiFile = path.join(docsFolder, filename, `${filename}.md`);
@@ -150,11 +149,11 @@ for (const fileActive of fileList) {
                 const title2 = file.title2
                     .map(
                         (title) =>
-                            ` > [${title}](https://github.com/apiel/zicBox/wiki/${
+                            ` - [${title}](https://github.com/apiel/zicBox/wiki/${
                                 file.filename
                             }#${title.toLowerCase()})`
                     )
-                    .join('\n>\n');
+                    .join('\n');
 
                 return `**${file.filename}**\n${title2}`;
             }
