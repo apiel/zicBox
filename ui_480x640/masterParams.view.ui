@@ -1,5 +1,6 @@
   COMPONENT: Play $encX1 $encY1 $encSize $encSize
     ICON_COLOR: #9dfe86
+    ID: Param0_button
 
   # I would rather move the GAIN on another page
   COMPONENT: Encoder2 $encX2 $encY1 $encSize $encSize
@@ -9,6 +10,7 @@
       GROUP: 0
     COLOR: #3791a1
     VALUE: MasterVolume VOLUME
+    ID: Param1_enc
 
   COMPONENT: Encoder2 $encX3 $encY1 $encSize $encSize
     ENCODER_ID: 2
@@ -17,6 +19,7 @@
       GROUP: 0
     COLOR: #ff8d99
     VALUE: MasterVolume GAIN
+    ID: Param2_enc
 
   COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize
     ENCODER_ID: 3
@@ -27,6 +30,7 @@
     COLOR: #ff7700
     TYPE: TWO_SIDED
     # BACKGROUND_COLOR: #2b2c2e
+    ID: Param3_enc
 
 
   COMPONENT: Rect $encX1 $encY2 $encSize $encSize
@@ -44,6 +48,7 @@
     VALUE: MultiModeFilter RESONANCE
     COLOR: #ff7700
     # BACKGROUND_COLOR: #2b2c2e
+    ID: Param7_enc
 
 
   COMPONENT: Rect $encX1 $encY3 $encSize $encSize
@@ -62,3 +67,4 @@
     VALUE: SampleRateReducer SAMPLE_STEP
     FONT_UNIT_SIZE: 8
     # BACKGROUND_COLOR: #2b2c2e
+    ID: Param11_enc
