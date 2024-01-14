@@ -49,15 +49,15 @@
   #   VALUE: Sample SUSTAIN_POSITION
   #   LABEL: Drive
 
-  COMPONENT: Rect $encX3 $encY2 $encSize $encSize
+  # COMPONENT: Rect $encX3 $encY2 $encSize $encSize
 
-  COMPONENT: Rect $encX4 $encY2 $encSize $encSize
+  # COMPONENT: Rect $encX4 $encY2 $encSize $encSize
 
 
-  COMPONENT: Rect $encX1 $encY3 $encSize $encSize
+  # COMPONENT: Rect $encX1 $encY3 $encSize $encSize
 
-  COMPONENT: Rect $encX2 $encY3 $encSize $encSize
+  # COMPONENT: Rect $encX2 $encY3 $encSize $encSize
 
-  COMPONENT: Rect $encX3 $encY3 $encSize $encSize
+  # COMPONENT: Rect $encX3 $encY3 $encSize $encSize
 
-  COMPONENT: Rect $encX4 $encY3 $encSize $encSize
+  # COMPONENT: Rect $encX4 $encY3 $encSize $encSize
