@@ -97,6 +97,8 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 
 - TODO make audio input and output selectable with val...
 
+- TODO puredata plugin
+
 - TODO save track patch
 
 - TODO SynthSample
@@ -105,6 +107,7 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
     - spray window
 
 - TODO tempo plugin, that would shalow midi clock in favour of custom clock
+    --> give a way to select either midi or internal clock
 
 - TODO modulation that would be a mix of envelop and lfo:
     - multiphase envelop (up to 8 or even more)
@@ -127,8 +130,6 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 
 - TODO wavetable player as in granular it doesnt make sense
         pad one wavetable where X and Y morph on different wavetable...
-
-- TODO puredata plugin
 
 - TODO Fm plugin
 
