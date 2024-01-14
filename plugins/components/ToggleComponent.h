@@ -199,6 +199,11 @@ public:
         }
         return NULL;
     }
+
+    void onMotion(MotionInterface& motion)
+    {
+        data(1);
+    }
 };
 
 #endif

@@ -133,6 +133,16 @@ public:
         }
         return NULL;
     }
+
+    void onMotion(MotionInterface& motion)
+    {
+        data(1);
+    }
+
+    void onMotionRelease(MotionInterface& motion)
+    {
+        data(0);
+    }
 };
 
 #endif
