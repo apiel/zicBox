@@ -10,6 +10,13 @@
 #include <unistd.h>
 #include <vector>
 
+/*md
+## Monitoring
+
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Monitoring.png" />
+
+Monitoring component show the current CPU usage.
+*/
 class MonitoringComponent : public Component {
 protected:
     size_t previous_idle_time = 0;
@@ -84,6 +91,7 @@ public:
 
     bool config(char* key, char* value)
     {
+        /*md - `COLOR: #999999` set component color */
         if (strcmp(key, "COLOR") == 0) {
             colors = getColorsFromColor(draw.getColor(value));
             return true;
