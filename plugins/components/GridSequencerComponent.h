@@ -27,6 +27,13 @@ public:
     }
 };
 
+/*md
+## GridSequencer
+
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/GridSequencer.png" />
+
+Can handle 1 sequencer per track.
+*/
 class GridSequencerComponent : public Component {
 protected:
     KeypadInterface* keypad;
