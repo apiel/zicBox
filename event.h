@@ -1,8 +1,8 @@
 #ifndef _UI_EVENT_H_
 #define _UI_EVENT_H_
 
-#include "viewManager.h"
 #include "motion.h"
+#include "viewManager.h"
 
 #ifndef MAX_SCREEN_MOTION
 // The current display only support 5 touch point
@@ -13,39 +13,34 @@
 #define ENCODER_COUNT 8
 #endif
 
-class EventHandler
-{
+class EventHandler {
 protected:
     Motion motions[MAX_SCREEN_MOTION];
-    ViewManager &viewManager = ViewManager::get();
+    ViewManager& viewManager = ViewManager::get();
     int encoderWidth = styles.screen.w / ENCODER_COUNT;
 
 #if SDL_MINOR_VERSION <= 24
     uint8_t emulateEncoderId = 0;
 #endif
 
-    static EventHandler *instance;
-    EventHandler() {}
+    static EventHandler* instance;
+    EventHandler() { }
 
-    MotionInterface *getMotion(int id)
+    MotionInterface* getMotion(int id)
     {
-        for (int i = 0; i < MAX_SCREEN_MOTION; ++i)
-        {
-            if (motions[i].id == id)
-            {
+        for (int i = 0; i < MAX_SCREEN_MOTION; ++i) {
+            if (motions[i].id == id) {
                 return &motions[i];
             }
         }
         return NULL;
     }
 
-    MotionInterface *getOldestMotion()
+    MotionInterface* getOldestMotion()
     {
-        MotionInterface *oldest = &motions[0];
-        for (int i = 1; i < MAX_SCREEN_MOTION; ++i)
-        {
-            if (motions[i].id < oldest->id)
-            {
+        MotionInterface* oldest = &motions[0];
+        for (int i = 1; i < MAX_SCREEN_MOTION; ++i) {
+            if (motions[i].id < oldest->id) {
                 oldest = &motions[i];
             }
         }
@@ -54,20 +49,18 @@ protected:
 
     void handleMotion(int x, int y, int id)
     {
-        if (id < 0)
-        {
+        if (id < 0) {
             return;
         }
 
 #ifndef IS_RPI
 #if SDL_MINOR_VERSION <= 24
-        emulateEncoderId = x / encoderWidth;
+        emulateEncoderId = getEmulatedEncoderId(x, y);
 #endif
 #endif
 
-        MotionInterface *motion = getMotion(id);
-        if (motion)
-        {
+        MotionInterface* motion = getMotion(id);
+        if (motion) {
             motion->move(x, y);
             viewManager.onMotion(*motion);
         }
@@ -75,14 +68,12 @@ protected:
 
     void handleMotionUp(int x, int y, int id)
     {
-        if (id < 0)
-        {
+        if (id < 0) {
             return;
         }
 
-        MotionInterface *motion = getMotion(id);
-        if (motion)
-        {
+        MotionInterface* motion = getMotion(id);
+        if (motion) {
             motion->move(x, y);
             viewManager.onMotionRelease(*motion);
             motion->setId(-1);
@@ -91,42 +82,68 @@ protected:
 
     void handleMotionDown(int x, int y, int id)
     {
-        if (id < 0)
-        {
+        if (id < 0) {
             return;
         }
 
-        MotionInterface *motion = getOldestMotion();
+        MotionInterface* motion = getOldestMotion();
         motion->init(id, x, y);
         viewManager.onMotion(*motion);
+    }
+
+    std::vector<Rect> zoneEncoders = {};
+    uint8_t getEmulatedEncoderId(int32_t x, int32_t y)
+    {
+        // return x / encoderWidth;
+
+        for (uint8_t i = 0; i < zoneEncoders.size(); i++) {
+            // if (x >= zoneEncoders[i].position.x && x < zoneEncoders[i].position.x + zoneEncoders[i].size.w &&
+            //     y >= zoneEncoders[i].position.y && y < zoneEncoders[i].position.y + zoneEncoders[i].size.h) {
+            if (inRect(zoneEncoders[i], { x, y })) {
+                return i;
+            }
+        }
+
+        return 255;
     }
 
     void emulateEncoder(SDL_MouseWheelEvent wheel)
     {
 #if SDL_MINOR_VERSION > 24
-        uint8_t emulateEncoderId = wheel.mouseX / encoderWidth;
+        uint8_t emulateEncoderId = getEmulatedEncoderId(wheel.mouseX, wheel.mouseY);
 #endif
         viewManager.onEncoder(emulateEncoderId, wheel.y);
     }
 
 public:
-    static EventHandler &get()
+    static EventHandler& get()
     {
-        if (!instance)
-        {
+        if (!instance) {
             instance = new EventHandler();
         }
         return *instance;
+    }
+
+    bool config(char* key, char* value)
+    {
+        if (strcmp(key, "ADD_ZONE_ENCODER") == 0) {
+            int x = atoi(strtok(value, " "));
+            int y = atoi(strtok(NULL, " "));
+            int w = atoi(strtok(NULL, " "));
+            int h = atoi(strtok(NULL, " "));
+            zoneEncoders.push_back({ { x, y }, { w, h } });
+            return true;
+        }
+
+        return false;
     }
 
     bool handle()
     {
         SDL_Event event;
 
-        while (SDL_PollEvent(&event))
-        {
-            switch (event.type)
-            {
+        while (SDL_PollEvent(&event)) {
+            switch (event.type) {
             case SDL_QUIT:
                 SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Quit");
                 return false;
@@ -164,6 +181,6 @@ public:
     }
 };
 
-EventHandler *EventHandler::instance = NULL;
+EventHandler* EventHandler::instance = NULL;
 
 #endif

@@ -59,6 +59,8 @@ protected:
 
     Step selectedStepCopy;
 
+    uint8_t stepCounter = 0;
+
     void progressInit()
     {
         for (unsigned int step = 0; step < stepsCount; step++) {
@@ -277,6 +279,8 @@ protected:
         uint8_t rightJump = 26;
 
         uint8_t master = 14;
+        uint8_t page = 13;
+        uint8_t noteOn = 12;
     } keys;
 
     uint8_t columnColor[4] = { 50, 20, 60, 90 }; // or 90

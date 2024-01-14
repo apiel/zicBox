@@ -6,8 +6,6 @@
   COMPONENT: Encoder2 $encX2 $encY1 $encSize $encSize
     ENCODER_ID: 1
     SHOW_GROUP: FALSE
-    if: $IS_RPI == false
-      GROUP: 0
     COLOR: #3791a1
     VALUE: MasterVolume VOLUME
     ID: Param1_enc
@@ -15,8 +13,7 @@
   COMPONENT: Encoder2 $encX3 $encY1 $encSize $encSize
     ENCODER_ID: 2
     SHOW_GROUP: FALSE
-    if: $IS_RPI == false
-      GROUP: 0
+
     COLOR: #ff8d99
     VALUE: MasterVolume GAIN
     FLOAT_PRECISION: 1
@@ -25,8 +22,6 @@
   COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize
     ENCODER_ID: 3
     SHOW_GROUP: FALSE
-    if: $IS_RPI == false
-      GROUP: 0
     VALUE: MultiModeFilter CUTOFF
     COLOR: #ff7700
     TYPE: TWO_SIDED
@@ -43,9 +38,6 @@
   COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
     ENCODER_ID: 7
     SHOW_GROUP: FALSE
-    if: $IS_RPI == false
-      GROUP: 1
-      ENCODER_ID: 3
     VALUE: MultiModeFilter RESONANCE
     COLOR: #ff7700
     # BACKGROUND_COLOR: #2b2c2e
@@ -61,9 +53,6 @@
   COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
     ENCODER_ID: 11
     SHOW_GROUP: FALSE
-    if: $IS_RPI == false
-      GROUP: 2
-      ENCODER_ID: 3
     COLOR: #ff7700
     VALUE: SampleRateReducer SAMPLE_STEP
     FONT_UNIT_SIZE: 8

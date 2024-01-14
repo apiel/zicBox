@@ -1,8 +1,6 @@
   COMPONENT: Encoder2 $encX1 $encY1 $encSize $encSize
     ENCODER_ID: 0
     SHOW_GROUP: FALSE
-    if: $IS_RPI == false
-      GROUP: 0
     COLOR: #9dfe86
     TRACK: $track
     VALUE: Sample START
@@ -11,8 +9,6 @@
   COMPONENT: Encoder2 $encX2 $encY1 $encSize $encSize
     ENCODER_ID: 1
     SHOW_GROUP: FALSE
-    if: $IS_RPI == false
-      GROUP: 0
     COLOR: #3791a1
     TRACK: $track
     VALUE: Sample END
@@ -21,8 +17,6 @@
   COMPONENT: Encoder2 $encX3 $encY1 $encSize $encSize
     ENCODER_ID: 2
     SHOW_GROUP: FALSE
-    if: $IS_RPI == false
-      GROUP: 0
     COLOR: #ff8d99
     TRACK: $track
     VALUE: Sample BROWSER
@@ -32,8 +26,6 @@
   COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize
     ENCODER_ID: 3
     SHOW_GROUP: FALSE
-    if: $IS_RPI == false
-      GROUP: 0
     VALUE: MultiModeFilter CUTOFF
     COLOR: #ff7700
     TYPE: TWO_SIDED
@@ -43,9 +35,6 @@
   # COMPONENT: Toggle $encX4 $encY1 $encSize $encSize
   #   ENCODER_ID: 3
   #   SHOW_GROUP: FALSE
-  #   if: $IS_RPI == false
-  #     GROUP: 1
-  #     ENCODER_ID: 0
   #   TOGGLE_COLOR: #ff7700
   #   TRACK: $track
   #   VALUE: Sequencer PLAY_STOP
@@ -57,9 +46,6 @@
   COMPONENT: Encoder2 $encX1 $encY2 $encSize $encSize
     ENCODER_ID: 4
     SHOW_GROUP: FALSE
-    if: $IS_RPI == false
-      GROUP: 1
-      ENCODER_ID: 0
     COLOR: #9dfe86
     TRACK: $track
     VALUE: Sample SUSTAIN_LENGTH
@@ -69,9 +55,6 @@
   COMPONENT: Encoder2 $encX2 $encY2 $encSize $encSize
     ENCODER_ID: 5
     SHOW_GROUP: FALSE
-    if: $IS_RPI == false
-      GROUP: 1
-      ENCODER_ID: 1
     COLOR: #3791a1
     TRACK: $track
     VALUE: Sample SUSTAIN_POSITION
@@ -80,9 +63,6 @@
   COMPONENT: Encoder2 $encX3 $encY2 $encSize $encSize
     ENCODER_ID: 6
     SHOW_GROUP: FALSE
-    if: $IS_RPI == false
-      GROUP: 1
-      ENCODER_ID: 2
     COLOR: #ff8d99
     TRACK: $track
     VALUE: Sample SUSTAIN_RELEASE
@@ -91,9 +71,6 @@
   COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
     ENCODER_ID: 7
     SHOW_GROUP: FALSE
-    if: $IS_RPI == false
-      GROUP: 1
-      ENCODER_ID: 3
     VALUE: MultiModeFilter RESONANCE
     COLOR: #ff7700
     # BACKGROUND_COLOR: #2b2c2e
@@ -103,9 +80,6 @@
   COMPONENT: Encoder2 $encX1 $encY3 $encSize $encSize
     ENCODER_ID: 8
     SHOW_GROUP: FALSE
-    if: $IS_RPI == false
-      GROUP: 2
-      ENCODER_ID: 0
     COLOR: #9dfe86
     TRACK: $track
     VALUE: Sample DENSITY
@@ -114,9 +88,6 @@
   COMPONENT: Encoder2 $encX2 $encY3 $encSize $encSize
     ENCODER_ID: 9
     SHOW_GROUP: FALSE
-    if: $IS_RPI == false
-      GROUP: 2
-      ENCODER_ID: 1
     COLOR: #3791a1
     TRACK: $track
     VALUE: Sample DENSITY_DELAY
@@ -126,9 +97,6 @@
   COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
     ENCODER_ID: 10
     SHOW_GROUP: FALSE
-    if: $IS_RPI == false
-      GROUP: 2
-      ENCODER_ID: 2
     TRACK: $track
     VALUE: Sample DENSITY_RANDOMIZE
     COLOR: #ff8d99
@@ -138,9 +106,6 @@
   COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
     ENCODER_ID: 11
     SHOW_GROUP: FALSE
-    if: $IS_RPI == false
-      GROUP: 2
-      ENCODER_ID: 3
     COLOR: #ff7700
     VALUE: SampleRateReducer SAMPLE_STEP
     FONT_UNIT_SIZE: 8

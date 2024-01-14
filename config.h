@@ -5,6 +5,7 @@
 #include "host.h"
 #include "styles.h"
 #include "viewManager.h"
+#include "event.h"
 
 #include "dustscript/dustscript.h"
 
@@ -64,7 +65,7 @@ In this example, we change the `overlay` color to `#00FFFF`.
         char* name = strtok(value, " ");
         char* color = strtok(NULL, " ");
         ViewManager::get().draw.setColor(name, color);
-    } else if (pluginControllerConfig(key, value)) {
+    } else if (pluginControllerConfig(key, value) || EventHandler::get().config(key, value)) {
         return;
     } else {
         ViewManager::get().config(key, value, filename);
