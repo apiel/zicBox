@@ -4,6 +4,13 @@
 #include "component.h"
 #include <string>
 
+/*md
+## Pad
+
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pad.png" />
+
+XY pad component, allows to control two audio plugin value parameters.
+*/
 class PadComponent : public Component {
 protected:
     const int pointerSize = 4;
@@ -86,6 +93,7 @@ public:
 
     bool config(char* key, char* value)
     {
+        /*md `VALUE_X: pluginName key` set X value to update on audio plugin parameter */
         if (strcmp(key, "VALUE_X") == 0) {
             char* pluginName = strtok(value, " ");
             char* keyValue = strtok(NULL, " ");
@@ -93,6 +101,7 @@ public:
             return true;
         }
 
+        /*md `VALUE_Y: pluginName key` set Y value to update on audio plugin parameter */
         if (strcmp(key, "VALUE_Y") == 0) {
             char* pluginName = strtok(value, " ");
             char* keyValue = strtok(NULL, " ");
@@ -100,21 +109,25 @@ public:
             return true;
         }
 
+        /*md `HOLD_VALUE: true|false` set if the value should be held or not */
         if (strcmp(key, "HOLD_VALUE") == 0) {
             holdValue = strcmp(value, "true") == 0;
             return true;
         }
 
+        /*md `RELEASE_X: value` X value set when pad is released */
         if (strcmp(key, "RELEASE_X") == 0) {
             releaseX = atof(value);
             return true;
         }
 
+        /*md `RELEASE_Y: value` Y value set when pad is released */
         if (strcmp(key, "RELEASE_Y") == 0) {
             releaseY = atof(value);
             return true;
         }
 
+        /*md `COLOR: color` set the color of the pad */
         if (strcmp(key, "COLOR") == 0) {
             colors = getColorsFromColor(draw.getColor(value));
             return true;
