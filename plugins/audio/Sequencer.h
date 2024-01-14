@@ -73,6 +73,7 @@ protected:
 
     uint8_t stepCounter = 0;
     uint8_t loopCounter = 0;
+    uint64_t * clockCounterPtr = NULL;
 
     bool active = false;
 
@@ -182,6 +183,7 @@ public:
 
     void onClockTick(uint64_t clockCounter)
     {
+        clockCounterPtr = &clockCounter;
         // Clock events are sent at a rate of 24 pulses per quarter note
         // (24/4 = 6)
         if (clockCounter % 6 == 0) {
@@ -327,6 +329,8 @@ public:
             // case 5: // Toggle play/pause
             //     active = !active;
             //     return NULL;
+        case 5:
+            return clockCounterPtr;
         }
         return NULL;
     }

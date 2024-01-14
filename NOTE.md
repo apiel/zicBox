@@ -10,6 +10,8 @@
 
 ## zic sample
 
+- TODO GridSeq touch could be used to move up/down/left/right
+
 - TODO enable track or play next, short press toggle play stop, long press trigger play next
 
 - TODO ?? auto save, instead to always save, only save if something changed
