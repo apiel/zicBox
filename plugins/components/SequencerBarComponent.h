@@ -6,6 +6,13 @@
 
 #include <string>
 
+/*md
+## SequencerBar
+
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SequencerBar.png" />
+
+Make minimal representation of the sequencer.
+*/
 class SequencerBarComponent : public Component {
 protected:
     AudioPlugin& plugin;
@@ -150,6 +157,7 @@ public:
 
     bool config(char* key, char* value)
     {
+        /*md - `COLOR: #999999` set component color */
         if (strcmp(key, "COLOR") == 0) {
             colors = getColorsFromColor(draw.getColor(value));
             return true;
