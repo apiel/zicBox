@@ -18,6 +18,7 @@ protected:
     // When reached the maximum, there might be a tempo issue
     // However, to reach it, it is almost impossible...
     uint64_t clockCounter = 0;
+    bool playing = false;
 
     struct MidiNoteEvent {
         uint8_t channel;
@@ -198,14 +199,30 @@ public:
 
     void clockTick()
     {
-        clockCounter++;
-        for (Plugin& plugin : plugins) {
-            plugin.instance->onClockTick(clockCounter);
+        if (playing) {
+            clockCounter++;
+            for (Plugin& plugin : plugins) {
+                plugin.instance->onClockTick(&clockCounter);
+            }
         }
     }
 
     void sendEvent(AudioEventType event)
     {
+        switch (event) {
+        case AudioEventType::START:
+            playing = true;
+            break;
+
+        case AudioEventType::STOP:
+            playing = false;
+            clockCounter = 0;
+            break;
+
+        case AudioEventType::PAUSE:
+            playing = false;
+            break;
+        }
         for (Plugin& plugin : plugins) {
             plugin.instance->onEvent(event);
         }

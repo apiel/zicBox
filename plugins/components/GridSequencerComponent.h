@@ -12,7 +12,7 @@ public:
     int16_t trackId = -1;
     AudioPlugin* seqPlugin;
     std::string name = "Init";
-    float volume = 1.0f; //rand() % 100 / 100.0f;
+    float volume = 1.0f; // rand() % 100 / 100.0f;
     bool active = false;
     Step* steps;
     ValueInterface* selectedStep;
@@ -66,7 +66,8 @@ protected:
 
     Step selectedStepCopy;
 
-    uint8_t stepCounter = 0;
+    uint64_t lastClockCounter = -1;
+    uint8_t lastStepCounter = -1;
 
     void progressInit()
     {
@@ -383,6 +384,20 @@ public:
                 renderSelection(grid.row, grid.col, colors.selector);
                 renderNext();
                 selectedStepCopy = tracks[grid.row].steps[grid.col - 1];
+            }
+
+            if (tracks[0].seqPlugin) {
+                uint64_t* clockCounterPtr = (uint64_t*)tracks[0].seqPlugin->data(3);
+                if (clockCounterPtr && lastClockCounter != *clockCounterPtr) {
+                    lastClockCounter = *clockCounterPtr;
+                    uint8_t stepCounter = lastClockCounter / 6 % stepsCount;
+                    if (stepCounter != lastStepCounter) {
+                        lastStepCounter = stepCounter;
+                        // printf("stepCounter: %d (%ld)\n", stepCounter, lastClockCounter);
+                        renderProgress(stepCounter);
+                        draw.renderNext();
+                    }
+                }
             }
         };
     }

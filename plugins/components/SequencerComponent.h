@@ -358,11 +358,11 @@ public:
         int column = (motion.position.x - position.x) / stepSize.w;
         if (fileMode) {
             if (row == rowCount && column == columnCount - 2) {
-                plugin.data(4, (void*)&input.value);
+                plugin.data(5, (void*)&input.value);
                 fileMode = false;
                 renderNext();
             } else if (row == rowCount && column == columnCount - 1) {
-                plugin.data(3, (void*)&input.value);
+                plugin.data(4, (void*)&input.value);
                 fileMode = false;
                 renderNext();
             } else {

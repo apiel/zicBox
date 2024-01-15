@@ -10,12 +10,12 @@
 
 class AudioPlugin;
 
-    enum AudioEventType {
-        STOP,
-        START,
-        PAUSE,
-        AUTOSAVE
-    };
+enum AudioEventType {
+    STOP,
+    START,
+    PAUSE,
+    AUTOSAVE
+};
 
 class AudioPluginHandlerInterface {
 public:
@@ -112,7 +112,7 @@ public:
         return NULL;
     }
 
-    virtual void onClockTick(uint64_t clockCounter)
+    virtual void onClockTick(uint64_t* clockCounter)
     {
     }
 
