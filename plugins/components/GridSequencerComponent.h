@@ -79,7 +79,7 @@ protected:
 
     void renderProgress(uint8_t stepCounter)
     {
-        int xPrevious = progressPosition.x + itemW * ((stepCounter - 1 + stepsCount) % stepsCount);
+        int xPrevious = progressPosition.x + itemW * ((lastStepCounter + stepsCount) % stepsCount);
         draw.filledRect({ xPrevious, progressPosition.y }, progressItemSize, colors.progressBg);
         int x = progressPosition.x + itemW * stepCounter;
         draw.filledRect({ x, progressPosition.y }, progressItemSize, colors.active.on);
@@ -392,9 +392,9 @@ public:
                     lastClockCounter = *clockCounterPtr;
                     uint8_t stepCounter = lastClockCounter / 6 % stepsCount;
                     if (stepCounter != lastStepCounter) {
-                        lastStepCounter = stepCounter;
                         // printf("stepCounter: %d (%ld)\n", stepCounter, lastClockCounter);
                         renderProgress(stepCounter);
+                        lastStepCounter = stepCounter;
                         draw.renderNext();
                     }
                 }

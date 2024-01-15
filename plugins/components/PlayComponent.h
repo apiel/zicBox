@@ -18,7 +18,8 @@ protected:
     bool playing = false;
     bool stopped = true;
 
-    std::chrono::_V2::system_clock::duration pressedTime = std::chrono::system_clock::now().time_since_epoch();
+    bool isPressed = false;
+    unsigned long pressedTime = -1;
 
     Size iconSize = { 20, 20 };
     Point iconPosition;
@@ -50,6 +51,18 @@ public:
 
         iconPosition = { (int)(position.x + (size.w * 0.5) - iconSize.w * 0.5), (int)(position.y + (size.h * 0.5) - iconSize.h * 0.5) };
         labelPosition = { (int)(position.x + (size.w * 0.5)), (int)(iconPosition.y + size.h / 3.0 - 5) }; // for size.h / 3.0 - 5 see encoder2
+
+        jobRendering = [this](unsigned long now) {
+            if (!stopped && isPressed) {
+                if (pressedTime == -1) {
+                    pressedTime = now;
+                } else if (now - pressedTime > 500) {
+                    stopped = true;
+                    sendAudioEvent(AudioEventType::STOP);
+                    renderNext();
+                }
+            }
+        };
     }
 
     void render()
@@ -112,11 +125,9 @@ public:
     void* data(int id, void* userdata = NULL) override
     {
         if (id == 0) {
-            std::chrono::_V2::system_clock::duration duration = std::chrono::system_clock::now().time_since_epoch() - pressedTime;
-            if (duration.count() > 500000000) {
+            isPressed = false;
+            if (playing && stopped) {
                 playing = false;
-                stopped = true;
-                sendAudioEvent(AudioEventType::STOP);
             } else if (!playing) {
                 playing = true;
                 stopped = false;
@@ -128,8 +139,8 @@ public:
             renderNext();
             return NULL;
         } else if (id == 1) {
-            pressedTime = std::chrono::system_clock::now().time_since_epoch();
-            return NULL;
+            pressedTime = -1;
+            isPressed = true;
         }
         return NULL;
     }
