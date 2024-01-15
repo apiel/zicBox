@@ -73,7 +73,7 @@ protected:
 
     uint8_t stepCounter = 0;
     uint8_t loopCounter = 0;
-    uint64_t * clockCounterPtr = NULL;
+    uint64_t* clockCounterPtr = NULL;
 
     bool active = false;
 
@@ -181,12 +181,12 @@ public:
         setSelectedStep(selectedStep.get());
     }
 
-    void onClockTick(uint64_t clockCounter)
+    void onClockTick(uint64_t* clockCounter)
     {
-        clockCounterPtr = &clockCounter;
+        clockCounterPtr = clockCounter;
         // Clock events are sent at a rate of 24 pulses per quarter note
         // (24/4 = 6)
-        if (clockCounter % 6 == 0) {
+        if (*clockCounter % 6 == 0) {
             onStep();
         }
     }
@@ -196,6 +196,7 @@ public:
         switch (event) {
         case AudioEventType::STOP: {
             active = false;
+            stepCounter = 0;
             for (int i = 0; i < MAX_STEPS; i++) {
                 if (targetPlugin && steps[i].counter) {
                     targetPlugin->noteOff(steps[i].note, 0);
@@ -205,13 +206,12 @@ public:
             break;
         }
         case AudioEventType::START:
-            stepCounter = 0;
             loopCounter = 0;
             active = true;
             break;
 
         case AudioEventType::PAUSE:
-            active = !active;
+            active = false;
             break;
         }
     }
@@ -320,17 +320,14 @@ public:
             uint8_t* index = (uint8_t*)userdata;
             return (void*)stepConditions[*index].name;
         }
-        case 3: // Save pattern
+        case 3:
+            return clockCounterPtr;
+        case 4: // Save pattern
             save(folder / *(std::string*)userdata);
             return NULL;
-        case 4: // Rename pattern
+        case 5: // Rename pattern
             rename(folder / *(std::string*)userdata);
             return NULL;
-            // case 5: // Toggle play/pause
-            //     active = !active;
-            //     return NULL;
-        case 5:
-            return clockCounterPtr;
         }
         return NULL;
     }
