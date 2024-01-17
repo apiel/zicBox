@@ -269,14 +269,120 @@ protected:
         }
     }
 
-    void paramIncrement(uint8_t param, int8_t direction)
+    void updateTrackSelection(int8_t state, uint8_t track)
     {
-        componentParam->data(0, &direction);
+        if (state == 1) {
+            grid.select(track, 0);
+            updateSelection();
+            draw.renderNext();
+        }
     }
 
+    uint8_t trackColor(uint8_t track)
+    {
+        return tracks[track].active ? 40 : 0;
+    }
+
+    void updateParamSelection(int8_t state, uint8_t param)
+    {
+        if (state == 1) {
+            onParamKeyPressed(param);
+        } else if (paramKeyPressed != -1 && keys.params[paramKeyPressed] == param) {
+            onParamKeyReleased(paramKeyPressed);
+            paramKeyPressed = -1;
+        }
+    }
+
+    void updateRowSelection(int8_t state, int8_t direction)
+    {
+        if (state == 1) {
+            if (paramKeyPressed == -1) {
+                grid.selectNextRow(direction);
+                updateSelection();
+                draw.renderNext();
+            } else {
+                int8_t step = direction > 0 ? 1 : -1;
+                componentParam->data(0, &step);
+            }
+        }
+    }
+    void updateColSelection(int8_t state, int8_t direction)
+    {
+        if (state == 1) {
+            if (paramKeyPressed == -1) {
+                grid.selectNextCol(direction);
+                updateSelection();
+                draw.renderNext();
+            } else {
+                int8_t step = direction > 0 ? 5 : -5;
+                componentParam->data(0, &step);
+            }
+        }
+    }
+
+    struct KeyMap {
+        uint8_t key;
+        std::function<uint8_t()> color;
+        std::function<void(int8_t state)> action;
+    };
+
+    std::vector<KeyMap> keyMaps = {
+        { 0, [&]() { return trackColor(0); }, [&](int8_t state) { updateTrackSelection(0, state); } },
+        { 1, [&]() { return trackColor(1); }, [&](int8_t state) { updateTrackSelection(1, state); } },
+        { 2, [&]() { return trackColor(2); }, [&](int8_t state) { updateTrackSelection(2, state); } },
+        { 3, [&]() { return trackColor(3); }, [&](int8_t state) { updateTrackSelection(3, state); } },
+        { 4, [&]() { return trackColor(4); }, [&](int8_t state) { updateTrackSelection(4, state); } },
+        { 5, [&]() { return trackColor(5); }, [&](int8_t state) { updateTrackSelection(5, state); } },
+        { 6, [&]() { return trackColor(6); }, [&](int8_t state) { updateTrackSelection(6, state); } },
+        { 7, [&]() { return trackColor(7); }, [&](int8_t state) { updateTrackSelection(7, state); } },
+        { 8, [&]() { return trackColor(8); }, [&](int8_t state) { updateTrackSelection(8, state); } },
+        { 9, [&]() { return trackColor(9); }, [&](int8_t state) { updateTrackSelection(9, state); } },
+        { 10, [&]() { return trackColor(10); }, [&](int8_t state) { updateTrackSelection(10, state); } },
+        { 11, [&]() { return trackColor(11); }, [&](int8_t state) { updateTrackSelection(11, state); } },
+        // 12 note on
+        // 13 page
+        { 14, [&]() { return 40; }, [&](int8_t state) {} },
+        { 15, [&]() { return 60; }, [&](int8_t state) {} },
+        { 16, [&]() { return 60; }, [&](int8_t state) {} },
+        { 17, [&]() { return 60; }, [&](int8_t state) {} },
+        { 18, [&]() { return 60; }, [&](int8_t state) {} },
+        { 19, [&]() { return 60; }, [&](int8_t state) {} },
+
+        { 20, [&]() { return 50; }, [&](int8_t state) { updateParamSelection(state, 0); } },
+        { 21, [&]() { return 20; }, [&](int8_t state) { updateParamSelection(state, 1); } },
+        { 22, [&]() { return 60; }, [&](int8_t state) { updateParamSelection(state, 2); } },
+        { 23, [&]() { return 90; }, [&](int8_t state) { updateParamSelection(state, 3); } },
+
+        //
+
+        { 27, [&]() { return 60; }, [&](int8_t state) {} },
+        { 28, [&]() { return 60; }, [&](int8_t state) {} },
+        { 29, [&]() { return 60; }, [&](int8_t state) {} },
+        { 30, [&]() { return 60; }, [&](int8_t state) {} },
+        { 31, [&]() { return 60; }, [&](int8_t state) {} },
+
+        { 32, [&]() { return 50; }, [&](int8_t state) { updateParamSelection(state, 4); } },
+        { 33, [&]() { return 20; }, [&](int8_t state) { updateParamSelection(state, 5); } },
+        { 34, [&]() { return 60; }, [&](int8_t state) { updateParamSelection(state, 6); } },
+        { 35, [&]() { return 90; }, [&](int8_t state) { updateParamSelection(state, 7); } },
+
+        //
+
+        { 39, [&]() { return 60; }, [&](int8_t state) {} },
+        { 40, [&]() { return 60; }, [&](int8_t state) {} },
+        { 41, [&]() { return 60; }, [&](int8_t state) {} },
+        { 42, [&]() { return 60; }, [&](int8_t state) {} },
+        { 43, [&]() { return 60; }, [&](int8_t state) {} },
+
+        { 44, [&]() { return 50; }, [&](int8_t state) { updateParamSelection(state, 8); } },
+        { 45, [&]() { return 20; }, [&](int8_t state) { updateParamSelection(state, 9); } },
+        { 46, [&]() { return 60; }, [&](int8_t state) { updateParamSelection(state, 10); } },
+        { 47, [&]() { return 90; }, [&](int8_t state) { updateParamSelection(state, 11); } },
+    };
+
     struct Keys {
-        uint8_t tracks[12] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
         uint8_t params[12] = { 20, 21, 22, 23, 32, 33, 34, 35, 44, 45, 46, 47 };
+        uint8_t tracks[12] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
         uint8_t clips[15] = { 15, 16, 17, 18, 19, 27, 28, 29, 30, 31, 39, 40, 41, 42, 43 };
 
         uint8_t up = 25;
@@ -285,10 +391,6 @@ protected:
         uint8_t right = 38;
         uint8_t leftJump = 24;
         uint8_t rightJump = 26;
-
-        uint8_t master = 14;
-        uint8_t page = 13;
-        uint8_t noteOn = 12;
     } keys;
 
     uint8_t columnColor[4] = { 50, 20, 60, 90 }; // or 90
@@ -485,7 +587,7 @@ public:
             }
 
             if (direction != 0) {
-                paramIncrement(paramKeyPressed, direction);
+                // paramIncrement(paramKeyPressed, direction);
                 return true;
             }
         }
