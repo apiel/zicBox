@@ -267,11 +267,13 @@ protected:
                 }
             }
         }
+        paramKeyPressed = -1;
     }
 
     void updateTrackSelection(int8_t state, uint8_t track)
     {
         if (state == 1) {
+            printf("select track %d\n", track);
             grid.select(track, 0);
             updateSelection();
             draw.renderNext();
@@ -287,9 +289,8 @@ protected:
     {
         if (state == 1) {
             onParamKeyPressed(param);
-        } else if (paramKeyPressed != -1 && keys.params[paramKeyPressed] == param) {
+        } else if (paramKeyPressed == param) {
             onParamKeyReleased(paramKeyPressed);
-            paramKeyPressed = -1;
         }
     }
 
@@ -297,7 +298,7 @@ protected:
     {
         if (state == 1) {
             if (paramKeyPressed == -1) {
-                grid.selectNextRow(direction);
+                grid.selectNextRow(-direction);
                 updateSelection();
                 draw.renderNext();
             } else {
@@ -320,6 +321,15 @@ protected:
         }
     }
 
+    void updateMasterSelection(int8_t state)
+    {
+        if (state == 1) {
+            grid.select(trackCount, 0);
+            updateSelection();
+            draw.renderNext();
+        }
+    }
+
     struct KeyMap {
         uint8_t key;
         std::function<uint8_t()> color;
@@ -327,21 +337,21 @@ protected:
     };
 
     std::vector<KeyMap> keyMaps = {
-        { 0, [&]() { return trackColor(0); }, [&](int8_t state) { updateTrackSelection(0, state); } },
-        { 1, [&]() { return trackColor(1); }, [&](int8_t state) { updateTrackSelection(1, state); } },
-        { 2, [&]() { return trackColor(2); }, [&](int8_t state) { updateTrackSelection(2, state); } },
-        { 3, [&]() { return trackColor(3); }, [&](int8_t state) { updateTrackSelection(3, state); } },
-        { 4, [&]() { return trackColor(4); }, [&](int8_t state) { updateTrackSelection(4, state); } },
-        { 5, [&]() { return trackColor(5); }, [&](int8_t state) { updateTrackSelection(5, state); } },
-        { 6, [&]() { return trackColor(6); }, [&](int8_t state) { updateTrackSelection(6, state); } },
-        { 7, [&]() { return trackColor(7); }, [&](int8_t state) { updateTrackSelection(7, state); } },
-        { 8, [&]() { return trackColor(8); }, [&](int8_t state) { updateTrackSelection(8, state); } },
-        { 9, [&]() { return trackColor(9); }, [&](int8_t state) { updateTrackSelection(9, state); } },
-        { 10, [&]() { return trackColor(10); }, [&](int8_t state) { updateTrackSelection(10, state); } },
-        { 11, [&]() { return trackColor(11); }, [&](int8_t state) { updateTrackSelection(11, state); } },
+        { 0, [&]() { return trackColor(0); }, [&](int8_t state) { updateTrackSelection(state, 0); } },
+        { 1, [&]() { return trackColor(1); }, [&](int8_t state) { updateTrackSelection(state, 1); } },
+        { 2, [&]() { return trackColor(2); }, [&](int8_t state) { updateTrackSelection(state, 2); } },
+        { 3, [&]() { return trackColor(3); }, [&](int8_t state) { updateTrackSelection(state, 3); } },
+        { 4, [&]() { return trackColor(4); }, [&](int8_t state) { updateTrackSelection(state, 4); } },
+        { 5, [&]() { return trackColor(5); }, [&](int8_t state) { updateTrackSelection(state, 5); } },
+        { 6, [&]() { return trackColor(6); }, [&](int8_t state) { updateTrackSelection(state, 6); } },
+        { 7, [&]() { return trackColor(7); }, [&](int8_t state) { updateTrackSelection(state, 7); } },
+        { 8, [&]() { return trackColor(8); }, [&](int8_t state) { updateTrackSelection(state, 8); } },
+        { 9, [&]() { return trackColor(9); }, [&](int8_t state) { updateTrackSelection(state, 9); } },
+        { 10, [&]() { return trackColor(10); }, [&](int8_t state) { updateTrackSelection(state, 10); } },
+        { 11, [&]() { return trackColor(11); }, [&](int8_t state) { updateTrackSelection(state, 11); } },
         // 12 note on
         // 13 page
-        { 14, [&]() { return 40; }, [&](int8_t state) {} },
+        { 14, [&]() { return 40; }, [&](int8_t state) { updateMasterSelection(state); } }, // Master
         { 15, [&]() { return 60; }, [&](int8_t state) {} },
         { 16, [&]() { return 60; }, [&](int8_t state) {} },
         { 17, [&]() { return 60; }, [&](int8_t state) {} },
@@ -353,7 +363,9 @@ protected:
         { 22, [&]() { return 60; }, [&](int8_t state) { updateParamSelection(state, 2); } },
         { 23, [&]() { return 90; }, [&](int8_t state) { updateParamSelection(state, 3); } },
 
-        //
+        // 24
+        { 25, [&]() { return 20; }, [&](int8_t state) { updateRowSelection(state, 1); } }, // Up
+        // 26
 
         { 27, [&]() { return 60; }, [&](int8_t state) {} },
         { 28, [&]() { return 60; }, [&](int8_t state) {} },
@@ -366,7 +378,9 @@ protected:
         { 34, [&]() { return 60; }, [&](int8_t state) { updateParamSelection(state, 6); } },
         { 35, [&]() { return 90; }, [&](int8_t state) { updateParamSelection(state, 7); } },
 
-        //
+        { 36, [&]() { return 20; }, [&](int8_t state) { updateColSelection(state, -1); } }, // Left
+        { 37, [&]() { return 20; }, [&](int8_t state) { updateRowSelection(state, -1); } }, // Down
+        { 38, [&]() { return 20; }, [&](int8_t state) { updateColSelection(state, 1); } }, // Right
 
         { 39, [&]() { return 60; }, [&](int8_t state) {} },
         { 40, [&]() { return 60; }, [&](int8_t state) {} },
@@ -380,62 +394,18 @@ protected:
         { 47, [&]() { return 90; }, [&](int8_t state) { updateParamSelection(state, 11); } },
     };
 
-    struct Keys {
-        uint8_t params[12] = { 20, 21, 22, 23, 32, 33, 34, 35, 44, 45, 46, 47 };
-        uint8_t tracks[12] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
-        uint8_t clips[15] = { 15, 16, 17, 18, 19, 27, 28, 29, 30, 31, 39, 40, 41, 42, 43 };
-
-        uint8_t up = 25;
-        uint8_t down = 37;
-        uint8_t left = 36;
-        uint8_t right = 38;
-        uint8_t leftJump = 24;
-        uint8_t rightJump = 26;
-    } keys;
-
-    uint8_t columnColor[4] = { 50, 20, 60, 90 }; // or 90
-
     void renderKeypad()
     {
         if (keypad) {
+            // TODO instead to do this should just set the one missing from the list...
             keypad->setKeyColor(254, 254); // set all key off
             keypad->setButton(254, 254); // set all button off
 
-            // keypad->setButton(keys.menu, 0);
-
-            for (int i = 0; i < 12; i++) {
-                keypad->setButton(keys.tracks[i], tracks[i].active ? 40 : 0);
+            for (KeyMap key : keyMaps) {
+                // if (key.action) {
+                keypad->setButton(key.key, key.color());
+                // }
             }
-
-            for (int i = 0; i < 15; i++) {
-                // keypad->setButton(keys.clips[i], clips[i].active ? 70 : 60);
-                keypad->setButton(keys.clips[i], 60);
-            }
-
-            keypad->setButton(keys.up, 20);
-            keypad->setButton(keys.down, 20);
-            keypad->setButton(keys.left, 20);
-            keypad->setButton(keys.right, 20);
-
-            keypad->setButton(keys.leftJump, 0);
-            keypad->setButton(keys.rightJump, 0);
-
-            keypad->setButton(keys.params[0], columnColor[0]);
-            keypad->setButton(keys.params[1], columnColor[1]);
-            keypad->setButton(keys.params[2], columnColor[2]);
-            keypad->setButton(keys.params[3], columnColor[3]);
-
-            keypad->setButton(keys.params[4], columnColor[0]);
-            keypad->setButton(keys.params[5], columnColor[1]);
-            keypad->setButton(keys.params[6], columnColor[2]);
-            keypad->setButton(keys.params[7], columnColor[3]);
-
-            keypad->setButton(keys.params[8], columnColor[0]);
-            keypad->setButton(keys.params[9], columnColor[1]);
-            keypad->setButton(keys.params[10], columnColor[2]);
-            keypad->setButton(keys.params[11], columnColor[3]);
-
-            keypad->setButton(keys.master, 40);
         }
     }
 
@@ -531,102 +501,16 @@ public:
         return false;
     }
 
-    bool onKeyPadDirection(int key)
-    {
-        if (paramKeyPressed == -1) {
-            if (key == keys.up) {
-                grid.up();
-                updateSelection();
-                draw.renderNext();
-                return true;
-            } else if (key == keys.down) {
-                grid.down();
-                updateSelection();
-                draw.renderNext();
-                return true;
-            } else if (key == keys.left) {
-                grid.left();
-                updateSelection();
-                draw.renderNext();
-                return true;
-            } else if (key == keys.right) {
-                grid.right();
-                updateSelection();
-                draw.renderNext();
-                return true;
-            } else if (key == keys.leftJump) {
-                int8_t step = ((grid.col - 1) % 4);
-                if (step < 1) {
-                    step = 4;
-                }
-                grid.selectNextCol(-step);
-                updateSelection();
-                draw.renderNext();
-                return true;
-            } else if (key == keys.rightJump) {
-                int8_t step = 4 - ((grid.col - 1) % 4);
-                grid.selectNextCol(step);
-                updateSelection();
-                draw.renderNext();
-                return true;
-            }
-        } else {
-            int8_t direction = 0;
-            if (key == keys.up) {
-                direction = 1;
-            } else if (key == keys.down) {
-                direction = -1;
-            } else if (key == keys.left) {
-                direction = -5;
-            } else if (key == keys.right) {
-                direction = 5;
-            } else if (key == keys.leftJump) {
-                direction = -10;
-            } else if (key == keys.rightJump) {
-                direction = 10;
-            }
-
-            if (direction != 0) {
-                // paramIncrement(paramKeyPressed, direction);
-                return true;
-            }
-        }
-        return false;
-    }
-
     void onKeyPad(int key, int8_t state)
     {
-        // printf("onKeypad(%d, %d)\n", id, state);
-        if (state == 1) {
-            if (!onKeyPadDirection(key)) {
-                if (key == keys.master) {
-                    grid.select(trackCount, 0);
-                    updateSelection();
-                    draw.renderNext();
-                    return;
-                }
-
-                for (int i = 0; i < 12; i++) {
-                    if (keys.tracks[i] == key) {
-                        grid.select(i, 0);
-                        updateSelection();
-                        draw.renderNext();
-                        return;
-                    } else if (keys.params[i] == key) {
-                        onParamKeyPressed(i);
-                        return;
-                    }
-                }
-
-                printf("unknown key %d\n", key);
-            }
-        } else {
-            if (paramKeyPressed != -1 && keys.params[paramKeyPressed] == key) {
-                onParamKeyReleased(paramKeyPressed);
-                paramKeyPressed = -1;
+        for (KeyMap keyMap : keyMaps) {
+            if (keyMap.key == key) {
+                keyMap.action(state);
                 return;
             }
         }
+
+        printf("unhandled key %d\n", key);
     }
 };
 
