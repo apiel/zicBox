@@ -10,6 +10,13 @@
 
 ## zic sample
 
+- TODO put keypad layout completely outside
+    - is keyboard layout view specific? or at least a view should be able to set a different keypad layout...
+    - UI component should allow to export multiple kind of keypad action
+    - there should be multiple layout that can be selected
+
+- TODO extract out progress bar, no more master view, as it should be completely separated
+
 - TODO keyboard edit steps...
 
 - TODO GridSeq touch could be used to move up/down/left/right

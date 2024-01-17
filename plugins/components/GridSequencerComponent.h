@@ -398,7 +398,6 @@ protected:
     {
         if (keypad) {
             // TODO instead to do this should just set the one missing from the list...
-            keypad->setKeyColor(254, 254); // set all key off
             keypad->setButton(254, 254); // set all button off
 
             for (KeyMap key : keyMaps) {

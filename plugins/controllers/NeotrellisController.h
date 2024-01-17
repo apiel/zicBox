@@ -128,6 +128,7 @@ public:
         msg[2] = color;
         write(port, msg, 3);
     }
+    
     void setButton(int id, uint8_t color)
     {
         // uint8_t command = '%';
