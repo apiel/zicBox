@@ -18,7 +18,7 @@ PLUGIN_COMPONENT: Play ./plugins/components/build/libzic_PlayComponent.so
 PLUGIN_CONTROLLER: Osc ./plugins/controllers/build/libzic_OscController.so
 
 PLUGIN_CONTROLLER: Keypad ./plugins/controllers/build/libzic_NeotrellisController.so
-  OPEN: /dev/ttyACM0
+  SERIAL: /dev/ttyACM0
 
 PLUGIN_CONTROLLER: MidiEncoder ./plugins/controllers/build/libzic_MidiEncoderController.so
   DEVICE: Arduino Leonardo:Arduino Leonardo MIDI 1
