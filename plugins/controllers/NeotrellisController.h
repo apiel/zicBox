@@ -13,6 +13,13 @@
 
 #include <thread>
 
+/*md
+## NeotrellisController
+
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/NeotrellisController.png" />
+
+Keypad interface using [Adafruit Neotrellis M4](https://learn.adafruit.com/adafruit-neotrellis-m4/overview).
+*/
 class NeotrellisController : public KeypadInterface {
 protected:
     struct termios tty;
@@ -54,11 +61,13 @@ protected:
                 if (byte == '$') {
                     uint8_t key;
                     read(port, &key, 1);
-                    keypad(key, 1);
+                    // printf("press key %d\n", key);
+                    onKeypad(key, 1);
                 } else if (byte == '!') {
                     uint8_t key;
                     read(port, &key, 1);
-                    keypad(key, 0);
+                    // printf("release key %d\n", key);
+                    onKeypad(key, 0);
                 }
             }
         }
@@ -107,11 +116,12 @@ public:
 
     bool config(char* key, char* value)
     {
-        if (strcmp(key, "OPEN") == 0) {
+        /*md - `SERIAL: /dev/ttyACM0` open connection using serial port */
+        if (strcmp(key, "SERIAL") == 0) {
             openSerial(value);
             return true;
         }
-        return false;
+        return KeypadInterface::config(key, value);
     }
 
     void setKeyColor(int id, uint8_t color)

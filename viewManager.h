@@ -199,14 +199,14 @@ public:
         m2.unlock();
     }
 
-    void onKeyPad(int id, int8_t state)
-    {
-        m2.lock();
-        for (auto& component : ui.view->components) {
-            component->onKeyPad(id, state);
-        }
-        m2.unlock();
-    }
+    // void onKeyPad(int id, int8_t state)
+    // {
+    //     m2.lock();
+    //     for (auto& component : ui.view->components) {
+    //         component->onKeyPad(id, state);
+    //     }
+    //     m2.unlock();
+    // }
 
     bool config(char* key, char* value, const char* filename)
     {
