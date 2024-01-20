@@ -394,19 +394,19 @@ protected:
         { 47, [&]() { return 90; }, [&](int8_t state) { updateParamSelection(state, 11); } },
     };
 
-    // void renderKeypad()
-    // {
-    //     if (keypad) {
-    //         // TODO instead to do this should just set the one missing from the list...
-    //         keypad->setButton(254, 254); // set all button off
+    void renderKeypad()
+    {
+        if (keypad) {
+            // TODO instead to do this should just set the one missing from the list...
+            keypad->setButton(254, 254); // set all button off
 
-    //         for (KeyMap key : keyMaps) {
-    //             // if (key.action) {
-    //             keypad->setButton(key.key, key.color());
-    //             // }
-    //         }
-    //     }
-    // }
+            for (KeyMap key : keyMaps) {
+                // if (key.action) {
+                keypad->setButton(key.key, key.color());
+                // }
+            }
+        }
+    }
 
     struct ColorsActive {
         Color on;
@@ -473,14 +473,14 @@ public:
         };
     }
 
-    // void initView(uint16_t counter)
-    // {
-    //     // Do not initialize if it was previously initialized
-    //     if (initViewCounter != counter - 1) {
-    //         renderKeypad();
-    //     }
-    //     initViewCounter = counter;
-    // }
+    void initView(uint16_t counter)
+    {
+        // Do not initialize if it was previously initialized
+        if (initViewCounter != counter - 1) {
+            renderKeypad();
+        }
+        initViewCounter = counter;
+    }
 
     void render()
     {
@@ -500,17 +500,17 @@ public:
         return false;
     }
 
-    // void onKeyPad(int key, int8_t state)
-    // {
-    //     for (KeyMap keyMap : keyMaps) {
-    //         if (keyMap.key == key) {
-    //             keyMap.action(state);
-    //             return;
-    //         }
-    //     }
+    void onKeyPad(int key, int8_t state)
+    {
+        for (KeyMap keyMap : keyMaps) {
+            if (keyMap.key == key) {
+                keyMap.action(state);
+                return;
+            }
+        }
 
-    //     printf("unhandled key %d\n", key);
-    // }
+        printf("unhandled key %d\n", key);
+    }
 };
 
 #endif
