@@ -16,7 +16,7 @@
 /*md
 ## NeotrellisController
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/NeotrellisController.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/controllers/NeotrellisController.png" />
 
 Keypad interface using [Adafruit Neotrellis M4](https://learn.adafruit.com/adafruit-neotrellis-m4/overview).
 */
