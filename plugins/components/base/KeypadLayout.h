@@ -6,6 +6,12 @@
 #include <string>
 #include <vector>
 
+/*md
+## KeypadLayout
+
+Some components might want to use a keypad layout.
+
+*/
 class KeypadLayout {
 public:
     std::string name = "default";
@@ -18,8 +24,15 @@ public:
     };
 
 protected:
-    void (*setButton)(int id, uint8_t color);
-    std::vector<KeyMap> mapping;
+    // void (*setButton)(int id, uint8_t color);
+
+public:
+    std::vector<KeyMap> mapping; // FIXME to be protected
+
+    // KeypadLayout(void (*setButton)(int id, uint8_t color))
+    //     // : setButton(setButton)
+    // {
+    // }
 
     void onKeypad(int key, int8_t state)
     {
@@ -33,15 +46,10 @@ protected:
         printf("unhandled key %d\n", key);
     }
 
-public:
-    KeypadLayout(void (*setButton)(int id, uint8_t color))
-        : setButton(setButton)
-    {
-    }
-
     // Might want to render keypad in a central place
     // However, how to switch of layout in the same view?
-    void renderKeypad()
+    // void renderKeypad(void (*setButton)(int id, uint8_t color))
+    void renderKeypad(std::function<void(int id, uint8_t color)> setButton)
     {
         // TODO instead to do this should just set the one missing from the list...
         // setButton(254, 254); // set all button off
@@ -52,7 +60,7 @@ public:
 
     bool config(char* key, char* value)
     {
-        // /*md - `KEYMAP: pluginName action param` set default keymap */
+        /*md - `KEYMAP: pluginName action param` */
         // if (strcmp(key, "KEYMAP") == 0) {
         //     char* pluginName = strtok(value, " ");
         //     char* action = strtok(NULL, " ");
