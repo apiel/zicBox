@@ -6,6 +6,7 @@ const {
     readFileSync,
     writeFileSync,
     mkdirSync,
+    appendFileSync,
 } = require('fs');
 const path = require('path');
 
@@ -131,10 +132,17 @@ function docs(folder) {
         const content = lines.join('\n');
         const title2 = extractTitle2(lines);
         const filename = header.replace(/^#+\s+/, '').replaceAll(' ', '-');
-        fileList.push({ filename, title2 });
         const wikiFile = path.join(docsFolder, filename, `${filename}.md`);
-        ensureDir(wikiFile);
-        writeFileSync(wikiFile, content);
+
+        // if filename in fileList, prepend data to file because parent folder will always come last
+        if (fileList.find((f) => f.filename === filename)) {
+            const appendContent = readFileSync(wikiFile, 'utf8');
+            writeFileSync(wikiFile, content + '\n\n' + appendContent);
+        } else {
+            fileList.push({ filename, title2 });
+            ensureDir(wikiFile);
+            writeFileSync(wikiFile, content);
+        }
     }
 }
 
