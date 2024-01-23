@@ -4,7 +4,7 @@
 
 ZicPad is an advance hardware version of ZicBox with a big touch screen, 12 encoders and a 4x12 RGB keypad.
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPad/zicpad.jpg" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPad/zicpad.png" />
 
 ### Material
 
