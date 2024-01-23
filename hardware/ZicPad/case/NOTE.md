@@ -1,4 +1,4 @@
-## Case
+### Case
 
 > This is a prototype doc to keep note on how I made my journey to make the enclosure
 
