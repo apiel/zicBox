@@ -2,7 +2,6 @@
 #define _UI_COMPONENT_GRID_SEQUENCER_H_
 
 #include "../audio/stepInterface.h"
-#include "../controllers/keypadInterface.h"
 
 #include "base/Grid.h"
 #include "base/KeypadLayout.h"
@@ -37,7 +36,6 @@ Can handle sequencer per track.
 */
 class GridSequencerComponent : public Component {
 protected:
-    KeypadInterface* keypad;
     KeypadLayout keypadLayout;
 
     std::string prefixTrackParamsView = "TrackParams_track_";
@@ -287,6 +285,20 @@ protected:
         return tracks[track].active ? 40 : 0;
     }
 
+    uint8_t paramColor(uint8_t param)
+    {
+        uint8_t col = param % 4;
+        switch (col) {
+        case 0:
+            return 50;
+        case 1:
+            return 60;
+        case 2:
+            return 20;
+        }
+        return 90;
+    }
+
     void updateParamSelection(int8_t state, uint8_t param)
     {
         if (state == 1) {
@@ -332,18 +344,6 @@ protected:
         }
     }
 
-    void renderKeypad()
-    {
-        if (keypad) {
-            // TODO instead to do this should just set the one missing from the list...
-            keypad->setButton(254, 254); // set all button off
-
-            keypadLayout.renderKeypad([&](int id, uint8_t color) {
-                keypad->setButton(id, color);
-            });
-        }
-    }
-
     struct ColorsActive {
         Color on;
         Color selector;
@@ -375,67 +375,83 @@ protected:
     };
 
 public:
+    void addKeyMap(uint8_t key, int param, std::string action)
+    {
+        if (action == "track") {
+            keypadLayout.mapping.push_back({ key, param, [&](int param) { return trackColor(param); }, [&](int8_t state, int param) { updateTrackSelection(state, param); } });
+        } else if (action == "param") {
+            keypadLayout.mapping.push_back({ key, param, [&](int param) { return paramColor(param); }, [&](int8_t state, int param) { updateParamSelection(state, param); } });
+        } else if (action == "row") {
+            keypadLayout.mapping.push_back({ key, param, [&](int param) { return 20; }, [&](int8_t state, int param) { updateRowSelection(state, param); } });
+        } else if (action == "col") {
+            keypadLayout.mapping.push_back({ key, param, [&](int param) { return 20; }, [&](int8_t state, int param) { updateColSelection(state, param); } });
+        } else if (action == "master") {
+            keypadLayout.mapping.push_back({ key, param, [&](int param) { return 40; }, [&](int8_t state, int param) { updateMasterSelection(state); } });
+        } else if (action == "clip") {
+            keypadLayout.mapping.push_back({ key, param, [&](int param) { return 60; }, [&](int8_t state, int param) {} });
+        }
+    }
+
     GridSequencerComponent(ComponentInterface::Props props)
         : Component(props)
+        , keypadLayout((KeypadInterface*)getController("Keypad"), [&](int8_t state, int param, std::string action) { addKeyMap(state, param, action); })
     {
-        keypad = (KeypadInterface*)getController("Keypad");
-
         keypadLayout.mapping = {
-            { 0, 0, [&](int param) { return trackColor(param); }, [&](int8_t state, int param) { updateTrackSelection(state, param); } },
-            { 1, 1, [&](int param) { return trackColor(param); }, [&](int8_t state, int param) { updateTrackSelection(state, param); } },
-            { 2, 2, [&](int param) { return trackColor(param); }, [&](int8_t state, int param) { updateTrackSelection(state, param); } },
-            { 3, 3, [&](int param) { return trackColor(param); }, [&](int8_t state, int param) { updateTrackSelection(state, param); } },
-            { 4, 4, [&](int param) { return trackColor(param); }, [&](int8_t state, int param) { updateTrackSelection(state, param); } },
-            { 5, 5, [&](int param) { return trackColor(param); }, [&](int8_t state, int param) { updateTrackSelection(state, param); } },
-            { 6, 6, [&](int param) { return trackColor(param); }, [&](int8_t state, int param) { updateTrackSelection(state, param); } },
-            { 7, 7, [&](int param) { return trackColor(param); }, [&](int8_t state, int param) { updateTrackSelection(state, param); } },
-            { 8, 8, [&](int param) { return trackColor(param); }, [&](int8_t state, int param) { updateTrackSelection(state, param); } },
-            { 9, 9, [&](int param) { return trackColor(param); }, [&](int8_t state, int param) { updateTrackSelection(state, param); } },
-            { 10, 10, [&](int param) { return trackColor(param); }, [&](int8_t state, int param) { updateTrackSelection(state, param); } },
-            { 11, 11, [&](int param) { return trackColor(param); }, [&](int8_t state, int param) { updateTrackSelection(state, param); } },
-            // 12 note on
-            // 13 page
-            { 14, -1, [&](int param) { return 40; }, [&](int8_t state, int param) { updateMasterSelection(state); } }, // Master
-            { 15, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
-            { 16, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
-            { 17, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
-            { 18, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
-            { 19, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
+            // { 0, 0, [&](int param) { return trackColor(param); }, [&](int8_t state, int param) { updateTrackSelection(state, param); } },
+            // { 1, 1, [&](int param) { return trackColor(param); }, [&](int8_t state, int param) { updateTrackSelection(state, param); } },
+            // { 2, 2, [&](int param) { return trackColor(param); }, [&](int8_t state, int param) { updateTrackSelection(state, param); } },
+            // { 3, 3, [&](int param) { return trackColor(param); }, [&](int8_t state, int param) { updateTrackSelection(state, param); } },
+            // { 4, 4, [&](int param) { return trackColor(param); }, [&](int8_t state, int param) { updateTrackSelection(state, param); } },
+            // { 5, 5, [&](int param) { return trackColor(param); }, [&](int8_t state, int param) { updateTrackSelection(state, param); } },
+            // { 6, 6, [&](int param) { return trackColor(param); }, [&](int8_t state, int param) { updateTrackSelection(state, param); } },
+            // { 7, 7, [&](int param) { return trackColor(param); }, [&](int8_t state, int param) { updateTrackSelection(state, param); } },
+            // { 8, 8, [&](int param) { return trackColor(param); }, [&](int8_t state, int param) { updateTrackSelection(state, param); } },
+            // { 9, 9, [&](int param) { return trackColor(param); }, [&](int8_t state, int param) { updateTrackSelection(state, param); } },
+            // { 10, 10, [&](int param) { return trackColor(param); }, [&](int8_t state, int param) { updateTrackSelection(state, param); } },
+            // { 11, 11, [&](int param) { return trackColor(param); }, [&](int8_t state, int param) { updateTrackSelection(state, param); } },
+            // // 12 note on
+            // // 13 page
+            // { 14, -1, [&](int param) { return 40; }, [&](int8_t state, int param) { updateMasterSelection(state); } }, // Master
+            // { 15, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
+            // { 16, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
+            // { 17, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
+            // { 18, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
+            // { 19, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
 
-            { 20, 0, [&](int param) { return 50; }, [&](int8_t state, int param) { updateParamSelection(state, param); } },
-            { 21, 1, [&](int param) { return 20; }, [&](int8_t state, int param) { updateParamSelection(state, param); } },
-            { 22, 2, [&](int param) { return 60; }, [&](int8_t state, int param) { updateParamSelection(state, param); } },
-            { 23, 3, [&](int param) { return 90; }, [&](int8_t state, int param) { updateParamSelection(state, param); } },
+            // { 20, 0, [&](int param) { return 50; }, [&](int8_t state, int param) { updateParamSelection(state, param); } },
+            // { 21, 1, [&](int param) { return 20; }, [&](int8_t state, int param) { updateParamSelection(state, param); } },
+            // { 22, 2, [&](int param) { return 60; }, [&](int8_t state, int param) { updateParamSelection(state, param); } },
+            // { 23, 3, [&](int param) { return 90; }, [&](int8_t state, int param) { updateParamSelection(state, param); } },
 
-            // 24
-            { 25, 1, [&](int param) { return 20; }, [&](int8_t state, int param) { updateRowSelection(state, 1); } }, // Up
-            // 26
+            // // 24
+            // { 25, 1, [&](int param) { return 20; }, [&](int8_t state, int param) { updateRowSelection(state, 1); } }, // Up
+            // // 26
 
-            { 27, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
-            { 28, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
-            { 29, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
-            { 30, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
-            { 31, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
+            // { 27, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
+            // { 28, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
+            // { 29, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
+            // { 30, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
+            // { 31, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
 
-            { 32, 4, [&](int param) { return 50; }, [&](int8_t state, int param) { updateParamSelection(state, param); } },
-            { 33, 5, [&](int param) { return 20; }, [&](int8_t state, int param) { updateParamSelection(state, param); } },
-            { 34, 6, [&](int param) { return 60; }, [&](int8_t state, int param) { updateParamSelection(state, param); } },
-            { 35, 7, [&](int param) { return 90; }, [&](int8_t state, int param) { updateParamSelection(state, param); } },
+            // { 32, 4, [&](int param) { return 50; }, [&](int8_t state, int param) { updateParamSelection(state, param); } },
+            // { 33, 5, [&](int param) { return 20; }, [&](int8_t state, int param) { updateParamSelection(state, param); } },
+            // { 34, 6, [&](int param) { return 60; }, [&](int8_t state, int param) { updateParamSelection(state, param); } },
+            // { 35, 7, [&](int param) { return 90; }, [&](int8_t state, int param) { updateParamSelection(state, param); } },
 
-            { 36, -1, [&](int param) { return 20; }, [&](int8_t state, int param) { updateColSelection(state, param); } }, // Left
-            { 37, -1, [&](int param) { return 20; }, [&](int8_t state, int param) { updateRowSelection(state, param); } }, // Down
-            { 38, 1, [&](int param) { return 20; }, [&](int8_t state, int param) { updateColSelection(state, param); } }, // Right
+            // { 36, -1, [&](int param) { return 20; }, [&](int8_t state, int param) { updateColSelection(state, param); } }, // Left
+            // { 37, -1, [&](int param) { return 20; }, [&](int8_t state, int param) { updateRowSelection(state, param); } }, // Down
+            // { 38, 1, [&](int param) { return 20; }, [&](int8_t state, int param) { updateColSelection(state, param); } }, // Right
 
-            { 39, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
-            { 40, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
-            { 41, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
-            { 42, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
-            { 43, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
+            // { 39, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
+            // { 40, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
+            // { 41, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
+            // { 42, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
+            // { 43, -1, [&](int param) { return 60; }, [&](int8_t state, int param) {} },
 
-            { 44, 8, [&](int param) { return 50; }, [&](int8_t state, int param) { updateParamSelection(state, param); } },
-            { 45, 9, [&](int param) { return 20; }, [&](int8_t state, int param) { updateParamSelection(state, param); } },
-            { 46, 10, [&](int param) { return 60; }, [&](int8_t state, int param) { updateParamSelection(state, param); } },
-            { 47, 11, [&](int param) { return 90; }, [&](int8_t state, int param) { updateParamSelection(state, param); } },
+            // { 44, 8, [&](int param) { return 50; }, [&](int8_t state, int param) { updateParamSelection(state, param); } },
+            // { 45, 9, [&](int param) { return 20; }, [&](int8_t state, int param) { updateParamSelection(state, param); } },
+            // { 46, 10, [&](int param) { return 60; }, [&](int8_t state, int param) { updateParamSelection(state, param); } },
+            // { 47, 11, [&](int param) { return 90; }, [&](int8_t state, int param) { updateParamSelection(state, param); } },
         };
 
         resize();
@@ -471,7 +487,7 @@ public:
     {
         // Do not initialize if it was previously initialized
         if (initViewCounter != counter - 1) {
-            renderKeypad();
+            keypadLayout.renderKeypad();
         }
         initViewCounter = counter;
     }
@@ -491,7 +507,7 @@ public:
             resize();
             return true;
         }
-        return false;
+        return keypadLayout.config(key, value);
     }
 
     void onKeyPad(int key, int8_t state)

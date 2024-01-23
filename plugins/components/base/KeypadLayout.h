@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "../../controllers/keypadInterface.h"
+
 /*md
 ## KeypadLayout
 
@@ -24,15 +26,17 @@ public:
     };
 
 protected:
-    // void (*setButton)(int id, uint8_t color);
+    KeypadInterface* keypad;
+    std::function<void(int8_t state, int param, std::string action)> addKeyMap;
 
 public:
-    std::vector<KeyMap> mapping; // FIXME to be protected
+    std::vector<KeyMap> mapping;
 
-    // KeypadLayout(void (*setButton)(int id, uint8_t color))
-    //     // : setButton(setButton)
-    // {
-    // }
+    KeypadLayout(KeypadInterface* keypad, std::function<void(int8_t state, int param, std::string action)> addKeyMap)
+        : keypad(keypad)
+        , addKeyMap(addKeyMap)
+    {
+    }
 
     void onKeypad(int key, int8_t state)
     {
@@ -49,24 +53,37 @@ public:
     // Might want to render keypad in a central place
     // However, how to switch of layout in the same view?
     // void renderKeypad(void (*setButton)(int id, uint8_t color))
-    void renderKeypad(std::function<void(int id, uint8_t color)> setButton)
+    // void renderKeypad(std::function<void(int id, uint8_t color)> setButton)
+    // {
+    //     // TODO instead to do this should just set the one missing from the list...
+    //     // setButton(254, 254); // set all button off
+    //     for (KeyMap keyMap : mapping) {
+    //         setButton(keyMap.key, keyMap.color(keyMap.param));
+    //     }
+    // }
+    void renderKeypad()
     {
+        if (!keypad) {
+            return;
+        }
+
         // TODO instead to do this should just set the one missing from the list...
         // setButton(254, 254); // set all button off
         for (KeyMap keyMap : mapping) {
-            setButton(keyMap.key, keyMap.color(keyMap.param));
+            keypad->setButton(keyMap.key, keyMap.color(keyMap.param));
         }
     }
 
     bool config(char* key, char* value)
     {
-        /*md - `KEYMAP: pluginName action param` */
-        // if (strcmp(key, "KEYMAP") == 0) {
-        //     char* pluginName = strtok(value, " ");
-        //     char* action = strtok(NULL, " ");
-        //     int param = atoi(strtok(NULL, " "));
-        //     // value = val(getPlugin(pluginName, track).getValue(keyValue));
-        // }
+        /*md - `KEYMAP: key action param` */
+        if (strcmp(key, "KEYMAP") == 0) {
+            uint8_t key = atoi(strtok(value, " "));
+            std::string action = strtok(NULL, " ");
+            char* paramStr = strtok(NULL, " ");
+            int param = paramStr != NULL ? atoi(paramStr) : -1;
+            addKeyMap(key, param, action);
+        }
         return false;
     }
 };

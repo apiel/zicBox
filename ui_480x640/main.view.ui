@@ -3,6 +3,23 @@ VIEW: shared_components HIDDEN
 
   COMPONENT: GridSequencer 0 403 480 240
     SHARED_COMPONENT: SharedGridSequencer
+    KEYMAP: 25 row 1
+    KEYMAP: 36 col -1
+    KEYMAP: 37 row -1
+    KEYMAP: 38 col 1
+    KEYMAP: 0 track 0
+    KEYMAP: 1 track 1
+    KEYMAP: 2 track 2
+    KEYMAP: 3 track 3
+    KEYMAP: 4 track 4
+    KEYMAP: 5 track 5
+    KEYMAP: 6 track 6
+    KEYMAP: 7 track 7
+    KEYMAP: 8 track 8
+    KEYMAP: 9 track 9
+    KEYMAP: 10 track 10
+    KEYMAP: 11 track 11
+    KEYMAP: 14 master
 
   $track=0
   while: $track < 12
