@@ -134,7 +134,9 @@ function docs(folder) {
         const wikiFile = path.join(docsFolder, filename, `${filename}.md`);
 
         // if filename in fileList, prepend data to file because parent folder will always come last
-        if (fileList.find((f) => f.filename === filename)) {
+        const fileListItem = fileList.find((f) => f.filename === filename);
+        if (fileListItem) {
+            fileListItem.title2 = [...title2, ...fileListItem.title2];
             const appendContent = readFileSync(wikiFile, 'utf8');
             writeFileSync(wikiFile, content + '\n\n' + appendContent);
         } else {
