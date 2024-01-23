@@ -160,7 +160,7 @@ for (const fileActive of fileList) {
                         (title) =>
                             ` - [${title}](https://github.com/apiel/zicBox/wiki/${
                                 file.filename
-                            }#${title.toLowerCase()})`
+                            }#${title.toLowerCase().replaceAll(' ', '-')})`
                     )
                     .join('\n');
 
