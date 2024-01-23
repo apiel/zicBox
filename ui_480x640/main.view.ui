@@ -20,6 +20,34 @@ VIEW: shared_components HIDDEN
     KEYMAP: 10 track 10
     KEYMAP: 11 track 11
     KEYMAP: 14 master
+    KEYMAP: 15 clip 0
+    KEYMAP: 16 clip 1
+    KEYMAP: 17 clip 2
+    KEYMAP: 18 clip 3
+    KEYMAP: 19 clip 4
+    KEYMAP: 27 clip 5
+    KEYMAP: 28 clip 6
+    KEYMAP: 29 clip 7
+    KEYMAP: 30 clip 8
+    KEYMAP: 31 clip 9
+    KEYMAP: 27 clip 10
+    KEYMAP: 39 clip 11
+    KEYMAP: 40 clip 12
+    KEYMAP: 41 clip 13
+    KEYMAP: 42 clip 14
+    KEYMAP: 43 clip 15
+    KEYMAP: 20 param 0
+    KEYMAP: 21 param 1
+    KEYMAP: 22 param 2
+    KEYMAP: 23 param 3
+    KEYMAP: 32 param 4
+    KEYMAP: 33 param 5
+    KEYMAP: 34 param 6
+    KEYMAP: 35 param 7
+    KEYMAP: 44 param 8
+    KEYMAP: 45 param 9
+    KEYMAP: 46 param 10
+    KEYMAP: 47 param 11
 
   $track=0
   while: $track < 12
