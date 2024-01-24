@@ -327,6 +327,16 @@ protected:
         }
     }
 
+    void updateLayout(int8_t state, uint8_t param)
+    {
+        if (state == 1) {
+            if (param < keypadLayouts.size()) {
+                currentKeypadLayout = keypadLayouts[param];
+                currentKeypadLayout->renderKeypad();
+            }
+        }
+    }
+
     struct ColorsActive {
         Color on;
         Color selector;
@@ -386,6 +396,9 @@ public:
             /*md - `step` to update a step: `KEYMAP: 1 step 4` will update step 4 when key 1 is pressed. */
         } else if (action == "step") {
             currentKeypadLayout->mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return tracks[grid.row].steps[keymap.param].enabled ? 21 : 20; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) {} });
+            /*md - `layout` to select a layout: `KEYMAP: 1 layout 2` will select layout 2 when key 1 is pressed. The numeric id of the layout corresponds to the order of initialization. */
+        } else if (action == "layout") {
+            currentKeypadLayout->mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color == 255 ? 90 : keymap.color; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateLayout(state, keymap.param); } });
         }
     }
 
@@ -426,7 +439,7 @@ public:
         if (currentKeypadLayout) {
             // Do not initialize if it was previously initialized
             // if (initViewCounter != counter - 1) {
-                currentKeypadLayout->renderKeypad();
+            currentKeypadLayout->renderKeypad();
             // }
             initViewCounter = counter;
         }
@@ -455,6 +468,17 @@ public:
             currentKeypadLayout = new KeypadLayout((KeypadInterface*)getController("Keypad"), [&](int8_t state, int param, std::string action, uint8_t color) { addKeyMap(state, param, action, color); });
             currentKeypadLayout->name = value;
             keypadLayouts.push_back(currentKeypadLayout);
+            return true;
+        }
+
+        /*md - `SELECTED_LAYOUT: name` to change the selected keypad layout. By default the last initiated keypad layout is selected. */
+        if (strcmp(key, "SELECTED_LAYOUT") == 0) {
+            for (KeypadLayout* keypadLayout : keypadLayouts) {
+                if (strcmp(keypadLayout->name.c_str(), value) == 0) {
+                    currentKeypadLayout = keypadLayout;
+                    return true;
+                }
+            }
             return true;
         }
 
