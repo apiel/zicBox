@@ -4,11 +4,14 @@ VIEW: shared_components HIDDEN
   COMPONENT: GridSequencer 0 403 480 240
     SHARED_COMPONENT: SharedGridSequencer
     KEYPAD_LAYOUT: default
+      KEYMAP: 15 master
+      KEYMAP: 27 layout 0
+      KEYMAP: 39 layout 1
+
       KEYMAP: 25 row 1
       KEYMAP: 36 col -1
       KEYMAP: 37 row -1
       KEYMAP: 38 col 1
-      KEYMAP: 14 master
       KEYMAP: 0 track 0
       KEYMAP: 1 track 1
       KEYMAP: 2 track 2
@@ -46,11 +49,23 @@ VIEW: shared_components HIDDEN
       KEYMAP: 46 param 10 90
       KEYMAP: 47 param 11 20
     KEYPAD_LAYOUT: steps
-      KEYMAP: 25 row 1
-      KEYMAP: 36 col -1
-      KEYMAP: 37 row -1
-      KEYMAP: 38 col 1
-      KEYMAP: 14 master
+      KEYMAP: 15 master
+      KEYMAP: 27 layout 0
+      KEYMAP: 39 layout 1
+
+      KEYMAP: 0 track 0
+      KEYMAP: 1 track 1
+      KEYMAP: 2 track 2
+      KEYMAP: 12 track 3
+      KEYMAP: 13 track 4
+      KEYMAP: 14 track 5
+      KEYMAP: 24 track 6
+      KEYMAP: 25 track 7
+      KEYMAP: 26 track 8
+      KEYMAP: 36 track 9
+      KEYMAP: 37 track 10
+      KEYMAP: 38 track 11
+      
       KEYMAP: 4 step 0
       KEYMAP: 5 step 1
       KEYMAP: 6 step 2
@@ -83,6 +98,7 @@ VIEW: shared_components HIDDEN
       KEYMAP: 45 step 29
       KEYMAP: 46 step 30
       KEYMAP: 47 step 31
+    SELECTED_LAYOUT: default
 
   $track=0
   while: $track < 12
