@@ -37,7 +37,8 @@ Can handle sequencer per track.
 // TODO param color keymap is hardcoded but we might want to make this dynamic...
 class GridSequencerComponent : public Component {
 protected:
-    KeypadLayout keypadLayout;
+    std::vector<KeypadLayout*> keypadLayouts;
+    KeypadLayout* currentKeypadLayout = NULL;
 
     std::string prefixTrackParamsView = "TrackParams_track_";
     std::string prefixStepParamsView = "StepParams_track_";
@@ -281,25 +282,6 @@ protected:
         }
     }
 
-    uint8_t trackColor(uint8_t track)
-    {
-        return tracks[track].active ? 40 : 0;
-    }
-
-    uint8_t paramColor(uint8_t param)
-    {
-        uint8_t col = param % 4;
-        switch (col) {
-        case 0:
-            return 50;
-        case 1:
-            return 60;
-        case 2:
-            return 20;
-        }
-        return 90;
-    }
-
     void updateParamSelection(int8_t state, uint8_t param)
     {
         if (state == 1) {
@@ -379,30 +361,33 @@ public:
     /*md **Keyboard actions**: */
     void addKeyMap(uint8_t key, int param, std::string action, uint8_t color)
     {
+        if (!currentKeypadLayout) {
+            printf("No keypad layout\n");
+            return;
+        }
         /*md - `track` to select track number: `KEYMAP: 1 track 2` will select track 2 when key 1 is pressed.*/
         if (action == "track") {
-            keypadLayout.mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return trackColor(keymap.param); }, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateTrackSelection(state, keymap.param); } });
-        /*md - `param` to select parameter number: `KEYMAP: 1 param 2 20` will select parameter 2 when key 1 is pressed. Color must be specified, in this example color is 20. */
+            currentKeypadLayout->mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return tracks[keymap.param].active ? 40 : 0; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateTrackSelection(state, keymap.param); } });
+            /*md - `param` to select parameter number: `KEYMAP: 1 param 2 20` will select parameter 2 when key 1 is pressed. Color must be specified, in this example color is 20. */
         } else if (action == "param") {
-            keypadLayout.mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateParamSelection(state, keymap.param); } });
-        /*md - `row` to select row number: `KEYMAP: 1 row -1` will decrement the current row selection when key 1 is pressed. */
+            currentKeypadLayout->mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateParamSelection(state, keymap.param); } });
+            /*md - `row` to select row number: `KEYMAP: 1 row -1` will decrement the current row selection when key 1 is pressed. */
         } else if (action == "row") {
-            keypadLayout.mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return 20; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateRowSelection(state, keymap.param); } });
-        /*md - `col` to select column number: `KEYMAP: 1 col -1` will decrement the current column selection when key 1 is pressed. */
+            currentKeypadLayout->mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return 20; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateRowSelection(state, keymap.param); } });
+            /*md - `col` to select column number: `KEYMAP: 1 col -1` will decrement the current column selection when key 1 is pressed. */
         } else if (action == "col") {
-            keypadLayout.mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return 20; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateColSelection(state, keymap.param); } });
-        /*md - `master` to select master track: `KEYMAP: 1 master` will select master when key 1 is pressed. */
+            currentKeypadLayout->mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return 20; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateColSelection(state, keymap.param); } });
+            /*md - `master` to select master track: `KEYMAP: 1 master` will select master when key 1 is pressed. */
         } else if (action == "master") {
-            keypadLayout.mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return 40; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateMasterSelection(state); } });
-        /*md - `clip` to select clip: `KEYMAP: 1 clip` will select clip when key 1 is pressed. */
+            currentKeypadLayout->mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return 40; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateMasterSelection(state); } });
+            /*md - `clip` to select clip: `KEYMAP: 1 clip` will select clip when key 1 is pressed. */
         } else if (action == "clip") {
-            keypadLayout.mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return 60; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) {} });
+            currentKeypadLayout->mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return 60; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) {} });
         }
     }
 
     GridSequencerComponent(ComponentInterface::Props props)
         : Component(props)
-        , keypadLayout((KeypadInterface*)getController("Keypad"), [&](int8_t state, int param, std::string action, uint8_t color) { addKeyMap(state, param, action, color); })
     {
         resize();
 
@@ -435,11 +420,13 @@ public:
 
     void initView(uint16_t counter)
     {
-        // Do not initialize if it was previously initialized
-        if (initViewCounter != counter - 1) {
-            keypadLayout.renderKeypad();
+        if (currentKeypadLayout) {
+            // Do not initialize if it was previously initialized
+            if (initViewCounter != counter - 1) {
+                currentKeypadLayout->renderKeypad();
+            }
+            initViewCounter = counter;
         }
-        initViewCounter = counter;
     }
 
     void render()
@@ -459,12 +446,26 @@ public:
             resize();
             return true;
         }
-        return keypadLayout.config(key, value);
+
+        /*md - `KEYPAD_LAYOUT: layout` inititates a keypad layout */
+        if (strcmp(key, "KEYPAD_LAYOUT") == 0) {
+            currentKeypadLayout = new KeypadLayout((KeypadInterface*)getController("Keypad"), [&](int8_t state, int param, std::string action, uint8_t color) { addKeyMap(state, param, action, color); });
+            currentKeypadLayout->name = value;
+            keypadLayouts.push_back(currentKeypadLayout);
+            return true;
+        }
+
+        if (currentKeypadLayout) {
+            return currentKeypadLayout->config(key, value);
+        }
+        return false;
     }
 
     void onKeyPad(int key, int8_t state)
     {
-        keypadLayout.onKeypad(key, state);
+        if (currentKeypadLayout) {
+            currentKeypadLayout->onKeypad(key, state);
+        }
     }
 };
 
