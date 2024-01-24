@@ -383,6 +383,9 @@ public:
             /*md - `clip` to select clip: `KEYMAP: 1 clip` will select clip when key 1 is pressed. */
         } else if (action == "clip") {
             currentKeypadLayout->mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return 60; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) {} });
+            /*md - `step` to update a step: `KEYMAP: 1 step 4` will update step 4 when key 1 is pressed. */
+        } else if (action == "step") {
+            currentKeypadLayout->mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return tracks[grid.row].steps[keymap.param].enabled ? 21 : 20; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) {} });
         }
     }
 
@@ -422,9 +425,9 @@ public:
     {
         if (currentKeypadLayout) {
             // Do not initialize if it was previously initialized
-            if (initViewCounter != counter - 1) {
+            // if (initViewCounter != counter - 1) {
                 currentKeypadLayout->renderKeypad();
-            }
+            // }
             initViewCounter = counter;
         }
     }

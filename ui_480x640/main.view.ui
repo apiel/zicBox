@@ -8,6 +8,7 @@ VIEW: shared_components HIDDEN
       KEYMAP: 36 col -1
       KEYMAP: 37 row -1
       KEYMAP: 38 col 1
+      KEYMAP: 14 master
       KEYMAP: 0 track 0
       KEYMAP: 1 track 1
       KEYMAP: 2 track 2
@@ -20,23 +21,18 @@ VIEW: shared_components HIDDEN
       KEYMAP: 9 track 9
       KEYMAP: 10 track 10
       KEYMAP: 11 track 11
-      KEYMAP: 14 master
-      KEYMAP: 15 clip 0
-      KEYMAP: 16 clip 1
-      KEYMAP: 17 clip 2
-      KEYMAP: 18 clip 3
-      KEYMAP: 19 clip 4
-      KEYMAP: 27 clip 5
-      KEYMAP: 28 clip 6
-      KEYMAP: 29 clip 7
-      KEYMAP: 30 clip 8
-      KEYMAP: 31 clip 9
-      KEYMAP: 27 clip 10
-      KEYMAP: 39 clip 11
-      KEYMAP: 40 clip 12
-      KEYMAP: 41 clip 13
-      KEYMAP: 42 clip 14
-      KEYMAP: 43 clip 15
+      KEYMAP: 16 clip 0
+      KEYMAP: 17 clip 1
+      KEYMAP: 18 clip 2
+      KEYMAP: 19 clip 3
+      KEYMAP: 28 clip 4
+      KEYMAP: 29 clip 5
+      KEYMAP: 30 clip 6
+      KEYMAP: 31 clip 7
+      KEYMAP: 40 clip 8
+      KEYMAP: 41 clip 9
+      KEYMAP: 42 clip 10
+      KEYMAP: 43 clip 11
       KEYMAP: 20 param 0 50
       KEYMAP: 21 param 1 60
       KEYMAP: 22 param 2 90
@@ -47,8 +43,46 @@ VIEW: shared_components HIDDEN
       KEYMAP: 35 param 7 20
       KEYMAP: 44 param 8 50
       KEYMAP: 45 param 9 60
-      KEYMAP: 46 param 10 20
-      KEYMAP: 47 param 11 90
+      KEYMAP: 46 param 10 90
+      KEYMAP: 47 param 11 20
+    KEYPAD_LAYOUT: steps
+      KEYMAP: 25 row 1
+      KEYMAP: 36 col -1
+      KEYMAP: 37 row -1
+      KEYMAP: 38 col 1
+      KEYMAP: 14 master
+      KEYMAP: 4 step 0
+      KEYMAP: 5 step 1
+      KEYMAP: 6 step 2
+      KEYMAP: 7 step 3
+      KEYMAP: 8 step 4
+      KEYMAP: 9 step 5
+      KEYMAP: 10 step 6
+      KEYMAP: 11 step 7
+      KEYMAP: 16 step 8
+      KEYMAP: 17 step 9
+      KEYMAP: 18 step 10
+      KEYMAP: 19 step 11
+      KEYMAP: 20 step 12
+      KEYMAP: 21 step 13
+      KEYMAP: 22 step 14
+      KEYMAP: 23 step 15
+      KEYMAP: 28 step 16
+      KEYMAP: 29 step 17
+      KEYMAP: 30 step 18
+      KEYMAP: 31 step 19
+      KEYMAP: 32 step 20
+      KEYMAP: 33 step 21
+      KEYMAP: 34 step 22
+      KEYMAP: 35 step 23
+      KEYMAP: 40 step 24
+      KEYMAP: 41 step 25
+      KEYMAP: 42 step 26
+      KEYMAP: 43 step 27
+      KEYMAP: 44 step 28
+      KEYMAP: 45 step 29
+      KEYMAP: 46 step 30
+      KEYMAP: 47 step 31
 
   $track=0
   while: $track < 12
