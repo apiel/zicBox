@@ -21,18 +21,19 @@ public:
     struct KeyMap {
         uint8_t key;
         int param;
-        std::function<uint8_t(int param)> color;
-        std::function<void(int8_t state, int param)> action;
+        uint8_t color;
+        std::function<uint8_t(KeyMap& keymap)> getColor;
+        std::function<void(int8_t state, KeyMap& keymap)> action;
     };
 
 protected:
     KeypadInterface* keypad;
-    std::function<void(int8_t state, int param, std::string action)> addKeyMap;
+    std::function<void(int8_t state, int param, std::string action, uint8_t color)> addKeyMap;
 
 public:
     std::vector<KeyMap> mapping;
 
-    KeypadLayout(KeypadInterface* keypad, std::function<void(int8_t state, int param, std::string action)> addKeyMap)
+    KeypadLayout(KeypadInterface* keypad, std::function<void(int8_t state, int param, std::string action, uint8_t color)> addKeyMap)
         : keypad(keypad)
         , addKeyMap(addKeyMap)
     {
@@ -42,7 +43,7 @@ public:
     {
         for (KeyMap keyMap : mapping) {
             if (keyMap.key == key) {
-                keyMap.action(state, keyMap.param);
+                keyMap.action(state, keyMap);
                 return;
             }
         }
@@ -70,19 +71,21 @@ public:
         // TODO instead to do this should just set the one missing from the list...
         // setButton(254, 254); // set all button off
         for (KeyMap keyMap : mapping) {
-            keypad->setButton(keyMap.key, keyMap.color(keyMap.param));
+            keypad->setButton(keyMap.key, keyMap.getColor(keyMap));
         }
     }
 
     bool config(char* key, char* value)
     {
-        /*md - `KEYMAP: key action param` */
+        /*md - `KEYMAP: key action [param] [color]` */
         if (strcmp(key, "KEYMAP") == 0) {
             uint8_t key = atoi(strtok(value, " "));
             std::string action = strtok(NULL, " ");
             char* paramStr = strtok(NULL, " ");
+            char* colorStr = strtok(NULL, " ");
             int param = paramStr != NULL ? atoi(paramStr) : -1;
-            addKeyMap(key, param, action);
+            uint8_t color = colorStr != NULL ? atoi(colorStr) : 255;
+            addKeyMap(key, param, action, color);
         }
         return false;
     }
