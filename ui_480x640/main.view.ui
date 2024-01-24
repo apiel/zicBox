@@ -8,6 +8,12 @@ VIEW: shared_components HIDDEN
       KEYMAP: 27 layout 0
       KEYMAP: 39 layout 1
 
+      KEYMAP: 12 none
+      KEYMAP: 13 none
+      KEYMAP: 14 none
+      KEYMAP: 24 none
+      KEYMAP: 26 none
+
       KEYMAP: 25 row 1
       KEYMAP: 36 col -1
       KEYMAP: 37 row -1
@@ -52,6 +58,8 @@ VIEW: shared_components HIDDEN
       KEYMAP: 15 master
       KEYMAP: 27 layout 0
       KEYMAP: 39 layout 1
+
+      KEYMAP: 3 none
 
       KEYMAP: 0 track 0
       KEYMAP: 1 track 1

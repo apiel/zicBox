@@ -342,6 +342,9 @@ protected:
     long stepPressedTime = 0;
     void updateStepSelection(int8_t state, int8_t param)
     {
+        if (grid.row >= trackCount) {
+            return;
+        }
         if (state == 1) {
             stepPressedTime = now;
             grid.lastCol = grid.col;
@@ -412,10 +415,17 @@ public:
             currentKeypadLayout->mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return 60; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) {} });
             /*md - `step` to update a step: `KEYMAP: 1 step 4` will update step 4 when key 1 is pressed. */
         } else if (action == "step") {
-            currentKeypadLayout->mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return tracks[grid.row].steps[keymap.param].enabled ? 21 : 20; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateStepSelection(state, keymap.param);} });
+            currentKeypadLayout->mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { 
+                if (grid.row >= trackCount) {
+                    return 254;
+                }
+                return tracks[grid.row].steps[keymap.param].enabled ? 21 : 20; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateStepSelection(state, keymap.param); } });
             /*md - `layout` to select a layout: `KEYMAP: 1 layout 2` will select layout 2 when key 1 is pressed. The numeric id of the layout corresponds to the order of initialization. */
         } else if (action == "layout") {
             currentKeypadLayout->mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color == 255 ? 90 : keymap.color; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateLayout(state, keymap.param); } });
+            /*md - `none` to disable keypad button: `KEYMAP: 1 none` will disable the button 1. */
+        } else if (action == "none") {
+            currentKeypadLayout->mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return 254; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) {} });
         }
     }
 
