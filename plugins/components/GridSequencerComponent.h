@@ -376,26 +376,26 @@ protected:
     };
 
 public:
-    void addKeyMap(uint8_t key, int param, std::string action)
+    void addKeyMap(uint8_t key, int param, std::string action, uint8_t color)
     {
         if (action == "track") {
-            keypadLayout.mapping.push_back({ key, param, [&](int param) { return trackColor(param); }, [&](int8_t state, int param) { updateTrackSelection(state, param); } });
+            keypadLayout.mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return trackColor(keymap.param); }, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateTrackSelection(state, keymap.param); } });
         } else if (action == "param") {
-            keypadLayout.mapping.push_back({ key, param, [&](int param) { return paramColor(param); }, [&](int8_t state, int param) { updateParamSelection(state, param); } });
+            keypadLayout.mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateParamSelection(state, keymap.param); } });
         } else if (action == "row") {
-            keypadLayout.mapping.push_back({ key, param, [&](int param) { return 20; }, [&](int8_t state, int param) { updateRowSelection(state, param); } });
+            keypadLayout.mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return 20; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateRowSelection(state, keymap.param); } });
         } else if (action == "col") {
-            keypadLayout.mapping.push_back({ key, param, [&](int param) { return 20; }, [&](int8_t state, int param) { updateColSelection(state, param); } });
+            keypadLayout.mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return 20; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateColSelection(state, keymap.param); } });
         } else if (action == "master") {
-            keypadLayout.mapping.push_back({ key, param, [&](int param) { return 40; }, [&](int8_t state, int param) { updateMasterSelection(state); } });
+            keypadLayout.mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return 40; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateMasterSelection(state); } });
         } else if (action == "clip") {
-            keypadLayout.mapping.push_back({ key, param, [&](int param) { return 60; }, [&](int8_t state, int param) {} });
+            keypadLayout.mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return 60; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) {} });
         }
     }
 
     GridSequencerComponent(ComponentInterface::Props props)
         : Component(props)
-        , keypadLayout((KeypadInterface*)getController("Keypad"), [&](int8_t state, int param, std::string action) { addKeyMap(state, param, action); })
+        , keypadLayout((KeypadInterface*)getController("Keypad"), [&](int8_t state, int param, std::string action, uint8_t color) { addKeyMap(state, param, action, color); })
     {
         resize();
 
