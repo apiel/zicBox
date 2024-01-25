@@ -33,8 +33,12 @@ public:
 <img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/GridSequencer.png" />
 
 Can handle sequencer per track.
+The component is expecting to have a sequencer audio plugin called `Sequencer` on the 12 first tracks.
+
+> [!NOTE]
+> - [ ] `TODO` make sequencer plugin name configurable
+> - [ ] `TODO` make track configurable
 */
-// TODO param color keymap is hardcoded but we might want to make this dynamic...
 class GridSequencerComponent : public Component {
 protected:
     std::vector<KeypadLayout*> keypadLayouts;

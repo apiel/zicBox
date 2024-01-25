@@ -13,4 +13,5 @@ sudo apt-get install libpigpio-dev liblo-dev
 make build
 ```
 
-TODO: run zicGpio as a service.
+> [!NOTE]
+> - [ ] `TODO` run zicGpio as a service.
