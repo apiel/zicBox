@@ -1,41 +1,12 @@
-# TODO
-
-- TODO documentation!!
-
-- use string instead of char...
-
 ## keypad
 
 - TODO use keypad as a keyboard while configuring a patch...
 
 ## zic sample
 
-- TODO put keypad layout completely outside
-    - is keyboard layout view specific? or at least a view should be able to set a different keypad layout...
-    - UI component should allow to export multiple kind of keypad action
-    - there should be multiple layout that can be selected
-
-- TODO extract out progress bar, no more master view, as it should be completely separated
-
-- TODO keyboard edit steps...
-
-- TODO GridSeq touch could be used to move up/down/left/right
-
-- TODO enable track or play next, short press toggle play stop, long press trigger play next
-
 - TODO ?? auto save, instead to always save, only save if something changed
     to do this, would need the each plugin have a way to keep track change, either with keeping the time of the last update
     or simply with a boolean
-
-- TODO yellow button to select the views
-    - short click on yellow button will toggle to the next view
-    - long press, combine with the 12 params buttons give access directly to a given params view
-
-- TODO save single track clip under a given name
-- TODO load a specific track clip
-
-- TODO ?? when 2 button color are pressed at the same time, Y get first value and X the second ??
-- TODO when 1 button, Y +1, X +5
 
 ## zicUi
 

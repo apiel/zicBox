@@ -36,8 +36,13 @@ Can handle sequencer per track.
 The component is expecting to have a sequencer audio plugin called `Sequencer` on the 12 first tracks.
 
 > [!NOTE]
-> - [ ] `TODO` make sequencer plugin name configurable
-> - [ ] `TODO` make track configurable
+> - `TODO` switch clip/variation
+> - `TODO` keypad action to toggle page views. E.g.: track view might have more parameter than the one visible on a single views. We need a way to be able to toggle between parameter views.
+> - `TODO` make sequencer plugin name configurable
+> - `TODO` make track configurable
+> - `TODO` touch could be used to move up/down/left/right
+> - `TODO` save single track clip under a given name
+> - `TODO` load a specific track clip
 */
 class GridSequencerComponent : public Component {
 protected:
