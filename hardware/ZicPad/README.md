@@ -6,9 +6,9 @@ ZicPad is an advance hardware version of ZicBox with a big touch screen, 12 enco
 
 <img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPad/zicpad.png" />
 
-### Material
+Note that this design doesn't have DAC and this might be problematic for some of us. The built-in DAC from RPi4 did improve a little bit but is far from being optimal. When I made this design, I was building it with using USB as audio interface in mind, in my case using my Elektron Digitone or my Behringer Xenyx 302 USB mixer... This is the point, many device today support audio in/out over USB and this is why I prefered to had more encoder instead of using a DAC. Having a DAC would not be so hard, but would require some small change on the PCB to move the encoder on a separate ICs instead to connect them directly to the RPi GPIO.
 
-TBD.
+### Material
 
 - 1x [Adafruit NeoTrellis M4 Express](https://learn.adafruit.com/adafruit-neotrellis-m4/overview) [37€ on mouser](https://www.mouser.at/ProductDetail/Adafruit/3938?qs=Zz7%252BYVVL6bG3C5a64%2FPLvA%3D%3D) 
 - 1x [Adafruit NeoTrellis](https://learn.adafruit.com/adafruit-neotrellis/overview) [12€ on mouser](https://www.mouser.at/ProductDetail/Adafruit/3954?qs=byeeYqUIh0NVHgHNdfReRA%3D%3D)
@@ -24,6 +24,6 @@ About 190€ without enclosure.
 
 For the enclosure, there is 2 options:
 - PCB front panel, about 30€ at JLCPCB
-- Laser cutted wood or acrylic
+- Laser cutted wood and/or acrylic
 
 The rest of the enclosure is hand made out of wood.
