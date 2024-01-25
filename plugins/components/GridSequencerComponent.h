@@ -33,7 +33,9 @@ public:
 <img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/GridSequencer.png" />
 
 Can handle sequencer per track.
-The component is expecting to have a sequencer audio plugin called `Sequencer` on the 12 first tracks.
+The component is expecting:
+- to have a sequencer audio plugin called `Sequencer` on 12 tracks.
+- to have mixer audio plugin called `Mixer`
 
 > [!NOTE]
 > - `TODO` switch clip/variation
