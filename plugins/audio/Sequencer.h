@@ -123,7 +123,7 @@ protected:
     }
 
 public:
-    /*md ### Values */
+    /*md **Values**: */
     /*md - `DETUNE` detuning all playing step notes by semitones */
     Val& detune = val(0.0f, "DETUNE", { "Detune", VALUE_CENTERED, -24.0f, 24.0f });
     /*md - `PATTERN` select the pattern to play */

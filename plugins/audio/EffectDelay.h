@@ -8,9 +8,15 @@
 
 #define MAX_DELAY_VOICES 8
 
-// TODO load/save different kind of delay and reverb from a config file
-// TODO add lfo on time ratio
+/*md
+## EffectDelay
 
+EffectDelay plugin is used to apply delay or reverb effect on audio buffer.
+
+> [!NOTE]
+> - `TODO` load/save different kind of delay and reverb from a config file
+> - `TODO` add lfo on time ratio
+*/
 class EffectDelay : public Mapping {
 protected:
     uint64_t sampleRate;
@@ -37,6 +43,7 @@ protected:
         return in + filter.sample(delay);
     }
 
+    /*md **Values**: */
     struct DelayVoice {
         uint64_t index;
         Val amplitude;
@@ -44,6 +51,16 @@ protected:
         Val sec;
     } voices[MAX_DELAY_VOICES] = {
         { 0,
+            /*md - Delay has 8 voices */
+            /*md   - `AMPLITUDE_0` to set amplitude on voice 0. */
+            /*md   - `AMPLITUDE_1` to set amplitude on voice 1. */
+            /*md   - ... */
+            /*md   - `FEEDBACK_0` to set feedback on voice 0. */
+            /*md   - `FEEDBACK_1` to set feedback on voice 1. */
+            /*md   - ... */
+            /*md   - `SEC_0` to set time ratio for voice 0. */
+            /*md   - `SEC_1` to set time ratio for voice 1. */
+            /*md   - ... */
             { 0.0, "AMPLITUDE_0", {}, [&](auto p) { setAmplitude(0, p.value); } },
             { 0.0, "FEEDBACK_0", {}, [&](auto p) { setFeedback(0, p.value); } },
             { 10.0, "SEC_0", {}, [&](auto p) { setSec(0, p.value); } } }, // FIXME this is not seconds...
@@ -78,13 +95,16 @@ protected:
     };
 
 public:
-    // From 0.0 to 1.0 to apply time ratio to voice in seconds
+    /*md - `TIME_RATIO` to modulate time ratio for all voices.*/
     Val timeRatio = { 100.0f, "TIME_RATIO", { "Time Ratio", .unit = "%" }, [&](auto p) { setTimeRatio(p.value); } };
+    /*md - `MASTER_AMPLITUDE` to set master amplitude.*/
     Val masterAmplitude = { 0.0f, "MASTER_AMPLITUDE", { "Master Amplitude", .unit = "%" }, [&](auto p) { setMasterAmplitude(p.value); } };
 
-    // should we inhirate filter so there is no need to defined this...
+    /*md - `CUTOFF` to set cutoff on delay buffer.*/
     Val cutoff = { 0.0f, "CUTOFF", { "Cutoff" }, [&](auto p) { setCutoff(p.value); } };
+    /*md - `RESONANCE` to set resonance on delay buffer.*/
     Val resonance = { 0.0f, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) { setResonance(p.value); } };
+    /*md - `MODE` to set filter mode.*/
     Val mode = { 0.0f, "MODE", {}, [&](auto p) { setMode(p.value); } };
 
     EffectFilter filter;

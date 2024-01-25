@@ -43,17 +43,17 @@ VIEW: shared_components HIDDEN
       KEYMAP: 42 clip 10
       KEYMAP: 43 clip 11
       KEYMAP: 20 param 0 50
-      KEYMAP: 21 param 1 60
-      KEYMAP: 22 param 2 90
-      KEYMAP: 23 param 3 20
+      KEYMAP: 21 param 1 20
+      KEYMAP: 22 param 2 60
+      KEYMAP: 23 param 3 90
       KEYMAP: 32 param 4 50
-      KEYMAP: 33 param 5 60
-      KEYMAP: 34 param 6 90
-      KEYMAP: 35 param 7 20
+      KEYMAP: 33 param 5 20
+      KEYMAP: 34 param 6 60
+      KEYMAP: 35 param 7 90
       KEYMAP: 44 param 8 50
-      KEYMAP: 45 param 9 60
-      KEYMAP: 46 param 10 90
-      KEYMAP: 47 param 11 20
+      KEYMAP: 45 param 9 20
+      KEYMAP: 46 param 10 60
+      KEYMAP: 47 param 11 90
     KEYPAD_LAYOUT: steps
       KEYMAP: 15 master
       KEYMAP: 27 layout 0

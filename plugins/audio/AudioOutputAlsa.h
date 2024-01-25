@@ -3,6 +3,14 @@
 
 #include "AudioAlsa.h"
 
+/*md
+## AudioOutputAlsa
+
+AudioOutputAlsa plugin is used to write audio output to ALSA.
+
+**Value**:
+- `DEVICE: name` to set output device name. If not defined, default device will be used.
+*/
 class AudioOutputAlsa : public AudioAlsa {
 protected:
     snd_pcm_stream_t stream()

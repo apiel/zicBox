@@ -3,6 +3,14 @@
 
 #include "AudioPulse.h"
 
+/*md
+## AudioOutputPulse
+
+AudioOutputPulse plugin is used to write audio output to PulseAudio.
+
+**Value**:
+- `DEVICE: name` to set output device name. If not defined, default device will be used.
+*/
 class AudioOutputPulse : public AudioPulse {
 protected:
     pa_simple* newDevice(const pa_sample_spec streamFormat)

@@ -3,6 +3,14 @@
 
 #include "AudioPulse.h"
 
+/*md
+## AudioInputPulse
+
+AudioInputPulse plugin is used to read audio input from PulseAudio.
+
+**Value**:
+- `DEVICE: name` to set input device name. If not defined, default device will be used.
+*/
 class AudioInputPulse : public AudioPulse {
 protected:
     pa_simple* newDevice(const pa_sample_spec streamFormat)

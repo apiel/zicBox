@@ -7,6 +7,11 @@
 
 #include <math.h>
 
+/*md
+## EffectDistortion
+
+EffectDistortion plugin is used to apply distortion effect on audio buffer.
+*/
 class EffectDistortion : public Mapping {
 protected:
     float shape;
@@ -28,6 +33,8 @@ protected:
     }
 
 public:
+    /*md **Values**: */
+    /*md - `DRIVE` to set drive. */
     Val& drive = val(0.0, "DRIVE", { "Distortion" }, [&](auto p) { setDrive(p.value); });
 
     EffectDistortion(AudioPlugin::Props& props, char* _name)
