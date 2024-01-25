@@ -6,6 +6,11 @@
 #include "../../helpers/trim.h"
 #include "audioPlugin.h"
 
+/*md
+## SerializeTrack
+
+SerializeTrack plugin is used to serialize track on disk. It will scan all the plugins on the given track and save them on disk.
+*/
 class SerializeTrack : public AudioPlugin {
 protected:
     std::mutex m;
@@ -25,6 +30,7 @@ public:
 
     bool config(char* key, char* value)
     {
+        /*md - `FILEPATH` to set filepath. By default it is `serialized/track.cfg`.*/
         if (strcmp(key, "FILEPATH") == 0) {
             filepath = value;
             return true;

@@ -6,6 +6,11 @@
 
 #include <math.h>
 
+/*md
+## EffectSampleRateReducer
+
+EffectSampleRateReducer plugin is used to reduce sample rate on audio buffer.
+*/
 class EffectSampleRateReducer : public Mapping {
 protected:
     float sampleSqueeze;
@@ -35,6 +40,8 @@ protected:
     }
 
 public:
+    /*md **Values**: */
+    /*md - `SAMPLE_STEP` to set sample step reduction. */
     Val& sampleStep = val(0.0f, "SAMPLE_STEP", { "Step Reducer", .max = 256.0, .unit = "steps" }, [&](auto p) { setSampleStep(p.value); });
 
     EffectSampleRateReducer(AudioPlugin::Props& props, char* _name)

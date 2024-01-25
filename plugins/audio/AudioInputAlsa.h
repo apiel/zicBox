@@ -3,6 +3,14 @@
 
 #include "AudioAlsa.h"
 
+/*md
+## AudioInputAlsa
+
+AudioInputAlsa plugin is used to read audio input from ALSA.
+
+**Value**:
+- `DEVICE: name` to set input device name. If not defined, default device will be used.
+*/
 class AudioInputAlsa : public AudioAlsa {
 protected:
     snd_pcm_stream_t stream()

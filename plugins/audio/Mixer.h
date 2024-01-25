@@ -32,7 +32,14 @@ public:
         for (uint16_t i = 0; i < TRACK_COUNT; i++) {
             // Start tracks at 1 and leave 0 for master track (trackTarget)
             tracks[i] = i + 1;
+            /*md **Value**: */
+            /*md - `TRACK_1` to set volume on track 1, min = 0.0, max = 100.*/
+            /*md - `TRACK_2` to set volume on track 2.*/
+            /*md - ...*/
             mix[i] = &val(100.0f, "TRACK_" + std::to_string(i + 1), { "Track " + std::to_string(i + 1) });
+            /*md - `MUTE_1` to mute track 1, `0.0` to unmute, `1.0` to mute.*/
+            /*md - `MUTE_2` to mute track 2.*/
+            /*md - ...*/
             mutes[i] = &val(0.0f, "MUTE_" + std::to_string(i + 1), { "Mute " + std::to_string(i + 1), .max = 1.0f });
         }
     }

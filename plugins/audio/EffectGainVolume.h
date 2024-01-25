@@ -4,9 +4,17 @@
 #include "audioPlugin.h"
 #include "mapping.h"
 
+/*md
+## EffectGainVolume
+
+EffectGainVolume plugin is used to apply gain and volume on audio buffer.
+*/
 class EffectGainVolume : public Mapping {
 public:
+    /*md **Values**: */
+    /*md - `VOLUME` to set volume. */
     Val& volume = val(100.0f, "VOLUME", { "Volume" }, [&](auto p) { setVolumeWithGain(p.value, gain.get()); });
+    /*md - `GAIN` to set gain. */
     Val& gain = val(1.0f, "GAIN", { "Gain", .min = 1.0f, .max = 20.0f, .step = .1f }, [&](auto p) { setVolumeWithGain(volume.get(), p.value); });
     float volumeWithGain = volume.get();
 

@@ -5,14 +5,22 @@
 #include "filter.h"
 #include "mapping.h"
 
+/*md
+## EffectFilterMultiMode
+
+EffectFilterMultiMode plugin is used to apply filter effect on audio buffer.
+Cutoff frequency will switch from low pass filter to high pass filter when reaching 50%.
+*/
 class EffectFilterMultiMode : public Mapping {
 protected:
     EffectFilterData hpf;
     EffectFilterData lpf;
 
 public:
-    // Cutoff mix
+    /*md **Values**: */
+    /*md - `CUTOFF` to set cutoff frequency and switch between low and high pass filter. */
     Val& mix = val(50.0, "CUTOFF", { "LPF | HPF", .type = VALUE_CENTERED }, [&](auto p) { setCutoff(p.value); });
+    /*md - `RESONANCE` to set resonance. */
     Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) { setResonance(p.value); });
 
     EffectFilterMultiMode(AudioPlugin::Props& props, char* _name)
