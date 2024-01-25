@@ -14,4 +14,4 @@ make build
 ```
 
 > [!NOTE]
-> - [ ] `TODO` run zicGpio as a service.
+> - `TODO` run zicGpio as a service.
