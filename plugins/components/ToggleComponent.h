@@ -14,7 +14,7 @@ Toggle an audio plugin value parameter between his minimum and maximum value.
 */
 class ToggleComponent : public Component {
 protected:
-    const char* label = NULL;
+    std::string label;
     char labelBuffer[32];
 
     const char* offLabel = NULL;
@@ -49,7 +49,7 @@ protected:
     void set(const char* pluginName, const char* key)
     {
         value = val(getPlugin(pluginName, track).getValue(key));
-        if (value != NULL && label == NULL) {
+        if (value != NULL && label.empty()) {
             label = value->label();
         }
     }

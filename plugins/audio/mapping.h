@@ -27,14 +27,17 @@ public:
         void* data = NULL;
     };
 
-    const char* _key;
+    std::string _key;
     std::function<void(CallbackProps)> callback;
 
-    Val(float initValue, const char* _key, ValueInterface::Props props = {}, std::function<void(CallbackProps)> _callback = NULL)
+    Val(float initValue, std::string _key, ValueInterface::Props props = {}, std::function<void(CallbackProps)> _callback = NULL)
         : _props(props)
         , _key(_key)
         , callback(_callback)
     {
+        if (_props.label == "") {
+            _props.label = _key;
+        }
         if (callback == NULL) {
             callback = [this](auto p) { setFloat(p.value); };
         }
@@ -46,14 +49,14 @@ public:
         return _props;
     }
 
-    const char* key()
+    std::string key()
     {
         return _key;
     }
 
-    const char* label()
+    std::string label()
     {
-        return _props.label ? _props.label : _key;
+        return _props.label;
     }
 
     inline float get()
@@ -114,7 +117,7 @@ class Mapping : public AudioPlugin {
 protected:
     std::vector<ValueInterface*> mapping;
 
-    Val& val(float initValue, const char* _key, ValueInterface::Props props = {}, std::function<void(Val::CallbackProps)> _callback = NULL)
+    Val& val(float initValue, std::string _key, ValueInterface::Props props = {}, std::function<void(Val::CallbackProps)> _callback = NULL)
     {
         Val* v = new Val(initValue, _key, props, _callback);
         mapping.push_back(v);
@@ -136,10 +139,10 @@ public:
         }
     }
 
-    int getValueIndex(const char* key)
+    int getValueIndex(std::string key)
     {
         for (int i = 0; i < mapping.size(); i++) {
-            if (strcmp(mapping[i]->key(), key) == 0) {
+            if (mapping[i]->key() == key) {
                 return i;
             }
         }
@@ -158,20 +161,24 @@ public:
         return mapping[valueIndex];
     }
 
-    ValueInterface* getValue(const char* key)
+    ValueInterface* getValue(std::string key)
     {
         for (int i = 0; i < mapping.size(); i++) {
-            if (strcmp(mapping[i]->key(), key) == 0) {
+            if (mapping[i]->key() == key) {
                 return mapping[i];
             }
         }
+        printf("!!!!!!!! getValue not found: %s\n", key.c_str());
+        // for (int i = 0; i < mapping.size(); i++) {
+        //     printf("--> %s\n", mapping[i]->key().c_str());
+        // }
         return NULL;
     }
 
     void serialize(FILE* file, std::string separator)
     {
         for (ValueInterface* val : mapping) {
-            fprintf(file, "%s %f%s", val->key(), val->get(), separator.c_str());
+            fprintf(file, "%s %f%s", val->key().c_str(), val->get(), separator.c_str());
         }
     }
 

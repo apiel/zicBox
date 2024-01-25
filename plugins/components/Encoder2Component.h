@@ -15,7 +15,7 @@ Encoder2 is used to display current audio plugin value for a given parameter.
 class Encoder2Component : public Component {
 protected:
     const char* name = NULL;
-    const char* label = NULL;
+    std::string label;
     char labelBuffer[32];
     uint8_t type = 0;
     int radius = 20;
@@ -257,9 +257,11 @@ public:
             char* pluginName = strtok(params, " ");
             char* keyValue = strtok(NULL, " ");
             value = val(getPlugin(pluginName, track).getValue(keyValue));
-            if (value != NULL && label == NULL) {
+            if (value != NULL) {
                 valueFloatPrecision = value->props().floatingPoint;
-                label = value->label();
+                if (label.empty()) {
+                    label = value->label();
+                }
             }
             return true;
         }

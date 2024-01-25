@@ -32,8 +32,8 @@ public:
         for (uint16_t i = 0; i < TRACK_COUNT; i++) {
             // Start tracks at 1 and leave 0 for master track (trackTarget)
             tracks[i] = i + 1;
-            mix[i] = &val(100.0f, ("TRACK_" + std::to_string(i + 1)).c_str(), { ("Track " + std::to_string(i + 1)).c_str() });
-            mutes[i] = &val(0.0f, ("MUTE_" + std::to_string(i + 1)).c_str(), { ("Mute " + std::to_string(i + 1)).c_str(), .max = 1.0f });
+            mix[i] = &val(100.0f, "TRACK_" + std::to_string(i + 1), { "Track " + std::to_string(i + 1) });
+            mutes[i] = &val(0.0f, "MUTE_" + std::to_string(i + 1), { "Mute " + std::to_string(i + 1), .max = 1.0f });
         }
     }
 

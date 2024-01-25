@@ -23,24 +23,13 @@
     TYPE: BROWSE
     ID: Param2_enc
 
+  # COMPONENT: Rect $encX4 $encY1 $encSize $encSize
   COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize
     ENCODER_ID: 3
     SHOW_GROUP: FALSE
-    VALUE: MultiModeFilter CUTOFF
+    VALUE: Mixer TRACK_$track
     COLOR: #ff7700
-    TYPE: TWO_SIDED
-    # BACKGROUND_COLOR: #2b2c2e
     ID: Param3_enc
-
-  # COMPONENT: Toggle $encX4 $encY1 $encSize $encSize
-  #   ENCODER_ID: 3
-  #   SHOW_GROUP: FALSE
-  #   TOGGLE_COLOR: #ff7700
-  #   TRACK: $track
-  #   VALUE: Sequencer PLAY_STOP
-  #   LABEL: Play
-  #   OFF_LABEL: Stop
-  #   ID: Param3_button
 
 
   COMPONENT: Encoder2 $encX1 $encY2 $encSize $encSize
@@ -68,13 +57,13 @@
     VALUE: Sample SUSTAIN_RELEASE
     ID: Param6_enc
 
-  COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
-    ENCODER_ID: 7
-    SHOW_GROUP: FALSE
-    VALUE: MultiModeFilter RESONANCE
-    COLOR: #ff7700
-    # BACKGROUND_COLOR: #2b2c2e
-    ID: Param7_enc
+  COMPONENT: Rect $encX4 $encY2 $encSize $encSize
+  # COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
+  #   ENCODER_ID: 7
+  #   SHOW_GROUP: FALSE
+  #   VALUE: MultiModeFilter RESONANCE
+  #   COLOR: #ff7700
+  #   ID: Param7_enc
 
 
   COMPONENT: Encoder2 $encX1 $encY3 $encSize $encSize
@@ -103,11 +92,12 @@
     LABEL: Density Rand
     ID: Param10_enc
 
-  COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
-    ENCODER_ID: 11
-    SHOW_GROUP: FALSE
-    COLOR: #ff7700
-    VALUE: SampleRateReducer SAMPLE_STEP
-    FONT_UNIT_SIZE: 8
-    # BACKGROUND_COLOR: #2b2c2e
-    ID: Param11_enc
+  COMPONENT: Rect $encX4 $encY3 $encSize $encSize
+  # COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
+  #   ENCODER_ID: 11
+  #   SHOW_GROUP: FALSE
+  #   COLOR: #ff7700
+  #   VALUE: SampleRateReducer SAMPLE_STEP
+  #   FONT_UNIT_SIZE: 8
+  #   # BACKGROUND_COLOR: #2b2c2e
+  #   ID: Param11_enc

@@ -56,7 +56,7 @@ protected:
         adsr[index].value = val(getPlugin(pluginName, track).getValue(key));
         adsr[index].encoderId = encoderId;
 
-        printf("set: %s %s %d = label %s\n", pluginName, key, encoderId, adsr[index].value->label());
+        printf("set: %s %s %d = label %s\n", pluginName, key, encoderId, adsr[index].value->label().c_str());
     }
 
     void set(uint8_t index, char* value)

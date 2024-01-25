@@ -8,7 +8,7 @@
 class ValSerializeSndFile {
 protected:
     struct ValSerialize {
-        const char* _key;
+        std::string _key;
         float value;
     };
 
