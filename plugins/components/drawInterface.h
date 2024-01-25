@@ -80,9 +80,9 @@ public:
         };
     }
 
-    virtual int textCentered(Point position, const char* text, Color color, uint32_t size, DrawTextOptions options = {}) = 0;
-    virtual int text(Point position, const char* text, Color color, uint32_t size, DrawTextOptions options = {}) = 0;
-    virtual int textRight(Point position, const char* text, Color color, uint32_t size, DrawTextOptions options = {}) = 0;
+    virtual int textCentered(Point position, std::string text, Color color, uint32_t size, DrawTextOptions options = {}) = 0;
+    virtual int text(Point position, std::string text, Color color, uint32_t size, DrawTextOptions options = {}) = 0;
+    virtual int textRight(Point position, std::string text, Color color, uint32_t size, DrawTextOptions options = {}) = 0;
 
     virtual void clear() = 0;
     virtual void filledRect(Point position, Size size, Color color) = 0;

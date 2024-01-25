@@ -9,7 +9,7 @@
 class EncoderComponent : public Component {
 protected:
     const char* name = NULL;
-    const char* label = NULL;
+    std::string label;
     char labelBuffer[32];
     uint8_t type = 0;
 
@@ -112,9 +112,11 @@ protected:
     void set(const char* pluginName, const char* key)
     {
         value = val(getPlugin(pluginName, track).getValue(key));
-        if (value != NULL && label == NULL) {
+        if (value != NULL) {
             valueFloatPrecision = value->props().floatingPoint;
-            label = value->label();
+            if (label.empty()) {
+                label = value->label();
+            }
         }
     }
 

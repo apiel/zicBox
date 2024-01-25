@@ -66,7 +66,7 @@ public:
         return NULL;
     }
 
-    virtual ValueInterface* getValue(const char* key)
+    virtual ValueInterface* getValue(std::string key)
     {
         return NULL;
     }
@@ -76,7 +76,7 @@ public:
         return 0;
     }
 
-    virtual int getValueIndex(const char* key)
+    virtual int getValueIndex(std::string key)
     {
         return -1;
     }
