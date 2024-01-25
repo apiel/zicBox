@@ -18,6 +18,7 @@ template <uint16_t TRACK_COUNT>
 class Mixer : public Mapping {
 public:
     Val* mix[TRACK_COUNT];
+    Val* mutes[TRACK_COUNT];
 
     uint16_t tracks[TRACK_COUNT];
     /*md By default, the mixing output goes to track 0.*/
@@ -32,6 +33,7 @@ public:
             // Start tracks at 1 and leave 0 for master track (trackTarget)
             tracks[i] = i + 1;
             mix[i] = &val(100.0f, ("TRACK_" + std::to_string(i + 1)).c_str(), { ("Track " + std::to_string(i + 1)).c_str() });
+            mutes[i] = &val(0.0f, ("MUTE_" + std::to_string(i + 1)).c_str(), { ("Mute " + std::to_string(i + 1)).c_str(), .max = 1.0f });
         }
     }
 
@@ -39,6 +41,9 @@ public:
     {
         float out = 0;
         for (uint16_t i = 0; i < TRACK_COUNT; i++) {
+            if (mutes[i]->get()) {
+                continue;
+            }
             out += mix[i]->pct() * buf[tracks[i]] * divider;
         }
         buf[trackTarget] = out;
