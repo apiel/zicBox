@@ -12,15 +12,17 @@ public:
     int16_t trackId = -1;
     AudioPlugin* seqPlugin;
     std::string name = "Init";
-    float volume = 1.0f; // rand() % 100 / 100.0f;
+    // float volume = 1.0f; // rand() % 100 / 100.0f;
+    ValueInterface* volume;
     bool active = false;
     Step* steps;
     ValueInterface* selectedStep;
 
-    void load(int16_t id, AudioPlugin& _seqPlugin)
+    void load(int16_t id, AudioPlugin& _seqPlugin, ValueInterface* _volume)
     {
         trackId = id;
         seqPlugin = &_seqPlugin;
+        volume = _volume;
         selectedStep = _seqPlugin.getValue("SELECTED_STEP");
         steps = (Step*)seqPlugin->data(0); // TODO make this configurable...
         name = "Track " + std::to_string(id + 1);
@@ -204,7 +206,7 @@ protected:
         trackColor.a = 50;
         draw.filledRect({ 5, y }, { w, itemSize.h }, trackColor);
         trackColor.a = 200;
-        int width = w * track.volume;
+        int width = w * track.volume->pct();
         draw.filledRect({ 5, y }, { width, itemSize.h }, trackColor);
 
         draw.text({ 8, y }, track.name.c_str(), trackText, 10);
@@ -445,8 +447,9 @@ public:
     {
         resize();
 
+        AudioPlugin& mixer = getPlugin("Mixer", -1);
         for (int16_t i = 0; i < 12; i++) {
-            tracks[i].load(i, getPlugin("Sequencer", i + 1));
+            tracks[i].load(i, getPlugin("Sequencer", i + 1), mixer.getValue("TRACK_" + std::to_string(i + 1)));
         }
 
         jobRendering = [this](unsigned long _now) {
