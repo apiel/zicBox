@@ -79,6 +79,12 @@ protected:
 
     AudioPlugin* targetPlugin = NULL;
 
+    enum Status {
+        OFF = 0,
+        ON = 1,
+        NEXT = 2
+    };
+
     bool conditionMet(Step& step)
     {
         return stepConditions[step.condition].conditionMet(loopCounter);
@@ -88,23 +94,29 @@ protected:
     {
         if (active) {
             stepCounter++;
+            uint8_t state = status.get();
             if (stepCounter >= MAX_STEPS) {
                 stepCounter = 0;
                 loopCounter++;
-            }
-            for (int i = 0; i < MAX_STEPS; i++) {
-                Step& step = steps[i];
-                if (step.counter) {
-                    step.counter--;
-                    if (targetPlugin && step.counter == 0) {
-                        targetPlugin->noteOff(step.note, 0);
-                    }
+                if (state == Status::NEXT) {
+                    status.set(Status::ON);
                 }
             }
-            Step& step = steps[stepCounter];
-            if (targetPlugin && step.enabled && conditionMet(step)) {
-                step.counter = step.len;
-                targetPlugin->noteOn(step.note, step.velocity);
+            if (state == Status::ON) {
+                for (int i = 0; i < MAX_STEPS; i++) {
+                    Step& step = steps[i];
+                    if (step.counter) {
+                        step.counter--;
+                        if (targetPlugin && step.counter == 0) {
+                            targetPlugin->noteOff(step.note, 0);
+                        }
+                    }
+                }
+                Step& step = steps[stepCounter];
+                if (targetPlugin && step.enabled && conditionMet(step)) {
+                    step.counter = step.len;
+                    targetPlugin->noteOn(step.note, step.velocity);
+                }
             }
         }
     }
@@ -143,42 +155,16 @@ public:
     Val& stepNote = val(0.0f, "STEP_NOTE", { "Note", VALUE_STRING, .min = 1.0f, .max = (float)MIDI_NOTE_COUNT }, [&](auto p) { setStepNote(p.value); });
     /*md - `STEP_ENABLED` toggle selected step */
     Val& stepEnabled = val(0.0f, "STEP_ENABLED", { "Enabled", VALUE_STRING, .max = 1 }, [&](auto p) { setStepEnabled(p.value); });
+    /*md - `STATUS` set status: off, on, next. Default: off
+    Play/Stop will answer to global event. However, you may want to the sequencer to not listen to those events or to only start to play on the next sequence iteration. */
+    Val& status = val(1.0f, "STATUS", { "Status", VALUE_STRING, .max = 2 }, [&](auto p) { setStatus(p.value); });
 
     Sequencer(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
         , props(props)
     {
-        // steps[0].velocity = 1.0;
-        // steps[0].len = 8;
-        // steps[0].enabled = true;
-
-        // steps[9].velocity = 1.0;
-        // steps[9].len = 2;
-        // steps[9].note = 70;
-        // steps[9].enabled = true;
-
-        // steps[16].velocity = 1.0;
-        // steps[16].note = 52;
-        // steps[16].len = 16;
-        // steps[16].enabled = true;
-
-        // steps[31].velocity = 1.0;
-        // steps[31].len = 8;
-        // steps[31].note = 40;
-        // steps[31].enabled = true;
-        // steps[31].condition = 1;
-
         refreshPatternList();
-
-        // std::vector<std::filesystem::path> list = getDirectoryList(folder);
-        // for (const auto& entry : list) {
-        //     printf(" - %s\n", entry.c_str());
-        // }
-
-        // save();
-        // load can be done using setPattern
-
-        setSelectedStep(selectedStep.get());
+        initValues();
     }
 
     void onClockTick(uint64_t* clockCounter)
@@ -218,6 +204,18 @@ public:
 
     void sample(float* buf)
     {
+    }
+
+    void setStatus(float value)
+    {
+        status.setFloat(value);
+        if (status.get() == Status::OFF) {
+            status.setString("OFF");
+        } else if (status.get() == Status::ON) {
+            status.setString("ON");
+        } else {
+            status.setString("NEXT");
+        }
     }
 
     void setPlayStop(float value)
