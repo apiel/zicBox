@@ -197,6 +197,7 @@ protected:
     }
 
     uint8_t baseNote = 60;
+
     float getSampleStep(uint8_t note)
     {
         // https://gist.github.com/YuxiUx/ef84328d95b10d0fcbf537de77b936cd
