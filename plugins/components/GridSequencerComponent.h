@@ -12,9 +12,8 @@ public:
     int16_t trackId = -1;
     AudioPlugin* seqPlugin;
     std::string name = "Init";
-    // float volume = 1.0f; // rand() % 100 / 100.0f;
     ValueInterface* volume;
-    bool active = false;
+    ValueInterface* status;
     Step* steps;
     ValueInterface* selectedStep;
 
@@ -24,6 +23,7 @@ public:
         seqPlugin = &_seqPlugin;
         volume = _volume;
         selectedStep = _seqPlugin.getValue("SELECTED_STEP");
+        status = _seqPlugin.getValue("STATUS");
         steps = (Step*)seqPlugin->data(0); // TODO make this configurable...
         name = "Track " + std::to_string(id + 1);
     }
@@ -47,6 +47,7 @@ The component is expecting:
 > - `TODO` touch could be used to move up/down/left/right
 > - `TODO` save single track clip under a given name
 > - `TODO` load a specific track clip
+> - `TODO` when sequencer status is `next`, track should blink
 */
 class GridSequencerComponent : public Component {
 protected:
@@ -199,7 +200,7 @@ protected:
 
         Color trackColor = colors.firstStep;
         Color trackText = colors.track;
-        if (track.active) {
+        if (track.status->get() == 1) {
             trackColor = colors.active.on;
             trackText = colors.active.selector;
         }
@@ -410,7 +411,7 @@ public:
         }
         /*md - `track` to select track number: `KEYMAP: 1 track 2` will select track 2 when key 1 is pressed.*/
         if (action == "track") {
-            currentKeypadLayout->mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return tracks[keymap.param].active ? 40 : 0; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateTrackSelection(state, keymap.param); } });
+            currentKeypadLayout->mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return tracks[keymap.param].status->get() == 1 ? 40 : 0; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateTrackSelection(state, keymap.param); } });
             /*md - `param` to select parameter number: `KEYMAP: 1 param 2 20` will select parameter 2 when key 1 is pressed. Color must be specified, in this example color is 20. */
         } else if (action == "param") {
             currentKeypadLayout->mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateParamSelection(state, keymap.param); } });
