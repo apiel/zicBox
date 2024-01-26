@@ -321,8 +321,9 @@ public:
         buf[track] = s;
     }
 
-    void noteOn(uint8_t note, uint8_t velocity) override
+    void noteOn(uint8_t note, float velocity) override
     {
+        // TODO use velocity
         if (velocity == 0) {
             return noteOff(note, velocity);
         }
@@ -338,7 +339,7 @@ public:
         debug("noteOn: %d %d %f\n", note, velocity, sampleStep);
     }
 
-    void noteOff(uint8_t note, uint8_t velocity) override
+    void noteOff(uint8_t note, float velocity) override
     {
         if (!repeat.get()) { // Play the whole sample if repeat is off
             return;

@@ -160,7 +160,7 @@ public:
         if (!noteTriggered) {
             noteTriggered = true;
             if (plugin) {
-                plugin->noteOn(60, 127);
+                plugin->noteOn(60, 1.0f);
             }
         }
     }

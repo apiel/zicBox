@@ -81,11 +81,11 @@ public:
         return -1;
     }
 
-    virtual void noteOn(uint8_t note, uint8_t velocity)
+    virtual void noteOn(uint8_t note, float velocity)
     {
     }
 
-    virtual void noteOff(uint8_t note, uint8_t velocity)
+    virtual void noteOff(uint8_t note, float velocity)
     {
     }
 

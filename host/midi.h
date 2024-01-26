@@ -21,10 +21,10 @@ void midiHandler(std::vector<unsigned char>* message)
         // ignore active sensing
     } else if (message->at(0) >= 0x90 && message->at(0) < 0xa0) {
         uint8_t channel = message->at(0) - 0x90;
-        AudioPluginHandler::get().noteOn(channel, message->at(1), message->at(2));
+        AudioPluginHandler::get().noteOn(channel, message->at(1), message->at(2) / 127.0);
     } else if (message->at(0) >= 0x80 && message->at(0) < 0x90) {
         uint8_t channel = message->at(0) - 0x80;
-        AudioPluginHandler::get().noteOff(channel, message->at(1), message->at(2));
+        AudioPluginHandler::get().noteOff(channel, message->at(1), message->at(2) / 127.0);
     } else {
         if (AudioPluginHandler::get().midi(message)) {
             return;

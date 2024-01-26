@@ -29,7 +29,12 @@
     ID: Param3_enc
 
 
-  # COMPONENT: Rect $encX1 $encY2 $encSize $encSize
+  COMPONENT: Encoder2 $encX1 $encY2 $encSize $encSize
+    ENCODER_ID: 4
+    SHOW_GROUP: FALSE
+    COLOR: #9dfe86
+    VALUE: Tempo BPM
+    ID: Param4_enc
 
   # COMPONENT: Rect $encX2 $encY2 $encSize $encSize
 

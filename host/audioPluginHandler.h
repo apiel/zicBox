@@ -173,7 +173,7 @@ public:
         return false;
     }
 
-    void noteOn(uint8_t channel, uint8_t note, uint8_t velocity)
+    void noteOn(uint8_t channel, uint8_t note, float velocity)
     {
         // printf("-------------- noteOn %d %d %d\n", channel, note, velocity);
         for (MidiNoteEvent& target : midiNoteEvents) {
@@ -187,7 +187,7 @@ public:
         }
     }
 
-    void noteOff(uint8_t channel, uint8_t note, uint8_t velocity)
+    void noteOff(uint8_t channel, uint8_t note, float velocity)
     {
         // printf("------------- noteOff %d %d %d\n", channel, note, velocity);
         for (MidiNoteEvent& target : midiNoteEvents) {

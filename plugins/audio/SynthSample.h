@@ -27,6 +27,11 @@
 #define MAX_SAMPLE_DENSITY 12
 #endif
 
+/*md
+## SynthSample
+
+SynthSample is a plugin to play samples.
+*/
 class SynthSample : public Mapping {
 protected:
     // Hardcoded to 48000, no matter the sample rate
@@ -230,8 +235,10 @@ public:
         initValues();
     }
 
+    /*md **Config**: */
     bool config(char* key, char* value) override
     {
+        /*md - `SAMPLES_FOLDER` set samples folder path. */
         if (strcmp(key, "SAMPLES_FOLDER") == 0) {
             fileBrowser.openFolder(value);
             browser.props().max = fileBrowser.count;
@@ -240,6 +247,7 @@ public:
             return true;
         }
 
+        /*md - `VOICE_ALLOW_SAME_NOTE: false` toggle voice playing the same note. If true, same note can be played at the same time on different voices. Default is `true`. */
         if (strcmp(key, "VOICE_ALLOW_SAME_NOTE") == 0) {
             voiceAllowSameNote = strcmp(value, "true") == 0;
             return true;
@@ -266,23 +274,23 @@ public:
         buf[track] = out;
     }
 
-    void noteOn(uint8_t note, uint8_t velocity) override
+    void noteOn(uint8_t note, float velocity) override
     {
+        debug("should play noteOn: %d %d\n", note, velocity);
         if (velocity == 0) {
             return noteOff(note, velocity);
         }
-
         Voice& voice = getNextVoice(note);
         voice.index = voiceIndexCounter++;
         voice.note = note;
         voice.step = getSampleStep(note);
-        voice.velocity = velocity / 127.0f;
+        voice.velocity = velocity;
         voiceStart(voice);
         // TODO attack softly if start after beginning of file
         debug("noteOn: %d %d\n", note, velocity);
     }
 
-    void noteOff(uint8_t note, uint8_t velocity) override
+    void noteOff(uint8_t note, float velocity) override
     {
         for (uint8_t v = 0; v < MAX_SAMPLE_VOICES; v++) {
             Voice& voice = voices[v];
@@ -294,7 +302,7 @@ public:
                 return;
             }
         }
-        debug("noteOff: note not found %d %d\n", note, velocity);
+        // debug("noteOff: note not found %d %d\n", note, velocity);
     }
 
     void setDensityDelay(float value)
