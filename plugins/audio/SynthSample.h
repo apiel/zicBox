@@ -276,7 +276,7 @@ public:
 
     void noteOn(uint8_t note, float velocity) override
     {
-        debug("should play noteOn: %d %d\n", note, velocity);
+        // debug("should play noteOn: %d %d\n", note, velocity);
         if (velocity == 0) {
             return noteOff(note, velocity);
         }

@@ -112,7 +112,7 @@ protected:
             Step& step = steps[stepCounter];
             if (targetPlugin && step.enabled && conditionMet(step)) {
                 step.counter = step.len;
-                printf("[step %d] should trigger note on %d %f\n", stepCounter, step.note, step.velocity);
+                // printf("[step %d] should trigger note on %d %f\n", stepCounter, step.note, step.velocity);
                 targetPlugin->noteOn(step.note, step.velocity);
             }
         }
