@@ -187,7 +187,7 @@ public:
 
         if (motion1 == NULL) {
             if (playControllerOn) {
-                plugin.noteOn(48, 127);
+                plugin.noteOn(48, 1.0f);
             }
             motion1 = &motion;
             startOrigin = start->pct();

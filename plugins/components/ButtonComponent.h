@@ -34,7 +34,7 @@ protected:
             char* noteStr = strtok(NULL, " ");
             uint8_t note = atoi(noteStr);
             char* velocityStr = strtok(NULL, " ");
-            uint8_t velocity = atoi(velocityStr);
+            float velocity = atof(velocityStr);
             AudioPlugin* plugin = &getPlugin(pluginName, track);
             event = [plugin, note, velocity]() {
                 plugin->noteOn(note, velocity);
