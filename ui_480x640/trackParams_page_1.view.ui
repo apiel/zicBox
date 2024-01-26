@@ -1,0 +1,104 @@
+  # COMPONENT: Encoder2 $encX1 $encY1 $encSize $encSize
+  #   ENCODER_ID: 0
+  #   SHOW_GROUP: FALSE
+  #   COLOR: #9dfe86
+  #   TRACK: $track
+  #   VALUE: Sample START
+  #   ID: Param0_enc
+
+  # COMPONENT: Encoder2 $encX2 $encY1 $encSize $encSize
+  #   ENCODER_ID: 1
+  #   SHOW_GROUP: FALSE
+  #   COLOR: #3791a1
+  #   TRACK: $track
+  #   VALUE: Sample END
+  #   ID: Param1_enc
+
+  # COMPONENT: Encoder2 $encX3 $encY1 $encSize $encSize
+  #   ENCODER_ID: 2
+  #   SHOW_GROUP: FALSE
+  #   COLOR: #ff8d99
+  #   TRACK: $track
+  #   VALUE: Sample BROWSER
+  #   TYPE: BROWSE
+  #   ID: Param2_enc
+
+  # # COMPONENT: Rect $encX4 $encY1 $encSize $encSize
+  # COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize
+  #   ENCODER_ID: 3
+  #   SHOW_GROUP: FALSE
+  #   VALUE: Mixer TRACK_$track
+  #   COLOR: #ff7700
+  #   ID: Param3_enc
+
+
+  # COMPONENT: Encoder2 $encX1 $encY2 $encSize $encSize
+  #   ENCODER_ID: 4
+  #   SHOW_GROUP: FALSE
+  #   COLOR: #9dfe86
+  #   TRACK: $track
+  #   VALUE: Sample SUSTAIN_LENGTH
+  #   LABEL: Sustain
+  #   ID: Param4_enc
+
+  # COMPONENT: Encoder2 $encX2 $encY2 $encSize $encSize
+  #   ENCODER_ID: 5
+  #   SHOW_GROUP: FALSE
+  #   COLOR: #3791a1
+  #   TRACK: $track
+  #   VALUE: Sample SUSTAIN_POSITION
+  #   ID: Param5_enc
+
+  # COMPONENT: Encoder2 $encX3 $encY2 $encSize $encSize
+  #   ENCODER_ID: 6
+  #   SHOW_GROUP: FALSE
+  #   COLOR: #ff8d99
+  #   TRACK: $track
+  #   VALUE: Sample SUSTAIN_RELEASE
+  #   ID: Param6_enc
+
+  # # COMPONENT: Rect $encX4 $encY2 $encSize $encSize
+  # COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
+  #   ENCODER_ID: 7
+  #   SHOW_GROUP: FALSE
+  #   TRACK: $track
+  #   VALUE: Sequencer STATUS
+  #   COLOR: #ff7700
+  #   ID: Param7_enc
+
+
+  # COMPONENT: Encoder2 $encX1 $encY3 $encSize $encSize
+  #   ENCODER_ID: 8
+  #   SHOW_GROUP: FALSE
+  #   COLOR: #9dfe86
+  #   TRACK: $track
+  #   VALUE: Sample DENSITY
+  #   ID: Param8_enc
+
+  # COMPONENT: Encoder2 $encX2 $encY3 $encSize $encSize
+  #   ENCODER_ID: 9
+  #   SHOW_GROUP: FALSE
+  #   COLOR: #3791a1
+  #   TRACK: $track
+  #   VALUE: Sample DENSITY_DELAY
+  #   FLOAT_PRECISION: 1
+  #   ID: Param9_enc
+
+  # COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
+  #   ENCODER_ID: 10
+  #   SHOW_GROUP: FALSE
+  #   TRACK: $track
+  #   VALUE: Sample DENSITY_RANDOMIZE
+  #   COLOR: #ff8d99
+  #   LABEL: Density Rand
+  #   ID: Param10_enc
+
+  # COMPONENT: Rect $encX4 $encY3 $encSize $encSize
+  # # COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
+  # #   ENCODER_ID: 11
+  # #   SHOW_GROUP: FALSE
+  # #   COLOR: #ff7700
+  # #   VALUE: SampleRateReducer SAMPLE_STEP
+  # #   FONT_UNIT_SIZE: 8
+  # #   # BACKGROUND_COLOR: #2b2c2e
+  # #   ID: Param11_enc
