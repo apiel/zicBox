@@ -12,13 +12,6 @@
 #include "../../helpers/random.h"
 #include "utils/ValSerializeSndFile.h"
 
-// Should all sample be converted to the same format when zicBox starts?
-// Sequencer can play different wave files on each step
-//          There would be 4 instance SynthSample for the sequencer
-//          + 1 instance SynthSample for patch editing
-// There is 2 modulations...
-// Could add density step by step on every loop
-
 #ifndef MAX_SAMPLE_VOICES
 #define MAX_SAMPLE_VOICES 4
 #endif
@@ -211,22 +204,27 @@ protected:
     }
 
 public:
+    /*md **Values**: */
+    /*md - `START` set the start position of the sample */
     Val& start = val(0.0f, "START", { "Start", .unit = "%" }, [&](auto p) { setStart(p.value); });
+    /*md - `END` set the end position of the sample */
     Val& end = val(100.0f, "END", { "End", .unit = "%" }, [&](auto p) { setEnd(p.value); });
+    /*md - `SUSTAIN_POSITION` set the position of the sustain */
     Val& sustainPosition = val(0.0f, "SUSTAIN_POSITION", { "Sustain position", .unit = "%" }, [&](auto p) { setSustainPosition(p.value, (bool*)p.data); });
-    // Where -1 is no sustain
+    /*md - `SUSTAIN_LENGTH` set the length of the sustain */
     Val& sustainLength = val(0.0f, "SUSTAIN_LENGTH", { "Sustain length", .unit = "%" }, [&](auto p) { setSustainLength(p.value, (bool*)p.data); });
-    // Sustain release set a delay before the sustain ends when note off is triggered
+    /*md - `SUSTAIN_RELEASE` set a delay before the sustain ends when note off is triggered */
     Val& sustainRelease = val(0.0f, "SUSTAIN_RELEASE", { "Sustain Release", .min = 0.0, .max = 5000.0, .step = 50.0, .unit = "ms" }, [&](auto p) { setSustainRelease(p.value); });
-    // Density would is adding more voice (sub voice) with a little delay on each added sub voice
+    /*md - `DENSITY` set the density of the voice. Density is adding more voice (sub voice) with a little delay on each added sub voice */
     Val& density = val(1.0f, "DENSITY", { "Density", .min = 1.0, .max = 12 });
-    // Density delay is the time between each sub voice
+    /*md - `DENSITY_DELAY` set the delay between each sub voice */
     Val& densityDelay = val(100.0f, "DENSITY_DELAY", { "Density Delay", .min = 0.1, .max = 1000.0, .step = 1.1, .unit = "ms", .incrementationType = VALUE_INCREMENTATION_EXP }, [&](auto p) { setDensityDelay(p.value); });
-    // If randomize is set, the density starting delay is random and while change on each sustain loop
+    /*md - `DENSITY_RANDOMIZE` set the density randomize. If randomize is set, the density starting delay is random and while change on each sustain loop. */
     Val& densityRandomize = val(0.0f, "DENSITY_RANDOMIZE", { "Density Randomize", .unit = "%" });
     // TODO Spray allows density in the sustain loop to get out of the boundary windows
     // Val& sustainSpray = val(0.0f, "SUSTAIN_SPRAY", { "Sustain Spray", .unit = "%" });
 
+    /*md - `BROWSER` to browse between samples to play. */
     Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)fileBrowser.count }, [&](auto p) { open(p.value); });
 
     SynthSample(AudioPlugin::Props& props, char* _name)
@@ -254,6 +252,7 @@ public:
             return true;
         }
 
+        /*md - `BASE_NOTE: 52` set the base note. The base note is used to determine how many semitone must be added compare to the original sample. Default is `60` (middle C). */
         if (strcmp(key, "BASE_NOTE") == 0) {
             baseNote = atoi(value);
             baseNote = range(baseNote, 0, 127);
