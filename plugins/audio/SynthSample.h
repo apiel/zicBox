@@ -169,7 +169,7 @@ protected:
 
     Voice& getNextVoice(uint8_t note)
     {
-        if (voiceAllowSameNote) {
+        if (!voiceAllowSameNote) {
             // First, we should look if the voice is not already running, due to the envelopRelease
             for (uint8_t v = 0; v < MAX_SAMPLE_VOICES; v++) {
                 Voice& voice = voices[v];
@@ -298,7 +298,7 @@ public:
                 voice.release = true;
                 voice.sustainReleaseLoopCount = 0;
                 // TODO release softly if release before end of file
-                debug("noteOff set on to false: %d %d\n", note, velocity);
+                // debug("noteOff set on to false: %d %d\n", note, velocity);
                 return;
             }
         }

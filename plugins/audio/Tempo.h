@@ -9,6 +9,9 @@
 
 Tempo audio module is responsible for clocking events. The main purpose is to send clock events to other plugins.
 A good example is the sequencer.
+
+> [!NOTE]
+> - `TODO` select between internal vs midi clock
 */
 class Tempo : public Mapping {
 protected:
@@ -27,11 +30,12 @@ public:
     }
 
     // Clock events are sent at a rate of 24 pulses per quarter note
+    // The is 4 beats per quarter
     // (24/4 = 6)
     void setBpm(float _bpm)
     {
         bpm.setFloat(_bpm);
-        sampleCountTarget = (uint32_t)((float)props.sampleRate * 60.0f / bpm.get() / 4.0f);
+        sampleCountTarget = (uint32_t)(((float)props.sampleRate * 60.0f / bpm.get()) / 12.0f);
     }
 
     void sample(float* buf)
