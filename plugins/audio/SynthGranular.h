@@ -348,7 +348,7 @@ public:
             Voice& voice = voices[v];
             if (voice.note == note) {
                 voice.envelop.release();
-                debug("noteOff set on to false: %d %d\n", note, velocity);
+                // debug("noteOff set on to false: %d %d\n", note, velocity);
                 return;
             }
         }
