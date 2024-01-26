@@ -19,7 +19,7 @@ protected:
     uint32_t sampleCountTarget = 0;
 
 public:
-    /*md ### Values */
+    /*md **Values**: */
     /*md - `BPM` in beats per minute*/
     Val& bpm = val(120.0f, "BPM", { "Bpm", .min = 60.0f, .max = 240.0f }, [&](auto p) { setBpm(p.value); });
 
@@ -47,7 +47,7 @@ public:
         }
     }
 
-    /*md ### Config file */
+    /*md **Config**: */
     bool config(char* key, char* value)
     {
         /*md - `BPM: 120.0` to set default beat per minute */
