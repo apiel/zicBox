@@ -54,6 +54,8 @@ protected:
     std::vector<KeypadLayout*> keypadLayouts;
     KeypadLayout* currentKeypadLayout = NULL;
 
+    uint8_t trackPageCount = 2;
+    uint8_t trackPage = 0;
     std::string prefixTrackParamsView = "TrackParams_track_";
     std::string prefixStepParamsView = "StepParams_track_";
 
@@ -135,7 +137,7 @@ protected:
         if (grid.row == trackCount) {
             view = "MasterParams";
         } else if (grid.col == 0) {
-            view = prefixTrackParamsView + std::to_string(grid.row + 1);
+            view = prefixTrackParamsView + std::to_string(grid.row + 1) + "_page_" + std::to_string(trackPage);
         } else {
             view = prefixStepParamsView + std::to_string(grid.row + 1);
             tracks[grid.row].selectedStep->set(grid.col - 1);
@@ -291,8 +293,12 @@ protected:
     void updateTrackSelection(int8_t state, uint8_t track)
     {
         if (state == 1) {
-            printf("select track %d\n", track);
-            grid.select(track, 0);
+            if (grid.row == track && grid.col == 0) {
+                trackPage = (trackPage + 1) % trackPageCount;
+            } else {
+                printf("select track %d\n", track);
+                grid.select(track, 0);
+            }
             updateSelection();
             draw.renderNext();
         }
@@ -522,6 +528,12 @@ public:
                     return true;
                 }
             }
+            return true;
+        }
+
+        /*md - `TRACK_PAGE_COUNT: count` to specify the number of track pages. By default it is 2.`*/
+        if (strcmp(key, "TRACK_PAGE_COUNT") == 0) {
+            trackPageCount = atoi(value);
             return true;
         }
 

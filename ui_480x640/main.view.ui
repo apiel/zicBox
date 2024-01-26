@@ -122,8 +122,13 @@ $track=0
 while: $track < 12
   $track=$track + 1
   
-  VIEW: TrackParams_track_$track
-    INCLUDE: trackParams.view.ui
+  VIEW: TrackParams_track_$track_page_0
+    INCLUDE: trackParams_page_0.view.ui
+    USE_SHARED_COMPONENT: Sample_track_$track
+    USE_SHARED_COMPONENT: SharedGridSequencer
+
+  VIEW: TrackParams_track_$track_page_1
+    INCLUDE: trackParams_page_1.view.ui
     USE_SHARED_COMPONENT: Sample_track_$track
     USE_SHARED_COMPONENT: SharedGridSequencer
 
