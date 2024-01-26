@@ -1,13 +1,6 @@
-## keypad
-
-- TODO use keypad as a keyboard while configuring a patch...
-
-## zic sample
-
-
 ## zicUi
 
-- TODO enocder string component...
+- TODO encoder string component...
 
 - TODO GridSequencer
     - TODO ?? auto save, instead to always save, only save if something changed
