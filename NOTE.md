@@ -7,6 +7,8 @@
 
 ## zicUi
 
+- TODO enocder string component...
+
 - TODO GridSequencer
     - TODO ?? auto save, instead to always save, only save if something changed
         to do this, would need the each plugin have a way to keep track change, either with keeping the time of the last update
