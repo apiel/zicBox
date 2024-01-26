@@ -75,8 +75,6 @@ protected:
     uint8_t loopCounter = 0;
     uint64_t* clockCounterPtr = NULL;
 
-    bool active = false;
-
     AudioPlugin* targetPlugin = NULL;
 
     enum Status {
@@ -92,31 +90,29 @@ protected:
 
     void onStep()
     {
-        if (active) {
-            stepCounter++;
-            uint8_t state = status.get();
-            if (stepCounter >= MAX_STEPS) {
-                stepCounter = 0;
-                loopCounter++;
-                if (state == Status::NEXT) {
-                    status.set(Status::ON);
-                }
+        stepCounter++;
+        uint8_t state = status.get();
+        if (stepCounter >= MAX_STEPS) {
+            stepCounter = 0;
+            loopCounter++;
+            if (state == Status::NEXT) {
+                status.set(Status::ON);
             }
-            if (state == Status::ON) {
-                for (int i = 0; i < MAX_STEPS; i++) {
-                    Step& step = steps[i];
-                    if (step.counter) {
-                        step.counter--;
-                        if (targetPlugin && step.counter == 0) {
-                            targetPlugin->noteOff(step.note, 0);
-                        }
+        }
+        if (state == Status::ON) {
+            for (int i = 0; i < MAX_STEPS; i++) {
+                Step& step = steps[i];
+                if (step.counter) {
+                    step.counter--;
+                    if (targetPlugin && step.counter == 0) {
+                        targetPlugin->noteOff(step.note, 0);
                     }
                 }
-                Step& step = steps[stepCounter];
-                if (targetPlugin && step.enabled && conditionMet(step)) {
-                    step.counter = step.len;
-                    targetPlugin->noteOn(step.note, step.velocity);
-                }
+            }
+            Step& step = steps[stepCounter];
+            if (targetPlugin && step.enabled && conditionMet(step)) {
+                step.counter = step.len;
+                targetPlugin->noteOn(step.note, step.velocity);
             }
         }
     }
@@ -140,8 +136,6 @@ public:
     Val& detune = val(0.0f, "DETUNE", { "Detune", VALUE_CENTERED, -24.0f, 24.0f });
     /*md - `PATTERN` select the pattern to play */
     Val& pattern = val(0.0f, "PATTERN", { "Pattern", .type = VALUE_STRING }, [&](auto p) { setPattern(p.value); });
-    /*md - `PLAY_STOP` toggle play/stop event */
-    Val& playStop = val(0.0f, "PLAY_STOP", { "Play/Stop", .max = 1.0f }, [&](auto p) { setPlayStop(p.value); });
 
     /*md - `SELECTED_STEP` select the step to edit */
     Val& selectedStep = val(0.0f, "SELECTED_STEP", { "Step", .max = MAX_STEPS }, [&](auto p) { setSelectedStep(p.value); });
@@ -177,28 +171,25 @@ public:
         }
     }
 
+    void allOff()
+    {
+        for (int i = 0; i < MAX_STEPS; i++) {
+            if (targetPlugin && steps[i].counter) {
+                printf("should trigger note off %d\n", steps[i].note);
+                targetPlugin->noteOff(steps[i].note, 0);
+                steps[i].counter = 0;
+            }
+        }
+    }
+
     void onEvent(AudioEventType event)
     {
-        switch (event) {
-        case AudioEventType::STOP: {
-            active = false;
+        if (event == AudioEventType::STOP) {
+            printf("in sequencer event STOP\n");
             stepCounter = 0;
-            for (int i = 0; i < MAX_STEPS; i++) {
-                if (targetPlugin && steps[i].counter) {
-                    targetPlugin->noteOff(steps[i].note, 0);
-                    steps[i].counter = 0;
-                }
-            }
-            break;
-        }
-        case AudioEventType::START:
-            loopCounter = 0;
-            active = true;
-            break;
-
-        case AudioEventType::PAUSE:
-            active = false;
-            break;
+            allOff();
+        } else if (event == AudioEventType::PAUSE) {
+            allOff();
         }
     }
 
@@ -211,21 +202,11 @@ public:
         status.setFloat(value);
         if (status.get() == Status::OFF) {
             status.setString("OFF");
+            onEvent(AudioEventType::STOP);
         } else if (status.get() == Status::ON) {
             status.setString("ON");
         } else {
             status.setString("NEXT");
-        }
-    }
-
-    void setPlayStop(float value)
-    {
-        printf("setPlayStop %f\n", value);
-        playStop.setFloat(value);
-        if (playStop.get()) {
-            onEvent(AudioEventType::START);
-        } else {
-            onEvent(AudioEventType::STOP);
         }
     }
 
