@@ -3,10 +3,10 @@
 - TODO encoder string component...
 
 - TODO GridSequencer
+    - TODO switch clip/variation
     - TODO ?? auto save, instead to always save, only save if something changed
         to do this, would need the each plugin have a way to keep track change, either with keeping the time of the last update
         or simply with a boolean
-    - TODO switch clip/variation
     - TODO keypad action to toggle page views. E.g.: track view might have more parameter than the one visible on a single views. We need a way to be able to toggle between parameter views.
     - TODO make sequencer plugin name configurable
     - TODO make track configurable

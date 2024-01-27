@@ -4,7 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/usr/include/rtmidi"
+                "/usr/include/rtmidi",
+                "/usr/include/pd"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

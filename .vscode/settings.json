@@ -80,6 +80,8 @@
         "charconv": "cpp",
         "format": "cpp",
         "span": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "synthpd.h": "c",
+        "mapping.h": "c"
     }
 }
