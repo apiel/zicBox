@@ -2,7 +2,7 @@
     ENCODER_ID: 0
     SHOW_GROUP: FALSE
     COLOR: #9dfe86
-    VALUE: Pd CC_4
+    VALUE: Pd FREQ
     ID: Param0_enc
 
   # COMPONENT: Encoder2 $encX2 $encY1 $encSize $encSize

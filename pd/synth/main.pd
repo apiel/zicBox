@@ -23,6 +23,8 @@
 #X obj 438 72 ctlin 3;
 #X obj 526 72 ctlin 4;
 #X obj 113 188 print;
+#X obj 460 552 print;
+#X obj 460 510 r FREQ;
 #X connect 1 0 3 0;
 #X connect 1 0 23 0;
 #X connect 1 1 4 0;
@@ -52,3 +54,4 @@
 #X connect 20 0 8 0;
 #X connect 21 0 7 0;
 #X connect 22 0 12 0;
+#X connect 25 0 24 0;
