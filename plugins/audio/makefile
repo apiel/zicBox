@@ -6,11 +6,16 @@ PARAMS ?= --std=c++17 -lstdc++fs
 all:
 	make EffectGainVolume EffectSampleRateReducer EffectFilter EffectDistortion EffectDelay\
 		EffectFilter EffectFilterMultiMode EffectFilterMultiMode2 EffectFilterMultiModeMoog\
-		SynthKick23 SynthGranular SynthSample\
+		SynthKick23 SynthGranular SynthSample SynthPd\
 		Sequencer Tempo\
 		Mixer2 Mixer4 Mixer8 Mixer12\
 		AudioInputPulse AudioOutputPulse AudioInputAlsa AudioOutputAlsa\
 		SerializeTrack
+
+# For some weird reason need to paste the path of libpd.so 
+# get libpd path `ldconfig -p | grep libpd`
+SynthPd:
+	make compile LIBNAME=SynthPd EXTRA="$(shell pkg-config --cflags --libs pd) /lib/x86_64-linux-gnu/libpd.so"
 
 SynthGranular:
 	make compile LIBNAME=SynthGranular EXTRA="$(shell pkg-config --cflags --libs sndfile)"
@@ -39,7 +44,7 @@ AudioOutputAlsa:
 
 compile:
 	@mkdir -p $(OBJ_DIR)
-	g++ -c -o $(OBJ_DIR)/$(LIBNAME).o audioPlugin.cpp -fPIC -DPLUGIN_NAME=$(LIBNAME) -DPLUGIN_INCLUDE=\"$(LIBNAME).h\" $(PARAMS)
+	g++ -c -o $(OBJ_DIR)/$(LIBNAME).o audioPlugin.cpp -fPIC -DPLUGIN_NAME=$(LIBNAME) -DPLUGIN_INCLUDE=\"$(LIBNAME).h\" $(EXTRA) $(PARAMS)
 	g++ -shared -o build/libzic_$(LIBNAME).so $(OBJ_DIR)/$(LIBNAME).o $(EXTRA) $(PARAMS)
 
 clean:
