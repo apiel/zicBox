@@ -25,6 +25,7 @@ public:
     struct CallbackProps {
         float value;
         void* data = NULL;
+        Val& val;
     };
 
     std::string _key;
@@ -95,7 +96,7 @@ public:
 
     void set(float value, void* data = NULL)
     {
-        callback({ value, data });
+        callback({ value, data, *this });
         (*onUpdatePtr)(value, onUpdateData);
     }
 

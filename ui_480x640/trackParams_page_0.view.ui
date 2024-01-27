@@ -93,12 +93,10 @@
     LABEL: Density Rand
     ID: Param10_enc
 
-  COMPONENT: Rect $encX4 $encY3 $encSize $encSize
-  # COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
-  #   ENCODER_ID: 11
-  #   SHOW_GROUP: FALSE
-  #   COLOR: #ff7700
-  #   VALUE: SampleRateReducer SAMPLE_STEP
-  #   FONT_UNIT_SIZE: 8
-  #   # BACKGROUND_COLOR: #2b2c2e
-  #   ID: Param11_enc
+  # COMPONENT: Rect $encX4 $encY3 $encSize $encSize
+  COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
+    ENCODER_ID: 11
+    SHOW_GROUP: FALSE
+    COLOR: #ff7700
+    VALUE: Pd CC_2
+    ID: Param11_enc
