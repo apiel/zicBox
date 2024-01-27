@@ -25,7 +25,6 @@ void pdprint(const char* s)
 }
 
 class SynthPd : public Mapping {
-protected:
 public:
     /*md **Values**: */
 
