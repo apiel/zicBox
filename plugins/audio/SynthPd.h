@@ -47,7 +47,7 @@ public:
     /*md **Config**: */
     bool config(char* key, char* value) override
     {
-        /*md - `OPEN_PD` open puredata patch. */
+        /*md - `OPEN_PD: filename` open puredata patch. */
         if (strcmp(key, "OPEN_PD") == 0) {
             char* filename = basename(value);
             char* folder = dirname(value);
@@ -56,6 +56,18 @@ public:
             if (!libpd_openfile(filename, folder)) {
                 debug("!!!! Error: could not open puredata file %s\n", filename);
             }
+            return true;
+        }
+
+        /*md - `ASSIGN_CC: cc name default_val` assign CC. */
+        if (strcmp(key, "ASSIGN_CC") == 0) {
+            uint8_t cc = atoi(strtok(value, " "));
+            char* name = strtok(NULL, " ");
+            uint8_t defaultVal = atoi(strtok(NULL, " "));
+            val(defaultVal, "CC_" + std::to_string(cc), { name, .max = 127 }, [&, cc](auto p) {
+                libpd_controlchange(0, cc, p.value);
+                p.val.setFloat(p.value);
+            });
             return true;
         }
 
@@ -82,12 +94,12 @@ public:
         }
         debug("[PD] noteOn: %d %f\n", note, velocity);
 
-        libpd_noteon(1, note, velocity * 127);
+        libpd_noteon(0, note, velocity * 127);
     }
 
     void noteOff(uint8_t note, float velocity) override
     {
-        libpd_noteon(1, note, 0);
+        libpd_noteon(0, note, 0);
     }
 };
 

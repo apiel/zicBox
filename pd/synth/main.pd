@@ -1,4 +1,4 @@
-#N canvas 562 133 683 707 12;
+#N canvas 1092 196 683 707 12;
 #X obj 175 626 dac~;
 #X obj 174 114 notein;
 #X obj 174 343 pack 0 0 0;
@@ -23,7 +23,6 @@
 #X obj 438 72 ctlin 3;
 #X obj 526 72 ctlin 4;
 #X obj 113 188 print;
-#X obj 282 626 print~;
 #X connect 1 0 3 0;
 #X connect 1 0 23 0;
 #X connect 1 1 4 0;
@@ -32,7 +31,6 @@
 #X connect 4 0 15 1;
 #X connect 6 0 0 0;
 #X connect 6 0 0 1;
-#X connect 6 0 24 0;
 #X connect 7 0 10 0;
 #X connect 8 0 9 0;
 #X connect 9 0 18 0;
