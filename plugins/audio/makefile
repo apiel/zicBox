@@ -6,7 +6,7 @@ PARAMS ?= --std=c++17 -lstdc++fs
 all:
 	make EffectGainVolume EffectSampleRateReducer EffectFilter EffectDistortion EffectDelay\
 		EffectFilter EffectFilterMultiMode EffectFilterMultiMode2 EffectFilterMultiModeMoog\
-		SynthKick23 SynthGranular SynthSample SynthPd\
+		SynthKick23 SynthGranular SynthSample \
 		Sequencer Tempo\
 		Mixer2 Mixer4 Mixer8 Mixer12\
 		AudioInputPulse AudioOutputPulse AudioInputAlsa AudioOutputAlsa\
@@ -16,6 +16,8 @@ all:
 # get libpd path `ldconfig -p | grep libpd`
 # SynthPd:
 # 	make compile LIBNAME=SynthPd EXTRA="$(shell pkg-config --cflags --libs pd) /lib/x86_64-linux-gnu/libpd.so"
+# 
+# FIXME: libpd is not available on RPi
 SynthPd:
 	make compile LIBNAME=SynthPd EXTRA="$(shell pkg-config --cflags --libs pd) $(shell ldconfig -p | grep libpd.so.0 | tr ' ' '\n' | grep /)"
 
