@@ -19,7 +19,6 @@ Patch use midi input `notein` to trigger notes. To modulate parameters, you can 
 > [!NOTE]
 > - `TODO` process audio input, e.g. apply effect using PD
 > - `FIXME` `apt install libpd` doesnt work on RPi. Need to embded libpd or to find a artifactory to download.
-> test
 */
 
 void pdprint(const char* s)
