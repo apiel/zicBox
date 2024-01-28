@@ -1,5 +1,8 @@
 ## zicUi
 
+- TODO live waveform visualisation
+    - might need for this to create an audio plugin to keep a buffer of the audio output
+
 - TODO encoder string component...
 
 - TODO GridSequencer
@@ -83,12 +86,12 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 
 - TODO make audio input and output selectable with val...
 
+- TODO Fm plugin
+
 - TODO puredata plugin
     - FIXME missing libpd on rpi
 
 - TODO save track patch
-
-- TODO explore usage of Tensorflow Nsynth
 
 - TODO SynthSample
     - fix start position of sample marker when start pos is not to 0
@@ -97,6 +100,8 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 
 - TODO tempo plugin, that would shalow midi clock in favour of custom clock
     --> give a way to select either midi or internal clock
+
+- TODO explore usage of Tensorflow Nsynth
 
 - TODO modulation that would be a mix of envelop and lfo:
     - multiphase envelop (up to 8 or even more)
@@ -119,8 +124,6 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 
 - TODO wavetable player as in granular it doesnt make sense
         pad one wavetable where X and Y morph on different wavetable...
-
-- TODO Fm plugin
 
 - TODO reverb, delay
      - load/save different kind of delay and reverb from a config file
