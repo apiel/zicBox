@@ -176,3 +176,7 @@ const sidebar = fileList
     .map(({ filename }) => `[${filename}](https://github.com/apiel/zicBox/wiki/${filename})`)
     .join('\n\n');
 writeFileSync(path.join(docsFolder, '..', '_Sidebar.md'), sidebar);
+
+const root = readFileSync('README.md', 'utf8');
+const home = root.split('\n').slice(1).join('\n');
+writeFileSync(path.join('wiki', 'Home.md'), home);
