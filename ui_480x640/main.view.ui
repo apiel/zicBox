@@ -3,6 +3,7 @@ VIEW: shared_components HIDDEN
 
   COMPONENT: GridSequencer 0 403 480 240
     SHARED_COMPONENT: SharedGridSequencer
+    TRACK_NAME: 1 Kick
     KEYPAD_LAYOUT: default
       KEYMAP: 15 master
       KEYMAP: 27 layout 0

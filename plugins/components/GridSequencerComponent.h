@@ -537,6 +537,13 @@ public:
             return true;
         }
 
+        /*md - `TRACK_NAME: track_id name` to change the name of a track.` */
+        if (strcmp(key, "TRACK_NAME") == 0) {
+            uint16_t track = atoi(strtok(value, " ")) - 1;
+            tracks[track].name = strtok(NULL, " ");
+            return true;
+        }
+
         if (currentKeypadLayout) {
             return currentKeypadLayout->config(key, value);
         }
