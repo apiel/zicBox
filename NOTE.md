@@ -84,6 +84,7 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 - TODO make audio input and output selectable with val...
 
 - TODO puredata plugin
+    - FIXME missing libpd on rpi
 
 - TODO save track patch
 
