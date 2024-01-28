@@ -21,6 +21,8 @@
 
 - TODO popup message
 
+- TODO spectrum analyser, to show current sound coming out base on frequency and amplitude...
+
 - TODO when touching the screen, it could either play a note and change pitch base on Y
                               or start ARP change pitch with Y and change pattern with X
                               or act as a chaos pad
