@@ -19,13 +19,6 @@ Audio:
 sudo apt install librtmidi-dev libsndfile1-dev
 ```
 
-For pure data plugin:
-```sh
-sudo apt-get install libpd-dev libpd0
-```
-
-> for puredata, there might need to do some change in the makefile
-
 User interface:
 
 ```sh

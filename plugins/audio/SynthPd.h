@@ -19,6 +19,19 @@ Patch use midi input `notein` to trigger notes. To modulate parameters, you can 
 > [!NOTE]
 > - `TODO` process audio input, e.g. apply effect using PD
 > - `FIXME` `apt install libpd` doesnt work on RPi. Need to embded libpd or to find a artifactory to download.
+
+On Raspberry, libpd is not available out of the box, this is why SynthPd has been commented out from makefile. To use it, you need to install [libpd](https://github.com/libpd/libpd) manually.
+
+On ubuntu, you can directly install it from the artifactory:
+```sh
+sudo apt-get install libpd-dev libpd0
+```
+
+Finally, you need to compile SynthPd:
+```sh
+make -C plugins/audio SynthPd
+```
+
 */
 
 void pdprint(const char* s)
