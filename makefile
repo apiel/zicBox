@@ -59,3 +59,9 @@ gpio:
 push_wiki:
 	node doc.js
 	cd wiki && git add . && git commit -m "wiki" && git push
+	git add wiki && git commit -m "wiki" && git push
+
+push:
+	node doc.js
+	cd wiki && git add . && git commit -m "wiki" || true && git push
+	git add . && git commit -m "$(m)" && git push
