@@ -16,6 +16,8 @@ public:
     ValueInterface* status;
     Step* steps;
     ValueInterface* selectedStep;
+    std::string trackView = "TrackParams_track_";
+    std::string stepView = "StepParams_track_";
 
     void load(int16_t id, AudioPlugin& _seqPlugin, ValueInterface* _volume)
     {
@@ -26,6 +28,9 @@ public:
         status = _seqPlugin.getValue("STATUS");
         steps = (Step*)seqPlugin->data(0); // TODO make this configurable...
         name = "Track " + std::to_string(id + 1);
+
+        trackView = trackView + std::to_string(id + 1);
+        stepView = stepView + std::to_string(id + 1);
     }
 };
 
@@ -56,8 +61,6 @@ protected:
 
     uint8_t trackPageCount = 2;
     uint8_t trackPage = 0;
-    std::string prefixTrackParamsView = "TrackParams_track_";
-    std::string prefixStepParamsView = "StepParams_track_";
 
     int firstColumnWidth = 92;
     int firstColumnMargin = 4;
@@ -137,9 +140,9 @@ protected:
         if (grid.row == trackCount) {
             view = "MasterParams";
         } else if (grid.col == 0) {
-            view = prefixTrackParamsView + std::to_string(grid.row + 1) + "_page_" + std::to_string(trackPage);
+            view = tracks[grid.row].trackView + "_page_" + std::to_string(trackPage);
         } else {
-            view = prefixStepParamsView + std::to_string(grid.row + 1);
+            view = tracks[grid.row].stepView;
             tracks[grid.row].selectedStep->set(grid.col - 1);
 
             selectedStepCopy = tracks[grid.row].steps[grid.col - 1];
@@ -541,6 +544,20 @@ public:
         if (strcmp(key, "TRACK_NAME") == 0) {
             uint16_t track = atoi(strtok(value, " ")) - 1;
             tracks[track].name = strtok(NULL, " ");
+            return true;
+        }
+
+        /*md - `TRACK_VIEW: track_id name` to set the view name of a track. By default it is `TrackParams_track_` */
+        if (strcmp(key, "TRACK_VIEW") == 0) {
+            uint16_t track = atoi(strtok(value, " ")) - 1;
+            tracks[track].trackView = strtok(NULL, " ");
+            return true;
+        }
+
+        /*md - `STEP_VIEW: track_id name` to set the view name of step editing. By default it is `StepParams_track_` */
+        if (strcmp(key, "STEP_VIEW") == 0) {
+            uint16_t track = atoi(strtok(value, " ")) - 1;
+            tracks[track].stepView = strtok(NULL, " ");
             return true;
         }
 
