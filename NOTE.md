@@ -19,6 +19,10 @@
 
 - TODO make label all at the same position...
 
+- TODO dekstop version
+    - display multiple view at once...
+    - ZicBox hardware can control ZicBox desktop throw OSC or USB...
+
 - TODO pattern selector in sequencer
        pattern category
 
@@ -88,6 +92,12 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 
 - TODO Fm plugin
 
+- TODO Zic_Drum_Kick23 
+    - give possibility to play sample in the same time as the engine...
+        - could we apply extra modulation freq and amplitude on the sample?
+    - Should it be also possible to record the generated kick inside a sample?
+    - Could it become a more generic drum engine...
+
 - TODO puredata plugin
     - FIXME missing libpd on rpi
 
@@ -117,10 +127,6 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
         - if step len is 0 it should play infinite
 
 - TODO MIXER track=1 vs track_b... should it be track_1 but ...?
-
-- TODO Zic_Drum_Kick23 give possibility to play sample in the same time as the engine...
-       Should it be also possible to record the generated kick inside a sample?
-       Could it become a more generic drum engine...
 
 - TODO wavetable player as in granular it doesnt make sense
         pad one wavetable where X and Y morph on different wavetable...
