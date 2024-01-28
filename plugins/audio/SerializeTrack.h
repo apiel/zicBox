@@ -5,22 +5,38 @@
 
 #include "../../helpers/trim.h"
 #include "audioPlugin.h"
+#include "mapping.h"
 
 /*md
 ## SerializeTrack
 
 SerializeTrack plugin is used to serialize track on disk. It will scan all the plugins on the given track and save them on disk.
 */
-class SerializeTrack : public AudioPlugin {
+class SerializeTrack : public Mapping {
 protected:
     std::mutex m;
 
     std::string filepath = "serialized/track.cfg";
+    std::string variationFolder = "serialized/track";
     bool initialized = false;
 
+    void setFilepath(std::string newFilepath)
+    {
+        filepath = newFilepath;
+        const char* dot = strrchr(filepath.c_str(), '.');
+        const char* slash = strrchr(filepath.c_str(), '/');
+        if (dot && slash && dot > slash) {
+            variationFolder = filepath.substr(0, dot - filepath.c_str());
+        }
+    }
+
 public:
+    /*md **Values:** */
+    /*md - `VARIATION` switch between different track serialization varaitions (clip). WIP */
+    Val& variation = val(0.0f, "VARIATION", { "Variation", .max = 12.0f }, [&](auto p) { setVariation(p.value); });
+
     SerializeTrack(AudioPlugin::Props& props, char* _name)
-        : AudioPlugin(props, _name)
+        : Mapping(props, _name)
     {
     }
 
@@ -28,13 +44,31 @@ public:
     {
     }
 
+    void setVariation(float value)
+    {
+        // should it use a mutex to avoid race conditions with serialization thread?
+        // also need to avoid that new variation get save to current file...
+        variation.setFloat(value);
+        // if variation is different than current variation
+        // then we can hydrate
+        // but first we need to save the current state, to variation folder
+    }
+
+    /*md **Config**: */
     bool config(char* key, char* value)
     {
         /*md - `FILEPATH` to set filepath. By default it is `serialized/track.cfg`.*/
         if (strcmp(key, "FILEPATH") == 0) {
-            filepath = value;
+            setFilepath(value);
             return true;
         }
+
+        /*md - `MAX_VARIATION` to set max variation. By default it is `12`.*/
+        if (strcmp(key, "MAX_VARIATION") == 0) {
+            variation.props().max = atof(value);
+            return true;
+        }
+
         return AudioPlugin::config(key, value);
     }
 
@@ -103,7 +137,7 @@ public:
         switch (id) {
         case 0: {
             if (userdata) {
-                filepath = (char*)userdata;
+                setFilepath((char*)userdata);
             }
             return NULL;
         }
