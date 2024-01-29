@@ -62,12 +62,12 @@ protected:
                     uint8_t key;
                     read(port, &key, 1);
                     // printf("press key %d\n", key);
-                    onKeypad(key, 1);
+                    onKeypad(id, key, 1);
                 } else if (byte == '!') {
                     uint8_t key;
                     read(port, &key, 1);
                     // printf("release key %d\n", key);
-                    onKeypad(key, 0);
+                    onKeypad(id, key, 0);
                 }
             }
         }
@@ -98,8 +98,8 @@ protected:
     }
 
 public:
-    NeotrellisController(Props& props)
-        : KeypadInterface(props)
+    NeotrellisController(Props& props, uint16_t id)
+        : KeypadInterface(props, id)
     {
     }
 

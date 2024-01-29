@@ -39,7 +39,7 @@ protected:
     }
 
 public:
-    OscController(Props &props) : ControllerInterface(props)
+    OscController(Props &props, uint16_t id) : ControllerInterface(props, id)
     {
         // printf("OSC server props : %d %d\n", props.midi, props.encoder);
         start("8888");
