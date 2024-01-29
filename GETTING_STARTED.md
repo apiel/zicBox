@@ -16,8 +16,6 @@ The user interface is composed of views and components. A view is composed of mu
 
 From the audio perspective, there is an audio buffer splitted in tracks (32 by default). Audio plugins are assign per track but can also manipulate multiple tracks, like the audio mixer.
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/zicbox.drawio.png" />
-
 <img src="https://raw.githubusercontent.com/apiel/zicBox/main/zicbox.drawio.svg" />
 
 ## Installation
