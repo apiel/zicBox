@@ -177,11 +177,11 @@ public:
                 return true;
 
             case SDL_KEYDOWN:
-                printf("key down: %d\n", event.key.keysym.sym);
+                viewManager.onKey(0, event.key.keysym.scancode, 1);
                 return true;
             
             case SDL_KEYUP:
-                printf("key up: %d\n", event.key.keysym.sym);
+                viewManager.onKey(0, event.key.keysym.scancode, 0);
                 return true;
             }
         }
