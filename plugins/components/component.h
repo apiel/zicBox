@@ -9,17 +9,16 @@
 #include <stdlib.h>
 
 class Component : public ComponentInterface {
-protected:
-    ValueInterface* val(ValueInterface* value)
-    {
-        values.push_back(value);
-        return value;
-    }
-
 public:
     Component(ComponentInterface::Props props)
         : ComponentInterface(props)
     {
+    }
+
+    ValueInterface* val(ValueInterface* value)
+    {
+        values.push_back(value);
+        return value;
     }
 
     virtual void render() { }
