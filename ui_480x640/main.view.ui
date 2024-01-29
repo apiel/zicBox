@@ -5,6 +5,11 @@ VIEW: shared_components HIDDEN
     SHARED_COMPONENT: SharedGridSequencer
     TRACK_NAME: 1 Kick
     KEYPAD_LAYOUT: default
+      KEYMAP: Keyboard 82 row 1
+      KEYMAP: Keyboard 80 col -1
+      KEYMAP: Keyboard 81 row -1
+      KEYMAP: Keyboard 79 col 1
+
       KEYMAP: Keypad 15 master
       KEYMAP: Keypad 27 layout 0
       KEYMAP: Keypad 39 layout 1

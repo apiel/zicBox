@@ -5,6 +5,8 @@
 
 class KeypadInterface : public ControllerInterface {
 public:
+    bool hasColor = true;
+
     KeypadInterface(ControllerInterface::Props& props, uint16_t id)
         : ControllerInterface(props, id)
         // , activeLayout(layouts[0])
