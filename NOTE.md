@@ -1,3 +1,7 @@
+- TODO keyboard / keypad
+    - see we can extract some logic to have global action that are not specific to a UI plugin
+    - implement a controller to use computer keyboard to be able to easily test on laptop without external hardware
+
 ## zicUi
 
 - TODO live waveform visualisation

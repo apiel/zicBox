@@ -3,7 +3,7 @@
 	url = https://github.com/libsndfile/libsndfile.git
 [submodule "dustscript"]
 	path = dustscript
-	url = https://github.com/apiel/zicBox.git
+	url = git@github.com:apiel/dustscript.git
 [submodule "wiki"]
 	path = wiki
-	url = https://github.com/apiel/zicBox.wiki.git
+	url = git@github.com:apiel/zicBox.wiki.git
