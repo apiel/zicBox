@@ -15,7 +15,7 @@ public:
     {
     }
 
-    ValueInterface* val(ValueInterface* value)
+    ValueInterface* watch(ValueInterface* value)
     {
         values.push_back(value);
         return value;

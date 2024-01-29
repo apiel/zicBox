@@ -206,11 +206,11 @@ public:
             bufferDataId = atoi(strtok(NULL, " "));
             plugin = &getPlugin(pluginName, track);
 
-            browser = val(plugin->getValue(valueKeys[0].c_str()));
-            startPosition = val(plugin->getValue(valueKeys[1].c_str()));
-            endPosition = val(plugin->getValue(valueKeys[2].c_str()));
-            sustainPosition = val(plugin->getValue(valueKeys[3].c_str()));
-            sustainLength = val(plugin->getValue(valueKeys[4].c_str()));
+            browser = watch(plugin->getValue(valueKeys[0].c_str()));
+            startPosition = watch(plugin->getValue(valueKeys[1].c_str()));
+            endPosition = watch(plugin->getValue(valueKeys[2].c_str()));
+            sustainPosition = watch(plugin->getValue(valueKeys[3].c_str()));
+            sustainLength = watch(plugin->getValue(valueKeys[4].c_str()));
             return true;
         }
 

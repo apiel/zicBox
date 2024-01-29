@@ -9,7 +9,7 @@
 class Wave2Component : public Component {
 protected:
     AudioPlugin& plugin;
-    ValueInterface* browser = val(getPlugin("Granular", track).getValue("BROWSER"));
+    ValueInterface* browser = watch(getPlugin("Granular", track).getValue("BROWSER"));
     float lastBrowser = -1.0f;
 
     Size textureSize;

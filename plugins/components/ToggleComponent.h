@@ -48,7 +48,7 @@ protected:
 
     void set(const char* pluginName, const char* key)
     {
-        value = val(getPlugin(pluginName, track).getValue(key));
+        value = watch(getPlugin(pluginName, track).getValue(key));
         if (value != NULL && label.empty()) {
             label = value->label();
         }

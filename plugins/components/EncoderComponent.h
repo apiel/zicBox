@@ -111,7 +111,7 @@ protected:
 
     void set(const char* pluginName, const char* key)
     {
-        value = val(getPlugin(pluginName, track).getValue(key));
+        value = watch(getPlugin(pluginName, track).getValue(key));
         if (value != NULL) {
             valueFloatPrecision = value->props().floatingPoint;
             if (label.empty()) {
