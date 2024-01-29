@@ -19,6 +19,7 @@ public:
     std::string name = "default";
 
     struct KeyMap {
+        KeypadInterface* controller;
         uint16_t controllerId;
         uint8_t key;
         int param;
@@ -28,15 +29,14 @@ public:
     };
 
 protected:
-    // FIXME move keypad ptr to KeyMap
-    KeypadInterface* keypad;
-    std::function<void(uint16_t controllerId, int8_t state, int param, std::string action, uint8_t color)> addKeyMap;
+    std::function<void(KeypadInterface* controller, uint16_t controllerId, int8_t state, int param, std::string action, uint8_t color)> addKeyMap;
+    ControllerInterface* (*getController)(const char* name);
 
 public:
     std::vector<KeyMap> mapping;
 
-    KeypadLayout(KeypadInterface* keypad, std::function<void(uint16_t controllerId, int8_t state, int param, std::string action, uint8_t color)> addKeyMap)
-        : keypad(keypad)
+    KeypadLayout(ControllerInterface* (*getController)(const char* name), std::function<void(KeypadInterface* controller, uint16_t controllerId, int8_t state, int param, std::string action, uint8_t color)> addKeyMap)
+        : getController(getController)
         , addKeyMap(addKeyMap)
     {
     }
@@ -66,18 +66,12 @@ public:
     // }
     void renderKeypad()
     {
-        if (!keypad) {
-            return;
-        }
-
         // TODO instead to do this should just set the one missing from the list...
         // setButton(254, 254); // set all button off
         for (KeyMap keyMap : mapping) {
-            // FIXME move keypad ptr to KeyMap
-            if (keyMap.controllerId == 0)
-                continue;
-
-            keypad->setButton(keyMap.key, keyMap.getColor(keyMap));
+            if (keyMap.controller && keyMap.controller->hasColor) {
+                keyMap.controller->setButton(keyMap.key, keyMap.getColor(keyMap));
+            }
         }
     }
 
@@ -93,14 +87,15 @@ public:
             int param = paramStr != NULL ? atoi(paramStr) : -1;
             uint8_t color = colorStr != NULL ? atoi(colorStr) : 255;
 
+            KeypadInterface* controller = NULL;
             uint16_t controllerId = -1;
             if (strcmp(controllerName.c_str(), "Keyboard") == 0) {
                 controllerId = 0;
             } else {
-                // FIXME get id from list of controllers
-                controllerId = keypad->id;
+                controller = (KeypadInterface *)getController(controllerName.c_str());
+                controllerId = controller->id;
             }
-            addKeyMap(controllerId, key, param, action, color);
+            addKeyMap(controller, controllerId, key, param, action, color);
         }
         return false;
     }
