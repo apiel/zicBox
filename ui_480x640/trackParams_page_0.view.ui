@@ -100,3 +100,11 @@
   #   COLOR: #ff7700
   #   VALUE: Pd CC_2
   #   ID: Param11_enc
+  COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
+    ENCODER_ID: 11
+    TRACK: $track
+    SHOW_GROUP: FALSE
+    COLOR: #ff7700
+    VALUE: SerializeTrack VARIATION
+    ID: Param11_enc
+    

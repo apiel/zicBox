@@ -1,6 +1,7 @@
 #ifndef _SERIALIZE_TRACK_H_
 #define _SERIALIZE_TRACK_H_
 
+#include <filesystem>
 #include <mutex>
 
 #include "../../helpers/trim.h"
@@ -46,12 +47,21 @@ public:
 
     void setVariation(float value)
     {
-        // should it use a mutex to avoid race conditions with serialization thread?
-        // also need to avoid that new variation get save to current file...
-        variation.setFloat(value);
-        // if variation is different than current variation
-        // then we can hydrate
-        // but first we need to save the current state, to variation folder
+        m.lock();
+        int16_t currentVariation = variation.get();
+        variation.setFloat((int16_t)value);
+        if (currentVariation != variation.get()) {
+            std::filesystem::create_directories(variationFolder);
+            std::filesystem::copy(filepath, variationFolder + "/" + std::to_string(currentVariation) + ".cfg", std::filesystem::copy_options::overwrite_existing);
+            if (std::filesystem::exists(variationFolder + "/" + std::to_string(variation.get()) + ".cfg")) {
+                std::filesystem::copy(variationFolder + "/" + std::to_string(variation.get()) + ".cfg", filepath, std::filesystem::copy_options::overwrite_existing);
+                hydrate(true);
+                return;
+            } else {
+                // We might want to re-initialize value, but for at the moment we dont keep in memory default value
+            }
+        }
+        m.unlock();
     }
 
     /*md **Config**: */
@@ -100,9 +110,11 @@ public:
         m.unlock();
     }
 
-    void hydrate()
+    void hydrate(bool skipLock = false)
     {
-        m.lock();
+        if (!skipLock) {
+            m.lock();
+        }
 
         FILE* file = fopen(filepath.c_str(), "r");
         if (!file) {
@@ -130,6 +142,11 @@ public:
         fclose(file);
 
         m.unlock();
+    }
+
+    void hydrate(std::string value)
+    {
+        // Do not hydrate this plugin, else it would make a loop
     }
 
     void* data(int id, void* userdata = NULL)
