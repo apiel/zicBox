@@ -53,8 +53,8 @@ public:
         if (currentVariation != variation.get()) {
             std::filesystem::create_directories(variationFolder);
             std::filesystem::copy(filepath, variationFolder + "/" + std::to_string(currentVariation) + ".cfg", std::filesystem::copy_options::overwrite_existing);
-            if (std::filesystem::exists(variationFolder + "/" + std::to_string(variation.get()) + ".cfg")) {
-                std::filesystem::copy(variationFolder + "/" + std::to_string(variation.get()) + ".cfg", filepath, std::filesystem::copy_options::overwrite_existing);
+            if (std::filesystem::exists(variationFolder + "/" + std::to_string((int16_t)variation.get()) + ".cfg")) {
+                std::filesystem::copy(variationFolder + "/" + std::to_string((int16_t)variation.get()) + ".cfg", filepath, std::filesystem::copy_options::overwrite_existing);
                 hydrate(true);
                 return;
             } else {
