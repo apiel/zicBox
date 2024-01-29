@@ -199,11 +199,11 @@ public:
         m2.unlock();
     }
 
-    void onKeyPad(uint16_t id, int key, int8_t state)
+    void onKey(uint16_t id, int key, int8_t state)
     {
         m2.lock();
         for (auto& component : ui.view->components) {
-            component->onKeyPad(id, key, state);
+            component->onKey(id, key, state);
         }
         m2.unlock();
     }

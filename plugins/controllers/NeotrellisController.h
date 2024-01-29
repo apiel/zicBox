@@ -62,12 +62,12 @@ protected:
                     uint8_t key;
                     read(port, &key, 1);
                     // printf("press key %d\n", key);
-                    onKeypad(id, key, 1);
+                    onKey(id, key, 1);
                 } else if (byte == '!') {
                     uint8_t key;
                     read(port, &key, 1);
                     // printf("release key %d\n", key);
-                    onKeypad(id, key, 0);
+                    onKey(id, key, 0);
                 }
             }
         }

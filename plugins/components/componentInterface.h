@@ -83,7 +83,7 @@ public:
     virtual void onMotionRelease(MotionInterface& motion) = 0;
     virtual void handleMotionRelease(MotionInterface& motion) = 0;
     virtual void onEncoder(int id, int8_t direction) = 0;
-    virtual void onKeyPad(uint16_t id, int key, int8_t state) = 0;
+    virtual void onKey(uint16_t id, int key, int8_t state) = 0;
     virtual bool config(char* key, char* value) = 0;
     virtual bool baseConfig(char* key, char* value) = 0;
     virtual void onGroupChanged(int8_t index) = 0;

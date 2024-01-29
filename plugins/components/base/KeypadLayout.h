@@ -39,7 +39,7 @@ public:
     {
     }
 
-    void onKeypad(int key, int8_t state)
+    void onKey(int key, int8_t state)
     {
         for (KeyMap keyMap : mapping) {
             if (keyMap.key == key) {
