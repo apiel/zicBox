@@ -16,8 +16,8 @@
 
 - TODO GridSequencer
     - TODO touch could be used to move up/down/left/right
-    - TODO save single track clip under a given name
-    - TODO load a specific track clip
+    - TODO save single track variation/clip under a given name
+    - TODO load a specific track variation/clip
 
 - TODO make label all at the same position...
 
