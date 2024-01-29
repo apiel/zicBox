@@ -568,10 +568,10 @@ public:
         return false;
     }
 
-    void onKeyPad(uint16_t id, int key, int8_t state)
+    void onKey(uint16_t id, int key, int8_t state)
     {
         if (currentKeypadLayout) {
-            currentKeypadLayout->onKeypad(key, state);
+            currentKeypadLayout->onKey(key, state);
         }
     }
 };

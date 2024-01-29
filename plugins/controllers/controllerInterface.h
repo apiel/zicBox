@@ -11,18 +11,18 @@ public:
     uint16_t id;
     void (*midi)(std::vector<unsigned char>* message) = NULL;
     void (*encoder)(int id, int8_t direction) = NULL;
-    void (*onKeypad)(uint16_t id, int key, int8_t state) = NULL;
+    void (*onKey)(uint16_t id, int key, int8_t state) = NULL;
 
     struct Props {
         void (*midi)(std::vector<unsigned char>* message) = NULL;
         void (*encoder)(int id, int8_t direction) = NULL;
-        void (*onKeypad)(uint16_t id, int key, int8_t state) = NULL;
+        void (*onKey)(uint16_t id, int key, int8_t state) = NULL;
     };
     ControllerInterface(Props& props, uint16_t id)
         : id(id)
         , midi(props.midi)
         , encoder(props.encoder)
-        , onKeypad(props.onKeypad)
+        , onKey(props.onKey)
     {
     }
 

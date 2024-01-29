@@ -17,7 +17,7 @@ void encoderHandler(int id, int8_t direction)
 
 void keyHandler(uint16_t id, int key, int8_t state)
 {
-    ViewManager::get().onKeyPad(id, key, state);
+    ViewManager::get().onKey(id, key, state);
 }
 
 uint16_t controllerId = 1;
