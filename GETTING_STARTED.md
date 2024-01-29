@@ -18,6 +18,8 @@ From the audio perspective, there is an audio buffer splitted in tracks (32 by d
 
 <img src="https://raw.githubusercontent.com/apiel/zicBox/main/zicbox.drawio.png" />
 
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/zicbox.drawio.svg" />
+
 ## Installation
 
 ```ssh
