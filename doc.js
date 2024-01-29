@@ -171,8 +171,8 @@ for (const [index, fileActive] of fileList.entries()) {
         .join('\n\n');
     writeFileSync(path.join(docsFolder, fileActive.filename, '_Sidebar.md'), sidebar);
 
-    const previous = index > 0 ? `Previous: [${fileList[index - 1].filename}](https://github.com/apiel/zicBox/wiki/${fileList[index - 1].filename})` : '';
-    const next = index < fileList.length - 1 ? `Next: [${fileList[index + 1].filename}](https://github.com/apiel/zicBox/wiki/${fileList[index + 1].filename})` : '';
+    const previous = index > 0 ? `Previous: <a href="https://github.com/apiel/zicBox/wiki/${fileList[index - 1].filename}">${fileList[index - 1].filename}</a>` : '';
+    const next = index < fileList.length - 1 ? 'Next: <a href="https://github.com/apiel/zicBox/wiki/' + fileList[index + 1].filename + '">' + fileList[index + 1].filename + '</a>' : '';
     const footer = `
 <p align="center">
     ${previous} ${next}
