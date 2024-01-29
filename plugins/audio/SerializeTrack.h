@@ -12,6 +12,7 @@
 ## SerializeTrack
 
 SerializeTrack plugin is used to serialize track on disk. It will scan all the plugins on the given track and save them on disk.
+
 */
 class SerializeTrack : public Mapping {
 protected:
@@ -35,6 +36,8 @@ public:
     /*md **Values:** */
     /*md - `VARIATION` switch between different track serialization varaitions (clip). WIP */
     Val& variation = val(0.0f, "VARIATION", { "Variation", .max = 12.0f }, [&](auto p) { setVariation(p.value); });
+    /*md - `EDIT_VARIATION` toggle to enable variation edit mode. If set to false variation will be read only. If set to true, every changes will be save before to switch to the next variation. Default is true. */
+    Val& editVariation = val(1.0f, "EDIT_VARIATION", { "Edit Variation", .max = 1.0f });
 
     SerializeTrack(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -52,7 +55,9 @@ public:
         variation.setFloat((int16_t)value);
         if (currentVariation != variation.get()) {
             std::filesystem::create_directories(variationFolder);
-            std::filesystem::copy(filepath, variationFolder + "/" + std::to_string(currentVariation) + ".cfg", std::filesystem::copy_options::overwrite_existing);
+            if (editVariation.get()) {
+                std::filesystem::copy(filepath, variationFolder + "/" + std::to_string(currentVariation) + ".cfg", std::filesystem::copy_options::overwrite_existing);
+            }
             if (std::filesystem::exists(variationFolder + "/" + std::to_string((int16_t)variation.get()) + ".cfg")) {
                 std::filesystem::copy(variationFolder + "/" + std::to_string((int16_t)variation.get()) + ".cfg", filepath, std::filesystem::copy_options::overwrite_existing);
                 hydrate(true);
@@ -67,15 +72,21 @@ public:
     /*md **Config**: */
     bool config(char* key, char* value)
     {
-        /*md - `FILEPATH` to set filepath. By default it is `serialized/track.cfg`.*/
+        /*md - `FILEPATH: filepath` to set filepath. By default it is `serialized/track.cfg`.*/
         if (strcmp(key, "FILEPATH") == 0) {
             setFilepath(value);
             return true;
         }
 
-        /*md - `MAX_VARIATION` to set max variation. By default it is `12`.*/
+        /*md - `MAX_VARIATION: 12` to set max variation. By default it is `12`.*/
         if (strcmp(key, "MAX_VARIATION") == 0) {
             variation.props().max = atof(value);
+            return true;
+        }
+
+        /*md - `EDIT_VARIATION: true` toggle to enable variation edit mode. If set to false variation will be read only. If set to true, every changes will be save before to switch to the next variation. Default is true`*/
+        if (strcmp(key, "EDIT_VARIATION") == 0) {
+            editVariation.set(strcmp(value, "true") == 0 ? 1.0f : 0.0f);
             return true;
         }
 
