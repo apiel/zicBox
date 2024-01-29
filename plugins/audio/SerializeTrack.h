@@ -34,7 +34,7 @@ protected:
 
 public:
     /*md **Values:** */
-    /*md - `VARIATION` switch between different track serialization varaitions (clip). WIP */
+    /*md - `VARIATION` switch between different track serialization varaitions (clip). */
     Val& variation = val(0.0f, "VARIATION", { "Variation", .max = 12.0f }, [&](auto p) { setVariation(p.value); });
     /*md - `EDIT_VARIATION` toggle to enable variation edit mode. If set to false variation will be read only. If set to true, every changes will be save before to switch to the next variation. Default is true. */
     Val& editVariation = val(1.0f, "EDIT_VARIATION", { "Edit Variation", .max = 1.0f });

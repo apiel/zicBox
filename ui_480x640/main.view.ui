@@ -31,18 +31,18 @@ VIEW: shared_components HIDDEN
       KEYMAP: 9 track 9
       KEYMAP: 10 track 10
       KEYMAP: 11 track 11
-      KEYMAP: 16 clip 0
-      KEYMAP: 17 clip 1
-      KEYMAP: 18 clip 2
-      KEYMAP: 19 clip 3
-      KEYMAP: 28 clip 4
-      KEYMAP: 29 clip 5
-      KEYMAP: 30 clip 6
-      KEYMAP: 31 clip 7
-      KEYMAP: 40 clip 8
-      KEYMAP: 41 clip 9
-      KEYMAP: 42 clip 10
-      KEYMAP: 43 clip 11
+      KEYMAP: 16 variation 0
+      KEYMAP: 17 variation 1
+      KEYMAP: 18 variation 2
+      KEYMAP: 19 variation 3
+      KEYMAP: 28 variation 4
+      KEYMAP: 29 variation 5
+      KEYMAP: 30 variation 6
+      KEYMAP: 31 variation 7
+      KEYMAP: 40 variation 8
+      KEYMAP: 41 variation 9
+      KEYMAP: 42 variation 10
+      KEYMAP: 43 variation 11
       KEYMAP: 20 param 0 50
       KEYMAP: 21 param 1 20
       KEYMAP: 22 param 2 60

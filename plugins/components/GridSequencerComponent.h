@@ -14,18 +14,20 @@ public:
     std::string name = "Init";
     ValueInterface* volume;
     ValueInterface* status;
+    ValueInterface* variation;
     Step* steps;
     ValueInterface* selectedStep;
     std::string trackView = "TrackParams_track_";
     std::string stepView = "StepParams_track_";
 
-    void load(Component* component, int16_t id, AudioPlugin& _seqPlugin, ValueInterface* _volume)
+    void load(Component* component, int16_t id)
     {
         trackId = id;
-        seqPlugin = &_seqPlugin;
-        volume = _volume;
-        selectedStep = _seqPlugin.getValue("SELECTED_STEP");
-        status = component->watch(_seqPlugin.getValue("STATUS"));
+        seqPlugin = &component->getPlugin("Sequencer", id + 1);
+        volume = component->getPlugin("Mixer", -1).getValue("TRACK_" + std::to_string(id + 1));
+        selectedStep = seqPlugin->getValue("SELECTED_STEP");
+        status = component->watch(seqPlugin->getValue("STATUS"));
+        variation = component->watch(component->getPlugin("SerializeTrack", id + 1).getValue("VARIATION"));
         steps = (Step*)seqPlugin->data(0); // TODO make this configurable...
         name = "Track " + std::to_string(id + 1);
 
@@ -433,9 +435,9 @@ public:
             /*md - `master` to select master track: `KEYMAP: 1 master` will select master when key 1 is pressed. */
         } else if (action == "master") {
             currentKeypadLayout->mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return 40; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateMasterSelection(state); } });
-            /*md - `clip` to select clip: `KEYMAP: 1 clip` will select clip when key 1 is pressed. */
-        } else if (action == "clip") {
-            currentKeypadLayout->mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return 60; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) {} });
+            /*md - `variation` to select variation: `KEYMAP: 1 variation` will select variation when key 1 is pressed. */
+        } else if (action == "variation") {
+            currentKeypadLayout->mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { return 60; }, [&](int8_t state, KeypadLayout::KeyMap& keymap) { tracks[grid.row].variation->set(keymap.param); } });
             /*md - `step` to update a step: `KEYMAP: 1 step 4` will update step 4 when key 1 is pressed. */
         } else if (action == "step") {
             currentKeypadLayout->mapping.push_back({ key, param, color, [&](KeypadLayout::KeyMap& keymap) { 
@@ -457,9 +459,8 @@ public:
     {
         resize();
 
-        AudioPlugin& mixer = getPlugin("Mixer", -1);
         for (int16_t i = 0; i < 12; i++) {
-            tracks[i].load(this, i, getPlugin("Sequencer", i + 1), mixer.getValue("TRACK_" + std::to_string(i + 1)));
+            tracks[i].load(this, i);
         }
 
         jobRendering = [this](unsigned long _now) {

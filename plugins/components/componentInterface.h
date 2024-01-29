@@ -30,7 +30,6 @@ protected:
     DrawInterface& draw;
     Styles& styles;
 
-    AudioPlugin& (*getPlugin)(const char* name, int16_t track);
     void (*sendAudioEvent)(AudioEventType event);
     ControllerInterface* (*getController)(const char* name);
     std::vector<ComponentInterface*> (*getViewComponents)();
@@ -47,6 +46,7 @@ protected:
     }
 
 public:
+    AudioPlugin& (*getPlugin)(const char* name, int16_t track);
     std::vector<ValueInterface*> values;
     Point position;
     Size size;
