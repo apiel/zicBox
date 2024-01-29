@@ -151,7 +151,7 @@ docs(rootFolder);
 
 fileList.sort((a, b) => a.filename.localeCompare(b.filename));
 
-for (const fileActive of fileList) {
+for (const [index, fileActive] of fileList.entries()) {
     const sidebar = fileList
         .map((file) => {
             if (file.filename === fileActive.filename) {
@@ -170,6 +170,15 @@ for (const fileActive of fileList) {
         })
         .join('\n\n');
     writeFileSync(path.join(docsFolder, fileActive.filename, '_Sidebar.md'), sidebar);
+
+    const previous = index > 0 ? `[${fileList[index - 1].filename}](https://github.com/apiel/zicBox/wiki/${fileList[index - 1].filename})` : '';
+    const next = index < fileList.length - 1 ? `[${fileList[index + 1].filename}](https://github.com/apiel/zicBox/wiki/${fileList[index + 1].filename})` : '';
+    const footer = `
+    | ${previous} |  | ${next} |
+    | :---:   | :---: | :---: |
+    `;
+
+    writeFileSync(path.join(docsFolder, fileActive.filename, '_Footer.md'), footer);
 }
 
 const sidebar = fileList

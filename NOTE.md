@@ -107,6 +107,8 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 
 - TODO save track patch
 
+- TODO use clap plugin https://nakst.gitlab.io/tutorial/clap-part-1.html
+
 - TODO SynthSample
     - fix start position of sample marker when start pos is not to 0
     - morph on wavetable, start and end stick to sustain position when both are touching sustain window
