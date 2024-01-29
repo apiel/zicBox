@@ -5,108 +5,108 @@ VIEW: shared_components HIDDEN
     SHARED_COMPONENT: SharedGridSequencer
     TRACK_NAME: 1 Kick
     KEYPAD_LAYOUT: default
-      KEYMAP: 15 master
-      KEYMAP: 27 layout 0
-      KEYMAP: 39 layout 1
+      KEYMAP: Keypad 15 master
+      KEYMAP: Keypad 27 layout 0
+      KEYMAP: Keypad 39 layout 1
 
-      KEYMAP: 12 none
-      KEYMAP: 13 none
-      KEYMAP: 14 none
-      KEYMAP: 24 none
-      KEYMAP: 26 none
+      KEYMAP: Keypad 12 none
+      KEYMAP: Keypad 13 none
+      KEYMAP: Keypad 14 none
+      KEYMAP: Keypad 24 none
+      KEYMAP: Keypad 26 none
 
-      KEYMAP: 25 row 1
-      KEYMAP: 36 col -1
-      KEYMAP: 37 row -1
-      KEYMAP: 38 col 1
-      KEYMAP: 0 track 0
-      KEYMAP: 1 track 1
-      KEYMAP: 2 track 2
-      KEYMAP: 3 track 3
-      KEYMAP: 4 track 4
-      KEYMAP: 5 track 5
-      KEYMAP: 6 track 6
-      KEYMAP: 7 track 7
-      KEYMAP: 8 track 8
-      KEYMAP: 9 track 9
-      KEYMAP: 10 track 10
-      KEYMAP: 11 track 11
-      KEYMAP: 16 variation 0
-      KEYMAP: 17 variation 1
-      KEYMAP: 18 variation 2
-      KEYMAP: 19 variation 3
-      KEYMAP: 28 variation 4
-      KEYMAP: 29 variation 5
-      KEYMAP: 30 variation 6
-      KEYMAP: 31 variation 7
-      KEYMAP: 40 variation 8
-      KEYMAP: 41 variation 9
-      KEYMAP: 42 variation 10
-      KEYMAP: 43 variation 11
-      KEYMAP: 20 param 0 50
-      KEYMAP: 21 param 1 20
-      KEYMAP: 22 param 2 60
-      KEYMAP: 23 param 3 90
-      KEYMAP: 32 param 4 50
-      KEYMAP: 33 param 5 20
-      KEYMAP: 34 param 6 60
-      KEYMAP: 35 param 7 90
-      KEYMAP: 44 param 8 50
-      KEYMAP: 45 param 9 20
-      KEYMAP: 46 param 10 60
-      KEYMAP: 47 param 11 90
+      KEYMAP: Keypad 25 row 1
+      KEYMAP: Keypad 36 col -1
+      KEYMAP: Keypad 37 row -1
+      KEYMAP: Keypad 38 col 1
+      KEYMAP: Keypad 0 track 0
+      KEYMAP: Keypad 1 track 1
+      KEYMAP: Keypad 2 track 2
+      KEYMAP: Keypad 3 track 3
+      KEYMAP: Keypad 4 track 4
+      KEYMAP: Keypad 5 track 5
+      KEYMAP: Keypad 6 track 6
+      KEYMAP: Keypad 7 track 7
+      KEYMAP: Keypad 8 track 8
+      KEYMAP: Keypad 9 track 9
+      KEYMAP: Keypad 10 track 10
+      KEYMAP: Keypad 11 track 11
+      KEYMAP: Keypad 16 variation 0
+      KEYMAP: Keypad 17 variation 1
+      KEYMAP: Keypad 18 variation 2
+      KEYMAP: Keypad 19 variation 3
+      KEYMAP: Keypad 28 variation 4
+      KEYMAP: Keypad 29 variation 5
+      KEYMAP: Keypad 30 variation 6
+      KEYMAP: Keypad 31 variation 7
+      KEYMAP: Keypad 40 variation 8
+      KEYMAP: Keypad 41 variation 9
+      KEYMAP: Keypad 42 variation 10
+      KEYMAP: Keypad 43 variation 11
+      KEYMAP: Keypad 20 param 0 50
+      KEYMAP: Keypad 21 param 1 20
+      KEYMAP: Keypad 22 param 2 60
+      KEYMAP: Keypad 23 param 3 90
+      KEYMAP: Keypad 32 param 4 50
+      KEYMAP: Keypad 33 param 5 20
+      KEYMAP: Keypad 34 param 6 60
+      KEYMAP: Keypad 35 param 7 90
+      KEYMAP: Keypad 44 param 8 50
+      KEYMAP: Keypad 45 param 9 20
+      KEYMAP: Keypad 46 param 10 60
+      KEYMAP: Keypad 47 param 11 90
     KEYPAD_LAYOUT: steps
-      KEYMAP: 15 master
-      KEYMAP: 27 layout 0
-      KEYMAP: 39 layout 1
+      KEYMAP: Keypad 15 master
+      KEYMAP: Keypad 27 layout 0
+      KEYMAP: Keypad 39 layout 1
 
-      KEYMAP: 3 none
+      KEYMAP: Keypad 3 none
 
-      KEYMAP: 0 track 0
-      KEYMAP: 1 track 1
-      KEYMAP: 2 track 2
-      KEYMAP: 12 track 3
-      KEYMAP: 13 track 4
-      KEYMAP: 14 track 5
-      KEYMAP: 24 track 6
-      KEYMAP: 25 track 7
-      KEYMAP: 26 track 8
-      KEYMAP: 36 track 9
-      KEYMAP: 37 track 10
-      KEYMAP: 38 track 11
+      KEYMAP: Keypad 0 track 0
+      KEYMAP: Keypad 1 track 1
+      KEYMAP: Keypad 2 track 2
+      KEYMAP: Keypad 12 track 3
+      KEYMAP: Keypad 13 track 4
+      KEYMAP: Keypad 14 track 5
+      KEYMAP: Keypad 24 track 6
+      KEYMAP: Keypad 25 track 7
+      KEYMAP: Keypad 26 track 8
+      KEYMAP: Keypad 36 track 9
+      KEYMAP: Keypad 37 track 10
+      KEYMAP: Keypad 38 track 11
       
-      KEYMAP: 4 step 0
-      KEYMAP: 5 step 1
-      KEYMAP: 6 step 2
-      KEYMAP: 7 step 3
-      KEYMAP: 8 step 4
-      KEYMAP: 9 step 5
-      KEYMAP: 10 step 6
-      KEYMAP: 11 step 7
-      KEYMAP: 16 step 8
-      KEYMAP: 17 step 9
-      KEYMAP: 18 step 10
-      KEYMAP: 19 step 11
-      KEYMAP: 20 step 12
-      KEYMAP: 21 step 13
-      KEYMAP: 22 step 14
-      KEYMAP: 23 step 15
-      KEYMAP: 28 step 16
-      KEYMAP: 29 step 17
-      KEYMAP: 30 step 18
-      KEYMAP: 31 step 19
-      KEYMAP: 32 step 20
-      KEYMAP: 33 step 21
-      KEYMAP: 34 step 22
-      KEYMAP: 35 step 23
-      KEYMAP: 40 step 24
-      KEYMAP: 41 step 25
-      KEYMAP: 42 step 26
-      KEYMAP: 43 step 27
-      KEYMAP: 44 step 28
-      KEYMAP: 45 step 29
-      KEYMAP: 46 step 30
-      KEYMAP: 47 step 31
+      KEYMAP: Keypad 4 step 0
+      KEYMAP: Keypad 5 step 1
+      KEYMAP: Keypad 6 step 2
+      KEYMAP: Keypad 7 step 3
+      KEYMAP: Keypad 8 step 4
+      KEYMAP: Keypad 9 step 5
+      KEYMAP: Keypad 10 step 6
+      KEYMAP: Keypad 11 step 7
+      KEYMAP: Keypad 16 step 8
+      KEYMAP: Keypad 17 step 9
+      KEYMAP: Keypad 18 step 10
+      KEYMAP: Keypad 19 step 11
+      KEYMAP: Keypad 20 step 12
+      KEYMAP: Keypad 21 step 13
+      KEYMAP: Keypad 22 step 14
+      KEYMAP: Keypad 23 step 15
+      KEYMAP: Keypad 28 step 16
+      KEYMAP: Keypad 29 step 17
+      KEYMAP: Keypad 30 step 18
+      KEYMAP: Keypad 31 step 19
+      KEYMAP: Keypad 32 step 20
+      KEYMAP: Keypad 33 step 21
+      KEYMAP: Keypad 34 step 22
+      KEYMAP: Keypad 35 step 23
+      KEYMAP: Keypad 40 step 24
+      KEYMAP: Keypad 41 step 25
+      KEYMAP: Keypad 42 step 26
+      KEYMAP: Keypad 43 step 27
+      KEYMAP: Keypad 44 step 28
+      KEYMAP: Keypad 45 step 29
+      KEYMAP: Keypad 46 step 30
+      KEYMAP: Keypad 47 step 31
     SELECTED_LAYOUT: default
 
   $track=0
