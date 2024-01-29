@@ -302,10 +302,10 @@ public:
         }
         case 3:
             return clockCounterPtr;
-        case 4: // Save pattern
+        case 10: // Save pattern
             save(folder / *(std::string*)userdata);
             return NULL;
-        case 5: // Rename pattern
+        case 11: // Rename pattern
             rename(folder / *(std::string*)userdata);
             return NULL;
         }

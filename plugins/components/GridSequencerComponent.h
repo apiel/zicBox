@@ -19,13 +19,13 @@ public:
     std::string trackView = "TrackParams_track_";
     std::string stepView = "StepParams_track_";
 
-    void load(int16_t id, AudioPlugin& _seqPlugin, ValueInterface* _volume)
+    void load(Component* component, int16_t id, AudioPlugin& _seqPlugin, ValueInterface* _volume)
     {
         trackId = id;
         seqPlugin = &_seqPlugin;
         volume = _volume;
         selectedStep = _seqPlugin.getValue("SELECTED_STEP");
-        status = _seqPlugin.getValue("STATUS");
+        status = component->val(_seqPlugin.getValue("STATUS"));
         steps = (Step*)seqPlugin->data(0); // TODO make this configurable...
         name = "Track " + std::to_string(id + 1);
 
@@ -459,7 +459,7 @@ public:
 
         AudioPlugin& mixer = getPlugin("Mixer", -1);
         for (int16_t i = 0; i < 12; i++) {
-            tracks[i].load(i, getPlugin("Sequencer", i + 1), mixer.getValue("TRACK_" + std::to_string(i + 1)));
+            tracks[i].load(this, i, getPlugin("Sequencer", i + 1), mixer.getValue("TRACK_" + std::to_string(i + 1)));
         }
 
         jobRendering = [this](unsigned long _now) {
