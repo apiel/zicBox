@@ -53,7 +53,7 @@ protected:
 
     void set(uint8_t index, int8_t encoderId, const char* pluginName, const char* key)
     {
-        adsr[index].value = val(getPlugin(pluginName, track).getValue(key));
+        adsr[index].value = watch(getPlugin(pluginName, track).getValue(key));
         adsr[index].encoderId = encoderId;
 
         printf("set: %s %s %d = label %s\n", pluginName, key, encoderId, adsr[index].value->label().c_str());

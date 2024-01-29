@@ -10,12 +10,12 @@
 class GranularComponent : public Component {
 protected:
     AudioPlugin& plugin;
-    ValueInterface* browser = val(getPlugin("Granular", track).getValue("BROWSER"));
+    ValueInterface* browser = watch(getPlugin("Granular", track).getValue("BROWSER"));
     float lastBrowser = -1.0f;
-    ValueInterface* start = val(getPlugin("Granular", track).getValue("START"));
-    ValueInterface* grainSize = val(getPlugin("Granular", track).getValue("GRAIN_SIZE"));
-    ValueInterface* spray = val(getPlugin("Granular", track).getValue("SPRAY"));
-    ValueInterface* density = val(getPlugin("Granular", track).getValue("DENSITY"));
+    ValueInterface* start = watch(getPlugin("Granular", track).getValue("START"));
+    ValueInterface* grainSize = watch(getPlugin("Granular", track).getValue("GRAIN_SIZE"));
+    ValueInterface* spray = watch(getPlugin("Granular", track).getValue("SPRAY"));
+    ValueInterface* density = watch(getPlugin("Granular", track).getValue("DENSITY"));
 
     MotionInterface* motion1 = NULL;
     MotionInterface* motion2 = NULL;

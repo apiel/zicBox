@@ -38,12 +38,12 @@ protected:
 
     void setValueX(const char* pluginName, const char* key)
     {
-        valueX = val(getPlugin(pluginName, track).getValue(key));
+        valueX = watch(getPlugin(pluginName, track).getValue(key));
     }
 
     void setValueY(const char* pluginName, const char* key)
     {
-        valueY = val(getPlugin(pluginName, track).getValue(key));
+        valueY = watch(getPlugin(pluginName, track).getValue(key));
     }
     struct Colors {
         Color background;

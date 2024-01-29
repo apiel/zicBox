@@ -16,13 +16,13 @@ Make minimal representation of the sequencer.
 class SequencerBarComponent : public Component {
 protected:
     AudioPlugin& plugin;
-    ValueInterface* selectedStep = val(getPlugin("Sequencer", track).getValue("SELECTED_STEP"));
-    ValueInterface* stepEnabled = val(getPlugin("Sequencer", track).getValue("STEP_ENABLED"));
-    ValueInterface* stepLength = val(getPlugin("Sequencer", track).getValue("STEP_LENGTH"));
-    ValueInterface* stepVelocity = val(getPlugin("Sequencer", track).getValue("STEP_VELOCITY"));
-    ValueInterface* stepNote = val(getPlugin("Sequencer", track).getValue("STEP_NOTE"));
-    ValueInterface* stepCondition = val(getPlugin("Sequencer", track).getValue("STEP_CONDITION"));
-    ValueInterface* pattern = val(getPlugin("Sequencer", track).getValue("PATTERN"));
+    ValueInterface* selectedStep = watch(getPlugin("Sequencer", track).getValue("SELECTED_STEP"));
+    ValueInterface* stepEnabled = watch(getPlugin("Sequencer", track).getValue("STEP_ENABLED"));
+    ValueInterface* stepLength = watch(getPlugin("Sequencer", track).getValue("STEP_LENGTH"));
+    ValueInterface* stepVelocity = watch(getPlugin("Sequencer", track).getValue("STEP_VELOCITY"));
+    ValueInterface* stepNote = watch(getPlugin("Sequencer", track).getValue("STEP_NOTE"));
+    ValueInterface* stepCondition = watch(getPlugin("Sequencer", track).getValue("STEP_CONDITION"));
+    ValueInterface* pattern = watch(getPlugin("Sequencer", track).getValue("PATTERN"));
 
     Point stepPosition;
     Size stepSize;

@@ -25,7 +25,7 @@ public:
         seqPlugin = &_seqPlugin;
         volume = _volume;
         selectedStep = _seqPlugin.getValue("SELECTED_STEP");
-        status = component->val(_seqPlugin.getValue("STATUS"));
+        status = component->watch(_seqPlugin.getValue("STATUS"));
         steps = (Step*)seqPlugin->data(0); // TODO make this configurable...
         name = "Track " + std::to_string(id + 1);
 

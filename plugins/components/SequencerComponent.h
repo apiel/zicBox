@@ -250,7 +250,7 @@ public:
         };
 
         // register for pattern change
-        patternValue = val(plugin.getValue("PATTERN"));
+        patternValue = watch(plugin.getValue("PATTERN"));
     }
 
     void render()

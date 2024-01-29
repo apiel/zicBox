@@ -256,7 +256,7 @@ public:
         if (strcmp(key, "VALUE") == 0) {
             char* pluginName = strtok(params, " ");
             char* keyValue = strtok(NULL, " ");
-            value = val(getPlugin(pluginName, track).getValue(keyValue));
+            value = watch(getPlugin(pluginName, track).getValue(keyValue));
             if (value != NULL) {
                 valueFloatPrecision = value->props().floatingPoint;
                 if (label.empty()) {

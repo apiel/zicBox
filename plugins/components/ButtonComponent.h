@@ -66,7 +66,7 @@ protected:
         char* key = strtok(NULL, " ");
         char* targetValue = strtok(NULL, " ");
 
-        ValueInterface* value = val(getPlugin(action, track).getValue(key));
+        ValueInterface* value = watch(getPlugin(action, track).getValue(key));
         if (value != NULL && label == "") {
             label = value->label();
         } else {
