@@ -2,6 +2,11 @@
     - see we can extract some logic to have global action that are not specific to a UI plugin
     - implement a controller to use computer keyboard to be able to easily test on laptop without external hardware
 
+- TODO hardware look for touch encoder or button encoder
+    - https://www.mouser.at/datasheet/2/54/PEC12R-777795.pdf
+    - 22mm https://www.mouser.at/ProductDetail/Bourns/PEC12R-4022F-S0024?qs=6oMev5NRZMHfikcgfDwwZA%3D%3D
+    - 30mm https://www.mouser.at/ProductDetail/Bourns/PEC12R-4030F-S0024?qs=15%2Ff%2FzFZJSBasYPWBClbAA%3D%3D
+
 ## zicUi
 
 - TODO live waveform visualisation
