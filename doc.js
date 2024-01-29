@@ -174,8 +174,8 @@ for (const [index, fileActive] of fileList.entries()) {
     const previous = index > 0 ? `[${fileList[index - 1].filename}](https://github.com/apiel/zicBox/wiki/${fileList[index - 1].filename})` : '';
     const next = index < fileList.length - 1 ? `[${fileList[index + 1].filename}](https://github.com/apiel/zicBox/wiki/${fileList[index + 1].filename})` : '';
     const footer = `
-    | ${previous} |  | ${next} |
-    | :---:   | :---: | :---: |
+| ${previous} |  | ${next} |
+| :---:  | :---: | :---: |
     `;
 
     writeFileSync(path.join(docsFolder, fileActive.filename, '_Footer.md'), footer);
