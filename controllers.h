@@ -15,11 +15,12 @@ void encoderHandler(int id, int8_t direction)
     ViewManager::get().onEncoder(id, direction);
 }
 
-void keyHandler(int id, int8_t state)
+void keyHandler(uint16_t id, int key, int8_t state)
 {
-    ViewManager::get().onKeyPad(id, state);
+    ViewManager::get().onKeyPad(id, key, state);
 }
 
+uint16_t controllerId = 1;
 void loadPluginController(char* value, const char* filename)
 {
     Controller plugin;
@@ -45,7 +46,7 @@ void loadPluginController(char* value, const char* filename)
     }
 
     ControllerInterface::Props props = { midiHandler, encoderHandler, keyHandler };
-    plugin.instance = ((ControllerInterface * (*)(ControllerInterface::Props & props)) allocator)(props);
+    plugin.instance = ((ControllerInterface * (*)(ControllerInterface::Props & props, uint16_t id)) allocator)(props, controllerId++);
     lastPluginControllerInstance = plugin.instance;
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "plugin interface loaded: %s\n", path);
 

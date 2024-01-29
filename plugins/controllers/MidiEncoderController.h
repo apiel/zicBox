@@ -54,8 +54,8 @@ public:
         uint8_t encoderId = -1;
     } encoders[127];
 
-    MidiEncoderController(Props& props)
-        : ControllerInterface(props)
+    MidiEncoderController(Props& props, uint16_t id)
+        : ControllerInterface(props, id)
     {
         midi.setCallback(midiHandler, this);
         midi.ignoreTypes(false, false, false);

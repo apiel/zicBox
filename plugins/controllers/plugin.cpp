@@ -14,9 +14,9 @@
 
 extern "C"
 {
-	PLUGIN_NAME *allocator(PLUGIN_PROPS& props)
+	PLUGIN_NAME *allocator(PLUGIN_PROPS& props, uint16_t id)
 	{
-		return new PLUGIN_NAME(props);
+		return new PLUGIN_NAME(props, id);
 	}
 
 	void deleter(PLUGIN_NAME *ptr)

@@ -69,7 +69,7 @@ public:
     {
     }
 
-    virtual void onKeyPad(int id, int8_t state)
+    virtual void onKeyPad(uint16_t id, int key, int8_t state)
     {
     }
 

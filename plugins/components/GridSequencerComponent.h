@@ -568,7 +568,7 @@ public:
         return false;
     }
 
-    void onKeyPad(int key, int8_t state)
+    void onKeyPad(uint16_t id, int key, int8_t state)
     {
         if (currentKeypadLayout) {
             currentKeypadLayout->onKeypad(key, state);

@@ -5,8 +5,8 @@
 
 class KeypadInterface : public ControllerInterface {
 public:
-    KeypadInterface(ControllerInterface::Props& props)
-        : ControllerInterface(props)
+    KeypadInterface(ControllerInterface::Props& props, uint16_t id)
+        : ControllerInterface(props, id)
         // , activeLayout(layouts[0])
     {
     }

@@ -175,6 +175,14 @@ public:
             case SDL_FINGERUP:
                 handleMotionUp(event.tfinger.x * styles.screen.w, event.tfinger.y * styles.screen.h, event.tfinger.fingerId);
                 return true;
+
+            case SDL_KEYDOWN:
+                printf("key down: %d\n", event.key.keysym.sym);
+                return true;
+            
+            case SDL_KEYUP:
+                printf("key up: %d\n", event.key.keysym.sym);
+                return true;
             }
         }
         return true;
