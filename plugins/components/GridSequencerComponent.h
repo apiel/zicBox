@@ -9,6 +9,8 @@
 
 class Track {
 public:
+    uint8_t pageCount = 2;
+    uint8_t page = 0;
     int16_t trackId = -1;
     AudioPlugin* seqPlugin;
     std::string name = "Init";
@@ -60,9 +62,6 @@ class GridSequencerComponent : public Component {
 protected:
     std::vector<KeypadLayout*> keypadLayouts;
     KeypadLayout* currentKeypadLayout = NULL;
-
-    uint8_t trackPageCount = 2;
-    uint8_t trackPage = 0;
 
     int firstColumnWidth = 92;
     int firstColumnMargin = 4;
@@ -142,17 +141,16 @@ protected:
         if (grid.row == trackCount) {
             view = "MasterParams";
         } else if (grid.col == 0) {
-            view = tracks[grid.row].trackView + "_page_" + std::to_string(trackPage);
+            view = tracks[grid.row].trackView + "_page_" + std::to_string(tracks[grid.row].page);
+
+            if (grid.lastRow != grid.row) {
+                tracks[grid.row].page = 0;
+            }
         } else {
             view = tracks[grid.row].stepView;
             tracks[grid.row].selectedStep->set(grid.col - 1);
 
             selectedStepCopy = tracks[grid.row].steps[grid.col - 1];
-
-            // printf("Selected step: %d enable %f = %s\n",
-            //     grid.col - 1,
-            //     tracks[grid.row].seqPlugin->getValue("STEP_ENABLED")->get(),
-            //     tracks[grid.row].steps[grid.col - 1].enabled ? "ON" : "OFF");
         }
 
         // printf("View: %s\n", view.c_str());
@@ -301,7 +299,7 @@ protected:
     {
         if (state == 1) {
             if (grid.row == track && grid.col == 0) {
-                trackPage = (trackPage + 1) % trackPageCount;
+                tracks[grid.row].page = (tracks[grid.row].page + 1) % tracks[grid.row].pageCount;
             } else {
                 printf("select track %d\n", track);
                 grid.select(track, 0);
@@ -537,9 +535,10 @@ public:
             return true;
         }
 
-        /*md - `TRACK_PAGE_COUNT: count` to specify the number of track pages. By default it is 2.`*/
+        /*md - `TRACK_PAGE_COUNT: track_id count` to specify the number of track pages. By default it is 2.`*/
         if (strcmp(key, "TRACK_PAGE_COUNT") == 0) {
-            trackPageCount = atoi(value);
+            uint16_t track = atoi(strtok(value, " ")) - 1;
+            tracks[track].pageCount = atoi(strtok(NULL, " "));
             return true;
         }
 
