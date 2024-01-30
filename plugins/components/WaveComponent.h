@@ -7,6 +7,11 @@
 #include "./base/KeypadLayout.h"
 #include "component.h"
 
+/*md
+## WaveComponent
+
+TBD.
+*/
 class WaveComponent : public Component {
 protected:
     AudioPlugin& plugin;
