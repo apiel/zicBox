@@ -28,6 +28,7 @@ protected:
     struct Colors {
         Color background;
         Color samples;
+        Color samplesFill;
         Color env;
     } colors;
 
@@ -35,7 +36,8 @@ protected:
     {
         return Colors({ draw.darken(color, 0.75),
             color,
-            draw.darken(color, 0.6) });
+            draw.alpha(color, 0.15),
+            draw.darken(color, 0.65) });
     }
 
     const int margin;
@@ -86,7 +88,7 @@ public:
 
         std::vector<Data>* envData = (std::vector<Data>*)plugin.data(envDataId);
         if (envData) {
-            std::vector<Point> points = {{ wavePosition.x, wavePosition.y + waveSize.h }};
+            std::vector<Point> points = { { wavePosition.x, wavePosition.y + waveSize.h } };
             // printf("envData size %lu\n", envData->size());
             for (int i = 0; i < envData->size() - 1; i++) {
                 Data& data1 = envData->at(i);
@@ -105,12 +107,22 @@ public:
         int h = waveSize.h * 0.5f;
         float yRatio = samplesCount / waveSize.w;
         for (int xIndex = 0; xIndex < waveSize.w - 1; xIndex++) {
-            int x = wavePosition.x + xIndex;
-            int i = xIndex * yRatio;
-            int y1 = wavePosition.y + (h - (int)(bufferSamples[i] * h));
-            int i2 = (xIndex + 1) * yRatio;
-            int y2 = wavePosition.y + (h - (int)(bufferSamples[i2] * h));
-            draw.line({ x, y1 }, { x + 1, y2 }, colors.samples);
+            {
+                int x = wavePosition.x + xIndex;
+                int i = xIndex * yRatio;
+                int y1 = wavePosition.y + (h - (int)(bufferSamples[i] * h));
+                int i2 = (xIndex + 1) * yRatio;
+                int y2 = wavePosition.y + (h - (int)(bufferSamples[i2] * h));
+                draw.aaline({ x, y1 }, { x + 1, y2 }, colors.samples);
+            }
+            {
+                // draw line from center
+                int x = wavePosition.x + xIndex;
+                int y1 = wavePosition.y + waveSize.h / 2;
+                int i = xIndex * yRatio;
+                int y2 = wavePosition.y + (h - (int)(bufferSamples[i] * h));
+                draw.line({ x, y1 }, { x, y2 }, colors.samplesFill);
+            }
         }
     }
 
