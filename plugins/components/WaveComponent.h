@@ -35,7 +35,7 @@ protected:
     {
         return Colors({ draw.darken(color, 0.75),
             color,
-            draw.darken(color, 0.3) });
+            draw.darken(color, 0.6) });
     }
 
     const int margin;
@@ -86,21 +86,15 @@ public:
 
         std::vector<Data>* envData = (std::vector<Data>*)plugin.data(envDataId);
         if (envData) {
-            std::vector<Point> points;
-
+            std::vector<Point> points = {{ wavePosition.x, wavePosition.y + waveSize.h }};
+            // printf("envData size %lu\n", envData->size());
             for (int i = 0; i < envData->size() - 1; i++) {
                 Data& data1 = envData->at(i);
+                // printf("%f %f\n", data1.modulation, data1.time);
                 points.push_back({ (int)(wavePosition.x + waveSize.w * data1.time),
                     (int)(wavePosition.y + waveSize.h - waveSize.h * data1.modulation) });
-
-                // Data& data1 = envData->at(i);
-                // Data& data2 = envData->at(i + 1);
-                // draw.aaline({ (int)(wavePosition.x + waveSize.w * data1.time),
-                //               (int)(wavePosition.y + waveSize.h - waveSize.h * data1.modulation) },
-                //     { (int)(wavePosition.x + waveSize.w * data2.time),
-                //         (int)(wavePosition.y + waveSize.h - waveSize.h * data2.modulation) },
-                //     colors.env);
             }
+            points.push_back({ (int)(wavePosition.x + waveSize.w), (int)(wavePosition.y + waveSize.h) });
 
             draw.filledPolygon(points, colors.env);
         }
