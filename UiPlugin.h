@@ -115,9 +115,10 @@ public:
         for (int i = 0; i < views.size(); i++) {
             if (views[i]->name == value) {
                 setView(i);
-                break;
+                return *this;
             }
         }
+        printf("Unknown view: %s\n", value.c_str());
         return *this;
     }
 
