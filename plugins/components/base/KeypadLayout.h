@@ -4,6 +4,7 @@
 #include <functional>
 #include <stdint.h>
 #include <string>
+#include <string.h>
 #include <vector>
 
 #include "../../controllers/keypadInterface.h"
