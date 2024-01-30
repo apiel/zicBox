@@ -287,7 +287,7 @@ public:
         voice.velocity = velocity;
         voiceStart(voice);
         // TODO attack softly if start after beginning of file
-        debug("noteOn: %d %d\n", note, velocity);
+        debug("noteOn: %d %f\n", note, velocity);
     }
 
     void noteOff(uint8_t note, float velocity) override

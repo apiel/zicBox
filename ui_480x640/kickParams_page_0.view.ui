@@ -23,13 +23,12 @@
   #   TYPE: BROWSE
   #   ID: Param2_enc
 
-  # # COMPONENT: Rect $encX4 $encY1 $encSize $encSize
-  # COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize
-  #   ENCODER_ID: 3
-  #   SHOW_GROUP: FALSE
-  #   VALUE: Mixer TRACK_$track
-  #   COLOR: #ff7700
-  #   ID: Param3_enc
+  COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize
+    ENCODER_ID: 3
+    SHOW_GROUP: FALSE
+    VALUE: Mixer TRACK_$track
+    COLOR: #ff7700
+    ID: Param3_enc
 
 
   # COMPONENT: Encoder2 $encX1 $encY2 $encSize $encSize
