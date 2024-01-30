@@ -104,7 +104,7 @@ public:
             for (int i = 0; i < envData->size() - 1; i++) {
                 Data& data1 = envData->at(i);
                 Data& data2 = envData->at(i + 1);
-                draw.line({ (int)(wavePosition.x + waveSize.w * data1.time),
+                draw.aaline({ (int)(wavePosition.x + waveSize.w * data1.time),
                               (int)(wavePosition.y + waveSize.h - waveSize.h * data1.modulation) },
                     { (int)(wavePosition.x + waveSize.w * data2.time),
                         (int)(wavePosition.y + waveSize.h - waveSize.h * data2.modulation) },
