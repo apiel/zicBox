@@ -2,6 +2,7 @@
 #define _UI_COMPONENT_SAMPLE_H_
 
 #include "../../helpers/inRect.h"
+#include "./base/KeypadLayout.h"
 #include "./base/SamplePositionBaseComponent.h"
 #include "./base/WaveBaseComponent.h"
 #include "./component.h"
@@ -46,6 +47,8 @@ protected:
 
     int overlayYtop = 0;
     int overlayYbottom = 0;
+
+    KeypadLayout keypadLayout;
 
     void renderStartOverlay()
     {
@@ -108,12 +111,29 @@ protected:
     }
 
 public:
+    /*md **Keyboard actions**: */
+    void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, int param, std::string action, uint8_t color)
+    {
+        /*md - `play` is used to play the sample. `KEYMAP: Keyboard 44 play 60` will trigger note on 60 when pressing space on keyboard. */
+        if (action == "play") {
+            keypadLayout.mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) {
+                    if (state) {
+                        if (plugin) {
+                            plugin->noteOn(keymap.param, 1.0f);
+                        } else {
+                            plugin->noteOff(keymap.param, 0.0f);
+                        }
+                    } }, color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color || 20; } });
+        }
+    }
+
     SampleComponent(ComponentInterface::Props props)
         : Component(props)
         , colors(getColorsFromColor(styles.colors.blue))
         , waveRect({ { 0, 20 }, { props.size.w, (int)(props.size.h - 2 * 20) } })
         , wave(getNewPropsRect(props, { { 0, 20 }, { props.size.w, (int)(props.size.h - 2 * 20) } }))
         , samplePosition(getNewPropsRect(props, { { props.position.x, props.position.y + 20 }, { props.size.w, (int)(props.size.h - 2 * 20) } }))
+        , keypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, int param, std::string action, uint8_t color) { addKeyMap(controller, controllerId, key, param, action, color); })
     {
         overlayYtop = position.y;
         overlayYbottom = position.y + size.h - 2;
@@ -220,21 +240,26 @@ public:
             return true;
         }
 
+        if (keypadLayout.config(key, value)) {
+            return true;
+        }
+
         return samplePosition.config(key, value) || wave.config(key, value);
     }
 
     void onKey(uint16_t id, int key, int8_t state)
     {
-        // TODO make this configurable
-        if (id == 0 && key == 44) {
-            if (state) {
-                if (plugin) {
-                    plugin->noteOn(60, 1.0f);
-                } else {
-                    plugin->noteOff(60, 0.0f);
-                }
-            }
-        }
+        // // TODO make this configurable
+        // if (id == 0 && key == 44) {
+        //     if (state) {
+        //         if (plugin) {
+        //             plugin->noteOn(60, 1.0f);
+        //         } else {
+        //             plugin->noteOff(60, 0.0f);
+        //         }
+        //     }
+        // }
+        keypadLayout.onKey(id, key, state);
     }
 };
 

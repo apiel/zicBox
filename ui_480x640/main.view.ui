@@ -123,6 +123,7 @@ VIEW: shared_components HIDDEN
       AUDIO_PLUGIN: Sample 0
       DATA_STATE: 2 1
       SHARED_COMPONENT: Sample_track_$track
+      KEYMAP: Keyboard 44 play 60
 
 $track=0
 while: $track < 12
