@@ -84,6 +84,27 @@ public:
     {
         draw.filledRect(wavePosition, size, colors.background);
 
+        std::vector<Data>* envData = (std::vector<Data>*)plugin.data(envDataId);
+        if (envData) {
+            std::vector<Point> points;
+
+            for (int i = 0; i < envData->size() - 1; i++) {
+                Data& data1 = envData->at(i);
+                points.push_back({ (int)(wavePosition.x + waveSize.w * data1.time),
+                    (int)(wavePosition.y + waveSize.h - waveSize.h * data1.modulation) });
+
+                // Data& data1 = envData->at(i);
+                // Data& data2 = envData->at(i + 1);
+                // draw.aaline({ (int)(wavePosition.x + waveSize.w * data1.time),
+                //               (int)(wavePosition.y + waveSize.h - waveSize.h * data1.modulation) },
+                //     { (int)(wavePosition.x + waveSize.w * data2.time),
+                //         (int)(wavePosition.y + waveSize.h - waveSize.h * data2.modulation) },
+                //     colors.env);
+            }
+
+            draw.filledPolygon(points, colors.env);
+        }
+
         uint64_t samplesCount = 1000;
         float* bufferSamples = (float*)plugin.data(1);
 
@@ -96,20 +117,6 @@ public:
             int i2 = (xIndex + 1) * yRatio;
             int y2 = wavePosition.y + (h - (int)(bufferSamples[i2] * h));
             draw.line({ x, y1 }, { x + 1, y2 }, colors.samples);
-        }
-
-        std::vector<Data>* envData = (std::vector<Data>*)plugin.data(envDataId);
-        if (envData) {
-
-            for (int i = 0; i < envData->size() - 1; i++) {
-                Data& data1 = envData->at(i);
-                Data& data2 = envData->at(i + 1);
-                draw.aaline({ (int)(wavePosition.x + waveSize.w * data1.time),
-                              (int)(wavePosition.y + waveSize.h - waveSize.h * data1.modulation) },
-                    { (int)(wavePosition.x + waveSize.w * data2.time),
-                        (int)(wavePosition.y + waveSize.h - waveSize.h * data2.modulation) },
-                    colors.env);
-            }
         }
     }
 
