@@ -249,16 +249,6 @@ public:
 
     void onKey(uint16_t id, int key, int8_t state)
     {
-        // // TODO make this configurable
-        // if (id == 0 && key == 44) {
-        //     if (state) {
-        //         if (plugin) {
-        //             plugin->noteOn(60, 1.0f);
-        //         } else {
-        //             plugin->noteOff(60, 0.0f);
-        //         }
-        //     }
-        // }
         keypadLayout.onKey(id, key, state);
     }
 };
