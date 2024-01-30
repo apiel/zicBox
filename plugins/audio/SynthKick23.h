@@ -270,6 +270,7 @@ public:
     void noteOn(uint8_t note, float velocity) override
     {
         // TODO use velocity
+        printf("kick noteOn: %d %f\n", note, velocity);
         
         // Could change the frequency base on the note...
         // Could change the amplitude base on the velocity...
