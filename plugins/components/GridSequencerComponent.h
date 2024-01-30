@@ -155,6 +155,8 @@ protected:
             //     tracks[grid.row].steps[grid.col - 1].enabled ? "ON" : "OFF");
         }
 
+        // printf("View: %s\n", view.c_str());
+
         if (view != lastView) {
             lastView = view;
             setView(view);
@@ -548,14 +550,14 @@ public:
             return true;
         }
 
-        /*md - `TRACK_VIEW: track_id name` to set the view name of a track. By default it is `TrackParams_track_` */
+        /*md - `TRACK_VIEW: track_id name` to set the view name of a track. By default it is `TrackParams_track_1`, `TrackParams_track_2`, ... */
         if (strcmp(key, "TRACK_VIEW") == 0) {
             uint16_t track = atoi(strtok(value, " ")) - 1;
             tracks[track].trackView = strtok(NULL, " ");
             return true;
         }
 
-        /*md - `STEP_VIEW: track_id name` to set the view name of step editing. By default it is `StepParams_track_` */
+        /*md - `STEP_VIEW: track_id name` to set the view name of step editing. By default it is `StepParams_track_1`, `StepParams_track_2`, ... */
         if (strcmp(key, "STEP_VIEW") == 0) {
             uint16_t track = atoi(strtok(value, " ")) - 1;
             tracks[track].stepView = strtok(NULL, " ");

@@ -1,6 +1,8 @@
 - TODO keyboard / keypad
     - see we can extract some logic to have global action that are not specific to a UI plugin
-    - implement a controller to use computer keyboard to be able to easily test on laptop without external hardware
+    - should LED and keypad be the same object
+        or could we assume that some LED doesn't necessarly belong to a key
+        LED could be associated to an encoder or just completely standalone...
 
 - TODO hardware look for touch encoder or button encoder
     - https://www.mouser.at/datasheet/2/54/PEC12R-777795.pdf
