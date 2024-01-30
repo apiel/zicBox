@@ -117,13 +117,13 @@ public:
         /*md - `play` is used to play the sample. `KEYMAP: Keyboard 44 play 60` will trigger note on 60 when pressing space on keyboard. */
         if (action == "play") {
             keypadLayout.mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) {
+                if (plugin) {
                     if (state) {
-                        if (plugin) {
-                            plugin->noteOn(keymap.param, 1.0f);
-                        } else {
-                            plugin->noteOff(keymap.param, 0.0f);
-                        }
-                    } }, color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color || 20; } });
+                        plugin->noteOn(keymap.param, 1.0f);
+                    } else {
+                        plugin->noteOff(keymap.param, 0.0f);
+                    }
+                } }, color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color || 20; } });
         }
     }
 
