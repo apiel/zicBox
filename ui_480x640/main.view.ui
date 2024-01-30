@@ -133,6 +133,9 @@ while: $track < 13
     VIEW: KickParams_track_page_0
       INCLUDE: kickParams_page_0.view.ui
       USE_SHARED_COMPONENT: SharedGridSequencer
+      COMPONENT: Wave 0 300 480 100
+        TRACK: $track
+        KEYMAP: Keyboard 44 play 60
     
   if: $track != 1
     VIEW: TrackParams_track_$track_page_0
