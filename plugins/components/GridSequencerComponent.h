@@ -420,35 +420,35 @@ public:
             printf("No keypad layout\n");
             return;
         }
-        /*md - `track` to select track number: `KEYMAP: 1 track 2` will select track 2 when key 1 is pressed.*/
+        /*md - `track` to select track number: `KEYMAP: Keypad 1 track 2` will select track 2 when key 1 is pressed.*/
         if (action == "track") {
             currentKeypadLayout->mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateTrackSelection(state, keymap.param); }, color, [&](KeypadLayout::KeyMap& keymap) { return tracks[keymap.param].status->get() == 1 ? 40 : 0; } });
-            /*md - `param` to select parameter number: `KEYMAP: 1 param 2 20` will select parameter 2 when key 1 is pressed. Color must be specified, in this example color is 20. */
+            /*md - `param` to select parameter number: `KEYMAP: Keypad 1 param 2 20` will select parameter 2 when key 1 is pressed. Color must be specified, in this example color is 20. */
         } else if (action == "param") {
             currentKeypadLayout->mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateParamSelection(state, keymap.param); }, color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color; } });
-            /*md - `row` to select row number: `KEYMAP: 1 row -1` will decrement the current row selection when key 1 is pressed. */
+            /*md - `row` to select row number: `KEYMAP: Keypad 1 row -1` will decrement the current row selection when key 1 is pressed. */
         } else if (action == "row") {
             currentKeypadLayout->mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateRowSelection(state, keymap.param); }, color, [&](KeypadLayout::KeyMap& keymap) { return 20; } });
-            /*md - `col` to select column number: `KEYMAP: 1 col -1` will decrement the current column selection when key 1 is pressed. */
+            /*md - `col` to select column number: `KEYMAP: Keypad 1 col -1` will decrement the current column selection when key 1 is pressed. */
         } else if (action == "col") {
             currentKeypadLayout->mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateColSelection(state, keymap.param); }, color, [&](KeypadLayout::KeyMap& keymap) { return 20; } });
-            /*md - `master` to select master track: `KEYMAP: 1 master` will select master when key 1 is pressed. */
+            /*md - `master` to select master track: `KEYMAP: Keypad 1 master` will select master when key 1 is pressed. */
         } else if (action == "master") {
             currentKeypadLayout->mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateMasterSelection(state); }, color, [&](KeypadLayout::KeyMap& keymap) { return 40; } });
-            /*md - `variation` to select variation: `KEYMAP: 1 variation` will select variation when key 1 is pressed. */
+            /*md - `variation` to select variation: `KEYMAP: Keypad 1 variation` will select variation when key 1 is pressed. */
         } else if (action == "variation") {
             currentKeypadLayout->mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { tracks[grid.row].variation->set(keymap.param); }, color, [&](KeypadLayout::KeyMap& keymap) { return 60; } });
-            /*md - `step` to update a step: `KEYMAP: 1 step 4` will update step 4 when key 1 is pressed. */
+            /*md - `step` to update a step: `KEYMAP: Keypad 1 step 4` will update step 4 when key 1 is pressed. */
         } else if (action == "step") {
             currentKeypadLayout->mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateStepSelection(state, keymap.param); }, color, [&](KeypadLayout::KeyMap& keymap) { 
                 if (grid.row >= trackCount) {
                     return 254;
                 }
                 return tracks[grid.row].steps[keymap.param].enabled ? 21 : 20; } });
-            /*md - `layout` to select a layout: `KEYMAP: 1 layout 2` will select layout 2 when key 1 is pressed. The numeric id of the layout corresponds to the order of initialization. */
+            /*md - `layout` to select a layout: `KEYMAP: Keypad 1 layout 2` will select layout 2 when key 1 is pressed. The numeric id of the layout corresponds to the order of initialization. */
         } else if (action == "layout") {
             currentKeypadLayout->mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateLayout(state, keymap.param); }, color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color == 255 ? 90 : keymap.color; } });
-            /*md - `none` to disable keypad button: `KEYMAP: 1 none` will disable the button 1. */
+            /*md - `none` to disable keypad button: `KEYMAP: Keypad 1 none` will disable the button 1. */
         } else if (action == "none") {
             currentKeypadLayout->mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) {}, color, [&](KeypadLayout::KeyMap& keymap) { return 254; } });
         }
@@ -518,7 +518,7 @@ public:
 
         /*md - `KEYPAD_LAYOUT: layout` inititates a keypad layout */
         if (strcmp(key, "KEYPAD_LAYOUT") == 0) {
-            currentKeypadLayout = new KeypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t state, int param, std::string action, uint8_t color) { addKeyMap(controller, controllerId, state, param, action, color); });
+            currentKeypadLayout = new KeypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, int param, std::string action, uint8_t color) { addKeyMap(controller, controllerId, key, param, action, color); });
             currentKeypadLayout->name = value;
             keypadLayouts.push_back(currentKeypadLayout);
             return true;
