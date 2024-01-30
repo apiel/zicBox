@@ -50,7 +50,7 @@ public:
             }
         }
 
-        printf("unhandled key %d for controller %d\n", key, id);
+        // printf("unhandled key %d for controller %d\n", key, id);
     }
 
     // Might want to render keypad in a central place

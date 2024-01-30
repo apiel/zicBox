@@ -176,13 +176,21 @@ public:
                 handleMotionUp(event.tfinger.x * styles.screen.w, event.tfinger.y * styles.screen.h, event.tfinger.fingerId);
                 return true;
 
-            case SDL_KEYDOWN:
+            case SDL_KEYDOWN: {
+                if (event.key.repeat) {
+                    return true;
+                }
                 viewManager.onKey(0, event.key.keysym.scancode, 1);
                 return true;
-            
-            case SDL_KEYUP:
+            }
+
+            case SDL_KEYUP: {
+                if (event.key.repeat) {
+                    return true;
+                }
                 viewManager.onKey(0, event.key.keysym.scancode, 0);
                 return true;
+            }
             }
         }
         return true;
