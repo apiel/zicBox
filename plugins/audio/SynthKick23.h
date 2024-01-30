@@ -300,6 +300,10 @@ public:
         }
         case 2:
             return envelopUi;
+        case 3:
+            return &envelopAmp.data;
+        case 4:
+            return &envelopFreq.data;
         }
         return NULL;
     }

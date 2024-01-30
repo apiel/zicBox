@@ -20,9 +20,6 @@ protected:
     Point wavePosition;
     void* textureWave = NULL;
 
-    bool showAmp = false;
-    bool showFreq = false;
-
     struct Data {
         float modulation;
         float time;
@@ -46,6 +43,8 @@ protected:
     int lastUpdateUi = -1;
 
     KeypadLayout keypadLayout;
+
+    uint8_t envDataId = 2;
 
 public:
     /*md **Keyboard actions**: */
@@ -99,7 +98,7 @@ public:
             draw.line({ x, y1 }, { x + 1, y2 }, colors.samples);
         }
 
-        std::vector<Data>* envData = (std::vector<Data>*)plugin.data(2);
+        std::vector<Data>* envData = (std::vector<Data>*)plugin.data(envDataId);
         if (envData) {
 
             for (int i = 0; i < envData->size() - 1; i++) {
@@ -118,6 +117,12 @@ public:
     {
         if (strcmp(key, "COLOR") == 0) {
             colors = getColorsFromColor(draw.getColor(value));
+            return true;
+        }
+
+        /*md - `ENVELOP_DATA_ID: id` is the id of the envelope data.*/
+        if (strcmp(key, "ENVELOP_DATA_ID") == 0) {
+            envDataId = atoi(value);
             return true;
         }
 
