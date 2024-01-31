@@ -5,15 +5,12 @@
   # I would rather move the GAIN on another page
   COMPONENT: Encoder2 $encX2 $encY1 $encSize $encSize
     ENCODER_ID: 1
-    SHOW_GROUP: FALSE
     COLOR: #3791a1
     VALUE: MasterVolume VOLUME
     ID: Param1_enc
 
   COMPONENT: Encoder2 $encX3 $encY1 $encSize $encSize
     ENCODER_ID: 2
-    SHOW_GROUP: FALSE
-
     COLOR: #ff8d99
     VALUE: MasterVolume GAIN
     FLOAT_PRECISION: 1
@@ -21,7 +18,6 @@
 
   COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize
     ENCODER_ID: 3
-    SHOW_GROUP: FALSE
     VALUE: MultiModeFilter CUTOFF
     COLOR: #ff7700
     TYPE: TWO_SIDED
@@ -31,7 +27,6 @@
 
   COMPONENT: Encoder2 $encX1 $encY2 $encSize $encSize
     ENCODER_ID: 4
-    SHOW_GROUP: FALSE
     COLOR: #9dfe86
     VALUE: Tempo BPM
     ID: Param4_enc
@@ -41,14 +36,12 @@
   # COMPONENT: Rect $encX3 $encY2 $encSize $encSize
   COMPONENT: Encoder2 $encX3 $encY2 $encSize $encSize
     ENCODER_ID: 6
-    SHOW_GROUP: FALSE
     VALUE: MultiModeFilter DRIVE
     COLOR: #ff8d99
     ID: Param6_enc
 
   COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
     ENCODER_ID: 7
-    SHOW_GROUP: FALSE
     VALUE: MultiModeFilter RESONANCE
     COLOR: #ff7700
     # BACKGROUND_COLOR: #2b2c2e
@@ -63,7 +56,6 @@
 
   COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
     ENCODER_ID: 11
-    SHOW_GROUP: FALSE
     COLOR: #ff7700
     VALUE: SampleRateReducer SAMPLE_STEP
     FONT_UNIT_SIZE: 8

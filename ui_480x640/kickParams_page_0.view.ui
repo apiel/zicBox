@@ -1,6 +1,5 @@
   COMPONENT: Encoder2 $encX1 $encY1 $encSize $encSize
     ENCODER_ID: 0
-    SHOW_GROUP: FALSE
     COLOR: #9dfe86
     TRACK: $track
     VALUE: Kick23 BROWSER
@@ -9,7 +8,6 @@
 
   COMPONENT: Encoder2 $encX2 $encY1 $encSize $encSize
     ENCODER_ID: 1
-    SHOW_GROUP: FALSE
     COLOR: #3791a1
     TRACK: $track
     VALUE: Kick23 MORPH
@@ -17,7 +15,6 @@
 
   COMPONENT: Encoder2 $encX3 $encY1 $encSize $encSize
     ENCODER_ID: 2
-    SHOW_GROUP: FALSE
     COLOR: #ff8d99
     TRACK: $track
     VALUE: Kick23 DURATION
@@ -25,7 +22,6 @@
 
   COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize
     ENCODER_ID: 3
-    SHOW_GROUP: FALSE
     VALUE: Mixer TRACK_$track
     COLOR: #ff7700
     ID: Param3_enc
@@ -33,7 +29,6 @@
 
   COMPONENT: Encoder2 $encX1 $encY2 $encSize $encSize
     ENCODER_ID: 4
-    SHOW_GROUP: FALSE
     COLOR: #9dfe86
     TRACK: $track
     VALUE: Kick23 ENVELOP_AMP_MOD_1
@@ -41,7 +36,6 @@
 
   COMPONENT: Encoder2 $encX2 $encY2 $encSize $encSize
     ENCODER_ID: 5
-    SHOW_GROUP: FALSE
     COLOR: #3791a1
     TRACK: $track
     VALUE: Kick23 ENVELOP_AMP_TIME_1
@@ -49,7 +43,6 @@
 
   COMPONENT: Encoder2 $encX3 $encY2 $encSize $encSize
     ENCODER_ID: 6
-    SHOW_GROUP: FALSE
     COLOR: #ff8d99
     TRACK: $track
     VALUE: Kick23 ENVELOP_AMP_MOD_2
@@ -58,7 +51,6 @@
   # COMPONENT: Rect $encX4 $encY2 $encSize $encSize
   COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
     ENCODER_ID: 7
-    SHOW_GROUP: FALSE
     TRACK: $track
     VALUE: Kick23 ENVELOP_AMP_TIME_2
     COLOR: #ff7700
@@ -67,7 +59,6 @@
 
   COMPONENT: Encoder2 $encX1 $encY3 $encSize $encSize
     ENCODER_ID: 8
-    SHOW_GROUP: FALSE
     COLOR: #9dfe86
     TRACK: $track
     VALUE: Kick23 ENVELOP_AMP_MOD_3
@@ -75,7 +66,6 @@
 
   COMPONENT: Encoder2 $encX2 $encY3 $encSize $encSize
     ENCODER_ID: 9
-    SHOW_GROUP: FALSE
     COLOR: #3791a1
     TRACK: $track
     VALUE: Kick23 ENVELOP_AMP_TIME_3
@@ -83,7 +73,6 @@
 
   COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
     ENCODER_ID: 10
-    SHOW_GROUP: FALSE
     TRACK: $track
     VALUE: Kick23 ENVELOP_AMP_MOD_4
     COLOR: #ff8d99
@@ -92,7 +81,6 @@
   COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
     ENCODER_ID: 11
     TRACK: $track
-    SHOW_GROUP: FALSE
     COLOR: #ff7700
     VALUE: Kick23 ENVELOP_AMP_TIME_4
     ID: Param11_enc

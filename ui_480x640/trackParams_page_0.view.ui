@@ -1,6 +1,5 @@
   COMPONENT: Encoder2 $encX1 $encY1 $encSize $encSize
     ENCODER_ID: 0
-    SHOW_GROUP: FALSE
     COLOR: #9dfe86
     TRACK: $track
     VALUE: Sample START
@@ -8,7 +7,6 @@
 
   COMPONENT: Encoder2 $encX2 $encY1 $encSize $encSize
     ENCODER_ID: 1
-    SHOW_GROUP: FALSE
     COLOR: #3791a1
     TRACK: $track
     VALUE: Sample END
@@ -16,7 +14,6 @@
 
   COMPONENT: Encoder2 $encX3 $encY1 $encSize $encSize
     ENCODER_ID: 2
-    SHOW_GROUP: FALSE
     COLOR: #ff8d99
     TRACK: $track
     VALUE: Sample BROWSER
@@ -26,7 +23,6 @@
   # COMPONENT: Rect $encX4 $encY1 $encSize $encSize
   COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize
     ENCODER_ID: 3
-    SHOW_GROUP: FALSE
     VALUE: Mixer TRACK_$track
     COLOR: #ff7700
     ID: Param3_enc
@@ -34,7 +30,6 @@
 
   COMPONENT: Encoder2 $encX1 $encY2 $encSize $encSize
     ENCODER_ID: 4
-    SHOW_GROUP: FALSE
     COLOR: #9dfe86
     TRACK: $track
     VALUE: Sample SUSTAIN_LENGTH
@@ -43,7 +38,6 @@
 
   COMPONENT: Encoder2 $encX2 $encY2 $encSize $encSize
     ENCODER_ID: 5
-    SHOW_GROUP: FALSE
     COLOR: #3791a1
     TRACK: $track
     VALUE: Sample SUSTAIN_POSITION
@@ -51,7 +45,6 @@
 
   COMPONENT: Encoder2 $encX3 $encY2 $encSize $encSize
     ENCODER_ID: 6
-    SHOW_GROUP: FALSE
     COLOR: #ff8d99
     TRACK: $track
     VALUE: Sample SUSTAIN_RELEASE
@@ -60,7 +53,6 @@
   # COMPONENT: Rect $encX4 $encY2 $encSize $encSize
   COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
     ENCODER_ID: 7
-    SHOW_GROUP: FALSE
     TRACK: $track
     VALUE: Sequencer STATUS
     COLOR: #ff7700
@@ -69,7 +61,6 @@
 
   COMPONENT: Encoder2 $encX1 $encY3 $encSize $encSize
     ENCODER_ID: 8
-    SHOW_GROUP: FALSE
     COLOR: #9dfe86
     TRACK: $track
     VALUE: Sample DENSITY
@@ -77,7 +68,6 @@
 
   COMPONENT: Encoder2 $encX2 $encY3 $encSize $encSize
     ENCODER_ID: 9
-    SHOW_GROUP: FALSE
     COLOR: #3791a1
     TRACK: $track
     VALUE: Sample DENSITY_DELAY
@@ -86,7 +76,6 @@
 
   COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
     ENCODER_ID: 10
-    SHOW_GROUP: FALSE
     TRACK: $track
     VALUE: Sample DENSITY_RANDOMIZE
     COLOR: #ff8d99
@@ -96,14 +85,12 @@
   # # COMPONENT: Rect $encX4 $encY3 $encSize $encSize
   # COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
   #   ENCODER_ID: 11
-  #   SHOW_GROUP: FALSE
   #   COLOR: #ff7700
   #   VALUE: Pd CC_2
   #   ID: Param11_enc
   COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
     ENCODER_ID: 11
     TRACK: $track
-    SHOW_GROUP: FALSE
     COLOR: #ff7700
     VALUE: SerializeTrack VARIATION
     ID: Param11_enc
