@@ -23,7 +23,7 @@ VIEW: shared_components HIDDEN
       KEYMAP: Keyboard 67 track 9
       KEYMAP: Keyboard 68 track 10
       KEYMAP: Keyboard 69 track 11
-      KEYMAP: Keyboard 70 master
+      KEYMAP: Keyboard 76 master
 
       KEYMAP: Keypad 15 master
       KEYMAP: Keypad 27 layout 0

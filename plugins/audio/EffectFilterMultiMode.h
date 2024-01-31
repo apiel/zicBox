@@ -23,7 +23,7 @@ public:
     /*md - `RESONANCE` to set resonance. */
     Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) { setResonance(p.value); });
     /*md - `DRIVE` to set drive. */
-    Val& drive = val(50, "DRIVE", { "Drive" }, [&](auto p) { setDrive(p.value); });
+    Val& drive = val(50, "DRIVE", { "F.Drive" }, [&](auto p) { setDrive(p.value); });
 
     EffectFilterMultiMode(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
