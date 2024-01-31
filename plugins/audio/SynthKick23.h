@@ -68,28 +68,28 @@ public:
     Val& duration = val(100.0f, "DURATION", { "Duration", .min = 100.0, .max = 5000.0, .step = 100.0, .unit = "ms" }, [&](auto p) { setDuration(p.value); });
 
     Val envAmpMod[ZIC_KICK_ENV_AMP_STEP] = {
-        { 50.0f, "ENVELOP_AMP_MOD_1", { "Amp.Mod.1", .unit = "%" }, [&](auto p) { setEnvAmpMod1(p.value); } },
-        { 50.0f, "ENVELOP_AMP_MOD_2", { "Amp.Mod.2", .unit = "%" }, [&](auto p) { setEnvAmpMod2(p.value); } },
-        { 50.0f, "ENVELOP_AMP_MOD_3", { "Amp.Mod.3", .unit = "%" }, [&](auto p) { setEnvAmpMod3(p.value); } },
-        { 50.0f, "ENVELOP_AMP_MOD_4", { "Amp.Mod.4", .unit = "%" }, [&](auto p) { setEnvAmpMod4(p.value); } },
+        { 50.0f, "ENVELOP_AMP_MOD_1", { "Amp.Mod.1", .unit = "%" }, [&](auto p) { setEnvAmpMod(p.value, 0); } },
+        { 50.0f, "ENVELOP_AMP_MOD_2", { "Amp.Mod.2", .unit = "%" }, [&](auto p) { setEnvAmpMod(p.value, 1); } },
+        { 50.0f, "ENVELOP_AMP_MOD_3", { "Amp.Mod.3", .unit = "%" }, [&](auto p) { setEnvAmpMod(p.value, 2); } },
+        { 50.0f, "ENVELOP_AMP_MOD_4", { "Amp.Mod.4", .unit = "%" }, [&](auto p) { setEnvAmpMod(p.value, 3); } },
     };
     Val envAmpTime[ZIC_KICK_ENV_AMP_STEP] = {
-        { 50.0f, "ENVELOP_AMP_TIME_1", { "Amp.Time 1", .unit = "%" }, [&](auto p) { setEnvAmpTime1(p.value); } },
-        { 50.0f, "ENVELOP_AMP_TIME_2", { "Amp.Time 2", .unit = "%" }, [&](auto p) { setEnvAmpTime2(p.value); } },
-        { 50.0f, "ENVELOP_AMP_TIME_3", { "Amp.Time 3", .unit = "%" }, [&](auto p) { setEnvAmpTime3(p.value); } },
-        { 50.0f, "ENVELOP_AMP_TIME_4", { "Amp.Time 4", .unit = "%" }, [&](auto p) { setEnvAmpTime4(p.value); } },
+        { 50.0f, "ENVELOP_AMP_TIME_1", { "Amp.Time 1", .unit = "%" }, [&](auto p) { setEnvAmpTime(p.value, 0); } },
+        { 50.0f, "ENVELOP_AMP_TIME_2", { "Amp.Time 2", .unit = "%" }, [&](auto p) { setEnvAmpTime(p.value, 1); } },
+        { 50.0f, "ENVELOP_AMP_TIME_3", { "Amp.Time 3", .unit = "%" }, [&](auto p) { setEnvAmpTime(p.value, 2); } },
+        { 50.0f, "ENVELOP_AMP_TIME_4", { "Amp.Time 4", .unit = "%" }, [&](auto p) { setEnvAmpTime(p.value, 3); } },
     };
     Val envFreqMod[ZIC_KICK_ENV_FREQ_STEP] = {
-        { 50.0f, "ENVELOP_FREQ_MOD_1", { "Freq.Mod.1", .unit = "%" }, [&](auto p) { setEnvFreqMod1(p.value); } },
-        { 50.0f, "ENVELOP_FREQ_MOD_2", { "Freq.Mod.2", .unit = "%" }, [&](auto p) { setEnvFreqMod2(p.value); } },
-        { 50.0f, "ENVELOP_FREQ_MOD_3", { "Freq.Mod.3", .unit = "%" }, [&](auto p) { setEnvFreqMod3(p.value); } },
-        { 50.0f, "ENVELOP_FREQ_MOD_4", { "Freq.Mod.4", .unit = "%" }, [&](auto p) { setEnvFreqMod4(p.value); } },
+        { 50.0f, "ENVELOP_FREQ_MOD_1", { "Freq.Mod.1", .unit = "%" }, [&](auto p) { setEnvFreqMod(p.value, 0); } },
+        { 50.0f, "ENVELOP_FREQ_MOD_2", { "Freq.Mod.2", .unit = "%" }, [&](auto p) { setEnvFreqMod(p.value, 1); } },
+        { 50.0f, "ENVELOP_FREQ_MOD_3", { "Freq.Mod.3", .unit = "%" }, [&](auto p) { setEnvFreqMod(p.value, 2); } },
+        { 50.0f, "ENVELOP_FREQ_MOD_4", { "Freq.Mod.4", .unit = "%" }, [&](auto p) { setEnvFreqMod(p.value, 3); } },
     };
     Val envFreqTime[ZIC_KICK_ENV_FREQ_STEP] = {
-        { 50.0f, "ENVELOP_FREQ_TIME_1", { "Freq.Time 1", .unit = "%" }, [&](auto p) { setEnvFreqTime1(p.value); } },
-        { 50.0f, "ENVELOP_FREQ_TIME_2", { "Freq.Time 2", .unit = "%" }, [&](auto p) { setEnvFreqTime2(p.value); } },
-        { 50.0f, "ENVELOP_FREQ_TIME_3", { "Freq.Time 3", .unit = "%" }, [&](auto p) { setEnvFreqTime3(p.value); } },
-        { 50.0f, "ENVELOP_FREQ_TIME_4", { "Freq.Time 4", .unit = "%" }, [&](auto p) { setEnvFreqTime4(p.value); } },
+        { 50.0f, "ENVELOP_FREQ_TIME_1", { "Freq.Time 1", .unit = "%" }, [&](auto p) { setEnvFreqTime(p.value, 0); } },
+        { 50.0f, "ENVELOP_FREQ_TIME_2", { "Freq.Time 2", .unit = "%" }, [&](auto p) { setEnvFreqTime(p.value, 1); } },
+        { 50.0f, "ENVELOP_FREQ_TIME_3", { "Freq.Time 3", .unit = "%" }, [&](auto p) { setEnvFreqTime(p.value, 2); } },
+        { 50.0f, "ENVELOP_FREQ_TIME_4", { "Freq.Time 4", .unit = "%" }, [&](auto p) { setEnvFreqTime(p.value, 3); } },
     };
 
     SynthKick23(AudioPlugin::Props& props, char* _name)
@@ -129,81 +129,60 @@ public:
         }
     }
 
-    SynthKick23& setEnvAmpMod1(float value) { return setEnvAmpMod(value, 0); }
-    SynthKick23& setEnvAmpMod2(float value) { return setEnvAmpMod(value, 1); }
-    SynthKick23& setEnvAmpMod3(float value) { return setEnvAmpMod(value, 2); }
-    SynthKick23& setEnvAmpMod4(float value) { return setEnvAmpMod(value, 3); }
-    SynthKick23& setEnvAmpMod(float value, uint8_t index)
+    void setEnvAmpMod(float value, uint8_t index)
     {
         envAmpMod[index].setFloat(value);
         envelopAmp.data[index + 2].modulation = envAmpMod[index].pct();
         updateUi(&envelopAmp.data);
-        return *this;
     }
 
-    SynthKick23& setEnvAmpTime1(float value) { return setEnvAmpTime(value, 0); }
-    SynthKick23& setEnvAmpTime2(float value) { return setEnvAmpTime(value, 1); }
-    SynthKick23& setEnvAmpTime3(float value) { return setEnvAmpTime(value, 2); }
-    SynthKick23& setEnvAmpTime4(float value) { return setEnvAmpTime(value, 3); }
-    SynthKick23& setEnvAmpTime(float value, uint8_t index)
+    void setEnvAmpTime(float value, uint8_t index)
     {
         if (value <= 0.0f) {
-            return *this;
+            return;
         }
         if (index > 0 && envAmpTime[index - 1].get() >= value) {
-            return *this;
+            return;
         }
         if (index < ZIC_KICK_ENV_AMP_STEP - 1 && envAmpTime[index + 1].get() <= value) {
-            return *this;
+            return;
         }
         envAmpTime[index].setFloat(value);
         envelopAmp.data[index + 2].time = envAmpTime[index].pct();
         updateUi(&envelopAmp.data);
-        return *this;
     }
 
-    SynthKick23& setEnvFreqMod1(float value) { return setEnvFreqMod(value, 0); }
-    SynthKick23& setEnvFreqMod2(float value) { return setEnvFreqMod(value, 1); }
-    SynthKick23& setEnvFreqMod3(float value) { return setEnvFreqMod(value, 2); }
-    SynthKick23& setEnvFreqMod4(float value) { return setEnvFreqMod(value, 3); }
-    SynthKick23& setEnvFreqMod(float value, uint8_t index)
+    void setEnvFreqMod(float value, uint8_t index)
     {
         envFreqMod[index].setFloat(value);
         envelopFreq.data[index + 1].modulation = envFreqMod[index].pct();
         updateUi(&envelopFreq.data);
-        return *this;
     }
 
-    SynthKick23& setEnvFreqTime1(float value) { return setEnvFreqTime(value, 0); }
-    SynthKick23& setEnvFreqTime2(float value) { return setEnvFreqTime(value, 1); }
-    SynthKick23& setEnvFreqTime3(float value) { return setEnvFreqTime(value, 2); }
-    SynthKick23& setEnvFreqTime4(float value) { return setEnvFreqTime(value, 3); }
-    SynthKick23& setEnvFreqTime(float value, uint8_t index)
+    void setEnvFreqTime(float value, uint8_t index)
     {
         if (value <= 0.0f) {
-            return *this;
+            return;
         }
         if (index > 0 && envFreqTime[index - 1].get() > value) {
-            return *this;
+            return;
         }
         if (index < ZIC_KICK_ENV_FREQ_STEP - 1 && envFreqTime[index + 1].get() < value) {
-            return *this;
+            return;
         }
         envFreqTime[index].setFloat(value);
         envelopFreq.data[index + 1].time = envFreqTime[index].pct();
         updateUi(&envelopFreq.data);
-        return *this;
     }
 
-    SynthKick23& setPitch(float value)
+    void setPitch(float value)
     {
         pitch.setFloat(value);
         pitchMult = pitch.pct() + 0.5f; // FIXME
         updateUi(NULL);
-        return *this;
     }
 
-    SynthKick23& setMorph(float value)
+   void setMorph(float value)
     {
         morph.setFloat(value);
         sampleStart = morph.pct() * bufferSampleCount;
@@ -213,16 +192,14 @@ public:
         }
         updateUi(NULL);
         // printf(">>>>>>>>>>>>>>.... sampleStart: %ld (%f bufferSampleCount %ld)\n", sampleStart, morph.get(), bufferSampleCount);
-        return *this;
     }
 
-    SynthKick23& setDuration(float value)
+    void setDuration(float value)
     {
         duration.setFloat(value);
         sampleCountDuration = duration.get() * (sampleRate * 0.0001f);
         updateUi(NULL);
         // printf(">>>>>>>>>>>>>>.... sampleCountDuration: %d (%d)\n", sampleCountDuration, duration.getAsInt());
-        return *this;
     }
 
     SynthKick23& close()
@@ -275,7 +252,7 @@ public:
     {
         // TODO use velocity
         printf("kick noteOn: %d %f\n", note, velocity);
-        
+
         // Could change the frequency base on the note...
         // Could change the amplitude base on the velocity...
         sampleIndex = 0;
