@@ -13,6 +13,10 @@
 #define ZIC_KICK_ENV_FREQ_STEP 4
 #define ZIC_KICK_UI 1000
 
+// TODO add noise
+//              noise could just be a second waveform, no need to have specific one.
+// TODO add second waveform or sine? to do FM.
+//                                   or to make a feedback sound in mix mode...
 class SynthKick23 : public Mapping {
 protected:
     SF_INFO sfinfo;

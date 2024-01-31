@@ -180,6 +180,7 @@ public:
                 if (event.key.repeat) {
                     return true;
                 }
+                // printf("key %d\n", event.key.keysym.scancode);
                 viewManager.onKey(0, event.key.keysym.scancode, 1);
                 return true;
             }
