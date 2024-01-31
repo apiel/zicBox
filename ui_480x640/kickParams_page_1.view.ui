@@ -32,6 +32,7 @@
     ENCODER_ID: 3
     TRACK: $track
     VALUE: MultiModeFilter DRIVE
+    LABEL: Filter drive
     COLOR: #ff7700
     ID: Param3_enc
 
