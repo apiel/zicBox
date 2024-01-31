@@ -133,6 +133,27 @@ public:
         }
     }
 
+    bool noteTriggered = false;
+    void onMotion(MotionInterface& motion)
+    {
+        if (!noteTriggered) {
+            noteTriggered = true;
+            if (plugin) {
+                plugin->noteOn(60, 1.0f);
+            }
+        }
+    }
+
+    void onMotionRelease(MotionInterface& motion)
+    {
+        if (noteTriggered) {
+            noteTriggered = false;
+            if (plugin) {
+                plugin->noteOff(60, 0);
+            }
+        }
+    }
+
     bool config(char* key, char* value)
     {
         /*md - `COLOR: #FFFFFF` set color of the waveform */
