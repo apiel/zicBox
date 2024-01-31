@@ -10,7 +10,9 @@
 /*md
 ## WaveComponent
 
-TBD.
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Wave.png" />
+
+WaveComponent will display the represention of a waveform and associated modulation envelope.
 */
 class WaveComponent : public Component {
 protected:
@@ -128,8 +130,15 @@ public:
 
     bool config(char* key, char* value)
     {
+        /*md - `COLOR: #FFFFFF` set color of the waveform */
         if (strcmp(key, "COLOR") == 0) {
             colors = getColorsFromColor(draw.getColor(value));
+            return true;
+        }
+
+        /*md - `BACKGROUND_COLOR: #000000` set background color */
+        if (strcmp(key, "BACKGROUND_COLOR") == 0) {
+            colors.background = draw.getColor(value);
             return true;
         }
 
