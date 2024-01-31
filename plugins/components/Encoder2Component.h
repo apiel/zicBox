@@ -39,7 +39,7 @@ protected:
 
     bool showKnob = true;
     bool showValue = true;
-    bool showGroup = true;
+    bool showGroup = false;
     bool showUnit = true;
 
     const int marginTop = 3;

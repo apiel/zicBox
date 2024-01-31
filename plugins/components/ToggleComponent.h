@@ -21,7 +21,7 @@ protected:
     char offLabelBuffer[32];
 
     int radius = 20;
-    bool showGroup = true;
+    bool showGroup = false;
 
     Size toggleSize;
     Point togglePosition;
