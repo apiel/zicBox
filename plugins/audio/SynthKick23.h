@@ -17,6 +17,16 @@
 //              noise could just be a second waveform, no need to have specific one.
 // TODO add second waveform or sine? to do FM.
 //                                   or to make a feedback sound in mix mode...
+//
+// >>>>> use buf[track] input as modulation for amp or freq, or use it to mix it with the output.
+
+// Instead to have a fix envelop, should we use an envelop with customizable steps...??
+
+/*md
+## SynthKick23
+
+Synth engine to generate drum sounds using wavetables.
+*/
 class SynthKick23 : public Mapping {
 protected:
     SF_INFO sfinfo;
@@ -62,9 +72,14 @@ protected:
     }
 
 public:
+    /*md **Values**: */
+    /*md - `BROWSER` Select wavetable.*/
     Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)fileBrowser.count }, [&](auto p) { open(p.value); });
+    /*md - `MORPH` Morhp over the wavetable.*/
     Val& morph = val(0.0f, "MORPH", { "Morph", .min = 1.0, .max = ZIC_WAVETABLE_WAVEFORMS_COUNT, .step = 0.1, .floatingPoint = 1 }, [&](auto p) { setMorph(p.value); });
+    /*md - `PITCH` Modulate the pitch.*/
     Val& pitch = val(0, "PITCH", { "Pitch", .min = -12, .max = 12 }, [&](auto p) { setPitch(p.value); });
+    /*md - `DURATION` set the duration of the envelop.*/
     Val& duration = val(100.0f, "DURATION", { "Duration", .min = 100.0, .max = 5000.0, .step = 100.0, .unit = "ms" }, [&](auto p) { setDuration(p.value); });
 
     Val envAmpMod[ZIC_KICK_ENV_AMP_STEP] = {
@@ -182,7 +197,7 @@ public:
         updateUi(NULL);
     }
 
-   void setMorph(float value)
+    void setMorph(float value)
     {
         morph.setFloat(value);
         sampleStart = morph.pct() * bufferSampleCount;
