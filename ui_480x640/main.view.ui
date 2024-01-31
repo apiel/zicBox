@@ -11,6 +11,19 @@ VIEW: shared_components HIDDEN
       KEYMAP: Keyboard 80 col -1
       KEYMAP: Keyboard 81 row -1
       KEYMAP: Keyboard 79 col 1
+      KEYMAP: Keyboard 58 track 0
+      KEYMAP: Keyboard 59 track 1
+      KEYMAP: Keyboard 60 track 2
+      KEYMAP: Keyboard 61 track 3
+      KEYMAP: Keyboard 62 track 4
+      KEYMAP: Keyboard 63 track 5
+      KEYMAP: Keyboard 64 track 6
+      KEYMAP: Keyboard 65 track 7
+      KEYMAP: Keyboard 66 track 8
+      KEYMAP: Keyboard 67 track 9
+      KEYMAP: Keyboard 68 track 10
+      KEYMAP: Keyboard 69 track 11
+      KEYMAP: Keyboard 70 master
 
       KEYMAP: Keypad 15 master
       KEYMAP: Keypad 27 layout 0

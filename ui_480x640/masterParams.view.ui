@@ -39,6 +39,12 @@
   # COMPONENT: Rect $encX2 $encY2 $encSize $encSize
 
   # COMPONENT: Rect $encX3 $encY2 $encSize $encSize
+  COMPONENT: Encoder2 $encX3 $encY2 $encSize $encSize
+    ENCODER_ID: 6
+    SHOW_GROUP: FALSE
+    VALUE: MultiModeFilter DRIVE
+    COLOR: #ff8d99
+    ID: Param6_enc
 
   COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
     ENCODER_ID: 7

@@ -16,6 +16,12 @@ public:
     float hp = 0.0f;
     float bp = 0.0f;
     float resonance = 0.0f;
+    float drive = 0.5f;
+
+    void setDrive(float _drive)
+    {
+        drive =  0.4f + _drive * _drive * 6;
+    }
 
     void setCutoff(float _cutoff)
     {
@@ -36,6 +42,8 @@ public:
 
     void setSampleData(float inputValue)
     {
+        inputValue = inputValue * drive; 
+
         hp = inputValue - buf0;
         bp = buf0 - buf1;
 
