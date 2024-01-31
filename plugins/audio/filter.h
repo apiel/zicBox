@@ -20,7 +20,7 @@ public:
 
     void setDrive(float _drive)
     {
-        drive =  0.4f + _drive * _drive * 6;
+        drive = 0.4f + _drive * _drive * 6;
     }
 
     void setCutoff(float _cutoff)
@@ -42,7 +42,7 @@ public:
 
     void setSampleData(float inputValue)
     {
-        inputValue = inputValue * drive; 
+        inputValue = inputValue * drive;
 
         hp = inputValue - buf0;
         bp = buf0 - buf1;
