@@ -150,6 +150,7 @@ while: $track < 13
         TRACK: $track
         KEYMAP: Keyboard 44 play 60
         ENVELOP_DATA_ID: 3
+        PLUGIN: Kick23
 
     VIEW: KickParams_track_page_1
       INCLUDE: kickParams_page_1.view.ui
@@ -158,6 +159,7 @@ while: $track < 13
         TRACK: $track
         KEYMAP: Keyboard 44 play 60
         ENVELOP_DATA_ID: 4
+        PLUGIN: Kick23
     
   if: $track != 1
     VIEW: TrackParams_track_$track_page_0
