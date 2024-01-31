@@ -141,11 +141,10 @@ protected:
         if (grid.row == trackCount) {
             view = "MasterParams";
         } else if (grid.col == 0) {
+            // if (grid.lastRow != grid.row) {
+            //     tracks[grid.row].page = 0;
+            // }
             view = tracks[grid.row].trackView + "_page_" + std::to_string(tracks[grid.row].page);
-
-            if (grid.lastRow != grid.row) {
-                tracks[grid.row].page = 0;
-            }
         } else {
             view = tracks[grid.row].stepView;
             tracks[grid.row].selectedStep->set(grid.col - 1);
@@ -300,6 +299,7 @@ protected:
         if (state == 1) {
             if (grid.row == track && grid.col == 0) {
                 tracks[grid.row].page = (tracks[grid.row].page + 1) % tracks[grid.row].pageCount;
+                // printf("page %d from %d\n", tracks[grid.row].page, tracks[grid.row].pageCount);
             } else {
                 printf("select track %d\n", track);
                 grid.select(track, 0);

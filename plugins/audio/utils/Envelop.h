@@ -17,6 +17,7 @@ public:
     Envelop(std::vector<Data> data)
         : data(data)
     {
+        index = data.size() - 1;
     }
 
     float next(float time, unsigned int* indexPtr)
