@@ -98,6 +98,6 @@ if: $screen == ui_480x640
   ADD_ZONE_ENCODER: $encX3 $encY3 $encSize $encSize
   ADD_ZONE_ENCODER: $encX4 $encY3 $encSize $encSize
 
-  $kickTrackCount=1
+  $kickTrackCount=2
   $sampleTrackStart=$kickTrackCount+1
   INCLUDE: ui_480x640/main.view.ui
