@@ -13,13 +13,6 @@
 #define ZIC_KICK_ENV_FREQ_STEP 4
 #define ZIC_KICK_UI 1000
 
-// TODO add noise
-//              noise could just be a second waveform, no need to have specific one.
-// TODO add second waveform or sine? to do FM.
-//                                   or to make a feedback sound in mix mode...
-//
-// >>>>> use buf[track] input as modulation for amp or freq, or use it to mix it with the output.
-
 // Instead to have a fix envelop, should we use an envelop with customizable steps...??
 
 /*md
@@ -81,6 +74,12 @@ public:
     Val& pitch = val(0, "PITCH", { "Pitch", .min = -12, .max = 12 }, [&](auto p) { setPitch(p.value); });
     /*md - `DURATION` set the duration of the envelop.*/
     Val& duration = val(100.0f, "DURATION", { "Duration", .min = 100.0, .max = 5000.0, .step = 100.0, .unit = "ms" }, [&](auto p) { setDuration(p.value); });
+    /*//md - `MIX` set mix between audio input and output.*/
+    Val& mix = val(100.0f, "MIX", { "Mix in/out", .type = VALUE_CENTERED });
+    /*//md - `FM_AMP_MOD` set amplitude modulation amount using audio input.*/
+    Val& fmAmpMod = val(0.0f, "FM_AMP_MOD", { "FM.Amp", .unit = "%" });
+    /*//md - `FM_FREQ_MOD` set frequency modulation amount using audio input.*/
+    Val& fmFreqMod = val(0.0f, "FM_FREQ_MOD", { "FM.Freq", .unit = "%" });
 
     Val envAmpMod[ZIC_KICK_ENV_AMP_STEP] = {
         { 50.0f, "ENVELOP_AMP_MOD_1", { "Amp.Mod.1", .unit = "%" }, [&](auto p) { setEnvAmpMod(p.value, 0); } },
@@ -135,13 +134,16 @@ public:
 
     void sample(float* buf)
     {
+        float input = buf[track];
         if (sampleDurationCounter < sampleCountDuration) {
             float time = (float)sampleDurationCounter / (float)sampleCountDuration;
-            float envAmp = envelopAmp.next(time);
-            float envFreq = envelopFreq.next(time);
+            float envAmp = envelopAmp.next(time) + input * fmAmpMod.pct();
+            float envFreq = envelopFreq.next(time) + input * fmFreqMod.pct();
             buf[track] = sample(time, &sampleIndex, envAmp, envFreq);
             sampleDurationCounter++;
         }
+
+        buf[track] = input * (1.0f - mix.pct()) + buf[track] * mix.pct();
     }
 
     void setEnvAmpMod(float value, uint8_t index)
@@ -268,12 +270,28 @@ public:
         // TODO use velocity
         printf("kick noteOn: %d %f\n", note, velocity);
 
+        if (siblingPlugin) {
+            siblingPlugin->noteOn(note, velocity);
+        }
+
         // Could change the frequency base on the note...
         // Could change the amplitude base on the velocity...
         sampleIndex = 0;
         sampleDurationCounter = 0;
         envelopAmp.reset();
         envelopFreq.reset();
+    }
+
+    AudioPlugin* siblingPlugin = NULL;
+
+    bool config(char* key, char* value)
+    {
+        if (strcmp(key, "FOWARD_NOTE_ON") == 0) {
+            siblingPlugin = props.audioPluginHandler->getPluginPtr(value);
+            return true;
+        }
+
+        return Mapping::config(key, value);
     }
 
     void* data(int id, void* userdata = NULL)
