@@ -74,6 +74,9 @@ public:
     Val& pitch = val(0, "PITCH", { "Pitch", .min = -12, .max = 12 }, [&](auto p) { setPitch(p.value); });
     /*md - `DURATION` set the duration of the envelop.*/
     Val& duration = val(100.0f, "DURATION", { "Duration", .min = 100.0, .max = 5000.0, .step = 100.0, .unit = "ms" }, [&](auto p) { setDuration(p.value); });
+    // ///*md - `ENV_FREQ_START` set the frequence value when the envelop start.*/
+    // Val& envFreqStart = val(1.0f, "ENVELOP_FREQ_MOD_0", { "Freq.Mod.0", .min = 0.0, .max = 2.0, .step = 0.1 }, [&](auto p) { setEnvFreqStart(p.value); });
+
     /*//md - `MIX` set mix between audio input and output.*/
     Val& mix = val(100.0f, "MIX", { "Mix in/out", .type = VALUE_CENTERED });
     /*//md - `FM_AMP_MOD` set amplitude modulation amount using audio input.*/
@@ -93,11 +96,12 @@ public:
         { 50.0f, "ENVELOP_AMP_TIME_3", { "Amp.Time 3", .unit = "%" }, [&](auto p) { setEnvAmpTime(p.value, 2); } },
         { 50.0f, "ENVELOP_AMP_TIME_4", { "Amp.Time 4", .unit = "%" }, [&](auto p) { setEnvAmpTime(p.value, 3); } },
     };
-    Val envFreqMod[ZIC_KICK_ENV_FREQ_STEP] = {
-        { 50.0f, "ENVELOP_FREQ_MOD_1", { "Freq.Mod.1", .unit = "%" }, [&](auto p) { setEnvFreqMod(p.value, 0); } },
-        { 50.0f, "ENVELOP_FREQ_MOD_2", { "Freq.Mod.2", .unit = "%" }, [&](auto p) { setEnvFreqMod(p.value, 1); } },
-        { 50.0f, "ENVELOP_FREQ_MOD_3", { "Freq.Mod.3", .unit = "%" }, [&](auto p) { setEnvFreqMod(p.value, 2); } },
-        { 50.0f, "ENVELOP_FREQ_MOD_4", { "Freq.Mod.4", .unit = "%" }, [&](auto p) { setEnvFreqMod(p.value, 3); } },
+    Val envFreqMod[ZIC_KICK_ENV_FREQ_STEP + 1] = {
+        { 100.0f, "ENVELOP_FREQ_MOD_0", { "Freq.Mod.0", .unit = "%" }, [&](auto p) { setEnvFreqMod(p.value, 0); } },
+        { 50.0f, "ENVELOP_FREQ_MOD_1", { "Freq.Mod.1", .unit = "%" }, [&](auto p) { setEnvFreqMod(p.value, 1); } },
+        { 50.0f, "ENVELOP_FREQ_MOD_2", { "Freq.Mod.2", .unit = "%" }, [&](auto p) { setEnvFreqMod(p.value, 2); } },
+        { 50.0f, "ENVELOP_FREQ_MOD_3", { "Freq.Mod.3", .unit = "%" }, [&](auto p) { setEnvFreqMod(p.value, 3); } },
+        { 50.0f, "ENVELOP_FREQ_MOD_4", { "Freq.Mod.4", .unit = "%" }, [&](auto p) { setEnvFreqMod(p.value, 4); } },
     };
     Val envFreqTime[ZIC_KICK_ENV_FREQ_STEP] = {
         { 50.0f, "ENVELOP_FREQ_TIME_1", { "Freq.Time 1", .unit = "%" }, [&](auto p) { setEnvFreqTime(p.value, 0); } },
@@ -111,7 +115,7 @@ public:
                                     // clang-format off
             &envAmpMod[0], &envAmpMod[1], &envAmpMod[2], &envAmpMod[3],
             &envAmpTime[0], &envAmpTime[1], &envAmpTime[2], &envAmpTime[3],
-            &envFreqMod[0], &envFreqMod[1], &envFreqMod[2], &envFreqMod[3],
+            &envFreqMod[0], &envFreqMod[1], &envFreqMod[2], &envFreqMod[3], &envFreqMod[4],
             &envFreqTime[0], &envFreqTime[1], &envFreqTime[2], &envFreqTime[3],
         }) // clang-format on
         , sampleRate(props.sampleRate)
@@ -172,7 +176,7 @@ public:
     void setEnvFreqMod(float value, uint8_t index)
     {
         envFreqMod[index].setFloat(value);
-        envelopFreq.data[index + 1].modulation = envFreqMod[index].pct();
+        envelopFreq.data[index].modulation = envFreqMod[index].pct();
         updateUi(&envelopFreq.data);
     }
 

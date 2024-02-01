@@ -5,7 +5,7 @@ VIEW: shared_components HIDDEN
     SHARED_COMPONENT: SharedGridSequencer
     TRACK_NAME: 1 Kick
     TRACK_VIEW: 1 KickParams_track
-    # TRACK_PAGE_COUNT: 1 1
+    TRACK_PAGE_COUNT: 1 3
     KEYPAD_LAYOUT: default
       KEYMAP: Keyboard 82 row 1
       KEYMAP: Keyboard 80 col -1
@@ -152,20 +152,14 @@ while: $track < 13
     VIEW: KickParams_track_page_0
       INCLUDE: kickParams_page_0.view.ui
       USE_SHARED_COMPONENT: SharedGridSequencer
-      COMPONENT: Wave 0 300 480 100
-        TRACK: $track
-        KEYMAP: Keyboard 44 play 60
-        ENVELOP_DATA_ID: 3
-        PLUGIN: Kick23
 
     VIEW: KickParams_track_page_1
       INCLUDE: kickParams_page_1.view.ui
       USE_SHARED_COMPONENT: SharedGridSequencer
-      COMPONENT: Wave 0 300 480 100
-        TRACK: $track
-        KEYMAP: Keyboard 44 play 60
-        ENVELOP_DATA_ID: 4
-        PLUGIN: Kick23
+
+    VIEW: KickParams_track_page_2
+      INCLUDE: kickParams_page_2.view.ui
+      USE_SHARED_COMPONENT: SharedGridSequencer
     
   if: $track != 1
     VIEW: TrackParams_track_$track_page_0

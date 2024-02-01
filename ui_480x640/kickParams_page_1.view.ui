@@ -10,31 +10,23 @@
     ENCODER_ID: 1
     COLOR: #3791a1
     TRACK: $track
-    VALUE: MultiModeFilter CUTOFF
-    TYPE: TWO_SIDED
+    VALUE: Kick23 ENVELOP_FREQ_MOD_0
     ID: Param1_enc
 
-  COMPONENT: Encoder2 $encX3 $encY1 $encSize $encSize
-    ENCODER_ID: 2
-    COLOR: #ff8d99
-    TRACK: $track
-    VALUE: MultiModeFilter RESONANCE
-    ID: Param2_enc
+  # COMPONENT: Encoder2 $encX3 $encY1 $encSize $encSize
+  #   ENCODER_ID: 2
+  #   COLOR: #ff8d99
+  #   TRACK: $track
+  #   VALUE: MultiModeFilter RESONANCE
+  #   ID: Param2_enc
 
   # COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize
   #   ENCODER_ID: 3
   #   TRACK: $track
-  #   VALUE: Distortion DRIVE
+  #   VALUE: MultiModeFilter DRIVE
+  #   LABEL: Filter drive
   #   COLOR: #ff7700
   #   ID: Param3_enc
-
-  COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize
-    ENCODER_ID: 3
-    TRACK: $track
-    VALUE: MultiModeFilter DRIVE
-    LABEL: Filter drive
-    COLOR: #ff7700
-    ID: Param3_enc
 
 
   COMPONENT: Encoder2 $encX1 $encY2 $encSize $encSize
@@ -95,3 +87,9 @@
     VALUE: Kick23 ENVELOP_FREQ_TIME_4
     ID: Param11_enc
     
+
+  COMPONENT: Wave 0 300 480 100
+    TRACK: $track
+    KEYMAP: Keyboard 44 play 60
+    ENVELOP_DATA_ID: 4
+    PLUGIN: Kick23
