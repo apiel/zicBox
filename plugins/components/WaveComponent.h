@@ -17,6 +17,7 @@ WaveComponent will display the represention of a waveform and associated modulat
 class WaveComponent : public Component {
 protected:
     AudioPlugin* plugin = NULL;
+    ValueInterface* browser = NULL;
 
     Size waveSize;
     Point wavePosition;
@@ -32,6 +33,7 @@ protected:
         Color samples;
         Color samplesFill;
         Color env;
+        Color info;
     } colors;
 
     Colors getColorsFromColor(Color color)
@@ -39,7 +41,8 @@ protected:
         return Colors({ draw.darken(color, 0.75),
             color,
             draw.alpha(color, 0.15),
-            draw.darken(color, 0.65) });
+            draw.darken(color, 0.65),
+            draw.darken(color, 0.3) });
     }
 
     const int margin;
@@ -49,6 +52,13 @@ protected:
     KeypadLayout keypadLayout;
 
     uint8_t envDataId = 2;
+
+    void renderWaveName()
+    {
+        if (browser) {
+            draw.text({ position.x + 10, position.y + 5 }, browser->string().c_str(), colors.info, 12);
+        }
+    }
 
 public:
     /*md **Keyboard actions**: */
@@ -132,6 +142,7 @@ public:
                 }
             }
         }
+        renderWaveName();
     }
 
     bool noteTriggered = false;
@@ -178,6 +189,14 @@ public:
         /*md - `PLUGIN: plugin_name` set plugin target */
         if (strcmp(key, "PLUGIN") == 0) {
             plugin = &getPlugin(value, track);
+            return true;
+        }
+
+        /*md - `NAME: key` set key to get name from wave */
+        if (strcmp(key, "NAME") == 0) {
+            if (plugin) {
+                browser = watch(plugin->getValue(value));
+            }
             return true;
         }
 
