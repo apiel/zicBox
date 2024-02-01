@@ -16,6 +16,9 @@
 
 Sample is used to display an audio sample, sustain position, and start/end position.
 The little green dot are the current playing positions of the sample.
+
+[SampleComponent.webm](https://github.com/apiel/zicBox/assets/5873198/a31fe431-58dc-4379-bfd1-a752d2ea579d)
+
 */
 class SampleComponent : public Component {
 protected:
