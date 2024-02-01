@@ -7,7 +7,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#define FILE_BROWSER_FILES_MAX 127
+// FIXME use vector and string
+
+#define FILE_BROWSER_FILES_MAX 2048
 #define FILE_BROWSER_FILEPATH_LEN 258
 #define FILE_BROWSER_FILENAME_LEN 255
 

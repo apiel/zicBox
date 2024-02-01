@@ -1,3 +1,5 @@
+- TODO filebrowser use vector and string
+
 - TODO keyboard / keypad
     - see we can extract some logic to have global action that are not specific to a UI plugin
     - should LED and keypad be the same object
