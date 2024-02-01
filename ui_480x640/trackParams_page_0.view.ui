@@ -54,7 +54,7 @@
   COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
     ENCODER_ID: 7
     TRACK: $track
-    VALUE: Sequencer STATUS
+    VALUE: SerializeTrack VARIATION
     COLOR: #ff7700
     ID: Param7_enc
 
@@ -92,6 +92,6 @@
     ENCODER_ID: 11
     TRACK: $track
     COLOR: #ff7700
-    VALUE: SerializeTrack VARIATION
+    VALUE: Sequencer STATUS
     ID: Param11_enc
     

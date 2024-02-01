@@ -1,4 +1,4 @@
-$kickTrackCount=2
+$kickTrackCount=3
 $sampleTrackStart=$kickTrackCount+1
 
 VIEW: shared_components HIDDEN
@@ -11,9 +11,9 @@ VIEW: shared_components HIDDEN
     TRACK_NAME: 2 Bass
     TRACK_VIEW: 2 KickParams_track_2
     TRACK_PAGE_COUNT: 2 3
-    # TRACK_NAME: 3 Drum
-    # TRACK_VIEW: 3 KickParams_track_3
-    # TRACK_PAGE_COUNT: 3 3
+    TRACK_NAME: 3 Drum
+    TRACK_VIEW: 3 KickParams_track_3
+    TRACK_PAGE_COUNT: 3 3
 
     KEYPAD_LAYOUT: default
       KEYMAP: Keyboard 82 row 1
