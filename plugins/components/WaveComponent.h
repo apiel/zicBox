@@ -114,12 +114,12 @@ public:
             float yRatio = samplesCount / waveSize.w;
             for (int xIndex = 0; xIndex < waveSize.w - 1; xIndex++) {
                 {
-                    // int x = wavePosition.x + xIndex;
-                    // int i = xIndex * yRatio;
-                    // int y1 = wavePosition.y + (h - (int)(bufferSamples[i] * h));
-                    // int i2 = (xIndex + 1) * yRatio;
-                    // int y2 = wavePosition.y + (h - (int)(bufferSamples[i2] * h));
-                    // draw.aaline({ x, y1 }, { x + 1, y2 }, colors.samples);
+                    int x = wavePosition.x + xIndex;
+                    int i = xIndex * yRatio;
+                    int y1 = wavePosition.y + (h - (int)(bufferSamples[i] * h));
+                    int i2 = (xIndex + 1) * yRatio;
+                    int y2 = wavePosition.y + (h - (int)(bufferSamples[i2] * h));
+                    draw.aaline({ x, y1 }, { x + 1, y2 }, colors.samples);
                 }
                 {
                     // draw line from center
