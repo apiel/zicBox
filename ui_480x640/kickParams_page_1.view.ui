@@ -54,6 +54,14 @@
     COLOR: #ff7700
     VALUE: Kick23 ENVELOP_AMP_TIME_4
     ID: Param11_enc
+
+
+  COMPONENT: Encoder2 $encX1 $encY3 $encSize $encSize
+    ENCODER_ID: 8
+    COLOR: #9dfe86
+    TRACK: $track
+    VALUE: Kick23 ENVELOP_AMP_MOD_0
+    ID: Param0_enc
     
 
 

@@ -84,11 +84,12 @@ public:
     /*//md - `FM_FREQ_MOD` set frequency modulation amount using audio input.*/
     Val& fmFreqMod = val(0.0f, "FM_FREQ_MOD", { "FM.Freq", .unit = "%" });
 
-    Val envAmpMod[ZIC_KICK_ENV_AMP_STEP] = {
-        { 50.0f, "ENVELOP_AMP_MOD_1", { "Amp.Mod.1", .unit = "%" }, [&](auto p) { setEnvAmpMod(p.value, 0); } },
-        { 50.0f, "ENVELOP_AMP_MOD_2", { "Amp.Mod.2", .unit = "%" }, [&](auto p) { setEnvAmpMod(p.value, 1); } },
-        { 50.0f, "ENVELOP_AMP_MOD_3", { "Amp.Mod.3", .unit = "%" }, [&](auto p) { setEnvAmpMod(p.value, 2); } },
-        { 50.0f, "ENVELOP_AMP_MOD_4", { "Amp.Mod.4", .unit = "%" }, [&](auto p) { setEnvAmpMod(p.value, 3); } },
+    Val envAmpMod[ZIC_KICK_ENV_AMP_STEP + 1] = {
+        { 100.0f, "ENVELOP_AMP_MOD_0", { "Amp.Mod.0", .unit = "%" }, [&](auto p) { setEnvAmpMod(p.value, 0); } },
+        { 50.0f, "ENVELOP_AMP_MOD_1", { "Amp.Mod.1", .unit = "%" }, [&](auto p) { setEnvAmpMod(p.value, 1); } },
+        { 50.0f, "ENVELOP_AMP_MOD_2", { "Amp.Mod.2", .unit = "%" }, [&](auto p) { setEnvAmpMod(p.value, 2); } },
+        { 50.0f, "ENVELOP_AMP_MOD_3", { "Amp.Mod.3", .unit = "%" }, [&](auto p) { setEnvAmpMod(p.value, 3); } },
+        { 50.0f, "ENVELOP_AMP_MOD_4", { "Amp.Mod.4", .unit = "%" }, [&](auto p) { setEnvAmpMod(p.value, 4); } },
     };
     Val envAmpTime[ZIC_KICK_ENV_AMP_STEP] = {
         { 50.0f, "ENVELOP_AMP_TIME_1", { "Amp.Time 1", .unit = "%" }, [&](auto p) { setEnvAmpTime(p.value, 0); } },
@@ -113,7 +114,7 @@ public:
     SynthKick23(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name, {
                                     // clang-format off
-            &envAmpMod[0], &envAmpMod[1], &envAmpMod[2], &envAmpMod[3],
+            &envAmpMod[0], &envAmpMod[1], &envAmpMod[2], &envAmpMod[3], &envAmpMod[4],
             &envAmpTime[0], &envAmpTime[1], &envAmpTime[2], &envAmpTime[3],
             &envFreqMod[0], &envFreqMod[1], &envFreqMod[2], &envFreqMod[3], &envFreqMod[4],
             &envFreqTime[0], &envFreqTime[1], &envFreqTime[2], &envFreqTime[3],
@@ -154,7 +155,7 @@ public:
     void setEnvAmpMod(float value, uint8_t index)
     {
         envAmpMod[index].setFloat(value);
-        envelopAmp.data[index + 2].modulation = envAmpMod[index].pct();
+        envelopAmp.data[index + 1].modulation = envAmpMod[index].pct();
         updateUi(&envelopAmp.data);
     }
 
