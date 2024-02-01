@@ -1,6 +1,3 @@
-$kickTrackCount=1
-$sampleTrackStart=$kickTrackCount+1
-
 VIEW: shared_components HIDDEN
 
   COMPONENT: GridSequencer 0 403 480 240
