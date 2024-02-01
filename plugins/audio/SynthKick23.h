@@ -41,7 +41,7 @@ protected:
     float sampleIndex = 0.0f;
     uint64_t sampleStart = 0;
 
-    unsigned int sampleCountDuration;
+    unsigned int sampleCountDuration = 0;
     unsigned int sampleDurationCounter = 0;
 
     Envelop envelopAmp = Envelop({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.3f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
@@ -145,6 +145,7 @@ public:
             float envFreq = envelopFreq.next(time) + input * fmFreqMod.pct();
             buf[track] = sample(time, &sampleIndex, envAmp, envFreq);
             sampleDurationCounter++;
+            // printf("[%d] sample: %d of %d=%f\n", track, sampleDurationCounter, sampleCountDuration, buf[track]);
         }
 
         buf[track] = input * (1.0f - mix.pct()) + buf[track] * mix.pct();
@@ -218,7 +219,11 @@ public:
     void setDuration(float value)
     {
         duration.setFloat(value);
+        bool isOff = sampleCountDuration == sampleDurationCounter;
         sampleCountDuration = duration.get() * (sampleRate * 0.0001f);
+        if (isOff) {
+            sampleDurationCounter = sampleCountDuration;
+        }
         updateUi(NULL);
         // printf(">>>>>>>>>>>>>>.... sampleCountDuration: %d (%d)\n", sampleCountDuration, duration.getAsInt());
     }
