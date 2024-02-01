@@ -1,4 +1,4 @@
-  COMPONENT: Encoder2 $encX1 $encY1 $encSize $encSize
+    COMPONENT: Encoder2 $encX1 $encY1 $encSize $encSize
     ENCODER_ID: 0
     COLOR: #9dfe86
     TRACK: $track
@@ -31,28 +31,28 @@
     ENCODER_ID: 4
     COLOR: #9dfe86
     TRACK: $track
-    VALUE: Kick23 ENVELOP_AMP_MOD_1
+    VALUE: Distortion DRIVE
     ID: Param4_enc
 
   COMPONENT: Encoder2 $encX2 $encY2 $encSize $encSize
     ENCODER_ID: 5
     COLOR: #3791a1
     TRACK: $track
-    VALUE: Kick23 ENVELOP_AMP_TIME_1
+    VALUE: MultiModeFilter CUTOFF
     ID: Param5_enc
 
   COMPONENT: Encoder2 $encX3 $encY2 $encSize $encSize
     ENCODER_ID: 6
     COLOR: #ff8d99
     TRACK: $track
-    VALUE: Kick23 ENVELOP_AMP_MOD_2
+    VALUE: MultiModeFilter RESONANCE
     ID: Param6_enc
 
   # COMPONENT: Rect $encX4 $encY2 $encSize $encSize
   COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
     ENCODER_ID: 7
     TRACK: $track
-    VALUE: Kick23 ENVELOP_AMP_TIME_2
+    VALUE: MultiModeFilter DRIVE
     COLOR: #ff7700
     ID: Param7_enc
 
@@ -61,34 +61,34 @@
     ENCODER_ID: 8
     COLOR: #9dfe86
     TRACK: $track
-    VALUE: Kick23 ENVELOP_AMP_MOD_3
+    VALUE: Kick23 PITCH
+    TYPE: TWO_SIDED
     ID: Param8_enc
 
-  COMPONENT: Encoder2 $encX2 $encY3 $encSize $encSize
-    ENCODER_ID: 9
-    COLOR: #3791a1
-    TRACK: $track
-    VALUE: Kick23 ENVELOP_AMP_TIME_3
-    ID: Param9_enc
+  # COMPONENT: Encoder2 $encX2 $encY3 $encSize $encSize
+  #   ENCODER_ID: 9
+  #   COLOR: #3791a1
+  #   TRACK: $track
+  #   VALUE: Kick23 ENVELOP_FREQ_TIME_3
+  #   ID: Param9_enc
 
-  COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
-    ENCODER_ID: 10
-    TRACK: $track
-    VALUE: Kick23 ENVELOP_AMP_MOD_4
-    COLOR: #ff8d99
-    ID: Param10_enc
+  # COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
+  #   ENCODER_ID: 10
+  #   TRACK: $track
+  #   VALUE: Kick23 ENVELOP_FREQ_MOD_4
+  #   COLOR: #ff8d99
+  #   ID: Param10_enc
 
-  COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
-    ENCODER_ID: 11
-    TRACK: $track
-    COLOR: #ff7700
-    VALUE: Kick23 ENVELOP_AMP_TIME_4
-    ID: Param11_enc
+  # COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
+  #   ENCODER_ID: 11
+  #   TRACK: $track
+  #   COLOR: #ff7700
+  #   VALUE: Kick23 ENVELOP_FREQ_TIME_4
+  #   ID: Param11_enc
     
-
 
   COMPONENT: Wave 0 300 480 100
     TRACK: $track
     KEYMAP: Keyboard 44 play 60
-    ENVELOP_DATA_ID: 3
     PLUGIN: Kick23
+    ENVELOP_DATA_ID: -1
