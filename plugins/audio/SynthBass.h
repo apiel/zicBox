@@ -5,6 +5,7 @@
 
 #include "audioPlugin.h"
 #include "fileBrowser.h"
+#include "filter.h"
 #include "mapping.h"
 #include "utils/Envelop.h"
 
@@ -17,6 +18,8 @@ Synth engine to generate bass sounds.
 */
 class SynthBass : public Mapping {
 protected:
+    EffectFilterData filter;
+
     // could be use make sample representation for a note duration
     float bufferUi[ZIC_BASS_UI];
 
@@ -41,6 +44,12 @@ public:
     Val& decayLevel = val(0.5f, "DECAY_LEVEL", { "Decay Level", .unit = "%" }, [&](auto p) { setDecayLevel(p.value); });
     /*md - `DECAY_TIME` set the decay time percentage base on the total duration.*/
     Val& decayTime = val(100.0f, "DECAY_TIME", { "Decay Time", .unit = "%" }, [&](auto p) { setDecayTime(p.value); });
+    /*md - `CUTOFF` to set cutoff frequency and switch between low and high pass filter. */
+    Val& cutoff = val(50.0, "CUTOFF", { "Cutoff", .unit = "%" }, [&](auto p) { setCutoff(p.value); });
+    /*md - `RESONANCE` to set resonance. */
+    Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) { setResonance(p.value); });
+    /*md - `DRIVE` to set drive. */
+    Val& drive = val(50, "DRIVE", { "F.Drive" }, [&](auto p) { setDrive(p.value); });
 
     SynthBass(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name) // clang-format on
@@ -58,7 +67,9 @@ public:
             }
             float time = (float)sampleIndex / (float)sampleCountDuration;
             float env = envelop.next(time);
-            buf[track] = sampleValue * velocity * env;
+            filter.setCutoff(0.85 * cutoff.pct() * env + 0.1);
+            filter.setSampleData(sampleValue * velocity * env);
+            buf[track] = filter.buf0;
         }
     }
 
@@ -94,6 +105,24 @@ public:
         // printf(">>>>>>>>>>>>>>.... sampleCountDuration: %d (%d)\n", sampleCountDuration, duration.getAsInt());
         updateUiState++;
     }
+
+    void setDrive(float value)
+    {
+        drive.setFloat(value);
+        filter.setDrive(drive.pct());
+    }
+
+    void setCutoff(float value)
+    {
+        cutoff.setFloat(value);
+        filter.setCutoff(0.85 * cutoff.pct() + 0.1);
+    }
+
+    void setResonance(float value)
+    {
+        resonance.setFloat(value);
+        filter.setResonance(resonance.pct());
+    };
 
     void noteOn(uint8_t note, float _velocity) override
     {
