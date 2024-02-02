@@ -70,6 +70,8 @@ public:
             filter.setCutoff(0.85 * cutoff.pct() * env + 0.1);
             filter.setSampleData(sampleValue * velocity * env);
             buf[track] = filter.buf0;
+
+            // buf[track] = sampleValue * velocity * env;
         }
     }
 
