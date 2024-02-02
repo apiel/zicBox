@@ -73,7 +73,7 @@ public:
     /*md - `PITCH` Modulate the pitch.*/
     Val& pitch = val(0, "PITCH", { "Pitch", .min = -12, .max = 12 }, [&](auto p) { setPitch(p.value); });
     /*md - `DURATION` set the duration of the envelop.*/
-    Val& duration = val(100.0f, "DURATION", { "Duration", .min = 100.0, .max = 5000.0, .step = 100.0, .unit = "ms" }, [&](auto p) { setDuration(p.value); });
+    Val& duration = val(100.0f, "DURATION", { "Duration", .min = 10.0, .max = 5000.0, .step = 10.0, .unit = "ms" }, [&](auto p) { setDuration(p.value); });
     // ///*md - `ENV_FREQ_START` set the frequence value when the envelop start.*/
     // Val& envFreqStart = val(1.0f, "ENVELOP_FREQ_MOD_0", { "Freq.Mod.0", .min = 0.0, .max = 2.0, .step = 0.1 }, [&](auto p) { setEnvFreqStart(p.value); });
 
@@ -221,7 +221,7 @@ public:
     {
         duration.setFloat(value);
         bool isOff = sampleCountDuration == sampleDurationCounter;
-        sampleCountDuration = duration.get() * (sampleRate * 0.0001f);
+        sampleCountDuration = duration.get() * (sampleRate * 0.001f);
         if (isOff) {
             sampleDurationCounter = sampleCountDuration;
         }

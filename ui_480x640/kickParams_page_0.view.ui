@@ -1,4 +1,4 @@
-    COMPONENT: Encoder2 $encX1 $encY1 $encSize $encSize
+  COMPONENT: Encoder2 $encX1 $encY1 $encSize $encSize
     ENCODER_ID: 0
     COLOR: #9dfe86
     TRACK: $track
