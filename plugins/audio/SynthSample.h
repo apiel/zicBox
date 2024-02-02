@@ -317,12 +317,12 @@ public:
         setSustainReleaseLoopCount();
     }
 
-    void open(const char* filename)
+    void open(std::string filename)
     {
         SF_INFO sfinfo;
-        SNDFILE* file = sf_open(filename, SFM_READ, &sfinfo);
+        SNDFILE* file = sf_open(filename.c_str(), SFM_READ, &sfinfo);
         if (!file) {
-            debug("Error: could not open file %s [%s]\n", filename, sf_strerror(file));
+            debug("Error: could not open file %s [%s]\n", filename.c_str(), sf_strerror(file));
             return;
         }
         // debug("Audio file %s sampleCount %ld sampleRate %d\n", filename, (long)sfinfo.frames, sfinfo.samplerate);
@@ -353,8 +353,8 @@ public:
         browser.setFloat(value);
         int position = browser.get();
         if (force || position != fileBrowser.position) {
-            char* filepath = fileBrowser.getFilePath(position);
             browser.setString(fileBrowser.getFile(position));
+            std::string filepath = fileBrowser.getFilePath(position);
             // debug("SAMPLE_SELECTOR: %f %s\n", value, filepath);
             open(filepath);
         }
