@@ -1,5 +1,6 @@
-$kickTrackCount=3
-$sampleTrackStart=$kickTrackCount+1
+$kickTrackCount=2
+$bassTrack=$kickTrackCount+1
+$sampleTrackStart=$bassTrack+1
 
 VIEW: shared_components HIDDEN
 
@@ -12,8 +13,8 @@ VIEW: shared_components HIDDEN
     TRACK_VIEW: 2 KickParams_track_2
     TRACK_PAGE_COUNT: 2 3
     TRACK_NAME: 3 Bass
-    TRACK_VIEW: 3 KickParams_track_3
-    TRACK_PAGE_COUNT: 3 3
+    TRACK_VIEW: 3 BassParams_track_3
+    TRACK_PAGE_COUNT: 3 1
 
     KEYPAD_LAYOUT: default
       KEYMAP: Keyboard 82 row 1
@@ -139,7 +140,7 @@ VIEW: shared_components HIDDEN
     SELECTED_LAYOUT: default
 
   $track=1
-  while: $track < $sampleTrackStart
+  while: $track < $bassTrack
     COMPONENT: Wave 0 300 480 100
       TRACK: $track
       KEYMAP: Keyboard 44 play 60
@@ -158,45 +159,9 @@ VIEW: shared_components HIDDEN
     $track=$track + 1
 
 
-$track=1
-while: $track < $sampleTrackStart
-  VIEW: KickParams_track_$track_page_0
-    INCLUDE: kickParams_page_0.view.ui
-    USE_SHARED_COMPONENT: SharedGridSequencer
-
-  VIEW: KickParams_track_$track_page_1
-    INCLUDE: kickParams_page_1.view.ui
-    USE_SHARED_COMPONENT: SharedGridSequencer
-
-  VIEW: KickParams_track_$track_page_2
-    INCLUDE: kickParams_page_2.view.ui
-    USE_SHARED_COMPONENT: SharedGridSequencer
-
-  VIEW: StepParams_track_$track
-    INCLUDE: stepParams.view.ui
-    USE_SHARED_COMPONENT: Wave_Kick23_track_1
-    USE_SHARED_COMPONENT: SharedGridSequencer
-  
-  $track=$track + 1
-
-$track=$sampleTrackStart
-while: $track < 13
-  VIEW: TrackParams_track_$track_page_0
-    INCLUDE: trackParams_page_0.view.ui
-    USE_SHARED_COMPONENT: Sample_track_$track
-    USE_SHARED_COMPONENT: SharedGridSequencer
-
-  VIEW: TrackParams_track_$track_page_1
-    INCLUDE: trackParams_page_1.view.ui
-    USE_SHARED_COMPONENT: Sample_track_$track
-    USE_SHARED_COMPONENT: SharedGridSequencer
-
-  VIEW: StepParams_track_$track
-    INCLUDE: stepParams.view.ui
-    USE_SHARED_COMPONENT: Sample_track_$track
-    USE_SHARED_COMPONENT: SharedGridSequencer
-  
-  $track=$track + 1
+INCLUDE: kick.view.ui
+INCLUDE: bass.view.ui
+INCLUDE: sample.view.ui
 
 
 VIEW: MasterParams
