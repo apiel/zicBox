@@ -78,12 +78,12 @@
   # #   COLOR: #ff8d99
   # #   ID: Param10_enc
 
-  # COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
-  #   ENCODER_ID: 11
-  #   TRACK: $track
-  #   COLOR: #ff7700
-  #   VALUE: Sequencer STATUS
-  #   ID: Param11_enc
+  COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
+    ENCODER_ID: 11
+    TRACK: $track
+    COLOR: #ff7700
+    VALUE: Sequencer STATUS
+    ID: Param11_enc
 
     
 

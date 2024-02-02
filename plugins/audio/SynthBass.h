@@ -39,7 +39,7 @@ public:
     /*md - `PITCH` set the pitch.*/
     Val& pitch = val(0, "PITCH", { "Pitch", .min = -24, .max = 24 }, [&](auto p) { setPitch(p.value); });
     /*md - `DURATION` set the duration of the envelop.*/
-    Val& duration = val(100.0f, "DURATION", { "Duration", .min = 100.0, .max = 5000.0, .step = 100.0, .unit = "ms" }, [&](auto p) { setDuration(p.value); });
+    Val& duration = val(100.0f, "DURATION", { "Duration", .min = 10.0, .max = 5000.0, .step = 10.0, .unit = "ms" }, [&](auto p) { setDuration(p.value); });
     /*md - `DECAY_LEVEL` set the decay level.*/
     Val& decayLevel = val(0.5f, "DECAY_LEVEL", { "Decay Level", .unit = "%" }, [&](auto p) { setDecayLevel(p.value); });
     /*md - `DECAY_TIME` set the decay time percentage base on the total duration.*/
