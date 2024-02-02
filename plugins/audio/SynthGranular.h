@@ -197,15 +197,15 @@ public:
     SynthGranular& save()
     {
         ValSerializeSndFile serialize(mapping);
-        char* filepath = fileBrowser.getFilePath(browser.get());
-        serialize.saveSetting(filepath);
+        std::string filepath = fileBrowser.getFilePath(browser.get());
+        serialize.saveSetting(filepath.c_str());
         return *this;
     }
 
-    SynthGranular& open(const char* filename)
+    SynthGranular& open(std::string filename)
     {
         SF_INFO sfinfo;
-        SNDFILE* file = sf_open(filename, SFM_READ, &sfinfo);
+        SNDFILE* file = sf_open(filename.c_str(), SFM_READ, &sfinfo);
         if (!file) {
             debug("Error: could not open file %s [%s]\n", filename, sf_strerror(file));
             return *this;
@@ -218,7 +218,7 @@ public:
         sf_close(file);
 
         ValSerializeSndFile serialize(mapping);
-        serialize.loadSetting(filename);
+        serialize.loadSetting(filename.c_str());
 
         return *this;
     }
@@ -228,9 +228,9 @@ public:
         browser.setFloat(value);
         int position = browser.get();
         if (force || position != fileBrowser.position) {
-            char* filepath = fileBrowser.getFilePath(position);
             browser.setString(fileBrowser.getFile(position));
-            debug("GRANULAR_SAMPLE_SELECTOR: %f %s\n", value, filepath);
+            std::string filepath = fileBrowser.getFilePath(position);
+            debug("GRANULAR_SAMPLE_SELECTOR: %f %s\n", value, filepath.c_str());
             open(filepath);
         }
         return *this;

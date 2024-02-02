@@ -237,11 +237,11 @@ public:
         return *this;
     }
 
-    SynthKick23& open(const char* filename)
+    SynthKick23& open(std::string filename)
     {
         close();
 
-        if (!(file = sf_open(filename, SFM_READ, &sfinfo))) {
+        if (!(file = sf_open(filename.c_str(), SFM_READ, &sfinfo))) {
             debug("Error: could not open file %s\n", filename);
             return *this;
         }
@@ -261,9 +261,9 @@ public:
         browser.setFloat(value);
         int position = browser.get();
         if (force || position != fileBrowser.position) {
-            char* filepath = fileBrowser.getFilePath(position);
             browser.setString(fileBrowser.getFile(position));
-            debug("KICK23_SAMPLE_SELECTOR: %f %s\n", value, filepath);
+            std::string filepath = fileBrowser.getFilePath(position);
+            debug("KICK23_SAMPLE_SELECTOR: %f %s\n", value, filepath.c_str());
             open(filepath);
         }
         return *this;

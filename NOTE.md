@@ -1,4 +1,5 @@
-- TODO filebrowser use vector and string
+- TODO filebrowser
+    - serialised might want to use filename instead of file index
 
 - TODO keyboard / keypad
     - see we can extract some logic to have global action that are not specific to a UI plugin
