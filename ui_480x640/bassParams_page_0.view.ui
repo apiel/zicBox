@@ -25,6 +25,8 @@
     COLOR: #ff7700
     ID: Param3_enc
 
+  print: >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Mixer TRACK_$track
+
 
   COMPONENT: Encoder2 $encX1 $encY2 $encSize $encSize
     ENCODER_ID: 4
@@ -47,13 +49,13 @@
     VALUE: Bass RESONANCE
     ID: Param6_enc
 
-  # COMPONENT: Rect $encX4 $encY2 $encSize $encSize
-  COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
-    ENCODER_ID: 7
-    TRACK: $track
-    VALUE: Bass DRIVE
-    COLOR: #ff7700
-    ID: Param7_enc
+  # # COMPONENT: Rect $encX4 $encY2 $encSize $encSize
+  # COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
+  #   ENCODER_ID: 7
+  #   TRACK: $track
+  #   VALUE: Bass DRIVE
+  #   COLOR: #ff7700
+  #   ID: Param7_enc
 
 
   COMPONENT: Encoder2 $encX1 $encY3 $encSize $encSize

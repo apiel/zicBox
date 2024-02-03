@@ -18,7 +18,6 @@ public:
     // Cutoff mix
     Val& mix = val(50.0, "CUTOFF", { "LPF | HPF", .type = VALUE_CENTERED }, [&](auto p) { setCutoff(p.value); });
     Val& resonance = val(0.0, "RESONANCE", { "Resonance" }, [&](auto p) { setResonance(p.value); });
-    Val& drive = val(50, "DRIVE", { "F.Drive" }, [&](auto p) { setDrive(p.value); });
 
     EffectFilterMultiMode2(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -66,13 +65,6 @@ public:
         lpf.setResonance(resonance.pct());
         hpf.setResonance(resonance.pct());
     };
-
-    void setDrive(float value)
-    {
-        drive.setFloat(value);
-        hpf.setDrive(drive.pct());
-        lpf.setDrive(drive.pct());
-    }
 };
 
 #endif
