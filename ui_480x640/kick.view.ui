@@ -3,19 +3,23 @@ while: $track < $bassTrack
   VIEW: KickParams_track_$track_page_0
     INCLUDE: kickParams_page_0.view.ui
     USE_SHARED_COMPONENT: SharedGridSequencer
+    INCLUDE: buttons.view.ui
 
   VIEW: KickParams_track_$track_page_1
     INCLUDE: kickParams_page_1.view.ui
     USE_SHARED_COMPONENT: SharedGridSequencer
+    INCLUDE: buttons.view.ui
 
   VIEW: KickParams_track_$track_page_2
     INCLUDE: kickParams_page_2.view.ui
     USE_SHARED_COMPONENT: SharedGridSequencer
+    INCLUDE: buttons.view.ui
 
   VIEW: StepParams_track_$track
     INCLUDE: stepParams.view.ui
     USE_SHARED_COMPONENT: Wave_Kick23_track_$track
     USE_SHARED_COMPONENT: SharedGridSequencer
+    INCLUDE: buttons.view.ui
   
   $track=$track + 1
 

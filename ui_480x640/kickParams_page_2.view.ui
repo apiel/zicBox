@@ -86,7 +86,7 @@
   #   ID: Param3_enc
     
 
-  COMPONENT: Wave 0 300 480 100
+  COMPONENT: Wave 0 275 480 100
     TRACK: $track
     KEYMAP: Keyboard 44 play 60
     ENVELOP_DATA_ID: 4
