@@ -48,8 +48,6 @@ public:
     Val& cutoff = val(50.0, "CUTOFF", { "Cutoff", .unit = "%" }, [&](auto p) { setCutoff(p.value); });
     /*md - `RESONANCE` to set resonance. */
     Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) { setResonance(p.value); });
-    /*md - `DRIVE` to set drive. */
-    Val& drive = val(50, "DRIVE", { "F.Drive" }, [&](auto p) { setDrive(p.value); });
 
     SynthBass(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name) // clang-format on
@@ -57,21 +55,25 @@ public:
         initValues();
     }
 
+    float sample(float& _sampleValue, EffectFilterData& _filter, float env)
+    {
+        _sampleValue += stepIncrement;
+        if (_sampleValue >= 1.0) {
+            _sampleValue = -1.0;
+        }
+        _filter.setCutoff(0.85 * cutoff.pct() * env + 0.1);
+        _filter.setSampleData(_sampleValue * velocity * env);
+        return _filter.buf0;
+        // return _sampleValue * velocity * env;
+    }
+
     void sample(float* buf)
     {
         if (sampleIndex < sampleCountDuration) {
             sampleIndex++;
-            sampleValue += stepIncrement;
-            if (sampleValue >= 1.0) {
-                sampleValue = -1.0;
-            }
             float time = (float)sampleIndex / (float)sampleCountDuration;
             float env = envelop.next(time);
-            filter.setCutoff(0.85 * cutoff.pct() * env + 0.1);
-            filter.setSampleData(sampleValue * velocity * env);
-            buf[track] = filter.buf0;
-
-            // buf[track] = sampleValue * velocity * env;
+            buf[track] = sample(sampleValue, filter, env);
         }
     }
 
@@ -108,22 +110,18 @@ public:
         updateUiState++;
     }
 
-    void setDrive(float value)
-    {
-        drive.setFloat(value);
-        filter.setDrive(drive.pct());
-    }
-
     void setCutoff(float value)
     {
         cutoff.setFloat(value);
         filter.setCutoff(0.85 * cutoff.pct() + 0.1);
+        updateUiState++;
     }
 
     void setResonance(float value)
     {
         resonance.setFloat(value);
         filter.setResonance(resonance.pct());
+        updateUiState++;
     };
 
     void noteOn(uint8_t note, float _velocity) override
@@ -143,15 +141,19 @@ public:
             return &updateUiState;
 
         case 1: {
-            unsigned int ampIndex = 0;
-            unsigned int freqIndex = 0;
-            float index = 0;
-            for (int i = 0; i < ZIC_BASS_UI; i++) {
-                // float time = i / (float)ZIC_BASS_UI;
-                // float envAmp = envelop.next(time, &ampIndex);
-                // float envFreq = envelopFreq.next(time, &freqIndex);
-                // bufferUi[i] = sample(time, &index, envAmp, envFreq);
-                bufferUi[i] = 0.0f;
+            EffectFilterData _filter;
+            _filter.setCutoff(filter.cutoff);
+            _filter.setResonance(filter.resonance);
+            float _sampleValue = 0.0f;
+            unsigned int envIndex = 0;
+            for (int i = 0; i < sampleCountDuration; i++) {
+                float time = (float)i / (float)sampleCountDuration;
+                float env = envelop.next(time, &envIndex);
+
+                int bufIndex = i * (float)ZIC_BASS_UI / (float)sampleCountDuration;
+                bufferUi[bufIndex] = sample(_sampleValue, _filter, env);
+
+                // printf("bufIndex: %d _sampleValue: %f\n", bufIndex, bufferUi[bufIndex]);
             }
             return (void*)&bufferUi;
         }
