@@ -9,6 +9,7 @@
 #include "filter.h"
 #include "mapping.h"
 #include "utils/Envelop.h"
+#include "../../helpers/random.h"
 
 #define ZIC_BASS_UI 1000
 
@@ -38,6 +39,8 @@ protected:
 
     float stairRatio = 0.0f;
 
+    Random random;
+
 public:
     /*md **Values**: */
     /*md - `PITCH` set the pitch.*/
@@ -57,6 +60,8 @@ public:
     /*md - `STAIRCASE` set how much the saw waveform morph to staircase.*/
     Val& staircase = val(9.0, "STAIRCASE", { "Stairs", .min = 1, .max = 9 }, [&](auto p) { setStaircase(p.value); });
 
+    Val& noise = val(0.0, "NOISE", { "Noise", .unit = "%" }, [&](auto p) { setNoise(p.value); });
+
     SynthBass(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name) // clang-format on
     {
@@ -74,6 +79,9 @@ public:
         if (stairRatio) {
             val = stairRatio * floor(_sampleValue / stairRatio);
         }
+        if (noise.get() > 0.0f) {
+            val += 0.01 * random.pct() * noise.get();
+        }
         _filter.setSampleData(val * _velocity * env);
         return range(_filter.buf0, -1.0f, 1.0f);
     }
@@ -86,6 +94,12 @@ public:
             float env = envelop.next(time);
             buf[track] = sample(sampleValue, filter, env, velocity);
         }
+    }
+
+    void setNoise(float value)
+    {
+        noise.setFloat(value);
+        updateUiState++;
     }
 
     void setStaircase(float value)

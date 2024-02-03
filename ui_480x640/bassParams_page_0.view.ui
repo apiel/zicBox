@@ -72,12 +72,12 @@
     VALUE: Bass STAIRCASE
     ID: Param9_enc
 
-  # # COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
-  # #   ENCODER_ID: 10
-  # #   TRACK: $track
-  # #   VALUE: Kick23 ENVELOP_FREQ_MOD_4
-  # #   COLOR: #ff8d99
-  # #   ID: Param10_enc
+  COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
+    ENCODER_ID: 10
+    TRACK: $track
+    VALUE: Bass NOISE
+    COLOR: #ff8d99
+    ID: Param10_enc
 
   COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
     ENCODER_ID: 11
