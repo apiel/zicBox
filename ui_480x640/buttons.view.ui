@@ -1,5 +1,5 @@
 COMPONENT: Button ($encX1-10) 615 110 20
-  LABEL: Granular
+  LABEL: Track Play/Stop
   COLOR: #AAAAAA
 
 COMPONENT: Button ($encX2-10) 615 110 20
@@ -7,9 +7,9 @@ COMPONENT: Button ($encX2-10) 615 110 20
   COLOR: #AAAAAA
 
 COMPONENT: Button ($encX3-10) 615 110 20
-  LABEL: Granular
+  LABEL: Shift
   COLOR: #AAAAAA
 
 COMPONENT: Button ($encX4-10) 615 110 20
-  LABEL: Granular
+  LABEL: Play/Stop
   COLOR: #AAAAAA
