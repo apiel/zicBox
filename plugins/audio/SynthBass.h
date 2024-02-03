@@ -32,6 +32,7 @@ protected:
     float stepIncrement = 0.001f;
     float velocity = 1.0f;
 
+    int bufferUiState = -1;
     int updateUiState = 0;
 
 public:
@@ -63,8 +64,7 @@ public:
         }
         _filter.setCutoff(0.85 * cutoff.pct() * env + 0.1);
         _filter.setSampleData(_sampleValue * velocity * env);
-        return _filter.buf0;
-        // return _sampleValue * velocity * env;
+        return _filter.buf0 < -1.0f ? -1.0f : _filter.buf0;
     }
 
     void sample(float* buf)
@@ -141,19 +141,21 @@ public:
             return &updateUiState;
 
         case 1: {
-            EffectFilterData _filter;
-            _filter.setCutoff(filter.cutoff);
-            _filter.setResonance(filter.resonance);
-            float _sampleValue = 0.0f;
-            unsigned int envIndex = 0;
-            for (int i = 0; i < sampleCountDuration; i++) {
-                float time = (float)i / (float)sampleCountDuration;
-                float env = envelop.next(time, &envIndex);
+            if (bufferUiState != updateUiState) {
+                bufferUiState = updateUiState;
+                EffectFilterData _filter;
+                _filter.setCutoff(filter.cutoff);
+                _filter.setResonance(filter.resonance);
+                float _sampleValue = 0.0f;
+                unsigned int envIndex = 0;
+                // printf("render bass waveform: %d\n", updateUiState);
+                for (int i = 0; i < sampleCountDuration; i++) {
+                    float time = (float)i / (float)sampleCountDuration;
+                    float env = envelop.next(time, &envIndex);
 
-                int bufIndex = i * (float)ZIC_BASS_UI / (float)sampleCountDuration;
-                bufferUi[bufIndex] = sample(_sampleValue, _filter, env);
-
-                // printf("bufIndex: %d _sampleValue: %f\n", bufIndex, bufferUi[bufIndex]);
+                    int bufIndex = i * (float)ZIC_BASS_UI / (float)sampleCountDuration;
+                    bufferUi[bufIndex] = sample(_sampleValue, _filter, env);
+                }
             }
             return (void*)&bufferUi;
         }
