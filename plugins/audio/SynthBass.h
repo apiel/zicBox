@@ -59,14 +59,14 @@ public:
         initValues();
     }
 
-    float sample(float& _sampleValue, EffectFilterData& _filter, float env)
+    float sample(float& _sampleValue, EffectFilterData& _filter, float env, float _velocity)
     {
         _sampleValue += stepIncrement;
         if (_sampleValue >= 1.0) {
             _sampleValue = -1.0;
         }
         _filter.setCutoff(0.85 * cutoff.pct() * env + 0.1);
-        _filter.setSampleData(_sampleValue * velocity * env);
+        _filter.setSampleData(_sampleValue * _velocity * env);
         return range(_filter.buf0, -1.0f, 1.0f);
     }
 
@@ -76,7 +76,7 @@ public:
             sampleIndex++;
             float time = (float)sampleIndex / (float)sampleCountDuration;
             float env = envelop.next(time);
-            buf[track] = sample(sampleValue, filter, env);
+            buf[track] = sample(sampleValue, filter, env, velocity);
         }
     }
 
@@ -164,7 +164,7 @@ public:
                     float env = envelop.next(time, &envIndex);
 
                     int bufIndex = i * (float)ZIC_BASS_UI / (float)sampleCountDuration;
-                    bufferUi[bufIndex] = sample(_sampleValue, _filter, env);
+                    bufferUi[bufIndex] = sample(_sampleValue, _filter, env, 1.0f);
                 }
             }
             return (void*)&bufferUi;
