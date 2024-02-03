@@ -1,0 +1,15 @@
+COMPONENT: Button ($encX1-10) 615 110 20
+  LABEL: Granular
+  COLOR: #AAAAAA
+
+COMPONENT: Button ($encX2-10) 615 110 20
+  LABEL: Granular
+  COLOR: #AAAAAA
+
+COMPONENT: Button ($encX3-10) 615 110 20
+  LABEL: Granular
+  COLOR: #AAAAAA
+
+COMPONENT: Button ($encX4-10) 615 110 20
+  LABEL: Granular
+  COLOR: #AAAAAA

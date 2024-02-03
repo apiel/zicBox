@@ -4,7 +4,7 @@ $sampleTrackStart=$bassTrack+1
 
 VIEW: shared_components HIDDEN
 
-  COMPONENT: GridSequencer 0 403 480 240
+  COMPONENT: GridSequencer 0 380 480 240
     SHARED_COMPONENT: SharedGridSequencer
     TRACK_NAME: 1 Kick
     TRACK_VIEW: 1 KickParams_track_1
@@ -141,7 +141,7 @@ VIEW: shared_components HIDDEN
 
   $track=1
   while: $track < $bassTrack
-    COMPONENT: Wave 0 300 480 100
+    COMPONENT: Wave 0 275 480 100
       TRACK: $track
       KEYMAP: Keyboard 44 play 60
       PLUGIN: Kick23
@@ -167,5 +167,6 @@ INCLUDE: sample.view.ui
 VIEW: MasterParams
   INCLUDE: masterParams.view.ui
   USE_SHARED_COMPONENT: SharedGridSequencer
+  INCLUDE: buttons.view.ui
 
 # print: done ($track)
