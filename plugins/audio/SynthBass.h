@@ -58,8 +58,8 @@ public:
     /*md - `STEP_FREQ` set how much the saw waveform ramp up increases on each sample.*/
     Val& stepFreq = val(10.0, "STEP_FREQ", { "Step Frequency", .max = 100 }, [&](auto p) { setStepFreq(p.value); });
     /*md - `STAIRCASE` set how much the saw waveform morph to staircase.*/
-    Val& staircase = val(9.0, "STAIRCASE", { "Stairs", .min = 1, .max = 9 }, [&](auto p) { setStaircase(p.value); });
-
+    Val& staircase = val(9.0, "STAIRCASE", { "Stairs", .min = -10, .max = 9 }, [&](auto p) { setStaircase(p.value); });
+    /*md - `NOISE` set the noise level.*/
     Val& noise = val(0.0, "NOISE", { "Noise", .unit = "%" }, [&](auto p) { setNoise(p.value); });
 
     SynthBass(AudioPlugin::Props& props, char* _name)
@@ -78,6 +78,9 @@ public:
         float val = _sampleValue;
         if (stairRatio) {
             val = stairRatio * floor(_sampleValue / stairRatio);
+            if (staircase.get() < 1.0f) {
+                val = val + floor(_sampleValue / stairRatio);
+            }
         }
         if (noise.get() > 0.0f) {
             val += 0.01 * random.pct() * noise.get();
@@ -106,7 +109,11 @@ public:
     {
         staircase.setFloat(value);
         if (staircase.get() < 9.0f) {
-            stairRatio = 1.0f / (float)staircase.get();
+            if (staircase.get() > 0.0f) {
+                stairRatio = -1.0f / (float)staircase.get();
+            } else {
+                stairRatio = 1.0f / (float)abs(staircase.get() - 1);
+            }
         } else {
             stairRatio = 0;
         }
