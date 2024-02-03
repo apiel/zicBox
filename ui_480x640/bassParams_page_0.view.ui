@@ -65,12 +65,12 @@
     TYPE: TWO_SIDED
     ID: Param8_enc
 
-  # # COMPONENT: Encoder2 $encX2 $encY3 $encSize $encSize
-  # #   ENCODER_ID: 9
-  # #   COLOR: #3791a1
-  # #   TRACK: $track
-  # #   VALUE: Kick23 ENVELOP_FREQ_TIME_3
-  # #   ID: Param9_enc
+  COMPONENT: Encoder2 $encX2 $encY3 $encSize $encSize
+    ENCODER_ID: 9
+    COLOR: #3791a1
+    TRACK: $track
+    VALUE: Bass STAIRCASE
+    ID: Param9_enc
 
   # # COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
   # #   ENCODER_ID: 10

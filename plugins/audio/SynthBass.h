@@ -36,6 +36,8 @@ protected:
     int bufferUiState = -1;
     int updateUiState = 0;
 
+    float stairRatio = 0.0f;
+
 public:
     /*md **Values**: */
     /*md - `PITCH` set the pitch.*/
@@ -50,8 +52,10 @@ public:
     Val& cutoff = val(50.0, "CUTOFF", { "Cutoff", .unit = "%" }, [&](auto p) { setCutoff(p.value); });
     /*md - `RESONANCE` to set resonance. */
     Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) { setResonance(p.value); });
-    /*md - `STEP_FREQ` set how many steps increment the saw on each sample.*/
+    /*md - `STEP_FREQ` set how much the saw waveform ramp up increases on each sample.*/
     Val& stepFreq = val(10.0, "STEP_FREQ", { "Step Frequency", .max = 100 }, [&](auto p) { setStepFreq(p.value); });
+    /*md - `STAIRCASE` set how much the saw waveform morph to staircase.*/
+    Val& staircase = val(9.0, "STAIRCASE", { "Stairs", .min = 1, .max = 9 }, [&](auto p) { setStaircase(p.value); });
 
     SynthBass(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name) // clang-format on
@@ -66,7 +70,11 @@ public:
             _sampleValue = -1.0;
         }
         _filter.setCutoff(0.85 * cutoff.pct() * env + 0.1);
-        _filter.setSampleData(_sampleValue * _velocity * env);
+        float val = _sampleValue;
+        if (stairRatio) {
+            val = stairRatio * floor(_sampleValue / stairRatio);
+        }
+        _filter.setSampleData(val * _velocity * env);
         return range(_filter.buf0, -1.0f, 1.0f);
     }
 
@@ -78,6 +86,17 @@ public:
             float env = envelop.next(time);
             buf[track] = sample(sampleValue, filter, env, velocity);
         }
+    }
+
+    void setStaircase(float value)
+    {
+        staircase.setFloat(value);
+        if (staircase.get() < 9.0f) {
+            stairRatio = 1.0f / (float)staircase.get();
+        } else {
+            stairRatio = 0;
+        }
+        updateUiState++;
     }
 
     void setStepFreq(float value)
