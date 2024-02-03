@@ -3,6 +3,7 @@
 
 #include <sndfile.h>
 
+#include "../../helpers/range.h"
 #include "audioPlugin.h"
 #include "fileBrowser.h"
 #include "filter.h"
@@ -49,6 +50,8 @@ public:
     Val& cutoff = val(50.0, "CUTOFF", { "Cutoff", .unit = "%" }, [&](auto p) { setCutoff(p.value); });
     /*md - `RESONANCE` to set resonance. */
     Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) { setResonance(p.value); });
+    /*md - `STEP_FREQ` set how many steps increment the saw on each sample.*/
+    Val& stepFreq = val(10.0, "STEP_FREQ", { "Step Frequency", .max = 100 }, [&](auto p) { setStepFreq(p.value); });
 
     SynthBass(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name) // clang-format on
@@ -64,7 +67,7 @@ public:
         }
         _filter.setCutoff(0.85 * cutoff.pct() * env + 0.1);
         _filter.setSampleData(_sampleValue * velocity * env);
-        return _filter.buf0 < -1.0f ? -1.0f : _filter.buf0;
+        return range(_filter.buf0, -1.0f, 1.0f);
     }
 
     void sample(float* buf)
@@ -75,6 +78,13 @@ public:
             float env = envelop.next(time);
             buf[track] = sample(sampleValue, filter, env);
         }
+    }
+
+    void setStepFreq(float value)
+    {
+        stepFreq.setFloat(value);
+        stepIncrement = stepFreq.pct() * 0.002 + 0.0006f;
+        updateUiState++;
     }
 
     void setDecayLevel(float value)
@@ -127,7 +137,7 @@ public:
     void noteOn(uint8_t note, float _velocity) override
     {
         velocity = _velocity;
-        printf("bass noteOn: %d %f\n", note, velocity);
+        // printf("bass noteOn: %d %f\n", note, velocity);
 
         sampleIndex = 0;
         sampleValue = 0.0f;
