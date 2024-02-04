@@ -267,9 +267,9 @@ protected:
         if (strcmp(action, "&SHIFT") == 0) {
             char* shiftValue = strtok(NULL, " ");
             if (strcmp(shiftValue, "true") == 0) {
-                *shift = true;
+                event = [this]() { shift = true; };
             } else if (strcmp(shiftValue, "false") == 0) {
-                *shift = false;
+                event = [this]() { shift = false; };
             }
             return;
         }
