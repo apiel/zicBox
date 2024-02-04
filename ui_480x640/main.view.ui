@@ -39,16 +39,11 @@ VIEW: shared_components HIDDEN
       KEYMAP: Keypad 27 layout 0
       KEYMAP: Keypad 39 layout 1
 
-      # KEYMAP: Keypad 12 none
-      # KEYMAP: Keypad 13 none
-      # KEYMAP: Keypad 14 none
-      # KEYMAP: Keypad 24 none
-      # KEYMAP: Keypad 26 none
-
       KEYMAP: Keypad 25 row 1
       KEYMAP: Keypad 36 col -1
       KEYMAP: Keypad 37 row -1
       KEYMAP: Keypad 38 col 1
+
       KEYMAP: Keypad 0 track 0
       KEYMAP: Keypad 1 track 1
       KEYMAP: Keypad 2 track 2
@@ -86,24 +81,38 @@ VIEW: shared_components HIDDEN
       KEYMAP: Keypad 46 param 10 60
       KEYMAP: Keypad 47 param 11 90
     KEYPAD_LAYOUT: steps
-      KEYMAP: Keypad 15 master
+      # KEYMAP: Keypad 15 master
+      # KEYMAP: Keypad 27 layout 0
+      # KEYMAP: Keypad 39 layout 1
+
+      # KEYMAP: Keypad 3 none
+
+      # KEYMAP: Keypad 0 track 0
+      # KEYMAP: Keypad 1 track 1
+      # KEYMAP: Keypad 2 track 2
+      # KEYMAP: Keypad 12 track 3
+      # KEYMAP: Keypad 13 track 4
+      # KEYMAP: Keypad 14 track 5
+      # KEYMAP: Keypad 24 track 6
+      # KEYMAP: Keypad 25 track 7
+      # KEYMAP: Keypad 26 track 8
+      # KEYMAP: Keypad 36 track 9
+      # KEYMAP: Keypad 37 track 10
+      # KEYMAP: Keypad 38 track 11
+
+      KEYMAP: Keypad 0 none
+      KEYMAP: Keypad 1 none
+      KEYMAP: Keypad 2 none
+      KEYMAP: Keypad 3 none
+
+      KEYMAP: Keypad 26 master
       KEYMAP: Keypad 27 layout 0
       KEYMAP: Keypad 39 layout 1
 
-      KEYMAP: Keypad 3 none
-
-      KEYMAP: Keypad 0 track 0
-      KEYMAP: Keypad 1 track 1
-      KEYMAP: Keypad 2 track 2
-      KEYMAP: Keypad 12 track 3
-      KEYMAP: Keypad 13 track 4
-      KEYMAP: Keypad 14 track 5
-      KEYMAP: Keypad 24 track 6
-      KEYMAP: Keypad 25 track 7
-      KEYMAP: Keypad 26 track 8
-      KEYMAP: Keypad 36 track 9
-      KEYMAP: Keypad 37 track 10
-      KEYMAP: Keypad 38 track 11
+      KEYMAP: Keypad 25 row 1
+      KEYMAP: Keypad 36 col -1
+      KEYMAP: Keypad 37 row -1
+      KEYMAP: Keypad 38 col 1
       
       KEYMAP: Keypad 4 step 0
       KEYMAP: Keypad 5 step 1
