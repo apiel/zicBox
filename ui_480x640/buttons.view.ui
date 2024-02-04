@@ -3,8 +3,8 @@ COMPONENT: Button ($encX1-10) 615 110 20
   COLOR: #AAAAAA
 
 COMPONENT: Button ($encX2-10) 615 110 20
-  LABEL: Granular
   COLOR: #AAAAAA
+  LABEL: &icon::pause::filled
 
 COMPONENT: Button ($encX3-10) 615 110 20
   LABEL: Shift

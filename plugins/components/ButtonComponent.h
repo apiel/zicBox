@@ -32,13 +32,6 @@ protected:
         char* action = strtok(config, " ");
 
         if (strcmp(action, "&SET_VIEW") == 0) {
-            // char* name = strtok(NULL, " ");
-            // // char* nameCopy = new char[strlen(name) + 1];
-            // // strcpy(nameCopy, name);
-            // std::string nameCopy(name);
-            // event = [this, nameCopy]() {
-            //     this->setView(nameCopy);
-            // };
             std::string name = strtok(NULL, " ");
             event = [this, name]() {
                 this->setView(name);
@@ -139,7 +132,7 @@ public:
     ButtonComponent(ComponentInterface::Props props)
         : Component(props)
         , icon(props.draw)
-        , colors(getColorsFromColor(styles.colors.blue))
+        , colors(getColorsFromColor(styles.colors.grey))
         , margin(styles.margin)
     {
         setFontSize(fontSize);
@@ -170,7 +163,7 @@ public:
     void setLabel(std::string _label)
     {
         label = _label;
-        renderLabel = icon.get(label, labelPosition, fontSize, colors.title, Icon::CENTER);
+        renderLabel = icon.get(label, labelPosition, fontSize, colors.icon, Icon::CENTER);
         if (!renderLabel) {
             renderLabel = [&]() {
                 draw.textCentered(labelPosition, label.c_str(), colors.title, fontSize);

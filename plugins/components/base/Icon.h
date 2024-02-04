@@ -1,8 +1,8 @@
 #ifndef _UI_DRAW_ICON_H_
 #define _UI_DRAW_ICON_H_
 
-#include <string>
 #include <functional>
+#include <string>
 
 #include "../drawInterface.h"
 
@@ -29,14 +29,52 @@ public:
                 backspace(position, size, color, align);
             };
         }
+
+        if (name == "&icon::play") {
+            return [&](Point position, uint8_t size, Color color, Align align) {
+                play(position, size, color, align);
+            };
+        }
+
+        if (name == "&icon::play::filled") {
+            return [&](Point position, uint8_t size, Color color, Align align) {
+                play(position, size, color, align, true);
+            };
+        }
+
+        if (name == "&icon::stop") {
+            return [&](Point position, uint8_t size, Color color, Align align) {
+                stop(position, size, color, align);
+            };
+        }
+
+        if (name == "&icon::stop::filled") {
+            return [&](Point position, uint8_t size, Color color, Align align) {
+                stop(position, size, color, align, true);
+            };
+        }
+
+        if (name == "&icon::pause") {
+            return [&](Point position, uint8_t size, Color color, Align align) {
+                pause(position, size, color, align);
+            };
+        }
+
+        if (name == "&icon::pause::filled") {
+            return [&](Point position, uint8_t size, Color color, Align align) {
+                pause(position, size, color, align, true);
+            };
+        }
+
         return nullptr;
     }
 
     std::function<void()> get(std::string name, Point position, uint8_t size, Color color, Align align = LEFT)
     {
-        if (name == "&icon::backspace") {
-            return [this, position, size, color, align]() {
-                backspace(position, size, color, align);
+        std::function<void(Point, uint8_t, Color, Align)> func = get(name);
+        if (func) {
+            return [func, position, size, color, align]() {
+                func(position, size, color, align);
             };
         }
         return nullptr;
@@ -55,12 +93,7 @@ public:
     void backspace(Point position, uint8_t size, Color color, Align align = LEFT)
     {
         int w = size * 1.5;
-        int x = position.x;
-        if (align == CENTER) {
-            x = position.x - w / 2;
-        } else if (align == RIGHT) {
-            x = position.x - w;
-        }
+        int x = getX(position, size, align, w);
 
         draw.lines({ { (int)(x + w * 0.25), position.y },
                        { x + w, position.y },
@@ -77,6 +110,54 @@ public:
         draw.line(
             { (int)(x + w * 0.75), (int)(position.y + size * 0.25) },
             { (int)(x + w * 0.4), (int)(position.y + size * 0.75) }, color);
+    }
+
+    void play(Point position, uint8_t size, Color color, Align align = LEFT, bool filled = false)
+    {
+        int x = getX(position, size, align, size);
+        std::vector<Point> points = {
+            { x, position.y },
+            { x + size, (int)(position.y + size * 0.5) },
+            { x, position.y + size }
+        };
+        if (filled) {
+            draw.filledPolygon(points, color);
+        } else {
+            draw.polygon(points, color);
+        }
+    }
+
+    void stop(Point position, uint8_t size, Color color, Align align = LEFT, bool filled = false)
+    {
+        int x = getX(position, size, align, size);
+        if (filled) {
+            draw.filledRect({ x, position.y }, { size, size }, color);
+        } else {
+            draw.rect({ x, position.y }, { size, size }, color);
+        }
+    }
+
+    void pause(Point position, uint8_t size, Color color, Align align = LEFT, bool filled = false)
+    {
+        int x = getX(position, size, align, size);
+        if (filled) {
+            draw.filledRect({ x, position.y }, { (int)(size * 0.3), size }, color);
+            draw.filledRect({ x + (int)(size * 0.7), position.y }, { (int)(size * 0.3), size }, color);
+        } else {
+            draw.rect({ x, position.y }, { (int)(size * 0.3), size }, color);
+            draw.rect({ x + (int)(size * 0.7), position.y }, { (int)(size * 0.3), size }, color);
+        }
+    }
+
+protected:
+    int getX(Point position, uint8_t size, Align align, int width)
+    {
+        if (align == CENTER) {
+            return position.x - width * 0.5f;
+        } else if (align == RIGHT) {
+            return position.x - width;
+        }
+        return position.x;
     }
 };
 
