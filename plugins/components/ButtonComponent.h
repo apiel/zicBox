@@ -214,7 +214,7 @@ public:
             return true;
         }
 
-        /*md - `LABEL: label` is used to set the text of the button. Icon can also be used, e.g.: `LABEL: &icon::play::filled`.*/
+        /*md - `LABEL: label` is used to set the text of the button. [Icons](https://github.com/apiel/zicBox/wiki/04-UI-Component-plugins#icons) can also be used, e.g.: `LABEL: &icon::play::filled`.*/
         if (strcmp(key, "LABEL") == 0) {
             setLabel(value);
             return true;
