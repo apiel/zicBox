@@ -200,6 +200,21 @@ public:
             return true;
         }
 
+        /*md - `ON_LONG_PRESS: action` is used to set an action when the button is long pressed  (where action can be the same as ON_PRESS)*/
+        if (strcmp(key, "ON_LONG_PRESS") == 0) {
+            // printf("value: %s\n", value);
+            set(onLongPress, value);
+            return true;
+        }
+
+        /*md - `ON_LONG_PRESS_RELEASE: action` is used to set an action when the button is released when long pressed  (where action can be the same as ON_PRESS)*/
+        if (strcmp(key, "ON_LONG_PRESS_RELEASE") == 0) {
+            // printf("value: %s\n", value);
+            set(onLongPressRelease, value);
+            return true;
+        }
+
+        /*md - `LABEL: label` is used to set the text of the button. Icon can also be used, e.g.: `LABEL: &icon::play::filled`.*/
         if (strcmp(key, "LABEL") == 0) {
             setLabel(value);
             return true;
