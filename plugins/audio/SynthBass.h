@@ -3,13 +3,13 @@
 
 #include <sndfile.h>
 
+#include "../../helpers/random.h"
 #include "../../helpers/range.h"
 #include "audioPlugin.h"
 #include "fileBrowser.h"
 #include "filter.h"
 #include "mapping.h"
 #include "utils/Envelop.h"
-#include "../../helpers/random.h"
 
 #define ZIC_BASS_UI 1000
 
@@ -41,6 +41,8 @@ protected:
 
     Random random;
 
+    float noteMult = 1.0f;
+
 public:
     /*md **Values**: */
     /*md - `PITCH` set the pitch.*/
@@ -68,9 +70,9 @@ public:
         initValues();
     }
 
-    float sample(float& _sampleValue, EffectFilterData& _filter, float env, float _velocity)
+    float sample(EffectFilterData& _filter, float env, float& _sampleValue, float _velocity, float _stepIncrement)
     {
-        _sampleValue += stepIncrement;
+        _sampleValue += _stepIncrement;
         if (_sampleValue >= 1.0) {
             _sampleValue = -1.0;
         }
@@ -95,7 +97,7 @@ public:
             sampleIndex++;
             float time = (float)sampleIndex / (float)sampleCountDuration;
             float env = envelop.next(time);
-            buf[track] = sample(sampleValue, filter, env, velocity);
+            buf[track] = sample(filter, env, sampleValue, velocity, stepIncrement * noteMult);
         }
     }
 
@@ -182,6 +184,9 @@ public:
         sampleIndex = 0;
         sampleValue = 0.0f;
         envelop.reset();
+
+        uint8_t baseNote = 60;
+        noteMult = pow(2, ((note - baseNote) / 12.0));
     }
 
     void* data(int id, void* userdata = NULL)
@@ -204,7 +209,7 @@ public:
                     float env = envelop.next(time, &envIndex);
 
                     int bufIndex = i * (float)ZIC_BASS_UI / (float)sampleCountDuration;
-                    bufferUi[bufIndex] = sample(_sampleValue, _filter, env, 1.0f);
+                    bufferUi[bufIndex] = sample(_filter, env, _sampleValue, 1.0f, stepIncrement);
                 }
             }
             return (void*)&bufferUi;
