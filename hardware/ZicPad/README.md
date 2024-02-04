@@ -55,8 +55,8 @@ The rest of the enclosure has been fully hand made out of wood, using a saw, dri
 
 <table>
     <tr>
-        <td><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPad/case/build/build0.png" /></td>
-        <td><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPad/case/build/build0.png" /></td>
-        <td><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPad/case/build/build0.png" /></td>
+        <td><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPad/case/photo/build0.png" /></td>
+        <td><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPad/case/photo/build0.png" /></td>
+        <td><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPad/case/photo/build0.png" /></td>
     </tr>
 </table>
