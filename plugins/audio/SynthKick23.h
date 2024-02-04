@@ -7,6 +7,7 @@
 #include "fileBrowser.h"
 #include "mapping.h"
 #include "utils/Envelop.h"
+#include "../../helpers/random.h"
 
 #define ZIC_WAVETABLE_WAVEFORMS_COUNT 64
 #define ZIC_KICK_ENV_AMP_STEP 4
@@ -41,6 +42,8 @@ protected:
     float sampleIndex = 0.0f;
     uint64_t sampleStart = 0;
 
+    Random random;
+
     unsigned int sampleCountDuration = 0;
     unsigned int sampleDurationCounter = 0;
 
@@ -56,6 +59,9 @@ protected:
             (*index) -= sampleCount;
         }
         float out = bufferSamples[(uint16_t)(*index) + sampleStart] * envAmp;
+        if (noise.get() > 0.0f) {
+            out += 0.01 * random.pct() * noise.get();
+        }
         out = out + out * clipping.pct() * 20;
         return range(out, -1.0f, 1.0f);
     }
@@ -81,6 +87,8 @@ public:
 
     /*md - `GAIN_CLIPPING` set the clipping level.*/
     Val& clipping = val(0.0, "GAIN_CLIPPING", { "Gain Clipping", .unit = "%" }, [&](auto p) { setClipping(p.value); });
+    /*md - `NOISE` set the noise level.*/
+    Val& noise = val(0.0, "NOISE", { "Noise", .unit = "%" }, [&](auto p) { setNoise(p.value); });
 
     /*//md - `MIX` set mix between audio input and output.*/
     Val& mix = val(100.0f, "MIX", { "Mix in/out", .type = VALUE_CENTERED });
@@ -167,6 +175,12 @@ public:
     void setClipping(float value)
     {
         clipping.setFloat(value);
+        updateUiState++;
+    }
+
+    void setNoise(float value)
+    {
+        noise.setFloat(value);
         updateUiState++;
     }
 
