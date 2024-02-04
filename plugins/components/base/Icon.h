@@ -6,6 +6,11 @@
 
 #include "../drawInterface.h"
 
+/*md
+## Icon
+
+List of icon used in plugin component:
+*/
 class Icon {
 protected:
     DrawInterface& draw;
@@ -24,42 +29,49 @@ public:
 
     std::function<void(Point, uint8_t, Color, Align)> get(std::string name)
     {
+        /*md - `&icon::backspace` */
         if (name == "&icon::backspace") {
             return [&](Point position, uint8_t size, Color color, Align align) {
                 backspace(position, size, color, align);
             };
         }
 
+        /*md - `&icon::play` */
         if (name == "&icon::play") {
             return [&](Point position, uint8_t size, Color color, Align align) {
                 play(position, size, color, align);
             };
         }
 
+        /*md - `&icon::play::filled` */
         if (name == "&icon::play::filled") {
             return [&](Point position, uint8_t size, Color color, Align align) {
                 play(position, size, color, align, true);
             };
         }
 
+        /*md - `&icon::stop` */
         if (name == "&icon::stop") {
             return [&](Point position, uint8_t size, Color color, Align align) {
                 stop(position, size, color, align);
             };
         }
 
+        /*md - `&icon::stop::filled` */
         if (name == "&icon::stop::filled") {
             return [&](Point position, uint8_t size, Color color, Align align) {
                 stop(position, size, color, align, true);
             };
         }
 
+        /*md - `&icon::pause` */
         if (name == "&icon::pause") {
             return [&](Point position, uint8_t size, Color color, Align align) {
                 pause(position, size, color, align);
             };
         }
 
+        /*md - `&icon::pause::filled` */
         if (name == "&icon::pause::filled") {
             return [&](Point position, uint8_t size, Color color, Align align) {
                 pause(position, size, color, align, true);
