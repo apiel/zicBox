@@ -27,3 +27,20 @@ For the enclosure, there is 2 options:
 - Laser cutted wood and/or acrylic
 
 The rest of the enclosure is hand made out of wood.
+
+### PCB
+
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPad/encoders/pcb.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPad/encoders/pcb2d.png" />
+
+The PCB has been created with [EasyEDA](https://easyeda.com/). You can load the copy of the PCB project using the json file [PCB_zicbox_encoders_2024-01-11.json](https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPad/PCB_zicbox_encoders_2024-01-11.json).
+
+To order the PCB, you need to send the Gerber file [Gerber_zicbox_encoders_2024-01-11.zip](https://github.com/apiel/zicBox/raw/main/hardware/ZicPad/Gerber_zicbox_encoders_2024-01-11.zip) to https://jlcpcb.com/. With slow shipping (about 10 days), it cost around 4€. Just upload the file using the button `Add gerber file` and normally there should be nothing to change. You can eventually change the color from `green` to `black`, it should not impact the price. Finally `Save to cart` and proceed to the checkout.
+
+The PCB assembly is quiet easy, it is just few encoder and pins headers to solder to the board.
+
+### Front panel
+
+For the front panel, it is also possible to order it as a PCB. I haven't yet tried myself, as it is more expensive due to the size (around 30€). I am waiting for the graphic design before to order it. So far, I made the front panel using my laser engraver to cut wood and acrylic sheet. To do this, I was converting the gerber file of PCB outline to Gcode, using a small script. For more details about this process, see my [notes](https://github.com/apiel/zicBox/blob/main/hardware/ZicPad/case/NOTE.md) in the case folder.
+
+The EasyEDA file  and the gerber file for the front panel are available [here](https://github.com/apiel/zicBox/tree/main/hardware/ZicPad/case/easyeda).
