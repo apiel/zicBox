@@ -30,8 +30,12 @@ The rest of the enclosure is hand made out of wood.
 
 ### PCB
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPad/encoders/pcb.png" />
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPad/encoders/pcb2d.png" />
+<table>
+    <tr>
+        <td><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPad/encoders/pcb.png" /></td>
+        <td><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPad/encoders/pcb2d.png" /></td>
+    </tr>
+</table>
 
 The PCB has been created with [EasyEDA](https://easyeda.com/). You can load the copy of the PCB project using the json file [PCB_zicbox_encoders_2024-01-11.json](https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPad/PCB_zicbox_encoders_2024-01-11.json).
 
