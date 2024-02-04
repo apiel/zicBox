@@ -55,7 +55,9 @@ protected:
         while ((*index) >= sampleCount) {
             (*index) -= sampleCount;
         }
-        return bufferSamples[(uint16_t)(*index) + sampleStart] * envAmp;
+        float out = bufferSamples[(uint16_t)(*index) + sampleStart] * envAmp;
+        out = out + out * clipping.pct() * 20;
+        return range(out, -1.0f, 1.0f);
     }
 
     void updateUi(std::vector<Envelop::Data>* envData)
@@ -76,6 +78,9 @@ public:
     Val& duration = val(100.0f, "DURATION", { "Duration", .min = 10.0, .max = 5000.0, .step = 10.0, .unit = "ms" }, [&](auto p) { setDuration(p.value); });
     // ///*md - `ENV_FREQ_START` set the frequence value when the envelop start.*/
     // Val& envFreqStart = val(1.0f, "ENVELOP_FREQ_MOD_0", { "Freq.Mod.0", .min = 0.0, .max = 2.0, .step = 0.1 }, [&](auto p) { setEnvFreqStart(p.value); });
+
+    /*md - `GAIN_CLIPPING` set the clipping level.*/
+    Val& clipping = val(0.0, "GAIN_CLIPPING", { "Gain Clipping", .unit = "%" }, [&](auto p) { setClipping(p.value); });
 
     /*//md - `MIX` set mix between audio input and output.*/
     Val& mix = val(100.0f, "MIX", { "Mix in/out", .type = VALUE_CENTERED });
@@ -157,6 +162,12 @@ public:
         envAmpMod[index].setFloat(value);
         envelopAmp.data[index + 1].modulation = envAmpMod[index].pct();
         updateUi(&envelopAmp.data);
+    }
+
+    void setClipping(float value)
+    {
+        clipping.setFloat(value);
+        updateUiState++;
     }
 
     void setEnvAmpTime(float value, uint8_t index)

@@ -83,7 +83,7 @@
     ENCODER_ID: 11
     TRACK: $track
     COLOR: #ff7700
-    VALUE: Bass CLIPPING
+    VALUE: Bass GAIN_CLIPPING
     ID: Param11_enc
 
     
