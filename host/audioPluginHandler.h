@@ -207,6 +207,16 @@ public:
         }
     }
 
+    bool isPlaying()
+    {
+        return playing;
+    }
+
+    bool isStopped()
+    {
+        return !playing && clockCounter == 0;
+    }
+
     void sendEvent(AudioEventType event)
     {
         switch (event) {

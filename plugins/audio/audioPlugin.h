@@ -46,6 +46,9 @@ public:
     virtual AudioPlugin& getPlugin(const char* name, int16_t track = -1) = 0;
     virtual void clockTick() = 0;
     virtual void sendEvent(AudioEventType event) = 0;
+
+    virtual bool isPlaying() = 0;
+    virtual bool isStopped() = 0;
 };
 
 class AudioPlugin {

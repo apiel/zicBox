@@ -150,7 +150,7 @@ VIEW: shared_components HIDDEN
 
   $track=$sampleTrackStart
   while: $track < 13
-    COMPONENT: Sample 0 300 480 100
+    COMPONENT: Sample 0 275 480 100
       TRACK: $track
       AUDIO_PLUGIN: Sample 0
       DATA_STATE: 2 1
@@ -164,6 +164,7 @@ INCLUDE: bass.view.ui
 INCLUDE: sample.view.ui
 
 
+$track=-1
 VIEW: MasterParams
   INCLUDE: masterParams.view.ui
   USE_SHARED_COMPONENT: SharedGridSequencer

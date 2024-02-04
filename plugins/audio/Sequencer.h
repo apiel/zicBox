@@ -302,6 +302,14 @@ public:
         }
         case 3:
             return clockCounterPtr;
+        case 4: { // Toggle sequencer
+            if (status.get() == Status::ON) {
+                status.set(Status::OFF);
+            } else {
+                status.set(Status::ON);
+            }
+            return NULL;
+        }
         case 10: // Save pattern
             save(folder / *(std::string*)userdata);
             return NULL;

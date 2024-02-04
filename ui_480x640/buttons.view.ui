@@ -1,14 +1,17 @@
 COMPONENT: Button ($encX1-10) 615 110 20
-  LABEL: Track Play/Stop
   COLOR: #AAAAAA
+  if: $track > -1
+    LABEL: Track Toggle
+    ON_RELEASE: &DATA Sequencer 4
+    ON_LONG_PRESS: Sequencer STATUS 2
+    KEYMAP: Keyboard 43 trigger
 
 COMPONENT: Button ($encX2-10) 615 110 20
   COLOR: #AAAAAA
-  LABEL: &icon::play::filled
 
 COMPONENT: Button ($encX3-10) 615 110 20
-  LABEL: Shift
   COLOR: #AAAAAA
+  LABEL: Shift
 
 COMPONENT: Button ($encX4-10) 615 110 20
   COLOR: #AAAAAA
