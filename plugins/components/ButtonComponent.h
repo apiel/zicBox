@@ -304,14 +304,19 @@ public:
                         handlePress();
                     } else {
                         handleRelease();
-                    } }, color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color || 20; } });
+                    } }, color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color == 255 ? 10 : keymap.color; } });
         }
     }
 
     void onKey(uint16_t id, int key, int8_t state)
     {
-        printf("key %d %d %d\n", id, key, state);
         keypadLayout.onKey(id, key, state);
+    }
+
+    void initView(uint16_t counter)
+    {
+
+        keypadLayout.renderKeypad();
     }
 };
 
