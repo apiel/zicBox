@@ -29,68 +29,6 @@ protected:
 
     std::function<void()> renderLabel = []() {};
 
-    void set(std::function<void()>& event, char* config)
-    {
-        char* action = strtok(config, " ");
-
-        if (strcmp(action, "&SET_VIEW") == 0) {
-            std::string name = strtok(NULL, " ");
-            event = [this, name]() {
-                this->setView(name);
-            };
-            return;
-        }
-
-        if (strcmp(action, "&NOTE_ON") == 0) {
-            char* pluginName = strtok(NULL, " ");
-            char* noteStr = strtok(NULL, " ");
-            uint8_t note = atoi(noteStr);
-            char* velocityStr = strtok(NULL, " ");
-            float velocity = atof(velocityStr);
-            AudioPlugin* plugin = &getPlugin(pluginName, track);
-            event = [plugin, note, velocity]() {
-                plugin->noteOn(note, velocity);
-            };
-            return;
-        }
-
-        if (strcmp(action, "&NOTE_OFF") == 0) {
-            char* pluginName = strtok(NULL, " ");
-            char* noteStr = strtok(NULL, " ");
-            uint8_t note = atoi(noteStr);
-            AudioPlugin* plugin = &getPlugin(pluginName, track);
-            event = [plugin, note]() {
-                plugin->noteOff(note, 0);
-            };
-            return;
-        }
-
-        if (strcmp(action, "&DATA") == 0) {
-            char* pluginName = strtok(NULL, " ");
-            int dataId = atoi(strtok(NULL, " "));
-            AudioPlugin* plugin = &getPlugin(pluginName, track);
-            event = [plugin, dataId]() {
-                plugin->data(dataId);
-            };
-            return;
-        }
-
-        char* key = strtok(NULL, " ");
-        char* targetValue = strtok(NULL, " ");
-
-        ValueInterface* value = watch(getPlugin(action, track).getValue(key));
-        if (value != NULL && label == "") {
-            label = value->label();
-        } else {
-            // printf("No value %s %s found for button on track %d\n", action, key, track);
-        }
-
-        float target = atof(targetValue);
-        event = [value, target]() {
-            value->set(target);
-        };
-    }
-
     void handlePress()
     {
         pressedTime = -1;
@@ -181,35 +119,28 @@ public:
 
     bool config(char* key, char* value)
     {
-        /*md
-- `ON_PRESS: action` is used to set an action when the button is pressed
-    - `ON_PRESS: &SET_VIEW name` sets the specified view when the button is pressed
-    - `ON_PRESS: &NOTE_ON pluginName note velocity` send the note on the specified plugin when the button is pressed
-    - `ON_PRESS: &NOTE_OFF pluginName note` send the note off the specified plugin when the button is pressed
-    - `ON_PRESS: &DATA pluginName dataId` send the data to the specified plugin when the button is pressed
-    - `ON_PRESS: pluginName key value` sets the value of the specified plugin key when the button is pressed
-*/
+        /*md - `ON_PRESS: action` is used to set an action when the button is pressed, e.g: `ON_PRESS: &SET_VIEW name`.*/
         if (strcmp(key, "ON_PRESS") == 0) {
             // printf("value: %s\n", value);
             set(onPress, value);
             return true;
         }
 
-        /*md - `ON_RELEASE: action` is used to set an action when the button is released  (where action can be the same as ON_PRESS)*/
+        /*md - `ON_RELEASE: action` is used to set an action when the button is released, e.g: `ON_RELEASE: &SET_VIEW name`.*/
         if (strcmp(key, "ON_RELEASE") == 0) {
             // printf("value: %s\n", value);
             set(onRelease, value);
             return true;
         }
 
-        /*md - `ON_LONG_PRESS: action` is used to set an action when the button is long pressed  (where action can be the same as ON_PRESS)*/
+        /*md - `ON_LONG_PRESS: action` is used to set an action when the button is long pressed.*/
         if (strcmp(key, "ON_LONG_PRESS") == 0) {
             // printf("value: %s\n", value);
             set(onLongPress, value);
             return true;
         }
 
-        /*md - `ON_LONG_PRESS_RELEASE: action` is used to set an action when the button is released when long pressed  (where action can be the same as ON_PRESS)*/
+        /*md - `ON_LONG_PRESS_RELEASE: action` is used to set an action when the button is released when long pressed.*/
         if (strcmp(key, "ON_LONG_PRESS_RELEASE") == 0) {
             // printf("value: %s\n", value);
             set(onLongPressRelease, value);
@@ -268,6 +199,76 @@ public:
         if (motion.originIn({ position, size })) {
             handleRelease();
         }
+    }
+
+protected:
+    // Keep after for documentation order
+    /*md Actions: */
+    void set(std::function<void()>& event, char* config)
+    {
+        char* action = strtok(config, " ");
+
+        /*md - `ON_PRESS: &SET_VIEW name` sets the specified view when the button is pressed. */
+        if (strcmp(action, "&SET_VIEW") == 0) {
+            std::string name = strtok(NULL, " ");
+            event = [this, name]() {
+                this->setView(name);
+            };
+            return;
+        }
+
+        /*md - `ON_PRESS: &NOTE_ON pluginName note velocity` send the note on the specified plugin when the button is pressed. */
+        if (strcmp(action, "&NOTE_ON") == 0) {
+            char* pluginName = strtok(NULL, " ");
+            char* noteStr = strtok(NULL, " ");
+            uint8_t note = atoi(noteStr);
+            char* velocityStr = strtok(NULL, " ");
+            float velocity = atof(velocityStr);
+            AudioPlugin* plugin = &getPlugin(pluginName, track);
+            event = [plugin, note, velocity]() {
+                plugin->noteOn(note, velocity);
+            };
+            return;
+        }
+
+        /*md - `ON_PRESS: &NOTE_OFF pluginName note` send the note off the specified plugin when the button is pressed. */
+        if (strcmp(action, "&NOTE_OFF") == 0) {
+            char* pluginName = strtok(NULL, " ");
+            char* noteStr = strtok(NULL, " ");
+            uint8_t note = atoi(noteStr);
+            AudioPlugin* plugin = &getPlugin(pluginName, track);
+            event = [plugin, note]() {
+                plugin->noteOff(note, 0);
+            };
+            return;
+        }
+
+        /*md - `ON_PRESS: &DATA pluginName dataId` send the data to the specified plugin when the button is pressed. */
+        if (strcmp(action, "&DATA") == 0) {
+            char* pluginName = strtok(NULL, " ");
+            int dataId = atoi(strtok(NULL, " "));
+            AudioPlugin* plugin = &getPlugin(pluginName, track);
+            event = [plugin, dataId]() {
+                plugin->data(dataId);
+            };
+            return;
+        }
+
+        /*md - `ON_PRESS: pluginName key value` sets the value of the specified plugin key when the button is pressed. */
+        char* key = strtok(NULL, " ");
+        char* targetValue = strtok(NULL, " ");
+
+        ValueInterface* value = watch(getPlugin(action, track).getValue(key));
+        if (value != NULL && label == "") {
+            label = value->label();
+        } else {
+            // printf("No value %s %s found for button on track %d\n", action, key, track);
+        }
+
+        float target = atof(targetValue);
+        event = [value, target]() {
+            value->set(target);
+        };
     }
 };
 
