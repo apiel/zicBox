@@ -10,6 +10,8 @@
 /*md
 ## Button
 
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Button.png" />
+
 Push button component that trigger an action when pressed and released.
 */
 class ButtonComponent : public Component {
@@ -220,27 +222,32 @@ public:
             return true;
         }
 
+        /*md - `COLOR: color` is used to set the color of the button.*/
         if (strcmp(key, "COLOR") == 0) {
             colors = getColorsFromColor(draw.getColor(value));
             return true;
         }
 
+        /*md - `ICON_COLOR: color` is used to set the color of the button icon.*/
         if (strcmp(key, "ICON_COLOR") == 0) {
             colors.icon = draw.getColor(value);
             return true;
         }
 
+        /*md - `BACKGROUND_COLOR: color` is used to set the background color of the button.*/
         if (strcmp(key, "BACKGROUND_COLOR") == 0) {
             colors.background = draw.getColor(value);
             colors.pressedBackground = draw.darken(colors.background, 0.3);
             return true;
         }
 
+        /*md - `PRESSED_BACKGROUND_COLOR: color` is used to set the background color of the button when pressed.*/
         if (strcmp(key, "PRESSED_BACKGROUND_COLOR") == 0) {
             colors.pressedBackground = draw.getColor(value);
             return true;
         }
 
+        /*md - `FONT_SIZE: size` is used to set the font size of the button. Font size is also used to defined the height of the icon.*/
         if (strcmp(key, "FONT_SIZE") == 0) {
             setFontSize(atoi(value));
             return true;
