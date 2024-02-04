@@ -15,34 +15,52 @@ protected:
     Icon icon;
 
     bool isPressed = false;
+    bool isLongPress = false;
+    unsigned long pressedTime = -1;
 
     std::string label = "";
 
     std::function<void()> renderLabel = []() {};
 
-    void handlePress(std::function<void()>& event, bool pressed)
+    void handlePress()
     {
-        isPressed = pressed;
+        pressedTime = -1;
+        isLongPress = false;
+        isPressed = true;
         renderNext();
-        event();
+        onPress();
+    }
+
+    void handleRelease()
+    {
+        isPressed = false;
+        renderNext();
+        if (isLongPress) {
+            onLongPressRelease();
+        } else {
+            onRelease();
+        }
     }
 
     struct Colors {
         Color background;
         Color pressedBackground;
         Color title;
+        Color icon;
     } colors;
 
     Colors getColorsFromColor(Color color)
     {
-        return Colors({ draw.darken(color, 0.6), draw.darken(color, 0.3), color });
+        return Colors({ draw.darken(color, 0.6), draw.darken(color, 0.3), color, color });
     }
 
     const int margin;
 
 public:
     std::function<void()> onPress = []() {};
+    std::function<void()> onLongPress = []() {};
     std::function<void()> onRelease = []() {};
+    std::function<void()> onLongPressRelease = []() {};
 
     ButtonBaseComponent(ComponentInterface::Props props)
         : Component(props)
@@ -51,6 +69,18 @@ public:
         , margin(styles.margin)
     {
         setFontSize(fontSize);
+
+        jobRendering = [this](unsigned long now) {
+            if (!isLongPress && isPressed) {
+                if (pressedTime == -1) {
+                    pressedTime = now;
+                } else if (now - pressedTime > 500) {
+                    isLongPress = true;
+                    onLongPress();
+                    renderNext();
+                }
+            }
+        };
     }
 
     void render()
@@ -92,6 +122,22 @@ public:
             return true;
         }
 
+        if (strcmp(key, "ICON_COLOR") == 0) {
+            colors.icon = draw.getColor(value);
+            return true;
+        }
+
+        if (strcmp(key, "BACKGROUND_COLOR") == 0) {
+            colors.background = draw.getColor(value);
+            colors.pressedBackground = draw.darken(colors.background, 0.3);
+            return true;
+        }
+
+        if (strcmp(key, "PRESSED_BACKGROUND_COLOR") == 0) {
+            colors.pressedBackground = draw.getColor(value);
+            return true;
+        }
+
         if (strcmp(key, "FONT_SIZE") == 0) {
             setFontSize(atoi(value));
             return true;
@@ -103,14 +149,14 @@ public:
     void onMotion(MotionInterface& motion)
     {
         if (!isPressed) {
-            handlePress(onPress, true);
+            handlePress();
         }
     }
 
     void onMotionRelease(MotionInterface& motion)
     {
         if (motion.originIn({ position, size })) {
-            handlePress(onRelease, false);
+            handleRelease();
         }
     }
 };

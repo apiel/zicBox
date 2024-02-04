@@ -2,6 +2,7 @@
 #define _UI_DRAW_ICON_H_
 
 #include <string>
+#include <functional>
 
 #include "../drawInterface.h"
 

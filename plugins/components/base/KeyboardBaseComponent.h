@@ -2,7 +2,7 @@
 #define _UI_BASE_COMPONENT_KEYBOARD_H_
 
 #include "../component.h"
-#include "ButtonBaseComponent.h"
+#include "../ButtonComponent.h"
 
 #include <string>
 
@@ -11,7 +11,7 @@ protected:
     static const uint8_t keyCount = 32;
     const uint8_t columnCount = 8;
 
-    ButtonBaseComponent* buttons[keyCount];
+    ButtonComponent* buttons[keyCount];
 
     const char* ABC[keyCount] = {
         // clang-format off
@@ -123,7 +123,7 @@ public:
                 (int)(btnArea.w - 2 * btnMargin),
                 (int)(btnArea.h - 2 * btnMargin)
             };
-            buttons[i] = new ButtonBaseComponent(btnProps);
+            buttons[i] = new ButtonComponent(btnProps);
         }
         setButtonsLabel();
     }
