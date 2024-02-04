@@ -57,6 +57,23 @@ public:
         }
         return AudioPlugin::config(key, value);
     }
+
+    // Used to share current playing state of audio host
+    int playingState = 0;
+    void* data(int id, void* userdata = NULL)
+    {
+        if (id == 0) {
+            playingState = 2;
+            if (props.audioPluginHandler->isPlaying()) {
+                playingState = 1;
+            }
+            if (props.audioPluginHandler->isStopped()) {
+                playingState = 0;
+            }
+            return &playingState;
+        }
+        return NULL;
+    }
 };
 
 #endif
