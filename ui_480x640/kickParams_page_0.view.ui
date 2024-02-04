@@ -48,13 +48,12 @@
     VALUE: MultiModeFilter RESONANCE
     ID: Param6_enc
 
-  # # COMPONENT: Rect $encX4 $encY2 $encSize $encSize
-  # COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
-  #   ENCODER_ID: 7
-  #   TRACK: $track
-  #   VALUE: MultiModeFilter DRIVE
-  #   COLOR: #ff7700
-  #   ID: Param7_enc
+  COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
+    ENCODER_ID: 7
+    TRACK: $track
+    VALUE: Kick23 GAIN_CLIPPING
+    COLOR: #ff7700
+    ID: Param7_enc
 
 
   COMPONENT: Encoder2 $encX1 $encY3 $encSize $encSize

@@ -65,8 +65,8 @@ public:
     Val& staircase = val(9.0, "STAIRCASE", { "Stairs", .min = -10, .max = 9 }, [&](auto p) { setStaircase(p.value); });
     /*md - `NOISE` set the noise level.*/
     Val& noise = val(0.0, "NOISE", { "Noise", .unit = "%" }, [&](auto p) { setNoise(p.value); });
-    /*md - `CLIPPING` set the clipping level.*/
-    Val& clipping = val(0.0, "CLIPPING", { "Clipping", .unit = "%" }, [&](auto p) { setClipping(p.value); });
+    /*md - `GAIN_CLIPPING` set the clipping level.*/
+    Val& clipping = val(0.0, "GAIN_CLIPPING", { "Gain Clipping", .unit = "%" }, [&](auto p) { setClipping(p.value); });
 
     SynthBass(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name) // clang-format on
