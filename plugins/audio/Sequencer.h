@@ -302,7 +302,13 @@ public:
         }
         case 3:
             return clockCounterPtr;
-        case 4: { // Toggle sequencer
+        case 10: // Save pattern
+            save(folder / *(std::string*)userdata);
+            return NULL;
+        case 11: // Rename pattern
+            rename(folder / *(std::string*)userdata);
+            return NULL;
+        case 20: { // Toggle sequencer
             if (status.get() == Status::ON) {
                 status.set(Status::OFF);
             } else {
@@ -310,11 +316,8 @@ public:
             }
             return NULL;
         }
-        case 10: // Save pattern
-            save(folder / *(std::string*)userdata);
-            return NULL;
-        case 11: // Rename pattern
-            rename(folder / *(std::string*)userdata);
+        case 21: // Step toggle
+            stepEnabled.set(selectedStepPtr->enabled ? 0.0 : 1.0);
             return NULL;
         }
         return NULL;
