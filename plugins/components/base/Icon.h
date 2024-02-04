@@ -7,7 +7,7 @@
 #include "../drawInterface.h"
 
 /*md
-## Icon
+## Icons
 
 List of icon used in plugin component:
 */
