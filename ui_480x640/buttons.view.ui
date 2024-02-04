@@ -11,5 +11,6 @@ COMPONENT: Button ($encX3-10) 615 110 20
   COLOR: #AAAAAA
 
 COMPONENT: Button ($encX4-10) 615 110 20
-  LABEL: Play/Stop
   COLOR: #AAAAAA
+  LABEL: &icon::play::filled
+  KEYMAP: Keyboard 40 trigger
