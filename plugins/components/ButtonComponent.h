@@ -1,11 +1,12 @@
 #ifndef _UI_COMPONENT_BUTTON_H_
 #define _UI_COMPONENT_BUTTON_H_
 
+#include "./base/KeypadLayout.h"
 #include "base/Icon.h"
 #include "component.h"
-#include <string>
 
 #include <functional>
+#include <string>
 
 /*md
 ## Button
@@ -28,6 +29,8 @@ protected:
     std::string label = "";
 
     std::function<void()> renderLabel = []() {};
+
+    KeypadLayout keypadLayout;
 
     void handlePress()
     {
@@ -74,6 +77,7 @@ public:
         , icon(props.draw)
         , colors(getColorsFromColor(styles.colors.grey))
         , margin(styles.margin)
+        , keypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, int param, std::string action, uint8_t color) { addKeyMap(controller, controllerId, key, param, action, color); })
     {
         setFontSize(fontSize);
 
@@ -117,6 +121,7 @@ public:
         labelPosition = { (int)(position.x + size.w * 0.5f), (int)(position.y + size.h * 0.5f - (fontSize * 0.5f)) };
     }
 
+    /*md **Config**: */
     bool config(char* key, char* value)
     {
         /*md - `ON_PRESS: action` is used to set an action when the button is pressed, e.g: `ON_PRESS: &SET_VIEW name`.*/
@@ -184,6 +189,10 @@ public:
             return true;
         }
 
+        if (keypadLayout.config(key, value)) {
+            return true;
+        }
+
         return false;
     }
 
@@ -203,7 +212,7 @@ public:
 
 protected:
     // Keep after for documentation order
-    /*md Actions: */
+    /*md **Actions**: */
     void set(std::function<void()>& event, char* config)
     {
         char* action = strtok(config, " ");
@@ -269,6 +278,26 @@ protected:
         event = [value, target]() {
             value->set(target);
         };
+    }
+
+public:
+    /*md **Keyboard actions**: */
+    void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, int param, std::string action, uint8_t color)
+    {
+        /*md - `trigger` is used to trigger the button. */
+        if (action == "trigger") {
+            keypadLayout.mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) {
+                    if (state) {
+                        handlePress();
+                    } else {
+                        handleRelease();
+                    } }, color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color || 20; } });
+        }
+    }
+
+    void onKey(uint16_t id, int key, int8_t state)
+    {
+        keypadLayout.onKey(id, key, state);
     }
 };
 
