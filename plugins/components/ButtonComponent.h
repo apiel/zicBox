@@ -263,6 +263,19 @@ protected:
             return;
         }
 
+        /*md - `ON_PRESS: &AUDIO_EVENT id` send audio event when the button is pressed. */
+        /*md    - `STOP` to send stop event to all tracks */
+        /*md    - `START` to send start event to all tracks */
+        /*md    - `PAUSE` to send pause event to all tracks */
+        /*md    - `TOGGLE_PLAY_PAUSE` to send toggle play pause event to all tracks */
+        if (strcmp(action, "&AUDIO_EVENT") == 0) {
+            AudioEventType id = getEventTypeFromName(strtok(NULL, " "));
+            event = [&, id]() {
+                sendAudioEvent(id);
+            };
+            return;
+        }
+
         /*md - `ON_PRESS: pluginName key value` sets the value of the specified plugin key when the button is pressed. */
         char* key = strtok(NULL, " ");
         char* targetValue = strtok(NULL, " ");

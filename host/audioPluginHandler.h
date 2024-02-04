@@ -222,6 +222,10 @@ public:
         case AudioEventType::PAUSE:
             playing = false;
             break;
+
+        case AudioEventType::TOGGLE_PLAY_PAUSE:
+            playing = !playing;
+            break;
         }
         for (Plugin& plugin : plugins) {
             plugin.instance->onEvent(event);

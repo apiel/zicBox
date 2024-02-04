@@ -14,8 +14,24 @@ enum AudioEventType {
     STOP,
     START,
     PAUSE,
-    AUTOSAVE
+    TOGGLE_PLAY_PAUSE,
+    AUTOSAVE,
+    COUNT
 };
+
+AudioEventType getEventTypeFromName(std::string name)
+{
+    if (name == "STOP") {
+        return AudioEventType::STOP;
+    } else if (name == "START") {
+        return AudioEventType::START;
+    } else if (name == "PAUSE") {
+        return AudioEventType::PAUSE;
+    } else if (name == "TOGGLE_PLAY_PAUSE") {
+        return AudioEventType::TOGGLE_PLAY_PAUSE;
+    }
+    return AudioEventType::COUNT;
+}
 
 class AudioPluginHandlerInterface {
 public:
