@@ -8,7 +8,7 @@
 <table>
     <thead>
         <td><a href="https://github.com/apiel/zicBox/wiki/06-Hardware#zicpad"><b>ZicPad</b></a></td>
-        <td><a href="https://github.com/apiel/zicBox/wiki/06-Hardware#zic-pixel"><b>ZicPixel</b></a></td>
+        <td><a href="https://github.com/apiel/zicBox/wiki/06-Hardware#zic-pixel"><b>ZicPixel</b></a> ... work in progress</td>
     </thead>
     <tr>
         <td><a href="https://github.com/apiel/zicBox/wiki/06-Hardware#zicpad"><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPad/zicpad.png" /></a></td>

@@ -48,3 +48,15 @@ The PCB assembly is quiet easy, it is just few encoder and pins headers to solde
 For the front panel, it is also possible to order it as a PCB. I haven't yet tried myself, as it is more expensive due to the size (around 30€). I am waiting for the graphic design before to order it. So far, I made the front panel using my laser engraver to cut wood and acrylic sheet. To do this, I was converting the gerber file of PCB outline to Gcode, using a small script. For more details about this process, see my [notes](https://github.com/apiel/zicBox/blob/main/hardware/ZicPad/case/NOTE.md) in the case folder.
 
 The EasyEDA file  and the gerber file for the front panel are available [here](https://github.com/apiel/zicBox/tree/main/hardware/ZicPad/case/easyeda).
+
+### Case enclosure
+
+The rest of the enclosure has been fully hand made out of wood, using a saw, drill and glue. For this part, it will be up to your own creativity :p till someone come up with 3d model.
+
+<table>
+    <tr>
+        <td><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPad/case/build/build0.png" /></td>
+        <td><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPad/case/build/build0.png" /></td>
+        <td><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPad/case/build/build0.png" /></td>
+    </tr>
+</table>
