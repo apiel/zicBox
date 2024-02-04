@@ -20,6 +20,8 @@ Synth engine to generate bass sounds.
 */
 class SynthBass : public Mapping {
 protected:
+    uint8_t baseNote = 60;
+
     EffectFilterData filter;
 
     // could be use make sample representation for a note duration
@@ -185,8 +187,7 @@ public:
         sampleValue = 0.0f;
         envelop.reset();
 
-        uint8_t baseNote = 60;
-        noteMult = pow(2, ((note - baseNote) / 12.0));
+        noteMult = pow(2, ((note - baseNote + pitch.get()) / 12.0));
     }
 
     void* data(int id, void* userdata = NULL)
