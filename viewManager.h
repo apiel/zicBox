@@ -73,7 +73,8 @@ protected:
             [](int8_t index) { ViewManager::get().setGroup(index); },
             [](int8_t index) { ViewManager::get().setVisibility(index); },
             [](std::string name) { UiPlugin::get().setView(name); },
-            [](ComponentInterface* component) { UiPlugin::get().pushToRenderingQueue(component); }
+            [](ComponentInterface* component) { UiPlugin::get().pushToRenderingQueue(component); },
+            &shift
         };
 
         // printf("addComponent: %s pos %d %d size %d %d\n", name, position.x, position.y, size.w, size.h);
@@ -90,6 +91,8 @@ protected:
 
 public:
     Draw draw;
+
+    bool shift = false;
 
     static ViewManager& get()
     {

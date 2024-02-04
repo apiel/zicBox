@@ -24,6 +24,7 @@ public:
         void (*setVisibility)(int8_t index);
         void (*setView)(std::string name);
         void (*pushToRenderingQueue)(ComponentInterface* component);
+        bool* shift;
     };
 
 protected:
@@ -37,6 +38,7 @@ protected:
     void (*setVisibility)(int8_t index);
     void (*setView)(std::string name);
     void (*pushToRenderingQueue)(ComponentInterface* component);
+    bool* shift = NULL;
 
     Props getNewPropsRect(Props props, Rect rect)
     {
@@ -69,6 +71,7 @@ public:
         , setVisibility(props.setVisibility)
         , setView(props.setView)
         , pushToRenderingQueue(props.pushToRenderingQueue)
+        , shift(props.shift)
         , position(props.position)
         , size(props.size)
     {
