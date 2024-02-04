@@ -1,23 +1,29 @@
 - TODO filebrowser
     - serialised might want to use filename instead of file index
 
+- TODO hardware look for touch encoder or button encoder
+    - https://www.mouser.at/datasheet/2/54/PEC12R-777795.pdf
+    - 22mm https://www.mouser.at/ProductDetail/Bourns/PEC12R-4022F-S0024?qs=6oMev5NRZMHfikcgfDwwZA%3D%3D
+    - 30mm https://www.mouser.at/ProductDetail/Bourns/PEC12R-4030F-S0024?qs=15%2Ff%2FzFZJSBasYPWBClbAA%3D%3D
+
+- TODO mute/unmute track
+
+- TODO compressor
+
+- TODO fm synth
+
+## zicUi
+
+- TODO encoder string component...
+
 - TODO keyboard / keypad
     - see we can extract some logic to have global action that are not specific to a UI plugin
     - should LED and keypad be the same object
         or could we assume that some LED doesn't necessarly belong to a key
         LED could be associated to an encoder or just completely standalone...
 
-- TODO hardware look for touch encoder or button encoder
-    - https://www.mouser.at/datasheet/2/54/PEC12R-777795.pdf
-    - 22mm https://www.mouser.at/ProductDetail/Bourns/PEC12R-4022F-S0024?qs=6oMev5NRZMHfikcgfDwwZA%3D%3D
-    - 30mm https://www.mouser.at/ProductDetail/Bourns/PEC12R-4030F-S0024?qs=15%2Ff%2FzFZJSBasYPWBClbAA%3D%3D
-
-## zicUi
-
 - TODO live waveform visualisation
     - might need for this to create an audio plugin to keep a buffer of the audio output
-
-- TODO encoder string component...
 
 - TODO GridSequencer
     - TODO touch could be used to move up/down/left/right
@@ -100,12 +106,6 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 - TODO make audio input and output selectable with val...
 
 - TODO Fm plugin
-
-- TODO Zic_Drum_Kick23 
-    - give possibility to play sample in the same time as the engine...
-        - could we apply extra modulation freq and amplitude on the sample?
-    - Should it be also possible to record the generated kick inside a sample?
-    - Could it become a more generic drum engine...
 
 - TODO puredata plugin
     - FIXME missing libpd on rpi

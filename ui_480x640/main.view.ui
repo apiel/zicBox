@@ -35,15 +35,15 @@ VIEW: shared_components HIDDEN
       KEYMAP: Keyboard 69 track 11
       KEYMAP: Keyboard 76 master
 
-      KEYMAP: Keypad 15 master
+      KEYMAP: Keypad 26 master
       KEYMAP: Keypad 27 layout 0
       KEYMAP: Keypad 39 layout 1
 
-      KEYMAP: Keypad 12 none
-      KEYMAP: Keypad 13 none
-      KEYMAP: Keypad 14 none
-      KEYMAP: Keypad 24 none
-      KEYMAP: Keypad 26 none
+      # KEYMAP: Keypad 12 none
+      # KEYMAP: Keypad 13 none
+      # KEYMAP: Keypad 14 none
+      # KEYMAP: Keypad 24 none
+      # KEYMAP: Keypad 26 none
 
       KEYMAP: Keypad 25 row 1
       KEYMAP: Keypad 36 col -1
