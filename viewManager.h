@@ -74,7 +74,7 @@ protected:
             [](int8_t index) { ViewManager::get().setVisibility(index); },
             [](std::string name) { UiPlugin::get().setView(name); },
             [](ComponentInterface* component) { UiPlugin::get().pushToRenderingQueue(component); },
-            &shift
+            shift
         };
 
         // printf("addComponent: %s pos %d %d size %d %d\n", name, position.x, position.y, size.w, size.h);
@@ -140,6 +140,7 @@ public:
 
     void renderComponents(unsigned long now = SDL_GetTicks())
     {
+        // printf("renderComponents shifted: %d\n", shift ? 1 : 0);
         m.lock();
 
         if (ui.view->componentsJob.size()) {

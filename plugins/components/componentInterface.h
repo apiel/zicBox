@@ -24,7 +24,7 @@ public:
         void (*setVisibility)(int8_t index);
         void (*setView)(std::string name);
         void (*pushToRenderingQueue)(ComponentInterface* component);
-        bool* shift;
+        bool& shift;
     };
 
 protected:
@@ -38,7 +38,7 @@ protected:
     void (*setVisibility)(int8_t index);
     void (*setView)(std::string name);
     void (*pushToRenderingQueue)(ComponentInterface* component);
-    bool* shift = NULL;
+    bool& shift;
 
     Props getNewPropsRect(Props props, Rect rect)
     {
