@@ -263,6 +263,17 @@ protected:
             return;
         }
 
+        /*md - `ON_PRESS: &SHIFT true/false` set shift value. */
+        if (strcmp(action, "&SHIFT") == 0) {
+            char* shiftValue = strtok(NULL, " ");
+            if (strcmp(shiftValue, "true") == 0) {
+                *shift = true;
+            } else if (strcmp(shiftValue, "false") == 0) {
+                *shift = false;
+            }
+            return;
+        }
+
         /*md - `ON_PRESS: &AUDIO_EVENT id` send audio event when the button is pressed. */
         /*md    - `STOP` to send stop event to all tracks */
         /*md    - `START` to send start event to all tracks */
@@ -310,12 +321,12 @@ public:
 
     void onKey(uint16_t id, int key, int8_t state)
     {
+        // printf("onKey %d %d %d\n", id, key, state);
         keypadLayout.onKey(id, key, state);
     }
 
     void initView(uint16_t counter)
     {
-
         keypadLayout.renderKeypad();
     }
 };

@@ -12,6 +12,8 @@
 
 - TODO fm synth
 
+- TODO keyboad should handle longpress (see button...)
+
 ## zicUi
 
 - TODO encoder string component...

@@ -296,7 +296,11 @@ protected:
 
     void updateTrackSelection(int8_t state, uint8_t track)
     {
-        if (state == 1) {
+        if (shift) {
+            if (state == 1) {
+                tracks[track].seqPlugin->data(20);
+            }
+        } else if (state == 1) {
             if (grid.row == track && grid.col == 0) {
                 tracks[grid.row].page = (tracks[grid.row].page + 1) % tracks[grid.row].pageCount;
                 // printf("page %d from %d\n", tracks[grid.row].page, tracks[grid.row].pageCount);
@@ -376,7 +380,7 @@ protected:
             grid.col = param + 1;
             updateSelection();
             draw.renderNext();
-        } else if (now - stepPressedTime < 300) {
+        } else if (!shift && now - stepPressedTime < 300) {
             tracks[grid.row].seqPlugin->getValue("STEP_ENABLED")->set(tracks[grid.row].steps[param].enabled ? 0 : 1);
             currentKeypadLayout->renderKeypad();
         }

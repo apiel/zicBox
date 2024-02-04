@@ -18,7 +18,11 @@ COMPONENT: Button ($encX2-10) 615 110 20
 COMPONENT: Button ($encX3-10) 615 110 20
   COLOR: #AAAAAA
   LABEL: Shift
+  ON_PRESS: &SHIFT true
+  ON_RELEASE: &SHIFT false
+  ON_LONG_PRESS: &SHIFT false
   KEYMAP: Keypad 14 trigger
+  KEYMAP: Keyboard 225 trigger
 
 COMPONENT: Button ($encX4-10) 615 110 20
   COLOR: #AAAAAA
