@@ -310,6 +310,7 @@ public:
 
     void onKey(uint16_t id, int key, int8_t state)
     {
+        printf("key %d %d %d\n", id, key, state);
         keypadLayout.onKey(id, key, state);
     }
 };
