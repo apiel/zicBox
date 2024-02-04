@@ -500,7 +500,7 @@ public:
 
     void render()
     {
-        draw.filledRect(position, size, colors.background);
+        draw.filledRect(position, { size.w, size.h - 5 }, colors.background);
         progressInit();
         renderMasterVolume();
         renderRows();
