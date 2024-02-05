@@ -7,6 +7,10 @@
 
 #include <math.h>
 
+#define STEPS 1024 // number of +ve or -ve steps in lookup tabe
+#define TABLESIZE 2049 // size of lookup table (steps * 2 + 1)
+#define DB_TO_LINEAR(x) (pow(10.0, (x) / 20.0))
+
 /*md
 ## EffectDistortion
 
@@ -15,12 +19,20 @@ EffectDistortion plugin is used to apply distortion effect on audio buffer.
 class EffectDistortion : public Mapping {
 protected:
     float shape;
+    double shapeTable[TABLESIZE];
+    double mMakeupGain = 1.0;
 
-    float (EffectDistortion::*samplePtr)(float) = &EffectDistortion::skipSample;
+    float (EffectDistortion::*samplePtr)(float) = &EffectDistortion::processSample;
+    float (EffectDistortion::*sampleDrive2Ptr)(float) = &EffectDistortion::skipSample;
 
     float skipSample(float buf)
     {
         return buf;
+    }
+
+    float processDrive2Sample(float buf)
+    {
+        return (1 + shape) * buf / (1 + shape * fabsf(buf));
     }
 
     float processSample(float buf)
@@ -29,13 +41,62 @@ protected:
             return buf;
         }
 
-        return (1 + shape) * buf / (1 + shape * fabsf(buf));
+        buf *= 1 + drive.pct() * 5;
+
+        int index = std::floor(buf * STEPS) + STEPS;
+        index = range(index, 0, 2 * STEPS - 1);
+        double xOffset = ((1 + buf) * STEPS) - index;
+        xOffset = range(xOffset, 0.0, 1.0);
+
+        float out = shapeTable[index] + (shapeTable[index + 1] - shapeTable[index]) * xOffset;
+
+        float gainRatioPct = gainRatio.pct();
+        out = out * ((1 - gainRatioPct) + (mMakeupGain * gainRatioPct));
+
+        return (this->*sampleDrive2Ptr)(out);
+    }
+
+    void generateShapeTable(float thresholdDb)
+    {
+        const double threshold = DB_TO_LINEAR(thresholdDb);
+        mMakeupGain = 15.0 / threshold;
+
+        double lowThresh = 1 - threshold;
+        double highThresh = 1 + threshold;
+
+        for (int n = 0; n < TABLESIZE; n++) {
+            if (n < (STEPS * lowThresh))
+                shapeTable[n] = -threshold;
+            else if (n > (STEPS * highThresh))
+                shapeTable[n] = threshold;
+            else
+                shapeTable[n] = n / (double)STEPS - 1;
+        }
+        // printf("gain %f threshold %f lowThresh %f highThresh %f\n", mMakeupGain, threshold, lowThresh, highThresh);
     }
 
 public:
     /*md **Values**: */
     /*md - `DRIVE` to set drive. */
-    Val& drive = val(0.0, "DRIVE", { "Distortion" }, [&](auto p) { setDrive(p.value); });
+    Val& drive = val(0.0, "DRIVE", { "Drive" });
+    /*md - `DRIVE2` to set drive2. */
+    Val& drive2 = val(0.0, "DRIVE2", { "Drive2" }, [&](auto p) { setDrive2(p.value); });
+    /*md - `GAIN_RATIO` to set makeup gain. */
+    Val& gainRatio = val(0.0, "GAIN_RATIO", { "Makeup Gain" });
+    /*md - `DB` to set the clipping level threshold. */
+    Val& db = val(0.0, "DB", { "Clipping level", .min = -100.0, .max = 0.0, .unit = "dB" }, [&](auto p) {
+        db.setFloat(p.value);
+        generateShapeTable(db.get());
+    });
+    /*md - `ENABLE` to enable the effect. */
+    Val& enable = val(1.0, "ENABLE", { "Enable", .max = 1.0 }, [&](auto p) {
+        enable.setFloat(p.value);
+        if (enable.get() > 0.0) {
+            samplePtr = &EffectDistortion::processSample;
+        } else {
+            samplePtr = &EffectDistortion::skipSample;
+        }
+    });
 
     EffectDistortion(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -53,17 +114,15 @@ public:
         buf[track] = sample(buf[track]);
     }
 
-    void setDrive(float value)
+    void setDrive2(float value)
     {
-        drive.setFloat(value);
-        if (drive.get() == 0.0) {
-            samplePtr = &EffectDistortion::skipSample;
-            debug("Distortion: disabled\n");
-        } else {
-            float pct = drive.get() / 101.0; // Dividing by 101 instead of 100 to have max 0.99
-            samplePtr = &EffectDistortion::processSample;
+        drive2.setFloat(value);
+        if (drive2.get() > 0) {
+            float pct = drive2.get() / 101.0; // Dividing by 101 instead of 100 to have max 0.99
             shape = 2 * pct / (1 - pct);
-            debug("Distortion: drive=%f shape=%f\n", drive.get(), shape);
+            sampleDrive2Ptr = &EffectDistortion::processDrive2Sample;
+        } else {
+            sampleDrive2Ptr = &EffectDistortion::skipSample;
         }
     }
 };
