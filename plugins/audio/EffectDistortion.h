@@ -88,10 +88,10 @@ public:
         db.setFloat(p.value);
         generateShapeTable(db.get());
     });
-    /*md - `ENABLE` to enable the effect. */
-    Val& enable = val(1.0, "ENABLE", { "Enable", .max = 1.0 }, [&](auto p) {
-        enable.setFloat(p.value);
-        if (enable.get() > 0.0) {
+    /*md - `ENABLED` to enable the effect. */
+    Val& enabled = val(1.0, "ENABLED", { "Enabled", .max = 1.0 }, [&](auto p) {
+        enabled.setFloat(p.value);
+        if (enabled.get() > 0.0) {
             samplePtr = &EffectDistortion::processSample;
         } else {
             samplePtr = &EffectDistortion::skipSample;

@@ -8,13 +8,12 @@ VIEW: shared_components HIDDEN
     SHARED_COMPONENT: SharedGridSequencer
     TRACK_NAME: 1 Kick
     TRACK_VIEW: 1 KickParams_track_1
-    TRACK_PAGE_COUNT: 1 3
+    TRACK_PAGE_COUNT: 1 4
     TRACK_NAME: 2 Drum
     TRACK_VIEW: 2 KickParams_track_2
-    TRACK_PAGE_COUNT: 2 3
+    TRACK_PAGE_COUNT: 2 4
     TRACK_NAME: 3 Bass
     TRACK_VIEW: 3 BassParams_track_3
-    TRACK_PAGE_COUNT: 3 1
 
     KEYPAD_LAYOUT: default
       KEYMAP: Keyboard 82 row 1

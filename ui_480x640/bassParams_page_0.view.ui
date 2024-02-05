@@ -25,16 +25,6 @@
     COLOR: #ff7700
     ID: Param3_enc
 
-  print: >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Mixer TRACK_$track
-
-
-  COMPONENT: Encoder2 $encX1 $encY2 $encSize $encSize
-    ENCODER_ID: 4
-    COLOR: #9dfe86
-    TRACK: $track
-    VALUE: Distortion DRIVE
-    ID: Param4_enc
-
   COMPONENT: Encoder2 $encX2 $encY2 $encSize $encSize
     ENCODER_ID: 5
     COLOR: #3791a1
