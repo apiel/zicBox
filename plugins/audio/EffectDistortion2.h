@@ -20,19 +20,14 @@ class EffectDistortion2 : public Mapping {
 protected:
     float shape;
 
-    float (EffectDistortion2::*samplePtr)(float) = &EffectDistortion2::skipSample;
+    float (EffectDistortion2::*samplePtr)(float) = &EffectDistortion2::processSample;
 
     float skipSample(float buf)
     {
         return buf;
     }
 
-    int mTableChoiceIndx = 0;
-    double mThreshold_dB = -12.0;
-    double mNoiseFloor = -70.0;
-    double mParam1 = 50.0;
-    double mParam2 = 80.0;
-    double mTable[TABLESIZE];
+    double shapeTable[TABLESIZE];
     double mMakeupGain = 1.0;
 
     float processSample(float buf)
@@ -41,25 +36,24 @@ protected:
             return buf;
         }
 
-        double amount = mParam1 / 100.0;
-        buf *= 1 + amount * 5;
+        buf *= 1 + drive.pct() * 5;
 
         int index = std::floor(buf * STEPS) + STEPS;
         index = range(index, 0, 2 * STEPS - 1);
         double xOffset = ((1 + buf) * STEPS) - index;
         xOffset = range(xOffset, 0.0, 1.0);
 
-        float out = mTable[index] + (mTable[index + 1] - mTable[index]) * xOffset;
+        float out = shapeTable[index] + (shapeTable[index + 1] - shapeTable[index]) * xOffset;
 
-        double p2 = mParam2 / 100.0;
-        out = out * ((1 - p2) + (mMakeupGain * p2));
+        float gainRatioPct = gainRatio.pct();
+        out = out * ((1 - gainRatioPct) + (mMakeupGain * gainRatioPct));
 
         return out;
     }
 
-    void hardClip()
+    void hardClip(float thresholdDb)
     {
-        const double threshold = DB_TO_LINEAR(mThreshold_dB);
+        const double threshold = DB_TO_LINEAR(thresholdDb);
         mMakeupGain = 15.0 / threshold;
 
         double lowThresh = 1 - threshold;
@@ -67,11 +61,11 @@ protected:
 
         for (int n = 0; n < TABLESIZE; n++) {
             if (n < (STEPS * lowThresh))
-                mTable[n] = -threshold;
+                shapeTable[n] = -threshold;
             else if (n > (STEPS * highThresh))
-                mTable[n] = threshold;
+                shapeTable[n] = threshold;
             else
-                mTable[n] = n / (double)STEPS - 1;
+                shapeTable[n] = n / (double)STEPS - 1;
         }
 
         printf("gain %f threshold %f lowThresh %f highThresh %f\n", mMakeupGain, threshold, lowThresh, highThresh);
@@ -79,17 +73,16 @@ protected:
 
 public:
     /*md **Values**: */
-    /*md - `DRIVE` to set drive. */
-    Val& drive = val(0.0, "DRIVE", { "Distortion" }, [&](auto p) { setDrive(p.value); });
+    // Val& drive = val(0.0, "DRIVE", { "Distortion" }, [&](auto p) { setDrive(p.value); });
 
-    Val& P1 = val(0.0, "P1", { "Drive" }, [&](auto p) { P1.setFloat(p.value); mParam1 = P1.get(); });
-    Val& P2 = val(0.0, "P2", { "Makeup Gain" }, [&](auto p) { P2.setFloat(p.value); mParam2 = P2.get(); });
+    /*md - `DRIVE` to set drive. */
+    Val& drive = val(0.0, "DRIVE", { "Drive" });
+    /*md - `GAIN_RATIO` to set makeup gain. */
+    Val& gainRatio = val(0.0, "GAIN_RATIO", { "Makeup Gain" });
     /*md - `DB` to set the clipping level threshold. */
-    Val& DB = val(0.0, "DB", { "Clipping level", .min = -100.0, .max = 0.0, .unit = "dB" }, [&](auto p) {
-        DB.setFloat(p.value);
-        mThreshold_dB = DB.get();
-        samplePtr = &EffectDistortion2::processSample;
-        hardClip();
+    Val& db = val(0.0, "DB", { "Clipping level", .min = -100.0, .max = 0.0, .unit = "dB" }, [&](auto p) {
+        db.setFloat(p.value);
+        hardClip(db.get());
     });
 
     EffectDistortion2(AudioPlugin::Props& props, char* _name)
@@ -121,7 +114,7 @@ public:
             // debug("Distortion: drive=%f shape=%f\n", drive.get(), shape);
 
             samplePtr = &EffectDistortion2::processSample;
-            hardClip();
+            // hardClip();
         }
     }
 };
