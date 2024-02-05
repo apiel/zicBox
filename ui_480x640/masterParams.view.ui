@@ -57,12 +57,12 @@
   # COMPONENT: Encoder2 $encX2 $encY3 $encSize $encSize
   #   ENCODER_ID: 9
   #   COLOR: #3791a1
-  #   VALUE: Distortion P1
+  #   VALUE: Distortion DRIVE
   #   ID: Param9_enc
 
   # COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
   #   ENCODER_ID: 10
-  #   VALUE: Distortion P2
+  #   VALUE: Distortion GAIN_RATIO
   #   COLOR: #ff8d99
   #   ID: Param10_enc
 

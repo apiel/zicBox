@@ -106,12 +106,12 @@
     ENCODER_ID: 9
     COLOR: #3791a1
     # TRACK: -1
-    VALUE: MasterDistortion P1
+    VALUE: MasterDistortion DRIVE
     ID: Param9_enc
 
   COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
     ENCODER_ID: 10
     # TRACK: -1
-    VALUE: MasterDistortion P2
+    VALUE: MasterDistortion GAIN_RATIO
     COLOR: #ff8d99
     ID: Param10_enc
