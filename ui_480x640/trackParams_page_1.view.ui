@@ -89,3 +89,29 @@
   # #   FONT_UNIT_SIZE: 8
   # #   # BACKGROUND_COLOR: #2b2c2e
   # #   ID: Param11_enc
+
+
+
+
+
+
+  COMPONENT: Encoder2 $encX1 $encY3 $encSize $encSize
+    ENCODER_ID: 8
+    COLOR: #9dfe86
+    # TRACK: -1
+    VALUE: MasterDistortion DB
+    ID: Param8_enc
+
+  COMPONENT: Encoder2 $encX2 $encY3 $encSize $encSize
+    ENCODER_ID: 9
+    COLOR: #3791a1
+    # TRACK: -1
+    VALUE: MasterDistortion P1
+    ID: Param9_enc
+
+  COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
+    ENCODER_ID: 10
+    # TRACK: -1
+    VALUE: MasterDistortion P2
+    COLOR: #ff8d99
+    ID: Param10_enc

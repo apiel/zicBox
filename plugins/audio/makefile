@@ -6,6 +6,7 @@ PARAMS ?= --std=c++17 -lstdc++fs
 all:
 	make EffectGainVolume EffectSampleRateReducer EffectFilter EffectDistortion EffectDelay\
 		EffectFilter EffectFilterMultiMode EffectFilterMultiMode2 EffectFilterMultiModeMoog\
+		EffectDistortion2 \
 		SynthKick23 SynthGranular SynthSample SynthBass \
 		Sequencer Tempo\
 		Mixer2 Mixer4 Mixer8 Mixer12\
