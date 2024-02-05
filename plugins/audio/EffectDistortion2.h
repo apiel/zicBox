@@ -19,16 +19,21 @@ EffectDistortion2 plugin is used to apply distortion effect on audio buffer.
 class EffectDistortion2 : public Mapping {
 protected:
     float shape;
+    double shapeTable[TABLESIZE];
+    double mMakeupGain = 1.0;
 
     float (EffectDistortion2::*samplePtr)(float) = &EffectDistortion2::processSample;
+    float (EffectDistortion2::*sampleDrive2Ptr)(float) = &EffectDistortion2::skipSample;
 
     float skipSample(float buf)
     {
         return buf;
     }
 
-    double shapeTable[TABLESIZE];
-    double mMakeupGain = 1.0;
+    float processDrive2Sample(float buf)
+    {
+        return (1 + shape) * buf / (1 + shape * fabsf(buf));
+    }
 
     float processSample(float buf)
     {
@@ -48,7 +53,7 @@ protected:
         float gainRatioPct = gainRatio.pct();
         out = out * ((1 - gainRatioPct) + (mMakeupGain * gainRatioPct));
 
-        return out;
+        return (this->*sampleDrive2Ptr)(out);
     }
 
     void hardClip(float thresholdDb)
@@ -67,22 +72,30 @@ protected:
             else
                 shapeTable[n] = n / (double)STEPS - 1;
         }
-
-        printf("gain %f threshold %f lowThresh %f highThresh %f\n", mMakeupGain, threshold, lowThresh, highThresh);
+        // printf("gain %f threshold %f lowThresh %f highThresh %f\n", mMakeupGain, threshold, lowThresh, highThresh);
     }
 
 public:
     /*md **Values**: */
-    // Val& drive = val(0.0, "DRIVE", { "Distortion" }, [&](auto p) { setDrive(p.value); });
-
     /*md - `DRIVE` to set drive. */
     Val& drive = val(0.0, "DRIVE", { "Drive" });
+    /*md - `DRIVE2` to set drive2. */
+    Val& drive2 = val(0.0, "DRIVE2", { "Drive2" }, [&](auto p) { setDrive2(p.value); });
     /*md - `GAIN_RATIO` to set makeup gain. */
     Val& gainRatio = val(0.0, "GAIN_RATIO", { "Makeup Gain" });
     /*md - `DB` to set the clipping level threshold. */
     Val& db = val(0.0, "DB", { "Clipping level", .min = -100.0, .max = 0.0, .unit = "dB" }, [&](auto p) {
         db.setFloat(p.value);
         hardClip(db.get());
+    });
+    /*md - `ENABLE` to enable the effect. */
+    Val& enable = val(1.0, "ENABLE", { "Enable", .max = 1.0 }, [&](auto p) {
+        enable.setFloat(p.value);
+        if (enable.get() > 0.0) {
+            samplePtr = &EffectDistortion2::processSample;
+        } else {
+            samplePtr = &EffectDistortion2::skipSample;
+        }
     });
 
     EffectDistortion2(AudioPlugin::Props& props, char* _name)
@@ -101,20 +114,15 @@ public:
         buf[track] = sample(buf[track]);
     }
 
-    void setDrive(float value)
+    void setDrive2(float value)
     {
-        drive.setFloat(value);
-        if (drive.get() == 0.0) {
-            samplePtr = &EffectDistortion2::skipSample;
-            debug("Distortion: disabled\n");
+        drive2.setFloat(value);
+        if (drive2.get() > 0) {
+            float pct = drive2.get() / 101.0; // Dividing by 101 instead of 100 to have max 0.99
+            shape = 2 * pct / (1 - pct);
+            sampleDrive2Ptr = &EffectDistortion2::processDrive2Sample;
         } else {
-            // float pct = drive.get() / 101.0; // Dividing by 101 instead of 100 to have max 0.99
-            // samplePtr = &EffectDistortion2::processSample;
-            // shape = 2 * pct / (1 - pct);
-            // debug("Distortion: drive=%f shape=%f\n", drive.get(), shape);
-
-            samplePtr = &EffectDistortion2::processSample;
-            // hardClip();
+            sampleDrive2Ptr = &EffectDistortion2::skipSample;
         }
     }
 };
