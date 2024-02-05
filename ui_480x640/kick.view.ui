@@ -15,6 +15,11 @@ while: $track < $bassTrack
     USE_SHARED_COMPONENT: SharedGridSequencer
     INCLUDE: buttons.view.ui
 
+  VIEW: KickParams_track_$track_page_3
+    INCLUDE: kickParams_page_3.view.ui
+    USE_SHARED_COMPONENT: SharedGridSequencer
+    INCLUDE: buttons.view.ui
+
   VIEW: StepParams_track_$track
     INCLUDE: stepParams.view.ui
     USE_SHARED_COMPONENT: Wave_Kick23_track_$track
