@@ -6,7 +6,7 @@
 #include "audioPlugin.h"
 #include "fileBrowser.h"
 #include "mapping.h"
-#include "utils/Envelop.h"
+#include "utils/EnvelopRelative.h"
 #include "../../helpers/random.h"
 
 #define ZIC_WAVETABLE_WAVEFORMS_COUNT 64
@@ -33,7 +33,7 @@ protected:
     float bufferSamples[bufferSize];
     float bufferUi[ZIC_KICK_UI];
     int updateUiState = 0;
-    std::vector<Envelop::Data>* envelopUi = NULL;
+    std::vector<EnvelopRelative::Data>* envelopUi = NULL;
 
     FileBrowser fileBrowser = FileBrowser("./wavetables");
 
@@ -47,8 +47,8 @@ protected:
     unsigned int sampleCountDuration = 0;
     unsigned int sampleDurationCounter = 0;
 
-    Envelop envelopAmp = Envelop({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.3f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
-    Envelop envelopFreq = Envelop({ { 1.0f, 0.0f }, { 0.26f, 0.03f }, { 0.24f, 0.35f }, { 0.22f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
+    EnvelopRelative envelopAmp = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.3f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
+    EnvelopRelative envelopFreq = EnvelopRelative({ { 1.0f, 0.0f }, { 0.26f, 0.03f }, { 0.24f, 0.35f }, { 0.22f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
 
     float sample(float time, float* index, float envAmp, float envFreq)
     {
@@ -66,7 +66,7 @@ protected:
         return range(out, -1.0f, 1.0f);
     }
 
-    void updateUi(std::vector<Envelop::Data>* envData)
+    void updateUi(std::vector<EnvelopRelative::Data>* envData)
     {
         envelopUi = envData;
         updateUiState++;
@@ -321,7 +321,7 @@ public:
 
     bool config(char* key, char* value)
     {
-        if (strcmp(key, "FOWARD_NOTE_ON") == 0) {
+        if (strcmp(key, "FORWARD_NOTE_ON") == 0) {
             siblingPlugin = props.audioPluginHandler->getPluginPtr(value);
             return true;
         }
@@ -341,8 +341,8 @@ public:
             float index = 0;
             for (int i = 0; i < ZIC_KICK_UI; i++) {
                 float time = i / (float)ZIC_KICK_UI;
-                float envAmp = envelopAmp.next(time, &ampIndex);
-                float envFreq = envelopFreq.next(time, &freqIndex);
+                float envAmp = envelopAmp.next(time, ampIndex);
+                float envFreq = envelopFreq.next(time, freqIndex);
                 bufferUi[i] = sample(time, &index, envAmp, envFreq);
             }
             return (void*)&bufferUi;

@@ -6,6 +6,12 @@
     - 22mm https://www.mouser.at/ProductDetail/Bourns/PEC12R-4022F-S0024?qs=6oMev5NRZMHfikcgfDwwZA%3D%3D
     - 30mm https://www.mouser.at/ProductDetail/Bourns/PEC12R-4030F-S0024?qs=15%2Ff%2FzFZJSBasYPWBClbAA%3D%3D
 
+- TODO mini analog mixer
+    - https://www.mouser.at/ProductDetail/Alps-Alpine/RK10J12R0A0B?qs=nR5Mw3RKkX4o8TMzstLlKA%3D%3D
+
+- TODO pixel harmonic https://www.ziaspace.com/_academic/BP_Scale/BP_modes/files/1_3_sharp4_6-copy.png
+    https://www.youtube.com/watch?v=DREjkHQpCYQ
+
 - TODO compressor
 
 - TODO fm synth
@@ -236,6 +242,8 @@ int main()
 ## more
 
 - elektron overbridge https://github.com/dagargo/overwitch
+
+- rsta2 circle https://github.com/rsta2/circle Circle is a C++ bare metal programming environment for the Raspberry Pi. (give possibility to run an application without OS..)
 
 ## debug
 
