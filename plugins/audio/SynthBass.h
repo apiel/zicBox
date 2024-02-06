@@ -1,15 +1,12 @@
 #ifndef _SYNTH_BASS_H_
 #define _SYNTH_BASS_H_
 
-#include <sndfile.h>
-
 #include "../../helpers/random.h"
 #include "../../helpers/range.h"
 #include "audioPlugin.h"
-#include "fileBrowser.h"
 #include "filter.h"
 #include "mapping.h"
-#include "utils/Envelop.h"
+#include "utils/EnvelopRelative.h"
 
 #define ZIC_BASS_UI 1000
 
@@ -28,7 +25,7 @@ protected:
     float bufferUi[ZIC_BASS_UI];
 
     // Envelop might need a bit of curve??
-    Envelop envelop = Envelop({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.3f, 0.4f }, { 0.0f, 1.0f } });
+    EnvelopRelative envelop = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.3f, 0.4f }, { 0.0f, 1.0f } });
 
     unsigned int sampleCountDuration = 0;
     unsigned int sampleIndex = 0;
@@ -216,7 +213,7 @@ public:
                 // printf("render bass waveform: %d\n", updateUiState);
                 for (int i = 0; i < sampleCountDuration; i++) {
                     float time = (float)i / (float)sampleCountDuration;
-                    float env = envelop.next(time, &envIndex);
+                    float env = envelop.next(time, envIndex);
 
                     int bufIndex = i * (float)ZIC_BASS_UI / (float)sampleCountDuration;
                     bufferUi[bufIndex] = sample(_filter, env, _sampleValue, 1.0f, stepIncrement);

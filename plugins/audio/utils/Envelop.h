@@ -4,12 +4,25 @@
 #include <vector>
 
 class Envelop {
-public:
-    unsigned int index = 0;
+protected:
+    unsigned int index = -1;
+    unsigned int sampleCount = 0;
 
+    void setNextPhase(unsigned int& sampleCountRef, unsigned int& indexRef)
+    {
+        sampleCountRef = 0.0f;
+        indexRef++;
+    }
+
+    bool isSustain(unsigned int indexRef)
+    {
+        return data[indexRef].sampleCount == 0.0f;
+    }
+
+public:
     struct Data {
         float modulation;
-        float time;
+        unsigned int sampleCount;
     };
 
     std::vector<Data> data;
@@ -17,34 +30,65 @@ public:
     Envelop(std::vector<Data> data)
         : data(data)
     {
-        index = data.size() - 1;
     }
 
-    float next(float time, unsigned int* indexPtr)
+    static unsigned int msToSampleCount(unsigned int ms, unsigned int sampleRate)
     {
-        if (*indexPtr > data.size() - 1) {
+        return ms * sampleRate * 0.001f;
+    }
+
+    float next(unsigned int& sampleCountRef, unsigned int& indexRef)
+    {
+        sampleCountRef++;
+        if (indexRef > data.size() - 1) {
             return 0.0f;
         }
-
-        if (time >= data[*indexPtr + 1].time) {
-            (*indexPtr)++;
+        if (isSustain(indexRef)) {
+            return data[indexRef].modulation;
         }
-        float timeOffset = data[*indexPtr + 1].time - data[*indexPtr].time;
-        // if (timeOffset == 0.0f) {
-        //     return data[*indexPtr].modulation;
-        // }
-        float timeRatio = (time - data[*indexPtr].time) / timeOffset;
-        return (data[*indexPtr + 1].modulation - data[*indexPtr].modulation) * timeRatio + data[*indexPtr].modulation;
+
+        if (sampleCountRef >= data[indexRef].sampleCount) {
+            setNextPhase(sampleCountRef, indexRef);
+        }
+
+        float timeRatio = sampleCount / data[indexRef].sampleCount;
+        return (data[indexRef + 1].modulation - data[indexRef].modulation) * timeRatio + data[indexRef].modulation;
     }
 
-    float next(float time)
+    float next()
     {
-        return next(time, &index);
+        return next(sampleCount, index);
+    }
+
+    void release()
+    {
+        release(sampleCount, index);
+    }
+
+    void release(unsigned int& sampleCountRef, unsigned int& indexRef)
+    {
+        if (isSustain(indexRef)) {
+            (indexRef)++;
+            setNextPhase(sampleCountRef, indexRef);
+        } else {
+            for (int i = indexRef; i < data.size(); i++) {
+                if (isSustain(i)) {
+                    (indexRef) = i + 1;
+                    setNextPhase(sampleCountRef, indexRef);
+                }
+            }
+        }
     }
 
     void reset()
     {
-        index = 0;
+        reset(sampleCount, index);
+    }
+
+    void reset(unsigned int& sampleCountRef, unsigned int& indexRef)
+    {
+        indexRef = 0;
+        sampleCountRef = 0;
     }
 };
 
