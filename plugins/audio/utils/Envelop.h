@@ -83,7 +83,7 @@ public:
         } else {
             for (int i = indexRef; i < data.size(); i++) {
                 if (isSustain(i)) {
-                    (indexRef) = i + 1;
+                    (indexRef) = i;
                     setNextPhase(sampleCountRef, indexRef);
                 }
             }
