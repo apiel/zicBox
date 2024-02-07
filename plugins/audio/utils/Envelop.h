@@ -34,13 +34,15 @@ public:
 
     static unsigned int msToSampleCount(unsigned int ms, unsigned int sampleRate)
     {
-        return ms * sampleRate * 0.001f;
+        unsigned int count = ms * sampleRate * 0.001f;
+        // printf("msToSampleCount: %d\n", count);
+        return count;
     }
 
     float next(unsigned int& sampleCountRef, unsigned int& indexRef)
     {
         sampleCountRef++;
-        if (indexRef > data.size() - 1) {
+        if (indexRef >= data.size()) {
             return 0.0f;
         }
 
@@ -55,10 +57,13 @@ public:
             }
         }
 
-        float timeRatio = sampleCount / data[indexRef].sampleCount;
-        return (data[indexRef + 1].modulation - data[indexRef].modulation) * timeRatio + data[indexRef].modulation;
+        float timeRatio = (float)sampleCount / (float)data[indexRef].sampleCount;
+        float env = (data[indexRef + 1].modulation - data[indexRef].modulation) * timeRatio + data[indexRef].modulation;
 
-        return 0.0f;
+        // if (indexRef == 3) {
+        //     printf("[%d] sampleCount %d / %d, mod+1: %f, mod: %f, timeRatio: %f, env: %f yo %f\n", indexRef, sampleCount, data[indexRef].sampleCount, data[indexRef + 1].modulation, data[indexRef].modulation, timeRatio, env);
+        // }
+        return env;
     }
 
     float next()
@@ -74,7 +79,6 @@ public:
     void release(unsigned int& sampleCountRef, unsigned int& indexRef)
     {
         if (isSustain(indexRef)) {
-            (indexRef)++;
             setNextPhase(sampleCountRef, indexRef);
         } else {
             for (int i = indexRef; i < data.size(); i++) {

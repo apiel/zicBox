@@ -33,32 +33,32 @@ protected:
         float index = 0.0f;
     } operators[ZIC_FM_OPS_COUNT] = {
         {
-            { 50.0f, "ATTACK_0", { "Attack 1", .min = 1.0, .max = 5000.0, .step = 10, .unit = "ms" }, [&](auto p) { setAttack(p.value, 0); } },
-            { 20.0f, "DECAY_0", { "Decay 1", .min = 1.0, .max = 5000.0, .step = 10, .unit = "ms" }, [&](auto p) { setDecay(p.value, 0); } },
+            { 50.0f, "ATTACK_0", { "Attack 1", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setAttack(p.value, 0); } },
+            { 20.0f, "DECAY_0", { "Decay 1", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setDecay(p.value, 0); } },
             { 0.8f, "SUSTAIN_0", { "Sustain 1", .unit = "%" }, [&](auto p) { setSustain(p.value, 0); } },
-            { 50.0f, "RELEASE_0", { "Release 1", .min = 1.0, .max = 5000.0, .step = 10, .unit = "ms" }, [&](auto p) { setRelease(p.value, 0); } },
-            { 440.0f, "FREQUENCY_0", { "Frequency 1", .min = 20.0, .max = 20000.0, .step = 10, .unit = "Hz" }, [&](auto p) { setFrequency(p.value, 0); } },
+            { 50.0f, "RELEASE_0", { "Release 1", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setRelease(p.value, 0); } },
+            { 440.0f, "FREQUENCY_0", { "Frequency 1", .min = 20.0, .max = 20000.0, .step = 20, .unit = "Hz" }, [&](auto p) { setFrequency(p.value, 0); } },
         },
         {
-            { 50.0f, "ATTACK_1", { "Attack 2", .min = 1.0, .max = 5000.0, .step = 10, .unit = "ms" }, [&](auto p) { setAttack(p.value, 1); } },
-            { 20.0f, "DECAY_1", { "Decay 2", .min = 1.0, .max = 5000.0, .step = 10, .unit = "ms" }, [&](auto p) { setDecay(p.value, 1); } },
+            { 50.0f, "ATTACK_1", { "Attack 2", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setAttack(p.value, 1); } },
+            { 20.0f, "DECAY_1", { "Decay 2", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setDecay(p.value, 1); } },
             { 0.8f, "SUSTAIN_1", { "Sustain 2", .unit = "%" }, [&](auto p) { setSustain(p.value, 1); } },
-            { 50.0f, "RELEASE_1", { "Release 2", .min = 1.0, .max = 5000.0, .step = 10, .unit = "ms" }, [&](auto p) { setRelease(p.value, 1); } },
-            { 440.0f, "FREQUENCY_1", { "Frequency 2", .min = 20.0, .max = 20000.0, .step = 10, .unit = "Hz" }, [&](auto p) { setFrequency(p.value, 1); } },
+            { 50.0f, "RELEASE_1", { "Release 2", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setRelease(p.value, 1); } },
+            { 440.0f, "FREQUENCY_1", { "Frequency 2", .min = 20.0, .max = 20000.0, .step = 20, .unit = "Hz" }, [&](auto p) { setFrequency(p.value, 1); } },
         },
         {
-            { 50.0f, "ATTACK_2", { "Attack 3", .min = 1.0, .max = 5000.0, .step = 10, .unit = "ms" }, [&](auto p) { setAttack(p.value, 2); } },
-            { 20.0f, "DECAY_2", { "Decay 3", .min = 1.0, .max = 5000.0, .step = 10, .unit = "ms" }, [&](auto p) { setDecay(p.value, 2); } },
+            { 50.0f, "ATTACK_2", { "Attack 3", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setAttack(p.value, 2); } },
+            { 20.0f, "DECAY_2", { "Decay 3", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setDecay(p.value, 2); } },
             { 0.8f, "SUSTAIN_2", { "Sustain 3", .unit = "%" }, [&](auto p) { setSustain(p.value, 2); } },
-            { 50.0f, "RELEASE_2", { "Release 3", .min = 1.0, .max = 5000.0, .step = 10, .unit = "ms" }, [&](auto p) { setRelease(p.value, 2); } },
-            { 440.0f, "FREQUENCY_2", { "Frequency 3", .min = 20.0, .max = 20000.0, .step = 10, .unit = "Hz" }, [&](auto p) { setFrequency(p.value, 2); } },
+            { 50.0f, "RELEASE_2", { "Release 3", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setRelease(p.value, 2); } },
+            { 440.0f, "FREQUENCY_2", { "Frequency 3", .min = 20.0, .max = 20000.0, .step = 20, .unit = "Hz" }, [&](auto p) { setFrequency(p.value, 2); } },
         },
         {
-            { 50.0f, "ATTACK_3", { "Attack 4", .min = 1.0, .max = 5000.0, .step = 10, .unit = "ms" }, [&](auto p) { setAttack(p.value, 3); } },
-            { 20.0f, "DECAY_3", { "Decay 4", .min = 1.0, .max = 5000.0, .step = 10, .unit = "ms" }, [&](auto p) { setDecay(p.value, 3); } },
+            { 50.0f, "ATTACK_3", { "Attack 4", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setAttack(p.value, 3); } },
+            { 20.0f, "DECAY_3", { "Decay 4", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setDecay(p.value, 3); } },
             { 0.8f, "SUSTAIN_3", { "Sustain 4", .unit = "%" }, [&](auto p) { setSustain(p.value, 3); } },
-            { 50.0f, "RELEASE_3", { "Release 4", .min = 1.0, .max = 5000.0, .step = 10, .unit = "ms" }, [&](auto p) { setRelease(p.value, 3); } },
-            { 440.0f, "FREQUENCY_3", { "Frequency 4", .min = 20.0, .max = 20000.0, .step = 10, .unit = "Hz" }, [&](auto p) { setFrequency(p.value, 3); } },
+            { 50.0f, "RELEASE_3", { "Release 4", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setRelease(p.value, 3); } },
+            { 440.0f, "FREQUENCY_3", { "Frequency 4", .min = 20.0, .max = 20000.0, .step = 20, .unit = "Hz" }, [&](auto p) { setFrequency(p.value, 3); } },
         }
     };
 
@@ -69,13 +69,13 @@ protected:
         operators[opIndex].stepIncrement = ZIC_FM_LUT_SIZE * operators[opIndex].freq.get() / props.sampleRate;
     }
 
-    void setAttack(unsigned int ms, unsigned int opIndex)
+    void setAttack(float ms, unsigned int opIndex)
     {
         operators[opIndex].attack.setFloat(ms);
         operators[opIndex].envelop.setAttack(operators[opIndex].attack.get());
     }
 
-    void setDecay(unsigned int ms, unsigned int opIndex)
+    void setDecay(float ms, unsigned int opIndex)
     {
         operators[opIndex].decay.setFloat(ms);
         operators[opIndex].envelop.setDecay(operators[opIndex].decay.get());
@@ -87,7 +87,7 @@ protected:
         operators[opIndex].envelop.setSustain(operators[opIndex].sustain.pct());
     }
 
-    void setRelease(unsigned int ms, unsigned int opIndex)
+    void setRelease(float ms, unsigned int opIndex)
     {
         operators[opIndex].release.setFloat(ms);
         operators[opIndex].envelop.setRelease(operators[opIndex].release.get());
