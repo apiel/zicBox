@@ -30,6 +30,7 @@ public:
     void setSustain(float value)
     {
         data[2].modulation = value;
+        data[3].modulation = value;
     }
 
     void setRelease(unsigned int ms)

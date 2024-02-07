@@ -69,19 +69,19 @@
     VALUE: FM FREQUENCY_3
     ID: Param9_enc
 
-  # COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
-  #   ENCODER_ID: 10
-  #   TRACK: $track
-  #   VALUE: Bass NOISE
-  #   COLOR: #ff8d99
-  #   ID: Param10_enc
+  COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
+    ENCODER_ID: 10
+    TRACK: $track
+    VALUE: MultiModeFilter CUTOFF
+    COLOR: #ff8d99
+    ID: Param10_enc
 
-  # COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
-  #   ENCODER_ID: 11
-  #   TRACK: $track
-  #   COLOR: #ff7700
-  #   VALUE: Bass GAIN_CLIPPING
-  #   ID: Param11_enc
+  COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
+    ENCODER_ID: 11
+    TRACK: $track
+    COLOR: #ff7700
+    VALUE: MultiModeFilter RESONANCE
+    ID: Param11_enc
 
     
 
