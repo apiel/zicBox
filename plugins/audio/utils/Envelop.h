@@ -43,16 +43,22 @@ public:
         if (indexRef > data.size() - 1) {
             return 0.0f;
         }
+
         if (isSustain(indexRef)) {
             return data[indexRef].modulation;
         }
 
         if (sampleCountRef >= data[indexRef].sampleCount) {
             setNextPhase(sampleCountRef, indexRef);
+            if (isSustain(indexRef)) {
+                return data[indexRef].modulation;
+            }
         }
 
         float timeRatio = sampleCount / data[indexRef].sampleCount;
         return (data[indexRef + 1].modulation - data[indexRef].modulation) * timeRatio + data[indexRef].modulation;
+
+        return 0.0f;
     }
 
     float next()

@@ -5,12 +5,16 @@
 
 class AdsrEnvelop : public Envelop {
 public:
-    unsigned int sampleRate;
+    unsigned int sampleRate = 48000;
 
-    AdsrEnvelop(unsigned int sampleRate)
+    AdsrEnvelop()
         : Envelop({ { 0.0f, 50 }, { 1.0f, 20 }, { 0.5f, 0 }, { 0.0f, 50 } })
-        , sampleRate(sampleRate)
     {
+    }
+
+    void setSampleRate(unsigned int rate)
+    {
+        sampleRate = rate;
     }
 
     void setAttack(unsigned int ms)
