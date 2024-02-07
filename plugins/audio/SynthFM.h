@@ -33,32 +33,32 @@ protected:
         float index = 0.0f;
     } operators[ZIC_FM_OPS_COUNT] = {
         {
-            { 50.0f, "ATTACK_0", { .min = 1.0, .max = 5000.0, .step = 10 }, [&](auto p) { setAttack(p.value, 0); } },
-            { 20.0f, "DECAY_0", { .min = 1.0, .max = 5000.0, .step = 10 }, [&](auto p) { setDecay(p.value, 0); } },
-            { 0.8f, "SUSTAIN_0", {}, [&](auto p) { setSustain(p.value, 0); } },
-            { 50.0f, "RELEASE_0", { .min = 1.0, .max = 5000.0, .step = 10 }, [&](auto p) { setRelease(p.value, 0); } },
-            { 440.0f, "FREQUENCY_0", { .min = 20.0, .max = 20000.0, .step = 10 }, [&](auto p) { setFrequency(p.value, 0); } },
+            { 50.0f, "ATTACK_0", { "Attack 1", .min = 1.0, .max = 5000.0, .step = 10, .unit = "ms" }, [&](auto p) { setAttack(p.value, 0); } },
+            { 20.0f, "DECAY_0", { "Decay 1", .min = 1.0, .max = 5000.0, .step = 10, .unit = "ms" }, [&](auto p) { setDecay(p.value, 0); } },
+            { 0.8f, "SUSTAIN_0", { "Sustain 1", .unit = "%" }, [&](auto p) { setSustain(p.value, 0); } },
+            { 50.0f, "RELEASE_0", { "Release 1", .min = 1.0, .max = 5000.0, .step = 10, .unit = "ms" }, [&](auto p) { setRelease(p.value, 0); } },
+            { 440.0f, "FREQUENCY_0", { "Frequency 1", .min = 20.0, .max = 20000.0, .step = 10, .unit = "Hz" }, [&](auto p) { setFrequency(p.value, 0); } },
         },
         {
-            { 50.0f, "ATTACK_1", { .min = 1.0, .max = 5000.0, .step = 10 }, [&](auto p) { setAttack(p.value, 1); } },
-            { 20.0f, "DECAY_1", { .min = 1.0, .max = 5000.0, .step = 10 }, [&](auto p) { setDecay(p.value, 1); } },
-            { 0.8f, "SUSTAIN_1", {}, [&](auto p) { setSustain(p.value, 1); } },
-            { 50.0f, "RELEASE_1", { .min = 1.0, .max = 5000.0, .step = 10 }, [&](auto p) { setRelease(p.value, 1); } },
-            { 440.0f, "FREQUENCY_1", { .min = 20.0, .max = 20000.0, .step = 10 }, [&](auto p) { setFrequency(p.value, 1); } },
+            { 50.0f, "ATTACK_1", { "Attack 2", .min = 1.0, .max = 5000.0, .step = 10, .unit = "ms" }, [&](auto p) { setAttack(p.value, 1); } },
+            { 20.0f, "DECAY_1", { "Decay 2", .min = 1.0, .max = 5000.0, .step = 10, .unit = "ms" }, [&](auto p) { setDecay(p.value, 1); } },
+            { 0.8f, "SUSTAIN_1", { "Sustain 2", .unit = "%" }, [&](auto p) { setSustain(p.value, 1); } },
+            { 50.0f, "RELEASE_1", { "Release 2", .min = 1.0, .max = 5000.0, .step = 10, .unit = "ms" }, [&](auto p) { setRelease(p.value, 1); } },
+            { 440.0f, "FREQUENCY_1", { "Frequency 2", .min = 20.0, .max = 20000.0, .step = 10, .unit = "Hz" }, [&](auto p) { setFrequency(p.value, 1); } },
         },
         {
-            { 50.0f, "ATTACK_2", { .min = 1.0, .max = 5000.0, .step = 10 }, [&](auto p) { setAttack(p.value, 2); } },
-            { 20.0f, "DECAY_2", { .min = 1.0, .max = 5000.0, .step = 10 }, [&](auto p) { setDecay(p.value, 2); } },
-            { 0.8f, "SUSTAIN_2", {}, [&](auto p) { setSustain(p.value, 2); } },
-            { 50.0f, "RELEASE_2", { .min = 1.0, .max = 5000.0, .step = 10 }, [&](auto p) { setRelease(p.value, 2); } },
-            { 440.0f, "FREQUENCY_2", { .min = 20.0, .max = 20000.0, .step = 10 }, [&](auto p) { setFrequency(p.value, 2); } },
+            { 50.0f, "ATTACK_2", { "Attack 3", .min = 1.0, .max = 5000.0, .step = 10, .unit = "ms" }, [&](auto p) { setAttack(p.value, 2); } },
+            { 20.0f, "DECAY_2", { "Decay 3", .min = 1.0, .max = 5000.0, .step = 10, .unit = "ms" }, [&](auto p) { setDecay(p.value, 2); } },
+            { 0.8f, "SUSTAIN_2", { "Sustain 3", .unit = "%" }, [&](auto p) { setSustain(p.value, 2); } },
+            { 50.0f, "RELEASE_2", { "Release 3", .min = 1.0, .max = 5000.0, .step = 10, .unit = "ms" }, [&](auto p) { setRelease(p.value, 2); } },
+            { 440.0f, "FREQUENCY_2", { "Frequency 3", .min = 20.0, .max = 20000.0, .step = 10, .unit = "Hz" }, [&](auto p) { setFrequency(p.value, 2); } },
         },
         {
-            { 50.0f, "ATTACK_3", { .min = 1.0, .max = 5000.0, .step = 10 }, [&](auto p) { setAttack(p.value, 3); } },
-            { 20.0f, "DECAY_3", { .min = 1.0, .max = 5000.0, .step = 10 }, [&](auto p) { setDecay(p.value, 3); } },
-            { 0.8f, "SUSTAIN_3", {}, [&](auto p) { setSustain(p.value, 3); } },
-            { 50.0f, "RELEASE_3", { .min = 1.0, .max = 5000.0, .step = 10 }, [&](auto p) { setRelease(p.value, 3); } },
-            { 440.0f, "FREQUENCY_3", { .min = 20.0, .max = 20000.0, .step = 10 }, [&](auto p) { setFrequency(p.value, 3); } },
+            { 50.0f, "ATTACK_3", { "Attack 4", .min = 1.0, .max = 5000.0, .step = 10, .unit = "ms" }, [&](auto p) { setAttack(p.value, 3); } },
+            { 20.0f, "DECAY_3", { "Decay 4", .min = 1.0, .max = 5000.0, .step = 10, .unit = "ms" }, [&](auto p) { setDecay(p.value, 3); } },
+            { 0.8f, "SUSTAIN_3", { "Sustain 4", .unit = "%" }, [&](auto p) { setSustain(p.value, 3); } },
+            { 50.0f, "RELEASE_3", { "Release 4", .min = 1.0, .max = 5000.0, .step = 10, .unit = "ms" }, [&](auto p) { setRelease(p.value, 3); } },
+            { 440.0f, "FREQUENCY_3", { "Frequency 4", .min = 20.0, .max = 20000.0, .step = 10, .unit = "Hz" }, [&](auto p) { setFrequency(p.value, 3); } },
         }
     };
 
@@ -97,6 +97,7 @@ protected:
 
     // could be use make sample representation for a note duration
     float bufferUi[ZIC_FM_UI];
+    int updateUiState = 0;
 
 public:
     uint8_t currentAlgorithm = 0;
@@ -143,9 +144,10 @@ public:
                 if (mod == 0.0) {
                     op.index += op.stepIncrement;
                 } else {
-                    float inc = op.stepIncrement + ZIC_FM_LUT_SIZE * op.freq.get() / props.sampleRate; // TODO optimize with precomputing: ZIC_FM_LUT_SIZE * op.freq.get() / props.sampleRate
+                    float freq = op.freq.get() + op.freq.get() * mod;
+                    float inc = op.stepIncrement + ZIC_FM_LUT_SIZE * freq / props.sampleRate; // TODO optimize with precomputing: ZIC_FM_LUT_SIZE * op.freq.get() / props.sampleRate
                     op.index += inc;
-                    // printf("inc: %f, mod %f \n", inc, mod);
+                    // printf("[op %d] freq: %f, inc: %f, mod %f \n", i, freq, inc, mod);
                     mod = 0.0f;
                 }
                 while (op.index >= ZIC_FM_LUT_SIZE) {
@@ -203,32 +205,19 @@ public:
 
     void* data(int id, void* userdata = NULL)
     {
-        // switch (id) {
-        // case 0:
-        //     return &updateUiState;
+        switch (id) {
+        case 0:
+            return &updateUiState;
 
-        // case 1: {
-        //     if (bufferUiState != updateUiState) {
-        //         bufferUiState = updateUiState;
-        //         EffectFilterData _filter;
-        //         _filter.setCutoff(filter.cutoff);
-        //         _filter.setResonance(filter.resonance);
-        //         float _sampleValue = 0.0f;
-        //         unsigned int envIndex = 0;
-        //         // printf("render bass waveform: %d\n", updateUiState);
-        //         for (int i = 0; i < sampleCountDuration; i++) {
-        //             float time = (float)i / (float)sampleCountDuration;
-        //             float env = envelop.next(time, &envIndex);
-
-        //             int bufIndex = i * (float)ZIC_BASS_UI / (float)sampleCountDuration;
-        //             bufferUi[bufIndex] = sample(_filter, env, _sampleValue, 1.0f, stepIncrement);
-        //         }
-        //     }
-        //     return (void*)&bufferUi;
-        // }
-        // case 2:
-        //     return &envelop.data;
-        // }
+        case 1: {
+            for (int i = 0; i < ZIC_FM_UI; i++) {
+                bufferUi[i] = 0.0f;
+            }
+            return (void*)&bufferUi;
+        }
+            // case 2:
+            //     return &envelop.data;
+        }
         return NULL;
     }
 };
