@@ -85,8 +85,7 @@
 
     
 
-  # COMPONENT: Wave 0 275 480 100
-  #   TRACK: $track
-  #   KEYMAP: Keyboard 44 play 60
-  #   PLUGIN: Bass
-  #   ENVELOP_DATA_ID: 2
+  COMPONENT: Wave 0 275 480 100
+    TRACK: $track
+    KEYMAP: Keyboard 44 play 60
+    PLUGIN: FM
