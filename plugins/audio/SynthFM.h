@@ -22,12 +22,76 @@ Work in progress
 class SynthFM : public Mapping {
 protected:
     struct FMoperator {
+        Val attack;
+        Val decay;
+        Val sustain;
+        Val release;
+        Val freq;
         AdsrEnvelop envelop;
         // should it be ratio instead of frequency
-        float frequency = 440.0f; // Might not even need to keep here
         float stepIncrement = 0.0f;
         float index = 0.0f;
-    } operators[ZIC_FM_OPS_COUNT];
+    } operators[ZIC_FM_OPS_COUNT] = {
+        {
+            { 50.0f, "ATTACK_0", { .min = 1.0, .max = 5000.0, .step = 10 }, [&](auto p) { setAttack(p.value, 0); } },
+            { 20.0f, "DECAY_0", { .min = 1.0, .max = 5000.0, .step = 10 }, [&](auto p) { setDecay(p.value, 0); } },
+            { 0.8f, "SUSTAIN_0", {}, [&](auto p) { setSustain(p.value, 0); } },
+            { 50.0f, "RELEASE_0", { .min = 1.0, .max = 5000.0, .step = 10 }, [&](auto p) { setRelease(p.value, 0); } },
+            { 440.0f, "FREQUENCY_0", { .min = 20.0, .max = 20000.0, .step = 10 }, [&](auto p) { setFrequency(p.value, 0); } },
+        },
+        {
+            { 50.0f, "ATTACK_1", { .min = 1.0, .max = 5000.0, .step = 10 }, [&](auto p) { setAttack(p.value, 1); } },
+            { 20.0f, "DECAY_1", { .min = 1.0, .max = 5000.0, .step = 10 }, [&](auto p) { setDecay(p.value, 1); } },
+            { 0.8f, "SUSTAIN_1", {}, [&](auto p) { setSustain(p.value, 1); } },
+            { 50.0f, "RELEASE_1", { .min = 1.0, .max = 5000.0, .step = 10 }, [&](auto p) { setRelease(p.value, 1); } },
+            { 440.0f, "FREQUENCY_1", { .min = 20.0, .max = 20000.0, .step = 10 }, [&](auto p) { setFrequency(p.value, 1); } },
+        },
+        {
+            { 50.0f, "ATTACK_2", { .min = 1.0, .max = 5000.0, .step = 10 }, [&](auto p) { setAttack(p.value, 2); } },
+            { 20.0f, "DECAY_2", { .min = 1.0, .max = 5000.0, .step = 10 }, [&](auto p) { setDecay(p.value, 2); } },
+            { 0.8f, "SUSTAIN_2", {}, [&](auto p) { setSustain(p.value, 2); } },
+            { 50.0f, "RELEASE_2", { .min = 1.0, .max = 5000.0, .step = 10 }, [&](auto p) { setRelease(p.value, 2); } },
+            { 440.0f, "FREQUENCY_2", { .min = 20.0, .max = 20000.0, .step = 10 }, [&](auto p) { setFrequency(p.value, 2); } },
+        },
+        {
+            { 50.0f, "ATTACK_3", { .min = 1.0, .max = 5000.0, .step = 10 }, [&](auto p) { setAttack(p.value, 3); } },
+            { 20.0f, "DECAY_3", { .min = 1.0, .max = 5000.0, .step = 10 }, [&](auto p) { setDecay(p.value, 3); } },
+            { 0.8f, "SUSTAIN_3", {}, [&](auto p) { setSustain(p.value, 3); } },
+            { 50.0f, "RELEASE_3", { .min = 1.0, .max = 5000.0, .step = 10 }, [&](auto p) { setRelease(p.value, 3); } },
+            { 440.0f, "FREQUENCY_3", { .min = 20.0, .max = 20000.0, .step = 10 }, [&](auto p) { setFrequency(p.value, 3); } },
+        }
+    };
+
+    void setFrequency(float value, unsigned int opIndex)
+    {
+        operators[opIndex].freq.setFloat(value);
+        // operators[opIndex].stepIncrement = operators[opIndex].frequency.get() * 2.0f * M_PI / sampleRate;
+        operators[opIndex].stepIncrement = ZIC_FM_LUT_SIZE * operators[opIndex].freq.get() / props.sampleRate;
+    }
+
+    void setAttack(unsigned int ms, unsigned int opIndex)
+    {
+        operators[opIndex].attack.setFloat(ms);
+        operators[opIndex].envelop.setAttack(operators[opIndex].attack.get());
+    }
+
+    void setDecay(unsigned int ms, unsigned int opIndex)
+    {
+        operators[opIndex].decay.setFloat(ms);
+        operators[opIndex].envelop.setDecay(operators[opIndex].decay.get());
+    }
+
+    void setSustain(float value, unsigned int opIndex)
+    {
+        operators[opIndex].sustain.setFloat(value);
+        operators[opIndex].envelop.setSustain(operators[opIndex].sustain.pct());
+    }
+
+    void setRelease(unsigned int ms, unsigned int opIndex)
+    {
+        operators[opIndex].release.setFloat(ms);
+        operators[opIndex].envelop.setRelease(operators[opIndex].release.get());
+    }
 
     uint8_t baseNote = 60;
 
@@ -45,7 +109,14 @@ public:
     Val& pitch = val(0, "PITCH", { "Pitch", .min = -24, .max = 24 }, [&](auto p) { setPitch(p.value); });
 
     SynthFM(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name) // clang-format on
+        : Mapping(props, _name, {
+                                    // clang-format off
+             &operators[0].attack, &operators[0].decay, &operators[0].sustain, &operators[0].release, &operators[0].freq, 
+             &operators[1].attack, &operators[1].decay, &operators[1].sustain, &operators[1].release, &operators[1].freq,
+             &operators[2].attack, &operators[2].decay, &operators[2].sustain, &operators[2].release, &operators[2].freq,
+             &operators[3].attack, &operators[3].decay, &operators[3].sustain, &operators[3].release, &operators[3].freq,
+                                    // clang-format on
+                                })
     {
         for (int i = 0; i < ZIC_FM_OPS_COUNT; i++) {
             operators[i].envelop.setSampleRate(props.sampleRate);
@@ -69,9 +140,15 @@ public:
             FMoperator& op = operators[i];
             float env = op.envelop.next();
             if (env > 0.0f) {
-                op.index += op.stepIncrement;
-                while (op.index >= ZIC_FM_LUT_SIZE)
-                {
+                if (mod == 0.0) {
+                    op.index += op.stepIncrement;
+                } else {
+                    float inc = op.stepIncrement + ZIC_FM_LUT_SIZE * op.freq.get() / props.sampleRate; // TODO optimize with precomputing: ZIC_FM_LUT_SIZE * op.freq.get() / props.sampleRate
+                    op.index += inc;
+                    // printf("inc: %f, mod %f \n", inc, mod);
+                    mod = 0.0f;
+                }
+                while (op.index >= ZIC_FM_LUT_SIZE) {
                     op.index -= ZIC_FM_LUT_SIZE;
                 }
                 float s = sineLut[(int)op.index] * env;
@@ -84,7 +161,11 @@ public:
                     for (int j = 0; j < ZIC_FM_OPS_COUNT; j++) {
                         if (algorithm[currentAlgorithm][i][j]) {
                             isMod = true;
-                            mod *= s;
+                            if (mod == 0.0f) {
+                                mod = s;
+                            } else {
+                                mod *= s;
+                            }
                         }
                     }
                     if (!isMod) {
@@ -109,7 +190,7 @@ public:
         for (int i = 0; i < ZIC_FM_OPS_COUNT; i++) {
             operators[i].envelop.reset();
             operators[i].index = 0.0f;
-            operators[i].stepIncrement = ZIC_FM_LUT_SIZE * operators[i].frequency / props.sampleRate;
+            operators[i].stepIncrement = ZIC_FM_LUT_SIZE * operators[i].freq.get() / props.sampleRate;
         }
     }
 
