@@ -1,0 +1,20 @@
+$track=$fmTrackStart
+while: $track < 13
+  VIEW: FmParams_track_$track_page_0
+    INCLUDE: fmParams_page_0.view.ui
+    USE_SHARED_COMPONENT: SharedGridSequencer
+    INCLUDE: buttons.view.ui
+
+  VIEW: FmParams_track_$track_page_1
+    INCLUDE: fmParams_page_1.view.ui
+    USE_SHARED_COMPONENT: SharedGridSequencer
+    INCLUDE: buttons.view.ui
+
+  VIEW: StepParams_track_$track
+    INCLUDE: stepParams.view.ui
+    USE_SHARED_COMPONENT: SharedGridSequencer
+    INCLUDE: buttons.view.ui
+  
+  $track=$track + 1
+
+#  end loop, keep me else loop issue
