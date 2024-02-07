@@ -1,5 +1,5 @@
 $track=$sampleTrackStart
-while: $track < 13
+while: $track < $sampleTrackCount
   VIEW: TrackParams_track_$track_page_0
     INCLUDE: trackParams_page_0.view.ui
     USE_SHARED_COMPONENT: Sample_track_$track
