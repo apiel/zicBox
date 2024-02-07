@@ -42,7 +42,7 @@ public:
     float next(unsigned int& sampleCountRef, unsigned int& indexRef)
     {
         sampleCountRef++;
-        if (indexRef >= data.size()) {
+        if (indexRef >= data.size() - 1) {
             return 0.0f;
         }
 
@@ -81,7 +81,7 @@ public:
         if (isSustain(indexRef)) {
             setNextPhase(sampleCountRef, indexRef);
         } else {
-            for (int i = indexRef; i < data.size(); i++) {
+            for (int i = indexRef; i < data.size() - 1; i++) {
                 if (isSustain(i)) {
                     (indexRef) = i;
                     setNextPhase(sampleCountRef, indexRef);

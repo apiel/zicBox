@@ -8,7 +8,7 @@ public:
     unsigned int sampleRate = 48000;
 
     AdsrEnvelop()
-        : Envelop({ { 0.0f, 50 }, { 1.0f, 20 }, { 0.5f, 0 }, { 0.0f, 50 } })
+        : Envelop({ { 0.0f, 50 }, { 1.0f, 20 }, { 0.5f, 0 }, { 0.0f, 50 }, { 0.0f, 0 } })
     {
     }
 
