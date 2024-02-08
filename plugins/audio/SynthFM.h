@@ -157,7 +157,7 @@ public:
                     op.index -= ZIC_FM_LUT_SIZE;
                 }
                 float s = sineLut[(int)op.index] * env;
-                if (i == ZIC_FM_OPS_COUNT - 1) {
+                if (i == ZIC_FM_OPS_COUNT - 1) { // Last operator can only be the carrier
                     outDivider++;
                     out += s;
                     out = out / outDivider;

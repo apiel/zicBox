@@ -10,6 +10,11 @@ while: $track < 13
     USE_SHARED_COMPONENT: SharedGridSequencer
     INCLUDE: buttons.view.ui
 
+  VIEW: FmParams_track_$track_page_2
+    INCLUDE: fmParams_page_2.view.ui
+    USE_SHARED_COMPONENT: SharedGridSequencer
+    INCLUDE: buttons.view.ui
+
   VIEW: StepParams_track_$track
     INCLUDE: stepParams.view.ui
     USE_SHARED_COMPONENT: SharedGridSequencer
