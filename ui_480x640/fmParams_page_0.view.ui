@@ -12,7 +12,7 @@
     ENCODER_ID: 1
     COLOR: #3791a1
     TRACK: $track
-    VALUE: FM FREQUENCY_1
+    VALUE: FM FEEDBACK_0
     FLOAT_PRECISION: 2
     FONT_VALUE_SIZE: 9
     ID: Param1_enc
@@ -20,16 +20,16 @@
   COMPONENT: Encoder2 $encX3 $encY_1 $encSize $encSize
     ENCODER_ID: 2
     TRACK: $track
-    VALUE: FM ALGO
+    VALUE: FM FREQUENCY_1
     COLOR: #ff8d99
     ID: Param2_enc
 
-  # COMPONENT: Encoder2 $encX4 $encY_1 $encSize $encSize
-  #   ENCODER_ID: 11
-  #   TRACK: $track
-  #   COLOR: #ff7700
-  #   VALUE: Bass GAIN_CLIPPING
-  #   ID: Param3_enc
+  COMPONENT: Encoder2 $encX4 $encY_1 $encSize $encSize
+    ENCODER_ID: 3
+    TRACK: $track
+    COLOR: #ff7700
+    VALUE: FM FEEDBACK_1
+    ID: Param3_enc
   
 
   COMPONENT: Encoder2 $encX1 $encY2 $encSize $encSize
@@ -50,12 +50,12 @@
     ENCODER_ID: 6
     COLOR: #ff8d99
     TRACK: $track
-    VALUE: FM SUSTAIN_0
+    VALUE: FM ATTACK_1
     ID: Param6_enc
 
   COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
     ENCODER_ID: 7
-    VALUE: FM RELEASE_0
+    VALUE: FM DECAY_1
     COLOR: #ff7700
     ID: Param7_enc
 
@@ -64,14 +64,14 @@
     ENCODER_ID: 8
     COLOR: #9dfe86
     TRACK: $track
-    VALUE: FM ATTACK_1
+    VALUE: FM SUSTAIN_0
     ID: Param8_enc
 
   COMPONENT: Encoder2 $encX2 $encY3 $encSize $encSize
     ENCODER_ID: 9
     COLOR: #3791a1
     TRACK: $track
-    VALUE: FM DECAY_1
+    VALUE: FM RELEASE_0
     ID: Param9_enc
 
   COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
