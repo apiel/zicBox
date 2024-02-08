@@ -245,6 +245,8 @@ int main()
 
 - rsta2 circle https://github.com/rsta2/circle Circle is a C++ bare metal programming environment for the Raspberry Pi. (give possibility to run an application without OS..)
 
+- calculate midi note https://gist.github.com/YuxiUx/ef84328d95b10d0fcbf537de77b936cd
+
 ## debug
 
 ```sh
