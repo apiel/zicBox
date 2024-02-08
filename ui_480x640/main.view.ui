@@ -19,8 +19,10 @@ VIEW: shared_components HIDDEN
     TRACK_VIEW: 3 BassParams_track_3
     TRACK_NAME: 11 FM
     TRACK_VIEW: 11 FmParams_track_11
+    TRACK_PAGE_COUNT: 11 3
     TRACK_NAME: 12 FM
     TRACK_VIEW: 12 FmParams_track_12
+    TRACK_PAGE_COUNT: 11 3
 
     KEYPAD_LAYOUT: default
       KEYMAP: Keyboard 82 row 1
