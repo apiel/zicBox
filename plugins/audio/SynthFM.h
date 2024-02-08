@@ -28,7 +28,7 @@ protected:
         Val release;
         Val freq;
         AdsrEnvelop envelop;
-        // should it be ratio instead of frequency
+        float pitchedFreq = 0.0f;
         float stepIncrement = 0.0f;
         float index = 0.0f;
     } operators[ZIC_FM_OPS_COUNT] = {
@@ -66,7 +66,8 @@ protected:
     {
         operators[opIndex].freq.setFloat(value);
         // operators[opIndex].stepIncrement = operators[opIndex].frequency.get() * 2.0f * M_PI / sampleRate;
-        operators[opIndex].stepIncrement = ZIC_FM_LUT_SIZE * operators[opIndex].freq.get() / props.sampleRate;
+        operators[opIndex].pitchedFreq = operators[opIndex].freq.get() * pitchRatio;
+        operators[opIndex].stepIncrement = ZIC_FM_LUT_SIZE * operators[opIndex].pitchedFreq / props.sampleRate;
     }
 
     void setAttack(float ms, unsigned int opIndex)
@@ -94,6 +95,8 @@ protected:
     }
 
     uint8_t baseNote = 60;
+    float velocity = 1.0f;
+    float pitchRatio = 1.0f;
 
     // could be use make sample representation for a note duration
     float bufferUi[ZIC_FM_UI];
@@ -144,7 +147,7 @@ public:
                 if (mod == 0.0) {
                     op.index += op.stepIncrement;
                 } else {
-                    float freq = op.freq.get() + op.freq.get() * mod;
+                    float freq = op.pitchedFreq + op.pitchedFreq * mod;
                     float inc = op.stepIncrement + ZIC_FM_LUT_SIZE * freq / props.sampleRate; // TODO optimize with precomputing: ZIC_FM_LUT_SIZE * op.freq.get() / props.sampleRate
                     op.index += inc;
                     // printf("[op %d] freq: %f, inc: %f, mod %f \n", i, freq, inc, mod);
@@ -178,7 +181,7 @@ public:
             }
         }
 
-        buf[track] = out;
+        buf[track] = out * velocity;
     }
 
     void setPitch(float value)
@@ -189,10 +192,13 @@ public:
 
     void noteOn(uint8_t note, float _velocity) override
     {
+        velocity = _velocity;
+        pitchRatio = pow(2.0f, (note - baseNote) / 12.0f);
         for (int i = 0; i < ZIC_FM_OPS_COUNT; i++) {
             operators[i].envelop.reset();
             operators[i].index = 0.0f;
-            operators[i].stepIncrement = ZIC_FM_LUT_SIZE * operators[i].freq.get() / props.sampleRate;
+            operators[i].pitchedFreq = operators[i].freq.get() * pitchRatio;
+            operators[i].stepIncrement = ZIC_FM_LUT_SIZE * operators[i].pitchedFreq / props.sampleRate;
         }
     }
 
