@@ -31,6 +31,7 @@ protected:
         float pitchedFreq = 0.0f;
         float stepIncrement = 0.0f;
         float index = 0.0f;
+        float mod = 0.0f;
     } operators[ZIC_FM_OPS_COUNT] = {
         {
             { 50.0f, "ATTACK_0", { "Attack 1", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setAttack(p.value, 0); } },
@@ -103,14 +104,32 @@ protected:
     int updateUiState = 0;
 
 public:
-    uint8_t currentAlgorithm = 0;
-    bool algorithm[1][ZIC_FM_OPS_COUNT - 1][ZIC_FM_OPS_COUNT] = {
-        { { 0, 0, 1, 0 }, { 0, 1, 0, 0 }, { 0, 0, 1, 0 } }
+    // Apply modulation when true
+    // First operator does receive modulation input
+    // And last operator is in any case the carrier, so doesnt send modulation
+    // This is why we have [ZIC_FM_OPS_COUNT - 1][ZIC_FM_OPS_COUNT - 1]
+    bool algorithm[12][ZIC_FM_OPS_COUNT - 1][ZIC_FM_OPS_COUNT - 1] = {
+        //     D            C            B
+        //  C, B, A      C, B, A      C, B, A
+        { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } },
+        { { 0, 1, 0 }, { 0, 1, 0 }, { 0, 0, 1 } },
+        { { 0, 0, 1 }, { 0, 1, 0 }, { 0, 0, 1 } },
+        { { 1, 1, 0 }, { 0, 0, 1 }, { 0, 0, 1 } },
+        { { 1, 0, 0 }, { 0, 1, 1 }, { 0, 0, 0 } },
+        { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 0 } },
+        { { 0, 0, 1 }, { 0, 0, 1 }, { 0, 0, 1 } },
+        { { 1, 0, 0 }, { 0, 0, 0 }, { 0, 0, 1 } },
+        { { 1, 1, 1 }, { 0, 0, 0 }, { 0, 0, 0 } },
+        { { 1, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } },
+        { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } },
+        { { 0, 1, 0 }, { 0, 1, 0 }, { 0, 0, 0 } },
     };
 
     /*md **Values**: */
     /*md - `PITCH` set the pitch.*/
     Val& pitch = val(0, "PITCH", { "Pitch", .min = -24, .max = 24 }, [&](auto p) { setPitch(p.value); });
+    /*md - `ALGO` set the FM algorithm.*/
+    Val& algo = val(1, "ALGO", { "Algorithm", .min = 1, .max = sizeof(algorithm) / sizeof(algorithm[0]) });
 
     SynthFM(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name, {
@@ -138,20 +157,23 @@ public:
     {
         uint8_t outDivider = 0;
         float out = 0.0f;
-        float mod = 0.0f;
+
+        for (int i = 0; i < ZIC_FM_OPS_COUNT; i++) {
+            operators[i].mod = 0.0f;
+        }
 
         for (int i = 0; i < ZIC_FM_OPS_COUNT; i++) {
             FMoperator& op = operators[i];
             float env = op.envelop.next();
             if (env > 0.0f) {
-                if (mod == 0.0) {
+                if (op.mod == 0.0) {
                     op.index += op.stepIncrement;
                 } else {
-                    float freq = op.pitchedFreq + op.pitchedFreq * mod;
+                    float freq = op.pitchedFreq + op.pitchedFreq * op.mod;
                     float inc = op.stepIncrement + ZIC_FM_LUT_SIZE * freq / props.sampleRate; // TODO optimize with precomputing: ZIC_FM_LUT_SIZE * op.freq.get() / props.sampleRate
                     op.index += inc;
                     // printf("[op %d] freq: %f, inc: %f, mod %f \n", i, freq, inc, mod);
-                    mod = 0.0f;
+                    // mod = 0.0f;
                 }
                 while (op.index >= ZIC_FM_LUT_SIZE) {
                     op.index -= ZIC_FM_LUT_SIZE;
@@ -163,13 +185,14 @@ public:
                     out = out / outDivider;
                 } else {
                     bool isMod = false;
-                    for (int j = 0; j < ZIC_FM_OPS_COUNT; j++) {
-                        if (algorithm[currentAlgorithm][i][j]) {
+                    for (int j = 0; j < ZIC_FM_OPS_COUNT - 1; j++) {
+                        if (algorithm[(uint8_t)(algo.get() - 1)][i][j]) {
                             isMod = true;
-                            if (mod == 0.0f) {
-                                mod = s;
+                            // j + 1 because the first operator doesnt receive modulation
+                            if (operators[j + 1].mod == 0.0f) {
+                                operators[j + 1].mod = s;
                             } else {
-                                mod *= s;
+                                operators[j + 1].mod *= s;
                             }
                         }
                     }

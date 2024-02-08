@@ -1,3 +1,5 @@
+- TODO delay, select voice to edit
+
 - TODO filebrowser
     - serialised might want to use filename instead of file index
 
@@ -11,8 +13,6 @@
 
 - TODO pixel harmonic https://www.ziaspace.com/_academic/BP_Scale/BP_modes/files/1_3_sharp4_6-copy.png
     https://www.youtube.com/watch?v=DREjkHQpCYQ
-
-- TODO compressor
 
 - TODO fm synth
 
