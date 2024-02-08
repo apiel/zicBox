@@ -33,7 +33,7 @@
   #   ENCODER_ID: 4
   #   COLOR: #9dfe86
   #   TRACK: $track
-  #   VALUE: FM ATTACK_3
+  #   VALUE: FM ALGO
   #   ID: Param4_enc
 
   # COMPONENT: Encoder2 $encX2 $encY2 $encSize $encSize
@@ -58,14 +58,13 @@
   #   ID: Param7_enc
 
 
-  # COMPONENT: Encoder2 $encX1 $encY3 $encSize $encSize
-  #   ENCODER_ID: 8
-  #   COLOR: #9dfe86
-  #   TRACK: $track
-  #   VALUE: FM FREQUENCY_2
-  #   FLOAT_PRECISION: 2
-  #   FONT_VALUE_SIZE: 9
-  #   ID: Param8_enc
+  COMPONENT: Encoder2 $encX1 $encY3 $encSize $encSize
+    ENCODER_ID: 8
+    COLOR: #9dfe86
+    TRACK: $track
+    VALUE: FM ALGO
+    FLOAT_PRECISION: 2
+    ID: Param8_enc
 
   # COMPONENT: Encoder2 $encX2 $encY3 $encSize $encSize
   #   ENCODER_ID: 9
@@ -73,22 +72,21 @@
   #   TRACK: $track
   #   VALUE: FM FREQUENCY_3
   #   FLOAT_PRECISION: 2
-  #   FONT_VALUE_SIZE: 9
   #   ID: Param9_enc
 
-  # COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
-  #   ENCODER_ID: 10
-  #   TRACK: $track
-  #   VALUE: MultiModeFilter CUTOFF
-  #   COLOR: #ff8d99
-  #   ID: Param10_enc
+  COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
+    ENCODER_ID: 10
+    TRACK: $track
+    VALUE: MultiModeFilter CUTOFF
+    COLOR: #ff8d99
+    ID: Param10_enc
 
-  # COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
-  #   ENCODER_ID: 11
-  #   TRACK: $track
-  #   COLOR: #ff7700
-  #   VALUE: MultiModeFilter RESONANCE
-  #   ID: Param11_enc
+  COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
+    ENCODER_ID: 11
+    TRACK: $track
+    COLOR: #ff7700
+    VALUE: MultiModeFilter RESONANCE
+    ID: Param11_enc
 
     
 

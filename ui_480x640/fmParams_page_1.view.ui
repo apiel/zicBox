@@ -76,7 +76,7 @@
   COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
     ENCODER_ID: 10
     TRACK: $track
-    VALUE: MultiModeFilter CUTOFF
+    VALUE: FM FEEDBACK_2
     COLOR: #ff8d99
     ID: Param10_enc
 
@@ -84,7 +84,7 @@
     ENCODER_ID: 11
     TRACK: $track
     COLOR: #ff7700
-    VALUE: MultiModeFilter RESONANCE
+    VALUE: FM FEEDBACK_3
     ID: Param11_enc
 
     

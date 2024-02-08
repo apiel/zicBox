@@ -27,11 +27,13 @@ protected:
         Val sustain;
         Val release;
         Val freq;
+        Val feedback;
         AdsrEnvelop envelop;
         float pitchedFreq = 0.0f;
         float stepIncrement = 0.0f;
         float index = 0.0f;
         float mod = 0.0f;
+        float feedbackMod = 0.0f;
     } operators[ZIC_FM_OPS_COUNT] = {
         {
             { 50.0f, "ATTACK_0", { "Attack 1", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setAttack(p.value, 0); } },
@@ -39,6 +41,7 @@ protected:
             { 0.8f, "SUSTAIN_0", { "Sustain 1", .unit = "%" }, [&](auto p) { setSustain(p.value, 0); } },
             { 50.0f, "RELEASE_0", { "Release 1", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setRelease(p.value, 0); } },
             { 440.0f, "FREQUENCY_0", { "Frequency 1", .min = 0.01, .max = 9000.0, .step = 1.05, .unit = "Hz", .incrementationType = VALUE_INCREMENTATION_EXP }, [&](auto p) { setFrequency(p.value, 0); } },
+            { 0.0f, "FEEDBACK_0", { "Feedback 1", .unit = "%" } },
         },
         {
             { 50.0f, "ATTACK_1", { "Attack 2", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setAttack(p.value, 1); } },
@@ -46,6 +49,7 @@ protected:
             { 0.8f, "SUSTAIN_1", { "Sustain 2", .unit = "%" }, [&](auto p) { setSustain(p.value, 1); } },
             { 50.0f, "RELEASE_1", { "Release 2", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setRelease(p.value, 1); } },
             { 440.0f, "FREQUENCY_1", { "Frequency 2", .min = 0.01, .max = 9000.0, .step = 1.05, .unit = "Hz", .incrementationType = VALUE_INCREMENTATION_EXP }, [&](auto p) { setFrequency(p.value, 1); } },
+            { 0.0f, "FEEDBACK_1", { "Feedback 2", .unit = "%" } },
         },
         {
             { 50.0f, "ATTACK_2", { "Attack 3", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setAttack(p.value, 2); } },
@@ -53,6 +57,7 @@ protected:
             { 0.8f, "SUSTAIN_2", { "Sustain 3", .unit = "%" }, [&](auto p) { setSustain(p.value, 2); } },
             { 50.0f, "RELEASE_2", { "Release 3", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setRelease(p.value, 2); } },
             { 440.0f, "FREQUENCY_2", { "Frequency 3", .min = 0.01, .max = 9000.0, .step = 1.05, .unit = "Hz", .incrementationType = VALUE_INCREMENTATION_EXP }, [&](auto p) { setFrequency(p.value, 2); } },
+            { 0.0f, "FEEDBACK_2", { "Feedback 3", .unit = "%" } },
         },
         {
             { 50.0f, "ATTACK_3", { "Attack 4", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setAttack(p.value, 3); } },
@@ -60,6 +65,7 @@ protected:
             { 0.8f, "SUSTAIN_3", { "Sustain 4", .unit = "%" }, [&](auto p) { setSustain(p.value, 3); } },
             { 50.0f, "RELEASE_3", { "Release 4", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setRelease(p.value, 3); } },
             { 440.0f, "FREQUENCY_3", { "Frequency 4", .min = 0.01, .max = 9000.0, .step = 1.05, .unit = "Hz", .incrementationType = VALUE_INCREMENTATION_EXP }, [&](auto p) { setFrequency(p.value, 3); } },
+            { 0.0f, "FEEDBACK_3", { "Feedback 4", .unit = "%" } },
         }
     };
 
@@ -134,10 +140,10 @@ public:
     SynthFM(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name, {
                                     // clang-format off
-             &operators[0].attack, &operators[0].decay, &operators[0].sustain, &operators[0].release, &operators[0].freq, 
-             &operators[1].attack, &operators[1].decay, &operators[1].sustain, &operators[1].release, &operators[1].freq,
-             &operators[2].attack, &operators[2].decay, &operators[2].sustain, &operators[2].release, &operators[2].freq,
-             &operators[3].attack, &operators[3].decay, &operators[3].sustain, &operators[3].release, &operators[3].freq,
+             &operators[0].attack, &operators[0].decay, &operators[0].sustain, &operators[0].release, &operators[0].freq, &operators[0].feedback,
+             &operators[1].attack, &operators[1].decay, &operators[1].sustain, &operators[1].release, &operators[1].freq, &operators[1].feedback,
+             &operators[2].attack, &operators[2].decay, &operators[2].sustain, &operators[2].release, &operators[2].freq, &operators[2].feedback,
+             &operators[3].attack, &operators[3].decay, &operators[3].sustain, &operators[3].release, &operators[3].freq, &operators[3].feedback,
                                     // clang-format on
                                 })
     {
@@ -166,10 +172,10 @@ public:
             FMoperator& op = operators[i];
             float env = op.envelop.next();
             if (env > 0.0f) {
-                if (op.mod == 0.0) {
+                if (op.mod == 0.0 && op.feedbackMod == 0.0) {
                     op.index += op.stepIncrement;
                 } else {
-                    float freq = op.pitchedFreq + op.pitchedFreq * op.mod;
+                    float freq = op.pitchedFreq + op.pitchedFreq * op.mod + op.pitchedFreq * op.feedbackMod;
                     float inc = op.stepIncrement + ZIC_FM_LUT_SIZE * freq / props.sampleRate; // TODO optimize with precomputing: ZIC_FM_LUT_SIZE * op.freq.get() / props.sampleRate
                     op.index += inc;
                     // printf("[op %d] freq: %f, inc: %f, mod %f \n", i, freq, inc, mod);
@@ -179,6 +185,11 @@ public:
                     op.index -= ZIC_FM_LUT_SIZE;
                 }
                 float s = sineLut[(int)op.index] * env;
+
+                if (op.feedback.get() > 0.0f) {
+                    op.feedbackMod = s * op.feedback.pct();
+                }
+
                 if (i == ZIC_FM_OPS_COUNT - 1) { // Last operator can only be the carrier
                     outDivider++;
                     out += s;
