@@ -99,6 +99,7 @@ public:
     virtual void polygon(std::vector<Point> points, Color color) = 0;
     virtual void aaline(Point start, Point end, Color color) = 0;
     virtual void aalines(std::vector<Point> points, Color color) = 0;
+    virtual void arc(Point position, int radius, int startAngle, int endAngle, Color color) = 0;
 
     virtual void* setTextureRenderer(Size size) = 0;
     virtual void setMainRenderer() = 0;

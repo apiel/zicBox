@@ -2,26 +2,26 @@
     ENCODER_ID: 0
     COLOR: #9dfe86
     TRACK: $track
-    VALUE: FM ATTACK_2
+    VALUE: FM FREQUENCY_2
     ID: Param0_enc
 
   COMPONENT: Encoder2 $encX2 $encY1 $encSize $encSize
     ENCODER_ID: 1
     COLOR: #3791a1
     TRACK: $track
-    VALUE: FM DECAY_2
+    VALUE: FM FEEDBACK_2
     ID: Param1_enc
 
   COMPONENT: Encoder2 $encX3 $encY1 $encSize $encSize
     ENCODER_ID: 2
     COLOR: #ff8d99
     TRACK: $track
-    VALUE: FM SUSTAIN_2
+    VALUE: FM FREQUENCY_3
     ID: Param2_enc
 
   COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize
     ENCODER_ID: 3
-    VALUE: FM RELEASE_2
+    VALUE: FM FEEDBACK_3
     COLOR: #ff7700
     ID: Param3_enc
 
@@ -30,27 +30,27 @@
     ENCODER_ID: 4
     COLOR: #9dfe86
     TRACK: $track
-    VALUE: FM ATTACK_3
+    VALUE: FM ATTACK_2
     ID: Param4_enc
 
   COMPONENT: Encoder2 $encX2 $encY2 $encSize $encSize
     ENCODER_ID: 5
     COLOR: #3791a1
     TRACK: $track
-    VALUE: FM DECAY_3
+    VALUE: FM DECAY_2
     ID: Param5_enc
 
   COMPONENT: Encoder2 $encX3 $encY2 $encSize $encSize
     ENCODER_ID: 6
     COLOR: #ff8d99
     TRACK: $track
-    VALUE: FM SUSTAIN_3
+    VALUE: FM ATTACK_3
     ID: Param6_enc
 
   COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
     ENCODER_ID: 7
     TRACK: $track
-    VALUE: FM RELEASE_3
+    VALUE: FM DECAY_3
     COLOR: #ff7700
     ID: Param7_enc
 
@@ -59,7 +59,7 @@
     ENCODER_ID: 8
     COLOR: #9dfe86
     TRACK: $track
-    VALUE: FM FREQUENCY_2
+    VALUE: FM SUSTAIN_2
     FLOAT_PRECISION: 2
     FONT_VALUE_SIZE: 9
     ID: Param8_enc
@@ -68,7 +68,7 @@
     ENCODER_ID: 9
     COLOR: #3791a1
     TRACK: $track
-    VALUE: FM FREQUENCY_3
+    VALUE: FM RELEASE_2
     FLOAT_PRECISION: 2
     FONT_VALUE_SIZE: 9
     ID: Param9_enc
@@ -76,7 +76,7 @@
   COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
     ENCODER_ID: 10
     TRACK: $track
-    VALUE: FM FEEDBACK_2
+    VALUE: FM SUSTAIN_3
     COLOR: #ff8d99
     ID: Param10_enc
 
@@ -84,8 +84,17 @@
     ENCODER_ID: 11
     TRACK: $track
     COLOR: #ff7700
-    VALUE: FM FEEDBACK_3
+    VALUE: FM RELEASE_3
     ID: Param11_enc
+
+
+  COMPONENT: Rect 5 2 235 ($encSize*3-4)
+    BORDER: #333333
+    RADIUS: 20
+
+  COMPONENT: Rect 245 2 230 ($encSize*3-4)
+    BORDER: #333333
+    RADIUS: 20
 
     
 

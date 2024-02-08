@@ -88,6 +88,15 @@
     COLOR: #ff7700
     ID: Param11_enc
 
+  
+  COMPONENT: Rect 5 2 235 ($encSize*3-4)
+    BORDER: #333333
+    RADIUS: 20
+
+  COMPONENT: Rect 245 2 230 ($encSize*3-4)
+    BORDER: #333333
+    RADIUS: 20
+
 
 
   COMPONENT: Wave 0 275 480 100

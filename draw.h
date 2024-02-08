@@ -289,6 +289,12 @@ public:
         SDL_RenderDrawRect(renderer, &rect);
     }
 
+    void arc(Point position, int radius, int startAngle, int endAngle, Color color)
+    {
+        // arcRGBA(renderer, position.x, position.y, radius, startAngle, endAngle, color.r, color.g, color.b, color.a);
+        aaArcRGBA(renderer, position.x, position.y, radius, radius, startAngle, endAngle, 1, color.r, color.g, color.b, color.a);
+    }
+
     void filledPie(Point position, int radius, int startAngle, int endAngle, Color color)
     {
         // https://github.com/rtrussell/BBCSDL/blob/master/include/SDL2_gfxPrimitives.h
