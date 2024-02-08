@@ -13,6 +13,7 @@ enum ValueType {
 enum ValueIncrementationType {
     VALUE_INCREMENTATION_BASIC,
     VALUE_INCREMENTATION_EXP,
+    VALUE_INCREMENTATION_MULT,
 };
 
 class ValueInterface {

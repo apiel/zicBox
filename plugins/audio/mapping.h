@@ -75,6 +75,15 @@ public:
             set(pow(base, incVal));
             return;
         }
+        if (_props.incrementationType == VALUE_INCREMENTATION_MULT) {
+            float mult = (_props.step == 1.0f ? 1.1f : _props.step) * abs(steps);
+            if (steps < 0) {
+                set(get() / mult);
+            } else {
+                set(get() * mult);
+            }
+            return;
+        }
         set(get() + ((float)steps * _props.step));
     }
 

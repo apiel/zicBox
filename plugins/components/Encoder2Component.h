@@ -360,6 +360,12 @@ public:
             return true;
         }
 
+        /*md - `FONT_VALUE_SIZE: 12` set the value font size */
+        if (strcmp(key, "FONT_VALUE_SIZE") == 0) {
+            fontValueSize = atoi(params);
+            return true;
+        }
+
         return false;
     }
 

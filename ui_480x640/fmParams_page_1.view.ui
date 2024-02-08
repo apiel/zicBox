@@ -60,6 +60,8 @@
     COLOR: #9dfe86
     TRACK: $track
     VALUE: FM FREQUENCY_2
+    FLOAT_PRECISION: 2
+    FONT_VALUE_SIZE: 9
     ID: Param8_enc
 
   COMPONENT: Encoder2 $encX2 $encY3 $encSize $encSize
@@ -67,6 +69,8 @@
     COLOR: #3791a1
     TRACK: $track
     VALUE: FM FREQUENCY_3
+    FLOAT_PRECISION: 2
+    FONT_VALUE_SIZE: 9
     ID: Param9_enc
 
   COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
