@@ -73,27 +73,57 @@ public:
         // draw modulation link
         if (algo[0][0]) // 1 to 2
         {
-            draw.line({ position.x + opSize.w, (int)(position.y + opSize.h * 0.5) }, { position.x + size.w - opSize.w, (int)(position.y + opSize.h * 0.5) }, colors.text);
+            Point start = { position.x + opSize.w, (int)(position.y + opSize.h * 0.5) };
+            Point dest = { position.x + size.w - opSize.w, (int)(position.y + opSize.h * 0.5) };
+            draw.line(start, dest, colors.text);
+
+            draw.line({ dest.x - 4, dest.y - 4 }, dest, colors.text);
+            draw.line({ dest.x - 4, dest.y + 4 }, dest, colors.text);
         }
         if (algo[1][1]) // 2 to 3
         {
-            draw.line({ position.x + size.w - opSize.w, position.y + opSize.h }, { position.x + opSize.w, position.y + size.h - opSize.h }, colors.text);
+            Point start = { position.x + size.w - opSize.w, position.y + opSize.h };
+            Point dest = { position.x + opSize.w, position.y + size.h - opSize.h };
+            draw.line(start, dest, colors.text);
+
+            draw.line({ dest.x, dest.y - 5 }, dest, colors.text);
+            draw.line({ dest.x + 5, dest.y }, dest, colors.text);
         }
         if (algo[2][2]) // 3 to 4
         {
-            draw.line({ position.x + size.w - opSize.w, (int)(position.y + size.h - opSize.h * 0.5) }, { position.x + opSize.w, (int)(position.y + size.h - opSize.h * 0.5) }, colors.text);
+            Point start = { position.x + opSize.w, (int)(position.y + size.h - opSize.h * 0.5) };
+            Point dest = { position.x + size.w - opSize.w, (int)(position.y + size.h - opSize.h * 0.5) };
+            draw.line(start, dest, colors.text);
+
+            draw.line({ dest.x - 4, dest.y - 4 }, dest, colors.text);
+            draw.line({ dest.x - 4, dest.y + 4 }, dest, colors.text);
         }
         if (algo[0][1]) // 1 to 3
         {
-            draw.line({ (int)(position.x + opSize.w * 0.5), position.y + opSize.h }, { (int)(position.x + opSize.w * 0.5), position.y + size.h - opSize.h }, colors.text);
+            Point start = { (int)(position.x + opSize.w * 0.5), position.y + opSize.h };
+            Point dest = { (int)(position.x + opSize.w * 0.5), position.y + size.h - opSize.h };
+            draw.line(start, dest, colors.text);
+
+            draw.line({ dest.x - 4, dest.y - 4 }, dest, colors.text);
+            draw.line({ dest.x + 4, dest.y - 4 }, dest, colors.text);
         }
         if (algo[0][2]) // 1 to 4
         {
-            draw.line({ position.x + opSize.w, position.y + opSize.h }, { position.x + size.w - opSize.w, position.y + size.h - opSize.h }, colors.text);
+            Point start = { position.x + opSize.w, position.y + opSize.h };
+            Point dest = { position.x + size.w - opSize.w, position.y + size.h - opSize.h };
+            draw.line(start, dest, colors.text);
+
+            draw.line({ dest.x, dest.y - 5 }, dest, colors.text);
+            draw.line({ dest.x - 5, dest.y }, dest, colors.text);
         }
         if (algo[1][2]) // 2 to 4
         {
-            draw.line({ (int)(position.x + size.w - opSize.w * 0.5), position.y + opSize.h }, { (int)(position.x + size.w - opSize.w * 0.5), position.y + size.h - opSize.h }, colors.text);
+            Point start = { (int)(position.x + size.w - opSize.w * 0.5), position.y + opSize.h };
+            Point end = { (int)(position.x + size.w - opSize.w * 0.5), position.y + size.h - opSize.h };
+            draw.line(start, end, colors.text);
+
+            draw.line({ end.x - 4, end.y - 4 }, end, colors.text);
+            draw.line({ end.x + 4, end.y - 4 }, end, colors.text);
         }
 
         // draw carrier
