@@ -7,6 +7,19 @@
 /*md
 ## FmAlgoComponent
 
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo1.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo2.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo3.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo4.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo5.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo6.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo7.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo8.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo9.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo10.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo11.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo12.png" />
+
 Show a FM algorithm and change them.
 */
 class FmAlgoComponent : public Component {
@@ -43,20 +56,21 @@ public:
         draw.textCentered({ (int)(position.x + size.w - opSize.w + opSize.w * 0.5), position.y + 2 }, "2", colors.text, fontSize);
         draw.rect({ position.x, position.y + size.h - opSize.h }, opSize, colors.border); // 3
         draw.textCentered({ (int)(position.x + opSize.w * 0.5), position.y + size.h - opSize.h + 2 }, "3", colors.text, fontSize);
+
         draw.rect({ position.x + size.w - opSize.w, position.y + size.h - opSize.h }, opSize, colors.border); // 4
         draw.textCentered({ (int)(position.x + size.w - opSize.w + opSize.w * 0.5), position.y + size.h - opSize.h + 2 }, "4", colors.text, fontSize);
 
         bool(*algo)[3] = (bool(*)[3])plugin->data(dataId);
-        
+
         // for (int i = 0; i < 3; i++) {
         //     for (int j = 0; j < 3; j++) {
         //         if (algo[i][j]) {
-        //             // draw.filledRect({ position.x + j * opSize.w, position.y + i * opSize.h }, opSize, colors.text);
         //             printf("...................op %d to %d\n", i + 1, j + 2);
         //         }
         //     }
         // }
 
+        // draw modulation link
         if (algo[0][0]) // 1 to 2
         {
             draw.line({ position.x + opSize.w, (int)(position.y + opSize.h * 0.5) }, { position.x + size.w - opSize.w, (int)(position.y + opSize.h * 0.5) }, colors.text);
@@ -80,6 +94,19 @@ public:
         if (algo[1][2]) // 2 to 4
         {
             draw.line({ (int)(position.x + size.w - opSize.w * 0.5), position.y + opSize.h }, { (int)(position.x + size.w - opSize.w * 0.5), position.y + size.h - opSize.h }, colors.text);
+        }
+
+        // draw carrier
+        Size carrierSize = { opSize.w - 2, opSize.h - 2 };
+        draw.rect({ position.x + size.w - opSize.w + 1, position.y + size.h - opSize.h + 1 }, carrierSize, colors.border); // 4 is always carrier
+        if (!algo[0][0] && !algo[0][1] && !algo[0][2]) { // 1
+            draw.rect({ position.x + 1, position.y + 1 }, carrierSize, colors.border);
+        }
+        if (!algo[1][0] && !algo[1][1] && !algo[1][2]) { // 2
+            draw.rect({ position.x + size.w - opSize.w + 1, position.y + 1 }, carrierSize, colors.border);
+        }
+        if (!algo[2][0] && !algo[2][1] && !algo[2][2]) { // 3
+            draw.rect({ position.x + 1, position.y + size.h - opSize.h + 1 }, carrierSize, colors.border);
         }
     }
 
