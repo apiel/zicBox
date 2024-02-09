@@ -147,6 +147,13 @@ public:
 
         return false;
     }
+
+    void onEncoder(int id, int8_t direction)
+    {
+        if (id == encoderId) {
+            value->increment(direction);
+        }
+    }
 };
 
 #endif
