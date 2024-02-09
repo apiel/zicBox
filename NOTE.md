@@ -14,8 +14,6 @@
 - TODO pixel harmonic https://www.ziaspace.com/_academic/BP_Scale/BP_modes/files/1_3_sharp4_6-copy.png
     https://www.youtube.com/watch?v=DREjkHQpCYQ
 
-- TODO fm synth
-
 - TODO keyboad should handle longpress (see button...)
 
 ## zicUi

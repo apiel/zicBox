@@ -147,7 +147,7 @@ VIEW: shared_components HIDDEN
     $track=$track + 1
 
   $track=$sampleTrackStart
-  while: $track < $sampleTrackCount
+  while: $track < $fmTrackStart
     COMPONENT: Sample 0 275 480 100
       TRACK: $track
       AUDIO_PLUGIN: Sample 0
