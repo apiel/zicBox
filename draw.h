@@ -289,6 +289,28 @@ public:
         SDL_RenderDrawRect(renderer, &rect);
     }
 
+    void filledRect(Point position, Size size, Color color, uint8_t radius)
+    {
+        filledRect({ position.x + radius, position.y }, { size.w - 2 * radius, size.h }, color);
+        filledRect({ position.x, position.y + radius }, { size.w, size.h - 2 * radius }, color);
+        filledPie({ position.x + radius, position.y + radius }, radius, 180, 270, color);
+        filledPie({ position.x + size.w - radius, position.y + radius }, radius, 270, 360, color);
+        filledPie({ position.x + radius, position.y + size.h - radius }, radius, 90, 180, color);
+        filledPie({ position.x + size.w - radius, position.y + size.h - radius }, radius, 0, 90, color);
+    }
+
+    void rect(Point position, Size size, Color color, uint8_t radius)
+    {
+        arc({ position.x + radius, position.y + radius }, radius, 180, 270, color);
+        line({ position.x, position.y + radius }, { position.x, position.y + size.h - radius }, color);
+        arc({ position.x + size.w - radius, position.y + radius }, radius, 270, 360, color);
+        line({ position.x + radius, position.y }, { position.x + size.w - radius, position.y }, color);
+        arc({ position.x + radius, position.y + size.h - radius }, radius, 90, 180, color);
+        line({ position.x + radius, position.y + size.h }, { position.x + size.w - radius, position.y + size.h }, color);
+        arc({ position.x + size.w - radius, position.y + size.h - radius }, radius, 0, 90, color);
+        line({ position.x + size.w, position.y + size.h - radius }, { position.x + size.w, position.y + radius }, color);
+    }
+
     void arc(Point position, int radius, int startAngle, int endAngle, Color color)
     {
         // arcRGBA(renderer, position.x, position.y, radius, startAngle, endAngle, color.r, color.g, color.b, color.a);
