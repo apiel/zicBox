@@ -100,6 +100,8 @@ public:
     virtual void aaline(Point start, Point end, Color color) = 0;
     virtual void aalines(std::vector<Point> points, Color color) = 0;
     virtual void arc(Point position, int radius, int startAngle, int endAngle, Color color) = 0;
+    virtual void filledRect(Point position, Size size, Color color, uint8_t radius) = 0;
+    virtual void rect(Point position, Size size, Color color, uint8_t radius) = 0;
 
     virtual void* setTextureRenderer(Size size) = 0;
     virtual void setMainRenderer() = 0;
