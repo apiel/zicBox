@@ -61,21 +61,21 @@ public:
 
     bool config(char* key, char* value)
     {
-        /*md - `BACKGROUND` set the background color and activate background drawing. */
+        /*md - `BACKGROUND: #333333` set the background color and activate background drawing. */
         if (strcmp(key, "BACKGROUND") == 0) {
             colors.background = draw.getColor(value);
             drawBackground = true;
             return true;
         }
 
-        /*md - `BORDER` set the border color and activate border drawing. */
+        /*md - `BORDER: #333333` set the border color and activate border drawing. */
         if (strcmp(key, "BORDER") == 0) {
             colors.border = draw.getColor(value);
             drawBorder = true;
             return true;
         }
 
-        /*md - `RADIUS` set the radius of the rounded corners. */
+        /*md - `RADIUS: 15` set the radius of the rounded corners. */
         if (strcmp(key, "RADIUS") == 0) {
             radius = atoi(value);
             return true;

@@ -1,5 +1,26 @@
   
-  COMPONENT: Encoder2 $encX1 $encY_1 $encSize $encSize
+  COMPONENT: Rect 5 3 235 ($encSize*3-4)
+    BACKGROUND: #2c3138
+    RADIUS: 15
+
+  COMPONENT: Text 117 5 0 0
+    TEXT: OP.1
+    COLOR: #4b535e
+    BOLD: true
+
+  COMPONENT: Rect 245 3 230 ($encSize*3-4)
+    BACKGROUND: #2c3138
+    RADIUS: 15
+
+  COMPONENT: Text 357 5 0 0
+    TEXT: OP.2
+    COLOR: #4b535e
+    BOLD: true
+
+
+
+
+  COMPONENT: Encoder2 $encX1 $encY1 $encSize $encSize
     ENCODER_ID: 0
     COLOR: #9dfe86
     TRACK: $track
@@ -7,8 +28,9 @@
     FLOAT_PRECISION: 2
     FONT_VALUE_SIZE: 9
     ID: Param0_enc
+    BACKGROUND_COLOR: #2c3138
 
-  COMPONENT: Encoder2 $encX2 $encY_1 $encSize $encSize
+  COMPONENT: Encoder2 $encX2 $encY1 $encSize $encSize
     ENCODER_ID: 1
     COLOR: #3791a1
     TRACK: $track
@@ -16,20 +38,23 @@
     FLOAT_PRECISION: 2
     FONT_VALUE_SIZE: 9
     ID: Param1_enc
+    BACKGROUND_COLOR: #2c3138
 
-  COMPONENT: Encoder2 $encX3 $encY_1 $encSize $encSize
+  COMPONENT: Encoder2 $encX3 $encY1 $encSize $encSize
     ENCODER_ID: 2
     TRACK: $track
     VALUE: FM FREQUENCY_1
     COLOR: #ff8d99
     ID: Param2_enc
+    BACKGROUND_COLOR: #2c3138
 
-  COMPONENT: Encoder2 $encX4 $encY_1 $encSize $encSize
+  COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize
     ENCODER_ID: 3
     TRACK: $track
     COLOR: #ff7700
     VALUE: FM FEEDBACK_1
     ID: Param3_enc
+    BACKGROUND_COLOR: #2c3138
   
 
   COMPONENT: Encoder2 $encX1 $encY2 $encSize $encSize
@@ -38,6 +63,7 @@
     TRACK: $track
     VALUE: FM ATTACK_0
     ID: Param4_enc
+    BACKGROUND_COLOR: #2c3138
 
   COMPONENT: Encoder2 $encX2 $encY2 $encSize $encSize
     ENCODER_ID: 5
@@ -45,6 +71,7 @@
     TRACK: $track
     VALUE: FM DECAY_0
     ID: Param5_enc
+    BACKGROUND_COLOR: #2c3138
 
   COMPONENT: Encoder2 $encX3 $encY2 $encSize $encSize
     ENCODER_ID: 6
@@ -52,12 +79,14 @@
     TRACK: $track
     VALUE: FM ATTACK_1
     ID: Param6_enc
+    BACKGROUND_COLOR: #2c3138
 
   COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
     ENCODER_ID: 7
     VALUE: FM DECAY_1
     COLOR: #ff7700
     ID: Param7_enc
+    BACKGROUND_COLOR: #2c3138
 
 
   COMPONENT: Encoder2 $encX1 $encY3 $encSize $encSize
@@ -66,6 +95,7 @@
     TRACK: $track
     VALUE: FM SUSTAIN_0
     ID: Param8_enc
+    BACKGROUND_COLOR: #2c3138
 
   COMPONENT: Encoder2 $encX2 $encY3 $encSize $encSize
     ENCODER_ID: 9
@@ -73,6 +103,7 @@
     TRACK: $track
     VALUE: FM RELEASE_0
     ID: Param9_enc
+    BACKGROUND_COLOR: #2c3138
 
   COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
     ENCODER_ID: 10
@@ -80,6 +111,7 @@
     TRACK: $track
     VALUE: FM SUSTAIN_1
     ID: Param10_enc
+    BACKGROUND_COLOR: #2c3138
 
   COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
     ENCODER_ID: 7
@@ -87,15 +119,8 @@
     VALUE: FM RELEASE_1
     COLOR: #ff7700
     ID: Param11_enc
+    BACKGROUND_COLOR: #2c3138
 
-  
-  COMPONENT: Rect 5 2 235 ($encSize*3-4)
-    BORDER: #333333
-    RADIUS: 20
-
-  COMPONENT: Rect 245 2 230 ($encSize*3-4)
-    BORDER: #333333
-    RADIUS: 20
 
 
 
