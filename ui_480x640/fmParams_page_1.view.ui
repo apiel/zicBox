@@ -1,3 +1,23 @@
+  # COMPONENT: Rect 5 3 235 ($encSize*3-4)
+  #   BACKGROUND: #2c3138
+  #   RADIUS: 15
+
+  COMPONENT: Text 117 5 0 0
+    TEXT: OP.1
+    COLOR: #4b535e
+    BOLD: true
+
+  # COMPONENT: Rect 245 3 230 ($encSize*3-4)
+  #   BACKGROUND: #2c3138
+  #   RADIUS: 15
+
+  COMPONENT: Text 357 5 0 0
+    TEXT: OP.2
+    COLOR: #4b535e
+    BOLD: true
+
+
+
   COMPONENT: Encoder2 $encX1 $encY1 $encSize $encSize
     ENCODER_ID: 0
     COLOR: #9dfe86

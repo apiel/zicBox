@@ -14,6 +14,7 @@ PLUGIN_COMPONENT: GridSequencer ./plugins/components/build/libzic_GridSequencerC
 PLUGIN_COMPONENT: Rect ./plugins/components/build/libzic_RectComponent.so
 PLUGIN_COMPONENT: Toggle ./plugins/components/build/libzic_ToggleComponent.so
 PLUGIN_COMPONENT: Play ./plugins/components/build/libzic_PlayComponent.so
+PLUGIN_COMPONENT: Text ./plugins/components/build/libzic_TextComponent.so
 
 PLUGIN_CONTROLLER: Osc ./plugins/controllers/build/libzic_OscController.so
 
@@ -80,9 +81,9 @@ if: $screen == ui_480x640
   $encX2=$encX1+120
   $encX3=$encX2+120
   $encX4=$encX3+120
-  $encY1=0
-  $encY2=$encY1+$encSize - 5
-  $encY3=$encY2+$encSize - 5
+  $encY1=7
+  $encY2=$encY1+$encSize - 6
+  $encY3=$encY2+$encSize - 6
 
   print: ....................the encoder size is $encSize
   ADD_ZONE_ENCODER: $encX1 $encY1 $encSize $encSize
