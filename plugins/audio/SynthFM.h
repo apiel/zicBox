@@ -257,6 +257,12 @@ public:
         }
             // case 2:
             //     return &envelop.data;
+
+        case 10:
+            // return &algorithm[(uint8_t)(algo.get() - 1)];
+            // bool *ret = algorithm[(uint8_t)(algo.get() - 1)][1];
+            bool (*ret)[3] = algorithm[(uint8_t)(algo.get() - 1)];
+            return ret;
         }
         return NULL;
     }
