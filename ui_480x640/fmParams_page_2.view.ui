@@ -65,12 +65,15 @@
     VALUE: FM ALGO
     ID: Param8_enc
 
-  COMPONENT: FmAlgo $encX2 $encY3 $encSize $encSize
+  COMPONENT: FmAlgo ($encX2+20) ($encY3+10) ($encSize-40) ($encSize-40)
     ENCODER_ID: 9
     COLOR: #3791a1
     TRACK: $track
     VALUE: FM ALGO
     ID: Param9_enc
+  COMPONENT: Text ($encX2+$encSize*0.5) ($encY3+$encSize-20) 0 0
+      TEXT: Algorithm
+      COLOR: #797c7f
 
   COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
     ENCODER_ID: 10
