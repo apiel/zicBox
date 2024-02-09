@@ -66,7 +66,7 @@
     FLOAT_PRECISION: 2
     ID: Param8_enc
 
-  # COMPONENT: Encoder2 $encX2 $encY3 $encSize $encSize
+  COMPONENT: FmAlgo $encX2 $encY3 $encSize $encSize
   #   ENCODER_ID: 9
   #   COLOR: #3791a1
   #   TRACK: $track
