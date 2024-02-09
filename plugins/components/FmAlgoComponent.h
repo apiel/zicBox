@@ -20,7 +20,7 @@
 <img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo11.png" />
 <img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo12.png" />
 
-Show a FM algorithm and change them.
+Show a FM algorithm and change them. The larger square operator are the carrier where audio is outputted.
 */
 class FmAlgoComponent : public Component {
 protected:
