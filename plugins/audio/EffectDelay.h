@@ -111,7 +111,7 @@ public:
 
     // /*md - `CUTOFF` to set cutoff on delay buffer.*/
     // Val cutoff = { 0.0f, "CUTOFF", { "Cutoff" }, [&](auto p) { setCutoff(p.value); } };
-    // Val& cutoff = filter.cutoff;
+    Val& cutoff = filter.cutoff;
     // /*md - `RESONANCE` to set resonance on delay buffer.*/
     // Val resonance = { 0.0f, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) { setResonance(p.value); } };
     // Val& resonance = filter.resonance;
