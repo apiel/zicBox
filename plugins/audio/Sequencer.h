@@ -139,7 +139,7 @@ public:
     Val& pattern = val(0.0f, "PATTERN", { "Pattern", .type = VALUE_STRING }, [&](auto p) { setPattern(p.value); });
 
     /*md - `SELECTED_STEP` select the step to edit */
-    Val& selectedStep = val(0.0f, "SELECTED_STEP", { "Step", .max = MAX_STEPS }, [&](auto p) { setSelectedStep(p.value); });
+    Val& selectedStep = val(0.0f, "SELECTED_STEP", { "Step", .min = 1.0f, .max = MAX_STEPS }, [&](auto p) { setSelectedStep(p.value); });
     /*md - `STEP_VELOCITY` set selected step velocity */
     Val& stepVelocity = val(0.0f, "STEP_VELOCITY", { "Velocity" }, [&](auto p) { setStepVelocity(p.value); });
     /*md - `STEP_LENGTH` set selected step length */
@@ -237,7 +237,7 @@ public:
     Sequencer& setSelectedStep(float value)
     {
         selectedStep.setFloat(value);
-        uint8_t index = selectedStep.get();
+        uint8_t index = selectedStep.get() - 1;
         selectedStepPtr = &steps[index];
         // printf("Selected step: %d note: %d = %s\n", index, selectedStepPtr->note, (char*)MIDI_NOTES_STR[selectedStepPtr->note]);
 

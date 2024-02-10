@@ -61,44 +61,46 @@ protected:
             /*md   - `SEC_0` to set time ratio for voice 0. */
             /*md   - `SEC_1` to set time ratio for voice 1. */
             /*md   - ... */
-            { 0.0, "AMPLITUDE_0", {}, [&](auto p) { setAmplitude(0, p.value); } },
-            { 0.0, "FEEDBACK_0", {}, [&](auto p) { setFeedback(0, p.value); } },
+            { 0.0, "AMPLITUDE_0" },
+            { 0.0, "FEEDBACK_0" },
             { 10.0, "SEC_0", {}, [&](auto p) { setSec(0, p.value); } } }, // FIXME this is not seconds...
         { 1,
-            { 0.0, "AMPLITUDE_1", {}, [&](auto p) { setAmplitude(1, p.value); } },
-            { 0.0, "FEEDBACK_1", {}, [&](auto p) { setFeedback(1, p.value); } },
+            { 0.0, "AMPLITUDE_1" },
+            { 0.0, "FEEDBACK_1" },
             { 10.0, "SEC_1", {}, [&](auto p) { setSec(1, p.value); } } },
         { 2,
-            { 0.0, "AMPLITUDE_2", {}, [&](auto p) { setAmplitude(2, p.value); } },
-            { 0.0, "FEEDBACK_2", {}, [&](auto p) { setFeedback(2, p.value); } },
+            { 0.0, "AMPLITUDE_2" },
+            { 0.0, "FEEDBACK_2" },
             { 10.0, "SEC_2", {}, [&](auto p) { setSec(2, p.value); } } },
         { 3,
-            { 0.0, "AMPLITUDE_3", {}, [&](auto p) { setAmplitude(3, p.value); } },
-            { 0.0, "FEEDBACK_3", {}, [&](auto p) { setFeedback(3, p.value); } },
+            { 0.0, "AMPLITUDE_3" },
+            { 0.0, "FEEDBACK_3" },
             { 10.0, "SEC_3", {}, [&](auto p) { setSec(3, p.value); } } },
         { 4,
-            { 0.0, "AMPLITUDE_4", {}, [&](auto p) { setAmplitude(4, p.value); } },
-            { 0.0, "FEEDBACK_4", {}, [&](auto p) { setFeedback(4, p.value); } },
+            { 0.0, "AMPLITUDE_4" },
+            { 0.0, "FEEDBACK_4" },
             { 10.0, "SEC_4", {}, [&](auto p) { setSec(4, p.value); } } },
         { 5,
-            { 0.0, "AMPLITUDE_5", {}, [&](auto p) { setAmplitude(5, p.value); } },
-            { 0.0, "FEEDBACK_5", {}, [&](auto p) { setFeedback(5, p.value); } },
+            { 0.0, "AMPLITUDE_5" },
+            { 0.0, "FEEDBACK_5" },
             { 10.0, "SEC_5", {}, [&](auto p) { setSec(5, p.value); } } },
         { 6,
-            { 0.0, "AMPLITUDE_6", {}, [&](auto p) { setAmplitude(6, p.value); } },
-            { 0.0, "FEEDBACK_6", {}, [&](auto p) { setFeedback(6, p.value); } },
+            { 0.0, "AMPLITUDE_6" },
+            { 0.0, "FEEDBACK_6" },
             { 10.0, "SEC_6", {}, [&](auto p) { setSec(6, p.value); } } },
         { 7,
-            { 0.0, "AMPLITUDE_7", {}, [&](auto p) { setAmplitude(7, p.value); } },
-            { 0.0, "FEEDBACK_7", {}, [&](auto p) { setFeedback(7, p.value); } },
+            { 0.0, "AMPLITUDE_7" },
+            { 0.0, "FEEDBACK_7" },
             { 10.0, "SEC_7", {}, [&](auto p) { setSec(7, p.value); } } },
     };
+
+    DelayVoice* selectedVoice = nullptr;
 
 public:
     /*md - `TIME_RATIO` to modulate time ratio for all voices.*/
     Val timeRatio = { 100.0f, "TIME_RATIO", { "Time Ratio", .unit = "%" }, [&](auto p) { setTimeRatio(p.value); } };
     /*md - `MASTER_AMPLITUDE` to set master amplitude.*/
-    Val masterAmplitude = { 0.0f, "MASTER_AMPLITUDE", { "Master Amplitude", .unit = "%" }, [&](auto p) { setMasterAmplitude(p.value); } };
+    Val masterAmplitude = { 0.0f, "MASTER_AMPLITUDE", { "Master Amplitude", .unit = "%" } };
 
     /*md - `CUTOFF` to set cutoff on delay buffer.*/
     Val cutoff = { 0.0f, "CUTOFF", { "Cutoff" }, [&](auto p) { setCutoff(p.value); } };
@@ -106,6 +108,8 @@ public:
     Val resonance = { 0.0f, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) { setResonance(p.value); } };
     /*md - `MODE` to set filter mode.*/
     Val mode = { 0.0f, "MODE", {}, [&](auto p) { setMode(p.value); } };
+    /*md - `VOICE_EDIT` select the step to edit */
+    Val& voiceEdit = val(0.0f, "VOICE_EDIT", { "Voice edit", .min = 1, .max = MAX_DELAY_VOICES }, [&](auto p) { setVoiceEdit(p.value); });
 
     EffectFilter filter;
 
@@ -126,6 +130,7 @@ public:
         , sampleRate(props.sampleRate)
         , filter(props, _name)
     {
+        initValues();
         setVoice(0, 10.0f, 60.0f, 0.0f);
         setVoice(1, 20.0f, 50.0f, 0.0f);
         setVoice(2, 30.0f, 40.0f, 0.0f);
@@ -150,74 +155,50 @@ public:
         buf[track] = sample(buf[track]);
     }
 
-    EffectDelay& setSec(uint8_t voiceIndex, float sec)
+    void setVoiceEdit(float value)
+    {
+        voiceEdit.setFloat(value);
+        uint8_t index = voiceEdit.get() - 1;
+        selectedVoice = &voices[index];
+    }
+
+    void setSec(uint8_t voiceIndex, float sec)
     {
         voices[voiceIndex].sec.setFloat(sec);
         voices[voiceIndex].index = (buffer.index + buffer.size - (uint64_t)(sampleRate * voices[voiceIndex].sec.pct() * timeRatio.pct())) % buffer.size;
-        return *this;
     }
 
-    EffectDelay& setAmplitude(uint8_t voiceIndex, float amplitude)
-    {
-        voices[voiceIndex].amplitude.setFloat(amplitude);
-        return *this;
-    }
-
-    EffectDelay& setFeedback(uint8_t voiceIndex, float feedback)
-    {
-        voices[voiceIndex].feedback.setFloat(feedback);
-        return *this;
-    }
-
-    EffectDelay& setVoice(uint8_t voiceIndex, float sec, float amplitude, float feedback)
+    void setVoice(uint8_t voiceIndex, float sec, float amplitude, float feedback)
     {
         setSec(voiceIndex, sec);
-        setAmplitude(voiceIndex, amplitude);
-        setFeedback(voiceIndex, feedback);
-        return *this;
+        voices[voiceIndex].amplitude.setFloat(amplitude);
+        voices[voiceIndex].feedback.setFloat(feedback);
     }
 
-    EffectDelay& setFeedback(float feedback)
-    {
-        for (uint8_t i = 0; i < MAX_DELAY_VOICES; i++) {
-            setFeedback(i, feedback);
-        }
-        return *this;
-    }
-
-    EffectDelay& setMasterAmplitude(float amplitude)
-    {
-        masterAmplitude.setFloat(amplitude);
-        return *this;
-    }
-
-    EffectDelay& setTimeRatio(float ratio)
+    void setTimeRatio(float ratio)
     {
         timeRatio.setFloat(ratio);
         for (uint8_t i = 0; i < MAX_DELAY_VOICES; i++) {
             setSec(i, voices[i].sec.get());
         }
-        return *this;
     }
 
-    EffectDelay& setCutoff(float value)
+    void setCutoff(float value)
     {
         cutoff.setFloat(value);
         filter.setCutoff(cutoff.get());
-        return *this;
     }
 
-    EffectDelay& setResonance(float value)
+    void setResonance(float value)
     {
         resonance.setFloat(value);
         filter.setResonance(resonance.get());
-        return *this;
     }
 
-    EffectDelay& setMode(float mode)
+    void setMode(float value)
     {
-        filter.setMode(mode);
-        return *this;
+        mode.setFloat(value);
+        filter.setMode(value);
     }
 };
 
