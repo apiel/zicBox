@@ -6,6 +6,7 @@
 #include "mapping.h"
 
 // #include <math.h>
+#include <string.h>
 
 class EffectFilter : public Mapping {
 protected:
@@ -13,8 +14,8 @@ protected:
 
 public:
     // Cutoff mix
-    Val& cutoff = val(50.0, "CUTOFF", { "Cutoff" }, [&](auto p) { setCutoff(p.value); });
-    Val& resonance = val(0.0, "RESONANCE", { "Resonance" }, [&](auto p) { setResonance(p.value); });
+    Val& cutoff = val(50.0, "CUTOFF", { "Cutoff", .unit = "%" }, [&](auto p) { setCutoff(p.value); });
+    Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) { setResonance(p.value); });
 
     enum Mode {
         OFF,
@@ -25,7 +26,7 @@ public:
     } mode
         = OFF;
     // TODO how to handle mode in a better way?
-    Val& mode_value = val(0.0, "MODE", { "Mode" }, [&](auto p) { setMode(p.value); });
+    Val& mode_value = val(0.0, "MODE", { "Mode", VALUE_STRING, .max = MODE_COUNT - 1, }, [&](auto p) { setMode(p.value); });
 
     EffectFilter(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -54,9 +55,26 @@ public:
         buf[track] = sample(buf[track]);
     }
 
+    std::string getMode(enum Mode _mode)
+    {
+        switch (_mode) {
+        case OFF:
+            return "OFF";
+        case LPF:
+            return "LPF";
+        case HPF:
+            return "HPF";
+        case BPF:
+            return "BPF";
+        default:
+            return "UNKNOWN";
+        }
+    }
+
     EffectFilter& setCutoff(float value)
     {
         cutoff.setFloat(value);
+        cutoff.setString(getMode(mode));
 
         if (mode == LPF) {
             data.setCutoff(0.85 * cutoff.pct() + 0.1);
