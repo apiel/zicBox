@@ -1,6 +1,10 @@
-  # COMPONENT: Rect 5 3 235 ($encSize*3+16)
-  #   BACKGROUND: #282d34
-  #   RADIUS: 15
+  COMPONENT: Rect 5 3 360 ($encSize + 4)
+    BACKGROUND: #282d34
+    RADIUS: 15
+
+  COMPONENT: Rect 5 ($encY3-2) 245 ($encSize + 1)
+    BACKGROUND: #282d34
+    RADIUS: 15
 
   COMPONENT: Encoder2 $encX1 $encY1 $encSize $encSize
     ENCODER_ID: 0
@@ -22,8 +26,10 @@
   COMPONENT: Encoder2 $encX3 $encY1 $encSize $encSize
     ENCODER_ID: 2
     COLOR: #ff8d99
+    BACKGROUND_COLOR: #282d34
     TRACK: $track
-    VALUE: Kick23 DURATION
+    VALUE: Kick23 PITCH
+    TYPE: TWO_SIDED
     ID: Param2_enc
 
   COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize
@@ -33,42 +39,42 @@
     ID: Param3_enc
 
 
-  # COMPONENT: Encoder2 $encX1 $encY2 $encSize $encSize
-  #   ENCODER_ID: 4
-  #   COLOR: #9dfe86
-  #   TRACK: $track
-  #   VALUE: Distortion DRIVE
-  #   ID: Param4_enc
+  COMPONENT: Encoder2 $encX1 $encY2 $encSize $encSize
+    ENCODER_ID: 4
+    COLOR: #9dfe86
+    TRACK: $track
+    VALUE: Kick23 DURATION
+    ID: Param4_enc
 
   COMPONENT: Encoder2 $encX2 $encY2 $encSize $encSize
     ENCODER_ID: 5
     COLOR: #3791a1
-    BACKGROUND_COLOR: #282d34
+    # BACKGROUND_COLOR: #282d34
     TRACK: $track
-    VALUE: MultiModeFilter CUTOFF
+    VALUE: Kick23 GAIN_CLIPPING
     ID: Param5_enc
 
   COMPONENT: Encoder2 $encX3 $encY2 $encSize $encSize
     ENCODER_ID: 6
     COLOR: #ff8d99
     TRACK: $track
-    VALUE: MultiModeFilter RESONANCE
+    VALUE: Kick23 NOISE
     ID: Param6_enc
 
-  COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
-    ENCODER_ID: 7
-    TRACK: $track
-    VALUE: Kick23 GAIN_CLIPPING
-    COLOR: #ff7700
-    ID: Param7_enc
+  # COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
+  #   ENCODER_ID: 7
+  #   TRACK: $track
+  #   VALUE: Kick23 GAIN_CLIPPING
+  #   COLOR: #ff7700
+  #   ID: Param7_enc
 
 
   COMPONENT: Encoder2 $encX1 $encY3 $encSize $encSize
     ENCODER_ID: 8
     COLOR: #9dfe86
+    BACKGROUND_COLOR: #282d34
     TRACK: $track
-    VALUE: Kick23 PITCH
-    TYPE: TWO_SIDED
+    VALUE: MultiModeFilter CUTOFF
     ID: Param8_enc
 
   COMPONENT: Encoder2 $encX2 $encY3 $encSize $encSize
@@ -76,7 +82,7 @@
     COLOR: #3791a1
     BACKGROUND_COLOR: #282d34
     TRACK: $track
-    VALUE: Kick23 NOISE
+    VALUE: MultiModeFilter RESONANCE
     ID: Param9_enc
 
   # COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
@@ -86,12 +92,12 @@
   #   COLOR: #ff8d99
   #   ID: Param10_enc
 
-  COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
-    ENCODER_ID: 11
-    TRACK: $track
-    COLOR: #ff7700
-    VALUE: Sequencer STATUS
-    ID: Param11_enc
+  # COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
+  #   ENCODER_ID: 11
+  #   TRACK: $track
+  #   COLOR: #ff7700
+  #   VALUE: Sequencer STATUS
+  #   ID: Param11_enc
 
     
 
