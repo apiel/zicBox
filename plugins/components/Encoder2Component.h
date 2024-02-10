@@ -26,15 +26,7 @@ protected:
     int twoSideMargin = 2;
     int knobMargin = 2;
 
-    struct DrawArea {
-        int x;
-        int xCenter;
-        int y;
-        int yCenter;
-        int w;
-        int h;
-    } area;
-
+    Point knobCenter;
     Point valuePosition;
 
     bool showKnob = true;
@@ -52,7 +44,7 @@ protected:
 
     void renderLabel()
     {
-        draw.textCentered({ area.xCenter, area.yCenter + insideRadius }, label, colors.title, 12);
+        draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius }, label, colors.title, 12);
     }
 
     void renderActiveGroup()
@@ -68,11 +60,11 @@ protected:
     {
         if (showKnob) {
             int knobRadius = insideRadius - knobMargin;
-            draw.filledEllipse({ area.xCenter, area.yCenter - marginTop }, knobRadius, knobRadius, colors.knob);
+            draw.filledEllipse({ knobCenter.x, knobCenter.y - marginTop }, knobRadius, knobRadius, colors.knob);
 
             // draw dot at value position
-            int cx = area.xCenter;
-            int cy = area.yCenter - marginTop;
+            int cx = knobCenter.x;
+            int cy = knobCenter.y - marginTop;
             int r = knobRadius - 3;
             float angleDegrees = 280 * value->pct();
             float angleRadians = angleDegrees * M_PI / 180.0 - 180;
@@ -88,34 +80,34 @@ protected:
         int val = 280 * value->pct();
 
         if (val < 280) {
-            draw.filledPie({ area.xCenter, area.yCenter - marginTop }, radius, 130, 50, colors.barBackground);
+            draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, 50, colors.barBackground);
         }
         if (val > 0) {
             int endAngle = 130 + val;
             if (endAngle > 360) {
                 endAngle = endAngle - 360;
             }
-            draw.filledPie({ area.xCenter, area.yCenter - marginTop }, radius, 130, endAngle, colors.bar);
+            draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, endAngle, colors.bar);
         }
-        draw.filledEllipse({ area.xCenter, area.yCenter - marginTop }, insideRadius, insideRadius, colors.background);
+        draw.filledEllipse({ knobCenter.x, knobCenter.y - marginTop }, insideRadius, insideRadius, colors.background);
     }
 
     void renderCenteredBar()
     {
         int val = 280 * value->pct();
 
-        draw.filledPie({ area.xCenter, area.yCenter - marginTop }, radius, 130, 50, colors.barBackground);
+        draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, 50, colors.barBackground);
         if (val > 140) {
             int endAngle = 130 + val;
             if (endAngle > 360) {
                 endAngle = endAngle - 360;
             }
 
-            draw.filledPie({ area.xCenter, area.yCenter - marginTop }, radius, 270, endAngle, colors.bar);
+            draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 270, endAngle, colors.bar);
         } else if (val < 140) {
-            draw.filledPie({ area.xCenter, area.yCenter - marginTop }, radius, 270 - (140 - val), 270, colors.bar);
+            draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 270 - (140 - val), 270, colors.bar);
         }
-        draw.filledEllipse({ area.xCenter, area.yCenter - marginTop }, insideRadius, insideRadius, colors.background);
+        draw.filledEllipse({ knobCenter.x, knobCenter.y - marginTop }, insideRadius, insideRadius, colors.background);
     }
 
     void renderUnit()
@@ -184,43 +176,9 @@ protected:
 
     const int margin;
 
-public:
-    // margin left 15
-    // margin right 10
-    Encoder2Component(ComponentInterface::Props props)
-        : Component(props)
-        , margin(styles.margin)
-        , area({ position.x, 0, position.y, 0, size.w, size.h })
+    void setRadius(int _radius)
     {
-        colors = {
-            styles.colors.background,
-            draw.darken(styles.colors.grey, 0.3),
-            draw.alpha(styles.colors.white, 0.4),
-            draw.alpha(styles.colors.white, 0.4),
-            draw.alpha(styles.colors.white, 0.2),
-            styles.colors.blue,
-            draw.alpha(styles.colors.blue, 0.5),
-            draw.alpha(styles.colors.blue, 0.2),
-            draw.getColor((char*)"#35373b"),
-            draw.alpha(styles.colors.white, 0.6),
-        };
-
-        area.xCenter = (int)(area.x + (area.w * 0.5));
-        area.yCenter = (int)(area.y + (area.h * 0.5));
-
-        valuePosition = { area.xCenter, area.yCenter - marginTop - 2 };
-
-        if (size.h < 60) {
-            printf("Encoder component height too small: %dx%d. Min height is 60.\n", size.w, size.h);
-            size.h = 60;
-        }
-
-        if (size.w < 60) {
-            printf("Encoder component width too small: %dx%d. Min width is 60.\n", size.w, size.h);
-            size.w = 60;
-        }
-
-        radius = size.h / 3.0;
+        radius = _radius;
         insideRadius = radius - 5;
 
         if (radius > 35) {
@@ -236,6 +194,41 @@ public:
             fontValueSize = 12;
             knobMargin = 3;
         }
+    }
+
+public:
+    // margin left 15
+    // margin right 10
+    Encoder2Component(ComponentInterface::Props props)
+        : Component(props)
+        , margin(styles.margin)
+    {
+        if (size.h < 60) {
+            printf("Encoder component height too small: %dx%d. Min height is 60.\n", size.w, size.h);
+            size.h = 60;
+        }
+
+        if (size.w < 60) {
+            printf("Encoder component width too small: %dx%d. Min width is 60.\n", size.w, size.h);
+            size.w = 60;
+        }
+
+        colors = {
+            styles.colors.background,
+            draw.darken(styles.colors.grey, 0.3),
+            draw.alpha(styles.colors.white, 0.4),
+            draw.alpha(styles.colors.white, 0.4),
+            draw.alpha(styles.colors.white, 0.2),
+            styles.colors.blue,
+            draw.alpha(styles.colors.blue, 0.5),
+            draw.alpha(styles.colors.blue, 0.2),
+            draw.getColor((char*)"#35373b"),
+            draw.alpha(styles.colors.white, 0.6),
+        };
+
+        knobCenter = { (int)(position.x + (size.w * 0.5)), (int)(position.y + ((size.h - 12) * 0.5)) };
+        valuePosition = { knobCenter.x, knobCenter.y - marginTop - 2 };
+        setRadius((size.h - 24) * 0.5);
     }
 
     void render()
@@ -363,6 +356,14 @@ public:
         /*md - `FONT_VALUE_SIZE: 12` set the value font size */
         if (strcmp(key, "FONT_VALUE_SIZE") == 0) {
             fontValueSize = atoi(params);
+            return true;
+        }
+
+        /*md - `KNOB_CENTERED: TRUE` */
+        if (strcmp(key, "KNOB_CENTERED") == 0) {
+            knobCenter.y = (int)(position.y + (size.h * 0.5));
+            valuePosition = { knobCenter.x, knobCenter.y - marginTop - 2 };
+            setRadius(size.h / 3.0);
             return true;
         }
 

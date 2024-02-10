@@ -1,6 +1,7 @@
   COMPONENT: Encoder2 $encX1 $encY1 $encSize $encSize
     ENCODER_ID: 0
     COLOR: #9dfe86
+    BACKGROUND_COLOR: #282d34
     TRACK: $track
     VALUE: Kick23 BROWSER
     TYPE: BROWSE
@@ -9,6 +10,7 @@
   COMPONENT: Encoder2 $encX2 $encY1 $encSize $encSize
     ENCODER_ID: 1
     COLOR: #3791a1
+    BACKGROUND_COLOR: #282d34
     TRACK: $track
     VALUE: Kick23 MORPH
     ID: Param1_enc
@@ -37,6 +39,7 @@
   COMPONENT: Encoder2 $encX2 $encY2 $encSize $encSize
     ENCODER_ID: 5
     COLOR: #3791a1
+    BACKGROUND_COLOR: #282d34
     TRACK: $track
     VALUE: MultiModeFilter CUTOFF
     ID: Param5_enc
@@ -67,6 +70,7 @@
   COMPONENT: Encoder2 $encX2 $encY3 $encSize $encSize
     ENCODER_ID: 9
     COLOR: #3791a1
+    BACKGROUND_COLOR: #282d34
     TRACK: $track
     VALUE: Kick23 NOISE
     ID: Param9_enc
