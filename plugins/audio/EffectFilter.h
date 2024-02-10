@@ -8,13 +8,20 @@
 // #include <math.h>
 #include <string.h>
 
+/*md
+## EffectFilter
+
+EffectFilter is a simple resonant filter.
+*/
 class EffectFilter : public Mapping {
 protected:
     EffectFilterData data;
 
 public:
-    // Cutoff mix
+    /*md **Values**: */
+    /*md - `CUTOFF` set cutoff. */
     Val& cutoff = val(50.0, "CUTOFF", { "Cutoff", .unit = "%" }, [&](auto p) { setCutoff(p.value); });
+    /*md - `RESONANCE` set resonance. */
     Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) { setResonance(p.value); });
 
     enum Mode {
@@ -25,7 +32,7 @@ public:
         MODE_COUNT,
     } mode
         = OFF;
-    // TODO how to handle mode in a better way?
+    /*md - `MODE` set filter mode. */
     Val& mode_value = val(0.0, "MODE", { "Mode", VALUE_STRING, .max = MODE_COUNT - 1, }, [&](auto p) { setMode(p.value); });
 
     EffectFilter(AudioPlugin::Props& props, char* _name)
