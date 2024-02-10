@@ -1,3 +1,7 @@
+  # COMPONENT: Rect 5 3 235 ($encSize*3+16)
+  #   BACKGROUND: #282d34
+  #   RADIUS: 15
+
   COMPONENT: Encoder2 $encX1 $encY1 $encSize $encSize
     ENCODER_ID: 0
     COLOR: #9dfe86
