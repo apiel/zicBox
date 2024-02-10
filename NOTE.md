@@ -1,5 +1,3 @@
-- TODO delay, select voice to edit
-
 - TODO FM ui waveform
 
 - TODO filebrowser

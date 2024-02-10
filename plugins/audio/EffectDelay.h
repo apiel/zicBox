@@ -196,24 +196,6 @@ public:
             setSec(&voices[i], voices[i].sec.get());
         }
     }
-
-    // void setCutoff(float value)
-    // {
-    //     cutoff.setFloat(value);
-    //     filter.setCutoff(cutoff.get());
-    // }
-
-    // void setResonance(float value)
-    // {
-    //     resonance.setFloat(value);
-    //     filter.setResonance(resonance.get());
-    // }
-
-    // void setMode(float value)
-    // {
-    //     mode.setFloat(value);
-    //     filter.setMode(value);
-    // }
 };
 
 #endif
