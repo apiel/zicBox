@@ -147,7 +147,7 @@ protected:
             view = tracks[grid.row].trackView + "_page_" + std::to_string(tracks[grid.row].page);
         } else {
             view = tracks[grid.row].stepView;
-            tracks[grid.row].selectedStep->set(grid.col - 1);
+            tracks[grid.row].selectedStep->set(grid.col);
 
             selectedStepCopy = tracks[grid.row].steps[grid.col - 1];
         }

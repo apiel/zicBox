@@ -1,20 +1,16 @@
 - TODO delay, select voice to edit
 
+- TODO FM ui waveform
+
 - TODO filebrowser
     - serialised might want to use filename instead of file index
+
+- TODO keyboad should handle longpress (see button...)
 
 - TODO hardware look for touch encoder or button encoder
     - https://www.mouser.at/datasheet/2/54/PEC12R-777795.pdf
     - 22mm https://www.mouser.at/ProductDetail/Bourns/PEC12R-4022F-S0024?qs=6oMev5NRZMHfikcgfDwwZA%3D%3D
     - 30mm https://www.mouser.at/ProductDetail/Bourns/PEC12R-4030F-S0024?qs=15%2Ff%2FzFZJSBasYPWBClbAA%3D%3D
-
-- TODO mini analog mixer
-    - https://www.mouser.at/ProductDetail/Alps-Alpine/RK10J12R0A0B?qs=nR5Mw3RKkX4o8TMzstLlKA%3D%3D
-
-- TODO pixel harmonic https://www.ziaspace.com/_academic/BP_Scale/BP_modes/files/1_3_sharp4_6-copy.png
-    https://www.youtube.com/watch?v=DREjkHQpCYQ
-
-- TODO keyboad should handle longpress (see button...)
 
 ## zicUi
 
@@ -221,6 +217,17 @@ int main()
 ```
 
 ## Hardware
+
+- TODO hardware look for touch encoder or button encoder
+    - https://www.mouser.at/datasheet/2/54/PEC12R-777795.pdf
+    - 22mm https://www.mouser.at/ProductDetail/Bourns/PEC12R-4022F-S0024?qs=6oMev5NRZMHfikcgfDwwZA%3D%3D
+    - 30mm https://www.mouser.at/ProductDetail/Bourns/PEC12R-4030F-S0024?qs=15%2Ff%2FzFZJSBasYPWBClbAA%3D%3D
+
+- TODO mini analog mixer
+    - https://www.mouser.at/ProductDetail/Alps-Alpine/RK10J12R0A0B?qs=nR5Mw3RKkX4o8TMzstLlKA%3D%3D
+
+- TODO pixel harmonic https://www.ziaspace.com/_academic/BP_Scale/BP_modes/files/1_3_sharp4_6-copy.png
+    https://www.youtube.com/watch?v=DREjkHQpCYQ
 
 - TODO make gpio interface run as service
 
