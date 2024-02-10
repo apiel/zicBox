@@ -1,4 +1,4 @@
-  COMPONENT: Rect 5 3 235 ($encSize*3-4)
+  COMPONENT: Rect 5 3 235 ($encSize*3+16)
     BACKGROUND: #282d34
     RADIUS: 15
 
@@ -7,7 +7,7 @@
     COLOR: #4b535e
     BOLD: true
 
-  COMPONENT: Rect 245 3 230 ($encSize*3-4)
+  COMPONENT: Rect 245 3 230 ($encSize*3+16)
     BACKGROUND: #282d34
     RADIUS: 15
 
