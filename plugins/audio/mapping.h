@@ -142,6 +142,11 @@ public:
     {
     }
 
+    void val(ValueInterface* value)
+    {
+        mapping.push_back(value);
+    }
+
     void initValues()
     {
         for (ValueInterface* val : mapping) {
