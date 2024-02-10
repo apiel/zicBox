@@ -10,7 +10,7 @@
     ENCODER_ID: 1
     COLOR: #3791a1
     TRACK: $track
-    VALUE: Delay TIME_RATIO
+    VALUE: Delay MODE
     ID: Param1_enc
 
   COMPONENT: Encoder2 $encX3 $encY1 $encSize $encSize
@@ -23,39 +23,40 @@
 
   COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize
     ENCODER_ID: 3
+    TRACK: $track
     VALUE: Delay RESONANCE
     LABEL: Delay Res.
     COLOR: #ff7700
     ID: Param3_enc
 
 
-  # COMPONENT: Encoder2 $encX1 $encY2 $encSize $encSize
-  #   ENCODER_ID: 4
-  #   COLOR: #9dfe86
-  #   TRACK: $track
-  #   VALUE: FM ALGO
-  #   ID: Param4_enc
+  COMPONENT: Encoder2 $encX1 $encY2 $encSize $encSize
+    ENCODER_ID: 4
+    COLOR: #9dfe86
+    TRACK: $track
+    VALUE: Delay VOICE_EDIT
+    ID: Param4_enc
 
-  # COMPONENT: Encoder2 $encX2 $encY2 $encSize $encSize
-  #   ENCODER_ID: 5
-  #   COLOR: #3791a1
-  #   TRACK: $track
-  #   VALUE: FM DECAY_3
-  #   ID: Param5_enc
+  COMPONENT: Encoder2 $encX2 $encY2 $encSize $encSize
+    ENCODER_ID: 5
+    COLOR: #3791a1
+    TRACK: $track
+    VALUE: Delay VOICE_AMPLITUDE
+    ID: Param5_enc
 
-  # COMPONENT: Encoder2 $encX3 $encY2 $encSize $encSize
-  #   ENCODER_ID: 6
-  #   COLOR: #ff8d99
-  #   TRACK: $track
-  #   VALUE: FM SUSTAIN_3
-  #   ID: Param6_enc
+  COMPONENT: Encoder2 $encX3 $encY2 $encSize $encSize
+    ENCODER_ID: 6
+    COLOR: #ff8d99
+    TRACK: $track
+    VALUE: Delay VOICE_FEEDBACK
+    ID: Param6_enc
 
-  # COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
-  #   ENCODER_ID: 7
-  #   TRACK: $track
-  #   VALUE: FM RELEASE_3
-  #   COLOR: #ff7700
-  #   ID: Param7_enc
+  COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
+    ENCODER_ID: 7
+    TRACK: $track
+    VALUE: Delay VOICE_TIME
+    COLOR: #ff7700
+    ID: Param7_enc
 
 
   COMPONENT: Encoder2 $encX1 $encY3 $encSize $encSize
