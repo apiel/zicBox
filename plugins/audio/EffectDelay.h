@@ -104,20 +104,12 @@ protected:
     }
 
 public:
+    EffectFilter filter;
+
     /*md - `TIME_RATIO` to modulate time ratio for all voices.*/
     Val timeRatio = { 100.0f, "TIME_RATIO", { "Time Ratio", .unit = "%" }, [&](auto p) { setTimeRatio(p.value); } };
     /*md - `MASTER_AMPLITUDE` to set master amplitude.*/
     Val masterAmplitude = { 0.0f, "MASTER_AMPLITUDE", { "Master Amplitude", .unit = "%" } };
-
-    // /*md - `CUTOFF` to set cutoff on delay buffer.*/
-    // Val cutoff = { 0.0f, "CUTOFF", { "Cutoff" }, [&](auto p) { setCutoff(p.value); } };
-    Val& cutoff = filter.cutoff;
-    // /*md - `RESONANCE` to set resonance on delay buffer.*/
-    // Val resonance = { 0.0f, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) { setResonance(p.value); } };
-    // Val& resonance = filter.resonance;
-    // /*md - `MODE` to set filter mode.*/
-    // Val mode = { 0.0f, "MODE", { "Mode", VALUE_STRING, .max = 3 }, [&](auto p) { setMode(p.value); } };
-    // Val& mode = filter.mode_value;
 
     /*md - `VOICE_EDIT` select the step to edit */
     Val& voiceEdit = val(0.0f, "VOICE_EDIT", { "Voice edit", .min = 1, .max = MAX_DELAY_VOICES }, [&](auto p) { setVoiceEdit(p.value); });
@@ -128,10 +120,9 @@ public:
     /*md - `VOICE_SEC` to set sec on selected voice.*/
     Val& voiceSec = val(0.0f, "VOICE_TIME", { "Voice time", .min = 0.0f, .max = 1000.0f, .step = 5.0f, .unit = "ms" }, [&](auto p) { p.val.setFloat(p.value); setSec(selectedVoice, p.value); });
 
-    EffectFilter filter;
-
     EffectDelay(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name, { // clang-format off
+        : Mapping(props, _name, {
+                                    // clang-format off
             &timeRatio, &masterAmplitude, 
             &voices[0].amplitude, &voices[0].feedback, &voices[0].sec, 
             &voices[1].amplitude, &voices[1].feedback, &voices[1].sec, 
@@ -141,13 +132,18 @@ public:
             &voices[5].amplitude, &voices[5].feedback, &voices[5].sec, 
             &voices[6].amplitude, &voices[6].feedback, &voices[6].sec, 
             &voices[7].amplitude, &voices[7].feedback, &voices[7].sec,
-            // &cutoff, &resonance, &mode
-            // filter.cutoff, filter.resonance, filter.mode
         })
         // clang-format on
         , sampleRate(props.sampleRate)
         , filter(props, _name)
     {
+        /*md - `CUTOFF` to set cutoff on delay buffer.*/
+        val(&filter.cutoff);
+        /*md - `RESONANCE` to set resonance on delay buffer.*/
+        val(&filter.resonance);
+        /*md - `MODE` to set filter mode.*/
+        val(&filter.mode_value);
+
         initValues();
         initVoice(0, 100.0f, 60.0f, 0.0f);
         initVoice(1, 200.0f, 50.0f, 0.0f);
