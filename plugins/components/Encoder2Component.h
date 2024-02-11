@@ -44,7 +44,11 @@ protected:
 
     void renderLabel()
     {
-        draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius }, label, colors.title, 12);
+        if (value->props().type == VALUE_STRING) {
+            draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius }, value->string(), colors.title, 12);
+        } else {
+            draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius }, label, colors.title, 12);
+        }
     }
 
     void renderActiveGroup()
