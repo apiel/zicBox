@@ -46,7 +46,7 @@ protected:
     void renderLabel()
     {
         if (stringValueReplaceTitle && value->props().type == VALUE_STRING) {
-            draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius }, value->string(), colors.title, 12);
+            draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius }, value->string(), colors.title, 12, { .maxWidth = size.w - 4 });
         } else {
             draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius }, label, colors.title, 12);
         }
