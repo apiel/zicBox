@@ -17,7 +17,7 @@
     COLOR: #ff8d99
     TRACK: $track
     VALUE: Sample BROWSER
-    TYPE: BROWSE
+    STRING_VALUE_REPLACE_TITLE: TRUE
     ID: Param2_enc
 
   # COMPONENT: Rect $encX4 $encY1 $encSize $encSize

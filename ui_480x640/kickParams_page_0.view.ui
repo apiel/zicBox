@@ -12,7 +12,7 @@
     BACKGROUND_COLOR: #282d34
     TRACK: $track
     VALUE: Kick23 BROWSER
-    TYPE: BROWSE
+    STRING_VALUE_REPLACE_TITLE: TRUE
     ID: Param0_enc
 
   COMPONENT: Encoder2 $encX2 $encY1 $encSize $encSize
@@ -29,7 +29,6 @@
     BACKGROUND_COLOR: #282d34
     TRACK: $track
     VALUE: Kick23 PITCH
-    TYPE: TWO_SIDED
     ID: Param2_enc
 
   COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize
@@ -75,6 +74,7 @@
     BACKGROUND_COLOR: #282d34
     TRACK: $track
     VALUE: MultiModeFilter CUTOFF
+    TYPE: TWO_SIDED
     ID: Param8_enc
 
   COMPONENT: Encoder2 $encX2 $encY3 $encSize $encSize

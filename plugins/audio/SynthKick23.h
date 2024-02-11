@@ -79,7 +79,7 @@ public:
     /*md - `MORPH` Morhp over the wavetable.*/
     Val& morph = val(0.0f, "MORPH", { "Morph", .min = 1.0, .max = ZIC_WAVETABLE_WAVEFORMS_COUNT, .step = 0.1, .floatingPoint = 1 }, [&](auto p) { setMorph(p.value); });
     /*md - `PITCH` Modulate the pitch.*/
-    Val& pitch = val(0, "PITCH", { "Pitch", .min = -12, .max = 12 }, [&](auto p) { setPitch(p.value); });
+    Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -12, .max = 12 }, [&](auto p) { setPitch(p.value); });
     /*md - `DURATION` set the duration of the envelop.*/
     Val& duration = val(100.0f, "DURATION", { "Duration", .min = 10.0, .max = 5000.0, .step = 10.0, .unit = "ms" }, [&](auto p) { setDuration(p.value); });
     // ///*md - `ENV_FREQ_START` set the frequence value when the envelop start.*/

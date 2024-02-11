@@ -17,7 +17,6 @@
     COLOR: #ff8d99
     TRACK: $track
     VALUE: Distortion DB
-    TYPE: BROWSE
     ID: Param2_enc
 
   COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize

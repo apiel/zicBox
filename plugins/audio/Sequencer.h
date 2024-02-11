@@ -202,12 +202,12 @@ public:
     {
         status.setFloat(value);
         if (status.get() == Status::OFF) {
-            status.setString("OFF");
+            status.setString("off");
             onEvent(AudioEventType::STOP);
         } else if (status.get() == Status::ON) {
-            status.setString("ON");
+            status.setString("on");
         } else {
-            status.setString("NEXT");
+            status.setString("next");
         }
     }
 
