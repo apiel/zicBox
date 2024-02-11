@@ -1,5 +1,3 @@
-- TODO encoder string component...
-
 - TODO FM ui waveform
 
 - TODO SynthSample 
@@ -18,13 +16,13 @@
 
 ## zicUi
 
-- TODO encoder string component...
-
 - TODO keyboard / keypad
     - see we can extract some logic to have global action that are not specific to a UI plugin
     - should LED and keypad be the same object
         or could we assume that some LED doesn't necessarly belong to a key
         LED could be associated to an encoder or just completely standalone...
+
+- TODO Delay make a visual representation of the delay.
 
 - TODO live waveform visualisation
     - might need for this to create an audio plugin to keep a buffer of the audio output
