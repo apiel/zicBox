@@ -1,4 +1,10 @@
+- TODO encoder string component...
+
 - TODO FM ui waveform
+
+- TODO SynthSample 
+    - fix openned voice
+    - multi sample mix 2 (or even 3) sample together
 
 - TODO filebrowser
     - serialised might want to use filename instead of file index
@@ -99,7 +105,9 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 
 ## zicHost
 
-- TODO SynthSample fix openned voice
+- TODO SynthSample 
+    - fix openned voice
+    - multi sample mix 2 (or even 3) sample together
 
 - TODO make audio input and output selectable with val...
 
