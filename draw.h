@@ -262,7 +262,8 @@ public:
     {
         options = getDefaultTextOptions(options);
         SDL_Surface* surface = getTextSurface(text.c_str(), color, size, options.fontPath);
-        int x = position.x - surface->w;
+        int w = surface->w > options.maxWidth ? options.maxWidth : surface->w;
+        int x = position.x - w;
         textToRenderer({ x, position.y }, surface, options.maxWidth);
         SDL_FreeSurface(surface);
 
