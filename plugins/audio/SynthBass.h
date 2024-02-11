@@ -45,7 +45,7 @@ protected:
 public:
     /*md **Values**: */
     /*md - `PITCH` set the pitch.*/
-    Val& pitch = val(0, "PITCH", { "Pitch", .min = -24, .max = 24 }, [&](auto p) { setPitch(p.value); });
+    Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24 }, [&](auto p) { setPitch(p.value); });
     /*md - `DURATION` set the duration of the envelop.*/
     Val& duration = val(100.0f, "DURATION", { "Duration", .min = 10.0, .max = 5000.0, .step = 10.0, .unit = "ms" }, [&](auto p) { setDuration(p.value); });
     /*md - `DECAY_LEVEL` set the decay level.*/

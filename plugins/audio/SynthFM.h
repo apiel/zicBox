@@ -133,7 +133,7 @@ public:
 
     /*md **Values**: */
     /*md - `PITCH` set the pitch.*/
-    Val& pitch = val(0, "PITCH", { "Pitch", .min = -24, .max = 24 }, [&](auto p) { setPitch(p.value); });
+    Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24 }, [&](auto p) { setPitch(p.value); });
     /*md - `ALGO` set the FM algorithm.*/
     Val& algo = val(1, "ALGO", { "Algorithm", .min = 1, .max = sizeof(algorithm) / sizeof(algorithm[0]) });
 

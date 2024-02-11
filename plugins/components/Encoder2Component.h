@@ -33,6 +33,7 @@ protected:
     bool showValue = true;
     bool showGroup = false;
     bool showUnit = true;
+    bool stringValueReplaceTitle = false;
 
     const int marginTop = 3;
 
@@ -44,7 +45,7 @@ protected:
 
     void renderLabel()
     {
-        if (value->props().type == VALUE_STRING) {
+        if (stringValueReplaceTitle && value->props().type == VALUE_STRING) {
             draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius }, value->string(), colors.title, 12);
         } else {
             draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius }, label, colors.title, 12);
@@ -123,10 +124,14 @@ protected:
 
     void renderValue()
     {
-        std::string valStr = std::to_string(value->get());
-        valStr = valStr.substr(0, valStr.find(".") + valueFloatPrecision + (valueFloatPrecision > 0 ? 1 : 0));
+        if (!stringValueReplaceTitle && value->props().type == VALUE_STRING) {
+            draw.textCentered({ valuePosition.x, valuePosition.y - 5 }, value->string(), colors.value, fontValueSize);
+        } else {
+            std::string valStr = std::to_string(value->get());
+            valStr = valStr.substr(0, valStr.find(".") + valueFloatPrecision + (valueFloatPrecision > 0 ? 1 : 0));
 
-        int x = draw.textCentered({ valuePosition.x, valuePosition.y - 5 }, valStr.c_str(), colors.value, fontValueSize);
+            draw.textCentered({ valuePosition.x, valuePosition.y - 5 }, valStr.c_str(), colors.value, fontValueSize);
+        }
     }
 
     void renderTwoSidedValue()
@@ -270,14 +275,11 @@ public:
         }
 
         /*md
-- `TYPE: ...` is used to set the encoder type
-    - `TYPE: BROWSE` TBD..
-    - `TYPE: TWO_SIDED` is use for centered values like PAN
+- `TYPE: TWO_SIDED` is used to set the encoder type
+    - `TYPE: TWO_SIDED` when there is a centered value like PAN and you want to show both side value: 20%|80%
         */
         if (strcmp(key, "TYPE") == 0) {
-            if (strcmp(params, "BROWSE") == 0) {
-                type = 1;
-            } else if (strcmp(params, "TWO_SIDED") == 0) {
+            if (strcmp(params, "TWO_SIDED") == 0) {
                 type = 1;
             } else {
                 type = atoi(params);
@@ -368,6 +370,12 @@ public:
             knobCenter.y = (int)(position.y + (size.h * 0.5));
             valuePosition = { knobCenter.x, knobCenter.y - marginTop - 2 };
             setRadius(size.h / 3.0);
+            return true;
+        }
+
+        /*md - `STRING_VALUE_REPLACE_TITLE: true` instead to show string value in knob, show under the knob. Can be useful for long string value. */
+        if (strcmp(key, "STRING_VALUE_REPLACE_TITLE") == 0) {
+            stringValueReplaceTitle = (strcmp(params, "TRUE") == 0);
             return true;
         }
 

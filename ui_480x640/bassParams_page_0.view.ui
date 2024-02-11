@@ -52,7 +52,6 @@
     COLOR: #9dfe86
     TRACK: $track
     VALUE: Bass PITCH
-    TYPE: TWO_SIDED
     ID: Param8_enc
 
   COMPONENT: Encoder2 $encX2 $encY3 $encSize $encSize
