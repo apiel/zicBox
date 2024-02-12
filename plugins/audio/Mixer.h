@@ -36,7 +36,7 @@ public:
             /*md - `TRACK_1` to set volume on track 1, min = 0.0, max = 100.*/
             /*md - `TRACK_2` to set volume on track 2.*/
             /*md - ...*/
-            mix[i] = &val(100.0f, "TRACK_" + std::to_string(i + 1), { "Track " + std::to_string(i + 1) });
+            mix[i] = &val(100.0f, "TRACK_" + std::to_string(i + 1), { "Track " + std::to_string(i + 1), .unit = "%" });
             // mix[i] = &val(100.0f, "TRACK_" + std::to_string(i + 1), { "Track " + std::to_string(i + 1) }, [&, i](auto p) { setTrack(p.value, i); });
             /*md - `MUTE_1` to mute track 1, `0.0` to unmute, `1.0` to mute.*/
             /*md - `MUTE_2` to mute track 2.*/
