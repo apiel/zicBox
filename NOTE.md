@@ -4,6 +4,8 @@
     - fix openned voice
     - multi sample mix 2 (or even 3) sample together
 
+- TODO FM modulation on kick
+
 - TODO filebrowser
     - serialised might want to use filename instead of file index
 
