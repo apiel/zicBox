@@ -1,1 +1,7 @@
 INCLUDE: distortionParams_page.view.ui
+
+
+  COMPONENT: Wave 0 275 480 100
+    TRACK: $track
+    KEYMAP: Keyboard 44 play 60
+    PLUGIN: Kick23
