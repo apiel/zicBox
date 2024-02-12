@@ -50,15 +50,15 @@ protected:
     EnvelopRelative envelopAmp = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.3f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
     EnvelopRelative envelopFreq = EnvelopRelative({ { 1.0f, 0.0f }, { 0.26f, 0.03f }, { 0.24f, 0.35f }, { 0.22f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
 
-    float sample(float time, float* index, float envAmp, float envFreq)
+    float sample(float time, float* index, float amp, float freq)
     {
-        // printf("(%f) envAmp %f envFreq %f\n", time, envAmp, envFreq);
+        // printf("(%f) amp %f freq %f\n", time, amp, freq);
 
-        (*index) += pitchMult * envFreq;
+        (*index) += pitchMult * freq;
         while ((*index) >= sampleCount) {
             (*index) -= sampleCount;
         }
-        float out = bufferSamples[(uint16_t)(*index) + sampleStart] * envAmp;
+        float out = bufferSamples[(uint16_t)(*index) + sampleStart] * amp;
         if (noise.get() > 0.0f) {
             out += 0.01 * random.pct() * noise.get();
         }
