@@ -299,10 +299,9 @@ public:
                 voice.sustainReleaseLoopCount = 0;
                 // TODO release softly if release before end of file
                 // debug("noteOff set on to false: %d %d\n", note, velocity);
-                return;
+                // return; // since multiple voice can have the same note do not return
             }
         }
-        // debug("noteOff: note not found %d %d\n", note, velocity);
     }
 
     void setDensityDelay(float value)
