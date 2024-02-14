@@ -1,15 +1,12 @@
 #ifndef _SYNTH_KICK23_H_
 #define _SYNTH_KICK23_H_
 
-#include <sndfile.h>
-
+#include "../../helpers/random.h"
+#include "Wavetable.h"
 #include "audioPlugin.h"
-#include "fileBrowser.h"
 #include "mapping.h"
 #include "utils/EnvelopRelative.h"
-#include "../../helpers/random.h"
 
-#define ZIC_WAVETABLE_WAVEFORMS_COUNT 64
 #define ZIC_KICK_ENV_AMP_STEP 4
 #define ZIC_KICK_ENV_FREQ_STEP 4
 #define ZIC_KICK_UI 1000
@@ -23,42 +20,26 @@ Synth engine to generate drum sounds using wavetables.
 */
 class SynthKick23 : public Mapping {
 protected:
-    SF_INFO sfinfo;
-    SNDFILE* file = NULL;
     uint64_t sampleRate;
 
-    uint64_t sampleCount = 2048; // should this be configurable?
-    static const uint64_t bufferSize = ZIC_WAVETABLE_WAVEFORMS_COUNT * 2048;
-    uint64_t bufferSampleCount = 0;
-    float bufferSamples[bufferSize];
+    Wavetable wavetable;
+
     float bufferUi[ZIC_KICK_UI];
     int updateUiState = 0;
     std::vector<EnvelopRelative::Data>* envelopUi = NULL;
 
-    FileBrowser fileBrowser = FileBrowser("./wavetables");
-
-    float pitchMult = 1.0f;
-
-    float sampleIndex = 0.0f;
-    uint64_t sampleStart = 0;
-
-    Random random;
-
     unsigned int sampleCountDuration = 0;
     unsigned int sampleDurationCounter = 0;
+
+    Random random;
 
     EnvelopRelative envelopAmp = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.3f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
     EnvelopRelative envelopFreq = EnvelopRelative({ { 1.0f, 0.0f }, { 0.26f, 0.03f }, { 0.24f, 0.35f }, { 0.22f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
 
     float sample(float time, float* index, float amp, float freq)
     {
-        // printf("(%f) amp %f freq %f\n", time, amp, freq);
+        float out = wavetable.sample(time, index, amp, freq);
 
-        (*index) += pitchMult * freq;
-        while ((*index) >= sampleCount) {
-            (*index) -= sampleCount;
-        }
-        float out = bufferSamples[(uint16_t)(*index) + sampleStart] * amp;
         if (noise.get() > 0.0f) {
             out += 0.01 * random.pct() * noise.get();
         }
@@ -75,7 +56,7 @@ protected:
 public:
     /*md **Values**: */
     /*md - `BROWSER` Select wavetable.*/
-    Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)fileBrowser.count }, [&](auto p) { open(p.value); });
+    Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)wavetable.fileBrowser.count }, [&](auto p) { open(p.value); });
     /*md - `MORPH` Morhp over the wavetable.*/
     Val& morph = val(0.0f, "MORPH", { "Morph", .min = 1.0, .max = ZIC_WAVETABLE_WAVEFORMS_COUNT, .step = 0.1, .floatingPoint = 1 }, [&](auto p) { setMorph(p.value); });
     /*md - `PITCH` Modulate the pitch.*/
@@ -134,19 +115,6 @@ public:
         }) // clang-format on
         , sampleRate(props.sampleRate)
     {
-        memset(&sfinfo, 0, sizeof(sfinfo));
-
-        open(browser.get(), true);
-
-        for (int i = 0; i < ZIC_KICK_ENV_AMP_STEP; i++) {
-            envAmpMod[i].setFloat(envelopAmp.data[i + 2].modulation * 100.0f);
-            envAmpTime[i].setFloat(envelopAmp.data[i + 2].time * 100.0f);
-        }
-        for (int i = 0; i < ZIC_KICK_ENV_FREQ_STEP; i++) {
-            envFreqMod[i].setFloat(envelopFreq.data[i + 1].modulation * 100.0f);
-            envFreqTime[i].setFloat(envelopFreq.data[i + 1].time * 100.0f);
-        }
-
         initValues();
     }
 
@@ -157,12 +125,24 @@ public:
             float time = (float)sampleDurationCounter / (float)sampleCountDuration;
             float envAmp = envelopAmp.next(time) + input * fmAmpMod.pct();
             float envFreq = envelopFreq.next(time) + input * fmFreqMod.pct();
-            buf[track] = sample(time, &sampleIndex, envAmp, envFreq);
+            buf[track] = sample(time, &wavetable.sampleIndex, envAmp, envFreq);
             sampleDurationCounter++;
             // printf("[%d] sample: %d of %d=%f\n", track, sampleDurationCounter, sampleCountDuration, buf[track]);
         }
 
         buf[track] = input * (1.0f - mix.pct()) + buf[track] * mix.pct();
+    }
+
+    void open(float value)
+    {
+        browser.setFloat(value);
+        int position = browser.get();
+        wavetable.open(position, false);
+        browser.setString(wavetable.fileBrowser.getFile(position));
+
+        sampleDurationCounter = -1; // set counter to the maximum
+        sampleDurationCounter = sampleCountDuration;
+        updateUi(NULL);
     }
 
     void setEnvAmpMod(float value, uint8_t index)
@@ -226,18 +206,15 @@ public:
     void setPitch(float value)
     {
         pitch.setFloat(value);
-        pitchMult = pitch.pct() + 0.5f; // FIXME
+        // pitchMult = pitch.pct() + 0.5f; // FIXME
+        wavetable.pitchMult = pitch.pct() + 0.5f; // FIXME
         updateUi(NULL);
     }
 
     void setMorph(float value)
     {
         morph.setFloat(value);
-        sampleStart = morph.pct() * bufferSampleCount;
-        uint64_t max = bufferSampleCount / ZIC_WAVETABLE_WAVEFORMS_COUNT * (ZIC_WAVETABLE_WAVEFORMS_COUNT - 1); // TODO make this better :p
-        if (sampleStart > max) {
-            sampleStart = max;
-        }
+        wavetable.morph(morph.pct());
         updateUi(NULL);
         // printf(">>>>>>>>>>>>>>.... sampleStart: %ld (%f bufferSampleCount %ld)\n", sampleStart, morph.get(), bufferSampleCount);
     }
@@ -254,52 +231,6 @@ public:
         // printf(">>>>>>>>>>>>>>.... sampleCountDuration: %d (%d)\n", sampleCountDuration, duration.getAsInt());
     }
 
-    SynthKick23& close()
-    {
-        if (file) {
-            sf_close(file);
-        }
-        return *this;
-    }
-
-    SynthKick23& open(std::string filename)
-    {
-        close();
-
-        if (!(file = sf_open(filename.c_str(), SFM_READ, &sfinfo))) {
-            debug("Error: could not open file %s\n", filename);
-            return *this;
-        }
-        debug("Audio file %s sampleCount %ld sampleRate %d\n", filename, (long)sfinfo.frames, sfinfo.samplerate);
-
-        bufferSampleCount = sf_read_float(file, bufferSamples, bufferSize);
-        sampleCount = bufferSampleCount / (float)ZIC_WAVETABLE_WAVEFORMS_COUNT;
-
-        sampleDurationCounter = sampleCountDuration;
-        updateUi(NULL);
-
-        return *this;
-    }
-
-    SynthKick23& open(float value, bool force)
-    {
-        browser.setFloat(value);
-        int position = browser.get();
-        if (force || position != fileBrowser.position) {
-            browser.setString(fileBrowser.getFile(position));
-            std::string filepath = fileBrowser.getFilePath(position);
-            debug("KICK23_SAMPLE_SELECTOR: %f %s\n", value, filepath.c_str());
-            open(filepath);
-        }
-        return *this;
-    }
-
-    SynthKick23& open(float value)
-    {
-        open(value, false);
-        return *this;
-    }
-
     void noteOn(uint8_t note, float velocity) override
     {
         // TODO use velocity
@@ -311,7 +242,7 @@ public:
 
         // Could change the frequency base on the note...
         // Could change the amplitude base on the velocity...
-        sampleIndex = 0;
+        wavetable.sampleIndex = 0;
         sampleDurationCounter = 0;
         envelopAmp.reset();
         envelopFreq.reset();
