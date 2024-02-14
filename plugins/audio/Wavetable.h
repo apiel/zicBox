@@ -16,6 +16,7 @@ protected:
     uint64_t sampleCount = 2048; // should this be configurable?
     static const uint64_t bufferSize = ZIC_WAVETABLE_WAVEFORMS_COUNT * 2048;
     uint64_t bufferSampleCount = 0;
+    uint64_t maxSampleStart = -1;
     float bufferSamples[bufferSize];
 
     uint64_t sampleStart = 0;
@@ -57,6 +58,7 @@ public:
 
         bufferSampleCount = sf_read_float(file, bufferSamples, bufferSize);
         sampleCount = bufferSampleCount / (float)ZIC_WAVETABLE_WAVEFORMS_COUNT;
+        maxSampleStart = bufferSampleCount / ZIC_WAVETABLE_WAVEFORMS_COUNT * (ZIC_WAVETABLE_WAVEFORMS_COUNT - 1);
 
         // sampleDurationCounter = -1; // set counter to the maximum
         // sampleDurationCounter = sampleCountDuration;
@@ -75,9 +77,8 @@ public:
     void morph(float pct)
     {
         sampleStart = pct * bufferSampleCount;
-        uint64_t max = bufferSampleCount / ZIC_WAVETABLE_WAVEFORMS_COUNT * (ZIC_WAVETABLE_WAVEFORMS_COUNT - 1); // TODO make this better :p
-        if (sampleStart > max) {
-            sampleStart = max;
+        if (sampleStart > maxSampleStart) {
+            sampleStart = maxSampleStart;
         }
     }
 };
