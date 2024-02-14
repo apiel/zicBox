@@ -22,7 +22,6 @@ protected:
 
 public:
     float sampleIndex = 0.0f;
-    float pitchMult = 1.0f;
     FileBrowser fileBrowser = FileBrowser("./wavetables");
 
     Wavetable()
@@ -31,9 +30,9 @@ public:
         open(0, true);
     }
 
-    float sample(float time, float* index, float amp, float freq)
+    float sample(float time, float* index, float amp, float freq, float pitch)
     {
-        (*index) += pitchMult * freq;
+        (*index) += pitch * freq;
         while ((*index) >= sampleCount) {
             (*index) -= sampleCount;
         }

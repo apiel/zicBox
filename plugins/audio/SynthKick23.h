@@ -23,6 +23,7 @@ protected:
     uint64_t sampleRate;
 
     Wavetable wavetable;
+    float pitchMult = 1.0f;
 
     float bufferUi[ZIC_KICK_UI];
     int updateUiState = 0;
@@ -38,7 +39,7 @@ protected:
 
     float sample(float time, float* index, float amp, float freq)
     {
-        float out = wavetable.sample(time, index, amp, freq);
+        float out = wavetable.sample(time, index, amp, freq, pitchMult);
 
         if (noise.get() > 0.0f) {
             out += 0.01 * random.pct() * noise.get();
@@ -206,8 +207,7 @@ public:
     void setPitch(float value)
     {
         pitch.setFloat(value);
-        // pitchMult = pitch.pct() + 0.5f; // FIXME
-        wavetable.pitchMult = pitch.pct() + 0.5f; // FIXME
+        pitchMult = pitch.pct() + 0.5f; // FIXME
         updateUi(NULL);
     }
 
