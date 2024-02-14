@@ -59,10 +59,6 @@ public:
         bufferSampleCount = sf_read_float(file, bufferSamples, bufferSize);
         sampleCount = bufferSampleCount / (float)ZIC_WAVETABLE_WAVEFORMS_COUNT;
         maxSampleStart = bufferSampleCount / ZIC_WAVETABLE_WAVEFORMS_COUNT * (ZIC_WAVETABLE_WAVEFORMS_COUNT - 1);
-
-        // sampleDurationCounter = -1; // set counter to the maximum
-        // sampleDurationCounter = sampleCountDuration;
-        // updateUi(NULL);
     }
 
        void open(int position, bool force)
