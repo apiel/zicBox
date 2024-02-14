@@ -113,6 +113,7 @@ public:
     {
         mode_value.setFloat(value);
         mode = (Mode)range((uint8_t)mode_value.get(), 0, (uint8_t)MODE_COUNT);
+        mode_value.setString(getMode(mode));
         return setMode(mode);
     }
 };

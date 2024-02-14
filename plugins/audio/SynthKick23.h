@@ -64,8 +64,6 @@ public:
     Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -12, .max = 12 }, [&](auto p) { setPitch(p.value); });
     /*md - `DURATION` set the duration of the envelop.*/
     Val& duration = val(100.0f, "DURATION", { "Duration", .min = 10.0, .max = 5000.0, .step = 10.0, .unit = "ms" }, [&](auto p) { setDuration(p.value); });
-    // ///*md - `ENV_FREQ_START` set the frequence value when the envelop start.*/
-    // Val& envFreqStart = val(1.0f, "ENVELOP_FREQ_MOD_0", { "Freq.Mod.0", .min = 0.0, .max = 2.0, .step = 0.1 }, [&](auto p) { setEnvFreqStart(p.value); });
 
     /*md - `GAIN_CLIPPING` set the clipping level.*/
     Val& clipping = val(0.0, "GAIN_CLIPPING", { "Gain Clipping", .unit = "%" }, [&](auto p) { setClipping(p.value); });
