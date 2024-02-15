@@ -1,14 +1,14 @@
-- TODO FM ui waveform
+- TODO save/load project
 
-- TODO SynthSample 
-    - multi sample mix 2 (or even 3) sample together
-
-- TODO FM modulation on kick
+- TODO FM ui waveform, maybe just show the 4 envelop...
 
 - TODO filebrowser
     - serialised might want to use filename instead of file index
 
 - TODO keyboad should handle longpress (see button...)
+
+- TODO SynthSample 
+    - multi sample mix 2 (or even 3) sample together
 
 - TODO hardware look for touch encoder or button encoder
     - https://www.mouser.at/datasheet/2/54/PEC12R-777795.pdf
