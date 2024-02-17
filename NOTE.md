@@ -264,3 +264,41 @@ gdb zicBox
 ```
 
 then `bt`.
+
+# st7789 7wire
+
+https://github.com/juj/fbcp-ili9341/issues/178#issuecomment-759897048
+
+```sh
+git clone https://github.com/juj/fbcp-ili9341.git
+cd fbcp-ili9341
+```
+
+Then edit display.h and paste in
+
+```sh
+#define DISPLAY_SPI_DRIVE_SETTINGS (1 | BCM2835_SPI0_CS_CPOL | BCM2835_SPI0_CS_CPHA)
+```
+under the line
+
+```sh
+#define DISPLAY_SPI_DRIVE_SETTINGS (0)
+```
+
+Then continue with
+
+```sh
+mkdir build
+cd build
+```sh
+
+```sh
+cmake -DST7789VW=ON -DGPIO_TFT_DATA_CONTROL=25 -DGPIO_TFT_RESET_PIN=27 -DGPIO_TFT_BACKLIGHT=18 -DSTATISTICS=0 -DSPI_BUS_CLOCK_DIVISOR=40 -DUSE_DMA_TRANSFERS=OFF ..
+```
+
+Finally run
+
+```sh
+make -j
+sudo ./fbcp-ili9341
+```
