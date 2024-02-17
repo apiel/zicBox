@@ -12,3 +12,5 @@ ZicBox is fully customizable using configuration files. Everyhting is build base
 ## Video
 
 https://github.com/apiel/zicBox/assets/5873198/ce7851f0-9692-4132-8f6f-98f3bc18849a
+
+https://github.com/apiel/zicBox/assets/5873198/ce0e32c0-5a68-4b8e-9f7a-18d56287ec61
