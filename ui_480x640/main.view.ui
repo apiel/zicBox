@@ -142,6 +142,7 @@ VIEW: shared_components HIDDEN
     COMPONENT: Wave 0 275 480 100
       TRACK: $track
       KEYMAP: Keyboard 44 play 60
+      KEYMAP: Keypad 24 play 60
       PLUGIN: Kick23
       SHARED_COMPONENT: Wave_Kick23_track_$track
     $track=$track + 1
@@ -154,6 +155,7 @@ VIEW: shared_components HIDDEN
       DATA_STATE: 2 1
       SHARED_COMPONENT: Sample_track_$track
       KEYMAP: Keyboard 44 play 60
+      KEYMAP: Keypad 24 play 60
     $track=$track + 1
 
 
