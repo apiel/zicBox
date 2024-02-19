@@ -1,3 +1,11 @@
+- TODO noise look up table
+
+- TODO quick turn encoder increase resolution
+
+- TODO make sequencer specific to a track instead of plugin...
+
+- TODO FM algo use circle for carrier
+
 - TODO save/load project
 
 - TODO FM ui waveform, maybe just show the 4 envelop...
