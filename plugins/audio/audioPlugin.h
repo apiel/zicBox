@@ -6,6 +6,7 @@
 #include <string.h>
 #include <vector>
 
+#include "lookupTable.h"
 #include "valueInterface.h"
 
 class AudioPlugin;
@@ -59,6 +60,7 @@ public:
         uint8_t channels;
         AudioPluginHandlerInterface* audioPluginHandler;
         int16_t maxTracks;
+        LookupTable* lookupTable;
     };
 
 protected:

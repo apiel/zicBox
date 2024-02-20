@@ -7,10 +7,7 @@
 #include "utils/AdsrEnvelop.h"
 
 #define ZIC_FM_UI 1000
-#define ZIC_FM_LUT_SIZE 2048
 #define ZIC_FM_OPS_COUNT 4
-
-float sineLut[ZIC_FM_LUT_SIZE];
 
 /*md
 ## SynthFM
@@ -74,7 +71,7 @@ protected:
         operators[opIndex].freq.setFloat(value);
         // operators[opIndex].stepIncrement = operators[opIndex].frequency.get() * 2.0f * M_PI / sampleRate;
         operators[opIndex].pitchedFreq = operators[opIndex].freq.get() * pitchRatio;
-        operators[opIndex].stepIncrement = ZIC_FM_LUT_SIZE * operators[opIndex].pitchedFreq / props.sampleRate;
+        operators[opIndex].stepIncrement = props.lookupTable->size * operators[opIndex].pitchedFreq / props.sampleRate;
     }
 
     void setAttack(float ms, unsigned int opIndex)
@@ -152,8 +149,8 @@ public:
         initValues();
 
         // Init sine LUT
-        for (int i = 0; i < ZIC_FM_LUT_SIZE; i++) {
-            sineLut[i] = sin((float)i / (float)ZIC_FM_LUT_SIZE * 2.0f * M_PI);
+        for (int i = 0; i < props.lookupTable->size; i++) {
+            props.lookupTable->sine[i] = sin((float)i / (float)props.lookupTable->size * 2.0f * M_PI);
         }
     }
 
@@ -174,15 +171,15 @@ public:
                     op.index += op.stepIncrement;
                 } else {
                     float freq = op.pitchedFreq + op.pitchedFreq * op.mod + op.pitchedFreq * op.feedbackMod;
-                    float inc = op.stepIncrement + ZIC_FM_LUT_SIZE * freq / props.sampleRate; // TODO optimize with precomputing: ZIC_FM_LUT_SIZE * op.freq.get() / props.sampleRate
+                    float inc = op.stepIncrement + props.lookupTable->size * freq / props.sampleRate; // TODO optimize with precomputing: props.lookupTable->size * op.freq.get() / props.sampleRate
                     op.index += inc;
                     // printf("[op %d] freq: %f, inc: %f, mod %f \n", i, freq, inc, mod);
                     // mod = 0.0f;
                 }
-                while (op.index >= ZIC_FM_LUT_SIZE) {
-                    op.index -= ZIC_FM_LUT_SIZE;
+                while (op.index >= props.lookupTable->size) {
+                    op.index -= props.lookupTable->size;
                 }
-                float s = sineLut[(int)op.index] * env;
+                float s = props.lookupTable->sine[(int)op.index] * env;
 
                 if (op.feedback.get() > 0.0f) {
                     op.feedbackMod = s * op.feedback.pct();
@@ -224,7 +221,7 @@ public:
             operators[i].envelop.reset();
             operators[i].index = 0.0f;
             operators[i].pitchedFreq = operators[i].freq.get() * pitchRatio;
-            operators[i].stepIncrement = ZIC_FM_LUT_SIZE * operators[i].pitchedFreq / props.sampleRate;
+            operators[i].stepIncrement = props.lookupTable->size * operators[i].pitchedFreq / props.sampleRate;
         }
     }
 
@@ -253,7 +250,7 @@ public:
         case 10:
             // return &algorithm[(uint8_t)(algo.get() - 1)];
             // bool *ret = algorithm[(uint8_t)(algo.get() - 1)][1];
-            bool (*ret)[3] = algorithm[(uint8_t)(algo.get() - 1)];
+            bool(*ret)[3] = algorithm[(uint8_t)(algo.get() - 1)];
             return ret;
         }
         return NULL;
