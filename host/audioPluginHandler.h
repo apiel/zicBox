@@ -6,12 +6,15 @@
 
 #include "../helpers/trim.h"
 #include "../plugins/audio/audioPlugin.h"
+#include "../plugins/audio/lookupTable.h"
 #include "def.h"
 #include "midiMapping.h"
 
 class AudioPluginHandler : public AudioPluginHandlerInterface {
 protected:
-    AudioPlugin::Props pluginProps = { debug, SAMPLE_RATE, APP_CHANNELS, this, MAX_TRACKS };
+    LookupTable lookupTable;
+
+    AudioPlugin::Props pluginProps = { debug, SAMPLE_RATE, APP_CHANNELS, this, MAX_TRACKS, &lookupTable };
 
     std::vector<MidiMapping> midiMapping;
 

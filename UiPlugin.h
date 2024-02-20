@@ -35,7 +35,7 @@ protected:
     std::vector<View*> views;
 
     static UiPlugin* instance;
-    AudioPlugin::Props props = { NULL, 0, 0, NULL, 0 };
+    AudioPlugin::Props props = { NULL, 0, 0, NULL, 0, NULL };
     UiPlugin()
         : Mapping(props, (char*)"UI")
     {
