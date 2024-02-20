@@ -1,7 +1,6 @@
 #ifndef _SYNTH_BASS_H_
 #define _SYNTH_BASS_H_
 
-#include "../../helpers/random.h"
 #include "../../helpers/range.h"
 #include "audioPlugin.h"
 #include "filter.h"
@@ -37,8 +36,6 @@ protected:
     int updateUiState = 0;
 
     float stairRatio = 0.0f;
-
-    Random random;
 
     float noteMult = 1.0f;
 
@@ -86,7 +83,7 @@ public:
             }
         }
         if (noise.get() > 0.0f) {
-            val += 0.01 * random.pct() * noise.get();
+            val += 0.01 * props.lookupTable->getNoise() * noise.get();
         }
         _filter.setSampleData(val * _velocity * env);
         float out = _filter.buf0 + _filter.buf0 * clipping.pct() * 8;

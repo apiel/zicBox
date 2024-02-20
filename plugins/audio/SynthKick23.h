@@ -1,7 +1,6 @@
 #ifndef _SYNTH_KICK23_H_
 #define _SYNTH_KICK23_H_
 
-#include "../../helpers/random.h"
 #include "Wavetable.h"
 #include "audioPlugin.h"
 #include "mapping.h"
@@ -32,8 +31,6 @@ protected:
     unsigned int sampleCountDuration = 0;
     unsigned int sampleDurationCounter = 0;
 
-    Random random;
-
     EnvelopRelative envelopAmp = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.3f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
     EnvelopRelative envelopFreq = EnvelopRelative({ { 1.0f, 0.0f }, { 0.26f, 0.03f }, { 0.24f, 0.35f }, { 0.22f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
 
@@ -42,7 +39,7 @@ protected:
         float out = wavetable.sample(time, index, amp, freq, pitchMult);
 
         if (noise.get() > 0.0f) {
-            out += 0.01 * random.pct() * noise.get();
+            out += 0.01 * props.lookupTable->getNoise() * noise.get();
         }
         out = out + out * clipping.pct() * 20;
         return range(out, -1.0f, 1.0f);
