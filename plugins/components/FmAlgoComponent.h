@@ -20,7 +20,7 @@
 <img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo11.png" />
 <img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo12.png" />
 
-Show FM algorithm and change them. The larger square operator are the carrier where audio is outputted.
+Show FM algorithm and change them. The filled square are the carrier where audio is outputted and the not filled square are the operators modulating the frequency.
 */
 class FmAlgoComponent : public Component {
 protected:
@@ -50,25 +50,8 @@ public:
     void render()
     {
         draw.filledRect(position, size, colors.background);
-        draw.rect(position, opSize, colors.border); // 1
-        draw.textCentered({ (int)(position.x + opSize.w * 0.5), position.y + 2 }, "1", colors.text, fontSize);
-        draw.rect({ position.x + size.w - opSize.w, position.y }, opSize, colors.border); // 2
-        draw.textCentered({ (int)(position.x + size.w - opSize.w + opSize.w * 0.5), position.y + 2 }, "2", colors.text, fontSize);
-        draw.rect({ position.x, position.y + size.h - opSize.h }, opSize, colors.border); // 3
-        draw.textCentered({ (int)(position.x + opSize.w * 0.5), position.y + size.h - opSize.h + 2 }, "3", colors.text, fontSize);
-
-        draw.rect({ position.x + size.w - opSize.w, position.y + size.h - opSize.h }, opSize, colors.border); // 4
-        draw.textCentered({ (int)(position.x + size.w - opSize.w + opSize.w * 0.5), position.y + size.h - opSize.h + 2 }, "4", colors.text, fontSize);
 
         bool(*algo)[3] = (bool(*)[3])plugin->data(dataId);
-
-        // for (int i = 0; i < 3; i++) {
-        //     for (int j = 0; j < 3; j++) {
-        //         if (algo[i][j]) {
-        //             printf("...................op %d to %d\n", i + 1, j + 2);
-        //         }
-        //     }
-        // }
 
         // draw modulation link
         if (algo[0][0]) // 1 to 2
@@ -126,17 +109,33 @@ public:
             draw.line({ end.x + 4, end.y - 4 }, end, colors.text);
         }
 
-        // draw carrier
-        Size carrierSize = { opSize.w - 2, opSize.h - 2 };
-        draw.rect({ position.x + size.w - opSize.w + 1, position.y + size.h - opSize.h + 1 }, carrierSize, colors.border); // 4 is always carrier
+        // draw operators and carriers
+        // 4 is always carrier
+        draw.filledRect({ position.x + size.w - opSize.w, position.y + size.h - opSize.h }, opSize, colors.border); // 4
+        draw.textCentered({ (int)(position.x + size.w - opSize.w + opSize.w * 0.5), position.y + size.h - opSize.h + 2 }, "4", colors.background, fontSize);
+
         if (!algo[0][0] && !algo[0][1] && !algo[0][2]) { // 1
-            draw.rect({ position.x + 1, position.y + 1 }, carrierSize, colors.border);
+            draw.filledRect(position, opSize, colors.border); // 1
+            draw.textCentered({ (int)(position.x + opSize.w * 0.5), position.y + 2 }, "1", colors.background, fontSize);
+        } else {
+            draw.rect(position, opSize, colors.border); // 1
+            draw.textCentered({ (int)(position.x + opSize.w * 0.5), position.y + 2 }, "1", colors.text, fontSize);
         }
+
         if (!algo[1][0] && !algo[1][1] && !algo[1][2]) { // 2
-            draw.rect({ position.x + size.w - opSize.w + 1, position.y + 1 }, carrierSize, colors.border);
+            draw.filledRect({ position.x + size.w - opSize.w, position.y }, opSize, colors.border); // 2
+            draw.textCentered({ (int)(position.x + size.w - opSize.w + opSize.w * 0.5), position.y + 2 }, "2", colors.background, fontSize);
+        } else {
+            draw.rect({ position.x + size.w - opSize.w, position.y }, opSize, colors.border); // 2
+            draw.textCentered({ (int)(position.x + size.w - opSize.w + opSize.w * 0.5), position.y + 2 }, "2", colors.text, fontSize);
         }
+
         if (!algo[2][0] && !algo[2][1] && !algo[2][2]) { // 3
-            draw.rect({ position.x + 1, position.y + size.h - opSize.h + 1 }, carrierSize, colors.border);
+            draw.filledRect({ position.x, position.y + size.h - opSize.h }, opSize, colors.border); // 3
+            draw.textCentered({ (int)(position.x + opSize.w * 0.5), position.y + size.h - opSize.h + 2 }, "3", colors.background, fontSize);
+        } else {
+            draw.rect({ position.x, position.y + size.h - opSize.h }, opSize, colors.border); // 3
+            draw.textCentered({ (int)(position.x + opSize.w * 0.5), position.y + size.h - opSize.h + 2 }, "3", colors.text, fontSize);
         }
     }
 
