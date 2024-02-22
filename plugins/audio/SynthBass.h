@@ -13,6 +13,9 @@
 ## SynthBass
 
 Synth engine to generate bass sounds.
+
+> [!NOTE] _deprecated_ in favor of **SynthKick23** that can produce bass with much more possibilities...
+> maybe transforming this synth in a virtual 303 would bring value to it but for the moment better to focus on **SynthKick23**
 */
 class SynthBass : public Mapping {
 protected:
