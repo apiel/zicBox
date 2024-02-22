@@ -60,12 +60,12 @@
     VALUE: Kick23 NOISE
     ID: Param6_enc
 
-  COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
-    ENCODER_ID: 7
-    TRACK: $track
-    VALUE: Kick23 RESONANCE_ENV
-    COLOR: #ff7700
-    ID: Param7_enc
+  # COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
+  #   ENCODER_ID: 7
+  #   TRACK: $track
+  #   VALUE: Kick23 RESONANCE_ENV
+  #   COLOR: #ff7700
+  #   ID: Param7_enc
 
 
   COMPONENT: Encoder2 $encX1 $encY3 $encSize $encSize
@@ -85,12 +85,12 @@
     VALUE: MultiModeFilter RESONANCE
     ID: Param9_enc
 
-  # COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
-  #   ENCODER_ID: 10
-  #   TRACK: $track
-  #   VALUE: Kick23 ENVELOP_FREQ_MOD_4
-  #   COLOR: #ff8d99
-  #   ID: Param10_enc
+  COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
+    ENCODER_ID: 10
+    TRACK: $track
+    VALUE: Kick23 RESONANCE_ENV
+    COLOR: #ff8d99
+    ID: Param10_enc
 
   # COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
   #   ENCODER_ID: 11

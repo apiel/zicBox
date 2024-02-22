@@ -37,7 +37,7 @@ protected:
     EnvelopRelative envelopAmp = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.3f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
     EnvelopRelative envelopFreq = EnvelopRelative({ { 1.0f, 0.0f }, { 0.26f, 0.03f }, { 0.24f, 0.35f }, { 0.22f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
 
-    float sample(float time, float* index, float amp, float freq)
+    float sample(EffectFilterData& _filter, float time, float* index, float amp, float freq)
     {
         float out = wavetable.sample(time, index, amp, freq, pitchMult);
 
@@ -46,9 +46,9 @@ protected:
         }
 
         if (resEnv.get() > 0.0f) {
-            filter.setCutoff(amp * 0.85);
-            filter.setSampleData(out );
-            out = filter.lp;   
+            _filter.setCutoff(amp * 0.85);
+            _filter.setSampleData(out );
+            out = _filter.lp;   
         }
 
         out = out + out * clipping.pct() * 20;
@@ -135,7 +135,7 @@ public:
             float time = (float)sampleDurationCounter / (float)sampleCountDuration;
             float envAmp = envelopAmp.next(time) + input * fmAmpMod.pct();
             float envFreq = envelopFreq.next(time) + input * fmFreqMod.pct();
-            buf[track] = sample(time, &wavetable.sampleIndex, envAmp, envFreq);
+            buf[track] = sample(filter, time, &wavetable.sampleIndex, envAmp, envFreq);
             sampleDurationCounter++;
             // printf("[%d] sample: %d of %d=%f\n", track, sampleDurationCounter, sampleCountDuration, buf[track]);
         }
@@ -285,12 +285,14 @@ public:
         case 1: {
             unsigned int ampIndex = 0;
             unsigned int freqIndex = 0;
+            EffectFilterData _filter;
+            _filter.setResonance(resEnv.get());
             float index = 0;
             for (int i = 0; i < ZIC_KICK_UI; i++) {
                 float time = i / (float)ZIC_KICK_UI;
                 float envAmp = envelopAmp.next(time, ampIndex);
                 float envFreq = envelopFreq.next(time, freqIndex);
-                bufferUi[i] = sample(time, &index, envAmp, envFreq);
+                bufferUi[i] = sample(_filter, time, &index, envAmp, envFreq);
             }
             return (void*)&bufferUi;
         }
