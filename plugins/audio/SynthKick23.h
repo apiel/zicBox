@@ -4,6 +4,7 @@
 #include "Wavetable.h"
 #include "audioPlugin.h"
 #include "mapping.h"
+#include "filter.h"
 #include "utils/EnvelopRelative.h"
 
 #define ZIC_KICK_ENV_AMP_STEP 4
@@ -31,6 +32,8 @@ protected:
     unsigned int sampleCountDuration = 0;
     unsigned int sampleDurationCounter = 0;
 
+    EffectFilterData filter;
+
     EnvelopRelative envelopAmp = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.3f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
     EnvelopRelative envelopFreq = EnvelopRelative({ { 1.0f, 0.0f }, { 0.26f, 0.03f }, { 0.24f, 0.35f }, { 0.22f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
 
@@ -41,6 +44,13 @@ protected:
         if (noise.get() > 0.0f) {
             out += 0.01 * props.lookupTable->getNoise() * noise.get();
         }
+
+        if (resEnv.get() > 0.0f) {
+            filter.setCutoff(amp * 0.85);
+            filter.setSampleData(out );
+            out = filter.lp;   
+        }
+
         out = out + out * clipping.pct() * 20;
         return range(out, -1.0f, 1.0f);
     }
@@ -66,6 +76,9 @@ public:
     Val& clipping = val(0.0, "GAIN_CLIPPING", { "Gain Clipping", .unit = "%" }, [&](auto p) { setClipping(p.value); });
     /*md - `NOISE` set the noise level.*/
     Val& noise = val(0.0, "NOISE", { "Noise", .unit = "%" }, [&](auto p) { setNoise(p.value); });
+
+    /*md - `RESONANCE_ENV` set resonance using amplitude envelope.*/
+    Val& resEnv = val(0.0f, "RESONANCE_ENV", { "Resonance Env.", .unit = "%" }, [&](auto p) { setResonance(p.value); });
 
     /*//md - `MIX` set mix between audio input and output.*/
     Val& mix = val(100.0f, "MIX", { "Mix in/out", .type = VALUE_CENTERED });
@@ -112,6 +125,7 @@ public:
         , sampleRate(props.sampleRate)
     {
         initValues();
+        filter.setResonance(0.95f);
     }
 
     void sample(float* buf)
@@ -140,6 +154,13 @@ public:
         sampleDurationCounter = sampleCountDuration;
         updateUi(NULL);
     }
+
+    void setResonance(float value)
+    {
+        resEnv.setFloat(value);
+        filter.setResonance(resEnv.pct());
+        updateUi(NULL);
+    };
 
     void setEnvAmpMod(float value, uint8_t index)
     {

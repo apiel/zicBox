@@ -54,7 +54,7 @@ public:
             return data.bp;
         }
         // LPF
-        return data.buf0;
+        return data.lp;
     }
 
     void sample(float* buf)
