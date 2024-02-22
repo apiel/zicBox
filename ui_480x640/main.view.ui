@@ -1,6 +1,5 @@
-$kickTrackCount=2
-$bassTrack=$kickTrackCount+1
-$sampleTrackStart=$bassTrack+1
+$kickTrackCount=3
+$sampleTrackStart=$kickTrackCount+1
 $sampleTrackCount=7
 $fmTrackStart=$sampleTrackStart+$sampleTrackCount
 $fmTrackCount=2
@@ -12,11 +11,12 @@ VIEW: shared_components HIDDEN
     TRACK_NAME: 1 Kick
     TRACK_VIEW: 1 KickParams_track_1
     TRACK_PAGE_COUNT: 1 4
-    TRACK_NAME: 2 Drum
+    TRACK_NAME: 2 Bass
     TRACK_VIEW: 2 KickParams_track_2
     TRACK_PAGE_COUNT: 2 4
-    TRACK_NAME: 3 Bass
-    TRACK_VIEW: 3 BassParams_track_3
+    TRACK_NAME: 3 Drum
+    TRACK_VIEW: 3 KickParams_track_3
+    TRACK_PAGE_COUNT: 3 4
     TRACK_NAME: 11 FM
     TRACK_VIEW: 11 FmParams_track_11
     TRACK_PAGE_COUNT: 11 3
@@ -138,7 +138,7 @@ VIEW: shared_components HIDDEN
     SELECTED_LAYOUT: default
 
   $track=1
-  while: $track < $bassTrack
+  while: $track < $sampleTrackStart
     COMPONENT: Wave 0 275 480 100
       TRACK: $track
       KEYMAP: Keyboard 44 play 60
@@ -160,7 +160,6 @@ VIEW: shared_components HIDDEN
 
 
 INCLUDE: kick.view.ui
-INCLUDE: bass.view.ui
 INCLUDE: sample.view.ui
 INCLUDE: fm.view.ui
 
