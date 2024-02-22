@@ -9,15 +9,10 @@
 #define MAX_SCREEN_MOTION 5
 #endif
 
-#ifndef ENCODER_COUNT
-#define ENCODER_COUNT 8
-#endif
-
 class EventHandler {
 protected:
     Motion motions[MAX_SCREEN_MOTION];
     ViewManager& viewManager = ViewManager::get();
-    int encoderWidth = styles.screen.w / ENCODER_COUNT;
 
 #if SDL_MINOR_VERSION <= 24
     uint8_t emulateEncoderId = 0;
@@ -94,8 +89,6 @@ protected:
     std::vector<Rect> zoneEncoders = {};
     uint8_t getEmulatedEncoderId(int32_t x, int32_t y)
     {
-        // return x / encoderWidth;
-
         for (uint8_t i = 0; i < zoneEncoders.size(); i++) {
             // if (x >= zoneEncoders[i].position.x && x < zoneEncoders[i].position.x + zoneEncoders[i].size.w &&
             //     y >= zoneEncoders[i].position.y && y < zoneEncoders[i].position.y + zoneEncoders[i].size.h) {

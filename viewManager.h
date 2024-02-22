@@ -21,6 +21,9 @@ protected:
     UiPlugin& ui = UiPlugin::get();
     int8_t visibility = 0;
 
+    // there should be about 4 to 12 encoders, however with 256 we are sure to not be out of bounds
+    unsigned long lastEncoderTick[256] = { 0 };
+
     static ViewManager* instance;
 
     ViewManager()
@@ -197,6 +200,11 @@ public:
     void onEncoder(int id, int8_t direction)
     {
         m2.lock();
+        unsigned long now = SDL_GetTicks();
+        if (now - lastEncoderTick[id] < 25) {
+            direction = direction * 5;
+        }
+        lastEncoderTick[id] = now;
         for (auto& component : ui.view->components) {
             component->onEncoder(id, direction);
         }
