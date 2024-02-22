@@ -1,5 +1,3 @@
-- TODO make sequencer specific to a track instead of plugin...
-
 - TODO try to achieve bass within the kick engine
     > apply amp envelop on filter or could even have his own envelop...
     > hardware: make misc synth button were legacy bass engine could go, as PD engine.
@@ -60,8 +58,6 @@
 - TODO pad ARP, y is taking care of semi tone and x change ARP pattern. Could it even be multi touch?
 
 - TODO pad motion recorder
-
-- TODO button shift can change encoder resolution
 
 - INFO Should SDL in draw be injectable? What if we want to use those i2c 1306 display or similar...
 
@@ -155,9 +151,6 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
                 save last state of the delay config... load the last state on start
                 base on this state, we can create config files...
      - add lfo on time ratio
-
-- INFO could sequencer use track...?
-- TODO make sequencer being able to have multiple target
 
 - INFO IPC in order to have a main thread that is running all the time, even if the rest crash...
        https://en.wikipedia.org/wiki/Inter-process_communication

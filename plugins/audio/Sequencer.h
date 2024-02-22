@@ -88,6 +88,33 @@ protected:
         return stepConditions[step.condition].conditionMet(loopCounter);
     }
 
+    void triggerNoteOn(Step& step)
+    {
+        if (targetPlugin) {
+            // printf("[step %d] should trigger note on %d %f\n", stepCounter, step.note, step.velocity);
+            targetPlugin->noteOn(step.note, step.velocity);
+        } else {
+            for (AudioPluginHandlerInterface::Plugin& plugin : props.audioPluginHandler->plugins) {
+                if (track == -1 || track == plugin.instance->track) {
+                    plugin.instance->noteOn(step.note, step.velocity);
+                }
+            }
+        }
+    }
+
+    void triggerNoteOff(Step& step)
+    {
+        if (targetPlugin) {
+            targetPlugin->noteOff(step.note, 0);
+        } else {
+            for (AudioPluginHandlerInterface::Plugin& plugin : props.audioPluginHandler->plugins) {
+                if (track == -1 || track == plugin.instance->track) {
+                    plugin.instance->noteOff(step.note, 0);
+                }
+            }
+        }
+    }
+
     void onStep()
     {
         stepCounter++;
@@ -104,16 +131,15 @@ protected:
                 Step& step = steps[i];
                 if (step.counter) {
                     step.counter--;
-                    if (targetPlugin && step.counter == 0) {
-                        targetPlugin->noteOff(step.note, 0);
+                    if (step.counter == 0) {
+                        triggerNoteOff(step);
                     }
                 }
             }
             Step& step = steps[stepCounter];
-            if (targetPlugin && step.enabled && conditionMet(step)) {
+            if (step.enabled && conditionMet(step)) {
                 step.counter = step.len;
-                // printf("[step %d] should trigger note on %d %f\n", stepCounter, step.note, step.velocity);
-                targetPlugin->noteOn(step.note, step.velocity);
+                triggerNoteOn(step);
             }
         }
     }
