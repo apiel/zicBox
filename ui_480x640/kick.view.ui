@@ -1,5 +1,5 @@
 $track=1
-while: $track < $bassTrack
+while: $track < $sampleTrackStart
   VIEW: KickParams_track_$track_page_0
     INCLUDE: kickParams_page_0.view.ui
     USE_SHARED_COMPONENT: SharedGridSequencer
