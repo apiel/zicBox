@@ -15,9 +15,5 @@ https://github.com/apiel/zicBox/assets/5873198/ce7851f0-9692-4132-8f6f-98f3bc188
 
 https://github.com/apiel/zicBox/assets/5873198/230f3da5-50a4-4377-aa6f-c81a4099012f
 
-https://github.com/apiel/zicBox/assets/5873198/c0d52fd8-47ca-4fdc-a793-1d83fe978311
-
 https://github.com/apiel/zicBox/assets/5873198/e99b061a-aea1-4e77-b8cd-2412d9264760
-
-
 
