@@ -12,8 +12,8 @@ class EffectFilterData {
 public:
     float cutoff = 0.0f;
     float feedback = 0.0f;
-    float buf0 = 0.0f;
     float buf1 = 0.0f;
+    float lp = 0.0f;
     float hp = 0.0f;
     float bp = 0.0f;
     float resonance = 0.0f;
@@ -37,11 +37,11 @@ public:
 
     void setSampleData(float inputValue)
     {
-        hp = inputValue - buf0;
-        bp = buf0 - buf1;
+        hp = inputValue - lp;
+        bp = lp - buf1;
 
-        buf0 = buf0 + cutoff * (hp + feedback * bp);
-        buf1 = buf1 + cutoff * (buf0 - buf1);
+        lp = lp + cutoff * (hp + feedback * bp);
+        buf1 = buf1 + cutoff * (lp - buf1);
     }
 };
 

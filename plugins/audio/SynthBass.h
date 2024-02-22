@@ -89,7 +89,7 @@ public:
             val += 0.01 * props.lookupTable->getNoise() * noise.get();
         }
         _filter.setSampleData(val * _velocity * env);
-        float out = _filter.buf0 + _filter.buf0 * clipping.pct() * 8;
+        float out = _filter.lp + _filter.lp * clipping.pct() * 8;
         return range(out, -1.0f, 1.0f);
     }
 
