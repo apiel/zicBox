@@ -286,7 +286,7 @@ public:
             unsigned int ampIndex = 0;
             unsigned int freqIndex = 0;
             EffectFilterData _filter;
-            _filter.setResonance(resEnv.get());
+            _filter.setResonance(resEnv.pct());
             float index = 0;
             for (int i = 0; i < ZIC_KICK_UI; i++) {
                 float time = i / (float)ZIC_KICK_UI;

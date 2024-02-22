@@ -89,6 +89,7 @@
     ENCODER_ID: 10
     TRACK: $track
     VALUE: Kick23 RESONANCE_ENV
+    LABEL: ResonanceEnv.
     COLOR: #ff8d99
     ID: Param10_enc
 
