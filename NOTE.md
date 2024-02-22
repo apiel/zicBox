@@ -1,18 +1,19 @@
-- TODO quick turn encoder increase resolution
-
 - TODO make sequencer specific to a track instead of plugin...
+
+- TODO try to achieve bass within the kick engine
+    > apply amp envelop on filter or could even have his own envelop...
+    > hardware: make misc synth button were legacy bass engine could go, as PD engine.
 
 - TODO save/load project
 
 - TODO FM ui waveform, maybe just show the 4 envelop...
 
+- TODO allow lua configuration??
+
 - TODO filebrowser
     - serialised might want to use filename instead of file index
 
 - TODO keyboad should handle longpress (see button...)
-
-- TODO SynthSample 
-    - multi sample mix 2 (or even 3) sample together
 
 - TODO hardware look for touch encoder or button encoder
     - https://www.mouser.at/datasheet/2/54/PEC12R-777795.pdf
@@ -61,8 +62,6 @@
 - TODO pad motion recorder
 
 - TODO button shift can change encoder resolution
-
-- TODO oscEncoder use time to make bigger step...
 
 - INFO Should SDL in draw be injectable? What if we want to use those i2c 1306 display or similar...
 
