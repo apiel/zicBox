@@ -25,7 +25,7 @@ protected:
 
     struct MidiNoteEvent {
         uint8_t channel;
-        AudioPlugin* plugin;
+        NoteTarget target;
     };
     std::vector<MidiNoteEvent> midiNoteEvents;
 
@@ -34,15 +34,28 @@ protected:
     static AudioPluginHandler* instance;
     AudioPluginHandler() { }
 
-    bool assignMidiNoteChannel(char* value)
+    bool assignMidiPluginChannel(char* value)
     {
         uint8_t channel = atoi(value);
         if (channel < 1 || channel > 16) {
             APP_INFO("Invalid midi note channel, set to 1\n");
             channel = 1;
         }
-        midiNoteEvents.push_back({ (uint8_t)(channel - 1), plugins.back().instance });
-        APP_INFO("[%s] Midi note channel set to %d\n", plugins.back().instance->name, channel);
+        midiNoteEvents.push_back({ (uint8_t)(channel - 1), { .plugin = plugins.back().instance } });
+        APP_INFO("[%s] Midi plugin channel set to %d\n", plugins.back().instance->name, channel);
+        return true;
+    }
+
+    bool assignMidiTrackChannel(char* value)
+    {
+        int16_t track = atoi(strtok(value, " "));
+        uint8_t channel = atoi(strtok(NULL, " "));
+        if (channel < 1 || channel > 16) {
+            APP_INFO("Invalid midi note channel, set to 1\n");
+            channel = 1;
+        }
+        midiNoteEvents.push_back({ (uint8_t)(channel - 1), { track } });
+        APP_INFO("[%s] Midi track channel set to %d\n", plugins.back().instance->name, channel);
         return true;
     }
 
@@ -159,8 +172,10 @@ public:
                 return true;
             } else if (strcmp(key, "MIDI_CC") == 0) {
                 return assignMidiMapping(value);
-            } else if (strcmp(key, "MIDI_NOTE_CHANNEL") == 0) {
-                return assignMidiNoteChannel(value);
+            } else if (strcmp(key, "MIDI_CHANNEL") == 0) {
+                return assignMidiPluginChannel(value);
+            } else if (strcmp(key, "TRACK_MIDI_CHANNEL") == 0) {
+                return assignMidiTrackChannel(value);
             }
         }
         return false;
@@ -176,7 +191,8 @@ public:
         return false;
     }
 
-    void noteOn(uint8_t note, float velocity, NoteTarget target){
+    void noteOn(uint8_t note, float velocity, NoteTarget target)
+    {
         if (target.plugin) {
             target.plugin->noteOn(note, velocity);
         } else {
@@ -188,7 +204,8 @@ public:
         }
     }
 
-    void noteOff(uint8_t note, float velocity, NoteTarget target){
+    void noteOff(uint8_t note, float velocity, NoteTarget target)
+    {
         if (target.plugin) {
             target.plugin->noteOff(note, velocity);
         } else {
@@ -202,13 +219,13 @@ public:
 
     void noteOn(uint8_t channel, uint8_t note, float velocity)
     {
-        // printf("-------------- noteOn %d %d %d\n", channel, note, velocity);
+        // printf("-------------- noteOn %d %d %f\n", channel, note, velocity);
         for (MidiNoteEvent& target : midiNoteEvents) {
             if (target.channel == channel) {
                 if (velocity == 0) {
-                    target.plugin->noteOff(note, velocity);
+                    noteOff(note, velocity, target.target);
                 } else {
-                    target.plugin->noteOn(note, velocity);
+                    noteOn(note, velocity, target.target);
                 }
             }
         }
@@ -216,10 +233,10 @@ public:
 
     void noteOff(uint8_t channel, uint8_t note, float velocity)
     {
-        // printf("------------- noteOff %d %d %d\n", channel, note, velocity);
+        // printf("------------- noteOff %d %d %f\n", channel, note, velocity);
         for (MidiNoteEvent& target : midiNoteEvents) {
             if (target.channel == channel) {
-                target.plugin->noteOff(note, velocity);
+                noteOn(note, velocity, target.target);
             }
         }
     }
