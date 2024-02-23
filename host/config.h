@@ -2,11 +2,14 @@
 #define _HOST_CONFIG_H_
 
 #include "../dustscript/dustscript.h"
+#include "../helpers/configPlugin.h"
 #include "../helpers/getFullpath.h"
 #include "def.h"
 #include "midi.h"
 
-void hostScriptCallback(char* key, char* value, const char* filename, uint8_t indentation, DustScript& instance)
+void hostScriptCallback(char* key, char* value, const char* filename, uint8_t indentation, DustScript& instance);
+
+void hostScriptCallback(char* key, char* value, const char* filename)
 {
     if (strcmp(key, "print") == 0) {
         printf(">> LOG: %s\n", value);
@@ -34,6 +37,8 @@ void hostScriptCallback(char* key, char* value, const char* filename, uint8_t in
         if (strcmp(value, "true") == 0) {
             enableDebug();
         }
+    } else if (strcmp(key, "LOAD_CONFIG_PLUGIN") == 0) {
+        loadConfigPlugin(value, filename, hostScriptCallback);
     } else if (strcmp(key, "AUTO_SAVE") == 0) {
         uint32_t msInterval = atoi(value);
         if (msInterval > 0) {
@@ -42,6 +47,11 @@ void hostScriptCallback(char* key, char* value, const char* filename, uint8_t in
     } else {
         AudioPluginHandler::get().config(key, value);
     }
+}
+
+void hostScriptCallback(char* key, char* value, const char* filename, uint8_t indentation, DustScript& instance)
+{
+    hostScriptCallback(key, value, filename);
 }
 
 void loadHostConfig(const char* filename)

@@ -4,6 +4,8 @@
 #include <string.h>
 
 // TODO use string...
+
+// paste path into parentFilename folder and output is fullpathBuffer
 char* getFullpath(char* path, const char* parentFilename, char* fullpathBuffer)
 {
     if (path[0] == '/') {
