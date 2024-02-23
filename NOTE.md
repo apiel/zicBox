@@ -101,6 +101,10 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 
 ## zicHost
 
+- TODO look at https://github.com/pichenettes/eurorack/tree/master/shades
+
+- TODO could use lookup table for filter resolution
+
 - TODO SynthSample 
     - fix openned voice
     - multi sample mix 2 (or even 3) sample together

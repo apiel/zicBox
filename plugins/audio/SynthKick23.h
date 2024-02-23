@@ -3,8 +3,8 @@
 
 #include "Wavetable.h"
 #include "audioPlugin.h"
-#include "mapping.h"
 #include "filter.h"
+#include "mapping.h"
 #include "utils/EnvelopRelative.h"
 
 #define ZIC_KICK_ENV_AMP_STEP 4
@@ -20,6 +20,7 @@ Synth engine to generate drum sounds using wavetables.
 */
 class SynthKick23 : public Mapping {
 protected:
+    uint8_t baseNote = 60;
     uint64_t sampleRate;
 
     Wavetable wavetable;
@@ -32,14 +33,16 @@ protected:
     unsigned int sampleCountDuration = 0;
     unsigned int sampleDurationCounter = 0;
 
+    float noteMult = 1.0f;
+
     EffectFilterData filter;
 
     EnvelopRelative envelopAmp = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.3f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
     EnvelopRelative envelopFreq = EnvelopRelative({ { 1.0f, 0.0f }, { 0.26f, 0.03f }, { 0.24f, 0.35f }, { 0.22f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
 
-    float sample(EffectFilterData& _filter, float time, float* index, float amp, float freq)
+    float sample(EffectFilterData& _filter, float time, float* index, float amp, float freq, float _noteMult = 1.0f)
     {
-        float out = wavetable.sample(time, index, amp, freq, pitchMult);
+        float out = wavetable.sample(time, index, amp, freq, pitchMult * _noteMult);
 
         if (noise.get() > 0.0f) {
             out += 0.01 * props.lookupTable->getNoise() * noise.get();
@@ -47,8 +50,8 @@ protected:
 
         if (resEnv.get() > 0.0f) {
             _filter.setCutoff(amp * 0.85);
-            _filter.setSampleData(out );
-            out = _filter.lp;   
+            _filter.setSampleData(out);
+            out = _filter.lp;
         }
 
         out = out + out * clipping.pct() * 20;
@@ -68,7 +71,7 @@ public:
     /*md - `MORPH` Morhp over the wavetable.*/
     Val& morph = val(0.0f, "MORPH", { "Morph", .min = 1.0, .max = ZIC_WAVETABLE_WAVEFORMS_COUNT, .step = 0.1, .floatingPoint = 1 }, [&](auto p) { setMorph(p.value); });
     /*md - `PITCH` Modulate the pitch.*/
-    Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -12, .max = 12 }, [&](auto p) { setPitch(p.value); });
+    Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -36, .max = 36 }, [&](auto p) { setPitch(p.value); });
     /*md - `DURATION` set the duration of the envelop.*/
     Val& duration = val(100.0f, "DURATION", { "Duration", .min = 10.0, .max = 5000.0, .step = 10.0, .unit = "ms" }, [&](auto p) { setDuration(p.value); });
 
@@ -135,7 +138,7 @@ public:
             float time = (float)sampleDurationCounter / (float)sampleCountDuration;
             float envAmp = envelopAmp.next(time) + input * fmAmpMod.pct();
             float envFreq = envelopFreq.next(time) + input * fmFreqMod.pct();
-            buf[track] = sample(filter, time, &wavetable.sampleIndex, envAmp, envFreq);
+            buf[track] = sample(filter, time, &wavetable.sampleIndex, envAmp, envFreq, noteMult);
             sampleDurationCounter++;
             // printf("[%d] sample: %d of %d=%f\n", track, sampleDurationCounter, sampleCountDuration, buf[track]);
         }
@@ -262,6 +265,8 @@ public:
         sampleDurationCounter = 0;
         envelopAmp.reset();
         envelopFreq.reset();
+
+        noteMult = pow(2, ((note - baseNote + pitch.get()) / 12.0));
     }
 
     AudioPlugin* siblingPlugin = NULL;
