@@ -33,6 +33,7 @@ protected:
     unsigned int sampleCountDuration = 0;
     unsigned int sampleDurationCounter = 0;
 
+    float velocity = 1.0f;
     float noteMult = 1.0f;
 
     EffectFilterData filter;
@@ -40,9 +41,9 @@ protected:
     EnvelopRelative envelopAmp = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.3f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
     EnvelopRelative envelopFreq = EnvelopRelative({ { 1.0f, 0.0f }, { 0.26f, 0.03f }, { 0.24f, 0.35f }, { 0.22f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
 
-    float sample(EffectFilterData& _filter, float time, float* index, float amp, float freq, float _noteMult = 1.0f)
+    float sample(EffectFilterData& _filter, float time, float* index, float amp, float freq, float _noteMult = 1.0f, float _velocity = 1.0f)
     {
-        float out = wavetable.sample(time, index, amp, freq, pitchMult * _noteMult);
+        float out = wavetable.sample(time, index, amp * _velocity, freq, pitchMult * _noteMult);
 
         if (noise.get() > 0.0f) {
             out += 0.01 * props.lookupTable->getNoise() * noise.get();
@@ -138,7 +139,7 @@ public:
             float time = (float)sampleDurationCounter / (float)sampleCountDuration;
             float envAmp = envelopAmp.next(time) + input * fmAmpMod.pct();
             float envFreq = envelopFreq.next(time) + input * fmFreqMod.pct();
-            buf[track] = sample(filter, time, &wavetable.sampleIndex, envAmp, envFreq, noteMult);
+            buf[track] = sample(filter, time, &wavetable.sampleIndex, envAmp, envFreq, noteMult, velocity);
             sampleDurationCounter++;
             // printf("[%d] sample: %d of %d=%f\n", track, sampleDurationCounter, sampleCountDuration, buf[track]);
         }
@@ -250,35 +251,17 @@ public:
         // printf(">>>>>>>>>>>>>>.... sampleCountDuration: %d (%d)\n", sampleCountDuration, duration.getAsInt());
     }
 
-    void noteOn(uint8_t note, float velocity) override
+    void noteOn(uint8_t note, float _velocity) override
     {
-        // TODO use velocity
-        printf("kick noteOn: %d %f\n", note, velocity);
+        // printf("kick noteOn: %d %f\n", note, _velocity);
 
-        if (siblingPlugin) {
-            siblingPlugin->noteOn(note, velocity);
-        }
-
-        // Could change the frequency base on the note...
-        // Could change the amplitude base on the velocity...
         wavetable.sampleIndex = 0;
         sampleDurationCounter = 0;
         envelopAmp.reset();
         envelopFreq.reset();
+        velocity = _velocity;
 
         noteMult = pow(2, ((note - baseNote + pitch.get()) / 12.0));
-    }
-
-    AudioPlugin* siblingPlugin = NULL;
-
-    bool config(char* key, char* value)
-    {
-        if (strcmp(key, "FORWARD_NOTE_ON") == 0) {
-            siblingPlugin = props.audioPluginHandler->getPluginPtr(value);
-            return true;
-        }
-
-        return Mapping::config(key, value);
     }
 
     void* data(int id, void* userdata = NULL)
