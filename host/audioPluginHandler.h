@@ -10,6 +10,13 @@
 #include "def.h"
 #include "midiMapping.h"
 
+/*md
+## Global and generic config
+
+> [!NOTE] generic config are configs that can be used by any plugin. Therefor they must be called once a plugin has been defined.
+
+*/
+
 class AudioPluginHandler : public AudioPluginHandlerInterface {
 protected:
     LookupTable lookupTable;
@@ -170,10 +177,13 @@ public:
         if (plugins.size() > 0) {
             if (plugins.back().instance->config(key, value)) {
                 return true;
+                /*md - `MIDI_CC: CUTOFF b0 4c xx` assign a midi CC command to a given plugin value (this is a generic config). */
             } else if (strcmp(key, "MIDI_CC") == 0) {
                 return assignMidiMapping(value);
+                /*md - `MIDI_CHANNEL: 1` assign a midi channel to a given plugin for a note on/off (this is a generic config). */
             } else if (strcmp(key, "MIDI_CHANNEL") == 0) {
                 return assignMidiPluginChannel(value);
+                /*md - `TRACK_MIDI_CHANNEL: track channel` assign a midi channel to a given track for a note on/off, e.g. `TRACK_MIDI_CHANNEL: 1 2` */
             } else if (strcmp(key, "TRACK_MIDI_CHANNEL") == 0) {
                 return assignMidiTrackChannel(value);
             }
