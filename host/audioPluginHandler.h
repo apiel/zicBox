@@ -13,7 +13,8 @@
 /*md
 ## Global and generic config
 
-> [!NOTE] generic config are configs that can be used by any plugin. Therefor they must be called once a plugin has been defined.
+> [!NOTE]
+> generic config are configs that can be used by any plugin. Therefor they must be called once a plugin has been defined.
 
 */
 
