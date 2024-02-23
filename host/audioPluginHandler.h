@@ -14,7 +14,7 @@
 ## Global and generic config
 
 > [!NOTE]
-> generic config are configs that can be used by any plugin. Therefor they must be called once a plugin has been defined.
+> Generic config are configs that can be used by any plugin. This must be passed after a plugin has been defined.
 
 */
 
