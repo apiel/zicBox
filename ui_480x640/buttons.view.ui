@@ -7,7 +7,7 @@ COMPONENT: Button ($encX1-10) 615 110 20
   KEYMAP: Keyboard 43 trigger
   KEYMAP: Keypad 12 trigger
 
-COMPONENT: Button ($encX2-10) 615 110 20
+COMPONENT: Button ($encX2-15) 615 110 20
   COLOR: #AAAAAA
   if: $track > -1
     LABEL: Step Toggle
@@ -15,7 +15,7 @@ COMPONENT: Button ($encX2-10) 615 110 20
   KEYMAP: Keyboard 20 trigger
   KEYMAP: Keypad 13 trigger
 
-COMPONENT: Button ($encX3-10) 615 110 20
+COMPONENT: Button ($encX3-20) 615 110 20
   COLOR: #AAAAAA
   LABEL: Shift
   ON_PRESS: &SHIFT true
@@ -24,7 +24,7 @@ COMPONENT: Button ($encX3-10) 615 110 20
   KEYMAP: Keypad 14 trigger
   KEYMAP: Keyboard 225 trigger
 
-COMPONENT: Button ($encX4-10) 615 110 20
+COMPONENT: Button ($encX4-25) 615 110 20
   COLOR: #AAAAAA
   LABEL: &icon::play::filled
   ON_RELEASE: &AUDIO_EVENT TOGGLE_PLAY_PAUSE
