@@ -176,6 +176,30 @@ public:
         return false;
     }
 
+    void noteOn(uint8_t note, float velocity, NoteTarget target){
+        if (target.plugin) {
+            target.plugin->noteOn(note, velocity);
+        } else {
+            for (AudioPluginHandlerInterface::Plugin& plugin : plugins) {
+                if (target.track == -1 || target.track == plugin.instance->track) {
+                    plugin.instance->noteOn(note, velocity);
+                }
+            }
+        }
+    }
+
+    void noteOff(uint8_t note, float velocity, NoteTarget target){
+        if (target.plugin) {
+            target.plugin->noteOff(note, velocity);
+        } else {
+            for (AudioPluginHandlerInterface::Plugin& plugin : plugins) {
+                if (target.track == -1 || target.track == plugin.instance->track) {
+                    plugin.instance->noteOff(note, velocity);
+                }
+            }
+        }
+    }
+
     void noteOn(uint8_t channel, uint8_t note, float velocity)
     {
         // printf("-------------- noteOn %d %d %d\n", channel, note, velocity);

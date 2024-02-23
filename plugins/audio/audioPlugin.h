@@ -48,6 +48,13 @@ public:
     virtual void clockTick() = 0;
     virtual void sendEvent(AudioEventType event) = 0;
 
+    struct NoteTarget {
+        int16_t track = -1;
+        AudioPlugin* plugin = NULL;
+    };
+    virtual void noteOn(uint8_t note, float velocity, NoteTarget target) = 0;
+    virtual void noteOff(uint8_t note, float velocity, NoteTarget target) = 0;
+
     virtual bool isPlaying() = 0;
     virtual bool isStopped() = 0;
 };
