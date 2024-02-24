@@ -28,6 +28,7 @@ libs:
 	make -C plugins/audio
 	make -C plugins/components
 	make -C plugins/controllers
+	make -C plugins/config
 	@echo "\nbuild plugins done."
 
 soHost:
