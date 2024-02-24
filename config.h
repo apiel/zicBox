@@ -35,7 +35,8 @@ SET_COLOR: overlay #00FFFF
 
 In this example, we change the `overlay` color to `#00FFFF`.
 
-<code style="color: red">#ff8d99 red</code>
+
+![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+)
 
 - `#21252b` background
 - `#00FFFF` overlay
