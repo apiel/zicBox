@@ -38,12 +38,12 @@ In this example, we change the `overlay` color to `#00FFFF`.
 
 
 
-- ![#21252b](https://via.placeholder.com/15/21252b/000000?text=+)  `#21252b` background
-- ![#00FFFF](https://via.placeholder.com/15/00FFFF/000000?text=+)  `#00FFFF` overlay
-- ![#00b300](https://via.placeholder.com/15/00b300/000000?text=+)  `#00b300` on
-- ![#ffffff](https://via.placeholder.com/15/ffffff/000000?text=+)  `#ffffff` white
-- ![#adcdff](https://via.placeholder.com/15/adcdff/000000?text=+)  `#adcdff` blue
-- ![#ff8d99](https://via.placeholder.com/15/ff8d99/000000?text=+)  `#ff8d99` red
+- `#21252b` ![#21252b](https://via.placeholder.com/15/21252b/000000?text=+) background
+- `#00FFFF` ![#00FFFF](https://via.placeholder.com/15/00FFFF/000000?text=+) overlay
+- `#00b300` ![#00b300](https://via.placeholder.com/15/00b300/000000?text=+) on
+- `#ffffff` ![#ffffff](https://via.placeholder.com/15/ffffff/000000?text=+) white
+- `#adcdff` ![#adcdff](https://via.placeholder.com/15/adcdff/000000?text=+) blue
+- `#ff8d99` ![#ff8d99](https://via.placeholder.com/15/ff8d99/000000?text=+) red
 
 > This list might be outdated, to get the list of existing colors, look at `./styles.h`
         */
