@@ -3,6 +3,7 @@
 - TODO FM ui waveform, maybe just show the 4 envelop...
 
 - TODO allow lua configuration??
+    - detect if liblua is installed...
 
 - TODO filebrowser
     - serialised might want to use filename instead of file index
