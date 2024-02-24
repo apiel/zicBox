@@ -38,7 +38,7 @@ void sendAudioEvent(AudioEventType event)
     audioPluginHandler->sendEvent(event);
 }
 
-bool loadHost(std::string hostConfigPath)
+bool loadHost(std::string hostConfigPath, const char *pluginConfig)
 {
     if (audioPluginHandler) {
         SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Host already loaded\n");
@@ -46,7 +46,7 @@ bool loadHost(std::string hostConfigPath)
     }
 
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Initializing host\n");
-    audioPluginHandler = initHost(hostConfigPath.c_str());
+    audioPluginHandler = initHost(hostConfigPath.c_str(), pluginConfig);
     if (!audioPluginHandler) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Error initializing host\n");
         return false;
