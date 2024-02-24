@@ -6,21 +6,17 @@
 // TODO use string...
 
 // paste path into parentFilename folder and output is fullpathBuffer
-char* getFullpath(char* path, const char* parentFilename, char* fullpathBuffer)
+char* getFullpath(char* newPath, const char* parentFilename, char* fullpathBuffer)
 {
-    if (path[0] == '/') {
-        return path;
-    }
-
+    char* lastSlash;
     strcpy(fullpathBuffer, parentFilename);
-    char* lastSlash = strrchr(fullpathBuffer, '/');
-    if (lastSlash) {
+    if (newPath[0] == '/' || (lastSlash = strrchr(fullpathBuffer, '/')) == NULL) {
+        fullpathBuffer[0] = '\0';
+    } else {
         *lastSlash = '\0';
         strcat(fullpathBuffer, "/");
-    } else {
-        fullpathBuffer[0] = '\0';
     }
-    strcat(fullpathBuffer, path);
+    strcat(fullpathBuffer, newPath);
     return fullpathBuffer;
 }
 

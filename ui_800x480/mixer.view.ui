@@ -1,7 +1,7 @@
 # Mixer view
 VIEW: Mixer
 
-  INCLUDE: layout.ui
+  include: layout.ui
 
   COMPONENT: Encoder 0 0 100 50
     ENCODER_ID: 0

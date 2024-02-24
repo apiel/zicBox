@@ -47,12 +47,12 @@ $screen=ui_480x640
 ### Default ###
 
 if: $screen == ui_800x480
-  INCLUDE: ui_800x480/layout.view.ui
-  INCLUDE: ui_800x480/main/main.view.ui
-  INCLUDE: ui_800x480/granular.view.ui
-  INCLUDE: ui_800x480/kick/kick.view.ui
-  INCLUDE: ui_800x480/demo.view.ui
-  INCLUDE: ui_800x480/mixer.view.ui
+  include: ui_800x480/layout.view.ui
+  include: ui_800x480/main/main.view.ui
+  include: ui_800x480/granular.view.ui
+  include: ui_800x480/kick/kick.view.ui
+  include: ui_800x480/demo.view.ui
+  include: ui_800x480/mixer.view.ui
 
   STARTUP_VIEW: Demo
 
@@ -64,7 +64,7 @@ if: $screen == ui_320x172
   SCREEN: 320 172
   $encoderSize=86
   print: ....................the encoder size is $encoderSize
-  INCLUDE: ui_320x172/main.view.ui
+  include: ui_320x172/main.view.ui
 
 ## 640x480 ###
 
@@ -72,7 +72,7 @@ if: $screen == ui_640x480
   SCREEN: 640 480
   $encoderSize=100
   print: ....................the encoder size is $encoderSize
-  INCLUDE: ui_640x480/main.view.ui
+  include: ui_640x480/main.view.ui
 
 ## 480x640 ###
 
@@ -100,4 +100,4 @@ if: $screen == ui_480x640
   ADD_ZONE_ENCODER: $encX2 $encY3 $encSize $encSize
   ADD_ZONE_ENCODER: $encX3 $encY3 $encSize $encSize
   ADD_ZONE_ENCODER: $encX4 $encY3 $encSize $encSize
-  INCLUDE: ui_480x640/main.view.ui
+  include: ui_480x640/main.view.ui

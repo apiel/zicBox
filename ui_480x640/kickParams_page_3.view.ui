@@ -1,4 +1,4 @@
-INCLUDE: distortionParams_page.view.ui
+include: distortionParams_page.view.ui
 
 
   COMPONENT: Wave 0 275 480 100

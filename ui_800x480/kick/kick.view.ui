@@ -2,7 +2,7 @@
 # Kick view
 VIEW: Kick
 
-  INCLUDE: ../layout.ui
+  include: ../layout.ui
 
   COMPONENT: Encoder 0 0 100 50
     ENCODER_ID: 0
@@ -33,5 +33,5 @@ VIEW: Kick
 
   COMPONENT: Wave 0 50 800 330
 
-  INCLUDE: envAmp.ui
-  INCLUDE: envFreq.ui
+  include: envAmp.ui
+  include: envFreq.ui

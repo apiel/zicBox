@@ -1,7 +1,7 @@
 # Main view
 VIEW: Main
 
-  INCLUDE: ../layout.ui
+  include: ../layout.ui
 
   COMPONENT: $encoder 0 0 100 100
     ENCODER_ID: 0
@@ -39,4 +39,4 @@ VIEW: Main
 
 # Granular
 
-  INCLUDE: granular.ui
+  include: granular.ui
