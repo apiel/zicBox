@@ -11,19 +11,19 @@ extern "C" {
 To set config from a lua script, you need to call `setConfig(key, value)` in the lua script:
 
 ```lua
-setConfig("print", "Call ZicBox print from Lua.");
-setConfig("PLUGIN_COMPONENT", "Encoder2 ./plugins/components/build/libzic_Encoder2Component.so");
-setConfig("LOAD_HOST", "config.cfg");
-setConfig("VIEW", "Main");
+setConfig("print", "Call ZicBox print from Lua.")
+setConfig("PLUGIN_COMPONENT", "Encoder2 ./plugins/components/build/libzic_Encoder2Component.so")
+setConfig("LOAD_HOST", "config.cfg")
+setConfig("VIEW", "Main")
 
 -- Let's create an encoder function
 function setEncoder (x, y, width, height, encoder_id, value)
-  setConfig("COMPONENT", "Encoder2" .. x .. " " .. y .. " " .. width .. " " .. height);
-  setConfig("ENCODER_ID", encoder_id);
-  setConfig("VALUE", value);
+  setConfig("COMPONENT", "Encoder2" .. x .. " " .. y .. " " .. width .. " " .. height)
+  setConfig("ENCODER_ID", encoder_id)
+  setConfig("VALUE", value)
 end
 
-setEncoder(10, 10, 100, 100, 1, "FM DECAY_1");
+setEncoder(10, 10, 100, 100, 1, "FM DECAY_1")
 
 -- ...
 ```
