@@ -26,10 +26,8 @@ void loadPluginController(char* value, const char* filename)
     Controller plugin;
     strcpy(plugin.name, strtok(value, " "));
     char* path = strtok(NULL, " ");
-
-    char fullpath[512];
-    getFullpath(path, filename, fullpath);
-    void* handle = dlopen(fullpath, RTLD_LAZY);
+    
+    void* handle = dlopen(getFullpath(path, filename).c_str(), RTLD_LAZY);
 
     if (!handle) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot open library: %s\n", dlerror());

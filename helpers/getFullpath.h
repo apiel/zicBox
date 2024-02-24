@@ -3,21 +3,14 @@
 
 #include <string.h>
 
-// TODO use string...
-
-// paste path into parentFilename folder and output is fullpathBuffer
-char* getFullpath(char* newPath, const char* parentFilename, char* fullpathBuffer)
+std::string getFullpath(std::string newPath, std::string parentFilename)
 {
-    char* lastSlash;
-    strcpy(fullpathBuffer, parentFilename);
-    if (newPath[0] == '/' || (lastSlash = strrchr(fullpathBuffer, '/')) == NULL) {
-        fullpathBuffer[0] = '\0';
-    } else {
-        *lastSlash = '\0';
-        strcat(fullpathBuffer, "/");
+    size_t lastSlash;
+    if (newPath[0] == '/' || (lastSlash = parentFilename.find_last_of("/")) == std::string::npos) {
+        return newPath;
     }
-    strcat(fullpathBuffer, newPath);
-    return fullpathBuffer;
+    std::string parentFolder = parentFilename.substr(0, lastSlash);
+    return parentFolder + "/" + newPath;
 }
 
 #endif
