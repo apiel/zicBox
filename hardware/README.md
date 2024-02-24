@@ -1,4 +1,4 @@
-# 06 Hardware
+# 07 Hardware
 
 > [!TIP]
 > If you any idea or suggestion about the hardware, share them here: https://github.com/apiel/zicBox/discussions/2

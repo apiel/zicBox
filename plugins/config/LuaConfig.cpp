@@ -5,6 +5,23 @@ extern "C" {
 #include <lua.h>
 #include <lualib.h>
 
+/*md
+## LuaConfig
+
+To set config from a lua script, you need to call `setConfig(key, value)` in the lua script:
+
+```lua
+setConfig("print", "Call ZicBox print from Lua.");
+setConfig("PLUGIN_COMPONENT", "Encoder2 ./plugins/components/build/libzic_Encoder2Component.so");
+setConfig("LOAD_HOST", "config.cfg");
+setConfig("VIEW", "Main");
+setConfig("COMPONENT", "Encoder2 10 10 100 100");
+  setConfig("ENCODER_ID", "1");
+  setConfig("VALUE", "FM DECAY_1");
+-- ...
+```
+
+*/
 static int setConfigFn(lua_State* L)
 {
     lua_getglobal(L, "callbackPtr");
