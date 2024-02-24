@@ -53,7 +53,9 @@ void uiScriptCallback(char* key, char* value, const char* filename)
         char* color = strtok(NULL, " ");
         ViewManager::get().draw.setColor(name, color);
     } else if (strcmp(key, "LOAD_CONFIG_PLUGIN") == 0) {
-        loadConfigPlugin(value, filename, uiScriptCallback);
+        char* scriptPath = strtok(value, " ");
+        char* plugin = strtok(NULL, " ");
+        loadConfigPlugin(scriptPath, plugin, uiScriptCallback);
     } else if (pluginControllerConfig(key, value) || EventHandler::get().config(key, value)) {
         return;
     } else {
@@ -61,9 +63,9 @@ void uiScriptCallback(char* key, char* value, const char* filename)
     }
 }
 
-void loadUiConfig(const char* filename, const char* pluginPath)
+void loadUiConfig(const char* scriptPath, const char* pluginPath)
 {
-    loadConfigPlugin(pluginPath, filename, uiScriptCallback);
+    loadConfigPlugin(pluginPath, scriptPath, uiScriptCallback);
 }
 
 #endif
