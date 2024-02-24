@@ -13,7 +13,7 @@ The main configuration file is `./config.ui`.
 Those `.ui` files are simple configuration files. It is base on [DustScript](https://github.com/apiel/dustscript) mainly using `KEY:VALUE` to set the configuration and providing some basic extra feature on top of it, like variable, if statement and while loop. However, using those script features are not mandatory and the UI can be fully configured without it.
 
 > [!TIP]
-> Instead to use DustScript, Lua can be used or any other configuration plugin, set [06-Config-plugins](https://github.com/apiel/zicBox/wiki/06-Config-plugins).
+> Instead to use DustScript, Lua can be used or any other configuration plugin, see [06-Config-plugins](https://github.com/apiel/zicBox/wiki/06-Config-plugins).
 
 The user interface is composed of views and components. A view is composed of multiple components. A component is for example a button or a rotary encoder. Each of the UI components are external shared library that can be loaded dynamically when the application start.
 
