@@ -3,7 +3,6 @@
 
 #include "../dustscript/dustscript.h"
 #include "../helpers/configPlugin.h"
-#include "../helpers/getFullpath.h"
 #include "def.h"
 #include "midi.h"
 

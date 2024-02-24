@@ -17,9 +17,7 @@ void uiScriptCallback(char* key, char* value, const char* filename)
     if (strcmp(key, "print") == 0) {
         printf(">> LOG: %s\n", value);
     } else if (strcmp(key, "LOAD_HOST") == 0) {
-        char hostConfigPath[512];
-        getFullpath(value, filename, hostConfigPath);
-        if (!loadHost(hostConfigPath)) {
+        if (!loadHost(getFullpath(value, filename))) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not load host");
         }
     } else if (strcmp(key, "SCREEN") == 0) {

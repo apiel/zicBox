@@ -8,10 +8,7 @@
 
 void loadConfigPlugin(char* path, const char* filename, void (*callback)(char* command, char* params, const char* filename))
 {
-    char fullpath[512];
-    getFullpath(path, filename, fullpath);
-    void* handle = dlopen(fullpath, RTLD_LAZY);
-
+    void* handle = dlopen(getFullpath(path, filename).c_str(), RTLD_LAZY);
     if (!handle) {
         printf("Cannot open library: %s\n", dlerror());
         return;
