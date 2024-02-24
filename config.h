@@ -25,28 +25,28 @@ void uiScriptCallback(char* key, char* value, const char* filename)
     } else if (strcmp(key, "PLUGIN_CONTROLLER") == 0) {
         loadPluginController(value, filename);
         /*md
-        ### SET_COLOR
+### SET_COLOR
 
-        `SET_COLOR` give the possibility to customize the pre-defined color for the UI. To change a color, use `SET_COLOR: name_of_color #xxxxxx`.
+`SET_COLOR` give the possibility to customize the pre-defined color for the UI. To change a color, use `SET_COLOR: name_of_color #xxxxxx`.
 
-        ```coffee
-        SET_COLOR: overlay #00FFFF
-        ```
+```coffee
+SET_COLOR: overlay #00FFFF
+```
 
-        In this example, we change the `overlay` color to `#00FFFF`.
+In this example, we change the `overlay` color to `#00FFFF`.
 
-        ```cpp
-            .colors = {
-                .background = {0x21, 0x25, 0x2b, 255},  // #21252b
-                .overlay = {0xd1, 0xe3, 0xff, 0x1e},    // #d1e3ff1e
-                .on = {0x00, 0xb3, 0x00, 255},          // #00b300
-                .white = {0xff, 0xff, 0xff, 255},       // #ffffff
-                .blue = {0xad, 0xcd, 0xff, 255},        // #adcdff
-                .red = {0xff, 0x8d, 0x99, 255},         // #ff8d99
-            },
-        ```
+```cpp
+    .colors = {
+        .background = {0x21, 0x25, 0x2b, 255},  // #21252b
+        .overlay = {0xd1, 0xe3, 0xff, 0x1e},    // #d1e3ff1e
+        .on = {0x00, 0xb3, 0x00, 255},          // #00b300
+        .white = {0xff, 0xff, 0xff, 255},       // #ffffff
+        .blue = {0xad, 0xcd, 0xff, 255},        // #adcdff
+        .red = {0xff, 0x8d, 0x99, 255},         // #ff8d99
+    },
+```
 
-        > This list might be outdated, to get the list of existing colors, look at `./styles.h`
+> This list might be outdated, to get the list of existing colors, look at `./styles.h`
         */
     } else if (strcmp(key, "SET_COLOR") == 0) {
         char* name = strtok(value, " ");
