@@ -10,7 +10,7 @@ void instantiateConfigPlugin(const char* pluginPath, const char* scriptPath, voi
 {
     void* handle = dlopen(pluginPath, RTLD_LAZY);
     if (!handle) {
-        printf("Cannot open library: %s\n", dlerror());
+        printf("Cannot open config library %s [%s]: %s\n", pluginPath, scriptPath, dlerror());
         return;
     }
 

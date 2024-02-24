@@ -4,6 +4,8 @@ $sampleTrackCount=7
 $fmTrackStart=$sampleTrackStart+$sampleTrackCount
 $fmTrackCount=2
 
+print: in main.view.ui $kickTrackCount $sampleTrackStart $sampleTrackCount $fmTrackStart $fmTrackCount
+
 VIEW: shared_components HIDDEN
 
   COMPONENT: GridSequencer 0 380 480 240

@@ -63,7 +63,6 @@ if: $screen == ui_800x480
 if: $screen == ui_320x172
   SCREEN: 320 172
   $encoderSize=86
-  print: ....................the encoder size is $encoderSize
   include: ui_320x172/main.view.ui
 
 ## 640x480 ###
@@ -71,7 +70,6 @@ if: $screen == ui_320x172
 if: $screen == ui_640x480
   SCREEN: 640 480
   $encoderSize=100
-  print: ....................the encoder size is $encoderSize
   include: ui_640x480/main.view.ui
 
 ## 480x640 ###
@@ -87,7 +85,6 @@ if: $screen == ui_480x640
   $encY2=$encY1+$encSize+6
   $encY3=$encY2+$encSize+6
 
-  print: ....................the encoder size is $encSize
   ADD_ZONE_ENCODER: $encX1 $encY1 $encSize $encSize
   ADD_ZONE_ENCODER: $encX2 $encY1 $encSize $encSize
   ADD_ZONE_ENCODER: $encX3 $encY1 $encSize $encSize

@@ -5,9 +5,9 @@
 #include "config.h"
 #include "def.h"
 
-AudioPluginHandlerInterface* initHost(const char* configPath = "./config.cfg")
+AudioPluginHandlerInterface* initHost(const char* configPath = "./config.cfg", const char* pluginConfig = NULL)
 {
-    loadHostConfig(configPath);
+    loadHostConfig(configPath, pluginConfig);
     return &AudioPluginHandler::get();
 }
 

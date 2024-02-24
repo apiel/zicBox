@@ -9,8 +9,6 @@
 
 #include "helpers/configPlugin.h"
 
-void uiScriptCallback(char* key, char* value, const char* filename, uint8_t indentation, DustScript& instance);
-
 void uiScriptCallback(char* key, char* value, const char* filename)
 {
     if (strcmp(key, "print") == 0) {
