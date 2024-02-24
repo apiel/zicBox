@@ -5,7 +5,7 @@ extern "C" {
 #include <lua.h>
 #include <lualib.h>
 
-static int MyCppFunction(lua_State* L)
+static int setConfigFn(lua_State* L)
 {
     lua_getglobal(L, "callbackPtr");
     void (*callback)(char* command, char* params, const char* filename) = (void (*)(char* command, char* params, const char* filename))lua_touserdata(L, -1);
@@ -30,7 +30,7 @@ void config(std::string filename, void (*callback)(char* command, char* params, 
     luaL_openlibs(L);
     lua_pushlightuserdata(L, (void*)callback);
     lua_setglobal(L, "callbackPtr");
-    lua_register(L, "setConfig", MyCppFunction);
+    lua_register(L, "setConfig", setConfigFn);
     luaL_dofile(L, filename.c_str());
     lua_close(L);
 }

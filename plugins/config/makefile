@@ -8,8 +8,9 @@ endif
 all:
 	make DustConfig LuaConfig
 
+# if liblua is not installed, it should skip
 LuaConfig:
-	make compile LIBNAME=LuaConfig EXTRA="$(shell pkg-config --cflags --libs lua)"
+	pkg-config --cflags --libs lua && make compile LIBNAME=LuaConfig EXTRA="$(shell pkg-config --cflags --libs lua)" || true
 
 %Config:
 	make compile LIBNAME=$@
