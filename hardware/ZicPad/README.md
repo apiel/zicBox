@@ -1,4 +1,4 @@
-# 06 Hardware
+# 07 Hardware
 
 ## ZicPad
 
