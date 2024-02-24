@@ -16,8 +16,8 @@ void instantiateConfigPlugin(const char* pluginPath, const char* scriptPath, voi
 
     dlerror();
 
-    void (*configParser)(const char* scriptPath, void (*callback)(char* command, char* params, const char* scriptPath));
-    configParser = (void (*)(const char* scriptPath, void (*callback)(char* command, char* params, const char* scriptPath)))dlsym(handle, "config");
+    void (*configParser)(std::string scriptPath, void (*callback)(char* command, char* params, const char* filename));
+    configParser = (void (*)(std::string scriptPath, void (*callback)(char* command, char* params, const char* filename)))dlsym(handle, "config");
     const char* dlsym_error = dlerror();
     if (dlsym_error) {
         printf("Cannot load symbol: %s\n", dlsym_error);
