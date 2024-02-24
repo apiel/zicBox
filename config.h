@@ -35,12 +35,12 @@ SET_COLOR: overlay #00FFFF
 
 In this example, we change the `overlay` color to `#00FFFF`.
 
-- background #21252b
-- overlay #00FFFF
-- on #00b300
-- white #ffffff
-- blue #adcdff
-- red #ff8d99
+- `#21252b` background
+- `#00FFFF` overlay
+- `#00b300` on
+- `#ffffff` white
+- `#adcdff` blue
+- `#ff8d99` red
 
 > This list might be outdated, to get the list of existing colors, look at `./styles.h`
         */
