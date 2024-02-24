@@ -1,10 +1,10 @@
 #include "../../dustscript/dustscript.h"
 
 extern "C" {
-void config(const char* filename, void (*callback)(char* command, char* params, const char* filename))
+void config(std::string filename, void (*callback)(char* command, char* params, const char* filename))
 {
     DustScript::load(
-        filename,
+        filename.c_str(),
         [&callback](char* key, char* value, const char* filename, uint8_t indentation, DustScript& instance) {
             callback(key, value, filename);
         },

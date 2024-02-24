@@ -46,20 +46,20 @@ void loadHostConfig(const char* scriptPath, const char* pluginPath)
 {
     printf("--------------------------------------------------\n\n\nLoading host config from %s plugin: %s \n\n\n--------------------------------------------------\n", scriptPath, pluginPath);
 
-    DustScript::load(
-        scriptPath,
-        [&](char* key, char* value, const char* filename, uint8_t indentation, DustScript& instance) {
-            hostScriptCallback(key, value, filename);
-        },
-        { .variables = { { "IS_RPI",
-#ifdef IS_RPI
-              "true"
-#else
-              "false"
-#endif
-          } } });
+//     DustScript::load(
+//         scriptPath,
+//         [&](char* key, char* value, const char* filename, uint8_t indentation, DustScript& instance) {
+//             hostScriptCallback(key, value, filename);
+//         },
+//         { .variables = { { "IS_RPI",
+// #ifdef IS_RPI
+//               "true"
+// #else
+//               "false"
+// #endif
+//           } } });
 
-    // loadConfigPlugin(pluginPath, scriptPath, hostScriptCallback);
+    loadConfigPlugin(pluginPath, scriptPath, hostScriptCallback);
 
     printf("-------------------------------------------------- Load host config done\n\n\n");
 }
