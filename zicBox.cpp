@@ -7,7 +7,7 @@
 
 int main(int argc, char* argv[])
 {
-    loadUiConfig(argc == 2 ? argv[1] : "config.ui");
+    loadUiConfig(argc >= 2 ? argv[1] : "config.ui", argc >= 3 ? argv[2] : NULL);
 
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
 

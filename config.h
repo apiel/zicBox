@@ -7,7 +7,6 @@
 #include "styles.h"
 #include "viewManager.h"
 
-#include "dustscript/dustscript.h"
 #include "helpers/configPlugin.h"
 
 void uiScriptCallback(char* key, char* value, const char* filename, uint8_t indentation, DustScript& instance);
@@ -62,20 +61,9 @@ void uiScriptCallback(char* key, char* value, const char* filename)
     }
 }
 
-void uiScriptCallback(char* key, char* value, const char* filename, uint8_t indentation, DustScript& instance)
+void loadUiConfig(const char* filename, const char* pluginPath)
 {
-    uiScriptCallback(key, value, filename);
-}
-
-void loadUiConfig(const char* filename)
-{
-    DustScript::load(filename, uiScriptCallback, { .variables = { { "$IS_RPI",
-#ifdef IS_RPI
-                                                       "true"
-#else
-                                                       "false"
-#endif
-                                                   } } });
+    loadConfigPlugin(pluginPath, filename, uiScriptCallback);
 }
 
 #endif
