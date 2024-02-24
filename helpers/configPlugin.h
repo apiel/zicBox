@@ -6,11 +6,11 @@
 #include <dlfcn.h>
 #include <stdio.h>
 
-void instantiateConfigPlugin(const char* pluginPath, const char* scriptPath, void (*callback)(char* command, char* params, const char* scriptPath))
+void instantiateConfigPlugin(const char* pluginPath, std::string scriptPath, void (*callback)(char* command, char* params, const char* scriptPath))
 {
     void* handle = dlopen(pluginPath, RTLD_LAZY);
     if (!handle) {
-        printf("Cannot open config library %s [%s]: %s\n", pluginPath, scriptPath, dlerror());
+        printf("Cannot open config library %s [%s]: %s\n", pluginPath, scriptPath.c_str(), dlerror());
         return;
     }
 
@@ -29,10 +29,10 @@ void instantiateConfigPlugin(const char* pluginPath, const char* scriptPath, voi
     dlclose(handle);
 }
 
-void loadConfigPlugin(const char* pluginPath, const char* scriptPath, void (*callback)(char* command, char* params, const char* scriptPath))
+void loadConfigPlugin(const char* pluginPath, std::string scriptPath, void (*callback)(char* command, char* params, const char* scriptPath))
 {
     if (!pluginPath) {
-        const char* extension = strrchr(scriptPath, '.');
+        const char* extension = strrchr(scriptPath.c_str(), '.');
 
         if (strcmp(extension, ".lua") == 0) {
             pluginPath = "lua";
