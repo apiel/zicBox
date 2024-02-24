@@ -49,15 +49,19 @@ void hostScriptCallback(char* key, char* value, const char* filename, uint8_t in
     hostScriptCallback(key, value, filename);
 }
 
-void loadHostConfig(const char* filename)
+void loadHostConfig(const char* scriptPath, const char* pluginPath)
 {
-    DustScript::load(filename, hostScriptCallback, { .variables = { { "IS_RPI",
-#ifdef IS_RPI
-                                                         "true"
-#else
-                                                         "false"
-#endif
-                                                     } } });
+printf("--------------------------------------------------\n\n\nLoading config from %s plugin: %s \n\n\n--------------------------------------------------\n", scriptPath, pluginPath);
+
+        DustScript::load(scriptPath, hostScriptCallback, { .variables = { { "IS_RPI",
+    #ifdef IS_RPI
+                                                             "true"
+    #else
+                                                             "false"
+    #endif
+                                                         } } });
+
+    // loadConfigPlugin(pluginPath, scriptPath, hostScriptCallback);
 }
 
 #endif

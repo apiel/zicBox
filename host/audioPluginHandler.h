@@ -150,7 +150,7 @@ public:
         plugin.handle = dlopen(path, RTLD_LAZY);
 
         if (!plugin.handle) {
-            APP_PRINT("Cannot open library: %s\n", dlerror());
+            APP_PRINT("Cannot open audio library %s [%s]: %s\n", path, name, dlerror());
             return;
         }
 
