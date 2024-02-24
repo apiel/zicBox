@@ -2,9 +2,6 @@
 
 - TODO FM ui waveform, maybe just show the 4 envelop...
 
-- TODO allow lua configuration??
-    - detect if liblua is installed...
-
 - TODO filebrowser
     - serialised might want to use filename instead of file index
 
@@ -99,6 +96,8 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 - filter frequency response curve https://stackoverflow.com/questions/76193236/implement-2nd-order-low-pass-filter-in-c-how-to-compute-coefficients
 
 ## zicHost
+
+- TODO libpd do the same as for lua, if lib not installed, skip...?
 
 - TODO look at https://github.com/pichenettes/eurorack/tree/master/shades
 
