@@ -5,7 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "/usr/include/rtmidi",
-                "/usr/include/pd"
+                "/usr/include/pd",
+                "/usr/include/lua5.4"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

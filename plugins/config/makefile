@@ -6,7 +6,10 @@ RPI := -DIS_RPI=1
 endif
 
 all:
-	make DustConfig
+	make DustConfig LuaConfig
+
+LuaConfig:
+	make compile LIBNAME=LuaConfig EXTRA="$(shell pkg-config --cflags --libs lua)"
 
 %Config:
 	make compile LIBNAME=$@
