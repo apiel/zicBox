@@ -15,9 +15,16 @@ setConfig("print", "Call ZicBox print from Lua.");
 setConfig("PLUGIN_COMPONENT", "Encoder2 ./plugins/components/build/libzic_Encoder2Component.so");
 setConfig("LOAD_HOST", "config.cfg");
 setConfig("VIEW", "Main");
-setConfig("COMPONENT", "Encoder2 10 10 100 100");
-  setConfig("ENCODER_ID", "1");
-  setConfig("VALUE", "FM DECAY_1");
+
+-- Let's create an encoder function
+function setEncoder (x, y, width, height, encoder_id, value)
+  setConfig("COMPONENT", "Encoder2" .. x .. " " .. y .. " " .. width .. " " .. height);
+  setConfig("ENCODER_ID", encoder_id);
+  setConfig("VALUE", value);
+end
+
+setEncoder(10, 10, 100, 100, 1, "FM DECAY_1");
+
 -- ...
 ```
 
@@ -30,7 +37,7 @@ static int setConfigFn(lua_State* L)
     lua_Debug ar;
     lua_getstack(L, 1, &ar);
     lua_getinfo(L, "S", &ar);
-    const char * filename = ar.source + 1; // +1 to remove leading @
+    const char* filename = ar.source + 1; // +1 to remove leading @
     // printf("yoyoyo %s\n", filename);
 
     const char* key = lua_tostring(L, 1);
