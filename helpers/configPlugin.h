@@ -6,7 +6,7 @@
 #include <dlfcn.h>
 #include <stdio.h>
 
-void instantiateConfigPlugin(const char* pluginPath, const char* filename, void (*callback)(char* command, char* params, const char* filename))
+void instantiateConfigPlugin(const char* pluginPath, const char* scriptPath, void (*callback)(char* command, char* params, const char* scriptPath))
 {
     void* handle = dlopen(pluginPath, RTLD_LAZY);
     if (!handle) {
@@ -16,8 +16,8 @@ void instantiateConfigPlugin(const char* pluginPath, const char* filename, void 
 
     dlerror();
 
-    void (*configParser)(const char* filename, void (*callback)(char* command, char* params, const char* filename));
-    configParser = (void (*)(const char* filename, void (*callback)(char* command, char* params, const char* filename)))dlsym(handle, "config");
+    void (*configParser)(const char* scriptPath, void (*callback)(char* command, char* params, const char* scriptPath));
+    configParser = (void (*)(const char* scriptPath, void (*callback)(char* command, char* params, const char* scriptPath)))dlsym(handle, "config");
     const char* dlsym_error = dlerror();
     if (dlsym_error) {
         printf("Cannot load symbol: %s\n", dlsym_error);
@@ -25,14 +25,14 @@ void instantiateConfigPlugin(const char* pluginPath, const char* filename, void 
         return;
     }
 
-    configParser(filename, callback);
+    configParser(scriptPath, callback);
     dlclose(handle);
 }
 
-void loadConfigPlugin(const char* pluginPath, const char* filename, void (*callback)(char* command, char* params, const char* filename))
+void loadConfigPlugin(const char* pluginPath, const char* scriptPath, void (*callback)(char* command, char* params, const char* scriptPath))
 {
     if (!pluginPath) {
-        const char* extension = strrchr(filename, '.');
+        const char* extension = strrchr(scriptPath, '.');
 
         if (strcmp(extension, ".lua") == 0) {
             pluginPath = "lua";
@@ -42,11 +42,11 @@ void loadConfigPlugin(const char* pluginPath, const char* filename, void (*callb
     }
 
     if (strcmp(pluginPath, "dustscript") == 0) {
-        instantiateConfigPlugin("plugins/config/build/libzic_DustConfig.so", filename, callback);
+        instantiateConfigPlugin("plugins/config/build/libzic_DustConfig.so", scriptPath, callback);
     } else if (strcmp(pluginPath, "lua") == 0) {
-        instantiateConfigPlugin("plugins/config/build/libzic_LuaConfig.so", filename, callback);
+        instantiateConfigPlugin("plugins/config/build/libzic_LuaConfig.so", scriptPath, callback);
     } else {
-        instantiateConfigPlugin(pluginPath, filename, callback);
+        instantiateConfigPlugin(pluginPath, scriptPath, callback);
     }
 }
 
