@@ -13,10 +13,6 @@ void hostScriptCallback(char* key, char* value, const char* filename)
 {
     if (strcmp(key, "print") == 0) {
         printf(">> LOG: %s\n", value);
-    } else if (strcmp(key, "INCLUDE") == 0) {
-        char fullpath[512];
-        getFullpath(value, filename, fullpath);
-        DustScript::load(fullpath, hostScriptCallback);
     } else if (strcmp(key, "MIDIIN") == 0) {
         loadMidiInput(midiController, value, &midiControllerCallback);
     } else if (strcmp(key, "MIDIOUT") == 0) {

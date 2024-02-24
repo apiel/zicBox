@@ -16,19 +16,6 @@ void uiScriptCallback(char* key, char* value, const char* filename)
 {
     if (strcmp(key, "print") == 0) {
         printf(">> LOG: %s\n", value);
-        /*md
-        ### INCLUDE
-
-        A `.ui` file can include another `.ui` file, using `INCLUDE: path/of/the/file.ui`. As soon as this `INCLUDE` is called, it will continue into the child file till his end, to finally come back to the original file.
-
-        ```coffee
-        INCLUDE: path/of/the/file.ui
-        ```
-        */
-    } else if (strcmp(key, "INCLUDE") == 0) {
-        char fullpath[512];
-        getFullpath(value, filename, fullpath);
-        DustScript::load(fullpath, uiScriptCallback);
     } else if (strcmp(key, "LOAD_HOST") == 0) {
         char hostConfigPath[512];
         getFullpath(value, filename, hostConfigPath);

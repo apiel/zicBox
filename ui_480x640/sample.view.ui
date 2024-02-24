@@ -1,22 +1,22 @@
 $track=$sampleTrackStart
 while: $track < $fmTrackStart
   VIEW: TrackParams_track_$track_page_0
-    INCLUDE: trackParams_page_0.view.ui
+    include: trackParams_page_0.view.ui
     USE_SHARED_COMPONENT: Sample_track_$track
     USE_SHARED_COMPONENT: SharedGridSequencer
-    INCLUDE: buttons.view.ui
+    include: buttons.view.ui
 
   VIEW: TrackParams_track_$track_page_1
-    INCLUDE: trackParams_page_1.view.ui
+    include: trackParams_page_1.view.ui
     USE_SHARED_COMPONENT: Sample_track_$track
     USE_SHARED_COMPONENT: SharedGridSequencer
-    INCLUDE: buttons.view.ui
+    include: buttons.view.ui
 
   VIEW: StepParams_track_$track
-    INCLUDE: stepParams.view.ui
+    include: stepParams.view.ui
     USE_SHARED_COMPONENT: Sample_track_$track
     USE_SHARED_COMPONENT: SharedGridSequencer
-    INCLUDE: buttons.view.ui
+    include: buttons.view.ui
   
   $track=$track + 1
 

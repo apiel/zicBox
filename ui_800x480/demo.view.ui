@@ -1,7 +1,7 @@
 
 VIEW: Demo
 
-  INCLUDE: layout.ui
+  include: layout.ui
 
   COMPONENT: Encoder2 0 0 100 100
     GROUP: 0
