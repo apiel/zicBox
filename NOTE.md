@@ -12,6 +12,8 @@
     - 22mm https://www.mouser.at/ProductDetail/Bourns/PEC12R-4022F-S0024?qs=6oMev5NRZMHfikcgfDwwZA%3D%3D
     - 30mm https://www.mouser.at/ProductDetail/Bourns/PEC12R-4030F-S0024?qs=15%2Ff%2FzFZJSBasYPWBClbAA%3D%3D
 
+- TODO start thread in https://llllllll.co/
+
 ## zicUi
 
 - TODO keyboard / keypad
