@@ -14,6 +14,8 @@
 
 - TODO start thread in https://llllllll.co/
 
+- TODO python config https://docs.python.org/3/extending/embedding.html
+
 ## zicUi
 
 - TODO keyboard / keypad
