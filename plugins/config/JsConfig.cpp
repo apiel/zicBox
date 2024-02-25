@@ -26,7 +26,7 @@ setConfig("PLUGIN_COMPONENT", "Encoder2 ./plugins/components/build/libzic_Encode
 setConfig("LOAD_HOST", "config.cfg")
 setConfig("VIEW", "Main")
 
--- Let's create an encoder function
+// Let's create an encoder function
 function setEncoder(x, y, width, height, encoder_id, value) {
   setConfig("COMPONENT", `Encoder2 ${x} ${y} ${width} ${height}`);
   setConfig("ENCODER_ID", encoder_id);
