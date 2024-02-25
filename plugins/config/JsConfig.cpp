@@ -37,6 +37,11 @@ setEncoder(10, 10, 100, 100, 1, "FM DECAY_1");
 
 // ...
 ```
+
+Finally run zicBox like this:
+```sh
+./zicBox config.js plugins/config/build/libzic_JsConfig.so
+```
 */
 
 // struct UserData {
