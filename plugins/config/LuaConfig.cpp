@@ -55,6 +55,14 @@ void config(std::string filename, void (*callback)(char* command, char* params, 
     lua_pushlightuserdata(L, (void*)callback);
     lua_setglobal(L, "callbackPtr");
     lua_register(L, "setConfig", setConfigFn);
+
+#ifdef IS_RPI
+    lua_pushboolean(L, true);
+#else
+    lua_pushboolean(L, false);
+#endif
+    lua_setglobal(L, "IS_RPI");
+
     luaL_dofile(L, filename.c_str());
     lua_close(L);
 }

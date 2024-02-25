@@ -28,7 +28,7 @@ setConfig("VIEW", "Main")
 
 // Let's create an encoder function
 function setEncoder(x, y, width, height, encoder_id, value) {
-  setConfig("COMPONENT", `Encoder2 ${x} ${y} ${width} ${height}`);
+  setConfig("COMPONENT", "Encoder2 " + x + " " + y + " " + width + " " + height);
   setConfig("ENCODER_ID", encoder_id);
   setConfig("VALUE", value);
 }
@@ -56,7 +56,7 @@ duk_ret_t setConfigFn(duk_context* ctx)
 
     duk_push_global_stash(ctx);
     duk_get_prop_string(ctx, -1, DUK_HIDDEN_SYMBOL("userDataPtr"));
-    UserData* userData = (UserData *)(duk_to_pointer(ctx, -1));
+    UserData* userData = (UserData*)(duk_to_pointer(ctx, -1));
     duk_pop(ctx);
 
     // printf("-------> %s: %s (%s)\n", key, value, userData->filename);
@@ -103,6 +103,13 @@ void config(std::string filename, void (*callback)(char* command, char* params, 
 
     duk_push_c_function(ctx, setConfigFn, 2);
     duk_put_global_string(ctx, "setConfig");
+
+#ifdef IS_RPI
+    duk_push_boolean(ctx, true);
+#else
+    duk_push_boolean(ctx, false);
+#endif
+    duk_put_global_string(ctx, "IS_RPI");
 
     push_file_as_string(ctx, filename.c_str());
     if (duk_peval(ctx) != 0) {
