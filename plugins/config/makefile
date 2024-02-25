@@ -12,6 +12,9 @@ all:
 LuaConfig:
 	pkg-config --cflags --libs lua && make compile LIBNAME=LuaConfig EXTRA="$(shell pkg-config --cflags --libs lua)" || true
 
+JsConfig:
+	pkg-config --cflags --libs duktape && make compile LIBNAME=JsConfig EXTRA="$(shell pkg-config --cflags --libs duktape)" || true
+
 %Config:
 	make compile LIBNAME=$@
 
