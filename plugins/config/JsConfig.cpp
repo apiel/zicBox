@@ -42,6 +42,10 @@ Finally run zicBox like this:
 ```sh
 ./zicBox config.js plugins/config/build/libzic_JsConfig.so
 ```
+
+> [!NOTE]
+> Duktape is a subset of JavaScript and might not support all features.
+
 */
 
 struct UserData {
