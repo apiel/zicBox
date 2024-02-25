@@ -44,27 +44,24 @@ Finally run zicBox like this:
 ```
 */
 
-// struct UserData {
-//     void (*callback)(char* command, char* params, const char* filename);
-//     const char* filename;
-// };
+struct UserData {
+    void (*callback)(char* command, char* params, const char* filename);
+    const char* filename;
+};
 
 duk_ret_t setConfigFn(duk_context* ctx)
 {
     const char* key = duk_to_string(ctx, 0);
     const char* value = duk_to_string(ctx, 1);
 
-    // printf("%s: %s\n", key, value);
-
     duk_push_global_stash(ctx);
-    duk_get_prop_string(ctx, -1, DUK_HIDDEN_SYMBOL("callbackPtr"));
-    void (*callback)(char* command, char* params, const char* filename) = (void (*)(char* command, char* params, const char* filename))(duk_to_pointer(ctx, -1));
+    duk_get_prop_string(ctx, -1, DUK_HIDDEN_SYMBOL("userDataPtr"));
+    UserData* userData = (UserData *)(duk_to_pointer(ctx, -1));
     duk_pop(ctx);
 
-    // printf("-------> %s: %s (%s)\n", key, value, filename);
+    // printf("-------> %s: %s (%s)\n", key, value, userData->filename);
 
-    callback((char*)key, (char*)value, "fixme");
-
+    userData->callback((char*)key, (char*)value, userData->filename);
     return 0;
 }
 
@@ -97,9 +94,12 @@ void config(std::string filename, void (*callback)(char* command, char* params, 
         exit(1);
     }
 
+    UserData* userData = new UserData();
+    userData->callback = callback;
+    userData->filename = filename.c_str();
     duk_push_global_stash(ctx);
-    duk_push_pointer(ctx, (void*)callback);
-    duk_put_prop_string(ctx, -2, DUK_HIDDEN_SYMBOL("callbackPtr"));
+    duk_push_pointer(ctx, (void*)userData);
+    duk_put_prop_string(ctx, -2, DUK_HIDDEN_SYMBOL("userDataPtr"));
 
     duk_push_c_function(ctx, setConfigFn, 2);
     duk_put_global_string(ctx, "setConfig");
@@ -110,5 +110,7 @@ void config(std::string filename, void (*callback)(char* command, char* params, 
     }
     duk_pop(ctx);
     duk_destroy_heap(ctx);
+
+    delete userData;
 }
 }
