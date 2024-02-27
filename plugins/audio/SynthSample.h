@@ -209,12 +209,12 @@ public:
     Val& start = val(0.0f, "START", { "Start", .unit = "%" }, [&](auto p) { setStart(p.value); });
     /*md - `END` set the end position of the sample */
     Val& end = val(100.0f, "END", { "End", .unit = "%" }, [&](auto p) { setEnd(p.value); });
-    /*md - `SUSTAIN_POSITION` set the position of the sustain */
-    Val& sustainPosition = val(0.0f, "SUSTAIN_POSITION", { "Sustain position", .unit = "%" }, [&](auto p) { setSustainPosition(p.value, (bool*)p.data); });
-    /*md - `SUSTAIN_LENGTH` set the length of the sustain */
-    Val& sustainLength = val(0.0f, "SUSTAIN_LENGTH", { "Sustain length", .unit = "%" }, [&](auto p) { setSustainLength(p.value, (bool*)p.data); });
-    /*md - `SUSTAIN_RELEASE` set a delay before the sustain ends when note off is triggered */
-    Val& sustainRelease = val(0.0f, "SUSTAIN_RELEASE", { "Sustain Release", .min = 0.0, .max = 5000.0, .step = 50.0, .unit = "ms" }, [&](auto p) { setSustainRelease(p.value); });
+    /*md - `LOOP_POSITION` set the position of the sustain loop */
+    Val& sustainPosition = val(0.0f, "LOOP_POSITION", { "Loop position", .unit = "%" }, [&](auto p) { setSustainPosition(p.value, (bool*)p.data); });
+    /*md - `LOOP_LENGTH` set the length of the sustain loop */
+    Val& sustainLength = val(0.0f, "LOOP_LENGTH", { "Loop length", .unit = "%" }, [&](auto p) { setSustainLength(p.value, (bool*)p.data); });
+    /*md - `LOOP_RELEASE` set a delay before the sustain loop ends when note off is triggered */
+    Val& sustainRelease = val(0.0f, "LOOP_RELEASE", { "Loop Release", .min = 0.0, .max = 5000.0, .step = 50.0, .unit = "ms" }, [&](auto p) { setSustainRelease(p.value); });
     /*md - `DENSITY` set the density of the voice. Density is adding more voice (sub voice) with a little delay on each added sub voice */
     Val& density = val(1.0f, "DENSITY", { "Density", .min = 1.0, .max = 12 });
     /*md - `DENSITY_DELAY` set the delay between each sub voice */
@@ -222,7 +222,7 @@ public:
     /*md - `DENSITY_RANDOMIZE` set the density randomize. If randomize is set, the density starting delay is random and while change on each sustain loop. */
     Val& densityRandomize = val(0.0f, "DENSITY_RANDOMIZE", { "Density Randomize", .unit = "%" });
     // TODO Spray allows density in the sustain loop to get out of the boundary windows
-    // Val& sustainSpray = val(0.0f, "SUSTAIN_SPRAY", { "Sustain Spray", .unit = "%" });
+    // Val& sustainSpray = val(0.0f, "LOOP_SPRAY", { "Sustain Spray", .unit = "%" });
 
     /*md - `BROWSER` to browse between samples to play. */
     Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)fileBrowser.count }, [&](auto p) { open(p.value); });

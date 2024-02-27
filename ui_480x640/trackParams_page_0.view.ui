@@ -32,22 +32,22 @@
     ENCODER_ID: 4
     COLOR: #9dfe86
     TRACK: $track
-    VALUE: Sample SUSTAIN_LENGTH
-    LABEL: Sustain
+    VALUE: Sample LOOP_LENGTH
+    LABEL: Loop
     ID: Param4_enc
 
   COMPONENT: Encoder2 $encX2 $encY2 $encSize $encSize
     ENCODER_ID: 5
     COLOR: #3791a1
     TRACK: $track
-    VALUE: Sample SUSTAIN_POSITION
+    VALUE: Sample LOOP_POSITION
     ID: Param5_enc
 
   COMPONENT: Encoder2 $encX3 $encY2 $encSize $encSize
     ENCODER_ID: 6
     COLOR: #ff8d99
     TRACK: $track
-    VALUE: Sample SUSTAIN_RELEASE
+    VALUE: Sample LOOP_RELEASE
     ID: Param6_enc
 
   # COMPONENT: Rect $encX4 $encY2 $encSize $encSize

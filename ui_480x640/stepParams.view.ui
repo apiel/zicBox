@@ -40,7 +40,7 @@
   #   ENCODER_ID: 5
   #   COLOR: #3791a1
   #   TRACK: $track
-  #   VALUE: Sample SUSTAIN_POSITION
+  #   VALUE: Sample LOOP_POSITION
   #   LABEL: Drive
 
   # COMPONENT: Rect $encX3 $encY2 $encSize $encSize

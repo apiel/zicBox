@@ -1,6 +1,16 @@
+## Next TODO
+
 - TODO save/load project
 
-- TODO FM ui waveform, maybe just show the 4 envelop...
+- TODO scatter/grid effect
+
+- TODO advance clip/variation transition...
+    - should sequencer take care to load variation?
+- TODO sequencer STATUS change logic:
+    - -1 should be infinite loop
+    - 0 off
+    - 1,2,3,... should be how long it wait before to start 
+      (or should it be to toggle status, so if it is already playing, it will stop)
 
 - TODO filebrowser
     - serialised might want to use filename instead of file index
@@ -16,7 +26,20 @@
 
 - TODO python config https://docs.python.org/3/extending/embedding.html
 
+- TODO instead of usual sequencer, link multiple sample together and then a note would trigger the series of samples... A bit like wavetstate
+
+- TODO sample:
+    - granularize sample...
+    - wavteable:
+        - fix start position of sample marker when start pos is not to 0
+        - morph on wavetable, start and end stick to sustain position when both are touching sustain window
+        - spray window
+
+- TODO FM ui waveform, maybe just show the 4 envelop...
+
 ## zicUi
+
+- Responsive UI ?
 
 - TODO keyboard / keypad
     - see we can extract some logic to have global action that are not specific to a UI plugin
