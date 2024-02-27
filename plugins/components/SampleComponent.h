@@ -37,8 +37,8 @@ protected:
         "BROWSER",
         "START",
         "END",
-        "SUSTAIN_POSITION",
-        "SUSTAIN_LENGTH",
+        "LOOP_POSITION",
+        "LOOP_LENGTH",
     };
 
     void* textureSampleWaveform = NULL;
