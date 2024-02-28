@@ -40,11 +40,11 @@ protected:
 public:
     /*md **Values**: */
     /*md - `LENGTH` set the duration of the grain.*/
-    Val& length = val(100.0f, "LENGTH", { "Length", .min = 5.0, .max = 100.0, .unit = "ms" }, setLength);
+    Val& length = val(100.0f, "LENGTH", { "Length", .min = 5.0, .max = 100.0, .unit = "ms" }, [&](auto p) { setLength(p.value); });
     /*md - `DENSITY` set the density of the effect, meaning how many grains are played at the same time. */
     Val& density = val(10.0f, "DENSITY", { "Density", .min = 1.0, .max = MAX_GRAINS });
     /*md - `DENSITY_DELAY` set the delay between each grains. */
-    Val& densityDelay = val(10.0f, "DENSITY_DELAY", { "Density Delay", .min = 1.0, .max = 1000, .unit = "ms" }, setDensityDelay);
+    Val& densityDelay = val(10.0f, "DENSITY_DELAY", { "Density Delay", .min = 1.0, .max = 1000, .unit = "ms" }, [&](auto p) { setDensityDelay(p.value); });
 
     EffectGrain(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
