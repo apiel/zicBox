@@ -216,7 +216,7 @@ public:
     /*md - `LOOP_RELEASE` set a delay before the sustain loop ends when note off is triggered */
     Val& sustainRelease = val(0.0f, "LOOP_RELEASE", { "Loop Release", .min = 0.0, .max = 5000.0, .step = 50.0, .unit = "ms" }, [&](auto p) { setSustainRelease(p.value); });
     /*md - `DENSITY` set the density of the voice. Density is adding more voice (sub voice) with a little delay on each added sub voice */
-    Val& density = val(1.0f, "DENSITY", { "Density", .min = 1.0, .max = 12 });
+    Val& density = val(1.0f, "DENSITY", { "Density", .min = 1.0, .max = MAX_SAMPLE_DENSITY });
     /*md - `DENSITY_DELAY` set the delay between each sub voice */
     Val& densityDelay = val(100.0f, "DENSITY_DELAY", { "Density Delay", .min = 0.1, .max = 1000.0, .step = 1.1, .unit = "ms", .incrementationType = VALUE_INCREMENTATION_EXP }, [&](auto p) { setDensityDelay(p.value); });
     /*md - `DENSITY_RANDOMIZE` set the density randomize. If randomize is set, the density starting delay is random and while change on each sustain loop. */
