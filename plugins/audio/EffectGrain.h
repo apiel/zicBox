@@ -34,7 +34,7 @@ protected:
         grain.index = 0;
         grain.position = buffer.index + densityIndex * grainDelay;
         // grain.positionIncrement = random() * 2.0f - 1.0f;
-        // grain.env.reset();
+        grain.env.reset();
     }
 
 public:
@@ -45,11 +45,22 @@ public:
     Val& density = val(10.0f, "DENSITY", { "Density", .min = 1.0, .max = MAX_GRAINS });
     /*md - `DENSITY_DELAY` set the delay between each grains. */
     Val& densityDelay = val(10.0f, "DENSITY_DELAY", { "Density Delay", .min = 1.0, .max = 1000, .unit = "ms" }, [&](auto p) { setDensityDelay(p.value); });
+    /*md - `ENVELOP` set the envelop of the grains. */
+    Val& envelop = val(0.0f, "ENVELOP", { "Envelop", .unit = "%" }, [&](auto p) { setEnvelop(p.value); });
 
     EffectGrain(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
     {
         initValues();
+    }
+
+    void setEnvelop(float value)
+    {
+        envelop.setFloat(value);
+        for (uint8_t i = 0; i < MAX_GRAINS; i++) {
+            grains[i].env.data[0].time = envelop.pct() * 0.5f;
+            grains[i].env.data[1].time = 1.0f - envelop.pct() * 0.5f;
+        }
     }
 
     void setDensityDelay(float value)
