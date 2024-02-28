@@ -24,8 +24,6 @@
 
 - TODO start thread in https://llllllll.co/
 
-- TODO python config https://docs.python.org/3/extending/embedding.html
-
 - TODO instead of usual sequencer, link multiple sample together and then a note would trigger the series of samples... A bit like wavetstate
 
 - TODO sample:
@@ -40,6 +38,8 @@
 ## zicUi
 
 - Responsive UI ?
+
+- TODO python config https://docs.python.org/3/extending/embedding.html
 
 - TODO keyboard / keypad
     - see we can extract some logic to have global action that are not specific to a UI plugin
