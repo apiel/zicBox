@@ -48,23 +48,23 @@
     ID: Param7_enc
 
 
-  # COMPONENT: Encoder2 $encX1 $encY3 $encSize $encSize
-  #   ENCODER_ID: 8
-  #   COLOR: #9dfe86
-  #   VALUE: Distortion DB
-  #   ID: Param8_enc
+  COMPONENT: Encoder2 $encX1 $encY3 $encSize $encSize
+    ENCODER_ID: 8
+    COLOR: #9dfe86
+    VALUE: EffectGrain LENGTH
+    ID: Param8_enc
 
-  # COMPONENT: Encoder2 $encX2 $encY3 $encSize $encSize
-  #   ENCODER_ID: 9
-  #   COLOR: #3791a1
-  #   VALUE: Distortion DRIVE
-  #   ID: Param9_enc
+  COMPONENT: Encoder2 $encX2 $encY3 $encSize $encSize
+    ENCODER_ID: 9
+    COLOR: #3791a1
+    VALUE: EffectGrain DENSITY
+    ID: Param9_enc
 
-  # COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
-  #   ENCODER_ID: 10
-  #   VALUE: Distortion GAIN_RATIO
-  #   COLOR: #ff8d99
-  #   ID: Param10_enc
+  COMPONENT: Encoder2 $encX3 $encY3 $encSize $encSize
+    ENCODER_ID: 10
+    VALUE: EffectGrain DENSITY_DELAY
+    COLOR: #ff8d99
+    ID: Param10_enc
 
   COMPONENT: Encoder2 $encX4 $encY3 $encSize $encSize
     ENCODER_ID: 11
