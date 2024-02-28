@@ -60,6 +60,7 @@ public:
         for (uint8_t i = 0; i < MAX_GRAINS; i++) {
             grains[i].env.data[0].time = envelop.pct() * 0.5f;
             grains[i].env.data[1].time = 1.0f - envelop.pct() * 0.5f;
+            printf("%f %f\n", grains[i].env.data[0].time, grains[i].env.data[1].time);
         }
     }
 
@@ -89,31 +90,19 @@ public:
                         grain.position -= buffer.size;
                     }
                 } else {
+                    // float env = grain.env.next(grain.index / (float)grainDuration);
+                    // printf("%f\n", env);
                     initGrain(i);
                 }
-                buf[track] += buffer.samples[(int)grain.position] * velocity;
+                float env = grain.env.next(grain.index / (float)grainDuration);
+                // printf("%f\n", env);
+                buf[track] += buffer.samples[(int)grain.position] * velocity * env;
             }
         }
     }
 
-    // Might use tempo to define loop/reverse length?
-    // 1, 2, 3, 6, 12, 24, 48, 96, ...
-    // Could it also use ms for none rhytmic loop?
-    // Is this necessary or should it just be dependent buffer size that would be customized depending on loop length...
-    void onClockTick(uint64_t* clockCounter)
-    {
-        // clockCounterPtr = clockCounter;
-        // // Clock events are sent at a rate of 24 pulses per quarter note
-        // // (24/4 = 6)
-        // if (*clockCounter % 6 == 0) {
-        //     onStep();
-        // }
-    }
-
     void noteOn(uint8_t note, float _velocity) override
     {
-        printf("effect grain noteOn: %d %f\n", note, _velocity);
-
         if (_velocity == 0) {
             return noteOff(note, _velocity);
         }
