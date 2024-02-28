@@ -42,7 +42,7 @@ public:
     /*md - `DENSITY` set the density of the effect, meaning how many grains are played at the same time. */
     Val& density = val(10.0f, "DENSITY", { "Density", .min = 1.0, .max = MAX_GRAINS });
     /*md - `DENSITY_DELAY` set the delay between each grains. */
-    Val& densityDelay = val(10.0f, "DENSITY_DELAY", { "Density Delay", .min = 0.1, .step = 0.1, .unit = "ms" });
+    Val& densityDelay = val(10.0f, "DENSITY_DELAY", { "Density Delay", .max = 1000, .unit = "ms" });
 
     EffectGrain(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
