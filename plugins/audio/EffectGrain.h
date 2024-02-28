@@ -18,6 +18,8 @@ protected:
     AudioBuffer<> buffer;
 
     float velocity = 0.0f;
+    uint64_t grainDelay = 0;
+    uint64_t grainDuration = 0;
 
     struct Grain {
         uint64_t index = 0;
@@ -30,7 +32,7 @@ protected:
     {
         Grain& grain = grains[densityIndex];
         grain.index = 0;
-        grain.position = buffer.index + densityIndex * 5000;
+        grain.position = buffer.index + densityIndex * grainDelay;
         // grain.positionIncrement = random() * 2.0f - 1.0f;
         // grain.env.reset();
     }
@@ -38,16 +40,28 @@ protected:
 public:
     /*md **Values**: */
     /*md - `LENGTH` set the duration of the grain.*/
-    Val& length = val(100.0f, "LENGTH", { "Length", .min = 5.0, .max = 100.0, .unit = "ms" });
+    Val& length = val(100.0f, "LENGTH", { "Length", .min = 5.0, .max = 100.0, .unit = "ms" }, setLength);
     /*md - `DENSITY` set the density of the effect, meaning how many grains are played at the same time. */
     Val& density = val(10.0f, "DENSITY", { "Density", .min = 1.0, .max = MAX_GRAINS });
     /*md - `DENSITY_DELAY` set the delay between each grains. */
-    Val& densityDelay = val(10.0f, "DENSITY_DELAY", { "Density Delay", .max = 1000, .unit = "ms" });
+    Val& densityDelay = val(10.0f, "DENSITY_DELAY", { "Density Delay", .min = 1.0, .max = 1000, .unit = "ms" }, setDensityDelay);
 
     EffectGrain(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
     {
         initValues();
+    }
+
+    void setDensityDelay(float value)
+    {
+        densityDelay.setFloat(value);
+        grainDelay = props.sampleRate * densityDelay.get() * 0.001f;
+    }
+
+    void setLength(float value)
+    {
+        length.setFloat(value);
+        grainDuration = props.sampleRate * length.get() * 0.001f;
     }
 
     void sample(float* buf)
