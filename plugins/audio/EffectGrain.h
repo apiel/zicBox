@@ -8,7 +8,7 @@
 
 #define MAX_GRAINS 16
 
-/*//md
+/*md
 ## EffectGrain
 
 EffectGrain plugin is used to apply granular and scatter effect to a buffer audio.
@@ -36,11 +36,13 @@ protected:
     }
 
 public:
-    /*//md **Values**: */
-    /*//md - `DENSITY` set the density of the effect, meaning how many grains are played at the same time. */
+    /*md **Values**: */
+    /*md - `LENGTH` set the duration of the grain.*/
+    Val& length = val(100.0f, "LENGTH", { "Length", .min = 5.0, .max = 100.0, .unit = "ms" });
+    /*md - `DENSITY` set the density of the effect, meaning how many grains are played at the same time. */
     Val& density = val(10.0f, "DENSITY", { "Density", .min = 1.0, .max = MAX_GRAINS });
-    /*//md - `DENSITY_DELAY` set the delay between each grains. */
-    Val& densityDelay = val(100.0f, "DENSITY_DELAY", { "Density Delay", .min = 0.1, .step = 0.1, .unit = "%" }, [&](auto p) { setDensityDelay(p.value); });
+    /*md - `DENSITY_DELAY` set the delay between each grains. */
+    Val& densityDelay = val(10.0f, "DENSITY_DELAY", { "Density Delay", .min = 0.1, .step = 0.1, .unit = ms" });
 
     EffectGrain(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -67,12 +69,6 @@ public:
                 buf[track] += buffer.samples[(int)grain.position] * velocity;
             }
         }
-    }
-
-    void setDensityDelay(float value)
-    {
-        densityDelay.setFloat(value);
-        // densityDelaySampleCount = props.sampleRate * densityDelay.get() * 0.001f;
     }
 
     // Might use tempo to define loop/reverse length?
