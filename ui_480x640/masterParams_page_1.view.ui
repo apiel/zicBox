@@ -2,12 +2,11 @@
   #   ICON_COLOR: #9dfe86
   #   ID: Param0_button
 
-  # # I would rather move the GAIN on another page
-  # COMPONENT: Encoder2 $encX2 $encY1 $encSize $encSize
-  #   ENCODER_ID: 1
-  #   COLOR: #3791a1
-  #   VALUE: MasterVolume VOLUME
-  #   ID: Param1_enc
+  COMPONENT: Encoder2 $encX2 $encY1 $encSize $encSize
+    ENCODER_ID: 1
+    COLOR: #3791a1
+    VALUE: EffectGrain DIRECTION
+    ID: Param1_enc
 
   # COMPONENT: Encoder2 $encX3 $encY1 $encSize $encSize
   #   ENCODER_ID: 2
@@ -41,15 +40,13 @@
     ENCODER_ID: 6
     COLOR: #ff8d99
     VALUE: EffectGrain DELAY_RANDOMIZE
-    # VALUE: EffectGrain PITCH_RANDOMIZE
     ID: Param6_enc
 
-  # COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
-  #   ENCODER_ID: 7
-  #   VALUE: MultiModeFilter RESONANCE
-  #   COLOR: #ff7700
-  #   # BACKGROUND_COLOR: #2b2c2e
-  #   ID: Param7_enc
+  COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
+    ENCODER_ID: 7
+    VALUE: EffectGrain PITCH_RANDOMIZE
+    COLOR: #ff7700
+    ID: Param7_enc
 
 
   COMPONENT: Encoder2 $encX1 $encY3 $encSize $encSize
