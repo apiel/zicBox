@@ -2,6 +2,8 @@
 
 - TODO save/load project
 
+- FIXME default sequencer pattern
+
 - TODO scatter/grid effect
 
 - TODO advance clip/variation transition...

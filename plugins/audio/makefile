@@ -9,7 +9,7 @@ all:
 		EffectGrain\
 		SynthKick23 SynthGranular SynthSample SynthBass SynthFM \
 		Sequencer Tempo\
-		Mixer2 Mixer4 Mixer8 Mixer12\
+		Mixer2 Mixer4 Mixer6 Mixer8 Mixer12\
 		AudioInputPulse AudioOutputPulse AudioInputAlsa AudioOutputAlsa\
 		SerializeTrack
 

@@ -66,13 +66,13 @@ public:
     /*md **Config**: */
     bool config(char* key, char* value)
     {
-        /*md - `TRACK_1: 1` to set track input 1 on track buffer 1.*/
-        /*md - `TRACK_2: 2` to set track input 2 on track buffer 2.*/
-        /*md - ...*/
-        if (strncmp(key, "TRACK_", strlen("TRACK_")) == 0) {
-            uint16_t i = atoi(key + strlen("TRACK_")) - 1;
-            if (i < TRACK_COUNT) {
-                tracks[i] = atoi(value);
+        /*md - `TRACK_START: 7` to set track 7 as first track, then 8, 9, ...*/
+        if (strcmp(key, "TRACK_START") == 0) {
+            uint16_t trackStart = atoi(value);
+            // printf("------------------------------------ trackStart: %d\n", trackStart);
+            for (uint16_t i = 0; i < TRACK_COUNT; i++) {
+                tracks[i] = trackStart + i;
+                // printf("- tracks[%d]: %d\n", i, tracks[i]);
             }
             return true;
         }
@@ -80,6 +80,7 @@ public:
         /*md - `TRACK_TARGET: 0` to set output to track 0.*/
         if (strcmp(key, "TRACK_TARGET") == 0) {
             trackTarget = atoi(value);
+            // printf("------------------------------------ trackTarget: %d\n", trackTarget);
             return true;
         }
 
@@ -94,6 +95,17 @@ public:
             uint16_t i = atoi(key + strlen("VALUE_")) - 1;
             if (i < TRACK_COUNT) {
                 mix[i]->set(atof(value));
+            }
+            return true;
+        }
+
+        /*md - `TRACK_1: 1` to set track input 1 on track buffer 1.*/
+        /*md - `TRACK_2: 2` to set track input 2 on track buffer 2.*/
+        /*md - ...*/
+        if (strncmp(key, "TRACK_", strlen("TRACK_")) == 0) {
+            uint16_t i = atoi(key + strlen("TRACK_")) - 1;
+            if (i < TRACK_COUNT) {
+                tracks[i] = atoi(value);
             }
             return true;
         }

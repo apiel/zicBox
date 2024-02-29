@@ -23,7 +23,8 @@
   # COMPONENT: Rect $encX4 $encY1 $encSize $encSize
   COMPONENT: Encoder2 $encX4 $encY1 $encSize $encSize
     ENCODER_ID: 3
-    VALUE: Mixer TRACK_$track
+    TRACK: $track
+    VALUE: Volume VOLUME
     COLOR: #ff7700
     ID: Param3_enc
 
