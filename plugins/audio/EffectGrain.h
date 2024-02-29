@@ -62,6 +62,10 @@ public:
     /*md - `PITCH_RANDOMIZE` set the pitch randomize. If randomize is set, the pitch is random and while change on each sustain loop.` */
     Val& pitchRandomize = val(0.0f, "PITCH_RANDOMIZE", { "Pitch Rand.", .unit = "%" });
 
+// TODO
+// reverse
+// filter
+
     EffectGrain(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
     {

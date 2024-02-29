@@ -164,12 +164,9 @@ VIEW: shared_components HIDDEN
 include: kick.view.ui
 include: sample.view.ui
 include: fm.view.ui
+include: master.view.ui
 
 
-$track=-1
-VIEW: MasterParams
-  include: masterParams.view.ui
-  USE_SHARED_COMPONENT: SharedGridSequencer
-  include: buttons.view.ui
+
 
 # print: done ($track)
