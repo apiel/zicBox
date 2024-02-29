@@ -105,7 +105,7 @@ public:
     EffectFilter& setMode(EffectFilter::Mode _mode)
     {
         mode_value.setFloat(_mode);
-        mode = mode_value.get();
+        mode = (Mode)mode_value.get();
         mode_value.setString(getMode(mode));
         setCutoff(cutoff.get());
         return *this;
