@@ -117,6 +117,7 @@ public:
                 float out = buffer.samples[(int)grain.position] * velocity * env;
                 buf[track] += out;
             }
+            buf[track] = buf[track] / density.get();
         }
     }
 
