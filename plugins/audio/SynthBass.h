@@ -52,7 +52,7 @@ public:
     Val& decayLevel = val(0.5f, "DECAY_LEVEL", { "Decay Level", .unit = "%" }, [&](auto p) { setDecayLevel(p.value); });
     /*md - `DECAY_TIME` set the decay time percentage base on the total duration.*/
     Val& decayTime = val(100.0f, "DECAY_TIME", { "Decay Time", .unit = "%" }, [&](auto p) { setDecayTime(p.value); });
-    /*md - `CUTOFF` to set cutoff frequency and switch between low and high pass filter. */
+    /*md - `CUTOFF` to set cutoff frequency of low pass filter. */
     Val& cutoff = val(50.0, "CUTOFF", { "Cutoff", .unit = "%" }, [&](auto p) { setCutoff(p.value); });
     /*md - `RESONANCE` to set resonance. */
     Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) { setResonance(p.value); });

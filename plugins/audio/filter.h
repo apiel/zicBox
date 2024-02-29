@@ -9,6 +9,17 @@
 #include <math.h> // fabs
 
 class EffectFilterData {
+protected:
+    float inRange(float s)
+    {
+        if (s < -1.0f) {
+            return -1.0f;
+        } else if (s > 1.0f) {
+            return 1.0f;
+        }
+        return s;
+    }
+
 public:
     float cutoff = 0.0f;
     float feedback = 0.0f;
@@ -37,11 +48,11 @@ public:
 
     void setSampleData(float inputValue)
     {
-        hp = inputValue - lp;
-        bp = lp - buf1;
-
-        lp = lp + cutoff * (hp + feedback * bp);
-        buf1 = buf1 + cutoff * (lp - buf1);
+        // inputValue = inRange(inputValue);
+        hp = inRange(inputValue - lp);
+        bp = inRange(lp - buf1);
+        lp = inRange(lp + cutoff * (hp + feedback * bp));
+        buf1 = inRange(buf1 + cutoff * (lp - buf1));
     }
 };
 
