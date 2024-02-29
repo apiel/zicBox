@@ -26,7 +26,8 @@ public:
     {
         trackId = id;
         seqPlugin = &component->getPlugin("Sequencer", id + 1);
-        volume = component->getPlugin("Mixer", -1).getValue("TRACK_" + std::to_string(id + 1));
+        // volume = component->getPlugin("Mixer", -1).getValue("TRACK_" + std::to_string(id + 1));
+        volume = component->getPlugin("Volume", id + 1).getValue("VOLUME");
         selectedStep = seqPlugin->getValue("SELECTED_STEP");
         status = component->watch(seqPlugin->getValue("STATUS"));
         variation = component->watch(component->getPlugin("SerializeTrack", id + 1).getValue("VARIATION"));
@@ -46,9 +47,10 @@ public:
 Can handle sequencer per track.
 The component is expecting:
 - to have a sequencer audio plugin called `Sequencer` on 12 tracks.
-- to have mixer audio plugin called `Mixer`
+- to have volume audio plugin called `Volume` on each track.
 
 > [!NOTE]
+> - `TODO` make volume plugin configurable and possibility to use mixer instead of single volume effect
 > - `TODO` switch clip/variation
 > - `TODO` keypad action to toggle page views. E.g.: track view might have more parameter than the one visible on a single views. We need a way to be able to toggle between parameter views.
 > - `TODO` make sequencer plugin name configurable
