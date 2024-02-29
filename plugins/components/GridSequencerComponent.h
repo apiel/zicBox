@@ -574,6 +574,12 @@ public:
             return true;
         }
 
+        /*md - `MASTER_PAGE_COUNT: count` to specify the number of master pages. */
+        if (strcmp(key, "MASTER_PAGE_COUNT") == 0) {
+            masterPageCount = atoi(value);
+            return true;
+        }
+
         if (currentKeypadLayout) {
             return currentKeypadLayout->config(key, value);
         }
