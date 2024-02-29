@@ -58,9 +58,9 @@ public:
     /*md - `PITCH` Modulate the pitch.*/
     Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -12, .max = 12 });
     /*md - `DELAY_RANDOMIZE` set the density delay randomize. If randomize is set, the density starting delay is random and while change on each sustain loop. */
-    Val& delayRandomize = val(0.0f, "DELAY_RANDOMIZE", { "Delay Randomize", .unit = "%" });
+    Val& delayRandomize = val(0.0f, "DELAY_RANDOMIZE", { "Delay Rand.", .unit = "%" });
     /*md - `PITCH_RANDOMIZE` set the pitch randomize. If randomize is set, the pitch is random and while change on each sustain loop.` */
-    Val& pitchRandomize = val(0.0f, "PITCH_RANDOMIZE", { "Pitch Randomize", .unit = "%" });
+    Val& pitchRandomize = val(0.0f, "PITCH_RANDOMIZE", { "Pitch Rand.", .unit = "%" });
 
     EffectGrain(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)

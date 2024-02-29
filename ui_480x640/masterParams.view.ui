@@ -40,7 +40,8 @@
   COMPONENT: Encoder2 $encX3 $encY2 $encSize $encSize
     ENCODER_ID: 6
     COLOR: #ff8d99
-    VALUE: EffectGrain PITCH_RANDOMIZE
+    VALUE: EffectGrain DELAY_RANDOMIZE
+    # VALUE: EffectGrain PITCH_RANDOMIZE
     ID: Param6_enc
 
   COMPONENT: Encoder2 $encX4 $encY2 $encSize $encSize
