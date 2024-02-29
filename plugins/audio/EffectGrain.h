@@ -13,6 +13,7 @@
 
 EffectGrain plugin is used to apply granular and scatter effect to a buffer audio.
 */
+// TODO envelop between to apply and release the effect smoothly
 class EffectGrain : public Mapping {
 protected:
     AudioBuffer<> buffer;
