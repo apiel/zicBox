@@ -25,7 +25,7 @@ protected:
         uint64_t index = 0;
         float position = 0.0f;
         float positionIncrement = 1.0f;
-        EnvelopRelative env = EnvelopRelative({ { 1.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 1.0f } });
+        EnvelopRelative env = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 1.0f } });
     } grains[MAX_GRAINS];
 
     void initGrain(uint8_t densityIndex)
@@ -58,8 +58,8 @@ public:
     {
         envelop.setFloat(value);
         for (uint8_t i = 0; i < MAX_GRAINS; i++) {
-            grains[i].env.data[0].time = envelop.pct() * 0.5f;
-            grains[i].env.data[1].time = 1.0f - envelop.pct() * 0.5f;
+            grains[i].env.data[1].time = envelop.pct() * 0.5f;
+            grains[i].env.data[2].time = 1.0f - envelop.pct() * 0.5f;
             printf("%f %f\n", grains[i].env.data[0].time, grains[i].env.data[1].time);
         }
     }
@@ -84,18 +84,16 @@ public:
             buf[track] = 0.0f;
             for (uint8_t i = 0; i < density.get(); i++) {
                 Grain& grain = grains[i];
-                if (grain.index++ < 4000) {
+                if (grain.index++ < grainDuration) {
                     grain.position += grain.positionIncrement;
                     while (grain.position >= buffer.size) {
                         grain.position -= buffer.size;
                     }
                 } else {
-                    // float env = grain.env.next(grain.index / (float)grainDuration);
-                    // printf("%f\n", env);
                     initGrain(i);
                 }
                 float env = grain.env.next(grain.index / (float)grainDuration);
-                // printf("%f\n", env);
+                // printf("time %f env %f\n", grain.index / (float)grainDuration, env);
                 buf[track] += buffer.samples[(int)grain.position] * velocity * env;
             }
         }
