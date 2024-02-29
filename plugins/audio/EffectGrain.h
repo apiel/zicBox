@@ -35,9 +35,14 @@ protected:
     {
         Grain& grain = grains[densityIndex];
         grain.index = 0;
-        grain.position = buffer.index + densityIndex * grainDelay;
-        grain.positionIncrement = positionIncrement; // Here could randomize
+        grain.position = buffer.index + densityIndex * grainDelay + grainDelay * getRand() * delayRandomize.pct();
+        grain.positionIncrement = positionIncrement + positionIncrement * getRand() * positionRandomize.pct();
         grain.env.reset();
+    }
+
+    float getRand()
+    {
+        return props.lookupTable->getNoise();
     }
 
 public:
@@ -52,6 +57,10 @@ public:
     Val& envelop = val(0.0f, "ENVELOP", { "Envelop", .unit = "%" }, [&](auto p) { setEnvelop(p.value); });
     /*md - `PITCH` Modulate the pitch.*/
     Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -12, .max = 12 });
+    /*md - `DELAY_RANDOMIZE` set the density delay randomize. If randomize is set, the density starting delay is random and while change on each sustain loop. */
+    Val& delayRandomize = val(0.0f, "DELAY_RANDOMIZE", { "Delay Randomize", .unit = "%" });
+    /*md - `PITCH_RANDOMIZE` set the pitch randomize. If randomize is set, the pitch is random and while change on each sustain loop.` */
+    Val& pitchRandomize = val(0.0f, "PITCH_RANDOMIZE", { "Pitch Randomize", .unit = "%" });
 
     EffectGrain(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
