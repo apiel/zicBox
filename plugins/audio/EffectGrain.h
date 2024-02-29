@@ -36,7 +36,7 @@ protected:
         Grain& grain = grains[densityIndex];
         grain.index = 0;
         grain.position = buffer.index + densityIndex * grainDelay + grainDelay * getRand() * delayRandomize.pct();
-        grain.positionIncrement = positionIncrement + positionIncrement * getRand() * pitchRandomize.pct();
+        grain.positionIncrement = positionIncrement * direction.get() + positionIncrement * getRand() * pitchRandomize.pct();
         grain.env.reset();
     }
 
@@ -61,9 +61,10 @@ public:
     Val& delayRandomize = val(0.0f, "DELAY_RANDOMIZE", { "Delay Rand.", .unit = "%" });
     /*md - `PITCH_RANDOMIZE` set the pitch randomize. If randomize is set, the pitch is random and while change on each sustain loop.` */
     Val& pitchRandomize = val(0.0f, "PITCH_RANDOMIZE", { "Pitch Rand.", .unit = "%" });
+    /*md - `DIRECTION` set the direction of the grain. */
+    Val& direction = val(1, "DIRECTION", { "Direction", VALUE_CENTERED, .min = -1, .max = 1, .step = 2 });
 
 // TODO
-// reverse
 // filter
 
     EffectGrain(AudioPlugin::Props& props, char* _name)
@@ -106,6 +107,9 @@ public:
                     grain.position += grain.positionIncrement;
                     while (grain.position >= buffer.size) {
                         grain.position -= buffer.size;
+                    }
+                    while (grain.position < 0) {
+                        grain.position += buffer.size;
                     }
                 } else {
                     initGrain(i);
