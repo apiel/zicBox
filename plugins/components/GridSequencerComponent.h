@@ -93,6 +93,9 @@ protected:
 
     unsigned long now = 0;
 
+    int8_t masterPage = 0;
+    int8_t masterPageCount = 2;
+
     void progressInit()
     {
         for (unsigned int step = 0; step < stepsCount; step++) {
@@ -139,7 +142,7 @@ protected:
         renderSelection();
         std::string view;
         if (grid.row == trackCount) {
-            view = "MasterParams";
+            view = std::string("MasterParams") + "_page_" + std::to_string(masterPage);
         } else if (grid.col == 0) {
             // if (grid.lastRow != grid.row) {
             //     tracks[grid.row].page = 0;
@@ -352,7 +355,11 @@ protected:
     void updateMasterSelection(int8_t state)
     {
         if (state == 1) {
-            grid.select(trackCount, 0);
+            if (grid.row == trackCount) {
+                masterPage = (masterPage + 1) % masterPageCount;
+            } else {
+                grid.select(trackCount, 0);
+            }
             updateSelection();
             draw.renderNext();
         }
