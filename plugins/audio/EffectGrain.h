@@ -36,7 +36,7 @@ protected:
         Grain& grain = grains[densityIndex];
         grain.index = 0;
         grain.position = buffer.index + densityIndex * grainDelay + grainDelay * getRand() * delayRandomize.pct();
-        grain.positionIncrement = positionIncrement + positionIncrement * getRand() * positionRandomize.pct();
+        grain.positionIncrement = positionIncrement + positionIncrement * getRand() * pitchRandomize.pct();
         grain.env.reset();
     }
 
