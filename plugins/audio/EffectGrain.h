@@ -21,6 +21,9 @@ protected:
     uint64_t grainDelay = 0;
     uint64_t grainDuration = 0;
 
+    uint8_t baseNote = 60;
+    float positionIncrement = 0.0f;
+
     struct Grain {
         uint64_t index = 0;
         float position = 0.0f;
@@ -33,8 +36,20 @@ protected:
         Grain& grain = grains[densityIndex];
         grain.index = 0;
         grain.position = buffer.index + densityIndex * grainDelay;
-        // grain.positionIncrement = random() * 2.0f - 1.0f;
+        grain.positionIncrement = positionIncrement; // Here could randomize
         grain.env.reset();
+    }
+
+    float getSampleStep(uint8_t note)
+    {
+        // https://gist.github.com/YuxiUx/ef84328d95b10d0fcbf537de77b936cd
+        // pow(2, ((0) / 12.0)) = 1 for 0 semitone
+        // pow(2, ((1) / 12.0)) = 1.059463094 for 1 semitone
+        // pow(2, ((2) / 12.0)) = 1.122462048 for 2 semitone
+        // ...
+
+        // printf("getSampleStep: %d >> %d = %f\n", note, note - baseNote, pow(2, (note - baseNote) / 12.0));
+        return pow(2, ((note - baseNote) / 12.0));
     }
 
 public:
@@ -47,6 +62,8 @@ public:
     Val& densityDelay = val(10.0f, "DENSITY_DELAY", { "Density Delay", .min = 1.0, .max = 1000, .unit = "ms" }, [&](auto p) { setDensityDelay(p.value); });
     /*md - `ENVELOP` set the envelop of the grains. */
     Val& envelop = val(0.0f, "ENVELOP", { "Envelop", .unit = "%" }, [&](auto p) { setEnvelop(p.value); });
+    /*md - `PITCH` Modulate the pitch.*/
+    Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -12, .max = 12 });
 
     EffectGrain(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -105,6 +122,7 @@ public:
             return noteOff(note, _velocity);
         }
         velocity = _velocity;
+        positionIncrement = pow(2, ((note - baseNote + pitch.get()) / 12.0));
         for (uint8_t i = 0; i < density.get(); i++) {
             initGrain(i);
         }
