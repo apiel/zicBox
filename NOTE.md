@@ -1,10 +1,10 @@
 ## Next TODO
 
-- TODO save/load project
-
 - FIXME filter that is crashing the audio....?
 
 - FIXME default sequencer pattern
+
+- TODO save/load project
 
 - TODO scatter/grid effect
 
