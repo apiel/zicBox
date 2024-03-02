@@ -4,6 +4,7 @@
 #include "audioBuffer.h"
 #include "audioPlugin.h"
 #include "mapping.h"
+#include "utils/AsrEnvelop.h"
 #include "utils/EnvelopRelative.h"
 
 #define MAX_GRAINS 16
@@ -24,6 +25,9 @@ protected:
 
     uint8_t baseNote = 60;
     float positionIncrement = 0.0f;
+
+    float envSteps = 0.00001f;
+    AsrEnvelop env = { &envSteps, &envSteps, NULL };
 
     struct Grain {
         uint64_t index = 0;
@@ -97,8 +101,10 @@ public:
     {
         buffer.addSample(buf[track]);
 
-        if (velocity) {
-            buf[track] = 0.0f;
+        float mainEnv = env.next();
+        if (mainEnv > 0.0f) {
+            // if (mainEnv < 1) printf("env %f\n", mainEnv);
+            float out = 0.0f;
             for (uint8_t i = 0; i < density.get(); i++) {
                 Grain& grain = grains[i];
                 if (grain.index++ < grainDuration) {
@@ -112,13 +118,12 @@ public:
                 } else {
                     initGrain(i);
                 }
-                float env = grain.env.next(grain.index / (float)grainDuration);
+                float grainEnv = grain.env.next(grain.index / (float)grainDuration);
                 // printf("time %f env %f\n", grain.index / (float)grainDuration, env);
-
-                float out = buffer.samples[(int)grain.position] * velocity * env;
-                buf[track] += out;
+                out += buffer.samples[(int)grain.position] * velocity * grainEnv;
             }
-            buf[track] = buf[track] / density.get();
+            out = out / density.get();
+            buf[track] = buf[track] * (1.0f - mainEnv) + out * mainEnv;
         }
     }
 
@@ -127,6 +132,7 @@ public:
         if (_velocity == 0) {
             return noteOff(note, _velocity);
         }
+        env.attack();
         velocity = _velocity;
         positionIncrement = pow(2, ((note - baseNote + pitch.get()) / 12.0));
         for (uint8_t i = 0; i < density.get(); i++) {
@@ -136,7 +142,8 @@ public:
 
     void noteOff(uint8_t note, float _velocity) override
     {
-        velocity = _velocity;
+        // velocity = _velocity;
+        env.release();
     }
 };
 
