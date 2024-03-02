@@ -2,8 +2,6 @@
 
 - TODO save/load project
 
-- TODO grainEffect envelop between to apply and release the effect smoothly
-
 - FIXME filter that is crashing the audio....?
 
 - FIXME default sequencer pattern
