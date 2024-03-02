@@ -23,7 +23,7 @@ protected:
 public:
     float cutoff = 0.0f;
     float feedback = 0.0f;
-    float buf1 = 0.0f;
+    float buf = 0.0f;
     float lp = 0.0f;
     float hp = 0.0f;
     float bp = 0.0f;
@@ -49,10 +49,24 @@ public:
     void setSampleData(float inputValue)
     {
         // inputValue = inRange(inputValue);
-        hp = inRange(inputValue - lp);
-        bp = inRange(lp - buf1);
-        lp = inRange(lp + cutoff * (hp + feedback * bp));
-        buf1 = inRange(buf1 + cutoff * (lp - buf1));
+
+        // hp = inRange(inputValue - buf);
+        // bp = inRange(buf - lp);
+        // buf = inRange(buf + cutoff * (hp + feedback * bp));
+        // lp = inRange(lp + cutoff * (buf - lp));
+
+        hp = (inputValue - buf);
+        bp = (buf - lp);
+        buf = (buf + cutoff * (hp + feedback * bp));
+        lp = (lp + cutoff * (buf - lp));
+
+        // if (inputValue > 1.0f || inputValue < -1.0f) {
+        //     printf("inputValue = %f buf = %f hp = %f bp = %f lp = %f\n", inputValue, buf, hp, bp, lp);
+        // }
+
+        // hp = inputValue;
+        // bp = inputValue;
+        // lp = inputValue;
     }
 };
 
