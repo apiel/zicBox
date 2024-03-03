@@ -7,7 +7,7 @@ ZicBox is fully customizable using configuration files. Everyhting is build base
 | <img src='https://github.com/apiel/zicBox/blob/main/images/zicpad.png?raw=true' width='480'> | :arrow_forward: see [Video](https://github.com/apiel/zicBox/#Video) | [<img src='https://github.com/apiel/zicBox/blob/main/images/proto2.png?raw=true' width='480'>](https://github.com/apiel/zicBox/blob/main/images/proto2.jpg?raw=true) | 
 | :---:   | :---: | :---: |
 | <img src='https://github.com/apiel/zicBox/blob/main/images/demo3.png?raw=true' width='480'> | <img src='https://github.com/apiel/zicBox/blob/main/images/demo4.png?raw=true' width='480'> | :book: See [Documentation](https://github.com/apiel/zicBox/wiki/01-Getting-started) :books: | 
-| :speech_balloon: [Discussions](https://github.com/apiel/zicBox/discussions) | <img src='https://github.com/apiel/zicBox/blob/main/images/pixel.png?raw=true' width='480'> | <img src='https://github.com/apiel/zicBox/blob/main/images/pixel_back.png?raw=true' width='480'> | 
+| :speech_balloon: [Discussions](https://github.com/apiel/zicBox/discussions) | <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel.png?raw=true' width='480'> | <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel_mpr121.png?raw=true' width='480'> | 
 
 ## Video
 

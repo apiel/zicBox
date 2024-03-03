@@ -2,7 +2,7 @@
 
 ## Zic Pixel
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPixel/pixel3.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPixel/pixel.png" />
 
 Small version of ZicBox using capacitive PCB keyboard with MPR121 ICs and smaller display. The goal is to reduce the cost and make ZicBox more affordable.
 
@@ -17,6 +17,8 @@ Small version of ZicBox using capacitive PCB keyboard with MPR121 ICs and smalle
 - 3x MPR121 capcitive sensor about 2.5€ per piece
 
 Total of about 60€...
+
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPixel/pixel_mpr121.png" />
 
 ### Drivers
 
