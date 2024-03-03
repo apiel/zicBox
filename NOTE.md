@@ -201,6 +201,16 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
        https://github.com/lv2/lilv/blob/master/tools/lv2apply.c
        https://github.com/jeremysalwen/lv2file
 
+## Pixel
+
+- FIXME
+    - mpr121 labelling
+    - smaller hole for encoder
+    - make alphanum in white instead of silver and may reduce special char
+    - make icon in silver instead of white in order to make it more conductive
+    - pad effect seem not to work properlly
+    - display hole is too big
+
 ## method function pointer
 
 See if I can use
