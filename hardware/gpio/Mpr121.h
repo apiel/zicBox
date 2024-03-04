@@ -47,6 +47,10 @@ enum {
     MPR121_SOFTRESET = 0x80,
 };
 
+#ifndef _BV
+#define _BV(bit) (1 << (bit))
+#endif
+
 class Mpr121 {
 protected:
     int i2c;
@@ -97,7 +101,6 @@ public:
         i2cWriteByteData(i2c, MPR121_CONFIG1, 0x10); // default, 16uA charge current
         i2cWriteByteData(i2c, MPR121_CONFIG2, 0x20); // 0.5uS encoding, 1ms period
 
-
         i2cWriteByteData(i2c, MPR121_ECR, 0x8F); // start with first 5 bits of baseline tracking
 #endif
 
@@ -109,6 +112,36 @@ public:
 #ifdef PIGPIO
         i2cClose(i2c);
 #endif
+    }
+
+    uint16_t touched(void)
+    {
+#ifdef PIGPIO
+        uint16_t t = i2cWriteWordData(i2c, MPR121_TOUCHSTATUS_L);
+        return t & 0x0FFF;
+#else
+        return 0;
+#endif
+    }
+
+    uint16_t lasttouched = 0;
+    uint16_t currtouched = 0;
+    void loop()
+    {
+        currtouched = touched();
+        for (uint8_t i = 0; i < 12; i++) {
+            // it if *is* touched and *wasnt* touched before, alert!
+            if ((currtouched & _BV(i)) && !(lasttouched & _BV(i))) {
+                printf("%d touched\n", i);
+            }
+            // if it *was* touched and now *isnt*, alert!
+            if (!(currtouched & _BV(i)) && (lasttouched & _BV(i))) {
+                printf("%d released\n", i);
+            }
+        }
+
+        // reset our state
+        lasttouched = currtouched;
     }
 };
 
