@@ -105,7 +105,7 @@ protected:
 #if SDL_MINOR_VERSION > 24
         uint8_t emulateEncoderId = getEmulatedEncoderId(wheel.mouseX, wheel.mouseY);
 #endif
-        viewManager.onEncoder(emulateEncoderId, wheel.y);
+        viewManager.onEncoder(emulateEncoderId, wheel.y, SDL_GetTicks());
     }
 
 public:

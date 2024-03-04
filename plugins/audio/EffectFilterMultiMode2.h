@@ -34,7 +34,7 @@ public:
         hpf.setSampleData(inputValue);
         lpf.setSampleData(inputValue);
 
-        return lpf.buf1 * (1.0 - mix.pct()) + hpf.hp * mix.pct();
+        return lpf.lp * (1.0 - mix.pct()) + hpf.hp * mix.pct();
     }
 
     void sample(float* buf)

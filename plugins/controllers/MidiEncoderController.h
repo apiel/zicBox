@@ -99,7 +99,7 @@ void midiHandler(double timeStamp, std::vector<unsigned char>* message, void* us
     plugin->encoders[message->at(1)].value = message->at(2);
 
     // printf("Midi encoder message: %d %d\n", plugin->encoders[message->at(1)].encoderId, direction);
-    plugin->encoder(plugin->encoders[message->at(1)].encoderId, direction);
+    plugin->encoder(plugin->encoders[message->at(1)].encoderId, direction, timeStamp);
 }
 
 #endif
