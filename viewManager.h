@@ -193,7 +193,7 @@ public:
         }
     }
 
-    void onEncoder(int id, int8_t direction)
+    void onEncoder(int id, int8_t direction, uint32_t tick)
     {
         m2.lock();
         unsigned long now = SDL_GetTicks();

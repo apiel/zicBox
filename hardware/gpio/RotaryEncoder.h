@@ -15,12 +15,12 @@ protected:
         self->pulse(gpio, level, tick);
     }
 
-    void send(uint8_t direction)
+    void send(uint8_t direction, uint32_t tick)
     {
         if (debug) {
             printf("[encoderId %d] send: %d\n", encoderId, direction);
         }
-        lo_send(oscClient, "/encoder", "ii", encoderId, direction);
+        lo_send(oscClient, "/encoder", "iii", encoderId, direction, tick);
     }
 
 public:
@@ -59,11 +59,11 @@ public:
 
             if ((gpio == gpioA) && (level == 1)) {
                 if (levelB) {
-                    send(-1);
+                    send(-1, tick);
                 }
             } else if ((gpio == gpioB) && (level == 1)) {
                 if (levelA) {
-                    send(1);
+                    send(1, tick);
                 }
             }
         }

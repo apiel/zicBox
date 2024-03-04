@@ -33,7 +33,7 @@ protected:
         printf("OSC server listening on port %s\n", port);
 
         lo_server_thread_add_method(serverThread, "/midi", NULL, midiOscHandler, this);
-        lo_server_thread_add_method(serverThread, "/encoder", "ii", encoderOscHandler, this);
+        lo_server_thread_add_method(serverThread, "/encoder", "iii", encoderOscHandler, this);
 
         lo_server_thread_start(serverThread);
     }
@@ -63,7 +63,7 @@ int midiOscHandler(const char *path, const char *types, lo_arg **argv, int argc,
 int encoderOscHandler(const char *path, const char *types, lo_arg **argv, int argc, lo_message data, void *user_data)
 {
     OscController *plugin = (OscController *)user_data;
-    plugin->encoder(argv[0]->i, argv[1]->i);
+    plugin->encoder(argv[0]->i, argv[1]->i, argv[2]->i);
     // printf("OSC encoder: %d %d\n", argv[0]->i, argv[1]->i);
 
     return 0;

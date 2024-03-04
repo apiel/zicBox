@@ -10,9 +10,9 @@
 
 ControllerInterface* lastPluginControllerInstance = NULL;
 
-void encoderHandler(int id, int8_t direction)
+void encoderHandler(int id, int8_t direction, uint32_t tick)
 {
-    ViewManager::get().onEncoder(id, direction);
+    ViewManager::get().onEncoder(id, direction, tick);
 }
 
 void keyHandler(uint16_t id, int key, int8_t state)
