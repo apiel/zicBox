@@ -117,7 +117,7 @@ public:
     uint16_t touched(void)
     {
 #ifdef PIGPIO
-        uint16_t t = i2cWriteWordData(i2c, MPR121_TOUCHSTATUS_L);
+        uint16_t t = i2cReadWordData(i2c, MPR121_TOUCHSTATUS_L);
         return t & 0x0FFF;
 #else
         return 0;
