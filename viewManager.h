@@ -196,11 +196,11 @@ public:
     void onEncoder(int id, int8_t direction, uint32_t tick)
     {
         m2.lock();
-        unsigned long now = SDL_GetTicks();
-        if (now - lastEncoderTick[id] < 25) {
+        // unsigned long tick = SDL_GetTicks();
+        if (tick - lastEncoderTick[id] < 25) {
             direction = direction * 5;
         }
-        lastEncoderTick[id] = now;
+        lastEncoderTick[id] = tick;
         for (auto& component : ui.view->components) {
             component->onEncoder(id, direction);
         }
