@@ -5,6 +5,10 @@
 
 #include "../../dustscript/dustscript.h"
 
+#include <vector>
+
+std::vector<Mpr121*> mpr121s;
+
 void configCallback(char* key, char* value, const char* filename)
 {
     if (strcmp(key, "print") == 0) {
@@ -23,7 +27,7 @@ void configCallback(char* key, char* value, const char* filename)
     } else if (strcmp(key, "MPR121") == 0) {
         char * p;
         int address = strtoul(strtok(value, " "), &p, 16);
-        new Mpr121(address);
+        mpr121s.push_back(new Mpr121(address));
     }
 }
 
@@ -51,7 +55,10 @@ int main(int argc, char** argv)
         });
 
     while (1) {
-        usleep(1000);
+        for(auto mpr121 : mpr121s) {
+            mpr121->loop();
+        }
+        usleep(1);
     }
 
     return 0;
