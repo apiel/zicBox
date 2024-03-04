@@ -1,5 +1,6 @@
 #include "Button.h"
 #include "RotaryEncoder.h"
+#include "Mpr121.h"
 #include "def.h"
 
 #include "../../dustscript/dustscript.h"
@@ -19,6 +20,10 @@ void configCallback(char* key, char* value, const char* filename)
         int gpio = atoi(strtok(value, " "));
         int buttonId = atoi(strtok(NULL, " "));
         new Button(gpio, buttonId);
+    } else if (strcmp(key, "MPR121") == 0) {
+        char * p;
+        int address = strtoul(strtok(value, " "), &p, 16);
+        new Mpr121(address);
     }
 }
 
