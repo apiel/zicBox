@@ -54,6 +54,7 @@ enum {
 class Mpr121 {
 protected:
     int i2c;
+    int address;
 
     void setThresholds(uint8_t touch, uint8_t release)
     {
@@ -67,6 +68,7 @@ protected:
 
 public:
     Mpr121(int address)
+    : address(address)
     {
         printf("[Mpr121] address: %x\n", address);
 
@@ -144,11 +146,11 @@ public:
             // it if *is* touched and *wasnt* touched before, alert!
             if ((currtouched & _BV(i)) && !(lasttouched & _BV(i))) {
                 uint16_t value = filteredData(i);
-                printf("%d touched: %d\n", i, value);
+                printf("[%x] %d touched: %d\n", address, i, value);
             }
             // if it *was* touched and now *isnt*, alert!
             if (!(currtouched & _BV(i)) && (lasttouched & _BV(i))) {
-                printf("%d released\n", i);
+                printf("[%x] %d released\n", address, i);
             }
         }
 
