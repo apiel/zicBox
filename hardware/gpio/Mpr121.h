@@ -124,6 +124,17 @@ public:
 #endif
     }
 
+    uint16_t filteredData(uint8_t t)
+    {
+#ifdef PIGPIO
+        if (t > 12)
+            return 0;
+        return i2cReadWordData(i2c, MPR121_FILTDATA_0L + t * 2);
+#else
+        return 0;
+#endif
+    }
+
     uint16_t lasttouched = 0;
     uint16_t currtouched = 0;
     void loop()
@@ -132,7 +143,8 @@ public:
         for (uint8_t i = 0; i < 12; i++) {
             // it if *is* touched and *wasnt* touched before, alert!
             if ((currtouched & _BV(i)) && !(lasttouched & _BV(i))) {
-                printf("%d touched\n", i);
+                uint16_t value = filteredData(i);
+                printf("%d touched: %d\n", i, value);
             }
             // if it *was* touched and now *isnt*, alert!
             if (!(currtouched & _BV(i)) && (lasttouched & _BV(i))) {
