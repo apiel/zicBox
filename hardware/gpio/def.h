@@ -9,7 +9,6 @@
 #include <lo/lo.h>
 
 #include <stdint.h>
-#include <vector>
 #include <stdio.h>
 #include <unistd.h>
 #include <cstring>

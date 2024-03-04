@@ -1,6 +1,26 @@
-#include "def.h"
-#include "RotaryEncoder.h"
 #include "Button.h"
+#include "RotaryEncoder.h"
+#include "def.h"
+
+#include "../../dustscript/dustscript.h"
+
+void configCallback(char* key, char* value, const char* filename)
+{
+    if (strcmp(key, "print") == 0) {
+        printf(">> LOG: %s\n", value);
+    } else if (strcmp(key, "debug") == 0) {
+        debug = (strcmp(value, "true") == 0);
+    } else if (strcmp(key, "ROTARY_ENCODER") == 0) {
+        int gpioA = atoi(strtok(value, " "));
+        int gpioB = atoi(strtok(NULL, " "));
+        int encoderId = atoi(strtok(NULL, " "));
+        new RotaryEncoder(gpioA, gpioB, encoderId);
+    } else if (strcmp(key, "BUTTON") == 0) {
+        int gpio = atoi(strtok(value, " "));
+        int buttonId = atoi(strtok(NULL, " "));
+        new Button(gpio, buttonId);
+    }
+}
 
 int main(int argc, char** argv)
 {
@@ -13,43 +33,17 @@ int main(int argc, char** argv)
     }
 #endif
 
-    if (argc == 2 && strcmp(argv[1], "--debug") == 0) {
-        printf("Debug mode\n");
-        debug = true;
-    }
-
     if (!oscClient) {
         printf("Failed to create OSC client\n");
         return 1;
     }
     printf("Initialized OSC client on port 8888\n");
 
-    RotaryEncoder encoders[ENCODER_COUNT] = {
-        { 20, 19, 0 },
-        { 13, 6, 1 },
-        { 5, 7, 2 },
-        { 8, 11, 3 },
-        { 21, 26, 4 },
-        { 9, 10, 5 },
-        { 27, 17, 6 },
-        { 22, 4, 7 },
-        { 16, 12, 8 },
-        { 25, 24, 9 },
-        { 23, 18, 10 },
-        { 15, 14, 11 },
-    };
-
-    Button buttons[BUTTON_COUNT] = {
-        // {26, 0},
-        // {19, 1},
-        // {13, 2},
-        // {6, 3},
-        // {5, 4},
-        // {22, 5},
-        // {27, 6},
-        // {17, 7},
-        // {4, 8},
-    };
+    DustScript::load(
+        argc >= 2 ? argv[1] : "config.cfg",
+        [&](char* key, char* value, const char* filename, uint8_t indentation, DustScript& instance) {
+            configCallback(key, value, filename);
+        });
 
     while (1) {
         usleep(1000);

@@ -24,7 +24,6 @@ protected:
     }
 
 public:
-    // void (*midiHandler)(std::vector<unsigned char>* message) = NULL;
     int gpioA;
     int gpioB;
     uint8_t encoderId;
