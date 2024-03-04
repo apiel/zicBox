@@ -55,8 +55,8 @@ protected:
     {
 #ifdef PIGPIO
         for (uint8_t i = 0; i < 12; i++) {
-            i2cWriteByteData(MPR121_TOUCHTH_0 + 2 * i, touch);
-            i2cWriteByteData(MPR121_RELEASETH_0 + 2 * i, release);
+            i2cWriteByteData(i2c, MPR121_TOUCHTH_0 + 2 * i, touch);
+            i2cWriteByteData(i2c, MPR121_RELEASETH_0 + 2 * i, release);
         }
 #endif
     }
@@ -69,36 +69,36 @@ public:
 #ifdef PIGPIO
         i2c = i2cOpen(1, address, 0);
 
-        i2cWriteByteData(MPR121_SOFTRESET, 0x63);
+        i2cWriteByteData(i2c, MPR121_SOFTRESET, 0x63);
         // delay ?
-        i2cWriteByteData(MPR121_ECR, 0x0);
+        i2cWriteByteData(i2c, MPR121_ECR, 0x0);
 
-        uint8_t c = i2cReadByteData(MPR121_CONFIG2);
+        uint8_t c = i2cReadByteData(i2c, MPR121_CONFIG2);
         if (c != 0x24) {
             return;
         }
 
         setThresholds(MPR121_TOUCH_THRESHOLD_DEFAULT, MPR121_RELEASE_THRESHOLD_DEFAULT);
-        i2cWriteByteData(MPR121_MHDR, 0x01);
-        i2cWriteByteData(MPR121_NHDR, 0x01);
-        i2cWriteByteData(MPR121_NCLR, 0x0E);
-        i2cWriteByteData(MPR121_FDLR, 0x00);
+        i2cWriteByteData(i2c, MPR121_MHDR, 0x01);
+        i2cWriteByteData(i2c, MPR121_NHDR, 0x01);
+        i2cWriteByteData(i2c, MPR121_NCLR, 0x0E);
+        i2cWriteByteData(i2c, MPR121_FDLR, 0x00);
 
-        i2cWriteByteData(MPR121_MHDF, 0x01);
-        i2cWriteByteData(MPR121_NHDF, 0x05);
-        i2cWriteByteData(MPR121_NCLF, 0x01);
-        i2cWriteByteData(MPR121_FDLF, 0x00);
+        i2cWriteByteData(i2c, MPR121_MHDF, 0x01);
+        i2cWriteByteData(i2c, MPR121_NHDF, 0x05);
+        i2cWriteByteData(i2c, MPR121_NCLF, 0x01);
+        i2cWriteByteData(i2c, MPR121_FDLF, 0x00);
 
-        i2cWriteByteData(MPR121_NHDT, 0x00);
-        i2cWriteByteData(MPR121_NCLT, 0x00);
-        i2cWriteByteData(MPR121_FDLT, 0x00);
+        i2cWriteByteData(i2c, MPR121_NHDT, 0x00);
+        i2cWriteByteData(i2c, MPR121_NCLT, 0x00);
+        i2cWriteByteData(i2c, MPR121_FDLT, 0x00);
 
-        i2cWriteByteData(MPR121_DEBOUNCE, 0);
-        i2cWriteByteData(MPR121_CONFIG1, 0x10); // default, 16uA charge current
-        i2cWriteByteData(MPR121_CONFIG2, 0x20); // 0.5uS encoding, 1ms period
+        i2cWriteByteData(i2c, MPR121_DEBOUNCE, 0);
+        i2cWriteByteData(i2c, MPR121_CONFIG1, 0x10); // default, 16uA charge current
+        i2cWriteByteData(i2c, MPR121_CONFIG2, 0x20); // 0.5uS encoding, 1ms period
 
 
-        i2cWriteByteData(MPR121_ECR, 0x8F); // start with first 5 bits of baseline tracking
+        i2cWriteByteData(i2c, MPR121_ECR, 0x8F); // start with first 5 bits of baseline tracking
 #endif
 
         printf("[Mpr121] %x initialized\n", address);
@@ -114,14 +114,14 @@ public:
 
 #endif
 
-// i2cWriteByteData(MPR121_MHDR, 0x5B);
-// i2cWriteByteData(MPR121_NHDR, 0x5B);
-// i2cWriteByteData(MPR121_NCLR, 0x5A);
-// i2cWriteByteData(MPR121_FDLR, 0x00);
-// i2cWriteByteData(MPR121_MHDF, 0x5B);
-// i2cWriteByteData(MPR121_NHDF, 0x5B);
-// i2cWriteByteData(MPR121_NCLF, 0x5A);
-// i2cWriteByteData(MPR121_FDLF, 0x00);
-// i2cWriteByteData(MPR121_NHDT, 0x5B);
-// i2cWriteByteData(MPR121_NCLT, 0x5A);
-// i2cWriteByteData(MPR121_FDLT, 0x00);
+// i2cWriteByteData(i2c, MPR121_MHDR, 0x5B);
+// i2cWriteByteData(i2c, MPR121_NHDR, 0x5B);
+// i2cWriteByteData(i2c, MPR121_NCLR, 0x5A);
+// i2cWriteByteData(i2c, MPR121_FDLR, 0x00);
+// i2cWriteByteData(i2c, MPR121_MHDF, 0x5B);
+// i2cWriteByteData(i2c, MPR121_NHDF, 0x5B);
+// i2cWriteByteData(i2c, MPR121_NCLF, 0x5A);
+// i2cWriteByteData(i2c, MPR121_FDLF, 0x00);
+// i2cWriteByteData(i2c, MPR121_NHDT, 0x5B);
+// i2cWriteByteData(i2c, MPR121_NCLT, 0x5A);
+// i2cWriteByteData(i2c, MPR121_FDLT, 0x00);
