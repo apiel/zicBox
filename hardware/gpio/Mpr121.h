@@ -160,15 +160,3 @@ public:
 };
 
 #endif
-
-// i2cWriteByteData(i2c, MPR121_MHDR, 0x5B);
-// i2cWriteByteData(i2c, MPR121_NHDR, 0x5B);
-// i2cWriteByteData(i2c, MPR121_NCLR, 0x5A);
-// i2cWriteByteData(i2c, MPR121_FDLR, 0x00);
-// i2cWriteByteData(i2c, MPR121_MHDF, 0x5B);
-// i2cWriteByteData(i2c, MPR121_NHDF, 0x5B);
-// i2cWriteByteData(i2c, MPR121_NCLF, 0x5A);
-// i2cWriteByteData(i2c, MPR121_FDLF, 0x00);
-// i2cWriteByteData(i2c, MPR121_NHDT, 0x5B);
-// i2cWriteByteData(i2c, MPR121_NCLT, 0x5A);
-// i2cWriteByteData(i2c, MPR121_FDLT, 0x00);
