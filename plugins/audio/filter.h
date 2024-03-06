@@ -10,15 +10,15 @@
 
 class EffectFilterData {
 protected:
-    float inRange(float s)
-    {
-        if (s < -1.0f) {
-            return -1.0f;
-        } else if (s > 1.0f) {
-            return 1.0f;
-        }
-        return s;
-    }
+    // float inRange(float s)
+    // {
+    //     if (s < -1.0f) {
+    //         return -1.0f;
+    //     } else if (s > 1.0f) {
+    //         return 1.0f;
+    //     }
+    //     return s;
+    // }
 
 public:
     float cutoff = 0.0f;
@@ -49,7 +49,6 @@ public:
     void setSampleData(float inputValue)
     {
         // inputValue = inRange(inputValue);
-
         // hp = inRange(inputValue - buf);
         // bp = inRange(buf - lp);
         // buf = inRange(buf + cutoff * (hp + feedback * bp));
@@ -60,13 +59,7 @@ public:
         buf = (buf + cutoff * (hp + feedback * bp));
         lp = (lp + cutoff * (buf - lp));
 
-        // if (inputValue > 1.0f || inputValue < -1.0f) {
-        //     printf("inputValue = %f buf = %f hp = %f bp = %f lp = %f\n", inputValue, buf, hp, bp, lp);
-        // }
-
-        // hp = inputValue;
-        // bp = inputValue;
-        // lp = inputValue;
+        // printf("inputValue = %f buf = %f hp = %f bp = %f lp = %f\n", inputValue, buf, hp, bp, lp);
     }
 };
 

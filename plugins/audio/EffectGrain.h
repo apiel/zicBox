@@ -12,7 +12,7 @@
 /*md
 ## EffectGrain
 
-EffectGrain plugin is used to apply granular and scatter effect to a buffer audio.
+EffectGrain plugin is used to apply granular effect to a buffer audio.
 */
 // TODO envelop between to apply and release the effect smoothly
 class EffectGrain : public Mapping {
@@ -25,6 +25,7 @@ protected:
 
     uint8_t baseNote = 60;
     float positionIncrement = 0.0f;
+    uint8_t playedNote = 0;
 
     float envSteps = 0.00001f;
     AsrEnvelop env = { &envSteps, &envSteps, NULL };
@@ -132,6 +133,7 @@ public:
         if (_velocity == 0) {
             return noteOff(note, _velocity);
         }
+        playedNote = note;
         env.attack();
         velocity = _velocity;
         positionIncrement = pow(2, ((note - baseNote + pitch.get()) / 12.0));
@@ -142,8 +144,9 @@ public:
 
     void noteOff(uint8_t note, float _velocity) override
     {
-        // velocity = _velocity;
-        env.release();
+        if (note == playedNote) {
+            env.release();
+        }
     }
 };
 

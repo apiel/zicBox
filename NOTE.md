@@ -210,7 +210,9 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
     - make icon in silver instead of white in order to make it more conductive
     - pad effect seem not to work properlly
     - display hole is too big
-
+    - might move number in empty spot? Or need to find a better way to utilize those empty spot..
+    - add a pin going to front panel for LED (and 5v)
+    
 ## method function pointer
 
 See if I can use
