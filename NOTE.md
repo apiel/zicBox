@@ -7,6 +7,12 @@
 - TODO save/load project
 
 - TODO scatter/grid effect
+    - when pressing a btn it would apply (only while button is pressed and then revert original setting):
+        - enable granular on some specific tracks
+        - update filter (could it even apply a modulation on the filter?)
+        - update sequencer pattern, for example to make kick rolling
+        - apply a reverb/delay or any other kind of effect
+        --> So all in all it should be able to apply a set of plugin value for a certain amount of time and reset once the key is released. Also, it might need to be able to trigger noteOn, e.g. for EffectGrain? or maybe not, EffectGrain should be able to run without noteOn
 
 - TODO advance clip/variation transition...
     - should sequencer take care to load variation?
