@@ -46,7 +46,12 @@ public:
             return;
         }
         float reso = resonance * 0.99;
-        feedback = reso + reso / (1.0 - cutoff);
+        float ratio = 1.0f - cutoff;
+        if (ratio <= 0.0f) {
+            feedback = 0.0f;
+            return;
+        }
+        feedback = reso + reso / ratio;
     }
 
     void setSampleData(float inputValue)
@@ -56,11 +61,6 @@ public:
         bp = fix(buf - lp);
         buf = fix(buf + cutoff * (hp + feedback * bp));
         lp = fix(lp + cutoff * (buf - lp));
-
-        // hp = (inputValue - buf);
-        // bp = (buf - lp);
-        // buf = (buf + cutoff * (hp + feedback * bp));
-        // lp = (lp + cutoff * (buf - lp));
 
         // printf("inputValue = %f buf = %f hp = %f bp = %f lp = %f\n", inputValue, buf, hp, bp, lp);
     }
