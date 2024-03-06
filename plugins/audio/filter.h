@@ -10,23 +10,26 @@
 
 class EffectFilterData {
 protected:
-    // float inRange(float s)
-    // {
-    //     if (s < -1.0f) {
-    //         return -1.0f;
-    //     } else if (s > 1.0f) {
-    //         return 1.0f;
-    //     }
-    //     return s;
-    // }
+    float fix(double s)
+    {
+        if (isnan(s)) {
+            return 0.0;
+        }
+        // if (s < -1.0f) {
+        //     return -1.0f;
+        // } else if (s > 1.0f) {
+        //     return 1.0f;
+        // }
+        return s;
+    }
 
 public:
     float cutoff = 0.0f;
     float feedback = 0.0f;
-    float buf = 0.0f;
-    float lp = 0.0f;
-    float hp = 0.0f;
-    float bp = 0.0f;
+    double buf = 0.0;
+    double lp = 0.0;
+    double hp = 0.0;
+    double bp = 0.0;
     float resonance = 0.0f;
    
     void setCutoff(float _cutoff)
@@ -48,16 +51,16 @@ public:
 
     void setSampleData(float inputValue)
     {
-        // inputValue = inRange(inputValue);
-        // hp = inRange(inputValue - buf);
-        // bp = inRange(buf - lp);
-        // buf = inRange(buf + cutoff * (hp + feedback * bp));
-        // lp = inRange(lp + cutoff * (buf - lp));
+        // inputValue = fix(inputValue);
+        hp = fix(inputValue - buf);
+        bp = fix(buf - lp);
+        buf = fix(buf + cutoff * (hp + feedback * bp));
+        lp = fix(lp + cutoff * (buf - lp));
 
-        hp = (inputValue - buf);
-        bp = (buf - lp);
-        buf = (buf + cutoff * (hp + feedback * bp));
-        lp = (lp + cutoff * (buf - lp));
+        // hp = (inputValue - buf);
+        // bp = (buf - lp);
+        // buf = (buf + cutoff * (hp + feedback * bp));
+        // lp = (lp + cutoff * (buf - lp));
 
         // printf("inputValue = %f buf = %f hp = %f bp = %f lp = %f\n", inputValue, buf, hp, bp, lp);
     }

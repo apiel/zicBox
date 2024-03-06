@@ -2,8 +2,6 @@
 
 - TODO start thread in https://llllllll.co/
 
-- FIXME filter that is crashing the audio....?
-
 - FIXME default sequencer pattern
 
 - TODO EffectGrain can be active without triggering any note...
@@ -32,12 +30,15 @@
 - TODO keyboad should handle longpress (see button...)
 
 - TODO sample:
-    - there could be multiple loop area and jump from one to the other either one after the other or randomly... there could also be a way to define the transition between the loop area, e.g. mixing the 2 area and slowly fadding out from one to the other.
+    - there could be multiple loop area and jump from one to the other, either one after the other or randomly... there could also be a way to define the transition between the loop area, e.g. mixing the 2 area and slowly fadding out from one to the other.
     - wavetable:
         - fix start position of sample marker when start pos is not to 0
         - morph on wavetable, start and end stick to sustain position when both are touching sustain window
         - spray window
     - granularize sample...
+
+- TODO kick23 could change morph position on every noteON. It would either be an incrementation or random or...
+    Would this principle make sense as on pitch or other drum parameter?
 
 - TODO FM ui waveform, maybe just show the 4 envelop...
 
