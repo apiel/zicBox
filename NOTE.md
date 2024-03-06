@@ -1,8 +1,12 @@
 ## Next TODO
 
+- TODO start thread in https://llllllll.co/
+
 - FIXME filter that is crashing the audio....?
 
 - FIXME default sequencer pattern
+
+- TODO EffectGrain can be active without triggering any note...
 
 - TODO save/load project
 
@@ -27,21 +31,13 @@
 
 - TODO keyboad should handle longpress (see button...)
 
-- TODO hardware look for touch encoder or button encoder
-    - https://www.mouser.at/datasheet/2/54/PEC12R-777795.pdf
-    - 22mm https://www.mouser.at/ProductDetail/Bourns/PEC12R-4022F-S0024?qs=6oMev5NRZMHfikcgfDwwZA%3D%3D
-    - 30mm https://www.mouser.at/ProductDetail/Bourns/PEC12R-4030F-S0024?qs=15%2Ff%2FzFZJSBasYPWBClbAA%3D%3D
-
-- TODO start thread in https://llllllll.co/
-
-- TODO instead of usual sequencer, link multiple sample together and then a note would trigger the series of samples... A bit like wavetstate
-
 - TODO sample:
-    - granularize sample...
-    - wavteable:
+    - there could be multiple loop area and jump from one to the other either one after the other or randomly... there could also be a way to define the transition between the loop area, e.g. mixing the 2 area and slowly fadding out from one to the other.
+    - wavetable:
         - fix start position of sample marker when start pos is not to 0
         - morph on wavetable, start and end stick to sustain position when both are touching sustain window
         - spray window
+    - granularize sample...
 
 - TODO FM ui waveform, maybe just show the 4 envelop...
 
@@ -135,6 +131,8 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
 ## zicHost
 
 - TODO libpd do the same as for lua, if lib not installed, skip...?
+
+- TODO instead of usual sequencer, link multiple sample together and then a note would trigger the series of samples... A bit like wavetstate
 
 - TODO look at https://github.com/pichenettes/eurorack/tree/master/shades
 
