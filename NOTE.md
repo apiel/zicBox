@@ -2,7 +2,7 @@
 
 - TODO start thread in https://llllllll.co/
 
-- FIXME default sequencer pattern
+- FIXME open playing noteOn
 
 - TODO EffectGrain can be active without triggering any note...
 
@@ -217,7 +217,10 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
     - display hole is too big
     - might move number in empty spot? Or need to find a better way to utilize those empty spot..
     - add a pin going to front panel for LED (and 5v)
+    - expose Lout and Rout via pin
     
+- use all the encoder left to make a mega midi interface...
+
 ## method function pointer
 
 See if I can use

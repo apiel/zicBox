@@ -9,7 +9,7 @@
 
 #include <string>
 
-/*md
+/*//md
 ## Sequencer
 
 <img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Sequencer.png" />

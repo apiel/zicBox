@@ -1,10 +1,8 @@
 #ifndef _SEQUENCER_H_
 #define _SEQUENCER_H_
 
-#include <filesystem>
 #include <string>
 
-#include "../../helpers/fs/directoryList.h"
 #include "../../helpers/midiNote.h"
 #include "audioPlugin.h"
 #include "mapping.h"
@@ -65,8 +63,6 @@ Sequencer audio module can be used to sequence another audio plugin on 32 steps.
 class Sequencer : public Mapping {
 protected:
     AudioPlugin::Props& props;
-    std::filesystem::path folder = "./patterns";
-    std::vector<std::filesystem::path> patternList;
 
     Step steps[MAX_STEPS];
     Step* selectedStepPtr = &steps[0];
@@ -117,25 +113,10 @@ protected:
         }
     }
 
-    void refreshPatternList(std::filesystem::path pathNew = "")
-    {
-        patternList = getDirectoryList(folder);
-        pattern.props().max = patternList.size() - 1;
-        if (pathNew == "") {
-            pattern.set(pattern.get());
-        } else {
-            std::vector<std::filesystem::path>::iterator it = std::find(patternList.begin(), patternList.end(), pathNew);
-            int index = it - patternList.begin();
-            pattern.set(index);
-        }
-    }
-
 public:
     /*md **Values**: */
     /*md - `DETUNE` detuning all playing step notes by semitones */
     Val& detune = val(0.0f, "DETUNE", { "Detune", VALUE_CENTERED, -24.0f, 24.0f });
-    /*md - `PATTERN` select the pattern to play */
-    Val& pattern = val(0.0f, "PATTERN", { "Pattern", .type = VALUE_STRING }, [&](auto p) { setPattern(p.value); });
 
     /*md - `SELECTED_STEP` select the step to edit */
     Val& selectedStep = val(0.0f, "SELECTED_STEP", { "Step", .min = 1.0f, .max = MAX_STEPS }, [&](auto p) { setSelectedStep(p.value); });
@@ -157,7 +138,6 @@ public:
         : Mapping(props, _name)
         , props(props)
     {
-        refreshPatternList();
         initValues();
     }
 
@@ -210,28 +190,12 @@ public:
         }
     }
 
-    Sequencer& setPattern(float value)
-    {
-        pattern.setFloat(value);
-        std::filesystem::path path = patternList[(int)pattern.get()];
-        pattern.setString(path.filename());
-        if (std::filesystem::exists(path)) {
-            if (std::filesystem::file_size(path) != sizeof(Step) * MAX_STEPS) {
-                printf("File %s is not the correct format (should be %ld bytes)\n", path.filename().c_str(), sizeof(Step) * MAX_STEPS);
-            } else {
-                // printf("Loading %s\n", patternFilename);
-                FILE* file = fopen(path.c_str(), "rb");
-                fread(steps, sizeof(Step), MAX_STEPS, file);
-                fclose(file);
-                return *this;
-            }
-        }
-
-        for (int i = 0; i < MAX_STEPS; i++) {
-            steps[i].reset();
-        }
-        return *this;
-    }
+    // void reset()
+    // {
+    //     for (int i = 0; i < MAX_STEPS; i++) {
+    //         steps[i].reset();
+    //     }
+    // }
 
     Sequencer& setSelectedStep(float value)
     {
@@ -301,12 +265,6 @@ public:
         }
         case 3:
             return clockCounterPtr;
-        case 10: // Save pattern
-            save(folder / *(std::string*)userdata);
-            return NULL;
-        case 11: // Rename pattern
-            rename(folder / *(std::string*)userdata);
-            return NULL;
         case 20: { // Toggle sequencer
             if (status.get() == Status::ON) {
                 status.set(Status::OFF);
@@ -320,22 +278,6 @@ public:
             return NULL;
         }
         return NULL;
-    }
-
-    void rename(std::filesystem::path pathNew)
-    {
-        std::filesystem::path path = patternList[(int)pattern.get()];
-        std::filesystem::rename(path, pathNew);
-        save(pathNew);
-    }
-
-    void save(std::filesystem::path path)
-    {
-        FILE* file = fopen(path.c_str(), "wb");
-        fwrite(steps, sizeof(Step), MAX_STEPS, file);
-        fclose(file);
-
-        refreshPatternList(path);
     }
 
     bool config(char* key, char* value)
