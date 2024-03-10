@@ -2,7 +2,7 @@ BUILD_DIR ?= build
 OBJ_DIR ?= $(BUILD_DIR)/obj
 
 all:
-	make PadComponent EncoderComponent Encoder2Component GranularComponent SequencerComponent\
+	make PadComponent EncoderComponent Encoder2Component GranularComponent\
 				ButtonComponent WaveComponent Wave2Component MonitoringComponent AdsrComponent\
 				SampleComponent GridSequencerComponent RectComponent ToggleComponent PlayComponent\
 				TextComponent FmAlgoComponent

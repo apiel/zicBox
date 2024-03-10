@@ -22,7 +22,6 @@ protected:
     ValueInterface* stepVelocity = watch(getPlugin("Sequencer", track).getValue("STEP_VELOCITY"));
     ValueInterface* stepNote = watch(getPlugin("Sequencer", track).getValue("STEP_NOTE"));
     ValueInterface* stepCondition = watch(getPlugin("Sequencer", track).getValue("STEP_CONDITION"));
-    ValueInterface* pattern = watch(getPlugin("Sequencer", track).getValue("PATTERN"));
 
     Point stepPosition;
     Size stepSize;
