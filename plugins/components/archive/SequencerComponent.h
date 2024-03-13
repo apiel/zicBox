@@ -285,7 +285,6 @@ public:
 
     bool config(char* key, char* value)
     {
-        /*md - `COLOR: #999999` set component color */
         if (strcmp(key, "COLOR") == 0) {
             colors = getColorsFromColor(draw.getColor(value));
             colorsActive = getColorsStepFromColor(draw.getColor(value));

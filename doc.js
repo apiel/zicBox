@@ -16,6 +16,7 @@ const ignore = [
     'node_modules',
     'waveshare/',
     'hardware/ZicPad/neotrillis/.pio',
+    'hardware/encoderModule/.pio',
     '.git',
     'dustscript',
     'wiki',
