@@ -151,3 +151,35 @@ sudo cp ~/Waveshare_fbcp/build/fbcp /usr/local/bin/fbcp
 And in `/etc/rc.local` add `fbcp&` before exit 0. Note that you must add "&" to run in the background, otherwise the system may not be able to start.
 
 > source https://www.waveshare.com/wiki/1.47inch_LCD_Module
+
+**LCD Display 1.3in 240x240 SPI Interface ST7789**
+
+```sh
+sudo apt-get install cmake libraspberrypi-dev raspberrypi-kernel-headers
+cd ~
+git clone https://github.com/juj/fbcp-ili9341.git
+cd fbcp-ili9341
+```
+
+Then edit display.h and paste in
+
+```sh
+#define DISPLAY_SPI_DRIVE_SETTINGS (1 | BCM2835_SPI0_CS_CPOL | BCM2835_SPI0_CS_CPHA)
+```
+under the line
+
+```sh
+#define DISPLAY_SPI_DRIVE_SETTINGS (0)
+```
+
+Then continue with
+
+```sh
+mkdir build
+cd build
+cmake -DST7789VW=ON -DGPIO_TFT_DATA_CONTROL=6 -DGPIO_TFT_RESET_PIN=5 -DGPIO_TFT_BACKLIGHT=13 -DSTATISTICS=0 -DSPI_BUS_CLOCK_DIVISOR=40 -DUSE_DMA_TRANSFERS=OFF -DDISPLAY_ROTATE_180_DEGREES=1 ..
+make -j
+sudo ./fbcp-ili9341
+```
+
+> For more details, see https://github.com/juj/fbcp-ili9341/issues/178#issuecomment-759897048

@@ -355,3 +355,17 @@ Finally run
 make -j
 sudo ./fbcp-ili9341
 ```
+
+In `/boot/config.txt`, add in the bottom:
+
+```
+hdmi_group=2
+hdmi_mode=87
+hdmi_cvt=240 240 60 1 0 0 0
+hdmi_force_hotplug=1
+```
+
+and comment out:
+```
+# dtoverlay=vc4-kms-v3d
+```
