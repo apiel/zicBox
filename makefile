@@ -9,6 +9,7 @@ WAVESHARE_C= $(shell find $(./waveshare) -type f -name '*.c' -not -path '*/\.*')
 
 RTMIDI=`pkg-config --cflags --libs rtmidi`
 SDL2=`sdl2-config --cflags --libs`
+# SDL2=`../test/SDL/build/sdl2-config --cflags --libs`
 SDL2_ttf=`pkg-config --cflags --libs SDL2_ttf`
 
 ifneq ($(shell uname -m),x86_64)
