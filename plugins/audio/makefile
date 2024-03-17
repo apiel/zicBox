@@ -28,6 +28,9 @@ SynthGranular:
 SynthKick23:
 	make compile LIBNAME=SynthKick23 EXTRA="$(shell pkg-config --cflags --libs sndfile)"
 
+SynthSample:
+	make compile LIBNAME=SynthSample EXTRA="$(shell pkg-config --cflags --libs sndfile)"
+
 AudioInputPulse:
 	make compile LIBNAME=AudioInputPulse EXTRA="$(shell pkg-config --cflags --libs libpulse-simple)"
 
