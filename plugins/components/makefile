@@ -5,7 +5,7 @@ all:
 	make PadComponent EncoderComponent Encoder2Component GranularComponent\
 				ButtonComponent WaveComponent Wave2Component MonitoringComponent AdsrComponent\
 				SampleComponent GridSequencerComponent RectComponent ToggleComponent PlayComponent\
-				TextComponent FmAlgoComponent
+				TextComponent FmAlgoComponent EncoderKnobComponent SequencerComponent
 
 %Component:
 	@mkdir -p $(OBJ_DIR)
