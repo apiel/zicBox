@@ -140,17 +140,19 @@ public:
         }
     }
 
+    int flags = SDL_WINDOW_SHOWN
+#ifdef IS_RPI
+    // | SDL_WINDOW_FULLSCREEN_DESKTOP
+#endif
+        ;
+
     void init()
     {
         window = SDL_CreateWindow(
             "Zic",
             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
             styles.screen.w, styles.screen.h,
-            SDL_WINDOW_SHOWN
-#ifdef IS_RPI
-                | SDL_WINDOW_FULLSCREEN_DESKTOP
-#endif
-        );
+            flags);
 
         if (window == NULL) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not create window: %s", SDL_GetError());
