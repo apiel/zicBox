@@ -51,6 +51,9 @@ In this example, we change the `overlay` color to `#00FFFF`.
         char* name = strtok(value, " ");
         char* color = strtok(NULL, " ");
         ViewManager::get().draw.setColor(name, color);
+    } else if (strcmp(key, "SDL_FLAGS") == 0) {
+        int flags = atoi(value);
+        ViewManager::get().draw.flags |= flags;
     } else if (strcmp(key, "LOAD_CONFIG_PLUGIN") == 0) {
         char* scriptPath = strtok(value, " ");
         char* plugin = strtok(NULL, " ");
