@@ -41,7 +41,8 @@ $encoder=Encoder2
 
 # $screen=ui_320x172
 # $screen=ui_800x480
-$screen=ui_480x640
+# $screen=ui_480x640
+$screen=ui_240x240
 
 
 ### Default ###
@@ -98,3 +99,14 @@ if: $screen == ui_480x640
   ADD_ZONE_ENCODER: $encX3 $encY3 $encSize $encSize
   ADD_ZONE_ENCODER: $encX4 $encY3 $encSize $encSize
   include: ui_480x640/main.view.ui
+
+## 240x240 ###
+
+if: $screen == ui_240x240
+  SCREEN: 240 240
+  $encSize=80
+  $encX1=15
+  $encX2=$encX1+125
+  $encY1=7
+  $encY2=$encY1+$encSize+6
+  include: ui_240x240/main.view.ui
