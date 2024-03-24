@@ -2,7 +2,7 @@ VIEW: Master
   COMPONENT: Encoder2 $encX1 $encY1 $encSize $encSize
     ENCODER_ID: 2
     COLOR: #ff8d99
-    VALUE: MasterVolume GAIN
+    VALUE: MasterVolume VOLUME
     FLOAT_PRECISION: 1
     ID: Param2_enc
 
