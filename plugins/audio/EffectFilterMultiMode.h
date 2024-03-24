@@ -49,7 +49,7 @@ public:
     void setCutoff(float value)
     {
         mix.setFloat(value);
-        printf("setCutoff %f >> %f\n", value, mix.pct());
+        // printf("setCutoff %f >> %f\n", value, mix.pct());
         hpf.setCutoff((0.20 * mix.pct()) + 0.00707);
         lpf.setCutoff(0.85 * mix.pct() + 0.1);
     }
@@ -57,7 +57,7 @@ public:
     void setResonance(float value)
     {
         resonance.setFloat(value);
-        printf("setResonance %f >> %f\n", value, resonance.pct());
+        // printf("setResonance %f >> %f\n", value, resonance.pct());
         lpf.setResonance(resonance.pct());
         hpf.setResonance(resonance.pct());
     };
