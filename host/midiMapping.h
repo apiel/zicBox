@@ -14,14 +14,14 @@ protected:
 
     bool handleUint8Position1(std::vector<unsigned char>* message)
     {
-        plugin->getValue(valueIndex)->set(message->at(1) / 128.0f);
+        plugin->getValue(valueIndex)->setPct(message->at(1) / 128.0f);
         return true;
     }
 
     bool handleUint8Position2(std::vector<unsigned char>* message)
     {
         if (msg[1] == message->at(1)) {
-            plugin->getValue(valueIndex)->set(message->at(2) / 128.0f);
+            plugin->getValue(valueIndex)->setPct(message->at(2) / 128.0f);
             return true;
         }
         return false;
@@ -29,7 +29,7 @@ protected:
 
     bool handleUint16(std::vector<unsigned char>* message)
     {
-        plugin->getValue(valueIndex)->set(((message->at(2) << 7) + message->at(1)) / 16383.0f);
+        plugin->getValue(valueIndex)->setPct(((message->at(2) << 7) + message->at(1)) / 16383.0f);
         return true;
     }
 
