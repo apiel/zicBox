@@ -109,4 +109,10 @@ if: $screen == ui_240x240
   $encX2=$encX1+125
   $encY1=7
   $encY2=$encY1+$encSize+6
+
+  ADD_ZONE_ENCODER: $encX1 $encY1 $encSize $encSize
+  ADD_ZONE_ENCODER: $encX2 $encY1 $encSize $encSize
+  ADD_ZONE_ENCODER: $encX1 $encY2 $encSize $encSize
+  ADD_ZONE_ENCODER: $encX2 $encY2 $encSize $encSize
+
   include: ui_240x240/main.view.ui
