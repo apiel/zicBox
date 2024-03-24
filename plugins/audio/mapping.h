@@ -109,6 +109,12 @@ public:
         (*onUpdatePtr)(value, onUpdateData);
     }
 
+    void setPct(float pct)
+    {
+        float value = range(pct * (_props.max - _props.min) + _props.min, _props.min, _props.max);
+        set(value);
+    }
+
     void onUpdate(void (*callback)(float, void* data), void* data)
     {
         onUpdatePtr = callback;

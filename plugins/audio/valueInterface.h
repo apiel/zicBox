@@ -35,6 +35,7 @@ public:
     virtual inline float get() = 0;
     virtual void increment(int8_t steps) = 0;
     virtual inline float pct() = 0;
+    virtual void setPct(float pct) = 0;
     virtual std::string string() = 0;
     virtual void set(float value, void* data = NULL) = 0;
     virtual void onUpdate(void (*callback)(float, void* data), void* data) = 0;
