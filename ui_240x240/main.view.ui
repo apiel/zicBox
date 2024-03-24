@@ -1,30 +1,30 @@
 VIEW: Master
   COMPONENT: Encoder2 $encX1 $encY1 $encSize $encSize
-    ENCODER_ID: 2
+    ENCODER_ID: 0
     COLOR: #ff8d99
     VALUE: MasterVolume VOLUME
     FLOAT_PRECISION: 1
-    ID: Param2_enc
+    ID: Param1_enc
 
   COMPONENT: Encoder2 $encX2 $encY1 $encSize $encSize
-    ENCODER_ID: 3
+    ENCODER_ID: 1
     VALUE: MultiModeFilter CUTOFF
     COLOR: #9dfe86
     TYPE: TWO_SIDED
     # BACKGROUND_COLOR: #2b2c2e
-    ID: Param3_enc
+    ID: Param2_enc
 
   COMPONENT: Encoder2 $encX1 $encY2 $encSize $encSize
-    ENCODER_ID: 7
+    ENCODER_ID: 2
     VALUE: MultiModeFilter RESONANCE
     COLOR: #3791a1
     # BACKGROUND_COLOR: #2b2c2e
-    ID: Param7_enc
+    ID: Param3_enc
 
   COMPONENT: Encoder2 $encX2 $encY2 $encSize $encSize
-    ENCODER_ID: 11
+    ENCODER_ID: 3
     COLOR: #ff7700
     VALUE: SampleRateReducer SAMPLE_STEP
     FONT_UNIT_SIZE: 8
     # BACKGROUND_COLOR: #2b2c2e
-    ID: Param11_enc
+    ID: Param4_enc
