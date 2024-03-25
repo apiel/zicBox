@@ -1,12 +1,3 @@
-# WAVESHARE START
-WAVESHARE_Config   = ./waveshare/Config
-WAVESHARE_EPD      = ./waveshare/LCD
-WAVESHARE_FONTS    = ./waveshare/Fonts
-WAVESHARE_GUI      = ./waveshare/GUI
-
-WAVESHARE_C= $(shell find $(./waveshare) -type f -name '*.c' -not -path '*/\.*')
-# WAVESHARE END
-
 RTMIDI=`pkg-config --cflags --libs rtmidi`
 SDL2=`sdl2-config --cflags --libs`
 # SDL2=`../test/SDL/build/sdl2-config --cflags --libs`
@@ -14,7 +5,6 @@ SDL2_ttf=`pkg-config --cflags --libs SDL2_ttf`
 
 ifneq ($(shell uname -m),x86_64)
 RPI := -DIS_RPI=1
-# WAVESHARE := $(WAVESHARE_C) -DUSE_WAVESHARE=1 -lbcm2835 -lm -DUSE_BCM2835_LIB=1 -I $(WAVESHARE_Config) -I $(WAVESHARE_GUI) -I $(WAVESHARE_EPD)
 endif
 
 BUILD=-Wno-narrowing -ldl $(RTMIDI)
@@ -48,7 +38,7 @@ runHost:
 
 build:
 	@echo "\n------------------ build zicBox ------------------\n"
-	g++ -g -fms-extensions -o zicBox zicBox.cpp $(WAVESHARE) -ldl $(SDL2) $(SDL2_ttf) $(RPI) $(RTMIDI)
+	g++ -g -fms-extensions -o zicBox zicBox.cpp -ldl $(SDL2) $(SDL2_ttf) $(RPI) $(RTMIDI)
 
 run:
 	@echo "\n------------------ run zicBox ------------------\n"

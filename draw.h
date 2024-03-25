@@ -8,16 +8,6 @@
 #include "drawGfx.h"
 #include "plugins/components/drawInterface.h"
 
-#ifdef USE_WAVESHARE
-#include "DEV_Config.h"
-#include "GUI_Paint.h"
-#include "LCD_1in47.h"
-
-#ifndef WAVESHARE_RGB
-#define WAVESHARE_RGB(r, g, b) (((r >> 3) << 11) | ((g >> 2) << 5) | (b >> 3))
-#endif
-#endif
-
 #define PIXEL_FORMAT SDL_PIXELFORMAT_RGBA8888
 
 class Draw : public DrawInterface {
@@ -25,10 +15,6 @@ protected:
     SDL_Texture* texture = NULL;
     SDL_Renderer* renderer = NULL;
     SDL_Window* window = NULL;
-
-#ifdef USE_WAVESHARE
-    UWORD* BlackImage;
-#endif
 
     bool needRendering = false;
 
@@ -165,29 +151,6 @@ public:
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
         texture = (SDL_Texture*)setTextureRenderer(styles.screen);
-
-#ifdef USE_WAVESHARE
-        if (DEV_ModuleInit() != 0) {
-            DEV_ModuleExit();
-            exit(0);
-        }
-
-        /* LCD Init */
-        printf("1.47inch LCD demo...\r\n");
-        LCD_1IN47_Init(HORIZONTAL);
-        LCD_1IN47_Clear(BLACK);
-        LCD_SetBacklight(1023);
-
-        UDOUBLE Imagesize = LCD_1IN47_HEIGHT * LCD_1IN47_WIDTH * 2;
-        printf("Imagesize = %d\r\n", Imagesize);
-        if ((BlackImage = (UWORD*)malloc(Imagesize)) == NULL) {
-            printf("Failed to apply for black memory...\r\n");
-            exit(0);
-        }
-        /*1.Create a new image cache named IMAGE_RGB and fill it with white*/
-        Paint_NewImage(BlackImage, LCD_1IN47_WIDTH, LCD_1IN47_HEIGHT, 90, BLACK, 16);
-        Paint_Clear(BLACK);
-#endif
     }
 
     void renderNext()
@@ -205,24 +168,6 @@ public:
 
     void render()
     {
-#ifdef USE_WAVESHARE
-        // FIXME need to find a more efficient way to access pixel and draw them to the SPI display
-        Uint32 r_mask, g_mask, b_mask, a_mask;
-        int bbp;
-        SDL_PixelFormatEnumToMasks(PIXEL_FORMAT, &bbp, &r_mask, &g_mask, &b_mask, &a_mask);
-        SDL_Surface* surface = SDL_CreateRGBSurface(0, styles.screen.w, styles.screen.h, bbp, r_mask, g_mask, b_mask, a_mask);
-        SDL_RenderReadPixels(renderer, NULL, PIXEL_FORMAT, (void*)surface->pixels, surface->pitch);
-
-        for (int x = 0; x < styles.screen.w; x++) {
-            for (int y = 0; y < styles.screen.h; y++) {
-                SDL_Color color;
-                SDL_GetRGBA(((Uint32*)surface->pixels)[x + y * styles.screen.w], surface->format, &color.r, &color.g, &color.b, &color.a);
-                Paint_SetPixel(x, y, WAVESHARE_RGB(color.r, color.g, color.b));
-            }
-        }
-        LCD_1IN47_Display(BlackImage);
-#endif
-
         // During the whole rendering process, we render into a texture
         // Only at the end, we push the texture to the screen
         //
