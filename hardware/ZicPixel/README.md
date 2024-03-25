@@ -10,9 +10,9 @@ Small version of ZicBox using capacitive PCB keyboard with MPR121 ICs and smalle
 
 
 - 2x PCBs at JLCPCB 4€ each inlucing shipping
-- 1x Raspberry Pi zero 25€
-- 1x [Waveshare 1.47in LCD module](https://www.waveshare.com/wiki/1.47inch_LCD_Module) 20€ on Amazon, 13€ on Aliexpress
-- 4x encoders wihtout detent [PEC12R-4025F-N0024](https://eu.mouser.com/ProductDetail/Bourns/PEC12R-4025F-N0024?qs=Zq5ylnUbLm4HSBD7%2FFgU%2FA%3D%3D&countryCode=DE&currencyCode=EUR&_gl=1*1nd7s7x*_ga*Nzc0OTY5NDMwLjE2OTg1MDM2NzE.*_ga_15W4STQT4T*MTcwNTk0NTcwNi4xMi4wLjE3MDU5NDU3MDcuNTkuMC4w*_ga_1KQLCYKRX3*MTcwNTk0NTcwNi4yLjAuMTcwNTk0NTcwNy4wLjAuMA..) 1.13€ (but might get expensive with shipping, could use other encoder to reduce cost)
+- 1x Raspberry Pi zero 2 25€
+- 1x ST7789 Drive [LCD OLED Display 240x240](https://www.aliexpress.com/item/4000182036178.html) 2€ on Aliexpress
+- 4x switch encoders without detent [PEC12R-4025F-S0024](https://eu.mouser.com/ProductDetail/Bourns/PEC12R-4025F-S0024?qs=Zq5ylnUbLm7c1LzY1JyJgg%3D%3D&_gl=1*18jq081*_ga*MjEzNTYwMjcyNS4xNzA5NDU2NTk3*_ga_15W4STQT4T*MTcxMTM3NzQ1MC4zLjEuMTcxMTM3NzUxOS41MS4wLjA.*_ga_1KQLCYKRX3*MTcxMTM3NzQ1MC4zLjEuMTcxMTM3NzUxOS4wLjAuMA..) 1.50€ (but might get expensive with shipping, could use other encoder to reduce cost)
 - 1x DAC [Adafruit UDA1334A](https://learn.adafruit.com/adafruit-i2s-stereo-decoder-uda1334a/raspberry-pi-wiring) 7€ (not available anymore) can find a copy on Amazon CJMCU-1334, 5x for 33€ =~ 5€ one piece (the DAC is optional and could be replaced by a USB audio card)
 - 3x MPR121 capcitive sensor about 2.5€ per piece
 
@@ -105,82 +105,22 @@ speaker-test -c2 --test=wav -w /usr/share/sounds/alsa/Front_Center.wav
 
 > source https://bytesnbits.co.uk/raspberry-pi-i2s-sound-output/ and https://learn.adafruit.com/adafruit-i2s-stereo-decoder-uda1334a/raspberry-pi-usage
 
-
-**SPI 1.47inch LCD display with FBCP Porting**
-
-Framebuffer uses a video output device to drive a video display device from a memory buffer containing complete frame data. Simply put, a memory area is used to store the display content, and the display content can be changed by changing the data in the memory.
-There is an open source project on github: fbcp-ili9341. Compared with other fbcp projects, this project uses partial refresh and DMA to achieve a speed of up to 60fps.
-
-Download Drivers
-```
-sudo apt-get install cmake libraspberrypi-dev raspberrypi-kernel-headers -y
-cd ~
-wget https://files.waveshare.com/upload/1/18/Waveshare_fbcp.zip
-unzip Waveshare_fbcp.zip
-cd Waveshare_fbcp/
-sudo chmod +x ./shell/*
-
-```
-
-Raspberry Pi's `vc4-kms-v3d` will cause fbcp to fail, so we need to close vc4-kms-v3d before installing it in fbcp.
-
-in `/boot/config.txt`
-Just comment the following line by adding a `#` in front:
-```sh
-# dtoverlay=vc4-kms-v3d
-# max_framebuffers=2
-```
-
-Then reboot to apply changes.
-
-Build FBCP for your display:
-```sh
-mkdir build
-cd build
-cmake -DSPI_BUS_CLOCK_DIVISOR=20 -DWAVESHARE_1INCH47_LCD=ON -DBACKLIGHT_CONTROL=ON -DSTATISTICS=0 ..
-make -j
-sudo ./fbcp
-```
-
-After running `fbcp` the screen should update and show either the terminal or the desktop environment.
-
-Finally, to automatically start it:
-```sh
-sudo cp ~/Waveshare_fbcp/build/fbcp /usr/local/bin/fbcp
-```
-
-And in `/etc/rc.local` add `fbcp&` before exit 0. Note that you must add "&" to run in the background, otherwise the system may not be able to start.
-
-> source https://www.waveshare.com/wiki/1.47inch_LCD_Module
-
 **LCD Display 1.3in 240x240 SPI Interface ST7789**
 
-```sh
-sudo apt-get install cmake libraspberrypi-dev raspberrypi-kernel-headers
-cd ~
-git clone https://github.com/juj/fbcp-ili9341.git
-cd fbcp-ili9341
-```
-
-Then edit display.h and paste in
+To be able to use the display, a custom version of SDL need to be installed.
 
 ```sh
-#define DISPLAY_SPI_DRIVE_SETTINGS (1 | BCM2835_SPI0_CS_CPOL | BCM2835_SPI0_CS_CPHA)
-```
-under the line
-
-```sh
-#define DISPLAY_SPI_DRIVE_SETTINGS (0)
-```
-
-Then continue with
-
-```sh
+git clone https://github.com/apiel/SDL.git -b SDL2
+cd SDL
 mkdir build
 cd build
-cmake -DST7789VW=ON -DGPIO_TFT_DATA_CONTROL=6 -DGPIO_TFT_RESET_PIN=5 -DGPIO_TFT_BACKLIGHT=13 -DSTATISTICS=0 -DSPI_BUS_CLOCK_DIVISOR=40 -DUSE_DMA_TRANSFERS=OFF -DDISPLAY_ROTATE_180_DEGREES=1 ..
-make -j
-sudo ./fbcp-ili9341
+../configure
+make
+sudo make install
 ```
 
-> For more details, see https://github.com/juj/fbcp-ili9341/issues/178#issuecomment-759897048
+Then run zicBox like this:
+
+```sh
+sudo SDL_VIDEODRIVER=dummy ./zicBox
+```
