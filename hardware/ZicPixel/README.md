@@ -19,6 +19,7 @@ Small version of ZicBox using capacitive PCB keyboard with MPR121 ICs and smalle
 Total of about 60€...
 
 <img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPixel/pixel_mpr121.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPixel/pixel_front.png" />
 
 ### Drivers
 
