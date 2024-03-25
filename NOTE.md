@@ -1,5 +1,7 @@
 ## Next TODO
 
+- TODO create separate asset folder
+
 - TODO start thread in https://llllllll.co/
 
 - FIXME open playing noteOn
