@@ -25,7 +25,6 @@ protected:
     void send(uint8_t direction, uint32_t tick)
     {
         controller->encoder(encoderId, direction, tick);
-        printf("[encoderId %d] send: %d\n", encoderId, direction);
     }
 
 public:

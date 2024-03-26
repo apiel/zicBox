@@ -3,6 +3,7 @@
 
 #include "controllerInterface.h"
 #include "pixel/RotaryEncoder.h"
+#include "pixel/Button.h"
 
 #include <cstring>
 #include <stdio.h>
@@ -27,10 +28,10 @@ public:
             int gpioB = atoi(strtok(NULL, " "));
             int encoderId = atoi(strtok(NULL, " "));
             new RotaryEncoder(this, gpioA, gpioB, encoderId);
-            // } else if (strcmp(key, "BUTTON") == 0) {
-            //     int gpio = atoi(strtok(params, " "));
-            //     int buttonId = atoi(strtok(NULL, " "));
-            //     new Button(gpio, buttonId);
+        } else if (strcmp(key, "BUTTON") == 0) {
+            int gpio = atoi(strtok(params, " "));
+            int buttonId = atoi(strtok(NULL, " "));
+            new Button(this, gpio, buttonId);
             // } else if (strcmp(key, "MPR121") == 0) {
             //     char* p;
             //     int address = strtoul(strtok(params, " "), &p, 16);

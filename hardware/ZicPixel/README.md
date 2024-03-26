@@ -111,6 +111,25 @@ To be able to use the display, a custom fork of SDL need to be installed.
 
 ```sh
 sudo apt-get install libbcm2835-dev
+git clone https://github.com/apiel/SDL.git -b SDL2
+cd SDL
+mkdir build
+cd build
+../configure
+make
+sudo make install
+```
+
+Then run zicBox like this:
+
+```sh
+sudo SDL_VIDEODRIVER=dummy ./zicBox
+```
+
+wip:
+
+```sh
+sudo apt-get install libbcm2835-dev
 git clone https://github.com/apiel/SDL.git -b st7789
 cd SDL
 mkdir build

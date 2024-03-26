@@ -108,6 +108,10 @@ if: $screen == ui_240x240
     ROTARY_ENCODER: 22 24 1
     ROTARY_ENCODER: 8 9 2
     ROTARY_ENCODER: 23 27 3
+    BUTTON: 16 0
+    BUTTON: 25 1
+    BUTTON: 7 2
+    BUTTON: 17 3
   SCREEN: 240 240
   $encSize=80
   $encX1=25
