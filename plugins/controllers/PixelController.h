@@ -13,6 +13,12 @@ public:
     PixelController(Props& props, uint16_t id)
         : ControllerInterface(props, id)
     {
+#ifdef PIGPIO
+        if (gpioInitialise() < 0) {
+            printf("Failed to initialise GPIO\n");
+            return 1;
+        }
+#endif
     }
 
     bool config(char* key, char* params)
