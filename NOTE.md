@@ -1,6 +1,6 @@
 ## Next TODO
 
-- TODO create separate asset folder
+- TODO create separate asset folder > might put it in wiki...
 
 - TODO start thread in https://llllllll.co/
 
