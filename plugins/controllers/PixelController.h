@@ -16,7 +16,6 @@ public:
 #ifdef PIGPIO
         if (gpioInitialise() < 0) {
             printf("Failed to initialise GPIO\n");
-            return 1;
         }
 #endif
     }
