@@ -103,11 +103,11 @@ if: $screen == ui_480x640
 ## 240x240 ###
 
 if: $screen == ui_240x240
-  PLUGIN_CONTROLLER: Pixel ./plugins/controllers/build/libzic_PixelController.so
-    ROTARY_ENCODER: 24 22 0
-    ROTARY_ENCODER: 20 12 1
-    ROTARY_ENCODER: 23 27 2
-    ROTARY_ENCODER: 9 8 3
+  # PLUGIN_CONTROLLER: Pixel ./plugins/controllers/build/libzic_PixelController.so
+  #   ROTARY_ENCODER: 24 22 0
+  #   ROTARY_ENCODER: 20 12 1
+  #   ROTARY_ENCODER: 23 27 2
+  #   ROTARY_ENCODER: 9 8 3
   SCREEN: 240 240
   $encSize=80
   $encX1=25
