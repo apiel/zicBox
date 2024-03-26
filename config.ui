@@ -105,10 +105,10 @@ if: $screen == ui_480x640
 if: $screen == ui_240x240
   SCREEN: 240 240
   $encSize=80
-  $encX1=15
-  $encX2=$encX1+125
+  $encX1=25
+  $encX2=$encX1+110
   $encY1=7
-  $encY2=$encY1+$encSize+6
+  $encY2=$encY1+$encSize
 
   ADD_ZONE_ENCODER: $encX1 $encY1 $encSize $encSize
   ADD_ZONE_ENCODER: $encX2 $encY1 $encSize $encSize
