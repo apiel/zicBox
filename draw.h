@@ -8,8 +8,8 @@
 #include "drawGfx.h"
 #include "plugins/components/drawInterface.h"
 
-// #define PIXEL_FORMAT SDL_PIXELFORMAT_RGBA8888
-#define PIXEL_FORMAT SDL_PIXELFORMAT_RGB565
+#define PIXEL_FORMAT SDL_PIXELFORMAT_RGBA8888
+// #define PIXEL_FORMAT SDL_PIXELFORMAT_RGB565
 
 class Draw : public DrawInterface {
 protected:
