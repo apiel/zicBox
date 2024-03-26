@@ -20,13 +20,9 @@ protected:
 
     void send(uint8_t direction, uint32_t tick)
     {
-        // if (debug) {
-        //     printf("[buttomId %d] send: %d\n", buttomId, direction);
-        // }
-        // lo_send(oscClient, "/button", "iii", buttomId, direction, tick);
-
         // controller->button(buttomId, direction, tick);
         printf("button %d: %d\n", buttomId, direction);
+        controller->onKey(controller->id, buttomId, direction ? 0 : 1);
     }
 
 public:
