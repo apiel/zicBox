@@ -110,7 +110,8 @@ speaker-test -c2 --test=wav -w /usr/share/sounds/alsa/Front_Center.wav
 To be able to use the display, a custom version of SDL need to be installed.
 
 ```sh
-git clone https://github.com/apiel/SDL.git -b SDL2
+sudo apt-get install libbcm2835-dev
+git clone https://github.com/apiel/SDL.git -b st7789
 cd SDL
 mkdir build
 cd build
@@ -122,5 +123,5 @@ sudo make install
 Then run zicBox like this:
 
 ```sh
-sudo SDL_VIDEODRIVER=dummy ./zicBox
+sudo SDL_VIDEODRIVER=st7789 ./zicBox
 ```
