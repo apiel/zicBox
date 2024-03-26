@@ -107,7 +107,7 @@ speaker-test -c2 --test=wav -w /usr/share/sounds/alsa/Front_Center.wav
 
 **LCD Display 1.3in 240x240 SPI Interface ST7789**
 
-To be able to use the display, a custom version of SDL need to be installed.
+To be able to use the display, a custom fork of SDL need to be installed.
 
 ```sh
 sudo apt-get install libbcm2835-dev
