@@ -27,13 +27,13 @@ protected:
     {
         RotaryEncoder* self = (RotaryEncoder*)user;
         self->controller->onKey(self->controller->id, self->encoderId, level ? 0 : 1);
-        printf("encoder button (%d): %d\n", self->encoderId, level);
+        // printf("encoder button (%d): %d\n", self->encoderId, level);
     }
 
     void send(uint8_t direction, uint32_t tick)
     {
         controller->encoder(encoderId, direction, tick);
-        printf("encoder (%d): %d\n", encoderId, direction);
+        // printf("encoder (%d): %d\n", encoderId, direction);
     }
 
 public:

@@ -15,6 +15,25 @@
 #define MPR121_TOUCH_THRESHOLD_DEFAULT 12
 #define MPR121_RELEASE_THRESHOLD_DEFAULT 6
 
+/*md
+## Mpr121Controller
+
+Mpr121Controller is a controller for MPR121 capacitive touch sensor.
+
+Those sensors used i2c bus. To be able to use it, you need to install pigpio library:
+
+```sh
+sudo apt-get install libpigpio-dev
+```
+
+You will need to activate the i2c interface in your rasberry pi using raspi-config.
+
+> [!TIP]
+> You can use i2cdetect to find the address of your i2c device.
+> `sudo apt-get install i2c-tools`
+> Use the command `i2cdetect -y 1` to list the addresses.
+*/
+
 enum {
     MPR121_TOUCHSTATUS_L = 0x00,
     MPR121_TOUCHSTATUS_H = 0x01,
@@ -118,6 +137,7 @@ public:
 #endif
 
         printf("[Mpr121] %x initialized\n", address);
+        loopThread = std::thread(&Mpr121::loop, this);
     }
 
     ~Mpr121()
@@ -125,7 +145,6 @@ public:
 #ifdef PIGPIO
         i2cClose(i2c);
 #endif
-        loopThread = std::thread(&Mpr121::loop, this);
     }
 
     uint16_t touched(void)
@@ -153,6 +172,7 @@ public:
     uint16_t currtouched = 0;
     void loop()
     {
+        printf("[Mpr121] %x start loop\n", address);
         while (true) {
             currtouched = touched();
             for (uint8_t i = 0; i < 12; i++) {
@@ -186,8 +206,10 @@ public:
 #endif
     }
 
+    /*md **Config:** */
     bool config(char* key, char* params)
     {
+        /*md - `ADDRESS: 0x5c` will connect to i2c device at address `0x5c` and watch all touch inputs. This can be called multiple times to instantiate multiple i2c devices */
         if (strcmp(key, "ADDRESS") == 0) {
             char* p;
             int address = strtoul(strtok(params, " "), &p, 16);
