@@ -218,7 +218,7 @@ public:
         if (strcmp(key, "ADDRESS") == 0) {
             char* p;
             int address = strtoul(strtok(params, " "), &p, 16);
-            new Mpr121(address);
+            new Mpr121(this, address);
         }
         return false;
     }
