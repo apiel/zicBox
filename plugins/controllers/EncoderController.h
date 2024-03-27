@@ -117,6 +117,7 @@ public:
             if (btn != NULL) {
                 gpioBtn = atoi(btn);
             }
+            printf("btn gpio: %d (%s)\n", gpioBtn, btn);
             new RotaryEncoder(this, encoderId, gpioA, gpioB, gpioBtn);
         }
         return false;
