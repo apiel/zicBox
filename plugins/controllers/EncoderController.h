@@ -63,7 +63,7 @@ public:
         if (gpioBtn >= 0) {
             gpioSetMode(gpioBtn, PI_INPUT);
             gpioSetPullUpDown(gpioBtn, PI_PUD_UP);
-            gpioSetAlertFuncEx(gpioBtn, pulseEx, this);
+            gpioSetAlertFuncEx(gpioBtn, pulseBtnEx, this);
         }
 #endif
     }
@@ -117,7 +117,6 @@ public:
             if (btn != NULL) {
                 gpioBtn = atoi(btn);
             }
-            printf("btn gpio: %d (%s)\n", gpioBtn, btn);
             new RotaryEncoder(this, encoderId, gpioA, gpioB, gpioBtn);
         }
         return false;
