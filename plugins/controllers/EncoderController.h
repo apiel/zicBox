@@ -3,6 +3,11 @@
 
 #include "controllerInterface.h"
 
+#ifdef PIGPIO
+// sudo apt-get install libpigpio-dev
+#include <pigpio.h>
+#endif
+
 #include <cstring>
 #include <stdio.h>
 
