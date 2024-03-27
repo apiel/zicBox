@@ -6,10 +6,10 @@ PIGPIO := -lpigpio -lrt -DPIGPIO=1
 endif
 
 all:
-	make OscController MidiEncoderController NeotrellisController PixelController EncoderController
+	make OscController MidiEncoderController NeotrellisController Mpr121Controller EncoderController
 
-PixelController:
-	make compile LIBNAME=PixelController EXTRA="$(PIGPIO)"
+Mpr121Controller:
+	make compile LIBNAME=Mpr121Controller EXTRA="$(PIGPIO)"
 
 EncoderController:
 	make compile LIBNAME=EncoderController EXTRA="$(PIGPIO)"

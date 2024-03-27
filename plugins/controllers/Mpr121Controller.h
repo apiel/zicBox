@@ -60,6 +60,8 @@ protected:
     int i2c;
     int address;
 
+    std::thread loopThread;
+
     void setThresholds(uint8_t touch, uint8_t release)
     {
 #ifdef PIGPIO
@@ -72,7 +74,7 @@ protected:
 
 public:
     Mpr121(int address)
-    : address(address)
+        : address(address)
     {
         printf("[Mpr121] address: %x\n", address);
 
@@ -118,6 +120,7 @@ public:
 #ifdef PIGPIO
         i2cClose(i2c);
 #endif
+        loopThread = std::thread(&Mpr121::loop, this);
     }
 
     uint16_t touched(void)
@@ -145,21 +148,23 @@ public:
     uint16_t currtouched = 0;
     void loop()
     {
-        currtouched = touched();
-        for (uint8_t i = 0; i < 12; i++) {
-            // it if *is* touched and *wasnt* touched before, alert!
-            if ((currtouched & _BV(i)) && !(lasttouched & _BV(i))) {
-                uint16_t value = filteredData(i);
-                printf("[%x] %d touched: %d\n", address, i, value);
+        while (true) {
+            currtouched = touched();
+            for (uint8_t i = 0; i < 12; i++) {
+                // it if *is* touched and *wasnt* touched before, alert!
+                if ((currtouched & _BV(i)) && !(lasttouched & _BV(i))) {
+                    uint16_t value = filteredData(i);
+                    printf("[%x] %d touched: %d\n", address, i, value);
+                }
+                // if it *was* touched and now *isnt*, alert!
+                if (!(currtouched & _BV(i)) && (lasttouched & _BV(i))) {
+                    printf("[%x] %d released\n", address, i);
+                }
             }
-            // if it *was* touched and now *isnt*, alert!
-            if (!(currtouched & _BV(i)) && (lasttouched & _BV(i))) {
-                printf("[%x] %d released\n", address, i);
-            }
-        }
 
-        // reset our state
-        lasttouched = currtouched;
+            // reset our state
+            lasttouched = currtouched;
+        }
     }
 };
 
@@ -178,17 +183,10 @@ public:
 
     bool config(char* key, char* params)
     {
-        if (strcmp(key, "address") == 0) {
+        if (strcmp(key, "ADDRESS") == 0) {
             char* p;
             int address = strtoul(strtok(params, " "), &p, 16);
             new Mpr121(address);
-
-    // move this in Mpr121...
-    // std::thread loopThread;
-    //         if (loopThread.joinable()) {
-
-    //         }
-    //         loopThread = std::thread(&Mpr121Controller::loop, this);
         }
         return false;
     }
