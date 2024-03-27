@@ -2,15 +2,17 @@ BUILD_DIR ?= build
 OBJ_DIR ?= $(BUILD_DIR)/obj
 
 ifneq ($(shell uname -m),x86_64)
-PIXEL := PixelController
 PIGPIO := -lpigpio -lrt -DPIGPIO=1
 endif
 
 all:
-	make OscController MidiEncoderController NeotrellisController $(PIXEL)
+	make OscController MidiEncoderController NeotrellisController PixelController EncoderController
 
 PixelController:
 	make compile LIBNAME=PixelController EXTRA="$(PIGPIO)"
+
+EncoderController:
+	make compile LIBNAME=EncoderController EXTRA="$(PIGPIO)"
 
 OscController:
 	make compile LIBNAME=OscController EXTRA="$(shell pkg-config --cflags --libs liblo)"

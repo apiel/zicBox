@@ -8,6 +8,11 @@
 #include <cstring>
 #include <stdio.h>
 
+// TODO: instead to call it pixel controller
+// let's call it encoderController
+// where encoder can be as well push button
+// ROTARY_ENCODER: id gpioA gpioB [gpioBtn]
+
 class PixelController : public ControllerInterface {
 protected:
 public:
