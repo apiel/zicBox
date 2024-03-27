@@ -83,6 +83,7 @@ class Mpr121 {
 protected:
     int i2c;
     int address;
+    ControllerInterface* controller;
 
     std::thread loopThread;
 
@@ -97,8 +98,9 @@ protected:
     }
 
 public:
-    Mpr121(int address)
+    Mpr121(ControllerInterface* _controller, int address)
         : address(address)
+        , controller(_controller)
     {
         printf("[Mpr121] address: %x\n", address);
 
@@ -178,12 +180,15 @@ public:
             for (uint8_t i = 0; i < 12; i++) {
                 // it if *is* touched and *wasnt* touched before, alert!
                 if ((currtouched & _BV(i)) && !(lasttouched & _BV(i))) {
-                    uint16_t value = filteredData(i);
-                    printf("[%x] %d touched: %d\n", address, i, value);
+                    // uint16_t value = filteredData(i);
+                    // printf("[%x] %d touched: %d\n", address, i, value);
+                    controller->onKey(address, i, 1);
+
                 }
                 // if it *was* touched and now *isnt*, alert!
                 if (!(currtouched & _BV(i)) && (lasttouched & _BV(i))) {
-                    printf("[%x] %d released\n", address, i);
+                    // printf("[%x] %d released\n", address, i);
+                    controller->onKey(address, i, 0);
                 }
             }
 
