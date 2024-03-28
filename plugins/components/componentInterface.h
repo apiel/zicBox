@@ -78,6 +78,7 @@ public:
         // printf("ComponentInterface: %d x %d\n", props.position.x, props.position.y);
     }
 
+    virtual void clear() = 0;
     virtual void render() = 0;
     virtual void renderNext() = 0;
     virtual void initView(uint16_t counter) = 0;

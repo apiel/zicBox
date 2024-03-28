@@ -23,6 +23,10 @@ public:
         return value;
     }
 
+    virtual void clear(){
+        draw.filledRect(position, size, draw.styles.colors.background);
+    };
+
     virtual void render() { }
     virtual void initView(uint16_t counter) { }
 
