@@ -9,7 +9,7 @@ int main(int argc, char* argv[])
 {
     loadUiConfig(argc >= 2 ? argv[1] : "config.ui", argc >= 3 ? argv[2] : NULL);
 
-    SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
+    // SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not initialize SDL: %s", SDL_GetError());
