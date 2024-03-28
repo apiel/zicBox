@@ -33,5 +33,16 @@ VIEW: Master
     # BACKGROUND_COLOR: #2b2c2e
     ID: Param4_enc
 
-  COMPONENT: NavBar 0 225 240 13
+  # COMPONENT: NavBar 0 225 240 13
+  COMPONENT: NavBar 0 220 240 20
     BACKGROUND: $forground
+    ARROW_WIDTH: 14
+    ITEM: view1 item 1
+    ITEM: view2 item 2
+    ITEM: view3 item 3
+    ITEM: view4 item 4
+    ITEM: view5 item 5
+    ITEM: view6 item 6
+    KEYMAP: Keyboard 29 prev
+    KEYMAP: Keyboard 6 next
+

@@ -1,8 +1,10 @@
 #ifndef _UI_COMPONENT_RECT_H_
 #define _UI_COMPONENT_RECT_H_
 
+#include "./base/KeypadLayout.h"
 #include "component.h"
 #include <string>
+#include <vector>
 
 /*md
 ## NavBarComponent
@@ -15,12 +17,29 @@ protected:
     Size itemSize = { 0, 0 };
     int fontSize = 10;
     int textTopMargin = 2;
-    int itemsMarginRight = 0;
+    int itemsFix = 0;
+    int itemPos = 0;
 
-    void drawItem(int x, int y, std::string text)
+    KeypadLayout keypadLayout;
+
+    struct Item {
+        std::string view;
+        std::string text;
+    };
+
+    std::vector<Item> items = {};
+
+    void drawItem(Point pos, Size _itemSize, std::string text)
     {
-        draw.filledRect({ x, y }, itemSize, colors.background);
-        draw.textCentered({ x + itemSize.w / 2, y + textTopMargin }, text, colors.font, fontSize);
+        draw.filledRect(pos, _itemSize, colors.background);
+        draw.textCentered({ pos.x + _itemSize.w / 2, pos.y + textTopMargin }, text, colors.font, fontSize);
+    }
+
+    void setSizes()
+    {
+        itemSize = { (size.w - 2 * (arrowSize.w + 1)) / 3 - 1, size.h };
+        textTopMargin = (arrowSize.h - fontSize) / 2;
+        itemsFix = (size.w - (((itemSize.w + 1) * 3) + (arrowSize.w * 2) + 1));
     }
 
     struct Colors {
@@ -29,15 +48,29 @@ protected:
     } colors;
 
 public:
+    /*md **Keyboard actions**: */
+    void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, int param, std::string action, uint8_t color)
+    {
+        /*md - `next` to navigate to the next items. */
+        if (action == "next") {
+            keypadLayout.mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { if (state) { itemPos++; renderNext(); } },
+                color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color == 255 ? 10 : keymap.color; } });
+        }
+        /*md - `prev` to navigate to the previous items. */
+        if (action == "prev") {
+            keypadLayout.mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { if (state) { itemPos--; renderNext(); } },
+                color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color == 255 ? 10 : keymap.color; } });
+        }
+    }
+
     NavBarComponent(ComponentInterface::Props props)
         : Component(props)
+        , keypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, int param, std::string action, uint8_t color) { addKeyMap(controller, controllerId, key, param, action, color); })
     {
         colors.background = props.draw.styles.colors.background;
         colors.font = props.draw.styles.colors.grey;
-        arrowSize = { props.size.h, props.size.h };
-        itemSize = { (props.size.w - 2 * (arrowSize.w + 1)) / 3 - 1, props.size.h };
-        textTopMargin = (arrowSize.h - fontSize) / 2;
-        itemsMarginRight = (size.w - (((itemSize.w + 1) * 3) + ((arrowSize.w + 1) * 2))) / 2;
+        arrowSize = { size.h, size.h };
+        setSizes();
     }
 
     void render()
@@ -54,8 +87,15 @@ public:
                          { position.x + size.w - arrowSize.w + 3, position.y + arrowSize.h - 2 } },
             colors.font);
 
+        int xPos = position.x + (arrowSize.w + 1);
         for (int i = 0; i < 3; i++) {
-            drawItem(position.x + (arrowSize.w + 1) + i * (itemSize.w + 1) + itemsMarginRight, position.y, "Item " + std::to_string(i));
+            // Because width is not always exactly dividable by 3 pixelwise
+            // we need to add some fix in the middle item
+            Size _itemSize = { itemSize.w + (i == 1 ? itemsFix : 0), itemSize.h };
+            drawItem({ xPos, position.y },
+                _itemSize,
+                items[(i + itemPos) % items.size()].text);
+            xPos += _itemSize.w + 1;
         }
     }
 
@@ -67,7 +107,50 @@ public:
             return true;
         }
 
+        /*md - `FONT_COLOR: #ffffff` set the font color. */
+        if (strcmp(key, "FONT_COLOR") == 0) {
+            colors.font = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `FONT_SIZE: 10` set the font size. */
+        if (strcmp(key, "FONT_SIZE") == 0) {
+            fontSize = atoi(value);
+            return true;
+        }
+
+        /*md - `ARROW_WIDTH: 10` set the arrow size. */
+        if (strcmp(key, "ARROW_WIDTH") == 0) {
+            arrowSize.w = atoi(value);
+            setSizes();
+            return true;
+        }
+
+        /*md - `ITEM: view label` add an item. */
+        if (strcmp(key, "ITEM") == 0) {
+            Item item;
+            item.view = strtok(value, " ");
+            item.text = strtok(NULL, "");
+            items.push_back(item);
+            return true;
+        }
+
+        if (keypadLayout.config(key, value)) {
+            return true;
+        }
+
         return false;
+    }
+
+    void onKey(uint16_t id, int key, int8_t state)
+    {
+        // printf("onKey %d %d %d\n", id, key, state);
+        keypadLayout.onKey(id, key, state);
+    }
+
+    void initView(uint16_t counter)
+    {
+        keypadLayout.renderKeypad();
     }
 };
 
