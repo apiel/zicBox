@@ -13,11 +13,13 @@ class NavBarComponent : public Component {
 protected:
     Size arrowSize = { 10, 10 };
     Size itemSize = { 0, 0 };
+    int fontSize = 10;
+    int textTopMargin = 2;
 
     void drawItem(int x, int y, std::string text)
     {
         draw.filledRect({ x, y }, itemSize, colors.background);
-        draw.textCentered({ x + itemSize.w / 2, y }, text, colors.font, 12);
+        draw.textCentered({ x + itemSize.w / 2, y + textTopMargin }, text, colors.font, fontSize);
     }
 
     struct Colors {
@@ -33,6 +35,7 @@ public:
         colors.font = props.draw.styles.colors.grey;
         arrowSize = { props.size.h, props.size.h };
         itemSize = { (props.size.w - 2 * (arrowSize.w + 1)) / 3 - 1, props.size.h };
+        textTopMargin = (arrowSize.h - fontSize) / 2;
     }
 
     void render()
