@@ -33,5 +33,5 @@ VIEW: Master
     # BACKGROUND_COLOR: #2b2c2e
     ID: Param4_enc
 
-  COMPONENT: NavBar 0 225 240 15
+  COMPONENT: NavBar 0 225 240 14
     BACKGROUND: $forground
