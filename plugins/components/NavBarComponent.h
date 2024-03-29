@@ -21,6 +21,7 @@ protected:
     int fontSize = 10;
     int textTopMargin = 2;
     int itemPos = 0;
+    bool showSub = false;
 
     KeypadLayout keypadLayout;
 
@@ -81,6 +82,14 @@ protected:
         }
     }
 
+    void handleButton(int8_t id, int8_t state)
+    {
+        // printf("handleButton: %d %d\n", id, state);
+        showSub = state == 1;
+        clear();
+        renderNext();
+    }
+
     struct Colors {
         Color background;
         Color font;
@@ -104,6 +113,30 @@ public:
                     [&](int8_t state, KeypadLayout::KeyMap& keymap) { if (state) { itemPos--; renderNext(); } },
                     color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color == 255 ? 10 : keymap.color; } });
         }
+
+        /*md - `btnLeft` to select left item. */
+        if (action == "btnLeft") {
+            keypadLayout.mapping.push_back(
+                { controller, controllerId, key, param,
+                    [&](int8_t state, KeypadLayout::KeyMap& keymap) { handleButton(0, state); },
+                    color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color == 255 ? 10 : keymap.color; } });
+        }
+
+        /*md - `btnMiddle` to select middle item. */
+        if (action == "btnMiddle") {
+            keypadLayout.mapping.push_back(
+                { controller, controllerId, key, param,
+                    [&](int8_t state, KeypadLayout::KeyMap& keymap) { handleButton(1, state); },
+                    color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color == 255 ? 10 : keymap.color; } });
+        }
+
+        /*md - `btnRight` to select right item. */
+        if (action == "btnRight") {
+            keypadLayout.mapping.push_back(
+                { controller, controllerId, key, param,
+                    [&](int8_t state, KeypadLayout::KeyMap& keymap) { handleButton(2, state); },
+                    color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color == 255 ? 10 : keymap.color; } });
+        }
     }
 
     NavBarComponent(ComponentInterface::Props props)
@@ -120,9 +153,11 @@ public:
 
     void render()
     {
-        // clear(); // should only clear when switching from main to sub
-        // renderMain();
-        renderSub();
+        if (showSub) {
+            renderSub();
+        } else {
+            renderMain();
+        }
     }
 
     bool config(char* key, char* value)
