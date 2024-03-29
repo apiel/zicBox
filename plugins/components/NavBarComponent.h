@@ -121,8 +121,8 @@ public:
     void render()
     {
         // clear(); // should only clear when switching from main to sub
-        renderMain();
-        // renderSub();
+        // renderMain();
+        renderSub();
     }
 
     bool config(char* key, char* value)
