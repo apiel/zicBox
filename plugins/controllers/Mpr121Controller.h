@@ -87,6 +87,7 @@ protected:
     ControllerInterface* controller;
 
     std::thread loopThread;
+    bool loopRunning = true;
 
     void setThresholds(uint8_t touch, uint8_t release)
     {
@@ -146,6 +147,8 @@ public:
 
     ~Mpr121()
     {
+        printf("[Mpr121] %x destroy\n", address);
+        loopRunning = false;
 #ifdef PIGPIO
         i2cClose(i2c);
 #endif
@@ -177,7 +180,7 @@ public:
     void loop()
     {
         printf("[Mpr121] %x start loop\n", address);
-        while (true) {
+        while (loopRunning) {
             currtouched = touched();
             for (uint8_t i = 0; i < 12; i++) {
                 // it if *is* touched and *wasnt* touched before, alert!
