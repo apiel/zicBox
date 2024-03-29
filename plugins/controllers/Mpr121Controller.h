@@ -104,7 +104,7 @@ public:
         , controller(_controller)
         , start(index * 12)
     {
-        printf("[Mpr121] address: %x\n", address);
+        printf("[Mpr121] address: %x start: %d\n", address, start);
 
 #ifdef PIGPIO
         i2c = i2cOpen(1, address, 0);
@@ -212,7 +212,7 @@ public:
     {
 #ifdef PIGPIO
         if (gpioInitialise() < 0) {
-            printf("Failed to initialise GPIO\n");
+            printf(".......................Failed to initialise GPIO\n");
         }
 #endif
     }
