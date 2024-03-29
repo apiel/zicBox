@@ -38,6 +38,7 @@
         - morph on wavetable, start and end stick to sustain position when both are touching sustain window
         - spray window
     - granularize sample...
+    - sample slice
 
 - TODO kick23 could change morph position on every noteON. It would either be an incrementation or random or...
     Would this principle make sense as on pitch or other drum parameter?

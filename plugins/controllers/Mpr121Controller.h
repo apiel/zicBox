@@ -217,6 +217,7 @@ public:
         : KeypadInterface(props, id)
     {
 #ifdef PIGPIO
+        gpioCfgSetInternals(PI_CFG_NOSIGHANDLER);
         if (gpioInitialise() < 0) {
             printf(".......................Failed to initialise GPIO\n");
         } else {
