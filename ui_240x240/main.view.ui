@@ -45,4 +45,6 @@ VIEW: Master
     ITEM: view6 item 6
     KEYMAP: Keyboard 29 prev
     KEYMAP: Keyboard 6 next
+    KEYMAP: Mpr121 2 prev
+    KEYMAP: Mpr121 8 next
 

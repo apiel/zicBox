@@ -83,6 +83,7 @@ class Mpr121 {
 protected:
     int i2c;
     int address;
+    int start;
     ControllerInterface* controller;
 
     std::thread loopThread;
@@ -98,9 +99,10 @@ protected:
     }
 
 public:
-    Mpr121(ControllerInterface* _controller, int address)
+    Mpr121(ControllerInterface* _controller, int address, int index)
         : address(address)
         , controller(_controller)
+        , start(index * 12)
     {
         printf("[Mpr121] address: %x\n", address);
 
@@ -180,15 +182,17 @@ public:
             for (uint8_t i = 0; i < 12; i++) {
                 // it if *is* touched and *wasnt* touched before, alert!
                 if ((currtouched & _BV(i)) && !(lasttouched & _BV(i))) {
-                    uint16_t value = filteredData(i);
-                    printf("[%x] %d touched: %d\n", address, i, value);
-                    controller->onKey(address, i, 1);
+                    // uint16_t value = filteredData(i);
+                    // printf("[%x] %d touched: %d\n", address, i, value);
+                    controller->onKey(controller->id, start + i, 1);
+                    // printf("[%d] %d touched\n", controller->id, start + i);
 
                 }
                 // if it *was* touched and now *isnt*, alert!
                 if (!(currtouched & _BV(i)) && (lasttouched & _BV(i))) {
                     // printf("[%x] %d released\n", address, i);
-                    controller->onKey(address, i, 0);
+                    controller->onKey(controller->id, start + i, 0);
+                    // printf("[%d] %d released\n", controller->id, start + i);
                 }
             }
 
@@ -200,6 +204,8 @@ public:
 
 class Mpr121Controller : public ControllerInterface {
 protected:
+    int count = 0;
+
 public:
     Mpr121Controller(Props& props, uint16_t id)
         : ControllerInterface(props, id)
@@ -218,7 +224,7 @@ public:
         if (strcmp(key, "ADDRESS") == 0) {
             char* p;
             int address = strtoul(strtok(params, " "), &p, 16);
-            new Mpr121(this, address);
+            new Mpr121(this, address, count++);
         }
         return false;
     }
