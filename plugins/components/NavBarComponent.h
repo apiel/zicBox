@@ -92,13 +92,17 @@ public:
     {
         /*md - `next` to navigate to the next items. */
         if (action == "next") {
-            keypadLayout.mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { if (state) { itemPos++; renderNext(); } },
-                color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color == 255 ? 10 : keymap.color; } });
+            keypadLayout.mapping.push_back(
+                { controller, controllerId, key, param,
+                    [&](int8_t state, KeypadLayout::KeyMap& keymap) { if (state) { itemPos++; renderNext(); } },
+                    color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color == 255 ? 10 : keymap.color; } });
         }
         /*md - `prev` to navigate to the previous items. */
         if (action == "prev") {
-            keypadLayout.mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { if (state) { itemPos--; renderNext(); } },
-                color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color == 255 ? 10 : keymap.color; } });
+            keypadLayout.mapping.push_back(
+                { controller, controllerId, key, param,
+                    [&](int8_t state, KeypadLayout::KeyMap& keymap) { if (state) { itemPos--; renderNext(); } },
+                    color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color == 255 ? 10 : keymap.color; } });
         }
     }
 

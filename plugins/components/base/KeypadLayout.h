@@ -90,13 +90,20 @@ public:
 
             KeypadInterface* controller = NULL;
             uint16_t controllerId = -1;
+            // printf("........search controller %s\n", controllerName.c_str());
             if (strcmp(controllerName.c_str(), "Keyboard") == 0) {
                 controllerId = 0;
             } else {
                 controller = (KeypadInterface *)getController(controllerName.c_str());
+                if (controller == NULL) {
+                    // printf("..................controller %s NOT fount\n", controllerName.c_str());
+                    return true;
+                }
+                // printf("........controller %s id %d\n", controllerName.c_str(), controller->id);
                 controllerId = controller->id;
             }
             addKeyMap(controller, controllerId, key, param, action, color);
+            return true;
         }
         return false;
     }

@@ -3,6 +3,8 @@
 
 #include "controllerInterface.h"
 
+#include "keypadInterface.h"
+
 #ifdef PIGPIO
 // sudo apt-get install libpigpio-dev
 #include <pigpio.h>
@@ -100,6 +102,8 @@ protected:
     }
 
 public:
+    bool hasColor = true;
+
     Mpr121(ControllerInterface* _controller, int address, int index)
         : address(address)
         , controller(_controller)
@@ -189,7 +193,6 @@ public:
                     // printf("[%x] %d touched: %d\n", address, i, value);
                     // controller->onKey(controller->id, start + i, 1);
                     printf("[%d] %d touched\n", controller->id, start + i);
-
                 }
                 // if it *was* touched and now *isnt*, alert!
                 if (!(currtouched & _BV(i)) && (lasttouched & _BV(i))) {
@@ -205,13 +208,13 @@ public:
     }
 };
 
-class Mpr121Controller : public ControllerInterface {
+class Mpr121Controller : public KeypadInterface {
 protected:
     int count = 0;
 
 public:
     Mpr121Controller(Props& props, uint16_t id)
-        : ControllerInterface(props, id)
+        : KeypadInterface(props, id)
     {
 #ifdef PIGPIO
         if (gpioInitialise() < 0) {
@@ -232,6 +235,11 @@ public:
             new Mpr121(this, address, count++);
         }
         return false;
+    }
+
+    void setButton(int id, uint8_t color)
+    {
+        // Do nothing has there is no color...
     }
 };
 
