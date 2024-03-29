@@ -180,7 +180,7 @@ public:
             for (uint8_t i = 0; i < 12; i++) {
                 // it if *is* touched and *wasnt* touched before, alert!
                 if ((currtouched & _BV(i)) && !(lasttouched & _BV(i))) {
-                    // uint16_t value = filteredData(i);
+                    uint16_t value = filteredData(i);
                     printf("[%x] %d touched: %d\n", address, i, value);
                     controller->onKey(address, i, 1);
 
