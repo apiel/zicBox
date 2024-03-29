@@ -109,10 +109,10 @@ if: $screen == ui_240x240
     ENCODER: 1 22 24 25
     ENCODER: 2 8 9 7
     ENCODER: 3 23 27 17
-  PLUGIN_CONTROLLER: Mpr121 ./plugins/controllers/build/libzic_Mpr121Controller.so
-    ADDRESS: 0x5a
-    ADDRESS: 0x5c
-    ADDRESS: 0x5d
+  # PLUGIN_CONTROLLER: Mpr121 ./plugins/controllers/build/libzic_Mpr121Controller.so
+  #   ADDRESS: 0x5a
+  #   ADDRESS: 0x5c
+  #   ADDRESS: 0x5d
   SCREEN: 240 240
   $encSize=80
   $encX1=25
