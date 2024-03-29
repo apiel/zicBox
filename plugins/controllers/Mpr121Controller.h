@@ -184,14 +184,14 @@ public:
                 if ((currtouched & _BV(i)) && !(lasttouched & _BV(i))) {
                     // uint16_t value = filteredData(i);
                     // printf("[%x] %d touched: %d\n", address, i, value);
-                    // controller->onKey(controller->id, start + i, 1);
+                    controller->onKey(controller->id, start + i, 1);
                     printf("[%d] %d touched\n", controller->id, start + i);
 
                 }
                 // if it *was* touched and now *isnt*, alert!
                 if (!(currtouched & _BV(i)) && (lasttouched & _BV(i))) {
                     // printf("[%x] %d released\n", address, i);
-                    // controller->onKey(controller->id, start + i, 0);
+                    controller->onKey(controller->id, start + i, 0);
                     printf("[%d] %d released\n", controller->id, start + i);
                 }
             }
