@@ -23,16 +23,32 @@ protected:
     KeypadLayout keypadLayout;
 
     struct Item {
-        std::string view;
         std::string text;
     };
 
-    std::vector<Item> items = {};
+    std::vector<Item> items = {
+        { "Shift" },
+        { "Track" },
+        { "Sequencer" },
+        { "Filter" },
+        { "+" },
+        { "Modulation" },
+        { "Waveform" },
+        { "FX" },
+        { "-" },
+        { "Master FX" },
+        { "Master Filter" },
+        { "..." },
+    };
 
-    void drawItem(Point pos, Size _itemSize, std::string text)
+    void renderItem(Point pos, int8_t index)
     {
-        draw.filledRect(pos, _itemSize, colors.background);
-        draw.textCentered({ pos.x + _itemSize.w / 2, pos.y + textTopMargin }, text, colors.font, fontSize);
+        if (index < 0 || index >= items.size()) {
+            return;
+        }
+
+        draw.filledRect(pos, itemSize, colors.background);
+        draw.textCentered({ pos.x + textLeftMargin, pos.y }, items[index].text, colors.font, fontSize);
     }
 
     void handleButton(int8_t id, int8_t state)
@@ -70,18 +86,12 @@ public:
         textLeftMargin = itemSize.w / 2; // center
     }
 
-    void renderItem(Point pos, int8_t index)
-    {
-        draw.filledRect(pos, itemSize, colors.background);
-        draw.textCentered({ pos.x + textLeftMargin, pos.y }, "item" + std::to_string(index), colors.font, fontSize);
-    }
-
     void render()
     {
         for (int row = 0; row < itemRowCount; row++) {
             for (int col = 0; col < itemColumnCount; col++) {
                 Point pos = { position.x + col * (itemSize.w + 1), position.y + row * (itemSize.h + 1) };
-                renderItem(pos, row * 5 + col);
+                renderItem(pos, row * itemColumnCount + col);
             }
         }
     }
