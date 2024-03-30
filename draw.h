@@ -189,7 +189,7 @@ public:
         int w = surface->w > options.maxWidth ? options.maxWidth : surface->w;
         int x = position.x - (w * 0.5);
         textToRenderer({ x, position.y }, surface, options.maxWidth);
-        int xEnd = x + surface->w;
+        int xEnd = x + w;
         SDL_FreeSurface(surface);
 
         return xEnd;

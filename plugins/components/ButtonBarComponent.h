@@ -7,7 +7,7 @@
 #include <vector>
 
 /*md
-## ButtonBarComponent
+## ButtonBar
 
 Button bar components dynamically give label to some push buttons.
 */
@@ -25,17 +25,18 @@ protected:
 
     struct Item {
         std::string text;
+        std::string viewPattern;
     };
 
     std::vector<Item> items = {
-        { "Track" },
-        { "Sequencer" },
-        { "Filter" },
-        { "Modulation" },
-        { "Waveform" },
-        { "FX" },
-        { "Master" },
-        { "..." },
+        { "Track", "track_$track_$page" }, // track_tracknumber_viewnumber
+        { "Sequencer", "sequencer_$track_$page" }, // sequencer_tracknumber_viewnumber
+        { "Filter", "filter_$track_$page" },
+        { "Modulation", "modulation_$track_$page" },
+        { "Waveform", "waveform_$track_$page" },
+        { "FX", "fx_$track_$page" },
+        { "Master", "master_$page" }, 
+        { "...", "misc_$page" },
     };
 
     void renderItem(Point pos, int8_t index)
