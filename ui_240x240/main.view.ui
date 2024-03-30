@@ -35,17 +35,19 @@ VIEW: Master
 
   COMPONENT: ButtonBar 0 200 240 40
     BACKGROUND: $forground
-    # ITEM: view1 item 1
-    # ITEM: view2 item 2
-    # ITEM: view3 item 3
-    # ITEM: view4 item 4
-    # ITEM: view5 item 5
-    # ITEM: view6 item 6
-    # KEYMAP: Keyboard 29 prev
-    # KEYMAP: Keyboard 6 next
-    # KEYMAP: Keyboard 4 btnLeft
-    # KEYMAP: Keyboard 22 btnMiddle
-    # KEYMAP: Keyboard 7 btnRight
+    KEYMAP: Keyboard 20 item 0
+    KEYMAP: Keyboard 26 item 1
+    KEYMAP: Keyboard 8 item 2
+    KEYMAP: Keyboard 21 item 3
+    KEYMAP: Keyboard 4 item 4
+    KEYMAP: Keyboard 22 item 5
+    KEYMAP: Keyboard 7 item 6
+    KEYMAP: Keyboard 9 item 7
+    KEYMAP: Keyboard 29 item 8
+    KEYMAP: Keyboard 27 item 9
+    KEYMAP: Keyboard 6 item 10
+    KEYMAP: Keyboard 25 item 11
+
     # KEYMAP: Mpr121 2 prev
     # KEYMAP: Mpr121 8 next
 
