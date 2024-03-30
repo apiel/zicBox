@@ -15,7 +15,7 @@ class ButtonBarComponent : public Component {
 protected:
     Size itemSize = { 0, 0 };
     int itemColumnCount = 4;
-    int itemRowCount = 3;
+    int itemRowCount = 2;
     int fontSize = 9;
     int textTopMargin = 2;
     int textLeftMargin = 0;
@@ -28,17 +28,13 @@ protected:
     };
 
     std::vector<Item> items = {
-        { "Shift" },
         { "Track" },
         { "Sequencer" },
         { "Filter" },
-        { "+" },
         { "Modulation" },
         { "Waveform" },
         { "FX" },
-        { "-" },
-        { "Master FX" },
-        { "Master Filter" },
+        { "Master" },
         { "..." },
     };
 
