@@ -80,20 +80,29 @@ protected:
             colors.value, fontValueSize);
         draw.text({ xCenter + twoSideMargin, yValue }, std::to_string(val).c_str(),
             colors.value, fontValueSize);
-
-        // draw.line({ xCenter, valuePosition.y - 10 }, { xCenter, valuePosition.y + 10 }, colors.barTwoSide);
-        // draw.line({ xCenter - 1, valuePosition.y - 10 }, { xCenter - 1, valuePosition.y + 10 }, colors.barTwoSide);
     }
 
     void renderEncoder()
     {
         if (value->props().type == VALUE_CENTERED) {
-            // renderCenteredBar();
+            if (value->pct() > 0.5) {
+                draw.filledRect(
+                    { xCenter, position.y + margin },
+                    { (int)((size.w - 2 * margin) * (value->pct() - 0.5)), size.h - 2 * margin },
+                    colors.backgroundProgress);
+            } else {
+                int w = (size.w - 2 * margin) * (0.5 - value->pct());
+                draw.filledRect(
+                    { xCenter - w, position.y + margin },
+                    { w, size.h - 2 * margin },
+                    colors.backgroundProgress);
+            }
+
         } else {
-        draw.filledRect(
-            { position.x + margin, position.y + margin },
-            { (int)((size.w - 2 * margin) * value->pct()), size.h - 2 * margin },
-            colors.backgroundProgress);
+            draw.filledRect(
+                { position.x + margin, position.y + margin },
+                { (int)((size.w - 2 * margin) * value->pct()), size.h - 2 * margin },
+                colors.backgroundProgress);
         }
 
         renderLabel();
@@ -113,11 +122,6 @@ protected:
         Color title;
         Color value;
         Color unit;
-        // Color bar;
-        // Color barBackground;
-        // Color barTwoSide;
-        // Color knob;
-        // Color knobDot;
     } colors;
 
     const int margin;
@@ -135,16 +139,7 @@ public:
             draw.darken(styles.colors.grey, 0.3),
             draw.alpha(styles.colors.white, 0.4),
             draw.alpha(styles.colors.white, 0.4),
-            // draw.alpha(styles.colors.white, 0.2),
-            // styles.colors.blue,
-            // draw.alpha(styles.colors.blue, 0.5),
-            // draw.alpha(styles.colors.blue, 0.2),
-            // draw.getColor((char*)"#35373b"),
-            // draw.alpha(styles.colors.white, 0.6),
         };
-
-        knobCenter = { (int)(position.x + (size.w * 0.5)), (int)(position.y + ((size.h - 12) * 0.5)) };
-        valuePosition = { knobCenter.x, knobCenter.y - marginTop - 2 };
 
         xCenter = position.x + (size.w * 0.5);
         yValue = position.y + (size.h - fontValueSize) - 4;

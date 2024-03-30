@@ -12,6 +12,7 @@ VIEW: Master
     ENCODER_ID: 1
     TRACK: 0
     VALUE: MultiModeFilter CUTOFF
+    LABEL: LPF   HPF
     COLOR: #9dfe86
     TYPE: TWO_SIDED
     BACKGROUND: $forground
