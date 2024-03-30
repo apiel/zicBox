@@ -1,5 +1,5 @@
-#ifndef _UI_COMPONENT_RECT_H_
-#define _UI_COMPONENT_RECT_H_
+#ifndef _UI_COMPONENT_NAVBAR_H_
+#define _UI_COMPONENT_NAVBAR_H_
 
 #include "./base/KeypadLayout.h"
 #include "component.h"
@@ -10,6 +10,8 @@
 ## NavBarComponent
 
 Navigation bar components draw a scrollable menu to be used with buttons/keys.
+
+> [!NOTE] WIP WIP work in progress...
 */
 class NavBarComponent : public Component {
 protected:

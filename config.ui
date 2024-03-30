@@ -17,6 +17,7 @@ PLUGIN_COMPONENT: Play ./plugins/components/build/libzic_PlayComponent.so
 PLUGIN_COMPONENT: Text ./plugins/components/build/libzic_TextComponent.so
 PLUGIN_COMPONENT: FmAlgo ./plugins/components/build/libzic_FmAlgoComponent.so
 PLUGIN_COMPONENT: NavBar ./plugins/components/build/libzic_NavBarComponent.so
+PLUGIN_COMPONENT: ButtonBar ./plugins/components/build/libzic_ButtonBarComponent.so
 
 
 PLUGIN_CONTROLLER: Osc ./plugins/controllers/build/libzic_OscController.so
