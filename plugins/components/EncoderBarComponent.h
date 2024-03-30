@@ -56,41 +56,6 @@ protected:
         // }
     }
 
-    void renderBar()
-    {
-        // int val = 280 * value->pct();
-
-        // if (val < 280) {
-        //     draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, 50, colors.barBackground);
-        // }
-        // if (val > 0) {
-        //     int endAngle = 130 + val;
-        //     if (endAngle > 360) {
-        //         endAngle = endAngle - 360;
-        //     }
-        //     draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, endAngle, colors.bar);
-        // }
-        // draw.filledEllipse({ knobCenter.x, knobCenter.y - marginTop }, insideRadius, insideRadius, colors.background);
-    }
-
-    void renderCenteredBar()
-    {
-        // int val = 280 * value->pct();
-
-        // draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, 50, colors.barBackground);
-        // if (val > 140) {
-        //     int endAngle = 130 + val;
-        //     if (endAngle > 360) {
-        //         endAngle = endAngle - 360;
-        //     }
-
-        //     draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 270, endAngle, colors.bar);
-        // } else if (val < 140) {
-        //     draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 270 - (140 - val), 270, colors.bar);
-        // }
-        // draw.filledEllipse({ knobCenter.x, knobCenter.y - marginTop }, insideRadius, insideRadius, colors.background);
-    }
-
     void renderValue()
     {
         if (!stringValueReplaceTitle && value->props().type == VALUE_STRING) {
@@ -122,12 +87,16 @@ protected:
 
     void renderEncoder()
     {
-        renderLabel();
         if (value->props().type == VALUE_CENTERED) {
-            renderCenteredBar();
+            // renderCenteredBar();
         } else {
-            renderBar();
+        draw.filledRect(
+            { position.x + margin, position.y + margin },
+            { (int)((size.w - 2 * margin) * value->pct()), size.h - 2 * margin },
+            colors.backgroundProgress);
         }
+
+        renderLabel();
 
         if (showValue) {
             if (value->props().type == VALUE_CENTERED && type == 1) {
@@ -140,6 +109,7 @@ protected:
 
     struct Colors {
         Color background;
+        Color backgroundProgress;
         Color title;
         Color value;
         Color unit;
@@ -161,6 +131,7 @@ public:
     {
         colors = {
             styles.colors.background,
+            draw.lighten(styles.colors.background, 0.2),
             draw.darken(styles.colors.grey, 0.3),
             draw.alpha(styles.colors.white, 0.4),
             draw.alpha(styles.colors.white, 0.4),
@@ -245,6 +216,7 @@ public:
         /*md - `BACKGROUND: #000000` set the background color */
         if (strcmp(key, "BACKGROUND") == 0) {
             colors.background = draw.getColor(params);
+            colors.backgroundProgress = draw.lighten(styles.colors.background, 0.5);
             return true;
         }
 
