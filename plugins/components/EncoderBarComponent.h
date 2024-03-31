@@ -14,27 +14,16 @@ EncoderBar is used to display current audio plugin value for a given parameter.
 */
 class EncoderBarComponent : public Component {
 protected:
-    const char* name = NULL;
     std::string label;
     char labelBuffer[32];
     uint8_t type = 0;
-    int radius = 20;
-    int insideRadius = 15;
 
     int fontValueSize = 11;
     int fontUnitSize = 9;
     int twoSideMargin = 2;
-    int knobMargin = 2;
 
-    Point knobCenter;
-    Point valuePosition;
-
-    bool showKnob = true;
     bool showValue = true;
     bool showUnit = true;
-    bool stringValueReplaceTitle = false;
-
-    const int marginTop = 3;
 
     int8_t encoderId = -1;
     uint8_t valueFloatPrecision = 0;
@@ -47,18 +36,9 @@ protected:
 
     int titleSize = 9;
 
-    void renderLabel()
-    {
-        // if (stringValueReplaceTitle && value->props().type == VALUE_STRING) {
-        //     draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius }, value->string(), colors.title, 12, { .maxWidth = size.w - 4 });
-        // } else {
-        draw.textCentered({ xCenter, position.y + 1 }, label, colors.title, titleSize);
-        // }
-    }
-
     void renderValue()
     {
-        if (!stringValueReplaceTitle && value->props().type == VALUE_STRING) {
+        if (value->props().type == VALUE_STRING) {
             draw.textCentered({ xCenter, yValue }, value->string(), colors.value, fontValueSize);
         } else {
             std::string valStr = std::to_string(value->get());
@@ -75,7 +55,6 @@ protected:
     void renderTwoSidedValue()
     {
         int val = value->get();
-        // FIXME use floating point...
         draw.textRight({ xCenter - twoSideMargin, yValue }, std::to_string((int)value->props().max - val).c_str(),
             colors.value, fontValueSize);
         draw.text({ xCenter + twoSideMargin, yValue }, std::to_string(val).c_str(),
@@ -105,7 +84,7 @@ protected:
                 colors.backgroundProgress);
         }
 
-        renderLabel();
+        draw.textCentered({ xCenter, position.y + 1 }, label, colors.title, titleSize);
 
         if (showValue) {
             if (value->props().type == VALUE_CENTERED && type == 1) {
@@ -127,8 +106,6 @@ protected:
     const int margin;
 
 public:
-    // margin left 15
-    // margin right 10
     EncoderBarComponent(ComponentInterface::Props props)
         : Component(props)
         , margin(styles.margin)
@@ -200,14 +177,6 @@ public:
             return true;
         }
 
-        /*md - `COLOR: #3791a1` set the ring color */
-        if (strcmp(key, "COLOR") == 0) {
-            // colors.bar = draw.getColor(params);
-            // colors.barBackground = draw.alpha(colors.bar, 0.5);
-            // colors.barTwoSide = draw.alpha(colors.bar, 0.2);
-            return true;
-        }
-
         /*md - `BACKGROUND: #000000` set the background color */
         if (strcmp(key, "BACKGROUND") == 0) {
             colors.background = draw.getColor(params);
@@ -226,12 +195,6 @@ public:
         /*md - `FLOAT_PRECISION: 2` set how many digits after the decimal point (by default none) */
         if (strcmp(key, "FLOAT_PRECISION") == 0) {
             valueFloatPrecision = atoi(params);
-            return true;
-        }
-
-        /*md - `SHOW_KNOB: FALSE` show the knob (middle circle) (default TRUE) */
-        if (strcmp(key, "SHOW_KNOB") == 0) {
-            showKnob = (strcmp(params, "TRUE") == 0);
             return true;
         }
 
@@ -256,12 +219,6 @@ public:
         /*md - `FONT_VALUE_SIZE: 12` set the value font size */
         if (strcmp(key, "FONT_VALUE_SIZE") == 0) {
             fontValueSize = atoi(params);
-            return true;
-        }
-
-        /*md - `STRING_VALUE_REPLACE_TITLE: true` instead to show string value in knob, show under the knob. Can be useful for long string value. */
-        if (strcmp(key, "STRING_VALUE_REPLACE_TITLE") == 0) {
-            stringValueReplaceTitle = (strcmp(params, "TRUE") == 0);
             return true;
         }
 
