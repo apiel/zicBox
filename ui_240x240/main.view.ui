@@ -59,7 +59,7 @@ VIEW: Master
     FONT_UNIT_SIZE: 8
     ID: Param6_enc
 
-  COMPONENT: Wave 0 78 240 40
+  COMPONENT: Wave 0 60 240 40
     TRACK: 1
     KEYMAP: Keyboard 44 play 60
     KEYMAP: Keypad 24 play 60
@@ -69,7 +69,7 @@ VIEW: Master
 
 
 
-  COMPONENT: GridMini 0 120 240 107
+  COMPONENT: GridMini 0 103 240 127
     ITEM: 1 Kick KickParams_track_1 4
     ITEM: 2 Bass KickParams_track_2 4
     ITEM: 3 Drum KickParams_track_3 4
