@@ -10,6 +10,8 @@
 ## ButtonBar
 
 Button bar components dynamically give label to some push buttons.
+
+> [!NOTE] WIP WIP work in progress...
 */
 class ButtonBarComponent : public Component {
 protected:
@@ -26,17 +28,20 @@ protected:
     struct Item {
         std::string text;
         std::string viewPattern;
+        int8_t page;
     };
 
+    int8_t track = 0;
+
     std::vector<Item> items = {
-        { "Track", "track_$track_$page" }, // track_tracknumber_viewnumber
-        { "Sequencer", "sequencer_$track_$page" }, // sequencer_tracknumber_viewnumber
-        { "Filter", "filter_$track_$page" },
+        { "Track", "track_$track_$page", 0 }, // track_tracknumber_viewnumber
+        { "Sequencer", "sequencer_$track_$page", 0 }, // sequencer_tracknumber_viewnumber
+        { "Filter", "filter_$track_$page", 0 },
         { "Modulation", "modulation_$track_$page" },
-        { "Waveform", "waveform_$track_$page" },
-        { "FX", "fx_$track_$page" },
-        { "Master", "master_$page" }, 
-        { "...", "misc_$page" },
+        { "Waveform", "waveform_$track_$page", 0 },
+        { "FX", "fx_$track_$page", 0 },
+        { "Master", "master_$page", 0 }, 
+        { "...", "misc_$page", 0 },
     };
 
     void renderItem(Point pos, int8_t index)
