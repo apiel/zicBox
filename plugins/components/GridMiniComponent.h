@@ -53,7 +53,7 @@ protected:
     std::vector<KeypadLayout*> keypadLayouts;
     KeypadLayout* currentKeypadLayout = NULL;
 
-    int firstColumnWidth = 40;
+    int firstColumnWidth = 48;
 
     Size itemSize;
     int itemW;
@@ -67,10 +67,6 @@ protected:
 
     Point progressPosition = { 0, 0 };
     Size progressItemSize = { 0, 5 };
-
-    int rowY[99];
-    // int rowY[trackCount + 1];
-    // std::vector<int> rowY;
 
     uint16_t initViewCounter = -1;
 
@@ -104,7 +100,7 @@ protected:
 
     void renderSelection(int8_t row, int8_t col, Color color)
     {
-        int y = rowY[row];
+        int y = row == trackCount ? progressPosition.y : tracks[row].y;
         uint8_t h = itemSize.h + 2;
         if (row == trackCount) { // Select volume/master
             h = progressItemSize.h + 2;
@@ -185,7 +181,7 @@ protected:
     void renderRows(bool clear = false)
     {
         if (clear) {
-            draw.filledRect({ 0, rowY[0] }, { size.h, rowY[0] - progressPosition.y }, colors.background);
+            draw.filledRect({ 0, tracks[0].y }, { size.h, tracks[0].y - progressPosition.y }, colors.background);
         }
         for (unsigned int row = 0; row < trackCount; row++) {
             renderRow(row);
@@ -212,21 +208,20 @@ protected:
         draw.text({ position.x + 2, track.y }, track.name.c_str(), trackText, 9);
     }
 
-    // void renderMasterVolume(bool selected = false)
-    // {
-    //     int w = firstColumnWidth - 8;
-    //     draw.filledRect({ firstColumnMargin, progressPosition.y - 1 }, { firstColumnWidth - 6, progressItemSize.h + 2 }, colors.background);
-    //     Color color = colors.active.on;
-    //     color.a = 100;
-    //     draw.filledRect({ 5, progressPosition.y }, { w, progressItemSize.h }, color);
-    //     color.a = 200;
-    //     //  int width = w * master.getVolume() / APP_MAX_VOLUME;
-    //     int width = w * 0.9;
-    //     draw.filledRect({ 5, progressPosition.y }, { width, progressItemSize.h }, color);
-    //     if (selected) {
-    //         draw.rect({ firstColumnMargin, progressPosition.y - 1 }, { 86, progressItemSize.h + 2 }, colors.active.selector);
-    //     }
-    // }
+    void renderMasterVolume(bool selected = false)
+    {
+        int w = firstColumnWidth - 1;
+        draw.filledRect({ position.x, progressPosition.y - 1 }, { firstColumnWidth, progressItemSize.h + 2 }, colors.background);
+        Color color = colors.active.on;
+        color.a = 100;
+        draw.filledRect({ position.x, progressPosition.y }, { w, progressItemSize.h }, color);
+        color.a = 200;
+        int width = w * 0.9; // FIXME !!
+        draw.filledRect({ position.x, progressPosition.y }, { width, progressItemSize.h }, color);
+        if (selected) {
+            draw.rect({ position.x, progressPosition.y - 1 }, { 86, progressItemSize.h + 2 }, colors.active.selector);
+        }
+    }
 
     void resize()
     {
@@ -243,8 +238,6 @@ protected:
         // Ajust progress bar size base itemSize.h round.
         progressPosition.y = tracks[tracks.size() - 1].y + itemSize.h + itemMargin + progressMarginY;
         // progressItemSize.h = position.y + size.h - progressMarginY - progressPosition.y;
-
-        rowY[trackCount] = progressPosition.y;
     }
 
     int8_t paramKeyPressed = -1;
@@ -494,8 +487,8 @@ public:
     void render()
     {
         draw.filledRect(position, { size.w, size.h - 5 }, colors.background);
-        // progressInit();
-        // renderMasterVolume();
+        progressInit();
+        renderMasterVolume();
         renderRows();
     }
 
