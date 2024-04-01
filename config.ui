@@ -120,7 +120,7 @@ if: $screen == ui_240x240
     ADDRESS: 0x5d
   SCREEN: 240 240
   $encW=120
-  $encH=26
+  $encH=18
   $encX1=0
   $encX2=$encW
   $encY1=0
