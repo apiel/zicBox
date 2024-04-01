@@ -2,8 +2,8 @@ VIEW: Master
   COMPONENT: EncoderBar $encX1 $encY1 $encW $encH
     ENCODER_ID: 0
     BACKGROUND: $forground
-    COLOR: #ff8d99 0.2
-    TEXT_COLOR: #CCCCCC
+    # COLOR: #ff8d99 0.2
+    # TEXT_COLOR: #CCCCCC
     TRACK: 0
     VALUE: MasterVolume VOLUME
     FLOAT_PRECISION: 1
@@ -15,8 +15,8 @@ VIEW: Master
     VALUE: MultiModeFilter CUTOFF
     LABEL: LPF   HPF
     BACKGROUND: $forground
-    COLOR: #9dfe86 0.2
-    TEXT_COLOR: #CCCCCC
+    # COLOR: #9dfe86 0.2
+    # TEXT_COLOR: #CCCCCC
     TYPE: TWO_SIDED
     ID: Param2_enc
 
@@ -25,15 +25,15 @@ VIEW: Master
     TRACK: 0
     VALUE: MultiModeFilter RESONANCE
     BACKGROUND: $forground
-    COLOR: #3791a1 0.2
-    TEXT_COLOR: #CCCCCC
+    # COLOR: #3791a1 0.2
+    # TEXT_COLOR: #CCCCCC
     ID: Param3_enc
 
   COMPONENT: EncoderBar $encX2 $encY2 $encW $encH
     ENCODER_ID: 3
     BACKGROUND: $forground
-    COLOR: #999999 0.2
-    TEXT_COLOR: #CCCCCC
+    # COLOR: #999999 0.2
+    # TEXT_COLOR: #CCCCCC
     TRACK: 0
     VALUE: SampleRateReducer SAMPLE_STEP
     FONT_UNIT_SIZE: 8
@@ -42,8 +42,8 @@ VIEW: Master
   COMPONENT: EncoderBar $encX1 $encY3 $encW $encH
     ENCODER_ID: 4
     BACKGROUND: $forground
-    COLOR: #7C37A1 0.2
-    TEXT_COLOR: #CCCCCC
+    # COLOR: #7C37A1 0.2
+    # TEXT_COLOR: #CCCCCC
     TRACK: 0
     VALUE: MasterVolume VOLUME
     FONT_UNIT_SIZE: 8
@@ -52,30 +52,38 @@ VIEW: Master
   COMPONENT: EncoderBar $encX2 $encY3 $encW $encH
     ENCODER_ID: 5
     BACKGROUND: $forground
-    COLOR: #ff7700 0.2
-    TEXT_COLOR: #CCCCCC
+    # COLOR: #ff7700 0.2
+    # TEXT_COLOR: #CCCCCC
     TRACK: 0
     VALUE: MasterVolume VOLUME
     FONT_UNIT_SIZE: 8
     ID: Param6_enc
 
-  COMPONENT: ButtonBar 0 200 240 26
-    BACKGROUND: $forground
-    KEYMAP: Keyboard 20 item 0
-    KEYMAP: Keyboard 26 item 1
-    KEYMAP: Keyboard 8 item 2
-    KEYMAP: Keyboard 21 item 3
-    KEYMAP: Keyboard 4 item 4
-    KEYMAP: Keyboard 22 item 5
-    KEYMAP: Keyboard 7 item 6
-    KEYMAP: Keyboard 9 item 7
-    KEYMAP: Keyboard 29 item 8
-    KEYMAP: Keyboard 27 item 9
-    KEYMAP: Keyboard 6 item 10
-    KEYMAP: Keyboard 25 item 11
+  COMPONENT: Wave 0 78 240 42
+    TRACK: 1
+    KEYMAP: Keyboard 44 play 60
+    KEYMAP: Keypad 24 play 60
+    PLUGIN: Kick23
+    ENVELOP_DATA_ID: -1
+    NAME: BROWSER
 
-    # KEYMAP: Mpr121 2 prev
-    # KEYMAP: Mpr121 8 next
+  COMPONENT: GridMini 0 120 240 107
+    # TRACK_NAME: 1 Kick
+    # TRACK_VIEW: 1 KickParams_track_1
+    # TRACK_PAGE_COUNT: 1 4
+    # TRACK_NAME: 2 Bass
+    # TRACK_VIEW: 2 KickParams_track_2
+    # TRACK_PAGE_COUNT: 2 4
+    # TRACK_NAME: 3 Drum
+    # TRACK_VIEW: 3 KickParams_track_3
+    # TRACK_PAGE_COUNT: 3 4
+    # TRACK_NAME: 11 FM
+    # TRACK_VIEW: 11 FmParams_track_11
+    # TRACK_PAGE_COUNT: 11 3
+    # TRACK_NAME: 12 FM
+    # TRACK_VIEW: 12 FmParams_track_12
+    # TRACK_PAGE_COUNT: 11 3
+
 
   COMPONENT: Button 0 226 59 13
     COLOR: #808080

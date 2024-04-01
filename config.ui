@@ -19,6 +19,8 @@ PLUGIN_COMPONENT: FmAlgo ./plugins/components/build/libzic_FmAlgoComponent.so
 PLUGIN_COMPONENT: NavBar ./plugins/components/build/libzic_NavBarComponent.so
 PLUGIN_COMPONENT: ButtonBar ./plugins/components/build/libzic_ButtonBarComponent.so
 PLUGIN_COMPONENT: EncoderBar ./plugins/components/build/libzic_EncoderBarComponent.so
+PLUGIN_COMPONENT: GridMini ./plugins/components/build/libzic_GridMiniComponent.so
+
 
 
 PLUGIN_CONTROLLER: Osc ./plugins/controllers/build/libzic_OscController.so
@@ -117,7 +119,7 @@ if: $screen == ui_240x240
     ADDRESS: 0x5d
   SCREEN: 240 240
   $encW=120
-  $encH=30
+  $encH=26
   $encX1=0
   $encX2=$encW
   $encY1=0
