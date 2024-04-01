@@ -59,7 +59,7 @@ VIEW: Master
     FONT_UNIT_SIZE: 8
     ID: Param6_enc
 
-  COMPONENT: Wave 0 78 240 42
+  COMPONENT: Wave 0 78 240 40
     TRACK: 1
     KEYMAP: Keyboard 44 play 60
     KEYMAP: Keypad 24 play 60
@@ -67,22 +67,18 @@ VIEW: Master
     ENVELOP_DATA_ID: -1
     NAME: BROWSER
 
+
+
   COMPONENT: GridMini 0 120 240 107
-    # TRACK_NAME: 1 Kick
-    # TRACK_VIEW: 1 KickParams_track_1
-    # TRACK_PAGE_COUNT: 1 4
-    # TRACK_NAME: 2 Bass
-    # TRACK_VIEW: 2 KickParams_track_2
-    # TRACK_PAGE_COUNT: 2 4
-    # TRACK_NAME: 3 Drum
-    # TRACK_VIEW: 3 KickParams_track_3
-    # TRACK_PAGE_COUNT: 3 4
-    # TRACK_NAME: 11 FM
-    # TRACK_VIEW: 11 FmParams_track_11
-    # TRACK_PAGE_COUNT: 11 3
-    # TRACK_NAME: 12 FM
-    # TRACK_VIEW: 12 FmParams_track_12
-    # TRACK_PAGE_COUNT: 11 3
+    ITEM: 1 Kick KickParams_track_1 4
+    ITEM: 2 Bass KickParams_track_2 4
+    ITEM: 3 Drum KickParams_track_3 4
+    ITEM: 4 Sample KickParams_track_4 2
+    ITEM: 5 Sample KickParams_track_5 2
+    ITEM: 6 Sample KickParams_track_6 2
+    ITEM: 11 FM FmParams_track_11 3
+    ITEM: 12 FM FmParams_track_12 3
+
 
 
   COMPONENT: Button 0 226 59 13
