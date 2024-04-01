@@ -1,5 +1,5 @@
 VIEW: Master
-  COMPONENT: EncoderBar $encX1 $encY1 $encW $encH
+  COMPONENT: EncoderBar2 $encX1 $encY1 $encW $encH
     ENCODER_ID: 0
     BACKGROUND: $forground
     # COLOR: #ff8d99 0.2
@@ -9,7 +9,7 @@ VIEW: Master
     FLOAT_PRECISION: 1
     ID: Param1_enc
 
-  COMPONENT: EncoderBar $encX2 $encY1 $encW $encH
+  COMPONENT: EncoderBar2 $encX2 $encY1 $encW $encH
     ENCODER_ID: 1
     TRACK: 0
     VALUE: MultiModeFilter CUTOFF
@@ -20,7 +20,7 @@ VIEW: Master
     TYPE: TWO_SIDED
     ID: Param2_enc
 
-  COMPONENT: EncoderBar $encX1 $encY2 $encW $encH
+  COMPONENT: EncoderBar2 $encX1 $encY2 $encW $encH
     ENCODER_ID: 2
     TRACK: 0
     VALUE: MultiModeFilter RESONANCE
@@ -29,7 +29,7 @@ VIEW: Master
     # TEXT_COLOR: #CCCCCC
     ID: Param3_enc
 
-  COMPONENT: EncoderBar $encX2 $encY2 $encW $encH
+  COMPONENT: EncoderBar2 $encX2 $encY2 $encW $encH
     ENCODER_ID: 3
     BACKGROUND: $forground
     # COLOR: #999999 0.2
@@ -39,7 +39,7 @@ VIEW: Master
     FONT_UNIT_SIZE: 8
     ID: Param4_enc
 
-  COMPONENT: EncoderBar $encX1 $encY3 $encW $encH
+  COMPONENT: EncoderBar2 $encX1 $encY3 $encW $encH
     ENCODER_ID: 4
     BACKGROUND: $forground
     # COLOR: #7C37A1 0.2
@@ -49,7 +49,7 @@ VIEW: Master
     FONT_UNIT_SIZE: 8
     ID: Param5_enc
 
-  COMPONENT: EncoderBar $encX2 $encY3 $encW $encH
+  COMPONENT: EncoderBar2 $encX2 $encY3 $encW $encH
     ENCODER_ID: 5
     BACKGROUND: $forground
     # COLOR: #ff7700 0.2
