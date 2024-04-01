@@ -122,11 +122,14 @@ if: $screen == ui_240x240
   $encX2=$encW
   $encY1=0
   $encY2=$encH
+  $encY3=$encY2+$encH
 
   ADD_ZONE_ENCODER: $encX1 $encY1 $encW $encH
   ADD_ZONE_ENCODER: $encX2 $encY1 $encW $encH
   ADD_ZONE_ENCODER: $encX1 $encY2 $encW $encH
   ADD_ZONE_ENCODER: $encX2 $encY2 $encW $encH
+  ADD_ZONE_ENCODER: $encX1 $encY3 $encW $encH
+  ADD_ZONE_ENCODER: $encX2 $encY3 $encW $encH
 
   $forground=#282d34
 

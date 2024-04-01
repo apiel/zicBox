@@ -184,11 +184,21 @@ public:
             return true;
         }
 
+        /*md - `COLOR: #555555` set the background progress bar color. To be set after BACKGROUND parameter, else it will be overwritten. */
+        if (strcmp(key, "COLOR") == 0) {
+            colors.backgroundProgress = draw.getColor(strtok(params, " "));
+            char * alpha = strtok(NULL, " ");
+            if (alpha != NULL) {
+                colors.backgroundProgress = draw.alpha(colors.backgroundProgress, atof(alpha));
+            }
+            return true;
+        }
+
         /*md - `TEXT_COLOR: #ffffff` set the text color */
         if (strcmp(key, "TEXT_COLOR") == 0) {
-            colors.title = draw.alpha(draw.getColor(params), 0.4);
-            colors.value = draw.alpha(draw.getColor(params), 0.4);
-            colors.unit = draw.alpha(draw.getColor(params), 0.2);
+            colors.title = draw.alpha(draw.getColor(params), 0.5);
+            colors.value = draw.alpha(draw.getColor(params), 0.8);
+            colors.unit = draw.alpha(draw.getColor(params), 0.4);
             return true;
         }
 
