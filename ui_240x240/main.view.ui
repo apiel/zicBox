@@ -6,7 +6,6 @@ VIEW: Master
     # TEXT_COLOR: #CCCCCC
     TRACK: 0
     VALUE: MasterVolume VOLUME
-    FLOAT_PRECISION: 1
     ID: Param1_enc
 
   COMPONENT: EncoderBar2 $encX2 $encY1 $encW $encH
