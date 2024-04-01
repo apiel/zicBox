@@ -125,7 +125,7 @@ protected:
     std::string lastView;
     void updateSelection()
     {
-        // renderSelection();
+        renderSelection();
         // std::string view;
         // if (grid.row == trackCount) {
         //     view = std::string("MasterParams") + "_page_" + std::to_string(masterPage);

@@ -45,7 +45,6 @@ VIEW: Master
     # TEXT_COLOR: #CCCCCC
     TRACK: 0
     VALUE: MasterVolume VOLUME
-    FONT_UNIT_SIZE: 8
     ID: Param5_enc
 
   COMPONENT: EncoderBar2 $encX2 $encY3 $encW $encH
@@ -55,7 +54,6 @@ VIEW: Master
     # TEXT_COLOR: #CCCCCC
     TRACK: 0
     VALUE: MasterVolume VOLUME
-    FONT_UNIT_SIZE: 8
     ID: Param6_enc
 
   COMPONENT: Wave 0 60 240 40
