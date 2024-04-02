@@ -3,9 +3,9 @@
 
 #include "./base/KeypadLayout.h"
 #include "component.h"
+#include <cmath>
 #include <string>
 #include <vector>
-#include <cmath>
 
 /*md
 ## KeyInfoBar
@@ -23,10 +23,11 @@ protected:
     int textLeftMargin = 0;
 
     KeypadLayout keypadLayout;
-    int8_t activeItem = 1;
+    int8_t activeItem = -1;
 
     struct Item {
         std::string text;
+        bool needUpdate = true;
     };
 
     std::vector<Item> items;
@@ -50,8 +51,12 @@ protected:
 
     void handleButton(int8_t id, int8_t state)
     {
-        // printf("handleButton: %d %d\n", id, state);
-        activeItem = id;
+        items[activeItem].needUpdate = true;
+        if (state == 0) {
+            activeItem = -1;
+        } else {
+            activeItem = id;
+        }
         renderNext();
     }
 
@@ -100,8 +105,11 @@ public:
     {
         for (int row = 0; row < itemRowCount; row++) {
             for (int col = 0; col < itemColumnCount; col++) {
-                Point pos = { position.x + col * (itemSize.w + 1), position.y + row * (itemSize.h + 1) };
-                renderItem(pos, row * itemColumnCount + col);
+                int itemIndex = row * itemColumnCount + col;
+                if (items[itemIndex].needUpdate) {
+                    Point pos = { position.x + col * (itemSize.w + 1), position.y + row * (itemSize.h + 1) };
+                    renderItem(pos, itemIndex);
+                }
             }
         }
     }
@@ -154,7 +162,7 @@ public:
 
     void onKey(uint16_t id, int key, int8_t state)
     {
-        printf("onKey %d %d %d\n", id, key, state);
+        // printf("onKey %d %d %d\n", id, key, state);
         keypadLayout.onKey(id, key, state);
     }
 
