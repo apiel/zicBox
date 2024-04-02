@@ -21,6 +21,7 @@ PLUGIN_COMPONENT: ButtonBar ./plugins/components/build/libzic_ButtonBarComponent
 PLUGIN_COMPONENT: EncoderBar ./plugins/components/build/libzic_EncoderBarComponent.so
 PLUGIN_COMPONENT: EncoderBar2 ./plugins/components/build/libzic_EncoderBar2Component.so
 PLUGIN_COMPONENT: GridMini ./plugins/components/build/libzic_GridMiniComponent.so
+PLUGIN_COMPONENT: KeyInfoBar ./plugins/components/build/libzic_KeyInfoBarComponent.so
 
 
 
@@ -120,7 +121,7 @@ if: $screen == ui_240x240
     ADDRESS: 0x5d
   SCREEN: 240 240
   $encW=120
-  $encH=20
+  $encH=18
   $encX1=0
   $encX2=$encW
   $encY1=0

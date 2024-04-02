@@ -6,7 +6,7 @@ all:
 				ButtonComponent WaveComponent Wave2Component MonitoringComponent AdsrComponent\
 				SampleComponent GridSequencerComponent RectComponent ToggleComponent PlayComponent\
 				TextComponent FmAlgoComponent NavBarComponent ButtonBarComponent\
-				EncoderBarComponent GridMiniComponent EncoderBar2Component
+				EncoderBarComponent GridMiniComponent EncoderBar2Component KeyInfoBarComponent
 
 %Component:
 	@mkdir -p $(OBJ_DIR)

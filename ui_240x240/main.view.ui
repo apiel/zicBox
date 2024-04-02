@@ -56,7 +56,9 @@ VIEW: Master
     VALUE: MasterVolume VOLUME
     ID: Param6_enc
 
-  COMPONENT: Wave 0 60 240 40
+
+
+  COMPONENT: Wave 0 54 240 40
     TRACK: 1
     KEYMAP: Keyboard 44 play 60
     KEYMAP: Keypad 24 play 60
@@ -66,7 +68,7 @@ VIEW: Master
 
 
 
-  COMPONENT: GridMini 0 103 240 127
+  COMPONENT: GridMini 0 97 240 120
     ITEM: 1 Kick KickParams_track_1 4
     ITEM: 2 Bass KickParams_track_2 4
     ITEM: 3 Drum KickParams_track_3 4
@@ -77,38 +79,50 @@ VIEW: Master
     ITEM: 12 FM FmParams_track_12 3
 
 
+  COMPONENT: KeyInfoBar 0 217 240 23
+    COLUMNS: 5
+    ITEM: Track
+    ITEM: Up
+    ITEM: .
+    ITEM: Play
+    ITEM: Page
+    ITEM: Left
+    ITEM: Down
+    ITEM: Right
+    ITEM: C
+    ITEM: Clips
 
-  COMPONENT: Button 0 226 59 13
-    COLOR: #808080
-    BACKGROUND_COLOR: $forground
-    FONT_SIZE: 9
-    LABEL: Demo 1
-    KEYMAP: Keyboard 29 trigger
+  # COMPONENT: Button 0 226 59 13
+  #   COLOR: #808080
+  #   BACKGROUND_COLOR: $forground
+  #   FONT_SIZE: 9
+  #   LABEL: Demo 1
+  #   KEYMAP: Keyboard 29 trigger
 
-  COMPONENT: Button 60 226 59 13
-    COLOR: #808080
-    BACKGROUND_COLOR: $forground
-    FONT_SIZE: 9
-    LABEL: Demo 2
-    KEYMAP: Keyboard 27 trigger
+  # COMPONENT: Button 60 226 59 13
+  #   COLOR: #808080
+  #   BACKGROUND_COLOR: $forground
+  #   FONT_SIZE: 9
+  #   LABEL: Demo 2
+  #   KEYMAP: Keyboard 27 trigger
 
-  COMPONENT: Button 120 226 59 13
-    COLOR: #808080
-    BACKGROUND_COLOR: $forground
-    FONT_SIZE: 9
-    LABEL: Shift
-    ON_PRESS: &SHIFT true
-    ON_RELEASE: &SHIFT false
-    ON_LONG_PRESS_RELEASE: &SHIFT false
-    KEYMAP: Keyboard 6 trigger
+  # COMPONENT: Button 120 226 59 13
+  #   COLOR: #808080
+  #   BACKGROUND_COLOR: $forground
+  #   FONT_SIZE: 9
+  #   LABEL: Shift
+  #   ON_PRESS: &SHIFT true
+  #   ON_RELEASE: &SHIFT false
+  #   ON_LONG_PRESS_RELEASE: &SHIFT false
+  #   KEYMAP: Keyboard 6 trigger
 
-  COMPONENT: Button 180 226 59 13
-    COLOR: #808080
-    BACKGROUND_COLOR: $forground
-    FONT_SIZE: 9
-    LABEL: &icon::play::filled
-    ON_RELEASE: &AUDIO_EVENT TOGGLE_PLAY_PAUSE
-    ON_LONG_PRESS: &AUDIO_EVENT STOP
-    KEYMAP: Keyboard 25 trigger
+  # COMPONENT: Button 180 226 59 13
+  #   COLOR: #808080
+  #   BACKGROUND_COLOR: $forground
+  #   FONT_SIZE: 9
+  #   LABEL: &icon::play::filled
+  #   ON_RELEASE: &AUDIO_EVENT TOGGLE_PLAY_PAUSE
+  #   ON_LONG_PRESS: &AUDIO_EVENT STOP
+  #   KEYMAP: Keyboard 25 trigger
 
 
