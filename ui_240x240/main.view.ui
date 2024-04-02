@@ -91,6 +91,16 @@ VIEW: Master
     ITEM: Right
     ITEM: C
     ITEM: Clips
+    KEYMAP: Keyboard 4 item 0
+    KEYMAP: Keyboard 22 item 1
+    KEYMAP: Keyboard 7 item 2
+    KEYMAP: Keyboard 9 item 3
+    KEYMAP: Keyboard 10 item 4
+    KEYMAP: Keyboard 29 item 5
+    KEYMAP: Keyboard 27 item 6
+    KEYMAP: Keyboard 6 item 7
+    KEYMAP: Keyboard 25 item 8
+    KEYMAP: Keyboard 5 item 9
 
   # COMPONENT: Button 0 226 59 13
   #   COLOR: #808080
