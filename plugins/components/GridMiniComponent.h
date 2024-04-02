@@ -58,7 +58,6 @@ protected:
     Size itemSize;
     int itemW;
     int itemMargin = 1;
-    int progressMarginY = 3;
 
     uint8_t trackCount = 8;
     const static uint8_t stepsCount = 32;
@@ -225,19 +224,18 @@ protected:
 
     void resize()
     {
-        progressPosition = { firstColumnWidth, position.y + size.h - progressItemSize.h - progressMarginY };
+        progressPosition = { firstColumnWidth, position.y + size.h - progressItemSize.h };
         itemSize.w = (size.w - firstColumnWidth) / stepsCount - itemMargin;
         itemW = itemSize.w + itemMargin;
         progressItemSize.w = itemSize.w;
-        itemSize.h = (progressPosition.y - position.y - progressMarginY) / trackCount - itemMargin;
+        itemSize.h = (progressPosition.y - position.y) / trackCount - itemMargin;
 
         for (unsigned int i = 0; i < tracks.size(); i++) {
             tracks[i].y = position.y + (itemSize.h + itemMargin) * i;
         }
 
         // Ajust progress bar size base itemSize.h round.
-        progressPosition.y = tracks[tracks.size() - 1].y + itemSize.h + itemMargin + progressMarginY;
-        // progressItemSize.h = position.y + size.h - progressMarginY - progressPosition.y;
+        progressPosition.y = tracks[tracks.size() - 1].y + itemSize.h + itemMargin;
     }
 
     int8_t paramKeyPressed = -1;
