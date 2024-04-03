@@ -82,6 +82,16 @@ VIEW: Master
   COMPONENT: KeyInfoBar 0 217 240 23
     COLUMNS: 5
     ITEM: Track
+      CHILD: Track
+      CHILD: 1
+      CHILD: 2
+      CHILD: 3
+      CHILD: 4
+      CHILD: Master
+      CHILD: 5
+      CHILD: 6
+      CHILD: 7
+      CHILD: 8
     ITEM: Up
     ITEM: .
     ITEM: Play

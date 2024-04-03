@@ -27,7 +27,9 @@ protected:
 
     struct Item {
         std::string text;
+        std::string title;
         bool needUpdate = true;
+        std::vector<std::string> children; // but then needUpdate might not work anymore...
     };
 
     std::vector<Item> items;
@@ -53,9 +55,21 @@ protected:
     {
         items[activeItem].needUpdate = true;
         if (state == 0) {
+            if ( items[activeItem].children.size() ) {
+                for (int i = 0; i < items[activeItem].children.size(); i++) {
+                    items[i].text = items[i].title;
+                    items[i].needUpdate = true;
+                }
+            }
             activeItem = -1;
         } else {
             activeItem = id;
+            if ( items[activeItem].children.size() ) {
+                for (int i = 0; i < items[activeItem].children.size(); i++) {
+                    items[i].text = items[activeItem].children[i];
+                    items[i].needUpdate = true;
+                }
+            }
         }
         renderNext();
     }
@@ -148,8 +162,17 @@ public:
         if (strcmp(key, "ITEM") == 0) {
             Item item;
             item.text = value;
+            item.title = value;
             items.push_back(item);
             resize();
+            return true;
+        }
+
+        /*md - `CHILD: name` add child to last item. */
+        if (strcmp(key, "CHILD") == 0) {
+            if (items.size()) {
+                items[items.size() - 1].children.push_back(value);
+            }
             return true;
         }
 
