@@ -103,7 +103,8 @@ VIEW: Master
     # ITEM: Down
     ITEM: &icon::arrowRight::filled
     # ITEM: Right
-    ITEM: C
+    ITEM: &icon::musicNote
+    # ITEM: C
     ITEM: Clips
     KEYMAP: Keyboard 4 item 0
     KEYMAP: Keyboard 22 item 1
