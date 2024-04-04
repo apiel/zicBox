@@ -93,12 +93,16 @@ VIEW: Master
       CHILD: 7
       CHILD: 8
     ITEM: &icon::arrowUp::filled
+    # ITEM: Up
     ITEM: .
     ITEM: &icon::play::filled
     ITEM: Page
-    ITEM: Left
+    ITEM: &icon::arrowLeft::filled
+    # ITEM: Left
     ITEM: &icon::arrowDown::filled
-    ITEM: Right
+    # ITEM: Down
+    ITEM: &icon::arrowRight::filled
+    # ITEM: Right
     ITEM: C
     ITEM: Clips
     KEYMAP: Keyboard 4 item 0

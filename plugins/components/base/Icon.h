@@ -111,6 +111,36 @@ public:
             };
         }
 
+        /*md - `&icon::arrowLeft` */
+        if (name == "&icon::arrowLeft") {
+            return [&](Point position, uint8_t size, Color color, Align align) {
+                arrowLeft(position, size, color, align);
+            };
+        }
+
+        /*md - `&icon::arrowLeft::filled` */
+        if (name == "&icon::arrowLeft::filled") {
+            return [&](Point position, uint8_t size, Color color, Align align) {
+                arrowLeft(position, size, color, align, true);
+            };
+        }
+
+        /*md - `&icon::arrowRight` */
+        if (name == "&icon::arrowRight") {
+            return [&](Point position, uint8_t size, Color color, Align align) {
+                arrowRight(position, size, color, align);
+            };
+        }
+
+        /*md - `&icon::arrowRight::filled` */
+        if (name == "&icon::arrowRight::filled") {
+            return [&](Point position, uint8_t size, Color color, Align align) {
+                arrowRight(position, size, color, align, true);
+            };
+        }
+
+        printf("Unknown icon: %s\n", name.c_str());
+
         return nullptr;
     }
 
@@ -224,6 +254,44 @@ public:
             { (int)(x + size * 0.25), position.y },
             { (int)(x + size * 0.25), (int)(position.y + size * 0.5) },
             { x, (int)(position.y + size * 0.5) }
+        };
+        if (filled) {
+            draw.filledPolygon(points, color);
+        } else {
+            draw.polygon(points, color);
+        }
+    }
+
+    void arrowLeft(Point position, uint8_t size, Color color, Align align = LEFT, bool filled = false)
+    {
+        int x = getX(position, size, align, size);
+        std::vector<Point> points = {
+            { (int)(x + size * 0.5), (int)(position.y + size * 0.25) },
+            { (int)(x + size * 0.5), position.y },
+            { x, (int)(position.y + size * 0.5) },
+            { (int)(x + size * 0.5), position.y + size },
+            { (int)(x + size * 0.5), (int)(position.y + size * 0.75) },
+            { (int)(x + size), (int)(position.y + size * 0.75) },
+            { (int)(x + size), (int)(position.y + size * 0.25) },
+        };
+        if (filled) {
+            draw.filledPolygon(points, color);
+        } else {
+            draw.polygon(points, color);
+        }
+    }
+
+    void arrowRight(Point position, uint8_t size, Color color, Align align = LEFT, bool filled = false)
+    {
+        int x = getX(position, size, align, size);
+        std::vector<Point> points = {
+            { (int)(x + size * 0.5), (int)(position.y + size * 0.25) },
+            { (int)(x + size * 0.5), position.y + size },
+            { (int)(x + size), (int)(position.y + size * 0.5) },
+            { (int)(x + size * 0.5), position.y },
+            { (int)(x + size * 0.5), (int)(position.y + size * 0.75) },
+            { (int)(x), (int)(position.y + size * 0.75) },
+            { (int)(x), (int)(position.y + size * 0.25) },
         };
         if (filled) {
             draw.filledPolygon(points, color);
