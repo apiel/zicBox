@@ -29,6 +29,11 @@ public:
 
     std::function<void(Point, uint8_t, Color, Align)> get(std::string name)
     {
+        // if first char is different than & then it's not an icon
+        if (name[0] != '&') {
+            return nullptr;
+        }
+
         /*md - `&icon::backspace` */
         if (name == "&icon::backspace") {
             return [&](Point position, uint8_t size, Color color, Align align) {
@@ -75,6 +80,34 @@ public:
         if (name == "&icon::pause::filled") {
             return [&](Point position, uint8_t size, Color color, Align align) {
                 pause(position, size, color, align, true);
+            };
+        }
+
+        /*md - `&icon::arrowUp` */
+        if (name == "&icon::arrowUp") {
+            return [&](Point position, uint8_t size, Color color, Align align) {
+                arrowUp(position, size, color, align);
+            };
+        }
+
+        /*md - `&icon::arrowUp::filled` */
+        if (name == "&icon::arrowUp::filled") {
+            return [&](Point position, uint8_t size, Color color, Align align) {
+                arrowUp(position, size, color, align, true);
+            };
+        }
+
+        /*md - `&icon::arrowDown` */
+        if (name == "&icon::arrowDown") {
+            return [&](Point position, uint8_t size, Color color, Align align) {
+                arrowDown(position, size, color, align);
+            };
+        }
+
+        /*md - `&icon::arrowDown::filled` */
+        if (name == "&icon::arrowDown::filled") {
+            return [&](Point position, uint8_t size, Color color, Align align) {
+                arrowDown(position, size, color, align, true);
             };
         }
 
@@ -158,6 +191,44 @@ public:
         } else {
             draw.rect({ x, position.y }, { (int)(size * 0.3), size }, color);
             draw.rect({ x + (int)(size * 0.7), position.y }, { (int)(size * 0.3), size }, color);
+        }
+    }
+
+    void arrowUp(Point position, uint8_t size, Color color, Align align = LEFT, bool filled = false)
+    {
+        int x = getX(position, size, align, size);
+        std::vector<Point> points = {
+            { (int)(x + size * 0.5), position.y },
+            { x + size, (int)(position.y + size * 0.5) },
+            { (int)(x + size * 0.75), (int)(position.y + size * 0.5) },
+            { (int)(x + size * 0.75), position.y + size },
+            { (int)(x + size * 0.25), position.y + size },
+            { (int)(x + size * 0.25), (int)(position.y + size * 0.5) },
+            { x, (int)(position.y + size * 0.5) }
+        };
+        if (filled) {
+            draw.filledPolygon(points, color);
+        } else {
+            draw.polygon(points, color);
+        }
+    }
+
+    void arrowDown(Point position, uint8_t size, Color color, Align align = LEFT, bool filled = false)
+    {
+        int x = getX(position, size, align, size);
+        std::vector<Point> points = {
+            { (int)(x + size * 0.5), position.y + size },
+            { x + size, (int)(position.y + size * 0.5) },
+            { (int)(x + size * 0.75), (int)(position.y + size * 0.5) },
+            { (int)(x + size * 0.75), position.y },
+            { (int)(x + size * 0.25), position.y },
+            { (int)(x + size * 0.25), (int)(position.y + size * 0.5) },
+            { x, (int)(position.y + size * 0.5) }
+        };
+        if (filled) {
+            draw.filledPolygon(points, color);
+        } else {
+            draw.polygon(points, color);
         }
     }
 
