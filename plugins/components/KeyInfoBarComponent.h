@@ -2,7 +2,9 @@
 #define _UI_COMPONENT_KEY_INFO_BAR_H_
 
 #include "./base/KeypadLayout.h"
+#include "base/Icon.h"
 #include "component.h"
+
 #include <cmath>
 #include <string>
 #include <vector>
@@ -21,6 +23,9 @@ protected:
     int fontSize = 9;
     int textTopMargin = 0;
     int textLeftMargin = 0;
+    int iconFix = 1;
+
+    Icon icon;
 
     KeypadLayout keypadLayout;
     int8_t activeItem = -1;
@@ -48,7 +53,11 @@ protected:
         }
 
         draw.filledRect(pos, itemSize, background);
-        draw.textCentered({ pos.x + textLeftMargin, pos.y + textTopMargin }, items[index].text, fontColor, fontSize);
+
+        Point textPos = { pos.x + textLeftMargin, pos.y + textTopMargin };
+        if (!icon.render(items[index].text, { textPos.x, textPos.y  + iconFix }, fontSize - iconFix, fontColor, Icon::CENTER)) {
+            draw.textCentered(textPos, items[index].text, fontColor, fontSize);
+        }
     }
 
     void handleButton(int8_t id, int8_t state)
@@ -99,6 +108,7 @@ public:
 
     KeyInfoBarComponent(ComponentInterface::Props props)
         : Component(props)
+        , icon(props.draw)
         , keypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, int param, std::string action, uint8_t color) { addKeyMap(controller, controllerId, key, param, action, color); })
     {
         colors.background = props.draw.lighten(props.draw.styles.colors.background, 0.2);
@@ -152,6 +162,15 @@ public:
         if (strcmp(key, "FONT_SIZE") == 0) {
             fontSize = atoi(value);
             textTopMargin = (itemSize.h - fontSize) / 2;
+
+            // if fontsize impaire remove 1 pixel else 0
+            iconFix = fontSize % 2;
+            return true;
+        }
+
+        /*md - `ICON_FIX: 1` remove 1 pixel to icon size, `ICON_FIX: 2` remove 2 pixel... */
+        if (strcmp(key, "ICON_FIX") == 0) {
+            iconFix = atoi(value);
             return true;
         }
 

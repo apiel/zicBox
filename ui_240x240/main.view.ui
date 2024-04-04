@@ -92,12 +92,12 @@ VIEW: Master
       CHILD: 6
       CHILD: 7
       CHILD: 8
-    ITEM: Up
+    ITEM: &icon::arrowUp::filled
     ITEM: .
-    ITEM: Play
+    ITEM: &icon::play::filled
     ITEM: Page
     ITEM: Left
-    ITEM: Down
+    ITEM: &icon::arrowDown::filled
     ITEM: Right
     ITEM: C
     ITEM: Clips
