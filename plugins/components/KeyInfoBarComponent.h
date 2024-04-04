@@ -24,6 +24,7 @@ protected:
     int textTopMargin = 0;
     int textLeftMargin = 0;
     int iconFix = 1;
+    int iconMarginTop = 1;
 
     Icon icon;
 
@@ -31,8 +32,8 @@ protected:
     int8_t activeItem = -1;
 
     struct Item {
-        std::string text;
-        std::string title;
+        std::string text = "                                               ";
+        std::string title = "                                               ";
         bool needUpdate = true;
         std::vector<std::string> children; // but then needUpdate might not work anymore...
     };
@@ -55,7 +56,7 @@ protected:
         draw.filledRect(pos, itemSize, background);
 
         Point textPos = { pos.x + textLeftMargin, pos.y + textTopMargin };
-        if (!icon.render(items[index].text, { textPos.x, textPos.y  + iconFix }, fontSize - iconFix, fontColor, Icon::CENTER)) {
+        if (!icon.render(items[index].text, { textPos.x, textPos.y  + iconFix + iconMarginTop }, fontSize - iconFix, fontColor, Icon::CENTER)) {
             draw.textCentered(textPos, items[index].text, fontColor, fontSize);
         }
     }
@@ -69,6 +70,7 @@ protected:
                 if (items[activeItem].children.size()) {
                     for (int i = 0; i < items[activeItem].children.size(); i++) {
                         items[i].text = items[i].title;
+                        // printf("set %d to %s %s\n", i, items[i].text.c_str(), items[i].title.c_str());
                         items[i].needUpdate = true;
                     }
                 }
@@ -78,6 +80,7 @@ protected:
             activeItem = id;
             if (items[activeItem].children.size()) {
                 for (int i = 0; i < items[activeItem].children.size(); i++) {
+                    // printf("was %d to %s %s\n", i, items[i].text.c_str(), items[i].title.c_str());
                     items[i].text = items[activeItem].children[i];
                     items[i].needUpdate = true;
                 }
@@ -174,6 +177,12 @@ public:
             return true;
         }
 
+        /*md - `ICON_MARGIN_TOP: 1` set the icon top margin. */
+        if (strcmp(key, "ICON_MARGIN_TOP") == 0) {
+            iconMarginTop = atoi(value);
+            return true;
+        }
+
         /*md - `COLUMNS: 5` set the number of columns. */
         if (strcmp(key, "COLUMNS") == 0) {
             itemColumnCount = atoi(value);
@@ -184,8 +193,8 @@ public:
         /*md - `ITEM: name` add new item to list. */
         if (strcmp(key, "ITEM") == 0) {
             Item item;
-            item.text = value;
             item.title = value;
+            item.text = item.title;
             items.push_back(item);
             resize();
             return true;
