@@ -139,7 +139,14 @@ public:
             };
         }
 
-        printf("Unknown icon: %s\n", name.c_str());
+        /*md - `&icon::musicNote` */
+        if (name == "&icon::musicNote") {
+            return [&](Point position, uint8_t size, Color color, Align align) {
+                musicNote(position, size, color, align);
+            };
+        }
+
+        // printf("Unknown icon: %s\n", name.c_str());
 
         return nullptr;
     }
@@ -298,6 +305,20 @@ public:
         } else {
             draw.polygon(points, color);
         }
+    }
+
+    void musicNote(Point position, uint8_t size, Color color, Align align = LEFT)
+    {
+        int x = getX(position, size, align, size);
+        std::vector<Point> points = {
+            { (int)(x + size * 0.75), (int)(position.y + size * 0.25) },
+            { (int)(x + size * 0.5), (int)(position.y) },
+            { (int)(x + size * 0.5), (int)(position.y + size * 0.75) },
+
+        };
+        // aalines
+        draw.lines(points, color);
+        draw.filledEllipse({ (int)(x + size * 0.4), (int)(position.y + size * 0.75) }, size * 0.25, size * 0.25, color);
     }
 
 protected:
