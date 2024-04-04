@@ -48,23 +48,26 @@ protected:
         }
 
         draw.filledRect(pos, itemSize, background);
-        draw.textCentered({ pos.x + textLeftMargin, pos.y }, items[index].text, fontColor, fontSize);
+        draw.textCentered({ pos.x + textLeftMargin, pos.y + textTopMargin }, items[index].text, fontColor, fontSize);
     }
 
     void handleButton(int8_t id, int8_t state)
     {
         items[activeItem].needUpdate = true;
+        // TODO work on key combination...
         if (state == 0) {
-            if ( items[activeItem].children.size() ) {
-                for (int i = 0; i < items[activeItem].children.size(); i++) {
-                    items[i].text = items[i].title;
-                    items[i].needUpdate = true;
+            if (activeItem == id) {
+                if (items[activeItem].children.size()) {
+                    for (int i = 0; i < items[activeItem].children.size(); i++) {
+                        items[i].text = items[i].title;
+                        items[i].needUpdate = true;
+                    }
                 }
+                activeItem = -1;
             }
-            activeItem = -1;
-        } else {
+        } else if (activeItem == -1) {
             activeItem = id;
-            if ( items[activeItem].children.size() ) {
+            if (items[activeItem].children.size()) {
                 for (int i = 0; i < items[activeItem].children.size(); i++) {
                     items[i].text = items[activeItem].children[i];
                     items[i].needUpdate = true;
@@ -110,7 +113,8 @@ public:
         if (items.size()) {
             itemRowCount = std::ceil(items.size() / (float)itemColumnCount);
             itemSize = { (size.w / itemColumnCount) - 1, (size.h / itemRowCount) - 1 };
-            textTopMargin = (itemSize.h - fontSize) / 2;
+            textTopMargin = (int)((itemSize.h - fontSize) / 2.0f) - 1;
+            // printf("textTopMargin: %d - %d = %f = %d\n", itemSize.h, fontSize, ((itemSize.h - fontSize) / 2.0f), textTopMargin);
             textLeftMargin = itemSize.w / 2; // center
         }
     }
