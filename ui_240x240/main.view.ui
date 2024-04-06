@@ -77,10 +77,11 @@ VIEW: Master
     ITEM: 6 Sample KickParams_track_6 2
     ITEM: 11 FM FmParams_track_11 3
     ITEM: 12 FM FmParams_track_12 3
-    KEYMAP: Keyboard 22 row 1
-    KEYMAP: Keyboard 29 col -1
-    KEYMAP: Keyboard 27 row -1
-    KEYMAP: Keyboard 6 col 1
+    KEYMAP: Keyboard 26 row 1
+    KEYMAP: Keyboard 4 col -1
+    KEYMAP: Keyboard 22 row -1
+    KEYMAP: Keyboard 7 col 1
+
 
 
   COMPONENT: KeyInfoBar 0 217 240 23
@@ -130,16 +131,17 @@ VIEW: Master
       CHILD: 7
       CHILD: 8
       CHILD: Clips
-    KEYMAP: Keyboard 4 item 0
-    KEYMAP: Keyboard 22 item 1
-    KEYMAP: Keyboard 7 item 2
-    KEYMAP: Keyboard 9 item 3
-    KEYMAP: Keyboard 10 item 4
-    KEYMAP: Keyboard 29 item 5
-    KEYMAP: Keyboard 27 item 6
-    KEYMAP: Keyboard 6 item 7
-    KEYMAP: Keyboard 25 item 8
-    KEYMAP: Keyboard 5 item 9
+    KEYMAP: Keyboard 20 item 0
+    KEYMAP: Keyboard 26 item 1
+    KEYMAP: Keyboard 8 item 2
+    KEYMAP: Keyboard 21 item 3
+    KEYMAP: Keyboard 23 item 4
+    KEYMAP: Keyboard 4 item 5
+    KEYMAP: Keyboard 22 item 6
+    KEYMAP: Keyboard 7 item 7
+    KEYMAP: Keyboard 9 item 8
+    KEYMAP: Keyboard 10 item 9
+
 
   # COMPONENT: Button 0 226 59 13
   #   COLOR: #808080
