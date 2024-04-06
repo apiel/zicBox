@@ -106,7 +106,7 @@ protected:
         }
 
         if (col == 0) {
-            draw.rect({ position.x - 1, y - 1 }, { firstColumnWidth + 1, h }, color);
+            draw.rect({ position.x, y - 1 }, { firstColumnWidth, h }, color);
         } else {
             int selectW = itemSize.w + 1;
             int x = firstColumnWidth + selectW * (col - 1);
@@ -187,8 +187,8 @@ protected:
 
     void renderTrackName(Track& track)
     {
-        int w = firstColumnWidth - 1;
-        draw.filledRect({ position.x, track.y }, { w, itemSize.h }, colors.step);
+        int w = firstColumnWidth - 2;
+        draw.filledRect({ position.x + 1, track.y }, { w, itemSize.h }, colors.step);
 
         Color trackColor = colors.firstStep;
         Color trackText = colors.track;
@@ -197,10 +197,10 @@ protected:
             trackText = colors.active.selector;
         }
         trackColor.a = 50;
-        draw.filledRect({ position.x, track.y }, { w, itemSize.h }, trackColor);
+        draw.filledRect({ position.x + 1, track.y }, { w, itemSize.h }, trackColor);
         trackColor.a = 200;
         int width = w * track.volume->pct();
-        draw.filledRect({ position.x, track.y }, { width, itemSize.h }, trackColor);
+        draw.filledRect({ position.x + 1, track.y }, { width, itemSize.h }, trackColor);
 
         draw.text({ position.x + 2, track.y }, track.name.c_str(), trackText, 9);
     }
@@ -516,7 +516,6 @@ public:
 
     void onKey(uint16_t id, int key, int8_t state)
     {
-        printf("onKey %d %d %d\n", id, key, state);
         keypadLayout.onKey(id, key, state);
     }
 };
