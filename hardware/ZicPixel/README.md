@@ -6,6 +6,8 @@
 
 Small version of ZicBox using capacitive PCB keyboard with MPR121 ICs and smaller display. The goal is to reduce the cost and make ZicBox more affordable.
 
+> [!WARNING] Work in progress. The prototype using a capacitive keyboard was not very pleasant to use. Making affordable device should not goes against user experience, so I will leave the idea of capacitive keyboard and instead try to use low profile mecanical keycaps. Also I need to find a solution for better integration of the display...
+
 ### Material
 
 
@@ -14,7 +16,8 @@ Small version of ZicBox using capacitive PCB keyboard with MPR121 ICs and smalle
 - 1x ST7789 LCD OLED Display 240x240 [3€ on Aliexpress](https://www.aliexpress.com/item/1005005990777548.html) [8€ on Amazon](https://www.amazon.de/-/en/DollaTek-Display-Module-Interface-Arduino/dp/B07QJY5H9G/)
 - 4x switch encoders without detent [PEC12R-4025F-S0024](https://eu.mouser.com/ProductDetail/Bourns/PEC12R-4025F-S0024?qs=Zq5ylnUbLm7c1LzY1JyJgg%3D%3D&_gl=1*18jq081*_ga*MjEzNTYwMjcyNS4xNzA5NDU2NTk3*_ga_15W4STQT4T*MTcxMTM3NzQ1MC4zLjEuMTcxMTM3NzUxOS41MS4wLjA.*_ga_1KQLCYKRX3*MTcxMTM3NzQ1MC4zLjEuMTcxMTM3NzUxOS4wLjAuMA..) 1.50€ (but might get expensive with shipping, could use other encoder to reduce cost)
 - 1x DAC [Adafruit UDA1334A](https://learn.adafruit.com/adafruit-i2s-stereo-decoder-uda1334a/raspberry-pi-wiring) 7€ (not available anymore) can find a copy on Amazon CJMCU-1334, 5x for 33€ =~ 5€ one piece (the DAC is optional and could be replaced by a USB audio card)
-- 3x MPR121 capcitive sensor about 2.5€ per piece
+- ~~3x MPR121 capcitive sensor about 2.5€ per piece~~ might keep one to make a small touch pad
+- low profile keypad TBD.
 
 Total of about 60€...
 
