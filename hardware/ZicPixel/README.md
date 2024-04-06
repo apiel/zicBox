@@ -6,7 +6,7 @@
 
 Small version of ZicBox using capacitive PCB keyboard with MPR121 ICs and smaller display. The goal is to reduce the cost and make ZicBox more affordable.
 
-> [!WARNING] Work in progress. The prototype using a capacitive keyboard was not very pleasant to use. Making affordable device should not goes against user experience, so I will leave the idea of capacitive keyboard and instead try to use low profile mecanical keycaps. Also I need to find a solution for better integration of the display...
+> [!NOTE] Work in progress. The prototype using a capacitive keyboard was not very pleasant to use. Making affordable device should not goes against user experience, so I will leave the idea of capacitive keyboard and instead try to use low profile mecanical keycaps. Also I need to find a solution for better integration of the display...
 
 ### Material
 
