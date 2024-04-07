@@ -77,10 +77,16 @@ VIEW: Master
     ITEM: 6 Sample KickParams_track_6 2
     ITEM: 11 FM FmParams_track_11 3
     ITEM: 12 FM FmParams_track_12 3
-    KEYMAP: Keyboard 26 row 1
-    KEYMAP: Keyboard 4 col -1
-    KEYMAP: Keyboard 22 row -1
-    KEYMAP: Keyboard 7 col 1
+    KEYMAP: Keyboard 20 key10 0
+    KEYMAP: Keyboard 26 key10 1
+    KEYMAP: Keyboard 8 key10 2
+    KEYMAP: Keyboard 21 key10 3
+    KEYMAP: Keyboard 23 key10 4
+    KEYMAP: Keyboard 4 key10 5
+    KEYMAP: Keyboard 22 key10 6
+    KEYMAP: Keyboard 7 key10 7
+    KEYMAP: Keyboard 9 key10 8
+    KEYMAP: Keyboard 10 key10 9
 
 
 
@@ -99,7 +105,7 @@ VIEW: Master
       CHILD: 8
     ITEM: &icon::arrowUp::filled
     # ITEM: Up
-    ITEM: .
+    ITEM: . .
     ITEM: &icon::play::filled
     ITEM: Page
       CHILD: 1
