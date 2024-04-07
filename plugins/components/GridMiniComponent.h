@@ -284,6 +284,20 @@ protected:
         }
     }
 
+    unsigned long playPressedTime = 0;
+    void handlePlay(int8_t state)
+    {
+        if (grid.row == trackCount) {
+            if (state == 0) {
+                sendAudioEvent(now - playPressedTime > 500 ? AudioEventType::STOP : AudioEventType::TOGGLE_PLAY_PAUSE);
+            } else {
+                playPressedTime = now;
+            }
+        } else {
+            // toggle track
+        }
+    }
+
     void handleKeyTrackController(int8_t state, int8_t keyId)
     {
         if (keyId == 5) {
@@ -322,6 +336,7 @@ protected:
             break;
 
         case 3:
+            handlePlay(state);
             break;
 
         case 4:
@@ -394,25 +409,25 @@ public:
     {
         jobRendering = [this](unsigned long _now) {
             now = _now;
-            // if (grid.row < trackCount && grid.col > 0 && !tracks[grid.row].steps[grid.col - 1].equal(selectedStepCopy)) {
-            //     renderSelection(grid.row, grid.col, colors.selector);
-            //     renderNext();
-            //     selectedStepCopy = tracks[grid.row].steps[grid.col - 1];
-            // }
+            if (grid.row < trackCount && grid.col > 0 && !tracks[grid.row].steps[grid.col - 1].equal(selectedStepCopy)) {
+                renderSelection(grid.row, grid.col, colors.selector);
+                renderNext();
+                selectedStepCopy = tracks[grid.row].steps[grid.col - 1];
+            }
 
-            // if (tracks[0].seqPlugin) {
-            //     uint64_t* clockCounterPtr = (uint64_t*)tracks[0].seqPlugin->data(3);
-            //     if (clockCounterPtr && lastClockCounter != *clockCounterPtr) {
-            //         lastClockCounter = *clockCounterPtr;
-            //         uint8_t stepCounter = lastClockCounter / 6 % stepsCount;
-            //         if (stepCounter != lastStepCounter) {
-            //             // printf("stepCounter: %d (%ld)\n", stepCounter, lastClockCounter);
-            //             renderProgress(stepCounter);
-            //             lastStepCounter = stepCounter;
-            //             draw.renderNext();
-            //         }
-            //     }
-            // }
+            if (tracks[0].seqPlugin) {
+                uint64_t* clockCounterPtr = (uint64_t*)tracks[0].seqPlugin->data(3);
+                if (clockCounterPtr && lastClockCounter != *clockCounterPtr) {
+                    lastClockCounter = *clockCounterPtr;
+                    uint8_t stepCounter = lastClockCounter / 6 % stepsCount;
+                    if (stepCounter != lastStepCounter) {
+                        // printf("stepCounter: %d (%ld)\n", stepCounter, lastClockCounter);
+                        renderProgress(stepCounter);
+                        lastStepCounter = stepCounter;
+                        draw.renderNext();
+                    }
+                }
+            }
         };
     }
 
