@@ -295,6 +295,9 @@ protected:
             }
         } else {
             // toggle track
+            // Long press should let select in how many loop it should start / stop
+            // Actually this could as well work for master stop / pause
+            // Short press just toggle right away
         }
     }
 
