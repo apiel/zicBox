@@ -1,5 +1,7 @@
 ## Next TODO
 
+- TODO encoder 2 sides, make 100% (actually 0.5) bar moving from one side to the other for LPF/HPF or pan. But keep as it is for semitones
+
 - TODO create separate asset folder > might put it in wiki...
 
 - TODO start thread in https://llllllll.co/
