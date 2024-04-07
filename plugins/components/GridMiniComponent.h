@@ -236,48 +236,13 @@ protected:
         progressPosition.y = tracks[tracks.size() - 1].y + itemSize.h + itemMargin;
     }
 
-    int8_t paramKeyPressed = -1;
     ComponentInterface* componentParam = NULL;
-
-    void onParamKeyPressed(uint8_t param)
-    {
-        std::string paramId = "Param" + std::to_string(param) + "_";
-        std::vector<ComponentInterface*> components = getViewComponents();
-        for (ComponentInterface* component : components) {
-            if (component->id.find(paramId) == 0) {
-                paramKeyPressed = param;
-                // id end by _toggle
-                if (component->id.find("_button") != -1) {
-                    // printf("toggle %s\n", component->id.c_str());
-                    component->data(1);
-                } else if (component->id.find("_enc") != -1) {
-                    // printf("enc %s\n", component->id.c_str());
-                    componentParam = component;
-                }
-            }
-        }
-    }
-
-    void onParamKeyReleased(uint8_t param)
-    {
-        std::string paramId = "Param" + std::to_string(param) + "_";
-        std::vector<ComponentInterface*> components = getViewComponents();
-        for (ComponentInterface* component : components) {
-            if (component->id.find(paramId) == 0) {
-                // id end by _toggle
-                if (component->id.find("_button") != -1) {
-                    // printf("toggle %s\n", component->id.c_str());
-                    component->data(0);
-                }
-            }
-        }
-        paramKeyPressed = -1;
-    }
 
     void updateTrackSelection(int8_t state, uint8_t track)
     {
         if (state == 1) {
             if (grid.row == track && grid.col == 0) {
+                printf("track %d next page\n", track);
                 tracks[grid.row].page = (tracks[grid.row].page + 1) % tracks[grid.row].pageCount;
                 // printf("page %d from %d\n", tracks[grid.row].page, tracks[grid.row].pageCount);
             } else {
@@ -289,39 +254,20 @@ protected:
         }
     }
 
-    void updateParamSelection(int8_t state, uint8_t param)
-    {
-        if (state == 1) {
-            onParamKeyPressed(param);
-        } else if (paramKeyPressed == param) {
-            onParamKeyReleased(paramKeyPressed);
-        }
-    }
-
     void updateRowSelection(int8_t state, int8_t direction)
     {
         if (state == 1) {
-            if (paramKeyPressed == -1) {
-                grid.selectNextRow(-direction);
-                updateSelection();
-                draw.renderNext();
-            } else {
-                int8_t step = direction > 0 ? 1 : -1;
-                componentParam->data(0, &step);
-            }
+            grid.selectNextRow(-direction);
+            updateSelection();
+            draw.renderNext();
         }
     }
     void updateColSelection(int8_t state, int8_t direction)
     {
         if (state == 1) {
-            if (paramKeyPressed == -1) {
-                grid.selectNextCol(direction);
-                updateSelection();
-                draw.renderNext();
-            } else {
-                int8_t step = direction > 0 ? 5 : -5;
-                componentParam->data(0, &step);
-            }
+            grid.selectNextCol(direction);
+            updateSelection();
+            draw.renderNext();
         }
     }
 
@@ -338,10 +284,35 @@ protected:
         }
     }
 
+    void handleKeyTrackController(int8_t state, int8_t keyId)
+    {
+        if (keyId == 5) {
+            updateMasterSelection(state);
+        } else if (keyId > 5) {
+            updateTrackSelection(state, keyId - 2); // from 6 to 9, need to remove 2, since master was in between...
+        } else {
+            updateTrackSelection(state, keyId - 1); // from 1 to 4, need to remove 1
+        }
+    }
+
+    int8_t pressedKey = -1;
     void handleKey10Controller(int8_t state, int8_t keyId)
     {
+        if (state == 0 && pressedKey == keyId) {
+            pressedKey = -1;
+            return;
+        }
+        if (pressedKey != -1) {
+            switch (pressedKey) {
+            case 0:
+                handleKeyTrackController(state, keyId);
+                return;
+            }
+        }
+
         switch (keyId) {
         case 0:
+            pressedKey = 0;
             break;
         case 1:
             updateRowSelection(state, 1);
@@ -373,9 +344,6 @@ protected:
             break;
 
         case 9:
-            break;
-
-        default:
             break;
         }
     }
@@ -418,26 +386,6 @@ public:
         if (action == "key10") {
             keypadLayout.mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { handleKey10Controller(state, keymap.param); }, color, [&](KeypadLayout::KeyMap& keymap) { return 20; } });
         }
-
-        // /*md - `row` to select row number: `KEYMAP: Keypad 1 row -1` will decrement the current row selection when key 1 is pressed. */
-        // if (action == "row") {
-        //     keypadLayout.mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateRowSelection(state, keymap.param); }, color, [&](KeypadLayout::KeyMap& keymap) { return 20; } });
-        //     /*md - `col` to select column number: `KEYMAP: Keypad 1 col -1` will decrement the current column selection when key 1 is pressed. */
-        // } else if (action == "col") {
-        //     keypadLayout.mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateColSelection(state, keymap.param); }, color, [&](KeypadLayout::KeyMap& keymap) { return 20; } });
-        // /*md - `track` to select track number: `KEYMAP: Keypad 1 track 2` will select track 2 when key 1 is pressed.*/
-        // else if (action == "track") {
-        //     keypadLayout.mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateTrackSelection(state, keymap.param); }, color, [&](KeypadLayout::KeyMap& keymap) { return tracks[keymap.param].status->get() == 1 ? 40 : 0; } });
-        //     /*md - `param` to select parameter number: `KEYMAP: Keypad 1 param 2 20` will select parameter 2 when key 1 is pressed. Color must be specified, in this example color is 20. */
-        // } else if (action == "param") {
-        //     keypadLayout.mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateParamSelection(state, keymap.param); }, color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color; } });
-        // /*md - `master` to select master track: `KEYMAP: Keypad 1 master` will select master when key 1 is pressed. */
-        // } else if (action == "master") {
-        //     keypadLayout.mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateMasterSelection(state); }, color, [&](KeypadLayout::KeyMap& keymap) { return 40; } });
-        //     /*md - `variation` to select variation: `KEYMAP: Keypad 1 variation` will select variation when key 1 is pressed. */
-        // } else if (action == "variation") {
-        //     keypadLayout.mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { tracks[grid.row].variation->set(keymap.param); }, color, [&](KeypadLayout::KeyMap& keymap) { return 60; } });
-        // }
     }
 
     GridMiniComponent(ComponentInterface::Props props)
