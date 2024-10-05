@@ -47,22 +47,15 @@ LOAD_HOST: config.cfg
 $encoder=Encoder2
 
 # $screen=ui_320x172
-# $screen=ui_800x480
+$screen=ui_800x480
 # $screen=ui_480x640
-$screen=ui_240x240
+# $screen=ui_240x240
 
 
 ### Default ###
 
 if: $screen == ui_800x480
-  include: ui_800x480/layout.view.ui
-  include: ui_800x480/main/main.view.ui
-  include: ui_800x480/granular.view.ui
-  include: ui_800x480/kick/kick.view.ui
-  include: ui_800x480/demo.view.ui
-  include: ui_800x480/mixer.view.ui
-
-  STARTUP_VIEW: Demo
+  include: ui_800x480/main.view.ui
 
 ## 320x172 ###
 
