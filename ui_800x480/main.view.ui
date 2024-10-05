@@ -1,8 +1,6 @@
 
 VIEW: Demo
 
-  include: layout.ui
-
   COMPONENT: Encoder2 0 0 100 100
     GROUP: 0
     ENCODER_ID: 0
