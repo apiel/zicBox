@@ -12,7 +12,7 @@
     </tr>
     <tr>
         <td><a href="https://github.com/apiel/zicBox/wiki/07-Hardware#zicpad"><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPad/zicpad.png" /></a></td>
-        <td><a href="https://github.com/apiel/zicBox/wiki/07-Hardware#zicplus"><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/400px.png" /></a></td>
+        <td><a href="https://github.com/apiel/zicBox/wiki/07-Hardware#zicplus"><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPlus/zic+.png" /></a></td>
     </tr>
     <tr>
         <td><a href="https://github.com/apiel/zicBox/wiki/07-Hardware#zic-pixel"><b>ZicPixel</b></a> ... discontinued</td>
