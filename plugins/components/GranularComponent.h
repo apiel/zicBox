@@ -78,7 +78,7 @@ protected:
     {
         auto [x, y] = rect.position;
         draw.rect(rect.position, rect.size, colors.toggle);
-        draw.text({ x + 5, y + 1 }, label, colors.info, 10);
+        draw.text({ x + 5, y + 1 }, label, 10, { colors.info });
         if (state) {
             draw.filledRect({ x + 37, y + 2 }, { 11, 11 }, colors.toggle);
         } else {
@@ -93,7 +93,7 @@ protected:
         if (pressed) {
             draw.filledRect({ x + 2, y + 2 }, { rect.size.w - 4, rect.size.h - 4 }, colors.toggle);
         }
-        draw.textCentered({ (int)(x + rect.size.w * 0.5), y + 1 }, label, colors.info, 10);
+        draw.textCentered({ (int)(x + rect.size.w * 0.5), y + 1 }, label, 10, { colors.info });
     }
 
     struct Colors {
@@ -153,7 +153,7 @@ public:
             textureSampleWaveform = draw.setTextureRenderer(textureSize);
             draw.filledRect({ 0, 0 }, { textureSize.w, textureSize.h }, colors.background);
             wave.render((float*)plugin.data(1), *(uint64_t*)plugin.data(0));
-            draw.text({ 10, 5 }, browser->string().c_str(), colors.info, 12);
+            draw.text({ 10, 5 }, browser->string().c_str(), 12, { colors.info });
             draw.setMainRenderer();
         }
         draw.applyTexture(textureSampleWaveform, { { position.x + margin, position.y + margin }, textureSize });

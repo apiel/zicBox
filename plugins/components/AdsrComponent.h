@@ -140,7 +140,7 @@ public:
             draw.filledRect({ p.x - 2, p.y - 2 }, { 4, 4 }, colors.line);
         }
 
-        draw.textCentered({ (int)(graphArea.position.x + w * 0.5), graphArea.position.y + h + 2 }, label.c_str(), colors.label, 10);
+        draw.textCentered({ (int)(graphArea.position.x + w * 0.5), graphArea.position.y + h + 2 }, label.c_str(), 10, { colors.label });
     }
 
     bool config(char* key, char* value)

@@ -221,7 +221,7 @@ protected:
         int width = w * track.volume->pct();
         draw.filledRect({ 5, y }, { width, itemSize.h }, trackColor);
 
-        draw.text({ 8, y }, track.name.c_str(), trackText, 10);
+        draw.text({ 8, y }, track.name.c_str(), 10, { trackText});
     }
 
     void renderMasterVolume(bool selected = false)

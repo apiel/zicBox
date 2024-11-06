@@ -111,7 +111,7 @@ public:
         renderLabel = icon.get(label, labelPosition, fontSize, colors.icon, Icon::CENTER);
         if (!renderLabel) {
             renderLabel = [&]() {
-                draw.textCentered(labelPosition, label.c_str(), colors.title, fontSize);
+                draw.textCentered(labelPosition, label.c_str(), fontSize, { colors.title });
             };
         }
     }

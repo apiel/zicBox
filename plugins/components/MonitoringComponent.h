@@ -113,7 +113,7 @@ public:
         int pct = percentage * 100;
         int x = position.x + size.w * 0.5;
         int y = position.y + (size.h - fontSize) * 0.5;
-        draw.textCentered({ x, y }, std::string("cpu: " + std::to_string(pct) + "%").c_str(), colors.text, fontSize);
+        draw.textCentered({ x, y }, std::string("cpu: " + std::to_string(pct) + "%").c_str(), fontSize, { colors.text });
     }
 };
 

@@ -56,7 +56,11 @@ struct Styles {
     } colors;
 };
 
-struct DrawTextOptions {
+struct DrawOptions {
+    Color color = { 255, 255, 255, 255 };
+};
+
+struct DrawTextOptions: DrawOptions {
     const char* fontPath = nullptr;
     int maxWidth = -1;
 };
@@ -76,14 +80,15 @@ public:
     DrawTextOptions getDefaultTextOptions(DrawTextOptions options)
     {
         return {
+            options.color,
             options.fontPath == nullptr ? styles.font.regular : options.fontPath,
             options.maxWidth == -1 ? styles.screen.w : options.maxWidth
         };
     }
 
-    virtual int textCentered(Point position, std::string text, Color color, uint32_t size, DrawTextOptions options = {}) = 0;
-    virtual int text(Point position, std::string text, Color color, uint32_t size, DrawTextOptions options = {}) = 0;
-    virtual int textRight(Point position, std::string text, Color color, uint32_t size, DrawTextOptions options = {}) = 0;
+    virtual int textCentered(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) = 0;
+    virtual int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) = 0;
+    virtual int textRight(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) = 0;
 
     virtual void clear() = 0;
     virtual void filledRect(Point position, Size size, Color color) = 0;

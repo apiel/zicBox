@@ -1,9 +1,9 @@
 #ifndef _UI_COMPONENT_PAD_H_
 #define _UI_COMPONENT_PAD_H_
 
+#include "./utils/color.h"
 #include "component.h"
 #include <string>
-#include "./utils/color.h"
 
 /*md
 ## Pad
@@ -24,15 +24,15 @@ protected:
     int drawValue(const char* c, ValueInterface* value, Point position)
     {
         int x = position.x;
-        x = draw.text({ x, position.y }, c, colors.title, 12);
+        x = draw.text({ x, position.y }, c, 12, { colors.title });
         int val = value->get();
         if (value->props().type == VALUE_CENTERED) {
-            x = draw.text({ x + 3, position.y }, std::to_string(100 - val).c_str(), colors.value, 12, { styles.font.bold });
+            x = draw.text({ x + 3, position.y }, std::to_string(100 - val).c_str(), 12, { colors.value, styles.font.bold });
         }
-        x = draw.text({ x + 3, position.y }, value->label(), colors.title, 12);
-        x = draw.text({ x + 3, position.y }, std::to_string(val).c_str(), colors.value, 12, { styles.font.bold });
+        x = draw.text({ x + 3, position.y }, value->label(), 12, { colors.title });
+        x = draw.text({ x + 3, position.y }, std::to_string(val).c_str(), 12, { colors.value, styles.font.bold });
         if (value->props().unit != NULL) {
-            x = draw.text({ x + 2, position.y }, value->props().unit, colors.title, 10);
+            x = draw.text({ x + 2, position.y }, value->props().unit, 10, { colors.title });
         }
         return x;
     }

@@ -1,10 +1,10 @@
 #ifndef _UI_COMPONENT2_ENCODER_H_
 #define _UI_COMPONENT2_ENCODER_H_
 
+#include "./utils/color.h"
 #include "component.h"
 #include <math.h>
 #include <string>
-#include "./utils/color.h"
 
 /*md
 ## Encoder2
@@ -47,9 +47,10 @@ protected:
     void renderLabel()
     {
         if (stringValueReplaceTitle && value->props().type == VALUE_STRING) {
-            draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius }, value->string(), colors.title, 12, { .maxWidth = size.w - 4 });
+            // draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius }, value->string(), 12, { colors.title, .maxWidth = size.w - 4 });
+            draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius }, value->string(), 12, { colors.title, NULL, size.w - 4 });
         } else {
-            draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius }, label, colors.title, 12);
+            draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius }, label, 12, { colors.title });
         }
     }
 
@@ -58,7 +59,7 @@ protected:
         if (showGroup && encoderActive) {
             draw.filledRect({ position.x + margin, position.y + margin }, { 12, 12 }, colors.id);
             // draw.filledEllipse({ position.x + margin + 6, position.y + margin + 6 }, 6, 6, colors.id);
-            draw.textCentered({ position.x + margin + 6, position.y + margin }, std::to_string(encoderId + 1).c_str(), colors.background, 8);
+            draw.textCentered({ position.x + margin + 6, position.y + margin }, std::to_string(encoderId + 1).c_str(), 8, { colors.background });
         }
     }
 
@@ -119,19 +120,19 @@ protected:
     void renderUnit()
     {
         if (showUnit && value->props().unit != NULL) {
-            draw.textCentered({ valuePosition.x, valuePosition.y + fontValueSize - 5 }, value->props().unit, colors.unit, fontUnitSize);
+            draw.textCentered({ valuePosition.x, valuePosition.y + fontValueSize - 5 }, value->props().unit, fontUnitSize, { colors.unit });
         }
     }
 
     void renderValue()
     {
         if (!stringValueReplaceTitle && value->props().type == VALUE_STRING) {
-            draw.textCentered({ valuePosition.x, valuePosition.y - 5 }, value->string(), colors.value, fontValueSize);
+            draw.textCentered({ valuePosition.x, valuePosition.y - 5 }, value->string(), fontValueSize, { colors.value });
         } else {
             std::string valStr = std::to_string(value->get());
             valStr = valStr.substr(0, valStr.find(".") + valueFloatPrecision + (valueFloatPrecision > 0 ? 1 : 0));
 
-            draw.textCentered({ valuePosition.x, valuePosition.y - 5 }, valStr.c_str(), colors.value, fontValueSize);
+            draw.textCentered({ valuePosition.x, valuePosition.y - 5 }, valStr.c_str(), fontValueSize, { colors.value });
         }
     }
 
@@ -140,9 +141,9 @@ protected:
         int val = value->get();
         // FIXME use floating point...
         draw.textRight({ valuePosition.x - twoSideMargin, valuePosition.y - 5 }, std::to_string((int)value->props().max - val).c_str(),
-            colors.value, fontValueSize - 3);
+            fontValueSize - 3, { colors.value });
         draw.text({ valuePosition.x + twoSideMargin, valuePosition.y - 5 }, std::to_string(val).c_str(),
-            colors.value, fontValueSize - 3);
+            fontValueSize - 3, { colors.value });
 
         draw.line({ valuePosition.x, valuePosition.y - 10 }, { valuePosition.x, valuePosition.y + 10 }, colors.barTwoSide);
         draw.line({ valuePosition.x - 1, valuePosition.y - 10 }, { valuePosition.x - 1, valuePosition.y + 10 }, colors.barTwoSide);

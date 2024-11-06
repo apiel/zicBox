@@ -96,7 +96,7 @@ protected:
 
         draw.filledRect({ x, y }, { w, h }, c.background);
 
-        draw.text({ x + 2, y + h - 12 }, std::to_string(index + 1).c_str(), c.text, 9);
+        draw.text({ x + 2, y + h - 12 }, std::to_string(index + 1).c_str(), 9, { c.text });
 
         int stepIndexWidth = 12;
         Point textPosition = {
@@ -105,7 +105,7 @@ protected:
         };
 
         Color textColor = steps[index].enabled ? c.textActive : c.textInactive;
-        draw.textCentered(textPosition, getStepText(index), textColor, fontSize);
+        draw.textCentered(textPosition, getStepText(index), fontSize, { textColor });
 
         if (index == *stepCounter) {
             draw.filledRect({ x, y - 3 }, { w, 2 }, colors.activePosition);
@@ -123,7 +123,7 @@ protected:
                 }
                 if (column >= encoderIndex && column < encoderIndex + encoderCount) {
                     draw.filledRect({ x, y }, { 12, 12 }, c.id);
-                    draw.textCentered({ x + 6, y }, std::to_string(encoderIds[column - encoderIndex] + 1).c_str(), colors.background, 8);
+                    draw.textCentered({ x + 6, y }, std::to_string(encoderIds[column - encoderIndex] + 1).c_str(), 8, { colors.background });
                 }
             }
         }
@@ -140,7 +140,7 @@ protected:
             (int)(x + w * 0.5),
             (int)(y + (h - fsize) * 0.5)
         };
-        draw.textCentered(textPosition, label, labelColor, fsize);
+        draw.textCentered(textPosition, label, fsize, { labelColor });
     }
 
     struct Colors {

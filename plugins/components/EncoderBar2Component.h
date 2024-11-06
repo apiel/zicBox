@@ -1,10 +1,10 @@
 #ifndef _UI_COMPONENT_ENCODER_BAR_2_H_
 #define _UI_COMPONENT_ENCODER_BAR_2_H_
 
+#include "./utils/color.h"
 #include "component.h"
 #include <math.h>
 #include <string>
-#include "./utils/color.h"
 
 /*md
 ## EncoderBar2
@@ -38,16 +38,16 @@ protected:
     void renderValue()
     {
         if (value->props().type == VALUE_STRING) {
-            draw.textCentered({ position.x + size.w - 4, position.y + 1 }, value->string(), colors.value, fontValueSize);
+            draw.textCentered({ position.x + size.w - 4, position.y + 1 }, value->string(), fontValueSize, { colors.value });
         } else {
             std::string valStr = std::to_string(value->get());
             valStr = valStr.substr(0, valStr.find(".") + valueFloatPrecision + (valueFloatPrecision > 0 ? 1 : 0));
 
             int x = position.x + size.w - 4;
             if (showUnit && value->props().unit != NULL) {
-                x = draw.textRight({ x, position.y + 1 }, value->props().unit, colors.unit, fontUnitSize) - 2;
+                x = draw.textRight({ x, position.y + 1 }, value->props().unit, fontUnitSize, { colors.unit }) - 2;
             }
-            draw.textRight({ x, position.y + 1 }, valStr.c_str(), colors.value, fontValueSize, { styles.font.bold });
+            draw.textRight({ x, position.y + 1 }, valStr.c_str(), fontValueSize, { colors.value, styles.font.bold });
         }
     }
 
@@ -55,9 +55,9 @@ protected:
     {
         int val = value->get();
         draw.text({ position.x + 4, position.y + 1 }, std::to_string((int)value->props().max - val).c_str(),
-            colors.value, fontValueSize, { styles.font.bold });
+            fontValueSize, { colors.value, styles.font.bold });
         draw.textRight({ position.x + size.w - 4, position.y + 1 }, std::to_string(val).c_str(),
-            colors.value, fontValueSize, { styles.font.bold });
+            fontValueSize, { colors.value, styles.font.bold });
     }
 
     void renderEncoder()
@@ -75,13 +75,13 @@ protected:
                     { w, size.h - 2 * margin },
                     colors.backgroundProgress);
             }
-            draw.textCentered({ xCenter, position.y + 1 }, label, colors.title, titleSize);
+            draw.textCentered({ xCenter, position.y + 1 }, label, titleSize, { colors.title});
         } else {
             draw.filledRect(
                 { position.x + margin, position.y + margin },
                 { (int)((size.w - 2 * margin) * value->pct()), size.h - 2 * margin },
                 colors.backgroundProgress);
-            draw.text({ position.x + 4, position.y + 1 }, label, colors.title, titleSize);
+            draw.text({ position.x + 4, position.y + 1 }, label, titleSize, { colors.title });
         }
 
         if (showValue) {

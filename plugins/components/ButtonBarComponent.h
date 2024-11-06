@@ -59,7 +59,7 @@ protected:
         }
 
         draw.filledRect(pos, itemSize, background);
-        draw.textCentered({ pos.x + textLeftMargin, pos.y }, items[index].text, fontColor, fontSize);
+        draw.textCentered({ pos.x + textLeftMargin, pos.y }, items[index].text, fontSize, { fontColor });
     }
 
     // int8_t previousActiveItem = 1; // to restore after pressing shift

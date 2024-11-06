@@ -57,7 +57,7 @@ protected:
     void renderWaveName()
     {
         if (browser) {
-            draw.text({ position.x + 10, position.y + 5 }, browser->string().c_str(), colors.info, 12);
+            draw.text({ position.x + 10, position.y + 5 }, browser->string().c_str(), 12, { colors.info });
         }
     }
 

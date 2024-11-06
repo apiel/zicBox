@@ -39,11 +39,11 @@ public:
     void render()
     {
         if (align == LEFT) {
-            draw.text(position, text, colors.text, size, { fontPath });
+            draw.text(position, text, size, { colors.text, fontPath });
         } else if (align == CENTER) {
-            draw.textCentered(position, text, colors.text, size, { fontPath });
+            draw.textCentered(position, text, size, { colors.text, fontPath });
         } else {
-            draw.textRight(position, text, colors.text, size, { fontPath });
+            draw.textRight(position, text, size, { colors.text, fontPath });
         }
     }
 

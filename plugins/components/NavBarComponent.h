@@ -37,7 +37,7 @@ protected:
     void drawItem(Point pos, Size _itemSize, std::string text)
     {
         draw.filledRect(pos, _itemSize, colors.background);
-        draw.textCentered({ pos.x + _itemSize.w / 2, pos.y + textTopMargin }, text, colors.font, fontSize);
+        draw.textCentered({ pos.x + _itemSize.w / 2, pos.y + textTopMargin }, text, fontSize, { colors.font });
     }
 
     void setSizes()
@@ -79,7 +79,7 @@ protected:
             for (int col = 0; col < 5; col++) {
                 Point pos = { position.x + col * (subItemSize.w + 1), position.y + row * subItemSize.h };
                 draw.filledRect(pos, subItemSize, colors.background);
-                draw.textCentered({ pos.x + subItemSize.w / 2, pos.y }, "track" + std::to_string(row * 5 + col + 1), colors.font, 9);
+                draw.textCentered({ pos.x + subItemSize.w / 2, pos.y }, "track" + std::to_string(row * 5 + col + 1), 9, { colors.font });
             }
         }
     }

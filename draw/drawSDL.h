@@ -165,10 +165,10 @@ public:
         SDL_SetRenderTarget(renderer, texture);
     }
 
-    int textCentered(Point position, std::string text, Color color, uint32_t size, DrawTextOptions options = {})
+    int textCentered(Point position, std::string text, uint32_t size, DrawTextOptions options = {})
     {
         options = getDefaultTextOptions(options);
-        SDL_Surface* surface = getTextSurface(text.c_str(), color, size, options.fontPath);
+        SDL_Surface* surface = getTextSurface(text.c_str(), options.color, size, options.fontPath);
         int w = surface->w > options.maxWidth ? options.maxWidth : surface->w;
         int x = position.x - (w * 0.5);
         textToRenderer({ x, position.y }, surface, options.maxWidth);
@@ -178,10 +178,10 @@ public:
         return xEnd;
     }
 
-    int text(Point position, std::string text, Color color, uint32_t size, DrawTextOptions options = {})
+    int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {})
     {
         options = getDefaultTextOptions(options);
-        SDL_Surface* surface = getTextSurface(text.c_str(), color, size, options.fontPath);
+        SDL_Surface* surface = getTextSurface(text.c_str(), options.color, size, options.fontPath);
         textToRenderer(position, surface, options.maxWidth);
         int xEnd = position.x + surface->w;
         SDL_FreeSurface(surface);
@@ -189,10 +189,10 @@ public:
         return xEnd;
     }
 
-    int textRight(Point position, std::string text, Color color, uint32_t size, DrawTextOptions options = {})
+    int textRight(Point position, std::string text, uint32_t size, DrawTextOptions options = {})
     {
         options = getDefaultTextOptions(options);
-        SDL_Surface* surface = getTextSurface(text.c_str(), color, size, options.fontPath);
+        SDL_Surface* surface = getTextSurface(text.c_str(), options.color, size, options.fontPath);
         int w = surface->w > options.maxWidth ? options.maxWidth : surface->w;
         int x = position.x - w;
         textToRenderer({ x, position.y }, surface, options.maxWidth);
