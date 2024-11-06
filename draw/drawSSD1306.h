@@ -34,17 +34,17 @@ public:
     {
     }
 
-    int textCentered(Point position, std::string text, Color color, uint32_t size, DrawTextOptions options = {})
+    int textCentered(Point position, std::string text, uint32_t size, DrawTextOptions options = {})
     {
         return 123;
     }
 
-    int text(Point position, std::string text, Color color, uint32_t size, DrawTextOptions options = {})
+    int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {})
     {
         return 123;
     }
 
-    int textRight(Point position, std::string text, Color color, uint32_t size, DrawTextOptions options = {})
+    int textRight(Point position, std::string text, uint32_t size, DrawTextOptions options = {})
     {
         return 123;
     }

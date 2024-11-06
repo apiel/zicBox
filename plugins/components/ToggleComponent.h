@@ -35,7 +35,7 @@ protected:
 
     void renderLabel()
     {
-        draw.textCentered(labelPosition, value->get() <= 0 && offLabel ? offLabel : label, colors.title, 12);
+        draw.textCentered(labelPosition, value->get() <= 0 && offLabel ? offLabel : label, 12, { colors.title });
     }
 
     void renderActiveGroup()
@@ -43,7 +43,7 @@ protected:
         if (showGroup && encoderActive) {
             draw.filledRect({ position.x + margin, position.y + margin }, { 12, 12 }, colors.id);
             // draw.filledEllipse({ position.x + margin + 6, position.y + margin + 6 }, 6, 6, colors.id);
-            draw.textCentered({ position.x + margin + 6, position.y + margin }, std::to_string(encoderId + 1).c_str(), colors.background, 8);
+            draw.textCentered({ position.x + margin + 6, position.y + margin }, std::to_string(encoderId + 1).c_str(), 8, { colors.background });
         }
     }
 

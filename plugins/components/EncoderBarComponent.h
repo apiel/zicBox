@@ -1,10 +1,10 @@
 #ifndef _UI_COMPONENT_ENCODER_BAR_H_
 #define _UI_COMPONENT_ENCODER_BAR_H_
 
+#include "./utils/color.h"
 #include "component.h"
 #include <math.h>
 #include <string>
-#include "./utils/color.h"
 
 /*md
 ## EncoderBar
@@ -40,15 +40,15 @@ protected:
     void renderValue()
     {
         if (value->props().type == VALUE_STRING) {
-            draw.textCentered({ xCenter, yValue }, value->string(), colors.value, fontValueSize);
+            draw.textCentered({ xCenter, yValue }, value->string(), fontValueSize, { colors.value });
         } else {
             std::string valStr = std::to_string(value->get());
             valStr = valStr.substr(0, valStr.find(".") + valueFloatPrecision + (valueFloatPrecision > 0 ? 1 : 0));
 
-            int xEnd = draw.textCentered({ xCenter, yValue }, valStr.c_str(), colors.value, fontValueSize);
+            int xEnd = draw.textCentered({ xCenter, yValue }, valStr.c_str(), fontValueSize, { colors.value });
 
             if (showUnit && value->props().unit != NULL) {
-                draw.text({ xEnd + 2, yUnit }, value->props().unit, colors.unit, fontUnitSize);
+                draw.text({ xEnd + 2, yUnit }, value->props().unit, fontUnitSize, { colors.unit });
             }
         }
     }
@@ -57,9 +57,9 @@ protected:
     {
         int val = value->get();
         draw.textRight({ xCenter - twoSideMargin, yValue }, std::to_string((int)value->props().max - val).c_str(),
-            colors.value, fontValueSize);
+            fontValueSize, { colors.value });
         draw.text({ xCenter + twoSideMargin, yValue }, std::to_string(val).c_str(),
-            colors.value, fontValueSize);
+            fontValueSize, { colors.value });
     }
 
     void renderEncoder()
@@ -85,7 +85,7 @@ protected:
                 colors.backgroundProgress);
         }
 
-        draw.textCentered({ xCenter, position.y + 1 }, label, colors.title, titleSize);
+        draw.textCentered({ xCenter, position.y + 1 }, label, titleSize, { colors.title });
 
         if (showValue) {
             if (value->props().type == VALUE_CENTERED && type == 1) {
@@ -188,7 +188,7 @@ public:
         /*md - `COLOR: #555555` set the background progress bar color. To be set after BACKGROUND parameter, else it will be overwritten. */
         if (strcmp(key, "COLOR") == 0) {
             colors.backgroundProgress = draw.getColor(strtok(params, " "));
-            char * alphaVal = strtok(NULL, " ");
+            char* alphaVal = strtok(NULL, " ");
             if (alphaVal != NULL) {
                 colors.backgroundProgress = alpha(colors.backgroundProgress, atof(alphaVal));
             }

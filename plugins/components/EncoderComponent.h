@@ -1,9 +1,9 @@
 #ifndef _UI_COMPONENT_ENCODER_H_
 #define _UI_COMPONENT_ENCODER_H_
 
+#include "./utils/color.h"
 #include "component.h"
 #include <string>
-#include "./utils/color.h"
 
 // TODO use function pointer on encoder initialisation to assign draw function base on type
 
@@ -32,7 +32,7 @@ protected:
 
     void drawLabel()
     {
-        draw.text({ area.x, area.y }, label, colors.title, 12);
+        draw.text({ area.x, area.y }, label, 12, { colors.title });
     }
 
     void drawBar()
@@ -54,10 +54,10 @@ protected:
         valStr = valStr.substr(0, valStr.find(".") + valueFloatPrecision + (valueFloatPrecision > 0 ? 1 : 0));
 
         int x = draw.textCentered({ area.xCenter, area.y + valueMarginTop }, valStr.c_str(),
-            colors.value, 20, { styles.font.bold });
+            20, { colors.value, styles.font.bold });
 
         if (value->props().unit != NULL) {
-            draw.text({ x + 2, area.y + valueMarginTop + 8 }, value->props().unit, colors.title, 10);
+            draw.text({ x + 2, area.y + valueMarginTop + 8 }, value->props().unit, 10, { colors.title });
         }
     }
 
@@ -80,14 +80,14 @@ protected:
     void drawCenteredEncoder()
     {
         if (type == 1) {
-            draw.textCentered({ area.xCenter, area.y }, label, colors.title, 12);
+            draw.textCentered({ area.xCenter, area.y }, label, 12, { colors.title });
 
             int val = value->get();
             // FIXME use floating point...
             draw.textRight({ area.x + area.w, area.y + valueMarginTop }, std::to_string(val).c_str(),
-                colors.value, 20, { styles.font.bold });
+                20, { colors.value, styles.font.bold });
             draw.text({ area.x, area.y + valueMarginTop }, std::to_string((int)value->props().max - val).c_str(),
-                colors.value, 20, { styles.font.bold });
+                20, { colors.value, styles.font.bold });
         } else {
             drawLabel();
             drawValue();
@@ -99,13 +99,15 @@ protected:
     void drawStringEncoder()
     {
         if (type == 1) {
-            draw.text({ area.x, area.y + 5 }, value->string().c_str(), colors.value, 12, { .maxWidth = area.w });
+            // draw.text({ area.x, area.y + 5 }, value->string().c_str(), 12, { colors.value, .maxWidth = area.w });
+            draw.text({ area.x, area.y + 5 }, value->string().c_str(), 12, { colors.value, NULL, area.w });
             char valueStr[20];
             sprintf(valueStr, "%d / %d", (int)(value->get()), (int)value->props().max);
-            draw.textRight({ area.x + area.w, area.y + 25 }, valueStr, colors.title, 10);
+            draw.textRight({ area.x + area.w, area.y + 25 }, valueStr, 10, { colors.title });
         } else {
             drawLabel();
-            draw.text({ area.x, area.y + 18 }, value->string().c_str(), colors.value, 12, { .maxWidth = area.w });
+            // draw.text({ area.x, area.y + 18 }, value->string().c_str(), 12, { colors.value, .maxWidth = area.w });
+            draw.text({ area.x, area.y + 18 }, value->string().c_str(), 12, { colors.value, NULL, area.w });
         }
         drawBar();
     }
@@ -162,7 +164,7 @@ public:
                 { position.x + margin, position.y + margin },
                 { 12, 12 },
                 colors.id);
-            draw.textCentered({ position.x + margin + 6, position.y + margin }, std::to_string(encoderId + 1).c_str(), colors.background, 8);
+            draw.textCentered({ position.x + margin + 6, position.y + margin }, std::to_string(encoderId + 1).c_str(), 8, { colors.background });
         }
 
         if (value != NULL) {

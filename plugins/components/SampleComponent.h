@@ -166,7 +166,7 @@ public:
             textureSampleWaveform = draw.setTextureRenderer(size);
             draw.filledRect({ 0, 0 }, size, colors.background);
             renderWaveform();
-            draw.text({ 10, 5 }, browser->string().c_str(), colors.info, 12);
+            draw.text({ 10, 5 }, browser->string().c_str(), 12, { colors.info });
             draw.setMainRenderer();
         }
         draw.applyTexture(textureSampleWaveform, { position, size });

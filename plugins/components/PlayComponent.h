@@ -1,11 +1,11 @@
 #ifndef _UI_COMPONENT_PLAY_H_
 #define _UI_COMPONENT_PLAY_H_
 
+#include "./utils/color.h"
 #include "component.h"
 #include <chrono>
 #include <math.h>
 #include <string>
-#include "./utils/color.h"
 
 /*md
 ## Play
@@ -78,7 +78,7 @@ public:
             draw.filledRect(iconPosition, iconSize, colors.icon);
             draw.rect(iconPosition, iconSize, colors.border);
             draw.rect({ iconPosition.x + 1, iconPosition.y + 1 }, { iconSize.w - 2, iconSize.h - 2 }, colors.border);
-            draw.textCentered(labelPosition, "Stopped", colors.title, 12);
+            draw.textCentered(labelPosition, "Stopped", 12, { colors.title });
         } else if (playing) {
             // Playing
             std::vector<Point> points = {
@@ -88,14 +88,14 @@ public:
             };
             draw.filledPolygon(points, colors.icon);
             draw.polygon(points, colors.border);
-            draw.textCentered(labelPosition, "Playing", colors.title, 12);
+            draw.textCentered(labelPosition, "Playing", 12, { colors.title });
         } else {
             // Paused
             draw.filledRect(iconPosition, { (int)(iconSize.w * 0.3), iconSize.h }, colors.icon);
             draw.rect(iconPosition, { (int)(iconSize.w * 0.3), iconSize.h }, colors.border);
             draw.filledRect({ iconPosition.x + (int)(iconSize.w * 0.7), iconPosition.y }, { (int)(iconSize.w * 0.3), iconSize.h }, colors.icon);
             draw.rect({ iconPosition.x + (int)(iconSize.w * 0.7), iconPosition.y }, { (int)(iconSize.w * 0.3), iconSize.h }, colors.border);
-            draw.textCentered(labelPosition, "Paused", colors.title, 12);
+            draw.textCentered(labelPosition, "Paused", 12, { colors.title });
         }
     }
 

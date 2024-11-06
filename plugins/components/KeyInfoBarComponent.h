@@ -57,8 +57,8 @@ protected:
         draw.filledRect(pos, itemSize, background);
 
         Point textPos = { pos.x + textLeftMargin, pos.y + textTopMargin };
-        if (!icon.render(items[index].text, { textPos.x, textPos.y  + iconFix + iconMarginTop }, fontSize - iconFix, fontColor, Icon::CENTER)) {
-            draw.textCentered(textPos, items[index].text, fontColor, fontSize);
+        if (!icon.render(items[index].text, { textPos.x, textPos.y + iconFix + iconMarginTop }, fontSize - iconFix, fontColor, Icon::CENTER)) {
+            draw.textCentered(textPos, items[index].text, fontSize, { fontColor });
         }
     }
 

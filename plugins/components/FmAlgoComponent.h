@@ -112,30 +112,30 @@ public:
         // draw operators and carriers
         // 4 is always carrier
         draw.filledRect({ position.x + size.w - opSize.w, position.y + size.h - opSize.h }, opSize, colors.border); // 4
-        draw.textCentered({ (int)(position.x + size.w - opSize.w + opSize.w * 0.5), position.y + size.h - opSize.h + 2 }, "4", colors.background, fontSize);
+        draw.textCentered({ (int)(position.x + size.w - opSize.w + opSize.w * 0.5), position.y + size.h - opSize.h + 2 }, "4", fontSize, { colors.background });
 
         if (!algo[0][0] && !algo[0][1] && !algo[0][2]) { // 1
             draw.filledRect(position, opSize, colors.border); // 1
-            draw.textCentered({ (int)(position.x + opSize.w * 0.5), position.y + 2 }, "1", colors.background, fontSize);
+            draw.textCentered({ (int)(position.x + opSize.w * 0.5), position.y + 2 }, "1", fontSize, { colors.background });
         } else {
             draw.rect(position, opSize, colors.border); // 1
-            draw.textCentered({ (int)(position.x + opSize.w * 0.5), position.y + 2 }, "1", colors.text, fontSize);
+            draw.textCentered({ (int)(position.x + opSize.w * 0.5), position.y + 2 }, "1", fontSize, { colors.text });
         }
 
         if (!algo[1][0] && !algo[1][1] && !algo[1][2]) { // 2
             draw.filledRect({ position.x + size.w - opSize.w, position.y }, opSize, colors.border); // 2
-            draw.textCentered({ (int)(position.x + size.w - opSize.w + opSize.w * 0.5), position.y + 2 }, "2", colors.background, fontSize);
+            draw.textCentered({ (int)(position.x + size.w - opSize.w + opSize.w * 0.5), position.y + 2 }, "2", fontSize, { colors.background });
         } else {
             draw.rect({ position.x + size.w - opSize.w, position.y }, opSize, colors.border); // 2
-            draw.textCentered({ (int)(position.x + size.w - opSize.w + opSize.w * 0.5), position.y + 2 }, "2", colors.text, fontSize);
+            draw.textCentered({ (int)(position.x + size.w - opSize.w + opSize.w * 0.5), position.y + 2 }, "2", fontSize, { colors.text });
         }
 
         if (!algo[2][0] && !algo[2][1] && !algo[2][2]) { // 3
             draw.filledRect({ position.x, position.y + size.h - opSize.h }, opSize, colors.border); // 3
-            draw.textCentered({ (int)(position.x + opSize.w * 0.5), position.y + size.h - opSize.h + 2 }, "3", colors.background, fontSize);
+            draw.textCentered({ (int)(position.x + opSize.w * 0.5), position.y + size.h - opSize.h + 2 }, "3", fontSize, { colors.background });
         } else {
             draw.rect({ position.x, position.y + size.h - opSize.h }, opSize, colors.border); // 3
-            draw.textCentered({ (int)(position.x + opSize.w * 0.5), position.y + size.h - opSize.h + 2 }, "3", colors.text, fontSize);
+            draw.textCentered({ (int)(position.x + opSize.w * 0.5), position.y + size.h - opSize.h + 2 }, "3", fontSize, { colors.text });
         }
     }
 
