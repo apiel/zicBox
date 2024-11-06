@@ -164,24 +164,24 @@ protected:
 
     Colors getColorsFromColor(Color color)
     {
-        return Colors({ draw.darken(color, 0.75),
+        return Colors({ darken(color, 0.75),
             styles.colors.on });
     }
 
     ColorsStep getColorsStepFromColor(Color color)
     {
-        return ColorsStep({ draw.darken(color, 0.55),
-            draw.darken(color, 0.3),
+        return ColorsStep({ darken(color, 0.55),
+            darken(color, 0.3),
             color,
-            draw.darken(color, 0.4),
-            draw.darken(color, 0.3) });
+            darken(color, 0.4),
+            darken(color, 0.3) });
     }
 
     ColorsMode getColorsModeFromColor(Color color)
     {
-        return ColorsMode({ draw.darken(color, 0.50),
+        return ColorsMode({ darken(color, 0.50),
             color,
-            draw.darken(color, 0.4) });
+            darken(color, 0.4) });
     }
 
     static const int stepMargin = 4;
@@ -212,7 +212,7 @@ public:
         : Component(props)
         , colors(getColorsFromColor(styles.colors.blue))
         , colorsActive(getColorsStepFromColor(styles.colors.blue))
-        , colorsInactive(getColorsStepFromColor(draw.darken(styles.colors.blue, 0.5)))
+        , colorsInactive(getColorsStepFromColor(darken(styles.colors.blue, 0.5)))
         , colorsMode(getColorsModeFromColor(styles.colors.grey))
         , plugin(getPlugin("Sequencer", track))
         , margin(styles.margin)
@@ -245,7 +245,7 @@ public:
         keyboard.onUpdate = [this](std::string* value) { input.renderNext(); };
         input.colors = {
             colors.background,
-            draw.darken(colorsActive.text, 0.3),
+            darken(colorsActive.text, 0.3),
             colorsActive.text,
         };
 
@@ -288,7 +288,7 @@ public:
         if (strcmp(key, "COLOR") == 0) {
             colors = getColorsFromColor(draw.getColor(value));
             colorsActive = getColorsStepFromColor(draw.getColor(value));
-            colorsInactive = getColorsStepFromColor(draw.darken(draw.getColor(value), 0.5));
+            colorsInactive = getColorsStepFromColor(darken(draw.getColor(value), 0.5));
             return true;
         }
 

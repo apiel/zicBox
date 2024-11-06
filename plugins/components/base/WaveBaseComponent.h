@@ -20,8 +20,8 @@ protected:
     Colors getColorsFromColor(Color color)
     {
         return Colors({
-            draw.darken(color, 0.4),
-            draw.darken(color, 0.2),
+            darken(color, 0.4),
+            darken(color, 0.2),
             color,
         });
     }

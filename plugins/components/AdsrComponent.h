@@ -3,6 +3,7 @@
 
 #include "component.h"
 #include <string>
+#include "./utils/color.h"
 
 // #define ADSR_ANIMATION 1
 
@@ -80,9 +81,9 @@ protected:
         return Colors({
             styles.colors.background,
             color,
-            draw.alpha(color, 0.2),
-            draw.alpha(color, 0.3),
-            draw.alpha(styles.colors.white, 0.4),
+            alpha(color, 0.2),
+            alpha(color, 0.3),
+            alpha(styles.colors.white, 0.4),
         });
     }
 

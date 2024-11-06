@@ -5,6 +5,7 @@
 #include <chrono>
 #include <math.h>
 #include <string>
+#include "./utils/color.h"
 
 /*md
 ## Play
@@ -42,12 +43,12 @@ public:
     {
         colors = {
             styles.colors.background,
-            draw.darken(styles.colors.grey, 0.3),
-            draw.alpha(styles.colors.white, 0.4),
+            darken(styles.colors.grey, 0.3),
+            alpha(styles.colors.white, 0.4),
             draw.getColor((char*)"#AAAAAA"),
             draw.getColor((char*)"#AAAAAA"),
         };
-        colors.border = draw.darken(colors.icon, 0.6);
+        colors.border = darken(colors.icon, 0.6);
 
         iconPosition = { (int)(position.x + (size.w * 0.5) - iconSize.w * 0.5), (int)(position.y + (size.h * 0.5) - iconSize.h * 0.5) };
         labelPosition = { (int)(position.x + (size.w * 0.5)), (int)(iconPosition.y + size.h / 3.0 - 5) }; // for size.h / 3.0 - 5 see encoder2
@@ -108,14 +109,14 @@ public:
 
         /*md - `TEXT_COLOR: #FFFFFF` set text color */
         if (strcmp(key, "TEXT_COLOR") == 0) {
-            colors.title = draw.alpha(draw.getColor(value), 0.4);
+            colors.title = alpha(draw.getColor(value), 0.4);
             return true;
         }
 
         /*md - `ICON_COLOR: #AAAAAA` set value color */
         if (strcmp(key, "ICON_COLOR") == 0) {
             colors.icon = draw.getColor(value);
-            colors.border = draw.darken(colors.icon, 0.6);
+            colors.border = darken(colors.icon, 0.6);
             return true;
         }
 

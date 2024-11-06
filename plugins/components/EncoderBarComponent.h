@@ -4,6 +4,7 @@
 #include "component.h"
 #include <math.h>
 #include <string>
+#include "./utils/color.h"
 
 /*md
 ## EncoderBar
@@ -112,10 +113,10 @@ public:
     {
         colors = {
             styles.colors.background,
-            draw.lighten(styles.colors.background, 0.2),
-            draw.darken(styles.colors.grey, 0.3),
-            draw.alpha(styles.colors.white, 0.4),
-            draw.alpha(styles.colors.white, 0.4),
+            lighten(styles.colors.background, 0.2),
+            darken(styles.colors.grey, 0.3),
+            alpha(styles.colors.white, 0.4),
+            alpha(styles.colors.white, 0.4),
         };
 
         xCenter = position.x + (size.w * 0.5);
@@ -180,25 +181,25 @@ public:
         /*md - `BACKGROUND: #000000` set the background color */
         if (strcmp(key, "BACKGROUND") == 0) {
             colors.background = draw.getColor(params);
-            colors.backgroundProgress = draw.lighten(styles.colors.background, 0.5);
+            colors.backgroundProgress = lighten(styles.colors.background, 0.5);
             return true;
         }
 
         /*md - `COLOR: #555555` set the background progress bar color. To be set after BACKGROUND parameter, else it will be overwritten. */
         if (strcmp(key, "COLOR") == 0) {
             colors.backgroundProgress = draw.getColor(strtok(params, " "));
-            char * alpha = strtok(NULL, " ");
-            if (alpha != NULL) {
-                colors.backgroundProgress = draw.alpha(colors.backgroundProgress, atof(alpha));
+            char * alphaVal = strtok(NULL, " ");
+            if (alphaVal != NULL) {
+                colors.backgroundProgress = alpha(colors.backgroundProgress, atof(alphaVal));
             }
             return true;
         }
 
         /*md - `TEXT_COLOR: #ffffff` set the text color */
         if (strcmp(key, "TEXT_COLOR") == 0) {
-            colors.title = draw.alpha(draw.getColor(params), 0.5);
-            colors.value = draw.alpha(draw.getColor(params), 0.8);
-            colors.unit = draw.alpha(draw.getColor(params), 0.4);
+            colors.title = alpha(draw.getColor(params), 0.5);
+            colors.value = alpha(draw.getColor(params), 0.8);
+            colors.unit = alpha(draw.getColor(params), 0.4);
             return true;
         }
 

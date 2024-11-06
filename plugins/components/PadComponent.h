@@ -3,6 +3,7 @@
 
 #include "component.h"
 #include <string>
+#include "./utils/color.h"
 
 /*md
 ## Pad
@@ -53,9 +54,9 @@ protected:
 
     Colors getColorsFromColor(Color color)
     {
-        return Colors({ draw.darken(color, 0.75),
+        return Colors({ darken(color, 0.75),
             color,
-            draw.darken(color, 0.2) });
+            darken(color, 0.2) });
     }
 
     const int margin;

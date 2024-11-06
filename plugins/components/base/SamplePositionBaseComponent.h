@@ -1,7 +1,7 @@
 #ifndef _UI_BASE_COMPONENT_SAMPLE_POSITION_H_
 #define _UI_BASE_COMPONENT_SAMPLE_POSITION_H_
 
-#include "../../../helpers/inRect.h"
+#include "../utils/inRect.h"
 #include "../component.h"
 #include <string>
 
@@ -27,7 +27,7 @@ public:
 
     SamplePositionBaseComponent(ComponentInterface::Props props)
         : Component(props)
-        , colors(getColorsFromColor(draw.lighten(draw.getColor((char*)"#9dfe86"), 0.3)))
+        , colors(getColorsFromColor(lighten(draw.getColor((char*)"#9dfe86"), 0.3)))
     {
     }
 
@@ -57,7 +57,7 @@ public:
             int x = position.x + sample.position * size.w;
             Color color = colors.sample;
             if (sample.release != 1.0) {
-                color = draw.alpha(color, sample.release);
+                color = alpha(color, sample.release);
             }
             draw.filledRect({ x, y + (sample.index * spacing % (size.h - 10)) }, { 4, 4 }, color);
         }

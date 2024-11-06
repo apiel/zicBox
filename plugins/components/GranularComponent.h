@@ -1,7 +1,8 @@
 #ifndef _UI_COMPONENT_GRANULAR_H_
 #define _UI_COMPONENT_GRANULAR_H_
 
-#include "../../helpers/inRect.h"
+#include "./utils/inRect.h"
+#include "./utils/color.h"
 #include "./base/SamplePositionBaseComponent.h"
 #include "./base/WaveBaseComponent.h"
 #include "component.h"
@@ -108,13 +109,13 @@ protected:
     Colors getColorsFromColor(Color color)
     {
         return Colors({
-            draw.darken(color, 0.75),
-            draw.darken(color, 0.3),
+            darken(color, 0.75),
+            darken(color, 0.3),
             styles.colors.overlay,
-            draw.alpha(color, 0.2),
-            draw.alpha(color, 0.2),
-            // draw.alpha(draw.darken(color, 0.80), 0.6),
-            // draw.alpha(draw.darken(color, 0.90), 0.3),
+            alpha(color, 0.2),
+            alpha(color, 0.2),
+            // alpha(darken(color, 0.80), 0.6),
+            // alpha(darken(color, 0.90), 0.3),
         });
     }
 

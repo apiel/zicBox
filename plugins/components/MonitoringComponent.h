@@ -9,6 +9,7 @@
 #include <numeric>
 #include <unistd.h>
 #include <vector>
+#include "./utils/color.h"
 
 /*md
 ## Monitoring
@@ -66,7 +67,7 @@ protected:
 
     Colors getColorsFromColor(Color color)
     {
-        return Colors({ draw.darken(color, 0.75), draw.darken(color, 0.65), color });
+        return Colors({ darken(color, 0.75), darken(color, 0.65), color });
     }
 
     const int margin;
