@@ -7,11 +7,16 @@
 
 #include "UiPlugin.h"
 #include "controllerList.h"
-#include "draw.h"
 #include "helpers/getFullpath.h"
 #include "host.h"
 #include "plugins/components/componentInterface.h"
 #include "styles.h"
+
+#ifdef DRAW_SDD1306
+#include "draw/drawSSD1306.h"
+#else
+#include "draw/drawSDL.h"
+#endif
 
 class ViewManager {
 protected:
