@@ -4,6 +4,7 @@
 #include "./base/KeypadLayout.h"
 #include "base/Icon.h"
 #include "component.h"
+#include "./utils/color.h"
 
 #include <functional>
 #include <string>
@@ -61,7 +62,7 @@ protected:
 
     Colors getColorsFromColor(Color color)
     {
-        return Colors({ draw.darken(color, 0.6), draw.darken(color, 0.3), color, color });
+        return Colors({ darken(color, 0.6), darken(color, 0.3), color, color });
     }
 
     const int margin;
@@ -173,7 +174,7 @@ public:
         /*md - `BACKGROUND_COLOR: color` is used to set the background color of the button.*/
         if (strcmp(key, "BACKGROUND_COLOR") == 0) {
             colors.background = draw.getColor(value);
-            colors.pressedBackground = draw.darken(colors.background, 0.3);
+            colors.pressedBackground = darken(colors.background, 0.3);
             return true;
         }
 

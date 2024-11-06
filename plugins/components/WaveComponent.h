@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "./base/KeypadLayout.h"
+#include "./utils/color.h"
 #include "component.h"
 
 /*md
@@ -38,11 +39,11 @@ protected:
 
     Colors getColorsFromColor(Color color)
     {
-        return Colors({ draw.darken(color, 0.75),
+        return Colors({ darken(color, 0.75),
             color,
-            draw.alpha(color, 0.15),
-            draw.darken(color, 0.65),
-            draw.darken(color, 0.3) });
+            alpha(color, 0.15),
+            darken(color, 0.65),
+            darken(color, 0.3) });
     }
 
     const int margin;

@@ -4,6 +4,7 @@
 #include "component.h"
 #include <math.h>
 #include <string>
+#include "./utils/color.h"
 
 /*md
 ## Encoder2
@@ -224,15 +225,15 @@ public:
 
         colors = {
             styles.colors.background,
-            draw.darken(styles.colors.grey, 0.3),
-            draw.alpha(styles.colors.white, 0.4),
-            draw.alpha(styles.colors.white, 0.4),
-            draw.alpha(styles.colors.white, 0.2),
+            darken(styles.colors.grey, 0.3),
+            alpha(styles.colors.white, 0.4),
+            alpha(styles.colors.white, 0.4),
+            alpha(styles.colors.white, 0.2),
             styles.colors.blue,
-            draw.alpha(styles.colors.blue, 0.5),
-            draw.alpha(styles.colors.blue, 0.2),
+            alpha(styles.colors.blue, 0.5),
+            alpha(styles.colors.blue, 0.2),
             draw.getColor((char*)"#35373b"),
-            draw.alpha(styles.colors.white, 0.6),
+            alpha(styles.colors.white, 0.6),
         };
 
         knobCenter = { (int)(position.x + (size.w * 0.5)), (int)(position.y + ((size.h - 12) * 0.5)) };
@@ -297,8 +298,8 @@ public:
         /*md - `COLOR: #3791a1` set the ring color */
         if (strcmp(key, "COLOR") == 0) {
             colors.bar = draw.getColor(params);
-            colors.barBackground = draw.alpha(colors.bar, 0.5);
-            colors.barTwoSide = draw.alpha(colors.bar, 0.2);
+            colors.barBackground = alpha(colors.bar, 0.5);
+            colors.barTwoSide = alpha(colors.bar, 0.2);
             return true;
         }
 
@@ -310,16 +311,16 @@ public:
 
         /*md - `TEXT_COLOR: #ffffff` set the text color */
         if (strcmp(key, "TEXT_COLOR") == 0) {
-            colors.title = draw.alpha(draw.getColor(params), 0.4);
-            colors.value = draw.alpha(draw.getColor(params), 0.4);
-            colors.unit = draw.alpha(draw.getColor(params), 0.2);
+            colors.title = alpha(draw.getColor(params), 0.4);
+            colors.value = alpha(draw.getColor(params), 0.4);
+            colors.unit = alpha(draw.getColor(params), 0.2);
             return true;
         }
 
         /*md - `KNOB_COLOR: #888888` set the knob color (middle circle) */
         if (strcmp(key, "KNOB_COLOR") == 0) {
             colors.knob = draw.getColor(params);
-            // colors.knobDot = draw.lighten(colors.knob, 0.7);
+            // colors.knobDot = lighten(colors.knob, 0.7);
             return true;
         }
 

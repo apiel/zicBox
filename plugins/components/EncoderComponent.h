@@ -3,6 +3,7 @@
 
 #include "component.h"
 #include <string>
+#include "./utils/color.h"
 
 // TODO use function pointer on encoder initialisation to assign draw function base on type
 
@@ -129,9 +130,9 @@ protected:
 
     Colors getColorsFromColor(Color color)
     {
-        return Colors({ draw.darken(color, 0.6),
-            draw.darken(color, 0.3),
-            draw.darken(color, 0.2),
+        return Colors({ darken(color, 0.6),
+            darken(color, 0.3),
+            darken(color, 0.2),
             color });
     }
 

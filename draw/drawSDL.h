@@ -7,6 +7,7 @@
 
 #include "drawSDLGfx.h"
 #include "../plugins/components/drawInterface.h"
+#include "../plugins/components/utils/color.h"
 
 #define PIXEL_FORMAT SDL_PIXELFORMAT_RGBA8888
 // #define PIXEL_FORMAT SDL_PIXELFORMAT_RGB565
@@ -53,11 +54,6 @@ protected:
         SDL_DestroyTexture(texture);
     }
 
-    float min(float a, float b)
-    {
-        return a < b ? a : b;
-    }
-
     Color* getStyleColor(char* color)
     {
         if (strcmp(color, "background") == 0) {
@@ -93,19 +89,6 @@ protected:
         }
 
         return NULL;
-    }
-
-    Color hex2rgb(char* hex)
-    {
-
-        hex++;
-        unsigned int color = strtol(hex, NULL, 16);
-        return Color({
-            .r = (uint8_t)((color & 0x00FF0000) >> 16),
-            .g = (uint8_t)((color & 0x0000FF00) >> 8),
-            .b = (uint8_t)((color & 0x000000FF)),
-            .a = 255,
-        });
     }
 
 public:
@@ -362,36 +345,6 @@ public:
         SDL_Rect rect = { dest.position.x, dest.position.y, dest.size.w, dest.size.h };
         SDL_RenderCopy(renderer, (SDL_Texture*)texture, NULL, &rect);
         SDL_RenderPresent(renderer);
-    }
-
-    Color darken(Color color, float amount)
-    {
-        return {
-            (uint8_t)(color.r * (1.0f - amount)),
-            (uint8_t)(color.g * (1.0f - amount)),
-            (uint8_t)(color.b * (1.0f - amount)),
-            color.a
-        };
-    }
-
-    Color lighten(Color color, float amount)
-    {
-        return {
-            (uint8_t)min(color.r * (1.0f + amount), 255.0f),
-            (uint8_t)min(color.g * (1.0f + amount), 255.0f),
-            (uint8_t)min(color.b * (1.0f + amount), 255.0f),
-            color.a
-        };
-    }
-
-    Color alpha(Color color, float amount)
-    {
-        return {
-            color.r,
-            color.g,
-            color.b,
-            (uint8_t)(amount * 255.0f),
-        };
     }
 
     Color getColor(char* color)

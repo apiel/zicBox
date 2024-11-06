@@ -2,6 +2,7 @@
 #define _UI_COMPONENT_SEQUENCER_H_
 
 #include "../audio/stepInterface.h"
+#include "./utils/color.h"
 #include "component.h"
 
 #include <string>
@@ -69,11 +70,11 @@ protected:
 
     Colors getColorsFromColor(Color color)
     {
-        return Colors({ draw.darken(color, 0.75),
-            draw.darken(color, 0.3),
+        return Colors({ darken(color, 0.75),
+            darken(color, 0.3),
             color,
             styles.colors.on,
-            draw.darken(color, 0.3) });
+            darken(color, 0.3) });
     }
 
     const int margin;

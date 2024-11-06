@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <vector>
+#include <string>
 
 struct Size {
     int w;
@@ -108,9 +109,6 @@ public:
     virtual void destroyTexture(void* texture) = 0;
     virtual void applyTexture(void* texture, Rect dest) = 0;
 
-    virtual Color darken(Color color, float amount) = 0;
-    virtual Color lighten(Color color, float amount) = 0;
-    virtual Color alpha(Color color, float amount) = 0;
     virtual Color getColor(char* color) = 0;
     virtual void setColor(char* name, char* color) = 0;
 };

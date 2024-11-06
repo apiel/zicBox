@@ -2,6 +2,7 @@
 #define _UI_COMPONENT_KEY_INFO_BAR_H_
 
 #include "./base/KeypadLayout.h"
+#include "./utils/color.h"
 #include "base/Icon.h"
 #include "component.h"
 
@@ -114,10 +115,10 @@ public:
         , icon(props.draw)
         , keypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, int param, std::string action, uint8_t color) { addKeyMap(controller, controllerId, key, param, action, color); })
     {
-        colors.background = props.draw.lighten(props.draw.styles.colors.background, 0.2);
+        colors.background = lighten(props.draw.styles.colors.background, 0.2);
         colors.font = props.draw.styles.colors.grey;
-        colors.activeBackground = props.draw.lighten(colors.background, 0.4);
-        colors.activeFont = props.draw.lighten(colors.font, 0.4);
+        colors.activeBackground = lighten(colors.background, 0.4);
+        colors.activeFont = lighten(colors.font, 0.4);
         // resize(); // No need to call when empty
     }
 
@@ -150,14 +151,14 @@ public:
         /*md - `BACKGROUND: #333333` set the background color and activate background drawing. */
         if (strcmp(key, "BACKGROUND") == 0) {
             colors.background = draw.getColor(value);
-            colors.activeBackground = draw.lighten(colors.background, 0.4);
+            colors.activeBackground = lighten(colors.background, 0.4);
             return true;
         }
 
         /*md - `FONT_COLOR: #ffffff` set the font color. */
         if (strcmp(key, "FONT_COLOR") == 0) {
             colors.font = draw.getColor(value);
-            colors.activeFont = draw.lighten(colors.font, 0.4);
+            colors.activeFont = lighten(colors.font, 0.4);
             return true;
         }
 

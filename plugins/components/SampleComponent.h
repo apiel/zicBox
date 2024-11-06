@@ -1,7 +1,8 @@
 #ifndef _UI_COMPONENT_SAMPLE_H_
 #define _UI_COMPONENT_SAMPLE_H_
 
-#include "../../helpers/inRect.h"
+#include "utils/inRect.h"
+#include "./utils/color.h"
 #include "./base/KeypadLayout.h"
 #include "./base/SamplePositionBaseComponent.h"
 #include "./base/WaveBaseComponent.h"
@@ -106,11 +107,11 @@ protected:
 
     Colors getColorsFromColor(Color color)
     {
-        return Colors({ draw.darken(color, 0.75),
-            draw.darken(color, 0.3),
-            draw.alpha(draw.darken(color, 0.80), 0.6),
-            draw.alpha(draw.darken(color, 0.90), 0.3),
-            draw.alpha(styles.colors.white, 0.3) });
+        return Colors({ darken(color, 0.75),
+            darken(color, 0.3),
+            alpha(darken(color, 0.80), 0.6),
+            alpha(darken(color, 0.90), 0.3),
+            alpha(styles.colors.white, 0.3) });
     }
 
 public:

@@ -4,6 +4,7 @@
 #include "component.h"
 #include <math.h>
 #include <string>
+#include "./utils/color.h"
 
 /*md
 ## Toggle
@@ -71,9 +72,9 @@ public:
     {
         colors = {
             styles.colors.background,
-            draw.darken(styles.colors.grey, 0.3),
-            draw.alpha(styles.colors.white, 0.4),
-            draw.alpha(styles.colors.white, 0.6),
+            darken(styles.colors.grey, 0.3),
+            alpha(styles.colors.white, 0.4),
+            alpha(styles.colors.white, 0.6),
             draw.getColor((char*)"#35373b"),
         };
 
@@ -147,7 +148,7 @@ public:
 
         /*md - `TEXT_COLOR: #ffffff` set the text color */
         if (strcmp(key, "TEXT_COLOR") == 0) {
-            colors.title = draw.alpha(draw.getColor(value), 0.4);
+            colors.title = alpha(draw.getColor(value), 0.4);
             return true;
         }
 
