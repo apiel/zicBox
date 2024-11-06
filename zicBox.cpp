@@ -1,5 +1,5 @@
 #include "config.h"
-#include "draw.h"
+#include "draw/drawSDL.h"
 #include "event.h"
 #include "host.h"
 #include "styles.h"

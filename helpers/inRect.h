@@ -1,7 +1,7 @@
 #ifndef _IN_RECT_H_
 #define _IN_RECT_H_
 
-#include "../draw.h"
+#include "../plugins/components/drawInterface.h"
 
 bool inRect(Rect rect, Point point)
 {
