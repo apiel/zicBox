@@ -1,8 +1,8 @@
 #ifndef _UI_COMPONENT_ENCODER_BAR_H_
 #define _UI_COMPONENT_ENCODER_BAR_H_
 
-#include "./utils/color.h"
-#include "component.h"
+#include "../utils/color.h"
+#include "../component.h"
 #include <math.h>
 #include <string>
 

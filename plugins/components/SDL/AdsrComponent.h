@@ -1,9 +1,9 @@
 #ifndef _UI_COMPONENT_ADSR_H_
 #define _UI_COMPONENT_ADSR_H_
 
-#include "component.h"
+#include "../component.h"
 #include <string>
-#include "./utils/color.h"
+#include "../utils/color.h"
 
 // #define ADSR_ANIMATION 1
 

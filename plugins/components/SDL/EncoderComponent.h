@@ -1,8 +1,8 @@
 #ifndef _UI_COMPONENT_ENCODER_H_
 #define _UI_COMPONENT_ENCODER_H_
 
-#include "./utils/color.h"
-#include "component.h"
+#include "../utils/color.h"
+#include "../component.h"
 #include <string>
 
 // TODO use function pointer on encoder initialisation to assign draw function base on type

@@ -1,11 +1,11 @@
 #ifndef _UI_COMPONENT_GRID_MINI_H_
 #define _UI_COMPONENT_GRID_MINI_H_
 
-#include "../audio/stepInterface.h"
+#include "../../audio/stepInterface.h"
 
 #include "base/Grid.h"
 #include "base/KeypadLayout.h"
-#include "component.h"
+#include "../component.h"
 
 #include <vector>
 

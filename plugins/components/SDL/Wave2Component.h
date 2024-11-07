@@ -1,10 +1,10 @@
 #ifndef _UI_COMPONENT_WAVE2_H_
 #define _UI_COMPONENT_WAVE2_H_
 
-#include "./utils/inRect.h"
-#include "./utils/color.h"
+#include "../utils/inRect.h"
+#include "../utils/color.h"
 #include "./base/WaveBaseComponent.h"
-#include "component.h"
+#include "../component.h"
 #include <string>
 
 class Wave2Component : public Component {

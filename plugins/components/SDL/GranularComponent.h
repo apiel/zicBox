@@ -1,11 +1,11 @@
 #ifndef _UI_COMPONENT_GRANULAR_H_
 #define _UI_COMPONENT_GRANULAR_H_
 
-#include "./utils/inRect.h"
-#include "./utils/color.h"
+#include "../utils/inRect.h"
+#include "../utils/color.h"
 #include "./base/SamplePositionBaseComponent.h"
 #include "./base/WaveBaseComponent.h"
-#include "component.h"
+#include "../component.h"
 #include <string>
 
 class GranularComponent : public Component {

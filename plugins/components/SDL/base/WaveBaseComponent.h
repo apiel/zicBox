@@ -1,8 +1,8 @@
 #ifndef _UI_BASE_COMPONENT_WAVE_H_
 #define _UI_BASE_COMPONENT_WAVE_H_
 
-#include "../component.h"
-#include "../utils/color.h"
+#include "../../component.h"
+#include "../../utils/color.h"
 #include <string>
 
 class WaveBaseComponent : public Component {

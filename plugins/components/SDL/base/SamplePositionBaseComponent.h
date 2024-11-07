@@ -1,9 +1,9 @@
 #ifndef _UI_BASE_COMPONENT_SAMPLE_POSITION_H_
 #define _UI_BASE_COMPONENT_SAMPLE_POSITION_H_
 
-#include "../utils/inRect.h"
-#include "../utils/color.h"
-#include "../component.h"
+#include "../../utils/inRect.h"
+#include "../../utils/color.h"
+#include "../../component.h"
 #include <string>
 
 class SamplePositionBaseComponent : public Component {
