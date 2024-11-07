@@ -5,9 +5,9 @@
 #include <SDL2/SDL_ttf.h>
 #include <stdexcept>
 
-#include "drawSDLGfx.h"
 #include "../plugins/components/drawInterface.h"
 #include "../plugins/components/utils/color.h"
+#include "drawSDLGfx.h"
 
 #define PIXEL_FORMAT SDL_PIXELFORMAT_RGBA8888
 // #define PIXEL_FORMAT SDL_PIXELFORMAT_RGB565
@@ -169,7 +169,7 @@ public:
     int textCentered(Point position, std::string text, uint32_t size, DrawTextOptions options = {})
     {
         options = getDefaultTextOptions(options);
-        SDL_Surface* surface = getTextSurface(text.c_str(),  size, options);
+        SDL_Surface* surface = getTextSurface(text.c_str(), size, options);
         int w = surface->w > options.maxWidth ? options.maxWidth : surface->w;
         int x = position.x - (w * 0.5);
         textToRenderer({ x, position.y }, surface, options.maxWidth);
@@ -377,17 +377,46 @@ public:
         return styles.colors.white;
     }
 
-    // TODO use string...
-    void setColor(char* name, char* color)
+    bool config(char* key, char* value)
     {
-        Color* styleColor = getStyleColor(name);
-        if (styleColor != NULL) {
-            Color newColor = hex2rgb(color);
-            //    *styleColor = newColor; // Dont do like this, to keep transparency
-            styleColor->r = newColor.r;
-            styleColor->g = newColor.g;
-            styleColor->b = newColor.b;
+        /*//md
+### SET_COLOR
+
+`SET_COLOR` give the possibility to customize the pre-defined color for the UI. To change a color, use `SET_COLOR: name_of_color #xxxxxx`.
+
+```coffee
+SET_COLOR: overlay #00FFFF
+```
+
+In this example, we change the `overlay` color to `#00FFFF`.
+
+
+
+
+- `#21252b` ![#21252b](https://via.placeholder.com/15/21252b/000000?text=+) background
+- `#00FFFF` ![#00FFFF](https://via.placeholder.com/15/00FFFF/000000?text=+) overlay
+- `#00b300` ![#00b300](https://via.placeholder.com/15/00b300/000000?text=+) on
+- `#ffffff` ![#ffffff](https://via.placeholder.com/15/ffffff/000000?text=+) white
+- `#adcdff` ![#adcdff](https://via.placeholder.com/15/adcdff/000000?text=+) blue
+- `#ff8d99` ![#ff8d99](https://via.placeholder.com/15/ff8d99/000000?text=+) red
+
+> This list might be outdated, to get the list of existing colors, look at `./styles.h`
+        */
+        if (strcmp(key, "SET_COLOR") == 0) {
+            char* name = strtok(value, " ");
+            char* color = strtok(NULL, " ");
+            Color* styleColor = getStyleColor(name);
+            if (styleColor != NULL) {
+                Color newColor = hex2rgb(color);
+                //    *styleColor = newColor; // Dont do like this, to keep transparency
+                styleColor->r = newColor.r;
+                styleColor->g = newColor.g;
+                styleColor->b = newColor.b;
+            }
+            return true;
         }
+
+        return false;
     }
 };
 

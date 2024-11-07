@@ -164,9 +164,9 @@ public:
         return styles.colors.white;
     }
 
-    // TODO use string...
-    void setColor(char* name, char* color)
+    bool config(char* key, char* value)
     {
+        return false;
     }
 };
 

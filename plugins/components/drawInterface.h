@@ -121,7 +121,7 @@ public:
     virtual void applyTexture(void* texture, Rect dest) = 0;
 
     virtual Color getColor(char* color) = 0;
-    virtual void setColor(char* name, char* color) = 0;
+    virtual bool config(char* key, char* value) = 0;
 };
 
 #endif
