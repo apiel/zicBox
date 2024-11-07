@@ -17,7 +17,7 @@ allall: libs buildHost soHost main
 libs:
 	@echo "\n------------------ plugins ------------------\n"
 	make -C plugins/audio
-	make -C plugins/components
+	make -C plugins/components/SDL
 	make -C plugins/controllers
 	make -C plugins/config
 	@echo "\nbuild plugins done."
