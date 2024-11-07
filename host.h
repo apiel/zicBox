@@ -1,21 +1,21 @@
 #ifndef _HOST_H_
 #define _HOST_H_
 
-#include <SDL2/SDL.h> // SDL_Log
-
 #include <stdexcept>
 #include <vector>
+#include <pthread.h> 
 
 #include "UiPlugin.h"
 #include "host/zicHost.h"
+#include "log.h"
 #include "plugins/audio/valueInterface.h"
 
 AudioPluginHandlerInterface* audioPluginHandler = NULL;
 
-int hostThread(void* data)
+void* hostThread(void* data)
 {
     AudioPluginHandler::get().loop();
-    return 0;
+    return NULL;
 }
 
 AudioPlugin& getPlugin(const char* name, int16_t track = -1)
@@ -38,22 +38,23 @@ void sendAudioEvent(AudioEventType event)
     audioPluginHandler->sendEvent(event);
 }
 
-bool loadHost(std::string hostConfigPath, const char *pluginConfig)
+bool loadHost(std::string hostConfigPath, const char* pluginConfig)
 {
     if (audioPluginHandler) {
-        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Host already loaded\n");
+        logDebug("Host already loaded\n");
         return true;
     }
 
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Initializing host\n");
+    logDebug("Initializing host\n");
     audioPluginHandler = initHost(hostConfigPath.c_str(), pluginConfig);
     if (!audioPluginHandler) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Error initializing host\n");
+        logError("Error initializing host\n");
         return false;
     }
 
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Starting host in SDL thread\n");
-    SDL_Thread* thread = SDL_CreateThread(hostThread, "host", NULL);
+    logDebug("Starting host in thread\n");
+    pthread_t ptid;
+    pthread_create(&ptid, NULL, &hostThread, NULL);
 
     return true;
 }

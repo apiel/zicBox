@@ -11,6 +11,8 @@
 #include "host.h"
 #include "plugins/components/componentInterface.h"
 #include "styles.h"
+#include "log.h"
+#include "timer.h"
 
 #ifdef DRAW_SDD1306
 #include "draw/drawSSD1306.h"
@@ -49,7 +51,7 @@ protected:
         char* path = strtok(NULL, " ");
         void* handle = dlopen(getFullpath(path, filename).c_str(), RTLD_LAZY);
         if (!handle) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot open component library %s [%s]: %s\n", path, filename, dlerror());
+            logError("Cannot open component library %s [%s]: %s\n", path, filename, dlerror());
             return;
         }
 
@@ -57,7 +59,7 @@ protected:
         plugin.allocator = (ComponentInterface * (*)(ComponentInterface::Props props)) dlsym(handle, "allocator");
         const char* dlsym_error = dlerror();
         if (dlsym_error) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot load symbol: %s\n", dlsym_error);
+            logError("Cannot load symbol: %s\n", dlsym_error);
             dlclose(handle);
             return;
         }
@@ -90,7 +92,7 @@ protected:
                 return;
             }
         }
-        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Unknown component: %s", name);
+        logWarn("Unknown component: %s", name);
     }
 
 public:
@@ -142,7 +144,7 @@ public:
         return true;
     }
 
-    void renderComponents(unsigned long now = SDL_GetTicks())
+    void renderComponents(unsigned long now = getTicks())
     {
         // printf("renderComponents shifted: %d\n", shift ? 1 : 0);
         m.lock();
@@ -201,7 +203,7 @@ public:
     void onEncoder(int id, int8_t direction, uint32_t tick)
     {
         m2.lock();
-        // unsigned long tick = SDL_GetTicks();
+        // unsigned long tick = getTicks();
         if (tick - lastEncoderTick[id] < 25) {
             direction = direction * 5;
         }

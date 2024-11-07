@@ -414,6 +414,8 @@ In this example, we change the `overlay` color to `#00FFFF`.
                 styleColor->b = newColor.b;
             }
             return true;
+        } else if (strcmp(key, "SDL_FLAGS") == 0) {
+            flags |= atoi(value);
         }
 
         return false;

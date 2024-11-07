@@ -3,6 +3,7 @@
 
 #include "motion.h"
 #include "viewManager.h"
+#include "timer.h"
 
 #ifndef MAX_SCREEN_MOTION
 // The current display only support 5 touch point
@@ -105,7 +106,7 @@ protected:
 #if SDL_MINOR_VERSION > 24
         uint8_t emulateEncoderId = getEmulatedEncoderId(wheel.mouseX, wheel.mouseY);
 #endif
-        viewManager.onEncoder(emulateEncoderId, wheel.y, SDL_GetTicks());
+        viewManager.onEncoder(emulateEncoderId, wheel.y, getTicks());
     }
 
 public:
