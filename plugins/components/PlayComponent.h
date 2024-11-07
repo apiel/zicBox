@@ -45,8 +45,10 @@ public:
             styles.colors.background,
             darken(styles.colors.grey, 0.3),
             alpha(styles.colors.white, 0.4),
-            draw.getColor((char*)"#AAAAAA"),
-            draw.getColor((char*)"#AAAAAA"),
+            // draw.getColor((char*)"#AAAAAA"),
+            { 0xAA, 0xAA, 0xAA },
+            // draw.getColor((char*)"#AAAAAA"),
+            { 0xAA, 0xAA, 0xAA },
         };
         colors.border = darken(colors.icon, 0.6);
 

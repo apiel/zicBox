@@ -28,7 +28,8 @@ public:
 
     SamplePositionBaseComponent(ComponentInterface::Props props)
         : Component(props)
-        , colors(getColorsFromColor(lighten(draw.getColor((char*)"#9dfe86"), 0.3)))
+        // , colors(getColorsFromColor(lighten(draw.getColor((char*)"#9dfe86"), 0.3)))
+        , colors(getColorsFromColor(lighten({ 0x9d, 0xfe, 0x86 }, 0.3)))
     {
     }
 

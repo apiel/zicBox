@@ -75,7 +75,8 @@ public:
             darken(styles.colors.grey, 0.3),
             alpha(styles.colors.white, 0.4),
             alpha(styles.colors.white, 0.6),
-            draw.getColor((char*)"#35373b"),
+            // draw.getColor((char*)"#35373b"),
+            { 0x35, 0x37, 0x3b },
         };
 
         togglePosition.y = position.y + (size.h * 0.5);

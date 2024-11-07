@@ -94,7 +94,7 @@ protected:
 
         ColorsStep& c = steps[index].enabled ? colorsActive : colorsInactive;
 
-        draw.filledRect({ x, y }, { w, h }, c.background);
+        draw.filledRect({ x, y }, { w, h }, { c.background });
 
         draw.text({ x + 2, y + h - 12 }, std::to_string(index + 1).c_str(), 9, { c.text });
 
@@ -108,10 +108,10 @@ protected:
         draw.textCentered(textPosition, getStepText(index), fontSize, { textColor });
 
         if (index == *stepCounter) {
-            draw.filledRect({ x, y - 3 }, { w, 2 }, colors.activePosition);
+            draw.filledRect({ x, y - 3 }, { w, 2 }, { colors.activePosition });
         } else if (steps[index].counter) {
             int w2 = w * (steps[index].counter / (float)steps[index].len);
-            draw.filledRect({ x + w - w2, y - 3 }, { w2, 2 }, colors.activePosition);
+            draw.filledRect({ x + w - w2, y - 3 }, { w2, 2 }, { colors.activePosition });
         }
 
         if (encoderActive) {
@@ -122,7 +122,7 @@ protected:
                     encoderIndex = columnCount - encoderCount;
                 }
                 if (column >= encoderIndex && column < encoderIndex + encoderCount) {
-                    draw.filledRect({ x, y }, { 12, 12 }, c.id);
+                    draw.filledRect({ x, y }, { 12, 12 }, { c.id });
                     draw.textCentered({ x + 6, y }, std::to_string(encoderIds[column - encoderIndex] + 1).c_str(), 8, { colors.background });
                 }
             }
@@ -135,7 +135,7 @@ protected:
 
         uint8_t fsize = fontSize * 0.8;
 
-        draw.filledRect({ x, y }, { w, h }, background);
+        draw.filledRect({ x, y }, { w, h }, { background });
         Point textPosition = {
             (int)(x + w * 0.5),
             (int)(y + (h - fsize) * 0.5)
@@ -258,7 +258,7 @@ public:
         draw.filledRect(
             { position.x + margin, position.y + margin },
             { size.w - 2 * margin, size.h - 2 * margin },
-            colors.background);
+            { colors.background });
 
         if (fileMode) {
             if (filenameIsOriginal) {
