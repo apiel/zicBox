@@ -1,7 +1,7 @@
 #ifndef _UI_BASE_COMPONENT_KEYBOARD_H_
 #define _UI_BASE_COMPONENT_KEYBOARD_H_
 
-#include "../component.h"
+#include "../../component.h"
 #include "../ButtonComponent.h"
 
 #include <string>

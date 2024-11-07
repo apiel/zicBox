@@ -1,7 +1,7 @@
 #ifndef _UI_COMPONENT_MONITORING_H_
 #define _UI_COMPONENT_MONITORING_H_
 
-#include "component.h"
+#include "../component.h"
 
 #include <fstream>
 #include <string>
@@ -9,7 +9,7 @@
 #include <numeric>
 #include <unistd.h>
 #include <vector>
-#include "./utils/color.h"
+#include "../utils/color.h"
 
 /*md
 ## Monitoring

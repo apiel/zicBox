@@ -5,7 +5,7 @@
 #include "../audio/stepInterface.h"
 #include "base/InputBaseComponent.h"
 #include "base/KeyboardBaseComponent.h"
-#include "component.h"
+#include "../component.h"
 
 #include <string>
 

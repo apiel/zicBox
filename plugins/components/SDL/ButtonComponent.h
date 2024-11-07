@@ -2,9 +2,9 @@
 #define _UI_COMPONENT_BUTTON_H_
 
 #include "./base/KeypadLayout.h"
-#include "./utils/color.h"
+#include "../utils/color.h"
 #include "base/Icon.h"
-#include "component.h"
+#include "../component.h"
 
 #include <functional>
 #include <string>

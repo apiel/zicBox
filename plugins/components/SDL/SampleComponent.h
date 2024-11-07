@@ -1,12 +1,12 @@
 #ifndef _UI_COMPONENT_SAMPLE_H_
 #define _UI_COMPONENT_SAMPLE_H_
 
-#include "utils/inRect.h"
-#include "./utils/color.h"
+#include "../utils/inRect.h"
+#include "../utils/color.h"
 #include "./base/KeypadLayout.h"
 #include "./base/SamplePositionBaseComponent.h"
 #include "./base/WaveBaseComponent.h"
-#include "./component.h"
+#include "../component.h"
 #include <string>
 
 /*md

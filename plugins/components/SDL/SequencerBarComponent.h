@@ -2,8 +2,8 @@
 #define _UI_COMPONENT_SEQUENCER_H_
 
 #include "../audio/stepInterface.h"
-#include "./utils/color.h"
-#include "component.h"
+#include "../utils/color.h"
+#include "../component.h"
 
 #include <string>
 

@@ -1,7 +1,7 @@
 #ifndef _UI_COMPONENT_FM_ALGO_H_
 #define _UI_COMPONENT_FM_ALGO_H_
 
-#include "component.h"
+#include "../component.h"
 #include <string>
 
 /*md
