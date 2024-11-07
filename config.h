@@ -24,33 +24,6 @@ void uiScriptCallback(char* key, char* value, const char* filename)
         styles.screen.h = atoi(strtok(NULL, " "));
     } else if (strcmp(key, "PLUGIN_CONTROLLER") == 0) {
         loadPluginController(value, filename);
-        /*md
-### SET_COLOR
-
-`SET_COLOR` give the possibility to customize the pre-defined color for the UI. To change a color, use `SET_COLOR: name_of_color #xxxxxx`.
-
-```coffee
-SET_COLOR: overlay #00FFFF
-```
-
-In this example, we change the `overlay` color to `#00FFFF`.
-
-
-
-
-- `#21252b` ![#21252b](https://via.placeholder.com/15/21252b/000000?text=+) background
-- `#00FFFF` ![#00FFFF](https://via.placeholder.com/15/00FFFF/000000?text=+) overlay
-- `#00b300` ![#00b300](https://via.placeholder.com/15/00b300/000000?text=+) on
-- `#ffffff` ![#ffffff](https://via.placeholder.com/15/ffffff/000000?text=+) white
-- `#adcdff` ![#adcdff](https://via.placeholder.com/15/adcdff/000000?text=+) blue
-- `#ff8d99` ![#ff8d99](https://via.placeholder.com/15/ff8d99/000000?text=+) red
-
-> This list might be outdated, to get the list of existing colors, look at `./styles.h`
-        */
-    } else if (strcmp(key, "SET_COLOR") == 0) {
-        char* name = strtok(value, " ");
-        char* color = strtok(NULL, " ");
-        ViewManager::get().draw.setColor(name, color);
     } else if (strcmp(key, "SDL_FLAGS") == 0) {
         int flags = atoi(value);
         ViewManager::get().draw.flags |= flags;
@@ -58,7 +31,10 @@ In this example, we change the `overlay` color to `#00FFFF`.
         char* scriptPath = strtok(value, " ");
         char* plugin = strtok(NULL, " ");
         loadConfigPlugin(scriptPath, plugin, uiScriptCallback);
-    } else if (pluginControllerConfig(key, value) || EventHandler::get().config(key, value)) {
+    } else if (
+        pluginControllerConfig(key, value) 
+        || EventHandler::get().config(key, value)
+        || ViewManager::get().draw.config(key, value)) {
         return;
     } else {
         ViewManager::get().config(key, value, filename);
