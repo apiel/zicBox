@@ -1,9 +1,12 @@
+#define USE_SDL_TIMER
+
 #include "config.h"
 #include "draw/drawSDL.h"
 #include "event.h"
 #include "host.h"
 #include "styles.h"
 #include "viewManager.h"
+#include "timer.h"
 
 int main(int argc, char* argv[])
 {
@@ -36,9 +39,9 @@ int main(int argc, char* argv[])
     // AudioPluginHandler::get().hydrate("serialized/track0.cfg", 0);
 
     EventHandler& event = EventHandler::get();
-    unsigned long lastUpdate = SDL_GetTicks();
+    unsigned long lastUpdate = getTicks();
     while (event.handle()) {
-        unsigned long now = SDL_GetTicks();
+        unsigned long now = getTicks();
         if (now - lastUpdate > 50) {
             lastUpdate = now;
             viewManager.renderComponents(now);

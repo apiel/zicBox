@@ -1,10 +1,11 @@
 #ifndef _CONTROLLERS_H_
 #define _CONTROLLERS_H_
 
+#include "controllerList.h"
 #include "host.h"
+#include "log.h"
 #include "plugins/controllers/controllerInterface.h"
 #include "viewManager.h"
-#include "controllerList.h"
 
 #include <dlfcn.h>
 
@@ -26,11 +27,11 @@ void loadPluginController(char* value, const char* filename)
     Controller plugin;
     strcpy(plugin.name, strtok(value, " "));
     char* path = strtok(NULL, " ");
-    
+
     void* handle = dlopen(getFullpath(path, filename).c_str(), RTLD_LAZY);
 
     if (!handle) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot open controller library %s [%s]: %s\n", path, filename, dlerror());
+        logError("Cannot open controller library %s [%s]: %s\n", path, filename, dlerror());
         return;
     }
 
@@ -38,7 +39,7 @@ void loadPluginController(char* value, const char* filename)
     void* allocator = dlsym(handle, "allocator");
     const char* dlsym_error = dlerror();
     if (dlsym_error) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot load symbol: %s\n", dlsym_error);
+        logError("Cannot load symbol: %s\n", dlsym_error);
         dlclose(handle);
         return;
     }
@@ -46,7 +47,7 @@ void loadPluginController(char* value, const char* filename)
     ControllerInterface::Props props = { midiHandler, encoderHandler, keyHandler };
     plugin.instance = ((ControllerInterface * (*)(ControllerInterface::Props & props, uint16_t id)) allocator)(props, controllerId++);
     lastPluginControllerInstance = plugin.instance;
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "plugin interface loaded: %s\n", path);
+    logDebug("plugin interface loaded: %s\n", path);
 
     controllers.push_back(plugin);
 }

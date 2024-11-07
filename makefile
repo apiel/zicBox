@@ -7,9 +7,10 @@ ifneq ($(shell uname -m),x86_64)
 RPI := -DIS_RPI=1
 endif
 
-BUILD=-Wno-narrowing -ldl $(RTMIDI)
+BUILD=-Wno-narrowing -ldl $(RTMIDI) 
 
 main: build run
+pixel: buildPixel runPixel
 host: buildHost runHost
 all: libs main
 allall: libs buildHost soHost main
@@ -43,6 +44,14 @@ build:
 run:
 	@echo "\n------------------ run zicBox ------------------\n"
 	./zicBox
+
+buildPixel:
+	@echo "\n------------------ build zicPixel ------------------\n"
+	g++ -g -fms-extensions -o zicPixel zicPixel.cpp -ldl $(RPI) $(RTMIDI)
+
+runPixel:
+	@echo "\n------------------ run zicPixel ------------------\n"
+	./zicPixel
 
 gpio:
 	@echo "\n------------------ gpio ------------------\n"
