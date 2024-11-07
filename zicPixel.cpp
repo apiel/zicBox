@@ -2,9 +2,9 @@
 
 #include "config.h"
 #include "draw/drawSDL.h"
-#include "event.h"
 #include "host.h"
 #include "styles.h"
+#include "timer.h"
 #include "viewManager.h"
 
 int main(int argc, char* argv[])
@@ -20,16 +20,15 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    // EventHandler& event = EventHandler::get();
-    // unsigned long lastUpdate = SDL_GetTicks();
-    // while (event.handle()) {
-    //     unsigned long now = SDL_GetTicks();
-    //     if (now - lastUpdate > 50) {
-    //         lastUpdate = now;
-    //         viewManager.renderComponents(now);
-    //     }
-    //     SDL_Delay(1);
-    // }
+    unsigned long lastUpdate = getTicks();
+    while (true) {
+        unsigned long now = getTicks();
+        if (now - lastUpdate > 50) {
+            lastUpdate = now;
+            viewManager.renderComponents(now);
+        }
+        usleep(1);
+    }
 
     return 0;
 }
