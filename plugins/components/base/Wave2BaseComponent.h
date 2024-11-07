@@ -2,6 +2,7 @@
 #define _UI_BASE_COMPONENT_WAVE2_H_
 
 #include "../component.h"
+#include "../utils/color.h"
 #include <string>
 
 class Wave2BaseComponent : public Component {
@@ -50,10 +51,10 @@ public:
             if (graphH) {
                 int y1 = yCenter - graphH;
                 int y2 = yCenter + graphH;
-                draw.line({ x, y1 }, { x, y2 }, colors.wave);
-                draw.line({ x, (int)(y1 + graphH * 0.5) }, { x, (int)(y2 - graphH * 0.5) }, colors.waveOutline);
+                draw.line({ x, y1 }, { x, y2 }, { colors.wave });
+                draw.line({ x, (int)(y1 + graphH * 0.5) }, { x, (int)(y2 - graphH * 0.5) }, { colors.waveOutline });
             } else {
-                draw.pixel({ x, yCenter }, colors.waveOutline);
+                draw.pixel({ x, yCenter }, { colors.waveOutline });
             }
         }
     }

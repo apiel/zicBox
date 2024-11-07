@@ -36,7 +36,7 @@ protected:
 
     void drawItem(Point pos, Size _itemSize, std::string text)
     {
-        draw.filledRect(pos, _itemSize, colors.background);
+        draw.filledRect(pos, _itemSize, { colors.background });
         draw.textCentered({ pos.x + _itemSize.w / 2, pos.y + textTopMargin }, text, fontSize, { colors.font });
     }
 
@@ -49,17 +49,17 @@ protected:
 
     void renderMain()
     {
-        draw.filledRect(position, arrowSize, colors.background);
+        draw.filledRect(position, arrowSize, { colors.background });
         draw.aalines({ { position.x + arrowSize.w - 3, position.y + 1 },
                          { position.x + 3, position.y + (int)(arrowSize.h * 0.5) },
                          { position.x + arrowSize.w - 3, position.y + arrowSize.h - 2 } },
-            colors.font);
+            { colors.font });
 
-        draw.filledRect({ position.x + size.w - arrowSize.w, position.y }, arrowSize, colors.background);
+        draw.filledRect({ position.x + size.w - arrowSize.w, position.y }, arrowSize, { colors.background });
         draw.aalines({ { position.x + size.w - arrowSize.w + 3, position.y + 1 },
                          { position.x + size.w - 3, position.y + (int)(arrowSize.h * 0.5) },
                          { position.x + size.w - arrowSize.w + 3, position.y + arrowSize.h - 2 } },
-            colors.font);
+            { colors.font });
 
         int xPos = position.x + (arrowSize.w + 1);
         for (int i = 0; i < 3; i++) {
@@ -78,7 +78,7 @@ protected:
         for (int row = 0; row < 2; row++) {
             for (int col = 0; col < 5; col++) {
                 Point pos = { position.x + col * (subItemSize.w + 1), position.y + row * subItemSize.h };
-                draw.filledRect(pos, subItemSize, colors.background);
+                draw.filledRect(pos, subItemSize, { colors.background });
                 draw.textCentered({ pos.x + subItemSize.w / 2, pos.y }, "track" + std::to_string(row * 5 + col + 1), 9, { colors.font });
             }
         }

@@ -107,7 +107,7 @@ public:
 
     void render()
     {
-        draw.filledRect(position, size, colors.background);
+        draw.filledRect(position, size, { colors.background });
 
         if (adsr[0].value == NULL || adsr[1].value == NULL || adsr[2].value == NULL || adsr[3].value == NULL) {
             return;
@@ -130,14 +130,14 @@ public:
             { graphArea.position.x + w, graphArea.position.y + h },
         };
 
-        draw.filledPolygon(points, colors.filling);
+        draw.filledPolygon(points, { colors.filling });
 #ifdef ADSR_ANIMATION
         renderStateProgression(points);
 #endif
-        draw.aalines(points, colors.line);
+        draw.aalines(points, { colors.line });
 
         for (Point p : points) {
-            draw.filledRect({ p.x - 2, p.y - 2 }, { 4, 4 }, colors.line);
+            draw.filledRect({ p.x - 2, p.y - 2 }, { 4, 4 }, { colors.line });
         }
 
         draw.textCentered({ (int)(graphArea.position.x + w * 0.5), graphArea.position.y + h + 2 }, label.c_str(), 10, { colors.label });

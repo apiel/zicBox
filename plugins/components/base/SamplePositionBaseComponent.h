@@ -2,6 +2,7 @@
 #define _UI_BASE_COMPONENT_SAMPLE_POSITION_H_
 
 #include "../utils/inRect.h"
+#include "../utils/color.h"
 #include "../component.h"
 #include <string>
 
@@ -59,7 +60,7 @@ public:
             if (sample.release != 1.0) {
                 color = alpha(color, sample.release);
             }
-            draw.filledRect({ x, y + (sample.index * spacing % (size.h - 10)) }, { 4, 4 }, color);
+            draw.filledRect({ x, y + (sample.index * spacing % (size.h - 10)) }, { 4, 4 }, { color });
         }
     }
 

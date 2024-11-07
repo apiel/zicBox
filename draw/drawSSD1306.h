@@ -53,77 +53,77 @@ public:
     {
     }
 
-    void filledRect(Point position, Size size, Color color)
+    void filledRect(Point position, Size size, DrawOptions options = {})
     {
     }
 
-    void rect(Point position, Size size, Color color)
+    void rect(Point position, Size size, DrawOptions options = {})
     {
     }
 
-    void filledRect(Point position, Size size, Color color, uint8_t radius)
+    void filledRect(Point position, Size size, uint8_t radius, DrawOptions options = {})
     {
-        filledRect({ position.x + radius, position.y }, { size.w - 2 * radius, size.h }, color);
-        filledRect({ position.x, position.y + radius }, { size.w, size.h - 2 * radius }, color);
-        filledPie({ position.x + radius, position.y + radius }, radius, 180, 270, color);
-        filledPie({ position.x + size.w - radius, position.y + radius }, radius, 270, 360, color);
-        filledPie({ position.x + radius, position.y + size.h - radius }, radius, 90, 180, color);
-        filledPie({ position.x + size.w - radius, position.y + size.h - radius }, radius, 0, 90, color);
+        filledRect({ position.x + radius, position.y }, { size.w - 2 * radius, size.h }, options);
+        filledRect({ position.x, position.y + radius }, { size.w, size.h - 2 * radius }, options);
+        filledPie({ position.x + radius, position.y + radius }, radius, 180, 270, options);
+        filledPie({ position.x + size.w - radius, position.y + radius }, radius, 270, 360, options);
+        filledPie({ position.x + radius, position.y + size.h - radius }, radius, 90, 180, options);
+        filledPie({ position.x + size.w - radius, position.y + size.h - radius }, radius, 0, 90, options);
     }
 
-    void rect(Point position, Size size, Color color, uint8_t radius)
+    void rect(Point position, Size size, uint8_t radius, DrawOptions options = {})
     {
-        arc({ position.x + radius, position.y + radius }, radius, 180, 270, color);
-        line({ position.x, position.y + radius }, { position.x, position.y + size.h - radius }, color);
-        arc({ position.x + size.w - radius, position.y + radius }, radius, 270, 360, color);
-        line({ position.x + radius, position.y }, { position.x + size.w - radius, position.y }, color);
-        arc({ position.x + radius, position.y + size.h - radius }, radius, 90, 180, color);
-        line({ position.x + radius, position.y + size.h }, { position.x + size.w - radius, position.y + size.h }, color);
-        arc({ position.x + size.w - radius, position.y + size.h - radius }, radius, 0, 90, color);
-        line({ position.x + size.w, position.y + size.h - radius }, { position.x + size.w, position.y + radius }, color);
+        arc({ position.x + radius, position.y + radius }, radius, 180, 270, options);
+        line({ position.x, position.y + radius }, { position.x, position.y + size.h - radius }, options);
+        arc({ position.x + size.w - radius, position.y + radius }, radius, 270, 360, options);
+        line({ position.x + radius, position.y }, { position.x + size.w - radius, position.y }, options);
+        arc({ position.x + radius, position.y + size.h - radius }, radius, 90, 180, options);
+        line({ position.x + radius, position.y + size.h }, { position.x + size.w - radius, position.y + size.h }, options);
+        arc({ position.x + size.w - radius, position.y + size.h - radius }, radius, 0, 90, options);
+        line({ position.x + size.w, position.y + size.h - radius }, { position.x + size.w, position.y + radius }, options);
     }
 
-    void arc(Point position, int radius, int startAngle, int endAngle, Color color)
-    {
-    }
-
-    void filledPie(Point position, int radius, int startAngle, int endAngle, Color color)
+    void arc(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
     {
     }
 
-    void filledEllipse(Point position, int radiusX, int radiusY, Color color)
+    void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
     {
     }
 
-    void ellipse(Point position, int radiusX, int radiusY, Color color)
+    void filledEllipse(Point position, int radiusX, int radiusY, DrawOptions options = {})
     {
     }
 
-    void filledPolygon(std::vector<Point> points, Color color)
+    void ellipse(Point position, int radiusX, int radiusY, DrawOptions options = {})
     {
     }
 
-    void polygon(std::vector<Point> points, Color color)
+    void filledPolygon(std::vector<Point> points, DrawOptions options = {})
     {
     }
 
-    void aaline(Point start, Point end, Color color)
+    void polygon(std::vector<Point> points, DrawOptions options = {})
     {
     }
 
-    void aalines(std::vector<Point> points, Color color)
+    void aaline(Point start, Point end, DrawOptions options = {})
     {
     }
 
-    void line(Point start, Point end, Color color)
+    void aalines(std::vector<Point> points, DrawOptions options = {})
     {
     }
 
-    void lines(std::vector<Point> points, Color color)
+    void line(Point start, Point end, DrawOptions options = {})
     {
     }
 
-    void pixel(Point position, Color color)
+    void lines(std::vector<Point> points, DrawOptions options = {})
+    {
+    }
+
+    void pixel(Point position, DrawOptions options = {})
     {
     }
 

@@ -45,18 +45,18 @@ protected:
         }
 
         int x = stepPosition.x + (index * (stepSize.w + margin));
-        draw.filledRect({ x, stepPosition.y }, stepSize, color);
+        draw.filledRect({ x, stepPosition.y }, stepSize, { color });
 
         int sel = selectedStep->get();
         if (index == sel) {
-            draw.filledRect({ x, stepPosition.y - 3 }, { stepSize.w, 2 }, colors.stepBackground);
+            draw.filledRect({ x, stepPosition.y - 3 }, { stepSize.w, 2 }, { colors.stepBackground });
         }
 
         if (index == *stepCounter) {
-            draw.filledRect({ x, stepPosition.y - 3 }, { stepSize.w, 2 }, colors.activePosition);
+            draw.filledRect({ x, stepPosition.y - 3 }, { stepSize.w, 2 }, { colors.activePosition });
         } else if (steps[index].counter) {
             int w = stepSize.w * (steps[index].counter / (float)steps[index].len);
-            draw.filledRect({ x + stepSize.w - w, stepPosition.y - 3 }, { w, 2 }, colors.activePosition);
+            draw.filledRect({ x + stepSize.w - w, stepPosition.y - 3 }, { w, 2 }, { colors.activePosition });
         }
     }
 
@@ -117,7 +117,7 @@ public:
         draw.filledRect(
             { position.x + margin, position.y + margin },
             { size.w - 2 * margin, size.h - 2 * margin },
-            colors.background);
+            { colors.background });
 
         for (int i = 0; i < stepCount; i++) {
             renderStep(i);
@@ -130,19 +130,19 @@ public:
             stepIndex = stepCount;
         }
         snprintf(info, 24, "Step: %.2d/%d", stepIndex, stepCount);
-        draw.text({ stepPosition.x, position.y }, info, colors.textInfo, 9);
+        draw.text({ stepPosition.x, position.y }, info, 9, { colors.textInfo });
 
-        draw.text({ stepPosition.x + 50, position.y }, stepEnabled->string().c_str(), colors.textInfo, 9);
-        draw.text({ stepPosition.x + 70, position.y }, stepNote->string().c_str(), colors.textInfo, 9);
+        draw.text({ stepPosition.x + 50, position.y }, stepEnabled->string().c_str(), 9, { colors.textInfo });
+        draw.text({ stepPosition.x + 70, position.y }, stepNote->string().c_str(), 9, { colors.textInfo });
 
         snprintf(info, 24, "len: %2d", (int)stepLength->get());
-        draw.text({ stepPosition.x + 90, position.y }, info, colors.textInfo, 9);
+        draw.text({ stepPosition.x + 90, position.y }, info, 9, { colors.textInfo });
 
         snprintf(info, 24, "velocity: %3d%%", (int)(stepVelocity->get()));
-        draw.text({ stepPosition.x + 120, position.y }, info, colors.textInfo, 9);
+        draw.text({ stepPosition.x + 120, position.y }, info, 9, { colors.textInfo });
 
         snprintf(info, 24, "condition: %s", stepCondition->string());
-        draw.text({ stepPosition.x + 180, position.y }, info, colors.textInfo, 9);
+        draw.text({ stepPosition.x + 180, position.y }, info, 9, { colors.textInfo });
     }
 
     void onMotion(MotionInterface& motion)

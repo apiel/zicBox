@@ -57,26 +57,26 @@ protected:
     void renderStartOverlay()
     {
         int w = size.w * startPosition->pct();
-        draw.filledRect({ position.x, overlayYtop }, { w, size.h }, colors.overlay);
-        draw.line({ position.x + w, overlayYtop }, { position.x + w, overlayYbottom }, colors.overlayEdge);
+        draw.filledRect({ position.x, overlayYtop }, { w, size.h }, { colors.overlay });
+        draw.line({ position.x + w, overlayYtop }, { position.x + w, overlayYbottom }, { colors.overlayEdge });
     }
 
     void renderEndOverlay()
     {
         // FIXME overlay too big
         int w = size.w * endPosition->pct();
-        draw.filledRect({ position.x + w, overlayYtop }, { size.w - w, size.h }, colors.overlay);
-        draw.line({ position.x + w, overlayYtop }, { position.x + w, overlayYbottom }, colors.overlayEdge);
+        draw.filledRect({ position.x + w, overlayYtop }, { size.w - w, size.h }, { colors.overlay });
+        draw.line({ position.x + w, overlayYtop }, { position.x + w, overlayYbottom }, { colors.overlayEdge });
     }
 
     void renderSustainOverlay()
     {
         int x = position.x + size.w * sustainPosition->pct();
-        draw.line({ x, overlayYtop }, { x, overlayYbottom }, colors.loopLine);
+        draw.line({ x, overlayYtop }, { x, overlayYbottom }, { colors.loopLine });
 
         int w = size.w * sustainLength->pct();
         // draw.filledRect({ x, position.y }, { w, size.h }, styles.colors.overlay);
-        draw.line({ x + w, overlayYtop }, { x + w, overlayYbottom }, colors.loopLine);
+        draw.line({ x + w, overlayYtop }, { x + w, overlayYbottom }, { colors.loopLine });
     }
 
     void renderWaveform()
@@ -164,7 +164,7 @@ public:
             }
             lastBrowser = browser->get();
             textureSampleWaveform = draw.setTextureRenderer(size);
-            draw.filledRect({ 0, 0 }, size, colors.background);
+            draw.filledRect({ 0, 0 }, size, { colors.background });
             renderWaveform();
             draw.text({ 10, 5 }, browser->string().c_str(), 12, { colors.info });
             draw.setMainRenderer();

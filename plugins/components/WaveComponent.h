@@ -100,7 +100,7 @@ public:
 
     void render()
     {
-        draw.filledRect(wavePosition, size, colors.background);
+        draw.filledRect(wavePosition, size, { colors.background });
 
         if (plugin) {
             std::vector<Data>* envData = (std::vector<Data>*)plugin->data(envDataId);
@@ -115,7 +115,7 @@ public:
                 }
                 points.push_back({ (int)(wavePosition.x + waveSize.w), (int)(wavePosition.y + waveSize.h) });
 
-                draw.filledPolygon(points, colors.env);
+                draw.filledPolygon(points, { colors.env });
             }
 
             uint64_t samplesCount = 1000;
@@ -130,7 +130,7 @@ public:
                     int y1 = wavePosition.y + (h - (int)(bufferSamples[i] * h));
                     int i2 = (xIndex + 1) * yRatio;
                     int y2 = wavePosition.y + (h - (int)(bufferSamples[i2] * h));
-                    draw.aaline({ x, y1 }, { x + 1, y2 }, colors.samples);
+                    draw.aaline({ x, y1 }, { x + 1, y2 }, { colors.samples });
                 }
                 {
                     // draw line from center
@@ -138,8 +138,8 @@ public:
                     int y1 = wavePosition.y + waveSize.h / 2;
                     int i = xIndex * yRatio;
                     int y2 = wavePosition.y + (h - (int)(bufferSamples[i] * h));
-                    draw.line({ x, y1 }, { x, y2 }, colors.samplesFill);
-                    draw.pixel({ x, y2 }, colors.samples);
+                    draw.line({ x, y1 }, { x, y2 }, { colors.samplesFill });
+                    draw.pixel({ x, y2 }, { colors.samples });
                 }
             }
         }

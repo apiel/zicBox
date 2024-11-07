@@ -2,6 +2,7 @@
 #define _UI_BASE_COMPONENT_INPUT_H_
 
 #include "../component.h"
+#include "../utils/color.h"
 
 #include <string>
 
@@ -47,15 +48,15 @@ public:
         draw.filledRect(
             { position.x + margin, position.y + margin },
             { size.w - 2 * margin, size.h - 2 * margin },
-            colors.background);
+            { colors.background });
 
         draw.line(
             { position.x + margin, position.y + size.h - margin },
             { position.x + size.w - margin, position.y + size.h - margin },
-            colors.line);
+            { colors.line });
 
         if (value.size() > 0) {
-            cursorX = draw.text(textPosition, value.c_str(), colors.text, fontSize);
+            cursorX = draw.text(textPosition, value.c_str(), fontSize, { colors.text });
         } else {
             cursorX = textPosition.x;
         }
@@ -68,7 +69,7 @@ public:
             draw.line(
                 { cursorX + 1, textPosition.y },
                 { cursorX + 1, textPosition.y + fontSize },
-                cursorStateShown ? colors.background : colors.text);
+                { cursorStateShown ? colors.background : colors.text });
             cursorStateShown = !cursorStateShown;
             draw.renderNext(); // call draw.renderNext instead renderNext, so the whole component is not rendered
         }

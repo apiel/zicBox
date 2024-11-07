@@ -2,6 +2,7 @@
 #define _UI_BASE_COMPONENT_WAVE_H_
 
 #include "../component.h"
+#include "../utils/color.h"
 #include <string>
 
 class WaveBaseComponent : public Component {
@@ -52,11 +53,11 @@ public:
             if (graphH) {
                 int y1 = yCenter - graphH;
                 int y2 = yCenter + graphH;
-                draw.line({ i, y1 }, { i, y2 }, colors.wave);
-                draw.line({ i, (int)(y1 + graphH * 0.25) }, { i, (int)(y2 - graphH * 0.25) }, colors.waveMiddle);
-                draw.line({ i, (int)(y1 + graphH * 0.75) }, { i, (int)(y2 - graphH * 0.75) }, colors.waveOutline);
+                draw.line({ i, y1 }, { i, y2 }, { colors.wave });
+                draw.line({ i, (int)(y1 + graphH * 0.25) }, { i, (int)(y2 - graphH * 0.25) }, { colors.waveMiddle });
+                draw.line({ i, (int)(y1 + graphH * 0.75) }, { i, (int)(y2 - graphH * 0.75) }, { colors.waveOutline });
             } else {
-                draw.pixel({ i, yCenter }, colors.waveOutline);
+                draw.pixel({ i, yCenter }, { colors.waveOutline });
             }
         }
     }
