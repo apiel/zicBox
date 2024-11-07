@@ -2,7 +2,7 @@
 
 #include "config.h"
 #include "draw/drawSDL.h"
-#include "event.h"
+#include "SDL_EventHandler.h"
 #include "host.h"
 #include "styles.h"
 #include "viewManager.h"

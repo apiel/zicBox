@@ -2,11 +2,13 @@
 #define _UI_CONFIG_H_
 
 #include "controllers.h"
-#include "event.h"
+#ifdef _UI_SDL_EVENT_HANDLER_H_
+#include "SDL_EventHandler.h"
+#endif
 #include "host.h"
+#include "log.h"
 #include "styles.h"
 #include "viewManager.h"
-#include "log.h"
 
 #include "helpers/configPlugin.h"
 
@@ -16,7 +18,7 @@ void uiScriptCallback(char* key, char* value, const char* filename)
         printf(">> LOG: %s\n", value);
     } else if (strcmp(key, "LOAD_HOST") == 0) {
         std::string configPath = strtok(value, " ");
-        char *pluginConfig = strtok(NULL, " ");
+        char* pluginConfig = strtok(NULL, " ");
         if (!loadHost(getFullpath(value, filename), pluginConfig)) {
             logError("Could not load host");
         }
@@ -30,8 +32,10 @@ void uiScriptCallback(char* key, char* value, const char* filename)
         char* plugin = strtok(NULL, " ");
         loadConfigPlugin(scriptPath, plugin, uiScriptCallback);
     } else if (
-        pluginControllerConfig(key, value) 
+        pluginControllerConfig(key, value)
+#ifdef _UI_SDL_EVENT_HANDLER_H_
         || EventHandler::get().config(key, value)
+#endif
         || ViewManager::get().draw.config(key, value)) {
         return;
     } else {
