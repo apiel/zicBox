@@ -39,13 +39,13 @@ protected:
     {
         draw.line({ area.x, area.y + size.h - 10 },
             { position.x + size.w - 10, area.y + size.h - 10 },
-            colors.title);
+            { colors.title });
 
         int x = area.x;
         int y = area.y + size.h - 10;
         int x2 = x + ((size.w - 20) * value->pct());
-        draw.line({ x, y }, { x2, y }, colors.value);
-        draw.line({ x, y - 1 }, { x2, y - 1 }, colors.value);
+        draw.line({ x, y }, { x2, y }, { colors.value });
+        draw.line({ x, y - 1 }, { x2, y - 1 }, { colors.value });
     }
 
     void drawValue()
@@ -73,8 +73,8 @@ protected:
         int x = area.x + (area.w * 0.5);
         int y = area.y + area.h - 10;
         int x2 = area.x + (area.w * value->pct());
-        draw.line({ x, y }, { x2, y }, colors.value);
-        draw.line({ x, y - 1 }, { x2, y - 1 }, colors.value);
+        draw.line({ x, y }, { x2, y }, { colors.value });
+        draw.line({ x, y - 1 }, { x2, y - 1 }, { colors.value });
     }
 
     void drawCenteredEncoder()
@@ -157,13 +157,13 @@ public:
         draw.filledRect(
             { position.x + margin, position.y + margin },
             { size.w - 2 * margin, size.h - 2 * margin },
-            colors.background);
+            { colors.background });
 
         if (encoderActive) {
             draw.filledRect(
                 { position.x + margin, position.y + margin },
                 { 12, 12 },
-                colors.id);
+                { colors.id });
             draw.textCentered({ position.x + margin + 6, position.y + margin }, std::to_string(encoderId + 1).c_str(), 8, { colors.background });
         }
 

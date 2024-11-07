@@ -58,7 +58,7 @@ protected:
             fontColor = colors.activeFont;
         }
 
-        draw.filledRect(pos, itemSize, background);
+        draw.filledRect(pos, itemSize, { background });
         draw.textCentered({ pos.x + textLeftMargin, pos.y }, items[index].text, fontSize, { fontColor });
     }
 

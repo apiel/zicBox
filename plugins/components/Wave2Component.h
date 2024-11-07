@@ -55,7 +55,7 @@ public:
             }
             lastBrowser = browser->get();
             textureSampleWaveform = draw.setTextureRenderer(textureSize);
-            draw.filledRect({ 0, 0 }, { textureSize.w, textureSize.h }, colors.background);
+            draw.filledRect({ 0, 0 }, { textureSize.w, textureSize.h }, { colors.background });
             wave.render((float*)plugin.data(1), *(uint64_t*)plugin.data(0));
             draw.text({ 10, 5 }, browser->string().c_str(), 12, { colors.info });
             draw.setMainRenderer();

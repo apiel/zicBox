@@ -74,7 +74,7 @@ public:
         draw.filledRect(
             { position.x + margin, position.y + margin },
             { size.w - 2 * margin, size.h - 2 * margin },
-            colors.background);
+            { colors.background });
 
         if (valueX != NULL && valueY != NULL) {
             int y = position.y + size.h - 20;
@@ -88,7 +88,7 @@ public:
                 { position.x + (margin * 2) + (int)((size.w - (pointerSize * 2)) * valueX->pct()),
                     position.y + (margin * 2) + (int)((size.h - (pointerSize * 2)) * (1.0 - valueY->pct())) },
                 { pointerSize, pointerSize },
-                colors.value);
+                { colors.value });
         }
     }
 

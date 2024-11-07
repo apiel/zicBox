@@ -1,10 +1,10 @@
 #ifndef _UI_COMPONENT_TOGGLE_H_
 #define _UI_COMPONENT_TOGGLE_H_
 
+#include "./utils/color.h"
 #include "component.h"
 #include <math.h>
 #include <string>
-#include "./utils/color.h"
 
 /*md
 ## Toggle
@@ -41,7 +41,7 @@ protected:
     void renderActiveGroup()
     {
         if (showGroup && encoderActive) {
-            draw.filledRect({ position.x + margin, position.y + margin }, { 12, 12 }, colors.id);
+            draw.filledRect({ position.x + margin, position.y + margin }, { 12, 12 }, { colors.id });
             // draw.filledEllipse({ position.x + margin + 6, position.y + margin + 6 }, 6, 6, colors.id);
             draw.textCentered({ position.x + margin + 6, position.y + margin }, std::to_string(encoderId + 1).c_str(), 8, { colors.background });
         }
@@ -92,20 +92,20 @@ public:
         draw.filledRect(
             { position.x + margin, position.y + margin },
             { size.w - 2 * margin, size.h - 2 * margin },
-            colors.background);
+            { colors.background });
 
         if (value != NULL) {
             renderActiveGroup();
             renderLabel();
 
-            draw.filledEllipse({ togglePosition.x - radius, togglePosition.y }, radius, radius, colors.toggleBackground);
-            draw.filledEllipse({ togglePosition.x + radius, togglePosition.y }, radius, radius, colors.toggleBackground);
-            draw.filledRect({ togglePosition.x - radius, togglePosition.y - radius }, { radius * 2, radius * 2 }, colors.toggleBackground);
+            draw.filledEllipse({ togglePosition.x - radius, togglePosition.y }, radius, radius, { colors.toggleBackground });
+            draw.filledEllipse({ togglePosition.x + radius, togglePosition.y }, radius, radius, { colors.toggleBackground });
+            draw.filledRect({ togglePosition.x - radius, togglePosition.y - radius }, { radius * 2, radius * 2 }, { colors.toggleBackground });
 
             if (value->get() > 0) {
-                draw.filledEllipse({ togglePosition.x + radius, togglePosition.y }, radius - 3, radius - 3, colors.toggle);
+                draw.filledEllipse({ togglePosition.x + radius, togglePosition.y }, radius - 3, radius - 3, { colors.toggle });
             } else {
-                draw.filledEllipse({ togglePosition.x - radius, togglePosition.y }, radius - 3, radius - 3, colors.toggle);
+                draw.filledEllipse({ togglePosition.x - radius, togglePosition.y }, radius - 3, radius - 3, { colors.toggle });
             }
         }
     }

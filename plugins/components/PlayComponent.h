@@ -71,13 +71,13 @@ public:
         draw.filledRect(
             { position.x + margin, position.y + margin },
             { size.w - 2 * margin, size.h - 2 * margin },
-            colors.background);
+            { colors.background });
 
         if (stopped) {
             // Stopped
-            draw.filledRect(iconPosition, iconSize, colors.icon);
-            draw.rect(iconPosition, iconSize, colors.border);
-            draw.rect({ iconPosition.x + 1, iconPosition.y + 1 }, { iconSize.w - 2, iconSize.h - 2 }, colors.border);
+            draw.filledRect(iconPosition, iconSize, { colors.icon });
+            draw.rect(iconPosition, iconSize, { colors.border });
+            draw.rect({ iconPosition.x + 1, iconPosition.y + 1 }, { iconSize.w - 2, iconSize.h - 2 }, { colors.border });
             draw.textCentered(labelPosition, "Stopped", 12, { colors.title });
         } else if (playing) {
             // Playing
@@ -86,15 +86,15 @@ public:
                 { iconPosition.x + iconSize.w, (int)(iconPosition.y + iconSize.h * 0.5) },
                 { iconPosition.x, iconPosition.y + iconSize.h }
             };
-            draw.filledPolygon(points, colors.icon);
-            draw.polygon(points, colors.border);
+            draw.filledPolygon(points, { colors.icon });
+            draw.polygon(points, { colors.border });
             draw.textCentered(labelPosition, "Playing", 12, { colors.title });
         } else {
             // Paused
-            draw.filledRect(iconPosition, { (int)(iconSize.w * 0.3), iconSize.h }, colors.icon);
-            draw.rect(iconPosition, { (int)(iconSize.w * 0.3), iconSize.h }, colors.border);
-            draw.filledRect({ iconPosition.x + (int)(iconSize.w * 0.7), iconPosition.y }, { (int)(iconSize.w * 0.3), iconSize.h }, colors.icon);
-            draw.rect({ iconPosition.x + (int)(iconSize.w * 0.7), iconPosition.y }, { (int)(iconSize.w * 0.3), iconSize.h }, colors.border);
+            draw.filledRect(iconPosition, { (int)(iconSize.w * 0.3), iconSize.h }, { colors.icon });
+            draw.rect(iconPosition, { (int)(iconSize.w * 0.3), iconSize.h }, { colors.border });
+            draw.filledRect({ iconPosition.x + (int)(iconSize.w * 0.7), iconPosition.y }, { (int)(iconSize.w * 0.3), iconSize.h }, { colors.icon });
+            draw.rect({ iconPosition.x + (int)(iconSize.w * 0.7), iconPosition.y }, { (int)(iconSize.w * 0.3), iconSize.h }, { colors.border });
             draw.textCentered(labelPosition, "Paused", 12, { colors.title });
         }
     }

@@ -49,7 +49,7 @@ public:
 
     void render()
     {
-        draw.filledRect(position, size, colors.background);
+        draw.filledRect(position, size, { colors.background });
 
         bool(*algo)[3] = (bool(*)[3])plugin->data(dataId);
 
@@ -58,83 +58,83 @@ public:
         {
             Point start = { position.x + opSize.w, (int)(position.y + opSize.h * 0.5) };
             Point dest = { position.x + size.w - opSize.w, (int)(position.y + opSize.h * 0.5) };
-            draw.line(start, dest, colors.text);
+            draw.line(start, dest, { colors.text });
 
-            draw.line({ dest.x - 4, dest.y - 4 }, dest, colors.text);
-            draw.line({ dest.x - 4, dest.y + 4 }, dest, colors.text);
+            draw.line({ dest.x - 4, dest.y - 4 }, dest, { colors.text });
+            draw.line({ dest.x - 4, dest.y + 4 }, dest, { colors.text });
         }
         if (algo[1][1]) // 2 to 3
         {
             Point start = { position.x + size.w - opSize.w, position.y + opSize.h };
             Point dest = { position.x + opSize.w, position.y + size.h - opSize.h };
-            draw.line(start, dest, colors.text);
+            draw.line(start, dest, { colors.text });
 
-            draw.line({ dest.x, dest.y - 5 }, dest, colors.text);
-            draw.line({ dest.x + 5, dest.y }, dest, colors.text);
+            draw.line({ dest.x, dest.y - 5 }, dest, { colors.text });
+            draw.line({ dest.x + 5, dest.y }, dest, { colors.text });
         }
         if (algo[2][2]) // 3 to 4
         {
             Point start = { position.x + opSize.w, (int)(position.y + size.h - opSize.h * 0.5) };
             Point dest = { position.x + size.w - opSize.w, (int)(position.y + size.h - opSize.h * 0.5) };
-            draw.line(start, dest, colors.text);
+            draw.line(start, dest, { colors.text });
 
-            draw.line({ dest.x - 4, dest.y - 4 }, dest, colors.text);
-            draw.line({ dest.x - 4, dest.y + 4 }, dest, colors.text);
+            draw.line({ dest.x - 4, dest.y - 4 }, dest, { colors.text });
+            draw.line({ dest.x - 4, dest.y + 4 }, dest, { colors.text });
         }
         if (algo[0][1]) // 1 to 3
         {
             Point start = { (int)(position.x + opSize.w * 0.5), position.y + opSize.h };
             Point dest = { (int)(position.x + opSize.w * 0.5), position.y + size.h - opSize.h };
-            draw.line(start, dest, colors.text);
+            draw.line(start, dest, { colors.text });
 
-            draw.line({ dest.x - 4, dest.y - 4 }, dest, colors.text);
-            draw.line({ dest.x + 4, dest.y - 4 }, dest, colors.text);
+            draw.line({ dest.x - 4, dest.y - 4 }, dest, { colors.text });
+            draw.line({ dest.x + 4, dest.y - 4 }, dest, { colors.text });
         }
         if (algo[0][2]) // 1 to 4
         {
             Point start = { position.x + opSize.w, position.y + opSize.h };
             Point dest = { position.x + size.w - opSize.w, position.y + size.h - opSize.h };
-            draw.line(start, dest, colors.text);
+            draw.line(start, dest, { colors.text });
 
-            draw.line({ dest.x, dest.y - 5 }, dest, colors.text);
-            draw.line({ dest.x - 5, dest.y }, dest, colors.text);
+            draw.line({ dest.x, dest.y - 5 }, dest, { colors.text });
+            draw.line({ dest.x - 5, dest.y }, dest, { colors.text });
         }
         if (algo[1][2]) // 2 to 4
         {
             Point start = { (int)(position.x + size.w - opSize.w * 0.5), position.y + opSize.h };
             Point end = { (int)(position.x + size.w - opSize.w * 0.5), position.y + size.h - opSize.h };
-            draw.line(start, end, colors.text);
+            draw.line(start, end, { colors.text });
 
-            draw.line({ end.x - 4, end.y - 4 }, end, colors.text);
-            draw.line({ end.x + 4, end.y - 4 }, end, colors.text);
+            draw.line({ end.x - 4, end.y - 4 }, end, { colors.text });
+            draw.line({ end.x + 4, end.y - 4 }, end, { colors.text });
         }
 
         // draw operators and carriers
         // 4 is always carrier
-        draw.filledRect({ position.x + size.w - opSize.w, position.y + size.h - opSize.h }, opSize, colors.border); // 4
+        draw.filledRect({ position.x + size.w - opSize.w, position.y + size.h - opSize.h }, opSize, { colors.border }); // 4
         draw.textCentered({ (int)(position.x + size.w - opSize.w + opSize.w * 0.5), position.y + size.h - opSize.h + 2 }, "4", fontSize, { colors.background });
 
         if (!algo[0][0] && !algo[0][1] && !algo[0][2]) { // 1
-            draw.filledRect(position, opSize, colors.border); // 1
+            draw.filledRect(position, opSize, { colors.border }); // 1
             draw.textCentered({ (int)(position.x + opSize.w * 0.5), position.y + 2 }, "1", fontSize, { colors.background });
         } else {
-            draw.rect(position, opSize, colors.border); // 1
+            draw.rect(position, opSize, { colors.border }); // 1
             draw.textCentered({ (int)(position.x + opSize.w * 0.5), position.y + 2 }, "1", fontSize, { colors.text });
         }
 
         if (!algo[1][0] && !algo[1][1] && !algo[1][2]) { // 2
-            draw.filledRect({ position.x + size.w - opSize.w, position.y }, opSize, colors.border); // 2
+            draw.filledRect({ position.x + size.w - opSize.w, position.y }, opSize, { colors.border }); // 2
             draw.textCentered({ (int)(position.x + size.w - opSize.w + opSize.w * 0.5), position.y + 2 }, "2", fontSize, { colors.background });
         } else {
-            draw.rect({ position.x + size.w - opSize.w, position.y }, opSize, colors.border); // 2
+            draw.rect({ position.x + size.w - opSize.w, position.y }, opSize, { colors.border }); // 2
             draw.textCentered({ (int)(position.x + size.w - opSize.w + opSize.w * 0.5), position.y + 2 }, "2", fontSize, { colors.text });
         }
 
         if (!algo[2][0] && !algo[2][1] && !algo[2][2]) { // 3
-            draw.filledRect({ position.x, position.y + size.h - opSize.h }, opSize, colors.border); // 3
+            draw.filledRect({ position.x, position.y + size.h - opSize.h }, opSize, { colors.border }); // 3
             draw.textCentered({ (int)(position.x + opSize.w * 0.5), position.y + size.h - opSize.h + 2 }, "3", fontSize, { colors.background });
         } else {
-            draw.rect({ position.x, position.y + size.h - opSize.h }, opSize, colors.border); // 3
+            draw.rect({ position.x, position.y + size.h - opSize.h }, opSize, { colors.border }); // 3
             draw.textCentered({ (int)(position.x + opSize.w * 0.5), position.y + size.h - opSize.h + 2 }, "3", fontSize, { colors.text });
         }
     }

@@ -67,31 +67,31 @@ protected:
         if (x + w > position.x + textureSize.w) {
             w -= (x + w) - (position.x + textureSize.w);
         }
-        draw.filledRect({ x, position.y + margin }, { w, textureSize.h }, colors.start);
+        draw.filledRect({ x, position.y + margin }, { w, textureSize.h }, { colors.start });
 
         // draw spray line
         int xSpray = x + (spray->pct() * w);
-        draw.line({ xSpray, position.y + margin }, { xSpray, position.y + textureSize.h }, colors.spray);
+        draw.line({ xSpray, position.y + margin }, { xSpray, position.y + textureSize.h }, { colors.spray });
     }
 
     void renderToggle(Rect rect, const char* label, bool state)
     {
         auto [x, y] = rect.position;
-        draw.rect(rect.position, rect.size, colors.toggle);
+        draw.rect(rect.position, rect.size, { colors.toggle });
         draw.text({ x + 5, y + 1 }, label, 10, { colors.info });
         if (state) {
-            draw.filledRect({ x + 37, y + 2 }, { 11, 11 }, colors.toggle);
+            draw.filledRect({ x + 37, y + 2 }, { 11, 11 }, { colors.toggle });
         } else {
-            draw.rect({ x + 37, y + 2 }, { 11, 11 }, colors.toggle);
+            draw.rect({ x + 37, y + 2 }, { 11, 11 }, { colors.toggle });
         }
     }
 
     void renderButton(Rect rect, const char* label, bool pressed)
     {
         auto [x, y] = rect.position;
-        draw.rect(rect.position, rect.size, colors.toggle);
+        draw.rect(rect.position, rect.size, { colors.toggle });
         if (pressed) {
-            draw.filledRect({ x + 2, y + 2 }, { rect.size.w - 4, rect.size.h - 4 }, colors.toggle);
+            draw.filledRect({ x + 2, y + 2 }, { rect.size.w - 4, rect.size.h - 4 }, { colors.toggle });
         }
         draw.textCentered({ (int)(x + rect.size.w * 0.5), y + 1 }, label, 10, { colors.info });
     }
@@ -151,7 +151,7 @@ public:
             }
             lastBrowser = browser->get();
             textureSampleWaveform = draw.setTextureRenderer(textureSize);
-            draw.filledRect({ 0, 0 }, { textureSize.w, textureSize.h }, colors.background);
+            draw.filledRect({ 0, 0 }, { textureSize.w, textureSize.h }, { colors.background });
             wave.render((float*)plugin.data(1), *(uint64_t*)plugin.data(0));
             draw.text({ 10, 5 }, browser->string().c_str(), 12, { colors.info });
             draw.setMainRenderer();

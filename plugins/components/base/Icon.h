@@ -183,15 +183,15 @@ public:
                        { (int)(x + w * 0.25), position.y + size },
                        { x, (int)(position.y + size * 0.5) },
                        { (int)(x + w * 0.25), position.y } },
-            color);
+            { color });
 
         draw.line(
             { (int)(x + w * 0.4), (int)(position.y + size * 0.25) },
-            { (int)(x + w * 0.75), (int)(position.y + size * 0.75) }, color);
+            { (int)(x + w * 0.75), (int)(position.y + size * 0.75) }, { color });
 
         draw.line(
             { (int)(x + w * 0.75), (int)(position.y + size * 0.25) },
-            { (int)(x + w * 0.4), (int)(position.y + size * 0.75) }, color);
+            { (int)(x + w * 0.4), (int)(position.y + size * 0.75) }, { color });
     }
 
     void play(Point position, uint8_t size, Color color, Align align = LEFT, bool filled = false)
@@ -203,9 +203,9 @@ public:
             { x, position.y + size }
         };
         if (filled) {
-            draw.filledPolygon(points, color);
+            draw.filledPolygon(points, { color });
         } else {
-            draw.polygon(points, color);
+            draw.polygon(points, { color });
         }
     }
 
@@ -213,9 +213,9 @@ public:
     {
         int x = getX(position, size, align, size);
         if (filled) {
-            draw.filledRect({ x, position.y }, { size, size }, color);
+            draw.filledRect({ x, position.y }, { size, size }, { color });
         } else {
-            draw.rect({ x, position.y }, { size, size }, color);
+            draw.rect({ x, position.y }, { size, size }, { color });
         }
     }
 
@@ -223,11 +223,11 @@ public:
     {
         int x = getX(position, size, align, size);
         if (filled) {
-            draw.filledRect({ x, position.y }, { (int)(size * 0.3), size }, color);
-            draw.filledRect({ x + (int)(size * 0.7), position.y }, { (int)(size * 0.3), size }, color);
+            draw.filledRect({ x, position.y }, { (int)(size * 0.3), size }, { color });
+            draw.filledRect({ x + (int)(size * 0.7), position.y }, { (int)(size * 0.3), size }, { color });
         } else {
-            draw.rect({ x, position.y }, { (int)(size * 0.3), size }, color);
-            draw.rect({ x + (int)(size * 0.7), position.y }, { (int)(size * 0.3), size }, color);
+            draw.rect({ x, position.y }, { (int)(size * 0.3), size }, { color });
+            draw.rect({ x + (int)(size * 0.7), position.y }, { (int)(size * 0.3), size }, { color });
         }
     }
 
@@ -244,9 +244,9 @@ public:
             { x, (int)(position.y + size * 0.5) }
         };
         if (filled) {
-            draw.filledPolygon(points, color);
+            draw.filledPolygon(points, { color });
         } else {
-            draw.polygon(points, color);
+            draw.polygon(points, { color });
         }
     }
 
@@ -263,9 +263,9 @@ public:
             { x, (int)(position.y + size * 0.5) }
         };
         if (filled) {
-            draw.filledPolygon(points, color);
+            draw.filledPolygon(points, { color });
         } else {
-            draw.polygon(points, color);
+            draw.polygon(points, { color });
         }
     }
 
@@ -282,9 +282,9 @@ public:
             { (int)(x + size), (int)(position.y + size * 0.25) },
         };
         if (filled) {
-            draw.filledPolygon(points, color);
+            draw.filledPolygon(points, { color });
         } else {
-            draw.polygon(points, color);
+            draw.polygon(points, { color });
         }
     }
 
@@ -301,9 +301,9 @@ public:
             { (int)(x), (int)(position.y + size * 0.25) },
         };
         if (filled) {
-            draw.filledPolygon(points, color);
+            draw.filledPolygon(points, { color });
         } else {
-            draw.polygon(points, color);
+            draw.polygon(points, { color });
         }
     }
 
@@ -317,8 +317,8 @@ public:
 
         };
         // aalines
-        draw.lines(points, color);
-        draw.filledEllipse({ (int)(x + size * 0.4), (int)(position.y + size * 0.75) }, size * 0.25, size * 0.25, color);
+        draw.lines(points, { color });
+        draw.filledEllipse({ (int)(x + size * 0.4), (int)(position.y + size * 0.75) }, size * 0.25, size * 0.25, { color });
     }
 
 protected:

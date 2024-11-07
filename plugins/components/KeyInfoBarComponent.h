@@ -54,7 +54,7 @@ protected:
             fontColor = colors.activeFont;
         }
 
-        draw.filledRect(pos, itemSize, background);
+        draw.filledRect(pos, itemSize, { background });
 
         Point textPos = { pos.x + textLeftMargin, pos.y + textTopMargin };
         if (!icon.render(items[index].text, { textPos.x, textPos.y + iconFix + iconMarginTop }, fontSize - iconFix, fontColor, Icon::CENTER)) {

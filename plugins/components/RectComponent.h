@@ -32,17 +32,17 @@ public:
     {
         if (radius) {
             if (drawBackground) {
-                draw.filledRect(position, size, colors.background, radius);
+                draw.filledRect(position, size, radius, { colors.background });
             }
             if (drawBorder) {
-                draw.rect(position, size, colors.border, radius);
+                draw.rect(position, size, radius, { colors.border });
             }
         } else {
             if (drawBackground) {
-                draw.filledRect(position, size, colors.background);
+                draw.filledRect(position, size, { colors.background });
             }
             if (drawBorder) {
-                draw.rect(position, size, colors.border);
+                draw.rect(position, size, { colors.border });
             }
         }
     }

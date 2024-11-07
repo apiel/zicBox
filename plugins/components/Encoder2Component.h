@@ -57,7 +57,7 @@ protected:
     void renderActiveGroup()
     {
         if (showGroup && encoderActive) {
-            draw.filledRect({ position.x + margin, position.y + margin }, { 12, 12 }, colors.id);
+            draw.filledRect({ position.x + margin, position.y + margin }, { 12, 12 }, { colors.id });
             // draw.filledEllipse({ position.x + margin + 6, position.y + margin + 6 }, 6, 6, colors.id);
             draw.textCentered({ position.x + margin + 6, position.y + margin }, std::to_string(encoderId + 1).c_str(), 8, { colors.background });
         }
@@ -67,7 +67,7 @@ protected:
     {
         if (showKnob) {
             int knobRadius = insideRadius - knobMargin;
-            draw.filledEllipse({ knobCenter.x, knobCenter.y - marginTop }, knobRadius, knobRadius, colors.knob);
+            draw.filledEllipse({ knobCenter.x, knobCenter.y - marginTop }, knobRadius, knobRadius, { colors.knob });
 
             // draw dot at value position
             int cx = knobCenter.x;
@@ -78,7 +78,7 @@ protected:
             int x = cx + r * cos(angleRadians);
             int y = cy + r * sin(angleRadians);
 
-            draw.filledEllipse({ x, y }, 2, 2, colors.knobDot);
+            draw.filledEllipse({ x, y }, 2, 2, { colors.knobDot });
         }
     }
 
@@ -87,34 +87,34 @@ protected:
         int val = 280 * value->pct();
 
         if (val < 280) {
-            draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, 50, colors.barBackground);
+            draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, 50, { colors.barBackground });
         }
         if (val > 0) {
             int endAngle = 130 + val;
             if (endAngle > 360) {
                 endAngle = endAngle - 360;
             }
-            draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, endAngle, colors.bar);
+            draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, endAngle, { colors.bar });
         }
-        draw.filledEllipse({ knobCenter.x, knobCenter.y - marginTop }, insideRadius, insideRadius, colors.background);
+        draw.filledEllipse({ knobCenter.x, knobCenter.y - marginTop }, insideRadius, insideRadius, { colors.background });
     }
 
     void renderCenteredBar()
     {
         int val = 280 * value->pct();
 
-        draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, 50, colors.barBackground);
+        draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, 50, { colors.barBackground });
         if (val > 140) {
             int endAngle = 130 + val;
             if (endAngle > 360) {
                 endAngle = endAngle - 360;
             }
 
-            draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 270, endAngle, colors.bar);
+            draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 270, endAngle, { colors.bar });
         } else if (val < 140) {
-            draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 270 - (140 - val), 270, colors.bar);
+            draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 270 - (140 - val), 270, { colors.bar });
         }
-        draw.filledEllipse({ knobCenter.x, knobCenter.y - marginTop }, insideRadius, insideRadius, colors.background);
+        draw.filledEllipse({ knobCenter.x, knobCenter.y - marginTop }, insideRadius, insideRadius, { colors.background });
     }
 
     void renderUnit()
@@ -145,8 +145,8 @@ protected:
         draw.text({ valuePosition.x + twoSideMargin, valuePosition.y - 5 }, std::to_string(val).c_str(),
             fontValueSize - 3, { colors.value });
 
-        draw.line({ valuePosition.x, valuePosition.y - 10 }, { valuePosition.x, valuePosition.y + 10 }, colors.barTwoSide);
-        draw.line({ valuePosition.x - 1, valuePosition.y - 10 }, { valuePosition.x - 1, valuePosition.y + 10 }, colors.barTwoSide);
+        draw.line({ valuePosition.x, valuePosition.y - 10 }, { valuePosition.x, valuePosition.y + 10 }, { colors.barTwoSide });
+        draw.line({ valuePosition.x - 1, valuePosition.y - 10 }, { valuePosition.x - 1, valuePosition.y + 10 }, { colors.barTwoSide });
     }
 
     void renderEncoder()
@@ -247,7 +247,7 @@ public:
         draw.filledRect(
             { position.x + margin, position.y + margin },
             { size.w - 2 * margin, size.h - 2 * margin },
-            colors.background);
+            { colors.background });
 
         if (value != NULL) {
             renderEncoder();

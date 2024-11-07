@@ -24,7 +24,7 @@ public:
     }
 
     virtual void clear(){
-        draw.filledRect(position, size, draw.styles.colors.background);
+        draw.filledRect(position, size, { draw.styles.colors.background });
     };
 
     virtual void render() { }

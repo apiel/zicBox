@@ -105,10 +105,10 @@ public:
     {
         Point rectPos = { position.x + margin, position.y + margin };
         Size rectSize = { size.w - 2 * margin, size.h - 2 * margin };
-        draw.filledRect(rectPos, rectSize, colors.background);
+        draw.filledRect(rectPos, rectSize, { colors.background });
 
         float percentage = getPercentage();
-        draw.filledRect(rectPos, { (int)(rectSize.w * percentage), rectSize.h }, colors.backgroundActive);
+        draw.filledRect(rectPos, { (int)(rectSize.w * percentage), rectSize.h }, { colors.backgroundActive });
 
         int pct = percentage * 100;
         int x = position.x + size.w * 0.5;

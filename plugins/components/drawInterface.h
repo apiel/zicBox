@@ -60,6 +60,12 @@ struct DrawOptions {
     Color color = { 255, 255, 255, 255 };
 };
 
+// struct DrawTextOptions {
+//     Color color = { 255, 255, 255, 255 };
+//     const char* fontPath = nullptr;
+//     int maxWidth = -1;
+// };
+
 struct DrawTextOptions: DrawOptions {
     const char* fontPath = nullptr;
     int maxWidth = -1;
@@ -91,23 +97,23 @@ public:
     virtual int textRight(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) = 0;
 
     virtual void clear() = 0;
-    virtual void filledRect(Point position, Size size, Color color) = 0;
-    virtual void rect(Point position, Size size, Color color) = 0;
-    virtual void line(Point start, Point end, Color color) = 0;
-    virtual void lines(std::vector<Point> points, Color color) = 0;
-    virtual void pixel(Point position, Color color) = 0;
+    virtual void line(Point start, Point end, DrawOptions options = {}) = 0;
+    virtual void lines(std::vector<Point> points, DrawOptions options = {}) = 0;
+    virtual void pixel(Point position, DrawOptions options = {}) = 0;
+    virtual void filledRect(Point position, Size size, DrawOptions options = {}) = 0;
+    virtual void rect(Point position, Size size, DrawOptions options = {}) = 0;
 
     // GFX
-    virtual void filledPie(Point position, int radius, int startAngle, int endAngle, Color color) = 0;
-    virtual void filledEllipse(Point position, int radiusX, int radiusY, Color color) = 0;
-    virtual void ellipse(Point position, int radiusX, int radiusY, Color color) = 0;
-    virtual void filledPolygon(std::vector<Point> points, Color color) = 0;
-    virtual void polygon(std::vector<Point> points, Color color) = 0;
-    virtual void aaline(Point start, Point end, Color color) = 0;
-    virtual void aalines(std::vector<Point> points, Color color) = 0;
-    virtual void arc(Point position, int radius, int startAngle, int endAngle, Color color) = 0;
-    virtual void filledRect(Point position, Size size, Color color, uint8_t radius) = 0;
-    virtual void rect(Point position, Size size, Color color, uint8_t radius) = 0;
+    virtual void filledRect(Point position, Size size, uint8_t radius, DrawOptions options = {}) = 0;
+    virtual void rect(Point position, Size size, uint8_t radius, DrawOptions options = {}) = 0;
+    virtual void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) = 0;
+    virtual void filledEllipse(Point position, int radiusX, int radiusY, DrawOptions options = {}) = 0;
+    virtual void ellipse(Point position, int radiusX, int radiusY, DrawOptions options = {}) = 0;
+    virtual void filledPolygon(std::vector<Point> points, DrawOptions options = {}) = 0;
+    virtual void polygon(std::vector<Point> points, DrawOptions options = {}) = 0;
+    virtual void aaline(Point start, Point end, DrawOptions options = {}) = 0;
+    virtual void aalines(std::vector<Point> points, DrawOptions options = {}) = 0;
+    virtual void arc(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) = 0;
 
     virtual void* setTextureRenderer(Size size) = 0;
     virtual void setMainRenderer() = 0;

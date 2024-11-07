@@ -84,16 +84,16 @@ protected:
     {
         for (unsigned int step = 0; step < stepsCount; step++) {
             int x = progressPosition.x + itemW * step;
-            draw.filledRect({ x, progressPosition.y }, progressItemSize, colors.progressBg);
+            draw.filledRect({ x, progressPosition.y }, progressItemSize, { colors.progressBg });
         }
     }
 
     void renderProgress(uint8_t stepCounter)
     {
         int xPrevious = progressPosition.x + itemW * ((lastStepCounter + stepsCount) % stepsCount);
-        draw.filledRect({ xPrevious, progressPosition.y }, progressItemSize, colors.progressBg);
+        draw.filledRect({ xPrevious, progressPosition.y }, progressItemSize, { colors.progressBg });
         int x = progressPosition.x + itemW * stepCounter;
-        draw.filledRect({ x, progressPosition.y }, progressItemSize, colors.active.on);
+        draw.filledRect({ x, progressPosition.y }, progressItemSize, { colors.active.on });
     }
 
     void renderSelection(int8_t row, int8_t col, Color color)
@@ -106,11 +106,11 @@ protected:
         }
 
         if (col == 0) {
-            draw.rect({ position.x, y - 1 }, { firstColumnWidth, h }, color);
+            draw.rect({ position.x, y - 1 }, { firstColumnWidth, h }, { color });
         } else {
             int selectW = itemSize.w + 1;
             int x = firstColumnWidth + selectW * (col - 1);
-            draw.rect({ x - 1, y - 1 }, { selectW + 1, h }, color);
+            draw.rect({ x - 1, y - 1 }, { selectW + 1, h }, { color });
         }
     }
 
@@ -162,7 +162,7 @@ protected:
         } else if (step % 4 == 0) {
             color = colors.firstStep;
         }
-        draw.filledRect({ x, y }, itemSize, color);
+        draw.filledRect({ x, y }, itemSize, { color });
     }
 
     void renderRow(unsigned int row)
@@ -178,7 +178,7 @@ protected:
     void renderRows(bool clear = false)
     {
         if (clear) {
-            draw.filledRect({ 0, tracks[0].y }, { size.h, tracks[0].y - progressPosition.y }, colors.background);
+            draw.filledRect({ 0, tracks[0].y }, { size.h, tracks[0].y - progressPosition.y }, { colors.background });
         }
         for (unsigned int row = 0; row < trackCount; row++) {
             renderRow(row);
@@ -188,7 +188,7 @@ protected:
     void renderTrackName(Track& track)
     {
         int w = firstColumnWidth - 2;
-        draw.filledRect({ position.x + 1, track.y }, { w, itemSize.h }, colors.step);
+        draw.filledRect({ position.x + 1, track.y }, { w, itemSize.h }, { colors.step });
 
         Color trackColor = colors.firstStep;
         Color trackText = colors.track;
@@ -197,10 +197,10 @@ protected:
             trackText = colors.active.selector;
         }
         trackColor.a = 50;
-        draw.filledRect({ position.x + 1, track.y }, { w, itemSize.h }, trackColor);
+        draw.filledRect({ position.x + 1, track.y }, { w, itemSize.h }, { trackColor });
         trackColor.a = 200;
         int width = w * track.volume->pct();
-        draw.filledRect({ position.x + 1, track.y }, { width, itemSize.h }, trackColor);
+        draw.filledRect({ position.x + 1, track.y }, { width, itemSize.h }, { trackColor });
 
         draw.text({ position.x + 2, track.y }, track.name.c_str(), 9, { trackText });
     }
@@ -208,15 +208,15 @@ protected:
     void renderMasterVolume(bool selected = false)
     {
         int w = firstColumnWidth - 1;
-        draw.filledRect({ position.x, progressPosition.y - 1 }, { firstColumnWidth, progressItemSize.h + 2 }, colors.background);
+        draw.filledRect({ position.x, progressPosition.y - 1 }, { firstColumnWidth, progressItemSize.h + 2 }, { colors.background });
         Color color = colors.active.on;
         color.a = 100;
-        draw.filledRect({ position.x, progressPosition.y }, { w, progressItemSize.h }, color);
+        draw.filledRect({ position.x, progressPosition.y }, { w, progressItemSize.h }, { color });
         color.a = 200;
         int width = w * 0.9; // FIXME !!
-        draw.filledRect({ position.x, progressPosition.y }, { width, progressItemSize.h }, color);
+        draw.filledRect({ position.x, progressPosition.y }, { width, progressItemSize.h }, { color });
         if (selected) {
-            draw.rect({ position.x, progressPosition.y - 1 }, { 86, progressItemSize.h + 2 }, colors.active.selector);
+            draw.rect({ position.x, progressPosition.y - 1 }, { 86, progressItemSize.h + 2 }, { colors.active.selector });
         }
     }
 
@@ -445,7 +445,7 @@ public:
 
     void render()
     {
-        draw.filledRect(position, { size.w, size.h - 5 }, colors.background);
+        draw.filledRect(position, { size.w, size.h - 5 }, { colors.background });
         progressInit();
         renderMasterVolume();
         renderRows();

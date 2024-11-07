@@ -2,9 +2,9 @@
 #define _UI_COMPONENT_BUTTON_H_
 
 #include "./base/KeypadLayout.h"
+#include "./utils/color.h"
 #include "base/Icon.h"
 #include "component.h"
-#include "./utils/color.h"
 
 #include <functional>
 #include <string>
@@ -100,7 +100,7 @@ public:
         draw.filledRect(
             { position.x + margin, position.y + margin },
             { size.w - 2 * margin, size.h - 2 * margin },
-            isPressed ? colors.pressedBackground : colors.background);
+            { isPressed ? colors.pressedBackground : colors.background });
 
         renderLabel();
     }

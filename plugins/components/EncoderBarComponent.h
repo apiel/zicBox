@@ -69,20 +69,20 @@ protected:
                 draw.filledRect(
                     { xCenter, position.y + margin },
                     { (int)((size.w - 2 * margin) * (value->pct() - 0.5)), size.h - 2 * margin },
-                    colors.backgroundProgress);
+                    { colors.backgroundProgress });
             } else {
                 int w = (size.w - 2 * margin) * (0.5 - value->pct());
                 draw.filledRect(
                     { xCenter - w, position.y + margin },
                     { w, size.h - 2 * margin },
-                    colors.backgroundProgress);
+                    { colors.backgroundProgress });
             }
 
         } else {
             draw.filledRect(
                 { position.x + margin, position.y + margin },
                 { (int)((size.w - 2 * margin) * value->pct()), size.h - 2 * margin },
-                colors.backgroundProgress);
+                { colors.backgroundProgress });
         }
 
         draw.textCentered({ xCenter, position.y + 1 }, label, titleSize, { colors.title });
@@ -129,7 +129,7 @@ public:
         draw.filledRect(
             { position.x + margin, position.y + margin },
             { size.w - 2 * margin, size.h - 2 * margin },
-            colors.background);
+            { colors.background });
 
         if (value != NULL) {
             renderEncoder();
