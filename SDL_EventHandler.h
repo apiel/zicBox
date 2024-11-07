@@ -1,5 +1,5 @@
-#ifndef _UI_EVENT_H_
-#define _UI_EVENT_H_
+#ifndef _UI_SDL_EVENT_HANDLER_H_
+#define _UI_SDL_EVENT_HANDLER_H_
 
 #include "motion.h"
 #include "viewManager.h"
