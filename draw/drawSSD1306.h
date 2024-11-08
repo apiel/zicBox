@@ -139,41 +139,38 @@ protected:
 
     uint8_t setDisplayDefaultConfig(uint8_t oled_lines = SSD1306_128_64_LINES)
     {
-        uint16_t i = 0;
-        uint8_t data_buf[128];
-        data_buf[i++] = SSD1306_COMM_CONTROL_BYTE; // command control byte
-        data_buf[i++] = SSD1306_COMM_DISPLAY_OFF; // display off
-        data_buf[i++] = SSD1306_COMM_DISP_NORM; // Set Normal Display (default)
-        data_buf[i++] = SSD1306_COMM_CLK_SET; // SETDISPLAYCLOCKDIV
-        data_buf[i++] = 0x80; // the suggested ratio 0x80
-        data_buf[i++] = SSD1306_COMM_MULTIPLEX; // SSD1306_SETMULTIPLEX
-        data_buf[i++] = oled_lines - 1; // height is 32 or 64 (always -1)
-        data_buf[i++] = SSD1306_COMM_VERT_OFFSET; // SETDISPLAYOFFSET
-        data_buf[i++] = 0; // no offset
-        data_buf[i++] = SSD1306_COMM_START_LINE; // SETSTARTLINE
-        data_buf[i++] = SSD1306_COMM_CHARGE_PUMP; // CHARGEPUMP
-        data_buf[i++] = 0x14; // turn on charge pump
-        data_buf[i++] = SSD1306_COMM_MEMORY_MODE; // MEMORYMODE
-        data_buf[i++] = SSD1306_PAGE_MODE; // page mode
-        data_buf[i++] = SSD1306_COMM_HORIZ_NORM; // SEGREMAP  Mirror screen horizontally (A0)
-        data_buf[i++] = SSD1306_COMM_SCAN_NORM; // COMSCANDEC Rotate screen vertically (C0)
-        data_buf[i++] = SSD1306_COMM_COM_PIN; // HARDWARE PIN
-        if (oled_lines == SSD1306_128_32_LINES)
-            data_buf[i++] = 0x02; // for 32 lines
-        else
-            data_buf[i++] = 0x12; // for 64 lines or 48 lines
-        data_buf[i++] = SSD1306_COMM_CONTRAST; // SETCONTRAST
-        data_buf[i++] = 0x7f; // default contract value
-        data_buf[i++] = SSD1306_COMM_PRECHARGE; // SETPRECHARGE
-        data_buf[i++] = 0xf1; // default precharge value
-        data_buf[i++] = SSD1306_COMM_DESELECT_LV; // SETVCOMDETECT
-        data_buf[i++] = 0x40; // default deselect value
-        data_buf[i++] = SSD1306_COMM_RESUME_RAM; // DISPLAYALLON_RESUME
-        data_buf[i++] = SSD1306_COMM_DISP_NORM; // NORMALDISPLAY
-        data_buf[i++] = SSD1306_COMM_DISPLAY_ON; // DISPLAY ON
-        data_buf[i++] = SSD1306_COMM_DISABLE_SCROLL; // Stop scroll
+        uint8_t data_buf[] = {
+            SSD1306_COMM_CONTROL_BYTE, // command control byte
+            SSD1306_COMM_DISPLAY_OFF, // display off
+            SSD1306_COMM_DISP_NORM, // Set Normal Display (default)
+            SSD1306_COMM_CLK_SET, // SETDISPLAYCLOCKDIV
+            0x80, // the suggested ratio 0x80
+            SSD1306_COMM_MULTIPLEX, // SSD1306_SETMULTIPLEX
+            (uint8_t)(oled_lines - 1), // height is 32 or 64 (always -1)
+            SSD1306_COMM_VERT_OFFSET, // SETDISPLAYOFFSET
+            0, // no offset
+            SSD1306_COMM_START_LINE, // SETSTARTLINE
+            SSD1306_COMM_CHARGE_PUMP, // CHARGEPUMP
+            0x14, // turn on charge pump            
+            SSD1306_COMM_MEMORY_MODE, // MEMORYMODE
+            SSD1306_PAGE_MODE, // page mode 
+            SSD1306_COMM_HORIZ_NORM, // SEGREMAP  Mirror screen horizontally (A0)
+            SSD1306_COMM_SCAN_NORM, // COMSCANDEC Rotate screen vertically (C0)
+            SSD1306_COMM_COM_PIN, // HARDWARE PIN
+            oled_lines == SSD1306_128_32_LINES ? (uint8_t)0x02 : (uint8_t)0x12, // 0x02 for 32 lines, 0x12 for 64 lines or 48 lines
+            SSD1306_COMM_CONTRAST, // SETCONTRAST
+            0x7f, // default contract value
+            SSD1306_COMM_PRECHARGE, // SETPRECHARGE
+            0xf1, // default precharge value
+            SSD1306_COMM_DESELECT_LV, // SETVCOMDETECT
+            0x40, // default deselect value
+            SSD1306_COMM_RESUME_RAM, // DISPLAYALLON_RESUME
+            SSD1306_COMM_DISP_NORM, // NORMALDISPLAY
+            SSD1306_COMM_DISPLAY_ON, // DISPLAY ON
+            SSD1306_COMM_DISABLE_SCROLL, // Stop scroll
+        };
 
-        return i2c.send(data_buf, i);
+        return i2c.send(data_buf, sizeof(data_buf) / sizeof(data_buf[0]));
     }
 
 public:
