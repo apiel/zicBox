@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 #include <stdio.h>
-#include <vector>
 #include <string>
+#include <vector>
 
 struct Size {
     int w;
@@ -66,7 +66,7 @@ struct DrawOptions {
 //     int maxWidth = -1;
 // };
 
-struct DrawTextOptions: DrawOptions {
+struct DrawTextOptions : DrawOptions {
     const char* fontPath = nullptr;
     int maxWidth = -1;
 };
@@ -79,6 +79,7 @@ public:
     {
     }
 
+    virtual void init() = 0;
     virtual void render() = 0;
     virtual void renderNext() = 0;
     virtual void triggerRendering() = 0;
