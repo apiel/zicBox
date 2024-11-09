@@ -101,7 +101,7 @@ public:
 
     void setDisplayDefaultConfig()
     {
-        uint8_t data_buf[] = {
+        uint8_t data[] = {
             SSD1306_COMM_CONTROL_BYTE, // command control byte
             SSD1306_COMM_DISPLAY_OFF, // display off
             SSD1306_COMM_DISP_NORM, // Set Normal Display (default)
@@ -132,7 +132,7 @@ public:
             SSD1306_COMM_DISABLE_SCROLL, // Stop scroll
         };
 
-        i2c.send(data_buf, sizeof(data_buf) / sizeof(data_buf[0]));
+        i2c.send(data, sizeof(data) / sizeof(data[0]));
     }
 
     uint8_t oledGetPageCount()
@@ -169,23 +169,23 @@ public:
     // 128 x 64 bits and the RAM is divided into eight pages, from PAGE0 to PAGE7
     void oledRender(int16_t page)
     {
-        uint8_t data_buf[1 + styles.screen.w];
-        data_buf[0] = SSD1306_DATA_CONTROL_BYTE;
+        uint8_t data[1 + styles.screen.w];
+        data[0] = SSD1306_DATA_CONTROL_BYTE;
         oledPosition(0, page);
         for (uint16_t i = 0; i < styles.screen.w; i++) {
-            data_buf[i + 1] = oledBuffer[i + styles.screen.w * page];
+            data[i + 1] = oledBuffer[i + styles.screen.w * page];
         }
-        i2c.send(data_buf, 1 + styles.screen.w);
+        i2c.send(data, 1 + styles.screen.w);
     }
 
     void oledPosition(uint8_t x, uint8_t page)
     {
-        uint8_t data_buf[4];
-        data_buf[0] = SSD1306_COMM_CONTROL_BYTE;
-        data_buf[1] = SSD1306_COMM_PAGE_NUMBER | (page & 0x0f);
-        data_buf[2] = SSD1306_COMM_LOW_COLUMN | (x & 0x0f);
-        data_buf[3] = SSD1306_COMM_HIGH_COLUMN | ((x >> 4) & 0x0f);
-        i2c.send(data_buf, 4);
+        uint8_t data[4];
+        data[0] = SSD1306_COMM_CONTROL_BYTE;
+        data[1] = SSD1306_COMM_PAGE_NUMBER | (page & 0x0f);
+        data[2] = SSD1306_COMM_LOW_COLUMN | (x & 0x0f);
+        data[3] = SSD1306_COMM_HIGH_COLUMN | ((x >> 4) & 0x0f);
+        i2c.send(data, 4);
     }
 
 
