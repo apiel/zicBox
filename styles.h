@@ -4,7 +4,7 @@
 #include "plugins/components/drawInterface.h"
 
 Styles styles = {
-    .screen = { 800, 480 },
+    .screen = { 128, 64 },
     .margin = 1,
     .font = {
         "/usr/share/fonts/truetype/roboto/unhinted/RobotoTTF/Roboto-Regular.ttf",

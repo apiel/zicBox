@@ -9,6 +9,7 @@
 
 int main(int argc, char* argv[])
 {
+    styles.screen = { 128, 64 };
     loadUiConfig(argc >= 2 ? argv[1] : "pixel.ui", argc >= 3 ? argv[2] : NULL);
 
     ViewManager& viewManager = ViewManager::get();

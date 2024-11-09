@@ -55,6 +55,7 @@ $screen=ui_800x480
 ### Default ###
 
 if: $screen == ui_800x480
+  SCREEN: 800 480
   include: ui_800x480/main.view.ui
 
 ## 320x172 ###
