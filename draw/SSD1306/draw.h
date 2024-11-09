@@ -1,9 +1,9 @@
 #ifndef _UI_DRAW_H_
 #define _UI_DRAW_H_
 
-#include "../helpers/i2c.h"
-#include "../log.h"
-#include "../plugins/components/drawInterface.h"
+#include "../../helpers/i2c.h"
+#include "../../log.h"
+#include "../../plugins/components/drawInterface.h"
 #include <stdexcept>
 #include <string>
 

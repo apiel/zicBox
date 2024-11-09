@@ -5,9 +5,9 @@
 #include <SDL2/SDL_ttf.h>
 #include <stdexcept>
 
-#include "../plugins/components/drawInterface.h"
-#include "../plugins/components/utils/color.h"
-#include "drawSDLGfx.h"
+#include "../../plugins/components/drawInterface.h"
+#include "../../plugins/components/utils/color.h"
+#include "drawGfx.h"
 
 #define PIXEL_FORMAT SDL_PIXELFORMAT_RGBA8888
 // #define PIXEL_FORMAT SDL_PIXELFORMAT_RGB565

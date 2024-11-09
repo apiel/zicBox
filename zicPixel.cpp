@@ -1,7 +1,7 @@
-#define DRAW_SDD1306
+#define DRAW_SSD1306
 
 #include "config.h"
-#include "draw/drawSDL.h"
+#include "draw/SSD1306/draw.h"
 #include "host.h"
 #include "styles.h"
 #include "timer.h"

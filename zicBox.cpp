@@ -1,7 +1,7 @@
 #define USE_SDL_TIMER
 
 #include "config.h"
-#include "draw/drawSDL.h"
+#include "draw/SDL/draw.h"
 #include "SDL_EventHandler.h"
 #include "host.h"
 #include "styles.h"
