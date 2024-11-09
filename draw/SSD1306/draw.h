@@ -169,11 +169,12 @@ public:
     // 128 x 64 bits and the RAM is divided into eight pages, from PAGE0 to PAGE7
     void oledRender(int16_t page)
     {
+        oledPosition(0, page);
         uint8_t data[1 + styles.screen.w];
         data[0] = SSD1306_DATA_CONTROL_BYTE;
-        oledPosition(0, page);
+        uint16_t offset = styles.screen.w * page;
         for (uint16_t i = 0; i < styles.screen.w; i++) {
-            data[i + 1] = oledBuffer[i + styles.screen.w * page];
+            data[i + 1] = oledBuffer[i + offset];
         }
         i2c.send(data, 1 + styles.screen.w);
     }
@@ -191,9 +192,9 @@ public:
 
     void oledClearPage(uint8_t page)
     {
-        uint16_t start = styles.screen.w * page;
+        uint16_t offset = styles.screen.w * page;
         for (uint16_t i = 0; i < styles.screen.w; i++) {
-            oledBuffer[i + start] = 0x00;
+            oledBuffer[i + offset] = 0x00;
         }
         oledRender(page);
     }
