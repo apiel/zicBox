@@ -55,10 +55,20 @@
 #define SSD1306_128_32_COLUMNS 128
 #define SSD1306_64_48_COLUMNS 64
 
+// Pixel color
+#define SSD1306_BLACK 0
+#define SSD1306_WHITE 1
+#define SSD1306_INVERSE 2
+
+// Use max height and width
+#define SSD1306_BUFFER_SIZE (128 * 64 / 8)
+
 class Draw : public DrawInterface {
 protected:
     I2c i2c;
+    uint8_t oledBuffer[SSD1306_BUFFER_SIZE] = { 0 };
 
+public:
     void initDisplay(uint8_t i2c_dev = 1)
     {
         if (!i2c.init(i2c_dev, SSD1306_I2C_ADDR)) {
@@ -125,6 +135,80 @@ protected:
         i2c.send(data_buf, sizeof(data_buf) / sizeof(data_buf[0]));
     }
 
+    uint8_t oledGetPageCount()
+    {
+        return styles.screen.h / 8;
+    }
+
+    void oledPixel(uint8_t x, uint8_t y, uint8_t color)
+    {
+        uint16_t tc = (styles.screen.w * (y / 8)) + x;
+        switch (color) {
+        case SSD1306_WHITE:
+            oledBuffer[tc] |= (1 << (y & 7));
+            break;
+        case SSD1306_BLACK:
+            oledBuffer[tc] &= ~(1 << (y & 7));
+            break;
+        case SSD1306_INVERSE:
+            oledBuffer[tc] ^= (1 << (y & 7));
+            break;
+        }
+    }
+
+    void oledRender()
+    {
+        oledRender(0, 0, styles.screen.w, styles.screen.h);
+    }
+
+    // void oledRender(int16_t x, int16_t y, uint8_t w, uint8_t h)
+    // {
+
+    //     uint8_t data[] = {
+    //         SSD1306_DATA_CONTROL_BYTE,
+    //         0x00,
+    //         (uint8_t)(styles.screen.w - 1),
+    //         SSD1306_COMM_SET_PAGE_ADDR,
+    //         0,
+    //         (uint8_t)(styles.screen.h == 64 ? 7 : styles.screen.h == 32 ? 3
+    //                                                           : 1),
+    //     };
+
+    //     i2c.send(data, sizeof(data) / sizeof(data[0]));
+
+    //     uint8_t dataBuf[2] = { 0, SSD1306_DATA_CONTROL_BYTE };
+    //     uint16_t offset = 0;
+    //     for (uint8_t ty = 0; ty < h; ty = ty + 8) {
+    //         if (y + ty < 0 || y + ty >= styles.screen.h) {
+    //             continue;
+    //         }
+    //         for (uint8_t tx = 0; tx < w; tx++) {
+
+    //             if (x + tx < 0 || x + tx >= styles.screen.w) {
+    //                 continue;
+    //             }
+    //             offset = (w * (ty / 8)) + tx;
+    //             dataBuf[0] = oledBuffer[offset];
+    //             i2c.send(dataBuf, 2);
+    //         }
+    //     }
+    // }
+
+    void oledRender(int16_t x, int16_t y, uint8_t w, uint8_t h)
+    {
+        uint8_t pages = oledGetPageCount();
+        uint8_t data_buf[1 + styles.screen.w];
+        data_buf[0] = SSD1306_DATA_CONTROL_BYTE;
+
+        for (uint8_t page = 0; page < pages; page++) {
+            oledPosition(0, page);
+            for (uint16_t i = 0; i < styles.screen.w; i++) {
+                data_buf[i + 1] = oledBuffer[i + styles.screen.w * page];
+            }
+            i2c.send(data_buf, 1 + styles.screen.w);
+        }
+    }
+
     void oledPosition(uint8_t x, uint8_t page)
     {
         uint8_t data_buf[4];
@@ -148,11 +232,6 @@ protected:
         i2c.send(data_buf, 1 + styles.screen.w);
     }
 
-    uint8_t oledGetPageCount()
-    {
-        return styles.screen.h / 8;
-    }
-
 public:
     Draw(Styles& styles)
         : DrawInterface(styles)
@@ -169,6 +248,9 @@ public:
         initDisplay();
         setDisplayDefaultConfig();
         clear();
+
+        line({ 0, 0 }, { 127, 127 });
+        oledRender();
     }
 
     void renderNext()
@@ -200,10 +282,11 @@ public:
 
     void clear()
     {
-        uint8_t pages = oledGetPageCount();
-        for (uint8_t page = 0; page < pages; page++) {
-            oledClearPage(page);
-        }
+        // TODO uncomment, commented the time of testing...
+        // uint8_t pages = oledGetPageCount();
+        // for (uint8_t page = 0; page < pages; page++) {
+        //     oledClearPage(page);
+        // }
     }
 
     void filledRect(Point position, Size size, DrawOptions options = {})
@@ -270,6 +353,44 @@ public:
 
     void line(Point start, Point end, DrawOptions options = {})
     {
+        int16_t steep = abs(end.y - start.y) > abs(end.x - start.x);
+        // if (steep) {
+        //     swapOLEDRPI(start.x, start.y);
+        //     swapOLEDRPI(end.x, end.y);
+        // }
+
+        // if (start.x > end.x) {
+        //     swapOLEDRPI(start.x, end.x);
+        //     swapOLEDRPI(start.y, end.y);
+        // }
+
+        int16_t dx, dy;
+        dx = end.x - start.x;
+        dy = abs(end.y - start.y);
+
+        int16_t err = dx / 2;
+        int16_t ystep;
+
+        if (start.y < end.y) {
+            ystep = 1;
+        } else {
+            ystep = -1;
+        }
+
+        int x = start.x;
+        int y = start.y;
+        for (; x <= end.x; x++) {
+            if (steep) {
+                oledPixel(y, x, SSD1306_WHITE);
+            } else {
+                oledPixel(x, y, SSD1306_WHITE);
+            }
+            err -= dy;
+            if (err < 0) {
+                y += ystep;
+                err += dx;
+            }
+        }
     }
 
     void lines(std::vector<Point> points, DrawOptions options = {})
