@@ -69,7 +69,7 @@ protected:
     uint8_t oledBuffer[SSD1306_BUFFER_SIZE] = { 0 };
 
 public:
-    void initDisplay(uint8_t i2c_dev = 1)
+    void oledInit(uint8_t i2c_dev = 1)
     {
         if (!i2c.init(i2c_dev, SSD1306_I2C_ADDR)) {
             throw std::runtime_error("Could not initialize SSD1306 display.");
@@ -99,7 +99,7 @@ public:
         }
     }
 
-    void setDisplayDefaultConfig()
+    void oledConfig()
     {
         uint8_t data[] = {
             SSD1306_COMM_CONTROL_BYTE, // command control byte
@@ -211,8 +211,8 @@ public:
     void init()
     {
         validateDisplaySize();
-        initDisplay();
-        setDisplayDefaultConfig();
+        oledInit();
+        oledConfig();
         clear();
 
         line({ 0, 0 }, { 127, 64 });
