@@ -14,10 +14,10 @@
 #include "log.h"
 #include "timer.h"
 
-#ifdef DRAW_SDD1306
-#include "draw/drawSSD1306.h"
+#ifdef DRAW_SSD1306
+#include "draw/SSD1306/draw.h"
 #else
-#include "draw/drawSDL.h"
+#include "draw/SDL/draw.h"
 #endif
 
 class ViewManager {
