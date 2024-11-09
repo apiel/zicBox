@@ -249,7 +249,7 @@ public:
         setDisplayDefaultConfig();
         clear();
 
-        line({ 0, 0 }, { 127, 127 });
+        line({ 0, 0 }, { 127, 64 });
         oledRender();
     }
 
