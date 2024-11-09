@@ -1,15 +1,11 @@
 #ifndef _UI_DRAW_H_
 #define _UI_DRAW_H_
 
+#include "../helpers/i2c.h"
 #include "../log.h"
 #include "../plugins/components/drawInterface.h"
 #include <stdexcept>
 #include <string>
-
-#include <fcntl.h>
-#include <linux/i2c-dev.h>
-#include <sys/ioctl.h>
-#include <unistd.h>
 
 #define SSD1306_I2C_ADDR 0x3c
 
@@ -20,10 +16,7 @@
 #define SSD1306_COMM_DISPLAY_ON 0xaf
 #define SSD1306_COMM_HORIZ_NORM 0xa0
 #define SSD1306_COMM_HORIZ_FLIP 0xa1
-#define SSD1306_COMM_RESUME_RAM 0xa4
-#define SSD1306_COMM_IGNORE_RAM 0xa5
 #define SSD1306_COMM_DISP_NORM 0xa6
-#define SSD1306_COMM_DISP_INVERSE 0xa7
 #define SSD1306_COMM_MULTIPLEX 0xa8
 #define SSD1306_COMM_VERT_OFFSET 0xd3
 #define SSD1306_COMM_CLK_SET 0xd5
@@ -32,7 +25,6 @@
 #define SSD1306_COMM_DESELECT_LV 0xdb
 #define SSD1306_COMM_CONTRAST 0x81
 #define SSD1306_COMM_DISABLE_SCROLL 0x2e
-#define SSD1306_COMM_ENABLE_SCROLL 0x2f
 #define SSD1306_COMM_PAGE_NUMBER 0xb0
 #define SSD1306_COMM_LOW_COLUMN 0x00
 #define SSD1306_COMM_HIGH_COLUMN 0x10
@@ -63,60 +55,6 @@
 #define SSD1306_128_32_COLUMNS 128
 #define SSD1306_64_48_COLUMNS 64
 
-class I2c {
-public:
-    int file = 0;
-
-    bool init(int i2c, int dev_addr)
-    {
-        if (file == 0) {
-            char filename[32];
-            sprintf(filename, "/dev/i2c-%d", i2c); // I2C bus number passed
-            file = open(filename, O_RDWR);
-            if (file < 0) {
-                file = 0;
-                return false;
-            }
-            if (ioctl(file, I2C_SLAVE, dev_addr) < 0) { // set slave address
-                close(file);
-                file = 0;
-                return false;
-            }
-            return true;
-        }
-        // assume done init already
-        return true;
-    }
-
-    uint8_t end()
-    {
-        if (file != 0) {
-            close(file);
-            file = 0;
-            return 0;
-        }
-        return 1;
-    }
-
-    uint8_t send(uint8_t* ptr, int16_t len)
-    {
-        if (file == 0 || ptr == 0 || len <= 0)
-            return 1;
-
-        write(file, ptr, len);
-        return 0;
-    }
-
-    uint8_t pull(uint8_t* ptr, int16_t len)
-    {
-        if (file == 0 || ptr == 0 || len <= 0)
-            return 1;
-
-        read(file, ptr, len);
-        return 0;
-    }
-};
-
 class Draw : public DrawInterface {
 protected:
     I2c i2c;
@@ -137,7 +75,21 @@ protected:
         }
     }
 
-    uint8_t setDisplayDefaultConfig(uint8_t oled_lines = SSD1306_128_64_LINES)
+    void validateDisplaySize()
+    {
+        if (styles.screen.w != SSD1306_128_64_COLUMNS
+            && styles.screen.w != SSD1306_128_32_COLUMNS
+            && styles.screen.w != SSD1306_64_48_COLUMNS) {
+            throw std::runtime_error("Unsupported display width " + std::to_string(styles.screen.w));
+        }
+        if (styles.screen.h != SSD1306_128_64_LINES
+            && styles.screen.h != SSD1306_128_32_LINES
+            && styles.screen.h != SSD1306_64_48_LINES) {
+            throw std::runtime_error("Unsupported display height " + std::to_string(styles.screen.h));
+        }
+    }
+
+    void setDisplayDefaultConfig()
     {
         uint8_t data_buf[] = {
             SSD1306_COMM_CONTROL_BYTE, // command control byte
@@ -146,31 +98,31 @@ protected:
             SSD1306_COMM_CLK_SET, // SETDISPLAYCLOCKDIV
             0x80, // the suggested ratio 0x80
             SSD1306_COMM_MULTIPLEX, // SSD1306_SETMULTIPLEX
-            (uint8_t)(oled_lines - 1), // height is 32 or 64 (always -1)
+            (uint8_t)(styles.screen.h - 1), // height is 32 or 64 (always -1)
             SSD1306_COMM_VERT_OFFSET, // SETDISPLAYOFFSET
             0, // no offset
             SSD1306_COMM_START_LINE, // SETSTARTLINE
             SSD1306_COMM_CHARGE_PUMP, // CHARGEPUMP
-            0x14, // turn on charge pump            
+            0x14, // turn on charge pump
             SSD1306_COMM_MEMORY_MODE, // MEMORYMODE
-            SSD1306_PAGE_MODE, // page mode 
+            SSD1306_PAGE_MODE, // page mode
             SSD1306_COMM_HORIZ_NORM, // SEGREMAP  Mirror screen horizontally (A0)
             SSD1306_COMM_SCAN_NORM, // COMSCANDEC Rotate screen vertically (C0)
             SSD1306_COMM_COM_PIN, // HARDWARE PIN
-            oled_lines == SSD1306_128_32_LINES ? (uint8_t)0x02 : (uint8_t)0x12, // 0x02 for 32 lines, 0x12 for 64 lines or 48 lines
+            styles.screen.h == SSD1306_128_32_LINES ? (uint8_t)0x02 : (uint8_t)0x12, // 0x02 for 32 lines, 0x12 for 64 lines or 48 lines
             SSD1306_COMM_CONTRAST, // SETCONTRAST
             0x7f, // default contract value
             SSD1306_COMM_PRECHARGE, // SETPRECHARGE
             0xf1, // default precharge value
             SSD1306_COMM_DESELECT_LV, // SETVCOMDETECT
             0x40, // default deselect value
-            SSD1306_COMM_RESUME_RAM, // DISPLAYALLON_RESUME
+            0xa4, // DISPLAYALLON_RESUME
             SSD1306_COMM_DISP_NORM, // NORMALDISPLAY
             SSD1306_COMM_DISPLAY_ON, // DISPLAY ON
             SSD1306_COMM_DISABLE_SCROLL, // Stop scroll
         };
 
-        return i2c.send(data_buf, sizeof(data_buf) / sizeof(data_buf[0]));
+        i2c.send(data_buf, sizeof(data_buf) / sizeof(data_buf[0]));
     }
 
 public:
@@ -218,6 +170,12 @@ public:
 
     void clear()
     {
+        // uint8_t data_buf[1024];
+        // data_buf[0] = SSD1306_DATA_CONTROL_BYTE;
+        // for (i = 0; i < max_columns; i++)
+        //     data_buf[i + 1] = 0x00;
+
+        // i2c.send(data_buf, 1 + max_columns);
     }
 
     void filledRect(Point position, Size size, DrawOptions options = {})
