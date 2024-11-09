@@ -125,6 +125,27 @@ protected:
         i2c.send(data_buf, sizeof(data_buf) / sizeof(data_buf[0]));
     }
 
+    void oledSetXY(uint8_t x, uint8_t y)
+    {
+        uint8_t data_buf[4];
+        data_buf[0] = SSD1306_COMM_CONTROL_BYTE;
+        data_buf[1] = SSD1306_COMM_PAGE_NUMBER | (y & 0x0f);
+        data_buf[2] = SSD1306_COMM_LOW_COLUMN | (x & 0x0f);
+        data_buf[3] = SSD1306_COMM_HIGH_COLUMN | ((x >> 4) & 0x0f);
+        i2c.send(data_buf, 4);
+    }
+
+    void oledClearRow(uint8_t row)
+    {
+        oledSetXY(0, row);
+        uint8_t data_buf[1 + styles.screen.w];
+        data_buf[0] = SSD1306_DATA_CONTROL_BYTE;
+        for (uint16_t i = 0; i < styles.screen.w; i++) {
+            data_buf[i + 1] = 0x00;
+        }
+        i2c.send(data_buf, 1 + styles.screen.w);
+    }
+
 public:
     Draw(Styles& styles)
         : DrawInterface(styles)
@@ -137,8 +158,10 @@ public:
 
     void init()
     {
+        validateDisplaySize();
         initDisplay();
         setDisplayDefaultConfig();
+        clear();
     }
 
     void renderNext()
@@ -170,12 +193,10 @@ public:
 
     void clear()
     {
-        // uint8_t data_buf[1024];
-        // data_buf[0] = SSD1306_DATA_CONTROL_BYTE;
-        // for (i = 0; i < max_columns; i++)
-        //     data_buf[i + 1] = 0x00;
-
-        // i2c.send(data_buf, 1 + max_columns);
+        uint8_t height = styles.screen.h / 8;
+        for (uint8_t row = 0; row < height; row++) {
+            oledClearRow(row);
+        }
     }
 
     void filledRect(Point position, Size size, DrawOptions options = {})
