@@ -158,55 +158,24 @@ public:
 
     void oledRender()
     {
-        oledRender(0, 0, styles.screen.w, styles.screen.h);
-    }
-
-    // void oledRender(int16_t x, int16_t y, uint8_t w, uint8_t h)
-    // {
-
-    //     uint8_t data[] = {
-    //         SSD1306_DATA_CONTROL_BYTE,
-    //         0x00,
-    //         (uint8_t)(styles.screen.w - 1),
-    //         SSD1306_COMM_SET_PAGE_ADDR,
-    //         0,
-    //         (uint8_t)(styles.screen.h == 64 ? 7 : styles.screen.h == 32 ? 3
-    //                                                           : 1),
-    //     };
-
-    //     i2c.send(data, sizeof(data) / sizeof(data[0]));
-
-    //     uint8_t dataBuf[2] = { 0, SSD1306_DATA_CONTROL_BYTE };
-    //     uint16_t offset = 0;
-    //     for (uint8_t ty = 0; ty < h; ty = ty + 8) {
-    //         if (y + ty < 0 || y + ty >= styles.screen.h) {
-    //             continue;
-    //         }
-    //         for (uint8_t tx = 0; tx < w; tx++) {
-
-    //             if (x + tx < 0 || x + tx >= styles.screen.w) {
-    //                 continue;
-    //             }
-    //             offset = (w * (ty / 8)) + tx;
-    //             dataBuf[0] = oledBuffer[offset];
-    //             i2c.send(dataBuf, 2);
-    //         }
-    //     }
-    // }
-
-    void oledRender(int16_t x, int16_t y, uint8_t w, uint8_t h)
-    {
         uint8_t pages = oledGetPageCount();
-        uint8_t data_buf[1 + styles.screen.w];
-        data_buf[0] = SSD1306_DATA_CONTROL_BYTE;
 
         for (uint8_t page = 0; page < pages; page++) {
-            oledPosition(0, page);
-            for (uint16_t i = 0; i < styles.screen.w; i++) {
-                data_buf[i + 1] = oledBuffer[i + styles.screen.w * page];
-            }
-            i2c.send(data_buf, 1 + styles.screen.w);
+            oledRender(page);
         }
+    }
+
+    // The GDDRAM is a bit mapped static RAM holding the bit pattern to be displayed. The size of the RAM is
+    // 128 x 64 bits and the RAM is divided into eight pages, from PAGE0 to PAGE7
+    void oledRender(int16_t page)
+    {
+        uint8_t data_buf[1 + styles.screen.w];
+        data_buf[0] = SSD1306_DATA_CONTROL_BYTE;
+        oledPosition(0, page);
+        for (uint16_t i = 0; i < styles.screen.w; i++) {
+            data_buf[i + 1] = oledBuffer[i + styles.screen.w * page];
+        }
+        i2c.send(data_buf, 1 + styles.screen.w);
     }
 
     void oledPosition(uint8_t x, uint8_t page)
@@ -219,17 +188,14 @@ public:
         i2c.send(data_buf, 4);
     }
 
-    // The GDDRAM is a bit mapped static RAM holding the bit pattern to be displayed. The size of the RAM is
-    // 128 x 64 bits and the RAM is divided into eight pages, from PAGE0 to PAGE7
+
     void oledClearPage(uint8_t page)
     {
-        oledPosition(0, page);
-        uint8_t data_buf[1 + styles.screen.w];
-        data_buf[0] = SSD1306_DATA_CONTROL_BYTE;
+        uint16_t start = styles.screen.w * page;
         for (uint16_t i = 0; i < styles.screen.w; i++) {
-            data_buf[i + 1] = 0x00;
+            oledBuffer[i + start] = 0x00;
         }
-        i2c.send(data_buf, 1 + styles.screen.w);
+        oledRender(page);
     }
 
 public:
