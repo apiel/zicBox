@@ -420,21 +420,6 @@ public:
     {
     }
 
-    Color darken(Color color, float amount)
-    {
-        return color;
-    }
-
-    Color lighten(Color color, float amount)
-    {
-        return color;
-    }
-
-    Color alpha(Color color, float amount)
-    {
-        return color;
-    }
-
     Color getColor(char* color)
     {
         return styles.colors.white;
