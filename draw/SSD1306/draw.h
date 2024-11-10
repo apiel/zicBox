@@ -400,6 +400,7 @@ public:
 
     void pixel(Point position, DrawOptions options = {})
     {
+        oledPixel(position.x, position.y);
     }
 
     void* setTextureRenderer(Size size)
