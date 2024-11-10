@@ -116,6 +116,8 @@ public:
     virtual void aaline(Point start, Point end, DrawOptions options = {}) = 0;
     virtual void aalines(std::vector<Point> points, DrawOptions options = {}) = 0;
     virtual void arc(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) = 0;
+    virtual void circle(Point position, int radius, DrawOptions options = {}) = 0;
+    virtual void filledCircle(Point position, int radius, DrawOptions options = {}) = 0;
 
     virtual void* setTextureRenderer(Size size) = 0;
     virtual void setMainRenderer() = 0;
