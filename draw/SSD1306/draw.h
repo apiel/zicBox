@@ -140,6 +140,12 @@ public:
         return styles.screen.h / 8;
     }
 
+    void oledPixel(uint8_t x, uint8_t y)
+    {
+        uint16_t tc = (styles.screen.w * (y / 8)) + x;
+        oledBuffer[tc] |= (1 << (y & 7));
+    }
+
     void oledPixel(uint8_t x, uint8_t y, uint8_t color)
     {
         uint16_t tc = (styles.screen.w * (y / 8)) + x;
@@ -188,7 +194,6 @@ public:
         data[3] = SSD1306_COMM_HIGH_COLUMN | ((x >> 4) & 0x0f);
         i2c.send(data, 4);
     }
-
 
     void oledClearPage(uint8_t page)
     {
@@ -321,36 +326,17 @@ public:
     void line(Point start, Point end, DrawOptions options = {})
     {
         int16_t steep = abs(end.y - start.y) > abs(end.x - start.x);
-        // if (steep) {
-        //     swapOLEDRPI(start.x, start.y);
-        //     swapOLEDRPI(end.x, end.y);
-        // }
-
-        // if (start.x > end.x) {
-        //     swapOLEDRPI(start.x, end.x);
-        //     swapOLEDRPI(start.y, end.y);
-        // }
-
-        int16_t dx, dy;
-        dx = end.x - start.x;
-        dy = abs(end.y - start.y);
-
+        int16_t dx = end.x - start.x;
+        int16_t dy = abs(end.y - start.y);
         int16_t err = dx / 2;
-        int16_t ystep;
+        int16_t ystep = start.y < end.y ? 1 : -1;
 
-        if (start.y < end.y) {
-            ystep = 1;
-        } else {
-            ystep = -1;
-        }
-
-        int x = start.x;
         int y = start.y;
-        for (; x <= end.x; x++) {
+        for (int x = start.x; x <= end.x; x++) {
             if (steep) {
-                oledPixel(y, x, SSD1306_WHITE);
+                oledPixel(y, x);
             } else {
-                oledPixel(x, y, SSD1306_WHITE);
+                oledPixel(x, y);
             }
             err -= dy;
             if (err < 0) {
