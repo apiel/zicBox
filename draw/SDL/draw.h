@@ -261,6 +261,16 @@ public:
         aaFilledPieRGBA(renderer, position.x, position.y, radius, radius, startAngle, endAngle, 0, color.r, color.g, color.b, color.a);
     }
 
+    void circle(Point position, int radius, DrawOptions options = {})
+    {
+        arc(position, radius, 0, 360, options);
+    }
+
+    void filledCircle(Point position, int radius, DrawOptions options = {})
+    {
+        filledPie(position, radius, 0, 360, options);
+    }
+
     void filledEllipse(Point position, int radiusX, int radiusY, DrawOptions options = {})
     {
         Color color = options.color;

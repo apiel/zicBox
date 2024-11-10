@@ -251,6 +251,32 @@ public:
         }
     }
 
+    // For circle
+    void drawOctants(int xc, int yc, int x, int y)
+    {
+        oledPixel(xc + x, yc + y);
+        oledPixel(xc - x, yc + y);
+        oledPixel(xc + x, yc - y);
+        oledPixel(xc - x, yc - y);
+        oledPixel(xc + y, yc + x);
+        oledPixel(xc - y, yc + x);
+        oledPixel(xc + y, yc - x);
+        oledPixel(xc - y, yc - x);
+    }
+
+    // For filled circle
+    void drawFilledOctants(int xc, int yc, int x, int y)
+    {
+        for (int xx = xc - x; xx <= xc + x; xx++)
+            oledPixel(xx, yc + y);
+        for (int xx = xc - x; xx <= xc + x; xx++)
+            oledPixel(xx, yc - y);
+        for (int xx = xc - y; xx <= xc + y; xx++)
+            oledPixel(xx, yc + x);
+        for (int xx = xc - y; xx <= xc + y; xx++)
+            oledPixel(xx, yc - x);
+    }
+
 public:
     Draw(Styles& styles)
         : DrawInterface(styles)
@@ -371,7 +397,7 @@ public:
         }
     }
 
-    void drawCircle(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
+    void circle(Point position, int radius, DrawOptions options = {})
     {
         int x = 0, y = radius;
         int d = 3 - 2 * radius;
@@ -388,28 +414,21 @@ public:
         }
     }
 
-    void drawOctants(int xc, int yc, int x, int y)
+    void filledCircle(Point position, int radius, DrawOptions options = {})
     {
-        oledPixel(xc + x, yc + y);
-        oledPixel(xc - x, yc + y);
-        oledPixel(xc + x, yc - y);
-        oledPixel(xc - x, yc - y);
-        oledPixel(xc + y, yc + x);
-        oledPixel(xc - y, yc + x);
-        oledPixel(xc + y, yc - x);
-        oledPixel(xc - y, yc - x);
-    }
-
-    void drawFilledOctants(int xc, int yc, int x, int y)
-    {
-        for (int xx = xc - x; xx <= xc + x; xx++)
-            oledPixel(xx, yc + y);
-        for (int xx = xc - x; xx <= xc + x; xx++)
-            oledPixel(xx, yc - y);
-        for (int xx = xc - y; xx <= xc + y; xx++)
-            oledPixel(xx, yc + x);
-        for (int xx = xc - y; xx <= xc + y; xx++)
-            oledPixel(xx, yc - x);
+        int x = 0, y = radius;
+        int d = 3 - 2 * radius;
+        drawFilledOctants(position.x, position.y, x, y);
+        while (y >= x) {
+            if (d > 0) {
+                y--;
+                d = d + 4 * (x - y) + 10;
+            } else {
+                d = d + 4 * x + 6;
+            }
+            x++;
+            drawFilledOctants(position.x, position.y, x, y);
+        }
     }
 
     void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
