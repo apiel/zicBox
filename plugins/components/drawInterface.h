@@ -94,38 +94,38 @@ public:
         };
     }
 
-    virtual int textCentered(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) = 0;
-    virtual int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) = 0;
-    virtual int textRight(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) = 0;
+    virtual int textCentered(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) { return 0; }
+    virtual int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) { return 0; }
+    virtual int textRight(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) { return 0; }
 
-    virtual void clear() = 0;
-    virtual void line(Point start, Point end, DrawOptions options = {}) = 0;
-    virtual void lines(std::vector<Point> points, DrawOptions options = {}) = 0;
-    virtual void pixel(Point position, DrawOptions options = {}) = 0;
-    virtual void filledRect(Point position, Size size, DrawOptions options = {}) = 0;
-    virtual void rect(Point position, Size size, DrawOptions options = {}) = 0;
+    virtual void clear() {}
+    virtual void line(Point start, Point end, DrawOptions options = {}) {}
+    virtual void lines(std::vector<Point> points, DrawOptions options = {}) {}
+    virtual void pixel(Point position, DrawOptions options = {}) {}
+    virtual void filledRect(Point position, Size size, DrawOptions options = {}) {}
+    virtual void rect(Point position, Size size, DrawOptions options = {}) {}
 
     // GFX
-    virtual void filledRect(Point position, Size size, uint8_t radius, DrawOptions options = {}) = 0;
-    virtual void rect(Point position, Size size, uint8_t radius, DrawOptions options = {}) = 0;
-    virtual void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) = 0;
-    virtual void filledEllipse(Point position, int radiusX, int radiusY, DrawOptions options = {}) = 0;
-    virtual void ellipse(Point position, int radiusX, int radiusY, DrawOptions options = {}) = 0;
-    virtual void filledPolygon(std::vector<Point> points, DrawOptions options = {}) = 0;
-    virtual void polygon(std::vector<Point> points, DrawOptions options = {}) = 0;
-    virtual void aaline(Point start, Point end, DrawOptions options = {}) = 0;
-    virtual void aalines(std::vector<Point> points, DrawOptions options = {}) = 0;
-    virtual void arc(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) = 0;
-    virtual void circle(Point position, int radius, DrawOptions options = {}) = 0;
-    virtual void filledCircle(Point position, int radius, DrawOptions options = {}) = 0;
+    virtual void filledRect(Point position, Size size, uint8_t radius, DrawOptions options = {}) {}
+    virtual void rect(Point position, Size size, uint8_t radius, DrawOptions options = {}) {}
+    virtual void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) {}
+    virtual void filledEllipse(Point position, int radiusX, int radiusY, DrawOptions options = {}) {}
+    virtual void ellipse(Point position, int radiusX, int radiusY, DrawOptions options = {}) {}
+    virtual void filledPolygon(std::vector<Point> points, DrawOptions options = {}) {}
+    virtual void polygon(std::vector<Point> points, DrawOptions options = {}) {}
+    virtual void aaline(Point start, Point end, DrawOptions options = {}) {}
+    virtual void aalines(std::vector<Point> points, DrawOptions options = {}) {}
+    virtual void arc(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) {}
+    virtual void circle(Point position, int radius, DrawOptions options = {}) {}
+    virtual void filledCircle(Point position, int radius, DrawOptions options = {}) {}
 
-    virtual void* setTextureRenderer(Size size) = 0;
-    virtual void setMainRenderer() = 0;
-    virtual void destroyTexture(void* texture) = 0;
-    virtual void applyTexture(void* texture, Rect dest) = 0;
+    virtual void* setTextureRenderer(Size size) { return NULL; }
+    virtual void setMainRenderer() {}
+    virtual void destroyTexture(void* texture) {}
+    virtual void applyTexture(void* texture, Rect dest) {}
 
     virtual Color getColor(char* color) = 0;
-    virtual bool config(char* key, char* value) = 0;
+    virtual bool config(char* key, char* value) { return false; }
 };
 
 #endif

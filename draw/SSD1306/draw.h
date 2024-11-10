@@ -301,32 +301,32 @@ public:
         oledRender();
     }
 
-    void renderNext()
+    void renderNext() override
     {
     }
 
-    void triggerRendering()
+    void triggerRendering() override
     {
     }
 
-    void render()
+    void render() override
     {
     }
 
-    int textCentered(Point position, std::string text, uint32_t size, DrawTextOptions options = {})
-    {
-        return 123;
-    }
+    // int textCentered(Point position, std::string text, uint32_t size, DrawTextOptions options = {})
+    // {
+    //     return 123;
+    // }
 
-    int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {})
-    {
-        return 123;
-    }
+    // int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {})
+    // {
+    //     return 123;
+    // }
 
-    int textRight(Point position, std::string text, uint32_t size, DrawTextOptions options = {})
-    {
-        return 123;
-    }
+    // int textRight(Point position, std::string text, uint32_t size, DrawTextOptions options = {})
+    // {
+    //     return 123;
+    // }
 
     void clear()
     {
@@ -431,33 +431,33 @@ public:
         }
     }
 
-    void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
-    {
-    }
+    // void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
+    // {
+    // }
 
-    void filledEllipse(Point position, int radiusX, int radiusY, DrawOptions options = {})
-    {
-    }
+    // void filledEllipse(Point position, int radiusX, int radiusY, DrawOptions options = {})
+    // {
+    // }
 
-    void ellipse(Point position, int radiusX, int radiusY, DrawOptions options = {})
-    {
-    }
+    // void ellipse(Point position, int radiusX, int radiusY, DrawOptions options = {})
+    // {
+    // }
 
-    void filledPolygon(std::vector<Point> points, DrawOptions options = {})
-    {
-    }
+    // void filledPolygon(std::vector<Point> points, DrawOptions options = {})
+    // {
+    // }
 
-    void polygon(std::vector<Point> points, DrawOptions options = {})
-    {
-    }
+    // void polygon(std::vector<Point> points, DrawOptions options = {})
+    // {
+    // }
 
-    void aaline(Point start, Point end, DrawOptions options = {})
-    {
-    }
+    // void aaline(Point start, Point end, DrawOptions options = {})
+    // {
+    // }
 
-    void aalines(std::vector<Point> points, DrawOptions options = {})
-    {
-    }
+    // void aalines(std::vector<Point> points, DrawOptions options = {})
+    // {
+    // }
 
     void line(Point start, Point end, DrawOptions options = {})
     {
@@ -482,27 +482,27 @@ public:
         oledPixel(position.x, position.y);
     }
 
-    void* setTextureRenderer(Size size)
-    {
-        return NULL;
-    }
+    // void* setTextureRenderer(Size size)
+    // {
+    //     return NULL;
+    // }
 
-    void setMainRenderer()
-    {
-    }
+    // void setMainRenderer()
+    // {
+    // }
 
-    void destroyTexture(void* texture)
-    {
-    }
+    // void destroyTexture(void* texture)
+    // {
+    // }
 
-    void applyTexture(void* texture, Rect dest)
-    {
-    }
+    // void applyTexture(void* texture, Rect dest)
+    // {
+    // }
 
-    Color getColor(char* color)
-    {
-        return styles.colors.white;
-    }
+    // Color getColor(char* color)
+    // {
+    //     return styles.colors.white;
+    // }
 
     bool config(char* key, char* value)
     {

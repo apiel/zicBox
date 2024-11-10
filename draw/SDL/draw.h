@@ -138,12 +138,12 @@ public:
         texture = (SDL_Texture*)setTextureRenderer(styles.screen);
     }
 
-    void renderNext()
+    void renderNext() override
     {
         needRendering = true;
     }
 
-    void triggerRendering()
+    void triggerRendering() override
     {
         if (needRendering) {
             render();
@@ -151,7 +151,7 @@ public:
         }
     }
 
-    void render()
+    void render() override
     {
         // During the whole rendering process, we render into a texture
         // Only at the end, we push the texture to the screen
@@ -166,7 +166,7 @@ public:
         SDL_SetRenderTarget(renderer, texture);
     }
 
-    int textCentered(Point position, std::string text, uint32_t size, DrawTextOptions options = {})
+    int textCentered(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
         options = getDefaultTextOptions(options);
         SDL_Surface* surface = getTextSurface(text.c_str(), size, options);
@@ -179,7 +179,7 @@ public:
         return xEnd;
     }
 
-    int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {})
+    int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
         options = getDefaultTextOptions(options);
         SDL_Surface* surface = getTextSurface(text.c_str(), size, options);
@@ -190,7 +190,7 @@ public:
         return xEnd;
     }
 
-    int textRight(Point position, std::string text, uint32_t size, DrawTextOptions options = {})
+    int textRight(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
         options = getDefaultTextOptions(options);
         SDL_Surface* surface = getTextSurface(text.c_str(), size, options);
@@ -202,14 +202,14 @@ public:
         return x;
     }
 
-    void clear()
+    void clear() override
     {
         Color color = styles.colors.background;
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
         SDL_RenderClear(renderer);
     }
 
-    void filledRect(Point position, Size size, DrawOptions options = {})
+    void filledRect(Point position, Size size, DrawOptions options = {}) override
     {
         Color color = options.color;
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
@@ -217,7 +217,7 @@ public:
         SDL_RenderFillRect(renderer, &rect);
     }
 
-    void rect(Point position, Size size, DrawOptions options = {})
+    void rect(Point position, Size size, DrawOptions options = {}) override
     {
         Color color = options.color;
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
@@ -225,7 +225,7 @@ public:
         SDL_RenderDrawRect(renderer, &rect);
     }
 
-    void filledRect(Point position, Size size, uint8_t radius, DrawOptions options = {})
+    void filledRect(Point position, Size size, uint8_t radius, DrawOptions options = {}) override
     {
         filledRect({ position.x + radius, position.y }, { size.w - 2 * radius, size.h }, options);
         filledRect({ position.x, position.y + radius }, { size.w, size.h - 2 * radius }, options);
@@ -235,7 +235,7 @@ public:
         filledPie({ position.x + size.w - radius, position.y + size.h - radius }, radius, 0, 90, options);
     }
 
-    void rect(Point position, Size size, uint8_t radius, DrawOptions options = {})
+    void rect(Point position, Size size, uint8_t radius, DrawOptions options = {}) override
     {
         arc({ position.x + radius, position.y + radius }, radius, 180, 270, options);
         line({ position.x, position.y + radius }, { position.x, position.y + size.h - radius }, options);
@@ -247,45 +247,45 @@ public:
         line({ position.x + size.w, position.y + size.h - radius }, { position.x + size.w, position.y + radius }, options);
     }
 
-    void arc(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
+    void arc(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) override
     {
         Color color = options.color;
         // arcRGBA(renderer, position.x, position.y, radius, startAngle, endAngle, color.r, color.g, color.b, color.a);
         aaArcRGBA(renderer, position.x, position.y, radius, radius, startAngle, endAngle, 1, color.r, color.g, color.b, color.a);
     }
 
-    void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
+    void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) override
     {
         Color color = options.color;
         // https://github.com/rtrussell/BBCSDL/blob/master/include/SDL2_gfxPrimitives.h
         aaFilledPieRGBA(renderer, position.x, position.y, radius, radius, startAngle, endAngle, 0, color.r, color.g, color.b, color.a);
     }
 
-    void circle(Point position, int radius, DrawOptions options = {})
+    void circle(Point position, int radius, DrawOptions options = {}) override
     {
         arc(position, radius, 0, 360, options);
     }
 
-    void filledCircle(Point position, int radius, DrawOptions options = {})
+    void filledCircle(Point position, int radius, DrawOptions options = {}) override
     {
         filledPie(position, radius, 0, 360, options);
     }
 
-    void filledEllipse(Point position, int radiusX, int radiusY, DrawOptions options = {})
+    void filledEllipse(Point position, int radiusX, int radiusY, DrawOptions options = {}) override
     {
         Color color = options.color;
         // https://github.com/rtrussell/BBCSDL/blob/master/include/SDL2_gfxPrimitives.h
         aaFilledEllipseRGBA(renderer, position.x, position.y, radiusX, radiusY, color.r, color.g, color.b, color.a);
     }
 
-    void ellipse(Point position, int radiusX, int radiusY, DrawOptions options = {})
+    void ellipse(Point position, int radiusX, int radiusY, DrawOptions options = {}) override
     {
         Color color = options.color;
         // https://github.com/rtrussell/BBCSDL/blob/master/include/SDL2_gfxPrimitives.h
         aaellipseRGBA(renderer, position.x, position.y, radiusX, radiusY, color.r, color.g, color.b, color.a);
     }
 
-    void filledPolygon(std::vector<Point> points, DrawOptions options = {})
+    void filledPolygon(std::vector<Point> points, DrawOptions options = {}) override
     {
         double x[points.size()];
         double y[points.size()];
@@ -299,7 +299,7 @@ public:
         aaFilledPolygonRGBA(renderer, x, y, points.size(), color.r, color.g, color.b, color.a);
     }
 
-    void polygon(std::vector<Point> points, DrawOptions options = {})
+    void polygon(std::vector<Point> points, DrawOptions options = {}) override
     {
         Sint16 x[points.size()];
         Sint16 y[points.size()];
@@ -313,66 +313,66 @@ public:
         aapolygonRGBA(renderer, x, y, points.size(), color.r, color.g, color.b, color.a);
     }
 
-    void aaline(Point start, Point end, DrawOptions options = {})
+    void aaline(Point start, Point end, DrawOptions options = {}) override
     {
         Color color = options.color;
         // https://github.com/rtrussell/BBCSDL/blob/master/include/SDL2_gfxPrimitives.h
         aalineRGBA(renderer, start.x, start.y, end.x, end.y, color.r, color.g, color.b, color.a);
     }
 
-    void aalines(std::vector<Point> points, DrawOptions options = {})
+    void aalines(std::vector<Point> points, DrawOptions options = {}) override
     {
         for (int i = 0; i < points.size() - 1; i++) {
             aaline(points[i], points[i + 1], options);
         }
     }
 
-    void line(Point start, Point end, DrawOptions options = {})
+    void line(Point start, Point end, DrawOptions options = {}) override
     {
         Color color = options.color;
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
         SDL_RenderDrawLine(renderer, start.x, start.y, end.x, end.y);
     }
 
-    void lines(std::vector<Point> points, DrawOptions options = {})
+    void lines(std::vector<Point> points, DrawOptions options = {}) override
     {
         Color color = options.color;
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
         SDL_RenderDrawLines(renderer, (SDL_Point*)points.data(), points.size());
     }
 
-    void pixel(Point position, DrawOptions options = {})
+    void pixel(Point position, DrawOptions options = {}) override
     {
         Color color = options.color;
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
         SDL_RenderDrawPoint(renderer, position.x, position.y);
     }
 
-    void* setTextureRenderer(Size size)
+    void* setTextureRenderer(Size size) override
     {
         SDL_Texture* texture = SDL_CreateTexture(renderer, PIXEL_FORMAT, SDL_TEXTUREACCESS_TARGET, size.w, size.h);
         SDL_SetRenderTarget(renderer, texture);
         return texture;
     }
 
-    void setMainRenderer()
+    void setMainRenderer() override
     {
         SDL_SetRenderTarget(renderer, texture);
     }
 
-    void destroyTexture(void* texture)
+    void destroyTexture(void* texture) override
     {
         SDL_DestroyTexture((SDL_Texture*)texture);
     }
 
-    void applyTexture(void* texture, Rect dest)
+    void applyTexture(void* texture, Rect dest) override
     {
         SDL_Rect rect = { dest.position.x, dest.position.y, dest.size.w, dest.size.h };
         SDL_RenderCopy(renderer, (SDL_Texture*)texture, NULL, &rect);
         SDL_RenderPresent(renderer);
     }
 
-    Color getColor(char* color)
+    Color getColor(char* color) override
     {
         // if first char is # then call hex2rgb
         if (color[0] == '#') {
@@ -387,7 +387,7 @@ public:
         return styles.colors.white;
     }
 
-    bool config(char* key, char* value)
+    bool config(char* key, char* value) override
     {
         /*//md
 ### SET_COLOR
