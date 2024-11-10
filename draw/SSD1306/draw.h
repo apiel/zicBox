@@ -4,6 +4,7 @@
 #include "../../helpers/i2c.h"
 #include "../../log.h"
 #include "../../plugins/components/drawInterface.h"
+#include <cmath>
 #include <stdexcept>
 #include <string>
 
@@ -204,6 +205,52 @@ public:
         oledRender(page);
     }
 
+    void lineVertical(Point start, Point end, DrawOptions options = {})
+    {
+        int ystep = start.y < end.y ? 1 : -1;
+        for (int y = start.y; y != end.y; y += ystep) {
+            oledPixel(start.x, y);
+        }
+    }
+
+    void lineHorizontal(Point start, Point end, DrawOptions options = {})
+    {
+        int xstep = start.x < end.x ? 1 : -1;
+        for (int x = start.x; x != end.x; x += xstep) {
+            oledPixel(x, start.y);
+        }
+    }
+
+    void lineDiagonal(Point start, Point end, DrawOptions options = {})
+    {
+        int x0, y0, x1, y1;
+        if (start.x < end.x) {
+            x0 = start.x;
+            x1 = end.x;
+            y0 = start.y;
+            y1 = end.y;
+        } else {
+            x0 = end.x;
+            x1 = start.x;
+            y0 = end.y;
+            y1 = start.y;
+        }
+        int deltaX = x1 - x0;
+        int deltaY = abs(y1 - y0);
+        int eps = 0;
+        int ystep = y0 < y1 ? 1 : -1;
+
+        int y = y0;
+        for (int x = x0; x <= x1; x++) {
+            oledPixel(x, y);
+            eps += deltaY;
+            if ((eps << 1) >= deltaX) {
+                y += ystep;
+                eps -= deltaX;
+            }
+        }
+    }
+
 public:
     Draw(Styles& styles)
         : DrawInterface(styles)
@@ -222,6 +269,8 @@ public:
         clear();
 
         line({ 0, 0 }, { 127, 64 });
+        line({ 0, 64 }, { 127, 0 });
+        rect({ 10, 10 }, { 30, 30 });
         oledRender();
     }
 
@@ -267,6 +316,14 @@ public:
 
     void rect(Point position, Size size, DrawOptions options = {})
     {
+        Point a = position;
+        Point b = { position.x + size.w, position.y };
+        Point c = { position.x + size.w, position.y + size.h };
+        Point d = { position.x, position.y + size.h };
+        line(a, b, options);
+        line(b, c, options);
+        line(c, d, options);
+        line(d, a, options);
     }
 
     void filledRect(Point position, Size size, uint8_t radius, DrawOptions options = {})
@@ -325,29 +382,20 @@ public:
 
     void line(Point start, Point end, DrawOptions options = {})
     {
-        int16_t steep = abs(end.y - start.y) > abs(end.x - start.x);
-        int16_t dx = end.x - start.x;
-        int16_t dy = abs(end.y - start.y);
-        int16_t err = dx / 2;
-        int16_t ystep = start.y < end.y ? 1 : -1;
-
-        int y = start.y;
-        for (int x = start.x; x <= end.x; x++) {
-            if (steep) {
-                oledPixel(y, x);
-            } else {
-                oledPixel(x, y);
-            }
-            err -= dy;
-            if (err < 0) {
-                y += ystep;
-                err += dx;
-            }
+        if (start.x == end.x) {
+            lineVertical(start, end, options);
+        } else if (start.y == end.y) {
+            lineHorizontal(start, end, options);
+        } else {
+            lineDiagonal(start, end, options);
         }
     }
 
     void lines(std::vector<Point> points, DrawOptions options = {})
     {
+        for (int i = 0; i < points.size() - 1; i++) {
+            line(points[i], points[i + 1], options);
+        }
     }
 
     void pixel(Point position, DrawOptions options = {})
