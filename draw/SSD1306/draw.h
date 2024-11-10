@@ -270,7 +270,7 @@ public:
 
         line({ 0, 0 }, { 127, 64 });
         line({ 0, 64 }, { 127, 0 });
-        rect({ 10, 10 }, { 30, 30 });
+        filledRect({ 10, 10 }, { 30, 30 });
         oledRender();
     }
 
@@ -312,6 +312,9 @@ public:
 
     void filledRect(Point position, Size size, DrawOptions options = {})
     {
+        for (int y = position.y; y < position.y + size.h; y++) {
+            lineHorizontal({ position.x, y }, { position.x + size.w, y }, options);
+        }
     }
 
     void rect(Point position, Size size, DrawOptions options = {})
@@ -320,10 +323,10 @@ public:
         Point b = { position.x + size.w, position.y };
         Point c = { position.x + size.w, position.y + size.h };
         Point d = { position.x, position.y + size.h };
-        line(a, b, options);
-        line(b, c, options);
-        line(c, d, options);
-        line(d, a, options);
+        lineHorizontal(a, b, options);
+        lineVertical(b, c, options);
+        lineHorizontal(c, d, options);
+        lineVertical(d, a, options);
     }
 
     void filledRect(Point position, Size size, uint8_t radius, DrawOptions options = {})
