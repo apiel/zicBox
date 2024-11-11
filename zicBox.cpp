@@ -27,8 +27,6 @@ int main(int argc, char* argv[])
 #endif
 
     ViewManager& viewManager = ViewManager::get();
-    viewManager.draw.init();
-
     viewManager.init();
     if (!viewManager.render()) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "No view were initialized to be rendered.");
