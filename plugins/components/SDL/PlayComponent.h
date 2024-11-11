@@ -90,7 +90,7 @@ public:
                 iconPosition,
             };
             draw.filledPolygon(points, { colors.icon });
-            draw.aalines(points, { colors.border });
+            draw.lines(points, { colors.border, .antiAliasing = true });
             draw.textCentered(labelPosition, "Playing", 12, { colors.title });
         } else {
             // Paused

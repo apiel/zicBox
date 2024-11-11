@@ -72,4 +72,4 @@ VIEW: Demo
   COMPONENT: Button 260 400 40 40
     LABEL: &icon::arrowRight
 
-  COMPONENT: Play 320 400 80 80
+  # COMPONENT: Play 320 400 80 80

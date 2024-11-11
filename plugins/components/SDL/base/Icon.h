@@ -206,7 +206,7 @@ public:
         if (filled) {
             draw.filledPolygon(points, { color });
         } else {
-            draw.aalines(points, { color });
+            draw.lines(points, { color, .antiAliasing = true });
         }
     }
 
@@ -248,7 +248,7 @@ public:
         if (filled) {
             draw.filledPolygon(points, { color });
         } else {
-            draw.aalines(points, { color });
+            draw.lines(points, { color, .antiAliasing = true });
         }
     }
 
@@ -268,7 +268,7 @@ public:
         if (filled) {
             draw.filledPolygon(points, { color });
         } else {
-            draw.aalines(points, { color });
+            draw.lines(points, { color, .antiAliasing = true });
         }
     }
 
@@ -288,7 +288,7 @@ public:
         if (filled) {
             draw.filledPolygon(points, { color });
         } else {
-            draw.aalines(points, { color });
+            draw.lines(points, { color, .antiAliasing = true });
         }
     }
 
@@ -308,7 +308,7 @@ public:
         if (filled) {
             draw.filledPolygon(points, { color });
         } else {
-            draw.aalines(points, { color });
+            draw.lines(points, { color, .antiAliasing = true });
         }
     }
 

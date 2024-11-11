@@ -2,6 +2,8 @@
 
 - TODO is polygone really necessary
 
+- TODO get rid of anti alias
+
 - TODO remove unused delcaration in draw
 
 ## Next TODO
