@@ -1,5 +1,7 @@
 ## Pixel TODO
 
+- TODO remove all define in zic pixel
+
 - TODO is polygone really necessary
 
 - TODO get rid of anti alias
