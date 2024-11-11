@@ -256,7 +256,6 @@ public:
 
     bool config(char* key, char* params)
     {
-        printf("------ config %s %s\n", key, params);
         /*md - `VALUE: pluginName keyName` is used to set the value to control */
         if (strcmp(key, "VALUE") == 0) {
             char* pluginName = strtok(params, " ");
