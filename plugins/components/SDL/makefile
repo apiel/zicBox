@@ -1,4 +1,9 @@
-BUILD_DIR ?= build
+ifneq ($(shell uname -m),x86_64)
+SUB_DIR := arm
+else
+SUB_DIR := x86
+endif
+BUILD_DIR ?= build/$(SUB_DIR)
 OBJ_DIR ?= $(BUILD_DIR)/obj
 
 all:
