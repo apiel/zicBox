@@ -1,27 +1,27 @@
-PLUGIN_COMPONENT: Encoder ./plugins/components/build/libzic_EncoderComponent.so
-PLUGIN_COMPONENT: Encoder2 ./plugins/components/build/libzic_Encoder2Component.so
-# PLUGIN_COMPONENT: EncoderKnob ./plugins/components/build/libzic_EncoderKnobComponent.so
-PLUGIN_COMPONENT: Pad ./plugins/components/build/libzic_PadComponent.so
-PLUGIN_COMPONENT: Granular ./plugins/components/build/libzic_GranularComponent.so
-PLUGIN_COMPONENT: Wave ./plugins/components/build/libzic_WaveComponent.so
-PLUGIN_COMPONENT: Wave2 ./plugins/components/build/libzic_Wave2Component.so
-# PLUGIN_COMPONENT: Sequencer ./plugins/components/build/libzic_SequencerComponent.so
-PLUGIN_COMPONENT: Button ./plugins/components/build/libzic_ButtonComponent.so
-PLUGIN_COMPONENT: Cpu ./plugins/components/build/libzic_MonitoringComponent.so
-PLUGIN_COMPONENT: Adsr ./plugins/components/build/libzic_AdsrComponent.so
-PLUGIN_COMPONENT: Sample ./plugins/components/build/libzic_SampleComponent.so
-PLUGIN_COMPONENT: GridSequencer ./plugins/components/build/libzic_GridSequencerComponent.so
-PLUGIN_COMPONENT: Rect ./plugins/components/build/libzic_RectComponent.so
-PLUGIN_COMPONENT: Toggle ./plugins/components/build/libzic_ToggleComponent.so
-PLUGIN_COMPONENT: Play ./plugins/components/build/libzic_PlayComponent.so
-PLUGIN_COMPONENT: Text ./plugins/components/build/libzic_TextComponent.so
-PLUGIN_COMPONENT: FmAlgo ./plugins/components/build/libzic_FmAlgoComponent.so
-PLUGIN_COMPONENT: NavBar ./plugins/components/build/libzic_NavBarComponent.so
-PLUGIN_COMPONENT: ButtonBar ./plugins/components/build/libzic_ButtonBarComponent.so
-PLUGIN_COMPONENT: EncoderBar ./plugins/components/build/libzic_EncoderBarComponent.so
-PLUGIN_COMPONENT: EncoderBar2 ./plugins/components/build/libzic_EncoderBar2Component.so
-PLUGIN_COMPONENT: GridMini ./plugins/components/build/libzic_GridMiniComponent.so
-PLUGIN_COMPONENT: KeyInfoBar ./plugins/components/build/libzic_KeyInfoBarComponent.so
+PLUGIN_COMPONENT: Encoder ./plugins/components/SDL/build/libzic_EncoderComponent.so
+PLUGIN_COMPONENT: Encoder2 ./plugins/components/SDL/build/libzic_Encoder2Component.so
+# PLUGIN_COMPONENT: EncoderKnob ./plugins/components/SDL/build/libzic_EncoderKnobComponent.so
+PLUGIN_COMPONENT: Pad ./plugins/components/SDL/build/libzic_PadComponent.so
+PLUGIN_COMPONENT: Granular ./plugins/components/SDL/build/libzic_GranularComponent.so
+PLUGIN_COMPONENT: Wave ./plugins/components/SDL/build/libzic_WaveComponent.so
+PLUGIN_COMPONENT: Wave2 ./plugins/components/SDL/build/libzic_Wave2Component.so
+# PLUGIN_COMPONENT: Sequencer ./plugins/components/SDL/build/libzic_SequencerComponent.so
+PLUGIN_COMPONENT: Button ./plugins/components/SDL/build/libzic_ButtonComponent.so
+PLUGIN_COMPONENT: Cpu ./plugins/components/SDL/build/libzic_MonitoringComponent.so
+PLUGIN_COMPONENT: Adsr ./plugins/components/SDL/build/libzic_AdsrComponent.so
+PLUGIN_COMPONENT: Sample ./plugins/components/SDL/build/libzic_SampleComponent.so
+PLUGIN_COMPONENT: GridSequencer ./plugins/components/SDL/build/libzic_GridSequencerComponent.so
+PLUGIN_COMPONENT: Rect ./plugins/components/SDL/build/libzic_RectComponent.so
+PLUGIN_COMPONENT: Toggle ./plugins/components/SDL/build/libzic_ToggleComponent.so
+PLUGIN_COMPONENT: Play ./plugins/components/SDL/build/libzic_PlayComponent.so
+PLUGIN_COMPONENT: Text ./plugins/components/SDL/build/libzic_TextComponent.so
+PLUGIN_COMPONENT: FmAlgo ./plugins/components/SDL/build/libzic_FmAlgoComponent.so
+PLUGIN_COMPONENT: NavBar ./plugins/components/SDL/build/libzic_NavBarComponent.so
+PLUGIN_COMPONENT: ButtonBar ./plugins/components/SDL/build/libzic_ButtonBarComponent.so
+PLUGIN_COMPONENT: EncoderBar ./plugins/components/SDL/build/libzic_EncoderBarComponent.so
+PLUGIN_COMPONENT: EncoderBar2 ./plugins/components/SDL/build/libzic_EncoderBar2Component.so
+PLUGIN_COMPONENT: GridMini ./plugins/components/SDL/build/libzic_GridMiniComponent.so
+PLUGIN_COMPONENT: KeyInfoBar ./plugins/components/SDL/build/libzic_KeyInfoBarComponent.so
 
 
 

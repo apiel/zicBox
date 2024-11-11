@@ -110,6 +110,7 @@ public:
 
     void init()
     {
+        draw.init();
         ui.setUpdateCallback([]() { ViewManager::get().render(); });
     }
 

@@ -13,8 +13,6 @@ int main(int argc, char* argv[])
     loadUiConfig(argc >= 2 ? argv[1] : "pixel.ui", argc >= 3 ? argv[2] : NULL);
 
     ViewManager& viewManager = ViewManager::get();
-    viewManager.draw.init();
-
     viewManager.init();
     if (!viewManager.render()) {
         printf("No view were initialized to be rendered.");
