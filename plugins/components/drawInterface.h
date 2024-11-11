@@ -116,7 +116,7 @@ public:
     virtual void destroyTexture(void* texture) { }
     virtual void applyTexture(void* texture, Rect dest) { }
 
-    virtual Color getColor(char* color) = 0;
+    virtual Color getColor(char* color) { return styles.colors.white; }
     virtual bool config(char* key, char* value) { return false; }
 };
 
