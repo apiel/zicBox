@@ -299,20 +299,6 @@ public:
         aaFilledPolygonRGBA(renderer, x, y, points.size(), color.r, color.g, color.b, color.a);
     }
 
-    void polygon(std::vector<Point> points, DrawOptions options = {}) override
-    {
-        Sint16 x[points.size()];
-        Sint16 y[points.size()];
-        for (int i = 0; i < points.size(); i++) {
-            x[i] = points[i].x;
-            y[i] = points[i].y;
-        }
-
-        Color color = options.color;
-        // https://github.com/rtrussell/BBCSDL/blob/master/include/SDL2_gfxPrimitives.h
-        aapolygonRGBA(renderer, x, y, points.size(), color.r, color.g, color.b, color.a);
-    }
-
     void aaline(Point start, Point end, DrawOptions options = {}) override
     {
         Color color = options.color;

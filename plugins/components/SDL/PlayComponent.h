@@ -86,10 +86,11 @@ public:
             std::vector<Point> points = {
                 iconPosition,
                 { iconPosition.x + iconSize.w, (int)(iconPosition.y + iconSize.h * 0.5) },
-                { iconPosition.x, iconPosition.y + iconSize.h }
+                { iconPosition.x, iconPosition.y + iconSize.h },
+                iconPosition,
             };
             draw.filledPolygon(points, { colors.icon });
-            draw.polygon(points, { colors.border });
+            draw.aalines(points, { colors.border });
             draw.textCentered(labelPosition, "Playing", 12, { colors.title });
         } else {
             // Paused

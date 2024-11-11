@@ -200,12 +200,13 @@ public:
         std::vector<Point> points = {
             { x, position.y },
             { x + size, (int)(position.y + size * 0.5) },
-            { x, position.y + size }
+            { x, position.y + size },
+            { x, position.y },
         };
         if (filled) {
             draw.filledPolygon(points, { color });
         } else {
-            draw.polygon(points, { color });
+            draw.aalines(points, { color });
         }
     }
 
@@ -241,12 +242,13 @@ public:
             { (int)(x + size * 0.75), position.y + size },
             { (int)(x + size * 0.25), position.y + size },
             { (int)(x + size * 0.25), (int)(position.y + size * 0.5) },
-            { x, (int)(position.y + size * 0.5) }
+            { x, (int)(position.y + size * 0.5) },
+            { (int)(x + size * 0.5), position.y },
         };
         if (filled) {
             draw.filledPolygon(points, { color });
         } else {
-            draw.polygon(points, { color });
+            draw.aalines(points, { color });
         }
     }
 
@@ -260,12 +262,13 @@ public:
             { (int)(x + size * 0.75), position.y },
             { (int)(x + size * 0.25), position.y },
             { (int)(x + size * 0.25), (int)(position.y + size * 0.5) },
-            { x, (int)(position.y + size * 0.5) }
+            { x, (int)(position.y + size * 0.5) },
+            { (int)(x + size * 0.5), position.y + size },
         };
         if (filled) {
             draw.filledPolygon(points, { color });
         } else {
-            draw.polygon(points, { color });
+            draw.aalines(points, { color });
         }
     }
 
@@ -280,11 +283,12 @@ public:
             { (int)(x + size * 0.5), (int)(position.y + size * 0.75) },
             { (int)(x + size), (int)(position.y + size * 0.75) },
             { (int)(x + size), (int)(position.y + size * 0.25) },
+            { (int)(x + size * 0.5), (int)(position.y + size * 0.25) },
         };
         if (filled) {
             draw.filledPolygon(points, { color });
         } else {
-            draw.polygon(points, { color });
+            draw.aalines(points, { color });
         }
     }
 
@@ -299,11 +303,12 @@ public:
             { (int)(x + size * 0.5), (int)(position.y + size * 0.75) },
             { (int)(x), (int)(position.y + size * 0.75) },
             { (int)(x), (int)(position.y + size * 0.25) },
+            { (int)(x + size * 0.5), (int)(position.y + size * 0.25) },
         };
         if (filled) {
             draw.filledPolygon(points, { color });
         } else {
-            draw.polygon(points, { color });
+            draw.aalines(points, { color });
         }
     }
 
