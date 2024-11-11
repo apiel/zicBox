@@ -57,3 +57,19 @@ VIEW: Demo
     AUDIO_PLUGIN: Sample 0
     DATA_STATE: 2 1
 
+  COMPONENT: Button 20 400 40 40
+    LABEL: &icon::play
+
+  COMPONENT: Button 80 400 40 40
+    LABEL: &icon::arrowUp
+
+  COMPONENT: Button 140 400 40 40
+    LABEL: &icon::arrowDown
+
+  COMPONENT: Button 200 400 40 40
+    LABEL: &icon::arrowLeft
+
+  COMPONENT: Button 260 400 40 40
+    LABEL: &icon::arrowRight
+
+  COMPONENT: Play 320 400 80 80

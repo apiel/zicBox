@@ -112,7 +112,6 @@ public:
     virtual void filledEllipse(Point position, int radiusX, int radiusY, DrawOptions options = {}) { }
     virtual void ellipse(Point position, int radiusX, int radiusY, DrawOptions options = {}) { }
     virtual void filledPolygon(std::vector<Point> points, DrawOptions options = {}) { }
-    virtual void polygon(std::vector<Point> points, DrawOptions options = {}) { }
     virtual void aaline(Point start, Point end, DrawOptions options = {}) { }
     virtual void aalines(std::vector<Point> points, DrawOptions options = {}) { }
     virtual void arc(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) { }
