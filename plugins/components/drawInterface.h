@@ -80,7 +80,7 @@ public:
     {
     }
 
-    // virtual void init() { }
+    virtual void init() { }
     virtual void render() = 0;
     virtual void renderNext() = 0;
     virtual void triggerRendering() = 0;

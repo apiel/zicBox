@@ -1,3 +1,9 @@
+## Pixel TODO
+
+- TODO is polygone really necessary
+
+- TODO remove unused delcaration in draw
+
 ## Next TODO
 
 - FIXME git clone recursive to be base on http instead of ssh
