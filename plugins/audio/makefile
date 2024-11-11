@@ -1,4 +1,9 @@
-BUILD_DIR ?= build
+ifneq ($(shell uname -m),x86_64)
+SUB_DIR := arm
+else
+SUB_DIR := x86
+endif
+BUILD_DIR ?= build/$(SUB_DIR)
 OBJ_DIR ?= $(BUILD_DIR)/obj
 # For raspberry std::filesystem is not found.
 PARAMS ?= --std=c++17 -lstdc++fs
@@ -53,7 +58,7 @@ AudioOutputAlsa:
 compile:
 	@mkdir -p $(OBJ_DIR)
 	g++ -c -o $(OBJ_DIR)/$(LIBNAME).o audioPlugin.cpp -fPIC -DPLUGIN_NAME=$(LIBNAME) -DPLUGIN_INCLUDE=\"$(LIBNAME).h\" $(EXTRA) $(PARAMS)
-	g++ -shared -o build/libzic_$(LIBNAME).so $(OBJ_DIR)/$(LIBNAME).o $(EXTRA) $(PARAMS)
+	g++ -shared -o $(BUILD_DIR)/libzic_$(LIBNAME).so $(OBJ_DIR)/$(LIBNAME).o $(EXTRA) $(PARAMS)
 
 clean:
 	rm -rf $(BUILD_DIR)
