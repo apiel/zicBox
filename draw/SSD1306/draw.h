@@ -13,40 +13,9 @@
 #define SSD1306_COMM_CONTROL_BYTE 0x00
 #define SSD1306_DATA_CONTROL_BYTE 0x40
 
-#define SSD1306_COMM_DISPLAY_OFF 0xae
-#define SSD1306_COMM_DISPLAY_ON 0xaf
-#define SSD1306_COMM_HORIZ_NORM 0xa0
-#define SSD1306_COMM_HORIZ_FLIP 0xa1
-#define SSD1306_COMM_DISP_NORM 0xa6
-#define SSD1306_COMM_MULTIPLEX 0xa8
-#define SSD1306_COMM_VERT_OFFSET 0xd3
-#define SSD1306_COMM_CLK_SET 0xd5
-#define SSD1306_COMM_PRECHARGE 0xd9
-#define SSD1306_COMM_COM_PIN 0xda
-#define SSD1306_COMM_DESELECT_LV 0xdb
-#define SSD1306_COMM_CONTRAST 0x81
-#define SSD1306_COMM_DISABLE_SCROLL 0x2e
 #define SSD1306_COMM_PAGE_NUMBER 0xb0
 #define SSD1306_COMM_LOW_COLUMN 0x00
 #define SSD1306_COMM_HIGH_COLUMN 0x10
-
-#define SSD1306_COMM_START_LINE 0x40
-
-#define SSD1306_COMM_CHARGE_PUMP 0x8d
-
-#define SSD1306_COMM_SCAN_NORM 0xc0
-#define SSD1306_COMM_SCAN_REVS 0xc8
-
-#define SSD1306_COMM_MEMORY_MODE 0x20
-#define SSD1306_COMM_SET_COL_ADDR 0x21
-#define SSD1306_COMM_SET_PAGE_ADDR 0x22
-
-#define SSD1306_HORI_MODE 0x00
-#define SSD1306_VERT_MODE 0x01
-#define SSD1306_PAGE_MODE 0x02
-
-#define SSD1306_FONT_SMALL 0x00
-#define SSD1306_FONT_NORMAL 0x01
 
 #define SSD1306_128_64_LINES 64
 #define SSD1306_128_32_LINES 32
@@ -104,33 +73,33 @@ public:
     {
         uint8_t data[] = {
             SSD1306_COMM_CONTROL_BYTE, // command control byte
-            SSD1306_COMM_DISPLAY_OFF, // display off
-            SSD1306_COMM_DISP_NORM, // Set Normal Display (default)
-            SSD1306_COMM_CLK_SET, // SETDISPLAYCLOCKDIV
+            0xae, // display off
+            0xa6, // Set Normal Display (default)
+            0xd5, // SETDISPLAYCLOCKDIV
             0x80, // the suggested ratio 0x80
-            SSD1306_COMM_MULTIPLEX, // SSD1306_SETMULTIPLEX
+            0xa8, // SSD1306_SETMULTIPLEX
             (uint8_t)(styles.screen.h - 1), // height is 32 or 64 (always -1)
-            SSD1306_COMM_VERT_OFFSET, // SETDISPLAYOFFSET
+            0xd3, // SETDISPLAYOFFSET
             0, // no offset
-            SSD1306_COMM_START_LINE, // SETSTARTLINE
-            SSD1306_COMM_CHARGE_PUMP, // CHARGEPUMP
+            0x40, // SETSTARTLINE
+            0x8d, // CHARGEPUMP
             0x14, // turn on charge pump
-            SSD1306_COMM_MEMORY_MODE, // MEMORYMODE
-            SSD1306_PAGE_MODE, // page mode
-            SSD1306_COMM_HORIZ_NORM, // SEGREMAP  Mirror screen horizontally (A0)
-            SSD1306_COMM_SCAN_NORM, // COMSCANDEC Rotate screen vertically (C0)
-            SSD1306_COMM_COM_PIN, // HARDWARE PIN
+            0x20, // MEMORYMODE
+            0x02, // page mode
+            0xa0, // SEGREMAP  Mirror screen horizontally (A0)
+            0xc0, // COMSCANDEC Rotate screen vertically (C0)
+            0xda, // HARDWARE PIN
             styles.screen.h == SSD1306_128_32_LINES ? (uint8_t)0x02 : (uint8_t)0x12, // 0x02 for 32 lines, 0x12 for 64 lines or 48 lines
-            SSD1306_COMM_CONTRAST, // SETCONTRAST
+            0x81, // SETCONTRAST
             0x7f, // default contract value
-            SSD1306_COMM_PRECHARGE, // SETPRECHARGE
+            0xd9, // SETPRECHARGE
             0xf1, // default precharge value
-            SSD1306_COMM_DESELECT_LV, // SETVCOMDETECT
+            0xdb, // SETVCOMDETECT
             0x40, // default deselect value
             0xa4, // DISPLAYALLON_RESUME
-            SSD1306_COMM_DISP_NORM, // NORMALDISPLAY
-            SSD1306_COMM_DISPLAY_ON, // DISPLAY ON
-            SSD1306_COMM_DISABLE_SCROLL, // Stop scroll
+            0xa6, // Set Normal Display (default)
+            0xaf, // DISPLAY ON
+            0x2e, // Stop scroll
         };
 
         i2c.send(data, sizeof(data) / sizeof(data[0]));
