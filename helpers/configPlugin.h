@@ -42,9 +42,17 @@ void loadConfigPlugin(const char* pluginPath, std::string scriptPath, void (*cal
     }
 
     if (strcmp(pluginPath, "dustscript") == 0) {
-        instantiateConfigPlugin("plugins/config/build/libzic_DustConfig.so", scriptPath, callback);
+#ifdef IS_RPI
+        instantiateConfigPlugin("plugins/config/build/arm/libzic_DustConfig.so", scriptPath, callback);
+#else
+        instantiateConfigPlugin("plugins/config/build/x86/libzic_DustConfig.so", scriptPath, callback);
+#endif
     } else if (strcmp(pluginPath, "lua") == 0) {
-        instantiateConfigPlugin("plugins/config/build/libzic_LuaConfig.so", scriptPath, callback);
+#ifdef IS_RPI
+        instantiateConfigPlugin("plugins/config/build/arm/libzic_LuaConfig.so", scriptPath, callback);
+#else
+        instantiateConfigPlugin("plugins/config/build/x86/libzic_LuaConfig.so", scriptPath, callback);
+#endif
     } else {
         instantiateConfigPlugin(pluginPath, scriptPath, callback);
     }

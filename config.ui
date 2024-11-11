@@ -29,12 +29,12 @@ PLUGIN_COMPONENT: KeyInfoBar ./plugins/components/SDL/$buildDir/libzic_KeyInfoBa
 
 
 
-PLUGIN_CONTROLLER: Osc ./plugins/controllers/build/libzic_OscController.so
+PLUGIN_CONTROLLER: Osc ./plugins/controllers/$buildDir/libzic_OscController.so
 
-PLUGIN_CONTROLLER: Keypad ./plugins/controllers/build/libzic_NeotrellisController.so
+PLUGIN_CONTROLLER: Keypad ./plugins/controllers/$buildDir/libzic_NeotrellisController.so
   SERIAL: /dev/ttyACM0
 
-PLUGIN_CONTROLLER: MidiEncoder ./plugins/controllers/build/libzic_MidiEncoderController.so
+PLUGIN_CONTROLLER: MidiEncoder ./plugins/controllers/$buildDir/libzic_MidiEncoderController.so
   DEVICE: Arduino Leonardo:Arduino Leonardo MIDI 1
   ENCODER_TARGET: 7 0
   ENCODER_TARGET: 6 1
@@ -108,12 +108,12 @@ if: $screen == ui_480x640
 ## 240x240 ###
 
 if: $screen == ui_240x240
-  PLUGIN_CONTROLLER: Encoder ./plugins/controllers/build/libzic_EncoderController.so
+  PLUGIN_CONTROLLER: Encoder ./plugins/controllers/$buildDir/libzic_EncoderController.so
     ENCODER: 0 12 20 16
     ENCODER: 1 22 24 25
     ENCODER: 2 8 9 7
     ENCODER: 3 23 27 17
-  PLUGIN_CONTROLLER: Mpr121 ./plugins/controllers/build/libzic_Mpr121Controller.so
+  PLUGIN_CONTROLLER: Mpr121 ./plugins/controllers/$buildDir/libzic_Mpr121Controller.so
     ADDRESS: 0x5a
     ADDRESS: 0x5c
     ADDRESS: 0x5d
