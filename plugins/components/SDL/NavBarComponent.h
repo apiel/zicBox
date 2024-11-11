@@ -50,16 +50,16 @@ protected:
     void renderMain()
     {
         draw.filledRect(position, arrowSize, { colors.background });
-        draw.aalines({ { position.x + arrowSize.w - 3, position.y + 1 },
+        draw.lines({ { position.x + arrowSize.w - 3, position.y + 1 },
                          { position.x + 3, position.y + (int)(arrowSize.h * 0.5) },
                          { position.x + arrowSize.w - 3, position.y + arrowSize.h - 2 } },
-            { colors.font });
+            { colors.font, .antiAliasing = true });
 
         draw.filledRect({ position.x + size.w - arrowSize.w, position.y }, arrowSize, { colors.background });
-        draw.aalines({ { position.x + size.w - arrowSize.w + 3, position.y + 1 },
+        draw.lines({ { position.x + size.w - arrowSize.w + 3, position.y + 1 },
                          { position.x + size.w - 3, position.y + (int)(arrowSize.h * 0.5) },
                          { position.x + size.w - arrowSize.w + 3, position.y + arrowSize.h - 2 } },
-            { colors.font });
+            { colors.font, .antiAliasing = true });
 
         int xPos = position.x + (arrowSize.w + 1);
         for (int i = 0; i < 3; i++) {

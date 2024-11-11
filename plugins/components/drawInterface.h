@@ -58,16 +58,11 @@ struct Styles {
 
 struct DrawOptions {
     Color color = { 255, 255, 255, 255 };
-    // bool antiAliasing = false;
+    bool antiAliasing = false;
 };
 
-// struct DrawTextOptions {
-//     Color color = { 255, 255, 255, 255 };
-//     const char* fontPath = nullptr;
-//     int maxWidth = -1;
-// };
-
-struct DrawTextOptions : DrawOptions {
+struct DrawTextOptions {
+    Color color = { 255, 255, 255, 255 };
     const char* fontPath = nullptr;
     int maxWidth = -1;
 };
@@ -112,8 +107,6 @@ public:
     virtual void filledEllipse(Point position, int radiusX, int radiusY, DrawOptions options = {}) { }
     virtual void ellipse(Point position, int radiusX, int radiusY, DrawOptions options = {}) { }
     virtual void filledPolygon(std::vector<Point> points, DrawOptions options = {}) { }
-    virtual void aaline(Point start, Point end, DrawOptions options = {}) { }
-    virtual void aalines(std::vector<Point> points, DrawOptions options = {}) { }
     virtual void arc(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) { }
     virtual void circle(Point position, int radius, DrawOptions options = {}) { }
     virtual void filledCircle(Point position, int radius, DrawOptions options = {}) { }
