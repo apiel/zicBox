@@ -5,6 +5,8 @@ SDL2_ttf=`pkg-config --cflags --libs SDL2_ttf`
 
 ifneq ($(shell uname -m),x86_64)
 RPI := -DIS_RPI=1
+else
+PIXEL_SDL := $(SDL2)
 endif
 
 BUILD=-Wno-narrowing -ldl $(RTMIDI) 
@@ -47,7 +49,7 @@ run:
 
 buildPixel:
 	@echo "\n------------------ build zicPixel ------------------\n"
-	g++ -g -fms-extensions -o zicPixel zicPixel.cpp -ldl $(RPI) $(RTMIDI)
+	g++ -g -fms-extensions -o zicPixel zicPixel.cpp -ldl $(RPI) $(RTMIDI) $(PIXEL_SDL)
 
 runPixel:
 	@echo "\n------------------ run zicPixel ------------------\n"

@@ -15,17 +15,6 @@ int main(int argc, char* argv[])
 
     // SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
 
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not initialize SDL: %s", SDL_GetError());
-        return 1;
-    }
-
-    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "SDL video driver: %s", SDL_GetCurrentVideoDriver());
-
-#ifdef IS_RPI
-    SDL_ShowCursor(SDL_DISABLE);
-#endif
-
     ViewManager& viewManager = ViewManager::get();
     viewManager.init();
     if (!viewManager.render()) {
