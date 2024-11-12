@@ -34,11 +34,12 @@
 #define SSD1306_BUFFER_SIZE (128 * 64 / 8)
 
 class Draw : public DrawInterface {
-protected:
-    I2c i2c;
+public:
     uint8_t oledBuffer[SSD1306_BUFFER_SIZE] = { 0 };
 
-public:
+protected:
+    I2c i2c;
+
     void oledInit(uint8_t i2c_dev = 1)
     {
         if (!i2c.init(i2c_dev, SSD1306_I2C_ADDR)) {
@@ -267,7 +268,6 @@ public:
         line({ 0, 64 }, { 127, 0 });
         rect({ 10, 10 }, { 30, 30 });
         arc({ 100, 32 }, 10, 0, 180);
-        oledRender();
     }
 
     void renderNext() override
@@ -280,6 +280,7 @@ public:
 
     void render() override
     {
+        oledRender();
     }
 
     void clear()

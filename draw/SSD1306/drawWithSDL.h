@@ -53,6 +53,37 @@ public:
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
         texture = (SDL_Texture*)setTextureRenderer(styles.screen);
+
+        // for testing
+        line({ 0, 0 }, { 127, 64 });
+        line({ 0, 64 }, { 127, 0 });
+        rect({ 10, 10 }, { 30, 30 });
+        arc({ 100, 32 }, 10, 0, 180);
+
+        render();
+    }
+
+    void render() override
+    {
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        for (uint16_t i = 0; i < SSD1306_BUFFER_SIZE; i++) {
+            if (oledBuffer[i] != 0x00) {
+                Point position = { i % styles.screen.w, i / styles.screen.w };
+                SDL_RenderDrawPoint(renderer, position.x, position.y);
+            }
+        }
+
+        // During the whole rendering process, we render into a texture
+        // Only at the end, we push the texture to the screen
+        //
+        // Set renderer pointing to screen
+        SDL_SetRenderTarget(renderer, NULL);
+        // Copy texture to renderer pointing on the screen
+        SDL_RenderCopy(renderer, texture, NULL, NULL);
+        // Present renderer
+        SDL_RenderPresent(renderer);
+        // Set renderer pointinng to texture
+        SDL_SetRenderTarget(renderer, texture);
     }
 };
 
