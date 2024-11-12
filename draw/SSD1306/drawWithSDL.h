@@ -5,7 +5,7 @@
 
 #include "./draw.h"
 
-class DrawWithSDL : protected Draw {
+class DrawWithSDL : public Draw {
 protected:
     SDL_Texture* texture = NULL;
     SDL_Renderer* renderer = NULL;
