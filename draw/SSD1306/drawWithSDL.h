@@ -55,12 +55,7 @@ public:
         texture = (SDL_Texture*)setTextureRenderer(styles.screen);
 
         // for testing
-        line({ 0, 0 }, { 127, 64 });
-        line({ 0, 64 }, { 127, 0 });
-        rect({ 10, 10 }, { 30, 30 });
-        arc({ 100, 32 }, 10, 0, 180);
-
-        render();
+        test();
     }
 
     void render() override
