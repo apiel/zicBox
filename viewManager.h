@@ -9,12 +9,14 @@
 #include "controllerList.h"
 #include "helpers/getFullpath.h"
 #include "host.h"
+#include "log.h"
 #include "plugins/components/componentInterface.h"
 #include "styles.h"
-#include "log.h"
 #include "timer.h"
 
-#ifdef DRAW_SSD1306
+#ifdef USE_DRAW_WITH_SDL
+#include "draw/SSD1306/drawWithSDL.h"
+#elifdef DRAW_SSD1306
 #include "draw/SSD1306/draw.h"
 #else
 #include "draw/SDL/draw.h"
@@ -96,7 +98,11 @@ protected:
     }
 
 public:
+#ifdef USE_DRAW_WITH_SDL
+    DrawWithSDL draw;
+#else
     Draw draw;
+#endif
 
     bool shift = false;
 
@@ -226,35 +232,35 @@ public:
 
     bool config(char* key, char* value, const char* filename)
     {
-/*md
-### PLUGIN_COMPONENT
+        /*md
+        ### PLUGIN_COMPONENT
 
-A component must be load from a shared library (those `.so` files). To load those plugin components, use `PLUGIN_COMPONENT: given_name_to_component ../path/of/the/component.so`.
+        A component must be load from a shared library (those `.so` files). To load those plugin components, use `PLUGIN_COMPONENT: given_name_to_component ../path/of/the/component.so`.
 
-```coffee
-PLUGIN_COMPONENT: Encoder ../plugins/build/libzic_EncoderComponent.so
-```
+        ```coffee
+        PLUGIN_COMPONENT: Encoder ../plugins/build/libzic_EncoderComponent.so
+        ```
 
-In this example, we load the shared library `../plugins/build/libzic_EncoderComponent.so` and we give it the name of `Encoder`. The `Encoder` name will be used later to place the components in the view.
-*/
+        In this example, we load the shared library `../plugins/build/libzic_EncoderComponent.so` and we give it the name of `Encoder`. The `Encoder` name will be used later to place the components in the view.
+        */
         if (strcmp(key, "PLUGIN_COMPONENT") == 0) {
             loadPlugin(value, filename);
             return true;
         }
-/*md
-### COMPONENT
+        /*md
+        ### COMPONENT
 
-To place previously loaded components inside a view, use `COMPONENT: given_name_to_component x y w h`.
+        To place previously loaded components inside a view, use `COMPONENT: given_name_to_component x y w h`.
 
-```coffee
-COMPONENT: Encoder 100 0 100 50
-ENCODER_ID: 1
-VALUE: MultiModeFilter RESONANCE
-```
+        ```coffee
+        COMPONENT: Encoder 100 0 100 50
+        ENCODER_ID: 1
+        VALUE: MultiModeFilter RESONANCE
+        ```
 
-A component can get extra configuration settings and any `KEY: VALUE` following `COMPONENT: ` will be forwarded to the component.
-In this example, we assign the hardware encoder id 1 to this component and we assign it to the resonance value from the multi mode filter audio plugin.
-*/
+        A component can get extra configuration settings and any `KEY: VALUE` following `COMPONENT: ` will be forwarded to the component.
+        In this example, we assign the hardware encoder id 1 to this component and we assign it to the resonance value from the multi mode filter audio plugin.
+        */
         if (strcmp(key, "COMPONENT") == 0) {
             char* name = strtok(value, " ");
             Point position = { atoi(strtok(NULL, " ")), atoi(strtok(NULL, " ")) };

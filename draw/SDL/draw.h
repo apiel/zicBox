@@ -117,8 +117,19 @@ public:
 #endif
         ;
 
-    void init()
+    void init() override
     {
+        if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not initialize SDL: %s", SDL_GetError());
+            throw std::runtime_error("Could not initialize SDL.");
+        }
+
+        SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "SDL video driver: %s", SDL_GetCurrentVideoDriver());
+
+#ifdef IS_RPI
+        SDL_ShowCursor(SDL_DISABLE);
+#endif
+
         window = SDL_CreateWindow(
             "Zic",
             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,

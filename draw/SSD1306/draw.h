@@ -256,7 +256,7 @@ public:
     {
     }
 
-    void init()
+    void init() override
     {
         validateDisplaySize();
         oledInit();
