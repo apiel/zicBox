@@ -68,8 +68,13 @@ public:
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         for (uint16_t i = 0; i < SSD1306_BUFFER_SIZE; i++) {
             if (oledBuffer[i] != 0x00) {
-                Point position = { i % styles.screen.w, i / styles.screen.w };
-                SDL_RenderDrawPoint(renderer, position.x, position.y);
+                Point position = { i % styles.screen.w, (i / styles.screen.w) * 8 };
+                // SDL_RenderDrawPoint(renderer, position.x, position.y);
+                for (int j = 0; j < 8; j++) {
+                    if (oledBuffer[i] & (1 << j)) {
+                        SDL_RenderDrawPoint(renderer, position.x, position.y + j);
+                    }
+                }
             }
         }
 
