@@ -234,6 +234,26 @@ protected:
         oledPixel(xc - y, yc - x);
     }
 
+    void drawOctants(int xc, int yc, int x, int y, uint8_t angle)
+    {
+        if (angle == 0)
+            oledPixel(xc + x, yc + y);
+        if (angle == 1)
+            oledPixel(xc - x, yc + y);
+        if (angle == 2)
+            oledPixel(xc + x, yc - y);
+        if (angle == 3)
+            oledPixel(xc - x, yc - y);
+        if (angle == 4)
+            oledPixel(xc + y, yc + x);
+        if (angle == 5)
+            oledPixel(xc - y, yc + x);
+        if (angle == 6)
+            oledPixel(xc + y, yc - x);
+        if (angle == 7)
+            oledPixel(xc - y, yc - x);
+    }
+
     // For filled circle
     void drawFilledOctants(int xc, int yc, int x, int y)
     {
@@ -257,6 +277,10 @@ public:
     {
     }
 
+    void quit()
+    {
+    }
+
     void init() override
     {
         validateDisplaySize();
@@ -272,7 +296,7 @@ public:
         line({ 0, 0 }, { 127, 64 });
         line({ 0, 64 }, { 127, 0 });
         rect({ 10, 10 }, { 30, 30 });
-        arc({ 100, 32 }, 10, 0, 180);
+        arc({ 100, 32 }, 0, 4, 180);
 
         render();
     }
@@ -342,20 +366,20 @@ public:
 
     void arc(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
     {
-        // draw arc pixel by pixel, use start angle and end angle to control the arc
-
-        int x = 0, y = radius;
-        int d = 3 - 2 * radius;
-        drawOctants(position.x, position.y, x, y);
-        while (y >= x) {
-            if (d > 0) {
-                y--;
-                d = d + 4 * (x - y) + 10;
-            } else {
-                d = d + 4 * x + 6;
-            }
-            x++;
+        for (int angle = startAngle; angle < endAngle; angle++) {
+            int x = 0, y = radius;
+            int d = 3 - 2 * radius;
             drawOctants(position.x, position.y, x, y);
+            while (y >= x) {
+                if (d > 0) {
+                    y--;
+                    d = d + 4 * (x - y) + 10;
+                } else {
+                    d = d + 4 * x + 6;
+                }
+                x++;
+                drawOctants(position.x, position.y, x, y, 0); // angle % 8
+            }
         }
     }
 

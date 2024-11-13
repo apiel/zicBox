@@ -11,12 +11,27 @@ protected:
     SDL_Renderer* renderer = NULL;
     SDL_Window* window = NULL;
 
+    int windowX = SDL_WINDOWPOS_CENTERED;
+    int windowY = SDL_WINDOWPOS_CENTERED;
+
     // bool needRendering = false;
 
 public:
     DrawWithSDL(Styles& styles)
         : Draw(styles)
     {
+    }
+
+    void quit()
+    {
+        int x, y;
+        SDL_GetWindowPosition(window, &x, &y);
+        logInfo("Exit on position x: %d, y: %d", x, y);
+
+        SDL_DestroyWindow(window);
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyTexture(texture);
+        SDL_Quit();
     }
 
     int flags = SDL_WINDOW_SHOWN
@@ -54,6 +69,8 @@ public:
 
         texture = (SDL_Texture*)setTextureRenderer(styles.screen);
 
+        SDL_SetWindowPosition(window, windowX, windowY);
+
         // for testing
         test();
     }
@@ -84,6 +101,17 @@ public:
         SDL_RenderPresent(renderer);
         // Set renderer pointinng to texture
         SDL_SetRenderTarget(renderer, texture);
+    }
+
+    bool config(char* key, char* value)
+    {
+        printf("in pixel draw sdl key: %s, value: %s\n", key, value);
+        if (strcmp(key, "WINDOW_POSITION") == 0) {
+            windowX = atoi(value);
+            windowY = atoi(value);
+            return true;
+        }
+        return Draw::config(key, value);
     }
 };
 

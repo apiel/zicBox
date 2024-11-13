@@ -1,3 +1,4 @@
+#define ZIC_LOG_LEVEL ZIC_LOG_DEBUG
 #define DRAW_SSD1306
 
 #ifndef IS_RPI
@@ -19,6 +20,8 @@ int main(int argc, char* argv[])
 {
     styles.screen = { 128, 64 };
     loadUiConfig(argc >= 2 ? argv[1] : "pixel.ui", argc >= 3 ? argv[2] : NULL);
+
+    showLogLevel();
 
     ViewManager& viewManager = ViewManager::get();
     viewManager.init();
@@ -42,9 +45,7 @@ int main(int argc, char* argv[])
         usleep(1);
     }
 
-#ifdef USE_DRAW_WITH_SDL
-    SDL_Quit();
-#endif
+    viewManager.draw.quit();
 
     return 0;
 }
