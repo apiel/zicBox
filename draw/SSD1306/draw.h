@@ -289,15 +289,19 @@ protected:
     //         line({xc - x, yc - y}, {xc, yc});
     // }
 
-    void drawChar(int16_t x, int16_t y, unsigned char character, uint8_t size)
+    void drawChar(int16_t x, int16_t y, unsigned char character, uint8_t* font)
     {
         // uint16_t height = 44;
         // uint16_t width = 16;
         // uint8_t* offset = &DotMatrix_M[(character - 32) * height];
 
-        uint16_t height = 8;
-        uint16_t width = 8;
-        uint8_t* offset = &Sinclair_S[(character - 32) * height];
+        // uint16_t height = Sinclair_S[0];
+        // uint16_t width = Sinclair_S[1];
+        // uint8_t* offset = &Sinclair_S[(character - 32) * height + 2];
+
+        uint16_t height = font[0];
+        uint16_t width = font[1];
+        uint8_t* offset = &font[(character - 32) * height + 2];
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -308,15 +312,19 @@ protected:
         }
     }
 
-    void drawCharInverse(int16_t x, int16_t y, unsigned char character, uint8_t size)
+    void drawCharInverse(int16_t x, int16_t y, unsigned char character, uint8_t* font)
     {
         // uint16_t height = 44;
         // uint16_t width = 16;
         // uint8_t* offset = &DotMatrix_M[(character - 32) * height];
 
-        uint16_t height = 8;
-        uint16_t width = 8;
-        uint8_t* offset = &Sinclair_S[(character - 32) * height];
+        // uint16_t height = Sinclair_S[0];
+        // uint16_t width = Sinclair_S[1];
+        // uint8_t* offset = &Sinclair_S[(character - 32) * height + 2];
+
+        uint16_t height = font[0];
+        uint16_t width = font[1];
+        uint8_t* offset = &font[(character - 32) * height + 2];
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -420,9 +428,9 @@ public:
         // filledPie({ 100, 32 }, 10, 4, 6);
         circle({ 100, 32 }, 10);
 
-        drawChar(10, 10, 'A', 1);
+        drawChar(10, 10, 'A', Sinclair_S);
 
-        drawCharInverse(60, 10, 'A', 1);
+        drawCharInverse(60, 10, 'A', Sinclair_S);
 
         render();
     }
