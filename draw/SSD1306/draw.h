@@ -1,6 +1,8 @@
 #ifndef _UI_DRAW_H_
 #define _UI_DRAW_H_
 
+#include "../../fonts/DotMatrix_M.h"
+#include "../../fonts/Sinclair_S.h"
 #include "../../helpers/i2c.h"
 #include "../../log.h"
 #include "../../plugins/components/drawInterface.h"
@@ -287,6 +289,42 @@ protected:
     //         line({xc - x, yc - y}, {xc, yc});
     // }
 
+    void drawChar(int16_t x, int16_t y, unsigned char character, uint8_t size)
+    {
+        // uint16_t height = 44;
+        // uint16_t width = 16;
+        // uint8_t* offset = &DotMatrix_M[(character - 32) * height];
+
+        uint16_t height = 8;
+        uint16_t width = 8;
+        uint8_t* offset = &Sinclair_S[(character - 32) * height];
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                if (offset[i] & (1 << j)) {
+                    oledPixel(x + j, y + i);
+                }
+            }
+        }
+    }
+
+    void drawCharInverse(int16_t x, int16_t y, unsigned char character, uint8_t size)
+    {
+        // uint16_t height = 44;
+        // uint16_t width = 16;
+        // uint8_t* offset = &DotMatrix_M[(character - 32) * height];
+
+        uint16_t height = 8;
+        uint16_t width = 8;
+        uint8_t* offset = &Sinclair_S[(character - 32) * height];
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                oledPixel(x + j, y + i, offset[i] & (1 << j) ? SSD1306_BLACK : SSD1306_WHITE);
+            }
+        }
+    }
+
 public:
     Draw(Styles& styles)
         : DrawInterface(styles)
@@ -376,11 +414,15 @@ public:
 
     void test()
     {
-        line({ 0, 0 }, { 127, 64 });
-        line({ 0, 64 }, { 127, 0 });
-        rect({ 10, 10 }, { 30, 30 }, 5);
+        // line({ 0, 0 }, { 127, 64 });
+        // line({ 0, 64 }, { 127, 0 });
+        // rect({ 10, 10 }, { 30, 30 }, 5);
         // filledPie({ 100, 32 }, 10, 4, 6);
         circle({ 100, 32 }, 10);
+
+        drawChar(10, 10, 'A', 1);
+
+        drawCharInverse(60, 10, 'A', 1);
 
         render();
     }
