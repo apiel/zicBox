@@ -1,13 +1,13 @@
-#ifndef _SINCLAIR_S_H_
-#define _SINCLAIR_S_H_
+#ifndef _TINY_FONT_H_
+#define _TINY_FONT_H_
 
 #include <cstdint>
 
 // Font type    : Full (95 characters)
-// Font size    : 8x8 pixels
+// Font size    : 3x8 pixels
 
-uint8_t Sinclair_S[] = {
-    8, 8, // 8x8
+uint8_t TinyFont[] = {
+    3, 8, // 3x8
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // <space>
     0x08, 0x08, 0x08, 0x08, 0x08, 0x00, 0x08, 0x00, // !
     0x14, 0x14, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // "
