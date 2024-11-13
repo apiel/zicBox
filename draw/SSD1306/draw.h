@@ -344,13 +344,13 @@ public:
 
     void rect(Point position, Size size, uint8_t radius, DrawOptions options = {})
     {
-        arc({ position.x + radius, position.y + radius }, radius, 180, 270, options);
+        // arc({ position.x + radius, position.y + radius }, radius, 180, 270, options);
         line({ position.x, position.y + radius }, { position.x, position.y + size.h - radius }, options);
-        arc({ position.x + size.w - radius, position.y + radius }, radius, 270, 360, options);
+        // arc({ position.x + size.w - radius, position.y + radius }, radius, 270, 360, options);
         line({ position.x + radius, position.y }, { position.x + size.w - radius, position.y }, options);
-        arc({ position.x + radius, position.y + size.h - radius }, radius, 90, 180, options);
+        // arc({ position.x + radius, position.y + size.h - radius }, radius, 90, 180, options);
         line({ position.x + radius, position.y + size.h }, { position.x + size.w - radius, position.y + size.h }, options);
-        arc({ position.x + size.w - radius, position.y + size.h - radius }, radius, 0, 90, options);
+        // arc({ position.x + size.w - radius, position.y + size.h - radius }, radius, 0, 90, options);
         line({ position.x + size.w, position.y + size.h - radius }, { position.x + size.w, position.y + radius }, options);
     }
 
@@ -358,7 +358,7 @@ public:
     {
         line({ 0, 0 }, { 127, 64 });
         line({ 0, 64 }, { 127, 0 });
-        rect({ 10, 10 }, { 30, 30 });
+        rect({ 10, 10 }, { 30, 30 }, 5);
         arc({ 100, 32 }, 10, -2, 2);
 
         // circle({ 100, 32 }, 10);
