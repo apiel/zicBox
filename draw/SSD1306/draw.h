@@ -267,6 +267,26 @@ protected:
             oledPixel(xx, yc - x);
     }
 
+    // void drawFilledOctants(int xc, int yc, int x, int y, uint8_t angle)
+    // {
+    //     if (angle == 0)
+    //         line({xc + x, yc - y}, {xc, yc});
+    //     if (angle == 1)
+    //         line({xc + y, yc - x}, {xc, yc});
+    //     if (angle == 2)
+    //         line({xc + y, yc + x}, {xc, yc});
+    //     if (angle == 3)
+    //         line({xc + x, yc + y}, {xc, yc});
+    //     if (angle == 4)
+    //         line({xc - x, yc + y}, {xc, yc});
+    //     if (angle == 5)
+    //         line({xc - y, yc + x}, {xc, yc});
+    //     if (angle == 6)
+    //         line({xc - y, yc - x}, {xc, yc});
+    //     if (angle == 7)
+    //         line({xc - x, yc - y}, {xc, yc});
+    // }
+
 public:
     Draw(Styles& styles)
         : DrawInterface(styles)
@@ -359,12 +379,37 @@ public:
         line({ 0, 0 }, { 127, 64 });
         line({ 0, 64 }, { 127, 0 });
         rect({ 10, 10 }, { 30, 30 }, 5);
-        arc({ 100, 32 }, 10, -2, 2);
-
+        // filledPie({ 100, 32 }, 10, 4, 6);
         // circle({ 100, 32 }, 10);
 
         render();
     }
+
+    // /**
+    //  * Draw filledPie when circle is divided into 8 octants. Each angle correspond to one octant.
+    //  * Meaning that angle 0 will correspond to octant 0, angle 45 will correspond to octant 1, etc.
+    //  * Therefor starting angle is 0 and ending angle is 8.
+    //  * Negative angles will result in anti clockwise rotation. Meaning that angle -1 will correspond to octant 7, etc.
+    //  */
+    // void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
+    // {
+    //     for (int angle = startAngle; angle < endAngle; angle++) {
+    //         // for (int angle = 0; angle < 8; angle++) {
+    //         int x = 0, y = radius;
+    //         int d = 3 - 2 * radius;
+    //         drawFilledOctants(position.x, position.y, x, y, (angle + 8) % 8);
+    //         while (y >= x) {
+    //             if (d > 0) {
+    //                 y--;
+    //                 d = d + 4 * (x - y) + 10;
+    //             } else {
+    //                 d = d + 4 * x + 6;
+    //             }
+    //             x++;
+    //             drawFilledOctants(position.x, position.y, x, y, (angle + 8) % 8);
+    //         }
+    //     }
+    // }
 
     /**
      * Draw arc when circle is divided into 8 octants. Each angle correspond to one octant.
