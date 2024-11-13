@@ -237,21 +237,21 @@ protected:
     void drawOctants(int xc, int yc, int x, int y, uint8_t angle)
     {
         if (angle == 0)
-            oledPixel(xc + x, yc + y);
-        if (angle == 1)
-            oledPixel(xc - x, yc + y);
-        if (angle == 2)
             oledPixel(xc + x, yc - y);
-        if (angle == 3)
-            oledPixel(xc - x, yc - y);
-        if (angle == 4)
+        if (angle == 1)
+            oledPixel(xc + y, yc - x);
+        if (angle == 2)
             oledPixel(xc + y, yc + x);
+        if (angle == 3)
+            oledPixel(xc + x, yc + y);
+        if (angle == 4)
+            oledPixel(xc - x, yc + y);
         if (angle == 5)
             oledPixel(xc - y, yc + x);
         if (angle == 6)
-            oledPixel(xc + y, yc - x);
-        if (angle == 7)
             oledPixel(xc - y, yc - x);
+        if (angle == 7)
+            oledPixel(xc - x, yc - y);
     }
 
     // For filled circle
@@ -289,16 +289,6 @@ public:
         clear();
 
         test();
-    }
-
-    void test()
-    {
-        line({ 0, 0 }, { 127, 64 });
-        line({ 0, 64 }, { 127, 0 });
-        rect({ 10, 10 }, { 30, 30 });
-        arc({ 100, 32 }, 0, 4, 180);
-
-        render();
     }
 
     void renderNext() override
@@ -364,12 +354,31 @@ public:
         line({ position.x + size.w, position.y + size.h - radius }, { position.x + size.w, position.y + radius }, options);
     }
 
+    void test()
+    {
+        line({ 0, 0 }, { 127, 64 });
+        line({ 0, 64 }, { 127, 0 });
+        rect({ 10, 10 }, { 30, 30 });
+        arc({ 100, 32 }, 10, -2, 2);
+
+        // circle({ 100, 32 }, 10);
+
+        render();
+    }
+
+    /**
+     * Draw arc when circle is divided into 8 octants. Each angle correspond to one octant.
+     * Meaning that angle 0 will correspond to octant 0, angle 45 will correspond to octant 1, etc.
+     * Therefor starting angle is 0 and ending angle is 8.
+     * Negative angles will result in anti clockwise rotation. Meaning that angle -1 will correspond to octant 7, etc.
+     */
     void arc(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
     {
         for (int angle = startAngle; angle < endAngle; angle++) {
+            // for (int angle = 0; angle < 8; angle++) {
             int x = 0, y = radius;
             int d = 3 - 2 * radius;
-            drawOctants(position.x, position.y, x, y);
+            drawOctants(position.x, position.y, x, y, (angle + 8) % 8);
             while (y >= x) {
                 if (d > 0) {
                     y--;
@@ -378,7 +387,7 @@ public:
                     d = d + 4 * x + 6;
                 }
                 x++;
-                drawOctants(position.x, position.y, x, y, 0); // angle % 8
+                drawOctants(position.x, position.y, x, y, (angle + 8) % 8);
             }
         }
     }
