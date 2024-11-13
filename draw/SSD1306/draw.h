@@ -1,8 +1,9 @@
 #ifndef _UI_DRAW_H_
 #define _UI_DRAW_H_
 
-#include "../../fonts/Tiny.h"
+#include "../../fonts/Sinclair_M.h"
 #include "../../fonts/Sinclair_S.h"
+#include "../../fonts/Tiny.h"
 #include "../../helpers/i2c.h"
 #include "../../log.h"
 #include "../../plugins/components/drawInterface.h"
@@ -289,39 +290,42 @@ protected:
     //         line({xc - x, yc - y}, {xc, yc});
     // }
 
-    void drawChar(int16_t x, int16_t y, unsigned char character, uint8_t* font)
+    // void drawChar(int16_t x, int16_t y, unsigned char character, uint8_t* font, float scale = 1.0)
+    // {
+    //     uint16_t height = font[0];
+    //     uint16_t width = font[1];
+    //     uint8_t* offset = &font[(character - 32) * height + 2];
+
+    //     for (int i = 0; i < height; i++) {
+    //         for (int j = 0; j < width; j++) {
+    //             if (offset[i] & (1 << j)) {
+    //                 oledPixel(x + j * scale, y + i * scale);
+    //             }
+    //         }
+    //     }
+    // }
+
+    void drawChar(int16_t x, int16_t y, unsigned char character, uint8_t* font, float scale = 1.0)
     {
-        // uint16_t height = 44;
-        // uint16_t width = 16;
-        // uint8_t* offset = &DotMatrix_M[(character - 32) * height];
-
-        // uint16_t height = Sinclair_S[0];
-        // uint16_t width = Sinclair_S[1];
-        // uint8_t* offset = &Sinclair_S[(character - 32) * height + 2];
-
         uint16_t height = font[0];
         uint16_t width = font[1];
-        uint8_t* offset = &font[(character - 32) * height + 2];
 
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                if (offset[i] & (1 << j)) {
-                    oledPixel(x + j, y + i);
+        character = 'B';
+
+        uint16_t temp = ((character - 32) * ((width / 8) * height)) + 2;
+        for (uint16_t j = 0; j < ((width / 8) * height); j++) {
+            uint8_t ch = font[temp];
+            for (uint8_t i = 0; i < 8; i++) {
+                if ((ch & (1 << (7 - i))) != 0) {
+                    oledPixel(x + i, y + j / 2);
                 }
             }
+            temp++;
         }
     }
 
     void drawCharInverse(int16_t x, int16_t y, unsigned char character, uint8_t* font)
     {
-        // uint16_t height = 44;
-        // uint16_t width = 16;
-        // uint8_t* offset = &DotMatrix_M[(character - 32) * height];
-
-        // uint16_t height = Sinclair_S[0];
-        // uint16_t width = Sinclair_S[1];
-        // uint8_t* offset = &Sinclair_S[(character - 32) * height + 2];
-
         uint16_t height = font[0];
         uint16_t width = font[1];
         uint8_t* offset = &font[(character - 32) * height + 2];
@@ -428,9 +432,9 @@ public:
         // filledPie({ 100, 32 }, 10, 4, 6);
         circle({ 100, 32 }, 10);
 
-        // drawChar(10, 10, 'A', Sinclair_S);
-
-        drawChar(10, 10, 'A', TinyFont);
+        // drawChar(10, 10, 'A', Sinclair_S, 3.0);
+        // drawChar(10, 10, 'A', TinyFont);
+        drawChar(10, 10, 'A', Sinclair_M);
 
         drawCharInverse(60, 10, 'A', Sinclair_S);
 
