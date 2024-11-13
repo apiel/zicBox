@@ -1,7 +1,7 @@
 #ifndef _UI_DRAW_H_
 #define _UI_DRAW_H_
 
-#include "../../fonts/DotMatrix_M.h"
+#include "../../fonts/Tiny.h"
 #include "../../fonts/Sinclair_S.h"
 #include "../../helpers/i2c.h"
 #include "../../log.h"
@@ -428,7 +428,9 @@ public:
         // filledPie({ 100, 32 }, 10, 4, 6);
         circle({ 100, 32 }, 10);
 
-        drawChar(10, 10, 'A', Sinclair_S);
+        // drawChar(10, 10, 'A', Sinclair_S);
+
+        drawChar(10, 10, 'A', TinyFont);
 
         drawCharInverse(60, 10, 'A', Sinclair_S);
 
