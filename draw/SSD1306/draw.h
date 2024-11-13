@@ -344,13 +344,13 @@ public:
 
     void rect(Point position, Size size, uint8_t radius, DrawOptions options = {})
     {
-        // arc({ position.x + radius, position.y + radius }, radius, 180, 270, options);
+        arc({ position.x + radius, position.y + radius }, radius, -2, 0, options);
         line({ position.x, position.y + radius }, { position.x, position.y + size.h - radius }, options);
-        // arc({ position.x + size.w - radius, position.y + radius }, radius, 270, 360, options);
+        arc({ position.x + size.w - radius, position.y + radius }, radius, 0, 2, options);
         line({ position.x + radius, position.y }, { position.x + size.w - radius, position.y }, options);
-        // arc({ position.x + radius, position.y + size.h - radius }, radius, 90, 180, options);
+        arc({ position.x + radius, position.y + size.h - radius }, radius, 4, 6, options);
         line({ position.x + radius, position.y + size.h }, { position.x + size.w - radius, position.y + size.h }, options);
-        // arc({ position.x + size.w - radius, position.y + size.h - radius }, radius, 0, 90, options);
+        arc({ position.x + size.w - radius, position.y + size.h - radius }, radius, 2, 4, options);
         line({ position.x + size.w, position.y + size.h - radius }, { position.x + size.w, position.y + radius }, options);
     }
 
