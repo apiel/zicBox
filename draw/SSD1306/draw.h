@@ -310,10 +310,12 @@ protected:
         uint16_t height = font[0];
         uint16_t width = font[1];
 
-        character = 'B';
+        // character = 'B';
+        character = '3';
 
-        uint16_t temp = ((character - 32) * ((width / 8) * height)) + 2;
-        for (uint16_t j = 0; j < ((width / 8) * height); j++) {
+        uint16_t len = ((width / 8) * height);
+        uint16_t temp = ((character - 32) * len) + 2;
+        for (uint16_t j = 0; j < len; j++) {
             uint8_t ch = font[temp];
             for (uint8_t i = 0; i < 8; i++) {
                 if ((ch & (1 << (7 - i))) != 0) {
