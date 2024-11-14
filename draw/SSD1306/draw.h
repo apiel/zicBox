@@ -121,12 +121,18 @@ protected:
     void oledPixel(uint8_t x, uint8_t y)
     {
         uint16_t tc = (styles.screen.w * (y / 8)) + x;
+        if (tc >= SSD1306_BUFFER_SIZE) {
+            return;
+        }
         oledBuffer[tc] |= (1 << (y & 7));
     }
 
     void oledPixel(uint8_t x, uint8_t y, uint8_t color)
     {
         uint16_t tc = (styles.screen.w * (y / 8)) + x;
+        if (tc >= SSD1306_BUFFER_SIZE) {
+            return;
+        }
         switch (color) {
         case SSD1306_WHITE:
             oledBuffer[tc] |= (1 << (y & 7));
@@ -338,7 +344,7 @@ public:
         filledRect({ 58, 10 }, { 20, 20 });
         drawChar({ 60, 10 }, 'B', Sinclair_S, 2.0, SSD1306_BLACK);
 
-        text({ 10, 40 }, "Hello World!", 16);
+        text({ 10, 55 }, "Hello World!", 16);
 
         render();
     }
@@ -360,7 +366,7 @@ public:
             drawChar({ (int)x, position.y }, text[i], font, scale);
             x += xInc;
         }
-        return 0;
+        return x;
     }
 
     Draw(Styles& styles)
