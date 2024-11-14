@@ -290,28 +290,12 @@ protected:
     //         line({xc - x, yc - y}, {xc, yc});
     // }
 
-    // void drawChar(int16_t x, int16_t y, unsigned char character, uint8_t* font, float scale = 1.0)
-    // {
-    //     uint16_t height = font[0];
-    //     uint16_t width = font[1];
-    //     uint8_t* offset = &font[(character - 32) * height + 2];
-
-    //     for (int i = 0; i < height; i++) {
-    //         for (int j = 0; j < width; j++) {
-    //             if (offset[i] & (1 << j)) {
-    //                 oledPixel(x + j * scale, y + i * scale);
-    //             }
-    //         }
-    //     }
-    // }
-
-    void drawChar(int16_t x, int16_t y, unsigned char character, uint8_t* font, float scale = 1.0)
+    void drawChar(Point position, unsigned char character, uint8_t* font, float scale = 1.0)
     {
+        int x = position.x;
+        int y = position.y;
         uint16_t height = font[0];
         uint16_t width = font[1];
-
-        character = 'B';
-        // character = '3';
 
         uint8_t mod = width / 8;
         int16_t x0 = x;
@@ -323,7 +307,6 @@ protected:
                 if (ch & 0x80) {
                     oledPixel(x, y);
                 }
-
                 ch <<= 1;
                 x++;
                 if ((x - x0) == height) {
@@ -336,16 +319,32 @@ protected:
         }
     }
 
-    void drawCharInverse(int16_t x, int16_t y, unsigned char character, uint8_t* font)
+    void drawCharInverse(Point position, unsigned char character, uint8_t* font)
     {
+        int x = position.x;
+        int y = position.y;
         uint16_t height = font[0];
         uint16_t width = font[1];
-        uint8_t* offset = &font[(character - 32) * height + 2];
 
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                oledPixel(x + j, y + i, offset[i] & (1 << j) ? SSD1306_BLACK : SSD1306_WHITE);
+        uint8_t mod = width / 8;
+        int16_t x0 = x;
+        uint16_t len = (mod * height);
+        uint16_t temp = ((character - 32) * len) + 2;
+        for (uint16_t i = 0; i < len; i++) {
+            uint8_t ch = font[temp];
+            for (uint8_t j = 0; j < 8; j++) {
+                if (!(ch & 0x80)) {
+                    oledPixel(x, y);
+                }
+                ch <<= 1;
+                x++;
+                if ((x - x0) == height) {
+                    x = x0;
+                    y++;
+                    break;
+                }
             }
+            temp++;
         }
     }
 
@@ -361,9 +360,9 @@ public:
         // drawChar(10, 10, 'A', Sinclair_S, 3.0);
         // drawChar(10, 10, 'A', TinyFont);
         // drawChar(10, 10, 'A', Sinclair_S);
-        drawChar(10, 10, 'A', Sinclair_M);
+        drawChar({ 10, 10 }, 'A', Sinclair_M);
 
-        drawCharInverse(60, 10, 'A', Sinclair_S);
+        drawCharInverse({ 60, 10 }, 'B', Sinclair_S);
 
         render();
     }
