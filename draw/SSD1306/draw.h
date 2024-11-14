@@ -305,6 +305,27 @@ protected:
     //     }
     // }
 
+    // void drawChar(int16_t x, int16_t y, unsigned char character, uint8_t* font, float scale = 1.0)
+    // {
+    //     uint16_t height = font[0];
+    //     uint16_t width = font[1];
+
+    //     // character = 'B';
+    //     character = '3';
+
+    //     uint16_t len = ((width / 8) * height);
+    //     uint16_t temp = ((character - 32) * len) + 2;
+    //     for (uint16_t j = 0; j < len; j++) {
+    //         uint8_t ch = font[temp];
+    //         for (uint8_t i = 0; i < 8; i++) {
+    //             if ((ch & (1 << (7 - i))) != 0) {
+    //                 oledPixel(x + i, y + j / 2);
+    //             }
+    //         }
+    //         temp++;
+    //     }
+    // }
+
     void drawChar(int16_t x, int16_t y, unsigned char character, uint8_t* font, float scale = 1.0)
     {
         uint16_t height = font[0];
@@ -313,13 +334,23 @@ protected:
         // character = 'B';
         character = '3';
 
-        uint16_t len = ((width / 8) * height);
+        uint8_t mod = width / 8;
+        int16_t y0 = y;
+        uint16_t len = (mod * height);
         uint16_t temp = ((character - 32) * len) + 2;
-        for (uint16_t j = 0; j < len; j++) {
+        for (uint16_t i = 0; i < len; i++) {
             uint8_t ch = font[temp];
-            for (uint8_t i = 0; i < 8; i++) {
-                if ((ch & (1 << (7 - i))) != 0) {
-                    oledPixel(x + i, y + j / 2);
+            for (uint8_t j = 0; j < 8; j++) {
+                if (ch & 0x80) {
+                    oledPixel(x, y);
+                }
+
+                ch <<= 1;
+                y++;
+                if ((y - y0) == height) {
+                    y = y0;
+                    x++;
+                    break;
                 }
             }
             temp++;
@@ -340,6 +371,24 @@ protected:
     }
 
 public:
+    void test()
+    {
+        // line({ 0, 0 }, { 127, 64 });
+        // line({ 0, 64 }, { 127, 0 });
+        // rect({ 10, 10 }, { 30, 30 }, 5);
+        // filledPie({ 100, 32 }, 10, 4, 6);
+        circle({ 100, 32 }, 10);
+
+        // drawChar(10, 10, 'A', Sinclair_S, 3.0);
+        // drawChar(10, 10, 'A', TinyFont);
+        // drawChar(10, 10, 'A', Sinclair_S);
+        drawChar(10, 10, 'A', Sinclair_M);
+
+        drawCharInverse(60, 10, 'A', Sinclair_S);
+
+        render();
+    }
+
     Draw(Styles& styles)
         : DrawInterface(styles)
     {
@@ -424,23 +473,6 @@ public:
         lineHorizontal({ position.x + radius, position.y + size.h }, { position.x + size.w - radius, position.y + size.h }, options);
         arc({ position.x + size.w - radius, position.y + size.h - radius }, radius, 2, 4, options);
         lineVertical({ position.x + size.w, position.y + size.h - radius }, { position.x + size.w, position.y + radius }, options);
-    }
-
-    void test()
-    {
-        // line({ 0, 0 }, { 127, 64 });
-        // line({ 0, 64 }, { 127, 0 });
-        // rect({ 10, 10 }, { 30, 30 }, 5);
-        // filledPie({ 100, 32 }, 10, 4, 6);
-        circle({ 100, 32 }, 10);
-
-        // drawChar(10, 10, 'A', Sinclair_S, 3.0);
-        // drawChar(10, 10, 'A', TinyFont);
-        drawChar(10, 10, 'A', Sinclair_M);
-
-        drawCharInverse(60, 10, 'A', Sinclair_S);
-
-        render();
     }
 
     // /**
