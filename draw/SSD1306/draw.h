@@ -13,6 +13,7 @@
 #include "fonts/UbuntuBold.h"
 #include <cmath>
 #include <stdexcept>
+#include <string.h>
 #include <string>
 
 #define SSD1306_I2C_ADDR 0x3c
@@ -46,6 +47,31 @@ public:
 
 protected:
     I2c i2c;
+
+    uint8_t* getFont(const char* name = NULL)
+    {
+        if (name == NULL) {
+            return Ubuntu;
+        }
+
+        if (strcmp(name, "ArialBold") == 0) {
+            return ArialBold;
+        } else if (strcmp(name, "ArialNormal") == 0) {
+            return ArialNormal;
+        } else if (strcmp(name, "BigFont") == 0) {
+            return BigFont;
+        } else if (strcmp(name, "Sinclair_M") == 0) {
+            return Sinclair_M;
+        } else if (strcmp(name, "Sinclair_S") == 0) {
+            return Sinclair_S;
+        } else if (strcmp(name, "Ubuntu") == 0) {
+            return Ubuntu;
+        } else if (strcmp(name, "UbuntuBold") == 0) {
+            return UbuntuBold;
+        } else {
+            throw std::runtime_error("Unknown font " + std::string(name));
+        }
+    }
 
     void oledInit(uint8_t i2c_dev = 1)
     {
@@ -339,13 +365,14 @@ public:
         circle({ 100, 32 }, 10);
 
         // drawChar({ 10, 10 }, 'A', ArialBold);
-        drawChar({ 10, 10 }, 'B', UbuntuBold);
+        // drawChar({ 10, 10 }, 'B', UbuntuBold);
+        drawChar({ 10, 10 }, 'B', UbuntuBold, 0.5);
 
         filledRect({ 58, 10 }, { 20, 20 });
         drawChar({ 60, 10 }, 'B', Sinclair_S, 2.0, SSD1306_BLACK);
 
         filledRect({ 40, 45 }, { 30, 20 });
-        textRight({ 120, 50 }, "Hello World!", 16, { .color = { SSD1306_INVERSE } });
+        textRight({ 120, 50 }, "Hello World!", 16, { .color = { SSD1306_INVERSE }, .fontPath = "Sinclair_S" });
 
         render();
     }
@@ -399,7 +426,7 @@ public:
     {
         uint8_t color = options.color.r == 255 ? SSD1306_WHITE : options.color.r;
 
-        uint8_t* font = Sinclair_S;
+        uint8_t* font = getFont(options.fontPath);
         uint16_t height = font[0];
         uint16_t width = font[1];
         float scale = size / (float)height;
@@ -421,7 +448,7 @@ public:
     {
         uint8_t color = options.color.r == 255 ? SSD1306_WHITE : options.color.r;
 
-        uint8_t* font = Sinclair_S;
+        uint8_t* font = getFont(options.fontPath);
         uint16_t height = font[0];
         uint16_t width = font[1];
         float scale = size / (float)height;
