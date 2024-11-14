@@ -1,16 +1,16 @@
 #ifndef _UI_DRAW_H_
 #define _UI_DRAW_H_
 
-#include "fonts/Sinclair_M.h"
-#include "fonts/Sinclair_S.h"
-#include "fonts/BigFont.h"
-#include "fonts/ArialNormal.h"
-#include "fonts/ArialBold.h"
-#include "fonts/Ubuntu.h"
-#include "fonts/UbuntuBold.h"
 #include "../../helpers/i2c.h"
 #include "../../log.h"
 #include "../../plugins/components/drawInterface.h"
+#include "fonts/ArialBold.h"
+#include "fonts/ArialNormal.h"
+#include "fonts/BigFont.h"
+#include "fonts/Sinclair_M.h"
+#include "fonts/Sinclair_S.h"
+#include "fonts/Ubuntu.h"
+#include "fonts/UbuntuBold.h"
 #include <cmath>
 #include <stdexcept>
 #include <string>
@@ -338,9 +338,29 @@ public:
         filledRect({ 58, 10 }, { 20, 20 });
         drawChar({ 60, 10 }, 'B', Sinclair_S, 2.0, SSD1306_BLACK);
 
-        drawChar({ 90, 5 }, 'B', Sinclair_S);
+        text({ 10, 40 }, "Hello World!", 16);
 
         render();
+    }
+
+    int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
+    {
+        uint8_t* font = Sinclair_S;
+        uint16_t height = font[0];
+        uint16_t width = font[1];
+        float scale = size / (float)height;
+        uint16_t len = text.length();
+
+        float x = position.x;
+        float xInc = width * scale;
+        for (uint16_t i = 0; i < len; i++) {
+            if ((x + xInc) > styles.screen.w) {
+                break;
+            }
+            drawChar({ (int)x, position.y }, text[i], font, scale);
+            x += xInc;
+        }
+        return 0;
     }
 
     Draw(Styles& styles)
