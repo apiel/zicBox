@@ -344,7 +344,8 @@ public:
         filledRect({ 58, 10 }, { 20, 20 });
         drawChar({ 60, 10 }, 'B', Sinclair_S, 2.0, SSD1306_BLACK);
 
-        textRight({ 120, 50 }, "Hello World!", 16);
+        filledRect({ 40, 45 }, { 30, 20 });
+        textRight({ 120, 50 }, "Hello World!", 16, { .color = { SSD1306_INVERSE } });
 
         render();
     }
@@ -396,6 +397,8 @@ public:
 
     int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
+        uint8_t color = options.color.r == 255 ? SSD1306_WHITE : options.color.r;
+
         uint8_t* font = Sinclair_S;
         uint16_t height = font[0];
         uint16_t width = font[1];
@@ -408,7 +411,7 @@ public:
             if ((x + xInc) > styles.screen.w) {
                 break;
             }
-            drawChar({ (int)x, position.y }, text[i], font, scale);
+            drawChar({ (int)x, position.y }, text[i], font, scale, color);
             x += xInc;
         }
         return x;
@@ -416,6 +419,8 @@ public:
 
     int textRight(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
+        uint8_t color = options.color.r == 255 ? SSD1306_WHITE : options.color.r;
+
         uint8_t* font = Sinclair_S;
         uint16_t height = font[0];
         uint16_t width = font[1];
@@ -429,7 +434,7 @@ public:
             if (x < 0) {
                 break;
             }
-            drawChar({ (int)x, position.y }, text[len - i - 1], font, scale);
+            drawChar({ (int)x, position.y }, text[len - i - 1], font, scale, color);
         }
         return x;
     }
