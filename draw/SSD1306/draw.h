@@ -6,6 +6,8 @@
 #include "fonts/BigFont.h"
 #include "fonts/ArialNormal.h"
 #include "fonts/ArialBold.h"
+#include "fonts/Ubuntu.h"
+#include "fonts/UbuntuBold.h"
 #include "../../helpers/i2c.h"
 #include "../../log.h"
 #include "../../plugins/components/drawInterface.h"
@@ -331,7 +333,7 @@ public:
         circle({ 100, 32 }, 10);
 
         // drawChar({ 10, 10 }, 'A', ArialBold);
-        drawChar({ 10, 10 }, 'B', Sinclair_M);
+        drawChar({ 10, 10 }, 'B', UbuntuBold);
 
         filledRect({ 58, 10 }, { 20, 20 });
         drawChar({ 60, 10 }, 'B', Sinclair_S, 2.0, SSD1306_BLACK);
