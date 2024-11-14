@@ -290,57 +290,28 @@ protected:
     //         line({xc - x, yc - y}, {xc, yc});
     // }
 
-    void drawChar(Point position, unsigned char character, uint8_t* font, float scale = 1.0)
+    void drawChar(Point position, unsigned char character, uint8_t* font, float scale = 1.0, uint8_t color = SSD1306_WHITE)
     {
-        int x = position.x;
-        int y = position.y;
+        float x = position.x;
+        float y = position.y;
         uint16_t height = font[0];
         uint16_t width = font[1];
 
         uint8_t mod = width / 8;
-        int16_t x0 = x;
+        float x0 = x;
         uint16_t len = (mod * height);
         uint16_t temp = ((character - 32) * len) + 2;
         for (uint16_t i = 0; i < len; i++) {
             uint8_t ch = font[temp];
             for (uint8_t j = 0; j < 8; j++) {
                 if (ch & 0x80) {
-                    oledPixel(x, y);
+                    oledPixel(x, y, color);
                 }
                 ch <<= 1;
-                x++;
-                if ((x - x0) == height) {
+                x += scale;
+                if ((x - x0) == height * scale) {
                     x = x0;
-                    y++;
-                    break;
-                }
-            }
-            temp++;
-        }
-    }
-
-    void drawCharInverse(Point position, unsigned char character, uint8_t* font)
-    {
-        int x = position.x;
-        int y = position.y;
-        uint16_t height = font[0];
-        uint16_t width = font[1];
-
-        uint8_t mod = width / 8;
-        int16_t x0 = x;
-        uint16_t len = (mod * height);
-        uint16_t temp = ((character - 32) * len) + 2;
-        for (uint16_t i = 0; i < len; i++) {
-            uint8_t ch = font[temp];
-            for (uint8_t j = 0; j < 8; j++) {
-                if (!(ch & 0x80)) {
-                    oledPixel(x, y);
-                }
-                ch <<= 1;
-                x++;
-                if ((x - x0) == height) {
-                    x = x0;
-                    y++;
+                    y += scale;
                     break;
                 }
             }
@@ -360,9 +331,12 @@ public:
         // drawChar(10, 10, 'A', Sinclair_S, 3.0);
         // drawChar(10, 10, 'A', TinyFont);
         // drawChar(10, 10, 'A', Sinclair_S);
-        drawChar({ 10, 10 }, 'A', Sinclair_M);
+        drawChar({ 10, 10 }, 'B', Sinclair_M);
 
-        drawCharInverse({ 60, 10 }, 'B', Sinclair_S);
+        filledRect({ 58, 10 }, { 20, 20 });
+        drawChar({ 60, 10 }, 'B', Sinclair_S, 2.0, SSD1306_BLACK);
+
+        drawChar({ 90, 5 }, 'B', Sinclair_S, 2.0);
 
         render();
     }
