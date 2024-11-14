@@ -344,29 +344,9 @@ public:
         filledRect({ 58, 10 }, { 20, 20 });
         drawChar({ 60, 10 }, 'B', Sinclair_S, 2.0, SSD1306_BLACK);
 
-        text({ 10, 55 }, "Hello World!", 16);
+        textRight({ 120, 50 }, "Hello World!", 16);
 
         render();
-    }
-
-    int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
-    {
-        uint8_t* font = Sinclair_S;
-        uint16_t height = font[0];
-        uint16_t width = font[1];
-        float scale = size / (float)height;
-        uint16_t len = text.length();
-
-        float x = position.x;
-        float xInc = width * scale;
-        for (uint16_t i = 0; i < len; i++) {
-            if ((x + xInc) > styles.screen.w) {
-                break;
-            }
-            drawChar({ (int)x, position.y }, text[i], font, scale);
-            x += xInc;
-        }
-        return x;
     }
 
     Draw(Styles& styles)
@@ -412,6 +392,46 @@ public:
         // for (uint8_t page = 0; page < pages; page++) {
         //     oledClearPage(page);
         // }
+    }
+
+    int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
+    {
+        uint8_t* font = Sinclair_S;
+        uint16_t height = font[0];
+        uint16_t width = font[1];
+        float scale = size / (float)height;
+        uint16_t len = text.length();
+
+        float x = position.x;
+        float xInc = width * scale;
+        for (uint16_t i = 0; i < len; i++) {
+            if ((x + xInc) > styles.screen.w) {
+                break;
+            }
+            drawChar({ (int)x, position.y }, text[i], font, scale);
+            x += xInc;
+        }
+        return x;
+    }
+
+    int textRight(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
+    {
+        uint8_t* font = Sinclair_S;
+        uint16_t height = font[0];
+        uint16_t width = font[1];
+        float scale = size / (float)height;
+        uint16_t len = text.length();
+
+        float x = position.x;
+        float xInc = width * scale;
+        for (uint16_t i = 0; i < len; i++) {
+            x -= xInc;
+            if (x < 0) {
+                break;
+            }
+            drawChar({ (int)x, position.y }, text[len - i - 1], font, scale);
+        }
+        return x;
     }
 
     void filledRect(Point position, Size size, DrawOptions options = {})
