@@ -305,37 +305,16 @@ protected:
     //     }
     // }
 
-    // void drawChar(int16_t x, int16_t y, unsigned char character, uint8_t* font, float scale = 1.0)
-    // {
-    //     uint16_t height = font[0];
-    //     uint16_t width = font[1];
-
-    //     // character = 'B';
-    //     character = '3';
-
-    //     uint16_t len = ((width / 8) * height);
-    //     uint16_t temp = ((character - 32) * len) + 2;
-    //     for (uint16_t j = 0; j < len; j++) {
-    //         uint8_t ch = font[temp];
-    //         for (uint8_t i = 0; i < 8; i++) {
-    //             if ((ch & (1 << (7 - i))) != 0) {
-    //                 oledPixel(x + i, y + j / 2);
-    //             }
-    //         }
-    //         temp++;
-    //     }
-    // }
-
     void drawChar(int16_t x, int16_t y, unsigned char character, uint8_t* font, float scale = 1.0)
     {
         uint16_t height = font[0];
         uint16_t width = font[1];
 
-        // character = 'B';
-        character = '3';
+        character = 'B';
+        // character = '3';
 
         uint8_t mod = width / 8;
-        int16_t y0 = y;
+        int16_t x0 = x;
         uint16_t len = (mod * height);
         uint16_t temp = ((character - 32) * len) + 2;
         for (uint16_t i = 0; i < len; i++) {
@@ -346,10 +325,10 @@ protected:
                 }
 
                 ch <<= 1;
-                y++;
-                if ((y - y0) == height) {
-                    y = y0;
-                    x++;
+                x++;
+                if ((x - x0) == height) {
+                    x = x0;
+                    y++;
                     break;
                 }
             }
