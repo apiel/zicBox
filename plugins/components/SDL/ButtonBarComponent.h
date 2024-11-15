@@ -1,7 +1,7 @@
 #ifndef _UI_COMPONENT_RECT_H_
 #define _UI_COMPONENT_RECT_H_
 
-#include "./base/KeypadLayout.h"
+#include "../base/KeypadLayout.h"
 #include "../utils/color.h"
 #include "../component.h"
 #include <string>

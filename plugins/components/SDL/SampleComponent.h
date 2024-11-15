@@ -3,7 +3,7 @@
 
 #include "../utils/inRect.h"
 #include "../utils/color.h"
-#include "./base/KeypadLayout.h"
+#include "../base/KeypadLayout.h"
 #include "./base/SamplePositionBaseComponent.h"
 #include "./base/WaveBaseComponent.h"
 #include "../component.h"

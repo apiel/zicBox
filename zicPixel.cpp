@@ -16,6 +16,7 @@
 #include "styles.h"
 #include "timer.h"
 #include "viewManager.h"
+#include "plugins/components/Pixel/PixelComponents.h"
 
 int main(int argc, char* argv[])
 {
@@ -30,6 +31,8 @@ int main(int argc, char* argv[])
         printf("No view were initialized to be rendered.");
         return 1;
     }
+
+    loadPixelComponents();
 
     unsigned long lastUpdate = getTicks();
 #ifdef USE_DRAW_WITH_SDL

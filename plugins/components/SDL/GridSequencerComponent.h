@@ -4,7 +4,7 @@
 #include "../../audio/stepInterface.h"
 
 #include "base/Grid.h"
-#include "base/KeypadLayout.h"
+#include "../base/KeypadLayout.h"
 #include "../component.h"
 
 class Track {

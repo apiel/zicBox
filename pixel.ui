@@ -11,3 +11,15 @@ ADD_ZONE_ENCODER: 84 32 42 32
 LOAD_HOST: pixel_audio.cfg
 
 VIEW: Main
+
+COMPONENT: KeyInfoBar 0 48 128 16
+    KEYMAP: Keyboard 20 item 0
+    KEYMAP: Keyboard 26 item 1
+    KEYMAP: Keyboard 8 item 2
+    KEYMAP: Keyboard 21 item 3
+    KEYMAP: Keyboard 23 item 4
+    KEYMAP: Keyboard 4 item 5
+    KEYMAP: Keyboard 22 item 6
+    KEYMAP: Keyboard 7 item 7
+    KEYMAP: Keyboard 9 item 8
+    KEYMAP: Keyboard 10 item 9

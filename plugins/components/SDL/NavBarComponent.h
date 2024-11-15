@@ -1,7 +1,7 @@
 #ifndef _UI_COMPONENT_NAVBAR_H_
 #define _UI_COMPONENT_NAVBAR_H_
 
-#include "./base/KeypadLayout.h"
+#include "../base/KeypadLayout.h"
 #include "../component.h"
 #include <string>
 #include <vector>

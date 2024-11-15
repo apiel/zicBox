@@ -1,9 +1,9 @@
 #ifndef _UI_COMPONENT_KEY_INFO_BAR_H_
 #define _UI_COMPONENT_KEY_INFO_BAR_H_
 
-#include "./base/KeypadLayout.h"
+#include "../base/KeypadLayout.h"
 #include "../utils/color.h"
-#include "base/Icon.h"
+#include "../base/Icon.h"
 #include "../component.h"
 
 #include <cmath>
