@@ -40,7 +40,7 @@ public:
 protected:
     string text[10] = {
         "FX", "Mod", "Src", "Perf", "Tck",
-        "&icon::play", "Mod", "&icon::pause", "&icon::arrowUp", "&icon::arrowDown"
+        "&icon::play", "&icon::arrowUp", "&icon::arrowDown", "Mod", "&icon::pause"
     };
     void renderRow(int y, int startIndex)
     {
