@@ -37,10 +37,26 @@ public:
     {
     }
 
+protected:
+    string text[10] = {
+        "FX", "Mod", "Src", "Perf", "Tck",
+        "&icon::play", "Mod", "&icon::pause", "&icon::arrowUp", "&icon::arrowDown"
+    };
+    void renderRow(int y, int startIndex)
+    {
+        for (int i = 0; i < 5; i++) {
+            Point textPos = { position.x + 14 + i * 25, y };
+            if (!icon.render(text[i + startIndex], textPos, 6, { 0 }, Icon::CENTER)) {
+                draw.textCentered(textPos, text[i + startIndex], 6, { .fontPath = "Sinclair_S" });
+            }
+        }
+    }
+
+public:
     void render()
     {
-        printf("should render KeyInfoBarComponent\n");
-        draw.filledRect(position, { 25, 8 });
+        renderRow(position.y, 0);
+        renderRow(position.y + 8, 5);
     }
 
     bool config(char* key, char* value)

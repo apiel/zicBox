@@ -470,6 +470,30 @@ public:
         return x;
     }
 
+    int textCentered(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
+    {
+        uint8_t color = options.color.r == 255 ? SSD1306_WHITE : options.color.r;
+
+        uint8_t* font = getFont(options.fontPath);
+        uint16_t height = font[0];
+        uint16_t width = font[1];
+        float scale = size / (float)height;
+        uint16_t len = text.length();
+
+        float x = position.x - (len * width * scale) / 2;
+        float xInc = width * scale;
+        for (uint16_t i = 0; i < len; i++) {
+            if ((x + xInc) > styles.screen.w) {
+                break;
+            }
+            if (x > 0) {
+                drawChar({ (int)x, position.y }, text[i], font, scale, color);
+            }
+            x += xInc;
+        }
+        return 0;
+    }
+
     void filledRect(Point position, Size size, DrawOptions options = {})
     {
         for (int y = position.y; y < position.y + size.h; y++) {
