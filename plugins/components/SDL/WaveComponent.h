@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "./base/KeypadLayout.h"
+#include "../base/KeypadLayout.h"
 #include "../utils/color.h"
 #include "../component.h"
 

@@ -23,6 +23,13 @@
 #endif
 
 class ViewManager {
+public:
+    struct Plugin {
+        string name;
+        ComponentInterface* (*allocator)(ComponentInterface::Props props);
+    };
+    std::vector<Plugin> plugins;
+
 protected:
     std::mutex m;
     std::mutex m2;
@@ -40,16 +47,10 @@ protected:
     {
     }
 
-    struct Plugin {
-        char name[64];
-        ComponentInterface* (*allocator)(ComponentInterface::Props props);
-    };
-    std::vector<Plugin> plugins;
-
     void loadPlugin(char* value, const char* filename)
     {
         Plugin plugin;
-        strcpy(plugin.name, strtok(value, " "));
+        plugin.name = strtok(value, " ");
         char* path = strtok(NULL, " ");
         void* handle = dlopen(getFullpath(path, filename).c_str(), RTLD_LAZY);
         if (!handle) {
@@ -88,7 +89,7 @@ protected:
         // printf("addComponent: %s pos %d %d size %d %d\n", name, position.x, position.y, size.w, size.h);
 
         for (auto& plugin : plugins) {
-            if (strcmp(plugin.name, name) == 0) {
+            if (plugin.name == name) {
                 ComponentInterface* component = plugin.allocator(props);
                 ui.addComponent(component);
                 return;
@@ -264,7 +265,9 @@ public:
         if (strcmp(key, "COMPONENT") == 0) {
             char* name = strtok(value, " ");
             Point position = { atoi(strtok(NULL, " ")), atoi(strtok(NULL, " ")) };
-            Size size = { atoi(strtok(NULL, " ")), atoi(strtok(NULL, " ")) };
+            char* w = strtok(NULL, " ");
+            char* h = strtok(NULL, " ");
+            Size size = { w ? atoi(w) : styles.screen.w, h ? atoi(h) : styles.screen.h };
             addComponent(name, position, size);
             return true;
         }
