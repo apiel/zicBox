@@ -69,7 +69,7 @@ protected:
         plugins.push_back(plugin);
     }
 
-    void addComponent(const char* name, Point position, Size size)
+    void addComponent(string name, Point position, Size size)
     {
         ComponentInterface::Props props = {
             position,
@@ -95,7 +95,7 @@ protected:
                 return;
             }
         }
-        logWarn("Unknown component: %s", name);
+        logWarn("Unknown component: %s", name.c_str());
     }
 
 public:
