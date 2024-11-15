@@ -13,12 +13,12 @@ void loadPixelComponents()
 {
     ViewManager& viewManager = ViewManager::get();
     // ViewManager::Plugin plugin = { "KeyInfoBar", allocKeyInfoBar };
-    ViewManager::Plugin plugin;
-    plugin.name = "KeyInfoBar";
-    plugin.allocator = (ComponentInterface * (*)(ComponentInterface::Props props))allocKeyInfoBar;
-    viewManager.plugins.push_back(plugin);
+    // ViewManager::Plugin plugin;
+    // plugin.name = "KeyInfoBar";
+    // plugin.allocator = (ComponentInterface * (*)(ComponentInterface::Props props))allocKeyInfoBar;
+    // viewManager.plugins.push_back(plugin);
 
-    // viewManager.plugins.push_back({ "KeyInfoBar", allocKeyInfoBar });
+    viewManager.plugins.push_back({ "KeyInfoBar", (ComponentInterface * (*)(ComponentInterface::Props props)) allocKeyInfoBar });
 }
 
 #endif
