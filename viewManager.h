@@ -26,7 +26,7 @@ class ViewManager {
 public:
     struct Plugin {
         string name;
-        ComponentInterface* (*allocator)(ComponentInterface::Props props);
+        std::function<ComponentInterface*(ComponentInterface::Props props)> allocator;
     };
     std::vector<Plugin> plugins;
 
@@ -59,7 +59,10 @@ protected:
         }
 
         dlerror();
-        plugin.allocator = (ComponentInterface * (*)(ComponentInterface::Props props)) dlsym(handle, "allocator");
+        plugin.allocator = [handle](ComponentInterface::Props props) {
+            void* allocator = dlsym(handle, "allocator");
+            return ((ComponentInterface * (*)(ComponentInterface::Props props)) allocator)(props);
+        };
         const char* dlsym_error = dlerror();
         if (dlsym_error) {
             logError("Cannot load symbol: %s\n", dlsym_error);
