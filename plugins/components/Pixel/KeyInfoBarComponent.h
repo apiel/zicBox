@@ -1,8 +1,8 @@
 #ifndef _UI_PIXEL_COMPONENT_KEY_INFO_BAR_H_
 #define _UI_PIXEL_COMPONENT_KEY_INFO_BAR_H_
 
-#include "../base/KeypadLayout.h"
 #include "../base/Icon.h"
+#include "../base/KeypadLayout.h"
 #include "../component.h"
 
 #include <cmath>
@@ -39,6 +39,8 @@ public:
 
     void render()
     {
+        printf("should render KeyInfoBarComponent\n");
+        draw.filledRect(position, { 25, 8 });
     }
 
     bool config(char* key, char* value)
@@ -52,7 +54,6 @@ public:
 
     void onKey(uint16_t id, int key, int8_t state)
     {
-        // printf("onKey %d %d %d\n", id, key, state);
         keypadLayout.onKey(id, key, state);
     }
 
