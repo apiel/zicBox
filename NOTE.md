@@ -1,12 +1,8 @@
 ## Pixel TODO
 
-- TODO remove all define in zic pixel
+- TODO 6 encoder mouse event :-)
 
-- TODO is polygone really necessary
-
-- TODO get rid of anti alias
-
-- TODO remove unused delcaration in draw
+- TODO for generic encoder, make a square around the value...
 
 ## Next TODO
 
