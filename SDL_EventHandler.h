@@ -93,7 +93,6 @@ protected:
         for (uint8_t i = 0; i < zoneEncoders.size(); i++) {
             // if (x >= zoneEncoders[i].position.x && x < zoneEncoders[i].position.x + zoneEncoders[i].size.w &&
             //     y >= zoneEncoders[i].position.y && y < zoneEncoders[i].position.y + zoneEncoders[i].size.h) {
-        printf("x: %d, y: %d in [x: %d, y: %d, w: %d, h: %d]\n", x, y, zoneEncoders[i].position.x, zoneEncoders[i].position.y, zoneEncoders[i].size.w, zoneEncoders[i].size.h);
             if (inRect(zoneEncoders[i], { x, y })) {
                 return i;
             }

@@ -105,7 +105,6 @@ public:
 
     bool config(char* key, char* value)
     {
-        printf("in pixel draw sdl key: %s, value: %s\n", key, value);
         if (strcmp(key, "WINDOW_POSITION") == 0) {
             windowX = atoi(value);
             windowY = atoi(value);

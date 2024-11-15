@@ -20,6 +20,8 @@
 
 int main(int argc, char* argv[])
 {
+    loadPixelComponents();
+
     styles.screen = { 128, 64 };
     loadUiConfig(argc >= 2 ? argv[1] : "pixel.ui", argc >= 3 ? argv[2] : NULL);
 
@@ -31,8 +33,6 @@ int main(int argc, char* argv[])
         printf("No view were initialized to be rendered.");
         return 1;
     }
-
-    loadPixelComponents();
 
     unsigned long lastUpdate = getTicks();
 #ifdef USE_DRAW_WITH_SDL

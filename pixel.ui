@@ -12,7 +12,7 @@ LOAD_HOST: pixel_audio.cfg
 
 VIEW: Main
 
-COMPONENT: KeyInfoBar 0 48 128 16
+  COMPONENT: KeyInfoBar 0 48
     KEYMAP: Keyboard 20 item 0
     KEYMAP: Keyboard 26 item 1
     KEYMAP: Keyboard 8 item 2
