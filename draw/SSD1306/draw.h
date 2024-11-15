@@ -47,6 +47,7 @@ public:
 
 protected:
     I2c i2c;
+    bool needRendering = false;
 
     uint8_t* getFont(const char* name = NULL)
     {
@@ -396,30 +397,33 @@ public:
         oledInit();
         oledConfig();
         clear();
-
-        test();
     }
 
     void renderNext() override
     {
+        needRendering = true;
     }
 
     void triggerRendering() override
     {
+        if (needRendering) {
+            render();
+            needRendering = false;
+        }
     }
 
     void render() override
     {
+        printf("should draw render\n");
         oledRender();
     }
 
     void clear()
     {
-        // TODO uncomment, commented the time of testing...
-        // uint8_t pages = oledGetPageCount();
-        // for (uint8_t page = 0; page < pages; page++) {
-        //     oledClearPage(page);
-        // }
+        uint8_t pages = oledGetPageCount();
+        for (uint8_t page = 0; page < pages; page++) {
+            oledClearPage(page);
+        }
     }
 
     int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
