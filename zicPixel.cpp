@@ -5,16 +5,17 @@
 #define USE_DRAW_WITH_SDL
 #endif
 
+#ifdef USE_DRAW_WITH_SDL
+// Define before config else ADD_ZONE_ENCODER not working
+#include "SDL_EventHandler.h"
+#endif
+
 #include "config.h"
 #include "draw/SSD1306/draw.h"
 #include "host.h"
 #include "styles.h"
 #include "timer.h"
 #include "viewManager.h"
-
-#ifdef USE_DRAW_WITH_SDL
-#include "SDL_EventHandler.h"
-#endif
 
 int main(int argc, char* argv[])
 {
