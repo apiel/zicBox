@@ -39,8 +39,8 @@ public:
 
 protected:
     string text[10] = {
-        "FX", "Mod", "Src", "Perf", "Tck",
-        "&icon::play", "&icon::arrowUp", "&icon::arrowDown", "Mod", "&icon::pause"
+        "FX", "mod", "src", "Perf", "Tck",
+        "&icon::play", "&icon::arrowUp", "&icon::arrowDown", "...", "&icon::pause"
     };
     void renderRow(int y, int startIndex)
     {
