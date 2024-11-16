@@ -45,8 +45,8 @@ PLUGIN_CONTROLLER: MidiEncoder ./plugins/controllers/$buildDir/libzic_MidiEncode
   ENCODER_TARGET: 1 6
   ENCODER_TARGET: 0 7
 
-LOAD_HOST: config.cfg
-# LOAD_HOST: config800.cfg
+include: config_audio.cfg
+# include: config_audio800.cfg
 
 $encoder=Encoder2
 

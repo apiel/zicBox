@@ -8,7 +8,7 @@ ADD_ZONE_ENCODER: 0 32 42 32
 ADD_ZONE_ENCODER: 42 32 42 32
 ADD_ZONE_ENCODER: 84 32 42 32
 
-LOAD_HOST: pixel_audio.cfg
+include: pixel_audio.cfg
 
 VIEW: Main
 
