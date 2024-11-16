@@ -49,7 +49,7 @@ run:
 
 buildPixel:
 	@echo "\n------------------ build zicPixel ------------------\n"
-	g++ -g -fms-extensions -o zicPixel zicPixel.cpp -ldl $(RPI) $(RTMIDI) $(PIXEL_SDL)
+	g++ -g -fms-extensions -o zicPixel zicPixel.cpp -ldl $(RPI) $(RTMIDI) $(PIXEL_SDL) $(shell pkg-config --cflags --libs sndfile) $(shell pkg-config --cflags --libs libpulse-simple)
 
 runPixel:
 	@echo "\n------------------ run zicPixel ------------------\n"

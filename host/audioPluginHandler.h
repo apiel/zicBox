@@ -4,13 +4,13 @@
 using namespace std;
 
 #include <stdexcept>
-#include <thread>
 #include <string>
+#include <thread>
 
 #include "../helpers/trim.h"
+#include "../log.h"
 #include "../plugins/audio/audioPlugin.h"
 #include "../plugins/audio/lookupTable.h"
-#include "../log.h"
 #include "def.h"
 #include "midiMapping.h"
 
@@ -23,16 +23,17 @@ using namespace std;
 */
 
 class AudioPluginHandler : public AudioPluginHandlerInterface {
+public:
+    struct PluginAlias {
+        string name;
+        std::function<AudioPlugin*(AudioPlugin::Props& props, char* name)> allocator;
+    };
+    std::vector<PluginAlias> pluginAliases;
+
 protected:
     LookupTable lookupTable;
 
     AudioPlugin::Props pluginProps = { debug, SAMPLE_RATE, APP_CHANNELS, this, MAX_TRACKS, &lookupTable };
-
-    struct PluginAllocator {
-        string name;
-        std::function<AudioPlugin*(AudioPlugin::Props& props, char* name)> allocator;
-    };
-    std::vector<PluginAllocator> pluginAllocators;
 
     std::vector<MidiMapping> midiMapping;
 
@@ -152,7 +153,7 @@ public:
 
     void loadPluginAlias(char* value)
     {
-        PluginAllocator pluginAllocator;
+        PluginAlias pluginAllocator;
 
         char* name = strtok(value, " ");
         char* path = strtok(NULL, " ");
@@ -175,7 +176,7 @@ public:
             dlclose(handle);
             return;
         }
-        pluginAllocators.push_back(pluginAllocator);
+        pluginAliases.push_back(pluginAllocator);
 
         logInfo("audio plugin alias loaded: %s\n", name);
     }
@@ -190,7 +191,7 @@ public:
             loadPlugin(name, path.c_str());
         } else {
             // look to alias if plugins is already loaded and allocate it
-            for (PluginAllocator& pluginAllocator : pluginAllocators) {
+            for (PluginAlias& pluginAllocator : pluginAliases) {
                 printf("pluginAllocator.name %s ==? path %s\n", pluginAllocator.name.c_str(), path.c_str());
                 if (pluginAllocator.name == path) {
                     plugins.push_back(pluginAllocator.allocator(pluginProps, name));
@@ -204,7 +205,7 @@ public:
 
     void loadPlugin(char* name, const char* path)
     {
-        void *handle = dlopen(path, RTLD_LAZY);
+        void* handle = dlopen(path, RTLD_LAZY);
 
         if (!handle) {
             logWarn("Cannot open audio library %s [%s]: %s\n", path, name, dlerror());
