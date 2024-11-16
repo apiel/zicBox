@@ -59,8 +59,8 @@ protected:
             APP_INFO("Invalid midi note channel, set to 1\n");
             channel = 1;
         }
-        midiNoteEvents.push_back({ (uint8_t)(channel - 1), { .plugin = plugins.back().instance } });
-        APP_INFO("[%s] Midi plugin channel set to %d\n", plugins.back().instance->name, channel);
+        midiNoteEvents.push_back({ (uint8_t)(channel - 1), { .plugin = plugins.back() } });
+        APP_INFO("[%s] Midi plugin channel set to %d\n", plugins.back()->name, channel);
         return true;
     }
 
@@ -73,7 +73,7 @@ protected:
             channel = 1;
         }
         midiNoteEvents.push_back({ (uint8_t)(channel - 1), { track } });
-        APP_INFO("[%s] Midi track channel set to %d\n", plugins.back().instance->name, channel);
+        APP_INFO("[%s] Midi track channel set to %d\n", plugins.back()->name, channel);
         return true;
     }
 
@@ -96,10 +96,10 @@ protected:
         uint8_t msg1Int = strtol(msg1, NULL, 16);
 
         // try to assign value to last plugin
-        int valueIndex = plugins.back().instance->getValueIndex(pluginKey);
+        int valueIndex = plugins.back()->getValueIndex(pluginKey);
         if (valueIndex != -1) {
-            midiMapping.push_back({ plugins.back().instance, valueIndex, size, valuePosition, msg0Int, msg1Int });
-            APP_INFO("[%s] Midi mapping assigned: %s\n", plugins.back().instance->name, pluginKey);
+            midiMapping.push_back({ plugins.back(), valueIndex, size, valuePosition, msg0Int, msg1Int });
+            APP_INFO("[%s] Midi mapping assigned: %s\n", plugins.back()->name, pluginKey);
             return true;
         }
         return false;
@@ -116,9 +116,9 @@ public:
 
     AudioPlugin* getPluginPtr(const char* name, int16_t track = -1)
     {
-        for (Plugin& plugin : plugins) {
-            if (strcmp(plugin.instance->name, name) == 0 && (track == -1 || plugin.instance->track == track)) {
-                return plugin.instance;
+        for (AudioPlugin* plugin : plugins) {
+            if (strcmp(plugin->name, name) == 0 && (track == -1 || plugin->track == track)) {
+                return plugin;
             }
         }
         return NULL;
@@ -137,8 +137,8 @@ public:
     {
         while (isRunning) {
             float buffer[MAX_TRACKS] = { 0.0f };
-            for (Plugin& plugin : plugins) {
-                plugin.instance->sample(buffer);
+            for (AudioPlugin* plugin : plugins) {
+                plugin->sample(buffer);
             }
             // then in props pass max tracks
             // then as part of audio plugin, setTrack and by default to 0
@@ -199,37 +199,35 @@ public:
 
     void loadPlugin(char* name, const char* path)
     {
-        Plugin plugin;
+        void *handle = dlopen(path, RTLD_LAZY);
 
-        plugin.handle = dlopen(path, RTLD_LAZY);
-
-        if (!plugin.handle) {
+        if (!handle) {
             logWarn("Cannot open audio library %s [%s]: %s\n", path, name, dlerror());
             return;
         }
 
         dlerror();
-        void* allocator = (AudioPlugin*)dlsym(plugin.handle, "allocator");
+        void* allocator = (AudioPlugin*)dlsym(handle, "allocator");
         const char* dlsym_error = dlerror();
         if (dlsym_error) {
             logWarn("Cannot load symbol: %s\n", dlsym_error);
-            dlclose(plugin.handle);
+            dlclose(handle);
             return;
         }
 
-        plugin.instance = ((AudioPlugin * (*)(AudioPlugin::Props & props, char* name)) allocator)(pluginProps, name);
-        logInfo("audio plugin loaded: %s\n", plugin.instance->name);
+        AudioPlugin* instance = ((AudioPlugin * (*)(AudioPlugin::Props & props, char* name)) allocator)(pluginProps, name);
+        logInfo("audio plugin loaded: %s\n", instance->name);
 
         // plugin.instance->set(0, 0.1f);
         // printf("---> getParamKey: %d\n", plugin.instance->getParamKey("volume"));
 
-        plugins.push_back(plugin);
+        plugins.push_back(instance);
     }
 
     bool config(char* key, char* value)
     {
         if (plugins.size() > 0) {
-            if (plugins.back().instance->config(key, value)) {
+            if (plugins.back()->config(key, value)) {
                 return true;
                 /*md - `MIDI_CC: CUTOFF b0 4c xx` assign a midi CC command to a given plugin value (this is a generic config). */
             } else if (strcmp(key, "MIDI_CC") == 0) {
@@ -260,9 +258,9 @@ public:
         if (target.plugin) {
             target.plugin->noteOn(note, velocity);
         } else {
-            for (AudioPluginHandlerInterface::Plugin& plugin : plugins) {
-                if (target.track == -1 || target.track == plugin.instance->track) {
-                    plugin.instance->noteOn(note, velocity);
+            for (AudioPlugin* plugin : plugins) {
+                if (target.track == -1 || target.track == plugin->track) {
+                    plugin->noteOn(note, velocity);
                 }
             }
         }
@@ -273,9 +271,9 @@ public:
         if (target.plugin) {
             target.plugin->noteOff(note, velocity);
         } else {
-            for (AudioPluginHandlerInterface::Plugin& plugin : plugins) {
-                if (target.track == -1 || target.track == plugin.instance->track) {
-                    plugin.instance->noteOff(note, velocity);
+            for (AudioPlugin* plugin : plugins) {
+                if (target.track == -1 || target.track == plugin->track) {
+                    plugin->noteOff(note, velocity);
                 }
             }
         }
@@ -309,8 +307,8 @@ public:
     {
         if (playing) {
             clockCounter++;
-            for (Plugin& plugin : plugins) {
-                plugin.instance->onClockTick(&clockCounter);
+            for (AudioPlugin* plugin : plugins) {
+                plugin->onClockTick(&clockCounter);
             }
         }
     }
@@ -345,8 +343,8 @@ public:
             playing = !playing;
             break;
         }
-        for (Plugin& plugin : plugins) {
-            plugin.instance->onEvent(event);
+        for (AudioPlugin* plugin : plugins) {
+            plugin->onEvent(event);
         }
     }
 

@@ -110,10 +110,10 @@ public:
         m.lock();
 
         FILE* file = fopen(filepath.c_str(), "w");
-        for (AudioPluginHandlerInterface::Plugin& plugin : props.audioPluginHandler->plugins) {
-            if ((track == -1 || track == plugin.instance->track) && plugin.instance->serializable) {
-                fprintf(file, "# %s\n", plugin.instance->name);
-                plugin.instance->serialize(file, "\n");
+        for (AudioPlugin* plugin : props.audioPluginHandler->plugins) {
+            if ((track == -1 || track == plugin->track) && plugin->serializable) {
+                fprintf(file, "# %s\n", plugin->name);
+                plugin->serialize(file, "\n");
             }
         }
         fclose(file);
