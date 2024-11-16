@@ -13,22 +13,61 @@
 #include "config.h"
 #include "draw/SSD1306/draw.h"
 #include "host.h"
+#include "plugins/components/Pixel/PixelComponents.h"
 #include "styles.h"
 #include "timer.h"
 #include "viewManager.h"
-#include "plugins/components/Pixel/PixelComponents.h"
 
-void loadAudioAlias()
+#include "plugins/audio/AudioOutputPulse.h"
+#include "plugins/audio/EffectDistortion.h"
+#include "plugins/audio/EffectFilterMultiMode.h"
+#include "plugins/audio/EffectGainVolume.h"
+#include "plugins/audio/Mixer2.h"
+#include "plugins/audio/Mixer4.h"
+#include "plugins/audio/Sequencer.h"
+#include "plugins/audio/SerializeTrack.h"
+#include "plugins/audio/SynthDrum23.h"
+#include "plugins/audio/Tempo.h"
+
+void loadAudioAliases()
 {
-    // ViewManager& viewManager = ViewManager::get();
-    // viewManager.plugins.push_back({ "KeyInfoBar", [](ComponentInterface::Props props) {
-    //     return new KeyInfoBarComponent(props);
-    // } });
+    AudioPluginHandler& audioPluginHandler = AudioPluginHandler::get();
+    audioPluginHandler.pluginAliases.push_back({ "SynthDrum23", [](AudioPlugin::Props& props, char* name) {
+                                                    return new SynthDrum23(props, name);
+                                                } });
+    audioPluginHandler.pluginAliases.push_back({ "Tempo", [](AudioPlugin::Props& props, char* name) {
+                                                    return new Tempo(props, name);
+                                                } });
+    audioPluginHandler.pluginAliases.push_back({ "Sequencer", [](AudioPlugin::Props& props, char* name) {
+                                                    return new Sequencer(props, name);
+                                                } });
+    audioPluginHandler.pluginAliases.push_back({ "EffectDistortion", [](AudioPlugin::Props& props, char* name) {
+                                                    return new EffectDistortion(props, name);
+                                                } });
+    audioPluginHandler.pluginAliases.push_back({ "EffectFilterMultiMode", [](AudioPlugin::Props& props, char* name) {
+                                                    return new EffectFilterMultiMode(props, name);
+                                                } });
+    audioPluginHandler.pluginAliases.push_back({ "SerializeTrack", [](AudioPlugin::Props& props, char* name) {
+                                                    return new SerializeTrack(props, name);
+                                                } });
+    audioPluginHandler.pluginAliases.push_back({ "EffectGainVolume", [](AudioPlugin::Props& props, char* name) {
+                                                    return new EffectGainVolume(props, name);
+                                                } });
+    audioPluginHandler.pluginAliases.push_back({ "Mixer4", [](AudioPlugin::Props& props, char* name) {
+                                                    return new Mixer4(props, name);
+                                                } });
+    audioPluginHandler.pluginAliases.push_back({ "Mixer2", [](AudioPlugin::Props& props, char* name) {
+                                                    return new Mixer2(props, name);
+                                                } });
+    audioPluginHandler.pluginAliases.push_back({ "AudioOutputPulse", [](AudioPlugin::Props& props, char* name) {
+                                                    return new AudioOutputPulse(props, name);
+                                                } });
 }
 
 int main(int argc, char* argv[])
 {
     loadPixelComponents();
+    loadAudioAliases();
 
     styles.screen = { 128, 64 };
     loadUiConfig(argc >= 2 ? argv[1] : "pixel.ui", argc >= 3 ? argv[2] : NULL);
