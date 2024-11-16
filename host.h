@@ -11,8 +11,6 @@
 #include "log.h"
 #include "plugins/audio/valueInterface.h"
 
-AudioPluginHandlerInterface* audioPluginHandler = &AudioPluginHandler::get();
-
 void* hostThread(void* data)
 {
     AudioPluginHandler::get().loop();
@@ -21,22 +19,15 @@ void* hostThread(void* data)
 
 AudioPlugin& getPlugin(const char* name, int16_t track = -1)
 {
-    if (!audioPluginHandler) {
-        throw std::runtime_error("Host not loaded");
-    }
-
     if (strcmp(name, "UI") == 0) {
         return UiPlugin::get();
     }
-    return audioPluginHandler->getPlugin(name, track);
+    return AudioPluginHandler::get().getPlugin(name, track);
 }
 
 void sendAudioEvent(AudioEventType event)
 {
-    if (!audioPluginHandler) {
-        throw std::runtime_error("Host not loaded");
-    }
-    audioPluginHandler->sendEvent(event);
+    AudioPluginHandler::get().sendEvent(event);
 }
 
 void startHostThread()
