@@ -233,30 +233,37 @@ protected:
 
     void lineDiagonal(Point start, Point end, DrawOptions options = {})
     {
-        int x0, y0, x1, y1;
-        if (start.x < end.x) {
-            x0 = start.x;
-            x1 = end.x;
-            y0 = start.y;
-            y1 = end.y;
-        } else {
-            x0 = end.x;
-            x1 = start.x;
-            y0 = end.y;
-            y1 = start.y;
-        }
-        int deltaX = x1 - x0;
-        int deltaY = abs(y1 - y0);
-        int eps = 0;
-        int ystep = y0 < y1 ? 1 : -1;
+        unsigned int dx = (end.x > start.x ? end.x - start.x : start.x - end.x);
+        short xstep = end.x > start.x ? 1 : -1;
+        unsigned int dy = (end.y > start.y ? end.y - start.y : start.y - end.y);
+        short ystep = end.y > start.y ? 1 : -1;
+        int col = start.x, row = start.y;
 
-        int y = y0;
-        for (int x = x0; x <= x1; x++) {
-            oledPixel(x, y);
-            eps += deltaY;
-            if ((eps << 1) >= deltaX) {
-                y += ystep;
-                eps -= deltaX;
+        if (dx < dy) {
+            int t = -(dy >> 1);
+            while (true) {
+                oledPixel(col, row);
+                if (row == end.y)
+                    return;
+                row += ystep;
+                t += dx;
+                if (t >= 0) {
+                    col += xstep;
+                    t -= dy;
+                }
+            }
+        } else {
+            int t = -(dx >> 1);
+            while (true) {
+                oledPixel(col, row);
+                if (col == end.x)
+                    return;
+                col += xstep;
+                t += dy;
+                if (t >= 0) {
+                    row += ystep;
+                    t -= dx;
+                }
             }
         }
     }
