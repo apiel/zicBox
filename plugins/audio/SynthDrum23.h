@@ -5,6 +5,7 @@
 #include "audioPlugin.h"
 #include "filter.h"
 #include "mapping.h"
+// #include "utils/Envelop.h"
 #include "utils/EnvelopRelative.h"
 
 #define ZIC_DRUM_ENV_AMP_STEP 4
@@ -40,6 +41,8 @@ protected:
 
     EnvelopRelative envelopAmp = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.3f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
     EnvelopRelative envelopFreq = EnvelopRelative({ { 1.0f, 0.0f }, { 0.26f, 0.03f }, { 0.24f, 0.35f }, { 0.22f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
+
+    // Envelop envelopAmp2 = Envelop({ { 0.0f, 50 }, { 1.0f, 100 }, { 0.0f, 0 } });
 
     float sample(EffectFilterData& _filter, float time, float* index, float amp, float freq, float _noteMult = 1.0f, float _velocity = 1.0f)
     {
@@ -290,6 +293,8 @@ public:
             return &envelopAmp.data;
         case 4:
             return &envelopFreq.data;
+        // case 5:
+        //     return &envelopAmp2.data;
         }
         return NULL;
     }
