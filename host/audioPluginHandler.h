@@ -184,7 +184,8 @@ public:
     void loadPlugin(char* value)
     {
         char* name = strtok(value, " ");
-        string path = strtok(NULL, " ");
+        char * pathPtr = strtok(NULL, " ");
+        string path = pathPtr ? pathPtr : name;
 
         // if path end by .so load it as plugin
         if (path.substr(path.length() - 3) == ".so") {
