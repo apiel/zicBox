@@ -18,6 +18,14 @@
 #include "viewManager.h"
 #include "plugins/components/Pixel/PixelComponents.h"
 
+void loadAudioAlias()
+{
+    // ViewManager& viewManager = ViewManager::get();
+    // viewManager.plugins.push_back({ "KeyInfoBar", [](ComponentInterface::Props props) {
+    //     return new KeyInfoBarComponent(props);
+    // } });
+}
+
 int main(int argc, char* argv[])
 {
     loadPixelComponents();

@@ -1,12 +1,13 @@
 #ifndef _HOST_H_
 #define _HOST_H_
 
+#include <pthread.h>
 #include <stdexcept>
 #include <vector>
-#include <pthread.h> 
 
 #include "UiPlugin.h"
-#include "host/zicHost.h"
+#include "host/audioPluginHandler.h"
+#include "host/config.h"
 #include "log.h"
 #include "plugins/audio/valueInterface.h"
 
@@ -46,7 +47,8 @@ bool loadHost(std::string hostConfigPath, const char* pluginConfig)
     }
 
     logDebug("Initializing host\n");
-    audioPluginHandler = initHost(hostConfigPath.c_str(), pluginConfig);
+    loadHostConfig(hostConfigPath.c_str(), pluginConfig);
+    audioPluginHandler = &AudioPluginHandler::get();
     if (!audioPluginHandler) {
         logError("Error initializing host\n");
         return false;

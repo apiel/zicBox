@@ -1,9 +1,12 @@
-#include "zicHost.h"
+#include "audioPluginHandler.h"
+#include "config.h"
+#include "def.h"
 
 extern "C" {
 AudioPluginHandlerInterface* init()
 {
-    return initHost();
+    loadHostConfig("./config.cfg", NULL);
+    return &AudioPluginHandler::get();
 }
 
 int mainLoop()
