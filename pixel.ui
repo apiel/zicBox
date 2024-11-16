@@ -23,3 +23,5 @@ VIEW: Main
     KEYMAP: Keyboard 7 item 7
     KEYMAP: Keyboard 9 item 8
     KEYMAP: Keyboard 10 item 9
+
+  COMPONENT: DrumEnvelop 0 0
