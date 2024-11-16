@@ -164,6 +164,7 @@ public:
         }
 
         dlerror();
+        pluginAllocator.name = name;
         pluginAllocator.allocator = [handle](AudioPlugin::Props& props, char* name) {
             void* allocator = dlsym(handle, "allocator");
             return ((AudioPlugin * (*)(AudioPlugin::Props & props, char* name)) allocator)(props, name);
@@ -175,6 +176,8 @@ public:
             return;
         }
         pluginAllocators.push_back(pluginAllocator);
+
+        logInfo("audio plugin alias loaded: %s\n", name);
     }
 
     void loadPlugin(char* value)
@@ -186,14 +189,16 @@ public:
         if (path.substr(path.length() - 3) == ".so") {
             loadPlugin(name, path.c_str());
         } else {
-            // // look to alias if plugins is already loaded and allocate it
-            // for (PluginAllocator& pluginAllocator : pluginAllocators) {
-            //     if (pluginAllocator.name == path) {
-            //         plugins.push_back(pluginAllocator.allocator(pluginProps, name));
-            //         logInfo("audio plugin loaded: %s\n", plugins.back().instance->name);
-            //         return;
-            //     }
-            // }
+            // look to alias if plugins is already loaded and allocate it
+            for (PluginAllocator& pluginAllocator : pluginAllocators) {
+                printf("pluginAllocator.name %s ==? path %s\n", pluginAllocator.name.c_str(), path.c_str());
+                if (pluginAllocator.name == path) {
+                    plugins.push_back(pluginAllocator.allocator(pluginProps, name));
+                    logInfo("audio plugin loaded: %s\n", plugins.back()->name);
+                    return;
+                }
+            }
+            logWarn("Cannot find audio plugin alias %s [%s]\n", path.c_str(), name);
         }
     }
 
