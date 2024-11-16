@@ -15,6 +15,8 @@ int main(int argc, char* argv[])
 
     // SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
 
+    startHostThread();
+
     ViewManager& viewManager = ViewManager::get();
     viewManager.init();
     if (!viewManager.render()) {

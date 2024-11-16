@@ -274,7 +274,7 @@ public:
             addComponent(name, position, size);
             return true;
         }
-        return ui.config(key, value);
+        return draw.config(key, value) || ui.config(key, value);
     }
 
     void config(const char* key, const char* value)

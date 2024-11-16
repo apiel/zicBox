@@ -16,12 +16,6 @@ void uiScriptCallback(char* key, char* value, const char* filename)
 {
     if (strcmp(key, "print") == 0) {
         printf(">> LOG: %s\n", value);
-    } else if (strcmp(key, "LOAD_HOST") == 0) {
-        std::string configPath = strtok(value, " ");
-        char* pluginConfig = strtok(NULL, " ");
-        if (!loadHost(getFullpath(value, filename), pluginConfig)) {
-            logError("Could not load host");
-        }
     } else if (strcmp(key, "SCREEN") == 0) {
         styles.screen.w = atoi(strtok(value, " "));
         styles.screen.h = atoi(strtok(NULL, " "));
@@ -36,10 +30,10 @@ void uiScriptCallback(char* key, char* value, const char* filename)
 #ifdef _UI_SDL_EVENT_HANDLER_H_
         || EventHandler::get().config(key, value)
 #endif
-        || ViewManager::get().draw.config(key, value)) {
+        || ViewManager::get().config(key, value, filename)) {
         return;
     } else {
-        ViewManager::get().config(key, value, filename);
+        hostScriptCallback(key, value, filename);
     }
 }
 

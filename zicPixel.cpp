@@ -35,6 +35,8 @@ int main(int argc, char* argv[])
 
     showLogLevel();
 
+    startHostThread();
+
     ViewManager& viewManager = ViewManager::get();
     viewManager.init();
     if (!viewManager.render()) {
