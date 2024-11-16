@@ -193,7 +193,6 @@ public:
         } else {
             // look to alias if plugins is already loaded and allocate it
             for (PluginAlias& pluginAllocator : pluginAliases) {
-                printf("pluginAllocator.name %s ==? path %s\n", pluginAllocator.name.c_str(), path.c_str());
                 if (pluginAllocator.name == path) {
                     plugins.push_back(pluginAllocator.allocator(pluginProps, name));
                     logInfo("audio plugin loaded: %s\n", plugins.back()->name);
