@@ -1,12 +1,16 @@
 #ifndef _AUDIO_PLUGIN_HANDLER_H_
 #define _AUDIO_PLUGIN_HANDLER_H_
 
+using namespace std;
+
 #include <stdexcept>
 #include <thread>
+#include <string>
 
 #include "../helpers/trim.h"
 #include "../plugins/audio/audioPlugin.h"
 #include "../plugins/audio/lookupTable.h"
+#include "../log.h"
 #include "def.h"
 #include "midiMapping.h"
 
@@ -23,6 +27,12 @@ protected:
     LookupTable lookupTable;
 
     AudioPlugin::Props pluginProps = { debug, SAMPLE_RATE, APP_CHANNELS, this, MAX_TRACKS, &lookupTable };
+
+    struct PluginAllocator {
+        string name;
+        std::function<AudioPlugin*(AudioPlugin::Props& props, char* name)> allocator;
+    };
+    std::vector<PluginAllocator> pluginAllocators;
 
     std::vector<MidiMapping> midiMapping;
 
@@ -140,17 +150,61 @@ public:
         }
     }
 
-    void loadPlugin(char* value)
+    void loadPluginAlias(char* value)
     {
-        Plugin plugin;
+        PluginAllocator pluginAllocator;
 
         char* name = strtok(value, " ");
         char* path = strtok(NULL, " ");
 
+        void* handle = dlopen(path, RTLD_LAZY);
+        if (!handle) {
+            logError("Cannot load audio library %s [%s]: %s\n", path, name, dlerror());
+            return;
+        }
+
+        dlerror();
+        pluginAllocator.allocator = [handle](AudioPlugin::Props& props, char* name) {
+            void* allocator = dlsym(handle, "allocator");
+            return ((AudioPlugin * (*)(AudioPlugin::Props & props, char* name)) allocator)(props, name);
+        };
+        const char* dlsym_error = dlerror();
+        if (dlsym_error) {
+            logError("Cannot load symbol: %s\n", dlsym_error);
+            dlclose(handle);
+            return;
+        }
+        pluginAllocators.push_back(pluginAllocator);
+    }
+
+    void loadPlugin(char* value)
+    {
+        char* name = strtok(value, " ");
+        string path = strtok(NULL, " ");
+
+        // if path end by .so load it as plugin
+        if (path.substr(path.length() - 3) == ".so") {
+            loadPlugin(name, path.c_str());
+        } else {
+            // // look to alias if plugins is already loaded and allocate it
+            // for (PluginAllocator& pluginAllocator : pluginAllocators) {
+            //     if (pluginAllocator.name == path) {
+            //         plugins.push_back(pluginAllocator.allocator(pluginProps, name));
+            //         logInfo("audio plugin loaded: %s\n", plugins.back().instance->name);
+            //         return;
+            //     }
+            // }
+        }
+    }
+
+    void loadPlugin(char* name, const char* path)
+    {
+        Plugin plugin;
+
         plugin.handle = dlopen(path, RTLD_LAZY);
 
         if (!plugin.handle) {
-            APP_PRINT("Cannot open audio library %s [%s]: %s\n", path, name, dlerror());
+            logWarn("Cannot open audio library %s [%s]: %s\n", path, name, dlerror());
             return;
         }
 
@@ -158,14 +212,13 @@ public:
         void* allocator = (AudioPlugin*)dlsym(plugin.handle, "allocator");
         const char* dlsym_error = dlerror();
         if (dlsym_error) {
-            APP_PRINT("Cannot load symbol: %s\n", dlsym_error);
+            logWarn("Cannot load symbol: %s\n", dlsym_error);
             dlclose(plugin.handle);
             return;
         }
 
         plugin.instance = ((AudioPlugin * (*)(AudioPlugin::Props & props, char* name)) allocator)(pluginProps, name);
-        APP_PRINT("audio plugin loaded\n");
-        APP_PRINT("plugin: %s\n", plugin.instance->name);
+        logInfo("audio plugin loaded: %s\n", plugin.instance->name);
 
         // plugin.instance->set(0, 0.1f);
         // printf("---> getParamKey: %d\n", plugin.instance->getParamKey("volume"));

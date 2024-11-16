@@ -19,7 +19,7 @@ protected:
         printf("handleButton: %d %d\n", id, state);
 
         if (state == 1) {
-            AudioPlugin* plugin = &getPlugin("Kick23", 1);
+            AudioPlugin* plugin = &getPlugin("Drum23", 1);
             plugin->noteOn(60, 100.0f);
         }
     }
