@@ -33,15 +33,12 @@ protected:
 
     void renderEditStep(std::vector<Data>* envData)
     {
-        // draw.filledRect({ position.x, cursorY - 3 }, { size.w, 3 }, { .color = { SSD1306_BLACK } });
         if (currentstep < envData->size() - 1) {
             float currentTime = envData->at(currentstep).time;
             float nextTime = envData->at(currentstep + 1).time;
-            // printf("[%d] %f => [%d] %f\n", currentstep, currentTime, currentstep + 1, nextTime);
-            // draw.line({ (int)(position.x + size.w * currentTime), cursorY }, { (int)(position.x + size.w * currentTime), cursorY - 3 });
+            draw.line({ (int)(position.x + size.w * currentTime), cursorY }, { (int)(position.x + size.w * currentTime), cursorY - 3 });
             draw.line({ (int)(position.x + size.w * currentTime), cursorY - 1 }, { (int)(position.x + size.w * nextTime), cursorY - 1 });
-            // draw.line({ (int)(position.x + size.w * nextTime), cursorY }, { (int)(position.x + size.w * nextTime), cursorY - 3 });
-            printf("edit step Draw line at %d %d => %d %d\n", (int)(position.x + size.w * currentTime), cursorY - 1, (int)(position.x + size.w * nextTime), cursorY - 1);
+            draw.line({ (int)(position.x + size.w * nextTime), cursorY }, { (int)(position.x + size.w * nextTime), cursorY - 3 });
         } else {
             draw.line({ position.x + size.w, cursorY }, { position.x + size.w, cursorY - 3 });
         }
@@ -54,12 +51,12 @@ public:
         plugin = &getPlugin("SynthDrum23", 1);
 
         envelopHeight = size.h - 6;
-        cursorY = position.y + size.h;
+        cursorY = position.y + size.h - 1;
     }
 
     void render() override
     {
-        draw.filledRect(position, size, { .color = { SSD1306_BLACK } });
+        draw.filledRect(position, { size.w, size.h }, { .color = { SSD1306_BLACK } });
         if (plugin) {
             std::vector<Data>* envData = (std::vector<Data>*)plugin->data(3);
             if (envData) {
