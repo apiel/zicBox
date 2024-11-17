@@ -39,7 +39,7 @@ protected:
 
     EffectFilterData filter;
 
-    EnvelopRelative envelopAmp = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.3f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
+    EnvelopRelative envelopAmp = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.3f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
     EnvelopRelative envelopFreq = EnvelopRelative({ { 1.0f, 0.0f }, { 0.26f, 0.03f }, { 0.24f, 0.35f }, { 0.22f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
 
     // Envelop envelopAmp2 = Envelop({ { 0.0f, 50 }, { 1.0f, 100 }, { 0.0f, 0 } });
@@ -169,13 +169,6 @@ public:
         updateUi(NULL);
     };
 
-    void setEnvAmpMod(float value, uint8_t index)
-    {
-        envAmpMod[index].setFloat(value);
-        envelopAmp.data[index + 1].modulation = envAmpMod[index].pct();
-        updateUi(&envelopAmp.data);
-    }
-
     void setClipping(float value)
     {
         clipping.setFloat(value);
@@ -188,6 +181,14 @@ public:
         updateUiState++;
     }
 
+    void setEnvAmpMod(float value, uint8_t index)
+    {
+        envAmpMod[index].setFloat(value);
+        envelopAmp.data[index + 1].modulation = envAmpMod[index].pct();
+        updateUi(&envelopAmp.data);
+        // printf("envAmpMod[%d]: %f ==? %f, envelopAmp[%d] %f\n", index, envAmpMod[index].get(), envAmpMod[index].pct(), index + 1, envelopAmp.data[index + 1].modulation);
+    }
+
     void setEnvAmpTime(float value, uint8_t index)
     {
         if (value <= 0.0f) {
@@ -196,12 +197,14 @@ public:
         if (index > 0 && envAmpTime[index - 1].get() >= value) {
             return;
         }
-        if (index < ZIC_DRUM_ENV_AMP_STEP - 1 && envAmpTime[index + 1].get() <= value) {
-            return;
-        }
+        // if (index < ZIC_DRUM_ENV_AMP_STEP - 1 && envAmpTime[index + 1].get() <= value) {
+        //     printf("Return C envAmpTime[%d]: %f <= %f\n", index + 1, envAmpTime[index + 1].get(), value);
+        //     return;
+        // }
         envAmpTime[index].setFloat(value);
         envelopAmp.data[index + 2].time = envAmpTime[index].pct();
         updateUi(&envelopAmp.data);
+        // printf("envAmpTime[%d]: %f ==? %f, envelopAmp[%d] %f\n", index, envAmpTime[index].get(), envAmpTime[index].pct(), index + 2, envelopAmp.data[index + 2].time);
     }
 
     void setEnvFreqMod(float value, uint8_t index)

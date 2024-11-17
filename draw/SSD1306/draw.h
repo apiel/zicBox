@@ -147,6 +147,9 @@ protected:
 
     void oledPixel(uint8_t x, uint8_t y)
     {
+        if (x >= styles.screen.w) {
+            return;
+        }
         uint16_t tc = (styles.screen.w * (y / 8)) + x;
         if (tc >= SSD1306_BUFFER_SIZE) {
             return;
@@ -156,6 +159,9 @@ protected:
 
     void oledPixel(uint8_t x, uint8_t y, uint8_t color)
     {
+        if (x >= styles.screen.w) {
+            return;
+        }
         uint16_t tc = (styles.screen.w * (y / 8)) + x;
         if (tc >= SSD1306_BUFFER_SIZE) {
             return;
