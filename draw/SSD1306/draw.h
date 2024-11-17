@@ -45,6 +45,18 @@ class Draw : public DrawInterface {
 public:
     uint8_t oledBuffer[SSD1306_BUFFER_SIZE] = { 0 };
 
+    // void printBuffer()
+    // {
+    //     printf("oledBuffer:\n");
+    //     for (uint16_t i = 0; i < SSD1306_BUFFER_SIZE; i++) {
+    //         printf("%02x ", oledBuffer[i]);
+    //         if ((i + 1) % styles.screen.w == 0) {
+    //             printf("\n");
+    //         }
+    //     }
+    //     printf("\n");
+    // }
+
 protected:
     I2c i2c;
     bool needRendering = false;
@@ -182,7 +194,6 @@ protected:
     void oledRender()
     {
         uint8_t pages = oledGetPageCount();
-
         for (uint8_t page = 0; page < pages; page++) {
             oledRender(page);
         }
@@ -214,16 +225,26 @@ protected:
 
     void lineVertical(Point start, Point end, DrawOptions options = {})
     {
-        int ystep = start.y < end.y ? 1 : -1;
-        for (int y = start.y; y != end.y; y += ystep) {
+        int y = start.y;
+        int len = end.y;
+        if (start.y > end.y) {
+            y = end.y;
+            len = start.y;
+        }
+        for (; y <= len; y++) {
             oledPixel(start.x, y, options.color.r);
         }
     }
 
     void lineHorizontal(Point start, Point end, DrawOptions options = {})
     {
-        int xstep = start.x < end.x ? 1 : -1;
-        for (int x = start.x; x != end.x; x += xstep) {
+        int x = start.x;
+        int len = end.x;
+        if (start.x > end.x) {
+            x = end.x;
+            len = start.x;
+        }
+        for (; x <= len; x++) {
             oledPixel(x, start.y, options.color.r);
         }
     }
@@ -508,7 +529,6 @@ public:
 
     void filledRect(Point position, Size size, DrawOptions options = {}) override
     {
-        printf("filledRect %d %d %d %d color %d\n", position.x, position.y, size.w, size.h, options.color.r);
         for (int y = position.y; y < position.y + size.h; y++) {
             lineHorizontal({ position.x, y }, { position.x + size.w, y }, options);
         }

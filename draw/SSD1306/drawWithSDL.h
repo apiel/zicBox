@@ -75,6 +75,10 @@ public:
 
     void render() override
     {
+        // first clear display
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
+        // draw pixels
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         for (uint16_t i = 0; i < SSD1306_BUFFER_SIZE; i++) {
             if (oledBuffer[i] != 0x00) {
