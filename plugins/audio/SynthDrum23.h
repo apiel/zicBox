@@ -41,6 +41,7 @@ protected:
 
     EnvelopRelative envelopAmp = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.0f, 1.0f } });
     EnvelopRelative envelopFreq = EnvelopRelative({ { 1.0f, 0.0f }, { 0.26f, 0.03f }, { 0.24f, 0.35f }, { 0.22f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
+    // EnvelopRelative envelopFreq = EnvelopRelative({ { 1.0f, 1.0f }, { 1.0f, 1.0f } });
 
     // Envelop envelopAmp2 = Envelop({ { 0.0f, 50 }, { 1.0f, 100 }, { 0.0f, 0 } });
 
@@ -109,27 +110,27 @@ public:
     //     { 50.0f, "ENVELOP_AMP_TIME_3", { "Amp.Time 3", .unit = "%" }, [&](auto p) { setEnvAmpTime(p.value, 2); } },
     //     { 50.0f, "ENVELOP_AMP_TIME_4", { "Amp.Time 4", .unit = "%" }, [&](auto p) { setEnvAmpTime(p.value, 3); } },
     // };
-    Val envFreqMod[ZIC_DRUM_ENV_FREQ_STEP + 1] = {
-        { 100.0f, "ENVELOP_FREQ_MOD_0", { "Freq.Mod.0", .unit = "%" }, [&](auto p) { setEnvFreqMod(p.value, 0); } },
-        { 50.0f, "ENVELOP_FREQ_MOD_1", { "Freq.Mod.1", .unit = "%" }, [&](auto p) { setEnvFreqMod(p.value, 1); } },
-        { 50.0f, "ENVELOP_FREQ_MOD_2", { "Freq.Mod.2", .unit = "%" }, [&](auto p) { setEnvFreqMod(p.value, 2); } },
-        { 50.0f, "ENVELOP_FREQ_MOD_3", { "Freq.Mod.3", .unit = "%" }, [&](auto p) { setEnvFreqMod(p.value, 3); } },
-        { 50.0f, "ENVELOP_FREQ_MOD_4", { "Freq.Mod.4", .unit = "%" }, [&](auto p) { setEnvFreqMod(p.value, 4); } },
-    };
-    Val envFreqTime[ZIC_DRUM_ENV_FREQ_STEP] = {
-        { 50.0f, "ENVELOP_FREQ_TIME_1", { "Freq.Time 1", .unit = "%" }, [&](auto p) { setEnvFreqTime(p.value, 0); } },
-        { 50.0f, "ENVELOP_FREQ_TIME_2", { "Freq.Time 2", .unit = "%" }, [&](auto p) { setEnvFreqTime(p.value, 1); } },
-        { 50.0f, "ENVELOP_FREQ_TIME_3", { "Freq.Time 3", .unit = "%" }, [&](auto p) { setEnvFreqTime(p.value, 2); } },
-        { 50.0f, "ENVELOP_FREQ_TIME_4", { "Freq.Time 4", .unit = "%" }, [&](auto p) { setEnvFreqTime(p.value, 3); } },
-    };
+    // Val envFreqMod[ZIC_DRUM_ENV_FREQ_STEP + 1] = {
+    //     { 100.0f, "ENVELOP_FREQ_MOD_0", { "Freq.Mod.0", .unit = "%" }, [&](auto p) { setEnvFreqMod(p.value, 0); } },
+    //     { 50.0f, "ENVELOP_FREQ_MOD_1", { "Freq.Mod.1", .unit = "%" }, [&](auto p) { setEnvFreqMod(p.value, 1); } },
+    //     { 50.0f, "ENVELOP_FREQ_MOD_2", { "Freq.Mod.2", .unit = "%" }, [&](auto p) { setEnvFreqMod(p.value, 2); } },
+    //     { 50.0f, "ENVELOP_FREQ_MOD_3", { "Freq.Mod.3", .unit = "%" }, [&](auto p) { setEnvFreqMod(p.value, 3); } },
+    //     { 50.0f, "ENVELOP_FREQ_MOD_4", { "Freq.Mod.4", .unit = "%" }, [&](auto p) { setEnvFreqMod(p.value, 4); } },
+    // };
+    // Val envFreqTime[ZIC_DRUM_ENV_FREQ_STEP] = {
+    //     { 50.0f, "ENVELOP_FREQ_TIME_1", { "Freq.Time 1", .unit = "%" }, [&](auto p) { setEnvFreqTime(p.value, 0); } },
+    //     { 50.0f, "ENVELOP_FREQ_TIME_2", { "Freq.Time 2", .unit = "%" }, [&](auto p) { setEnvFreqTime(p.value, 1); } },
+    //     { 50.0f, "ENVELOP_FREQ_TIME_3", { "Freq.Time 3", .unit = "%" }, [&](auto p) { setEnvFreqTime(p.value, 2); } },
+    //     { 50.0f, "ENVELOP_FREQ_TIME_4", { "Freq.Time 4", .unit = "%" }, [&](auto p) { setEnvFreqTime(p.value, 3); } },
+    // };
 
     SynthDrum23(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name, {
                                     // clang-format off
             // &envAmpMod[0], &envAmpMod[1], &envAmpMod[2], &envAmpMod[3], &envAmpMod[4],
             // &envAmpTime[0], &envAmpTime[1], &envAmpTime[2], &envAmpTime[3],
-            &envFreqMod[0], &envFreqMod[1], &envFreqMod[2], &envFreqMod[3], &envFreqMod[4],
-            &envFreqTime[0], &envFreqTime[1], &envFreqTime[2], &envFreqTime[3],
+            // &envFreqMod[0], &envFreqMod[1], &envFreqMod[2], &envFreqMod[3], &envFreqMod[4],
+            // &envFreqTime[0], &envFreqTime[1], &envFreqTime[2], &envFreqTime[3],
         }) // clang-format on
         , sampleRate(props.sampleRate)
     {
@@ -209,28 +210,28 @@ public:
     //     // printf("envAmpTime[%d]: %f ==? %f, envelopAmp[%d] %f\n", index, envAmpTime[index].get(), envAmpTime[index].pct(), index + 2, envelopAmp.data[index + 2].time);
     // }
 
-    void setEnvFreqMod(float value, uint8_t index)
-    {
-        envFreqMod[index].setFloat(value);
-        envelopFreq.data[index].modulation = envFreqMod[index].pct();
-        updateUi(&envelopFreq.data);
-    }
+    // void setEnvFreqMod(float value, uint8_t index)
+    // {
+    //     envFreqMod[index].setFloat(value);
+    //     envelopFreq.data[index].modulation = envFreqMod[index].pct();
+    //     updateUi(&envelopFreq.data);
+    // }
 
-    void setEnvFreqTime(float value, uint8_t index)
-    {
-        if (value <= 0.0f) {
-            return;
-        }
-        if (index > 0 && envFreqTime[index - 1].get() > value) {
-            return;
-        }
-        if (index < ZIC_DRUM_ENV_FREQ_STEP - 1 && envFreqTime[index + 1].get() < value) {
-            return;
-        }
-        envFreqTime[index].setFloat(value);
-        envelopFreq.data[index + 1].time = envFreqTime[index].pct();
-        updateUi(&envelopFreq.data);
-    }
+    // void setEnvFreqTime(float value, uint8_t index)
+    // {
+    //     if (value <= 0.0f) {
+    //         return;
+    //     }
+    //     if (index > 0 && envFreqTime[index - 1].get() > value) {
+    //         return;
+    //     }
+    //     if (index < ZIC_DRUM_ENV_FREQ_STEP - 1 && envFreqTime[index + 1].get() < value) {
+    //         return;
+    //     }
+    //     envFreqTime[index].setFloat(value);
+    //     envelopFreq.data[index + 1].time = envFreqTime[index].pct();
+    //     updateUi(&envelopFreq.data);
+    // }
 
     void setPitch(float value)
     {
@@ -267,7 +268,7 @@ public:
         sampleDurationCounter = 0;
         envelopAmp.reset();
         envelopFreq.reset();
-        velocity = _velocity;
+        velocity = range(_velocity, 0.0f, 1.0f);
 
         noteMult = pow(2, ((note - baseNote + pitch.get()) / 12.0));
     }
@@ -298,8 +299,8 @@ public:
             return &envelopAmp.data;
         case 4:
             return &envelopFreq.data;
-        // case 5:
-        //     return &envelopAmp2.data;
+            // case 5:
+            //     return &envelopAmp2.data;
         }
         return NULL;
     }

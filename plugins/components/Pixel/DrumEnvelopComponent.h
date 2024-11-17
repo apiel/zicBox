@@ -2,6 +2,7 @@
 #define _UI_PIXEL_COMPONENT_DRUM_ENV_H_
 
 #include "../component.h"
+#include "../../../helpers/range.h"
 
 class DrumEnvelopComponent : public Component {
 protected:
@@ -58,13 +59,13 @@ public:
     {
         draw.filledRect(position, { size.w, size.h }, { .color = { SSD1306_BLACK } });
         if (plugin) {
+            // TODO might want to set this globally
             std::vector<Data>* envData = (std::vector<Data>*)plugin->data(3);
             if (envData) {
                 renderEnvelop(envData);
                 renderEditStep(envData);
             }
         }
-        // draw.filledRect(position, size, { .color = { SSD1306_BLACK } });
     }
 
     void onEncoder(int id, int8_t direction) override
@@ -77,6 +78,24 @@ public:
             }
             printf("update currentstep: %d\n", currentstep);
             renderNext();
+        } else if (id == 1) {
+            // TODO might want to set this globally
+            std::vector<Data>* envData = (std::vector<Data>*)plugin->data(3);
+            if (envData) {
+                Data& data = envData->at(currentstep);
+                float value = data.time + (direction * 0.01f);
+                data.time = range(value, 0.0f, 1.0f);
+                renderNext();
+            }
+        } else if (id == 2) {
+            // TODO might want to set this globally
+            std::vector<Data>* envData = (std::vector<Data>*)plugin->data(3);
+            if (envData) {
+                Data& data = envData->at(currentstep);
+                float value = data.modulation + (direction * 0.01f);
+                data.modulation = range(value, 0.0f, 1.0f);
+                renderNext();
+            }
         } else {
             printf("DrumEnvelopComponent onEncoder: %d %d\n", id, direction);
             ValueInterface* value = plugin->getValue("DURATION");

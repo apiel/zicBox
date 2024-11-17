@@ -20,7 +20,7 @@ protected:
 
         if (state == 1) {
             AudioPlugin* plugin = &getPlugin("SynthDrum23", 1);
-            plugin->noteOn(60, 100.0f);
+            plugin->noteOn(60, 1.0f);
         }
     }
 
