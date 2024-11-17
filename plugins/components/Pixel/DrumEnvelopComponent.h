@@ -16,7 +16,8 @@ protected:
     int envelopHeight = 30;
     int cursorY = 0;
 
-    uint8_t currentstep = 0;
+    int8_t currentstep = 0;
+    int8_t editstepStart = 0;
 
     void renderEnvelop(std::vector<Data>* envData)
     {
@@ -77,7 +78,7 @@ public:
                 if (currentstep < envData->size() - 1) {
                     currentstep++;
                 }
-            } else if (currentstep > 0) {
+            } else if (currentstep > editstepStart) {
                 currentstep--;
             }
             printf("update currentstep: %d\n", currentstep);
@@ -85,7 +86,7 @@ public:
         } else if (id == 1) {
             // TODO might want to set this globally
             std::vector<Data>* envData = (std::vector<Data>*)plugin->data(3);
-            if (envData) {
+            if (envData && currentstep > 0) {
                 if (currentstep == envData->size() - 1) {
                     envData->push_back({ 0.0f, 1.0f });
                 }
@@ -108,6 +109,20 @@ public:
             ValueInterface* value = plugin->getValue("DURATION");
             value->increment(direction);
         }
+    }
+
+    bool config(char* key, char* value)
+    {
+        /*md `EDIT_STEP_START: set the first modultation step that can be edited (by default 0). */
+        if (strcmp(key, "EDIT_STEP_START") == 0) {
+            editstepStart = atoi(value);
+            // TODO might want to set this globally
+            std::vector<Data>* envData = (std::vector<Data>*)plugin->data(3);
+            currentstep = range(currentstep, editstepStart, envData->size() - 1);
+            return true;
+        }
+
+        return false;
     }
 };
 
