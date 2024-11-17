@@ -4,7 +4,7 @@
 #include "../component.h"
 
 class DrumEnvelopComponent : public Component {
-public:
+protected:
     AudioPlugin* plugin = NULL;
 
     struct Data {
@@ -12,39 +12,79 @@ public:
         float time;
     };
 
+    int envelopHeight = 30;
+    int cursorY = 0;
+
+    uint8_t currentstep = 0;
+
+    void renderEnvelop(std::vector<Data>* envData)
+    {
+        Data& data = envData->at(0);
+        Point lastPosition = { (int)(position.x + size.w * data.time), (int)(position.y + envelopHeight - envelopHeight * data.modulation) };
+        // printf("[0] %f %f => %dpx x %dpx\n", data.modulation, data.time, lastPosition.x, lastPosition.y);
+        for (int i = 1; i < envData->size(); i++) {
+            Data& data2 = envData->at(i);
+            Point nextPosition = { (int)(position.x + size.w * data2.time), (int)(position.y + envelopHeight - envelopHeight * data2.modulation) };
+            draw.line(lastPosition, nextPosition);
+            // printf("[%d] %f %f => %dpx x %dpx\n", i, data2.modulation, data2.time, nextPosition.x, nextPosition.y);
+            lastPosition = nextPosition;
+        }
+    }
+
+    void renderEditStep(std::vector<Data>* envData)
+    {
+        // draw.filledRect({ position.x, cursorY - 3 }, { size.w, 3 }, { .color = { SSD1306_BLACK } });
+        if (currentstep < envData->size() - 1) {
+            float currentTime = envData->at(currentstep).time;
+            float nextTime = envData->at(currentstep + 1).time;
+            // printf("[%d] %f => [%d] %f\n", currentstep, currentTime, currentstep + 1, nextTime);
+            // draw.line({ (int)(position.x + size.w * currentTime), cursorY }, { (int)(position.x + size.w * currentTime), cursorY - 3 });
+            draw.line({ (int)(position.x + size.w * currentTime), cursorY - 1 }, { (int)(position.x + size.w * nextTime), cursorY - 1 });
+            // draw.line({ (int)(position.x + size.w * nextTime), cursorY }, { (int)(position.x + size.w * nextTime), cursorY - 3 });
+            printf("edit step Draw line at %d %d => %d %d\n", (int)(position.x + size.w * currentTime), cursorY - 1, (int)(position.x + size.w * nextTime), cursorY - 1);
+        } else {
+            draw.line({ position.x + size.w, cursorY }, { position.x + size.w, cursorY - 3 });
+        }
+    }
+
+public:
     DrumEnvelopComponent(ComponentInterface::Props props)
         : Component(props)
     {
         plugin = &getPlugin("SynthDrum23", 1);
+
+        envelopHeight = size.h - 6;
+        cursorY = position.y + size.h;
     }
 
     void render() override
     {
+        draw.filledRect(position, size, { .color = { SSD1306_BLACK } });
         if (plugin) {
             std::vector<Data>* envData = (std::vector<Data>*)plugin->data(3);
             if (envData) {
-                printf("envData size %lu\n", envData->size());
-
-                Data& data = envData->at(0);
-                Point lastPosition = { (int)(position.x + size.w * data.time), (int)(position.y + size.h - size.h * data.modulation) };
-                for (int i = 1; i < envData->size() - 1; i++) {
-                    data = envData->at(i);
-                    Point nextPosition = { (int)(position.x + size.w * data.time), (int)(position.y + size.h - size.h * data.modulation) };
-                    draw.line(lastPosition, nextPosition);
-                    draw.rect(nextPosition, { 2, 2 });
-                    printf("%f %f => %dpx x %dpx\n", data.modulation, data.time, nextPosition.x, nextPosition.y);
-                    lastPosition = nextPosition;
-                }
+                renderEnvelop(envData);
+                renderEditStep(envData);
             }
         }
+        // draw.filledRect(position, size, { .color = { SSD1306_BLACK } });
     }
 
     void onEncoder(int id, int8_t direction) override
     {
-        printf("DrumEnvelopComponent onEncoder: %d %d\n", id, direction);
-
-        ValueInterface* value = plugin->getValue("DURATION");
-        value->increment(direction);
+        if (id == 0) {
+            if (direction > 0) {
+                currentstep++;
+            } else {
+                currentstep = currentstep > 0 ? currentstep - 1 : currentstep;
+            }
+            printf("update currentstep: %d\n", currentstep);
+            renderNext();
+        } else {
+            printf("DrumEnvelopComponent onEncoder: %d %d\n", id, direction);
+            ValueInterface* value = plugin->getValue("DURATION");
+            value->increment(direction);
+        }
     }
 };
 

@@ -12,7 +12,7 @@ include: pixel_audio.cfg
 
 VIEW: Main
 
-  COMPONENT: DrumEnvelop 0 0 128 42
+  COMPONENT: DrumEnvelop 0 0 127 42
 
   COMPONENT: KeyInfoBar 0 48
     KEYMAP: Keyboard 20 item 0
