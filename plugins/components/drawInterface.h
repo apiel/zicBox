@@ -29,9 +29,9 @@ struct Xywh {
 };
 
 typedef struct Color {
-    uint8_t r;
-    uint8_t g;
-    uint8_t b;
+    uint8_t r = 255;
+    uint8_t g = 255;
+    uint8_t b = 255;
     uint8_t a = 255;
 } Color;
 
@@ -94,6 +94,7 @@ public:
     virtual int textRight(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) { return 0; }
 
     virtual void clear() { }
+    virtual void clear(uint8_t page) { }
     virtual void line(Point start, Point end, DrawOptions options = {}) { }
     virtual void lines(std::vector<Point> points, DrawOptions options = {}) { }
     virtual void pixel(Point position, DrawOptions options = {}) { }

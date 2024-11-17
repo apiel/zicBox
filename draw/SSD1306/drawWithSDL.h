@@ -35,6 +35,7 @@ public:
     }
 
     int flags = SDL_WINDOW_SHOWN
+        | SDL_WINDOW_ALWAYS_ON_TOP
 #ifdef IS_RPI
     // | SDL_WINDOW_FULLSCREEN_DESKTOP
 #endif

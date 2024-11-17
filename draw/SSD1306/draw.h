@@ -35,8 +35,8 @@
 
 // Pixel color
 #define SSD1306_BLACK 0
-#define SSD1306_WHITE 1
-#define SSD1306_INVERSE 2
+#define SSD1306_INVERSE 1
+#define SSD1306_WHITE 255
 
 // Use max height and width
 #define SSD1306_BUFFER_SIZE (128 * 64 / 8)
@@ -167,14 +167,14 @@ protected:
             return;
         }
         switch (color) {
-        case SSD1306_WHITE:
-            oledBuffer[tc] |= (1 << (y & 7));
-            break;
         case SSD1306_BLACK:
             oledBuffer[tc] &= ~(1 << (y & 7));
             break;
         case SSD1306_INVERSE:
             oledBuffer[tc] ^= (1 << (y & 7));
+            break;
+        default: // While
+            oledBuffer[tc] |= (1 << (y & 7));
             break;
         }
     }
@@ -212,20 +212,11 @@ protected:
         i2c.send(data, 4);
     }
 
-    void oledClearPage(uint8_t page)
-    {
-        uint16_t offset = styles.screen.w * page;
-        for (uint16_t i = 0; i < styles.screen.w; i++) {
-            oledBuffer[i + offset] = 0x00;
-        }
-        oledRender(page);
-    }
-
     void lineVertical(Point start, Point end, DrawOptions options = {})
     {
         int ystep = start.y < end.y ? 1 : -1;
         for (int y = start.y; y != end.y; y += ystep) {
-            oledPixel(start.x, y);
+            oledPixel(start.x, y, options.color.r);
         }
     }
 
@@ -233,7 +224,7 @@ protected:
     {
         int xstep = start.x < end.x ? 1 : -1;
         for (int x = start.x; x != end.x; x += xstep) {
-            oledPixel(x, start.y);
+            oledPixel(x, start.y, options.color.r);
         }
     }
 
@@ -248,7 +239,7 @@ protected:
         if (dx < dy) {
             int t = -(dy >> 1);
             while (true) {
-                oledPixel(col, row);
+                oledPixel(col, row, options.color.r);
                 if (row == end.y)
                     return;
                 row += ystep;
@@ -261,7 +252,7 @@ protected:
         } else {
             int t = -(dx >> 1);
             while (true) {
-                oledPixel(col, row);
+                oledPixel(col, row, options.color.r);
                 if (col == end.x)
                     return;
                 col += xstep;
@@ -427,16 +418,24 @@ public:
 
     void render() override
     {
-        printf("should draw render\n");
         oledRender();
     }
 
-    void clear()
+    void clear() override
     {
         uint8_t pages = oledGetPageCount();
         for (uint8_t page = 0; page < pages; page++) {
-            oledClearPage(page);
+            clear(page);
         }
+    }
+
+    void clear(uint8_t page) override
+    {
+        uint16_t offset = styles.screen.w * page;
+        for (uint16_t i = 0; i < styles.screen.w; i++) {
+            oledBuffer[i + offset] = 0x00;
+        }
+        oledRender(page);
     }
 
     int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
@@ -507,14 +506,15 @@ public:
         return 0;
     }
 
-    void filledRect(Point position, Size size, DrawOptions options = {})
+    void filledRect(Point position, Size size, DrawOptions options = {}) override
     {
+        printf("filledRect %d %d %d %d color %d\n", position.x, position.y, size.w, size.h, options.color.r);
         for (int y = position.y; y < position.y + size.h; y++) {
             lineHorizontal({ position.x, y }, { position.x + size.w, y }, options);
         }
     }
 
-    void rect(Point position, Size size, DrawOptions options = {})
+    void rect(Point position, Size size, DrawOptions options = {}) override
     {
         Point a = position;
         Point b = { position.x + size.w, position.y };
@@ -526,7 +526,7 @@ public:
         lineVertical(d, a, options);
     }
 
-    void filledRect(Point position, Size size, uint8_t radius, DrawOptions options = {})
+    void filledRect(Point position, Size size, uint8_t radius, DrawOptions options = {}) override
     {
         filledRect({ position.x + radius, position.y }, { size.w - 2 * radius, size.h }, options);
         filledRect({ position.x, position.y + radius }, { size.w, size.h - 2 * radius }, options);
@@ -536,7 +536,7 @@ public:
         filledPie({ position.x + size.w - radius, position.y + size.h - radius }, radius, 0, 90, options);
     }
 
-    void rect(Point position, Size size, uint8_t radius, DrawOptions options = {})
+    void rect(Point position, Size size, uint8_t radius, DrawOptions options = {}) override
     {
         arc({ position.x + radius, position.y + radius }, radius, -2, 0, options);
         lineVertical({ position.x, position.y + radius }, { position.x, position.y + size.h - radius }, options);
@@ -580,7 +580,7 @@ public:
      * Therefor starting angle is 0 and ending angle is 8.
      * Negative angles will result in anti clockwise rotation. Meaning that angle -1 will correspond to octant 7, etc.
      */
-    void arc(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
+    void arc(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) override
     {
         for (int angle = startAngle; angle < endAngle; angle++) {
             // for (int angle = 0; angle < 8; angle++) {
@@ -600,7 +600,7 @@ public:
         }
     }
 
-    void circle(Point position, int radius, DrawOptions options = {})
+    void circle(Point position, int radius, DrawOptions options = {}) override
     {
         int x = 0, y = radius;
         int d = 3 - 2 * radius;
@@ -617,7 +617,7 @@ public:
         }
     }
 
-    void filledCircle(Point position, int radius, DrawOptions options = {})
+    void filledCircle(Point position, int radius, DrawOptions options = {}) override
     {
         int x = 0, y = radius;
         int d = 3 - 2 * radius;
@@ -634,7 +634,7 @@ public:
         }
     }
 
-    void line(Point start, Point end, DrawOptions options = {})
+    void line(Point start, Point end, DrawOptions options = {}) override
     {
         if (start.x == end.x) {
             lineVertical(start, end, options);
@@ -645,19 +645,19 @@ public:
         }
     }
 
-    void lines(std::vector<Point> points, DrawOptions options = {})
+    void lines(std::vector<Point> points, DrawOptions options = {}) override
     {
         for (int i = 0; i < points.size() - 1; i++) {
             line(points[i], points[i + 1], options);
         }
     }
 
-    void pixel(Point position, DrawOptions options = {})
+    void pixel(Point position, DrawOptions options = {}) override
     {
         oledPixel(position.x, position.y);
     }
 
-    bool config(char* key, char* value)
+    bool config(char* key, char* value) override
     {
         return false;
     }
