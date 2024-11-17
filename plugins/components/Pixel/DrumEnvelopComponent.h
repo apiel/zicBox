@@ -1,8 +1,8 @@
 #ifndef _UI_PIXEL_COMPONENT_DRUM_ENV_H_
 #define _UI_PIXEL_COMPONENT_DRUM_ENV_H_
 
-#include "../component.h"
 #include "../../../helpers/range.h"
+#include "../component.h"
 
 class DrumEnvelopComponent : public Component {
 protected:
@@ -72,9 +72,13 @@ public:
     {
         if (id == 0) {
             if (direction > 0) {
-                currentstep++;
-            } else {
-                currentstep = currentstep > 0 ? currentstep - 1 : currentstep;
+                // TODO might want to set this globally
+                std::vector<Data>* envData = (std::vector<Data>*)plugin->data(3);
+                if (currentstep < envData->size() - 1) {
+                    currentstep++;
+                }
+            } else if (currentstep > 0) {
+                currentstep--;
             }
             printf("update currentstep: %d\n", currentstep);
             renderNext();
@@ -82,6 +86,9 @@ public:
             // TODO might want to set this globally
             std::vector<Data>* envData = (std::vector<Data>*)plugin->data(3);
             if (envData) {
+                if (currentstep == envData->size() - 1) {
+                    envData->push_back({ 0.0f, 1.0f });
+                }
                 Data& data = envData->at(currentstep);
                 float value = data.time + (direction * 0.01f);
                 data.time = range(value, 0.0f, 1.0f);
