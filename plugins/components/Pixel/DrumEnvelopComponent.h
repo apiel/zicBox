@@ -16,9 +16,6 @@ protected:
     int envelopHeight = 30;
     int cursorY = 0;
 
-    int8_t currentstep = 0;
-    int8_t editstepStart = 0;
-
     void renderEnvelop(std::vector<Data>* envData)
     {
         Data& data = envData->at(0);
@@ -35,6 +32,7 @@ protected:
 
     void renderEditStep(std::vector<Data>* envData)
     {
+        int8_t currentstep = *(int8_t*)plugin->data(2);
         if (currentstep < envData->size() - 1) {
             float currentTime = envData->at(currentstep).time;
             float nextTime = envData->at(currentstep + 1).time;
@@ -72,38 +70,15 @@ public:
     void onEncoder(int id, int8_t direction) override
     {
         if (id == 0) {
-            if (direction > 0) {
-                // TODO might want to set this globally
-                std::vector<Data>* envData = (std::vector<Data>*)plugin->data(0);
-                if (currentstep < envData->size() - 1) {
-                    currentstep++;
-                }
-            } else if (currentstep > editstepStart) {
-                currentstep--;
-            }
-            printf("update currentstep: %d\n", currentstep);
+            plugin->data(2, &direction);
+            // printf("update currentstep: %d\n", currentstep);
             renderNext();
         } else if (id == 1) {
-            // TODO might want to set this globally
-            std::vector<Data>* envData = (std::vector<Data>*)plugin->data(0);
-            if (envData && currentstep > 0) {
-                if (currentstep == envData->size() - 1) {
-                    envData->push_back({ 0.0f, 1.0f });
-                }
-                Data& data = envData->at(currentstep);
-                float value = data.time + (direction * 0.01f);
-                data.time = range(value, 0.0f, 1.0f);
-                renderNext();
-            }
+            plugin->data(3, &direction);
+            renderNext();
         } else if (id == 2) {
-            // TODO might want to set this globally
-            std::vector<Data>* envData = (std::vector<Data>*)plugin->data(0);
-            if (envData) {
-                Data& data = envData->at(currentstep);
-                float value = data.modulation + (direction * 0.01f);
-                data.modulation = range(value, 0.0f, 1.0f);
-                renderNext();
-            }
+            plugin->data(4, &direction);
+            renderNext();
         } else {
             printf("DrumEnvelopComponent onEncoder: %d %d\n", id, direction);
             ValueInterface* value = plugin->getValue("DURATION");
@@ -113,15 +88,6 @@ public:
 
     bool config(char* key, char* value)
     {
-        /*md `EDIT_STEP_START: set the first modultation step that can be edited (by default 0). */
-        if (strcmp(key, "EDIT_STEP_START") == 0) {
-            editstepStart = atoi(value);
-            // TODO might want to set this globally
-            std::vector<Data>* envData = (std::vector<Data>*)plugin->data(0);
-            currentstep = range(currentstep, editstepStart, envData->size() - 1);
-            return true;
-        }
-
         return false;
     }
 };
