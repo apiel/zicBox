@@ -194,7 +194,7 @@ public:
                 float value = envelopAmp.data[currentstepAmp].modulation + (direction * 0.01f);
                 envelopAmp.data[currentstepAmp].modulation = range(value, 0.0f, 1.0f);
             }
-            return NULL;
+            return &envelopAmp.data[currentstepAmp].modulation;
         case 4:
             return &envelopFreq.data;
         }
