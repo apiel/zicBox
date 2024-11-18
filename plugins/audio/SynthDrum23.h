@@ -170,6 +170,8 @@ public:
     }
 
 protected:
+    int8_t currentstepAmp = 1;
+
 public:
     void* data(int id, void* userdata = NULL)
     {
@@ -178,6 +180,35 @@ public:
             return &envelopAmp.data;
         case 1:
             return &envelopFreq.data;
+        case 2: // set & get current amp step edit point
+            if (userdata) {
+                int8_t direction = *(int8_t*)userdata;
+                if (direction > 0) {
+                    if (currentstepAmp < envelopAmp.data.size() - 1) {
+                        currentstepAmp++;
+                    }
+                } else if (currentstepAmp > 1) {
+                    currentstepAmp--;
+                }
+            }
+            return &currentstepAmp;
+        case 3: // update amp time for current step
+            if (userdata && currentstepAmp > 0) {
+                int8_t direction = *(int8_t*)userdata;
+                if (currentstepAmp == envelopAmp.data.size() - 1) {
+                    envelopAmp.data.push_back({ 0.0f, 1.0f });
+                }
+                float value = envelopAmp.data[currentstepAmp].time + (direction * 0.01f);
+                envelopAmp.data[currentstepAmp].time = range(value, 0.0f, 1.0f);
+            }
+            return NULL;
+        case 4: // update amp modulation value for current step
+            if (userdata && currentstepAmp > 0) {
+                int8_t direction = *(int8_t*)userdata;
+                float value = envelopAmp.data[currentstepAmp].modulation + (direction * 0.01f);
+                envelopAmp.data[currentstepAmp].modulation = range(value, 0.0f, 1.0f);
+            }
+            return NULL;
         }
         return NULL;
     }
