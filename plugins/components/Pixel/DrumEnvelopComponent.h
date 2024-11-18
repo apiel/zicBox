@@ -6,17 +6,18 @@
 
 class DrumEnvelopComponent : public Component {
 protected:
-    AudioPlugin* plugin = NULL;
-
     struct Data {
         float modulation;
         float time;
     };
 
+    AudioPlugin* plugin = NULL;
+    std::vector<Data>* envData = NULL;
+
     int envelopHeight = 30;
     int cursorY = 0;
 
-    void renderEnvelop(std::vector<Data>* envData)
+    void renderEnvelop()
     {
         Data& data = envData->at(0);
         Point lastPosition = { (int)(position.x + size.w * data.time), (int)(position.y + envelopHeight - envelopHeight * data.modulation) };
@@ -30,9 +31,9 @@ protected:
         }
     }
 
-    void renderEditStep(std::vector<Data>* envData)
+    void renderEditStep()
     {
-        int8_t currentstep = *(int8_t*)plugin->data(2);
+        int8_t currentstep = *(int8_t*)plugin->data(1);
         if (currentstep < envData->size() - 1) {
             float currentTime = envData->at(currentstep).time;
             float nextTime = envData->at(currentstep + 1).time;
@@ -48,8 +49,6 @@ public:
     DrumEnvelopComponent(ComponentInterface::Props props)
         : Component(props)
     {
-        plugin = &getPlugin("SynthDrum23", 1);
-
         envelopHeight = size.h - 6;
         cursorY = position.y + size.h - 1;
     }
@@ -57,13 +56,9 @@ public:
     void render() override
     {
         draw.filledRect(position, { size.w, size.h }, { .color = { SSD1306_BLACK } });
-        if (plugin) {
-            // TODO might want to set this globally
-            std::vector<Data>* envData = (std::vector<Data>*)plugin->data(0);
-            if (envData) {
-                renderEnvelop(envData);
-                renderEditStep(envData);
-            }
+        if (envData) {
+            renderEnvelop();
+            renderEditStep();
         }
     }
 
@@ -87,6 +82,18 @@ public:
 
     bool config(char* key, char* value)
     {
+        /*md - `PLUGIN: plugin_name` set plugin target */
+        if (strcmp(key, "PLUGIN") == 0) {
+            plugin = &getPlugin(value, track);
+            return true;
+        }
+
+        /*md - `ENVELOP_DATA_ID: id` is the id of the envelope data.*/
+        if (strcmp(key, "ENVELOP_DATA_ID") == 0) {
+            envData = (std::vector<Data>*)plugin->data(atoi(value));
+            return true;
+        }
+
         return false;
     }
 };
