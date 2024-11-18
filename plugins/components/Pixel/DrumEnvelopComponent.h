@@ -15,9 +15,10 @@ protected:
     std::vector<Data>* envData = NULL;
     uint8_t currentStepDataId = 1;
     uint8_t setTimeDataId = 2;
-    uint8_t setModDataId = 3;
+    uint8_t modDataId = 3;
 
     int8_t currentstep = 0;
+    float currentMod = 0.0f;
 
     int envelopHeight = 30;
     int cursorY = 0;
@@ -54,7 +55,7 @@ protected:
     {
         draw.text({ position.x, position.y }, std::to_string(currentstep + 1) + "/" + std::to_string(envData->size()), 8);
         draw.textCentered({ position.x + size.w / 2, position.y }, "Time", 8);
-        draw.textRight({ position.x + size.w, position.y }, "Mod", 8);
+        draw.textRight({ position.x + size.w, position.y }, std::to_string((int)(currentMod * 100)) + "%", 8);
     }
 
 public:
@@ -71,6 +72,7 @@ public:
         draw.filledRect(position, { size.w, size.h }, { .color = { SSD1306_BLACK } });
         if (envData) {
             currentstep = *(int8_t*)plugin->data(currentStepDataId);
+            currentMod = *(float*)plugin->data(modDataId);
 
             renderEnvelop();
             renderEditStep();
@@ -87,7 +89,7 @@ public:
             plugin->data(setTimeDataId, &direction);
             renderNext();
         } else if (id == 2) {
-            plugin->data(setModDataId, &direction);
+            plugin->data(modDataId, &direction);
             renderNext();
         } else {
             printf("DrumEnvelopComponent onEncoder: %d %d\n", id, direction);
@@ -110,7 +112,7 @@ public:
             envData = (std::vector<Data>*)plugin->data(id);
             currentStepDataId = id + 1;
             setTimeDataId = id + 2;
-            setModDataId = id + 3;
+            modDataId = id + 3;
             return true;
         }
 
@@ -120,15 +122,15 @@ public:
             return true;
         }
 
-        /*md - `TIME_DATA_ID: id` is the data id to set the step to edit time.*/
+        /*md - `TIME_DATA_ID: id` is the data id to get/set the step to time.*/
         if (strcmp(key, "TIME_DATA_ID") == 0) {
             setTimeDataId = atoi(value);
             return true;
         }
 
-        /*md - `MOD_DATA_ID: id` is the data id to set the step to edit mod.*/
+        /*md - `MOD_DATA_ID: id` is the data id to get/set the step to mod.*/
         if (strcmp(key, "MOD_DATA_ID") == 0) {
-            setModDataId = atoi(value);
+            modDataId = atoi(value);
             return true;
         }
 
