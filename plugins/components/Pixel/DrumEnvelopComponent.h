@@ -13,6 +13,9 @@ protected:
 
     AudioPlugin* plugin = NULL;
     std::vector<Data>* envData = NULL;
+    uint8_t currentStepDataId = 1;
+    uint8_t setTimeDataId = 2;
+    uint8_t setModDataId = 3;
 
     int envelopHeight = 30;
     int cursorY = 0;
@@ -90,7 +93,29 @@ public:
 
         /*md - `ENVELOP_DATA_ID: id` is the id of the envelope data.*/
         if (strcmp(key, "ENVELOP_DATA_ID") == 0) {
-            envData = (std::vector<Data>*)plugin->data(atoi(value));
+            uint8_t id = atoi(value);
+            envData = (std::vector<Data>*)plugin->data(id);
+            currentStepDataId = id + 1;
+            setTimeDataId = id + 2;
+            setModDataId = id + 3;
+            return true;
+        }
+
+        /*md - `STEP_DATA_ID: id` is the data id to get/set the current step/phase to edit.*/
+        if (strcmp(key, "STEP_DATA_ID") == 0) {
+            currentStepDataId = atoi(value);
+            return true;
+        }
+
+        /*md - `TIME_DATA_ID: id` is the data id to set the step to edit time.*/
+        if (strcmp(key, "TIME_DATA_ID") == 0) {
+            setTimeDataId = atoi(value);
+            return true;
+        }
+
+        /*md - `MOD_DATA_ID: id` is the data id to set the step to edit mod.*/
+        if (strcmp(key, "MOD_DATA_ID") == 0) {
+            setModDataId = atoi(value);
             return true;
         }
 
