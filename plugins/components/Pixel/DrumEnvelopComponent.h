@@ -61,7 +61,7 @@ public:
         draw.filledRect(position, { size.w, size.h }, { .color = { SSD1306_BLACK } });
         if (plugin) {
             // TODO might want to set this globally
-            std::vector<Data>* envData = (std::vector<Data>*)plugin->data(3);
+            std::vector<Data>* envData = (std::vector<Data>*)plugin->data(0);
             if (envData) {
                 renderEnvelop(envData);
                 renderEditStep(envData);
@@ -74,7 +74,7 @@ public:
         if (id == 0) {
             if (direction > 0) {
                 // TODO might want to set this globally
-                std::vector<Data>* envData = (std::vector<Data>*)plugin->data(3);
+                std::vector<Data>* envData = (std::vector<Data>*)plugin->data(0);
                 if (currentstep < envData->size() - 1) {
                     currentstep++;
                 }
@@ -85,7 +85,7 @@ public:
             renderNext();
         } else if (id == 1) {
             // TODO might want to set this globally
-            std::vector<Data>* envData = (std::vector<Data>*)plugin->data(3);
+            std::vector<Data>* envData = (std::vector<Data>*)plugin->data(0);
             if (envData && currentstep > 0) {
                 if (currentstep == envData->size() - 1) {
                     envData->push_back({ 0.0f, 1.0f });
@@ -97,7 +97,7 @@ public:
             }
         } else if (id == 2) {
             // TODO might want to set this globally
-            std::vector<Data>* envData = (std::vector<Data>*)plugin->data(3);
+            std::vector<Data>* envData = (std::vector<Data>*)plugin->data(0);
             if (envData) {
                 Data& data = envData->at(currentstep);
                 float value = data.modulation + (direction * 0.01f);
@@ -117,7 +117,7 @@ public:
         if (strcmp(key, "EDIT_STEP_START") == 0) {
             editstepStart = atoi(value);
             // TODO might want to set this globally
-            std::vector<Data>* envData = (std::vector<Data>*)plugin->data(3);
+            std::vector<Data>* envData = (std::vector<Data>*)plugin->data(0);
             currentstep = range(currentstep, editstepStart, envData->size() - 1);
             return true;
         }
