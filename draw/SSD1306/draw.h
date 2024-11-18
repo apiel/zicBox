@@ -64,7 +64,7 @@ protected:
     uint8_t* getFont(const char* name = NULL)
     {
         if (name == NULL) {
-            return Ubuntu;
+            return Sinclair_S;
         }
 
         if (strcmp(name, "ArialBold") == 0) {

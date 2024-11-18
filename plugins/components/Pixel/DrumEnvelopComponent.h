@@ -17,17 +17,20 @@ protected:
     uint8_t setTimeDataId = 2;
     uint8_t setModDataId = 3;
 
+    int8_t currentstep = 0;
+
     int envelopHeight = 30;
     int cursorY = 0;
+    Point envPosition = { 0, 0 };
 
     void renderEnvelop()
     {
         Data& data = envData->at(0);
-        Point lastPosition = { (int)(position.x + size.w * data.time), (int)(position.y + envelopHeight - envelopHeight * data.modulation) };
+        Point lastPosition = { (int)(envPosition.x + size.w * data.time), (int)(envPosition.y + envelopHeight - envelopHeight * data.modulation) };
         // printf("[0] %f %f => %dpx x %dpx\n", data.modulation, data.time, lastPosition.x, lastPosition.y);
         for (int i = 1; i < envData->size(); i++) {
             Data& data2 = envData->at(i);
-            Point nextPosition = { (int)(position.x + size.w * data2.time), (int)(position.y + envelopHeight - envelopHeight * data2.modulation) };
+            Point nextPosition = { (int)(envPosition.x + size.w * data2.time), (int)(envPosition.y + envelopHeight - envelopHeight * data2.modulation) };
             draw.line(lastPosition, nextPosition);
             // printf("[%d] %f %f => %dpx x %dpx\n", i, data2.modulation, data2.time, nextPosition.x, nextPosition.y);
             lastPosition = nextPosition;
@@ -36,7 +39,6 @@ protected:
 
     void renderEditStep()
     {
-        int8_t currentstep = *(int8_t*)plugin->data(1);
         if (currentstep < envData->size() - 1) {
             float currentTime = envData->at(currentstep).time;
             float nextTime = envData->at(currentstep + 1).time;
@@ -48,11 +50,19 @@ protected:
         }
     }
 
+    void renderTitles()
+    {
+        draw.text({ position.x, position.y }, std::to_string(currentstep + 1) + "/" + std::to_string(envData->size()), 8);
+        draw.textCentered({ position.x + size.w / 2, position.y }, "Time", 8);
+        draw.textRight({ position.x + size.w, position.y }, "Mod", 8);
+    }
+
 public:
     DrumEnvelopComponent(ComponentInterface::Props props)
         : Component(props)
     {
-        envelopHeight = size.h - 6;
+        envPosition = { position.x, position.y + 10 };
+        envelopHeight = size.h - 6 - 10;
         cursorY = position.y + size.h - 1;
     }
 
@@ -60,21 +70,24 @@ public:
     {
         draw.filledRect(position, { size.w, size.h }, { .color = { SSD1306_BLACK } });
         if (envData) {
+            currentstep = *(int8_t*)plugin->data(currentStepDataId);
+
             renderEnvelop();
             renderEditStep();
+            renderTitles();
         }
     }
 
     void onEncoder(int id, int8_t direction) override
     {
         if (id == 0) {
-            plugin->data(1, &direction);
+            plugin->data(currentStepDataId, &direction);
             renderNext();
         } else if (id == 1) {
-            plugin->data(2, &direction);
+            plugin->data(setTimeDataId, &direction);
             renderNext();
         } else if (id == 2) {
-            plugin->data(3, &direction);
+            plugin->data(setModDataId, &direction);
             renderNext();
         } else {
             printf("DrumEnvelopComponent onEncoder: %d %d\n", id, direction);
