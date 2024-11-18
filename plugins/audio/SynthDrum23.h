@@ -42,10 +42,6 @@ protected:
     float sample(EffectFilterData& _filter, float time, float* index, float amp, float freq, float _noteMult = 1.0f, float _velocity = 1.0f)
     {
         float out = wavetable.sample(time, index, amp * _velocity, freq, pitchMult * _noteMult);
-        // if (amp * _velocity == 0.0f) {
-        //     printf("amp: %f out: %f\n", amp * _velocity, out);
-        // }
-
         if (noise.get() > 0.0f) {
             out += 0.01 * props.lookupTable->getNoise() * noise.get();
         }
@@ -79,13 +75,6 @@ public:
     /*md - `RESONANCE_ENV` set resonance using amplitude envelope.*/
     Val& resEnv = val(0.0f, "RESONANCE_ENV", { "Resonance Env.", .unit = "%" }, [&](auto p) { setResonance(p.value); });
 
-    /*//md - `MIX` set mix between audio input and output.*/
-    Val& mix = val(100.0f, "MIX", { "Mix in/out", .type = VALUE_CENTERED });
-    /*//md - `FM_AMP_MOD` set amplitude modulation amount using audio input.*/
-    Val& fmAmpMod = val(0.0f, "FM_AMP_MOD", { "FM.Amp", .unit = "%" });
-    /*//md - `FM_FREQ_MOD` set frequency modulation amount using audio input.*/
-    Val& fmFreqMod = val(0.0f, "FM_FREQ_MOD", { "FM.Freq", .unit = "%" });
-
     SynthDrum23(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
         , sampleRate(props.sampleRate)
@@ -96,17 +85,16 @@ public:
 
     void sample(float* buf)
     {
-        float input = buf[track];
         if (sampleDurationCounter < sampleCountDuration) {
             float time = (float)sampleDurationCounter / (float)sampleCountDuration;
-            float envAmp = envelopAmp.next(time) + input * fmAmpMod.pct();
-            float envFreq = envelopFreq.next(time) + input * fmFreqMod.pct();
+            float envAmp = envelopAmp.next(time);
+            float envFreq = envelopFreq.next(time);
             buf[track] = sample(filter, time, &wavetable.sampleIndex, envAmp, envFreq, noteMult, velocity);
             sampleDurationCounter++;
             // printf("[%d] sample: %d of %d=%f\n", track, sampleDurationCounter, sampleCountDuration, buf[track]);
         }
 
-        buf[track] = input * (1.0f - mix.pct()) + buf[track] * mix.pct();
+        buf[track] = buf[track];
     }
 
     void open(float value)
