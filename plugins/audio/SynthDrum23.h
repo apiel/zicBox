@@ -178,9 +178,7 @@ public:
         switch (id) {
         case 0:
             return &envelopAmp.data;
-        case 1:
-            return &envelopFreq.data;
-        case 2: // set & get current amp step edit point
+        case 1: // set & get current amp step edit point
             if (userdata) {
                 int8_t direction = *(int8_t*)userdata;
                 if (direction > 0) {
@@ -192,7 +190,7 @@ public:
                 }
             }
             return &currentstepAmp;
-        case 3: // update amp time for current step
+        case 2: // update amp time for current step
             if (userdata && currentstepAmp > 0) {
                 int8_t direction = *(int8_t*)userdata;
                 if (currentstepAmp == envelopAmp.data.size() - 1) {
@@ -202,13 +200,15 @@ public:
                 envelopAmp.data[currentstepAmp].time = range(value, 0.0f, 1.0f);
             }
             return NULL;
-        case 4: // update amp modulation value for current step
+        case 3: // update amp modulation value for current step
             if (userdata && currentstepAmp > 0) {
                 int8_t direction = *(int8_t*)userdata;
                 float value = envelopAmp.data[currentstepAmp].modulation + (direction * 0.01f);
                 envelopAmp.data[currentstepAmp].modulation = range(value, 0.0f, 1.0f);
             }
             return NULL;
+        case 4:
+            return &envelopFreq.data;
         }
         return NULL;
     }

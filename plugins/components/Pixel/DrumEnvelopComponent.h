@@ -70,14 +70,13 @@ public:
     void onEncoder(int id, int8_t direction) override
     {
         if (id == 0) {
-            plugin->data(2, &direction);
-            // printf("update currentstep: %d\n", currentstep);
+            plugin->data(1, &direction);
             renderNext();
         } else if (id == 1) {
-            plugin->data(3, &direction);
+            plugin->data(2, &direction);
             renderNext();
         } else if (id == 2) {
-            plugin->data(4, &direction);
+            plugin->data(3, &direction);
             renderNext();
         } else {
             printf("DrumEnvelopComponent onEncoder: %d %d\n", id, direction);
