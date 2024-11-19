@@ -158,7 +158,7 @@ public:
     }
 
 protected:
-    int8_t currentstepAmp = 1;
+    uint16_t msAmp = 0;
 
 public:
     void* data(int id, void* userdata = NULL)
@@ -168,8 +168,11 @@ public:
             return &envelopAmp.data;
         case 1: // set & get current amp step edit point
             return envelopAmp.updateEditPhase((int8_t*)userdata);
-        case 2: // update amp time for current step
-            return envelopAmp.updatePhaseTime((int8_t*)userdata);
+        case 2: { // update amp time for current step
+            float* timePct = envelopAmp.updatePhaseTime((int8_t*)userdata);
+            msAmp = (uint16_t)(*timePct * duration.get());
+            return &msAmp;
+        }
         case 3: // update amp modulation value for current step
             return envelopAmp.updatePhaseModulation((int8_t*)userdata);
         case 4:

@@ -14,11 +14,12 @@ protected:
     AudioPlugin* plugin = NULL;
     std::vector<Data>* envData = NULL;
     uint8_t currentStepDataId = 1;
-    uint8_t setTimeDataId = 2;
+    uint8_t timeDataId = 2;
     uint8_t modDataId = 3;
 
     int8_t currentstep = 0;
     float currentMod = 0.0f;
+    uint16_t currentTimeMs = 0;
 
     int envelopHeight = 30;
     int cursorY = 0;
@@ -54,7 +55,7 @@ protected:
     void renderTitles()
     {
         draw.text({ position.x, position.y }, std::to_string(currentstep + 1) + "/" + std::to_string(envData->size()), 8);
-        draw.textCentered({ position.x + size.w / 2, position.y }, "Time", 8);
+        draw.textCentered({ position.x + size.w / 2, position.y }, std::to_string(currentTimeMs) + "ms", 8);
         draw.textRight({ position.x + size.w, position.y }, std::to_string((int)(currentMod * 100)) + "%", 8);
     }
 
@@ -73,6 +74,7 @@ public:
         if (envData) {
             currentstep = *(int8_t*)plugin->data(currentStepDataId);
             currentMod = *(float*)plugin->data(modDataId);
+            currentTimeMs = *(uint16_t*)plugin->data(timeDataId);
 
             renderEnvelop();
             renderEditStep();
@@ -86,7 +88,7 @@ public:
             plugin->data(currentStepDataId, &direction);
             renderNext();
         } else if (id == 1) {
-            plugin->data(setTimeDataId, &direction);
+            plugin->data(timeDataId, &direction);
             renderNext();
         } else if (id == 2) {
             plugin->data(modDataId, &direction);
@@ -111,7 +113,7 @@ public:
             uint8_t id = atoi(value);
             envData = (std::vector<Data>*)plugin->data(id);
             currentStepDataId = id + 1;
-            setTimeDataId = id + 2;
+            timeDataId = id + 2;
             modDataId = id + 3;
             return true;
         }
@@ -124,7 +126,7 @@ public:
 
         /*md - `TIME_DATA_ID: id` is the data id to get/set the step to time.*/
         if (strcmp(key, "TIME_DATA_ID") == 0) {
-            setTimeDataId = atoi(value);
+            timeDataId = atoi(value);
             return true;
         }
 

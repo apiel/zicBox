@@ -76,7 +76,7 @@ public:
         }
     }
 
-    uint16_t* updatePhaseTime(int8_t* direction = NULL)
+    float* updatePhaseTime(int8_t* direction = NULL)
     {
         if (direction && currentEditPhase >= minEditablePhase) {
             if (currentEditPhase == data.size() - 1) {
@@ -85,7 +85,7 @@ public:
             float value = data[currentEditPhase].time + ((*direction) * 0.01f);
             data[currentEditPhase].time = range(value, 0.0f, 1.0f);
         }
-        return NULL; // should return ms
+        return &data[currentEditPhase].time;
     }
 
     float* updatePhaseModulation(int8_t* direction = NULL)
