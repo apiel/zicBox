@@ -14,9 +14,10 @@ public:
 
     std::vector<Data> data;
 
-    EnvelopRelative(std::vector<Data> data)
+    EnvelopRelative(std::vector<Data> data, int8_t _minEditablePhase = 0)
         : data(data)
     {
+        setMinEditablePhase(_minEditablePhase);
     }
 
     float next(float time, unsigned int& indexRef)
@@ -46,6 +47,54 @@ public:
     void reset(unsigned int& indexRef)
     {
         indexRef = 0;
+    }
+
+protected:
+    int8_t minEditablePhase;
+
+public:
+    int8_t currentEditPhase = 1;
+    int8_t* updateEditPhase(int8_t* direction = NULL)
+    {
+        if (direction) {
+            if (*direction > 0) {
+                if (currentEditPhase < data.size() - 1) {
+                    currentEditPhase++;
+                }
+            } else if (currentEditPhase > minEditablePhase) {
+                currentEditPhase--;
+            }
+        }
+        return &currentEditPhase;
+    }
+
+    void setMinEditablePhase(int8_t phase)
+    {
+        minEditablePhase = phase;
+        if (currentEditPhase < minEditablePhase) {
+            currentEditPhase = minEditablePhase;
+        }
+    }
+
+    uint16_t* updatePhaseTime(int8_t* direction = NULL)
+    {
+        if (direction && currentEditPhase >= minEditablePhase) {
+            if (currentEditPhase == data.size() - 1) {
+                data.push_back({ 0.0f, 1.0f });
+            }
+            float value = data[currentEditPhase].time + ((*direction) * 0.01f);
+            data[currentEditPhase].time = range(value, 0.0f, 1.0f);
+        }
+        return NULL; // should return ms
+    }
+
+    float* updatePhaseModulation(int8_t* direction = NULL)
+    {
+        if (direction && currentEditPhase > 0) {
+            float value = data[currentEditPhase].modulation + (*direction * 0.01f);
+            data[currentEditPhase].modulation = range(value, 0.0f, 1.0f);
+        }
+        return &data[currentEditPhase].modulation;
     }
 };
 

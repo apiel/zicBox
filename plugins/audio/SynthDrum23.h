@@ -35,7 +35,7 @@ protected:
 
     EffectFilterData filter;
 
-    EnvelopRelative envelopAmp = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.0f, 1.0f } });
+    EnvelopRelative envelopAmp = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.0f, 1.0f } }, 1);
     EnvelopRelative envelopFreq = EnvelopRelative({ { 1.0f, 0.0f }, { 0.26f, 0.03f }, { 0.24f, 0.35f }, { 0.22f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
     // EnvelopRelative envelopFreq = EnvelopRelative({ { 1.0f, 1.0f }, { 1.0f, 1.0f } });
 
@@ -167,34 +167,11 @@ public:
         case 0:
             return &envelopAmp.data;
         case 1: // set & get current amp step edit point
-            if (userdata) {
-                int8_t direction = *(int8_t*)userdata;
-                if (direction > 0) {
-                    if (currentstepAmp < envelopAmp.data.size() - 1) {
-                        currentstepAmp++;
-                    }
-                } else if (currentstepAmp > 1) {
-                    currentstepAmp--;
-                }
-            }
-            return &currentstepAmp;
+            return envelopAmp.updateEditPhase((int8_t*)userdata);
         case 2: // update amp time for current step
-            if (userdata && currentstepAmp > 0) {
-                int8_t direction = *(int8_t*)userdata;
-                if (currentstepAmp == envelopAmp.data.size() - 1) {
-                    envelopAmp.data.push_back({ 0.0f, 1.0f });
-                }
-                float value = envelopAmp.data[currentstepAmp].time + (direction * 0.01f);
-                envelopAmp.data[currentstepAmp].time = range(value, 0.0f, 1.0f);
-            }
-            return NULL;
+            return envelopAmp.updatePhaseTime((int8_t*)userdata);
         case 3: // update amp modulation value for current step
-            if (userdata && currentstepAmp > 0) {
-                int8_t direction = *(int8_t*)userdata;
-                float value = envelopAmp.data[currentstepAmp].modulation + (direction * 0.01f);
-                envelopAmp.data[currentstepAmp].modulation = range(value, 0.0f, 1.0f);
-            }
-            return &envelopAmp.data[currentstepAmp].modulation;
+            return envelopAmp.updatePhaseModulation((int8_t*)userdata);
         case 4:
             return &envelopFreq.data;
         }
