@@ -1,17 +1,21 @@
+// sudo chown 0:0 test2
+// sudo chmod u+s test2
+
 // sudo apt-get install libraspberrypi-dev raspberrypi-kernel-headers
 // cp ../remoteZicBox/st7789.cpp . && g++ -o test2 st7789.cpp -lbcm2835 -lrt -DBCM2835=1 -fpermissive -lbcm_host && sudo ./test2
 
+// https://raspberrypi.stackexchange.com/questions/40105/access-gpio-pins-without-root-no-access-to-dev-mem-try-running-as-root
+
+#include <fcntl.h> // open, O_RDWR, O_SYNC
 #include <inttypes.h>
-#include <unistd.h>   // usleep
-#include <stdio.h>    // printf, stderr
-#include <fcntl.h>    // open, O_RDWR, O_SYNC
+#include <stdio.h> // printf, stderr
 #include <sys/mman.h> // mmap, munmap
+#include <unistd.h> // usleep
 
 #define HAS_BCM 1 // comment for testing on non-BCM hardware (desktops, etc.)
 #ifdef HAS_BCM
 #include <bcm_host.h> // bcm_host_get_peripheral_address, bcm_host_get_peripheral_size, bcm_host_get_sdram_address
 #endif
-
 
 // res go to pin 15
 // #define PIN_RESET 22
@@ -30,82 +34,76 @@
 // #define GPIO_TFT_RESET_PIN 5
 // #define GPIO_TFT_BACKLIGHT 13
 
-
-
 #define SPI_BUS_CLOCK_DIVISOR 20
 
 #define DISPLAY_WIDTH 240
 #define DISPLAY_HEIGHT 240
 
+#define BCM2835_GPIO_BASE 0x200000 // Address to GPIO register file
+#define BCM2835_SPI0_BASE 0x204000 // Address to SPI0 register file
+#define BCM2835_TIMER_BASE 0x3000 // Address to System Timer register file
 
-#define BCM2835_GPIO_BASE  0x200000 // Address to GPIO register file
-#define BCM2835_SPI0_BASE  0x204000 // Address to SPI0 register file
-#define BCM2835_TIMER_BASE 0x3000   // Address to System Timer register file
-
-#define BCM2835_SPI0_CS_RXF      0x00100000 // Receive FIFO is full
-#define BCM2835_SPI0_CS_RXR      0x00080000 // FIFO needs reading
-#define BCM2835_SPI0_CS_TXD      0x00040000 // TXD TX FIFO can accept Data
-#define BCM2835_SPI0_CS_RXD      0x00020000 // RXD RX FIFO contains Data
-#define BCM2835_SPI0_CS_DONE     0x00010000 // Done transfer Done
-#define BCM2835_SPI0_CS_ADCS     0x00000800 // Automatically Deassert Chip Select
-#define BCM2835_SPI0_CS_INTR     0x00000400 // Fire interrupts on RXR?
-#define BCM2835_SPI0_CS_INTD     0x00000200 // Fire interrupts on DONE?
-#define BCM2835_SPI0_CS_DMAEN    0x00000100 // Enable DMA transfers?
-#define BCM2835_SPI0_CS_TA       0x00000080 // Transfer Active
-#define BCM2835_SPI0_CS_CLEAR    0x00000030 // Clear FIFO Clear RX and TX
+#define BCM2835_SPI0_CS_RXF 0x00100000 // Receive FIFO is full
+#define BCM2835_SPI0_CS_RXR 0x00080000 // FIFO needs reading
+#define BCM2835_SPI0_CS_TXD 0x00040000 // TXD TX FIFO can accept Data
+#define BCM2835_SPI0_CS_RXD 0x00020000 // RXD RX FIFO contains Data
+#define BCM2835_SPI0_CS_DONE 0x00010000 // Done transfer Done
+#define BCM2835_SPI0_CS_ADCS 0x00000800 // Automatically Deassert Chip Select
+#define BCM2835_SPI0_CS_INTR 0x00000400 // Fire interrupts on RXR?
+#define BCM2835_SPI0_CS_INTD 0x00000200 // Fire interrupts on DONE?
+#define BCM2835_SPI0_CS_DMAEN 0x00000100 // Enable DMA transfers?
+#define BCM2835_SPI0_CS_TA 0x00000080 // Transfer Active
+#define BCM2835_SPI0_CS_CLEAR 0x00000030 // Clear FIFO Clear RX and TX
 #define BCM2835_SPI0_CS_CLEAR_RX 0x00000020 // Clear FIFO Clear RX
 #define BCM2835_SPI0_CS_CLEAR_TX 0x00000010 // Clear FIFO Clear TX
-#define BCM2835_SPI0_CS_CPOL     0x00000008 // Clock Polarity
-#define BCM2835_SPI0_CS_CPHA     0x00000004 // Clock Phase
-#define BCM2835_SPI0_CS_CS       0x00000003 // Chip Select
+#define BCM2835_SPI0_CS_CPOL 0x00000008 // Clock Polarity
+#define BCM2835_SPI0_CS_CPHA 0x00000004 // Clock Phase
+#define BCM2835_SPI0_CS_CS 0x00000003 // Chip Select
 
-#define BCM2835_SPI0_CS_RXF_SHIFT      20
-#define BCM2835_SPI0_CS_RXR_SHIFT      19
-#define BCM2835_SPI0_CS_TXD_SHIFT      18
-#define BCM2835_SPI0_CS_RXD_SHIFT      17
-#define BCM2835_SPI0_CS_DONE_SHIFT     16
-#define BCM2835_SPI0_CS_ADCS_SHIFT     11
-#define BCM2835_SPI0_CS_INTR_SHIFT     10
-#define BCM2835_SPI0_CS_INTD_SHIFT     9
-#define BCM2835_SPI0_CS_DMAEN_SHIFT    8
-#define BCM2835_SPI0_CS_TA_SHIFT       7
+#define BCM2835_SPI0_CS_RXF_SHIFT 20
+#define BCM2835_SPI0_CS_RXR_SHIFT 19
+#define BCM2835_SPI0_CS_TXD_SHIFT 18
+#define BCM2835_SPI0_CS_RXD_SHIFT 17
+#define BCM2835_SPI0_CS_DONE_SHIFT 16
+#define BCM2835_SPI0_CS_ADCS_SHIFT 11
+#define BCM2835_SPI0_CS_INTR_SHIFT 10
+#define BCM2835_SPI0_CS_INTD_SHIFT 9
+#define BCM2835_SPI0_CS_DMAEN_SHIFT 8
+#define BCM2835_SPI0_CS_TA_SHIFT 7
 #define BCM2835_SPI0_CS_CLEAR_RX_SHIFT 5
 #define BCM2835_SPI0_CS_CLEAR_TX_SHIFT 4
-#define BCM2835_SPI0_CS_CPOL_SHIFT     3
-#define BCM2835_SPI0_CS_CPHA_SHIFT     2
-#define BCM2835_SPI0_CS_CS_SHIFT       0
+#define BCM2835_SPI0_CS_CPOL_SHIFT 3
+#define BCM2835_SPI0_CS_CPHA_SHIFT 2
+#define BCM2835_SPI0_CS_CS_SHIFT 0
 
 #define GPIO_SPI0_MOSI 10 // Pin P1-19, MOSI when SPI0 in use
-#define GPIO_SPI0_MISO 9  // Pin P1-21, MISO when SPI0 in use
-#define GPIO_SPI0_CLK  11 // Pin P1-23, CLK when SPI0 in use
-#define GPIO_SPI0_CE0  8  // Pin P1-24, CE0 when SPI0 in use
-#define GPIO_SPI0_CE1  7  // Pin P1-26, CE1 when SPI0 in use
+#define GPIO_SPI0_MISO 9 // Pin P1-21, MISO when SPI0 in use
+#define GPIO_SPI0_CLK 11 // Pin P1-23, CLK when SPI0 in use
+#define GPIO_SPI0_CE0 8 // Pin P1-24, CE0 when SPI0 in use
+#define GPIO_SPI0_CE1 7 // Pin P1-26, CE1 when SPI0 in use
 
 #define DISPLAY_SPI_DRIVE_SETTINGS (1 | BCM2835_SPI0_CS_CPOL | BCM2835_SPI0_CS_CPHA)
 
-typedef struct GPIORegisterFile
-{
+typedef struct GPIORegisterFile {
     uint32_t gpfsel[6], reserved0; // GPIO Function Select registers, 3 bits per pin, 10 pins in an uint32_t
-    uint32_t gpset[2], reserved1;  // GPIO Pin Output Set registers, write a 1 to bit at index I to set the pin at index I high
-    uint32_t gpclr[2], reserved2;  // GPIO Pin Output Clear registers, write a 1 to bit at index I to set the pin at index I low
+    uint32_t gpset[2], reserved1; // GPIO Pin Output Set registers, write a 1 to bit at index I to set the pin at index I high
+    uint32_t gpclr[2], reserved2; // GPIO Pin Output Clear registers, write a 1 to bit at index I to set the pin at index I low
     uint32_t gplev[2];
 } GPIORegisterFile;
-volatile GPIORegisterFile *gpio = 0;
+volatile GPIORegisterFile* gpio = 0;
 
-extern volatile void *bcm2835;
+extern volatile void* bcm2835;
 
 int mem_fd = -1;
-volatile void *bcm2835 = 0;
+volatile void* bcm2835 = 0;
 
-typedef struct SPIRegisterFile
-{
-  uint32_t cs;   // SPI Master Control and Status register
-  uint32_t fifo; // SPI Master TX and RX FIFOs
-  uint32_t clk;  // SPI Master Clock Divider
-  uint32_t dlen; // SPI Master Number of DMA Bytes to Write
+typedef struct SPIRegisterFile {
+    uint32_t cs; // SPI Master Control and Status register
+    uint32_t fifo; // SPI Master TX and RX FIFOs
+    uint32_t clk; // SPI Master Clock Divider
+    uint32_t dlen; // SPI Master Number of DMA Bytes to Write
 } SPIRegisterFile;
-volatile SPIRegisterFile *spi;
-
+volatile SPIRegisterFile* spi;
 
 void setGpioMode(uint8_t pin, uint8_t mode)
 {
@@ -141,12 +139,12 @@ void WaitForPolledSPITransferToFinish()
 #endif
 }
 
-void sendCmd(uint8_t cmd, uint8_t *payload, uint32_t payloadSize)
+void sendCmd(uint8_t cmd, uint8_t* payload, uint32_t payloadSize)
 {
 #ifdef HAS_BCM
-    int8_t *tStart;
-    uint8_t *tEnd;
-    uint8_t *tPrefillEnd;
+    int8_t* tStart;
+    uint8_t* tEnd;
+    uint8_t* tPrefillEnd;
     uint32_t cs;
 
     // WaitForPolledSPITransferToFinish();
@@ -208,15 +206,15 @@ int InitSPI()
         fprintf(stderr, "mapping /dev/mem failed\n");
         return -1;
     }
-    spi = (volatile SPIRegisterFile *)((uintptr_t)bcm2835 + BCM2835_SPI0_BASE);
-    gpio = (volatile GPIORegisterFile *)((uintptr_t)bcm2835 + BCM2835_GPIO_BASE);
+    spi = (volatile SPIRegisterFile*)((uintptr_t)bcm2835 + BCM2835_SPI0_BASE);
+    gpio = (volatile GPIORegisterFile*)((uintptr_t)bcm2835 + BCM2835_GPIO_BASE);
 
     setGpioMode(GPIO_TFT_DATA_CONTROL, 0x01); // Data/Control pin to output (0x01)
     setGpioMode(GPIO_SPI0_MOSI, 0x04);
     setGpioMode(GPIO_SPI0_CLK, 0x04);
 
     spi->cs = BCM2835_SPI0_CS_CLEAR | DISPLAY_SPI_DRIVE_SETTINGS; // Initialize the Control and Status register to defaults: CS=0 (Chip Select), CPHA=0 (Clock Phase), CPOL=0 (Clock Polarity), CSPOL=0 (Chip Select Polarity), TA=0 (Transfer not active), and reset TX and RX queues.
-    spi->clk = SPI_BUS_CLOCK_DIVISOR;                             // Clock Divider determines SPI bus speed, resulting speed=256MHz/clk
+    spi->clk = SPI_BUS_CLOCK_DIVISOR; // Clock Divider determines SPI bus speed, resulting speed=256MHz/clk
 
     // Enable fast 8 clocks per byte transfer mode, instead of slower 9 clocks per byte.
     // Errata to BCM2835 behavior: documentation states that the SPI0 DLEN register is only used for DMA. However, even when DMA is not being utilized, setting it from
@@ -228,33 +226,6 @@ int InitSPI()
 
     return 0;
 }
-
-// void DeinitSPI()
-// {
-// #ifdef HAS_BCM
-//     spi->cs = BCM2835_SPI0_CS_CLEAR | DISPLAY_SPI_DRIVE_SETTINGS;
-
-//     setGpioMode(GPIO_TFT_DATA_CONTROL, 0);
-
-//     setGpioMode(GPIO_SPI0_CE1, 0);
-//     setGpioMode(GPIO_SPI0_CE0, 0);
-//     setGpioMode(GPIO_SPI0_MISO, 0);
-//     setGpioMode(GPIO_SPI0_MOSI, 0);
-//     setGpioMode(GPIO_SPI0_CLK, 0);
-
-//     if (bcm2835) {
-//         munmap((void *)bcm2835, bcm_host_get_peripheral_size());
-//         bcm2835 = 0;
-//     }
-
-//     if (mem_fd >= 0) {
-//         close(mem_fd);
-//         mem_fd = -1;
-//     }
-// #endif
-// }
-
-
 
 #define DISPLAY_SET_CURSOR_X 0x2A
 #define DISPLAY_SET_CURSOR_Y 0x2B
@@ -312,7 +283,7 @@ void InitSPIDisplay()
 
     printf("Initializing SPI bus\n");
 
-    // // // Do the initialization with a very low SPI bus speed, so that it will succeed even if the bus speed chosen by the user is too high.
+    // Do the initialization with a very low SPI bus speed, so that it will succeed even if the bus speed chosen by the user is too high.
     spi->clk = 34;
     __sync_synchronize();
 
@@ -322,8 +293,8 @@ void InitSPIDisplay()
     usleep(20 * 1000);
 
 #define MADCTL_COLUMN_ADDRESS_ORDER_SWAP (1 << 6)
-#define MADCTL_ROW_ADDRESS_ORDER_SWAP    (1 << 7)
-#define MADCTL_ROTATE_180_DEGREES        (MADCTL_COLUMN_ADDRESS_ORDER_SWAP | MADCTL_ROW_ADDRESS_ORDER_SWAP)
+#define MADCTL_ROW_ADDRESS_ORDER_SWAP (1 << 7)
+#define MADCTL_ROTATE_180_DEGREES (MADCTL_COLUMN_ADDRESS_ORDER_SWAP | MADCTL_ROW_ADDRESS_ORDER_SWAP)
 /* RGB/BGR Order ('0' = RGB, '1' = BGR) */
 #define ST7789_MADCTL_RGB 0x00
 #define ST7789_MADCTL_BGR 0x08
@@ -352,7 +323,11 @@ void InitSPIDisplay()
     // drawFillRect(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, 0); // clear screen
     // uint16_t randomColor = rand() % 0xFFFFFF;
     // drawFillRect(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, randomColor); // clear screen
-    drawFillRect(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, 0x0000FF); // clear screen
+    drawFillRect(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, 0xFF00FF); // clear screen
+
+    for (int i = 0; i < 100; i++) {
+        drawPixel(i, i, 0xFFFF00);
+    }
 
     setGpioMode(GPIO_TFT_BACKLIGHT, 1);
     setGpio(GPIO_TFT_BACKLIGHT);
@@ -360,7 +335,7 @@ void InitSPIDisplay()
     sendCmdOnly(/*Display ON*/ 0x29);
     usleep(100 * 1000);
 
-//     // And speed up to the desired operation speed finally after init is done.
+    //     // And speed up to the desired operation speed finally after init is done.
     usleep(10 * 1000); // Delay a bit before restoring CLK, or otherwise this has been observed to cause the display not init if done back to back after the clear operation above.
     spi->clk = SPI_BUS_CLOCK_DIVISOR;
 }
@@ -459,7 +434,7 @@ void InitSPIDisplay()
 //     DeinitSPI();
 // }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     InitSPI();
     InitSPIDisplay();
