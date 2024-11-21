@@ -50,7 +50,7 @@ class DevMemSpi {
 protected:
     int fd = -1;
 
-    uint8_t gpioDataControl;
+    std::function<void(uint8_t)> setDataControl;
 
     void WaitForPolledSPITransferToFinish()
     {
@@ -65,20 +65,20 @@ protected:
 
     int init()
     {
-        // Memory map GPIO and SPI peripherals for direct access
-        fd = open("/dev/mem", O_RDWR | O_SYNC);
-        if (fd < 0) {
-            fprintf(stderr, "can't open /dev/mem (run as sudo)\n");
-            return -1;
-        }
+        // // Memory map GPIO and SPI peripherals for direct access
+        // fd = open("/dev/mem", O_RDWR | O_SYNC);
+        // if (fd < 0) {
+        //     fprintf(stderr, "can't open /dev/mem (run as sudo)\n");
+        //     return -1;
+        // }
 
-        printf("bcm_host_get_peripheral_address: %p, bcm_host_get_peripheral_size: %u, bcm_host_get_sdram_address: %p\n", bcm_host_get_peripheral_address(), bcm_host_get_peripheral_size(), bcm_host_get_sdram_address());
-        bcm2835 = mmap(NULL, bcm_host_get_peripheral_size(), (PROT_READ | PROT_WRITE), MAP_SHARED, fd, bcm_host_get_peripheral_address());
-        if (bcm2835 == MAP_FAILED) {
-            fprintf(stderr, "mapping /dev/mem failed\n");
-            return -1;
-        }
-        spi = (volatile SPIRegisterFile*)((uintptr_t)bcm2835 + BCM2835_SPI0_BASE);
+        // printf("bcm_host_get_peripheral_address: %p, bcm_host_get_peripheral_size: %u, bcm_host_get_sdram_address: %p\n", bcm_host_get_peripheral_address(), bcm_host_get_peripheral_size(), bcm_host_get_sdram_address());
+        // bcm2835 = mmap(NULL, bcm_host_get_peripheral_size(), (PROT_READ | PROT_WRITE), MAP_SHARED, fd, bcm_host_get_peripheral_address());
+        // if (bcm2835 == MAP_FAILED) {
+        //     fprintf(stderr, "mapping /dev/mem failed\n");
+        //     return -1;
+        // }
+        // spi = (volatile SPIRegisterFile*)((uintptr_t)bcm2835 + BCM2835_SPI0_BASE);
 
         setGpioMode(GPIO_SPI0_MOSI, 0x04);
         setGpioMode(GPIO_SPI0_CLK, 0x04);
@@ -97,8 +97,8 @@ protected:
     }
 
 public:
-    DevMemSpi(uint8_t gpioDataControl)
-        : gpioDataControl(gpioDataControl)
+    DevMemSpi(std::function<void(uint8_t)> setDataControl)
+        : setDataControl(setDataControl)
     {
         init();
     }
@@ -113,14 +113,14 @@ public:
         spi->cs = BCM2835_SPI0_CS_TA | DISPLAY_SPI_DRIVE_SETTINGS; // Spi begins transfer
 
         // An SPI transfer to the display always starts with one control (command) byte, followed by N data bytes.
-        setGpio(gpioDataControl, 0);
+        setDataControl(0);
 
         spi->fifo = cmd;
         while (!(spi->cs & (BCM2835_SPI0_CS_RXD | BCM2835_SPI0_CS_DONE))) /*nop*/
             ;
 
         if (payloadSize > 0) {
-            setGpio(gpioDataControl, 1);
+            setDataControl(1);
 
             tStart = payload;
             tEnd = payload + payloadSize;
