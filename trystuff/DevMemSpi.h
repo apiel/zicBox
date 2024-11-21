@@ -7,8 +7,6 @@
 #include <sys/mman.h> // mmap, munmap
 // #include <unistd.h> // usleep
 
-#include <functional>
-
 #include "../helpers/gpio.h"
 
 #include <bcm_host.h> // bcm_host_get_peripheral_address, bcm_host_get_peripheral_size, bcm_host_get_sdram_address
