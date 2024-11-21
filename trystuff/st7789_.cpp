@@ -294,12 +294,14 @@ void InitSPIDisplay()
     }
 
     // drawFillRect(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, 0); // clear screen
-    // uint16_t randomColor = rand() % 0xFFFFFF;
-    // drawFillRect(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, randomColor); // clear screen
-    drawFillRect(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, 0xFF00FF); // clear screen
+    srand(time(NULL));
+    uint16_t randomColor = rand() % 0xFFFFFF;
+    printf("randomColor = 0x%06X\n", randomColor);
+    drawFillRect(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, randomColor); // clear screen
 
     for (int i = 0; i < 100; i++) {
         drawPixel(i, i, 0xFFFF00);
+        drawPixel(rand() % DISPLAY_WIDTH, rand() % DISPLAY_HEIGHT, 0xFFFFFF);
     }
 
     setGpioMode(GPIO_TFT_BACKLIGHT, 1);
