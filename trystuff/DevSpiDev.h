@@ -7,8 +7,6 @@
 #include <sys/mman.h> // mmap, munmap
 // #include <unistd.h> // usleep
 
-#include <functional>
-
 #include "../helpers/gpio.h"
 
 #include <bcm_host.h> // bcm_host_get_peripheral_address, bcm_host_get_peripheral_size, bcm_host_get_sdram_address
@@ -46,7 +44,7 @@ typedef struct SPIRegisterFile {
 } SPIRegisterFile;
 volatile SPIRegisterFile* spi;
 
-class DevMemSpi {
+class Spi {
 protected:
     int fd = -1;
 
@@ -65,20 +63,14 @@ protected:
 
     int init()
     {
-        // // Memory map GPIO and SPI peripherals for direct access
-        // fd = open("/dev/mem", O_RDWR | O_SYNC);
-        // if (fd < 0) {
-        //     fprintf(stderr, "can't open /dev/mem (run as sudo)\n");
-        //     return -1;
-        // }
+        if ((fd = open("/dev/spidev0.0", O_RDWR)) < 0) {
+            printf("Unable to open SPI device /dev/spidev0.0\n");
+            return -1;
+        }
 
-        // printf("bcm_host_get_peripheral_address: %p, bcm_host_get_peripheral_size: %u, bcm_host_get_sdram_address: %p\n", bcm_host_get_peripheral_address(), bcm_host_get_peripheral_size(), bcm_host_get_sdram_address());
-        // bcm2835 = mmap(NULL, bcm_host_get_peripheral_size(), (PROT_READ | PROT_WRITE), MAP_SHARED, fd, bcm_host_get_peripheral_address());
-        // if (bcm2835 == MAP_FAILED) {
-        //     fprintf(stderr, "mapping /dev/mem failed\n");
-        //     return -1;
-        // }
-        // spi = (volatile SPIRegisterFile*)((uintptr_t)bcm2835 + BCM2835_SPI0_BASE);
+        #define BCM2835_SPI0_BASE 0x204000 // Address to SPI0 register file
+        // #define BCM2835_SPI0_BASE 0 // Address to SPI0 register file
+        spi = (volatile SPIRegisterFile*)mmap(0, BLOCK_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, BCM2835_SPI0_BASE);
 
         setGpioMode(GPIO_SPI0_MOSI, 0x04);
         setGpioMode(GPIO_SPI0_CLK, 0x04);
@@ -97,7 +89,7 @@ protected:
     }
 
 public:
-    DevMemSpi(uint8_t gpioDataControl)
+    Spi(uint8_t gpioDataControl)
         : gpioDataControl(gpioDataControl)
     {
         init();

@@ -12,6 +12,8 @@
 #include "../helpers/st7789.h"
 
 #include "DevMemSpi.h"
+// #include "DevSpiDev.h" // segmentation fault
+// #include "DevSpiDev2.h" // Bad file descriptor
 
 // res go to pin 15
 // #define PIN_RESET 22
@@ -54,6 +56,6 @@ int main(int argc, char* argv[])
     st7789.init();
 
     usleep(10 * 1000); // Delay a bit before restoring CLK, or otherwise this has been observed to cause the display not init if done back to back after the clear operation above.
-    spi.setSpeed(SPI_BUS_CLOCK_DIVISOR);
+    spi.setSpeed(20);
     return 0;
 }
