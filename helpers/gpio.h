@@ -40,7 +40,7 @@ void setGpio(uint8_t pin, uint8_t value) { value ? setGpio(pin) : clearGpio(pin)
 
 uint8_t getGpio(uint8_t pin) { return memgpio->gplev[0] & (1 << (pin)); }
 
-int initGpio(int argc, char* argv[])
+int initGpio()
 {
     int gpiomem_fd = open("/dev/gpiomem", O_RDWR | O_SYNC);
     if (gpiomem_fd < 0) {
