@@ -158,14 +158,14 @@ int InitSPI()
 
 void InitSPIDisplay()
 {
-    printf("Resetting display at reset GPIO pin %d\n", GPIO_TFT_RESET_PIN);
-    setGpioMode(GPIO_TFT_RESET_PIN, 1);
-    setGpio(GPIO_TFT_RESET_PIN, 1);
-    usleep(120 * 1000);
-    setGpio(GPIO_TFT_RESET_PIN, 0);
-    usleep(120 * 1000);
-    setGpio(GPIO_TFT_RESET_PIN, 1);
-    usleep(120 * 1000);
+    // printf("Resetting display at reset GPIO pin %d\n", GPIO_TFT_RESET_PIN);
+    // setGpioMode(GPIO_TFT_RESET_PIN, 1);
+    // setGpio(GPIO_TFT_RESET_PIN, 1);
+    // usleep(120 * 1000);
+    // setGpio(GPIO_TFT_RESET_PIN, 0);
+    // usleep(120 * 1000);
+    // setGpio(GPIO_TFT_RESET_PIN, 1);
+    // usleep(120 * 1000);
 
     printf("Initializing SPI bus\n");
 
