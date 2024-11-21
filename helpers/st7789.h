@@ -85,9 +85,13 @@ public:
         usleep(10 * 1000);
         sendCmdData(0x36, 0x08); // Memory Access Control: Row/col addr, bottom-top refresh
         // sendCmdData(0x36, 0x00); // Memory Access Control: RGB
-        uint8_t x[4] = { 0, 0, 0, 0x1a }; // xstart = 0, xend = 170
+        // uint8_t x[4] = { 0, 0, 0, 0x1a }; // xstart = 0, xend = 170
+        uint8_t x[4] = { 0, 0, (width-1) >> 8, (width-1) & 0xFF };
+        printf("x: %x %x %x %x\n", x[0], x[1], x[2], x[3]);
         sendCmd(0x2A, x, 4); // Set Column Address
-        uint8_t y[4] = { 0, 0, 0x01, 0x3f }; // ystart = 0, yend = 320
+        // uint8_t y[4] = { 0, 0, 0x01, 0x3f }; // ystart = 0, yend = 320
+        uint8_t y[4] = { 0, 0, (height-1) >> 8, (height-1) & 0xFF };
+        printf("y: %x %x %x %x\n", y[0], y[1], y[2], y[3]);
         sendCmd(0x2B, y, 4); // Set Row Address
         sendCmdOnly(0x21); // Display Inversion
         usleep(10 * 1000);
@@ -102,11 +106,9 @@ public:
         drawFillRect(0, 0, width, height, randomColor); // clear screen
 
         for (int i = 0; i < 100; i++) {
-            drawPixel(i, i, 0xFFFF00);
+            drawPixel(i, i*2, 0xFFFF00);
             drawPixel(rand() % width, rand() % height, 0xFFFFFF);
         }
-
-        sendCmdOnly(/*Display ON*/ 0x29);
     }
 };
 
