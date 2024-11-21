@@ -18,9 +18,6 @@ protected:
     uint16_t width;
     uint16_t height;
 
-    // uint8_t colstart = 0x23; // try 0x24 too
-    // uint8_t rowstart = 0x00;
-
     std::function<void(uint8_t, uint8_t*, uint32_t)> sendCmd;
 
     void sendCmdOnly(uint8_t cmd)
@@ -77,24 +74,41 @@ public:
 
     void init()
     {
-        sendCmdOnly(0x01); // Software Reset
-        usleep(150 * 1000);
-        sendCmdOnly(0x11); // Sleep Out
-        usleep(500 * 1000);
-        sendCmdData(0x3A, 0x55); // Set Color Mode: 16-bit
+        uint8_t madctl = 0;
+        uint8_t data[4] = { 0, 0, (uint8_t)(240 >> 8), (uint8_t)(240 & 0xFF) };
+
+        sendCmdOnly(0x11 /*Sleep Out*/);
+        usleep(120 * 1000);
+        sendCmdData(0x3A /*COLMOD: Pixel Format Set*/, 0x05 /*16bpp*/);
+        usleep(20 * 1000);
+
+#define MADCTL_COLUMN_ADDRESS_ORDER_SWAP (1 << 6)
+#define MADCTL_ROW_ADDRESS_ORDER_SWAP (1 << 7)
+#define MADCTL_ROTATE_180_DEGREES (MADCTL_COLUMN_ADDRESS_ORDER_SWAP | MADCTL_ROW_ADDRESS_ORDER_SWAP)
+/* RGB/BGR Order ('0' = RGB, '1' = BGR) */
+#define ST7789_MADCTL_RGB 0x00
+#define ST7789_MADCTL_BGR 0x08
+
+        madctl |= MADCTL_ROW_ADDRESS_ORDER_SWAP;
+        madctl |= ST7789_MADCTL_BGR; // Because we swap order, we need to use BGR...
+        madctl ^= MADCTL_ROTATE_180_DEGREES;
+        sendCmdData(0x36 /*MADCTL: Memory Access Control*/, madctl);
         usleep(10 * 1000);
-        sendCmdData(0x36, 0x08); // Memory Access Control: Row/col addr, bottom-top refresh
-        // sendCmdData(0x36, 0x00); // Memory Access Control: RGB
-        uint8_t x[4] = { 0, 0, 0, 0x1a }; // xstart = 0, xend = 170
-        sendCmd(0x2A, x, 4); // Set Column Address
-        uint8_t y[4] = { 0, 0, 0x01, 0x3f }; // ystart = 0, yend = 320
-        sendCmd(0x2B, y, 4); // Set Row Address
-        sendCmdOnly(0x21); // Display Inversion
+
+        sendCmdData(0xBA /*DGMEN: Enable Gamma*/, 0x04);
+
+        sendCmdOnly(0x21 /*Display Inversion On*/);
+        // sendCmd(0x20 /*Display Inversion Off*/);
+
+        sendCmdOnly(0x13 /*NORON: Partial off (normal)*/);
         usleep(10 * 1000);
-        sendCmdOnly(0x13); // Normal Display Mode
-        usleep(10 * 1000);
-        sendCmdOnly(0x29); // Display On
-        usleep(500 * 1000);
+        // The ST7789 controller is actually a unit with 320x240 graphics memory area, but only 240x240 portion
+        // of it is displayed. Therefore if we wanted to swap row address mode above, writes to Y=0...239 range will actually land in
+        // memory in row addresses Y = 319-(0...239) = 319...80 range. To view this range, we must scroll the view by +80 units in Y
+        // direction so that contents of Y=80...319 is displayed instead of Y=0...239.
+        if ((madctl & MADCTL_ROW_ADDRESS_ORDER_SWAP)) {
+            sendCmd(0x37 /*VSCSAD: Vertical Scroll Start Address of RAM*/, data, 4);
+        }
 
         // drawFillRect(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, 0); // clear screen
         srand(time(NULL));
