@@ -52,8 +52,8 @@ int main(int argc, char* argv[])
     // Do the initialization with a very low SPI bus speed, so that it will succeed even if the bus speed chosen by the user is too high.
     spi.setSpeed(34);
 
-    ST7789 st7789([spi](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); }, 240, 240);
-    // ST7789 st7789([spi](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); }, 170, 320);
+    // ST7789 st7789([spi](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); }, 240, 240);
+    ST7789 st7789([spi](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); }, 170, 320);
     st7789.init();
 
     usleep(10 * 1000); // Delay a bit before restoring CLK, or otherwise this has been observed to cause the display not init if done back to back after the clear operation above.
