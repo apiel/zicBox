@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
 {
     initGpio();
     setGpioMode(GPIO_TFT_DATA_CONTROL, 0x01); // Data/Control pin to output (0x01)
-    DevMemSpi spi = DevMemSpi(GPIO_TFT_DATA_CONTROL);
+    Spi spi = Spi(GPIO_TFT_DATA_CONTROL);
 
     // printf("Resetting display at reset GPIO pin %d\n", GPIO_TFT_RESET_PIN);
     // setGpioMode(GPIO_TFT_RESET_PIN, 1);

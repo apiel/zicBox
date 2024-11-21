@@ -46,7 +46,7 @@ typedef struct SPIRegisterFile {
 } SPIRegisterFile;
 volatile SPIRegisterFile* spi;
 
-class DevMemSpi {
+class Spi {
 protected:
     int fd = -1;
 
@@ -97,7 +97,7 @@ protected:
     }
 
 public:
-    DevMemSpi(uint8_t gpioDataControl)
+    Spi(uint8_t gpioDataControl)
         : gpioDataControl(gpioDataControl)
     {
         init();

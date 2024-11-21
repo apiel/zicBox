@@ -50,7 +50,7 @@ class DevMemSpi {
 protected:
     int fd = -1;
 
-    std::function<void(uint8_t)> setDataControl;
+    uint8_t gpioDataControl;
 
     void WaitForPolledSPITransferToFinish()
     {
@@ -97,8 +97,8 @@ protected:
     }
 
 public:
-    DevMemSpi(std::function<void(uint8_t)> setDataControl)
-        : setDataControl(setDataControl)
+    DevMemSpi(uint8_t gpioDataControl)
+        : gpioDataControl(gpioDataControl)
     {
         init();
     }
@@ -113,14 +113,14 @@ public:
         spi->cs = BCM2835_SPI0_CS_TA | DISPLAY_SPI_DRIVE_SETTINGS; // Spi begins transfer
 
         // An SPI transfer to the display always starts with one control (command) byte, followed by N data bytes.
-        setDataControl(0);
+        setGpio(gpioDataControl, 0);
 
         spi->fifo = cmd;
         while (!(spi->cs & (BCM2835_SPI0_CS_RXD | BCM2835_SPI0_CS_DONE))) /*nop*/
             ;
 
         if (payloadSize > 0) {
-            setDataControl(1);
+            setGpio(gpioDataControl, 1);
 
             tStart = payload;
             tEnd = payload + payloadSize;
