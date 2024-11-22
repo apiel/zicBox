@@ -26,12 +26,11 @@ protected:
 
     uint8_t gpioDataControl;
 
-    uint32_t speed = 16000000; // 16 MHz;
+    // uint32_t speed = 16000000; // 16 MHz;
     // uint32_t speed = 2500000;
 
     int init()
     {
-        int fd;
         int ret;
         uint8_t mode;
         uint8_t bits;
@@ -66,16 +65,6 @@ protected:
             return -1;
         }
 
-        ret = ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
-        if (ret == -1) {
-            printf("Can't set max speed");
-            return -1;
-        }
-        ret = ioctl(fd, SPI_IOC_RD_MAX_SPEED_HZ, &speed);
-        if (ret == -1) {
-            printf("Can't get max speed\n");
-            return -1;
-        }
         return fd;
     }
 
@@ -132,9 +121,19 @@ public:
         }
     }
 
-    void setSpeed(uint32_t speed)
+    int setSpeed(uint32_t speed)
     {
-       // nothing
+        int ret = ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
+        if (ret == -1) {
+            printf("Can't set max speed");
+            return -1;
+        }
+        ret = ioctl(fd, SPI_IOC_RD_MAX_SPEED_HZ, &speed);
+        if (ret == -1) {
+            printf("Can't get max speed\n");
+            return -1;
+        }
+        return 0;
     }
 };
 
