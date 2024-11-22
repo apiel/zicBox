@@ -7,11 +7,12 @@
 #include <time.h>
 #include <unistd.h>
 
-// #define DISPLAY_SET_CURSOR_X 0x2A
-// #define DISPLAY_SET_CURSOR_Y 0x2B
+#define DISPLAY_SET_CURSOR_X 0x2A
+#define DISPLAY_SET_CURSOR_Y 0x2B
 // #define DISPLAY_SET_CURSOR_X 0x23 // try 0x24 too
-#define DISPLAY_SET_CURSOR_X 0x24
-#define DISPLAY_SET_CURSOR_Y 0x00
+// #define DISPLAY_SET_CURSOR_X 0x24
+// #define DISPLAY_SET_CURSOR_Y 0x00
+
 #define DISPLAY_WRITE_PIXELS 0x2C
 
 #define BYTESPERPIXEL 2
@@ -75,6 +76,22 @@ public:
         }
     }
 
+    void fillScreen(uint16_t color)
+    {
+        uint32_t size = width * height * BYTESPERPIXEL;
+        uint8_t pixels[size];
+        uint8_t pixel[BYTESPERPIXEL] = { color >> 8, color & 0xFF };
+
+        for (int i = 0; i < size; i += BYTESPERPIXEL) {
+            pixels[i] = pixel[0];
+            pixels[i + 1] = pixel[1];
+        }
+
+        sendAddr(DISPLAY_SET_CURSOR_X, 0, width);
+        sendAddr(DISPLAY_SET_CURSOR_Y, 0, height);
+        sendCmd(DISPLAY_WRITE_PIXELS, pixels, size);
+    }
+
     void init()
     {
         sendCmdOnly(0x01); // Software Reset
@@ -100,7 +117,7 @@ public:
         // drawFillRect(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, 0); // clear screen
         srand(time(NULL));
         uint16_t randomColor = rand() % 0xFFFFFF;
-        drawFillRect(0, 0, width, height, randomColor); // clear screen
+        fillScreen(randomColor); // clear screen
 
         for (int i = 0; i < 100; i++) {
             drawPixel(i, i * 2, 0xFFFF00);
