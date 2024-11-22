@@ -14,10 +14,18 @@
 #include "styles.h"
 #include "timer.h"
 
+#ifdef DRAW_ST7789 
+#ifdef USE_DRAW_WITH_SDL
+#include "draw/ST7789/drawWithSDL.h"
+#else
+#include "draw/ST7789/draw.h"
+#endif
+#elifdef DRAW_SSD1306
 #ifdef USE_DRAW_WITH_SDL
 #include "draw/SSD1306/drawWithSDL.h"
-#elifdef DRAW_SSD1306
+#else
 #include "draw/SSD1306/draw.h"
+#endif
 #else
 #include "draw/SDL/draw.h"
 #endif
