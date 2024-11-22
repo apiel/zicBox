@@ -20,7 +20,7 @@ protected:
 
     std::function<void(uint8_t, uint8_t*, uint32_t)> sendCmd;
 
-    void sendCmdOnly(uint8_t cmd)
+    void sendCmd(uint8_t cmd)
     {
         sendCmd(cmd, NULL, 0);
     }
@@ -77,7 +77,7 @@ public:
         uint8_t madctl = 0;
         uint8_t data[4] = { 0, 0, (uint8_t)(240 >> 8), (uint8_t)(240 & 0xFF) };
 
-        sendCmdOnly(0x11 /*Sleep Out*/);
+        sendCmd(0x11 /*Sleep Out*/);
         usleep(120 * 1000);
         sendCmdData(0x3A /*COLMOD: Pixel Format Set*/, 0x05 /*16bpp*/);
         usleep(20 * 1000);
@@ -97,10 +97,10 @@ public:
 
         sendCmdData(0xBA /*DGMEN: Enable Gamma*/, 0x04);
 
-        sendCmdOnly(0x21 /*Display Inversion On*/);
+        sendCmd(0x21 /*Display Inversion On*/);
         // sendCmd(0x20 /*Display Inversion Off*/);
 
-        sendCmdOnly(0x13 /*NORON: Partial off (normal)*/);
+        sendCmd(0x13 /*NORON: Partial off (normal)*/);
         usleep(10 * 1000);
         // The ST7789 controller is actually a unit with 320x240 graphics memory area, but only 240x240 portion
         // of it is displayed. Therefore if we wanted to swap row address mode above, writes to Y=0...239 range will actually land in
@@ -120,7 +120,7 @@ public:
             drawPixel(rand() % width, rand() % height, 0xFFFFFF);
         }
 
-        sendCmdOnly(/*Display ON*/ 0x29);
+        sendCmd(/*Display ON*/ 0x29);
     }
 };
 

@@ -26,16 +26,21 @@ protected:
     uint16_t width;
     uint16_t height;
 
-    std::function<void(uint8_t, uint8_t*, uint32_t)> sendCmd;
+    std::function<void(uint8_t, uint8_t*, uint32_t)> sendSpiCmd;
 
-    void sendCmdOnly(uint8_t cmd)
+    void sendCmd(uint8_t cmd)
     {
-        sendCmd(cmd, NULL, 0);
+        sendSpiCmd(cmd, NULL, 0);
     }
 
-    void sendCmdData(uint8_t cmd, uint8_t data)
+    void sendCmd(uint8_t cmd, uint8_t data)
     {
-        sendCmd(cmd, &data, 1);
+        sendSpiCmd(cmd, &data, 1);
+    }
+
+    void sendCmd(uint8_t cmd, uint8_t* data, uint32_t len)
+    {
+        sendSpiCmd(cmd, data, len);
     }
 
     void sendAddr(uint8_t cmd, uint16_t addr0, uint16_t addr1)
@@ -45,8 +50,8 @@ protected:
     }
 
 public:
-    ST7789(std::function<void(uint8_t, uint8_t*, uint32_t)> sendCmd, uint16_t width, uint16_t height)
-        : sendCmd(sendCmd)
+    ST7789(std::function<void(uint8_t, uint8_t*, uint32_t)> sendSpiCmd, uint16_t width, uint16_t height)
+        : sendSpiCmd(sendSpiCmd)
         , width(width)
         , height(height)
     {
@@ -98,24 +103,24 @@ public:
 
     void init()
     {
-        sendCmdOnly(0x01); // Software Reset
+        sendCmd(0x01); // Software Reset
         usleep(150 * 1000);
-        sendCmdOnly(0x11); // Sleep Out
+        sendCmd(0x11); // Sleep Out
         usleep(500 * 1000);
-        sendCmdData(0x3A, 0x55); // Set Color Mode: 16-bit
+        sendCmd(0x3A, 0x55); // Set Color Mode: 16-bit
         usleep(10 * 1000);
-        sendCmdData(0x36, 0x08); // Memory Access Control: Row/col addr, bottom-top refresh
-        // sendCmdData(0x36, 0x00); // Memory Access Control: RGB
+        sendCmd(0x36, 0x08); // Memory Access Control: Row/col addr, bottom-top refresh
+        // sendCmd(0x36, 0x00); // Memory Access Control: RGB
         // uint8_t x[4] = { 0, 0, 0, 0x1a }; // xstart = 0, xend = 170
         uint8_t x[4] = { 0, 0, U16_TO_U8(width) };
         sendCmd(0x2A, x, 4); // Set Column Address
         uint8_t y[4] = { 0, 0, U16_TO_U8(height) }; // uint8_t y[4] = { 0, 0, 0x01, 0x3f }; // ystart = 0, yend = 320
         sendCmd(0x2B, y, 4); // Set Row Address
-        sendCmdOnly(0x21); // Display Inversion
+        sendCmd(0x21); // Display Inversion
         usleep(10 * 1000);
-        sendCmdOnly(0x13); // Normal Display Mode
+        sendCmd(0x13); // Normal Display Mode
         usleep(10 * 1000);
-        sendCmdOnly(0x29); // Display On
+        sendCmd(0x29); // Display On
         usleep(500 * 1000);
     }
 
