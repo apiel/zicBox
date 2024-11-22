@@ -1,5 +1,6 @@
 #define ZIC_LOG_LEVEL ZIC_LOG_DEBUG
-#define DRAW_SSD1306
+// #define DRAW_SSD1306
+#define DRAW_ST7789
 
 #ifndef IS_RPI
 #define USE_DRAW_WITH_SDL
@@ -11,7 +12,11 @@
 #endif
 
 #include "config.h"
+#ifdef DRAW_SSD1306
 #include "draw/SSD1306/draw.h"
+#elifdef DRAW_ST7789 
+#include "draw/ST7789/draw.h"
+#endif
 #include "host.h"
 #include "plugins/components/Pixel/PixelComponents.h"
 #include "styles.h"
