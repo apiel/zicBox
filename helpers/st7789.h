@@ -9,6 +9,8 @@
 
 #define DISPLAY_SET_CURSOR_X 0x2A
 #define DISPLAY_SET_CURSOR_Y 0x2B
+
+// For 170x320 display ??
 // #define DISPLAY_SET_CURSOR_X 0x23 // try 0x24 too
 // #define DISPLAY_SET_CURSOR_X 0x24
 // #define DISPLAY_SET_CURSOR_Y 0x00
@@ -16,6 +18,8 @@
 #define DISPLAY_WRITE_PIXELS 0x2C
 
 #define BYTESPERPIXEL 2
+
+#define U16_TO_U8(x) (uint8_t)((x >> 8) & 0xFF), (uint8_t)(x & 0xFF)
 
 class ST7789 {
 protected:
@@ -36,7 +40,7 @@ protected:
 
     void sendAddr(uint8_t cmd, uint16_t addr0, uint16_t addr1)
     {
-        uint8_t addr[4] = { (uint8_t)(addr0 >> 8), (uint8_t)(addr0 & 0xFF), (uint8_t)(addr1 >> 8), (uint8_t)(addr1 & 0xFF) };
+        uint8_t addr[4] = { U16_TO_U8(addr0), U16_TO_U8(addr1) };
         sendCmd(cmd, addr, 4);
     }
 
@@ -50,11 +54,11 @@ public:
 
     void drawPixel(uint16_t x, uint16_t y, uint16_t color)
     {
-        uint8_t data[BYTESPERPIXEL] = { (uint8_t)(color >> 8), (uint8_t)(color & 0xFF) };
-
         sendAddr(DISPLAY_SET_CURSOR_X, (uint16_t)x, (uint16_t)x);
         sendAddr(DISPLAY_SET_CURSOR_Y, (uint16_t)y, (uint16_t)y);
-        sendCmd(DISPLAY_WRITE_PIXELS, data, 2);
+
+        uint8_t pixel[BYTESPERPIXEL] = { U16_TO_U8(color) };
+        sendCmd(DISPLAY_WRITE_PIXELS, pixel, 2);
     }
 
     void drawFillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color)
@@ -62,7 +66,7 @@ public:
         int yPos;
         uint16_t size = w * BYTESPERPIXEL;
         uint8_t pixels[size];
-        uint8_t pixel[BYTESPERPIXEL] = { (uint8_t)(color >> 8), (uint8_t)(color & 0xFF) };
+        uint8_t pixel[BYTESPERPIXEL] = { U16_TO_U8(color) };
 
         for (uint16_t i = 0; i < size; i += BYTESPERPIXEL) {
             pixels[i] = pixel[0];
@@ -80,7 +84,7 @@ public:
     {
         uint32_t size = width * height * BYTESPERPIXEL;
         uint8_t pixels[size];
-        uint8_t pixel[BYTESPERPIXEL] = { (uint8_t)(color >> 8), (uint8_t)(color & 0xFF) };
+        uint8_t pixel[BYTESPERPIXEL] = { U16_TO_U8(color) };
 
         for (int i = 0; i < size; i += BYTESPERPIXEL) {
             pixels[i] = pixel[0];
@@ -103,9 +107,9 @@ public:
         sendCmdData(0x36, 0x08); // Memory Access Control: Row/col addr, bottom-top refresh
         // sendCmdData(0x36, 0x00); // Memory Access Control: RGB
         // uint8_t x[4] = { 0, 0, 0, 0x1a }; // xstart = 0, xend = 170
-        uint8_t x[4] = { 0, 0, (uint8_t)((width - 1) >> 8), (uint8_t)((width - 1) & 0xFF) };
+        uint8_t x[4] = { 0, 0, U16_TO_U8(width) };
         sendCmd(0x2A, x, 4); // Set Column Address
-        uint8_t y[4] = { 0, 0, (uint8_t)((height - 1) >> 8), (uint8_t)((height - 1) & 0xFF) }; // uint8_t y[4] = { 0, 0, 0x01, 0x3f }; // ystart = 0, yend = 320
+        uint8_t y[4] = { 0, 0, U16_TO_U8(height) }; // uint8_t y[4] = { 0, 0, 0x01, 0x3f }; // ystart = 0, yend = 320
         sendCmd(0x2B, y, 4); // Set Row Address
         sendCmdOnly(0x21); // Display Inversion
         usleep(10 * 1000);
