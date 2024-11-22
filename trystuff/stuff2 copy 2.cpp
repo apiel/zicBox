@@ -14,6 +14,26 @@
 
 #include "../helpers/gpio.h"
 
+/* Test the Adafuit 7789 display.  Initialize, clear to four different colors
+ * then blank and exit.
+ *
+ * Use kernel SPI bit-banging.  This app assumes the display is wired this way:
+ *
+ * PIN   Name   PI
+ * ---   -----  -------------------
+ *  1    Vi     3v3 (pin 1)
+ *  2    3V     (n/c)
+ *  3    G      Ground (pin 6)
+ *  4    CL     SPI0 CLK (GPIO 11) (pin 23) - SPI clock
+ *  5    SO     SPI0 MISO (GPIO 9) (pin 21) - Not used by this app
+ *  6    SI     SPI0 MOSI (GPIO 10) (pin 19) - SPI data out (to display)
+ *  7    TC     SPI0 CE0 (GPIO 8) (pin 24) TFT chip select
+ *  8    RT     (n/c) - Reset line
+ *  9    DC     GPIO 25 (pin 22).  Data/Command switch
+ * 10    CC     SPI0 CE1 (GPIO 7) (pin 26) SD card chip select
+ * 11    BL     (n/c) - Ground this to disable the backlight
+ */
+
 static void pabort(const char* s)
 {
     perror(s);
@@ -71,21 +91,6 @@ void init_gpio(void)
     setGpioMode(DC, 0x01);
 }
 
-int setSpiSpeed(int fd, uint32_t speed)
-{
-    int ret;
-
-    ret = ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
-    if (ret == -1)
-        pabort("Can't set max speed");
-    ret = ioctl(fd, SPI_IOC_RD_MAX_SPEED_HZ, &speed);
-    if (ret == -1)
-        pabort("Can't get max speed\n");
-    printf("Max speed: %ld\n", speed);
-
-    return fd;
-}
-
 int init_spi(void)
 {
     int fd;
@@ -121,7 +126,15 @@ int init_spi(void)
 
     // Max speed (in Hz)
     speed = 16000000; // 16 MHz
-    return setSpiSpeed(fd, speed);
+    ret = ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
+    if (ret == -1)
+        pabort("Can't set max speed");
+    ret = ioctl(fd, SPI_IOC_RD_MAX_SPEED_HZ, &speed);
+    if (ret == -1)
+        pabort("Can't get max speed\n");
+    printf("Max speed: %ld\n", speed);
+
+    return fd;
 }
 
 void command_mode(void)
@@ -221,9 +234,8 @@ void write_rgb565(int fd, uint16_t value, int count)
  */
 void init_display(int fd)
 {
-    setSpiSpeed(fd, 20000);
-    write_command(fd, SWRESET);  // Software reset
-    usleep(200000);
+    // write_command(fd, SWRESET);  // Software reset
+    // usleep(200000);
     write_command(fd, SLPOUT);   // Exit sleep mode
     usleep(200000);
     write_command(fd, COLMOD);   // Set color mode to RGB 16-bit 565
@@ -238,8 +250,6 @@ void init_display(int fd)
     usleep(10000);
     write_command(fd, DISPON);   // Display on
     usleep(200000);
-
-    setSpiSpeed(fd, 16000000);
 
 // custom
 
