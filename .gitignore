@@ -11,5 +11,6 @@ methodptr
 zicUi
 zicBox
 zicPixel
+zicPixelSSD1306
 build
 test2

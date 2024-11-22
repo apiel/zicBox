@@ -1,5 +1,5 @@
 #define ZIC_LOG_LEVEL ZIC_LOG_DEBUG
-#define DRAW_ST7789
+#define DRAW_SSD1306
 
 #ifndef IS_RPI
 #define USE_DRAW_WITH_SDL
@@ -11,7 +11,7 @@
 #endif
 
 #include "config.h"
-#include "draw/ST7789/draw.h"
+#include "draw/SSD1306/draw.h"
 #include "host.h"
 #include "plugins/components/Pixel/PixelComponents.h"
 #include "styles.h"
@@ -28,9 +28,6 @@
 #include "plugins/audio/SerializeTrack.h"
 #include "plugins/audio/SynthDrum23.h"
 #include "plugins/audio/Tempo.h"
-
-// Make from scratch UI
-// Do not load audio plugins like this
 
 void loadAudioAliases()
 {
@@ -73,7 +70,7 @@ int main(int argc, char* argv[])
     loadAudioAliases();
 
     styles.screen = { 128, 64 };
-    loadUiConfig(argc >= 2 ? argv[1] : "pixel.ui", argc >= 3 ? argv[2] : NULL);
+    loadUiConfig(argc >= 2 ? argv[1] : "pixelSSD1306.cfg", argc >= 3 ? argv[2] : NULL);
 
     showLogLevel();
 

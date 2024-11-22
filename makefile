@@ -15,6 +15,7 @@ BUILD=-Wno-narrowing -ldl $(RTMIDI)
 
 main: build run
 pixel: buildPixel runPixel
+pixelSSD1306: buildPixelSSD1306 runPixelSSD1306
 host: buildHost runHost
 all: libs main
 allall: libs buildHost soHost main
@@ -56,6 +57,14 @@ buildPixel:
 runPixel:
 	@echo "\n------------------ run zicPixel ------------------\n"
 	./zicPixel
+
+buildPixelSSD1306:
+	@echo "\n------------------ build zicPixel SSD1306 ------------------\n"
+	g++ -g -fms-extensions -o zicPixelSSD1306 zicPixelSSD1306.cpp -ldl $(RPI) $(RTMIDI) $(PIXEL_SDL) $(shell pkg-config --cflags --libs sndfile) $(shell pkg-config --cflags --libs libpulse-simple)
+
+runPixelSSD1306:
+	@echo "\n------------------ run zicPixel ------------------\n"
+	./zicPixelSSD1306
 
 gpio:
 	@echo "\n------------------ gpio ------------------\n"
