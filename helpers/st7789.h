@@ -113,7 +113,10 @@ public:
         usleep(10 * 1000);
         sendCmdOnly(0x29); // Display On
         usleep(500 * 1000);
+    }
 
+    void test()
+    {
         // drawFillRect(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, 0); // clear screen
         srand(time(NULL));
         uint16_t randomColor = rand() % 0xFFFFFF;

@@ -11,9 +11,14 @@
 #include "../helpers/gpio.h"
 #include "../helpers/st7789.h"
 
+#define USE_DEV_MEM_SPI
+#ifdef USE_DEV_MEM_SPI
 #include "DevMemSpi.h"
+#else
+#include "DevSpiDev2.h" // Bad file descriptor
+#endif
+
 // #include "DevSpiDev.h" // segmentation fault
-// #include "DevSpiDev2.h" // Bad file descriptor
 
 // res go to pin 15
 // #define PIN_RESET 22
@@ -49,14 +54,25 @@ int main(int argc, char* argv[])
 
     printf("Initializing SPI bus\n");
 
-    // Do the initialization with a very low SPI bus speed, so that it will succeed even if the bus speed chosen by the user is too high.
+// Do the initialization with a very low SPI bus speed, so that it will succeed even if the bus speed chosen by the user is too high.
+#ifdef USE_DEV_MEM_SPI
     spi.setSpeed(34);
+#else
+    spi.setSpeed(200000);
+#endif
 
     ST7789 st7789([spi](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); }, 240, 240);
     // ST7789 st7789([spi](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); }, 170, 320);
     st7789.init();
 
     usleep(10 * 1000); // Delay a bit before restoring CLK, or otherwise this has been observed to cause the display not init if done back to back after the clear operation above.
+
+#ifdef USE_DEV_MEM_SPI
     spi.setSpeed(20);
+#else
+    spi.setSpeed(16000000); // 16 MHz
+#endif
+
+    st7789.test();
     return 0;
 }
