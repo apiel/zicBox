@@ -1,11 +1,13 @@
-#ifndef _LIB_DEV_MEM_SPI_H_
-#define _LIB_DEV_MEM_SPI_H_
+#ifndef _LIB_SPI_H_
+#define _LIB_SPI_H_
+
+// Need to be root to access /dev/mem
+// build with -lbcm2835 -lbcm_host
 
 #include <fcntl.h> // open, O_RDWR, O_SYNC
 #include <inttypes.h>
 #include <stdio.h> // printf, stderr
 #include <sys/mman.h> // mmap, munmap
-// #include <unistd.h> // usleep
 
 #include "../helpers/gpio.h"
 

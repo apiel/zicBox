@@ -1,17 +1,16 @@
-#ifndef _LIB_DEV_MEM_SPI_H_
-#define _LIB_DEV_MEM_SPI_H_
+#ifndef _LIB_SPI_H_
+#define _LIB_SPI_H_
+
+// Can be use without to be root,
+// but GPIO_TFT_RESET_PIN make it bugs...
 
 #include <fcntl.h> // open, O_RDWR, O_SYNC
-#include <inttypes.h>
 #include <stdio.h> // printf, stderr
-#include <sys/mman.h> // mmap, munmap
-// #include <unistd.h> // usleep
 
 #include "../helpers/gpio.h"
 
 #include <cmath>
 #include <errno.h>
-#include <fcntl.h>
 #include <iostream>
 #include <linux/spi/spidev.h>
 #include <string.h>
