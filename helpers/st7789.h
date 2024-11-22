@@ -50,7 +50,7 @@ public:
 
     void drawPixel(uint16_t x, uint16_t y, uint16_t color)
     {
-        uint8_t data[BYTESPERPIXEL] = { color >> 8, color & 0xFF };
+        uint8_t data[BYTESPERPIXEL] = { (uint8_t)(color >> 8), (uint8_t)(color & 0xFF) };
 
         sendAddr(DISPLAY_SET_CURSOR_X, (uint16_t)x, (uint16_t)x);
         sendAddr(DISPLAY_SET_CURSOR_Y, (uint16_t)y, (uint16_t)y);
@@ -62,7 +62,7 @@ public:
         int yPos;
         uint16_t size = w * BYTESPERPIXEL;
         uint8_t pixels[size];
-        uint8_t pixel[BYTESPERPIXEL] = { color >> 8, color & 0xFF };
+        uint8_t pixel[BYTESPERPIXEL] = { (uint8_t)(color >> 8), (uint8_t)(color & 0xFF) };
 
         for (uint16_t i = 0; i < size; i += BYTESPERPIXEL) {
             pixels[i] = pixel[0];
@@ -80,7 +80,7 @@ public:
     {
         uint32_t size = width * height * BYTESPERPIXEL;
         uint8_t pixels[size];
-        uint8_t pixel[BYTESPERPIXEL] = { color >> 8, color & 0xFF };
+        uint8_t pixel[BYTESPERPIXEL] = { (uint8_t)(color >> 8), (uint8_t)(color & 0xFF) };
 
         for (int i = 0; i < size; i += BYTESPERPIXEL) {
             pixels[i] = pixel[0];
@@ -103,9 +103,9 @@ public:
         sendCmdData(0x36, 0x08); // Memory Access Control: Row/col addr, bottom-top refresh
         // sendCmdData(0x36, 0x00); // Memory Access Control: RGB
         // uint8_t x[4] = { 0, 0, 0, 0x1a }; // xstart = 0, xend = 170
-        uint8_t x[4] = { 0, 0, (width - 1) >> 8, (width - 1) & 0xFF };
+        uint8_t x[4] = { 0, 0, (uint8_t)((width - 1) >> 8), (uint8_t)((width - 1) & 0xFF) };
         sendCmd(0x2A, x, 4); // Set Column Address
-        uint8_t y[4] = { 0, 0, (height - 1) >> 8, (height - 1) & 0xFF }; // uint8_t y[4] = { 0, 0, 0x01, 0x3f }; // ystart = 0, yend = 320
+        uint8_t y[4] = { 0, 0, (uint8_t)((height - 1) >> 8), (uint8_t)((height - 1) & 0xFF) }; // uint8_t y[4] = { 0, 0, 0x01, 0x3f }; // ystart = 0, yend = 320
         sendCmd(0x2B, y, 4); // Set Row Address
         sendCmdOnly(0x21); // Display Inversion
         usleep(10 * 1000);
@@ -119,12 +119,12 @@ public:
     {
         // drawFillRect(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, 0); // clear screen
         srand(time(NULL));
-        uint16_t randomColor = rand() % 0xFFFFFF;
+        uint16_t randomColor = rand() % 0xFFFF;
         fillScreen(randomColor); // clear screen
 
         for (int i = 0; i < 100; i++) {
-            drawPixel(i, i * 2, 0xFFFF00);
-            drawPixel(rand() % width, rand() % height, 0xFFFFFF);
+            drawPixel(i, i * 2, 0xFFF0);
+            drawPixel(rand() % width, rand() % height, 0xFFFF);
         }
     }
 };
