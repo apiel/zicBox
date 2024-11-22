@@ -1,24 +1,20 @@
-// sudo chown 0:0 test2
-// sudo chmod u+s test2
-
-// sudo apt-get install libraspberrypi-dev raspberrypi-kernel-headers
-// cp ../remoteZicBox/st7789.cpp . && g++ -o test2 st7789.cpp -lbcm2835 -lrt -DBCM2835=1 -fpermissive -lbcm_host && sudo ./test2
-
-// g++ -o test2 st7789_.cpp -lbcm2835 -lrt -DBCM2835=1 -fpermissive -lbcm_host && mv test2 ~/. && sudo ~/test2
-
-// https://raspberrypi.stackexchange.com/questions/40105/access-gpio-pins-without-root-no-access-to-dev-mem-try-running-as-root
-
 #include "../helpers/gpio.h"
 #include "../helpers/st7789.h"
 
-// #define USE_DEV_MEM_SPI
-#ifdef USE_DEV_MEM_SPI
-#include "DevMemSpi.h"
+// #define USE_SPI_DEV_MEM
+#ifdef USE_SPI_DEV_MEM
+// sudo apt-get install libraspberrypi-dev raspberrypi-kernel-headers
+// sudo chown 0:0 test2
+// sudo chmod u+s test2
+// see:
+// https://raspberrypi.stackexchange.com/questions/40105/access-gpio-pins-without-root-no-access-to-dev-mem-try-running-as-root
+//
+// g++ -o test2 st7789_.cpp -lbcm2835 -fpermissive -lbcm_host && mv test2 ~/. && sudo ~/test2
+#include "../helpers/SpiDevMem.h"
 #else
-#include "DevSpiDev2.h" // Bad file descriptor
+// g++ -o test2 st7789_.cpp -fpermissive && ./test2
+#include "../helpers/SpiDevSpi.h"
 #endif
-
-// #include "DevSpiDev.h" // segmentation fault
 
 // res go to pin 15
 // #define PIN_RESET 22
@@ -43,7 +39,7 @@ int main(int argc, char* argv[])
     setGpioMode(GPIO_TFT_DATA_CONTROL, 0x01); // Data/Control pin to output (0x01)
     Spi spi = Spi(GPIO_TFT_DATA_CONTROL);
 
-#ifdef USE_DEV_MEM_SPI
+#ifdef USE_SPI_DEV_MEM
     printf("Resetting display at reset GPIO pin %d\n", GPIO_TFT_RESET_PIN);
     setGpioMode(GPIO_TFT_RESET_PIN, 1);
     setGpio(GPIO_TFT_RESET_PIN, 1);
@@ -57,7 +53,7 @@ int main(int argc, char* argv[])
     printf("Initializing SPI bus\n");
 
 // Do the initialization with a very low SPI bus speed, so that it will succeed even if the bus speed chosen by the user is too high.
-#ifdef USE_DEV_MEM_SPI
+#ifdef USE_SPI_DEV_MEM
     spi.setSpeed(34);
 #else
     spi.setSpeed(20000);
@@ -68,7 +64,7 @@ int main(int argc, char* argv[])
 
     usleep(10 * 1000); // Delay a bit before restoring CLK, or otherwise this has been observed to cause the display not init if done back to back after the clear operation above.
 
-#ifdef USE_DEV_MEM_SPI
+#ifdef USE_SPI_DEV_MEM
     spi.setSpeed(20);
 #else
     spi.setSpeed(16000000); // 16 MHz
