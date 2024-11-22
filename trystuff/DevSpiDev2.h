@@ -26,8 +26,8 @@ protected:
 
     uint8_t gpioDataControl;
 
-    // uint32_t speed = 16000000; // 16 MHz;
-    uint32_t speed = 2500000;
+    uint32_t speed = 16000000; // 16 MHz;
+    // uint32_t speed = 2500000;
 
     int init()
     {
@@ -42,7 +42,7 @@ protected:
             return -1;
         }
 
-        mode = 1;
+        mode = 0;
         ret = ioctl(fd, SPI_IOC_WR_MODE, &mode);
         if (ret == -1) {
             printf("Can't set SPI write mode");
