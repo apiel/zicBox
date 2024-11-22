@@ -13,6 +13,10 @@
 #define GPIO_BASE 0x00200000 // 0_00200000
 // #define GPIO_BASE 0x200000
 
+#define GPIO_INPUT 0x00
+#define GPIO_OUTPUT 0x01
+#define GPIO_ALT0 0x04
+
 typedef struct GPIORegisterFile {
     uint32_t gpfsel[6], reserved0; // GPIO Function Select registers, 3 bits per pin, 10 pins in an uint32_t
     uint32_t gpset[2], reserved1; // GPIO Pin Output Set registers, write a 1 to bit at index I to set the pin at index I high

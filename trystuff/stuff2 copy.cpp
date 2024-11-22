@@ -1,24 +1,4 @@
-// cp ../remoteZicBox/st7789_2.cpp . && g++ -o test23 st7789_2.cpp -lbcm2835 -lrt -DBCM2835=1 -fpermissive -lbcm_host && ./test23
-
-#include <fcntl.h> // open, O_RDWR, O_SYNC
-#include <inttypes.h>
-#include <stdio.h> // printf, stderr
-#include <string.h> // memset
-#include <sys/ioctl.h>
-#include <sys/mman.h> // mmap, munmap
-#include <unistd.h> // usleep
-
-#include <cmath>
-#include <errno.h>
-#include <fcntl.h>
-#include <iostream>
-#include <linux/spi/spidev.h>
-#include <string.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <time.h>
-#include <unistd.h>
-
+// g++ -o stuff2 stuff2.cpp -lrt -fpermissive -lwiringPi && mv stuff2 ~/. && sudo ~/stuff2
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <linux/spi/spidev.h>
@@ -31,64 +11,40 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
+#include <wiringPi.h>
 
-// res go to pin 15
-// #define PIN_RESET 22
-#define GPIO_TFT_RESET_PIN 22
-// DC go to pin 11
-// #define PIN_DATA_CONTROL 17
-#define GPIO_TFT_DATA_CONTROL 17
-// BLK go to pin 13 (should be optional or can be connected directly to 3.3v)
-// #define PIN_BACKLIGHT 27
-#define GPIO_TFT_BACKLIGHT 27
-
-typedef struct GPIORegisterFile {
-    uint32_t gpfsel[6], reserved0; // GPIO Function Select registers, 3 bits per pin, 10 pins in an uint32_t
-    uint32_t gpset[2], reserved1; // GPIO Pin Output Set registers, write a 1 to bit at index I to set the pin at index I high
-    uint32_t gpclr[2], reserved2; // GPIO Pin Output Clear registers, write a 1 to bit at index I to set the pin at index I low
-    uint32_t gplev[2];
-} GPIORegisterFile;
-volatile GPIORegisterFile* gpio = 0;
-
-// static volatile unsigned int *gpio ;
-
-// extern volatile void* bcm2835;
-// volatile void* bcm2835 = 0;
-
-void setGpioMode(uint8_t pin, uint8_t mode)
-{
-    gpio->gpfsel[(pin) / 10] = (gpio->gpfsel[(pin) / 10] & ~(0x7 << ((pin) % 10) * 3)) | ((mode) << ((pin) % 10) * 3);
-}
-
-void setGpio(uint8_t pin)
-{
-    gpio->gpset[0] = 1 << (pin); // Pin must be (0-31)
-}
-
-void clearGpio(uint8_t pin)
-{
-    gpio->gpclr[0] = 1 << (pin); // Pin must be (0-31)
-}
-
-// #define BCM2835_GPIO_BASE 0x200000 // Address to GPIO register file
-// #define BCM2835_SPI0_BASE 0x204000 // Address to SPI0 register file
-
-#define BLOCK_SIZE (4 * 1024)
-
-#define GPIO_BASE 0x00200000 // 0_00200000
-
-#define GPIO_SPI0_MOSI 10 // Pin P1-19, MOSI when SPI0 in use
-#define GPIO_SPI0_MISO 9 // Pin P1-21, MISO when SPI0 in use
-#define GPIO_SPI0_CLK 11 // Pin P1-23, CLK when SPI0 in use
-
-/// spi
+/* Test the Adafuit 7789 display.  Initialize, clear to four different colors
+ * then blank and exit.
+ *
+ * Use kernel SPI bit-banging.  This app assumes the display is wired this way:
+ *
+ * PIN   Name   PI
+ * ---   -----  -------------------
+ *  1    Vi     3v3 (pin 1)
+ *  2    3V     (n/c)
+ *  3    G      Ground (pin 6)
+ *  4    CL     SPI0 CLK (GPIO 11) (pin 23) - SPI clock
+ *  5    SO     SPI0 MISO (GPIO 9) (pin 21) - Not used by this app
+ *  6    SI     SPI0 MOSI (GPIO 10) (pin 19) - SPI data out (to display)
+ *  7    TC     SPI0 CE0 (GPIO 8) (pin 24) TFT chip select
+ *  8    RT     (n/c) - Reset line
+ *  9    DC     GPIO 25 (pin 22).  Data/Command switch
+ * 10    CC     SPI0 CE1 (GPIO 7) (pin 26) SD card chip select
+ * 11    BL     (n/c) - Ground this to disable the backlight
+ */
 
 static void pabort(const char* s)
 {
-    printf("!! %s\n", s);
     perror(s);
     abort();
 }
+
+/*
+ * The GPIO pins we're directly manipulating
+ */
+enum {
+    DC = 17
+} pin;
 
 /*
  * Some convenient 565 color constants
@@ -116,6 +72,23 @@ enum {
     MADCTL = 0x36, // Memory and data access control
     COLMOD = 0x3A // Color mode (interface pixel format)
 } commands;
+
+/*
+ * Set a pin's voltage.  Zero-value = low, non-zero = high
+ */
+void set_pin(uint8_t pin, uint8_t value)
+{
+    digitalWrite(pin, value);
+}
+
+void init_gpio(void)
+{
+    // Initialize GPIO library using Broadcom pin numbers
+    wiringPiSetupGpio();
+
+    // Set all the pins we're using to output mode
+    pinMode(DC, OUTPUT);
+}
 
 int init_spi(void)
 {
@@ -163,22 +136,14 @@ int init_spi(void)
     return fd;
 }
 
-void set_pin(uint8_t pin, uint8_t value)
-{
-    if (value)
-        setGpio(pin);
-    else
-        clearGpio(pin);
-}
-
 void command_mode(void)
 {
-    set_pin(GPIO_TFT_DATA_CONTROL, 0);
+    set_pin(DC, 0);
 }
 
 void data_mode(void)
 {
-    set_pin(GPIO_TFT_DATA_CONTROL, 1);
+    set_pin(DC, 1);
 }
 
 void write_buffer(int fd, uint8_t* buffer, size_t len)
@@ -268,22 +233,51 @@ void write_rgb565(int fd, uint16_t value, int count)
  */
 void init_display(int fd)
 {
-    write_command(fd, SWRESET); // Software reset
+    // write_command(fd, SWRESET);  // Software reset
+    // usleep(200000);
+    write_command(fd, SLPOUT);   // Exit sleep mode
     usleep(200000);
-    write_command(fd, SLPOUT); // Exit sleep mode
-    usleep(200000);
-    write_command(fd, COLMOD); // Set color mode to RGB 16-bit 565
+    write_command(fd, COLMOD);   // Set color mode to RGB 16-bit 565
     write_data(fd, 0x55);
     usleep(10000);
-    write_command(fd, MADCTL); // Default memory order: left-right, top-bottom
+    write_command(fd, MADCTL);   // Default memory order: left-right, top-bottom
     write_data(fd, 0);
     usleep(10000);
-    write_command(fd, INVON); // Hack - display invert
+    write_command(fd, INVON);    // Hack - display invert
     usleep(10000);
-    write_command(fd, NORON); // Normal display mode
+    write_command(fd, NORON);    // Normal display mode
     usleep(10000);
-    write_command(fd, DISPON); // Display on
+    write_command(fd, DISPON);   // Display on
     usleep(200000);
+
+// custom
+
+    // write_command(fd, 0x01); // Software Reset
+    // usleep(150 * 1000);
+    // write_command(fd, 0x11); // Sleep Out
+    // usleep(500 * 1000);
+    // // sendCmdData(0x3A, 0x55); // Set Color Mode: 16-bit
+    // write_command(fd, 0x3A);
+    // write_data(fd, 0x55);
+    // usleep(10 * 1000);
+    // // sendCmdData(0x36, 0x08); // Memory Access Control: Row/col addr, bottom-top refresh
+    // write_command(fd, 0x36);
+    // write_data(fd, 0x08);
+    // // uint8_t x[4] = { 0, 0, 0, 0x1a }; // xstart = 0, xend = 170
+    // uint8_t x[4] = { 0, 0, (240 - 1) >> 8, (240 - 1) & 0xFF };
+    // // sendCmd(0x2A, x, 4); // Set Column Address
+    // write_command(fd, 0x2A);
+    // write_data_buffer(fd, x, 4);
+    // uint8_t y[4] = { 0, 0, (240 - 1) >> 8, (240 - 1) & 0xFF }; // uint8_t y[4] = { 0, 0, 0x01, 0x3f }; // ystart = 0, yend = 320
+    // // sendCmd(0x2B, y, 4); // Set Row Address
+    // write_command(fd, 0x2B);
+    // write_data_buffer(fd, y, 4);
+    // write_command(fd, 0x21); // Display Inversion
+    // usleep(10 * 1000);
+    // write_command(fd, 0x13); // Normal Display Mode
+    // usleep(10 * 1000);
+    // write_command(fd, 0x29); // Display On
+    // usleep(500 * 1000);
 }
 
 void set_addr_window(int fd, uint16_t left, uint16_t top,
@@ -333,7 +327,7 @@ void dump_bitmap(int fd, uint16_t left, uint16_t top, uint16_t right,
 
     set_addr_window(fd, left, top, right, bottom);
     write_command(fd, RAMWR);
-    write_data_buffer(fd, (u_int8_t*)buffer, width * height * 2);
+    write_data_buffer(fd, (uint8_t*)buffer, width * height * 2);
 }
 
 /************************************
@@ -400,38 +394,6 @@ void draw_x_buffered(int fd)
     dump_bitmap(fd, 0, 0, 239, 239, buffer);
     gettimeofday(&end, NULL);
     printf("Drew buffered shape in %.4f seconds\n", time_delta(&start, &end));
-}
-
-int init_gpio(void)
-{
-    printf("Start spi display test.\n");
-    int gpiomem_fd = open("/dev/gpiomem", O_RDWR | O_SYNC);
-    if (gpiomem_fd < 0) {
-        fprintf(stderr, "can't open /dev/gpiomem (fix permissions: https://raspberrypi.stackexchange.com/questions/40105/access-gpio-pins-without-root-no-access-to-dev-mem-try-running-as-root)\n");
-        return -1;
-    }
-
-    printf("Nmap gpiomem...\n");
-    gpio = (volatile GPIORegisterFile*)mmap(0, BLOCK_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, gpiomem_fd, GPIO_BASE);
-    if (gpio == MAP_FAILED) {
-        fprintf(stderr, "mmap (GPIO) failed\n");
-        return -1;
-    }
-
-    setGpioMode(GPIO_TFT_DATA_CONTROL, 0x01); // Data/Control pin to output (0x01)
-    setGpioMode(GPIO_SPI0_MOSI, 0x04);
-    setGpioMode(GPIO_SPI0_CLK, 0x04);
-
-    printf("Resetting display at reset GPIO pin %d\n", GPIO_TFT_RESET_PIN);
-    setGpioMode(GPIO_TFT_RESET_PIN, 1);
-    setGpio(GPIO_TFT_RESET_PIN);
-    usleep(120 * 1000);
-    clearGpio(GPIO_TFT_RESET_PIN);
-    usleep(120 * 1000);
-    setGpio(GPIO_TFT_RESET_PIN);
-    usleep(120 * 1000);
-
-    return 0;
 }
 
 int main(int argc, char* argv[])
