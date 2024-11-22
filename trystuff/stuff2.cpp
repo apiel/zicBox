@@ -392,14 +392,26 @@ int main(int argc, char* argv[])
     int fd;
 
     init_gpio();
+
+// #define GPIO_TFT_RESET_PIN 22
+//     printf("Resetting display at reset GPIO pin %d\n", GPIO_TFT_RESET_PIN);
+//     setGpioMode(GPIO_TFT_RESET_PIN, 1);
+//     setGpio(GPIO_TFT_RESET_PIN, 1);
+//     usleep(120 * 1000);
+//     setGpio(GPIO_TFT_RESET_PIN, 0);
+//     usleep(120 * 1000);
+//     setGpio(GPIO_TFT_RESET_PIN, 1);
+//     usleep(120 * 1000);
+
+
     fd = init_spi();
 
     init_display(fd);
     time_display(fd);
-    sleep(3);
+    usleep(500 * 1000);
     clear_screen(fd);
     draw_x(fd);
-    sleep(3);
+    usleep(500 * 1000);
     clear_screen(fd);
     draw_x_buffered(fd);
 

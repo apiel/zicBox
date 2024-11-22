@@ -11,7 +11,7 @@
 #include "../helpers/gpio.h"
 #include "../helpers/st7789.h"
 
-#define USE_DEV_MEM_SPI
+// #define USE_DEV_MEM_SPI
 #ifdef USE_DEV_MEM_SPI
 #include "DevMemSpi.h"
 #else
@@ -43,6 +43,7 @@ int main(int argc, char* argv[])
     setGpioMode(GPIO_TFT_DATA_CONTROL, 0x01); // Data/Control pin to output (0x01)
     Spi spi = Spi(GPIO_TFT_DATA_CONTROL);
 
+#ifdef USE_DEV_MEM_SPI
     printf("Resetting display at reset GPIO pin %d\n", GPIO_TFT_RESET_PIN);
     setGpioMode(GPIO_TFT_RESET_PIN, 1);
     setGpio(GPIO_TFT_RESET_PIN, 1);
@@ -51,6 +52,7 @@ int main(int argc, char* argv[])
     usleep(120 * 1000);
     setGpio(GPIO_TFT_RESET_PIN, 1);
     usleep(120 * 1000);
+#endif
 
     printf("Initializing SPI bus\n");
 
@@ -58,11 +60,10 @@ int main(int argc, char* argv[])
 #ifdef USE_DEV_MEM_SPI
     spi.setSpeed(34);
 #else
-    spi.setSpeed(200000);
+    spi.setSpeed(20000);
 #endif
 
     ST7789 st7789([spi](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); }, 240, 240);
-    // ST7789 st7789([spi](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); }, 170, 320);
     st7789.init();
 
     usleep(10 * 1000); // Delay a bit before restoring CLK, or otherwise this has been observed to cause the display not init if done back to back after the clear operation above.
