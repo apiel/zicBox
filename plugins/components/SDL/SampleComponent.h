@@ -133,7 +133,7 @@ public:
 
     SampleComponent(ComponentInterface::Props props)
         : Component(props)
-        , colors(getColorsFromColor(styles.colors.blue))
+        , colors(getColorsFromColor(styles.colors.primary))
         , waveRect({ { 0, 20 }, { props.size.w, (int)(props.size.h - 2 * 20) } })
         , wave(getNewPropsRect(props, { { 0, 20 }, { props.size.w, (int)(props.size.h - 2 * 20) } }))
         , samplePosition(getNewPropsRect(props, { { props.position.x, props.position.y + 20 }, { props.size.w, (int)(props.size.h - 2 * 20) } }))

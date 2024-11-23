@@ -36,7 +36,7 @@ public:
     InputBaseComponent(ComponentInterface::Props props)
         : Component(props)
         , textPosition({ position.x + 2, (int)(position.y + size.h * 0.5f - (fontSize * 0.5f)) })
-        , colors(getColorsFromColor(styles.colors.grey))
+        , colors(getColorsFromColor({ 0x80, 0x80, 0x80, 255 }))
         , margin(styles.margin)
     {
         setFontSize(fontSize);

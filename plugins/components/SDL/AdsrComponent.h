@@ -90,7 +90,7 @@ protected:
 public:
     AdsrComponent(ComponentInterface::Props props)
         : Component(props)
-        , colors(getColorsFromColor(styles.colors.blue))
+        , colors(getColorsFromColor(styles.colors.primary))
     {
         graphArea = {
             { position.x + 4, position.y + 4 },

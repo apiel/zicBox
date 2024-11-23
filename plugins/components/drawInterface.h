@@ -45,13 +45,10 @@ struct Styles {
     } font;
     struct Colors {
         Color background;
-        Color darkOverlay;
-        Color on;
         Color white;
-        Color blue;
-        Color red;
-        Color turquoise;
-        Color grey;
+        Color text;
+        Color primary;
+        Color secondary;
     } colors;
 };
 

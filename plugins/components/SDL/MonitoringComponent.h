@@ -77,7 +77,7 @@ protected:
 public:
     MonitoringComponent(ComponentInterface::Props props)
         : Component(props)
-        , colors(getColorsFromColor(styles.colors.grey))
+        , colors(getColorsFromColor({ 0x80, 0x80, 0x80, 255 }))
         , margin(styles.margin)
     {
         fontSize = props.size.h * 0.5;

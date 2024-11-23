@@ -145,7 +145,7 @@ public:
     // margin right 10
     EncoderComponent(ComponentInterface::Props props)
         : Component(props)
-        , colors(getColorsFromColor(styles.colors.blue))
+        , colors(getColorsFromColor(styles.colors.primary))
         , margin(styles.margin)
         , area({ position.x + 15, 0, position.y, size.w - (15 + 10), size.h })
     {

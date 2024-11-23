@@ -73,7 +73,7 @@ protected:
         return Colors({ darken(color, 0.75),
             darken(color, 0.3),
             color,
-            styles.colors.on,
+            { 0x00, 0xb3, 0x00, 255 },
             darken(color, 0.3) });
     }
 
@@ -84,7 +84,7 @@ protected:
 public:
     SequencerBarComponent(ComponentInterface::Props props)
         : Component(props)
-        , colors(getColorsFromColor(styles.colors.blue))
+        , colors(getColorsFromColor(styles.colors.primary))
         , margin(styles.margin)
         , plugin(getPlugin("Sequencer", track))
     {

@@ -43,7 +43,7 @@ public:
     {
         colors = {
             styles.colors.background,
-            darken(styles.colors.grey, 0.3),
+            darken({ 0x80, 0x80, 0x80, 255 }, 0.3),
             alpha(styles.colors.white, 0.4),
             // draw.getColor((char*)"#AAAAAA"),
             { 0xAA, 0xAA, 0xAA },

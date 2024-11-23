@@ -1,8 +1,8 @@
 #ifndef _UI_COMPONENT2_ENCODER_H_
 #define _UI_COMPONENT2_ENCODER_H_
 
-#include "../utils/color.h"
 #include "../component.h"
+#include "../utils/color.h"
 #include <math.h>
 #include <string>
 
@@ -226,13 +226,13 @@ public:
 
         colors = {
             styles.colors.background,
-            darken(styles.colors.grey, 0.3),
+            darken({ 0x80, 0x80, 0x80, 255 }, 0.3),
             alpha(styles.colors.white, 0.4),
             alpha(styles.colors.white, 0.4),
             alpha(styles.colors.white, 0.2),
-            styles.colors.blue,
-            alpha(styles.colors.blue, 0.5),
-            alpha(styles.colors.blue, 0.2),
+            styles.colors.primary,
+            alpha(styles.colors.primary, 0.5),
+            alpha(styles.colors.primary, 0.2),
             draw.getColor((char*)"#35373b"),
             alpha(styles.colors.white, 0.6),
         };

@@ -36,7 +36,7 @@ protected:
 public:
     Wave2Component(ComponentInterface::Props props)
         : Component(props)
-        , colors(getColorsFromColor(styles.colors.blue))
+        , colors(getColorsFromColor(styles.colors.primary))
         , margin(styles.margin)
         , plugin(getPlugin("Granular", track))
         , wave(getNewPropsRect(props,

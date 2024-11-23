@@ -124,7 +124,7 @@ protected:
 public:
     GranularComponent(ComponentInterface::Props props)
         : Component(props)
-        , colors(getColorsFromColor(styles.colors.blue))
+        , colors(getColorsFromColor(styles.colors.primary))
         , margin(styles.margin)
         , plugin(getPlugin("Granular", track))
         , wave(getNewPropsRect(props, { { 0, 20 }, { props.size.w - 2 * styles.margin, (int)(props.size.h - 2 * (20 + styles.margin)) } }))
