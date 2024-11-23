@@ -30,6 +30,8 @@
 #include <string.h>
 #include <string>
 
+#include <arpa/inet.h> // htons
+
 // Use max height and width
 #define ST7789_ROWS 240
 #define ST7789_COLS 240
@@ -303,15 +305,27 @@ public:
         }
     }
 
+    // uint16_t BLACK = 0x0000,
+    // uint16_t RED = 0xF800,
+    // uint16_t GREEN = 0x07E0,
+    // uint16_t BLUE = 0x001F,
+    // uint16_t WHITE = 0xFFFF
+    // uint16_t getColor(uint8_t r, uint8_t g, uint8_t b) { return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3); }
+    
+
     void render() override
     {
-        printf("Rendering ST7789\n");
         uint16_t pixels[ST7789_COLS];
         for (int i = 0; i < ST7789_ROWS; i++) {
             for (int j = 0; j < ST7789_COLS; j++) {
                 Color color = screenBuffer[i][j];
-                uint16_t rgb = (color.r << 16) | (color.g << 8) | color.b;
-                pixels[j] = rgb;
+                // uint16_t rgb = (color.r << 16) | (color.g << 8) | color.b;
+                // uint16_t rgb = (color.b << 16) | (color.g << 8) | color.r;
+                // uint16_t rgb = ((color.r & 0xF8) << 8) | ((color.g & 0xFC) << 3) | (color.b >> 3);
+                // uint16_t rgb = ((color.b & 0xF8) << 8) | ((color.g & 0xFC) << 3) | (color.r >> 3); // good
+                // uint16_t rgb = ((color.r >> 3) << 11) | ((color.g >> 2) << 5) | (color.b >> 3);
+                uint16_t rgb = ((color.b >> 3) << 11) | ((color.g >> 2) << 5) | (color.r >> 3); // good
+                pixels[j] = htons(rgb);
                 cacheBuffer[i][j] = color;
             }
             st7789.drawRow(0, i, ST7789_COLS, pixels);
