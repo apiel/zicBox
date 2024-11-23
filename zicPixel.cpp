@@ -18,17 +18,6 @@
 #include "timer.h"
 #include "viewManager.h"
 
-#include "plugins/audio/AudioOutputPulse.h"
-#include "plugins/audio/EffectDistortion.h"
-#include "plugins/audio/EffectFilterMultiMode.h"
-#include "plugins/audio/EffectGainVolume.h"
-#include "plugins/audio/Mixer2.h"
-#include "plugins/audio/Mixer4.h"
-#include "plugins/audio/Sequencer.h"
-#include "plugins/audio/SerializeTrack.h"
-#include "plugins/audio/SynthDrum23.h"
-#include "plugins/audio/Tempo.h"
-
 // Make from scratch UI
 
 int main(int argc, char* argv[])
@@ -40,7 +29,6 @@ int main(int argc, char* argv[])
 
     showLogLevel();
 
-    // might want to load host using so, in order to save compile time by removing $(shell pkg-config --cflags --libs libpulse-simple)
     startHostThread();
 
     ViewManager& viewManager = ViewManager::get();
