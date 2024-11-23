@@ -308,7 +308,6 @@ public:
         : DrawInterface(styles)
         , st7789([&](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); }, 240, 240)
     {
-        setGpioMode(GPIO_TFT_DATA_CONTROL, 0x01); // Data/Control pin to output (0x01)
     }
 
     ~Draw()
@@ -322,6 +321,9 @@ public:
     void init() override
     {
         initGpio();
+        setGpioMode(GPIO_TFT_DATA_CONTROL, 0x01); // Data/Control pin to output (0x01)
+        spi.init();
+
 #ifdef USE_SPI_DEV_MEM
         setGpioMode(GPIO_TFT_RESET_PIN, 1);
         setGpio(GPIO_TFT_RESET_PIN, 1);

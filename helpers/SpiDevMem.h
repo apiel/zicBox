@@ -63,6 +63,12 @@ protected:
             spi->cs = BCM2835_SPI0_CS_CLEAR_RX | BCM2835_SPI0_CS_TA | DISPLAY_SPI_DRIVE_SETTINGS;
     }
 
+public:
+    Spi(uint8_t gpioDataControl)
+        : gpioDataControl(gpioDataControl)
+    {
+    }
+
     int init()
     {
         // Memory map GPIO and SPI peripherals for direct access
@@ -94,13 +100,6 @@ protected:
         spi->dlen = 2;
 
         return 0;
-    }
-
-public:
-    Spi(uint8_t gpioDataControl)
-        : gpioDataControl(gpioDataControl)
-    {
-        init();
     }
 
     void sendCmd(uint8_t cmd, uint8_t* payload, uint32_t payloadSize)

@@ -1,18 +1,13 @@
-WINDOW_POSITION: 482 651
-
-# Add encoder for SDL emulator
-ADD_ZONE_ENCODER: 0 0 42 32
-ADD_ZONE_ENCODER: 42 0 42 32
-ADD_ZONE_ENCODER: 84 0 42 32
-ADD_ZONE_ENCODER: 0 32 42 32
-ADD_ZONE_ENCODER: 42 32 42 32
-ADD_ZONE_ENCODER: 84 32 42 32
-
-include: pixel_audio.cfg
-
 $buildDir=build/arm
 if: $IS_RPI != true
   $buildDir=build/x86
+
+########################################## AUDIO PLUGINS ##########################################
+
+include: pixel_audio.cfg
+
+########################################## CONTROLLERS ##########################################
+
 PLUGIN_CONTROLLER: MidiEncoder ./plugins/controllers/$buildDir/libzic_MidiEncoderController.so
   DEVICE: Arduino Leonardo:Arduino Leonardo MIDI 1
   ENCODER_TARGET: 7 0
@@ -23,6 +18,19 @@ PLUGIN_CONTROLLER: MidiEncoder ./plugins/controllers/$buildDir/libzic_MidiEncode
   ENCODER_TARGET: 2 5
   ENCODER_TARGET: 1 6
   ENCODER_TARGET: 0 7
+
+########################################## UI ##########################################
+
+# Add window position for SDL emulator
+WINDOW_POSITION: 400 500
+
+# Add encoder for SDL emulator
+ADD_ZONE_ENCODER: 0 0 42 32
+ADD_ZONE_ENCODER: 42 0 42 32
+ADD_ZONE_ENCODER: 84 0 42 32
+ADD_ZONE_ENCODER: 0 32 42 32
+ADD_ZONE_ENCODER: 42 32 42 32
+ADD_ZONE_ENCODER: 84 32 42 32
 
 VIEW: Main
 

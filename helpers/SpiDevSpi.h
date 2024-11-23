@@ -28,45 +28,6 @@ protected:
     // uint32_t speed = 16000000; // 16 MHz;
     // uint32_t speed = 2500000;
 
-    int init()
-    {
-        int ret;
-        uint8_t mode;
-        uint8_t bits;
-
-        fd = open("/dev/spidev0.0", O_RDWR);
-        if (fd < 0) {
-            printf("Can't open device");
-            return -1;
-        }
-
-        mode = 0;
-        ret = ioctl(fd, SPI_IOC_WR_MODE, &mode);
-        if (ret == -1) {
-            printf("Can't set SPI write mode");
-            return -1;
-        }
-        ret = ioctl(fd, SPI_IOC_RD_MODE, &mode);
-        if (ret == -1) {
-            printf("Can't get SPI read mode");
-            return -1;
-        }
-        // Bits per word
-        bits = 8;
-        ret = ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &bits);
-        if (ret == -1) {
-            printf("Can't set bits");
-            return -1;
-        }
-        ret = ioctl(fd, SPI_IOC_RD_BITS_PER_WORD, &bits);
-        if (ret == -1) {
-            printf("Can't get bits\n");
-            return -1;
-        }
-
-        return fd;
-    }
-
     void write_buffer(uint8_t* buffer, size_t len)
     {
         int ret;
@@ -105,7 +66,45 @@ public:
     Spi(uint8_t gpioDataControl)
         : gpioDataControl(gpioDataControl)
     {
-        init();
+    }
+
+    int init()
+    {
+        int ret;
+        uint8_t mode;
+        uint8_t bits;
+
+        fd = open("/dev/spidev0.0", O_RDWR);
+        if (fd < 0) {
+            printf("Can't open device");
+            return -1;
+        }
+
+        mode = 0;
+        ret = ioctl(fd, SPI_IOC_WR_MODE, &mode);
+        if (ret == -1) {
+            printf("Can't set SPI write mode");
+            return -1;
+        }
+        ret = ioctl(fd, SPI_IOC_RD_MODE, &mode);
+        if (ret == -1) {
+            printf("Can't get SPI read mode");
+            return -1;
+        }
+        // Bits per word
+        bits = 8;
+        ret = ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &bits);
+        if (ret == -1) {
+            printf("Can't set bits");
+            return -1;
+        }
+        ret = ioctl(fd, SPI_IOC_RD_BITS_PER_WORD, &bits);
+        if (ret == -1) {
+            printf("Can't get bits\n");
+            return -1;
+        }
+
+        return fd;
     }
 
     void sendCmd(uint8_t cmd, uint8_t* payload, uint32_t payloadSize)
