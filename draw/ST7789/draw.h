@@ -112,6 +112,10 @@ protected:
 
     void lineDiagonal(Point start, Point end, DrawOptions options = {})
     {
+        if (options.antiAliasing) {
+            // lineAntiAliased(start, end, options);
+            return;
+        }
         unsigned int dx = (end.x > start.x ? end.x - start.x : start.x - end.x);
         short xstep = end.x > start.x ? 1 : -1;
         unsigned int dy = (end.y > start.y ? end.y - start.y : start.y - end.y);
@@ -145,6 +149,131 @@ protected:
                 }
             }
         }
+    }
+
+    // int aaLineDiagonal(SDL_Renderer* renderer, Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a, int draw_endpoint)
+    void aaLineDiagonal(Point start, Point end, DrawOptions options = {})
+    {
+        int32_t xx0, yy0, xx1, yy1;
+        int result;
+        uint32_t intshift, erracc, erradj;
+        uint32_t erracctmp, wgt;
+        int dx, dy, tmp, xdir, y0p1, x0pxdir;
+
+        /*
+         * Keep on working with 32bit numbers
+         */
+        xx0 = start.x;
+        yy0 = start.y;
+        xx1 = end.x;
+        yy1 = end.y;
+
+        /*
+         * Reorder points to make dy positive
+         */
+        if (yy0 > yy1) {
+            tmp = yy0;
+            yy0 = yy1;
+            yy1 = tmp;
+            tmp = xx0;
+            xx0 = xx1;
+            xx1 = tmp;
+        }
+
+        /*
+         * Calculate distance
+         */
+        dx = xx1 - xx0;
+        dy = yy1 - yy0;
+
+        /*
+         * Adjust for negative dx and set xdir
+         */
+        if (dx >= 0) {
+            xdir = 1;
+        } else {
+            xdir = -1;
+            dx = (-dx);
+        }
+
+#define AAbits 8
+
+        erracc = 0;
+        intshift = 32 - AAbits;
+
+        pixel({ start.x, start.y }, options);
+
+        // if (dy > dx) {
+        //     erradj = ((dx << 16) / dy) << 16;
+        //     x0pxdir = xx0 + xdir;
+        //     while (--dy) {
+        //         erracctmp = erracc;
+        //         erracc += erradj;
+        //         if (erracc <= erracctmp) {
+        //             xx0 = x0pxdir;
+        //             x0pxdir += xdir;
+        //         }
+        //         yy0++;
+
+        //         /*
+        //          * the AAbits most significant bits of erracc give us the intensity
+        //          * weighting for this pixel, and the complement of the weighting for
+        //          * the paired pixel.
+        //          */
+        //         wgt = (erracc >> intshift) & 255;
+        //         result |= pixelRGBAWeight(renderer, xx0, yy0, r, g, b, a, 255 - wgt);
+        //         result |= pixelRGBAWeight(renderer, x0pxdir, yy0, r, g, b, a, wgt);
+        //     }
+
+        // } else {
+
+        //     /*
+        //      * x-major line.  Calculate 16-bit fixed-point fractional part of a pixel
+        //      * that Y advances each time X advances 1 pixel, truncating the result so
+        //      * that we won't overrun the endpoint along the X axis.
+        //      */
+        //     /*
+        //      * Not-so-portable version: erradj = ((Uint64)dy << 32) / (Uint64)dx;
+        //      */
+        //     erradj = ((dy << 16) / dx) << 16;
+
+        //     /*
+        //      * draw all pixels other than the first and last
+        //      */
+        //     y0p1 = yy0 + 1;
+        //     while (--dx) {
+
+        //         erracctmp = erracc;
+        //         erracc += erradj;
+        //         if (erracc <= erracctmp) {
+        //             /*
+        //              * Accumulator turned over, advance y
+        //              */
+        //             yy0 = y0p1;
+        //             y0p1++;
+        //         }
+        //         xx0 += xdir; /* x-major so always advance X */
+        //         /*
+        //          * the AAbits most significant bits of erracc give us the intensity
+        //          * weighting for this pixel, and the complement of the weighting for
+        //          * the paired pixel.
+        //          */
+        //         wgt = (erracc >> intshift) & 255;
+        //         result |= pixelRGBAWeight(renderer, xx0, yy0, r, g, b, a, 255 - wgt);
+        //         result |= pixelRGBAWeight(renderer, xx0, y0p1, r, g, b, a, wgt);
+        //     }
+        // }
+
+        // /*
+        //  * Do we have to draw the endpoint
+        //  */
+        // if (draw_endpoint) {
+        //     /*
+        //      * Draw final pixel, always exactly intersected by the line and doesn't
+        //      * need to be weighted.
+        //      */
+        //     result |= pixelRGBA(renderer, x2, y2, r, g, b, a);
+        // }
     }
 
     // For circle
@@ -563,12 +692,41 @@ public:
         }
     }
 
+    // void filledPolygon(std::vector<Point> points, DrawOptions options = {}) override
+    // {
+    //     double x[points.size()];
+    //     double y[points.size()];
+    //     for (int i = 0; i < points.size(); i++) {
+    //         x[i] = points[i].x;
+    //         y[i] = points[i].y;
+    //     }
+
+    //     Color color = options.color;
+    //     // https://github.com/rtrussell/BBCSDL/blob/master/include/SDL2_gfxPrimitives.h
+    //     aaFilledPolygonRGBA(renderer, x, y, points.size(), color.r, color.g, color.b, color.a);
+    // }
+
     void pixel(Point position, DrawOptions options = {}) override
     {
         if (position.x < 0 || position.x >= styles.screen.w || position.y < 0 || position.y >= styles.screen.h) {
             return;
         }
-        screenBuffer[position.y][position.x] = options.color;
+        if (options.color.a != 255) {
+            Color current = screenBuffer[position.y][position.x];
+            Color newColor = {
+                .r = options.color.r * options.color.a / 255,
+                .g = options.color.g * options.color.a / 255,
+                .b = options.color.b * options.color.a / 255,
+            };
+            screenBuffer[position.y][position.x] = {
+                .r = (u_int8_t)(current.r + newColor.r),
+                .g = (u_int8_t)(current.g + newColor.g),
+                .b = (u_int8_t)(current.b + newColor.b),
+                .a = 255
+            };
+        } else {
+            screenBuffer[position.y][position.x] = options.color;
+        }
     }
 
     bool config(char* key, char* value) override
