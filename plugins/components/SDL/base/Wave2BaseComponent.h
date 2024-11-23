@@ -28,7 +28,7 @@ protected:
 public:
     Wave2BaseComponent(ComponentInterface::Props props)
         : Component(props)
-        , colors(getColorsFromColor(styles.colors.blue))
+        , colors(getColorsFromColor(styles.colors.primary))
     {
         lineHeight = props.size.h * 0.5f;
         yCenter = position.y + lineHeight;

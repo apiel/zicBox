@@ -165,7 +165,7 @@ protected:
     Colors getColorsFromColor(Color color)
     {
         return Colors({ darken(color, 0.75),
-            styles.colors.on });
+            { 0x00, 0xb3, 0x00, 255 } });
     }
 
     ColorsStep getColorsStepFromColor(Color color)
@@ -210,10 +210,10 @@ public:
 
     SequencerComponent(ComponentInterface::Props props)
         : Component(props)
-        , colors(getColorsFromColor(styles.colors.blue))
-        , colorsActive(getColorsStepFromColor(styles.colors.blue))
-        , colorsInactive(getColorsStepFromColor(darken(styles.colors.blue, 0.5)))
-        , colorsMode(getColorsModeFromColor(styles.colors.grey))
+        , colors(getColorsFromColor(styles.colors.primary))
+        , colorsActive(getColorsStepFromColor(styles.colors.primary))
+        , colorsInactive(getColorsStepFromColor(darken(styles.colors.primary, 0.5)))
+        , colorsMode(getColorsModeFromColor({ 0x80, 0x80, 0x80, 255 }))
         , plugin(getPlugin("Sequencer", track))
         , margin(styles.margin)
         , input(getNewPropsRect(props,

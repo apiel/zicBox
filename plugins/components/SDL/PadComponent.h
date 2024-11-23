@@ -64,7 +64,7 @@ protected:
 public:
     PadComponent(ComponentInterface::Props props)
         : Component(props)
-        , colors(getColorsFromColor(styles.colors.blue))
+        , colors(getColorsFromColor(styles.colors.primary))
         , margin(styles.margin)
     {
     }

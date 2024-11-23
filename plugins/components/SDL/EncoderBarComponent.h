@@ -114,7 +114,7 @@ public:
         colors = {
             styles.colors.background,
             lighten(styles.colors.background, 0.2),
-            darken(styles.colors.grey, 0.3),
+            darken({ 0x80, 0x80, 0x80, 255 }, 0.3),
             alpha(styles.colors.white, 0.4),
             alpha(styles.colors.white, 0.4),
         };

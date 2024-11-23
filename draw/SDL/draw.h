@@ -61,28 +61,20 @@ protected:
             return &styles.colors.background;
         }
 
-        if (strcmp(color, "on") == 0) {
-            return &styles.colors.on;
-        }
-
         if (strcmp(color, "white") == 0) {
             return &styles.colors.white;
         }
 
-        if (strcmp(color, "blue") == 0) {
-            return &styles.colors.blue;
+        if (strcmp(color, "primary") == 0) {
+            return &styles.colors.primary;
         }
 
-        if (strcmp(color, "red") == 0) {
-            return &styles.colors.red;
+        if (strcmp(color, "seconday") == 0) {
+            return &styles.colors.secondary;
         }
 
-        if (strcmp(color, "turquoise") == 0) {
-            return &styles.colors.turquoise;
-        }
-
-        if (strcmp(color, "grey") == 0) {
-            return &styles.colors.grey;
+        if (strcmp(color, "text") == 0) {
+            return &styles.colors.text;
         }
 
         return NULL;

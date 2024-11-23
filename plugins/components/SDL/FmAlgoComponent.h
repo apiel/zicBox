@@ -42,7 +42,7 @@ public:
     FmAlgoComponent(ComponentInterface::Props props)
         : Component(props)
         , colors({ props.draw.styles.colors.background,
-              props.draw.styles.colors.grey,
+              { 0x80, 0x80, 0x80, 255 },
               props.draw.styles.colors.white })
     {
     }

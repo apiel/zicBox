@@ -95,7 +95,7 @@ public:
         , keypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, int param, std::string action, uint8_t color) { addKeyMap(controller, controllerId, key, param, action, color); })
     {
         colors.background = lighten(props.draw.styles.colors.background, 0.2);
-        colors.font = props.draw.styles.colors.grey;
+        colors.font = { 0x80, 0x80, 0x80, 255 };
         colors.activeBackground = lighten(colors.background, 0.4);
         colors.activeFont = lighten(colors.font, 0.4);
         itemSize = { (size.w / itemColumnCount) - 1, (size.h / itemRowCount) - 1 };
