@@ -81,9 +81,6 @@ public:
     {
         draw.filledRect(position, size, { bgColor });
 
-        // Test alpha
-        // draw.filledRect({ position.x + size.w - 20, position.y }, { 40, 20 }, { 0x54, 0x22, 0x26, 200 });
-
         if (envData) {
             currentstep = *(int8_t*)plugin->data(currentStepDataId);
             currentMod = *(float*)plugin->data(modDataId);
