@@ -27,8 +27,10 @@ protected:
 
     bool filled = true;
 
-    Color envColor = { 0x28, 0x59, 0x5f };
-    Color bgColor = { 0, 0, 0, 255 };
+    Color envColor;
+    Color bgColor;
+    Color textColor;
+    Color cursorColor;
 
     void renderEnvelop()
     {
@@ -61,20 +63,22 @@ protected:
 
     void renderTitles()
     {
-        draw.text({ position.x, position.y }, std::to_string(currentstep + 1) + "/" + std::to_string(envData->size()), 8);
-        draw.textCentered({ position.x + size.w / 2, position.y }, std::to_string(currentTimeMs) + "ms", 8);
-        draw.textRight({ position.x + size.w, position.y }, std::to_string((int)(currentMod * 100)) + "%", 8);
+        draw.text({ position.x, position.y }, std::to_string(currentstep + 1) + "/" + std::to_string(envData->size()), 8, { textColor});
+        draw.textCentered({ position.x + size.w / 2, position.y }, std::to_string(currentTimeMs) + "ms", 8, { textColor});
+        draw.textRight({ position.x + size.w, position.y }, std::to_string((int)(currentMod * 100)) + "%", 8, { textColor});
     }
 
 public:
     DrumEnvelopComponent(ComponentInterface::Props props)
         : Component(props)
+        , bgColor(styles.colors.background)
+        , textColor(styles.colors.text)
+        , cursorColor(styles.colors.text)
+        , envColor(styles.colors.primary)
     {
         envPosition = { position.x, position.y + 10 };
         envelopHeight = size.h - 6 - 10;
         cursorY = position.y + size.h - 1;
-
-        bgColor = styles.colors.background;
     }
 
     void render() override
@@ -155,6 +159,18 @@ public:
         /*md - `ENVELOP_COLOR: color` is the color of the envelop. */
         if (strcmp(key, "ENVELOP_COLOR") == 0) {
             envColor = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `TEXT_COLOR: color` is the color of the text. */
+        if (strcmp(key, "TEXT_COLOR") == 0) {
+            textColor = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `CURSOR_COLOR: color` is the color of the cursor. */
+        if (strcmp(key, "CURSOR_COLOR") == 0) {
+            cursorColor = draw.getColor(value);
             return true;
         }
 
