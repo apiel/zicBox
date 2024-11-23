@@ -66,6 +66,13 @@ public:
         sendCmd(DISPLAY_WRITE_PIXELS, pixel, 2);
     }
 
+    void drawRow(uint16_t x, uint16_t y, uint16_t w, uint16_t * pixels)
+    {
+        sendAddr(DISPLAY_SET_CURSOR_X, x, x + w);
+        sendAddr(DISPLAY_SET_CURSOR_Y, y, y);
+        sendCmd(DISPLAY_WRITE_PIXELS, (uint8_t*)pixels, w * BYTESPERPIXEL);
+    }
+
     void drawFillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color)
     {
         int yPos;
@@ -79,9 +86,10 @@ public:
         }
 
         for (yPos = 0; yPos < h; ++yPos) {
-            sendAddr(DISPLAY_SET_CURSOR_X, x, x + w);
-            sendAddr(DISPLAY_SET_CURSOR_Y, y + yPos, y + yPos);
-            sendCmd(DISPLAY_WRITE_PIXELS, pixels, size);
+            // sendAddr(DISPLAY_SET_CURSOR_X, x, x + w);
+            // sendAddr(DISPLAY_SET_CURSOR_Y, y + yPos, y + yPos);
+            // sendCmd(DISPLAY_WRITE_PIXELS, pixels, size);
+            drawRow(x, y + yPos, w, (uint16_t*)pixels);
         }
     }
 
@@ -130,6 +138,8 @@ public:
         srand(time(NULL));
         uint16_t randomColor = rand() % 0xFFFF;
         fillScreen(randomColor); // clear screen
+
+        drawFillRect(140, 140, 30, 30, 0xFF00);
 
         for (int i = 0; i < 100; i++) {
             drawPixel(i, i * 2, 0xFFF0);

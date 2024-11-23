@@ -77,10 +77,10 @@ protected:
         }
     }
 
-    uint16_t toU16rgb(Color color)
-    {
-        return (color.r << 16) | (color.g << 8) | color.b;
-    }
+    // uint16_t toU16rgb(Color color)
+    // {
+    //     return (color.r << 16) | (color.g << 8) | color.b;
+    // }
 
     void lineVertical(Point start, Point end, DrawOptions options = {})
     {
@@ -305,6 +305,16 @@ public:
 
     void render() override
     {
+        uint16_t pixels[ST7789_COLS];
+        for (int i = 0; i < ST7789_ROWS; i++) {
+            for (int j = 0; j < ST7789_COLS; j++) {
+                Color color = screenBuffer[i][j];
+                uint16_t rgb = (color.r << 16) | (color.g << 8) | color.b;
+                pixels[j] = rgb;
+                cacheBuffer[i][j] = color;
+            }
+            st7789.drawRow(i, 0, ST7789_COLS, pixels);
+        }
     }
 
     void clear() override
