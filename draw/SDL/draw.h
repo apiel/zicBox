@@ -73,6 +73,10 @@ protected:
             return &styles.colors.secondary;
         }
 
+        if (strcmp(color, "tertiary") == 0) {
+            return &styles.colors.tertiary;
+        }
+
         if (strcmp(color, "text") == 0) {
             return &styles.colors.text;
         }

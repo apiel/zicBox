@@ -49,6 +49,7 @@ struct Styles {
         Color text;
         Color primary;
         Color secondary;
+        Color tertiary;
     } colors;
 };
 

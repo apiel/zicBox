@@ -22,6 +22,8 @@
 
 int main(int argc, char* argv[])
 {
+    styles.colors.primary = { 0x28, 0x59, 0x5f };
+
     loadPixelComponents();
 
     styles.screen = { 240, 240 };
