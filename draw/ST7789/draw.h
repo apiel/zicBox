@@ -44,6 +44,7 @@
 class Draw : public DrawInterface {
 public:
     Color screenBuffer[ST7789_ROWS][ST7789_COLS];
+    Color cacheBuffer[ST7789_ROWS][ST7789_COLS];
 
 protected:
     bool needRendering = false;
@@ -245,12 +246,6 @@ public:
         : DrawInterface(styles)
         , st7789([&](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); }, ST7789_ROWS, ST7789_COLS)
     {
-        // Init buffer with background color
-        for (int i = 0; i < ST7789_ROWS; i++) {
-            for (int j = 0; j < ST7789_COLS; j++) {
-                screenBuffer[i][j] = styles.colors.background;
-            }
-        }
     }
 
     ~Draw()
@@ -314,6 +309,13 @@ public:
 
     void clear() override
     {
+        // Init buffer with background color
+        for (int i = 0; i < ST7789_ROWS; i++) {
+            for (int j = 0; j < ST7789_COLS; j++) {
+                screenBuffer[i][j] = styles.colors.background;
+                cacheBuffer[i][j] = styles.colors.background;
+            }
+        }
     }
 
     int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override

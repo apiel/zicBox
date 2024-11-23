@@ -12,9 +12,9 @@ void loadPixelComponents()
         return new KeyInfoBarComponent(props);
     } });
 
-    // viewManager.plugins.push_back({ "DrumEnvelop", [](ComponentInterface::Props props) {
-    //     return new DrumEnvelopComponent(props);
-    // } });
+    viewManager.plugins.push_back({ "DrumEnvelop", [](ComponentInterface::Props props) {
+        return new DrumEnvelopComponent(props);
+    } });
 }
 
 #endif
