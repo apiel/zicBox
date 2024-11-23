@@ -9,10 +9,17 @@
 #include <string>
 #include <vector>
 
+/*md
+## KeyInfoBar
+
+KeyInfoBar components provide some information about the current kaypad layout.
+*/
 class KeyInfoBarComponent : public Component {
 protected:
     Icon icon;
     KeypadLayout keypadLayout;
+
+    Color textColor;
 
     void handleButton(int8_t id, int8_t state)
     {
@@ -39,6 +46,7 @@ public:
         : Component(props)
         , icon(props.draw)
         , keypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, int param, std::string action, uint8_t color) { addKeyMap(controller, controllerId, key, param, action, color); })
+        , textColor(styles.colors.text)
     {
         buttonWidth = size.w / 5.0f;
         buttonStartX = buttonWidth * 0.5f;
@@ -69,9 +77,16 @@ public:
         renderRow(position.y + 10, 5);
     }
 
+    /*md **Config**: */
     bool config(char* key, char* value)
     {
         if (keypadLayout.config(key, value)) {
+            return true;
+        }
+
+        /*md - `TEXT_COLOR: color` is the color of the text. */
+        if (strcmp(key, "TEXT_COLOR") == 0) {
+            textColor = draw.getColor(value);
             return true;
         }
 
