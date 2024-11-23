@@ -71,9 +71,12 @@ public:
     void render() override
     {
         // draw.filledRect(position, { size.w, size.h }, { styles.colors.grey });
-        // #212b37
         // #542426
-        draw.filledRect(position, { size.w, size.h }, { 0x54, 0x22, 0x26 });
+        // draw.filledRect(position, { size.w, size.h }, { 0x54, 0x22, 0x26 });
+        // #2e3d4f
+        // draw.filledRect(position, { size.w, size.h }, { 0x2e, 0x3d, 0x4f });
+        // #285959
+        draw.filledRect(position, { size.w, size.h }, { 0x28, 0x59, 0x5f });
         if (envData) {
             currentstep = *(int8_t*)plugin->data(currentStepDataId);
             currentMod = *(float*)plugin->data(modDataId);
