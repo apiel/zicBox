@@ -39,7 +39,7 @@ VIEW: Main
     PLUGIN: SynthDrum23
     ENVELOP_DATA_ID: 0
 
-  COMPONENT: KeyInfoBar 0 48
+  COMPONENT: KeyInfoBar 0 216
     KEYMAP: Keyboard 20 item 0
     KEYMAP: Keyboard 26 item 1
     KEYMAP: Keyboard 8 item 2

@@ -40,9 +40,14 @@ public:
         , icon(props.draw)
         , keypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, int param, std::string action, uint8_t color) { addKeyMap(controller, controllerId, key, param, action, color); })
     {
+        buttonWidth = size.w / 5.0f;
+        buttonStartX = buttonWidth * 0.5f;
     }
 
 protected:
+    int buttonWidth = 40;
+    int buttonStartX = 14;
+
     string text[10] = {
         "FX", "mod", "src", "Perf", "Tck",
         "&icon::play", "&icon::arrowUp", "&icon::arrowDown", "...", "&icon::pause"
@@ -50,9 +55,9 @@ protected:
     void renderRow(int y, int startIndex)
     {
         for (int i = 0; i < 5; i++) {
-            Point textPos = { position.x + 14 + i * 25, y };
-            if (!icon.render(text[i + startIndex], textPos, 6, {}, Icon::CENTER)) {
-                draw.textCentered(textPos, text[i + startIndex], 6);
+            Point textPos = { position.x + buttonStartX + i * buttonWidth, y };
+            if (!icon.render(text[i + startIndex], textPos, 8, {}, Icon::CENTER)) {
+                draw.textCentered(textPos, text[i + startIndex], 8);
             }
         }
     }
@@ -61,7 +66,7 @@ public:
     void render()
     {
         renderRow(position.y, 0);
-        renderRow(position.y + 8, 5);
+        renderRow(position.y + 10, 5);
     }
 
     bool config(char* key, char* value)
