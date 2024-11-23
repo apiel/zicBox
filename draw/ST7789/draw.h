@@ -151,7 +151,6 @@ protected:
         }
     }
 
-    // int aaLineDiagonal(SDL_Renderer* renderer, Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a, int draw_endpoint)
     void aaLineDiagonal(Point start, Point end, DrawOptions options, bool draw_endpoint = true)
     {
         int32_t xx0 = start.x;
@@ -653,19 +652,216 @@ public:
         }
     }
 
-    // void filledPolygon(std::vector<Point> points, DrawOptions options = {}) override
-    // {
-    //     double x[points.size()];
-    //     double y[points.size()];
-    //     for (int i = 0; i < points.size(); i++) {
-    //         x[i] = points[i].x;
-    //         y[i] = points[i].y;
-    //     }
+    void filledPolygon(std::vector<Point> points, DrawOptions options = {}) override
+    {
+        int i, j, xi, yi, result;
+        double x1, x2, y0, y1, y2, minx, maxx, prec;
+        float *list, *strip;
 
-    //     Color color = options.color;
-    //     // https://github.com/rtrussell/BBCSDL/blob/master/include/SDL2_gfxPrimitives.h
-    //     aaFilledPolygonRGBA(renderer, x, y, points.size(), color.r, color.g, color.b, color.a);
-    // }
+        if (points.size() < 3)
+            return;
+
+        int n = points.size();
+        // Find extrema:
+        minx = 99999.0;
+        maxx = -99999.0;
+        prec = 0.00001;
+        for (i = 0; i < n; i++) {
+            double x = points[i].x;
+            double y = fabs(points[i].y);
+            if (x < minx)
+                minx = x;
+            if (x > maxx)
+                maxx = x;
+            if (y > prec)
+                prec = y;
+        }
+        minx = floor(minx);
+        maxx = floor(maxx);
+        prec = floor(pow(2, 19) / prec);
+
+#define POLYSIZE 16384
+
+        list = (float*)malloc(POLYSIZE * sizeof(float));
+        if (list == NULL)
+            return;
+
+        // Build vertex list.  Special x-values used to indicate vertex type:
+        // x = -100001.0 indicates /\, x = -100003.0 indicates \/, x = -100002.0 neither
+        yi = 0;
+        y0 = floor(points[n - 1].y * prec) / prec;
+        y1 = floor(points[0].y * prec) / prec;
+        for (i = 1; i <= n; i++) {
+            if (yi > POLYSIZE - 4) {
+                free(list);
+                return;
+            }
+            y2 = floor(points[i % n].y * prec) / prec;
+            if (((y1 < y2) - (y1 > y2)) == ((y0 < y1) - (y0 > y1))) {
+                list[yi++] = -100002.0;
+                list[yi++] = y1;
+                list[yi++] = -100002.0;
+                list[yi++] = y1;
+            } else {
+                if (y0 != y1) {
+                    list[yi++] = (y1 < y0) - (y1 > y0) - 100002.0;
+                    list[yi++] = y1;
+                }
+                if (y1 != y2) {
+                    list[yi++] = (y1 < y2) - (y1 > y2) - 100002.0;
+                    list[yi++] = y1;
+                }
+            }
+            y0 = y1;
+            y1 = y2;
+        }
+        xi = yi;
+
+        // Sort vertex list:
+        qsort(list, yi / 2, sizeof(float) * 2, Draw::gfxPrimitivesCompareFloat2);
+
+        // Append line list to vertex list:
+        for (i = 1; i <= n; i++) {
+            double x, y;
+            double d = 0.5 / prec;
+
+            x1 = points[i - 1].x;
+            y1 = floor(points[i - 1].y * prec) / prec;
+            x2 = points[i % n].x;
+            y2 = floor(points[i % n].y * prec) / prec;
+
+            if (y2 < y1) {
+                double tmp;
+                tmp = x1;
+                x1 = x2;
+                x2 = tmp;
+                tmp = y1;
+                y1 = y2;
+                y2 = tmp;
+            }
+            if (y2 != y1)
+                y0 = (x2 - x1) / (y2 - y1);
+
+            for (j = 1; j < xi; j += 4) {
+                y = list[j];
+                if (((y + d) <= y1) || (y == list[j + 4]))
+                    continue;
+                if ((y -= d) >= y2)
+                    break;
+                if (yi > POLYSIZE - 4) {
+                    free(list);
+                    return;
+                }
+                if (y > y1) {
+                    list[yi++] = x1 + y0 * (y - y1);
+                    list[yi++] = y;
+                }
+                y += d * 2.0;
+                if (y < y2) {
+                    list[yi++] = x1 + y0 * (y - y1);
+                    list[yi++] = y;
+                }
+            }
+
+            y = floor(y1) + 1.0;
+            while (y <= y2) {
+                x = x1 + y0 * (y - y1);
+                if (yi > POLYSIZE - 2) {
+                    free(list);
+                    return;
+                }
+                list[yi++] = x;
+                list[yi++] = y;
+                y += 1.0;
+            }
+        }
+
+        // Sort combined list:
+        qsort(list, yi / 2, sizeof(float) * 2, Draw::gfxPrimitivesCompareFloat2);
+
+        // Plot lines:
+        strip = (float*)malloc((maxx - minx + 2) * sizeof(float));
+        if (strip == NULL) {
+            free(list);
+            return;
+        }
+        memset(strip, 0, (maxx - minx + 2) * sizeof(float));
+        n = yi;
+        yi = list[1];
+        j = 0;
+
+        for (i = 0; i < n - 7; i += 4) {
+            float x1 = list[i + 0];
+            float y1 = list[i + 1];
+            float x3 = list[i + 2];
+            float x2 = list[i + j + 0];
+            float y2 = list[i + j + 1];
+            float x4 = list[i + j + 2];
+
+            if (x1 + x3 == -200002.0)
+                j += 4;
+            else if (x1 + x3 == -200006.0)
+                j -= 4;
+            else if ((x1 >= minx) && (x2 >= minx)) {
+                if (x1 > x2) {
+                    float tmp = x1;
+                    x1 = x2;
+                    x2 = tmp;
+                }
+                if (x3 > x4) {
+                    float tmp = x3;
+                    x3 = x4;
+                    x4 = tmp;
+                }
+
+                for (xi = x1 - minx; xi <= x4 - minx; xi++) {
+                    float u, v;
+                    float x = minx + xi;
+                    if (x < x2)
+                        u = (x - x1 + 1) / (x2 - x1 + 1);
+                    else
+                        u = 1.0;
+                    if (x >= x3 - 1)
+                        v = (x4 - x) / (x4 - x3 + 1);
+                    else
+                        v = 1.0;
+                    if ((u > 0.0) && (v > 0.0))
+                        strip[xi] += (y2 - y1) * (u + v - 1.0);
+                }
+            }
+
+            if ((yi == (list[i + 5] - 1.0)) || (i == n - 8)) {
+                for (xi = 0; xi <= maxx - minx; xi++) {
+                    if (strip[xi] != 0.0) {
+                        if (strip[xi] >= 0.996) {
+                            int x0 = xi;
+                            while (strip[++xi] >= 0.996)
+                                ;
+                            xi--;
+                            line({ (int)(minx + x0), yi }, { (int)(minx + xi), yi }, options);
+                        } else {
+                            pixel({ (int)(minx + xi), yi }, options);
+                        }
+                    }
+                }
+                memset(strip, 0, (maxx - minx + 2) * sizeof(float));
+                yi++;
+            }
+        }
+
+        // Free arrays:
+        free(list);
+        free(strip);
+    }
+
+    static int gfxPrimitivesCompareFloat2(const void* a, const void* b)
+    {
+        float diff = *((float*)a + 1) - *((float*)b + 1);
+        if (diff != 0.0)
+            return (diff > 0) - (diff < 0);
+        diff = *(float*)a - *(float*)b;
+        return (diff > 0) - (diff < 0);
+    }
 
     void pixel(Point position, DrawOptions options = {}) override
     {
