@@ -840,7 +840,7 @@ public:
                             xi--;
                             line({ (int)(minx + x0), yi }, { (int)(minx + xi), yi }, options);
                         } else {
-                            pixel({ (int)(minx + xi), yi }, options);
+                            pixel({ (int)(minx + xi), yi }, { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * strip[xi]) });
                         }
                     }
                 }
