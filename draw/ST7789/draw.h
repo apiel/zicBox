@@ -236,7 +236,7 @@ public:
         drawChar({ 10, 10 }, 'B', UbuntuBold, 0.5);
 
         filledRect({ 58, 10 }, { 20, 20 });
-        drawChar({ 60, 10 }, 'B', Sinclair_S, 2.0, { .color = { 255, 0 , 0 } });
+        drawChar({ 60, 10 }, 'B', Sinclair_S, 2.0, { .color = { 255, 0, 0 } });
 
         filledRect({ 40, 45 }, { 30, 20 });
         textRight({ 120, 50 }, "Hello World!", 16, { .color = { 0, 255, 0 }, .fontPath = "Sinclair_S" });
@@ -305,13 +305,16 @@ public:
         }
     }
 
-    // uint16_t BLACK = 0x0000,
-    // uint16_t RED = 0xF800,
-    // uint16_t GREEN = 0x07E0,
-    // uint16_t BLUE = 0x001F,
-    // uint16_t WHITE = 0xFFFF
-    // uint16_t getColor(uint8_t r, uint8_t g, uint8_t b) { return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3); }
-    
+    uint16_t colorToU16(Color color)
+    {
+        // uint16_t rgb = (color.r << 16) | (color.g << 8) | color.b;
+        // uint16_t rgb = (color.b << 16) | (color.g << 8) | color.r;
+        // uint16_t rgb = ((color.r & 0xF8) << 8) | ((color.g & 0xFC) << 3) | (color.b >> 3);
+        // uint16_t rgb = ((color.b & 0xF8) << 8) | ((color.g & 0xFC) << 3) | (color.r >> 3); // good
+        // uint16_t rgb = ((color.r >> 3) << 11) | ((color.g >> 2) << 5) | (color.b >> 3);
+        uint16_t rgb = ((color.b >> 3) << 11) | ((color.g >> 2) << 5) | (color.r >> 3); // good
+        return htons(rgb);
+    }
 
     void render() override
     {
@@ -319,13 +322,7 @@ public:
         for (int i = 0; i < ST7789_ROWS; i++) {
             for (int j = 0; j < ST7789_COLS; j++) {
                 Color color = screenBuffer[i][j];
-                // uint16_t rgb = (color.r << 16) | (color.g << 8) | color.b;
-                // uint16_t rgb = (color.b << 16) | (color.g << 8) | color.r;
-                // uint16_t rgb = ((color.r & 0xF8) << 8) | ((color.g & 0xFC) << 3) | (color.b >> 3);
-                // uint16_t rgb = ((color.b & 0xF8) << 8) | ((color.g & 0xFC) << 3) | (color.r >> 3); // good
-                // uint16_t rgb = ((color.r >> 3) << 11) | ((color.g >> 2) << 5) | (color.b >> 3);
-                uint16_t rgb = ((color.b >> 3) << 11) | ((color.g >> 2) << 5) | (color.r >> 3); // good
-                pixels[j] = htons(rgb);
+                pixels[j] = colorToU16(color);
                 cacheBuffer[i][j] = color;
             }
             st7789.drawRow(0, i, ST7789_COLS, pixels);
