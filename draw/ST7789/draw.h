@@ -113,7 +113,7 @@ protected:
     void lineDiagonal(Point start, Point end, DrawOptions options = {})
     {
         if (options.antiAliasing) {
-            // lineAntiAliased(start, end, options);
+            aaLineDiagonal(start, end, options);
             return;
         }
         unsigned int dx = (end.x > start.x ? end.x - start.x : start.x - end.x);
@@ -152,25 +152,14 @@ protected:
     }
 
     // int aaLineDiagonal(SDL_Renderer* renderer, Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a, int draw_endpoint)
-    void aaLineDiagonal(Point start, Point end, DrawOptions options = {})
+    void aaLineDiagonal(Point start, Point end, DrawOptions options, bool draw_endpoint = true)
     {
-        int32_t xx0, yy0, xx1, yy1;
-        int result;
-        uint32_t intshift, erracc, erradj;
-        uint32_t erracctmp, wgt;
+        int32_t xx0 = start.x;
+        int32_t yy0 = start.y;
+        int32_t xx1 = end.x;
+        int32_t yy1 = end.y;
+
         int dx, dy, tmp, xdir, y0p1, x0pxdir;
-
-        /*
-         * Keep on working with 32bit numbers
-         */
-        xx0 = start.x;
-        yy0 = start.y;
-        xx1 = end.x;
-        yy1 = end.y;
-
-        /*
-         * Reorder points to make dy positive
-         */
         if (yy0 > yy1) {
             tmp = yy0;
             yy0 = yy1;
@@ -180,15 +169,8 @@ protected:
             xx1 = tmp;
         }
 
-        /*
-         * Calculate distance
-         */
         dx = xx1 - xx0;
         dy = yy1 - yy0;
-
-        /*
-         * Adjust for negative dx and set xdir
-         */
         if (dx >= 0) {
             xdir = 1;
         } else {
@@ -198,82 +180,61 @@ protected:
 
 #define AAbits 8
 
-        erracc = 0;
-        intshift = 32 - AAbits;
+        uint32_t erracc = 0;
+        uint32_t intshift = 32 - AAbits;
 
         pixel({ start.x, start.y }, options);
 
-        // if (dy > dx) {
-        //     erradj = ((dx << 16) / dy) << 16;
-        //     x0pxdir = xx0 + xdir;
-        //     while (--dy) {
-        //         erracctmp = erracc;
-        //         erracc += erradj;
-        //         if (erracc <= erracctmp) {
-        //             xx0 = x0pxdir;
-        //             x0pxdir += xdir;
-        //         }
-        //         yy0++;
+        if (dy > dx) {
+            uint32_t erradj = ((dx << 16) / dy) << 16;
+            x0pxdir = xx0 + xdir;
+            while (--dy) {
+                uint32_t erracctmp = erracc;
+                erracc += erradj;
+                if (erracc <= erracctmp) {
+                    xx0 = x0pxdir;
+                    x0pxdir += xdir;
+                }
+                yy0++;
+                uint32_t wgt = (erracc >> intshift) & 255;
+                pixelWeight({ xx0, yy0 }, options, 255 - wgt);
+                pixelWeight({ x0pxdir, yy0 }, options, wgt);
+            }
 
-        //         /*
-        //          * the AAbits most significant bits of erracc give us the intensity
-        //          * weighting for this pixel, and the complement of the weighting for
-        //          * the paired pixel.
-        //          */
-        //         wgt = (erracc >> intshift) & 255;
-        //         result |= pixelRGBAWeight(renderer, xx0, yy0, r, g, b, a, 255 - wgt);
-        //         result |= pixelRGBAWeight(renderer, x0pxdir, yy0, r, g, b, a, wgt);
-        //     }
+        } else {
+            uint32_t erradj = ((dy << 16) / dx) << 16;
+            y0p1 = yy0 + 1;
+            while (--dx) {
 
-        // } else {
+                uint32_t erracctmp = erracc;
+                erracc += erradj;
+                if (erracc <= erracctmp) {
+                    yy0 = y0p1;
+                    y0p1++;
+                }
+                xx0 += xdir;
+                uint32_t wgt = (erracc >> intshift) & 255;
+                pixelWeight({ xx0, yy0 }, options, 255 - wgt);
+                pixelWeight({ xx0, y0p1 }, options, wgt);
+            }
+        }
 
-        //     /*
-        //      * x-major line.  Calculate 16-bit fixed-point fractional part of a pixel
-        //      * that Y advances each time X advances 1 pixel, truncating the result so
-        //      * that we won't overrun the endpoint along the X axis.
-        //      */
-        //     /*
-        //      * Not-so-portable version: erradj = ((Uint64)dy << 32) / (Uint64)dx;
-        //      */
-        //     erradj = ((dy << 16) / dx) << 16;
+        if (draw_endpoint) {
+            pixel({ end.x, end.y }, options);
+        }
+    }
 
-        //     /*
-        //      * draw all pixels other than the first and last
-        //      */
-        //     y0p1 = yy0 + 1;
-        //     while (--dx) {
-
-        //         erracctmp = erracc;
-        //         erracc += erradj;
-        //         if (erracc <= erracctmp) {
-        //             /*
-        //              * Accumulator turned over, advance y
-        //              */
-        //             yy0 = y0p1;
-        //             y0p1++;
-        //         }
-        //         xx0 += xdir; /* x-major so always advance X */
-        //         /*
-        //          * the AAbits most significant bits of erracc give us the intensity
-        //          * weighting for this pixel, and the complement of the weighting for
-        //          * the paired pixel.
-        //          */
-        //         wgt = (erracc >> intshift) & 255;
-        //         result |= pixelRGBAWeight(renderer, xx0, yy0, r, g, b, a, 255 - wgt);
-        //         result |= pixelRGBAWeight(renderer, xx0, y0p1, r, g, b, a, wgt);
-        //     }
-        // }
-
-        // /*
-        //  * Do we have to draw the endpoint
-        //  */
-        // if (draw_endpoint) {
-        //     /*
-        //      * Draw final pixel, always exactly intersected by the line and doesn't
-        //      * need to be weighted.
-        //      */
-        //     result |= pixelRGBA(renderer, x2, y2, r, g, b, a);
-        // }
+    void pixelWeight(Point position, DrawOptions options, int weight)
+    {
+        int ax = options.color.a;
+        ax = ((ax * weight) >> 8);
+        if (ax > 255) {
+            options.color.a = 255;
+        } else {
+            options.color.a = (uint8_t)(ax & 0x000000ff);
+        }
+        // options.color.a = weight;
+        pixel(position, options);
     }
 
     // For circle
@@ -712,21 +673,30 @@ public:
             return;
         }
         if (options.color.a != 255) {
-            Color current = screenBuffer[position.y][position.x];
-            Color newColor = {
-                .r = options.color.r * options.color.a / 255,
-                .g = options.color.g * options.color.a / 255,
-                .b = options.color.b * options.color.a / 255,
-            };
-            screenBuffer[position.y][position.x] = {
-                .r = (u_int8_t)(current.r + newColor.r),
-                .g = (u_int8_t)(current.g + newColor.g),
-                .b = (u_int8_t)(current.b + newColor.b),
-                .a = 255
-            };
+            screenBuffer[position.y][position.x] = applyAlphaColor(screenBuffer[position.y][position.x], options.color);
         } else {
             screenBuffer[position.y][position.x] = options.color;
         }
+    }
+
+    Color applyAlphaColor(Color currentColor, Color newColor)
+    {
+        Color resultColor;
+
+        // Normalize the alpha value of newColor to [0, 1]
+        float alphaNew = newColor.a / 255.0f;
+        float alphaCurrent = currentColor.a / 255.0f;
+
+        // Apply the alpha blending formula to each component
+        resultColor.r = (uint8_t)((alphaNew * newColor.r) + ((1 - alphaNew) * currentColor.r));
+        resultColor.g = (uint8_t)((alphaNew * newColor.g) + ((1 - alphaNew) * currentColor.g));
+        resultColor.b = (uint8_t)((alphaNew * newColor.b) + ((1 - alphaNew) * currentColor.b));
+
+        // For alpha, you can just take the alpha of the new color,
+        // since this is the final transparency level.
+        resultColor.a = newColor.a;
+
+        return resultColor;
     }
 
     bool config(char* key, char* value) override

@@ -33,7 +33,7 @@ protected:
         for (int i = 1; i < envData->size(); i++) {
             Data& data2 = envData->at(i);
             Point nextPosition = { (int)(envPosition.x + size.w * data2.time), (int)(envPosition.y + envelopHeight - envelopHeight * data2.modulation) };
-            draw.line(lastPosition, nextPosition);
+            draw.line(lastPosition, nextPosition, { .antiAliasing = true});
             // printf("[%d] %f %f => %dpx x %dpx\n", i, data2.modulation, data2.time, nextPosition.x, nextPosition.y);
             lastPosition = nextPosition;
         }
@@ -78,8 +78,8 @@ public:
         // #285959
         draw.filledRect(position, size, { 0x28, 0x59, 0x5f });
         
-        // // Test alpha
-        // draw.filledRect({ position.x + size.w - 20, position.y }, { 40, 20 }, { 0x54, 0x22, 0x26, 200 });
+        // Test alpha
+        draw.filledRect({ position.x + size.w - 20, position.y }, { 40, 20 }, { 0x54, 0x22, 0x26, 200 });
         
         if (envData) {
             currentstep = *(int8_t*)plugin->data(currentStepDataId);
