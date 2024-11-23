@@ -46,7 +46,7 @@
 class Draw : public DrawInterface {
 public:
     Color screenBuffer[ST7789_ROWS][ST7789_COLS];
-    Color cacheBuffer[ST7789_ROWS][ST7789_COLS];
+    uint16_t cacheBuffer[ST7789_ROWS][ST7789_COLS];
 
 protected:
     bool needRendering = false;
@@ -320,12 +320,27 @@ public:
     {
         uint16_t pixels[ST7789_COLS];
         for (int i = 0; i < ST7789_ROWS; i++) {
+            // for (int j = 0; j < ST7789_COLS; j++) {
+            //     Color color = screenBuffer[i][j];
+            //     pixels[j] = colorToU16(color);
+            // }
+            // st7789.drawRow(0, i, ST7789_COLS, pixels);
+
+            // Don't make uneccessary calls to the display
+            // and only send the row of pixels that have changed
+            bool changed = false;
             for (int j = 0; j < ST7789_COLS; j++) {
                 Color color = screenBuffer[i][j];
-                pixels[j] = colorToU16(color);
-                cacheBuffer[i][j] = color;
+                uint16_t rgbU16 = colorToU16(color);
+                pixels[j] = rgbU16;
+                if (cacheBuffer[i][j] != rgbU16) {
+                    changed = true;
+                }
+                cacheBuffer[i][j] = rgbU16;
             }
-            st7789.drawRow(0, i, ST7789_COLS, pixels);
+            if (changed) {
+                st7789.drawRow(0, i, ST7789_COLS, pixels);
+            }
         }
     }
 
@@ -335,7 +350,7 @@ public:
         for (int i = 0; i < ST7789_ROWS; i++) {
             for (int j = 0; j < ST7789_COLS; j++) {
                 screenBuffer[i][j] = styles.colors.background;
-                cacheBuffer[i][j] = styles.colors.background;
+                cacheBuffer[i][j] = colorToU16(styles.colors.background);
             }
         }
     }
