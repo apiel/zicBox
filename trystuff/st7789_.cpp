@@ -38,6 +38,7 @@ int main(int argc, char* argv[])
     initGpio();
     setGpioMode(GPIO_TFT_DATA_CONTROL, 0x01); // Data/Control pin to output (0x01)
     Spi spi = Spi(GPIO_TFT_DATA_CONTROL);
+    spi.init();
 
 #ifdef USE_SPI_DEV_MEM
     printf("Resetting display at reset GPIO pin %d\n", GPIO_TFT_RESET_PIN);

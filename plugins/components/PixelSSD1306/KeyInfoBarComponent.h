@@ -51,9 +51,9 @@ protected:
     {
         for (int i = 0; i < 5; i++) {
             Point textPos = { position.x + 14 + i * 25, y };
-            // if (!icon.render(text[i + startIndex], textPos, 6, { SSD1306_WHITE }, Icon::CENTER)) {
-            //     draw.textCentered(textPos, text[i + startIndex], 6);
-            // }
+            if (!icon.render(text[i + startIndex], textPos, 6, { SSD1306_WHITE }, Icon::CENTER)) {
+                draw.textCentered(textPos, text[i + startIndex], 6);
+            }
         }
     }
 

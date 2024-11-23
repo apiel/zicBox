@@ -30,49 +30,12 @@
 #include "plugins/audio/Tempo.h"
 
 // Make from scratch UI
-// Do not load audio plugins like this
-
-void loadAudioAliases()
-{
-    AudioPluginHandler& audioPluginHandler = AudioPluginHandler::get();
-    audioPluginHandler.pluginAliases.push_back({ "SynthDrum23", [](AudioPlugin::Props& props, char* name) {
-                                                    return new SynthDrum23(props, name);
-                                                } });
-    audioPluginHandler.pluginAliases.push_back({ "Tempo", [](AudioPlugin::Props& props, char* name) {
-                                                    return new Tempo(props, name);
-                                                } });
-    audioPluginHandler.pluginAliases.push_back({ "Sequencer", [](AudioPlugin::Props& props, char* name) {
-                                                    return new Sequencer(props, name);
-                                                } });
-    audioPluginHandler.pluginAliases.push_back({ "EffectDistortion", [](AudioPlugin::Props& props, char* name) {
-                                                    return new EffectDistortion(props, name);
-                                                } });
-    audioPluginHandler.pluginAliases.push_back({ "EffectFilterMultiMode", [](AudioPlugin::Props& props, char* name) {
-                                                    return new EffectFilterMultiMode(props, name);
-                                                } });
-    audioPluginHandler.pluginAliases.push_back({ "SerializeTrack", [](AudioPlugin::Props& props, char* name) {
-                                                    return new SerializeTrack(props, name);
-                                                } });
-    audioPluginHandler.pluginAliases.push_back({ "EffectGainVolume", [](AudioPlugin::Props& props, char* name) {
-                                                    return new EffectGainVolume(props, name);
-                                                } });
-    audioPluginHandler.pluginAliases.push_back({ "Mixer4", [](AudioPlugin::Props& props, char* name) {
-                                                    return new Mixer4(props, name);
-                                                } });
-    audioPluginHandler.pluginAliases.push_back({ "Mixer2", [](AudioPlugin::Props& props, char* name) {
-                                                    return new Mixer2(props, name);
-                                                } });
-    audioPluginHandler.pluginAliases.push_back({ "AudioOutputPulse", [](AudioPlugin::Props& props, char* name) {
-                                                    return new AudioOutputPulse(props, name);
-                                                } });
-}
 
 int main(int argc, char* argv[])
 {
     loadPixelComponents();
-    loadAudioAliases();
 
-    styles.screen = { 128, 64 };
+    styles.screen = { 240, 240 };
     loadUiConfig(argc >= 2 ? argv[1] : "pixel.ui", argc >= 3 ? argv[2] : NULL);
 
     showLogLevel();

@@ -13,7 +13,7 @@
 #include "config.h"
 #include "draw/SSD1306/draw.h"
 #include "host.h"
-#include "plugins/components/Pixel/PixelComponents.h"
+#include "plugins/components/PixelSSD1306/PixelComponents.h"
 #include "styles.h"
 #include "timer.h"
 #include "viewManager.h"
