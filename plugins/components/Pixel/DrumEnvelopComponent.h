@@ -4,6 +4,12 @@
 #include "../../../helpers/range.h"
 #include "../component.h"
 
+/*md
+## Drum envelop
+
+Show a representation of a drum envelop (envelop with relative time and modulation, without sustain).
+*/
+
 class DrumEnvelopComponent : public Component {
 protected:
     struct Data {
@@ -63,9 +69,9 @@ protected:
 
     void renderTitles()
     {
-        draw.text({ position.x, position.y }, std::to_string(currentstep + 1) + "/" + std::to_string(envData->size()), 8, { textColor});
-        draw.textCentered({ position.x + size.w / 2, position.y }, std::to_string(currentTimeMs) + "ms", 8, { textColor});
-        draw.textRight({ position.x + size.w, position.y }, std::to_string((int)(currentMod * 100)) + "%", 8, { textColor});
+        draw.text({ position.x, position.y }, std::to_string(currentstep + 1) + "/" + std::to_string(envData->size()), 8, { textColor });
+        draw.textCentered({ position.x + size.w / 2, position.y }, std::to_string(currentTimeMs) + "ms", 8, { textColor });
+        draw.textRight({ position.x + size.w, position.y }, std::to_string((int)(currentMod * 100)) + "%", 8, { textColor });
     }
 
 public:
@@ -114,6 +120,7 @@ public:
         }
     }
 
+    /*md **Config**: */
     bool config(char* key, char* value)
     {
         /*md - `PLUGIN: plugin_name` set plugin target */
