@@ -312,6 +312,7 @@ public:
         // uint16_t rgb = ((color.r & 0xF8) << 8) | ((color.g & 0xFC) << 3) | (color.b >> 3);
         // uint16_t rgb = ((color.b & 0xF8) << 8) | ((color.g & 0xFC) << 3) | (color.r >> 3); // good
         // uint16_t rgb = ((color.r >> 3) << 11) | ((color.g >> 2) << 5) | (color.b >> 3);
+
         uint16_t rgb = ((color.b >> 3) << 11) | ((color.g >> 2) << 5) | (color.r >> 3); // good
         return htons(rgb);
     }
@@ -326,8 +327,8 @@ public:
             // }
             // st7789.drawRow(0, i, ST7789_COLS, pixels);
 
-            // Don't make uneccessary calls to the display
-            // and only send the row of pixels that have changed
+            // To not make uneccessary calls to the display
+            // only send the row of pixels that have changed
             bool changed = false;
             for (int j = 0; j < ST7789_COLS; j++) {
                 Color color = screenBuffer[i][j];
