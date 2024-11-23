@@ -111,7 +111,7 @@ protected:
         return Colors({
             darken(color, 0.75),
             darken(color, 0.3),
-            styles.colors.overlay,
+            { 0xd1, 0xe3, 0xff, 0x1e },
             alpha(color, 0.2),
             alpha(color, 0.2),
             // alpha(darken(color, 0.80), 0.6),

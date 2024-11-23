@@ -61,10 +61,6 @@ protected:
             return &styles.colors.background;
         }
 
-        if (strcmp(color, "overlay") == 0) {
-            return &styles.colors.overlay;
-        }
-
         if (strcmp(color, "on") == 0) {
             return &styles.colors.on;
         }
@@ -389,16 +385,15 @@ public:
 `SET_COLOR` give the possibility to customize the pre-defined color for the UI. To change a color, use `SET_COLOR: name_of_color #xxxxxx`.
 
 ```coffee
-SET_COLOR: overlay #00FFFF
+SET_COLOR: background #00FFFF
 ```
 
-In this example, we change the `overlay` color to `#00FFFF`.
+In this example, we change the `background` color to `#00FFFF`.
 
 
 
 
 - `#21252b` ![#21252b](https://via.placeholder.com/15/21252b/000000?text=+) background
-- `#00FFFF` ![#00FFFF](https://via.placeholder.com/15/00FFFF/000000?text=+) overlay
 - `#00b300` ![#00b300](https://via.placeholder.com/15/00b300/000000?text=+) on
 - `#ffffff` ![#ffffff](https://via.placeholder.com/15/ffffff/000000?text=+) white
 - `#adcdff` ![#adcdff](https://via.placeholder.com/15/adcdff/000000?text=+) blue

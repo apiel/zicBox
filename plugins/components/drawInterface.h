@@ -45,7 +45,6 @@ struct Styles {
     } font;
     struct Colors {
         Color background;
-        Color overlay;
         Color darkOverlay;
         Color on;
         Color white;

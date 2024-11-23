@@ -12,7 +12,6 @@ Styles styles = {
         "/usr/share/fonts/truetype/roboto/unhinted/RobotoTTF/Roboto-Italic.ttf" },
     .colors = {
         .background = { 0x21, 0x25, 0x2b, 255 }, // #21252b
-        .overlay = { 0xd1, 0xe3, 0xff, 0x1e }, // #d1e3ff1e
         .darkOverlay = {  0x21, 0x25, 0x2b, 150 }, // #8080801e
         .on = { 0x00, 0xb3, 0x00, 255 }, // #00b300
         .white = { 0xff, 0xff, 0xff, 255 }, // #ffffff
