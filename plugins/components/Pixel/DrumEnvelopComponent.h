@@ -70,7 +70,7 @@ public:
 
     void render() override
     {
-        // draw.filledRect(position, { size.w, size.h }, { .color = { SSD1306_BLACK } });
+        draw.filledRect(position, { size.w, size.h }, { styles.colors.grey });
         if (envData) {
             currentstep = *(int8_t*)plugin->data(currentStepDataId);
             currentMod = *(float*)plugin->data(modDataId);

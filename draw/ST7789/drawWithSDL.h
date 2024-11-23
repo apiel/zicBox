@@ -71,8 +71,6 @@ public:
         texture = (SDL_Texture*)setTextureRenderer(styles.screen);
 
         SDL_SetWindowPosition(window, windowX, windowY);
-
-        test();
     }
 
     void render() override
