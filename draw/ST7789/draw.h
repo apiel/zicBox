@@ -406,16 +406,29 @@ public:
         return htons(rgb);
     }
 
-    void render() override
+    bool fullRendering = false;
+    void fullRender()
     {
         uint16_t pixels[ST7789_COLS];
         for (int i = 0; i < ST7789_ROWS; i++) {
-            // for (int j = 0; j < ST7789_COLS; j++) {
-            //     Color color = screenBuffer[i][j];
-            //     pixels[j] = colorToU16(color);
-            // }
-            // st7789.drawRow(0, i, ST7789_COLS, pixels);
+            for (int j = 0; j < ST7789_COLS; j++) {
+                Color color = screenBuffer[i][j];
+                pixels[j] = colorToU16(color);
+            }
+            st7789.drawRow(0, i, ST7789_COLS, pixels);
+        }
+        fullRendering = false;
+    }
 
+    void render() override
+    {
+        if (fullRendering) {
+            fullRender();
+            return;
+        }
+        
+        uint16_t pixels[ST7789_COLS];
+        for (int i = 0; i < ST7789_ROWS; i++) {
             // To not make uneccessary calls to the display
             // only send the row of pixels that have changed
             bool changed = false;
@@ -443,6 +456,7 @@ public:
                 cacheBuffer[i][j] = colorToU16(styles.colors.background);
             }
         }
+        fullRendering = true;
     }
 
     int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
