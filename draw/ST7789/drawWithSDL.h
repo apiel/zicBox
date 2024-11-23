@@ -71,6 +71,8 @@ public:
         texture = (SDL_Texture*)setTextureRenderer(styles.screen);
 
         SDL_SetWindowPosition(window, windowX, windowY);
+
+        test();
     }
 
     void render() override
@@ -78,20 +80,15 @@ public:
         // first clear display
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
-        
-        // // draw pixels
-        // SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        // for (uint16_t i = 0; i < ST7789_BUFFER_SIZE; i++) {
-        //     if (oledBuffer[i] != 0x00) {
-        //         Point position = { i % styles.screen.w, (i / styles.screen.w) * 8 };
-        //         // SDL_RenderDrawPoint(renderer, position.x, position.y);
-        //         for (int j = 0; j < 8; j++) {
-        //             if (oledBuffer[i] & (1 << j)) {
-        //                 SDL_RenderDrawPoint(renderer, position.x, position.y + j);
-        //             }
-        //         }
-        //     }
-        // }
+
+        // draw pixels
+        for (uint16_t i = 0; i < ST7789_ROWS; i++) {
+            for (uint16_t j = 0; j < ST7789_COLS; j++) {
+                Color color = screenBuffer[i][j];
+                SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
+                SDL_RenderDrawPoint(renderer, j, i);
+            }
+        }
 
         // During the whole rendering process, we render into a texture
         // Only at the end, we push the texture to the screen

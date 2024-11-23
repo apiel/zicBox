@@ -31,7 +31,8 @@
 #include <string>
 
 // Use max height and width
-#define ST7789_BUFFER_SIZE (240 * 240 / 8)
+#define ST7789_ROWS 240
+#define ST7789_COLS 240
 
 // res go to pin 15
 #define GPIO_TFT_RESET_PIN 22
@@ -42,19 +43,7 @@
 
 class Draw : public DrawInterface {
 public:
-    uint8_t oledBuffer[ST7789_BUFFER_SIZE] = { 0 };
-
-    // void printBuffer()
-    // {
-    //     printf("oledBuffer:\n");
-    //     for (uint16_t i = 0; i < ST7789_BUFFER_SIZE; i++) {
-    //         printf("%02x ", oledBuffer[i]);
-    //         if ((i + 1) % styles.screen.w == 0) {
-    //             printf("\n");
-    //         }
-    //     }
-    //     printf("\n");
-    // }
+    Color screenBuffer[ST7789_ROWS][ST7789_COLS];
 
 protected:
     bool needRendering = false;
@@ -87,41 +76,9 @@ protected:
         }
     }
 
-    void oledPixel(uint8_t x, uint8_t y)
+    uint16_t toU16rgb(Color color)
     {
-        // if (x >= styles.screen.w) {
-        //     return;
-        // }
-        // uint16_t tc = (styles.screen.w * (y / 8)) + x;
-        // if (tc >= ST7789_BUFFER_SIZE) {
-        //     return;
-        // }
-        // oledBuffer[tc] |= (1 << (y & 7));
-
-        st7789.drawPixel(x, y, 0xFFFF);
-    }
-
-    void oledPixel(uint8_t x, uint8_t y, uint8_t color)
-    {
-        st7789.drawPixel(x, y, color ? 0x0000 : 0xFFFF);
-        // if (x >= styles.screen.w) {
-        //     return;
-        // }
-        // uint16_t tc = (styles.screen.w * (y / 8)) + x;
-        // if (tc >= ST7789_BUFFER_SIZE) {
-        //     return;
-        // }
-        // switch (color) {
-        // case 1:
-        //     oledBuffer[tc] &= ~(1 << (y & 7));
-        //     break;
-        // case 2:
-        //     oledBuffer[tc] ^= (1 << (y & 7));
-        //     break;
-        // default: // While
-        //     oledBuffer[tc] |= (1 << (y & 7));
-        //     break;
-        // }
+        return (color.r << 16) | (color.g << 8) | color.b;
     }
 
     void lineVertical(Point start, Point end, DrawOptions options = {})
@@ -133,7 +90,7 @@ protected:
             len = start.y;
         }
         for (; y <= len; y++) {
-            oledPixel(start.x, y, options.color.r);
+            pixel({ start.x, y }, options);
         }
     }
 
@@ -146,7 +103,7 @@ protected:
             len = start.x;
         }
         for (; x <= len; x++) {
-            oledPixel(x, start.y, options.color.r);
+            pixel({ x, start.y }, options);
         }
     }
 
@@ -161,7 +118,7 @@ protected:
         if (dx < dy) {
             int t = -(dy >> 1);
             while (true) {
-                oledPixel(col, row, options.color.r);
+                pixel({ col, row }, options);
                 if (row == end.y)
                     return;
                 row += ystep;
@@ -174,7 +131,7 @@ protected:
         } else {
             int t = -(dx >> 1);
             while (true) {
-                oledPixel(col, row, options.color.r);
+                pixel({ col, row }, options);
                 if (col == end.x)
                     return;
                 col += xstep;
@@ -188,72 +145,52 @@ protected:
     }
 
     // For circle
-    void drawOctants(int xc, int yc, int x, int y)
+    void drawOctants(int xc, int yc, int x, int y, DrawOptions options = {})
     {
-        oledPixel(xc + x, yc + y);
-        oledPixel(xc - x, yc + y);
-        oledPixel(xc + x, yc - y);
-        oledPixel(xc - x, yc - y);
-        oledPixel(xc + y, yc + x);
-        oledPixel(xc - y, yc + x);
-        oledPixel(xc + y, yc - x);
-        oledPixel(xc - y, yc - x);
+        pixel({ xc + x, yc + y }, options);
+        pixel({ xc - x, yc + y }, options);
+        pixel({ xc + x, yc - y }, options);
+        pixel({ xc - x, yc - y }, options);
+        pixel({ xc + y, yc + x }, options);
+        pixel({ xc - y, yc + x }, options);
+        pixel({ xc + y, yc - x }, options);
+        pixel({ xc - y, yc - x }, options);
     }
 
-    void drawOctants(int xc, int yc, int x, int y, uint8_t angle)
+    void drawOctants(int xc, int yc, int x, int y, uint8_t angle, DrawOptions options = {})
     {
         if (angle == 0)
-            oledPixel(xc + x, yc - y);
+            pixel({ xc + x, yc - y }, options);
         if (angle == 1)
-            oledPixel(xc + y, yc - x);
+            pixel({ xc + y, yc - x }, options);
         if (angle == 2)
-            oledPixel(xc + y, yc + x);
+            pixel({ xc + y, yc + x }, options);
         if (angle == 3)
-            oledPixel(xc + x, yc + y);
+            pixel({ xc + x, yc + y }, options);
         if (angle == 4)
-            oledPixel(xc - x, yc + y);
+            pixel({ xc - x, yc + y }, options);
         if (angle == 5)
-            oledPixel(xc - y, yc + x);
+            pixel({ xc - y, yc + x }, options);
         if (angle == 6)
-            oledPixel(xc - y, yc - x);
+            pixel({ xc - y, yc - x }, options);
         if (angle == 7)
-            oledPixel(xc - x, yc - y);
+            pixel({ xc - x, yc - y }, options);
     }
 
     // For filled circle
-    void drawFilledOctants(int xc, int yc, int x, int y)
+    void drawFilledOctants(int xc, int yc, int x, int y, DrawOptions options = {})
     {
         for (int xx = xc - x; xx <= xc + x; xx++)
-            oledPixel(xx, yc + y);
+            pixel({ xx, yc + y }, options);
         for (int xx = xc - x; xx <= xc + x; xx++)
-            oledPixel(xx, yc - y);
+            pixel({ xx, yc - y }, options);
         for (int xx = xc - y; xx <= xc + y; xx++)
-            oledPixel(xx, yc + x);
+            pixel({ xx, yc + x }, options);
         for (int xx = xc - y; xx <= xc + y; xx++)
-            oledPixel(xx, yc - x);
+            pixel({ xx, yc - x }, options);
     }
 
-    // void drawFilledOctants(int xc, int yc, int x, int y, uint8_t angle)
-    // {
-    //     if (angle == 0)
-    //         line({xc + x, yc - y}, {xc, yc});
-    //     if (angle == 1)
-    //         line({xc + y, yc - x}, {xc, yc});
-    //     if (angle == 2)
-    //         line({xc + y, yc + x}, {xc, yc});
-    //     if (angle == 3)
-    //         line({xc + x, yc + y}, {xc, yc});
-    //     if (angle == 4)
-    //         line({xc - x, yc + y}, {xc, yc});
-    //     if (angle == 5)
-    //         line({xc - y, yc + x}, {xc, yc});
-    //     if (angle == 6)
-    //         line({xc - y, yc - x}, {xc, yc});
-    //     if (angle == 7)
-    //         line({xc - x, yc - y}, {xc, yc});
-    // }
-
-    void drawChar(Point position, unsigned char character, uint8_t* font, float scale = 1.0, uint8_t color = 0)
+    void drawChar(Point position, unsigned char character, uint8_t* font, float scale = 1.0, DrawOptions options = {})
     {
         float x = position.x;
         float y = position.y;
@@ -268,7 +205,7 @@ protected:
             uint8_t ch = font[temp];
             for (uint8_t j = 0; j < 8; j++) {
                 if (ch & 0x80) {
-                    oledPixel(x, y, color);
+                    pixel({ (int)x, (int)y }, options);
                 }
                 ch <<= 1;
                 x += scale;
@@ -296,18 +233,24 @@ public:
         drawChar({ 10, 10 }, 'B', UbuntuBold, 0.5);
 
         filledRect({ 58, 10 }, { 20, 20 });
-        drawChar({ 60, 10 }, 'B', Sinclair_S, 2.0, 1);
+        drawChar({ 60, 10 }, 'B', Sinclair_S, 2.0, { .color = { 255, 0 , 0 } });
 
         filledRect({ 40, 45 }, { 30, 20 });
-        textRight({ 120, 50 }, "Hello World!", 16, { .color = { 2 }, .fontPath = "Sinclair_S" });
+        textRight({ 120, 50 }, "Hello World!", 16, { .color = { 0, 255, 0 }, .fontPath = "Sinclair_S" });
 
         render();
     }
 
     Draw(Styles& styles)
         : DrawInterface(styles)
-        , st7789([&](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); }, 240, 240)
+        , st7789([&](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); }, ST7789_ROWS, ST7789_COLS)
     {
+        // Init buffer with background color
+        for (int i = 0; i < ST7789_ROWS; i++) {
+            for (int j = 0; j < ST7789_COLS; j++) {
+                screenBuffer[i][j] = styles.colors.background;
+            }
+        }
     }
 
     ~Draw()
@@ -375,8 +318,6 @@ public:
 
     int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
-        uint8_t color = options.color.r == 255 ? 0 : options.color.r;
-
         uint8_t* font = getFont(options.fontPath);
         uint16_t height = font[0];
         uint16_t width = font[1];
@@ -389,7 +330,7 @@ public:
             if ((x + xInc) > styles.screen.w) {
                 break;
             }
-            drawChar({ (int)x, position.y }, text[i], font, scale, color);
+            drawChar({ (int)x, position.y }, text[i], font, scale, { .color = { options.color } });
             x += xInc;
         }
         return x;
@@ -397,8 +338,6 @@ public:
 
     int textRight(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
-        uint8_t color = options.color.r == 255 ? 0 : options.color.r;
-
         uint8_t* font = getFont(options.fontPath);
         uint16_t height = font[0];
         uint16_t width = font[1];
@@ -412,15 +351,13 @@ public:
             if (x < 0) {
                 break;
             }
-            drawChar({ (int)x, position.y }, text[len - i - 1], font, scale, color);
+            drawChar({ (int)x, position.y }, text[len - i - 1], font, scale, { .color = { options.color } });
         }
         return x;
     }
 
     int textCentered(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
-        uint8_t color = options.color.r == 255 ? 0 : options.color.r;
-
         uint8_t* font = getFont(options.fontPath);
         uint16_t height = font[0];
         uint16_t width = font[1];
@@ -434,7 +371,7 @@ public:
                 break;
             }
             if (x > 0) {
-                drawChar({ (int)x, position.y }, text[i], font, scale, color);
+                drawChar({ (int)x, position.y }, text[i], font, scale, { .color = { options.color } });
             }
             x += xInc;
         }
@@ -588,7 +525,10 @@ public:
 
     void pixel(Point position, DrawOptions options = {}) override
     {
-        oledPixel(position.x, position.y);
+        if (position.x < 0 || position.x >= styles.screen.w || position.y < 0 || position.y >= styles.screen.h) {
+            return;
+        }
+        screenBuffer[position.y][position.x] = options.color;
     }
 
     bool config(char* key, char* value) override
