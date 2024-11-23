@@ -146,6 +146,18 @@ public:
             return true;
         }
 
+        /*md - `BACKGROUND_COLOR: color` is the background color of the component. */
+        if (strcmp(key, "BACKGROUND_COLOR") == 0) {
+            bgColor = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `ENVELOP_COLOR: color` is the color of the envelop. */
+        if (strcmp(key, "ENVELOP_COLOR") == 0) {
+            envColor = draw.getColor(value);
+            return true;
+        }
+
         return false;
     }
 };
