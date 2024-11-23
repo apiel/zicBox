@@ -39,6 +39,8 @@ VIEW: Main
     PLUGIN: SynthDrum23
     ENVELOP_DATA_ID: 0
 
+# first check how many pin we need for ST7789, 3 or 4 ?
+
 # add duration encoder
 # add RESONANCE_ENV encoder
 
@@ -46,6 +48,9 @@ VIEW: Main
 # add freq envelop
 # add pitch encoder
 # add noise encoder
+
+# only active row has color
+# other rows are gray out
 
   COMPONENT: KeyInfoBar 0 216
     KEYMAP: Keyboard 20 item 0
