@@ -25,17 +25,24 @@ protected:
     int cursorY = 0;
     Point envPosition = { 0, 0 };
 
+    bool filled = true;
+
+    Color envColor = { 0x28, 0x59, 0x5f };
+    Color bgColor = { 0, 0, 0, 255 };
+
     void renderEnvelop()
     {
         Data& data = envData->at(0);
-        Point lastPosition = { (int)(envPosition.x + size.w * data.time), (int)(envPosition.y + envelopHeight - envelopHeight * data.modulation) };
-        // printf("[0] %f %f => %dpx x %dpx\n", data.modulation, data.time, lastPosition.x, lastPosition.y);
+        std::vector<Point> points;
+        points.push_back({ (int)(envPosition.x + size.w * data.time), (int)(envPosition.y + envelopHeight - envelopHeight * data.modulation) });
         for (int i = 1; i < envData->size(); i++) {
             Data& data2 = envData->at(i);
-            Point nextPosition = { (int)(envPosition.x + size.w * data2.time), (int)(envPosition.y + envelopHeight - envelopHeight * data2.modulation) };
-            draw.line(lastPosition, nextPosition, { .antiAliasing = true});
-            // printf("[%d] %f %f => %dpx x %dpx\n", i, data2.modulation, data2.time, nextPosition.x, nextPosition.y);
-            lastPosition = nextPosition;
+            points.push_back({ (int)(envPosition.x + size.w * data2.time), (int)(envPosition.y + envelopHeight - envelopHeight * data2.modulation) });
+        }
+        if (filled) {
+            draw.filledPolygon(points, { envColor, .antiAliasing = true });
+        } else {
+            draw.lines(points, { envColor, .antiAliasing = true });
         }
     }
 
@@ -66,21 +73,17 @@ public:
         envPosition = { position.x, position.y + 10 };
         envelopHeight = size.h - 6 - 10;
         cursorY = position.y + size.h - 1;
+
+        bgColor = styles.colors.background;
     }
 
     void render() override
     {
-        // draw.filledRect(position, size, { styles.colors.grey });
-        // #542426
-        // draw.filledRect(position, size, { 0x54, 0x22, 0x26 });
-        // #2e3d4f
-        // draw.filledRect(position, size, { 0x2e, 0x3d, 0x4f });
-        // #285959
-        draw.filledRect(position, size, { 0x28, 0x59, 0x5f });
-        
+        draw.filledRect(position, size, { bgColor });
+
         // Test alpha
-        draw.filledRect({ position.x + size.w - 20, position.y }, { 40, 20 }, { 0x54, 0x22, 0x26, 200 });
-        
+        // draw.filledRect({ position.x + size.w - 20, position.y }, { 40, 20 }, { 0x54, 0x22, 0x26, 200 });
+
         if (envData) {
             currentstep = *(int8_t*)plugin->data(currentStepDataId);
             currentMod = *(float*)plugin->data(modDataId);
