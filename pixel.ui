@@ -39,6 +39,14 @@ VIEW: Main
     PLUGIN: SynthDrum23
     ENVELOP_DATA_ID: 0
 
+# add duration encoder
+# add RESONANCE_ENV encoder
+
+#---
+# add freq envelop
+# add pitch encoder
+# add noise encoder
+
   COMPONENT: KeyInfoBar 0 216
     KEYMAP: Keyboard 20 item 0
     KEYMAP: Keyboard 26 item 1

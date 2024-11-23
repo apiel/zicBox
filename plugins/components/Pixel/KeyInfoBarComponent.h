@@ -57,8 +57,8 @@ protected:
     int buttonStartX = 14;
 
     string text[10] = {
-        "FX", "mod", "src", "Perf", "Tck",
-        "&icon::play", "&icon::arrowUp", "&icon::arrowDown", "...", "&icon::pause"
+        "&icon::arrowUp", "FX", "Synth", "Live", "Track",
+        "&icon::arrowDown", "mod", "...", "&icon::pause", "&icon::play"
     };
     void renderRow(int y, int startIndex)
     {
@@ -74,7 +74,7 @@ public:
     void render()
     {
         renderRow(position.y, 0);
-        renderRow(position.y + 10, 5);
+        renderRow(position.y + 12, 5);
     }
 
     /*md **Config**: */
