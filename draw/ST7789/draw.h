@@ -305,6 +305,7 @@ public:
 
     void render() override
     {
+        printf("Rendering ST7789\n");
         uint16_t pixels[ST7789_COLS];
         for (int i = 0; i < ST7789_ROWS; i++) {
             for (int j = 0; j < ST7789_COLS; j++) {
@@ -313,7 +314,7 @@ public:
                 pixels[j] = rgb;
                 cacheBuffer[i][j] = color;
             }
-            st7789.drawRow(i, 0, ST7789_COLS, pixels);
+            st7789.drawRow(0, i, ST7789_COLS, pixels);
         }
     }
 

@@ -40,6 +40,7 @@ int main(int argc, char* argv[])
 
     showLogLevel();
 
+    // might want to load host using so, in order to save compile time by removing $(shell pkg-config --cflags --libs libpulse-simple)
     startHostThread();
 
     ViewManager& viewManager = ViewManager::get();
