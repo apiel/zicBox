@@ -266,7 +266,9 @@ public:
 
     void circle(Point position, int radius, DrawOptions options = {}) override
     {
-        arc(position, radius, 0, 360, options);
+        // arc(position, radius, 0, 360, options);
+
+        // to use ellipse algo
     }
 
     void filledCircle(Point position, int radius, DrawOptions options = {}) override
