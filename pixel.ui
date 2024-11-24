@@ -45,7 +45,7 @@ $track=1
     PLUGIN: SynthDrum23
     ENVELOP_DATA_ID: 0
 
-  COMPONENT: Encoder2 $3/4W 0 $1/4W 50
+  COMPONENT: Encoder2 $3/4W 2 $1/4W 50
     ENCODER_ID: 4
     COLOR: #ff8d99
     TRACK: $track
