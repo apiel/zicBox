@@ -546,393 +546,195 @@ public:
         lineVertical({ position.x + size.w, position.y + size.h - radius }, { position.x + size.w, position.y + radius }, options);
     }
 
-    // void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) override
-    // {
-    //     int nverts, i, result;
+    // // almost perfect just issue with top and bootom
+    //     void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
+    //     {
+    //         if (radius <= 0)
+    //             return;
 
-    //     if ((radius <= 0) || (startAngle == endAngle))
-    //         return;
+    //         // Normalize angles to range [0, 360)
+    //         startAngle = (startAngle % 360 + 360) % 360;
+    //         endAngle = (endAngle % 360 + 360) % 360;
 
-    //     float start = fmod(startAngle, 360.0) * 2.0 * M_PI / 360.0;
-    //     float end = fmod(endAngle, 360.0) * 2.0 * M_PI / 360.0;
+    //         // Handle cases where the angle range spans across 360 degrees
+    //         bool wrapAround = startAngle > endAngle;
 
-    //     while (start >= end)
-    //         end += 2.0 * M_PI;
+    //         int xi, yi;
+    //         double s, x, y, dx, dy, v;
+    //         int n = radius + 1;
 
-    //     nverts = (end - start) * radius / M_PI;
-    //     if (nverts < 2)
-    //         nverts = 2;
-    //     if (nverts > 180)
-    //         nverts = 180;
+    //         for (yi = position.y - n - 1; yi <= position.y + n + 1; yi++) {
+    //             if (yi < (position.y - 0.5))
+    //                 y = yi;
+    //             else
+    //                 y = yi + 1;
 
-    //     std::vector<Point> points;
-    //     for (i = 0; i < nverts; i++) {
-    //         double angle = start + (end - start) * (double)i / (double)(nverts - 1);
-    //         points.push_back({ (int)(position.x + radius * cos(angle)), (int)(position.y + radius * sin(angle)) });
-    //     }
-    //     points.push_back(position);
+    //             s = (y - position.y) / radius;
+    //             s = s * s;
 
-    //     filledPolygon(points, options);
-    // }
+    //             if (s < 1.0) {
+    //                 x = radius * sqrt(1.0 - s) - 1;
 
-    // void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
-    // {
-    //     if (radius <= 0)
-    //         return;
+    //                 // Process anti-aliased left and right edges
+    //                 for (int side = -1; side <= 1; side += 2) {
+    //                     xi = side > 0 ? position.x + x : position.x - x;
 
-    //     // Normalize angles to range [0, 360)
-    //     startAngle = (startAngle % 360 + 360) % 360;
-    //     endAngle = (endAngle % 360 + 360) % 360;
+    //                     while (true) {
+    //                         dx = fabs(xi - position.x);
+    //                         dy = fabs(y - position.y) - 1.0;
+    //                         double boundary = 8 * radius * radius;
 
-    //     // Handle cases where the angle range spans across 360 degrees
-    //     bool wrapAround = startAngle > endAngle;
+    //                         // Calculate edge alpha
+    //                         v = boundary - 4 * (dx - dy) * (dx - dy);
+    //                         if (v < 0)
+    //                             break;
 
-    //     int xi, yi;
-    //     double s, x, y, dx, dy, v;
-    //     int n = radius + 1;
+    //                         v = (sqrt(v) - 2 * (dx + dy)) / 4;
+    //                         if (v < 0)
+    //                             break;
 
-    //     for (yi = position.y - n - 1; yi <= position.y + n + 1; yi++) {
-    //         if (yi < (position.y - 0.5))
-    //             y = yi;
-    //         else
-    //             y = yi + 1;
+    //                         if (v > 1.0)
+    //                             v = 1.0;
 
-    //         s = (y - position.y) / radius;
-    //         s = s * s;
+    //                         // Check if the angle is within bounds
+    //                         double angle = atan2(yi - position.y, xi - position.x) * 180.0 / M_PI;
+    //                         if (angle < 0)
+    //                             angle += 360;
 
-    //         if (s < 1.0) {
-    //             x = radius * sqrt(1.0 - s);
+    //                         if (wrapAround) {
+    //                             if (!(angle >= startAngle || angle <= endAngle))
+    //                                 break;
+    //                         } else {
+    //                             if (!(angle >= startAngle && angle <= endAngle))
+    //                                 break;
+    //                         }
 
-    //             // Left to right: Process both anti-aliased edges and main region
-    //             for (int side = -1; side <= 1; side += 2) {
-    //                 xi = side > 0 ? position.x + x : position.x - x;
+    //                         // Draw anti-aliased edge pixel
+    //                         pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
 
-    //                 while (true) {
-    //                     dx = fabs(xi - position.x);
-    //                     dy = fabs(y - position.y) - 1.0;
-    //                     double boundary = 8 * radius * radius;
+    //                         // Adjust for subpixel alignment symmetry
+    //                         xi += side;
+    //                     }
+    //                 }
 
-    //                     // Calculate edge alpha
-    //                     v = boundary - 4 * (dx - dy) * (dx - dy);
-    //                     if (v < 0)
-    //                         break;
+    //                 // Draw solid region between anti-aliased edges
+    //                 int leftX = (int)(position.x - x);
+    //                 int rightX = (int)(position.x + x);
 
-    //                     v = (sqrt(v) - 2 * (dx + dy)) / 4;
-    //                     if (v < 0)
-    //                         break;
-
-    //                     if (v > 1.0)
-    //                         v = 1.0;
-
-    //                     // Check if the angle is within bounds
-    //                     double angle = atan2(yi - position.y, xi - position.x) * 180.0 / M_PI;
+    //                 for (int xFill = leftX + 1; xFill < rightX; xFill++) {
+    //                     // Check angle for the fill region
+    //                     double angle = atan2(yi - position.y, xFill - position.x) * 180.0 / M_PI;
     //                     if (angle < 0)
     //                         angle += 360;
 
     //                     if (wrapAround) {
     //                         if (!(angle >= startAngle || angle <= endAngle))
-    //                             break;
+    //                             continue;
     //                     } else {
     //                         if (!(angle >= startAngle && angle <= endAngle))
-    //                             break;
+    //                             continue;
     //                     }
 
-    //                     // Draw anti-aliased edge pixel
-    //                     pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
-
-    //                     // Move inward along this edge
-    //                     xi += side;
+    //                     // Draw the fill pixel
+    //                     pixel({ xFill, yi }, options);
     //                 }
-    //             }
-
-    //             // Draw solid region between anti-aliased edges
-    //             int leftX = (int)(position.x - x + 1);
-    //             int rightX = (int)(position.x + x - 1);
-
-    //             for (int xFill = leftX; xFill <= rightX; xFill++) {
-    //                 // Check angle for the fill region
-    //                 double angle = atan2(yi - position.y, xFill - position.x) * 180.0 / M_PI;
-    //                 if (angle < 0)
-    //                     angle += 360;
-
-    //                 if (wrapAround) {
-    //                     if (!(angle >= startAngle || angle <= endAngle))
-    //                         continue;
-    //                 } else {
-    //                     if (!(angle >= startAngle && angle <= endAngle))
-    //                         continue;
-    //                 }
-
-    //                 // Draw the fill pixel
-    //                 pixel({ xFill, yi }, options);
     //             }
     //         }
     //     }
-    // }
-
-    // void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
-    // {
-    //     if (radius <= 0)
-    //         return;
-
-    //     // Normalize angles to range [0, 360)
-    //     startAngle = (startAngle % 360 + 360) % 360;
-    //     endAngle = (endAngle % 360 + 360) % 360;
-
-    //     // Handle cases where the angle range spans across 360 degrees
-    //     bool wrapAround = startAngle > endAngle;
-
-    //     int xi, yi;
-    //     double s, x, y, dx, dy, v;
-    //     int n = radius + 1;
-
-    //     for (yi = position.y - n - 1; yi <= position.y + n + 1; yi++) {
-    //         if (yi < (position.y - 0.5))
-    //             y = yi;
-    //         else
-    //             y = yi + 1;
-
-    //         s = (y - position.y) / radius;
-    //         s = s * s;
-
-    //         if (s < 1.0) {
-    //             x = radius * sqrt(1.0 - s);
-
-    //             // Process anti-aliased left and right edges
-    //             for (int side = -1; side <= 1; side += 2) {
-    //                 xi = side > 0 ? position.x + x : position.x - x;
-
-    //                 while (true) {
-    //                     dx = fabs(xi - position.x);
-    //                     dy = fabs(y - position.y) - 1.0;
-    //                     double boundary = 8 * radius * radius;
-
-    //                     // Calculate edge alpha
-    //                     v = boundary - 4 * (dx - dy) * (dx - dy);
-    //                     if (v < 0)
-    //                         break;
-
-    //                     v = (sqrt(v) - 2 * (dx + dy)) / 4;
-    //                     if (v < 0)
-    //                         break;
-
-    //                     if (v > 1.0)
-    //                         v = 1.0;
-
-    //                     // Check if the angle is within bounds
-    //                     double angle = atan2(yi - position.y, xi - position.x) * 180.0 / M_PI;
-    //                     if (angle < 0)
-    //                         angle += 360;
-
-    //                     if (wrapAround) {
-    //                         if (!(angle >= startAngle || angle <= endAngle))
-    //                             break;
-    //                     } else {
-    //                         if (!(angle >= startAngle && angle <= endAngle))
-    //                             break;
-    //                     }
-
-    //                     // Draw anti-aliased edge pixel
-    //                     pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
-
-    //                     // Adjust for subpixel alignment symmetry
-    //                     xi += side;
-    //                 }
-    //             }
-
-    //             // Draw solid region between anti-aliased edges
-    //             int leftX = (int)(position.x - x);
-    //             int rightX = (int)(position.x + x);
-
-    //             for (int xFill = leftX + 1; xFill < rightX; xFill++) {
-    //                 // Check angle for the fill region
-    //                 double angle = atan2(yi - position.y, xFill - position.x) * 180.0 / M_PI;
-    //                 if (angle < 0)
-    //                     angle += 360;
-
-    //                 if (wrapAround) {
-    //                     if (!(angle >= startAngle || angle <= endAngle))
-    //                         continue;
-    //                 } else {
-    //                     if (!(angle >= startAngle && angle <= endAngle))
-    //                         continue;
-    //                 }
-
-    //                 // Draw the fill pixel
-    //                 pixel({ xFill, yi }, options);
-    //             }
-    //         }
-    //     }
-    // }
 
     void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
-        {
-            if (radius <= 0)
-                return;
+    {
+        int xi, yi;
+        double s, v, x, y, dx, dy;
 
-            // Normalize angles to range [0, 360)
-            startAngle = (startAngle % 360 + 360) % 360;
-            endAngle = (endAngle % 360 + 360) % 360;
+        // Convert angles to radians for comparison
+        double startRad = startAngle * M_PI / 180.0;
+        double endRad = endAngle * M_PI / 180.0;
 
-            // Handle cases where the angle range spans across 360 degrees
-            bool wrapAround = startAngle > endAngle;
-
-            int xi, yi;
-            double s, x, y, dx, dy, v;
-            int n = radius + 1;
-
-            for (yi = position.y - n - 1; yi <= position.y + n + 1; yi++) {
-                if (yi < (position.y - 0.5))
-                    y = yi;
-                else
-                    y = yi + 1;
-
-                s = (y - position.y) / radius;
-                s = s * s;
-
-                if (s < 1.0) {
-                    x = radius * sqrt(1.0 - s) -1;
-
-                    // Process anti-aliased left and right edges
-                    for (int side = -1; side <= 1; side += 2) {
-                        xi = side > 0 ? position.x + x : position.x - x;
-
-                        while (true) {
-                            dx = fabs(xi - position.x);
-                            dy = fabs(y - position.y) - 1.0;
-                            double boundary = 8 * radius * radius;
-
-                            // Calculate edge alpha
-                            v = boundary - 4 * (dx - dy) * (dx - dy);
-                            if (v < 0)
-                                break;
-
-                            v = (sqrt(v) - 2 * (dx + dy)) / 4;
-                            if (v < 0)
-                                break;
-
-                            if (v > 1.0)
-                                v = 1.0;
-
-                            // Check if the angle is within bounds
-                            double angle = atan2(yi - position.y, xi - position.x) * 180.0 / M_PI;
-                            if (angle < 0)
-                                angle += 360;
-
-                            if (wrapAround) {
-                                if (!(angle >= startAngle || angle <= endAngle))
-                                    break;
-                            } else {
-                                if (!(angle >= startAngle && angle <= endAngle))
-                                    break;
-                            }
-
-                            // Draw anti-aliased edge pixel
-                            pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
-
-                            // Adjust for subpixel alignment symmetry
-                            xi += side;
-                        }
-                    }
-
-                    // Draw solid region between anti-aliased edges
-                    int leftX = (int)(position.x - x);
-                    int rightX = (int)(position.x + x);
-
-                    for (int xFill = leftX + 1; xFill < rightX; xFill++) {
-                        // Check angle for the fill region
-                        double angle = atan2(yi - position.y, xFill - position.x) * 180.0 / M_PI;
+        int n = radius + 1;
+        for (yi = position.y - n - 1; yi <= position.y + n + 1; yi++) {
+            if (yi < (position.y - 0.5))
+                y = yi;
+            else
+                y = yi + 1;
+            s = (y - position.y) / radius;
+            s = s * s;
+            x = 0.5;
+            if (s < 1.0) {
+                x = radius * sqrt(1.0 - s);
+                if (x >= 0.5) {
+                    // Draw only the visible part of the pie within the angle range
+                    for (xi = (int)(position.x - x + 1); xi <= (int)(position.x + x - 1); xi++) {
+                        // Convert (xi, yi) to polar coordinates (r, theta)
+                        double dx = xi - position.x;
+                        double dy = yi - position.y;
+                        double angle = atan2(dy, dx);
                         if (angle < 0)
-                            angle += 360;
+                            angle += 2 * M_PI; // Normalize to [0, 2π]
 
-                        if (wrapAround) {
-                            if (!(angle >= startAngle || angle <= endAngle))
-                                continue;
-                        } else {
-                            if (!(angle >= startAngle && angle <= endAngle))
-                                continue;
+                        // Check if angle is within the start and end angles
+                        if (startRad <= angle && angle <= endRad) {
+                            pixel({ xi, yi }, { options.color });
                         }
-
-                        // Draw the fill pixel
-                        pixel({ xFill, yi }, options);
                     }
                 }
             }
+            s = 8 * radius * radius;
+            dy = fabs(y - position.y) - 1.0;
+            xi = position.x - x; // left
+            while (1) {
+                dx = (position.x - xi - 1);
+                v = s - 4 * (dx - dy) * (dx - dy);
+                if (v < 0)
+                    break;
+                v = (sqrt(v) - 2 * (dx + dy)) / 4;
+                if (v < 0)
+                    break;
+                if (v > 1.0)
+                    v = 1.0;
+
+                // Convert (xi, yi) to polar coordinates (r, theta)
+                double dx = xi - position.x;
+                double dy = yi - position.y;
+                double angle = atan2(dy, dx);
+                if (angle < 0)
+                    angle += 2 * M_PI; // Normalize to [0, 2π]
+
+                // Check if angle is within the start and end angles
+                if (startRad <= angle && angle <= endRad) {
+                    pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
+                }
+
+                xi -= 1;
+            }
+            xi = position.x + x; // right
+            while (1) {
+                dx = (xi - position.x);
+                v = s - 4 * (dx - dy) * (dx - dy);
+                if (v < 0)
+                    break;
+                v = (sqrt(v) - 2 * (dx + dy)) / 4;
+                if (v < 0)
+                    break;
+                if (v > 1.0)
+                    v = 1.0;
+
+                // Convert (xi, yi) to polar coordinates (r, theta)
+                double dx = xi - position.x;
+                double dy = yi - position.y;
+                double angle = atan2(dy, dx);
+                if (angle < 0)
+                    angle += 2 * M_PI; // Normalize to [0, 2π]
+
+                // Check if angle is within the start and end angles
+                if (startRad <= angle && angle <= endRad) {
+                    pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
+                }
+
+                xi += 1;
+            }
         }
-
-    // void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
-    // {
-    //     int xi, yi;
-    //     double s, v, x, y, dx, dy;
-    //     double angle, distance;
-
-    //     int n = radius + 1;
-    //     for (yi = position.y - n - 1; yi <= position.y + n + 1; yi++) {
-    //         if (yi < (position.y - 0.5))
-    //             y = yi;
-    //         else
-    //             y = yi + 1;
-    //         s = (y - position.y) / radius;
-    //         s = s * s;
-    //         x = 0.5;
-    //         if (s < 1.0) {
-    //             x = radius * sqrt(1.0 - s);
-    //             if (x >= 0.5) {
-    //                 line({ (int)(position.x - x + 1), yi }, { (int)(position.x + x - 1), yi }, options);
-    //             }
-    //         }
-    //         s = 8 * radius * radius;
-    //         dy = fabs(y - position.y) - 1.0;
-    //         xi = position.x - x; // left
-    //         while (1) {
-    //             dx = (position.x - xi - 1);
-    //             v = s - 4 * (dx - dy) * (dx - dy);
-    //             if (v < 0)
-    //                 break;
-    //             v = (sqrt(v) - 2 * (dx + dy)) / 4;
-    //             if (v < 0)
-    //                 break;
-    //             if (v > 1.0)
-    //                 v = 1.0;
-
-    //             // Convert pixel position to polar coordinates and check if it falls within the pie's angle range
-    //             distance = sqrt((xi - position.x) * (xi - position.x) + (yi - position.y) * (yi - position.y));
-    //             angle = atan2(yi - position.y, xi - position.x) * 180.0 / M_PI; // angle in degrees
-    //             if (angle < 0)
-    //                 angle += 360; // Normalize angle to [0, 360]
-
-    //             if (distance <= radius && angle >= startAngle && angle <= endAngle) {
-    //                 pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
-    //             }
-
-    //             xi -= 1;
-    //         }
-    //         xi = position.x + x; // right
-    //         while (1) {
-    //             dx = (xi - position.x);
-    //             v = s - 4 * (dx - dy) * (dx - dy);
-    //             if (v < 0)
-    //                 break;
-    //             v = (sqrt(v) - 2 * (dx + dy)) / 4;
-    //             if (v < 0)
-    //                 break;
-    //             if (v > 1.0)
-    //                 v = 1.0;
-
-    //             // Convert pixel position to polar coordinates and check if it falls within the pie's angle range
-    //             distance = sqrt((xi - position.x) * (xi - position.x) + (yi - position.y) * (yi - position.y));
-    //             angle = atan2(yi - position.y, xi - position.x) * 180.0 / M_PI; // angle in degrees
-    //             if (angle < 0)
-    //                 angle += 360; // Normalize angle to [0, 360]
-
-    //             if (distance <= radius && angle >= startAngle && angle <= endAngle) {
-    //                 pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
-    //             }
-
-    //             xi += 1;
-    //         }
-    //     }
-    // }
+    }
 
     // Calculate the distance from a point to the center of the circle
     float distanceToCenter(Point p, Point center)
