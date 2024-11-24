@@ -52,7 +52,7 @@ $track=1
     VALUE: SynthDrum23 DURATION
 
 
-  COMPONENT: Encoder2 0 100 100 100
+  COMPONENT: Encoder2 0 100 60 60
     ENCODER_ID: 4
     COLOR: #ff8d99
     TRACK: $track

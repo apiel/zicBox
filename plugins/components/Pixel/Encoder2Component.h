@@ -26,7 +26,6 @@ protected:
     int fontUnitSize = 8;
     int fontLabelSize = 6;
     int twoSideMargin = 2;
-    int knobMargin = 2;
 
     Point knobCenter;
     Point valuePosition;
@@ -165,17 +164,12 @@ protected:
         radius = _radius;
         insideRadius = radius - 5;
 
-        if (radius > 26) {
+        if (radius > 30) {
             // should then change the font to bigger one
             fontValueSize = 16;
             fontLabelSize = 8;
             twoSideMargin = 3;
-            knobMargin = 3;
-        } else if (radius > 24) {
-            fontValueSize = 8;
-            fontLabelSize = 8;
-            knobMargin = 3;
-        }
+        } 
     }
 
 public:
