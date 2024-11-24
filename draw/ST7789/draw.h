@@ -852,73 +852,126 @@ public:
     //     filledEllipse(position, radius, radius, options);
     // }
 
+    // void filledCircle(Point position, int radius, DrawOptions options = {})
+    // {
+    //     if (radius <= 0)
+    //         return;
+
+    //     int xi, yi;
+    //     double s, x, y, dx, dy, v;
+    //     int n = radius + 1;
+
+    //     for (yi = position.y - n - 1; yi <= position.y + n + 1; yi++) {
+    //         if (yi < (position.y - 0.5))
+    //             y = yi;
+    //         else
+    //             y = yi + 1;
+
+    //         s = (y - position.y) / radius;
+    //         s = s * s;
+
+    //         if (s < 1.0) {
+    //             x = radius * sqrt(1.0 - s);
+
+    //             if (x >= 0.5) {
+    //                 // Draw the horizontal line for the current row
+    //                 line({ (int)(position.x - x + 1), yi }, { (int)(position.x + x - 1), yi }, options);
+    //             }
+
+    //             // Handle pixel-level anti-aliasing near the edges
+    //             double boundary = 8 * radius * radius;
+    //             dy = fabs(y - position.y) - 1.0;
+
+    //             // Left edge
+    //             xi = position.x - x;
+    //             while (1) {
+    //                 dx = (position.x - xi - 1);
+    //                 v = boundary - 4 * (dx - dy) * (dx - dy);
+    //                 if (v < 0)
+    //                     break;
+
+    //                 v = (sqrt(v) - 2 * (dx + dy)) / 4;
+    //                 if (v < 0)
+    //                     break;
+
+    //                 if (v > 1.0)
+    //                     v = 1.0;
+
+    //                 pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
+    //                 xi -= 1;
+    //             }
+
+    //             // Right edge
+    //             xi = position.x + x;
+    //             while (1) {
+    //                 dx = (xi - position.x);
+    //                 v = boundary - 4 * (dx - dy) * (dx - dy);
+    //                 if (v < 0)
+    //                     break;
+
+    //                 v = (sqrt(v) - 2 * (dx + dy)) / 4;
+    //                 if (v < 0)
+    //                     break;
+
+    //                 if (v > 1.0)
+    //                     v = 1.0;
+
+    //                 pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
+    //                 xi += 1;
+    //             }
+    //         }
+    //     }
+    // }
+
     void filledCircle(Point position, int radius, DrawOptions options = {})
     {
-        if (radius <= 0)
-            return;
-
         int xi, yi;
-        double s, x, y, dx, dy, v;
-        int n = radius + 1;
+        double s, v, x, y, dx, dy;
 
+        int n = radius + 1;
         for (yi = position.y - n - 1; yi <= position.y + n + 1; yi++) {
             if (yi < (position.y - 0.5))
                 y = yi;
             else
                 y = yi + 1;
-
             s = (y - position.y) / radius;
             s = s * s;
-
+            x = 0.5;
             if (s < 1.0) {
                 x = radius * sqrt(1.0 - s);
-
                 if (x >= 0.5) {
-                    // Draw the horizontal line for the current row
                     line({ (int)(position.x - x + 1), yi }, { (int)(position.x + x - 1), yi }, options);
                 }
-
-                // Handle pixel-level anti-aliasing near the edges
-                double boundary = 8 * radius * radius;
-                dy = fabs(y - position.y) - 1.0;
-
-                // Left edge
-                xi = position.x - x;
-                while (1) {
-                    dx = (position.x - xi - 1);
-                    v = boundary - 4 * (dx - dy) * (dx - dy);
-                    if (v < 0)
-                        break;
-
-                    v = (sqrt(v) - 2 * (dx + dy)) / 4;
-                    if (v < 0)
-                        break;
-
-                    if (v > 1.0)
-                        v = 1.0;
-
-                    pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
-                    xi -= 1;
-                }
-
-                // Right edge
-                xi = position.x + x;
-                while (1) {
-                    dx = (xi - position.x);
-                    v = boundary - 4 * (dx - dy) * (dx - dy);
-                    if (v < 0)
-                        break;
-
-                    v = (sqrt(v) - 2 * (dx + dy)) / 4;
-                    if (v < 0)
-                        break;
-
-                    if (v > 1.0)
-                        v = 1.0;
-
-                    pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
-                    xi += 1;
-                }
+            }
+            s = 8 * radius * radius;
+            dy = fabs(y - position.y) - 1.0;
+            xi = position.x - x; // left
+            while (1) {
+                dx = (position.x - xi - 1);
+                v = s - 4 * (dx - dy) * (dx - dy);
+                if (v < 0)
+                    break;
+                v = (sqrt(v) - 2 * (dx + dy)) / 4;
+                if (v < 0)
+                    break;
+                if (v > 1.0)
+                    v = 1.0;
+                pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
+                xi -= 1;
+            }
+            xi = position.x + x; // right
+            while (1) {
+                dx = (xi - position.x);
+                v = s - 4 * (dx - dy) * (dx - dy);
+                if (v < 0)
+                    break;
+                v = (sqrt(v) - 2 * (dx + dy)) / 4;
+                if (v < 0)
+                    break;
+                if (v > 1.0)
+                    v = 1.0;
+                pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
+                xi += 1;
             }
         }
     }

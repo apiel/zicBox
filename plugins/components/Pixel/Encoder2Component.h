@@ -257,7 +257,7 @@ public:
 
         // draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, 50, { colors.barBackground, .antiAliasing = true, .thickness = 3 });
 
-        // draw.filledCircle({ knobCenter.x, knobCenter.y - marginTop }, radius, { styles.colors.white });
+        draw.filledCircle({ knobCenter.x, knobCenter.y - marginTop }, radius, { styles.colors.white });
     }
 
     bool config(char* key, char* params)
