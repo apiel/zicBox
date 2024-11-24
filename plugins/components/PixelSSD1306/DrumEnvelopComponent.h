@@ -102,13 +102,13 @@ public:
 
     bool config(char* key, char* value)
     {
-        /*md - `PLUGIN: plugin_name` set plugin target */
+        /*//md - `PLUGIN: plugin_name` set plugin target */
         if (strcmp(key, "PLUGIN") == 0) {
             plugin = &getPlugin(value, track);
             return true;
         }
 
-        /*md - `ENVELOP_DATA_ID: id` is the id of the envelope data.*/
+        /*//md - `ENVELOP_DATA_ID: id` is the id of the envelope data.*/
         if (strcmp(key, "ENVELOP_DATA_ID") == 0) {
             uint8_t id = atoi(value);
             envData = (std::vector<Data>*)plugin->data(id);
@@ -118,19 +118,19 @@ public:
             return true;
         }
 
-        /*md - `STEP_DATA_ID: id` is the data id to get/set the current step/phase to edit.*/
+        /*//md - `STEP_DATA_ID: id` is the data id to get/set the current step/phase to edit.*/
         if (strcmp(key, "STEP_DATA_ID") == 0) {
             currentStepDataId = atoi(value);
             return true;
         }
 
-        /*md - `TIME_DATA_ID: id` is the data id to get/set the step to time.*/
+        /*//md - `TIME_DATA_ID: id` is the data id to get/set the step to time.*/
         if (strcmp(key, "TIME_DATA_ID") == 0) {
             timeDataId = atoi(value);
             return true;
         }
 
-        /*md - `MOD_DATA_ID: id` is the data id to get/set the step to mod.*/
+        /*//md - `MOD_DATA_ID: id` is the data id to get/set the step to mod.*/
         if (strcmp(key, "MOD_DATA_ID") == 0) {
             modDataId = atoi(value);
             return true;
