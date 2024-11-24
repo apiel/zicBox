@@ -69,7 +69,7 @@ protected:
             return &styles.colors.primary;
         }
 
-        if (strcmp(color, "seconday") == 0) {
+        if (strcmp(color, "secondary") == 0) {
             return &styles.colors.secondary;
         }
 

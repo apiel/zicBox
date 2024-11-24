@@ -12,6 +12,7 @@
 #include "viewManager.h"
 
 #include "helpers/configPlugin.h"
+#include "plugins/components/utils/color.h"
 
 void uiScriptCallback(char* key, char* value, const char* filename)
 {
@@ -39,6 +40,11 @@ void loadUiConfig(const char* scriptPath, const char* pluginPath, Styles styles)
     std::vector<Var> variables = {
         { "SCREEN_WIDTH", std::to_string(styles.screen.w) },
         { "SCREEN_HEIGHT", std::to_string(styles.screen.h) },
+        { "PRIMARY_COLOR", rgbToString(styles.colors.primary) },
+        { "SECONDARY_COLOR", rgbToString(styles.colors.secondary) },
+        { "TERTIARY_COLOR", rgbToString(styles.colors.tertiary) },
+        { "TEXT_COLOR", rgbToString(styles.colors.text) },
+        { "BACKGROUND_COLOR", rgbToString(styles.colors.background) },
     };
     loadConfigPlugin(pluginPath, scriptPath, uiScriptCallback, variables);
 }

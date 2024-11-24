@@ -16,6 +16,13 @@ Color hex2rgb(char* hex)
     });
 }
 
+string rgbToString(Color color)
+{
+    char buffer[8];
+    sprintf(buffer, "#%02X%02X%02X", color.r, color.g, color.b);
+    return buffer;
+}
+
 Color darken(Color color, float amount)
 {
     return {
