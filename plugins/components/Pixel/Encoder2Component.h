@@ -85,7 +85,8 @@ protected:
         int val = 280 * value->pct();
 
         if (val < 280) {
-            draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, 50, { colors.barBackground });
+            // draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, 50, { colors.barBackground });
+            draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, -230, 50, { colors.barBackground });
         }
         if (val > 0) {
             int endAngle = 130 + val;
@@ -101,7 +102,8 @@ protected:
     {
         int val = 280 * value->pct();
 
-        draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, 50, { colors.barBackground });
+        // draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, 50, { colors.barBackground });
+        draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, -230, 50, { colors.barBackground });
         if (val > 140) {
             int endAngle = 130 + val;
             if (endAngle > 360) {
@@ -244,21 +246,8 @@ public:
             { colors.background });
 
         if (value != NULL) {
-            // renderEncoder();
+            renderEncoder();
         }
-
-        // draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, 50, { styles.colors.white });
-        draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, -230, 50, { styles.colors.white });
-        // draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 0, 350, { styles.colors.white });
-
-        // draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, insideRadius -2, 130, 50, { colors.barBackground, .antiAliasing = true });
-        // draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, 50, { colors.barBackground, .antiAliasing = true, .thickness = 3 });
-
-        // draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 0, 180, { colors.barBackground, .antiAliasing = true, .thickness = 3 });
-
-        // draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, 50, { colors.barBackground, .antiAliasing = true, .thickness = 3 });
-
-        // draw.filledCircle({ knobCenter.x, knobCenter.y - marginTop }, radius, { styles.colors.white });
     }
 
     bool config(char* key, char* params)
