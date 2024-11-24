@@ -24,6 +24,12 @@ PLUGIN_CONTROLLER: MidiEncoder ./plugins/controllers/$buildDir/libzic_MidiEncode
 # Add window position for SDL emulator
 WINDOW_POSITION: 400 500
 
+$1/4W=$SCREEN_WIDTH/4
+$1/2W=$1/4W*2
+$3/4W=$1/4W*3
+
+print: $1/4W $1/2W $3/4W $SCREEN_WIDTH
+
 # Add encoder for SDL emulator
 ADD_ZONE_ENCODER: 0 0 42 32
 ADD_ZONE_ENCODER: 42 0 42 32
@@ -34,7 +40,7 @@ ADD_ZONE_ENCODER: 84 32 42 32
 
 VIEW: Main
 
-  COMPONENT: DrumEnvelop 0 0 127 42
+  COMPONENT: DrumEnvelop 0 0 $3/4W 42
     TRACK: 1
     PLUGIN: SynthDrum23
     ENVELOP_DATA_ID: 0

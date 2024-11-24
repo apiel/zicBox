@@ -10,8 +10,11 @@ ifneq ($(shell uname -m),x86_64)
 RPI := -DIS_RPI=1
 endif
 
+default:
+	make DustConfig
+
 all:
-	make DustConfig LuaConfig
+	make DustConfig LuaConfig JsConfig
 
 # if liblua is not installed, it should skip
 LuaConfig:

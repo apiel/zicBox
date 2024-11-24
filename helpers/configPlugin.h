@@ -5,8 +5,15 @@
 
 #include <dlfcn.h>
 #include <stdio.h>
+#include <string>
+#include <vector>
 
-void instantiateConfigPlugin(const char* pluginPath, std::string scriptPath, void (*callback)(char* command, char* params, const char* scriptPath))
+struct Var {
+    std::string key;
+    std::string value;
+};
+
+void instantiateConfigPlugin(const char* pluginPath, std::string scriptPath, void (*callback)(char* command, char* params, const char* scriptPath), std::vector<Var> variables = {})
 {
     void* handle = dlopen(pluginPath, RTLD_LAZY);
     if (!handle) {
@@ -16,8 +23,8 @@ void instantiateConfigPlugin(const char* pluginPath, std::string scriptPath, voi
 
     dlerror();
 
-    void (*configParser)(std::string scriptPath, void (*callback)(char* command, char* params, const char* filename));
-    configParser = (void (*)(std::string scriptPath, void (*callback)(char* command, char* params, const char* filename)))dlsym(handle, "config");
+    void (*configParser)(std::string scriptPath, void (*callback)(char* command, char* params, const char* filename), std::vector<Var> variables);
+    configParser = (void (*)(std::string scriptPath, void (*callback)(char* command, char* params, const char* filename), std::vector<Var> variables))dlsym(handle, "config");
     const char* dlsym_error = dlerror();
     if (dlsym_error) {
         printf("Cannot load symbol: %s\n", dlsym_error);
@@ -25,11 +32,11 @@ void instantiateConfigPlugin(const char* pluginPath, std::string scriptPath, voi
         return;
     }
 
-    configParser(scriptPath, callback);
+    configParser(scriptPath, callback, variables);
     dlclose(handle);
 }
 
-void loadConfigPlugin(const char* pluginPath, std::string scriptPath, void (*callback)(char* command, char* params, const char* scriptPath))
+void loadConfigPlugin(const char* pluginPath, std::string scriptPath, void (*callback)(char* command, char* params, const char* scriptPath), std::vector<Var> variables = {})
 {
     if (!pluginPath) {
         const char* extension = strrchr(scriptPath.c_str(), '.');
@@ -43,18 +50,18 @@ void loadConfigPlugin(const char* pluginPath, std::string scriptPath, void (*cal
 
     if (strcmp(pluginPath, "dustscript") == 0) {
 #ifdef IS_RPI
-        instantiateConfigPlugin("plugins/config/build/arm/libzic_DustConfig.so", scriptPath, callback);
+        instantiateConfigPlugin("plugins/config/build/arm/libzic_DustConfig.so", scriptPath, callback, variables);
 #else
-        instantiateConfigPlugin("plugins/config/build/x86/libzic_DustConfig.so", scriptPath, callback);
+        instantiateConfigPlugin("plugins/config/build/x86/libzic_DustConfig.so", scriptPath, callback, variables);
 #endif
     } else if (strcmp(pluginPath, "lua") == 0) {
 #ifdef IS_RPI
-        instantiateConfigPlugin("plugins/config/build/arm/libzic_LuaConfig.so", scriptPath, callback);
+        instantiateConfigPlugin("plugins/config/build/arm/libzic_LuaConfig.so", scriptPath, callback, variables);
 #else
-        instantiateConfigPlugin("plugins/config/build/x86/libzic_LuaConfig.so", scriptPath, callback);
+        instantiateConfigPlugin("plugins/config/build/x86/libzic_LuaConfig.so", scriptPath, callback, variables);
 #endif
     } else {
-        instantiateConfigPlugin(pluginPath, scriptPath, callback);
+        instantiateConfigPlugin(pluginPath, scriptPath, callback, variables);
     }
 }
 

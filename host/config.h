@@ -32,8 +32,6 @@ void hostScriptCallback(char* key, char* value, const char* filename)
         if (strcmp(value, "true") == 0) {
             enableDebug();
         }
-    } else if (strcmp(key, "LOAD_CONFIG_PLUGIN") == 0) {
-        loadConfigPlugin(value, filename, hostScriptCallback);
     } else if (strcmp(key, "AUTO_SAVE") == 0) {
         uint32_t msInterval = atoi(value);
         if (msInterval > 0) {

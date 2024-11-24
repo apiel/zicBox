@@ -5,6 +5,8 @@
 
 - TODO for generic encoder, make a square around the value...
 
+- TODO make dustscript part of the repo instead to be external dependency...
+
 #### Pixel seq
 
 - TODO for seq

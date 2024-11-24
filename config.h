@@ -7,6 +7,7 @@
 #endif
 #include "host.h"
 #include "log.h"
+#include "plugins/components/drawInterface.h"
 #include "styles.h"
 #include "viewManager.h"
 
@@ -21,10 +22,6 @@ void uiScriptCallback(char* key, char* value, const char* filename)
         styles.screen.h = atoi(strtok(NULL, " "));
     } else if (strcmp(key, "PLUGIN_CONTROLLER") == 0) {
         loadPluginController(value, filename);
-    } else if (strcmp(key, "LOAD_CONFIG_PLUGIN") == 0) {
-        char* scriptPath = strtok(value, " ");
-        char* plugin = strtok(NULL, " ");
-        loadConfigPlugin(scriptPath, plugin, uiScriptCallback);
     } else if (
         pluginControllerConfig(key, value)
 #ifdef _UI_SDL_EVENT_HANDLER_H_
@@ -37,9 +34,13 @@ void uiScriptCallback(char* key, char* value, const char* filename)
     }
 }
 
-void loadUiConfig(const char* scriptPath, const char* pluginPath)
+void loadUiConfig(const char* scriptPath, const char* pluginPath, Styles styles)
 {
-    loadConfigPlugin(pluginPath, scriptPath, uiScriptCallback);
+    std::vector<Var> variables = {
+        { "SCREEN_WIDTH", std::to_string(styles.screen.w) },
+        { "SCREEN_HEIGHT", std::to_string(styles.screen.h) },
+    };
+    loadConfigPlugin(pluginPath, scriptPath, uiScriptCallback, variables);
 }
 
 #endif

@@ -1,4 +1,5 @@
 #include <string>
+#include <vector>
 
 extern "C" {
 #include <lauxlib.h>
@@ -28,6 +29,10 @@ setEncoder(10, 10, 100, 100, 1, "FM DECAY_1")
 -- ...
 ```
 
+It might be necessary to install liblua5.4-dev:
+```sh
+sudo apt-get install liblua5.4-dev
+```
 */
 static int setConfigFn(lua_State* L)
 {
@@ -48,7 +53,12 @@ static int setConfigFn(lua_State* L)
     return 0;
 }
 
-void config(std::string filename, void (*callback)(char* command, char* params, const char* filename))
+struct Var {
+    std::string key;
+    std::string value;
+};
+
+void config(std::string filename, void (*callback)(char* command, char* params, const char* filename), std::vector<Var> variables)
 {
     lua_State* L = luaL_newstate();
     luaL_openlibs(L);
@@ -62,6 +72,11 @@ void config(std::string filename, void (*callback)(char* command, char* params, 
     lua_pushboolean(L, false);
 #endif
     lua_setglobal(L, "IS_RPI");
+
+    for (int i = 0; i < variables.size(); i++) {
+        lua_pushstring(L, variables[i].key.c_str());
+        lua_setglobal(L, variables[i].value.c_str());
+    }
 
     luaL_dofile(L, filename.c_str());
     lua_close(L);

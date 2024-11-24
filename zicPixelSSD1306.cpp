@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
     loadAudioAliases();
 
     styles.screen = { 128, 64 };
-    loadUiConfig(argc >= 2 ? argv[1] : "pixelSSD1306.cfg", argc >= 3 ? argv[2] : NULL);
+    loadUiConfig(argc >= 2 ? argv[1] : "pixelSSD1306.cfg", argc >= 3 ? argv[2] : NULL, styles);
 
     showLogLevel();
 

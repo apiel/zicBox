@@ -22,12 +22,12 @@
 
 int main(int argc, char* argv[])
 {
+    styles.screen = { 240, 240 };
     styles.colors.primary = { 0x28, 0x59, 0x5f };
 
     loadPixelComponents();
 
-    styles.screen = { 240, 240 };
-    loadUiConfig(argc >= 2 ? argv[1] : "pixel.ui", argc >= 3 ? argv[2] : NULL);
+    loadUiConfig(argc >= 2 ? argv[1] : "pixel.ui", argc >= 3 ? argv[2] : NULL, styles);
 
     showLogLevel();
 

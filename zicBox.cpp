@@ -11,7 +11,7 @@
 int main(int argc, char* argv[])
 {
     styles.screen = { 800, 480 };
-    loadUiConfig(argc >= 2 ? argv[1] : "config.ui", argc >= 3 ? argv[2] : NULL);
+    loadUiConfig(argc >= 2 ? argv[1] : "config.ui", argc >= 3 ? argv[2] : NULL, styles);
 
     // SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
 
