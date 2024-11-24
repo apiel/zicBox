@@ -575,238 +575,105 @@ public:
     //     filledPolygon(points, options);
     // }
 
-    // void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
-    // {
-    //     // Convert angles from degrees to radians for trigonometric functions
-    //     float startRad = startAngle * (M_PI / 180.0f);
-    //     float endRad = endAngle * (M_PI / 180.0f);
+    void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
+    {
+        if (radius <= 0)
+            return;
 
-    //     // Loop over all angles from startAngle to endAngle
-    //     for (float angle = startRad; angle <= endRad; angle += 0.01f) {
-    //         // Loop over all radii from 0 to the given radius
-    //         for (int r = 0; r <= radius; r++) {
-    //             // Calculate the x and y position using polar coordinates
-    //             int x = position.x + static_cast<int>(r * cos(angle));
-    //             int y = position.y + static_cast<int>(r * sin(angle));
+        // Normalize angles to range [0, 360)
+        startAngle = (startAngle % 360 + 360) % 360;
+        endAngle = (endAngle % 360 + 360) % 360;
 
-    //             // Draw the pixel at (x, y)
-    //             pixel(Point { x, y }, options);
-    //         }
-    //     }
+        // Handle cases where the angle range spans across 360 degrees
+        bool wrapAround = startAngle > endAngle;
 
-    //     // Anti-aliasing: Adjust pixel intensity near boundaries
-    //     // One approach is to fade out pixels at the edge of the pie slice (optional).
-    //     // You could apply a blending technique or adjust the color transparency (alpha) for smoother edges.
-    //     for (float angle = startRad; angle <= endRad; angle += 0.01f) {
-    //         for (int r = radius - 1; r < radius; r++) {
-    //             // We adjust pixels near the edge of the pie slice to simulate anti-aliasing
-    //             int x = position.x + static_cast<int>(r * cos(angle));
-    //             int y = position.y + static_cast<int>(r * sin(angle));
+        int xi, yi;
+        double s, x, y, dx, dy, v;
+        int n = radius + 1;
 
-    //             // Adjust the alpha channel to simulate anti-aliasing (e.g., make the edges semi-transparent)
-    //             Color color = options.color;
-    //             color.a = static_cast<int>(options.color.a * 0.5f); // Reduce the alpha for anti-aliasing
+        for (yi = position.y - n - 1; yi <= position.y + n + 1; yi++) {
+            if (yi < (position.y - 0.5))
+                y = yi;
+            else
+                y = yi + 1;
 
-    //             // Draw the anti-aliased pixel
-    //             pixel(Point { x, y }, { color });
-    //         }
-    //     }
-    // }
+            s = (y - position.y) / radius;
+            s = s * s;
+
+            if (s < 1.0) {
+                x = radius * sqrt(1.0 - s);
+
+                // Left to right: Process both anti-aliased edges and main region
+                for (int side = -1; side <= 1; side += 2) {
+                    xi = side > 0 ? position.x + x : position.x - x;
+
+                    while (true) {
+                        dx = fabs(xi - position.x);
+                        dy = fabs(y - position.y) - 1.0;
+                        double boundary = 8 * radius * radius;
+
+                        // Calculate edge alpha
+                        v = boundary - 4 * (dx - dy) * (dx - dy);
+                        if (v < 0)
+                            break;
+
+                        v = (sqrt(v) - 2 * (dx + dy)) / 4;
+                        if (v < 0)
+                            break;
+
+                        if (v > 1.0)
+                            v = 1.0;
+
+                        // Check if the angle is within bounds
+                        double angle = atan2(yi - position.y, xi - position.x) * 180.0 / M_PI;
+                        if (angle < 0)
+                            angle += 360;
+
+                        if (wrapAround) {
+                            if (!(angle >= startAngle || angle <= endAngle))
+                                break;
+                        } else {
+                            if (!(angle >= startAngle && angle <= endAngle))
+                                break;
+                        }
+
+                        // Draw anti-aliased edge pixel
+                        pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
+
+                        // Move inward along this edge
+                        xi += side;
+                    }
+                }
+
+                // Draw solid region between anti-aliased edges
+                int leftX = (int)(position.x - x + 1);
+                int rightX = (int)(position.x + x - 1);
+
+                for (int xFill = leftX; xFill <= rightX; xFill++) {
+                    // Check angle for the fill region
+                    double angle = atan2(yi - position.y, xFill - position.x) * 180.0 / M_PI;
+                    if (angle < 0)
+                        angle += 360;
+
+                    if (wrapAround) {
+                        if (!(angle >= startAngle || angle <= endAngle))
+                            continue;
+                    } else {
+                        if (!(angle >= startAngle && angle <= endAngle))
+                            continue;
+                    }
+
+                    // Draw the fill pixel
+                    pixel({ xFill, yi }, options);
+                }
+            }
+        }
+    }
 
     // Calculate the distance from a point to the center of the circle
     float distanceToCenter(Point p, Point center)
     {
         return sqrt(pow(p.x - center.x, 2) + pow(p.y - center.y, 2));
-    }
-
-    // Function to draw a filled pie with smoother anti-aliasing
-    // void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
-    // {
-    //     // Convert angles from degrees to radians for trigonometric functions
-    //     float startRad = startAngle * (M_PI / 180.0f);
-    //     float endRad = endAngle * (M_PI / 180.0f);
-
-    //     // Step size for angle resolution (higher value for smoother curves)
-    //     const float angleStep = 0.005f; // Smaller steps for finer resolution
-
-    //     // Loop over all angles from startAngle to endAngle
-    //     for (float angle = startRad; angle <= endRad; angle += angleStep) {
-    //         // Loop over all radii from 0 to the given radius
-    //         for (int r = 0; r <= radius; r++) {
-    //             // Calculate the x and y position using polar coordinates
-    //             int x = position.x + static_cast<int>(r * cos(angle));
-    //             int y = position.y + static_cast<int>(r * sin(angle));
-
-    //             // Distance from the current pixel to the center of the pie
-    //             Point pixelPoint = { x, y };
-    //             float distToCenter = distanceToCenter(pixelPoint, position);
-
-    //             // Calculate distance to the edge (the border of the pie slice)
-    //             float distToEdge = fabs(distToCenter - radius);
-
-    //             // Apply alpha blending based on how close the pixel is to the edge
-    //             // DrawOptions pixelOptions = options;
-    //             Color color = options.color;
-
-    //             // If the pixel is close to the edge, blend the alpha value
-    //             if (distToEdge < 1.0f) { // Pixels near the boundary
-    //                 float alphaFactor = 1.0f - distToEdge; // Decrease alpha as it gets closer to the edge
-    //                 color.a = static_cast<int>(options.color.a * alphaFactor);
-    //                 // printf("alpha: %d, alphaFactor: %f\n", color.a, alphaFactor);
-    //             }
-
-    //             // Draw the pixel with the adjusted options
-    //             pixel(pixelPoint, { color });
-    //         }
-    //     }
-    // }
-
-    // void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
-    // {
-    //     float startRad = startAngle * (M_PI / 180.0f);
-    //     float endRad = endAngle * (M_PI / 180.0f);
-    //     const float angleStep = 0.001f;
-
-    //     for (float angle = startRad; angle <= endRad; angle += angleStep) {
-    //         for (int r = 0; r <= radius; r++) {
-    //             int x = position.x + static_cast<int>(r * cos(angle));
-    //             int y = position.y + static_cast<int>(r * sin(angle));
-
-    //             // Avoid calculating distance repeatedly
-    //             Point pixelPoint = { x, y };
-    //             float distToCenter = distanceToCenter(pixelPoint, position);
-    //             float distToEdge = fabs(distToCenter - radius);
-
-    //             // Improved blending
-    //             Color color = options.color;
-    //             if (distToEdge < 2.0f) {
-    //                 float alphaFactor = 1.0f - (distToEdge / 2.0f);
-    //                 color.a = static_cast<int>(options.color.a * alphaFactor);
-    //             }
-
-    //             // Clamp coordinates to screen size if necessary
-    //             x = std::max(0, std::min(x, 240 - 1));
-    //             y = std::max(0, std::min(y, 240 - 1));
-
-    //             pixel({ x, y }, { color });
-    //         }
-    //     }
-    // }
-
-    // void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
-    // {
-    //     float startRad = startAngle * (M_PI / 180.0f);
-    //     float endRad = endAngle * (M_PI / 180.0f);
-    //     const float angleStep = 0.001f;
-
-    //     for (float angle = startRad; angle <= endRad; angle += angleStep) {
-    //         for (int r = 0; r <= radius; r++) {
-    //             int x = position.x + static_cast<int>(r * cos(angle));
-    //             int y = position.y + static_cast<int>(r * sin(angle));
-
-    //             Point pixelPoint = { x, y };
-    //             float distToCenter = distanceToCenter(pixelPoint, position);
-    //             float distToEdge = fabs(distToCenter - radius);
-
-    //             Color foregroundColor = options.color;
-    //             if (distToEdge < 2.0f) {
-    //                 float alphaFactor = 1.0f - (distToEdge / 2.0f);
-    //                 foregroundColor.a = static_cast<uint8_t>(options.color.a * alphaFactor);
-
-    //                 // Retrieve background color
-    //                 // Color backgroundColor = getPixel(pixelPoint);
-    //                 Color backgroundColor = screenBuffer[pixelPoint.y][pixelPoint.x];
-
-    //                 // Blend foreground and background colors manually
-    //                 uint8_t blendedRed = static_cast<uint8_t>(alphaFactor * foregroundColor.r + (1.0f - alphaFactor) * backgroundColor.r);
-    //                 uint8_t blendedGreen = static_cast<uint8_t>(alphaFactor * foregroundColor.g + (1.0f - alphaFactor) * backgroundColor.g);
-    //                 uint8_t blendedBlue = static_cast<uint8_t>(alphaFactor * foregroundColor.b + (1.0f - alphaFactor) * backgroundColor.b);
-
-    //                 // Set the resulting blended color
-    //                 foregroundColor.r = blendedRed;
-    //                 foregroundColor.g = blendedGreen;
-    //                 foregroundColor.b = blendedBlue;
-    //             }
-
-    //             // Draw the pixel with the manually blended color
-    //             pixel(pixelPoint, { foregroundColor });
-    //         }
-    //     }
-    // }
-
-    // void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
-    // {
-    //     float startRad = startAngle * (M_PI / 180.0f);
-    //     float endRad = endAngle * (M_PI / 180.0f);
-    //     const float angleStep = 0.001f; // Higher resolution
-
-    //     // Loop over all angles from startAngle to endAngle
-    //     for (float angle = startRad; angle <= endRad; angle += angleStep) {
-    //         int xStart = position.x + static_cast<int>(radius * cos(angle));
-    //         int yStart = position.y + static_cast<int>(radius * sin(angle));
-
-    //         // Use Bresenham's Circle Algorithm to plot boundaries
-    //         for (int r = 0; r <= radius; r++) {
-    //             int x = position.x + static_cast<int>(r * cos(angle));
-    //             int y = position.y + static_cast<int>(r * sin(angle));
-
-    //             Point pixelPoint = { x, y };
-    //             Color color = options.color;
-
-    //             // Anti-aliasing at the edges
-    //             float distToEdge = fabs(r - radius);
-    //             if (distToEdge < 1.0f) {
-    //                 float alphaFactor = 1.0f - distToEdge;
-    //                 color.a = static_cast<uint8_t>(options.color.a * alphaFactor);
-    //             }
-
-    //             // Draw pixel
-    //             pixel(pixelPoint, { color });
-    //         }
-    //     }
-    // }
-
-    void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
-    {
-        // Convert angles to radians
-        float startRad = startAngle * (M_PI / 180.0f);
-        float endRad = endAngle * (M_PI / 180.0f);
-
-        // Define supersampling factor (e.g., 2x supersampling)
-        const int supersampleFactor = 2; // Adjust this for higher quality (4x, 8x, etc.)
-        const float angleStep = 0.001f; // Small step size for smoother edges
-
-        // Supersampled buffer (larger virtual canvas)
-        int supersampledRadius = radius * supersampleFactor;
-
-        // Loop over all angles within the pie slice
-        for (float angle = startRad; angle <= endRad; angle += angleStep) {
-            for (int r = 0; r <= supersampledRadius; r++) {
-                // Calculate supersampled x, y positions
-                float x = position.x * supersampleFactor + r * cos(angle);
-                float y = position.y * supersampleFactor + r * sin(angle);
-
-                // Map supersampled coordinates back to the framebuffer
-                int pixelX = static_cast<int>(x / supersampleFactor);
-                int pixelY = static_cast<int>(y / supersampleFactor);
-
-                // Calculate distance to the edge
-                float distToCenter = sqrt(pow(x / supersampleFactor - position.x, 2) + pow(y / supersampleFactor - position.y, 2));
-                float distToEdge = fabs(distToCenter - radius);
-
-                // Determine color and alpha for edge blending
-                Color color = options.color;
-                if (distToEdge < 2.0f) { // Smooth blending range
-                    float alphaFactor = 1.0f - (distToEdge / 2.0f);
-                    color.a = static_cast<uint8_t>(options.color.a * alphaFactor);
-                }
-
-                // Draw pixel (ensure bounds checking for framebuffer)
-                if (pixelX >= 0 && pixelY >= 0 && pixelX < 240 && pixelY < 240) {
-                    pixel({ pixelX, pixelY }, { color });
-                }
-            }
-        }
     }
 
     // void arc(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) override
@@ -885,9 +752,80 @@ public:
         ellipse(position, radius, radius, options);
     }
 
-    void filledCircle(Point position, int radius, DrawOptions options = {}) override
+    // void filledCircle(Point position, int radius, DrawOptions options = {}) override
+    // {
+    //     filledEllipse(position, radius, radius, options);
+    // }
+
+    void filledCircle(Point position, int radius, DrawOptions options = {})
     {
-        filledEllipse(position, radius, radius, options);
+        if (radius <= 0)
+            return;
+
+        int xi, yi;
+        double s, x, y, dx, dy, v;
+        int n = radius + 1;
+
+        for (yi = position.y - n - 1; yi <= position.y + n + 1; yi++) {
+            if (yi < (position.y - 0.5))
+                y = yi;
+            else
+                y = yi + 1;
+
+            s = (y - position.y) / radius;
+            s = s * s;
+
+            if (s < 1.0) {
+                x = radius * sqrt(1.0 - s);
+
+                if (x >= 0.5) {
+                    // Draw the horizontal line for the current row
+                    line({ (int)(position.x - x + 1), yi }, { (int)(position.x + x - 1), yi }, options);
+                }
+
+                // Handle pixel-level anti-aliasing near the edges
+                double boundary = 8 * radius * radius;
+                dy = fabs(y - position.y) - 1.0;
+
+                // Left edge
+                xi = position.x - x;
+                while (1) {
+                    dx = (position.x - xi - 1);
+                    v = boundary - 4 * (dx - dy) * (dx - dy);
+                    if (v < 0)
+                        break;
+
+                    v = (sqrt(v) - 2 * (dx + dy)) / 4;
+                    if (v < 0)
+                        break;
+
+                    if (v > 1.0)
+                        v = 1.0;
+
+                    pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
+                    xi -= 1;
+                }
+
+                // Right edge
+                xi = position.x + x;
+                while (1) {
+                    dx = (xi - position.x);
+                    v = boundary - 4 * (dx - dy) * (dx - dy);
+                    if (v < 0)
+                        break;
+
+                    v = (sqrt(v) - 2 * (dx + dy)) / 4;
+                    if (v < 0)
+                        break;
+
+                    if (v > 1.0)
+                        v = 1.0;
+
+                    pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
+                    xi += 1;
+                }
+            }
+        }
     }
 
     void line(Point start, Point end, DrawOptions options = {}) override
