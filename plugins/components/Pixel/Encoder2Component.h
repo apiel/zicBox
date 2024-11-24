@@ -168,10 +168,12 @@ protected:
         if (radius > 26) {
             // should then change the font to bigger one
             fontValueSize = 16;
+            fontLabelSize = 8;
             twoSideMargin = 3;
             knobMargin = 3;
         } else if (radius > 24) {
             fontValueSize = 8;
+            fontLabelSize = 8;
             knobMargin = 3;
         }
     }
