@@ -546,14 +546,124 @@ public:
         lineVertical({ position.x + size.w, position.y + size.h - radius }, { position.x + size.w, position.y + radius }, options);
     }
 
+    // void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
+    // {
+    //     int xi, yi;
+    //     double s, v, x, y, dx, dy;
+
+    //     // Convert angles to radians for comparison
+    //     double startRad = startAngle * M_PI / 180.0;
+    //     double endRad = endAngle * M_PI / 180.0;
+
+    //     int n = radius + 1;
+    //     for (yi = position.y - n - 1; yi <= position.y + n + 1; yi++) {
+    //         if (yi < (position.y - 0.5))
+    //             y = yi;
+    //         else
+    //             y = yi + 1;
+    //         s = (y - position.y) / radius;
+    //         s = s * s;
+    //         x = 0.5;
+    //         if (s < 1.0) {
+    //             x = radius * sqrt(1.0 - s);
+    //             if (x >= 0.5) {
+    //                 // Draw only the visible part of the pie within the angle range
+    //                 for (xi = (int)(position.x - x + 1); xi <= (int)(position.x + x - 1); xi++) {
+    //                     // Convert (xi, yi) to polar coordinates (r, theta)
+    //                     double dx = xi - position.x;
+    //                     double dy = yi - position.y;
+    //                     double angle = atan2(dy, dx);
+    //                     if (angle < 0)
+    //                         angle += 2 * M_PI; // Normalize to [0, 2π]
+
+    //                     // Check if angle is within the start and end angles
+    //                     if (startRad <= angle && angle <= endRad) {
+    //                         pixel({ xi, yi }, { options.color });
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //         s = 8 * radius * radius;
+    //         dy = fabs(y - position.y) - 1.0;
+    //         xi = position.x - x; // left
+    //         while (1) {
+    //             dx = (position.x - xi - 1);
+    //             v = s - 4 * (dx - dy) * (dx - dy);
+    //             if (v < 0)
+    //                 break;
+    //             v = (sqrt(v) - 2 * (dx + dy)) / 4;
+    //             if (v < 0)
+    //                 break;
+    //             if (v > 1.0)
+    //                 v = 1.0;
+
+    //             // Convert (xi, yi) to polar coordinates (r, theta)
+    //             double dx = xi - position.x;
+    //             double dy = yi - position.y;
+    //             double angle = atan2(dy, dx);
+    //             if (angle < 0)
+    //                 angle += 2 * M_PI; // Normalize to [0, 2π]
+
+    //             // Check if angle is within the start and end angles
+    //             if (startRad <= angle && angle <= endRad) {
+    //                 pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
+    //             }
+
+    //             xi -= 1;
+    //         }
+    //         xi = position.x + x; // right
+    //         while (1) {
+    //             dx = (xi - position.x);
+    //             v = s - 4 * (dx - dy) * (dx - dy);
+    //             if (v < 0)
+    //                 break;
+    //             v = (sqrt(v) - 2 * (dx + dy)) / 4;
+    //             if (v < 0)
+    //                 break;
+    //             if (v > 1.0)
+    //                 v = 1.0;
+
+    //             // Convert (xi, yi) to polar coordinates (r, theta)
+    //             double dx = xi - position.x;
+    //             double dy = yi - position.y;
+    //             double angle = atan2(dy, dx);
+    //             if (angle < 0)
+    //                 angle += 2 * M_PI; // Normalize to [0, 2π]
+
+    //             // Check if angle is within the start and end angles
+    //             if (startRad <= angle && angle <= endRad) {
+    //                 pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
+    //             }
+
+    //             xi += 1;
+    //         }
+    //     }
+
+    //     // Draw smooth radius lines for the start and end angles
+    //     int r = radius -1;
+    //     int startX = position.x + (int)(r * cos(startRad));
+    //     int startY = position.y + (int)(r * sin(startRad));
+    //     int endX = position.x + (int)(r * cos(endRad));
+    //     int endY = position.y + (int)(r * sin(endRad));
+    //     line({ startX, startY }, position, { options.color, .antiAliasing = true });
+    //     line({ endX, endY }, position, { options.color, .antiAliasing = true });
+    // }
+
     void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
     {
         int xi, yi;
         double s, v, x, y, dx, dy;
 
+        // Normalize angles to range [0, 360)
+        startAngle = (startAngle % 360 + 360) % 360;
+        endAngle = (endAngle % 360 + 360) % 360;
+
         // Convert angles to radians for comparison
         double startRad = startAngle * M_PI / 180.0;
         double endRad = endAngle * M_PI / 180.0;
+
+        // Ensure angles are in counterclockwise order
+        bool wrapAround = (endRad < startRad);
 
         int n = radius + 1;
         for (yi = position.y - n - 1; yi <= position.y + n + 1; yi++) {
@@ -577,7 +687,7 @@ public:
                             angle += 2 * M_PI; // Normalize to [0, 2π]
 
                         // Check if angle is within the start and end angles
-                        if (startRad <= angle && angle <= endRad) {
+                        if ((wrapAround && (angle >= startRad || angle <= endRad)) || (!wrapAround && angle >= startRad && angle <= endRad)) {
                             pixel({ xi, yi }, { options.color });
                         }
                     }
@@ -605,7 +715,7 @@ public:
                     angle += 2 * M_PI; // Normalize to [0, 2π]
 
                 // Check if angle is within the start and end angles
-                if (startRad <= angle && angle <= endRad) {
+                if ((wrapAround && (angle >= startRad || angle <= endRad)) || (!wrapAround && angle >= startRad && angle <= endRad)) {
                     pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
                 }
 
@@ -631,7 +741,7 @@ public:
                     angle += 2 * M_PI; // Normalize to [0, 2π]
 
                 // Check if angle is within the start and end angles
-                if (startRad <= angle && angle <= endRad) {
+                if ((wrapAround && (angle >= startRad || angle <= endRad)) || (!wrapAround && angle >= startRad && angle <= endRad)) {
                     pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
                 }
 
