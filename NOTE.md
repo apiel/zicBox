@@ -5,6 +5,8 @@
 
 - TODO for generic encoder, make a square around the value...
 
+#### Pixel seq
+
 - TODO for seq
 push encoder siwtch row...
 ```cpp
@@ -28,6 +30,8 @@ or instead to have "exit" key, use this one to enable disable
     };
 ```
 Last option might be best!
+
+- TODO separate probability and step condition, also introduce step motion that would switch semitone every time step get trigger
 
 ## Next TODO
 

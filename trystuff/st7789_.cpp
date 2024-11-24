@@ -1,7 +1,7 @@
 #include "../helpers/gpio.h"
 #include "../helpers/st7789.h"
 
-// #define USE_SPI_DEV_MEM
+#define USE_SPI_DEV_MEM
 #ifdef USE_SPI_DEV_MEM
 // sudo apt-get install libraspberrypi-dev raspberrypi-kernel-headers
 // sudo chown 0:0 test2
