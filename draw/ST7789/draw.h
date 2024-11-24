@@ -656,41 +656,6 @@ public:
         line({ endX, endY }, position, { options.color, .antiAliasing = true });
     }
 
-    // Calculate the distance from a point to the center of the circle
-    float distanceToCenter(Point p, Point center)
-    {
-        return sqrt(pow(p.x - center.x, 2) + pow(p.y - center.y, 2));
-    }
-
-    // void arc(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) override
-    // {
-    //     int nverts, i;
-
-    //     if ((radius <= 0) || (startAngle == endAngle) || (options.thickness <= 0))
-    //         return;
-
-    //     float start = fmod(startAngle, 360.0) * 2.0 * M_PI / 360.0;
-    //     float end = fmod(endAngle, 360.0) * 2.0 * M_PI / 360.0;
-    //     while (start >= end)
-    //         end += 2.0 * M_PI;
-
-    //     nverts = 2 * floor((end - start) * radius / M_PI);
-    //     if (nverts < 2)
-    //         nverts = 2;
-    //     if (nverts > 360)
-    //         nverts = 360;
-
-    //     std::vector<Point> points(nverts);
-
-    //     for (i = 0; i < nverts / 2; i++) {
-    //         double angle = start + (end - start) * (double)i / (double)(nverts / 2 - 1);
-    //         points[i] = { (int)(position.x + (radius + options.thickness / 2) * cos(angle)), (int)(position.y + (radius + options.thickness / 2) * sin(angle)) };
-    //         points[nverts - 1 - i] = { (int)(position.x + (radius - options.thickness / 2) * cos(angle)), (int)(position.y + (radius - options.thickness / 2) * sin(angle)) };
-    //     }
-
-    //     filledPolygon(points, options);
-    // }
-
     void arc(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) override
     {
         int xi, yi;
