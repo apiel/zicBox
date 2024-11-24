@@ -248,6 +248,8 @@ public:
         if (value != NULL) {
             renderEncoder();
         }
+
+        // draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, -230, 50, { styles.colors.white, .thickness = 5 });
     }
 
     bool config(char* key, char* params)
