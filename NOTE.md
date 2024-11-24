@@ -12,6 +12,7 @@
       --> same for ST7789 and SSD1306
       --> at the end there should be a common draw library to draw shapes
                 and specifc parent lib to render pixels to the screen
+      --> however on SSD1306 there cannot be anti alias, so maybe this one should stay separated...
 
 #### Pixel seq
 
