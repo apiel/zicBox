@@ -61,6 +61,12 @@ $track=1
 # add pitch encoder
 # add noise encoder
 
+  COMPONENT: Encoder2 $3/4W 50 $1/4W 50
+    # ENCODER_ID: 4
+    COLOR: secondary
+    TRACK: $track
+    VALUE: SynthDrum23 PITCH
+
 # only active row has color
 # other rows are gray out
 
