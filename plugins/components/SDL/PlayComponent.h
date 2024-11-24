@@ -8,9 +8,9 @@
 #include <string>
 
 /*md
-## Play
+## SDL Play
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Play.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SDL/Play.png" />
 
 Play component toggle play and pause, or stop on long press.
 */

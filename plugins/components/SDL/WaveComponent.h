@@ -9,9 +9,9 @@
 #include "../component.h"
 
 /*md
-## WaveComponent
+## SDL WaveComponent
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Wave.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SDL/Wave.png" />
 
 WaveComponent will display the represention of a waveform and associated modulation envelope.
 */

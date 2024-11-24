@@ -11,7 +11,7 @@
 #include <vector>
 
 /*md
-## KeyInfoBar
+## SDL KeyInfoBar
 
 KeyInfoBar components provide some information about the current kaypad layout.
 

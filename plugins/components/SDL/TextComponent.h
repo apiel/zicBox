@@ -5,7 +5,7 @@
 #include <string>
 
 /*md
-## TextComponent
+## SDL TextComponent
 
 Draw a text on the view.
 */

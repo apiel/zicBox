@@ -7,9 +7,9 @@
 #include <string>
 
 /*md
-## SDL Encoder2
+## Encoder2
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SDL/Encoder2.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/pixel/Encoder2.png" />
 
 Encoder2 is used to display current audio plugin value for a given parameter.
 */

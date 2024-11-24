@@ -7,9 +7,9 @@
 #include <string>
 
 /*md
-## EncoderBar
+## SDL EncoderBar
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/EncoderBar.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SDL/EncoderBar.png" />
 
 EncoderBar is used to display current audio plugin value for a given parameter.
 */

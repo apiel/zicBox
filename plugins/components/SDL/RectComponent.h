@@ -5,7 +5,7 @@
 #include <string>
 
 /*md
-## RectComponent
+## SDL RectComponent
 
 Draw a rectangle on the view. Can be use to group elements together.
 */
