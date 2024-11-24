@@ -30,7 +30,6 @@ protected:
     Point knobCenter;
     Point valuePosition;
 
-    bool showKnob = true;
     bool showValue = true;
     bool showGroup = false;
     bool showUnit = true;
@@ -156,8 +155,6 @@ protected:
         Color bar;
         Color barBackground;
         Color barTwoSide;
-        Color knob;
-        Color knobDot;
     } colors;
 
     const int margin;
@@ -204,8 +201,6 @@ public:
             styles.colors.primary,
             alpha(styles.colors.primary, 0.5),
             alpha(styles.colors.primary, 0.2),
-            draw.getColor((char*)"#35373b"),
-            alpha(styles.colors.white, 0.6),
         };
 
         knobCenter = { (int)(position.x + (size.w * 0.5)), (int)(position.y + ((size.h - 12) * 0.5)) };
@@ -291,22 +286,9 @@ public:
             return true;
         }
 
-        /*md - `KNOB_COLOR: #888888` set the knob color (middle circle) */
-        if (strcmp(key, "KNOB_COLOR") == 0) {
-            colors.knob = draw.getColor(params);
-            // colors.knobDot = lighten(colors.knob, 0.7);
-            return true;
-        }
-
         /*md - `FLOAT_PRECISION: 2` set how many digits after the decimal point (by default none) */
         if (strcmp(key, "FLOAT_PRECISION") == 0) {
             valueFloatPrecision = atoi(params);
-            return true;
-        }
-
-        /*md - `SHOW_KNOB: FALSE` show the knob (middle circle) (default TRUE) */
-        if (strcmp(key, "SHOW_KNOB") == 0) {
-            showKnob = (strcmp(params, "TRUE") == 0);
             return true;
         }
 
