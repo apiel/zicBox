@@ -35,7 +35,7 @@ protected:
     bool showUnit = true;
     bool stringValueReplaceTitle = false;
 
-    const int marginTop = 3;
+    const int marginTop = 2;
 
     bool encoderActive = true;
     int8_t encoderId = -1;
@@ -46,9 +46,9 @@ protected:
     void renderLabel()
     {
         if (stringValueReplaceTitle && value->props().type == VALUE_STRING) {
-            draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius }, value->string(), 6, { colors.title, NULL, size.w - 4 });
+            draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius + 1 }, value->string(), 6, { colors.title, NULL, size.w - 4 });
         } else {
-            draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius }, label, 6, { colors.title });
+            draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius + 1 }, label, 6, { colors.title });
         }
     }
 
@@ -203,9 +203,9 @@ public:
             alpha(styles.colors.primary, 0.2),
         };
 
-        knobCenter = { (int)(position.x + (size.w * 0.5)), (int)(position.y + ((size.h - 12) * 0.5)) };
+        knobCenter = { (int)(position.x + (size.w * 0.5)), (int)(position.y + (size.h * 0.5)) };
         valuePosition = { knobCenter.x, knobCenter.y - marginTop - 2 };
-        setRadius((size.h - 24) * 0.5);
+        setRadius((size.h - 4) * 0.5);
     }
 
     void render()
