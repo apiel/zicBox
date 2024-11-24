@@ -1,6 +1,7 @@
 // apt-get install libduktape207 duktape-dev
 
 #include <string>
+#include <vector>
 
 extern "C" {
 #include <duktape.h>
@@ -85,7 +86,12 @@ static void push_file_as_string(duk_context* ctx, const char* filename)
     }
 }
 
-void config(std::string filename, void (*callback)(char* command, char* params, const char* filename))
+struct Var {
+    std::string key;
+    std::string value;
+};
+
+void config(std::string filename, void (*callback)(char* command, char* params, const char* filename), std::vector<Var> variables)
 {
     duk_context* ctx = NULL;
     char line[4096];
@@ -114,6 +120,11 @@ void config(std::string filename, void (*callback)(char* command, char* params, 
     duk_push_boolean(ctx, false);
 #endif
     duk_put_global_string(ctx, "IS_RPI");
+
+    for (int i = 0; i < variables.size(); i++) {
+        duk_push_string(ctx, variables[i].key.c_str());
+        duk_put_global_string(ctx, variables[i].value.c_str());
+    }
 
     push_file_as_string(ctx, filename.c_str());
     if (duk_peval(ctx) != 0) {
