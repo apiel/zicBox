@@ -47,14 +47,7 @@ $track=1
 
   COMPONENT: Encoder2 $3/4W 0 $1/4W 50
     ENCODER_ID: 4
-    COLOR: #ff8d99
-    TRACK: $track
-    VALUE: SynthDrum23 DURATION
-
-
-  COMPONENT: Encoder2 0 100 60 60
-    ENCODER_ID: 4
-    COLOR: #ff8d99
+    COLOR: secondary
     TRACK: $track
     VALUE: SynthDrum23 DURATION
 
