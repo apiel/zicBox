@@ -5,20 +5,20 @@
 #include <string>
 
 /*md
-## FmAlgo
+## SDL FmAlgo
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo1.png" />
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo2.png" />
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo3.png" />
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo4.png" />
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo5.png" />
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo6.png" />
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo7.png" />
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo8.png" />
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo9.png" />
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo10.png" />
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo11.png" />
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/fm/algo12.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SDL/fm/algo1.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SDL/fm/algo2.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SDL/fm/algo3.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SDL/fm/algo4.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SDL/fm/algo5.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SDL/fm/algo6.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SDL/fm/algo7.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SDL/fm/algo8.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SDL/fm/algo9.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SDL/fm/algo10.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SDL/fm/algo11.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SDL/fm/algo12.png" />
 
 Show FM algorithm and change them. The filled square are the carrier where audio is outputted and the not filled square are the operators modulating the frequency.
 */

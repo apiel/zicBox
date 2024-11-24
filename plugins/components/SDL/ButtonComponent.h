@@ -10,9 +10,9 @@
 #include <string>
 
 /*md
-## Button
+## SDL Button
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Button.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SDL/Button.png" />
 
 Push button component that trigger an action when pressed and released.
 */

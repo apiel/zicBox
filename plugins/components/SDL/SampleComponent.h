@@ -10,10 +10,10 @@
 #include <string>
 
 /*md
-## Sample
+## SDL Sample
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Sample.png" />
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Sample2.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SDL/Sample.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SDL/Sample2.png" />
 
 Sample is used to display an audio sample, sustain position, and start/end position.
 The little green dot are the current playing positions of the sample.

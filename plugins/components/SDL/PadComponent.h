@@ -6,9 +6,9 @@
 #include <string>
 
 /*md
-## Pad
+## SDL Pad
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pad.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SDL/Pad.png" />
 
 XY pad component, allows to control two audio plugin value parameters.
 */

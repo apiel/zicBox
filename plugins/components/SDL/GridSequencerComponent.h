@@ -40,9 +40,9 @@ public:
 };
 
 /*md
-## GridSequencer
+## SDL GridSequencer
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/GridSequencer.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SDL/GridSequencer.png" />
 
 Can handle sequencer per track.
 The component is expecting:

@@ -7,9 +7,9 @@
 #include <string>
 
 /*md
-## Toggle
+## SDL Toggle
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Toggle.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SDL/Toggle.png" />
 
 Toggle an audio plugin value parameter between his minimum and maximum value.
 */

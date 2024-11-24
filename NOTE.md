@@ -7,6 +7,12 @@
 
 - TODO make dustscript part of the repo instead to be external dependency...
 
+- TODO get rid of SDL component andunify everything
+      --> move everything to buffer base UI and only pass use the SDL to render buffer to the screen
+      --> same for ST7789 and SSD1306
+      --> at the end there should be a common draw library to draw shapes
+                and specifc parent lib to render pixels to the screen
+
 #### Pixel seq
 
 - TODO for seq

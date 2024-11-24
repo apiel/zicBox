@@ -12,9 +12,9 @@
 #include "../utils/color.h"
 
 /*md
-## Monitoring
+## SDL Monitoring
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Monitoring.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SDL/Monitoring.png" />
 
 Monitoring component show the current CPU usage.
 */

@@ -7,7 +7,7 @@
 #include <vector>
 
 /*md
-## NavBar
+## SDL NavBar
 
 Navigation bar components draw a scrollable menu to be used with buttons/keys.
 

@@ -38,9 +38,9 @@ public:
 };
 
 /*md
-## GridMini
+## SDL GridMini
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/GridMini.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SDL/GridMini.png" />
 
 Can handle sequencer per track.
 The component is expecting:

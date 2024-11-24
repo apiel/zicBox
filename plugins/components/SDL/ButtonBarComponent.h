@@ -8,7 +8,7 @@
 #include <vector>
 
 /*md
-## ButtonBar
+## SDL ButtonBar
 
 Button bar components dynamically give label to some push buttons.
 

@@ -8,9 +8,9 @@
 #include <string>
 
 /*md
-## SequencerBar
+## SDL SequencerBar
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SequencerBar.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/SDL/SequencerBar.png" />
 
 Make minimal representation of the sequencer.
 */
