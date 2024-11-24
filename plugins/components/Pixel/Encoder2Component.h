@@ -61,60 +61,37 @@ protected:
         }
     }
 
-    void renderKnob()
-    {
-        if (showKnob) {
-            int knobRadius = insideRadius - knobMargin;
-            draw.filledCircle({ knobCenter.x, knobCenter.y - marginTop }, knobRadius, { colors.knob });
-
-            // draw dot at value position
-            int cx = knobCenter.x;
-            int cy = knobCenter.y - marginTop;
-            int r = knobRadius;
-            float angleDegrees = 280 * value->pct();
-            float angleRadians = angleDegrees * M_PI / 180.0 - 180;
-            int x = cx + r * cos(angleRadians);
-            int y = cy + r * sin(angleRadians);
-
-            draw.filledCircle({ x, y }, 2, { colors.knobDot });
-        }
-    }
-
     void renderBar()
     {
         int val = 280 * value->pct();
 
         if (val < 280) {
-            // draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, 50, { colors.barBackground });
-            draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, -230, 50, { colors.barBackground });
+            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, -230, 50, { colors.barBackground, .thickness = 4 });
         }
         if (val > 0) {
             int endAngle = 130 + val;
             if (endAngle > 360) {
                 endAngle = endAngle - 360;
             }
-            draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, endAngle, { colors.bar });
+            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, endAngle, { colors.bar, .thickness = 4 });
         }
-        draw.filledCircle({ knobCenter.x, knobCenter.y - marginTop }, insideRadius, { colors.background });
     }
 
     void renderCenteredBar()
     {
         int val = 280 * value->pct();
 
-        // draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, 50, { colors.barBackground });
-        draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, -230, 50, { colors.barBackground });
+        draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, -230, 50, { colors.barBackground, .thickness = 4 });
         if (val > 140) {
             int endAngle = 130 + val;
             if (endAngle > 360) {
                 endAngle = endAngle - 360;
             }
 
-            draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 270, endAngle, { colors.bar });
+            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 270, endAngle, { colors.bar, .thickness = 4 });
         } else if (val < 140) {
-            draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 270 - (140 - val), 270, { colors.bar });
+            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 270, 130 + val, { colors.bar, .thickness = 4 });
         }
-        draw.filledEllipse({ knobCenter.x, knobCenter.y - marginTop }, insideRadius, insideRadius, { colors.background });
     }
 
     void renderUnit()
@@ -159,8 +136,6 @@ protected:
         } else {
             renderBar();
         }
-
-        renderKnob();
 
         if (showValue) {
             renderUnit();
