@@ -24,6 +24,7 @@ protected:
 
     int fontValueSize = 8;
     int fontUnitSize = 8;
+    int fontLabelSize = 6;
     int twoSideMargin = 2;
     int knobMargin = 2;
 
@@ -46,9 +47,9 @@ protected:
     void renderLabel()
     {
         if (stringValueReplaceTitle && value->props().type == VALUE_STRING) {
-            draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius + 1 }, value->string(), 6, { colors.title, NULL, size.w - 4 });
+            draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius + 1 }, value->string(), fontLabelSize, { colors.title, NULL, size.w - 4 });
         } else {
-            draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius + 1 }, label, 6, { colors.title });
+            draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius + 1 }, label, fontLabelSize, { colors.title });
         }
     }
 
@@ -176,8 +177,6 @@ protected:
     }
 
 public:
-    // margin left 15
-    // margin right 10
     Encoder2Component(ComponentInterface::Props props)
         : Component(props)
         , margin(styles.margin)
@@ -317,11 +316,9 @@ public:
             return true;
         }
 
-        /*md - `KNOB_CENTERED: TRUE` */
-        if (strcmp(key, "KNOB_CENTERED") == 0) {
-            knobCenter.y = (int)(position.y + (size.h * 0.5));
-            valuePosition = { knobCenter.x, knobCenter.y - marginTop - 2 };
-            setRadius(size.h / 3.0);
+        /*md - `FONT_TITLE_SIZE: 12` set the title font size */
+        if (strcmp(key, "FONT_TITLE_SIZE") == 0) {
+            fontLabelSize = atoi(params);
             return true;
         }
 
