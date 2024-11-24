@@ -247,8 +247,8 @@ public:
             // renderEncoder();
         }
 
-        // draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, 50, { styles.colors.white });
-        draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 0, 350, { styles.colors.white });
+        draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, -130, 50, { styles.colors.white });
+        // draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 0, 350, { styles.colors.white });
 
         // draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, insideRadius -2, 130, 50, { colors.barBackground, .antiAliasing = true });
         // draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, 50, { colors.barBackground, .antiAliasing = true, .thickness = 3 });
