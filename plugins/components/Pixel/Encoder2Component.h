@@ -47,9 +47,9 @@ protected:
     void renderLabel()
     {
         if (stringValueReplaceTitle && value->props().type == VALUE_STRING) {
-            draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius + 1 }, value->string(), fontLabelSize, { colors.title, NULL, size.w - 4 });
+            draw.textCentered({ knobCenter.x, position.y + size.h - fontLabelSize }, value->string(), fontLabelSize, { colors.title, NULL, size.w - 4 });
         } else {
-            draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius + 1 }, label, fontLabelSize, { colors.title });
+            draw.textCentered({ knobCenter.x, position.y + size.h - fontLabelSize }, label, fontLabelSize, { colors.title });
         }
     }
 
@@ -204,9 +204,9 @@ public:
             alpha(styles.colors.primary, 0.2),
         };
 
-        knobCenter = { (int)(position.x + (size.w * 0.5)), (int)(position.y + (size.h * 0.5) + marginTop) };
+        knobCenter = { (int)(position.x + (size.w * 0.5)), (int)(position.y + (size.h * 0.5) + marginTop - 1) };
         valuePosition = { knobCenter.x, knobCenter.y - marginTop - 2 };
-        setRadius((size.h - 4) * 0.5);
+        setRadius((size.h - 6) * 0.5);
     }
 
     void render()
