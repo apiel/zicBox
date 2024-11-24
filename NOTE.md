@@ -25,7 +25,7 @@ or instead to have "exit" key, use this one to enable disable
 --> to exit press shift + what ever.. 
 ```cpp
     string text[10] = {
-        "step 1", "step 2", "step 3", "step 4", "Shift", // shift switch next encoder value [note, velocity, len] [probabilty, ?, ?]
+        "step 1", "step 2", "step 3", "step 4", "Shift", // shift switch next encoder value [note, velocity, len] [probabilty, condition, motion]
         "step 5", "step 6", "step 7", "step 8", "On/Off", // Enable/disable step
     };
 ```
