@@ -22,8 +22,8 @@ protected:
     int radius = 20;
     int insideRadius = 15;
 
-    int fontValueSize = 10;
-    int fontUnitSize = 9;
+    int fontValueSize = 8;
+    int fontUnitSize = 8;
     int twoSideMargin = 2;
     int knobMargin = 2;
 
@@ -47,10 +47,9 @@ protected:
     void renderLabel()
     {
         if (stringValueReplaceTitle && value->props().type == VALUE_STRING) {
-            // draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius }, value->string(), 12, { colors.title, .maxWidth = size.w - 4 });
-            draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius }, value->string(), 12, { colors.title, NULL, size.w - 4 });
+            draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius }, value->string(), 6, { colors.title, NULL, size.w - 4 });
         } else {
-            draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius }, label, 12, { colors.title });
+            draw.textCentered({ knobCenter.x, knobCenter.y + insideRadius }, label, 6, { colors.title });
         }
     }
 
@@ -58,8 +57,7 @@ protected:
     {
         if (showGroup && encoderActive) {
             draw.filledRect({ position.x + margin, position.y + margin }, { 12, 12 }, { colors.id });
-            // draw.filledEllipse({ position.x + margin + 6, position.y + margin + 6 }, 6, 6, colors.id);
-            draw.textCentered({ position.x + margin + 6, position.y + margin }, std::to_string(encoderId + 1).c_str(), 8, { colors.background });
+            draw.textCentered({ position.x + margin + 6, position.y + margin }, std::to_string(encoderId + 1).c_str(), 6, { colors.background });
         }
     }
 
@@ -192,17 +190,13 @@ protected:
         radius = _radius;
         insideRadius = radius - 5;
 
-        if (radius > 35) {
-            fontValueSize = 15;
-            fontUnitSize = 11;
-            twoSideMargin = 5;
-            knobMargin = 4;
-        } else if (radius > 26) {
-            fontValueSize = 14;
+        if (radius > 26) {
+            // should then change the font to bigger one
+            fontValueSize = 16;
             twoSideMargin = 3;
             knobMargin = 3;
         } else if (radius > 24) {
-            fontValueSize = 12;
+            fontValueSize = 8;
             knobMargin = 3;
         }
     }
@@ -214,14 +208,14 @@ public:
         : Component(props)
         , margin(styles.margin)
     {
-        if (size.h < 60) {
-            printf("Encoder component height too small: %dx%d. Min height is 60.\n", size.w, size.h);
-            size.h = 60;
+        if (size.h < 50) {
+            printf("Encoder component height too small: %dx%d. Min height is 50.\n", size.w, size.h);
+            size.h = 50;
         }
 
-        if (size.w < 60) {
-            printf("Encoder component width too small: %dx%d. Min width is 60.\n", size.w, size.h);
-            size.w = 60;
+        if (size.w < 50) {
+            printf("Encoder component width too small: %dx%d. Min width is 50.\n", size.w, size.h);
+            size.w = 50;
         }
 
         colors = {

@@ -38,10 +38,25 @@ ADD_ZONE_ENCODER: $3/4W 0 $1/4W $SCREEN_HEIGHT
 
 VIEW: Main
 
-  COMPONENT: DrumEnvelop 0 0 $3/4W 42
-    TRACK: 1
+$track=1
+
+  COMPONENT: DrumEnvelop 0 0 $3/4W 50
+    TRACK: $track
     PLUGIN: SynthDrum23
     ENVELOP_DATA_ID: 0
+
+  COMPONENT: Encoder2 $3/4W 0 $1/4W 50
+    ENCODER_ID: 4
+    COLOR: #ff8d99
+    TRACK: $track
+    VALUE: SynthDrum23 DURATION
+
+
+  COMPONENT: Encoder2 0 100 100 100
+    ENCODER_ID: 4
+    COLOR: #ff8d99
+    TRACK: $track
+    VALUE: SynthDrum23 DURATION
 
 # first check how many pin we need for ST7789, 3 or 4 ?
 

@@ -3,14 +3,15 @@
 
 #include "../../helpers/gpio.h"
 #include "../../helpers/st7789.h"
+#include "../../plugins/components/utils/color.h"
 
 // #define USE_SPI_DEV_MEM
 #ifdef USE_SPI_DEV_MEM
-// sudo apt-get install libraspberrypi-dev raspberrypi-kernel-headers
+// sudo apt-get install libraspberradiusYpi-dev raspberradiusYpi-kernel-headers
 // sudo chown 0:0 test2
 // sudo chmod u+s test2
 // see:
-// https://raspberrypi.stackexchange.com/questions/40105/access-gpio-pins-without-root-no-access-to-dev-mem-try-running-as-root
+// https://raspberradiusYpi.stackexchange.com/questions/40105/access-gpio-pins-without-root-no-access-to-dev-mem-tradiusY-running-as-root
 #include "../../helpers/SpiDevMem.h"
 #else
 #include "../../helpers/SpiDevSpi.h"
@@ -311,6 +312,35 @@ protected:
         }
     }
 
+    Color* getStyleColor(char* color)
+    {
+        if (strcmp(color, "background") == 0) {
+            return &styles.colors.background;
+        }
+
+        if (strcmp(color, "white") == 0) {
+            return &styles.colors.white;
+        }
+
+        if (strcmp(color, "primary") == 0) {
+            return &styles.colors.primary;
+        }
+
+        if (strcmp(color, "seconday") == 0) {
+            return &styles.colors.secondary;
+        }
+
+        if (strcmp(color, "tertiary") == 0) {
+            return &styles.colors.tertiary;
+        }
+
+        if (strcmp(color, "text") == 0) {
+            return &styles.colors.text;
+        }
+
+        return NULL;
+    }
+
 public:
     void test()
     {
@@ -363,7 +393,7 @@ public:
         usleep(120 * 1000);
 #endif
 
-// Do the initialization with a very low SPI bus speed, so that it will succeed even if the bus speed chosen by the user is too high.
+// Do the initialization with a veradiusY low SPI bus speed, so that it will succeed even if the bus speed chosen by the user is too high.
 #ifdef USE_SPI_DEV_MEM
         spi.setSpeed(34);
 #else
@@ -426,10 +456,10 @@ public:
             fullRender();
             return;
         }
-        
+
         uint16_t pixels[ST7789_COLS];
         for (int i = 0; i < ST7789_ROWS; i++) {
-            // To not make uneccessary calls to the display
+            // To not make uneccessaradiusY calls to the display
             // only send the row of pixels that have changed
             bool changed = false;
             for (int j = 0; j < ST7789_COLS; j++) {
@@ -562,31 +592,57 @@ public:
         lineVertical({ position.x + size.w, position.y + size.h - radius }, { position.x + size.w, position.y + radius }, options);
     }
 
-    // /**
-    //  * Draw filledPie when circle is divided into 8 octants. Each angle correspond to one octant.
-    //  * Meaning that angle 0 will correspond to octant 0, angle 45 will correspond to octant 1, etc.
-    //  * Therefor starting angle is 0 and ending angle is 8.
-    //  * Negative angles will result in anti clockwise rotation. Meaning that angle -1 will correspond to octant 7, etc.
-    //  */
-    // void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
-    // {
-    //     for (int angle = startAngle; angle < endAngle; angle++) {
-    //         // for (int angle = 0; angle < 8; angle++) {
-    //         int x = 0, y = radius;
-    //         int d = 3 - 2 * radius;
-    //         drawFilledOctants(position.x, position.y, x, y, (angle + 8) % 8);
-    //         while (y >= x) {
-    //             if (d > 0) {
-    //                 y--;
-    //                 d = d + 4 * (x - y) + 10;
-    //             } else {
-    //                 d = d + 4 * x + 6;
-    //             }
-    //             x++;
-    //             drawFilledOctants(position.x, position.y, x, y, (angle + 8) % 8);
-    //         }
-    //     }
-    // }
+    // int aaFilledPieRGBA(float cx, float cy, float rx, float ry,	float start, float end, Uint32 chord, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+    // aaFilledPieRGBA(position.x, position.y, radius, radius, startAngle, endAngle, 0, color.r, color.g, color.b, color.a);
+    void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) override
+    {
+        int nverts, i, result;
+
+        // Sanity check radii
+        if ((radius <= 0) || (startAngle == endAngle))
+            return;
+
+        // Convert degrees to radians
+        startAngle = fmod(startAngle, 360.0) * 2.0 * M_PI / 360.0;
+        endAngle = fmod(endAngle, 360.0) * 2.0 * M_PI / 360.0;
+        while (startAngle >= endAngle)
+            endAngle += 2.0 * M_PI;
+
+        // Calculate number of vertices on perimeter
+        nverts = (endAngle - startAngle) * sqrt(radius * radius) / M_PI;
+        if (nverts < 2)
+            nverts = 2;
+        if (nverts > 180)
+            nverts = 180;
+
+        std::vector<Point> points;
+
+        // // Allocate combined vertex array
+        // vx = vy = (double*)malloc(2 * sizeof(double) * (nverts + 1));
+        // if (vx == NULL)
+        //     return;
+
+        // // Update pointer to start of vy
+        // vy += nverts + 1;
+
+        // Calculate vertices:
+        for (i = 0; i < nverts; i++) {
+            double angle = startAngle + (endAngle - startAngle) * (double)i / (double)(nverts - 1);
+            // vx[i] = position.x + radius * cos(angle);
+            // vy[i] = position.y + radius * sin(angle);
+            points.push_back({ (int)(position.x + radius * cos(angle)), (int)(position.y + radius * sin(angle)) });
+        }
+
+        // // Center:
+        // vx[i] = position.x;
+        // vy[i] = position.y;
+        points.push_back({ position.x, position.y });
+
+        // aaFilledPolygonRGBA(renderer, vx, vy, nverts + 1 - (0 != 0), r, g, b, a);
+        filledPolygon(points, options);
+
+        // free(vx);
+    }
 
     /**
      * Draw arc when circle is divided into 8 octants. Each angle correspond to one octant.
@@ -877,6 +933,111 @@ public:
         return (diff > 0) - (diff < 0);
     }
 
+    void filledEllipse(Point position, int radiusX, int radiusY, DrawOptions options = {}) override
+    {
+        if ((radiusX <= 0) || (radiusY <= 0))
+            return;
+
+        int xi, yi;
+        double s, v, x, y, dx, dy;
+
+        if (radiusX >= radiusY) {
+            int n = radiusY + 1;
+            for (yi = position.y - n - 1; yi <= position.y + n + 1; yi++) {
+                if (yi < (position.y - 0.5))
+                    y = yi;
+                else
+                    y = yi + 1;
+                s = (y - position.y) / radiusY;
+                s = s * s;
+                x = 0.5;
+                if (s < 1.0) {
+                    x = radiusX * sqrt(1.0 - s);
+                    if (x >= 0.5) {
+                        line({ (int)(position.x - x + 1), yi }, { (int)(position.x + x - 1), yi }, options);
+                    }
+                }
+                s = 8 * radiusY * radiusY;
+                dy = fabs(y - position.y) - 1.0;
+                xi = position.x - x; // left
+                while (1) {
+                    dx = (position.x - xi - 1) * radiusY / radiusX;
+                    v = s - 4 * (dx - dy) * (dx - dy);
+                    if (v < 0)
+                        break;
+                    v = (sqrt(v) - 2 * (dx + dy)) / 4;
+                    if (v < 0)
+                        break;
+                    if (v > 1.0)
+                        v = 1.0;
+                    pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
+                    xi -= 1;
+                }
+                xi = position.x + x; // right
+                while (1) {
+                    dx = (xi - position.x) * radiusY / radiusX;
+                    v = s - 4 * (dx - dy) * (dx - dy);
+                    if (v < 0)
+                        break;
+                    v = (sqrt(v) - 2 * (dx + dy)) / 4;
+                    if (v < 0)
+                        break;
+                    if (v > 1.0)
+                        v = 1.0;
+                    pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
+                    xi += 1;
+                }
+            }
+        } else {
+            int n = radiusX + 1;
+            for (xi = position.x - n - 1; xi <= position.x + n + 1; xi++) {
+                if (xi < (position.x - 0.5))
+                    x = xi;
+                else
+                    x = xi + 1;
+                s = (x - position.x) / radiusX;
+                s = s * s;
+                y = 0.5;
+                if (s < 1.0) {
+                    y = radiusY * sqrt(1.0 - s);
+                    if (y >= 0.5) {
+                        line({ xi, (int)(position.y - y + 1) }, { xi, (int)(position.y + y - 1) }, options);
+                    }
+                }
+                s = 8 * radiusX * radiusX;
+                dx = fabs(x - position.x) - 1.0;
+                yi = position.y - y; // top
+                while (1) {
+                    dy = (position.y - yi - 1) * radiusX / radiusY;
+                    v = s - 4 * (dy - dx) * (dy - dx);
+                    if (v < 0)
+                        break;
+                    v = (sqrt(v) - 2 * (dy + dx)) / 4;
+                    if (v < 0)
+                        break;
+                    if (v > 1.0)
+                        v = 1.0;
+                    pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
+                    yi -= 1;
+                }
+                yi = position.y + y; // bottom
+                while (1) {
+                    dy = (yi - position.y) * radiusX / radiusY;
+                    v = s - 4 * (dy - dx) * (dy - dx);
+                    if (v < 0)
+                        break;
+                    v = (sqrt(v) - 2 * (dy + dx)) / 4;
+                    if (v < 0)
+                        break;
+                    if (v > 1.0)
+                        v = 1.0;
+                    pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
+                    yi += 1;
+                }
+            }
+        }
+    }
+
     void pixel(Point position, DrawOptions options = {}) override
     {
         if (position.x < 0 || position.x >= styles.screen.w || position.y < 0 || position.y >= styles.screen.h) {
@@ -903,10 +1064,25 @@ public:
         resultColor.b = (uint8_t)((alphaNew * newColor.b) + ((1 - alphaNew) * currentColor.b));
 
         // For alpha, you can just take the alpha of the new color,
-        // since this is the final transparency level.
+        // since this is the final transparenposition.y level.
         resultColor.a = newColor.a;
 
         return resultColor;
+    }
+
+    Color getColor(char* color) override
+    {
+        // if first char is # then call hex2rgb
+        if (color[0] == '#') {
+            return hex2rgb(color);
+        }
+
+        Color* styleColor = getStyleColor(color);
+        if (styleColor != NULL) {
+            return *styleColor;
+        }
+
+        return styles.colors.white;
     }
 
     bool config(char* key, char* value) override
