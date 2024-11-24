@@ -46,15 +46,21 @@ $track=1
     ENVELOP_DATA_ID: 0
 
   COMPONENT: Encoder2 $3/4W 0 $1/4W 50
-    # ENCODER_ID: 3
+    ENCODER_ID: 3
     COLOR: secondary
     TRACK: $track
     VALUE: SynthDrum23 DURATION
 
 
+# TODO use freq envelope
+  COMPONENT: DrumEnvelop 0 60 $3/4W 50
+    TRACK: $track
+    PLUGIN: SynthDrum23
+    ENVELOP_DATA_ID: 0
 
+# TODO activate encoder with arrow up/down
   COMPONENT: Encoder2 $3/4W 60 $1/4W 50
-    ENCODER_ID: 3
+    # ENCODER_ID: 3
     COLOR: secondary
     TRACK: $track
     VALUE: SynthDrum23 PITCH
