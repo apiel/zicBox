@@ -46,23 +46,15 @@ $track=1
     ENVELOP_DATA_ID: 0
 
   COMPONENT: Encoder2 $3/4W 0 $1/4W 50
-    ENCODER_ID: 4
+    # ENCODER_ID: 3
     COLOR: secondary
     TRACK: $track
     VALUE: SynthDrum23 DURATION
 
-# first check how many pin we need for ST7789, 3 or 4 ?
 
-# add duration encoder
-# add RESONANCE_ENV encoder
 
-#---
-# add freq envelop
-# add pitch encoder
-# add noise encoder
-
-  COMPONENT: Encoder2 $3/4W 50 $1/4W 50
-    # ENCODER_ID: 4
+  COMPONENT: Encoder2 $3/4W 60 $1/4W 50
+    ENCODER_ID: 3
     COLOR: secondary
     TRACK: $track
     VALUE: SynthDrum23 PITCH

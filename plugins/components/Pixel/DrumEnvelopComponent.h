@@ -116,9 +116,9 @@ public:
             plugin->data(modDataId, &direction);
             renderNext();
         } else {
-            printf("DrumEnvelopComponent onEncoder: %d %d\n", id, direction);
-            ValueInterface* value = plugin->getValue("DURATION");
-            value->increment(direction);
+            // printf("DrumEnvelopComponent onEncoder: %d %d\n", id, direction);
+            // ValueInterface* value = plugin->getValue("DURATION");
+            // value->increment(direction);
         }
     }
 
