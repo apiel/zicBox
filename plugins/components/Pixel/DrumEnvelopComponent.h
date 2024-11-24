@@ -69,9 +69,11 @@ protected:
 
     void renderTitles()
     {
-        draw.text({ position.x, position.y }, std::to_string(currentstep + 1) + "/" + std::to_string(envData->size()), 8, { textColor });
-        draw.textCentered({ position.x + size.w / 2, position.y }, std::to_string(currentTimeMs) + "ms", 8, { textColor });
-        draw.textRight({ position.x + size.w, position.y }, std::to_string((int)(currentMod * 100)) + "%", 8, { textColor });
+        int cellWidth = size.w / 3;
+        int x = position.x + cellWidth * 0.5;
+        draw.textCentered({ x, position.y }, std::to_string(currentstep + 1) + "/" + std::to_string(envData->size()), 8, { textColor });
+        draw.textCentered({ x + cellWidth, position.y }, std::to_string(currentTimeMs) + "ms", 8, { textColor });
+        draw.textCentered({ x + cellWidth * 2, position.y }, std::to_string((int)(currentMod * 100)) + "%", 8, { textColor });
     }
 
 public:
