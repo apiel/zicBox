@@ -546,110 +546,7 @@ public:
         lineVertical({ position.x + size.w, position.y + size.h - radius }, { position.x + size.w, position.y + radius }, options);
     }
 
-    // void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
-    // {
-    //     int xi, yi;
-    //     double s, v, x, y, dx, dy;
-
-    //     // Convert angles to radians for comparison
-    //     double startRad = startAngle * M_PI / 180.0;
-    //     double endRad = endAngle * M_PI / 180.0;
-
-    //     int n = radius + 1;
-    //     for (yi = position.y - n - 1; yi <= position.y + n + 1; yi++) {
-    //         if (yi < (position.y - 0.5))
-    //             y = yi;
-    //         else
-    //             y = yi + 1;
-    //         s = (y - position.y) / radius;
-    //         s = s * s;
-    //         x = 0.5;
-    //         if (s < 1.0) {
-    //             x = radius * sqrt(1.0 - s);
-    //             if (x >= 0.5) {
-    //                 // Draw only the visible part of the pie within the angle range
-    //                 for (xi = (int)(position.x - x + 1); xi <= (int)(position.x + x - 1); xi++) {
-    //                     // Convert (xi, yi) to polar coordinates (r, theta)
-    //                     double dx = xi - position.x;
-    //                     double dy = yi - position.y;
-    //                     double angle = atan2(dy, dx);
-    //                     if (angle < 0)
-    //                         angle += 2 * M_PI; // Normalize to [0, 2π]
-
-    //                     // Check if angle is within the start and end angles
-    //                     if (startRad <= angle && angle <= endRad) {
-    //                         pixel({ xi, yi }, { options.color });
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //         s = 8 * radius * radius;
-    //         dy = fabs(y - position.y) - 1.0;
-    //         xi = position.x - x; // left
-    //         while (1) {
-    //             dx = (position.x - xi - 1);
-    //             v = s - 4 * (dx - dy) * (dx - dy);
-    //             if (v < 0)
-    //                 break;
-    //             v = (sqrt(v) - 2 * (dx + dy)) / 4;
-    //             if (v < 0)
-    //                 break;
-    //             if (v > 1.0)
-    //                 v = 1.0;
-
-    //             // Convert (xi, yi) to polar coordinates (r, theta)
-    //             double dx = xi - position.x;
-    //             double dy = yi - position.y;
-    //             double angle = atan2(dy, dx);
-    //             if (angle < 0)
-    //                 angle += 2 * M_PI; // Normalize to [0, 2π]
-
-    //             // Check if angle is within the start and end angles
-    //             if (startRad <= angle && angle <= endRad) {
-    //                 pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
-    //             }
-
-    //             xi -= 1;
-    //         }
-    //         xi = position.x + x; // right
-    //         while (1) {
-    //             dx = (xi - position.x);
-    //             v = s - 4 * (dx - dy) * (dx - dy);
-    //             if (v < 0)
-    //                 break;
-    //             v = (sqrt(v) - 2 * (dx + dy)) / 4;
-    //             if (v < 0)
-    //                 break;
-    //             if (v > 1.0)
-    //                 v = 1.0;
-
-    //             // Convert (xi, yi) to polar coordinates (r, theta)
-    //             double dx = xi - position.x;
-    //             double dy = yi - position.y;
-    //             double angle = atan2(dy, dx);
-    //             if (angle < 0)
-    //                 angle += 2 * M_PI; // Normalize to [0, 2π]
-
-    //             // Check if angle is within the start and end angles
-    //             if (startRad <= angle && angle <= endRad) {
-    //                 pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
-    //             }
-
-    //             xi += 1;
-    //         }
-    //     }
-
-    //     // Draw smooth radius lines for the start and end angles
-    //     int r = radius -1;
-    //     int startX = position.x + (int)(r * cos(startRad));
-    //     int startY = position.y + (int)(r * sin(startRad));
-    //     int endX = position.x + (int)(r * cos(endRad));
-    //     int endY = position.y + (int)(r * sin(endRad));
-    //     line({ startX, startY }, position, { options.color, .antiAliasing = true });
-    //     line({ endX, endY }, position, { options.color, .antiAliasing = true });
-    // }
-
-    void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
+    void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) override
     {
         int xi, yi;
         double s, v, x, y, dx, dy;
@@ -750,7 +647,7 @@ public:
         }
 
         // Draw smooth radius lines for the start and end angles
-        int r = radius -1;
+        int r = radius - 1;
         int startX = position.x + (int)(r * cos(startRad));
         int startY = position.y + (int)(r * sin(startRad));
         int endX = position.x + (int)(r * cos(endRad));
@@ -794,44 +691,147 @@ public:
     //     filledPolygon(points, options);
     // }
 
-    // Function to draw an arc with thickness and smoother anti-aliasing
-    void arc(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
+    void arc(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) override
     {
-        // Convert angles from degrees to radians for trigonometric functions
-        float startRad = startAngle * (M_PI / 180.0f);
-        float endRad = endAngle * (M_PI / 180.0f);
+        int xi, yi;
+        double s, v, x, y, dx, dy;
 
-        // Step size for angle resolution (higher value for smoother curves)
-        const float angleStep = 0.005f; // Smaller steps for finer resolution
+        // Normalize angles to range [0, 360)
+        startAngle = (startAngle % 360 + 360) % 360;
+        endAngle = (endAngle % 360 + 360) % 360;
 
-        // Loop over all angles from startAngle to endAngle
-        for (float angle = startRad; angle <= endRad; angle += angleStep) {
-            // Loop over all radii from (radius - thickness) to (radius + thickness)
-            for (int r = radius - options.thickness; r <= radius + options.thickness; r++) {
-                // Calculate the x and y position using polar coordinates
-                int x = position.x + static_cast<int>(r * cos(angle));
-                int y = position.y + static_cast<int>(r * sin(angle));
+        // Convert angles to radians
+        double startRad = startAngle * M_PI / 180.0;
+        double endRad = endAngle * M_PI / 180.0;
 
-                // Distance from the current pixel to the center of the circle
-                Point pixelPoint = { x, y };
-                float distToCenter = distanceToCenter(pixelPoint, position);
+        // Handle angle wrapping
+        bool wrapAround = (endRad < startRad);
 
-                // Calculate distance to the edge (the boundary of the arc)
-                float distToEdge = fabs(distToCenter - radius);
+        // Calculate inner and outer radii
+        double innerRadius = radius - options.thickness / 2.0;
+        double outerRadius = radius + options.thickness / 2.0;
 
-                // Apply alpha blending based on how close the pixel is to the edge of the arc
-                // DrawOptions pixelOptions = options;
-                Color color = options.color;
+        int n = outerRadius + 1;
+        for (yi = position.y - n - 1; yi <= position.y + n + 1; yi++) {
+            if (yi < (position.y - 0.5))
+                y = yi;
+            else
+                y = yi + 1;
+            s = (y - position.y) / outerRadius;
+            s = s * s;
+            x = 0.5;
+            if (s < 1.0) {
+                x = outerRadius * sqrt(1.0 - s);
+                if (x >= 0.5) {
+                    for (xi = (int)(position.x - x + 1); xi <= (int)(position.x + x - 1); xi++) {
+                        // Calculate distance to the center
+                        double dx = xi - position.x;
+                        double dy = yi - position.y;
+                        double distance = sqrt(dx * dx + dy * dy);
 
-                // If the pixel is close to the arc boundary, blend the alpha value
-                if (distToEdge < 1.0f) { // Pixels near the boundary of the arc
-                    float alphaFactor = 1.0f - distToEdge; // Decrease alpha as it gets closer to the edge
-                    // pixelOptions.a = static_cast<int>(options.a * alphaFactor);
-                    color.a = static_cast<int>(options.color.a * alphaFactor);
+                        // Determine if within the angle and thickness range
+                        if (distance >= innerRadius && distance <= outerRadius) {
+                            // Convert (xi, yi) to polar coordinates
+                            double angle = atan2(dy, dx);
+                            if (angle < 0)
+                                angle += 2 * M_PI; // Normalize to [0, 2π]
+
+                            // Check angle constraints
+                            if ((wrapAround && (angle >= startRad || angle <= endRad)) || (!wrapAround && angle >= startRad && angle <= endRad)) {
+                                // Anti-aliasing based on distance to inner and outer radii
+                                double alpha = 1.0;
+                                if (distance < innerRadius + 1.0) {
+                                    alpha = distance - innerRadius;
+                                } else if (distance > outerRadius - 1.0) {
+                                    alpha = outerRadius - distance;
+                                }
+                                if (alpha > 0) {
+                                    pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * alpha) } });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            s = 8 * outerRadius * outerRadius;
+            dy = fabs(y - position.y) - 1.0;
+            xi = position.x - x; // left
+            while (1) {
+                dx = (position.x - xi - 1);
+                v = s - 4 * (dx - dy) * (dx - dy);
+                if (v < 0)
+                    break;
+                v = (sqrt(v) - 2 * (dx + dy)) / 4;
+                if (v < 0)
+                    break;
+                if (v > 1.0)
+                    v = 1.0;
+
+                // Calculate distance to the center
+                double dx = xi - position.x;
+                double dy = yi - position.y;
+                double distance = sqrt(dx * dx + dy * dy);
+
+                // Determine if within the angle and thickness range
+                if (distance >= innerRadius && distance <= outerRadius) {
+                    double angle = atan2(dy, dx);
+                    if (angle < 0)
+                        angle += 2 * M_PI; // Normalize to [0, 2π]
+
+                    // Check angle constraints
+                    if ((wrapAround && (angle >= startRad || angle <= endRad)) || (!wrapAround && angle >= startRad && angle <= endRad)) {
+                        double alpha = 1.0;
+                        if (distance < innerRadius + 1.0) {
+                            alpha = distance - innerRadius;
+                        } else if (distance > outerRadius - 1.0) {
+                            alpha = outerRadius - distance;
+                        }
+                        if (alpha > 0) {
+                            pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v * alpha) } });
+                        }
+                    }
                 }
 
-                // Draw the pixel with the adjusted options (anti-aliasing)
-                pixel(pixelPoint, { color });
+                xi -= 1;
+            }
+            xi = position.x + x; // right
+            while (1) {
+                dx = (xi - position.x);
+                v = s - 4 * (dx - dy) * (dx - dy);
+                if (v < 0)
+                    break;
+                v = (sqrt(v) - 2 * (dx + dy)) / 4;
+                if (v < 0)
+                    break;
+                if (v > 1.0)
+                    v = 1.0;
+
+                // Calculate distance to the center
+                double dx = xi - position.x;
+                double dy = yi - position.y;
+                double distance = sqrt(dx * dx + dy * dy);
+
+                // Determine if within the angle and thickness range
+                if (distance >= innerRadius && distance <= outerRadius) {
+                    double angle = atan2(dy, dx);
+                    if (angle < 0)
+                        angle += 2 * M_PI; // Normalize to [0, 2π]
+
+                    // Check angle constraints
+                    if ((wrapAround && (angle >= startRad || angle <= endRad)) || (!wrapAround && angle >= startRad && angle <= endRad)) {
+                        double alpha = 1.0;
+                        if (distance < innerRadius + 1.0) {
+                            alpha = distance - innerRadius;
+                        } else if (distance > outerRadius - 1.0) {
+                            alpha = outerRadius - distance;
+                        }
+                        if (alpha > 0) {
+                            pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v * alpha) } });
+                        }
+                    }
+                }
+
+                xi += 1;
             }
         }
     }
