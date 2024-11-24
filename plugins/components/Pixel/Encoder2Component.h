@@ -89,7 +89,7 @@ protected:
 
             draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 270, endAngle, { colors.bar, .thickness = 4 });
         } else if (val < 140) {
-            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 270, 130 + val, { colors.bar, .thickness = 4 });
+            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, -230 + val, 270, { colors.bar, .thickness = 4 });
         }
     }
 
