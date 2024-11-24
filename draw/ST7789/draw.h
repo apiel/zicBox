@@ -237,52 +237,6 @@ protected:
         pixel(position, options);
     }
 
-    // For circle
-    void drawOctants(int xc, int yc, int x, int y, DrawOptions options = {})
-    {
-        pixel({ xc + x, yc + y }, options);
-        pixel({ xc - x, yc + y }, options);
-        pixel({ xc + x, yc - y }, options);
-        pixel({ xc - x, yc - y }, options);
-        pixel({ xc + y, yc + x }, options);
-        pixel({ xc - y, yc + x }, options);
-        pixel({ xc + y, yc - x }, options);
-        pixel({ xc - y, yc - x }, options);
-    }
-
-    void drawOctants(int xc, int yc, int x, int y, uint8_t angle, DrawOptions options = {})
-    {
-        if (angle == 0)
-            pixel({ xc + x, yc - y }, options);
-        if (angle == 1)
-            pixel({ xc + y, yc - x }, options);
-        if (angle == 2)
-            pixel({ xc + y, yc + x }, options);
-        if (angle == 3)
-            pixel({ xc + x, yc + y }, options);
-        if (angle == 4)
-            pixel({ xc - x, yc + y }, options);
-        if (angle == 5)
-            pixel({ xc - y, yc + x }, options);
-        if (angle == 6)
-            pixel({ xc - y, yc - x }, options);
-        if (angle == 7)
-            pixel({ xc - x, yc - y }, options);
-    }
-
-    // For filled circle
-    void drawFilledOctants(int xc, int yc, int x, int y, DrawOptions options = {})
-    {
-        for (int xx = xc - x; xx <= xc + x; xx++)
-            pixel({ xx, yc + y }, options);
-        for (int xx = xc - x; xx <= xc + x; xx++)
-            pixel({ xx, yc - y }, options);
-        for (int xx = xc - y; xx <= xc + y; xx++)
-            pixel({ xx, yc + x }, options);
-        for (int xx = xc - y; xx <= xc + y; xx++)
-            pixel({ xx, yc - x }, options);
-    }
-
     void drawChar(Point position, unsigned char character, uint8_t* font, float scale = 1.0, DrawOptions options = {})
     {
         float x = position.x;
@@ -592,116 +546,80 @@ public:
         lineVertical({ position.x + size.w, position.y + size.h - radius }, { position.x + size.w, position.y + radius }, options);
     }
 
-    // int aaFilledPieRGBA(float cx, float cy, float rx, float ry,	float start, float end, Uint32 chord, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
-    // aaFilledPieRGBA(position.x, position.y, radius, radius, startAngle, endAngle, 0, color.r, color.g, color.b, color.a);
+
+// float cx, float cy, float rx, float ry, float start, float end, Uint32 chord, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+
     void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) override
     {
         int nverts, i, result;
 
-        // Sanity check radii
         if ((radius <= 0) || (startAngle == endAngle))
             return;
 
-        // Convert degrees to radians
-        startAngle = fmod(startAngle, 360.0) * 2.0 * M_PI / 360.0;
-        endAngle = fmod(endAngle, 360.0) * 2.0 * M_PI / 360.0;
-        while (startAngle >= endAngle)
-            endAngle += 2.0 * M_PI;
+        float start = fmod(startAngle, 360.0) * 2.0 * M_PI / 360.0;
+        float end = fmod(endAngle, 360.0) * 2.0 * M_PI / 360.0;
 
-        // Calculate number of vertices on perimeter
-        nverts = (endAngle - startAngle) * sqrt(radius * radius) / M_PI;
+        while (start >= end)
+            end += 2.0 * M_PI;
+
+        nverts = (end - start) * radius / M_PI;
         if (nverts < 2)
             nverts = 2;
         if (nverts > 180)
             nverts = 180;
 
         std::vector<Point> points;
-
-        // // Allocate combined vertex array
-        // vx = vy = (double*)malloc(2 * sizeof(double) * (nverts + 1));
-        // if (vx == NULL)
-        //     return;
-
-        // // Update pointer to start of vy
-        // vy += nverts + 1;
-
-        // Calculate vertices:
         for (i = 0; i < nverts; i++) {
-            double angle = startAngle + (endAngle - startAngle) * (double)i / (double)(nverts - 1);
-            // vx[i] = position.x + radius * cos(angle);
-            // vy[i] = position.y + radius * sin(angle);
+            double angle = start + (end - start) * (double)i / (double)(nverts - 1);
             points.push_back({ (int)(position.x + radius * cos(angle)), (int)(position.y + radius * sin(angle)) });
         }
+        points.push_back(position);
 
-        // // Center:
-        // vx[i] = position.x;
-        // vy[i] = position.y;
-        points.push_back({ position.x, position.y });
-
-        // aaFilledPolygonRGBA(renderer, vx, vy, nverts + 1 - (0 != 0), r, g, b, a);
         filledPolygon(points, options);
-
-        // free(vx);
     }
 
-    /**
-     * Draw arc when circle is divided into 8 octants. Each angle correspond to one octant.
-     * Meaning that angle 0 will correspond to octant 0, angle 45 will correspond to octant 1, etc.
-     * Therefor starting angle is 0 and ending angle is 8.
-     * Negative angles will result in anti clockwise rotation. Meaning that angle -1 will correspond to octant 7, etc.
-     */
+    // position.x, position.y, radius, radius, startAngle, endAngle, 1
+    // float cx, float cy, float rx, float ry, float start, float end, float thick
     void arc(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) override
     {
-        for (int angle = startAngle; angle < endAngle; angle++) {
-            // for (int angle = 0; angle < 8; angle++) {
-            int x = 0, y = radius;
-            int d = 3 - 2 * radius;
-            drawOctants(position.x, position.y, x, y, (angle + 8) % 8);
-            while (y >= x) {
-                if (d > 0) {
-                    y--;
-                    d = d + 4 * (x - y) + 10;
-                } else {
-                    d = d + 4 * x + 6;
-                }
-                x++;
-                drawOctants(position.x, position.y, x, y, (angle + 8) % 8);
-            }
+        int nverts, i;
+
+        // Sanity check radii and thickness
+        if ((radius <= 0) || (startAngle == endAngle) || (options.thickness <= 0))
+            return;
+
+        // Convert degrees to radians
+        float start = fmod(startAngle, 360.0) * 2.0 * M_PI / 360.0;
+        float end = fmod(endAngle, 360.0) * 2.0 * M_PI / 360.0;
+        while (start >= end)
+            end += 2.0 * M_PI;
+
+        // Calculate number of vertices
+        nverts = 2 * floor((end - start) * radius / M_PI);
+        if (nverts < 2)
+            nverts = 2;
+        if (nverts > 360)
+            nverts = 360;
+
+        std::vector<Point> points(nverts);
+
+        for (i = 0; i < nverts / 2; i++) {
+            double angle = start + (end - start) * (double)i / (double)(nverts / 2 - 1);
+            points[i] = { (int)(position.x + (radius + options.thickness / 2) * cos(angle)), (int)(position.y + (radius + options.thickness / 2) * sin(angle)) };
+            points[nverts - 1 - i] = { (int)(position.x + (radius - options.thickness / 2) * cos(angle)), (int)(position.y + (radius - options.thickness / 2) * sin(angle)) };
         }
+
+        filledPolygon(points, options);
     }
 
     void circle(Point position, int radius, DrawOptions options = {}) override
     {
-        int x = 0, y = radius;
-        int d = 3 - 2 * radius;
-        drawOctants(position.x, position.y, x, y);
-        while (y >= x) {
-            if (d > 0) {
-                y--;
-                d = d + 4 * (x - y) + 10;
-            } else {
-                d = d + 4 * x + 6;
-            }
-            x++;
-            drawOctants(position.x, position.y, x, y);
-        }
+        ellipse(position, radius, radius, options);
     }
 
     void filledCircle(Point position, int radius, DrawOptions options = {}) override
     {
-        int x = 0, y = radius;
-        int d = 3 - 2 * radius;
-        drawFilledOctants(position.x, position.y, x, y);
-        while (y >= x) {
-            if (d > 0) {
-                y--;
-                d = d + 4 * (x - y) + 10;
-            } else {
-                d = d + 4 * x + 6;
-            }
-            x++;
-            drawFilledOctants(position.x, position.y, x, y);
-        }
+        filledEllipse(position, radius, radius, options);
     }
 
     void line(Point start, Point end, DrawOptions options = {}) override

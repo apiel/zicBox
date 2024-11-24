@@ -65,18 +65,18 @@ protected:
     {
         if (showKnob) {
             int knobRadius = insideRadius - knobMargin;
-            draw.filledEllipse({ knobCenter.x, knobCenter.y - marginTop }, knobRadius, knobRadius, { colors.knob });
+            draw.filledCircle({ knobCenter.x, knobCenter.y - marginTop }, knobRadius, { colors.knob });
 
             // draw dot at value position
             int cx = knobCenter.x;
             int cy = knobCenter.y - marginTop;
-            int r = knobRadius - 3;
+            int r = knobRadius;
             float angleDegrees = 280 * value->pct();
             float angleRadians = angleDegrees * M_PI / 180.0 - 180;
             int x = cx + r * cos(angleRadians);
             int y = cy + r * sin(angleRadians);
 
-            draw.filledEllipse({ x, y }, 2, 2, { colors.knobDot });
+            draw.filledCircle({ x, y }, 2, { colors.knobDot });
         }
     }
 
@@ -85,7 +85,7 @@ protected:
         int val = 280 * value->pct();
 
         if (val < 280) {
-            draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, 50, { colors.barBackground });
+            draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, 50, { colors.barBackground, .antiAliasing = true });
         }
         if (val > 0) {
             int endAngle = 130 + val;
@@ -243,9 +243,17 @@ public:
             { size.w - 2 * margin, size.h - 2 * margin },
             { colors.background });
 
+        // draw.filledCircle({ knobCenter.x, knobCenter.y - marginTop }, radius, { colors.barBackground });
+
         if (value != NULL) {
             renderEncoder();
         }
+
+        // draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, 50, { colors.barBackground, .antiAliasing = true });
+        // draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, insideRadius -2, 130, 50, { colors.barBackground, .antiAliasing = true });
+        // draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, 50, { colors.barBackground, .antiAliasing = true, .thickness = 3 });
+
+        // draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, 50, { colors.barBackground, .antiAliasing = true, .thickness = 3 });
     }
 
     bool config(char* key, char* params)

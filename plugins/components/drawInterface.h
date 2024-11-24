@@ -56,6 +56,7 @@ struct Styles {
 struct DrawOptions {
     Color color = { 255, 255, 255, 255 };
     bool antiAliasing = false;
+    int thickness = 1;
 };
 
 struct DrawTextOptions {
