@@ -203,23 +203,18 @@ public:
             alpha(styles.colors.primary, 0.2),
         };
 
-        knobCenter = { (int)(position.x + (size.w * 0.5)), (int)(position.y + (size.h * 0.5)) };
+        knobCenter = { (int)(position.x + (size.w * 0.5)), (int)(position.y + (size.h * 0.5) + marginTop) };
         valuePosition = { knobCenter.x, knobCenter.y - marginTop - 2 };
         setRadius((size.h - 4) * 0.5);
     }
 
     void render()
     {
-        draw.filledRect(
-            { position.x + margin, position.y + margin },
-            { size.w - 2 * margin, size.h - 2 * margin },
-            { colors.background });
+        draw.filledRect(position, size, { colors.background });
 
         if (value != NULL) {
             renderEncoder();
         }
-
-        // draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, -230, 50, { styles.colors.white, .thickness = 5 });
     }
 
     bool config(char* key, char* params)
