@@ -4,6 +4,7 @@
 #include "../../../helpers/range.h"
 #include "../component.h"
 #include "../utils/color.h"
+#include "utils/ToggleColor.h"
 
 /*md
 ## Drum envelop
@@ -37,20 +38,10 @@ protected:
 
     Color bgColor;
 
-    Color fillColor;
-    Color outlineColor;
-    Color textColor;
-    Color cursorColor;
-
-    Color fillColorActive;
-    Color outlineColorActive;
-    Color textColorActive;
-    Color cursorColorActive;
-
-    Color fillColorInactive;
-    Color outlineColorInactive;
-    Color textColorInactive;
-    Color cursorColorInactive;
+    ToggleColor fillColor;
+    ToggleColor outlineColor;
+    ToggleColor textColor;
+    ToggleColor cursorColor;
 
     float inactiveColorRatio = 0.5f;
 
@@ -77,10 +68,10 @@ protected:
         }
 
         if (filled) {
-            draw.filledPolygon(points, { fillColor });
+            draw.filledPolygon(points, { fillColor.color });
         }
         if (outline) {
-            draw.lines(points, { outlineColor });
+            draw.lines(points, { outlineColor.color });
         }
     }
 
@@ -89,11 +80,11 @@ protected:
         if (currentstep < envData->size() - 1) {
             float currentTime = envData->at(currentstep).time;
             float nextTime = envData->at(currentstep + 1).time;
-            draw.line({ (int)(position.x + size.w * currentTime), cursorY }, { (int)(position.x + size.w * currentTime), cursorY - 3 }, { cursorColor });
-            draw.line({ (int)(position.x + size.w * currentTime), cursorY - 1 }, { (int)(position.x + size.w * nextTime), cursorY - 1 }, { cursorColor });
-            draw.line({ (int)(position.x + size.w * nextTime), cursorY }, { (int)(position.x + size.w * nextTime), cursorY - 3 }, { cursorColor });
+            draw.line({ (int)(position.x + size.w * currentTime), cursorY }, { (int)(position.x + size.w * currentTime), cursorY - 3 }, { cursorColor.color });
+            draw.line({ (int)(position.x + size.w * currentTime), cursorY - 1 }, { (int)(position.x + size.w * nextTime), cursorY - 1 }, { cursorColor.color });
+            draw.line({ (int)(position.x + size.w * nextTime), cursorY }, { (int)(position.x + size.w * nextTime), cursorY - 3 }, { cursorColor.color });
         } else {
-            draw.line({ position.x + size.w, cursorY }, { position.x + size.w, cursorY - 3 }, { cursorColor });
+            draw.line({ position.x + size.w, cursorY }, { position.x + size.w, cursorY - 3 }, { cursorColor.color });
         }
     }
 
@@ -101,48 +92,33 @@ protected:
     {
         int cellWidth = size.w / 3;
         int x = position.x + cellWidth * 0.5;
-        draw.textCentered({ x, position.y }, std::to_string(currentstep + 1) + "/" + std::to_string(envData->size()), 8, { textColor });
-        draw.textCentered({ x + cellWidth, position.y }, std::to_string(currentTimeMs) + "ms", 8, { textColor });
-        draw.textCentered({ x + cellWidth * 2, position.y }, std::to_string((int)(currentMod * 100)) + "%", 8, { textColor });
-    }
-
-    void setActiveColors() {
-        fillColor = fillColorActive;
-        outlineColor = outlineColorActive;
-        textColor = textColorActive;
-        cursorColor = cursorColorActive;
-    }
-
-    void setInactiveColors() {
-        fillColor = fillColorInactive;
-        outlineColor = outlineColorInactive;
-        textColor = textColorInactive;
-        cursorColor = cursorColorInactive;
+        draw.textCentered({ x, position.y }, std::to_string(currentstep + 1) + "/" + std::to_string(envData->size()), 8, { textColor.color });
+        draw.textCentered({ x + cellWidth, position.y }, std::to_string(currentTimeMs) + "ms", 8, { textColor.color });
+        draw.textCentered({ x + cellWidth * 2, position.y }, std::to_string((int)(currentMod * 100)) + "%", 8, { textColor.color });
     }
 
     void updateColors() {
-        if (encoderActive) {
-            setActiveColors();
-        } else {
-            setInactiveColors();
-        }
+        fillColor.toggle(encoderActive);
+        outlineColor.toggle(encoderActive);
+        textColor.toggle(encoderActive);
+        cursorColor.toggle(encoderActive);
     }
 
     void updateInactiveColors() {
-        fillColorInactive = darken(fillColorActive, inactiveColorRatio);
-        outlineColorInactive = darken(outlineColorActive, inactiveColorRatio);
-        textColorInactive = darken(textColorActive, inactiveColorRatio);
-        cursorColorInactive = darken(cursorColorActive, inactiveColorRatio);
+        fillColor.darkness(inactiveColorRatio);
+        outlineColor.darkness(inactiveColorRatio);
+        textColor.darkness(inactiveColorRatio);
+        cursorColor.darkness(inactiveColorRatio);
     }
 
 public:
     DrumEnvelopComponent(ComponentInterface::Props props)
         : Component(props)
         , bgColor(styles.colors.background)
-        , textColorActive(styles.colors.text)
-        , cursorColorActive(styles.colors.text)
-        , fillColorActive(styles.colors.primary)
-        , outlineColorActive(lighten(styles.colors.primary, 0.5))
+        , textColor(styles.colors.text, inactiveColorRatio)
+        , cursorColor(styles.colors.text, inactiveColorRatio)
+        , fillColor(styles.colors.primary, inactiveColorRatio)
+        , outlineColor(lighten(styles.colors.primary, 0.5), inactiveColorRatio)
     {
         updateInactiveColors();
         updateColors();
@@ -245,25 +221,25 @@ public:
 
         /*md - `FILL_COLOR: color` is the color of the envelop. */
         if (strcmp(key, "FILL_COLOR") == 0) {
-            fillColor = draw.getColor(value);
+            fillColor.setColor(draw.getColor(value), inactiveColorRatio);
             return true;
         }
 
         /*md - `OUTLINE_COLOR: color` is the color of the envelop outline. */
         if (strcmp(key, "OUTLINE_COLOR") == 0) {
-            outlineColor = draw.getColor(value);
+            outlineColor.setColor(draw.getColor(value), inactiveColorRatio);
             return true;
         }
 
         /*md - `TEXT_COLOR: color` is the color of the text. */
         if (strcmp(key, "TEXT_COLOR") == 0) {
-            textColor = draw.getColor(value);
+            textColor.setColor(draw.getColor(value), inactiveColorRatio);
             return true;
         }
 
         /*md - `CURSOR_COLOR: color` is the color of the cursor. */
         if (strcmp(key, "CURSOR_COLOR") == 0) {
-            cursorColor = draw.getColor(value);
+            cursorColor.setColor(draw.getColor(value), inactiveColorRatio);
             return true;
         }
 
