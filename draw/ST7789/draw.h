@@ -803,13 +803,8 @@ public:
 
     void circle(Point position, int radius, DrawOptions options = {}) override
     {
-        ellipse(position, radius, radius, options);
+        arc(position, radius, 0, 359, options);
     }
-
-    // void filledCircle(Point position, int radius, DrawOptions options = {}) override
-    // {
-    //     filledEllipse(position, radius, radius, options);
-    // }
 
     void filledCircle(Point position, int radius, DrawOptions options = {})
     {
@@ -1091,111 +1086,6 @@ public:
             return (diff > 0) - (diff < 0);
         diff = *(float*)a - *(float*)b;
         return (diff > 0) - (diff < 0);
-    }
-
-    void filledEllipse(Point position, int radiusX, int radiusY, DrawOptions options = {}) override
-    {
-        if ((radiusX <= 0) || (radiusY <= 0))
-            return;
-
-        int xi, yi;
-        double s, v, x, y, dx, dy;
-
-        if (radiusX >= radiusY) {
-            int n = radiusY + 1;
-            for (yi = position.y - n - 1; yi <= position.y + n + 1; yi++) {
-                if (yi < (position.y - 0.5))
-                    y = yi;
-                else
-                    y = yi + 1;
-                s = (y - position.y) / radiusY;
-                s = s * s;
-                x = 0.5;
-                if (s < 1.0) {
-                    x = radiusX * sqrt(1.0 - s);
-                    if (x >= 0.5) {
-                        line({ (int)(position.x - x + 1), yi }, { (int)(position.x + x - 1), yi }, options);
-                    }
-                }
-                s = 8 * radiusY * radiusY;
-                dy = fabs(y - position.y) - 1.0;
-                xi = position.x - x; // left
-                while (1) {
-                    dx = (position.x - xi - 1) * radiusY / radiusX;
-                    v = s - 4 * (dx - dy) * (dx - dy);
-                    if (v < 0)
-                        break;
-                    v = (sqrt(v) - 2 * (dx + dy)) / 4;
-                    if (v < 0)
-                        break;
-                    if (v > 1.0)
-                        v = 1.0;
-                    pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
-                    xi -= 1;
-                }
-                xi = position.x + x; // right
-                while (1) {
-                    dx = (xi - position.x) * radiusY / radiusX;
-                    v = s - 4 * (dx - dy) * (dx - dy);
-                    if (v < 0)
-                        break;
-                    v = (sqrt(v) - 2 * (dx + dy)) / 4;
-                    if (v < 0)
-                        break;
-                    if (v > 1.0)
-                        v = 1.0;
-                    pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
-                    xi += 1;
-                }
-            }
-        } else {
-            int n = radiusX + 1;
-            for (xi = position.x - n - 1; xi <= position.x + n + 1; xi++) {
-                if (xi < (position.x - 0.5))
-                    x = xi;
-                else
-                    x = xi + 1;
-                s = (x - position.x) / radiusX;
-                s = s * s;
-                y = 0.5;
-                if (s < 1.0) {
-                    y = radiusY * sqrt(1.0 - s);
-                    if (y >= 0.5) {
-                        line({ xi, (int)(position.y - y + 1) }, { xi, (int)(position.y + y - 1) }, options);
-                    }
-                }
-                s = 8 * radiusX * radiusX;
-                dx = fabs(x - position.x) - 1.0;
-                yi = position.y - y; // top
-                while (1) {
-                    dy = (position.y - yi - 1) * radiusX / radiusY;
-                    v = s - 4 * (dy - dx) * (dy - dx);
-                    if (v < 0)
-                        break;
-                    v = (sqrt(v) - 2 * (dy + dx)) / 4;
-                    if (v < 0)
-                        break;
-                    if (v > 1.0)
-                        v = 1.0;
-                    pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
-                    yi -= 1;
-                }
-                yi = position.y + y; // bottom
-                while (1) {
-                    dy = (yi - position.y) * radiusX / radiusY;
-                    v = s - 4 * (dy - dx) * (dy - dx);
-                    if (v < 0)
-                        break;
-                    v = (sqrt(v) - 2 * (dy + dx)) / 4;
-                    if (v < 0)
-                        break;
-                    if (v > 1.0)
-                        v = 1.0;
-                    pixel({ xi, yi }, { { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * v) } });
-                    yi += 1;
-                }
-            }
-        }
     }
 
     void pixel(Point position, DrawOptions options = {}) override

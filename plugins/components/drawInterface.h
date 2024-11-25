@@ -103,8 +103,6 @@ public:
     virtual void filledRect(Point position, Size size, uint8_t radius, DrawOptions options = {}) { }
     virtual void rect(Point position, Size size, uint8_t radius, DrawOptions options = {}) { }
     virtual void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) { }
-    virtual void filledEllipse(Point position, int radiusX, int radiusY, DrawOptions options = {}) { }
-    virtual void ellipse(Point position, int radiusX, int radiusY, DrawOptions options = {}) { }
     virtual void filledPolygon(std::vector<Point> points, DrawOptions options = {}) { }
     virtual void arc(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) { }
     virtual void circle(Point position, int radius, DrawOptions options = {}) { }

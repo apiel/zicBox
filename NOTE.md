@@ -1,5 +1,11 @@
 ## Pixel TODO
 
+
+- TODO everything should always use AA mode...
+- TODO remove ellipse
+- TODO optimise polygon algorithm
+- TODO add thickness to line
+
 - TODO make single config file...
 - TODO define first audio engine and then load them...
 

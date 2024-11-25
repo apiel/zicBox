@@ -257,37 +257,23 @@ public:
         aaArcRGBA(renderer, position.x, position.y, radius, radius, startAngle, endAngle, 1, color.r, color.g, color.b, color.a);
     }
 
-    void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) override
+    void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {})
     {
         Color color = options.color;
         // https://github.com/rtrussell/BBCSDL/blob/master/include/SDL2_gfxPrimitives.h
-        aaFilledPieRGBA(renderer, position.x, position.y, radius, radius, startAngle, endAngle, 0, color.r, color.g, color.b, color.a);
+        aaFilledEllipseRGBA(renderer, position.x, position.y, radius, radius, color.r, color.g, color.b, color.a);
     }
 
     void circle(Point position, int radius, DrawOptions options = {}) override
     {
-        // arc(position, radius, 0, 360, options);
-
-        // to use ellipse algo
+        Color color = options.color;
+        // https://github.com/rtrussell/BBCSDL/blob/master/include/SDL2_gfxPrimitives.h
+        aaellipseRGBA(renderer, position.x, position.y, radius, radius, color.r, color.g, color.b, color.a);
     }
 
     void filledCircle(Point position, int radius, DrawOptions options = {}) override
     {
         filledPie(position, radius, 0, 360, options);
-    }
-
-    void filledEllipse(Point position, int radiusX, int radiusY, DrawOptions options = {}) override
-    {
-        Color color = options.color;
-        // https://github.com/rtrussell/BBCSDL/blob/master/include/SDL2_gfxPrimitives.h
-        aaFilledEllipseRGBA(renderer, position.x, position.y, radiusX, radiusY, color.r, color.g, color.b, color.a);
-    }
-
-    void ellipse(Point position, int radiusX, int radiusY, DrawOptions options = {}) override
-    {
-        Color color = options.color;
-        // https://github.com/rtrussell/BBCSDL/blob/master/include/SDL2_gfxPrimitives.h
-        aaellipseRGBA(renderer, position.x, position.y, radiusX, radiusY, color.r, color.g, color.b, color.a);
     }
 
     void filledPolygon(std::vector<Point> points, DrawOptions options = {}) override

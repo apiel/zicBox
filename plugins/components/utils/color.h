@@ -3,6 +3,8 @@
 
 #include "../drawInterface.h"
 
+#include <string>
+
 Color hex2rgb(char* hex)
 {
 
@@ -16,7 +18,7 @@ Color hex2rgb(char* hex)
     });
 }
 
-string rgbToString(Color color)
+std::string rgbToString(Color color)
 {
     char buffer[8];
     sprintf(buffer, "#%02X%02X%02X", color.r, color.g, color.b);
