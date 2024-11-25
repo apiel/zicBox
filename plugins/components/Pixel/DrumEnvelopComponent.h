@@ -4,7 +4,7 @@
 #include "../../../helpers/range.h"
 #include "../component.h"
 #include "../utils/color.h"
-#include "utils/ToggleColor.h"
+#include "utils/GroupColorComponent.h"
 
 /*md
 ## Drum envelop
@@ -12,7 +12,7 @@
 Show a representation of a drum envelop (envelop with relative time and modulation, without sustain).
 */
 
-class DrumEnvelopComponent : public Component {
+class DrumEnvelopComponent : public GroupColorComponent {
 protected:
     struct Data {
         float modulation;
@@ -39,14 +39,12 @@ protected:
 
     Color bgColor;
 
-    const float inactiveColorRatio = 0.5f; // Must be define before ToggleColor, could also use #define
     ToggleColor fillColor;
     ToggleColor outlineColor;
     ToggleColor textColor;
     ToggleColor cursorColor;
 
 
-    bool encoderActive = true;
     int encoderPhase = -1;
     int encoderTime = -1;
     int encoderModulation = -1;
@@ -98,16 +96,9 @@ protected:
         draw.textCentered({ x + cellWidth * 2, position.y }, std::to_string((int)(currentMod * 100)) + "%", 8, { textColor.color });
     }
 
-    void updateColors() {
-        fillColor.toggle(encoderActive);
-        outlineColor.toggle(encoderActive);
-        textColor.toggle(encoderActive);
-        cursorColor.toggle(encoderActive);
-    }
-
 public:
     DrumEnvelopComponent(ComponentInterface::Props props)
-        : Component(props)
+        : GroupColorComponent(props, { &fillColor, &outlineColor, &textColor, &cursorColor })
         , bgColor(styles.colors.background)
         , textColor(styles.colors.text, inactiveColorRatio)
         , cursorColor(styles.colors.text, inactiveColorRatio)
@@ -138,7 +129,7 @@ public:
 
     void onEncoder(int id, int8_t direction) override
     {
-        if (encoderActive) {
+        if (isActive) {
             if (id == encoderPhase) {
                 plugin->data(currentStepDataId, &direction);
                 renderNext();
@@ -162,8 +153,8 @@ public:
         if (group == index || group == -1) {
             shouldActivate = true;
         }
-        if (shouldActivate != encoderActive) {
-            encoderActive = shouldActivate;
+        if (shouldActivate != isActive) {
+            isActive = shouldActivate;
             updateColors();
             renderNext();
         }
@@ -266,7 +257,8 @@ public:
             return true;
         }
 
-        return false;
+        /*md - `INACTIVE_COLOR_RATIO: 0.0 - 1.0` is the ratio of darkness for the inactive color (default: 0.5). */
+        return GroupColorComponent::config(key, value);
     }
 };
 
