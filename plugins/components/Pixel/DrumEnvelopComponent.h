@@ -277,6 +277,7 @@ public:
         /*md - `INACTIVE_COLOR_RATIO: ratio` is the ratio of darkness for inactive color.*/
         if (strcmp(key, "INACTIVE_COLOR_RATIO") == 0) {
             inactiveColorRatio = atof(value);
+            updateInactiveColors();
             return true;
         }
 
