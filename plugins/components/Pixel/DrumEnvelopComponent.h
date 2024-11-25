@@ -39,7 +39,7 @@ protected:
 
     Color bgColor;
 
-    float inactiveColorRatio = 0.5f; // Must be define before ToggleColor
+    const float inactiveColorRatio = 0.5f; // Must be define before ToggleColor, could also use #define
     ToggleColor fillColor;
     ToggleColor outlineColor;
     ToggleColor textColor;
@@ -103,13 +103,6 @@ protected:
         outlineColor.toggle(encoderActive);
         textColor.toggle(encoderActive);
         cursorColor.toggle(encoderActive);
-    }
-
-    void updateInactiveColors() {
-        fillColor.darkness(inactiveColorRatio);
-        outlineColor.darkness(inactiveColorRatio);
-        textColor.darkness(inactiveColorRatio);
-        cursorColor.darkness(inactiveColorRatio);
     }
 
 public:
@@ -270,14 +263,6 @@ public:
         /*md - `ENCODER_MODULATION: id` is the id of the encoder to control the modulation. */
         if (strcmp(key, "ENCODER_MODULATION") == 0) {
             encoderModulation = atoi(value);
-            return true;
-        }
-
-        // inactiveColorRatio
-        /*md - `INACTIVE_COLOR_RATIO: ratio` is the ratio of darkness for inactive color.*/
-        if (strcmp(key, "INACTIVE_COLOR_RATIO") == 0) {
-            inactiveColorRatio = atof(value);
-            updateInactiveColors();
             return true;
         }
 
