@@ -211,8 +211,8 @@ public:
             renderEncoder();
         }
 
-        draw.line({ 100, 150 }, { 50, 170 }, { colors.id, .thickness = 4 });
-        draw.line({ 100, 150 }, { 50, 130 }, { colors.id, .thickness = 4 });
+        draw.line({ 100, 150 }, { 100, 170 }, { colors.id, .thickness = 4 });
+        draw.line({ 100, 150 }, { 100, 130 }, { colors.id, .thickness = 4 });
         draw.line({ 100, 150 }, { 150, 170 }, { colors.id, .thickness = 4 });
         draw.line({ 100, 150 }, { 150, 130 }, { colors.id, .thickness = 4 });
     }
