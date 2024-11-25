@@ -41,6 +41,10 @@ protected:
     Color textColor;
     Color cursorColor;
 
+    int encoderPhase = -1;
+    int encoderTime = -1;
+    int encoderModulation = -1;
+
     void renderEnvelop()
     {
         Data data = envData->at(0);
@@ -119,13 +123,13 @@ public:
 
     void onEncoder(int id, int8_t direction) override
     {
-        if (id == 0) {
+        if (id == encoderPhase) {
             plugin->data(currentStepDataId, &direction);
             renderNext();
-        } else if (id == 1) {
+        } else if (id == encoderTime) {
             plugin->data(timeDataId, &direction);
             renderNext();
-        } else if (id == 2) {
+        } else if (id == encoderModulation) {
             plugin->data(modDataId, &direction);
             renderNext();
         } else {
@@ -211,6 +215,24 @@ public:
         /*md - `FILLED: true/false` is if the envelop should be filled (default: true). */
         if (strcmp(key, "FILLED") == 0) {
             filled = strcmp(value, "true") == 0;
+            return true;
+        }
+
+        /*md - `ENCODER_PHASE: id` is the id of the encoder to control the phase. */
+        if (strcmp(key, "ENCODER_PHASE") == 0) {
+            encoderPhase = atoi(value);
+            return true;
+        }
+
+        /*md - `ENCODER_TIME: id` is the id of the encoder to control the time. */
+        if (strcmp(key, "ENCODER_TIME") == 0) {
+            encoderTime = atoi(value);
+            return true;
+        }
+
+        /*md - `ENCODER_MODULATION: id` is the id of the encoder to control the modulation. */
+        if (strcmp(key, "ENCODER_MODULATION") == 0) {
+            encoderModulation = atoi(value);
             return true;
         }
 

@@ -83,6 +83,14 @@ public:
                 data.push_back({ 0.0f, 1.0f });
             }
             float value = data[currentEditPhase].time + ((*direction) * 0.01f);
+            
+            if (currentEditPhase > 1 && value <= data[currentEditPhase - 1].time) {
+                return &data[currentEditPhase].time;
+            }
+            if (currentEditPhase < data.size() - 1 && value >= data[currentEditPhase + 1].time) {
+                return &data[currentEditPhase].time;
+            }
+
             data[currentEditPhase].time = range(value, 0.0f, 1.0f);
         }
         return &data[currentEditPhase].time;
