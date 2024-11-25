@@ -58,7 +58,6 @@ protected:
     {
         if (showGroup && encoderActive) {
             draw.filledRect({ position.x + margin, position.y + margin }, { 12, 12 }, { colors.id });
-            // draw.filledEllipse({ position.x + margin + 6, position.y + margin + 6 }, 6, 6, colors.id);
             draw.textCentered({ position.x + margin + 6, position.y + margin }, std::to_string(encoderId + 1).c_str(), 8, { colors.background });
         }
     }
@@ -67,7 +66,7 @@ protected:
     {
         if (showKnob) {
             int knobRadius = insideRadius - knobMargin;
-            draw.filledEllipse({ knobCenter.x, knobCenter.y - marginTop }, knobRadius, knobRadius, { colors.knob });
+            draw.filledCircle({ knobCenter.x, knobCenter.y - marginTop }, knobRadius, { colors.knob });
 
             // draw dot at value position
             int cx = knobCenter.x;
@@ -78,7 +77,7 @@ protected:
             int x = cx + r * cos(angleRadians);
             int y = cy + r * sin(angleRadians);
 
-            draw.filledEllipse({ x, y }, 2, 2, { colors.knobDot });
+            draw.filledCircle({ x, y }, 2, { colors.knobDot });
         }
     }
 
@@ -96,7 +95,7 @@ protected:
             }
             draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, endAngle, { colors.bar });
         }
-        draw.filledEllipse({ knobCenter.x, knobCenter.y - marginTop }, insideRadius, insideRadius, { colors.background });
+        draw.filledCircle({ knobCenter.x, knobCenter.y - marginTop }, insideRadius, { colors.background });
     }
 
     void renderCenteredBar()
@@ -114,7 +113,7 @@ protected:
         } else if (val < 140) {
             draw.filledPie({ knobCenter.x, knobCenter.y - marginTop }, radius, 270 - (140 - val), 270, { colors.bar });
         }
-        draw.filledEllipse({ knobCenter.x, knobCenter.y - marginTop }, insideRadius, insideRadius, { colors.background });
+        draw.filledCircle({ knobCenter.x, knobCenter.y - marginTop }, insideRadius, { colors.background });
     }
 
     void renderUnit()

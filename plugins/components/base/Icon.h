@@ -323,7 +323,7 @@ public:
         };
         // aalines
         draw.lines(points, { color });
-        draw.filledEllipse({ (int)(x + size * 0.4), (int)(position.y + size * 0.75) }, size * 0.25, size * 0.25, { color });
+        draw.filledCircle({ (int)(x + size * 0.4), (int)(position.y + size * 0.75) }, size * 0.25, { color });
     }
 
 protected:
