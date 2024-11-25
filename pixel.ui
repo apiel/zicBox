@@ -56,7 +56,7 @@ $track=1
   COMPONENT: DrumEnvelop 0 60 $3/4W 50
     TRACK: $track
     PLUGIN: SynthDrum23
-    ENVELOP_DATA_ID: 0
+    ENVELOP_DATA_ID: 4
 
 # TODO activate encoder with arrow up/down
   COMPONENT: Encoder2 $3/4W 60 $1/4W 50

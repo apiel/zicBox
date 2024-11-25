@@ -3,6 +3,7 @@
 
 #include "../../../helpers/range.h"
 #include "../component.h"
+#include "../utils/color.h"
 
 /*md
 ## Drum envelop
@@ -32,25 +33,36 @@ protected:
     Point envPosition = { 0, 0 };
 
     bool filled = true;
+    bool outline = true;
 
-    Color envColor;
+    Color fillColor;
+    Color outlineColor;
     Color bgColor;
     Color textColor;
     Color cursorColor;
 
     void renderEnvelop()
     {
-        Data& data = envData->at(0);
+        Data data = envData->at(0);
         std::vector<Point> points;
-        points.push_back({ (int)(envPosition.x + size.w * data.time), (int)(envPosition.y + envelopHeight - envelopHeight * data.modulation) });
-        for (int i = 1; i < envData->size(); i++) {
-            Data& data2 = envData->at(i);
-            points.push_back({ (int)(envPosition.x + size.w * data2.time), (int)(envPosition.y + envelopHeight - envelopHeight * data2.modulation) });
+        points.push_back({ envPosition.x, envPosition.y + envelopHeight });
+        if (data.modulation != 0.0f) {
+            points.push_back({ envPosition.x, (int)(envPosition.y + envelopHeight - envelopHeight * data.modulation) });
         }
+        for (int i = 1; i < envData->size(); i++) {
+            data = envData->at(i);
+            points.push_back({ (int)(envPosition.x + size.w * data.time), (int)(envPosition.y + envelopHeight - envelopHeight * data.modulation) });
+        }
+
+        if (data.modulation != 0.0f) {
+            points.push_back({ (int)(envPosition.x + size.w), envPosition.y + envelopHeight });
+        }
+
         if (filled) {
-            draw.filledPolygon(points, { envColor });
-        } else {
-            draw.lines(points, { envColor });
+            draw.filledPolygon(points, { fillColor });
+        }
+        if (outline) {
+            draw.lines(points, { outlineColor });
         }
     }
 
@@ -82,7 +94,8 @@ public:
         , bgColor(styles.colors.background)
         , textColor(styles.colors.text)
         , cursorColor(styles.colors.text)
-        , envColor(styles.colors.primary)
+        , fillColor(styles.colors.primary)
+        , outlineColor(lighten(styles.colors.primary, 0.5))
     {
         envPosition = { position.x, position.y + 10 };
         envelopHeight = size.h - 6 - 10;
@@ -165,9 +178,15 @@ public:
             return true;
         }
 
-        /*md - `ENVELOP_COLOR: color` is the color of the envelop. */
-        if (strcmp(key, "ENVELOP_COLOR") == 0) {
-            envColor = draw.getColor(value);
+        /*md - `FILL_COLOR: color` is the color of the envelop. */
+        if (strcmp(key, "FILL_COLOR") == 0) {
+            fillColor = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `OUTLINE_COLOR: color` is the color of the envelop outline. */
+        if (strcmp(key, "OUTLINE_COLOR") == 0) {
+            outlineColor = draw.getColor(value);
             return true;
         }
 
@@ -180,6 +199,18 @@ public:
         /*md - `CURSOR_COLOR: color` is the color of the cursor. */
         if (strcmp(key, "CURSOR_COLOR") == 0) {
             cursorColor = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `OUTLINE: true/false` is if the envelop should be outlined (default: true). */
+        if (strcmp(key, "OUTLINE") == 0) {
+            outline = strcmp(value, "true") == 0;
+            return true;
+        }
+
+        /*md - `FILLED: true/false` is if the envelop should be filled (default: true). */
+        if (strcmp(key, "FILLED") == 0) {
+            filled = strcmp(value, "true") == 0;
             return true;
         }
 
