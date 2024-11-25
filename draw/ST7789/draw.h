@@ -563,6 +563,7 @@ public:
         }
     }
 
+    // FIXME thickness is not working properly
     void rect(Point position, Size size, DrawOptions options = {}) override
     {
         Point a = position;
@@ -575,15 +576,14 @@ public:
         line(d, a, options);
     }
 
-    // FIXME thickness is not working properly
     void filledRect(Point position, Size size, uint8_t radius, DrawOptions options = {}) override
     {
         filledRect({ position.x + radius, position.y }, { size.w - 2 * radius, size.h }, options);
         filledRect({ position.x, position.y + radius }, { size.w, size.h - 2 * radius }, options);
         filledPie({ position.x + radius, position.y + radius }, radius, 180, 270, options);
-        filledPie({ position.x + size.w - radius, position.y + radius }, radius, 270, 360, options);
+        filledPie({ position.x + size.w - radius + 1, position.y + radius }, radius, 270, 360, options);
         filledPie({ position.x + radius, position.y + size.h - radius }, radius, 90, 180, options);
-        filledPie({ position.x + size.w - radius, position.y + size.h - radius }, radius, 0, 90, options);
+        filledPie({ position.x + size.w - radius + 1, position.y + size.h - radius }, radius, 0, 90, options);
     }
 
     // FIXME thickness is not working properly
