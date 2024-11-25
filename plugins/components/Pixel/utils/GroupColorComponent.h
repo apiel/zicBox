@@ -33,6 +33,19 @@ public:
     {
     }
 
+    void onGroupChanged(int8_t index) override
+    {
+        bool shouldActivate = false;
+        if (group == index || group == -1) {
+            shouldActivate = true;
+        }
+        if (shouldActivate != isActive) {
+            isActive = shouldActivate;
+            updateColors();
+            renderNext();
+        }
+    }
+
     bool config(char* key, char* value)
     {
         if (strcmp(key, "INACTIVE_COLOR_RATIO") == 0) {
