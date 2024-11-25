@@ -192,6 +192,19 @@ public:
     void setGroup(int8_t index)
     {
         int8_t group = index == -1 ? 0 : index;
+
+        // If group is out of bound, we set it to 0
+        bool usable = false;
+        for (auto& component : ui.view->components) {
+            if (component->group == group) {
+                usable = true;
+                break;
+            }
+        }
+        if (!usable) {
+            group = 0;
+        }
+
         for (auto& component : ui.view->components) {
             component->onGroupChanged(group);
         }
