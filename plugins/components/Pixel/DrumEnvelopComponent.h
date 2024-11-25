@@ -36,14 +36,15 @@ protected:
     bool filled = true;
     bool outline = true;
 
+
     Color bgColor;
 
+    float inactiveColorRatio = 0.5f; // Must be define before ToggleColor
     ToggleColor fillColor;
     ToggleColor outlineColor;
     ToggleColor textColor;
     ToggleColor cursorColor;
 
-    float inactiveColorRatio = 0.5f;
 
     bool encoderActive = true;
     int encoderPhase = -1;
@@ -120,7 +121,6 @@ public:
         , fillColor(styles.colors.primary, inactiveColorRatio)
         , outlineColor(lighten(styles.colors.primary, 0.5), inactiveColorRatio)
     {
-        updateInactiveColors();
         updateColors();
 
         envPosition = { position.x, position.y + 10 };
