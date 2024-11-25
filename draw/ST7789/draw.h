@@ -87,6 +87,19 @@ protected:
 
     void lineVertical(Point start, Point end, DrawOptions options = {})
     {
+        if (options.thickness == 1) {
+            lineVertical1px(start, end, options);
+        } else {
+            int startx = start.x - options.thickness * 0.5;
+            int endx = end.x - options.thickness * 0.5;
+            for (int i = 0; i < options.thickness; i++) {
+                lineVertical1px({ startx + i, start.y }, { endx + i, end.y }, options);
+            }
+        }
+    }
+
+    void lineVertical1px(Point start, Point end, DrawOptions options = {})
+    {
         int y = start.y;
         int len = end.y;
         if (start.y > end.y) {
@@ -99,6 +112,19 @@ protected:
     }
 
     void lineHorizontal(Point start, Point end, DrawOptions options = {})
+    {
+        if (options.thickness == 1) {
+            lineHorizontal1px(start, end, options);
+        } else {
+            int starty = start.y - options.thickness * 0.5;
+            int endy = end.y - options.thickness * 0.5;
+            for (int i = 0; i < options.thickness; i++) {
+                lineHorizontal1px({ start.x, starty + i }, { end.x, endy + i }, options);
+            }
+        }
+    }
+
+    void lineHorizontal1px(Point start, Point end, DrawOptions options = {})
     {
         int x = start.x;
         int len = end.x;
