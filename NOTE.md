@@ -1,12 +1,5 @@
 ## Pixel TODO
 
-- TODO add thickness to line
-
-- TODO make single config file...
-- TODO define first audio engine and then load them...
-
-- TODO for generic encoder, make a square around the value...
-
 - TODO make dustscript part of the repo instead to be external dependency...
 
 - TODO get rid of SDL component andunify everything
@@ -15,6 +8,8 @@
       --> at the end there should be a common draw library to draw shapes
                 and specifc parent lib to render pixels to the screen
       --> however on SSD1306 there cannot be anti alias, so maybe this one should stay separated...
+
+- FIXME thickness on rectangle
 
 #### Pixel seq
 
