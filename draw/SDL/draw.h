@@ -293,26 +293,22 @@ public:
     void line(Point start, Point end, DrawOptions options = {}) override
     {
         Color color = options.color;
-        if (options.antiAliasing) {
-            // https://github.com/rtrussell/BBCSDL/blob/master/include/SDL2_gfxPrimitives.h
-            aalineRGBA(renderer, start.x, start.y, end.x, end.y, color.r, color.g, color.b, color.a);
-        } else {
-            SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-            SDL_RenderDrawLine(renderer, start.x, start.y, end.x, end.y);
-        }
+        // https://github.com/rtrussell/BBCSDL/blob/master/include/SDL2_gfxPrimitives.h
+        aalineRGBA(renderer, start.x, start.y, end.x, end.y, color.r, color.g, color.b, color.a);
+
+        // SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+        // SDL_RenderDrawLine(renderer, start.x, start.y, end.x, end.y);
     }
 
     void lines(std::vector<Point> points, DrawOptions options = {}) override
     {
         Color color = options.color;
-        if (options.antiAliasing) {
-            for (int i = 0; i < points.size() - 1; i++) {
-                aalineRGBA(renderer, points[i].x, points[i].y, points[i + 1].x, points[i + 1].y, color.r, color.g, color.b, color.a);
-            }
-        } else {
-            SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-            SDL_RenderDrawLines(renderer, (SDL_Point*)points.data(), points.size());
+        for (int i = 0; i < points.size() - 1; i++) {
+            aalineRGBA(renderer, points[i].x, points[i].y, points[i + 1].x, points[i + 1].y, color.r, color.g, color.b, color.a);
         }
+
+        // SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+        // SDL_RenderDrawLines(renderer, (SDL_Point*)points.data(), points.size());
     }
 
     void pixel(Point position, DrawOptions options = {}) override

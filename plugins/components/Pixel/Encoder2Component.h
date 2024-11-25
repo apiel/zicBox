@@ -210,8 +210,6 @@ public:
         if (value != NULL) {
             renderEncoder();
         }
-
-        draw.circle({ 100, 150}, 30, { colors.id, .thickness = 4 });
     }
 
     bool config(char* key, char* params)

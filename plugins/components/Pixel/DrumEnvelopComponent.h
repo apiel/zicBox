@@ -48,9 +48,9 @@ protected:
             points.push_back({ (int)(envPosition.x + size.w * data2.time), (int)(envPosition.y + envelopHeight - envelopHeight * data2.modulation) });
         }
         if (filled) {
-            draw.filledPolygon(points, { envColor, .antiAliasing = true });
+            draw.filledPolygon(points, { envColor });
         } else {
-            draw.lines(points, { envColor, .antiAliasing = true });
+            draw.lines(points, { envColor });
         }
     }
 

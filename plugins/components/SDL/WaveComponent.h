@@ -130,7 +130,7 @@ public:
                     int y1 = wavePosition.y + (h - (int)(bufferSamples[i] * h));
                     int i2 = (xIndex + 1) * yRatio;
                     int y2 = wavePosition.y + (h - (int)(bufferSamples[i2] * h));
-                    draw.line({ x, y1 }, { x + 1, y2 }, { colors.samples, .antiAliasing = true });
+                    draw.line({ x, y1 }, { x + 1, y2 }, { colors.samples });
                 }
                 {
                     // draw line from center

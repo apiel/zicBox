@@ -134,7 +134,7 @@ public:
 #ifdef ADSR_ANIMATION
         renderStateProgression(points);
 #endif
-        draw.lines(points, { colors.line, .antiAliasing = true });
+        draw.lines(points, { colors.line });
 
         for (Point p : points) {
             draw.filledRect({ p.x - 2, p.y - 2 }, { 4, 4 }, { colors.line });
