@@ -113,47 +113,6 @@ protected:
 
     void lineDiagonal(Point start, Point end, DrawOptions options = {})
     {
-        if (options.antiAliasing) {
-            aaLineDiagonal(start, end, options);
-            return;
-        }
-        unsigned int dx = (end.x > start.x ? end.x - start.x : start.x - end.x);
-        short xstep = end.x > start.x ? 1 : -1;
-        unsigned int dy = (end.y > start.y ? end.y - start.y : start.y - end.y);
-        short ystep = end.y > start.y ? 1 : -1;
-        int col = start.x, row = start.y;
-
-        if (dx < dy) {
-            int t = -(dy >> 1);
-            while (true) {
-                pixel({ col, row }, options);
-                if (row == end.y)
-                    return;
-                row += ystep;
-                t += dx;
-                if (t >= 0) {
-                    col += xstep;
-                    t -= dy;
-                }
-            }
-        } else {
-            int t = -(dx >> 1);
-            while (true) {
-                pixel({ col, row }, options);
-                if (col == end.x)
-                    return;
-                col += xstep;
-                t += dy;
-                if (t >= 0) {
-                    row += ystep;
-                    t -= dx;
-                }
-            }
-        }
-    }
-
-    void aaLineDiagonal(Point start, Point end, DrawOptions options, bool draw_endpoint = true)
-    {
         int32_t xx0 = start.x;
         int32_t yy0 = start.y;
         int32_t xx1 = end.x;
@@ -218,9 +177,42 @@ protected:
                 pixelWeight({ xx0, y0p1 }, options, wgt);
             }
         }
+    }
 
-        if (draw_endpoint) {
-            pixel({ end.x, end.y }, options);
+    void fastLineDiagonal(Point start, Point end, DrawOptions options = {})
+    {
+        unsigned int dx = (end.x > start.x ? end.x - start.x : start.x - end.x);
+        short xstep = end.x > start.x ? 1 : -1;
+        unsigned int dy = (end.y > start.y ? end.y - start.y : start.y - end.y);
+        short ystep = end.y > start.y ? 1 : -1;
+        int col = start.x, row = start.y;
+
+        if (dx < dy) {
+            int t = -(dy >> 1);
+            while (true) {
+                pixel({ col, row }, options);
+                if (row == end.y)
+                    return;
+                row += ystep;
+                t += dx;
+                if (t >= 0) {
+                    col += xstep;
+                    t -= dy;
+                }
+            }
+        } else {
+            int t = -(dx >> 1);
+            while (true) {
+                pixel({ col, row }, options);
+                if (col == end.x)
+                    return;
+                col += xstep;
+                t += dy;
+                if (t >= 0) {
+                    row += ystep;
+                    t -= dx;
+                }
+            }
         }
     }
 
@@ -652,8 +644,8 @@ public:
         int startY = position.y + (int)(r * sin(startRad));
         int endX = position.x + (int)(r * cos(endRad));
         int endY = position.y + (int)(r * sin(endRad));
-        line({ startX, startY }, position, { options.color, .antiAliasing = true });
-        line({ endX, endY }, position, { options.color, .antiAliasing = true });
+        line({ startX, startY }, position, { options.color });
+        line({ endX, endY }, position, { options.color });
     }
 
     void arc(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) override
@@ -879,204 +871,52 @@ public:
 
     void filledPolygon(std::vector<Point> points, DrawOptions options = {}) override
     {
-        int i, j, xi, yi, result;
-        double x1, x2, y0, y1, y2, minx, maxx, prec;
-        float *list, *strip;
-
         if (points.size() < 3)
-            return;
+            return; // A polygon must have at least 3 points
 
-        int n = points.size();
-        // Find extrema:
-        minx = 99999.0;
-        maxx = -99999.0;
-        prec = 0.00001;
-        for (i = 0; i < n; i++) {
-            double x = points[i].x;
-            double y = fabs(points[i].y);
-            if (x < minx)
-                minx = x;
-            if (x > maxx)
-                maxx = x;
-            if (y > prec)
-                prec = y;
-        }
-        minx = floor(minx);
-        maxx = floor(maxx);
-        prec = floor(pow(2, 19) / prec);
+        lines(points, options);
+        line(points[0], points[points.size() - 1], options);
 
-#define POLYSIZE 16384
-
-        list = (float*)malloc(POLYSIZE * sizeof(float));
-        if (list == NULL)
-            return;
-
-        // Build vertex list.  Special x-values used to indicate vertex type:
-        // x = -100001.0 indicates /\, x = -100003.0 indicates \/, x = -100002.0 neither
-        yi = 0;
-        y0 = floor(points[n - 1].y * prec) / prec;
-        y1 = floor(points[0].y * prec) / prec;
-        for (i = 1; i <= n; i++) {
-            if (yi > POLYSIZE - 4) {
-                free(list);
-                return;
-            }
-            y2 = floor(points[i % n].y * prec) / prec;
-            if (((y1 < y2) - (y1 > y2)) == ((y0 < y1) - (y0 > y1))) {
-                list[yi++] = -100002.0;
-                list[yi++] = y1;
-                list[yi++] = -100002.0;
-                list[yi++] = y1;
-            } else {
-                if (y0 != y1) {
-                    list[yi++] = (y1 < y0) - (y1 > y0) - 100002.0;
-                    list[yi++] = y1;
-                }
-                if (y1 != y2) {
-                    list[yi++] = (y1 < y2) - (y1 > y2) - 100002.0;
-                    list[yi++] = y1;
-                }
-            }
-            y0 = y1;
-            y1 = y2;
-        }
-        xi = yi;
-
-        // Sort vertex list:
-        qsort(list, yi / 2, sizeof(float) * 2, Draw::gfxPrimitivesCompareFloat2);
-
-        // Append line list to vertex list:
-        for (i = 1; i <= n; i++) {
-            double x, y;
-            double d = 0.5 / prec;
-
-            x1 = points[i - 1].x;
-            y1 = floor(points[i - 1].y * prec) / prec;
-            x2 = points[i % n].x;
-            y2 = floor(points[i % n].y * prec) / prec;
-
-            if (y2 < y1) {
-                double tmp;
-                tmp = x1;
-                x1 = x2;
-                x2 = tmp;
-                tmp = y1;
-                y1 = y2;
-                y2 = tmp;
-            }
-            if (y2 != y1)
-                y0 = (x2 - x1) / (y2 - y1);
-
-            for (j = 1; j < xi; j += 4) {
-                y = list[j];
-                if (((y + d) <= y1) || (y == list[j + 4]))
-                    continue;
-                if ((y -= d) >= y2)
-                    break;
-                if (yi > POLYSIZE - 4) {
-                    free(list);
-                    return;
-                }
-                if (y > y1) {
-                    list[yi++] = x1 + y0 * (y - y1);
-                    list[yi++] = y;
-                }
-                y += d * 2.0;
-                if (y < y2) {
-                    list[yi++] = x1 + y0 * (y - y1);
-                    list[yi++] = y;
-                }
-            }
-
-            y = floor(y1) + 1.0;
-            while (y <= y2) {
-                x = x1 + y0 * (y - y1);
-                if (yi > POLYSIZE - 2) {
-                    free(list);
-                    return;
-                }
-                list[yi++] = x;
-                list[yi++] = y;
-                y += 1.0;
-            }
+        // Compute the bounding box of the polygon
+        int minY = points[0].y, maxY = points[0].y;
+        for (const auto& p : points) {
+            minY = std::min(minY, p.y);
+            maxY = std::max(maxY, p.y);
         }
 
-        // Sort combined list:
-        qsort(list, yi / 2, sizeof(float) * 2, Draw::gfxPrimitivesCompareFloat2);
+        // Use a scan-line approach to fill the polygon
+        for (int y = minY; y <= maxY; ++y) {
+            std::vector<int> intersections;
 
-        // Plot lines:
-        strip = (float*)malloc((maxx - minx + 2) * sizeof(float));
-        if (strip == NULL) {
-            free(list);
-            return;
-        }
-        memset(strip, 0, (maxx - minx + 2) * sizeof(float));
-        n = yi;
-        yi = list[1];
-        j = 0;
+            // Find intersections of the polygon with the current scan line
+            for (size_t i = 0; i < points.size(); ++i) {
+                Point p1 = points[i];
+                Point p2 = points[(i + 1) % points.size()]; // Wrap around to the first point
 
-        for (i = 0; i < n - 7; i += 4) {
-            float x1 = list[i + 0];
-            float y1 = list[i + 1];
-            float x3 = list[i + 2];
-            float x2 = list[i + j + 0];
-            float y2 = list[i + j + 1];
-            float x4 = list[i + j + 2];
-
-            if (x1 + x3 == -200002.0)
-                j += 4;
-            else if (x1 + x3 == -200006.0)
-                j -= 4;
-            else if ((x1 >= minx) && (x2 >= minx)) {
-                if (x1 > x2) {
-                    float tmp = x1;
-                    x1 = x2;
-                    x2 = tmp;
-                }
-                if (x3 > x4) {
-                    float tmp = x3;
-                    x3 = x4;
-                    x4 = tmp;
-                }
-
-                for (xi = x1 - minx; xi <= x4 - minx; xi++) {
-                    float u, v;
-                    float x = minx + xi;
-                    if (x < x2)
-                        u = (x - x1 + 1) / (x2 - x1 + 1);
-                    else
-                        u = 1.0;
-                    if (x >= x3 - 1)
-                        v = (x4 - x) / (x4 - x3 + 1);
-                    else
-                        v = 1.0;
-                    if ((u > 0.0) && (v > 0.0))
-                        strip[xi] += (y2 - y1) * (u + v - 1.0);
+                // Check if the scan line crosses the edge
+                if ((p1.y <= y && p2.y > y) || (p2.y <= y && p1.y > y)) {
+                    // Compute the x-coordinate of the intersection
+                    float t = (y - p1.y) / float(p2.y - p1.y);
+                    int x = p1.x + t * (p2.x - p1.x);
+                    intersections.push_back(x);
                 }
             }
 
-            if ((yi == (list[i + 5] - 1.0)) || (i == n - 8)) {
-                for (xi = 0; xi <= maxx - minx; xi++) {
-                    if (strip[xi] != 0.0) {
-                        if (strip[xi] >= 0.996) {
-                            int x0 = xi;
-                            while (strip[++xi] >= 0.996)
-                                ;
-                            xi--;
-                            line({ (int)(minx + x0), yi }, { (int)(minx + xi), yi }, options);
-                        } else {
-                            pixel({ (int)(minx + xi), yi }, { options.color.r, options.color.g, options.color.b, (uint8_t)(options.color.a * strip[xi]) });
-                        }
+            // Sort the intersections to form spans
+            std::sort(intersections.begin(), intersections.end());
+
+            // Fill the spans between pairs of intersections
+            for (size_t i = 0; i < intersections.size(); i += 2) {
+                if (i + 1 < intersections.size()) {
+                    int xStart = intersections[i] + 1;
+                    int xEnd = intersections[i + 1];
+
+                    for (int x = xStart; x <= xEnd; ++x) {
+                        pixel({ x, y }, options);
                     }
                 }
-                memset(strip, 0, (maxx - minx + 2) * sizeof(float));
-                yi++;
             }
         }
-
-        // Free arrays:
-        free(list);
-        free(strip);
     }
 
     static int gfxPrimitivesCompareFloat2(const void* a, const void* b)
