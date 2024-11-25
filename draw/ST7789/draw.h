@@ -80,21 +80,49 @@ protected:
         }
     }
 
-    // uint16_t toU16rgb(Color color)
-    // {
-    //     return (color.r << 16) | (color.g << 8) | color.b;
-    // }
+    void line1px(Point start, Point end, DrawOptions options = {})
+    {
+        if (start.x == end.x) {
+            lineVertical1px(start, end, options);
+        } else if (start.y == end.y) {
+            lineHorizontal1px(start, end, options);
+        } else {
+            lineDiagonal1px(start, end, options);
+        }
+    }
+
+    void lineWithThickness(Point start, Point end, DrawOptions options = {})
+    {
+        if (start.x == end.x) {
+            lineVertical(start, end, options);
+        } else if (start.y == end.y) {
+            lineHorizontal(start, end, options);
+        } else {
+            lineDiagonal(start, end, options);
+        }
+    }
+
+    void lines1px(std::vector<Point> points, DrawOptions options = {})
+    {
+        for (int i = 0; i < points.size() - 1; i++) {
+            line1px(points[i], points[i + 1], options);
+        }
+    }
+
+    void linesWithThickness(std::vector<Point> points, DrawOptions options = {})
+    {
+        for (int i = 0; i < points.size() - 1; i++) {
+            lineWithThickness(points[i], points[i + 1], options);
+        }
+    }
 
     void lineVertical(Point start, Point end, DrawOptions options = {})
     {
-        if (options.thickness == 1) {
-            lineVertical1px(start, end, options);
-        } else {
-            int startx = start.x - options.thickness * 0.5;
-            int endx = end.x - options.thickness * 0.5;
-            for (int i = 0; i < options.thickness; i++) {
-                lineVertical1px({ startx + i, start.y }, { endx + i, end.y }, options);
-            }
+
+        int startx = start.x - options.thickness * 0.5;
+        int endx = end.x - options.thickness * 0.5;
+        for (int i = 0; i < options.thickness; i++) {
+            lineVertical1px({ startx + i, start.y }, { endx + i, end.y }, options);
         }
     }
 
@@ -113,14 +141,10 @@ protected:
 
     void lineHorizontal(Point start, Point end, DrawOptions options = {})
     {
-        if (options.thickness == 1) {
-            lineHorizontal1px(start, end, options);
-        } else {
-            int starty = start.y - options.thickness * 0.5;
-            int endy = end.y - options.thickness * 0.5;
-            for (int i = 0; i < options.thickness; i++) {
-                lineHorizontal1px({ start.x, starty + i }, { end.x, endy + i }, options);
-            }
+        int starty = start.y - options.thickness * 0.5;
+        int endy = end.y - options.thickness * 0.5;
+        for (int i = 0; i < options.thickness; i++) {
+            lineHorizontal1px({ start.x, starty + i }, { end.x, endy + i }, options);
         }
     }
 
@@ -139,14 +163,10 @@ protected:
 
     void lineDiagonal(Point start, Point end, DrawOptions options = {})
     {
-        if (options.thickness == 1) {
-            lineDiagonal1px(start, end, options);
-        } else {
-            int startx = start.x - options.thickness * 0.5;
-            int endx = end.x - options.thickness * 0.5;
-            for (int i = 0; i < options.thickness; i++) {
-                lineDiagonal1px({ startx + i, start.y }, { endx + i, end.y }, options);
-            }
+        int startx = start.x - options.thickness * 0.5;
+        int endx = end.x - options.thickness * 0.5;
+        for (int i = 0; i < options.thickness; i++) {
+            lineDiagonal1px({ startx + i, start.y }, { endx + i, end.y }, options);
         }
     }
 
@@ -539,7 +559,7 @@ public:
     void filledRect(Point position, Size size, DrawOptions options = {}) override
     {
         for (int y = position.y; y < position.y + size.h; y++) {
-            lineHorizontal({ position.x, y }, { position.x + size.w, y }, options);
+            lineHorizontal1px({ position.x, y }, { position.x + size.w, y }, options);
         }
     }
 
@@ -549,12 +569,13 @@ public:
         Point b = { position.x + size.w, position.y };
         Point c = { position.x + size.w, position.y + size.h };
         Point d = { position.x, position.y + size.h };
-        lineHorizontal(a, b, options);
-        lineVertical(b, c, options);
-        lineHorizontal(c, d, options);
-        lineVertical(d, a, options);
+        line(a, b, options);
+        line(b, c, options);
+        line(c, d, options);
+        line(d, a, options);
     }
 
+    // FIXME thickness is not working properly
     void filledRect(Point position, Size size, uint8_t radius, DrawOptions options = {}) override
     {
         filledRect({ position.x + radius, position.y }, { size.w - 2 * radius, size.h }, options);
@@ -565,16 +586,17 @@ public:
         filledPie({ position.x + size.w - radius, position.y + size.h - radius }, radius, 0, 90, options);
     }
 
+    // FIXME thickness is not working properly
     void rect(Point position, Size size, uint8_t radius, DrawOptions options = {}) override
     {
-        arc({ position.x + radius, position.y + radius }, radius, -2, 0, options);
-        lineVertical({ position.x, position.y + radius }, { position.x, position.y + size.h - radius }, options);
-        arc({ position.x + size.w - radius, position.y + radius }, radius, 0, 2, options);
-        lineHorizontal({ position.x + radius, position.y }, { position.x + size.w - radius, position.y }, options);
-        arc({ position.x + radius, position.y + size.h - radius }, radius, 4, 6, options);
-        lineHorizontal({ position.x + radius, position.y + size.h }, { position.x + size.w - radius, position.y + size.h }, options);
-        arc({ position.x + size.w - radius, position.y + size.h - radius }, radius, 2, 4, options);
-        lineVertical({ position.x + size.w, position.y + size.h - radius }, { position.x + size.w, position.y + radius }, options);
+        arc({ position.x + radius, position.y + radius }, radius, 180, 270, options);
+        line({ position.x, position.y + radius }, { position.x, position.y + size.h - radius }, options);
+        arc({ position.x + size.w - radius, position.y + radius }, radius, 270, 360, options);
+        line({ position.x + radius, position.y }, { position.x + size.w - radius, position.y }, options);
+        arc({ position.x + radius, position.y + size.h - radius }, radius, 90, 180, options);
+        line({ position.x + radius, position.y + size.h }, { position.x + size.w - radius, position.y + size.h }, options);
+        arc({ position.x + size.w - radius, position.y + size.h - radius }, radius, 0, 90, options);
+        line({ position.x + size.w, position.y + size.h - radius }, { position.x + size.w, position.y + radius }, options);
     }
 
     void filledPie(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) override
@@ -683,8 +705,8 @@ public:
         int startY = position.y + (int)(r * sin(startRad));
         int endX = position.x + (int)(r * cos(endRad));
         int endY = position.y + (int)(r * sin(endRad));
-        line({ startX, startY }, position, { options.color });
-        line({ endX, endY }, position, { options.color });
+        line1px({ startX, startY }, position, { options.color });
+        line1px({ endX, endY }, position, { options.color });
     }
 
     void arc(Point position, int radius, int startAngle, int endAngle, DrawOptions options = {}) override
@@ -854,7 +876,7 @@ public:
             if (s < 1.0) {
                 x = radius * sqrt(1.0 - s);
                 if (x >= 0.5) {
-                    line({ (int)(position.x - x + 1), yi }, { (int)(position.x + x - 1), yi }, options);
+                    line1px({ (int)(position.x - x + 1), yi }, { (int)(position.x + x - 1), yi }, options);
                 }
             }
             s = 8 * radius * radius;
@@ -892,19 +914,19 @@ public:
 
     void line(Point start, Point end, DrawOptions options = {}) override
     {
-        if (start.x == end.x) {
-            lineVertical(start, end, options);
-        } else if (start.y == end.y) {
-            lineHorizontal(start, end, options);
+        if (options.thickness == 1) {
+            line1px(start, end, options);
         } else {
-            lineDiagonal(start, end, options);
+            lineWithThickness(start, end, options);
         }
     }
 
     void lines(std::vector<Point> points, DrawOptions options = {}) override
     {
-        for (int i = 0; i < points.size() - 1; i++) {
-            line(points[i], points[i + 1], options);
+        if (options.thickness == 1) {
+            lines1px(points, options);
+        } else {
+            linesWithThickness(points, options);
         }
     }
 
@@ -913,8 +935,8 @@ public:
         if (points.size() < 3)
             return; // A polygon must have at least 3 points
 
-        lines(points, { options.color });
-        line(points[0], points[points.size() - 1], { options.color });
+        lines1px(points, options);
+        line1px(points[0], points[points.size() - 1], options);
 
         // Compute the bounding box of the polygon
         int minY = points[0].y, maxY = points[0].y;
