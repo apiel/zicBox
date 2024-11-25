@@ -1,5 +1,7 @@
 ## Pixel TODO
 
+- TODO check audio!!
+
 - TODO make dustscript part of the repo instead to be external dependency...
 
 - TODO get rid of SDL component andunify everything

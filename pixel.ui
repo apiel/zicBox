@@ -40,7 +40,8 @@ VIEW: Main
 
 $track=1
 
-  COMPONENT: DrumEnvelop 0 0 $3/4W 50
+  COMPONENT: DrumEnvelop 0 0 ($3/4W-2) 50
+    GROUP: 0
     TRACK: $track
     PLUGIN: SynthDrum23
     ENVELOP_DATA_ID: 0
@@ -49,6 +50,7 @@ $track=1
     ENCODER_MODULATION: 2
 
   COMPONENT: Encoder2 $3/4W 0 $1/4W 50
+    GROUP: 0
     ENCODER_ID: 3
     COLOR: secondary
     TRACK: $track
@@ -56,13 +58,15 @@ $track=1
 
 
 # TODO use freq envelope
-  COMPONENT: DrumEnvelop 0 60 $3/4W 50
+  COMPONENT: DrumEnvelop 0 60 ($3/4W-2) 50
+    GROUP: 1
     TRACK: $track
     PLUGIN: SynthDrum23
     ENVELOP_DATA_ID: 4
 
 # TODO activate encoder with arrow up/down
   COMPONENT: Encoder2 $3/4W 60 $1/4W 50
+    GROUP: 1
     # ENCODER_ID: 3
     COLOR: secondary
     TRACK: $track

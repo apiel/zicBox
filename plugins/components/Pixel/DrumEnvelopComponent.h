@@ -35,12 +35,24 @@ protected:
     bool filled = true;
     bool outline = true;
 
+    Color bgColor;
+
     Color fillColor;
     Color outlineColor;
-    Color bgColor;
     Color textColor;
     Color cursorColor;
 
+    Color fillColorActive;
+    Color outlineColorActive;
+    Color textColorActive;
+    Color cursorColorActive;
+
+    Color fillColorInactive;
+    Color outlineColorInactive;
+    Color textColorInactive;
+    Color cursorColorInactive;
+
+    bool encoderActive = true;
     int encoderPhase = -1;
     int encoderTime = -1;
     int encoderModulation = -1;
@@ -75,11 +87,11 @@ protected:
         if (currentstep < envData->size() - 1) {
             float currentTime = envData->at(currentstep).time;
             float nextTime = envData->at(currentstep + 1).time;
-            draw.line({ (int)(position.x + size.w * currentTime), cursorY }, { (int)(position.x + size.w * currentTime), cursorY - 3 });
-            draw.line({ (int)(position.x + size.w * currentTime), cursorY - 1 }, { (int)(position.x + size.w * nextTime), cursorY - 1 });
-            draw.line({ (int)(position.x + size.w * nextTime), cursorY }, { (int)(position.x + size.w * nextTime), cursorY - 3 });
+            draw.line({ (int)(position.x + size.w * currentTime), cursorY }, { (int)(position.x + size.w * currentTime), cursorY - 3 }, { cursorColor });
+            draw.line({ (int)(position.x + size.w * currentTime), cursorY - 1 }, { (int)(position.x + size.w * nextTime), cursorY - 1 }, { cursorColor });
+            draw.line({ (int)(position.x + size.w * nextTime), cursorY }, { (int)(position.x + size.w * nextTime), cursorY - 3 }, { cursorColor });
         } else {
-            draw.line({ position.x + size.w, cursorY }, { position.x + size.w, cursorY - 3 });
+            draw.line({ position.x + size.w, cursorY }, { position.x + size.w, cursorY - 3 }, { cursorColor });
         }
     }
 
@@ -92,15 +104,47 @@ protected:
         draw.textCentered({ x + cellWidth * 2, position.y }, std::to_string((int)(currentMod * 100)) + "%", 8, { textColor });
     }
 
+    void setActiveColors() {
+        fillColor = fillColorActive;
+        outlineColor = outlineColorActive;
+        textColor = textColorActive;
+        cursorColor = cursorColorActive;
+    }
+
+    void setInactiveColors() {
+        fillColor = fillColorInactive;
+        outlineColor = outlineColorInactive;
+        textColor = textColorInactive;
+        cursorColor = cursorColorInactive;
+    }
+
+    void updateColors() {
+        if (encoderActive) {
+            setActiveColors();
+        } else {
+            setInactiveColors();
+        }
+    }
+
+    void updateInactiveColors() {
+        fillColorInactive = darken(fillColorActive, 0.5);
+        outlineColorInactive = darken(outlineColorActive, 0.5);
+        textColorInactive = darken(textColorActive, 0.5);
+        cursorColorInactive = darken(cursorColorActive, 0.5);
+    }
+
 public:
     DrumEnvelopComponent(ComponentInterface::Props props)
         : Component(props)
         , bgColor(styles.colors.background)
-        , textColor(styles.colors.text)
-        , cursorColor(styles.colors.text)
-        , fillColor(styles.colors.primary)
-        , outlineColor(lighten(styles.colors.primary, 0.5))
+        , textColorActive(styles.colors.text)
+        , cursorColorActive(styles.colors.text)
+        , fillColorActive(styles.colors.primary)
+        , outlineColorActive(lighten(styles.colors.primary, 0.5))
     {
+        updateInactiveColors();
+        updateColors();
+
         envPosition = { position.x, position.y + 10 };
         envelopHeight = size.h - 6 - 10;
         cursorY = position.y + size.h - 1;
@@ -123,19 +167,34 @@ public:
 
     void onEncoder(int id, int8_t direction) override
     {
-        if (id == encoderPhase) {
-            plugin->data(currentStepDataId, &direction);
+        if (encoderActive) {
+            if (id == encoderPhase) {
+                plugin->data(currentStepDataId, &direction);
+                renderNext();
+            } else if (id == encoderTime) {
+                plugin->data(timeDataId, &direction);
+                renderNext();
+            } else if (id == encoderModulation) {
+                plugin->data(modDataId, &direction);
+                renderNext();
+            } else {
+                // printf("DrumEnvelopComponent onEncoder: %d %d\n", id, direction);
+                // ValueInterface* value = plugin->getValue("DURATION");
+                // value->increment(direction);
+            }
+        }
+    }
+
+    void onGroupChanged(int8_t index) override
+    {
+        bool shouldActivate = false;
+        if (group == index || group == -1) {
+            shouldActivate = true;
+        }
+        if (shouldActivate != encoderActive) {
+            encoderActive = shouldActivate;
+            updateColors();
             renderNext();
-        } else if (id == encoderTime) {
-            plugin->data(timeDataId, &direction);
-            renderNext();
-        } else if (id == encoderModulation) {
-            plugin->data(modDataId, &direction);
-            renderNext();
-        } else {
-            // printf("DrumEnvelopComponent onEncoder: %d %d\n", id, direction);
-            // ValueInterface* value = plugin->getValue("DURATION");
-            // value->increment(direction);
         }
     }
 
