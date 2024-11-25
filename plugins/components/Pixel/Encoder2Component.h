@@ -210,8 +210,6 @@ public:
         if (value != NULL) {
             renderEncoder();
         }
-
-        draw.filledRect({ 50, 150}, size, 10, { colors.id, .thickness = 3 });
     }
 
     bool config(char* key, char* params)

@@ -36,8 +36,8 @@ protected:
     EffectFilterData filter;
 
     EnvelopRelative envelopAmp = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.0f, 1.0f } }, 1);
-    EnvelopRelative envelopFreq = EnvelopRelative({ { 1.0f, 0.0f }, { 0.26f, 0.03f }, { 0.24f, 0.35f }, { 0.22f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
-    // EnvelopRelative envelopFreq = EnvelopRelative({ { 1.0f, 1.0f }, { 1.0f, 1.0f } });
+    // EnvelopRelative envelopFreq = EnvelopRelative({ { 1.0f, 0.0f }, { 0.26f, 0.03f }, { 0.24f, 0.35f }, { 0.22f, 0.4f }, { 0.0f, 1.0f }, { 0.0f, 1.0f } });
+    EnvelopRelative envelopFreq = EnvelopRelative({ { 0.5f, 0.0f }, { 1.0f, 0.5f }, { 0.0f, 1.0f } });
 
     float sample(EffectFilterData& _filter, float time, float* index, float amp, float freq, float _noteMult = 1.0f, float _velocity = 1.0f)
     {
@@ -177,6 +177,15 @@ public:
             return envelopAmp.updatePhaseModulation((int8_t*)userdata);
         case 4:
             return &envelopFreq.data;
+        case 5: // set & get current freq step edit point
+            return envelopFreq.updateEditPhase((int8_t*)userdata);
+        case 6: { // update freq time for current step
+            float* timePct = envelopFreq.updatePhaseTime((int8_t*)userdata);
+            msAmp = (uint16_t)(*timePct * duration.get());
+            return &msAmp;
+        }
+        case 7: // update freq modulation value for current step
+            return envelopFreq.updatePhaseModulation((int8_t*)userdata);
         }
         return NULL;
     }
