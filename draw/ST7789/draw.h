@@ -113,6 +113,19 @@ protected:
 
     void lineDiagonal(Point start, Point end, DrawOptions options = {})
     {
+        if (options.thickness == 1) {
+            lineDiagonal1px(start, end, options);
+        } else {
+            int startx = start.x - options.thickness * 0.5;
+            int endx = end.x - options.thickness * 0.5;
+            for (int i = 0; i < options.thickness; i++) {
+                lineDiagonal1px({ startx + i, start.y }, { endx + i, end.y }, options);
+            }
+        }
+    }
+
+    void lineDiagonal1px(Point start, Point end, DrawOptions options = {})
+    {
         int32_t xx0 = start.x;
         int32_t yy0 = start.y;
         int32_t xx1 = end.x;
@@ -874,8 +887,8 @@ public:
         if (points.size() < 3)
             return; // A polygon must have at least 3 points
 
-        lines(points, options);
-        line(points[0], points[points.size() - 1], options);
+        lines(points, { options.color });
+        line(points[0], points[points.size() - 1], { options.color });
 
         // Compute the bounding box of the polygon
         int minY = points[0].y, maxY = points[0].y;
@@ -917,15 +930,6 @@ public:
                 }
             }
         }
-    }
-
-    static int gfxPrimitivesCompareFloat2(const void* a, const void* b)
-    {
-        float diff = *((float*)a + 1) - *((float*)b + 1);
-        if (diff != 0.0)
-            return (diff > 0) - (diff < 0);
-        diff = *(float*)a - *(float*)b;
-        return (diff > 0) - (diff < 0);
     }
 
     void pixel(Point position, DrawOptions options = {}) override
