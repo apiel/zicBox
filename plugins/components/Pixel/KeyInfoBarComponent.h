@@ -18,6 +18,7 @@ class KeyInfoBarComponent : public Component {
 protected:
     Icon icon;
     KeypadLayout keypadLayout;
+    int8_t activeGroup = 0;
 
     Color textColor;
 
@@ -26,8 +27,14 @@ protected:
         printf("handleButton: %d %d\n", id, state);
 
         if (state == 1) {
-            AudioPlugin* plugin = &getPlugin("SynthDrum23", 1);
-            plugin->noteOn(60, 1.0f);
+            if (id == 0) {
+                setGroup(activeGroup - 1);
+            } else if (id == 5) {
+                setGroup(activeGroup + 1);
+            } else {
+                AudioPlugin* plugin = &getPlugin("SynthDrum23", 1);
+                plugin->noteOn(60, 1.0f);
+            }
         }
     }
 
@@ -96,6 +103,11 @@ public:
     void onKey(uint16_t id, int key, int8_t state)
     {
         keypadLayout.onKey(id, key, state);
+    }
+
+    void onGroupChanged(int8_t index) override
+    {
+        activeGroup = index;
     }
 
     void initView(uint16_t counter)

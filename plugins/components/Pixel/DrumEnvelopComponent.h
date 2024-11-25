@@ -52,6 +52,8 @@ protected:
     Color textColorInactive;
     Color cursorColorInactive;
 
+    float inactiveColorRatio = 0.5f;
+
     bool encoderActive = true;
     int encoderPhase = -1;
     int encoderTime = -1;
@@ -127,10 +129,10 @@ protected:
     }
 
     void updateInactiveColors() {
-        fillColorInactive = darken(fillColorActive, 0.5);
-        outlineColorInactive = darken(outlineColorActive, 0.5);
-        textColorInactive = darken(textColorActive, 0.5);
-        cursorColorInactive = darken(cursorColorActive, 0.5);
+        fillColorInactive = darken(fillColorActive, inactiveColorRatio);
+        outlineColorInactive = darken(outlineColorActive, inactiveColorRatio);
+        textColorInactive = darken(textColorActive, inactiveColorRatio);
+        cursorColorInactive = darken(cursorColorActive, inactiveColorRatio);
     }
 
 public:
@@ -292,6 +294,13 @@ public:
         /*md - `ENCODER_MODULATION: id` is the id of the encoder to control the modulation. */
         if (strcmp(key, "ENCODER_MODULATION") == 0) {
             encoderModulation = atoi(value);
+            return true;
+        }
+
+        // inactiveColorRatio
+        /*md - `INACTIVE_COLOR_RATIO: ratio` is the ratio of darkness for inactive color.*/
+        if (strcmp(key, "INACTIVE_COLOR_RATIO") == 0) {
+            inactiveColorRatio = atof(value);
             return true;
         }
 
