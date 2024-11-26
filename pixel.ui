@@ -24,6 +24,16 @@ PLUGIN_CONTROLLER: MidiEncoder ./plugins/controllers/$buildDir/libzic_MidiEncode
 # Add window position for SDL emulator
 WINDOW_POSITION: 400 500
 
+$SCREEN_WIDTH=320
+$SCREEN_HEIGHT=240
+
+# $SCREEN_WIDTH=240
+# $SCREEN_HEIGHT=240
+# ST7789_MADCTL: 8
+# ST7789_INVERTED: true
+
+SCREEN: $SCREEN_WIDTH $SCREEN_HEIGHT
+
 $1/4W=$SCREEN_WIDTH/4
 $1/2W=$1/4W*2
 $3/4W=$1/4W*3
