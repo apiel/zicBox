@@ -11,7 +11,7 @@
 /*md
 ## Encoder3
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/pixel/Encoder3.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/Encoder3.png" />
 
 Encoder3 is used to display current audio plugin value for a given parameter.
 */
