@@ -4,17 +4,25 @@
 #include "../../component.h"
 #include "./ToggleColor.h"
 
+
+// Give name to colors, so group color can handle config...
+
 class GroupColorComponent : public Component {
 protected:
     bool isActive = true;
     float inactiveColorRatio = 0.5f;
 
-    std::vector<ToggleColor*> colors;
+    struct NamedColor {
+        std::string name;
+        ToggleColor* color;
+    };
+
+    std::vector<NamedColor> colors;
 
     void updateColors()
     {
         for (auto& color : colors) {
-            color->toggle(isActive);
+            color.color->toggle(isActive);
         }
     }
 
@@ -22,12 +30,12 @@ protected:
     {
         inactiveColorRatio = ratio;
         for (auto& color : colors) {
-            color->darkness(inactiveColorRatio);
+            color.color->darkness(inactiveColorRatio);
         }
     }
 
 public:
-    GroupColorComponent(ComponentInterface::Props props, std::vector<ToggleColor*> colors)
+    GroupColorComponent(ComponentInterface::Props props, std::vector<NamedColor> colors)
         : Component(props)
         , colors(colors)
     {

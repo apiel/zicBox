@@ -96,7 +96,7 @@ protected:
 
 public:
     DrumEnvelopComponent(ComponentInterface::Props props)
-        : GroupColorComponent(props, { &fillColor, &outlineColor, &textColor, &cursorColor })
+        : GroupColorComponent(props, { { "FILL_COLOR", &fillColor }, { "OUTLINE_COLOR", &outlineColor }, { "TEXT_COLOR", &textColor }, { "CURSOR_COLOR", &cursorColor } })
         , bgColor(styles.colors.background)
         , textColor(styles.colors.text, inactiveColorRatio)
         , cursorColor(styles.colors.text, inactiveColorRatio)
