@@ -6,6 +6,8 @@
 #include <math.h>
 #include <string>
 
+#include "utils/GroupColorComponent.h"
+
 /*md
 ## Encoder2
 
@@ -13,7 +15,7 @@
 
 Encoder2 is used to display current audio plugin value for a given parameter.
 */
-class Encoder2Component : public Component {
+class Encoder2Component : public GroupColorComponent {
 protected:
     const char* name = NULL;
     std::string label;
@@ -37,7 +39,6 @@ protected:
 
     const int marginTop = 2;
 
-    bool encoderActive = true;
     int8_t encoderId = -1;
     uint8_t valueFloatPrecision = 0;
 
@@ -46,17 +47,17 @@ protected:
     void renderLabel()
     {
         if (stringValueReplaceTitle && value->props().type == VALUE_STRING) {
-            draw.textCentered({ knobCenter.x, position.y + size.h - fontLabelSize }, value->string(), fontLabelSize, { colors.title, NULL, size.w - 4 });
+            draw.textCentered({ knobCenter.x, position.y + size.h - fontLabelSize }, value->string(), fontLabelSize, { titleColor.color, NULL, size.w - 4 });
         } else {
-            draw.textCentered({ knobCenter.x, position.y + size.h - fontLabelSize }, label, fontLabelSize, { colors.title });
+            draw.textCentered({ knobCenter.x, position.y + size.h - fontLabelSize }, label, fontLabelSize, { titleColor.color });
         }
     }
 
     void renderActiveGroup()
     {
-        if (showGroup && encoderActive) {
-            draw.filledRect({ position.x + margin, position.y + margin }, { 12, 12 }, { colors.id });
-            draw.textCentered({ position.x + margin + 6, position.y + margin }, std::to_string(encoderId + 1).c_str(), 6, { colors.background });
+        if (showGroup && isActive) {
+            draw.filledRect({ position.x + margin, position.y + margin }, { 12, 12 }, { idColor.color });
+            draw.textCentered({ position.x + margin + 6, position.y + margin }, std::to_string(encoderId + 1).c_str(), 6, { bgColor });
         }
     }
 
@@ -65,14 +66,14 @@ protected:
         int val = 280 * value->pct();
 
         if (val < 280) {
-            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, -230, 50, { colors.barBackground, .thickness = 4 });
+            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, -230, 50, { barBackgroundColor.color, .thickness = 4 });
         }
         if (val > 0) {
             int endAngle = 130 + val;
             if (endAngle > 360) {
                 endAngle = endAngle - 360;
             }
-            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, endAngle, { colors.bar, .thickness = 4 });
+            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, endAngle, { barColor.color, .thickness = 4 });
         }
     }
 
@@ -80,35 +81,35 @@ protected:
     {
         int val = 280 * value->pct();
 
-        draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, -230, 50, { colors.barBackground, .thickness = 4 });
+        draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, -230, 50, { barBackgroundColor.color, .thickness = 4 });
         if (val > 140) {
             int endAngle = 130 + val;
             if (endAngle > 360) {
                 endAngle = endAngle - 360;
             }
 
-            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 270, endAngle, { colors.bar, .thickness = 4 });
+            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 270, endAngle, { barColor.color, .thickness = 4 });
         } else if (val < 140) {
-            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, -230 + val, 270, { colors.bar, .thickness = 4 });
+            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, -230 + val, 270, { barColor.color, .thickness = 4 });
         }
     }
 
     void renderUnit()
     {
         if (showUnit && value->props().unit != NULL) {
-            draw.textCentered({ valuePosition.x, valuePosition.y + fontValueSize - 5 }, value->props().unit, fontUnitSize, { colors.unit });
+            draw.textCentered({ valuePosition.x, valuePosition.y + fontValueSize - 5 }, value->props().unit, fontUnitSize, { unitColor.color });
         }
     }
 
     void renderValue()
     {
         if (!stringValueReplaceTitle && value->props().type == VALUE_STRING) {
-            draw.textCentered({ valuePosition.x, valuePosition.y - 5 }, value->string(), fontValueSize, { colors.value });
+            draw.textCentered({ valuePosition.x, valuePosition.y - 5 }, value->string(), fontValueSize, { valueColor.color });
         } else {
             std::string valStr = std::to_string(value->get());
             valStr = valStr.substr(0, valStr.find(".") + valueFloatPrecision + (valueFloatPrecision > 0 ? 1 : 0));
 
-            draw.textCentered({ valuePosition.x, valuePosition.y - 5 }, valStr.c_str(), fontValueSize, { colors.value });
+            draw.textCentered({ valuePosition.x, valuePosition.y - 5 }, valStr.c_str(), fontValueSize, { valueColor.color });
         }
     }
 
@@ -117,12 +118,12 @@ protected:
         int val = value->get();
         // FIXME use floating point...
         draw.textRight({ valuePosition.x - twoSideMargin, valuePosition.y - 5 }, std::to_string((int)value->props().max - val).c_str(),
-            fontValueSize - 3, { colors.value });
+            fontValueSize - 3, { valueColor.color });
         draw.text({ valuePosition.x + twoSideMargin, valuePosition.y - 5 }, std::to_string(val).c_str(),
-            fontValueSize - 3, { colors.value });
+            fontValueSize - 3, { valueColor.color });
 
-        draw.line({ valuePosition.x, valuePosition.y - 10 }, { valuePosition.x, valuePosition.y + 10 }, { colors.barTwoSide });
-        draw.line({ valuePosition.x - 1, valuePosition.y - 10 }, { valuePosition.x - 1, valuePosition.y + 10 }, { colors.barTwoSide });
+        draw.line({ valuePosition.x, valuePosition.y - 10 }, { valuePosition.x, valuePosition.y + 10 }, { barTwoSideColor.color });
+        draw.line({ valuePosition.x - 1, valuePosition.y - 10 }, { valuePosition.x - 1, valuePosition.y + 10 }, { barTwoSideColor.color });
     }
 
     void renderEncoder()
@@ -146,16 +147,15 @@ protected:
         }
     }
 
-    struct Colors {
-        Color background;
-        Color id;
-        Color title;
-        Color value;
-        Color unit;
-        Color bar;
-        Color barBackground;
-        Color barTwoSide;
-    } colors;
+    Color bgColor;
+
+    ToggleColor idColor;
+    ToggleColor titleColor;
+    ToggleColor valueColor;
+    ToggleColor unitColor;
+    ToggleColor barColor;
+    ToggleColor barBackgroundColor;
+    ToggleColor barTwoSideColor;
 
     const int margin;
 
@@ -174,8 +174,24 @@ protected:
 
 public:
     Encoder2Component(ComponentInterface::Props props)
-        : Component(props)
+        : GroupColorComponent(props, {
+            { "ID_COLOR", &idColor },
+            { "TITLE_COLOR", &titleColor },
+            { "VALUE_COLOR", &valueColor },
+            { "UNIT_COLOR", &unitColor },
+            { "BAR_COLOR", &barColor },
+            { "BAR_BACKGROUND_COLOR", &barBackgroundColor },
+            { "BAR_TWOSIDE_COLOR", &barTwoSideColor },
+        })
         , margin(styles.margin)
+        , bgColor(styles.colors.background)
+        , idColor({ 0x60, 0x60, 0x60, 255 }, inactiveColorRatio)
+        , titleColor(alpha(styles.colors.text, 0.4), inactiveColorRatio) // instead of alpha color should we use plain color?
+        , valueColor(alpha(styles.colors.text, 0.4), inactiveColorRatio)
+        , unitColor(alpha(styles.colors.text, 0.2), inactiveColorRatio)
+        , barColor(styles.colors.primary, inactiveColorRatio)
+        , barBackgroundColor(alpha(styles.colors.primary, 0.5), inactiveColorRatio)
+        , barTwoSideColor(alpha(styles.colors.primary, 0.2), inactiveColorRatio)
     {
         if (size.h < 50) {
             printf("Encoder component height too small: %dx%d. Min height is 50.\n", size.w, size.h);
@@ -187,17 +203,6 @@ public:
             size.w = 50;
         }
 
-        colors = {
-            styles.colors.background,
-            darken({ 0x80, 0x80, 0x80, 255 }, 0.3),
-            alpha(styles.colors.white, 0.4),
-            alpha(styles.colors.white, 0.4),
-            alpha(styles.colors.white, 0.2),
-            styles.colors.primary,
-            alpha(styles.colors.primary, 0.5),
-            alpha(styles.colors.primary, 0.2),
-        };
-
         knobCenter = { (int)(position.x + (size.w * 0.5)), (int)(position.y + (size.h * 0.5) + marginTop - 1) };
         valuePosition = { knobCenter.x, knobCenter.y - marginTop - 2 };
         setRadius((size.h - 6) * 0.5);
@@ -205,7 +210,7 @@ public:
 
     void render()
     {
-        draw.filledRect(position, size, { colors.background });
+        draw.filledRect(position, size, { bgColor });
 
         if (value != NULL) {
             renderEncoder();
@@ -256,23 +261,23 @@ public:
 
         /*md - `COLOR: #3791a1` set the ring color */
         if (strcmp(key, "COLOR") == 0) {
-            colors.bar = draw.getColor(params);
-            colors.barBackground = alpha(colors.bar, 0.5);
-            colors.barTwoSide = alpha(colors.bar, 0.2);
+            barColor.setColor(draw.getColor(params), inactiveColorRatio);
+            barBackgroundColor.setColor(alpha(barColor.color, 0.5), inactiveColorRatio);
+            barTwoSideColor.setColor(alpha(barColor.color, 0.2), inactiveColorRatio);
             return true;
         }
 
         /*md - `BACKGROUND_COLOR: #000000` set the background color */
         if (strcmp(key, "BACKGROUND_COLOR") == 0) {
-            colors.background = draw.getColor(params);
+            bgColor = draw.getColor(params);
             return true;
         }
 
         /*md - `TEXT_COLOR: #ffffff` set the text color */
         if (strcmp(key, "TEXT_COLOR") == 0) {
-            colors.title = alpha(draw.getColor(params), 0.4);
-            colors.value = alpha(draw.getColor(params), 0.4);
-            colors.unit = alpha(draw.getColor(params), 0.2);
+            titleColor.setColor(alpha(draw.getColor(params), 0.4), inactiveColorRatio);
+            valueColor.setColor(alpha(draw.getColor(params), 0.4), inactiveColorRatio);
+            unitColor.setColor(alpha(draw.getColor(params), 0.2), inactiveColorRatio);
             return true;
         }
 
@@ -324,27 +329,14 @@ public:
             return true;
         }
 
-        return false;
+        return GroupColorComponent::config(key, params);
     }
 
     void onEncoder(int id, int8_t direction)
     {
-        if (encoderActive && id == encoderId) {
+        if (isActive && id == encoderId) {
             value->increment(direction);
         }
-    }
-
-    void onGroupChanged(int8_t index) override
-    {
-        bool shouldActivate = false;
-        if (group == index || group == -1) {
-            shouldActivate = true;
-        }
-        if (shouldActivate != encoderActive) {
-            encoderActive = shouldActivate;
-            renderNext();
-        }
-        // printf("current group: %d inccoming group: %d drawId: %d\n", group, index, drawId);
     }
 
     void* data(int id, void* userdata = NULL) override
