@@ -84,8 +84,16 @@ $track=1
     VALUE: SynthDrum23 PITCH
 
 # create bar encoders
+# BROWSER --> could show wavetable and morph over... 
+#             maybe even 3d view? No need to show the 64 wave, could show only part of it
+# MORPH
+# GAIN_CLIPPING
+# NOISE
+# RESONANCE_ENV
 
-# add waveform
+# ADD Sample on top of the output... but could use audio input (like SynthKick23) instead to make it part of SynthDrum23
+
+# Show add waveform ?
 
   COMPONENT: KeyInfoBar 0 216
     KEYMAP: Keyboard 20 item 0
