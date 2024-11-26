@@ -23,6 +23,7 @@
 int main(int argc, char* argv[])
 {
     styles.screen = { 240, 240 };
+    // styles.screen = { 320, 240 };
     styles.colors.primary = { 0x28, 0x59, 0x5f };
     styles.colors.secondary = { 0xff, 0x8d, 0x99 };
 

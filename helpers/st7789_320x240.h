@@ -29,7 +29,6 @@ class ST7789 {
 protected:
     uint16_t width;
     uint16_t height;
-    uint8_t mode;
 
     std::function<void(uint8_t, uint8_t*, uint32_t)> sendSpiCmd;
 
@@ -55,11 +54,10 @@ protected:
     }
 
 public:
-    ST7789(std::function<void(uint8_t, uint8_t*, uint32_t)> sendSpiCmd, uint16_t width, uint16_t height, uint8_t mode = 0)
+    ST7789(std::function<void(uint8_t, uint8_t*, uint32_t)> sendSpiCmd, uint16_t width, uint16_t height)
         : sendSpiCmd(sendSpiCmd)
         , width(width)
         , height(height)
-        , mode(mode)
     {
     }
 
@@ -115,13 +113,18 @@ public:
         sendCmd(DISPLAY_WRITE_PIXELS, pixels, size);
     }
 
-// #define ST7789_MADCTL_MY  0x80
-// #define ST7789_MADCTL_MX  0x40
-// #define ST7789_MADCTL_MV  0x20
-// #define ST7789_MADCTL_ML  0x10
-// #define ST7789_MADCTL_MH  0x04
-// #define ST7789_MADCTL_RGB 0x00
-// #define STT7789_MADCTL_BGR 0x08
+    uint16_t colorToU16(Color color)
+    {
+        // uint16_t rgb = (color.r << 16) | (color.g << 8) | color.b;
+        // uint16_t rgb = (color.b << 16) | (color.g << 8) | color.r;
+        // uint16_t rgb = ((color.r & 0xF8) << 8) | ((color.g & 0xFC) << 3) | (color.b >> 3);
+        // uint16_t rgb = ((color.b & 0xF8) << 8) | ((color.g & 0xFC) << 3) | (color.r >> 3); // good
+        // uint16_t rgb = ((color.r >> 3) << 11) | ((color.g >> 2) << 5) | (color.b >> 3);
+
+        uint16_t rgb = ((color.b >> 3) << 11) | ((color.g >> 2) << 5) | (color.r >> 3); // good
+        return htons(rgb);
+        // return rgb;
+    }
 
     void init()
     {
@@ -131,25 +134,16 @@ public:
         usleep(500 * 1000);
         sendCmd(0x3A, 0x55); // Set Color Mode: 16-bit
         usleep(10 * 1000);
-        // sendCmd(0x36, 0x00); // RGB
+        // sendCmd(0x36, 0x08); // Memory Access Control: BGR
+        // sendCmd(0x36, 0x00); // Memory Access Control: RGB
+        // sendCmd(0x36, 0x40 | 0x80 | 0x00);
+        // sendCmd(0x36, 0x40 | 0x20 | 0x00);
+        // sendCmd(0x36, 0x20 | 0x08);
+        sendCmd(0x36, 0x20 | 0x00);
 
-        // instead of mode, could pass directly MADCTL as a parameter
-        // and could even be passed from config file
-        if (mode == 0) {
-            sendCmd(0x36, 0x08); // BGR
-        } else if (mode == 1) {
-            // sendCmd(0x36, 0x08); // Memory Access Control: BGR
-            // sendCmd(0x36, 0x00); // Memory Access Control: RGB
-            // sendCmd(0x36, 0x40 | 0x80 | 0x00);
-            // sendCmd(0x36, 0x40 | 0x20 | 0x00);
-            // sendCmd(0x36, 0x20 | 0x08);
-            sendCmd(0x36, 0x20 | 0x00);
-        }
-
-        // uint8_t x[4] = { 0, 0, 0, 0x1a }; // xstart = 0, xend = 170
         uint8_t x[4] = { 0, 0, U16_TO_U8(width) };
         sendCmd(0x2A, x, 4); // Set Column Address
-        uint8_t y[4] = { 0, 0, U16_TO_U8(height) }; // uint8_t y[4] = { 0, 0, 0x01, 0x3f }; // ystart = 0, yend = 320
+        uint8_t y[4] = { 0, 0, U16_TO_U8(height) };
         sendCmd(0x2B, y, 4); // Set Row Address
         sendCmd(0x21); // Display Inversion
         usleep(10 * 1000);
@@ -161,34 +155,20 @@ public:
 
     void test()
     {
-        // // drawFillRect(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, 0); // clear screen
-        // srand(time(NULL));
-        // uint16_t randomColor = rand() % 0xFFFF;
-        // fillScreen(randomColor); // clear screen
-
-        fillScreen(colorToU16({ 0x21, 0x25, 0x2b, 255 })); // #21252b
-
-        // drawFillRect(140, 140, 30, 30, 0xFF00);
+        // drawFillRect(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, 0); // clear screen
+        srand(time(NULL));
+        uint16_t randomColor = rand() % 0xFFFF;
+        fillScreen(randomColor); // clear screen
 
         drawFillRect(40, 20, 30, 30, colorToU16({ 0xFF, 0x00, 0x00 })); // #FF0000
-        drawFillRect(width - 40, height - 20, 10, 10, colorToU16({ 0x00, 0x00, 0xFF })); // #0000FF
+        drawFillRect(260, 220, 10, 10, colorToU16({ 0x00, 0x00, 0xFF })); // #0000FF
+
+        printf("width: %d height: %d\n", width, height);
 
         for (int i = 0; i < 100; i++) {
             drawPixel(i, i * 2, 0xFFF0);
             drawPixel(rand() % width, rand() % height, 0xFFFF);
         }
-    }
-
-    uint16_t colorToU16(Color color)
-    {
-        // uint16_t rgb = (color.r << 16) | (color.g << 8) | color.b;
-        // uint16_t rgb = (color.b << 16) | (color.g << 8) | color.r;
-        // uint16_t rgb = ((color.r & 0xF8) << 8) | ((color.g & 0xFC) << 3) | (color.b >> 3);
-        // uint16_t rgb = ((color.b & 0xF8) << 8) | ((color.g & 0xFC) << 3) | (color.r >> 3); // good
-        // uint16_t rgb = ((color.r >> 3) << 11) | ((color.g >> 2) << 5) | (color.b >> 3);
-
-        uint16_t rgb = ((color.b >> 3) << 11) | ((color.g >> 2) << 5) | (color.r >> 3); // good
-        return htons(rgb);
     }
 };
 

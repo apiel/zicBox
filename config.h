@@ -18,9 +18,6 @@ void uiScriptCallback(char* key, char* value, const char* filename)
 {
     if (strcmp(key, "print") == 0) {
         printf(">> LOG: %s\n", value);
-    } else if (strcmp(key, "SCREEN") == 0) {
-        styles.screen.w = atoi(strtok(value, " "));
-        styles.screen.h = atoi(strtok(NULL, " "));
     } else if (strcmp(key, "PLUGIN_CONTROLLER") == 0) {
         loadPluginController(value, filename);
     } else if (

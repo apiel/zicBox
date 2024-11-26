@@ -80,8 +80,8 @@ public:
         SDL_RenderClear(renderer);
 
         // draw pixels
-        for (uint16_t i = 0; i < ST7789_ROWS; i++) {
-            for (uint16_t j = 0; j < ST7789_COLS; j++) {
+        for (uint16_t i = 0; i < styles.screen.h; i++) {
+            for (uint16_t j = 0; j < styles.screen.w; j++) {
                 Color color = screenBuffer[i][j];
                 SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
                 SDL_RenderDrawPoint(renderer, j, i);

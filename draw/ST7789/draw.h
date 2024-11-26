@@ -31,11 +31,9 @@
 #include <string.h>
 #include <string>
 
-#include <arpa/inet.h> // htons
-
-// Use max height and width
-#define ST7789_ROWS 240
-#define ST7789_COLS 240
+// Let's make a buffer bigger than necessary so we are sure any screen size can fit
+#define ST7789_ROWS 1024
+#define ST7789_COLS 1024
 
 // res go to pin 15
 #define GPIO_TFT_RESET_PIN 22
@@ -370,7 +368,7 @@ public:
 
     Draw(Styles& styles)
         : DrawInterface(styles)
-        , st7789([&](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); }, ST7789_ROWS, ST7789_COLS)
+        , st7789([&](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); }, styles.screen.w, styles.screen.h)
     {
     }
 
@@ -429,28 +427,16 @@ public:
         }
     }
 
-    uint16_t colorToU16(Color color)
-    {
-        // uint16_t rgb = (color.r << 16) | (color.g << 8) | color.b;
-        // uint16_t rgb = (color.b << 16) | (color.g << 8) | color.r;
-        // uint16_t rgb = ((color.r & 0xF8) << 8) | ((color.g & 0xFC) << 3) | (color.b >> 3);
-        // uint16_t rgb = ((color.b & 0xF8) << 8) | ((color.g & 0xFC) << 3) | (color.r >> 3); // good
-        // uint16_t rgb = ((color.r >> 3) << 11) | ((color.g >> 2) << 5) | (color.b >> 3);
-
-        uint16_t rgb = ((color.b >> 3) << 11) | ((color.g >> 2) << 5) | (color.r >> 3); // good
-        return htons(rgb);
-    }
-
     bool fullRendering = false;
     void fullRender()
     {
         uint16_t pixels[ST7789_COLS];
-        for (int i = 0; i < ST7789_ROWS; i++) {
-            for (int j = 0; j < ST7789_COLS; j++) {
+        for (int i = 0; i < styles.screen.h; i++) {
+            for (int j = 0; j < styles.screen.w; j++) {
                 Color color = screenBuffer[i][j];
-                pixels[j] = colorToU16(color);
+                pixels[j] = st7789.colorToU16(color);
             }
-            st7789.drawRow(0, i, ST7789_COLS, pixels);
+            st7789.drawRow(0, i, styles.screen.w, pixels);
         }
         fullRendering = false;
     }
@@ -463,13 +449,13 @@ public:
         }
 
         uint16_t pixels[ST7789_COLS];
-        for (int i = 0; i < ST7789_ROWS; i++) {
+        for (int i = 0; i < styles.screen.h; i++) {
             // To not make uneccessaradiusY calls to the display
             // only send the row of pixels that have changed
             bool changed = false;
-            for (int j = 0; j < ST7789_COLS; j++) {
+            for (int j = 0; j < styles.screen.w; j++) {
                 Color color = screenBuffer[i][j];
-                uint16_t rgbU16 = colorToU16(color);
+                uint16_t rgbU16 = st7789.colorToU16(color);
                 pixels[j] = rgbU16;
                 if (cacheBuffer[i][j] != rgbU16) {
                     changed = true;
@@ -477,7 +463,7 @@ public:
                 cacheBuffer[i][j] = rgbU16;
             }
             if (changed) {
-                st7789.drawRow(0, i, ST7789_COLS, pixels);
+                st7789.drawRow(0, i, styles.screen.w, pixels);
             }
         }
     }
@@ -485,10 +471,10 @@ public:
     void clear() override
     {
         // Init buffer with background color
-        for (int i = 0; i < ST7789_ROWS; i++) {
+        for (int i = 0; i < ST7789_ROWS; i++) { // here we can do the whole buffer even if it is out of bound
             for (int j = 0; j < ST7789_COLS; j++) {
                 screenBuffer[i][j] = styles.colors.background;
-                cacheBuffer[i][j] = colorToU16(styles.colors.background);
+                cacheBuffer[i][j] = st7789.colorToU16(styles.colors.background);
             }
         }
         fullRendering = true;

@@ -393,8 +393,13 @@ In this example, we change the `background` color to `#00FFFF`.
                 styleColor->b = newColor.b;
             }
             return true;
+        } else if (strcmp(key, "SCREEN") == 0) {
+            styles.screen.w = atoi(strtok(value, " "));
+            styles.screen.h = atoi(strtok(NULL, " "));
+            return true;
         } else if (strcmp(key, "SDL_FLAGS") == 0) {
             flags |= atoi(value);
+            return true;
         }
 
         return false;
