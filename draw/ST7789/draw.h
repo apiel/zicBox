@@ -368,7 +368,7 @@ public:
 
     Draw(Styles& styles)
         : DrawInterface(styles)
-        , st7789([&](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); }, styles.screen.w, styles.screen.h)
+        , st7789([&](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); })
     {
     }
 
@@ -403,7 +403,7 @@ public:
         spi.setSpeed(20000);
 #endif
 
-        st7789.init();
+        st7789.init(styles.screen.w, styles.screen.h);
         usleep(10 * 1000); // Delay a bit before restoring CLK, or otherwise this has been observed to cause the display not init if done back to back after the clear operation above.
 
 #ifdef USE_SPI_DEV_MEM
@@ -1015,6 +1015,36 @@ public:
 
     bool config(char* key, char* value) override
     {
+        if (strcmp(key, "SET_COLOR") == 0) {
+            char* name = strtok(value, " ");
+            char* color = strtok(NULL, " ");
+            Color* styleColor = getStyleColor(name);
+            if (styleColor != NULL) {
+                Color newColor = hex2rgb(color);
+                //    *styleColor = newColor; // Dont do like this, to keep transparency
+                styleColor->r = newColor.r;
+                styleColor->g = newColor.g;
+                styleColor->b = newColor.b;
+            }
+            return true;
+        }
+
+        if (strcmp(key, "SCREEN") == 0) {
+            styles.screen.w = atoi(strtok(value, " "));
+            styles.screen.h = atoi(strtok(NULL, " "));
+            return true;
+        }
+
+        if (strcmp(key, "ST7789_MADCTL") == 0) {
+            st7789.madctl = atoi(value);
+            return true;
+        }
+
+        if (strcmp(key, "ST7789_INVERTED") == 0) {
+            st7789.displayInverted = strcmp(value, "true") == 0;
+            return true;
+        }
+
         return false;
     }
 };
