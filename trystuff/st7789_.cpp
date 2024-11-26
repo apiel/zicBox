@@ -1,4 +1,5 @@
 #include "../helpers/gpio.h"
+
 #include "../helpers/st7789.h"
 
 #define USE_SPI_DEV_MEM
@@ -61,6 +62,8 @@ int main(int argc, char* argv[])
 #endif
 
     ST7789 st7789([&](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); }, 240, 240);
+    // ST7789 st7789([&](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); }, 240, 320);
+    // ST7789 st7789([&](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); }, 320, 240);
     st7789.init();
 
     usleep(10 * 1000); // Delay a bit before restoring CLK, or otherwise this has been observed to cause the display not init if done back to back after the clear operation above.

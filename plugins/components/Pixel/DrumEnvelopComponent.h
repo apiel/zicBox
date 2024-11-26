@@ -36,14 +36,12 @@ protected:
     bool filled = true;
     bool outline = true;
 
-
     Color bgColor;
 
     ToggleColor fillColor;
     ToggleColor outlineColor;
     ToggleColor textColor;
     ToggleColor cursorColor;
-
 
     int encoderPhase = -1;
     int encoderTime = -1;
@@ -143,6 +141,12 @@ public:
                 // printf("DrumEnvelopComponent onEncoder: %d %d\n", id, direction);
                 // ValueInterface* value = plugin->getValue("DURATION");
                 // value->increment(direction);
+
+                if (id > 4) { // just for testing rpi speaker, to be removed
+                    printf("play SynthDrum23 note on (encoder %d)\n", id);
+                    AudioPlugin* plugin = &getPlugin("SynthDrum23", 1);
+                    plugin->noteOn(60, 1.0f);
+                }
             }
         }
     }

@@ -29,7 +29,6 @@ class ST7789 {
 protected:
     uint16_t width;
     uint16_t height;
-    uint8_t mode;
 
     std::function<void(uint8_t, uint8_t*, uint32_t)> sendSpiCmd;
 
@@ -55,11 +54,10 @@ protected:
     }
 
 public:
-    ST7789(std::function<void(uint8_t, uint8_t*, uint32_t)> sendSpiCmd, uint16_t width, uint16_t height, uint8_t mode = 0)
+    ST7789(std::function<void(uint8_t, uint8_t*, uint32_t)> sendSpiCmd, uint16_t width, uint16_t height)
         : sendSpiCmd(sendSpiCmd)
         , width(width)
         , height(height)
-        , mode(mode)
     {
     }
 
@@ -115,14 +113,6 @@ public:
         sendCmd(DISPLAY_WRITE_PIXELS, pixels, size);
     }
 
-// #define ST7789_MADCTL_MY  0x80
-// #define ST7789_MADCTL_MX  0x40
-// #define ST7789_MADCTL_MV  0x20
-// #define ST7789_MADCTL_ML  0x10
-// #define ST7789_MADCTL_MH  0x04
-// #define ST7789_MADCTL_RGB 0x00
-// #define STT7789_MADCTL_BGR 0x08
-
     void init()
     {
         sendCmd(0x01); // Software Reset
@@ -131,21 +121,8 @@ public:
         usleep(500 * 1000);
         sendCmd(0x3A, 0x55); // Set Color Mode: 16-bit
         usleep(10 * 1000);
-        // sendCmd(0x36, 0x00); // RGB
-
-        // instead of mode, could pass directly MADCTL as a parameter
-        // and could even be passed from config file
-        if (mode == 0) {
-            sendCmd(0x36, 0x08); // BGR
-        } else if (mode == 1) {
-            // sendCmd(0x36, 0x08); // Memory Access Control: BGR
-            // sendCmd(0x36, 0x00); // Memory Access Control: RGB
-            // sendCmd(0x36, 0x40 | 0x80 | 0x00);
-            // sendCmd(0x36, 0x40 | 0x20 | 0x00);
-            // sendCmd(0x36, 0x20 | 0x08);
-            sendCmd(0x36, 0x20 | 0x00);
-        }
-
+        sendCmd(0x36, 0x08); // Memory Access Control: Row/col addr, bottom-top refresh
+        // sendCmd(0x36, 0x00); // Memory Access Control: RGB
         // uint8_t x[4] = { 0, 0, 0, 0x1a }; // xstart = 0, xend = 170
         uint8_t x[4] = { 0, 0, U16_TO_U8(width) };
         sendCmd(0x2A, x, 4); // Set Column Address
@@ -166,7 +143,8 @@ public:
         // uint16_t randomColor = rand() % 0xFFFF;
         // fillScreen(randomColor); // clear screen
 
-        fillScreen(colorToU16({ 0x21, 0x25, 0x2b, 255 })); // #21252b
+        fillScreen({ 0x21, 0x25, 0x2b, 255 }); // clear screen
+
 
         // drawFillRect(140, 140, 30, 30, 0xFF00);
 
