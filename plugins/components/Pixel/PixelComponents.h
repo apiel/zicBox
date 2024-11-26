@@ -4,7 +4,7 @@
 #include "../../../viewManager.h"
 #include "./KeyInfoBarComponent.h"
 #include "./DrumEnvelopComponent.h"
-#include "./Encoder2Component.h"
+#include "./Encoder3Component.h"
 
 void loadPixelComponents()
 {
@@ -17,8 +17,8 @@ void loadPixelComponents()
         return new DrumEnvelopComponent(props);
     } });
 
-    viewManager.plugins.push_back({ "Encoder2", [](ComponentInterface::Props props) {
-        return new Encoder2Component(props);
+    viewManager.plugins.push_back({ "Encoder3", [](ComponentInterface::Props props) {
+        return new Encoder3Component(props);
     } });
 }
 
