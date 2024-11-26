@@ -5,6 +5,9 @@
 #include "../../utils/color.h"
 
 class ToggleColor {
+protected:
+    uint8_t value = 1;
+
 public:
     Color color;
     Color color1;
@@ -24,26 +27,30 @@ public:
     {
     }
 
-    void toggle(uint8_t value)
+    void toggle(uint8_t _value)
     {
+        value = _value;
         color = value == 1 ? color1 : color2;
     }
 
     void darkness(float darkenRatio)
     {
         color2 = darken(color1, darkenRatio);
+        color = value == 1 ? color1 : color2;
     }
 
-    void setColors(Color color1, Color color2)
+    void setColors(Color _color1, Color _color2)
     {
-        this->color1 = color1;
-        this->color2 = color2;
+        color1 = _color1;
+        color2 = _color2;
+        color = value == 1 ? color1 : color2;
     }
 
-    void setColor(Color color, float darkenRatio)
+    void setColor(Color _color, float darkenRatio)
     {
-        this->color1 = color;
-        this->color2 = darken(color, darkenRatio);
+        color1 = _color;
+        color2 = darken(_color, darkenRatio);
+        color = value == 1 ? color1 : color2;
     }
 };
 
