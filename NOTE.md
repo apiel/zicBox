@@ -41,6 +41,28 @@ Last option might be best!
 
 - TODO separate probability and step condition, also introduce step motion that would switch semitone every time step get trigger
 
+#### pins
+
+Rpi has 26 pins
+Use 3 pins for audio
+
+With DSI display:
+- 3 audio
+- 10 btn
+- 13 left for encoder = 6  (and 1 can be push encoder)
+
+With I2c display:
+- 3 audio
+- 10 btn
+- 2 display (SDA/SCL)
+- 11 left for encoder = 5  (and 1 can be push encoder)
+
+With ST7789 display:
+- 3 audio
+- 10 btn
+- 5 display (4?)
+- 8 left for encoder = 4 
+
 ## Next TODO
 
 - FIXME git clone recursive to be base on http instead of ssh

@@ -54,6 +54,22 @@ protected:
         sendCmd(cmd, addr, 4);
     }
 
+    void fillScreen(uint16_t color) // just for testing
+    {
+        drawFillRect(0, 0, width, height, color);
+    }
+
+    void drawFillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color) // just for testing
+    {
+        uint16_t pixels[w];
+        for (uint16_t i = 0; i < w; ++i) {
+            pixels[i] = color;
+        }
+        for (uint16_t i = 0; i < h; ++i) {
+            drawRow(x, y + i, w, pixels);
+        }
+    }
+
 public:
     ST7789(std::function<void(uint8_t, uint8_t*, uint32_t)> sendSpiCmd, uint16_t width, uint16_t height, uint8_t mode = 0)
         : sendSpiCmd(sendSpiCmd)
@@ -79,49 +95,13 @@ public:
         sendCmd(DISPLAY_WRITE_PIXELS, (uint8_t*)pixels, w * BYTESPERPIXEL);
     }
 
-    void drawFillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color)
-    {
-        int yPos;
-        uint16_t size = w * BYTESPERPIXEL;
-        uint8_t pixels[size];
-        uint8_t pixel[BYTESPERPIXEL] = { U16_TO_U8(color) };
-
-        for (uint16_t i = 0; i < size; i += BYTESPERPIXEL) {
-            pixels[i] = pixel[0];
-            pixels[i + 1] = pixel[1];
-        }
-
-        for (yPos = 0; yPos < h; ++yPos) {
-            // sendAddr(DISPLAY_SET_CURSOR_X, x, x + w);
-            // sendAddr(DISPLAY_SET_CURSOR_Y, y + yPos, y + yPos);
-            // sendCmd(DISPLAY_WRITE_PIXELS, pixels, size);
-            drawRow(x, y + yPos, w, (uint16_t*)pixels);
-        }
-    }
-
-    void fillScreen(uint16_t color)
-    {
-        uint32_t size = width * height * BYTESPERPIXEL;
-        uint8_t pixels[size];
-        uint8_t pixel[BYTESPERPIXEL] = { U16_TO_U8(color) };
-
-        for (int i = 0; i < size; i += BYTESPERPIXEL) {
-            pixels[i] = pixel[0];
-            pixels[i + 1] = pixel[1];
-        }
-
-        sendAddr(DISPLAY_SET_CURSOR_X, 0, width);
-        sendAddr(DISPLAY_SET_CURSOR_Y, 0, height);
-        sendCmd(DISPLAY_WRITE_PIXELS, pixels, size);
-    }
-
-// #define ST7789_MADCTL_MY  0x80
-// #define ST7789_MADCTL_MX  0x40
-// #define ST7789_MADCTL_MV  0x20
-// #define ST7789_MADCTL_ML  0x10
-// #define ST7789_MADCTL_MH  0x04
-// #define ST7789_MADCTL_RGB 0x00
-// #define STT7789_MADCTL_BGR 0x08
+    // #define ST7789_MADCTL_MY  0x80
+    // #define ST7789_MADCTL_MX  0x40
+    // #define ST7789_MADCTL_MV  0x20
+    // #define ST7789_MADCTL_ML  0x10
+    // #define ST7789_MADCTL_MH  0x04
+    // #define ST7789_MADCTL_RGB 0x00
+    // #define STT7789_MADCTL_BGR 0x08
 
     void init()
     {
