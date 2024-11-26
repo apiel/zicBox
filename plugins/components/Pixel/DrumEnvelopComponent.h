@@ -188,36 +188,6 @@ public:
             return true;
         }
 
-        /*md - `BACKGROUND_COLOR: color` is the background color of the component. */
-        if (strcmp(key, "BACKGROUND_COLOR") == 0) {
-            bgColor = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `FILL_COLOR: color` is the color of the envelop. */
-        if (strcmp(key, "FILL_COLOR") == 0) {
-            fillColor.setColor(draw.getColor(value), inactiveColorRatio);
-            return true;
-        }
-
-        /*md - `OUTLINE_COLOR: color` is the color of the envelop outline. */
-        if (strcmp(key, "OUTLINE_COLOR") == 0) {
-            outlineColor.setColor(draw.getColor(value), inactiveColorRatio);
-            return true;
-        }
-
-        /*md - `TEXT_COLOR: color` is the color of the text. */
-        if (strcmp(key, "TEXT_COLOR") == 0) {
-            textColor.setColor(draw.getColor(value), inactiveColorRatio);
-            return true;
-        }
-
-        /*md - `CURSOR_COLOR: color` is the color of the cursor. */
-        if (strcmp(key, "CURSOR_COLOR") == 0) {
-            cursorColor.setColor(draw.getColor(value), inactiveColorRatio);
-            return true;
-        }
-
         /*md - `OUTLINE: true/false` is if the envelop should be outlined (default: true). */
         if (strcmp(key, "OUTLINE") == 0) {
             outline = strcmp(value, "true") == 0;
@@ -248,6 +218,16 @@ public:
             return true;
         }
 
+        /*md - `BACKGROUND_COLOR: color` is the background color of the component. */
+        if (strcmp(key, "BACKGROUND_COLOR") == 0) {
+            bgColor = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `FILL_COLOR: color` is the color of the envelop. */
+        /*md - `OUTLINE_COLOR: color` is the color of the envelop outline. */
+        /*md - `TEXT_COLOR: color` is the color of the text. */
+        /*md - `CURSOR_COLOR: color` is the color of the cursor. */
         /*md - `INACTIVE_COLOR_RATIO: 0.0 - 1.0` is the ratio of darkness for the inactive color (default: 0.5). */
         return GroupColorComponent::config(key, value);
     }
