@@ -1,8 +1,9 @@
 ## Pixel TODO
 
 - TODO check audio!!
+- TODO serialize SynthDrum
 
-- TODO rename encoder2 to encoder3
+- NOTE wavetable could morph by rotating the cursor
 
 - TODO make dustscript part of the repo instead to be external dependency...
 
