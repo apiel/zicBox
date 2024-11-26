@@ -9,6 +9,8 @@
 /*md
 ## Drum envelop
 
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/DrumEnvelop.png" />
+
 Show a representation of a drum envelop (envelop with relative time and modulation, without sustain).
 */
 
