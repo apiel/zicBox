@@ -2,6 +2,8 @@
 
 - TODO check audio!!
 
+- TODO rename encoder2 to encoder3
+
 - TODO make dustscript part of the repo instead to be external dependency...
 
 - TODO get rid of SDL component andunify everything

@@ -9,13 +9,13 @@
 #include "utils/GroupColorComponent.h"
 
 /*md
-## Encoder2
+## Encoder3
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/pixel/Encoder2.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/pixel/Encoder3.png" />
 
-Encoder2 is used to display current audio plugin value for a given parameter.
+Encoder3 is used to display current audio plugin value for a given parameter.
 */
-class Encoder2Component : public GroupColorComponent {
+class Encoder3Component : public GroupColorComponent {
 protected:
     const char* name = NULL;
     std::string label;
@@ -173,7 +173,7 @@ protected:
     }
 
 public:
-    Encoder2Component(ComponentInterface::Props props)
+    Encoder3Component(ComponentInterface::Props props)
         : GroupColorComponent(props, {
             { "ID_COLOR", &idColor },
             { "TITLE_COLOR", &titleColor },

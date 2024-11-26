@@ -59,7 +59,7 @@ $track=1
     ENCODER_TIME: 1
     ENCODER_MODULATION: 2
 
-  COMPONENT: Encoder2 $3/4W 0 $1/4W 50
+  COMPONENT: Encoder3 $3/4W 0 $1/4W 50
     GROUP: 0
     ENCODER_ID: 3
     COLOR: secondary
@@ -67,7 +67,6 @@ $track=1
     VALUE: SynthDrum23 DURATION
 
 
-# TODO use freq envelope
   COMPONENT: DrumEnvelop 0 60 ($3/4W-2) 50
     GROUP: 1
     TRACK: $track
@@ -77,16 +76,16 @@ $track=1
     ENCODER_TIME: 1
     ENCODER_MODULATION: 2
 
-# TODO activate encoder with arrow up/down
-  COMPONENT: Encoder2 $3/4W 60 $1/4W 50
+  COMPONENT: Encoder3 $3/4W 60 $1/4W 50
     GROUP: 1
     ENCODER_ID: 3
     COLOR: secondary
     TRACK: $track
     VALUE: SynthDrum23 PITCH
 
-# only active row has color
-# other rows are gray out
+# create bar encoders
+
+# add waveform
 
   COMPONENT: KeyInfoBar 0 216
     KEYMAP: Keyboard 20 item 0
