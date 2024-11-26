@@ -61,10 +61,12 @@ int main(int argc, char* argv[])
     spi.setSpeed(20000);
 #endif
 
-    ST7789 st7789([&](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); }, 240, 240);
-    // ST7789 st7789([&](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); }, 240, 320);
-    // ST7789 st7789([&](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); }, 320, 240);
-    st7789.init();
+    ST7789 st7789([&](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); });
+    st7789.init(320, 240);
+
+    // st7789.madctl = 0x08;
+    // st7789.displayInverted = true;
+    // st7789.init(240, 240);
 
     usleep(10 * 1000); // Delay a bit before restoring CLK, or otherwise this has been observed to cause the display not init if done back to back after the clear operation above.
 
