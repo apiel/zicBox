@@ -56,6 +56,13 @@ public:
 
     bool config(char* key, char* value)
     {
+        for (auto& color : colors) {
+            if (strcmp(key, color.name.c_str()) == 0) {
+                color.color->setColor(draw.getColor(value), inactiveColorRatio);
+                return true;
+            }
+        }
+
         if (strcmp(key, "INACTIVE_COLOR_RATIO") == 0) {
             inactiveColorRatio = atof(value);
             setInactiveColorRatio(inactiveColorRatio);
