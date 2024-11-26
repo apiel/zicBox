@@ -334,6 +334,10 @@ public:
 
     void onEncoder(int id, int8_t direction)
     {
+        // if (isActive) {
+        //     printf("[%s] Encoder2Component onEncoder: %d %d\n", label.c_str(), id, direction);
+        // }
+
         if (isActive && id == encoderId) {
             value->increment(direction);
         }

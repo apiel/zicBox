@@ -73,11 +73,14 @@ $track=1
     TRACK: $track
     PLUGIN: SynthDrum23
     ENVELOP_DATA_ID: 4
+    ENCODER_PHASE: 0
+    ENCODER_TIME: 1
+    ENCODER_MODULATION: 2
 
 # TODO activate encoder with arrow up/down
   COMPONENT: Encoder2 $3/4W 60 $1/4W 50
     GROUP: 1
-    # ENCODER_ID: 3
+    ENCODER_ID: 3
     COLOR: secondary
     TRACK: $track
     VALUE: SynthDrum23 PITCH
