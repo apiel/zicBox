@@ -31,6 +31,7 @@ public:
         open(0, true);
     }
 
+    // FIXME why to have time, if it is not used!! to be remove
     float sample(float time, float* index, float amp, float freq, float pitch)
     {
         (*index) += pitch * freq;
@@ -61,14 +62,14 @@ public:
         maxSampleStart = bufferSampleCount / ZIC_WAVETABLE_WAVEFORMS_COUNT * (ZIC_WAVETABLE_WAVEFORMS_COUNT - 1);
     }
 
-       void open(int position, bool force)
+    void open(int position, bool force)
     {
         if (force || position != fileBrowser.position) {
             std::string filepath = fileBrowser.getFilePath(position);
             printf("KICK23_SAMPLE_SELECTOR: %d %s\n", position, filepath.c_str());
             open(filepath);
         }
-    } 
+    }
 
     void morph(float pct)
     {
