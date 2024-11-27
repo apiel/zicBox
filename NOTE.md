@@ -1,6 +1,5 @@
 ## Pixel TODO
 
-- TODO check audio!!
 - TODO serialize SynthDrum
 
 - NOTE wavetable could morph by rotating the cursor

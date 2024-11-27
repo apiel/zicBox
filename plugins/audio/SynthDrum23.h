@@ -1,6 +1,8 @@
 #ifndef _SYNTH_DRUM23_H_
 #define _SYNTH_DRUM23_H_
 
+#include <sstream>
+
 #include "Wavetable.h"
 #include "audioPlugin.h"
 #include "filter.h"
@@ -154,6 +156,51 @@ public:
         velocity = range(_velocity, 0.0f, 1.0f);
 
         noteMult = pow(2, ((note - baseNote + pitch.get()) / 12.0));
+    }
+
+    void serialize(FILE* file, std::string separator) override
+    {
+        Mapping::serialize(file, separator);
+        // Save amp envelop
+        fprintf(file, "ENV_AMP");
+        for (EnvelopRelative::Data& phase : envelopAmp.data) {
+            fprintf(file, " %f:%f", phase.modulation, phase.time);
+        }
+        fprintf(file, "%s", separator.c_str());
+
+        // Save freq envelop
+        fprintf(file, "ENV_FREQ");
+        for (EnvelopRelative::Data& phase : envelopFreq.data) {
+            fprintf(file, " %f:%f", phase.modulation, phase.time);
+        }
+        fprintf(file, "%s", separator.c_str());
+    }
+
+    void hydrateEnv(EnvelopRelative& env, std::string envData)
+    {
+        env.data.clear();
+        std::stringstream ss(envData);
+        std::string token;
+        while (ss >> token) {
+            float time = 0;
+            float mod = 0;
+            sscanf(token.c_str(), "%f:%f", &mod, &time);
+            // printf("- time: %f mode: %f\n", time, mod);
+            env.data.push_back({ mod, time });
+        }
+    }
+
+    void hydrate(std::string value) override
+    {
+        if (value.find("ENV_AMP ") != std::string::npos) {
+            hydrateEnv(envelopAmp, value.substr(8));
+            return;
+        }
+        if (value.find("ENV_FREQ ") != std::string::npos) {
+            hydrateEnv(envelopFreq, value.substr(9));
+            return;
+        }
+        Mapping::hydrate(value);
     }
 
 protected:

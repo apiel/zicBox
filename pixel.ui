@@ -36,6 +36,7 @@ SCREEN: $SCREEN_WIDTH $SCREEN_HEIGHT
 
 $1/4W=$SCREEN_WIDTH/4
 $1/2W=$1/4W*2
+$2/4W=$1/2W
 $3/4W=$1/4W*3
 
 print: $1/4W $1/2W $3/4W $SCREEN_WIDTH
@@ -90,6 +91,51 @@ $track=1
 # GAIN_CLIPPING
 # NOISE
 # RESONANCE_ENV
+
+  COMPONENT: Encoder3 0 120 $1/4W 40
+    GROUP: 2
+    ENCODER_ID: 0
+    COLOR: secondary
+    TRACK: $track
+    VALUE: SynthDrum23 RESONANCE_ENV
+
+  COMPONENT: Encoder3 $1/4W 120 $1/4W 40
+    GROUP: 2
+    ENCODER_ID: 1
+    COLOR: secondary
+    TRACK: $track
+    VALUE: SynthDrum23 GAIN_CLIPPING
+
+  COMPONENT: Encoder3 $2/4W 120 $1/4W 40
+    GROUP: 2
+    ENCODER_ID: 2
+    COLOR: secondary
+    TRACK: $track
+    VALUE: SynthDrum23 BROWSER
+
+  COMPONENT: Encoder3 $3/4W 120 $1/4W 40
+    GROUP: 2
+    ENCODER_ID: 3
+    COLOR: secondary
+    TRACK: $track
+    VALUE: SynthDrum23 MORPH
+
+
+
+  COMPONENT: Encoder3 0 160 $1/4W 40
+    GROUP: 3
+    ENCODER_ID: 0
+    COLOR: secondary
+    TRACK: $track
+    VALUE: MMFilter CUTOFF
+
+  COMPONENT: Encoder3 $1/4W 160 $1/4W 40
+    GROUP: 3
+    ENCODER_ID: 1
+    COLOR: secondary
+    TRACK: $track
+    VALUE: MMFilter RESONANCE
+
 
 # ADD Sample on top of the output... but could use audio input (like SynthKick23) instead to make it part of SynthDrum23
 
