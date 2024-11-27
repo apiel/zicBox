@@ -136,6 +136,13 @@ $track=1
     TRACK: $track
     VALUE: MMFilter RESONANCE
 
+  COMPONENT: Encoder3 $2/4W 160 $1/4W 40
+    GROUP: 3
+    ENCODER_ID: 2
+    COLOR: secondary
+    TRACK: $track
+    VALUE: SynthDrum23 NOISE
+
 
 # ADD Sample on top of the output... but could use audio input (like SynthKick23) instead to make it part of SynthDrum23
 

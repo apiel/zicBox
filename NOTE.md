@@ -1,6 +1,6 @@
 ## Pixel TODO
 
-- TODO serialize SynthDrum
+- FIXME why to have time, if it is not used!! to be remove in wavetable
 
 - NOTE wavetable could morph by rotating the cursor
 
