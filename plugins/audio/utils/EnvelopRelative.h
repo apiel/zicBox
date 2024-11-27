@@ -98,7 +98,7 @@ public:
 
     float* updatePhaseModulation(int8_t* direction = NULL)
     {
-        if (direction && currentEditPhase > 0) {
+        if (direction && currentEditPhase >= minEditablePhase) {
             float value = data[currentEditPhase].modulation + (*direction * 0.01f);
             data[currentEditPhase].modulation = range(value, 0.0f, 1.0f);
         }
