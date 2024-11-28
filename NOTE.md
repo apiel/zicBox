@@ -1,12 +1,13 @@
 ## Pixel TODO
 
-- TODO Encoder group: OnEncoder event should take group as param, so if we put an external encoder Interface, we can overwrite the current group? Should it really do this? Maybe it should be the view manager... maybe not :p might still be a good idea to pass it and use this to make the comparison.
-
-- TODO DrumSample track: is a very basic track that can play 1 shot sample (8, 12, 16?), first page select the sample (volume and mute?), second page grid sequencer with velocity, step probability (volume and mute?), third page global track effect, filter...
-
 - TODO Scrolling: use view and set a scrolling position is the view shared with all components... might introduce an onScroll event.
+    - There should be CONTAINER within the view, also a view should be a container
+    - Should group be assigned to a view instead to be global?
+    - Should we pass the view to each components?
 
 - TODO Volume/Gain, could we have a value over 100% like 150%??
+
+- TODO DrumSample track: is a very basic track that can play 1 shot sample (8, 12, 16?), first page select the sample (volume and mute?), second page grid sequencer with velocity, step probability (volume and mute?), third page global track effect, filter...
 
 - NOTE wavetable could morph by rotating the cursor
 
@@ -20,6 +21,8 @@
       --> however on SSD1306 there cannot be anti alias, so maybe this one should stay separated...
 
 - FIXME thickness on rectangle
+
+- TODO Encoder group: OnEncoder event should take group as param, so if we put an external encoder Interface, we can overwrite the current group? Should it really do this? Maybe it should be the view manager... maybe not :p might still be a good idea to pass it and use this to make the comparison.
 
 #### Pixel seq
 
