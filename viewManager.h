@@ -13,7 +13,7 @@
 #include "styles.h"
 #include "timer.h"
 
-#ifdef DRAW_ST7789 
+#ifdef DRAW_ST7789
 #ifdef USE_DRAW_WITH_SDL
 #include "draw/ST7789/drawWithSDL.h"
 #else
@@ -30,8 +30,7 @@
 #endif
 
 class ViewManager {
-   uint16_t initViewCounter = 0;
-
+protected:
     struct SharedComponent {
         std::string name;
         ComponentInterface* component;
@@ -43,7 +42,6 @@ class ViewManager {
         std::vector<ComponentInterface*> components = {};
         std::vector<ComponentInterface*> componentsToRender = {};
         std::vector<ComponentInterface*> componentsJob = {};
-        bool hidden = false;
     };
 
     View* lastView = NULL;
@@ -53,7 +51,7 @@ class ViewManager {
 public:
     View* view = NULL;
 
-   void setView(std::string value)
+    void setView(std::string value)
     {
         printf("set view string to %s\n", value.c_str());
         if (value == "&previous") {
@@ -103,23 +101,10 @@ public:
         # some components...
         # ...
         ```
-
-        In some case, we need to create some hidden view. Those hidden views can be useful when defining a layout that is re-used in multiple view. It might also be useful, when a view have multiple state (e.g. shifted view...). In all those case, we do not want those view to be iterable. To define a hidden view, set `HIDDEN` flag after the view name.
-
-        ```coffee
-        VIEW: Layout HIDDEN
-
-        # some components...
-        ```
         */
         if (strcmp(key, "VIEW") == 0) {
             View* v = new View;
-            v->name = strtok(value, " ");
-
-            char* hidden = strtok(NULL, " ");
-            if (hidden != NULL && strcmp(hidden, "HIDDEN") == 0) {
-                v->hidden = true;
-            }
+            v->name = value;
 
             views.push_back(v);
             setView(v->name);
@@ -138,7 +123,7 @@ public:
         STARTUP_VIEW: Mixer
         ```
 
-        If `STARTUP_VIEW` is not defined, the first defined view (not `HIDDEN`) will be displayed.
+        If `STARTUP_VIEW` is not defined, the first defined view will be displayed.
         */
         if (strcmp(key, "STARTUP_VIEW") == 0) {
             setView(value);
@@ -191,6 +176,7 @@ public:
         }
     }
 
+    uint16_t initViewCounter = 0;
     void initActiveComponents(void (*callback)(float, void* data))
     {
         for (auto& component : view->components) {
