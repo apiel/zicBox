@@ -40,7 +40,6 @@ protected:
     EnvelopRelative envelopAmp = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.0f, 1.0f } }, 1);
     EnvelopRelative envelopFreq = EnvelopRelative({ { 0.5f, 0.0f }, { 1.0f, 0.5f }, { 0.0f, 1.0f } });
 
-
     float index = 0;
     float wave(float amp, float freq, float pitch)
     {
@@ -65,7 +64,7 @@ protected:
 
     float sample(EffectFilterData& _filter, float time, float* index, float amp, float freq, float _noteMult = 1.0f, float _velocity = 1.0f)
     {
-        float out = wavetable.sample(time, index, amp * _velocity, freq, pitchMult * _noteMult);
+        float out = wavetable.sample(index, amp * _velocity, freq, pitchMult * _noteMult);
         // float out = wave(amp * _velocity, freq, pitchMult * _noteMult);
         if (noise.get() > 0.0f) {
             out += 0.01 * props.lookupTable->getNoise() * noise.get() * amp;
