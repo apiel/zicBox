@@ -69,88 +69,7 @@ public:
                 return;
             }
         }
-        printf("Unknown view: %s\n", value.c_str());
-    }
-
-    int getViewCount()
-    {
-        return views.size();
-    }
-
-    void pushToRenderingQueue(ComponentInterface* component)
-    {
-        view->componentsToRender.push_back(component);
-    }
-
-    bool viewConfig(char* key, char* value)
-    {
-        /*md
-        ### VIEW
-
-        The user interface is composed of multiple views that contain the components. A view, represent a full screen layout. Use `VIEW: name_of_the_veiw` to create a view. All the following `COMPONENT: ` will be assign to this view, till the next view.
-
-        ```coffee
-        # VIEW: ViewName
-
-        VIEW: Main
-
-        # some components...
-
-        VIEW: Mixer
-
-        # some components...
-        # ...
-        ```
-        */
-        if (strcmp(key, "VIEW") == 0) {
-            View* v = new View;
-            v->name = value;
-
-            views.push_back(v);
-            setView(v->name);
-
-            return true;
-        }
-
-        /*md
-        ### STARTUP_VIEW
-
-        `STARTUP_VIEW` can be used to load a specific view on startup. This command should only be call at the end of the configuration file, once all the view has been initialised.
-
-        ```coffee
-        #STARTUP_VIEW: ViewName
-
-        STARTUP_VIEW: Mixer
-        ```
-
-        If `STARTUP_VIEW` is not defined, the first defined view will be displayed.
-        */
-        if (strcmp(key, "STARTUP_VIEW") == 0) {
-            setView(value);
-        }
-
-        if (strcmp(key, "USE_SHARED_COMPONENT") == 0) {
-            for (auto& shared : sharedComponents) {
-                if (shared.name == value) {
-                    addComponent(shared.component);
-                    return true;
-                }
-            }
-            printf("ERROR: Shared component not found: %s\n", value);
-        }
-
-        if (views.size() > 0 && views.back()->components.size() > 0) {
-            if (strcmp(key, "SHARED_COMPONENT") == 0) {
-                SharedComponent shared;
-                shared.name = value;
-                shared.component = views.back()->components.back();
-                sharedComponents.push_back(shared);
-            }
-
-            return views.back()->components.back()->baseConfig(key, value);
-        }
-
-        return false;
+        logWarn("Unknown view: %s\n", value.c_str());
     }
 
     void addComponent(ComponentInterface* component)
@@ -161,29 +80,20 @@ public:
                 views.back()->componentsJob.push_back(component);
             }
         } else {
-            printf("ERROR: No view to add component to. Create first a view to be able to add components.\n");
-        }
-    }
-
-    void clearOnUpdate()
-    {
-        if (lastView != NULL) {
-            for (auto& component : lastView->components) {
-                for (auto* value : component->values) {
-                    value->onUpdate([](float, void* data) {}, NULL);
-                }
-            }
+            logError("ERROR: No view to add component to. Create first a view to be able to add components.\n");
         }
     }
 
     uint16_t initViewCounter = 0;
-    void initActiveComponents(void (*callback)(float, void* data))
+    void initActiveComponents()
     {
         for (auto& component : view->components) {
             component->initView(initViewCounter);
             component->renderNext();
             for (auto* value : component->values) {
-                value->onUpdate(callback, value);
+                value->onUpdate(
+                    [](float, void* data) { ViewManager::get().onUpdate((ValueInterface*)data); },
+                    value);
             }
         }
         initViewCounter++;
@@ -250,7 +160,7 @@ protected:
             [](int8_t index) { ViewManager::get().setGroup(index); },
             [](int8_t index) { ViewManager::get().setVisibility(index); },
             [](std::string name) { ViewManager::get().setView(name); },
-            [](ComponentInterface* component) { ViewManager::get().pushToRenderingQueue(component); },
+            [](ComponentInterface* component) { ViewManager::get().view->componentsToRender.push_back(component); },
             shift
         };
 
@@ -303,14 +213,21 @@ public:
     bool render()
     {
         m.lock();
-        if (!getViewCount()) {
+        if (!views.size()) {
             return false;
         }
 
         draw.clear();
 
-        clearOnUpdate();
-        initActiveComponents([](float, void* data) { ViewManager::get().onUpdate((ValueInterface*)data); });
+        if (lastView != NULL) {
+            for (auto& component : lastView->components) {
+                for (auto* value : component->values) {
+                    value->onUpdate([](float, void* data) {}, NULL);
+                }
+            }
+        }
+
+        initActiveComponents();
 
         m.unlock();
 
@@ -451,7 +368,75 @@ public:
             addComponent(name, position, size);
             return true;
         }
-        return draw.config(key, value) || viewConfig(key, value);
+
+        /*md
+### VIEW
+
+The user interface is composed of multiple views that contain the components. A view, represent a full screen layout. Use `VIEW: name_of_the_veiw` to create a view. All the following `COMPONENT: ` will be assign to this view, till the next view.
+
+```coffee
+# VIEW: ViewName
+
+VIEW: Main
+
+# some components...
+
+VIEW: Mixer
+
+# some components...
+# ...
+```
+*/
+        if (strcmp(key, "VIEW") == 0) {
+            View* v = new View;
+            v->name = value;
+
+            views.push_back(v);
+            setView(v->name);
+
+            return true;
+        }
+
+        /*md
+        ### STARTUP_VIEW
+
+        `STARTUP_VIEW` can be used to load a specific view on startup. This command should only be call at the end of the configuration file, once all the view has been initialised.
+
+        ```coffee
+        #STARTUP_VIEW: ViewName
+
+        STARTUP_VIEW: Mixer
+        ```
+
+        If `STARTUP_VIEW` is not defined, the first defined view will be displayed.
+        */
+        if (strcmp(key, "STARTUP_VIEW") == 0) {
+            setView(value);
+            return true;
+        }
+
+        if (strcmp(key, "USE_SHARED_COMPONENT") == 0) {
+            for (auto& shared : sharedComponents) {
+                if (shared.name == value) {
+                    addComponent(shared.component);
+                    return true;
+                }
+            }
+            printf("ERROR: Shared component not found: %s\n", value);
+        }
+
+        if (views.size() > 0 && views.back()->components.size() > 0) {
+            if (strcmp(key, "SHARED_COMPONENT") == 0) {
+                SharedComponent shared;
+                shared.name = value;
+                shared.component = views.back()->components.back();
+                sharedComponents.push_back(shared);
+            }
+
+            return views.back()->components.back()->baseConfig(key, value);
+        }
+
+        return draw.config(key, value);
     }
 
     void config(const char* key, const char* value)
