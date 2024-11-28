@@ -7,6 +7,8 @@
 
 #include <cstdio> // printf
 
+// FIXME this is a bit odd, I guess just to be able to use VIEW val within an encoder.
+// but it seems that it is used nowhere... maybe let's remove it
 /**
  * Simulate audio plugin component to be usable within the UI component
  */

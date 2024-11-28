@@ -58,6 +58,8 @@ protected:
         // Generate a triangle wave: Map phase [0, 1] to triangle shape [-1, 1]
         float triangle = 4.0f * std::abs(index - 0.5f) - 1.0f;
 
+        // printf("triangle: %f index: %f\n", triangle, std::abs(index - 0.5f));
+
         // Apply amplitude scaling
         return amp * triangle;
     }
