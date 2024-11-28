@@ -30,6 +30,13 @@
 #endif
 
 class ViewManager {
+public:
+    struct Plugin {
+        string name;
+        std::function<ComponentInterface*(ComponentInterface::Props props)> allocator;
+    };
+    std::vector<Plugin> plugins;
+
 protected:
     struct SharedComponent {
         std::string name;
@@ -72,45 +79,9 @@ public:
         logWarn("Unknown view: %s\n", value.c_str());
     }
 
-    void addComponent(ComponentInterface* component)
-    {
-        if (views.size() > 0) {
-            views.back()->components.push_back(component);
-            if (component->jobRendering) {
-                views.back()->componentsJob.push_back(component);
-            }
-        } else {
-            logError("ERROR: No view to add component to. Create first a view to be able to add components.\n");
-        }
-    }
-
-    uint16_t initViewCounter = 0;
-    void initActiveComponents()
-    {
-        for (auto& component : view->components) {
-            component->initView(initViewCounter);
-            component->renderNext();
-            for (auto* value : component->values) {
-                value->onUpdate(
-                    [](float, void* data) { ViewManager::get().onUpdate((ValueInterface*)data); },
-                    value);
-            }
-        }
-        initViewCounter++;
-    }
-
-public:
-    struct Plugin {
-        string name;
-        std::function<ComponentInterface*(ComponentInterface::Props props)> allocator;
-    };
-    std::vector<Plugin> plugins;
-
 protected:
     std::mutex m;
     std::mutex m2;
-
-    int8_t visibility = 0;
 
     // there should be about 4 to 12 encoders, however with 256 we are sure to not be out of bounds
     unsigned long lastEncoderTick[256] = { 0 };
@@ -158,7 +129,6 @@ protected:
             getController,
             []() { return ViewManager::get().view->components; },
             [](int8_t index) { ViewManager::get().setGroup(index); },
-            [](int8_t index) { ViewManager::get().setVisibility(index); },
             [](std::string name) { ViewManager::get().setView(name); },
             [](ComponentInterface* component) { ViewManager::get().view->componentsToRender.push_back(component); },
             shift
@@ -174,6 +144,33 @@ protected:
             }
         }
         logWarn("Unknown component: %s", name.c_str());
+    }
+
+    void addComponent(ComponentInterface* component)
+    {
+        if (views.size() > 0) {
+            views.back()->components.push_back(component);
+            if (component->jobRendering) {
+                views.back()->componentsJob.push_back(component);
+            }
+        } else {
+            logError("ERROR: No view to add component to. Create first a view to be able to add components.\n");
+        }
+    }
+
+    uint16_t initViewCounter = 0;
+    void initActiveComponents()
+    {
+        for (auto& component : view->components) {
+            component->initView(initViewCounter);
+            component->renderNext();
+            for (auto* value : component->values) {
+                value->onUpdate(
+                    [](float, void* data) { ViewManager::get().onUpdate((ValueInterface*)data); },
+                    value);
+            }
+        }
+        initViewCounter++;
     }
 
 public:
@@ -280,14 +277,6 @@ public:
 
         for (auto& component : view->components) {
             component->onGroupChanged(group);
-        }
-    }
-
-    void setVisibility(int8_t index)
-    {
-        visibility = index == -1 ? 0 : index;
-        for (auto& component : view->components) {
-            component->onVisibilityChanged(visibility);
         }
     }
 
