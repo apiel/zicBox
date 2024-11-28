@@ -1,6 +1,12 @@
 ## Pixel TODO
 
-- FIXME why to have time, if it is not used!! to be remove in wavetable
+- TODO Encoder group: OnEncoder event should take group as param, so if we put an external encoder Interface, we can overwrite the current group? Should it really do this? Maybe it should be the view manager... maybe not :p might still be a good idea to pass it and use this to make the comparison.
+
+- TODO DrumSample track: is a very basic track that can play 1 shot sample (8, 12, 16?), first page select the sample (volume and mute?), second page grid sequencer with velocity, step probability (volume and mute?), third page global track effect, filter...
+
+- TODO Scrolling: use view and set a scrolling position is the view shared with all components... might introduce an onScroll event.
+
+- TODO Volume/Gain, could we have a value over 100% like 150%??
 
 - NOTE wavetable could morph by rotating the cursor
 

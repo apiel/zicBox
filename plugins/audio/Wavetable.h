@@ -31,8 +31,7 @@ public:
         open(0, true);
     }
 
-    // FIXME why to have time, if it is not used!! to be remove
-    float sample(float time, float* index, float amp, float freq, float pitch)
+    float sample(float* index, float amp, float freq, float pitch)
     {
         (*index) += pitch * freq;
         while ((*index) >= sampleCount) {
