@@ -6,6 +6,7 @@ using namespace std;
 #include <stdexcept>
 #include <string>
 #include <thread>
+#include <functional>
 
 #include "../helpers/trim.h"
 #include "../log.h"

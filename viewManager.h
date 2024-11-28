@@ -5,7 +5,7 @@
 #include <mutex>
 #include <vector>
 
-#include "UiPlugin.h"
+// #include "UiPlugin.h"
 #include "controllerList.h"
 #include "helpers/getFullpath.h"
 #include "host.h"
@@ -31,6 +31,179 @@
 #endif
 
 class ViewManager {
+   uint16_t initViewCounter = 0;
+
+    struct SharedComponent {
+        std::string name;
+        ComponentInterface* component;
+    };
+    std::vector<SharedComponent> sharedComponents;
+
+    struct View {
+        std::string name;
+        std::vector<ComponentInterface*> components = {};
+        std::vector<ComponentInterface*> componentsToRender = {};
+        std::vector<ComponentInterface*> componentsJob = {};
+        bool hidden = false;
+    };
+
+    View* lastView = NULL;
+
+    std::vector<View*> views;
+
+public:
+    View* view = NULL;
+
+   void setView(std::string value)
+    {
+        printf("set view string to %s\n", value.c_str());
+        if (value == "&previous") {
+            value = lastView->name;
+        }
+        for (int i = 0; i < views.size(); i++) {
+            if (views[i]->name == value) {
+                if (view != views[i]) {
+                    if (lastView != view) {
+                        lastView = view;
+                    }
+                    view = views[i];
+                    render();
+                }
+                return;
+            }
+        }
+        printf("Unknown view: %s\n", value.c_str());
+    }
+
+    int getViewCount()
+    {
+        return views.size();
+    }
+
+    void pushToRenderingQueue(ComponentInterface* component)
+    {
+        view->componentsToRender.push_back(component);
+    }
+
+    bool viewConfig(char* key, char* value)
+    {
+        /*md
+        ### VIEW
+
+        The user interface is composed of multiple views that contain the components. A view, represent a full screen layout. Use `VIEW: name_of_the_veiw` to create a view. All the following `COMPONENT: ` will be assign to this view, till the next view.
+
+        ```coffee
+        # VIEW: ViewName
+
+        VIEW: Main
+
+        # some components...
+
+        VIEW: Mixer
+
+        # some components...
+        # ...
+        ```
+
+        In some case, we need to create some hidden view. Those hidden views can be useful when defining a layout that is re-used in multiple view. It might also be useful, when a view have multiple state (e.g. shifted view...). In all those case, we do not want those view to be iterable. To define a hidden view, set `HIDDEN` flag after the view name.
+
+        ```coffee
+        VIEW: Layout HIDDEN
+
+        # some components...
+        ```
+        */
+        if (strcmp(key, "VIEW") == 0) {
+            View* v = new View;
+            v->name = strtok(value, " ");
+
+            char* hidden = strtok(NULL, " ");
+            if (hidden != NULL && strcmp(hidden, "HIDDEN") == 0) {
+                v->hidden = true;
+            }
+
+            views.push_back(v);
+            setView(v->name);
+
+            return true;
+        }
+
+        /*md
+        ### STARTUP_VIEW
+
+        `STARTUP_VIEW` can be used to load a specific view on startup. This command should only be call at the end of the configuration file, once all the view has been initialised.
+
+        ```coffee
+        #STARTUP_VIEW: ViewName
+
+        STARTUP_VIEW: Mixer
+        ```
+
+        If `STARTUP_VIEW` is not defined, the first defined view (not `HIDDEN`) will be displayed.
+        */
+        if (strcmp(key, "STARTUP_VIEW") == 0) {
+            setView(value);
+        }
+
+        if (strcmp(key, "USE_SHARED_COMPONENT") == 0) {
+            for (auto& shared : sharedComponents) {
+                if (shared.name == value) {
+                    addComponent(shared.component);
+                    return true;
+                }
+            }
+            printf("ERROR: Shared component not found: %s\n", value);
+        }
+
+        if (views.size() > 0 && views.back()->components.size() > 0) {
+            if (strcmp(key, "SHARED_COMPONENT") == 0) {
+                SharedComponent shared;
+                shared.name = value;
+                shared.component = views.back()->components.back();
+                sharedComponents.push_back(shared);
+            }
+
+            return views.back()->components.back()->baseConfig(key, value);
+        }
+
+        return false;
+    }
+
+    void addComponent(ComponentInterface* component)
+    {
+        if (views.size() > 0) {
+            views.back()->components.push_back(component);
+            if (component->jobRendering) {
+                views.back()->componentsJob.push_back(component);
+            }
+        } else {
+            printf("ERROR: No view to add component to. Create first a view to be able to add components.\n");
+        }
+    }
+
+    void clearOnUpdate()
+    {
+        if (lastView != NULL) {
+            for (auto& component : lastView->components) {
+                for (auto* value : component->values) {
+                    value->onUpdate([](float, void* data) {}, NULL);
+                }
+            }
+        }
+    }
+
+    void initActiveComponents(void (*callback)(float, void* data))
+    {
+        for (auto& component : view->components) {
+            component->initView(initViewCounter);
+            component->renderNext();
+            for (auto* value : component->values) {
+                value->onUpdate(callback, value);
+            }
+        }
+        initViewCounter++;
+    }
+
 public:
     struct Plugin {
         string name;
@@ -42,7 +215,6 @@ protected:
     std::mutex m;
     std::mutex m2;
 
-    UiPlugin& ui = UiPlugin::get();
     int8_t visibility = 0;
 
     // there should be about 4 to 12 encoders, however with 256 we are sure to not be out of bounds
@@ -89,11 +261,11 @@ protected:
             getPlugin,
             sendAudioEvent,
             getController,
-            []() { return UiPlugin::get().view->components; },
+            []() { return ViewManager::get().view->components; },
             [](int8_t index) { ViewManager::get().setGroup(index); },
             [](int8_t index) { ViewManager::get().setVisibility(index); },
-            [](std::string name) { UiPlugin::get().setView(name); },
-            [](ComponentInterface* component) { UiPlugin::get().pushToRenderingQueue(component); },
+            [](std::string name) { ViewManager::get().setView(name); },
+            [](ComponentInterface* component) { ViewManager::get().pushToRenderingQueue(component); },
             shift
         };
 
@@ -102,7 +274,7 @@ protected:
         for (auto& plugin : plugins) {
             if (plugin.name == name) {
                 ComponentInterface* component = plugin.allocator(props);
-                ui.addComponent(component);
+                addComponent(component);
                 return;
             }
         }
@@ -129,13 +301,12 @@ public:
     void init()
     {
         draw.init();
-        ui.setUpdateCallback([]() { ViewManager::get().render(); });
     }
 
     // TODO could this be optimized by creating mapping values to components?
     void onUpdate(ValueInterface* val)
     {
-        for (auto& component : ui.view->components) {
+        for (auto& component : view->components) {
             for (auto* value : component->values) {
                 if (value == val) {
                     component->onUpdate(value);
@@ -147,14 +318,14 @@ public:
     bool render()
     {
         m.lock();
-        if (!ui.getViewCount()) {
+        if (!getViewCount()) {
             return false;
         }
 
         draw.clear();
 
-        ui.clearOnUpdate();
-        ui.initActiveComponents([](float, void* data) { ViewManager::get().onUpdate((ValueInterface*)data); });
+        clearOnUpdate();
+        initActiveComponents([](float, void* data) { ViewManager::get().onUpdate((ValueInterface*)data); });
 
         m.unlock();
 
@@ -168,21 +339,21 @@ public:
         // printf("renderComponents shifted: %d\n", shift ? 1 : 0);
         m.lock();
 
-        if (ui.view->componentsJob.size()) {
-            for (auto& component : ui.view->componentsJob) {
+        if (view->componentsJob.size()) {
+            for (auto& component : view->componentsJob) {
                 if (component->active) {
                     component->jobRendering(now);
                 }
             }
         }
 
-        if (ui.view->componentsToRender.size()) {
-            for (auto& component : ui.view->componentsToRender) {
+        if (view->componentsToRender.size()) {
+            for (auto& component : view->componentsToRender) {
                 if (component->active) {
                     component->render();
                 }
             }
-            ui.view->componentsToRender.clear();
+            view->componentsToRender.clear();
             draw.renderNext();
         }
         draw.triggerRendering();
@@ -195,7 +366,7 @@ public:
 
         // If group is out of bound, we set it to 0
         bool usable = false;
-        for (auto& component : ui.view->components) {
+        for (auto& component : view->components) {
             if (component->group == group) {
                 usable = true;
                 break;
@@ -205,7 +376,7 @@ public:
             group = 0;
         }
 
-        for (auto& component : ui.view->components) {
+        for (auto& component : view->components) {
             component->onGroupChanged(group);
         }
     }
@@ -213,21 +384,21 @@ public:
     void setVisibility(int8_t index)
     {
         visibility = index == -1 ? 0 : index;
-        for (auto& component : ui.view->components) {
+        for (auto& component : view->components) {
             component->onVisibilityChanged(visibility);
         }
     }
 
     void onMotion(MotionInterface& motion)
     {
-        for (auto& component : ui.view->components) {
+        for (auto& component : view->components) {
             component->handleMotion(motion);
         }
     }
 
     void onMotionRelease(MotionInterface& motion)
     {
-        for (auto& component : ui.view->components) {
+        for (auto& component : view->components) {
             component->handleMotionRelease(motion);
         }
     }
@@ -240,7 +411,7 @@ public:
             direction = direction * 5;
         }
         lastEncoderTick[id] = tick;
-        for (auto& component : ui.view->components) {
+        for (auto& component : view->components) {
             component->onEncoder(id, direction);
         }
         m2.unlock();
@@ -249,7 +420,7 @@ public:
     void onKey(uint16_t id, int key, int8_t state)
     {
         m2.lock();
-        for (auto& component : ui.view->components) {
+        for (auto& component : view->components) {
             component->onKey(id, key, state);
         }
         m2.unlock();
@@ -295,7 +466,7 @@ public:
             addComponent(name, position, size);
             return true;
         }
-        return draw.config(key, value) || ui.config(key, value);
+        return draw.config(key, value) || viewConfig(key, value);
     }
 
     void config(const char* key, const char* value)
