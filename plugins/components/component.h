@@ -90,14 +90,6 @@ public:
             return true;
         }
 
-        if (strcmp(key, "VISIBILITY") == 0) {
-            visibility = atoi(value);
-            if (visibility != 0) { // Maybe not the best...
-                active = false;
-            }
-            return true;
-        }
-
         if (strcmp(key, "TRACK") == 0) {
             track = atoi(value);
             return true;
@@ -113,14 +105,6 @@ public:
 
     virtual void onGroupChanged(int8_t index)
     {
-    }
-
-    virtual void onVisibilityChanged(int8_t index)
-    {
-        if (visibility == index || visibility == -1) {
-            active = true;
-            renderNext();
-        }
     }
 };
 

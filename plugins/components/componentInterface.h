@@ -21,7 +21,6 @@ public:
         ControllerInterface* (*getController)(const char* name);
         std::vector<ComponentInterface*> (*getViewComponents)();
         void (*setGroup)(int8_t index);
-        void (*setVisibility)(int8_t index);
         void (*setView)(std::string name);
         void (*pushToRenderingQueue)(ComponentInterface* component);
         bool& shift;
@@ -35,7 +34,6 @@ protected:
     ControllerInterface* (*getController)(const char* name);
     std::vector<ComponentInterface*> (*getViewComponents)();
     void (*setGroup)(int8_t index);
-    void (*setVisibility)(int8_t index);
     void (*setView)(std::string name);
     void (*pushToRenderingQueue)(ComponentInterface* component);
     bool& shift;
@@ -54,7 +52,6 @@ public:
     Size size;
     int16_t track = -1;
     int8_t group = -1;
-    int8_t visibility = -1;
     bool active = true;
     std::string id = "";
 
@@ -68,7 +65,6 @@ public:
         , getController(props.getController)
         , getViewComponents(props.getViewComponents)
         , setGroup(props.setGroup)
-        , setVisibility(props.setVisibility)
         , setView(props.setView)
         , pushToRenderingQueue(props.pushToRenderingQueue)
         , shift(props.shift)
@@ -92,7 +88,6 @@ public:
     virtual bool baseConfig(char* key, char* value) = 0;
     virtual void onGroupChanged(int8_t index) = 0;
     virtual void onUpdate(ValueInterface* value) = 0;
-    virtual void onVisibilityChanged(int8_t index) = 0;
     virtual void* data(int id, void* userdata = NULL)
     {
         return NULL;
