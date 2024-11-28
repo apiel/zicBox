@@ -32,7 +32,7 @@ public:
 
     virtual void renderNext()
     {
-        if (active) {
+        if (active && pushToRenderingQueue) {
             pushToRenderingQueue(this);
         }
     }

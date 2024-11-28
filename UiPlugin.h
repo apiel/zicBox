@@ -1,18 +1,11 @@
 #ifndef _UI_PLUGIN_H_
 #define _UI_PLUGIN_H_
 
-// #include "plugins/valueInterface.h"
-#include "plugins/audio/mapping.h"
 #include "plugins/components/componentInterface.h"
 
 #include <cstdio> // printf
 
-// FIXME this is a bit odd, I guess just to be able to use VIEW val within an encoder.
-// but it seems that it is used nowhere... maybe let's remove it
-/**
- * Simulate audio plugin component to be usable within the UI component
- */
-class UiPlugin : public Mapping {
+class UiPlugin {
 protected:
     void (*onUpdatePtr)() = []() {};
 
@@ -37,44 +30,12 @@ protected:
     std::vector<View*> views;
 
     static UiPlugin* instance;
-    AudioPlugin::Props props = { NULL, 0, 0, NULL, 0, NULL };
     UiPlugin()
-        : Mapping(props, (char*)"UI")
     {
-    }
-
-    void setView(int index)
-    {
-        if (index < 0 || index >= views.size()) {
-            return;
-        }
-
-        if (view != views[index]) {
-            if (lastView != view) {
-                lastView = view;
-            }
-            view = views[index];
-
-            if (!view->hidden) {
-                viewSelector.setString(view->name);
-
-                int value = 1;
-                for (int i = 0; i < index; i++) {
-                    if (!views[i]->hidden) {
-                        value++;
-                    }
-                }
-                viewSelector.setFloat((float)value);
-            }
-
-            onUpdatePtr();
-        }
     }
 
 public:
     View* view = NULL;
-
-    Val& viewSelector = val(1.0f, "VIEW", { "View", VALUE_STRING, .min = 1.0 }, [&](auto p) { setView(p.value); });
 
     static UiPlugin& get()
     {
@@ -91,32 +52,21 @@ public:
         onUpdatePtr = callback;
     }
 
-    UiPlugin& setView(float value)
-    {
-        if (value < viewSelector.props().min || value > viewSelector.props().max) {
-            return *this;
-        }
-        int visible = 0;
-        for (int i = 0; i < views.size(); i++) {
-            if (!views[i]->hidden) {
-                visible++;
-            }
-            if (visible == (int)value) {
-                setView(i);
-                break;
-            }
-        }
-        return *this;
-    }
-
     UiPlugin& setView(std::string value)
     {
+        printf("set view string to %s\n", value.c_str());
         if (value == "&previous") {
             value = lastView->name;
         }
         for (int i = 0; i < views.size(); i++) {
             if (views[i]->name == value) {
-                setView(i);
+                if (view != views[i]) {
+                    if (lastView != view) {
+                        lastView = view;
+                    }
+                    view = views[i];
+                    onUpdatePtr();
+                }
                 return *this;
             }
         }
@@ -136,32 +86,32 @@ public:
 
     bool config(char* key, char* value)
     {
-/*md
-### VIEW
+        /*md
+        ### VIEW
 
-The user interface is composed of multiple views that contain the components. A view, represent a full screen layout. Use `VIEW: name_of_the_veiw` to create a view. All the following `COMPONENT: ` will be assign to this view, till the next view.
+        The user interface is composed of multiple views that contain the components. A view, represent a full screen layout. Use `VIEW: name_of_the_veiw` to create a view. All the following `COMPONENT: ` will be assign to this view, till the next view.
 
-```coffee
-# VIEW: ViewName
+        ```coffee
+        # VIEW: ViewName
 
-VIEW: Main
+        VIEW: Main
 
-# some components...
+        # some components...
 
-VIEW: Mixer
+        VIEW: Mixer
 
-# some components...
-# ...
-```
+        # some components...
+        # ...
+        ```
 
-In some case, we need to create some hidden view. Those hidden views can be useful when defining a layout that is re-used in multiple view. It might also be useful, when a view have multiple state (e.g. shifted view...). In all those case, we do not want those view to be iterable. To define a hidden view, set `HIDDEN` flag after the view name.
+        In some case, we need to create some hidden view. Those hidden views can be useful when defining a layout that is re-used in multiple view. It might also be useful, when a view have multiple state (e.g. shifted view...). In all those case, we do not want those view to be iterable. To define a hidden view, set `HIDDEN` flag after the view name.
 
-```coffee
-VIEW: Layout HIDDEN
+        ```coffee
+        VIEW: Layout HIDDEN
 
-# some components...
-```
-*/
+        # some components...
+        ```
+        */
         if (strcmp(key, "VIEW") == 0) {
             View* v = new View;
             v->name = strtok(value, " ");
@@ -172,35 +122,24 @@ VIEW: Layout HIDDEN
             }
 
             views.push_back(v);
-
-            uint16_t max = 0;
-            for (auto& view : views) {
-                if (!view->hidden) {
-                    max++;
-                }
-            }
-            viewSelector.props().max = (float)max;
-
-            printf("Set VIEW: %s hidden=%s (max %d)\n", v->name.c_str(), v->hidden ? "true" : "false", max);
-
-            setView(1.0f);
+            setView(v->name);
 
             return true;
         }
 
-/*md
-### STARTUP_VIEW
+        /*md
+        ### STARTUP_VIEW
 
-`STARTUP_VIEW` can be used to load a specific view on startup. This command should only be call at the end of the configuration file, once all the view has been initialised.
+        `STARTUP_VIEW` can be used to load a specific view on startup. This command should only be call at the end of the configuration file, once all the view has been initialised.
 
-```coffee
-#STARTUP_VIEW: ViewName
+        ```coffee
+        #STARTUP_VIEW: ViewName
 
-STARTUP_VIEW: Mixer
-```
+        STARTUP_VIEW: Mixer
+        ```
 
-If `STARTUP_VIEW` is not defined, the first defined view (not `HIDDEN`) will be displayed.
-*/
+        If `STARTUP_VIEW` is not defined, the first defined view (not `HIDDEN`) will be displayed.
+        */
         if (strcmp(key, "STARTUP_VIEW") == 0) {
             setView(value);
         }
