@@ -5,7 +5,6 @@
 #include <stdexcept>
 #include <vector>
 
-#include "UiPlugin.h"
 #include "host/audioPluginHandler.h"
 #include "host/config.h"
 #include "log.h"
@@ -19,9 +18,6 @@ void* hostThread(void* data)
 
 AudioPlugin& getPlugin(const char* name, int16_t track = -1)
 {
-    if (strcmp(name, "UI") == 0) {
-        return UiPlugin::get();
-    }
     return AudioPluginHandler::get().getPlugin(name, track);
 }
 
