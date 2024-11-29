@@ -20,6 +20,8 @@ protected:
     KeypadLayout keypadLayout;
     int8_t activeGroup = 0;
 
+    Point pos = { 0, 0 };
+
     Color textColor;
 
     void handleButton(int8_t id, int8_t state)
@@ -70,7 +72,7 @@ protected:
     void renderRow(int y, int startIndex)
     {
         for (int i = 0; i < 5; i++) {
-            Point textPos = { position.x + buttonStartX + i * buttonWidth, y };
+            Point textPos = { pos.x + buttonStartX + i * buttonWidth, y };
             if (!icon.render(text[i + startIndex], textPos, 8, {}, Icon::CENTER)) {
                 draw.textCentered(textPos, text[i + startIndex], 8);
             }
@@ -80,8 +82,9 @@ protected:
 public:
     void render()
     {
-        renderRow(position.y, 0);
-        renderRow(position.y + 12, 5);
+        pos = getPosition();
+        renderRow(pos.y, 0);
+        renderRow(pos.y + 12, 5);
     }
 
     /*md **Config**: */

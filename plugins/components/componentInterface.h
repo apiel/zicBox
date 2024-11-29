@@ -47,6 +47,14 @@ protected:
         return props;
     }
 
+    Point getPosition()
+    {
+        return {
+            position.x + container->position.x,
+            position.y + container->position.y
+        };
+    }
+
 public:
     ComponentContainer* container;
     AudioPlugin& (*getPlugin)(const char* name, int16_t track);

@@ -29,8 +29,9 @@ protected:
     int fontLabelSize = 6;
     int twoSideMargin = 2;
 
-    Point knobCenter;
-    Point valuePosition;
+    Point pos = { 0, 0 };
+    Point knobCenter = { 0, 0 };
+    Point valuePosition = { 0, 0 };
 
     bool showValue = true;
     bool showGroup = false;
@@ -47,17 +48,17 @@ protected:
     void renderLabel()
     {
         if (stringValueReplaceTitle && value->props().type == VALUE_STRING) {
-            draw.textCentered({ knobCenter.x, position.y + size.h - fontLabelSize }, value->string(), fontLabelSize, { titleColor.color, NULL, size.w - 4 });
+            draw.textCentered({ knobCenter.x, pos.y + size.h - fontLabelSize }, value->string(), fontLabelSize, { titleColor.color, NULL, size.w - 4 });
         } else {
-            draw.textCentered({ knobCenter.x, position.y + size.h - fontLabelSize }, label, fontLabelSize, { titleColor.color });
+            draw.textCentered({ knobCenter.x, pos.y + size.h - fontLabelSize }, label, fontLabelSize, { titleColor.color });
         }
     }
 
     void renderActiveGroup()
     {
         if (showGroup && isActive) {
-            draw.filledRect({ position.x + margin, position.y + margin }, { 12, 12 }, { idColor.color });
-            draw.textCentered({ position.x + margin + 6, position.y + margin }, std::to_string(encoderId + 1).c_str(), 6, { bgColor });
+            draw.filledRect({ pos.x + margin, pos.y + margin }, { 12, 12 }, { idColor.color });
+            draw.textCentered({ pos.x + margin + 6, pos.y + margin }, std::to_string(encoderId + 1).c_str(), 6, { bgColor });
         }
     }
 
@@ -175,14 +176,14 @@ protected:
 public:
     Encoder3Component(ComponentInterface::Props props)
         : GroupColorComponent(props, {
-            { "ID_COLOR", &idColor },
-            { "TITLE_COLOR", &titleColor },
-            { "VALUE_COLOR", &valueColor },
-            { "UNIT_COLOR", &unitColor },
-            { "BAR_COLOR", &barColor },
-            { "BAR_BACKGROUND_COLOR", &barBackgroundColor },
-            { "BAR_TWOSIDE_COLOR", &barTwoSideColor },
-        })
+                                         { "ID_COLOR", &idColor },
+                                         { "TITLE_COLOR", &titleColor },
+                                         { "VALUE_COLOR", &valueColor },
+                                         { "UNIT_COLOR", &unitColor },
+                                         { "BAR_COLOR", &barColor },
+                                         { "BAR_BACKGROUND_COLOR", &barBackgroundColor },
+                                         { "BAR_TWOSIDE_COLOR", &barTwoSideColor },
+                                     })
         , margin(styles.margin)
         , bgColor(styles.colors.background)
         , idColor({ 0x60, 0x60, 0x60, 255 }, inactiveColorRatio)
@@ -203,16 +204,16 @@ public:
             size.w = 50;
         }
 
-        knobCenter = { (int)(position.x + (size.w * 0.5)), (int)(position.y + (size.h * 0.5) + marginTop - 1) };
-        valuePosition = { knobCenter.x, knobCenter.y - marginTop - 2 };
         setRadius((size.h - 6) * 0.5);
     }
 
     void render()
     {
-        draw.filledRect(position, size, { bgColor });
-
         if (value != NULL) {
+            pos = getPosition();
+            knobCenter = { (int)(pos.x + (size.w * 0.5)), (int)(pos.y + (size.h * 0.5) + marginTop - 1) };
+            valuePosition = { knobCenter.x, knobCenter.y - marginTop - 2 };
+            draw.filledRect(pos, size, { bgColor });
             renderEncoder();
         }
     }
