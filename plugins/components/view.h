@@ -2,14 +2,9 @@
 #define _VIEW_COMPONENT_H_
 
 #include "componentInterface.h"
-#include "drawInterface.h"
+#include "ComponentContainer.h"
 
 #include <mutex>
-
-class ComponentContainer {
-public:
-    Point position = { 0, 0 };
-};
 
 class View : public ComponentContainer {
 public:
