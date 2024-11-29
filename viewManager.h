@@ -114,6 +114,7 @@ protected:
     void addComponent(string name, Point position, Size size)
     {
         ComponentInterface::Props props = {
+            NULL,
             position,
             size,
             draw,
@@ -142,9 +143,11 @@ protected:
     void addComponent(ComponentInterface* component)
     {
         if (views.size() > 0) {
-            views.back()->components.push_back(component);
+            View *lastView = views.back();
+            component->container = lastView->containes.back();
+            lastView->components.push_back(component);
             if (component->jobRendering) {
-                views.back()->componentsJob.push_back(component);
+                lastView->componentsJob.push_back(component);
             }
         } else {
             logError("ERROR: No view to add component to. Create first a view to be able to add components.\n");

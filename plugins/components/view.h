@@ -1,8 +1,8 @@
 #ifndef _VIEW_COMPONENT_H_
 #define _VIEW_COMPONENT_H_
 
-#include "componentInterface.h"
 #include "ComponentContainer.h"
+#include "componentInterface.h"
 
 #include <mutex>
 
@@ -12,6 +12,7 @@ public:
     std::vector<ComponentInterface*> components = {};
     std::vector<ComponentInterface*> componentsToRender = {};
     std::vector<ComponentInterface*> componentsJob = {};
+    std::vector<ComponentContainer*> containes = { this };
     DrawInterface& draw;
     std::mutex m2;
 
