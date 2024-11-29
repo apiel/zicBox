@@ -10,6 +10,7 @@
 #include "host.h"
 #include "log.h"
 #include "plugins/components/componentInterface.h"
+#include "plugins/components/view.h"
 #include "styles.h"
 #include "timer.h"
 
@@ -43,13 +44,6 @@ protected:
         ComponentInterface* component;
     };
     std::vector<SharedComponent> sharedComponents;
-
-    struct View {
-        std::string name;
-        std::vector<ComponentInterface*> components = {};
-        std::vector<ComponentInterface*> componentsToRender = {};
-        std::vector<ComponentInterface*> componentsJob = {};
-    };
 
     View* lastView = NULL;
 
