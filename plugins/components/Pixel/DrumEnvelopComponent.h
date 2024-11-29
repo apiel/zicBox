@@ -34,7 +34,6 @@ protected:
     int envelopHeight = 30;
     int cursorY = 0;
     Point envPosition = { 0, 0 };
-    Point pos = { 0, 0 };
 
     bool filled = true;
     bool outline = true;
@@ -113,7 +112,7 @@ public:
 
     void render() override
     {
-        pos = getPosition();
+        updatePosition();
         envPosition = { pos.x, pos.y + 10 };
         cursorY = pos.y + size.h - 1;
         draw.filledRect(pos, size, { bgColor });

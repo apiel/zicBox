@@ -29,7 +29,6 @@ protected:
     int fontLabelSize = 6;
     int twoSideMargin = 2;
 
-    Point pos = { 0, 0 };
     Point knobCenter = { 0, 0 };
     Point valuePosition = { 0, 0 };
 
@@ -210,7 +209,7 @@ public:
     void render()
     {
         if (value != NULL) {
-            pos = getPosition();
+            updatePosition();
             knobCenter = { (int)(pos.x + (size.w * 0.5)), (int)(pos.y + (size.h * 0.5) + marginTop - 1) };
             valuePosition = { knobCenter.x, knobCenter.y - marginTop - 2 };
             draw.filledRect(pos, size, { bgColor });

@@ -20,8 +20,6 @@ protected:
     KeypadLayout keypadLayout;
     int8_t activeGroup = 0;
 
-    Point pos = { 0, 0 };
-
     Color textColor;
 
     void handleButton(int8_t id, int8_t state)
@@ -82,7 +80,7 @@ protected:
 public:
     void render()
     {
-        pos = getPosition();
+        updatePosition();
         renderRow(pos.y, 0);
         renderRow(pos.y + 12, 5);
     }
