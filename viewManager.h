@@ -152,8 +152,6 @@ protected:
         }
     }
 
- 
-
 public:
 #ifdef USE_DRAW_WITH_SDL
     DrawWithSDL draw;
@@ -175,8 +173,6 @@ public:
     {
         draw.init();
     }
-
-
 
     bool render()
     {
@@ -208,25 +204,7 @@ public:
     {
         // printf("renderComponents shifted: %d\n", shift ? 1 : 0);
         m.lock();
-
-        if (view->componentsJob.size()) {
-            for (auto& component : view->componentsJob) {
-                if (component->active) {
-                    component->jobRendering(now);
-                }
-            }
-        }
-
-        if (view->componentsToRender.size()) {
-            for (auto& component : view->componentsToRender) {
-                if (component->active) {
-                    component->render();
-                }
-            }
-            view->componentsToRender.clear();
-            draw.renderNext();
-        }
-        draw.triggerRendering();
+        view->renderComponents(now);
         m.unlock();
     }
 
@@ -253,38 +231,25 @@ public:
 
     void onMotion(MotionInterface& motion)
     {
-        for (auto& component : view->components) {
-            component->handleMotion(motion);
-        }
+        view->onMotion(motion);
     }
 
     void onMotionRelease(MotionInterface& motion)
     {
-        for (auto& component : view->components) {
-            component->handleMotionRelease(motion);
-        }
+        view->onMotionRelease(motion);
     }
 
     void onEncoder(int id, int8_t direction, uint32_t tick)
     {
         m2.lock();
-        // unsigned long tick = getTicks();
-        if (tick - lastEncoderTick[id] < 25) {
-            direction = direction * 5;
-        }
-        lastEncoderTick[id] = tick;
-        for (auto& component : view->components) {
-            component->onEncoder(id, direction);
-        }
+        view->onEncoder(id, direction, tick);
         m2.unlock();
     }
 
     void onKey(uint16_t id, int key, int8_t state)
     {
         m2.lock();
-        for (auto& component : view->components) {
-            component->onKey(id, key, state);
-        }
+        view->onKey(id, key, state);
         m2.unlock();
     }
 
@@ -348,7 +313,7 @@ VIEW: Mixer
 ```
 */
         if (strcmp(key, "VIEW") == 0) {
-            View* v = new View;
+            View* v = new View(draw);
             v->name = value;
 
             views.push_back(v);
