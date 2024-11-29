@@ -75,7 +75,6 @@ public:
 
 protected:
     std::mutex m;
-    std::mutex m2;
 
     // there should be about 4 to 12 encoders, however with 256 we are sure to not be out of bounds
     unsigned long lastEncoderTick[256] = { 0 };
@@ -227,30 +226,6 @@ public:
         for (auto& component : view->components) {
             component->onGroupChanged(group);
         }
-    }
-
-    void onMotion(MotionInterface& motion)
-    {
-        view->onMotion(motion);
-    }
-
-    void onMotionRelease(MotionInterface& motion)
-    {
-        view->onMotionRelease(motion);
-    }
-
-    void onEncoder(int id, int8_t direction, uint32_t tick)
-    {
-        m2.lock();
-        view->onEncoder(id, direction, tick);
-        m2.unlock();
-    }
-
-    void onKey(uint16_t id, int key, int8_t state)
-    {
-        m2.lock();
-        view->onKey(id, key, state);
-        m2.unlock();
     }
 
     bool config(char* key, char* value, const char* filename)
