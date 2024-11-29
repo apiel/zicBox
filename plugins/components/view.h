@@ -4,6 +4,8 @@
 #include "componentInterface.h"
 #include "drawInterface.h"
 
+#include <mutex>
+
 class ComponentContainer {
 public:
     Point position = { 0, 0 };
@@ -16,6 +18,7 @@ public:
     std::vector<ComponentInterface*> componentsToRender = {};
     std::vector<ComponentInterface*> componentsJob = {};
     DrawInterface& draw;
+    std::mutex m2;
 
     View(DrawInterface& draw)
         : draw(draw)
@@ -89,6 +92,7 @@ public:
     unsigned long lastEncoderTick[256] = { 0 };
     void onEncoder(int id, int8_t direction, uint32_t tick)
     {
+        m2.lock();
         if (tick - lastEncoderTick[id] < 25) {
             direction = direction * 5;
         }
@@ -96,13 +100,16 @@ public:
         for (auto& component : components) {
             component->onEncoder(id, direction);
         }
+        m2.unlock();
     }
 
     void onKey(uint16_t id, int key, int8_t state)
     {
+        m2.lock();
         for (auto& component : components) {
             component->onKey(id, key, state);
         }
+        m2.unlock();
     }
 };
 

@@ -58,7 +58,7 @@ protected:
         MotionInterface* motion = getMotion(id);
         if (motion) {
             motion->move(x, y);
-            viewManager.onMotion(*motion);
+            viewManager.view->onMotion(*motion);
         }
     }
 
@@ -71,7 +71,7 @@ protected:
         MotionInterface* motion = getMotion(id);
         if (motion) {
             motion->move(x, y);
-            viewManager.onMotionRelease(*motion);
+            viewManager.view->onMotionRelease(*motion);
             motion->setId(-1);
         }
     }
@@ -84,7 +84,7 @@ protected:
 
         MotionInterface* motion = getOldestMotion();
         motion->init(id, x, y);
-        viewManager.onMotion(*motion);
+        viewManager.view->onMotion(*motion);
     }
 
     std::vector<Rect> zoneEncoders = {};
@@ -106,7 +106,7 @@ protected:
 #if SDL_MINOR_VERSION > 24
         uint8_t emulateEncoderId = getEmulatedEncoderId(wheel.mouseX, wheel.mouseY);
 #endif
-        viewManager.onEncoder(emulateEncoderId, wheel.y, getTicks());
+        viewManager.view->onEncoder(emulateEncoderId, wheel.y, getTicks());
     }
 
 public:
@@ -175,7 +175,7 @@ public:
                     return true;
                 }
                 // printf("key %d\n", event.key.keysym.scancode);
-                viewManager.onKey(0, event.key.keysym.scancode, 1);
+                viewManager.view->onKey(0, event.key.keysym.scancode, 1);
                 return true;
             }
 
@@ -183,7 +183,7 @@ public:
                 if (event.key.repeat) {
                     return true;
                 }
-                viewManager.onKey(0, event.key.keysym.scancode, 0);
+                viewManager.view->onKey(0, event.key.keysym.scancode, 0);
                 return true;
             }
             }

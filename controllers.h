@@ -13,12 +13,12 @@ ControllerInterface* lastPluginControllerInstance = NULL;
 
 void encoderHandler(int id, int8_t direction, uint32_t tick)
 {
-    ViewManager::get().onEncoder(id, direction, tick);
+    ViewManager::get().view->onEncoder(id, direction, tick);
 }
 
 void keyHandler(uint16_t id, int key, int8_t state)
 {
-    ViewManager::get().onKey(id, key, state);
+    ViewManager::get().view->onKey(id, key, state);
 }
 
 uint16_t controllerId = 1;
