@@ -2,6 +2,7 @@
 #define _UI_COMPONENT_INTERFACE_H_
 
 #include "../controllers/controllerInterface.h"
+#include "ComponentContainer.h"
 #include "drawInterface.h"
 #include "motionInterface.h"
 #include "valueInterface.h"
@@ -10,11 +11,10 @@
 #include <string.h>
 #include <vector>
 
-
-
 class ComponentInterface {
 public:
     struct Props {
+        ComponentContainer* container;
         Point position;
         Size size;
         DrawInterface& draw;
@@ -48,6 +48,7 @@ protected:
     }
 
 public:
+    ComponentContainer* container;
     AudioPlugin& (*getPlugin)(const char* name, int16_t track);
     std::vector<ValueInterface*> values;
     Point position;
@@ -62,6 +63,7 @@ public:
     ComponentInterface(Props props)
         : draw(props.draw)
         , styles(props.draw.styles)
+        , container(props.container)
         , getPlugin(props.getPlugin)
         , sendAudioEvent(props.sendAudioEvent)
         , getController(props.getController)
