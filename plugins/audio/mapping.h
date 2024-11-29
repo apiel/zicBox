@@ -16,7 +16,7 @@ protected:
     float value_pct;
     std::string value_s;
 
-    void (*onUpdatePtr)(float, void* data) = [](float, void* data) {};
+    std::function<void(float, void*)> onUpdateFn = [](float, void* data) {};
     void* onUpdateData = NULL;
 
     ValueInterface::Props _props;
@@ -106,7 +106,7 @@ public:
     void set(float value, void* data = NULL)
     {
         callback({ value, data, *this });
-        (*onUpdatePtr)(value, onUpdateData);
+        onUpdateFn(value, onUpdateData);
     }
 
     void setPct(float pct)
@@ -115,9 +115,9 @@ public:
         set(value);
     }
 
-    void onUpdate(void (*callback)(float, void* data), void* data)
+    void onUpdate(std::function<void(float, void*)> callback, void* data)
     {
-        onUpdatePtr = callback;
+        onUpdateFn = callback;
         onUpdateData = data;
     }
 

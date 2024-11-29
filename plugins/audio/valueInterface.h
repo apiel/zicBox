@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <string>
+#include <functional>
 
 enum ValueType {
     VALUE_BASIC,
@@ -38,7 +39,7 @@ public:
     virtual void setPct(float pct) = 0;
     virtual std::string string() = 0;
     virtual void set(float value, void* data = NULL) = 0;
-    virtual void onUpdate(void (*callback)(float, void* data), void* data) = 0;
+    virtual void onUpdate(std::function<void(float, void*)> callback, void* data) = 0;
     virtual void checkForUpdate() = 0;
 };
 
