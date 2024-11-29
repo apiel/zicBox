@@ -152,20 +152,7 @@ protected:
         }
     }
 
-    uint16_t initViewCounter = 0;
-    void initActiveComponents()
-    {
-        for (auto& component : view->components) {
-            component->initView(initViewCounter);
-            component->renderNext();
-            for (auto* value : component->values) {
-                value->onUpdate(
-                    [](float, void* data) { ViewManager::get().onUpdate((ValueInterface*)data); },
-                    value);
-            }
-        }
-        initViewCounter++;
-    }
+ 
 
 public:
 #ifdef USE_DRAW_WITH_SDL
@@ -189,17 +176,7 @@ public:
         draw.init();
     }
 
-    // TODO could this be optimized by creating mapping values to components?
-    void onUpdate(ValueInterface* val)
-    {
-        for (auto& component : view->components) {
-            for (auto* value : component->values) {
-                if (value == val) {
-                    component->onUpdate(value);
-                }
-            }
-        }
-    }
+
 
     bool render()
     {
@@ -218,7 +195,7 @@ public:
             }
         }
 
-        initActiveComponents();
+        view->initActiveComponents();
 
         m.unlock();
 
