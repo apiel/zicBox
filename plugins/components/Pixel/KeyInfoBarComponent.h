@@ -112,19 +112,6 @@ public:
         activeGroup = index;
     }
 
-    // void onGroupChanged(int8_t index) override
-    // {
-    //     if (index != activeGroup) {
-    //         activeGroup = index;
-    //         if (index == 2) {
-    //             ComponentContainer* container = getContainer("Scroll");
-    //             if (container) {
-    //                 // container->position.y = -100;
-    //             }
-    //         }
-    //     }
-    // }
-
     void initView(uint16_t counter)
     {
         keypadLayout.renderKeypad();
