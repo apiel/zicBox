@@ -25,6 +25,7 @@ public:
         void (*setGroup)(int8_t index);
         void (*setView)(std::string name);
         void (*pushToRenderingQueue)(ComponentInterface* component);
+        std::function<ComponentContainer* (std::string name)> getContainer;
         bool& shift;
     };
 
@@ -38,6 +39,7 @@ protected:
     void (*setGroup)(int8_t index);
     void (*setView)(std::string name);
     void (*pushToRenderingQueue)(ComponentInterface* component);
+    std::function<ComponentContainer* (std::string name)> getContainer;
     bool& shift;
     Point relativePosition = { 0, 0 };
 
@@ -77,6 +79,7 @@ public:
         , setGroup(props.setGroup)
         , setView(props.setView)
         , pushToRenderingQueue(props.pushToRenderingQueue)
+        , getContainer(props.getContainer)
         , shift(props.shift)
         , position(props.position)
         , size(props.size)

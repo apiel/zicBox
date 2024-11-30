@@ -9,6 +9,17 @@ public:
         : ComponentContainer(name, position, size)
     {
     }
+
+    bool updateCompontentPosition(Point initialPosition, Size size, Point& relativePosition) override
+    {
+        int x = initialPosition.x + position.x;
+        int y = initialPosition.y + position.y;
+        if (x >= 0 || y >= 0) {
+            relativePosition = { x, y };
+            return true;
+        }
+        return false;
+    }
 };
 
 #endif
