@@ -12,6 +12,8 @@ protected:
 
     Point originPosition;
 
+    bool center = true;
+
 public:
     ScrollGroupContainer(ViewInterface* view, std::string name, Point position, Size size)
         : ComponentContainer(view, name, position, size)
@@ -45,17 +47,18 @@ public:
                     }
                 }
             }
-            printf("[%d] minY: %d maxY: %d size.h: %d (%d) pos.y: %d\n", i, minY, maxY, size.h, (int)(size.h * 0.5), originPosition.y);
+            // printf("[%d] minY: %d maxY: %d size.h: %d (%d) pos.y: %d\n", i, minY, maxY, size.h, (int)(size.h * 0.5), originPosition.y);
             if (maxY > size.h * 0.6) {
-                yPositionPerGroup.push_back(-(minY - size.h * 0.6));
-                printf("push: %d\n", yPositionPerGroup.back());
+                if (center) {
+                    yPositionPerGroup.push_back(yPositionPerGroup.back() - (maxY - minY));
+                } else {
+                    int y = -(minY - size.h * 0.6);
+                    yPositionPerGroup.push_back(y > 0 ? 0 : y);
+                }
             } else {
                 yPositionPerGroup.push_back(0);
             }
         }
-
-        // yPositionPerGroup[2] = -60;
-        // yPositionPerGroup[3] = -60;
     }
 
     bool updateCompontentPosition(Point initialPosition, Size componentSize, Point& relativePosition) override
@@ -97,6 +100,11 @@ public:
     {
         if (strcmp(key, "BACKGROUND_COLOR") == 0) {
             bgColor = view->draw.getColor(value);
+            return true;
+        }
+
+        if (strcmp(key, "CENTER") == 0) {
+            center = strcmp(value, "true") == 0;
             return true;
         }
 

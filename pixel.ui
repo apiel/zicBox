@@ -158,6 +158,14 @@ $track=1
       VALUE: SynthDrum23 NOISE
 
 
+    COMPONENT: Encoder3 $2/4W 240 $1/4W 50
+      GROUP: 4
+      ENCODER_ID: 2
+      COLOR: secondary
+      TRACK: $track
+      VALUE: SynthDrum23 NOISE
+
+
 # ADD Sample on top of the output... but could use audio input (like SynthKick23) instead to make it part of SynthDrum23
 
 # Show add waveform ?
