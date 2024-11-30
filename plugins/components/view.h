@@ -1,18 +1,18 @@
 #ifndef _VIEW_COMPONENT_H_
 #define _VIEW_COMPONENT_H_
 
-#include "container/ComponentContainer.h"
-#include "componentInterface.h"
+#include "./componentInterface.h"
+#include "./container/ComponentContainer.h"
+#include "./container/containers.h"
 
 #include <mutex>
 
 class View : public ComponentContainer {
 public:
-    std::string name;
     std::vector<ComponentInterface*> components = {};
     std::vector<ComponentInterface*> componentsToRender = {};
     std::vector<ComponentInterface*> componentsJob = {};
-    std::vector<ComponentContainer*> containes = { this };
+    std::vector<ComponentContainer*> containers = { this };
     DrawInterface& draw;
     std::mutex m2;
 
@@ -106,6 +106,35 @@ public:
             component->onKey(id, key, state);
         }
         m2.unlock();
+    }
+
+    bool config(char* key, char* value)
+    {
+        if (strcmp(key, "CONTAINER") == 0) {
+            string type = strtok(value, " ");
+            string name = strtok(NULL, " ");
+            Point position = {
+                atoi(strtok(NULL, " ")),
+                atoi(strtok(NULL, " ")),
+            };
+            Size size = { 0, 0 };
+            char* w = strtok(NULL, " ");
+            if (w != NULL) {
+                size.w = atoi(w);
+                char* h = strtok(NULL, " ");
+                if (h != NULL) {
+                    size.h = atoi(h);
+                }
+            }
+            ComponentContainer* newContainer = getContainer(type, name, position, size);
+            if (newContainer != NULL) {
+                containers.push_back(newContainer);
+            } else {
+                logWarn("Unknown container: %s", type.c_str());
+            }
+            return true;
+        }
+        return false;
     }
 };
 
