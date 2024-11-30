@@ -28,6 +28,10 @@ public:
         }
         return false;
     }
+
+    virtual void onGroupChanged(int8_t index)
+    {
+    }
 };
 
 #endif

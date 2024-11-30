@@ -1,23 +1,16 @@
 #ifndef _VIEW_COMPONENT_H_
 #define _VIEW_COMPONENT_H_
 
-#include "./componentInterface.h"
-#include "./container/ComponentContainer.h"
-#include "./container/containers.h"
+#include "./ViewInterface.h"
 
 #include <mutex>
 
-class View : public ComponentContainer {
+class View : public ViewInterface {
 public:
-    std::vector<ComponentInterface*> components = {};
-    std::vector<ComponentInterface*> componentsToRender = {};
-    std::vector<ComponentInterface*> componentsJob = {};
-    std::vector<ComponentContainer*> containers = { this };
-    DrawInterface& draw;
     std::mutex m2;
 
     View(DrawInterface& draw)
-        : draw(draw)
+        : ViewInterface(draw)
     {
     }
 
@@ -34,6 +27,31 @@ public:
             }
         }
         initViewCounter++;
+    }
+
+    void setGroup(int8_t index) override
+    {
+        int8_t group = index == -1 ? 0 : index;
+
+        // If group is out of bound, we set it to 0
+        bool usable = false;
+        for (auto& component : components) {
+            if (component->group == group) {
+                usable = true;
+                break;
+            }
+        }
+        if (!usable) {
+            group = 0;
+        }
+
+        for (auto& container : containers) {
+            container->onGroupChanged(group);
+        }
+
+        for (auto& component : components) {
+            component->onGroupChanged(group);
+        }
     }
 
     // TODO could this be optimized by creating mapping values to components?
@@ -108,6 +126,17 @@ public:
         m2.unlock();
     }
 
+    ComponentContainer* getContainer(string name) override
+    {
+        for (auto& container : containers) {
+            printf("Container: %s == %s ?\n", container->name.c_str(), name.c_str());
+            if (container->name == name) {
+                return container;
+            }
+        }
+        return NULL;
+    }
+
     bool config(char* key, char* value)
     {
         if (strcmp(key, "CONTAINER") == 0) {
@@ -136,17 +165,6 @@ public:
             return true;
         }
         return false;
-    }
-
-    ComponentContainer* getContainer(string name)
-    {
-        for (auto& container : containers) {
-            printf("Container: %s == %s ?\n", container->name.c_str(), name.c_str());
-            if (container->name == name) {
-                return container;
-            }
-        }
-        return NULL;
     }
 };
 
