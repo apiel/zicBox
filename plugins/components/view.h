@@ -1,7 +1,7 @@
 #ifndef _VIEW_COMPONENT_H_
 #define _VIEW_COMPONENT_H_
 
-#include "ComponentContainer.h"
+#include "container/ComponentContainer.h"
 #include "componentInterface.h"
 
 #include <mutex>
