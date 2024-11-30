@@ -22,7 +22,7 @@ public:
     {
         int x = initialPosition.x + position.x;
         int y = initialPosition.y + position.y;
-        if (x != relativePosition.x || y != relativePosition.y) {
+        if (x >= 0 || y >= 0) {
             relativePosition = { x, y };
             return true;
         }

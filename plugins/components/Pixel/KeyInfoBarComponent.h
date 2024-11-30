@@ -80,9 +80,10 @@ protected:
 public:
     void render()
     {
-        updatePosition();
-        renderRow(relativePosition.y, 0);
-        renderRow(relativePosition.y + 12, 5);
+        if (updatePosition()) {
+            renderRow(relativePosition.y, 0);
+            renderRow(relativePosition.y + 12, 5);
+        }
     }
 
     /*md **Config**: */
