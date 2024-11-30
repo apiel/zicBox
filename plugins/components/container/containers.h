@@ -5,10 +5,10 @@
 
 #include <string>
 
-ComponentContainer* newContainer(std::string type, std::string name, Point position, Size size)
+ComponentContainer* newContainer(std::string type, ViewInterface* view, std::string name, Point position, Size size)
 {
     if (type == "ScrollGroupContainer") {
-        return new ScrollGroupContainer(name, position, size);
+        return new ScrollGroupContainer(view, name, position, size);
     }
 
     return NULL;

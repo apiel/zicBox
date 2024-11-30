@@ -1,11 +1,8 @@
 #ifndef _VIEW_INTERFACE_COMPONENT_H_
 #define _VIEW_INTERFACE_COMPONENT_H_
 
-#include "./container/containers.h"
-
 #include <string>
 #include <vector>
-// #include <iterator>
 
 class ViewInterface {
 public:
