@@ -128,6 +128,7 @@ public:
             }
             ComponentContainer* container = newContainer(type, name, position, size);
             if (container != NULL) {
+                logInfo("Adding container (%s): %s %dx%d %dx%d", type.c_str(), name.c_str(), position.x, position.y, size.w, size.h);
                 containers.push_back(container);
             } else {
                 logWarn("Unknown container: %s", type.c_str());
@@ -137,8 +138,10 @@ public:
         return false;
     }
 
-    ComponentContainer* getContainer(string name) {
+    ComponentContainer* getContainer(string name)
+    {
         for (auto& container : containers) {
+            printf("Container: %s == %s ?\n", container->name.c_str(), name.c_str());
             if (container->name == name) {
                 return container;
             }
