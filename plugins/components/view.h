@@ -19,10 +19,17 @@ public:
     {
     }
 
+    int8_t lastGroupId = 0;
     void init()
     {
         for (auto& container : containers) {
             container->initContainer();
+        }
+
+        for (auto& component : components) {
+            if (component->group > lastGroupId) {
+                lastGroupId = component->group;
+            }
         }
     }
 
@@ -51,26 +58,27 @@ public:
         return (std::vector<void*>*)&components;
     }
 
+    bool groupLoop = true;
     void setGroup(int8_t index) override
     {
-        int8_t group = index == -1 ? 0 : index;
-
-        // If group is out of bound, we set it to 0
-        bool usable = false;
-        for (auto& component : components) {
-            if (component->group == group) {
-                usable = true;
-                break;
+        int8_t group;
+        if (groupLoop) {
+            group = index == -1 ? lastGroupId : index;
+            if (group > lastGroupId) {
+                group = 0;
+            }
+        } else {
+            group = index == -1 ? 0 : index;
+            if (group > lastGroupId) {
+                group = lastGroupId;
             }
         }
-        if (usable) {
-            for (auto& container : containers) {
-                container->onGroupChanged(group);
-            }
+        for (auto& container : containers) {
+            container->onGroupChanged(group);
+        }
 
-            for (auto& component : components) {
-                component->onGroupChanged(group);
-            }
+        for (auto& component : components) {
+            component->onGroupChanged(group);
         }
     }
 
@@ -182,6 +190,11 @@ public:
             } else {
                 logWarn("Unknown container: %s", type.c_str());
             }
+            return true;
+        }
+
+        if (strcmp(key, "GROUP_LOOP") == 0) {
+            groupLoop = strcmp(value, "true") == 0;
             return true;
         }
 

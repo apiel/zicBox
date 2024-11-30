@@ -24,7 +24,7 @@ public:
 
     void initContainer() override
     {
-        int16_t lastGroupId = -1;
+        int8_t lastGroupId = -1;
         std::vector<void*>* components = view->getComponents();
         for (void* c : *components) {
             ComponentInterface* component = (ComponentInterface*)c;
