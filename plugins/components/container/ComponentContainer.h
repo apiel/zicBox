@@ -1,7 +1,7 @@
 #ifndef _COMPONENT_CONTAINER_H_
 #define _COMPONENT_CONTAINER_H_
 
-#include "drawInterface.h"
+#include "../drawInterface.h"
 
 class ComponentContainer {
 public:

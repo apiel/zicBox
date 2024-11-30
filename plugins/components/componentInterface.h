@@ -2,7 +2,7 @@
 #define _UI_COMPONENT_INTERFACE_H_
 
 #include "../controllers/controllerInterface.h"
-#include "ComponentContainer.h"
+#include "container/ComponentContainer.h"
 #include "drawInterface.h"
 #include "motionInterface.h"
 #include "valueInterface.h"
