@@ -136,21 +136,21 @@ $track=1
 
 
 
-    COMPONENT: Encoder3 0 170 $1/4W 50
+    COMPONENT: Encoder3 0 180 $1/4W 50
       GROUP: 3
       ENCODER_ID: 0
       COLOR: secondary
       TRACK: $track
       VALUE: MMFilter CUTOFF
 
-    COMPONENT: Encoder3 $1/4W 170 $1/4W 50
+    COMPONENT: Encoder3 $1/4W 180 $1/4W 50
       GROUP: 3
       ENCODER_ID: 1
       COLOR: secondary
       TRACK: $track
       VALUE: MMFilter RESONANCE
 
-    COMPONENT: Encoder3 $2/4W 170 $1/4W 50
+    COMPONENT: Encoder3 $2/4W 180 $1/4W 50
       GROUP: 3
       ENCODER_ID: 2
       COLOR: secondary
