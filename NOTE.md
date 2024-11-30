@@ -1,10 +1,5 @@
 ## Pixel TODO
 
-- TODO Scrolling: use view and set a scrolling position is the view shared with all components... might introduce an onScroll event.
-    - There should be CONTAINER within the view, also a view should be a container
-    - Should group be assigned to a view instead to be global?
-    - Should we pass the view to each components?
-
 - TODO Volume/Gain, could we have a value over 100% like 150%??
 
 - TODO DrumSample track: is a very basic track that can play 1 shot sample (8, 12, 16?), first page select the sample (volume and mute?), second page grid sequencer with velocity, step probability (volume and mute?), third page global track effect, filter...

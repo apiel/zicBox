@@ -81,7 +81,7 @@ public:
             position.y = yPositionPerGroup[index];
             if (position.y != lastY) {
                 lastY = position.y;
-                printf("set scroll container position.y: %d\n", position.y);
+                // printf("set scroll container position.y: %d\n", position.y);
 
                 view->draw.filledRect(originPosition, size, { bgColor });
                 // view->draw.filledRect(originPosition, size, { 0xFF, 0xFF, 0xFF });
