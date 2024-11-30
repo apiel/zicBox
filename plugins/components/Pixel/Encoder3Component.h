@@ -47,17 +47,17 @@ protected:
     void renderLabel()
     {
         if (stringValueReplaceTitle && value->props().type == VALUE_STRING) {
-            draw.textCentered({ knobCenter.x, pos.y + size.h - fontLabelSize }, value->string(), fontLabelSize, { titleColor.color, NULL, size.w - 4 });
+            draw.textCentered({ knobCenter.x, relativePosition.y + size.h - fontLabelSize }, value->string(), fontLabelSize, { titleColor.color, NULL, size.w - 4 });
         } else {
-            draw.textCentered({ knobCenter.x, pos.y + size.h - fontLabelSize }, label, fontLabelSize, { titleColor.color });
+            draw.textCentered({ knobCenter.x, relativePosition.y + size.h - fontLabelSize }, label, fontLabelSize, { titleColor.color });
         }
     }
 
     void renderActiveGroup()
     {
         if (showGroup && isActive) {
-            draw.filledRect({ pos.x + margin, pos.y + margin }, { 12, 12 }, { idColor.color });
-            draw.textCentered({ pos.x + margin + 6, pos.y + margin }, std::to_string(encoderId + 1).c_str(), 6, { bgColor });
+            draw.filledRect({ relativePosition.x + margin, relativePosition.y + margin }, { 12, 12 }, { idColor.color });
+            draw.textCentered({ relativePosition.x + margin + 6, relativePosition.y + margin }, std::to_string(encoderId + 1).c_str(), 6, { bgColor });
         }
     }
 
@@ -210,9 +210,9 @@ public:
     {
         if (value != NULL) {
             updatePosition();
-            knobCenter = { (int)(pos.x + (size.w * 0.5)), (int)(pos.y + (size.h * 0.5) + marginTop - 1) };
+            knobCenter = { (int)(relativePosition.x + (size.w * 0.5)), (int)(relativePosition.y + (size.h * 0.5) + marginTop - 1) };
             valuePosition = { knobCenter.x, knobCenter.y - marginTop - 2 };
-            draw.filledRect(pos, size, { bgColor });
+            draw.filledRect(relativePosition, size, { bgColor });
             renderEncoder();
         }
     }

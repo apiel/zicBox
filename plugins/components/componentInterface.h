@@ -39,7 +39,7 @@ protected:
     void (*setView)(std::string name);
     void (*pushToRenderingQueue)(ComponentInterface* component);
     bool& shift;
-    Point pos = { 0, 0 };
+    Point relativePosition = { 0, 0 };
 
     Props getNewPropsRect(Props props, Rect rect)
     {
@@ -48,12 +48,9 @@ protected:
         return props;
     }
 
-    void updatePosition()
+    bool updatePosition()
     {
-        pos = {
-            position.x + container->position.x,
-            position.y + container->position.y
-        };
+        return container->updateCompontentPosition(position, size, relativePosition);
     }
 
 public:
