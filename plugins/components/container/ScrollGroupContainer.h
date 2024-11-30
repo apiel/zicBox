@@ -5,8 +5,8 @@
 
 class ScrollGroupContainer : public ComponentContainer {
 public:
-    ScrollGroupContainer(std::string name, Point position, Size size)
-        : ComponentContainer(name, position, size)
+    ScrollGroupContainer(ViewInterface* view, std::string name, Point position, Size size)
+        : ComponentContainer(view, name, position, size)
     {
     }
 
@@ -33,6 +33,12 @@ public:
         //         }
         //     }
         // }
+    }
+
+    bool config(char* key, char* params) override
+    {
+        printf("ScrollGroupContainer config: %s %s\n", key, params);
+        return false;
     }
 };
 

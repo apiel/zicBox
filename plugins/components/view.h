@@ -2,6 +2,7 @@
 #define _VIEW_COMPONENT_H_
 
 #include "./ViewInterface.h"
+#include "./container/containers.h"
 
 #include <mutex>
 
@@ -169,7 +170,7 @@ public:
                     size.h = atoi(h);
                 }
             }
-            ComponentContainer* container = newContainer(type, name, position, size);
+            ComponentContainer* container = newContainer(type, this, name, position, size);
             if (container != NULL) {
                 logInfo("Adding container (%s): %s %dx%d %dx%d", type.c_str(), name.c_str(), position.x, position.y, size.w, size.h);
                 containers.push_back(container);
@@ -178,6 +179,13 @@ public:
             }
             return true;
         }
+
+        for (auto& container : containers) {
+            if (container != this && container->config(key, value)) {
+                return true;
+            }
+        }
+
         return false;
     }
 };
