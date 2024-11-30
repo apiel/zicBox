@@ -5,8 +5,9 @@
 
 #include <mutex>
 
-class View : public ViewInterface {
+class View : public ViewInterface, public ComponentContainer {
 public:
+    std::vector<ComponentContainer*> containers = { this };
     std::vector<ComponentInterface*> components = {};
     std::vector<ComponentInterface*> componentsToRender = {};
     std::vector<ComponentInterface*> componentsJob = {};
@@ -139,10 +140,10 @@ public:
         m2.unlock();
     }
 
-    ComponentContainer* getContainer(string name) override
+    void* getContainer(string name) override
     {
         for (auto& container : containers) {
-            printf("Container: %s == %s ?\n", container->name.c_str(), name.c_str());
+            // printf("Container: %s == %s ?\n", container->name.c_str(), name.c_str());
             if (container->name == name) {
                 return container;
             }
