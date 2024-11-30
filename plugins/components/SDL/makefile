@@ -6,6 +6,8 @@ endif
 BUILD_DIR ?= build/$(SUB_DIR)
 OBJ_DIR ?= $(BUILD_DIR)/obj
 
+INC=-I../../..
+
 all:
 	make PadComponent EncoderComponent Encoder2Component GranularComponent\
 				ButtonComponent WaveComponent Wave2Component MonitoringComponent AdsrComponent\
@@ -15,8 +17,8 @@ all:
 
 %Component:
 	@mkdir -p $(OBJ_DIR)
-	g++ -g -c -o $(OBJ_DIR)/$@.o plugin.cpp -fPIC -DPLUGIN_NAME=$@ -DPLUGIN_INCLUDE=\"$@.h\"
-	g++ -g -shared -o $(BUILD_DIR)/libzic_$@.so $(OBJ_DIR)/$@.o
+	g++ -g -c -o $(OBJ_DIR)/$@.o plugin.cpp $(INC) -fPIC -DPLUGIN_NAME=$@ -DPLUGIN_INCLUDE=\"$@.h\"
+	g++ -g -shared -o $(BUILD_DIR)/libzic_$@.so $(INC) $(OBJ_DIR)/$@.o
 
 clean:
 	rm -rf $(BUILD_DIR)

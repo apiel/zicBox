@@ -1,7 +1,8 @@
 #ifndef _PIXEL_COMPONENTS_H_
 #define _PIXEL_COMPONENTS_H_
 
-#include "../../../viewManager.h"
+#include "viewManager.h"
+
 #include "./KeyInfoBarComponent.h"
 #include "./DrumEnvelopComponent.h"
 #include "./Encoder3Component.h"

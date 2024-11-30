@@ -13,6 +13,8 @@ endif
 
 BUILD=-Wno-narrowing -ldl $(RTMIDI) 
 
+INC=-I.
+
 main: build run
 pixel: buildPixel runPixel
 pixelSSD1306: buildPixelSSD1306 runPixelSSD1306
@@ -44,7 +46,7 @@ runHost:
 
 build:
 	@echo "\n------------------ build zicBox ------------------\n"
-	g++ -g -fms-extensions -o zicBox zicBox.cpp -ldl $(SDL2) $(SDL2_ttf) $(RPI) $(RTMIDI)
+	g++ -g -fms-extensions -o zicBox zicBox.cpp -ldl $(INC) $(SDL2) $(SDL2_ttf) $(RPI) $(RTMIDI)
 
 run:
 	@echo "\n------------------ run zicBox ------------------\n"
@@ -53,7 +55,7 @@ run:
 # g++ -g -fms-extensions -o zicPixel zicPixel.cpp -ldl $(RPI) $(RTMIDI) $(PIXEL_SDL) $(SPI_DEV_MEM) $(shell pkg-config --cflags --libs libpulse-simple)
 buildPixel:
 	@echo "\n------------------ build zicPixel ------------------\n"
-	g++ -g -fms-extensions -o zicPixel zicPixel.cpp -ldl $(RPI) $(RTMIDI) $(PIXEL_SDL) $(SPI_DEV_MEM)
+	g++ -g -fms-extensions -o zicPixel zicPixel.cpp -ldl $(INC) $(RPI) $(RTMIDI) $(PIXEL_SDL) $(SPI_DEV_MEM)
 
 runPixel:
 	@echo "\n------------------ run zicPixel ------------------\n"
@@ -61,7 +63,7 @@ runPixel:
 
 buildPixelSSD1306:
 	@echo "\n------------------ build zicPixel SSD1306 ------------------\n"
-	g++ -g -fms-extensions -o zicPixelSSD1306 zicPixelSSD1306.cpp -ldl $(RPI) $(RTMIDI) $(PIXEL_SDL) $(shell pkg-config --cflags --libs sndfile) $(shell pkg-config --cflags --libs libpulse-simple)
+	g++ -g -fms-extensions -o zicPixelSSD1306 zicPixelSSD1306.cpp -ldl $(INC) $(RPI) $(RTMIDI) $(PIXEL_SDL) $(shell pkg-config --cflags --libs sndfile) $(shell pkg-config --cflags --libs libpulse-simple)
 
 runPixelSSD1306:
 	@echo "\n------------------ run zicPixel ------------------\n"
