@@ -144,7 +144,7 @@ protected:
     void addComponent(ComponentInterface* component)
     {
         if (views.size() > 0) {
-            View *lastView = views.back();
+            View* lastView = views.back();
             component->container = lastView->containers.back();
             lastView->components.push_back(component);
             if (component->jobRendering) {
@@ -329,18 +329,26 @@ VIEW: Mixer
             printf("ERROR: Shared component not found: %s\n", value);
         }
 
-        if (views.size() > 0 && views.back()->components.size() > 0) {
-            if (strcmp(key, "SHARED_COMPONENT") == 0) {
-                SharedComponent shared;
-                shared.name = value;
-                shared.component = views.back()->components.back();
-                sharedComponents.push_back(shared);
-            }
-
-            return views.back()->components.back()->baseConfig(key, value);
+        if (draw.config(key, value)) {
+            return true;
         }
 
-        return draw.config(key, value);
+        if (views.size() > 0) {
+            if (views.back()->config(key, value)) {
+                return true;
+            }
+            if (views.back()->components.size() > 0) {
+                if (strcmp(key, "SHARED_COMPONENT") == 0) {
+                    SharedComponent shared;
+                    shared.name = value;
+                    shared.component = views.back()->components.back();
+                    sharedComponents.push_back(shared);
+                }
+                return views.back()->components.back()->baseConfig(key, value);
+            }
+        }
+
+        return false;
     }
 
     void config(const char* key, const char* value)

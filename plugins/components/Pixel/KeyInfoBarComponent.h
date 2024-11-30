@@ -117,7 +117,10 @@ public:
         if (index != activeGroup) {
             activeGroup = index;
             if (index == 2) {
-                
+                ComponentContainer* container = getContainer("Scroll");
+                if (container) {
+                    // container->position.y = -100;
+                }
             }
         }
     }
