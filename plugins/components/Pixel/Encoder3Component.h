@@ -190,7 +190,7 @@ public:
         , valueColor(alpha(styles.colors.text, 0.4), inactiveColorRatio)
         , unitColor(alpha(styles.colors.text, 0.2), inactiveColorRatio)
         , barColor(styles.colors.primary, inactiveColorRatio)
-        , barBackgroundColor(alpha(styles.colors.primary, 0.5), inactiveColorRatio)
+        , barBackgroundColor(alpha(styles.colors.primary, 0.7), inactiveColorRatio)
         , barTwoSideColor(alpha(styles.colors.primary, 0.2), inactiveColorRatio)
     {
         if (size.h < 50) {
@@ -261,7 +261,7 @@ public:
         /*md - `COLOR: #3791a1` set the ring color */
         if (strcmp(key, "COLOR") == 0) {
             barColor.setColor(draw.getColor(params), inactiveColorRatio);
-            barBackgroundColor.setColor(alpha(barColor.color, 0.5), inactiveColorRatio);
+            barBackgroundColor.setColor(alpha(barColor.color, 0.7), inactiveColorRatio);
             barTwoSideColor.setColor(alpha(barColor.color, 0.2), inactiveColorRatio);
             return true;
         }
