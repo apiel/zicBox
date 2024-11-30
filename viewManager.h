@@ -117,15 +117,11 @@ protected:
             NULL,
             position,
             size,
-            draw,
             getPlugin,
             sendAudioEvent,
             getController,
-            []() { return ViewManager::get().view->components; },
-            [](int8_t index) { ViewManager::get().view->setGroup(index); },
-            [](std::string name) { ViewManager::get().setView(name); },
-            [](ComponentInterface* component) { ViewManager::get().view->componentsToRender.push_back(component); },
-            [this](std::string name) { return view->getContainer(name); },
+            [this](std::string name) { setView(name); },
+            view,
             shift
         };
 

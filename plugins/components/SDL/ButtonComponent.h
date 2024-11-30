@@ -75,7 +75,7 @@ public:
 
     ButtonComponent(ComponentInterface::Props props)
         : Component(props)
-        , icon(props.draw)
+        , icon(props.view->draw)
         , colors(getColorsFromColor({ 0x80, 0x80, 0x80, 255 }))
         , margin(styles.margin)
         , keypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, int param, std::string action, uint8_t color) { addKeyMap(controller, controllerId, key, param, action, color); })

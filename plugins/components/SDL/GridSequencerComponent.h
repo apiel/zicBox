@@ -3,9 +3,9 @@
 
 #include "../../audio/stepInterface.h"
 
-#include "base/Grid.h"
 #include "../base/KeypadLayout.h"
 #include "../component.h"
+#include "base/Grid.h"
 
 class Track {
 public:
@@ -267,8 +267,9 @@ protected:
     void onParamKeyPressed(uint8_t param)
     {
         std::string paramId = "Param" + std::to_string(param) + "_";
-        std::vector<ComponentInterface*> components = getViewComponents();
-        for (ComponentInterface* component : components) {
+        std::vector<void*>* components = view->getComponents();
+        for (void* c : *components) {
+            ComponentInterface* component = (ComponentInterface*)c;
             if (component->id.find(paramId) == 0) {
                 paramKeyPressed = param;
                 // id end by _toggle
@@ -286,8 +287,9 @@ protected:
     void onParamKeyReleased(uint8_t param)
     {
         std::string paramId = "Param" + std::to_string(param) + "_";
-        std::vector<ComponentInterface*> components = getViewComponents();
-        for (ComponentInterface* component : components) {
+        std::vector<void*>* components = view->getComponents();
+        for (void* c : *components) {
+            ComponentInterface* component = (ComponentInterface*)c;
             if (component->id.find(paramId) == 0) {
                 // id end by _toggle
                 if (component->id.find("_button") != -1) {

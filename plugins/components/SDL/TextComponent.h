@@ -31,8 +31,8 @@ protected:
 public:
     TextComponent(ComponentInterface::Props props)
         : Component(props)
-        , colors({ props.draw.styles.colors.white })
-        , fontPath(props.draw.styles.font.regular)
+        , colors({ styles.colors.white })
+        , fontPath(styles.font.regular)
     {
     }
 

@@ -24,7 +24,7 @@ public:
     RectComponent(ComponentInterface::Props props)
         : Component(props)
     {
-        colors.background = props.draw.styles.colors.background;
+        colors.background = props.view->draw.styles.colors.background;
         colors.border = colors.background;
     }
 

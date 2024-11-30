@@ -145,7 +145,7 @@ public:
         : Component(props)
         , keypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, int param, std::string action, uint8_t color) { addKeyMap(controller, controllerId, key, param, action, color); })
     {
-        colors.background = props.draw.styles.colors.background;
+        colors.background = styles.colors.background;
         colors.font = { 0x80, 0x80, 0x80, 255 };
         arrowSize = { size.h, size.h };
         setSizes();

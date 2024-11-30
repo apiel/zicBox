@@ -32,8 +32,8 @@ public:
 
     virtual void renderNext()
     {
-        if (active && pushToRenderingQueue) {
-            pushToRenderingQueue(this);
+        if (active) {
+            view->pushToRenderingQueue(this);
         }
     }
 
@@ -54,7 +54,7 @@ public:
 
         if (motion.in({ position, size })) {
             if (motion.isStarting() && group != -1) {
-                setGroup(group);
+                view->setGroup(group);
             }
             onMotion(motion);
         }

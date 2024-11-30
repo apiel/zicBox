@@ -28,9 +28,9 @@ protected:
 
         if (state == 1) {
             if (id == 0) {
-                setGroup(activeGroup - 1);
+                view->setGroup(activeGroup - 1);
             } else if (id == 5) {
-                setGroup(activeGroup + 1);
+                view->setGroup(activeGroup + 1);
             } else {
                 AudioPlugin* plugin = &getPlugin("SynthDrum23", 1);
                 plugin->noteOn(60, 1.0f);
@@ -51,7 +51,7 @@ public:
 
     KeyInfoBarComponent(ComponentInterface::Props props)
         : Component(props)
-        , icon(props.draw)
+        , icon(props.view->draw)
         , keypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, int param, std::string action, uint8_t color) { addKeyMap(controller, controllerId, key, param, action, color); })
         , textColor(styles.colors.text)
     {
