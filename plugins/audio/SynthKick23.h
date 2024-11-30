@@ -1,7 +1,7 @@
 #ifndef _SYNTH_KICK23_H_
 #define _SYNTH_KICK23_H_
 
-#include "Wavetable.h"
+#include "./utils/Wavetable.h"
 #include "audioPlugin.h"
 #include "filter.h"
 #include "mapping.h"
