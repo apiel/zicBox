@@ -126,15 +126,24 @@ public:
                     size.h = atoi(h);
                 }
             }
-            ComponentContainer* newContainer = getContainer(type, name, position, size);
-            if (newContainer != NULL) {
-                containers.push_back(newContainer);
+            ComponentContainer* container = newContainer(type, name, position, size);
+            if (container != NULL) {
+                containers.push_back(container);
             } else {
                 logWarn("Unknown container: %s", type.c_str());
             }
             return true;
         }
         return false;
+    }
+
+    ComponentContainer* getContainer(string name) {
+        for (auto& container : containers) {
+            if (container->name == name) {
+                return container;
+            }
+        }
+        return NULL;
     }
 };
 

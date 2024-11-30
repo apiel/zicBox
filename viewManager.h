@@ -125,6 +125,7 @@ protected:
             [](int8_t index) { ViewManager::get().setGroup(index); },
             [](std::string name) { ViewManager::get().setView(name); },
             [](ComponentInterface* component) { ViewManager::get().view->componentsToRender.push_back(component); },
+            [this](std::string name) { return view->getContainer(name); },
             shift
         };
 

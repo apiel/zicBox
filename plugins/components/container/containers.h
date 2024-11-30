@@ -5,7 +5,7 @@
 
 #include <string>
 
-ComponentContainer* getContainer(std::string type, std::string name, Point position, Size size)
+ComponentContainer* newContainer(std::string type, std::string name, Point position, Size size)
 {
     if (type == "ScrollContainer") {
         return new ScrollContainer(name, position, size);
