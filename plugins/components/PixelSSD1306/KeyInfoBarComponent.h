@@ -37,7 +37,7 @@ public:
 
     KeyInfoBarComponent(ComponentInterface::Props props)
         : Component(props)
-        , icon(props.draw)
+        , icon(props.view->draw)
         , keypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, int param, std::string action, uint8_t color) { addKeyMap(controller, controllerId, key, param, action, color); })
     {
     }

@@ -7,6 +7,9 @@
 
 class View : public ViewInterface {
 public:
+    std::vector<ComponentInterface*> components = {};
+    std::vector<ComponentInterface*> componentsToRender = {};
+    std::vector<ComponentInterface*> componentsJob = {};
     std::mutex m2;
 
     View(DrawInterface& draw)
@@ -27,6 +30,16 @@ public:
             }
         }
         initViewCounter++;
+    }
+
+    void pushToRenderingQueue(void* component)
+    {
+        componentsToRender.push_back((ComponentInterface*)component);
+    }
+
+    std::vector<void*>* getComponents() override
+    {
+        return (std::vector<void*>*)&components;
     }
 
     void setGroup(int8_t index) override

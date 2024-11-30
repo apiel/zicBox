@@ -1,11 +1,12 @@
 #ifndef _UI_COMPONENT_INTERFACE_H_
 #define _UI_COMPONENT_INTERFACE_H_
 
-#include "plugins/controllers/controllerInterface.h"
+#include "./ViewInterface.h"
 #include "./container/ComponentContainer.h"
 #include "./drawInterface.h"
 #include "./motionInterface.h"
 #include "./valueInterface.h"
+#include "plugins/controllers/controllerInterface.h"
 
 #include <functional>
 #include <string.h>
@@ -17,15 +18,11 @@ public:
         ComponentContainer* container;
         Point position;
         Size size;
-        DrawInterface& draw;
         AudioPlugin& (*getPlugin)(const char* name, int16_t track);
         void (*sendAudioEvent)(AudioEventType event);
         ControllerInterface* (*getController)(const char* name);
-        std::vector<ComponentInterface*> (*getViewComponents)();
-        void (*setGroup)(int8_t index);
-        void (*setView)(std::string name);
-        void (*pushToRenderingQueue)(ComponentInterface* component);
-        std::function<ComponentContainer* (std::string name)> getContainer;
+        std::function<void(std::string name)> setView;
+        ViewInterface* view;
         bool& shift;
     };
 
@@ -35,11 +32,8 @@ protected:
 
     void (*sendAudioEvent)(AudioEventType event);
     ControllerInterface* (*getController)(const char* name);
-    std::vector<ComponentInterface*> (*getViewComponents)();
-    void (*setGroup)(int8_t index);
-    void (*setView)(std::string name);
-    void (*pushToRenderingQueue)(ComponentInterface* component);
-    std::function<ComponentContainer* (std::string name)> getContainer;
+    std::function<void(std::string name)> setView;
+    ViewInterface* view;
     bool& shift;
     Point relativePosition = { 0, 0 };
 
@@ -69,17 +63,14 @@ public:
     std::function<void(unsigned long now)> jobRendering;
 
     ComponentInterface(Props props)
-        : draw(props.draw)
-        , styles(props.draw.styles)
+        : draw(props.view->draw)
+        , styles(props.view->draw.styles)
         , container(props.container)
         , getPlugin(props.getPlugin)
         , sendAudioEvent(props.sendAudioEvent)
         , getController(props.getController)
-        , getViewComponents(props.getViewComponents)
-        , setGroup(props.setGroup)
         , setView(props.setView)
-        , pushToRenderingQueue(props.pushToRenderingQueue)
-        , getContainer(props.getContainer)
+        , view(props.view)
         , shift(props.shift)
         , position(props.position)
         , size(props.size)
