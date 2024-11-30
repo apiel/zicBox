@@ -21,6 +21,9 @@ public:
     {
     }
 
+    // lets not call it init() to not conflict with View::init()
+    virtual void initContainer() { }
+
     virtual bool updateCompontentPosition(Point initialPosition, Size size, Point& relativePosition)
     {
         int x = initialPosition.x + position.x;

@@ -19,6 +19,13 @@ public:
     {
     }
 
+    void init()
+    {
+        for (auto& container : containers) {
+            container->initContainer();
+        }
+    }
+
     uint16_t initViewCounter = 0;
     void initActiveComponents()
     {

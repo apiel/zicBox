@@ -171,6 +171,10 @@ public:
     void init()
     {
         draw.init();
+
+        for (auto& v : views) {
+            v->init();
+        }
     }
 
     bool render()

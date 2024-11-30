@@ -10,6 +10,11 @@ public:
     {
     }
 
+    void initContainer() override
+    { 
+        printf("ScrollGroupContainer initContainer\n");
+    }
+
     bool updateCompontentPosition(Point initialPosition, Size size, Point& relativePosition) override
     {
         int x = initialPosition.x + position.x;
@@ -35,11 +40,11 @@ public:
         // }
     }
 
-    bool config(char* key, char* params) override
-    {
-        printf("ScrollGroupContainer config: %s %s\n", key, params);
-        return false;
-    }
+    // bool config(char* key, char* params) override
+    // {
+    //     printf("ScrollGroupContainer config: %s %s\n", key, params);
+    //     return false;
+    // }
 };
 
 #endif
