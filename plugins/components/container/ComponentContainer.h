@@ -24,11 +24,11 @@ public:
     // lets not call it init() to not conflict with View::init()
     virtual void initContainer() { }
 
-    virtual bool updateCompontentPosition(Point initialPosition, Size size, Point& relativePosition)
+    virtual bool updateCompontentPosition(Point initialPosition, Size componentSize, Point& relativePosition)
     {
         int x = initialPosition.x + position.x;
         int y = initialPosition.y + position.y;
-        if (x >= 0 || y >= 0) {
+        if (x >= 0 && y >= 0) {
             relativePosition = { x, y };
             return true;
         }
