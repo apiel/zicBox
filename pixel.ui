@@ -51,103 +51,6 @@ VIEW: Main
 
 $track=1
 
-  COMPONENT: DrumEnvelop 0 0 ($3/4W-2) 50
-    GROUP: 0
-    TRACK: $track
-    PLUGIN: SynthDrum23
-    ENVELOP_DATA_ID: 0
-    ENCODER_PHASE: 0
-    ENCODER_TIME: 1
-    ENCODER_MODULATION: 2
-
-  COMPONENT: Encoder3 $3/4W 0 $1/4W 50
-    GROUP: 0
-    ENCODER_ID: 3
-    COLOR: secondary
-    TRACK: $track
-    VALUE: SynthDrum23 DURATION
-
-
-  COMPONENT: DrumEnvelop 0 60 ($3/4W-2) 50
-    GROUP: 1
-    TRACK: $track
-    PLUGIN: SynthDrum23
-    ENVELOP_DATA_ID: 4
-    ENCODER_PHASE: 0
-    ENCODER_TIME: 1
-    ENCODER_MODULATION: 2
-
-  COMPONENT: Encoder3 $3/4W 60 $1/4W 50
-    GROUP: 1
-    ENCODER_ID: 3
-    COLOR: secondary
-    TRACK: $track
-    VALUE: SynthDrum23 PITCH
-
-# create bar encoders
-# BROWSER --> could show wavetable and morph over... 
-#             maybe even 3d view? No need to show the 64 wave, could show only part of it
-# MORPH
-# GAIN_CLIPPING
-# NOISE
-# RESONANCE_ENV
-
-  COMPONENT: Encoder3 0 120 $1/4W 40
-    GROUP: 2
-    ENCODER_ID: 0
-    COLOR: secondary
-    TRACK: $track
-    VALUE: SynthDrum23 RESONANCE_ENV
-
-  COMPONENT: Encoder3 $1/4W 120 $1/4W 40
-    GROUP: 2
-    ENCODER_ID: 1
-    COLOR: secondary
-    TRACK: $track
-    VALUE: SynthDrum23 GAIN_CLIPPING
-
-  COMPONENT: Encoder3 $2/4W 120 $1/4W 40
-    GROUP: 2
-    ENCODER_ID: 2
-    COLOR: secondary
-    TRACK: $track
-    VALUE: SynthDrum23 BROWSER
-
-  COMPONENT: Encoder3 $3/4W 120 $1/4W 40
-    GROUP: 2
-    ENCODER_ID: 3
-    COLOR: secondary
-    TRACK: $track
-    VALUE: SynthDrum23 MORPH
-
-
-
-  COMPONENT: Encoder3 0 160 $1/4W 40
-    GROUP: 3
-    ENCODER_ID: 0
-    COLOR: secondary
-    TRACK: $track
-    VALUE: MMFilter CUTOFF
-
-  COMPONENT: Encoder3 $1/4W 160 $1/4W 40
-    GROUP: 3
-    ENCODER_ID: 1
-    COLOR: secondary
-    TRACK: $track
-    VALUE: MMFilter RESONANCE
-
-  COMPONENT: Encoder3 $2/4W 160 $1/4W 40
-    GROUP: 3
-    ENCODER_ID: 2
-    COLOR: secondary
-    TRACK: $track
-    VALUE: SynthDrum23 NOISE
-
-
-# ADD Sample on top of the output... but could use audio input (like SynthKick23) instead to make it part of SynthDrum23
-
-# Show add waveform ?
-
   COMPONENT: KeyInfoBar 0 216
     KEYMAP: Keyboard 20 item 0
     KEYMAP: Keyboard 26 item 1
@@ -159,3 +62,102 @@ $track=1
     KEYMAP: Keyboard 7 item 7
     KEYMAP: Keyboard 9 item 8
     KEYMAP: Keyboard 10 item 9
+
+  CONTAINER: ScrollContainer Scroll 0 0 $SCREEN_WIDTH 214
+
+    COMPONENT: DrumEnvelop 0 0 ($3/4W-2) 50
+      GROUP: 0
+      TRACK: $track
+      PLUGIN: SynthDrum23
+      ENVELOP_DATA_ID: 0
+      ENCODER_PHASE: 0
+      ENCODER_TIME: 1
+      ENCODER_MODULATION: 2
+
+    COMPONENT: Encoder3 $3/4W 0 $1/4W 50
+      GROUP: 0
+      ENCODER_ID: 3
+      COLOR: secondary
+      TRACK: $track
+      VALUE: SynthDrum23 DURATION
+
+
+    COMPONENT: DrumEnvelop 0 60 ($3/4W-2) 50
+      GROUP: 1
+      TRACK: $track
+      PLUGIN: SynthDrum23
+      ENVELOP_DATA_ID: 4
+      ENCODER_PHASE: 0
+      ENCODER_TIME: 1
+      ENCODER_MODULATION: 2
+
+    COMPONENT: Encoder3 $3/4W 60 $1/4W 50
+      GROUP: 1
+      ENCODER_ID: 3
+      COLOR: secondary
+      TRACK: $track
+      VALUE: SynthDrum23 PITCH
+
+# create bar encoders
+# BROWSER --> could show wavetable and morph over... 
+#             maybe even 3d view? No need to show the 64 wave, could show only part of it
+# MORPH
+# GAIN_CLIPPING
+# NOISE
+# RESONANCE_ENV
+
+    COMPONENT: Encoder3 0 120 $1/4W 40
+      GROUP: 2
+      ENCODER_ID: 0
+      COLOR: secondary
+      TRACK: $track
+      VALUE: SynthDrum23 RESONANCE_ENV
+
+    COMPONENT: Encoder3 $1/4W 120 $1/4W 40
+      GROUP: 2
+      ENCODER_ID: 1
+      COLOR: secondary
+      TRACK: $track
+      VALUE: SynthDrum23 GAIN_CLIPPING
+
+    COMPONENT: Encoder3 $2/4W 120 $1/4W 40
+      GROUP: 2
+      ENCODER_ID: 2
+      COLOR: secondary
+      TRACK: $track
+      VALUE: SynthDrum23 BROWSER
+
+    COMPONENT: Encoder3 $3/4W 120 $1/4W 40
+      GROUP: 2
+      ENCODER_ID: 3
+      COLOR: secondary
+      TRACK: $track
+      VALUE: SynthDrum23 MORPH
+
+
+
+    COMPONENT: Encoder3 0 160 $1/4W 40
+      GROUP: 3
+      ENCODER_ID: 0
+      COLOR: secondary
+      TRACK: $track
+      VALUE: MMFilter CUTOFF
+
+    COMPONENT: Encoder3 $1/4W 160 $1/4W 40
+      GROUP: 3
+      ENCODER_ID: 1
+      COLOR: secondary
+      TRACK: $track
+      VALUE: MMFilter RESONANCE
+
+    COMPONENT: Encoder3 $2/4W 160 $1/4W 40
+      GROUP: 3
+      ENCODER_ID: 2
+      COLOR: secondary
+      TRACK: $track
+      VALUE: SynthDrum23 NOISE
+
+
+# ADD Sample on top of the output... but could use audio input (like SynthKick23) instead to make it part of SynthDrum23
+
+# Show add waveform ?

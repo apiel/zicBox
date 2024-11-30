@@ -208,8 +208,7 @@ public:
 
     void render()
     {
-        if (value != NULL) {
-            updatePosition();
+        if (value != NULL && updatePosition()) {
             knobCenter = { (int)(relativePosition.x + (size.w * 0.5)), (int)(relativePosition.y + (size.h * 0.5) + marginTop - 1) };
             valuePosition = { knobCenter.x, knobCenter.y - marginTop - 2 };
             draw.filledRect(relativePosition, size, { bgColor });
