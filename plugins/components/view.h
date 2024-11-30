@@ -63,16 +63,14 @@ public:
                 break;
             }
         }
-        if (!usable) {
-            group = 0;
-        }
+        if (usable) {
+            for (auto& container : containers) {
+                container->onGroupChanged(group);
+            }
 
-        for (auto& container : containers) {
-            container->onGroupChanged(group);
-        }
-
-        for (auto& component : components) {
-            component->onGroupChanged(group);
+            for (auto& component : components) {
+                component->onGroupChanged(group);
+            }
         }
     }
 
