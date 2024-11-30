@@ -1,11 +1,11 @@
 #ifndef _UI_COMPONENT_INTERFACE_H_
 #define _UI_COMPONENT_INTERFACE_H_
 
-#include "../controllers/controllerInterface.h"
-#include "container/ComponentContainer.h"
-#include "drawInterface.h"
-#include "motionInterface.h"
-#include "valueInterface.h"
+#include "plugins/controllers/controllerInterface.h"
+#include "./container/ComponentContainer.h"
+#include "./drawInterface.h"
+#include "./motionInterface.h"
+#include "./valueInterface.h"
 
 #include <functional>
 #include <string.h>

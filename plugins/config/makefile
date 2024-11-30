@@ -10,6 +10,8 @@ ifneq ($(shell uname -m),x86_64)
 RPI := -DIS_RPI=1
 endif
 
+INC=-I../..
+
 default:
 	make DustConfig
 
@@ -28,8 +30,8 @@ JsConfig:
 
 compile:
 	@mkdir -p $(OBJ_DIR)
-	g++ -g -c -o $(OBJ_DIR)/$(LIBNAME).o $(LIBNAME).cpp -fPIC $(EXTRA) $(RPI)
-	g++ -g -shared -o $(BUILD_DIR)/libzic_$(LIBNAME).so $(OBJ_DIR)/$(LIBNAME).o $(EXTRA) $(RPI)
+	g++ -g -c -o $(OBJ_DIR)/$(LIBNAME).o $(LIBNAME).cpp -fPIC $(INC) $(EXTRA) $(RPI)
+	g++ -g -shared -o $(BUILD_DIR)/libzic_$(LIBNAME).so $(OBJ_DIR)/$(LIBNAME).o $(INC) $(EXTRA) $(RPI)
 
 clean:
 	rm -rf $(BUILD_DIR)
