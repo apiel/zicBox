@@ -122,7 +122,7 @@ protected:
             sendAudioEvent,
             getController,
             []() { return ViewManager::get().view->components; },
-            [](int8_t index) { ViewManager::get().setGroup(index); },
+            [](int8_t index) { ViewManager::get().view->setGroup(index); },
             [](std::string name) { ViewManager::get().setView(name); },
             [](ComponentInterface* component) { ViewManager::get().view->componentsToRender.push_back(component); },
             [this](std::string name) { return view->getContainer(name); },
@@ -209,27 +209,6 @@ public:
         m.lock();
         view->renderComponents(now);
         m.unlock();
-    }
-
-    void setGroup(int8_t index)
-    {
-        int8_t group = index == -1 ? 0 : index;
-
-        // If group is out of bound, we set it to 0
-        bool usable = false;
-        for (auto& component : view->components) {
-            if (component->group == group) {
-                usable = true;
-                break;
-            }
-        }
-        if (!usable) {
-            group = 0;
-        }
-
-        for (auto& component : view->components) {
-            component->onGroupChanged(group);
-        }
     }
 
     bool config(char* key, char* value, const char* filename)

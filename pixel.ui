@@ -63,7 +63,7 @@ $track=1
     KEYMAP: Keyboard 9 item 8
     KEYMAP: Keyboard 10 item 9
 
-  CONTAINER: ScrollContainer Scroll 0 0 $SCREEN_WIDTH 214
+  CONTAINER: ScrollGroupContainer Scroll 0 0 $SCREEN_WIDTH 214
 
     COMPONENT: DrumEnvelop 0 0 ($3/4W-2) 50
       GROUP: 0
