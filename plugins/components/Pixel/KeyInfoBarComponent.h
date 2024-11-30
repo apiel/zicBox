@@ -70,7 +70,7 @@ protected:
     void renderRow(int y, int startIndex)
     {
         for (int i = 0; i < 5; i++) {
-            Point textPos = { pos.x + buttonStartX + i * buttonWidth, y };
+            Point textPos = { relativePosition.x + buttonStartX + i * buttonWidth, y };
             if (!icon.render(text[i + startIndex], textPos, 8, {}, Icon::CENTER)) {
                 draw.textCentered(textPos, text[i + startIndex], 8);
             }
@@ -81,8 +81,8 @@ public:
     void render()
     {
         updatePosition();
-        renderRow(pos.y, 0);
-        renderRow(pos.y + 12, 5);
+        renderRow(relativePosition.y, 0);
+        renderRow(relativePosition.y + 12, 5);
     }
 
     /*md **Config**: */

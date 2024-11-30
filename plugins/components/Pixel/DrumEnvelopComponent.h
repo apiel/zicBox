@@ -79,21 +79,21 @@ protected:
         if (currentstep < envData->size() - 1) {
             float currentTime = envData->at(currentstep).time;
             float nextTime = envData->at(currentstep + 1).time;
-            draw.line({ (int)(pos.x + size.w * currentTime), cursorY }, { (int)(pos.x + size.w * currentTime), cursorY - 3 }, { cursorColor.color });
-            draw.line({ (int)(pos.x + size.w * currentTime), cursorY - 1 }, { (int)(pos.x + size.w * nextTime), cursorY - 1 }, { cursorColor.color });
-            draw.line({ (int)(pos.x + size.w * nextTime), cursorY }, { (int)(pos.x + size.w * nextTime), cursorY - 3 }, { cursorColor.color });
+            draw.line({ (int)(relativePosition.x + size.w * currentTime), cursorY }, { (int)(relativePosition.x + size.w * currentTime), cursorY - 3 }, { cursorColor.color });
+            draw.line({ (int)(relativePosition.x + size.w * currentTime), cursorY - 1 }, { (int)(relativePosition.x + size.w * nextTime), cursorY - 1 }, { cursorColor.color });
+            draw.line({ (int)(relativePosition.x + size.w * nextTime), cursorY }, { (int)(relativePosition.x + size.w * nextTime), cursorY - 3 }, { cursorColor.color });
         } else {
-            draw.line({ pos.x + size.w, cursorY }, { pos.x + size.w, cursorY - 3 }, { cursorColor.color });
+            draw.line({ relativePosition.x + size.w, cursorY }, { relativePosition.x + size.w, cursorY - 3 }, { cursorColor.color });
         }
     }
 
     void renderTitles()
     {
         int cellWidth = size.w / 3;
-        int x = pos.x + cellWidth * 0.5;
-        draw.textCentered({ x, pos.y }, std::to_string(currentstep + 1) + "/" + std::to_string(envData->size()), 8, { textColor.color });
-        draw.textCentered({ x + cellWidth, pos.y }, std::to_string(currentTimeMs) + "ms", 8, { textColor.color });
-        draw.textCentered({ x + cellWidth * 2, pos.y }, std::to_string((int)(currentMod * 100)) + "%", 8, { textColor.color });
+        int x = relativePosition.x + cellWidth * 0.5;
+        draw.textCentered({ x, relativePosition.y }, std::to_string(currentstep + 1) + "/" + std::to_string(envData->size()), 8, { textColor.color });
+        draw.textCentered({ x + cellWidth, relativePosition.y }, std::to_string(currentTimeMs) + "ms", 8, { textColor.color });
+        draw.textCentered({ x + cellWidth * 2, relativePosition.y }, std::to_string((int)(currentMod * 100)) + "%", 8, { textColor.color });
     }
 
 public:
@@ -113,9 +113,9 @@ public:
     void render() override
     {
         updatePosition();
-        envPosition = { pos.x, pos.y + 10 };
-        cursorY = pos.y + size.h - 1;
-        draw.filledRect(pos, size, { bgColor });
+        envPosition = { relativePosition.x, relativePosition.y + 10 };
+        cursorY = relativePosition.y + size.h - 1;
+        draw.filledRect(relativePosition, size, { bgColor });
 
         if (envData) {
             currentstep = *(int8_t*)plugin->data(currentStepDataId);
