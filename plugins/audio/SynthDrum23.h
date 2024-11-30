@@ -3,7 +3,7 @@
 
 #include <sstream>
 
-#include "Wavetable.h"
+#include "./utils/Wavetable.h"
 #include "audioPlugin.h"
 #include "filter.h"
 #include "mapping.h"

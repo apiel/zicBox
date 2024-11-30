@@ -66,14 +66,14 @@ protected:
         int val = 280 * value->pct();
 
         if (val < 280) {
-            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, -230, 50, { barBackgroundColor.color, .thickness = 4 });
+            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, -230, 50, { barBackgroundColor.color, .thickness = 3 });
         }
         if (val > 0) {
             int endAngle = 130 + val;
             if (endAngle > 360) {
                 endAngle = endAngle - 360;
             }
-            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, endAngle, { barColor.color, .thickness = 4 });
+            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, endAngle, { barColor.color, .thickness = 5 });
         }
     }
 
@@ -81,16 +81,16 @@ protected:
     {
         int val = 280 * value->pct();
 
-        draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, -230, 50, { barBackgroundColor.color, .thickness = 4 });
+        draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, -230, 50, { barBackgroundColor.color, .thickness = 3 });
         if (val > 140) {
             int endAngle = 130 + val;
             if (endAngle > 360) {
                 endAngle = endAngle - 360;
             }
 
-            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 270, endAngle, { barColor.color, .thickness = 4 });
+            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 270, endAngle, { barColor.color, .thickness = 5 });
         } else if (val < 140) {
-            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, -230 + val, 270, { barColor.color, .thickness = 4 });
+            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, -230 + val, 270, { barColor.color, .thickness = 5 });
         }
     }
 
