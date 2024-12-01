@@ -33,23 +33,40 @@ protected:
 
     ValueInterface* valueType = NULL;
 
-    float* waveform = NULL;
-    uint16_t* waveformSize = NULL;
+    uint8_t waveformDataId = 8;
+    uint8_t sizeDataId = 9;
+
+    int waveformHeight = 30;
+    int waveformY = 0;
 
     void renderWaveform()
     {
-        std::vector<Point> relativePoints;
-        float halfHeight = size.h * 0.5;
-        for (int i = 0; i < *waveformSize; i++) {
-            Point point = { (int)(size.w * i / (*waveformSize - 1)), (int)(waveform[i] * halfHeight + halfHeight) };
-            relativePoints.push_back({ point.x + relativePosition.x, point.y + relativePosition.y });
+        float* waveform = (float*)plugin->data(waveformDataId);
+        uint16_t* waveformSize = (uint16_t*)plugin->data(sizeDataId);
+        printf("waveformSize: %d\n", *waveformSize);
+        if (waveform && waveformSize) {
+            std::vector<Point> relativePoints;
+            float halfHeight = waveformHeight * 0.5;
+            for (int i = 0; i < *waveformSize; i++) {
+                Point point = { (int)(size.w * i / (*waveformSize - 1)), (int)(waveform[i] * halfHeight + halfHeight) };
+                relativePoints.push_back({ point.x + relativePosition.x, point.y + waveformY });
+            }
+            if (filled) {
+                draw.filledPolygon(relativePoints, { fillColor.color });
+            }
+            if (outline) {
+                draw.lines(relativePoints, { outlineColor.color });
+            }
         }
-        if (filled) {
-            draw.filledPolygon(relativePoints, { fillColor.color });
-        }
-        if (outline) {
-            draw.lines(relativePoints, { outlineColor.color });
-        }
+    }
+
+    void renderTitles()
+    {
+        int cellWidth = size.w / 3;
+        int x = relativePosition.x + cellWidth * 0.5;
+        draw.textCentered({ x, relativePosition.y }, valueType->string(), 8, { textColor.color });
+        // draw.textCentered({ x + cellWidth, relativePosition.y }, std::to_string(currentTimeMs) + "ms", 8, { textColor.color });
+        // draw.textCentered({ x + cellWidth * 2, relativePosition.y }, std::to_string((int)(currentMod * 100)) + "%", 8, { textColor.color });
     }
 
 public:
@@ -61,16 +78,16 @@ public:
         , outlineColor(lighten(styles.colors.primary, 0.5), inactiveColorRatio)
     {
         updateColors();
+        waveformHeight = size.h - 9;
     }
 
     void render() override
     {
         if (updatePosition()) {
+            waveformY = relativePosition.y + 8;
             draw.filledRect(relativePosition, size, { bgColor });
-            if (waveform && waveformSize) {
-                printf("render waveform\n");
-                renderWaveform();
-            }
+            renderWaveform();
+            renderTitles();
         }
     }
 
@@ -100,11 +117,9 @@ public:
 
         /*md - `WAVEFORM_DATA_ID: waveform_id size_id` is the data id to get the shape of the waveform to draw.*/
         if (strcmp(key, "WAVEFORM_DATA_ID") == 0) {
-            uint8_t waveformId = atoi(strtok(value, " "));
+            waveformDataId = atoi(strtok(value, " "));
             char* sizeIdStr = strtok(NULL, " ");
-            uint8_t sizeId = sizeIdStr ? atoi(sizeIdStr) : waveformId + 1;
-            waveform = (float*)plugin->data(waveformId);
-            waveformSize = (uint16_t*)plugin->data(sizeId);
+            sizeDataId = sizeIdStr ? atoi(sizeIdStr) : waveformDataId + 1;
             return true;
         }
 

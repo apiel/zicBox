@@ -65,11 +65,11 @@ protected:
     }
 
 public:
-    uint64_t sampleCount = LOOKUP_TABLE_SIZE;
     float lut[LOOKUP_TABLE_SIZE];
 
     Waveform(LookupTable* sharedLut, uint64_t sampleRate)
-        : sharedLut(sharedLut)
+        : WaveformInterface(LOOKUP_TABLE_SIZE)
+        , sharedLut(sharedLut)
         , sampleRate(sampleRate)
     {
         loadSineType();
