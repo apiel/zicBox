@@ -104,6 +104,7 @@ public:
                 valueShape->increment(direction);
                 renderNext();
             } else if (id == encoderMacro) {
+                valueMacro->increment(direction);
                 renderNext();
             }
         }
