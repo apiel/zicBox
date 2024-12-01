@@ -69,7 +69,8 @@ public:
 
     float sample(float* index, float freq)
     {
-        float phaseIncrement = freq / sampleRate;
+        float modulatedFreq = 110.0f * freq;
+        float phaseIncrement = modulatedFreq / sampleRate;
 
         *index += phaseIncrement;
         while (*index >= 1.0f) {
