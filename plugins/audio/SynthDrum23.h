@@ -76,7 +76,7 @@ protected:
         { "Sine", &waveform, Waveform::Type::Sine },
         { "Triangle", &waveform, Waveform::Type::Triangle },
         { "Square", &waveform, Waveform::Type::Square },
-        { "Flame", &waveform, Waveform::Type::Flame },
+        { "Pulse", &waveform, Waveform::Type::Pulse },
     };
 
 public:

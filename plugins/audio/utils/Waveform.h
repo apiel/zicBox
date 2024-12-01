@@ -45,7 +45,7 @@ public:
         Sine,
         Triangle,
         Square,
-        Flame
+        Pulse
     };
 
 protected:
@@ -108,7 +108,7 @@ protected:
         }
     }
 
-    void loadSquareType()
+    void loadPulseType()
     {
         float pulse = range(macro, 0.1f, 0.9f);
         for (uint16_t i = 0; i < sampleCount; i++) {
@@ -155,15 +155,36 @@ protected:
         }
     }
 
-    void loadFlameType()
+    void loadSquareType()
     {
-        // A flame-like wave, similar to the Flame stitch in needlepoint, resulting from: squarewave(x) - squarewave(x * 2) * cos(x * PI * 2).
         for (uint16_t i = 0; i < sampleCount; i++) {
             float phase = i / (float)sampleCount; // Normalized phase [0, 1)
-            float square1 = phase < 0.5f ? 1.0f : -1.0f; // Square wave at base frequency
-            float square2 = ((int)(phase * 2) % 2) == 0 ? 1.0f : -1.0f; // Square wave at double frequency
-            float modulated = square2 * std::cos(phase * M_PI * 2); // Modulate square2 by cosine
-            lut[i] = (square1 - modulated) * 0.5f; // Combine waveforms
+
+            // Base square wave
+            float square1 = phase < 0.5f ? 1.0f : -1.0f;
+
+            // Second square wave at double the frequency
+            float square2 = ((int)(phase * 2) % 2) == 0 ? 1.0f : -1.0f;
+
+            // Split macro into two regions
+            if (macro <= 0.5f) {
+                // First behavior: Phase shift modulation
+                float modulatedPhase = std::fmod(phase + macro * 2.0f, 1.0f); // Scale macro for 0-0.5 range
+                float modulation = shape * std::cos(modulatedPhase * M_PI * 2);
+                float modulated = square2 * modulation;
+
+                // Blend the base and modulated square waves using the shape parameter
+                lut[i] = (1.0f - shape) * square1 + shape * (square1 - modulated) * 0.5f;
+            } else {
+                // Second behavior: Frequency modulation
+                float fmAmount = (macro - 0.5f) * 4.0f; // Scale FM strength for 0.5-1.0 range
+                float modulatedPhase = std::fmod(phase + fmAmount * std::sin(phase * M_PI * 2), 1.0f);
+                float modulation = shape * std::cos(modulatedPhase * M_PI * 2);
+                float modulated = square2 * modulation;
+
+                // Blend the base and frequency-modulated waveforms using the shape parameter
+                lut[i] = (1.0f - shape) * square1 + shape * (square1 - modulated) * 0.5f;
+            }
         }
     }
 
@@ -218,14 +239,19 @@ public:
         case Type::Square: {
             if (reset) {
                 shape = 0.0f; // square
-                macro = 0.5f; // centered
+                macro = 0.0f;
             }
             loadSquareType();
             break;
         }
-        case Type::Flame:
-            loadFlameType();
+        case Type::Pulse: {
+            if (reset) {
+                shape = 0.0f; // square
+                macro = 0.5f; // centered
+            }
+            loadPulseType();
             break;
+        }
         }
     }
 
