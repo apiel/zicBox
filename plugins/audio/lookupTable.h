@@ -3,13 +3,14 @@
 
 #include <math.h>
 
+#define LOOKUP_TABLE_SIZE 4096
+
 class LookupTable {
 protected:
     int noiseIndex = 0;
 
 public:
-    // const static int size = 2048;
-    const static int size = 4096;
+    const static int size = LOOKUP_TABLE_SIZE;
     float sine[size];
     float noise[size];
 
