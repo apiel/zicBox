@@ -58,10 +58,29 @@ protected:
 
     Type selectedType = Type::Sine;
 
+    // Use shape to introduce harmonic components (second and third harmonics).
+    // Use macro to adjust the balance between the second and third harmonics for creative wave shaping.
     void loadSineType()
     {
+        float maxAmplitude = 1.0f; // To track maximum amplitude for normalization
+
+        // First pass: Compute the waveform and track the maximum amplitude
         for (uint16_t i = 0; i < sampleCount; i++) {
-            lut[i] = sharedLut->sine[i];
+            float phase = i / (float)sampleCount; // Normalized phase [0, 1)
+            float baseSine = sharedLut->sine[i]; // Original sine wave value
+
+            // Add harmonic distortion
+            float harmonicSine = baseSine
+                + shape * macro * std::sin(2.0f * M_PI * phase * 2.0f) // Second harmonic
+                + shape * (1.0f - macro) * std::sin(2.0f * M_PI * phase * 3.0f); // Third harmonic
+
+            lut[i] = harmonicSine; // Store in LUT for now
+            maxAmplitude = std::max(maxAmplitude, std::abs(harmonicSine));
+        }
+
+        // Second pass: Normalize to fit within [-1.0, 1.0]
+        for (uint16_t i = 0; i < sampleCount; i++) {
+            lut[i] /= maxAmplitude; // Scale down to fit within [-1.0, 1.0]
         }
     }
 
@@ -181,6 +200,10 @@ public:
         selectedType = waveformType;
         switch (waveformType) {
         case Type::Sine: {
+            if (reset) {
+                shape = 0.0f;
+                macro = 0.0f;
+            }
             loadSineType();
             break;
         }
