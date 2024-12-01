@@ -2,6 +2,7 @@
 #define _SYNTH_DRUM23_H_
 
 #include <sstream>
+#include <vector>
 
 #include "./utils/Waveform.h"
 #include "./utils/Wavetable.h"
@@ -70,8 +71,18 @@ protected:
         return range(out, -1.0f, 1.0f);
     }
 
+    // std::vector<std::string> waveformTypes = { "Waveform", "Sine", "Triangle", "Square", "Sawtooth" };
+
+#define DRUM23_WAVEFORMS_COUNT 5
+    const char *waveformTypes[DRUM23_WAVEFORMS_COUNT] = { "Wavetable", "Sine", "Triangle", "Square", "Sawtooth" };
+
 public:
     /*md **Values**: */
+    /*md - `WAVEFORM_TYPE` Select waveform type (wavetable, sine, triangle...).*/
+    Val& waveformType = val(0.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = DRUM23_WAVEFORMS_COUNT - 1 }, [&](auto p) {
+        p.val.setFloat(p.value);
+        p.val.setString(waveformTypes[(int)p.val.get()]);
+    });
     /*md - `BROWSER` Select wavetable.*/
     Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)wavetable.fileBrowser.count }, [&](auto p) { open(p.value); });
     /*md - `MORPH` Morhp over the wavetable.*/
