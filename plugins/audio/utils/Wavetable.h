@@ -91,6 +91,8 @@ public:
             sampleStart = maxSampleStart;
         }
     }
+
+    int getIndex() { return sampleStart / sampleCount; }
 };
 
 #endif

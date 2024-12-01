@@ -91,6 +91,11 @@ public:
         wave = type.wave;
         if (p.val.get() != 0.0f) {
             waveform.setWaveformType((Waveform::Type)type.indexType);
+            shape.set(waveform.shape * 100.0f);
+            macro.set(waveform.macro * 100.0f);
+        } else {
+            shape.set(wavetable.fileBrowser.position);
+            macro.set(wavetable.getIndex());
         }
     });
     /*md - `SHAPE` Morhp over the waveform shape.*/
@@ -98,9 +103,9 @@ public:
         if (waveformType.get() != 0.0f) {
             p.val.setFloat(p.value);
             waveform.setShape(p.val.pct());
-            p.val.setString(std::to_string(p.val.get()) + "%");
+            p.val.setString(std::to_string((int)p.val.get()) + "%");
         } else {
-            p.val.setFloat(p.value);
+            p.val.setFloat((int)p.value);
 
             int position = p.val.get();
             wavetable.open(position, false);
@@ -116,10 +121,12 @@ public:
         if (waveformType.get() != 0.0f) {
             p.val.setFloat(p.value);
             waveform.setMacro(p.val.pct());
+            p.val.setString(std::to_string((int)p.val.get()) + "%");
         } else {
             float value = range(p.value, 1.0f, ZIC_WAVETABLE_WAVEFORMS_COUNT);
             p.val.setFloat(value);
             wavetable.morph((int)p.val.get() - 1);
+            p.val.setString(std::to_string((int)p.val.get()) + "/" + std::to_string(ZIC_WAVETABLE_WAVEFORMS_COUNT));
         }
     });
 
