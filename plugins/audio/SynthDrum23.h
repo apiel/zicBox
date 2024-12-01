@@ -104,7 +104,7 @@ public:
             int direction = p.value - p.val.get();
             int value = p.val.get() + direction * 10;
             // printf("val: %f, direction: %d, value: %d\n", p.value, direction, value);
-            p.val.setFloat(p.value);
+            p.val.setFloat(value);
             waveform.setShape(p.val.pct());
             p.val.setString(std::to_string((int)(p.val.get() * 0.1)) + "%");
         } else {

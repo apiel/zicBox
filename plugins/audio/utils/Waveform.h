@@ -1,37 +1,6 @@
 #ifndef _WAVEFORM_H_
 #define _WAVEFORM_H_
 
-// https://potterdraw.sourceforge.io/Help/Modulation/Waveform.htm
-// https://potterdraw.sourceforge.io/Help/Modulation/Slew.htm
-
-// could make a LUT and do like envelop to get value between 2 points
-
-// Param: edge sharpness for sine
-
-// Param: stairs number?
-
-// option1
-// Param: point1 x
-// Param: point1 y
-// Param: point2 x
-// Param: point2 y
-// Param: width
-
-// option4
-// Param: angle from sawtooth to triangle
-// Param: top width
-// Param: bottom width
-
-// option5
-// Param: angle from sawtooth to triangle
-// Param: stairs number: infinite triangle, 10, 9, to 1 became a square
-// Param: pulse width: rectangular wave
-
-// Type: sine, triangle, square,....
-// Shape: sawtooth to triangle to soft edge triangle, square to circular...
-// Pulse
-// Stairs ?
-
 #include "helpers/range.h"
 #include "plugins/audio/lookupTable.h"
 #include "plugins/audio/utils/WaveformInterface.h"
@@ -269,7 +238,7 @@ protected:
 public:
     float shape = 0.5f;
     float macro = 0.5f;
-    
+
     Waveform(LookupTable* sharedLut, uint64_t sampleRate)
         : WaveformInterface(LOOKUP_TABLE_SIZE)
         , sharedLut(sharedLut)
