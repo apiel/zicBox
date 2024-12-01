@@ -32,6 +32,8 @@ protected:
     int encoderMacro = -1;
 
     ValueInterface* valueType = NULL;
+    ValueInterface* valueShape = NULL;
+    ValueInterface* valueMacro = NULL;
 
     uint8_t waveformDataId = 8;
     uint8_t sizeDataId = 9;
@@ -43,7 +45,6 @@ protected:
     {
         float* waveform = (float*)plugin->data(waveformDataId);
         uint16_t* waveformSize = (uint16_t*)plugin->data(sizeDataId);
-        printf("waveformSize: %d\n", *waveformSize);
         if (waveform && waveformSize) {
             std::vector<Point> relativePoints;
             float halfHeight = waveformHeight * 0.5;
@@ -98,6 +99,7 @@ public:
                 valueType->increment(direction);
                 renderNext();
             } else if (id == encoderShape) {
+                valueShape->increment(direction);
                 renderNext();
             } else if (id == encoderMacro) {
                 renderNext();
@@ -112,6 +114,8 @@ public:
         if (strcmp(key, "PLUGIN") == 0) {
             plugin = &getPlugin(value, track);
             valueType = watch(plugin->getValue("WAVEFORM_TYPE"));
+            valueShape = watch(plugin->getValue("SHAPE"));
+            // valueMacro = watch(plugin->getValue("MACRO"));
             return true;
         }
 
