@@ -43,22 +43,25 @@ protected:
     EnvelopRelative envelopFreq = EnvelopRelative({ { 0.5f, 0.0f }, { 1.0f, 0.5f }, { 0.0f, 1.0f } });
 
     float index = 0;
-    float wave(float amp, float freq, float pitch)
+    float wave(float freq)
     {
-        float modulatedFreq = 110.0f * (pitch + freq);
-        return amp * waveform.sample(&index, modulatedFreq);
+        float modulatedFreq = 110.0f * (freq);
+        return waveform.sample(&index, modulatedFreq);
     }
 
-    float sample(EffectFilterData& _filter, float time, float* index, float amp, float freq, float _noteMult = 1.0f, float _velocity = 1.0f)
+    float sample(EffectFilterData& _filter, float time, float* index, float ampModulation, float freqModulation, float _noteMult = 1.0f, float _velocity = 1.0f)
     {
-        // float out = wavetable.sample(index, amp * _velocity, freq, pitchMult * _noteMult);
-        float out = wave(amp * _velocity, freq, pitchMult * _noteMult);
+        float amp = ampModulation * _velocity;
+        float freq = freqModulation + pitchMult * _noteMult;
+
+        // float out = wavetable.sample(index, freq) * amp;
+        float out = wave(freq) * amp;
         if (noise.get() > 0.0f) {
             out += 0.01 * props.lookupTable->getNoise() * noise.get() * amp;
         }
 
         if (resEnv.get() > 0.0f) {
-            _filter.setCutoff(amp * 0.85);
+            _filter.setCutoff(ampModulation * 0.85);
             _filter.setSampleData(out);
             out = _filter.lp;
         }

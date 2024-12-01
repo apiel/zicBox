@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-float linerInterpolation(float index, uint16_t lutSize, float* lut)
+float linearInterpolation(float index, uint16_t lutSize, float* lut)
 {
     // Linear Interpolation to get smoother transitions between discrete LUT values
     float lutIndex = index * lutSize;
