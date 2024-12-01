@@ -40,18 +40,47 @@ protected:
     float noteMult = 1.0f;
 
     EffectFilterData filter;
+    EffectFilterData clickFilter;
 
     EnvelopRelative envelopAmp = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.0f, 1.0f } }, 1);
     EnvelopRelative envelopFreq = EnvelopRelative({ { 0.5f, 0.0f }, { 1.0f, 0.5f }, { 0.0f, 1.0f } });
 
-    float sample(EffectFilterData& _filter, float time, float* index, float ampModulation, float freqModulation, float _noteMult = 1.0f, float _velocity = 1.0f)
+    float addClicking(float time, float out, EffectFilterData& _clickFilter)
+    {
+        // Add a click at the beginning
+        float duration = clickDuration.pct(); // Duration of the click in seconds
+        float clickAmplitude = click.pct();
+
+        if (clickAmplitude && time < duration) {
+            float noise = props.lookupTable->getNoise(); // Get noise sample
+            float clickEnv = 1.0f - (time / duration); // Linear fade-out for the click
+
+            // Apply the envelope to the noise
+            float rawClick = noise * clickAmplitude * clickEnv;
+
+            _clickFilter.setSampleData(rawClick);
+            if (clickCutoff.get() > 0.0f) {
+                out += _clickFilter.hp;
+
+            } else {
+                out += _clickFilter.lp;
+            }
+        }
+
+        // Apply soft clipping
+        return out + out * clipping.pct() * 20;
+    }
+
+    float sample(float time, float* index, float ampModulation, float freqModulation, float _noteMult, float _velocity, EffectFilterData& _filter, EffectFilterData& _clickFilter)
     {
         float amp = ampModulation * _velocity;
         float freq = freqModulation + pitchMult * _noteMult;
 
-        // float out = wavetable.sample(index, freq) * amp;
-        // float out = waveform.sample(index, freq) * amp;
         float out = wave->sample(index, freq) * amp;
+
+        out = addClicking(time, out, _clickFilter);
+        // out = addClicking(time, 0, _clickFilter);
+
         if (noise.get() > 0.0f) {
             out += 0.01 * props.lookupTable->getNoise() * noise.get() * amp;
         }
@@ -134,22 +163,38 @@ public:
         }
     });
 
-    // /*md - `BROWSER` Select wavetable.*/
-    // Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)wavetable.fileBrowser.count }, [&](auto p) { open(p.value); });
-    // /*md - `MORPH` Morhp over the wavetable.*/
-    // Val& morph = val(0.0f, "MORPH", { "Morph", .min = 1.0, .max = ZIC_WAVETABLE_WAVEFORMS_COUNT, .step = 0.1, .floatingPoint = 1 }, [&](auto p) { setMorph(p.value); });
     /*md - `PITCH` Modulate the pitch.*/
     Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -36, .max = 36 }, [&](auto p) { setPitch(p.value); });
     /*md - `DURATION` set the duration of the envelop.*/
     Val& duration = val(100.0f, "DURATION", { "Duration", .min = 10.0, .max = 5000.0, .step = 10.0, .unit = "ms" }, [&](auto p) { setDuration(p.value); });
 
     /*md - `GAIN_CLIPPING` set the clipping level.*/
-    Val& clipping = val(0.0, "GAIN_CLIPPING", { "Gain Clipping", .unit = "%" }, [&](auto p) { setClipping(p.value); });
+    Val& clipping = val(0.0, "GAIN_CLIPPING", { "Clipping", .unit = "%" }, [&](auto p) { setClipping(p.value); });
     /*md - `NOISE` set the noise level.*/
     Val& noise = val(0.0, "NOISE", { "Noise", .unit = "%" }, [&](auto p) { setNoise(p.value); });
 
     /*md - `RESONANCE_ENV` set resonance using amplitude envelope.*/
-    Val& resEnv = val(0.0f, "RESONANCE_ENV", { "Resonance Env.", .unit = "%" }, [&](auto p) { setResonance(p.value); });
+    Val& resEnv = val(0.0f, "RESONANCE_ENV", { "Reso Env.", .unit = "%" }, [&](auto p) { setResonance(p.value); });
+
+    /*md - `CLICK` set the click level.*/
+    Val& click = val(0, "CLICK", { "Click" });
+
+    /*md - `CLICK_DURATION` set the duration of the click.*/
+    Val& clickDuration = val(0.1f, "CLICK_DURATION", { "Click Dur." });
+
+    /*md - `CLICK_CUTOFF` set the cutoff frequency of the click.*/
+    Val& clickCutoff = val(50.0f, "CLICK_CUTOFF", { "Click LP|HP", VALUE_CENTERED, .min = -100.0, .max = 100.0, .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        int value = std::abs(p.val.get());
+        clickFilter.setCutoff(value * 0.01f);
+        p.val.setString((p.val.get() < 0 ? "LP" : "HP") + std::to_string(value));
+    });
+
+    /*md - `CLICK_RESONANCE` set the resonance of the click.*/
+    Val& clickResonance = val(75.0f, "CLICK_RESONANCE", { "Click Reso." }, [&](auto p) {
+        p.val.setFloat(p.value);
+        clickFilter.setResonance(p.val.pct());
+    });
 
     SynthDrum23(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -158,6 +203,9 @@ public:
     {
         initValues();
         filter.setResonance(0.95f);
+
+        clickFilter.setResonance(0.85);
+        clickFilter.setCutoff(0.10);
     }
 
     void sample(float* buf)
@@ -166,7 +214,7 @@ public:
             float time = (float)sampleDurationCounter / (float)sampleCountDuration;
             float envAmp = envelopAmp.next(time);
             float envFreq = envelopFreq.next(time);
-            buf[track] = sample(filter, time, &wavetable.sampleIndex, envAmp, envFreq, noteMult, velocity);
+            buf[track] = sample(time, &wavetable.sampleIndex, envAmp, envFreq, noteMult, velocity, filter, clickFilter);
             sampleDurationCounter++;
             // printf("[%d] sample: %d of %d=%f\n", track, sampleDurationCounter, sampleCountDuration, buf[track]);
         }

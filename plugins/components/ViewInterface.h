@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "./drawInterface.h"
+
 class ViewInterface {
 public:
     DrawInterface& draw;

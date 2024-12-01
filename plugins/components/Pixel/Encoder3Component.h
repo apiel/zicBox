@@ -103,7 +103,7 @@ protected:
 
     void renderValue()
     {
-        if (!stringValueReplaceTitle && value->props().type == VALUE_STRING) {
+        if (!stringValueReplaceTitle && (value->props().type == VALUE_STRING || type == 2)) {
             draw.textCentered({ valuePosition.x, valuePosition.y - 5 }, value->string(), fontValueSize, { valueColor.color });
         } else {
             std::string valStr = std::to_string(value->get());
@@ -117,9 +117,9 @@ protected:
     {
         int val = value->get();
         // FIXME use floating point...
-        draw.textRight({ valuePosition.x - twoSideMargin, valuePosition.y - 5 }, std::to_string((int)value->props().max - val).c_str(),
+        draw.textRight({ valuePosition.x - twoSideMargin, valuePosition.y - 2 }, std::to_string((int)value->props().max - val).c_str(),
             fontValueSize - 3, { valueColor.color });
-        draw.text({ valuePosition.x + twoSideMargin, valuePosition.y - 5 }, std::to_string(val).c_str(),
+        draw.text({ valuePosition.x + twoSideMargin, valuePosition.y - 2 }, std::to_string(val).c_str(),
             fontValueSize - 3, { valueColor.color });
 
         draw.line({ valuePosition.x, valuePosition.y - 10 }, { valuePosition.x, valuePosition.y + 10 }, { barTwoSideColor.color });
@@ -245,6 +245,8 @@ public:
         if (strcmp(key, "TYPE") == 0) {
             if (strcmp(params, "TWO_SIDED") == 0) {
                 type = 1;
+            } else if (strcmp(params, "STRING") == 0) {
+                type = 2;
             } else {
                 type = atoi(params);
             }

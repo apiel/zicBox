@@ -116,36 +116,51 @@ $track=1
       TRACK: $track
       VALUE: SynthDrum23 MACRO
 
-#   rest...
+#   Click
     COMPONENT: Encoder3 0 180 $1/4W 50
       GROUP: 3
       ENCODER_ID: 0
       COLOR: secondary
       TRACK: $track
-      VALUE: SynthDrum23 RESONANCE_ENV
+      VALUE: SynthDrum23 CLICK
 
     COMPONENT: Encoder3 $1/4W 180 $1/4W 50
       GROUP: 3
       ENCODER_ID: 1
       COLOR: secondary
       TRACK: $track
-      VALUE: SynthDrum23 GAIN_CLIPPING
+      VALUE: SynthDrum23 CLICK_DURATION
 
 
+    COMPONENT: Encoder3 $2/4W 180 $1/4W 50
+      GROUP: 3
+      ENCODER_ID: 2
+      COLOR: secondary
+      TYPE: STRING
+      TRACK: $track
+      VALUE: SynthDrum23 CLICK_CUTOFF
 
+    COMPONENT: Encoder3 $3/4W 180 $1/4W 50
+      GROUP: 3
+      ENCODER_ID: 3
+      COLOR: secondary
+      TRACK: $track
+      VALUE: SynthDrum23 CLICK_RESONANCE
+
+#   rest...
     COMPONENT: Encoder3 0 240 $1/4W 50
       GROUP: 4
       ENCODER_ID: 0
       COLOR: secondary
       TRACK: $track
-      VALUE: MMFilter CUTOFF
+      VALUE: SynthDrum23 RESONANCE_ENV
 
     COMPONENT: Encoder3 $1/4W 240 $1/4W 50
       GROUP: 4
       ENCODER_ID: 1
       COLOR: secondary
       TRACK: $track
-      VALUE: MMFilter RESONANCE
+      VALUE: SynthDrum23 GAIN_CLIPPING
 
     COMPONENT: Encoder3 $2/4W 240 $1/4W 50
       GROUP: 4
@@ -153,6 +168,21 @@ $track=1
       COLOR: secondary
       TRACK: $track
       VALUE: SynthDrum23 NOISE
+
+
+    COMPONENT: Encoder3 0 300 $1/4W 50
+      GROUP: 5
+      ENCODER_ID: 0
+      COLOR: secondary
+      TRACK: $track
+      VALUE: MMFilter CUTOFF
+
+    COMPONENT: Encoder3 $1/4W 300 $1/4W 50
+      GROUP: 5
+      ENCODER_ID: 1
+      COLOR: secondary
+      TRACK: $track
+      VALUE: MMFilter RESONANCE
 
 
 # ADD Sample on top of the output... but could use audio input (like SynthKick23) instead to make it part of SynthDrum23
