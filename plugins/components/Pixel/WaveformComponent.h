@@ -68,8 +68,8 @@ protected:
         int cellWidth = size.w / 3;
         int x = relativePosition.x + cellWidth * 0.5;
         draw.textCentered({ x, relativePosition.y }, valueType->string(), 8, { textColor.color });
-        // draw.textCentered({ x + cellWidth, relativePosition.y }, std::to_string(currentTimeMs) + "ms", 8, { textColor.color });
-        // draw.textCentered({ x + cellWidth * 2, relativePosition.y }, std::to_string((int)(currentMod * 100)) + "%", 8, { textColor.color });
+        draw.textCentered({ x + cellWidth, relativePosition.y }, std::to_string((int)valueShape->get()) + "%", 8, { textColor.color });
+        draw.textCentered({ x + cellWidth * 2, relativePosition.y }, std::to_string((int)valueMacro->get()) + "%", 8, { textColor.color });
     }
 
 public:
