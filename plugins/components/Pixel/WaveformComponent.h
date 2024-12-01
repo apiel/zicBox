@@ -16,7 +16,6 @@ Show a representation of a waveform.
 
 class WaveformComponent : public GroupColorComponent {
 protected:
-
     AudioPlugin* plugin = NULL;
 
     bool filled = true;
@@ -28,11 +27,32 @@ protected:
     ToggleColor outlineColor;
     ToggleColor textColor;
 
-    void renderWaveform()
-    {
+    float* waveform = NULL;
+    uint16_t* waveformSize = NULL;
 
+    std::vector<Point> points;
+    void preComputePoints()
+    {
+        points.clear();
+        float halfHeight = size.h * 0.5;
+        for (int i = 0; i < *waveformSize; i++) {
+            points.push_back({ (int)(size.w * i / (*waveformSize - 1)), (int)(waveform[i] * halfHeight + halfHeight) });
+        }
     }
 
+    void renderWaveform()
+    {
+        std::vector<Point> relativePoints;
+        for (auto& point : points) {
+            relativePoints.push_back({ point.x + relativePosition.x, point.y + relativePosition.y });
+        }
+        if (filled) {
+            draw.filledPolygon(relativePoints, { fillColor.color });
+        }
+        if (outline) {
+            draw.lines(relativePoints, { outlineColor.color });
+        }
+    }
 
 public:
     WaveformComponent(ComponentInterface::Props props)
@@ -49,7 +69,9 @@ public:
     {
         if (updatePosition()) {
             draw.filledRect(relativePosition, size, { bgColor });
-            renderWaveform();
+            if (waveform && waveformSize) {
+                renderWaveform();
+            }
         }
     }
 
@@ -59,6 +81,22 @@ public:
         /*md - `PLUGIN: plugin_name` set plugin target */
         if (strcmp(key, "PLUGIN") == 0) {
             plugin = &getPlugin(value, track);
+            return true;
+        }
+
+        /*md - `WAVEFORM_DATA_ID: waveform_id size_id` is the data id to get the shape of the waveform to draw.*/
+        if (strcmp(key, "WAVEFORM_DATA_ID") == 0) {
+            uint8_t waveformId = atoi(strtok(value, " "));
+            char * sizeIdStr = strtok(NULL, " ");
+            uint8_t sizeId = sizeIdStr ? atoi(sizeIdStr) : waveformId + 1;
+            waveform = (float*)plugin->data(waveformId);
+            waveformSize = (uint16_t*)plugin->data(sizeId);
+            preComputePoints();
+            return true;
+        }
+
+        /*md - `SIZE_DATA_ID: id` is the data id to get the size of the waveform to draw.*/
+        if (strcmp(key, "SIZE_DATA_ID") == 0) {
             return true;
         }
 

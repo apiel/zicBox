@@ -104,10 +104,7 @@ $track=1
       GROUP: 2
       TRACK: $track
       PLUGIN: SynthDrum23
-      ENVELOP_DATA_ID: 4
-      ENCODER_PHASE: 0
-      ENCODER_TIME: 1
-      ENCODER_MODULATION: 2
+      WAVEFORM_DATA_ID: 8
 
 #   rest...
     COMPONENT: Encoder3 0 180 $1/4W 50
