@@ -4,7 +4,7 @@
 #include <sndfile.h>
 #include <string>
 
-#include "fileBrowser.h"
+#include "plugins/audio/fileBrowser.h"
 
 #define ZIC_WAVETABLE_WAVEFORMS_COUNT 64
 

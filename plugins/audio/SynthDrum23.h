@@ -4,6 +4,7 @@
 #include <sstream>
 
 #include "./utils/Wavetable.h"
+#include "./utils/Waveform.h"
 #include "audioPlugin.h"
 #include "filter.h"
 #include "mapping.h"
@@ -26,6 +27,7 @@ protected:
     uint8_t baseNote = 60;
     uint64_t sampleRate;
 
+    Waveform waveform;
     Wavetable wavetable;
     float pitchMult = 1.0f;
 
@@ -43,31 +45,14 @@ protected:
     float index = 0;
     float wave(float amp, float freq, float pitch)
     {
-        // Apply frequency modulation
-        float modulatedFreq = 440.0f * (pitch + freq);
-
-        // Calculate phase increment
-        float phaseIncrement = modulatedFreq / props.sampleRate;
-
-        // Update the phase index, keeping it in the range [0, 1]
-        index += phaseIncrement;
-        if (index >= 1.0f) {
-            index -= 1.0f;
-        }
-
-        // Generate a triangle wave: Map phase [0, 1] to triangle shape [-1, 1]
-        float triangle = 4.0f * std::abs(index - 0.5f) - 1.0f;
-
-        // printf("triangle: %f index: %f\n", triangle, std::abs(index - 0.5f));
-
-        // Apply amplitude scaling
-        return amp * triangle;
+        float modulatedFreq = 110.0f * (pitch + freq);
+        return amp * waveform.sample(&index, modulatedFreq);
     }
 
     float sample(EffectFilterData& _filter, float time, float* index, float amp, float freq, float _noteMult = 1.0f, float _velocity = 1.0f)
     {
-        float out = wavetable.sample(index, amp * _velocity, freq, pitchMult * _noteMult);
-        // float out = wave(amp * _velocity, freq, pitchMult * _noteMult);
+        // float out = wavetable.sample(index, amp * _velocity, freq, pitchMult * _noteMult);
+        float out = wave(amp * _velocity, freq, pitchMult * _noteMult);
         if (noise.get() > 0.0f) {
             out += 0.01 * props.lookupTable->getNoise() * noise.get() * amp;
         }
@@ -103,6 +88,7 @@ public:
 
     SynthDrum23(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
+        , waveform(props.lookupTable, props.sampleRate)
         , sampleRate(props.sampleRate)
     {
         initValues();
