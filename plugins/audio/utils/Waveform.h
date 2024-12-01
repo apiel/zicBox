@@ -33,30 +33,32 @@
 // Stairs ?
 
 #include "plugins/audio/lookupTable.h"
+#include "plugins/audio/utils/WaveformInterface.h"
 #include "plugins/audio/utils/utils.h"
 
 #include <cstdint>
 
-class Waveform {
+class Waveform : public WaveformInterface {
 protected:
     LookupTable* sharedLut;
     uint64_t sampleRate;
 
     void loadSineType()
     {
-        for (uint16_t i = 0; i < LOOKUP_TABLE_SIZE; i++) {
+        for (uint16_t i = 0; i < sampleCount; i++) {
             lut[i] = sharedLut->sine[i];
         }
     }
 
     void loadTriangleType()
     {
-        for (uint16_t i = 0; i < LOOKUP_TABLE_SIZE; i++) {
-            lut[i] = 4.0f * std::abs((i / (float)LOOKUP_TABLE_SIZE) - 0.5f) - 1.0f;
+        for (uint16_t i = 0; i < sampleCount; i++) {
+            lut[i] = 4.0f * std::abs((i / (float)sampleCount) - 0.5f) - 1.0f;
         }
     }
 
 public:
+    uint64_t sampleCount = LOOKUP_TABLE_SIZE;
     float lut[LOOKUP_TABLE_SIZE];
 
     Waveform(LookupTable* sharedLut, uint64_t sampleRate)
@@ -67,7 +69,7 @@ public:
         // loadTriangleType();
     }
 
-    float sample(float* index, float freq)
+    float sample(float* index, float freq) override
     {
         float modulatedFreq = 110.0f * freq;
         float phaseIncrement = modulatedFreq / sampleRate;
@@ -77,11 +79,14 @@ public:
             *index -= 1.0f;
         }
 
-        // return lut[(uint16_t)(*index * LOOKUP_TABLE_SIZE)];
-        return linearInterpolation(*index, LOOKUP_TABLE_SIZE, lut);
+        // return lut[(uint16_t)(*index * sampleCount)];
+        return linearInterpolation(*index, sampleCount, lut);
     }
 
-
+    float* samples() override
+    {
+        return lut;
+    }
 };
 
 #endif

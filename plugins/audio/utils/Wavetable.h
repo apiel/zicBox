@@ -5,10 +5,11 @@
 #include <string>
 
 #include "plugins/audio/fileBrowser.h"
+#include "plugins/audio/utils/WaveformInterface.h"
 
 #define ZIC_WAVETABLE_WAVEFORMS_COUNT 64
 
-class Wavetable {
+class Wavetable: public WaveformInterface {
 protected:
     SF_INFO sfinfo;
     SNDFILE* file = NULL;
@@ -35,7 +36,7 @@ public:
         return bufferSamples + sampleStart;
     }
 
-    float sample(float* index, float freq)
+    float sample(float* index, float freq) override
     {
         (*index) += freq;
         while ((*index) >= sampleCount) {
