@@ -114,7 +114,7 @@ $track=1
       ENCODER_ID: 3
       COLOR: secondary
       TRACK: $track
-      VALUE: SynthDrum23 WAVEFORM_TYPE
+      VALUE: SynthDrum23 SHAPE
 
 #   rest...
     COMPONENT: Encoder3 0 180 $1/4W 50

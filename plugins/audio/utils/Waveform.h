@@ -32,6 +32,7 @@
 // Pulse
 // Stairs ?
 
+#include "helpers/range.h"
 #include "plugins/audio/lookupTable.h"
 #include "plugins/audio/utils/WaveformInterface.h"
 #include "plugins/audio/utils/utils.h"
@@ -39,9 +40,22 @@
 #include <cstdint>
 
 class Waveform : public WaveformInterface {
+public:
+    enum Type {
+        Sine,
+        Triangle,
+        Square,
+        Flame
+    };
+
 protected:
     LookupTable* sharedLut;
     uint64_t sampleRate;
+    float shape = 0.9f;
+
+    float lut[LOOKUP_TABLE_SIZE];
+
+    Type selectedType = Type::Sine;
 
     void loadSineType()
     {
@@ -50,10 +64,30 @@ protected:
         }
     }
 
+    // void loadTriangleType()
+    // {
+    //     for (uint16_t i = 0; i < sampleCount; i++) {
+    //         lut[i] = 4.0f * std::abs((i / (float)sampleCount) - 0.5f) - 1.0f;
+    //     }
+    // }
+
     void loadTriangleType()
     {
         for (uint16_t i = 0; i < sampleCount; i++) {
-            lut[i] = 4.0f * std::abs((i / (float)sampleCount) - 0.5f) - 1.0f;
+            float phase = i / (float)sampleCount; // Normalized phase [0, 1)
+
+            float y; // Output waveform value
+
+            if (phase < shape) {
+                // Ramp up for the rising segment
+                y = (1.0f / shape) * phase;
+            } else {
+                // Ramp down for the falling segment
+                y = 1.0f - (1.0f / (1.0f - shape)) * (phase - shape);
+            }
+
+            // Scale y to range [-1, 1]
+            lut[i] = -(2.0f * y - 1.0f);
         }
     }
 
@@ -64,16 +98,25 @@ protected:
         }
     }
 
-public:
-    float lut[LOOKUP_TABLE_SIZE];
+    void loadFlameType()
+    {
+        // A flame-like wave, similar to the Flame stitch in needlepoint, resulting from: squarewave(x) - squarewave(x * 2) * cos(x * PI * 2).
+        for (uint16_t i = 0; i < sampleCount; i++) {
+            float phase = i / (float)sampleCount; // Normalized phase [0, 1)
+            float square1 = phase < 0.5f ? 1.0f : -1.0f; // Square wave at base frequency
+            float square2 = ((int)(phase * 2) % 2) == 0 ? 1.0f : -1.0f; // Square wave at double frequency
+            float modulated = square2 * std::cos(phase * M_PI * 2); // Modulate square2 by cosine
+            lut[i] = square1 - modulated; // Combine waveforms
+        }
+    }
 
+public:
     Waveform(LookupTable* sharedLut, uint64_t sampleRate)
         : WaveformInterface(LOOKUP_TABLE_SIZE)
         , sharedLut(sharedLut)
         , sampleRate(sampleRate)
     {
-        loadSineType();
-        // loadTriangleType();
+        setWaveformType(Type::Sine);
     }
 
     float sample(float* index, float freq) override
@@ -95,14 +138,9 @@ public:
         return lut;
     }
 
-    enum Type {
-        Sine,
-        Triangle,
-        Square
-    };
-
     void setWaveformType(Type waveformType)
     {
+        selectedType = waveformType;
         switch (waveformType) {
         case Type::Sine:
             loadSineType();
@@ -113,7 +151,16 @@ public:
         case Type::Square:
             loadSquareType();
             break;
+        case Type::Flame:
+            loadFlameType();
+            break;
         }
+    }
+
+    void setShape(float value)
+    {
+        shape = range(value, 0.0f, 1.0f);
+        setWaveformType(selectedType);
     }
 };
 

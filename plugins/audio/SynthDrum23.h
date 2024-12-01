@@ -76,10 +76,8 @@ protected:
         { "Sine", &waveform, Waveform::Type::Sine },
         { "Triangle", &waveform, Waveform::Type::Triangle },
         { "Square", &waveform, Waveform::Type::Square },
-        { "Sawtooth", &waveform, Waveform::Type::Triangle },
+        { "Flame", &waveform, Waveform::Type::Flame },
     };
-
-    // const char *waveformTypes[DRUM23_WAVEFORMS_COUNT] = { "Wavetable", "Sine", "Triangle", "Square", "Sawtooth" };
 
 public:
     /*md **Values**: */
@@ -93,6 +91,17 @@ public:
             waveform.setWaveformType((Waveform::Type)type.indexType);
         }
     });
+    /*md - `SHAPE` Morhp over the waveform shape.*/
+    Val& shape = val(0.0f, "SHAPE", { "Shape" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        if (waveformType.get() != 0.0f) {
+            waveform.setShape(p.val.pct());
+        } else {
+            // setMorph(p.val.get());
+        }
+    });
+
+
     /*md - `BROWSER` Select wavetable.*/
     Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)wavetable.fileBrowser.count }, [&](auto p) { open(p.value); });
     /*md - `MORPH` Morhp over the wavetable.*/
