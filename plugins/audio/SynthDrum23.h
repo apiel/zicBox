@@ -79,11 +79,6 @@ protected:
         float out = wave->sample(index, freq) * amp;
 
         out = addClicking(time, out, _clickFilter);
-        // out = addClicking(time, 0, _clickFilter);
-
-        if (noise.get() > 0.0f) {
-            out += 0.01 * props.lookupTable->getNoise() * noise.get() * amp;
-        }
 
         if (resEnv.get() > 0.0f) {
             _filter.setCutoff(ampModulation * 0.85);
@@ -170,8 +165,6 @@ public:
 
     /*md - `GAIN_CLIPPING` set the clipping level.*/
     Val& clipping = val(0.0, "GAIN_CLIPPING", { "Clipping", .unit = "%" }, [&](auto p) { setClipping(p.value); });
-    /*md - `NOISE` set the noise level.*/
-    Val& noise = val(0.0, "NOISE", { "Noise", .unit = "%" }, [&](auto p) { setNoise(p.value); });
 
     /*md - `RESONANCE_ENV` set resonance using amplitude envelope.*/
     Val& resEnv = val(0.0f, "RESONANCE_ENV", { "Reso Env.", .unit = "%" }, [&](auto p) { setResonance(p.value); });
@@ -242,11 +235,6 @@ public:
     void setClipping(float value)
     {
         clipping.setFloat(value);
-    }
-
-    void setNoise(float value)
-    {
-        noise.setFloat(value);
     }
 
     void setPitch(float value)

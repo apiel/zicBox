@@ -162,24 +162,17 @@ $track=1
       TRACK: $track
       VALUE: SynthDrum23 GAIN_CLIPPING
 
+
     COMPONENT: Encoder3 $2/4W 240 $1/4W 50
       GROUP: 4
       ENCODER_ID: 2
       COLOR: secondary
       TRACK: $track
-      VALUE: SynthDrum23 NOISE
-
-
-    COMPONENT: Encoder3 0 300 $1/4W 50
-      GROUP: 5
-      ENCODER_ID: 0
-      COLOR: secondary
-      TRACK: $track
       VALUE: MMFilter CUTOFF
 
-    COMPONENT: Encoder3 $1/4W 300 $1/4W 50
-      GROUP: 5
-      ENCODER_ID: 1
+    COMPONENT: Encoder3 $3/4W 240 $1/4W 50
+      GROUP: 4
+      ENCODER_ID: 3
       COLOR: secondary
       TRACK: $track
       VALUE: MMFilter RESONANCE
