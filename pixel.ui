@@ -148,12 +148,12 @@ $track=1
       VALUE: SynthDrum23 CLICK_RESONANCE
 
 #   rest...
-    COMPONENT: Encoder3 0 240 $1/4W 50
-      GROUP: 4
-      ENCODER_ID: 0
-      COLOR: secondary
-      TRACK: $track
-      VALUE: SynthDrum23 RESONANCE_ENV
+#    COMPONENT: Encoder3 0 240 $1/4W 50
+#      GROUP: 4
+#      ENCODER_ID: 0
+#      COLOR: secondary
+#      TRACK: $track
+#      VALUE: SynthDrum23 GAIN
 
     COMPONENT: Encoder3 $1/4W 240 $1/4W 50
       GROUP: 4
