@@ -95,22 +95,22 @@ public:
         return lut;
     }
 
-    enum WaveformType {
+    enum Type {
         Sine,
         Triangle,
         Square
     };
 
-    void setWaveformType(WaveformType waveformType)
+    void setWaveformType(Type waveformType)
     {
         switch (waveformType) {
-        case WaveformType::Sine:
+        case Type::Sine:
             loadSineType();
             break;
-        case WaveformType::Triangle:
+        case Type::Triangle:
             loadTriangleType();
             break;
-        case WaveformType::Square:
+        case Type::Square:
             loadSquareType();
             break;
         }
