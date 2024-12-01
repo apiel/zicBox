@@ -54,8 +54,8 @@ protected:
         float amp = ampModulation * _velocity;
         float freq = freqModulation + pitchMult * _noteMult;
 
-        // float out = wavetable.sample(index, freq) * amp;
-        float out = wave(freq) * amp;
+        float out = wavetable.sample(index, freq) * amp;
+        // float out = wave(freq) * amp;
         if (noise.get() > 0.0f) {
             out += 0.01 * props.lookupTable->getNoise() * noise.get() * amp;
         }
