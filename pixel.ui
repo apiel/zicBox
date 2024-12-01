@@ -65,6 +65,7 @@ $track=1
 
   CONTAINER: ScrollGroupContainer Scroll 0 0 $SCREEN_WIDTH 214
 
+#   Amp envelope
     COMPONENT: DrumEnvelop 0 0 ($3/4W-2) 50
       GROUP: 0
       TRACK: $track
@@ -81,7 +82,7 @@ $track=1
       TRACK: $track
       VALUE: SynthDrum23 DURATION
 
-
+#   Frequency envelope
     COMPONENT: DrumEnvelop 0 60 ($3/4W-2) 50
       GROUP: 1
       TRACK: $track
@@ -98,37 +99,40 @@ $track=1
       TRACK: $track
       VALUE: SynthDrum23 PITCH
 
-# create bar encoders
-# BROWSER --> could show wavetable and morph over... 
-#             maybe even 3d view? No need to show the 64 wave, could show only part of it
-# MORPH
-# GAIN_CLIPPING
-# NOISE
-# RESONANCE_ENV
-
-    COMPONENT: Encoder3 0 120 $1/4W 50
+#   Waveform
+    COMPONENT: Waveform 0 120 ($3/4W-2) 50
       GROUP: 2
+      TRACK: $track
+      PLUGIN: SynthDrum23
+      ENVELOP_DATA_ID: 4
+      ENCODER_PHASE: 0
+      ENCODER_TIME: 1
+      ENCODER_MODULATION: 2
+
+#   rest...
+    COMPONENT: Encoder3 0 180 $1/4W 50
+      GROUP: 3
       ENCODER_ID: 0
       COLOR: secondary
       TRACK: $track
       VALUE: SynthDrum23 RESONANCE_ENV
 
-    COMPONENT: Encoder3 $1/4W 120 $1/4W 50
-      GROUP: 2
+    COMPONENT: Encoder3 $1/4W 180 $1/4W 50
+      GROUP: 3
       ENCODER_ID: 1
       COLOR: secondary
       TRACK: $track
       VALUE: SynthDrum23 GAIN_CLIPPING
 
-    COMPONENT: Encoder3 $2/4W 120 $1/4W 50
-      GROUP: 2
+    COMPONENT: Encoder3 $2/4W 180 $1/4W 50
+      GROUP: 3
       ENCODER_ID: 2
       COLOR: secondary
       TRACK: $track
       VALUE: SynthDrum23 BROWSER
 
-    COMPONENT: Encoder3 $3/4W 120 $1/4W 50
-      GROUP: 2
+    COMPONENT: Encoder3 $3/4W 180 $1/4W 50
+      GROUP: 3
       ENCODER_ID: 3
       COLOR: secondary
       TRACK: $track
@@ -136,27 +140,19 @@ $track=1
 
 
 
-    COMPONENT: Encoder3 0 180 $1/4W 50
-      GROUP: 3
+    COMPONENT: Encoder3 0 240 $1/4W 50
+      GROUP: 4
       ENCODER_ID: 0
       COLOR: secondary
       TRACK: $track
       VALUE: MMFilter CUTOFF
 
-    COMPONENT: Encoder3 $1/4W 180 $1/4W 50
-      GROUP: 3
+    COMPONENT: Encoder3 $1/4W 240 $1/4W 50
+      GROUP: 4
       ENCODER_ID: 1
       COLOR: secondary
       TRACK: $track
       VALUE: MMFilter RESONANCE
-
-    COMPONENT: Encoder3 $2/4W 180 $1/4W 50
-      GROUP: 3
-      ENCODER_ID: 2
-      COLOR: secondary
-      TRACK: $track
-      VALUE: SynthDrum23 NOISE
-
 
     COMPONENT: Encoder3 $2/4W 240 $1/4W 50
       GROUP: 4
