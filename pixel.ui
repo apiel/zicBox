@@ -106,6 +106,13 @@ $track=1
       PLUGIN: SynthDrum23
       WAVEFORM_DATA_ID: 8
 
+    COMPONENT: Encoder3 $3/4W 120 $1/4W 50
+      GROUP: 2
+      ENCODER_ID: 3
+      COLOR: secondary
+      TRACK: $track
+      VALUE: SynthDrum23 WAVEFORM_TYPE
+
 #   rest...
     COMPONENT: Encoder3 0 180 $1/4W 50
       GROUP: 3
