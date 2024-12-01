@@ -66,7 +66,7 @@ protected:
         return range(out, -1.0f, 1.0f);
     }
 
-#define DRUM23_WAVEFORMS_COUNT 5
+#define DRUM23_WAVEFORMS_COUNT 7
     struct WaveformType {
         std::string name;
         WaveformInterface* wave;
@@ -77,6 +77,8 @@ protected:
         { "Triangle", &waveform, Waveform::Type::Triangle },
         { "Square", &waveform, Waveform::Type::Square },
         { "Pulse", &waveform, Waveform::Type::Pulse },
+        { "FM", &waveform, Waveform::Type::Fm },
+        { "FMsquare", &waveform, Waveform::Type::FmSquare },
     };
 
 public:
