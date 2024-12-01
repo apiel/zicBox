@@ -57,6 +57,13 @@ protected:
         }
     }
 
+    void loadSquareType()
+    {
+        for (uint16_t i = 0; i < sampleCount; i++) {
+            lut[i] = i < sampleCount / 2 ? 1.0f : -1.0f;
+        }
+    }
+
 public:
     uint64_t sampleCount = LOOKUP_TABLE_SIZE;
     float lut[LOOKUP_TABLE_SIZE];
@@ -86,6 +93,27 @@ public:
     float* samples() override
     {
         return lut;
+    }
+
+    enum WaveformType {
+        Sine,
+        Triangle,
+        Square
+    };
+
+    void setWaveformType(WaveformType waveformType)
+    {
+        switch (waveformType) {
+        case WaveformType::Sine:
+            loadSineType();
+            break;
+        case WaveformType::Triangle:
+            loadTriangleType();
+            break;
+        case WaveformType::Square:
+            loadSquareType();
+            break;
+        }
     }
 };
 
