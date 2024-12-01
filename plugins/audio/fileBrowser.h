@@ -57,6 +57,12 @@ public:
         position = range(pos, 0, count - 1);
         return files[position];
     }
+
+    std::string getFileWithoutExtension(uint16_t pos)
+    {
+        std::string file = getFile(pos);
+        return file.substr(0, file.find_last_of("."));
+    }
 };
 
 #endif

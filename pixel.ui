@@ -131,20 +131,6 @@ $track=1
       TRACK: $track
       VALUE: SynthDrum23 GAIN_CLIPPING
 
-    COMPONENT: Encoder3 $2/4W 180 $1/4W 50
-      GROUP: 3
-      ENCODER_ID: 2
-      COLOR: secondary
-      TRACK: $track
-      VALUE: SynthDrum23 BROWSER
-
-    COMPONENT: Encoder3 $3/4W 180 $1/4W 50
-      GROUP: 3
-      ENCODER_ID: 3
-      COLOR: secondary
-      TRACK: $track
-      VALUE: SynthDrum23 MORPH
-
 
 
     COMPONENT: Encoder3 0 240 $1/4W 50

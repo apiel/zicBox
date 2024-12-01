@@ -95,28 +95,38 @@ public:
     });
     /*md - `SHAPE` Morhp over the waveform shape.*/
     Val& shape = val(0.0f, "SHAPE", { "Shape" }, [&](auto p) {
-        p.val.setFloat(p.value);
         if (waveformType.get() != 0.0f) {
+            p.val.setFloat(p.value);
             waveform.setShape(p.val.pct());
+            p.val.setString(std::to_string(p.val.get()) + "%");
         } else {
-            // setMorph(p.val.get());
+            p.val.setFloat(p.value);
+
+            int position = p.val.get();
+            wavetable.open(position, false);
+            p.val.setString(wavetable.fileBrowser.getFileWithoutExtension(position));
+
+            sampleDurationCounter = -1; // set counter to the maximum
+            sampleDurationCounter = sampleCountDuration;
         }
     });
 
     /*md - `MACRO` Macro is arbitrary parameter depending of selected waveform type. */
     Val& macro = val(0.0f, "MACRO", { "Macro" }, [&](auto p) {
-        p.val.setFloat(p.value);
         if (waveformType.get() != 0.0f) {
+            p.val.setFloat(p.value);
             waveform.setMacro(p.val.pct());
         } else {
-            // setMorph(p.val.get());
+            float value = range(p.value, 1.0f, ZIC_WAVETABLE_WAVEFORMS_COUNT);
+            p.val.setFloat(value);
+            wavetable.morph((int)p.val.get() - 1);
         }
     });
 
-    /*md - `BROWSER` Select wavetable.*/
-    Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)wavetable.fileBrowser.count }, [&](auto p) { open(p.value); });
-    /*md - `MORPH` Morhp over the wavetable.*/
-    Val& morph = val(0.0f, "MORPH", { "Morph", .min = 1.0, .max = ZIC_WAVETABLE_WAVEFORMS_COUNT, .step = 0.1, .floatingPoint = 1 }, [&](auto p) { setMorph(p.value); });
+    // /*md - `BROWSER` Select wavetable.*/
+    // Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)wavetable.fileBrowser.count }, [&](auto p) { open(p.value); });
+    // /*md - `MORPH` Morhp over the wavetable.*/
+    // Val& morph = val(0.0f, "MORPH", { "Morph", .min = 1.0, .max = ZIC_WAVETABLE_WAVEFORMS_COUNT, .step = 0.1, .floatingPoint = 1 }, [&](auto p) { setMorph(p.value); });
     /*md - `PITCH` Modulate the pitch.*/
     Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -36, .max = 36 }, [&](auto p) { setPitch(p.value); });
     /*md - `DURATION` set the duration of the envelop.*/
@@ -153,16 +163,16 @@ public:
         buf[track] = buf[track];
     }
 
-    void open(float value)
-    {
-        browser.setFloat(value);
-        int position = browser.get();
-        wavetable.open(position, false);
-        browser.setString(wavetable.fileBrowser.getFile(position));
+    // void open(float value)
+    // {
+    //     browser.setFloat(value);
+    //     int position = browser.get();
+    //     wavetable.open(position, false);
+    //     browser.setString(wavetable.fileBrowser.getFile(position));
 
-        sampleDurationCounter = -1; // set counter to the maximum
-        sampleDurationCounter = sampleCountDuration;
-    }
+    //     sampleDurationCounter = -1; // set counter to the maximum
+    //     sampleDurationCounter = sampleCountDuration;
+    // }
 
     void setResonance(float value)
     {
@@ -184,12 +194,6 @@ public:
     {
         pitch.setFloat(value);
         pitchMult = pitch.pct() + 0.5f; // FIXME
-    }
-
-    void setMorph(float value)
-    {
-        morph.setFloat(value);
-        wavetable.morph(morph.pct());
     }
 
     void setDuration(float value)
