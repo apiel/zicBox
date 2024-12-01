@@ -28,6 +28,7 @@ protected:
     uint8_t baseNote = 60;
     uint64_t sampleRate;
 
+    WaveformInterface* wave = nullptr;
     Waveform waveform;
     Wavetable wavetable;
     float pitchMult = 1.0f;
@@ -49,7 +50,8 @@ protected:
         float freq = freqModulation + pitchMult * _noteMult;
 
         // float out = wavetable.sample(index, freq) * amp;
-        float out = waveform.sample(index, freq) * amp;
+        // float out = waveform.sample(index, freq) * amp;
+        float out = wave->sample(index, freq) * amp;
         if (noise.get() > 0.0f) {
             out += 0.01 * props.lookupTable->getNoise() * noise.get() * amp;
         }
@@ -75,6 +77,7 @@ public:
     Val& waveformType = val(0.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = DRUM23_WAVEFORMS_COUNT - 1 }, [&](auto p) {
         p.val.setFloat(p.value);
         p.val.setString(waveformTypes[(int)p.val.get()]);
+        wave = p.val.get() == 0.0f ? (WaveformInterface*)&wavetable : &waveform;
     });
     /*md - `BROWSER` Select wavetable.*/
     Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)wavetable.fileBrowser.count }, [&](auto p) { open(p.value); });
