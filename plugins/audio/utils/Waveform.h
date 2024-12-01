@@ -85,6 +85,49 @@ protected:
     //     }
     // }
 
+    // void loadSquareType()
+    // {
+    //     float pulse = range(macro, 0.1f, 0.9f);
+    //     for (uint16_t i = 0; i < sampleCount; i++) {
+    //         float phase = i / (float)sampleCount; // Normalized phase [0, 1)
+    //         float dutyCycle = pulse; // Pulse width directly set by `pulse` parameter
+
+    //         float value;
+    //         if (phase < dutyCycle) {
+    //             // High part of the pulse
+    //             if (shape < 0.33f) {
+    //                 // Square wave (sharp edges)
+    //                 value = 1.0f;
+    //             } else if (shape < 0.66f) {
+    //                 // Rounded pulse (smooth transition to low)
+    //                 float transition = (dutyCycle - phase) / (0.33f * dutyCycle);
+    //                 value = 1.0f - std::exp(-transition * 5.0f); // Smooth transition down
+    //             } else {
+    //                 // Circular pulse (sinusoidal edge)
+    //                 float normalizedPhase = phase / dutyCycle; // Normalize phase to [0, 1]
+    //                 value = std::sin(normalizedPhase * M_PI_2); // Circular transition down
+    //             }
+    //         } else {
+    //             // Low part of the pulse
+    //             if (shape < 0.33f) {
+    //                 // Square wave (sharp edges)
+    //                 value = -1.0f;
+    //             } else if (shape < 0.66f) {
+    //                 // Rounded pulse (smooth transition to high)
+    //                 float transition = (phase - dutyCycle) / (0.33f * (1.0f - dutyCycle));
+    //                 value = -1.0f + std::exp(-transition * 5.0f); // Smooth transition up
+    //             } else {
+    //                 // Circular pulse (sinusoidal edge)
+    //                 float normalizedPhase = (phase - dutyCycle) / (1.0f - dutyCycle); // Normalize phase to [0, 1]
+    //                 value = -std::sin(normalizedPhase * M_PI_2); // Circular transition up
+    //             }
+    //         }
+
+    //         // Store the computed value in the lookup table
+    //         lut[i] = value;
+    //     }
+    // }
+
     void loadSquareType()
     {
         float pulse = range(macro, 0.1f, 0.9f);
@@ -95,31 +138,35 @@ protected:
             float value;
             if (phase < dutyCycle) {
                 // High part of the pulse
-                if (shape < 0.33f) {
-                    // Square wave (sharp edges)
-                    value = 1.0f;
-                } else if (shape < 0.66f) {
-                    // Rounded pulse (smooth transition to low)
-                    float transition = (dutyCycle - phase) / (0.33f * dutyCycle);
-                    value = 1.0f - std::exp(-transition * 5.0f); // Smooth transition down
+                float t = phase / dutyCycle; // Normalized phase within the high region
+                if (shape < 0.5f) {
+                    // Interpolate between sharp and rounded
+                    float mix = shape * 2.0f; // Normalize shape to [0, 1]
+                    float sharp = 1.0f; // Pure sharp edge
+                    float rounded = std::tanh(5.0f * (1.0f - t)); // Smooth transition down
+                    value = sharp * (1.0f - mix) + rounded * mix;
                 } else {
-                    // Circular pulse (sinusoidal edge)
-                    float normalizedPhase = phase / dutyCycle; // Normalize phase to [0, 1]
-                    value = std::sin(normalizedPhase * M_PI_2); // Circular transition down
+                    // Interpolate between rounded and circular
+                    float mix = (shape - 0.5f) * 2.0f; // Normalize shape to [0, 1]
+                    float rounded = std::tanh(5.0f * (1.0f - t)); // Smooth transition down
+                    float circular = std::sin(t * M_PI_2); // Circular transition down
+                    value = rounded * (1.0f - mix) + circular * mix;
                 }
             } else {
                 // Low part of the pulse
-                if (shape < 0.33f) {
-                    // Square wave (sharp edges)
-                    value = -1.0f;
-                } else if (shape < 0.66f) {
-                    // Rounded pulse (smooth transition to high)
-                    float transition = (phase - dutyCycle) / (0.33f * (1.0f - dutyCycle));
-                    value = -1.0f + std::exp(-transition * 5.0f); // Smooth transition up
+                float t = (phase - dutyCycle) / (1.0f - dutyCycle); // Normalized phase within the low region
+                if (shape < 0.5f) {
+                    // Interpolate between sharp and rounded
+                    float mix = shape * 2.0f; // Normalize shape to [0, 1]
+                    float sharp = -1.0f; // Pure sharp edge
+                    float rounded = -std::tanh(5.0f * t); // Smooth transition up
+                    value = sharp * (1.0f - mix) + rounded * mix;
                 } else {
-                    // Circular pulse (sinusoidal edge)
-                    float normalizedPhase = (phase - dutyCycle) / (1.0f - dutyCycle); // Normalize phase to [0, 1]
-                    value = -std::sin(normalizedPhase * M_PI_2); // Circular transition up
+                    // Interpolate between rounded and circular
+                    float mix = (shape - 0.5f) * 2.0f; // Normalize shape to [0, 1]
+                    float rounded = -std::tanh(5.0f * t); // Smooth transition up
+                    float circular = -std::sin(t * M_PI_2); // Circular transition up
+                    value = rounded * (1.0f - mix) + circular * mix;
                 }
             }
 
