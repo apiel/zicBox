@@ -99,13 +99,17 @@ public:
         }
     });
     /*md - `SHAPE` Morhp over the waveform shape.*/
-    Val& shape = val(0.0f, "SHAPE", { "Shape" }, [&](auto p) {
+    Val& shape = val(0.0f, "SHAPE", { "Shape", .max = 1000 }, [&](auto p) {
         if (waveformType.get() != 0.0f) {
+            int direction = p.value - p.val.get();
+            int value = p.val.get() + direction * 10;
+            // printf("val: %f, direction: %d, value: %d\n", p.value, direction, value);
             p.val.setFloat(p.value);
             waveform.setShape(p.val.pct());
-            p.val.setString(std::to_string((int)p.val.get()) + "%");
+            p.val.setString(std::to_string((int)(p.val.get() * 0.1)) + "%");
         } else {
-            p.val.setFloat((int)p.value);
+            int value = range(p.value, 0.0f, wavetable.fileBrowser.count);
+            p.val.setFloat(value);
 
             int position = p.val.get();
             wavetable.open(position, false);
