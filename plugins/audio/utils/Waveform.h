@@ -33,6 +33,7 @@
 // Stairs ?
 
 #include "plugins/audio/lookupTable.h"
+#include "plugins/audio/utils/utils.h"
 
 #include <cstdint>
 
@@ -76,16 +77,10 @@ public:
         }
 
         // return lut[(uint16_t)(*index * LOOKUP_TABLE_SIZE)];
-
-        // Linear Interpolation to get smoother transitions between discrete LUT values
-        float lutIndex = *index * LOOKUP_TABLE_SIZE;
-        uint16_t index1 = (uint16_t)lutIndex;
-        uint16_t index2 = (index1 + 1) % LOOKUP_TABLE_SIZE;
-        float fractional = lutIndex - index1;
-
-        // Linear interpolation
-        return lut[index1] * (1.0f - fractional) + lut[index2] * fractional;
+        return linerInterpolation(*index, LOOKUP_TABLE_SIZE, lut);
     }
+
+
 };
 
 #endif
