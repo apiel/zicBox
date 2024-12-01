@@ -13,7 +13,6 @@ protected:
     SF_INFO sfinfo;
     SNDFILE* file = NULL;
 
-    uint64_t sampleCount = 2048; // should this be configurable?
     static const uint64_t bufferSize = ZIC_WAVETABLE_WAVEFORMS_COUNT * 2048;
     uint64_t bufferSampleCount = 0;
     uint64_t maxSampleStart = -1;
@@ -22,6 +21,7 @@ protected:
     uint64_t sampleStart = 0;
 
 public:
+    uint64_t sampleCount = 2048; // should this be configurable?
     float sampleIndex = 0.0f;
     FileBrowser fileBrowser = FileBrowser("./wavetables");
 
@@ -29,6 +29,10 @@ public:
     {
         memset(&sfinfo, 0, sizeof(sfinfo));
         open(0, true);
+    }
+
+    float* samples() {
+        return bufferSamples + sampleStart;
     }
 
     float sample(float* index, float freq)

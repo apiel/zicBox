@@ -3,8 +3,8 @@
 
 #include <sstream>
 
-#include "./utils/Wavetable.h"
 #include "./utils/Waveform.h"
+#include "./utils/Wavetable.h"
 #include "audioPlugin.h"
 #include "filter.h"
 #include "mapping.h"
@@ -246,6 +246,12 @@ public:
         }
         case 7: // update freq modulation value for current step
             return envelopFreq.updatePhaseModulation((int8_t*)userdata);
+        case 8: { // pointer to waveform
+            return wavetable.samples();
+        }
+        case 9: { // size of the waveform
+            return &wavetable.sampleCount;
+        }
         }
         return NULL;
     }
