@@ -177,7 +177,4 @@ $track=1
       TRACK: $track
       VALUE: MMFilter RESONANCE
 
-
-# ADD Sample on top of the output... but could use audio input (like SynthKick23) instead to make it part of SynthDrum23
-
-# Show add waveform ?
+###### show distortion
