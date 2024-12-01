@@ -66,21 +66,31 @@ protected:
         return range(out, -1.0f, 1.0f);
     }
 
-    // std::vector<std::string> waveformTypes = { "Waveform", "Sine", "Triangle", "Square", "Sawtooth" };
-
 #define DRUM23_WAVEFORMS_COUNT 5
-    const char *waveformTypes[DRUM23_WAVEFORMS_COUNT] = { "Wavetable", "Sine", "Triangle", "Square", "Sawtooth" };
+    struct WaveformType {
+        std::string name;
+        WaveformInterface* wave;
+        uint8_t indexType = 0;
+    } waveformTypes[DRUM23_WAVEFORMS_COUNT] = {
+        { "Wavetable", &wavetable },
+        { "Sine", &waveform, Waveform::Type::Sine },
+        { "Triangle", &waveform, Waveform::Type::Triangle },
+        { "Square", &waveform, Waveform::Type::Square },
+        { "Sawtooth", &waveform, Waveform::Type::Triangle },
+    };
+
+    // const char *waveformTypes[DRUM23_WAVEFORMS_COUNT] = { "Wavetable", "Sine", "Triangle", "Square", "Sawtooth" };
 
 public:
     /*md **Values**: */
     /*md - `WAVEFORM_TYPE` Select waveform type (wavetable, sine, triangle...).*/
     Val& waveformType = val(0.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = DRUM23_WAVEFORMS_COUNT - 1 }, [&](auto p) {
         p.val.setFloat(p.value);
-        p.val.setString(waveformTypes[(int)p.val.get()]);
-        if (p.val.get() == 0.0f) {
-            wave = &wavetable;
-        } else if (p.val.get() == 1.0f) {
-            wave = &waveform;
+        WaveformType type = waveformTypes[(int)p.val.get()];
+        p.val.setString(type.name);
+        wave = type.wave;
+        if (p.val.get() != 0.0f) {
+            waveform.setWaveformType((Waveform::Type)type.indexType);
         }
     });
     /*md - `BROWSER` Select wavetable.*/
