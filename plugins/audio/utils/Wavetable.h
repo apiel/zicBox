@@ -22,11 +22,11 @@ protected:
     uint64_t sampleStart = 0;
 
 public:
-    uint64_t sampleCount = 2048; // should this be configurable?
     float sampleIndex = 0.0f;
     FileBrowser fileBrowser = FileBrowser("./wavetables");
 
     Wavetable()
+    : WaveformInterface(2048)
     {
         memset(&sfinfo, 0, sizeof(sfinfo));
         open(0, true);

@@ -5,7 +5,13 @@
 
 class WaveformInterface {
 public:
-    uint64_t sampleCount = 2048;
+    uint64_t sampleCount;
+
+    WaveformInterface(uint64_t sampleCount)
+        : sampleCount(sampleCount)
+    {
+    }
+
     virtual float sample(float* index, float freq) = 0;
     virtual float* samples() = 0;
 };
