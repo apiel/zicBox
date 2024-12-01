@@ -27,23 +27,21 @@ protected:
     ToggleColor outlineColor;
     ToggleColor textColor;
 
+    int encoderType = -1;
+    int encoderShape = -1;
+    int encoderMacro = -1;
+
+    ValueInterface* valueType = NULL;
+
     float* waveform = NULL;
     uint16_t* waveformSize = NULL;
-
-    std::vector<Point> points;
-    void preComputePoints()
-    {
-        points.clear();
-        float halfHeight = size.h * 0.5;
-        for (int i = 0; i < *waveformSize; i++) {
-            points.push_back({ (int)(size.w * i / (*waveformSize - 1)), (int)(waveform[i] * halfHeight + halfHeight) });
-        }
-    }
 
     void renderWaveform()
     {
         std::vector<Point> relativePoints;
-        for (auto& point : points) {
+        float halfHeight = size.h * 0.5;
+        for (int i = 0; i < *waveformSize; i++) {
+            Point point = { (int)(size.w * i / (*waveformSize - 1)), (int)(waveform[i] * halfHeight + halfHeight) };
             relativePoints.push_back({ point.x + relativePosition.x, point.y + relativePosition.y });
         }
         if (filled) {
@@ -70,7 +68,22 @@ public:
         if (updatePosition()) {
             draw.filledRect(relativePosition, size, { bgColor });
             if (waveform && waveformSize) {
+                printf("render waveform\n");
                 renderWaveform();
+            }
+        }
+    }
+
+    void onEncoder(int id, int8_t direction) override
+    {
+        if (isActive) {
+            if (id == encoderType) {
+                valueType->increment(direction);
+                renderNext();
+            } else if (id == encoderShape) {
+                renderNext();
+            } else if (id == encoderMacro) {
+                renderNext();
             }
         }
     }
@@ -81,22 +94,40 @@ public:
         /*md - `PLUGIN: plugin_name` set plugin target */
         if (strcmp(key, "PLUGIN") == 0) {
             plugin = &getPlugin(value, track);
+            valueType = watch(plugin->getValue("WAVEFORM_TYPE"));
             return true;
         }
 
         /*md - `WAVEFORM_DATA_ID: waveform_id size_id` is the data id to get the shape of the waveform to draw.*/
         if (strcmp(key, "WAVEFORM_DATA_ID") == 0) {
             uint8_t waveformId = atoi(strtok(value, " "));
-            char * sizeIdStr = strtok(NULL, " ");
+            char* sizeIdStr = strtok(NULL, " ");
             uint8_t sizeId = sizeIdStr ? atoi(sizeIdStr) : waveformId + 1;
             waveform = (float*)plugin->data(waveformId);
             waveformSize = (uint16_t*)plugin->data(sizeId);
-            preComputePoints();
             return true;
         }
 
         /*md - `SIZE_DATA_ID: id` is the data id to get the size of the waveform to draw.*/
         if (strcmp(key, "SIZE_DATA_ID") == 0) {
+            return true;
+        }
+
+        /*md - `ENCODER_TYPE: id` is the id of the encoder to select the type of the waveform. */
+        if (strcmp(key, "ENCODER_TYPE") == 0) {
+            encoderType = atoi(value);
+            return true;
+        }
+
+        /*md - `ENCODER_SHAPE: id` is the id of the encoder to morph the shape of the waveform. */
+        if (strcmp(key, "ENCODER_SHAPE") == 0) {
+            encoderShape = atoi(value);
+            return true;
+        }
+
+        /*md - `ENCODER_MACRO: id` is the id of the encoder to set the macro value of the waveform. Macro is arbitrary parameter depending of selected waveform type. */
+        if (strcmp(key, "ENCODER_MACRO") == 0) {
+            encoderMacro = atoi(value);
             return true;
         }
 
