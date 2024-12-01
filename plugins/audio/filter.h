@@ -15,11 +15,6 @@ protected:
         if (isnan(s)) {
             return 0.0;
         }
-        // if (s < -1.0f) {
-        //     return -1.0f;
-        // } else if (s > 1.0f) {
-        //     return 1.0f;
-        // }
         return s;
     }
 
@@ -56,13 +51,10 @@ public:
 
     void setSampleData(float inputValue)
     {
-        // inputValue = fix(inputValue);
         hp = fix(inputValue - buf);
         bp = fix(buf - lp);
         buf = fix(buf + cutoff * (hp + feedback * bp));
         lp = fix(lp + cutoff * (buf - lp));
-
-        // printf("inputValue = %f buf = %f hp = %f bp = %f lp = %f\n", inputValue, buf, hp, bp, lp);
     }
 };
 
