@@ -45,7 +45,9 @@ public:
         Sine,
         Triangle,
         Square,
-        Pulse
+        Pulse,
+        Fm,
+        FmSquare,
     };
 
 protected:
@@ -188,6 +190,84 @@ protected:
         }
     }
 
+    void loadFmSquareType()
+    {
+        // FM parameters
+        float carrierFreq = 1.0f; // Base frequency for the carrier
+        float modulatorFreq = carrierFreq * (1.0f + macro); // Modulator frequency adjusted by macro
+
+        // FM modulation depth: higher shape means more modulation
+        float modulationIndex = shape * 10.0f; // Controls modulation depth
+
+        for (uint16_t i = 0; i < sampleCount; i++) {
+            float phase = i / (float)sampleCount; // Normalized phase [0, 1)
+
+            // Carrier sine wave (basic tone)
+            float carrier = std::sin(phase * 2.0f * M_PI * carrierFreq);
+
+            // Modulator sine wave (modulating signal)
+            float modulator = std::sin(phase * 2.0f * M_PI * modulatorFreq);
+
+            // Apply FM modulation: the modulator modulates the carrier based on modulation depth
+            float modulatedWave = carrier + modulationIndex * modulator;
+
+            // Normalize to [0, 1]
+            modulatedWave = 0.5f * (modulatedWave + 1.0f); // Shift from [-1, 1] to [0, 1]
+
+            // Store the result in the lookup table
+            lut[i] = range(modulatedWave, -1.0f, 1.0f); // Ensure value is within bounds
+        }
+    }
+
+    void loadFmType()
+    {
+        // FM parameters
+        float carrierFreq = 1.0f; // Base frequency for the carrier
+        float modulatorFreq = carrierFreq * (1.0f + macro); // Modulator frequency adjusted by macro
+
+        // FM modulation depth: higher shape means more modulation
+        float modulationIndex = shape * 10.0f; // Controls modulation depth
+
+        float maxAmplitude = 0.0f; // Variable to track the max amplitude during FM computation
+
+        // First pass to compute the maximum amplitude
+        for (uint16_t i = 0; i < sampleCount; i++) {
+            float phase = i / (float)sampleCount; // Normalized phase [0, 1)
+
+            // Carrier sine wave (basic tone)
+            float carrier = std::sin(phase * 2.0f * M_PI * carrierFreq);
+
+            // Modulator sine wave (modulating signal)
+            float modulator = std::sin(phase * 2.0f * M_PI * modulatorFreq);
+
+            // Apply FM modulation: the modulator modulates the carrier based on modulation depth
+            float modulatedWave = carrier + modulationIndex * modulator;
+
+            // Track the maximum absolute amplitude value for normalization
+            maxAmplitude = std::max(maxAmplitude, std::abs(modulatedWave));
+        }
+
+        // Second pass to apply the modulation and normalization
+        for (uint16_t i = 0; i < sampleCount; i++) {
+            float phase = i / (float)sampleCount; // Normalized phase [0, 1)
+
+            // Carrier sine wave (basic tone)
+            float carrier = std::sin(phase * 2.0f * M_PI * carrierFreq);
+
+            // Modulator sine wave (modulating signal)
+            float modulator = std::sin(phase * 2.0f * M_PI * modulatorFreq);
+
+            // Apply FM modulation: the modulator modulates the carrier based on modulation depth
+            float modulatedWave = carrier + modulationIndex * modulator;
+
+            // Normalize the waveform to fit within the [0, 1] range
+            modulatedWave /= maxAmplitude; // Normalize by the maximum amplitude from the first pass
+
+            // Soft clip if necessary to avoid extreme clipping (optional)
+            lut[i] = range(modulatedWave, -1.0f, 1.0f);
+        }
+    }
+
 public:
     Waveform(LookupTable* sharedLut, uint64_t sampleRate)
         : WaveformInterface(LOOKUP_TABLE_SIZE)
@@ -250,6 +330,22 @@ public:
                 macro = 0.5f; // centered
             }
             loadPulseType();
+            break;
+        }
+        case Type::Fm: {
+            if (reset) {
+                shape = 0.25f;
+                macro = 1.0f;
+            }
+            loadFmType();
+            break;
+        }
+        case Type::FmSquare: {
+            if (reset) {
+                shape = 0.50f;
+                macro = 0.75f;
+            }
+            loadFmSquareType();
             break;
         }
         }
