@@ -117,7 +117,7 @@ public:
             plugin = &getPlugin(value, track);
             valueType = watch(plugin->getValue("WAVEFORM_TYPE"));
             valueShape = watch(plugin->getValue("SHAPE"));
-            // valueMacro = watch(plugin->getValue("MACRO"));
+            valueMacro = watch(plugin->getValue("MACRO"));
             return true;
         }
 

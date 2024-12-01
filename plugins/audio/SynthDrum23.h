@@ -101,6 +101,15 @@ public:
         }
     });
 
+    /*md - `MACRO` Macro is arbitrary parameter depending of selected waveform type. */
+    Val& macro = val(0.0f, "MACRO", { "Macro" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        if (waveformType.get() != 0.0f) {
+            waveform.setMacro(p.val.pct());
+        } else {
+            // setMorph(p.val.get());
+        }
+    });
 
     /*md - `BROWSER` Select wavetable.*/
     Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)wavetable.fileBrowser.count }, [&](auto p) { open(p.value); });

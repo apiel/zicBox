@@ -51,7 +51,8 @@ public:
 protected:
     LookupTable* sharedLut;
     uint64_t sampleRate;
-    float shape = 0.9f;
+    float shape = 0.5f;
+    float macro = 0.5f;
 
     float lut[LOOKUP_TABLE_SIZE];
 
@@ -77,10 +78,53 @@ protected:
         }
     }
 
+    // void loadSquareType()
+    // {
+    //     for (uint16_t i = 0; i < sampleCount; i++) {
+    //         lut[i] = i < sampleCount / 2 ? 1.0f : -1.0f;
+    //     }
+    // }
+
     void loadSquareType()
     {
+        float pulse = range(macro, 0.1f, 0.9f);
         for (uint16_t i = 0; i < sampleCount; i++) {
-            lut[i] = i < sampleCount / 2 ? 1.0f : -1.0f;
+            float phase = i / (float)sampleCount; // Normalized phase [0, 1)
+            float dutyCycle = pulse; // Pulse width directly set by `pulse` parameter
+
+            float value;
+            if (phase < dutyCycle) {
+                // High part of the pulse
+                if (shape < 0.33f) {
+                    // Square wave (sharp edges)
+                    value = 1.0f;
+                } else if (shape < 0.66f) {
+                    // Rounded pulse (smooth transition to low)
+                    float transition = (dutyCycle - phase) / (0.33f * dutyCycle);
+                    value = 1.0f - std::exp(-transition * 5.0f); // Smooth transition down
+                } else {
+                    // Circular pulse (sinusoidal edge)
+                    float normalizedPhase = phase / dutyCycle; // Normalize phase to [0, 1]
+                    value = std::sin(normalizedPhase * M_PI_2); // Circular transition down
+                }
+            } else {
+                // Low part of the pulse
+                if (shape < 0.33f) {
+                    // Square wave (sharp edges)
+                    value = -1.0f;
+                } else if (shape < 0.66f) {
+                    // Rounded pulse (smooth transition to high)
+                    float transition = (phase - dutyCycle) / (0.33f * (1.0f - dutyCycle));
+                    value = -1.0f + std::exp(-transition * 5.0f); // Smooth transition up
+                } else {
+                    // Circular pulse (sinusoidal edge)
+                    float normalizedPhase = (phase - dutyCycle) / (1.0f - dutyCycle); // Normalize phase to [0, 1]
+                    value = -std::sin(normalizedPhase * M_PI_2); // Circular transition up
+                }
+            }
+
+            // Store the computed value in the lookup table
+            lut[i] = value;
         }
     }
 
@@ -146,6 +190,12 @@ public:
     void setShape(float value)
     {
         shape = range(value, 0.0f, 1.0f);
+        setWaveformType(selectedType);
+    }
+
+    void setMacro(float value)
+    {
+        macro = range(value, 0.0f, 1.0f);
         setWaveformType(selectedType);
     }
 };
