@@ -67,66 +67,27 @@ protected:
 
     void loadTriangleType()
     {
+        float pulse = range(macro, 0.05f, 1.0f);
         for (uint16_t i = 0; i < sampleCount; i++) {
-            float phase = i / (float)sampleCount;
+            float phase = i / (float)sampleCount; // Normalized phase [0, 1)
 
-            float y = phase < shape
-                ? (1.0f / shape) * phase
-                : (1.0f - (1.0f / (1.0f - shape)) * (phase - shape));
+            // Adjust phase to fit within the pulse width
+            if (phase < pulse) {
+                phase /= pulse; // Scale phase within the active pulse region
 
-            lut[i] = -(2.0f * y - 1.0f);
+                // Compute the waveform value based on the shape parameter
+                float y = phase < shape
+                    ? (1.0f / shape) * phase // Rising edge
+                    : (1.0f - (1.0f / (1.0f - shape)) * (phase - shape)); // Falling edge
+
+                // Scale and store in the lookup table
+                lut[i] = -(2.0f * y - 1.0f);
+            } else {
+                // Outside the pulse range, set to 0
+                lut[i] = 0.0f;
+            }
         }
     }
-
-    // void loadSquareType()
-    // {
-    //     for (uint16_t i = 0; i < sampleCount; i++) {
-    //         lut[i] = i < sampleCount / 2 ? 1.0f : -1.0f;
-    //     }
-    // }
-
-    // void loadSquareType()
-    // {
-    //     float pulse = range(macro, 0.1f, 0.9f);
-    //     for (uint16_t i = 0; i < sampleCount; i++) {
-    //         float phase = i / (float)sampleCount; // Normalized phase [0, 1)
-    //         float dutyCycle = pulse; // Pulse width directly set by `pulse` parameter
-
-    //         float value;
-    //         if (phase < dutyCycle) {
-    //             // High part of the pulse
-    //             if (shape < 0.33f) {
-    //                 // Square wave (sharp edges)
-    //                 value = 1.0f;
-    //             } else if (shape < 0.66f) {
-    //                 // Rounded pulse (smooth transition to low)
-    //                 float transition = (dutyCycle - phase) / (0.33f * dutyCycle);
-    //                 value = 1.0f - std::exp(-transition * 5.0f); // Smooth transition down
-    //             } else {
-    //                 // Circular pulse (sinusoidal edge)
-    //                 float normalizedPhase = phase / dutyCycle; // Normalize phase to [0, 1]
-    //                 value = std::sin(normalizedPhase * M_PI_2); // Circular transition down
-    //             }
-    //         } else {
-    //             // Low part of the pulse
-    //             if (shape < 0.33f) {
-    //                 // Square wave (sharp edges)
-    //                 value = -1.0f;
-    //             } else if (shape < 0.66f) {
-    //                 // Rounded pulse (smooth transition to high)
-    //                 float transition = (phase - dutyCycle) / (0.33f * (1.0f - dutyCycle));
-    //                 value = -1.0f + std::exp(-transition * 5.0f); // Smooth transition up
-    //             } else {
-    //                 // Circular pulse (sinusoidal edge)
-    //                 float normalizedPhase = (phase - dutyCycle) / (1.0f - dutyCycle); // Normalize phase to [0, 1]
-    //                 value = -std::sin(normalizedPhase * M_PI_2); // Circular transition up
-    //             }
-    //         }
-
-    //         // Store the computed value in the lookup table
-    //         lut[i] = value;
-    //     }
-    // }
 
     void loadSquareType()
     {
@@ -215,19 +176,30 @@ public:
         return lut;
     }
 
-    void setWaveformType(Type waveformType)
+    void setWaveformType(Type waveformType, bool reset = true)
     {
         selectedType = waveformType;
         switch (waveformType) {
-        case Type::Sine:
+        case Type::Sine: {
             loadSineType();
             break;
-        case Type::Triangle:
+        }
+        case Type::Triangle: {
+            if (reset) {
+                shape = 0.5f; // triangle
+                macro = 1.0f; // no pulse
+            }
             loadTriangleType();
             break;
-        case Type::Square:
+        }
+        case Type::Square: {
+            if (reset) {
+                shape = 0.0f; // square
+                macro = 0.5f; // centered
+            }
             loadSquareType();
             break;
+        }
         case Type::Flame:
             loadFlameType();
             break;
@@ -237,13 +209,13 @@ public:
     void setShape(float value)
     {
         shape = range(value, 0.0f, 1.0f);
-        setWaveformType(selectedType);
+        setWaveformType(selectedType, false);
     }
 
     void setMacro(float value)
     {
         macro = range(value, 0.0f, 1.0f);
-        setWaveformType(selectedType);
+        setWaveformType(selectedType, false);
     }
 };
 
