@@ -77,7 +77,11 @@ public:
     Val& waveformType = val(0.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = DRUM23_WAVEFORMS_COUNT - 1 }, [&](auto p) {
         p.val.setFloat(p.value);
         p.val.setString(waveformTypes[(int)p.val.get()]);
-        wave = p.val.get() == 0.0f ? (WaveformInterface*)&wavetable : &waveform;
+        if (p.val.get() == 0.0f) {
+            wave = &wavetable;
+        } else if (p.val.get() == 1.0f) {
+            wave = &waveform;
+        }
     });
     /*md - `BROWSER` Select wavetable.*/
     Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)wavetable.fileBrowser.count }, [&](auto p) { open(p.value); });
