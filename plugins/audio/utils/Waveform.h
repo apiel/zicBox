@@ -77,7 +77,7 @@ public:
         }
 
         // return lut[(uint16_t)(*index * LOOKUP_TABLE_SIZE)];
-        return linerInterpolation(*index, LOOKUP_TABLE_SIZE, lut);
+        return linearInterpolation(*index, LOOKUP_TABLE_SIZE, lut);
     }
 
 

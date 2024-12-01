@@ -31,13 +31,13 @@ public:
         open(0, true);
     }
 
-    float sample(float* index, float amp, float freq, float pitch)
+    float sample(float* index, float freq)
     {
-        (*index) += pitch * freq;
+        (*index) += freq;
         while ((*index) >= sampleCount) {
             (*index) -= sampleCount;
         }
-        return bufferSamples[(uint16_t)(*index) + sampleStart] * amp;
+        return bufferSamples[(uint16_t)(*index) + sampleStart];
     }
 
     void close()
