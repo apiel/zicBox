@@ -9,7 +9,7 @@
 
 #define ZIC_WAVETABLE_WAVEFORMS_COUNT 64
 
-class Wavetable: public WaveformInterface {
+class Wavetable : public WaveformInterface {
 protected:
     SF_INFO sfinfo;
     SNDFILE* file = NULL;
@@ -26,13 +26,14 @@ public:
     FileBrowser fileBrowser = FileBrowser("./wavetables");
 
     Wavetable()
-    : WaveformInterface(2048)
+        : WaveformInterface(2048)
     {
         memset(&sfinfo, 0, sizeof(sfinfo));
         open(0, true);
     }
 
-    float* samples() {
+    float* samples()
+    {
         return bufferSamples + sampleStart;
     }
 
@@ -78,6 +79,14 @@ public:
     void morph(float pct)
     {
         sampleStart = pct * bufferSampleCount;
+        if (sampleStart > maxSampleStart) {
+            sampleStart = maxSampleStart;
+        }
+    }
+
+    void morph(int index)
+    {
+        sampleStart = index * sampleCount;
         if (sampleStart > maxSampleStart) {
             sampleStart = maxSampleStart;
         }
