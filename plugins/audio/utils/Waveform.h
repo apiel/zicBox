@@ -62,8 +62,8 @@ public:
         : sharedLut(sharedLut)
         , sampleRate(sampleRate)
     {
-        // loadSineType();
-        loadTriangleType();
+        loadSineType();
+        // loadTriangleType();
     }
 
     float sample(float* index, float freq)
@@ -75,7 +75,16 @@ public:
             *index -= 1.0f;
         }
 
-        return lut[(uint16_t)(*index * LOOKUP_TABLE_SIZE)];
+        // return lut[(uint16_t)(*index * LOOKUP_TABLE_SIZE)];
+
+        // Linear Interpolation to get smoother transitions between discrete LUT values
+        float lutIndex = *index * LOOKUP_TABLE_SIZE;
+        uint16_t index1 = (uint16_t)lutIndex;
+        uint16_t index2 = (index1 + 1) % LOOKUP_TABLE_SIZE;
+        float fractional = lutIndex - index1;
+
+        // Linear interpolation
+        return lut[index1] * (1.0f - fractional) + lut[index2] * fractional;
     }
 };
 
