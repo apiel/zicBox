@@ -53,8 +53,6 @@ public:
 protected:
     LookupTable* sharedLut;
     uint64_t sampleRate;
-    float shape = 0.5f;
-    float macro = 0.5f;
 
     float lut[LOOKUP_TABLE_SIZE];
 
@@ -269,6 +267,9 @@ protected:
     }
 
 public:
+    float shape = 0.5f;
+    float macro = 0.5f;
+    
     Waveform(LookupTable* sharedLut, uint64_t sampleRate)
         : WaveformInterface(LOOKUP_TABLE_SIZE)
         , sharedLut(sharedLut)

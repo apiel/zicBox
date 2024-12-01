@@ -69,7 +69,7 @@ protected:
         int x = relativePosition.x + cellWidth * 0.5;
         draw.textCentered({ x, relativePosition.y }, valueType->string(), 8, { textColor.color });
         draw.textCentered({ x + cellWidth, relativePosition.y }, valueShape->string(), 8, { textColor.color });
-        draw.textCentered({ x + cellWidth * 2, relativePosition.y }, std::to_string((int)valueMacro->get()) + "%", 8, { textColor.color });
+        draw.textCentered({ x + cellWidth * 2, relativePosition.y }, valueMacro->string(), 8, { textColor.color });
     }
 
 public:
