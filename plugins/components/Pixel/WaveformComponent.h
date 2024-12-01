@@ -48,10 +48,12 @@ protected:
         if (waveform && waveformSize) {
             std::vector<Point> relativePoints;
             float halfHeight = waveformHeight * 0.5;
+            relativePoints.push_back({ relativePosition.x, (int)(waveformY + halfHeight) });
             for (int i = 0; i < *waveformSize; i++) {
                 Point point = { (int)(size.w * i / (*waveformSize - 1)), (int)(waveform[i] * halfHeight + halfHeight) };
                 relativePoints.push_back({ point.x + relativePosition.x, point.y + waveformY });
             }
+            relativePoints.push_back({ relativePosition.x + size.w, (int)(waveformY + halfHeight) });
             if (filled) {
                 draw.filledPolygon(relativePoints, { fillColor.color });
             }

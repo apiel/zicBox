@@ -64,29 +64,15 @@ protected:
         }
     }
 
-    // void loadTriangleType()
-    // {
-    //     for (uint16_t i = 0; i < sampleCount; i++) {
-    //         lut[i] = 4.0f * std::abs((i / (float)sampleCount) - 0.5f) - 1.0f;
-    //     }
-    // }
-
     void loadTriangleType()
     {
         for (uint16_t i = 0; i < sampleCount; i++) {
-            float phase = i / (float)sampleCount; // Normalized phase [0, 1)
+            float phase = i / (float)sampleCount;
 
-            float y; // Output waveform value
+            float y = phase < shape
+                ? (1.0f / shape) * phase
+                : (1.0f - (1.0f / (1.0f - shape)) * (phase - shape));
 
-            if (phase < shape) {
-                // Ramp up for the rising segment
-                y = (1.0f / shape) * phase;
-            } else {
-                // Ramp down for the falling segment
-                y = 1.0f - (1.0f / (1.0f - shape)) * (phase - shape);
-            }
-
-            // Scale y to range [-1, 1]
             lut[i] = -(2.0f * y - 1.0f);
         }
     }
@@ -106,7 +92,7 @@ protected:
             float square1 = phase < 0.5f ? 1.0f : -1.0f; // Square wave at base frequency
             float square2 = ((int)(phase * 2) % 2) == 0 ? 1.0f : -1.0f; // Square wave at double frequency
             float modulated = square2 * std::cos(phase * M_PI * 2); // Modulate square2 by cosine
-            lut[i] = square1 - modulated; // Combine waveforms
+            lut[i] = (square1 - modulated) * 0.5f; // Combine waveforms
         }
     }
 
