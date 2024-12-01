@@ -1,5 +1,9 @@
 ## Pixel TODO
 
+- TODO make a visual representation of the click
+
+- TODO kick distortion
+
 - TODO Volume/Gain, could we have a value over 100% like 150%??
 
 - TODO DrumSample track: is a very basic track that can play 1 shot sample (8, 12, 16?), first page select the sample (volume and mute?), second page grid sequencer with velocity, step probability (volume and mute?), third page global track effect, filter...
