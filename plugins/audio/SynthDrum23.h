@@ -39,7 +39,6 @@ protected:
     float velocity = 1.0f;
     float noteMult = 1.0f;
 
-    EffectFilterData filter;
     EffectFilterData clickFilter;
 
     EnvelopRelative envelopAmp = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.0f, 1.0f } }, 1);
@@ -71,7 +70,7 @@ protected:
         return out + out * clipping.pct() * 20;
     }
 
-    float sample(float time, float* index, float ampModulation, float freqModulation, float _noteMult, float _velocity, EffectFilterData& _filter, EffectFilterData& _clickFilter)
+    float sample(float time, float* index, float ampModulation, float freqModulation, float _noteMult, float _velocity, EffectFilterData& _clickFilter)
     {
         float amp = ampModulation * _velocity;
         float freq = freqModulation + pitchMult * _noteMult;
@@ -79,12 +78,6 @@ protected:
         float out = wave->sample(index, freq) * amp;
 
         out = addClicking(time, out, _clickFilter);
-
-        if (resEnv.get() > 0.0f) {
-            _filter.setCutoff(ampModulation * 0.85);
-            _filter.setSampleData(out);
-            out = _filter.lp;
-        }
 
         out = out + out * clipping.pct() * 20;
         return range(out, -1.0f, 1.0f);
@@ -166,9 +159,6 @@ public:
     /*md - `GAIN_CLIPPING` set the clipping level.*/
     Val& clipping = val(0.0, "GAIN_CLIPPING", { "Clipping", .unit = "%" }, [&](auto p) { setClipping(p.value); });
 
-    /*md - `RESONANCE_ENV` set resonance using amplitude envelope.*/
-    Val& resEnv = val(0.0f, "RESONANCE_ENV", { "Reso Env.", .unit = "%" }, [&](auto p) { setResonance(p.value); });
-
     /*md - `CLICK` set the click level.*/
     Val& click = val(0, "CLICK", { "Click" });
 
@@ -195,7 +185,6 @@ public:
         , sampleRate(props.sampleRate)
     {
         initValues();
-        filter.setResonance(0.95f);
 
         clickFilter.setResonance(0.85);
         clickFilter.setCutoff(0.10);
@@ -207,30 +196,13 @@ public:
             float time = (float)sampleDurationCounter / (float)sampleCountDuration;
             float envAmp = envelopAmp.next(time);
             float envFreq = envelopFreq.next(time);
-            buf[track] = sample(time, &wavetable.sampleIndex, envAmp, envFreq, noteMult, velocity, filter, clickFilter);
+            buf[track] = sample(time, &wavetable.sampleIndex, envAmp, envFreq, noteMult, velocity, clickFilter);
             sampleDurationCounter++;
             // printf("[%d] sample: %d of %d=%f\n", track, sampleDurationCounter, sampleCountDuration, buf[track]);
         }
 
         buf[track] = buf[track];
     }
-
-    // void open(float value)
-    // {
-    //     browser.setFloat(value);
-    //     int position = browser.get();
-    //     wavetable.open(position, false);
-    //     browser.setString(wavetable.fileBrowser.getFile(position));
-
-    //     sampleDurationCounter = -1; // set counter to the maximum
-    //     sampleDurationCounter = sampleCountDuration;
-    // }
-
-    void setResonance(float value)
-    {
-        resEnv.setFloat(value);
-        filter.setResonance(resEnv.pct());
-    };
 
     void setClipping(float value)
     {
