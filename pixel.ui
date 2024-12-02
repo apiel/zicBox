@@ -183,32 +183,32 @@ $track=1
      ENCODER_ID: 0
      COLOR: secondary
      TRACK: $track
-     VALUE: Distortion DRIVE
+     VALUE: Distortion LEVEL
 
     COMPONENT: Encoder3 $1/4W 300 $1/4W 50
       GROUP: 5
       ENCODER_ID: 1
       COLOR: secondary
       TRACK: $track
-      VALUE: Distortion DRIVE2
+      VALUE: Distortion DRIVE
 
     COMPONENT: Encoder3 $2/4W 300 $1/4W 50
       GROUP: 5
       ENCODER_ID: 2
       COLOR: secondary
       TRACK: $track
-      VALUE: Distortion GAIN_RATIO
+      VALUE: Distortion COMPRESS
 
     COMPONENT: Encoder3 $3/4W 300 $1/4W 50
       GROUP: 5
       ENCODER_ID: 3
       COLOR: secondary
       TRACK: $track
-      VALUE: Distortion DB
+      VALUE: Distortion BASS
 
-   COMPONENT: Encoder3 0 360 $1/4W 50
-     GROUP: 6
-     ENCODER_ID: 0
-     COLOR: secondary
-     TRACK: $track
-     VALUE: Distortion ENABLED
+  #  COMPONENT: Encoder3 0 360 $1/4W 50
+  #    GROUP: 6
+  #    ENCODER_ID: 0
+  #    COLOR: secondary
+  #    TRACK: $track
+  #    VALUE: Distortion ENABLED
