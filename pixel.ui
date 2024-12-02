@@ -183,7 +183,7 @@ $track=1
      ENCODER_ID: 0
      COLOR: secondary
      TRACK: $track
-     VALUE: Distortion LEVEL
+     VALUE: Distortion WAVESHAPE
 
     COMPONENT: Encoder3 $1/4W 300 $1/4W 50
       GROUP: 5
@@ -211,4 +211,4 @@ $track=1
      ENCODER_ID: 0
      COLOR: secondary
      TRACK: $track
-     VALUE: Distortion WAVESHAPE
+     VALUE: Distortion LEVEL
