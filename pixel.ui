@@ -206,9 +206,9 @@ $track=1
       TRACK: $track
       VALUE: Distortion BASS
 
-  #  COMPONENT: Encoder3 0 360 $1/4W 50
-  #    GROUP: 6
-  #    ENCODER_ID: 0
-  #    COLOR: secondary
-  #    TRACK: $track
-  #    VALUE: Distortion ENABLED
+   COMPONENT: Encoder3 0 360 $1/4W 50
+     GROUP: 6
+     ENCODER_ID: 0
+     COLOR: secondary
+     TRACK: $track
+     VALUE: Distortion WAVESHAPE
