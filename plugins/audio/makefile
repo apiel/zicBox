@@ -13,7 +13,7 @@ INC=-I../..
 all:
 	make EffectGainVolume EffectSampleRateReducer EffectFilter EffectDistortion EffectDelay\
 		EffectFilter EffectFilterMultiMode EffectFilterMultiMode2 EffectFilterMultiModeMoog\
-		EffectGrain EffectDistortion2 \
+		EffectGrain EffectDistortion2 EffectDistortion3 \
 		SynthKick23 SynthDrum23 SynthGranular SynthSample SynthBass SynthFM \
 		Sequencer Tempo\
 		Mixer2 Mixer4 Mixer6 Mixer8 Mixer12\

@@ -206,9 +206,37 @@ $track=1
       TRACK: $track
       VALUE: Distortion BASS
 
-   COMPONENT: Encoder3 0 360 $1/4W 50
+  #  COMPONENT: Encoder3 0 360 $1/4W 50
+  #    GROUP: 6
+  #    ENCODER_ID: 0
+  #    COLOR: secondary
+  #    TRACK: $track
+  #    VALUE: Distortion LEVEL
+
+  COMPONENT: Encoder3 0 360 $1/4W 50
      GROUP: 6
      ENCODER_ID: 0
      COLOR: secondary
      TRACK: $track
-     VALUE: Distortion LEVEL
+     VALUE: Distortion3 WAVESHAPE
+
+    COMPONENT: Encoder3 $1/4W 360 $1/4W 50
+      GROUP: 6
+      ENCODER_ID: 1
+      COLOR: secondary
+      TRACK: $track
+      VALUE: Distortion3 DRIVE
+
+    COMPONENT: Encoder3 $2/4W 360 $1/4W 50
+      GROUP: 6
+      ENCODER_ID: 2
+      COLOR: secondary
+      TRACK: $track
+      VALUE: Distortion3 COMPRESS
+
+    COMPONENT: Encoder3 $3/4W 360 $1/4W 50
+      GROUP: 6
+      ENCODER_ID: 3
+      COLOR: secondary
+      TRACK: $track
+      VALUE: Distortion3 BASS
