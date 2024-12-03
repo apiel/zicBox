@@ -18,6 +18,8 @@
 
 - FIXME thickness on rectangle
 
+- FIXME dustscript fix end loop, see sequencer view
+
 - TODO Encoder group: OnEncoder event should take group as param, so if we put an external encoder Interface, we can overwrite the current group? Should it really do this? Maybe it should be the view manager... maybe not :p might still be a good idea to pass it and use this to make the comparison.
 
 #### Pixel seq

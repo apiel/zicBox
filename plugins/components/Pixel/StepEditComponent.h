@@ -1,6 +1,7 @@
 #ifndef _UI_PIXEL_COMPONENT_STEP_EDIT_H_
 #define _UI_PIXEL_COMPONENT_STEP_EDIT_H_
 
+#include "helpers/midiNote.h"
 #include "plugins/audio/stepInterface.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
@@ -45,21 +46,23 @@ public:
 
     void render() override
     {
-        if (updatePosition()) {
+        if (updatePosition() && step) {
             draw.filledRect(relativePosition, size, { bgColor });
 
-            int x = draw.text({ relativePosition.x + 2, relativePosition.y }, "C", 16, { text.color });
-            draw.text({ x - 2, relativePosition.y + 6 }, "4#", 8, { text.color });
+            const char* note = MIDI_NOTES_STR[step->note];
+            const char noteLetter[2] = { note[0], '\0' };
+            const char* noteSuffix = note + 1;
+            int x = draw.text({ relativePosition.x + 2, relativePosition.y }, noteLetter, 16, { text.color });
+            draw.text({ x - 2, relativePosition.y + 6 }, noteSuffix, 8, { text.color });
 
             float centerX = relativePosition.x + size.w * 0.5;
 
-            float velocity = 0.5;
             int barWidth = size.w * 0.40;
             int barX = (int)(centerX - barWidth * 0.5);
             draw.filledRect({ barX, relativePosition.y },
                 { barWidth, 3 }, { barBackground.color });
             draw.filledRect({ barX, relativePosition.y },
-                { (int)(barWidth * velocity), 3 }, { bar.color });
+                { (int)(barWidth * step->velocity), 3 }, { bar.color });
 
             draw.textRight({ relativePosition.x + size.w - 4, relativePosition.y + 6 }, "1/32", 8, { text2.color });
         }
