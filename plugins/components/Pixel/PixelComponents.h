@@ -8,6 +8,7 @@
 #include "./Encoder3Component.h"
 #include "./GraphComponent.h"
 #include "./SeparatorComponent.h"
+#include "./StepEditComponent.h"
 
 void loadPixelComponents()
 {
@@ -30,6 +31,10 @@ void loadPixelComponents()
 
     viewManager.plugins.push_back({ "Separator", [](ComponentInterface::Props props) {
         return new SeparatorComponent(props);
+    } });
+
+    viewManager.plugins.push_back({ "StepEdit", [](ComponentInterface::Props props) {
+        return new StepEditComponent(props);
     } });
 }
 
