@@ -1,5 +1,5 @@
-#ifndef _UI_PIXEL_COMPONENT_DRUM_CLICK_H_
-#define _UI_PIXEL_COMPONENT_DRUM_CLICK_H_
+#ifndef _UI_PIXEL_COMPONENT_GRAPH_H_
+#define _UI_PIXEL_COMPONENT_GRAPH_H_
 
 #include "../../../helpers/range.h"
 #include "../component.h"

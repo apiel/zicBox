@@ -7,6 +7,7 @@
 #include "./DrumEnvelopComponent.h"
 #include "./Encoder3Component.h"
 #include "./GraphComponent.h"
+#include "./SeparatorComponent.h"
 
 void loadPixelComponents()
 {
@@ -25,6 +26,10 @@ void loadPixelComponents()
 
     viewManager.plugins.push_back({ "Graph", [](ComponentInterface::Props props) {
         return new GraphComponent(props);
+    } });
+
+    viewManager.plugins.push_back({ "Separator", [](ComponentInterface::Props props) {
+        return new SeparatorComponent(props);
     } });
 }
 

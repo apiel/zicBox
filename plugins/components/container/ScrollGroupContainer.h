@@ -14,12 +14,15 @@ protected:
 
     bool center = true;
 
+    int scrollOffset;
+
 public:
     ScrollGroupContainer(ViewInterface* view, std::string name, Point position, Size size)
         : ComponentContainer(view, name, position, size)
         , bgColor(view->draw.styles.colors.background)
         , originPosition(position)
     {
+        scrollOffset = size.h * 0.7;
     }
 
     void initContainer() override
@@ -48,7 +51,7 @@ public:
                 }
             }
             // printf("[%d] minY: %d maxY: %d size.h: %d (%d) pos.y: %d\n", i, minY, maxY, size.h, (int)(size.h * 0.5), originPosition.y);
-            if (maxY > size.h * 0.6) {
+            if (maxY > scrollOffset) {
                 if (center) {
                     yPositionPerGroup.push_back(yPositionPerGroup.back() - (maxY - minY));
                 } else {
@@ -105,6 +108,11 @@ public:
 
         if (strcmp(key, "CENTER") == 0) {
             center = strcmp(value, "true") == 0;
+            return true;
+        }
+
+        if (strcmp(key, "SCROLL_OFFSET") == 0) {
+            scrollOffset = atoi(value);
             return true;
         }
 
