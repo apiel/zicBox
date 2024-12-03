@@ -80,7 +80,7 @@ $group=$group+1
 $y=$y+$rowHeight
 
     COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
-      TITLE: Drum
+      TITLE: Drum \($track)
       GROUP: $group
 
 $y=$y+$sepHeight
@@ -281,8 +281,11 @@ VIEW: Sequencer
     KEYMAP: Keyboard 9 item 8
     KEYMAP: Keyboard 10 item 9
 
+  COMPONENT: Separator 0 0 $SCREEN_WIDTH 8
+    TITLE: Drum \($track)
+
 $rowHeight=25
-$y=-($rowHeight)
+$y=-($rowHeight) + 12
 $group=-1
 $step=0
 
