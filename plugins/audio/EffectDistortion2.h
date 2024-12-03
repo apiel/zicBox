@@ -16,7 +16,7 @@ EffectDistortion2 plugin is used to apply distortion effect on audio buffer.
 
 class EffectDistortion2 : public Mapping {
 public:
-    Val& level = val(50.0, "LEVEL", { "FX Level", .min = 0.0, .max = 100.0, .step = 1.0, .unit = "%" });
+    Val& level = val(50.0, "LEVEL", { "Dist. Level", .min = 0.0, .max = 100.0, .step = 1.0, .unit = "%" });
     Val& drive = val(50.0, "DRIVE", { "Drive", .min = 0.0, .max = 100.0, .step = 1.0, .unit = "%" });
     Val& compress = val(50.0, "COMPRESS", { "Compression", .min = 0.0, .max = 100.0, .step = 1.0, .unit = "%" });
     Val& bass = val(50.0, "BASS", { "Bass Boost", .min = 0.0, .max = 100.0, .step = 1.0, .unit = "%" });
