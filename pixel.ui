@@ -147,6 +147,31 @@ $y=$y+$sepHeight
       TRACK: $track
       VALUE: Distortion BASS
 
+#   Waveform
+$group=$group+1
+$y=$y+$rowHeight
+
+    COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
+      TITLE: Waveform
+      GROUP: $group
+
+$y=$y+$sepHeight
+    COMPONENT: Graph 0 $y ($3/4W-2) 50
+      GROUP: $group
+      TRACK: $track
+      PLUGIN: SynthDrum23
+      DATA_ID: 8
+      ENCODER: 0 WAVEFORM_TYPE
+      ENCODER: 1 SHAPE
+      ENCODER: 2 MACRO
+
+    # COMPONENT: Encoder3 $3/4W $y $1/4W 50
+    #   GROUP: $group
+    #   ENCODER_ID: 3
+    #   COLOR: quaternary
+    #   TRACK: $track
+    #   VALUE: SynthDrum23 MACRO
+
 #   Amp envelope
 $group=$group+1
 $y=$y+$rowHeight
@@ -198,31 +223,6 @@ $y=$y+$sepHeight
       COLOR: secondary
       TRACK: $track
       VALUE: SynthDrum23 PITCH
-
-#   Waveform
-$group=$group+1
-$y=$y+$rowHeight
-
-    COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
-      TITLE: Waveform
-      GROUP: $group
-
-$y=$y+$sepHeight
-    COMPONENT: Graph 0 $y ($3/4W-2) 50
-      GROUP: $group
-      TRACK: $track
-      PLUGIN: SynthDrum23
-      DATA_ID: 8
-      ENCODER: 0 WAVEFORM_TYPE
-      ENCODER: 1 SHAPE
-      ENCODER: 2 MACRO
-
-    COMPONENT: Encoder3 $3/4W $y $1/4W 50
-      GROUP: $group
-      ENCODER_ID: 3
-      COLOR: secondary
-      TRACK: $track
-      VALUE: SynthDrum23 MACRO
 
 #   Click
 $group=$group+1
