@@ -25,6 +25,7 @@ class GraphComponent : public GroupColorComponent {
     struct EncoderParam {
         int id = -1;
         ValueInterface* value = NULL;
+        bool toString = false;
     };
     std::vector<EncoderParam> encoders;
 
@@ -60,12 +61,18 @@ class GraphComponent : public GroupColorComponent {
     {
         int cellWidth = size.w / encoders.size();
         int x = relativePosition.x + cellWidth * 0.5;
-        // draw.textCentered({ x, relativePosition.y }, valueType->string(), 8, { textColor.color });
-        // draw.textCentered({ x + cellWidth, relativePosition.y }, valueShape->string(), 8, { textColor.color });
-        // draw.textCentered({ x + cellWidth * 2, relativePosition.y }, valueMacro->string(), 8, { textColor.color });
-
         for (int i = 0; i < encoders.size(); i++) {
-            encoders[i].value && draw.textCentered({ x + cellWidth * i, relativePosition.y }, encoders[i].value->string(), 8, { textColor.color });
+            ValueInterface* value = encoders[i].value;
+            if (value) {
+                if (value->props().type == VALUE_STRING || encoders[i].toString) {
+                    draw.textCentered({ x + cellWidth * i, relativePosition.y }, value->string(), 8, { textColor.color });
+                } else if (value->props().unit != NULL) {
+                    // could be great make unit in a different color
+                    draw.textCentered({ x + cellWidth * i, relativePosition.y }, std::to_string(value->get()) + value->props().unit, 8, { textColor.color });
+                } else {
+                    draw.textCentered({ x + cellWidth * i, relativePosition.y }, std::to_string(value->get()), 8, { textColor.color });
+                }
+            }
         }
     }
 
@@ -94,16 +101,6 @@ public:
     void onEncoder(int id, int8_t direction) override
     {
         if (isActive) {
-            // if (id == encoderType) {
-            //     valueType->increment(direction);
-            //     renderNext();
-            // } else if (id == encoderShape) {
-            //     valueShape->increment(direction);
-            //     renderNext();
-            // } else if (id == encoderMacro) {
-            //     valueMacro->increment(direction);
-            //     renderNext();
-            // }
             for (auto& encoder : encoders) {
                 if (encoder.id == id) {
                     encoder.value->increment(direction);
@@ -120,9 +117,6 @@ public:
         /*md - `PLUGIN: plugin_name` set plugin target */
         if (strcmp(key, "PLUGIN") == 0) {
             plugin = &getPlugin(value, track);
-            // valueType = watch(plugin->getValue("WAVEFORM_TYPE"));
-            // valueShape = watch(plugin->getValue("SHAPE"));
-            // valueMacro = watch(plugin->getValue("MACRO"));
             return true;
         }
 
@@ -139,11 +133,14 @@ public:
             return true;
         }
 
-        /*md - `ENCODER: encoder_id value` is the id of the encoder to update given value, e.g. `ENCODER: 0 LEVEL`. */
+        /*md - `ENCODER: encoder_id value [string]` is the id of the encoder to update given value, e.g. `ENCODER: 0 LEVEL`. Set `string` to force using string rendering. */
         if (strcmp(key, "ENCODER") == 0) {
             uint8_t encoderId = atoi(strtok(value, " "));
             char* encoderValue = strtok(NULL, " ");
-            encoders.push_back({ encoderId, watch(plugin->getValue(encoderValue)) });
+            char* toString = strtok(NULL, " ");
+            encoders.push_back({ encoderId,
+                watch(plugin->getValue(encoderValue)),
+                toString != NULL && strcmp(toString, "string") == 0 });
             return true;
         }
 
