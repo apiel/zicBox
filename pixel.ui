@@ -104,7 +104,7 @@ $track=1
       GROUP: 2
       TRACK: $track
       PLUGIN: SynthDrum23
-      WAVEFORM_DATA_ID: 8
+      DATA_ID: 8
       ENCODER: 0 WAVEFORM_TYPE
       ENCODER: 1 SHAPE
       ENCODER: 2 MACRO
