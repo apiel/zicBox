@@ -72,6 +72,81 @@ $rowHeight=55
 $y=-($rowHeight)
 $group=-1
 
+
+#   Drum
+$group=$group+1
+$y=$y+$rowHeight
+
+    COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
+      TITLE: Drum
+      GROUP: $group
+
+$y=$y+$sepHeight
+    COMPONENT: Encoder3 $2/4W $y $1/4W 50
+      GROUP: $group
+      ENCODER_ID: 0
+      COLOR: secondary
+      TRACK: $track
+      VALUE: MMFilter CUTOFF
+
+    COMPONENT: Encoder3 $3/4W $y $1/4W 50
+      GROUP: $group
+      ENCODER_ID: 1
+      COLOR: secondary
+      TRACK: $track
+      VALUE: MMFilter RESONANCE
+
+    COMPONENT: Encoder3 $1/4W $y $1/4W 50
+      GROUP: $group
+      ENCODER_ID: 2
+      COLOR: secondary
+      TRACK: $track
+      VALUE: SynthDrum23 GAIN_CLIPPING
+
+   COMPONENT: Encoder3 $3/4W $y $1/4W 50
+      GROUP: $group
+      ENCODER_ID: 3
+      COLOR: secondary
+      TRACK: $track
+      VALUE: Distortion LEVEL
+
+#   Distortion
+$group=$group+1
+$y=$y+$rowHeight
+
+    COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
+      TITLE: Distortion
+      GROUP: $group
+
+$y=$y+$sepHeight
+    COMPONENT: Encoder3 0 $y $1/4W 50
+      GROUP: $group
+      ENCODER_ID: 0
+      COLOR: secondary
+      TRACK: $track
+      VALUE: Distortion WAVESHAPE
+
+    COMPONENT: Encoder3 $1/4W $y $1/4W 50
+      GROUP: $group
+      ENCODER_ID: 1
+      COLOR: secondary
+      TRACK: $track
+      VALUE: Distortion DRIVE
+
+    COMPONENT: Encoder3 $2/4W $y $1/4W 50
+      GROUP: $group
+      ENCODER_ID: 2
+      COLOR: secondary
+      TRACK: $track
+      VALUE: Distortion COMPRESS
+
+    COMPONENT: Encoder3 $3/4W $y $1/4W 50
+      GROUP: $group
+      ENCODER_ID: 3
+      COLOR: secondary
+      TRACK: $track
+      VALUE: Distortion BASS
+
 #   Amp envelope
 $group=$group+1
 $y=$y+$rowHeight
@@ -187,80 +262,3 @@ $y=$y+$sepHeight
       COLOR: secondary
       TRACK: $track
       VALUE: SynthDrum23 CLICK_RESONANCE
-
-#   Drum
-$group=$group+1
-$y=$y+$rowHeight
-
-    COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
-      TITLE: Drum
-      GROUP: $group
-
-$y=$y+$sepHeight
-    COMPONENT: Encoder3 $1/4W $y $1/4W 50
-      GROUP: $group
-      ENCODER_ID: 1
-      COLOR: secondary
-      TRACK: $track
-      VALUE: SynthDrum23 GAIN_CLIPPING
-
-
-    COMPONENT: Encoder3 $2/4W $y $1/4W 50
-      GROUP: $group
-      ENCODER_ID: 2
-      COLOR: secondary
-      TRACK: $track
-      VALUE: MMFilter CUTOFF
-
-    COMPONENT: Encoder3 $3/4W $y $1/4W 50
-      GROUP: $group
-      ENCODER_ID: 3
-      COLOR: secondary
-      TRACK: $track
-      VALUE: MMFilter RESONANCE
-
-#   Distortion
-$group=$group+1
-$y=$y+$rowHeight
-
-    COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
-      TITLE: Distortion
-      GROUP: $group
-
-$y=$y+$sepHeight
-    COMPONENT: Encoder3 0 $y $1/4W 50
-      GROUP: $group
-      ENCODER_ID: 0
-      COLOR: secondary
-      TRACK: $track
-      VALUE: Distortion WAVESHAPE
-
-    COMPONENT: Encoder3 $1/4W $y $1/4W 50
-      GROUP: $group
-      ENCODER_ID: 1
-      COLOR: secondary
-      TRACK: $track
-      VALUE: Distortion DRIVE
-
-    COMPONENT: Encoder3 $2/4W $y $1/4W 50
-      GROUP: $group
-      ENCODER_ID: 2
-      COLOR: secondary
-      TRACK: $track
-      VALUE: Distortion COMPRESS
-
-    COMPONENT: Encoder3 $3/4W $y $1/4W 50
-      GROUP: $group
-      ENCODER_ID: 3
-      COLOR: secondary
-      TRACK: $track
-      VALUE: Distortion BASS
-
-$group=$group+1
-$y=$y+$sepHeight+$rowHeight
-   COMPONENT: Encoder3 0 $y $1/4W 50
-      GROUP: $group
-      ENCODER_ID: 0
-      COLOR: secondary
-      TRACK: $track
-      VALUE: Distortion LEVEL
