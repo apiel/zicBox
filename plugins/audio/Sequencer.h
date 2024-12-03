@@ -265,6 +265,13 @@ public:
         }
         case 3:
             return clockCounterPtr;
+        case 4: {
+            uint8_t* index = (uint8_t*)userdata;
+            if (*index >= MAX_STEPS) {
+                return NULL;
+            }
+            return &steps[*index];
+        }
         case 20: { // Toggle sequencer
             if (status.get() == Status::ON) {
                 status.set(Status::OFF);

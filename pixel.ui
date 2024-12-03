@@ -284,31 +284,91 @@ VIEW: Sequencer
 $rowHeight=25
 $y=-($rowHeight)
 $group=-1
+$step=-1
 
 $group=$group+1
 $y=$y+$rowHeight
+  $step=$step+1
   COMPONENT: StepEdit 0 $y $1/4W 25
     GROUP: $group
+    DATA: Sequencer 4 $step
 
+  $step=$step+1
   COMPONENT: StepEdit $1/4W $y $1/4W 25
     GROUP: $group
+    DATA: Sequencer 4 $step
 
+  $step=$step+1
   COMPONENT: StepEdit $2/4W $y $1/4W 25
     GROUP: $group
+    DATA: Sequencer 4 $step
 
+  $step=$step+1
   COMPONENT: StepEdit $3/4W $y $1/4W 25
     GROUP: $group
+    DATA: Sequencer 4 $step
 
 $y=$y+$rowHeight
+  $step=$step+1
   COMPONENT: StepEdit 0 $y $1/4W 25
     GROUP: $group
+    DATA: Sequencer 4 $step
 
+  $step=$step+1
   COMPONENT: StepEdit $1/4W $y $1/4W 25
     GROUP: $group
+    DATA: Sequencer 4 $step
 
+  $step=$step+1
   COMPONENT: StepEdit $2/4W $y $1/4W 25
     GROUP: $group
+    DATA: Sequencer 4 $step
 
+  $step=$step+1
   COMPONENT: StepEdit $3/4W $y $1/4W 25
     GROUP: $group
+    DATA: Sequencer 4 $step
 
+
+$group=$group+1
+$y=$y+$rowHeight
+  $step=$step+1
+  COMPONENT: StepEdit 0 $y $1/4W 25
+    GROUP: $group
+    DATA: Sequencer 4 $step
+
+  $step=$step+1
+  COMPONENT: StepEdit $1/4W $y $1/4W 25
+    GROUP: $group
+    DATA: Sequencer 4 $step
+
+  $step=$step+1
+  COMPONENT: StepEdit $2/4W $y $1/4W 25
+    GROUP: $group
+    DATA: Sequencer 4 $step
+
+  $step=$step+1
+  COMPONENT: StepEdit $3/4W $y $1/4W 25
+    GROUP: $group
+    DATA: Sequencer 4 $step
+
+$y=$y+$rowHeight
+  $step=$step+1
+  COMPONENT: StepEdit 0 $y $1/4W 25
+    GROUP: $group
+    DATA: Sequencer 4 $step
+
+  $step=$step+1
+  COMPONENT: StepEdit $1/4W $y $1/4W 25
+    GROUP: $group
+    DATA: Sequencer 4 $step
+
+  $step=$step+1
+  COMPONENT: StepEdit $2/4W $y $1/4W 25
+    GROUP: $group
+    DATA: Sequencer 4 $step
+
+  $step=$step+1
+  COMPONENT: StepEdit $3/4W $y $1/4W 25
+    GROUP: $group
+    DATA: Sequencer 4 $step
