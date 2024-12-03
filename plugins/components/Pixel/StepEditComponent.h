@@ -1,8 +1,9 @@
 #ifndef _UI_PIXEL_COMPONENT_STEP_EDIT_H_
 #define _UI_PIXEL_COMPONENT_STEP_EDIT_H_
 
-#include "../component.h"
-#include "../utils/color.h"
+#include "plugins/audio/stepInterface.h"
+#include "plugins/components/component.h"
+#include "plugins/components/utils/color.h"
 #include "utils/GroupColorComponent.h"
 
 /*md
@@ -14,13 +15,21 @@ StepEdit component is used to edit a step value.
 */
 
 // [note, velocity, len] [probabilty, condition, motion]
+// For the note length, we should show the note symbol
 
 class StepEditComponent : public GroupColorComponent {
+protected:
+    AudioPlugin* plugin = NULL;
+    Step* step;
+
     Color bgColor;
     ToggleColor text;
     ToggleColor text2;
     ToggleColor barBackground;
     ToggleColor bar;
+
+    uint8_t dataId = -1;
+    uint8_t stepIndex = -1;
 
 public:
     StepEditComponent(ComponentInterface::Props props)
@@ -59,6 +68,15 @@ public:
     /*md **Config**: */
     bool config(char* key, char* value)
     {
+        /*md - `DATA: plugin_name data_id step_index` set plugin target */
+        if (strcmp(key, "DATA") == 0) {
+            plugin = &getPlugin(strtok(value, " "), track);
+            dataId = atoi(strtok(NULL, " "));
+            stepIndex = atoi(strtok(NULL, " "));
+            step = (Step*)plugin->data(dataId, &stepIndex);
+            return true;
+        }
+
         /*md - `BACKGROUND_COLOR: color` is the background color of the component. */
         if (strcmp(key, "BACKGROUND_COLOR") == 0) {
             bgColor = draw.getColor(value);
