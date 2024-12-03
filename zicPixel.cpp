@@ -22,8 +22,15 @@
 
 int main(int argc, char* argv[])
 {
-    styles.colors.primary = { 0x28, 0x59, 0x5f };
-    styles.colors.secondary = { 0xff, 0x8d, 0x99 };
+    // styles.colors.primary = { 0x3a, 0x7d, 0x80 }; // #3a7d80
+    // styles.colors.secondary = { 0xff, 0xa0, 0xad }; // #ffa0ad
+    // styles.colors.tertiary = { 0xa0, 0xb4, 0x97 }; // #A0B497
+    // styles.colors.quaternary = { 0xe6, 0xc3, 0x4a }; // #e6c34a
+
+    styles.colors.primary = { 0x4f, 0xbf, 0xc5 }; // #4fbfc5
+    styles.colors.secondary = { 0xff, 0x8a, 0x94 }; // #ff8a94
+    styles.colors.tertiary = { 0xc5, 0xd8, 0xb2 }; // #c5d8b2
+    styles.colors.quaternary = { 0xf7, 0xda, 0x6d }; // #f7da6d
 
     loadPixelComponents();
 

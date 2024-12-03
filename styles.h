@@ -17,6 +17,7 @@ Styles styles = {
         .primary = { 0xad, 0xcd, 0xff, 255 }, // #adcdff
         .secondary = { 0xff, 0x8d, 0x99, 255 }, // #ff8d99
         .tertiary = { 0x8d, 0xDD, 0x99, 255 }, // #8dDD99
+        .quaternary = { 0xff, 0x99, 0x00, 255 }, // #ff9900
     },
 };
 

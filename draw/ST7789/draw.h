@@ -337,6 +337,10 @@ protected:
             return &styles.colors.tertiary;
         }
 
+        if (strcmp(color, "quaternary") == 0) {
+            return &styles.colors.quaternary;
+        }
+
         if (strcmp(color, "text") == 0) {
             return &styles.colors.text;
         }
