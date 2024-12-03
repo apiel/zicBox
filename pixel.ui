@@ -82,21 +82,21 @@ $y=$y+$rowHeight
       GROUP: $group
 
 $y=$y+$sepHeight
-    COMPONENT: Encoder3 $2/4W $y $1/4W 50
+    COMPONENT: Encoder3 0 $y $1/4W 50
       GROUP: $group
       ENCODER_ID: 0
       COLOR: secondary
       TRACK: $track
       VALUE: MMFilter CUTOFF
 
-    COMPONENT: Encoder3 $3/4W $y $1/4W 50
+    COMPONENT: Encoder3 $1/4W $y $1/4W 50
       GROUP: $group
       ENCODER_ID: 1
       COLOR: secondary
       TRACK: $track
       VALUE: MMFilter RESONANCE
 
-    COMPONENT: Encoder3 $1/4W $y $1/4W 50
+    COMPONENT: Encoder3 $2/4W $y $1/4W 50
       GROUP: $group
       ENCODER_ID: 2
       COLOR: secondary

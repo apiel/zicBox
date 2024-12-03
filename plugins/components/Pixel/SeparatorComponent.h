@@ -19,7 +19,7 @@ class SeparatorComponent : public GroupColorComponent {
 
     std::string title;
 
-    bool drawLine = true;
+    bool drawLine = false;
 
 public:
     SeparatorComponent(ComponentInterface::Props props)
@@ -41,9 +41,11 @@ public:
             }
             if (!title.empty()) {
                 Point textPos = { relativePosition.x + (int)(size.w * 0.5), relativePosition.y + (int)(size.h * 0.5) - 4 };
-                draw.filledRect({ textPos.x - (int)(8 * title.length() * 0.5) - 4, relativePosition.y },
-                    { (int)title.length() * 8 + 8, size.h },
-                    { bgColor });
+                if (drawLine) {
+                    draw.filledRect({ textPos.x - (int)(8 * title.length() * 0.5) - 4, relativePosition.y },
+                        { (int)title.length() * 8 + 8, size.h },
+                        { bgColor });
+                }
                 draw.textCentered(textPos, title, 8, { color.color });
             }
         }
