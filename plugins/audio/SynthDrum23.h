@@ -310,11 +310,9 @@ public:
         }
         case 7: // update freq modulation value for current step
             return envelopFreq.updatePhaseModulation((int8_t*)userdata);
-        case 8: { // pointer to waveform
-            return wave->samples();
-        }
-        case 9: { // size of the waveform
-            return &wave->sampleCount;
+        case 8: { // pointer to waveform sample
+            float* index = (float*)userdata;
+            return wave->sample(index);
         }
         }
         return NULL;

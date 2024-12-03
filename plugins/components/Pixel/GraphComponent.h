@@ -29,22 +29,21 @@ class GraphComponent : public GroupColorComponent {
     };
     std::vector<EncoderParam> encoders;
 
-    uint8_t dataId = 8;
-    uint8_t sizeDataId = 9;
+    uint8_t dataId = -1;
 
     int waveformHeight = 30;
     int waveformY = 0;
 
     void renderGraph()
     {
-        float* waveform = (float*)plugin->data(dataId);
-        uint16_t* waveformSize = (uint16_t*)plugin->data(sizeDataId);
-        if (waveform && waveformSize) {
+        if (dataId != -1) {
             std::vector<Point> relativePoints;
             float halfHeight = waveformHeight * 0.5;
             relativePoints.push_back({ relativePosition.x, (int)(waveformY + halfHeight) });
-            for (int i = 0; i < *waveformSize; i++) {
-                Point point = { (int)(size.w * i / (*waveformSize - 1)), (int)(waveform[i] * halfHeight + halfHeight) };
+            for (int i = 0; i < size.w; i++) {
+                float index = i / (float)(size.w - 1);
+                float* value = (float*)plugin->data(dataId, &index);
+                Point point = { i, (int)(*value * halfHeight + halfHeight) };
                 relativePoints.push_back({ point.x + relativePosition.x, point.y + waveformY });
             }
             relativePoints.push_back({ relativePosition.x + size.w, (int)(waveformY + halfHeight) });
@@ -122,9 +121,7 @@ public:
 
         /*md - `DATA_ID: data_id` is the data id to get the shape/graph to draw.*/
         if (strcmp(key, "DATA_ID") == 0) {
-            dataId = atoi(strtok(value, " "));
-            char* sizeIdStr = strtok(NULL, " ");
-            sizeDataId = sizeIdStr ? atoi(sizeIdStr) : dataId + 1;
+            dataId = atoi(value);
             return true;
         }
 

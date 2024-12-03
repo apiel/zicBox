@@ -261,6 +261,11 @@ public:
         return linearInterpolation(*index, sampleCount, lut);
     }
 
+    float* sample(float* index) override
+    {
+        return &lut[(uint16_t)(*index * sampleCount)];
+    }
+
     float* samples() override
     {
         return lut;

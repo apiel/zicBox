@@ -13,6 +13,7 @@ public:
     }
 
     virtual float sample(float* index, float freq) = 0;
+    virtual float* sample(float* index) = 0;
     virtual float* samples() = 0;
 };
 
