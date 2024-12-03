@@ -30,7 +30,7 @@ protected:
             if (id == 0) {
                 view->setGroup(activeGroup - 1);
             } else if (id == 1) {
-                setView("Sequencer");
+                view->setView("Sequencer");
             } else if (id == 5) {
                 view->setGroup(activeGroup + 1);
             } else {

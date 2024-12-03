@@ -120,7 +120,6 @@ protected:
             getPlugin,
             sendAudioEvent,
             getController,
-            [this](std::string name) { setView(name); },
             view,
             shift
         };
@@ -273,7 +272,7 @@ VIEW: Mixer
 ```
 */
         if (strcmp(key, "VIEW") == 0) {
-            View* v = new View(draw);
+            View* v = new View(draw, [&](std::string name) { setView(name); });
             v->name = value;
 
             views.push_back(v);
