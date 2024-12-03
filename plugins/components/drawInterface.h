@@ -50,6 +50,7 @@ struct Styles {
         Color primary;
         Color secondary;
         Color tertiary;
+        Color quaternary;
     } colors;
 };
 
