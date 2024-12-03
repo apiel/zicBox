@@ -7,11 +7,10 @@
 #include "utils/GroupColorComponent.h"
 
 /*md
-## DrumClickComponent
+## GraphComponent
 */
 
-class DrumClickComponent : public GroupColorComponent {
-protected:
+class GraphComponent : public GroupColorComponent {
     AudioPlugin* plugin = NULL;
 
     bool filled = true;
@@ -23,30 +22,28 @@ protected:
     ToggleColor outlineColor;
     ToggleColor textColor;
 
-    int encoderLevel = -1;
-    int encoderDuration = -1;
-    int encoderFilter = -1;
-    int encoderResonance = -1;
+    struct EncoderParam {
+        int id = -1;
+        ValueInterface* value = NULL;
+    };
+    std::vector<EncoderParam> encoders;
 
-    ValueInterface* valueLevel = NULL;
-    ValueInterface* valueDuration = NULL;
-    ValueInterface* valueFilter = NULL;
-    ValueInterface* valueResonance = NULL;
-
-    uint8_t waveformDataId = 10;
+    uint8_t waveformDataId = 8;
+    uint8_t sizeDataId = 9;
 
     int waveformHeight = 30;
     int waveformY = 0;
 
     void renderWaveform()
     {
-        float* waveform = (float*)plugin->data(waveformDataId, &size.w);
-        if (waveform) {
+        float* waveform = (float*)plugin->data(waveformDataId);
+        uint16_t* waveformSize = (uint16_t*)plugin->data(sizeDataId);
+        if (waveform && waveformSize) {
             std::vector<Point> relativePoints;
             float halfHeight = waveformHeight * 0.5;
             relativePoints.push_back({ relativePosition.x, (int)(waveformY + halfHeight) });
-            for (int i = 0; i < size.w; i++) {
-                Point point = { i, (int)(waveform[i] * halfHeight + halfHeight) };
+            for (int i = 0; i < *waveformSize; i++) {
+                Point point = { (int)(size.w * i / (*waveformSize - 1)), (int)(waveform[i] * halfHeight + halfHeight) };
                 relativePoints.push_back({ point.x + relativePosition.x, point.y + waveformY });
             }
             relativePoints.push_back({ relativePosition.x + size.w, (int)(waveformY + halfHeight) });
@@ -61,16 +58,19 @@ protected:
 
     void renderTitles()
     {
-        int cellWidth = size.w / 4;
+        int cellWidth = size.w / encoders.size();
         int x = relativePosition.x + cellWidth * 0.5;
-        valueLevel && draw.textCentered({ x, relativePosition.y }, std::to_string(valueLevel->get()), 8, { textColor.color });
-        valueDuration && draw.textCentered({ x + cellWidth, relativePosition.y }, std::to_string(valueDuration->get()), 8, { textColor.color });
-        valueFilter && draw.textCentered({ x + cellWidth * 2, relativePosition.y }, valueFilter->string(), 8, { textColor.color });
-        valueResonance && draw.textCentered({ x + cellWidth * 3, relativePosition.y }, std::to_string(valueResonance->get()), 8, { textColor.color });
+        // draw.textCentered({ x, relativePosition.y }, valueType->string(), 8, { textColor.color });
+        // draw.textCentered({ x + cellWidth, relativePosition.y }, valueShape->string(), 8, { textColor.color });
+        // draw.textCentered({ x + cellWidth * 2, relativePosition.y }, valueMacro->string(), 8, { textColor.color });
+
+        for (int i = 0; i < encoders.size(); i++) {
+            encoders[i].value && draw.textCentered({ x + cellWidth * i, relativePosition.y }, encoders[i].value->string(), 8, { textColor.color });
+        }
     }
 
 public:
-    DrumClickComponent(ComponentInterface::Props props)
+    GraphComponent(ComponentInterface::Props props)
         : GroupColorComponent(props, { { "FILL_COLOR", &fillColor }, { "OUTLINE_COLOR", &outlineColor }, { "TEXT_COLOR", &textColor } })
         , bgColor(styles.colors.background)
         , textColor(styles.colors.text, inactiveColorRatio)
@@ -94,18 +94,22 @@ public:
     void onEncoder(int id, int8_t direction) override
     {
         if (isActive) {
-            if (id == encoderLevel) {
-                valueLevel->increment(direction);
-                renderNext();
-            } else if (id == encoderDuration) {
-                valueDuration->increment(direction);
-                renderNext();
-            } else if (id == encoderFilter) {
-                valueFilter->increment(direction);
-                renderNext();
-            } else if (id == encoderResonance) {
-                valueResonance->increment(direction);
-                renderNext();
+            // if (id == encoderType) {
+            //     valueType->increment(direction);
+            //     renderNext();
+            // } else if (id == encoderShape) {
+            //     valueShape->increment(direction);
+            //     renderNext();
+            // } else if (id == encoderMacro) {
+            //     valueMacro->increment(direction);
+            //     renderNext();
+            // }
+            for (auto& encoder : encoders) {
+                if (encoder.id == id) {
+                    encoder.value->increment(direction);
+                    renderNext();
+                    break;
+                }
             }
         }
     }
@@ -116,40 +120,30 @@ public:
         /*md - `PLUGIN: plugin_name` set plugin target */
         if (strcmp(key, "PLUGIN") == 0) {
             plugin = &getPlugin(value, track);
-            valueLevel = watch(plugin->getValue("CLICK"));
-            valueDuration = watch(plugin->getValue("CLICK_DURATION"));
-            valueFilter = watch(plugin->getValue("CLICK_CUTOFF"));
-            valueResonance = watch(plugin->getValue("CLICK_RESONANCE"));
+            // valueType = watch(plugin->getValue("WAVEFORM_TYPE"));
+            // valueShape = watch(plugin->getValue("SHAPE"));
+            // valueMacro = watch(plugin->getValue("MACRO"));
             return true;
         }
 
         /*md - `WAVEFORM_DATA_ID: waveform_id size_id` is the data id to get the shape of the waveform to draw.*/
         if (strcmp(key, "WAVEFORM_DATA_ID") == 0) {
-            waveformDataId = atoi(value);
+            waveformDataId = atoi(strtok(value, " "));
+            char* sizeIdStr = strtok(NULL, " ");
+            sizeDataId = sizeIdStr ? atoi(sizeIdStr) : waveformDataId + 1;
             return true;
         }
 
-        /*md - `ENCODER_LEVEL: id` is the id of the encoder to select the clicking level. */
-        if (strcmp(key, "ENCODER_LEVEL") == 0) {
-            encoderLevel = atoi(value);
+        /*md - `SIZE_DATA_ID: id` is the data id to get the size of the waveform to draw.*/
+        if (strcmp(key, "SIZE_DATA_ID") == 0) {
             return true;
         }
 
-        /*md - `ENCODER_DURATION: id` is the id of the encoder to define the clicking duration. */
-        if (strcmp(key, "ENCODER_DURATION") == 0) {
-            encoderDuration = atoi(value);
-            return true;
-        }
-
-        /*md - `ENCODER_FILTER: id` is the id of the encoder to set the clicking filter amount. */
-        if (strcmp(key, "ENCODER_FILTER") == 0) {
-            encoderFilter = atoi(value);
-            return true;
-        }
-
-        /*md - `ENCODER_RESONANCE: id` is the id of the encoder to set the clicking resonance amount. */
-        if (strcmp(key, "ENCODER_RESONANCE") == 0) {
-            encoderResonance = atoi(value);
+        /*md - `ENCODER: encoder_id value` is the id of the encoder to update given value, e.g. `ENCODER: 0 LEVEL`. */
+        if (strcmp(key, "ENCODER") == 0) {
+            uint8_t encoderId = atoi(strtok(value, " "));
+            char* encoderValue = strtok(NULL, " ");
+            encoders.push_back({ encoderId, watch(plugin->getValue(encoderValue)) });
             return true;
         }
 

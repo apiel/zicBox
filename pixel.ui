@@ -100,14 +100,23 @@ $track=1
       VALUE: SynthDrum23 PITCH
 
 #   Waveform
-    COMPONENT: Waveform 0 120 ($3/4W-2) 50
+    # COMPONENT: Waveform 0 120 ($3/4W-2) 50
+    #   GROUP: 2
+    #   TRACK: $track
+    #   PLUGIN: SynthDrum23
+    #   WAVEFORM_DATA_ID: 8
+    #   ENCODER_TYPE: 0
+    #   ENCODER_SHAPE: 1
+    #   ENCODER_MACRO: 2
+
+    COMPONENT: Graph 0 120 ($3/4W-2) 50
       GROUP: 2
       TRACK: $track
       PLUGIN: SynthDrum23
       WAVEFORM_DATA_ID: 8
-      ENCODER_TYPE: 0
-      ENCODER_SHAPE: 1
-      ENCODER_MACRO: 2
+      ENCODER: 0 WAVEFORM_TYPE
+      ENCODER: 1 SHAPE
+      ENCODER: 2 MACRO
 
     COMPONENT: Encoder3 $3/4W 120 $1/4W 50
       GROUP: 2
