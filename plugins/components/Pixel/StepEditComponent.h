@@ -42,11 +42,15 @@ public:
             int x = draw.text({ relativePosition.x + 2, relativePosition.y }, "C", 16, { text.color });
             draw.text({ x - 2, relativePosition.y + 6 }, "4#", 8, { text.color });
 
+            float centerX = relativePosition.x + size.w * 0.5;
+
             float velocity = 0.5;
-            draw.filledRect({ relativePosition.x + 32, relativePosition.y },
-                { size.w - 40, 3 }, { barBackground.color });
-            draw.filledRect({ relativePosition.x + 32, relativePosition.y },
-                { (int)((size.w - 40) * velocity), 3 }, { bar.color });
+            int barWidth = size.w * 0.40;
+            int barX = (int)(centerX - barWidth * 0.5);
+            draw.filledRect({ barX, relativePosition.y },
+                { barWidth, 3 }, { barBackground.color });
+            draw.filledRect({ barX, relativePosition.y },
+                { (int)(barWidth * velocity), 3 }, { bar.color });
 
             draw.textRight({ relativePosition.x + size.w - 4, relativePosition.y + 6 }, "1/32", 8, { text2.color });
         }
