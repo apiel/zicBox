@@ -116,7 +116,7 @@ public:
         }
     });
     /*md - `SHAPE` Morhp over the waveform shape.*/
-    Val& shape = val(0.0f, "SHAPE", { "Shape", .max = 1000 }, [&](auto p) {
+    Val& shape = val(0.0f, "SHAPE", { "Shape", VALUE_STRING, .max = 1000 }, [&](auto p) {
         if (waveformType.get() != 0.0f) {
             int direction = p.value - p.val.get();
             int value = p.val.get() + direction * 10;
@@ -138,7 +138,7 @@ public:
     });
 
     /*md - `MACRO` Macro is arbitrary parameter depending of selected waveform type. */
-    Val& macro = val(0.0f, "MACRO", { "Macro" }, [&](auto p) {
+    Val& macro = val(0.0f, "MACRO", { "Macro", VALUE_STRING }, [&](auto p) {
         if (waveformType.get() != 0.0f) {
             p.val.setFloat(p.value);
             waveform.setMacro(p.val.pct());
