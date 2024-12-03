@@ -18,14 +18,16 @@ StepEdit component is used to edit a step value.
 class StepEditComponent : public GroupColorComponent {
     Color bgColor;
     ToggleColor text;
+    ToggleColor text2;
     ToggleColor barBackground;
     ToggleColor bar;
 
 public:
     StepEditComponent(ComponentInterface::Props props)
-        : GroupColorComponent(props, { { "TEXT_COLOR", &text }, { "BAR_BACKGROUND_COLOR", &barBackground }, { "BAR_COLOR", &bar } })
+        : GroupColorComponent(props, { { "TEXT_COLOR", &text }, { "TEXT2_COLOR", &text2 }, { "BAR_BACKGROUND_COLOR", &barBackground }, { "BAR_COLOR", &bar } })
         , bgColor(styles.colors.background)
-        , text(styles.colors.primary, inactiveColorRatio)
+        , text(styles.colors.text, inactiveColorRatio)
+        , text2(darken(styles.colors.text, 0.5), inactiveColorRatio)
         , barBackground(darken(styles.colors.tertiary, 0.5), inactiveColorRatio)
         , bar(styles.colors.tertiary, inactiveColorRatio)
     {
@@ -36,14 +38,17 @@ public:
     {
         if (updatePosition()) {
             draw.filledRect(relativePosition, size, { bgColor });
-            int x = draw.text(relativePosition, "C", 16, { text.color });
+
+            int x = draw.text({ relativePosition.x + 2, relativePosition.y }, "C", 16, { text.color });
             draw.text({ x - 2, relativePosition.y + 6 }, "4#", 8, { text.color });
 
             float velocity = 0.5;
-            draw.filledRect({ relativePosition.x + 20, relativePosition.y },
-                { size.w - 20, 8 }, { barBackground.color });
-            draw.filledRect({ relativePosition.x + 20, relativePosition.y },
-                { (int)((size.w - 20) * velocity), 8 }, { bar.color });
+            draw.filledRect({ relativePosition.x + 32, relativePosition.y },
+                { size.w - 40, 3 }, { barBackground.color });
+            draw.filledRect({ relativePosition.x + 32, relativePosition.y },
+                { (int)((size.w - 40) * velocity), 3 }, { bar.color });
+
+            draw.textRight({ relativePosition.x + size.w - 4, relativePosition.y + 6 }, "1/32", 8, { text2.color });
         }
     }
 
