@@ -1,7 +1,5 @@
 ## Pixel TODO
 
-- TODO make a reusable form component
-
 - TODO text separator
 
 - TODO Volume/Gain, could we have a value over 100% like 150%??

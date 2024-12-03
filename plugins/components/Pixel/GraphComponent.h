@@ -8,6 +8,11 @@
 
 /*md
 ## GraphComponent
+
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/graph.png" />
+
+Show a representation of data points and provide a way to control them.
+
 */
 
 class GraphComponent : public GroupColorComponent {
