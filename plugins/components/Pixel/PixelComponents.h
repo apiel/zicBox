@@ -6,7 +6,6 @@
 #include "./KeyInfoBarComponent.h"
 #include "./DrumEnvelopComponent.h"
 #include "./Encoder3Component.h"
-#include "./WaveformComponent.h"
 #include "./GraphComponent.h"
 
 void loadPixelComponents()
@@ -22,10 +21,6 @@ void loadPixelComponents()
 
     viewManager.plugins.push_back({ "Encoder3", [](ComponentInterface::Props props) {
         return new Encoder3Component(props);
-    } });
-
-    viewManager.plugins.push_back({ "Waveform", [](ComponentInterface::Props props) {
-        return new WaveformComponent(props);
     } });
 
     viewManager.plugins.push_back({ "Graph", [](ComponentInterface::Props props) {
