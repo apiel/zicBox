@@ -1,8 +1,8 @@
 ## Pixel TODO
 
-- TODO make a visual representation of the click
+- TODO make a reusable form component
 
-- TODO kick distortion
+- TODO text separator
 
 - TODO Volume/Gain, could we have a value over 100% like 150%??
 
