@@ -29,15 +29,15 @@ class GraphComponent : public GroupColorComponent {
     };
     std::vector<EncoderParam> encoders;
 
-    uint8_t waveformDataId = 8;
+    uint8_t dataId = 8;
     uint8_t sizeDataId = 9;
 
     int waveformHeight = 30;
     int waveformY = 0;
 
-    void renderWaveform()
+    void renderGraph()
     {
-        float* waveform = (float*)plugin->data(waveformDataId);
+        float* waveform = (float*)plugin->data(dataId);
         uint16_t* waveformSize = (uint16_t*)plugin->data(sizeDataId);
         if (waveform && waveformSize) {
             std::vector<Point> relativePoints;
@@ -93,7 +93,7 @@ public:
         if (updatePosition()) {
             waveformY = relativePosition.y + 8;
             draw.filledRect(relativePosition, size, { bgColor });
-            renderWaveform();
+            renderGraph();
             renderTitles();
         }
     }
@@ -120,16 +120,11 @@ public:
             return true;
         }
 
-        /*md - `WAVEFORM_DATA_ID: waveform_id size_id` is the data id to get the shape of the waveform to draw.*/
-        if (strcmp(key, "WAVEFORM_DATA_ID") == 0) {
-            waveformDataId = atoi(strtok(value, " "));
+        /*md - `DATA_ID: data_id` is the data id to get the shape/graph to draw.*/
+        if (strcmp(key, "DATA_ID") == 0) {
+            dataId = atoi(strtok(value, " "));
             char* sizeIdStr = strtok(NULL, " ");
-            sizeDataId = sizeIdStr ? atoi(sizeIdStr) : waveformDataId + 1;
-            return true;
-        }
-
-        /*md - `SIZE_DATA_ID: id` is the data id to get the size of the waveform to draw.*/
-        if (strcmp(key, "SIZE_DATA_ID") == 0) {
+            sizeDataId = sizeIdStr ? atoi(sizeIdStr) : dataId + 1;
             return true;
         }
 
