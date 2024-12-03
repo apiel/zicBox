@@ -65,9 +65,25 @@ $track=1
 
   CONTAINER: ScrollGroupContainer Scroll 0 0 $SCREEN_WIDTH 214
 
+$sepHeight=12
+$rowHeight=55
+
+# set to - rowHeight so we easily schuffle thing around
+$y=-($rowHeight)
+$group=-1
+
 #   Amp envelope
-    COMPONENT: DrumEnvelop 0 0 ($3/4W-2) 50
-      GROUP: 0
+$group=$group+1
+$y=$y+$rowHeight
+
+    COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
+      TITLE: Amplitude
+      GROUP: $group
+
+$y=$y+$sepHeight
+
+    COMPONENT: DrumEnvelop 0 $y ($3/4W-2) 50
+      GROUP: $group
       TRACK: $track
       PLUGIN: SynthDrum23
       ENVELOP_DATA_ID: 0
@@ -75,16 +91,25 @@ $track=1
       ENCODER_TIME: 1
       ENCODER_MODULATION: 2
 
-    COMPONENT: Encoder3 $3/4W 0 $1/4W 50
-      GROUP: 0
+    COMPONENT: Encoder3 $3/4W $y $1/4W 50
+      GROUP: $group
       ENCODER_ID: 3
       COLOR: secondary
       TRACK: $track
       VALUE: SynthDrum23 DURATION
 
 #   Frequency envelope
-    COMPONENT: DrumEnvelop 0 60 ($3/4W-2) 50
-      GROUP: 1
+$group=$group+1
+$y=$y+$rowHeight
+
+    COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
+      TITLE: Frequency
+      GROUP: $group
+
+$y=$y+$sepHeight
+
+    COMPONENT: DrumEnvelop 0 $y ($3/4W-2) 50
+      GROUP: $group
       TRACK: $track
       PLUGIN: SynthDrum23
       ENVELOP_DATA_ID: 4
@@ -92,16 +117,24 @@ $track=1
       ENCODER_TIME: 1
       ENCODER_MODULATION: 2
 
-    COMPONENT: Encoder3 $3/4W 60 $1/4W 50
-      GROUP: 1
+    COMPONENT: Encoder3 $3/4W $y $1/4W 50
+      GROUP: $group
       ENCODER_ID: 3
       COLOR: secondary
       TRACK: $track
       VALUE: SynthDrum23 PITCH
 
 #   Waveform
-    COMPONENT: Graph 0 120 ($3/4W-2) 50
-      GROUP: 2
+$group=$group+1
+$y=$y+$rowHeight
+
+    COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
+      TITLE: Waveform
+      GROUP: $group
+
+$y=$y+$sepHeight
+    COMPONENT: Graph 0 $y ($3/4W-2) 50
+      GROUP: $group
       TRACK: $track
       PLUGIN: SynthDrum23
       DATA_ID: 8
@@ -109,105 +142,124 @@ $track=1
       ENCODER: 1 SHAPE
       ENCODER: 2 MACRO
 
-    COMPONENT: Encoder3 $3/4W 120 $1/4W 50
-      GROUP: 2
+    COMPONENT: Encoder3 $3/4W $y $1/4W 50
+      GROUP: $group
       ENCODER_ID: 3
       COLOR: secondary
       TRACK: $track
       VALUE: SynthDrum23 MACRO
 
 #   Click
-    COMPONENT: Encoder3 0 180 $1/4W 50
-      GROUP: 3
+$group=$group+1
+$y=$y+$rowHeight
+
+    COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
+      TITLE: Click transient
+      GROUP: $group
+
+$y=$y+$sepHeight
+    COMPONENT: Encoder3 0 $y $1/4W 50
+      GROUP: $group
       ENCODER_ID: 0
       COLOR: secondary
       TRACK: $track
       VALUE: SynthDrum23 CLICK
 
-    COMPONENT: Encoder3 $1/4W 180 $1/4W 50
-      GROUP: 3
+    COMPONENT: Encoder3 $1/4W $y $1/4W 50
+      GROUP: $group
       ENCODER_ID: 1
       COLOR: secondary
       TRACK: $track
       VALUE: SynthDrum23 CLICK_DURATION
 
 
-    COMPONENT: Encoder3 $2/4W 180 $1/4W 50
-      GROUP: 3
+    COMPONENT: Encoder3 $2/4W $y $1/4W 50
+      GROUP: $group
       ENCODER_ID: 2
       COLOR: secondary
       TYPE: STRING
       TRACK: $track
       VALUE: SynthDrum23 CLICK_CUTOFF
 
-    COMPONENT: Encoder3 $3/4W 180 $1/4W 50
-      GROUP: 3
+    COMPONENT: Encoder3 $3/4W $y $1/4W 50
+      GROUP: $group
       ENCODER_ID: 3
       COLOR: secondary
       TRACK: $track
       VALUE: SynthDrum23 CLICK_RESONANCE
 
-#   rest...
-#    COMPONENT: Encoder3 0 240 $1/4W 50
-#      GROUP: 4
-#      ENCODER_ID: 0
-#      COLOR: secondary
-#      TRACK: $track
-#      VALUE: SynthDrum23 GAIN
+#   Drum
+$group=$group+1
+$y=$y+$rowHeight
 
-    COMPONENT: Encoder3 $1/4W 240 $1/4W 50
-      GROUP: 4
+    COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
+      TITLE: Drum
+      GROUP: $group
+
+$y=$y+$sepHeight
+    COMPONENT: Encoder3 $1/4W $y $1/4W 50
+      GROUP: $group
       ENCODER_ID: 1
       COLOR: secondary
       TRACK: $track
       VALUE: SynthDrum23 GAIN_CLIPPING
 
 
-    COMPONENT: Encoder3 $2/4W 240 $1/4W 50
-      GROUP: 4
+    COMPONENT: Encoder3 $2/4W $y $1/4W 50
+      GROUP: $group
       ENCODER_ID: 2
       COLOR: secondary
       TRACK: $track
       VALUE: MMFilter CUTOFF
 
-    COMPONENT: Encoder3 $3/4W 240 $1/4W 50
-      GROUP: 4
+    COMPONENT: Encoder3 $3/4W $y $1/4W 50
+      GROUP: $group
       ENCODER_ID: 3
       COLOR: secondary
       TRACK: $track
       VALUE: MMFilter RESONANCE
 
-#  Distortion
-   COMPONENT: Encoder3 0 300 $1/4W 50
-     GROUP: 5
-     ENCODER_ID: 0
-     COLOR: secondary
-     TRACK: $track
-     VALUE: Distortion WAVESHAPE
+#   Distortion
+$group=$group+1
+$y=$y+$rowHeight
 
-    COMPONENT: Encoder3 $1/4W 300 $1/4W 50
-      GROUP: 5
+    COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
+      TITLE: Distortion
+      GROUP: $group
+
+$y=$y+$sepHeight
+    COMPONENT: Encoder3 0 $y $1/4W 50
+      GROUP: $group
+      ENCODER_ID: 0
+      COLOR: secondary
+      TRACK: $track
+      VALUE: Distortion WAVESHAPE
+
+    COMPONENT: Encoder3 $1/4W $y $1/4W 50
+      GROUP: $group
       ENCODER_ID: 1
       COLOR: secondary
       TRACK: $track
       VALUE: Distortion DRIVE
 
-    COMPONENT: Encoder3 $2/4W 300 $1/4W 50
-      GROUP: 5
+    COMPONENT: Encoder3 $2/4W $y $1/4W 50
+      GROUP: $group
       ENCODER_ID: 2
       COLOR: secondary
       TRACK: $track
       VALUE: Distortion COMPRESS
 
-    COMPONENT: Encoder3 $3/4W 300 $1/4W 50
-      GROUP: 5
+    COMPONENT: Encoder3 $3/4W $y $1/4W 50
+      GROUP: $group
       ENCODER_ID: 3
       COLOR: secondary
       TRACK: $track
       VALUE: Distortion BASS
 
-   COMPONENT: Encoder3 0 360 $1/4W 50
-      GROUP: 6
+$group=$group+1
+$y=$y+$sepHeight+$rowHeight
+   COMPONENT: Encoder3 0 $y $1/4W 50
+      GROUP: $group
       ENCODER_ID: 0
       COLOR: secondary
       TRACK: $track
