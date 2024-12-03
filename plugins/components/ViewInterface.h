@@ -3,15 +3,18 @@
 
 #include <string>
 #include <vector>
+#include <functional>
 
 #include "./drawInterface.h"
 
 class ViewInterface {
 public:
     DrawInterface& draw;
+    std::function<void(std::string name)> setView;
 
-    ViewInterface(DrawInterface& draw)
+    ViewInterface(DrawInterface& draw, std::function<void(std::string name)> setView)
         : draw(draw)
+        , setView(setView)
     {
     }
 

@@ -142,26 +142,26 @@ protected:
     void updateSelection()
     {
         renderSelection();
-        std::string view;
+        std::string viewName;
         if (grid.row == trackCount) {
-            view = std::string("MasterParams") + "_page_" + std::to_string(masterPage);
+            viewName = std::string("MasterParams") + "_page_" + std::to_string(masterPage);
         } else if (grid.col == 0) {
             // if (grid.lastRow != grid.row) {
             //     tracks[grid.row].page = 0;
             // }
-            view = tracks[grid.row].trackView + "_page_" + std::to_string(tracks[grid.row].page);
+            viewName = tracks[grid.row].trackView + "_page_" + std::to_string(tracks[grid.row].page);
         } else {
-            view = tracks[grid.row].stepView;
+            viewName = tracks[grid.row].stepView;
             tracks[grid.row].selectedStep->set(grid.col);
 
             selectedStepCopy = tracks[grid.row].steps[grid.col - 1];
         }
 
-        // printf("View: %s\n", view.c_str());
+        // printf("View: %s\n", viewName.c_str());
 
-        if (view != lastView) {
-            lastView = view;
-            setView(view);
+        if (viewName != lastView) {
+            lastView = viewName;
+            view->setView(viewName);
         }
     }
 

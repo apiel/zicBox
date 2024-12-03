@@ -21,7 +21,6 @@ public:
         AudioPlugin& (*getPlugin)(const char* name, int16_t track);
         void (*sendAudioEvent)(AudioEventType event);
         ControllerInterface* (*getController)(const char* name);
-        std::function<void(std::string name)> setView;
         ViewInterface* view;
         bool& shift;
     };
@@ -32,7 +31,6 @@ protected:
 
     void (*sendAudioEvent)(AudioEventType event);
     ControllerInterface* (*getController)(const char* name);
-    std::function<void(std::string name)> setView;
     ViewInterface* view;
     bool& shift;
     Point relativePosition = { 0, 0 };
@@ -69,7 +67,6 @@ public:
         , getPlugin(props.getPlugin)
         , sendAudioEvent(props.sendAudioEvent)
         , getController(props.getController)
-        , setView(props.setView)
         , view(props.view)
         , shift(props.shift)
         , position(props.position)

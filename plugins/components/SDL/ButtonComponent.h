@@ -222,7 +222,7 @@ protected:
         if (strcmp(action, "&SET_VIEW") == 0) {
             std::string name = strtok(NULL, " ");
             event = [this, name]() {
-                this->setView(name);
+                view->setView(name);
             };
             return;
         }
