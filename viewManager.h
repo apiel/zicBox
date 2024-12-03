@@ -172,6 +172,8 @@ public:
     {
         draw.init();
 
+        view = views[0];
+
         for (auto& v : views) {
             v->init();
         }

@@ -29,6 +29,8 @@ protected:
         if (state == 1) {
             if (id == 0) {
                 view->setGroup(activeGroup - 1);
+            } else if (id == 1) {
+                setView("Sequencer");
             } else if (id == 5) {
                 view->setGroup(activeGroup + 1);
             } else {
@@ -64,8 +66,8 @@ protected:
     int buttonStartX = 14;
 
     string text[10] = {
-        "&icon::arrowUp", "FX", "Synth", "Live", "Track",
-        "&icon::arrowDown", "mod", "...", "&icon::pause", "&icon::play"
+        "&icon::arrowUp", "Seq", "Clip", "Synth", "Track",
+        "&icon::arrowDown", "mod", "Live", "&icon::pause", "&icon::play"
     };
     void renderRow(int y, int startIndex)
     {
