@@ -18,12 +18,19 @@ StepEdit component is used to edit a step value.
 // [note, velocity, len] [probabilty, condition, motion]
 // For the note length, we should show the note symbol
 
+// Push encoder scroll throught selection
+// --> if shift is pressed it jump of group
+
+// Shift + key will select step
+// key only will enable/disable step (and selecting it at the same time)
+
 class StepEditComponent : public GroupColorComponent {
 protected:
     AudioPlugin* plugin = NULL;
     Step* step;
 
     Color bgColor;
+    Color selection;
     ToggleColor text;
     ToggleColor text2;
     ToggleColor barBackground;
@@ -32,10 +39,13 @@ protected:
     uint8_t dataId = -1;
     uint8_t stepIndex = -1;
 
+    bool selected = false;
+
 public:
     StepEditComponent(ComponentInterface::Props props)
         : GroupColorComponent(props, { { "TEXT_COLOR", &text }, { "TEXT2_COLOR", &text2 }, { "BAR_BACKGROUND_COLOR", &barBackground }, { "BAR_COLOR", &bar } })
         , bgColor(styles.colors.background)
+        , selection(styles.colors.primary)
         , text(styles.colors.text, inactiveColorRatio)
         , text2(darken(styles.colors.text, 0.5), inactiveColorRatio)
         , barBackground(darken(styles.colors.tertiary, 0.5), inactiveColorRatio)
@@ -50,25 +60,30 @@ public:
             draw.filledRect(relativePosition, size, { bgColor });
 
             if (step->enabled) {
+                int y = relativePosition.y + (size.h - 16) * 0.5;
                 const char* note = MIDI_NOTES_STR[step->note];
                 const char noteLetter[2] = { note[0], '\0' };
                 const char* noteSuffix = note + 1;
-                int x = draw.text({ relativePosition.x + 2, relativePosition.y }, noteLetter, 16, { text.color });
-                draw.text({ x - 2, relativePosition.y + 6 }, noteSuffix, 8, { text.color });
+                int x = draw.text({ relativePosition.x + 2, y }, noteLetter, 16, { text.color });
+                draw.text({ x - 2, y + 6 }, noteSuffix, 8, { text.color });
 
                 float centerX = relativePosition.x + size.w * 0.5;
 
                 int barWidth = size.w * 0.40;
                 int barX = (int)(centerX - barWidth * 0.5);
-                draw.filledRect({ barX, relativePosition.y }, { barWidth, 3 }, { barBackground.color });
+                draw.filledRect({ barX, y }, { barWidth, 3 }, { barBackground.color });
 
                 if (step->velocity) {
-                    draw.filledRect({ barX, relativePosition.y }, { (int)(barWidth * step->velocity), 3 }, { bar.color });
+                    draw.filledRect({ barX, y }, { (int)(barWidth * step->velocity), 3 }, { bar.color });
                 }
 
-                draw.textRight({ relativePosition.x + size.w - 4, relativePosition.y + 6 }, "1/32", 8, { text2.color });
+                draw.textRight({ relativePosition.x + size.w - 4, y + 6 }, "1/32", 8, { text2.color });
             } else {
                 draw.textCentered({ (int)(relativePosition.x + size.w * 0.5), relativePosition.y }, "---", 16, { text.color });
+            }
+
+            if (selected) {
+                draw.rect(relativePosition, { size.w - 1, size.h - 1}, { selection });
             }
         }
     }
@@ -76,6 +91,11 @@ public:
     /*md **Config**: */
     bool config(char* key, char* value)
     {
+        if (strcmp(key, "SELECT") == 0) {
+            selected = strcmp(value, "true") == 0;
+            return true;
+        }
+
         /*md - `DATA: plugin_name data_id step_index` set plugin target */
         if (strcmp(key, "DATA") == 0) {
             plugin = &getPlugin(strtok(value, " "), track);
