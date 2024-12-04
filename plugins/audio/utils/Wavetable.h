@@ -39,7 +39,7 @@ public:
 
     float* sample(float* index) override
     {
-        return &bufferSamples[(uint16_t)(*index) + sampleStart];
+        return &bufferSamples[(uint16_t)(*index * sampleCount) + sampleStart];
     }
 
     float sample(float* index, float freq) override
