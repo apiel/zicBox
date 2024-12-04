@@ -40,6 +40,7 @@ protected:
     uint8_t stepIndex = -1;
 
     bool selected = false;
+    int16_t groupRange[2] = { -1, -1 };
 
 public:
     StepEditComponent(ComponentInterface::Props props)
@@ -83,16 +84,32 @@ public:
             }
 
             if (selected) {
-                draw.rect(relativePosition, { size.w - 1, size.h - 1}, { selection });
+                draw.rect(relativePosition, { size.w - 1, size.h - 1 }, { selection });
             }
+        }
+    }
+
+    void onGroupChanged(int8_t index) override
+    {
+        bool isSameGroup = group == index;
+        bool isInGroupRange = groupRange[0] != -1 && index >= groupRange[0] && index <= groupRange[1];
+        if (isInGroupRange != isActive) {
+            isActive = isInGroupRange;
+            updateColors();
+            renderNext();
+        }
+        if (isSameGroup != selected) {
+            selected = isSameGroup;
+            renderNext();
         }
     }
 
     /*md **Config**: */
     bool config(char* key, char* value)
     {
-        if (strcmp(key, "SELECT") == 0) {
-            selected = strcmp(value, "true") == 0;
+        if (strcmp(key, "GROUP_RANGE") == 0) {
+            groupRange[0] = atoi(strtok(value, " "));
+            groupRange[1] = atoi(strtok(NULL, " "));
             return true;
         }
 
