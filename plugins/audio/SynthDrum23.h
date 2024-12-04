@@ -104,7 +104,7 @@ public:
     Val& waveformType = val(0.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = DRUM23_WAVEFORMS_COUNT - 1 }, [&](auto p) {
         float current = p.val.get();
         p.val.setFloat(p.value);
-        if (current == p.val.get()) {
+        if (wave && current == p.val.get()) {
             return;
         }
         WaveformType type = waveformTypes[(int)p.val.get()];
@@ -316,6 +316,9 @@ public:
         case 7: // update freq modulation value for current step
             return envelopFreq.updatePhaseModulation((int8_t*)userdata);
         case 8: { // pointer to waveform sample
+            if (!wave) {
+                return NULL;
+            }
             float* index = (float*)userdata;
             return wave->sample(index);
         }
