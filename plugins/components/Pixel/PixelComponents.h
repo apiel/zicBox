@@ -9,6 +9,7 @@
 #include "./GraphComponent.h"
 #include "./SeparatorComponent.h"
 #include "./StepEditComponent.h"
+#include "./HiddenEncoderComponent.h"
 
 void loadPixelComponents()
 {
@@ -23,6 +24,10 @@ void loadPixelComponents()
 
     viewManager.plugins.push_back({ "Encoder3", [](ComponentInterface::Props props) {
         return new Encoder3Component(props);
+    } });
+
+    viewManager.plugins.push_back({ "HiddenEncoder", [](ComponentInterface::Props props) {
+        return new HiddenEncoderComponent(props);
     } });
 
     viewManager.plugins.push_back({ "Graph", [](ComponentInterface::Props props) {
