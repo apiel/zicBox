@@ -102,13 +102,18 @@ public:
     /*md **Values**: */
     /*md - `WAVEFORM_TYPE` Select waveform type (wavetable, sine, triangle...).*/
     Val& waveformType = val(0.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = DRUM23_WAVEFORMS_COUNT - 1 }, [&](auto p) {
+        float current = p.val.get();
         p.val.setFloat(p.value);
+        if (current == p.val.get()) {
+            return;
+        }
         WaveformType type = waveformTypes[(int)p.val.get()];
         p.val.setString(type.name);
         wave = type.wave;
         if (p.val.get() != 0.0f) {
             waveform.setWaveformType((Waveform::Type)type.indexType);
-            shape.set(waveform.shape * 100.0f);
+            printf("Waveform type: %s shape: %f macro: %f\n", type.name.c_str(), waveform.shape * 100.0f, waveform.macro * 100.0f);
+            shape.set(waveform.shape * 1000.0f);
             macro.set(waveform.macro * 100.0f);
         } else {
             shape.set(wavetable.fileBrowser.position);

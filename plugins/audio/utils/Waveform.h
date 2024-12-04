@@ -317,8 +317,9 @@ public:
         }
         case Type::FmSquare: {
             if (reset) {
-                shape = 0.50f;
-                macro = 0.75f;
+                shape = 1.00f;
+                macro = 1.00f;
+                printf("FmSquare reset to shape: %f, macro: %f\n", shape, macro);
             }
             loadFmSquareType();
             break;

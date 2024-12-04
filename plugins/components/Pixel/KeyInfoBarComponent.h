@@ -33,6 +33,8 @@ protected:
                 view->setView("Sequencer");
             } else if (id == 5) {
                 view->setGroup(activeGroup + 1);
+            } else if (id == 9) {
+                sendAudioEvent(AudioEventType::TOGGLE_PLAY_PAUSE);
             } else {
                 AudioPlugin* plugin = &getPlugin("SynthDrum23", 1);
                 plugin->noteOn(60, 1.0f);
@@ -65,7 +67,7 @@ protected:
     int buttonWidth = 40;
     int buttonStartX = 14;
 
-    string text[10] = {
+    std::string text[10] = {
         "&icon::arrowUp", "Seq", "Clip", "Synth", "Track",
         "&icon::arrowDown", "mod", "Live", "&icon::pause", "&icon::play"
     };
