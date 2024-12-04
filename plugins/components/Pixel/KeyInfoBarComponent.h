@@ -14,6 +14,17 @@
 
 KeyInfoBar components provide some information about the current kaypad layout.
 */
+
+// Instead to have child elements, use same concept as group...
+// presskey can set visibility of a given component
+
+// KEYMAP in addition of key number, we could use engish keyboard value
+
+// Row 1: 1=10  2=9  3=8  4=7  5=6  6=5  7=4  8=3  9=2  0=1
+// Row 2: Q=20  W=26  E=8  R=18  T=16  Y=24  U=22  I=15  O=12  P=10
+// Row 3: A=14  S=19  D=12  F=17  G=23  H=21  J=25  K=30  L=28
+// Row 4: Z=32  X=29  C=11  V=27  B=13  N=9  M=7
+
 class KeyInfoBarComponent : public Component {
 protected:
     Icon icon;
@@ -67,10 +78,7 @@ protected:
     int buttonWidth = 40;
     int buttonStartX = 14;
 
-    std::string text[10] = {
-        "&icon::arrowUp", "Seq", "Clip", "Synth", "Track",
-        "&icon::arrowDown", "mod", "Live", "&icon::pause", "&icon::play"
-    };
+    std::string text[10] = { "", "", "", "", "", "", "", "", "", "" };
     void renderRow(int y, int startIndex)
     {
         for (int i = 0; i < 5; i++) {
@@ -94,6 +102,26 @@ public:
     bool config(char* key, char* value)
     {
         if (keypadLayout.config(key, value)) {
+            return true;
+        }
+
+        /*md - `ROW1: text text text text text` is the text of the first row. */
+        if (strcmp(key, "ROW1") == 0) {
+            text[0] = strtok(value, " ");
+            text[1] = strtok(NULL, " ");
+            text[2] = strtok(NULL, " ");
+            text[3] = strtok(NULL, " ");
+            text[4] = strtok(NULL, " ");
+            return true;
+        }
+
+        /*md - `ROW2: text text text text text` is the text of the second row. */
+        if (strcmp(key, "ROW2") == 0) {
+            text[5] = strtok(value, " ");
+            text[6] = strtok(NULL, " ");
+            text[7] = strtok(NULL, " ");
+            text[8] = strtok(NULL, " ");
+            text[9] = strtok(NULL, " ");
             return true;
         }
 
