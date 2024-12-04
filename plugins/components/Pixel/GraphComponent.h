@@ -48,8 +48,10 @@ class GraphComponent : public GroupColorComponent {
             for (int i = 0; i < size.w; i++) {
                 float index = i / (float)(size.w - 1);
                 float* value = (float*)plugin->data(dataId, &index);
-                Point point = { i, (int)(*value * halfHeight + halfHeight) };
-                relativePoints.push_back({ point.x + relativePosition.x, point.y + waveformY });
+                if (value != NULL) {
+                    Point point = { i, (int)(*value * halfHeight + halfHeight) };
+                    relativePoints.push_back({ point.x + relativePosition.x, point.y + waveformY });
+                }
             }
             relativePoints.push_back({ relativePosition.x + size.w, (int)(waveformY + halfHeight) });
             if (filled) {
