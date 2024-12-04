@@ -346,3 +346,6 @@ while: $step < 32
 
 # need to keep this else loop doesnt work properly...
 print: end step=$step
+
+  COMPONENT: HiddenEncoder 0 0 0 0
+    ENCODER_ID: 3

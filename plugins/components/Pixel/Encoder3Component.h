@@ -1,5 +1,5 @@
-#ifndef _UI_COMPONENT2_ENCODER_H_
-#define _UI_COMPONENT2_ENCODER_H_
+#ifndef _UI_COMPONENT3_ENCODER_H_
+#define _UI_COMPONENT3_ENCODER_H_
 
 #include "../component.h"
 #include "../utils/color.h"
@@ -37,6 +37,7 @@ protected:
     bool showUnit = true;
     bool stringValueReplaceTitle = false;
 
+    // FIXME should remove marginTop
     const int marginTop = 2;
 
     int8_t encoderId = -1;
@@ -339,7 +340,7 @@ public:
         //     printf("[%s] Encoder2Component onEncoder: %d %d\n", label.c_str(), id, direction);
         // }
 
-        if (isActive && id == encoderId) {
+        if (value && isActive && id == encoderId) {
             value->increment(direction);
         }
     }
