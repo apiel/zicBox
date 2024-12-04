@@ -286,55 +286,63 @@ VIEW: Sequencer
 
 $rowHeight=25
 $y=-($rowHeight) + 12
-$group=-1
 $step=0
+$groupRange=0
 
 while: $step < 32
-  $group=$group+1
   $y=$y+$rowHeight
   
     COMPONENT: StepEdit 0 $y $1/4W 25
-      GROUP: $group
+      GROUP: $step
+      GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer 4 $step
-      SELECT: true
 
     $step=$step+1
     COMPONENT: StepEdit $1/4W $y $1/4W 25
-      GROUP: $group
+      GROUP: $step
+      GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer 4 $step
 
     $step=$step+1
     COMPONENT: StepEdit $2/4W $y $1/4W 25
-      GROUP: $group
+      GROUP: $step
+      GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer 4 $step
 
     $step=$step+1
     COMPONENT: StepEdit $3/4W $y $1/4W 25
-      GROUP: $group
+      GROUP: $step
+      GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer 4 $step
 
   $y=$y+$rowHeight
     $step=$step+1
     COMPONENT: StepEdit 0 $y $1/4W 25
-      GROUP: $group
+      GROUP: $step
+      GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer 4 $step
 
     $step=$step+1
     COMPONENT: StepEdit $1/4W $y $1/4W 25
-      GROUP: $group
+      GROUP: $step
+      GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer 4 $step
 
     $step=$step+1
     COMPONENT: StepEdit $2/4W $y $1/4W 25
-      GROUP: $group
+      GROUP: $step
+      GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer 4 $step
 
     $step=$step+1
     COMPONENT: StepEdit $3/4W $y $1/4W 25
-      GROUP: $group
+      GROUP: $step
+      GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer 4 $step
 
     $step=$step+1
+  
+  $groupRange=$groupRange+8
 
 # need to keep this else loop doesnt work properly...
 print: end step=$step

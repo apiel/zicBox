@@ -65,6 +65,7 @@ public:
                         lastView = view;
                     }
                     view = views[i];
+                    view->setGroup(0);
                     render();
                 }
                 return;
