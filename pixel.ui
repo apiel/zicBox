@@ -296,6 +296,7 @@ while: $step < 32
     COMPONENT: StepEdit 0 $y $1/4W 25
       GROUP: $group
       DATA: Sequencer 4 $step
+      SELECT: true
 
     $step=$step+1
     COMPONENT: StepEdit $1/4W $y $1/4W 25
