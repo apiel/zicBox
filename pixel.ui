@@ -54,11 +54,13 @@ VIEW: Main
 $track=1
 
   COMPONENT: KeyInfoBar 0 216
+    ROW1: &icon::arrowUp Seq Clip Synth Track
     KEYMAP: Keyboard 20 item 0
     KEYMAP: Keyboard 26 item 1
     KEYMAP: Keyboard 8 item 2
     KEYMAP: Keyboard 21 item 3
     KEYMAP: Keyboard 23 item 4
+    ROW2: &icon::arrowDown mod Live &icon::pause &icon::play
     KEYMAP: Keyboard 4 item 5
     KEYMAP: Keyboard 22 item 6
     KEYMAP: Keyboard 7 item 7
@@ -270,11 +272,13 @@ $y=$y+$sepHeight
 VIEW: Sequencer
 
   COMPONENT: KeyInfoBar 0 216
+    ROW1: 1 2 3 4 Shift
     KEYMAP: Keyboard 20 item 0
     KEYMAP: Keyboard 26 item 1
     KEYMAP: Keyboard 8 item 2
     KEYMAP: Keyboard 21 item 3
     KEYMAP: Keyboard 23 item 4
+    ROW2: 5 6 7 8 ...
     KEYMAP: Keyboard 4 item 5
     KEYMAP: Keyboard 22 item 6
     KEYMAP: Keyboard 7 item 7
