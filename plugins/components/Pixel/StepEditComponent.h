@@ -24,6 +24,9 @@ StepEdit component is used to edit a step value.
 // Shift + key will select step
 // key only will enable/disable step (and selecting it at the same time)
 
+// pressing encoder will toggle between basic and step probability mode
+// also shift + key on an already selected step will toggle between basic and step probability mode
+
 class StepEditComponent : public GroupColorComponent {
 protected:
     AudioPlugin* plugin = NULL;
