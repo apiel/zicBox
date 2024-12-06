@@ -3,8 +3,8 @@
 
 #include <functional>
 #include <stdint.h>
-#include <string>
 #include <string.h>
+#include <string>
 #include <vector>
 
 #include "../../controllers/keypadInterface.h"
@@ -32,6 +32,30 @@ public:
 protected:
     std::function<void(KeypadInterface* controller, uint16_t controllerId, int8_t state, int param, std::string action, uint8_t color)> addKeyMap;
     ControllerInterface* (*getController)(const char* name);
+
+    uint8_t getKeyCode(std::string keyStr)
+    {
+        // A is 4 and Z is 29
+        if (keyStr[0] >= 97 && keyStr[0] <= 123) {
+            return keyStr[0] - 97 + 4;
+        }
+
+        // a is 4 and z is 29
+        if (keyStr[0] >= 65 && keyStr[0] <= 90) {
+            return keyStr[0] - 65 + 4;
+        }
+
+        // 0 is 30 and 9 is 39
+        if (keyStr[0] >= 48 && keyStr[0] <= 57) {
+            return keyStr[0] - 48 + 30;
+        }
+
+        if (keyStr.length() == 1) {
+            throw std::runtime_error("Unsupported key: " + keyStr + ". Supported keys: a-z, A-Z, 0-9. For other special char, use scancode values with at least two digits (e.g. 4 should be written as 04).");
+        }
+
+        return atoi(keyStr.c_str());
+    }
 
 public:
     std::vector<KeyMap> mapping;
@@ -78,10 +102,11 @@ public:
 
     bool config(char* key, char* value)
     {
-        /*md - `KEYMAP: controllerName key action [param] [color]` Map an action to a controller key. Use `Keyboard` as `controllerName` to use computer keyboard. */
+        /*md - `KEYMAP: controllerName key action [param] [color]` Map an action to a controller key. Use `Keyboard` as `controllerName` to use computer keyboard. Any key of one character will be converted to scancode. Supported keys: a-z, A-Z, 0-9. For other special char, use scancode values with at least two digits (e.g. 4 should be written as 04). */
         if (strcmp(key, "KEYMAP") == 0) {
             std::string controllerName = strtok(value, " ");
-            uint8_t key = atoi(strtok(NULL, " "));
+            uint8_t key = getKeyCode(strtok(NULL, " "));
+            // printf("KEYMAP: %d\n", key);
             std::string action = strtok(NULL, " ");
             char* paramStr = strtok(NULL, " ");
             char* colorStr = strtok(NULL, " ");
@@ -94,7 +119,7 @@ public:
             if (strcmp(controllerName.c_str(), "Keyboard") == 0) {
                 controllerId = 0;
             } else {
-                controller = (KeypadInterface *)getController(controllerName.c_str());
+                controller = (KeypadInterface*)getController(controllerName.c_str());
                 if (controller == NULL) {
                     // printf("..................controller %s NOT fount\n", controllerName.c_str());
                     return true;
