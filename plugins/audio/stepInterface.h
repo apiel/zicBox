@@ -1,12 +1,12 @@
 #ifndef _STEP_SEQUENCER_H_
 #define _STEP_SEQUENCER_H_
 
-#include <math.h>
-#include <stdint.h>
-#include <time.h>
-#include <string>
 #include <cstring>
 #include <functional>
+#include <math.h>
+#include <stdint.h>
+#include <string>
+#include <time.h>
 
 // #include "helpers/midiNote.h"
 #include "helpers/range.h"
@@ -48,9 +48,24 @@ struct StepCondition {
 struct StepMotion {
     const char* name;
     std::function<int8_t(uint8_t loopCounter)> get;
-    uint8_t counter = 0;
 } stepMotions[] = {
-    { "---", [](uint8_t loopCounter) { return 0; }, 0 },
+    { "---", [](uint8_t loopCounter) { return 0; } },
+    { "+01", [](uint8_t loopCounter) { return 0; } }, // <-- then -1 +1 not necessary!!
+    { "-01", [](uint8_t loopCounter) { return 0; } }, // are even - necessary?? but then might want +1+0
+    { "+02", [](uint8_t loopCounter) { return 0; } },
+    { "-02", [](uint8_t loopCounter) { return 0; } },
+    // ... bis 12 
+    { "+012", [](uint8_t loopCounter) { return 0; } },
+    { "-012", [](uint8_t loopCounter) { return 0; } },
+    { "+0123", [](uint8_t loopCounter) { return 0; } },
+    { "-0123", [](uint8_t loopCounter) { return 0; } },
+    { "+0246", [](uint8_t loopCounter) { return 0; } },
+    { "-0246", [](uint8_t loopCounter) { return 0; } },
+    { "-1+1", [](uint8_t loopCounter) { return 0; } },
+    { "-2+2", [](uint8_t loopCounter) { return 0; } },
+    { "-3+3", [](uint8_t loopCounter) { return 0; } },
+    // ...
+    { "-12+12", [](uint8_t loopCounter) { return 0; } },
 };
 
 uint8_t STEP_CONDITIONS_COUNT = sizeof(stepConditions) / sizeof(stepConditions[0]);
