@@ -158,7 +158,7 @@ public:
     Draw draw;
 #endif
 
-    uint8_t shift = 0;
+    uint8_t shift[256] = { 0 };
 
     static ViewManager& get()
     {
