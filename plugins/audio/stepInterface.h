@@ -6,9 +6,10 @@
 #include <time.h>
 #include <string>
 #include <cstring>
+#include <functional>
 
-// #include "../../helpers/midiNote.h"
-#include "../../helpers/range.h"
+// #include "helpers/midiNote.h"
+#include "helpers/range.h"
 
 int randCounter = 0;
 int getRand()
@@ -42,6 +43,14 @@ struct StepCondition {
     { "95%", [](uint8_t loopCounter) { return (getRand() % 100) < 95; } },
     { "98%", [](uint8_t loopCounter) { return (getRand() % 100) < 98; } },
     { "99%", [](uint8_t loopCounter) { return (getRand() % 100) < 99; } },
+};
+
+struct StepMotion {
+    const char* name;
+    std::function<int8_t(uint8_t loopCounter)> get;
+    uint8_t counter = 0;
+} stepMotions[] = {
+    { "---", [](uint8_t loopCounter) { return 0; }, 0 },
 };
 
 uint8_t STEP_CONDITIONS_COUNT = sizeof(stepConditions) / sizeof(stepConditions[0]);
