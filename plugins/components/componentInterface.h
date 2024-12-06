@@ -22,7 +22,7 @@ public:
         void (*sendAudioEvent)(AudioEventType event);
         ControllerInterface* (*getController)(const char* name);
         ViewInterface* view;
-        uint8_t* shift;
+        std::function<void(uint8_t index, uint8_t value)> setShift;
     };
 
 protected:
@@ -32,7 +32,7 @@ protected:
     void (*sendAudioEvent)(AudioEventType event);
     ControllerInterface* (*getController)(const char* name);
     ViewInterface* view;
-    uint8_t* shift;
+    std::function<void(uint8_t index, uint8_t value)> setShift;
     Point relativePosition = { 0, 0 };
 
     Props getNewPropsRect(Props props, Rect rect)
@@ -68,7 +68,7 @@ public:
         , sendAudioEvent(props.sendAudioEvent)
         , getController(props.getController)
         , view(props.view)
-        , shift(props.shift)
+        , setShift(props.setShift)
         , position(props.position)
         , size(props.size)
     {
@@ -88,6 +88,7 @@ public:
     virtual bool config(char* key, char* value) = 0;
     virtual bool baseConfig(char* key, char* value) = 0;
     virtual void onGroupChanged(int8_t index) = 0;
+    virtual void onShift(uint8_t index, uint8_t value) = 0;
     virtual void onUpdate(ValueInterface* value) = 0;
     virtual void* data(int id, void* userdata = NULL)
     {

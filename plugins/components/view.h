@@ -82,6 +82,13 @@ public:
         }
     }
 
+    void onShift(uint8_t index, uint8_t value)
+    {
+        for (auto& component : components) {
+            component->onShift(index, value);
+        }
+    }
+
     // TODO could this be optimized by creating mapping values to components?
     void onUpdate(ValueInterface* val)
     {
