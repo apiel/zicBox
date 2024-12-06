@@ -49,7 +49,6 @@ protected:
     uint8_t encoderId2 = -1;
     uint8_t encoderId3 = -1;
 
-    uint8_t shift = 0;
     uint8_t shiftIndex = 255;
 
 public:
@@ -68,7 +67,6 @@ public:
     void onShift(uint8_t index, uint8_t value) override
     {
         if (index == shiftIndex) {
-            shift = value;
             renderNext();
         }
     }
@@ -81,7 +79,7 @@ public:
             if (step->enabled) {
                 int y = relativePosition.y + (size.h - 16) * 0.5;
 
-                if (shift) {
+                if (view->shift[shiftIndex]) {
                     draw.textCentered({ (int)(relativePosition.x + size.w * 0.5), relativePosition.y }, "YO", 16, { text.color });
                 } else {
                     const char* note = MIDI_NOTES_STR[step->note];
