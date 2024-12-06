@@ -20,11 +20,6 @@ KeyInfoBar components provide some information about the current kaypad layout.
 
 // KEYMAP in addition of key number, we could use engish keyboard value
 
-// Row 1: 1=10  2=9  3=8  4=7  5=6  6=5  7=4  8=3  9=2  0=1
-// Row 2: Q=20  W=26  E=8  R=18  T=16  Y=24  U=22  I=15  O=12  P=10
-// Row 3: A=14  S=19  D=12  F=17  G=23  H=21  J=25  K=30  L=28
-// Row 4: Z=32  X=29  C=11  V=27  B=13  N=9  M=7
-
 class KeyInfoBarComponent : public Component {
 protected:
     Icon icon;
