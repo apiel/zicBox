@@ -45,6 +45,10 @@ protected:
     bool selected = false;
     int16_t groupRange[2] = { -1, -1 };
 
+    uint8_t encoderId1 = -1;
+    uint8_t encoderId2 = -1;
+    uint8_t encoderId3 = -1;
+
 public:
     StepEditComponent(ComponentInterface::Props props)
         : GroupColorComponent(props, { { "TEXT_COLOR", &text }, { "TEXT2_COLOR", &text2 }, { "BAR_BACKGROUND_COLOR", &barBackground }, { "BAR_COLOR", &bar } })
@@ -92,6 +96,22 @@ public:
         }
     }
 
+    void onEncoder(int id, int8_t direction) override
+    {
+        if (selected) {
+            if (id == encoderId1) {
+                step->setNote(step->note + direction);
+                renderNext();
+            } else if (id == encoderId2) {
+                step->setVelocity(step->velocity + direction * 0.05);
+                renderNext();
+            } else if (id == encoderId3) {
+                step->setLength(step->len + direction);
+                renderNext();
+            }
+        }
+    }
+
     void onGroupChanged(int8_t index) override
     {
         bool isSameGroup = group == index;
@@ -122,6 +142,14 @@ public:
             dataId = atoi(strtok(NULL, " "));
             stepIndex = atoi(strtok(NULL, " "));
             step = (Step*)plugin->data(dataId, &stepIndex);
+            return true;
+        }
+
+        /*md - `ENCODERS: encoder_id1 encoder_id2 encoder_id3` is the id of the encoder to update step value. This component use 3 encoders. In standard view, it will change note, velocity and length. In shift view, it will change probability, condition and motion. */
+        if (strcmp(key, "ENCODERS") == 0) {
+            encoderId1 = atoi(strtok(value, " "));
+            encoderId2 = atoi(strtok(NULL, " "));
+            encoderId3 = atoi(strtok(NULL, " "));
             return true;
         }
 
