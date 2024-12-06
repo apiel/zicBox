@@ -23,30 +23,31 @@ public:
         return value;
     }
 
-    virtual void clear(){
+    virtual void clear() override
+    {
         draw.filledRect(position, size, { draw.styles.colors.background });
     };
 
-    virtual void render() { }
-    virtual void initView(uint16_t counter) { }
+    virtual void render() override { }
+    virtual void initView(uint16_t counter) override { }
 
-    virtual void renderNext()
+    virtual void renderNext() override
     {
         if (active) {
             view->pushToRenderingQueue(this);
         }
     }
 
-    virtual void onUpdate(ValueInterface* value)
+    virtual void onUpdate(ValueInterface* value) override
     {
         renderNext();
     }
 
-    virtual void onMotion(MotionInterface& motion)
+    virtual void onMotion(MotionInterface& motion) override
     {
     }
 
-    virtual void handleMotion(MotionInterface& motion)
+    virtual void handleMotion(MotionInterface& motion) override
     {
         if (!motion.originIn({ position, size })) {
             return;
@@ -60,28 +61,28 @@ public:
         }
     }
 
-    virtual void onMotionRelease(MotionInterface& motion)
+    virtual void onMotionRelease(MotionInterface& motion) override
     {
     }
 
-    virtual void handleMotionRelease(MotionInterface& motion)
+    virtual void handleMotionRelease(MotionInterface& motion) override
     {
         onMotionRelease(motion);
     }
 
-    virtual void onEncoder(int id, int8_t direction)
+    virtual void onEncoder(int id, int8_t direction) override
     {
     }
 
-    virtual void onKey(uint16_t id, int key, int8_t state)
+    virtual void onKey(uint16_t id, int key, int8_t state) override
     {
     }
 
-    virtual bool config(char* key, char* value)
+    virtual bool config(char* key, char* value) override
     {
         return false;
     }
-    virtual bool baseConfig(char* key, char* value)
+    virtual bool baseConfig(char* key, char* value) override
     {
         if (strcmp(key, "GROUP") == 0) {
             group = atoi(value);
@@ -103,7 +104,11 @@ public:
         return config(key, value);
     }
 
-    virtual void onGroupChanged(int8_t index)
+    virtual void onGroupChanged(int8_t index) override
+    {
+    }
+
+    virtual void onShift(uint8_t index, uint8_t value) override
     {
     }
 };

@@ -49,6 +49,9 @@ protected:
     uint8_t encoderId2 = -1;
     uint8_t encoderId3 = -1;
 
+    uint8_t shift = 0;
+    uint8_t shiftIndex = 255;
+
 public:
     StepEditComponent(ComponentInterface::Props props)
         : GroupColorComponent(props, { { "TEXT_COLOR", &text }, { "TEXT2_COLOR", &text2 }, { "BAR_BACKGROUND_COLOR", &barBackground }, { "BAR_COLOR", &bar } })
@@ -62,6 +65,14 @@ public:
         updateColors();
     }
 
+    void onShift(uint8_t index, uint8_t value) override
+    {
+        if (index == shiftIndex) {
+            shift = value;
+            renderNext();
+        }
+    }
+
     void render() override
     {
         if (updatePosition() && step) {
@@ -69,24 +80,29 @@ public:
 
             if (step->enabled) {
                 int y = relativePosition.y + (size.h - 16) * 0.5;
-                const char* note = MIDI_NOTES_STR[step->note];
-                const char noteLetter[2] = { note[0], '\0' };
-                const char* noteSuffix = note + 1;
-                int x = draw.text({ relativePosition.x + 2, y }, noteLetter, 16, { text.color });
-                draw.text({ x - 2, y + 6 }, noteSuffix, 8, { text.color });
 
-                float centerX = relativePosition.x + size.w * 0.5;
+                if (shift) {
+                    draw.textCentered({ (int)(relativePosition.x + size.w * 0.5), relativePosition.y }, "YO", 16, { text.color });
+                } else {
+                    const char* note = MIDI_NOTES_STR[step->note];
+                    const char noteLetter[2] = { note[0], '\0' };
+                    const char* noteSuffix = note + 1;
+                    int x = draw.text({ relativePosition.x + 2, y }, noteLetter, 16, { text.color });
+                    draw.text({ x - 2, y + 6 }, noteSuffix, 8, { text.color });
 
-                int barWidth = size.w * 0.40;
-                int barX = (int)(centerX - barWidth * 0.5);
-                draw.filledRect({ barX, y }, { barWidth, 3 }, { barBackground.color });
+                    float centerX = relativePosition.x + size.w * 0.5;
 
-                if (step->velocity) {
-                    draw.filledRect({ barX, y }, { (int)(barWidth * step->velocity), 3 }, { bar.color });
+                    int barWidth = size.w * 0.40;
+                    int barX = (int)(centerX - barWidth * 0.5);
+                    draw.filledRect({ barX, y }, { barWidth, 3 }, { barBackground.color });
+
+                    if (step->velocity) {
+                        draw.filledRect({ barX, y }, { (int)(barWidth * step->velocity), 3 }, { bar.color });
+                    }
+
+                    // TODO if 0 make infinit sign
+                    draw.textRight({ relativePosition.x + size.w - 4, y + 6 }, std::to_string(step->len) + "/32", 8, { text2.color });
                 }
-
-                // TODO if 0 make infinit sign
-                draw.textRight({ relativePosition.x + size.w - 4, y + 6 }, std::to_string(step->len) + "/32", 8, { text2.color });
             } else {
                 draw.textCentered({ (int)(relativePosition.x + size.w * 0.5), relativePosition.y }, "---", 16, { text.color });
             }
@@ -152,6 +168,12 @@ public:
             encoderId1 = atoi(strtok(value, " "));
             encoderId2 = atoi(strtok(NULL, " "));
             encoderId3 = atoi(strtok(NULL, " "));
+            return true;
+        }
+
+        /*md - `SHIFT_INDEX: 255` set the index of the shift bank to use. There is 255 shift banks share within the whole app. */
+        if (strcmp(key, "SHIFT_INDEX") == 0) {
+            shiftIndex = atoi(value);
             return true;
         }
 

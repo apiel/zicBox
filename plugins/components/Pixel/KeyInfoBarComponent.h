@@ -28,6 +28,9 @@ protected:
 
     Color textColor;
 
+    uint8_t shift = 0;
+    uint8_t shiftIndex = 255;
+
     void handleButton(int8_t id, int8_t state)
     {
         printf("handleButton: %d %d\n", id, state);
@@ -37,6 +40,8 @@ protected:
                 view->setGroup(activeGroup - 1);
             } else if (id == 1) {
                 view->setView("Sequencer");
+            } else if (id == 4) {
+                setShift(shiftIndex, shift ? 0 : 1);
             } else if (id == 5) {
                 view->setGroup(activeGroup + 1);
             } else if (id == 9) {
@@ -90,6 +95,13 @@ public:
         if (updatePosition()) {
             renderRow(relativePosition.y, 0);
             renderRow(relativePosition.y + 12, 5);
+        }
+    }
+
+    void onShift(uint8_t index, uint8_t value) override
+    {
+        if (index == shiftIndex) {
+            shift = value;
         }
     }
 

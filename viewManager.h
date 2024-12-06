@@ -66,6 +66,9 @@ public:
                     }
                     view = views[i];
                     view->setGroup(0);
+                    for (int i = 0; i < 256; i++) {
+                        view->onShift(i, shift[i]); 
+                    }
                     render();
                 }
                 return;
@@ -122,7 +125,7 @@ protected:
             sendAudioEvent,
             getController,
             view,
-            shift
+            [this](uint8_t index, uint8_t value) { shift[index] = value; view->onShift(index, value); }
         };
 
         // printf("addComponent: %s pos %d %d size %d %d\n", name, position.x, position.y, size.w, size.h);
