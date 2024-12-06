@@ -85,7 +85,8 @@ public:
                     draw.filledRect({ barX, y }, { (int)(barWidth * step->velocity), 3 }, { bar.color });
                 }
 
-                draw.textRight({ relativePosition.x + size.w - 4, y + 6 }, "1/32", 8, { text2.color });
+                // TODO if 0 make infinit sign
+                draw.textRight({ relativePosition.x + size.w - 4, y + 6 }, std::to_string(step->len) + "/32", 8, { text2.color });
             } else {
                 draw.textCentered({ (int)(relativePosition.x + size.w * 0.5), relativePosition.y }, "---", 16, { text.color });
             }
@@ -107,6 +108,7 @@ public:
                 renderNext();
             } else if (id == encoderId3) {
                 step->setLength(step->len + direction);
+                // printf("step length: %d\n", step->len);
                 renderNext();
             }
         }
