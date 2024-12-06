@@ -71,6 +71,15 @@ public:
         }
     }
 
+    void renderNote(int y)
+    {
+        const char* note = MIDI_NOTES_STR[step->note];
+        const char noteLetter[2] = { note[0], '\0' };
+        const char* noteSuffix = note + 1;
+        int x = draw.text({ relativePosition.x + 2, y }, noteLetter, 16, { text.color });
+        draw.text({ x - 2, y + 6 }, noteSuffix, 8, { text.color });
+    }
+
     void render() override
     {
         if (updatePosition() && step) {
@@ -78,15 +87,11 @@ public:
 
             int y = relativePosition.y + (size.h - 16) * 0.5;
             if (step->enabled) {
+                renderNote(y);
                 if (view->shift[shiftIndex]) {
-                    draw.textCentered({ (int)(relativePosition.x + size.w * 0.5), y }, "YO", 16, { text.color });
+                    draw.text({ relativePosition.x + 32, y }, stepConditions[step->condition].name, 8, { text2.color });
+                    draw.text({ relativePosition.x + 32, y + 8 }, "---", 8, { text2.color });
                 } else {
-                    const char* note = MIDI_NOTES_STR[step->note];
-                    const char noteLetter[2] = { note[0], '\0' };
-                    const char* noteSuffix = note + 1;
-                    int x = draw.text({ relativePosition.x + 2, y }, noteLetter, 16, { text.color });
-                    draw.text({ x - 2, y + 6 }, noteSuffix, 8, { text.color });
-
                     float centerX = relativePosition.x + size.w * 0.5;
 
                     int barWidth = size.w * 0.40;
@@ -117,7 +122,11 @@ public:
                 step->setNote(step->note + direction);
                 renderNext();
             } else if (id == encoderId2) {
-                step->setVelocity(step->velocity + direction * 0.05);
+                if (view->shift[shiftIndex]) {
+                    step->setCondition(step->condition + direction);
+                } else {
+                    step->setVelocity(step->velocity + direction * 0.05);
+                }
                 renderNext();
             } else if (id == encoderId3) {
                 step->setLength(step->len + direction);
@@ -160,7 +169,7 @@ public:
             return true;
         }
 
-        /*md - `ENCODERS: encoder_id1 encoder_id2 encoder_id3` is the id of the encoder to update step value. This component use 3 encoders. In standard view, it will change note, velocity and length. In shift view, it will change probability, condition and motion. */
+        /*md - `ENCODERS: encoder_id1 encoder_id2 encoder_id3` is the id of the encoder to update step value. This component use 3 encoders. In standard view, it will change note, velocity and length. In shift view, it will change note, condition and motion. */
         if (strcmp(key, "ENCODERS") == 0) {
             encoderId1 = atoi(strtok(value, " "));
             encoderId2 = atoi(strtok(NULL, " "));
