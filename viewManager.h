@@ -275,7 +275,7 @@ VIEW: Mixer
 ```
 */
         if (strcmp(key, "VIEW") == 0) {
-            View* v = new View(draw, [&](std::string name) { setView(name); });
+            View* v = new View(draw, [&](std::string name) { setView(name); }, shift);
             v->name = value;
 
             views.push_back(v);

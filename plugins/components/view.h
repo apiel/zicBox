@@ -14,8 +14,8 @@ public:
     std::vector<ComponentInterface*> componentsJob = {};
     std::mutex m2;
 
-    View(DrawInterface& draw, std::function<void(std::string name)> setView)
-        : ViewInterface(draw, setView)
+    View(DrawInterface& draw, std::function<void(std::string name)> setView, uint8_t * shift)
+        : ViewInterface(draw, setView, shift)
     {
     }
 

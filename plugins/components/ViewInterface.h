@@ -11,10 +11,12 @@ class ViewInterface {
 public:
     DrawInterface& draw;
     std::function<void(std::string name)> setView;
+    uint8_t *shift;
 
-    ViewInterface(DrawInterface& draw, std::function<void(std::string name)> setView)
+    ViewInterface(DrawInterface& draw, std::function<void(std::string name)> setView, uint8_t *shift)
         : draw(draw)
         , setView(setView)
+        , shift(shift)
     {
     }
 
