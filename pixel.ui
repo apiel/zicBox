@@ -300,24 +300,28 @@ while: $step < 32
       GROUP: $step
       GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer 4 $step
+      ENCODERS: 0 1 2
 
     $step=$step+1
     COMPONENT: StepEdit $1/4W $y $1/4W 25
       GROUP: $step
       GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer 4 $step
+      ENCODERS: 0 1 2
 
     $step=$step+1
     COMPONENT: StepEdit $2/4W $y $1/4W 25
       GROUP: $step
       GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer 4 $step
+      ENCODERS: 0 1 2
 
     $step=$step+1
     COMPONENT: StepEdit $3/4W $y $1/4W 25
       GROUP: $step
       GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer 4 $step
+      ENCODERS: 0 1 2
 
   $y=$y+$rowHeight
     $step=$step+1
@@ -325,24 +329,28 @@ while: $step < 32
       GROUP: $step
       GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer 4 $step
+      ENCODERS: 0 1 2
 
     $step=$step+1
     COMPONENT: StepEdit $1/4W $y $1/4W 25
       GROUP: $step
       GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer 4 $step
+      ENCODERS: 0 1 2
 
     $step=$step+1
     COMPONENT: StepEdit $2/4W $y $1/4W 25
       GROUP: $step
       GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer 4 $step
+      ENCODERS: 0 1 2
 
     $step=$step+1
     COMPONENT: StepEdit $3/4W $y $1/4W 25
       GROUP: $step
       GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer 4 $step
+      ENCODERS: 0 1 2
 
     $step=$step+1
   
