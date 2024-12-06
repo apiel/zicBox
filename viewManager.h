@@ -158,7 +158,7 @@ public:
     Draw draw;
 #endif
 
-    bool shift = false;
+    uint8_t shift = 0;
 
     static ViewManager& get()
     {
@@ -207,7 +207,6 @@ public:
 
     void renderComponents(unsigned long now = getTicks())
     {
-        // printf("renderComponents shifted: %d\n", shift ? 1 : 0);
         m.lock();
         view->renderComponents(now);
         m.unlock();

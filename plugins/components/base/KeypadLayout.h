@@ -7,7 +7,8 @@
 #include <string>
 #include <vector>
 
-#include "../../controllers/keypadInterface.h"
+#include "plugins/controllers/keypadInterface.h"
+#include "log.h"
 
 /*md
 ## KeypadLayout
@@ -51,7 +52,8 @@ protected:
                 return keyStr[1] - 48 + 30;
             }
 
-            throw std::runtime_error("Unsupported key: " + keyStr + ". Supported keys: a-z, A-Z, 0-9. For other special char, use scancode values.");
+            logWarn("Unsupported key: " + keyStr + ". Supported keys: a-z, A-Z, 0-9. For other special char, use scancode values.");
+            return -1; // 255
         }
 
         return atoi(keyStr.c_str());
