@@ -303,7 +303,7 @@ protected:
 
     void updateTrackSelection(int8_t state, uint8_t track)
     {
-        if (shift) {
+        if (shift[0]) {
             if (state == 1) {
                 tracks[track].seqPlugin->data(20);
             }
