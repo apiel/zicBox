@@ -76,11 +76,10 @@ public:
         if (updatePosition() && step) {
             draw.filledRect(relativePosition, size, { bgColor });
 
+            int y = relativePosition.y + (size.h - 16) * 0.5;
             if (step->enabled) {
-                int y = relativePosition.y + (size.h - 16) * 0.5;
-
                 if (view->shift[shiftIndex]) {
-                    draw.textCentered({ (int)(relativePosition.x + size.w * 0.5), relativePosition.y }, "YO", 16, { text.color });
+                    draw.textCentered({ (int)(relativePosition.x + size.w * 0.5), y }, "YO", 16, { text.color });
                 } else {
                     const char* note = MIDI_NOTES_STR[step->note];
                     const char noteLetter[2] = { note[0], '\0' };
@@ -102,7 +101,7 @@ public:
                     draw.textRight({ relativePosition.x + size.w - 4, y + 6 }, std::to_string(step->len) + "/32", 8, { text2.color });
                 }
             } else {
-                draw.textCentered({ (int)(relativePosition.x + size.w * 0.5), relativePosition.y }, "---", 16, { text.color });
+                draw.textCentered({ (int)(relativePosition.x + size.w * 0.5), y }, "---", 16, { text.color });
             }
 
             if (selected) {
