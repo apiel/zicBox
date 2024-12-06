@@ -22,7 +22,7 @@ public:
         void (*sendAudioEvent)(AudioEventType event);
         ControllerInterface* (*getController)(const char* name);
         ViewInterface* view;
-        bool& shift;
+        uint8_t& shift;
     };
 
 protected:
@@ -32,7 +32,7 @@ protected:
     void (*sendAudioEvent)(AudioEventType event);
     ControllerInterface* (*getController)(const char* name);
     ViewInterface* view;
-    bool& shift;
+    uint8_t& shift;
     Point relativePosition = { 0, 0 };
 
     Props getNewPropsRect(Props props, Rect rect)

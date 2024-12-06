@@ -265,12 +265,13 @@ protected:
         }
 
         /*md - `ON_PRESS: &SHIFT true/false` set shift value. */
+        // TODO support shift with different value, e.g.: &SHIFT:2 or &SHIFT:123
         if (strcmp(action, "&SHIFT") == 0) {
             char* shiftValue = strtok(NULL, " ");
             if (strcmp(shiftValue, "true") == 0) {
-                event = [this]() { shift = true; };
+                event = [this]() { shift = 1; };
             } else if (strcmp(shiftValue, "false") == 0) {
-                event = [this]() { shift = false; };
+                event = [this]() { shift = 0; };
             }
             return;
         }
