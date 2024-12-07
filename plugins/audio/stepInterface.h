@@ -10,6 +10,7 @@
 
 // #include "helpers/midiNote.h"
 #include "helpers/range.h"
+#include "helpers/format.h"
 
 int randCounter = 0;
 int getRand()
@@ -161,7 +162,7 @@ public:
     {
         return std::to_string(enabled) + " "
             + std::to_string(note) + " "
-            + std::to_string(velocity) + " "
+            + fToString(velocity, 2) + " "
             + stepConditions[condition].name + " "
             + stepMotions[motion].name + " "
             + std::to_string(len);
