@@ -59,14 +59,13 @@ public:
     void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress)
     {
         if (action == "item") {
-            int* id = new int(atoi(param));
             keypadLayout.mapping.push_back(
                 {
                     controller,
                     controllerId,
                     key,
                     [&](int8_t state, KeypadLayout::KeyMap& keymap) { handleButton(*(int*)keymap.param, state); },
-                    id,
+                    new int(atoi(param)),
                 });
         }
     }

@@ -3,9 +3,9 @@
 
 #include "../../audio/stepInterface.h"
 
-#include "base/Grid.h"
 #include "../base/KeypadLayout.h"
 #include "../component.h"
+#include "base/Grid.h"
 
 #include <vector>
 
@@ -398,17 +398,18 @@ protected:
 
 public:
     /*md **Keyboard actions**: */
-    void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, int param, std::string action, uint8_t color)
+    void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress)
     {
         /*md - `key10` is used to assign one of the 10 keys for the 10 buttons control of GridMini. */
         if (action == "key10") {
-            keypadLayout.mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { handleKey10Controller(state, keymap.param); }, color, [&](KeypadLayout::KeyMap& keymap) { return 20; } });
+            int* id = new int(atoi(param));
+            keypadLayout.mapping.push_back({ controller, controllerId, key, [&](int8_t state, KeypadLayout::KeyMap& keymap) { handleKey10Controller(state, *(int*)keymap.param); }, id });
         }
     }
 
     GridMiniComponent(ComponentInterface::Props props)
         : Component(props)
-        , keypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, int param, std::string action, uint8_t color) { addKeyMap(controller, controllerId, key, param, action, color); })
+        , keypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress) { addKeyMap(controller, controllerId, key, action, param, actionLongPress, paramLongPress); })
     {
         jobRendering = [this](unsigned long _now) {
             now = _now;

@@ -2,8 +2,8 @@
 #define _UI_COMPONENT_RECT_H_
 
 #include "../base/KeypadLayout.h"
-#include "../utils/color.h"
 #include "../component.h"
+#include "../utils/color.h"
 #include <string>
 #include <vector>
 
@@ -41,7 +41,7 @@ protected:
         { "Modulation", "modulation_$track_$page" },
         { "Waveform", "waveform_$track_$page", 0 },
         { "FX", "fx_$track_$page", 0 },
-        { "Master", "master_$page", 0 }, 
+        { "Master", "master_$page", 0 },
         { "...", "misc_$page", 0 },
     };
 
@@ -79,20 +79,25 @@ protected:
 
 public:
     /*md **Keyboard actions**: */
-    void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, int param, std::string action, uint8_t color)
+    void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress)
     {
         /*md - `item` to select item. */
         if (action == "item") {
+            int* id = new int(atoi(param));
             keypadLayout.mapping.push_back(
-                { controller, controllerId, key, param,
-                    [&](int8_t state, KeypadLayout::KeyMap& keymap) { handleButton(keymap.param, state); },
-                    color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color == 255 ? 10 : keymap.color; } });
+                {
+                    controller,
+                    controllerId,
+                    key,
+                    [&](int8_t state, KeypadLayout::KeyMap& keymap) { handleButton(*(int*)keymap.param, state); },
+                    id,
+                });
         }
     }
 
     ButtonBarComponent(ComponentInterface::Props props)
         : Component(props)
-        , keypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, int param, std::string action, uint8_t color) { addKeyMap(controller, controllerId, key, param, action, color); })
+        , keypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress) { addKeyMap(controller, controllerId, key, action, param, actionLongPress, paramLongPress); })
     {
         colors.background = lighten(styles.colors.background, 0.2);
         colors.font = { 0x80, 0x80, 0x80, 255 };

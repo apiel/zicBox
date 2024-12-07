@@ -99,51 +99,66 @@ protected:
 
 public:
     /*md **Keyboard actions**: */
-    void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, int param, std::string action, uint8_t color)
+    void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress)
     {
         /*md - `next` to navigate to the next items. */
         if (action == "next") {
             keypadLayout.mapping.push_back(
-                { controller, controllerId, key, param,
+                {
+                    controller,
+                    controllerId,
+                    key,
                     [&](int8_t state, KeypadLayout::KeyMap& keymap) { if (state) { itemPos++; renderNext(); } },
-                    color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color == 255 ? 10 : keymap.color; } });
+                });
         }
         /*md - `prev` to navigate to the previous items. */
         if (action == "prev") {
             keypadLayout.mapping.push_back(
-                { controller, controllerId, key, param,
+                {
+                    controller,
+                    controllerId,
+                    key,
                     [&](int8_t state, KeypadLayout::KeyMap& keymap) { if (state) { itemPos--; renderNext(); } },
-                    color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color == 255 ? 10 : keymap.color; } });
+                });
         }
 
         /*md - `btnLeft` to select left item. */
         if (action == "btnLeft") {
             keypadLayout.mapping.push_back(
-                { controller, controllerId, key, param,
+                {
+                    controller,
+                    controllerId,
+                    key,
                     [&](int8_t state, KeypadLayout::KeyMap& keymap) { handleButton(0, state); },
-                    color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color == 255 ? 10 : keymap.color; } });
+                });
         }
 
         /*md - `btnMiddle` to select middle item. */
         if (action == "btnMiddle") {
             keypadLayout.mapping.push_back(
-                { controller, controllerId, key, param,
+                {
+                    controller,
+                    controllerId,
+                    key,
                     [&](int8_t state, KeypadLayout::KeyMap& keymap) { handleButton(1, state); },
-                    color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color == 255 ? 10 : keymap.color; } });
+                });
         }
 
         /*md - `btnRight` to select right item. */
         if (action == "btnRight") {
             keypadLayout.mapping.push_back(
-                { controller, controllerId, key, param,
+                {
+                    controller,
+                    controllerId,
+                    key,
                     [&](int8_t state, KeypadLayout::KeyMap& keymap) { handleButton(2, state); },
-                    color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color == 255 ? 10 : keymap.color; } });
+                });
         }
     }
 
     NavBarComponent(ComponentInterface::Props props)
         : Component(props)
-        , keypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, int param, std::string action, uint8_t color) { addKeyMap(controller, controllerId, key, param, action, color); })
+        , keypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress) { addKeyMap(controller, controllerId, key, action, param, actionLongPress, paramLongPress); })
     {
         colors.background = styles.colors.background;
         colors.font = { 0x80, 0x80, 0x80, 255 };

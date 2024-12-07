@@ -1,12 +1,12 @@
 #ifndef _UI_COMPONENT_SAMPLE_H_
 #define _UI_COMPONENT_SAMPLE_H_
 
-#include "../utils/inRect.h"
-#include "../utils/color.h"
 #include "../base/KeypadLayout.h"
+#include "../component.h"
+#include "../utils/color.h"
+#include "../utils/inRect.h"
 #include "./base/SamplePositionBaseComponent.h"
 #include "./base/WaveBaseComponent.h"
-#include "../component.h"
 #include <string>
 
 /*md
@@ -116,18 +116,18 @@ protected:
 
 public:
     /*md **Keyboard actions**: */
-    void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, int param, std::string action, uint8_t color)
+    void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress)
     {
         /*md - `play` is used to play the sample. `KEYMAP: Keyboard 44 play 60` will trigger note on 60 when pressing space on keyboard. */
         if (action == "play") {
-            keypadLayout.mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) {
+            keypadLayout.mapping.push_back({ controller, controllerId, key, [&](int8_t state, KeypadLayout::KeyMap& keymap) {
                 if (plugin) {
                     if (state) {
-                        plugin->noteOn(keymap.param, 1.0f);
+                        plugin->noteOn(*(int*)keymap.param, 1.0f);
                     } else {
-                        plugin->noteOff(keymap.param, 0.0f);
+                        plugin->noteOff(*(int*)keymap.param, 0.0f);
                     }
-                } }, color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color || 20; } });
+                } }, new int(atoi(param)) });
         }
     }
 
@@ -137,7 +137,7 @@ public:
         , waveRect({ { 0, 20 }, { props.size.w, (int)(props.size.h - 2 * 20) } })
         , wave(getNewPropsRect(props, { { 0, 20 }, { props.size.w, (int)(props.size.h - 2 * 20) } }))
         , samplePosition(getNewPropsRect(props, { { props.position.x, props.position.y + 20 }, { props.size.w, (int)(props.size.h - 2 * 20) } }))
-        , keypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, int param, std::string action, uint8_t color) { addKeyMap(controller, controllerId, key, param, action, color); })
+        , keypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress) { addKeyMap(controller, controllerId, key, action, param, actionLongPress, paramLongPress); })
     {
         overlayYtop = position.y;
         overlayYbottom = position.y + size.h - 2;
