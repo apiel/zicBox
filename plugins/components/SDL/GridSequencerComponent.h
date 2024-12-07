@@ -429,7 +429,7 @@ protected:
 
 public:
     /*md **Keyboard actions**: */
-    void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, int param, std::string action, uint8_t color)
+    void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress)
     {
         if (!currentKeypadLayout) {
             printf("No keypad layout\n");
@@ -437,35 +437,35 @@ public:
         }
         /*md - `track` to select track number: `KEYMAP: Keypad 1 track 2` will select track 2 when key 1 is pressed.*/
         if (action == "track") {
-            currentKeypadLayout->mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateTrackSelection(state, keymap.param); }, color, [&](KeypadLayout::KeyMap& keymap) { return tracks[keymap.param].status->get() == 1 ? 40 : 0; } });
+            currentKeypadLayout->mapping.push_back({ controller, controllerId, key, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateTrackSelection(state, *(int*)keymap.param); }, new int(atoi(param)), .getColor = [&](KeypadLayout::KeyMap& keymap) { return tracks[*(int *)keymap.param].status->get() == 1 ? 40 : 0; } });
             /*md - `param` to select parameter number: `KEYMAP: Keypad 1 param 2 20` will select parameter 2 when key 1 is pressed. Color must be specified, in this example color is 20. */
         } else if (action == "param") {
-            currentKeypadLayout->mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateParamSelection(state, keymap.param); }, color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color; } });
+            currentKeypadLayout->mapping.push_back({ controller, controllerId, key, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateParamSelection(state,*(int *)keymap.param); }, new int(atoi(param)), .getColor = [&](KeypadLayout::KeyMap& keymap) { return keymap.color; } });
             /*md - `row` to select row number: `KEYMAP: Keypad 1 row -1` will decrement the current row selection when key 1 is pressed. */
         } else if (action == "row") {
-            currentKeypadLayout->mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateRowSelection(state, keymap.param); }, color, [&](KeypadLayout::KeyMap& keymap) { return 20; } });
+            currentKeypadLayout->mapping.push_back({ controller, controllerId, key, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateRowSelection(state,*(int *)keymap.param); }, new int(atoi(param)), .getColor = [&](KeypadLayout::KeyMap& keymap) { return 20; } });
             /*md - `col` to select column number: `KEYMAP: Keypad 1 col -1` will decrement the current column selection when key 1 is pressed. */
         } else if (action == "col") {
-            currentKeypadLayout->mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateColSelection(state, keymap.param); }, color, [&](KeypadLayout::KeyMap& keymap) { return 20; } });
+            currentKeypadLayout->mapping.push_back({ controller, controllerId, key, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateColSelection(state,*(int *)keymap.param); }, new int(atoi(param)), .getColor = [&](KeypadLayout::KeyMap& keymap) { return 20; } });
             /*md - `master` to select master track: `KEYMAP: Keypad 1 master` will select master when key 1 is pressed. */
         } else if (action == "master") {
-            currentKeypadLayout->mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateMasterSelection(state); }, color, [&](KeypadLayout::KeyMap& keymap) { return 40; } });
+            currentKeypadLayout->mapping.push_back({ controller, controllerId, key, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateMasterSelection(state); }, new int(atoi(param)), .getColor = [&](KeypadLayout::KeyMap& keymap) { return 40; } });
             /*md - `variation` to select variation: `KEYMAP: Keypad 1 variation` will select variation when key 1 is pressed. */
         } else if (action == "variation") {
-            currentKeypadLayout->mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { tracks[grid.row].variation->set(keymap.param); }, color, [&](KeypadLayout::KeyMap& keymap) { return 60; } });
+            currentKeypadLayout->mapping.push_back({ controller, controllerId, key, [&](int8_t state, KeypadLayout::KeyMap& keymap) { tracks[grid.row].variation->set(*(int *)keymap.param); }, new int(atoi(param)), .getColor = [&](KeypadLayout::KeyMap& keymap) { return 60; } });
             /*md - `step` to update a step: `KEYMAP: Keypad 1 step 4` will update step 4 when key 1 is pressed. */
         } else if (action == "step") {
-            currentKeypadLayout->mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateStepSelection(state, keymap.param); }, color, [&](KeypadLayout::KeyMap& keymap) { 
+            currentKeypadLayout->mapping.push_back({ controller, controllerId, key, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateStepSelection(state,*(int *)keymap.param); }, new int(atoi(param)), .getColor = [&](KeypadLayout::KeyMap& keymap) { 
                 if (grid.row >= trackCount) {
                     return 254;
                 }
-                return tracks[grid.row].steps[keymap.param].enabled ? 21 : 20; } });
+                return tracks[grid.row].steps[*(int *)keymap.param].enabled ? 21 : 20; } });
             /*md - `layout` to select a layout: `KEYMAP: Keypad 1 layout 2` will select layout 2 when key 1 is pressed. The numeric id of the layout corresponds to the order of initialization. */
         } else if (action == "layout") {
-            currentKeypadLayout->mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateLayout(state, keymap.param); }, color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color == 255 ? 90 : keymap.color; } });
+            currentKeypadLayout->mapping.push_back({ controller, controllerId, key, [&](int8_t state, KeypadLayout::KeyMap& keymap) { updateLayout(state,*(int *)keymap.param); }, new int(atoi(param)), .getColor = [&](KeypadLayout::KeyMap& keymap) { return keymap.color == 255 ? 90 : keymap.color; } });
             /*md - `none` to disable keypad button: `KEYMAP: Keypad 1 none` will disable the button 1. */
         } else if (action == "none") {
-            currentKeypadLayout->mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) {}, color, [&](KeypadLayout::KeyMap& keymap) { return 254; } });
+            currentKeypadLayout->mapping.push_back({ controller, controllerId, key, [&](int8_t state, KeypadLayout::KeyMap& keymap) {}, new int(atoi(param)), .getColor = [&](KeypadLayout::KeyMap& keymap) { return 254; } });
         }
     }
 
@@ -533,7 +533,7 @@ public:
 
         /*md - `KEYPAD_LAYOUT: layout` inititates a keypad layout */
         if (strcmp(key, "KEYPAD_LAYOUT") == 0) {
-            currentKeypadLayout = new KeypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, int param, std::string action, uint8_t color) { addKeyMap(controller, controllerId, key, param, action, color); });
+            currentKeypadLayout = new KeypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress) { addKeyMap(controller, controllerId, key, action, param, actionLongPress, paramLongPress); });
             currentKeypadLayout->name = value;
             keypadLayouts.push_back(currentKeypadLayout);
             return true;

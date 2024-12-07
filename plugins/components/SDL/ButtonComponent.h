@@ -1,10 +1,10 @@
 #ifndef _UI_COMPONENT_BUTTON_H_
 #define _UI_COMPONENT_BUTTON_H_
 
-#include "../base/KeypadLayout.h"
-#include "../utils/color.h"
 #include "../base/Icon.h"
+#include "../base/KeypadLayout.h"
 #include "../component.h"
+#include "../utils/color.h"
 
 #include <functional>
 #include <string>
@@ -78,7 +78,7 @@ public:
         , icon(props.view->draw)
         , colors(getColorsFromColor({ 0x80, 0x80, 0x80, 255 }))
         , margin(styles.margin)
-        , keypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, int param, std::string action, uint8_t color) { addKeyMap(controller, controllerId, key, param, action, color); })
+        , keypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress) { addKeyMap(controller, controllerId, key, action, param, actionLongPress, paramLongPress); })
     {
         setFontSize(fontSize);
 
@@ -308,16 +308,16 @@ protected:
 
 public:
     /*md **Keyboard actions**: */
-    void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, int param, std::string action, uint8_t color)
+    void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress)
     {
         /*md - `trigger` is used to trigger the button. */
         if (action == "trigger") {
-            keypadLayout.mapping.push_back({ controller, controllerId, key, param, [&](int8_t state, KeypadLayout::KeyMap& keymap) {
+            keypadLayout.mapping.push_back({ controller, controllerId, key, [&](int8_t state, KeypadLayout::KeyMap& keymap) {
                     if (state) {
                         handlePress();
                     } else {
                         handleRelease();
-                    } }, color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color == 255 ? 10 : keymap.color; } });
+                    } } });
         }
     }
 
