@@ -50,17 +50,17 @@ struct StepMotion {
     std::function<int8_t(uint8_t loopCounter)> get;
 } stepMotions[] = {
     { "---", [](uint8_t loopCounter) { return 0; } },
-    { "+01", [](uint8_t loopCounter) { return 0; } },
-    { "-01", [](uint8_t loopCounter) { return 0; } },
-    { "+02", [](uint8_t loopCounter) { return 0; } },
-    { "-02", [](uint8_t loopCounter) { return 0; } },
+    { "0,1", [](uint8_t loopCounter) { return 0; } },
+    { "1,0", [](uint8_t loopCounter) { return 0; } },
+    { "0,2", [](uint8_t loopCounter) { return 0; } },
+    { "2,2", [](uint8_t loopCounter) { return 0; } },
     // ... bis 12 
-    { "+012", [](uint8_t loopCounter) { return 0; } },
-    { "-012", [](uint8_t loopCounter) { return 0; } },
-    { "+0123", [](uint8_t loopCounter) { return 0; } },
-    { "-0123", [](uint8_t loopCounter) { return 0; } },
-    { "+0246", [](uint8_t loopCounter) { return 0; } },
-    { "-0246", [](uint8_t loopCounter) { return 0; } },
+    { "0,1,2", [](uint8_t loopCounter) { return 0; } },
+    { "2,1,0", [](uint8_t loopCounter) { return 0; } },
+    { "0,1,2,3", [](uint8_t loopCounter) { return 0; } },
+    { "3,2,1,0", [](uint8_t loopCounter) { return 0; } },
+    { "0,2,4,6", [](uint8_t loopCounter) { return 0; } },
+    { "6,4,2,0", [](uint8_t loopCounter) { return 0; } },
 };
 
 uint8_t STEP_CONDITIONS_COUNT = sizeof(stepConditions) / sizeof(stepConditions[0]);
@@ -141,6 +141,13 @@ public:
         for (int i = 0; i < STEP_CONDITIONS_COUNT; i++) {
             if (strcmp(stepConditions[i].name, conditionName) == 0) {
                 condition = i;
+                break;
+            }
+        }
+        char* motionName = strtok(NULL, " ");
+        for (int i = 0; i < STEP_MOTIONS_COUNT; i++) {
+            if (strcmp(stepMotions[i].name, motionName) == 0) {
+                motion = i;
                 break;
             }
         }

@@ -90,7 +90,14 @@ public:
                 renderNote(y);
                 if (view->shift[shiftIndex]) {
                     draw.text({ relativePosition.x + 32, y }, stepConditions[step->condition].name, 8, { text2.color });
-                    draw.text({ relativePosition.x + 32, y + 8 }, "---", 8, { text2.color });
+
+                    std::string motionSteps = stepMotions[step->motion].name;
+                    char* motionStep = strtok((char*)motionSteps.c_str(), ",");
+                    int x = relativePosition.x + 32;
+                    for (int i = 0; motionStep != NULL; i++) {
+                        x = draw.text({ x, y + 8 }, motionStep, 8, { i % 2 == 0 ? text.color : text2.color });
+                        motionStep = strtok(NULL, ",");
+                    }
                 } else {
                     float centerX = relativePosition.x + size.w * 0.5;
 
@@ -129,8 +136,11 @@ public:
                 }
                 renderNext();
             } else if (id == encoderId3) {
-                step->setLength(step->len + direction);
-                // printf("step length: %d\n", step->len);
+                if (view->shift[shiftIndex]) {
+                    step->setMotion(step->motion + direction);
+                } else {
+                    step->setLength(step->len + direction);
+                }
                 renderNext();
             }
         }
