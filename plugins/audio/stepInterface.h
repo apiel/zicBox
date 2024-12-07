@@ -50,8 +50,8 @@ struct StepMotion {
     std::function<int8_t(uint8_t loopCounter)> get;
 } stepMotions[] = {
     { "---", [](uint8_t loopCounter) { return 0; } },
-    { "+01", [](uint8_t loopCounter) { return 0; } }, // <-- then -1 +1 not necessary!!
-    { "-01", [](uint8_t loopCounter) { return 0; } }, // are even - necessary?? but then might want +1+0
+    { "+01", [](uint8_t loopCounter) { return 0; } },
+    { "-01", [](uint8_t loopCounter) { return 0; } },
     { "+02", [](uint8_t loopCounter) { return 0; } },
     { "-02", [](uint8_t loopCounter) { return 0; } },
     // ... bis 12 
@@ -61,14 +61,10 @@ struct StepMotion {
     { "-0123", [](uint8_t loopCounter) { return 0; } },
     { "+0246", [](uint8_t loopCounter) { return 0; } },
     { "-0246", [](uint8_t loopCounter) { return 0; } },
-    { "-1+1", [](uint8_t loopCounter) { return 0; } },
-    { "-2+2", [](uint8_t loopCounter) { return 0; } },
-    { "-3+3", [](uint8_t loopCounter) { return 0; } },
-    // ...
-    { "-12+12", [](uint8_t loopCounter) { return 0; } },
 };
 
 uint8_t STEP_CONDITIONS_COUNT = sizeof(stepConditions) / sizeof(stepConditions[0]);
+uint8_t STEP_MOTIONS_COUNT = sizeof(stepMotions) / sizeof(stepMotions[0]);
 
 class Step {
 public:
@@ -78,6 +74,7 @@ public:
     uint8_t len = 1; // len 0 is infinite?
     uint8_t counter = 0;
     uint8_t note = 60;
+    uint8_t motion = 0;
 
     void reset()
     {
@@ -87,6 +84,7 @@ public:
         len = 1;
         counter = 0;
         note = 60;
+        motion = 0;
     }
 
     bool equal(Step& other)
@@ -94,6 +92,7 @@ public:
         return enabled == other.enabled
             && velocity == other.velocity
             && condition == other.condition
+            && motion == other.motion
             && len == other.len
             && note == other.note;
     }
@@ -101,6 +100,11 @@ public:
     void setCondition(int condition)
     {
         this->condition = range(condition, 0, STEP_CONDITIONS_COUNT - 1);
+    }
+
+    void setMotion(int motion)
+    {
+        this->motion = range(motion, 0, STEP_MOTIONS_COUNT - 1);
     }
 
     void setNote(int note)
@@ -124,6 +128,7 @@ public:
             + std::to_string(note) + " "
             + std::to_string(velocity) + " "
             + stepConditions[condition].name + " "
+            + stepMotions[motion].name + " "
             + std::to_string(len);
     }
 
