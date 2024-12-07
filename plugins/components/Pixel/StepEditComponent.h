@@ -38,6 +38,8 @@ protected:
     ToggleColor text2;
     ToggleColor barBackground;
     ToggleColor bar;
+    ToggleColor textMotion1;
+    ToggleColor textMotion2;
 
     uint8_t dataId = -1;
     uint8_t stepIndex = -1;
@@ -53,13 +55,15 @@ protected:
 
 public:
     StepEditComponent(ComponentInterface::Props props)
-        : GroupColorComponent(props, { { "TEXT_COLOR", &text }, { "TEXT2_COLOR", &text2 }, { "BAR_BACKGROUND_COLOR", &barBackground }, { "BAR_COLOR", &bar } })
+        : GroupColorComponent(props, { { "TEXT_COLOR", &text }, { "TEXT2_COLOR", &text2 }, { "BAR_BACKGROUND_COLOR", &barBackground }, { "BAR_COLOR", &bar }, { "TEXT_MOTION1_COLOR", &textMotion1 }, { "TEXT_MOTION2_COLOR", &textMotion2 } })
         , bgColor(styles.colors.background)
         , selection(styles.colors.primary)
         , text(styles.colors.text, inactiveColorRatio)
         , text2(darken(styles.colors.text, 0.5), inactiveColorRatio)
         , barBackground(darken(styles.colors.tertiary, 0.5), inactiveColorRatio)
         , bar(styles.colors.tertiary, inactiveColorRatio)
+        , textMotion1(styles.colors.secondary, inactiveColorRatio)
+        , textMotion2(styles.colors.quaternary, inactiveColorRatio)
     {
         updateColors();
     }
@@ -92,11 +96,15 @@ public:
                     draw.text({ relativePosition.x + 32, y }, stepConditions[step->condition].name, 8, { text2.color });
 
                     std::string motionSteps = stepMotions[step->motion].name;
-                    char* motionStep = strtok((char*)motionSteps.c_str(), ",");
                     int x = relativePosition.x + 32;
-                    for (int i = 0; motionStep != NULL; i++) {
-                        x = draw.text({ x, y + 8 }, motionStep, 8, { i % 2 == 0 ? text.color : text2.color });
-                        motionStep = strtok(NULL, ",");
+                    if (motionSteps == "---") {
+                        draw.text({ x, y + 8 }, motionSteps, 8, { text2.color });
+                    } else {
+                        char* motionStep = strtok((char*)motionSteps.c_str(), ",");
+                        for (int i = 0; motionStep != NULL; i++) {
+                            x = draw.text({ x, y + 8 }, motionStep, 8, { i % 2 == 0 ? textMotion1.color : textMotion2.color });
+                            motionStep = strtok(NULL, ",");
+                        }
                     }
                 } else {
                     float centerX = relativePosition.x + size.w * 0.5;
@@ -202,6 +210,8 @@ public:
         /*md - `TEXT_COLOR: color` is the color of the text. */
         /*md - `BAR_COLOR: color` is the color of the velocity bar. */
         /*md - `BAR_BACKGROUND_COLOR: color` is the color of the velocity bar background. */
+        /*md - `TEXT_MOTION1_COLOR: color` is the first color of the motion text. */
+        /*md - `TEXT_MOTION2_COLOR: color` is the second color of the motion text. */
         return GroupColorComponent::config(key, value);
     }
 };
