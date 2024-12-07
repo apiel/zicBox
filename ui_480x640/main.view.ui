@@ -78,18 +78,18 @@ VIEW: shared_components
       KEYMAP: Keypad 41 variation 9
       KEYMAP: Keypad 42 variation 10
       KEYMAP: Keypad 43 variation 11
-      KEYMAP: Keypad 20 param 0 50
-      KEYMAP: Keypad 21 param 1 20
-      KEYMAP: Keypad 22 param 2 60
-      KEYMAP: Keypad 23 param 3 90
-      KEYMAP: Keypad 32 param 4 50
-      KEYMAP: Keypad 33 param 5 20
-      KEYMAP: Keypad 34 param 6 60
-      KEYMAP: Keypad 35 param 7 90
-      KEYMAP: Keypad 44 param 8 50
-      KEYMAP: Keypad 45 param 9 20
-      KEYMAP: Keypad 46 param 10 60
-      KEYMAP: Keypad 47 param 11 90
+      KEYMAP: Keypad 20 param 0
+      KEYMAP: Keypad 21 param 1
+      KEYMAP: Keypad 22 param 2
+      KEYMAP: Keypad 23 param 3
+      KEYMAP: Keypad 32 param 4
+      KEYMAP: Keypad 33 param 5
+      KEYMAP: Keypad 34 param 6
+      KEYMAP: Keypad 35 param 7
+      KEYMAP: Keypad 44 param 8
+      KEYMAP: Keypad 45 param 9
+      KEYMAP: Keypad 46 param 10
+      KEYMAP: Keypad 47 param 11
     KEYPAD_LAYOUT: steps
       KEYMAP: Keypad 00 none
       KEYMAP: Keypad 01 none

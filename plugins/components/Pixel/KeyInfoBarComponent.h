@@ -28,6 +28,9 @@ protected:
 
     Color textColor;
 
+    //                        { index, value}
+    int16_t shiftVisibility[2] = { -1, -1 };
+
     uint8_t shiftIndex = 255;
 
     void handleButton(int8_t id, int8_t state)
@@ -53,20 +56,25 @@ protected:
     }
 
 public:
-    void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, int param, std::string action, uint8_t color)
+    void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress)
     {
         if (action == "item") {
+            int* id = new int(atoi(param));
             keypadLayout.mapping.push_back(
-                { controller, controllerId, key, param,
-                    [&](int8_t state, KeypadLayout::KeyMap& keymap) { handleButton(keymap.param, state); },
-                    color, [&](KeypadLayout::KeyMap& keymap) { return keymap.color == 255 ? 10 : keymap.color; } });
+                {
+                    controller,
+                    controllerId,
+                    key,
+                    [&](int8_t state, KeypadLayout::KeyMap& keymap) { handleButton(*(int*)keymap.param, state); },
+                    id,
+                });
         }
     }
 
     KeyInfoBarComponent(ComponentInterface::Props props)
         : Component(props)
         , icon(props.view->draw)
-        , keypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, int param, std::string action, uint8_t color) { addKeyMap(controller, controllerId, key, param, action, color); })
+        , keypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress) { addKeyMap(controller, controllerId, key, action, param, actionLongPress, paramLongPress); })
         , textColor(styles.colors.text)
     {
         buttonWidth = size.w / 5.0f;
@@ -88,10 +96,15 @@ protected:
         }
     }
 
+    bool isVisible()
+    {
+        return shiftVisibility[0] == -1 || view->shift[shiftVisibility[0]] == shiftVisibility[1];
+    }
+
 public:
     void render()
     {
-        if (updatePosition()) {
+        if (isVisible() && updatePosition()) {
             renderRow(relativePosition.y, 0);
             renderRow(relativePosition.y + 12, 5);
         }
@@ -124,6 +137,13 @@ public:
             return true;
         }
 
+        /*md - `SHIFT_VISIBILITY: index value` is the index and value to make the component visible or not. */
+        if (strcmp(key, "SHIFT_VISIBILITY") == 0) {
+            shiftVisibility[0] = atoi(strtok(value, " "));
+            shiftVisibility[1] = atoi(strtok(NULL, " "));
+            return true;
+        }
+
         /*md - `TEXT_COLOR: color` is the color of the text. */
         if (strcmp(key, "TEXT_COLOR") == 0) {
             textColor = draw.getColor(value);
@@ -135,7 +155,9 @@ public:
 
     void onKey(uint16_t id, int key, int8_t state)
     {
-        keypadLayout.onKey(id, key, state);
+        if (isVisible()) {
+            keypadLayout.onKey(id, key, state);
+        }
     }
 
     void onGroupChanged(int8_t index) override
