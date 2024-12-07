@@ -60,6 +60,8 @@ struct StepMotion {
     { "4,0", [](uint8_t loopCounter) { uint8_t semitone[2] = { 4, 0 }; return semitone[loopCounter % 2]; } },
     { "0,5", [](uint8_t loopCounter) { uint8_t semitone[2] = { 0, 5 }; return semitone[loopCounter % 2]; } },
     { "5,0", [](uint8_t loopCounter) { uint8_t semitone[2] = { 5, 0 }; return semitone[loopCounter % 2]; } },
+    { "0,6", [](uint8_t loopCounter) { uint8_t semitone[2] = { 0, 6 }; return semitone[loopCounter % 2]; } },
+    { "6,0", [](uint8_t loopCounter) { uint8_t semitone[2] = { 6, 0 }; return semitone[loopCounter % 2]; } },
     { "0,12", [](uint8_t loopCounter) { uint8_t semitone[2] = { 0, 12 }; return semitone[loopCounter % 2]; } },
     { "12,0", [](uint8_t loopCounter) { uint8_t semitone[2] = { 12, 0 }; return semitone[loopCounter % 2]; } },
     { "0,1,2", [](uint8_t loopCounter) { uint8_t semitone[3] = { 0, 1, 2 }; return semitone[loopCounter % 3]; } },
