@@ -134,17 +134,25 @@ public:
     {
         if (selected) {
             if (id == encoderId1) {
-                step->setNote(step->note + direction);
+                if (!step->enabled) {
+                    step->enabled = true;
+                } else {
+                    step->setNote(step->note + direction);
+                }
                 renderNext();
             } else if (id == encoderId2) {
-                if (view->shift[shiftIndex]) {
+                if (!step->enabled) {
+                    step->enabled = true;
+                } else if (view->shift[shiftIndex]) {
                     step->setCondition(step->condition + direction);
                 } else {
                     step->setVelocity(step->velocity + direction * 0.05);
                 }
                 renderNext();
             } else if (id == encoderId3) {
-                if (view->shift[shiftIndex]) {
+                if (!step->enabled) {
+                    step->enabled = true;
+                } else if (view->shift[shiftIndex]) {
                     step->setMotion(step->motion + direction);
                 } else {
                     step->setLength(step->len + direction);
