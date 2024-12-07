@@ -84,6 +84,16 @@ protected:
         return stepConditions[step.condition].conditionMet(loopCounter);
     }
 
+    uint8_t motion(Step& step)
+    {
+        return stepMotions[step.motion].get(loopCounter);
+    }
+
+    uint8_t getNote(Step& step)
+    {
+        return step.note + motion(step);
+    }
+
     void onStep()
     {
         stepCounter++;
@@ -101,14 +111,14 @@ protected:
                 if (step.counter) {
                     step.counter--;
                     if (step.counter == 0) {
-                        props.audioPluginHandler->noteOff(step.note, 0, { track, targetPlugin });
+                        props.audioPluginHandler->noteOff(getNote(step), 0, { track, targetPlugin });
                     }
                 }
             }
             Step& step = steps[stepCounter];
             if (step.enabled && conditionMet(step)) {
                 step.counter = step.len;
-                props.audioPluginHandler->noteOn(step.note, step.velocity, { track, targetPlugin });
+                props.audioPluginHandler->noteOn(getNote(step), step.velocity, { track, targetPlugin });
             }
         }
     }
