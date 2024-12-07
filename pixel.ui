@@ -272,6 +272,7 @@ $y=$y+$sepHeight
 VIEW: Sequencer
 
   COMPONENT: KeyInfoBar 0 216
+    SHIFT_VISIBILITY: 254 0
     ROW1: 1 2 3 4 Shift
     KEYMAP: Keyboard 'q' item 0
     KEYMAP: Keyboard 'w' item 1
@@ -279,6 +280,21 @@ VIEW: Sequencer
     KEYMAP: Keyboard 'r' item 3
     KEYMAP: Keyboard 't' item 4
     ROW2: 5 6 7 8 &icon::play
+    KEYMAP: Keyboard 'a' item 5
+    KEYMAP: Keyboard 's' item 6
+    KEYMAP: Keyboard 'd' item 7
+    KEYMAP: Keyboard 'f' item 8
+    KEYMAP: Keyboard 'g' item 9
+
+  COMPONENT: KeyInfoBar 0 216
+    SHIFT_VISIBILITY: 254 1
+    ROW1: 1 2 3 4 Shift
+    KEYMAP: Keyboard 'q' item 0
+    KEYMAP: Keyboard 'w' item 1
+    KEYMAP: Keyboard 'e' item 2
+    KEYMAP: Keyboard 'r' item 3
+    KEYMAP: Keyboard 't' item 4
+    ROW2: 5 6 7 8 Synth
     KEYMAP: Keyboard 'a' item 5
     KEYMAP: Keyboard 's' item 6
     KEYMAP: Keyboard 'd' item 7
