@@ -56,18 +56,9 @@ protected:
     }
 
 public:
-    std::function<void(int8_t state, KeypadLayout::KeyMap& keymap)> getAction(std::string action)
-    {
-        if (action.rfind("setView:") == 0) {
-            std::string* paramFn = new std::string(action.substr(8));
-            return [this, paramFn](int8_t state, KeypadLayout::KeyMap& keymap) { printf("----------------- setView yeah"); view->setView(*paramFn); };
-        }
-        return NULL;
-    }
-
     void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, std::string action, std::string actionLongPress)
     {
-        std::function<void(int8_t state, KeypadLayout::KeyMap & keymap)> actionFn = getAction(action);
+        std::function<void(int8_t state, KeypadLayout::KeyMap & keymap)> actionFn = keypadLayout.getAction(this, action);
 
         if (!actionFn) {
             if (action.rfind("item:") == 0) {
@@ -83,8 +74,6 @@ public:
             actionFn,
             [&](int8_t state, KeypadLayout::KeyMap& keymap) { printf("longpress test\n"); },
         });
-
-        // actionFn(0, keypadLayout.mapping.back());
     }
 
     KeyInfoBarComponent(ComponentInterface::Props props)

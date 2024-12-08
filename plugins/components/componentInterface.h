@@ -31,7 +31,6 @@ protected:
 
     void (*sendAudioEvent)(AudioEventType event);
     ControllerInterface* (*getController)(const char* name);
-    ViewInterface* view;
     std::function<void(uint8_t index, uint8_t value)> setShift;
     Point relativePosition = { 0, 0 };
 
@@ -48,6 +47,7 @@ protected:
     }
 
 public:
+    ViewInterface* view;
     ComponentContainer* container;
     AudioPlugin& (*getPlugin)(const char* name, int16_t track);
     std::vector<ValueInterface*> values;

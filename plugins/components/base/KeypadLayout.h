@@ -129,17 +129,14 @@ public:
         }
     }
 
-    std::function<void(int8_t state, KeyMap& keymap)> getAction(std::string action, void* param, void* paramFn)
+    std::function<void(int8_t state, KeypadLayout::KeyMap& keymap)> getAction(ComponentInterface* component, std::string action)
     {
-        if (action == "setView") {
-            paramFn = new std::string((char*)param);
-            return [this, paramFn](int8_t state, KeyMap& keymap) { printf("----------------- setView yeah"); componentProps.view->setView(*(std::string*)paramFn); };
+        if (action.rfind("setView:") == 0) {
+            std::string* paramFn = new std::string(action.substr(8));
+            return [component, paramFn](int8_t state, KeypadLayout::KeyMap& keymap) {
+                component->view->setView(*paramFn);
+            };
         }
-        // if (action == "setGroup") {
-        //     paramFn = new int(atoi((char*)param));
-        //     actionFn = [this](int8_t state, KeyMap& keymap) { componentProps.view->setGroup(*(int*)keymap.param); };
-        //     return true;
-        // }
         return NULL;
     }
 
