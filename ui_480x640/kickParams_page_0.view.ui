@@ -105,8 +105,8 @@
 
   COMPONENT: Wave 0 275 480 100
     TRACK: $track
-    KEYMAP: Keyboard 44 play 60
-    KEYMAP: Keypad 24 play 60
+    KEYMAP: Keyboard 44 play:60
+    KEYMAP: Keypad 24 play:60
     PLUGIN: Kick23
     ENVELOP_DATA_ID: -1
     NAME: BROWSER
