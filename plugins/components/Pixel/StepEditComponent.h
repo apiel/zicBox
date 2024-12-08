@@ -59,6 +59,8 @@ protected:
     uint8_t shiftModeIndex = 255;
     uint8_t globalShift = 0;
 
+    int16_t restoreShiftMode = -1;
+
 public:
     StepEditComponent(ComponentInterface::Props props)
         : GroupColorComponent(props, { { "TEXT_COLOR", &text }, { "TEXT2_COLOR", &text2 }, { "BAR_BACKGROUND_COLOR", &barBackground }, { "BAR_COLOR", &bar }, { "TEXT_MOTION1_COLOR", &textMotion1 }, { "TEXT_MOTION2_COLOR", &textMotion2 } })
@@ -78,10 +80,22 @@ public:
                         if (!view->shift[globalShift]) {
                             step->enabled = !step->enabled;
                         } else {
-                            // view->shift[shiftModeIndex] = !view->shift[shiftModeIndex];
+                            restoreShiftMode = view->shift[shiftModeIndex];
                         }
                         view->setGroup(group);
                         renderNext();
+                    }
+                };
+            }
+
+            if (action == "restoreShiftMode") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        if (restoreShiftMode != -1) {
+                            view->shift[shiftModeIndex] = restoreShiftMode;
+                            restoreShiftMode = -1;
+                            renderNext();
+                        }
                     }
                 };
             }
