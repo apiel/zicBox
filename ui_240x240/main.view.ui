@@ -60,8 +60,8 @@ VIEW: Master
 
   COMPONENT: Wave 0 54 240 40
     TRACK: 1
-    KEYMAP: Keyboard 44 play 60
-    KEYMAP: Keypad 24 play 60
+    KEYMAP: Keyboard 44 play:60
+    KEYMAP: Keypad 24 play:60
     PLUGIN: Kick23
     ENVELOP_DATA_ID: -1
     NAME: BROWSER
@@ -77,16 +77,16 @@ VIEW: Master
     ITEM: 6 Sample KickParams_track_6 2
     ITEM: 11 FM FmParams_track_11 3
     ITEM: 12 FM FmParams_track_12 3
-    KEYMAP: Keyboard 20 key10 0
-    KEYMAP: Keyboard 26 key10 1
-    KEYMAP: Keyboard 08 key10 2
-    KEYMAP: Keyboard 21 key10 3
-    KEYMAP: Keyboard 23 key10 4
-    KEYMAP: Keyboard 04 key10 5
-    KEYMAP: Keyboard 22 key10 6
-    KEYMAP: Keyboard 07 key10 7
-    KEYMAP: Keyboard 09 key10 8
-    KEYMAP: Keyboard 10 key10 9
+    KEYMAP: Keyboard 20 key10:0
+    KEYMAP: Keyboard 26 key10:1
+    KEYMAP: Keyboard 08 key10:2
+    KEYMAP: Keyboard 21 key10:3
+    KEYMAP: Keyboard 23 key10:4
+    KEYMAP: Keyboard 04 key10:5
+    KEYMAP: Keyboard 22 key10:6
+    KEYMAP: Keyboard 07 key10:7
+    KEYMAP: Keyboard 09 key10:8
+    KEYMAP: Keyboard 10 key10:9
 
 
 
@@ -137,16 +137,16 @@ VIEW: Master
       CHILD: 7
       CHILD: 8
       CHILD: Clips
-    KEYMAP: Keyboard 20 item 0
-    KEYMAP: Keyboard 26 item 1
-    KEYMAP: Keyboard 08 item 2
-    KEYMAP: Keyboard 21 item 3
-    KEYMAP: Keyboard 23 item 4
-    KEYMAP: Keyboard 04 item 5
-    KEYMAP: Keyboard 22 item 6
-    KEYMAP: Keyboard 07 item 7
-    KEYMAP: Keyboard 09 item 8
-    KEYMAP: Keyboard 10 item 9
+    KEYMAP: Keyboard 20 item:0
+    KEYMAP: Keyboard 26 item:1
+    KEYMAP: Keyboard 08 item:2
+    KEYMAP: Keyboard 21 item:3
+    KEYMAP: Keyboard 23 item:4
+    KEYMAP: Keyboard 04 item:5
+    KEYMAP: Keyboard 22 item:6
+    KEYMAP: Keyboard 07 item:7
+    KEYMAP: Keyboard 09 item:8
+    KEYMAP: Keyboard 10 item:9
 
 
   # COMPONENT: Button 0 226 59 13
