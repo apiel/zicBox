@@ -70,16 +70,6 @@ protected:
         return atoi(keyStr.c_str());
     }
 
-    bool keyIsPressed(KeyMap& keyMap)
-    {
-        return keyMap.pressedTime != -1;
-    }
-
-    bool keyIsReleased(KeyMap& keyMap)
-    {
-        return keyMap.pressedTime == -1;
-    }
-
 public:
     std::vector<KeyMap> mapping;
 
@@ -129,6 +119,16 @@ public:
         : component(component)
         , getCustomAction(getCustomAction)
     {
+    }
+
+    static bool keyIsPressed(KeyMap& keyMap)
+    {
+        return keyMap.pressedTime != -1;
+    }
+
+    static bool keyIsReleased(KeyMap& keyMap)
+    {
+        return keyMap.pressedTime == -1;
     }
 
     // To be used if longPress action is activated

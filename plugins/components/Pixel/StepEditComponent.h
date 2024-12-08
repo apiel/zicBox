@@ -3,6 +3,7 @@
 
 #include "helpers/midiNote.h"
 #include "plugins/audio/stepInterface.h"
+#include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
 #include "utils/GroupColorComponent.h"
@@ -31,6 +32,8 @@ class StepEditComponent : public GroupColorComponent {
 protected:
     AudioPlugin* plugin = NULL;
     Step* step;
+
+    KeypadLayout keypadLayout;
 
     Color bgColor;
     Color selection;
@@ -64,6 +67,19 @@ public:
         , bar(styles.colors.tertiary, inactiveColorRatio)
         , textMotion1(styles.colors.secondary, inactiveColorRatio)
         , textMotion2(styles.colors.quaternary, inactiveColorRatio)
+        , keypadLayout(this, [&](std::string action) {
+            std::function<void(KeypadLayout::KeyMap&)> func = NULL;
+            if (action == "stepToggle") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::keyIsReleased(keymap)) {
+                        step->enabled = !step->enabled;
+                        view->setGroup(group);
+                        renderNext();
+                    }
+                };
+            }
+            return func;
+        })
     {
         updateColors();
     }
@@ -177,9 +193,20 @@ public:
         }
     }
 
+    void onKey(uint16_t id, int key, int8_t state, unsigned long now)
+    {
+        if (isActive) {
+            keypadLayout.onKey(id, key, state, now);
+        }
+    }
+
     /*md **Config**: */
     bool config(char* key, char* value)
     {
+        if (keypadLayout.config(key, value)) {
+            return true;
+        }
+
         if (strcmp(key, "GROUP_RANGE") == 0) {
             groupRange[0] = atoi(strtok(value, " "));
             groupRange[1] = atoi(strtok(NULL, " "));
