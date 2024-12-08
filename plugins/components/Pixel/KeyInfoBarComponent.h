@@ -58,12 +58,12 @@ protected:
 public:
     void addKeyMap(KeypadLayout::AddKeyMapProps props)
     {
-        std::function<void(int8_t state, KeypadLayout::KeyMap & keymap)> actionFn = keypadLayout.getAction(props.action);
+        std::function<void(KeypadLayout::KeyMap & keymap)> actionFn = keypadLayout.getAction(props.action);
 
         if (!actionFn) {
             if (props.action.rfind("item:") == 0) {
                 int *paramFn = new int(atoi(props.action.substr(5).c_str()));
-                actionFn = [this, paramFn](int8_t state, KeypadLayout::KeyMap& keymap) { handleButton(*paramFn, state); };
+                actionFn = [this, paramFn](KeypadLayout::KeyMap& keymap) { handleButton(*paramFn, keymap.pressedTime != -1); };
             }
         }
 
@@ -72,7 +72,7 @@ public:
             props.controllerId,
             props.key,
             actionFn,
-            [&](int8_t state, KeypadLayout::KeyMap& keymap) { printf("longpress test\n"); },
+            [&](KeypadLayout::KeyMap& keymap) { printf("longpress test\n"); },
         });
     }
 

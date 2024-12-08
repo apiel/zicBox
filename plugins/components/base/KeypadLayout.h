@@ -25,8 +25,8 @@ public:
         KeypadInterface* controller;
         uint16_t controllerId;
         uint8_t key;
-        std::function<void(int8_t state, KeyMap& keymap)> action;
-        std::function<void(int8_t state, KeyMap& keymap)> actionLongPress;
+        std::function<void(KeyMap& keymap)> action;
+        std::function<void(KeyMap& keymap)> actionLongPress;
         std::function<uint8_t(KeyMap& keymap)> getColor;
         bool isLongPress = false;
         unsigned long pressedTime = -1;
@@ -83,7 +83,7 @@ public:
         for (KeyMap& keyMap : mapping) {
             if (keyMap.actionLongPress && !keyMap.isLongPress && keyMap.pressedTime != -1 && now - keyMap.pressedTime > 500) {
                 keyMap.isLongPress = true;
-                keyMap.actionLongPress(1, keyMap);
+                keyMap.actionLongPress(keyMap);
                 renderKeypadColor(keyMap);
                 return true;
             }
@@ -97,16 +97,19 @@ public:
             if (keyMap.controllerId == id && keyMap.key == key) {
                 if (state == 1) {
                     keyMap.isLongPress = false;
+                    // To know if the key is pressed, we set pressedTime to the current time
+                    // It also allow us to calculate the duration of the key press for long press
                     keyMap.pressedTime = now;
                 } else {
+                    // To know if the key is not pressed anymore, we set pressedTime to -1
                     keyMap.pressedTime = -1;
                     if (keyMap.isLongPress && keyMap.actionLongPress) {
-                        keyMap.actionLongPress(0, keyMap);
+                        keyMap.actionLongPress(keyMap);
                         renderKeypadColor(keyMap);
                     }
                 }
                 if (keyMap.action) {
-                    keyMap.action(state, keyMap);
+                    keyMap.action(keyMap);
                     renderKeypadColor(keyMap);
                 }
                 return;
@@ -130,11 +133,11 @@ public:
         }
     }
 
-    std::function<void(int8_t state, KeypadLayout::KeyMap& keymap)> getAction(std::string action)
+    std::function<void(KeypadLayout::KeyMap& keymap)> getAction(std::string action)
     {
         if (action.rfind("setView:") == 0) {
             std::string* paramFn = new std::string(action.substr(8));
-            return [this, paramFn](int8_t state, KeypadLayout::KeyMap& keymap) {
+            return [this, paramFn](KeypadLayout::KeyMap& keymap) {
                 component->view->setView(*paramFn);
             };
         }
