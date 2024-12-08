@@ -72,10 +72,28 @@ public:
     {
     }
 
+    bool jobRendering(unsigned long now)
+    {
+        for (KeyMap& keyMap : mapping) {
+            if (!keyMap.isLongPress && keyMap.pressedTime != -1 && now - keyMap.pressedTime > 500) {
+                keyMap.isLongPress = true;
+                keyMap.actionLongPress(1, keyMap);
+                return true;
+            }
+        }
+        return false;
+    }
+
     void onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
-        for (KeyMap keyMap : mapping) {
+        for (KeyMap& keyMap : mapping) {
             if (keyMap.controllerId == id && keyMap.key == key) {
+                if (state == 1) {
+                    keyMap.isLongPress = false;
+                    keyMap.pressedTime = now;
+                } else if (keyMap.isLongPress) {
+                    keyMap.actionLongPress(0, keyMap);
+                }
                 keyMap.action(state, keyMap);
                 return;
             }

@@ -79,6 +79,12 @@ public:
     {
         buttonWidth = size.w / 5.0f;
         buttonStartX = buttonWidth * 0.5f;
+
+        jobRendering = [this](unsigned long now) {
+            if (keypadLayout.jobRendering(now)) {
+                // renderNext(); // For the moment doesn't really to re-render, as no UI change happens
+            }
+        };
     }
 
 protected:
