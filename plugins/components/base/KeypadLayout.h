@@ -32,9 +32,16 @@ public:
         unsigned long pressedTime = -1;
     };
 
+    struct AddKeyMapProps {
+        KeypadInterface* controller;
+        uint16_t controllerId;
+        uint8_t key;
+        std::string action;
+        std::string actionLongPress;
+    };
+
 protected:
-    ComponentInterface::Props& componentProps;
-    std::function<void(KeypadInterface* controller, uint16_t controllerId, int8_t state, std::string action, std::string actionLongPress)> addKeyMap;
+    std::function<void(AddKeyMapProps props)> addKeyMap;
     ControllerInterface* (*getController)(const char* name);
 
     uint8_t getKeyCode(std::string keyStr)
@@ -65,9 +72,8 @@ protected:
 public:
     std::vector<KeyMap> mapping;
 
-    KeypadLayout(ComponentInterface::Props& props, ControllerInterface* (*getController)(const char* name), std::function<void(KeypadInterface* controller, uint16_t controllerId, int8_t state, std::string action, std::string actionLongPress)> addKeyMap)
-        : componentProps(props)
-        , getController(getController)
+    KeypadLayout(ControllerInterface* (*getController)(const char* name), std::function<void(AddKeyMapProps props)> addKeyMap)
+        : getController(getController)
         , addKeyMap(addKeyMap)
     {
     }
@@ -165,7 +171,7 @@ public:
                 // printf("........controller %s id %d\n", controllerName.c_str(), controller->id);
                 controllerId = controller->id;
             }
-            addKeyMap(controller, controllerId, key, action, actionLongPress);
+            addKeyMap({ controller, controllerId, key, action, actionLongPress });
             return true;
         }
         return false;
