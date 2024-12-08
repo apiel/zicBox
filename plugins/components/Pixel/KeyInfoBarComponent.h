@@ -40,8 +40,8 @@ protected:
         if (state == 1) {
             if (id == 0) {
                 view->setGroup(activeGroup - 1);
-            // } else if (id == 1) {
-            //     view->setView("Sequencer");
+                // } else if (id == 1) {
+                //     view->setView("Sequencer");
             } else if (id == 4) {
                 setShift(shiftIndex, view->shift[shiftIndex] ? 0 : 1);
             } else if (id == 5) {
@@ -56,15 +56,24 @@ protected:
     }
 
 public:
+    std::function<void(int8_t state, KeypadLayout::KeyMap& keymap)> getAction(std::string action, void* param)
+    {
+        if (action == "setView") {
+            std::string* paramFn = new std::string((char*)param);
+            return [this, paramFn](int8_t state, KeypadLayout::KeyMap& keymap) { printf("----------------- setView yeah"); view->setView(*paramFn); };
+        }
+        return NULL;
+    }
+
     void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress)
     {
-        std::function<void(int8_t state, KeypadLayout::KeyMap & keymap)> actionFn = [](int8_t state, KeypadLayout::KeyMap& keymap) {};
-        void* paramFn = NULL;
+        // std::function<void(int8_t state, KeypadLayout::KeyMap & keymap)> actionFn = keypadLayout.getAction(action, param, paramFn);
+        std::function<void(int8_t state, KeypadLayout::KeyMap & keymap)> actionFn = getAction(action, param);
 
-        if (!keypadLayout.setAction(action, param, actionFn, paramFn)) {
+        if (!actionFn) {
             if (action == "item") {
-                paramFn = new int(atoi(param));
-                actionFn = [this](int8_t state, KeypadLayout::KeyMap& keymap) { handleButton(*(int*)keymap.param, state); };
+                int *paramFn = new int(atoi(param));
+                actionFn = [this, paramFn](int8_t state, KeypadLayout::KeyMap& keymap) { handleButton(*paramFn, state); };
             }
         }
 
@@ -73,9 +82,10 @@ public:
             controllerId,
             key,
             actionFn,
-            paramFn,
             [&](int8_t state, KeypadLayout::KeyMap& keymap) { printf("longpress test\n"); },
         });
+
+        // actionFn(0, keypadLayout.mapping.back());
     }
 
     KeyInfoBarComponent(ComponentInterface::Props props)

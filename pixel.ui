@@ -56,7 +56,7 @@ $track=1
   COMPONENT: KeyInfoBar 0 216
     ROW1: &icon::arrowUp Seq Clip Synth Track
     KEYMAP: Keyboard 'q' item:0
-    KEYMAP: Keyboard 'w' item:1
+    KEYMAP: Keyboard 'w' setView:Sequencer
     KEYMAP: Keyboard 'e' item:2
     KEYMAP: Keyboard 'r' item:3
     KEYMAP: Keyboard 't' item:4
