@@ -71,7 +71,7 @@ public:
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
             if (action == "stepToggle") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
-                    if (KeypadLayout::keyIsReleased(keymap)) {
+                    if (KeypadLayout::isReleased(keymap)) {
                         step->enabled = !step->enabled;
                         view->setGroup(group);
                         renderNext();

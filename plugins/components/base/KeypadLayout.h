@@ -121,12 +121,12 @@ public:
     {
     }
 
-    static bool keyIsPressed(KeyMap& keyMap)
+    static bool isPressed(KeyMap& keyMap)
     {
         return keyMap.pressedTime != -1;
     }
 
-    static bool keyIsReleased(KeyMap& keyMap)
+    static bool isReleased(KeyMap& keyMap)
     {
         return keyMap.pressedTime == -1;
     }
@@ -137,7 +137,7 @@ public:
     // bool jobRendering(unsigned long now)
     // {
     //     for (KeyMap& keyMap : mapping) {
-    //         if (keyMap.actionLongPress && !keyMap.isLongPress && keyIsPressed(keyMap) && now - keyMap.pressedTime > 500) {
+    //         if (keyMap.actionLongPress && !keyMap.isLongPress && isPressed(keyMap) && now - keyMap.pressedTime > 500) {
     //             keyMap.isLongPress = true;
     //             keyMap.actionLongPress(keyMap);
     //             renderKeypadColor(keyMap);
@@ -198,7 +198,7 @@ public:
         if (action.rfind("setView:") == 0) {
             std::string* paramFn = new std::string(action.substr(8));
             return [this, paramFn](KeypadLayout::KeyMap& keymap) {
-                if (keyIsReleased(keymap)) {
+                if (isReleased(keymap)) {
                     component->view->setView(*paramFn);
                 }
             };
@@ -209,7 +209,7 @@ public:
             int incValue = atoi(action.substr(10).c_str());
             int* paramFn = new int(incValue * direction);
             return [this, paramFn](KeypadLayout::KeyMap& keymap) {
-                if (keyIsReleased(keymap)) {
+                if (isReleased(keymap)) {
                     component->view->setGroup(component->view->activeGroup + *paramFn);
                 }
             };
@@ -218,7 +218,7 @@ public:
         if (action.rfind("setGroup:") == 0) {
             int* paramFn = new int(atoi(action.substr(9).c_str()));
             return [this, paramFn](KeypadLayout::KeyMap& keymap) {
-                if (keyIsReleased(keymap)) {
+                if (isReleased(keymap)) {
                     component->view->setGroup(*paramFn);
                 }
             };
@@ -230,12 +230,12 @@ public:
             uint8_t* shiftPressed = new uint8_t(atoi(strtok(NULL, ":")));
             uint8_t* shiftReleased = new uint8_t(atoi(strtok(NULL, ":")));
             return [this, shiftIndex, shiftPressed, shiftReleased](KeypadLayout::KeyMap& keymap) {
-                component->setShift(*shiftIndex, keyIsReleased(keymap) ? *shiftReleased : *shiftPressed);
+                component->setShift(*shiftIndex, isReleased(keymap) ? *shiftReleased : *shiftPressed);
             };
         }
 
         if (action == "shift") {
-            return [this](KeypadLayout::KeyMap& keymap) { component->setShift(0, keyIsPressed(keymap)); };
+            return [this](KeypadLayout::KeyMap& keymap) { component->setShift(0, isPressed(keymap)); };
         }
 
         // Unlike shift, shiftToggle will only toggle on release, meaning that it will only toggle the shift state on key release
@@ -245,7 +245,7 @@ public:
             uint8_t* shiftA = new uint8_t(atoi(strtok(NULL, ":")));
             uint8_t* shiftB = new uint8_t(atoi(strtok(NULL, ":")));
             return [this, shiftIndex, shiftA, shiftB](KeypadLayout::KeyMap& keymap) {
-                if (keyIsReleased(keymap)) {
+                if (isReleased(keymap)) {
                     component->setShift(*shiftIndex, component->view->shift[*shiftIndex] == *shiftA ? *shiftB : *shiftA);
                 }
             };
