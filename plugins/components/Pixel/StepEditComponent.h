@@ -28,6 +28,8 @@ StepEdit component is used to edit a step value.
 // pressing encoder will toggle between basic and step probability mode
 // also shift + key on an already selected step will toggle between basic and step probability mode
 
+// TODO show active step
+
 class StepEditComponent : public GroupColorComponent {
 protected:
     AudioPlugin* plugin = NULL;
@@ -72,7 +74,11 @@ public:
             if (action == "stepToggle") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
-                        step->enabled = !step->enabled;
+                        if (!view->shift[254]) {
+                            step->enabled = !step->enabled;
+                        } else {
+                            // view->shift[shiftIndex] = !view->shift[shiftIndex];
+                        }
                         view->setGroup(group);
                         renderNext();
                     }

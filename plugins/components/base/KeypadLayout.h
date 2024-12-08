@@ -251,10 +251,33 @@ public:
             };
         }
 
+        if (action == "playPause") {
+            return [this](KeypadLayout::KeyMap& keymap) {
+                if (isReleased(keymap)) {
+                    sendAudioEvent(AudioEventType::TOGGLE_PLAY_PAUSE);
+                }
+                // long press could trigger stop
+            };
+        }
+
+        if (action.rfind("noteOn:") == 0) {
+            const char* params = action.substr(7).c_str();
+            AudioPlugin* plugin = &getPlugin(strtok((char*)params, ":"), component->track);
+            if (plugin) {
+                uint8_t* note = new uint8_t(atoi(strtok(NULL, ":")));
+                return [this, plugin, note](KeypadLayout::KeyMap& keymap) {
+                    if (isReleased(keymap)) {
+                        plugin->noteOn(*note, 1.0f);
+                    }
+                };
+            }
+        }
+
         return NULL;
     }
 
-    std::function<uint8_t(KeypadLayout::KeyMap& keymap)> getColorAction(std::string action)
+    std::function<uint8_t(KeypadLayout::KeyMap& keymap)>
+    getColorAction(std::string action)
     {
         return NULL;
     }
