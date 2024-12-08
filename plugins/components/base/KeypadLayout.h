@@ -271,8 +271,10 @@ public:
             if (plugin) {
                 uint8_t* note = new uint8_t(atoi(strtok(NULL, ":")));
                 return [this, plugin, note](KeypadLayout::KeyMap& keymap) {
-                    if (isReleased(keymap)) {
+                    if (isPressed(keymap)) {
                         plugin->noteOn(*note, 1.0f);
+                    } else {
+                        plugin->noteOff(*note, 0.0f);
                     }
                 };
             }
