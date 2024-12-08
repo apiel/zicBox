@@ -32,44 +32,13 @@ protected:
     //                        { index, value}
     int16_t shiftVisibility[2] = { -1, -1 };
 
-    // uint8_t shiftIndex = 255;
-
-    void handleButton(int8_t id, int8_t state)
-    {
-        printf("handleButton: %d %d\n", id, state);
-
-        if (state == 1) {
-            if (id == 0) {
-                view->setGroup(activeGroup - 1);
-                // } else if (id == 1) {
-                //     view->setView("Sequencer");
-            // } else if (id == 4) {
-            //     setShift(shiftIndex, view->shift[shiftIndex] ? 0 : 1);
-            } else if (id == 5) {
-                view->setGroup(activeGroup + 1);
-            } else if (id == 9) {
-                sendAudioEvent(AudioEventType::TOGGLE_PLAY_PAUSE);
-            } else {
-                AudioPlugin* plugin = &getPlugin("SynthDrum23", 1);
-                plugin->noteOn(60, 1.0f);
-            }
-        }
-    }
-
 public:
     KeyInfoBarComponent(ComponentInterface::Props props)
         : Component(props)
         , icon(props.view->draw)
         , bgColor(styles.colors.background)
         , textColor(styles.colors.text)
-        , keypadLayout(this, [&](std::string action) {
-            std::function<void(KeypadLayout::KeyMap&)> func = NULL;
-            if (action.rfind("item:") == 0) {
-                int* paramFn = new int(atoi(action.substr(5).c_str()));
-                func = [this, paramFn](KeypadLayout::KeyMap& keymap) { handleButton(*paramFn, keymap.pressedTime != -1); };
-            }
-            return func;
-        })
+        , keypadLayout(this)
     {
         buttonWidth = size.w / 5.0f;
         buttonStartX = buttonWidth * 0.5f;
