@@ -318,6 +318,7 @@ while: $step < 32
       DATA: Sequencer 4 $step
       ENCODERS: 0 1 2
       KEYMAP: Keyboard 'q' stepToggle
+      GLOBAL_SHIFT: 254
 
     $step=$step+1
     COMPONENT: StepEdit $1/4W $y $1/4W 25
@@ -326,6 +327,7 @@ while: $step < 32
       DATA: Sequencer 4 $step
       ENCODERS: 0 1 2
       KEYMAP: Keyboard 'w' stepToggle
+      GLOBAL_SHIFT: 254
 
     $step=$step+1
     COMPONENT: StepEdit $2/4W $y $1/4W 25
@@ -334,6 +336,7 @@ while: $step < 32
       DATA: Sequencer 4 $step
       ENCODERS: 0 1 2
       KEYMAP: Keyboard 'e' stepToggle
+      GLOBAL_SHIFT: 254
 
     $step=$step+1
     COMPONENT: StepEdit $3/4W $y $1/4W 25
@@ -342,6 +345,7 @@ while: $step < 32
       DATA: Sequencer 4 $step
       ENCODERS: 0 1 2
       KEYMAP: Keyboard 'r' stepToggle
+      GLOBAL_SHIFT: 254
 
   $y=$y+$rowHeight
     $step=$step+1
@@ -351,6 +355,7 @@ while: $step < 32
       DATA: Sequencer 4 $step
       ENCODERS: 0 1 2
       KEYMAP: Keyboard 'a' stepToggle
+      GLOBAL_SHIFT: 254
 
     $step=$step+1
     COMPONENT: StepEdit $1/4W $y $1/4W 25
@@ -359,6 +364,7 @@ while: $step < 32
       DATA: Sequencer 4 $step
       ENCODERS: 0 1 2
       KEYMAP: Keyboard 's' stepToggle
+      GLOBAL_SHIFT: 254
 
     $step=$step+1
     COMPONENT: StepEdit $2/4W $y $1/4W 25
@@ -367,6 +373,7 @@ while: $step < 32
       DATA: Sequencer 4 $step
       ENCODERS: 0 1 2
       KEYMAP: Keyboard 'd' stepToggle
+      GLOBAL_SHIFT: 254
 
     $step=$step+1
     COMPONENT: StepEdit $3/4W $y $1/4W 25
@@ -375,6 +382,7 @@ while: $step < 32
       DATA: Sequencer 4 $step
       ENCODERS: 0 1 2
       KEYMAP: Keyboard 'f' stepToggle
+      GLOBAL_SHIFT: 254
 
     $step=$step+1
   
