@@ -26,9 +26,7 @@ public:
         uint16_t controllerId;
         uint8_t key;
         std::function<void(int8_t state, KeyMap& keymap)> action;
-        void* param = NULL;
-        std::function<void(int8_t state, KeyMap& keymap)> actionLongPress = [](int8_t state, KeyMap& keymap) {};
-        void* paramLongPress = NULL;
+        std::function<void(int8_t state, KeyMap& keymap)> actionLongPress;
         uint8_t color = 255;
         std::function<uint8_t(KeyMap& keymap)> getColor = [&](KeyMap& keymap) { return keymap.color; };
         bool isLongPress = false;
@@ -78,7 +76,7 @@ public:
     bool jobRendering(unsigned long now)
     {
         for (KeyMap& keyMap : mapping) {
-            if (!keyMap.isLongPress && keyMap.pressedTime != -1 && now - keyMap.pressedTime > 500) {
+            if (keyMap.actionLongPress && !keyMap.isLongPress && keyMap.pressedTime != -1 && now - keyMap.pressedTime > 500) {
                 keyMap.isLongPress = true;
                 keyMap.actionLongPress(1, keyMap);
                 return true;
@@ -94,10 +92,15 @@ public:
                 if (state == 1) {
                     keyMap.isLongPress = false;
                     keyMap.pressedTime = now;
-                } else if (keyMap.isLongPress) {
-                    keyMap.actionLongPress(0, keyMap);
+                } else {
+                    keyMap.pressedTime = -1;
+                    if (keyMap.isLongPress && keyMap.actionLongPress) {
+                        keyMap.actionLongPress(0, keyMap);
+                    }
                 }
-                keyMap.action(state, keyMap);
+                if (keyMap.action) {
+                    keyMap.action(state, keyMap);
+                }
                 return;
             }
         }
@@ -127,19 +130,18 @@ public:
         }
     }
 
-    bool setAction(std::string action, void* param, std::function<void(int8_t state, KeyMap& keymap)>& actionFn, void* paramFn)
+    std::function<void(int8_t state, KeyMap& keymap)> getAction(std::string action, void* param, void* paramFn)
     {
         if (action == "setView") {
             paramFn = new std::string((char*)param);
-            actionFn = [this](int8_t state, KeyMap& keymap) { componentProps.view->setView(*(std::string*)keymap.param); };
-            return true;
+            return [this, paramFn](int8_t state, KeyMap& keymap) { printf("----------------- setView yeah"); componentProps.view->setView(*(std::string*)paramFn); };
         }
         // if (action == "setGroup") {
         //     paramFn = new int(atoi((char*)param));
         //     actionFn = [this](int8_t state, KeyMap& keymap) { componentProps.view->setGroup(*(int*)keymap.param); };
         //     return true;
         // }
-        return false;
+        return NULL;
     }
 
     bool config(char* key, char* value)
