@@ -199,6 +199,43 @@ public:
                 }
             };
         }
+
+        if (action.rfind("setGroup:") == 0) {
+            int* paramFn = new int(atoi(action.substr(9).c_str()));
+            return [this, paramFn](KeypadLayout::KeyMap& keymap) {
+                if (keyIsReleased(keymap)) {
+                    component->view->setGroup(*paramFn);
+                }
+            };
+        }
+
+        if (action.rfind("shift:") == 0) {
+            const char* params = action.substr(6).c_str();
+            uint8_t* shiftIndex = new uint8_t(atoi(strtok((char*)params, ":")));
+            uint8_t* shiftPressed = new uint8_t(atoi(strtok(NULL, ":")));
+            uint8_t* shiftReleased = new uint8_t(atoi(strtok(NULL, ":")));
+            return [this, shiftIndex, shiftPressed, shiftReleased](KeypadLayout::KeyMap& keymap) {
+                component->setShift(*shiftIndex, keyIsReleased(keymap) ? *shiftReleased : *shiftPressed);
+            };
+        }
+
+        if (action == "shift") {
+            return [this](KeypadLayout::KeyMap& keymap) { component->setShift(0, keyIsPressed(keymap)); };
+        }
+
+        // Unlike shift, shiftToggle will only toggle on release, meaning that it will only toggle the shift state on key release
+        if (action.rfind("shiftToggle:") == 0) {
+            const char* params = action.substr(12).c_str();
+            uint8_t* shiftIndex = new uint8_t(atoi(strtok((char*)params, ":")));
+            uint8_t* shiftA = new uint8_t(atoi(strtok(NULL, ":")));
+            uint8_t* shiftB = new uint8_t(atoi(strtok(NULL, ":")));
+            return [this, shiftIndex, shiftA, shiftB](KeypadLayout::KeyMap& keymap) {
+                if (keyIsReleased(keymap)) {
+                    component->setShift(*shiftIndex, component->view->shift[*shiftIndex] == *shiftA ? *shiftB : *shiftA);
+                }
+            };
+        }
+
         return NULL;
     }
 
