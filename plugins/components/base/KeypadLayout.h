@@ -216,6 +216,8 @@ public:
             uint8_t* shiftReleased = new uint8_t(atoi(strtok(NULL, ":")));
             return [this, shiftIndex, shiftPressed, shiftReleased](KeypadLayout::KeyMap& keymap) {
                 component->setShift(*shiftIndex, keyIsReleased(keymap) ? *shiftReleased : *shiftPressed);
+
+                printf("setShift(%d, %d)\n", *shiftIndex, component->view->shift[*shiftIndex]);
             };
         }
 
