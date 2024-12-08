@@ -409,7 +409,7 @@ public:
 
     GridMiniComponent(ComponentInterface::Props props)
         : Component(props)
-        , keypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress) { addKeyMap(controller, controllerId, key, action, param, actionLongPress, paramLongPress); })
+        , keypadLayout(props, getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress) { addKeyMap(controller, controllerId, key, action, param, actionLongPress, paramLongPress); })
     {
         jobRendering = [this](unsigned long _now) {
             now = _now;
