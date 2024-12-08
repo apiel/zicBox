@@ -74,6 +74,7 @@ public:
                 group = lastGroupId;
             }
         }
+        activeGroup = group;
         for (auto& container : containers) {
             container->onGroupChanged(group);
         }

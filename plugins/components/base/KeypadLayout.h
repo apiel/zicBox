@@ -68,6 +68,16 @@ protected:
         return atoi(keyStr.c_str());
     }
 
+    bool keyIsPressed(KeyMap& keyMap)
+    {
+        return keyMap.pressedTime != -1;
+    }
+
+    bool keyIsReleased(KeyMap& keyMap)
+    {
+        return keyMap.pressedTime == -1;
+    }
+
 public:
     std::vector<KeyMap> mapping;
 
@@ -86,14 +96,14 @@ public:
         }
 
         // TODO handle keypad color
-        // color should be define base on the state of keymap 
+        // color should be define base on the state of keymap
         // using pressedTime to know if the key is pressed
         // and using isLongPress to know if the key is long pressed
         // --> should there be a getColor for each mode short press / long press ?
         // --> should get color be define base on action name ?
         // --> couldn't we instead have an array of color for each mode (short pressed, long pressed, short released, long released) ?
         // In the current version, we are not using keypad color, so let's postpone those decisions
-        std::function<uint8_t(KeyMap& keymap)> getColorFn = getColorAction(props.action);
+        std::function<uint8_t(KeyMap & keymap)> getColorFn = getColorAction(props.action);
         if (!getColorFn) {
             // getColorFn = getCustomColorAction(props.color);
         }
@@ -116,7 +126,7 @@ public:
     bool jobRendering(unsigned long now)
     {
         for (KeyMap& keyMap : mapping) {
-            if (keyMap.actionLongPress && !keyMap.isLongPress && keyMap.pressedTime != -1 && now - keyMap.pressedTime > 500) {
+            if (keyMap.actionLongPress && !keyMap.isLongPress && keyIsPressed(keyMap) && now - keyMap.pressedTime > 500) {
                 keyMap.isLongPress = true;
                 keyMap.actionLongPress(keyMap);
                 renderKeypadColor(keyMap);
@@ -173,7 +183,20 @@ public:
         if (action.rfind("setView:") == 0) {
             std::string* paramFn = new std::string(action.substr(8));
             return [this, paramFn](KeypadLayout::KeyMap& keymap) {
-                component->view->setView(*paramFn);
+                if (keyIsReleased(keymap)) {
+                    component->view->setView(*paramFn);
+                }
+            };
+        }
+
+        if (action.rfind("incGroup:") == 0) {
+            int direction = action[9] == '-' ? -1 : 1;
+            int incValue = atoi(action.substr(10).c_str());
+            int* paramFn = new int(incValue * direction);
+            return [this, paramFn](KeypadLayout::KeyMap& keymap) {
+                if (keyIsReleased(keymap)) {
+                    component->view->setGroup(component->view->activeGroup + *paramFn);
+                }
             };
         }
         return NULL;
