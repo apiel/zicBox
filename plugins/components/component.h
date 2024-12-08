@@ -74,7 +74,7 @@ public:
     {
     }
 
-    virtual void onKey(uint16_t id, int key, int8_t state) override
+    virtual void onKey(uint16_t id, int key, int8_t state, unsigned long now) override
     {
     }
 

@@ -66,6 +66,7 @@ public:
                     key,
                     [&](int8_t state, KeypadLayout::KeyMap& keymap) { handleButton(*(int*)keymap.param, state); },
                     new int(atoi(param)),
+                    [&](int8_t state, KeypadLayout::KeyMap& keymap) { printf("longpress test\n"); },
                 });
         }
     }
@@ -152,10 +153,10 @@ public:
         return false;
     }
 
-    void onKey(uint16_t id, int key, int8_t state)
+    void onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
         if (isVisible()) {
-            keypadLayout.onKey(id, key, state);
+            keypadLayout.onKey(id, key, state, now);
         }
     }
 
