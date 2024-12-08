@@ -290,31 +290,31 @@ VIEW: Sequencer
   COMPONENT: KeyInfoBar 0 216
     SHIFT_VISIBILITY: 254 0
     ROW1: 1 2 3 4 Shift
-    KEYMAP: Keyboard 'q' item:0
-    KEYMAP: Keyboard 'w' item:1
-    KEYMAP: Keyboard 'e' item:2
-    KEYMAP: Keyboard 'r' item:3
+    # KEYMAP: Keyboard 'q' item:0
+    # KEYMAP: Keyboard 'w' item:1
+    # KEYMAP: Keyboard 'e' item:2
+    # KEYMAP: Keyboard 'r' item:3
     KEYMAP: Keyboard 't' shiftToggle:255:0:1 shift:254:1:0
     ROW2: 5 6 7 8 &icon::play
-    KEYMAP: Keyboard 'a' item:5
-    KEYMAP: Keyboard 's' item:6
-    KEYMAP: Keyboard 'd' item:7
-    KEYMAP: Keyboard 'f' item:8
+    # KEYMAP: Keyboard 'a' item:5
+    # KEYMAP: Keyboard 's' item:6
+    # KEYMAP: Keyboard 'd' item:7
+    # KEYMAP: Keyboard 'f' item:8
     KEYMAP: Keyboard 'g' item:9
 
   COMPONENT: KeyInfoBar 0 216
     SHIFT_VISIBILITY: 254 1
     ROW1: 1 2 3 4 Shift
-    KEYMAP: Keyboard 'q' item:0
-    KEYMAP: Keyboard 'w' item:1
-    KEYMAP: Keyboard 'e' item:2
-    KEYMAP: Keyboard 'r' item:3
+    # KEYMAP: Keyboard 'q' item:0
+    # KEYMAP: Keyboard 'w' item:1
+    # KEYMAP: Keyboard 'e' item:2
+    # KEYMAP: Keyboard 'r' item:3
     KEYMAP: Keyboard 't' shiftToggle:255:0:1 shift:254:1:0
     ROW2: 5 6 7 8 Exit
-    KEYMAP: Keyboard 'a' item:5
-    KEYMAP: Keyboard 's' item:6
-    KEYMAP: Keyboard 'd' item:7
-    KEYMAP: Keyboard 'f' item:8
+    # KEYMAP: Keyboard 'a' item:5
+    # KEYMAP: Keyboard 's' item:6
+    # KEYMAP: Keyboard 'd' item:7
+    # KEYMAP: Keyboard 'f' item:8
     KEYMAP: Keyboard 'g' setView:Main
 
   COMPONENT: Separator 0 0 $SCREEN_WIDTH 8
@@ -333,6 +333,7 @@ while: $step < 32
       GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer 4 $step
       ENCODERS: 0 1 2
+      KEYMAP: Keyboard 'q' stepToggle
 
     $step=$step+1
     COMPONENT: StepEdit $1/4W $y $1/4W 25
@@ -340,6 +341,7 @@ while: $step < 32
       GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer 4 $step
       ENCODERS: 0 1 2
+      KEYMAP: Keyboard 'w' stepToggle
 
     $step=$step+1
     COMPONENT: StepEdit $2/4W $y $1/4W 25
@@ -347,6 +349,7 @@ while: $step < 32
       GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer 4 $step
       ENCODERS: 0 1 2
+      KEYMAP: Keyboard 'e' stepToggle
 
     $step=$step+1
     COMPONENT: StepEdit $3/4W $y $1/4W 25
@@ -354,6 +357,7 @@ while: $step < 32
       GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer 4 $step
       ENCODERS: 0 1 2
+      KEYMAP: Keyboard 'r' stepToggle
 
   $y=$y+$rowHeight
     $step=$step+1
@@ -362,6 +366,7 @@ while: $step < 32
       GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer 4 $step
       ENCODERS: 0 1 2
+      KEYMAP: Keyboard 'a' stepToggle
 
     $step=$step+1
     COMPONENT: StepEdit $1/4W $y $1/4W 25
@@ -369,6 +374,7 @@ while: $step < 32
       GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer 4 $step
       ENCODERS: 0 1 2
+      KEYMAP: Keyboard 's' stepToggle
 
     $step=$step+1
     COMPONENT: StepEdit $2/4W $y $1/4W 25
@@ -376,6 +382,7 @@ while: $step < 32
       GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer 4 $step
       ENCODERS: 0 1 2
+      KEYMAP: Keyboard 'd' stepToggle
 
     $step=$step+1
     COMPONENT: StepEdit $3/4W $y $1/4W 25
@@ -383,6 +390,7 @@ while: $step < 32
       GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer 4 $step
       ENCODERS: 0 1 2
+      KEYMAP: Keyboard 'f' stepToggle
 
     $step=$step+1
   
