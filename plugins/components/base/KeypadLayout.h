@@ -110,11 +110,16 @@ public:
         if (strcmp(key, "KEYMAP") == 0) {
             std::string controllerName = strtok(value, " ");
             uint8_t key = getKeyCode(strtok(NULL, " "));
-            std::string action = strtok(NULL, " ");
-            char* param = strtok(NULL, " ");
+
+            char * actionPtr = strtok(NULL, " ");
             char* actionLongPressPtr = strtok(NULL, " ");
-            std::string actionLongPress = actionLongPressPtr ? std::string(actionLongPressPtr) : "";
-            char* paramLongPress = strtok(NULL, " ");
+
+            std::string action = strtok(actionPtr, ":");
+            char* param = strtok(NULL, ":");
+
+            std::string actionLongPress = actionLongPressPtr ? strtok(actionLongPressPtr, ":") : "";
+            char* paramLongPress = actionLongPressPtr ? strtok(NULL, ":") : NULL;
+
 
             KeypadInterface* controller = NULL;
             uint16_t controllerId = -1;
