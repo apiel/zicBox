@@ -26,7 +26,8 @@ public:
         uint16_t controllerId;
         uint8_t key;
         std::function<void(KeyMap& keymap)> action;
-        std::function<void(KeyMap& keymap)> actionLongPress;
+        std::function<void(KeyMap& keymap)> action2;
+        // std::function<void(KeyMap& keymap)> actionLongPress;
         std::function<uint8_t(KeyMap& keymap)> getColor;
         bool isLongPress = false;
         unsigned long pressedTime = -1;
@@ -37,7 +38,8 @@ public:
         uint16_t controllerId;
         uint8_t key;
         std::string action;
-        std::string actionLongPress;
+        std::string action2;
+        // std::string actionLongPress;
     };
 
 protected:
@@ -90,10 +92,15 @@ public:
             actionFn = getCustomAction(props.action);
         }
 
-        std::function<void(KeypadLayout::KeyMap & keymap)> actionLongPressFn = getAction(props.actionLongPress);
-        if (!actionLongPressFn) {
-            actionLongPressFn = getCustomAction(props.actionLongPress);
+        std::function<void(KeypadLayout::KeyMap & keymap)> action2Fn = getAction(props.action2);
+        if (!action2Fn) {
+            action2Fn = getCustomAction(props.action2);
         }
+
+        // std::function<void(KeypadLayout::KeyMap & keymap)> actionLongPressFn = getAction(props.actionLongPress);
+        // if (!actionLongPressFn) {
+        //     actionLongPressFn = getCustomAction(props.actionLongPress);
+        // }
 
         // TODO handle keypad color
         // color should be define base on the state of keymap
@@ -113,7 +120,8 @@ public:
             props.controllerId,
             props.key,
             actionFn,
-            actionLongPressFn,
+            action2Fn,
+            // actionLongPressFn,
         });
     };
 
@@ -123,38 +131,45 @@ public:
     {
     }
 
-    bool jobRendering(unsigned long now)
-    {
-        for (KeyMap& keyMap : mapping) {
-            if (keyMap.actionLongPress && !keyMap.isLongPress && keyIsPressed(keyMap) && now - keyMap.pressedTime > 500) {
-                keyMap.isLongPress = true;
-                keyMap.actionLongPress(keyMap);
-                renderKeypadColor(keyMap);
-                return true;
-            }
-        }
-        return false;
-    }
+    // To be used if longPress action is activated
+    // in component constructor do: jobRendering = [this](unsigned long now) { if (keypadLayout.jobRendering(now)) { renderNext(); } };
+    //
+    // bool jobRendering(unsigned long now)
+    // {
+    //     for (KeyMap& keyMap : mapping) {
+    //         if (keyMap.actionLongPress && !keyMap.isLongPress && keyIsPressed(keyMap) && now - keyMap.pressedTime > 500) {
+    //             keyMap.isLongPress = true;
+    //             keyMap.actionLongPress(keyMap);
+    //             renderKeypadColor(keyMap);
+    //             return true;
+    //         }
+    //     }
+    //     return false;
+    // }
 
     void onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
         for (KeyMap& keyMap : mapping) {
             if (keyMap.controllerId == id && keyMap.key == key) {
                 if (state == 1) {
-                    keyMap.isLongPress = false;
+                    // keyMap.isLongPress = false;
                     // To know if the key is pressed, we set pressedTime to the current time
                     // It also allow us to calculate the duration of the key press for long press
                     keyMap.pressedTime = now;
                 } else {
                     // To know if the key is not pressed anymore, we set pressedTime to -1
                     keyMap.pressedTime = -1;
-                    if (keyMap.isLongPress && keyMap.actionLongPress) {
-                        keyMap.actionLongPress(keyMap);
-                        renderKeypadColor(keyMap);
-                    }
+                    // if (keyMap.isLongPress && keyMap.actionLongPress) {
+                    //     keyMap.actionLongPress(keyMap);
+                    //     renderKeypadColor(keyMap);
+                    // }
                 }
                 if (keyMap.action) {
                     keyMap.action(keyMap);
+                    renderKeypadColor(keyMap);
+                }
+                if (keyMap.action2) {
+                    keyMap.action2(keyMap);
                     renderKeypadColor(keyMap);
                 }
                 return;
@@ -216,8 +231,6 @@ public:
             uint8_t* shiftReleased = new uint8_t(atoi(strtok(NULL, ":")));
             return [this, shiftIndex, shiftPressed, shiftReleased](KeypadLayout::KeyMap& keymap) {
                 component->setShift(*shiftIndex, keyIsReleased(keymap) ? *shiftReleased : *shiftPressed);
-
-                printf("setShift(%d, %d)\n", *shiftIndex, component->view->shift[*shiftIndex]);
             };
         }
 
