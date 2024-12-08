@@ -374,7 +374,7 @@ protected:
         if (state == 1) {
             if (param < keypadLayouts.size()) {
                 currentKeypadLayout = keypadLayouts[param];
-                currentKeypadLayout->renderKeypad();
+                currentKeypadLayout->renderKeypadColor();
             }
         }
     }
@@ -393,7 +393,7 @@ protected:
             draw.renderNext();
         } else if (!view->shift[0] && now - stepPressedTime < 300) {
             tracks[grid.row].seqPlugin->getValue("STEP_ENABLED")->set(tracks[grid.row].steps[param].enabled ? 0 : 1);
-            currentKeypadLayout->renderKeypad();
+            currentKeypadLayout->renderKeypadColor();
         }
     }
 
@@ -507,7 +507,7 @@ public:
         if (currentKeypadLayout) {
             // Do not initialize if it was previously initialized
             // if (initViewCounter != counter - 1) {
-            currentKeypadLayout->renderKeypad();
+            currentKeypadLayout->renderKeypadColor();
             // }
             initViewCounter = counter;
         }

@@ -439,7 +439,7 @@ public:
     {
         // Do not initialize if it was previously initialized
         // if (initViewCounter != counter - 1) {
-        keypadLayout.renderKeypad();
+        keypadLayout.renderKeypadColor();
         // }
         initViewCounter = counter;
     }
