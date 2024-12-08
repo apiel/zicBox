@@ -27,15 +27,14 @@ public:
         uint8_t key;
         std::function<void(int8_t state, KeyMap& keymap)> action;
         std::function<void(int8_t state, KeyMap& keymap)> actionLongPress;
-        uint8_t color = 255;
-        std::function<uint8_t(KeyMap& keymap)> getColor = [&](KeyMap& keymap) { return keymap.color; };
+        std::function<uint8_t(KeyMap& keymap)> getColor = [](KeyMap& keymap) { return 255; };
         bool isLongPress = false;
         unsigned long pressedTime = -1;
     };
 
 protected:
     ComponentInterface::Props& componentProps;
-    std::function<void(KeypadInterface* controller, uint16_t controllerId, int8_t state, std::string action, char* param, std::string actionLongPress, char* paramLongPress)> addKeyMap;
+    std::function<void(KeypadInterface* controller, uint16_t controllerId, int8_t state, std::string action, std::string actionLongPress)> addKeyMap;
     ControllerInterface* (*getController)(const char* name);
 
     uint8_t getKeyCode(std::string keyStr)
@@ -66,7 +65,7 @@ protected:
 public:
     std::vector<KeyMap> mapping;
 
-    KeypadLayout(ComponentInterface::Props& props, ControllerInterface* (*getController)(const char* name), std::function<void(KeypadInterface* controller, uint16_t controllerId, int8_t state, std::string action, char* param, std::string actionLongPress, char* paramLongPress)> addKeyMap)
+    KeypadLayout(ComponentInterface::Props& props, ControllerInterface* (*getController)(const char* name), std::function<void(KeypadInterface* controller, uint16_t controllerId, int8_t state, std::string action, std::string actionLongPress)> addKeyMap)
         : componentProps(props)
         , getController(getController)
         , addKeyMap(addKeyMap)
@@ -151,14 +150,9 @@ public:
             std::string controllerName = strtok(value, " ");
             uint8_t key = getKeyCode(strtok(NULL, " "));
 
-            char* actionPtr = strtok(NULL, " ");
+            std::string action = strtok(NULL, " ");
             char* actionLongPressPtr = strtok(NULL, " ");
-
-            std::string action = strtok(actionPtr, ":");
-            char* param = strtok(NULL, ":");
-
-            std::string actionLongPress = actionLongPressPtr ? strtok(actionLongPressPtr, ":") : "";
-            char* paramLongPress = actionLongPressPtr ? strtok(NULL, ":") : NULL;
+            std::string actionLongPress = actionLongPressPtr ? actionLongPressPtr : "";
 
             KeypadInterface* controller = NULL;
             uint16_t controllerId = -1;
@@ -174,7 +168,7 @@ public:
                 // printf("........controller %s id %d\n", controllerName.c_str(), controller->id);
                 controllerId = controller->id;
             }
-            addKeyMap(controller, controllerId, key, action, param, actionLongPress, paramLongPress);
+            addKeyMap(controller, controllerId, key, action, actionLongPress);
             return true;
         }
         return false;
