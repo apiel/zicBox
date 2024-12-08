@@ -58,29 +58,29 @@ $track=1
     ROW1: &icon::arrowUp Seq Clip Synth Track
     KEYMAP: Keyboard 'q' incGroup:-1
     KEYMAP: Keyboard 'w' setView:Sequencer
-    KEYMAP: Keyboard 'e' item:2
-    KEYMAP: Keyboard 'r' item:3
+    KEYMAP: Keyboard 'e' noteOn:SynthDrum23:58
+    KEYMAP: Keyboard 'r' noteOn:SynthDrum23:59
     KEYMAP: Keyboard 't' shift:254:1:0
     ROW2: &icon::arrowDown mod Live &icon::pause &icon::play
     KEYMAP: Keyboard 'a' incGroup:+1
-    KEYMAP: Keyboard 's' item:6
-    KEYMAP: Keyboard 'd' item:7
-    KEYMAP: Keyboard 'f' item:8
-    KEYMAP: Keyboard 'g' item:9
+    KEYMAP: Keyboard 's' noteOn:SynthDrum23:60
+    KEYMAP: Keyboard 'd' noteOn:SynthDrum23:61
+    KEYMAP: Keyboard 'f' noteOn:SynthDrum23:62
+    KEYMAP: Keyboard 'g' playPause
 
   COMPONENT: KeyInfoBar 0 216
     SHIFT_VISIBILITY: 254 1
     ROW1: 1 2 3 4 Track
-    KEYMAP: Keyboard 'q' item:0
-    KEYMAP: Keyboard 'w' item:1
-    KEYMAP: Keyboard 'e' item:2
-    KEYMAP: Keyboard 'r' item:3
+    KEYMAP: Keyboard 'q' noteOn:SynthDrum23:60
+    KEYMAP: Keyboard 'w' noteOn:SynthDrum23:60
+    KEYMAP: Keyboard 'e' noteOn:SynthDrum23:60
+    KEYMAP: Keyboard 'r' noteOn:SynthDrum23:60
     KEYMAP: Keyboard 't' shift:254:1:0
     ROW2: 5 6 7 8 Master
-    KEYMAP: Keyboard 'a' item:5
-    KEYMAP: Keyboard 's' item:6
-    KEYMAP: Keyboard 'd' item:7
-    KEYMAP: Keyboard 'f' item:8
+    KEYMAP: Keyboard 'a' noteOn:SynthDrum23:60
+    KEYMAP: Keyboard 's' noteOn:SynthDrum23:60
+    KEYMAP: Keyboard 'd' noteOn:SynthDrum23:60
+    KEYMAP: Keyboard 'f' noteOn:SynthDrum23:60
     KEYMAP: Keyboard 'g' setView:Master
 
   CONTAINER: ScrollGroupContainer Scroll 0 0 $SCREEN_WIDTH 214
@@ -290,31 +290,15 @@ VIEW: Sequencer
   COMPONENT: KeyInfoBar 0 216
     SHIFT_VISIBILITY: 254 0
     ROW1: 1 2 3 4 Shift
-    # KEYMAP: Keyboard 'q' item:0
-    # KEYMAP: Keyboard 'w' item:1
-    # KEYMAP: Keyboard 'e' item:2
-    # KEYMAP: Keyboard 'r' item:3
     KEYMAP: Keyboard 't' shiftToggle:255:0:1 shift:254:1:0
     ROW2: 5 6 7 8 &icon::play
-    # KEYMAP: Keyboard 'a' item:5
-    # KEYMAP: Keyboard 's' item:6
-    # KEYMAP: Keyboard 'd' item:7
-    # KEYMAP: Keyboard 'f' item:8
-    KEYMAP: Keyboard 'g' item:9
+    KEYMAP: Keyboard 'g' playPause
 
   COMPONENT: KeyInfoBar 0 216
     SHIFT_VISIBILITY: 254 1
     ROW1: 1 2 3 4 Shift
-    # KEYMAP: Keyboard 'q' item:0
-    # KEYMAP: Keyboard 'w' item:1
-    # KEYMAP: Keyboard 'e' item:2
-    # KEYMAP: Keyboard 'r' item:3
     KEYMAP: Keyboard 't' shiftToggle:255:0:1 shift:254:1:0
     ROW2: 5 6 7 8 Exit
-    # KEYMAP: Keyboard 'a' item:5
-    # KEYMAP: Keyboard 's' item:6
-    # KEYMAP: Keyboard 'd' item:7
-    # KEYMAP: Keyboard 'f' item:8
     KEYMAP: Keyboard 'g' setView:Main
 
   COMPONENT: Separator 0 0 $SCREEN_WIDTH 8
