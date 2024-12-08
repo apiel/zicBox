@@ -78,12 +78,12 @@ public:
     // Publicly available to be eventually overridden
     std::function<void(AddKeyMapProps props)> addKeyMap = [this](AddKeyMapProps props) {
         std::function<void(KeypadLayout::KeyMap & keymap)> actionFn = getAction(props.action);
-        if (!actionFn) {
+        if (!actionFn && getCustomAction) {
             actionFn = getCustomAction(props.action);
         }
 
         std::function<void(KeypadLayout::KeyMap & keymap)> action2Fn = getAction(props.action2);
-        if (!action2Fn) {
+        if (!action2Fn && getCustomAction) {
             action2Fn = getCustomAction(props.action2);
         }
 
@@ -114,6 +114,11 @@ public:
             // actionLongPressFn,
         });
     };
+
+    KeypadLayout(ComponentInterface* component)
+        : component(component)
+    {
+    }
 
     KeypadLayout(ComponentInterface* component, std::function<std::function<void(KeypadLayout::KeyMap& keymap)>(std::string action)> getCustomAction)
         : component(component)
