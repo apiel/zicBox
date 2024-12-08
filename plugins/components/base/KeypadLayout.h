@@ -41,7 +41,6 @@ public:
     };
 
 protected:
-    std::function<void(AddKeyMapProps props)> addKeyMap;
     ComponentInterface* component;
 
     uint8_t getKeyCode(std::string keyStr)
@@ -72,9 +71,45 @@ protected:
 public:
     std::vector<KeyMap> mapping;
 
-    KeypadLayout(ComponentInterface* component, std::function<void(AddKeyMapProps props)> addKeyMap)
+    std::function<std::function<void(KeypadLayout::KeyMap& keymap)>(std::string action)> getCustomAction;
+
+    // Publicly available to be eventually overridden
+    std::function<void(AddKeyMapProps props)> addKeyMap = [this](AddKeyMapProps props) {
+        std::function<void(KeypadLayout::KeyMap & keymap)> actionFn = getAction(props.action);
+        if (!actionFn) {
+            actionFn = getCustomAction(props.action);
+        }
+
+        std::function<void(KeypadLayout::KeyMap & keymap)> actionLongPressFn = getAction(props.actionLongPress);
+        if (!actionLongPressFn) {
+            actionLongPressFn = getCustomAction(props.actionLongPress);
+        }
+
+        // TODO handle keypad color
+        // color should be define base on the state of keymap 
+        // using pressedTime to know if the key is pressed
+        // and using isLongPress to know if the key is long pressed
+        // --> should there be a getColor for each mode short press / long press ?
+        // --> should get color be define base on action name ?
+        // --> couldn't we instead have an array of color for each mode (short pressed, long pressed, short released, long released) ?
+        // In the current version, we are not using keypad color, so let's postpone those decisions
+        std::function<uint8_t(KeyMap& keymap)> getColorFn = getColorAction(props.action);
+        if (!getColorFn) {
+            // getColorFn = getCustomColorAction(props.color);
+        }
+
+        mapping.push_back({
+            props.controller,
+            props.controllerId,
+            props.key,
+            actionFn,
+            actionLongPressFn,
+        });
+    };
+
+    KeypadLayout(ComponentInterface* component, std::function<std::function<void(KeypadLayout::KeyMap& keymap)>(std::string action)> getCustomAction)
         : component(component)
-        , addKeyMap(addKeyMap)
+        , getCustomAction(getCustomAction)
     {
     }
 
@@ -141,6 +176,11 @@ public:
                 component->view->setView(*paramFn);
             };
         }
+        return NULL;
+    }
+
+    std::function<uint8_t(KeypadLayout::KeyMap& keymap)> getColorAction(std::string action)
+    {
         return NULL;
     }
 

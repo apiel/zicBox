@@ -56,31 +56,18 @@ protected:
     }
 
 public:
-    void addKeyMap(KeypadLayout::AddKeyMapProps props)
-    {
-        std::function<void(KeypadLayout::KeyMap & keymap)> actionFn = keypadLayout.getAction(props.action);
-
-        if (!actionFn) {
-            if (props.action.rfind("item:") == 0) {
-                int *paramFn = new int(atoi(props.action.substr(5).c_str()));
-                actionFn = [this, paramFn](KeypadLayout::KeyMap& keymap) { handleButton(*paramFn, keymap.pressedTime != -1); };
-            }
-        }
-
-        keypadLayout.mapping.push_back({
-            props.controller,
-            props.controllerId,
-            props.key,
-            actionFn,
-            [&](KeypadLayout::KeyMap& keymap) { printf("longpress test\n"); },
-        });
-    }
-
     KeyInfoBarComponent(ComponentInterface::Props props)
         : Component(props)
         , icon(props.view->draw)
-        , keypadLayout(this, [&](KeypadLayout::AddKeyMapProps props) { addKeyMap(props); })
         , textColor(styles.colors.text)
+        , keypadLayout(this, [&](std::string action) {
+            std::function<void(KeypadLayout::KeyMap&)> func = NULL;
+            if (action.rfind("item:") == 0) {
+                int* paramFn = new int(atoi(action.substr(5).c_str()));
+                func = [this, paramFn](KeypadLayout::KeyMap& keymap) { handleButton(*paramFn, keymap.pressedTime != -1); };
+            }
+            return func;
+        })
     {
         buttonWidth = size.w / 5.0f;
         buttonStartX = buttonWidth * 0.5f;
