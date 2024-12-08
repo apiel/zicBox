@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "log.h"
+#include "plugins/components/componentInterface.h"
 #include "plugins/controllers/keypadInterface.h"
 
 /*md
@@ -35,6 +36,7 @@ public:
     };
 
 protected:
+    ComponentInterface::Props& componentProps;
     std::function<void(KeypadInterface* controller, uint16_t controllerId, int8_t state, std::string action, char* param, std::string actionLongPress, char* paramLongPress)> addKeyMap;
     ControllerInterface* (*getController)(const char* name);
 
@@ -66,8 +68,9 @@ protected:
 public:
     std::vector<KeyMap> mapping;
 
-    KeypadLayout(ControllerInterface* (*getController)(const char* name), std::function<void(KeypadInterface* controller, uint16_t controllerId, int8_t state, std::string action, char* param, std::string actionLongPress, char* paramLongPress)> addKeyMap)
-        : getController(getController)
+    KeypadLayout(ComponentInterface::Props& props, ControllerInterface* (*getController)(const char* name), std::function<void(KeypadInterface* controller, uint16_t controllerId, int8_t state, std::string action, char* param, std::string actionLongPress, char* paramLongPress)> addKeyMap)
+        : componentProps(props)
+        , getController(getController)
         , addKeyMap(addKeyMap)
     {
     }
@@ -122,6 +125,16 @@ public:
                 keyMap.controller->setButton(keyMap.key, keyMap.getColor(keyMap));
             }
         }
+    }
+
+    bool setAction(std::string action, void* param, std::function<void(int8_t state, KeyMap& keymap)>& actionFn, void* paramFn)
+    {
+        if (action == "setView") {
+            paramFn = new std::string((char*)param);
+            actionFn = [this](int8_t state, KeyMap& keymap) { componentProps.view->setView(*(std::string*)keymap.param); };
+            return true;
+        }
+        return false;
     }
 
     bool config(char* key, char* value)

@@ -82,7 +82,7 @@ public:
         : Component(props)
         , colors(getColorsFromColor(styles.colors.primary))
         , margin(styles.margin)
-        , keypadLayout(getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress) { addKeyMap(controller, controllerId, key, action, param, actionLongPress, paramLongPress); })
+        , keypadLayout(props, getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress) { addKeyMap(controller, controllerId, key, action, param, actionLongPress, paramLongPress); })
     {
         waveSize = { size.w - 2 * margin, size.h - 2 * margin };
         wavePosition = { position.x + margin, position.y + margin };
