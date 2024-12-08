@@ -321,10 +321,10 @@ public:
         }
     }
 
-    void onKey(uint16_t id, int key, int8_t state)
+    void onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
         // printf("onKey %d %d %d\n", id, key, state);
-        keypadLayout.onKey(id, key, state);
+        keypadLayout.onKey(id, key, state, now);
     }
 
     void initView(uint16_t counter)

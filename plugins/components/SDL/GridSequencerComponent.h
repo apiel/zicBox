@@ -590,10 +590,10 @@ public:
         return false;
     }
 
-    void onKey(uint16_t id, int key, int8_t state)
+    void onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
         if (currentKeypadLayout) {
-            currentKeypadLayout->onKey(id, key, state);
+            currentKeypadLayout->onKey(id, key, state, now);
         }
     }
 };

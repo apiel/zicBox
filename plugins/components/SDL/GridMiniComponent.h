@@ -493,9 +493,9 @@ public:
         return false;
     }
 
-    void onKey(uint16_t id, int key, int8_t state)
+    void onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
-        keypadLayout.onKey(id, key, state);
+        keypadLayout.onKey(id, key, state, now);
     }
 };
 

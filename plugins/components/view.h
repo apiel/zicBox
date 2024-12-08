@@ -3,6 +3,7 @@
 
 #include "./ViewInterface.h"
 #include "./container/containers.h"
+#include "timer.h"
 
 #include <mutex>
 
@@ -154,9 +155,10 @@ public:
 
     void onKey(uint16_t id, int key, int8_t state)
     {
+        unsigned long now = getTicks();
         m2.lock();
         for (auto& component : components) {
-            component->onKey(id, key, state);
+            component->onKey(id, key, state, now);
         }
         m2.unlock();
     }

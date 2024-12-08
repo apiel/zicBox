@@ -30,6 +30,8 @@ public:
         void* paramLongPress = NULL;
         uint8_t color = 255;
         std::function<uint8_t(KeyMap& keymap)> getColor = [&](KeyMap& keymap) { return keymap.color; };
+        bool isLongPress = false;
+        unsigned long pressedTime = -1;
     };
 
 protected:
@@ -70,7 +72,7 @@ public:
     {
     }
 
-    void onKey(uint16_t id, int key, int8_t state)
+    void onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
         for (KeyMap keyMap : mapping) {
             if (keyMap.controllerId == id && keyMap.key == key) {
@@ -111,7 +113,7 @@ public:
             std::string controllerName = strtok(value, " ");
             uint8_t key = getKeyCode(strtok(NULL, " "));
 
-            char * actionPtr = strtok(NULL, " ");
+            char* actionPtr = strtok(NULL, " ");
             char* actionLongPressPtr = strtok(NULL, " ");
 
             std::string action = strtok(actionPtr, ":");
@@ -119,7 +121,6 @@ public:
 
             std::string actionLongPress = actionLongPressPtr ? strtok(actionLongPressPtr, ":") : "";
             char* paramLongPress = actionLongPressPtr ? strtok(NULL, ":") : NULL;
-
 
             KeypadInterface* controller = NULL;
             uint16_t controllerId = -1;
