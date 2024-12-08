@@ -25,30 +25,22 @@ protected:
     }
 
 public:
-    void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress)
-    {
-        if (action == "item") {
-            int* id = new int(atoi(param));
-            keypadLayout.mapping.push_back(
-                {
-                    controller,
-                    controllerId,
-                    key,
-                    [&](int8_t state, KeypadLayout::KeyMap& keymap) { handleButton(*(int*)keymap.param, state); },
-                    id,
-                });
-        }
-    }
-
     KeyInfoBarComponent(ComponentInterface::Props props)
         : Component(props)
         , icon(props.view->draw)
-        , keypadLayout( getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress) { addKeyMap(controller, controllerId, key, action, param, actionLongPress, paramLongPress); })
+        , keypadLayout(this, [&](std::string action) {
+            std::function<void(KeypadLayout::KeyMap&)> func = NULL;
+            if (action.rfind("item:") == 0) {
+                int* paramFn = new int(atoi(action.substr(5).c_str()));
+                func = [this, paramFn](KeypadLayout::KeyMap& keymap) { handleButton(*paramFn, keymap.pressedTime != -1); };
+            }
+            return func;
+        })
     {
     }
 
 protected:
-    string text[10] = {
+    std::string text[10] = {
         "FX", "mod", "src", "Perf", "Tck",
         "&icon::play", "&icon::arrowUp", "&icon::arrowDown", "...", "&icon::pause"
     };
