@@ -31,7 +31,7 @@ protected:
     //                        { index, value}
     int16_t shiftVisibility[2] = { -1, -1 };
 
-    uint8_t shiftIndex = 255;
+    // uint8_t shiftIndex = 255;
 
     void handleButton(int8_t id, int8_t state)
     {
@@ -42,8 +42,8 @@ protected:
                 view->setGroup(activeGroup - 1);
                 // } else if (id == 1) {
                 //     view->setView("Sequencer");
-            } else if (id == 4) {
-                setShift(shiftIndex, view->shift[shiftIndex] ? 0 : 1);
+            // } else if (id == 4) {
+            //     setShift(shiftIndex, view->shift[shiftIndex] ? 0 : 1);
             } else if (id == 5) {
                 view->setGroup(activeGroup + 1);
             } else if (id == 9) {
