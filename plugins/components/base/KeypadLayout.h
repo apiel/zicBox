@@ -27,7 +27,7 @@ public:
         uint8_t key;
         std::function<void(int8_t state, KeyMap& keymap)> action;
         std::function<void(int8_t state, KeyMap& keymap)> actionLongPress;
-        std::function<uint8_t(KeyMap& keymap)> getColor = [](KeyMap& keymap) { return 255; };
+        std::function<uint8_t(KeyMap& keymap)> getColor;
         bool isLongPress = false;
         unsigned long pressedTime = -1;
     };
@@ -42,7 +42,7 @@ public:
 
 protected:
     std::function<void(AddKeyMapProps props)> addKeyMap;
-    ControllerInterface* (*getController)(const char* name);
+    ComponentInterface* component;
 
     uint8_t getKeyCode(std::string keyStr)
     {
@@ -72,8 +72,8 @@ protected:
 public:
     std::vector<KeyMap> mapping;
 
-    KeypadLayout(ControllerInterface* (*getController)(const char* name), std::function<void(AddKeyMapProps props)> addKeyMap)
-        : getController(getController)
+    KeypadLayout(ComponentInterface* component, std::function<void(AddKeyMapProps props)> addKeyMap)
+        : component(component)
         , addKeyMap(addKeyMap)
     {
     }
@@ -84,6 +84,7 @@ public:
             if (keyMap.actionLongPress && !keyMap.isLongPress && keyMap.pressedTime != -1 && now - keyMap.pressedTime > 500) {
                 keyMap.isLongPress = true;
                 keyMap.actionLongPress(1, keyMap);
+                renderKeypadColor(keyMap);
                 return true;
             }
         }
@@ -101,45 +102,39 @@ public:
                     keyMap.pressedTime = -1;
                     if (keyMap.isLongPress && keyMap.actionLongPress) {
                         keyMap.actionLongPress(0, keyMap);
+                        renderKeypadColor(keyMap);
                     }
                 }
                 if (keyMap.action) {
                     keyMap.action(state, keyMap);
+                    renderKeypadColor(keyMap);
                 }
                 return;
             }
         }
-
-        // printf("unhandled key %d for controller %d\n", key, id);
     }
 
-    // Might want to render keypad in a central place
-    // However, how to switch of layout in the same view?
-    // void renderKeypad(void (*setButton)(int id, uint8_t color))
-    // void renderKeypad(std::function<void(int id, uint8_t color)> setButton)
-    // {
-    //     // TODO instead to do this should just set the one missing from the list...
-    //     // setButton(254, 254); // set all button off
-    //     for (KeyMap keyMap : mapping) {
-    //         setButton(keyMap.key, keyMap.color(keyMap.param));
-    //     }
-    // }
-    void renderKeypad()
+    void renderKeypadColor()
     {
         // TODO instead to do this should just set the one missing from the list...
         // setButton(254, 254); // set all button off
         for (KeyMap keyMap : mapping) {
-            if (keyMap.controller && keyMap.controller->hasColor) {
-                keyMap.controller->setButton(keyMap.key, keyMap.getColor(keyMap));
-            }
+            renderKeypadColor(keyMap);
         }
     }
 
-    std::function<void(int8_t state, KeypadLayout::KeyMap& keymap)> getAction(ComponentInterface* component, std::string action)
+    void renderKeypadColor(KeyMap keyMap)
+    {
+        if (keyMap.getColor && keyMap.controller && keyMap.controller->hasColor) {
+            keyMap.controller->setButton(keyMap.key, keyMap.getColor(keyMap));
+        }
+    }
+
+    std::function<void(int8_t state, KeypadLayout::KeyMap& keymap)> getAction(std::string action)
     {
         if (action.rfind("setView:") == 0) {
             std::string* paramFn = new std::string(action.substr(8));
-            return [component, paramFn](int8_t state, KeypadLayout::KeyMap& keymap) {
+            return [this, paramFn](int8_t state, KeypadLayout::KeyMap& keymap) {
                 component->view->setView(*paramFn);
             };
         }
@@ -163,7 +158,7 @@ public:
             if (strcmp(controllerName.c_str(), "Keyboard") == 0) {
                 controllerId = 0;
             } else {
-                controller = (KeypadInterface*)getController(controllerName.c_str());
+                controller = (KeypadInterface*)component->getController(controllerName.c_str());
                 if (controller == NULL) {
                     // printf("..................controller %s NOT fount\n", controllerName.c_str());
                     return true;

@@ -58,7 +58,7 @@ protected:
 public:
     void addKeyMap(KeypadLayout::AddKeyMapProps props)
     {
-        std::function<void(int8_t state, KeypadLayout::KeyMap & keymap)> actionFn = keypadLayout.getAction(this, props.action);
+        std::function<void(int8_t state, KeypadLayout::KeyMap & keymap)> actionFn = keypadLayout.getAction(props.action);
 
         if (!actionFn) {
             if (props.action.rfind("item:") == 0) {
@@ -79,7 +79,7 @@ public:
     KeyInfoBarComponent(ComponentInterface::Props props)
         : Component(props)
         , icon(props.view->draw)
-        , keypadLayout(getController, [&](KeypadLayout::AddKeyMapProps props) { addKeyMap(props); })
+        , keypadLayout(this, [&](KeypadLayout::AddKeyMapProps props) { addKeyMap(props); })
         , textColor(styles.colors.text)
     {
         buttonWidth = size.w / 5.0f;
@@ -178,7 +178,7 @@ public:
 
     void initView(uint16_t counter)
     {
-        keypadLayout.renderKeypad();
+        keypadLayout.renderKeypadColor();
     }
 };
 

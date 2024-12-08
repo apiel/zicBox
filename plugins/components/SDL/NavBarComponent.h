@@ -228,7 +228,7 @@ public:
 
     void initView(uint16_t counter)
     {
-        keypadLayout.renderKeypad();
+        keypadLayout.renderKeypadColor();
     }
 };
 
