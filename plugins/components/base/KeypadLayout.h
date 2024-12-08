@@ -134,6 +134,11 @@ public:
             actionFn = [this](int8_t state, KeyMap& keymap) { componentProps.view->setView(*(std::string*)keymap.param); };
             return true;
         }
+        // if (action == "setGroup") {
+        //     paramFn = new int(atoi((char*)param));
+        //     actionFn = [this](int8_t state, KeyMap& keymap) { componentProps.view->setGroup(*(int*)keymap.param); };
+        //     return true;
+        // }
         return false;
     }
 
