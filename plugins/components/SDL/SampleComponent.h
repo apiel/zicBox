@@ -115,29 +115,30 @@ protected:
     }
 
 public:
-    /*md **Keyboard actions**: */
-    void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress)
-    {
-        /*md - `play` is used to play the sample. `KEYMAP: Keyboard 44 play 60` will trigger note on 60 when pressing space on keyboard. */
-        if (action == "play") {
-            keypadLayout.mapping.push_back({ controller, controllerId, key, [&](int8_t state, KeypadLayout::KeyMap& keymap) {
-                if (plugin) {
-                    if (state) {
-                        plugin->noteOn(*(int*)keymap.param, 1.0f);
-                    } else {
-                        plugin->noteOff(*(int*)keymap.param, 0.0f);
-                    }
-                } }, new int(atoi(param)) });
-        }
-    }
-
     SampleComponent(ComponentInterface::Props props)
         : Component(props)
         , colors(getColorsFromColor(styles.colors.primary))
         , waveRect({ { 0, 20 }, { props.size.w, (int)(props.size.h - 2 * 20) } })
         , wave(getNewPropsRect(props, { { 0, 20 }, { props.size.w, (int)(props.size.h - 2 * 20) } }))
         , samplePosition(getNewPropsRect(props, { { props.position.x, props.position.y + 20 }, { props.size.w, (int)(props.size.h - 2 * 20) } }))
-        , keypadLayout( getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress) { addKeyMap(controller, controllerId, key, action, param, actionLongPress, paramLongPress); })
+        , keypadLayout(this, [&](std::string action) {
+            std::function<void(KeypadLayout::KeyMap&)> func = NULL;
+            /*md **Keyboard actions**: */
+            /*md - `play` is used to play the sample. `KEYMAP: Keyboard 44 play 60` will trigger note on 60 when pressing space on keyboard. */
+            if (action.rfind("play:") == 0) {
+                uint8_t* note = new uint8_t(atoi(action.substr(5).c_str()));
+                func = [this, note](KeypadLayout::KeyMap& keymap) {
+                    if (plugin) {
+                        if (keymap.pressedTime != -1) {
+                            plugin->noteOn(*note, 1.0f);
+                        } else {
+                            plugin->noteOff(*note, 0.0f);
+                        }
+                    }
+                };
+            }
+            return func;
+        })
     {
         overlayYtop = position.y;
         overlayYbottom = position.y + size.h - 2;

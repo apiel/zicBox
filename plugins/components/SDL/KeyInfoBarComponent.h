@@ -98,26 +98,19 @@ protected:
     } colors;
 
 public:
-    /*md **Keyboard actions**: */
-    void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress)
-    {
-        /*md - `item` to select item. */
-        if (action == "item") {
-            keypadLayout.mapping.push_back(
-                {
-                    controller,
-                    controllerId,
-                    key,
-                    [&](int8_t state, KeypadLayout::KeyMap& keymap) { handleButton(*(int*)keymap.param, state); },
-                    new int(atoi(param)),
-                });
-        }
-    }
-
     KeyInfoBarComponent(ComponentInterface::Props props)
         : Component(props)
         , icon(props.view->draw)
-        , keypadLayout( getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress) { addKeyMap(controller, controllerId, key, action, param, actionLongPress, paramLongPress); })
+        , keypadLayout(this, [&](std::string action) {
+            std::function<void(KeypadLayout::KeyMap&)> func = NULL;
+            /*md **Keyboard actions**: */
+            /*md - `item` to select item. */
+            if (action.rfind("item:") == 0) {
+                int* id = new int(atoi(action.substr(5).c_str()));
+                func = [&, id](KeypadLayout::KeyMap& keymap) { handleButton(*id, keymap.pressedTime != -1); };
+            }
+            return func;
+        })
     {
         colors.background = lighten(styles.colors.background, 0.2);
         colors.font = { 0x80, 0x80, 0x80, 255 };

@@ -397,19 +397,18 @@ protected:
     };
 
 public:
-    /*md **Keyboard actions**: */
-    void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress)
-    {
-        /*md - `key10` is used to assign one of the 10 keys for the 10 buttons control of GridMini. */
-        if (action == "key10") {
-            int* id = new int(atoi(param));
-            keypadLayout.mapping.push_back({ controller, controllerId, key, [&](int8_t state, KeypadLayout::KeyMap& keymap) { handleKey10Controller(state, *(int*)keymap.param); }, id });
-        }
-    }
-
     GridMiniComponent(ComponentInterface::Props props)
         : Component(props)
-        , keypadLayout( getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress) { addKeyMap(controller, controllerId, key, action, param, actionLongPress, paramLongPress); })
+        , keypadLayout(this, [&](std::string action) {
+            std::function<void(KeypadLayout::KeyMap&)> func = NULL;
+            /*md **Keyboard actions**: */
+            /*md - `key10` is used to assign one of the 10 keys for the 10 buttons control of GridMini. */
+            if (action.rfind("key10:") == 0) {
+                int* id = new int(atoi(action.substr(6).c_str()));
+                func = [&, id](KeypadLayout::KeyMap& keymap) { handleKey10Controller(keymap.pressedTime != -1, *id); };
+            }
+            return func;
+        })
     {
         jobRendering = [this](unsigned long _now) {
             now = _now;

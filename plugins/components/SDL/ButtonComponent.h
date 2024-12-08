@@ -78,7 +78,20 @@ public:
         , icon(props.view->draw)
         , colors(getColorsFromColor({ 0x80, 0x80, 0x80, 255 }))
         , margin(styles.margin)
-        , keypadLayout( getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress) { addKeyMap(controller, controllerId, key, action, param, actionLongPress, paramLongPress); })
+        , keypadLayout(this, [&](std::string action) {
+            std::function<void(KeypadLayout::KeyMap&)> func = NULL;
+            /*md **Keyboard actions**: */
+            /*md - `trigger` is used to trigger the button. */
+            if (action == "trigger") {
+                func = [&](KeypadLayout::KeyMap& keymap) {
+                    if (keymap.pressedTime != -1) {
+                        handlePress();
+                    } else {
+                        handleRelease();
+                    } };
+            }
+            return func;
+        })
     {
         setFontSize(fontSize);
 
@@ -307,20 +320,6 @@ protected:
     }
 
 public:
-    /*md **Keyboard actions**: */
-    void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress)
-    {
-        /*md - `trigger` is used to trigger the button. */
-        if (action == "trigger") {
-            keypadLayout.mapping.push_back({ controller, controllerId, key, [&](int8_t state, KeypadLayout::KeyMap& keymap) {
-                    if (state) {
-                        handlePress();
-                    } else {
-                        handleRelease();
-                    } } });
-        }
-    }
-
     void onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
         // printf("onKey %d %d %d\n", id, key, state);
