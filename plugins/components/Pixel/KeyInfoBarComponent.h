@@ -40,8 +40,8 @@ protected:
         if (state == 1) {
             if (id == 0) {
                 view->setGroup(activeGroup - 1);
-            } else if (id == 1) {
-                view->setView("Sequencer");
+            // } else if (id == 1) {
+            //     view->setView("Sequencer");
             } else if (id == 4) {
                 setShift(shiftIndex, view->shift[shiftIndex] ? 0 : 1);
             } else if (id == 5) {
@@ -58,8 +58,6 @@ protected:
 public:
     void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, std::string action, char* param, std::string actionLongPress, char* paramLongPress)
     {
-        // bool setAction(std::string action, void* param, std::function<void(int8_t state, KeyMap& keymap)>& actionFn, void* paramFn)
-
         std::function<void(int8_t state, KeypadLayout::KeyMap & keymap)> actionFn = [](int8_t state, KeypadLayout::KeyMap& keymap) {};
         void* paramFn = NULL;
 
@@ -78,18 +76,6 @@ public:
             paramFn,
             [&](int8_t state, KeypadLayout::KeyMap& keymap) { printf("longpress test\n"); },
         });
-
-        // if (action == "item") {
-        //     keypadLayout.mapping.push_back(
-        //         {
-        //             controller,
-        //             controllerId,
-        //             key,
-        //             [&](int8_t state, KeypadLayout::KeyMap& keymap) { handleButton(*(int*)keymap.param, state); },
-        //             new int(atoi(param)),
-        //             [&](int8_t state, KeypadLayout::KeyMap& keymap) { printf("longpress test\n"); },
-        //         });
-        // }
     }
 
     KeyInfoBarComponent(ComponentInterface::Props props)
