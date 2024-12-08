@@ -56,21 +56,21 @@ protected:
     }
 
 public:
-    void addKeyMap(KeypadInterface* controller, uint16_t controllerId, uint8_t key, std::string action, std::string actionLongPress)
+    void addKeyMap(KeypadLayout::AddKeyMapProps props)
     {
-        std::function<void(int8_t state, KeypadLayout::KeyMap & keymap)> actionFn = keypadLayout.getAction(this, action);
+        std::function<void(int8_t state, KeypadLayout::KeyMap & keymap)> actionFn = keypadLayout.getAction(this, props.action);
 
         if (!actionFn) {
-            if (action.rfind("item:") == 0) {
-                int *paramFn = new int(atoi(action.substr(5).c_str()));
+            if (props.action.rfind("item:") == 0) {
+                int *paramFn = new int(atoi(props.action.substr(5).c_str()));
                 actionFn = [this, paramFn](int8_t state, KeypadLayout::KeyMap& keymap) { handleButton(*paramFn, state); };
             }
         }
 
         keypadLayout.mapping.push_back({
-            controller,
-            controllerId,
-            key,
+            props.controller,
+            props.controllerId,
+            props.key,
             actionFn,
             [&](int8_t state, KeypadLayout::KeyMap& keymap) { printf("longpress test\n"); },
         });
@@ -79,7 +79,7 @@ public:
     KeyInfoBarComponent(ComponentInterface::Props props)
         : Component(props)
         , icon(props.view->draw)
-        , keypadLayout(props, getController, [&](KeypadInterface* controller, uint16_t controllerId, int8_t key, std::string action, std::string actionLongPress) { addKeyMap(controller, controllerId, key, action, actionLongPress); })
+        , keypadLayout(getController, [&](KeypadLayout::AddKeyMapProps props) { addKeyMap(props); })
         , textColor(styles.colors.text)
     {
         buttonWidth = size.w / 5.0f;
