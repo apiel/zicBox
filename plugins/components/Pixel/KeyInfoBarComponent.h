@@ -26,6 +26,7 @@ protected:
     KeypadLayout keypadLayout;
     int8_t activeGroup = 0;
 
+    Color bgColor;
     Color textColor;
 
     //                        { index, value}
@@ -59,6 +60,7 @@ public:
     KeyInfoBarComponent(ComponentInterface::Props props)
         : Component(props)
         , icon(props.view->draw)
+        , bgColor(styles.colors.background)
         , textColor(styles.colors.text)
         , keypadLayout(this, [&](std::string action) {
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
@@ -103,6 +105,7 @@ public:
     void render()
     {
         if (isVisible() && updatePosition()) {
+            draw.filledRect(relativePosition, size, { bgColor });
             renderRow(relativePosition.y, 0);
             renderRow(relativePosition.y + 12, 5);
         }
@@ -142,6 +145,12 @@ public:
             return true;
         }
 
+        /*md - `BACKGROUND_COLOR: color` is the color of the background. */
+        if (strcmp(key, "BACKGROUND_COLOR") == 0) {
+            bgColor = draw.getColor(value);
+            return true;
+        }
+
         /*md - `TEXT_COLOR: color` is the color of the text. */
         if (strcmp(key, "TEXT_COLOR") == 0) {
             textColor = draw.getColor(value);
@@ -166,6 +175,11 @@ public:
     void initView(uint16_t counter)
     {
         keypadLayout.renderKeypadColor();
+    }
+
+    void onShift(uint8_t index, uint8_t value) override
+    {
+        renderNext();
     }
 };
 
