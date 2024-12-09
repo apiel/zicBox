@@ -48,6 +48,8 @@ public:
                 }
                 draw.textCentered(textPos, title, 8, { color.color });
             }
+
+            // draw.text({ relativePosition.x, relativePosition.y }, "0123#", 8, { color.color, .fontPath = "MusicNote" });
         }
     }
 

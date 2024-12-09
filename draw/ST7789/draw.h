@@ -1,9 +1,9 @@
 #ifndef _UI_DRAW_H_
 #define _UI_DRAW_H_
 
-#include "../../helpers/gpio.h"
-#include "../../helpers/st7789.h"
-#include "../../plugins/components/utils/color.h"
+#include "helpers/gpio.h"
+#include "helpers/st7789.h"
+#include "plugins/components/utils/color.h"
 
 // #define USE_SPI_DEV_MEM
 #ifdef USE_SPI_DEV_MEM
@@ -12,20 +12,21 @@
 // sudo chmod u+s test2
 // see:
 // https://raspberradiusYpi.stackexchange.com/questions/40105/access-gpio-pins-without-root-no-access-to-dev-mem-tradiusY-running-as-root
-#include "../../helpers/SpiDevMem.h"
+#include "helpers/SpiDevMem.h"
 #else
-#include "../../helpers/SpiDevSpi.h"
+#include "helpers/SpiDevSpi.h"
 #endif
 
-#include "../../log.h"
-#include "../../plugins/components/drawInterface.h"
 #include "fonts/ArialBold.h"
 #include "fonts/ArialNormal.h"
 #include "fonts/BigFont.h"
+#include "fonts/MusicNote.h"
 #include "fonts/Sinclair_M.h"
 #include "fonts/Sinclair_S.h"
 #include "fonts/Ubuntu.h"
 #include "fonts/UbuntuBold.h"
+#include "log.h"
+#include "plugins/components/drawInterface.h"
 #include <cmath>
 #include <stdexcept>
 #include <string.h>
@@ -69,6 +70,8 @@ protected:
             return Sinclair_M;
         } else if (strcmp(name, "Sinclair_S") == 0) {
             return Sinclair_S;
+        } else if (strcmp(name, "MusicNote") == 0) {
+            return FontMusicNote;
         } else if (strcmp(name, "Ubuntu") == 0) {
             return Ubuntu;
         } else if (strcmp(name, "UbuntuBold") == 0) {
