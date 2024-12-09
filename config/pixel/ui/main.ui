@@ -25,130 +25,15 @@ ADD_ZONE_ENCODER: $1/4W 0 $1/4W $SCREEN_HEIGHT
 ADD_ZONE_ENCODER: $1/2W 0 $1/4W $SCREEN_HEIGHT
 ADD_ZONE_ENCODER: $3/4W 0 $1/4W $SCREEN_HEIGHT
 
-#------------------------------------------ Main ------------------------------------------
+#------------------------------------------ Track1 ------------------------------------------
 
-VIEW: Main
+VIEW: Track1
 
 $track=1
 
 include: keyboard_main.ui
 include: drum23_synth.ui
 
-#------------------------------------------ Sequencer ------------------------------------------
+VIEW: Sequencer1
 
-VIEW: Sequencer
-
-  COMPONENT: KeyInfoBar 0 216
-    SHIFT_VISIBILITY: 254 0
-    ROW1: 1 2 3 4 Shift
-    KEYMAP: Keyboard 't' shiftToggle:255:0:1 shift:254:1:0
-    ROW2: 5 6 7 8 &icon::play
-    KEYMAP: Keyboard 'g' playPause
-
-  COMPONENT: KeyInfoBar 0 216
-    SHIFT_VISIBILITY: 254 1
-    ROW1: 1 2 3 4 Shift
-    KEYMAP: Keyboard 't' shiftToggle:255:0:1 shift:254:1:0
-    ROW2: 5 6 7 8 Exit
-    KEYMAP: Keyboard 'g' setView:Main
-
-  COMPONENT: Separator 0 0 $SCREEN_WIDTH 8
-    TITLE: Drum \($track)
-
-$rowHeight=25
-$y=-($rowHeight) + 12
-$step=0
-$groupRange=0
-
-while: $step < 32
-  $y=$y+$rowHeight
-  
-    COMPONENT: StepEdit 0 $y $1/4W 25
-      GROUP: $step
-      GROUP_RANGE: ($groupRange) ($groupRange+7)
-      DATA: Sequencer 4 $step
-      ENCODERS: 0 1 2
-      KEYMAP: Keyboard 'q' stepToggle
-      KEYMAP: Keyboard 't' restoreShiftMode
-      GLOBAL_SHIFT: 254
-
-    $step=$step+1
-    COMPONENT: StepEdit $1/4W $y $1/4W 25
-      GROUP: $step
-      GROUP_RANGE: ($groupRange) ($groupRange+7)
-      DATA: Sequencer 4 $step
-      ENCODERS: 0 1 2
-      KEYMAP: Keyboard 'w' stepToggle
-      KEYMAP: Keyboard 't' restoreShiftMode
-      GLOBAL_SHIFT: 254
-
-    $step=$step+1
-    COMPONENT: StepEdit $2/4W $y $1/4W 25
-      GROUP: $step
-      GROUP_RANGE: ($groupRange) ($groupRange+7)
-      DATA: Sequencer 4 $step
-      ENCODERS: 0 1 2
-      KEYMAP: Keyboard 'e' stepToggle
-      KEYMAP: Keyboard 't' restoreShiftMode
-      GLOBAL_SHIFT: 254
-
-    $step=$step+1
-    COMPONENT: StepEdit $3/4W $y $1/4W 25
-      GROUP: $step
-      GROUP_RANGE: ($groupRange) ($groupRange+7)
-      DATA: Sequencer 4 $step
-      ENCODERS: 0 1 2
-      KEYMAP: Keyboard 'r' stepToggle
-      KEYMAP: Keyboard 't' restoreShiftMode
-      GLOBAL_SHIFT: 254
-
-  $y=$y+$rowHeight
-    $step=$step+1
-    COMPONENT: StepEdit 0 $y $1/4W 25
-      GROUP: $step
-      GROUP_RANGE: ($groupRange) ($groupRange+7)
-      DATA: Sequencer 4 $step
-      ENCODERS: 0 1 2
-      KEYMAP: Keyboard 'a' stepToggle
-      KEYMAP: Keyboard 't' restoreShiftMode
-      GLOBAL_SHIFT: 254
-
-    $step=$step+1
-    COMPONENT: StepEdit $1/4W $y $1/4W 25
-      GROUP: $step
-      GROUP_RANGE: ($groupRange) ($groupRange+7)
-      DATA: Sequencer 4 $step
-      ENCODERS: 0 1 2
-      KEYMAP: Keyboard 's' stepToggle
-      KEYMAP: Keyboard 't' restoreShiftMode
-      GLOBAL_SHIFT: 254
-
-    $step=$step+1
-    COMPONENT: StepEdit $2/4W $y $1/4W 25
-      GROUP: $step
-      GROUP_RANGE: ($groupRange) ($groupRange+7)
-      DATA: Sequencer 4 $step
-      ENCODERS: 0 1 2
-      KEYMAP: Keyboard 'd' stepToggle
-      KEYMAP: Keyboard 't' restoreShiftMode
-      GLOBAL_SHIFT: 254
-
-    $step=$step+1
-    COMPONENT: StepEdit $3/4W $y $1/4W 25
-      GROUP: $step
-      GROUP_RANGE: ($groupRange) ($groupRange+7)
-      DATA: Sequencer 4 $step
-      ENCODERS: 0 1 2
-      KEYMAP: Keyboard 'f' stepToggle
-      KEYMAP: Keyboard 't' restoreShiftMode
-      GLOBAL_SHIFT: 254
-
-    $step=$step+1
-  
-  $groupRange=$groupRange+8
-
-# need to keep this else loop doesnt work properly...
-print: end step=$step
-
-  COMPONENT: HiddenEncoder 0 0 0 0
-    ENCODER_ID: 3
+include: sequencer.ui
