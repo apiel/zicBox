@@ -13,6 +13,7 @@ public:
     std::function<void(std::string name)> setView;
     uint8_t *shift;
     int8_t activeGroup = 0;
+    int8_t track = -1;
 
     ViewInterface(DrawInterface& draw, std::function<void(std::string name)> setView, uint8_t *shift)
         : draw(draw)

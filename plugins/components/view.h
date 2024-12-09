@@ -177,6 +177,12 @@ public:
 
     bool config(char* key, char* value)
     {
+        // set default track value for all components contained in the view
+        if (strcmp(key, "COMPONENTS_TRACK") == 0) {
+            track = atoi(value);
+            return true;
+        }
+
         if (strcmp(key, "CONTAINER") == 0) {
             string type = strtok(value, " ");
             string name = strtok(NULL, " ");
