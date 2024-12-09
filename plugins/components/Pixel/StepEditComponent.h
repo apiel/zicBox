@@ -155,7 +155,13 @@ public:
                     }
 
                     // TODO if 0 make infinit sign
-                    draw.textRight({ relativePosition.x + size.w - 4, y + 6 }, std::to_string(step->len) + "/32", 8, { text2.color });
+                    if (!step->len) {
+                        // draw.textRight({ relativePosition.x + size.w - 4, y + 6 }, "OO", 8, { text2.color });
+                        draw.textRight({ relativePosition.x + size.w - 4, y + 6 }, "O", 8, { text2.color });
+                        draw.textRight({ relativePosition.x + size.w - 4 - 5, y + 6 }, "O", 8, { text2.color });
+                    } else {
+                        draw.textRight({ relativePosition.x + size.w - 4, y + 6 }, std::to_string(step->len) + "/32", 8, { text2.color });
+                    }
                 }
             } else {
                 draw.textCentered({ (int)(relativePosition.x + size.w * 0.5), y }, "---", 16, { text.color });
