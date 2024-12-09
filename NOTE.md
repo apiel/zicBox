@@ -1,5 +1,7 @@
 ## Pixel TODO
 
+- TODO port zicPixel to Web assembly
+
 - TODO: document data_id, or even make it accessible with string id
         --> each audio plugin, should have a getDataId(string name)
 
