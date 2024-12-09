@@ -135,6 +135,11 @@ public:
         return NULL;
     }
 
+    virtual uint8_t getDataId(std::string name)
+    {
+        return atoi(name.c_str());
+    }
+
     virtual void onClockTick(uint64_t* clockCounter)
     {
     }

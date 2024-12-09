@@ -289,32 +289,69 @@ protected:
     uint16_t msAmp = 0;
 
 public:
-    void* data(int id, void* userdata = NULL)
+    enum DATA_ID
+    {
+        ENV_AMP,
+        ENV_AMP_EDIT,
+        ENV_AMP_TIME,
+        ENV_AMP_MOD,
+        ENV_FREQ,
+        ENV_FREQ_EDIT,
+        ENV_FREQ_TIME,
+        ENV_FREQ_MOD,
+        WAVEFORM,  
+    };
+
+    /*md **Data ID**: */
+    uint8_t getDataId(std::string name) override
+    {
+        /*md - `ENV_AMP` update the amplitude for current step */
+        if (name == "ENV_AMP") return ENV_AMP;
+        /*md - `ENV_AMP_EDIT` set/get the amplitude edit point for current step */
+        if (name == "ENV_AMP_EDIT") return ENV_AMP_EDIT;
+        /*md - `ENV_AMP_TIME` update the amplitude time for current step */
+        if (name == "ENV_AMP_TIME") return ENV_AMP_TIME;
+        /*md - `ENV_AMP_MOD` update the amplitude modulation value for current step */
+        if (name == "ENV_AMP_MOD") return ENV_AMP_MOD;
+        /*md - `ENV_FREQ` update the frequency for current step */
+        if (name == "ENV_FREQ") return ENV_FREQ;
+        /*md - `ENV_FREQ_EDIT` set/get the frequency edit point for current step */
+        if (name == "ENV_FREQ_EDIT") return ENV_FREQ_EDIT;
+        /*md - `ENV_FREQ_TIME` update the frequency time for current step */
+        if (name == "ENV_FREQ_TIME") return ENV_FREQ_TIME;
+        /*md - `ENV_FREQ_MOD` update the frequency modulation value for current step */
+        if (name == "ENV_FREQ_MOD") return ENV_FREQ_MOD;
+        /*md - `WAVEFORM` return a representation of the selected waveform */
+        if (name == "WAVEFORM") return WAVEFORM;
+        return atoi(name.c_str());
+    }
+
+    void* data(int id, void* userdata = NULL) override
     {
         switch (id) {
-        case 0:
+        case ENV_AMP:
             return &envelopAmp.data;
-        case 1: // set & get current amp step edit point
+        case ENV_AMP_EDIT: // set & get current amp step edit point
             return envelopAmp.updateEditPhase((int8_t*)userdata);
-        case 2: { // update amp time for current step
+        case ENV_AMP_TIME: { // update amp time for current step
             float* timePct = envelopAmp.updatePhaseTime((int8_t*)userdata);
             msAmp = (uint16_t)(*timePct * duration.get());
             return &msAmp;
         }
-        case 3: // update amp modulation value for current step
+        case ENV_AMP_MOD: // update amp modulation value for current step
             return envelopAmp.updatePhaseModulation((int8_t*)userdata);
-        case 4:
+        case ENV_FREQ:
             return &envelopFreq.data;
-        case 5: // set & get current freq step edit point
+        case ENV_FREQ_EDIT: // set & get current freq step edit point
             return envelopFreq.updateEditPhase((int8_t*)userdata);
-        case 6: { // update freq time for current step
+        case ENV_FREQ_TIME: { // update freq time for current step
             float* timePct = envelopFreq.updatePhaseTime((int8_t*)userdata);
             msAmp = (uint16_t)(*timePct * duration.get());
             return &msAmp;
         }
-        case 7: // update freq modulation value for current step
+        case ENV_FREQ_MOD: // update freq modulation value for current step
             return envelopFreq.updatePhaseModulation((int8_t*)userdata);
-        case 8: { // pointer to waveform sample
+        case WAVEFORM: { // pointer to waveform sample
             if (!wave) {
                 return NULL;
             }

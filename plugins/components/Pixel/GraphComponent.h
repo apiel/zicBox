@@ -128,7 +128,7 @@ public:
 
         /*md - `DATA_ID: data_id` is the data id to get the shape/graph to draw.*/
         if (strcmp(key, "DATA_ID") == 0) {
-            dataId = atoi(value);
+            dataId = plugin->getDataId(value);
             return true;
         }
 

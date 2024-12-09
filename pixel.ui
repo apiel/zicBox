@@ -180,7 +180,7 @@ $y=$y+$sepHeight
       GROUP: $group
       TRACK: $track
       PLUGIN: SynthDrum23
-      DATA_ID: 8
+      DATA_ID: WAVEFORM
       ENCODER: 0 WAVEFORM_TYPE
       ENCODER: 1 SHAPE
       ENCODER: 2 MACRO
