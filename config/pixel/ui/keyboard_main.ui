@@ -3,7 +3,7 @@
     SHIFT_VISIBILITY: 254 0
     ROW1: &icon::arrowUp Seq Clip Synth Track
     KEYMAP: Keyboard 'q' incGroup:-1
-    KEYMAP: Keyboard 'w' setView:Sequencer
+    KEYMAP: Keyboard 'w' setView:Sequencer($track)
     KEYMAP: Keyboard 'e' noteOn:SynthDrum23:58
     KEYMAP: Keyboard 'r' noteOn:SynthDrum23:59
     KEYMAP: Keyboard 't' shift:254:1:0
