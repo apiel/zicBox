@@ -79,7 +79,7 @@ protected:
         out = addClicking(time, out, _clickFilter);
 
         out = out + out * clipping.pct() * 20;
-        return range(out * _velocity, -1.0f, 1.0f);
+        return range(out, -1.0f, 1.0f) * _velocity;
     }
 
 #define DRUM23_WAVEFORMS_COUNT 7
