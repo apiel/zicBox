@@ -112,13 +112,15 @@ protected:
                     step.counter--;
                     if (step.counter == 0) {
                         props.audioPluginHandler->noteOff(getNote(step), 0, { track, targetPlugin });
+                        printf("should trigger note off %d track %d\n", step.note, track);
                     }
                 }
             }
             Step& step = steps[stepCounter];
-            if (step.enabled && conditionMet(step)) {
+            if (step.enabled && conditionMet(step) && step.velocity > 0.0f) {
                 step.counter = step.len;
                 props.audioPluginHandler->noteOn(getNote(step), step.velocity, { track, targetPlugin });
+                printf("should trigger note on %d track %d len %d velocity %.2f\n", step.note, track, step.len, step.velocity);
             }
         }
     }

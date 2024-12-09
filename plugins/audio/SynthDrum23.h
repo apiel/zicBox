@@ -72,15 +72,14 @@ protected:
 
     float sample(float time, float* index, float ampModulation, float freqModulation, float _noteMult, float _velocity, EffectFilterData& _clickFilter)
     {
-        float amp = ampModulation * _velocity;
         float freq = freqModulation + pitchMult * _noteMult;
 
-        float out = wave->sample(index, freq) * amp;
+        float out = wave->sample(index, freq) * ampModulation;
 
         out = addClicking(time, out, _clickFilter);
 
         out = out + out * clipping.pct() * 20;
-        return range(out, -1.0f, 1.0f);
+        return range(out * _velocity, -1.0f, 1.0f);
     }
 
 #define DRUM23_WAVEFORMS_COUNT 7
