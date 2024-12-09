@@ -53,7 +53,7 @@ public:
     std::vector<ValueInterface*> values;
     Point position;
     Size size;
-    int16_t track = -1;
+    int16_t track;
     int8_t group = -1;
     bool active = true;
     std::string id = "";
@@ -71,6 +71,7 @@ public:
         , setShift(props.setShift)
         , position(props.position)
         , size(props.size)
+        , track(props.view->track)
     {
         // printf("ComponentInterface: %d x %d\n", props.position.x, props.position.y);
     }

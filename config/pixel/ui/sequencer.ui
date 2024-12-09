@@ -6,6 +6,8 @@
     ROW2: 5 6 7 8 &icon::play
     KEYMAP: Keyboard 'g' playPause
 
+# TODO maybe instead 1234, should be for track
+# and exit master
   COMPONENT: KeyInfoBar 0 216
     SHIFT_VISIBILITY: 254 1
     ROW1: 1 2 3 4 Shift

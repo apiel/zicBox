@@ -25,15 +25,26 @@ ADD_ZONE_ENCODER: $1/4W 0 $1/4W $SCREEN_HEIGHT
 ADD_ZONE_ENCODER: $1/2W 0 $1/4W $SCREEN_HEIGHT
 ADD_ZONE_ENCODER: $3/4W 0 $1/4W $SCREEN_HEIGHT
 
-#------------------------------------------ Track1 ------------------------------------------
-
-VIEW: Track1
-
 $track=1
 
-include: keyboard_main.ui
-include: drum23_synth.ui
+# - Track1
+VIEW: Track($track)
+  COMPONENTS_TRACK: $track
+  include: keyboard_main.ui
+  include: drum23_synth.ui
 
-VIEW: Sequencer1
+VIEW: Sequencer($track)
+  COMPONENTS_TRACK: $track
+  include: sequencer.ui
 
-include: sequencer.ui
+$track=$track+1
+
+# - Track2
+VIEW: Track($track)
+  COMPONENTS_TRACK: $track
+  include: keyboard_main.ui
+  include: drum23_synth.ui
+
+VIEW: Sequencer($track)
+  COMPONENTS_TRACK: $track
+  include: sequencer.ui

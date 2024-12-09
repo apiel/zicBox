@@ -17,14 +17,14 @@
   COMPONENT: KeyInfoBar 0 216
     SHIFT_VISIBILITY: 254 1
     ROW1: 1 2 3 4 Track
-    KEYMAP: Keyboard 'q' noteOn:SynthDrum23:60
-    KEYMAP: Keyboard 'w' noteOn:SynthDrum23:60
-    KEYMAP: Keyboard 'e' noteOn:SynthDrum23:60
-    KEYMAP: Keyboard 'r' noteOn:SynthDrum23:60
+    KEYMAP: Keyboard 'q' setView:Track1
+    KEYMAP: Keyboard 'w' setView:Track2
+    KEYMAP: Keyboard 'e' setView:Track3
+    KEYMAP: Keyboard 'r' setView:Track4
     KEYMAP: Keyboard 't' shift:254:1:0
     ROW2: 5 6 7 8 Master
-    KEYMAP: Keyboard 'a' noteOn:SynthDrum23:60
-    KEYMAP: Keyboard 's' noteOn:SynthDrum23:60
-    KEYMAP: Keyboard 'd' noteOn:SynthDrum23:60
-    KEYMAP: Keyboard 'f' noteOn:SynthDrum23:60
+    KEYMAP: Keyboard 'a' setView:Track5
+    KEYMAP: Keyboard 's' setView:Track6
+    KEYMAP: Keyboard 'd' setView:Track7
+    KEYMAP: Keyboard 'f' setView:Track8
     KEYMAP: Keyboard 'g' setView:Master
