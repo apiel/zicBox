@@ -1,5 +1,9 @@
 ## Pixel TODO
 
+- TODO toggleColor FM algo
+
+- TODO seq show active step
+
 - TODO port zicPixel to Web assembly
 
 - TODO sudo display

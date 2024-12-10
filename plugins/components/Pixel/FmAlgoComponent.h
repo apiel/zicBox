@@ -36,7 +36,7 @@ protected:
     int8_t encoderId = -1;
     ValueInterface* value = NULL;
     AudioPlugin* plugin;
-    int8_t dataId = 10;
+    int8_t dataId = 0;
 
     int textMarginTop = 4;
     int textMarginLeft = 1;
@@ -171,6 +171,7 @@ public:
             char* keyValue = strtok(NULL, " ");
             plugin = &getPlugin(pluginName, track);
             value = watch(plugin->getValue(keyValue));
+            dataId = plugin->getDataId("ALGO");
             return true;
         }
 
@@ -182,7 +183,7 @@ public:
 
         /*md - `DATA_ID: 0` is used to set the data id that will return the current algorithm layout. */
         if (strcmp(key, "DATA_ID") == 0) {
-            dataId = atoi(params);
+            dataId = plugin->getDataId(params);
             return true;
         }
 

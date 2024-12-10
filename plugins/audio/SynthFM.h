@@ -6,7 +6,6 @@
 #include "mapping.h"
 #include "utils/AdsrEnvelop.h"
 
-#define ZIC_FM_UI 1000
 #define ZIC_FM_OPS_COUNT 4
 
 /*md
@@ -102,10 +101,6 @@ protected:
     float velocity = 1.0f;
     float pitchRatio = 1.0f;
 
-    // could be use make sample representation for a note duration
-    float bufferUi[ZIC_FM_UI];
-    int updateUiState = 0;
-
 public:
     // Apply modulation when true
     // First operator does receive modulation input
@@ -148,10 +143,10 @@ public:
 
         initValues();
 
-        // Init sine LUT
-        for (int i = 0; i < props.lookupTable->size; i++) {
-            props.lookupTable->sine[i] = sin((float)i / (float)props.lookupTable->size * 2.0f * M_PI);
-        }
+        // // Init sine LUT
+        // for (int i = 0; i < props.lookupTable->size; i++) {
+        //     props.lookupTable->sine[i] = sin((float)i / (float)props.lookupTable->size * 2.0f * M_PI);
+        // }
     }
 
     void sample(float* buf)
@@ -232,24 +227,23 @@ public:
         }
     }
 
+   enum DATA_ID
+    {
+        ALGO,
+    };
+
+    /*md **Data ID**: */
+    uint8_t getDataId(std::string name) override
+    {
+        /*md - `ALGO` return current algorithm */
+        if (name == "ALGO") return ALGO;
+        return atoi(name.c_str());
+    }
+
     void* data(int id, void* userdata = NULL)
     {
         switch (id) {
-        case 0:
-            return &updateUiState;
-
-        case 1: {
-            for (int i = 0; i < ZIC_FM_UI; i++) {
-                bufferUi[i] = 0.0f;
-            }
-            return (void*)&bufferUi;
-        }
-            // case 2:
-            //     return &envelop.data;
-
-        case 10:
-            // return &algorithm[(uint8_t)(algo.get() - 1)];
-            // bool *ret = algorithm[(uint8_t)(algo.get() - 1)][1];
+        case ALGO:
             bool(*ret)[3] = algorithm[(uint8_t)(algo.get() - 1)];
             return ret;
         }
