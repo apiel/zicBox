@@ -4,6 +4,8 @@
 
 - TODO sudo display
 
+- TODO make duscript config not a '.so' file but directly part of the build...
+
 - TODO to be deprecated: const char* fontPath = nullptr;
 
 - TODO Volume/Gain, could we have a value over 100% like 150%??
