@@ -54,33 +54,6 @@ protected:
     Spi spi = Spi(GPIO_TFT_DATA_CONTROL);
     ST7789 st7789;
 
-    uint8_t* getFont(const char* name = NULL)
-    {
-        if (name == NULL) {
-            return Sinclair_S;
-        }
-
-        if (strcmp(name, "ArialBold") == 0) {
-            return ArialBold;
-        } else if (strcmp(name, "ArialNormal") == 0) {
-            return ArialNormal;
-        } else if (strcmp(name, "BigFont") == 0) {
-            return BigFont;
-        } else if (strcmp(name, "Sinclair_M") == 0) {
-            return Sinclair_M;
-        } else if (strcmp(name, "Sinclair_S") == 0) {
-            return Sinclair_S;
-        } else if (strcmp(name, "MusicNote") == 0) {
-            return FontMusicNote;
-        } else if (strcmp(name, "Ubuntu") == 0) {
-            return Ubuntu;
-        } else if (strcmp(name, "UbuntuBold") == 0) {
-            return UbuntuBold;
-        } else {
-            throw std::runtime_error("Unknown font " + std::string(name));
-        }
-    }
-
     void line1px(Point start, Point end, DrawOptions options = {})
     {
         if (start.x == end.x) {
@@ -487,9 +460,36 @@ public:
         fullRendering = true;
     }
 
+    void* getFont(const char* name = NULL) override
+    {
+        if (name == NULL) {
+            return Sinclair_S;
+        }
+
+        if (strcmp(name, "ArialBold") == 0) {
+            return ArialBold;
+        } else if (strcmp(name, "ArialNormal") == 0) {
+            return ArialNormal;
+        } else if (strcmp(name, "BigFont") == 0) {
+            return BigFont;
+        } else if (strcmp(name, "Sinclair_M") == 0) {
+            return Sinclair_M;
+        } else if (strcmp(name, "Sinclair_S") == 0) {
+            return Sinclair_S;
+        } else if (strcmp(name, "MusicNote") == 0) {
+            return FontMusicNote;
+        } else if (strcmp(name, "Ubuntu") == 0) {
+            return Ubuntu;
+        } else if (strcmp(name, "UbuntuBold") == 0) {
+            return UbuntuBold;
+        } else {
+            throw std::runtime_error("Unknown font " + std::string(name));
+        }
+    }
+
     int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
-        uint8_t* font = getFont(options.fontPath);
+        uint8_t* font = options.font ? (uint8_t*)options.font : (uint8_t*)getFont(options.fontPath);
         uint16_t height = font[0];
         uint16_t width = font[1];
         float scale = size / (float)height;
@@ -509,7 +509,7 @@ public:
 
     int textRight(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
-        uint8_t* font = getFont(options.fontPath);
+        uint8_t* font = options.font ? (uint8_t*)options.font : (uint8_t*)getFont(options.fontPath);
         uint16_t height = font[0];
         uint16_t width = font[1];
         float scale = size / (float)height;
@@ -529,7 +529,7 @@ public:
 
     int textCentered(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
-        uint8_t* font = getFont(options.fontPath);
+        uint8_t* font = options.font ? (uint8_t*)options.font : (uint8_t*)getFont(options.fontPath);
         uint16_t height = font[0];
         uint16_t width = font[1];
         float scale = size / (float)height;
