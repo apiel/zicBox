@@ -37,7 +37,14 @@ $y=$y+$sepHeight
     #   ENCODER_ID: 2
     #   COLOR: secondary
     #   TRACK: $track
-    #   VALUE: SynthDrum23 GAIN_CLIPPING
+    #   VALUE: FM ALGO
+
+  COMPONENT: FmAlgo $2/4W $y $1/4W 50
+    GROUP: $group
+    ENCODER_ID: 2
+    COLOR: secondary
+    TRACK: $track
+    VALUE: FM ALGO
 
    COMPONENT: Encoder3 $3/4W $y $1/4W 50
       GROUP: $group
