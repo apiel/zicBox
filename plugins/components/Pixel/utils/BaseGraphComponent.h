@@ -48,12 +48,10 @@ protected:
         int cellWidth = size.w / titles.size();
         int x = relativePosition.x + cellWidth * 0.5;
         for (int i = 0; i < titles.size(); i++) {
-            // draw.textCentered({ x + cellWidth * i, relativePosition.y }, titles[i][0], 8, { textColor1.color });
-            // draw.textCentered({ x + cellWidth * i, relativePosition.y }, titles[i][1], 8, { textColor2.color });
             int len = titles[i].text1.length() + titles[i].text2.length();
             int w = len * 8;
             int x2 = draw.text({ (int)(x + cellWidth * i - w * 0.5), relativePosition.y }, titles[i].text1, 8, { textColor1.color });
-            draw.text({ x2 + w, relativePosition.y }, titles[i].text2, 8, { textColor2.color });
+            draw.text({ x2, relativePosition.y }, titles[i].text2, 8, { textColor2.color });
         }
     }
 

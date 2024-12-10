@@ -11,6 +11,7 @@
 #include "./StepEditComponent.h"
 #include "./HiddenEncoderComponent.h"
 #include "./FmAlgoComponent.h"
+#include "./AdsrComponent.h"
 
 void loadPixelComponents()
 {
@@ -45,6 +46,10 @@ void loadPixelComponents()
 
     viewManager.plugins.push_back({ "FmAlgo", [](ComponentInterface::Props props) {
         return new FmAlgoComponent(props);
+    } });
+
+    viewManager.plugins.push_back({ "Adsr", [](ComponentInterface::Props props) {
+        return new AdsrComponent(props);
     } });
 }
 
