@@ -25,23 +25,13 @@ ADD_ZONE_ENCODER: $1/4W 0 $1/4W $SCREEN_HEIGHT
 ADD_ZONE_ENCODER: $1/2W 0 $1/4W $SCREEN_HEIGHT
 ADD_ZONE_ENCODER: $3/4W 0 $1/4W $SCREEN_HEIGHT
 
-$track=1
+$track=0
 
-# - Track1
-VIEW: Track($track)
-  COMPONENTS_TRACK: $track
-  include: keyboard_main.ui
-  include: drum23_synth.ui
-
-VIEW: Sequencer($track)
-  COMPONENTS_TRACK: $track
-  include: sequencer.ui
-
+# - Track Drum23 (1)
 $track=$track+1
-
-# - Track2
 VIEW: Track($track)
   COMPONENTS_TRACK: $track
+  $synth=SynthDrum23
   include: keyboard_main.ui
   include: drum23_synth.ui
 
@@ -49,11 +39,12 @@ VIEW: Sequencer($track)
   COMPONENTS_TRACK: $track
   include: sequencer.ui
 
+
+# - Track Drum23 (2)
 $track=$track+1
-
-# - Track3
 VIEW: Track($track)
   COMPONENTS_TRACK: $track
+  $synth=SynthDrum23
   include: keyboard_main.ui
   include: drum23_synth.ui
 
@@ -61,3 +52,41 @@ VIEW: Sequencer($track)
   COMPONENTS_TRACK: $track
   include: sequencer.ui
 
+
+# - Track Drum23 (3)
+$track=$track+1
+VIEW: Track($track)
+  COMPONENTS_TRACK: $track
+  $synth=SynthDrum23
+  include: keyboard_main.ui
+  include: drum23_synth.ui
+
+VIEW: Sequencer($track)
+  COMPONENTS_TRACK: $track
+  include: sequencer.ui
+
+
+# - Track FM (4)
+$track=$track+1
+VIEW: Track($track)
+  COMPONENTS_TRACK: $track
+  $synth=FM
+  include: keyboard_main.ui
+  include: fm_synth.ui
+
+VIEW: Sequencer($track)
+  COMPONENTS_TRACK: $track
+  include: sequencer.ui
+
+
+# - Track FM (5)
+$track=$track+1
+VIEW: Track($track)
+  COMPONENTS_TRACK: $track
+  $synth=FM
+  include: keyboard_main.ui
+  include: fm_synth.ui
+
+VIEW: Sequencer($track)
+  COMPONENTS_TRACK: $track
+  include: sequencer.ui
