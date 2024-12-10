@@ -43,13 +43,13 @@ public:
         points.push_back({ 0, waveformHeight });
         // int a = encoders[0].value->pct() * size.w * 0.30;
         // 1 - Math.pow(1 - 0.1, 2) // to make lower value larger and higher value smaller 0.1 = 0.19 & 0.9 = 0.99
-        int a = (1 - pow(1 - encoders[0].value->pct(), 3)) * size.w * 0.30;
+        int a = (1 - pow(1 - encoders[0].value->pct(), 10)) * size.w * 0.32;
         points.push_back({ a, 0 });
         // int d = encoders[1].value->pct() * size.w * 0.30;
-        int d = (1 - pow(1 - encoders[1].value->pct(), 3)) * size.w * 0.30;
+        int d = (1 - pow(1 - encoders[1].value->pct(), 10)) * size.w * 0.32;
         points.push_back({ a + d, (int)(waveformHeight - encoders[2].value->pct() * waveformHeight) });
         // int r = encoders[3].value->pct() * size.w * 0.30;
-        int r = (1 - pow(1 - encoders[3].value->pct(), 3)) * size.w * 0.30;
+        int r = (1 - pow(1 - encoders[3].value->pct(), 10)) * size.w * 0.32;
         points.push_back({ (int)(size.w - r), (int)(waveformHeight - encoders[2].value->pct() * waveformHeight) });
         points.push_back({ size.w, waveformHeight });
         return points;
