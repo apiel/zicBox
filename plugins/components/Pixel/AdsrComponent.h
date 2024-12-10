@@ -41,9 +41,10 @@ public:
     {
         std::vector<Point> points = {};
         points.push_back({ 0, waveformHeight });
-        points.push_back({ (int)(encoders[0].value->pct() * size.w), 0 });
-        points.push_back({ (int)(encoders[1].value->pct() * size.w), (int)(encoders[2].value->pct() * waveformHeight) });
-        points.push_back({ (int)(size.w - encoders[3].value->pct() * size.w), (int)(encoders[2].value->pct() * waveformHeight) });
+        float value = encoders[0].value->get() / (encoders[0].value->get() + encoders[1].value->get());
+        points.push_back({ (int)(value * size.w * 0.5), 0 });
+        points.push_back({ (int)(0.5 * size.w), (int)(waveformHeight - encoders[2].value->pct() * waveformHeight) });
+        points.push_back({ (int)(size.w - encoders[3].value->pct() * size.w * 0.35), (int)(waveformHeight - encoders[2].value->pct() * waveformHeight) });
         points.push_back({ size.w, waveformHeight });
         return points;
     }
