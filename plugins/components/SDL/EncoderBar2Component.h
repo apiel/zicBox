@@ -1,8 +1,8 @@
 #ifndef _UI_COMPONENT_ENCODER_BAR_2_H_
 #define _UI_COMPONENT_ENCODER_BAR_2_H_
 
-#include "../utils/color.h"
 #include "../component.h"
+#include "../utils/color.h"
 #include <math.h>
 #include <string>
 
@@ -47,17 +47,19 @@ protected:
             if (showUnit && value->props().unit != NULL) {
                 x = draw.textRight({ x, position.y + 1 }, value->props().unit, fontUnitSize, { colors.unit }) - 2;
             }
-            draw.textRight({ x, position.y + 1 }, valStr.c_str(), fontValueSize, { colors.value, styles.font.bold });
+            void* fontBold = draw.getFont(styles.font.bold);
+            draw.textRight({ x, position.y + 1 }, valStr.c_str(), fontValueSize, { colors.value, fontBold });
         }
     }
 
     void renderTwoSidedValue()
     {
         int val = value->get();
+        void* fontBold = draw.getFont(styles.font.bold);
         draw.text({ position.x + 4, position.y + 1 }, std::to_string((int)value->props().max - val).c_str(),
-            fontValueSize, { colors.value, styles.font.bold });
+            fontValueSize, { colors.value, fontBold });
         draw.textRight({ position.x + size.w - 4, position.y + 1 }, std::to_string(val).c_str(),
-            fontValueSize, { colors.value, styles.font.bold });
+            fontValueSize, { colors.value, fontBold });
     }
 
     void renderEncoder()
@@ -73,9 +75,9 @@ protected:
                 draw.filledRect(
                     { xCenter - w, position.y + margin },
                     { w, size.h - 2 * margin },
-                    { colors.backgroundProgress});
+                    { colors.backgroundProgress });
             }
-            draw.textCentered({ xCenter, position.y + 1 }, label, titleSize, { colors.title});
+            draw.textCentered({ xCenter, position.y + 1 }, label, titleSize, { colors.title });
         } else {
             draw.filledRect(
                 { position.x + margin, position.y + margin },

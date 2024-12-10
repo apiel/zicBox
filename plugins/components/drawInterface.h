@@ -61,9 +61,8 @@ struct DrawOptions {
 
 struct DrawTextOptions {
     Color color = { 255, 255, 255, 255 };
-    const char* fontPath = nullptr; // TODO to be deprecated
+    void* font = NULL;
     int maxWidth = -1;
-    void *font = NULL;
 };
 
 class DrawInterface {
@@ -78,15 +77,6 @@ public:
     virtual void render() = 0;
     virtual void renderNext() = 0;
     virtual void triggerRendering() = 0;
-
-    DrawTextOptions getDefaultTextOptions(DrawTextOptions options)
-    {
-        return {
-            options.color,
-            options.fontPath == nullptr ? styles.font.regular : options.fontPath,
-            options.maxWidth == -1 ? styles.screen.w : options.maxWidth
-        };
-    }
 
     virtual int textCentered(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) { return 0; }
     virtual int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) { return 0; }
@@ -114,7 +104,7 @@ public:
     virtual void destroyTexture(void* texture) { }
     virtual void applyTexture(void* texture, Rect dest) { }
 
-    virtual void* getFont(const char* name = NULL) { return NULL; }
+    virtual void* getFont(const char* name = NULL, int size = -1) { printf("yoooooooooo\n"); return NULL; }
     virtual Color getColor(char* color) { return styles.colors.white; }
     virtual bool config(char* key, char* value) { return false; }
 };

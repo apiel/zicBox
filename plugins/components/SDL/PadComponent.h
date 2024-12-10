@@ -26,11 +26,12 @@ protected:
         int x = position.x;
         x = draw.text({ x, position.y }, c, 12, { colors.title });
         int val = value->get();
+        void* fontBold = draw.getFont(styles.font.bold);
         if (value->props().type == VALUE_CENTERED) {
-            x = draw.text({ x + 3, position.y }, std::to_string(100 - val).c_str(), 12, { colors.value, styles.font.bold });
+            x = draw.text({ x + 3, position.y }, std::to_string(100 - val).c_str(), 12, { colors.value, fontBold });
         }
         x = draw.text({ x + 3, position.y }, value->label(), 12, { colors.title });
-        x = draw.text({ x + 3, position.y }, std::to_string(val).c_str(), 12, { colors.value, styles.font.bold });
+        x = draw.text({ x + 3, position.y }, std::to_string(val).c_str(), 12, { colors.value, fontBold });
         if (value->props().unit != NULL) {
             x = draw.text({ x + 2, position.y }, value->props().unit, 10, { colors.title });
         }

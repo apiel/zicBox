@@ -341,7 +341,7 @@ public:
         drawChar({ 60, 10 }, 'B', Sinclair_S, 2.0, { .color = { 255, 0, 0 } });
 
         filledRect({ 40, 45 }, { 30, 20 });
-        textRight({ 120, 50 }, "Hello World!", 16, { .color = { 0, 255, 0 }, .fontPath = "Sinclair_S" });
+        textRight({ 120, 50 }, "Hello World!", 16, { .color = { 0, 255, 0 }, .font = &Sinclair_S });
 
         render();
     }
@@ -460,9 +460,9 @@ public:
         fullRendering = true;
     }
 
-    void* getFont(const char* name = NULL) override
+    void* getFont(const char* name = NULL, int size = -1) override
     {
-        if (name == NULL) {
+        if (name == NULL || strcmp(name, "default") == 0) {
             return Sinclair_S;
         }
 
@@ -487,9 +487,17 @@ public:
         }
     }
 
+    uint8_t* getFont(DrawTextOptions options)
+    {
+        if (options.font) {
+            return (uint8_t*)options.font;
+        }
+        return Sinclair_S;
+    }
+
     int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
-        uint8_t* font = options.font ? (uint8_t*)options.font : (uint8_t*)getFont(options.fontPath);
+        uint8_t* font = getFont(options);
         uint16_t height = font[0];
         uint16_t width = font[1];
         float scale = size / (float)height;
@@ -509,7 +517,7 @@ public:
 
     int textRight(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
-        uint8_t* font = options.font ? (uint8_t*)options.font : (uint8_t*)getFont(options.fontPath);
+        uint8_t* font = getFont(options);
         uint16_t height = font[0];
         uint16_t width = font[1];
         float scale = size / (float)height;
@@ -529,7 +537,7 @@ public:
 
     int textCentered(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
-        uint8_t* font = options.font ? (uint8_t*)options.font : (uint8_t*)getFont(options.fontPath);
+        uint8_t* font = getFont(options);
         uint16_t height = font[0];
         uint16_t width = font[1];
         float scale = size / (float)height;
