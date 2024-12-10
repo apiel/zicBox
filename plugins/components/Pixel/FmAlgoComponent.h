@@ -38,6 +38,9 @@ protected:
     AudioPlugin* plugin;
     int8_t dataId = 10;
 
+    int textMarginTop = 4;
+    int textMarginLeft = 1;
+
 public:
     FmAlgoComponent(ComponentInterface::Props props)
         : Component(props)
@@ -120,30 +123,30 @@ public:
             // draw operators and carriers
             // 4 is always carrier
             draw.filledRect({ relativePosition.x + size.w - opSize.w, relativePosition.y + size.h - opSize.h }, opSize, { colors.border }); // 4
-            draw.textCentered({ (int)(relativePosition.x + size.w - opSize.w + opSize.w * 0.5), relativePosition.y + size.h - opSize.h + 2 }, "4", fontSize, { colors.background });
+            draw.textCentered({ (int)(relativePosition.x + size.w - opSize.w + opSize.w * 0.5 + textMarginLeft), relativePosition.y + size.h - opSize.h + textMarginTop }, "4", fontSize, { colors.background });
 
             if (!algo[0][0] && !algo[0][1] && !algo[0][2]) { // 1
                 draw.filledRect(position, opSize, { colors.border }); // 1
-                draw.textCentered({ (int)(relativePosition.x + opSize.w * 0.5), relativePosition.y + 2 }, "1", fontSize, { colors.background });
+                draw.textCentered({ (int)(relativePosition.x + opSize.w * 0.5 + textMarginLeft), relativePosition.y + textMarginTop }, "1", fontSize, { colors.background });
             } else {
                 draw.rect(position, opSize, { colors.border }); // 1
-                draw.textCentered({ (int)(relativePosition.x + opSize.w * 0.5), relativePosition.y + 2 }, "1", fontSize, { colors.text });
+                draw.textCentered({ (int)(relativePosition.x + opSize.w * 0.5 + textMarginLeft), relativePosition.y + textMarginTop }, "1", fontSize, { colors.text });
             }
 
             if (!algo[1][0] && !algo[1][1] && !algo[1][2]) { // 2
                 draw.filledRect({ relativePosition.x + size.w - opSize.w, relativePosition.y }, opSize, { colors.border }); // 2
-                draw.textCentered({ (int)(relativePosition.x + size.w - opSize.w + opSize.w * 0.5), relativePosition.y + 2 }, "2", fontSize, { colors.background });
+                draw.textCentered({ (int)(relativePosition.x + size.w - opSize.w + opSize.w * 0.5 + textMarginLeft), relativePosition.y + textMarginTop }, "2", fontSize, { colors.background });
             } else {
                 draw.rect({ relativePosition.x + size.w - opSize.w, relativePosition.y }, opSize, { colors.border }); // 2
-                draw.textCentered({ (int)(relativePosition.x + size.w - opSize.w + opSize.w * 0.5), relativePosition.y + 2 }, "2", fontSize, { colors.text });
+                draw.textCentered({ (int)(relativePosition.x + size.w - opSize.w + opSize.w * 0.5 + textMarginLeft), relativePosition.y + textMarginTop }, "2", fontSize, { colors.text });
             }
 
             if (!algo[2][0] && !algo[2][1] && !algo[2][2]) { // 3
                 draw.filledRect({ relativePosition.x, relativePosition.y + size.h - opSize.h }, opSize, { colors.border }); // 3
-                draw.textCentered({ (int)(relativePosition.x + opSize.w * 0.5), relativePosition.y + size.h - opSize.h + 2 }, "3", fontSize, { colors.background });
+                draw.textCentered({ (int)(relativePosition.x + opSize.w * 0.5 + textMarginLeft), relativePosition.y + size.h - opSize.h + textMarginTop }, "3", fontSize, { colors.background });
             } else {
                 draw.rect({ relativePosition.x, relativePosition.y + size.h - opSize.h }, opSize, { colors.border }); // 3
-                draw.textCentered({ (int)(relativePosition.x + opSize.w * 0.5), relativePosition.y + size.h - opSize.h + 2 }, "3", fontSize, { colors.text });
+                draw.textCentered({ (int)(relativePosition.x + opSize.w * 0.5 + textMarginLeft), relativePosition.y + size.h - opSize.h + textMarginTop }, "3", fontSize, { colors.text });
             }
         }
     }
