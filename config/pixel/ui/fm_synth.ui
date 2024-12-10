@@ -95,7 +95,7 @@ $group=$group+1
 $y=$y+$rowHeight
 
     COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
-      TITLE: Envelope Operator 1
+      TITLE: Operator 1
       GROUP: $group
 
 $y=$y+$sepHeight
