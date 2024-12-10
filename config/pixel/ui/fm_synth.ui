@@ -1,0 +1,85 @@
+
+  CONTAINER: ScrollGroupContainer Scroll 0 0 $SCREEN_WIDTH 214
+
+$sepHeight=12
+$rowHeight=55
+
+# set to - rowHeight so we easily schuffle thing around
+$y=-($rowHeight)
+$group=-1
+
+
+#   FM
+$group=$group+1
+$y=$y+$rowHeight
+
+    COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
+      TITLE: FM \($track)
+      GROUP: $group
+
+$y=$y+$sepHeight
+    COMPONENT: Encoder3 0 $y $1/4W 50
+      GROUP: $group
+      ENCODER_ID: 0
+      COLOR: primary
+      TRACK: $track
+      VALUE: MMFilter CUTOFF
+
+    COMPONENT: Encoder3 $1/4W $y $1/4W 50
+      GROUP: $group
+      ENCODER_ID: 1
+      COLOR: primary
+      TRACK: $track
+      VALUE: MMFilter RESONANCE
+
+    # COMPONENT: Encoder3 $2/4W $y $1/4W 50
+    #   GROUP: $group
+    #   ENCODER_ID: 2
+    #   COLOR: secondary
+    #   TRACK: $track
+    #   VALUE: SynthDrum23 GAIN_CLIPPING
+
+   COMPONENT: Encoder3 $3/4W $y $1/4W 50
+      GROUP: $group
+      ENCODER_ID: 3
+      COLOR: tertiary
+      TRACK: $track
+      VALUE: Distortion LEVEL
+
+#   Distortion
+$group=$group+1
+$y=$y+$rowHeight
+
+    COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
+      TITLE: Distortion
+      GROUP: $group
+
+$y=$y+$sepHeight
+    COMPONENT: Encoder3 0 $y $1/4W 50
+      GROUP: $group
+      ENCODER_ID: 0
+      COLOR: tertiary
+      TRACK: $track
+      VALUE: Distortion WAVESHAPE
+
+    COMPONENT: Encoder3 $1/4W $y $1/4W 50
+      GROUP: $group
+      ENCODER_ID: 1
+      COLOR: tertiary
+      TRACK: $track
+      VALUE: Distortion DRIVE
+
+    COMPONENT: Encoder3 $2/4W $y $1/4W 50
+      GROUP: $group
+      ENCODER_ID: 2
+      COLOR: tertiary
+      TRACK: $track
+      VALUE: Distortion COMPRESS
+
+    COMPONENT: Encoder3 $3/4W $y $1/4W 50
+      GROUP: $group
+      ENCODER_ID: 3
+      COLOR: tertiary
+      TRACK: $track
+      VALUE: Distortion BASS
+
