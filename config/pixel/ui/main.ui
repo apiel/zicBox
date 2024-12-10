@@ -48,3 +48,16 @@ VIEW: Track($track)
 VIEW: Sequencer($track)
   COMPONENTS_TRACK: $track
   include: sequencer.ui
+
+$track=$track+1
+
+# - Track3
+VIEW: Track($track)
+  COMPONENTS_TRACK: $track
+  include: keyboard_main.ui
+  include: drum23_synth.ui
+
+VIEW: Sequencer($track)
+  COMPONENTS_TRACK: $track
+  include: sequencer.ui
+
