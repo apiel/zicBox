@@ -10,6 +10,7 @@
 #include "./SeparatorComponent.h"
 #include "./StepEditComponent.h"
 #include "./HiddenEncoderComponent.h"
+#include "./FmAlgoComponent.h"
 
 void loadPixelComponents()
 {
@@ -40,6 +41,10 @@ void loadPixelComponents()
 
     viewManager.plugins.push_back({ "StepEdit", [](ComponentInterface::Props props) {
         return new StepEditComponent(props);
+    } });
+
+    viewManager.plugins.push_back({ "FmAlgo", [](ComponentInterface::Props props) {
+        return new FmAlgoComponent(props);
     } });
 }
 
