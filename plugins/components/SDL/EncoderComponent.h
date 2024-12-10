@@ -1,8 +1,8 @@
 #ifndef _UI_COMPONENT_ENCODER_H_
 #define _UI_COMPONENT_ENCODER_H_
 
-#include "../utils/color.h"
 #include "../component.h"
+#include "../utils/color.h"
 #include <string>
 
 // TODO use function pointer on encoder initialisation to assign draw function base on type
@@ -53,8 +53,9 @@ protected:
         std::string valStr = std::to_string(value->get());
         valStr = valStr.substr(0, valStr.find(".") + valueFloatPrecision + (valueFloatPrecision > 0 ? 1 : 0));
 
+        void* fontBold = draw.getFont(styles.font.bold);
         int x = draw.textCentered({ area.xCenter, area.y + valueMarginTop }, valStr.c_str(),
-            20, { colors.value, styles.font.bold });
+            20, { colors.value, fontBold });
 
         if (value->props().unit != NULL) {
             draw.text({ x + 2, area.y + valueMarginTop + 8 }, value->props().unit, 10, { colors.title });
@@ -83,11 +84,12 @@ protected:
             draw.textCentered({ area.xCenter, area.y }, label, 12, { colors.title });
 
             int val = value->get();
+            void* fontBold = draw.getFont(styles.font.bold);
             // FIXME use floating point...
             draw.textRight({ area.x + area.w, area.y + valueMarginTop }, std::to_string(val).c_str(),
-                20, { colors.value, styles.font.bold });
+                20, { colors.value, fontBold });
             draw.text({ area.x, area.y + valueMarginTop }, std::to_string((int)value->props().max - val).c_str(),
-                20, { colors.value, styles.font.bold });
+                20, { colors.value, fontBold });
         } else {
             drawLabel();
             drawValue();

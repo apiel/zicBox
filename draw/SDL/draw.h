@@ -22,7 +22,12 @@ protected:
 
     SDL_Surface* getTextSurface(const char* text, uint32_t size, DrawTextOptions options = {})
     {
-        TTF_Font* font = TTF_OpenFont(options.fontPath, size);
+        TTF_Font* font = (TTF_Font*)options.font;
+        // if (font == NULL) {
+        //     SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "------------> Using default font %s\n", styles.font.regular);
+        //     SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "------------> Using font size %d\n", size);
+        //     font = TTF_OpenFont(styles.font.regular, size);
+        // }
         if (font == NULL) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to open font\n");
             return 0;
@@ -169,9 +174,27 @@ public:
         SDL_SetRenderTarget(renderer, texture);
     }
 
+    DrawTextOptions getDefaultTextOptions(DrawTextOptions options, int fontSize)
+    {
+        return {
+            options.color,
+            options.font == NULL ? getFont(NULL, fontSize) : options.font,
+            options.maxWidth == -1 ? styles.screen.w : options.maxWidth,
+        };
+    }
+
+    // TODO cache font...
+    void* getFont(const char* name = NULL, int size = -1) override
+    {
+        if (name == NULL || strcmp(name, "default") == 0) {
+            return TTF_OpenFont(styles.font.regular, size);
+        }
+        return TTF_OpenFont(name, size);
+    }
+
     int textCentered(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
-        options = getDefaultTextOptions(options);
+        options = getDefaultTextOptions(options, size);
         SDL_Surface* surface = getTextSurface(text.c_str(), size, options);
         int w = surface->w > options.maxWidth ? options.maxWidth : surface->w;
         int x = position.x - (w * 0.5);
@@ -184,7 +207,7 @@ public:
 
     int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
-        options = getDefaultTextOptions(options);
+        options = getDefaultTextOptions(options, size);
         SDL_Surface* surface = getTextSurface(text.c_str(), size, options);
         textToRenderer(position, surface, options.maxWidth);
         int xEnd = position.x + surface->w;
@@ -195,7 +218,7 @@ public:
 
     int textRight(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
-        options = getDefaultTextOptions(options);
+        options = getDefaultTextOptions(options, size);
         SDL_Surface* surface = getTextSurface(text.c_str(), size, options);
         int w = surface->w > options.maxWidth ? options.maxWidth : surface->w;
         int x = position.x - w;

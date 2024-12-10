@@ -26,24 +26,32 @@ protected:
     } align
         = CENTER;
 
-    const char* fontPath;
+    // const char* fontPath;
 
 public:
     TextComponent(ComponentInterface::Props props)
         : Component(props)
         , colors({ styles.colors.white })
-        , fontPath(styles.font.regular)
+    // , fontPath(styles.font.regular)
     {
     }
 
     void render()
     {
+        // if (align == LEFT) {
+        //     draw.text(position, text, size, { colors.text, fontPath });
+        // } else if (align == CENTER) {
+        //     draw.textCentered(position, text, size, { colors.text, fontPath });
+        // } else {
+        //     draw.textRight(position, text, size, { colors.text, fontPath });
+        // }
+
         if (align == LEFT) {
-            draw.text(position, text, size, { colors.text, fontPath });
+            draw.text(position, text, size, { colors.text });
         } else if (align == CENTER) {
-            draw.textCentered(position, text, size, { colors.text, fontPath });
+            draw.textCentered(position, text, size, { colors.text });
         } else {
-            draw.textRight(position, text, size, { colors.text, fontPath });
+            draw.textRight(position, text, size, { colors.text });
         }
     }
 
@@ -79,13 +87,13 @@ public:
             return true;
         }
 
-        /*md - `BOLD: true` set bold text. */
-        if (strcmp(key, "BOLD") == 0) {
-            if (strcmp(value, "true") == 0) {
-                fontPath = styles.font.bold;
-            }
-            return true;
-        }
+        // /*md - `BOLD: true` set bold text. */
+        // if (strcmp(key, "BOLD") == 0) {
+        //     if (strcmp(value, "true") == 0) {
+        //         fontPath = styles.font.bold;
+        //     }
+        //     return true;
+        // }
 
         return false;
     }

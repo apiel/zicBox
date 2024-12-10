@@ -9,6 +9,7 @@
 #include "fonts/BigFont.h"
 #include "fonts/Sinclair_M.h"
 #include "fonts/Sinclair_S.h"
+#include "fonts/MusicNote.h"
 #include "fonts/Ubuntu.h"
 #include "fonts/UbuntuBold.h"
 #include <cmath>
@@ -60,31 +61,6 @@ public:
 protected:
     I2c i2c;
     bool needRendering = false;
-
-    uint8_t* getFont(const char* name = NULL)
-    {
-        if (name == NULL) {
-            return Sinclair_S;
-        }
-
-        if (strcmp(name, "ArialBold") == 0) {
-            return ArialBold;
-        } else if (strcmp(name, "ArialNormal") == 0) {
-            return ArialNormal;
-        } else if (strcmp(name, "BigFont") == 0) {
-            return BigFont;
-        } else if (strcmp(name, "Sinclair_M") == 0) {
-            return Sinclair_M;
-        } else if (strcmp(name, "Sinclair_S") == 0) {
-            return Sinclair_S;
-        } else if (strcmp(name, "Ubuntu") == 0) {
-            return Ubuntu;
-        } else if (strcmp(name, "UbuntuBold") == 0) {
-            return UbuntuBold;
-        } else {
-            throw std::runtime_error("Unknown font " + std::string(name));
-        }
-    }
 
     void oledInit(uint8_t i2c_dev = 1)
     {
@@ -398,7 +374,7 @@ public:
         drawChar({ 60, 10 }, 'B', Sinclair_S, 2.0, SSD1306_BLACK);
 
         filledRect({ 40, 45 }, { 30, 20 });
-        textRight({ 120, 50 }, "Hello World!", 16, { .color = { SSD1306_INVERSE }, .fontPath = "Sinclair_S" });
+        textRight({ 120, 50 }, "Hello World!", 16, { .color = { SSD1306_INVERSE }, .font = &Sinclair_S });
 
         render();
     }
@@ -459,11 +435,46 @@ public:
         oledRender(page);
     }
 
+    void* getFont(const char* name = NULL, int size = -1) override
+    {
+        if (name == NULL || strcmp(name, "default") == 0) {
+            return Sinclair_S;
+        }
+
+        if (strcmp(name, "ArialBold") == 0) {
+            return ArialBold;
+        } else if (strcmp(name, "ArialNormal") == 0) {
+            return ArialNormal;
+        } else if (strcmp(name, "BigFont") == 0) {
+            return BigFont;
+        } else if (strcmp(name, "Sinclair_M") == 0) {
+            return Sinclair_M;
+        } else if (strcmp(name, "Sinclair_S") == 0) {
+            return Sinclair_S;
+        } else if (strcmp(name, "MusicNote") == 0) {
+            return FontMusicNote;
+        } else if (strcmp(name, "Ubuntu") == 0) {
+            return Ubuntu;
+        } else if (strcmp(name, "UbuntuBold") == 0) {
+            return UbuntuBold;
+        } else {
+            throw std::runtime_error("Unknown font " + std::string(name));
+        }
+    }
+
+    uint8_t* getFont(DrawTextOptions options)
+    {
+        if (options.font) {
+            return (uint8_t*)options.font;
+        }
+        return Sinclair_S;
+    }
+
     int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
         uint8_t color = options.color.r == 255 ? SSD1306_WHITE : options.color.r;
 
-        uint8_t* font = getFont(options.fontPath);
+        uint8_t* font = getFont(options);
         uint16_t height = font[0];
         uint16_t width = font[1];
         float scale = size / (float)height;
@@ -485,7 +496,7 @@ public:
     {
         uint8_t color = options.color.r == 255 ? SSD1306_WHITE : options.color.r;
 
-        uint8_t* font = getFont(options.fontPath);
+        uint8_t* font = getFont(options);
         uint16_t height = font[0];
         uint16_t width = font[1];
         float scale = size / (float)height;
@@ -507,7 +518,7 @@ public:
     {
         uint8_t color = options.color.r == 255 ? SSD1306_WHITE : options.color.r;
 
-        uint8_t* font = getFont(options.fontPath);
+        uint8_t* font = getFont(options);
         uint16_t height = font[0];
         uint16_t width = font[1];
         float scale = size / (float)height;
