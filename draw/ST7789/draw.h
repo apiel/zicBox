@@ -17,14 +17,7 @@
 #include "helpers/SpiDevSpi.h"
 #endif
 
-#include "fonts/ArialBold.h"
-#include "fonts/ArialNormal.h"
-#include "fonts/BigFont.h"
-#include "fonts/MusicNote.h"
-#include "fonts/Sinclair_M.h"
-#include "fonts/Sinclair_S.h"
-#include "fonts/Ubuntu.h"
-#include "fonts/UbuntuBold.h"
+#include "fonts/fonts.h"
 #include "log.h"
 #include "plugins/components/drawInterface.h"
 #include <cmath>
@@ -462,29 +455,11 @@ public:
 
     void* getFont(const char* name = NULL, int size = -1) override
     {
-        if (name == NULL || strcmp(name, "default") == 0) {
-            return Sinclair_S;
-        }
-
-        if (strcmp(name, "ArialBold") == 0) {
-            return ArialBold;
-        } else if (strcmp(name, "ArialNormal") == 0) {
-            return ArialNormal;
-        } else if (strcmp(name, "BigFont") == 0) {
-            return BigFont;
-        } else if (strcmp(name, "Sinclair_M") == 0) {
-            return Sinclair_M;
-        } else if (strcmp(name, "Sinclair_S") == 0) {
-            return Sinclair_S;
-        } else if (strcmp(name, "MusicNote") == 0) {
-            return FontMusicNote;
-        } else if (strcmp(name, "Ubuntu") == 0) {
-            return Ubuntu;
-        } else if (strcmp(name, "UbuntuBold") == 0) {
-            return UbuntuBold;
-        } else {
+        void* font = getFontPtr(name);
+        if (!font) {
             throw std::runtime_error("Unknown font " + std::string(name));
         }
+        return font;
     }
 
     uint8_t* getFont(DrawTextOptions options)
