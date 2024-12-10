@@ -2,16 +2,17 @@
 #define _CONFIG_PLUGIN_H
 
 #include "getFullpath.h"
+#include "plugins/config/DustConfig.h"
 
 #include <dlfcn.h>
 #include <stdio.h>
 #include <string>
 #include <vector>
 
-struct Var {
-    std::string key;
-    std::string value;
-};
+// struct Var {
+//     std::string key;
+//     std::string value;
+// };
 
 void instantiateConfigPlugin(const char* pluginPath, std::string scriptPath, void (*callback)(char* command, char* params, const char* scriptPath), std::vector<Var> variables = {})
 {
@@ -49,11 +50,7 @@ void loadConfigPlugin(const char* pluginPath, std::string scriptPath, void (*cal
     }
 
     if (strcmp(pluginPath, "dustscript") == 0) {
-#ifdef IS_RPI
-        instantiateConfigPlugin("plugins/config/build/arm/libzic_DustConfig.so", scriptPath, callback, variables);
-#else
-        instantiateConfigPlugin("plugins/config/build/x86/libzic_DustConfig.so", scriptPath, callback, variables);
-#endif
+        dustConfig(scriptPath, callback, variables);
     } else if (strcmp(pluginPath, "lua") == 0) {
 #ifdef IS_RPI
         instantiateConfigPlugin("plugins/config/build/arm/libzic_LuaConfig.so", scriptPath, callback, variables);
