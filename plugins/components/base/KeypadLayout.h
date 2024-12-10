@@ -269,7 +269,7 @@ public:
             const char* params = action.substr(7).c_str();
             char * pluginName = strtok((char*)params, ":");
             AudioPlugin* plugin = &component->getPlugin(pluginName, component->track);
-            printf("noteon load plugin: %s from track: %d\n", pluginName, component->track);
+            // printf("noteon load plugin: %s from track: %d\n", pluginName, component->track);
             if (plugin) {
                 uint8_t* note = new uint8_t(atoi(strtok(NULL, ":")));
                 return [this, plugin, note](KeypadLayout::KeyMap& keymap) {
