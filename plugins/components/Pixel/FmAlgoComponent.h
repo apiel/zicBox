@@ -60,6 +60,7 @@ public:
     void render()
     {
         if (updatePosition()) {
+            // printf("updated position %d value=%f\n", dataId, value->get());
             draw.filledRect(relativePosition, size, { colors.background });
 
             bool(*algo)[3] = (bool(*)[3])plugin->data(dataId);
