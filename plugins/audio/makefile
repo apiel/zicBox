@@ -14,7 +14,7 @@ all:
 	make EffectGainVolume EffectSampleRateReducer EffectFilter EffectDistortion EffectDelay\
 		EffectFilter EffectFilterMultiMode EffectFilterMultiMode2 EffectFilterMultiModeMoog\
 		EffectGrain EffectDistortion2 \
-		SynthKick23 SynthDrum23 SynthGranular SynthSample SynthBass SynthFM \
+		SynthKick23 SynthDrum23 SynthGranular SynthSample SynthBass SynthFM SynthFM2 \
 		Sequencer Tempo\
 		Mixer2 Mixer4 Mixer6 Mixer8 Mixer12\
 		AudioInputPulse AudioOutputPulse AudioInputAlsa AudioOutputAlsa\
