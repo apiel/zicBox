@@ -42,7 +42,7 @@ $y=$y+$sepHeight
   COMPONENT: FmAlgo $2/4W $y $1/4W 50
     GROUP: $group
     ENCODER_ID: 2
-    COLOR: secondary
+    TEXT_COLOR: secondary
     TRACK: $track
     VALUE: FM ALGO
 
