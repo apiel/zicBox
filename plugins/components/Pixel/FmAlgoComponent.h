@@ -189,7 +189,7 @@ public:
 
     void onEncoder(int id, int8_t direction)
     {
-        if (id == encoderId) {
+        if (value && isActive && id == encoderId) {
             value->increment(direction);
         }
     }

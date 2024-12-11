@@ -1,6 +1,6 @@
 ## Pixel TODO
 
-- TODO toggleColor FM algo
+- TODO add modulation on bitcrusher :-)
 
 - TODO seq show active step
 
