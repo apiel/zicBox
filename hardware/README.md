@@ -20,6 +20,6 @@
     </tr>
     <tr>
         <td><a href="https://github.com/apiel/zicBox/wiki/07-Hardware#zic-pixel"><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPixel/pixel.png" /></a></td>
-        <td><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPixel/pixel2.png" /></td>
+        <td><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPixel/pixel2.png" width='480' /></td>
     </tr>
 </table>
