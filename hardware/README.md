@@ -16,7 +16,7 @@
     </tr>
     <tr>
         <td><a href="https://github.com/apiel/zicBox/wiki/07-Hardware#zic-pixel"><b>ZicPixel</b></a> ... discontinued</td>
-        <td><b>ZicPixel</b></a> Work in progress...</td>
+        <td><b>ZicPixel v.2</b></a> Work in progress...</td>
     </tr>
     <tr>
         <td><a href="https://github.com/apiel/zicBox/wiki/07-Hardware#zic-pixel"><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPixel/pixel.png" /></a></td>
