@@ -62,6 +62,14 @@ int main(int argc, char* argv[])
 #endif
 
     ST7789 st7789([&](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); });
+    // ILI9341 display (1)
+    // st7789.madctl = 0x20;
+    // st7789.displayInverted = false;
+    // st7789.init(320, 240);
+
+    // GMT024 display (2)
+    st7789.madctl = 0x08 | 0x20 |  0x40; // BGR + MV + MX
+    st7789.displayInverted = true;
     st7789.init(320, 240);
 
     // st7789.madctl = 0x08;
