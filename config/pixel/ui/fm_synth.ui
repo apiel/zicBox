@@ -90,18 +90,18 @@ $y=$y+$sepHeight
       TRACK: $track
       VALUE: Distortion BASS
 
-#   Envelope
-$group=$group+1
-$y=$y+$rowHeight
+#   Op 1
+$op=0
+include: fm_synth_operator.ui
 
-    COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
-      TITLE: Operator 1
-      GROUP: $group
+#   Op 2
+$op=1
+include: fm_synth_operator.ui
 
-$y=$y+$sepHeight
+#   Op 3
+$op=2
+include: fm_synth_operator.ui
 
-    COMPONENT: Adsr 0 $y $SCREEN_WIDTH 50
-      PLUGIN: FM
-      GROUP: $group
-      VALUES: ATTACK_0 DECAY_0 SUSTAIN_0 RELEASE_0
-      TRACK: $track
+#   Op 4
+$op=3
+include: fm_synth_operator.ui
