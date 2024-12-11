@@ -69,24 +69,26 @@ $y=$y+$sepHeight
       TRACK: $track
       VALUE: Bitcrusher SAMPLE_STEP
 
-    # COMPONENT: Encoder3 $1/4W $y $1/4W 50
-    #   GROUP: $group
-    #   ENCODER_ID: 1
-    #   COLOR: tertiary
-    #   TRACK: $track
-    #   VALUE: Bitcrusher DRIVE
+    COMPONENT: Encoder3 $1/4W $y $1/4W 50
+      GROUP: $group
+      ENCODER_ID: 1
+      COLOR: quaternary
+      TRACK: $track
+      VALUE: Delay MASTER_AMPLITUDE
+      LABEL: Delay
 
-    # COMPONENT: Encoder3 $2/4W $y $1/4W 50
-    #   GROUP: $group
-    #   ENCODER_ID: 2
-    #   COLOR: tertiary
-    #   TRACK: $track
-    #   VALUE: Bitcrusher COMPRESS
+    COMPONENT: Encoder3 $2/4W $y $1/4W 50
+      GROUP: $group
+      ENCODER_ID: 2
+      COLOR: quaternary
+      TRACK: $track
+      VALUE: Delay TIME_RATIO
+      LABEL: Delay time
 
     # COMPONENT: Encoder3 $3/4W $y $1/4W 50
     #   GROUP: $group
     #   ENCODER_ID: 3
-    #   COLOR: tertiary
+    #   COLOR: quaternary
     #   TRACK: $track
     #   VALUE: Distortion BASS
 

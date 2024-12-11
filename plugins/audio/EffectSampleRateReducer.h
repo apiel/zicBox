@@ -56,10 +56,10 @@ public:
         sampleStepInt = sampleStep.get();
         if (sampleStepInt == 0) {
             samplePtr = &EffectSampleRateReducer::skipSample;
-            debug("SampleRateReducer: disabled\n");
+            // debug("SampleRateReducer: disabled\n");
         } else {
             samplePtr = &EffectSampleRateReducer::processSample;
-            debug("SampleRateReducer: sampleStep=%d\n", sampleStepInt);
+            // debug("SampleRateReducer: sampleStep=%d\n", sampleStepInt);
         }
         return *this;
     }
