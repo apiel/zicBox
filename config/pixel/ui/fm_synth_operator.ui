@@ -1,0 +1,33 @@
+#   Operator
+$group=$group+1
+$y=$y+$rowHeight
+
+    COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
+      TITLE: Operator ($op+1)
+      GROUP: $group
+
+$y=$y+$sepHeight
+
+    COMPONENT: Adsr 0 $y $SCREEN_WIDTH 50
+      PLUGIN: FM
+      GROUP: $group
+      VALUES: ATTACK_($op) DECAY_($op) SUSTAIN_($op) RELEASE_($op)
+      TRACK: $track
+
+$group=$group+1
+$y=$y+$rowHeight+$sepHeight
+    COMPONENT: Encoder3 0 $y $1/4W 50
+      GROUP: $group
+      ENCODER_ID: 0
+      COLOR: tertiary
+      TRACK: $track
+      VALUE: FM FREQUENCY_($op)
+
+    COMPONENT: Encoder3 $1/4W $y $1/4W 50
+      GROUP: $group
+      ENCODER_ID: 1
+      COLOR: tertiary
+      TRACK: $track
+      VALUE: FM FEEDBACK_($op)
+
+
