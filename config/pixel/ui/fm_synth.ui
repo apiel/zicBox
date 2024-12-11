@@ -46,19 +46,19 @@ $y=$y+$sepHeight
     TRACK: $track
     VALUE: FM ALGO
 
-   COMPONENT: Encoder3 $3/4W $y $1/4W 50
-      GROUP: $group
-      ENCODER_ID: 3
-      COLOR: tertiary
-      TRACK: $track
-      VALUE: Distortion LEVEL
+  #  COMPONENT: Encoder3 $3/4W $y $1/4W 50
+  #     GROUP: $group
+  #     ENCODER_ID: 3
+  #     COLOR: tertiary
+  #     TRACK: $track
+  #     VALUE: Distortion LEVEL
 
-#   Distortion
+#   Bitcrusher
 $group=$group+1
 $y=$y+$rowHeight
 
     COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
-      TITLE: Distortion
+      TITLE: Effect
       GROUP: $group
 
 $y=$y+$sepHeight
@@ -67,28 +67,28 @@ $y=$y+$sepHeight
       ENCODER_ID: 0
       COLOR: tertiary
       TRACK: $track
-      VALUE: Distortion WAVESHAPE
+      VALUE: Bitcrusher SAMPLE_STEP
 
-    COMPONENT: Encoder3 $1/4W $y $1/4W 50
-      GROUP: $group
-      ENCODER_ID: 1
-      COLOR: tertiary
-      TRACK: $track
-      VALUE: Distortion DRIVE
+    # COMPONENT: Encoder3 $1/4W $y $1/4W 50
+    #   GROUP: $group
+    #   ENCODER_ID: 1
+    #   COLOR: tertiary
+    #   TRACK: $track
+    #   VALUE: Bitcrusher DRIVE
 
-    COMPONENT: Encoder3 $2/4W $y $1/4W 50
-      GROUP: $group
-      ENCODER_ID: 2
-      COLOR: tertiary
-      TRACK: $track
-      VALUE: Distortion COMPRESS
+    # COMPONENT: Encoder3 $2/4W $y $1/4W 50
+    #   GROUP: $group
+    #   ENCODER_ID: 2
+    #   COLOR: tertiary
+    #   TRACK: $track
+    #   VALUE: Bitcrusher COMPRESS
 
-    COMPONENT: Encoder3 $3/4W $y $1/4W 50
-      GROUP: $group
-      ENCODER_ID: 3
-      COLOR: tertiary
-      TRACK: $track
-      VALUE: Distortion BASS
+    # COMPONENT: Encoder3 $3/4W $y $1/4W 50
+    #   GROUP: $group
+    #   ENCODER_ID: 3
+    #   COLOR: tertiary
+    #   TRACK: $track
+    #   VALUE: Distortion BASS
 
 #   Op 1
 $op=0
