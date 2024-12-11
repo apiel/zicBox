@@ -21,7 +21,8 @@ $y=$y+$rowHeight
       ENCODER_ID: 0
       COLOR: tertiary
       TRACK: $track
-      VALUE: FM FREQUENCY_($op)
+      VALUE: FM RATIO_($op)
+      FLOAT_PRECISION: 2
 
     COMPONENT: Encoder3 $1/4W $y $1/4W 50
       GROUP: $group

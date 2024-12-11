@@ -32,13 +32,6 @@ $y=$y+$sepHeight
       TRACK: $track
       VALUE: MMFilter RESONANCE
 
-    # COMPONENT: Encoder3 $2/4W $y $1/4W 50
-    #   GROUP: $group
-    #   ENCODER_ID: 2
-    #   COLOR: secondary
-    #   TRACK: $track
-    #   VALUE: FM ALGO
-
   COMPONENT: FmAlgo $2/4W $y $1/4W 50
     GROUP: $group
     ENCODER_ID: 2
@@ -46,12 +39,12 @@ $y=$y+$sepHeight
     TRACK: $track
     VALUE: FM ALGO
 
-  #  COMPONENT: Encoder3 $3/4W $y $1/4W 50
-  #     GROUP: $group
-  #     ENCODER_ID: 3
-  #     COLOR: tertiary
-  #     TRACK: $track
-  #     VALUE: Distortion LEVEL
+   COMPONENT: Encoder3 $3/4W $y $1/4W 50
+      GROUP: $group
+      ENCODER_ID: 3
+      COLOR: tertiary
+      TRACK: $track
+      VALUE: FM FREQUENCY
 
 #   Bitcrusher
 $group=$group+1
