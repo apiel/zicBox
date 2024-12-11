@@ -70,10 +70,17 @@ protected:
     }
 
 public:
-    // 240x240 => 0x08 BGR
-    // 320x240 => 0x20 Rotated 90 degrees
-    uint8_t madctl = 0x20;
-    bool displayInverted = false;
+    // ILI9341 display (1)
+    // uint8_t madctl = 0x20;
+    // bool displayInverted = false;
+
+    // GMT024 display (2)
+    uint8_t madctl = 0x08 | 0x20 | 0x40; // BGR + MV + MX
+    bool displayInverted = true;
+
+    // 240x240 display
+    // uint8_t madctl = 0x08; // BGR
+    // bool displayInverted = true;
 
     ST7789(std::function<void(uint8_t, uint8_t*, uint32_t)> sendSpiCmd)
         : sendSpiCmd(sendSpiCmd)
