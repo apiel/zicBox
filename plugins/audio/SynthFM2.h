@@ -1,8 +1,8 @@
 #ifndef _SYNTH_FM2_H_
 #define _SYNTH_FM2_H_
 
-#include "helpers/range.h"
 #include "audioPlugin.h"
+#include "helpers/range.h"
 #include "mapping.h"
 #include "utils/AdsrEnvelop.h"
 
@@ -227,8 +227,7 @@ public:
         }
     }
 
-   enum DATA_ID
-    {
+    enum DATA_ID {
         ALGO,
     };
 
@@ -236,7 +235,8 @@ public:
     uint8_t getDataId(std::string name) override
     {
         /*md - `ALGO` return current algorithm */
-        if (name == "ALGO") return ALGO;
+        if (name == "ALGO")
+            return ALGO;
         return atoi(name.c_str());
     }
 
