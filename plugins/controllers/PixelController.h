@@ -25,26 +25,19 @@ protected:
         { 7, getKeyCode("'w'") }, // pin 26 = gpio 7
         { 25, getKeyCode("'e'") }, // pin 22 = gpio 25
         { 23, getKeyCode("'r'") }, // pin 16 = gpio 23
-        { 14, getKeyCode("'t'") },// pin 8 = gpio 14 
-        { 16, getKeyCode("'a'") },// pin 36 = gpio 16 
-        { 12, getKeyCode("'s'") },// pin 32 = gpio 12
-        { 8, getKeyCode("'d'") },// pin 24 = gpio 8
-        { 24, getKeyCode("'f'") },// pin 18 = gpio 24
-        { 15, getKeyCode("'g'") },// pin 10 = gpio 15
+        { 14, getKeyCode("'t'") }, // pin 8 = gpio 14
+        { 16, getKeyCode("'a'") }, // pin 36 = gpio 16
+        { 12, getKeyCode("'s'") }, // pin 32 = gpio 12
+        { 8, getKeyCode("'d'") }, // pin 24 = gpio 8
+        { 24, getKeyCode("'f'") }, // pin 18 = gpio 24
+        { 15, getKeyCode("'g'") }, // pin 10 = gpio 15
     };
 
 public:
     PixelController(Props& props, uint16_t id)
         : ControllerInterface(props, id)
     {
-        if (initGpio() != -1) {
-            for (auto& key : keys) {
-                gpioSetMode(key.gpio, GPIO_INPUT);
-                key.lastState = gpioRead(key.gpio);
-            }
-
-            loopThread = std::thread(&PixelController::loop, this);
-        }
+        loopThread = std::thread(&PixelController::loop, this);
     }
 
     ~PixelController()
@@ -54,13 +47,24 @@ public:
 
     void loop()
     {
+        if (initGpio() == -1) {
+            return;
+        }
+
+        for (auto& key : keys) {
+            gpioSetMode(key.gpio, GPIO_INPUT);
+            key.lastState = gpioRead(key.gpio);
+            // printf("[%d] ", key.key);
+        }
+        // printf("\n");
+
         while (loopRunning) {
             for (auto& key : keys) {
                 uint8_t state = gpioRead(key.gpio);
                 if (state != key.lastState) {
                     key.lastState = state;
                     onKey(id, key.key, state);
-                    // printf("key [%d] state changed %d\n", key.key, state);
+                    printf("key [%d] state changed %d\n", key.key, state);
                 }
                 // printf("[%d]=%d ", key.key, state);
             }
