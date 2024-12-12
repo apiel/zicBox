@@ -57,3 +57,5 @@ dtoverlay=i2s-mmap
 enable_uart=0
 # disables the Bluetooth module, which may otherwise occupy the UART.
 dtoverlay=disable-bt
+
+BOOT_UART=0
