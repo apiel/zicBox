@@ -24,7 +24,7 @@ From the audio perspective, there is an audio buffer splitted in tracks (32 by d
 ## Installation
 
 ```ssh
-git clone --recurse-submodules git@github.com:apiel/zicBox.git
+git clone --recurse-submodules https://github.com/apiel/zicBox.git
 ```
 
 > If repo has already been cloned but submodule are missing, use `git submodule update --init` to pull them.
