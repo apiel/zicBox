@@ -83,5 +83,6 @@
         "variant": "cpp",
         "synthpd.h": "c",
         "mapping.h": "c"
-    }
+    },
+    "C_Cpp.errorSquiggles": "enabled"
 }
