@@ -361,12 +361,20 @@ public:
 
 #ifdef USE_SPI_DEV_MEM
         gpioSetMode(GPIO_TFT_RESET_PIN, 1);
-        setGpio(GPIO_TFT_RESET_PIN, 1);
+        gpioWrite(GPIO_TFT_RESET_PIN, 1);
         usleep(120 * 1000);
-        setGpio(GPIO_TFT_RESET_PIN, 0);
+        gpioWrite(GPIO_TFT_RESET_PIN, 0);
         usleep(120 * 1000);
-        setGpio(GPIO_TFT_RESET_PIN, 1);
+        gpioWrite(GPIO_TFT_RESET_PIN, 1);
         usleep(120 * 1000);
+#else
+        // gpioSetMode(GPIO_TFT_RESET_PIN, GPIO_OUTPUT);
+        // gpioWrite(GPIO_TFT_RESET_PIN, 1);
+        // usleep(120 * 1000);
+        // gpioWrite(GPIO_TFT_RESET_PIN, 0);
+        // usleep(120 * 1000);
+        // gpioWrite(GPIO_TFT_RESET_PIN, 1);
+        // usleep(120 * 1000);
 #endif
 
 // Do the initialization with a veradiusY low SPI bus speed, so that it will succeed even if the bus speed chosen by the user is too high.
