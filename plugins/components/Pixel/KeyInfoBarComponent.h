@@ -131,7 +131,6 @@ public:
 
     void onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
-        printf("remove me onKey in info bar %d %d %d\n", id, key, state);
         if (isVisible()) {
             keypadLayout.onKey(id, key, state, now);
         }
