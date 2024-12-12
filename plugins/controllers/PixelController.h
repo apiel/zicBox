@@ -65,7 +65,7 @@ public:
                 if (state != key.lastState) {
                     key.lastState = state;
                     onKey(id, key.key, state);
-                    printf("gpio%d key [%d] state changed %d\n", key.gpio, key.key, state);
+                    // printf("gpio%d key [%d] state changed %d\n", key.gpio, key.key, state);
                 }
                 // printf("[%d]=%d ", key.key, state);
             }
