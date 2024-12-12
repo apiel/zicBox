@@ -59,13 +59,13 @@ public:
                 uint8_t state = gpioRead(key.gpio);
                 if (state != key.lastState) {
                     key.lastState = state;
-                    // controller->onKey(controller->id, key.key, state);
+                    onKey(id, key.key, state);
                     // printf("key [%d] state changed %d\n", key.key, state);
                 }
-                printf("[%d]=%d ", key.key, state);
+                // printf("[%d]=%d ", key.key, state);
             }
-            printf("\n");
-            std::this_thread::sleep_for(100ms);
+            // printf("\n");
+            std::this_thread::sleep_for(10ms);
         }
     }
 };

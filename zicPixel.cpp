@@ -33,8 +33,9 @@ int main(int argc, char* argv[])
     styles.colors.tertiary = { 0xc5, 0xd8, 0xb2 }; // #c5d8b2
     styles.colors.quaternary = { 0xf7, 0xda, 0x6d }; // #f7da6d
 
+    new PixelController(controllerProps, 0);
+
     loadPixelComponents();
-    new PixelController(controllerProps, controllerId++);
 
     loadUiConfig(argc >= 2 ? argv[1] : "pixel.cfg", argc >= 3 ? argv[2] : NULL, styles);
 
