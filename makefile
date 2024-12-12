@@ -17,6 +17,7 @@ INC=-I.
 
 main: build run
 pixel: buildPixel runPixel
+pixelAll: pixelLibs buildPixel runPixel
 pixelSSD1306: buildPixelSSD1306 runPixelSSD1306
 host: buildHost runHost
 all: libs main
@@ -28,6 +29,11 @@ libs:
 	make -C plugins/components/SDL
 	make -C plugins/controllers
 	make -C plugins/config
+	@echo "\nbuild plugins done."
+
+pixelLibs:
+	@echo "\n------------------ plugins ------------------\n"
+	make -C plugins/audio
 	@echo "\nbuild plugins done."
 
 soHost:

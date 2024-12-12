@@ -53,3 +53,7 @@ hdmi_force_hotplug=1
 dtoverlay=hifiberry-dac
 dtoverlay=i2s-mmap
 
+# disables the UART functionality
+enable_uart=0
+# disables the Bluetooth module, which may otherwise occupy the UART.
+dtoverlay=disable-bt
