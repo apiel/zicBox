@@ -42,7 +42,18 @@ void clearGpio(uint8_t pin)
 
 void setGpio(uint8_t pin, uint8_t value) { value ? setGpio(pin) : clearGpio(pin); }
 
-uint8_t getGpio(uint8_t pin) { return memgpio->gplev[0] & (1 << (pin)); }
+// uint8_t getGpio(uint8_t pin) { return memgpio->gplev[0] & (1 << (pin)); }
+
+#define BANK (gpio >> 5)
+#define BIT (1 << (gpio & 0x1F))
+
+uint8_t getGpio(uint8_t gpio)
+{
+    if ((memgpio->gplev[BANK] & BIT) != 0)
+        return 1;
+    else
+        return 0;
+}
 
 int initGpio()
 {

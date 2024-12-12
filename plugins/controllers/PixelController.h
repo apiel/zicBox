@@ -25,7 +25,7 @@ protected:
         { 7, getKeyCode("'w'") }, // pin 26 = gpio 7
         { 25, getKeyCode("'e'") }, // pin 22 = gpio 25
         { 23, getKeyCode("'r'") }, // pin 16 = gpio 23
-        { 8, getKeyCode("'t'") },// pin 8 = gpio 14 
+        { 14, getKeyCode("'t'") },// pin 8 = gpio 14 
         { 16, getKeyCode("'a'") },// pin 36 = gpio 16 
         { 12, getKeyCode("'s'") },// pin 32 = gpio 12
         { 8, getKeyCode("'d'") },// pin 24 = gpio 8
@@ -39,6 +39,8 @@ public:
     {
         if (initGpio() != -1) {
             for (auto& key : keys) {
+                // setGpioMode(key.pin, GPIO_INPUT);
+                // setGpio(key.pin);
                 setGpioMode(key.pin, GPIO_OUTPUT);
                 key.lastState = getGpio(key.pin);
             }
@@ -55,7 +57,7 @@ public:
     void loop()
     {
         while (loopRunning) {
-            for (auto key : keys) {
+            for (auto& key : keys) {
                 uint8_t state = getGpio(key.pin);
                 if (state != key.lastState) {
                     key.lastState = state;
