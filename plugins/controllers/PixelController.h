@@ -40,7 +40,7 @@ public:
         if (initGpio() != -1) {
             for (auto& key : keys) {
                 gpioSetMode(key.gpio, GPIO_INPUT);
-                key.lastState = gpioReadd(key.gpio);
+                key.lastState = gpioRead(key.gpio);
             }
 
             loopThread = std::thread(&PixelController::loop, this);
@@ -56,7 +56,7 @@ public:
     {
         while (loopRunning) {
             for (auto& key : keys) {
-                uint8_t state = gpioReadd(key.gpio);
+                uint8_t state = gpioRead(key.gpio);
                 if (state != key.lastState) {
                     key.lastState = state;
                     // controller->onKey(controller->id, key.key, state);
