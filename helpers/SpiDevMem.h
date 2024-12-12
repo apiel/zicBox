@@ -1,6 +1,8 @@
 #ifndef _LIB_SPI_H_
 #define _LIB_SPI_H_
 
+// // sudo apt-get install libbcm2835-dev
+
 // Need to be root to access /dev/mem
 // build with -lbcm2835 -lbcm_host
 

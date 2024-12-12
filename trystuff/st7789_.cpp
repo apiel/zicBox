@@ -4,6 +4,7 @@
 
 #define USE_SPI_DEV_MEM
 #ifdef USE_SPI_DEV_MEM
+// sudo apt-get install libbcm2835-dev
 // sudo apt-get install libraspberrypi-dev raspberrypi-kernel-headers
 // sudo chown 0:0 test2
 // sudo chmod u+s test2
@@ -44,11 +45,11 @@ int main(int argc, char* argv[])
 #ifdef USE_SPI_DEV_MEM
     printf("Resetting display at reset GPIO pin %d\n", GPIO_TFT_RESET_PIN);
     gpioSetMode(GPIO_TFT_RESET_PIN, 1);
-    setGpio(GPIO_TFT_RESET_PIN, 1);
+    gpioWrite(GPIO_TFT_RESET_PIN, 1);
     usleep(120 * 1000);
-    setGpio(GPIO_TFT_RESET_PIN, 0);
+    gpioWrite(GPIO_TFT_RESET_PIN, 0);
     usleep(120 * 1000);
-    setGpio(GPIO_TFT_RESET_PIN, 1);
+    gpioWrite(GPIO_TFT_RESET_PIN, 1);
     usleep(120 * 1000);
 #endif
 
