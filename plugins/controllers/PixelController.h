@@ -15,7 +15,7 @@ protected:
     bool loopRunning = true;
 
     struct Key {
-        uint8_t pin;
+        uint8_t gpio;
         int key;
         uint8_t lastState = 0;
     };
@@ -39,10 +39,8 @@ public:
     {
         if (initGpio() != -1) {
             for (auto& key : keys) {
-                // setGpioMode(key.pin, GPIO_INPUT);
-                // setGpio(key.pin);
-                setGpioMode(key.pin, GPIO_OUTPUT);
-                key.lastState = getGpio(key.pin);
+                gpioSetMode(key.gpio, GPIO_INPUT);
+                key.lastState = gpioReadd(key.gpio);
             }
 
             loopThread = std::thread(&PixelController::loop, this);
@@ -58,16 +56,16 @@ public:
     {
         while (loopRunning) {
             for (auto& key : keys) {
-                uint8_t state = getGpio(key.pin);
+                uint8_t state = gpioReadd(key.gpio);
                 if (state != key.lastState) {
                     key.lastState = state;
                     // controller->onKey(controller->id, key.key, state);
-                    printf("key [%d] state changed %d\n", key.key, state);
+                    // printf("key [%d] state changed %d\n", key.key, state);
                 }
                 printf("[%d]=%d ", key.key, state);
             }
             printf("\n");
-            std::this_thread::sleep_for(1000ms);
+            std::this_thread::sleep_for(100ms);
         }
     }
 };

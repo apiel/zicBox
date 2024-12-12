@@ -37,13 +37,13 @@ void InitSPIDisplay()
 int main(int argc, char* argv[])
 {
     initGpio();
-    setGpioMode(GPIO_TFT_DATA_CONTROL, 0x01); // Data/Control pin to output (0x01)
+    gpioSetMode(GPIO_TFT_DATA_CONTROL, 0x01); // Data/Control pin to output (0x01)
     Spi spi = Spi(GPIO_TFT_DATA_CONTROL);
     spi.init();
 
 #ifdef USE_SPI_DEV_MEM
     printf("Resetting display at reset GPIO pin %d\n", GPIO_TFT_RESET_PIN);
-    setGpioMode(GPIO_TFT_RESET_PIN, 1);
+    gpioSetMode(GPIO_TFT_RESET_PIN, 1);
     setGpio(GPIO_TFT_RESET_PIN, 1);
     usleep(120 * 1000);
     setGpio(GPIO_TFT_RESET_PIN, 0);

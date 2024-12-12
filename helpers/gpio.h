@@ -13,8 +13,11 @@
 #define GPIO_BASE 0x00200000 // 0_00200000
 // #define GPIO_BASE 0x200000
 
+// read
 #define GPIO_INPUT 0x00
+// write
 #define GPIO_OUTPUT 0x01
+// alt
 #define GPIO_ALT0 0x04
 
 typedef struct GPIORegisterFile {
@@ -25,7 +28,7 @@ typedef struct GPIORegisterFile {
 } GPIORegisterFile;
 volatile GPIORegisterFile* memgpio = 0;
 
-void setGpioMode(uint8_t pin, uint8_t mode)
+void gpioSetMode(uint8_t pin, uint8_t mode)
 {
     memgpio->gpfsel[(pin) / 10] = (memgpio->gpfsel[(pin) / 10] & ~(0x7 << ((pin) % 10) * 3)) | ((mode) << ((pin) % 10) * 3);
 }
@@ -40,9 +43,9 @@ void clearGpio(uint8_t pin)
     memgpio->gpclr[0] = 1 << (pin); // Pin must be (0-31)
 }
 
-void setGpio(uint8_t pin, uint8_t value) { value ? setGpio(pin) : clearGpio(pin); }
+void gpioWrite(uint8_t pin, uint8_t value) { value ? setGpio(pin) : clearGpio(pin); }
 
-uint8_t getGpio(uint8_t gpio)
+uint8_t gpioRead(uint8_t gpio)
 {
     if ((memgpio->gplev[gpio >> 5] & 1 << (gpio & 0x1F)) != 0)
         return 0;

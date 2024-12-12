@@ -86,8 +86,8 @@ public:
         }
         spi = (volatile SPIRegisterFile*)((uintptr_t)bcm2835 + BCM2835_SPI0_BASE);
 
-        setGpioMode(GPIO_SPI0_MOSI, 0x04);
-        setGpioMode(GPIO_SPI0_CLK, 0x04);
+        gpioSetMode(GPIO_SPI0_MOSI, 0x04);
+        gpioSetMode(GPIO_SPI0_CLK, 0x04);
 
         spi->cs = BCM2835_SPI0_CS_CLEAR | DISPLAY_SPI_DRIVE_SETTINGS; // Initialize the Control and Status register to defaults: CS=0 (Chip Select), CPHA=0 (Clock Phase), CPOL=0 (Clock Polarity), CSPOL=0 (Chip Select Polarity), TA=0 (Transfer not active), and reset TX and RX queues.
         spi->clk = SPI_BUS_CLOCK_DIVISOR; // Clock Divider determines SPI bus speed, resulting speed=256MHz/clk
@@ -112,14 +112,14 @@ public:
         spi->cs = BCM2835_SPI0_CS_TA | DISPLAY_SPI_DRIVE_SETTINGS; // Spi begins transfer
 
         // An SPI transfer to the display always starts with one control (command) byte, followed by N data bytes.
-        setGpio(gpioDataControl, 0);
+        gpioWrite(gpioDataControl, 0);
 
         spi->fifo = cmd;
         while (!(spi->cs & (BCM2835_SPI0_CS_RXD | BCM2835_SPI0_CS_DONE))) /*nop*/
             ;
 
         if (payloadSize > 0) {
-            setGpio(gpioDataControl, 1);
+            gpioWrite(gpioDataControl, 1);
 
             tStart = payload;
             tEnd = payload + payloadSize;
