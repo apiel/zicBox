@@ -46,17 +46,19 @@ uint8_t getGpio(uint8_t pin) { return memgpio->gplev[0] & (1 << (pin)); }
 
 int initGpio()
 {
-    int gpiomem_fd = open("/dev/gpiomem", O_RDWR | O_SYNC);
-    if (gpiomem_fd < 0) {
-        // https://raspberrypi.stackexchange.com/questions/40105/access-gpio-pins-without-root-no-access-to-dev-mem-try-running-as-root
-        fprintf(stderr, "can't open /dev/gpiomem\n");
-        return -1;
-    }
+    if (memgpio == 0) {
+        int gpiomem_fd = open("/dev/gpiomem", O_RDWR | O_SYNC);
+        if (gpiomem_fd < 0) {
+            // https://raspberrypi.stackexchange.com/questions/40105/access-gpio-pins-without-root-no-access-to-dev-mem-try-running-as-root
+            fprintf(stderr, "can't open /dev/gpiomem\n");
+            return -1;
+        }
 
-    memgpio = (volatile GPIORegisterFile*)mmap(0, BLOCK_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, gpiomem_fd, GPIO_BASE);
-    if (memgpio == MAP_FAILED) {
-        fprintf(stderr, "mmap (GPIO) failed\n");
-        return -1;
+        memgpio = (volatile GPIORegisterFile*)mmap(0, BLOCK_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, gpiomem_fd, GPIO_BASE);
+        if (memgpio == MAP_FAILED) {
+            fprintf(stderr, "mmap (GPIO) failed\n");
+            return -1;
+        }
     }
     return 0;
 }

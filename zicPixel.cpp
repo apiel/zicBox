@@ -14,6 +14,7 @@
 #include "draw/ST7789/draw.h"
 #include "host.h"
 #include "plugins/components/Pixel/PixelComponents.h"
+#include "plugins/controllers/PixelController.h"
 #include "styles.h"
 #include "timer.h"
 #include "viewManager.h"
@@ -33,6 +34,7 @@ int main(int argc, char* argv[])
     styles.colors.quaternary = { 0xf7, 0xda, 0x6d }; // #f7da6d
 
     loadPixelComponents();
+    new PixelController(controllerProps, controllerId++);
 
     loadUiConfig(argc >= 2 ? argv[1] : "pixel.cfg", argc >= 3 ? argv[2] : NULL, styles);
 

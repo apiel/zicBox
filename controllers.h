@@ -22,6 +22,8 @@ void keyHandler(uint16_t id, int key, int8_t state)
 }
 
 uint16_t controllerId = 1;
+ControllerInterface::Props controllerProps = { midiHandler, encoderHandler, keyHandler };
+
 void loadPluginController(char* value, const char* filename)
 {
     Controller plugin;
@@ -44,8 +46,7 @@ void loadPluginController(char* value, const char* filename)
         return;
     }
 
-    ControllerInterface::Props props = { midiHandler, encoderHandler, keyHandler };
-    plugin.instance = ((ControllerInterface * (*)(ControllerInterface::Props & props, uint16_t id)) allocator)(props, controllerId++);
+    plugin.instance = ((ControllerInterface * (*)(ControllerInterface::Props & props, uint16_t id)) allocator)(controllerProps, controllerId++);
     lastPluginControllerInstance = plugin.instance;
     logDebug("plugin interface loaded: %s\n", path);
 

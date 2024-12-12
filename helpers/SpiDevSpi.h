@@ -7,7 +7,7 @@
 #include <fcntl.h> // open, O_RDWR, O_SYNC
 #include <stdio.h> // printf, stderr
 
-#include "../helpers/gpio.h"
+#include "helpers/gpio.h"
 
 #include <cmath>
 #include <errno.h>
