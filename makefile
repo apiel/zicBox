@@ -17,7 +17,7 @@ INC=-I.
 
 main: build run
 pixel: buildPixel runPixel
-pixelAll: pixelLibs buildPixel runPixel
+allPixel: pixelLibs buildPixel runPixel
 pixelSSD1306: buildPixelSSD1306 runPixelSSD1306
 host: buildHost runHost
 all: libs main
