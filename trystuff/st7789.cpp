@@ -109,7 +109,7 @@ typedef struct SPIRegisterFile {
 } SPIRegisterFile;
 volatile SPIRegisterFile* spi;
 
-void setGpioMode(uint8_t pin, uint8_t mode)
+void gpioSetMode(uint8_t pin, uint8_t mode)
 {
 #ifdef HAS_BCM
     gpio->gpfsel[(pin) / 10] = (gpio->gpfsel[(pin) / 10] & ~(0x7 << ((pin) % 10) * 3)) | ((mode) << ((pin) % 10) * 3);
@@ -213,9 +213,9 @@ int InitSPI()
     spi = (volatile SPIRegisterFile*)((uintptr_t)bcm2835 + BCM2835_SPI0_BASE);
     gpio = (volatile GPIORegisterFile*)((uintptr_t)bcm2835 + BCM2835_GPIO_BASE);
 
-    setGpioMode(GPIO_TFT_DATA_CONTROL, 0x01); // Data/Control pin to output (0x01)
-    setGpioMode(GPIO_SPI0_MOSI, 0x04);
-    setGpioMode(GPIO_SPI0_CLK, 0x04);
+    gpioSetMode(GPIO_TFT_DATA_CONTROL, 0x01); // Data/Control pin to output (0x01)
+    gpioSetMode(GPIO_SPI0_MOSI, 0x04);
+    gpioSetMode(GPIO_SPI0_CLK, 0x04);
 
     spi->cs = BCM2835_SPI0_CS_CLEAR | DISPLAY_SPI_DRIVE_SETTINGS; // Initialize the Control and Status register to defaults: CS=0 (Chip Select), CPHA=0 (Clock Phase), CPOL=0 (Clock Polarity), CSPOL=0 (Chip Select Polarity), TA=0 (Transfer not active), and reset TX and RX queues.
     spi->clk = SPI_BUS_CLOCK_DIVISOR; // Clock Divider determines SPI bus speed, resulting speed=256MHz/clk
@@ -277,7 +277,7 @@ void InitSPIDisplay()
     uint8_t data[4] = { 0, 0, (uint8_t)(240 >> 8), (uint8_t)(240 & 0xFF) };
 
     printf("Resetting display at reset GPIO pin %d\n", GPIO_TFT_RESET_PIN);
-    setGpioMode(GPIO_TFT_RESET_PIN, 1);
+    gpioSetMode(GPIO_TFT_RESET_PIN, 1);
     setGpio(GPIO_TFT_RESET_PIN);
     usleep(120 * 1000);
     clearGpio(GPIO_TFT_RESET_PIN);
@@ -333,7 +333,7 @@ void InitSPIDisplay()
         drawPixel(i, i, 0xFFFF00);
     }
 
-    setGpioMode(GPIO_TFT_BACKLIGHT, 1);
+    gpioSetMode(GPIO_TFT_BACKLIGHT, 1);
     setGpio(GPIO_TFT_BACKLIGHT);
 
     sendCmdOnly(/*Display ON*/ 0x29);

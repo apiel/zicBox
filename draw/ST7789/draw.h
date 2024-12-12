@@ -356,11 +356,11 @@ public:
     void init() override
     {
         initGpio();
-        setGpioMode(GPIO_TFT_DATA_CONTROL, 0x01); // Data/Control pin to output (0x01)
+        gpioSetMode(GPIO_TFT_DATA_CONTROL, 0x01); // Data/Control pin to output (0x01)
         spi.init();
 
 #ifdef USE_SPI_DEV_MEM
-        setGpioMode(GPIO_TFT_RESET_PIN, 1);
+        gpioSetMode(GPIO_TFT_RESET_PIN, 1);
         setGpio(GPIO_TFT_RESET_PIN, 1);
         usleep(120 * 1000);
         setGpio(GPIO_TFT_RESET_PIN, 0);

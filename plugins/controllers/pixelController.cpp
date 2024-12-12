@@ -53,10 +53,10 @@ public:
             gpioSetMode(key.pin, PI_INPUT);
             key.lastState = gpioRead(key.pin);
 #else
-            // setGpioMode(key.pin, GPIO_INPUT);
+            // gpioSetMode(key.pin, GPIO_INPUT);
             // setGpio(key.pin);
-            setGpioMode(key.pin, GPIO_INPUT);
-            key.lastState = getGpio(key.pin);
+            gpioSetMode(key.pin, GPIO_INPUT);
+            key.lastState = gpioRead(key.pin);
 #endif
         }
 
@@ -75,18 +75,18 @@ public:
 #ifdef PIGPIO
                 uint8_t state = gpioRead(key.pin);
 #else
-                uint8_t state = getGpio(key.pin);
+                uint8_t state = gpioRead(key.pin);
 #endif
                 if (state != key.lastState) {
                     key.lastState = state;
                     // controller->onKey(controller->id, key.key, state);
-                    printf("key [%d] state changed %d\n", key.key, state);
+                    // printf("key [%d] state changed %d\n", key.key, state);
                 }
                 printf("[%d]=%d ", key.key, state);
             }
             printf("\n");
             // std::this_thread::sleep_for(1000ms);
-            usleep(1000);
+            usleep(100);
         }
     }
 };

@@ -110,11 +110,11 @@ public:
     void sendCmd(uint8_t cmd, uint8_t* payload, uint32_t payloadSize)
     {
         // An SPI transfer to the display always starts with one control (command) byte, followed by N data bytes.
-        setGpio(gpioDataControl, 0);
+        gpioWrite(gpioDataControl, 0);
         write_buffer(&cmd, 1);
 
         if (payloadSize > 0) {
-            setGpio(gpioDataControl, 1);
+            gpioWrite(gpioDataControl, 1);
             write_buffer(payload, payloadSize);
         }
     }
