@@ -7,10 +7,10 @@
 #include <string>
 #include <vector>
 
+#include "helpers/controller.h"
 #include "log.h"
 #include "plugins/components/componentInterface.h"
 #include "plugins/controllers/keypadInterface.h"
-#include "helpers/controller.h"
 
 /*md
 ## KeypadLayout
@@ -128,6 +128,7 @@ public:
 
     void onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
+        // printf("keypad id %d key %d state %d\n", id, key, state);
         for (KeyMap& keyMap : mapping) {
             if (keyMap.controllerId == id && keyMap.key == key) {
                 if (state == 1) {
@@ -144,6 +145,7 @@ public:
                     // }
                 }
                 if (keyMap.action) {
+                    // printf("--> call action keymap id %d key %d\n", keyMap.controllerId, keyMap.key);
                     keyMap.action(keyMap);
                     renderKeypadColor(keyMap);
                 }
@@ -241,7 +243,7 @@ public:
 
         if (action.rfind("noteOn:") == 0) {
             const char* params = action.substr(7).c_str();
-            char * pluginName = strtok((char*)params, ":");
+            char* pluginName = strtok((char*)params, ":");
             AudioPlugin* plugin = &component->getPlugin(pluginName, component->track);
             // printf("noteon load plugin: %s from track: %d\n", pluginName, component->track);
             if (plugin) {
@@ -290,6 +292,7 @@ public:
                 // printf("........controller %s id %d\n", controllerName.c_str(), controller->id);
                 controllerId = controller->id;
             }
+            // printf("add keymap %d %d action: %s longpress: %s\n", controllerId, key, action.c_str(), actionLongPress.c_str());
             addKeyMap({ controller, controllerId, key, action, actionLongPress });
             return true;
         }
