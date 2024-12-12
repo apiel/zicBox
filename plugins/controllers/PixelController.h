@@ -53,6 +53,7 @@ public:
 
         for (auto& key : keys) {
             gpioSetMode(key.gpio, GPIO_INPUT);
+            gpioSetPullUp(key.gpio);
             key.lastState = gpioRead(key.gpio);
             // printf("[%d] ", key.key);
         }
@@ -64,7 +65,7 @@ public:
                 if (state != key.lastState) {
                     key.lastState = state;
                     onKey(id, key.key, state);
-                    printf("key [%d] state changed %d\n", key.key, state);
+                    printf("gpio%d key [%d] state changed %d\n", key.gpio, key.key, state);
                 }
                 // printf("[%d]=%d ", key.key, state);
             }
