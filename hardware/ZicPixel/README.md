@@ -113,6 +113,26 @@ speaker-test -c2 --test=wav -w /usr/share/sounds/alsa/Front_Center.wav
 
 > source https://bytesnbits.co.uk/raspberry-pi-i2s-sound-output/ and https://learn.adafruit.com/adafruit-i2s-stereo-decoder-uda1334a/raspberry-pi-usage
 
+** Gpio **
+
+In order to not interfer with gpio, uart (serial) should be disabled.
+
+In `/boot/config.txt` add:
+```
+# disables the UART functionality
+enable_uart=0
+# disables the Bluetooth module, which may otherwise occupy the UART.
+dtoverlay=disable-bt
+```
+
+Disable the Serial Service by running the following commands:
+```
+sudo systemctl stop serial-getty@ttyAMA0.service
+sudo systemctl disable serial-getty@ttyAMA0.service
+```
+
+Then reboot. Check if serial is gone by running `ls -l /dev/serial*`
+
 **LCD Display 1.3in 240x240 SPI Interface ST7789**
 
 To be able to use the display, a custom fork of SDL need to be installed.
