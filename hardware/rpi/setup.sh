@@ -7,7 +7,9 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 apt-get update
-apt-get install vim build-essential librtmidi-dev libsndfile1-dev pulseaudio alsa-utils -y
+apt-get install vim build-essential librtmidi-dev libsndfile1-dev pulseaudio alsa-utils libbcm2835-dev libraspberrypi-dev -y
+
+pulseaudio --start
 
 # Write the content to /etc/asound.conf
 cat << EOF > /etc/asound.conf
@@ -53,6 +55,21 @@ dtoverlay=i2s-mmap
 enable_uart=0
 # disables the Bluetooth module, which may otherwise occupy the UART.
 dtoverlay=disable-bt
+
+force_eeprom_read=0
+disable_poe_fan=1
 EOF
 
 echo "/boot/config.txt has been updated."
+
+# Ask the user if they want to reboot
+read -p "Would you like to reboot now? (y/N): " reboot_choice
+case "$reboot_choice" in
+    [yY][eE][sS]|[yY])
+        echo "Rebooting now..."
+        reboot
+        ;;
+    *)
+        echo "Reboot skipped. Please reboot later to apply changes."
+        ;;
+esac

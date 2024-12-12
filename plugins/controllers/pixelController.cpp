@@ -41,21 +41,25 @@ protected:
 public:
     PixelController()
     {
-#ifndef PIGPIO
-        if (initGpio() == -1) {
+#ifdef PIGPIO
+        if (gpioInitialise() < 0) {
             return;
         }
 #else
-        gpioInitialise();
+        if (initGpio() == -1) {
+            return;
+        }
 #endif
         for (auto& key : keys) {
 #ifdef PIGPIO
             gpioSetMode(key.pin, PI_INPUT);
+            gpioSetPullUpDown(key.pin, PI_PUD_UP);
             key.lastState = gpioRead(key.pin);
 #else
             // gpioSetMode(key.pin, GPIO_INPUT);
             // setGpio(key.pin);
             gpioSetMode(key.pin, GPIO_INPUT);
+            gpioSetPullUpDown(key.pin);
             key.lastState = gpioRead(key.pin);
 #endif
         }
@@ -82,7 +86,7 @@ public:
                     // controller->onKey(controller->id, key.key, state);
                     // printf("key [%d] state changed %d\n", key.key, state);
                 }
-                printf("[%d]=%d ", key.key, state);
+                printf("[%d]=%d", key.pin, state);
             }
             printf("\n");
             // std::this_thread::sleep_for(1000ms);
