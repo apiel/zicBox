@@ -1,7 +1,5 @@
 ## Pixel TODO
 
-- TODO move rtmidi in .so file to speadup build time
-
 - TODO add modulation on bitcrusher :-)
 
 - TODO seq show active step

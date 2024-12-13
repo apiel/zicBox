@@ -66,20 +66,24 @@ public:
 
     void loop()
     {
-
         while (loopRunning) {
-            for (auto& key : keys) {
-                uint8_t state = gpioRead(key.gpio);
-                if (state != key.lastState) {
-                    key.lastState = state;
-                    onKey(key, state);
-                    // LOG_GPIO_KEY("gpio%d key [%d] state changed %d\n", key.gpio, key.key, state);
-                }
-                LOG_GPIO_KEY("[%d]=%d ", key.key, state);
-            }
-            LOG_GPIO_KEY("\n");
+            handler();
             std::this_thread::sleep_for(10ms);
         }
+    }
+
+    void handler()
+    {
+        for (auto& key : keys) {
+            uint8_t state = gpioRead(key.gpio);
+            if (state != key.lastState) {
+                key.lastState = state;
+                onKey(key, state);
+                // LOG_GPIO_KEY("gpio%d key [%d] state changed %d\n", key.gpio, key.key, state);
+            }
+            LOG_GPIO_KEY("[%d]=%d ", key.key, state);
+        }
+        LOG_GPIO_KEY("\n");
     }
 };
 

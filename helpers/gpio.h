@@ -17,6 +17,8 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h> // mmap, munmap
 #include <unistd.h> // usleep
+#include <string> // std::string
+#include <cstdlib> // system
 
 #define BLOCK_SIZE (4 * 1024)
 

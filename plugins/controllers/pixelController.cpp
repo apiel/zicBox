@@ -4,12 +4,13 @@
 
 // could use `pinctrl set 17 pu`
 
-#define DEBUG_GPIO_KEY 1
+// #define DEBUG_GPIO_KEY 1
+// #define DEBUG_GPIO_ENCODER 1
 
+#include "../../helpers/GpioEncoder.h"
 #include "../../helpers/GpioKey.h"
 
 #include <unistd.h>
-
 
 int main(int argc, char* argv[])
 {
@@ -26,13 +27,25 @@ int main(int argc, char* argv[])
                         { 15, getKeyCode("'g'") }, // pin 10 = gpio 15
                     },
         [](GpioKey::Key key, uint8_t state) {
-            //   printf("gpio%d key [%d] state changed %d\n", key.gpio, key.key, state);
+              printf("gpio%d key [%d] state changed %d\n", key.gpio, key.key, state);
         });
 
     if (gpioKey.init() == -1) {
         return -1;
     }
     gpioKey.startThread();
+
+    GpioEncoder gpioEncoder({
+                                { 0, 20, 26 }, // pin 38 = gpio 20, pin 37 = gpio 26
+                            },
+        [](GpioEncoder::Encoder encoder, int8_t direction) {
+            printf("encoder%d gpioA%d gpioB%d direction %d\n", encoder.id, encoder.gpioA, encoder.gpioB, direction);
+        });
+
+    if (gpioEncoder.init() == -1) {
+        return -1;
+    }
+    gpioEncoder.startThread();
 
     while (true) {
         usleep(1000);
