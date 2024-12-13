@@ -2,9 +2,12 @@
 
 // g++ pixelController.cpp -o pixelControllerPigpio -I../.. -pthread -lpigpio -lrt -DPIGPIO=1 && mv ./pixelControllerPigpio ~/pixelControllerPigpio && sudo ~/pixelControllerPigpio
 
+#define DEBUG_GPIO_KEY 1
+
 #include "../../helpers/GpioKey.h"
 
 #include <unistd.h>
+
 
 int main(int argc, char* argv[])
 {

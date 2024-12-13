@@ -11,6 +11,12 @@
 
 using namespace std;
 
+#ifdef DEBUG_GPIO_KEY
+#define LOG_GPIO_KEY(...) printf(__VA_ARGS__)
+#else
+#define LOG_GPIO_KEY(...)
+#endif
+
 class GpioKey {
 public:
     struct Key {
@@ -67,11 +73,11 @@ public:
                 if (state != key.lastState) {
                     key.lastState = state;
                     onKey(key, state);
-                    // printf("gpio%d key [%d] state changed %d\n", key.gpio, key.key, state);
+                    // LOG_GPIO_KEY("gpio%d key [%d] state changed %d\n", key.gpio, key.key, state);
                 }
-                printf("[%d]=%d ", key.key, state);
+                LOG_GPIO_KEY("[%d]=%d ", key.key, state);
             }
-            printf("\n");
+            LOG_GPIO_KEY("\n");
             std::this_thread::sleep_for(10ms);
         }
     }
