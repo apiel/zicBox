@@ -58,6 +58,9 @@ dtoverlay=disable-bt
 
 force_eeprom_read=0
 disable_poe_fan=1
+
+gpio=14=ip,pu
+gpio=15=ip,pu
 EOF
 
 echo "/boot/config.txt has been updated."
