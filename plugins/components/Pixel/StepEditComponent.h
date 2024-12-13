@@ -174,7 +174,8 @@ public:
             }
 
             if (playing) {
-                draw.line({ relativePosition.x, relativePosition.y + size.h - 1 }, { relativePosition.x + size.w - 1, relativePosition.y + size.h - 1 }, { text.color });
+                draw.line({ relativePosition.x, relativePosition.y + size.h - 2 }, { relativePosition.x + size.w - 1, relativePosition.y + size.h - 2 }, { bar.color });
+                draw.line({ relativePosition.x, relativePosition.y + size.h - 1 }, { relativePosition.x + size.w - 1, relativePosition.y + size.h - 1 }, { bar.color });
             }
         }
     }
