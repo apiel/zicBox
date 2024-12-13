@@ -1,6 +1,15 @@
 #ifndef _HELPER_GPIO_H_
 #define _HELPER_GPIO_H_
 
+// read
+#define GPIO_INPUT 0x00
+// write
+#define GPIO_OUTPUT 0x01
+// alt
+#define GPIO_ALT0 0x04
+
+#ifndef PIGPIO
+
 #include <fcntl.h> // open, O_RDWR, O_SYNC
 #include <inttypes.h>
 #include <stdio.h> // printf, stderr
@@ -14,12 +23,7 @@
 #define GPIO_BASE 0x00200000 // 0_00200000
 // #define GPIO_BASE 0x200000
 
-// read
-#define GPIO_INPUT 0x00
-// write
-#define GPIO_OUTPUT 0x01
-// alt
-#define GPIO_ALT0 0x04
+
 
 // typedef struct GPIORegisterFile {
 //     uint32_t gpfsel[6], reserved0; // GPIO Function Select registers, 3 bits per pin, 10 pins in an uint32_t
@@ -28,9 +32,9 @@
 //     uint32_t gplev[2];
 // } GPIORegisterFile;
 
-#define GPIO_PUD_OFF 0x0  // No pull-up or pull-down
+#define GPIO_PUD_OFF 0x0 // No pull-up or pull-down
 #define GPIO_PUD_DOWN 0x1 // Pull-down
-#define GPIO_PUD_UP 0x2   // Pull-up
+#define GPIO_PUD_UP 0x2 // Pull-up
 
 typedef struct GPIORegisterFile {
     uint32_t gpfsel[6], reserved0;
@@ -44,7 +48,7 @@ typedef struct GPIORegisterFile {
     uint32_t gplen[2];
     uint32_t gparen[2];
     uint32_t gpafen[2];
-    uint32_t gppud;       // GPIO Pull-up/down Register
+    uint32_t gppud; // GPIO Pull-up/down Register
     uint32_t gppudclk[2]; // GPIO Pull-up/down Clock Register
 } GPIORegisterFile;
 volatile GPIORegisterFile* memgpio = 0;
@@ -93,23 +97,56 @@ int initGpio()
     return 0;
 }
 
+// void gpioSetPullUp(uint8_t gpio)
+// {
+//     memgpio->gppud = GPIO_PUD_UP;
+//     usleep(10);
+//     memgpio->gppudclk[gpio >> 5] = 1 << (gpio & 0x1F);
+//     usleep(10);
+//     memgpio->gppud = GPIO_PUD_OFF;
+//     memgpio->gppudclk[gpio >> 5] = 0;
+// }
+
 void gpioSetPullUp(uint8_t gpio)
 {
-    // Step 1: Write to GPPUD to set the desired control signal (pull-up)
-    memgpio->gppud = GPIO_PUD_UP;
-
-    // Step 2: Wait 150 cycles for control signal to set up (arbitrary delay)
-    usleep(1); // At least 150 cycles on Raspberry Pi hardware
-
-    // Step 3: Write to GPPUDCLK to clock the control signal into the specified GPIO pin
-    memgpio->gppudclk[gpio >> 5] = 1 << (gpio & 0x1F);
-
-    // Step 4: Wait 150 cycles to ensure clock signal is registered
-    usleep(1);
-
-    // Step 5: Clear the GPPUD and GPPUDCLK to remove the signal
-    memgpio->gppud = GPIO_PUD_OFF;
-    memgpio->gppudclk[gpio >> 5] = 0;
+    uint8_t* reg = (uint8_t*)memgpio;
+    *(reg + 37) = GPIO_PUD_UP;
+    usleep(10);
+    *(reg + 38 + (gpio >> 5)) = 1 << (gpio & 0x1F);
+    usleep(10);
+    *(reg + 37) = 0;
+    *(reg + 38 + (gpio >> 5)) = 0;
 }
 
+#else
+
+// sudo apt-get install libpigpio-dev
+#include <pigpio.h>
+
+// void gpioSetMode(uint8_t pin, uint8_t mode) {}
+
+void setGpio(uint8_t pin)
+{
+    gpioWrite(pin, 1);
+}
+
+void clearGpio(uint8_t pin)
+{
+    gpioWrite(pin, 0);
+}
+
+// void gpioWrite(uint8_t pin, uint8_t value) { value ? setGpio(pin) : clearGpio(pin); }
+// uint8_t gpioRead(uint8_t gpio) { return 1; }
+
+int initGpio()
+{
+    return gpioInitialise();
+}
+
+void gpioSetPullUp(uint8_t gpio)
+{
+    gpioSetPullUpDown(gpio, PI_PUD_UP);
+}
+
+#endif
 #endif
