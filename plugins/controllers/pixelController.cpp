@@ -25,6 +25,8 @@ int main(int argc, char* argv[])
                         { 8, getKeyCode("'d'") }, // pin 24 = gpio 8
                         { 24, getKeyCode("'f'") }, // pin 18 = gpio 24
                         { 15, getKeyCode("'g'") }, // pin 10 = gpio 15
+
+                        { 9, getKeyCode("'3'") }, // pin 21 = gpio 9 <-- push encoder 3
                     },
         [](GpioKey::Key key, uint8_t state) {
               printf("gpio%d key [%d] state changed %d\n", key.gpio, key.key, state);
@@ -37,6 +39,9 @@ int main(int argc, char* argv[])
 
     GpioEncoder gpioEncoder({
                                 { 0, 20, 26 }, // pin 38 = gpio 20, pin 37 = gpio 26
+                                { 1, 6, 5 }, // pin 31 = gpio 6, pin 29 = gpio 5
+                                { 2, 0, 1 }, // pin 27 = gpio 0, pin 28 = gpio 1
+                                { 3, 4, 27 }, // pin 7 = gpio 4, pin 13 = gpio 27
                             },
         [](GpioEncoder::Encoder encoder, int8_t direction) {
             printf("encoder%d gpioA%d gpioB%d direction %d\n", encoder.id, encoder.gpioA, encoder.gpioB, direction);
