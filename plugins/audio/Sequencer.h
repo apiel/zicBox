@@ -68,6 +68,7 @@ protected:
     Step* selectedStepPtr = &steps[0];
 
     uint8_t stepCounter = 0;
+    bool isPlaying = false;
     uint8_t loopCounter = 0;
     uint64_t* clockCounterPtr = NULL;
 
@@ -174,8 +175,10 @@ public:
         }
     }
 
-    void onEvent(AudioEventType event)
+    void onEvent(AudioEventType event, bool playing) override
     {
+        isPlaying = playing;
+        // printf("[%d] seq is playing %d\n", event, isPlaying);
         if (event == AudioEventType::STOP) {
             printf("in sequencer event STOP\n");
             stepCounter = 0;
@@ -194,7 +197,7 @@ public:
         status.setFloat(value);
         if (status.get() == Status::OFF) {
             status.setString("off");
-            onEvent(AudioEventType::STOP);
+            onEvent(AudioEventType::STOP, false);
         } else if (status.get() == Status::ON) {
             status.setString("on");
         } else {
@@ -267,6 +270,7 @@ public:
     enum DATA_ID {
         STEPS,
         STEP_COUNTER,
+        IS_PLAYING,
         STEP_CONDITION,
         CLOCK_COUNTER,
         GET_STEP,
@@ -283,6 +287,9 @@ public:
         /*md - `STEP_COUNTER` return current played step */
         if (name == "STEP_COUNTER")
             return DATA_ID::STEP_COUNTER;
+        /*md - `IS_PLAYING` return is playing */
+        if (name == "IS_PLAYING")
+            return DATA_ID::IS_PLAYING;
         /*md - `STEP_CONDITION` return current step condition */
         if (name == "STEP_CONDITION")
             return DATA_ID::STEP_CONDITION;
@@ -308,6 +315,8 @@ public:
             return &steps;
         case DATA_ID::STEP_COUNTER:
             return &stepCounter;
+        case DATA_ID::IS_PLAYING:
+            return &isPlaying;
         case DATA_ID::STEP_CONDITION: { // Get step condition name
             uint8_t* index = (uint8_t*)userdata;
             return (void*)stepConditions[*index].name;

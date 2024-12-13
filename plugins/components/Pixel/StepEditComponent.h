@@ -16,15 +16,15 @@
 StepEdit component is used to edit a step value.
 */
 
-// TODO show active step
-
 class StepEditComponent : public GroupColorComponent {
 protected:
     AudioPlugin* plugin = NULL;
     Step* step;
     uint8_t* stepCounter = NULL;
 
-    bool playing = false;
+    bool notePlaying = false;
+    bool* seqPlayingPtr = NULL;
+    bool seqPlaying = false;
 
     KeypadLayout keypadLayout;
 
@@ -95,14 +95,20 @@ public:
         updateColors();
 
         jobRendering = [this](unsigned long now) {
-            if (stepIndex != *stepCounter) {
-                if (playing) {
-                    playing = false;
+            if (seqPlayingPtr != NULL && *seqPlayingPtr != seqPlaying) {
+                seqPlaying = *seqPlayingPtr;
+                renderNext();
+            }
+            if (seqPlayingPtr == NULL || seqPlaying) {
+                if (stepIndex != *stepCounter) {
+                    if (notePlaying) {
+                        notePlaying = false;
+                        renderNext();
+                    }
+                } else if (!notePlaying) {
+                    notePlaying = true;
                     renderNext();
                 }
-            } else if (!playing) {
-                playing = true;
-                renderNext();
             }
         };
     }
@@ -173,7 +179,7 @@ public:
                 draw.rect(relativePosition, { size.w - 1, size.h - 1 }, { selection });
             }
 
-            if (playing) {
+            if ((seqPlayingPtr == NULL || seqPlaying) && notePlaying) {
                 // draw.filledRect({ relativePosition.x, relativePosition.y + size.h - 2 }, { size.w, 2 }, { bar.color });
                 // draw.filledRect({ relativePosition.x + (int)(size.w * 0.25), relativePosition.y + size.h - 2 }, { (int)(size.w * 0.5), 2 }, { bar.color });
                 draw.filledRect({ relativePosition.x + 2, relativePosition.y + size.h - 4 }, { 16, 4 }, { bar.color });
@@ -260,6 +266,12 @@ public:
         /*md - `COUNTER_DATA_ID: data_id` is the data id to show active step. */
         if (strcmp(key, "COUNTER_DATA_ID") == 0) {
             stepCounter = (uint8_t*)plugin->data(plugin->getDataId(value));
+            return true;
+        }
+
+        /*md - `SEQUENCE_DATA_ID: data_id` is the data id to show if the sequence is playing. */
+        if (strcmp(key, "SEQUENCE_DATA_ID") == 0) {
+            seqPlayingPtr = (bool*)plugin->data(plugin->getDataId(value));
             return true;
         }
 

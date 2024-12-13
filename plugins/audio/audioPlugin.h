@@ -148,7 +148,7 @@ public:
     {
     }
 
-    virtual void onEvent(AudioEventType event)
+    virtual void onEvent(AudioEventType event, bool playing)
     {
     }
 

@@ -93,7 +93,7 @@ public:
         return AudioPlugin::config(key, value);
     }
 
-    void onEvent(AudioEventType event)
+    void onEvent(AudioEventType event, bool isPlaying) override
     {
         if (event == AudioEventType::AUTOSAVE) {
             if (!initialized) {
