@@ -351,7 +351,7 @@ public:
             break;
         }
         for (AudioPlugin* plugin : plugins) {
-            plugin->onEvent(event);
+            plugin->onEvent(event, playing);
         }
     }
 

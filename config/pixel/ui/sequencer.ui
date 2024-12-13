@@ -71,6 +71,7 @@ while: $step < 32
       GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer GET_STEP $step
       COUNTER_DATA_ID: STEP_COUNTER
+      SEQUENCE_DATA_ID: IS_PLAYING
       ENCODERS: 0 1 2
       KEYMAP: Keyboard 'q' stepToggle
       KEYMAP: Keyboard 't' restoreShiftMode
@@ -82,6 +83,7 @@ while: $step < 32
       GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer GET_STEP $step
       COUNTER_DATA_ID: STEP_COUNTER
+      SEQUENCE_DATA_ID: IS_PLAYING
       ENCODERS: 0 1 2
       KEYMAP: Keyboard 'w' stepToggle
       KEYMAP: Keyboard 't' restoreShiftMode
@@ -93,6 +95,7 @@ while: $step < 32
       GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer GET_STEP $step
       COUNTER_DATA_ID: STEP_COUNTER
+      SEQUENCE_DATA_ID: IS_PLAYING
       ENCODERS: 0 1 2
       KEYMAP: Keyboard 'e' stepToggle
       KEYMAP: Keyboard 't' restoreShiftMode
@@ -104,6 +107,7 @@ while: $step < 32
       GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer GET_STEP $step
       COUNTER_DATA_ID: STEP_COUNTER
+      SEQUENCE_DATA_ID: IS_PLAYING
       ENCODERS: 0 1 2
       KEYMAP: Keyboard 'r' stepToggle
       KEYMAP: Keyboard 't' restoreShiftMode
@@ -116,6 +120,7 @@ while: $step < 32
       GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer GET_STEP $step
       COUNTER_DATA_ID: STEP_COUNTER
+      SEQUENCE_DATA_ID: IS_PLAYING
       ENCODERS: 0 1 2
       KEYMAP: Keyboard 'a' stepToggle
       KEYMAP: Keyboard 't' restoreShiftMode
@@ -127,6 +132,7 @@ while: $step < 32
       GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer GET_STEP $step
       COUNTER_DATA_ID: STEP_COUNTER
+      SEQUENCE_DATA_ID: IS_PLAYING
       ENCODERS: 0 1 2
       KEYMAP: Keyboard 's' stepToggle
       KEYMAP: Keyboard 't' restoreShiftMode
@@ -138,6 +144,7 @@ while: $step < 32
       GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer GET_STEP $step
       COUNTER_DATA_ID: STEP_COUNTER
+      SEQUENCE_DATA_ID: IS_PLAYING
       ENCODERS: 0 1 2
       KEYMAP: Keyboard 'd' stepToggle
       KEYMAP: Keyboard 't' restoreShiftMode
@@ -149,6 +156,7 @@ while: $step < 32
       GROUP_RANGE: ($groupRange) ($groupRange+7)
       DATA: Sequencer GET_STEP $step
       COUNTER_DATA_ID: STEP_COUNTER
+      SEQUENCE_DATA_ID: IS_PLAYING
       ENCODERS: 0 1 2
       KEYMAP: Keyboard 'f' stepToggle
       KEYMAP: Keyboard 't' restoreShiftMode
