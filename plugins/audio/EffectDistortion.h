@@ -7,8 +7,8 @@
 
 #include <math.h>
 
-#define STEPS 1024 // number of +ve or -ve steps in lookup tabe
-#define TABLESIZE 2049 // size of lookup table (steps * 2 + 1)
+#define DIST_STEPS 1024 // number of +ve or -ve steps in lookup tabe
+#define DIST_TABLESIZE 2049 // size of lookup table (steps * 2 + 1)
 #define DB_TO_LINEAR(x) (pow(10.0, (x) / 20.0))
 
 /*md
@@ -19,7 +19,7 @@ EffectDistortion plugin is used to apply distortion effect on audio buffer.
 class EffectDistortion : public Mapping {
 protected:
     float shape;
-    double shapeTable[TABLESIZE];
+    double shapeTable[DIST_TABLESIZE];
     double mMakeupGain = 1.0;
 
     float (EffectDistortion::*samplePtr)(float) = &EffectDistortion::processSample;
@@ -43,9 +43,9 @@ protected:
 
         buf *= 1 + drive.pct() * 5;
 
-        int index = std::floor(buf * STEPS) + STEPS;
-        index = range(index, 0, 2 * STEPS - 1);
-        double xOffset = ((1 + buf) * STEPS) - index;
+        int index = std::floor(buf * DIST_STEPS) + DIST_STEPS;
+        index = range(index, 0, 2 * DIST_STEPS - 1);
+        double xOffset = ((1 + buf) * DIST_STEPS) - index;
         xOffset = range(xOffset, 0.0, 1.0);
 
         float out = shapeTable[index] + (shapeTable[index + 1] - shapeTable[index]) * xOffset;
@@ -64,13 +64,13 @@ protected:
         double lowThresh = 1 - threshold;
         double highThresh = 1 + threshold;
 
-        for (int n = 0; n < TABLESIZE; n++) {
-            if (n < (STEPS * lowThresh))
+        for (int n = 0; n < DIST_TABLESIZE; n++) {
+            if (n < (DIST_STEPS * lowThresh))
                 shapeTable[n] = -threshold;
-            else if (n > (STEPS * highThresh))
+            else if (n > (DIST_STEPS * highThresh))
                 shapeTable[n] = threshold;
             else
-                shapeTable[n] = n / (double)STEPS - 1;
+                shapeTable[n] = n / (double)DIST_STEPS - 1;
         }
         // printf("gain %f threshold %f lowThresh %f highThresh %f\n", mMakeupGain, threshold, lowThresh, highThresh);
     }

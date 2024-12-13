@@ -264,27 +264,64 @@ public:
         return *this;
     }
 
+    enum DATA_ID {
+        STEPS,
+        STEP_COUNTER,
+        STEP_CONDITION,
+        CLOCK_COUNTER,
+        GET_STEP,
+        SELECTED_STEP_PTR,
+        STEP_TOGGLE
+    };
+
+    /*md **Data ID**: */
+    uint8_t getDataId(std::string name) override
+    {
+        /*md - `STEPS` return steps */
+        if (name == "STEPS")
+            return DATA_ID::STEPS;
+        /*md - `STEP_COUNTER` return current played step */
+        if (name == "STEP_COUNTER")
+            return DATA_ID::STEP_COUNTER;
+        /*md - `STEP_CONDITION` return current step condition */
+        if (name == "STEP_CONDITION")
+            return DATA_ID::STEP_CONDITION;
+        /*md - `CLOCK_COUNTER` return clock counter */
+        if (name == "CLOCK_COUNTER")
+            return DATA_ID::CLOCK_COUNTER;
+        /*md - `GET_STEP` get step by index */
+        if (name == "GET_STEP")
+            return DATA_ID::GET_STEP;
+        /*md - `SELECTED_STEP_PTR` return selected step pointer */
+        if (name == "SELECTED_STEP_PTR")
+            return DATA_ID::SELECTED_STEP_PTR;
+        /*md - `STEP_TOGGLE` toggle selected step */
+        if (name == "STEP_TOGGLE")
+            return DATA_ID::STEP_TOGGLE;
+        return atoi(name.c_str());
+    }
+
     void* data(int id, void* userdata = NULL)
     {
         switch (id) {
-        case 0:
+        case DATA_ID::STEPS:
             return &steps;
-        case 1:
+        case DATA_ID::STEP_COUNTER:
             return &stepCounter;
-        case 2: { // Get step condition name
+        case DATA_ID::STEP_CONDITION: { // Get step condition name
             uint8_t* index = (uint8_t*)userdata;
             return (void*)stepConditions[*index].name;
         }
-        case 3:
+        case DATA_ID::CLOCK_COUNTER:
             return clockCounterPtr;
-        case 4: {
+        case DATA_ID::GET_STEP: {
             uint8_t* index = (uint8_t*)userdata;
             if (*index >= MAX_STEPS) {
                 return NULL;
             }
             return &steps[*index];
         }
-        case 20: { // Toggle sequencer
+        case DATA_ID::SELECTED_STEP_PTR: { // Toggle sequencer
             if (status.get() == Status::ON) {
                 status.set(Status::OFF);
             } else {
@@ -292,7 +329,7 @@ public:
             }
             return NULL;
         }
-        case 21: // Step toggle
+        case DATA_ID::STEP_TOGGLE: // Step toggle
             stepEnabled.set(selectedStepPtr->enabled ? 0.0 : 1.0);
             return NULL;
         }
