@@ -33,6 +33,9 @@ public:
                 pa_simple_write(device, buffer, bufferReadSize, NULL);
             }
         }
+        // if (buf[track] < -1.0f || buf[track] > 1.0f) {
+        //     printf("AudioOutputPulse out of range %f\n", buf[track]);
+        // }
         buffer[bufferIndex++] = buf[track];
     }
 };
