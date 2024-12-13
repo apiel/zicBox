@@ -1,5 +1,5 @@
-#ifndef _PIXEL_CONTROLLER_H_
-#define _PIXEL_CONTROLLER_H_
+#ifndef _HELPER_GPIO_KEY_H_
+#define _HELPER_GPIO_KEY_H_
 
 #include "helpers/controller.h"
 #include "helpers/gpio.h"
