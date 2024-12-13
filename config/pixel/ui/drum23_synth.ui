@@ -101,12 +101,12 @@ $y=$y+$sepHeight
       ENCODER: 1 SHAPE
       ENCODER: 2 MACRO
 
-    # COMPONENT: Encoder3 $3/4W $y $1/4W 50
-    #   GROUP: $group
-    #   ENCODER_ID: 3
-    #   COLOR: quaternary
-    #   TRACK: $track
-    #   VALUE: SynthDrum23 MACRO
+    COMPONENT: Encoder3 $3/4W $y $1/4W 50
+      GROUP: $group
+      ENCODER_ID: 3
+      COLOR: quaternary
+      TRACK: $track
+      VALUE: Volume VOLUME
 
 #   Amp envelope
 $group=$group+1
