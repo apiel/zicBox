@@ -3,7 +3,7 @@
 
 #include "motion.h"
 #include "viewManager.h"
-#include "timer.h"
+#include "helpers/getTicks.h"
 
 #ifndef MAX_SCREEN_MOTION
 // The current display only support 5 touch point

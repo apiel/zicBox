@@ -3,7 +3,7 @@
 
 #include "./ViewInterface.h"
 #include "./container/containers.h"
-#include "timer.h"
+#include "helpers/getTicks.h"
 
 #include <mutex>
 

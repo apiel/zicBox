@@ -1,5 +1,5 @@
-#ifndef _TIMER_H_
-#define _TIMER_H_
+#ifndef _TIMER_GET_TICKS_H_
+#define _TIMER_GET_TICKS_H_
 
 #include <cstdint>
 

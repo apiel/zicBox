@@ -15,7 +15,7 @@
 #include "host.h"
 #include "plugins/components/PixelSSD1306/PixelComponents.h"
 #include "styles.h"
-#include "timer.h"
+#include "helpers/getTicks.h"
 #include "viewManager.h"
 
 #include "plugins/audio/AudioOutputPulse.h"
