@@ -24,6 +24,8 @@ protected:
     Step* step;
     uint8_t* stepCounter = NULL;
 
+    bool playing = false;
+
     KeypadLayout keypadLayout;
 
     Color bgColor;
@@ -91,6 +93,18 @@ public:
         })
     {
         updateColors();
+
+        jobRendering = [this](unsigned long now) {
+            if (stepIndex != *stepCounter) {
+                if (playing) {
+                    playing = false;
+                    renderNext();
+                }
+            } else if (!playing) {
+                playing = true;
+                renderNext();
+            }
+        };
     }
 
     void onShift(uint8_t index, uint8_t value) override
@@ -157,6 +171,10 @@ public:
 
             if (selected) {
                 draw.rect(relativePosition, { size.w - 1, size.h - 1 }, { selection });
+            }
+
+            if (playing) {
+                draw.line({ relativePosition.x, relativePosition.y + size.h - 1 }, { relativePosition.x + size.w - 1, relativePosition.y + size.h - 1 }, { text.color });
             }
         }
     }
