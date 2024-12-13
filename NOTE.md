@@ -2,13 +2,13 @@
 
 - TODO add modulation on bitcrusher :-)
 
-- TODO seq show active step
-
 - TODO port zicPixel to Web assembly
 
 - TODO sudo display
 
-- TODO to be deprecated: const char* fontPath = nullptr;
+- TODO can EffectGrain and EffectDelay be one single effect to make an advance GrainDelay effect...?
+- TODO make a simple EffectDelay with preset... or re-use the exisiting one?
+- TODO or should it just be GRAIN track, DELAY track and REVERB track (alias delay?)
 
 - TODO Volume/Gain, could we have a value over 100% like 150%??
 
