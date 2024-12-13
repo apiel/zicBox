@@ -107,15 +107,21 @@ int initGpio()
 //     memgpio->gppudclk[gpio >> 5] = 0;
 // }
 
+// void gpioSetPullUp(uint8_t gpio)
+// {
+//     uint8_t* reg = (uint8_t*)memgpio;
+//     *(reg + 37) = GPIO_PUD_UP;
+//     usleep(10);
+//     *(reg + 38 + (gpio >> 5)) = 1 << (gpio & 0x1F);
+//     usleep(10);
+//     *(reg + 37) = 0;
+//     *(reg + 38 + (gpio >> 5)) = 0;
+// }
+
 void gpioSetPullUp(uint8_t gpio)
 {
-    uint8_t* reg = (uint8_t*)memgpio;
-    *(reg + 37) = GPIO_PUD_UP;
-    usleep(10);
-    *(reg + 38 + (gpio >> 5)) = 1 << (gpio & 0x1F);
-    usleep(10);
-    *(reg + 37) = 0;
-    *(reg + 38 + (gpio >> 5)) = 0;
+    std::string cmd = "pinctrl set " + std::to_string(gpio) + " pu";
+    system(cmd.c_str());
 }
 
 #else

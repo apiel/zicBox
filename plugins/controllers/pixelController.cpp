@@ -2,6 +2,8 @@
 
 // g++ pixelController.cpp -o pixelControllerPigpio -I../.. -pthread -lpigpio -lrt -DPIGPIO=1 && mv ./pixelControllerPigpio ~/pixelControllerPigpio && sudo ~/pixelControllerPigpio
 
+// could use `pinctrl set 17 pu`
+
 #define DEBUG_GPIO_KEY 1
 
 #include "../../helpers/GpioKey.h"
