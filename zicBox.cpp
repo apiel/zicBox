@@ -6,7 +6,7 @@
 #include "host.h"
 #include "styles.h"
 #include "viewManager.h"
-#include "timer.h"
+#include "helpers/getTicks.h"
 
 int main(int argc, char* argv[])
 {

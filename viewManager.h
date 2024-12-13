@@ -12,7 +12,7 @@
 #include "plugins/components/componentInterface.h"
 #include "plugins/components/view.h"
 #include "styles.h"
-#include "timer.h"
+#include "helpers/getTicks.h"
 
 #ifdef DRAW_ST7789
 #ifdef USE_DRAW_WITH_SDL

@@ -16,7 +16,7 @@
 #include "plugins/components/Pixel/PixelComponents.h"
 #include "plugins/controllers/PixelController.h"
 #include "styles.h"
-#include "timer.h"
+#include "helpers/getTicks.h"
 #include "viewManager.h"
 
 // Make from scratch UI
