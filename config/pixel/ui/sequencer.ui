@@ -69,7 +69,7 @@ while: $step < 32
     COMPONENT: StepEdit 0 $y $1/4W 25
       GROUP: $step
       GROUP_RANGE: ($groupRange) ($groupRange+7)
-      DATA: Sequencer 4 $step
+      DATA: Sequencer GET_STEP $step
       ENCODERS: 0 1 2
       KEYMAP: Keyboard 'q' stepToggle
       KEYMAP: Keyboard 't' restoreShiftMode
@@ -79,7 +79,7 @@ while: $step < 32
     COMPONENT: StepEdit $1/4W $y $1/4W 25
       GROUP: $step
       GROUP_RANGE: ($groupRange) ($groupRange+7)
-      DATA: Sequencer 4 $step
+      DATA: Sequencer GET_STEP $step
       ENCODERS: 0 1 2
       KEYMAP: Keyboard 'w' stepToggle
       KEYMAP: Keyboard 't' restoreShiftMode
@@ -89,7 +89,7 @@ while: $step < 32
     COMPONENT: StepEdit $2/4W $y $1/4W 25
       GROUP: $step
       GROUP_RANGE: ($groupRange) ($groupRange+7)
-      DATA: Sequencer 4 $step
+      DATA: Sequencer GET_STEP $step
       ENCODERS: 0 1 2
       KEYMAP: Keyboard 'e' stepToggle
       KEYMAP: Keyboard 't' restoreShiftMode
@@ -99,7 +99,7 @@ while: $step < 32
     COMPONENT: StepEdit $3/4W $y $1/4W 25
       GROUP: $step
       GROUP_RANGE: ($groupRange) ($groupRange+7)
-      DATA: Sequencer 4 $step
+      DATA: Sequencer GET_STEP $step
       ENCODERS: 0 1 2
       KEYMAP: Keyboard 'r' stepToggle
       KEYMAP: Keyboard 't' restoreShiftMode
@@ -110,7 +110,7 @@ while: $step < 32
     COMPONENT: StepEdit 0 $y $1/4W 25
       GROUP: $step
       GROUP_RANGE: ($groupRange) ($groupRange+7)
-      DATA: Sequencer 4 $step
+      DATA: Sequencer GET_STEP $step
       ENCODERS: 0 1 2
       KEYMAP: Keyboard 'a' stepToggle
       KEYMAP: Keyboard 't' restoreShiftMode
@@ -120,7 +120,7 @@ while: $step < 32
     COMPONENT: StepEdit $1/4W $y $1/4W 25
       GROUP: $step
       GROUP_RANGE: ($groupRange) ($groupRange+7)
-      DATA: Sequencer 4 $step
+      DATA: Sequencer GET_STEP $step
       ENCODERS: 0 1 2
       KEYMAP: Keyboard 's' stepToggle
       KEYMAP: Keyboard 't' restoreShiftMode
@@ -130,7 +130,7 @@ while: $step < 32
     COMPONENT: StepEdit $2/4W $y $1/4W 25
       GROUP: $step
       GROUP_RANGE: ($groupRange) ($groupRange+7)
-      DATA: Sequencer 4 $step
+      DATA: Sequencer GET_STEP $step
       ENCODERS: 0 1 2
       KEYMAP: Keyboard 'd' stepToggle
       KEYMAP: Keyboard 't' restoreShiftMode
@@ -140,7 +140,7 @@ while: $step < 32
     COMPONENT: StepEdit $3/4W $y $1/4W 25
       GROUP: $step
       GROUP_RANGE: ($groupRange) ($groupRange+7)
-      DATA: Sequencer 4 $step
+      DATA: Sequencer GET_STEP $step
       ENCODERS: 0 1 2
       KEYMAP: Keyboard 'f' stepToggle
       KEYMAP: Keyboard 't' restoreShiftMode

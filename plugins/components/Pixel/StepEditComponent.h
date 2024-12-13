@@ -16,24 +16,13 @@
 StepEdit component is used to edit a step value.
 */
 
-// [note, velocity, len] [probabilty, condition, motion]
-// For the note length, we should show the note symbol
-
-// Push encoder scroll throught selection
-// --> if shift is pressed it jump of group
-
-// Shift + key will select step
-// key only will enable/disable step (and selecting it at the same time)
-
-// pressing encoder will toggle between basic and step probability mode
-// also shift + key on an already selected step will toggle between basic and step probability mode
-
 // TODO show active step
 
 class StepEditComponent : public GroupColorComponent {
 protected:
     AudioPlugin* plugin = NULL;
     Step* step;
+    uint8_t* stepCounter = NULL;
 
     KeypadLayout keypadLayout;
 
@@ -46,7 +35,6 @@ protected:
     ToggleColor textMotion1;
     ToggleColor textMotion2;
 
-    uint8_t dataId = -1;
     uint8_t stepIndex = -1;
 
     bool selected = false;
@@ -243,9 +231,15 @@ public:
         /*md - `DATA: plugin_name data_id step_index` set plugin target */
         if (strcmp(key, "DATA") == 0) {
             plugin = &getPlugin(strtok(value, " "), track);
-            dataId = atoi(strtok(NULL, " "));
+            uint8_t dataId = plugin->getDataId(strtok(NULL, " "));
             stepIndex = atoi(strtok(NULL, " "));
             step = (Step*)plugin->data(dataId, &stepIndex);
+            return true;
+        }
+
+        /*md - `COUNTER_DATA_ID: data_id` is the data id to show active step. */
+        if (strcmp(key, "COUNTER_DATA_ID") == 0) {
+            stepCounter = (uint8_t*)plugin->data(plugin->getDataId(value));
             return true;
         }
 
