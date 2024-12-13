@@ -59,8 +59,18 @@ dtoverlay=disable-bt
 force_eeprom_read=0
 disable_poe_fan=1
 
+# set gpio pins to input and pull up
+# especially important for gpio 14 -> UART
 gpio=14=ip,pu
+gpio=7=ip,pu
+gpio=8=ip,pu
+gpio=12=ip,pu
+gpio=13=ip,pu
 gpio=15=ip,pu
+gpio=16=ip,pu
+gpio=23=ip,pu
+gpio=24=ip,pu
+gpio=25=ip,pu
 EOF
 
 echo "/boot/config.txt has been updated."
