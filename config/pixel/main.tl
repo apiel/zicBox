@@ -10,7 +10,9 @@ ui.setScreenSize(screenWidth, screenHeight)
 ui.view("Main")
 
 text({
-    position = { x = 0, y = 0 },
-    size = { w = screenWidth, h = 8},
-    text = "Hello world"
+    pos = { x = 0, y = 0 },
+    -- size = { w = screenWidth, h = 8},
+    text = "Hello world",
+    center = true,
+    fontSize = 24
 })
