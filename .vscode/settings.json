@@ -87,6 +87,7 @@
     "C_Cpp.errorSquiggles": "enabled",
     "makefile.configureOnOpen": false,
     "Lua.diagnostics.globals": [
-        "setConfig"
+        "setConfig",
+        "zic"
     ],
 }

@@ -19,19 +19,19 @@ To use it, you need to install Duktape and Duktape-dev:
 apt-get install libduktape207 duktape-dev
 ```
 
-To set config from a js script, you need to call `setConfig(key, value);` in the js script:
+To set config from a js script, you need to call `zic(key, value);` in the js script:
 
 ```js
-setConfig("print", "Call ZicBox print from Lua.")
-setConfig("PLUGIN_COMPONENT", "Encoder2 ./plugins/components/build/libzic_Encoder2Component.so")
-setConfig("LOAD_HOST", "config.cfg")
-setConfig("VIEW", "Main")
+zic("print", "Call ZicBox print from Lua.")
+zic("PLUGIN_COMPONENT", "Encoder2 ./plugins/components/build/libzic_Encoder2Component.so")
+zic("LOAD_HOST", "config.cfg")
+zic("VIEW", "Main")
 
 // Let's create an encoder function
 function setEncoder(x, y, width, height, encoder_id, value) {
-  setConfig("COMPONENT", "Encoder2 " + x + " " + y + " " + width + " " + height);
-  setConfig("ENCODER_ID", encoder_id);
-  setConfig("VALUE", value);
+  zic("COMPONENT", "Encoder2 " + x + " " + y + " " + width + " " + height);
+  zic("ENCODER_ID", encoder_id);
+  zic("VALUE", value);
 }
 
 setEncoder(10, 10, 100, 100, 1, "FM DECAY_1");
@@ -54,7 +54,7 @@ struct UserData {
     const char* filename;
 };
 
-duk_ret_t setConfigFn(duk_context* ctx)
+duk_ret_t zicSetConfigFn(duk_context* ctx)
 {
     const char* key = duk_to_string(ctx, 0);
     const char* value = duk_to_string(ctx, 1);
@@ -111,8 +111,8 @@ void config(std::string filename, void (*callback)(char* command, char* params, 
     duk_push_pointer(ctx, (void*)userData);
     duk_put_prop_string(ctx, -2, DUK_HIDDEN_SYMBOL("userDataPtr"));
 
-    duk_push_c_function(ctx, setConfigFn, 2);
-    duk_put_global_string(ctx, "setConfig");
+    duk_push_c_function(ctx, zicSetConfigFn, 2);
+    duk_put_global_string(ctx, "zic");
 
 #ifdef IS_RPI
     duk_push_boolean(ctx, true);
