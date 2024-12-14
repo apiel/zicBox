@@ -2,7 +2,8 @@
 #define _CONFIG_PLUGIN_H
 
 #include "getFullpath.h"
-#include "plugins/config/DustConfig.h"
+// #include "plugins/config/DustConfig.h"
+#include "plugins/config/LuaConfig.h"
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -40,23 +41,18 @@ void instantiateConfigPlugin(const char* pluginPath, std::string scriptPath, voi
 void loadConfigPlugin(const char* pluginPath, std::string scriptPath, void (*callback)(char* command, char* params, const char* scriptPath), std::vector<Var> variables = {})
 {
     if (!pluginPath) {
-        const char* extension = strrchr(scriptPath.c_str(), '.');
-
-        if (strcmp(extension, ".lua") == 0) {
-            pluginPath = "lua";
-        } else {
-            pluginPath = "dustscript";
-        }
+        pluginPath = "lua";
     }
 
     if (strcmp(pluginPath, "dustscript") == 0) {
-        dustConfig(scriptPath, callback, variables);
-    } else if (strcmp(pluginPath, "lua") == 0) {
+        // dustConfig(scriptPath, callback, variables);
 #ifdef IS_RPI
-        instantiateConfigPlugin("plugins/config/build/arm/libzic_LuaConfig.so", scriptPath, callback, variables);
+        instantiateConfigPlugin("plugins/config/build/arm/libzic_DustConfig.so", scriptPath, callback, variables);
 #else
-        instantiateConfigPlugin("plugins/config/build/x86/libzic_LuaConfig.so", scriptPath, callback, variables);
+        instantiateConfigPlugin("plugins/config/build/x86/libzic_DustConfig.so", scriptPath, callback, variables);
 #endif
+    } else if (strcmp(pluginPath, "lua") == 0) {
+        luaConfig(scriptPath, callback, variables);
     } else {
         instantiateConfigPlugin(pluginPath, scriptPath, callback, variables);
     }
