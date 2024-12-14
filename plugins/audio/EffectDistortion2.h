@@ -68,14 +68,15 @@ public:
 protected:
     float processSample(float input, float levelAmount, float driveAmount, float compressAmount, float bassBoostAmount, float waveshapeAmount, float& prevInput, float& prevOutput)
     {
-        float bassBoosted = applyBoost(input, bassBoostAmount, prevInput, prevOutput);
-        float driven = applyDrive(bassBoosted, driveAmount);
-        float compressed = applyCompression(driven, compressAmount);
-        float waveshaped = applyWaveshape(compressed, waveshapeAmount);
+        float output = input;
+        output = applyBoost(output, bassBoostAmount, prevInput, prevOutput);
+        output = applyDrive(output, driveAmount);
+        output = applyCompression(output, compressAmount);
+        output = applyWaveshape(output, waveshapeAmount);
 
-        float processed = blend(input, waveshaped, levelAmount);
+        output = blend(input, output, levelAmount);
 
-        float output = applySoftClipping(processed);
+        output = applySoftClipping(output);
 
         return range(output, -1.0f, 1.0f);
     }
