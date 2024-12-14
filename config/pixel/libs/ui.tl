@@ -25,4 +25,11 @@ function ui.setScreenSize(width: number, height: number)
     setConfig("SCREEN", width .. " " .. height)
 end
 
+function ui.getComponentPosition(pos: ui.Point, size: ui.Size | nil): string
+    if size is ui.Size then
+        return pos.x .. " " .. pos.y .. " " .. size.w .. " " .. size.h
+    end
+    return pos.x .. " " .. pos.y
+end
+
 return ui
