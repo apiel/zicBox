@@ -1,5 +1,6 @@
 
   CONTAINER: ScrollGroupContainer Scroll 0 0 $SCREEN_WIDTH 214
+    SCROLL_TO_CENTER: true
 
 $sepHeight=12
 $rowHeight=55
