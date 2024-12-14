@@ -53,13 +53,12 @@ public:
         float waveshapeAmount = waveshape.pct();
 
         // First pass
-        float intermediate = processSample(input, levelAmount, driveAmount, compressAmount, bassBoostAmount, waveshapeAmount, prevInput1, prevOutput1);
+        float output = processSample(input, levelAmount, driveAmount, compressAmount, bassBoostAmount, waveshapeAmount, prevInput1, prevOutput1);
 
         // Second pass
-        float output = processSample(intermediate, levelAmount, driveAmount, compressAmount, bassBoostAmount, waveshapeAmount, prevInput2, prevOutput2);
+        // output = processSample(output, levelAmount, driveAmount, compressAmount, bassBoostAmount, waveshapeAmount, prevInput2, prevOutput2);
 
-        // Ensure output stays within [-1.0, 1.0]
-        buf[track] = std::max(-1.0f, std::min(1.0f, output));
+        buf[track] = output;
     }
 
 private:
@@ -93,7 +92,7 @@ private:
         float processed = (1.0f - levelAmount) * input + levelAmount * waveshaped;
 
         // Step 6: Soft clipping
-        return tanhLookup(processed);
+        return range(tanhLookup(processed), -1.0f, 1.0f);
     }
 };
 
