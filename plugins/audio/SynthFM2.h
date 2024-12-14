@@ -22,7 +22,7 @@ protected:
         Val decay;
         Val sustain;
         Val release;
-        Val ratio; // Ratio for determining frequency based on mainFreq
+        Val ratio;
         Val feedback;
         AdsrEnvelop envelop;
         float pitchedFreq = 0.0f;
@@ -68,20 +68,7 @@ protected:
     void setRatio(float value, unsigned int opIndex)
     {
         operators[opIndex].ratio.setFloat(value);
-        updateOperatorFrequency(opIndex);
-    }
-
-    void updateOperatorFrequency(unsigned int opIndex)
-    {
-        operators[opIndex].pitchedFreq = mainFreq.get() * operators[opIndex].ratio.get();
-        operators[opIndex].stepIncrement = props.lookupTable->size * operators[opIndex].pitchedFreq / props.sampleRate;
-    }
-
-    void updateOperatorFrequencies()
-    {
-        for (int i = 0; i < ZIC_FM_OPS_COUNT; i++) {
-            updateOperatorFrequency(i);
-        }
+        updateOperatorFrequency(operators[opIndex]);
     }
 
     void setAttack(float ms, unsigned int opIndex)
@@ -110,7 +97,26 @@ protected:
 
     uint8_t baseNote = 60;
     float velocity = 1.0f;
-    float pitchRatio = 1.0f;
+    // notePitchRatio is the pitch of the current playing note;
+    float notePitchRatio = 1.0f;
+
+    void updateOperatorFrequency(FMoperator& op)
+    {
+        op.pitchedFreq = mainFreq.get() * op.ratio.get() * notePitchRatio;
+        op.stepIncrement = props.lookupTable->size * op.pitchedFreq / props.sampleRate;
+    }
+
+    void triggerOperator(FMoperator& op)
+    {
+        op.envelop.reset();
+        op.index = 0.0f;
+        updateOperatorFrequency(op);
+    }
+
+    void releaseOperator(FMoperator& op)
+    {
+        op.envelop.release();
+    }
 
 public:
     bool algorithm[12][ZIC_FM_OPS_COUNT - 1][ZIC_FM_OPS_COUNT - 1] = {
@@ -146,88 +152,81 @@ public:
         }
 
         initValues();
-
-        updateOperatorFrequencies();
     }
 
-    void noteOn(uint8_t note, float velocityValue) override
+    void noteOn(uint8_t note, float _velocity) override
     {
-        baseNote = note;
-        velocity = velocityValue;
-        pitchRatio = powf(2.0f, (note - 69) / 12.0f); // Convert MIDI note to frequency ratio
-        // setMainFrequency(440.0f * pitchRatio);
-        updateOperatorFrequencies();
-
+        velocity = _velocity;
+        notePitchRatio = pow(2.0f, (note - baseNote) / 12.0f);
         for (int i = 0; i < ZIC_FM_OPS_COUNT; i++) {
-            // operators[i].envelop.noteOn();
-            operators[i].envelop.reset();
-            operators[i].index = 0.0f;
+            triggerOperator(operators[i]);
         }
     }
 
     void noteOff(uint8_t note, float _velocity) override
     {
-        // printf("fm2 note off\n");
         for (int i = 0; i < ZIC_FM_OPS_COUNT; i++) {
-            // operators[i].envelop.noteOff();
-            operators[i].envelop.release();
+            releaseOperator(operators[i]);
         }
     }
 
-    float process()
+    void sample(float* buf) override
     {
-        float output[ZIC_FM_OPS_COUNT] = { 0.0f, 0.0f, 0.0f, 0.0f };
-        bool anyActive = false;
+        uint8_t outDivider = 0;
+        float out = 0.0f;
 
-        // Calculate output for each operator
+        for (int i = 0; i < ZIC_FM_OPS_COUNT; i++) {
+            operators[i].mod = 0.0f;
+        }
+
         for (int i = 0; i < ZIC_FM_OPS_COUNT; i++) {
             FMoperator& op = operators[i];
             float env = op.envelop.next();
-            // printf("[%d] env: %f\n", i + 1, env);
             if (env > 0.0f) {
-                anyActive = true;
-                if (op.feedback.get() > 0.0f) {
-                    op.feedbackMod = op.mod * op.feedback.pct();
+                if (op.mod == 0.0 && op.feedbackMod == 0.0) {
+                    op.index += op.stepIncrement;
+                } else {
+                    float freq = op.pitchedFreq + op.pitchedFreq * op.mod + op.pitchedFreq * op.feedbackMod;
+                    float inc = op.stepIncrement + props.lookupTable->size * freq / props.sampleRate; // TODO optimize with precomputing: props.lookupTable->size * op.freq.get() / props.sampleRate
+                    op.index += inc;
+                    // printf("[op %d] freq: %f, inc: %f, mod %f \n", i, freq, inc, mod);
+                    // mod = 0.0f;
                 }
-
-                float sampleValue = props.lookupTable->sine[(int)(op.index + op.feedbackMod)];
-                op.mod = sampleValue * env;
-
-                op.index += op.stepIncrement;
                 while (op.index >= props.lookupTable->size) {
                     op.index -= props.lookupTable->size;
                 }
+                float s = props.lookupTable->sine[(int)op.index] * env;
 
-                output[i] = operators[i].mod;
-            }
-        }
+                if (op.feedback.get() > 0.0f) {
+                    op.feedbackMod = s * op.feedback.pct();
+                }
 
-        if (!anyActive) {
-            return 0.0f;
-        }
-
-        // Combine operator outputs based on the selected algorithm
-        float finalOutput = 0.0f;
-        auto& algoMatrix = algorithm[(uint8_t)(algo.get() - 1)];
-        for (int i = 0; i < ZIC_FM_OPS_COUNT - 1; i++) {
-            for (int j = 0; j < ZIC_FM_OPS_COUNT - 1; j++) {
-                if (algoMatrix[i][j]) {
-                    output[i] += output[j];
+                if (i == ZIC_FM_OPS_COUNT - 1) { // Last operator can only be the carrier
+                    outDivider++;
+                    out += s;
+                    out = out / outDivider;
+                } else {
+                    bool isMod = false;
+                    for (int j = 0; j < ZIC_FM_OPS_COUNT - 1; j++) {
+                        if (algorithm[(uint8_t)(algo.get() - 1)][i][j]) {
+                            isMod = true;
+                            // j + 1 because the first operator doesnt receive modulation
+                            if (operators[j + 1].mod == 0.0f) {
+                                operators[j + 1].mod = s;
+                            } else {
+                                operators[j + 1].mod *= s;
+                            }
+                        }
+                    }
+                    if (!isMod) {
+                        outDivider++;
+                        out += s;
+                    }
                 }
             }
         }
 
-        // Sum up all outputs
-        for (int i = 0; i < ZIC_FM_OPS_COUNT; i++) {
-            finalOutput += output[i];
-        }
-
-        return finalOutput;
-    }
-
-    void sample(float* buf)
-    {
-        buf[track] = process() * velocity;
+        buf[track] = out * velocity;
     }
 
     enum DATA_ID {
@@ -243,7 +242,7 @@ public:
         return atoi(name.c_str());
     }
 
-    void* data(int id, void* userdata = NULL)
+    void* data(int id, void* userdata = NULL) override
     {
         switch (id) {
         case ALGO:
@@ -255,3 +254,56 @@ public:
 };
 
 #endif // _SYNTH_FM2_H_
+
+/*
+void sample(float* buf)
+{
+    float output[ZIC_FM_OPS_COUNT] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    bool anyActive = false;
+
+    // Calculate output for each operator
+    for (int i = 0; i < ZIC_FM_OPS_COUNT; i++) {
+        FMoperator& op = operators[i];
+        float env = op.envelop.next();
+        // printf("[%d] env: %f\n", i + 1, env);
+        if (env > 0.0f) {
+            anyActive = true;
+            if (op.feedback.get() > 0.0f) {
+                op.feedbackMod = op.mod * op.feedback.pct();
+            }
+
+            float sampleValue = props.lookupTable->sine[(int)(op.index + op.feedbackMod)];
+            op.mod = sampleValue * env;
+
+            op.index += op.stepIncrement;
+            while (op.index >= props.lookupTable->size) {
+                op.index -= props.lookupTable->size;
+            }
+
+            output[i] = operators[i].mod;
+        }
+    }
+
+    if (!anyActive) {
+        return 0.0f;
+    }
+
+    // Combine operator outputs based on the selected algorithm
+    float finalOutput = 0.0f;
+    auto& algoMatrix = algorithm[(uint8_t)(algo.get() - 1)];
+    for (int i = 0; i < ZIC_FM_OPS_COUNT - 1; i++) {
+        for (int j = 0; j < ZIC_FM_OPS_COUNT - 1; j++) {
+            if (algoMatrix[i][j]) {
+                output[i] += output[j];
+            }
+        }
+    }
+
+    // Sum up all outputs
+    for (int i = 0; i < ZIC_FM_OPS_COUNT; i++) {
+        finalOutput += output[i];
+    }
+
+    buf[track] = finalOutput * velocity;
+}
+*/

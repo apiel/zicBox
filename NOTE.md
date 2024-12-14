@@ -6,6 +6,8 @@
 
 - TODO sudo display
 
+- TODO cache audio track to reduce computation?
+
 - TODO can EffectGrain and EffectDelay be one single effect to make an advance GrainDelay effect...?
 - TODO make a simple EffectDelay with preset... or re-use the exisiting one?
 - TODO or should it just be GRAIN track, DELAY track and REVERB track (alias delay?)
