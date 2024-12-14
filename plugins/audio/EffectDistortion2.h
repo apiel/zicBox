@@ -23,7 +23,7 @@ public:
     Val& waveshape = val(0.0, "WAVESHAPE", { "Waveshape", .min = 0.0, .max = 100.0, .step = 1.0, .unit = "%" });
 
     float prevInput1 = 0.0f, prevOutput1 = 0.0f; // State for pass 1
-    float prevInput2 = 0.0f, prevOutput2 = 0.0f; // State for pass 2
+    // float prevInput2 = 0.0f, prevOutput2 = 0.0f; // State for pass 2
 
     EffectDistortion2(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -55,32 +55,18 @@ public:
         float bassBoostAmount = bass.pct();
         float waveshapeAmount = waveshape.pct();
 
-        // First pass
-        float output = processSample(input, levelAmount, driveAmount, compressAmount, bassBoostAmount, waveshapeAmount, prevInput1, prevOutput1);
-
-        // For whatever reason, the second pass doesn't work on RPi.
-        // Second pass
-        // output = processSample(output, levelAmount, driveAmount, compressAmount, bassBoostAmount, waveshapeAmount, prevInput2, prevOutput2);
-
-        buf[track] = output;
-    }
-
-protected:
-    float processSample(float input, float levelAmount, float driveAmount, float compressAmount, float bassBoostAmount, float waveshapeAmount, float& prevInput, float& prevOutput)
-    {
         float output = input;
-        output = applyBoost(output, bassBoostAmount, prevInput, prevOutput);
+        output = applyBoost(output, bassBoostAmount, prevInput1, prevOutput1);
         output = applyDrive(output, driveAmount);
         output = applyCompression(output, compressAmount);
         output = applyWaveshape(output, waveshapeAmount);
-
         output = blend(input, output, levelAmount);
-
         output = applySoftClipping(output);
 
-        return range(output, -1.0f, 1.0f);
+        buf[track] = range(output, -1.0f, 1.0f);
     }
 
+protected:
     float blend(float originalInput, float processedInput, float levelAmount)
     {
         return (1.0f - levelAmount) * originalInput + levelAmount * processedInput;
