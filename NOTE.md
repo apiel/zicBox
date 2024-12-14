@@ -1,7 +1,5 @@
 ## Pixel TODO
 
-- TODO fix audio issue on rpis
-
 - TODO should we move to Lua (with teal for static type) instead of dustscript
        --> could also use TypeScriptToLua (problem need to install npm...)
 
@@ -13,6 +11,12 @@
             - but to do it manual, we would ne a way to identify component
               or only link with previous component:
                     CHILD_FROM_PREVIOUS: true
+
+- TODO DrumSample track: is a very basic track that can play 1 shot sample (8, 12, 16?), first page select the sample (volume and mute?), second page grid sequencer with velocity, step probability (volume and mute?), third page global track effect, filter...
+
+- TODO can EffectGrain and EffectDelay be one single effect to make an advance GrainDelay effect...?
+- TODO make a simple EffectDelay with preset... or re-use the exisiting one?
+- TODO or should it just be GRAIN track, DELAY track and REVERB track (alias delay?)
 
 - TODO cleanup audio plugin
     - remove `APP_INFO`
@@ -27,12 +31,6 @@
 - TODO sudo display
 
 - IDEA cache audio track to reduce computation?
-
-- TODO can EffectGrain and EffectDelay be one single effect to make an advance GrainDelay effect...?
-- TODO make a simple EffectDelay with preset... or re-use the exisiting one?
-- TODO or should it just be GRAIN track, DELAY track and REVERB track (alias delay?)
-
-- TODO DrumSample track: is a very basic track that can play 1 shot sample (8, 12, 16?), first page select the sample (volume and mute?), second page grid sequencer with velocity, step probability (volume and mute?), third page global track effect, filter...
 
 - TODO get rid of SDL component andunify everything
       --> move everything to buffer base UI and only pass use the SDL to render buffer to the screen

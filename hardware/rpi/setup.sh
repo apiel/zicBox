@@ -7,7 +7,7 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 apt-get update
-apt-get install vim build-essential librtmidi-dev libsndfile1-dev pulseaudio alsa-utils libbcm2835-dev libraspberrypi-dev -y
+apt-get install vim build-essential librtmidi-dev libsndfile1-dev pulseaudio alsa-utils libbcm2835-dev libraspberrypi-dev liblua5.4-dev -y
 
 pulseaudio --start
 

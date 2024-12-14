@@ -13,7 +13,7 @@ endif
 INC=-I../..
 
 all:
-	make LuaConfig JsConfig
+	make LuaConfig JsConfig DustConfig
 
 # if liblua is not installed, it should skip
 LuaConfig:
