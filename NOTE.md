@@ -1,5 +1,7 @@
 ## Pixel TODO
 
+- TODO fix audio issue on rpis
+
 - TODO should we move to Lua (with teal for static type) instead of dustscript
        --> could also use TypeScriptToLua (problem need to install npm...)
 
