@@ -11,23 +11,23 @@ local ui = require "config/pixel/libs/ui"
 --- - backgroundColor: The background color (optional)
 --- - color: The text color (optional)
 local function text(params, position, options)
-    setConfig("COMPONENT", "Text " .. ui.getComponentPosition(position))
-    setConfig("TEXT", params.text)
+    zic("COMPONENT", "Text " .. ui.getComponentPosition(position))
+    zic("TEXT", params.text)
     if options ~= nil then
         if options.center ~= nil then
-            setConfig("CENTERED", options.center and "true" or "false")
+            zic("CENTERED", options.center and "true" or "false")
         end
         if options.fontSize ~= nil then
-            setConfig("FONT_SIZE", options.fontSize)
+            zic("FONT_SIZE", options.fontSize)
         end
         if options.font ~= nil then
-            setConfig("FONT", options.font)
+            zic("FONT", options.font)
         end
         if options.backgroundColor ~= nil then
-            setConfig("BACKGROUND_COLOR", options.backgroundColor)
+            zic("BACKGROUND_COLOR", options.backgroundColor)
         end
         if options.color ~= nil then
-            setConfig("COLOR", options.color)
+            zic("COLOR", options.color)
         end
     end
 end

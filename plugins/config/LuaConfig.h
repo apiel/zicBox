@@ -41,7 +41,7 @@ void luaConfig(std::string filename, void (*callback)(char* command, char* param
     luaL_openlibs(L);
     lua_pushlightuserdata(L, (void*)callback);
     lua_setglobal(L, "callbackPtr");
-    lua_register(L, "setConfig", setConfigFn);
+    lua_register(L, "zic", setConfigFn);
 
 #ifdef IS_RPI
     lua_pushboolean(L, true);
