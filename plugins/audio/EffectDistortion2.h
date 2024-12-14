@@ -55,6 +55,7 @@ public:
         // First pass
         float output = processSample(input, levelAmount, driveAmount, compressAmount, bassBoostAmount, waveshapeAmount, prevInput1, prevOutput1);
 
+        // For whatever reason, the second pass doesn't work on RPi.
         // Second pass
         // output = processSample(output, levelAmount, driveAmount, compressAmount, bassBoostAmount, waveshapeAmount, prevInput2, prevOutput2);
 
@@ -92,7 +93,9 @@ private:
         float processed = (1.0f - levelAmount) * input + levelAmount * waveshaped;
 
         // Step 6: Soft clipping
-        return range(tanhLookup(processed), -1.0f, 1.0f);
+        float output = tanhLookup(processed);
+
+        return range(output, -1.0f, 1.0f);
     }
 };
 
