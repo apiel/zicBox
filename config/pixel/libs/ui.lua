@@ -21,13 +21,12 @@ function ui.setScreenSize(width, height)
 end
 
 --- Get the component position
---- @param pos {x: number, y: number} The position of the component
---- @param size {w: number, h: number} | nil The size of the component
-function ui.getComponentPosition(pos, size)
-    if size ~= nil then
-        return pos.x .. " " .. pos.y .. " " .. size.w .. " " .. size.h
+--- @param position {x: number, y: number, w: number, h: number} The position of the component.
+function ui.getComponentPosition(position)
+    if position.w ~= nil and position.h ~= nil then
+        return position.x .. " " .. position.y .. " " .. position.w .. " " .. position.h
     end
-    return pos.x .. " " .. pos.y
+    return position.x .. " " .. position.y
 end
 
 return ui
