@@ -20,43 +20,58 @@ $y=$y+$rowHeight
       GROUP: $group
 
 $y=$y+$sepHeight
+  #   COMPONENT: Encoder3 0 $y $1/4W 50
+  #     GROUP: $group
+  #     ENCODER_ID: 0
+  #     COLOR: primary
+  #     TRACK: $track
+  #     VALUE: MMFilter CUTOFF
+
+  #   COMPONENT: Encoder3 $1/4W $y $1/4W 50
+  #     GROUP: $group
+  #     ENCODER_ID: 1
+  #     COLOR: primary
+  #     TRACK: $track
+  #     VALUE: MMFilter RESONANCE
+
+  # COMPONENT: FmAlgo $2/4W $y $1/4W 50
+  #   GROUP: $group
+  #   ENCODER_ID: 2
+  #   TEXT_COLOR: secondary
+  #   TRACK: $track
+  #   VALUE: FM ALGO
+
     COMPONENT: Encoder3 0 $y $1/4W 50
       GROUP: $group
       ENCODER_ID: 0
-      COLOR: primary
+      COLOR: secondary
       TRACK: $track
-      VALUE: MMFilter CUTOFF
+      VALUE: Volume VOLUME
 
     COMPONENT: Encoder3 $1/4W $y $1/4W 50
       GROUP: $group
       ENCODER_ID: 1
       COLOR: primary
       TRACK: $track
-      VALUE: MMFilter RESONANCE
+      VALUE: MMFilter CUTOFF
 
-  COMPONENT: FmAlgo $2/4W $y $1/4W 50
-    GROUP: $group
-    ENCODER_ID: 2
-    TEXT_COLOR: secondary
-    TRACK: $track
-    VALUE: FM ALGO
+    COMPONENT: Encoder3 $2/4W $y $1/4W 50
+      GROUP: $group
+      ENCODER_ID: 2
+      COLOR: primary
+      TRACK: $track
+      VALUE: MMFilter RESONANCE
 
    COMPONENT: Encoder3 $3/4W $y $1/4W 50
       GROUP: $group
       ENCODER_ID: 3
       COLOR: tertiary
       TRACK: $track
-      VALUE: FM FREQUENCY
+      VALUE: FM ALGO
 
 #   Bitcrusher
 $group=$group+1
 $y=$y+$rowHeight
-
-    COMPONENT: Text 0 $y $SCREEN_WIDTH 8
-      TEXT: Effect
-      CENTERED: true
-      GROUP: $group
-
 $y=$y+$sepHeight
     COMPONENT: Encoder3 0 $y $1/4W 50
       GROUP: $group
@@ -81,12 +96,12 @@ $y=$y+$sepHeight
       VALUE: Delay TIME_RATIO
       LABEL: Delay time
 
-    # COMPONENT: Encoder3 $3/4W $y $1/4W 50
-    #   GROUP: $group
-    #   ENCODER_ID: 3
-    #   COLOR: quaternary
-    #   TRACK: $track
-    #   VALUE: Distortion BASS
+    COMPONENT: Encoder3 $3/4W $y $1/4W 50
+      GROUP: $group
+      ENCODER_ID: 3
+      COLOR: quaternary
+      TRACK: $track
+      VALUE: FM FREQUENCY
 
 #   Op 1
 $op=0
