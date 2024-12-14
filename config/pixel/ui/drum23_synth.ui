@@ -23,23 +23,23 @@ $y=$y+$sepHeight
     COMPONENT: Encoder3 0 $y $1/4W 50
       GROUP: $group
       ENCODER_ID: 0
-      COLOR: primary
+      COLOR: secondary
       TRACK: $track
-      VALUE: MMFilter CUTOFF
+      VALUE: Volume VOLUME
 
     COMPONENT: Encoder3 $1/4W $y $1/4W 50
       GROUP: $group
       ENCODER_ID: 1
       COLOR: primary
       TRACK: $track
-      VALUE: MMFilter RESONANCE
+      VALUE: MMFilter CUTOFF
 
     COMPONENT: Encoder3 $2/4W $y $1/4W 50
       GROUP: $group
       ENCODER_ID: 2
-      COLOR: secondary
+      COLOR: primary
       TRACK: $track
-      VALUE: SynthDrum23 GAIN_CLIPPING
+      VALUE: MMFilter RESONANCE
 
    COMPONENT: Encoder3 $3/4W $y $1/4W 50
       GROUP: $group
@@ -110,7 +110,7 @@ $y=$y+$sepHeight
       ENCODER_ID: 3
       COLOR: quaternary
       TRACK: $track
-      VALUE: Volume VOLUME
+      VALUE: SynthDrum23 GAIN_CLIPPING
 
 #   Amp envelope
 $group=$group+1
