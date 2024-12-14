@@ -2,8 +2,9 @@
 $group=$group+1
 $y=$y+$rowHeight
 
-    COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
-      TITLE: Operator ($op+1)
+    COMPONENT: Text 0 $y $SCREEN_WIDTH 8
+      TEXT: Operator ($op+1)
+      CENTERED: true
       GROUP: $group
 
 $y=$y+$sepHeight

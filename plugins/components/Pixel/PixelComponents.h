@@ -12,6 +12,7 @@
 #include "./HiddenEncoderComponent.h"
 #include "./FmAlgoComponent.h"
 #include "./AdsrComponent.h"
+#include "./TextComponent.h"
 
 void loadPixelComponents()
 {
@@ -50,6 +51,10 @@ void loadPixelComponents()
 
     viewManager.plugins.push_back({ "Adsr", [](ComponentInterface::Props props) {
         return new AdsrComponent(props);
+    } });
+
+    viewManager.plugins.push_back({ "Text", [](ComponentInterface::Props props) {
+        return new TextComponent(props);
     } });
 }
 
