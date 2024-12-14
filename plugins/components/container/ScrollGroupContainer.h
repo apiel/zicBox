@@ -58,8 +58,10 @@ public:
             }
             // printf("[%d] minY: %d maxY: %d size.h: %d (%d) pos.y: %d\n", i, minY, maxY, size.h, (int)(size.h * 0.5), originPosition.y);
             if (maxY > scrollOffset) {
+                int h = maxY - minY;
                 if (scrollToCenter) {
-                    yPositionPerGroup.push_back(yPositionPerGroup.back() - (maxY - minY));
+                    int y = -(minY - (size.h - h) * 0.5);
+                    yPositionPerGroup.push_back(y > 0 ? 0 : y);
                 } else {
                     int y = -(minY - size.h * 0.6);
                     yPositionPerGroup.push_back(y > 0 ? 0 : y);
