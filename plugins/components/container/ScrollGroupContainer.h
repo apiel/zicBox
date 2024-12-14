@@ -4,6 +4,12 @@
 #include "./ComponentContainer.h"
 #include "plugins/components/componentInterface.h"
 
+/*md
+## ScrollGroup
+
+ScrollGroup is a container that scroll the grouped component together.
+*/
+
 class ScrollGroupContainer : public ComponentContainer {
 protected:
     std::vector<int> yPositionPerGroup;
@@ -12,7 +18,7 @@ protected:
 
     Point originPosition;
 
-    bool center = true;
+    bool scrollToCenter = false;
 
     int scrollOffset;
 
@@ -52,7 +58,7 @@ public:
             }
             // printf("[%d] minY: %d maxY: %d size.h: %d (%d) pos.y: %d\n", i, minY, maxY, size.h, (int)(size.h * 0.5), originPosition.y);
             if (maxY > scrollOffset) {
-                if (center) {
+                if (scrollToCenter) {
                     yPositionPerGroup.push_back(yPositionPerGroup.back() - (maxY - minY));
                 } else {
                     int y = -(minY - size.h * 0.6);
@@ -101,16 +107,19 @@ public:
 
     bool config(char* key, char* value) override
     {
+        /*md - `BACKGROUND_COLOR: color` is the background color of the component. */
         if (strcmp(key, "BACKGROUND_COLOR") == 0) {
             bgColor = view->draw.getColor(value);
             return true;
         }
 
-        if (strcmp(key, "CENTER") == 0) {
-            center = strcmp(value, "true") == 0;
+        /*md - `SCROLL_TO_CENTER: true/false` scroll to center (default: false). */
+        if (strcmp(key, "SCROLL_TO_CENTER") == 0) {
+            scrollToCenter = strcmp(value, "true") == 0;
             return true;
         }
 
+        /*md - `SCROLL_OFFSET: 100` set the where group component start to scroll. By default 70% from container height. */
         if (strcmp(key, "SCROLL_OFFSET") == 0) {
             scrollOffset = atoi(value);
             return true;
