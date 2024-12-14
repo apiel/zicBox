@@ -7,8 +7,10 @@ SDL2_ttf=`pkg-config --cflags --libs SDL2_ttf`
 
 ifneq ($(shell uname -m),x86_64)
 RPI := -DIS_RPI=1
+BIN_SUFFIX := arm
 else
 PIXEL_SDL := $(SDL2)
+BIN_SUFFIX := x86
 endif
 
 BUILD=-Wno-narrowing -ldl $(RTMIDI) 
@@ -52,28 +54,28 @@ runHost:
 
 build:
 	@echo "\n------------------ build zicBox ------------------\n"
-	g++ -g -fms-extensions -o zicBox zicBox.cpp -ldl $(INC) $(SDL2) $(SDL2_ttf) $(RPI) $(RTMIDI)
+	g++ -g -fms-extensions -o zicBox.$(BIN_SUFFIX) zicBox.cpp -ldl $(INC) $(SDL2) $(SDL2_ttf) $(RPI) $(RTMIDI)
 
 run:
 	@echo "\n------------------ run zicBox ------------------\n"
-	./zicBox
+	./zicBox.$(BIN_SUFFIX)
 
 # g++ -g -fms-extensions -o zicPixel zicPixel.cpp -ldl $(RPI) $(RTMIDI) $(PIXEL_SDL) $(SPI_DEV_MEM) $(shell pkg-config --cflags --libs libpulse-simple)
 buildPixel:
 	@echo "\n------------------ build zicPixel ------------------\n"
-	g++ -g -fms-extensions -o zicPixel zicPixel.cpp -ldl $(INC) $(RPI) $(RTMIDI) $(PIXEL_SDL) $(SPI_DEV_MEM)
+	g++ -g -fms-extensions -o pixel.$(BIN_SUFFIX) zicPixel.cpp -ldl $(INC) $(RPI) $(RTMIDI) $(PIXEL_SDL) $(SPI_DEV_MEM)
 
 runPixel:
 	@echo "\n------------------ run zicPixel ------------------\n"
-	./zicPixel
+	./pixel.$(BIN_SUFFIX)
 
 buildPixelSSD1306:
 	@echo "\n------------------ build zicPixel SSD1306 ------------------\n"
-	g++ -g -fms-extensions -o zicPixelSSD1306 zicPixelSSD1306.cpp -ldl $(INC) $(RPI) $(RTMIDI) $(PIXEL_SDL) $(shell pkg-config --cflags --libs sndfile) $(shell pkg-config --cflags --libs libpulse-simple)
+	g++ -g -fms-extensions -o pixelSSD1306.$(BIN_SUFFIX) zicPixelSSD1306.cpp -ldl $(INC) $(RPI) $(RTMIDI) $(PIXEL_SDL) $(shell pkg-config --cflags --libs sndfile) $(shell pkg-config --cflags --libs libpulse-simple)
 
 runPixelSSD1306:
 	@echo "\n------------------ run zicPixel ------------------\n"
-	./zicPixelSSD1306
+	./pixelSSD1306.$(BIN_SUFFIX)
 
 gpio:
 	@echo "\n------------------ gpio ------------------\n"
