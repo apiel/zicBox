@@ -7,7 +7,14 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 apt-get update
-apt-get install vim build-essential librtmidi-dev libsndfile1-dev pulseaudio alsa-utils libbcm2835-dev libraspberrypi-dev liblua5.4-dev -y
+apt-get install vim build-essential librtmidi-dev libsndfile1-dev pulseaudio alsa-utils libbcm2835-dev libraspberrypi-dev luarocks -y
+
+# install teal for static type in lua
+luarocks install tl
+
+# for lua 5.4
+# apt-get install liblua5.4-dev
+# luarocks install tl --lua-version=5.4
 
 pulseaudio --start
 

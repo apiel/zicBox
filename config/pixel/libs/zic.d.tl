@@ -1,0 +1,1 @@
+global function setConfig(string, string) end

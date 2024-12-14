@@ -1,6 +1,8 @@
 #ifndef _LUA_CONFIG_H_
 #define _LUA_CONFIG_H_
 
+#include "log.h"
+
 #include <string>
 #include <vector>
 
@@ -53,7 +55,10 @@ void luaConfig(std::string filename, void (*callback)(char* command, char* param
         lua_setglobal(L, variables[i].value.c_str());
     }
 
-    luaL_dofile(L, filename.c_str());
+    int ret =luaL_dofile(L, filename.c_str());
+    if (ret != 0) {
+        logError("Lua error [0x%x]: %s", ret, lua_tostring(L, -1));
+    }
     lua_close(L);
 }
 }
