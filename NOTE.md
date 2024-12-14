@@ -14,6 +14,10 @@
               or only link with previous component:
                     CHILD_FROM_PREVIOUS: true
 
+- TODO cleanup audio plugin
+    - remove `APP_INFO`
+    - remove int (*debug)(const char* format, ...); from props
+
 - TODO create rectangle component
 
 - TODO add modulation on bitcrusher :-)
