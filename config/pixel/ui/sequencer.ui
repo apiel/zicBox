@@ -55,8 +55,9 @@
     KEYMAP: Keyboard 'g' setView:Master
 
 
-  COMPONENT: Separator 0 0 $SCREEN_WIDTH 8
-    TITLE: Drum \($track)
+  COMPONENT: Text 0 0 $SCREEN_WIDTH 8
+    TEXT: Track \($track)
+    CENTERED: true
 
 $rowHeight=25
 $y=-($rowHeight) + 12

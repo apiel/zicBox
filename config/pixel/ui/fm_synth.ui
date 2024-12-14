@@ -13,8 +13,9 @@ $group=-1
 $group=$group+1
 $y=$y+$rowHeight
 
-    COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
-      TITLE: FM \($track)
+    COMPONENT: Text 0 $y $SCREEN_WIDTH 8
+      TEXT: FM \($track)
+      CENTERED: true
       GROUP: $group
 
 $y=$y+$sepHeight
@@ -50,8 +51,9 @@ $y=$y+$sepHeight
 $group=$group+1
 $y=$y+$rowHeight
 
-    COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
-      TITLE: Effect
+    COMPONENT: Text 0 $y $SCREEN_WIDTH 8
+      TEXT: Effect
+      CENTERED: true
       GROUP: $group
 
 $y=$y+$sepHeight

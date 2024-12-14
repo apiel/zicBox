@@ -13,8 +13,9 @@ $group=-1
 $group=$group+1
 $y=$y+$rowHeight
 
-    COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
-      TITLE: Drum \($track)
+    COMPONENT: Text 0 $y $SCREEN_WIDTH 8
+      TEXT: Drum \($track)
+      CENTERED: true
       GROUP: $group
 
 $y=$y+$sepHeight
@@ -50,8 +51,9 @@ $y=$y+$sepHeight
 $group=$group+1
 $y=$y+$rowHeight
 
-    COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
-      TITLE: Distortion
+    COMPONENT: Text 0 $y $SCREEN_WIDTH 8
+      TEXT: Distortion
+      CENTERED: true
       GROUP: $group
 
 $y=$y+$sepHeight
@@ -87,8 +89,9 @@ $y=$y+$sepHeight
 $group=$group+1
 $y=$y+$rowHeight
 
-    COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
-      TITLE: Waveform
+    COMPONENT: Text 0 $y $SCREEN_WIDTH 8
+      TEXT: Waveform
+      CENTERED: true
       GROUP: $group
 
 $y=$y+$sepHeight
@@ -112,8 +115,9 @@ $y=$y+$sepHeight
 $group=$group+1
 $y=$y+$rowHeight
 
-    COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
-      TITLE: Amplitude
+    COMPONENT: Text 0 $y $SCREEN_WIDTH 8
+      TEXT: Amplitude
+      CENTERED: true
       GROUP: $group
 
 $y=$y+$sepHeight
@@ -138,8 +142,9 @@ $y=$y+$sepHeight
 $group=$group+1
 $y=$y+$rowHeight
 
-    COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
-      TITLE: Frequency
+    COMPONENT: Text 0 $y $SCREEN_WIDTH 8
+      TEXT: Frequency
+      CENTERED: true
       GROUP: $group
 
 $y=$y+$sepHeight
@@ -164,8 +169,9 @@ $y=$y+$sepHeight
 $group=$group+1
 $y=$y+$rowHeight
 
-    COMPONENT: Separator 0 $y $SCREEN_WIDTH 8
-      TITLE: Click transient
+    COMPONENT: Text 0 $y $SCREEN_WIDTH 8
+      TEXT: Click transient
+      CENTERED: true
       GROUP: $group
 
 $y=$y+$sepHeight
