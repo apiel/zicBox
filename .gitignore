@@ -12,5 +12,15 @@ zicUi
 zicBox
 zicPixel
 zicPixelSSD1306
+zicBox.arm
+zicBox.x86
+zicPixel.arm
+zicPixel.x86
+zicPixelSSD1306.arm
+zicPixelSSD1306.x86
+pixelSSD1306.x86
+pixelSSD1306.arm
+pixel.arm
+pixel.x86
 build
 test2
