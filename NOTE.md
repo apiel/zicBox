@@ -1,22 +1,33 @@
 ## Pixel TODO
 
+- TODO rename separator to text component
+       --> create line component (maybe not event necesaary as there rect component...)
+       --> create rectangle component
+
+- TODO in seq component use music font to show step length
+
+- IDEA could we make overlapping component somehow refresh if the one under update?? :p
+        --> should this be manual or should it be done automatically
+            - if it is automatic it could endup in a mess if UI is badely designed
+              could have a flag to enable it:
+                    FIND_PARENT_UPDATE: true
+            - but to do it manual, we would ne a way to identify component
+              or only link with previous component:
+                    CHILD_FROM_PREVIOUS: true
+
 - TODO add modulation on bitcrusher :-)
 
 - TODO port zicPixel to Web assembly
 
 - TODO sudo display
 
-- TODO cache audio track to reduce computation?
+- IDEA cache audio track to reduce computation?
 
 - TODO can EffectGrain and EffectDelay be one single effect to make an advance GrainDelay effect...?
 - TODO make a simple EffectDelay with preset... or re-use the exisiting one?
 - TODO or should it just be GRAIN track, DELAY track and REVERB track (alias delay?)
 
-- TODO Volume/Gain, could we have a value over 100% like 150%??
-
 - TODO DrumSample track: is a very basic track that can play 1 shot sample (8, 12, 16?), first page select the sample (volume and mute?), second page grid sequencer with velocity, step probability (volume and mute?), third page global track effect, filter...
-
-- TODO make dustscript part of the repo instead to be external dependency...
 
 - TODO get rid of SDL component andunify everything
       --> move everything to buffer base UI and only pass use the SDL to render buffer to the screen
