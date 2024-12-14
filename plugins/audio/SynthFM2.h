@@ -135,7 +135,13 @@ public:
     };
 
     Val& algo = val(1, "ALGO", { "Algorithm", .min = 1, .max = sizeof(algorithm) / sizeof(algorithm[0]) });
-    Val& mainFreq = val(440.0f, "FREQUENCY", { "Frequency", .min = 20.0, .max = 5000.0, .step = 1.0, .unit = "Hz" });
+    Val& mainFreq = val(440.0f, "FREQUENCY", { "Frequency", .min = 20.0, .max = 5000.0, .step = 10.0, .unit = "Hz" },
+        [&](auto p) { 
+            mainFreq.setFloat(p.value);
+            for (int i = 0; i < ZIC_FM_OPS_COUNT; i++) {
+                updateOperatorFrequency(operators[i]);
+            }
+         });
 
     SynthFM2(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name, {
