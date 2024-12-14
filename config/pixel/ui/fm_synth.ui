@@ -20,27 +20,6 @@ $y=$y+$rowHeight
       GROUP: $group
 
 $y=$y+$sepHeight
-  #   COMPONENT: Encoder3 0 $y $1/4W 50
-  #     GROUP: $group
-  #     ENCODER_ID: 0
-  #     COLOR: primary
-  #     TRACK: $track
-  #     VALUE: MMFilter CUTOFF
-
-  #   COMPONENT: Encoder3 $1/4W $y $1/4W 50
-  #     GROUP: $group
-  #     ENCODER_ID: 1
-  #     COLOR: primary
-  #     TRACK: $track
-  #     VALUE: MMFilter RESONANCE
-
-  # COMPONENT: FmAlgo $2/4W $y $1/4W 50
-  #   GROUP: $group
-  #   ENCODER_ID: 2
-  #   TEXT_COLOR: secondary
-  #   TRACK: $track
-  #   VALUE: FM ALGO
-
     COMPONENT: Encoder3 0 $y $1/4W 50
       GROUP: $group
       ENCODER_ID: 0
@@ -62,14 +41,13 @@ $y=$y+$sepHeight
       TRACK: $track
       VALUE: MMFilter RESONANCE
 
-   COMPONENT: Encoder3 $3/4W $y $1/4W 50
+    COMPONENT: FmAlgo $3/4W $y $1/4W 50
       GROUP: $group
       ENCODER_ID: 3
-      COLOR: tertiary
+      TEXT_COLOR: secondary
       TRACK: $track
       VALUE: FM ALGO
 
-#   Bitcrusher
 $group=$group+1
 $y=$y+$rowHeight
 $y=$y+$sepHeight
@@ -99,7 +77,7 @@ $y=$y+$sepHeight
     COMPONENT: Encoder3 $3/4W $y $1/4W 50
       GROUP: $group
       ENCODER_ID: 3
-      COLOR: quaternary
+      COLOR: primary
       TRACK: $track
       VALUE: FM FREQUENCY
 
