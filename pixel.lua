@@ -1,3 +1,4 @@
--- include file in config/pixel/main.lua
+local tl = require "tl"
+tl.loader()
 
-require("config/pixel/main")
+require "config/pixel/main"
