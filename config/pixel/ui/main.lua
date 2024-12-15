@@ -24,11 +24,11 @@ local drum23_synth = require("config/pixel/ui/drum23_synth")
 track = track + 1
 ui.view("Track" .. track, { COMPONENTS_TRACK = track })
 mainKeyboard(track, "SynthDrum23")
--- drum23_synth(track)
+drum23_synth(track)
 
 -- - Track Drum23 (2)
 track = track + 1
 ui.view("Track" .. track, { COMPONENTS_TRACK = track })
 mainKeyboard(track, "SynthDrum23")
--- drum23_synth(track)
+drum23_synth(track)
 

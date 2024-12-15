@@ -35,10 +35,10 @@ static int setConfigFn(lua_State* L)
     const char* filename = ar.source + 1; // +1 to remove leading @
     // printf("yoyoyo %s\n", filename);
 
-    const char* key = lua_tostring(L, 1);
-    const char* value = lua_tostring(L, 2);
+    std::string key = lua_tostring(L, 1);
+    std::string value = lua_tostring(L, 2);
 
-    callback((char*)key, (char*)value, filename, variables);
+    callback((char *)key.c_str(), (char*)value.c_str(), filename, variables);
 
     return 0;
 }

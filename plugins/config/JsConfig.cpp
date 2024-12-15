@@ -62,8 +62,8 @@ struct UserData {
 
 duk_ret_t zicSetConfigFn(duk_context* ctx)
 {
-    const char* key = duk_to_string(ctx, 0);
-    const char* value = duk_to_string(ctx, 1);
+    std::string key = duk_to_string(ctx, 0);
+    std::string value = duk_to_string(ctx, 1);
 
     duk_push_global_stash(ctx);
     duk_get_prop_string(ctx, -1, DUK_HIDDEN_SYMBOL("userDataPtr"));
@@ -72,7 +72,7 @@ duk_ret_t zicSetConfigFn(duk_context* ctx)
 
     // printf("-------> %s: %s (%s)\n", key, value, userData->filename);
 
-    userData->callback((char*)key, (char*)value, userData->filename, userData->variables);
+    userData->callback((char*)key.c_str(), (char*)value.c_str(), userData->filename, userData->variables);
     return 0;
 }
 
