@@ -21,7 +21,7 @@ local ui = require "config/pixel/libs/ui"
 --- - DATA set plugin target
 --- - COUNTER_DATA_ID is the data id to show active step
 --- @param position {x: number, y: number, w: number, h: number} The position of the component.
---- @param options {GROUP: number, TRACK: number, GROUP_RANGE: string | table, SEQUENCE_DATA_ID: string, ENCODERS: string, SHIFT_MODE: number, GLOBAL_SHIFT: number, BACKGROUND_COLOR: string, TEXT_COLOR: string, BAR_COLOR: string, BAR_BACKGROUND_COLOR: string, TEXT_MOTION1_COLOR: string, TEXT_MOTION2_COLOR: string} Options:
+--- @param options {GROUP: number, TRACK: number, GROUP_RANGE: string | table, SEQUENCE_DATA_ID: string, ENCODERS: string | table, SHIFT_MODE: number, GLOBAL_SHIFT: number, BACKGROUND_COLOR: string, TEXT_COLOR: string, BAR_COLOR: string, BAR_BACKGROUND_COLOR: string, TEXT_MOTION1_COLOR: string, TEXT_MOTION2_COLOR: string} Options:
 --- - GROUP is the group of the component
 --- - TRACK is the track of the component
 --- - GROUP_RANGE is the index of the first and last group for selection

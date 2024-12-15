@@ -39,3 +39,12 @@ drum23_synth(track)
 ui.view("Sequencer" .. track, { COMPONENTS_TRACK = track })
 sequencer(track)
 
+-- - Track Drum23 (3)
+track = track + 1
+ui.view("Track" .. track, { COMPONENTS_TRACK = track })
+mainKeyboard(track, "SynthDrum23")
+drum23_synth(track)
+
+ui.view("Sequencer" .. track, { COMPONENTS_TRACK = track })
+sequencer(track)
+
