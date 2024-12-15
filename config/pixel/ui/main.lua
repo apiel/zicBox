@@ -13,10 +13,15 @@ W2_4 = W1_4 * 2
 W1_2 = W2_4
 W3_4 = W1_4 * 3
 
-ui.addZoneEncoder({ x = 0, y = 0, w = W1_4, h = ScreenHeight })
-ui.addZoneEncoder({ x = W1_4, y = 0, w = W1_4, h = ScreenHeight })
-ui.addZoneEncoder({ x = W1_2, y = 0, w = W1_4, h = ScreenHeight })
-ui.addZoneEncoder({ x = W3_4, y = 0, w = W1_4, h = ScreenHeight })
+ui.addZoneEncoder({ 0, 0, W1_4, ScreenHeight })
+ui.addZoneEncoder({ W1_4, 0, W1_4, ScreenHeight })
+ui.addZoneEncoder({ W1_2, 0, W1_4, ScreenHeight })
+ui.addZoneEncoder({ W3_4, 0, W1_4, ScreenHeight })
+
+local track = 0
+local drum23_synth = require("config/pixel/ui/drum23_synth")
+-- - Track Drum23 (1)
+drum23_synth(track)
 
 -- local text = require("config/pixel/libs/component/text")
 -- text(
@@ -32,12 +37,12 @@ ui.addZoneEncoder({ x = W3_4, y = 0, w = W1_4, h = ScreenHeight })
 --     { TRACK = 5, GROUP = 1 }
 -- )
 
-local encoder3 = require("config/pixel/libs/component/encoder3")
-encoder3(
-    { ENCODER_ID = 0, VALUE = "MMFilter CUTOFF" },
-    { x = 0, y = 80, w = 50, h = 50 },
-    { TRACK = 2 }
-)
+-- local encoder3 = require("config/pixel/libs/component/encoder3")
+-- encoder3(
+--     { ENCODER_ID = 0, VALUE = "MMFilter CUTOFF" },
+--     { x = 0, y = 80, w = 50, h = 50 },
+--     { TRACK = 2 }
+-- )
 
 -- local fmAlgo = require("config/pixel/libs/component/fmAlgo")
 -- fmAlgo(
