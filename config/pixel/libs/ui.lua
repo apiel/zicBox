@@ -1,3 +1,5 @@
+local core = require("config/pixel/libs/core")
+
 local ui = {}
 
 --- Create a view
@@ -29,68 +31,6 @@ function ui.parsePosition(position)
     return position.x .. " " .. position.y
 end
 
-local function parseValue(value)
-    if type(value) == "boolean" then
-        return value and "true" or "false"
-    end
-    if type(value) == "table" then
-        for i, v in ipairs(value) do
-            value[i] = parseValue(v)
-        end
-        return table.concat(value, " ")
-    end
-    return value
-end
-
-
-local function parseKeyValue(key, value)
-    -- Handle KEYMAPS
-    if key == "KEYMAPS" then
-        if type(value) == "table" then
-            for _, v in ipairs(value) do
-                if type(v) == "string" then
-                    zic("KEYMAP", v)
-                else
-                    local controllerId = v.controller and v.controller or "Keyboard"
-                    local k = type(v.key) == "number" and v.key or "'" .. v.key .. "'"
-                    local action2 = v.action2 and " " .. v.action2 or ""
-                    zic("KEYMAP", controllerId .. " " .. k .. " " .. v.action .. action2)
-                end
-            end
-        end
-        return
-    end
-
-    print(key .. ": " .. parseValue(value))
-    zic(key, parseValue(value))
-end
-
---- Parse options and apply them to zic configurations
---- @param options { [string]: string | boolean | number | table } Options to apply
-function ui.parseOptions(options)
-    if options ~= nil then
-        for key, value in pairs(options) do
-            parseKeyValue(key, value)
-        end
-    end
-end
-
---- Parse params and apply them to zic configurations
---- @param params { [string]: string | boolean | number | table } Params to apply
---- @param mandatory table Mandatory params key in right order
-function ui.parseParams(params, mandatory)
-    if params == nil then
-        error("Params cannot be nil", 2)
-    end
-
-    for _, key in ipairs(mandatory) do
-        if params[key] == nil then
-            error("Mandatory param " .. key .. " is missing", 2)
-        end
-        parseKeyValue(key, params[key])
-    end
-end
-
 --- Create a component
 --- @param name string The name of the component
 --- @param mandatoryParams table Mandatory params key in right order
@@ -99,8 +39,8 @@ end
 --- @param options { [string]: string | boolean | number | table } Options to apply
 function ui.component(name, mandatoryParams, params, position, options)
     zic("COMPONENT", name .. " " .. ui.parsePosition(position))
-    ui.parseParams(params, mandatoryParams)
-    ui.parseOptions(options)
+    core.parseParams(params, mandatoryParams)
+    core.parseOptions(options)
 end
 
 return ui

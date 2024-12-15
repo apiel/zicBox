@@ -18,6 +18,12 @@
 - TODO make a simple EffectDelay with preset... or re-use the exisiting one?
 - TODO or should it just be GRAIN track, DELAY track and REVERB track (alias delay?)
 
+- TODO Save button or project:
+    - save yes
+    - restore 
+    - save as
+    - copy to ? Track? Variation/clip ?
+
 - TODO cleanup audio plugin
     - remove `APP_INFO`
     - remove int (*debug)(const char* format, ...); from props
