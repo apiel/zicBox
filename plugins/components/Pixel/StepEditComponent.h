@@ -248,6 +248,7 @@ public:
             return true;
         }
 
+        /*md - `GROUP_RANGE: index1 index2` is the index of the first and last group for selection.*/
         if (strcmp(key, "GROUP_RANGE") == 0) {
             groupRange[0] = atoi(strtok(value, " "));
             groupRange[1] = atoi(strtok(NULL, " "));

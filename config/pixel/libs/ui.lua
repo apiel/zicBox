@@ -61,7 +61,7 @@ local function parseKeyValue(key, value)
         return
     end
 
-    -- print(key .. ": " .. parseValue(value))
+    print(key .. ": " .. parseValue(value))
     zic(key, parseValue(value))
 end
 
