@@ -1,5 +1,6 @@
 local scrollGroup = require("config/pixel/libs/containers/scrollGroup")
 local text = require("config/pixel/libs/component/text")
+local encoder3 = require("config/pixel/libs/component/encoder3")
 
 local function drum23_synth(track)
   scrollGroup("Scroll", { x = 0, y = 0, w = ScreenWidth, h = 214 }, {
@@ -19,40 +20,42 @@ local function drum23_synth(track)
   y = y + rowHeight
 
   text(
-      { TEXT = "Drum (" .. track .. ")" },
-      { x = 0, y = y, w = ScreenWidth, h = 8 },
-      { CENTERED = true, GROUP = group }
+    { TEXT = "Drum (" .. track .. ")" },
+    { x = 0, y = y, w = ScreenWidth, h = 8 },
+    { CENTERED = true, GROUP = group }
   )
 
   y = y + sepHeight
 
-  --     COMPONENT: Encoder3 0 $y $1/4W 50
-  --       GROUP: $group
-  --       ENCODER_ID: 0
-  --       COLOR: secondary
-  --       TRACK: $track
-  --       VALUE: Volume VOLUME
+  encoder3(
+    { ENCODER_ID = 0, VALUE = "Volume VOLUME" },
+    { x = 0, y = y, w = W1_4, h = 50 },
+    { GROUP = group, COLOR = "secondary", TRACK = track }
+  )
 
-  --     COMPONENT: Encoder3 $1/4W $y $1/4W 50
-  --       GROUP: $group
-  --       ENCODER_ID: 1
-  --       COLOR: primary
-  --       TRACK: $track
-  --       VALUE: MMFilter CUTOFF
+  encoder3(
+    { ENCODER_ID = 1, VALUE = "MMFilter CUTOFF" },
+    { x = W1_4, y = y, w = W1_4, h = 50 },
+    { GROUP = group, COLOR = "primary", TRACK = track }
+  )
 
-  --     COMPONENT: Encoder3 $2/4W $y $1/4W 50
-  --       GROUP: $group
-  --       ENCODER_ID: 2
-  --       COLOR: primary
-  --       TRACK: $track
-  --       VALUE: MMFilter RESONANCE
-
+  encoder3(
+    { ENCODER_ID = 2, VALUE = "MMFilter RESONANCE" },
+    { x = W2_4, y = y, w = W1_4, h = 50 },
+    { GROUP = group, COLOR = "primary", TRACK = track }
+  )
   --    COMPONENT: Encoder3 $3/4W $y $1/4W 50
   --       GROUP: $group
   --       ENCODER_ID: 3
   --       COLOR: tertiary
   --       TRACK: $track
   --       VALUE: Distortion LEVEL
+
+  encoder3(
+    { ENCODER_ID = 3, VALUE = "Distortion LEVEL" },
+    { x = W3_4, y = y, w = W1_4, h = 50 },
+    { GROUP = group, COLOR = "tertiary", TRACK = track }
+  )
 
   -- #   Distortion
   -- $group=$group+1
