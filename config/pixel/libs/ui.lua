@@ -23,8 +23,11 @@ function ui.setScreenSize(width, height)
 end
 
 --- Parse a position
---- @param position {x: number, y: number, w: number, h: number} | {x: number, y: number} The position of the component.
+--- @param position {x: number, y: number, w: number, h: number} | {x: number, y: number} | table The position of the component.
 function ui.parsePosition(position)
+    if #position == 2 or #position == 4 then
+        return table.concat(position, " ")
+    end
     if position.w ~= nil and position.h ~= nil then
         return position.x .. " " .. position.y .. " " .. position.w .. " " .. position.h
     end
