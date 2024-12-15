@@ -101,7 +101,7 @@ end
 
 --- Apply keyValues to zic
 --- @param keyValues table values to apply
-function core.zicKeyValues(keyValues)
+function core.zic(keyValues)
     for _, keyValue in ipairs(keyValues) do
         zic(keyValue.key, keyValue.value)
     end
