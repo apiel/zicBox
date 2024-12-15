@@ -1,6 +1,8 @@
 local scrollGroup = require("config/pixel/libs/containers/scrollGroup")
 local text = require("config/pixel/libs/component/text")
 local encoder3 = require("config/pixel/libs/component/encoder3")
+local graph = require("config/pixel/libs/component/graph")
+local drumEnvelop = require("config/pixel/libs/component/drumEnvelop")
 
 local function drum23_synth(track)
   scrollGroup("Scroll", { x = 0, y = 0, w = ScreenWidth, h = 214 }, {
@@ -78,124 +80,98 @@ local function drum23_synth(track)
   )
 
   -- #   Waveform
-  -- $group=$group+1
-  -- $y=$y+$rowHeight
+  group = group + 1
+  y = y + rowHeight
+  text(
+    { TEXT = "Waveform" },
+    { x = 0, y = y, w = ScreenWidth, h = 8 },
+    { CENTERED = true, GROUP = group }
+  )
 
-  --     COMPONENT: Text 0 $y $SCREEN_WIDTH 8
-  --       TEXT: Waveform
-  --       CENTERED: true
-  --       GROUP: $group
-
-  -- $y=$y+$sepHeight
-  --     COMPONENT: Graph 0 $y ($3/4W-2) 50
-  --       GROUP: $group
-  --       TRACK: $track
-  --       PLUGIN: SynthDrum23
-  --       DATA_ID: WAVEFORM
-  --       ENCODER: 0 WAVEFORM_TYPE
-  --       ENCODER: 1 SHAPE
-  --       ENCODER: 2 MACRO
-
-  --     COMPONENT: Encoder3 $3/4W $y $1/4W 50
-  --       GROUP: $group
-  --       ENCODER_ID: 3
-  --       COLOR: quaternary
-  --       TRACK: $track
-  --       VALUE: SynthDrum23 GAIN_CLIPPING
+  y = y + sepHeight
+  graph(
+    { PLUGIN = "SynthDrum23", DATA_ID = "WAVEFORM" },
+    { x = 0, y = y, w = W3_4 - 2, h = 50 },
+    { GROUP = group, TRACK = track, ENCODERS = { "0 WAVEFORM_TYPE", "1 SHAPE", "2 MACRO" } }
+  )
+  encoder3(
+    { ENCODER_ID = 3, VALUE = "SynthDrum23 GAIN_CLIPPING" },
+    { x = W3_4, y = y, w = W1_4, h = 50 },
+    { GROUP = group, COLOR = "quaternary", TRACK = track }
+  )
 
   -- #   Amp envelope
-  -- $group=$group+1
-  -- $y=$y+$rowHeight
+  group = group + 1
+  y = y + rowHeight
+  text(
+    { TEXT = "Amplitude" },
+    { x = 0, y = y, w = ScreenWidth, h = 8 },
+    { CENTERED = true, GROUP = group }
+  )
 
-  --     COMPONENT: Text 0 $y $SCREEN_WIDTH 8
-  --       TEXT: Amplitude
-  --       CENTERED: true
-  --       GROUP: $group
-
-  -- $y=$y+$sepHeight
-
-  --     COMPONENT: DrumEnvelop 0 $y ($3/4W-2) 50
-  --       GROUP: $group
-  --       TRACK: $track
-  --       PLUGIN: SynthDrum23
-  --       ENVELOP_DATA_ID: 0
-  --       ENCODER_PHASE: 0
-  --       ENCODER_TIME: 1
-  --       ENCODER_MODULATION: 2
-
-  --     COMPONENT: Encoder3 $3/4W $y $1/4W 50
-  --       GROUP: $group
-  --       ENCODER_ID: 3
-  --       COLOR: quaternary
-  --       TRACK: $track
-  --       VALUE: SynthDrum23 DURATION
+  y = y + sepHeight
+  drumEnvelop(
+    { PLUGIN = "SynthDrum23", ENVELOP_DATA_ID = "0" },
+    { x = 0, y = y, w = W3_4 - 2, h = 50 },
+    { GROUP = group, TRACK = track, ENCODERS = { "0 PHASE", "1 TIME", "2 MODULATION" } }
+  )
+  encoder3(
+    { ENCODER_ID = 3, VALUE = "SynthDrum23 DURATION" },
+    { x = W3_4, y = y, w = W1_4, h = 50 },
+    { GROUP = group, COLOR = "quaternary", TRACK = track }
+  )
 
   -- #   Frequency envelope
-  -- $group=$group+1
-  -- $y=$y+$rowHeight
+  group = group + 1
+  y = y + rowHeight
+  text(
+    { TEXT = "Frequency" },
+    { x = 0, y = y, w = ScreenWidth, h = 8 },
+    { CENTERED = true, GROUP = group }
+  )
 
-  --     COMPONENT: Text 0 $y $SCREEN_WIDTH 8
-  --       TEXT: Frequency
-  --       CENTERED: true
-  --       GROUP: $group
-
-  -- $y=$y+$sepHeight
-
-  --     COMPONENT: DrumEnvelop 0 $y ($3/4W-2) 50
-  --       GROUP: $group
-  --       TRACK: $track
-  --       PLUGIN: SynthDrum23
-  --       ENVELOP_DATA_ID: 4
-  --       ENCODER_PHASE: 0
-  --       ENCODER_TIME: 1
-  --       ENCODER_MODULATION: 2
-
-  --     COMPONENT: Encoder3 $3/4W $y $1/4W 50
-  --       GROUP: $group
-  --       ENCODER_ID: 3
-  --       COLOR: secondary
-  --       TRACK: $track
-  --       VALUE: SynthDrum23 PITCH
+  y = y + sepHeight
+  drumEnvelop(
+    { PLUGIN = "SynthDrum23", ENVELOP_DATA_ID = "4" },
+    { x = 0, y = y, w = W3_4 - 2, h = 50 },
+    { GROUP = group, TRACK = track, ENCODERS = { "0 PHASE", "1 TIME", "2 MODULATION" } }
+  )
+  encoder3(
+    { ENCODER_ID = 3, VALUE = "SynthDrum23 PITCH" },
+    { x = W3_4, y = y, w = W1_4, h = 50 },
+    { GROUP = group, COLOR = "secondary", TRACK = track }
+  )
 
   -- #   Click
-  -- $group=$group+1
-  -- $y=$y+$rowHeight
+  group = group + 1
+  y = y + rowHeight
+  text(
+    { TEXT = "Click transient" },
+    { x = 0, y = y, w = ScreenWidth, h = 8 },
+    { CENTERED = true, GROUP = group }
+  )
 
-  --     COMPONENT: Text 0 $y $SCREEN_WIDTH 8
-  --       TEXT: Click transient
-  --       CENTERED: true
-  --       GROUP: $group
-
-  -- $y=$y+$sepHeight
-  --     COMPONENT: Encoder3 0 $y $1/4W 50
-  --       GROUP: $group
-  --       ENCODER_ID: 0
-  --       COLOR: quaternary
-  --       TRACK: $track
-  --       VALUE: SynthDrum23 CLICK
-
-  --     COMPONENT: Encoder3 $1/4W $y $1/4W 50
-  --       GROUP: $group
-  --       ENCODER_ID: 1
-  --       COLOR: quaternary
-  --       TRACK: $track
-  --       VALUE: SynthDrum23 CLICK_DURATION
-
-
-  --     COMPONENT: Encoder3 $2/4W $y $1/4W 50
-  --       GROUP: $group
-  --       ENCODER_ID: 2
-  --       COLOR: quaternary
-  --       TYPE: STRING
-  --       TRACK: $track
-  --       VALUE: SynthDrum23 CLICK_CUTOFF
-
-  --     COMPONENT: Encoder3 $3/4W $y $1/4W 50
-  --       GROUP: $group
-  --       ENCODER_ID: 3
-  --       COLOR: quaternary
-  --       TRACK: $track
-  --       VALUE: SynthDrum23 CLICK_RESONANCE
+  y = y + sepHeight
+  encoder3(
+    { ENCODER_ID = 0, VALUE = "SynthDrum23 CLICK" },
+    { x = 0, y = y, w = W1_4, h = 50 },
+    { GROUP = group, COLOR = "quaternary", TRACK = track }
+  )
+  encoder3(
+    { ENCODER_ID = 1, VALUE = "SynthDrum23 CLICK_DURATION" },
+    { x = W1_4, y = y, w = W1_4, h = 50 },
+    { GROUP = group, COLOR = "quaternary", TRACK = track }
+  )
+  encoder3(
+    { ENCODER_ID = 2, VALUE = "SynthDrum23 CLICK_CUTOFF" },
+    { x = W2_4, y = y, w = W1_4, h = 50 },
+    { GROUP = group, COLOR = "quaternary", TRACK = track }
+  )
+  encoder3(
+    { ENCODER_ID = 3, VALUE = "SynthDrum23 CLICK_RESONANCE" },
+    { x = W3_4, y = y, w = W1_4, h = 50 },
+    { GROUP = group, COLOR = "quaternary", TRACK = track }
+  )
 end
 
 return drum23_synth

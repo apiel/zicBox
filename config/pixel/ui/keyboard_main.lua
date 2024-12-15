@@ -7,8 +7,7 @@ local function keyboardMain(track, synth)
     {
       ROW1 = "&icon::arrowUp Seq Clip Synth Track",
       ROW2 = "&icon::arrowDown &icon::musicNote::pixelated Live &icon::pause &icon::play"
-    },
-    position,
+    }, position,
     {
       SHIFT_VISIBILITY = { index = 254, value = 0 },
       KEYMAPS = {
@@ -30,8 +29,7 @@ local function keyboardMain(track, synth)
     {
       ROW1 = "1 2 3 4 Track",
       ROW2 = "5 6 7 8 Master"
-    },
-    position,
+    }, position,
     {
       SHIFT_VISIBILITY = { index = 254, value = 1 },
       KEYMAPS = {
