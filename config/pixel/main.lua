@@ -23,3 +23,10 @@ adsr(
     { x = 0, y = 20, w = ScreenWidth, h = 50 },
     { TRACK = 4 }
 )
+
+local encoder3 = require("config/pixel/libs/component/encoder3")
+encoder3(
+    { ENCODER_ID = 1, VALUE = { pluginName = "MMFilter", keyName = "CUTOFF" } },
+    { x = 0, y = 80, w = 50, h = 50 },
+    { TRACK = 4 }
+)
