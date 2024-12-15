@@ -1,11 +1,11 @@
 local ui = require "config/pixel/libs/ui"
 
 --- Show a representation of the ADSR envdelop.
---- @param params {VALUES: table, PLUGIN: string } Params:
+--- @param params {VALUES: table | string, PLUGIN: string } Params:
 --- - VALUES (A_value D_value S_value R_value) are the values id for the encoders and data point.
 --- - PLUGIN set plugin target
 --- @param position {x: number, y: number, w: number, h: number} The position of the component.
---- @param options {GROUP: number, TRACK: number, ENCODERS: table, OUTLINE: boolean, FILLED: boolean, BACKGROUND_COLOR: string, FILL_COLOR: string, OUTLINE_COLOR: string, TEXT_COLOR1: string, TEXT_COLOR2: string, INACTIVE_COLOR_RATIO: number} Options:
+--- @param options {GROUP: number, TRACK: number, ENCODERS: table | string, OUTLINE: boolean, FILLED: boolean, BACKGROUND_COLOR: string, FILL_COLOR: string, OUTLINE_COLOR: string, TEXT_COLOR1: string, TEXT_COLOR2: string, INACTIVE_COLOR_RATIO: number} Options:
 --- - GROUP is the group of the component
 --- - TRACK is the track of the component
 --- - ENCODERS (A_encoder_id D_encoder_id S_encoder_id R_encoder_id) are the IDs of the encoders to update given value.
