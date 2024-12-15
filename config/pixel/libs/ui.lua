@@ -29,16 +29,25 @@ function ui.parsePosition(position)
     return position.x .. " " .. position.y
 end
 
+local function parseValue(value)
+    if type(value) == "boolean" then
+        return value and "true" or "false"
+    end
+    if type(value) == "table" then
+        for i, v in ipairs(value) do
+            value[i] = parseValue(v)
+        end
+        return table.concat(value, " ")
+    end
+    return value
+end
+
 local function parseKeyValue(key, value)
     -- camel to snake case
     -- key = key:gsub("(%u)", function(c)
     --     return "_" .. c
     -- end):upper()
-
-    if type(value) == "boolean" then
-        value = value and "true" or "false"
-    end
-    zic(key, value)
+    zic(key, parseValue(value))
 end
 
 --- Parse options and apply them to zic configurations
