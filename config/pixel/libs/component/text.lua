@@ -11,9 +11,7 @@ local ui = require "config/pixel/libs/ui"
 --- - BACKGROUND_COLOR The background color (optional)
 --- - COLOR The text color (optional)
 local function text(params, position, options)
-    zic("COMPONENT", "Text " .. ui.getComponentPosition(position))
-    ui.parseParams(params, { "TEXT" })
-    ui.parseOptions(options)
+    ui.component("Text", { "TEXT" }, params, position, options)
 end
 
 return text

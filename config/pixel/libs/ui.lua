@@ -20,9 +20,9 @@ function ui.setScreenSize(width, height)
     zic("SCREEN", width .. " " .. height)
 end
 
---- Get the component position
---- @param position {x: number, y: number, w: number, h: number} The position of the component.
-function ui.getComponentPosition(position)
+--- Parse a position
+--- @param position {x: number, y: number, w: number | nil, h: number | nil} The position of the component.
+function ui.parsePosition(position)
     if position.w ~= nil and position.h ~= nil then
         return position.x .. " " .. position.y .. " " .. position.w .. " " .. position.h
     end
@@ -68,6 +68,17 @@ function ui.parseParams(params, mandatory)
     for key, value in pairs(params) do
         parseKeyValue(key, value)
     end
+end
+
+--- Create a component
+--- @param name string The name of the component
+--- @param params { [string]: string | boolean | number | table } Params to apply
+--- @param position {x: number, y: number, w: number | nil, h: number | nil} The position of the component.
+--- @param options { [string]: string | boolean | number | table } Options to apply
+function ui.component(name, mandatoryParams, params, position, options)
+    zic("COMPONENT", name .. " " .. ui.parsePosition(position))
+    ui.parseParams(params, mandatoryParams)
+    ui.parseOptions(options)
 end
 
 return ui
