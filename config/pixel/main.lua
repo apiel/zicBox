@@ -75,7 +75,7 @@ stepEdit(
         DATA = { pluginName = "Sequencer", dataId = "GET_STEP", stepIndex = 0 },
         COUNTER_DATA_ID = "STEP_COUNTER"
     },
-    { x = 0, y = 180, w = 80, h = 25 },
+    { x = 220, y = 180, w = 80, h = 25 },
     {
         GROUP = 0,
         TRACK = 1,
@@ -83,4 +83,20 @@ stepEdit(
         SEQUENCE_DATA_ID = "IS_PLAYING",
         GLOBAL_SHIFT = 254
     }
+)
+
+-- COMPONENT: DrumEnvelop 0 $y ($3/4W-2) 50
+-- GROUP: $group
+-- TRACK: $track
+-- PLUGIN: SynthDrum23
+-- ENVELOP_DATA_ID: 0
+-- ENCODER_PHASE: 0
+-- ENCODER_TIME: 1
+-- ENCODER_MODULATION: 2
+
+local drumEnvelop = require("config/pixel/libs/component/drumEnvelop")
+drumEnvelop(
+    { PLUGIN = "SynthDrum23", ENVELOP_DATA_ID = "0" },
+    { x = 0, y = 180, w = 200, h = 50 },
+    { GROUP = 0, TRACK = 1 }
 )
