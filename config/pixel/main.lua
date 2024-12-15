@@ -38,3 +38,10 @@ fmAlgo(
     { x = 60, y = 80, w = 50, h = 50 },
     { TRACK = 4 }
 )
+
+local graph = require("config/pixel/libs/component/graph")
+graph(
+    { PLUGIN = "SynthDrum23", DATA_ID = "WAVEFORM" },
+    { x = 120, y = 80, w = 200, h = 50 },
+    { TRACK = 1, GROUP = 1, ENCODERS = { "0 WAVEFORM_TYPE", "1 SHAPE", "2 MACRO" } }
+)
