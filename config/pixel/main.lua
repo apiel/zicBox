@@ -68,3 +68,19 @@ keyInfoBar(
         }
     }
 )
+
+local stepEdit = require("config/pixel/libs/component/stepEdit")
+stepEdit(
+    {
+        DATA = { pluginName = "Sequencer", dataId = "GET_STEP", stepIndex = 0 },
+        COUNTER_DATA_ID = "STEP_COUNTER"
+    },
+    { x = 0, y = 180, w = 80, h = 25 },
+    {
+        GROUP = 0,
+        TRACK = 1,
+        GROUP_RANGE = { 0, 7 },
+        SEQUENCE_DATA_ID = "IS_PLAYING",
+        GLOBAL_SHIFT = 254
+    }
+)
