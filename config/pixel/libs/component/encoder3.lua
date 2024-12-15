@@ -1,7 +1,7 @@
 local ui = require "config/pixel/libs/ui"
 
 --- Encoder3 is used to display current audio plugin value for a given parameter.
---- @param params {ENCODER_ID: number, VALUE: { pluginName: string, keyName: string} } Params:
+--- @param params {ENCODER_ID: number, VALUE: { pluginName: string, keyName: string} | string } Params:
 --- - ENCODER_ID is used to set the encoder id that will interract with this component
 --- - VALUE is used to set the value to control
 --- @param position {x: number, y: number, w: number, h: number} The position of the component.
@@ -22,6 +22,7 @@ local ui = require "config/pixel/libs/ui"
 --- - FONT_TITLE_SIZE set the title font size
 --- - STRING_VALUE_REPLACE_TITLE instead to show string value in knob, show under the knob. Can be useful for long string value.
 local function component(params, position, options)
+    params.VALUE = type(params.VALUE) == "string" and params.VALUE or params.VALUE.pluginName .. " " .. params.VALUE.keyName
     ui.component("Encoder3", {"ENCODER_ID", "VALUE"}, params, position, options)
 end
 
