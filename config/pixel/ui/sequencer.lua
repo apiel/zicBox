@@ -1,5 +1,7 @@
 local keyInfoBar = require("config/pixel/libs/component/keyInfoBar")
 local stepEdit = require("config/pixel/libs/component/stepEdit")
+local text = require("config/pixel/libs/component/text")
+local hiddenEncoder = require("config/pixel/libs/component/hiddenEncoder")
 
 local function sequencer(track)
   keyInfoBar(
@@ -40,124 +42,190 @@ local function sequencer(track)
     }
   )
 
+  text({ TEXT = "Track " .. track }, { x = 0, y = 0, w = ScreenWidth, h = 8 }, { CENTERED = true })
 
-  --   COMPONENT: Text 0 0 $SCREEN_WIDTH 8
-  --     TEXT: Track \($track)
-  --     CENTERED: true
+  local rowHeight = 25
+  local y = -rowHeight + 12
+  local step = 0
+  local groupRange = 0
 
-  -- $rowHeight=25
-  -- $y=-($rowHeight) + 12
-  -- $step=0
-  -- $groupRange=0
+  while step < 32 do
+    y = y + rowHeight
+    stepEdit(
+      {
+        DATA = { pluginName = "Sequencer", dataId = "GET_STEP", stepIndex = step },
+        COUNTER_DATA_ID = "STEP_COUNTER"
+      },
+      { x = 0, y = y, w = W1_4, h = 25 },
+      {
+        GROUP = step,
+        TRACK = track,
+        GROUP_RANGE = { groupRange, groupRange + 7 },
+        SEQUENCE_DATA_ID = "IS_PLAYING",
+        GLOBAL_SHIFT = 254,
+        ENCODERS = { 0, 1, 2 },
+        KEYMAPS = {
+          { key = "q", action = "stepToggle" },
+          { key = "t", action = "restoreShiftMode" }
+        }
+      }
+    )
 
-  -- while: $step < 32
-  --   $y=$y+$rowHeight
+    step = step + 1
+    stepEdit(
+      {
+        DATA = { pluginName = "Sequencer", dataId = "GET_STEP", stepIndex = step },
+        COUNTER_DATA_ID = "STEP_COUNTER"
+      },
+      { x = W1_4, y = y, w = W1_4, h = 25 },
+      {
+        GROUP = step,
+        TRACK = track,
+        GROUP_RANGE = { groupRange, groupRange + 7 },
+        SEQUENCE_DATA_ID = "IS_PLAYING",
+        GLOBAL_SHIFT = 254,
+        ENCODERS = { 0, 1, 2 },
+        KEYMAPS = {
+          { key = "w", action = "stepToggle" },
+          { key = "t", action = "restoreShiftMode" }
+        }
+      }
+    )
 
-  --     COMPONENT: StepEdit 0 $y $1/4W 25
-  --       GROUP: $step
-  --       GROUP_RANGE: ($groupRange) ($groupRange+7)
-  --       DATA: Sequencer GET_STEP $step
-  --       COUNTER_DATA_ID: STEP_COUNTER
-  --       SEQUENCE_DATA_ID: IS_PLAYING
-  --       ENCODERS: 0 1 2
-  --       KEYMAP: Keyboard 'q' stepToggle
-  --       KEYMAP: Keyboard 't' restoreShiftMode
-  --       GLOBAL_SHIFT: 254
+    step = step + 1
+    stepEdit(
+      {
+        DATA = { pluginName = "Sequencer", dataId = "GET_STEP", stepIndex = step },
+        COUNTER_DATA_ID = "STEP_COUNTER"
+      },
+      { x = W2_4, y = y, w = W1_4, h = 25 },
+      {
+        GROUP = step,
+        TRACK = track,
+        GROUP_RANGE = { groupRange, groupRange + 7 },
+        SEQUENCE_DATA_ID = "IS_PLAYING",
+        GLOBAL_SHIFT = 254,
+        ENCODERS = { 0, 1, 2 },
+        KEYMAPS = {
+          { key = "e", action = "stepToggle" },
+          { key = "t", action = "restoreShiftMode" }
+        }
+      }
+    )
 
-  --     $step=$step+1
-  --     COMPONENT: StepEdit $1/4W $y $1/4W 25
-  --       GROUP: $step
-  --       GROUP_RANGE: ($groupRange) ($groupRange+7)
-  --       DATA: Sequencer GET_STEP $step
-  --       COUNTER_DATA_ID: STEP_COUNTER
-  --       SEQUENCE_DATA_ID: IS_PLAYING
-  --       ENCODERS: 0 1 2
-  --       KEYMAP: Keyboard 'w' stepToggle
-  --       KEYMAP: Keyboard 't' restoreShiftMode
-  --       GLOBAL_SHIFT: 254
+    step = step + 1
+    stepEdit(
+      {
+        DATA = { pluginName = "Sequencer", dataId = "GET_STEP", stepIndex = step },
+        COUNTER_DATA_ID = "STEP_COUNTER"
+      },
+      { x = W3_4, y = y, w = W1_4, h = 25 },
+      {
+        GROUP = step,
+        TRACK = track,
+        GROUP_RANGE = { groupRange, groupRange + 7 },
+        SEQUENCE_DATA_ID = "IS_PLAYING",
+        GLOBAL_SHIFT = 254,
+        ENCODERS = { 0, 1, 2 },
+        KEYMAPS = {
+          { key = "r", action = "stepToggle" },
+          { key = "t", action = "restoreShiftMode" }
+        }
+      }
+    )
 
-  --     $step=$step+1
-  --     COMPONENT: StepEdit $2/4W $y $1/4W 25
-  --       GROUP: $step
-  --       GROUP_RANGE: ($groupRange) ($groupRange+7)
-  --       DATA: Sequencer GET_STEP $step
-  --       COUNTER_DATA_ID: STEP_COUNTER
-  --       SEQUENCE_DATA_ID: IS_PLAYING
-  --       ENCODERS: 0 1 2
-  --       KEYMAP: Keyboard 'e' stepToggle
-  --       KEYMAP: Keyboard 't' restoreShiftMode
-  --       GLOBAL_SHIFT: 254
+    y = y + rowHeight
 
-  --     $step=$step+1
-  --     COMPONENT: StepEdit $3/4W $y $1/4W 25
-  --       GROUP: $step
-  --       GROUP_RANGE: ($groupRange) ($groupRange+7)
-  --       DATA: Sequencer GET_STEP $step
-  --       COUNTER_DATA_ID: STEP_COUNTER
-  --       SEQUENCE_DATA_ID: IS_PLAYING
-  --       ENCODERS: 0 1 2
-  --       KEYMAP: Keyboard 'r' stepToggle
-  --       KEYMAP: Keyboard 't' restoreShiftMode
-  --       GLOBAL_SHIFT: 254
+    step = step + 1
+    stepEdit(
+      {
+        DATA = { pluginName = "Sequencer", dataId = "GET_STEP", stepIndex = step },
+        COUNTER_DATA_ID = "STEP_COUNTER"
+      },
+      { x = 0, y = y, w = W1_4, h = 25 },
+      {
+        GROUP = step,
+        TRACK = track,
+        GROUP_RANGE = { groupRange, groupRange + 7 },
+        SEQUENCE_DATA_ID = "IS_PLAYING",
+        GLOBAL_SHIFT = 254,
+        ENCODERS = { 0, 1, 2 },
+        KEYMAPS = {
+          { key = "a", action = "stepToggle" },
+          { key = "t", action = "restoreShiftMode" }
+        }
+      }
+    )
 
-  --   $y=$y+$rowHeight
-  --     $step=$step+1
-  --     COMPONENT: StepEdit 0 $y $1/4W 25
-  --       GROUP: $step
-  --       GROUP_RANGE: ($groupRange) ($groupRange+7)
-  --       DATA: Sequencer GET_STEP $step
-  --       COUNTER_DATA_ID: STEP_COUNTER
-  --       SEQUENCE_DATA_ID: IS_PLAYING
-  --       ENCODERS: 0 1 2
-  --       KEYMAP: Keyboard 'a' stepToggle
-  --       KEYMAP: Keyboard 't' restoreShiftMode
-  --       GLOBAL_SHIFT: 254
+    step = step + 1
+    stepEdit(
+      {
+        DATA = { pluginName = "Sequencer", dataId = "GET_STEP", stepIndex = step },
+        COUNTER_DATA_ID = "STEP_COUNTER"
+      },
+      { x = W1_4, y = y, w = W1_4, h = 25 },
+      {
+        GROUP = step,
+        TRACK = track,
+        GROUP_RANGE = { groupRange, groupRange + 7 },
+        SEQUENCE_DATA_ID = "IS_PLAYING",
+        GLOBAL_SHIFT = 254,
+        ENCODERS = { 0, 1, 2 },
+        KEYMAPS = {
+          { key = "s", action = "stepToggle" },
+          { key = "t", action = "restoreShiftMode" }
+        }
+      }
+    )
 
-  --     $step=$step+1
-  --     COMPONENT: StepEdit $1/4W $y $1/4W 25
-  --       GROUP: $step
-  --       GROUP_RANGE: ($groupRange) ($groupRange+7)
-  --       DATA: Sequencer GET_STEP $step
-  --       COUNTER_DATA_ID: STEP_COUNTER
-  --       SEQUENCE_DATA_ID: IS_PLAYING
-  --       ENCODERS: 0 1 2
-  --       KEYMAP: Keyboard 's' stepToggle
-  --       KEYMAP: Keyboard 't' restoreShiftMode
-  --       GLOBAL_SHIFT: 254
+    step = step + 1
+    stepEdit(
+      {
+        DATA = { pluginName = "Sequencer", dataId = "GET_STEP", stepIndex = step },
+        COUNTER_DATA_ID = "STEP_COUNTER"
+      },
+      { x = W2_4, y = y, w = W1_4, h = 25 },
+      {
+        GROUP = step,
+        TRACK = track,
+        GROUP_RANGE = { groupRange, groupRange + 7 },
+        SEQUENCE_DATA_ID = "IS_PLAYING",
+        GLOBAL_SHIFT = 254,
+        ENCODERS = { 0, 1, 2 },
+        KEYMAPS = {
+          { key = "d", action = "stepToggle" },
+          { key = "t", action = "restoreShiftMode" }
+        }
+      }
+    )
 
-  --     $step=$step+1
-  --     COMPONENT: StepEdit $2/4W $y $1/4W 25
-  --       GROUP: $step
-  --       GROUP_RANGE: ($groupRange) ($groupRange+7)
-  --       DATA: Sequencer GET_STEP $step
-  --       COUNTER_DATA_ID: STEP_COUNTER
-  --       SEQUENCE_DATA_ID: IS_PLAYING
-  --       ENCODERS: 0 1 2
-  --       KEYMAP: Keyboard 'd' stepToggle
-  --       KEYMAP: Keyboard 't' restoreShiftMode
-  --       GLOBAL_SHIFT: 254
+    step = step + 1
+    stepEdit(
+      {
+        DATA = { pluginName = "Sequencer", dataId = "GET_STEP", stepIndex = step },
+        COUNTER_DATA_ID = "STEP_COUNTER"
+      },
+      { x = W3_4, y = y, w = W1_4, h = 25 },
+      {
+        GROUP = step,
+        TRACK = track,
+        GROUP_RANGE = { groupRange, groupRange + 7 },
+        SEQUENCE_DATA_ID = "IS_PLAYING",
+        GLOBAL_SHIFT = 254,
+        ENCODERS = { 0, 1, 2 },
+        KEYMAPS = {
+          { key = "f", action = "stepToggle" },
+          { key = "t", action = "restoreShiftMode" }
+        }
+      }
+    )
 
-  --     $step=$step+1
-  --     COMPONENT: StepEdit $3/4W $y $1/4W 25
-  --       GROUP: $step
-  --       GROUP_RANGE: ($groupRange) ($groupRange+7)
-  --       DATA: Sequencer GET_STEP $step
-  --       COUNTER_DATA_ID: STEP_COUNTER
-  --       SEQUENCE_DATA_ID: IS_PLAYING
-  --       ENCODERS: 0 1 2
-  --       KEYMAP: Keyboard 'f' stepToggle
-  --       KEYMAP: Keyboard 't' restoreShiftMode
-  --       GLOBAL_SHIFT: 254
+    step = step + 1
 
-  --     $step=$step+1
+    groupRange = groupRange + 8
+  end
 
-  --   $groupRange=$groupRange+8
-
-  -- # need to keep this else loop doesnt work properly...
-  -- print: end step=$step
-
-  --   COMPONENT: HiddenEncoder 0 0 0 0
-  --     ENCODER_ID: 3
+  hiddenEncoder({ ENCODER_ID = 3 })
 end
 
 return sequencer

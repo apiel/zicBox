@@ -45,11 +45,13 @@ end
 --- @param mandatoryParams table Mandatory params key in right order
 --- @param params { [string]: string | boolean | number | table } Params to apply
 --- @param position {x: number, y: number, w: number, h: number} | {x: number, y: number} The position of the component
---- @param options { [string]: string | boolean | number | table } Options to apply
+--- @param options { [string]: string | boolean | number | table } | nil Options to apply
 function ui.component(name, mandatoryParams, params, position, options)
     zic("COMPONENT", name .. " " .. ui.parsePosition(position))
     core.zic(core.parseParams(params, mandatoryParams))
-    core.zic(core.parseOptions(options))
+    if options ~= nil then
+        core.zic(core.parseOptions(options))
+    end
 end
 
 --- Add a zone encoder, used to simulate encoder in SDL mode
