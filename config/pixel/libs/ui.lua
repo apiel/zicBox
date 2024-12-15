@@ -47,6 +47,8 @@ local function parseKeyValue(key, value)
     -- key = key:gsub("(%u)", function(c)
     --     return "_" .. c
     -- end):upper()
+
+    -- print(key .. ": " .. parseValue(value))
     zic(key, parseValue(value))
 end
 
