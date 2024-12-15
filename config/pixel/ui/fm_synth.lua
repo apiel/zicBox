@@ -5,8 +5,9 @@ local fmAlgo = require("config/pixel/libs/component/fmAlgo")
 local fmSynthOperator = require("config/pixel/ui/fm_synth_operator")
 
 local function fm_synth(track)
-  --   CONTAINER: ScrollGroupContainer Scroll 0 0 $SCREEN_WIDTH 214
-  --     SCROLL_TO_CENTER: true
+  scrollGroup("Scroll", { x = 0, y = 0, w = ScreenWidth, h = 214 }, {
+    SCROLL_TO_CENTER = true,
+  })
 
   local sepHeight = 12
   local rowHeight = 55
@@ -17,75 +18,56 @@ local function fm_synth(track)
 
 
   -- #   FM
-  -- $group=$group+1
-  -- $y=$y+$rowHeight
+  group = group + 1
+  y = y + rowHeight
 
-  --     COMPONENT: Text 0 $y $SCREEN_WIDTH 8
-  --       TEXT: FM \($track)
-  --       CENTERED: true
-  --       GROUP: $group
+  text({ TEXT = "FM (" .. track .. ")" }, { x = 0, y = y, w = ScreenWidth, h = 8 }, { CENTERED = true, GROUP = group })
 
-  -- $y=$y+$sepHeight
-  --     COMPONENT: Encoder3 0 $y $1/4W 50
-  --       GROUP: $group
-  --       ENCODER_ID: 0
-  --       COLOR: secondary
-  --       TRACK: $track
-  --       VALUE: Volume VOLUME
+  y = y + sepHeight
+  encoder3(
+    { ENCODER_ID = 0, VALUE = "Volume VOLUME" },
+    { x = 0, y = y, w = W1_4, h = 50 },
+    { GROUP = group, COLOR = "secondary", TRACK = track }
+  )
+  encoder3(
+    { ENCODER_ID = 1, VALUE = "MMFilter CUTOFF" },
+    { x = W1_4, y = y, w = W1_4, h = 50 },
+    { GROUP = group, COLOR = "primary", TRACK = track }
+  )
+  encoder3(
+    { ENCODER_ID = 2, VALUE = "MMFilter RESONANCE" },
+    { x = W2_4, y = y, w = W1_4, h = 50 },
+    { GROUP = group, COLOR = "primary", TRACK = track }
+  )
+  fmAlgo(
+    { ENCODER_ID = 3, VALUE = "FM ALGO" },
+    { x = W3_4, y = y, w = W1_4, h = 50 },
+    { GROUP = group, TEXT_COLOR = "secondary", TRACK = track }
+  )
 
-  --     COMPONENT: Encoder3 $1/4W $y $1/4W 50
-  --       GROUP: $group
-  --       ENCODER_ID: 1
-  --       COLOR: primary
-  --       TRACK: $track
-  --       VALUE: MMFilter CUTOFF
-
-  --     COMPONENT: Encoder3 $2/4W $y $1/4W 50
-  --       GROUP: $group
-  --       ENCODER_ID: 2
-  --       COLOR: primary
-  --       TRACK: $track
-  --       VALUE: MMFilter RESONANCE
-
-  --     COMPONENT: FmAlgo $3/4W $y $1/4W 50
-  --       GROUP: $group
-  --       ENCODER_ID: 3
-  --       TEXT_COLOR: secondary
-  --       TRACK: $track
-  --       VALUE: FM ALGO
-
-  -- $group=$group+1
-  -- $y=$y+$rowHeight
-  -- $y=$y+$sepHeight
-  --     COMPONENT: Encoder3 0 $y $1/4W 50
-  --       GROUP: $group
-  --       ENCODER_ID: 0
-  --       COLOR: tertiary
-  --       TRACK: $track
-  --       VALUE: Bitcrusher SAMPLE_STEP
-
-  --     COMPONENT: Encoder3 $1/4W $y $1/4W 50
-  --       GROUP: $group
-  --       ENCODER_ID: 1
-  --       COLOR: quaternary
-  --       TRACK: $track
-  --       VALUE: Delay MASTER_AMPLITUDE
-  --       LABEL: Delay
-
-  --     COMPONENT: Encoder3 $2/4W $y $1/4W 50
-  --       GROUP: $group
-  --       ENCODER_ID: 2
-  --       COLOR: quaternary
-  --       TRACK: $track
-  --       VALUE: Delay TIME_RATIO
-  --       LABEL: Delay time
-
-  --     COMPONENT: Encoder3 $3/4W $y $1/4W 50
-  --       GROUP: $group
-  --       ENCODER_ID: 3
-  --       COLOR: primary
-  --       TRACK: $track
-  --       VALUE: FM FREQUENCY
+  group = group + 1
+  y = y + rowHeight
+  y = y + sepHeight
+  encoder3(
+    { ENCODER_ID = 0, VALUE = "Bitcrusher SAMPLE_STEP" },
+    { x = 0, y = y, w = W1_4, h = 50 },
+    { GROUP = group, COLOR = "tertiary", TRACK = track }
+  )
+  encoder3(
+    { ENCODER_ID = 1, VALUE = "Delay MASTER_AMPLITUDE" },
+    { x = W1_4, y = y, w = W1_4, h = 50 },
+    { GROUP = group, COLOR = "quaternary", TRACK = track, LABEL = "Delay" }
+  )
+  encoder3(
+    { ENCODER_ID = 2, VALUE = "Delay TIME_RATIO" },
+    { x = W2_4, y = y, w = W1_4, h = 50 },
+    { GROUP = group, COLOR = "quaternary", TRACK = track, LABEL = "Delay time" }
+  )
+  encoder3(
+    { ENCODER_ID = 3, VALUE = "FM FREQUENCY" },
+    { x = W3_4, y = y, w = W1_4, h = 50 },
+    { GROUP = group, COLOR = "primary", TRACK = track }
+  )
 
   group = group + 1
 
