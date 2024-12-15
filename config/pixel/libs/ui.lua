@@ -43,4 +43,10 @@ function ui.component(name, mandatoryParams, params, position, options)
     core.zic(core.parseOptions(options))
 end
 
+--- Add a zone encoder, used to simulate encoder in SDL mode
+--- @param position {x: number, y: number, w: number, h: number} The position of the zone
+function ui.addZoneEncoder(position)
+    zic("ADD_ZONE_ENCODER", ui.parsePosition(position))
+end
+
 return ui
