@@ -1,6 +1,6 @@
 local ui = require("config/pixel/libs/ui")
 
--- require("config/pixel/audio/main")
+require("config/pixel/audio/main")
 
 ui.setWindowPosition(400, 500)
 
@@ -17,9 +17,9 @@ text(
     { CENTERED = true, FONT_SIZE = 24 }
 )
 
--- local adsr = require("config/pixel/libs/component/adsr")
--- adsr(
---     { VALUES = { "ATTACK_0", "DECAY_0", "SUSTAIN_0", "RELEASE_0" }, PLUGIN = "FM" },
---     { x = 0, y = 20, w = ScreenWidth, h = 50 },
---     { TRACK = 5 }
--- )
+local adsr = require("config/pixel/libs/component/adsr")
+adsr(
+    { VALUES = { "ATTACK_0", "DECAY_0", "SUSTAIN_0", "RELEASE_0" }, PLUGIN = "FM" },
+    { x = 0, y = 20, w = ScreenWidth, h = 50 },
+    { TRACK = 4 }
+)

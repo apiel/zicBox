@@ -24,17 +24,11 @@ zic("AUDIO_PLUGIN", "Tempo")
 local drum23Track = require("config/pixel/audio/drum23_track")
 local fmTrack = require("config/pixel/audio/fm_track")
 
-local track=1
-drum23Track(track)
-track=track+1
-drum23Track(track)
-track=track+1
-drum23Track(track)
-track=track+1
-fmTrack(track)
-track=track+1
-fmTrack(track)
-track=track+1
+drum23Track(1)
+drum23Track(2)
+drum23Track(3)
+fmTrack(4)
+-- fmTrack(5)
 
 -- Mixers
 
