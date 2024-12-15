@@ -1,5 +1,7 @@
 local ui = require("config/pixel/libs/ui")
 
+-- require("config/pixel/audio/main")
+
 ui.setWindowPosition(400, 500)
 
 ScreenWidth = 320
