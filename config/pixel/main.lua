@@ -26,7 +26,14 @@ text(
 
 local encoder3 = require("config/pixel/libs/component/encoder3")
 encoder3(
-    { ENCODER_ID = 1, VALUE = "MMFilter CUTOFF" },
+    { ENCODER_ID = 0, VALUE = "MMFilter CUTOFF" },
     { x = 0, y = 80, w = 50, h = 50 },
     { TRACK = 2 }
+)
+
+local fmAlgo = require("config/pixel/libs/component/fmAlgo")
+fmAlgo(
+    { ENCODER_ID = 1, VALUE = "FM ALGO" },
+    { x = 60, y = 80, w = 50, h = 50 },
+    { TRACK = 4 }
 )
