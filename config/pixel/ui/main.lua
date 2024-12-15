@@ -1,6 +1,8 @@
 local ui = require("config/pixel/libs/ui")
 local mainKeyboard = require("config/pixel/ui/keyboard_main")
 local sequencer = require("config/pixel/ui/sequencer")
+local drum23Synth = require("config/pixel/ui/drum23_synth")
+local fmSynth = require("config/pixel/ui/fm_synth")
 
 ui.setWindowPosition(400, 500)
 
@@ -19,13 +21,12 @@ ui.addZoneEncoder({ W1_2, 0, W1_4, ScreenHeight })
 ui.addZoneEncoder({ W3_4, 0, W1_4, ScreenHeight })
 
 local track = 0
-local drum23_synth = require("config/pixel/ui/drum23_synth")
 
 -- - Track Drum23 (1)
 track = track + 1
 ui.view("Track" .. track, { COMPONENTS_TRACK = track })
 mainKeyboard(track, "SynthDrum23")
-drum23_synth(track)
+drum23Synth(track)
 
 ui.view("Sequencer" .. track, { COMPONENTS_TRACK = track })
 sequencer(track)
@@ -34,7 +35,7 @@ sequencer(track)
 track = track + 1
 ui.view("Track" .. track, { COMPONENTS_TRACK = track })
 mainKeyboard(track, "SynthDrum23")
-drum23_synth(track)
+drum23Synth(track)
 
 ui.view("Sequencer" .. track, { COMPONENTS_TRACK = track })
 sequencer(track)
@@ -43,8 +44,25 @@ sequencer(track)
 track = track + 1
 ui.view("Track" .. track, { COMPONENTS_TRACK = track })
 mainKeyboard(track, "SynthDrum23")
-drum23_synth(track)
+drum23Synth(track)
 
 ui.view("Sequencer" .. track, { COMPONENTS_TRACK = track })
 sequencer(track)
 
+-- # - Track FM (4)
+track = track + 1
+ui.view("Track" .. track, { COMPONENTS_TRACK = track })
+mainKeyboard(track, "FM")
+fmSynth(track)
+
+ui.view("Sequencer" .. track, { COMPONENTS_TRACK = track })
+sequencer(track)
+
+-- # - Track FM (5)
+track = track + 1
+ui.view("Track" .. track, { COMPONENTS_TRACK = track })
+mainKeyboard(track, "FM")
+fmSynth(track)
+
+ui.view("Sequencer" .. track, { COMPONENTS_TRACK = track })
+sequencer(track)
