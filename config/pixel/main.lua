@@ -45,3 +45,30 @@ graph(
     { x = 120, y = 80, w = 200, h = 50 },
     { TRACK = 1, GROUP = 1, ENCODERS = { "0 WAVEFORM_TYPE", "1 SHAPE", "2 MACRO" } }
 )
+
+-- COMPONENT: KeyInfoBar 0 216
+-- SHIFT_VISIBILITY: 254 0
+-- ROW1: &icon::arrowUp Seq Clip Synth Track
+-- KEYMAP: Keyboard 'q' incGroup:-1
+-- KEYMAP: Keyboard 'w' setView:Sequencer($track)
+-- KEYMAP: Keyboard 'e' noteOn:($synth):58
+-- KEYMAP: Keyboard 'r' noteOn:($synth):59
+-- KEYMAP: Keyboard 't' shift:254:1:0
+-- ROW2: &icon::arrowDown &icon::musicNote::pixelated Live &icon::pause &icon::play
+-- KEYMAP: Keyboard 'a' incGroup:+1
+-- KEYMAP: Keyboard 's' noteOn:($synth):60
+-- KEYMAP: Keyboard 'd' noteOn:($synth):61
+-- KEYMAP: Keyboard 'f' noteOn:($synth):62
+-- KEYMAP: Keyboard 'g' playPause
+
+local keyInfoBar = require("config/pixel/libs/component/keyInfoBar")
+keyInfoBar(
+    {
+        ROW1 = "1 2 3 4 Shift",
+        ROW2 = "&icon::arrowDown &icon::musicNote::pixelated Live &icon::pause &icon::play"
+    },
+    { x = 0, y = 130 },
+    {
+        -- SHIFT_VISIBILITY = { index = 254, value = 0 }
+    }
+)
