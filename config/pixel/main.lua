@@ -20,7 +20,6 @@ core.controller("MidiEncoder", "libzic_MidiEncoderController.so",
         { "ENCODER_TARGET", "0 7" },
     }
 )
--- core.loadDustConfig("config/pixel/yo.dust")
 
 ------------------------------ UI ------------------------------
 
