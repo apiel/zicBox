@@ -29,7 +29,7 @@ It might be necessary to install liblua5.4-dev:
 sudo apt-get install liblua5.4-dev
 ```
 */
-void config(std::string filename, void (*callback)(char* command, char* params, const char* filename), std::vector<Var> variables)
+void config(std::string filename, void (*callback)(char* command, char* params, const char* filename, std::vector<Var> variables), std::vector<Var> variables)
 {
     luaConfig(filename, callback, variables);
 }
