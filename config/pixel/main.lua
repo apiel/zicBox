@@ -18,12 +18,12 @@ text(
     { CENTERED = true, FONT_SIZE = 24 }
 )
 
--- local adsr = require("config/pixel/libs/component/adsr")
--- adsr(
---     { VALUES = "ATTACK_0 DECAY_0 SUSTAIN_0 RELEASE_0", PLUGIN = "FM" },
---     { x = 0, y = 20, w = ScreenWidth, h = 50 },
---     { TRACK = 4 }
--- )
+local adsr = require("config/pixel/libs/component/adsr")
+adsr(
+    { PLUGIN = "FM", VALUES = "ATTACK_0 DECAY_0 SUSTAIN_0 RELEASE_0" },
+    { x = 0, y = 20, w = ScreenWidth, h = 50 },
+    { TRACK = 5, GROUP = 1 }
+)
 
 local encoder3 = require("config/pixel/libs/component/encoder3")
 encoder3(
