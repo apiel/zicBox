@@ -48,7 +48,7 @@ local function parseKeyValue(key, value)
     --     return "_" .. c
     -- end):upper()
 
-    -- print(key .. ": " .. parseValue(value))
+    print(key .. ": " .. parseValue(value))
     zic(key, parseValue(value))
 end
 
@@ -64,7 +64,7 @@ end
 
 --- Parse params and apply them to zic configurations
 --- @param params { [string]: string | boolean | number | table } Params to apply
---- @param mandatory table Mandatory params
+--- @param mandatory table Mandatory params key in right order
 function ui.parseParams(params, mandatory)
     if params == nil then
         error("Params cannot be nil", 2)
@@ -74,15 +74,13 @@ function ui.parseParams(params, mandatory)
         if params[key] == nil then
             error("Mandatory param " .. key .. " is missing", 2)
         end
-    end
-
-    for key, value in pairs(params) do
-        parseKeyValue(key, value)
+        parseKeyValue(key, params[key])
     end
 end
 
 --- Create a component
 --- @param name string The name of the component
+--- @param mandatoryParams table Mandatory params key in right order
 --- @param params { [string]: string | boolean | number | table } Params to apply
 --- @param position {x: number, y: number, w: number | nil, h: number | nil} The position of the component.
 --- @param options { [string]: string | boolean | number | table } Options to apply

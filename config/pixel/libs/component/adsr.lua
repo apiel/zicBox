@@ -1,9 +1,9 @@
 local ui = require "config/pixel/libs/ui"
 
 --- Show a representation of the ADSR envdelop.
---- @param params {VALUES: table | string, PLUGIN: string } Params:
---- - VALUES (A_value D_value S_value R_value) are the values id for the encoders and data point.
+--- @param params {PLUGIN: string, VALUES: table | string} Params:
 --- - PLUGIN set plugin target
+--- - VALUES (A_value D_value S_value R_value) are the values id for the encoders and data point.
 --- @param position {x: number, y: number, w: number, h: number} The position of the component.
 --- @param options {GROUP: number, TRACK: number, ENCODERS: table | string, OUTLINE: boolean, FILLED: boolean, BACKGROUND_COLOR: string, FILL_COLOR: string, OUTLINE_COLOR: string, TEXT_COLOR1: string, TEXT_COLOR2: string, INACTIVE_COLOR_RATIO: number} Options:
 --- - GROUP is the group of the component
@@ -18,7 +18,7 @@ local ui = require "config/pixel/libs/ui"
 --- - TEXT_COLOR2 is the color of the unit.
 --- - INACTIVE_COLOR_RATIO is the ratio of darkness for the inactive color (default: 0.5).
 local function component(params, position, options)
-    ui.component("Adsr", {"VALUES", "PLUGIN" }, params, position, options)
+    ui.component("Adsr", {"PLUGIN", "VALUES"}, params, position, options)
 end
 
 return component
