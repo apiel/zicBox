@@ -42,11 +42,24 @@ local function parseValue(value)
     return value
 end
 
+
 local function parseKeyValue(key, value)
-    -- camel to snake case
-    -- key = key:gsub("(%u)", function(c)
-    --     return "_" .. c
-    -- end):upper()
+    -- Handle KEYMAPS
+    if key == "KEYMAPS" then
+        if type(value) == "table" then
+            for _, v in ipairs(value) do
+                if type(v) == "string" then
+                    zic("KEYMAP", v)
+                else
+                    local controllerId = v.controller and v.controller or "Keyboard"
+                    local k = type(v.key) == "number" and v.key or "'" .. v.key .. "'"
+                    local action2 = v.action2 and " " .. v.action2 or ""
+                    zic("KEYMAP", controllerId .. " " .. k .. " " .. v.action .. action2)
+                end
+            end
+        end
+        return
+    end
 
     -- print(key .. ": " .. parseValue(value))
     zic(key, parseValue(value))
