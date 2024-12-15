@@ -22,7 +22,7 @@ void uiScriptCallback(char* key, char* value, const char* filename, std::vector<
     } else if (strcmp(key, "LOAD_CONFIG") == 0) {
         char* script = strtok(value, " ");
         char* plugin = strtok(NULL, " ");
-        loadConfigPlugin(plugin, script, uiScriptCallback, variables);
+        loadConfigPlugin(getFullpath(plugin, filename).c_str(), script, uiScriptCallback, variables);
     } else if (strcmp(key, "PLUGIN_CONTROLLER") == 0) {
         loadPluginController(value, filename);
     } else if (

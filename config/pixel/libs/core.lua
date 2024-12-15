@@ -75,18 +75,6 @@ function core.parseParams(params, mandatory)
     return keyValues
 end
 
---- Add a controller to the zic configuration
---- @param name string The name of the controller
---- @param pluginPath string The path of the controller plugin
---- @param mandatoryParams table Mandatory params key in right order
---- @param params { [string]: string | boolean | number | table } Params to apply
---- @param options { [string]: string | boolean | number | table } Options to apply
-function core.controller(name, pluginPath, mandatoryParams, params, options)
-    zic("PLUGIN_CONTROLLER", name .. " " .. pluginPath)
-    core.parseParams(params, mandatoryParams)
-    core.parseOptions(options)
-end
-
 --- Build the plateform
 --- @return string The plateform
 function core.buildPlateform()
@@ -96,15 +84,33 @@ end
 --- Load a dust configurations
 --- @param scriptPath string The path of the script
 function core.loadDustConfig(scriptPath)
-    zic("LOAD_CONFIG", scriptPath .. " plugins/config/build/" .. core.buildPlateform() .. "/libzic_DustConfig.so")
+    zic("LOAD_CONFIG", scriptPath .. " @/plugins/config/build/" .. core.buildPlateform() .. "/libzic_DustConfig.so")
 end
 
 --- Apply keyValues to zic
 --- @param keyValues table values to apply
 function core.zic(keyValues)
     for _, keyValue in ipairs(keyValues) do
-        zic(keyValue.key, keyValue.value)
+        if #keyValue == 2 then
+            zic(keyValue[1], keyValue[2])
+        -- elseif type(keyValue.key) ~= "string" then
+        --     error("Invalid key value, key must be a string [received " .. type(keyValue.key) .. "]", 2)
+        -- elseif type(keyValue.value) ~= "string" then
+        --     error("Invalid key value, value must be a string [received " .. type(keyValue.value) .. "]", 2)
+        else
+            zic(keyValue.key, keyValue.value)
+        end
     end
+end
+
+--- Add a controller to the zic configuration
+--- @param name string The name of the controller
+--- @param pluginPath string The path of the controller plugin
+--- @param rawParams table Params to apply
+function core.controller(name, pluginPath, rawParams)
+    -- print("PLUGIN_CONTROLLER: " .. name .. " @/plugins/controllers/build/" .. core.buildPlateform() .. "/" .. pluginPath)
+    zic("PLUGIN_CONTROLLER", name .. " @/plugins/controllers/build/" .. core.buildPlateform() .. "/" .. pluginPath)
+    core.zic(rawParams)
 end
 
 return core
