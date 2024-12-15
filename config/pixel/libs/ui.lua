@@ -4,8 +4,14 @@ local ui = {}
 
 --- Create a view
 --- @param name string The name of the view to create
-function ui.view(name)
+--- @param options { COMPONENTS_TRACK: number, GROUP_LOOP: boolean } Options:
+--- - COMPONENTS_TRACK set default track value for all components contained in the view
+--- - GROUP_LOOP set if group incrementation should loop back to start once reached the end. (default: true)
+function ui.view(name, options)
     zic("VIEW", name)
+    if options ~= nil then
+        core.zic(core.parseOptions(options))
+    end
 end
 
 --- Set the window position
