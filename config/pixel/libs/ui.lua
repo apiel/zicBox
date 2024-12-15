@@ -29,21 +29,44 @@ function ui.getComponentPosition(position)
     return position.x .. " " .. position.y
 end
 
-local function camelToSnake(camel_str)
-    return camel_str:gsub("(%u)", function(c)
-        return "_" .. c
-    end):upper()
+local function parseKeyValue(key, value)
+    -- camel to snake case
+    -- key = key:gsub("(%u)", function(c)
+    --     return "_" .. c
+    -- end):upper()
+
+    if type(value) == "boolean" then
+        value = value and "true" or "false"
+    end
+    zic(key, value)
 end
 
+--- Parse options and apply them to zic configurations
+--- @param options { [string]: string | boolean | number | table } Options to apply
 function ui.parseOptions(options)
     if options ~= nil then
         for key, value in pairs(options) do
-            if type(value) == "boolean" then
-                value = value and "true" or "false"
-            end
-            print("key:" .. camelToSnake(key) .. " val:" .. value)
-            zic(camelToSnake(key), value)
+            parseKeyValue(key, value)
         end
+    end
+end
+
+--- Parse params and apply them to zic configurations
+--- @param params { [string]: string | boolean | number | table } Params to apply
+--- @param mandatory table Mandatory params
+function ui.parseParams(params, mandatory)
+    if params == nil then
+        error("Params cannot be nil", 2)
+    end
+
+    for _, key in ipairs(mandatory) do
+        if params[key] == nil then
+            error("Mandatory param " .. key .. " is missing", 2)
+        end
+    end
+
+    for key, value in pairs(params) do
+        parseKeyValue(key, value)
     end
 end
 
