@@ -98,7 +98,7 @@ function core.zic(keyValues)
         -- elseif type(keyValue.value) ~= "string" then
         --     error("Invalid key value, value must be a string [received " .. type(keyValue.value) .. "]", 2)
         else
-            print("# ZIC: " .. keyValue.key .. ": " .. keyValue.value)
+            -- print("# ZIC: " .. keyValue.key .. ": " .. keyValue.value)
             zic(keyValue.key, keyValue.value)
         end
     end
