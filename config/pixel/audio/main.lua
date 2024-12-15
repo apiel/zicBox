@@ -1,3 +1,5 @@
+print("--------------- load audio config from Lua")
+
 zic("DEBUG", "true")
 
 local buildDir = IS_RPI and "build/arm" or "build/x86"

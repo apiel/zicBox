@@ -12,12 +12,17 @@
 #include "viewManager.h"
 
 #include "helpers/configPlugin.h"
+#include "helpers/getFullpath.h"
 #include "plugins/components/utils/color.h"
 
 void uiScriptCallback(char* key, char* value, const char* filename, std::vector<Var> variables)
 {
     if (strcmp(key, "print") == 0) {
         printf(">> LOG: %s\n", value);
+    } else if (strcmp(key, "LOAD_CONFIG") == 0) {
+        char* script = strtok(value, " ");
+        char* plugin = strtok(NULL, " ");
+        loadConfigPlugin(plugin, script, uiScriptCallback, variables);
     } else if (strcmp(key, "PLUGIN_CONTROLLER") == 0) {
         loadPluginController(value, filename);
     } else if (
