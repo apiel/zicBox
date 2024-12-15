@@ -39,8 +39,8 @@ end
 --- @param options { [string]: string | boolean | number | table } Options to apply
 function ui.component(name, mandatoryParams, params, position, options)
     zic("COMPONENT", name .. " " .. ui.parsePosition(position))
-    core.zicKeyValues(core.parseParams(params, mandatoryParams))
-    core.zicKeyValues(core.parseOptions(options))
+    core.zic(core.parseParams(params, mandatoryParams))
+    core.zic(core.parseOptions(options))
 end
 
 return ui
