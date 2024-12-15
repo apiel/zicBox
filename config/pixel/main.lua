@@ -1,6 +1,7 @@
 local ui = require("config/pixel/libs/ui")
 
-require("config/pixel/audio/main")
+-- require("config/pixel/audio/main")
+zic("LOAD_CONFIG", "config/pixel/audio/main.cfg plugins/config/build/x86/libzic_DustConfig.so")
 
 ui.setWindowPosition(400, 500)
 
