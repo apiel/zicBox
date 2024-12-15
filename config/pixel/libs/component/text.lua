@@ -10,8 +10,8 @@ local ui = require "config/pixel/libs/ui"
 --- - FONT The font name (optional)
 --- - BACKGROUND_COLOR The background color (optional)
 --- - COLOR The text color (optional)
-local function text(params, position, options)
+local function component(params, position, options)
     ui.component("Text", { "TEXT" }, params, position, options)
 end
 
-return text
+return component
