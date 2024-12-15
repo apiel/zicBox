@@ -14,7 +14,7 @@
 #include "helpers/configPlugin.h"
 #include "plugins/components/utils/color.h"
 
-void uiScriptCallback(char* key, char* value, const char* filename)
+void uiScriptCallback(char* key, char* value, const char* filename, std::vector<Var> variables)
 {
     if (strcmp(key, "print") == 0) {
         printf(">> LOG: %s\n", value);
@@ -28,7 +28,7 @@ void uiScriptCallback(char* key, char* value, const char* filename)
         || ViewManager::get().config(key, value, filename)) {
         return;
     } else {
-        hostScriptCallback(key, value, filename);
+        hostScriptCallback(key, value, filename, variables);
     }
 }
 

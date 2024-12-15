@@ -49,9 +49,15 @@ Finally run zicBox like this:
 
 */
 
+struct Var {
+    std::string key;
+    std::string value;
+};
+
 struct UserData {
-    void (*callback)(char* command, char* params, const char* filename);
+    void (*callback)(char* command, char* params, const char* filename, std::vector<Var> variables);
     const char* filename;
+    std::vector<Var> variables;
 };
 
 duk_ret_t zicSetConfigFn(duk_context* ctx)
@@ -66,7 +72,7 @@ duk_ret_t zicSetConfigFn(duk_context* ctx)
 
     // printf("-------> %s: %s (%s)\n", key, value, userData->filename);
 
-    userData->callback((char*)key, (char*)value, userData->filename);
+    userData->callback((char*)key, (char*)value, userData->filename, userData->variables);
     return 0;
 }
 
@@ -86,12 +92,7 @@ static void push_file_as_string(duk_context* ctx, const char* filename)
     }
 }
 
-struct Var {
-    std::string key;
-    std::string value;
-};
-
-void config(std::string filename, void (*callback)(char* command, char* params, const char* filename), std::vector<Var> variables)
+void config(std::string filename, void (*callback)(char* command, char* params, const char* filename, std::vector<Var> variables), std::vector<Var> variables)
 {
     duk_context* ctx = NULL;
     char line[4096];
@@ -107,6 +108,7 @@ void config(std::string filename, void (*callback)(char* command, char* params, 
     UserData* userData = new UserData();
     userData->callback = callback;
     userData->filename = filename.c_str();
+    userData->variables = variables;
     duk_push_global_stash(ctx);
     duk_push_pointer(ctx, (void*)userData);
     duk_put_prop_string(ctx, -2, DUK_HIDDEN_SYMBOL("userDataPtr"));

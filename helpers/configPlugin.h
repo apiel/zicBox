@@ -15,7 +15,7 @@
 //     std::string value;
 // };
 
-void instantiateConfigPlugin(const char* pluginPath, std::string scriptPath, void (*callback)(char* command, char* params, const char* scriptPath), std::vector<Var> variables = {})
+void instantiateConfigPlugin(const char* pluginPath, std::string scriptPath, void (*callback)(char* command, char* params, const char* scriptPath, std::vector<Var> variables), std::vector<Var> variables)
 {
     void* handle = dlopen(pluginPath, RTLD_LAZY);
     if (!handle) {
@@ -25,8 +25,8 @@ void instantiateConfigPlugin(const char* pluginPath, std::string scriptPath, voi
 
     dlerror();
 
-    void (*configParser)(std::string scriptPath, void (*callback)(char* command, char* params, const char* filename), std::vector<Var> variables);
-    configParser = (void (*)(std::string scriptPath, void (*callback)(char* command, char* params, const char* filename), std::vector<Var> variables))dlsym(handle, "config");
+    void (*configParser)(std::string scriptPath, void (*callback)(char* command, char* params, const char* filename, std::vector<Var> variables), std::vector<Var> variables);
+    configParser = (void (*)(std::string scriptPath, void (*callback)(char* command, char* params, const char* filename, std::vector<Var> variables), std::vector<Var> variables))dlsym(handle, "config");
     const char* dlsym_error = dlerror();
     if (dlsym_error) {
         printf("Cannot load symbol: %s\n", dlsym_error);
@@ -38,7 +38,7 @@ void instantiateConfigPlugin(const char* pluginPath, std::string scriptPath, voi
     dlclose(handle);
 }
 
-void loadConfigPlugin(const char* pluginPath, std::string scriptPath, void (*callback)(char* command, char* params, const char* scriptPath), std::vector<Var> variables = {})
+void loadConfigPlugin(const char* pluginPath, std::string scriptPath, void (*callback)(char* command, char* params, const char* scriptPath, std::vector<Var> variables), std::vector<Var> variables = {})
 {
     if (!pluginPath) {
         pluginPath = "lua";

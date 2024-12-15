@@ -6,7 +6,7 @@
 #include "def.h"
 #include "midi.h"
 
-void hostScriptCallback(char* key, char* value, const char* filename)
+void hostScriptCallback(char* key, char* value, const char* filename, std::vector<Var> variables)
 {
     if (strcmp(key, "print") == 0) {
         printf(">> LOG: %s\n", value);

@@ -11,7 +11,7 @@ struct Var {
     std::string value;
 };
 
-void dustConfig(std::string filename, void (*callback)(char* command, char* params, const char* filename), std::vector<Var> variables)
+void dustConfig(std::string filename, void (*callback)(char* command, char* params, const char* filename, std::vector<Var> variables), std::vector<Var> variables)
 {
     std::vector<DustScript::Variable> vars = { { "$IS_RPI",
 #ifdef IS_RPI
@@ -27,8 +27,8 @@ void dustConfig(std::string filename, void (*callback)(char* command, char* para
 
     DustScript::load(
         filename.c_str(),
-        [&callback](char* key, char* value, const char* filename, uint8_t indentation, DustScript& instance) {
-            callback(key, value, filename);
+        [&callback, &variables](char* key, char* value, const char* filename, uint8_t indentation, DustScript& instance) {
+            callback(key, value, filename, variables);
         },
         { .variables = vars });
 }

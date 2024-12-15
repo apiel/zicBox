@@ -16,10 +16,18 @@ struct Var {
     std::string value;
 };
 
+struct UserData {
+    void (*callback)(char* command, char* params, const char* filename, std::vector<Var> variables);
+    const char* filename;
+    std::vector<Var> variables;
+};
+
 static int setConfigFn(lua_State* L)
 {
     lua_getglobal(L, "callbackPtr");
-    void (*callback)(char* command, char* params, const char* filename) = (void (*)(char* command, char* params, const char* filename))lua_touserdata(L, -1);
+    UserData* userData = (UserData*)lua_touserdata(L, -1);
+    void (*callback)(char* command, char* params, const char* filename, std::vector<Var> variables) = userData->callback;
+    std::vector<Var> variables = userData->variables;
 
     lua_Debug ar;
     lua_getstack(L, 1, &ar);
@@ -30,16 +38,20 @@ static int setConfigFn(lua_State* L)
     const char* key = lua_tostring(L, 1);
     const char* value = lua_tostring(L, 2);
 
-    callback((char*)key, (char*)value, filename);
+    callback((char*)key, (char*)value, filename, variables);
 
     return 0;
 }
 
-void luaConfig(std::string filename, void (*callback)(char* command, char* params, const char* filename), std::vector<Var> variables)
+void luaConfig(std::string filename, void (*callback)(char* command, char* params, const char* filename, std::vector<Var> variables), std::vector<Var> variables)
 {
     lua_State* L = luaL_newstate();
     luaL_openlibs(L);
-    lua_pushlightuserdata(L, (void*)callback);
+    UserData* userData = new UserData();
+    userData->callback = callback;
+    userData->filename = filename.c_str();
+    userData->variables = variables;
+    lua_pushlightuserdata(L, (void*)userData);
     lua_setglobal(L, "callbackPtr");
     lua_register(L, "zic", setConfigFn);
 
