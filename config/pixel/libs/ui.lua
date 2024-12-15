@@ -29,4 +29,22 @@ function ui.getComponentPosition(position)
     return position.x .. " " .. position.y
 end
 
+local function camelToSnake(camel_str)
+    return camel_str:gsub("(%u)", function(c)
+        return "_" .. c
+    end):upper()
+end
+
+function ui.parseOptions(options)
+    if options ~= nil then
+        for key, value in pairs(options) do
+            if type(value) == "boolean" then
+                value = value and "true" or "false"
+            end
+            print("key:" .. camelToSnake(key) .. " val:" .. value)
+            zic(camelToSnake(key), value)
+        end
+    end
+end
+
 return ui

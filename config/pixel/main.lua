@@ -11,5 +11,5 @@ ui.view("Main")
 text(
     { text = "Hello world" },
     { x = 0, y = 0, w = ScreenWidth, h = 8 },
-    { center = true, fontSize = 24 }
+    { centered = true, fontSize = 24 }
 )
