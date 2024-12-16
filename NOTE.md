@@ -1,5 +1,7 @@
 ## Pixel TODO
 
+- TODO fix FM on rpi
+
 - TODO should we move to Lua (with teal for static type) instead of dustscript
        --> could also use TypeScriptToLua (problem need to install npm...)
 
