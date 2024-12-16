@@ -37,12 +37,26 @@ protected:
 
     FileBrowser fileBrowser = FileBrowser("./samples");
     float index = 0;
+    uint64_t indexStart = 0;
+    uint64_t indexEnd = 0;
     float stepIncrement = 1.0;
 
 public:
     /*md **Values**: */
+    /*md - `START` set the start position of the sample */
+    Val& start = val(0.0f, "START", { "Start", .unit = "%" }, [&](auto p) {
+        if (p.value < end.get()) {
+            p.val.setFloat(p.value);
+            indexStart = p.val.pct() * sampleBuffer.count;
+        }
+    });
     /*md - `END` set the end position of the sample */
-    Val& end = val(100.0f, "END", { "End", .unit = "%" });
+    Val& end = val(100.0f, "END", { "End", .unit = "%" }, [&](auto p) {
+        if (p.value > start.get()) {
+            p.val.setFloat(p.value);
+            indexEnd = p.val.pct() * sampleBuffer.count;
+        }
+    });
     /*md - `BROWSER` to browse between samples to play. */
     Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)fileBrowser.count }, [&](auto p) { open(p.value); });
 
@@ -81,7 +95,7 @@ public:
     void noteOn(uint8_t note, float velocity) override
     {
         debug("drum sample noteOn: %d %f\n", note, velocity);
-        index = 0.0;
+        index = indexStart;
     }
 
     void open(std::string filename)
@@ -107,6 +121,9 @@ public:
         } else {
             stepIncrement = 1.0f;
         }
+
+        index = sampleBuffer.count;
+        indexEnd = end.pct() * sampleBuffer.count;
     }
 
     void open(float value, bool force = false)
