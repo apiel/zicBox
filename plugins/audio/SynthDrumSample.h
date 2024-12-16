@@ -41,6 +41,23 @@ protected:
     uint64_t indexEnd = 0;
     float stepIncrement = 1.0;
 
+    void applyGain()
+    {
+        float max = 0.0;
+        for (uint64_t i = 0; i < sampleBuffer.count; i++) {
+            if (sampleBuffer.data[i] > max) {
+                max = sampleBuffer.data[i];
+            } else if (-sampleBuffer.data[i] > max) {
+                max = -sampleBuffer.data[i];
+            }
+        }
+        float gain = 1.0 / max;
+        // printf("max sample: %f gain: %f\n", max, gain);
+        for (uint64_t i = 0; i < sampleBuffer.count; i++) {
+            sampleBuffer.data[i] = sampleBuffer.data[i] * gain;
+        }
+    }
+
 public:
     /*md **Values**: */
     /*md - `START` set the start position of the sample */
@@ -124,6 +141,7 @@ public:
 
         index = sampleBuffer.count;
         indexEnd = end.pct() * sampleBuffer.count;
+        applyGain();
     }
 
     void open(float value, bool force = false)
