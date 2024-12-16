@@ -1,6 +1,7 @@
 local core = require("config/pixel/libs/core")
 local audio = require("config/pixel/libs/audio")
 local drum23 = require("config/pixel/audio/drum23_track")
+local fm = require("config/pixel/audio/fm_track")
 
 audio.pluginAlias("AudioOutput", "libzic_AudioOutputPulse.so")
 audio.pluginAlias("SynthDrum23", "libzic_SynthDrum23.so")
@@ -23,6 +24,10 @@ audio.plugin("Tempo")
 drum23(1)
 drum23(2)
 drum23(3)
+
+-- # FM tracks
+fm(4)
+fm(5)
 
 -- require("config/pixel/audio/main")
 core.loadDustConfig("config/pixel/audio/main.cfg")
