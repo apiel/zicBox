@@ -23,7 +23,7 @@
 /*md
 ## SynthSample
 
-SynthSample is a plugin to play samples.
+SynthSample is a multi voice sample player with a bunch of tweaking to transform a simple sample to something completely different...
 */
 class SynthSample : public Mapping {
 protected:
