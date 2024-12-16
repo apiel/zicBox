@@ -1,9 +1,6 @@
 ## Pixel TODO
 
-- TODO fix FM on rpi
-
-- TODO should we move to Lua (with teal for static type) instead of dustscript
-       --> could also use TypeScriptToLua (problem need to install npm...)
+- FIXME fix FM on rpi
 
 - IDEA could we make overlapping component somehow refresh if the one under update?? :p
         --> should this be manual or should it be done automatically
