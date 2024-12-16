@@ -1,9 +1,11 @@
 local audio = require("config/pixel/libs/audio")
 local drum23 = require("config/pixel/audio/drum23_track")
+local drumSample = require("config/pixel/audio/drumSample_track")
 local fm = require("config/pixel/audio/fm_track")
 
 audio.pluginAlias("AudioOutput", "libzic_AudioOutputPulse.so")
 audio.pluginAlias("SynthDrum23", "libzic_SynthDrum23.so")
+audio.pluginAlias("DrumSample", "libzic_SynthDrumSample.so")
 audio.pluginAlias("Sequencer", "libzic_Sequencer.so")
 audio.pluginAlias("EffectDistortion", "libzic_EffectDistortion.so")
 audio.pluginAlias("EffectDistortion2", "libzic_EffectDistortion2.so")
@@ -20,7 +22,8 @@ audio.pluginAlias("SynthFM", "libzic_SynthFM2.so")
 audio.plugin("Tempo")
 
 -- # Drum tracks
-drum23(1)
+-- drum23(1)
+drumSample(1)
 drum23(2)
 drum23(3)
 drum23(4)

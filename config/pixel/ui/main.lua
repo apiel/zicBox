@@ -22,14 +22,10 @@ ui.addZoneEncoder({ W3_4, 0, W1_4, ScreenHeight })
 
 local track = 0
 
--- - Track Drum23 (1)
+-- - Track Sample (1)
 track = track + 1
 ui.view("Track" .. track, { COMPONENTS_TRACK = track })
-mainKeyboard(track, "SynthDrum23")
-drum23Synth(track)
-
-ui.view("Sequencer" .. track, { COMPONENTS_TRACK = track })
-sequencer(track)
+mainKeyboard(track, "DrumSample")
 
 -- - Track Drum23 (2)
 track = track + 1

@@ -14,7 +14,7 @@ all:
 	make EffectGainVolume EffectSampleRateReducer EffectFilter EffectDistortion EffectDelay\
 		EffectFilter EffectFilterMultiMode EffectFilterMultiMode2 EffectFilterMultiModeMoog\
 		EffectGrain EffectDistortion2 \
-		SynthKick23 SynthDrum23 SynthGranular SynthSample SynthBass SynthFM SynthFM2 \
+		SynthKick23 SynthDrum23 SynthGranular SynthSample SynthBass SynthFM SynthFM2 SynthDrumSample \
 		Sequencer Tempo\
 		Mixer2 Mixer4 Mixer6 Mixer8 Mixer12\
 		AudioInputPulse AudioOutputPulse AudioInputAlsa AudioOutputAlsa\
@@ -40,6 +40,9 @@ SynthDrum23:
 
 SynthSample:
 	make compile LIBNAME=SynthSample EXTRA="$(shell pkg-config --cflags --libs sndfile)"
+
+SynthDrumSample:
+	make compile LIBNAME=SynthDrumSample EXTRA="$(shell pkg-config --cflags --libs sndfile)"
 
 AudioInputPulse:
 	make compile LIBNAME=AudioInputPulse EXTRA="$(shell pkg-config --cflags --libs libpulse-simple)"

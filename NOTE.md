@@ -23,6 +23,12 @@
     - save as
     - copy to ? Track? Variation/clip ?
 
+- IDEA clip/variation could be on one single page for every track
+    --> 1 row per track, each row moving from left to right to select a clip
+    --> clip can be play instantly at the next loop or in 2 loop (3?, ...)
+
+- TODO sequencer play cord
+
 - TODO cleanup audio plugin
     - remove `APP_INFO`
     - remove int (*debug)(const char* format, ...); from props
