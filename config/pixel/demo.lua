@@ -41,7 +41,7 @@ fmAlgo(
 
 local graph = require("config/pixel/libs/component/graph")
 graph(
-    { PLUGIN = "SynthDrum23", DATA_ID = "WAVEFORM" },
+    { PLUGIN = "Drum23", DATA_ID = "WAVEFORM" },
     { x = 120, y = 80, w = 200, h = 50 },
     { TRACK = 1, GROUP = 1, ENCODERS = { "0 WAVEFORM_TYPE", "1 SHAPE", "2 MACRO" } }
 )
@@ -57,11 +57,11 @@ keyInfoBar(
         KEYMAPS = {
             "Keyboard 'q' incGroup:-1",
             "Keyboard 'w' setView:Sequencer1",
-            "Keyboard 'e' noteOn:SynthDrum23:58",
-            "Keyboard 'r' noteOn:SynthDrum23:59",
+            "Keyboard 'e' noteOn:Drum23:58",
+            "Keyboard 'r' noteOn:Drum23:59",
             "Keyboard 't' shift:254:1:0",
             "Keyboard 'a' incGroup:+1",
-            "Keyboard 's' noteOn:SynthDrum23:60",
+            "Keyboard 's' noteOn:Drum23:60",
             "Keyboard 'd' noteOn:FM:61",
             "Keyboard 'f' noteOn:FM:62",
             { key = "g", action = "playPause" }
@@ -87,7 +87,7 @@ stepEdit(
 
 local drumEnvelop = require("config/pixel/libs/component/drumEnvelop")
 drumEnvelop(
-    { PLUGIN = "SynthDrum23", ENVELOP_DATA_ID = "0" },
+    { PLUGIN = "Drum23", ENVELOP_DATA_ID = "0" },
     { x = 0, y = 180, w = 200, h = 50 },
     { GROUP = 0, TRACK = 1 }
 )
