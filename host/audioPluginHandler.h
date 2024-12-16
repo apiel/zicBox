@@ -152,14 +152,14 @@ public:
         }
     }
 
-    void loadPluginAlias(char* value)
+    void loadPluginAlias(char* value, const char* filename)
     {
         PluginAlias pluginAllocator;
 
         char* name = strtok(value, " ");
         char* path = strtok(NULL, " ");
 
-        void* handle = dlopen(path, RTLD_LAZY);
+        void* handle = dlopen(getFullpath(path, filename).c_str(), RTLD_LAZY);
         if (!handle) {
             logError("Cannot load audio library %s [%s]: %s\n", path, name, dlerror());
             return;

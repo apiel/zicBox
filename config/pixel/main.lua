@@ -2,8 +2,7 @@ local core = require("config/pixel/libs/core")
 
 ---------------------------- AUDIO -----------------------------
 
--- require("config/pixel/audio/main")
-core.loadDustConfig("config/pixel/audio/main.cfg")
+require("config/pixel/audio/main")
 
 --------------------------- CONTROLLER -------------------------
 
