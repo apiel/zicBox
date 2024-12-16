@@ -26,19 +26,12 @@ drum23(2)
 drum23(3)
 drum23(4)
 
-
+audio.plugin("Mixer4", { NAME = "MixerDrum", TRACK_TARGET = 9 })
+audio.plugin("SerializeTrack", { TRACK = 9, FILEPATH = "serializedPixel/mixer_drum.cfg" })
 
 -- # FM tracks
 fm(5)
 fm(6)
-
-
--- # Mixer Drum
-
-audio.plugin("Mixer4", { NAME = "MixerDrum", TRACK_TARGET = 9 })
-audio.plugin("SerializeTrack", { TRACK = 9, FILEPATH = "serializedPixel/mixer_drum.cfg" })
-
--- # Mixer Synth
 
 audio.plugin("Mixer4", { NAME = "MixerSynth", TRACK_START = 5, TRACK_TARGET = 10 })
 audio.plugin("SerializeTrack", { TRACK = 10, FILEPATH = "serializedPixel/mixer_synth.cfg" })
