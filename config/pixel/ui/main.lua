@@ -30,7 +30,7 @@ mainKeyboard(track, "DrumSample")
 -- - Track Drum23 (2)
 track = track + 1
 ui.view("Track" .. track, { COMPONENTS_TRACK = track })
-mainKeyboard(track, "SynthDrum23")
+mainKeyboard(track, "Drum23")
 drum23Synth(track)
 
 ui.view("Sequencer" .. track, { COMPONENTS_TRACK = track })
@@ -39,7 +39,7 @@ sequencer(track)
 -- - Track Drum23 (3)
 track = track + 1
 ui.view("Track" .. track, { COMPONENTS_TRACK = track })
-mainKeyboard(track, "SynthDrum23")
+mainKeyboard(track, "Drum23")
 drum23Synth(track)
 
 ui.view("Sequencer" .. track, { COMPONENTS_TRACK = track })
@@ -48,7 +48,7 @@ sequencer(track)
 -- - Track Drum23 (4)
 track = track + 1
 ui.view("Track" .. track, { COMPONENTS_TRACK = track })
-mainKeyboard(track, "SynthDrum23")
+mainKeyboard(track, "Drum23")
 drum23Synth(track)
 
 ui.view("Sequencer" .. track, { COMPONENTS_TRACK = track })

@@ -90,12 +90,12 @@ local function drum23_synth(track)
 
   y = y + sepHeight
   graph(
-    { PLUGIN = "SynthDrum23", DATA_ID = "WAVEFORM" },
+    { PLUGIN = "Drum23", DATA_ID = "WAVEFORM" },
     { x = 0, y = y, w = W3_4 - 2, h = 50 },
     { GROUP = group, TRACK = track, ENCODERS = { "0 WAVEFORM_TYPE", "1 SHAPE", "2 MACRO" } }
   )
   encoder3(
-    { ENCODER_ID = 3, VALUE = "SynthDrum23 GAIN_CLIPPING" },
+    { ENCODER_ID = 3, VALUE = "Drum23 GAIN_CLIPPING" },
     { x = W3_4, y = y, w = W1_4, h = 50 },
     { GROUP = group, COLOR = "quaternary", TRACK = track }
   )
@@ -111,12 +111,12 @@ local function drum23_synth(track)
 
   y = y + sepHeight
   drumEnvelop(
-    { PLUGIN = "SynthDrum23", ENVELOP_DATA_ID = "0" },
+    { PLUGIN = "Drum23", ENVELOP_DATA_ID = "0" },
     { x = 0, y = y, w = W3_4 - 2, h = 50 },
     { GROUP = group, TRACK = track, ENCODERS = { "0 PHASE", "1 TIME", "2 MODULATION" } }
   )
   encoder3(
-    { ENCODER_ID = 3, VALUE = "SynthDrum23 DURATION" },
+    { ENCODER_ID = 3, VALUE = "Drum23 DURATION" },
     { x = W3_4, y = y, w = W1_4, h = 50 },
     { GROUP = group, COLOR = "quaternary", TRACK = track }
   )
@@ -132,12 +132,12 @@ local function drum23_synth(track)
 
   y = y + sepHeight
   drumEnvelop(
-    { PLUGIN = "SynthDrum23", ENVELOP_DATA_ID = "4" },
+    { PLUGIN = "Drum23", ENVELOP_DATA_ID = "4" },
     { x = 0, y = y, w = W3_4 - 2, h = 50 },
     { GROUP = group, TRACK = track, ENCODERS = { "0 PHASE", "1 TIME", "2 MODULATION" } }
   )
   encoder3(
-    { ENCODER_ID = 3, VALUE = "SynthDrum23 PITCH" },
+    { ENCODER_ID = 3, VALUE = "Drum23 PITCH" },
     { x = W3_4, y = y, w = W1_4, h = 50 },
     { GROUP = group, COLOR = "secondary", TRACK = track }
   )
@@ -153,22 +153,22 @@ local function drum23_synth(track)
 
   y = y + sepHeight
   encoder3(
-    { ENCODER_ID = 0, VALUE = "SynthDrum23 CLICK" },
+    { ENCODER_ID = 0, VALUE = "Drum23 CLICK" },
     { x = 0, y = y, w = W1_4, h = 50 },
     { GROUP = group, COLOR = "quaternary", TRACK = track }
   )
   encoder3(
-    { ENCODER_ID = 1, VALUE = "SynthDrum23 CLICK_DURATION" },
+    { ENCODER_ID = 1, VALUE = "Drum23 CLICK_DURATION" },
     { x = W1_4, y = y, w = W1_4, h = 50 },
     { GROUP = group, COLOR = "quaternary", TRACK = track }
   )
   encoder3(
-    { ENCODER_ID = 2, VALUE = "SynthDrum23 CLICK_CUTOFF" },
+    { ENCODER_ID = 2, VALUE = "Drum23 CLICK_CUTOFF" },
     { x = W2_4, y = y, w = W1_4, h = 50 },
     { GROUP = group, COLOR = "quaternary", TRACK = track }
   )
   encoder3(
-    { ENCODER_ID = 3, VALUE = "SynthDrum23 CLICK_RESONANCE" },
+    { ENCODER_ID = 3, VALUE = "Drum23 CLICK_RESONANCE" },
     { x = W3_4, y = y, w = W1_4, h = 50 },
     { GROUP = group, COLOR = "quaternary", TRACK = track }
   )
