@@ -23,7 +23,7 @@
 /*md
 ## SynthDrumSample
 
-SynthDrumSample is a very basic plugin to play one shot sample with a builtin sequencer.
+SynthDrumSample is a very basic plugin to play one shot sample.
 */
 class SynthDrumSample : public Mapping {
 protected:
