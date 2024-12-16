@@ -24,10 +24,45 @@ audio.plugin("Tempo")
 drum23(1)
 drum23(2)
 drum23(3)
+-- drum23(4)
+
+
 
 -- # FM tracks
-fm(4)
+fm(4) -- to be drepracated
 fm(5)
 
+
+
 -- require("config/pixel/audio/main")
-core.loadDustConfig("config/pixel/audio/main.cfg")
+-- core.loadDustConfig("config/pixel/audio/main.cfg")
+
+-- # Mixer Drum
+
+-- AUDIO_PLUGIN: MixerDrum Mixer4
+--   TRACK_TARGET: 9
+audio.plugin("Mixer4", { NAME = "MixerDrum", TRACK_TARGET = 9 })
+audio.plugin("SerializeTrack", { TRACK = 9, FILEPATH = "serializedPixel/mixer_drum.cfg" })
+
+-- # Mixer Synth
+
+-- AUDIO_PLUGIN: MixerSynth Mixer4
+--   TRACK_START: 5
+--   TRACK_TARGET: 10
+audio.plugin("Mixer4", { NAME = "MixerSynth", TRACK_START = 5, TRACK_TARGET = 10 })
+audio.plugin("SerializeTrack", { TRACK = 10, FILEPATH = "serializedPixel/mixer_synth.cfg" })
+
+-- # Master
+
+-- AUDIO_PLUGIN: MixerMaster Mixer2
+--   TRACK_A: 9
+--   TRACK_B: 10
+--   VALUE: 50
+--   TRACK_TARGET: 0
+audio.plugin("Mixer2", { NAME = "MixerMaster", TRACK_A = 9, TRACK_B = 10, VALUE = 50, TRACK_TARGET = 0 })
+
+audio.plugin("EffectGainVolume", { NAME = "MasterVolume" })
+audio.plugin("AudioOutput")
+audio.plugin("SerializeTrack", { FILEPATH = "serializedPixel/master.cfg" })
+
+audio.autoSave(500)

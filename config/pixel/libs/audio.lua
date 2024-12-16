@@ -25,4 +25,11 @@ function audio.plugin(pluginAlias, options)
     end
 end
 
+--- Set the auto save mode
+--- @param time number The time between each auto save in ms.
+--- This will be apply only to plugins that has been already loaded
+function audio.autoSave(time)
+    zic("AUTO_SAVE", time)
+end
+
 return audio
