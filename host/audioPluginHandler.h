@@ -8,12 +8,13 @@ using namespace std;
 #include <thread>
 #include <functional>
 
-#include "../helpers/trim.h"
-#include "../log.h"
-#include "../plugins/audio/audioPlugin.h"
-#include "../plugins/audio/lookupTable.h"
+#include "helpers/trim.h"
+#include "log.h"
+#include "plugins/audio/audioPlugin.h"
+#include "plugins/audio/lookupTable.h"
 #include "def.h"
 #include "midiMapping.h"
+#include "helpers/getFullpath.h"
 
 /*md
 ## Global and generic config
