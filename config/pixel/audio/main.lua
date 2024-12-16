@@ -16,5 +16,7 @@ audio.pluginAlias("SerializeTrack", "libzic_SerializeTrack.so")
 audio.pluginAlias("Tempo", "libzic_Tempo.so")
 audio.pluginAlias("SynthFM", "libzic_SynthFM2.so")
 
+audio.plugin("Tempo")
+
 -- require("config/pixel/audio/main")
 core.loadDustConfig("config/pixel/audio/main.cfg")
