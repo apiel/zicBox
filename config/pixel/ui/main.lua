@@ -49,7 +49,16 @@ drum23Synth(track)
 ui.view("Sequencer" .. track, { COMPONENTS_TRACK = track })
 sequencer(track)
 
--- # - Track FM (4)
+-- - Track Drum23 (4)
+track = track + 1
+ui.view("Track" .. track, { COMPONENTS_TRACK = track })
+mainKeyboard(track, "SynthDrum23")
+drum23Synth(track)
+
+ui.view("Sequencer" .. track, { COMPONENTS_TRACK = track })
+sequencer(track)
+
+-- # - Track FM (5)
 track = track + 1
 ui.view("Track" .. track, { COMPONENTS_TRACK = track })
 mainKeyboard(track, "FM")
@@ -58,7 +67,7 @@ fmSynth(track)
 ui.view("Sequencer" .. track, { COMPONENTS_TRACK = track })
 sequencer(track)
 
--- # - Track FM (5)
+-- # - Track FM (6)
 track = track + 1
 ui.view("Track" .. track, { COMPONENTS_TRACK = track })
 mainKeyboard(track, "FM")
