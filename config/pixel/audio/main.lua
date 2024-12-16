@@ -1,4 +1,3 @@
-local core = require("config/pixel/libs/core")
 local audio = require("config/pixel/libs/audio")
 local drum23 = require("config/pixel/audio/drum23_track")
 local fm = require("config/pixel/audio/fm_track")
