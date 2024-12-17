@@ -15,10 +15,35 @@
 #include "helpers/getFullpath.h"
 #include "plugins/components/utils/color.h"
 
+#include <fstream>
+std::ofstream logFile;
+bool logConfigToFile = false;
+void logScript(char* key, char* value)
+{
+    if (logConfigToFile) {
+        if (!logFile.is_open()) {
+            logFile.open("pixel.log", std::ios::trunc);
+        }
+        if (logFile.is_open()) {
+            logFile << "Key: " << (key ? key : "null")
+                    << ", Value: " << (value ? value : "null") << std::endl;
+        }
+    }
+}
+void closeLog()
+{
+    if (logFile.is_open()) {
+        logFile.close();
+    }
+}
+
 void uiScriptCallback(char* key, char* value, const char* filename, std::vector<Var> variables)
 {
+    logScript(key, value);
     if (strcmp(key, "print") == 0) {
         printf(">> LOG: %s\n", value);
+    } else if (strcmp(key, "LOG_CONFIG") == 0) {
+        logConfigToFile = (strcmp(value, "true") == 0);
     } else if (strcmp(key, "LOAD_CONFIG") == 0) {
         char* script = strtok(value, " ");
         char* plugin = strtok(NULL, " ");
@@ -49,6 +74,7 @@ void loadUiConfig(const char* scriptPath, const char* pluginPath, Styles styles)
         { "BACKGROUND_COLOR", rgbToString(styles.colors.background) },
     };
     loadConfigPlugin(pluginPath, scriptPath, uiScriptCallback, variables);
+    closeLog();
 }
 
 #endif

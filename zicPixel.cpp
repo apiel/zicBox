@@ -12,11 +12,11 @@
 
 #include "config.h"
 #include "draw/ST7789/draw.h"
+#include "helpers/getTicks.h"
 #include "host.h"
 #include "plugins/components/Pixel/PixelComponents.h"
 #include "plugins/controllers/PixelController.h"
 #include "styles.h"
-#include "helpers/getTicks.h"
 #include "viewManager.h"
 
 // Make from scratch UI
