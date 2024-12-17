@@ -41,6 +41,8 @@ protected:
     uint64_t indexEnd = 0;
     float stepIncrement = 1.0;
 
+    float velocity = 1.0;
+
     void applyGain()
     {
         float max = 0.0;
@@ -103,16 +105,17 @@ public:
     {
         float out = 0.0f;
         if (index < sampleBuffer.count) {
-            out = sampleBuffer.data[(int)index];
+            out = sampleBuffer.data[(int)index] * velocity;
             index += stepIncrement;
         }
         buf[track] = out;
     }
 
-    void noteOn(uint8_t note, float velocity) override
+    void noteOn(uint8_t note, float _velocity) override
     {
         debug("drum sample noteOn: %d %f\n", note, velocity);
         index = indexStart;
+        velocity = _velocity;
     }
 
     void open(std::string filename)
