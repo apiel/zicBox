@@ -3,6 +3,7 @@ local mainKeyboard = require("config/pixel/ui/keyboard_main")
 local sequencer = require("config/pixel/ui/sequencer")
 local drum23Synth = require("config/pixel/ui/drum23_synth")
 local fmSynth = require("config/pixel/ui/fm_synth")
+local drumSample = require("config/pixel/ui/drumSample")
 
 ui.setWindowPosition(400, 500)
 
@@ -26,6 +27,7 @@ local track = 0
 track = track + 1
 ui.view("Track" .. track, { COMPONENTS_TRACK = track })
 mainKeyboard(track, "DrumSample")
+drumSample(track)
 
 -- - Track Drum23 (2)
 track = track + 1
