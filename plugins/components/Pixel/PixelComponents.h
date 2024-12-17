@@ -12,6 +12,7 @@
 #include "./FmAlgoComponent.h"
 #include "./AdsrComponent.h"
 #include "./TextComponent.h"
+#include "./SeqSynthBarComponent.h"
 
 void loadPixelComponents()
 {
@@ -50,6 +51,10 @@ void loadPixelComponents()
 
     viewManager.plugins.push_back({ "Text", [](ComponentInterface::Props props) {
         return new TextComponent(props);
+    } });
+
+    viewManager.plugins.push_back({ "SeqSynthBar", [](ComponentInterface::Props props) {
+        return new SeqSynthBarComponent(props);
     } });
 }
 
