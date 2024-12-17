@@ -24,10 +24,6 @@ public:
     bool config(char* key, char* value)
     {
         if (strcmp(key, "TRACK_A") == 0) {
-            // By default, trackTarget is trackA unless trackTarget is specified
-            if (trackA == trackTarget) {
-                trackTarget = atoi(value);
-            }
             trackA = atoi(value);
             return true;
         }
