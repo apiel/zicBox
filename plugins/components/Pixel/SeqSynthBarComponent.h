@@ -58,33 +58,15 @@ public:
         updateColors();
     }
 
-    int renderPct(ValueInterface* val, int x)
-    {
-        x = draw.text({ x, relativePosition.y }, val->label(), 8, { labelColor });
-        x = draw.text({ x + 4, relativePosition.y }, std::to_string((int)val->get()), 8, { textColor });
-        x = draw.text({ x, relativePosition.y }, "%", 8, { labelColor });
-        return x;
-    }
-
-    void renderEncoders()
-    {
-        int x = relativePosition.x;
-
-        // renderPct(someVal, x);
-        x = renderPct(valVolume, x);
-        x = renderPct(valStart, x + 15);
-        x = renderPct(valEnd, x + 15);
-    }
-
     void render() override
     {
         if (updatePosition() && steps && seqPlugin) {
             draw.filledRect(relativePosition, size, { background });
 
-            // renderEncoders();
-
             int stepW = 4;
             int stepH = size.h;
+
+            int textY = (size.h - 8) * 0.5 + relativePosition.y;
 
             int stepsW = stepCount * (stepW + 2 + 0.5); // 2 / 4 adding 2 pixel every 4 steps
             int nameW = size.w - stepsW - 5;
@@ -94,7 +76,7 @@ public:
             if (seqStatus->get() == 1) {
                 draw.filledRect({ x, relativePosition.y }, { (int)(nameW * valVolume->pct()), stepH }, { nameColor });
             }
-            draw.text({ x + 2, relativePosition.y }, valBrowser->string(), 8, { textColor, .maxWidth = (nameW - 4) });
+            draw.text({ x + 2, textY }, valBrowser->string(), 8, { textColor, .maxWidth = (nameW - 4) });
             x += nameW + 4;
 
             for (int i = 0; i < stepCount; i++) {
