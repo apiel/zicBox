@@ -104,9 +104,11 @@ public:
     void sample(float* buf) override
     {
         float out = 0.0f;
-        if (index < sampleBuffer.count) {
+        if (index < indexEnd) {
             out = sampleBuffer.data[(int)index] * velocity;
             index += stepIncrement;
+        } else if (index != sampleBuffer.count) {
+            index = sampleBuffer.count;
         }
         buf[track] = out;
     }

@@ -33,11 +33,6 @@ protected:
 
     uint8_t stepIndex = -1;
 
-    uint8_t encoderId1 = -1;
-    uint8_t encoderId2 = -1;
-    uint8_t encoderId3 = -1;
-    uint8_t encoderId4 = -1;
-
     ValueInterface* valStart = NULL;
     ValueInterface* valEnd = NULL;
     ValueInterface* valBrowser = NULL;
@@ -113,9 +108,20 @@ public:
         }
     }
 
-    // void onEncoder(int id, int8_t direction) override
-    // {
-    // }
+    void onEncoder(int id, int8_t direction) override
+    {
+        if (active) {
+            if (id == 0) {
+                valVolume->increment(direction);
+            } else if (id == 1) {
+                valStart->increment(direction);
+            } else if (id == 2) {
+                valEnd->increment(direction);
+            } else if (id == 3) {
+                valBrowser->increment(direction);
+            }
+        }
+    }
 
     // void onKey(uint16_t id, int key, int8_t state, unsigned long now)
     // {

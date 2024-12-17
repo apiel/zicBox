@@ -480,7 +480,6 @@ public:
 
     int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
-        printf("Text[%d]: %s\n", position.x, text.c_str());
         uint8_t* font = getFont(options);
         uint16_t height = font[0];
         uint16_t width = font[1];
