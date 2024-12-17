@@ -12,7 +12,8 @@ local function drumSample(track)
         { "SEQ_PLUGIN", "SYNTH_PLUGIN" },
         { SEQ_PLUGIN = "Sequencer", SYNTH_PLUGIN = "DrumSample" },
         { x = 0, y = 10, w = ScreenWidth, h = 20 }, {
-            TRACK = track
+            TRACK = track,
+            NAME_COLOR = "#00b300"
         })
 end
 
