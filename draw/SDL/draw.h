@@ -179,7 +179,7 @@ public:
         return {
             options.color,
             options.font == NULL ? getFont(NULL, fontSize) : options.font,
-            options.maxWidth == -1 ? styles.screen.w : options.maxWidth,
+            options.maxWidth ? options.maxWidth : styles.screen.w,
         };
     }
 

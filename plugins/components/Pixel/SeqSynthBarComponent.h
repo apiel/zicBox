@@ -62,21 +62,22 @@ public:
         updateColors();
     }
 
-    void renderPct(ValueInterface* val, int x)
+    int renderPct(ValueInterface* val, int x)
     {
-        x = draw.textCentered({ x - 4, relativePosition.y }, std::to_string((int)val->get()), 8, { text.color });
-        x = draw.textCentered({ x + 2, relativePosition.y }, "%", 8, { label.color });
+        x = draw.text({ x, relativePosition.y }, val->label(), 8, { label.color });
+        x = draw.text({ x + 4, relativePosition.y }, std::to_string((int)val->get()), 8, { text.color });
+        x = draw.text({ x, relativePosition.y }, "%", 8, { label.color });
+        return x;
     }
 
     void renderEncoders()
     {
-        int cellWidth = size.w / 4;
-        int x = relativePosition.x + cellWidth * 0.5;
+        int x = relativePosition.x;
 
         // renderPct(someVal, x);
-        renderPct(valVolume, x + cellWidth);
-        renderPct(valBrowser, x + cellWidth * 2);
-        renderPct(valEnd, x + cellWidth * 3);
+        x = renderPct(valVolume, x);
+        x = renderPct(valStart, x + 15);
+        x = renderPct(valEnd, x + 15);
     }
 
     void render() override
