@@ -15,9 +15,11 @@
 
 class SeqSynthBarComponent : public GroupColorComponent {
 protected:
-    AudioPlugin* plugin = NULL;
+    AudioPlugin* seqPlugin = NULL;
     Step* steps = NULL;
     uint8_t stepCount = 32;
+
+    AudioPlugin* synthPlugin = NULL;
 
     KeypadLayout keypadLayout;
 
@@ -33,6 +35,11 @@ protected:
     uint8_t encoderId2 = -1;
     uint8_t encoderId3 = -1;
     uint8_t encoderId4 = -1;
+
+    ValueInterface* valStart = NULL;
+    ValueInterface* valEnd = NULL;
+    ValueInterface* valBrowser = NULL;
+    ValueInterface* valVolume = NULL;
 
 public:
     SeqSynthBarComponent(ComponentInterface::Props props)
@@ -52,7 +59,7 @@ public:
 
     void render() override
     {
-        if (updatePosition() && steps) {
+        if (updatePosition() && steps && seqPlugin) {
             draw.filledRect(relativePosition, size, { background });
 
             int stepW = 4;
@@ -62,11 +69,11 @@ public:
             int nameW = size.w - stepsW - 5;
             int x = relativePosition.x + 1;
             draw.filledRect({ x, relativePosition.y + 8 }, { nameW, stepH }, { foreground.color });
+            draw.text({ x + 2, relativePosition.y + 8 }, valBrowser->string(), 8, { text.color, .maxWidth = (nameW - 4) });
             x += nameW + 4;
 
             for (int i = 0; i < stepCount; i++) {
                 Step* step = &steps[i];
-                printf("step %d enabled: %d velocity: %f\n", i, step->enabled, step->velocity);
                 Color color = step->enabled ? darken(activeStep.color, 1.0 - step->velocity) : foreground.color;
                 draw.filledRect({ x, relativePosition.y + 8 }, { stepW, stepH }, { color });
                 x += stepW + 2;
@@ -95,14 +102,26 @@ public:
             return true;
         }
 
-        /*md - `PLUGIN: plugin_name [get_steps_data_id]` set plugin target */
-        if (strcmp(key, "PLUGIN") == 0) {
-            plugin = &getPlugin(strtok(value, " "), track);
-            stepCount = plugin->getValue("SELECTED_STEP")->props().max;
+        /*md - `SEQ_PLUGIN: plugin_name [get_steps_data_id]` set plugin target for sequencer */
+        if (strcmp(key, "SEQ_PLUGIN") == 0) {
+            seqPlugin = &getPlugin(strtok(value, " "), track);
+            stepCount = seqPlugin->getValue("SELECTED_STEP")->props().max;
 
             char* getStepsDataId = strtok(NULL, " ");
-            uint8_t dataId = plugin->getDataId(getStepsDataId != NULL ? getStepsDataId : "STEPS");
-            steps = (Step*)plugin->data(dataId);
+            uint8_t dataId = seqPlugin->getDataId(getStepsDataId != NULL ? getStepsDataId : "STEPS");
+            steps = (Step*)seqPlugin->data(dataId);
+            return true;
+        }
+
+        /*md - `SYNTH_PLUGIN: plugin_name` set the plugin target for the synth. */
+        if (strcmp(key, "SYNTH_PLUGIN") == 0) {
+            synthPlugin = &getPlugin(value, track);
+            // might want to make this configurable...
+            valBrowser = watch(synthPlugin->getValue("BROWSER"));
+            valEnd = watch(synthPlugin->getValue("END"));
+            valStart = watch(synthPlugin->getValue("START"));
+            // FIXME
+            valVolume = watch(getPlugin("Volume", track).getValue("VOLUME"));
             return true;
         }
 
