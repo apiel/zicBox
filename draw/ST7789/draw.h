@@ -538,7 +538,7 @@ public:
             }
             x += xInc;
         }
-        return 0;
+        return x;
     }
 
     void filledRect(Point position, Size size, DrawOptions options = {}) override
