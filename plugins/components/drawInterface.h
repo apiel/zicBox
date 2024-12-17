@@ -62,7 +62,7 @@ struct DrawOptions {
 struct DrawTextOptions {
     Color color = { 255, 255, 255, 255 };
     void* font = NULL;
-    int maxWidth = -1;
+    int maxWidth = 0;
 };
 
 class DrawInterface {
