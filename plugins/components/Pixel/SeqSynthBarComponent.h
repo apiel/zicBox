@@ -24,12 +24,12 @@ protected:
     KeypadLayout keypadLayout;
 
     Color background;
-    Color selection;
-    ToggleColor text;
-    ToggleColor foreground;
-    ToggleColor activeStep;
-    ToggleColor nameColor;
-    ToggleColor label;
+    ToggleColor selection;
+    Color textColor;
+    Color foreground;
+    Color activeStepColor;
+    Color nameColor;
+    Color labelColor;
 
     uint8_t stepIndex = -1;
 
@@ -41,27 +41,28 @@ protected:
 
 public:
     SeqSynthBarComponent(ComponentInterface::Props props)
-        : GroupColorComponent(props, { { "TEXT_COLOR", &text }, { "FOREGROUND_COLOR", &foreground }, { "ACTIVE_STEP_COLOR", &activeStep }, { "NAME_COLOR", &nameColor }, { "LABEL_COLOR", &label } })
+        : GroupColorComponent(props, { { "SELECTION_COLOR", &selection } }, 1.0)
         , background(styles.colors.background)
-        , selection(styles.colors.primary)
-        , text(styles.colors.text, inactiveColorRatio)
-        , label(darken(styles.colors.text, 0.5), inactiveColorRatio)
-        , foreground({ 0x40, 0x40, 0x40 }, inactiveColorRatio)
-        , activeStep(styles.colors.primary, inactiveColorRatio)
-        , nameColor(styles.colors.primary, inactiveColorRatio)
+        , selection(styles.colors.primary, inactiveColorRatio)
+        , textColor(styles.colors.text)
+        , labelColor(darken(styles.colors.text, 0.5))
+        , foreground({ 0x40, 0x40, 0x40 })
+        , activeStepColor(styles.colors.primary)
+        , nameColor(styles.colors.primary)
         , keypadLayout(this, [&](std::string action) {
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
             return func;
         })
     {
+        // setInactiveColorRatio(1.0);
         updateColors();
     }
 
     int renderPct(ValueInterface* val, int x)
     {
-        x = draw.text({ x, relativePosition.y }, val->label(), 8, { label.color });
-        x = draw.text({ x + 4, relativePosition.y }, std::to_string((int)val->get()), 8, { text.color });
-        x = draw.text({ x, relativePosition.y }, "%", 8, { label.color });
+        x = draw.text({ x, relativePosition.y }, val->label(), 8, { labelColor });
+        x = draw.text({ x + 4, relativePosition.y }, std::to_string((int)val->get()), 8, { textColor });
+        x = draw.text({ x, relativePosition.y }, "%", 8, { labelColor });
         return x;
     }
 
@@ -80,26 +81,26 @@ public:
         if (updatePosition() && steps && seqPlugin) {
             draw.filledRect(relativePosition, size, { background });
 
-            renderEncoders();
+            // renderEncoders();
 
             int stepW = 4;
-            int stepH = size.h - 8;
+            int stepH = size.h;
 
             int stepsW = stepCount * (stepW + 2 + 0.5); // 2 / 4 adding 2 pixel every 4 steps
             int nameW = size.w - stepsW - 5;
             int x = relativePosition.x + 1;
-            Color color = seqStatus->get() == 1 ? darken(nameColor.color, 0.5) : foreground.color;
-            draw.filledRect({ x, relativePosition.y + 8 }, { nameW, stepH }, { color });
+            Color color = seqStatus->get() == 1 ? darken(nameColor, 0.5) : foreground;
+            draw.filledRect({ x, relativePosition.y }, { nameW, stepH }, { color });
             if (seqStatus->get() == 1) {
-                draw.filledRect({ x, relativePosition.y + 8 }, { (int)(nameW * valVolume->pct()), stepH }, { nameColor.color });
+                draw.filledRect({ x, relativePosition.y }, { (int)(nameW * valVolume->pct()), stepH }, { nameColor });
             }
-            draw.text({ x + 2, relativePosition.y + 8 }, valBrowser->string(), 8, { text.color, .maxWidth = (nameW - 4) });
+            draw.text({ x + 2, relativePosition.y }, valBrowser->string(), 8, { textColor, .maxWidth = (nameW - 4) });
             x += nameW + 4;
 
             for (int i = 0; i < stepCount; i++) {
                 Step* step = &steps[i];
-                color = step->enabled ? darken(activeStep.color, 1.0 - step->velocity) : foreground.color;
-                draw.filledRect({ x, relativePosition.y + 8 }, { stepW, stepH }, { color });
+                color = step->enabled ? darken(activeStepColor, 1.0 - step->velocity) : foreground;
+                draw.filledRect({ x, relativePosition.y }, { stepW, stepH }, { color });
                 x += stepW + 2;
                 if (i % 4 == 3) {
                     x += 2;
@@ -110,17 +111,17 @@ public:
 
     void onEncoder(int id, int8_t direction) override
     {
-        if (active) {
-            if (id == 0) {
-                valVolume->increment(direction);
-            } else if (id == 1) {
-                valStart->increment(direction);
-            } else if (id == 2) {
-                valEnd->increment(direction);
-            } else if (id == 3) {
-                valBrowser->increment(direction);
-            }
-        }
+        // if (active) {
+        //     if (id == 0) {
+        //         valVolume->increment(direction);
+        //     } else if (id == 1) {
+        //         valStart->increment(direction);
+        //     } else if (id == 2) {
+        //         valEnd->increment(direction);
+        //     } else if (id == 3) {
+        //         valBrowser->increment(direction);
+        //     }
+        // }
     }
 
     // void onKey(uint16_t id, int key, int8_t state, unsigned long now)
@@ -167,17 +168,37 @@ public:
             return true;
         }
 
-        /*md - `SELECTION_COLOR: color` is the selection color. */
-        if (strcmp(key, "SELECTION_COLOR") == 0) {
-            selection = draw.getColor(value);
+        /*md - `TEXT_COLOR: color` is the color of the text. */
+        if (strcmp(key, "TEXT_COLOR") == 0) {
+            textColor = draw.getColor(value);
             return true;
         }
 
-        /*md - `TEXT_COLOR: color` is the color of the text. */
         /*md - `FOREGROUND_COLOR: color` is the foreground color. */
+        if (strcmp(key, "FOREGROUND_COLOR") == 0) {
+            foreground = draw.getColor(value);
+            return true;
+        }
+
         /*md - `ACTIVE_STEP_COLOR: color` is the color of the active step. */
+        if (strcmp(key, "ACTIVE_STEP_COLOR") == 0) {
+            activeStepColor = draw.getColor(value);
+            return true;
+        }
+
         /*md - `NAME_COLOR: color` is the color of the name. */
+        if (strcmp(key, "NAME_COLOR") == 0) {
+            nameColor = draw.getColor(value);
+            return true;
+        }
+        
         /*md - `LABEL_COLOR: color` is the color of the label. */
+        if (strcmp(key, "LABEL_COLOR") == 0) {
+            labelColor = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `SELECTION_COLOR: color` is the selection color. */
         return GroupColorComponent::config(key, value);
     }
 };

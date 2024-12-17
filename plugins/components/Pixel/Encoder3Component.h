@@ -104,7 +104,7 @@ protected:
 
     void renderValue()
     {
-        if (!stringValueReplaceTitle && (value->props().type == VALUE_STRING || type == 2)) {
+        if (!stringValueReplaceTitle && ((value->props().type == VALUE_STRING && type != 3) || type == 2)) {
             draw.textCentered({ valuePosition.x, valuePosition.y - 5 }, value->string(), fontValueSize, { valueColor.color });
         } else {
             std::string valStr = std::to_string(value->get());
@@ -248,6 +248,8 @@ public:
                 type = 1;
             } else if (strcmp(params, "STRING") == 0) {
                 type = 2;
+            } else if (strcmp(params, "NUMBER") == 0) {
+                type = 3;
             } else {
                 type = atoi(params);
             }
