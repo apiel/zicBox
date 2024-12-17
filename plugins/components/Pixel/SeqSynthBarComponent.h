@@ -29,6 +29,7 @@ protected:
     ToggleColor foreground;
     ToggleColor activeStep;
     ToggleColor nameColor;
+    ToggleColor label;
 
     uint8_t stepIndex = -1;
 
@@ -45,10 +46,11 @@ protected:
 
 public:
     SeqSynthBarComponent(ComponentInterface::Props props)
-        : GroupColorComponent(props, { { "TEXT_COLOR", &text }, { "FOREGROUND_COLOR", &foreground }, { "ACTIVE_STEP_COLOR", &activeStep }, { "NAME_COLOR", &nameColor } })
+        : GroupColorComponent(props, { { "TEXT_COLOR", &text }, { "FOREGROUND_COLOR", &foreground }, { "ACTIVE_STEP_COLOR", &activeStep }, { "NAME_COLOR", &nameColor }, { "LABEL_COLOR", &label } })
         , background(styles.colors.background)
         , selection(styles.colors.primary)
         , text(styles.colors.text, inactiveColorRatio)
+        , label(darken(styles.colors.text, 0.5), inactiveColorRatio)
         , foreground({ 0x40, 0x40, 0x40 }, inactiveColorRatio)
         , activeStep(styles.colors.primary, inactiveColorRatio)
         , nameColor(styles.colors.primary, inactiveColorRatio)
@@ -60,10 +62,29 @@ public:
         updateColors();
     }
 
+    void renderPct(ValueInterface* val, int x)
+    {
+        x = draw.textCentered({ x - 4, relativePosition.y }, std::to_string((int)val->get()), 8, { text.color });
+        x = draw.textCentered({ x + 2, relativePosition.y }, "%", 8, { label.color });
+    }
+
+    void renderEncoders()
+    {
+        int cellWidth = size.w / 4;
+        int x = relativePosition.x + cellWidth * 0.5;
+
+        // renderPct(someVal, x);
+        renderPct(valVolume, x + cellWidth);
+        renderPct(valBrowser, x + cellWidth * 2);
+        renderPct(valEnd, x + cellWidth * 3);
+    }
+
     void render() override
     {
         if (updatePosition() && steps && seqPlugin) {
             draw.filledRect(relativePosition, size, { background });
+
+            renderEncoders();
 
             int stepW = 4;
             int stepH = size.h - 8;
@@ -149,6 +170,7 @@ public:
         /*md - `FOREGROUND_COLOR: color` is the foreground color. */
         /*md - `ACTIVE_STEP_COLOR: color` is the color of the active step. */
         /*md - `NAME_COLOR: color` is the color of the name. */
+        /*md - `LABEL_COLOR: color` is the color of the label. */
         return GroupColorComponent::config(key, value);
     }
 };
