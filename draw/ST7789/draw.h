@@ -488,8 +488,9 @@ public:
 
         float x = position.x;
         float xInc = width * scale;
+        float maxX = x + (options.maxWidth ? options.maxWidth : (styles.screen.w - x));
         for (uint16_t i = 0; i < len; i++) {
-            if ((x + xInc) > styles.screen.w) {
+            if (x + xInc > maxX) {
                 break;
             }
             drawChar({ (int)x, position.y }, text[i], font, scale, { .color = { options.color } });

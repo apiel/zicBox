@@ -8,9 +8,12 @@ local function drumSample(track)
         { CENTERED = true }
     )
 
-    ui.component("SeqSynthBar", { "PLUGIN" }, { PLUGIN = "Sequencer" }, { x = 0, y = 10, w = ScreenWidth, h = 20 }, {
-        TRACK = track
-    })
+    ui.component("SeqSynthBar",
+        { "SEQ_PLUGIN", "SYNTH_PLUGIN" },
+        { SEQ_PLUGIN = "Sequencer", SYNTH_PLUGIN = "DrumSample" },
+        { x = 0, y = 10, w = ScreenWidth, h = 20 }, {
+            TRACK = track
+        })
 end
 
 return drumSample
