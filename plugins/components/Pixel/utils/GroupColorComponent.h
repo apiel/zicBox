@@ -41,6 +41,13 @@ public:
     {
     }
 
+    GroupColorComponent(ComponentInterface::Props props, std::vector<NamedColor> colors, float inactiveColorRatio)
+        : Component(props)
+        , colors(colors)
+        , inactiveColorRatio(inactiveColorRatio)
+    {
+    }
+
     void onGroupChanged(int8_t index) override
     {
         bool shouldActivate = false;
