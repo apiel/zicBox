@@ -41,7 +41,7 @@ public:
     SeqSynthBarComponent(ComponentInterface::Props props)
         : GroupColorComponent(props, { { "SELECTION_COLOR", &selection } }, 1.0)
         , background(styles.colors.background)
-        , selection(styles.colors.primary, inactiveColorRatio)
+        , selection(styles.colors.white, inactiveColorRatio)
         , textColor(styles.colors.text)
         , labelColor(darken(styles.colors.text, 0.5))
         , foreground({ 0x40, 0x40, 0x40 })
@@ -75,6 +75,7 @@ public:
                 draw.filledRect({ x, relativePosition.y }, { (int)(nameW * valVolume->pct()), stepH }, { nameColor });
             }
             draw.text({ x + 2, textY }, valBrowser->string(), 8, { textColor, .maxWidth = (nameW - 4) });
+            draw.rect({ x, relativePosition.y }, { nameW, stepH }, { selection.color });
             x += nameW + 4;
 
             for (int i = 0; i < stepCount; i++) {
