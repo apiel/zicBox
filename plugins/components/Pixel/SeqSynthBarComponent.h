@@ -28,6 +28,7 @@ protected:
     ToggleColor text;
     ToggleColor foreground;
     ToggleColor activeStep;
+    ToggleColor nameColor;
 
     uint8_t stepIndex = -1;
 
@@ -40,15 +41,17 @@ protected:
     ValueInterface* valEnd = NULL;
     ValueInterface* valBrowser = NULL;
     ValueInterface* valVolume = NULL;
+    ValueInterface* seqStatus;
 
 public:
     SeqSynthBarComponent(ComponentInterface::Props props)
-        : GroupColorComponent(props, { { "TEXT_COLOR", &text }, { "FOREGROUND_COLOR", &foreground }, { "ACTIVE_STEP_COLOR", &activeStep } })
+        : GroupColorComponent(props, { { "TEXT_COLOR", &text }, { "FOREGROUND_COLOR", &foreground }, { "ACTIVE_STEP_COLOR", &activeStep }, { "NAME_COLOR", &nameColor } })
         , background(styles.colors.background)
         , selection(styles.colors.primary)
         , text(styles.colors.text, inactiveColorRatio)
         , foreground({ 0x40, 0x40, 0x40 }, inactiveColorRatio)
         , activeStep(styles.colors.primary, inactiveColorRatio)
+        , nameColor(styles.colors.primary, inactiveColorRatio)
         , keypadLayout(this, [&](std::string action) {
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
             return func;
@@ -68,13 +71,17 @@ public:
             int stepsW = stepCount * (stepW + 2 + 0.5); // 2 / 4 adding 2 pixel every 4 steps
             int nameW = size.w - stepsW - 5;
             int x = relativePosition.x + 1;
-            draw.filledRect({ x, relativePosition.y + 8 }, { nameW, stepH }, { foreground.color });
+            Color color = seqStatus->get() == 1 ? darken(nameColor.color, 0.5) : foreground.color;
+            draw.filledRect({ x, relativePosition.y + 8 }, { nameW, stepH }, { color });
+            if (seqStatus->get() == 1) {
+                draw.filledRect({ x, relativePosition.y + 8 }, { (int)(nameW * valVolume->pct()), stepH }, { nameColor.color });
+            }
             draw.text({ x + 2, relativePosition.y + 8 }, valBrowser->string(), 8, { text.color, .maxWidth = (nameW - 4) });
             x += nameW + 4;
 
             for (int i = 0; i < stepCount; i++) {
                 Step* step = &steps[i];
-                Color color = step->enabled ? darken(activeStep.color, 1.0 - step->velocity) : foreground.color;
+                color = step->enabled ? darken(activeStep.color, 1.0 - step->velocity) : foreground.color;
                 draw.filledRect({ x, relativePosition.y + 8 }, { stepW, stepH }, { color });
                 x += stepW + 2;
                 if (i % 4 == 3) {
@@ -106,6 +113,7 @@ public:
         if (strcmp(key, "SEQ_PLUGIN") == 0) {
             seqPlugin = &getPlugin(strtok(value, " "), track);
             stepCount = seqPlugin->getValue("SELECTED_STEP")->props().max;
+            seqStatus = watch(seqPlugin->getValue("STATUS"));
 
             char* getStepsDataId = strtok(NULL, " ");
             uint8_t dataId = seqPlugin->getDataId(getStepsDataId != NULL ? getStepsDataId : "STEPS");
@@ -140,6 +148,7 @@ public:
         /*md - `TEXT_COLOR: color` is the color of the text. */
         /*md - `FOREGROUND_COLOR: color` is the foreground color. */
         /*md - `ACTIVE_STEP_COLOR: color` is the color of the active step. */
+        /*md - `NAME_COLOR: color` is the color of the name. */
         return GroupColorComponent::config(key, value);
     }
 };
