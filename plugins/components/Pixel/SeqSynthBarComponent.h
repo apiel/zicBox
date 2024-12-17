@@ -33,8 +33,6 @@ protected:
 
     uint8_t stepIndex = -1;
 
-    ValueInterface* valStart = NULL;
-    ValueInterface* valEnd = NULL;
     ValueInterface* valBrowser = NULL;
     ValueInterface* valVolume = NULL;
     ValueInterface* seqStatus;
@@ -137,8 +135,6 @@ public:
             synthPlugin = &getPlugin(value, track);
             // might want to make this configurable...
             valBrowser = watch(synthPlugin->getValue("BROWSER"));
-            valEnd = watch(synthPlugin->getValue("END"));
-            valStart = watch(synthPlugin->getValue("START"));
             // FIXME
             valVolume = watch(getPlugin("Volume", track).getValue("VOLUME"));
             return true;
