@@ -1,7 +1,7 @@
 #ifndef _GROUP_COLOR_COMPONENT_H_
 #define _GROUP_COLOR_COMPONENT_H_
 
-#include "../../component.h"
+#include "plugins/components/component.h"
 #include "./ToggleColor.h"
 
 
