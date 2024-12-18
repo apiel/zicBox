@@ -66,7 +66,7 @@ local function drumSample(track)
             ROW1 =
             "&icon::musicNote::pixelated &icon::arrowUp::filled &icon::musicNote::pixelated &icon::musicNote::pixelated Track",
             ROW2 =
-            "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled &icon::musicNote::pixelated &icon::musicNote::pixelated &icon::play::filled"
+            "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled &icon::musicNote::pixelated &icon::play::filled"
         }, keyInfoPosition,
         {
             SHIFT_VISIBILITY = { index = 254, value = 0 },
