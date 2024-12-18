@@ -21,7 +21,7 @@ protected:
     KeypadLayout keypadLayout;
 
     Color background;
-    ToggleColor selection;
+    Color selectionColor;
     Color textColor;
     Color foreground;
     Color activeStepColor;
@@ -38,9 +38,9 @@ protected:
 
 public:
     SeqSynthBarComponent(ComponentInterface::Props props)
-        : GroupColorComponent(props, { { "SELECTION_COLOR", &selection } }, 1.0)
+        : GroupColorComponent(props, { }, 1.0)
         , background(styles.colors.background)
-        , selection(styles.colors.white, inactiveColorRatio)
+        , selectionColor(styles.colors.white)
         , textColor(styles.colors.text)
         , labelColor(darken(styles.colors.text, 0.5))
         , foreground({ 0x40, 0x40, 0x40 })
@@ -99,8 +99,8 @@ public:
             if (valName != NULL) {
                 draw.text({ x + 2, textY }, valName->string(), 8, { textColor, .maxWidth = (nameW - 4) });
             }
-            if (selectedItem == 0) {
-                draw.rect({ x, relativePosition.y }, { nameW, stepH - 1 }, { selection.color });
+            if (isActive && selectedItem == 0) {
+                draw.rect({ x, relativePosition.y }, { nameW, stepH - 1 }, { selectionColor });
             }
             x += nameW + 4;
 
@@ -108,8 +108,8 @@ public:
                 Step* step = &steps[i];
                 color = step->enabled ? darken(activeStepColor, 1.0 - step->velocity) : foreground;
                 draw.filledRect({ x, relativePosition.y }, { stepW, stepH }, { color });
-                if (selectedItem == i + 1) {
-                    draw.rect({ x, relativePosition.y }, { stepW, stepH - 1 }, { selection.color });
+                if (isActive && selectedItem == i + 1) {
+                    draw.rect({ x, relativePosition.y }, { stepW, stepH - 1 }, { selectionColor });
                 }
                 x += stepW + 2;
                 if (i % 4 == 3) {
@@ -121,9 +121,27 @@ public:
 
     void onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
-        if (isActive) {
+        // if (isActive) { // to mke each component independent
             keypadLayout.onKey(id, key, state, now);
+        // }
+    }
+
+    void onGroupChanged(int8_t index) override
+    {
+        if (isActive) {
+            renderNext();
         }
+        GroupColorComponent::onGroupChanged(index);
+
+        // bool shouldActivate = false;
+        // if (group == index || group == -1) {
+        //     shouldActivate = true;
+        // }
+        // if (shouldActivate != isActive) {
+        //     isActive = shouldActivate;
+        //     updateColors();
+        //     renderNext();
+        // }
     }
 
     /*md **Config**: */
@@ -196,6 +214,11 @@ public:
         }
 
         /*md - `SELECTION_COLOR: color` is the selection color. */
+        if (strcmp(key, "SELECTION_COLOR") == 0) {
+            selectionColor = draw.getColor(value);
+            return true;
+        }
+
         return GroupColorComponent::config(key, value);
     }
 };
