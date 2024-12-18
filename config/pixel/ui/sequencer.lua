@@ -7,7 +7,7 @@ local function sequencer(track)
   keyInfoBar(
     {
       ROW1 = "1 2 3 4 Shift",
-      ROW2 = "5 6 7 8 &icon::play"
+      ROW2 = "5 6 7 8 &icon::play::filled"
     },
     { x = 0, y = 216 },
     {
