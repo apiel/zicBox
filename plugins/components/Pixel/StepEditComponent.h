@@ -64,7 +64,7 @@ public:
         , textMotion2(styles.colors.quaternary, inactiveColorRatio)
         , keypadLayout(this, [&](std::string action) {
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
-            if (action == "stepToggle") {
+            if (action == ".stepToggle") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         if (!view->shift[globalShift]) {
@@ -78,7 +78,7 @@ public:
                 };
             }
 
-            if (action == "restoreShiftMode") {
+            if (action == ".restoreShiftMode") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         if (restoreShiftMode != -1) {

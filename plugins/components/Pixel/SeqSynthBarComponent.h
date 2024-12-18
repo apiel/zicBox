@@ -34,6 +34,8 @@ protected:
     ValueInterface* valVolume = NULL;
     ValueInterface* seqStatus = NULL;
 
+    int8_t selectedItem = 0;
+
 public:
     SeqSynthBarComponent(ComponentInterface::Props props)
         : GroupColorComponent(props, { { "SELECTION_COLOR", &selection } }, 1.0)
@@ -46,6 +48,28 @@ public:
         , nameColor(styles.colors.primary)
         , keypadLayout(this, [&](std::string action) {
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
+            if (action == ".left") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        selectedItem--;
+                        if (selectedItem < 0) {
+                            selectedItem = 0;
+                        }
+                        renderNext();
+                    }
+                };
+            }
+            if (action == ".right") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        selectedItem++;
+                        if (selectedItem > stepCount) {
+                            selectedItem = stepCount;
+                        }
+                        renderNext();
+                    }
+                };
+            }
             return func;
         })
     {
@@ -75,13 +99,18 @@ public:
             if (valName != NULL) {
                 draw.text({ x + 2, textY }, valName->string(), 8, { textColor, .maxWidth = (nameW - 4) });
             }
-            draw.rect({ x, relativePosition.y }, { nameW, stepH }, { selection.color });
+            if (selectedItem == 0) {
+                draw.rect({ x, relativePosition.y }, { nameW, stepH - 1 }, { selection.color });
+            }
             x += nameW + 4;
 
             for (int i = 0; i < stepCount; i++) {
                 Step* step = &steps[i];
                 color = step->enabled ? darken(activeStepColor, 1.0 - step->velocity) : foreground;
                 draw.filledRect({ x, relativePosition.y }, { stepW, stepH }, { color });
+                if (selectedItem == i + 1) {
+                    draw.rect({ x, relativePosition.y }, { stepW, stepH - 1 }, { selection.color });
+                }
                 x += stepW + 2;
                 if (i % 4 == 3) {
                     x += 2;
@@ -90,12 +119,12 @@ public:
         }
     }
 
-    // void onKey(uint16_t id, int key, int8_t state, unsigned long now)
-    // {
-    //     if (isActive) {
-    //         keypadLayout.onKey(id, key, state, now);
-    //     }
-    // }
+    void onKey(uint16_t id, int key, int8_t state, unsigned long now)
+    {
+        if (isActive) {
+            keypadLayout.onKey(id, key, state, now);
+        }
+    }
 
     /*md **Config**: */
     bool config(char* key, char* value)
