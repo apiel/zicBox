@@ -95,7 +95,6 @@ public:
                 // printf("set scroll container position.y: %d\n", position.y);
 
                 view->draw.filledRect(originPosition, size, { bgColor });
-                // view->draw.filledRect(originPosition, size, { 0xFF, 0xFF, 0xFF });
 
                 // maybe need to make something in view for this?
                 std::vector<void*>* components = view->getComponents();

@@ -2,6 +2,7 @@ local ui = require("config/pixel/libs/ui")
 local text = require("config/pixel/libs/component/text")
 local encoder3 = require("config/pixel/libs/component/encoder3")
 local keyInfoBar = require("config/pixel/libs/component/keyInfoBar")
+local groupVisibility = require("config/pixel/libs/containers/groupVisibility")
 
 local function row(group, track, y)
     local h = 15
@@ -19,46 +20,43 @@ local function row(group, track, y)
                 { key = "d", action = ".right" },
             }
         })
+
+
     return y + h + 2
 end
 
-local function drumSample(track)
-    text(
-        { TEXT = "Drum Sample(" .. track .. ")" },
-        { x = 0, y = 0, w = ScreenWidth, h = 8 },
-        { CENTERED = true }
-    )
+local function encoders(group, track)
+    groupVisibility("DrumSample" .. track, group)
 
     encoder3(
         { ENCODER_ID = 0, VALUE = "Volume VOLUME" },
         { x = 0, y = 15, w = W1_4, h = 50 },
-        { COLOR = "primary", TRACK = 11 }
+        { COLOR = "primary", TRACK = track, ENCODER_ID = 0 }
     )
     encoder3(
         { ENCODER_ID = 0, VALUE = "DrumSample START" },
         { x = W1_4, y = 15, w = W1_4, h = 50 },
-        { COLOR = "secondary", TRACK = 11 }
+        { COLOR = "secondary", TRACK = track, ENCODER_ID = 1 }
     )
     encoder3(
         { ENCODER_ID = 0, VALUE = "DrumSample END" },
         { x = W2_4, y = 15, w = W1_4, h = 50 },
-        { COLOR = "tertiary", TRACK = 11 }
+        { COLOR = "tertiary", TRACK = track, ENCODER_ID = 2 }
     )
     encoder3(
         { ENCODER_ID = 0, VALUE = "DrumSample BROWSER" },
         { x = W3_4, y = 15, w = W1_4, h = 50 },
-        { COLOR = "quaternary", TRACK = 11, TYPE = "NUMBER" }
+        { COLOR = "quaternary", TRACK = track, TYPE = "NUMBER", ENCODER_ID = 3 }
+    )
+end
+
+local function drumSample(track)
+    text(
+        { TEXT = "Drum Sample(1)" },
+        { x = 0, y = 0, w = ScreenWidth, h = 8 },
+        { CENTERED = true }
     )
 
-    local y = 70
-    y = row(0, 11, y)
-    y = row(1, 12, y)
-    y = row(2, 13, y)
-    y = row(3, 14, y)
-    y = row(4, 15, y)
-    y = row(5, 16, y)
-    y = row(6, 17, y)
-    y = row(7, 18, y)
 
     local keyInfoPosition = { x = 0, y = 216 }
     keyInfoBar(
@@ -106,6 +104,25 @@ local function drumSample(track)
             }
         }
     )
+
+    local y = 70
+    y = row(0, 11, y)
+    y = row(1, 12, y)
+    y = row(2, 13, y)
+    y = row(3, 14, y)
+    y = row(4, 15, y)
+    y = row(5, 16, y)
+    y = row(6, 17, y)
+    y = row(7, 18, y)
+
+    encoders(0, 11)
+    encoders(1, 12)
+    encoders(2, 13)
+    encoders(3, 14)
+    encoders(4, 15)
+    encoders(5, 16)
+    encoders(6, 17)
+    encoders(7, 18)
 end
 
 return drumSample
