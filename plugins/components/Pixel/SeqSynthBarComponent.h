@@ -37,6 +37,8 @@ protected:
 
     int8_t selectedItem = 0;
 
+    bool independent = false;
+
 public:
     SeqSynthBarComponent(ComponentInterface::Props props)
         : Component(props)
@@ -120,9 +122,9 @@ public:
 
     void onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
-        // if (isActive) { // to mke each component independent
-        keypadLayout.onKey(id, key, state, now);
-        // }
+        if (!independent || isActive) {
+            keypadLayout.onKey(id, key, state, now);
+        }
     }
 
     void onGroupChanged(int8_t index) override
@@ -213,6 +215,12 @@ public:
         /*md - `SELECTION_COLOR: color` is the selection color. */
         if (strcmp(key, "SELECTION_COLOR") == 0) {
             selectionColor = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `INDEPENDENT: true` is whether the component is independent or not. (default: false) When false, selection will change wether the component is active or not. */
+        if (strcmp(key, "INDEPENDENT") == 0) {
+            independent = strcmp(value, "true") == 0;
             return true;
         }
 
