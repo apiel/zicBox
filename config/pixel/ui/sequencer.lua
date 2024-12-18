@@ -65,8 +65,8 @@ local function sequencer(track)
         GLOBAL_SHIFT = 254,
         ENCODERS = { 0, 1, 2 },
         KEYMAPS = {
-          { key = "q", action = "stepToggle" },
-          { key = "t", action = "restoreShiftMode" }
+          { key = "q", action = ".stepToggle" },
+          { key = "t", action = ".restoreShiftMode" }
         }
       }
     )
@@ -86,8 +86,8 @@ local function sequencer(track)
         GLOBAL_SHIFT = 254,
         ENCODERS = { 0, 1, 2 },
         KEYMAPS = {
-          { key = "w", action = "stepToggle" },
-          { key = "t", action = "restoreShiftMode" }
+          { key = "w", action = ".stepToggle" },
+          { key = "t", action = ".restoreShiftMode" }
         }
       }
     )
@@ -107,8 +107,8 @@ local function sequencer(track)
         GLOBAL_SHIFT = 254,
         ENCODERS = { 0, 1, 2 },
         KEYMAPS = {
-          { key = "e", action = "stepToggle" },
-          { key = "t", action = "restoreShiftMode" }
+          { key = "e", action = ".stepToggle" },
+          { key = "t", action = ".restoreShiftMode" }
         }
       }
     )
@@ -128,8 +128,8 @@ local function sequencer(track)
         GLOBAL_SHIFT = 254,
         ENCODERS = { 0, 1, 2 },
         KEYMAPS = {
-          { key = "r", action = "stepToggle" },
-          { key = "t", action = "restoreShiftMode" }
+          { key = "r", action = ".stepToggle" },
+          { key = "t", action = ".restoreShiftMode" }
         }
       }
     )
@@ -151,8 +151,8 @@ local function sequencer(track)
         GLOBAL_SHIFT = 254,
         ENCODERS = { 0, 1, 2 },
         KEYMAPS = {
-          { key = "a", action = "stepToggle" },
-          { key = "t", action = "restoreShiftMode" }
+          { key = "a", action = ".stepToggle" },
+          { key = "t", action = ".restoreShiftMode" }
         }
       }
     )
@@ -172,8 +172,8 @@ local function sequencer(track)
         GLOBAL_SHIFT = 254,
         ENCODERS = { 0, 1, 2 },
         KEYMAPS = {
-          { key = "s", action = "stepToggle" },
-          { key = "t", action = "restoreShiftMode" }
+          { key = "s", action = ".stepToggle" },
+          { key = "t", action = ".restoreShiftMode" }
         }
       }
     )
@@ -193,8 +193,8 @@ local function sequencer(track)
         GLOBAL_SHIFT = 254,
         ENCODERS = { 0, 1, 2 },
         KEYMAPS = {
-          { key = "d", action = "stepToggle" },
-          { key = "t", action = "restoreShiftMode" }
+          { key = "d", action = ".stepToggle" },
+          { key = "t", action = ".restoreShiftMode" }
         }
       }
     )
@@ -214,8 +214,8 @@ local function sequencer(track)
         GLOBAL_SHIFT = 254,
         ENCODERS = { 0, 1, 2 },
         KEYMAPS = {
-          { key = "f", action = "stepToggle" },
-          { key = "t", action = "restoreShiftMode" }
+          { key = "f", action = ".stepToggle" },
+          { key = "t", action = ".restoreShiftMode" }
         }
       }
     )

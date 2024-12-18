@@ -7,13 +7,17 @@ local function row(group, track, y)
     local h = 15
     ui.component("SeqSynthBar",
         { "SEQ_PLUGIN" },
-        { SEQ_PLUGIN = "Sequencer",  },
+        { SEQ_PLUGIN = "Sequencer", },
         { x = 0, y = y, w = ScreenWidth, h = h }, {
             GROUP = group,
             TRACK = track,
             NAME_COLOR = "#00b300",
             NAME_PLUGIN = "DrumSample BROWSER",
             VOLUME_PLUGIN = "Volume VOLUME",
+            KEYMAPS = {
+                { key = "a", action = ".left" },
+                { key = "d", action = ".right" },
+            }
         })
     return y + h + 2
 end
@@ -72,9 +76,9 @@ local function drumSample(track)
                 { key = "e", action = "noteOn:DrumSample:58" },
                 { key = "r", action = "noteOn:DrumSample:59" },
                 { key = "t", action = "shift:254:1:0" },
-                { key = "a", action = "noteOn:DrumSample:60" },
+
                 { key = "s", action = "incGroup:+1" },
-                { key = "d", action = "noteOn:DrumSample:61" },
+
                 { key = "f", action = "noteOn:DrumSample:62" },
                 { key = "g", action = "playPause" }
             }
