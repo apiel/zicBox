@@ -36,6 +36,7 @@ public:
             shouldActivate = true;
         }
         if (shouldActivate != isVisible) {
+            printf("[%s] current group: %d inccoming group: %d\n", name.c_str(), group, index);
             isVisible = shouldActivate;
             std::vector<void*>* components = view->getComponents();
             for (void* c : *components) {

@@ -31,22 +31,22 @@ local function encoders(group, track)
     encoder3(
         { ENCODER_ID = 0, VALUE = "Volume VOLUME" },
         { x = 0, y = 15, w = W1_4, h = 50 },
-        { COLOR = "primary", TRACK = track, ENCODER_ID = 0 }
+        { COLOR = "primary", TRACK = track, GROUP = group }
     )
     encoder3(
-        { ENCODER_ID = 0, VALUE = "DrumSample START" },
+        { ENCODER_ID = 1, VALUE = "DrumSample START" },
         { x = W1_4, y = 15, w = W1_4, h = 50 },
-        { COLOR = "secondary", TRACK = track, ENCODER_ID = 1 }
+        { COLOR = "secondary", TRACK = track, GROUP = group }
     )
     encoder3(
-        { ENCODER_ID = 0, VALUE = "DrumSample END" },
+        { ENCODER_ID = 2, VALUE = "DrumSample END" },
         { x = W2_4, y = 15, w = W1_4, h = 50 },
-        { COLOR = "tertiary", TRACK = track, ENCODER_ID = 2 }
+        { COLOR = "tertiary", TRACK = track,GROUP = group }
     )
     encoder3(
-        { ENCODER_ID = 0, VALUE = "DrumSample BROWSER" },
+        { ENCODER_ID = 3, VALUE = "DrumSample BROWSER" },
         { x = W3_4, y = 15, w = W1_4, h = 50 },
-        { COLOR = "quaternary", TRACK = track, TYPE = "NUMBER", ENCODER_ID = 3 }
+        { COLOR = "quaternary", TRACK = track, TYPE = "NUMBER", GROUP = group }
     )
 end
 
