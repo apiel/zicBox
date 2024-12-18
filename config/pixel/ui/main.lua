@@ -25,7 +25,7 @@ local track = 0
 
 -- - Track Sample (1)
 track = track + 1
-ui.view("Track" .. track, { COMPONENTS_TRACK = track })
+ui.view("Track" .. track) -- , { COMPONENTS_TRACK = track }
 drumSample(track)
 
 -- - Track Drum23 (2)

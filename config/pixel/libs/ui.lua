@@ -4,7 +4,7 @@ local ui = {}
 
 --- Create a view
 --- @param name string The name of the view to create
---- @param options { COMPONENTS_TRACK: number, GROUP_LOOP: boolean } Options:
+--- @param options { COMPONENTS_TRACK: number, GROUP_LOOP: boolean } | nil Options:
 --- - COMPONENTS_TRACK set default track value for all components contained in the view
 --- - GROUP_LOOP set if group incrementation should loop back to start once reached the end. (default: true)
 function ui.view(name, options)
@@ -48,6 +48,10 @@ end
 --- @param options { [string]: string | boolean | number | table } | nil Options to apply
 function ui.component(name, mandatoryParams, params, position, options)
     zic("COMPONENT", name .. " " .. ui.parsePosition(position))
+    if options ~= nil and options.track ~= nil then
+        zic("TRACK", options.track)
+        options.track = nil
+    end
     core.zic(core.parseParams(params, mandatoryParams))
     if options ~= nil then
         core.zic(core.parseOptions(options))

@@ -32,33 +32,33 @@ local function drumSample(track)
     encoder3(
         { ENCODER_ID = 0, VALUE = "Volume VOLUME" },
         { x = 0, y = 15, w = W1_4, h = 50 },
-        { COLOR = "primary", TRACK = track }
+        { COLOR = "primary", TRACK = 11 }
     )
     encoder3(
         { ENCODER_ID = 0, VALUE = "DrumSample START" },
         { x = W1_4, y = 15, w = W1_4, h = 50 },
-        { COLOR = "secondary", TRACK = track }
+        { COLOR = "secondary", TRACK = 11 }
     )
     encoder3(
         { ENCODER_ID = 0, VALUE = "DrumSample END" },
         { x = W2_4, y = 15, w = W1_4, h = 50 },
-        { COLOR = "tertiary", TRACK = track }
+        { COLOR = "tertiary", TRACK = 11 }
     )
     encoder3(
         { ENCODER_ID = 0, VALUE = "DrumSample BROWSER" },
         { x = W3_4, y = 15, w = W1_4, h = 50 },
-        { COLOR = "quaternary", TRACK = track, TYPE = "NUMBER" }
+        { COLOR = "quaternary", TRACK = 11, TYPE = "NUMBER" }
     )
 
     local y = 70
-    y = row(0, track, y)
-    y = row(1, track, y)
-    y = row(2, track, y)
-    y = row(3, track, y)
-    y = row(4, track, y)
-    y = row(5, track, y)
-    y = row(6, track, y)
-    y = row(7, track, y)
+    y = row(0, 11, y)
+    y = row(1, 12, y)
+    y = row(2, 13, y)
+    y = row(3, 14, y)
+    y = row(4, 15, y)
+    y = row(5, 16, y)
+    y = row(6, 17, y)
+    y = row(7, 18, y)
 
     local keyInfoPosition = { x = 0, y = 216 }
     keyInfoBar(

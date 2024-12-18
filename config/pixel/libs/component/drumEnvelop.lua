@@ -23,8 +23,7 @@ local ui = require "config/pixel/libs/ui"
 --- - CURSOR_COLOR set the cursor color
 --- - INACTIVE_COLOR_RATIO is the ratio of darkness for the inactive color (default: 0.5).
 local function component(params, position, options)
-    ui.component("DrumEnvelop", { "PLUGIN", "ENVELOP_DATA_ID" }, params,
-        position, options)
+    ui.component("DrumEnvelop", { "PLUGIN", "ENVELOP_DATA_ID" }, params, position, options)
 end
 
 return component
