@@ -17,6 +17,8 @@
 - TODO make a simple EffectDelay with preset... or re-use the exisiting one?
 - TODO or should it just be GRAIN track, DELAY track and REVERB track (alias delay?)
 
+- TODO digital audio programming tutorial
+
 - TODO Save button or project:
     - save yes
     - restore 
@@ -57,6 +59,9 @@
 - FIXME encoder3 should remove marginTop
 
 - TODO Encoder group: OnEncoder event should take group as param, so if we put an external encoder Interface, we can overwrite the current group? Should it really do this? Maybe it should be the view manager... maybe not :p might still be a good idea to pass it and use this to make the comparison.
+
+- IDEA try deno compile and see if in anyway can be used as config file
+      --> https://docs.deno.com/runtime/reference/cli/compile/
 
 #### Pixel seq
 

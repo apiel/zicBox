@@ -5,19 +5,20 @@ local position = { x = 0, y = 216 }
 local function keyboardMain(track, synth)
   keyInfoBar(
     {
-      ROW1 = "&icon::arrowUp Seq Clip Synth Track",
-      ROW2 = "&icon::arrowDown &icon::musicNote::pixelated Live &icon::pause &icon::play"
+      ROW1 =
+      "&icon::musicNote::pixelated &icon::arrowUp::filled &icon::musicNote::pixelated &icon::musicNote::pixelated Track",
+      ROW2 = "Seq &icon::arrowDown::filled &icon::musicNote::pixelated &icon::musicNote::pixelated &icon::play::filled"
     }, position,
     {
       SHIFT_VISIBILITY = { index = 254, value = 0 },
       KEYMAPS = {
-        { key = "q", action = "incGroup:-1" },
-        { key = "w", action = "setView:Sequencer" .. track },
-        { key = "e", action = "noteOn:" .. synth .. ":58" },
-        { key = "r", action = "noteOn:" .. synth .. ":59" },
+        { key = "q", action = "noteOn:" .. synth .. ":58" },
+        { key = "w", action = "incGroup:-1" },
+        { key = "e", action = "noteOn:" .. synth .. ":59" },
+        { key = "r", action = "noteOn:" .. synth .. ":60" },
         { key = "t", action = "shift:254:1:0" },
-        { key = "a", action = "incGroup:+1" },
-        { key = "s", action = "noteOn:" .. synth .. ":60" },
+        { key = "a", action = "setView:Sequencer" .. track },
+        { key = "s", action = "incGroup:+1" },
         { key = "d", action = "noteOn:" .. synth .. ":61" },
         { key = "f", action = "noteOn:" .. synth .. ":62" },
         { key = "g", action = "playPause" }
