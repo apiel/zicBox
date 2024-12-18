@@ -7,7 +7,17 @@
 
 int noDebug(const char* format, ...) { return 0; }
 
+void demoNoise();
+void demoSine();
+
 int main(int argc, char* argv[])
+{
+    // demoNoise();
+    demoSine();
+    return 0;
+}
+
+void demoNoise()
 {
     AudioPlugin::Props props = {
         .debug = noDebug,
@@ -22,21 +32,36 @@ int main(int argc, char* argv[])
 
     float buffer[MAX_TRACKS] = { 0.0f };
 
-    // while (1) {
-    //     buffer[0] = rand() / (float)RAND_MAX;
-    //     audioOutput.sample(buffer);
-    // }
+    while (1) {
+        buffer[0] = rand() / (float)RAND_MAX;
+        audioOutput.sample(buffer);
+    }
+}
+
+void demoSine()
+{
+    AudioPlugin::Props props = {
+        .debug = noDebug,
+        .sampleRate = 44100,
+        .channels = 2,
+        .audioPluginHandler = nullptr,
+        .maxTracks = MAX_TRACKS,
+        .lookupTable = nullptr,
+    };
+
+    AudioOutputPulse audioOutput(props, (char*)"zicAudioOutputPulse");
+
+    float buffer[MAX_TRACKS] = { 0.0f };
 
     // Main sine wave parameters
     float frequency = 220.0f; // Base frequency in Hz
-    float phase = 0.0f;       // Phase accumulator
+    float phase = 0.0f; // Phase accumulator
     float phaseIncrement = (TWO_PI * frequency) / props.sampleRate; // Increment per sample
 
     // LFO parameters for amplitude modulation
     float lfoFrequency = 0.5f; // Low Frequency Oscillator (LFO) in Hz
     float lfoPhase = 0.0f;
     float lfoPhaseIncrement = (TWO_PI * lfoFrequency) / props.sampleRate;
-
     while (1) {
         // Amplitude modulation using LFO
         float lfoValue = (std::sin(lfoPhase) + 1.0f) / 2.0f; // LFO oscillates between 0 and 1
