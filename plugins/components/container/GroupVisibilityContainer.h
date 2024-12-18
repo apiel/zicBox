@@ -48,8 +48,8 @@ public:
 
     bool config(char* key, char* value) override
     {
-        /*md - `GROUP: 0` the group index to show/hide the components. */
-        if (strcmp(key, "GROUP") == 0) {
+        /*md - `VISIBILITY_GROUP: 0` the group index to show/hide the components. */
+        if (strcmp(key, "VISIBILITY_GROUP") == 0) {
             group = atoi(value);
             return true;
         }

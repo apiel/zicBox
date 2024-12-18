@@ -6,7 +6,7 @@ local ui = require("config/pixel/libs/ui")
 --- @param group number The group index
 local function container(name, group)
     zic("CONTAINER", "GroupVisibilityContainer " .. name .. " " .. ui.parsePosition({ 0, 0 }))
-    zic("GROUP", group)
+    zic("VISIBILITY_GROUP", group)
 end
 
 return container
