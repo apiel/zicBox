@@ -6,15 +6,16 @@
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
-#include "utils/GroupColorComponent.h"
 
 /*md
 ## SeqSynthBar
 
 */
 
-class SeqSynthBarComponent : public GroupColorComponent {
+class SeqSynthBarComponent : public Component {
 protected:
+    bool isActive = true;
+
     Step* steps = NULL;
     uint8_t stepCount = 32;
 
@@ -38,7 +39,7 @@ protected:
 
 public:
     SeqSynthBarComponent(ComponentInterface::Props props)
-        : GroupColorComponent(props, { }, 1.0)
+        : Component(props)
         , background(styles.colors.background)
         , selectionColor(styles.colors.white)
         , textColor(styles.colors.text)
@@ -73,8 +74,6 @@ public:
             return func;
         })
     {
-        // setInactiveColorRatio(1.0);
-        updateColors();
     }
 
     void render() override
@@ -122,7 +121,7 @@ public:
     void onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
         // if (isActive) { // to mke each component independent
-            keypadLayout.onKey(id, key, state, now);
+        keypadLayout.onKey(id, key, state, now);
         // }
     }
 
@@ -131,17 +130,15 @@ public:
         if (isActive) {
             renderNext();
         }
-        GroupColorComponent::onGroupChanged(index);
 
-        // bool shouldActivate = false;
-        // if (group == index || group == -1) {
-        //     shouldActivate = true;
-        // }
-        // if (shouldActivate != isActive) {
-        //     isActive = shouldActivate;
-        //     updateColors();
-        //     renderNext();
-        // }
+        bool shouldActivate = false;
+        if (group == index || group == -1) {
+            shouldActivate = true;
+        }
+        if (shouldActivate != isActive) {
+            isActive = shouldActivate;
+            renderNext();
+        }
     }
 
     /*md **Config**: */
@@ -219,7 +216,7 @@ public:
             return true;
         }
 
-        return GroupColorComponent::config(key, value);
+        return false;
     }
 };
 
