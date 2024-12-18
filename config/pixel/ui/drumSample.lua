@@ -6,12 +6,14 @@ local keyInfoBar = require("config/pixel/libs/component/keyInfoBar")
 local function row(group, track, y)
     local h = 15
     ui.component("SeqSynthBar",
-        { "SEQ_PLUGIN", "SYNTH_PLUGIN" },
-        { SEQ_PLUGIN = "Sequencer", SYNTH_PLUGIN = "DrumSample" },
+        { "SEQ_PLUGIN" },
+        { SEQ_PLUGIN = "Sequencer",  },
         { x = 0, y = y, w = ScreenWidth, h = h }, {
             GROUP = group,
             TRACK = track,
-            NAME_COLOR = "#00b300"
+            NAME_COLOR = "#00b300",
+            NAME_PLUGIN = "DrumSample BROWSER",
+            VOLUME_PLUGIN = "Volume VOLUME",
         })
     return y + h + 2
 end

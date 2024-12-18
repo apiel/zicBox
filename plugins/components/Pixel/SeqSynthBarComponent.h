@@ -15,11 +15,8 @@
 
 class SeqSynthBarComponent : public GroupColorComponent {
 protected:
-    AudioPlugin* seqPlugin = NULL;
     Step* steps = NULL;
     uint8_t stepCount = 32;
-
-    AudioPlugin* synthPlugin = NULL;
 
     KeypadLayout keypadLayout;
 
@@ -33,9 +30,9 @@ protected:
 
     uint8_t stepIndex = -1;
 
-    ValueInterface* valBrowser = NULL;
+    ValueInterface* valName = NULL;
     ValueInterface* valVolume = NULL;
-    ValueInterface* seqStatus;
+    ValueInterface* seqStatus = NULL;
 
 public:
     SeqSynthBarComponent(ComponentInterface::Props props)
@@ -58,7 +55,7 @@ public:
 
     void render() override
     {
-        if (updatePosition() && steps && seqPlugin) {
+        if (updatePosition() && steps) {
             draw.filledRect(relativePosition, size, { background });
 
             int stepW = 4;
@@ -69,12 +66,15 @@ public:
             int stepsW = stepCount * (stepW + 2 + 0.5); // 2 / 4 adding 2 pixel every 4 steps
             int nameW = size.w - stepsW - 5;
             int x = relativePosition.x + 1;
-            Color color = seqStatus->get() == 1 ? darken(nameColor, 0.5) : foreground;
+            bool showVolume = seqStatus != NULL && seqStatus->get() == 1 && valVolume != NULL;
+            Color color = showVolume ? darken(nameColor, 0.5) : foreground;
             draw.filledRect({ x, relativePosition.y }, { nameW, stepH }, { color });
-            if (seqStatus->get() == 1) {
+            if (showVolume) {
                 draw.filledRect({ x, relativePosition.y }, { (int)(nameW * valVolume->pct()), stepH }, { nameColor });
             }
-            draw.text({ x + 2, textY }, valBrowser->string(), 8, { textColor, .maxWidth = (nameW - 4) });
+            if (valName != NULL) {
+                draw.text({ x + 2, textY }, valName->string(), 8, { textColor, .maxWidth = (nameW - 4) });
+            }
             draw.rect({ x, relativePosition.y }, { nameW, stepH }, { selection.color });
             x += nameW + 4;
 
@@ -88,21 +88,6 @@ public:
                 }
             }
         }
-    }
-
-    void onEncoder(int id, int8_t direction) override
-    {
-        // if (active) {
-        //     if (id == 0) {
-        //         valVolume->increment(direction);
-        //     } else if (id == 1) {
-        //         valStart->increment(direction);
-        //     } else if (id == 2) {
-        //         valEnd->increment(direction);
-        //     } else if (id == 3) {
-        //         valBrowser->increment(direction);
-        //     }
-        // }
     }
 
     // void onKey(uint16_t id, int key, int8_t state, unsigned long now)
@@ -121,6 +106,8 @@ public:
 
         /*md - `SEQ_PLUGIN: plugin_name [get_steps_data_id]` set plugin target for sequencer */
         if (strcmp(key, "SEQ_PLUGIN") == 0) {
+            AudioPlugin* seqPlugin = NULL;
+
             seqPlugin = &getPlugin(strtok(value, " "), track);
             stepCount = seqPlugin->getValue("SELECTED_STEP")->props().max;
             seqStatus = watch(seqPlugin->getValue("STATUS"));
@@ -131,13 +118,15 @@ public:
             return true;
         }
 
-        /*md - `SYNTH_PLUGIN: plugin_name` set the plugin target for the synth. */
-        if (strcmp(key, "SYNTH_PLUGIN") == 0) {
-            synthPlugin = &getPlugin(value, track);
-            // might want to make this configurable...
-            valBrowser = watch(synthPlugin->getValue("BROWSER"));
-            // FIXME
-            valVolume = watch(getPlugin("Volume", track).getValue("VOLUME"));
+        /*md - `NAME_PLUGIN: plugin_name value_key` set the plugin target to be used for the name. */
+        if (strcmp(key, "NAME_PLUGIN") == 0) {
+            valName = watch(getPlugin(strtok(value, " "), track).getValue(strtok(NULL, " ")));
+            return true;
+        }
+
+        /*md - `VOLUME_PLUGIN: plugin_name value_key` is used for the volume bar (but can be any else). */
+        if (strcmp(key, "VOLUME_PLUGIN") == 0) {
+            valVolume = watch(getPlugin(strtok(value, " "), track).getValue(strtok(NULL, " ")));
             return true;
         }
 
@@ -170,7 +159,7 @@ public:
             nameColor = draw.getColor(value);
             return true;
         }
-        
+
         /*md - `LABEL_COLOR: color` is the color of the label. */
         if (strcmp(key, "LABEL_COLOR") == 0) {
             labelColor = draw.getColor(value);
