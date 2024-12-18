@@ -214,10 +214,8 @@ public:
             return true;
         }
 
-        for (auto& container : containers) {
-            if (container != this && container->config(key, value)) {
-                return true;
-            }
+        if (containers.size() > 1 && containers.back()->config(key, value)) {
+            return true;
         }
 
         return false;

@@ -34,7 +34,7 @@ local function keyboardMain(track, synth)
     {
       SHIFT_VISIBILITY = { index = 254, value = 1 },
       KEYMAPS = {
-        { key = "q", action = track == 1 and "setView:Sequencer1" or "setView:Track1" },
+        { key = "q", action = "setView:Track1" },
         { key = "w", action = track == 2 and "setView:Sequencer2" or "setView:Track2" },
         { key = "e", action = track == 3 and "setView:Sequencer3" or "setView:Track3" },
         { key = "r", action = track == 4 and "setView:Sequencer4" or "setView:Track4" },
