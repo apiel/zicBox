@@ -160,6 +160,13 @@ public:
             };
         }
 
+        /*md - `&icon::toggle::rect` */
+        if (name == "&icon::toggle::rect") {
+            return [&](Point position, uint8_t size, Color color, Align align) {
+                toggleRect(position, size, color, align);
+            };
+        }
+
         // printf("Unknown icon: %s\n", name.c_str());
 
         return nullptr;
@@ -295,8 +302,8 @@ public:
             { x, (int)(position.y + size * 0.5) },
             { (int)(x + size * 0.5), position.y + size },
             { (int)(x + size * 0.5), (int)(position.y + size * 0.75) },
-            { (int)(x + size), (int)(position.y + size * 0.75) },
-            { (int)(x + size), (int)(position.y + size * 0.25) },
+            { x + size, (int)(position.y + size * 0.75) },
+            { x + size, (int)(position.y + size * 0.25) },
             { (int)(x + size * 0.5), (int)(position.y + size * 0.25) },
         };
         if (filled) {
@@ -312,11 +319,11 @@ public:
         std::vector<Point> points = {
             { (int)(x + size * 0.5), (int)(position.y + size * 0.25) },
             { (int)(x + size * 0.5), position.y + size },
-            { (int)(x + size), (int)(position.y + size * 0.5) },
+            { x + size, (int)(position.y + size * 0.5) },
             { (int)(x + size * 0.5), position.y },
             { (int)(x + size * 0.5), (int)(position.y + size * 0.75) },
-            { (int)(x), (int)(position.y + size * 0.75) },
-            { (int)(x), (int)(position.y + size * 0.25) },
+            { x, (int)(position.y + size * 0.75) },
+            { x, (int)(position.y + size * 0.25) },
             { (int)(x + size * 0.5), (int)(position.y + size * 0.25) },
         };
         if (filled) {
@@ -355,16 +362,20 @@ public:
     {
         int x = getX(position, size, align, size);
 
-        x += 4; // whatever fix compare to other icons
+        draw.arc({ x + size, (int)(position.y + size * 0.5) }, size * 0.5, 270, 90, { color });
+        draw.arc({ x, (int)(position.y + size * 0.5) }, size * 0.5, 90, 270, { color });
 
-        draw.arc({ (int)(x + size * 0.5), (int)(position.y + size * 0.5) }, size * 0.5, 270, 90, { color });
-        draw.arc({ (int)(x - size * 0.5), (int)(position.y + size * 0.5) }, size * 0.5, 90, 270, { color });
+        draw.line({ x, position.y }, { x + size, position.y }, { color });
+        draw.line({ x, position.y + size }, { x + size, position.y + size }, { color });
 
-        draw.line({ (int)(x - size * 0.5), (int)(position.y) }, { (int)(x + size * 0.5), (int)(position.y) }, { color });
-        draw.line({ (int)(x - size * 0.5), (int)(position.y + size) }, { (int)(x + size * 0.5), (int)(position.y + size) }, { color });
+        draw.filledCircle({ (int)(x + size * 0.1), (int)(position.y + size * 0.5) }, size * 0.25, { color });
+    }
 
-        draw.filledCircle({ (int)(x - size * 0.25), (int)(position.y + size * 0.5) }, size * 0.25, { color });
-
+    void toggleRect(Point position, uint8_t size, Color color, Align align = LEFT)
+    {
+        int x = getX(position, size, align, size);
+        draw.rect({ (int)(x - size * 0.5), position.y }, { size * 2, size }, { color });
+        draw.filledCircle({ (int)(x + size * 0.1), (int)(position.y + size * 0.5) }, size * 0.25, { color });
     }
 
 protected:
