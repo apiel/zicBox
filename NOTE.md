@@ -1,5 +1,7 @@
 ## Pixel TODO
 
+- TODO drum sample
+    - toggle icon
 - TODO drum sample master:
     -- instead of gain might want to add some drive...
     -- there could even be two type of drive using center value
