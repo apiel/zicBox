@@ -89,6 +89,10 @@ public:
         for (auto& component : components) {
             component->onContext(index, value);
         }
+
+        // for (auto& container : containers) {
+        //     container->onContext(index, value);
+        // }
     }
 
     // TODO could this be optimized by creating mapping values to components?

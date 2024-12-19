@@ -115,6 +115,12 @@ protected:
         plugins.push_back(plugin);
     }
 
+    void setContext(uint8_t index, uint8_t value)
+    {
+        contextVar[index] = value;
+        view->onContext(index, value);
+    }
+
     void addComponent(string name, Point position, Size size)
     {
         ComponentInterface::Props props = {
@@ -125,7 +131,7 @@ protected:
             sendAudioEvent,
             getController,
             view,
-            [this](uint8_t index, uint8_t value) { contextVar[index] = value; view->onContext(index, value); }
+            [this](uint8_t index, uint8_t value) { setContext(index, value); }
         };
 
         // printf("addComponent: %s pos %d %d size %d %d\n", name, position.x, position.y, size.w, size.h);
