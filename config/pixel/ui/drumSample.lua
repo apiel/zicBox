@@ -5,7 +5,7 @@ local keyInfoBar = require("config/pixel/libs/component/keyInfoBar")
 local groupVisibility = require("config/pixel/libs/containers/groupVisibility")
 
 local function row(group, track, y)
-    local h = 15
+    local h = 20
     ui.component("SeqSynthBar",
         { "SEQ_PLUGIN" },
         { SEQ_PLUGIN = "Sequencer", },
@@ -27,28 +27,57 @@ local function row(group, track, y)
     return y + h + 2
 end
 
-local function encoders(group, track)
+local function encoders(group, track, y)
     groupVisibility("DrumSample" .. track, group)
 
     encoder3(
         { ENCODER_ID = 0, VALUE = "Volume VOLUME" },
-        { x = 0, y = 15, w = W1_4, h = 50 },
+        { x = 0, y = y, w = W1_4, h = 50 },
         { COLOR = "primary", TRACK = track, GROUP = group }
     )
     encoder3(
         { ENCODER_ID = 1, VALUE = "DrumSample START" },
-        { x = W1_4, y = 15, w = W1_4, h = 50 },
+        { x = W1_4, y = y, w = W1_4, h = 50 },
         { COLOR = "secondary", TRACK = track, GROUP = group }
     )
     encoder3(
         { ENCODER_ID = 2, VALUE = "DrumSample END" },
-        { x = W2_4, y = 15, w = W1_4, h = 50 },
+        { x = W2_4, y = y, w = W1_4, h = 50 },
         { COLOR = "tertiary", TRACK = track, GROUP = group }
     )
     encoder3(
         { ENCODER_ID = 3, VALUE = "DrumSample BROWSER" },
-        { x = W3_4, y = 15, w = W1_4, h = 50 },
+        { x = W3_4, y = y, w = W1_4, h = 50 },
         { COLOR = "quaternary", TRACK = track, TYPE = "NUMBER", GROUP = group }
+    )
+end
+
+local function encodersMaster(group, track, y)
+    groupVisibility("DrumSamplemaster", group)
+
+    encoder3(
+        { ENCODER_ID = 0, VALUE = "Volume VOLUME" },
+        { x = 0, y = y, w = W1_4, h = 50 },
+        { COLOR = "quaternary", TRACK = track, GROUP = group }
+    )
+
+    -- instead of gain might want to add some drive...
+    -- there could even be two type of drive using center value
+    encoder3(
+        { ENCODER_ID = 1, VALUE = "Volume GAIN" },
+        { x = W1_4, y = y, w = W1_4, h = 50 },
+        { COLOR = "secondary", TRACK = track, GROUP = group }
+    )
+
+    encoder3(
+        { ENCODER_ID = 2, VALUE = "MMFilter CUTOFF" },
+        { x = W2_4, y = y, w = W1_4, h = 50 },
+        { COLOR = "tertiary", TRACK = track, GROUP = group }
+    )
+    encoder3(
+        { ENCODER_ID = 3, VALUE = "MMFilter RESONANCE" },
+        { x = W3_4, y = y, w = W1_4, h = 50 },
+        { COLOR = "tertiary", TRACK = track, TYPE = "NUMBER", GROUP = group }
     )
 end
 
@@ -106,24 +135,20 @@ local function drumSample(track)
         }
     )
 
-    local y = 70
-    y = row(0, 11, y)
-    y = row(1, 12, y)
-    y = row(2, 13, y)
-    y = row(3, 14, y)
-    y = row(4, 15, y)
-    y = row(5, 16, y)
-    y = row(6, 17, y)
-    y = row(7, 18, y)
+    local y = 0
 
-    encoders(0, 11)
-    encoders(1, 12)
-    encoders(2, 13)
-    encoders(3, 14)
-    encoders(4, 15)
-    encoders(5, 16)
-    encoders(6, 17)
-    encoders(7, 18)
+    y = 110
+    y = row(1, 11, y)
+    y = row(2, 12, y)
+    y = row(3, 13, y)
+    y = row(4, 14, y)
+
+    y = 35
+    encodersMaster(0, track, y)
+    encoders(1, 11, y)
+    encoders(2, 12, y)
+    encoders(3, 13, y)
+    encoders(4, 14, y)
 end
 
 return drumSample
