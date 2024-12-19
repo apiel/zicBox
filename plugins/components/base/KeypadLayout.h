@@ -243,10 +243,10 @@ public:
 
         if (action.rfind("noteOn:") == 0) {
             std::string substring = action.substr(7);
-            char* params = new char[substring.size() + 1];
-            std::strcpy(params, substring.c_str());
+            std::vector<char> params(substring.begin(), substring.end());
+            params.push_back('\0');
 
-            char* pluginName = std::strtok(params, ":");
+            char* pluginName = std::strtok(params.data(), ":");
             char* noteStr = std::strtok(NULL, ":");
             char* trackStr = std::strtok(NULL, ":");
             AudioPlugin* plugin = &component->getPlugin(pluginName, trackStr != NULL ? atoi(trackStr) : component->track);
@@ -260,7 +260,6 @@ public:
                     }
                 };
             }
-            delete[] params;
         }
 
         return NULL;
