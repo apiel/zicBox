@@ -86,13 +86,15 @@ public:
 
     void onContext(uint8_t index, float value)
     {
+        for (auto& container : containers) {
+            if (container != this) {
+                container->onContext(index, value);
+            }
+        }
+
         for (auto& component : components) {
             component->onContext(index, value);
         }
-
-        // for (auto& container : containers) {
-        //     container->onContext(index, value);
-        // }
     }
 
     // TODO could this be optimized by creating mapping values to components?
