@@ -1,5 +1,13 @@
 ## Pixel TODO
 
+- TODO drum sample master:
+    -- instead of gain might want to add some drive...
+    -- there could even be two type of drive using center value
+    --
+    ------> and volume should have some gain
+    ---   --> till half of the encoder it is the volume pct
+    ---   --> after half of the encoder it is the gain from 1.0 bis 20.0
+
 - FIXME fix FM on rpi
 
 - IDEA could we make overlapping component somehow refresh if the one under update?? :p

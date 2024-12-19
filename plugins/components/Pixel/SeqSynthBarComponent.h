@@ -27,7 +27,6 @@ protected:
     Color foreground;
     Color activeStepColor;
     Color nameColor;
-    Color labelColor;
 
     uint8_t stepIndex = -1;
 
@@ -43,7 +42,6 @@ public:
         , background(styles.colors.background)
         , selectionColor(styles.colors.white)
         , textColor(styles.colors.text)
-        , labelColor(darken(styles.colors.text, 0.5))
         , foreground({ 0x40, 0x40, 0x40 })
         , activeStepColor(styles.colors.primary)
         , nameColor(styles.colors.primary)
@@ -66,6 +64,17 @@ public:
                             setContext(selectedItemBank, view->contextVar[selectedItemBank] + 1);
                         }
                         renderNext();
+                    }
+                };
+            }
+            if (action == ".stepToggle") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        if (view->contextVar[selectedItemBank] > 0) {
+                           Step* step = &steps[(int)(view->contextVar[selectedItemBank] - 1)];
+                           step->enabled = !step->enabled;
+                           renderNext();
+                        }
                     }
                 };
             }
@@ -205,12 +214,6 @@ public:
         /*md - `NAME_COLOR: color` is the color of the name. */
         if (strcmp(key, "NAME_COLOR") == 0) {
             nameColor = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `LABEL_COLOR: color` is the color of the label. */
-        if (strcmp(key, "LABEL_COLOR") == 0) {
-            labelColor = draw.getColor(value);
             return true;
         }
 
