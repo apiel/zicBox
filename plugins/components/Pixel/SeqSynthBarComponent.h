@@ -52,14 +52,9 @@ public:
             if (action == ".left") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
-                        view->contextVar[selectedItemBank]--;
-                        if (view->contextVar[selectedItemBank] < 0) {
-                            view->contextVar[selectedItemBank] = 0;
+                        if (view->contextVar[selectedItemBank] > 0) {
+                            setContext(selectedItemBank, view->contextVar[selectedItemBank] - 1);
                         }
-                        // selectedItem--;
-                        // if (selectedItem < 0) {
-                        //     selectedItem = 0;
-                        // }
                         renderNext();
                     }
                 };
@@ -67,13 +62,8 @@ public:
             if (action == ".right") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
-                        // selectedItem++;
-                        // if (selectedItem > stepCount) {
-                        //     selectedItem = stepCount;
-                        // }
-                        view->contextVar[selectedItemBank]++;
-                        if (view->contextVar[selectedItemBank] > stepCount) {
-                            view->contextVar[selectedItemBank] = stepCount;
+                        if (view->contextVar[selectedItemBank] < stepCount) {
+                            setContext(selectedItemBank, view->contextVar[selectedItemBank] + 1);
                         }
                         renderNext();
                     }
@@ -106,7 +96,6 @@ public:
             if (valName != NULL) {
                 draw.text({ x + 2, textY }, valName->string(), 8, { textColor, .maxWidth = (nameW - 4) });
             }
-            // if (isActive && selectedItem == 0) {
             if (isActive && view->contextVar[selectedItemBank] == 0) {
                 draw.rect({ x, relativePosition.y }, { nameW, stepH - 1 }, { selectionColor });
             }
@@ -116,7 +105,6 @@ public:
                 Step* step = &steps[i];
                 color = step->enabled ? darken(activeStepColor, 1.0 - step->velocity) : foreground;
                 draw.filledRect({ x, relativePosition.y }, { stepW, stepH }, { color });
-                // if (isActive && selectedItem == i + 1) {
                 if (isActive && view->contextVar[selectedItemBank] == i + 1) {
                     draw.rect({ x, relativePosition.y }, { stepW, stepH - 1 }, { selectionColor });
                 }
@@ -181,6 +169,12 @@ public:
         /*md - `VOLUME_PLUGIN: plugin_name value_key` is used for the volume bar (but can be any else). */
         if (strcmp(key, "VOLUME_PLUGIN") == 0) {
             valVolume = watch(getPlugin(strtok(value, " "), track).getValue(strtok(NULL, " ")));
+            return true;
+        }
+
+        /*md - `SELECT_ITEM_CONTEXT: context_id` is the context id for the selected item (default is 10). */
+        if (strcmp(key, "SELECT_ITEM_CONTEXT") == 0) {
+            selectedItemBank = atoi(value);
             return true;
         }
 
