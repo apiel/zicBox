@@ -17,6 +17,7 @@ local function row(group, track, y)
             VOLUME_PLUGIN = "Volume VOLUME",
             KEYMAPS = {
                 { key = "q", action = "noteOn:DrumSample:57" },
+                { key = "e", action = ".stepToggle" },
 
                 { key = "a", action = ".left" },
                 { key = "d", action = ".right" },
@@ -25,6 +26,28 @@ local function row(group, track, y)
 
 
     return y + h + 2
+end
+
+local function progressBar(group, track, y)
+    local h = 4
+    ui.component("SeqProgressBar",
+        { "SEQ_PLUGIN" },
+        { SEQ_PLUGIN = "Sequencer", },
+        { x = 0, y = y, w = ScreenWidth, h = h }, {
+            GROUP = group,
+            TRACK = track,
+            ACTIVE_COLOR = "#00b300",
+            VOLUME_PLUGIN = "Volume VOLUME",
+            KEYMAPS = {
+                -- { key = "q", action = "noteOn:DrumSample:57" },
+                -- { key = "e", action = ".stepToggle" },
+
+                -- { key = "a", action = ".left" },
+                -- { key = "d", action = ".right" },
+            }
+        })
+
+    return y + h + 4
 end
 
 local function encoders(group, track, y)
@@ -63,6 +86,10 @@ local function encodersMaster(group, track, y)
 
     -- instead of gain might want to add some drive...
     -- there could even be two type of drive using center value
+    --
+    ------> and volume should have some gain
+    ---   --> till half of the encoder it is the volume pct
+    ---   --> after half of the encoder it is the gain from 1.0 bis 20.0
     encoder3(
         { ENCODER_ID = 1, VALUE = "Volume GAIN" },
         { x = W1_4, y = y, w = W1_4, h = 50 },
@@ -101,7 +128,7 @@ local function drumSample(track)
             SHIFT_VISIBILITY = { index = 254, value = 0 },
             KEYMAPS = {
                 { key = "w", action = "incGroup:-1" },
-                { key = "e", action = "noteOn:DrumSample:58" },
+
                 { key = "r", action = "noteOn:DrumSample:59" },
                 { key = "t", action = "shift:254:1:0" },
 
@@ -138,6 +165,7 @@ local function drumSample(track)
     local y = 0
 
     y = 70
+    y = progressBar(0, track, y)
     y = row(1, 11, y)
     y = row(2, 12, y)
     y = row(3, 13, y)
