@@ -130,8 +130,12 @@ public:
         if (strcmp(key, "SEQ_PLUGIN") == 0) {
             AudioPlugin* seqPlugin = NULL;
 
+            char * pluginName = strtok(value, " ");
+            int trackId = atoi(strtok(NULL, " "));
+            // printf("pluginName: %s, trackId: %d\n", pluginName, trackId);
+
             // seqPlugin = &getPlugin(strtok(value, " "), track);
-            seqPlugin = &getPlugin(strtok(value, " "), 11);
+            seqPlugin = &getPlugin(pluginName, trackId);
             stepCount = seqPlugin->getValue("SELECTED_STEP")->props().max;
             stepCounter = (uint8_t*)seqPlugin->data(seqPlugin->getDataId("STEP_COUNTER"));
             seqPlayingPtr = (bool*)seqPlugin->data(seqPlugin->getDataId("IS_PLAYING"));
