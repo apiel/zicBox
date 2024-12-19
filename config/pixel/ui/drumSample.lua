@@ -2,7 +2,7 @@ local ui = require("config/pixel/libs/ui")
 local text = require("config/pixel/libs/component/text")
 local encoder3 = require("config/pixel/libs/component/encoder3")
 local keyInfoBar = require("config/pixel/libs/component/keyInfoBar")
-local groupVisibility = require("config/pixel/libs/containers/groupVisibility")
+local visibility = require("config/pixel/libs/containers/visibility")
 
 local function row(group, track, y)
     local h = 15
@@ -51,7 +51,7 @@ local function progressBar(group, track, y)
 end
 
 local function encoders(group, track, y)
-    groupVisibility("DrumSample" .. track, group)
+    visibility("DrumSample" .. track, group)
 
     encoder3(
         { ENCODER_ID = 0, VALUE = "Volume VOLUME" },
@@ -76,7 +76,7 @@ local function encoders(group, track, y)
 end
 
 local function encodersMaster(group, track, y)
-    groupVisibility("DrumSampleMaster", group)
+    visibility("DrumSampleMaster", group)
 
     encoder3(
         { ENCODER_ID = 0, VALUE = "Volume VOLUME" },

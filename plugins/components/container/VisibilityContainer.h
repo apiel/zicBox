@@ -1,22 +1,22 @@
-#ifndef _GROUP_VISIBILITY_CONTAINER_H_
-#define _GROUP_VISIBILITY_CONTAINER_H_
+#ifndef _VISIBILITY_CONTAINER_H_
+#define _VISIBILITY_CONTAINER_H_
 
 #include "./ComponentContainer.h"
 #include "plugins/components/componentInterface.h"
 
 /*md
-## GroupVisibility
+## Visibility
 
-GroupVisibility is a container that show/hide the components for a given group index.
+Visibility is a container that show/hide the components for a given group index.
 */
 
-class GroupVisibilityContainer : public ComponentContainer {
+class VisibilityContainer : public ComponentContainer {
 protected:
     int group = -1;
     bool isVisible = true;
 
 public:
-    GroupVisibilityContainer(ViewInterface* view, std::string name, Point position, Size size)
+    VisibilityContainer(ViewInterface* view, std::string name, Point position, Size size)
         : ComponentContainer(view, name, position, size)
     {
     }
