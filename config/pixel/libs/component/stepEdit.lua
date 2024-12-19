@@ -7,8 +7,8 @@ local ui = require "config/pixel/libs/ui"
 -- /*md - `COUNTER_DATA_ID: data_id` is the data id to show active step. */
 -- /*md - `SEQUENCE_DATA_ID: data_id` is the data id to show if the sequence is playing. */
 -- /*md - `ENCODERS: encoder_id1 encoder_id2 encoder_id3` is the id of the encoder to update step value. This component use 3 encoders. In standard view, it will change note, velocity and length. In shift view, it will change note, condition and motion. */
--- /*md - `SHIFT_MODE: 255` set the index of the shift bank to use to switch between velocity/length and condition/motion. There is 255 shift banks share within the whole app. */
--- /*md - `GLOBAL_SHIFT: 0` set the index of the shift bank to detect gloabl shift value. */
+-- /*md - `SHIFT_MODE: 255` set the index of the context variable bank to use to switch between velocity/length and condition/motion. There is 255 context variable banks share within the whole app. */
+-- /*md - `GLOBAL_SHIFT: 0` set the index of the context variable bank to detect gloabl shift value. */
 -- /*md - `BACKGROUND_COLOR: color` is the background color of the component. */
 -- /*md - `TEXT_COLOR: color` is the color of the text. */
 -- /*md - `BAR_COLOR: color` is the color of the velocity bar. */
@@ -27,8 +27,8 @@ local ui = require "config/pixel/libs/ui"
 --- - GROUP_RANGE is the index of the first and last group for selection
 --- - SEQUENCE_DATA_ID is the data id to show if the sequence is playing
 --- - ENCODERS (encoder_id1 encoder_id2 encoder_id3) is the id of the encoder to update step value. This component use 3 encoders. In standard view, it will change note, velocity and length. In shift view, it will change note, condition and motion.
---- - SHIFT_MODE set the index of the shift bank to use to switch between velocity/length and condition/motion. There is 255 shift banks share within the whole app.
---- - GLOBAL_SHIFT set the index of the shift bank to detect gloabl shift value.
+--- - SHIFT_MODE set the index of the context variable bank to use to switch between velocity/length and condition/motion. There is 255 context variable banks share within the whole app.
+--- - GLOBAL_SHIFT set the index of the context variable bank to detect gloabl shift value.
 --- - BACKGROUND_COLOR set the background color
 --- - TEXT_COLOR set the text color
 --- - BAR_COLOR set the color of the velocity bar

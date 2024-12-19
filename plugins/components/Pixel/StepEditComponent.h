@@ -284,13 +284,13 @@ public:
             return true;
         }
 
-        /*md - `SHIFT_MODE: 255` set the index of the shift bank to use to switch between velocity/length and condition/motion. There is 255 shift banks share within the whole app. */
+        /*md - `SHIFT_MODE: 255` set the index of the context variable bank to use to switch between velocity/length and condition/motion. There is 255 context variable banks share within the whole app. */
         if (strcmp(key, "SHIFT_MODE") == 0) {
             shiftModeIndex = atoi(value);
             return true;
         }
 
-        /*md - `GLOBAL_SHIFT: 0` set the index of the shift bank to detect gloabl shift value. */
+        /*md - `GLOBAL_SHIFT: 0` set the index of the context variable bank to detect gloabl shift value. */
         if (strcmp(key, "GLOBAL_SHIFT") == 0) {
             globalShift = atoi(value);
             return true;
