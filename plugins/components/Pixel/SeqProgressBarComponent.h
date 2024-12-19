@@ -61,6 +61,9 @@ public:
             if (valVolume != NULL) {
                 draw.filledRect({ x, relativePosition.y }, { (int)(nameW * valVolume->pct()), stepH }, { activeColor });
             }
+            if (isActive) {
+                draw.rect({ x, relativePosition.y }, { nameW, stepH - 1 }, { selectionColor });
+            }
 
             x += nameW + 4;
 
@@ -109,7 +112,8 @@ public:
         if (strcmp(key, "SEQ_PLUGIN") == 0) {
             AudioPlugin* seqPlugin = NULL;
 
-            seqPlugin = &getPlugin(strtok(value, " "), track);
+            // seqPlugin = &getPlugin(strtok(value, " "), track);
+            seqPlugin = &getPlugin(strtok(value, " "), 11);
             stepCount = seqPlugin->getValue("SELECTED_STEP")->props().max;
 
             // char* getStepsDataId = strtok(NULL, " ");

@@ -29,7 +29,7 @@ local function row(group, track, y)
 end
 
 local function progressBar(group, track, y)
-    local h = 4
+    local h = 5
     ui.component("SeqProgressBar",
         { "SEQ_PLUGIN" },
         { SEQ_PLUGIN = "Sequencer", },
@@ -39,7 +39,7 @@ local function progressBar(group, track, y)
             ACTIVE_COLOR = "#00b300",
             VOLUME_PLUGIN = "Volume VOLUME",
             KEYMAPS = {
-                -- { key = "q", action = "noteOn:DrumSample:57" },
+                { key = "q", action = "noteOn:DrumSample:57:11" },
                 -- { key = "e", action = ".stepToggle" },
 
                 -- { key = "a", action = ".left" },
@@ -76,7 +76,7 @@ local function encoders(group, track, y)
 end
 
 local function encodersMaster(group, track, y)
-    groupVisibility("DrumSamplemaster", group)
+    groupVisibility("DrumSampleMaster", group)
 
     encoder3(
         { ENCODER_ID = 0, VALUE = "Volume VOLUME" },
