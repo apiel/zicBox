@@ -32,7 +32,7 @@ local function progressBar(group, track, y)
     local h = 5
     ui.component("SeqProgressBar",
         { "SEQ_PLUGIN" },
-        { SEQ_PLUGIN = "Sequencer", },
+        { SEQ_PLUGIN = "Sequencer 11", },
         { x = 0, y = y, w = ScreenWidth, h = h }, {
             GROUP = group,
             TRACK = track,
