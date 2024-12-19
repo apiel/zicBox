@@ -36,8 +36,8 @@ public:
             shouldActivate = true;
         }
         if (shouldActivate != isVisible) {
-            printf("[%s] current group: %d inccoming group: %d\n", name.c_str(), group, index);
             isVisible = shouldActivate;
+            // printf("[%s] current group: %d inccoming group: %d visible: %s\n", name.c_str(), group, index, isVisible ? "true" : "false");
             std::vector<void*>* components = view->getComponents();
             for (void* c : *components) {
                 ComponentInterface* component = (ComponentInterface*)c;

@@ -41,7 +41,7 @@ local function encoders(group, track)
     encoder3(
         { ENCODER_ID = 2, VALUE = "DrumSample END" },
         { x = W2_4, y = 15, w = W1_4, h = 50 },
-        { COLOR = "tertiary", TRACK = track,GROUP = group }
+        { COLOR = "tertiary", TRACK = track, GROUP = group }
     )
     encoder3(
         { ENCODER_ID = 3, VALUE = "DrumSample BROWSER" },
