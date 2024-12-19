@@ -2,7 +2,7 @@
 #define _CONTAINERS_H_
 
 #include "./ScrollGroupContainer.h"
-#include "./GroupVisibilityContainer.h"
+#include "./VisibilityContainer.h"
 
 #include <string>
 
@@ -12,8 +12,8 @@ ComponentContainer* newContainer(std::string type, ViewInterface* view, std::str
         return new ScrollGroupContainer(view, name, position, size);
     }
 
-    if (type == "GroupVisibilityContainer") {
-        return new GroupVisibilityContainer(view, name, position, size);
+    if (type == "VisibilityContainer") {
+        return new VisibilityContainer(view, name, position, size);
     }
 
     return NULL;
