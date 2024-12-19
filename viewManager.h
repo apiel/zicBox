@@ -175,9 +175,7 @@ public:
     {
         draw.init();
 
-        // if (view == NULL) {
-            view = views[0];
-        // }
+        view = views[0];
         setView(view->name, true);
 
         for (auto& v : views) {
@@ -284,24 +282,6 @@ VIEW: Mixer
             views.push_back(v);
             setView(v->name);
 
-            return true;
-        }
-
-        /*md
-        ### STARTUP_VIEW
-
-        `STARTUP_VIEW` can be used to load a specific view on startup. This command should only be call at the end of the configuration file, once all the view has been initialised.
-
-        ```coffee
-        #STARTUP_VIEW: ViewName
-
-        STARTUP_VIEW: Mixer
-        ```
-
-        If `STARTUP_VIEW` is not defined, the first defined view will be displayed.
-        */
-        if (strcmp(key, "STARTUP_VIEW") == 0) {
-            setView(value);
             return true;
         }
 
