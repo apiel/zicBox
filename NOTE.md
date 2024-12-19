@@ -63,34 +63,7 @@
 - IDEA try deno compile and see if in anyway can be used as config file
       --> https://docs.deno.com/runtime/reference/cli/compile/
 
-#### Pixel seq
-
-- TODO for seq
-push encoder siwtch row...
-```cpp
-    string text[10] = {
-        "step 1", "step 2", "step 3", "step 4", "Shift", // shift switch next encoder value [note, velocity, len] [probabilty, ?, ?]
-        "step 5", "step 6", "step 7", "step 8", "Exit", // Exit seq view
-    };
-```
-problem with this layout is how to select step vs enabling step. 
---> maybe depending of the shift mode... when shift pressed enable step, else by default select step
---> however if step is disable, it will enable it even if shift not pressed
-or opposite
---> by default step enable/disable (select in the same time)
---> if shift pressed, it just select
-or instead to have "exit" key, use this one to enable disable
---> to exit press shift + what ever.. 
-```cpp
-    string text[10] = {
-        "step 1", "step 2", "step 3", "step 4", "Shift", 
-        // shift switch next encoder value [note, velocity, len] [probabilty, condition, motion]
-        "step 5", "step 6", "step 7", "step 8", "On/Off", // Enable/disable step
-    };
-```
-Last option might be best!
-
-- TODO separate probability and step condition, also introduce step motion that would switch semitone every time step get trigger
+- IDEA extra keypad extension: make a 5x5 rgb keypad using keycap but with transparent cap. They can be put in chain, so we could have a 5x10 keypad, or even more...
 
 #### pins
 
