@@ -43,6 +43,10 @@ public:
     {
         return false;
     }
+
+    virtual void onContext(uint8_t index, float value)
+    {
+    }
 };
 
 #endif

@@ -13,7 +13,12 @@ Visibility is a container that show/hide the components for a given group index.
 class VisibilityContainer : public ComponentContainer {
 protected:
     int group = -1;
-    bool isVisible = true;
+    bool isGroupVisible = true;
+
+    int16_t contextIndex = -1;
+    bool isContextVisible = true;
+    int8_t visibleWhen = -1;
+    int8_t hideWhen = -1;
 
 public:
     VisibilityContainer(ViewInterface* view, std::string name, Point position, Size size)
@@ -23,7 +28,7 @@ public:
 
     bool updateCompontentPosition(Point initialPosition, Size componentSize, Point& relativePosition) override
     {
-        if (isVisible) {
+        if (isGroupVisible && isContextVisible) {
             return ComponentContainer::updateCompontentPosition(initialPosition, componentSize, relativePosition);
         }
         return false;
@@ -35,9 +40,9 @@ public:
         if (group == index || group == -1) {
             shouldActivate = true;
         }
-        if (shouldActivate != isVisible) {
-            isVisible = shouldActivate;
-            // printf("[%s] current group: %d inccoming group: %d visible: %s\n", name.c_str(), group, index, isVisible ? "true" : "false");
+        if (shouldActivate != isGroupVisible) {
+            isGroupVisible = shouldActivate;
+            // printf("[%s] current group: %d inccoming group: %d visible: %s\n", name.c_str(), group, index, isGroupVisible ? "true" : "false");
             std::vector<void*>* components = view->getComponents();
             for (void* c : *components) {
                 ComponentInterface* component = (ComponentInterface*)c;
@@ -48,11 +53,34 @@ public:
         }
     }
 
+    void onContext(uint8_t index, float value) override
+    {
+        if (index == contextIndex) {
+            if (hideWhen != -1) {
+                isContextVisible = value != hideWhen;
+            }
+            if (visibleWhen != -1) {
+                isContextVisible = value == visibleWhen;
+            }
+        }
+    }
+
     bool config(char* key, char* value) override
     {
         /*md - `VISIBILITY_GROUP: 0` the group index to show/hide the components. */
         if (strcmp(key, "VISIBILITY_GROUP") == 0) {
             group = atoi(value);
+            return true;
+        }
+
+        /*md - `VISIBILITY_CONTEXT: index SHOW/HIDE value` the context index to show/hide the components for a given value. */
+        if (strcmp(key, "VISIBILITY_CONTEXT") == 0) {
+            contextIndex = atoi(strtok(value, " "));
+            if (strcmp(strtok(NULL, " "), "HIDE") == 0) {
+                hideWhen = atoi(strtok(NULL, " "));
+            } else {
+                visibleWhen = atoi(strtok(NULL, " "));
+            }
             return true;
         }
 
