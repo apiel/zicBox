@@ -34,6 +34,7 @@ protected:
     ValueInterface* valVolume = NULL;
     ValueInterface* seqStatus = NULL;
     ValueInterface* seqSelectedStep = NULL; // SELECTED_STEP
+    ValueInterface* seqStepEnabled = NULL; // STEP_ENABLED
 
     uint8_t selectedItemBank = 10;
     uint8_t visibleEncodersBank = 11;
@@ -73,8 +74,7 @@ public:
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         if (view->contextVar[selectedItemBank] > 0) {
-                            Step* step = &steps[(int)(view->contextVar[selectedItemBank] - 1)];
-                            step->enabled = !step->enabled;
+                            seqStepEnabled->set(!seqStepEnabled->get());
                             renderNext();
                         }
                     }
@@ -176,6 +176,8 @@ public:
             stepCount = seqPlugin->getValue("SELECTED_STEP")->props().max;
             seqStatus = watch(seqPlugin->getValue("STATUS"));
             seqSelectedStep = seqPlugin->getValue("SELECTED_STEP");
+            seqStepEnabled = watch(seqPlugin->getValue("STEP_ENABLED"));
+            watch(seqPlugin->getValue("STEP_VELOCITY")); // Watch step velocity to update step color base on velocity
 
             char* getStepsDataId = strtok(NULL, " ");
             uint8_t dataId = seqPlugin->getDataId(getStepsDataId != NULL ? getStepsDataId : "STEPS");
