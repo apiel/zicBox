@@ -303,7 +303,7 @@ protected:
 
     void updateTrackSelection(int8_t state, uint8_t track)
     {
-        if (view->shift[0]) {
+        if (view->contextVar[0]) {
             if (state == 1) {
                 tracks[track].seqPlugin->data(20);
             }
@@ -391,7 +391,7 @@ protected:
             grid.col = param + 1;
             updateSelection();
             draw.renderNext();
-        } else if (!view->shift[0] && now - stepPressedTime < 300) {
+        } else if (!view->contextVar[0] && now - stepPressedTime < 300) {
             tracks[grid.row].seqPlugin->getValue("STEP_ENABLED")->set(tracks[grid.row].steps[param].enabled ? 0 : 1);
             currentKeypadLayout->renderKeypadColor();
         }
