@@ -33,6 +33,7 @@ protected:
     ValueInterface* valName = NULL;
     ValueInterface* valVolume = NULL;
     ValueInterface* seqStatus = NULL;
+    ValueInterface* seqSelectedStep = NULL; // SELECTED_STEP
 
     uint8_t selectedItemBank = 10;
     uint8_t visibleEncodersBank = 11;
@@ -89,6 +90,9 @@ public:
         if (index == selectedItemBank) {
             setContext(visibleEncodersBank, view->contextVar[selectedItemBank] == 0 ? 0 : 1);
             // renderNext(); // no need render
+            if (view->contextVar[selectedItemBank] > 0) {
+                seqSelectedStep->set((int)(view->contextVar[selectedItemBank]));
+            }
         }
     }
 
@@ -171,6 +175,7 @@ public:
             seqPlugin = &getPlugin(strtok(value, " "), track);
             stepCount = seqPlugin->getValue("SELECTED_STEP")->props().max;
             seqStatus = watch(seqPlugin->getValue("STATUS"));
+            seqSelectedStep = seqPlugin->getValue("SELECTED_STEP");
 
             char* getStepsDataId = strtok(NULL, " ");
             uint8_t dataId = seqPlugin->getDataId(getStepsDataId != NULL ? getStepsDataId : "STEPS");
