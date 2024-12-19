@@ -41,7 +41,9 @@ public:
             std::vector<void*>* components = view->getComponents();
             for (void* c : *components) {
                 ComponentInterface* component = (ComponentInterface*)c;
-                component->renderNext();
+                if (component->container == this) {
+                    component->renderNext();
+                }
             }
         }
     }
