@@ -338,10 +338,9 @@ public:
 
     void onEncoder(int id, int8_t direction)
     {
-        if (isActive && id == encoderId) {
-            printf("[track %d group %d][%s] Encoder3Component onEncoder: %d %d\n", track, group, label.c_str(), id, direction);
-        }
-
+        // if (isActive && id == encoderId) {
+        //     printf("[track %d group %d][%s] Encoder3Component onEncoder: %d %d\n", track, group, label.c_str(), id, direction);
+        // }
         if (value && isActive && id == encoderId) {
             value->increment(direction);
         }

@@ -5,7 +5,7 @@ local keyInfoBar = require("config/pixel/libs/component/keyInfoBar")
 local groupVisibility = require("config/pixel/libs/containers/groupVisibility")
 
 local function row(group, track, y)
-    local h = 20
+    local h = 15
     ui.component("SeqSynthBar",
         { "SEQ_PLUGIN" },
         { SEQ_PLUGIN = "Sequencer", },
@@ -66,7 +66,7 @@ local function encodersMaster(group, track, y)
     encoder3(
         { ENCODER_ID = 1, VALUE = "Volume GAIN" },
         { x = W1_4, y = y, w = W1_4, h = 50 },
-        { COLOR = "secondary", TRACK = track, GROUP = group }
+        { COLOR = "secondary", TRACK = track, GROUP = group, FLOAT_PRECISION = 2 }
     )
 
     encoder3(
@@ -137,18 +137,26 @@ local function drumSample(track)
 
     local y = 0
 
-    y = 110
+    y = 70
     y = row(1, 11, y)
     y = row(2, 12, y)
     y = row(3, 13, y)
     y = row(4, 14, y)
+    y = row(4, 15, y)
+    y = row(4, 16, y)
+    y = row(4, 17, y)
+    y = row(4, 18, y)
 
-    y = 35
+    y = 15
     encodersMaster(0, track, y)
     encoders(1, 11, y)
     encoders(2, 12, y)
     encoders(3, 13, y)
     encoders(4, 14, y)
+    encoders(4, 15, y)
+    encoders(4, 16, y)
+    encoders(4, 17, y)
+    encoders(4, 18, y)
 end
 
 return drumSample
