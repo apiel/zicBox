@@ -34,6 +34,17 @@ public:
         return false;
     }
 
+    void renderAllNext()
+    {
+        std::vector<void*>* components = view->getComponents();
+        for (void* c : *components) {
+            ComponentInterface* component = (ComponentInterface*)c;
+            if (component->container == this) {
+                component->renderNext();
+            }
+        }
+    }
+
     void onGroupChanged(int8_t index) override
     {
         bool shouldActivate = false;
@@ -42,14 +53,7 @@ public:
         }
         if (shouldActivate != isGroupVisible) {
             isGroupVisible = shouldActivate;
-            // printf("[%s] current group: %d inccoming group: %d visible: %s\n", name.c_str(), group, index, isGroupVisible ? "true" : "false");
-            std::vector<void*>* components = view->getComponents();
-            for (void* c : *components) {
-                ComponentInterface* component = (ComponentInterface*)c;
-                if (component->container == this) {
-                    component->renderNext();
-                }
-            }
+            renderAllNext();
         }
     }
 
@@ -62,6 +66,7 @@ public:
             if (visibleWhen != -1) {
                 isContextVisible = value == visibleWhen;
             }
+            renderAllNext();
         }
     }
 
