@@ -363,7 +363,7 @@ public:
         draw.line({ (int)(x - size * 0.5), (int)(position.y) }, { (int)(x + size * 0.5), (int)(position.y) }, { color });
         draw.line({ (int)(x - size * 0.5), (int)(position.y + size) }, { (int)(x + size * 0.5), (int)(position.y + size) }, { color });
 
-        draw.filledCircle({ (int)(x - size * 0.4), (int)(position.y + size * 0.5) }, size * 0.25, { color });
+        draw.filledCircle({ (int)(x - size * 0.25), (int)(position.y + size * 0.5) }, size * 0.25, { color });
 
     }
 
