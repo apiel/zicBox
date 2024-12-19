@@ -153,6 +153,13 @@ public:
             };
         }
 
+        /*md - `&icon::toggle` */
+        if (name == "&icon::toggle") {
+            return [&](Point position, uint8_t size, Color color, Align align) {
+                toggle(position, size, color, align);
+            };
+        }
+
         // printf("Unknown icon: %s\n", name.c_str());
 
         return nullptr;
@@ -342,6 +349,22 @@ public:
         draw.lines(points, { color });
         // use rect instead of filledCircle because filledCircle is pixelated
         draw.filledRect({ (int)(x + size * 0.25), (int)(position.y + size * 0.75) }, { (int)(size * 0.25), (int)(size * 0.25) }, { color });
+    }
+
+    void toggle(Point position, uint8_t size, Color color, Align align = LEFT)
+    {
+        int x = getX(position, size, align, size);
+
+        x += 4; // whatever fix compare to other icons
+
+        draw.arc({ (int)(x + size * 0.5), (int)(position.y + size * 0.5) }, size * 0.5, 270, 90, { color });
+        draw.arc({ (int)(x - size * 0.5), (int)(position.y + size * 0.5) }, size * 0.5, 90, 270, { color });
+
+        draw.line({ (int)(x - size * 0.5), (int)(position.y) }, { (int)(x + size * 0.5), (int)(position.y) }, { color });
+        draw.line({ (int)(x - size * 0.5), (int)(position.y + size) }, { (int)(x + size * 0.5), (int)(position.y + size) }, { color });
+
+        draw.filledCircle({ (int)(x - size * 0.4), (int)(position.y + size * 0.5) }, size * 0.25, { color });
+
     }
 
 protected:
