@@ -7,12 +7,12 @@
 
 #include "controllerList.h"
 #include "helpers/getFullpath.h"
+#include "helpers/getTicks.h"
 #include "host.h"
 #include "log.h"
 #include "plugins/components/componentInterface.h"
 #include "plugins/components/view.h"
 #include "styles.h"
-#include "helpers/getTicks.h"
 
 #ifdef DRAW_ST7789
 #ifdef USE_DRAW_WITH_SDL
@@ -52,7 +52,7 @@ protected:
 public:
     View* view = NULL;
 
-    void setView(std::string value)
+    void setView(std::string value, bool force = false)
     {
         printf("set view string to %s\n", value.c_str());
         if (value == "&previous") {
@@ -60,14 +60,14 @@ public:
         }
         for (int i = 0; i < views.size(); i++) {
             if (views[i]->name == value) {
-                if (view != views[i]) {
+                if (view != views[i] || force) {
                     if (lastView != view) {
                         lastView = view;
                     }
                     view = views[i];
                     view->setGroup(0);
                     for (int i = 0; i < 256; i++) {
-                        view->onShift(i, shift[i]); 
+                        view->onShift(i, shift[i]);
                     }
                     render();
                 }
@@ -175,7 +175,10 @@ public:
     {
         draw.init();
 
-        view = views[0];
+        // if (view == NULL) {
+            view = views[0];
+        // }
+        setView(view->name, true);
 
         for (auto& v : views) {
             v->init();
@@ -327,7 +330,9 @@ VIEW: Mixer
                     shared.component = views.back()->components.back();
                     sharedComponents.push_back(shared);
                 }
-                return views.back()->components.back()->baseConfig(key, value);
+                if (views.back()->components.back()->baseConfig(key, value)) {
+                    return true;
+                }
             }
         }
 

@@ -108,8 +108,8 @@ public:
 
     bool config(char* key, char* value) override
     {
-        /*md - `BACKGROUND_COLOR: color` is the background color of the component. */
-        if (strcmp(key, "BACKGROUND_COLOR") == 0) {
+        /*md - `CONTAINER_BACKGROUND_COLOR: color` is the background color of the component. */
+        if (strcmp(key, "CONTAINER_BACKGROUND_COLOR") == 0) {
             bgColor = view->draw.getColor(value);
             return true;
         }
