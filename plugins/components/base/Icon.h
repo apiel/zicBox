@@ -375,7 +375,8 @@ public:
     {
         int x = getX(position, size, align, size);
         draw.rect({ (int)(x - size * 0.5), position.y }, { size * 2, size }, { color });
-        draw.filledCircle({ (int)(x + size * 0.1), (int)(position.y + size * 0.5) }, size * 0.25, { color });
+        // draw.filledCircle({ (int)(x + size * 0.1), (int)(position.y + size * 0.5) }, size * 0.25, { color });
+        draw.filledRect({ (int)(x - size * 0.5) + 2, position.y + 2 }, { size - 4, size - 4 }, { color });
     }
 
 protected:
