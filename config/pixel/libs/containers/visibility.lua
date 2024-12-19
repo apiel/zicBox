@@ -8,10 +8,7 @@ local ui = require("config/pixel/libs/ui")
 local function container(name, options)
     zic("CONTAINER", "VisibilityContainer " .. name .. " " .. ui.parsePosition({ 0, 0 }))
     if options ~= nil then
-        -- core.zic(core.parseOptions(options))
-        if options.VISIBILITY_GROUP ~= nil then
-            zic("VISIBILITY_GROUP", options.VISIBILITY_GROUP)
-        end
+        core.zic(core.parseOptions(options))
     end
 end
 
