@@ -51,60 +51,67 @@ local function progressBar(group, track, y)
 end
 
 local function encoders(group, track, y)
-    visibility("DrumSample" .. track, { VISIBILITY_GROUP = group, VISIBILITY_CONTEXT = "11 SHOW 0" })
+    visibility(
+        "DrumSample" .. track,
+        { x = 0, y = y, w = ScreenWidth, h = 50 },
+        { VISIBILITY_GROUP = group, VISIBILITY_CONTEXT = "11 SHOW 0" }
+    )
 
     encoder3(
         { ENCODER_ID = 0, VALUE = "Volume VOLUME" },
-        { x = 0, y = y, w = W1_4, h = 50 },
+        { x = 0, y = 0, w = W1_4, h = 50 },
         { COLOR = "primary", TRACK = track, GROUP = group }
     )
     encoder3(
         { ENCODER_ID = 1, VALUE = "DrumSample START" },
-        { x = W1_4, y = y, w = W1_4, h = 50 },
+        { x = W1_4, y = 0, w = W1_4, h = 50 },
         { COLOR = "secondary", TRACK = track, GROUP = group }
     )
     encoder3(
         { ENCODER_ID = 2, VALUE = "DrumSample END" },
-        { x = W2_4, y = y, w = W1_4, h = 50 },
+        { x = W2_4, y = 0, w = W1_4, h = 50 },
         { COLOR = "tertiary", TRACK = track, GROUP = group }
     )
     encoder3(
         { ENCODER_ID = 3, VALUE = "DrumSample BROWSER" },
-        { x = W3_4, y = y, w = W1_4, h = 50 },
+        { x = W3_4, y = 0, w = W1_4, h = 50 },
         { COLOR = "quaternary", TRACK = track, TYPE = "NUMBER", GROUP = group }
     )
 
-    visibility("DrumSample" .. track, { VISIBILITY_GROUP = group, VISIBILITY_CONTEXT = "11 HIDE 0" })
+    visibility(
+        "DrumSample" .. track,
+        { x = 0, y = y, w = ScreenWidth, h = 50 },
+        { VISIBILITY_GROUP = group, VISIBILITY_CONTEXT = "11 HIDE 0" }
+    )
 
     encoder3(
-        { ENCODER_ID = 0, VALUE = "Volume VOLUME" },
-        { x = 0, y = y, w = W1_4, h = 50 },
+        { ENCODER_ID = 0, VALUE = "Sequencer STEP_VELOCITY" },
+        { x = 0, y = 0, w = W1_4, h = 50 },
         { COLOR = "primary", TRACK = track, GROUP = group }
     )
     encoder3(
-        { ENCODER_ID = 1, VALUE = "Volume VOLUME" },
-        { x = W1_4, y = y, w = W1_4, h = 50 },
+        { ENCODER_ID = 1, VALUE = "Sequencer STEP_CONDITION" },
+        { x = W1_4, y = 0, w = W1_4, h = 50 },
         { COLOR = "secondary", TRACK = track, GROUP = group }
     )
     encoder3(
-        { ENCODER_ID = 2, VALUE = "Volume VOLUME" },
-        { x = W2_4, y = y, w = W1_4, h = 50 },
+        { ENCODER_ID = 2, VALUE = "Sequencer STEP_ENABLED" },
+        { x = W2_4, y = 0, w = W1_4, h = 50 },
         { COLOR = "tertiary", TRACK = track, GROUP = group }
     )
-    encoder3(
-        { ENCODER_ID = 3, VALUE = "Volume VOLUME" },
-        { x = W3_4, y = y, w = W1_4, h = 50 },
-        { COLOR = "quaternary", TRACK = track, GROUP = group }
-    )
-
+    -- encoder3(
+    --     { ENCODER_ID = 3, VALUE = "Volume VOLUME" },
+    --     { x = W3_4, y = 0, w = W1_4, h = 50 },
+    --     { COLOR = "quaternary", TRACK = track, GROUP = group }
+    -- )
 end
 
 local function encodersMaster(group, track, y)
-    visibility("DrumSampleMaster", { VISIBILITY_GROUP = group })
+    visibility("DrumSampleMaster", { x = 0, y = y, w = ScreenWidth, h = 50 }, { VISIBILITY_GROUP = group })
 
     encoder3(
         { ENCODER_ID = 0, VALUE = "Volume VOLUME" },
-        { x = 0, y = y, w = W1_4, h = 50 },
+        { x = 0, y = 0, w = W1_4, h = 50 },
         { COLOR = "quaternary", TRACK = track, GROUP = group }
     )
 
@@ -116,18 +123,18 @@ local function encodersMaster(group, track, y)
     ---   --> after half of the encoder it is the gain from 1.0 bis 20.0
     encoder3(
         { ENCODER_ID = 1, VALUE = "Volume GAIN" },
-        { x = W1_4, y = y, w = W1_4, h = 50 },
+        { x = W1_4, y = 0, w = W1_4, h = 50 },
         { COLOR = "secondary", TRACK = track, GROUP = group, FLOAT_PRECISION = 2 }
     )
 
     encoder3(
         { ENCODER_ID = 2, VALUE = "MMFilter CUTOFF" },
-        { x = W2_4, y = y, w = W1_4, h = 50 },
+        { x = W2_4, y = 0, w = W1_4, h = 50 },
         { COLOR = "tertiary", TRACK = track, GROUP = group }
     )
     encoder3(
         { ENCODER_ID = 3, VALUE = "MMFilter RESONANCE" },
-        { x = W3_4, y = y, w = W1_4, h = 50 },
+        { x = W3_4, y = 0, w = W1_4, h = 50 },
         { COLOR = "tertiary", TRACK = track, TYPE = "NUMBER", GROUP = group }
     )
 end

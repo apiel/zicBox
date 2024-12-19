@@ -20,10 +20,20 @@ protected:
     int8_t visibleWhen = -1;
     int8_t hideWhen = -1;
 
+    Color bgColor;
+
 public:
     VisibilityContainer(ViewInterface* view, std::string name, Point position, Size size)
         : ComponentContainer(view, name, position, size)
+        , bgColor(view->draw.styles.colors.background)
     {
+    }
+
+    void renderBackground()
+    {
+        if (isGroupVisible && isContextVisible) {
+            view->draw.filledRect(position, size, { bgColor });
+        }
     }
 
     bool updateCompontentPosition(Point initialPosition, Size componentSize, Point& relativePosition) override
@@ -42,6 +52,7 @@ public:
         }
         if (shouldActivate != isGroupVisible) {
             isGroupVisible = shouldActivate;
+            renderBackground();
             view->renderAllNext(this);
         }
     }
@@ -55,12 +66,19 @@ public:
             if (visibleWhen != -1) {
                 isContextVisible = value == visibleWhen;
             }
+            renderBackground();
             view->renderAllNext(this);
         }
     }
 
     bool config(char* key, char* value) override
     {
+        /*md - `CONTAINER_BACKGROUND_COLOR: color` is the background color of the component. */
+        if (strcmp(key, "CONTAINER_BACKGROUND_COLOR") == 0) {
+            bgColor = view->draw.getColor(value);
+            return true;
+        }
+
         /*md - `VISIBILITY_GROUP: 0` the group index to show/hide the components. */
         if (strcmp(key, "VISIBILITY_GROUP") == 0) {
             group = atoi(value);
