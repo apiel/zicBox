@@ -51,7 +51,7 @@ local function progressBar(group, track, y)
 end
 
 local function encoders(group, track, y)
-    visibility("DrumSample" .. track, group)
+    visibility("DrumSample" .. track, { VISIBILITY_GROUP = group })
 
     encoder3(
         { ENCODER_ID = 0, VALUE = "Volume VOLUME" },
@@ -76,7 +76,7 @@ local function encoders(group, track, y)
 end
 
 local function encodersMaster(group, track, y)
-    visibility("DrumSampleMaster", group)
+    visibility("DrumSampleMaster", { VISIBILITY_GROUP = group })
 
     encoder3(
         { ENCODER_ID = 0, VALUE = "Volume VOLUME" },
