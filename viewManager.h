@@ -67,7 +67,7 @@ public:
                     view = views[i];
                     view->setGroup(0);
                     for (int i = 0; i < 256; i++) {
-                        view->onShift(i, shift[i]);
+                        view->onContext(i, contextVar[i]);
                     }
                     render();
                 }
@@ -125,7 +125,7 @@ protected:
             sendAudioEvent,
             getController,
             view,
-            [this](uint8_t index, uint8_t value) { shift[index] = value; view->onShift(index, value); }
+            [this](uint8_t index, uint8_t value) { contextVar[index] = value; view->onContext(index, value); }
         };
 
         // printf("addComponent: %s pos %d %d size %d %d\n", name, position.x, position.y, size.w, size.h);
@@ -161,7 +161,7 @@ public:
     Draw draw;
 #endif
 
-    uint8_t shift[256] = { 0 };
+    float contextVar[256] = { 0 };
 
     static ViewManager& get()
     {
@@ -276,7 +276,7 @@ VIEW: Mixer
 ```
 */
         if (strcmp(key, "VIEW") == 0) {
-            View* v = new View(draw, [&](std::string name) { setView(name); }, shift);
+            View* v = new View(draw, [&](std::string name) { setView(name); }, contextVar);
             v->name = value;
 
             views.push_back(v);

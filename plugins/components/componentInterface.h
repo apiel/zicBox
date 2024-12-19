@@ -22,7 +22,7 @@ public:
         void (*sendAudioEvent)(AudioEventType event);
         ControllerInterface* (*getController)(const char* name);
         ViewInterface* view;
-        std::function<void(uint8_t index, uint8_t value)> setShift;
+        std::function<void(uint8_t index, uint8_t value)> setContext;
     };
 
 protected:
@@ -49,7 +49,7 @@ public:
     AudioPlugin& (*getPlugin)(const char* name, int16_t track);
     ControllerInterface* (*getController)(const char* name);
     void (*sendAudioEvent)(AudioEventType event);
-    std::function<void(uint8_t index, uint8_t value)> setShift;
+    std::function<void(uint8_t index, uint8_t value)> setContext;
     std::vector<ValueInterface*> values;
     Point position;
     Size size;
@@ -68,7 +68,7 @@ public:
         , sendAudioEvent(props.sendAudioEvent)
         , getController(props.getController)
         , view(props.view)
-        , setShift(props.setShift)
+        , setContext(props.setContext)
         , position(props.position)
         , size(props.size)
         , track(props.view->track)
@@ -89,7 +89,7 @@ public:
     virtual bool config(char* key, char* value) = 0;
     virtual bool baseConfig(char* key, char* value) = 0;
     virtual void onGroupChanged(int8_t index) = 0;
-    virtual void onShift(uint8_t index, uint8_t value) = 0;
+    virtual void onContext(uint8_t index, float value) = 0;
     virtual void onUpdate(ValueInterface* value) = 0;
     virtual void* data(int id, void* userdata = NULL)
     {

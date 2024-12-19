@@ -67,10 +67,10 @@ public:
             if (action == ".stepToggle") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
-                        if (!view->shift[globalShift]) {
+                        if (!view->contextVar[globalShift]) {
                             step->enabled = !step->enabled;
                         } else {
-                            restoreShiftMode = view->shift[shiftModeIndex];
+                            restoreShiftMode = view->contextVar[shiftModeIndex];
                         }
                         view->setGroup(group);
                         renderNext();
@@ -82,7 +82,7 @@ public:
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         if (restoreShiftMode != -1) {
-                            view->shift[shiftModeIndex] = restoreShiftMode;
+                            view->contextVar[shiftModeIndex] = restoreShiftMode;
                             restoreShiftMode = -1;
                             renderNext();
                         }
@@ -113,7 +113,7 @@ public:
         };
     }
 
-    void onShift(uint8_t index, uint8_t value) override
+    void onContext(uint8_t index, float value) override
     {
         if (index == shiftModeIndex) {
             renderNext();
@@ -137,7 +137,7 @@ public:
             int y = relativePosition.y + (size.h - 16) * 0.5;
             if (step->enabled) {
                 renderNote(y);
-                if (view->shift[shiftModeIndex]) {
+                if (view->contextVar[shiftModeIndex]) {
                     draw.text({ relativePosition.x + 32, y }, stepConditions[step->condition].name, 8, { text2.color });
 
                     std::string motionSteps = stepMotions[step->motion].name;
@@ -200,7 +200,7 @@ public:
             } else if (id == encoderId2) {
                 if (!step->enabled) {
                     step->enabled = true;
-                } else if (view->shift[shiftModeIndex]) {
+                } else if (view->contextVar[shiftModeIndex]) {
                     step->setCondition(step->condition + direction);
                 } else {
                     step->setVelocity(step->velocity + direction * 0.05);
@@ -209,7 +209,7 @@ public:
             } else if (id == encoderId3) {
                 if (!step->enabled) {
                     step->enabled = true;
-                } else if (view->shift[shiftModeIndex]) {
+                } else if (view->contextVar[shiftModeIndex]) {
                     step->setMotion(step->motion + direction);
                 } else {
                     step->setLength(step->len + direction);
