@@ -151,7 +151,7 @@ local function drumSample(track)
     keyInfoBar(
         {
             ROW1 =
-            "&icon::musicNote::pixelated &icon::arrowUp::filled &icon::musicNote::pixelated &icon::musicNote::pixelated Track",
+            "&icon::musicNote::pixelated &icon::arrowUp::filled &icon::toggle &icon::musicNote::pixelated Track",
             ROW2 =
             "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled &icon::musicNote::pixelated &icon::play::filled"
         }, keyInfoPosition,
