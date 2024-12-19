@@ -131,6 +131,15 @@ public:
         draw.triggerRendering();
     }
 
+    void renderAllNext(void* container)
+    {
+        for (auto& component : components) {
+            if (component->container == container) {
+                component->renderNext();
+            }
+        }
+    }
+
     void onMotion(MotionInterface& motion)
     {
         for (auto& component : components) {
