@@ -35,7 +35,7 @@ protected:
     ValueInterface* valVolume = NULL;
     ValueInterface* seqStatus = NULL;
 
-    int8_t selectedItem = 0;
+    int8_t selectedItemBank = 10;
 
 public:
     SeqSynthBarComponent(ComponentInterface::Props props)
@@ -52,10 +52,14 @@ public:
             if (action == ".left") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
-                        selectedItem--;
-                        if (selectedItem < 0) {
-                            selectedItem = 0;
+                        view->contextVar[selectedItemBank]--;
+                        if (view->contextVar[selectedItemBank] < 0) {
+                            view->contextVar[selectedItemBank] = 0;
                         }
+                        // selectedItem--;
+                        // if (selectedItem < 0) {
+                        //     selectedItem = 0;
+                        // }
                         renderNext();
                     }
                 };
@@ -63,9 +67,13 @@ public:
             if (action == ".right") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
-                        selectedItem++;
-                        if (selectedItem > stepCount) {
-                            selectedItem = stepCount;
+                        // selectedItem++;
+                        // if (selectedItem > stepCount) {
+                        //     selectedItem = stepCount;
+                        // }
+                        view->contextVar[selectedItemBank]++;
+                        if (view->contextVar[selectedItemBank] > stepCount) {
+                            view->contextVar[selectedItemBank] = stepCount;
                         }
                         renderNext();
                     }
@@ -98,7 +106,8 @@ public:
             if (valName != NULL) {
                 draw.text({ x + 2, textY }, valName->string(), 8, { textColor, .maxWidth = (nameW - 4) });
             }
-            if (isActive && selectedItem == 0) {
+            // if (isActive && selectedItem == 0) {
+            if (isActive && view->contextVar[selectedItemBank] == 0) {
                 draw.rect({ x, relativePosition.y }, { nameW, stepH - 1 }, { selectionColor });
             }
             x += nameW + 4;
@@ -107,7 +116,8 @@ public:
                 Step* step = &steps[i];
                 color = step->enabled ? darken(activeStepColor, 1.0 - step->velocity) : foreground;
                 draw.filledRect({ x, relativePosition.y }, { stepW, stepH }, { color });
-                if (isActive && selectedItem == i + 1) {
+                // if (isActive && selectedItem == i + 1) {
+                if (isActive && view->contextVar[selectedItemBank] == i + 1) {
                     draw.rect({ x, relativePosition.y }, { stepW, stepH - 1 }, { selectionColor });
                 }
                 x += stepW + 2;
