@@ -17,6 +17,9 @@ protected:
     bool isActive = true;
 
     uint8_t stepCount = 32;
+    int16_t lastStepCounter = -1;
+    uint8_t* stepCounter = NULL;
+    bool* seqPlayingPtr = NULL;
 
     KeypadLayout keypadLayout;
 
@@ -41,6 +44,21 @@ public:
             return func;
         })
     {
+        jobRendering = [this](unsigned long now) {
+            if (seqPlayingPtr != NULL) {
+                if (*seqPlayingPtr) {
+                    if (stepCounter != NULL &&lastStepCounter != *stepCounter) {
+                        lastStepCounter = *stepCounter;
+                        renderNext();
+                    }
+                } else {
+                    if (lastStepCounter != -1) {
+                        renderNext();
+                    }
+                    lastStepCounter = -1;
+                }
+            }
+        };
     }
 
     void render() override
@@ -68,7 +86,7 @@ public:
             x += nameW + 4;
 
             for (int i = 0; i < stepCount; i++) {
-                color = foreground;
+                color = lastStepCounter == i ? activeColor : foreground;
                 draw.filledRect({ x, relativePosition.y }, { stepW, stepH }, { color });
                 x += stepW + 2;
                 if (i % 4 == 3) {
@@ -115,10 +133,9 @@ public:
             // seqPlugin = &getPlugin(strtok(value, " "), track);
             seqPlugin = &getPlugin(strtok(value, " "), 11);
             stepCount = seqPlugin->getValue("SELECTED_STEP")->props().max;
+            stepCounter = (uint8_t*)seqPlugin->data(seqPlugin->getDataId("STEP_COUNTER"));
+            seqPlayingPtr = (bool*)seqPlugin->data(seqPlugin->getDataId("IS_PLAYING"));
 
-            // char* getStepsDataId = strtok(NULL, " ");
-            // uint8_t dataId = seqPlugin->getDataId(getStepsDataId != NULL ? getStepsDataId : "STEPS");
-            // steps = (Step*)seqPlugin->data(dataId);
             return true;
         }
 
