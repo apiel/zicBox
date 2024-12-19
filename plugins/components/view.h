@@ -15,8 +15,8 @@ public:
     std::vector<ComponentInterface*> componentsJob = {};
     std::mutex m2;
 
-    View(DrawInterface& draw, std::function<void(std::string name)> setView, uint8_t* shift)
-        : ViewInterface(draw, setView, shift)
+    View(DrawInterface& draw, std::function<void(std::string name)> setView, float* contextVar)
+        : ViewInterface(draw, setView, contextVar)
     {
     }
 
@@ -84,10 +84,10 @@ public:
         }
     }
 
-    void onShift(uint8_t index, uint8_t value)
+    void onContext(uint8_t index, float value)
     {
         for (auto& component : components) {
-            component->onShift(index, value);
+            component->onContext(index, value);
         }
     }
 

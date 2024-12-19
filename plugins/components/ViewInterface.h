@@ -11,14 +11,14 @@ class ViewInterface {
 public:
     DrawInterface& draw;
     std::function<void(std::string name)> setView;
-    uint8_t *shift;
+    float *contextVar;
     int8_t activeGroup = 0;
     int8_t track = -1;
 
-    ViewInterface(DrawInterface& draw, std::function<void(std::string name)> setView, uint8_t *shift)
+    ViewInterface(DrawInterface& draw, std::function<void(std::string name)> setView, float *contextVar)
         : draw(draw)
         , setView(setView)
-        , shift(shift)
+        , contextVar(contextVar)
     {
     }
 

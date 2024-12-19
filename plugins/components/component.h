@@ -108,7 +108,7 @@ public:
     {
     }
 
-    virtual void onShift(uint8_t index, uint8_t value) override
+    virtual void onContext(uint8_t index, float value) override
     {
     }
 };

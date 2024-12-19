@@ -67,7 +67,7 @@ protected:
 
     bool isVisible()
     {
-        return shiftVisibility[0] == -1 || view->shift[shiftVisibility[0]] == shiftVisibility[1];
+        return shiftVisibility[0] == -1 || view->contextVar[shiftVisibility[0]] == shiftVisibility[1];
     }
 
 public:
@@ -146,7 +146,7 @@ public:
         keypadLayout.renderKeypadColor();
     }
 
-    void onShift(uint8_t index, uint8_t value) override
+    void onContext(uint8_t index, float value) override
     {
         if (index == shiftVisibility[0]) {
             renderNext();

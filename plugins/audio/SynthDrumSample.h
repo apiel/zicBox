@@ -115,6 +115,7 @@ public:
 
     void noteOn(uint8_t note, float _velocity) override
     {
+        printf("[%d] drum sample noteOn: %d %f\n", track, note, _velocity);
         debug("drum sample noteOn: %d %f\n", note, velocity);
         index = indexStart;
         velocity = _velocity;

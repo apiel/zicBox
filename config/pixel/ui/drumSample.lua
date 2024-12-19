@@ -16,6 +16,8 @@ local function row(group, track, y)
             NAME_PLUGIN = "DrumSample BROWSER",
             VOLUME_PLUGIN = "Volume VOLUME",
             KEYMAPS = {
+                { key = "q", action = "noteOn:DrumSample:57" },
+
                 { key = "a", action = ".left" },
                 { key = "d", action = ".right" },
             }
@@ -69,7 +71,6 @@ local function drumSample(track)
         {
             SHIFT_VISIBILITY = { index = 254, value = 0 },
             KEYMAPS = {
-                { key = "q", action = "noteOn:DrumSample:57" },
                 { key = "w", action = "incGroup:-1" },
                 { key = "e", action = "noteOn:DrumSample:58" },
                 { key = "r", action = "noteOn:DrumSample:59" },

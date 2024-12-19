@@ -207,27 +207,27 @@ public:
 
         if (action.rfind("shift:") == 0) {
             const char* params = action.substr(6).c_str();
-            uint8_t* shiftIndex = new uint8_t(atoi(strtok((char*)params, ":")));
+            uint8_t* indexVar = new uint8_t(atoi(strtok((char*)params, ":")));
             uint8_t* shiftPressed = new uint8_t(atoi(strtok(NULL, ":")));
             uint8_t* shiftReleased = new uint8_t(atoi(strtok(NULL, ":")));
-            return [this, shiftIndex, shiftPressed, shiftReleased](KeypadLayout::KeyMap& keymap) {
-                component->setShift(*shiftIndex, isReleased(keymap) ? *shiftReleased : *shiftPressed);
+            return [this, indexVar, shiftPressed, shiftReleased](KeypadLayout::KeyMap& keymap) {
+                component->setContext(*indexVar, isReleased(keymap) ? *shiftReleased : *shiftPressed);
             };
         }
 
         if (action == "shift") {
-            return [this](KeypadLayout::KeyMap& keymap) { component->setShift(0, isPressed(keymap)); };
+            return [this](KeypadLayout::KeyMap& keymap) { component->setContext(0, isPressed(keymap)); };
         }
 
         // Unlike shift, shiftToggle will only toggle on release, meaning that it will only toggle the shift state on key release
         if (action.rfind("shiftToggle:") == 0) {
             const char* params = action.substr(12).c_str();
-            uint8_t* shiftIndex = new uint8_t(atoi(strtok((char*)params, ":")));
+            uint8_t* indexVar = new uint8_t(atoi(strtok((char*)params, ":")));
             uint8_t* shiftA = new uint8_t(atoi(strtok(NULL, ":")));
             uint8_t* shiftB = new uint8_t(atoi(strtok(NULL, ":")));
-            return [this, shiftIndex, shiftA, shiftB](KeypadLayout::KeyMap& keymap) {
+            return [this, indexVar, shiftA, shiftB](KeypadLayout::KeyMap& keymap) {
                 if (isReleased(keymap)) {
-                    component->setShift(*shiftIndex, component->view->shift[*shiftIndex] == *shiftA ? *shiftB : *shiftA);
+                    component->setContext(*indexVar, component->view->contextVar[*indexVar] == *shiftA ? *shiftB : *shiftA);
                 }
             };
         }
