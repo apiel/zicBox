@@ -51,7 +51,7 @@ local function progressBar(group, track, y)
 end
 
 local function encoders(group, track, y)
-    visibility("DrumSample" .. track, { VISIBILITY_GROUP = group }) --- , VISIBILITY_CONTEXT = "11 SHOW 1"
+    visibility("DrumSample" .. track, { VISIBILITY_GROUP = group, VISIBILITY_CONTEXT = "11 SHOW 0" })
 
     encoder3(
         { ENCODER_ID = 0, VALUE = "Volume VOLUME" },
@@ -73,6 +73,30 @@ local function encoders(group, track, y)
         { x = W3_4, y = y, w = W1_4, h = 50 },
         { COLOR = "quaternary", TRACK = track, TYPE = "NUMBER", GROUP = group }
     )
+
+    visibility("DrumSample" .. track, { VISIBILITY_GROUP = group, VISIBILITY_CONTEXT = "11 HIDE 0" })
+
+    encoder3(
+        { ENCODER_ID = 0, VALUE = "Volume VOLUME" },
+        { x = 0, y = y, w = W1_4, h = 50 },
+        { COLOR = "primary", TRACK = track, GROUP = group }
+    )
+    encoder3(
+        { ENCODER_ID = 1, VALUE = "Volume VOLUME" },
+        { x = W1_4, y = y, w = W1_4, h = 50 },
+        { COLOR = "secondary", TRACK = track, GROUP = group }
+    )
+    encoder3(
+        { ENCODER_ID = 2, VALUE = "Volume VOLUME" },
+        { x = W2_4, y = y, w = W1_4, h = 50 },
+        { COLOR = "tertiary", TRACK = track, GROUP = group }
+    )
+    encoder3(
+        { ENCODER_ID = 3, VALUE = "Volume VOLUME" },
+        { x = W3_4, y = y, w = W1_4, h = 50 },
+        { COLOR = "quaternary", TRACK = track, GROUP = group }
+    )
+
 end
 
 local function encodersMaster(group, track, y)

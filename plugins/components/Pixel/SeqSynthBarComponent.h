@@ -71,9 +71,9 @@ public:
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         if (view->contextVar[selectedItemBank] > 0) {
-                           Step* step = &steps[(int)(view->contextVar[selectedItemBank] - 1)];
-                           step->enabled = !step->enabled;
-                           renderNext();
+                            Step* step = &steps[(int)(view->contextVar[selectedItemBank] - 1)];
+                            step->enabled = !step->enabled;
+                            renderNext();
                         }
                     }
                 };
@@ -81,6 +81,14 @@ public:
             return func;
         })
     {
+    }
+
+    void onContext(uint8_t index, float value) override
+    {
+        if (index == selectedItemBank) {
+            setContext(11, view->contextVar[selectedItemBank] == 0 ? 0 : 1);
+            // renderNext(); // no need render
+        }
     }
 
     void render() override
