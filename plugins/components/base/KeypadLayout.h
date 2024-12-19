@@ -242,12 +242,16 @@ public:
         }
 
         if (action.rfind("noteOn:") == 0) {
-            const char* params = action.substr(7).c_str();
-            char* pluginName = strtok((char*)params, ":");
-            AudioPlugin* plugin = &component->getPlugin(pluginName, component->track);
-            // printf("noteon load plugin: %s from track: %d\n", pluginName, component->track);
+            std::string substring = action.substr(7);
+            char* params = new char[substring.size() + 1];
+            std::strcpy(params, substring.c_str());
+
+            char* pluginName = std::strtok(params, ":");
+            char* noteStr = std::strtok(NULL, ":");
+            char* trackStr = std::strtok(NULL, ":");
+            AudioPlugin* plugin = &component->getPlugin(pluginName, trackStr != NULL ? atoi(trackStr) : component->track);
             if (plugin) {
-                uint8_t* note = new uint8_t(atoi(strtok(NULL, ":")));
+                uint8_t* note = new uint8_t(atoi(noteStr));
                 return [this, plugin, note](KeypadLayout::KeyMap& keymap) {
                     if (isPressed(keymap)) {
                         plugin->noteOn(*note, 1.0f);
@@ -256,6 +260,7 @@ public:
                     }
                 };
             }
+            delete[] params;
         }
 
         return NULL;
