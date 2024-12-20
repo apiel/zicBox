@@ -1,5 +1,7 @@
 ## Pixel TODO
 
+- TODO digital audio programming tutorial
+
 - FIXME fix FM on rpi
 
 - IDEA could we make overlapping component somehow refresh if the one under update?? :p
@@ -14,8 +16,6 @@
 - TODO can EffectGrain and EffectDelay be one single effect to make an advance GrainDelay effect...?
 - TODO make a simple EffectDelay with preset... or re-use the exisiting one?
 - TODO or should it just be GRAIN track, DELAY track and REVERB track (alias delay?)
-
-- TODO digital audio programming tutorial
 
 - TODO Save button or project:
     - save yes
