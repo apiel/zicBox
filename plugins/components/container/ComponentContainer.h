@@ -35,20 +35,20 @@ public:
         return false;
     }
 
-    virtual void onGroupChanged(int8_t index)
-    {
-    }
+    virtual bool isVisible(Point initialPosition, Size componentSize) { return true; }
 
     virtual bool config(char* key, char* params)
     {
         return false;
     }
 
-    virtual void onContext(uint8_t index, float value)
+    virtual void onGroupChanged(int8_t index)
     {
     }
 
-    virtual bool isVisible(Point initialPosition, Size componentSize) { return true; }
+    virtual void onContext(uint8_t index, float value)
+    {
+    }
 };
 
 #endif
