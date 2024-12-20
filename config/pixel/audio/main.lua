@@ -33,7 +33,7 @@ drumSample(16)
 drumSample(17)
 drumSample(18)
 audio.plugin("Mixer8", { NAME = "MixerDrumSample",  TRACK_START = 11, TRACK_TARGET = 1 })
-audio.plugin("EffectVolumeDrive", { NAME = "Volume", TRACK = 1 })
+audio.plugin("EffectVolumeDrive", { NAME = "VolumeDrive", TRACK = 1 })
 audio.plugin("EffectFilterMultiMode", { NAME = "MMFilter", TRACK = 1 })
 audio.plugin("SerializeTrack", { TRACK = 1, FILEPATH = "serializedPixel/track_1.cfg" })
 
