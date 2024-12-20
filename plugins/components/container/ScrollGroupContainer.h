@@ -72,6 +72,13 @@ public:
         }
     }
 
+    bool isVisible(Point initialPosition, Size componentSize) override
+    {
+        int x = initialPosition.x + position.x;
+        int y = initialPosition.y + position.y;
+        return x >= 0 && y >= 0 && y + componentSize.h < originPosition.y + size.h;
+    }
+
     bool updateCompontentPosition(Point initialPosition, Size componentSize, Point& relativePosition) override
     {
         int x = initialPosition.x + position.x;
