@@ -75,6 +75,8 @@ public:
                         if (view->contextVar[selectedItemBank] > 0) {
                             seqStepEnabled->set(!seqStepEnabled->get());
                             renderNext();
+                        } else {
+                            seqStatus->set(seqStatus->get() == 0 ? 1 : 0);
                         }
                     }
                 };
