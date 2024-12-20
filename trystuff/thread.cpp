@@ -12,7 +12,9 @@ constexpr int NUM_TRACKS = 4;
 std::mutex mtx;
 std::condition_variable cv;
 std::atomic<bool> stop_flag(false);
-std::atomic<int> ready_count(0);
+// std::atomic<int> ready_count(0);
+
+bool sampling[NUM_TRACKS] = { false };
 
 void track_worker(int track_id)
 {
@@ -20,7 +22,7 @@ void track_worker(int track_id)
         // Wait for a signal to generate the next sample
         {
             std::unique_lock<std::mutex> lock(mtx);
-            cv.wait(lock, [track_id] { return ready_count == 0; });
+            cv.wait(lock, [track_id] { return sampling[track_id]; });
         }
 
         int randMs = rand() % 1000;
@@ -31,11 +33,16 @@ void track_worker(int track_id)
         // Notify that this track is done
         {
             std::unique_lock<std::mutex> lock(mtx);
-            ready_count++;
-            if (ready_count == NUM_TRACKS) {
-                cv.notify_all(); // Signal the main thread
-            }
+            sampling[track_id] = false;
+            cv.notify_all();
         }
+    }
+}
+
+void resetThreads()
+{
+    for (int i = 0; i < NUM_TRACKS; ++i) {
+        sampling[i] = true;
     }
 }
 
@@ -52,7 +59,7 @@ int main()
         // Notify threads to process the next sample
         {
             std::unique_lock<std::mutex> lock(mtx);
-            ready_count = 0;
+            resetThreads();
             cv.notify_all();
         }
 
@@ -61,7 +68,13 @@ int main()
         // Wait for all threads to finish generating their samples
         {
             std::unique_lock<std::mutex> lock(mtx);
-            cv.wait(lock, [] { return ready_count == NUM_TRACKS; });
+            cv.wait(lock, [] {
+                bool ready = true;
+                for (int i = 0; i < NUM_TRACKS; ++i) {
+                    ready &= !sampling[i];
+                }
+                return ready;
+            });
         }
 
         printf("All threads finished generating their samples in Loop %d\n", loop);
@@ -69,7 +82,7 @@ int main()
 
     // Stop the worker threads
     stop_flag = true;
-    ready_count = 0;
+    resetThreads();
     cv.notify_all();
 
     // Join threads
