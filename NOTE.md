@@ -1,5 +1,36 @@
 ## Pixel TODO
 
+- TODO utilise all CPU core
+---> On Linux, you can use the pthread library or the sched_setaffinity function to set thread affinity
+```cpp
+#include <pthread.h>
+#include <sched.h>
+#include <thread>
+#include <iostream>
+
+void set_thread_affinity(std::thread &t, int core_id) {
+    cpu_set_t cpuset;
+    CPU_ZERO(&cpuset);
+    CPU_SET(core_id, &cpuset);
+
+    int rc = pthread_setaffinity_np(t.native_handle(), sizeof(cpu_set_t), &cpuset);
+    if (rc != 0) {
+        std::cerr << "Error setting thread affinity: " << rc << std::endl;
+    }
+}
+
+void thread_function() {
+    std::cout << "Thread running\n";
+}
+
+int main() {
+    std::thread t(thread_function);
+    set_thread_affinity(t, 0); // Bind thread to core 0
+    t.join();
+    return 0;
+}
+```
+
 - TODO digital audio programming tutorial
 
 - FIXME fix FM on rpi
