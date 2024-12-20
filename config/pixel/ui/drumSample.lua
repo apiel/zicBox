@@ -112,22 +112,22 @@ local function encodersMaster(group, track, y)
     encoder3(
         { ENCODER_ID = 0, VALUE = "VolumeDrive VOLUME" },
         { x = 0, y = 0, w = W1_4, h = 50 },
-        { COLOR = "quaternary", TRACK = track, GROUP = group, USE_SECOND_COLOR = 0.5 }
+        { COLOR = "tertiary", TRACK = track, GROUP = group, USE_SECOND_COLOR = 0.5 }
     )
     encoder3(
         { ENCODER_ID = 1, VALUE = "VolumeDrive DRIVE" },
         { x = W1_4, y = 0, w = W1_4, h = 50 },
-        { COLOR = "secondary", TRACK = track, GROUP = group }
+        { COLOR = "secondary", TRACK = track, GROUP = group, TYPE = "TWO_VALUES" }
     )
     encoder3(
         { ENCODER_ID = 2, VALUE = "MMFilter CUTOFF" },
         { x = W2_4, y = 0, w = W1_4, h = 50 },
-        { COLOR = "tertiary", TRACK = track, GROUP = group }
+        { COLOR = "primary", TRACK = track, GROUP = group, TYPE = "TWO_SIDED" }
     )
     encoder3(
         { ENCODER_ID = 3, VALUE = "MMFilter RESONANCE" },
         { x = W3_4, y = 0, w = W1_4, h = 50 },
-        { COLOR = "tertiary", TRACK = track, TYPE = "NUMBER", GROUP = group }
+        { COLOR = "primary", TRACK = track, GROUP = group }
     )
 end
 
