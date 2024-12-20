@@ -74,7 +74,8 @@ protected:
             if (endAngle > 360) {
                 endAngle = endAngle - 360;
             }
-            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, endAngle, { barColor.color, .thickness = 5 });
+            Color color = useBar2Color != -1 && value->pct() > useBar2Color ?  bar2Color.color : barColor.color;
+            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, endAngle, { color, .thickness = 5 });
         }
     }
 
@@ -155,8 +156,11 @@ protected:
     ToggleColor valueColor;
     ToggleColor unitColor;
     ToggleColor barColor;
+    ToggleColor bar2Color;
     ToggleColor barBackgroundColor;
     ToggleColor barTwoSideColor;
+
+    float useBar2Color = -1.0f;
 
     const int margin;
 
@@ -181,6 +185,7 @@ public:
                                          { "VALUE_COLOR", &valueColor },
                                          { "UNIT_COLOR", &unitColor },
                                          { "BAR_COLOR", &barColor },
+                                         { "BAR_2_COLOR", &bar2Color },
                                          { "BAR_BACKGROUND_COLOR", &barBackgroundColor },
                                          { "BAR_TWOSIDE_COLOR", &barTwoSideColor },
                                      })
@@ -191,6 +196,7 @@ public:
         , valueColor(alpha(styles.colors.text, 0.4), inactiveColorRatio)
         , unitColor(alpha(styles.colors.text, 0.2), inactiveColorRatio)
         , barColor(styles.colors.primary, inactiveColorRatio)
+        , bar2Color(styles.colors.secondary, inactiveColorRatio)
         , barBackgroundColor(alpha(styles.colors.primary, 0.7), inactiveColorRatio)
         , barTwoSideColor(alpha(styles.colors.primary, 0.2), inactiveColorRatio)
     {
@@ -285,6 +291,12 @@ public:
         /*md - `FLOAT_PRECISION: 2` set how many digits after the decimal point (by default none) */
         if (strcmp(key, "FLOAT_PRECISION") == 0) {
             valueFloatPrecision = atoi(params);
+            return true;
+        }
+
+        /*md - `USE_SECOND_COLOR: value` set the percentage value when `BAR2_COLOR` should be used instead of `BAR_COLOR`, e.g. 0.5 will switch at 50% */
+        if (strcmp(key, "USE_SECOND_COLOR") == 0) {
+            useBar2Color = atof(params);
             return true;
         }
 
