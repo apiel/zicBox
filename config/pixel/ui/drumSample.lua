@@ -37,7 +37,7 @@ local function progressBar(group, track, y)
             GROUP = group,
             TRACK = track,
             ACTIVE_COLOR = "#00b300",
-            VOLUME_PLUGIN = "Volume VOLUME",
+            VOLUME_PLUGIN = "VolumeDrive VOLUME",
             KEYMAPS = {
                 { key = "q", action = "noteOn:DrumSample:57:11" },
                 -- { key = "e", action = ".stepToggle" },
@@ -110,23 +110,15 @@ local function encodersMaster(group, track, y)
     visibility("DrumSampleMaster", { x = 0, y = y, w = ScreenWidth, h = 50 }, { VISIBILITY_GROUP = group })
 
     encoder3(
-        { ENCODER_ID = 0, VALUE = "Volume VOLUME" },
+        { ENCODER_ID = 0, VALUE = "VolumeDrive VOLUME" },
         { x = 0, y = 0, w = W1_4, h = 50 },
         { COLOR = "quaternary", TRACK = track, GROUP = group, USE_SECOND_COLOR = 0.5 }
     )
-
-    -- instead of gain might want to add some drive...
-    -- there could even be two type of drive using center value
-    --
-    ------> and volume should have some gain
-    ---   --> till half of the encoder it is the volume pct
-    ---   --> after half of the encoder it is the gain from 1.0 bis 20.0
-    -- encoder3(
-    --     { ENCODER_ID = 1, VALUE = "Volume GAIN" },
-    --     { x = W1_4, y = 0, w = W1_4, h = 50 },
-    --     { COLOR = "secondary", TRACK = track, GROUP = group, FLOAT_PRECISION = 2 }
-    -- )
-
+    encoder3(
+        { ENCODER_ID = 1, VALUE = "VolumeDrive DRIVE" },
+        { x = W1_4, y = 0, w = W1_4, h = 50 },
+        { COLOR = "secondary", TRACK = track, GROUP = group }
+    )
     encoder3(
         { ENCODER_ID = 2, VALUE = "MMFilter CUTOFF" },
         { x = W2_4, y = 0, w = W1_4, h = 50 },

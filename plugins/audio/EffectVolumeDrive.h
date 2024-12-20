@@ -32,6 +32,24 @@ public:
         }
     });
 
+    float compressAmount = 0.0f;
+    float driveAmount = 0.0f;
+
+    /*md - `DRIVE` to set drive and compression. */
+    Val& mix = val(50.0, "DRIVE", { "Comp. | Drive", .type = VALUE_CENTERED, .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        if (p.val.get() == 50.0f) {
+            driveAmount = 0.0f;
+            compressAmount = 0.0f;
+        } else if (p.val.get() > 50.0f) {
+            driveAmount = (p.val.get() - 50.0f) / 50.0f;
+            compressAmount = 0.0f;
+        } else {
+            driveAmount = 0.0f;
+            compressAmount = (50.0f - p.val.get()) / 50.0f;
+        }
+    });
+
     EffectVolumeDrive(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
     {
@@ -40,7 +58,33 @@ public:
 
     void sample(float* buf)
     {
-        buf[track] = buf[track] * volumeWithGain;
+        float output = buf[track];
+        output = applyCompression(output, compressAmount);
+        output = applyDrive(output, driveAmount);
+        buf[track] = output * volumeWithGain;
+    }
+
+    float applyCompression(float input, float compressAmount)
+    {
+        if (compressAmount == 0.0f) {
+            return input;
+        }
+        return std::pow(input, 1.0f - compressAmount * 0.8f);
+    }
+
+    float applyDrive(float input, float driveAmount)
+    {
+        if (driveAmount == 0.0f) {
+            return input;
+        }
+        return tanhLookup(input * (1.0f + driveAmount * 5.0f));
+    }
+
+    float tanhLookup(float x)
+    {
+        x = range(x, -1.0f, 1.0f);
+        int index = static_cast<int>((x + 1.0f) * 0.5f * (props.lookupTable->size - 1));
+        return props.lookupTable->tanh[index];
     }
 };
 
