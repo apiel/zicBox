@@ -62,11 +62,11 @@ local function encoders(group, track, y)
         { x = 0, y = 0, w = W1_4, h = 50 },
         { COLOR = "primary", TRACK = track, GROUP = group }
     )
-    encoder3(
-        { ENCODER_ID = 1, VALUE = "DrumSample START" },
-        { x = W1_4, y = 0, w = W1_4, h = 50 },
-        { COLOR = "secondary", TRACK = track, GROUP = group }
-    )
+    -- encoder3(
+    --     { ENCODER_ID = 1, VALUE = "DrumSample START" },
+    --     { x = W1_4, y = 0, w = W1_4, h = 50 },
+    --     { COLOR = "secondary", TRACK = track, GROUP = group }
+    -- )
     encoder3(
         { ENCODER_ID = 2, VALUE = "DrumSample END" },
         { x = W2_4, y = 0, w = W1_4, h = 50 },
