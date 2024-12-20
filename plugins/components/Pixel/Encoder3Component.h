@@ -50,7 +50,7 @@ protected:
         if (stringValueReplaceTitle && value->props().type == VALUE_STRING) {
             draw.textCentered({ knobCenter.x, relativePosition.y + size.h - fontLabelSize }, value->string(), fontLabelSize, { titleColor.color, NULL, size.w - 4 });
         } else {
-            draw.textCentered({ knobCenter.x, relativePosition.y + size.h - fontLabelSize }, label, fontLabelSize, { titleColor.color });
+            draw.textCentered({ knobCenter.x, relativePosition.y + size.h - fontLabelSize }, label.empty() ? value->label() : label, fontLabelSize, { titleColor.color });
         }
     }
 
@@ -226,9 +226,6 @@ public:
             value = watch(getPlugin(pluginName, track).getValue(keyValue));
             if (value != NULL) {
                 valueFloatPrecision = value->props().floatingPoint;
-                if (label.empty()) {
-                    label = value->label();
-                }
             }
             return true;
         }
