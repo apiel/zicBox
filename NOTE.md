@@ -4,6 +4,11 @@
 
 - FIXME fix FM on rpi
 
+- TODO advance sample synth UI
+
+- TODO make everything start automatically on RPi
+    ---> also provide a way to auto update system
+
 - IDEA could we make overlapping component somehow refresh if the one under update?? :p
         --> should this be manual or should it be done automatically
             - if it is automatic it could endup in a mess if UI is badely designed
