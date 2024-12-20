@@ -36,9 +36,14 @@ public:
         }
     }
 
+    bool isVisible(Point initialPosition, Size componentSize) override
+    {
+        return isGroupVisible && isContextVisible;
+    }
+
     bool updateCompontentPosition(Point initialPosition, Size componentSize, Point& relativePosition) override
     {
-        if (isGroupVisible && isContextVisible) {
+        if (isVisible(initialPosition, componentSize)) {
             return ComponentContainer::updateCompontentPosition(initialPosition, componentSize, relativePosition);
         }
         return false;

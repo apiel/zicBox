@@ -47,6 +47,8 @@ public:
     virtual void onContext(uint8_t index, float value)
     {
     }
+
+    virtual bool isVisible(Point initialPosition, Size componentSize) { return true; }
 };
 
 #endif
