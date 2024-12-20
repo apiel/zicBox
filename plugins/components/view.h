@@ -80,8 +80,15 @@ public:
         }
 
         for (auto& component : components) {
+            // if (isVisible(component)) {
             component->onGroupChanged(group);
+            // }
         }
+    }
+
+    bool isVisible(ComponentInterface* component)
+    {
+        return component->container->isVisible(component->position, component->size);
     }
 
     void onContext(uint8_t index, float value)
@@ -143,14 +150,18 @@ public:
     void onMotion(MotionInterface& motion)
     {
         for (auto& component : components) {
-            component->handleMotion(motion);
+            if (isVisible(component)) {
+                component->handleMotion(motion);
+            }
         }
     }
 
     void onMotionRelease(MotionInterface& motion)
     {
         for (auto& component : components) {
-            component->handleMotionRelease(motion);
+            if (isVisible(component)) {
+                component->handleMotionRelease(motion);
+            }
         }
     }
 
@@ -164,7 +175,9 @@ public:
         }
         lastEncoderTick[id] = tick;
         for (auto& component : components) {
-            component->onEncoder(id, direction);
+            if (isVisible(component)) {
+                component->onEncoder(id, direction);
+            }
         }
         m2.unlock();
     }
@@ -174,7 +187,9 @@ public:
         unsigned long now = getTicks();
         m2.lock();
         for (auto& component : components) {
-            component->onKey(id, key, state, now);
+            if (isVisible(component)) {
+                component->onKey(id, key, state, now);
+            }
         }
         m2.unlock();
     }
