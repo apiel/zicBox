@@ -80,15 +80,8 @@ public:
         }
 
         for (auto& component : components) {
-            // if (isVisible(component)) {
             component->onGroupChanged(group);
-            // }
         }
-    }
-
-    bool isVisible(ComponentInterface* component)
-    {
-        return component->container->isVisible(component->position, component->size);
     }
 
     void onContext(uint8_t index, float value)
@@ -104,13 +97,14 @@ public:
         }
     }
 
-    // TODO could this be optimized by creating mapping values to components?
     void onUpdate(ValueInterface* val)
     {
         for (auto& component : components) {
-            for (auto* value : component->values) {
-                if (value == val) {
-                    component->onUpdate(value);
+            if (isVisible(component)) {
+                for (auto* value : component->values) {
+                    if (value == val) {
+                        component->onUpdate(value);
+                    }
                 }
             }
         }
@@ -145,6 +139,11 @@ public:
                 component->renderNext();
             }
         }
+    }
+
+    bool isVisible(ComponentInterface* component)
+    {
+        return component->container->isVisible(component->position, component->size);
     }
 
     void onMotion(MotionInterface& motion)
