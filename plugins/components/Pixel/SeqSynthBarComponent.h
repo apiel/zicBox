@@ -37,7 +37,6 @@ protected:
     ValueInterface* seqStepEnabled = NULL; // STEP_ENABLED
 
     uint8_t selectedItemBank = 10;
-    uint8_t visibleEncodersBank = 11;
 
 public:
     SeqSynthBarComponent(ComponentInterface::Props props)
@@ -88,7 +87,6 @@ public:
     void onContext(uint8_t index, float value) override
     {
         if (index == selectedItemBank) {
-            setContext(visibleEncodersBank, view->contextVar[selectedItemBank] == 0 ? 0 : 1);
             // renderNext(); // no need render
             if (view->contextVar[selectedItemBank] > 0) {
                 seqSelectedStep->set((int)(view->contextVar[selectedItemBank]));
@@ -200,12 +198,6 @@ public:
         /*md - `SELECT_ITEM_CONTEXT: context_id` is the context id for the selected item (default is 10). */
         if (strcmp(key, "SELECT_ITEM_CONTEXT") == 0) {
             selectedItemBank = atoi(value);
-            return true;
-        }
-
-        /*md - `VISIBLE_ENCODERS_CONTEXT: context_id` is the context id to determine which encoders are visible (default is 11). */
-        if (strcmp(key, "VISIBLE_ENCODERS_CONTEXT") == 0) {
-            visibleEncodersBank = atoi(value);
             return true;
         }
 
