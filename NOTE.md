@@ -1,13 +1,5 @@
 ## Pixel TODO
 
-- TODO drum sample master:
-    -- instead of gain might want to add some drive...
-    -- there could even be two type of drive using center value
-    --
-    ------> and volume should have some gain
-    ---   --> till half of the encoder it is the volume pct
-    ---   --> after half of the encoder it is the gain from 1.0 bis 20.0
-
 - FIXME fix FM on rpi
 
 - IDEA could we make overlapping component somehow refresh if the one under update?? :p
@@ -18,8 +10,6 @@
             - but to do it manual, we would ne a way to identify component
               or only link with previous component:
                     CHILD_FROM_PREVIOUS: true
-
-- TODO DrumSample track: is a very basic track that can play 1 shot sample (8, 12, 16?), first page select the sample (volume and mute?), second page grid sequencer with velocity, step probability (volume and mute?), third page global track effect, filter...
 
 - TODO can EffectGrain and EffectDelay be one single effect to make an advance GrainDelay effect...?
 - TODO make a simple EffectDelay with preset... or re-use the exisiting one?
