@@ -20,7 +20,7 @@ protected:
     const char* name = NULL;
     std::string label;
     char labelBuffer[32];
-    uint8_t type = 0;
+
     int radius = 20;
     int insideRadius = 15;
 
@@ -105,10 +105,19 @@ protected:
 
     void renderValue()
     {
-        if (!stringValueReplaceTitle && ((value->props().type == VALUE_STRING && type != 3) || type == 2)) {
+        if (!stringValueReplaceTitle && ((value->props().type == VALUE_STRING && type != 3) || type == ENCODER_TYPE::STRING)) {
             draw.textCentered({ valuePosition.x, valuePosition.y - 5 }, value->string(), fontValueSize, { valueColor.color });
         } else {
-            std::string valStr = std::to_string(value->get());
+            float val = value->get();
+            if (type == ENCODER_TYPE::TWO_VALUES) {
+                if (value->pct() > 0.5) {
+                    val = val - (value->props().max * 0.5);
+                } else {
+                    val = (value->props().max * 0.5) - val;
+                }
+            }
+
+            std::string valStr = std::to_string(val);
             valStr = valStr.substr(0, valStr.find(".") + valueFloatPrecision + (valueFloatPrecision > 0 ? 1 : 0));
 
             draw.textCentered({ valuePosition.x, valuePosition.y - 5 }, valStr.c_str(), fontValueSize, { valueColor.color });
@@ -141,7 +150,7 @@ protected:
 
         if (showValue) {
             renderUnit();
-            if (value->props().type == VALUE_CENTERED && type == 1) {
+            if (value->props().type == VALUE_CENTERED && type == ENCODER_TYPE::TWO_SIDED) {
                 renderTwoSidedValue();
             } else {
                 renderValue();
@@ -223,6 +232,14 @@ public:
         }
     }
 
+    enum ENCODER_TYPE {
+        NORMAL,
+        TWO_SIDED,
+        STRING,
+        NUMBER,
+        TWO_VALUES,
+    } type = ENCODER_TYPE::NORMAL;
+
     bool config(char* key, char* params)
     {
         /*md - `VALUE: pluginName keyName` is used to set the value to control */
@@ -248,13 +265,15 @@ public:
         */
         if (strcmp(key, "TYPE") == 0) {
             if (strcmp(params, "TWO_SIDED") == 0) {
-                type = 1;
+                type = ENCODER_TYPE::TWO_SIDED;
             } else if (strcmp(params, "STRING") == 0) {
-                type = 2;
+                type = ENCODER_TYPE::STRING;
             } else if (strcmp(params, "NUMBER") == 0) {
-                type = 3;
+                type = ENCODER_TYPE::NUMBER;
+            } else if (strcmp(params, "TWO_VALUES") == 0) {
+                type = ENCODER_TYPE::TWO_VALUES;                
             } else {
-                type = atoi(params);
+                type = (ENCODER_TYPE)atoi(params);
             }
             return true;
         }

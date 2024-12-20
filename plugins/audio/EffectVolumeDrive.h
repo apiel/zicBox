@@ -36,17 +36,17 @@ public:
     float driveAmount = 0.0f;
 
     /*md - `DRIVE` to set drive and compression. */
-    Val& mix = val(50.0, "DRIVE", { "Comp. | Drive", .type = VALUE_CENTERED, .unit = "%" }, [&](auto p) {
+    Val& mix = val(100.0, "DRIVE", { "Comp. | Drive", .type = VALUE_CENTERED, .max = 200.0f, .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
-        if (p.val.get() == 50.0f) {
+        if (p.val.get() == 100.0f) {
             driveAmount = 0.0f;
             compressAmount = 0.0f;
-        } else if (p.val.get() > 50.0f) {
-            driveAmount = (p.val.get() - 50.0f) / 50.0f;
+        } else if (p.val.get() > 100.0f) {
+            driveAmount = (p.val.get() - 100.0f) / 100.0f;
             compressAmount = 0.0f;
         } else {
             driveAmount = 0.0f;
-            compressAmount = (50.0f - p.val.get()) / 50.0f;
+            compressAmount = (100.0f - p.val.get()) / 100.0f;
         }
     });
 
