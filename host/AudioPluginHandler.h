@@ -147,9 +147,6 @@ public:
         // }
 
         float buffer[128 * MAX_TRACKS] = { 0.0f };
-        // for (int i = 0; i < 128 * MAX_TRACKS; i++) {
-        //     buffer[i] = 0.0f;
-        // }
 
         std::mutex masterMtx;
         std::condition_variable masterCv;
