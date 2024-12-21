@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <vector>
 
-#include "host/audioPluginHandler.h"
+#include "host/AudioPluginHandler.h"
 #include "host/config.h"
 #include "log.h"
 #include "plugins/audio/valueInterface.h"

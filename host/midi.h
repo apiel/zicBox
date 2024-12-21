@@ -1,7 +1,7 @@
 #ifndef _MIDI_H_
 #define _MIDI_H_
 
-#include "audioPluginHandler.h"
+#include "AudioPluginHandler.h"
 #include "def.h"
 
 RtMidiIn midiController;

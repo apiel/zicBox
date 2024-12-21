@@ -152,6 +152,8 @@ public:
     {
     }
 
+    virtual std::vector<uint8_t> trackDependencies() { return {}; }
+
     /**
      * @brief Serialize the plugin values to a file
      *

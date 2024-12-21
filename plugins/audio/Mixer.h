@@ -14,22 +14,22 @@ Mixer audio plugin is used to mix tracks together.
 - `Mixer12` is a 12-track mixer.
 
 */
-template <uint16_t TRACK_COUNT>
+template <uint8_t TRACK_COUNT>
 class Mixer : public Mapping {
 public:
     Val* mix[TRACK_COUNT];
     Val* mutes[TRACK_COUNT];
 
-    uint16_t tracks[TRACK_COUNT];
+    uint8_t tracks[TRACK_COUNT];
     /*md By default, the mixing output goes to track 0.*/
-    uint16_t trackTarget = 0;
+    uint8_t trackTarget = 0;
     float divider = 1.0f / (float)TRACK_COUNT;
 
     Mixer(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
     {
         /*md And input tracks start at 1, then 2, 3, ....*/
-        for (uint16_t i = 0; i < TRACK_COUNT; i++) {
+        for (uint8_t i = 0; i < TRACK_COUNT; i++) {
             // Start tracks at 1 and leave 0 for master track (trackTarget)
             tracks[i] = i + 1;
             /*md **Value**: */
@@ -45,13 +45,16 @@ public:
         }
     }
 
-    // void setTrack(float value, uint16_t i)
-    // {
-    //     mix[i]->setFloat(value);
-    //     printf("mix[%d]: %f, divider %f\n", i, mix[i]->pct(), divider);
-    // }
+    std::vector<uint8_t> trackDependencies() override
+    {
+        std::vector<uint8_t> dependencies = {};
+        for (uint16_t i = 0; i < TRACK_COUNT; i++) {
+            dependencies.push_back(tracks[i]);
+        }
+        return dependencies;
+    }
 
-    void sample(float* buf)
+    void sample(float* buf) override
     {
         float out = 0;
         for (uint16_t i = 0; i < TRACK_COUNT; i++) {
@@ -64,7 +67,7 @@ public:
     }
 
     /*md **Config**: */
-    bool config(char* key, char* value)
+    bool config(char* key, char* value) override
     {
         /*md - `TRACK_START: 7` to set track 7 as first track, then 8, 9, ...*/
         if (strcmp(key, "TRACK_START") == 0) {
