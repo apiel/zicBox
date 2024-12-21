@@ -137,77 +137,47 @@ public:
         return *plugin;
     }
 
-    std::mutex tracksMtx;
-    std::condition_variable tracksCv;
     void loop()
     {
-        // while (isRunning) {
-        //     float buffer[MAX_TRACKS] = { 0.0f };
-        //     for (AudioPlugin* plugin : plugins) {
-        //         plugin->sample(buffer);
-        //     }
-        // }
+        while (isRunning) {
+            float buffer[MAX_TRACKS] = { 0.0f };
+            for (AudioPlugin* plugin : plugins) {
+                plugin->sample(buffer);
+            }
+        }
 
+        std::mutex mtx;
+        std::condition_variable cv;
         float buffer[MAX_TRACKS] = { 0.0f };
 
         // Init tracks
-        std::vector<Track> tracks;
+        std::vector<Track*> tracks;
         for (uint8_t i = 0; i < MAX_TRACKS; i++) {
-            tracks.emplace_back(i, buffer, tracksMtx, tracksCv);
-            Track& track = tracks.back();
+            Track* track = new Track(i, buffer, mtx, cv);
+            tracks.push_back(track);
             for (AudioPlugin* plugin : plugins) {
                 if (plugin->track == i) {
-                    track.plugins.push_back(plugin);
+                    track->plugins.push_back(plugin);
                 }
             }
-            if (track.plugins.size() == 0) {
+            if (track->plugins.size() == 0) {
                 tracks.pop_back();
             }
         }
 
         // Init tracks
-        for (Track& track : tracks) {
-            // Set Track dependencies
-            for (AudioPlugin* plugin : track.plugins) {
-                std::vector<uint8_t> dependencies = plugin->trackDependencies();
-                for (uint8_t dependency : dependencies) {
-                    for (Track& dependencyTrack : tracks) {
-                        if (dependencyTrack.id == dependency) {
-                            track.trackDependencies.push_back(&dependencyTrack);
-                        }
-                    }
-                }
-            }
-            // remove duplicates
-            std::sort(track.trackDependencies.begin(), track.trackDependencies.end());
-            track.trackDependencies.erase(std::unique(track.trackDependencies.begin(), track.trackDependencies.end()), track.trackDependencies.end());
-
-            // printf("Track dependencies for track %d [%ld]:\n", track.id, track.trackDependencies.size());
-            for (Track* dependency : track.trackDependencies) {
-                printf("  - %d\n", dependency->id);
-            }
-
-            // start thread
-            track.thread = std::thread(&Track::loop, &track);
+        for (Track* track : tracks) {
+            track->init(tracks);
         }
 
-        while (isRunning) {
-            for (Track& track : tracks) {
-                track.sampling = true;
-            }
-            tracksCv.notify_all();
+        // Wait for to finish
+        for (Track* track : tracks) {
+            track->thread.join();
+        }
 
-            // printf("Wait for all threads to finish generating their samples\n");
-
-            std::unique_lock lock(tracksMtx);
-            tracksCv.wait(lock, [&] {
-                for (Track& track : tracks) {
-                    if (track.sampling) {
-                        return false;
-                    }
-                }
-                return true;
-            });
+        // Delete tracks
+        for (Track* track : tracks) {
+            delete track;
         }
     }
 
