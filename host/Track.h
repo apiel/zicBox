@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "def.h"
+#include "log.h"
 #include "plugins/audio/audioPlugin.h"
 
 class Track {
@@ -42,6 +43,7 @@ public:
                 return;
             }
         }
+        logDebug(">>> Track %d has no dependency, start a thread", id);
         // There is no dependency, start a thread
         thread = std::thread([this] { loop(); });
     }
