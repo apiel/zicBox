@@ -8,8 +8,8 @@
 #include <thread>
 #include <vector>
 
-#include "plugins/audio/audioPlugin.h"
 #include "def.h"
+#include "plugins/audio/audioPlugin.h"
 
 class Track {
 public:
@@ -46,11 +46,8 @@ public:
     void loop()
     {
         while (isRunning) {
-            // Wait for a signal to generate the next sample
-            {
-                std::unique_lock<std::mutex> lock(mtx);
-                cv.wait(lock, [&] { return shouldStartSampling(); });
-            }
+            std::unique_lock lock(mtx);
+            cv.wait(lock, [&] { return shouldStartSampling(); });
 
             // printf("Track %d generating sample\n", id);
             for (AudioPlugin* plugin : plugins) {
@@ -58,12 +55,8 @@ public:
             }
             // printf("Track %d finished\n", id);
 
-            // Notify that this track is done
-            {
-                std::unique_lock<std::mutex> lock(mtx);
-                sampling = false;
-                cv.notify_all();
-            }
+            sampling = false;
+            cv.notify_all();
         }
     }
 };
