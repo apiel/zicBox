@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <vector>
+#include <set>
 
 #include "lookupTable.h"
 #include "valueInterface.h"
@@ -152,7 +153,7 @@ public:
     {
     }
 
-    virtual std::vector<uint8_t> trackDependencies() { return {}; }
+    virtual std::set<uint8_t> trackDependencies() { return {}; }
 
     /**
      * @brief Serialize the plugin values to a file

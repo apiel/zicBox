@@ -5,6 +5,7 @@
 #include <condition_variable>
 #include <cstdint>
 #include <mutex>
+#include <set>
 #include <thread>
 #include <vector>
 
@@ -14,19 +15,23 @@
 class Track {
 public:
     uint8_t id;
-    // bool sampling = true;
-    std::atomic<bool> sampling = true;
+    uint8_t status = 2;
     std::vector<AudioPlugin*> plugins;
     std::thread thread;
     float* buffer;
     std::mutex mtx;
     std::condition_variable cv;
-    std::vector<Track*> trackDependencies;
+    std::unique_lock<std::mutex> lock = std::unique_lock(mtx);
+    std::set<Track*> dependentTracks;
+    std::set<Track*> trackDependencies;
     std::vector<Track*> tracks;
 
-    Track(uint8_t id, float* buffer)
+    std::mutex& tracksMtx;
+
+    Track(uint8_t id, float* buffer, std::mutex& tracksMtx)
         : id(id)
         , buffer(buffer)
+        , tracksMtx(tracksMtx)
     {
     }
 
@@ -34,92 +39,88 @@ public:
     {
         this->tracks = tracks;
 
-        // Set Track dependencies
+        // Set track dependencies
+        std::set<uint8_t> dependencies;
         for (AudioPlugin* plugin : plugins) {
-            std::vector<uint8_t> dependencies = plugin->trackDependencies();
-            for (uint8_t dependency : dependencies) {
-                for (Track* dependencyTrack : tracks) {
-                    if (dependencyTrack->id == dependency) {
-                        trackDependencies.push_back(dependencyTrack);
-                    }
+            std::set<uint8_t> pluginDependencies = plugin->trackDependencies();
+            dependencies.insert(pluginDependencies.begin(), pluginDependencies.end());
+        }
+        for (uint8_t dependency : dependencies) {
+            for (Track* dependencyTrack : tracks) {
+                if (dependencyTrack->id == dependency) {
+                    dependencyTrack->dependentTracks.insert(this);
+                    trackDependencies.insert(dependencyTrack);
                 }
             }
         }
+    }
 
-        // remove duplicates
-        std::sort(trackDependencies.begin(), trackDependencies.end());
-        trackDependencies.erase(std::unique(trackDependencies.begin(), trackDependencies.end()), trackDependencies.end());
-
-        // printf("Track dependencies for track %d [%ld]:\n", id, trackDependencies.size());
-        for (Track* dependency : trackDependencies) {
-            // printf("  - %d\n", dependency->id);
+    void initMasterTrack()
+    {
+        for (Track* track : tracks) {
+            if (track->trackDependencies.size() == 0) {
+                // printf(">>>>>>>>>>>>>>>>>>>>>>> Track %d has no dependencies\n", track->id);
+                dependentTracks.insert(track);
+                // track->status = 0;
+            }
         }
+        thread = std::thread(&Track::loop, this);
+        onFinish();
+    }
 
-        // start thread
+    void startThread()
+    {
+        // printf("-------\n");
+        // printf("Track %d has %ld tracks waiting for it:\n", id, dependentTracks.size());
+        // for (Track* dependent : dependentTracks) {
+        //     printf("  - %d\n", dependent->id);
+        // }
+        // printf("Track %d has %ld depencies:\n", id, trackDependencies.size());
+        // for (Track* dependency : trackDependencies) {
+        //     printf("  - %d\n", dependency->id);
+        // }
+
         thread = std::thread(&Track::loop, this);
     }
 
-    std::mutex mtxCondition;
-    bool checkCondition()
+    bool allDependenciesFinished()
     {
-        mtxCondition.lock();
-        printf("Track %d checking condition\n", id);
-        if (!sampling) {
-            printf("Track %d is not in sampling mode\n", id);
-            mtxCondition.unlock();
-            return false;
-        }
         for (Track* dependency : trackDependencies) {
-            if (dependency->sampling) {
-                mtxCondition.unlock();
-                printf("Track %d still waiting for dependency %d\n", id, dependency->id);
+            if (dependency->status != 2) {
                 return false;
             }
         }
-        mtxCondition.unlock();
         return true;
     }
 
-    std::mutex mtxNotifyAll;
-    void notifyAll()
-    {
-        mtxNotifyAll.lock();
-        for (Track* track : tracks) {
-            if (track->sampling) {
-                track->cv.notify_one();
-            }
-        }
-        mtxNotifyAll.unlock();
-    }
-
-    std::mutex mtxNotify;
-    void resetThreads()
-    {
-        printf("Resetting all tracks\n");
-        mtxNotify.lock();
-        for (Track* track : tracks) {
-            track->sampling = true;
-        }
-        mtxNotify.unlock();
-        notifyAll();
-    }
     void onFinish()
     {
-        printf("Track %d finished generating sample\n", id);
-        if (id == 0) {
-            resetThreads();
-        } else {
-            sampling = false;
-            notifyAll();
+        // printf("Track %d finished generating sample\n", id);
+        tracksMtx.lock();
+        status = 2;
+        for (Track* track : dependentTracks) {
+            if (track->allDependenciesFinished()) {
+                track->status = 0;
+            } else {
+                // printf("Track %d depedency from track %d still have none finished dependencies\n", track->id, id);
+            }
+
+            if (track->status == 0) {
+                track->status = 1;
+                // printf("Track %d notifying track %d that it is finished [%d]\n", id, track->id, status);
+                track->cv.notify_one();
+                // status = 0;
+            } else {
+                // printf("Track %d depedency from track %d cannot be starting because of status %d\n", track->id, id, track->status);
+            }
         }
+        tracksMtx.unlock();
     }
 
     void loop()
     {
         while (isRunning) {
-            std::unique_lock lock(mtx);
-            cv.wait(lock, [&] { return checkCondition(); });
-            lock.unlock();
+            cv.wait(lock, [&] { return status == 1; });
 
             // printf("Track %d generating sample\n", id);
             for (AudioPlugin* plugin : plugins) {
@@ -131,23 +132,3 @@ public:
 };
 
 #endif
-
-// void onFinish()
-// {
-//     sampling = false;
-//     // std::unique_lock lock(mtx);
-//     for (Track* track : tracks) {
-//         if (track->sampling) {
-//             // If there is a track that is currently sampling, dont reset all
-//             // lock.unlock();
-//             notifyAll();
-//             return;
-//         }
-//     }
-//     // lock.unlock();
-//     // No more tracks are currently sampling, reset all
-//     for (Track* track : tracks) {
-//         track->sampling = true;
-//     }
-//     notifyAll();
-// }
