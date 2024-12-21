@@ -35,6 +35,8 @@ public:
 
     void init(std::vector<Track*> tracks)
     {
+        // Only start a thread if track doesn't have any dependency on another tracks
+        // All mixing and master track will be done in the main loop
         for (AudioPlugin* plugin : plugins) {
             if (plugin->trackDependencies().size() > 0) {
                 return;
@@ -60,31 +62,11 @@ public:
         }
     }
 
-    // void process(float* buf)
-    // {
-    //     for (AudioPlugin* plugin : plugins) {
-    //         plugin->sample(buf);
-    //     }
-    // }
     void process(uint8_t index)
     {
         for (AudioPlugin* plugin : plugins) {
             plugin->sample(buffer + index * 32);
         }
-
-        // // printf("Track %d generating sample\n", id);
-        // float buf[32];
-        // for (uint8_t i = 0; i < 32; i++) {
-        //     buf[i] = buffer[index * 32 + i];
-        // }
-
-        // for (AudioPlugin* plugin : plugins) {
-        //     plugin->sample(buf);
-        // }
-
-        // for (uint8_t i = 0; i < 32; i++) {
-        //     buffer[index * 32 + i] = buf[i];
-        // }
     }
 };
 
