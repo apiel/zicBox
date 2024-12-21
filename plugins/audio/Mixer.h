@@ -21,8 +21,6 @@ public:
     Val* mutes[TRACK_COUNT];
 
     uint8_t tracks[TRACK_COUNT];
-    /*md By default, the mixing output goes to track 0.*/
-    uint8_t trackTarget = 0;
     float divider = 1.0f / (float)TRACK_COUNT;
 
     Mixer(AudioPlugin::Props& props, char* _name)
@@ -63,7 +61,7 @@ public:
             }
             out += mix[i]->pct() * buf[tracks[i]] * divider;
         }
-        buf[trackTarget] = out;
+        buf[track] = out;
     }
 
     /*md **Config**: */
@@ -77,13 +75,6 @@ public:
                 tracks[i] = trackStart + i;
                 // printf("- tracks[%d]: %d\n", i, tracks[i]);
             }
-            return true;
-        }
-
-        /*md - `TRACK_TARGET: 0` to set output to track 0.*/
-        if (strcmp(key, "TRACK_TARGET") == 0) {
-            trackTarget = atoi(value);
-            // printf("------------------------------------ trackTarget: %d\n", trackTarget);
             return true;
         }
 

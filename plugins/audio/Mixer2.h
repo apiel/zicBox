@@ -9,7 +9,6 @@ public:
     Val& mix = val(50.0f, "MIX", { "Mix", .type = VALUE_CENTERED });
     uint8_t trackA = 0;
     uint8_t trackB = 1;
-    uint8_t trackTarget = 0;
 
     Mixer2(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -23,7 +22,7 @@ public:
 
     void sample(float* buf)
     {
-        buf[trackTarget] = buf[trackA] * (1.0f - mix.pct()) + buf[trackB] * mix.pct();
+        buf[track] = buf[trackA] * (1.0f - mix.pct()) + buf[trackB] * mix.pct();
     }
 
     bool config(char* key, char* value)
@@ -34,10 +33,6 @@ public:
         }
         if (strcmp(key, "TRACK_B") == 0) {
             trackB = atoi(value);
-            return true;
-        }
-        if (strcmp(key, "TRACK_TARGET") == 0) {
-            trackTarget = atoi(value);
             return true;
         }
         if (strcmp(key, "VALUE") == 0) {
