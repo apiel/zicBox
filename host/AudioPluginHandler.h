@@ -146,14 +146,12 @@ public:
             }
         }
 
-        std::mutex mtx;
-        std::condition_variable cv;
         float buffer[MAX_TRACKS] = { 0.0f };
 
         // Init tracks
         std::vector<Track*> tracks;
         for (uint8_t i = 0; i < MAX_TRACKS; i++) {
-            Track* track = new Track(i, buffer, mtx, cv);
+            Track* track = new Track(i, buffer);
             tracks.push_back(track);
             for (AudioPlugin* plugin : plugins) {
                 if (plugin->track == i) {
