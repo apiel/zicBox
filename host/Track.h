@@ -23,13 +23,11 @@ public:
     // bool processing = false;
     std::atomic<bool> processing = false;
 
-    std::mutex& masterMtx;
     std::condition_variable& masterCv;
 
-    Track(uint8_t id, float* buffer, std::mutex& masterMtx, std::condition_variable& masterCv)
+    Track(uint8_t id, float* buffer, std::condition_variable& masterCv)
         : id(id)
         , buffer(buffer)
-        , masterMtx(masterMtx)
         , masterCv(masterCv)
     {
     }

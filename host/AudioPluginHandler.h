@@ -155,7 +155,7 @@ public:
         // Create tracks
         std::vector<Track*> tracks;
         for (uint8_t i = 0; i < MAX_TRACKS; i++) {
-            Track* track = new Track(i, buffer, masterMtx, masterCv);
+            Track* track = new Track(i, buffer, masterCv);
             tracks.push_back(track);
             for (AudioPlugin* plugin : plugins) {
                 if (plugin->track == i) {
@@ -175,32 +175,32 @@ public:
         auto ms = std::chrono::milliseconds(10);
 
         while (isRunning) {
-            // for (Track* track : tracks) {
-            //     if (track->thread.joinable()) {
-            //         track->processing = true;
-            //         track->cv.notify_one();
-            //     }
-            // }
-            // masterCv.wait_for(lock, ms, [&] {
-            //     for (Track* track : tracks) {
-            //         if (track->processing) {
-            //             return false;
-            //         }
-            //     }
-            //     return true;
-            // });
-            // for (Track* track : tracks) {
-            //     if (!track->thread.joinable()) {
-            //         float* buf = buffer;
-            //         for (uint8_t i = 0; i < 128; i++) {
-            //             track->process(i);
-            //         }
-            //     }
-            // }
-
             for (Track* track : tracks) {
-                track->process(0);
+                if (track->thread.joinable()) {
+                    track->processing = true;
+                    track->cv.notify_one();
+                }
             }
+            masterCv.wait_for(lock, ms, [&] {
+                for (Track* track : tracks) {
+                    if (track->processing) {
+                        return false;
+                    }
+                }
+                return true;
+            });
+            for (Track* track : tracks) {
+                if (!track->thread.joinable()) {
+                    float* buf = buffer;
+                    for (uint8_t i = 0; i < 128; i++) {
+                        track->process(i);
+                    }
+                }
+            }
+
+            // for (Track* track : tracks) {
+            //     track->process(0);
+            // }
         }
         // Wait for to finish
         for (Track* track : tracks) {

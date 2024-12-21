@@ -32,16 +32,16 @@ local function drum23_synth(track)
     { x = 0, y = y, w = W1_4, h = 50 },
     { GROUP = group, COLOR = "secondary", TRACK = track }
   )
-  encoder3(
-    { ENCODER_ID = 1, VALUE = "MMFilter CUTOFF" },
-    { x = W1_4, y = y, w = W1_4, h = 50 },
-    { GROUP = group, COLOR = "primary", TRACK = track }
-  )
-  encoder3(
-    { ENCODER_ID = 2, VALUE = "MMFilter RESONANCE" },
-    { x = W2_4, y = y, w = W1_4, h = 50 },
-    { GROUP = group, COLOR = "primary", TRACK = track }
-  )
+  -- encoder3(
+  --   { ENCODER_ID = 1, VALUE = "MMFilter CUTOFF" },
+  --   { x = W1_4, y = y, w = W1_4, h = 50 },
+  --   { GROUP = group, COLOR = "primary", TRACK = track }
+  -- )
+  -- encoder3(
+  --   { ENCODER_ID = 2, VALUE = "MMFilter RESONANCE" },
+  --   { x = W2_4, y = y, w = W1_4, h = 50 },
+  --   { GROUP = group, COLOR = "primary", TRACK = track }
+  -- )
   encoder3(
     { ENCODER_ID = 3, VALUE = "Distortion LEVEL" },
     { x = W3_4, y = y, w = W1_4, h = 50 },
