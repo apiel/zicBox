@@ -43,11 +43,11 @@ public:
         }
     }
 
-    std::vector<uint8_t> trackDependencies() override
+    std::set<uint8_t> trackDependencies() override
     {
-        std::vector<uint8_t> dependencies = {};
+        std::set<uint8_t> dependencies = {};
         for (uint16_t i = 0; i < TRACK_COUNT; i++) {
-            dependencies.push_back(tracks[i]);
+            dependencies.insert(tracks[i]);
         }
         return dependencies;
     }

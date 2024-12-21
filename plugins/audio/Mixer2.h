@@ -15,7 +15,7 @@ public:
     {
     }
 
-    std::vector<uint8_t> trackDependencies() override
+    std::set<uint8_t> trackDependencies() override
     {
         return { trackA, trackB };
     }

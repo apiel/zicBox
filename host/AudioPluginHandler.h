@@ -137,6 +137,7 @@ public:
         return *plugin;
     }
 
+    std::mutex tracksMtx;
     void loop()
     {
         while (isRunning) {
@@ -148,10 +149,11 @@ public:
 
         float buffer[MAX_TRACKS] = { 0.0f };
 
-        // Init tracks
+        // printf("Creating %d tracks\n", MAX_TRACKS);
+        // Create tracks
         std::vector<Track*> tracks;
         for (uint8_t i = 0; i < MAX_TRACKS; i++) {
-            Track* track = new Track(i, buffer);
+            Track* track = new Track(i, buffer, tracksMtx);
             tracks.push_back(track);
             for (AudioPlugin* plugin : plugins) {
                 if (plugin->track == i) {
@@ -163,16 +165,31 @@ public:
             }
         }
 
+        // printf("Initializing %ld tracks\n", tracks.size());
         // Init tracks
         for (Track* track : tracks) {
             track->init(tracks);
         }
 
+        // printf("Starting %ld tracks\n", tracks.size());
+        // Start threads
+        Track* master = NULL;
+        for (Track* track : tracks) {
+            if (track->id == 0) {
+                master = track;
+            } else {
+                track->startThread();
+            }
+        }
+        master->initMasterTrack();
+
+        // printf("Joining %ld tracks\n", tracks.size());
         // Wait for to finish
         for (Track* track : tracks) {
             track->thread.join();
         }
 
+        // printf("Deleting %ld tracks\n", tracks.size());
         // Delete tracks
         for (Track* track : tracks) {
             delete track;
