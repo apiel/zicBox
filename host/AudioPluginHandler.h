@@ -3,18 +3,19 @@
 
 using namespace std;
 
+#include <functional>
 #include <stdexcept>
 #include <string>
 #include <thread>
-#include <functional>
 
+#include "Track.h"
+#include "def.h"
+#include "helpers/getFullpath.h"
 #include "helpers/trim.h"
 #include "log.h"
+#include "midiMapping.h"
 #include "plugins/audio/audioPlugin.h"
 #include "plugins/audio/lookupTable.h"
-#include "def.h"
-#include "midiMapping.h"
-#include "helpers/getFullpath.h"
 
 /*md
 ## Global and generic config
@@ -136,6 +137,8 @@ public:
         return *plugin;
     }
 
+    std::mutex tracksMtx;
+    std::condition_variable tracksCv;
     void loop()
     {
         while (isRunning) {
@@ -143,14 +146,78 @@ public:
             for (AudioPlugin* plugin : plugins) {
                 plugin->sample(buffer);
             }
-            // then in props pass max tracks
-            // then as part of audio plugin, setTrack and by default to 0
-
-            // float s = 0.0f;
-            // for (Plugin& plugin : plugins) {
-            //     s = plugin.instance->sample(s);
-            // }
         }
+
+        // float buffer[MAX_TRACKS] = { 0.0f };
+
+        // // Init tracks
+        // std::vector<Track> tracks;
+        // for (uint8_t i = 0; i < MAX_TRACKS; i++) {
+        //     tracks.emplace_back(i, buffer, tracksMtx, tracksCv);
+        //     Track& track = tracks.back();
+        //     for (AudioPlugin* plugin : plugins) {
+        //         if (plugin->track == i) {
+        //             track.plugins.push_back(plugin);
+        //         }
+        //     }
+        //     if (track.plugins.size() == 0) {
+        //         tracks.pop_back();
+        //     }
+        // }
+
+        // // Init tracks
+        // for (Track& track : tracks) {
+        //     // Set Track dependencies
+        //     for (AudioPlugin* plugin : track.plugins) {
+        //         printf("Check plugin %s dependencies for track %d:\n", plugin->name, track.id);
+        //         std::vector<uint8_t> dependencies = plugin->trackDependencies();
+        //         for (uint8_t dependency : dependencies) {
+        //             printf(">>>>>>>> Track %d depends on track %d\n", track.id, dependency);
+        //             for (Track& dependencyTrack : tracks) {
+        //                 if (dependencyTrack.id == dependency) {
+        //                     track.trackDependencies.push_back(&dependencyTrack);
+        //                 }
+        //             }
+        //         }
+        //     }
+        //     // remove duplicates
+        //     std::sort(track.trackDependencies.begin(), track.trackDependencies.end());
+        //     track.trackDependencies.erase(std::unique(track.trackDependencies.begin(), track.trackDependencies.end()), track.trackDependencies.end());
+
+        //     printf("Track dependencies for track %d [%ld]:\n", track.id, track.trackDependencies.size());
+        //     for (Track* dependency : track.trackDependencies) {
+        //         printf("  - %d\n", dependency->id);
+        //     }
+
+        //     // start thread
+        //     track.thread = std::thread(&Track::loop, &track);
+        // }
+
+        // while (isRunning) {
+        //     // Notify threads to process the next sample
+        //     {
+        //         std::unique_lock<std::mutex> lock(tracksMtx);
+        //         for (Track& track : tracks) {
+        //             track.sampling = true;
+        //         }
+        //         tracksCv.notify_all();
+        //     }
+
+        //     // printf("Wait for all threads to finish generating their samples\n");
+
+        //     // Wait for all threads to finish
+        //     {
+        //         std::unique_lock<std::mutex> lock(tracksMtx);
+        //         tracksCv.wait(lock, [&] {
+        //             for (Track& track : tracks) {
+        //                 if (track.sampling) {
+        //                     return false;
+        //                 }
+        //             }
+        //             return true;
+        //         });
+        //     }
+        // }
     }
 
     void loadPluginAlias(char* value, const char* filename)
@@ -186,7 +253,7 @@ public:
     void loadPlugin(char* value)
     {
         char* name = strtok(value, " ");
-        char * pathPtr = strtok(NULL, " ");
+        char* pathPtr = strtok(NULL, " ");
         string path = pathPtr ? pathPtr : name;
 
         // if path end by .so load it as plugin

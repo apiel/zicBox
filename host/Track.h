@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "plugins/audio/audioPlugin.h"
+#include "def.h"
 
 class Track {
 public:
@@ -17,15 +18,13 @@ public:
     std::vector<AudioPlugin*> plugins;
     std::thread thread;
     float* buffer;
-    std::atomic<bool>& isRunning;
     std::mutex& mtx;
     std::condition_variable& cv;
     std::vector<Track*> trackDependencies;
 
-    Track(uint8_t id, float* buffer, std::atomic<bool>& isRunning, std::mutex& mtx, std::condition_variable& cv)
+    Track(uint8_t id, float* buffer, std::mutex& mtx, std::condition_variable& cv)
         : id(id)
         , buffer(buffer)
-        , isRunning(isRunning)
         , mtx(mtx)
         , cv(cv)
     {
@@ -53,9 +52,11 @@ public:
                 cv.wait(lock, [&] { return shouldStartSampling(); });
             }
 
+            // printf("Track %d generating sample\n", id);
             for (AudioPlugin* plugin : plugins) {
                 plugin->sample(buffer);
             }
+            // printf("Track %d finished\n", id);
 
             // Notify that this track is done
             {

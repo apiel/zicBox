@@ -7,6 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <dlfcn.h>
+#include <atomic>
 
 #ifndef SAMPLE_RATE
 // #define SAMPLE_RATE 44100
@@ -63,7 +64,7 @@ void enableDebug()
 char audioOutputName[255] = "";
 char audioInputName[255] = "";
 
-bool isRunning = true;
+std::atomic<bool> isRunning(true);
 void quit()
 {
     debug("Quitting...\n");
