@@ -137,23 +137,25 @@ public:
         return *plugin;
     }
 
-    std::mutex tracksMtx;
     void loop()
     {
-        while (isRunning) {
-            float buffer[MAX_TRACKS] = { 0.0f };
-            for (AudioPlugin* plugin : plugins) {
-                plugin->sample(buffer);
-            }
-        }
+        // while (isRunning) {
+        //     float buffer[MAX_TRACKS] = { 0.0f };
+        //     for (AudioPlugin* plugin : plugins) {
+        //         plugin->sample(buffer);
+        //     }
+        // }
 
         float buffer[MAX_TRACKS] = { 0.0f };
 
-        // printf("Creating %d tracks\n", MAX_TRACKS);
+        std::mutex masterMtx;
+        std::condition_variable masterCv;
+        std::unique_lock<std::mutex> lock = std::unique_lock(masterMtx);
+
         // Create tracks
         std::vector<Track*> tracks;
         for (uint8_t i = 0; i < MAX_TRACKS; i++) {
-            Track* track = new Track(i, buffer, tracksMtx);
+            Track* track = new Track(i, buffer, masterMtx, masterCv);
             tracks.push_back(track);
             for (AudioPlugin* plugin : plugins) {
                 if (plugin->track == i) {
@@ -165,31 +167,41 @@ public:
             }
         }
 
-        // printf("Initializing %ld tracks\n", tracks.size());
         // Init tracks
         for (Track* track : tracks) {
             track->init(tracks);
         }
 
-        // printf("Starting %ld tracks\n", tracks.size());
-        // Start threads
-        Track* master = NULL;
-        for (Track* track : tracks) {
-            if (track->id == 0) {
-                master = track;
-            } else {
-                track->startThread();
+        auto ms = std::chrono::milliseconds(10);
+
+        while (isRunning) {
+            // for (Track* track : tracks) {
+            //     if (track->thread.joinable()) {
+            //         track->processing = true;
+            //         track->cv.notify_one();
+            //     }
+            // }
+            // masterCv.wait_for(lock, ms, [&] {
+            //     for (Track* track : tracks) {
+            //         if (track->processing) {
+            //             return false;
+            //         }
+            //     }
+            //     return true;
+            // });
+            for (Track* track : tracks) {
+                // if (!track->thread.joinable()) {
+                    track->process();
+                // }
             }
         }
-        master->initMasterTrack();
-
-        // printf("Joining %ld tracks\n", tracks.size());
         // Wait for to finish
         for (Track* track : tracks) {
-            track->thread.join();
+            if (track->thread.joinable()) {
+                track->thread.join();
+            }
         }
 
-        // printf("Deleting %ld tracks\n", tracks.size());
         // Delete tracks
         for (Track* track : tracks) {
             delete track;
