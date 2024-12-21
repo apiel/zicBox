@@ -24,12 +24,12 @@ ui.addZoneEncoder({ W3_4, 0, W1_4, ScreenHeight })
 local track = 0
 
 -- - Track Sample (1)
-track = track + 1
+track = 1
 ui.view("Track" .. track) -- , { COMPONENTS_TRACK = track }
 drumSample(track)
 
 -- - Track Drum23 (2)
-track = track + 1
+track = 2
 ui.view("Track" .. track, { COMPONENTS_TRACK = track })
 mainKeyboard(track, "Drum23")
 drum23Synth(track)
@@ -38,7 +38,7 @@ ui.view("Sequencer" .. track, { COMPONENTS_TRACK = track })
 sequencer(track)
 
 -- - Track Drum23 (3)
-track = track + 1
+track = 3
 ui.view("Track" .. track, { COMPONENTS_TRACK = track })
 mainKeyboard(track, "Drum23")
 drum23Synth(track)
@@ -47,7 +47,7 @@ ui.view("Sequencer" .. track, { COMPONENTS_TRACK = track })
 sequencer(track)
 
 -- - Track Drum23 (4)
-track = track + 1
+track = 4
 ui.view("Track" .. track, { COMPONENTS_TRACK = track })
 mainKeyboard(track, "Drum23")
 drum23Synth(track)
@@ -56,7 +56,7 @@ ui.view("Sequencer" .. track, { COMPONENTS_TRACK = track })
 sequencer(track)
 
 -- # - Track FM (5)
-track = track + 1
+track = 5
 ui.view("Track" .. track, { COMPONENTS_TRACK = track })
 mainKeyboard(track, "FM")
 fmSynth(track)
@@ -65,7 +65,7 @@ ui.view("Sequencer" .. track, { COMPONENTS_TRACK = track })
 sequencer(track)
 
 -- # - Track FM (6)
-track = track + 1
+track = 6
 ui.view("Track" .. track, { COMPONENTS_TRACK = track })
 mainKeyboard(track, "FM")
 fmSynth(track)
