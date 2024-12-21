@@ -14,20 +14,19 @@
 class Track {
 public:
     uint8_t id;
-    bool sampling = true;
+    // bool sampling = true;
+    std::atomic<bool> sampling = true;
     std::vector<AudioPlugin*> plugins;
     std::thread thread;
     float* buffer;
-    std::mutex& mtx;
-    std::condition_variable& cv;
+    std::mutex mtx;
+    std::condition_variable cv;
     std::vector<Track*> trackDependencies;
     std::vector<Track*> tracks;
 
-    Track(uint8_t id, float* buffer, std::mutex& mtx, std::condition_variable& cv)
+    Track(uint8_t id, float* buffer)
         : id(id)
         , buffer(buffer)
-        , mtx(mtx)
-        , cv(cv)
     {
     }
 
@@ -60,36 +59,59 @@ public:
         thread = std::thread(&Track::loop, this);
     }
 
+    std::mutex mtxCondition;
     bool checkCondition()
     {
+        mtxCondition.lock();
+        printf("Track %d checking condition\n", id);
         if (!sampling) {
+            printf("Track %d is not in sampling mode\n", id);
+            mtxCondition.unlock();
             return false;
         }
         for (Track* dependency : trackDependencies) {
             if (dependency->sampling) {
+                mtxCondition.unlock();
+                printf("Track %d still waiting for dependency %d\n", id, dependency->id);
                 return false;
             }
         }
+        mtxCondition.unlock();
         return true;
     }
 
-    void notify()
+    std::mutex mtxNotifyAll;
+    void notifyAll()
     {
-        // std::unique_lock lock(mtx);
+        mtxNotifyAll.lock();
         for (Track* track : tracks) {
             if (track->sampling) {
-                // If there is a track that is currently sampling, dont reset all
-                // lock.unlock();
-                cv.notify_all();
-                return;
+                track->cv.notify_one();
             }
         }
-        // lock.unlock();
-        // No more tracks are currently sampling, reset all
+        mtxNotifyAll.unlock();
+    }
+
+    std::mutex mtxNotify;
+    void resetThreads()
+    {
+        printf("Resetting all tracks\n");
+        mtxNotify.lock();
         for (Track* track : tracks) {
             track->sampling = true;
         }
-        cv.notify_all();
+        mtxNotify.unlock();
+        notifyAll();
+    }
+    void onFinish()
+    {
+        printf("Track %d finished generating sample\n", id);
+        if (id == 0) {
+            resetThreads();
+        } else {
+            sampling = false;
+            notifyAll();
+        }
     }
 
     void loop()
@@ -103,12 +125,29 @@ public:
             for (AudioPlugin* plugin : plugins) {
                 plugin->sample(buffer);
             }
-            // printf("Track %d finished\n", id);
-
-            sampling = false;
-            notify();
+            onFinish();
         }
     }
 };
 
 #endif
+
+// void onFinish()
+// {
+//     sampling = false;
+//     // std::unique_lock lock(mtx);
+//     for (Track* track : tracks) {
+//         if (track->sampling) {
+//             // If there is a track that is currently sampling, dont reset all
+//             // lock.unlock();
+//             notifyAll();
+//             return;
+//         }
+//     }
+//     // lock.unlock();
+//     // No more tracks are currently sampling, reset all
+//     for (Track* track : tracks) {
+//         track->sampling = true;
+//     }
+//     notifyAll();
+// }
