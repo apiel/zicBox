@@ -147,9 +147,9 @@ public:
         // }
 
         float buffer[128 * MAX_TRACKS] = { 0.0f };
-        for (int i = 0; i < 128 * MAX_TRACKS; i++) {
-            buffer[i] = 0.0f;
-        }
+        // for (int i = 0; i < 128 * MAX_TRACKS; i++) {
+        //     buffer[i] = 0.0f;
+        // }
 
         std::mutex masterMtx;
         std::condition_variable masterCv;
@@ -178,31 +178,31 @@ public:
         auto ms = std::chrono::milliseconds(10);
 
         while (isRunning) {
+            // for (Track* track : tracks) {
+            //     if (track->thread.joinable()) {
+            //         track->processing = true;
+            //         track->cv.notify_one();
+            //     }
+            // }
+            // masterCv.wait_for(lock, ms, [&] {
+            //     for (Track* track : tracks) {
+            //         if (track->processing) {
+            //             return false;
+            //         }
+            //     }
+            //     return true;
+            // });
+            // for (Track* track : tracks) {
+            //     if (!track->thread.joinable()) {
+            //         float* buf = buffer;
+            //         for (uint8_t i = 0; i < 128; i++) {
+            //             track->process(i);
+            //         }
+            //     }
+            // }
+
             for (Track* track : tracks) {
-                if (track->thread.joinable()) {
-                    track->processing = true;
-                    track->cv.notify_one();
-                }
-            }
-            masterCv.wait_for(lock, ms, [&] {
-                for (Track* track : tracks) {
-                    if (track->processing) {
-                        return false;
-                    }
-                }
-                return true;
-            });
-            for (Track* track : tracks) {
-                if (!track->thread.joinable()) {
-                    float* buf = buffer;
-                    for (uint8_t i = 0; i < 128; i++) {
-                        // increase buffer position
-                        // track->process(buf);
-                        // buf += MAX_TRACKS;
-                        track->process(i);
-                    }
-                    // track->process(buffer);
-                }
+                track->process(0);
             }
         }
         // Wait for to finish
