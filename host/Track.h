@@ -41,7 +41,7 @@ public:
             }
         }
         // There is no dependency, start a thread
-        thread = std::thread([this] { loop(); }); 
+        thread = std::thread([this] { loop(); });
     }
 
     void loop()
@@ -51,18 +51,40 @@ public:
 
         while (isRunning) {
             cv.wait(lock, [&] { return processing == true; });
-            process();
+            // process();
+            for (uint8_t i = 0; i < 128; i++) {
+                process(i);
+            }
             processing = false;
             masterCv.notify_one();
         }
     }
 
-    void process()
+    // void process(float* buf)
+    // {
+    //     for (AudioPlugin* plugin : plugins) {
+    //         plugin->sample(buf);
+    //     }
+    // }
+    void process(uint8_t index)
     {
-        // printf("Track %d generating sample\n", id);
         for (AudioPlugin* plugin : plugins) {
-            plugin->sample(buffer);
+            plugin->sample(buffer + index * 32);
         }
+
+        // // printf("Track %d generating sample\n", id);
+        // float buf[32];
+        // for (uint8_t i = 0; i < 32; i++) {
+        //     buf[i] = buffer[index * 32 + i];
+        // }
+
+        // for (AudioPlugin* plugin : plugins) {
+        //     plugin->sample(buf);
+        // }
+
+        // for (uint8_t i = 0; i < 32; i++) {
+        //     buffer[index * 32 + i] = buf[i];
+        // }
     }
 };
 
