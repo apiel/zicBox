@@ -1,8 +1,10 @@
 ## Pixel TODO
 
-- TODO get track creation order base on dependencies
-
 - TODO zic pixel mini (320x170 display, rpi zero 2)
+
+- TODO drum freq envelop is really good but not to use
+  - might be great to keep this one as advance version
+  - and to have one more simple where we could somehow morph between envelops a bit like wavetable...
 
 - IDEA when looking at the first track, this representation of the sequencer is much easier to understand what is going on
     - maybe we should use this concept for all tracks
