@@ -120,3 +120,42 @@ Each track in the buffer corresponds to a separate audio channel .
 This example highlights the fundamental structure of real-time audio programming: prepare audio data, write it to a buffer, and send it to the audio output.
 Starting with noise is a great way to understand how audio buffers and output work without dealing with complex audio synthesis or processing.
 From here, you can experiment with generating other types of audio signals, such as sine waves, and explore how to expand to multiple tracks or stereo audio.
+
+## Audio chunk
+
+In the previous example, you can see that each sample is sent one at a time to the output. However, behind the scenes, `AudioOutputPulse` is accumulating these samples in an internal buffer. This internal buffer groups the samples into chunks, which are then sent to PulseAudio for more efficient processing.
+
+Chunks are used in audio processing for efficiency and practicality. Here's why:
+
+1. **Minimized Overhead**: Sending audio samples one at a time to the audio server (e.g., PulseAudio) would involve constant communication, causing significant overhead. This includes function calls, context switching, and potentially network or inter-process communication if the server is running separately. By grouping samples into chunks and sending them in batches, the number of communications is drastically reduced, improving efficiency.
+
+2. **Compatibility with Audio Hardware**: Most audio hardware and APIs are designed to process audio data in blocks or frames rather than individual samples. These blocks are predefined sizes of audio data that align with the hardware’s internal processing or buffering capabilities. Chunks ensure that the data provided to the hardware matches its expected format.
+
+3. **Smooth Playback**: Real-time audio playback requires a constant and uninterrupted flow of data. By buffering samples into chunks, the system has a reserve of audio data ready to be processed. This helps prevent playback issues like stuttering or glitches that could occur if the system momentarily runs out of samples.
+
+In our example—and in most parts of zicBox—I handle audio processing sample by sample. This approach is much easier to understand and, in most cases, doesn’t make a significant difference in performance.
+
+The only time it becomes important to use chunks is when generating audio across multiple threads. In such cases, synchronizing and communicating between threads for each individual sample is too costly. That’s where processing audio in chunks makes sense.
+
+Multi-threaded audio generation is far away... For now, let’s stick to sample-by-sample processing for its simplicity!
+
+**Why Sample-by-Sample Processing is Simpler**:
+1. **Straightforward Logic**: Processing audio one sample at a time aligns naturally with how sound is represented—a continuous stream of individual values. There’s no need to worry about managing multiple samples at once, so the logic is easier to follow and debug.
+
+2. **Reduced Buffer Management**: Handling chunks requires maintaining intermediate buffers, ensuring they’re the correct size, and managing the flow of data between buffers. By working sample by sample, you avoid these complexities entirely.
+
+3. **Great for Learning**: For beginners or simple projects, working with one sample at a time makes it easier to understand how audio data is processed and manipulated without introducing additional layers of complexity.
+
+**Why Chunks are Necessary in Multi-Threaded Processing**
+1. **High Cost of Per-Sample Synchronization**: In multi-threaded scenarios, threads need to communicate to ensure the generated audio is synchronized. Doing this for each individual sample introduces a lot of overhead, as thread synchronization mechanisms (e.g., mutexes, locks) are expensive to execute repeatedly.
+
+2. **Batch Processing Reduces Overhead**: By working with chunks, threads can generate multiple samples at once and communicate only when an entire chunk is ready. This drastically reduces the number of synchronization events and improves efficiency.
+
+**Why Start with Sample-by-Sample**
+
+Before introducing the complexity of multi-threading and chunk management, it’s beneficial to master sample-by-sample processing. This approach builds a strong foundation, helping you understand the basics of audio synthesis, manipulation, and playback without worrying about advanced optimizations.
+
+When you’re ready to scale up to multi-threading or more demanding performance scenarios, you’ll have the knowledge to adapt your processing to chunks efficiently.
+
+In 99% of my personal projects, I stick to sample-by-sample processing. I only switch to chunk-based processing when it’s absolutely necessary.
+
