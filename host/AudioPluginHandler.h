@@ -218,6 +218,11 @@ public:
                     }
                 }
             }
+
+            // cleanup buffer
+            for (int i = 0; i < bufferSize; i++) {
+                buffer[i] = 0.0f;
+            }
         }
         // Wait for to finish
         for (Track* track : tracks) {

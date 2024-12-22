@@ -1,5 +1,7 @@
 ## Pixel TODO
 
+- TODO get track creation order base on dependencies
+
 - TODO use .emplace_back instead of .push_back in vector?
 - TODO use std::set when possible
 
@@ -20,6 +22,9 @@
             - but to do it manual, we would ne a way to identify component
               or only link with previous component:
                     CHILD_FROM_PREVIOUS: true
+
+- TODO wavetable create, where we can pick a specific part of a given wavetable and past it into a new one
+       - might also want to use waveform generator and even fm algorigthm?
 
 - TODO can EffectGrain and EffectDelay be one single effect to make an advance GrainDelay effect...?
 - TODO make a simple EffectDelay with preset... or re-use the exisiting one?
