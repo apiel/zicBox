@@ -26,3 +26,4 @@ build
 test2
 *.log
 thread
+plugins/audio/tutorial/*.bin

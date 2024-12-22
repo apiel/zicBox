@@ -59,3 +59,47 @@ Today, with modern CPUs and MCUs that have good support for floating-point opera
 **Conclusion**:
 
 While fixed-point arithmetic still has its place in certain resource-constrained systems (especially with older MCUs or when extreme performance optimization is required), modern hardware’s efficient support for floating-point arithmetic makes float the more practical choice for most audio programming today. It allows developers to focus on the creative and algorithmic aspects of their work rather than worrying about low-level number representation.
+
+## Let's make some noise
+
+The easiest way to get started is by literally producing noise. Noise is simply a random value sent to the audio buffer. In this example—and all the examples that follow—we’ll use my audio library to send audio to the output buffer. The library is built on PulseAudio. I’m working on Linux, but I believe it should also be compatible with Windows and macOS (though I haven’t tested it yet).
+
+> If it doesn’t work for you, here’s a friendly tip: switch to Linux! 😄
+
+```cpp
+// 01.cpp
+#include "plugins/audio/AudioOutputPulse.h"
+
+#define MAX_TRACKS 16
+#define TWO_PI 6.283185307179586
+
+int noDebug(const char* format, ...) { return 0; }
+
+int main(int argc, char* argv[])
+{
+    AudioPlugin::Props props = {
+        .debug = noDebug,
+        .sampleRate = 44100,
+        .channels = 2,
+        .audioPluginHandler = nullptr,
+        .maxTracks = MAX_TRACKS,
+        .lookupTable = nullptr,
+    };
+
+    AudioOutputPulse audioOutput(props, (char*)"zicAudioOutputPulse");
+
+    float buffer[MAX_TRACKS] = { 0.0f };
+
+    while (1) {
+        buffer[0] = rand() / (float)RAND_MAX;
+        audioOutput.sample(buffer);
+    }
+
+    return 0;
+}
+```
+
+Compile it with:
+```sh
+g++ 01.cpp -o 01.bin -I../../.. -pthread -D_REENTRANT -lpulse-simple -lpulse -pthread && ./01.bin
+```

@@ -1,5 +1,3 @@
-MAKEFLAGS += -j$(shell nproc)
-
 RTMIDI=`pkg-config --cflags --libs rtmidi`
 SDL2=`sdl2-config --cflags --libs`
 # SDL2=`../test/SDL/build/sdl2-config --cflags --libs`

@@ -36,7 +36,7 @@ public:
 protected:
     LookupTable lookupTable;
 
-    AudioPlugin::Props pluginProps = { debug, SAMPLE_RATE, APP_CHANNELS, this, MAX_TRACKS, &lookupTable };
+    AudioPlugin::Props pluginProps = { SAMPLE_RATE, APP_CHANNELS, this, MAX_TRACKS, &lookupTable };
 
     std::vector<MidiMapping> midiMapping;
 
@@ -60,11 +60,11 @@ protected:
     {
         uint8_t channel = atoi(value);
         if (channel < 1 || channel > 16) {
-            APP_INFO("Invalid midi note channel, set to 1\n");
+            logInfo("Invalid midi note channel, set to 1");
             channel = 1;
         }
         midiNoteEvents.push_back({ (uint8_t)(channel - 1), { .plugin = plugins.back() } });
-        APP_INFO("[%s] Midi plugin channel set to %d\n", plugins.back()->name, channel);
+        logInfo("[%s] Midi plugin channel set to %d", plugins.back()->name, channel);
         return true;
     }
 
@@ -73,11 +73,11 @@ protected:
         int16_t track = atoi(strtok(value, " "));
         uint8_t channel = atoi(strtok(NULL, " "));
         if (channel < 1 || channel > 16) {
-            APP_INFO("Invalid midi note channel, set to 1\n");
+            logInfo("Invalid midi note channel, set to 1");
             channel = 1;
         }
         midiNoteEvents.push_back({ (uint8_t)(channel - 1), { track } });
-        APP_INFO("[%s] Midi track channel set to %d\n", plugins.back()->name, channel);
+        logInfo("[%s] Midi track channel set to %d", plugins.back()->name, channel);
         return true;
     }
 
@@ -90,7 +90,7 @@ protected:
         char* msg2 = strtok(NULL, " ");
 
         if (msg0 == NULL || msg1 == NULL) {
-            APP_INFO("Invalid midi mapping\n");
+            logInfo("Invalid midi mapping");
             return false;
         }
 
@@ -103,7 +103,7 @@ protected:
         int valueIndex = plugins.back()->getValueIndex(pluginKey);
         if (valueIndex != -1) {
             midiMapping.push_back({ plugins.back(), valueIndex, size, valuePosition, msg0Int, msg1Int });
-            APP_INFO("[%s] Midi mapping assigned: %s\n", plugins.back()->name, pluginKey);
+            logInfo("[%s] Midi mapping assigned: %s", plugins.back()->name, pluginKey);
             return true;
         }
         return false;
@@ -301,7 +301,7 @@ public:
 
         void* handle = dlopen(getFullpath(path, filename).c_str(), RTLD_LAZY);
         if (!handle) {
-            logError("Cannot load audio library %s [%s]: %s\n", path, name, dlerror());
+            logError("Cannot load audio library %s [%s]: %s", path, name, dlerror());
             return;
         }
 
@@ -313,13 +313,13 @@ public:
         };
         const char* dlsym_error = dlerror();
         if (dlsym_error) {
-            logError("Cannot load symbol: %s\n", dlsym_error);
+            logError("Cannot load symbol: %s", dlsym_error);
             dlclose(handle);
             return;
         }
         pluginAliases.push_back(pluginAllocator);
 
-        logInfo("audio plugin alias loaded: %s\n", name);
+        logInfo("audio plugin alias loaded: %s", name);
     }
 
     void loadPlugin(char* value)
@@ -336,11 +336,11 @@ public:
             for (PluginAlias& pluginAllocator : pluginAliases) {
                 if (pluginAllocator.name == path) {
                     plugins.push_back(pluginAllocator.allocator(pluginProps, name));
-                    logInfo("audio plugin loaded: %s\n", plugins.back()->name);
+                    logInfo("audio plugin loaded: %s", plugins.back()->name);
                     return;
                 }
             }
-            logWarn("Cannot find audio plugin alias %s [%s]\n", path.c_str(), name);
+            logWarn("Cannot find audio plugin alias %s [%s]", path.c_str(), name);
         }
     }
 
@@ -349,7 +349,7 @@ public:
         void* handle = dlopen(path, RTLD_LAZY);
 
         if (!handle) {
-            logWarn("Cannot open audio library %s [%s]: %s\n", path, name, dlerror());
+            logWarn("Cannot open audio library %s [%s]: %s", path, name, dlerror());
             return;
         }
 
@@ -357,13 +357,13 @@ public:
         void* allocator = (AudioPlugin*)dlsym(handle, "allocator");
         const char* dlsym_error = dlerror();
         if (dlsym_error) {
-            logWarn("Cannot load symbol: %s\n", dlsym_error);
+            logWarn("Cannot load symbol: %s", dlsym_error);
             dlclose(handle);
             return;
         }
 
         AudioPlugin* instance = ((AudioPlugin * (*)(AudioPlugin::Props & props, char* name)) allocator)(pluginProps, name);
-        logInfo("audio plugin loaded: %s\n", instance->name);
+        logInfo("audio plugin loaded: %s", instance->name);
 
         // plugin.instance->set(0, 0.1f);
         // printf("---> getParamKey: %d\n", plugin.instance->getParamKey("volume"));
@@ -517,7 +517,7 @@ public:
         }
 
         autoSaveThread = std::thread([this, msInterval]() {
-            APP_PRINT("Starting autosave thread with interval %d ms\n", msInterval);
+            logInfo("Starting autosave thread with interval %d ms", msInterval);
 
             // Wait a bit first, else it crash...
             std::this_thread::sleep_for(std::chrono::milliseconds(100));

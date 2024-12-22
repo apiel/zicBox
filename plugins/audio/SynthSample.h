@@ -9,8 +9,9 @@
 #include "fileBrowser.h"
 #include "mapping.h"
 
-#include "../../helpers/random.h"
+#include "helpers/random.h"
 #include "utils/ValSerializeSndFile.h"
+#include "log.h"
 
 #ifndef MAX_SAMPLE_VOICES
 #define MAX_SAMPLE_VOICES 4
@@ -184,7 +185,7 @@ protected:
             for (uint8_t v = 0; v < MAX_SAMPLE_VOICES; v++) {
                 Voice& voice = voices[v];
                 if (voice.note == note) {
-                    debug("getNextVoice: voice already running %d\n", note);
+                    logDebug("getNextVoice: voice already running %d\n", note);
                     return voice;
                 }
             }
@@ -202,7 +203,7 @@ protected:
             }
         }
 
-        debug("getNextVoice: no voice available. Steal voice %d.\n", voiceToSteal);
+        logDebug("getNextVoice: no voice available. Steal voice %d.\n", voiceToSteal);
         return voices[voiceToSteal];
     }
 
@@ -293,7 +294,7 @@ public:
 
     void noteOn(uint8_t note, float velocity) override
     {
-        // debug("should play noteOn: %d %d\n", note, velocity);
+        // logDebug("should play noteOn: %d %d\n", note, velocity);
         if (velocity == 0) {
             return noteOff(note, velocity);
         }
@@ -304,7 +305,7 @@ public:
         voice.velocity = velocity;
         voiceStart(voice);
         // TODO attack softly if start after beginning of file
-        debug("noteOn: %d %f\n", note, velocity);
+        logDebug("noteOn: %d %f\n", note, velocity);
     }
 
     void noteOff(uint8_t note, float velocity) override
@@ -315,7 +316,7 @@ public:
                 voice.release = true;
                 voice.sustainReleaseLoopCount = 0;
                 // TODO release softly if release before end of file
-                // debug("noteOff set on to false: %d %d\n", note, velocity);
+                // logDebug("noteOff set on to false: %d %d\n", note, velocity);
                 // return; // since multiple voice can have the same note do not return
             }
         }
@@ -338,10 +339,10 @@ public:
         SF_INFO sfinfo;
         SNDFILE* file = sf_open(filename.c_str(), SFM_READ, &sfinfo);
         if (!file) {
-            debug("Error: could not open file %s [%s]\n", filename.c_str(), sf_strerror(file));
+            logDebug("Error: could not open file %s [%s]\n", filename.c_str(), sf_strerror(file));
             return;
         }
-        // debug("Audio file %s sampleCount %ld sampleRate %d\n", filename, (long)sfinfo.frames, sfinfo.samplerate);
+        // logDebug("Audio file %s sampleCount %ld sampleRate %d\n", filename, (long)sfinfo.frames, sfinfo.samplerate);
         // printf(".................Audio file chan %d vs prop chan %d\n", sfinfo.channels, props.channels);
 
         sampleBuffer.count = sf_read_float(file, sampleData, bufferSize);
@@ -372,7 +373,7 @@ public:
         if (force || position != fileBrowser.position) {
             browser.setString(fileBrowser.getFile(position));
             std::string filepath = fileBrowser.getFilePath(position);
-            // debug("SAMPLE_SELECTOR: %f %s\n", value, filepath);
+            // logDebug("SAMPLE_SELECTOR: %f %s\n", value, filepath);
             open(filepath);
         }
     }

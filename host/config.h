@@ -17,21 +17,17 @@ void hostScriptCallback(char* key, char* value, const char* filename, std::vecto
         loadMidiOutput(midiOut, value);
     } else if (strcmp(key, "AUDIO_OUTPUT") == 0) {
         strcpy(audioOutputName, value);
-        APP_INFO("Audio output set: %s\n", audioOutputName);
+        logInfo("Audio output set: %s", audioOutputName);
     } else if (strcmp(key, "AUDIO_INPUT") == 0) {
         strcpy(audioInputName, value);
-        APP_INFO("Audio input set: %s\n", audioInputName);
+        logInfo("Audio input set: %s", audioInputName);
     } else if (strcmp(key, "AUDIO_PLUGIN") == 0) {
         AudioPluginHandler::get().loadPlugin(value);
     } else if (strcmp(key, "AUDIO_PLUGIN_ALIAS") == 0) {
         AudioPluginHandler::get().loadPluginAlias(value, filename);
     } else if (strcmp(key, "GAIN_OUTPUT") == 0) {
         // float gain = AudioPluginHandler::get().gainVolume.setGain(atof(value)).gain;
-        // APP_INFO("Gain output set: %f\n", gain);
-    } else if (strcmp(key, "DEBUG") == 0) {
-        if (strcmp(value, "true") == 0) {
-            enableDebug();
-        }
+        // logInfo("Gain output set: %f", gain);
     } else if (strcmp(key, "AUTO_SAVE") == 0) {
         uint32_t msInterval = atoi(value);
         if (msInterval > 0) {
