@@ -26,7 +26,7 @@ void showLogLevel() {
 
 void logDebug(std::string message) {
 #if ZIC_LOG_LEVEL <= ZIC_LOG_DEBUG
-    printf("[debug] %s\n", message.c_str());
+    printf("\033[32m[debug]\033[0m %s\n", message.c_str());
 #endif
 }
 
@@ -34,7 +34,7 @@ void logDebug(const char* message, ...) {
 #if ZIC_LOG_LEVEL <= ZIC_LOG_DEBUG
     va_list args;
     va_start(args, message);
-    printf("[debug] ");
+    printf("\033[32m[debug]\033[0m ");
     vprintf(message, args);
     printf("\n");
     va_end(args);
@@ -43,7 +43,7 @@ void logDebug(const char* message, ...) {
 
 void logInfo(std::string message) {
 #if ZIC_LOG_LEVEL <= ZIC_LOG_INFO
-    printf("[info] %s\n", message.c_str());
+    printf("\033[34m[info]\033[0m %s\n", message.c_str());
 #endif
 }
 
@@ -51,7 +51,7 @@ void logInfo(const char* message, ...) {
 #if ZIC_LOG_LEVEL <= ZIC_LOG_INFO
     va_list args;
     va_start(args, message);
-    printf("[info] ");
+    printf("\033[34m[info]\033[0m ");
     vprintf(message, args);
     printf("\n");
     va_end(args);
@@ -60,7 +60,7 @@ void logInfo(const char* message, ...) {
 
 void logWarn(std::string message) {
 #if ZIC_LOG_LEVEL <= ZIC_LOG_WARN
-    printf("[warn] %s\n", message.c_str());
+    printf("\033[33m[warn]\033[0m %s\n", message.c_str());
 #endif
 }
 
@@ -68,7 +68,7 @@ void logWarn(const char* message, ...) {
 #if ZIC_LOG_LEVEL <= ZIC_LOG_WARN
     va_list args;
     va_start(args, message);
-    printf("[warn] ");
+    printf("\033[33m[warn]\033[0m ");
     vprintf(message, args);
     printf("\n");
     va_end(args);
@@ -77,7 +77,7 @@ void logWarn(const char* message, ...) {
 
 void logError(std::string message) {
 #if ZIC_LOG_LEVEL <= ZIC_LOG_ERROR
-    printf("[error] %s\n", message.c_str());
+    printf("\033[31m[error]\033[0m %s\n", message.c_str());
 #endif
 }
 
@@ -85,7 +85,7 @@ void logError(const char* message, ...) {
 #if ZIC_LOG_LEVEL <= ZIC_LOG_ERROR
     va_list args;
     va_start(args, message);
-    printf("[error] ");
+    printf("\033[31m[error]\033[0m ");
     vprintf(message, args);
     printf("\n");
     va_end(args);
