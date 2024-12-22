@@ -1,12 +1,24 @@
 // Compile and run:
-// g++ 03.cpp -o 03.bin -I../../.. -lpulse-simple -lpulse && ./03.bin
+// g++ 04.cpp -o 04.bin -I../../.. -lpulse-simple -lpulse && ./04.bin
 
 #include "plugins/audio/AudioOutputPulse.h"
 #include <cmath> // For sin()
 
 #define TWO_PI 6.283185307179586
 
-// Function to calculate the envelope value at a given sample index
+// Size of the lookup table
+#define LUT_SIZE 1024
+
+// Precompute the sine values and store them in a lookup table
+float sineLUT[LUT_SIZE];
+
+// Function to initialize the sine lookup table
+void initializeSineLUT() {
+    for (int i = 0; i < LUT_SIZE; ++i) {
+        sineLUT[i] = sin(TWO_PI * i / LUT_SIZE);
+    }
+}
+
 float calculateEnvelope(int sampleIndex, int totalSamples, int rampSamples)
 {
     if (sampleIndex < rampSamples) {
@@ -38,13 +50,16 @@ int main(int argc, char* argv[])
     // Phase accumulator for the sine wave
     float phase = 0.0f;
 
-    // Phase increment per sample
-    float phaseIncrement = TWO_PI * frequency / props.sampleRate;
+    // Phase increment per sample based on the desired frequency
+    float phaseIncrement = frequency * LUT_SIZE / props.sampleRate;
+
+    // Initialize the sine lookup table
+    initializeSineLUT();
 
     // Envelope configuration
-    float rampDuration = 0.4f; // Ramp-up and ramp-down duration in seconds
-    float beepDuration = 1.5f; // Total beep duration (including ramp-up and ramp-down) in seconds
-    float breakDuration = 0.5f; // Duration of the silence between beeps in seconds
+    float rampDuration = 0.1f; // Ramp-up and ramp-down duration in seconds
+    float beepDuration = 0.5f; // Total beep duration (including ramp-up and ramp-down) in seconds
+    float breakDuration = 0.2f; // Duration of the silence between beeps
 
     // Calculate sample counts
     int rampSamples = rampDuration * props.sampleRate;
@@ -58,15 +73,16 @@ int main(int argc, char* argv[])
             // Calculate the current amplitude using the envelope function
             float amplitude = calculateEnvelope(i, beepSamples, rampSamples);
 
-            // Generate the sine wave sample with envelope
-            buffer[0] = amplitude * sin(phase);
+            // Get the sine value from the lookup table
+            int index = static_cast<int>(phase) % LUT_SIZE;
+            buffer[0] = amplitude * sineLUT[index];
 
             // Increment the phase
             phase += phaseIncrement;
 
-            // Wrap the phase back into the range [0, TWO_PI]
-            if (phase >= TWO_PI) {
-                phase -= TWO_PI;
+            // Wrap the phase to stay within the LUT size
+            if (phase >= LUT_SIZE) {
+                phase -= LUT_SIZE;
             }
 
             // Send the generated sample to the audio output
