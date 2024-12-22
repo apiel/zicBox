@@ -1,6 +1,6 @@
-#include "plugins/audio/AudioOutputPulse.h"
-
 // g++ 01.cpp -o 01.bin -I../../.. -lpulse-simple -lpulse && ./01.bin
+
+#include "plugins/audio/AudioOutputPulse.h"
 
 int main(int argc, char* argv[])
 {

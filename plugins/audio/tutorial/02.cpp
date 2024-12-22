@@ -1,10 +1,10 @@
+// Compile and run:
+// g++ 02.cpp -o 02.bin -I../../.. -lpulse-simple -lpulse && ./02.bin
+
 #include "plugins/audio/AudioOutputPulse.h"
 #include <cmath> // For sin()
 
 #define TWO_PI 6.283185307179586
-
-// Compile and run:
-// g++ 02.cpp -o 02.bin -I../../.. -lpulse-simple -lpulse && ./02.bin
 
 int main(int argc, char* argv[])
 {

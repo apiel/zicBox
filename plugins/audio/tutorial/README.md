@@ -262,9 +262,9 @@ float beepDuration = 1.5f; // Total beep duration (including ramp-up and ramp-do
 float breakDuration = 0.5f; // Duration of the silence between beeps in seconds
 
 // Calculate sample counts
-int rampSamples = rampDuration * sampleRate;
-int beepSamples = beepDuration * sampleRate;
-int breakSamples = breakDuration * sampleRate;
+int rampSamples = rampDuration * props.sampleRate;
+int beepSamples = beepDuration * props.sampleRate;
+int breakSamples = breakDuration * props.sampleRate;
 ```
 We calculate how many samples each steps need.
 
@@ -316,14 +316,11 @@ int main(int argc, char* argv[])
     // Frequency of the sine wave (in Hz)
     float frequency = 440.0f; // Standard A4 note
 
-    // Sampling rate (from audio properties)
-    float sampleRate = props.sampleRate;
-
     // Phase accumulator for the sine wave
     float phase = 0.0f;
 
     // Phase increment per sample
-    float phaseIncrement = TWO_PI * frequency / sampleRate;
+    float phaseIncrement = TWO_PI * frequency / props.sampleRate;
 
     // Envelope configuration
     float rampDuration = 0.4f; // Ramp-up and ramp-down duration in seconds
@@ -331,9 +328,9 @@ int main(int argc, char* argv[])
     float breakDuration = 0.5f; // Duration of the silence between beeps in seconds
 
     // Calculate sample counts
-    int rampSamples = rampDuration * sampleRate;
-    int beepSamples = beepDuration * sampleRate;
-    int breakSamples = breakDuration * sampleRate;
+    int rampSamples = rampDuration * props.sampleRate;
+    int beepSamples = beepDuration * props.sampleRate;
+    int breakSamples = breakDuration * props.sampleRate;
 
     // Main loop to generate and play the sine wave with envelope
     while (1) {
@@ -374,6 +371,191 @@ g++ 03.cpp -o 03.bin -I../../.. -lpulse-simple -lpulse && ./03.bin
 ```
 
 ## Lookup table
+
+A Lookup Table (LUT) is a data structure, typically an array or table, that stores precomputed values. Instead of performing a computation repeatedly, the program retrieves the results directly from the table, offering faster access than recalculating the values on the fly.
+
+**How Does a LUT Work?**
+
+1. **Precompute Values:**
+Values (such as sine wave points, logarithms, etc.) are precomputed and stored in the table. These values are indexed by a specific key, often an integer or floating-point value.
+
+2. **Indexing:**
+To retrieve a value, you use an index. For example, if you want to get the sine of 30 degrees, you look up the corresponding precomputed value from the table using the index for that angle.
+
+3. **Direct Access:**
+Instead of computing the sine of each angle in real-time (which can be computationally expensive), you directly access the value from the table. This is much faster, as memory access (loading a value) is typically faster than performing mathematical operations.
+
+**Example of a Simple LUT**
+
+Suppose we want to generate the sine wave for 360 degrees. Instead of calculating sin(x) every time we need it, we could create a LUT with precomputed sine values for 0 to 360 degrees (or even a higher resolution, like every 0.5 degree).
+
+**LUT Example:**
+
+| Index (degrees) | Sine Value |
+|----|----|
+| 0	| 0.0 |
+| 1	| 0.017452 |
+| 2	| 0.034899 |
+| 3	| 0.052336 |
+| ... |	... |
+| 360 |	0.0 |
+
+If you need the sine of 45 degrees, instead of recalculating sin(45), you simply look up the value stored at index 45 in the table.
+
+```cpp
+float sineTable[361];  // LUT for sine values
+
+// Populate the table with sine values
+for (int i = 0; i <= 360; ++i) {
+    sineTable[i] = sin(i * M_PI / 180.0f);  // Convert degrees to radians
+}
+
+// Access the sine of 45 degrees directly
+float sineValue = sineTable[45];
+```
+
+Using a lookup table instead of calculating the sine wave on the fly can provide significant performance benefits, especially in real-time audio applications. 
+
+1. **Performance Efficiency**
+- **Sine Calculation is Expensive:**
+  Computing the sine of a number is a relatively expensive operation for a CPU. It involves floating-point calculations that can take several CPU cycles.
+
+- **Lookup Table is Faster:**
+  By precomputing the sine values and storing them in a table, you can simply access the correct value using an array index. This is a much faster operation—essentially just loading a value from memory (which takes only a few cycles), instead of recalculating it every time.
+
+2. **Real-Time Constraints**
+- **Real-Time Audio Processing:**
+  Audio processing often occurs in real time, where the system needs to process audio data and send it to the output at a fixed rate (e.g., 44.1 kHz). If your audio generation code is constantly recalculating sine waves, it may not be able to keep up with the required output rate, causing delays or glitches.
+
+- **Reduced Latency:**
+  Using a lookup table can reduce the amount of time spent on computation, helping to maintain the required processing speed and minimize latency. This is crucial in real-time systems like audio playback.
+
+3. **Reusability and Consistency**
+- **Consistent Values:**
+  A lookup table guarantees that the sine values are consistent and accurate each time they’re accessed. You don’t have to worry about rounding errors or inaccuracies that may arise in real-time floating-point computations. This is important when generating precise waveforms in audio applications.
+
+- **Reusability Across Multiple Generations:**
+  Once the table is created, it can be reused for generating multiple sine waves with different frequencies. The only thing you need to do is adjust the table index, based on the desired frequency. This saves on repeated computation.
+
+4. **Reduced CPU Load**
+- **Less CPU Usage:**
+  In systems with limited CPU resources (such as embedded systems or low-power devices), reducing the number of computations required per sample can allow more resources to be dedicated to other parts of the application, such as mixing, effects, or handling multiple audio channels.
+
+**When to Use Lookup Tables**
+
+While lookup tables are very efficient, they do come with some trade-offs:
+
+- **Memory Usage:** Lookup tables take up memory to store the precomputed values. Depending on the precision required and the number of different waveforms, the table size can be quite large. For sine waves, this may not be a major concern, but in systems with limited memory, this could be a factor.
+
+- **Precision:** The resolution of the lookup table depends on how many values you precompute. A higher resolution table gives more accurate results, but it also takes up more memory. For many applications, a balance between performance and precision is required.
+
+
+**Conclusion**
+
+In audio programming, using a lookup table for sine wave generation can drastically improve performance, reduce CPU load, and ensure that real-time constraints are met. By trading off a small amount of memory usage for faster, consistent calculations, this method becomes a go-to optimization in many real-time audio systems.
+
+
+Full example:
+```cpp
+
+#include "plugins/audio/AudioOutputPulse.h"
+#include <cmath> // For sin()
+
+#define TWO_PI 6.283185307179586
+
+// Size of the lookup table
+#define LUT_SIZE 1024
+
+// Precompute the sine values and store them in a lookup table
+float sineLUT[LUT_SIZE];
+
+// Function to initialize the sine lookup table
+void initializeSineLUT() {
+    for (int i = 0; i < LUT_SIZE; ++i) {
+        sineLUT[i] = sin(TWO_PI * i / LUT_SIZE);
+    }
+}
+
+float calculateEnvelope(int sampleIndex, int totalSamples, int rampSamples)
+{
+    if (sampleIndex < rampSamples) {
+        // Ramp-up
+        return (float)sampleIndex / rampSamples;
+    } else if (sampleIndex >= totalSamples - rampSamples) {
+        // Ramp-down
+        return (float)(totalSamples - sampleIndex) / rampSamples;
+    } else {
+        // Sustain
+        return 1.0f;
+    }
+}
+
+int main(int argc, char* argv[])
+{
+    // Initialize audio properties with default settings
+    AudioPlugin::Props props = defaultAudioProps;
+
+    // Create an AudioOutputPulse instance to handle audio output
+    AudioOutputPulse audioOutput(props, (char*)"zicAudioOutputPulse");
+
+    // Create an audio buffer to hold samples (one per track)
+    float buffer[props.maxTracks] = { 0.0f };
+
+    // Frequency of the sine wave (in Hz)
+    float frequency = 440.0f; // Standard A4 note
+
+    // Phase accumulator for the sine wave
+    float phase = 0.0f;
+
+    // Phase increment per sample based on the desired frequency
+    float phaseIncrement = frequency * LUT_SIZE / props.sampleRate;
+
+    // Initialize the sine lookup table
+    initializeSineLUT();
+
+    // Envelope configuration
+    float rampDuration = 0.1f; // Ramp-up and ramp-down duration in seconds
+    float beepDuration = 0.5f; // Total beep duration (including ramp-up and ramp-down) in seconds
+    float breakDuration = 0.2f; // Duration of the silence between beeps
+
+    // Calculate sample counts
+    int rampSamples = rampDuration * props.sampleRate;
+    int beepSamples = beepDuration * props.sampleRate;
+    int breakSamples = breakDuration * props.sampleRate;
+
+    // Main loop to generate and play the sine wave with envelope
+    while (1) {
+        // Generate the beep with ramp-up and ramp-down
+        for (int i = 0; i < beepSamples; ++i) {
+            // Calculate the current amplitude using the envelope function
+            float amplitude = calculateEnvelope(i, beepSamples, rampSamples);
+
+            // Get the sine value from the lookup table
+            int index = static_cast<int>(phase) % LUT_SIZE;
+            buffer[0] = amplitude * sineLUT[index];
+
+            // Increment the phase
+            phase += phaseIncrement;
+
+            // Wrap the phase to stay within the LUT size
+            if (phase >= LUT_SIZE) {
+                phase -= LUT_SIZE;
+            }
+
+            // Send the generated sample to the audio output
+            audioOutput.sample(buffer);
+        }
+
+        // Generate silence for the break
+        for (int i = 0; i < breakSamples; ++i) {
+            buffer[0] = 0.0f; // Silence
+            audioOutput.sample(buffer);
+        }
+    }
+
+    return 0;
+}
+```
 
 ## Linear interpolation
 
