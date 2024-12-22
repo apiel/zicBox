@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
 
 Compile it with:
 ```sh
-g++ 01.cpp -o 01.bin -I../../.. -pthread -D_REENTRANT -lpulse-simple -lpulse -pthread && ./01.bin
+g++ 01.cpp -o 01.bin -I../../.. -lpulse-simple -lpulse && ./01.bin
 ```
 
 
@@ -159,3 +159,222 @@ When you’re ready to scale up to multi-threading or more demanding performance
 
 In 99% of my personal projects, I stick to sample-by-sample processing. I only switch to chunk-based processing when it’s absolutely necessary.
 
+## Sine wave
+
+Here's a complete example for generating and playing a sine wave:
+
+```cpp
+// 02.cpp
+
+#include "plugins/audio/AudioOutputPulse.h"
+#include <cmath> // For sin()
+
+#define TWO_PI 6.283185307179586
+
+int main(int argc, char* argv[])
+{
+    // Initialize audio properties with default settings
+    AudioPlugin::Props props = defaultAudioProps;
+
+    // Create an AudioOutputPulse instance to handle audio output
+    AudioOutputPulse audioOutput(props, (char*)"zicAudioOutputPulse");
+
+    // Create an audio buffer to hold samples (one per track)
+    float buffer[props.maxTracks] = { 0.0f };
+
+    // Frequency of the sine wave (in Hz)
+    float frequency = 440.0f; // Standard A4 note
+
+    // Phase accumulator for the sine wave
+    float phase = 0.0f;
+
+    // Phase increment per sample
+    float phaseIncrement = TWO_PI * frequency / props.sampleRate;
+
+    // Main loop to generate and play the sine wave
+    while (1) {
+        // Calculate the sine value for the current phase
+        buffer[0] = sin(phase);
+
+        // Increment the phase
+        phase += phaseIncrement;
+
+        // Wrap the phase back into the range [0, TWO_PI]
+        if (phase >= TWO_PI) {
+            phase -= TWO_PI;
+        }
+
+        // Send the generated sample to the audio output
+        audioOutput.sample(buffer);
+    }
+
+    return 0;
+}
+```
+
+> [!WARNING]
+> It generates a continuous, unpleasant beep sound.
+
+Compile it with:
+```sh
+g++ 02.cpp -o 02.bin -I../../.. -lpulse-simple -lpulse && ./02.bin
+```
+
+1. **Frequency and Sample Rate**: The sine wave's frequency is set to 440 Hz (the pitch of the A4 musical note). The sampling rate is fetched from the audio properties (props.sampleRate).
+
+2. **Phase and Phase Increment**: The phase represents the current position in the sine wave cycle. The phaseIncrement determines how much the phase progresses for each sample, based on the frequency and sampling rate. The formula TWO_PI * frequency / sampleRate ensures the correct frequency is achieved.
+   
+3. **Sine Wave Generation**: The sine value is calculated for the current phase using sin(phase) and assigned to buffer[0].
+
+4. **Phase Wrapping**: After each sample, the phase is incremented. When the phase exceeds 2𝜋, it’s wrapped back into the range of [0,2𝜋].
+
+5. **Output the Sample**: The generated sine wave sample is sent to the audio output using audioOutput.sample(buffer).
+
+This example generates a pure sine wave at 440 Hz and outputs it continuously. You can adjust the frequency variable to produce different tones.
+
+## Amplitude envelop
+
+Let’s introduce a new function to generate an amplitude envelope. One of the simplest types is the ASR (Attack, Sustain, Release) envelope. To implement this, take a look at the following function:
+
+```cpp
+// Function to calculate the envelope value at a given sample index
+float calculateEnvelope(int sampleIndex, int totalSamples, int rampSamples)
+{
+    if (sampleIndex < rampSamples) {
+        // Attack: Ramp-up
+        return (float)sampleIndex / rampSamples;
+    } else if (sampleIndex >= totalSamples - rampSamples) {
+        // Release: Ramp-down
+        return (float)(totalSamples - sampleIndex) / rampSamples;
+    } else {
+        // Sustain
+        return 1.0f;
+    }
+}
+```
+
+**Envelope Creation**: Added a linear ramp-up for the start of the beep and a ramp-down for the end. The envelope smoothly increases the amplitude from 0 to 1 (ramp-up) and decreases it back to 0 (ramp-down).
+
+```cpp
+// Envelope configuration
+float rampDuration = 0.4f; // Ramp-up and ramp-down duration in seconds
+float beepDuration = 1.5f; // Total beep duration (including ramp-up and ramp-down) in seconds
+float breakDuration = 0.5f; // Duration of the silence between beeps in seconds
+
+// Calculate sample counts
+int rampSamples = rampDuration * sampleRate;
+int beepSamples = beepDuration * sampleRate;
+int breakSamples = breakDuration * sampleRate;
+```
+We calculate how many samples each steps need.
+
+1. **Sample Count Calculations**: Converted durations (in seconds) into sample counts using the sampling rate (sampleRate).
+2. **Break Between Beeps**: After the beep ends, silence is generated for a short duration (breakDuration).
+
+Finally, we apply the modulation to the waveform:
+
+```cpp
+// Generate the sine wave sample with envelope
+buffer[0] = amplitude * sin(phase);
+```
+Applied the envelope to the sine wave by multiplying the amplitude during the ramp-up and ramp-down sections.
+
+Here is the whole code:
+```cpp
+// 03.cpp
+#include "plugins/audio/AudioOutputPulse.h"
+#include <cmath> // For sin()
+
+#define TWO_PI 6.283185307179586
+
+// Function to calculate the envelope value at a given sample index
+float calculateEnvelope(int sampleIndex, int totalSamples, int rampSamples)
+{
+    if (sampleIndex < rampSamples) {
+        // Attack: Ramp-up
+        return (float)sampleIndex / rampSamples;
+    } else if (sampleIndex >= totalSamples - rampSamples) {
+        // Release: Ramp-down
+        return (float)(totalSamples - sampleIndex) / rampSamples;
+    } else {
+        // Sustain
+        return 1.0f;
+    }
+}
+
+int main(int argc, char* argv[])
+{
+    // Initialize audio properties with default settings
+    AudioPlugin::Props props = defaultAudioProps;
+
+    // Create an AudioOutputPulse instance to handle audio output
+    AudioOutputPulse audioOutput(props, (char*)"zicAudioOutputPulse");
+
+    // Create an audio buffer to hold samples (one per track)
+    float buffer[props.maxTracks] = { 0.0f };
+
+    // Frequency of the sine wave (in Hz)
+    float frequency = 440.0f; // Standard A4 note
+
+    // Sampling rate (from audio properties)
+    float sampleRate = props.sampleRate;
+
+    // Phase accumulator for the sine wave
+    float phase = 0.0f;
+
+    // Phase increment per sample
+    float phaseIncrement = TWO_PI * frequency / sampleRate;
+
+    // Envelope configuration
+    float rampDuration = 0.4f; // Ramp-up and ramp-down duration in seconds
+    float beepDuration = 1.5f; // Total beep duration (including ramp-up and ramp-down) in seconds
+    float breakDuration = 0.5f; // Duration of the silence between beeps in seconds
+
+    // Calculate sample counts
+    int rampSamples = rampDuration * sampleRate;
+    int beepSamples = beepDuration * sampleRate;
+    int breakSamples = breakDuration * sampleRate;
+
+    // Main loop to generate and play the sine wave with envelope
+    while (1) {
+        // Generate the beep with ramp-up and ramp-down
+        for (int i = 0; i < beepSamples; ++i) {
+            // Calculate the current amplitude using the envelope function
+            float amplitude = calculateEnvelope(i, beepSamples, rampSamples);
+
+            // Generate the sine wave sample with envelope
+            buffer[0] = amplitude * sin(phase);
+
+            // Increment the phase
+            phase += phaseIncrement;
+
+            // Wrap the phase back into the range [0, TWO_PI]
+            if (phase >= TWO_PI) {
+                phase -= TWO_PI;
+            }
+
+            // Send the generated sample to the audio output
+            audioOutput.sample(buffer);
+        }
+
+        // Generate silence for the break
+        for (int i = 0; i < breakSamples; ++i) {
+            buffer[0] = 0.0f; // Silence
+            audioOutput.sample(buffer);
+        }
+    }
+
+    return 0;
+}
+```
+
+Compile it with:
+```sh
+g++ 03.cpp -o 03.bin -I../../.. -lpulse-simple -lpulse && ./03.bin
+```
+
+## Lookup table
+
+## Linear interpolation
+
+## Wavetable
