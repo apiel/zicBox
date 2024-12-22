@@ -32,18 +32,25 @@ public:
     {
     }
 
+    bool hasDependencies()
+    {
+        for (AudioPlugin* plugin : plugins) {
+            if (plugin->trackDependencies().size() > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     void init(std::vector<Track*> tracks)
     {
         // Only start a thread if track doesn't have any dependency on another tracks
         // All mixing and master track will be done in the main loop
-        for (AudioPlugin* plugin : plugins) {
-            if (plugin->trackDependencies().size() > 0) {
-                return;
-            }
+        if (!hasDependencies()) {
+            logDebug(">>> Track %d has no dependency, start a thread", id);
+            // There is no dependency, start a thread
+            thread = std::thread([this] { loop(); });
         }
-        logDebug(">>> Track %d has no dependency, start a thread", id);
-        // There is no dependency, start a thread
-        thread = std::thread([this] { loop(); });
     }
 
     void loop()
