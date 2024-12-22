@@ -148,6 +148,55 @@ protected:
         return tracks;
     }
 
+    // Check wether all dependencies are are available in the sortedTracks
+    // However, if track dependencies are missing in the origin tracks, we don't count them
+    // example: mixer expecting to get 4 tracks, but only 2 of them are used...
+    uint8_t countMissingTracks(std::set<uint8_t> dependencies, std::set<uint8_t> target, std::set<uint8_t> origin)
+    {
+        uint8_t missing = 0;
+        for (auto s : dependencies) {
+            if (target.find(s) == target.end() && origin.find(s) != origin.end()) {
+                missing++;
+            }
+        }
+        return missing;
+    }
+
+    std::vector<Track*> sortTracksByDependencies(std::vector<Track*> tracks)
+    {
+        std::set<uint8_t> originTrackIds;
+        for (Track* track : tracks) {
+            originTrackIds.insert(track->id);
+        }
+
+        std::set<uint8_t> trackIds;
+        std::vector<Track*> sortedTracks;
+        // First push tracks without dependencies
+        for (Track* track : tracks) {
+            if (!track->hasDependencies()) {
+                sortedTracks.push_back(track);
+                trackIds.insert(track->id);
+            }
+        }
+        // Let's limit the number of loop to be sure we do not get stuck in an infinite loop
+        for (uint8_t i = 0; i < 250 && sortedTracks.size() < tracks.size(); i++) {
+            for (Track* track : tracks) {
+                // Check that track is not already in the sortedTracks
+                if (trackIds.find(track->id) == trackIds.end()) {
+                    std::set<uint8_t> dependencies = track->getDependencies();
+                    uint8_t missing = countMissingTracks(dependencies, trackIds, originTrackIds);
+                    // printf("----> Track %d dependencies %ld missing %d\n", track->id, dependencies.size(), missing);
+                    // now check that all dependencies are in the sortedTracks
+                    if (missing == 0) {
+                        sortedTracks.push_back(track);
+                        trackIds.insert(track->id);
+                    }
+                }
+            }
+        }
+        return sortedTracks;
+    }
+
 public:
     static AudioPluginHandler& get()
     {
@@ -186,7 +235,13 @@ public:
         std::unique_lock<std::mutex> lock = std::unique_lock(masterMtx);
 
         // Create tracks
-        std::vector<Track*> tracks = createTracks(buffer, masterCv);
+        // Sorting the tracks would not be mandatory if plugins are instanciated in the right order in the config file
+        // However, it is very easy to not think abut it, so introducing this sorting system can save from trouble (even if it introduce complexity)
+        // For example, initializing the tempo plugin at the begining of the file, could just lead to not having sound 
+        // at all because track 0 would design at first position but also be used for audio output, meaning the that the
+        // buffer would be cleaned up even before the audio output being consumed...
+        std::vector<Track*> tracks = sortTracksByDependencies(createTracks(buffer, masterCv));
+        // std::vector<Track*> tracks = createTracks(buffer, masterCv);
 
         // Init tracks
         for (Track* track : tracks) {
