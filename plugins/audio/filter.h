@@ -51,6 +51,11 @@ public:
 
     void setSampleData(float inputValue)
     {
+        // hp = inputValue;
+        // bp = inputValue;
+        // buf = inputValue;
+        // lp = inputValue;
+
         hp = fix(inputValue - buf);
         bp = fix(buf - lp);
         buf = fix(buf + cutoff * (hp + feedback * bp));
