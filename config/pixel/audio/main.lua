@@ -21,8 +21,6 @@ audio.pluginAlias("DrumSample", "libzic_SynthDrumSample.so")
 audio.pluginAlias("Sequencer", "libzic_Sequencer.so")
 audio.pluginAlias("AudioOutput", "libzic_AudioOutputPulse.so")
 
-audio.plugin("Tempo")
-
 -- # Drum tracks
 drumSample(11)
 drumSample(12)
@@ -58,5 +56,7 @@ audio.plugin("Mixer2", { NAME = "MixerMaster", TRACK_A = 9, TRACK_B = 10, VALUE 
 audio.plugin("EffectGainVolume", { NAME = "MasterVolume" })
 audio.plugin("AudioOutput")
 audio.plugin("SerializeTrack", { FILEPATH = "serializedPixel/master.cfg" })
+
+audio.plugin("Tempo")
 
 audio.autoSave(500)

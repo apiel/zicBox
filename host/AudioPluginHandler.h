@@ -109,6 +109,45 @@ protected:
         return false;
     }
 
+    std::vector<uint8_t> getTrackIds()
+    {
+        std::set<uint8_t> trackIdsSet;
+        std::vector<uint8_t> trackIds; // for whatever reason unsorted_set is not working as expected
+        for (AudioPlugin* plugin : plugins) {
+            if (plugin->track < MAX_TRACKS && trackIdsSet.find(plugin->track) == trackIdsSet.end()) {
+                trackIdsSet.insert(plugin->track);
+                trackIds.push_back(plugin->track);
+            }
+        }
+        return trackIds;
+    }
+
+    Track* createTrack(uint8_t id, float* buffer, std::condition_variable& masterCv)
+    {
+        Track* track = new Track(id, buffer, masterCv);
+        for (AudioPlugin* plugin : plugins) {
+            if (plugin->track == id) {
+                track->plugins.push_back(plugin);
+            }
+        }
+        return track;
+    }
+
+    std::vector<Track*> createTracks(float* buffer, std::condition_variable& masterCv)
+    {
+        std::vector<Track*> tracks;
+        std::vector<uint8_t> trackIds = getTrackIds();
+        for (auto trackId : trackIds) {
+            // printf("----------------- Track %d\n", trackId);
+            Track* track = createTrack(trackId, buffer, masterCv);
+            tracks.push_back(track);
+            if (track->plugins.size() == 0) {
+                tracks.pop_back();
+            }
+        }
+        return tracks;
+    }
+
 public:
     static AudioPluginHandler& get()
     {
@@ -135,32 +174,6 @@ public:
             throw std::runtime_error("Could not find plugin " + std::string(name) + " on track " + std::to_string(track));
         }
         return *plugin;
-    }
-
-
-
-    Track* createTrack(uint8_t id, float *buffer, std::condition_variable& masterCv)
-    {
-        Track* track = new Track(id, buffer, masterCv);
-        for (AudioPlugin* plugin : plugins) {
-            if (plugin->track == id) {
-                track->plugins.push_back(plugin);
-            }
-        }
-        return track;
-    }
-
-    std::vector<Track*> createTracks(float *buffer, std::condition_variable& masterCv)
-    {
-        std::vector<Track*> tracks;
-        for (uint8_t i = 0; i < MAX_TRACKS; i++) {
-            Track* track = createTrack(i, buffer, masterCv);
-            tracks.push_back(track);
-            if (track->plugins.size() == 0) {
-                tracks.pop_back();
-            }
-        }
-        return tracks;
     }
 
     void loop()
@@ -197,11 +210,7 @@ public:
                 }
                 return true;
             });
-            // FIXME to initialize track by order of plugin instead of track IDs
-            // for (Track* track : tracks) {
-            // instead do it in inverse order
-            for (int i = tracks.size() - 1; i >= 0; i--) {
-                Track* track = tracks[i];
+            for (Track* track : tracks) {
                 if (!track->thread.joinable()) {
                     float* buf = buffer;
                     for (uint8_t i = 0; i < 128; i++) {
@@ -209,10 +218,6 @@ public:
                     }
                 }
             }
-
-            // for (Track* track : tracks) {
-            //     track->process(0);
-            // }
         }
         // Wait for to finish
         for (Track* track : tracks) {
