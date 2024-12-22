@@ -9,7 +9,8 @@
 #include "fileBrowser.h"
 #include "mapping.h"
 
-#include "../../helpers/random.h"
+#include "log.h"
+#include "helpers/random.h"
 #include "utils/ValSerializeSndFile.h"
 
 #ifndef MAX_SAMPLE_VOICES
@@ -116,7 +117,7 @@ public:
     void noteOn(uint8_t note, float _velocity) override
     {
         // printf("[%d] drum sample noteOn: %d %f\n", track, note, _velocity);
-        debug("drum sample noteOn: %d %f\n", note, velocity);
+        logDebug("drum sample noteOn: %d %f\n", note, velocity);
         index = indexStart;
         velocity = _velocity;
     }
@@ -126,10 +127,10 @@ public:
         SF_INFO sfinfo;
         SNDFILE* file = sf_open(filename.c_str(), SFM_READ, &sfinfo);
         if (!file) {
-            debug("Error: could not open file %s [%s]\n", filename.c_str(), sf_strerror(file));
+            logDebug("Error: could not open file %s [%s]\n", filename.c_str(), sf_strerror(file));
             return;
         }
-        // debug("Audio file %s sampleCount %ld sampleRate %d\n", filename, (long)sfinfo.frames, sfinfo.samplerate);
+        // logDebug("Audio file %s sampleCount %ld sampleRate %d\n", filename, (long)sfinfo.frames, sfinfo.samplerate);
         // printf(".................Audio file chan %d vs prop chan %d\n", sfinfo.channels, props.channels);
 
         sampleBuffer.count = sf_read_float(file, sampleData, bufferSize);
@@ -157,7 +158,7 @@ public:
         if (force || position != fileBrowser.position) {
             browser.setString(fileBrowser.getFile(position));
             std::string filepath = fileBrowser.getFilePath(position);
-            // debug("SAMPLE_SELECTOR: %f %s\n", value, filepath);
+            // logDebug("SAMPLE_SELECTOR: %f %s\n", value, filepath);
             open(filepath);
         }
     }

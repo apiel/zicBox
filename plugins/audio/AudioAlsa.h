@@ -4,6 +4,7 @@
 #include <alsa/asoundlib.h>
 
 #include "audioPlugin.h"
+#include "log.h"
 
 #define ALSA_MAX_CHANNELS 2
 
@@ -26,7 +27,7 @@ protected:
         while (snd_card_next(&cardNum) > -1 && cardNum > -1) {
             char* name;
             snd_card_get_name(cardNum, &name);
-            debug("- %s [DEVICE=hw:%d,0]\n", name, cardNum);
+            logDebug("- %s [DEVICE=hw:%d,0]\n", name, cardNum);
             if (strcmp(name, deviceName) == 0) {
                 sprintf(cardName, "hw:%d,0", cardNum);
                 deviceName = cardName;
@@ -44,13 +45,13 @@ protected:
             snd_pcm_close(handle);
         }
 
-        debug("AudioAlsa::open %s (rate %d, channels %d)\n", deviceName, props.sampleRate, props.channels);
+        logDebug("AudioAlsa::open %s (rate %d, channels %d)\n", deviceName, props.sampleRate, props.channels);
 
         int err;
         if ((err = snd_pcm_open(&handle, deviceName, stream(), 0)) < 0) {
-            debug("Playback open audio card \"%s\" error: %s.\nOpen default sound card\n", deviceName, snd_strerror(err));
+            logDebug("Playback open audio card \"%s\" error: %s.\nOpen default sound card\n", deviceName, snd_strerror(err));
             if ((err = snd_pcm_open(&handle, "default", stream(), 0)) < 0) {
-                debug("Default playback audio card error: %s\n", snd_strerror(err));
+                logDebug("Default playback audio card error: %s\n", snd_strerror(err));
             }
         }
 
@@ -58,7 +59,7 @@ protected:
         if ((err = snd_pcm_set_params(handle, format, SND_PCM_ACCESS_RW_INTERLEAVED,
                  props.channels > ALSA_MAX_CHANNELS ? ALSA_MAX_CHANNELS : props.channels, props.sampleRate, 1, 500000))
             < 0) {
-            debug("Audio card params error: %s\n", snd_strerror(err));
+            logDebug("Audio card params error: %s\n", snd_strerror(err));
             return;
         }
     }
@@ -78,7 +79,7 @@ public:
     bool config(char* key, char* value) override
     {
         if (strcmp(key, "DEVICE") == 0) {
-            debug("Load output device: %s\n", value);
+            logDebug("Load output device: %s\n", value);
             deviceName = value;
             search(); // TODO implement search
             open();

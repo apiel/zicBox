@@ -34,17 +34,17 @@ public:
 
         int err;
         if ((err = snd_pcm_open(&handleOut, audioOutputName, SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
-            APP_INFO("Playback open audio card \"%s\" error: %s.\nOpen default sound card\n", audioOutputName, snd_strerror(err));
+            logInfo("Playback open audio card \"%s\" error: %s.\nOpen default sound card\n", audioOutputName, snd_strerror(err));
             if ((err = snd_pcm_open(&handleOut, "default", SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
-                APP_INFO("Default playback audio card error: %s\n", snd_strerror(err));
+                logInfo("Default playback audio card error: %s\n", snd_strerror(err));
                 return 1;
             }
         }
 
         if ((err = snd_pcm_open(&handleIn, audioInputName, SND_PCM_STREAM_CAPTURE, 0)) < 0) {
-            APP_INFO("Capture open audio card \"%s\" error: %s.\nOpen default sound card\n", audioInputName, snd_strerror(err));
+            logInfo("Capture open audio card \"%s\" error: %s.\nOpen default sound card\n", audioInputName, snd_strerror(err));
             if ((err = snd_pcm_open(&handleIn, "default", SND_PCM_STREAM_CAPTURE, 0)) < 0) {
-                APP_INFO("Default capture audio card error: %s\n", snd_strerror(err));
+                logInfo("Default capture audio card error: %s\n", snd_strerror(err));
                 return 1;
             }
         }
@@ -53,7 +53,7 @@ public:
         // if ((err = snd_pcm_set_params(handleOut, SND_PCM_FORMAT_FLOAT, SND_PCM_ACCESS_RW_INTERLEAVED,
         //          APP_CHANNELS, SAMPLE_RATE, 1, 500000))
         //     < 0) {
-        //     APP_INFO("Audio card params error: %s\n", snd_strerror(err));
+        //     logInfo("Audio card params error: %s\n", snd_strerror(err));
         //     return 1;
         // }
         // while (isRunning) {
@@ -67,14 +67,14 @@ public:
         if ((err = snd_pcm_set_params(handleOut, format, SND_PCM_ACCESS_RW_INTERLEAVED,
                  APP_CHANNELS, SAMPLE_RATE, 1, 500000))
             < 0) {
-            APP_INFO("Audio card params error: %s\n", snd_strerror(err));
+            logInfo("Audio card params error: %s\n", snd_strerror(err));
             return 1;
         }
 
         if ((err = snd_pcm_set_params(handleIn, format, SND_PCM_ACCESS_RW_INTERLEAVED,
                  APP_CHANNELS, SAMPLE_RATE, 1, 500000))
             < 0) {
-            APP_INFO("Audio card params error: %s\n", snd_strerror(err));
+            logInfo("Audio card params error: %s\n", snd_strerror(err));
             return 1;
         }
 
@@ -82,7 +82,7 @@ public:
             // float inputBuffer[APP_AUDIO_CHUNK * APP_CHANNELS];
             // int32_t inputBuffer32[APP_AUDIO_CHUNK * APP_CHANNELS];
             // if (snd_pcm_readi(handleIn, inputBuffer32, APP_AUDIO_CHUNK) < 0) {
-            //     APP_INFO("Audio card read error: %s\n", snd_strerror(err));
+            //     logInfo("Audio card read error: %s\n", snd_strerror(err));
             //     return 1;
             // }
             // for (int i = 0; i < APP_AUDIO_CHUNK * APP_CHANNELS; i++) {
@@ -99,7 +99,7 @@ public:
 
             int32_t inputBuffer32[APP_AUDIO_CHUNK * APP_CHANNELS];
             if (snd_pcm_readi(handleIn, inputBuffer32, APP_AUDIO_CHUNK) < 0) {
-                APP_INFO("Audio card read error: %s\n", snd_strerror(err));
+                logInfo("Audio card read error: %s\n", snd_strerror(err));
                 return 1;
             }
 

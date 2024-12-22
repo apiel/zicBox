@@ -5,6 +5,7 @@
 #include <pulse/simple.h>
 
 #include "audioPlugin.h"
+#include "log.h"
 
 static void pa_context_state_callback(pa_context* context, void* userdata);
 
@@ -24,7 +25,7 @@ protected:
 
     void open()
     {
-        debug("AudioPulse::open\n");
+        logDebug("AudioPulse::open\n");
 
         if (device) {
             pa_simple_free(device);
@@ -40,7 +41,7 @@ protected:
         device = newDevice(streamFormat);
 
         if (!device) {
-            debug("ERROR: pa_simple_new() failed.\n");
+            logDebug("ERROR: pa_simple_new() failed.\n");
             return;
         }
     }
@@ -52,27 +53,27 @@ protected:
         char* server = NULL;
 
         if (!(ml = pa_mainloop_new())) {
-            debug("pa_mainloop_new() failed.\n");
+            logDebug("pa_mainloop_new() failed.\n");
             return freeListDevice(ml, context, server);
         }
 
         paMainLoopApi = pa_mainloop_get_api(ml);
 
         if (!(context = pa_context_new_with_proplist(paMainLoopApi, NULL, NULL))) {
-            debug("pa_context_new() failed.\n");
+            logDebug("pa_context_new() failed.\n");
             return freeListDevice(ml, context, server);
         }
 
         pa_context_set_state_callback(context, pa_context_state_callback, this);
 
         if (pa_context_connect(context, server, PA_CONTEXT_NOFLAGS, NULL) < 0) {
-            debug("pa_context_connect() failed: %s\n", pa_strerror(pa_context_errno(context)));
+            logDebug("pa_context_connect() failed: %s\n", pa_strerror(pa_context_errno(context)));
             return freeListDevice(ml, context, server);
         }
 
         int ret = 1;
         if (pa_mainloop_run(ml, &ret) < 0) {
-            debug("pa_mainloop_run() failed.\n");
+            logDebug("pa_mainloop_run() failed.\n");
         }
         freeListDevice(ml, context, server);
     }
@@ -106,7 +107,7 @@ public:
     bool config(char* key, char* value) override
     {
         if (strcmp(key, "DEVICE") == 0) {
-            debug("Load output device: %s\n", value);
+            logDebug("Load output device: %s\n", value);
             deviceName = value;
             search();
             open();
@@ -131,7 +132,7 @@ static void pa_set_info(int eol, void* userdata, const pa_proplist* proplist, co
     }
 
     const char* description = pa_proplist_gets(proplist, "device.description");
-    api->debug("- %s [DEVICE=%s] or [DEVICE=%s]\n", description, description, name);
+    logDebug("- %s [DEVICE=%s] or [DEVICE=%s]\n", description, description, name);
 
     if (strcmp(description, api->deviceName) == 0) {
         AudioPulse* api = (AudioPulse*)userdata;
@@ -182,7 +183,7 @@ static void pa_context_state_callback(pa_context* context, void* userdata)
 
     case PA_CONTEXT_FAILED:
     default:
-        api->debug("PA_CONTEXT_FAILED\n");
+        logDebug("PA_CONTEXT_FAILED\n");
         api->paMainLoopApi->quit(api->paMainLoopApi, 0);
     }
 }

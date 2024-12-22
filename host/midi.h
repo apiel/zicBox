@@ -3,6 +3,7 @@
 
 #include "AudioPluginHandler.h"
 #include "def.h"
+#include "log.h"
 
 RtMidiIn midiController;
 RtMidiOut midiOut;
@@ -30,12 +31,12 @@ void midiHandler(std::vector<unsigned char>* message)
             return;
         }
 
-        debug("Midi controller message: ");
+        logDebug("Midi controller message: ");
         unsigned int nBytes = message->size();
         for (unsigned int i = 0; i < nBytes; i++) {
-            debug("%02x ", (int)message->at(i));
+            logDebug("%02x ", (int)message->at(i));
         }
-        debug("\n");
+        logDebug("\n");
     }
 }
 
@@ -60,14 +61,14 @@ bool loadMidiInput(RtMidiIn& midi, const char* portName, RtMidiIn::RtMidiCallbac
 {
     int port = getMidiDevice(midi, portName);
     if (port == -1) {
-        APP_INFO("Midi input %s not found\n", portName);
+        logInfo("Midi input %s not found", portName);
         return false;
     }
 
     midi.openPort(port);
     midi.setCallback(callback);
     midi.ignoreTypes(false, false, false);
-    APP_INFO("Midi input loaded: %s\n", midi.getPortName(port).c_str());
+    logInfo("Midi input loaded: %s", midi.getPortName(port).c_str());
     return true;
 }
 
@@ -75,12 +76,12 @@ bool loadMidiOutput(RtMidiOut& midi, const char* portName)
 {
     int port = getMidiDevice(midi, portName);
     if (port == -1) {
-        APP_INFO("Midi output %s not found\n", portName);
+        logInfo("Midi output %s not found", portName);
         return false;
     }
 
     midi.openPort(port);
-    APP_INFO("Midi output loaded: %s\n", midi.getPortName(port).c_str());
+    logInfo("Midi output loaded: %s", midi.getPortName(port).c_str());
     return true;
 }
 

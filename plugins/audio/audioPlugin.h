@@ -58,7 +58,6 @@ public:
 class AudioPlugin {
 public:
     struct Props {
-        int (*debug)(const char* format, ...);
         uint64_t sampleRate;
         uint8_t channels;
         AudioPluginHandlerInterface* audioPluginHandler;
@@ -74,11 +73,8 @@ public:
     int16_t track = 0;
     bool serializable = true;
 
-    int (*debug)(const char* format, ...);
-
     AudioPlugin(Props& props, char* _name)
         : props(props)
-        , debug(props.debug)
     {
         strcpy(name, _name);
     }

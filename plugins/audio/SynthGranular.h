@@ -9,7 +9,8 @@
 #include "mapping.h"
 #include "utils/AsrEnvelop.h"
 #include "utils/ValSerializeSndFile.h"
-#include "../../helpers/random.h"
+#include "helpers/random.h"
+#include "log.h"
 
 #define GRANULAR_BUFFER_SECONDS 30
 #define MAX_GRAINS_PER_VOICE 24
@@ -97,7 +98,7 @@ protected:
         // delayInt = delay.get() * SAMPLE_RATE;
         grain.delay = delay.pct() > 0 ? (random.get() % (int)(delay.pct() * sampleRate)) : 0;
 
-        // debug("initGrain: grain.start %d grain.sampleCount %d grain.delay %d\n", grain.start, grain.sampleCount, grain.delay);
+        // logDebug("initGrain: grain.start %d grain.sampleCount %d grain.delay %d\n", grain.start, grain.sampleCount, grain.delay);
     }
 
     float sample(Voice& voice)
@@ -137,7 +138,7 @@ protected:
         for (uint8_t v = 0; v < MAX_GRAIN_VOICES; v++) {
             Voice& voice = voices[v];
             if (voice.note == note) {
-                debug("getNextVoice: voice already running %d\n", note);
+                logDebug("getNextVoice: voice already running %d\n", note);
                 return voice;
             }
         }
@@ -154,7 +155,7 @@ protected:
             }
         }
 
-        debug("getNextVoice: no voice available. Steal voice %d.\n", voiceToSteal);
+        logDebug("getNextVoice: no voice available. Steal voice %d.\n", voiceToSteal);
         return voices[voiceToSteal];
     }
 
@@ -184,7 +185,7 @@ public:
     bool config(char* key, char* value) override
     {
         if (strcmp(key, "SAMPLES_FOLDER") == 0) {
-            debug("Granular SAMPLES_FOLDER: %s\n", value);
+            logDebug("Granular SAMPLES_FOLDER: %s\n", value);
             fileBrowser.openFolder(value);
             browser.props().max = fileBrowser.count;
             open(0.0, true);
@@ -207,11 +208,11 @@ public:
         SF_INFO sfinfo;
         SNDFILE* file = sf_open(filename.c_str(), SFM_READ, &sfinfo);
         if (!file) {
-            debug("Error: could not open file %s [%s]\n", filename, sf_strerror(file));
+            logDebug("Error: could not open file %s [%s]\n", filename, sf_strerror(file));
             return *this;
         }
 
-        debug("Audio file %s sampleCount %ld sampleRate %d\n", filename, (long)sfinfo.frames, sfinfo.samplerate);
+        logDebug("Audio file %s sampleCount %ld sampleRate %d\n", filename, (long)sfinfo.frames, sfinfo.samplerate);
 
         bufferSampleCount = sf_read_float(file, bufferSamples, bufferSize);
 
@@ -230,7 +231,7 @@ public:
         if (force || position != fileBrowser.position) {
             browser.setString(fileBrowser.getFile(position));
             std::string filepath = fileBrowser.getFilePath(position);
-            debug("GRANULAR_SAMPLE_SELECTOR: %f %s\n", value, filepath.c_str());
+            logDebug("GRANULAR_SAMPLE_SELECTOR: %f %s\n", value, filepath.c_str());
             open(filepath);
         }
         return *this;
@@ -253,7 +254,7 @@ public:
     {
         pitch.setFloat(value);
         pitchSemitone = pitch.get();
-        debug("pitch %d\n", pitchSemitone);
+        logDebug("pitch %d\n", pitchSemitone);
         for (uint8_t v = 0; v < MAX_GRAIN_VOICES; v++) {
             for (uint8_t g = 0; g < MAX_GRAINS_PER_VOICE; g++) {
                 voices[v].grains[g].sampleStep = getSampleStep(voices[v].note + pitchSemitone);
@@ -272,7 +273,7 @@ public:
     {
         density.setFloat(value);
         densityUint8 = density.get();
-        debug("density %d\n", densityUint8);
+        logDebug("density %d\n", densityUint8);
         return *this;
     }
 
@@ -289,7 +290,7 @@ public:
         // can be simplified to:
         uint64_t attackSamples = attack.pct() * sampleRate * 5;
         attackStep = 1.0f / attackSamples;
-        debug("attack %ld samples %f step\n", attackSamples, attackStep);
+        logDebug("attack %ld samples %f step\n", attackSamples, attackStep);
         return *this;
     }
 
@@ -306,7 +307,7 @@ public:
         // can be simplified to:
         uint64_t releaseSamples = release.pct() * sampleRate * 10;
         releaseStep = 1.0f / releaseSamples;
-        debug("release %ld samples %f step\n", releaseSamples, releaseStep);
+        logDebug("release %ld samples %f step\n", releaseSamples, releaseStep);
         return *this;
     }
 
@@ -337,7 +338,7 @@ public:
         for (uint8_t g = 0; g < densityUint8; g++) {
             initGrain(voice.grains[g], sampleStep);
         }
-        debug("noteOn: %d %d %f\n", note, velocity, sampleStep);
+        logDebug("noteOn: %d %d %f\n", note, velocity, sampleStep);
     }
 
     void noteOff(uint8_t note, float velocity) override
@@ -349,12 +350,12 @@ public:
             Voice& voice = voices[v];
             if (voice.note == note) {
                 voice.envelop.release();
-                // debug("noteOff set on to false: %d %d\n", note, velocity);
+                // logDebug("noteOff set on to false: %d %d\n", note, velocity);
                 return;
             }
         }
 
-        debug("noteOff: note not found %d %d\n", note, velocity);
+        logDebug("noteOff: note not found %d %d\n", note, velocity);
     }
 
 protected:

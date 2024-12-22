@@ -49,25 +49,12 @@ float midiFreq[128] = {
     8372.0180896192, 8869.8441912599, 9397.2725733570, 9956.0634791066, 10548.0818212118, 11175.3034058561, 11839.8215267723, 12543.8539514160
 };
 
-int noDebug(const char* format, ...)
-{
-    return 0;
-}
-int (*debug)(const char* format, ...) = noDebug;
-
-void enableDebug()
-{
-    debug = APP_PRINT;
-    APP_INFO("Debug mode enabled\n");
-}
-
 char audioOutputName[255] = "";
 char audioInputName[255] = "";
 
 std::atomic<bool> isRunning(true);
 void quit()
 {
-    debug("Quitting...\n");
     isRunning = false;
 }
 
