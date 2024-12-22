@@ -1,9 +1,9 @@
-#include "AudioOutputPulse.h"
+#include "plugins/audio/AudioOutputPulse.h"
 
 #define MAX_TRACKS 16
 #define TWO_PI 6.283185307179586
 
-// g++ test.cpp -o test -I../.. -pthread -D_REENTRANT -lpulse-simple -lpulse -pthread && ./test
+// g++ test.cpp -o test -I../../.. -pthread -D_REENTRANT -lpulse-simple -lpulse -pthread && ./test
 
 int noDebug(const char* format, ...) { return 0; }
 
