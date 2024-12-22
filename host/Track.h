@@ -32,6 +32,18 @@ public:
     {
     }
 
+    std::set<uint8_t> getDependencies()
+    {
+        std::set<uint8_t> dependencies;
+        for (AudioPlugin* plugin : plugins) {
+            std::set<uint8_t> pluginDependencies = plugin->trackDependencies();
+            if (pluginDependencies.size() > 0) {
+                dependencies.insert(pluginDependencies.begin(), pluginDependencies.end());
+            }
+        }
+        return dependencies;
+    }
+
     bool hasDependencies()
     {
         for (AudioPlugin* plugin : plugins) {
