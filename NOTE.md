@@ -2,6 +2,14 @@
 
 - TODO get track creation order base on dependencies
 
+- TODO zic pixel mini (320x170 display, rpi zero 2)
+
+- IDEA when looking at the first track, this representation of the sequencer is much easier to understand what is going on
+    - maybe we should use this concept for all tracks
+    - also might want to cache drum engine output into a sample to save processing
+      and only switch live generation when we are on the view to edit the engine.
+      But how to deal with different notes? It seems that the zicPixel is not using so much memory, so could store them in a bigger audio buffer...
+
 - TODO use .emplace_back instead of .push_back in vector?
 - TODO use std::set when possible
 
