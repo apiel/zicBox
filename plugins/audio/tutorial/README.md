@@ -70,36 +70,53 @@ The easiest way to get started is by literally producing noise. Noise is simply 
 // 01.cpp
 #include "plugins/audio/AudioOutputPulse.h"
 
-#define MAX_TRACKS 16
-#define TWO_PI 6.283185307179586
-
-int noDebug(const char* format, ...) { return 0; }
-
 int main(int argc, char* argv[])
 {
-    AudioPlugin::Props props = {
-        .debug = noDebug,
-        .sampleRate = 44100,
-        .channels = 2,
-        .audioPluginHandler = nullptr,
-        .maxTracks = MAX_TRACKS,
-        .lookupTable = nullptr,
-    };
+    // Initialize audio properties with default settings
+    AudioPlugin::Props props = defaultAudioProps;
 
+    // Create an AudioOutputPulse instance to handle audio output
+    // The name "zicAudioOutputPulse" is passed as an identifier
     AudioOutputPulse audioOutput(props, (char*)"zicAudioOutputPulse");
 
-    float buffer[MAX_TRACKS] = { 0.0f };
+    // Create an audio buffer to hold samples
+    // Each sample corresponds to a track; initialize to silence (0.0f)
+    float buffer[props.maxTracks] = { 0.0f };
 
+    // Main loop to generate and play audio
     while (1) {
+        // Assign a random float value to track 0
+        // rand() generates a random integer, which is normalized to the range [0.0, 1.0]
         buffer[0] = rand() / (float)RAND_MAX;
+
+        // Send the sample from track 0 to the audio output
+        // By default, the audio output processes track 0
         audioOutput.sample(buffer);
     }
 
     return 0;
 }
+
 ```
 
 Compile it with:
 ```sh
 g++ 01.cpp -o 01.bin -I../../.. -pthread -D_REENTRANT -lpulse-simple -lpulse -pthread && ./01.bin
 ```
+
+
+1. **Audio Library Overview**: The code uses the AudioOutputPulse class from your audio library to interact with PulseAudio, a widely used sound server on Linux. This class handles the connection to the audio server and streams the audio data to the output device.
+
+2. **Audio Buffer**: An audio buffer is an array used to store audio samples temporarily before they are sent to the audio output. In this example:
+The buffer array has a size equal to the maximum number of tracks defined in props.maxTracks.
+Each track in the buffer corresponds to a separate audio channel .
+
+3. **Random Noise Generation**: To produce noise, a random value is generated using the rand() function, which outputs a pseudo-random integer. This value is then normalized to a floating-point number between 0.0 and 1.0 by dividing by RAND_MAX, the maximum possible value of rand().
+
+4. **Real-Time Audio Output**: The audioOutput.sample(buffer) function sends the buffer to the audio output device. In this implementation: The function is called repeatedly in an infinite loop. Each iteration processes one audio frame (a single sample for each track). This ensures continuous real-time audio playback.
+
+**Takeaways for Beginners**:
+
+This example highlights the fundamental structure of real-time audio programming: prepare audio data, write it to a buffer, and send it to the audio output.
+Starting with noise is a great way to understand how audio buffers and output work without dealing with complex audio synthesis or processing.
+From here, you can experiment with generating other types of audio signals, such as sine waves, and explore how to expand to multiple tracks or stereo audio.

@@ -2,10 +2,10 @@
 #define _AUDIO_PLUGIN_H_
 
 #include <cstdlib>
+#include <set>
 #include <stdint.h>
 #include <string.h>
 #include <vector>
-#include <set>
 
 #include "lookupTable.h"
 #include "valueInterface.h"
@@ -167,6 +167,14 @@ public:
     virtual void hydrate(std::string value)
     {
     }
+};
+
+AudioPlugin::Props defaultAudioProps = {
+    .sampleRate = 44100,
+    .channels = 2,
+    .audioPluginHandler = nullptr,
+    .maxTracks = 16,
+    .lookupTable = nullptr,
 };
 
 #endif
