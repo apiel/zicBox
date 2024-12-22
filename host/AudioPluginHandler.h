@@ -137,15 +137,35 @@ public:
         return *plugin;
     }
 
+
+
+    Track* createTrack(uint8_t id, float *buffer, std::condition_variable& masterCv)
+    {
+        Track* track = new Track(id, buffer, masterCv);
+        for (AudioPlugin* plugin : plugins) {
+            if (plugin->track == id) {
+                track->plugins.push_back(plugin);
+            }
+        }
+        return track;
+    }
+
+    std::vector<Track*> createTracks(float *buffer, std::condition_variable& masterCv)
+    {
+        std::vector<Track*> tracks;
+        for (uint8_t i = 0; i < MAX_TRACKS; i++) {
+            Track* track = createTrack(i, buffer, masterCv);
+            tracks.push_back(track);
+            if (track->plugins.size() == 0) {
+                tracks.pop_back();
+            }
+        }
+        return tracks;
+    }
+
     void loop()
     {
-        // while (isRunning) {
-        //     float buffer[MAX_TRACKS] = { 0.0f };
-        //     for (AudioPlugin* plugin : plugins) {
-        //         plugin->sample(buffer);
-        //     }
-        // }
-
+        int bufferSize = 128 * MAX_TRACKS;
         float buffer[128 * MAX_TRACKS] = { 0.0f };
 
         std::mutex masterMtx;
@@ -153,19 +173,7 @@ public:
         std::unique_lock<std::mutex> lock = std::unique_lock(masterMtx);
 
         // Create tracks
-        std::vector<Track*> tracks;
-        for (uint8_t i = 0; i < MAX_TRACKS; i++) {
-            Track* track = new Track(i, buffer, masterCv);
-            tracks.push_back(track);
-            for (AudioPlugin* plugin : plugins) {
-                if (plugin->track == i) {
-                    track->plugins.push_back(plugin);
-                }
-            }
-            if (track->plugins.size() == 0) {
-                tracks.pop_back();
-            }
-        }
+        std::vector<Track*> tracks = createTracks(buffer, masterCv);
 
         // Init tracks
         for (Track* track : tracks) {
@@ -189,7 +197,11 @@ public:
                 }
                 return true;
             });
-            for (Track* track : tracks) {
+            // FIXME to initialize track by order of plugin instead of track IDs
+            // for (Track* track : tracks) {
+            // instead do it in inverse order
+            for (int i = tracks.size() - 1; i >= 0; i--) {
+                Track* track = tracks[i];
                 if (!track->thread.joinable()) {
                     float* buf = buffer;
                     for (uint8_t i = 0; i < 128; i++) {
