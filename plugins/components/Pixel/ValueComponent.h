@@ -26,12 +26,12 @@ protected:
     int unitFontSize = 6;
     int maxFontSize = 8;
     void* font = NULL;
+    int barH = 2;
 
     ValueInterface* val = NULL;
     int8_t encoderId = -1;
     uint8_t floatPrecision = 0;
 
-    bool showBar = true;
     bool showValue = true;
     bool showUnit = true;
     bool showLabel = true;
@@ -69,17 +69,17 @@ public:
         if (updatePosition()) {
             draw.filledRect(relativePosition, size, { bgColor });
             if (val != NULL) {
-                if (showBar) {
+                if (barH > 0) {
                     if (val->hasType(VALUE_CENTERED)) {
                         float valPct = val->pct();
                         if (valPct < 0.5) {
                             int w = size.w * (0.5 - valPct);
-                            draw.filledRect({ relativePosition.x + (int)(size.w * 0.5) - w, relativePosition.y }, { w, size.h }, { barColor.color });
+                            draw.filledRect({ relativePosition.x + (int)(size.w * 0.5) - w, relativePosition.y }, { w, barH }, { barColor.color });
                         } else {
-                            draw.filledRect({ relativePosition.x + (int)(size.w * 0.5), relativePosition.y }, { (int)(size.w * (valPct - 0.5)), size.h }, { barColor.color });
+                            draw.filledRect({ relativePosition.x + (int)(size.w * 0.5), relativePosition.y }, { (int)(size.w * (valPct - 0.5)), barH }, { barColor.color });
                         }
                     } else {
-                        draw.filledRect({ relativePosition.x, relativePosition.y }, { (int)(size.w * val->pct()), size.h }, { barColor.color });
+                        draw.filledRect({ relativePosition.x, relativePosition.y }, { (int)(size.w * val->pct()), barH }, { barColor.color });
                     }
                 }
 
@@ -150,9 +150,9 @@ public:
             return true;
         }
 
-        /*md - `SHOW_BAR: true` shows the bar (default: true) */
-        if (strcmp(key, "SHOW_BAR") == 0) {
-            showBar = atoi(params);
+        /*md - `BAR_HEIGHT: 2` set the bar height (default: 2) */
+        if (strcmp(key, "BAR_HEIGHT") == 0) {
+            barH = atoi(params);
             return true;
         }
 
