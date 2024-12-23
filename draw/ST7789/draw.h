@@ -527,7 +527,11 @@ public:
         float scale = size / (float)height;
         uint16_t len = text.length();
 
-        float x = position.x - (len * width * scale) / 2;
+        int w = len * width * scale;
+        if (w > options.maxWidth) {
+            w = options.maxWidth;
+        }
+        float x = position.x - w / 2;
         float xInc = width * scale;
         for (uint16_t i = 0; i < len; i++) {
             if ((x + xInc) > styles.screen.w) {
