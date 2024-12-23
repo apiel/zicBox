@@ -1,8 +1,6 @@
 ## Pixel TODO
 
-- TODO zic pixel mini (320x170 display, rpi zero 2)
-
-- TODO drum freq envelop is really good but not to use
+- TODO drum freq envelop is really good but not easy to use
   - might be great to keep this one as advance version
   - and to have one more simple where we could somehow morph between envelops a bit like wavetable...
 
