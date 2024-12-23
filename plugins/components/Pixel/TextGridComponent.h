@@ -1,9 +1,9 @@
 #ifndef _UI_PIXEL_COMPONENT_TEXT_GRID_H_
 #define _UI_PIXEL_COMPONENT_TEXT_GRID_H_
 
-#include "../base/Icon.h"
-#include "../base/KeypadLayout.h"
-#include "../component.h"
+#include "plugins/components/base/Icon.h"
+#include "plugins/components/base/KeypadLayout.h"
+#include "plugins/components/component.h"
 
 #include <cmath>
 #include <string>
@@ -22,6 +22,7 @@ protected:
     int8_t activeGroup = 0;
 
     Color bgColor;
+    Color itemBackground;
     Color textColor;
 
     //                        { index, value}
@@ -33,13 +34,19 @@ public:
         , icon(props.view->draw)
         , bgColor(styles.colors.background)
         , textColor(styles.colors.text)
+        , itemBackground(lighten(styles.colors.background, 0.5))
         , keypadLayout(this)
     {
     }
 
 protected:
+    struct Item {
+        std::string text;
+        bool activeBackground = false;
+    };
+
     struct Row {
-        std::vector<std::string> text;
+        std::vector<Item> items;
         int startX = 0;
         int width = 0;
     };
@@ -49,14 +56,18 @@ protected:
     int renderRow(int y, Row& row)
     {
         int index = 0;
-        for (auto text : row.text) {
+        int h = 12;
+        for (auto item : row.items) {
             Point textPos = { relativePosition.x + row.startX + index * row.width, y };
-            if (!icon.render(text, textPos, 8, {}, Icon::CENTER)) {
-                draw.textCentered(textPos, text, 8);
+            if (item.activeBackground) {
+                draw.filledRect({ textPos.x - row.startX, textPos.y }, { row.width, h - 1 }, { itemBackground });
+            }
+            if (!icon.render(item.text, textPos, 8, {}, Icon::CENTER)) {
+                draw.textCentered(textPos, item.text, 8);
             }
             index++;
         }
-        return 12;
+        return h;
     }
 
     bool isVisible()
@@ -88,10 +99,15 @@ public:
             Row row;
             char* text = strtok(value, " ");
             while (text != NULL) {
-                row.text.push_back(text);
+                Item item = { text, false };
+                if (item.text[0] == '!') {
+                    item.activeBackground = true;
+                    item.text = item.text.substr(1);
+                }
+                row.items.push_back(item);
                 text = strtok(NULL, " ");
             }
-            row.width = size.w / row.text.size();
+            row.width = size.w / row.items.size();
             row.startX = row.width * 0.5f;
             rows.push_back(row);
             return true;
