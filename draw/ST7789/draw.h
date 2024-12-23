@@ -528,7 +528,7 @@ public:
         uint16_t len = text.length();
 
         int w = len * width * scale;
-        if (w > options.maxWidth) {
+        if (options.maxWidth && w > options.maxWidth) {
             w = options.maxWidth;
         }
         float x = position.x - w / 2;
