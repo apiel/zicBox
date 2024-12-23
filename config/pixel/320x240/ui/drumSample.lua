@@ -1,7 +1,7 @@
 local ui = require("config/pixel/libs/ui")
 local text = require("config/pixel/libs/component/text")
 local encoder3 = require("config/pixel/libs/component/encoder3")
-local keyInfoBar = require("config/pixel/libs/component/keyInfoBar")
+local textGrid = require("config/pixel/libs/component/textGrid")
 local visibility = require("config/pixel/libs/containers/visibility")
 
 local function row(group, track, y)
@@ -140,11 +140,9 @@ local function drumSample(track)
 
 
     local keyInfoPosition = { x = 0, y = 216 }
-    keyInfoBar(
+    textGrid(
         {
-            ROW1 =
             "&icon::musicNote::pixelated &icon::arrowUp::filled &icon::toggle::rect &icon::musicNote::pixelated Track",
-            ROW2 =
             "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled &icon::musicNote::pixelated &icon::play::filled"
         }, keyInfoPosition,
         {
@@ -163,10 +161,10 @@ local function drumSample(track)
         }
     )
 
-    keyInfoBar(
+    textGrid(
         {
-            ROW1 = "1 2 3 4 Track",
-            ROW2 = "5 6 7 8 Master"
+            "1 2 3 4 Track",
+            "5 6 7 8 Master"
         }, keyInfoPosition,
         {
             SHIFT_VISIBILITY = { index = 254, value = 1 },

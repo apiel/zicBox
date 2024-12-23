@@ -1,13 +1,12 @@
-local keyInfoBar = require("config/pixel/libs/component/keyInfoBar")
+local textGrid = require("config/pixel/libs/component/textGrid")
 
 local position = { x = 0, y = 216 }
 
 local function keyboardMain(track, synth)
-  keyInfoBar(
+  textGrid(
     {
-      ROW1 =
       "&icon::musicNote::pixelated &icon::arrowUp::filled &icon::musicNote::pixelated &icon::musicNote::pixelated Track",
-      ROW2 = "Seq &icon::arrowDown::filled &icon::musicNote::pixelated &icon::musicNote::pixelated &icon::play::filled"
+      "Seq &icon::arrowDown::filled &icon::musicNote::pixelated &icon::musicNote::pixelated &icon::play::filled"
     }, position,
     {
       SHIFT_VISIBILITY = { index = 254, value = 0 },
@@ -26,10 +25,10 @@ local function keyboardMain(track, synth)
     }
   )
 
-  keyInfoBar(
+  textGrid(
     {
-      ROW1 = "1 2 3 4 Track",
-      ROW2 = "5 6 7 8 Master"
+      "1 2 3 4 Track",
+      "5 6 7 8 Master"
     }, position,
     {
       SHIFT_VISIBILITY = { index = 254, value = 1 },
