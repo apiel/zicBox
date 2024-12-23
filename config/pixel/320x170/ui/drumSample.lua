@@ -110,29 +110,27 @@ end
 local function encodersMaster(group, track, y)
     visibility("DrumSampleMaster", { x = 0, y = y, w = ScreenWidth, h = 50 }, { VISIBILITY_GROUP = group })
 
-    value({}, { x = 0, y = 0, w = W2_4 - 2, h = 11 }, { 
+    value("VolumeDrive VOLUME", { x = 0, y = 0, w = W2_4 - 2, h = 11 }, { 
         LABEL_COLOR = "tertiary",
         BAR_COLOR = TertiaryBar,
-        VALUE = "VolumeDrive VOLUME",
         ENCODER_ID = 0, TRACK = track, GROUP = group
     })
-    value({}, { x = 0, y = 12, w = W2_4 - 2, h = 11 }, { 
+    value("VolumeDrive DRIVE", { x = 0, y = 12, w = W2_4 - 2, h = 11 }, { 
         LABEL_COLOR = "primary",
         BAR_COLOR = PrimaryBar,
-        VALUE = "VolumeDrive DRIVE",
         ENCODER_ID = 1, TRACK = track, GROUP = group
     })
-    value({}, { x = W2_4, y = 0, w = W2_4 - 2, h = 11 }, { 
+    value("MMFilter CUTOFF", { x = W2_4, y = 0, w = W2_4 - 2, h = 11 }, { 
         LABEL_COLOR = "secondary",
         BAR_COLOR = SecondaryBar,
-        VALUE = "MMFilter RESONANCE",
+        USE_STRING_VALUE = true,
+        SHOW_LABEL = false,
         ENCODER_ID = 2, TRACK = track, GROUP = group
      })
-     value({}, { x = W2_4, y = 12, w = W2_4 - 2, h = 11 }, { 
+     value("MMFilter RESONANCE", { x = W2_4, y = 12, w = W2_4 - 2, h = 11 }, { 
         LABEL_COLOR = "quaternary",
         BAR_COLOR = QuaternaryBar,
-        VALUE = "MMFilter RESONANCE",
-        ENCODER_ID = 4, TRACK = track, GROUP = group
+        ENCODER_ID = 3, TRACK = track, GROUP = group
      })
 
 
