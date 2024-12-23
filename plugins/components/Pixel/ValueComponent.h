@@ -36,6 +36,7 @@ protected:
     bool showUnit = true;
     bool showLabel = true;
     bool useStringValue = false;
+    bool verticalAlignCenter = false;
 
     void setMaxFontSize()
     {
@@ -89,7 +90,7 @@ public:
                     x -= labelFontSize * val->props().label.length() + 2;
                 }
 
-                int textY = (size.h - maxFontSize) * 0.5 + relativePosition.y;
+                int textY = verticalAlignCenter ? (size.h - maxFontSize) * 0.5 + relativePosition.y : (size.h - maxFontSize) + relativePosition.y;
                 // Put all text in the same line
                 int labelY = textY + maxFontSize - labelFontSize;
                 int valueY = textY + maxFontSize - valueFontSize;
@@ -101,7 +102,7 @@ public:
 
                 if (showValue) {
                     x = showLabel ? draw.text({ x, valueY }, getValStr(), valueFontSize, { valueColor.color, .font = font })
-                                   : draw.textCentered({ x, valueY }, getValStr(), valueFontSize, { valueColor.color, .font = font, .maxWidth = size.w - 4 });
+                                  : draw.textCentered({ x, valueY }, getValStr(), valueFontSize, { valueColor.color, .font = font, .maxWidth = size.w - 4 });
                     if (showUnit && val->props().unit != NULL) {
                         draw.text({ x, unitY }, val->props().unit, unitFontSize, { unitColor.color, .font = font });
                     }
@@ -153,6 +154,12 @@ public:
         /*md - `BAR_HEIGHT: 2` set the bar height (default: 2) */
         if (strcmp(key, "BAR_HEIGHT") == 0) {
             barH = atoi(params);
+            return true;
+        }
+
+        /*md - `VERTICAL_ALIGN_CENTER: true` set the text vertical alignment to center (default: false) */
+        if (strcmp(key, "VERTICAL_ALIGN_CENTER") == 0) {
+            verticalAlignCenter = strcmp(params, "true") == 0;
             return true;
         }
 
