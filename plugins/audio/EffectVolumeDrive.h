@@ -36,17 +36,23 @@ public:
     float driveAmount = 0.0f;
 
     /*md - `DRIVE` to set drive and compression. */
-    Val& mix = val(100.0, "DRIVE", { "Comp. | Drive", .type = VALUE_CENTERED, .max = 200.0f, .unit = "%" }, [&](auto p) {
+    Val& mix = val(100.0, "DRIVE", { "Comp.|Drive", .type = VALUE_CENTERED | VALUE_STRING, .max = 200.0f }, [&](auto p) {
         p.val.setFloat(p.value);
         if (p.val.get() == 100.0f) {
             driveAmount = 0.0f;
             compressAmount = 0.0f;
+            p.val.props().label = "Comp.|Drive";
+            p.val.setString("0");
         } else if (p.val.get() > 100.0f) {
             driveAmount = (p.val.get() - 100.0f) / 100.0f;
             compressAmount = 0.0f;
+            p.val.props().label = "Drive";
+            p.val.setString(std::to_string((int)(driveAmount * 100)) + "%");
         } else {
             driveAmount = 0.0f;
             compressAmount = (100.0f - p.val.get()) / 100.0f;
+            p.val.props().label = "Compressor";
+            p.val.setString(std::to_string((int)(compressAmount * 100)) + "%");
         }
     });
 

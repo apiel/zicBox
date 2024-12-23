@@ -6,9 +6,9 @@
 #include <functional>
 
 enum ValueType {
-    VALUE_BASIC,
-    VALUE_CENTERED,
-    VALUE_STRING,
+    VALUE_BASIC    = 1 << 0, // 1
+    VALUE_CENTERED = 1 << 1, // 2
+    VALUE_STRING   = 1 << 2  // 4
 };
 
 enum ValueIncrementationType {
@@ -21,7 +21,7 @@ class ValueInterface {
 public:
     struct Props {
         std::string label = "";
-        ValueType type = VALUE_BASIC;
+        uint8_t type = VALUE_BASIC;
         float min = 0.0f;
         float max = 100.0f;
         float step = 1.00f;
@@ -41,6 +41,14 @@ public:
     virtual void set(float value, void* data = NULL) = 0;
     virtual void onUpdate(std::function<void(float, void*)> callback, void* data) = 0;
     virtual void checkForUpdate() = 0;
+
+    bool hasType(ValueType type) {
+        return (props().type & type) != 0;
+    }
+
+    bool hasAllTypes(uint8_t types) {
+        return (props().type & types) == types;
+    }
 };
 
 #endif
