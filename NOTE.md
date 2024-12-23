@@ -1,5 +1,7 @@
 ## Pixel TODO
 
+- TODO cleanup encoder3 with new value type
+
 - TODO drum freq envelop is really good but not easy to use
   - might be great to keep this one as advance version
   - and to have one more simple where we could somehow morph between envelops a bit like wavetable...
