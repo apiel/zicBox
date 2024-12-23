@@ -3,6 +3,7 @@ local text = require("config/pixel/libs/component/text")
 local encoder3 = require("config/pixel/libs/component/encoder3")
 local textGrid = require("config/pixel/libs/component/textGrid")
 local visibility = require("config/pixel/libs/containers/visibility")
+local value = require("config/pixel/libs/component/value")
 
 local function row(group, track, y)
     local h = 15
@@ -174,6 +175,9 @@ local function drumSample(track)
             }
         }
     )
+
+    value({}, { x = W2_4, y = KeyInfoPosition.y, w = W1_4 - 2, h = 11 }, { VALUE = "VolumeDrive VOLUME" })
+    value({}, { x = W3_4, y = KeyInfoPosition.y, w = W1_4 - 2, h = 11 }, { VALUE = "MMFilter RESONANCE" })
 
     local y = 0
 

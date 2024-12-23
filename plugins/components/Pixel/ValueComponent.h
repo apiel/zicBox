@@ -1,0 +1,137 @@
+#ifndef _UI_PIXEL_COMPONENT_VALUE_H_
+#define _UI_PIXEL_COMPONENT_VALUE_H_
+
+#include "plugins/components/component.h"
+#include "plugins/components/utils/color.h"
+#include "utils/GroupColorComponent.h"
+
+/*md
+## Value
+
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/value.png" />
+
+Value component is used to display an audio plugin value.
+*/
+
+class ValueComponent : public GroupColorComponent {
+protected:
+    Color bgColor;
+    ToggleColor valueColor;
+    ToggleColor barColor;
+    ToggleColor unitColor;
+
+    int fontSize = 8;
+    void* font = NULL;
+
+    ValueInterface* val = NULL;
+    int8_t encoderId = -1;
+    uint8_t floatPrecision = 0;
+
+    bool showBar = true;
+    bool showValue = true;
+    bool showUnit = true;
+
+public:
+    ValueComponent(ComponentInterface::Props props)
+        : GroupColorComponent(props, { { "VALUE_COLOR", &valueColor }, { "BAR_COLOR", &barColor } , { "UNIT_COLOR", &unitColor } })
+        , bgColor(styles.colors.background)
+        , valueColor(styles.colors.text, inactiveColorRatio)
+        , barColor(lighten(styles.colors.background, 0.4), inactiveColorRatio)
+        , unitColor(darken(styles.colors.text, 0.5), inactiveColorRatio)
+    {
+        updateColors();
+    }
+
+    void render() override
+    {
+        if (updatePosition()) {
+            draw.filledRect(relativePosition, size, { bgColor });
+            if (val != NULL) {
+                if (showBar) {
+                    draw.filledRect({ relativePosition.x, relativePosition.y }, { (int)(size.w * val->pct()), size.h }, { barColor.color });
+                }
+                int x = relativePosition.x + (int)(size.w * 0.5);
+                int textY = (size.h - 8) * 0.5 + relativePosition.y;
+
+                if (showValue) {
+                    std::string valStr = std::to_string(val->get());
+                    valStr = valStr.substr(0, valStr.find(".") + floatPrecision + (floatPrecision > 0 ? 1 : 0));
+                    x= draw.textCentered({ x, textY }, valStr, fontSize, { valueColor.color, .font = font });
+                }
+
+                if (showUnit && val->props().unit != NULL) {
+                    draw.text({ x, textY }, val->props().unit, fontSize, { unitColor.color, .font = font });
+                }
+            }
+        }
+    }
+
+    /*md **Config**: */
+    bool config(char* key, char* params)
+    {
+        /*md - `VALUE: pluginName keyName` is used to set the value to control */
+        if (strcmp(key, "VALUE") == 0) {
+            char* pluginName = strtok(params, " ");
+            char* keyValue = strtok(NULL, " ");
+            val = watch(getPlugin(pluginName, track).getValue(keyValue));
+            if (val != NULL) {
+                floatPrecision = val->props().floatingPoint;
+            }
+            return true;
+        }
+
+        /*md - `ENCODER_ID: 0` is used to set the encoder id that will interract with this component */
+        if (strcmp(key, "ENCODER_ID") == 0) {
+            encoderId = atoi(params);
+            return true;
+        }
+
+        /*md - `FLOAT_PRECISION: 2` set how many digits after the decimal point (by default none) */
+        if (strcmp(key, "FLOAT_PRECISION") == 0) {
+            floatPrecision = atoi(params);
+            return true;
+        }
+
+        /*md - `SHOW_BAR: true` shows the bar (default: true) */
+        if (strcmp(key, "SHOW_BAR") == 0) {
+            showBar = atoi(params);
+            return true;
+        }
+
+        /*md - `SHOW_VALUE: true` shows the value (default: true) */
+        if (strcmp(key, "SHOW_VALUE") == 0) {
+            showValue = atoi(params);
+            return true;
+        }
+
+        /*md - `SHOW_UNIT: true` shows the unit (default: true) */
+        if (strcmp(key, "SHOW_UNIT") == 0) {
+            showUnit = atoi(params);
+            return true;
+        }
+
+        /*md - `FONT_SIZE: size` is the font size of the component. */
+        if (strcmp(key, "FONT_SIZE") == 0) {
+            fontSize = atoi(params);
+            return true;
+        }
+
+        /*md - `FONT: font` is the font of the component. */
+        if (strcmp(key, "FONT") == 0) {
+            font = draw.getFont(params);
+            return true;
+        }
+
+        /*md - `BACKGROUND_COLOR: color` is the background color of the component. */
+        if (strcmp(key, "BACKGROUND_COLOR") == 0) {
+            bgColor = draw.getColor(params);
+            return true;
+        }
+
+        /*md - `VALUE_COLOR: color` is the color of the value. */
+        /*md - `BAR_COLOR: color` is the color of the bar. */
+        return GroupColorComponent::config(key, params);
+    }
+};
+
+#endif
