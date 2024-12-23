@@ -110,8 +110,16 @@ end
 local function encodersMaster(group, track, y)
     visibility("DrumSampleMaster", { x = 0, y = y, w = ScreenWidth, h = 50 }, { VISIBILITY_GROUP = group })
 
-    value({}, { x = 0, y = 0, w = W2_4 - 2, h = 11 }, { VALUE = "VolumeDrive VOLUME" })
-    value({}, { x = W2_4, y = 0, w = W2_4 - 2, h = 11 }, { VALUE = "MMFilter RESONANCE" })
+    value({}, { x = 0, y = 0, w = W2_4 - 2, h = 11 }, { 
+        LABEL_COLOR = "tertiary",
+        VALUE = "VolumeDrive VOLUME",
+        ENCODER_ID = 0
+    })
+    value({}, { x = W2_4, y = 0, w = W2_4 - 2, h = 11 }, { 
+        LABEL_COLOR = "secondary",
+        VALUE = "MMFilter RESONANCE",
+        ENCODER_ID = 2
+     })
 
     -- encoder3(
     --     { ENCODER_ID = 0, VALUE = "VolumeDrive VOLUME" },
