@@ -69,7 +69,17 @@ public:
             draw.filledRect(relativePosition, size, { bgColor });
             if (val != NULL) {
                 if (showBar) {
-                    draw.filledRect({ relativePosition.x, relativePosition.y }, { (int)(size.w * val->pct()), size.h }, { barColor.color });
+                    if (val->hasType(VALUE_CENTERED)) {
+                        float valPct = val->pct();
+                        if (valPct < 0.5) {
+                            int w = size.w * (0.5 - valPct);
+                            draw.filledRect({ relativePosition.x + (int)(size.w*0.5) - w, relativePosition.y }, { w, size.h }, { barColor.color });
+                        } else {
+                            draw.filledRect({ relativePosition.x + (int)(size.w * 0.5), relativePosition.y }, { (int)(size.w * (valPct - 0.5)), size.h }, { barColor.color });
+                        }
+                    } else {
+                        draw.filledRect({ relativePosition.x, relativePosition.y }, { (int)(size.w * val->pct()), size.h }, { barColor.color });
+                    }
                 }
 
                 int x = relativePosition.x + (size.w) * 0.5;
@@ -79,6 +89,7 @@ public:
                 }
 
                 int textY = (size.h - maxFontSize) * 0.5 + relativePosition.y;
+                // Put all text in the same line
                 int labelY = textY + maxFontSize - labelFontSize;
                 int valueY = textY + maxFontSize - valueFontSize;
                 int unitY = textY + maxFontSize - unitFontSize;
