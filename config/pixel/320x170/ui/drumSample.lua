@@ -1,12 +1,11 @@
 local ui = require("config/pixel/libs/ui")
-local text = require("config/pixel/libs/component/text")
 local encoder3 = require("config/pixel/libs/component/encoder3")
 local textGrid = require("config/pixel/libs/component/textGrid")
 local visibility = require("config/pixel/libs/containers/visibility")
 local value = require("config/pixel/libs/component/value")
 
 local function row(group, track, y)
-    local h = 15
+    local h = 12
     ui.component("SeqSynthBar",
         { "SEQ_PLUGIN" },
         { SEQ_PLUGIN = "Sequencer", },
@@ -26,7 +25,7 @@ local function row(group, track, y)
         })
 
 
-    return y + h + 2
+    return y + h + 1
 end
 
 local function progressBar(group, track, y)
@@ -54,115 +53,57 @@ end
 local function encoders(group, track, y)
     visibility(
         "DrumSample" .. track,
-        { x = 0, y = y, w = ScreenWidth, h = 50 },
+        { x = 0, y = y, w = ScreenWidth, h = 24 },
         { VISIBILITY_GROUP = group, VISIBILITY_CONTEXT = "10 SHOW 0" }
     )
 
-    encoder3(
-        { ENCODER_ID = 0, VALUE = "Volume VOLUME" },
-        { x = 0, y = 0, w = W1_4, h = 50 },
-        { COLOR = "primary", TRACK = track, GROUP = group }
-    )
-    encoder3(
-        { ENCODER_ID = 1, VALUE = "DrumSample START" },
-        { x = W1_4, y = 0, w = W1_4, h = 50 },
-        { COLOR = "secondary", TRACK = track, GROUP = group }
-    )
-    encoder3(
-        { ENCODER_ID = 2, VALUE = "DrumSample END" },
-        { x = W2_4, y = 0, w = W1_4, h = 50 },
-        { COLOR = "tertiary", TRACK = track, GROUP = group }
-    )
-    encoder3(
-        { ENCODER_ID = 3, VALUE = "DrumSample BROWSER" },
-        { x = W3_4, y = 0, w = W1_4, h = 50 },
-        { COLOR = "quaternary", TRACK = track, TYPE = "NUMBER", GROUP = group }
-    )
+    value("Volume VOLUME", { x = 0, y = 0, w = W2_4 - 2, h = 11 },
+        { LABEL_COLOR = "tertiary", BAR_COLOR = TertiaryBar, ENCODER_ID = 0, TRACK = track, GROUP = group })
+    value("DrumSample START", { x = 0, y = 12, w = W2_4 - 2, h = 11 },
+        { LABEL_COLOR = "primary", BAR_COLOR = PrimaryBar, ENCODER_ID = 1, TRACK = track, GROUP = group })
+    value("DrumSample BROWSER", { x = W2_4, y = 0, w = W2_4 - 2, h = 11 },
+        { LABEL_COLOR = "secondary", BAR_COLOR = SecondaryBar, ENCODER_ID = 2, TRACK = track, GROUP = group, SHOW_LABEL = false, })
+    value("DrumSample END", { x = W2_4, y = 12, w = W2_4 - 2, h = 11 },
+        { LABEL_COLOR = "quaternary", BAR_COLOR = QuaternaryBar, ENCODER_ID = 3, TRACK = track, GROUP = group })
 
     visibility(
         "DrumSample" .. track,
-        { x = 0, y = y, w = ScreenWidth, h = 50 },
+        { x = 0, y = y, w = ScreenWidth, h = 24 },
         { VISIBILITY_GROUP = group, VISIBILITY_CONTEXT = "10 HIDE 0" }
     )
 
-    encoder3(
-        { ENCODER_ID = 0, VALUE = "Sequencer STEP_VELOCITY" },
-        { x = 0, y = 0, w = W1_4, h = 50 },
-        { COLOR = "primary", TRACK = track, GROUP = group }
-    )
-    encoder3(
-        { ENCODER_ID = 1, VALUE = "Sequencer STEP_CONDITION" },
-        { x = W1_4, y = 0, w = W1_4, h = 50 },
-        { COLOR = "secondary", TRACK = track, GROUP = group }
-    )
-    encoder3(
-        { ENCODER_ID = 2, VALUE = "Sequencer STEP_ENABLED" },
-        { x = W2_4, y = 0, w = W1_4, h = 50 },
-        { COLOR = "tertiary", TRACK = track, GROUP = group }
-    )
-    -- encoder3(
-    --     { ENCODER_ID = 3, VALUE = "Volume VOLUME" },
-    --     { x = W3_4, y = 0, w = W1_4, h = 50 },
-    --     { COLOR = "quaternary", TRACK = track, GROUP = group }
-    -- )
+    value("Sequencer STEP_VELOCITY", { x = 0, y = 0, w = W2_4 - 2, h = 11 },
+        { LABEL_COLOR = "tertiary", BAR_COLOR = TertiaryBar, ENCODER_ID = 0, TRACK = track, GROUP = group })
+    value("Sequencer STEP_CONDITION", { x = 0, y = 12, w = W2_4 - 2, h = 11 },
+        { LABEL_COLOR = "primary", BAR_COLOR = PrimaryBar, ENCODER_ID = 1, TRACK = track, GROUP = group })
+    value("Sequencer STEP_ENABLED", { x = W2_4, y = 0, w = W2_4 - 2, h = 11 },
+        { LABEL_COLOR = "secondary", BAR_COLOR = SecondaryBar, ENCODER_ID = 2, TRACK = track, GROUP = group })
+    -- value("Volume VOLUME", { x = W2_4, y = 12, w = W2_4 - 2, h = 11 },
+    --     { LABEL_COLOR = "quaternary", BAR_COLOR = QuaternaryBar, ENCODER_ID = 3, TRACK = track, GROUP = group })
 end
 
 local function encodersMaster(group, track, y)
     visibility("DrumSampleMaster", { x = 0, y = y, w = ScreenWidth, h = 50 }, { VISIBILITY_GROUP = group })
 
-    value("VolumeDrive VOLUME", { x = 0, y = 0, w = W2_4 - 2, h = 11 }, { 
-        LABEL_COLOR = "tertiary",
-        BAR_COLOR = TertiaryBar,
-        ENCODER_ID = 0, TRACK = track, GROUP = group
-    })
-    value("VolumeDrive DRIVE", { x = 0, y = 12, w = W2_4 - 2, h = 11 }, { 
-        LABEL_COLOR = "primary",
-        BAR_COLOR = PrimaryBar,
-        ENCODER_ID = 1, TRACK = track, GROUP = group
-    })
-    value("MMFilter CUTOFF", { x = W2_4, y = 0, w = W2_4 - 2, h = 11 }, { 
-        LABEL_COLOR = "secondary",
-        BAR_COLOR = SecondaryBar,
-        USE_STRING_VALUE = true,
-        SHOW_LABEL = false,
-        ENCODER_ID = 2, TRACK = track, GROUP = group
-     })
-     value("MMFilter RESONANCE", { x = W2_4, y = 12, w = W2_4 - 2, h = 11 }, { 
-        LABEL_COLOR = "quaternary",
-        BAR_COLOR = QuaternaryBar,
-        ENCODER_ID = 3, TRACK = track, GROUP = group
-     })
-
-
-    -- encoder3(
-    --     { ENCODER_ID = 0, VALUE = "VolumeDrive VOLUME" },
-    --     { x = 0, y = 0, w = W1_4, h = 50 },
-    --     { COLOR = "tertiary", TRACK = track, GROUP = group, USE_SECOND_COLOR = 0.5 }
-    -- )
-    -- encoder3(
-    --     { ENCODER_ID = 1, VALUE = "VolumeDrive DRIVE" },
-    --     { x = W1_4, y = 0, w = W1_4, h = 50 },
-    --     { COLOR = "secondary", TRACK = track, GROUP = group, TYPE = "TWO_VALUES" }
-    -- )
-    -- encoder3(
-    --     { ENCODER_ID = 2, VALUE = "MMFilter CUTOFF" },
-    --     { x = W2_4, y = 0, w = W1_4, h = 50 },
-    --     { COLOR = "primary", TRACK = track, GROUP = group, TYPE = "TWO_SIDED" }
-    -- )
-    -- encoder3(
-    --     { ENCODER_ID = 3, VALUE = "MMFilter RESONANCE" },
-    --     { x = W3_4, y = 0, w = W1_4, h = 50 },
-    --     { COLOR = "primary", TRACK = track, GROUP = group }
-    -- )
+    value("VolumeDrive VOLUME", { x = 0, y = 0, w = W2_4 - 2, h = 11 },
+        { LABEL_COLOR = "tertiary", BAR_COLOR = TertiaryBar, ENCODER_ID = 0, TRACK = track, GROUP = group })
+    value("VolumeDrive DRIVE", { x = 0, y = 12, w = W2_4 - 2, h = 11 },
+        { LABEL_COLOR = "primary", BAR_COLOR = PrimaryBar, ENCODER_ID = 1, TRACK = track, GROUP = group })
+    value("MMFilter CUTOFF", { x = W2_4, y = 0, w = W2_4 - 2, h = 11 },
+        {
+            LABEL_COLOR = "secondary",
+            BAR_COLOR = SecondaryBar,
+            USE_STRING_VALUE = true,
+            SHOW_LABEL = false,
+            ENCODER_ID = 2,
+            TRACK = track,
+            GROUP = group
+        })
+    value("MMFilter RESONANCE", { x = W2_4, y = 12, w = W2_4 - 2, h = 11 },
+        { LABEL_COLOR = "quaternary", BAR_COLOR = QuaternaryBar, ENCODER_ID = 3, TRACK = track, GROUP = group })
 end
 
 local function drumSample(track)
-    text(
-        { TEXT = "Drum Sample(1)" },
-        { x = 0, y = 0, w = ScreenWidth, h = 8 },
-        { CENTERED = true }
-    )
-
     textGrid(
         {
             "&icon::musicNote::pixelated &icon::arrowUp::filled ...",
@@ -202,27 +143,27 @@ local function drumSample(track)
 
     local y = 0
 
-    y = 70
+    y = 28
     y = progressBar(0, track, y)
     y = row(1, 11, y)
     y = row(2, 12, y)
     y = row(3, 13, y)
-    -- y = row(4, 14, y)
-    -- y = row(5, 15, y)
-    -- y = row(6, 16, y)
-    -- y = row(7, 17, y)
-    -- y = row(8, 18, y)
+    y = row(4, 14, y)
+    y = row(5, 15, y)
+    y = row(6, 16, y)
+    y = row(7, 17, y)
+    y = row(8, 18, y)
 
-    y = 15
+    y = 0
     encodersMaster(0, track, y)
     encoders(1, 11, y)
     encoders(2, 12, y)
     encoders(3, 13, y)
-    -- encoders(4, 14, y)
-    -- encoders(5, 15, y)
-    -- encoders(6, 16, y)
-    -- encoders(7, 17, y)
-    -- encoders(8, 18, y)
+    encoders(4, 14, y)
+    encoders(5, 15, y)
+    encoders(6, 16, y)
+    encoders(7, 17, y)
+    encoders(8, 18, y)
 end
 
 return drumSample

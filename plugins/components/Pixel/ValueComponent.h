@@ -101,7 +101,7 @@ public:
 
                 if (showValue) {
                     x = showLabel ? draw.text({ x, valueY }, getValStr(), valueFontSize, { valueColor.color, .font = font })
-                                   : draw.textCentered({ x, valueY }, getValStr(), valueFontSize, { valueColor.color, .font = font });
+                                   : draw.textCentered({ x, valueY }, getValStr(), valueFontSize, { valueColor.color, .font = font, .maxWidth = size.w - 4 });
                     if (showUnit && val->props().unit != NULL) {
                         draw.text({ x, unitY }, val->props().unit, unitFontSize, { unitColor.color, .font = font });
                     }
