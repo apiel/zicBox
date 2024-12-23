@@ -3,7 +3,7 @@
 
 #include "viewManager.h"
 
-#include "./KeyInfoBarComponent.h"
+#include "./TextGridComponent.h"
 #include "./DrumEnvelopComponent.h"
 #include "./Encoder3Component.h"
 #include "./GraphComponent.h"
@@ -18,8 +18,8 @@
 void loadPixelComponents()
 {
     ViewManager& viewManager = ViewManager::get();
-    viewManager.plugins.push_back({ "KeyInfoBar", [](ComponentInterface::Props props) {
-        return new KeyInfoBarComponent(props);
+    viewManager.plugins.push_back({ "TextGrid", [](ComponentInterface::Props props) {
+        return new TextGridComponent(props);
     } });
 
     viewManager.plugins.push_back({ "DrumEnvelop", [](ComponentInterface::Props props) {
