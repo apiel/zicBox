@@ -19,8 +19,12 @@ protected:
     ToggleColor valueColor;
     ToggleColor barColor;
     ToggleColor unitColor;
+    ToggleColor labelColor;
 
-    int fontSize = 8;
+    int valueFontSize = 8;
+    int labelFontSize = 6;
+    int unitFontSize = 6;
+    int maxFontSize = 8;
     void* font = NULL;
 
     ValueInterface* val = NULL;
@@ -30,14 +34,20 @@ protected:
     bool showBar = true;
     bool showValue = true;
     bool showUnit = true;
+    bool showLabel = true;
+
+    void setMaxFontSize() {
+        maxFontSize = std::max({ valueFontSize, labelFontSize, unitFontSize });
+    }
 
 public:
     ValueComponent(ComponentInterface::Props props)
-        : GroupColorComponent(props, { { "VALUE_COLOR", &valueColor }, { "BAR_COLOR", &barColor } , { "UNIT_COLOR", &unitColor } })
+        : GroupColorComponent(props, { { "VALUE_COLOR", &valueColor }, { "BAR_COLOR", &barColor }, { "UNIT_COLOR", &unitColor }, { "LABEL_COLOR", &labelColor } })
         , bgColor(styles.colors.background)
         , valueColor(styles.colors.text, inactiveColorRatio)
         , barColor(lighten(styles.colors.background, 0.4), inactiveColorRatio)
         , unitColor(darken(styles.colors.text, 0.5), inactiveColorRatio)
+        , labelColor(darken(styles.colors.text, 0.5), inactiveColorRatio)
     {
         updateColors();
     }
@@ -50,17 +60,30 @@ public:
                 if (showBar) {
                     draw.filledRect({ relativePosition.x, relativePosition.y }, { (int)(size.w * val->pct()), size.h }, { barColor.color });
                 }
-                int x = relativePosition.x + (int)(size.w * 0.5);
-                int textY = (size.h - 8) * 0.5 + relativePosition.y;
 
-                if (showValue) {
-                    std::string valStr = std::to_string(val->get());
-                    valStr = valStr.substr(0, valStr.find(".") + floatPrecision + (floatPrecision > 0 ? 1 : 0));
-                    x= draw.textCentered({ x, textY }, valStr, fontSize, { valueColor.color, .font = font });
+                std::string valStr = std::to_string(val->get());
+                valStr = valStr.substr(0, valStr.find(".") + floatPrecision + (floatPrecision > 0 ? 1 : 0));
+
+                int x = relativePosition.x + (size.w) * 0.5;
+
+                if (showLabel && showValue) {
+                    x -= labelFontSize * val->props().label.length() + 2;
                 }
 
-                if (showUnit && val->props().unit != NULL) {
-                    draw.text({ x, textY }, val->props().unit, fontSize, { unitColor.color, .font = font });
+                int textY = (size.h - maxFontSize) * 0.5 + relativePosition.y;
+                int labelY = textY + maxFontSize - labelFontSize;
+                int valueY = textY + maxFontSize - valueFontSize;
+                int unitY = textY + maxFontSize - unitFontSize;
+
+                if (showLabel) {
+                    x = draw.text({ x, labelY }, val->props().label, labelFontSize, { labelColor.color, .font = font }) + 2;
+                }
+
+                if (showValue) {
+                    x = draw.text({ x, valueY }, valStr, valueFontSize, { valueColor.color, .font = font });
+                    if (showUnit && val->props().unit != NULL) {
+                        draw.text({ x, unitY }, val->props().unit, unitFontSize, { unitColor.color, .font = font });
+                    }
                 }
             }
         }
@@ -110,9 +133,30 @@ public:
             return true;
         }
 
-        /*md - `FONT_SIZE: size` is the font size of the component. */
-        if (strcmp(key, "FONT_SIZE") == 0) {
-            fontSize = atoi(params);
+        /*md - `SHOW_LABEL: true` shows the label (default: true) */
+        if (strcmp(key, "SHOW_LABEL") == 0) {
+            showLabel = atoi(params);
+            return true;
+        }
+
+        /*md - `VALUE_FONT_SIZE: size` is the font size of the component. */
+        if (strcmp(key, "VALUE_FONT_SIZE") == 0) {
+            valueFontSize = atoi(params);
+            setMaxFontSize();
+            return true;
+        }
+
+        /*md - `LABEL_FONT_SIZE: size` is the font size of the component. */
+        if (strcmp(key, "LABEL_FONT_SIZE") == 0) {
+            labelFontSize = atoi(params);
+            setMaxFontSize();
+            return true;
+        }
+
+        /*md - `UNIT_FONT_SIZE: size` is the font size of the component. */
+        if (strcmp(key, "UNIT_FONT_SIZE") == 0) {
+            unitFontSize = atoi(params);
+            setMaxFontSize();
             return true;
         }
 
@@ -130,6 +174,8 @@ public:
 
         /*md - `VALUE_COLOR: color` is the color of the value. */
         /*md - `BAR_COLOR: color` is the color of the bar. */
+        /*md - `UNIT_COLOR: color` is the color of the unit. */
+        /*md - `LABEL_COLOR: color` is the color of the label. */
         return GroupColorComponent::config(key, params);
     }
 };
