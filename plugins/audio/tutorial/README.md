@@ -559,4 +559,120 @@ int main(int argc, char* argv[])
 
 ## Linear interpolation
 
+Linear interpolation is a way of estimating a value that falls between two known values. Imagine you’re looking at a straight line connecting two points on a graph. Linear interpolation is like drawing that line and picking a value somewhere between those two points. It assumes everything changes at a steady rate between the points.
+
+**Why Linear Interpolation Matters in a Lookup Table (LUT)**
+
+LUTs can’t store every possible value but only some of them (depending on the lookup table size). For any value not in the table, you need a way to estimate it. This is where linear interpolation becomes important.
+
+- **It Fills the Gaps**: Since a LUT only has values at specific points, linear interpolation helps estimate values for the points in between.
+- **It Keeps Things Smooth**: Using interpolation makes the transitions between the stored values look natural and continuous, rather than jumping abruptly.
+- **It Saves Space**: Instead of storing every possible value in the table (which would require a lot of memory), you can store just a few key points and use interpolation to fill in the rest.
+
+```cpp
+float linearInterpolation(float index, uint16_t lutSize, float* lut)
+{
+    // Linear Interpolation to get smoother transitions between discrete LUT values
+    
+    // Step 1: Scale the normalized index (0.0 to 1.0) to the LUT range (0 to lutSize - 1).
+    // This maps the input index to a position within the LUT.
+    float lutIndex = index * (lutSize - 1);
+    
+    // Step 2: Find the lower neighboring index in the LUT.
+    // Convert the floating-point position to an integer index.
+    uint16_t index1 = (uint16_t)lutIndex;
+
+    // Step 3: Find the upper neighboring index in the LUT.
+    // Wrap around using modulo in case we are at the last LUT element.
+    uint16_t index2 = (index1 + 1) % lutSize;
+
+    // Step 4: Calculate the fractional distance between index1 and the exact position.
+    // This determines how close the position is to the next LUT value (index2).
+    float fractional = lutIndex - index1;
+
+    // Step 5: Perform linear interpolation between the two neighboring LUT values.
+    // The result is a weighted average of the values at index1 and index2.
+    // The weights are determined by the fractional distance.
+    return lut[index1] * (1.0f - fractional) + lut[index2] * fractional;
+}
+```
+
 ## Wavetable
+
+Now that we understand lookup tables (LUTs), we can introduce **wavetables**, which are closely related. A wavetable is essentially a specialized form of a lookup table designed for audio synthesis. While a LUT stores precomputed values of a mathematical function or data for efficient retrieval, a wavetable specifically stores samples of one or more waveforms.
+
+The primary difference is that a wavetable can contain multiple waveform representations within the same table, allowing it to store various types of periodic signals like sine waves, square waves, sawtooth waves, or custom waveforms. These waveforms can be accessed, interpolated, and combined to generate dynamic and evolving sounds in audio synthesis.
+
+**What is a Wavetable?**
+
+A wavetable is a precomputed array (or set of arrays) of values that represent one or more cycles of a waveform. These values are stored in memory and accessed during sound synthesis to efficiently produce continuous audio signals. Wavetables are widely used in music production and digital audio applications because they enable efficient and versatile sound generation.
+
+Key characteristics of a wavetable:
+
+1. **Waveform Representation**: It contains sampled points of a waveform. For example, a sine wave might be divided into 1024 evenly spaced samples.
+2. **Multiple Waveforms**: A single wavetable can hold several different waveforms, which can be selected or interpolated for creative effects.
+3. **Efficient Playback**: Rather than recalculating waveform values in real time (e.g., using trigonometric functions), the wavetable allows rapid access to precomputed values.
+
+In short, using a wavetable is just like using a lookup table (LUT), but instead of storing a single set of values, you store multiple waveforms. These can then be accessed and interpolated as needed for audio synthesis.
+
+```cpp
+#include "plugins/audio/AudioOutputPulse.h"
+#include <cmath> // For sin()
+
+// Define the size of the wavetable and the number of waveforms
+const uint16_t WAVE_SIZE = 256; // Number of samples per waveform
+const uint16_t NUM_WAVES = 3;   // Number of waveforms in the wavetable
+
+// Generate a simple wavetable with multiple waveforms
+void generateWavetable(float wavetable[WAVE_SIZE * NUM_WAVES]) {
+    for (uint8_t wave = 0; wave < NUM_WAVES; ++wave) {
+        for (int16_t i = 0; i < WAVE_SIZE; ++i) {
+            float phase = static_cast<float>(i) / WAVE_SIZE;
+            if (wave == 0) {
+                wavetable[wave * WAVE_SIZE + i] = std::sin(2.0f * M_PI * phase); // Sine wave
+            } else if (wave == 1) {
+                wavetable[wave * WAVE_SIZE + i] = phase < 0.5f ? 1.0f : -1.0f;    // Square wave
+            } else if (wave == 2) {
+                wavetable[wave * WAVE_SIZE + i] = 2.0f * (phase - 0.5f);         // Sawtooth wave
+            }
+        }
+    }
+}
+
+int main() {
+    // Initialize audio properties with default settings
+    AudioPlugin::Props props = defaultAudioProps;
+
+    // Create an AudioOutputPulse instance to handle audio output
+    AudioOutputPulse audioOutput(props, (char*)"zicAudioOutputPulse");
+
+    // Create an audio buffer to hold samples (one per track)
+    float buffer[props.maxTracks] = { 0.0f };
+
+    // Create a flat array to store the wavetable
+    float wavetable[WAVE_SIZE * NUM_WAVES];
+
+    // Generate waveforms
+    generateWavetable(wavetable);
+
+    uint8_t waveform = 0; // Sine wave
+    int16_t index = 0;
+    // Main loop to generate and play the sine wave
+    while (1) {
+        // Calculate the sine value for the current phase
+        buffer[0] = wavetable[waveform * WAVE_SIZE + index];
+
+        index++;
+        while (index >= WAVE_SIZE) {
+            index -= WAVE_SIZE;
+        }
+
+        // Send the generated sample to the audio output
+        audioOutput.sample(buffer);
+    }
+
+    return 0;
+}
+```
+
+You can create your own wavetable from scratch, but there are also plenty of ready-made options available online. For instance, [WaveEdit](https://synthtech.com/waveedit/) is a fantastic tool that allows you to design custom wavetables and provides access to a large library of shared wavetables created by the community. It's a great resource for both beginners and advanced users looking to explore or expand their wavetable collection.
