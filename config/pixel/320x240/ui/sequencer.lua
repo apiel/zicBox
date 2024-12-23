@@ -1,13 +1,13 @@
-local keyInfoBar = require("config/pixel/libs/component/keyInfoBar")
+local textGrid = require("config/pixel/libs/component/textGrid")
 local stepEdit = require("config/pixel/libs/component/stepEdit")
 local text = require("config/pixel/libs/component/text")
 local hiddenEncoder = require("config/pixel/libs/component/hiddenEncoder")
 
 local function sequencer(track)
-  keyInfoBar(
+  textGrid(
     {
-      ROW1 = "1 2 3 4 Shift",
-      ROW2 = "5 6 7 8 &icon::play::filled"
+      "1 2 3 4 Shift",
+      "5 6 7 8 &icon::play::filled"
     },
     { x = 0, y = 216 },
     {
@@ -19,10 +19,10 @@ local function sequencer(track)
     }
   )
 
-  keyInfoBar(
+  textGrid(
     {
-      ROW1 = "1 2 3 4 Track",
-      ROW2 = "5 6 7 8 Master"
+      "1 2 3 4 Track",
+      "5 6 7 8 Master"
     },
     { x = 0, y = 216 },
     {
