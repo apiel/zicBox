@@ -35,6 +35,7 @@ protected:
     bool showValue = true;
     bool showUnit = true;
     bool showLabel = true;
+    bool useStringValue = false;
 
     void setMaxFontSize()
     {
@@ -43,7 +44,7 @@ protected:
 
     std::string getValStr()
     {
-        if (val->hasType(VALUE_STRING)) {
+        if (useStringValue) {
             return val->string();
         }
         std::string valStr = std::to_string(val->get());
@@ -73,7 +74,7 @@ public:
                         float valPct = val->pct();
                         if (valPct < 0.5) {
                             int w = size.w * (0.5 - valPct);
-                            draw.filledRect({ relativePosition.x + (int)(size.w*0.5) - w, relativePosition.y }, { w, size.h }, { barColor.color });
+                            draw.filledRect({ relativePosition.x + (int)(size.w * 0.5) - w, relativePosition.y }, { w, size.h }, { barColor.color });
                         } else {
                             draw.filledRect({ relativePosition.x + (int)(size.w * 0.5), relativePosition.y }, { (int)(size.w * (valPct - 0.5)), size.h }, { barColor.color });
                         }
@@ -99,7 +100,8 @@ public:
                 }
 
                 if (showValue) {
-                    x = draw.text({ x, valueY }, getValStr(), valueFontSize, { valueColor.color, .font = font });
+                    x = showLabel ? draw.text({ x, valueY }, getValStr(), valueFontSize, { valueColor.color, .font = font })
+                                   : draw.textCentered({ x, valueY }, getValStr(), valueFontSize, { valueColor.color, .font = font });
                     if (showUnit && val->props().unit != NULL) {
                         draw.text({ x, unitY }, val->props().unit, unitFontSize, { unitColor.color, .font = font });
                     }
@@ -126,6 +128,7 @@ public:
             if (val != NULL) {
                 floatPrecision = val->props().floatingPoint;
             }
+            useStringValue = val->hasType(VALUE_STRING);
             return true;
         }
 
@@ -138,6 +141,12 @@ public:
         /*md - `FLOAT_PRECISION: 2` set how many digits after the decimal point (by default none) */
         if (strcmp(key, "FLOAT_PRECISION") == 0) {
             floatPrecision = atoi(params);
+            return true;
+        }
+
+        /*md - `USE_STRING_VALUE: true` use the string value instead of the floating point one (default: false) */
+        if (strcmp(key, "USE_STRING_VALUE") == 0) {
+            useStringValue = strcmp(params, "true") == 0;
             return true;
         }
 
