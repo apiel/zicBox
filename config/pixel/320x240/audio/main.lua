@@ -1,7 +1,7 @@
 local audio = require("config/pixel/libs/audio")
-local drum23 = require("config/pixel/audio/drum23_track")
-local drumSample = require("config/pixel/audio/drumSample_track")
-local fm = require("config/pixel/audio/fm_track")
+local drum23 = require("config/pixel/320x240/audio/drum23_track")
+local drumSample = require("config/pixel/320x240/audio/drumSample_track")
+local fm = require("config/pixel/320x240/audio/fm_track")
 
 audio.pluginAlias("EffectDistortion", "libzic_EffectDistortion.so")
 audio.pluginAlias("EffectDistortion2", "libzic_EffectDistortion2.so")

@@ -2,7 +2,7 @@ local core = require("config/pixel/libs/core")
 
 ---------------------------- AUDIO -----------------------------
 
-require("config/pixel/audio/main")
+require("config/pixel/320x240/audio/main")
 
 --------------------------- CONTROLLER -------------------------
 
@@ -22,4 +22,4 @@ core.controller("MidiEncoder", "libzic_MidiEncoderController.so",
 
 ------------------------------ UI ------------------------------
 
-require("config/pixel/ui/main")
+require("config/pixel/320x240/ui/main")

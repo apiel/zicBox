@@ -2,7 +2,7 @@ local scrollGroup = require("config/pixel/libs/containers/scrollGroup")
 local text = require("config/pixel/libs/component/text")
 local encoder3 = require("config/pixel/libs/component/encoder3")
 local fmAlgo = require("config/pixel/libs/component/fmAlgo")
-local fmSynthOperator = require("config/pixel/ui/fm_synth_operator")
+local fmSynthOperator = require("config/pixel/320x240/ui/fm_synth_operator")
 
 local function fm_synth(track)
   scrollGroup("Scroll", { x = 0, y = 0, w = ScreenWidth, h = 214 }, {
