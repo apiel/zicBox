@@ -43,7 +43,7 @@ protected:
 
     std::string getValStr()
     {
-        if (val->props().type == VALUE_STRING) {
+        if (val->hasType(VALUE_STRING)) {
             return val->string();
         }
         std::string valStr = std::to_string(val->get());
