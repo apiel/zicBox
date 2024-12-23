@@ -24,6 +24,7 @@ protected:
     Color bgColor;
     Color itemBackground;
     Color textColor;
+    Color textColor2;
 
     //                        { index, value}
     int16_t shiftVisibility[2] = { -1, -1 };
@@ -34,6 +35,7 @@ public:
         , icon(props.view->draw)
         , bgColor(styles.colors.background)
         , textColor(styles.colors.text)
+        , textColor2(darken(styles.colors.text, 0.5))
         , itemBackground(lighten(styles.colors.background, 0.5))
         , keypadLayout(this)
     {
@@ -43,6 +45,7 @@ protected:
     struct Item {
         std::string text;
         bool activeBackground = false;
+        bool secondColor = false;
     };
 
     struct Row {
@@ -62,8 +65,9 @@ protected:
             if (item.activeBackground) {
                 draw.filledRect({ textPos.x - row.startX, textPos.y }, { row.width, h - 1 }, { itemBackground });
             }
-            if (!icon.render(item.text, textPos, 8, {}, Icon::CENTER)) {
-                draw.textCentered(textPos, item.text, 8);
+            Color color = item.secondColor ? textColor2 : textColor;
+            if (!icon.render(item.text, textPos, 8, { color }, Icon::CENTER)) {
+                draw.textCentered(textPos, item.text, 8, { color });
             }
             index++;
         }
@@ -103,6 +107,9 @@ public:
                 if (item.text[0] == '!') {
                     item.activeBackground = true;
                     item.text = item.text.substr(1);
+                } else if (item.text[0] == '^') {
+                    item.secondColor = true;
+                    item.text = item.text.substr(1);
                 }
                 row.items.push_back(item);
                 text = strtok(NULL, " ");
@@ -129,6 +136,18 @@ public:
         /*md - `TEXT_COLOR: color` is the color of the text. */
         if (strcmp(key, "TEXT_COLOR") == 0) {
             textColor = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `TEXT_COLOR2: color` is the color of the text. */
+        if (strcmp(key, "TEXT_COLOR2") == 0) {
+            textColor2 = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `ITEM_BACKGROUND: color` is the color of the item background. */
+        if (strcmp(key, "ITEM_BACKGROUND") == 0) {
+            itemBackground = draw.getColor(value);
             return true;
         }
 
