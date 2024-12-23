@@ -41,6 +41,16 @@ protected:
         maxFontSize = std::max({ valueFontSize, labelFontSize, unitFontSize });
     }
 
+    std::string getValStr()
+    {
+        if (val->props().type == VALUE_STRING) {
+            return val->string();
+        }
+        std::string valStr = std::to_string(val->get());
+        valStr = valStr.substr(0, valStr.find(".") + floatPrecision + (floatPrecision > 0 ? 1 : 0));
+        return valStr;
+    }
+
 public:
     ValueComponent(ComponentInterface::Props props)
         : GroupColorComponent(props, { { "VALUE_COLOR", &valueColor }, { "BAR_COLOR", &barColor }, { "UNIT_COLOR", &unitColor }, { "LABEL_COLOR", &labelColor } })
@@ -62,9 +72,6 @@ public:
                     draw.filledRect({ relativePosition.x, relativePosition.y }, { (int)(size.w * val->pct()), size.h }, { barColor.color });
                 }
 
-                std::string valStr = std::to_string(val->get());
-                valStr = valStr.substr(0, valStr.find(".") + floatPrecision + (floatPrecision > 0 ? 1 : 0));
-
                 int x = relativePosition.x + (size.w) * 0.5;
 
                 if (showLabel && showValue) {
@@ -81,7 +88,7 @@ public:
                 }
 
                 if (showValue) {
-                    x = draw.text({ x, valueY }, valStr, valueFontSize, { valueColor.color, .font = font });
+                    x = draw.text({ x, valueY }, getValStr(), valueFontSize, { valueColor.color, .font = font });
                     if (showUnit && val->props().unit != NULL) {
                         draw.text({ x, unitY }, val->props().unit, unitFontSize, { unitColor.color, .font = font });
                     }
