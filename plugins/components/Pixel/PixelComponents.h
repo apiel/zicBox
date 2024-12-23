@@ -14,6 +14,7 @@
 #include "./TextComponent.h"
 #include "./SeqSynthBarComponent.h"
 #include "./SeqProgressBarComponent.h"
+#include "./ValueComponent.h"
 
 void loadPixelComponents()
 {
@@ -60,6 +61,10 @@ void loadPixelComponents()
 
     viewManager.plugins.push_back({ "SeqProgressBar", [](ComponentInterface::Props props) {
         return new SeqProgressBarComponent(props);
+    } });
+
+    viewManager.plugins.push_back({ "Value", [](ComponentInterface::Props props) {
+        return new ValueComponent(props);
     } });
 }
 
