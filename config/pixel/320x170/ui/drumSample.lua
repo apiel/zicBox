@@ -112,25 +112,25 @@ local function encodersMaster(group, track, y)
 
     value({}, { x = 0, y = 0, w = W2_4 - 2, h = 11 }, { 
         LABEL_COLOR = "tertiary",
-        BAR_COLOR = "#647355",
+        BAR_COLOR = TertiaryBar,
         VALUE = "VolumeDrive VOLUME",
         ENCODER_ID = 0
     })
     value({}, { x = 0, y = 12, w = W2_4 - 2, h = 11 }, { 
         LABEL_COLOR = "primary",
-        BAR_COLOR = "#377275",
+        BAR_COLOR = PrimaryBar,
         VALUE = "VolumeDrive VOLUME",
         ENCODER_ID = 1
     })
     value({}, { x = W2_4, y = 0, w = W2_4 - 2, h = 11 }, { 
         LABEL_COLOR = "secondary",
-        BAR_COLOR = "#734047",
+        BAR_COLOR = SecondaryBar,
         VALUE = "MMFilter RESONANCE",
         ENCODER_ID = 2
      })
      value({}, { x = W2_4, y = 12, w = W2_4 - 2, h = 11 }, { 
         LABEL_COLOR = "quaternary",
-        BAR_COLOR = "#94854b",
+        BAR_COLOR = QuaternaryBar,
         VALUE = "MMFilter RESONANCE",
         ENCODER_ID = 4
      })
