@@ -40,29 +40,28 @@ public:
         , textColor(styles.colors.text)
         , keypadLayout(this)
     {
-        buttonWidth = size.w / 5.0f;
-        buttonStartX = buttonWidth * 0.5f;
-
-        // jobRendering = [this](unsigned long now) {
-        //     if (keypadLayout.jobRendering(now)) {
-        //         // renderNext(); // For the moment doesn't really to re-render, as no UI change happens
-        //     }
-        // };
     }
 
 protected:
-    int buttonWidth = 40;
-    int buttonStartX = 14;
+    struct Row {
+        std::vector<std::string> text;
+        int startX = 0;
+        int width = 0;
+    };
 
-    std::string text[10] = { "", "", "", "", "", "", "", "", "", "" };
-    void renderRow(int y, int startIndex)
+    std::vector<Row> rows;
+
+    int renderRow(int y, Row& row)
     {
-        for (int i = 0; i < 5; i++) {
-            Point textPos = { relativePosition.x + buttonStartX + i * buttonWidth, y };
-            if (!icon.render(text[i + startIndex], textPos, 8, {}, Icon::CENTER)) {
-                draw.textCentered(textPos, text[i + startIndex], 8);
+        int index = 0;
+        for (auto text : row.text) {
+            Point textPos = { relativePosition.x + row.startX + index * row.width, y };
+            if (!icon.render(text, textPos, 8, {}, Icon::CENTER)) {
+                draw.textCentered(textPos, text, 8);
             }
+            index++;
         }
+        return 12;
     }
 
     bool isVisible()
@@ -75,8 +74,10 @@ public:
     {
         if (isVisible() && updatePosition()) {
             draw.filledRect(relativePosition, size, { bgColor });
-            renderRow(relativePosition.y, 0);
-            renderRow(relativePosition.y + 12, 5);
+            int y = relativePosition.y;
+            for (auto row : rows) {
+                y += renderRow(y, row);
+            }
         }
     }
 
@@ -87,23 +88,17 @@ public:
             return true;
         }
 
-        /*md - `ROW1: text text text text text` is the text of the first row. */
-        if (strcmp(key, "ROW1") == 0) {
-            text[0] = strtok(value, " ");
-            text[1] = strtok(NULL, " ");
-            text[2] = strtok(NULL, " ");
-            text[3] = strtok(NULL, " ");
-            text[4] = strtok(NULL, " ");
-            return true;
-        }
-
-        /*md - `ROW2: text text text text text` is the text of the second row. */
-        if (strcmp(key, "ROW2") == 0) {
-            text[5] = strtok(value, " ");
-            text[6] = strtok(NULL, " ");
-            text[7] = strtok(NULL, " ");
-            text[8] = strtok(NULL, " ");
-            text[9] = strtok(NULL, " ");
+        /*md - `ROW: text text text text text` is the text to add in row. */
+        if (strcmp(key, "ROW") == 0) {
+            Row row;
+            char* text = strtok(value, " ");
+            while (text != NULL) {
+                row.text.push_back(text);
+                text = strtok(NULL, " ");
+            }
+            row.width = size.w / row.text.size();
+            row.startX = row.width * 0.5f;
+            rows.push_back(row);
             return true;
         }
 

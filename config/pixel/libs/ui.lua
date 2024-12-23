@@ -29,13 +29,16 @@ function ui.setScreenSize(width, height)
 end
 
 --- Parse a position
---- @param position {x: number, y: number, w: number, h: number} | {x: number, y: number} | table The position of the component.
+--- @param position {x: number, y: number, w: number, h: number} | {x: number, y: number, w: number} | {x: number, y: number} | table The position of the component.
 function ui.parsePosition(position)
-    if #position == 2 or #position == 4 then
+    if #position == 2 or #position == 3 or #position == 4 then
         return table.concat(position, " ")
     end
     if position.w ~= nil and position.h ~= nil then
         return position.x .. " " .. position.y .. " " .. position.w .. " " .. position.h
+    end
+    if position.w ~= nil then
+        return position.x .. " " .. position.y .. " " .. position.w
     end
     return position.x .. " " .. position.y
 end
@@ -44,7 +47,7 @@ end
 --- @param name string The name of the component
 --- @param mandatoryParams table Mandatory params key in right order
 --- @param params { [string]: string | boolean | number | table } Params to apply
---- @param position {x: number, y: number, w: number, h: number} | {x: number, y: number} The position of the component
+--- @param position {x: number, y: number, w: number, h: number} | {x: number, y: number, w: number} | {x: number, y: number} The position of the component
 --- @param options { [string]: string | boolean | number | table } | nil Options to apply
 function ui.component(name, mandatoryParams, params, position, options)
     zic("COMPONENT", name .. " " .. ui.parsePosition(position))
