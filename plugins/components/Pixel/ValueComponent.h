@@ -36,7 +36,8 @@ protected:
     bool showUnit = true;
     bool showLabel = true;
 
-    void setMaxFontSize() {
+    void setMaxFontSize()
+    {
         maxFontSize = std::max({ valueFontSize, labelFontSize, unitFontSize });
     }
 
@@ -45,7 +46,7 @@ public:
         : GroupColorComponent(props, { { "VALUE_COLOR", &valueColor }, { "BAR_COLOR", &barColor }, { "UNIT_COLOR", &unitColor }, { "LABEL_COLOR", &labelColor } })
         , bgColor(styles.colors.background)
         , valueColor(styles.colors.text, inactiveColorRatio)
-        , barColor(lighten(styles.colors.background, 0.4), inactiveColorRatio)
+        , barColor(lighten(styles.colors.background, 0.5), inactiveColorRatio)
         , unitColor(darken(styles.colors.text, 0.5), inactiveColorRatio)
         , labelColor(darken(styles.colors.text, 0.5), inactiveColorRatio)
     {
@@ -86,6 +87,13 @@ public:
                     }
                 }
             }
+        }
+    }
+
+    void onEncoder(int id, int8_t direction)
+    {
+        if (val && isActive && id == encoderId) {
+            val->increment(direction);
         }
     }
 
