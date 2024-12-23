@@ -159,7 +159,7 @@ local function drumSample(track)
 
     textGrid(
         {
-            "&icon::play::filled &icon::toggle::rect ...",
+            "&icon::play::filled &icon::toggle::rect !...",
             "Menu Sub Master"
         }, KeyInfoPosition,
         {
