@@ -1,7 +1,7 @@
 local ui = require("config/pixel/libs/ui")
 local text = require("config/pixel/libs/component/text")
 local encoder3 = require("config/pixel/libs/component/encoder3")
-local keyInfoBar = require("config/pixel/libs/component/keyInfoBar")
+local textGrid = require("config/pixel/libs/component/textGrid")
 local visibility = require("config/pixel/libs/containers/visibility")
 
 local function row(group, track, y)
@@ -138,7 +138,7 @@ local function drumSample(track)
         { CENTERED = true }
     )
 
-    keyInfoBar(
+    textGrid(
         {
             "&icon::musicNote::pixelated &icon::arrowUp::filled ...",
             "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled"
@@ -157,7 +157,7 @@ local function drumSample(track)
         }
     )
 
-    keyInfoBar(
+    textGrid(
         {
             "&icon::play::filled &icon::toggle::rect ...",
             "Menu Sub Master"

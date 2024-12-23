@@ -1,8 +1,8 @@
 local ui = require("config/pixel/libs/ui")
-local mainKeyboard = require("config/pixel/320x170/ui/keyboard_main")
-local sequencer = require("config/pixel/320x170/ui/sequencer")
-local drum23Synth = require("config/pixel/320x170/ui/drum23_synth")
-local fmSynth = require("config/pixel/320x170/ui/fm_synth")
+-- local mainKeyboard = require("config/pixel/320x170/ui/keyboard_main")
+-- local sequencer = require("config/pixel/320x170/ui/sequencer")
+-- local drum23Synth = require("config/pixel/320x170/ui/drum23_synth")
+-- local fmSynth = require("config/pixel/320x170/ui/fm_synth")
 local drumSample = require("config/pixel/320x170/ui/drumSample")
 
 ui.setWindowPosition(400, 500)

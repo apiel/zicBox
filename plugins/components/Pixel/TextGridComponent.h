@@ -1,5 +1,5 @@
-#ifndef _UI_PIXEL_COMPONENT_KEY_INFO_BAR_H_
-#define _UI_PIXEL_COMPONENT_KEY_INFO_BAR_H_
+#ifndef _UI_PIXEL_COMPONENT_TEXT_GRID_H_
+#define _UI_PIXEL_COMPONENT_TEXT_GRID_H_
 
 #include "../base/Icon.h"
 #include "../base/KeypadLayout.h"
@@ -10,17 +10,12 @@
 #include <vector>
 
 /*md
-## KeyInfoBar
+## TextGrid
 
-KeyInfoBar components provide some information about the current kaypad layout.
+TextGrid components to display text in a table.
 */
 
-// Instead to have child elements, use same concept as group...
-// presskey can set visibility of a given component
-
-// KEYMAP in addition of key number, we could use engish keyboard value
-
-class KeyInfoBarComponent : public Component {
+class TextGridComponent : public Component {
 protected:
     Icon icon;
     KeypadLayout keypadLayout;
@@ -33,7 +28,7 @@ protected:
     int16_t shiftVisibility[2] = { -1, -1 };
 
 public:
-    KeyInfoBarComponent(ComponentInterface::Props props)
+    TextGridComponent(ComponentInterface::Props props)
         : Component(props)
         , icon(props.view->draw)
         , bgColor(styles.colors.background)
