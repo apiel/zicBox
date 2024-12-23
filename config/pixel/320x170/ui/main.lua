@@ -20,7 +20,7 @@ KeyInfoPosition = { x = 0, y = 146, w = W2_4 }
 
 PrimaryBar = "#377275"
 SecondaryBar = "#734047"
-TertiaryBar = "#647355"
+TertiaryBar = "#368a36"
 QuaternaryBar = "#94854b"
 
 ui.addZoneEncoder({ 0, 0, W1_4, ScreenHeight })

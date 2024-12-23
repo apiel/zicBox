@@ -12,7 +12,7 @@ local function row(group, track, y)
         { x = 0, y = y, w = ScreenWidth, h = h }, {
             GROUP = group,
             TRACK = track,
-            NAME_COLOR = "#00b300",
+            NAME_COLOR = "#23a123",
             NAME_PLUGIN = "DrumSample BROWSER",
             VOLUME_PLUGIN = "Volume VOLUME",
             KEYMAPS = {
@@ -36,7 +36,7 @@ local function progressBar(group, track, y)
         { x = 0, y = y, w = ScreenWidth, h = h }, {
             GROUP = group,
             TRACK = track,
-            ACTIVE_COLOR = "#00b300",
+            ACTIVE_COLOR = "#23a123",
             VOLUME_PLUGIN = "VolumeDrive VOLUME",
             KEYMAPS = {
                 { key = "q", action = "noteOn:DrumSample:57:11" },
