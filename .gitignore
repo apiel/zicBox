@@ -27,3 +27,4 @@ test2
 *.log
 thread
 plugins/audio/tutorial/*.bin
+pixel_env.lua
