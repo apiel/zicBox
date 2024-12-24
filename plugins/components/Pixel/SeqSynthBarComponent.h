@@ -10,6 +10,8 @@
 /*md
 ## SeqSynthBar
 
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/seqSynthBar.png" />
+
 */
 
 class SeqSynthBarComponent : public Component {
