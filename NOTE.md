@@ -6,6 +6,11 @@
   - might be great to keep this one as advance version
   - and to have one more simple where we could somehow morph between envelops a bit like wavetable...
 
+- TODO TODO
+- IDEA cache audio track to reduce computation?
+  - should the whole track be cached but how to deal with probability
+  - should we cache just the synth output, (how about effect..?)
+
 - IDEA when looking at the first track, this representation of the sequencer is much easier to understand what is going on
     - maybe we should use this concept for all tracks
     - also might want to cache drum engine output into a sample to save processing
@@ -33,9 +38,6 @@
               or only link with previous component:
                     CHILD_FROM_PREVIOUS: true
 
-- TODO wavetable create, where we can pick a specific part of a given wavetable and past it into a new one
-       - might also want to use waveform generator and even fm algorigthm?
-
 - TODO can EffectGrain and EffectDelay be one single effect to make an advance GrainDelay effect...?
 - TODO make a simple EffectDelay with preset... or re-use the exisiting one?
 - TODO or should it just be GRAIN track, DELAY track and REVERB track (alias delay?)
@@ -59,12 +61,12 @@
 - TODO create rectangle component
 
 - TODO add modulation on bitcrusher :-)
+- TODO wavetable create, where we can pick a specific part of a given wavetable and past it into a new one
+       - might also want to use waveform generator and even fm algorigthm?
 
 - TODO port zicPixel to Web assembly
 
 - TODO sudo display
-
-- IDEA cache audio track to reduce computation?
 
 - TODO get rid of SDL component andunify everything
       --> move everything to buffer base UI and only pass use the SDL to render buffer to the screen
