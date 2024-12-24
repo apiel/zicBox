@@ -10,6 +10,8 @@
 /*md
 ## SeqProgressBarComponent
 
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/seqProgressBar.png" />
+
 */
 
 class SeqProgressBarComponent : public Component {
