@@ -104,7 +104,7 @@ local function encodersMaster(group, track, y)
         { LABEL_COLOR = "quaternary", BAR_COLOR = QuaternaryBar, ENCODER_ID = 3, TRACK = track, GROUP = group })
 end
 
-local function drumSample(track)
+local function mainView()
     textGrid(
         {
             "&icon::musicNote::pixelated &icon::arrowUp::filled ...",
@@ -136,7 +136,7 @@ local function drumSample(track)
                 -- { key = "w", action = "setView:Track2" }, // stepToggle
                 { key = "e", action = "shift:254:1:0" },
                 { key = "a", action = "setView:menu" },
-                { key = "s", action = "setView:sub" .. track },
+                { key = "s", action = "setView:sub" },
                 { key = "d", action = "setView:Master" },
             }
         }
@@ -145,7 +145,7 @@ local function drumSample(track)
     local y = 0
 
     y = 30
-    y = progressBar(0, track, y)
+    y = progressBar(0, 1, y)
     y = row(1, 11, y, { "Main", "FX", "Amp.", "Freq.", "Wave", "Clic" })
     y = row(2, 12, y, { "Main", "FX", "Amp.", "Freq.", "Wave", "Clic" })
     y = row(3, 13, y, {})
@@ -156,7 +156,7 @@ local function drumSample(track)
     y = row(8, 18, y, { "Main", "FX", "Op1", ".", "Op2", ".", "Op3", ".", "Op4", "." })
 
     y = 0
-    encodersMaster(0, track, y)
+    encodersMaster(0, 1, y)
     encoders(1, 11, y)
     encoders(2, 12, y)
     encoders(3, 13, y)
@@ -167,4 +167,4 @@ local function drumSample(track)
     encoders(8, 18, y)
 end
 
-return drumSample
+return mainView
