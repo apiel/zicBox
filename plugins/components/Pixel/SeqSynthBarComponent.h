@@ -32,6 +32,8 @@ protected:
 
     uint8_t stepIndex = -1;
 
+    std::string name;
+   
     ValueInterface* valName = NULL;
     ValueInterface* valVolume = NULL;
     ValueInterface* seqStatus = NULL;
@@ -119,6 +121,8 @@ public:
             }
             if (valName != NULL) {
                 draw.text({ x + 2, textY }, valName->string(), 8, { textColor, .maxWidth = (nameW - 4) });
+            } else if (name.length() > 0) {
+                draw.text({ x + 2, textY }, name, 8, { textColor, .maxWidth = (nameW - 4) });
             }
             if (isActive && view->contextVar[selectedItemBank] == 0) {
                 draw.rect({ x, relativePosition.y }, { nameW, stepH - 1 }, { selectionColor });
@@ -190,6 +194,11 @@ public:
         /*md - `NAME_PLUGIN: plugin_name value_key` set the plugin target to be used for the name. */
         if (strcmp(key, "NAME_PLUGIN") == 0) {
             valName = watch(getPlugin(strtok(value, " "), track).getValue(strtok(NULL, " ")));
+            return true;
+        }
+
+        if (strcmp(key, "NAME") == 0) {
+            name = value;
             return true;
         }
 

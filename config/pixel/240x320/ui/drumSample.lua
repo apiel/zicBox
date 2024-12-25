@@ -13,7 +13,8 @@ local function row(group, track, y)
             GROUP = group,
             TRACK = track,
             NAME_COLOR = "#23a123",
-            NAME_PLUGIN = "DrumSample BROWSER",
+            -- NAME_PLUGIN = "DrumSample BROWSER",
+            NAME = track,
             VOLUME_PLUGIN = "Volume VOLUME",
             KEYMAPS = {
                 { key = "q", action = "noteOn:DrumSample:57" },
