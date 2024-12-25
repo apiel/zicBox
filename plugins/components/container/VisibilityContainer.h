@@ -22,8 +22,8 @@ protected:
     enum Condition {
         SHOW_WHEN,
         SHOW_WHEN_NOT,
-        SHOW_WHEN_UPPER,
-        SHOW_WHEN_LOWER
+        SHOW_WHEN_OVER,
+        SHOW_WHEN_UNDER
     } cond = SHOW_WHEN;
 
     Color bgColor;
@@ -79,9 +79,9 @@ public:
             // }
             if (cond == SHOW_WHEN_NOT) {
                 isContextVisible = value != contextValue;
-            } else if (cond == SHOW_WHEN_UPPER) {
+            } else if (cond == SHOW_WHEN_OVER) {
                 isContextVisible = value > contextValue;
-            } else if (cond == SHOW_WHEN_LOWER) {
+            } else if (cond == SHOW_WHEN_UNDER) {
                 isContextVisible = value < contextValue;
             } else {
                 isContextVisible = value > contextValue;
@@ -105,17 +105,17 @@ public:
             return true;
         }
 
-        /*md - `VISIBILITY_CONTEXT: index SHOW_WHEN/SHOW_WHEN_NOT/SHOW_WHEN_UPPER/SHOW_WHEN_LOWER value` the context index to show/hide the components for a given value. */
+        /*md - `VISIBILITY_CONTEXT: index SHOW_WHEN/SHOW_WHEN_NOT/SHOW_WHEN_OVER/SHOW_WHEN_UNDER value` the context index to show/hide the components for a given value. */
         if (strcmp(key, "VISIBILITY_CONTEXT") == 0) {
             contextIndex = atoi(strtok(value, " "));
             std::string condStr = strtok(NULL, " ");
             contextValue = atof(strtok(NULL, " "));
             if (condStr == "SHOW_WHEN_NOT") {
                 cond = SHOW_WHEN_NOT;
-            } else if (condStr == "SHOW_WHEN_UPPER") {
-                cond = SHOW_WHEN_UPPER;
-            } else if (condStr == "SHOW_WHEN_LOWER") {
-                cond = SHOW_WHEN_LOWER;
+            } else if (condStr == "SHOW_WHEN_OVER") {
+                cond = SHOW_WHEN_OVER;
+            } else if (condStr == "SHOW_WHEN_UNDER") {
+                cond = SHOW_WHEN_UNDER;
             } else {
                 cond = SHOW_WHEN;
             }
