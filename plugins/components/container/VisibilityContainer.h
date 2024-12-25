@@ -71,12 +71,6 @@ public:
     void onContext(uint8_t index, float value) override
     {
         if (index == contextIndex) {
-            // if (hideWhen != -1) {
-            //     isContextVisible = value != hideWhen;
-            // }
-            // if (visibleWhen != -1) {
-            //     isContextVisible = value == visibleWhen;
-            // }
             if (cond == SHOW_WHEN_NOT) {
                 isContextVisible = value != contextValue;
             } else if (cond == SHOW_WHEN_OVER) {
@@ -84,7 +78,7 @@ public:
             } else if (cond == SHOW_WHEN_UNDER) {
                 isContextVisible = value < contextValue;
             } else {
-                isContextVisible = value > contextValue;
+                isContextVisible = value == contextValue;
             }
             renderBackground();
             view->renderAllNext(this);
