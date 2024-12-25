@@ -106,26 +106,45 @@ public:
     int rendername(int x)
     {
         int stepsW = stepCount * (stepW + 2 + 0.5); // 2 / 4 adding 2 pixel every 4 steps
+        int witdhLeft = size.w - stepsW - 5;
+
+        int nameX = x;
+        int nameW = witdhLeft;
+
+        if (showLeftArrow) {
+            draw.filledRect({ nameX, relativePosition.y }, { 8, size.h }, { foreground });
+            int arrowH = 7;
+            int arrowW = 4;
+            int arrowCenterY = size.h * 0.5;
+            int side = arrowH * 0.5;
+            std::vector<Point> points = {
+                { nameX + arrowW, relativePosition.y + arrowCenterY - side },
+                { nameX + 1, relativePosition.y + arrowCenterY },
+                { nameX + arrowW, relativePosition.y + arrowCenterY + side },
+            };
+            draw.filledPolygon(points, { textColor });
+
+            nameX += 8;
+            nameW -= 8;
+        }
 
         bool showVolume = seqStatus != NULL && seqStatus->get() == 1 && valVolume != NULL;
-        Color color = showVolume ? darken(nameColor, 0.5) : foreground;
-        int nameX = x;
-        int nameW = size.w - stepsW - 5;
-        draw.filledRect({ nameX, relativePosition.y }, { nameW, size.h }, { color });
+        draw.filledRect({ nameX, relativePosition.y }, { nameW, size.h }, { showVolume ? darken(nameColor, 0.5) : foreground });
         if (showVolume) {
             draw.filledRect({ nameX, relativePosition.y }, { (int)(nameW * valVolume->pct()), size.h }, { nameColor });
         }
+
         int textY = (size.h - 8) * 0.5 + relativePosition.y;
         if (valName != NULL) {
-            draw.text({ nameX + 2, textY }, valName->string(), 8, { textColor, .maxWidth = (nameW - 4) });
+            draw.text({ nameX + 2, textY }, valName->string(), 8, { textColor, .maxWidth = (nameW - 2) });
         } else if (name.length() > 0) {
-            draw.text({ nameX + 2, textY }, name, 8, { textColor, .maxWidth = (nameW - 4) });
+            draw.text({ nameX + 2, textY }, name, 8, { textColor, .maxWidth = (nameW - 2) });
         }
         if (isActive && view->contextVar[selectedItemBank] == 0) {
             draw.rect({ nameX, relativePosition.y }, { nameW, size.h - 1 }, { selectionColor });
         }
 
-        return nameW + 4;
+        return witdhLeft + 4;
     }
 
     void render() override
