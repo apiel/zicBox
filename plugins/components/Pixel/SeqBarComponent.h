@@ -53,7 +53,7 @@ public:
         , selectionColor(styles.colors.white)
         , textColor(styles.colors.text)
         , foreground({ 0x40, 0x40, 0x40 })
-        , arrowColor(styles.colors.primary)
+        , arrowColor({ 0x80, 0x80, 0x80 })
         , activeStepColor(styles.colors.primary)
         , nameColor(styles.colors.primary)
         , keypadLayout(this, [&](std::string action) {
