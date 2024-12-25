@@ -1,5 +1,5 @@
-#ifndef _UI_PIXEL_COMPONENT_SEQ_BAR_H_
-#define _UI_PIXEL_COMPONENT_SEQ_BAR_H_
+#ifndef _UI_PIXEL_COMPONENT_SEQ_SYNTH_BAR_H_
+#define _UI_PIXEL_COMPONENT_SEQ_SYNTH_BAR_H_
 
 #include "helpers/midiNote.h"
 #include "plugins/audio/stepInterface.h"
@@ -8,13 +8,13 @@
 #include "plugins/components/utils/color.h"
 
 /*md
-## SeqBar
+## SeqSynthBar
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/seqBar.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/seqSynthBar.png" />
 
 */
 
-class SeqBarComponent : public Component {
+class SeqSynthBarComponent : public Component {
 protected:
     bool isActive = true;
 
@@ -43,10 +43,11 @@ protected:
 
     uint8_t selectedItemBank = 10;
 
+    bool showLeftArrow = true;
     int stepW = 4;
 
 public:
-    SeqBarComponent(ComponentInterface::Props props)
+    SeqSynthBarComponent(ComponentInterface::Props props)
         : Component(props)
         , background(styles.colors.background)
         , selectionColor(styles.colors.white)
@@ -60,7 +61,7 @@ public:
             if (action == ".left") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
-                        if (view->contextVar[selectedItemBank] > 0) {
+                        if (view->contextVar[selectedItemBank] > (showLeftArrow ? -1 : 0)) {
                             setContext(selectedItemBank, view->contextVar[selectedItemBank] - 1);
                         }
                         renderNext();
@@ -104,6 +105,25 @@ public:
         }
     }
 
+    void renderArrow(int x)
+    {
+        draw.filledRect({ x, relativePosition.y }, { 6, size.h }, { foreground });
+        int arrowH = 7;
+        int arrowW = 4;
+        int arrowCenterY = size.h * 0.5;
+        int side = arrowH * 0.5;
+        std::vector<Point> points = {
+            { x + arrowW, relativePosition.y + arrowCenterY - side },
+            { x + 1, relativePosition.y + arrowCenterY },
+            { x + arrowW, relativePosition.y + arrowCenterY + side },
+        };
+        draw.filledPolygon(points, { arrowColor });
+
+        // if (view->contextVar[selectedItemBank] == -1) {
+        //     draw.rect({ x, relativePosition.y }, { 6, size.h - 1 }, { selectionColor });
+        // }
+    }
+
     int rendername(int x)
     {
         int stepsW = stepCount * (stepW + 2 + 0.5); // 2 / 4 adding 2 pixel every 4 steps
@@ -111,6 +131,12 @@ public:
 
         int nameX = x;
         int nameW = witdhLeft;
+
+        if (showLeftArrow) {
+            renderArrow(nameX);
+            nameX += 8;
+            nameW -= 8;
+        }
 
         bool showVolume = seqStatus != NULL && seqStatus->get() == 1 && valVolume != NULL;
         draw.filledRect({ nameX, relativePosition.y }, { nameW, size.h }, { showVolume ? darken(nameColor, 0.5) : foreground });
@@ -209,6 +235,12 @@ public:
         /*md - `NAME: name` set the name of the component. */
         if (strcmp(key, "NAME") == 0) {
             name = value;
+            return true;
+        }
+
+        /*md - `SHOW_LEFT_ARROW: true` show the left arrow. */
+        if (strcmp(key, "SHOW_LEFT_ARROW") == 0) {
+            showLeftArrow = strcmp(value, "true") == 0;
             return true;
         }
 
