@@ -33,7 +33,7 @@ protected:
     uint8_t stepIndex = -1;
 
     std::string name;
-   
+
     ValueInterface* valName = NULL;
     ValueInterface* valVolume = NULL;
     ValueInterface* seqStatus = NULL;
@@ -41,6 +41,9 @@ protected:
     ValueInterface* seqStepEnabled = NULL; // STEP_ENABLED
 
     uint8_t selectedItemBank = 10;
+
+    bool showLeftArrow = true;
+    int stepW = 4;
 
 public:
     SeqBarComponent(ComponentInterface::Props props)
@@ -100,41 +103,44 @@ public:
         }
     }
 
+    int rendername(int x)
+    {
+        int stepsW = stepCount * (stepW + 2 + 0.5); // 2 / 4 adding 2 pixel every 4 steps
+
+        bool showVolume = seqStatus != NULL && seqStatus->get() == 1 && valVolume != NULL;
+        Color color = showVolume ? darken(nameColor, 0.5) : foreground;
+        int nameX = x;
+        int nameW = size.w - stepsW - 5;
+        draw.filledRect({ nameX, relativePosition.y }, { nameW, size.h }, { color });
+        if (showVolume) {
+            draw.filledRect({ nameX, relativePosition.y }, { (int)(nameW * valVolume->pct()), size.h }, { nameColor });
+        }
+        int textY = (size.h - 8) * 0.5 + relativePosition.y;
+        if (valName != NULL) {
+            draw.text({ nameX + 2, textY }, valName->string(), 8, { textColor, .maxWidth = (nameW - 4) });
+        } else if (name.length() > 0) {
+            draw.text({ nameX + 2, textY }, name, 8, { textColor, .maxWidth = (nameW - 4) });
+        }
+        if (isActive && view->contextVar[selectedItemBank] == 0) {
+            draw.rect({ nameX, relativePosition.y }, { nameW, size.h - 1 }, { selectionColor });
+        }
+
+        return nameW + 4;
+    }
+
     void render() override
     {
         if (updatePosition() && steps) {
             draw.filledRect(relativePosition, size, { background });
 
-            int stepW = 4;
-            int stepH = size.h;
-
-            int textY = (size.h - 8) * 0.5 + relativePosition.y;
-
-            int stepsW = stepCount * (stepW + 2 + 0.5); // 2 / 4 adding 2 pixel every 4 steps
-            int nameW = size.w - stepsW - 5;
             int x = relativePosition.x + 1;
-            bool showVolume = seqStatus != NULL && seqStatus->get() == 1 && valVolume != NULL;
-            Color color = showVolume ? darken(nameColor, 0.5) : foreground;
-            draw.filledRect({ x, relativePosition.y }, { nameW, stepH }, { color });
-            if (showVolume) {
-                draw.filledRect({ x, relativePosition.y }, { (int)(nameW * valVolume->pct()), stepH }, { nameColor });
-            }
-            if (valName != NULL) {
-                draw.text({ x + 2, textY }, valName->string(), 8, { textColor, .maxWidth = (nameW - 4) });
-            } else if (name.length() > 0) {
-                draw.text({ x + 2, textY }, name, 8, { textColor, .maxWidth = (nameW - 4) });
-            }
-            if (isActive && view->contextVar[selectedItemBank] == 0) {
-                draw.rect({ x, relativePosition.y }, { nameW, stepH - 1 }, { selectionColor });
-            }
-            x += nameW + 4;
-
+            x += rendername(x);
             for (int i = 0; i < stepCount; i++) {
                 Step* step = &steps[i];
-                color = step->enabled ? darken(activeStepColor, 1.0 - step->velocity) : foreground;
-                draw.filledRect({ x, relativePosition.y }, { stepW, stepH }, { color });
+                Color color = step->enabled ? darken(activeStepColor, 1.0 - step->velocity) : foreground;
+                draw.filledRect({ x, relativePosition.y }, { stepW, size.h }, { color });
                 if (isActive && view->contextVar[selectedItemBank] == i + 1) {
-                    draw.rect({ x, relativePosition.y }, { stepW, stepH - 1 }, { selectionColor });
+                    draw.rect({ x, relativePosition.y }, { stepW, size.h - 1 }, { selectionColor });
                 }
                 x += stepW + 2;
                 if (i % 4 == 3) {
