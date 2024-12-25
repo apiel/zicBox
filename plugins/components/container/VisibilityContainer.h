@@ -16,9 +16,15 @@ protected:
     bool isGroupVisible = true;
 
     int16_t contextIndex = -1;
+    float contextValue = 0;
     bool isContextVisible = true;
-    int8_t visibleWhen = -1;
-    int8_t hideWhen = -1;
+
+    enum Condition {
+        SHOW_WHEN,
+        SHOW_WHEN_NOT,
+        SHOW_WHEN_UPPER,
+        SHOW_WHEN_LOWER
+    } cond = SHOW_WHEN;
 
     Color bgColor;
 
@@ -65,11 +71,20 @@ public:
     void onContext(uint8_t index, float value) override
     {
         if (index == contextIndex) {
-            if (hideWhen != -1) {
-                isContextVisible = value != hideWhen;
-            }
-            if (visibleWhen != -1) {
-                isContextVisible = value == visibleWhen;
+            // if (hideWhen != -1) {
+            //     isContextVisible = value != hideWhen;
+            // }
+            // if (visibleWhen != -1) {
+            //     isContextVisible = value == visibleWhen;
+            // }
+            if (cond == SHOW_WHEN_NOT) {
+                isContextVisible = value != contextValue;
+            } else if (cond == SHOW_WHEN_UPPER) {
+                isContextVisible = value > contextValue;
+            } else if (cond == SHOW_WHEN_LOWER) {
+                isContextVisible = value < contextValue;
+            } else {
+                isContextVisible = value > contextValue;
             }
             renderBackground();
             view->renderAllNext(this);
@@ -90,13 +105,19 @@ public:
             return true;
         }
 
-        /*md - `VISIBILITY_CONTEXT: index SHOW/HIDE value` the context index to show/hide the components for a given value. */
+        /*md - `VISIBILITY_CONTEXT: index SHOW_WHEN/SHOW_WHEN_NOT/SHOW_WHEN_UPPER/SHOW_WHEN_LOWER value` the context index to show/hide the components for a given value. */
         if (strcmp(key, "VISIBILITY_CONTEXT") == 0) {
             contextIndex = atoi(strtok(value, " "));
-            if (strcmp(strtok(NULL, " "), "HIDE") == 0) {
-                hideWhen = atoi(strtok(NULL, " "));
+            std::string condStr = strtok(NULL, " ");
+            contextValue = atof(strtok(NULL, " "));
+            if (condStr == "SHOW_WHEN_NOT") {
+                cond = SHOW_WHEN_NOT;
+            } else if (condStr == "SHOW_WHEN_UPPER") {
+                cond = SHOW_WHEN_UPPER;
+            } else if (condStr == "SHOW_WHEN_LOWER") {
+                cond = SHOW_WHEN_LOWER;
             } else {
-                visibleWhen = atoi(strtok(NULL, " "));
+                cond = SHOW_WHEN;
             }
             return true;
         }
