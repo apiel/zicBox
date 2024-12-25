@@ -54,7 +54,7 @@ local function encoders(group, track, y)
     visibility(
         "DrumSample" .. track,
         { x = 0, y = y, w = ScreenWidth, h = 24 },
-        { VISIBILITY_GROUP = group, VISIBILITY_CONTEXT = "10 SHOW 0" }
+        { VISIBILITY_GROUP = group, VISIBILITY_CONTEXT = "10 SHOW_WHEN 0" }
     )
 
     value("Volume VOLUME", { x = 0, y = 0, w = W2_4 - 2, h = 11 },
@@ -69,7 +69,7 @@ local function encoders(group, track, y)
     visibility(
         "DrumSample" .. track,
         { x = 0, y = y, w = ScreenWidth, h = 24 },
-        { VISIBILITY_GROUP = group, VISIBILITY_CONTEXT = "10 HIDE 0" }
+        { VISIBILITY_GROUP = group, VISIBILITY_CONTEXT = "10 SHOW_WHEN_NOT 0" }
     )
 
     value("Sequencer STEP_VELOCITY", { x = 0, y = 0, w = W2_4 - 2, h = 11 },
