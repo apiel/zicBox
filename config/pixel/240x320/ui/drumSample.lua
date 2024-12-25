@@ -3,7 +3,7 @@ local textGrid = require("config/pixel/libs/component/textGrid")
 local visibility = require("config/pixel/libs/containers/visibility")
 local value = require("config/pixel/libs/component/value")
 
-local function row(group, track, y)
+local function row(group, track, y, items)
     local rowH = 14
     ui.component("SeqSynthBar",
         { "SEQ_PLUGIN" },
@@ -14,6 +14,7 @@ local function row(group, track, y)
             NAME_COLOR = "#23a123",
             -- NAME_PLUGIN = "DrumSample BROWSER",
             NAME = track,
+            ITEMS = items,
             VOLUME_PLUGIN = "Volume VOLUME",
             KEYMAPS = {
                 { key = "q", action = "noteOn:DrumSample:57" },
@@ -145,14 +146,14 @@ local function drumSample(track)
 
     y = 30
     y = progressBar(0, track, y)
-    y = row(1, 11, y)
-    y = row(2, 12, y)
-    y = row(3, 13, y)
-    y = row(4, 14, y)
-    y = row(5, 15, y)
-    y = row(6, 16, y)
-    y = row(7, 17, y)
-    y = row(8, 18, y)
+    y = row(1, 11, y, { "Main", "FX", "Amp.", "Freq.", "Wave", "Clic" })
+    y = row(2, 12, y, { "Main", "FX", "Amp.", "Freq.", "Wave", "Clic" })
+    y = row(3, 13, y, {})
+    y = row(4, 14, y, {})
+    y = row(5, 15, y, {})
+    y = row(6, 16, y, {})
+    y = row(7, 17, y, { "Main", "FX", "Op1", ".", "Op2", ".", "Op3", ".", "Op4", "." })
+    y = row(8, 18, y, { "Main", "FX", "Op1", ".", "Op2", ".", "Op3", ".", "Op4", "." })
 
     y = 0
     encodersMaster(0, track, y)
