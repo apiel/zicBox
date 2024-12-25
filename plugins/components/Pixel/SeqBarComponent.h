@@ -1,5 +1,5 @@
-#ifndef _UI_PIXEL_COMPONENT_SEQ_SYNTH_BAR_H_
-#define _UI_PIXEL_COMPONENT_SEQ_SYNTH_BAR_H_
+#ifndef _UI_PIXEL_COMPONENT_SEQ_BAR_H_
+#define _UI_PIXEL_COMPONENT_SEQ_BAR_H_
 
 #include "helpers/midiNote.h"
 #include "plugins/audio/stepInterface.h"
@@ -8,13 +8,13 @@
 #include "plugins/components/utils/color.h"
 
 /*md
-## SeqSynthBar
+## SeqBar
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/seqSynthBar.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/seqBar.png" />
 
 */
 
-class SeqSynthBarComponent : public Component {
+class SeqBarComponent : public Component {
 protected:
     bool isActive = true;
 
@@ -43,7 +43,7 @@ protected:
     uint8_t selectedItemBank = 10;
 
 public:
-    SeqSynthBarComponent(ComponentInterface::Props props)
+    SeqBarComponent(ComponentInterface::Props props)
         : Component(props)
         , background(styles.colors.background)
         , selectionColor(styles.colors.white)
