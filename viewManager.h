@@ -115,7 +115,7 @@ protected:
         plugins.push_back(plugin);
     }
 
-    void setContext(uint8_t index, uint8_t value)
+    void setContext(uint8_t index, float value)
     {
         contextVar[index] = value;
         view->onContext(index, value);
@@ -131,7 +131,7 @@ protected:
             sendAudioEvent,
             getController,
             view,
-            [this](uint8_t index, uint8_t value) { setContext(index, value); }
+            [this](uint8_t index, float value) { setContext(index, value); }
         };
 
         // printf("addComponent: %s pos %d %d size %d %d\n", name, position.x, position.y, size.w, size.h);
