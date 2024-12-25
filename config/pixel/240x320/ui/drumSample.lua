@@ -6,7 +6,7 @@ local value = require("config/pixel/libs/component/value")
 
 local function row(group, track, y)
     local rowH = 14
-    ui.component("SeqSynthBar",
+    ui.component("SeqBar",
         { "SEQ_PLUGIN" },
         { SEQ_PLUGIN = "Sequencer", },
         { x = 0, y = y, w = ScreenWidth, h = rowH }, {
@@ -27,6 +27,22 @@ local function row(group, track, y)
 
 
     return y + 1 + rowH
+end
+
+local function row2(group, track, y)
+    local rowH = 10
+    ui.component("SynthBar",
+        {  },
+        {  },
+        { x = 0, y = y + 1, w = ScreenWidth, h = rowH }, {
+            GROUP = group,
+            TRACK = track,
+            KEYMAPS = {
+            }
+        })
+
+
+    return y + 1 + 2 + rowH
 end
 
 local function progressBar(group, track, y)
@@ -146,7 +162,7 @@ local function drumSample(track)
 
     y = 30
     y = progressBar(0, track, y)
-    y = row(1, 11, y)
+    y = row2(1, 11, y)
     y = row(2, 12, y)
     y = row(3, 13, y)
     y = row(4, 14, y)

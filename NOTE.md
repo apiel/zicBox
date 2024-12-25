@@ -11,6 +11,9 @@
   - should the whole track be cached but how to deal with probability
   - should we cache just the synth output, (how about effect..?)
 
+- TODO should we move back to build component as module to speed up build?
+  - or should we look at way to compile only things that changed?
+
 - IDEA when looking at the first track, this representation of the sequencer is much easier to understand what is going on
     - maybe we should use this concept for all tracks
     - also might want to cache drum engine output into a sample to save processing
