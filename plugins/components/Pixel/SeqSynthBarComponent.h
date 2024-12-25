@@ -43,10 +43,12 @@ protected:
 
     uint8_t selectedItemBank = 10;
 
-    bool showLeftArrow = true;
     int stepW = 4;
 
-    std::vector<std::string> items = { "Main", "FX", "Amp.", "Freq.", "Wave", "Clic" };
+    // std::vector<std::string> items = { "Main", "FX", "Amp.", "Freq.", "Wave", "Clic" };
+    std::vector<std::string> items = { "Main", "FX", "Op1", ".", "Op2", ".", "Op3", ".", "Op4", "." };
+
+    int menuIndex = 0;
 
 public:
     SeqSynthBarComponent(ComponentInterface::Props props)
@@ -63,8 +65,10 @@ public:
             if (action == ".left") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
-                        if (view->contextVar[selectedItemBank] > (showLeftArrow ? -1 : 0)) {
+                        if (view->contextVar[selectedItemBank] > 0) {
                             setContext(selectedItemBank, view->contextVar[selectedItemBank] - 1);
+                        } else if (menuIndex < items.size()) {
+                            menuIndex++;
                         }
                         renderNext();
                     }
@@ -73,7 +77,9 @@ public:
             if (action == ".right") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
-                        if (view->contextVar[selectedItemBank] < stepCount) {
+                        if (menuIndex > 0) {
+                            menuIndex--;
+                        } else if (view->contextVar[selectedItemBank] < stepCount) {
                             setContext(selectedItemBank, view->contextVar[selectedItemBank] + 1);
                         }
                         renderNext();
@@ -130,7 +136,7 @@ public:
         int nameX = x;
         int nameW = witdhLeft;
 
-        if (showLeftArrow) {
+        if (items.size() > 0) {
             renderArrow(nameX);
             nameX += 8;
             nameW -= 8;
@@ -183,7 +189,7 @@ public:
             // draw.filledRect({ x, relativePosition.y }, { itemW, size.h }, { foreground });
             // draw.text({ x + 2, textY }, items[i], fontSize, { textColor });
             draw.textCentered({ (int)(x + itemW * 0.5), textY }, items[i], fontSize, { textColor, .maxWidth = itemW });
-            if (isActive && view->contextVar[selectedItemBank] == i + 1) {
+            if (isActive && items.size() - i == menuIndex) {
                 draw.rect({ x, relativePosition.y }, { itemW, size.h - 1 }, { selectionColor });
             }
             x += itemW + 2;
@@ -195,7 +201,7 @@ public:
         if (updatePosition() && steps) {
             draw.filledRect(relativePosition, size, { background });
 
-            if (view->contextVar[selectedItemBank] == -1) {
+            if (view->contextVar[selectedItemBank] == 0 && menuIndex > 0) {
                 renderSynthMode();
             } else {
                 renderSeqMode();
@@ -259,12 +265,6 @@ public:
         /*md - `NAME: name` set the name of the component. */
         if (strcmp(key, "NAME") == 0) {
             name = value;
-            return true;
-        }
-
-        /*md - `SHOW_LEFT_ARROW: true` show the left arrow. */
-        if (strcmp(key, "SHOW_LEFT_ARROW") == 0) {
-            showLeftArrow = strcmp(value, "true") == 0;
             return true;
         }
 
