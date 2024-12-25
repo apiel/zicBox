@@ -177,18 +177,16 @@ public:
     void renderSynthMode()
     {
         int textY = (size.h - 8) * 0.5 + relativePosition.y;
-        int itemW = size.w / items.size();
+        int itemW = (size.w / items.size()) - 2;
         int x = relativePosition.x + 1;
         for (int i = 0; i < items.size(); i++) {
             // draw.filledRect({ x, relativePosition.y }, { itemW, size.h }, { foreground });
-            draw.text({ x + 2, textY }, items[i], fontSize, { textColor });
+            // draw.text({ x + 2, textY }, items[i], fontSize, { textColor });
+            draw.textCentered({ (int)(x + itemW * 0.5), textY }, items[i], fontSize, { textColor, .maxWidth = itemW });
             if (isActive && view->contextVar[selectedItemBank] == i + 1) {
                 draw.rect({ x, relativePosition.y }, { itemW, size.h - 1 }, { selectionColor });
             }
             x += itemW + 2;
-            if (i % 4 == 3) {
-                x += 2;
-            }
         }
     }
 
