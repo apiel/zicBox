@@ -46,7 +46,8 @@ protected:
     int stepW = 4;
 
     // std::vector<std::string> items = { "Main", "FX", "Amp.", "Freq.", "Wave", "Clic" };
-    std::vector<std::string> items = { "Main", "FX", "Op1", ".", "Op2", ".", "Op3", ".", "Op4", "." };
+    // std::vector<std::string> items = { "Main", "FX", "Op1", ".", "Op2", ".", "Op3", ".", "Op4", "." };
+    std::vector<std::string> items;
 
     int menuIndex = 0;
 
@@ -277,6 +278,16 @@ public:
         /*md - `SELECT_ITEM_CONTEXT: context_id` is the context id for the selected item (default is 10). */
         if (strcmp(key, "SELECT_ITEM_CONTEXT") == 0) {
             selectedItemBank = atoi(value);
+            return true;
+        }
+
+        /*md - `ITEMS: name name name name name` is the name of the items. */
+        if (strcmp(key, "ITEMS") == 0) {
+            char* name = strtok(value, " ");
+            while (name != NULL) {
+                items.push_back(name);
+                name = strtok(NULL, " ");
+            }
             return true;
         }
 
