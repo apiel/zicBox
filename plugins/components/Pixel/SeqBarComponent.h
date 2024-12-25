@@ -29,6 +29,7 @@ protected:
     Color foreground;
     Color activeStepColor;
     Color nameColor;
+    Color arrowColor;
 
     uint8_t stepIndex = -1;
 
@@ -52,6 +53,7 @@ public:
         , selectionColor(styles.colors.white)
         , textColor(styles.colors.text)
         , foreground({ 0x40, 0x40, 0x40 })
+        , arrowColor(styles.colors.primary)
         , activeStepColor(styles.colors.primary)
         , nameColor(styles.colors.primary)
         , keypadLayout(this, [&](std::string action) {
@@ -122,7 +124,7 @@ public:
                 { nameX + 1, relativePosition.y + arrowCenterY },
                 { nameX + arrowW, relativePosition.y + arrowCenterY + side },
             };
-            draw.filledPolygon(points, { textColor });
+            draw.filledPolygon(points, { arrowColor });
 
             nameX += 8;
             nameW -= 8;
