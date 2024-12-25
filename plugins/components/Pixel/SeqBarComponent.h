@@ -61,7 +61,7 @@ public:
             if (action == ".left") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
-                        if (view->contextVar[selectedItemBank] > 0) {
+                        if (view->contextVar[selectedItemBank] > (showLeftArrow ? -1 : 0)) {
                             setContext(selectedItemBank, view->contextVar[selectedItemBank] - 1);
                         }
                         renderNext();
@@ -114,7 +114,7 @@ public:
         int nameW = witdhLeft;
 
         if (showLeftArrow) {
-            draw.filledRect({ nameX, relativePosition.y }, { 8, size.h }, { foreground });
+            draw.filledRect({ nameX, relativePosition.y }, { 6, size.h }, { foreground });
             int arrowH = 7;
             int arrowW = 4;
             int arrowCenterY = size.h * 0.5;

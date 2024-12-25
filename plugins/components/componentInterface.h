@@ -22,7 +22,7 @@ public:
         void (*sendAudioEvent)(AudioEventType event);
         ControllerInterface* (*getController)(const char* name);
         ViewInterface* view;
-        std::function<void(uint8_t index, uint8_t value)> setContext;
+        std::function<void(uint8_t index, float value)> setContext;
     };
 
 protected:
@@ -49,7 +49,7 @@ public:
     AudioPlugin& (*getPlugin)(const char* name, int16_t track);
     ControllerInterface* (*getController)(const char* name);
     void (*sendAudioEvent)(AudioEventType event);
-    std::function<void(uint8_t index, uint8_t value)> setContext;
+    std::function<void(uint8_t index, float value)> setContext;
     std::vector<ValueInterface*> values;
     Point position;
     Size size;
