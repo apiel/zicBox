@@ -6,7 +6,6 @@ local value = require("config/pixel/libs/component/value")
 
 local function row(group, track, y)
     local rowH = 14
-    y = y - 1 - rowH
     ui.component("SeqSynthBar",
         { "SEQ_PLUGIN" },
         { SEQ_PLUGIN = "Sequencer", },
@@ -26,12 +25,11 @@ local function row(group, track, y)
         })
 
 
-    return y
+    return y + 1 + rowH
 end
 
 local function progressBar(group, track, y)
     local progressH = 5
-    y = y - 4 - progressH
     ui.component("SeqProgressBar",
         { "SEQ_PLUGIN" },
         { SEQ_PLUGIN = "Sequencer 11", },
@@ -49,7 +47,7 @@ local function progressBar(group, track, y)
             }
         })
 
-    return y
+    return y + 4 + progressH
 end
 
 local function encoders(group, track, y)
@@ -145,16 +143,16 @@ local function drumSample(track)
 
     local y = 0
 
-    y = KeyInfoPosition.y - 5
-    y = row(8, 18, y)
-    y = row(7, 17, y)
-    y = row(6, 16, y)
-    y = row(5, 15, y)
-    y = row(4, 14, y)
-    y = row(3, 13, y)
-    y = row(2, 12, y)
-    y = row(1, 11, y)
+    y = 30
     y = progressBar(0, track, y)
+    y = row(1, 11, y)
+    y = row(2, 12, y)
+    y = row(3, 13, y)
+    y = row(4, 14, y)
+    y = row(5, 15, y)
+    y = row(6, 16, y)
+    y = row(7, 17, y)
+    y = row(8, 18, y)
 
     y = 0
     encodersMaster(0, track, y)

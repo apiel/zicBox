@@ -47,7 +47,7 @@ protected:
 
     void renderLabel()
     {
-        if (stringValueReplaceTitle && value->props().type == VALUE_STRING) {
+        if (stringValueReplaceTitle && value->hasType(VALUE_STRING)) {
             draw.textCentered({ knobCenter.x, relativePosition.y + size.h - fontLabelSize }, value->string(), fontLabelSize, { titleColor.color, NULL, size.w - 4 });
         } else {
             draw.textCentered({ knobCenter.x, relativePosition.y + size.h - fontLabelSize }, label.empty() ? value->label() : label, fontLabelSize, { titleColor.color });
@@ -74,7 +74,7 @@ protected:
             if (endAngle > 360) {
                 endAngle = endAngle - 360;
             }
-            Color color = useBar2Color != -1 && value->pct() > useBar2Color ?  bar2Color.color : barColor.color;
+            Color color = useBar2Color != -1 && value->pct() > useBar2Color ? bar2Color.color : barColor.color;
             draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, endAngle, { color, .thickness = 5 });
         }
     }
@@ -105,7 +105,7 @@ protected:
 
     void renderValue()
     {
-        if (!stringValueReplaceTitle && ((value->props().type == VALUE_STRING && type != 3) || type == ENCODER_TYPE::STRING)) {
+        if (!stringValueReplaceTitle && ((value->hasType(VALUE_STRING) && type != 3) || type == ENCODER_TYPE::STRING)) {
             draw.textCentered({ valuePosition.x, valuePosition.y - 5 }, value->string(), fontValueSize, { valueColor.color });
         } else {
             float val = value->get();
@@ -142,7 +142,7 @@ protected:
         renderActiveGroup();
 
         renderLabel();
-        if (value->props().type == VALUE_CENTERED) {
+        if (value->hasType(VALUE_CENTERED)) {
             renderCenteredBar();
         } else {
             renderBar();
@@ -150,7 +150,7 @@ protected:
 
         if (showValue) {
             renderUnit();
-            if (value->props().type == VALUE_CENTERED && type == ENCODER_TYPE::TWO_SIDED) {
+            if (value->hasType(VALUE_CENTERED) && type == ENCODER_TYPE::TWO_SIDED) {
                 renderTwoSidedValue();
             } else {
                 renderValue();
@@ -238,7 +238,8 @@ public:
         STRING,
         NUMBER,
         TWO_VALUES,
-    } type = ENCODER_TYPE::NORMAL;
+    } type
+        = ENCODER_TYPE::NORMAL;
 
     bool config(char* key, char* params)
     {
@@ -271,7 +272,7 @@ public:
             } else if (strcmp(params, "NUMBER") == 0) {
                 type = ENCODER_TYPE::NUMBER;
             } else if (strcmp(params, "TWO_VALUES") == 0) {
-                type = ENCODER_TYPE::TWO_VALUES;                
+                type = ENCODER_TYPE::TWO_VALUES;
             } else {
                 type = (ENCODER_TYPE)atoi(params);
             }
