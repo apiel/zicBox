@@ -46,6 +46,8 @@ protected:
     bool showLeftArrow = true;
     int stepW = 4;
 
+    std::vector<std::string> items = { "Main", "FX", "Amp.", "Freq.", "Wave", "Clic" };
+
 public:
     SeqSynthBarComponent(ComponentInterface::Props props)
         : Component(props)
@@ -118,10 +120,6 @@ public:
             { x + arrowW, relativePosition.y + arrowCenterY + side },
         };
         draw.filledPolygon(points, { arrowColor });
-
-        // if (view->contextVar[selectedItemBank] == -1) {
-        //     draw.rect({ x, relativePosition.y }, { 6, size.h - 1 }, { selectionColor });
-        // }
     }
 
     int rendername(int x)
@@ -157,24 +155,52 @@ public:
         return witdhLeft + 4;
     }
 
+    void renderSeqMode()
+    {
+        int x = relativePosition.x + 1;
+        x += rendername(x);
+        for (int i = 0; i < stepCount; i++) {
+            Step* step = &steps[i];
+            Color color = step->enabled ? darken(activeStepColor, 1.0 - step->velocity) : foreground;
+            draw.filledRect({ x, relativePosition.y }, { stepW, size.h }, { color });
+            if (isActive && view->contextVar[selectedItemBank] == i + 1) {
+                draw.rect({ x, relativePosition.y }, { stepW, size.h - 1 }, { selectionColor });
+            }
+            x += stepW + 2;
+            if (i % 4 == 3) {
+                x += 2;
+            }
+        }
+    }
+
+    int fontSize = 6;
+    void renderSynthMode()
+    {
+        int textY = (size.h - 8) * 0.5 + relativePosition.y;
+        int itemW = size.w / items.size();
+        int x = relativePosition.x + 1;
+        for (int i = 0; i < items.size(); i++) {
+            // draw.filledRect({ x, relativePosition.y }, { itemW, size.h }, { foreground });
+            draw.text({ x + 2, textY }, items[i], fontSize, { textColor });
+            if (isActive && view->contextVar[selectedItemBank] == i + 1) {
+                draw.rect({ x, relativePosition.y }, { itemW, size.h - 1 }, { selectionColor });
+            }
+            x += itemW + 2;
+            if (i % 4 == 3) {
+                x += 2;
+            }
+        }
+    }
+
     void render() override
     {
         if (updatePosition() && steps) {
             draw.filledRect(relativePosition, size, { background });
 
-            int x = relativePosition.x + 1;
-            x += rendername(x);
-            for (int i = 0; i < stepCount; i++) {
-                Step* step = &steps[i];
-                Color color = step->enabled ? darken(activeStepColor, 1.0 - step->velocity) : foreground;
-                draw.filledRect({ x, relativePosition.y }, { stepW, size.h }, { color });
-                if (isActive && view->contextVar[selectedItemBank] == i + 1) {
-                    draw.rect({ x, relativePosition.y }, { stepW, size.h - 1 }, { selectionColor });
-                }
-                x += stepW + 2;
-                if (i % 4 == 3) {
-                    x += 2;
-                }
+            if (view->contextVar[selectedItemBank] == -1) {
+                renderSynthMode();
+            } else {
+                renderSeqMode();
             }
         }
     }
