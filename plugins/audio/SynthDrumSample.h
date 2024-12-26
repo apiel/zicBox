@@ -9,8 +9,8 @@
 #include "fileBrowser.h"
 #include "mapping.h"
 
-#include "log.h"
 #include "helpers/random.h"
+#include "log.h"
 #include "utils/ValSerializeSndFile.h"
 
 #ifndef MAX_SAMPLE_VOICES
@@ -41,6 +41,7 @@ protected:
     uint64_t indexStart = 0;
     uint64_t indexEnd = 0;
     float stepIncrement = 1.0;
+    float stepMultiplier = 1.0;
 
     float velocity = 1.0;
 
@@ -59,6 +60,19 @@ protected:
         for (uint64_t i = 0; i < sampleBuffer.count; i++) {
             sampleBuffer.data[i] = sampleBuffer.data[i] * gain;
         }
+    }
+
+    uint8_t baseNote = 60;
+    float getSampleStep(uint8_t note)
+    {
+        // https://gist.github.com/YuxiUx/ef84328d95b10d0fcbf537de77b936cd
+        // pow(2, ((0) / 12.0)) = 1 for 0 semitone
+        // pow(2, ((1) / 12.0)) = 1.059463094 for 1 semitone
+        // pow(2, ((2) / 12.0)) = 1.122462048 for 2 semitone
+        // ...
+
+        // printf("getSampleStep: %d >> %d = %f\n", note, note - baseNote, pow(2, (note - baseNote) / 12.0));
+        return pow(2, ((note - baseNote) / 12.0)) * stepMultiplier;
     }
 
 public:
@@ -117,8 +131,9 @@ public:
     void noteOn(uint8_t note, float _velocity) override
     {
         // printf("[%d] drum sample noteOn: %d %f\n", track, note, _velocity);
-        logDebug("drum sample noteOn: %d %f\n", note, velocity);
+        // logDebug("drum sample noteOn: %d %f", note, velocity);
         index = indexStart;
+        stepIncrement = getSampleStep(note);
         velocity = _velocity;
     }
 
@@ -139,11 +154,11 @@ public:
         sf_close(file);
 
         if (sfinfo.channels < props.channels) {
-            stepIncrement = 0.5f;
+            stepMultiplier = 0.5f;
         } else if (sfinfo.channels > props.channels) {
-            stepIncrement = 2.0f;
+            stepMultiplier = 2.0f;
         } else {
-            stepIncrement = 1.0f;
+            stepMultiplier = 1.0f;
         }
 
         index = sampleBuffer.count;
