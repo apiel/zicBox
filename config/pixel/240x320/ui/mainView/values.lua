@@ -1,5 +1,7 @@
 local visibility = require("config/pixel/libs/containers/visibility")
 local value = require("config/pixel/libs/component/value")
+local encoder3 = require("config/pixel/libs/component/encoder3")
+local graph = require("config/pixel/libs/component/graph")
 
 -- local valueH = 11
 local valueH = 25
@@ -70,7 +72,7 @@ function values.mainDrumSample(group, track, y)
 end
 
 function values.mainDrum23(group, track, y)
-    container(group, y, { VISIBILITY_CONTEXT = {"10 SHOW_WHEN 0", "11 SHOW_WHEN 0" } })
+    container(group, y, { VISIBILITY_CONTEXT = { "10 SHOW_WHEN 0", "11 SHOW_WHEN 0" } })
 
     value("Volume VOLUME", topLeft(), tertiary({}, group, track, 0))
     value("Distortion LEVEL", bottomLeft(), primary({}, group, track, 1))
@@ -98,6 +100,18 @@ function values.drum23(group, track, y)
     value("Distortion DRIVE", bottomLeft(), primary({}, group, track, 1))
     value("Distortion COMPRESS", topRight(), secondary({}, group, track, 2))
     value("Distortion BASS", bottomRight(), quaternary({}, group, track, 3))
+
+    container(group, y, { VISIBILITY_CONTEXT = "11 SHOW_WHEN 2" })
+    graph(
+        { PLUGIN = "Drum23", DATA_ID = "WAVEFORM" },
+        { x = 0, y = 0, w = W3_4 - 2, h = 50 },
+        { GROUP = group, TRACK = track, RENDER_TITLE_ON_TOP = false, ENCODERS = { "0 WAVEFORM_TYPE", "1 SHAPE", "2 MACRO" } }
+    )
+    encoder3(
+        { ENCODER_ID = 3, VALUE = "Drum23 GAIN_CLIPPING" },
+        { x = W3_4, y = 0, w = W1_4, h = 50 },
+        { GROUP = group, COLOR = "quaternary", TRACK = track }
+    )
 end
 
 return values
