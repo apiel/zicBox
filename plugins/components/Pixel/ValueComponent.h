@@ -42,7 +42,11 @@ protected:
 
     void setMaxFontSize()
     {
-        maxFontSize = std::max({ valueFontSize, labelFontSize, unitFontSize });
+        if (showValue) {
+            maxFontSize = std::max({ valueFontSize, labelFontSize, unitFontSize });
+        } else {
+            maxFontSize = std::max({ labelFontSize, unitFontSize });
+        }
     }
 
     std::string getValStr()
@@ -106,6 +110,10 @@ public:
 
                 if (showLabel) {
                     x = draw.text({ x, labelY }, val->props().label, labelFontSize, { labelColor.color, .font = font }) + 2;
+                }
+
+                if (showLabelOverValue) {
+                    draw.textCentered({ x, valueY - (valueFontSize + 2) }, val->props().label, labelFontSize, { labelColor.color, .font = font });
                 }
 
                 if (showValue) {
@@ -180,18 +188,21 @@ public:
         /*md - `SHOW_VALUE: true` shows the value (default: true) */
         if (strcmp(key, "SHOW_VALUE") == 0) {
             showValue = strcmp(params, "true") == 0;
+            setMaxFontSize();
             return true;
         }
 
         /*md - `SHOW_UNIT: true` shows the unit (default: true) */
         if (strcmp(key, "SHOW_UNIT") == 0) {
             showUnit = strcmp(params, "true") == 0;
+            setMaxFontSize();
             return true;
         }
 
         /*md - `SHOW_LABEL: true` shows the label (default: true) */
         if (strcmp(key, "SHOW_LABEL") == 0) {
             showLabel = strcmp(params, "true") == 0;
+            setMaxFontSize();
             return true;
         }
 
@@ -201,6 +212,7 @@ public:
             if (showLabelOverValue) {
                 showLabel = false;
             }
+            setMaxFontSize();
             return true;
         }
 

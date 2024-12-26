@@ -15,6 +15,7 @@ local function base(options, group, track, encoderId)
     options.ENCODER_ID = encoderId
     options.TRACK = track
     options.GROUP = group
+    options.SHOW_LABEL_OVER_VALUE = true
     return options
 end
 
