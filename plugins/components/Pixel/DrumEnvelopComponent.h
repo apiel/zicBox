@@ -32,7 +32,6 @@ protected:
     uint16_t currentTimeMs = 0;
 
     int envelopHeight = 30;
-    int cursorY = 0;
     Point envPosition = { 0, 0 };
 
     bool filled = true;
@@ -48,6 +47,17 @@ protected:
     int encoderPhase = -1;
     int encoderTime = -1;
     int encoderModulation = -1;
+
+    bool renderTitleOnTop = true;
+
+    void updateGraphHeight()
+    {
+        if (renderTitleOnTop) {
+            envelopHeight = size.h - 6 - 10;
+        } else {
+            envelopHeight = size.h - 6 - 10 - 9;
+        }
+    }
 
     void renderEnvelop()
     {
@@ -76,6 +86,7 @@ protected:
 
     void renderEditStep()
     {
+        int cursorY = envPosition.y + envelopHeight + 5;
         if (currentstep < envData->size() - 1) {
             float currentTime = envData->at(currentstep).time;
             float nextTime = envData->at(currentstep + 1).time;
@@ -89,11 +100,18 @@ protected:
 
     void renderTitles()
     {
-        int cellWidth = size.w / 3;
-        int x = relativePosition.x + cellWidth * 0.5;
-        draw.textCentered({ x, relativePosition.y }, std::to_string(currentstep + 1) + "/" + std::to_string(envData->size()), 8, { textColor.color });
-        draw.textCentered({ x + cellWidth, relativePosition.y }, std::to_string(currentTimeMs) + "ms", 8, { textColor.color });
-        draw.textCentered({ x + cellWidth * 2, relativePosition.y }, std::to_string((int)(currentMod * 100)) + "%", 8, { textColor.color });
+        if (renderTitleOnTop) {
+            int cellWidth = size.w / 3;
+            int x = relativePosition.x + cellWidth * 0.5;
+            draw.textCentered({ x, relativePosition.y }, std::to_string(currentstep + 1) + "/" + std::to_string(envData->size()), 8, { textColor.color });
+            draw.textCentered({ x + cellWidth, relativePosition.y }, std::to_string(currentTimeMs) + "ms", 8, { textColor.color });
+            draw.textCentered({ x + cellWidth * 2, relativePosition.y }, std::to_string((int)(currentMod * 100)) + "%", 8, { textColor.color });
+        } else {
+            int x = relativePosition.x;
+            draw.text({ x + 2, relativePosition.y }, std::to_string(currentTimeMs) + "ms", 8, { textColor.color });
+            draw.textRight({ x + size.w - 2, relativePosition.y }, std::to_string((int)(currentMod * 100)) + "%", 8, { textColor.color });
+            draw.text({ x + 2, relativePosition.y + size.h - 8 }, std::to_string(currentstep + 1) + "/" + std::to_string(envData->size()), 8, { textColor.color });
+        }
     }
 
 public:
@@ -106,15 +124,13 @@ public:
         , outlineColor(lighten(styles.colors.primary, 0.5), inactiveColorRatio)
     {
         updateColors();
-
-        envelopHeight = size.h - 6 - 10;
+        updateGraphHeight();
     }
 
     void render() override
     {
         if (updatePosition()) {
             envPosition = { relativePosition.x, relativePosition.y + 10 };
-            cursorY = relativePosition.y + size.h - 1;
             draw.filledRect(relativePosition, size, { bgColor });
 
             if (envData) {
@@ -213,6 +229,13 @@ public:
         /*md - `ENCODER_TIME: id` is the id of the encoder to control the time. */
         if (strcmp(key, "ENCODER_TIME") == 0) {
             encoderTime = atoi(value);
+            return true;
+        }
+
+        /*md - `RENDER_TITLE_ON_TOP: true/false` is if the title should be rendered on top (default: true). */
+        if (strcmp(key, "RENDER_TITLE_ON_TOP") == 0) {
+            renderTitleOnTop = strcmp(value, "true") == 0;
+            updateGraphHeight();
             return true;
         }
 

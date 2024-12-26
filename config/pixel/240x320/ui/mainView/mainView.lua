@@ -30,7 +30,7 @@ local function row(group, track, y, menuContext, synth, items)
 end
 
 local function rowDrum23(group, track, y, menuContext)
-    return row(group, track, y, menuContext, "Drum23", { "Click", "Wave", "Freq.", "Amp.", "FX" })
+    return row(group, track, y, menuContext, "Drum23", { "Click", "Freq.", "Amp.", "Wave", "FX" })
 end
 
 local function rowDrumSample(group, track, y, menuContext)

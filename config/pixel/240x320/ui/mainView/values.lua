@@ -2,6 +2,7 @@ local visibility = require("config/pixel/libs/containers/visibility")
 local value = require("config/pixel/libs/component/value")
 local encoder3 = require("config/pixel/libs/component/encoder3")
 local graph = require("config/pixel/libs/component/graph")
+local drumEnvelop = require("config/pixel/libs/component/drumEnvelop")
 
 -- local valueH = 11
 local valueH = 25
@@ -109,6 +110,18 @@ function values.drum23(group, track, y)
     )
     encoder3(
         { ENCODER_ID = 3, VALUE = "Drum23 GAIN_CLIPPING" },
+        { x = W3_4, y = 0, w = W1_4, h = 50 },
+        { GROUP = group, COLOR = "quaternary", TRACK = track }
+    )
+
+    container(group, y, { VISIBILITY_CONTEXT = "11 SHOW_WHEN 3" })
+    drumEnvelop(
+        { PLUGIN = "Drum23", ENVELOP_DATA_ID = "0" },
+        { x = 0, y = 0, w = W3_4 - 2, h = 50 },
+        { GROUP = group, TRACK = track, RENDER_TITLE_ON_TOP = false, ENCODERS = { "0 TIME", "1 PHASE", "2 MODULATION",  } }
+    )
+    encoder3(
+        { ENCODER_ID = 3, VALUE = "Drum23 DURATION" },
         { x = W3_4, y = 0, w = W1_4, h = 50 },
         { GROUP = group, COLOR = "quaternary", TRACK = track }
     )
