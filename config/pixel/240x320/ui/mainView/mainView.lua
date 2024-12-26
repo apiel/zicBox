@@ -29,6 +29,10 @@ local function row(group, track, y, menuContext, synth, items)
     return y + 1 + rowH
 end
 
+local function rowDrum23(group, track, y, menuContext)
+    return row(group, track, y, menuContext, "Drum23", { "Click", "Wave", "Freq.", "Amp.", "FX" })
+end
+
 local function progressBar(group, track, y)
     local progressH = 5
     ui.component("SeqProgressBar",
@@ -94,8 +98,8 @@ local function mainView()
     -- y = 30
     y = 60
     y = progressBar(0, 1, y)
-    y = row(1, 1, y, 11, "Drum23", { "Main", "FX", "Amp.", "Freq.", "Wave", "Clic" })
-    y = row(2, 2, y, 12, "Drum23", { "Main", "FX", "Amp.", "Freq.", "Wave", "Clic" })
+    y = rowDrum23(1, 1, y, 11)
+    y = rowDrum23(2, 2, y, 12)
     y = row(3, 3, y, 13, "DrumSample", {})
     y = row(4, 4, y, 14, "DrumSample", {})
     y = row(5, 5, y, 15, "DrumSample", {})
@@ -103,18 +107,18 @@ local function mainView()
     y = row(7, 7, y, 17, "DrumSample", {})
     y = row(8, 8, y, 18, "DrumSample", {})
 
--- "Main", "FX", "Op1", ".", "Op2", ".", "Op3", ".", "Op4", "."
+    -- "FX", "Op1", ".", "Op2", ".", "Op3", ".", "Op4", "."
 
     y = 0
     values.master(0, 0, y)
-    values.main(1, 1, y)
-    values.main(2, 2, y)
-    values.main(3, 3, y)
-    values.main(4, 4, y)
-    values.main(5, 5, y)
-    values.main(6, 6, y)
-    values.main(7, 7, y)
-    values.main(8, 8, y)
+    values.mainDrum23(1, 1, y)
+    values.mainDrum23(2, 2, y)
+    values.mainDrumSample(3, 3, y)
+    values.mainDrumSample(4, 4, y)
+    values.mainDrumSample(5, 5, y)
+    values.mainDrumSample(6, 6, y)
+    values.mainDrumSample(7, 7, y)
+    values.mainDrumSample(8, 8, y)
 end
 
 return mainView

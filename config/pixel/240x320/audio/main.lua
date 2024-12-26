@@ -44,6 +44,7 @@ audio.plugin("SerializeTrack", { TRACK = 10, FILEPATH = "serializedPixel2/mixer_
 
 audio.plugin("Mixer2", { NAME = "MixerMaster", TRACK_A = 9, TRACK_B = 10, VALUE = 50, TRACK = 0 })
 
+audio.plugin("EffectFilterMultiMode", { NAME = "MasterFilter" })
 audio.plugin("EffectGainVolume", { NAME = "MasterVolume" })
 audio.plugin("AudioOutput")
 audio.plugin("SerializeTrack", { FILEPATH = "serializedPixel2/master.cfg" })
