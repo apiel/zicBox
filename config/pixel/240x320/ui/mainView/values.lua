@@ -111,6 +111,11 @@ end
 
 local function sampleValues(group, track, y, contextIndex)
     container(group, y, { VISIBILITY_CONTEXT = contextIndex .. " SHOW_WHEN 1" })
+
+    value("DrumSample BROWSER", topLeft(), tertiary({}, group, track, 0))
+    value("DrumSample START", bottomLeft(), primary({}, group, track, 1))
+    -- value("DrumSample BROWSER", topRight(), secondary({}, group, track, 2))
+    value("DrumSample END", bottomRight(), quaternary({}, group, track, 3))
 end
 
 
@@ -123,20 +128,20 @@ local function seq(group, track, y)
     -- value("Volume VOLUME", bottomRight(), quaternary({}, group, track, 3))
 end
 
-function values.mainDrumSample(group, track, y, contextIndex)
+function values.drumSample(group, track, y, contextIndex)
     container(group, y, { VISIBILITY_CONTEXT = { "10 SHOW_WHEN 0", contextIndex .. " SHOW_WHEN 0" } })
 
     value("Volume VOLUME", topLeft(), tertiary({}, group, track, 0))
-    value("DrumSample START", bottomLeft(), primary({}, group, track, 1))
-    value("DrumSample BROWSER", topRight(), secondary({ SHOW_LABEL = false, }, group, track, 2))
-    value("DrumSample END", bottomRight(), quaternary({}, group, track, 3))
+    -- value("DrumSample START", bottomLeft(), primary({}, group, track, 1))
+    -- value("DrumSample BROWSER", topRight(), secondary({}, group, track, 2))
+    -- value("DrumSample END", bottomRight(), quaternary({}, group, track, 3))
 
     seq(group, track, y)
 
-    -- values.mainDrum23(group, track, y, contextIndex)
+    sampleValues(group, track, y, contextIndex)
 end
 
-function values.mainDrum23(group, track, y, contextIndex)
+function values.drum23(group, track, y, contextIndex)
     container(group, y, { VISIBILITY_CONTEXT = { "10 SHOW_WHEN 0", contextIndex .. " SHOW_WHEN 0" } })
 
     value("Volume VOLUME", topLeft(), tertiary({}, group, track, 0))
