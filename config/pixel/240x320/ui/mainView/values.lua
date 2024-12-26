@@ -70,7 +70,7 @@ function values.mainDrumSample(group, track, y)
 end
 
 function values.mainDrum23(group, track, y)
-    container(group, y, { VISIBILITY_CONTEXT = "10 SHOW_WHEN 0" })
+    container(group, y, { VISIBILITY_CONTEXT = {"10 SHOW_WHEN 0", "11 SHOW_WHEN 0" } })
 
     value("Volume VOLUME", topLeft(), tertiary({}, group, track, 0))
     value("Distortion LEVEL", bottomLeft(), primary({}, group, track, 1))
@@ -98,8 +98,6 @@ function values.drum23(group, track, y)
     value("Distortion DRIVE", bottomLeft(), primary({}, group, track, 1))
     value("Distortion COMPRESS", topRight(), secondary({}, group, track, 2))
     value("Distortion BASS", bottomRight(), quaternary({}, group, track, 3))
-
-    seq(group, track, y)
 end
 
 return values
