@@ -5,9 +5,7 @@ local graph = require("config/pixel/libs/component/graph")
 local drumEnvelop = require("config/pixel/libs/component/drumEnvelop")
 
 local function drum23_synth(track)
-  scrollGroup("Scroll", { x = 0, y = 0, w = ScreenWidth, h = 214 }, {
-    SCROLL_TO_CENTER = true,
-  })
+  scrollGroup({ x = 0, y = 0, w = ScreenWidth, h = 214 }, { SCROLL_TO_CENTER = true })
 
   local sepHeight = 12
   local rowHeight = 55

@@ -214,7 +214,6 @@ public:
 
         if (strcmp(key, "CONTAINER") == 0) {
             string type = strtok(value, " ");
-            string name = strtok(NULL, " ");
             Point position = {
                 atoi(strtok(NULL, " ")),
                 atoi(strtok(NULL, " ")),
@@ -228,6 +227,7 @@ public:
                     size.h = atoi(h);
                 }
             }
+            string name = "container_" + to_string(containers.size());
             ComponentContainer* container = newContainer(type, this, name, position, size);
             if (container != NULL) {
                 logInfo("Adding container (%s): %s %dx%d %dx%d", type.c_str(), name.c_str(), position.x, position.y, size.w, size.h);
@@ -235,6 +235,12 @@ public:
             } else {
                 logWarn("Unknown container: %s", type.c_str());
             }
+            return true;
+        }
+
+        if (strcmp(key, "CONTAINER_NAME") == 0) {
+            string name = strtok(value, " ");
+            containers.back()->name = name;
             return true;
         }
 

@@ -46,7 +46,6 @@ end
 
 local function seq(group, track, y)
     visibility(
-        "DrumSample" .. track,
         { x = 0, y = y, w = ScreenWidth, h = valueH * 2 + 2 },
         { VISIBILITY_GROUP = group, VISIBILITY_CONTEXT = "10 SHOW_WHEN_OVER 0" }
     )
@@ -59,7 +58,6 @@ end
 
 function values.mainDrumSample(group, track, y)
     visibility(
-        "track" .. track,
         { x = 0, y = y, w = ScreenWidth, h = valueH * 2 + 2 },
         { VISIBILITY_GROUP = group, VISIBILITY_CONTEXT = "10 SHOW_WHEN 0" }
     )
@@ -74,7 +72,6 @@ end
 
 function values.mainDrum23(group, track, y)
     visibility(
-        "track" .. track,
         { x = 0, y = y, w = ScreenWidth, h = valueH * 2 + 2 },
         { VISIBILITY_GROUP = group, VISIBILITY_CONTEXT = "10 SHOW_WHEN 0" }
     )
@@ -88,7 +85,7 @@ function values.mainDrum23(group, track, y)
 end
 
 function values.master(group, track, y)
-    visibility("master", { x = 0, y = y, w = ScreenWidth, h = valueH * 2 + 2 }, { VISIBILITY_GROUP = group })
+    visibility({ x = 0, y = y, w = ScreenWidth, h = valueH * 2 + 2 }, { VISIBILITY_GROUP = group })
 
     -- might not even want to put volume here can be in sub-page
     --> rather put step reducer and another effect
