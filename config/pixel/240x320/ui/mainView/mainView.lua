@@ -81,14 +81,14 @@ local function mainView()
 
     textGrid(
         {
-            "&icon::play::filled &icon::toggle::rect ^...",
+            "&icon::toggle::rect &icon::play::filled ^...",
             "Menu Sub Master"
         }, KeyInfoPosition,
         {
             SHIFT_VISIBILITY = { index = 254, value = 1 },
             KEYMAPS = {
-                { key = "q", action = "playPause" },
-                -- { key = "w", action = "setView:Track2" }, // stepToggle
+                -- { key = "q", action = "playPause" },
+                { key = "w", action = "playPause" }, -- stepToggle
                 { key = "e", action = "shift:254:1:0" },
                 { key = "a", action = "setView:menu" },
                 { key = "s", action = "setView:sub" },
