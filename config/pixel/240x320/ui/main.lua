@@ -20,7 +20,7 @@ W3_4 = W1_4 * 3
 KeyInfoPosition = { x = 0, y = 296, w = W3_4 }
 
 PrimaryBar = "#377275"
-SecondaryBar = "#734047"
+SecondaryBar = "#b54f5e"
 TertiaryBar = "#368a36"
 QuaternaryBar = "#94854b"
 
