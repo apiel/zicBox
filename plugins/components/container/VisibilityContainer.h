@@ -3,6 +3,7 @@
 
 #include "./ComponentContainer.h"
 #include "plugins/components/componentInterface.h"
+#include "plugins/components/utils/VisibilityContext.h"
 
 #include <vector>
 
@@ -17,27 +18,7 @@ protected:
     int group = -1;
     bool isGroupVisible = true;
 
-    // int16_t contextIndex = -1;
-    // float contextValue = 0;
-    // bool isContextVisible = true;
-
-    enum Condition {
-        SHOW_WHEN,
-        SHOW_WHEN_NOT,
-        SHOW_WHEN_OVER,
-        SHOW_WHEN_UNDER
-    } cond
-        = SHOW_WHEN;
-
-    struct ContextCondition {
-        int16_t index;
-        float value;
-        Condition cond;
-        bool isVisible = true;
-    };
-
-    std::vector<ContextCondition> contextConditions;
-    bool isContextVisible = true;
+    VisibilityContext visibility;
 
     Color bgColor;
 
@@ -50,14 +31,14 @@ public:
 
     void renderBackground()
     {
-        if (isGroupVisible && isContextVisible) {
+        if (isGroupVisible && visibility.visible) {
             view->draw.filledRect(position, size, { bgColor });
         }
     }
 
     bool isVisible(Point initialPosition, Size componentSize) override
     {
-        return isGroupVisible && isContextVisible;
+        return isGroupVisible && visibility.visible;
     }
 
     bool updateCompontentPosition(Point initialPosition, Size componentSize, Point& relativePosition) override
@@ -83,25 +64,7 @@ public:
 
     void onContext(uint8_t index, float value) override
     {
-        bool update = false;
-        isContextVisible = true;
-        for (auto& cond : contextConditions) {
-            if (index == cond.index) {
-                if (cond.cond == SHOW_WHEN_NOT) {
-                    cond.isVisible = value != cond.value;
-                } else if (cond.cond == SHOW_WHEN_OVER) {
-                    cond.isVisible = value > cond.value;
-                } else if (cond.cond == SHOW_WHEN_UNDER) {
-                    cond.isVisible = value < cond.value;
-                } else {
-                    cond.isVisible = value == cond.value;
-                }
-                update = true;
-            }
-            isContextVisible = isContextVisible && cond.isVisible;
-        }
-
-        if (update) {
+        if (visibility.onContext(index, value)) {
             renderBackground();
             view->renderAllNext(this);
         }
@@ -122,21 +85,7 @@ public:
         }
 
         /*md - `VISIBILITY_CONTEXT: index SHOW_WHEN/SHOW_WHEN_NOT/SHOW_WHEN_OVER/SHOW_WHEN_UNDER value` the context index to show/hide the components for a given value. */
-        if (strcmp(key, "VISIBILITY_CONTEXT") == 0) {
-            ContextCondition context;
-            context.index = atoi(strtok(value, " "));
-            std::string condStr = strtok(NULL, " ");
-            context.value = atof(strtok(NULL, " "));
-            if (condStr == "SHOW_WHEN_NOT") {
-                context.cond = SHOW_WHEN_NOT;
-            } else if (condStr == "SHOW_WHEN_OVER") {
-                context.cond = SHOW_WHEN_OVER;
-            } else if (condStr == "SHOW_WHEN_UNDER") {
-                context.cond = SHOW_WHEN_UNDER;
-            } else {
-                context.cond = SHOW_WHEN;
-            }
-            contextConditions.push_back(context);
+        if (visibility.config(key, value)) {
             return true;
         }
 
