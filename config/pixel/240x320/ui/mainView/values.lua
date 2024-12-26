@@ -16,6 +16,7 @@ local function base(options, group, track, encoderId)
     options.TRACK = track
     options.GROUP = group
     options.SHOW_LABEL_OVER_VALUE = true
+    -- options.LABEL_FONT_SIZE = 8
     return options
 end
 
@@ -72,7 +73,7 @@ function values.master(group, track, y)
 
     value("VolumeDrive VOLUME", topLeft(), tertiary({}, group, track, 0))
     value("VolumeDrive DRIVE", bottomLeft(), primary({}, group, track, 1))
-    value("MMFilter CUTOFF", topRight(), secondary({ USE_STRING_VALUE = true, SHOW_LABEL = false }, group, track, 2))
+    value("MMFilter CUTOFF", topRight(), quaternary({ USE_STRING_VALUE = true, LABEL = "Filter" }, group, track, 2))
     value("MMFilter RESONANCE", bottomRight(), quaternary({}, group, track, 3))
 end
 

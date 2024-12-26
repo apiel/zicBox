@@ -39,6 +39,15 @@ protected:
     bool showLabelOverValue = false;
     bool useStringValue = false;
     bool verticalAlignCenter = false;
+    std::string label;
+
+    std::string getLabel()
+    {
+        if (!label.length()) {
+            return val->props().label;
+        }
+        return label;
+    }
 
     void setMaxFontSize()
     {
@@ -108,12 +117,10 @@ public:
                 int valueY = textY + maxFontSize - valueFontSize;
                 int unitY = textY + maxFontSize - unitFontSize;
 
-                if (showLabel) {
-                    x = draw.text({ x, labelY }, val->props().label, labelFontSize, { labelColor.color, .font = font }) + 2;
-                }
-
                 if (showLabelOverValue) {
-                    draw.textCentered({ x, valueY - (valueFontSize + 2) }, val->props().label, labelFontSize, { labelColor.color, .font = font });
+                    draw.textCentered({ x, valueY - (valueFontSize + 2) }, getLabel(), labelFontSize, { labelColor.color, .font = font });
+                } else if (showLabel) {
+                    x = draw.text({ x, labelY }, getLabel(), labelFontSize, { labelColor.color, .font = font }) + 2;
                 }
 
                 if (showValue) {
@@ -213,6 +220,12 @@ public:
                 showLabel = false;
             }
             setMaxFontSize();
+            return true;
+        }
+
+        /*md - `LABEL: label` is the label of the component. */
+        if (strcmp(key, "LABEL") == 0) {
+            label = params;
             return true;
         }
 
