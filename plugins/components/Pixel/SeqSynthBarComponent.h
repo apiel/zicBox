@@ -42,14 +42,11 @@ protected:
     ValueInterface* seqStepEnabled = NULL; // STEP_ENABLED
 
     uint8_t selectedItemBank = 10;
+    uint8_t selectedMenuBank = 11;
 
     int stepW = 4;
 
-    // std::vector<std::string> items = { "Main", "FX", "Amp.", "Freq.", "Wave", "Clic" };
-    // std::vector<std::string> items = { "Main", "FX", "Op1", ".", "Op2", ".", "Op3", ".", "Op4", "." };
     std::vector<std::string> items;
-
-    int menuIndex = 0;
 
 public:
     SeqSynthBarComponent(ComponentInterface::Props props)
@@ -68,8 +65,8 @@ public:
                     if (KeypadLayout::isReleased(keymap)) {
                         if (view->contextVar[selectedItemBank] > 0) {
                             setContext(selectedItemBank, view->contextVar[selectedItemBank] - 1);
-                        } else if (menuIndex < items.size()) {
-                            menuIndex++;
+                        } else if (view->contextVar[selectedMenuBank] < items.size()) {
+                            setContext(selectedMenuBank, view->contextVar[selectedMenuBank] + 1);
                         }
                         renderNext();
                     }
@@ -78,8 +75,8 @@ public:
             if (action == ".right") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
-                        if (menuIndex > 0) {
-                            menuIndex--;
+                        if (view->contextVar[selectedMenuBank] > 0) {
+                            setContext(selectedMenuBank, view->contextVar[selectedMenuBank] - 1);
                         } else if (view->contextVar[selectedItemBank] < stepCount) {
                             setContext(selectedItemBank, view->contextVar[selectedItemBank] + 1);
                         }
@@ -181,7 +178,7 @@ public:
     }
 
     int fontSize = 6;
-    void renderSynthMode()
+    void renderSynthMode(int menuIndex)
     {
         int textY = (size.h - 8) * 0.5 + relativePosition.y;
         int itemW = (size.w / items.size()) - 2;
@@ -202,8 +199,8 @@ public:
         if (updatePosition() && steps) {
             draw.filledRect(relativePosition, size, { background });
 
-            if (view->contextVar[selectedItemBank] == 0 && menuIndex > 0) {
-                renderSynthMode();
+            if (items.size() > 0 && view->contextVar[selectedItemBank] == 0 && view->contextVar[selectedMenuBank] > 0) {
+                renderSynthMode(view->contextVar[selectedMenuBank] <= items.size() ? view->contextVar[selectedMenuBank] : items.size());
             } else {
                 renderSeqMode();
             }
@@ -272,6 +269,12 @@ public:
         /*md - `VOLUME_PLUGIN: plugin_name value_key` is used for the volume bar (but can be any else). */
         if (strcmp(key, "VOLUME_PLUGIN") == 0) {
             valVolume = watch(getPlugin(strtok(value, " "), track).getValue(strtok(NULL, " ")));
+            return true;
+        }
+
+        /*md - `SELECT_MENU_CONTEXT: context_id` is the context id for the selected menu (default is 11). */
+        if (strcmp(key, "SELECT_MENU_CONTEXT") == 0) {
+            selectedMenuBank = atoi(value);
             return true;
         }
 
