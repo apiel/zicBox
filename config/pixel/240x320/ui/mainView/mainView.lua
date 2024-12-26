@@ -34,7 +34,7 @@ local function rowDrum23(group, track, y, menuContext)
 end
 
 local function rowDrumSample(group, track, y, menuContext)
-    return row(group, track, y, menuContext, "DrumSample", {})
+    return row(group, track, y, menuContext, "DrumSample", { "Sample" })
 end
 
 local function progressBar(group, track, y)
@@ -115,16 +115,22 @@ local function mainView()
 
     y = 0
     values.master(0, 0, y)
-    values.mainDrum23(1, 1, y)
-    values.drum23(1, 1, y, 11)
-    values.mainDrum23(2, 2, y)
-    values.drum23(2, 2, y, 12)
-    values.mainDrumSample(3, 3, y)
-    values.mainDrumSample(4, 4, y)
-    values.mainDrumSample(5, 5, y)
-    values.mainDrumSample(6, 6, y)
-    values.mainDrumSample(7, 7, y)
-    values.mainDrumSample(8, 8, y)
+    values.mainDrum23(1, 1, y, 11)
+    -- values.drum23(1, 1, y, 11)
+    values.mainDrum23(2, 2, y, 12)
+    -- values.drum23(2, 2, y, 12)
+    values.mainDrumSample(3, 3, y, 13)
+    -- values.sample(3, 3, y, 13)
+    values.mainDrumSample(4, 4, y, 14)
+    -- values.sample(4, 4, y, 14)
+    values.mainDrumSample(5, 5, y, 15)
+    -- values.sample(5, 5, y, 15)
+    values.mainDrumSample(6, 6, y, 16)
+    -- values.sample(6, 6, y, 16)
+    values.mainDrumSample(7, 7, y, 17)
+    -- values.sample(7, 7, y, 17)
+    values.mainDrumSample(8, 8, y, 18)
+    -- values.sample(8, 8, y, 18)
 end
 
 return mainView
