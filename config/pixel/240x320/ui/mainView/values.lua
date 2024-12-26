@@ -94,4 +94,15 @@ function values.master(group, track, y)
     value("MasterFilter RESONANCE", bottomRight(), quaternary({}, group, track, 3))
 end
 
+function values.drum23(group, track, y)
+    container(group, y, { VISIBILITY_CONTEXT = "11 SHOW_WHEN 1" })
+
+    value("Distortion WAVESHAPE", topLeft(), tertiary({}, group, track, 0))
+    value("Distortion DRIVE", bottomLeft(), primary({}, group, track, 1))
+    value("Distortion COMPRESS", topRight(), secondary({ USE_STRING_VALUE = true, LABEL = "Filter" }, group, track, 2))
+    value("Distortion BASS", bottomRight(), quaternary({}, group, track, 3))
+
+    seq(group, track, y)
+end
+
 return values
