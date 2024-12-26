@@ -76,6 +76,7 @@ function values.mainDrum23(group, track, y)
     container(group, y, { VISIBILITY_CONTEXT = { "10 SHOW_WHEN 0", "11 SHOW_WHEN 0" } })
 
     value("Volume VOLUME", topLeft(), tertiary({}, group, track, 0))
+    --> might want to put something else, no need of distortion level, could just be always at 100%
     value("Distortion LEVEL", bottomLeft(), primary({}, group, track, 1))
     value("MMFilter CUTOFF", topRight(), quaternary({ USE_STRING_VALUE = true, LABEL = "Filter" }, group, track, 2))
     value("MMFilter RESONANCE", bottomRight(), quaternary({}, group, track, 3))
