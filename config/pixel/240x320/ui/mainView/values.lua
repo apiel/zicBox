@@ -46,10 +46,7 @@ end
 
 local function container(group, y, options)
     options.VISIBILITY_GROUP = group
-    visibility(
-        { x = 0, y = y, w = ScreenWidth, h = valueH * 2 + 2 },
-        { VISIBILITY_GROUP = group, options }
-    )
+    visibility({ x = 0, y = y, w = ScreenWidth, h = valueH * 2 + 2 }, options)
 end
 
 local function seq(group, track, y)
