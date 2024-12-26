@@ -139,6 +139,8 @@ public:
     Val& stepLength = val(0.0f, "STEP_LENGTH", { "Len", .min = 1.0f, .max = MAX_STEPS }, [&](auto p) { setStepLength(p.value); });
     /*md - `STEP_CONDITION` set selected step condition */
     Val& stepCondition = val(1.0f, "STEP_CONDITION", { "Condition", VALUE_STRING, .min = 1.0f, .max = (float)STEP_CONDITIONS_COUNT }, [&](auto p) { setStepCondition(p.value); });
+    /*md - `STEP_MOTION` set selected step motion */
+    Val& stepMotion = val(0.0f, "STEP_MOTION", { "Motion", VALUE_STRING, .min = 1.0f, .max = (float)STEP_MOTIONS_COUNT }, [&](auto p) { setStepMotion(p.value); });
     /*md - `STEP_NOTE` set selected step note */
     Val& stepNote = val(0.0f, "STEP_NOTE", { "Note", VALUE_STRING, .min = 1.0f, .max = (float)MIDI_NOTE_COUNT }, [&](auto p) { setStepNote(p.value); });
     /*md - `STEP_ENABLED` toggle selected step */
@@ -256,6 +258,14 @@ public:
         stepCondition.setFloat(value);
         selectedStepPtr->condition = stepCondition.get() - 1;
         stepCondition.setString((char*)stepConditions[selectedStepPtr->condition].name);
+        return *this;
+    }
+
+    Sequencer& setStepMotion(float value)
+    {
+        stepMotion.setFloat(value);
+        selectedStepPtr->motion = stepMotion.get() - 1;
+        stepMotion.setString((char*)stepMotions[selectedStepPtr->motion].name);
         return *this;
     }
 
