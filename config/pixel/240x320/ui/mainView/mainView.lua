@@ -16,7 +16,7 @@ local function row(group, track, y, menuContext, synth, items)
             ITEMS = items,
             VOLUME_PLUGIN = "Volume VOLUME",
             KEYMAPS = {
-                { key = "q", action = "noteOn:" .. synth .. ":57" },
+                { key = "q", action = "noteOn:" .. synth .. ":60" },
                 -- { key = "e", action = ".stepToggle" },
 
                 { key = "a", action = ".left" },
@@ -48,7 +48,7 @@ local function progressBar(group, track, y)
             ACTIVE_COLOR = "#23a123",
             VOLUME_PLUGIN = "Volume VOLUME",
             KEYMAPS = {
-                { key = "q", action = "noteOn:Drum23:57:1" },
+                { key = "q", action = "noteOn:Drum23:60:1" },
                 -- { key = "e", action = ".stepToggle" },
 
                 -- { key = "a", action = ".left" },
