@@ -9,6 +9,7 @@
 ## Value
 
 <img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/value.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/value2.png" />
 
 Value component is used to display an audio plugin value.
 */
