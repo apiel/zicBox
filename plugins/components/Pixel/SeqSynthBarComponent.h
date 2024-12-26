@@ -76,7 +76,11 @@ public:
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         if (view->contextVar[selectedMenuBank] > 0) {
-                            setContext(selectedMenuBank, view->contextVar[selectedMenuBank] - 1);
+                            int menuIndex = view->contextVar[selectedMenuBank];
+                            if (menuIndex > items.size()) {
+                                menuIndex = items.size();
+                            }
+                            setContext(selectedMenuBank, menuIndex - 1);
                         } else if (view->contextVar[selectedItemBank] < stepCount) {
                             setContext(selectedItemBank, view->contextVar[selectedItemBank] + 1);
                         }
