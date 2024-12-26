@@ -16,7 +16,8 @@ local function row(group, track, y, menuContext, synth, items)
             ITEMS = items,
             VOLUME_PLUGIN = "Volume VOLUME",
             KEYMAPS = {
-                { key = "q", action = "noteOn:" .. synth .. ":60" },
+                -- { key = "q", action = "noteOn:" .. synth .. ":60" },
+                { key = "q", action = ".stepToggleOrPlayNote:" .. synth },
                 -- { key = "e", action = ".stepToggle" },
 
                 { key = "a", action = ".left" },
@@ -66,7 +67,26 @@ local function mainView()
             "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled"
         }, KeyInfoPosition,
         {
-            VISIBILITY_CONTEXT = {"254 SHOW_WHEN 0"},
+            VISIBILITY_CONTEXT = {"254 SHOW_WHEN 0", "10 SHOW_WHEN 0"},
+            KEYMAPS = {
+                { key = "w", action = "incGroup:-1" },
+                { key = "e", action = "shift:254:1:0" },
+
+                { key = "s", action = "incGroup:+1" },
+
+                -- { key = "f", action = "noteOn:DrumSample:62" },
+                -- { key = "g", action = "playPause" }
+            }
+        }
+    )
+
+    textGrid(
+        {
+            "&icon::toggle::rect &icon::arrowUp::filled ...",
+            "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled"
+        }, KeyInfoPosition,
+        {
+            VISIBILITY_CONTEXT = {"254 SHOW_WHEN 0", "10 SHOW_WHEN_OVER 0"},
             KEYMAPS = {
                 { key = "w", action = "incGroup:-1" },
                 { key = "e", action = "shift:254:1:0" },

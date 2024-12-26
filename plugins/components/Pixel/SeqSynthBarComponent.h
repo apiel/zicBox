@@ -100,6 +100,24 @@ public:
                     }
                 };
             }
+            if (action.rfind(".stepToggleOrPlayNote:") == 0) {
+                std::string pluginName = action.substr(22);
+                AudioPlugin* plugin = &getPlugin(pluginName.c_str(), track);
+                func = [this, plugin](KeypadLayout::KeyMap& keymap) {
+                    if (view->contextVar[selectedItemBank] > 0) {
+                        if (KeypadLayout::isReleased(keymap)) {
+                            seqStepEnabled->set(!seqStepEnabled->get());
+                            renderNext();
+                        }
+                    } else {
+                        if (KeypadLayout::isPressed(keymap)) {
+                            plugin->noteOn(60, 1.0f);
+                        } else {
+                            plugin->noteOff(60, 0.0f);
+                        }
+                    }
+                };
+            }
             return func;
         })
     {
