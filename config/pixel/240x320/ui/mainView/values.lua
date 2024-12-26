@@ -122,10 +122,10 @@ end
 local function seq(group, track, y)
     container(group, y, { VISIBILITY_CONTEXT = "10 SHOW_WHEN_OVER 0" })
 
-    value("Sequencer STEP_VELOCITY", topLeft(), tertiary({}, group, track, 0))
+    value("Sequencer STEP_NOTE", topLeft(), tertiary({}, group, track, 0))
     value("Sequencer STEP_CONDITION", bottomLeft(), primary({}, group, track, 1))
-    value("Sequencer STEP_ENABLED", topRight(), secondary({}, group, track, 2))
-    -- value("Volume VOLUME", bottomRight(), quaternary({}, group, track, 3))
+    value("Sequencer STEP_VELOCITY", topRight(), secondary({}, group, track, 2))
+    value("Sequencer STEP_MOTION", bottomRight(), quaternary({}, group, track, 3))
 end
 
 function values.drumSample(group, track, y, contextIndex)
