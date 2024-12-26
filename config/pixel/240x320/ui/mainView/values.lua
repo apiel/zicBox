@@ -77,7 +77,8 @@ function values.mainDrum23(group, track, y)
 
     value("Volume VOLUME", topLeft(), tertiary({}, group, track, 0))
     --> might want to put something else, no need of distortion level, could just be always at 100%
-    value("Distortion LEVEL", bottomLeft(), primary({}, group, track, 1))
+    -- value("Distortion LEVEL", bottomLeft(), primary({}, group, track, 1))
+    value("Drum23 GAIN_CLIPPING", bottomLeft(), primary({}, group, track, 1))
     value("MMFilter CUTOFF", topRight(), quaternary({ USE_STRING_VALUE = true, LABEL = "Filter" }, group, track, 2))
     value("MMFilter RESONANCE", bottomRight(), quaternary({}, group, track, 3))
 
@@ -109,11 +110,11 @@ function values.drum23(group, track, y)
         { x = 0, y = 0, w = W3_4 - 2, h = 50 },
         { GROUP = group, TRACK = track, RENDER_TITLE_ON_TOP = false, ENCODERS = { "0 WAVEFORM_TYPE", "2 MACRO", "1 SHAPE" } }
     )
-    encoder3(
-        { ENCODER_ID = 3, VALUE = "Drum23 GAIN_CLIPPING" },
-        { x = W3_4, y = 0, w = W1_4, h = 50 },
-        { GROUP = group, COLOR = "quaternary", TRACK = track }
-    )
+    -- encoder3(
+    --     { ENCODER_ID = 3, VALUE = "Drum23 GAIN_CLIPPING" },
+    --     { x = W3_4, y = 0, w = W1_4, h = 50 },
+    --     { GROUP = group, COLOR = "quaternary", TRACK = track }
+    -- )
 
     container(group, y, { VISIBILITY_CONTEXT = "11 SHOW_WHEN 3" })
     drumEnvelop(
