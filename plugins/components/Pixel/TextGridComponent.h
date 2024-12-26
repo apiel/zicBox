@@ -4,6 +4,7 @@
 #include "plugins/components/base/Icon.h"
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
+#include "plugins/components/utils/VisibilityContext.h"
 
 #include <cmath>
 #include <string>
@@ -26,8 +27,7 @@ protected:
     Color textColor;
     Color textColor2;
 
-    //                        { index, value}
-    int16_t shiftVisibility[2] = { -1, -1 };
+    VisibilityContext visibility;
 
 public:
     TextGridComponent(ComponentInterface::Props props)
@@ -74,15 +74,10 @@ protected:
         return h;
     }
 
-    bool isVisible()
-    {
-        return shiftVisibility[0] == -1 || view->contextVar[shiftVisibility[0]] == shiftVisibility[1];
-    }
-
 public:
     void render()
     {
-        if (isVisible() && updatePosition()) {
+        if (visibility.visible && updatePosition()) {
             draw.filledRect(relativePosition, size, { bgColor });
             int y = relativePosition.y;
             for (auto row : rows) {
@@ -120,10 +115,8 @@ public:
             return true;
         }
 
-        /*md - `SHIFT_VISIBILITY: index value` is the index and value to make the component visible or not. */
-        if (strcmp(key, "SHIFT_VISIBILITY") == 0) {
-            shiftVisibility[0] = atoi(strtok(value, " "));
-            shiftVisibility[1] = atoi(strtok(NULL, " "));
+        /*md - `VISIBILITY_CONTEXT: index SHOW_WHEN/SHOW_WHEN_NOT/SHOW_WHEN_OVER/SHOW_WHEN_UNDER value` the context index to show/hide the components for a given value. */
+        if (visibility.config(key, value)) {
             return true;
         }
 
@@ -156,7 +149,7 @@ public:
 
     void onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
-        if (isVisible()) {
+        if (visibility.visible) {
             keypadLayout.onKey(id, key, state, now);
         }
     }
@@ -173,7 +166,7 @@ public:
 
     void onContext(uint8_t index, float value) override
     {
-        if (index == shiftVisibility[0]) {
+        if (visibility.onContext(index, value)) {
             renderNext();
         }
     }

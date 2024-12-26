@@ -66,7 +66,7 @@ local function mainView()
             "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled"
         }, KeyInfoPosition,
         {
-            SHIFT_VISIBILITY = { index = 254, value = 0 },
+            VISIBILITY_CONTEXT = {"254 SHOW_WHEN 0"},
             KEYMAPS = {
                 { key = "w", action = "incGroup:-1" },
                 { key = "e", action = "shift:254:1:0" },
@@ -85,7 +85,7 @@ local function mainView()
             "Menu Sub Master"
         }, KeyInfoPosition,
         {
-            SHIFT_VISIBILITY = { index = 254, value = 1 },
+            VISIBILITY_CONTEXT = {"254 SHOW_WHEN 1"},
             KEYMAPS = {
                 -- { key = "q", action = "playPause" },
                 { key = "w", action = "playPause" }, -- stepToggle
