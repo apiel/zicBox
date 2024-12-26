@@ -27,6 +27,7 @@ protected:
     int maxFontSize = 8;
     void* font = NULL;
     int barH = 2;
+    int barBgH = 1;
 
     ValueInterface* val = NULL;
     int8_t encoderId = -1;
@@ -71,6 +72,7 @@ public:
             draw.filledRect(relativePosition, size, { bgColor });
             if (val != NULL) {
                 if (barH > 0) {
+                    draw.filledRect({ relativePosition.x, relativePosition.y }, { size.w, barBgH }, { darken(barColor.color, 0.4) });
                     if (val->hasType(VALUE_CENTERED)) {
                         float valPct = val->pct();
                         if (valPct < 0.5) {
@@ -154,6 +156,12 @@ public:
         /*md - `BAR_HEIGHT: 2` set the bar height (default: 2) */
         if (strcmp(key, "BAR_HEIGHT") == 0) {
             barH = atoi(params);
+            return true;
+        }
+
+        /*md - `BAR_BG_HEIGHT: 1` set the bar background height (default: 1) */
+        if (strcmp(key, "BAR_BG_HEIGHT") == 0) {
+            barBgH = atoi(params);
             return true;
         }
 
