@@ -2,7 +2,7 @@ local ui = require("config/pixel/libs/ui")
 local textGrid = require("config/pixel/libs/component/textGrid")
 local values = require("config/pixel/240x320/ui/mainView/values")
 
-local function row(group, track, y, items)
+local function row(group, track, y, menuContext, items)
     local rowH = 14
     ui.component("SeqSynthBar",
         { "SEQ_PLUGIN" },
@@ -21,7 +21,8 @@ local function row(group, track, y, items)
 
                 { key = "a", action = ".left" },
                 { key = "d", action = ".right" },
-            }
+            },
+            SELECT_MENU_CONTEXT = menuContext
         })
 
 
@@ -93,14 +94,14 @@ local function mainView()
     -- y = 30
     y = 60
     y = progressBar(0, 1, y)
-    y = row(1, 11, y, { "Main", "FX", "Amp.", "Freq.", "Wave", "Clic" })
-    y = row(2, 12, y, { "Main", "FX", "Amp.", "Freq.", "Wave", "Clic" })
-    y = row(3, 13, y, {})
-    y = row(4, 14, y, {})
-    y = row(5, 15, y, {})
-    y = row(6, 16, y, {})
-    y = row(7, 17, y, { "Main", "FX", "Op1", ".", "Op2", ".", "Op3", ".", "Op4", "." })
-    y = row(8, 18, y, { "Main", "FX", "Op1", ".", "Op2", ".", "Op3", ".", "Op4", "." })
+    y = row(1, 11, y, 11, { "Main", "FX", "Amp.", "Freq.", "Wave", "Clic" })
+    y = row(2, 12, y, 12, { "Main", "FX", "Amp.", "Freq.", "Wave", "Clic" })
+    y = row(3, 13, y, 13, {})
+    y = row(4, 14, y, 14, {})
+    y = row(5, 15, y, 15, {})
+    y = row(6, 16, y, 16, {})
+    y = row(7, 17, y, 17, { "Main", "FX", "Op1", ".", "Op2", ".", "Op3", ".", "Op4", "." })
+    y = row(8, 18, y, 18, { "Main", "FX", "Op1", ".", "Op2", ".", "Op3", ".", "Op4", "." })
 
     y = 0
     values.master(0, 1, y)
