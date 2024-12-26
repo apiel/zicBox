@@ -66,9 +66,10 @@ protected:
             }
         }
 
-        // Apply soft clipping
-        return out + out * clipping.pct() * 20;
+        return out;
     }
+
+    float scaledClipping = 0.0f;
 
     float sample(float time, float* index, float ampModulation, float freqModulation, float _noteMult, float _velocity, EffectFilterData& _clickFilter)
     {
@@ -78,7 +79,7 @@ protected:
 
         out = addClicking(time, out, _clickFilter);
 
-        out = out + out * clipping.pct() * 20;
+        out = out + out * scaledClipping;
         return range(out, -1.0f, 1.0f) * _velocity;
     }
 
@@ -161,7 +162,11 @@ public:
     Val& duration = val(100.0f, "DURATION", { "Duration", .min = 10.0, .max = 5000.0, .step = 10.0, .unit = "ms" }, [&](auto p) { setDuration(p.value); });
 
     /*md - `GAIN_CLIPPING` set the clipping level.*/
-    Val& clipping = val(0.0, "GAIN_CLIPPING", { "Clipping", .unit = "%" }, [&](auto p) { setClipping(p.value); });
+    Val& clipping = val(0.0, "GAIN_CLIPPING", { "Clipping", .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        scaledClipping = p.val.pct() * p.val.pct() * 20;
+        printf("clipping[%f]: %f\n", p.val.pct(), scaledClipping);
+    });
 
     /*md - `CLICK` set the click level.*/
     Val& click = val(0, "CLICK", { "Click" });
@@ -206,11 +211,6 @@ public:
         }
 
         buf[track] = buf[track];
-    }
-
-    void setClipping(float value)
-    {
-        clipping.setFloat(value);
     }
 
     void setPitch(float value)
@@ -289,8 +289,7 @@ protected:
     uint16_t msAmp = 0;
 
 public:
-    enum DATA_ID
-    {
+    enum DATA_ID {
         ENV_AMP,
         ENV_AMP_EDIT,
         ENV_AMP_TIME,
@@ -299,30 +298,39 @@ public:
         ENV_FREQ_EDIT,
         ENV_FREQ_TIME,
         ENV_FREQ_MOD,
-        WAVEFORM,  
+        WAVEFORM,
     };
 
     /*md **Data ID**: */
     uint8_t getDataId(std::string name) override
     {
         /*md - `ENV_AMP` update the amplitude for current step */
-        if (name == "ENV_AMP") return ENV_AMP;
+        if (name == "ENV_AMP")
+            return ENV_AMP;
         /*md - `ENV_AMP_EDIT` set/get the amplitude edit point for current step */
-        if (name == "ENV_AMP_EDIT") return ENV_AMP_EDIT;
+        if (name == "ENV_AMP_EDIT")
+            return ENV_AMP_EDIT;
         /*md - `ENV_AMP_TIME` update the amplitude time for current step */
-        if (name == "ENV_AMP_TIME") return ENV_AMP_TIME;
+        if (name == "ENV_AMP_TIME")
+            return ENV_AMP_TIME;
         /*md - `ENV_AMP_MOD` update the amplitude modulation value for current step */
-        if (name == "ENV_AMP_MOD") return ENV_AMP_MOD;
+        if (name == "ENV_AMP_MOD")
+            return ENV_AMP_MOD;
         /*md - `ENV_FREQ` update the frequency for current step */
-        if (name == "ENV_FREQ") return ENV_FREQ;
+        if (name == "ENV_FREQ")
+            return ENV_FREQ;
         /*md - `ENV_FREQ_EDIT` set/get the frequency edit point for current step */
-        if (name == "ENV_FREQ_EDIT") return ENV_FREQ_EDIT;
+        if (name == "ENV_FREQ_EDIT")
+            return ENV_FREQ_EDIT;
         /*md - `ENV_FREQ_TIME` update the frequency time for current step */
-        if (name == "ENV_FREQ_TIME") return ENV_FREQ_TIME;
+        if (name == "ENV_FREQ_TIME")
+            return ENV_FREQ_TIME;
         /*md - `ENV_FREQ_MOD` update the frequency modulation value for current step */
-        if (name == "ENV_FREQ_MOD") return ENV_FREQ_MOD;
+        if (name == "ENV_FREQ_MOD")
+            return ENV_FREQ_MOD;
         /*md - `WAVEFORM` return a representation of the selected waveform */
-        if (name == "WAVEFORM") return WAVEFORM;
+        if (name == "WAVEFORM")
+            return WAVEFORM;
         return atoi(name.c_str());
     }
 
