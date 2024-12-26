@@ -46,15 +46,15 @@ end
 
 function values.main(group, track, y)
     visibility(
-        "DrumSample" .. track,
+        "track" .. track,
         { x = 0, y = y, w = ScreenWidth, h = valueH * 2 + 2 },
         { VISIBILITY_GROUP = group, VISIBILITY_CONTEXT = "10 SHOW_WHEN 0" }
     )
 
     value("Volume VOLUME", topLeft(), tertiary({}, group, track, 0))
-    value("DrumSample START", bottomLeft(), primary({}, group, track, 1))
-    value("DrumSample BROWSER", topRight(), secondary({ SHOW_LABEL = false, }, group, track, 2))
-    value("DrumSample END", bottomRight(), quaternary({}, group, track, 3))
+    -- value("DrumSample START", bottomLeft(), primary({}, group, track, 1))
+    -- value("DrumSample BROWSER", topRight(), secondary({ SHOW_LABEL = false, }, group, track, 2))
+    -- value("DrumSample END", bottomRight(), quaternary({}, group, track, 3))
 
     visibility(
         "DrumSample" .. track,
@@ -69,12 +69,12 @@ function values.main(group, track, y)
 end
 
 function values.master(group, track, y)
-    visibility("DrumSampleMaster", { x = 0, y = y, w = ScreenWidth, h = valueH * 2 + 2 }, { VISIBILITY_GROUP = group })
+    visibility("master", { x = 0, y = y, w = ScreenWidth, h = valueH * 2 + 2 }, { VISIBILITY_GROUP = group })
 
-    value("VolumeDrive VOLUME", topLeft(), tertiary({}, group, track, 0))
-    value("VolumeDrive DRIVE", bottomLeft(), primary({}, group, track, 1))
-    value("MMFilter CUTOFF", topRight(), quaternary({ USE_STRING_VALUE = true, LABEL = "Filter" }, group, track, 2))
-    value("MMFilter RESONANCE", bottomRight(), quaternary({}, group, track, 3))
+    value("MasterVolume VOLUME", topLeft(), tertiary({}, group, track, 0))
+    -- value("VolumeDrive DRIVE", bottomLeft(), primary({}, group, track, 1))
+    -- value("MMFilter CUTOFF", topRight(), quaternary({ USE_STRING_VALUE = true, LABEL = "Filter" }, group, track, 2))
+    -- value("MMFilter RESONANCE", bottomRight(), quaternary({}, group, track, 3))
 end
 
 return values

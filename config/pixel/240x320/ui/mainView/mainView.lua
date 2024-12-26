@@ -2,7 +2,7 @@ local ui = require("config/pixel/libs/ui")
 local textGrid = require("config/pixel/libs/component/textGrid")
 local values = require("config/pixel/240x320/ui/mainView/values")
 
-local function row(group, track, y, menuContext, items)
+local function row(group, track, y, menuContext, synth, items)
     local rowH = 14
     ui.component("SeqSynthBar",
         { "SEQ_PLUGIN" },
@@ -16,7 +16,7 @@ local function row(group, track, y, menuContext, items)
             ITEMS = items,
             VOLUME_PLUGIN = "Volume VOLUME",
             KEYMAPS = {
-                { key = "q", action = "noteOn:DrumSample:57" },
+                { key = "q", action = "noteOn:" .. synth .. ":57" },
                 -- { key = "e", action = ".stepToggle" },
 
                 { key = "a", action = ".left" },
@@ -33,14 +33,14 @@ local function progressBar(group, track, y)
     local progressH = 5
     ui.component("SeqProgressBar",
         { "SEQ_PLUGIN" },
-        { SEQ_PLUGIN = "Sequencer 11", },
+        { SEQ_PLUGIN = "Sequencer 1", },
         { x = 0, y = y, w = ScreenWidth, h = progressH }, {
             GROUP = group,
             TRACK = track,
             ACTIVE_COLOR = "#23a123",
-            VOLUME_PLUGIN = "VolumeDrive VOLUME",
+            VOLUME_PLUGIN = "Volume VOLUME",
             KEYMAPS = {
-                { key = "q", action = "noteOn:DrumSample:57:11" },
+                { key = "q", action = "noteOn:Drum23:57:1" },
                 -- { key = "e", action = ".stepToggle" },
 
                 -- { key = "a", action = ".left" },
@@ -94,25 +94,27 @@ local function mainView()
     -- y = 30
     y = 60
     y = progressBar(0, 1, y)
-    y = row(1, 11, y, 11, { "Main", "FX", "Amp.", "Freq.", "Wave", "Clic" })
-    y = row(2, 12, y, 12, { "Main", "FX", "Amp.", "Freq.", "Wave", "Clic" })
-    y = row(3, 13, y, 13, {})
-    y = row(4, 14, y, 14, {})
-    y = row(5, 15, y, 15, {})
-    y = row(6, 16, y, 16, {})
-    y = row(7, 17, y, 17, { "Main", "FX", "Op1", ".", "Op2", ".", "Op3", ".", "Op4", "." })
-    y = row(8, 18, y, 18, { "Main", "FX", "Op1", ".", "Op2", ".", "Op3", ".", "Op4", "." })
+    y = row(1, 1, y, 11, "Drum23", { "Main", "FX", "Amp.", "Freq.", "Wave", "Clic" })
+    y = row(2, 2, y, 12, "Drum23", { "Main", "FX", "Amp.", "Freq.", "Wave", "Clic" })
+    y = row(3, 3, y, 13, "DrumSample", {})
+    y = row(4, 4, y, 14, "DrumSample", {})
+    y = row(5, 5, y, 15, "DrumSample", {})
+    y = row(6, 6, y, 16, "DrumSample", {})
+    y = row(7, 7, y, 17, "DrumSample", {})
+    y = row(8, 8, y, 18, "DrumSample", {})
+
+-- "Main", "FX", "Op1", ".", "Op2", ".", "Op3", ".", "Op4", "."
 
     y = 0
-    values.master(0, 1, y)
-    values.main(1, 11, y)
-    values.main(2, 12, y)
-    values.main(3, 13, y)
-    values.main(4, 14, y)
-    values.main(5, 15, y)
-    values.main(6, 16, y)
-    values.main(7, 17, y)
-    values.main(8, 18, y)
+    values.master(0, 0, y)
+    values.main(1, 1, y)
+    values.main(2, 2, y)
+    values.main(3, 3, y)
+    values.main(4, 4, y)
+    values.main(5, 5, y)
+    values.main(6, 6, y)
+    values.main(7, 7, y)
+    values.main(8, 8, y)
 end
 
 return mainView
