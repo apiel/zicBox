@@ -5,9 +5,7 @@ local fmAlgo = require("config/pixel/libs/component/fmAlgo")
 local fmSynthOperator = require("config/pixel/320x240/ui/fm_synth_operator")
 
 local function fm_synth(track)
-  scrollGroup("Scroll", { x = 0, y = 0, w = ScreenWidth, h = 214 }, {
-    SCROLL_TO_CENTER = true,
-  })
+  scrollGroup({ x = 0, y = 0, w = ScreenWidth, h = 214 }, { SCROLL_TO_CENTER = true })
 
   local sepHeight = 12
   local rowHeight = 55

@@ -52,7 +52,6 @@ end
 
 local function encoders(group, track, y)
     visibility(
-        "DrumSample" .. track,
         { x = 0, y = y, w = ScreenWidth, h = 50 },
         { VISIBILITY_GROUP = group, VISIBILITY_CONTEXT = "10 SHOW_WHEN 0" }
     )
@@ -79,7 +78,6 @@ local function encoders(group, track, y)
     )
 
     visibility(
-        "DrumSample" .. track,
         { x = 0, y = y, w = ScreenWidth, h = 50 },
         { VISIBILITY_GROUP = group, VISIBILITY_CONTEXT = "10 SHOW_WHEN_OVER 0" }
     )
@@ -107,7 +105,7 @@ local function encoders(group, track, y)
 end
 
 local function encodersMaster(group, track, y)
-    visibility("DrumSampleMaster", { x = 0, y = y, w = ScreenWidth, h = 50 }, { VISIBILITY_GROUP = group })
+    visibility({ x = 0, y = y, w = ScreenWidth, h = 50 }, { VISIBILITY_GROUP = group })
 
     encoder3(
         { ENCODER_ID = 0, VALUE = "VolumeDrive VOLUME" },
