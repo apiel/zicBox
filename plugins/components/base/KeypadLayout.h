@@ -246,9 +246,9 @@ public:
             std::vector<char> params(substring.begin(), substring.end());
             params.push_back('\0');
 
-            char* pluginName = std::strtok(params.data(), ":");
-            char* noteStr = std::strtok(NULL, ":");
-            char* trackStr = std::strtok(NULL, ":");
+            char* pluginName = strtok(params.data(), ":");
+            char* noteStr = strtok(NULL, ":");
+            char* trackStr = strtok(NULL, ":");
             AudioPlugin* plugin = &component->getPlugin(pluginName, trackStr != NULL ? atoi(trackStr) : component->track);
             if (plugin) {
                 uint8_t* note = new uint8_t(atoi(noteStr));

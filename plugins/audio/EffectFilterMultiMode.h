@@ -52,7 +52,7 @@ public:
         float mixValue = mix.pct();
         hpf.setCutoff((0.20 * mixValue) + 0.00707);
         lpf.setCutoff(0.85 * mixValue + 0.1);
-        mix.setString("LPF " + std::to_string((int)(mixValue * 100)) + "%   " + std::to_string((int)((1 - mixValue) * 100)) + "% HPF");
+        mix.setString(std::to_string((int)((1 - mixValue) * 100)) + "% LP|HP " + std::to_string((int)(mixValue * 100)) + "%");
     }
 
     void setResonance(float value)

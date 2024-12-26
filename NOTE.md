@@ -1,6 +1,9 @@
 ## Pixel TODO
 
-- TODO cleanup encoder3 with new value type
+- IDEA val->setString should it instead get an array of strin
+    - ["Resonance", "37", "%"]
+    - ["LP", "78", "%", "HP", "22", "%"]
+    - by default using the props to build the string value but can be customised using setString
 
 - TODO drum freq envelop is really good but not easy to use
   - might be great to keep this one as advance version
