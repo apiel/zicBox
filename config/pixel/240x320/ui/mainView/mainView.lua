@@ -33,6 +33,10 @@ local function rowDrum23(group, track, y, menuContext)
     return row(group, track, y, menuContext, "Drum23", { "Click", "Wave", "Freq.", "Amp.", "FX" })
 end
 
+local function rowDrumSample(group, track, y, menuContext)
+    return row(group, track, y, menuContext, "DrumSample", {})
+end
+
 local function progressBar(group, track, y)
     local progressH = 5
     ui.component("SeqProgressBar",
@@ -100,12 +104,12 @@ local function mainView()
     y = progressBar(0, 1, y)
     y = rowDrum23(1, 1, y, 11)
     y = rowDrum23(2, 2, y, 12)
-    y = row(3, 3, y, 13, "DrumSample", {})
-    y = row(4, 4, y, 14, "DrumSample", {})
-    y = row(5, 5, y, 15, "DrumSample", {})
-    y = row(6, 6, y, 16, "DrumSample", {})
-    y = row(7, 7, y, 17, "DrumSample", {})
-    y = row(8, 8, y, 18, "DrumSample", {})
+    y = rowDrumSample(3, 3, y, 13)
+    y = rowDrumSample(4, 4, y, 14)
+    y = rowDrumSample(5, 5, y, 15)
+    y = rowDrumSample(6, 6, y, 16)
+    y = rowDrumSample(7, 7, y, 17)
+    y = rowDrumSample(8, 8, y, 18)
 
     -- "FX", "Op1", ".", "Op2", ".", "Op3", ".", "Op4", "."
 
