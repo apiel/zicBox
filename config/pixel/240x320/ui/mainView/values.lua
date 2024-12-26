@@ -96,15 +96,15 @@ function values.master(group, track, y)
     value("MasterFilter RESONANCE", bottomRight(), quaternary({}, group, track, 3))
 end
 
-function values.drum23(group, track, y)
-    container(group, y, { VISIBILITY_CONTEXT = "11 SHOW_WHEN 1" })
+function values.drum23(group, track, y, contextIndex)
+    container(group, y, { VISIBILITY_CONTEXT = contextIndex .. " SHOW_WHEN 1" })
 
     value("Distortion WAVESHAPE", topLeft(), tertiary({}, group, track, 0))
     value("Distortion DRIVE", bottomLeft(), primary({}, group, track, 1))
     value("Distortion COMPRESS", topRight(), secondary({}, group, track, 2))
     value("Distortion BASS", bottomRight(), quaternary({}, group, track, 3))
 
-    container(group, y, { VISIBILITY_CONTEXT = "11 SHOW_WHEN 2" })
+    container(group, y, { VISIBILITY_CONTEXT = contextIndex .. " SHOW_WHEN 2" })
     graph(
         { PLUGIN = "Drum23", DATA_ID = "WAVEFORM" },
         { x = 0, y = 0, w = W3_4 - 2, h = 50 },
@@ -116,7 +116,7 @@ function values.drum23(group, track, y)
     --     { GROUP = group, COLOR = "quaternary", TRACK = track }
     -- )
 
-    container(group, y, { VISIBILITY_CONTEXT = "11 SHOW_WHEN 3" })
+    container(group, y, { VISIBILITY_CONTEXT = contextIndex .. " SHOW_WHEN 3" })
     drumEnvelop(
         { PLUGIN = "Drum23", ENVELOP_DATA_ID = "0" },
         { x = 0, y = 0, w = W3_4 - 2, h = 50 },
@@ -128,19 +128,19 @@ function values.drum23(group, track, y)
         { GROUP = group, COLOR = "quaternary", TRACK = track }
     )
 
-    container(group, y, { VISIBILITY_CONTEXT = "11 SHOW_WHEN 4" })
+    container(group, y, { VISIBILITY_CONTEXT = contextIndex .. " SHOW_WHEN 4" })
     drumEnvelop(
         { PLUGIN = "Drum23", ENVELOP_DATA_ID = "4" },
         { x = 0, y = 0, w = W3_4 - 2, h = 50 },
         { GROUP = group, TRACK = track, RENDER_TITLE_ON_TOP = false, ENCODERS = { "0 TIME", "1 PHASE", "2 MODULATION" } }
     )
     encoder3(
-        { ENCODER_ID = 3, VALUE = "Drum23 PITCH" },
+        { ENCODER_ID = 3, VALUE = "Drum23 PITCH", },
         { x = W3_4, y = 0, w = W1_4, h = 50 },
         { GROUP = group, COLOR = "secondary", TRACK = track }
     )
 
-    container(group, y, { VISIBILITY_CONTEXT = "11 SHOW_WHEN 5" })
+    container(group, y, { VISIBILITY_CONTEXT = contextIndex .. " SHOW_WHEN 5" })
     value("Drum23 CLICK", topLeft(), tertiary({}, group, track, 0))
     value("Drum23 CLICK_DURATION", bottomLeft(), primary({}, group, track, 1))
     value("Drum23 CLICK_CUTOFF", topRight(), secondary({ USE_STRING_VALUE = true }, group, track, 2))
