@@ -66,24 +66,29 @@ public:
         updateColors();
     }
 
+    void renderBar()
+    {
+        draw.filledRect({ relativePosition.x, relativePosition.y }, { size.w, barBgH }, { darken(barColor.color, 0.4) });
+        if (val->hasType(VALUE_CENTERED)) {
+            float valPct = val->pct();
+            if (valPct < 0.5) {
+                int w = size.w * (0.5 - valPct);
+                draw.filledRect({ relativePosition.x + (int)(size.w * 0.5) - w, relativePosition.y }, { w, barH }, { barColor.color });
+            } else {
+                draw.filledRect({ relativePosition.x + (int)(size.w * 0.5), relativePosition.y }, { (int)(size.w * (valPct - 0.5)), barH }, { barColor.color });
+            }
+        } else {
+            draw.filledRect({ relativePosition.x, relativePosition.y }, { (int)(size.w * val->pct()), barH }, { barColor.color });
+        }
+    }
+
     void render() override
     {
         if (updatePosition()) {
             draw.filledRect(relativePosition, size, { bgColor });
             if (val != NULL) {
                 if (barH > 0) {
-                    draw.filledRect({ relativePosition.x, relativePosition.y }, { size.w, barBgH }, { darken(barColor.color, 0.4) });
-                    if (val->hasType(VALUE_CENTERED)) {
-                        float valPct = val->pct();
-                        if (valPct < 0.5) {
-                            int w = size.w * (0.5 - valPct);
-                            draw.filledRect({ relativePosition.x + (int)(size.w * 0.5) - w, relativePosition.y }, { w, barH }, { barColor.color });
-                        } else {
-                            draw.filledRect({ relativePosition.x + (int)(size.w * 0.5), relativePosition.y }, { (int)(size.w * (valPct - 0.5)), barH }, { barColor.color });
-                        }
-                    } else {
-                        draw.filledRect({ relativePosition.x, relativePosition.y }, { (int)(size.w * val->pct()), barH }, { barColor.color });
-                    }
+                    renderBar();
                 }
 
                 int x = relativePosition.x + (size.w) * 0.5;
