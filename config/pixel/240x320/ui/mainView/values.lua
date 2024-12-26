@@ -118,13 +118,31 @@ function values.drum23(group, track, y)
     drumEnvelop(
         { PLUGIN = "Drum23", ENVELOP_DATA_ID = "0" },
         { x = 0, y = 0, w = W3_4 - 2, h = 50 },
-        { GROUP = group, TRACK = track, RENDER_TITLE_ON_TOP = false, ENCODERS = { "0 TIME", "1 PHASE", "2 MODULATION",  } }
+        { GROUP = group, TRACK = track, RENDER_TITLE_ON_TOP = false, ENCODERS = { "0 TIME", "1 PHASE", "2 MODULATION", } }
     )
     encoder3(
         { ENCODER_ID = 3, VALUE = "Drum23 DURATION" },
         { x = W3_4, y = 0, w = W1_4, h = 50 },
         { GROUP = group, COLOR = "quaternary", TRACK = track }
     )
+
+    container(group, y, { VISIBILITY_CONTEXT = "11 SHOW_WHEN 4" })
+    drumEnvelop(
+        { PLUGIN = "Drum23", ENVELOP_DATA_ID = "4" },
+        { x = 0, y = 0, w = W3_4 - 2, h = 50 },
+        { GROUP = group, TRACK = track, RENDER_TITLE_ON_TOP = false, ENCODERS = { "0 TIME", "1 PHASE", "2 MODULATION" } }
+    )
+    encoder3(
+        { ENCODER_ID = 3, VALUE = "Drum23 PITCH" },
+        { x = W3_4, y = 0, w = W1_4, h = 50 },
+        { GROUP = group, COLOR = "secondary", TRACK = track }
+    )
+
+    container(group, y, { VISIBILITY_CONTEXT = "11 SHOW_WHEN 5" })
+    value("Drum23 CLICK", topLeft(), tertiary({}, group, track, 0))
+    value("Drum23 CLICK_DURATION", bottomLeft(), primary({}, group, track, 1))
+    value("Drum23 CLICK_CUTOFF", topRight(), secondary({ USE_STRING_VALUE = true }, group, track, 2))
+    value("Drum23 CLICK_RESONANCE", bottomRight(), quaternary({}, group, track, 3))
 end
 
 return values
