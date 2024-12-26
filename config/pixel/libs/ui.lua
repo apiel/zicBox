@@ -67,4 +67,20 @@ function ui.addZoneEncoder(position)
     zic("ADD_ZONE_ENCODER", ui.parsePosition(position))
 end
 
+function ui.parseVisibilityContext(options, key)
+    if (key == nil) then
+        key = "VISIBILITY_CONTEXT"
+    end
+    if options[key] ~= nil then
+        if type(options[key]) == "table" then
+            for _, context in ipairs(options[key]) do
+                zic(key, context)
+            end
+        else
+            zic(key, options[key])
+        end
+        options[key] = nil
+    end
+end
+
 return ui
