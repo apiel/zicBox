@@ -165,7 +165,6 @@ public:
     Val& clipping = val(0.0, "GAIN_CLIPPING", { "Clipping", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         scaledClipping = p.val.pct() * p.val.pct() * 20;
-        printf("clipping[%f]: %f\n", p.val.pct(), scaledClipping);
     });
 
     /*md - `CLICK` set the click level.*/
