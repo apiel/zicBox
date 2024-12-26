@@ -3,7 +3,7 @@ local ui = require("config/pixel/libs/ui")
 -- local sequencer = require("config/pixel/240x320/ui/sequencer")
 -- local drum23Synth = require("config/pixel/240x320/ui/drum23_synth")
 -- local fmSynth = require("config/pixel/240x320/ui/fm_synth")
-local mainView = require("config/pixel/240x320/ui/mainView")
+local mainView = require("config/pixel/240x320/ui/mainView/mainView")
 
 ui.setWindowPosition(400, 500)
 

@@ -36,6 +36,7 @@ protected:
     bool showValue = true;
     bool showUnit = true;
     bool showLabel = true;
+    bool showLabelOverValue = false;
     bool useStringValue = false;
     bool verticalAlignCenter = false;
 
@@ -178,19 +179,28 @@ public:
 
         /*md - `SHOW_VALUE: true` shows the value (default: true) */
         if (strcmp(key, "SHOW_VALUE") == 0) {
-            showValue = atoi(params);
+            showValue = strcmp(params, "true") == 0;
             return true;
         }
 
         /*md - `SHOW_UNIT: true` shows the unit (default: true) */
         if (strcmp(key, "SHOW_UNIT") == 0) {
-            showUnit = atoi(params);
+            showUnit = strcmp(params, "true") == 0;
             return true;
         }
 
         /*md - `SHOW_LABEL: true` shows the label (default: true) */
         if (strcmp(key, "SHOW_LABEL") == 0) {
-            showLabel = atoi(params);
+            showLabel = strcmp(params, "true") == 0;
+            return true;
+        }
+
+        /*md - `SHOW_LABEL_OVER_VALUE: true` shows the label over the value (default: false) `*/
+        if (strcmp(key, "SHOW_LABEL_OVER_VALUE") == 0) {
+            showLabelOverValue = strcmp(params, "true") == 0;
+            if (showLabelOverValue) {
+                showLabel = false;
+            }
             return true;
         }
 
