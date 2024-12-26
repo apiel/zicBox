@@ -10,7 +10,7 @@ local function keyboardMain(track, synth)
       ROW2 = "Seq &icon::arrowDown::filled &icon::musicNote::pixelated &icon::musicNote::pixelated &icon::play::filled"
     }, position,
     {
-      SHIFT_VISIBILITY = { index = 254, value = 0 },
+      CONTEXT_VISIBILITY = {"254 SHOW_WHEN 0"},
       KEYMAPS = {
         { key = "q", action = "noteOn:" .. synth .. ":58" },
         { key = "w", action = "incGroup:-1" },
@@ -32,7 +32,7 @@ local function keyboardMain(track, synth)
       ROW2 = "5 6 7 8 Master"
     }, position,
     {
-      SHIFT_VISIBILITY = { index = 254, value = 1 },
+      CONTEXT_VISIBILITY = {"254 SHOW_WHEN 0"},
       KEYMAPS = {
         { key = "q", action = "setView:Track1" },
         { key = "w", action = track == 2 and "setView:Sequencer2" or "setView:Track2" },
