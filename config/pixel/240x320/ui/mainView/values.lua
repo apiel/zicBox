@@ -105,7 +105,7 @@ function values.drum23(group, track, y)
     graph(
         { PLUGIN = "Drum23", DATA_ID = "WAVEFORM" },
         { x = 0, y = 0, w = W3_4 - 2, h = 50 },
-        { GROUP = group, TRACK = track, RENDER_TITLE_ON_TOP = false, ENCODERS = { "0 WAVEFORM_TYPE", "1 SHAPE", "2 MACRO" } }
+        { GROUP = group, TRACK = track, RENDER_TITLE_ON_TOP = false, ENCODERS = { "0 WAVEFORM_TYPE", "2 MACRO", "1 SHAPE" } }
     )
     encoder3(
         { ENCODER_ID = 3, VALUE = "Drum23 GAIN_CLIPPING" },
