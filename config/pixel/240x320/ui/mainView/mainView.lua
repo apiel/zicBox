@@ -116,7 +116,7 @@ local function mainView()
     y = 0
     values.master(0, 0, y)
     values.mainDrum23(1, 1, y)
-    -- values.drum23(1, 1, y)
+    values.drum23(1, 1, y)
     values.mainDrum23(2, 2, y)
     values.mainDrumSample(3, 3, y)
     values.mainDrumSample(4, 4, y)

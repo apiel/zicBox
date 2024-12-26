@@ -96,7 +96,7 @@ function values.drum23(group, track, y)
 
     value("Distortion WAVESHAPE", topLeft(), tertiary({}, group, track, 0))
     value("Distortion DRIVE", bottomLeft(), primary({}, group, track, 1))
-    value("Distortion COMPRESS", topRight(), secondary({ USE_STRING_VALUE = true, LABEL = "Filter" }, group, track, 2))
+    value("Distortion COMPRESS", topRight(), secondary({}, group, track, 2))
     value("Distortion BASS", bottomRight(), quaternary({}, group, track, 3))
 
     seq(group, track, y)
