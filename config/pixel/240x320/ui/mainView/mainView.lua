@@ -1,31 +1,38 @@
 local ui = require("config/pixel/libs/ui")
 local textGrid = require("config/pixel/libs/component/textGrid")
 local values = require("config/pixel/240x320/ui/mainView/values")
+local visibility = require("config/pixel/libs/containers/visibility")
 
-local function row(group, track, y, menuContext, synth, items)
-    local rowH = 14
+local function _row(group, track, menuContext, items, rowH, keymaps)
     ui.component("SeqSynthBar",
         { "SEQ_PLUGIN" },
         { SEQ_PLUGIN = "Sequencer", },
-        { x = 0, y = y, w = ScreenWidth, h = rowH }, {
+        { x = 0, y = 0, w = ScreenWidth, h = rowH }, {
             GROUP = group,
             TRACK = track,
             NAME_COLOR = "#23a123",
-            -- NAME_PLUGIN = "DrumSample BROWSER",
             NAME = track,
             ITEMS = items,
             VOLUME_PLUGIN = "Volume VOLUME",
-            KEYMAPS = {
-                -- { key = "q", action = "noteOn:" .. synth .. ":60" },
-                { key = "q", action = ".stepToggleOrPlayNote:" .. synth },
-                -- { key = "e", action = ".stepToggle" },
-
-                { key = "a", action = ".left" },
-                { key = "d", action = ".right" },
-            },
+            KEYMAPS = keymaps,
             SELECT_MENU_CONTEXT = menuContext
         })
+end
 
+local function row(group, track, y, menuContext, synth, items)
+    local rowH = 14
+
+    visibility({ x = 0, y = y, w = ScreenWidth, h = rowH }, { VISIBILITY_CONTEXT = { "254 SHOW_WHEN 0" }})
+    _row(group, track, menuContext, items, rowH, {
+        { key = "q", action = ".stepToggleOrPlayNote:" .. synth },
+        { key = "a", action = ".left" },
+        { key = "d", action = ".right" },
+    })
+
+    visibility({ x = 0, y = y, w = ScreenWidth, h = rowH }, { VISIBILITY_CONTEXT = { "254 SHOW_WHEN 1" }})
+    _row(group, track, menuContext, items, rowH, {
+        { key = "q", action = ".stepToggle" },
+    })
 
     return y + 1 + rowH
 end
@@ -67,7 +74,7 @@ local function mainView()
             "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled"
         }, KeyInfoPosition,
         {
-            VISIBILITY_CONTEXT = {"254 SHOW_WHEN 0", "10 SHOW_WHEN 0"},
+            VISIBILITY_CONTEXT = { "254 SHOW_WHEN 0", "10 SHOW_WHEN 0" },
             KEYMAPS = {
                 { key = "w", action = "incGroup:-1" },
                 { key = "e", action = "shift:254:1:0" },
@@ -86,7 +93,7 @@ local function mainView()
             "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled"
         }, KeyInfoPosition,
         {
-            VISIBILITY_CONTEXT = {"254 SHOW_WHEN 0", "10 SHOW_WHEN_OVER 0"},
+            VISIBILITY_CONTEXT = { "254 SHOW_WHEN 0", "10 SHOW_WHEN_OVER 0" },
             KEYMAPS = {
                 { key = "w", action = "incGroup:-1" },
                 { key = "e", action = "shift:254:1:0" },
@@ -105,7 +112,7 @@ local function mainView()
             "Menu Sub Master"
         }, KeyInfoPosition,
         {
-            VISIBILITY_CONTEXT = {"254 SHOW_WHEN 1"},
+            VISIBILITY_CONTEXT = { "254 SHOW_WHEN 1" },
             KEYMAPS = {
                 -- { key = "q", action = "playPause" },
                 { key = "w", action = "playPause" }, -- stepToggle
