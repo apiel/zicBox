@@ -44,11 +44,16 @@ local function quaternary(options, group, track, encoderId)
     return base(options, group, track, encoderId)
 end
 
-local function seq(group, track, y)
+local function container(group, y, options)
+    options.VISIBILITY_GROUP = group
     visibility(
         { x = 0, y = y, w = ScreenWidth, h = valueH * 2 + 2 },
-        { VISIBILITY_GROUP = group, VISIBILITY_CONTEXT = "10 SHOW_WHEN_OVER 0" }
+        { VISIBILITY_GROUP = group, options }
     )
+end
+
+local function seq(group, track, y)
+    container(group, y, { VISIBILITY_CONTEXT = "10 SHOW_WHEN_OVER 0" })
 
     value("Sequencer STEP_VELOCITY", topLeft(), tertiary({}, group, track, 0))
     value("Sequencer STEP_CONDITION", bottomLeft(), primary({}, group, track, 1))
@@ -57,10 +62,7 @@ local function seq(group, track, y)
 end
 
 function values.mainDrumSample(group, track, y)
-    visibility(
-        { x = 0, y = y, w = ScreenWidth, h = valueH * 2 + 2 },
-        { VISIBILITY_GROUP = group, VISIBILITY_CONTEXT = "10 SHOW_WHEN 0" }
-    )
+    container(group, y, { VISIBILITY_CONTEXT = "10 SHOW_WHEN 0" })
 
     value("Volume VOLUME", topLeft(), tertiary({}, group, track, 0))
     value("DrumSample START", bottomLeft(), primary({}, group, track, 1))
@@ -71,10 +73,7 @@ function values.mainDrumSample(group, track, y)
 end
 
 function values.mainDrum23(group, track, y)
-    visibility(
-        { x = 0, y = y, w = ScreenWidth, h = valueH * 2 + 2 },
-        { VISIBILITY_GROUP = group, VISIBILITY_CONTEXT = "10 SHOW_WHEN 0" }
-    )
+    container(group, y, { VISIBILITY_CONTEXT = "10 SHOW_WHEN 0" })
 
     value("Volume VOLUME", topLeft(), tertiary({}, group, track, 0))
     value("Distortion LEVEL", bottomLeft(), primary({}, group, track, 1))
@@ -85,7 +84,7 @@ function values.mainDrum23(group, track, y)
 end
 
 function values.master(group, track, y)
-    visibility({ x = 0, y = y, w = ScreenWidth, h = valueH * 2 + 2 }, { VISIBILITY_GROUP = group })
+    container(group, y, {})
 
     -- might not even want to put volume here can be in sub-page
     --> rather put step reducer and another effect
