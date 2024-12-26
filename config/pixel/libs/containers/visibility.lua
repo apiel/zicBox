@@ -8,16 +8,7 @@ local ui = require("config/pixel/libs/ui")
 local function container(position, options)
     zic("CONTAINER", "VisibilityContainer " .. ui.parsePosition(position))
     if options ~= nil then
-        if options.VISIBILITY_CONTEXT ~= nil then
-            if type(options.VISIBILITY_CONTEXT) == "table" then
-                for _, context in ipairs(options.VISIBILITY_CONTEXT) do
-                    zic("VISIBILITY_CONTEXT", context)
-                end
-            else
-                zic("VISIBILITY_CONTEXT", options.VISIBILITY_CONTEXT)
-            end
-            options.VISIBILITY_CONTEXT = nil
-        end
+        ui.parseVisibilityContext(options)
         core.zic(core.parseOptions(options))
     end
 end

@@ -11,7 +11,7 @@ local function sequencer(track)
     },
     { x = 0, y = 216 },
     {
-      SHIFT_VISIBILITY = { index = 254, value = 0 },
+      CONTEXT_VISIBILITY = {"254 SHOW_WHEN 0"},
       KEYMAPS = {
         { key = "t", action = "shiftToggle:255:0:1", action2 = "shift:254:1:0" },
         { key = "g", action = "playPause" }
@@ -26,13 +26,13 @@ local function sequencer(track)
     },
     { x = 0, y = 216 },
     {
-      SHIFT_VISIBILITY = { index = 254, value = 1 },
+      CONTEXT_VISIBILITY = {"254 SHOW_WHEN 1"},
       KEYMAPS = {
         { key = "q", action = track == 1 and "setView:Track1" or "setView:Sequencer1" },
         { key = "w", action = track == 2 and "setView:Track2" or "setView:Sequencer2" },
         { key = "e", action = track == 3 and "setView:Track3" or "setView:Sequencer3" },
         { key = "r", action = track == 4 and "setView:Track4" or "setView:Sequencer4" },
-        { key = "t", action = "shiftToggle:255:0:1",                                  action2 = "shift:254:1:0" },
+        { key = "t", action = "shiftToggle:255:0:1", action2 = "shift:254:1:0" },
         { key = "a", action = track == 5 and "setView:Track5" or "setView:Sequencer5" },
         { key = "s", action = track == 6 and "setView:Track6" or "setView:Sequencer6" },
         { key = "d", action = track == 7 and "setView:Track7" or "setView:Sequencer7" },

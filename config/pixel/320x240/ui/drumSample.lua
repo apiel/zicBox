@@ -144,7 +144,7 @@ local function drumSample(track)
             "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled &icon::musicNote::pixelated &icon::play::filled"
         }, keyInfoPosition,
         {
-            SHIFT_VISIBILITY = { index = 254, value = 0 },
+            VISIBILITY_CONTEXT = {"254 SHOW_WHEN 0"},
             KEYMAPS = {
                 { key = "w", action = "incGroup:-1" },
 
@@ -165,7 +165,7 @@ local function drumSample(track)
             "5 6 7 8 Master"
         }, keyInfoPosition,
         {
-            SHIFT_VISIBILITY = { index = 254, value = 1 },
+            VISIBILITY_CONTEXT = {"254 SHOW_WHEN 1"},
             KEYMAPS = {
                 { key = "q", action = track == 1 and "setView:Sequencer1" or "setView:Track1" },
                 { key = "w", action = track == 2 and "setView:Sequencer2" or "setView:Track2" },
