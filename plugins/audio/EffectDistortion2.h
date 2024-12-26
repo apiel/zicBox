@@ -18,7 +18,7 @@ class EffectDistortion2 : public Mapping {
 public:
     /*md **Values**: */
     /*md - `LEVEL` to set distortion mix level. */
-    Val& level = val(50.0, "LEVEL", { "Dist. Level", .min = 0.0, .max = 100.0, .step = 1.0, .unit = "%" });
+    Val& level = val(100.0, "LEVEL", { "Dist. Level", .min = 0.0, .max = 100.0, .step = 1.0, .unit = "%" });
     /*md - `DRIVE` to set distortion drive. */
     Val& drive = val(50.0, "DRIVE", { "Drive", .min = 0.0, .max = 100.0, .step = 1.0, .unit = "%" });
     /*md - `COMPRESS` to set distortion compression. */
