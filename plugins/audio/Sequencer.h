@@ -224,6 +224,7 @@ public:
         stepVelocity.set(selectedStepPtr->velocity * 100);
         stepLength.set(selectedStepPtr->len);
         stepCondition.set(selectedStepPtr->condition + 1);
+        stepMotion.set(selectedStepPtr->motion + 1);
         stepNote.set(selectedStepPtr->note);
         stepEnabled.set(selectedStepPtr->enabled ? 1.0 : 0.0);
 
