@@ -1,5 +1,9 @@
 ## Pixel TODO
 
+- TODO precompile big header files
+  - move string vector ... into a single header file to precompile it
+  - ccache
+
 - IDEA val->setString should it instead get an array of strin
     - ["Resonance", "37", "%"]
     - ["LP", "78", "%", "HP", "22", "%"]
