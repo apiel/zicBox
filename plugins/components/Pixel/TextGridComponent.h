@@ -5,6 +5,7 @@
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/VisibilityContext.h"
+#include "plugins/components/utils/color.h"
 
 #include <cmath>
 #include <string>
