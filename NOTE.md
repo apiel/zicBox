@@ -13,6 +13,9 @@
 - IDEA cache audio track to reduce computation?
   - should the whole track be cached but how to deal with probability
   - should we cache just the synth output, (how about effect..?)
+    - for different note either cache multiple note
+    - or just increase step increament or decrease it... cache it in a very low note, so sampling up is not an issue (-12+12 semitone should be enough)
+    - ultimately could do some granular effect to pitch the note, but should not be necessary
 
 - TODO should we move back to build component as module to speed up build?
   - or should we look at way to compile only things that changed?
