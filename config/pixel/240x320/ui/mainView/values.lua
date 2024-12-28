@@ -1,7 +1,7 @@
 local visibility = require("config/pixel/libs/containers/visibility")
 local value = require("config/pixel/libs/component/value")
 local encoder3 = require("config/pixel/libs/component/encoder3")
-local graph = require("config/pixel/libs/component/graph")
+local graph = require("config/pixel/libs/component/graphEncoder")
 local drumEnvelop = require("config/pixel/libs/component/drumEnvelop")
 
 -- local valueH = 11

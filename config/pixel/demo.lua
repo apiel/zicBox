@@ -39,7 +39,7 @@ fmAlgo(
     { TRACK = 4 }
 )
 
-local graph = require("config/pixel/libs/component/graph")
+local graph = require("config/pixel/libs/component/graphEncoder")
 graph(
     { PLUGIN = "Drum23", DATA_ID = "WAVEFORM" },
     { x = 120, y = 80, w = 200, h = 50 },

@@ -1,7 +1,7 @@
 local scrollGroup = require("config/pixel/libs/containers/scrollGroup")
 local text = require("config/pixel/libs/component/text")
 local encoder3 = require("config/pixel/libs/component/encoder3")
-local graph = require("config/pixel/libs/component/graph")
+local graph = require("config/pixel/libs/component/graphEncoder")
 local drumEnvelop = require("config/pixel/libs/component/drumEnvelop")
 
 local function drum23_synth(track)
