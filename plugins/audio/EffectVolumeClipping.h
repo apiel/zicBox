@@ -14,7 +14,7 @@ class EffectVolumeClipping : public Mapping {
 public:
     /*md **Values**: */
     /*md - `VOLUME` to set volume. Till 100, it is the volume percentage, after 100 it is the gain. */
-    Val& volume = val(100.0f, "VOLUME", { "Volume"});
+    Val& volume = val(100.0f, "VOLUME", { "Volume", .unit = "%" });
 
     float scaledClipping = 0.0f;
     /*md - `GAIN_CLIPPING` set the clipping level.*/

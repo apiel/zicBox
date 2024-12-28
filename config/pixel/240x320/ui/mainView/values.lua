@@ -5,12 +5,15 @@ local graph = require("config/pixel/libs/component/graphEncoder")
 local drumEnvelop = require("config/pixel/libs/component/drumEnvelop")
 
 -- local valueH = 11
-local valueH = 25
+-- local valueH = 25
+local valueH = 34
+
+local rowSpacing = 3
 
 local function topLeft() return { x = 0, y = 0, w = W2_4 - 2, h = valueH } end
-local function bottomLeft() return { x = 0, y = valueH + 1, w = W2_4 - 2, h = valueH } end
+local function bottomLeft() return { x = 0, y = valueH + rowSpacing, w = W2_4 - 2, h = valueH } end
 local function topRight() return { x = W2_4, y = 0, w = W2_4 - 2, h = valueH } end
-local function bottomRight() return { x = W2_4, y = valueH + 1, w = W2_4 - 2, h = valueH } end
+local function bottomRight() return { x = W2_4, y = valueH + rowSpacing, w = W2_4 - 2, h = valueH } end
 
 local values = {}
 
@@ -19,7 +22,8 @@ local function base(options, group, track, encoderId)
     options.TRACK = track
     options.GROUP = group
     options.SHOW_LABEL_OVER_VALUE = true
-    -- options.LABEL_FONT_SIZE = 8
+    options.LABEL_FONT_SIZE = 8
+    options.VALUE_FONT_SIZE = 12
     return options
 end
 
