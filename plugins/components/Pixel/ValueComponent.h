@@ -27,7 +27,8 @@ protected:
     int unitFontSize = 6;
     int maxFontSize = 8;
     void* font = NULL;
-    uint8_t fontHeightValue = 0;
+    int fontHeightValue = 0;
+    int valueH = 8;
     int barH = 2;
     int barBgH = 1;
 
@@ -53,8 +54,9 @@ protected:
 
     void setMaxFontSize()
     {
+        valueH = fontHeightValue == 0 ? valueFontSize : fontHeightValue;
         if (showValue) {
-            maxFontSize = std::max({ valueFontSize, labelFontSize, unitFontSize });
+            maxFontSize = std::max({ valueH, labelFontSize, unitFontSize });
         } else {
             maxFontSize = std::max({ labelFontSize, unitFontSize });
         }
@@ -116,11 +118,11 @@ public:
                 int textY = verticalAlignCenter ? (size.h - maxFontSize) * 0.5 + relativePosition.y : (size.h - maxFontSize) + relativePosition.y;
                 // Put all text in the same line
                 int labelY = textY + maxFontSize - labelFontSize;
-                int valueY = textY + maxFontSize - valueFontSize;
+                int valueY = textY + maxFontSize - valueH;
                 int unitY = textY + maxFontSize - unitFontSize;
 
                 if (showLabelOverValue) {
-                    draw.textCentered({ x, valueY - (valueFontSize + 2) }, getLabel(), labelFontSize, { labelColor.color, .font = font });
+                    draw.textCentered({ x, valueY - (labelFontSize + 2) }, getLabel(), labelFontSize, { labelColor.color, .font = font });
                 } else if (showLabel) {
                     x = draw.text({ x, labelY }, getLabel(), labelFontSize, { labelColor.color, .font = font }) + 2;
                 }
@@ -129,7 +131,7 @@ public:
                     x = showLabel ? draw.text({ x, valueY }, getValStr(), valueFontSize, { valueColor.color, .font = font, .fontHeight = fontHeightValue })
                                   : draw.textCentered({ x, valueY }, getValStr(), valueFontSize, { valueColor.color, .font = font, .maxWidth = size.w - 4, .fontHeight = fontHeightValue });
                     if (showUnit && val->props().unit != NULL) {
-                        draw.text({ x, unitY }, val->props().unit, unitFontSize, { unitColor.color, .font = font });
+                        draw.text({ x + 2, unitY }, val->props().unit, unitFontSize, { unitColor.color, .font = font });
                     }
                 }
             }
@@ -261,6 +263,7 @@ public:
         /*md - `VALUE_FONT_HEIGHT: 16` is the font height of the value. */
         if (strcmp(key, "VALUE_FONT_HEIGHT") == 0) {
             fontHeightValue = atoi(params);
+            setMaxFontSize();
             return true;
         }
 
