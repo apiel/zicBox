@@ -27,6 +27,7 @@ protected:
     int unitFontSize = 6;
     int maxFontSize = 8;
     void* font = NULL;
+    void* fontValue = NULL;
     int barH = 2;
     int barBgH = 1;
 
@@ -125,8 +126,8 @@ public:
                 }
 
                 if (showValue) {
-                    x = showLabel ? draw.text({ x, valueY }, getValStr(), valueFontSize, { valueColor.color, .font = font })
-                                  : draw.textCentered({ x, valueY }, getValStr(), valueFontSize, { valueColor.color, .font = font, .maxWidth = size.w - 4 });
+                    x = showLabel ? draw.text({ x, valueY }, getValStr(), valueFontSize, { valueColor.color, .font = fontValue })
+                                  : draw.textCentered({ x, valueY }, getValStr(), valueFontSize, { valueColor.color, .font = fontValue, .maxWidth = size.w - 4 });
                     if (showUnit && val->props().unit != NULL) {
                         draw.text({ x, unitY }, val->props().unit, unitFontSize, { unitColor.color, .font = font });
                     }
@@ -254,6 +255,13 @@ public:
         /*md - `FONT: font` is the font of the component. */
         if (strcmp(key, "FONT") == 0) {
             font = draw.getFont(params);
+            fontValue = font;
+            return true;
+        }
+
+        /*md - `VALUE_FONT: font` is the font of the value. */
+        if (strcmp(key, "VALUE_FONT") == 0) {
+            fontValue = draw.getFont(params);
             return true;
         }
 
