@@ -6,6 +6,8 @@ local drumEnvelop = require("config/pixel/libs/component/drumEnvelop")
 
 local valueH = 34
 local rowSpacing = 3
+local height = 70
+local encoderH = 50
 
 local function topLeft() return { x = 0, y = 0, w = W2_4 - 2, h = valueH } end
 local function bottomLeft() return { x = 0, y = valueH + rowSpacing, w = W2_4 - 2, h = valueH } end
@@ -65,41 +67,41 @@ local function drum23Values(group, track, y, contextIndex)
     container(group, y, { VISIBILITY_CONTEXT = contextIndex .. " SHOW_WHEN 2" })
     -- graph(
     --     { PLUGIN = "Drum23", DATA_ID = "WAVEFORM" },
-    --     { x = 0, y = 0, w = W3_4 - 2, h = 50 },
+    --     { x = 0, y = 0, w = W3_4 - 2, h = height },
     --     { GROUP = group, TRACK = track, RENDER_TITLE_ON_TOP = false, ENCODERS = { "0 WAVEFORM_TYPE", "2 MACRO", "1 SHAPE" } }
     -- )
     -- encoder3(
     --     { ENCODER_ID = 3, VALUE = "Drum23 GAIN_CLIPPING" },
-    --     { x = W3_4, y = 0, w = W1_4, h = 50 },
+    --     { x = W3_4, y = 0, w = W1_4, h = height },
     --     { GROUP = group, COLOR = "quaternary", TRACK = track }
     -- )
     graph(
         { PLUGIN = "Drum23", DATA_ID = "WAVEFORM" },
-        { x = 0, y = 0, w = ScreenWidth, h = 50 },
+        { x = 0, y = 0, w = ScreenWidth, h = height },
         { GROUP = group, TRACK = track, RENDER_TITLE_ON_TOP = false, ENCODERS = { "0 WAVEFORM_TYPE", "2 MACRO", "1 SHAPE" } }
     )
 
     container(group, y, { VISIBILITY_CONTEXT = contextIndex .. " SHOW_WHEN 3" })
     drumEnvelop(
         { PLUGIN = "Drum23", ENVELOP_DATA_ID = "0" },
-        { x = 0, y = 0, w = W3_4 - 2, h = 50 },
+        { x = 0, y = 0, w = W3_4 - 2, h = height },
         { GROUP = group, TRACK = track, RENDER_TITLE_ON_TOP = false, ENCODERS = { "0 TIME", "1 PHASE", "2 MODULATION", } }
     )
     encoder3(
         { ENCODER_ID = 3, VALUE = "Drum23 DURATION" },
-        { x = W3_4, y = 0, w = W1_4, h = 50 },
+        { x = W3_4, y = (height - encoderH) * 0.5, w = W1_4, h = encoderH },
         { GROUP = group, COLOR = "quaternary", TRACK = track }
     )
 
     container(group, y, { VISIBILITY_CONTEXT = contextIndex .. " SHOW_WHEN 4" })
     drumEnvelop(
         { PLUGIN = "Drum23", ENVELOP_DATA_ID = "4" },
-        { x = 0, y = 0, w = W3_4 - 2, h = 50 },
+        { x = 0, y = 0, w = W3_4 - 2, h = height },
         { GROUP = group, TRACK = track, RENDER_TITLE_ON_TOP = false, ENCODERS = { "0 TIME", "1 PHASE", "2 MODULATION" } }
     )
     encoder3(
         { ENCODER_ID = 3, VALUE = "Drum23 PITCH", },
-        { x = W3_4, y = 0, w = W1_4, h = 50 },
+        { x = W3_4, y = (height - encoderH) * 0.5, w = W1_4, h = encoderH },
         { GROUP = group, COLOR = "secondary", TRACK = track }
     )
 
