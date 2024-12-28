@@ -274,6 +274,7 @@ protected:
                     for (int i = 0; i < heightRatio; i++) {
                         pixel({ (int)x, (int)y + i }, options);
                     }
+                    // pixel({ (int)x, (int)y }, options);
                 }
                 ch <<= 1;
                 x += scale;

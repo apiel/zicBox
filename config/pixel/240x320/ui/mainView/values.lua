@@ -20,9 +20,12 @@ local function base(options, group, track, encoderId)
     options.ENCODER_ID = encoderId
     options.TRACK = track
     options.GROUP = group
-    options.SHOW_LABEL_OVER_VALUE = true
+    options.SHOW_LABEL_OVER_VALUE = 6
     options.LABEL_FONT_SIZE = 8
-    options.VALUE_FONT_HEIGHT = 16
+    -- options.VALUE_FONT_HEIGHT = 16
+    if options.VALUE_FONT_SIZE == nil then
+        options.VALUE_FONT_SIZE = 16
+    end
     return options
 end
 
@@ -115,7 +118,9 @@ end
 local function sampleValues(group, track, y, contextIndex)
     container(group, y, { VISIBILITY_CONTEXT = contextIndex .. " SHOW_WHEN 1" })
 
-    value("DrumSample BROWSER", topLeft(), tertiary({}, group, track, 0))
+    local browserPos = topLeft()
+    browserPos.h = 28
+    value("DrumSample BROWSER", browserPos, tertiary({ VALUE_FONT_SIZE = 8 }, group, track, 0))
     value("DrumSample START", bottomLeft(), primary({}, group, track, 1))
     -- value("DrumSample BROWSER", topRight(), secondary({}, group, track, 2))
     value("DrumSample END", bottomRight(), quaternary({}, group, track, 3))
