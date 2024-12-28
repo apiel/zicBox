@@ -137,7 +137,8 @@ local function mainView()
     local y = 0
 
     -- y = 30
-    y = 60 + top
+    -- y = 60 + top
+    y = 80 + top
     y = progressBar(0, 1, y)
     y = rowDrum23(1, 1, y, 11)
     y = rowDrum23(2, 2, y, 12)
