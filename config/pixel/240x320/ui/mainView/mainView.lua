@@ -124,10 +124,11 @@ local function mainView()
         }
     )
 
+    local top = 100
     local y = 0
 
     -- y = 30
-    y = 60
+    y = 60 + top
     y = progressBar(0, 1, y)
     y = rowDrum23(1, 1, y, 11)
     y = rowDrum23(2, 2, y, 12)
@@ -140,7 +141,7 @@ local function mainView()
 
     -- "FX", "Op1", ".", "Op2", ".", "Op3", ".", "Op4", "."
 
-    y = 0
+    y = 0 + top
     values.master(0, 0, y)
     values.drum23(1, 1, y, 11)
     values.drum23(2, 2, y, 12)
