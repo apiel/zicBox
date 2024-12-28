@@ -1,12 +1,12 @@
 #ifndef _UI_PIXEL_COMPONENT_BASE_GRAPH_ENCODER_H_
 #define _UI_PIXEL_COMPONENT_BASE_GRAPH_ENCODER_H_
 
-#include "./GroupColorComponent.h"
+#include "./BaseGraphComponent.h"
 #include "helpers/range.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
 
-class BaseGraphEncoderComponent : public GroupColorComponent {
+class BaseGraphEncoderComponent : public BaseGraphComponent {
 public:
     struct Title {
         std::string text1;
@@ -14,39 +14,8 @@ public:
     };
 
 protected:
-    AudioPlugin* plugin = NULL;
-
-    bool filled = true;
-    bool outline = true;
-
-    Color bgColor;
-
-    ToggleColor fillColor;
-    ToggleColor outlineColor;
     ToggleColor textColor1;
     ToggleColor textColor2;
-
-    int waveformHeight = 30;
-    int waveformY = 0;
-
-    void renderGraph()
-    {
-        std::vector<Point> relativePoints = getPoints();
-        if (relativePoints.size() > 2) {
-            float halfHeight = waveformHeight * 0.5;
-
-            for (auto& point : relativePoints) {
-                point.y += waveformY;
-                point.x += relativePosition.x;
-            }
-            if (filled) {
-                draw.filledPolygon(relativePoints, { fillColor.color });
-            }
-            if (outline) {
-                draw.lines(relativePoints, { outlineColor.color });
-            }
-        }
-    }
 
     void renderTitles(std::vector<Title> titles, int y, int cellWidth)
     {
@@ -88,25 +57,21 @@ protected:
 
 public:
     BaseGraphEncoderComponent(ComponentInterface::Props props)
-        : GroupColorComponent(props, { { "FILL_COLOR", &fillColor }, { "OUTLINE_COLOR", &outlineColor }, { "TEXT_COLOR1", &textColor1 }, { "TEXT_COLOR2", &textColor2 } })
-        , bgColor(styles.colors.background)
+        : BaseGraphComponent(props)
         , textColor1(styles.colors.text, inactiveColorRatio)
         , textColor2(darken(styles.colors.text, 0.5), inactiveColorRatio)
-        , fillColor(styles.colors.primary, inactiveColorRatio)
-        , outlineColor(lighten(styles.colors.primary, 0.5), inactiveColorRatio)
     {
+        colors.push_back({ "TEXT_COLOR1", &textColor1 });
+        colors.push_back({ "TEXT_COLOR2", &textColor2 });
         updateColors();
         updateWaveformHeight();
     }
     virtual std::vector<Title> getTitles() = 0;
-    virtual std::vector<Point> getPoints() = 0;
 
     void render() override
     {
         if (updatePosition()) {
-            waveformY = relativePosition.y + 8;
-            draw.filledRect(relativePosition, size, { bgColor });
-            renderGraph();
+            BaseGraphComponent::render();
             renderTitles();
         }
     }

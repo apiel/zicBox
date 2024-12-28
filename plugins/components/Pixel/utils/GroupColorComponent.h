@@ -12,12 +12,7 @@ protected:
     bool isActive = true;
     float inactiveColorRatio = 0.5f;
 
-    struct NamedColor {
-        std::string name;
-        ToggleColor* color;
-    };
 
-    std::vector<NamedColor> colors;
 
     void updateColors()
     {
@@ -35,6 +30,13 @@ protected:
     }
 
 public:
+    struct NamedColor {
+        std::string name;
+        ToggleColor* color;
+    };
+
+    std::vector<NamedColor> colors;
+    
     GroupColorComponent(ComponentInterface::Props props, std::vector<NamedColor> colors)
         : Component(props)
         , colors(colors)
