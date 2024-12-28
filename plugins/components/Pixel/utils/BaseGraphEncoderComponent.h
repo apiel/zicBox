@@ -1,12 +1,12 @@
-#ifndef _UI_PIXEL_COMPONENT_BASE_GRAPH_H_
-#define _UI_PIXEL_COMPONENT_BASE_GRAPH_H_
+#ifndef _UI_PIXEL_COMPONENT_BASE_GRAPH_ENCODER_H_
+#define _UI_PIXEL_COMPONENT_BASE_GRAPH_ENCODER_H_
 
 #include "./GroupColorComponent.h"
 #include "helpers/range.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
 
-class BaseGraphComponent : public GroupColorComponent {
+class BaseGraphEncoderComponent : public GroupColorComponent {
 public:
     struct Title {
         std::string text1;
@@ -87,7 +87,7 @@ protected:
     }
 
 public:
-    BaseGraphComponent(ComponentInterface::Props props)
+    BaseGraphEncoderComponent(ComponentInterface::Props props)
         : GroupColorComponent(props, { { "FILL_COLOR", &fillColor }, { "OUTLINE_COLOR", &outlineColor }, { "TEXT_COLOR1", &textColor1 }, { "TEXT_COLOR2", &textColor2 } })
         , bgColor(styles.colors.background)
         , textColor1(styles.colors.text, inactiveColorRatio)

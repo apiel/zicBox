@@ -1,7 +1,7 @@
 #ifndef _UI_PIXEL_COMPONENT_ADSR_H_
 #define _UI_PIXEL_COMPONENT_ADSR_H_
 
-#include "utils/BaseGraphComponent.h"
+#include "utils/BaseGraphEncoderComponent.h"
 
 /*md
 ## GraphComponent
@@ -12,7 +12,7 @@ Show a representation of the ADSR envdelop.
 
 */
 
-class AdsrComponent : public BaseGraphComponent {
+class AdsrComponent : public BaseGraphEncoderComponent {
     struct EncoderParam {
         std::string name;
         int id = -1;
@@ -22,7 +22,7 @@ class AdsrComponent : public BaseGraphComponent {
 
 public:
     AdsrComponent(ComponentInterface::Props props)
-        : BaseGraphComponent(props)
+        : BaseGraphEncoderComponent(props)
     {
         textColor1.setColor(styles.colors.secondary, inactiveColorRatio);
         textColor2.setColor(styles.colors.text, inactiveColorRatio);
@@ -99,7 +99,7 @@ public:
             return true;
         }
 
-        return BaseGraphComponent::config(key, value);
+        return BaseGraphEncoderComponent::config(key, value);
     }
 };
 

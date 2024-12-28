@@ -6,7 +6,7 @@
 #include "./TextGridComponent.h"
 #include "./DrumEnvelopComponent.h"
 #include "./Encoder3Component.h"
-#include "./GraphComponent.h"
+#include "./GraphEncoderComponent.h"
 #include "./StepEditComponent.h"
 #include "./HiddenEncoderComponent.h"
 #include "./FmAlgoComponent.h"
@@ -37,7 +37,7 @@ void loadPixelComponents()
     } });
 
     viewManager.plugins.push_back({ "Graph", [](ComponentInterface::Props props) {
-        return new GraphComponent(props);
+        return new GraphEncoderComponent(props);
     } });
 
     viewManager.plugins.push_back({ "StepEdit", [](ComponentInterface::Props props) {
