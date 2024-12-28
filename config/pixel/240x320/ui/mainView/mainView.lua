@@ -129,7 +129,7 @@ local function mainView()
         {},
         { x = 0, y = 10, w = ScreenWidth, h = 80 }, {
             TRACK = 0,
-            BACKGROUND_COLOR = "#3d424c",
+            BACKGROUND_COLOR = "#2c323a",
             DATA = "Spectrogram BUFFER",
         })
 
