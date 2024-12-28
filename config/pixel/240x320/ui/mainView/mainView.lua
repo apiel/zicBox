@@ -127,18 +127,15 @@ local function mainView()
     ui.component("Spectrogram",
         {},
         {},
-        { x = 0, y = 10, w = ScreenWidth, h = 80 }, {
+        { x = 0, y = 10, w = ScreenWidth, h = 60 }, {
             TRACK = 0,
             BACKGROUND_COLOR = "#2c323a",
             DATA = "Spectrogram BUFFER",
         })
 
-    local top = 100
     local y = 0
 
-    -- y = 30
-    -- y = 60 + top
-    y = 80 + top
+    y = 160
     y = progressBar(0, 1, y)
     y = rowDrum23(1, 1, y, 11)
     y = rowDrum23(2, 2, y, 12)
@@ -151,7 +148,7 @@ local function mainView()
 
     -- "FX", "Op1", ".", "Op2", ".", "Op3", ".", "Op4", "."
 
-    y = 0 + top
+    y = 80
     values.master(0, 0, y)
     values.drum23(1, 1, y, 11)
     values.drum23(2, 2, y, 12)
