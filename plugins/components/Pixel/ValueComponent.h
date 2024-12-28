@@ -39,7 +39,7 @@ protected:
     bool showValue = true;
     bool showUnit = true;
     bool showLabel = true;
-    bool showLabelOverValue = false;
+    int showLabelOverValue = 0;
     bool useStringValue = false;
     bool verticalAlignCenter = false;
     std::string label;
@@ -122,7 +122,7 @@ public:
                 int unitY = textY + maxFontSize - unitFontSize;
 
                 if (showLabelOverValue) {
-                    draw.textCentered({ x, valueY - (labelFontSize + 2) }, getLabel(), labelFontSize, { labelColor.color, .font = font });
+                    draw.textCentered({ x, relativePosition.y + showLabelOverValue }, getLabel(), labelFontSize, { labelColor.color, .font = font });
                 } else if (showLabel) {
                     x = draw.text({ x, labelY }, getLabel(), labelFontSize, { labelColor.color, .font = font }) + 2;
                 }
@@ -217,9 +217,9 @@ public:
             return true;
         }
 
-        /*md - `SHOW_LABEL_OVER_VALUE: true` shows the label over the value (default: false) `*/
+        /*md - `SHOW_LABEL_OVER_VALUE: 4` shows the label over the value, 4 px from the top of the component (default: 0) `*/
         if (strcmp(key, "SHOW_LABEL_OVER_VALUE") == 0) {
-            showLabelOverValue = strcmp(params, "true") == 0;
+            showLabelOverValue = atoi(params);
             if (showLabelOverValue) {
                 showLabel = false;
             }

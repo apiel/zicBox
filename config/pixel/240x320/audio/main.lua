@@ -23,7 +23,7 @@ audio.pluginAlias("Sequencer", "libzic_Sequencer.so")
 audio.pluginAlias("AudioOutput", "libzic_AudioOutputPulse.so")
 audio.pluginAlias("Spectrogram", "libzic_AudioSpectrogram.so")
 
-StringCuttoffFormat = "%d%%  %d%%"
+StringCuttoffFormat = "%d%% %d%%"
 
 -- # Drum tracks
 drum23(1)
