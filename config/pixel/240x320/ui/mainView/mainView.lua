@@ -2,6 +2,7 @@ local ui = require("config/pixel/libs/ui")
 local textGrid = require("config/pixel/libs/component/textGrid")
 local values = require("config/pixel/240x320/ui/mainView/values")
 local visibility = require("config/pixel/libs/containers/visibility")
+local value = require("config/pixel/libs/component/value")
 
 local function _row(group, track, menuContext, items, rowH, keymaps)
     ui.component("SeqSynthBar",
@@ -123,6 +124,8 @@ local function mainView()
             }
         }
     )
+
+    value("Tempo BPM", {W3_4, KeyInfoPosition.y, W1_4, 22}, { SHOW_LABEL_OVER_VALUE = 0, BAR_HEIGHT = 0, VALUE_FONT_SIZE = 16 })
 
     ui.component("Spectrogram",
         {},
