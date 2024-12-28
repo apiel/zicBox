@@ -18,22 +18,40 @@ class SpectrogramComponent : public Component {
 protected:
     Color bgColor;
     Color waveOut;
+    Color waveMiddle;
     Color waveIn;
 
-    float *buffer;
+    float* buffer;
 
 public:
     SpectrogramComponent(ComponentInterface::Props props)
         : Component(props)
         , bgColor(styles.colors.background)
-        , waveOut(styles.colors.primary)
-        , waveIn(darken(styles.colors.primary, 0.5))
+        , waveIn(styles.colors.primary)
+        , waveMiddle(darken(styles.colors.primary, 0.2))
+        , waveOut(darken(styles.colors.primary, 0.4))
     {
+        jobRendering = [this](unsigned long now) {
+            renderNext();
+        };
     }
     void render()
     {
         if (updatePosition()) {
             draw.filledRect(relativePosition, size, { bgColor });
+            int yCenter = relativePosition.y + size.h / 2;
+            for (int i = 0; i < size.w; i++) {
+                int graphH = buffer[i] * size.h;
+                if (graphH) {
+                    int y1 = yCenter - graphH;
+                    int y2 = yCenter + graphH;
+                    draw.line({ i, y1 }, { i, y2 }, { waveIn });
+                    draw.line({ i, (int)(y1 + graphH * 0.25) }, { i, (int)(y2 - graphH * 0.25) }, { waveMiddle });
+                    draw.line({ i, (int)(y1 + graphH * 0.75) }, { i, (int)(y2 - graphH * 0.75) }, { waveOut });
+                } else {
+                    draw.pixel({ i, yCenter }, { waveOut });
+                }
+            }
         }
     }
 
