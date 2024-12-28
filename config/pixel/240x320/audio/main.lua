@@ -23,6 +23,8 @@ audio.pluginAlias("Sequencer", "libzic_Sequencer.so")
 audio.pluginAlias("AudioOutput", "libzic_AudioOutputPulse.so")
 audio.pluginAlias("Spectrogram", "libzic_AudioSpectrogram.so")
 
+StringCuttoffFormat = "%d%%  %d%%"
+
 -- # Drum tracks
 drum23(1)
 drum23(2)
@@ -46,7 +48,7 @@ audio.plugin("SerializeTrack", { TRACK = 10, FILEPATH = "serializedPixel2/mixer_
 
 audio.plugin("Mixer2", { NAME = "MixerMaster", TRACK_A = 9, TRACK_B = 10, VALUE = 50, TRACK = 0 })
 
-audio.plugin("EffectFilterMultiMode", { NAME = "MasterFilter" })
+audio.plugin("EffectFilterMultiMode", { NAME = "MasterFilter", STRING_CUTOFF_FORMAT = StringCuttoffFormat })
 audio.plugin("EffectGainVolume", { NAME = "MasterVolume" })
 audio.plugin("Spectrogram")
 audio.plugin("AudioOutput")
