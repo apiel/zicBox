@@ -124,6 +124,15 @@ local function mainView()
         }
     )
 
+    ui.component("Spectrogram",
+        {},
+        {},
+        { x = 0, y = 10, w = ScreenWidth, h = 80 }, {
+            TRACK = 0,
+            BACKGROUND_COLOR = "#3d424c",
+            DATA = "Spectrogram BUFFER",
+        })
+
     local top = 100
     local y = 0
 

@@ -16,6 +16,7 @@
 #include "./SeqProgressBarComponent.h"
 #include "./SeqSynthBarComponent.h"
 #include "./ValueComponent.h"
+#include "./SpectrogramComponent.h"
 
 void loadPixelComponents()
 {
@@ -70,6 +71,10 @@ void loadPixelComponents()
 
     viewManager.plugins.push_back({ "Value", [](ComponentInterface::Props props) {
         return new ValueComponent(props);
+    } });
+
+    viewManager.plugins.push_back({ "Spectrogram", [](ComponentInterface::Props props) {
+        return new SpectrogramComponent(props);
     } });
 }
 

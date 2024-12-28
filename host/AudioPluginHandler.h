@@ -220,6 +220,10 @@ public:
     {
         AudioPlugin* plugin = getPluginPtr(name, track);
         if (!plugin) {
+            logInfo("Could not find plugin %s on track %d. List of available plugins:", name, track);
+            for (AudioPlugin* plugin : plugins) {
+                logInfo("- Found plugin %s on track %d", plugin->name, plugin->track);
+            }
             throw std::runtime_error("Could not find plugin " + std::string(name) + " on track " + std::to_string(track));
         }
         return *plugin;

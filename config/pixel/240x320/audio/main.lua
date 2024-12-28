@@ -21,6 +21,7 @@ audio.pluginAlias("Drum23", "libzic_SynthDrum23.so")
 audio.pluginAlias("DrumSample", "libzic_SynthDrumSample.so")
 audio.pluginAlias("Sequencer", "libzic_Sequencer.so")
 audio.pluginAlias("AudioOutput", "libzic_AudioOutputPulse.so")
+audio.pluginAlias("Spectrogram", "libzic_AudioSpectrogram.so")
 
 -- # Drum tracks
 drum23(1)
@@ -47,6 +48,7 @@ audio.plugin("Mixer2", { NAME = "MixerMaster", TRACK_A = 9, TRACK_B = 10, VALUE 
 
 audio.plugin("EffectFilterMultiMode", { NAME = "MasterFilter" })
 audio.plugin("EffectGainVolume", { NAME = "MasterVolume" })
+audio.plugin("Spectrogram")
 audio.plugin("AudioOutput")
 audio.plugin("SerializeTrack", { FILEPATH = "serializedPixel2/master.cfg" })
 
