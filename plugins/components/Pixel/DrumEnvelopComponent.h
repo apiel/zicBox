@@ -50,6 +50,8 @@ protected:
 
     bool renderTitleOnTop = true;
 
+    int fontSize = 8;
+
     void updateGraphHeight()
     {
         if (renderTitleOnTop) {
@@ -103,14 +105,14 @@ protected:
         if (renderTitleOnTop) {
             int cellWidth = size.w / 3;
             int x = relativePosition.x + cellWidth * 0.5;
-            draw.textCentered({ x, relativePosition.y }, std::to_string(currentstep + 1) + "/" + std::to_string(envData->size()), 8, { textColor.color });
-            draw.textCentered({ x + cellWidth, relativePosition.y }, std::to_string(currentTimeMs) + "ms", 8, { textColor.color });
-            draw.textCentered({ x + cellWidth * 2, relativePosition.y }, std::to_string((int)(currentMod * 100)) + "%", 8, { textColor.color });
+            draw.textCentered({ x, relativePosition.y }, std::to_string(currentstep + 1) + "/" + std::to_string(envData->size()), fontSize, { textColor.color });
+            draw.textCentered({ x + cellWidth, relativePosition.y }, std::to_string(currentTimeMs) + "ms", fontSize, { textColor.color });
+            draw.textCentered({ x + cellWidth * 2, relativePosition.y }, std::to_string((int)(currentMod * 100)) + "%", fontSize, { textColor.color });
         } else {
             int x = relativePosition.x;
-            draw.text({ x + 2, relativePosition.y }, std::to_string(currentTimeMs) + "ms", 8, { textColor.color });
-            draw.textRight({ x + size.w - 2, relativePosition.y }, std::to_string((int)(currentMod * 100)) + "%", 8, { textColor.color });
-            draw.text({ x + 2, relativePosition.y + size.h - 8 }, std::to_string(currentstep + 1) + "/" + std::to_string(envData->size()), 8, { textColor.color });
+            draw.text({ x + 2, relativePosition.y }, std::to_string(currentTimeMs) + "ms", fontSize, { textColor.color });
+            draw.textRight({ x + size.w - 2, relativePosition.y }, std::to_string((int)(currentMod * 100)) + "%", fontSize, { textColor.color });
+            draw.text({ x + 2, relativePosition.y + size.h - 8 }, std::to_string(currentstep + 1) + "/" + std::to_string(envData->size()), fontSize, { textColor.color });
         }
     }
 
