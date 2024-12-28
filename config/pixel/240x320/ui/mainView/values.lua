@@ -4,11 +4,11 @@ local encoder3 = require("config/pixel/libs/component/encoder3")
 local graph = require("config/pixel/libs/component/graphEncoder")
 local drumEnvelop = require("config/pixel/libs/component/drumEnvelop")
 
--- local valueH = 11
--- local valueH = 25
-local valueH = 34
+-- local valueH = 34
+-- local rowSpacing = 3
 
-local rowSpacing = 3
+local valueH = 28
+local rowSpacing = 9
 
 local function topLeft() return { x = 0, y = 0, w = W2_4 - 2, h = valueH } end
 local function bottomLeft() return { x = 0, y = valueH + rowSpacing, w = W2_4 - 2, h = valueH } end
@@ -23,7 +23,10 @@ local function base(options, group, track, encoderId)
     options.GROUP = group
     options.SHOW_LABEL_OVER_VALUE = true
     options.LABEL_FONT_SIZE = 8
-    options.VALUE_FONT_SIZE = 12
+    -- if options.VALUE_FONT_SIZE == nil then
+        -- options.VALUE_FONT_SIZE = 12
+    -- end
+    -- options.VALUE_FONT = "Sinclair_M"
     return options
 end
 
@@ -116,7 +119,7 @@ end
 local function sampleValues(group, track, y, contextIndex)
     container(group, y, { VISIBILITY_CONTEXT = contextIndex .. " SHOW_WHEN 1" })
 
-    value("DrumSample BROWSER", topLeft(), tertiary({}, group, track, 0))
+    value("DrumSample BROWSER", topLeft(), tertiary({ VALUE_FONT_SIZE = 8 }, group, track, 0))
     value("DrumSample START", bottomLeft(), primary({}, group, track, 1))
     -- value("DrumSample BROWSER", topRight(), secondary({}, group, track, 2))
     value("DrumSample END", bottomRight(), quaternary({}, group, track, 3))
