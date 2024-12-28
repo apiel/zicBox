@@ -20,7 +20,7 @@ local ui = require "config/pixel/libs/ui"
 local function component(params, position, options)
     local encoders = options.ENCODERS
     options.ENCODERS = nil
-    ui.component("Graph", { "PLUGIN", "DATA_ID" }, params, position, options)
+    ui.component("GraphEncoder", { "PLUGIN", "DATA_ID" }, params, position, options)
     if type(encoders) == "table" then
         for _, encoder in ipairs(encoders) do
             zic("ENCODER", encoder)

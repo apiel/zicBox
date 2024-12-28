@@ -36,7 +36,7 @@ void loadPixelComponents()
         return new HiddenEncoderComponent(props);
     } });
 
-    viewManager.plugins.push_back({ "Graph", [](ComponentInterface::Props props) {
+    viewManager.plugins.push_back({ "GraphEncoder", [](ComponentInterface::Props props) {
         return new GraphEncoderComponent(props);
     } });
 
