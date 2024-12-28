@@ -148,7 +148,7 @@ function values.drum23(group, track, y, contextIndex)
     --> might want to put something else, no need of distortion level, could just be always at 100%
     -- value("Distortion LEVEL", bottomLeft(), primary({}, group, track, 1))
     value("Drum23 GAIN_CLIPPING", bottomLeft(), primary({}, group, track, 1))
-    value("MMFilter CUTOFF", topRight(), quaternary({ USE_STRING_VALUE = true, LABEL = "Filter" }, group, track, 2))
+    value("MMFilter CUTOFF", topRight(), quaternary({ USE_STRING_VALUE = true }, group, track, 2))
     value("MMFilter RESONANCE", bottomRight(), quaternary({}, group, track, 3))
 
     seq(group, track, y)
@@ -163,7 +163,7 @@ function values.master(group, track, y)
     --> rather put step reducer and another effect
     value("MasterVolume VOLUME", topLeft(), tertiary({}, group, track, 0))
     -- value("VolumeDrive DRIVE", bottomLeft(), primary({}, group, track, 1))
-    value("MasterFilter CUTOFF", topRight(), quaternary({ USE_STRING_VALUE = true, LABEL = "Filter" }, group, track, 2))
+    value("MasterFilter CUTOFF", topRight(), quaternary({ USE_STRING_VALUE = true }, group, track, 2))
     value("MasterFilter RESONANCE", bottomRight(), quaternary({}, group, track, 3))
 end
 

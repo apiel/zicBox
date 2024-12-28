@@ -16,6 +16,8 @@ protected:
     EffectFilterData hpf;
     EffectFilterData lpf;
 
+    std::string valueFmt = "%d%% LP|HP %d%%";
+
 public:
     /*md **Values**: */
     /*md - `CUTOFF` to set cutoff frequency and switch between low and high pass filter. */
@@ -52,7 +54,9 @@ public:
         float mixValue = mix.pct();
         hpf.setCutoff((0.20 * mixValue) + 0.00707);
         lpf.setCutoff(0.85 * mixValue + 0.1);
-        mix.setString(std::to_string((int)((1 - mixValue) * 100)) + "% LP|HP " + std::to_string((int)(mixValue * 100)) + "%");
+        char strBuf[128];
+        sprintf(strBuf, valueFmt.c_str(), (int)((1 - mixValue) * 100), (int)(mixValue * 100));
+        mix.setString(strBuf);
     }
 
     void setResonance(float value)
@@ -62,6 +66,16 @@ public:
         lpf.setResonance(resonance.pct());
         hpf.setResonance(resonance.pct());
     };
+
+    bool config(char* key, char* value) override
+    {
+        /*md - `STRING_CUTOFF_FORMAT` set the string value format for the cutoff. */
+        if (strcmp(key, "STRING_CUTOFF_FORMAT") == 0) {
+            valueFmt = value;
+            return true;
+        }
+        return Mapping::config(key, value);
+    }
 };
 
 #endif
