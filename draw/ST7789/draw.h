@@ -255,14 +255,15 @@ protected:
         pixel(position, options);
     }
 
-    void drawChar(Point position, unsigned char character, uint8_t* font, float scale = 1.0, DrawOptions options = {})
+    void drawChar(Point position, unsigned char character, uint8_t* font, float scale = 1.0, uint8_t heightRatio = 1, DrawOptions options = {})
     {
         float x = position.x;
         float y = position.y;
         uint16_t height = font[0];
         uint16_t width = font[1];
 
-        uint8_t mod = width / 8;
+        uint8_t diff = width % 8;
+        uint8_t mod = (width + diff) / 8;
         float x0 = x;
         uint16_t len = (mod * height);
         uint16_t temp = ((character - 32) * len) + 2;
@@ -270,13 +271,15 @@ protected:
             uint8_t ch = font[temp];
             for (uint8_t j = 0; j < 8; j++) {
                 if (ch & 0x80) {
-                    pixel({ (int)x, (int)y }, options);
+                    for (int i = 0; i < heightRatio; i++) {
+                        pixel({ (int)x, (int)y + i }, options);
+                    }
                 }
                 ch <<= 1;
                 x += scale;
                 if ((x - x0) == height * scale) {
                     x = x0;
-                    y += scale;
+                    y += scale * heightRatio;
                     break;
                 }
             }
@@ -328,10 +331,10 @@ public:
 
         // drawChar({ 10, 10 }, 'A', ArialBold);
         // drawChar({ 10, 10 }, 'B', UbuntuBold);
-        drawChar({ 10, 10 }, 'B', UbuntuBold, 0.5);
+        drawChar({ 10, 10 }, 'B', UbuntuBold, 0.5, 1);
 
         filledRect({ 58, 10 }, { 20, 20 });
-        drawChar({ 60, 10 }, 'B', Sinclair_S, 2.0, { .color = { 255, 0, 0 } });
+        drawChar({ 60, 10 }, 'B', Sinclair_S, 2.0, 1, { .color = { 255, 0, 0 } });
 
         filledRect({ 40, 45 }, { 30, 20 });
         textRight({ 120, 50 }, "Hello World!", 16, { .color = { 0, 255, 0 }, .font = &Sinclair_S });
@@ -485,6 +488,7 @@ public:
         uint16_t width = font[1];
         float scale = size / (float)height;
         uint16_t len = text.length();
+        uint8_t heightRatio = options.fontHeight == 0 ? 1 : (options.fontHeight / height);
 
         float x = position.x;
         float xInc = width * scale;
@@ -493,7 +497,7 @@ public:
             if (x + xInc > maxX) {
                 break;
             }
-            drawChar({ (int)x, position.y }, text[i], font, scale, { .color = { options.color } });
+            drawChar({ (int)x, position.y }, text[i], font, scale, heightRatio, { .color = { options.color } });
             x += xInc;
         }
         return x;
@@ -506,6 +510,7 @@ public:
         uint16_t width = font[1];
         float scale = size / (float)height;
         uint16_t len = text.length();
+        uint8_t heightRatio = options.fontHeight == 0 ? 1 : (options.fontHeight / height);
 
         float x = position.x;
         float xInc = width * scale;
@@ -514,7 +519,7 @@ public:
             if (x < 0) {
                 break;
             }
-            drawChar({ (int)x, position.y }, text[len - i - 1], font, scale, { .color = { options.color } });
+            drawChar({ (int)x, position.y }, text[len - i - 1], font, scale, heightRatio, { .color = { options.color } });
         }
         return x;
     }
@@ -526,6 +531,7 @@ public:
         uint16_t width = font[1];
         float scale = size / (float)height;
         uint16_t len = text.length();
+        uint8_t heightRatio = options.fontHeight == 0 ? 1 : (options.fontHeight / height);
 
         int w = len * width * scale;
         if (options.maxWidth && w > options.maxWidth) {
@@ -538,7 +544,7 @@ public:
                 break;
             }
             if (x > 0) {
-                drawChar({ (int)x, position.y }, text[i], font, scale, { .color = { options.color } });
+                drawChar({ (int)x, position.y }, text[i], font, scale, heightRatio, { .color = { options.color } });
             }
             x += xInc;
         }

@@ -4,6 +4,8 @@
   - move string vector ... into a single header file to precompile it
   - ccache
 
+- TODO all color code in text char...
+
 - IDEA val->setString should it instead get an array of strin
     - ["Resonance", "37", "%"]
     - ["LP", "78", "%", "HP", "22", "%"]

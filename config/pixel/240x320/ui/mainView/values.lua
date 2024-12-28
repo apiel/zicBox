@@ -24,9 +24,11 @@ local function base(options, group, track, encoderId)
     options.SHOW_LABEL_OVER_VALUE = true
     options.LABEL_FONT_SIZE = 8
     -- if options.VALUE_FONT_SIZE == nil then
-        -- options.VALUE_FONT_SIZE = 12
+        -- options.VALUE_FONT_SIZE = 8
     -- end
     -- options.VALUE_FONT = "Sinclair_M"
+    -- options.VALUE_FONT = "Sinclair_12"
+    options.VALUE_FONT_HEIGHT = 16
     return options
 end
 
