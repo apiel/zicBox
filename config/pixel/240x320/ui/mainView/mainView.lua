@@ -130,7 +130,7 @@ local function mainView()
     ui.component("Spectrogram",
         {},
         {},
-        { x = 0, y = 10, w = ScreenWidth, h = 60 }, {
+        { x = 0, y = 10, w = ScreenWidth, h = 64 }, {
             TRACK = 0,
             BACKGROUND_COLOR = "#2c323a",
             DATA = "Spectrogram BUFFER",
@@ -151,7 +151,7 @@ local function mainView()
 
     -- "FX", "Op1", ".", "Op2", ".", "Op3", ".", "Op4", "."
 
-    y = 80
+    y = 84
     values.master(0, 0, y)
     values.drum23(1, 1, y, 11)
     values.drum23(2, 2, y, 12)
