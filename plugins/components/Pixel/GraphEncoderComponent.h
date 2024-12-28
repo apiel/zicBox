@@ -1,18 +1,18 @@
-#ifndef _UI_PIXEL_COMPONENT_GRAPH_H_
-#define _UI_PIXEL_COMPONENT_GRAPH_H_
+#ifndef _UI_PIXEL_COMPONENT_GRAPH_ENCODER_H_
+#define _UI_PIXEL_COMPONENT_GRAPH_ENCODER_H_
 
-#include "utils/BaseGraphComponent.h"
+#include "utils/BaseGraphEncoderComponent.h"
 
 /*md
-## GraphComponent
+## GraphEncoderComponent
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/graph.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/graphEncoder.png" />
 
 Show a representation of data points and provide a way to control them.
 
 */
 
-class GraphComponent : public BaseGraphComponent {
+class GraphEncoderComponent : public BaseGraphEncoderComponent {
     struct EncoderParam {
         int id = -1;
         ValueInterface* value = NULL;
@@ -23,8 +23,8 @@ class GraphComponent : public BaseGraphComponent {
     uint8_t dataId = -1;
 
 public:
-    GraphComponent(ComponentInterface::Props props)
-        : BaseGraphComponent(props)
+    GraphEncoderComponent(ComponentInterface::Props props)
+        : BaseGraphEncoderComponent(props)
     {
     }
 
@@ -105,7 +105,7 @@ public:
             return true;
         }
 
-        return BaseGraphComponent::config(key, value);
+        return BaseGraphEncoderComponent::config(key, value);
     }
 };
 
