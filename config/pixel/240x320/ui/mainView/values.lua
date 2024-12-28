@@ -3,6 +3,7 @@ local value = require("config/pixel/libs/component/value")
 local encoder3 = require("config/pixel/libs/component/encoder3")
 local graph = require("config/pixel/libs/component/graphEncoder")
 local drumEnvelop = require("config/pixel/libs/component/drumEnvelop")
+local ui = require("config/pixel/libs/ui")
 
 local valueH = 29
 local rowSpacing = 8
@@ -81,6 +82,7 @@ local function drum23Values(group, track, y, contextIndex)
     )
 
     container(group, y, { VISIBILITY_CONTEXT = contextIndex .. " SHOW_WHEN 3" })
+    ui.component("Rect", {}, {}, { x = 0, y = 0, w = ScreenWidth, h = height }, {})
     drumEnvelop(
         { PLUGIN = "Drum23", ENVELOP_DATA_ID = "0" },
         { x = 0, y = 0, w = W3_4 - 2, h = height },
@@ -93,6 +95,7 @@ local function drum23Values(group, track, y, contextIndex)
     )
 
     container(group, y, { VISIBILITY_CONTEXT = contextIndex .. " SHOW_WHEN 4" })
+    ui.component("Rect", {}, {}, { x = 0, y = 0, w = ScreenWidth, h = height }, {})
     drumEnvelop(
         { PLUGIN = "Drum23", ENVELOP_DATA_ID = "4" },
         { x = 0, y = 0, w = W3_4 - 2, h = height },

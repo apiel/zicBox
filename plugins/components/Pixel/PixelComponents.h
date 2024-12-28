@@ -17,6 +17,7 @@
 #include "./SeqSynthBarComponent.h"
 #include "./ValueComponent.h"
 #include "./SpectrogramComponent.h"
+#include "./RectComponent.h"
 
 void loadPixelComponents()
 {
@@ -75,6 +76,10 @@ void loadPixelComponents()
 
     viewManager.plugins.push_back({ "Spectrogram", [](ComponentInterface::Props props) {
         return new SpectrogramComponent(props);
+    } });
+
+    viewManager.plugins.push_back({ "Rect", [](ComponentInterface::Props props) {
+        return new RectComponent(props);
     } });
 }
 
