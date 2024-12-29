@@ -9,6 +9,7 @@ SUB_DIR := x86
 endif
 BUILD_DIR ?= build/$(SUB_DIR)
 OBJ_DIR ?= $(BUILD_DIR)/obj
+DEP_DIR ?= $(OBJ_DIR)/deps  # Directory for dependency files
 # For raspberry std::filesystem is not found.
 PARAMS ?= --std=c++17 -lstdc++fs
 
@@ -78,7 +79,9 @@ compile:
 	make $(OBJ_DIR)/$(LIBNAME).o EXTRA="$(EXTRA)"
 	make $(BUILD_DIR)/libzic_$(LIBNAME).so
 
-$(OBJ_DIR)/%.o: %.h
+# add mapping.h as dependency to watch
+
+$(OBJ_DIR)/%.o: %.h mapping.h
 	@mkdir -p $(OBJ_DIR)
 	g++ -c -o $(OBJ_DIR)/$*.o audioPlugin.cpp $(INC) -fPIC -DPLUGIN_NAME=$* -DPLUGIN_INCLUDE=\"$*.h\" $(EXTRA) $(PARAMS)
 
