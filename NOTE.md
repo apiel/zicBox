@@ -22,14 +22,14 @@
     We should cache several plugin at once, caching a single plugin is not bringing signitificant improvement: e.g. SynthDrumSample (very close to what cache would be) is using about 2% cpu and SynthDrum23 is using 4% cpu. However, SynthDrum23 + Distortion + MMFilter is using 10% cpu.
     See `void set(float value, void* data = NULL)` in `plugins/audio/mapping.h` calling `onUpdateFn` callback function, could use the same concept to trigger recording of a new cache. However, ui is already using this, so either we could need a vector of callback function, or 2 of them... Some way to debounce it would make sense. How to record the cache, without to impact the audio output?
     **Find a way to record one note:** Create an audio plugin to cache output from all previous plugin. This cache plugin would watch for parameter change. If parameter of one of the previous plugin change, it would cache the audio output for a strategic note (low tone note) and then allowing to speedup reading cache to get higher note.
-    **All track caching** the whole track caching would make it hard for sequencer motion and probability, easier but most likely not the right way...
+    **All track caching** the whole track caching would make it hard for sequencer motion and probability, most likely not the right way...
 
 - TODO use .emplace_back instead of .push_back in vector?
 - TODO use std::set when possible
 
 - TODO digital audio programming tutorial
 
-- IDEA val->setString should it instead get an array of strin
+- IDEA val->setString should it instead get an array of string
     - ["Resonance", "37", "%"]
     - ["LP", "78", "%", "HP", "22", "%"]
     - by default using the props to build the string value but can be customised using setString
