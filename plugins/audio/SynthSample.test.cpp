@@ -17,7 +17,8 @@ void hydate(AudioPlugin& plugin, std::string configs) {
     std::istringstream stream(configs);
     std::string line;
     while (std::getline(stream, line)) {
-        if (!line.empty()) {
+        // skip line starting with #
+        if (!line.empty() && line[0] != '#') {
         plugin.hydrate(line);
         }
     }
@@ -39,8 +40,11 @@ int main(int argc, char* argv[])
     SynthSample synth(props, (char*)"zicSynth");
     hydate(synth, R"(
 START 0.000000
-END 93.000000
-BROWSER 16.000000)");
+END 100.000000
+DENSITY 6.000000
+DENSITY_RANDOMIZE 25.000000
+DENSITY_DELAY 500.000000
+BROWSER 1.000000)");
 
     EffectDistortion2 distortion2(props, (char*)"zicEffectDistortion2");
     hydate(distortion2, R"(
@@ -54,7 +58,7 @@ WAVESHAPE 25.000000)");
 
     int count = 0;
     while (1) {
-        if (count == props.sampleRate) { // every second
+        if (count == props.sampleRate * 3) { // every 3 second
             count = 0;
             synth.noteOn(60, 1.0f);
         }
