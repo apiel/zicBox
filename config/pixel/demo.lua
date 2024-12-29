@@ -12,11 +12,7 @@ ui.setScreenSize(ScreenWidth, ScreenHeight)
 ui.view("Main")
 
 local text = require("config/pixel/libs/component/text")
-text(
-    { TEXT = "Hello world" },
-    { x = 0, y = 0, w = ScreenWidth, h = 8 },
-    { CENTERED = true, FONT_SIZE = 24 }
-)
+text("Hello world", { x = 0, y = 0, w = ScreenWidth, h = 8 }, { CENTERED = true, FONT_SIZE = 24 })
 
 local adsr = require("config/pixel/libs/component/adsr")
 adsr(

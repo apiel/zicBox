@@ -3,6 +3,7 @@ local textGrid = require("config/pixel/libs/component/textGrid")
 local values = require("config/pixel/240x320/ui/mainView/values")
 local visibility = require("config/pixel/libs/containers/visibility")
 local value = require("config/pixel/libs/component/value")
+local text = require("config/pixel/libs/component/text")
 
 local function _row(group, track, menuContext, items, rowH, keymaps)
     ui.component("SeqSynthBar",
@@ -23,14 +24,14 @@ end
 local function row(group, track, y, menuContext, synth, items)
     local rowH = 14
 
-    visibility({ x = 0, y = y, w = ScreenWidth, h = rowH }, { VISIBILITY_CONTEXT = { "254 SHOW_WHEN 0" }})
+    visibility({ x = 0, y = y, w = ScreenWidth, h = rowH }, { VISIBILITY_CONTEXT = { "254 SHOW_WHEN 0" } })
     _row(group, track, menuContext, items, rowH, {
         { key = "q", action = ".stepToggleOrPlayNote:" .. synth },
         { key = "a", action = ".left" },
         { key = "d", action = ".right" },
     })
 
-    visibility({ x = 0, y = y, w = ScreenWidth, h = rowH }, { VISIBILITY_CONTEXT = { "254 SHOW_WHEN 1" }})
+    visibility({ x = 0, y = y, w = ScreenWidth, h = rowH }, { VISIBILITY_CONTEXT = { "254 SHOW_WHEN 1" } })
     _row(group, track, menuContext, items, rowH, {
         { key = "q", action = ".stepToggle" },
     })
@@ -125,16 +126,20 @@ local function mainView()
         }
     )
 
-    value("Tempo BPM", {W3_4, KeyInfoPosition.y, W1_4, 22}, { SHOW_LABEL_OVER_VALUE = 0, BAR_HEIGHT = 0, VALUE_FONT_SIZE = 16 })
+    value("Tempo BPM", { W3_4, KeyInfoPosition.y, W1_4, 22 },
+        { SHOW_LABEL_OVER_VALUE = 0, BAR_HEIGHT = 0, VALUE_FONT_SIZE = 16 })
 
     ui.component("Spectrogram",
         {},
         {},
         { x = 0, y = 4, w = ScreenWidth, h = 70 }, {
             TRACK = 0,
-            BACKGROUND_COLOR = "#2c323a",
+            -- BACKGROUND_COLOR = "#2c323a",
             DATA = "Spectrogram BUFFER",
+            TEXT = "Pixel"
         })
+
+    -- text("Pixel", { x = 0, y = 20, w = ScreenWidth, h = 16 }, { CENTERED = true, FONT_SIZE = 16 })
 
     local y = 0
 

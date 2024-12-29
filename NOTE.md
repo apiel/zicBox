@@ -1,15 +1,17 @@
 ## Pixel TODO
 
-- TODO precompile big header files
-  - move string vector ... into a single header file to precompile it
-  - ccache
+- TODO speed up compile time
+  - cross compile for rpi directly on laptop
+  - precompile big header files ? 
+    - --> move string vector ... into a single header file to precompile it
+    - --> precompile rtmidi, pulse... ?
+  - ccache ?
+  - should we move back to build component as module to speed up build?
+    - could we find a way to compile only module that have changed?
+  - move host.h into a module? or find a way to precompile it and only compile if necessary...
+  
 
-- TODO all color code in text char...
-
-- IDEA val->setString should it instead get an array of strin
-    - ["Resonance", "37", "%"]
-    - ["LP", "78", "%", "HP", "22", "%"]
-    - by default using the props to build the string value but can be customised using setString
+- TODO add color code in text char...
 
 - TODO drum freq envelop is really good but not easy to use
   - might be great to keep this one as advance version
@@ -23,19 +25,16 @@
     - or just increase step increament or decrease it... cache it in a very low note, so sampling up is not an issue (-12+12 semitone should be enough)
     - ultimately could do some granular effect to pitch the note, but should not be necessary
 
-- TODO should we move back to build component as module to speed up build?
-  - or should we look at way to compile only things that changed?
-
-- IDEA when looking at the first track, this representation of the sequencer is much easier to understand what is going on
-    - maybe we should use this concept for all tracks
-    - also might want to cache drum engine output into a sample to save processing
-      and only switch live generation when we are on the view to edit the engine.
-      But how to deal with different notes? It seems that the zicPixel is not using so much memory, so could store them in a bigger audio buffer...
-
 - TODO use .emplace_back instead of .push_back in vector?
 - TODO use std::set when possible
 
 - TODO digital audio programming tutorial
+
+- IDEA val->setString should it instead get an array of strin
+    - ["Resonance", "37", "%"]
+    - ["LP", "78", "%", "HP", "22", "%"]
+    - by default using the props to build the string value but can be customised using setString
+
 
 - FIXME fix FM on rpi
 

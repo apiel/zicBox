@@ -130,11 +130,7 @@ local function encodersMaster(group, track, y)
 end
 
 local function drumSample(track)
-    text(
-        { TEXT = "Drum Sample(1)" },
-        { x = 0, y = 0, w = ScreenWidth, h = 8 },
-        { CENTERED = true }
-    )
+    text("Drum Sample(1)", { x = 0, y = 0, w = ScreenWidth, h = 8 }, { CENTERED = true })
 
 
     local keyInfoPosition = { x = 0, y = 216 }
@@ -144,7 +140,7 @@ local function drumSample(track)
             "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled &icon::musicNote::pixelated &icon::play::filled"
         }, keyInfoPosition,
         {
-            VISIBILITY_CONTEXT = {"254 SHOW_WHEN 0"},
+            VISIBILITY_CONTEXT = { "254 SHOW_WHEN 0" },
             KEYMAPS = {
                 { key = "w", action = "incGroup:-1" },
 
@@ -165,7 +161,7 @@ local function drumSample(track)
             "5 6 7 8 Master"
         }, keyInfoPosition,
         {
-            VISIBILITY_CONTEXT = {"254 SHOW_WHEN 1"},
+            VISIBILITY_CONTEXT = { "254 SHOW_WHEN 1" },
             KEYMAPS = {
                 { key = "q", action = track == 1 and "setView:Sequencer1" or "setView:Track1" },
                 { key = "w", action = track == 2 and "setView:Sequencer2" or "setView:Track2" },

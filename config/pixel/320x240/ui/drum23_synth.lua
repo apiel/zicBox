@@ -18,11 +18,7 @@ local function drum23_synth(track)
   -- #   Drum
   group = group + 1
   y = y + rowHeight
-  text(
-    { TEXT = "Drum (" .. track .. ")" },
-    { x = 0, y = y, w = ScreenWidth, h = 8 },
-    { CENTERED = true, GROUP = group }
-  )
+  text("Drum (" .. track .. ")", { x = 0, y = y, w = ScreenWidth, h = 8 }, { CENTERED = true, GROUP = group })
 
   y = y + sepHeight
   encoder3(
@@ -49,11 +45,7 @@ local function drum23_synth(track)
   -- #   Distortion
   group = group + 1
   y = y + rowHeight
-  text(
-    { TEXT = "Distortion" },
-    { x = 0, y = y, w = ScreenWidth, h = 8 },
-    { CENTERED = true, GROUP = group }
-  )
+  text("Distortion", { x = 0, y = y, w = ScreenWidth, h = 8 }, { CENTERED = true, GROUP = group })
 
   y = y + sepHeight
   encoder3(
@@ -80,11 +72,7 @@ local function drum23_synth(track)
   -- #   Waveform
   group = group + 1
   y = y + rowHeight
-  text(
-    { TEXT = "Waveform" },
-    { x = 0, y = y, w = ScreenWidth, h = 8 },
-    { CENTERED = true, GROUP = group }
-  )
+  text("Waveform", { x = 0, y = y, w = ScreenWidth, h = 8 }, { CENTERED = true, GROUP = group })
 
   y = y + sepHeight
   graph(
@@ -101,11 +89,7 @@ local function drum23_synth(track)
   -- #   Amp envelope
   group = group + 1
   y = y + rowHeight
-  text(
-    { TEXT = "Amplitude" },
-    { x = 0, y = y, w = ScreenWidth, h = 8 },
-    { CENTERED = true, GROUP = group }
-  )
+  text("Amplitude", { x = 0, y = y, w = ScreenWidth, h = 8 }, { CENTERED = true, GROUP = group })
 
   y = y + sepHeight
   drumEnvelop(
@@ -122,11 +106,7 @@ local function drum23_synth(track)
   -- #   Frequency envelope
   group = group + 1
   y = y + rowHeight
-  text(
-    { TEXT = "Frequency" },
-    { x = 0, y = y, w = ScreenWidth, h = 8 },
-    { CENTERED = true, GROUP = group }
-  )
+  text("Frequency", { x = 0, y = y, w = ScreenWidth, h = 8 }, { CENTERED = true, GROUP = group })
 
   y = y + sepHeight
   drumEnvelop(
@@ -143,11 +123,7 @@ local function drum23_synth(track)
   -- #   Click
   group = group + 1
   y = y + rowHeight
-  text(
-    { TEXT = "Click transient" },
-    { x = 0, y = y, w = ScreenWidth, h = 8 },
-    { CENTERED = true, GROUP = group }
-  )
+  text("Click transient", { x = 0, y = y, w = ScreenWidth, h = 8 }, { CENTERED = true, GROUP = group })
 
   y = y + sepHeight
   encoder3(
