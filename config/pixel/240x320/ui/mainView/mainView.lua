@@ -56,7 +56,7 @@ local function progressBar(group, track, y)
             GROUP = group,
             TRACK = track,
             ACTIVE_COLOR = "#23a123",
-            VOLUME_PLUGIN = "Volume VOLUME",
+            VOLUME_PLUGIN = "MasterVolume VOLUME",
             KEYMAPS = {
                 { key = "q", action = "noteOn:Drum23:60:1" },
                 -- { key = "e", action = ".stepToggle" },
@@ -144,7 +144,7 @@ local function mainView()
     local y = 0
 
     y = 160
-    y = progressBar(0, 1, y)
+    y = progressBar(0, 0, y)
     y = rowDrum23(1, 1, y, 11)
     y = rowDrum23(2, 2, y, 12)
     y = rowDrumSample(3, 3, y, 13)
