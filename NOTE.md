@@ -24,16 +24,15 @@
     **Find a way to record one note:** Create an audio plugin to cache output from all previous plugin. This cache plugin would watch for parameter change. If parameter of one of the previous plugin change, it would cache the audio output for a strategic note (low tone note) and then allowing to speedup reading cache to get higher note.
     **All track caching** the whole track caching would make it hard for sequencer motion and probability, most likely not the right way...
 
-- TODO use .emplace_back instead of .push_back in vector?
-- TODO use std::set when possible
-
 - TODO digital audio programming tutorial
+
+- TODO filebrowser
+    - serialised might want to use filename instead of file index
 
 - IDEA val->setString should it instead get an array of string
     - ["Resonance", "37", "%"]
     - ["LP", "78", "%", "HP", "22", "%"]
     - by default using the props to build the string value but can be customised using setString
-
 
 - FIXME fix FM on rpi
 
@@ -65,13 +64,10 @@
     --> 1 row per track, each row moving from left to right to select a clip
     --> clip can be play instantly at the next loop or in 2 loop (3?, ...)
 
+- TODO use .emplace_back instead of .push_back in vector?
+- TODO use std::set when possible
+
 - TODO sequencer play cord
-
-- TODO cleanup audio plugin
-    - remove `APP_INFO`
-    - remove int (*debug)(const char* format, ...); from props
-
-- TODO create rectangle component
 
 - TODO add modulation on bitcrusher :-)
 - TODO wavetable create, where we can pick a specific part of a given wavetable and past it into a new one
@@ -90,8 +86,6 @@
 
 - FIXME thickness on rectangle
 
-- FIXME dustscript fix end loop, see sequencer view
-
 - FIXME encoder3 should remove marginTop
 
 - TODO Encoder group: OnEncoder event should take group as param, so if we put an external encoder Interface, we can overwrite the current group? Should it really do this? Maybe it should be the view manager... maybe not :p might still be a good idea to pass it and use this to make the comparison.
@@ -101,35 +95,7 @@
 
 - IDEA extra keypad extension: make a 5x5 rgb keypad using keycap but with transparent cap. They can be put in chain, so we could have a 5x10 keypad, or even more...
 
-#### pins
-
-Rpi has 26 pins
-Use 3 pins for audio
-
-With DSI display:
-- 3 audio
-- 10 btn
-- 13 left for encoder = 6  (and 1 can be push encoder)
-
-With I2c display:
-- 3 audio
-- 10 btn
-- 2 display (SDA/SCL)
-- 11 left for encoder = 5  (and 1 can be push encoder)
-
-With ST7789 display:
-- 3 audio
-- 10 btn
-- 5 display (4?)
-- 8 left for encoder = 4 
-
 ## Next TODO
-
-- FIXME git clone recursive to be base on http instead of ssh
-
-- TODO look if instead of using dustscript, all module could be loaded as a single application with a main C++ entry point that include all the module...
-
-- TODO encoder 2 sides, make 100% (actually 0.5) bar moving from one side to the other for LPF/HPF or pan. But keep as it is for semitones
 
 - TODO create separate asset folder > might put it in wiki...
 
@@ -156,9 +122,6 @@ With ST7789 display:
     - 0 off
     - 1,2,3,... should be how long it wait before to start 
       (or should it be to toggle status, so if it is already playing, it will stop)
-
-- TODO filebrowser
-    - serialised might want to use filename instead of file index
 
 - TODO keyboad should handle longpress (see button...)
 
