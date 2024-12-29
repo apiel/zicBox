@@ -42,7 +42,7 @@ local function sequencer(track)
     }
   )
 
-  text({ TEXT = "Track " .. track }, { x = 0, y = 0, w = ScreenWidth, h = 8 }, { CENTERED = true })
+  text("Track " .. track, { x = 0, y = 0, w = ScreenWidth, h = 8 }, { CENTERED = true })
 
   local rowHeight = 25
   local y = -rowHeight + 12

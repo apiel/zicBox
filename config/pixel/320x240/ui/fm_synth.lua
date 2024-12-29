@@ -19,7 +19,7 @@ local function fm_synth(track)
   group = group + 1
   y = y + rowHeight
 
-  text({ TEXT = "FM (" .. track .. ")" }, { x = 0, y = y, w = ScreenWidth, h = 8 }, { CENTERED = true, GROUP = group })
+  text("FM (" .. track .. ")", { x = 0, y = y, w = ScreenWidth, h = 8 }, { CENTERED = true, GROUP = group })
 
   y = y + sepHeight
   encoder3(

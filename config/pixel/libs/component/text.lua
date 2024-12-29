@@ -1,8 +1,7 @@
 local ui = require "config/pixel/libs/ui"
 
 --- Create a text component
---- @param params {TEXT: string } Params:
---- - TEXT The text to display
+--- @param text string The text to display
 --- @param position {x: number, y: number, w: number, h: number} The position of the component.
 --- @param options {CENTERED: boolean, FONT_SIZE: number, FONT: string, BACKGROUND_COLOR: string, COLOR: string} Options:
 --- - CENTERED Whether to center the text (default: false)
@@ -10,8 +9,8 @@ local ui = require "config/pixel/libs/ui"
 --- - FONT The font name (optional)
 --- - BACKGROUND_COLOR The background color (optional)
 --- - COLOR The text color (optional)
-local function component(params, position, options)
-    ui.component("Text", { "TEXT" }, params, position, options)
+local function component(text, position, options)
+    ui.component("Text", { "TEXT" }, { TEXT = text }, position, options)
 end
 
 return component

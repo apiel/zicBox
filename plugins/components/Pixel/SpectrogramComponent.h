@@ -21,6 +21,9 @@ protected:
     Color waveMiddle;
     Color waveIn;
 
+    Color textColor;
+    std::string text;
+
     float* buffer;
 
 public:
@@ -30,6 +33,7 @@ public:
         , waveIn(styles.colors.primary)
         , waveMiddle(darken(styles.colors.primary, 0.2))
         , waveOut(darken(styles.colors.primary, 0.4))
+        , textColor(lighten(styles.colors.background, 0.9))
     {
         jobRendering = [this](unsigned long now) {
             renderNext();
@@ -40,6 +44,11 @@ public:
         if (updatePosition()) {
             draw.filledRect(relativePosition, size, { bgColor });
             int yCenter = relativePosition.y + size.h / 2;
+
+            if (!text.empty()) {
+                draw.textCentered({ relativePosition.x + (int)(size.w / 2), relativePosition.y }, text, 16, { textColor });
+            }
+
             for (int i = 0; i < size.w; i++) {
                 int graphH = buffer[i] * size.h;
                 if (graphH) {
@@ -61,6 +70,36 @@ public:
         /*md - `BACKGROUND_COLOR: color` is the background color of the component. */
         if (strcmp(key, "BACKGROUND_COLOR") == 0) {
             bgColor = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `WAVE_COLOR_OUT: color` is the color of the wave. */
+        if (strcmp(key, "WAVE_COLOR_OUT") == 0) {
+            waveOut = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `WAVE_COLOR_MIDDLE: color` is the color of the wave. */
+        if (strcmp(key, "WAVE_COLOR_MIDDLE") == 0) {
+            waveMiddle = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `WAVE_COLOR_IN: color` is the color of the wave. */
+        if (strcmp(key, "WAVE_COLOR_IN") == 0) {
+            waveIn = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `TEXT_COLOR: color` is the color of the text. */
+        if (strcmp(key, "TEXT_COLOR") == 0) {
+            textColor = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `TEXT: text` is the text to display. */
+        if (strcmp(key, "TEXT") == 0) {
+            text = value;
             return true;
         }
 
