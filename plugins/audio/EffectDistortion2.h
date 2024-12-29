@@ -67,7 +67,7 @@ public:
         output = applyCompression(output, compressAmount);
         output = applyWaveshape(output, waveshapeAmount);
         output = blend(input, output, levelAmount);
-        output = applySoftClipping(output);
+        // output = applySoftClipping(output);
 
         buf[track] = range(output, -1.0f, 1.0f);
     }
