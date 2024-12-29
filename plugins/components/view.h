@@ -41,7 +41,7 @@ public:
             component->initView(initViewCounter);
             component->renderNext();
             for (auto* value : component->values) {
-                value->onUpdate(
+                value->setOnUpdateCallback(
                     [this](float, void* data) { onUpdate((ValueInterface*)data); },
                     value);
             }

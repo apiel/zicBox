@@ -115,7 +115,7 @@ public:
         set(value);
     }
 
-    void onUpdate(std::function<void(float, void*)> callback, void* data)
+    void setOnUpdateCallback(std::function<void(float, void*)> callback, void* data)
     {
         onUpdateFn = callback;
         onUpdateData = data;

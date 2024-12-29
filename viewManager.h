@@ -201,7 +201,7 @@ public:
         if (lastView != NULL) {
             for (auto& component : lastView->components) {
                 for (auto* value : component->values) {
-                    value->onUpdate([](float, void* data) {}, NULL);
+                    value->setOnUpdateCallback([](float, void* data) {}, NULL);
                 }
             }
         }
