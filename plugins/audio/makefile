@@ -79,9 +79,9 @@ compile:
 	make $(OBJ_DIR)/$(LIBNAME).o EXTRA="$(EXTRA)"
 	make $(BUILD_DIR)/libzic_$(LIBNAME).so
 
-# add mapping.h as dependency to watch
+# add mapping.h and audioPlugin.h as dependency to watch
 
-$(OBJ_DIR)/%.o: %.h mapping.h
+$(OBJ_DIR)/%.o: %.h mapping.h audioPlugin.h lookupTable.h valueInterface.h
 	@mkdir -p $(OBJ_DIR)
 	g++ -c -o $(OBJ_DIR)/$*.o audioPlugin.cpp $(INC) -fPIC -DPLUGIN_NAME=$* -DPLUGIN_INCLUDE=\"$*.h\" $(EXTRA) $(PARAMS)
 
