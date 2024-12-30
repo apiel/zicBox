@@ -3,12 +3,11 @@ local textGrid = require("config/pixel/libs/component/textGrid")
 local values = require("config/pixel/240x320/ui/mainView/values")
 local visibility = require("config/pixel/libs/containers/visibility")
 local value = require("config/pixel/libs/component/value")
-local text = require("config/pixel/libs/component/text")
 
 local function _row(group, track, menuContext, items, rowH, keymaps)
     ui.component("SeqSynthBar",
         { "SEQ_PLUGIN" },
-        { SEQ_PLUGIN = "Sequencer", },
+        { SEQ_PLUGIN = "Sequencer" },
         { x = 0, y = 0, w = ScreenWidth, h = rowH }, {
             GROUP = group,
             TRACK = track,
@@ -17,7 +16,8 @@ local function _row(group, track, menuContext, items, rowH, keymaps)
             ITEMS = items,
             VOLUME_PLUGIN = "Volume VOLUME",
             KEYMAPS = keymaps,
-            SELECT_MENU_CONTEXT = menuContext
+            SELECT_MENU_CONTEXT = menuContext,
+            SERIALIZE_PLUGIN = "SerializeTrack",
         })
 end
 
