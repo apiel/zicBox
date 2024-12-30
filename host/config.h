@@ -37,9 +37,4 @@ void hostScriptCallback(char* key, char* value, const char* filename, std::vecto
     }
 }
 
-void loadHostConfig(const char* scriptPath, const char* pluginPath)
-{
-    loadConfigPlugin(pluginPath, scriptPath, hostScriptCallback);
-}
-
 #endif
