@@ -37,6 +37,7 @@ pixelLibs:
 	@echo "\n------------------ plugins ------------------\n"
 	make -C host
 	make -C plugins/audio
+	make -C plugins/components/Pixel
 	@echo "\nbuild plugins done."
 
 build:
