@@ -129,8 +129,8 @@ local function mainView()
 
     textGrid(
         {
-            "? &icon::play::filled ^...",
-            "Menu ? Save"
+            "Menu &icon::play::filled ^...",
+            "Clip ? Save"
         }, KeyInfoPosition,
         {
             VISIBILITY_GROUP = { "SHOW_WHEN 0" },
