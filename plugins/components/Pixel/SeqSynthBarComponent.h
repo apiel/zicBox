@@ -35,19 +35,16 @@ protected:
 
     std::string name;
 
-    ValueInterface* valVariation = NULL;
     ValueInterface* valName = NULL;
     ValueInterface* valVolume = NULL;
     ValueInterface* seqStatus = NULL;
     ValueInterface* seqSelectedStep = NULL; // SELECTED_STEP
     ValueInterface* seqStepEnabled = NULL; // STEP_ENABLED
 
-    uint8_t modeBank = 9;
     uint8_t selectedItemBank = 10;
     uint8_t selectedMenuBank = 11;
 
     int stepW = 4;
-    int clipW = 12;
 
     std::vector<std::string> items;
 
@@ -121,14 +118,6 @@ public:
                     }
                 };
             }
-            if (action == ".mode") {
-                func = [this](KeypadLayout::KeyMap& keymap) {
-                    if (KeypadLayout::isReleased(keymap)) {
-                        setContext(modeBank, (int)(view->contextVar[modeBank] + 1) % 2);
-                        renderNext();
-                    }
-                };
-            }
             return func;
         })
     {
@@ -196,26 +185,16 @@ public:
     {
         int x = relativePosition.x + 1;
         x += rendername(x);
-        if (valVariation && view->contextVar[modeBank] == 1) {
-            int count = valVariation->props().max;
-            for (int i = 0; i < count; i++) {
-                Color color = valVariation->get() == i ? activeStepColor : foreground;
-                draw.filledRect({ x, relativePosition.y }, { clipW, size.h }, { color });
-                draw.textCentered({ (int)(x + clipW * 0.5), relativePosition.y }, std::to_string(i + 1), 6, { textColor });
-                x += clipW + 2;
+        for (int i = 0; i < stepCount; i++) {
+            Step* step = &steps[i];
+            Color color = step->enabled ? darken(activeStepColor, 1.0 - step->velocity) : foreground;
+            draw.filledRect({ x, relativePosition.y }, { stepW, size.h }, { color });
+            if (isActive && view->contextVar[selectedItemBank] == i + 1) {
+                draw.rect({ x, relativePosition.y }, { stepW, size.h - 1 }, { selectionColor });
             }
-        } else {
-            for (int i = 0; i < stepCount; i++) {
-                Step* step = &steps[i];
-                Color color = step->enabled ? darken(activeStepColor, 1.0 - step->velocity) : foreground;
-                draw.filledRect({ x, relativePosition.y }, { stepW, size.h }, { color });
-                if (isActive && view->contextVar[selectedItemBank] == i + 1) {
-                    draw.rect({ x, relativePosition.y }, { stepW, size.h - 1 }, { selectionColor });
-                }
-                x += stepW + 2;
-                if (i % 4 == 3) {
-                    x += 2;
-                }
+            x += stepW + 2;
+            if (i % 4 == 3) {
+                x += 2;
             }
         }
     }
@@ -298,14 +277,6 @@ public:
             return true;
         }
 
-        /*md - `SERIALIZE_PLUGIN: plugin_name` set the plugin target to be used for the loading clip/variation. */
-        if (strcmp(key, "SERIALIZE_PLUGIN") == 0) {
-            AudioPlugin* plugin = &getPlugin(value, track);
-            if (plugin) {
-                valVariation = watch(plugin->getValue("VARIATION"));
-            }
-        }
-
         /*md - `NAME_PLUGIN: plugin_name value_key` set the plugin target to be used for the name. */
         if (strcmp(key, "NAME_PLUGIN") == 0) {
             valName = watch(getPlugin(strtok(value, " "), track).getValue(strtok(NULL, " ")));
@@ -333,12 +304,6 @@ public:
         /*md - `SELECT_ITEM_CONTEXT: context_id` is the context id for the selected item (default is 10). */
         if (strcmp(key, "SELECT_ITEM_CONTEXT") == 0) {
             selectedItemBank = atoi(value);
-            return true;
-        }
-
-        /*md - `MODE_CONTEXT: context_id` is the context id for the mode to switch between sequencer and clip view (default is 9). */
-        if (strcmp(key, "MODE_CONTEXT") == 0) {
-            modeBank = atoi(value);
             return true;
         }
 
