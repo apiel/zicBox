@@ -26,14 +26,14 @@ local function row(group, track, y, menuContext, synth, items)
 
     visibility({ x = 0, y = y, w = ScreenWidth, h = rowH }, { VISIBILITY_CONTEXT = { "254 SHOW_WHEN 0" } })
     _row(group, track, menuContext, items, rowH, {
-        { key = "q", action = ".stepToggleOrPlayNote:" .. synth },
+        { key = "q", action = ".toggleOrPlayNote:" .. synth },
         { key = "a", action = ".left" },
         { key = "d", action = ".right" },
     })
 
     visibility({ x = 0, y = y, w = ScreenWidth, h = rowH }, { VISIBILITY_CONTEXT = { "254 SHOW_WHEN 1" } })
     _row(group, track, menuContext, items, rowH, {
-        { key = "q", action = ".stepToggle" },
+        { key = "q", action = ".toggle" },
     })
 
     return y + 1 + rowH
@@ -59,7 +59,7 @@ local function progressBar(group, track, y)
             VOLUME_PLUGIN = "MasterVolume VOLUME",
             KEYMAPS = {
                 { key = "q", action = "noteOn:Drum23:60:1" },
-                -- { key = "e", action = ".stepToggle" },
+                -- { key = "e", action = ".toggle" },
 
                 -- { key = "a", action = ".left" },
                 -- { key = "d", action = ".right" },

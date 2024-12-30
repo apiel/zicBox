@@ -77,7 +77,7 @@ public:
                     }
                 };
             }
-            if (action == ".stepToggle") {
+            if (action == ".toggle") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         if (view->contextVar[selectedItemBank] > 0) {
