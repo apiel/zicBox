@@ -10,7 +10,7 @@
 #include "log.h"
 #include "plugins/audio/valueInterface.h"
 
-void* hostThread(void* data)
+void* hostThread(void* = NULL)
 {
     AudioPluginHandler::get().loop();
     return NULL;

@@ -1,15 +1,15 @@
 /*md
-> Find an example on how to use the host in standalone mode (without ZicBox) in `standalone_demo.cpp`.
+> Find an example on how to use the host embedded in your own application: `use_host_demo.cpp`.
 */
 
-// Build with: `g++ -o demo demo.cpp`
+// Build with: `g++ -o demo use_host_demo.cpp`
 
 #include <dlfcn.h>
 #include <stdio.h>
 
 int main()
 {
-    const char* path = "./zicHost.so";
+    const char* path = "./zicHost.x86.so";
     printf("Loading host from %s\n", path);
     void* handle = dlopen(path, RTLD_LAZY);
     if (handle == NULL) {
