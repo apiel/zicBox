@@ -9,6 +9,7 @@
 #include "log.h"
 #include "plugins/audio/audioPlugin.h"
 
+#define USE_HOST_SO
 #ifdef USE_HOST_SO
 #include "plugins/config/LuaConfig.h"
 
@@ -46,7 +47,7 @@ void sendAudioEvent(AudioEventType event)
 void* hostThread(void* = NULL)
 {
     if (host) {
-        host->audioPluginHandler = host->load(NULL);
+        host->audioPluginHandler->loop();
     }
     return NULL;
 }
@@ -87,6 +88,7 @@ void loadHostPlugin()
         dlclose(handle);
         return;
     }
+    host->audioPluginHandler = host->load(NULL);
 
     host->midiHandler = (void (*)(std::vector<unsigned char>* message))dlsym(handle, "midiHandler");
     dlsym_error = dlerror();
