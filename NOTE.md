@@ -1,5 +1,11 @@
 ## Pixel TODO
 
+- TODO variations, clips, ...
+- TODO save, save as, load
+- TODO advance sample player
+- TODO master track
+- TODO perform / grid effect / scatter effect
+
 - TODO speed up compile time
   - cross compile for rpi directly on laptop
   - precompile big header files ? 
@@ -9,11 +15,17 @@
   - should we move back to build component as module to speed up build?
     - could we find a way to compile only module that have changed?
   - move host.h into a module? or find a way to precompile it and only compile if necessary...
-  
-- TODO variations, clips, ...
-- TODO save, save as, load
+      - --> maybe make it a .cpp file
 
 - TODO add color code in text char...
+
+- IDEA DrumSample is the less consuming CPU, maybe expending it a little bit to a SimpleSample engine
+  - skip density
+  - skip multi voice
+  - allow looping point
+  - make usage of wavetable easy?
+  - pitch using granular technic?
+  - would be great to be able to record fm or density effect, modulation and so on into a sample. And then being able to play it with a specific looping point... but is this related to sample or is it more caching system concept??!?
 
 - TODO drum freq envelop is really good but not easy to use
   - might be great to keep this one as advance version
