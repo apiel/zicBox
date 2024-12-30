@@ -19,6 +19,7 @@ local function component(rows, position, options)
         core.zic(core.parseOptions(options))
     end
     ui.parseVisibilityContext(options)
+    ui.parseVisibilityGroup(options)
     for _, row in ipairs(rows) do
         zic("ROW", row)
     end
