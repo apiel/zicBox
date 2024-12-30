@@ -17,7 +17,7 @@ local function row(group, track, y)
             VOLUME_PLUGIN = "Volume VOLUME",
             KEYMAPS = {
                 { key = "q", action = "noteOn:DrumSample:57" },
-                { key = "e", action = ".stepToggle" },
+                { key = "e", action = ".toggle" },
 
                 { key = "a", action = ".left" },
                 { key = "d", action = ".right" },
@@ -40,7 +40,7 @@ local function progressBar(group, track, y)
             VOLUME_PLUGIN = "VolumeDrive VOLUME",
             KEYMAPS = {
                 { key = "q", action = "noteOn:DrumSample:57:11" },
-                -- { key = "e", action = ".stepToggle" },
+                -- { key = "e", action = ".toggle" },
 
                 -- { key = "a", action = ".left" },
                 -- { key = "d", action = ".right" },

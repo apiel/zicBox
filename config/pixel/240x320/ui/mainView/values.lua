@@ -164,6 +164,8 @@ end
 function values.master(group, track, y)
     container(group, y, {})
 
+    ui.component("Rect", {}, {}, { x = 0, y = 0, w = ScreenWidth, h = height }, {})
+
     -- might not even want to put volume here can be in sub-page
     --> rather put step reducer and another effect
     value("MasterVolume VOLUME", topLeft(), tertiary({}, group, track, 0))

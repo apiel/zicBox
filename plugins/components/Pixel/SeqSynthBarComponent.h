@@ -88,7 +88,7 @@ public:
                     }
                 };
             }
-            if (action == ".stepToggle") {
+            if (action == ".toggle") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         if (view->contextVar[selectedItemBank] > 0) {
@@ -100,8 +100,8 @@ public:
                     }
                 };
             }
-            if (action.rfind(".stepToggleOrPlayNote:") == 0) {
-                std::string pluginName = action.substr(22);
+            if (action.rfind(".toggleOrPlayNote:") == 0) {
+                std::string pluginName = action.substr(18);
                 AudioPlugin* plugin = &getPlugin(pluginName.c_str(), track);
                 func = [this, plugin](KeypadLayout::KeyMap& keymap) {
                     if (view->contextVar[selectedItemBank] > 0) {
