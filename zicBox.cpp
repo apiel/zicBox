@@ -10,6 +10,8 @@
 
 int main(int argc, char* argv[])
 {
+    loadHostPlugin();
+
     styles.screen = { 800, 480 };
     loadUiConfig(argc >= 2 ? argv[1] : "config.ui", argc >= 3 ? argv[2] : "dustscript", styles);
 

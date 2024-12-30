@@ -20,15 +20,13 @@ BUILD=-Wno-narrowing -ldl $(RTMIDI)
 INC=-I.
 
 main: build run
+all: libs main
 pixel: buildPixel runPixel
 allPixel: pixelLibs buildPixel runPixel
-pixelSSD1306: buildPixelSSD1306 runPixelSSD1306
-host: buildHost runHost
-all: libs main
-allall: libs buildHost soHost main
 
 libs:
 	@echo "\n------------------ plugins ------------------\n"
+	make -C host
 	make -C plugins/audio
 	make -C plugins/components/SDL
 	make -C plugins/controllers
@@ -37,22 +35,9 @@ libs:
 
 pixelLibs:
 	@echo "\n------------------ plugins ------------------\n"
+	make -C host
 	make -C plugins/audio
 	@echo "\nbuild plugins done."
-
-soHost:
-	@echo "\n------------------ build host shared library ------------------\n"
-	g++ -fPIC -shared -o host/zicHost.so host/zicHost.cpp -fopenmp $(BUILD)
-	@echo "\nbuild zicHost.so done."
-
-buildHost:
-	@echo "\n------------------ build host ------------------\n"
-	g++ -g -o host/zicHost -Wall host/zicHost.cpp -fopenmp $(BUILD)
-	@echo "\nbuild host/zicHost done."
-
-runHost:
-	@echo "\n------------------ run host ------------------\n"
-	./host/zicHost
 
 build:
 	@echo "\n------------------ build zicBox ------------------\n"
@@ -62,7 +47,6 @@ run:
 	@echo "\n------------------ run zicBox ------------------\n"
 	./zicBox.$(BIN_SUFFIX)
 
-# g++ -g -fms-extensions -o zicPixel zicPixel.cpp -ldl $(RPI) $(RTMIDI) $(PIXEL_SDL) $(SPI_DEV_MEM) $(shell pkg-config --cflags --libs libpulse-simple)
 buildPixel:
 	@echo "\n------------------ build zicPixel ------------------\n"
 	g++ -g -fms-extensions -o pixel.$(BIN_SUFFIX) zicPixel.cpp -ldl $(INC) $(RPI) $(RTMIDI) $(PIXEL_SDL) $(SPI_DEV_MEM) $(LUA)
@@ -70,18 +54,6 @@ buildPixel:
 runPixel:
 	@echo "\n------------------ run zicPixel ------------------\n"
 	./pixel.$(BIN_SUFFIX)
-
-buildPixelSSD1306:
-	@echo "\n------------------ build zicPixel SSD1306 ------------------\n"
-	g++ -g -fms-extensions -o pixelSSD1306.$(BIN_SUFFIX) zicPixelSSD1306.cpp -ldl $(INC) $(RPI) $(RTMIDI) $(PIXEL_SDL) $(LUA) $(shell pkg-config --cflags --libs sndfile) $(shell pkg-config --cflags --libs libpulse-simple)
-
-runPixelSSD1306:
-	@echo "\n------------------ run zicPixel ------------------\n"
-	./pixelSSD1306.$(BIN_SUFFIX)
-
-gpio:
-	@echo "\n------------------ gpio ------------------\n"
-	make -C hardware/gpio
 
 push_wiki:
 	node doc.js
