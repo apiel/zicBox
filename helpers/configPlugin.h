@@ -2,7 +2,6 @@
 #define _CONFIG_PLUGIN_H
 
 #include "getFullpath.h"
-// #include "plugins/config/DustConfig.h"
 #include "plugins/config/LuaConfig.h"
 
 #include <dlfcn.h>
@@ -45,7 +44,6 @@ void loadConfigPlugin(const char* pluginPath, std::string scriptPath, void (*cal
     }
 
     if (strcmp(pluginPath, "dustscript") == 0) {
-        // dustConfig(scriptPath, callback, variables);
 #ifdef IS_RPI
         instantiateConfigPlugin("plugins/config/build/arm/libzic_DustConfig.so", scriptPath, callback, variables);
 #else

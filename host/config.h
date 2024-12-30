@@ -1,7 +1,6 @@
 #ifndef _HOST_CONFIG_H_
 #define _HOST_CONFIG_H_
 
-#include "../dustscript/dustscript.h"
 #include "../helpers/configPlugin.h"
 #include "def.h"
 #include "midi.h"
