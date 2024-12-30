@@ -8,7 +8,7 @@
 RtMidiIn midiController;
 RtMidiOut midiOut;
 
-void midiHandler(std::vector<unsigned char>* message)
+extern "C" void midiHandler(std::vector<unsigned char>* message)
 {
     if (message->at(0) == 0xf8) {
         AudioPluginHandler::get().clockTick();

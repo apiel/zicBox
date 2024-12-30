@@ -6,6 +6,8 @@
 #include "helpers/getTicks.h"
 
 #include <mutex>
+#include <vector>
+#include <string>
 
 class View : public ViewInterface, public ComponentContainer {
 public:
@@ -193,7 +195,7 @@ public:
         m2.unlock();
     }
 
-    void* getContainer(string name) override
+    void* getContainer(std::string name) override
     {
         for (auto& container : containers) {
             // printf("Container: %s == %s ?\n", container->name.c_str(), name.c_str());
@@ -213,7 +215,7 @@ public:
         }
 
         if (strcmp(key, "CONTAINER") == 0) {
-            string type = strtok(value, " ");
+            std::string type = strtok(value, " ");
             Point position = {
                 atoi(strtok(NULL, " ")),
                 atoi(strtok(NULL, " ")),
@@ -227,7 +229,7 @@ public:
                     size.h = atoi(h);
                 }
             }
-            string name = "container_" + to_string(containers.size());
+            std::string name = "container_" + std::to_string(containers.size());
             ComponentContainer* container = newContainer(type, this, name, position, size);
             if (container != NULL) {
                 logInfo("Adding container (%s): %s %dx%d %dx%d", type.c_str(), name.c_str(), position.x, position.y, size.w, size.h);
@@ -239,7 +241,7 @@ public:
         }
 
         if (strcmp(key, "CONTAINER_NAME") == 0) {
-            string name = strtok(value, " ");
+            std::string name = strtok(value, " ");
             containers.back()->name = name;
             return true;
         }

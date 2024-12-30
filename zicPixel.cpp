@@ -23,6 +23,8 @@
 
 int main(int argc, char* argv[])
 {
+    loadHostPlugin();
+
     // styles.colors.primary = { 0x3a, 0x7d, 0x80 }; // #3a7d80
     // styles.colors.secondary = { 0xff, 0xa0, 0xad }; // #ffa0ad
     // styles.colors.tertiary = { 0xa0, 0xb4, 0x97 }; // #A0B497
