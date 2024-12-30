@@ -65,7 +65,7 @@ WAVESHAPE 25.000000)");
             drum23.noteOn(60, 1.0f);
         }
         drum23.sample(buffer);
-        // distortion2.sample(buffer);
+        distortion2.sample(buffer);
         audioOutput.sample(buffer);
         count++;
     }
