@@ -14,7 +14,7 @@ BUILD=-Wno-narrowing -ldl $(RTMIDI)
 INC=-I../.
 
 main:
-	g++ -fPIC -shared -o zicHost.$(BIN_PLATFORM).so zicHost.cpp -fopenmp $(BUILD) $(INC) $(LUA)
+	g++ -fPIC -shared -o libzicHost.$(BIN_PLATFORM).so zicHost.cpp -fopenmp $(BUILD) $(INC) $(LUA)
 
 standalone: buildStandaloneHost runStandaloneHost
 

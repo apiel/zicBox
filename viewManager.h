@@ -33,7 +33,7 @@
 class ViewManager {
 public:
     struct Plugin {
-        string name;
+        std::string name;
         std::function<ComponentInterface*(ComponentInterface::Props props)> allocator;
     };
     std::vector<Plugin> plugins;
@@ -121,7 +121,7 @@ protected:
         view->onContext(index, value);
     }
 
-    void addComponent(string name, Point position, Size size)
+    void addComponent(std::string name, Point position, Size size)
     {
         ComponentInterface::Props props = {
             NULL,

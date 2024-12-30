@@ -14,6 +14,7 @@
 #include "helpers/configPlugin.h"
 #include "helpers/getFullpath.h"
 #include "plugins/components/utils/color.h"
+#include "plugins/config/LuaConfig.h"
 
 #include <fstream>
 std::ofstream logFile;

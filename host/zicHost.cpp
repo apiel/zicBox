@@ -2,22 +2,17 @@
 #include "config.h"
 #include "def.h"
 
-extern "C" {
-AudioPluginHandlerInterface* load(const char* scriptPath =  "./config.lua")
+extern "C" AudioPluginHandlerInterface* load(const char* scriptPath = NULL)
 {
-    loadConfigPlugin(NULL, scriptPath, hostScriptCallback);
+    if (scriptPath != NULL) {
+        loadConfigPlugin(NULL, scriptPath, hostScriptCallback);
+    }
     return &AudioPluginHandler::get();
-}
-
-void midi(std::vector<unsigned char>* message)
-{
-    midiHandler(message);
-}
 }
 
 int main()
 {
-    AudioPluginHandlerInterface* audioPluginHandler = load();
+    AudioPluginHandlerInterface* audioPluginHandler = load("./config.lua");
     audioPluginHandler->loop();
     return 0;
 }

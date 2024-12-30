@@ -9,7 +9,7 @@
 
 int main()
 {
-    const char* path = "./zicHost.x86.so";
+    const char* path = "./libzicHost.x86.so";
     printf("Loading host from %s\n", path);
     void* handle = dlopen(path, RTLD_LAZY);
     if (handle == NULL) {
