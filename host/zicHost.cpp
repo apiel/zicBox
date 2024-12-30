@@ -3,26 +3,10 @@
 #include "def.h"
 
 extern "C" {
-AudioPluginHandlerInterface* init(const char* scriptPath =  "./config.lua")
+AudioPluginHandlerInterface* load(const char* scriptPath =  "./config.lua")
 {
     loadConfigPlugin(NULL, scriptPath, hostScriptCallback);
     return &AudioPluginHandler::get();
-}
-
-void* hostLoop(void* = NULL)
-{
-    AudioPluginHandler::get().loop();
-    return NULL;
-}
-
-AudioPlugin& getPlugin(const char* name, int16_t track = -1)
-{
-    return AudioPluginHandler::get().getPlugin(name, track);
-}
-
-void sendAudioEvent(AudioEventType event)
-{
-    AudioPluginHandler::get().sendEvent(event);
 }
 
 void midi(std::vector<unsigned char>* message)
@@ -33,9 +17,7 @@ void midi(std::vector<unsigned char>* message)
 
 int main()
 {
-    if (!init()) {
-        return 1;
-    }
-    hostLoop();
+    AudioPluginHandlerInterface* audioPluginHandler = load();
+    audioPluginHandler->loop();
     return 0;
 }
