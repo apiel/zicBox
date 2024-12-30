@@ -41,6 +41,7 @@ protected:
     ValueInterface* seqSelectedStep = NULL; // SELECTED_STEP
     ValueInterface* seqStepEnabled = NULL; // STEP_ENABLED
 
+    uint8_t modeBank = 9;
     uint8_t selectedItemBank = 10;
     uint8_t selectedMenuBank = 11;
 
@@ -118,6 +119,14 @@ public:
                     }
                 };
             }
+            if (action == ".mode") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        setContext(modeBank, (int)(view->contextVar[modeBank] + 1) % 2);
+                        renderNext();
+                    }
+                };
+            }
             return func;
         })
     {
@@ -181,26 +190,30 @@ public:
         return witdhLeft + 4;
     }
 
-    void renderSeqMode()
+    void renderMain()
     {
         int x = relativePosition.x + 1;
         x += rendername(x);
-        for (int i = 0; i < stepCount; i++) {
-            Step* step = &steps[i];
-            Color color = step->enabled ? darken(activeStepColor, 1.0 - step->velocity) : foreground;
-            draw.filledRect({ x, relativePosition.y }, { stepW, size.h }, { color });
-            if (isActive && view->contextVar[selectedItemBank] == i + 1) {
-                draw.rect({ x, relativePosition.y }, { stepW, size.h - 1 }, { selectionColor });
-            }
-            x += stepW + 2;
-            if (i % 4 == 3) {
-                x += 2;
+        if (view->contextVar[modeBank] == 1) {
+
+        } else {
+            for (int i = 0; i < stepCount; i++) {
+                Step* step = &steps[i];
+                Color color = step->enabled ? darken(activeStepColor, 1.0 - step->velocity) : foreground;
+                draw.filledRect({ x, relativePosition.y }, { stepW, size.h }, { color });
+                if (isActive && view->contextVar[selectedItemBank] == i + 1) {
+                    draw.rect({ x, relativePosition.y }, { stepW, size.h - 1 }, { selectionColor });
+                }
+                x += stepW + 2;
+                if (i % 4 == 3) {
+                    x += 2;
+                }
             }
         }
     }
 
     int fontSize = 6;
-    void renderSynthMode(int menuIndex)
+    void renderSynthMenu(int menuIndex)
     {
         int textY = (size.h - 8) * 0.5 + relativePosition.y;
         int itemW = (size.w / items.size()) - 2;
@@ -222,9 +235,9 @@ public:
             draw.filledRect(relativePosition, size, { background });
 
             if (items.size() > 0 && view->contextVar[selectedItemBank] == 0 && view->contextVar[selectedMenuBank] > 0) {
-                renderSynthMode(view->contextVar[selectedMenuBank] <= items.size() ? view->contextVar[selectedMenuBank] : items.size());
+                renderSynthMenu(view->contextVar[selectedMenuBank] <= items.size() ? view->contextVar[selectedMenuBank] : items.size());
             } else {
-                renderSeqMode();
+                renderMain();
             }
         }
     }
@@ -294,7 +307,7 @@ public:
             return true;
         }
 
-        /*md - `SELECT_MENU_CONTEXT: context_id` is the context id for the selected menu (default is 11). */
+        /*md - `SELECT_MENU_CONTEXT: context_id` is the context id for the selected synth menu (default is 11). */
         if (strcmp(key, "SELECT_MENU_CONTEXT") == 0) {
             selectedMenuBank = atoi(value);
             return true;
@@ -303,6 +316,12 @@ public:
         /*md - `SELECT_ITEM_CONTEXT: context_id` is the context id for the selected item (default is 10). */
         if (strcmp(key, "SELECT_ITEM_CONTEXT") == 0) {
             selectedItemBank = atoi(value);
+            return true;
+        }
+
+        /*md - `MODE_CONTEXT: context_id` is the context id for the mode to switch between sequencer and clip view (default is 9). */
+        if (strcmp(key, "MODE_CONTEXT") == 0) {
+            modeBank = atoi(value);
             return true;
         }
 
