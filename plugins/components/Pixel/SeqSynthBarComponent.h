@@ -35,6 +35,7 @@ protected:
 
     std::string name;
 
+    ValueInterface* valVariation = NULL;
     ValueInterface* valName = NULL;
     ValueInterface* valVolume = NULL;
     ValueInterface* seqStatus = NULL;
@@ -46,6 +47,7 @@ protected:
     uint8_t selectedMenuBank = 11;
 
     int stepW = 4;
+    int clipW = 12;
 
     std::vector<std::string> items;
 
@@ -194,8 +196,14 @@ public:
     {
         int x = relativePosition.x + 1;
         x += rendername(x);
-        if (view->contextVar[modeBank] == 1) {
-
+        if (valVariation && view->contextVar[modeBank] == 1) {
+            int count = valVariation->props().max;
+            for (int i = 0; i < count; i++) {
+                Color color = valVariation->get() == i ? activeStepColor : foreground;
+                draw.filledRect({ x, relativePosition.y }, { clipW, size.h }, { color });
+                draw.textCentered({ (int)(x + clipW * 0.5), relativePosition.y }, std::to_string(i + 1), 6, { textColor });
+                x += clipW + 2;
+            }
         } else {
             for (int i = 0; i < stepCount; i++) {
                 Step* step = &steps[i];
@@ -286,7 +294,16 @@ public:
             char* getStepsDataId = strtok(NULL, " ");
             uint8_t dataId = seqPlugin->getDataId(getStepsDataId != NULL ? getStepsDataId : "STEPS");
             steps = (Step*)seqPlugin->data(dataId);
+
             return true;
+        }
+
+        /*md - `SERIALIZE_PLUGIN: plugin_name` set the plugin target to be used for the loading clip/variation. */
+        if (strcmp(key, "SERIALIZE_PLUGIN") == 0) {
+            AudioPlugin* plugin = &getPlugin(value, track);
+            if (plugin) {
+                valVariation = watch(plugin->getValue("VARIATION"));
+            }
         }
 
         /*md - `NAME_PLUGIN: plugin_name value_key` set the plugin target to be used for the name. */
