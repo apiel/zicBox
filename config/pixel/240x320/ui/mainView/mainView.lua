@@ -17,7 +17,6 @@ local function _row(group, track, menuContext, items, rowH, keymaps)
             VOLUME_PLUGIN = "Volume VOLUME",
             KEYMAPS = keymaps,
             SELECT_MENU_CONTEXT = menuContext,
-            SERIALIZE_PLUGIN = "SerializeTrack",
         })
 end
 
@@ -34,7 +33,7 @@ local function row(group, track, y, menuContext, synth, items)
     visibility({ x = 0, y = y, w = ScreenWidth, h = rowH }, { VISIBILITY_CONTEXT = { "254 SHOW_WHEN 1" } })
     _row(group, track, menuContext, items, rowH, {
         { key = "q", action = ".toggle" },
-        { key = "a", action = ".mode" },
+        -- { key = "a", action = ".mode" },
     })
 
     return y + 1 + rowH
