@@ -1,3 +1,15 @@
+
+/*
+buildPixelSSD1306:
+	@echo "\n------------------ build zicPixel SSD1306 ------------------\n"
+	g++ -g -fms-extensions -o pixelSSD1306.$(BIN_SUFFIX) zicPixelSSD1306.cpp -ldl $(INC) $(RPI) $(RTMIDI) $(PIXEL_SDL) $(LUA) $(shell pkg-config --cflags --libs sndfile) $(shell pkg-config --cflags --libs libpulse-simple)
+
+runPixelSSD1306:
+	@echo "\n------------------ run zicPixel ------------------\n"
+	./pixelSSD1306.$(BIN_SUFFIX)
+
+*/
+
 #define ZIC_LOG_LEVEL ZIC_LOG_DEBUG
 #define DRAW_SSD1306
 
