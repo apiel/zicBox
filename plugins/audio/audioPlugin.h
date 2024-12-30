@@ -53,6 +53,8 @@ public:
 
     virtual bool isPlaying() = 0;
     virtual bool isStopped() = 0;
+    
+    virtual void loop() = 0;
 };
 
 class AudioPlugin {
