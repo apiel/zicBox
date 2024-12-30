@@ -14,7 +14,14 @@ BUILD=-Wno-narrowing -ldl $(RTMIDI)
 INC=-I../.
 
 main:
+	make libzicHost.$(BIN_PLATFORM).so
+
+libzicHost.$(BIN_PLATFORM).so: zicHost.cpp AudioPluginHandler.h config.h ../plugins/audio/audioPlugin.h
 	g++ -fPIC -shared -o libzicHost.$(BIN_PLATFORM).so zicHost.cpp -fopenmp $(BUILD) $(INC) $(LUA)
+
+rebuild:
+	rm libzicHost.$(BIN_PLATFORM).so
+	make libzicHost.$(BIN_PLATFORM).so
 
 standalone: buildStandaloneHost runStandaloneHost
 
