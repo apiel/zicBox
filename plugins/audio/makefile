@@ -1,5 +1,3 @@
-# TODO: fix me
-# FIXME put me back
 MAKEFLAGS += -j$(shell nproc)
 
 ifneq ($(shell uname -m),x86_64)
@@ -25,7 +23,11 @@ all:
 		AudioInputPulse AudioOutputPulse AudioInputAlsa AudioOutputAlsa\
 		SerializeTrack
 
-rebuild: clean all
+# rebuild: clean all
+
+rebuild:
+	make clean
+	+make all
 
 # For some weird reason need to paste the path of libpd.so 
 # get libpd path `ldconfig -p | grep libpd`
@@ -64,7 +66,7 @@ AudioOutputAlsa:
 	+make compile LIBNAME=AudioOutputAlsa EXTRA="$(shell pkg-config --cflags --libs alsa)"
 
 %:
-	+make compile LIBNAME=$@
+	make compile LIBNAME=$@
 
 # could do this and prefix all plugin with _ in all
 # _%:
@@ -76,6 +78,7 @@ AudioOutputAlsa:
 #     g++ -shared -o $(BUILD_DIR)/libzic_$(LIBNAME).so $(INC) $(OBJ_DIR)/$(LIBNAME).o $(EXTRA) $(PARAMS)
 
 compile:
+	@echo "-------- :$(LIBNAME): --------"
 	make $(OBJ_DIR)/$(LIBNAME).o EXTRA="$(EXTRA)"
 	make $(BUILD_DIR)/libzic_$(LIBNAME).so
 

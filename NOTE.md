@@ -8,14 +8,6 @@
 
 - TODO speed up compile time
   - cross compile for rpi directly on laptop
-  - precompile big header files ? 
-    - --> move string vector ... into a single header file to precompile it
-    - --> precompile rtmidi, pulse... ?
-  - ccache ?
-  - should we move back to build component as module to speed up build?
-    - could we find a way to compile only module that have changed?
-  - move host.h into a module? or find a way to precompile it and only compile if necessary...
-      - --> maybe make it a .cpp file
 
 - TODO add color code in text char...
 
