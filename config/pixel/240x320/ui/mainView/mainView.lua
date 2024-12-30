@@ -34,6 +34,7 @@ local function row(group, track, y, menuContext, synth, items)
     visibility({ x = 0, y = y, w = ScreenWidth, h = rowH }, { VISIBILITY_CONTEXT = { "254 SHOW_WHEN 1" } })
     _row(group, track, menuContext, items, rowH, {
         { key = "q", action = ".toggle" },
+        { key = "a", action = ".mode" },
     })
 
     return y + 1 + rowH
@@ -120,7 +121,7 @@ local function mainView()
                 -- { key = "q", action = "playPause" },
                 { key = "w", action = "playPause" }, -- stepToggle
                 { key = "e", action = "shift:254:1:0" },
-                { key = "a", action = "setView:menu" },
+                -- { key = "a", action = "setView:menu" },
                 { key = "s", action = "setView:sub" },
                 { key = "d", action = "setView:Master" },
             }
