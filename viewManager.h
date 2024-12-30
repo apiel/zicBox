@@ -90,14 +90,20 @@ protected:
     {
     }
 
-    void loadPlugin(char* value, const char* filename)
+    void setContext(uint8_t index, float value)
+    {
+        contextVar[index] = value;
+        view->onContext(index, value);
+    }
+
+    void loadPlugin(char* value, std::string filename)
     {
         Plugin plugin;
         plugin.name = strtok(value, " ");
         char* path = strtok(NULL, " ");
         void* handle = dlopen(getFullpath(path, filename).c_str(), RTLD_LAZY);
         if (!handle) {
-            logError("Cannot open component library %s [%s]: %s\n", path, filename, dlerror());
+            logError("Cannot open component library %s [%s]: %s\n", path, filename.c_str(), dlerror());
             return;
         }
 
@@ -113,12 +119,6 @@ protected:
             return;
         }
         plugins.push_back(plugin);
-    }
-
-    void setContext(uint8_t index, float value)
-    {
-        contextVar[index] = value;
-        view->onContext(index, value);
     }
 
     void addComponent(std::string name, Point position, Size size)
@@ -187,6 +187,11 @@ public:
         for (auto& v : views) {
             v->init();
         }
+    }
+
+    void loadPlugin(std::string value)
+    {
+        loadPlugin((char*)value.c_str(), "");
     }
 
     bool render()
