@@ -21,8 +21,10 @@ INC=-I.
 
 main: build run
 all: libs main
-pixel: buildPixel runPixel
-allPixel: pixelLibs buildPixel runPixel
+# pixel: buildPixel runPixel
+# allPixel: pixelLibs buildPixel runPixel
+pixel: pixelLibs buildPixel runPixel
+rebuildPixel: pixelRebuild buildPixel runPixel
 
 libs:
 	@echo "\n------------------ plugins ------------------\n"
@@ -39,6 +41,11 @@ pixelLibs:
 	make -C plugins/audio
 	make -C plugins/components/Pixel
 	@echo "\nbuild plugins done."
+
+pixelRebuild:
+	make -C host rebuild
+	make -C plugins/audio rebuild
+	make -C plugins/components/Pixel rebuild
 
 build:
 	@echo "\n------------------ build zicBox ------------------\n"
