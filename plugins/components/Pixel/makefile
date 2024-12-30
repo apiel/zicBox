@@ -23,6 +23,7 @@ all:
 
 %Component:
 	make $(OBJ_DIR)/$@.o
+	make $(BUILD_DIR)/libzic_$@.so
 
 $(OBJ_DIR)/%.o: %.h ../component.h
 	@mkdir -p $(OBJ_DIR)
