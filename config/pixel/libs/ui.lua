@@ -83,4 +83,20 @@ function ui.parseVisibilityContext(options, key)
     end
 end
 
+function ui.parseVisibilityGroup(options, key)
+    if (key == nil) then
+        key = "VISIBILITY_GROUP"
+    end
+    if options[key] ~= nil then
+        if type(options[key]) == "table" then
+            for _, context in ipairs(options[key]) do
+                zic(key, context)
+            end
+        else
+            zic(key, options[key])
+        end
+        options[key] = nil
+    end
+end
+
 return ui

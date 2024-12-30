@@ -5,6 +5,7 @@
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/VisibilityContext.h"
+#include "plugins/components/utils/VisibilityGroup.h"
 #include "plugins/components/utils/color.h"
 
 #include <cmath>
@@ -21,15 +22,14 @@ class TextGridComponent : public Component {
 protected:
     Icon icon;
     KeypadLayout keypadLayout;
-    int8_t activeGroup = 0;
 
     Color bgColor;
     Color itemBackground;
     Color textColor;
     Color textColor2;
 
-    VisibilityContext visibility;
-
+    VisibilityContext visibilityContext;
+    VisibilityGroup visibilityGroup;
 public:
     TextGridComponent(ComponentInterface::Props props)
         : Component(props)
@@ -78,7 +78,7 @@ protected:
 public:
     void render()
     {
-        if (visibility.visible && updatePosition()) {
+        if (visibilityContext.visible && visibilityGroup.visible && updatePosition()) {
             draw.filledRect(relativePosition, size, { bgColor });
             int y = relativePosition.y;
             for (auto row : rows) {
@@ -117,7 +117,12 @@ public:
         }
 
         /*md - `VISIBILITY_CONTEXT: index SHOW_WHEN/SHOW_WHEN_NOT/SHOW_WHEN_OVER/SHOW_WHEN_UNDER value` the context index to show/hide the components for a given value. */
-        if (visibility.config(key, value)) {
+        if (visibilityContext.config(key, value)) {
+            return true;
+        }
+
+        /*md - `VISIBILITY_GROUP: SHOW_WHEN/SHOW_WHEN_NOT/SHOW_WHEN_OVER/SHOW_WHEN_UNDER group_id` the group index to show/hide the components. */
+        if (visibilityGroup.config(key, value)) {
             return true;
         }
 
@@ -150,14 +155,16 @@ public:
 
     void onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
-        if (visibility.visible) {
+        if (visibilityContext.visible) {
             keypadLayout.onKey(id, key, state, now);
         }
     }
 
     void onGroupChanged(int8_t index) override
     {
-        activeGroup = index;
+        if (visibilityGroup.onGroupChanged(index)) {
+            renderNext();
+        }
     }
 
     void initView(uint16_t counter)
@@ -167,7 +174,7 @@ public:
 
     void onContext(uint8_t index, float value) override
     {
-        if (visibility.onContext(index, value)) {
+        if (visibilityContext.onContext(index, value)) {
             renderNext();
         }
     }

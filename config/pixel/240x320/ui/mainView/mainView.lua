@@ -111,9 +111,10 @@ local function mainView()
     textGrid(
         {
             "&icon::toggle::rect &icon::play::filled ^...",
-            "Menu Sub Master"
+            "Clip Edit Master"
         }, KeyInfoPosition,
         {
+            VISIBILITY_GROUP = { "SHOW_WHEN_NOT 0" },
             VISIBILITY_CONTEXT = { "254 SHOW_WHEN 1" },
             KEYMAPS = {
                 -- { key = "q", action = "playPause" },
@@ -122,6 +123,25 @@ local function mainView()
                 { key = "a", action = "setView:menu" },
                 { key = "s", action = "setView:sub" },
                 { key = "d", action = "setView:Master" },
+            }
+        }
+    )
+
+    textGrid(
+        {
+            "? &icon::play::filled ^...",
+            "Menu ? Save"
+        }, KeyInfoPosition,
+        {
+            VISIBILITY_GROUP = { "SHOW_WHEN 0" },
+            VISIBILITY_CONTEXT = { "254 SHOW_WHEN 1" },
+            KEYMAPS = {
+                -- { key = "q", action = "playPause" },
+                -- { key = "w", action = "playPause" }, -- stepToggle
+                -- { key = "e", action = "shift:254:1:0" },
+                -- { key = "a", action = "setView:menu" },
+                -- { key = "s", action = "setView:sub" },
+                -- { key = "d", action = "setView:Master" },
             }
         }
     )
