@@ -6,7 +6,7 @@ local function synth(track)
   audio.plugin("EffectFilterMultiMode", { NAME = "MMFilter", TRACK = track, STRING_CUTOFF_FORMAT = StringCuttoffFormat })
   audio.plugin("EffectSampleRateReducer", { NAME = "Bitcrusher", TRACK = track })
   audio.plugin("EffectDelay", { NAME = "Delay", TRACK = track })
-  audio.plugin("SerializeTrack", { TRACK = track, FILEPATH = "serializedPixel2/track_" .. track .. ".cfg" })
+  audio.plugin("SerializeTrack", { TRACK = track, FILEPATH = "serializedPixel2/track_" .. track .. ".cfg", MAX_VARIATION = MaxVariation })
   audio.plugin("EffectGainVolume", { NAME = "Volume", TRACK = track })
 end
 
