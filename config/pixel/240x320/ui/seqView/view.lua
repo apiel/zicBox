@@ -71,6 +71,7 @@ end
 
 local function view(viewName)
     ui.view(viewName)
+
     -- track
     textGrid(
         {
