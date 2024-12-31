@@ -29,6 +29,15 @@ SecondaryBar = "#b54f5e"
 TertiaryBar = "#368a36"
 QuaternaryBar = "#94854b"
 
+ColorTrack1 = "#fd6f0e"
+ColorTrack2 = "#ffcd04"
+ColorTrack3 = "#a3c912"
+ColorTrack4 = "#23a123"
+ColorTrack5 = "#15a5ca"
+ColorTrack6 = "#4643d8"
+ColorTrack7 = "#902ed1"
+ColorTrack8 = "#cb11ca"
+
 ui.addZoneEncoder({ 0, 0, W1_4, ScreenHeight })
 ui.addZoneEncoder({ W1_4, 0, W1_4, ScreenHeight })
 ui.addZoneEncoder({ W1_2, 0, W1_4, ScreenHeight })

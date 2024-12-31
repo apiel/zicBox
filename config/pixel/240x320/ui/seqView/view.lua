@@ -4,14 +4,14 @@ local values = require("config/pixel/240x320/ui/seqView/values")
 local visibility = require("config/pixel/libs/containers/visibility")
 local value = require("config/pixel/libs/component/value")
 
-local function _row(group, track, menuContext, items, rowH, keymaps)
+local function _row(color, group, track, menuContext, items, rowH, keymaps)
     ui.component("SeqSynthBar",
         { "SEQ_PLUGIN" },
         { SEQ_PLUGIN = "Sequencer" },
         { x = 0, y = 0, w = ScreenWidth, h = rowH }, {
             GROUP = group,
             TRACK = track,
-            NAME_COLOR = "#23a123",
+            NAME_COLOR = color,
             NAME = track,
             ITEMS = items,
             VOLUME_PLUGIN = "Volume VOLUME",
@@ -20,18 +20,18 @@ local function _row(group, track, menuContext, items, rowH, keymaps)
         })
 end
 
-local function row(group, track, y, menuContext, synth, items)
+local function row(color, group, track, y, menuContext, synth, items)
     local rowH = 14
 
     visibility({ x = 0, y = y, w = ScreenWidth, h = rowH }, { VISIBILITY_CONTEXT = { "254 SHOW_WHEN 0" } })
-    _row(group, track, menuContext, items, rowH, {
+    _row(color, group, track, menuContext, items, rowH, {
         { key = "q", action = ".toggleOrPlayNote:" .. synth },
         { key = "a", action = ".left" },
         { key = "d", action = ".right" },
     })
 
     visibility({ x = 0, y = y, w = ScreenWidth, h = rowH }, { VISIBILITY_CONTEXT = { "254 SHOW_WHEN 1" } })
-    _row(group, track, menuContext, items, rowH, {
+    _row(color, group, track, menuContext, items, rowH, {
         { key = "q", action = ".toggle" },
         { key = "a", action = "setView:clips" },
     })
@@ -39,12 +39,12 @@ local function row(group, track, y, menuContext, synth, items)
     return y + 1 + rowH
 end
 
-local function rowDrum23(group, track, y, menuContext)
-    return row(group, track, y, menuContext, "Drum23", { "Click", "Freq.", "Amp.", "Wave", "FX" })
+local function rowDrum23(color, group, track, y, menuContext)
+    return row(color, group, track, y, menuContext, "Drum23", { "Click", "Freq.", "Amp.", "Wave", "FX" })
 end
 
-local function rowDrumSample(group, track, y, menuContext)
-    return row(group, track, y, menuContext, "DrumSample", { "Sample" })
+local function rowDrumSample(color, group, track, y, menuContext)
+    return row(color, group, track, y, menuContext, "DrumSample", { "Sample" })
 end
 
 local function progressBar(group, track, y)
@@ -165,14 +165,14 @@ local function view(viewName)
 
     y = 160
     y = progressBar(0, 0, y)
-    y = rowDrum23(1, 1, y, 11)
-    y = rowDrum23(2, 2, y, 12)
-    y = rowDrumSample(3, 3, y, 13)
-    y = rowDrumSample(4, 4, y, 14)
-    y = rowDrumSample(5, 5, y, 15)
-    y = rowDrumSample(6, 6, y, 16)
-    y = rowDrumSample(7, 7, y, 17)
-    y = rowDrumSample(8, 8, y, 18)
+    y = rowDrum23(ColorTrack1, 1, 1, y, 11)
+    y = rowDrum23(ColorTrack2, 2, 2, y, 12)
+    y = rowDrumSample(ColorTrack3, 3, 3, y, 13)
+    y = rowDrumSample(ColorTrack4, 4, 4, y, 14)
+    y = rowDrumSample(ColorTrack5, 5, 5, y, 15)
+    y = rowDrumSample(ColorTrack6, 6, 6, y, 16)
+    y = rowDrumSample(ColorTrack7, 7, 7, y, 17)
+    y = rowDrumSample(ColorTrack8, 8, 8, y, 18)
 
     -- "FX", "Op1", ".", "Op2", ".", "Op3", ".", "Op4", "."
 

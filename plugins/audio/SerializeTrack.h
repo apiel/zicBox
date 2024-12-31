@@ -160,20 +160,41 @@ public:
         // Do not hydrate this plugin, else it would make a loop
     }
 
+    enum DATA_ID {
+        SET_FILEPATH,
+        SERIALIZE,
+        HYDRATE
+    };
+
+    /*md **Data ID**: */
+    uint8_t getDataId(std::string name) override
+    {
+        /*md - `SET_FILEPATH` set filepath */
+        if (name == "SET_FILEPATH")
+            return DATA_ID::SET_FILEPATH;
+        /*md - `SERIALIZE` serialize */
+        if (name == "SERIALIZE")
+            return DATA_ID::SERIALIZE;
+        /*md - `HYDRATE` hydrate */
+        if (name == "HYDRATE")
+            return DATA_ID::HYDRATE;
+        return atoi(name.c_str());
+    }
+
     void* data(int id, void* userdata = NULL)
     {
         switch (id) {
-        case 0: {
+        case DATA_ID::SET_FILEPATH: {
             if (userdata) {
                 setFilepath((char*)userdata);
             }
             return NULL;
         }
-        case 1:
+        case DATA_ID::SERIALIZE:
             data(0, userdata);
             serialize();
             return NULL;
-        case 2:
+        case DATA_ID::HYDRATE:
             data(0, userdata);
             hydrate();
             return NULL;

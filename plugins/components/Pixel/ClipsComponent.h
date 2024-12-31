@@ -2,6 +2,7 @@
 #define _UI_PIXEL_COMPONENT_CLIPS_H_
 
 #include "plugins/components/component.h"
+#include "plugins/components/utils/color.h"
 
 #include <string>
 
@@ -15,6 +16,7 @@ class ClipsComponent : public Component {
 protected:
     Color bgColor;
     Color foreground;
+    Color textColor;
 
     ValueInterface* valVariation = NULL;
 
@@ -25,6 +27,7 @@ public:
         : Component(props)
         , bgColor(styles.colors.background)
         , foreground({ 0x40, 0x40, 0x40 })
+        , textColor({ 0x80, 0x80, 0x80 })
     {
     }
     void render()
@@ -34,7 +37,20 @@ public:
             if (valVariation) {
                 int count = valVariation->props().max;
                 for (int i = 0; i < count; i++) {
-                    draw.filledRect({ relativePosition.x, relativePosition.y + i * clipH }, { size.w, clipH - 1 }, { foreground });
+                    int y = relativePosition.y + i * clipH;
+                    draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { foreground });
+                    for (int xx = 0; xx < size.w; xx += 4) {
+                        for (int yy = 0; yy < clipH - 4; yy += 4) {
+                            // // get rand value between 0.0 and 1.0
+                            // float v = rand() / (float)RAND_MAX;
+                            // draw.filledRect({ relativePosition.x + xx, y + yy }, {4, 4}, { lighten(foreground, v * 0.5) });
+
+                            int c = rand() % 2;
+                            Color color = c == 0 ? foreground : lighten(foreground, 0.2);
+                            draw.filledRect({ relativePosition.x + xx, y + yy }, { 4, 4 }, { color });
+                        }
+                    }
+                    draw.textCentered({ relativePosition.x + (int)(size.w * 0.5), y + (int)((clipH - 8) * 0.5) }, std::to_string(i), 8, { textColor, .maxWidth = size.w });
                 }
             }
         }
