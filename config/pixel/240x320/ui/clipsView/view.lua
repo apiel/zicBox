@@ -23,11 +23,11 @@ local function progressBar(y)
     return y + 4 + progressH
 end
 
-local function clips(track, x, y)
+local function clips(track, y)
     ui.component("Clips",
         { "PLUGIN" },
         { PLUGIN = "SerializeTrack", },
-        { x = x, y = y, w = W1_8 - 2, h = 200 }, {
+        { x = (track - 1) * W1_8, y = y, w = W1_8 - 2, h = 200 }, {
             TRACK = track,
         })
 end
@@ -38,16 +38,14 @@ local function view(viewName)
     local y = 0
     y = progressBar(y)
 
-    y = y + 5
-
-    clips(1, 0, y)
-    clips(2, W1_8, y)
-    clips(3, W2_8, y)
-    clips(4, W3_8, y)
-    clips(5, W4_8, y)
-    clips(6, W5_8, y)
-    clips(7, W6_8, y)
-    clips(8, W7_8, y)
+    clips(1, y)
+    clips(2, y)
+    clips(3, y)
+    clips(4, y)
+    clips(5, y)
+    clips(6, y)
+    clips(7, y)
+    clips(8, y)
 
     -- clips
     textGrid(
