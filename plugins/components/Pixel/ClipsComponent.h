@@ -29,7 +29,7 @@ public:
         : Component(props)
         , bgColor(styles.colors.background)
         , foreground({ 0x40, 0x40, 0x40 })
-        , foreground2(lighten(foreground, 0.7))
+        , foreground2(lighten(foreground, 0.5))
         , textColor(styles.colors.text)
         , barColor(styles.colors.primary)
     {
@@ -43,19 +43,18 @@ public:
                 int count = valVariation->props().max;
                 for (int i = 0; i < count; i++) {
                     int y = relativePosition.y + i * clipH;
-                    
+
                     if (i == playingId) {
                         draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { darken(barColor, 0.8) });
                         draw.filledRect({ relativePosition.x, y }, { size.w, 2 }, { barColor });
                     } else {
                         draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { foreground });
-                        for (int xx = 0; xx < size.w; xx += 4) {
-                            for (int yy = 0; yy < clipH - 1; yy += 4) {
-                                int c = rand() % 2;
-                                Color color = c == 0 ? foreground : foreground2;
-                                draw.filledRect({ relativePosition.x + xx, y + yy }, { 4, 4 }, { color });
-                            }
-                        }
+                        // for (int xx = 0; xx < size.w; xx += 2) {
+                        //     if (rand() % 2) {
+                        //         int c = rand() % 7;
+                        //         draw.filledRect({ relativePosition.x + xx, y + c + 4 }, { 2, 1 }, { foreground2 });
+                        //     }
+                        // }
                         draw.filledRect({ relativePosition.x, y }, { size.w, 1 }, { darken(barColor, 0.3) });
                     }
 
