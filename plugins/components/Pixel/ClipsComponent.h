@@ -29,7 +29,7 @@ public:
         : Component(props)
         , bgColor(styles.colors.background)
         , foreground({ 0x40, 0x40, 0x40 })
-        , foreground2(lighten(foreground, 0.5))
+        , foreground2(lighten(foreground, 0.7))
         , textColor(styles.colors.text)
         , barColor(styles.colors.primary)
     {
@@ -45,7 +45,7 @@ public:
                     int y = relativePosition.y + i * clipH;
                     
                     if (i == playingId) {
-                        draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { darken(barColor, 0.9) });
+                        draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { darken(barColor, 0.8) });
                         draw.filledRect({ relativePosition.x, y }, { size.w, 2 }, { barColor });
                     } else {
                         draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { foreground });
