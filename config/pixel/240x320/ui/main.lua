@@ -9,10 +9,18 @@ ScreenHeight = 320
 ui.setScreenSize(ScreenWidth, ScreenHeight)
 
 W1_4 = ScreenWidth / 4
-W1_8 = ScreenWidth / 8
 W2_4 = W1_4 * 2
 W1_2 = W2_4
 W3_4 = W1_4 * 3
+
+W1_8 = ScreenWidth / 8
+W2_8 = W1_8 * 2
+W3_8 = W1_8 * 3
+W4_8 = W1_8 * 4
+W5_8 = W1_8 * 5
+W6_8 = W1_8 * 6
+W7_8 = W1_8 * 7
+W8_8 = W1_8 * 8
 
 KeyInfoPosition = { x = 0, y = 296, w = W3_4 }
 

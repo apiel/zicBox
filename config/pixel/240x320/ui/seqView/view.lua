@@ -115,7 +115,7 @@ local function view(viewName)
     textGrid(
         {
             "&icon::toggle::rect &icon::play::filled ^...",
-            "Clip Edit Master"
+            "Clips Edit Master"
         }, KeyInfoPosition,
         {
             VISIBILITY_GROUP = { "SHOW_WHEN_NOT 0" },
@@ -135,7 +135,7 @@ local function view(viewName)
     textGrid(
         {
             "Menu &icon::play::filled ^...",
-            "Clip ? Save"
+            "Clips ? Save"
         }, KeyInfoPosition,
         {
             VISIBILITY_GROUP = { "SHOW_WHEN 0" },
