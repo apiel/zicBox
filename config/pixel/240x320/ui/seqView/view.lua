@@ -1,6 +1,6 @@
 local ui = require("config/pixel/libs/ui")
 local textGrid = require("config/pixel/libs/component/textGrid")
-local values = require("config/pixel/240x320/ui/mainView/values")
+local values = require("config/pixel/240x320/ui/seqView/values")
 local visibility = require("config/pixel/libs/containers/visibility")
 local value = require("config/pixel/libs/component/value")
 
@@ -69,7 +69,8 @@ local function progressBar(group, track, y)
     return y + 4 + progressH
 end
 
-local function mainView()
+local function view(viewName)
+    ui.view(viewName)
     textGrid(
         {
             "&icon::musicNote::pixelated &icon::arrowUp::filled ...",
@@ -188,4 +189,4 @@ local function mainView()
     values.drumSample(8, 8, y, 18)
 end
 
-return mainView
+return view

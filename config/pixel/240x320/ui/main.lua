@@ -1,9 +1,5 @@
 local ui = require("config/pixel/libs/ui")
--- local mainKeyboard = require("config/pixel/240x320/ui/keyboard_main")
--- local sequencer = require("config/pixel/240x320/ui/sequencer")
--- local drum23Synth = require("config/pixel/240x320/ui/drum23_synth")
--- local fmSynth = require("config/pixel/240x320/ui/fm_synth")
-local mainView = require("config/pixel/240x320/ui/mainView/mainView")
+local seqView = require("config/pixel/240x320/ui/seqView/view")
 
 ui.setWindowPosition(400, 500)
 
@@ -29,5 +25,4 @@ ui.addZoneEncoder({ W1_4, 0, W1_4, ScreenHeight })
 ui.addZoneEncoder({ W1_2, 0, W1_4, ScreenHeight })
 ui.addZoneEncoder({ W3_4, 0, W1_4, ScreenHeight })
 
-ui.view("Main")
-mainView()
+seqView("seq")
