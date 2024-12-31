@@ -43,21 +43,24 @@ public:
                 int count = valVariation->props().max;
                 for (int i = 0; i < count; i++) {
                     int y = relativePosition.y + i * clipH;
-                    draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { foreground });
-                    Color fg2 = i == playingId ? darken(barColor, 0.7) : foreground2;
-                    for (int xx = 0; xx < size.w; xx += 4) {
-                        for (int yy = 0; yy < clipH - 1; yy += 4) {
-                            // // get rand value between 0.0 and 1.0
-                            // float v = rand() / (float)RAND_MAX;
-                            // draw.filledRect({ relativePosition.x + xx, y + yy }, {4, 4}, { lighten(foreground, v * 0.5) });
-
-                            int c = rand() % 2;
-                            Color color = c == 0 ? foreground : fg2;
-                            draw.filledRect({ relativePosition.x + xx, y + yy }, { 4, 4 }, { color });
+                    
+                    if (i == playingId) {
+                        draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { darken(barColor, 0.7) });
+                        draw.filledRect({ relativePosition.x, y }, { size.w, 2 }, { barColor });
+                    } else {
+                        draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { foreground });
+                        Color fg2 = i == playingId ? darken(barColor, 0.7) : foreground2;
+                        for (int xx = 0; xx < size.w; xx += 4) {
+                            for (int yy = 0; yy < clipH - 1; yy += 4) {
+                                int c = rand() % 2;
+                                Color color = c == 0 ? foreground : fg2;
+                                draw.filledRect({ relativePosition.x + xx, y + yy }, { 4, 4 }, { color });
+                            }
                         }
+                        Color color = i == playingId ? barColor : darken(barColor, 0.3);
+                        draw.filledRect({ relativePosition.x, y }, { size.w, i == playingId ? 2 : 1 }, { color });
                     }
-                    Color color = i == playingId ? barColor : darken(barColor, 0.3);
-                    draw.filledRect({ relativePosition.x, y }, { size.w, i == playingId ? 2 : 1 }, { color });
+
                     draw.textCentered({ relativePosition.x + (int)(size.w * 0.5), y + (int)((clipH - 8) * 0.5) }, std::to_string(i), 8, { textColor, .maxWidth = size.w });
                 }
             }
