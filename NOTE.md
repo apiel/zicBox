@@ -1,5 +1,7 @@
 ## Pixel TODO
 
+- FIXME pixel_env.lua
+
 - TODO variations, clips, ...
 - TODO save, save as, load
 - TODO advance sample player
