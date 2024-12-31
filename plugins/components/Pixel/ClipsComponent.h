@@ -1,6 +1,7 @@
 #ifndef _UI_PIXEL_COMPONENT_CLIPS_H_
 #define _UI_PIXEL_COMPONENT_CLIPS_H_
 
+#include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
 
@@ -14,6 +15,8 @@ Clips components to draw a rectangle.
 
 class ClipsComponent : public Component {
 protected:
+    bool isActive = true;
+
     Color bgColor;
     Color foreground;
     Color textColor;
@@ -24,6 +27,10 @@ protected:
 
     int clipH = 17;
 
+    uint8_t selectionBank = 30;
+
+    KeypadLayout keypadLayout;
+
 public:
     ClipsComponent(ComponentInterface::Props props)
         : Component(props)
@@ -32,6 +39,30 @@ public:
         , foreground2(lighten(foreground, 0.5))
         , textColor(styles.colors.text)
         , barColor(styles.colors.primary)
+        , keypadLayout(this, [&](std::string action) {
+            std::function<void(KeypadLayout::KeyMap&)> func = NULL;
+            if (action == ".up") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        if (view->contextVar[selectionBank] > 0) {
+                            setContext(selectionBank, view->contextVar[selectionBank] - 1);
+                        }
+                        renderNext();
+                    }
+                };
+            }
+            if (action == ".down") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        if (view->contextVar[selectionBank] < valVariation->props().max - 1) {
+                            setContext(selectionBank, view->contextVar[selectionBank] + 1);
+                        }
+                        renderNext();
+                    }
+                };
+            }
+            return func;
+        })
     {
     }
     void render()
@@ -61,14 +92,45 @@ public:
                     if (rand() % 2 || i == playingId) {
                         draw.textCentered({ relativePosition.x + (int)(size.w * 0.5), y + (int)((clipH - 8) * 0.5) }, std::to_string(i + 1), 8, { textColor, .maxWidth = size.w });
                     }
+
+                    if (isActive && i == view->contextVar[selectionBank]) {
+                        draw.rect({ relativePosition.x, y }, { size.w, clipH - 2 }, { barColor });
+                    }
                 }
             }
+        }
+    }
+
+    void onKey(uint16_t id, int key, int8_t state, unsigned long now) override
+    {
+        if (isActive) {
+            keypadLayout.onKey(id, key, state, now);
+        }
+    }
+
+    void onGroupChanged(int8_t index) override
+    {
+        if (isActive) {
+            renderNext();
+        }
+
+        bool shouldActivate = false;
+        if (group == index || group == -1) {
+            shouldActivate = true;
+        }
+        if (shouldActivate != isActive) {
+            isActive = shouldActivate;
+            renderNext();
         }
     }
 
     /*md **Config**: */
     bool config(char* key, char* value)
     {
+        if (keypadLayout.config(key, value)) {
+            return true;
+        }
+
         /*md - `BACKGROUND_COLOR: color` is the background color of the component. */
         if (strcmp(key, "BACKGROUND_COLOR") == 0) {
             bgColor = draw.getColor(value);
