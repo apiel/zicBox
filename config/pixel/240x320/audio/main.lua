@@ -25,6 +25,8 @@ audio.pluginAlias("Spectrogram", "libzic_AudioSpectrogram.so")
 
 StringCuttoffFormat = "%d%% %d%%"
 
+MaxVariation = 16
+
 -- # Drum tracks
 drum23(1)
 drum23(2)

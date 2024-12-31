@@ -58,7 +58,9 @@ public:
                         draw.filledRect({ relativePosition.x, y }, { size.w, 1 }, { darken(barColor, 0.3) });
                     }
 
-                    draw.textCentered({ relativePosition.x + (int)(size.w * 0.5), y + (int)((clipH - 8) * 0.5) }, std::to_string(i), 8, { textColor, .maxWidth = size.w });
+                    if (rand() % 2 || i == playingId) {
+                        draw.textCentered({ relativePosition.x + (int)(size.w * 0.5), y + (int)((clipH - 8) * 0.5) }, std::to_string(i + 1), 8, { textColor, .maxWidth = size.w });
+                    }
                 }
             }
         }
