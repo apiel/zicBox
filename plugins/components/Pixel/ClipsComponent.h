@@ -45,7 +45,7 @@ public:
                     int y = relativePosition.y + i * clipH;
                     
                     if (i == playingId) {
-                        draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { darken(barColor, 0.7) });
+                        draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { darken(barColor, 0.9) });
                         draw.filledRect({ relativePosition.x, y }, { size.w, 2 }, { barColor });
                     } else {
                         draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { foreground });
