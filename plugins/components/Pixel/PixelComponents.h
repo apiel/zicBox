@@ -31,11 +31,13 @@ void loadPixelComponents()
     viewManager.loadPlugin("Spectrogram " + folder + "SpectrogramComponent.so");
     viewManager.loadPlugin("Value " + folder + "ValueComponent.so");
     viewManager.loadPlugin("Rect " + folder + "RectComponent.so");
+    viewManager.loadPlugin("Clips " + folder + "ClipsComponent.so");
 }
 
 #else
 
 #include "./AdsrComponent.h"
+#include "./ClipsComponent.h"
 #include "./DrumEnvelopComponent.h"
 #include "./Encoder3Component.h"
 #include "./FmAlgoComponent.h"
@@ -54,8 +56,13 @@ void loadPixelComponents()
 void loadPixelComponents()
 {
     ViewManager& viewManager = ViewManager::get();
+
     viewManager.plugins.push_back({ "TextGrid", [](ComponentInterface::Props props) {
                                        return new TextGridComponent(props);
+                                   } });
+
+    viewManager.plugins.push_back({ "Clips", [](ComponentInterface::Props props) {
+                                       return new ClipsComponent(props);
                                    } });
 
     viewManager.plugins.push_back({ "DrumEnvelop", [](ComponentInterface::Props props) {
