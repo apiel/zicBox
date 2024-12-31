@@ -33,7 +33,7 @@ local function row(group, track, y, menuContext, synth, items)
     visibility({ x = 0, y = y, w = ScreenWidth, h = rowH }, { VISIBILITY_CONTEXT = { "254 SHOW_WHEN 1" } })
     _row(group, track, menuContext, items, rowH, {
         { key = "q", action = ".toggle" },
-        -- { key = "a", action = ".mode" },
+        { key = "a", action = "setView:clips" },
     })
 
     return y + 1 + rowH
@@ -71,6 +71,7 @@ end
 
 local function view(viewName)
     ui.view(viewName)
+    -- track
     textGrid(
         {
             "&icon::musicNote::pixelated &icon::arrowUp::filled ...",
@@ -90,6 +91,7 @@ local function view(viewName)
         }
     )
 
+    -- track step edit
     textGrid(
         {
             "&icon::toggle::rect &icon::arrowUp::filled ...",
@@ -109,6 +111,7 @@ local function view(viewName)
         }
     )
 
+    -- track shifted
     textGrid(
         {
             "&icon::toggle::rect &icon::play::filled ^...",
@@ -128,6 +131,7 @@ local function view(viewName)
         }
     )
 
+    -- progressbar shifted
     textGrid(
         {
             "Menu &icon::play::filled ^...",
@@ -137,12 +141,7 @@ local function view(viewName)
             VISIBILITY_GROUP = { "SHOW_WHEN 0" },
             VISIBILITY_CONTEXT = { "254 SHOW_WHEN 1" },
             KEYMAPS = {
-                -- { key = "q", action = "playPause" },
-                -- { key = "w", action = "playPause" }, -- stepToggle
-                -- { key = "e", action = "shift:254:1:0" },
-                -- { key = "a", action = "setView:menu" },
-                -- { key = "s", action = "setView:sub" },
-                -- { key = "d", action = "setView:Master" },
+                { key = "a", action = "setView:clips" },
             }
         }
     )
