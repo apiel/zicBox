@@ -49,7 +49,7 @@ public:
         jobRendering = [this](unsigned long now) {
             if (seqPlayingPtr != NULL) {
                 if (*seqPlayingPtr) {
-                    if (stepCounter != NULL &&lastStepCounter != *stepCounter) {
+                    if (stepCounter != NULL && lastStepCounter != *stepCounter) {
                         lastStepCounter = *stepCounter;
                         renderNext();
                     }
@@ -76,19 +76,19 @@ public:
             int stepsW = stepCount * (stepW + 2 + 0.5); // 2 / 4 adding 2 pixel every 4 steps
             int nameW = size.w - stepsW - 5;
             int x = relativePosition.x + 1;
-            Color color = valVolume != NULL ? darken(activeColor, 0.5) : foreground;
-            draw.filledRect({ x, relativePosition.y }, { nameW, stepH }, { color });
+
             if (valVolume != NULL) {
+                draw.filledRect({ x, relativePosition.y }, { nameW, stepH }, { darken(activeColor, 0.5) });
                 draw.filledRect({ x, relativePosition.y }, { (int)(nameW * valVolume->pct()), stepH }, { activeColor });
-            }
-            if (isActive) {
-                draw.rect({ x, relativePosition.y }, { nameW, stepH - 1 }, { selectionColor });
+                if (isActive) {
+                    draw.rect({ x, relativePosition.y }, { nameW, stepH - 1 }, { selectionColor });
+                }
             }
 
             x += nameW + 4;
 
             for (int i = 0; i < stepCount; i++) {
-                color = lastStepCounter == i ? activeColor : foreground;
+                Color color = lastStepCounter == i ? activeColor : foreground;
                 draw.filledRect({ x, relativePosition.y }, { stepW, stepH }, { color });
                 x += stepW + 2;
                 if (i % 4 == 3) {
@@ -132,7 +132,7 @@ public:
         if (strcmp(key, "SEQ_PLUGIN") == 0) {
             AudioPlugin* seqPlugin = NULL;
 
-            char * pluginName = strtok(value, " ");
+            char* pluginName = strtok(value, " ");
             int trackId = atoi(strtok(NULL, " "));
             // printf("pluginName: %s, trackId: %d\n", pluginName, trackId);
 

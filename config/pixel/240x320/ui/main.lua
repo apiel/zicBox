@@ -1,5 +1,6 @@
 local ui = require("config/pixel/libs/ui")
 local seqView = require("config/pixel/240x320/ui/seqView/view")
+local clipsView = require("config/pixel/240x320/ui/clipsView/view")
 
 ui.setWindowPosition(400, 500)
 
@@ -26,3 +27,4 @@ ui.addZoneEncoder({ W1_2, 0, W1_4, ScreenHeight })
 ui.addZoneEncoder({ W3_4, 0, W1_4, ScreenHeight })
 
 seqView("seq")
+clipsView("clips")
