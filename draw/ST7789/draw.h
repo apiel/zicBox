@@ -988,26 +988,6 @@ public:
         }
     }
 
-    Color applyAlphaColor(Color currentColor, Color newColor)
-    {
-        Color resultColor;
-
-        // Normalize the alpha value of newColor to [0, 1]
-        float alphaNew = newColor.a / 255.0f;
-        float alphaCurrent = currentColor.a / 255.0f;
-
-        // Apply the alpha blending formula to each component
-        resultColor.r = (uint8_t)((alphaNew * newColor.r) + ((1 - alphaNew) * currentColor.r));
-        resultColor.g = (uint8_t)((alphaNew * newColor.g) + ((1 - alphaNew) * currentColor.g));
-        resultColor.b = (uint8_t)((alphaNew * newColor.b) + ((1 - alphaNew) * currentColor.b));
-
-        // For alpha, you can just take the alpha of the new color,
-        // since this is the final transparenposition.y level.
-        resultColor.a = newColor.a;
-
-        return resultColor;
-    }
-
     Color getColor(char* color) override
     {
         // if first char is # then call hex2rgb

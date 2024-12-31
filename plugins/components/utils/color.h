@@ -60,4 +60,30 @@ Color alpha(Color color, float amount)
     };
 }
 
+Color applyAlphaColor(Color sourceColor, Color appliedColor)
+{
+    Color resultColor;
+
+    // Normalize the alpha value of appliedColor to [0, 1]
+    float alphaNew = appliedColor.a / 255.0f;
+    float alphaCurrent = sourceColor.a / 255.0f;
+
+    // Apply the alpha blending formula to each component
+    resultColor.r = (uint8_t)((alphaNew * appliedColor.r) + ((1 - alphaNew) * sourceColor.r));
+    resultColor.g = (uint8_t)((alphaNew * appliedColor.g) + ((1 - alphaNew) * sourceColor.g));
+    resultColor.b = (uint8_t)((alphaNew * appliedColor.b) + ((1 - alphaNew) * sourceColor.b));
+
+    // For alpha, you can just take the alpha of the new color,
+    // since this is the final transparenposition.y level.
+    resultColor.a = appliedColor.a;
+
+    return resultColor;
+}
+
+Color applyAlphaColor(Color sourceColor, Color appliedColor, float pct)
+{
+    appliedColor.a = (uint8_t)(pct * 255.0f);
+    return applyAlphaColor(sourceColor, appliedColor);
+}
+
 #endif

@@ -17,6 +17,8 @@ protected:
     Color bgColor;
     Color foreground;
     Color textColor;
+    Color foreground2;
+    Color barColor;
 
     ValueInterface* valVariation = NULL;
 
@@ -27,6 +29,7 @@ public:
         : Component(props)
         , bgColor(styles.colors.background)
         , foreground({ 0x40, 0x40, 0x40 })
+        , foreground2(lighten(foreground, 0.2))
         , textColor({ 0x80, 0x80, 0x80 })
     {
     }
@@ -46,7 +49,7 @@ public:
                             // draw.filledRect({ relativePosition.x + xx, y + yy }, {4, 4}, { lighten(foreground, v * 0.5) });
 
                             int c = rand() % 2;
-                            Color color = c == 0 ? foreground : lighten(foreground, 0.2);
+                            Color color = c == 0 ? foreground : foreground2;
                             draw.filledRect({ relativePosition.x + xx, y + yy }, { 4, 4 }, { color });
                         }
                     }
@@ -62,6 +65,29 @@ public:
         /*md - `BACKGROUND_COLOR: color` is the background color of the component. */
         if (strcmp(key, "BACKGROUND_COLOR") == 0) {
             bgColor = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `FOREGROUND_COLOR: color` is the foreground color of the component. */
+        if (strcmp(key, "FOREGROUND_COLOR") == 0) {
+            foreground = draw.getColor(value);
+            foreground2 = lighten(foreground, 0.2);
+            return true;
+        }
+
+        /*md - `TEXT_COLOR: color` is the text color of the component. */
+        if (strcmp(key, "TEXT_COLOR") == 0) {
+            textColor = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `COLOR: color` is the foreground color of the component. */
+        if (strcmp(key, "COLOR") == 0) {
+            barColor = draw.getColor(value);
+            textColor = barColor;
+            // foreground2 = barColor;
+            // foreground2.a = 100;
+            // foreground2 = applyAlphaColor(foreground, foreground2);
             return true;
         }
 
