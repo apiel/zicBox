@@ -4,7 +4,6 @@
 
 - FIXME fix sequencer counter, when one track is on pause it should keep counting to stay sync with other running track
 
-- TODO variations, clips, ...
 - TODO save, save as, load
 - TODO advance sample player
 - TODO master track
@@ -13,7 +12,7 @@
 - TODO speed up compile time
   - cross compile for rpi directly on laptop
 
-- TODO keymap shifted? or should we be able to access action from another component...
+- IDEA daw mode...
 
 - IDEA DrumSample is the less consuming CPU, maybe expending it a little bit to a SimpleSample engine
   - skip density
