@@ -19,7 +19,7 @@ void loadPixelComponents()
     viewManager.loadPlugin("TextGrid " + folder + "TextGridComponent.so");
     viewManager.loadPlugin("DrumEnvelop " + folder + "DrumEnvelopComponent.so");
     viewManager.loadPlugin("Encoder3 " + folder + "Encoder3Component.so");
-    viewManager.loadPlugin("HiddenEncoder " + folder + "HiddenEncoderComponent.so");
+    viewManager.loadPlugin("HiddenValue " + folder + "HiddenValueComponent.so");
     viewManager.loadPlugin("GraphEncoder " + folder + "GraphEncoderComponent.so");
     viewManager.loadPlugin("StepEdit " + folder + "StepEditComponent.so");
     viewManager.loadPlugin("FmAlgo " + folder + "FmAlgoComponent.so");
@@ -42,7 +42,7 @@ void loadPixelComponents()
 #include "./Encoder3Component.h"
 #include "./FmAlgoComponent.h"
 #include "./GraphEncoderComponent.h"
-#include "./HiddenEncoderComponent.h"
+#include "./HiddenValueComponent.h"
 #include "./RectComponent.h"
 #include "./SeqBarComponent.h"
 #include "./SeqProgressBarComponent.h"
@@ -73,8 +73,8 @@ void loadPixelComponents()
                                        return new Encoder3Component(props);
                                    } });
 
-    viewManager.plugins.push_back({ "HiddenEncoder", [](ComponentInterface::Props props) {
-                                       return new HiddenEncoderComponent(props);
+    viewManager.plugins.push_back({ "HiddenValue", [](ComponentInterface::Props props) {
+                                       return new HiddenValueComponent(props);
                                    } });
 
     viewManager.plugins.push_back({ "GraphEncoder", [](ComponentInterface::Props props) {

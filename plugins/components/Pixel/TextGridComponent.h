@@ -155,7 +155,7 @@ public:
 
     void onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
-        if (visibilityContext.visible) {
+        if (visibilityContext.visible && visibilityGroup.visible) {
             keypadLayout.onKey(id, key, state, now);
         }
     }
