@@ -38,6 +38,8 @@ local function clips(color, track, group, y)
             KEYMAPS = {
                 { key = "w", action = ".up" },
                 { key = "s", action = ".down" },
+
+                { key = "d", action = ".save", context = "254:1" },
             }
         })
 
@@ -68,7 +70,7 @@ local function view(viewName)
         {
             VISIBILITY_CONTEXT = { "254 SHOW_WHEN 0" },
             KEYMAPS = {
-                { key = "e", action = "shift:254:1:0" },
+                { key = "e", action = "contextToggle:254:1:0" },
                 { key = "a", action = "incGroup:-1" },
                 { key = "d", action = "incGroup:+1" },
             }
@@ -94,7 +96,7 @@ local function view(viewName)
             VISIBILITY_CONTEXT = { "254 SHOW_WHEN 1" },
             KEYMAPS = {
                 { key = "w", action = "playPause" },
-                { key = "e", action = "shift:254:1:0" },
+                { key = "e", action = "contextToggle:254:1:0" },
                 { key = "a", action = "setView:seq" },
             }
         }

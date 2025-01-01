@@ -82,7 +82,7 @@ local function view(viewName)
             VISIBILITY_CONTEXT = { "254 SHOW_WHEN 0", "10 SHOW_WHEN 0" },
             KEYMAPS = {
                 { key = "w", action = "incGroup:-1" },
-                { key = "e", action = "shift:254:1:0" },
+                { key = "e", action = "contextToggle:254:1:0" },
 
                 { key = "s", action = "incGroup:+1" },
 
@@ -102,7 +102,7 @@ local function view(viewName)
             VISIBILITY_CONTEXT = { "254 SHOW_WHEN 0", "10 SHOW_WHEN_OVER 0" },
             KEYMAPS = {
                 { key = "w", action = "incGroup:-1" },
-                { key = "e", action = "shift:254:1:0" },
+                { key = "e", action = "contextToggle:254:1:0" },
 
                 { key = "s", action = "incGroup:+1" },
 
@@ -124,7 +124,7 @@ local function view(viewName)
             KEYMAPS = {
                 -- { key = "q", action = "playPause" },
                 { key = "w", action = "playPause" }, -- stepToggle
-                { key = "e", action = "shift:254:1:0" },
+                { key = "e", action = "contextToggle:254:1:0" },
                 -- { key = "a", action = "setView:menu" },
                 { key = "s", action = "setView:sub" },
                 { key = "d", action = "setView:Master" },

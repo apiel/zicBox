@@ -21,6 +21,9 @@ local function parseKeyMap(value)
                 table.insert(keyValues, { key = "KEYMAP", value = v })
             else
                 local controllerId = v.controller and v.controller or "Keyboard"
+                if v.context then
+                    controllerId = controllerId .. ":" .. v.context
+                end
                 local k = type(v.key) == "number" and v.key or "'" .. v.key .. "'"
                 local action2 = v.action2 and " " .. v.action2 or ""
                 table.insert(keyValues,
