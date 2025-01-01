@@ -107,6 +107,24 @@ public:
                     }
                 };
             }
+            if (action == ".next") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        int16_t id = view->contextVar[selectionBank];
+                        if (variations[id].exists) {
+                            if (valVariation->get() == id) {
+                                if (valSeqStatus->get() == 0) {
+                                    valSeqStatus->set(2);
+                                }
+                            } else {
+                                // TODO Would need to set variation only at the next round...
+                                // valVariation->set(id);
+                            }
+                            renderNext();
+                        }
+                    }
+                };
+            }
             return func;
         })
     {
