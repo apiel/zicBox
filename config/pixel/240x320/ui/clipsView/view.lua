@@ -36,8 +36,8 @@ local function clips(color, track, group, y)
             GROUP = group,
             COLOR = color,
             KEYMAPS = {
-                { key = "w", action = ".up" },
-                { key = "s", action = ".down" },
+                { key = "w", action = ".up", context = "254:0" },
+                { key = "s", action = ".down", context = "254:0" },
 
                 { key = "d", action = ".save", context = "254:1" },
             }

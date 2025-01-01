@@ -26,10 +26,11 @@ protected:
 
     AudioPlugin* pluginSerialize = NULL;
     ValueInterface* valVariation = NULL;
+    uint8_t saveVariationDataId = -1;
 
     struct Variation {
         bool exists;
-        std::string filepath;
+        // std::string filepath;
     };
     std::vector<Variation> variations;
 
@@ -73,8 +74,10 @@ public:
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         int16_t id = view->contextVar[selectionBank];
-                        pluginSerialize->data(pluginSerialize->getDataId("SAVE_VARIATION"), (void*)&id);
-                        renderNext();
+                        if (pluginSerialize) {
+                            pluginSerialize->data(saveVariationDataId, (void*)&id);
+                        }
+                        // renderNext();
                     }
                 };
             }
@@ -177,13 +180,13 @@ public:
 
         /*md - `PLUGIN: plugin_name` set plugin target for serializer */
         if (strcmp(key, "PLUGIN") == 0) {
-            AudioPlugin* pluginSerialize = &getPlugin(value, track);
+            pluginSerialize = &getPlugin(value, track);
             valVariation = watch(pluginSerialize->getValue("VARIATION"));
+            saveVariationDataId = pluginSerialize->getDataId("SAVE_VARIATION");
 
             for (int i = 0; i < valVariation->props().max; i++) {
                 bool exists = pluginSerialize->data(pluginSerialize->getDataId("GET_VARIATION"), &i) != NULL;
-                std::string filepath = *(std::string*)pluginSerialize->data(pluginSerialize->getDataId("GET_VARIATION_PATH"), &i);
-                variations.push_back({ exists, filepath });
+                variations.push_back({ exists });
             }
             return true;
         }
