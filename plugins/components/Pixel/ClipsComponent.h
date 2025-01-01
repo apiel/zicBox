@@ -48,7 +48,7 @@ public:
     ClipsComponent(ComponentInterface::Props props)
         : Component(props)
         , bgColor(styles.colors.background)
-        , foreground({ 0x40, 0x40, 0x40 })
+        , foreground({ 0x35, 0x35, 0x35 })
         , foreground2(lighten(foreground, 0.5))
         , textColor(styles.colors.text)
         , barColor(styles.colors.primary)
