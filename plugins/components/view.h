@@ -6,8 +6,8 @@
 #include "helpers/getTicks.h"
 
 #include <mutex>
-#include <vector>
 #include <string>
+#include <vector>
 
 class View : public ViewInterface, public ComponentContainer {
 public:
@@ -206,8 +206,14 @@ public:
         return NULL;
     }
 
+    bool resetGroupOnSetView = false;
     bool config(char* key, char* value)
     {
+        if (strcmp(key, "RESET_GROUP_ON_SET_VIEW") == 0) {
+            resetGroupOnSetView = strcmp(value, "true") == 0;
+            return true;
+        }
+
         // set default track value for all components contained in the view
         if (strcmp(key, "COMPONENTS_TRACK") == 0) {
             track = atoi(value);

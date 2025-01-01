@@ -65,7 +65,7 @@ public:
                         lastView = view;
                     }
                     view = views[i];
-                    view->setGroup(0);
+                    view->setGroup(view->resetGroupOnSetView ? 0 : view->activeGroup);
                     for (int i = 0; i < 256; i++) {
                         view->onContext(i, contextVar[i]);
                     }
