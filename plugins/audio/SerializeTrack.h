@@ -59,6 +59,14 @@ public:
         std::filesystem::copy(filepath, getVariationFilepath(id), std::filesystem::copy_options::overwrite_existing);
     }
 
+    void loadVariation(int16_t id)
+    {
+        if (std::filesystem::exists(getVariationFilepath(id))) {
+            std::filesystem::copy(getVariationFilepath(id), filepath, std::filesystem::copy_options::overwrite_existing);
+            hydrate();
+        }
+    }
+
     void setVariation(float value)
     {
         m.lock();
@@ -68,13 +76,7 @@ public:
             if (saveBeforeChangingVariation) {
                 saveVariation(currentVariation);
             }
-            if (std::filesystem::exists(getVariationFilepath((int16_t)variation.get()))) {
-                std::filesystem::copy(getVariationFilepath((int16_t)variation.get()), filepath, std::filesystem::copy_options::overwrite_existing);
-                hydrate(true);
-                return;
-            } else {
-                // We might want to re-initialize value, but for at the moment we dont keep in memory default value
-            }
+            loadVariation((int16_t)variation.get());
         }
         m.unlock();
     }
@@ -107,7 +109,9 @@ public:
     {
         if (event == AudioEventType::AUTOSAVE) {
             if (!initialized) {
+                m.lock();
                 hydrate();
+                m.unlock();
                 initialized = true;
             } else {
                 serialize();
@@ -131,16 +135,11 @@ public:
         m.unlock();
     }
 
-    void hydrate(bool skipLock = false)
+    void hydrate()
     {
-        if (!skipLock) {
-            m.lock();
-        }
-
         FILE* file = fopen(filepath.c_str(), "r");
         if (!file) {
             printf("Hydration file not found: %s\n", filepath.c_str());
-            m.unlock();
             return;
         }
 
@@ -161,8 +160,6 @@ public:
             }
         }
         fclose(file);
-
-        m.unlock();
     }
 
     void hydrate(std::string value)
@@ -177,6 +174,7 @@ public:
         GET_VARIATION,
         GET_VARIATION_PATH,
         SAVE_VARIATION,
+        LOAD_VARIATION,
     };
 
     /*md **Data ID**: */
@@ -200,6 +198,9 @@ public:
         /*md - `SAVE_VARIATION` save variation */
         if (name == "SAVE_VARIATION")
             return DATA_ID::SAVE_VARIATION;
+        /*md - `LOAD_VARIATION` load variation */
+        if (name == "LOAD_VARIATION")
+            return DATA_ID::LOAD_VARIATION;
         return atoi(name.c_str());
     }
 
@@ -219,7 +220,9 @@ public:
             return NULL;
         case DATA_ID::HYDRATE:
             data(0, userdata);
+            m.lock();
             hydrate();
+            m.unlock();
             return NULL;
         case DATA_ID::GET_VARIATION: {
             if (userdata) {
@@ -242,6 +245,16 @@ public:
                 int id = *(int16_t*)userdata;
                 m.lock();
                 saveVariation(id);
+                m.unlock();
+                variation.setFloat(id);
+            }
+            return NULL;
+        }
+        case DATA_ID::LOAD_VARIATION: {
+            if (userdata) {
+                int id = *(int16_t*)userdata;
+                m.lock();
+                hydrate();
                 m.unlock();
             }
             return NULL;

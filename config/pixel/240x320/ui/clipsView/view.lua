@@ -1,7 +1,6 @@
 local ui = require("config/pixel/libs/ui")
 local textGrid = require("config/pixel/libs/component/textGrid")
 local value = require("config/pixel/libs/component/value")
-local visibility = require("config/pixel/libs/containers/visibility")
 
 local function progressBar(y)
     local progressH = 5
@@ -36,6 +35,7 @@ local function clips(color, track, group, y)
             GROUP = group,
             COLOR = color,
             KEYMAPS = {
+                { key = "q", action = ".toggle", context = "254:0" },
                 { key = "w", action = ".up", context = "254:0" },
                 { key = "s", action = ".down", context = "254:0" },
 

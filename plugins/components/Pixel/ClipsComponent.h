@@ -77,8 +77,18 @@ public:
                         if (pluginSerialize) {
                             pluginSerialize->data(saveVariationDataId, (void*)&id);
                             variations[id].exists = true;
+                            // valVariation->set(id);
                             renderNext();
                         }
+                    }
+                };
+            }
+            if (action == ".toggle") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        int16_t id = view->contextVar[selectionBank];
+                        valVariation->set(id);
+                        renderNext();
                     }
                 };
             }
