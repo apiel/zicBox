@@ -1,40 +1,30 @@
 local ui = require("config/pixel/libs/ui")
 local textGrid = require("config/pixel/libs/component/textGrid")
 local values = require("config/pixel/240x320/ui/seqView/values")
-local visibility = require("config/pixel/libs/containers/visibility")
 local value = require("config/pixel/libs/component/value")
 
-local function _row(color, group, track, menuContext, items, rowH, keymaps)
+local function row(color, group, track, y, menuContext, synth, items)
+    local rowH = 14
+
     ui.component("SeqSynthBar",
         { "SEQ_PLUGIN" },
         { SEQ_PLUGIN = "Sequencer" },
-        { x = 0, y = 0, w = ScreenWidth, h = rowH }, {
+        { x = 0, y = y, w = ScreenWidth, h = rowH }, {
             GROUP = group,
             TRACK = track,
             NAME_COLOR = color,
             NAME = track,
             ITEMS = items,
             VOLUME_PLUGIN = "Volume VOLUME",
-            KEYMAPS = keymaps,
+            KEYMAPS = {
+                { key = "q", action = ".toggleOrPlayNote:" .. synth, context = "254:0" },
+                { key = "a", action = ".left", context = "254:0" },
+                { key = "d", action = ".right", context = "254:0" },
+                { key = "q", action = ".toggle", context = "254:1" },
+                { key = "a", action = "setView:clips", context = "254:1" },
+            },
             SELECT_MENU_CONTEXT = menuContext,
         })
-end
-
-local function row(color, group, track, y, menuContext, synth, items)
-    local rowH = 14
-
-    visibility({ x = 0, y = y, w = ScreenWidth, h = rowH }, { VISIBILITY_CONTEXT = { "254 SHOW_WHEN 0" } })
-    _row(color, group, track, menuContext, items, rowH, {
-        { key = "q", action = ".toggleOrPlayNote:" .. synth },
-        { key = "a", action = ".left" },
-        { key = "d", action = ".right" },
-    })
-
-    visibility({ x = 0, y = y, w = ScreenWidth, h = rowH }, { VISIBILITY_CONTEXT = { "254 SHOW_WHEN 1" } })
-    _row(color, group, track, menuContext, items, rowH, {
-        { key = "q", action = ".toggle" },
-        { key = "a", action = "setView:clips" },
-    })
 
     return y + 1 + rowH
 end
