@@ -48,6 +48,11 @@ public:
     {
     }
 
+    std::string getVariationFilepath(int16_t id)
+    {
+        return variationFolder + "/" + std::to_string(id) + ".cfg";
+    }
+
     void setVariation(float value)
     {
         m.lock();
@@ -56,10 +61,10 @@ public:
         if (currentVariation != variation.get()) {
             std::filesystem::create_directories(variationFolder);
             if (editVariation.get()) {
-                std::filesystem::copy(filepath, variationFolder + "/" + std::to_string(currentVariation) + ".cfg", std::filesystem::copy_options::overwrite_existing);
+                std::filesystem::copy(filepath, getVariationFilepath(currentVariation), std::filesystem::copy_options::overwrite_existing);
             }
-            if (std::filesystem::exists(variationFolder + "/" + std::to_string((int16_t)variation.get()) + ".cfg")) {
-                std::filesystem::copy(variationFolder + "/" + std::to_string((int16_t)variation.get()) + ".cfg", filepath, std::filesystem::copy_options::overwrite_existing);
+            if (std::filesystem::exists(getVariationFilepath((int16_t)variation.get()))) {
+                std::filesystem::copy(getVariationFilepath((int16_t)variation.get()), filepath, std::filesystem::copy_options::overwrite_existing);
                 hydrate(true);
                 return;
             } else {
@@ -163,7 +168,9 @@ public:
     enum DATA_ID {
         SET_FILEPATH,
         SERIALIZE,
-        HYDRATE
+        HYDRATE,
+        GET_VARIATION,
+        GET_VARIATION_PATH,
     };
 
     /*md **Data ID**: */
@@ -178,9 +185,16 @@ public:
         /*md - `HYDRATE` hydrate */
         if (name == "HYDRATE")
             return DATA_ID::HYDRATE;
+        /*md - `GET_VARIATION` get variation */
+        if (name == "GET_VARIATION")
+            return DATA_ID::GET_VARIATION;
+        /*md - `GET_VARIATION_PATH` get variation path */
+        if (name == "GET_VARIATION_PATH")
+            return DATA_ID::GET_VARIATION_PATH;
         return atoi(name.c_str());
     }
 
+    std::string dataStr;
     void* data(int id, void* userdata = NULL)
     {
         switch (id) {
@@ -198,6 +212,22 @@ public:
             data(0, userdata);
             hydrate();
             return NULL;
+        case DATA_ID::GET_VARIATION: {
+            if (userdata) {
+                int id = *(int16_t*)userdata;
+                bool fileExists = std::filesystem::exists(getVariationFilepath(id));
+                return fileExists ? &fileExists : NULL;
+            }
+            return NULL;
+        }
+        case DATA_ID::GET_VARIATION_PATH: {
+            if (userdata) {
+                int id = *(int16_t*)userdata;
+                dataStr = getVariationFilepath(id);
+                return &dataStr;
+            }
+            return NULL;
+        }
         }
         return NULL;
     }

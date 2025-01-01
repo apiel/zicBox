@@ -41,7 +41,7 @@ end
 local function view(viewName)
     ui.view(viewName)
 
-    local y = 0
+    local y = 5
     y = progressBar(y)
 
     clips(ColorTrack1, 1, 0, y)

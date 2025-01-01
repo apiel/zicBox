@@ -6,6 +6,7 @@
 #include "plugins/components/utils/color.h"
 
 #include <string>
+#include <vector>
 
 /*md
 ## Clips
@@ -23,7 +24,14 @@ protected:
     Color foreground2;
     Color barColor;
 
+    AudioPlugin* pluginSerialize = NULL;
     ValueInterface* valVariation = NULL;
+
+    struct Variation {
+        bool active;
+        std::string filepath;
+    };
+    std::vector<Variation> variations;
 
     int clipH = 17;
 
@@ -70,9 +78,10 @@ public:
         if (updatePosition()) {
             draw.filledRect(relativePosition, size, { bgColor });
             if (valVariation) {
-                int playingId = rand() % 12;
-                int count = valVariation->props().max;
+                int playingId = 0;
+                int count = variations.size();
                 for (int i = 0; i < count; i++) {
+                    Variation& variation = variations[i];
                     int y = relativePosition.y + i * clipH;
 
                     if (i == playingId) {
@@ -89,7 +98,7 @@ public:
                         draw.filledRect({ relativePosition.x, y }, { size.w, 1 }, { darken(barColor, 0.3) });
                     }
 
-                    if (rand() % 2 || i == playingId) {
+                    if (variation.active) {
                         draw.textCentered({ relativePosition.x + (int)(size.w * 0.5), y + (int)((clipH - 8) * 0.5) }, std::to_string(i + 1), 8, { textColor, .maxWidth = size.w });
                     }
 
@@ -159,8 +168,14 @@ public:
 
         /*md - `PLUGIN: plugin_name` set plugin target for serializer */
         if (strcmp(key, "PLUGIN") == 0) {
-            AudioPlugin* plugin = &getPlugin(value, track);
-            valVariation = watch(plugin->getValue("VARIATION"));
+            AudioPlugin* pluginSerialize = &getPlugin(value, track);
+            valVariation = watch(pluginSerialize->getValue("VARIATION"));
+
+            for (int i = 0; i < valVariation->props().max; i++) {
+                bool active = pluginSerialize->data(pluginSerialize->getDataId("GET_VARIATION"), &i) != NULL;
+                std::string filepath = *(std::string *)pluginSerialize->data(pluginSerialize->getDataId("GET_VARIATION_PATH"), &i);
+                variations.push_back({ active, filepath });
+            }
             return true;
         }
 
