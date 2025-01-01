@@ -29,6 +29,9 @@ public:
         std::function<void(KeyMap& keymap)> action;
         std::function<void(KeyMap& keymap)> action2;
         // std::function<void(KeyMap& keymap)> actionLongPress;
+        bool useContext = false;
+        uint8_t contextId = 0;
+        float contextValue = 0.0f;
         std::function<uint8_t(KeyMap& keymap)> getColor;
         bool isLongPress = false;
         unsigned long pressedTime = -1;
@@ -41,6 +44,9 @@ public:
         std::string action;
         std::string action2;
         // std::string actionLongPress;
+        bool useContext;
+        uint8_t contextId;
+        float contextValue;
     };
 
     ComponentInterface* component;
@@ -205,8 +211,8 @@ public:
             };
         }
 
-        if (action.rfind("shift:") == 0) {
-            const char* params = action.substr(6).c_str();
+        if (action.rfind("contextToggle:") == 0) {
+            const char* params = action.substr(14).c_str();
             uint8_t* indexVar = new uint8_t(atoi(strtok((char*)params, ":")));
             uint8_t* shiftPressed = new uint8_t(atoi(strtok(NULL, ":")));
             uint8_t* shiftReleased = new uint8_t(atoi(strtok(NULL, ":")));
@@ -215,13 +221,9 @@ public:
             };
         }
 
-        if (action == "shift") {
-            return [this](KeypadLayout::KeyMap& keymap) { component->setContext(0, isPressed(keymap)); };
-        }
-
-        // Unlike shift, shiftToggle will only toggle on release, meaning that it will only toggle the shift state on key release
-        if (action.rfind("shiftToggle:") == 0) {
-            const char* params = action.substr(12).c_str();
+        // Unlike contextToggle, it will only toggle on release
+        if (action.rfind("contextToggleOnRelease:") == 0) {
+            const char* params = action.substr(23).c_str();
             uint8_t* indexVar = new uint8_t(atoi(strtok((char*)params, ":")));
             uint8_t* shiftA = new uint8_t(atoi(strtok(NULL, ":")));
             uint8_t* shiftB = new uint8_t(atoi(strtok(NULL, ":")));
@@ -282,6 +284,18 @@ public:
             char* actionLongPressPtr = strtok(NULL, " ");
             std::string actionLongPress = actionLongPressPtr ? actionLongPressPtr : "";
 
+            bool useContext = false;
+            uint8_t contextId = 0;
+            float contextValue = 0.0f;
+            size_t pos = controllerName.find(":");
+            if (pos != std::string::npos) {
+                std::string contextStr = controllerName.c_str() + pos + 1;
+                controllerName = controllerName.substr(0, pos);
+                contextId = atoi(strtok((char*)contextStr.c_str(), ":"));
+                contextValue = atof(strtok(NULL, ":"));
+                useContext = true;
+            }
+
             KeypadInterface* controller = NULL;
             uint16_t controllerId = -1;
             // printf("........search controller %s\n", controllerName.c_str());
@@ -297,7 +311,7 @@ public:
                 controllerId = controller->id;
             }
             // printf("add keymap %d %d action: %s longpress: %s\n", controllerId, key, action.c_str(), actionLongPress.c_str());
-            addKeyMap({ controller, controllerId, key, action, actionLongPress });
+            addKeyMap({ controller, controllerId, key, action, actionLongPress, useContext, contextId, contextValue });
             return true;
         }
         return false;

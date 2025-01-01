@@ -55,7 +55,7 @@ keyInfoBar(
             "Keyboard 'w' setView:Sequencer1",
             "Keyboard 'e' noteOn:Drum23:58",
             "Keyboard 'r' noteOn:Drum23:59",
-            "Keyboard 't' shift:254:1:0",
+            "Keyboard 't' contextToggle:254:1:0",
             "Keyboard 'a' incGroup:+1",
             "Keyboard 's' noteOn:Drum23:60",
             "Keyboard 'd' noteOn:FM:61",
