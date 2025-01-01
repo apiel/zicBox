@@ -22,6 +22,8 @@ protected:
     std::string variationFolder = "serialized/track";
     bool initialized = false;
 
+    bool editVariation = true;
+
     void setFilepath(std::string newFilepath)
     {
         filepath = newFilepath;
@@ -36,8 +38,6 @@ public:
     /*md **Values:** */
     /*md - `VARIATION` switch between different track serialization variations (clip). */
     Val& variation = val(0.0f, "VARIATION", { "Variation", .max = 12.0f }, [&](auto p) { setVariation(p.value); });
-    /*md - `EDIT_VARIATION` toggle to enable variation edit mode. If set to false variation will be read only. If set to true, every changes will be save before to switch to the next variation. Default is true. */
-    Val& editVariation = val(1.0f, "EDIT_VARIATION", { "Edit Variation", .max = 1.0f });
 
     SerializeTrack(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -60,7 +60,7 @@ public:
         variation.setFloat((int16_t)value);
         if (currentVariation != variation.get()) {
             std::filesystem::create_directories(variationFolder);
-            if (editVariation.get()) {
+            if (editVariation) {
                 std::filesystem::copy(filepath, getVariationFilepath(currentVariation), std::filesystem::copy_options::overwrite_existing);
             }
             if (std::filesystem::exists(getVariationFilepath((int16_t)variation.get()))) {
@@ -91,7 +91,7 @@ public:
 
         /*md - `EDIT_VARIATION: true` toggle to enable variation edit mode. If set to false variation will be read only. If set to true, every changes will be save before to switch to the next variation. Default is true`*/
         if (strcmp(key, "EDIT_VARIATION") == 0) {
-            editVariation.set(strcmp(value, "true") == 0 ? 1.0f : 0.0f);
+            editVariation = strcmp(value, "true") == 0;
             return true;
         }
 
