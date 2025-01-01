@@ -28,7 +28,7 @@ protected:
     ValueInterface* valVariation = NULL;
 
     struct Variation {
-        bool active;
+        bool exists;
         std::string filepath;
     };
     std::vector<Variation> variations;
@@ -78,13 +78,13 @@ public:
         if (updatePosition()) {
             draw.filledRect(relativePosition, size, { bgColor });
             if (valVariation) {
-                int playingId = 0;
+                int playingId = valVariation->get();
                 int count = variations.size();
                 for (int i = 0; i < count; i++) {
                     Variation& variation = variations[i];
                     int y = relativePosition.y + i * clipH;
 
-                    if (i == playingId) {
+                    if (variation.exists && i == playingId) {
                         draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { darken(barColor, 0.8) });
                         draw.filledRect({ relativePosition.x, y }, { size.w, 2 }, { barColor });
                     } else {
@@ -98,7 +98,7 @@ public:
                         draw.filledRect({ relativePosition.x, y }, { size.w, 1 }, { darken(barColor, 0.3) });
                     }
 
-                    if (variation.active) {
+                    if (variation.exists) {
                         draw.textCentered({ relativePosition.x + (int)(size.w * 0.5), y + (int)((clipH - 8) * 0.5) }, std::to_string(i + 1), 8, { textColor, .maxWidth = size.w });
                     }
 
@@ -172,9 +172,9 @@ public:
             valVariation = watch(pluginSerialize->getValue("VARIATION"));
 
             for (int i = 0; i < valVariation->props().max; i++) {
-                bool active = pluginSerialize->data(pluginSerialize->getDataId("GET_VARIATION"), &i) != NULL;
+                bool exists = pluginSerialize->data(pluginSerialize->getDataId("GET_VARIATION"), &i) != NULL;
                 std::string filepath = *(std::string *)pluginSerialize->data(pluginSerialize->getDataId("GET_VARIATION_PATH"), &i);
-                variations.push_back({ active, filepath });
+                variations.push_back({ exists, filepath });
             }
             return true;
         }
