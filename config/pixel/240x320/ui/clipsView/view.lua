@@ -37,6 +37,7 @@ local function clips(color, track, group, y)
                 { key = "w", action = ".up", context = "254:0" },
                 { key = "s", action = ".down", context = "254:0" },
 
+                { key = "q", action = ".next", context = "254:1" },
                 { key = "d", action = ".save", context = "254:1" },
             }
         })
