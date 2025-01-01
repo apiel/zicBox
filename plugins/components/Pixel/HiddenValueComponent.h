@@ -1,23 +1,28 @@
-#ifndef _UI_COMPONENT_HIDDEN_ENCODER_H_
-#define _UI_COMPONENT_HIDDEN_ENCODER_H_
+#ifndef _UI_COMPONENT_HIDDEN_VALUE_H_
+#define _UI_COMPONENT_HIDDEN_VALUE_H_
 
-#include "../component.h"
+#include "plugins/components/base/KeypadLayout.h"
+#include "plugins/components/component.h"
+
 #include <string>
 
 /*md
-## HiddenEncoder
+## HiddenValue
 
-Hidden encoder component is used to change a value without showing it.
+Hidden value component is used to change a value without showing it.
 */
-class HiddenEncoderComponent : public Component {
+class HiddenValueComponent : public Component {
 protected:
     int8_t encoderId = -1;
 
     ValueInterface* value = NULL;
 
+    KeypadLayout keypadLayout;
+
 public:
-    HiddenEncoderComponent(ComponentInterface::Props props)
+    HiddenValueComponent(ComponentInterface::Props props)
         : Component(props)
+        , keypadLayout(this)
     {
     }
 
@@ -27,6 +32,10 @@ public:
 
     bool config(char* key, char* params)
     {
+        if (keypadLayout.config(key, params)) {
+            return true;
+        }
+
         /*md - `VALUE: pluginName keyName` is used to set the value to control */
         if (strcmp(key, "VALUE") == 0) {
             char* pluginName = strtok(params, " ");
@@ -59,6 +68,11 @@ public:
                 view->setGroup(currentGroup + direction);
             }
         }
+    }
+
+    void onKey(uint16_t id, int key, int8_t state, unsigned long now)
+    {
+        keypadLayout.onKey(id, key, state, now);
     }
 };
 

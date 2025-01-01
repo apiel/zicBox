@@ -1,7 +1,7 @@
 local textGrid = require("config/pixel/libs/component/textGrid")
 local stepEdit = require("config/pixel/libs/component/stepEdit")
 local text = require("config/pixel/libs/component/text")
-local hiddenEncoder = require("config/pixel/libs/component/hiddenEncoder")
+local hiddenValue = require("config/pixel/libs/component/hiddenValue")
 
 local function sequencer(track)
   textGrid(
@@ -225,7 +225,7 @@ local function sequencer(track)
     groupRange = groupRange + 8
   end
 
-  hiddenEncoder({ ENCODER_ID = 3 })
+  hiddenValue({ ENCODER_ID = 3 })
 end
 
 return sequencer

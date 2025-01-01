@@ -21,7 +21,7 @@ local function row(color, group, track, y, menuContext, synth, items)
                 { key = "a", action = ".left", context = "254:0" },
                 { key = "d", action = ".right", context = "254:0" },
                 { key = "q", action = ".toggle", context = "254:1" },
-                { key = "a", action = "setView:clips", context = "254:1" },
+                -- { key = "a", action = "setView:clips", context = "254:1" },
             },
             SELECT_MENU_CONTEXT = menuContext,
         })
@@ -48,11 +48,13 @@ local function progressBar(group, track, y)
             ACTIVE_COLOR = "#23a123",
             VOLUME_PLUGIN = "MasterVolume VOLUME",
             KEYMAPS = {
-                { key = "q", action = "noteOn:Drum23:60:1" },
+                -- { key = "q", action = "noteOn:Drum23:60:1" },
                 -- { key = "e", action = ".toggle" },
 
                 -- { key = "a", action = ".left" },
                 -- { key = "d", action = ".right" },
+                -- { key = "w", action = "incGroup:-1", context = "254:0" },
+                -- { key = "s", action = "incGroup:+1", context = "254:0" },
             }
         })
 
@@ -62,6 +64,43 @@ end
 local function view(viewName)
     ui.view(viewName)
 
+
+    -- progressbar
+    textGrid(
+        {
+            "&icon::play::filled &icon::arrowUp::filled ...",
+            "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled"
+        }, KeyInfoPosition,
+        {
+            VISIBILITY_GROUP = { "SHOW_WHEN 0" },
+            VISIBILITY_CONTEXT = { "254 SHOW_WHEN 0" },
+            KEYMAPS = {
+                { key = "q", action = "playPause" },
+                { key = "w", action = "incGroup:-1" },
+                { key = "e", action = "contextToggle:254:1:0" },
+
+                { key = "s", action = "incGroup:+1" },
+            }
+        }
+    )
+
+    -- progressbar shifted
+    textGrid(
+        {
+            "Menu &icon::play::filled ^...",
+            "Clips ? Save"
+        }, KeyInfoPosition,
+        {
+            VISIBILITY_GROUP = { "SHOW_WHEN 0" },
+            VISIBILITY_CONTEXT = { "254 SHOW_WHEN 1" },
+            KEYMAPS = {
+                { key = "w", action = "playPause" },
+                { key = "a", action = "setView:clips" },
+                { key = "e", action = "contextToggle:254:1:0" },
+            }
+        }
+    )
+
     -- track
     textGrid(
         {
@@ -69,6 +108,7 @@ local function view(viewName)
             "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled"
         }, KeyInfoPosition,
         {
+            VISIBILITY_GROUP = { "SHOW_WHEN_NOT 0" },
             VISIBILITY_CONTEXT = { "254 SHOW_WHEN 0", "10 SHOW_WHEN 0" },
             KEYMAPS = {
                 { key = "w", action = "incGroup:-1" },
@@ -89,6 +129,7 @@ local function view(viewName)
             "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled"
         }, KeyInfoPosition,
         {
+            VISIBILITY_GROUP = { "SHOW_WHEN_NOT 0" },
             VISIBILITY_CONTEXT = { "254 SHOW_WHEN 0", "10 SHOW_WHEN_OVER 0" },
             KEYMAPS = {
                 { key = "w", action = "incGroup:-1" },
@@ -116,23 +157,9 @@ local function view(viewName)
                 { key = "w", action = "playPause" }, -- stepToggle
                 { key = "e", action = "contextToggle:254:1:0" },
                 -- { key = "a", action = "setView:menu" },
-                { key = "s", action = "setView:sub" },
-                { key = "d", action = "setView:Master" },
-            }
-        }
-    )
-
-    -- progressbar shifted
-    textGrid(
-        {
-            "Menu &icon::play::filled ^...",
-            "Clips ? Save"
-        }, KeyInfoPosition,
-        {
-            VISIBILITY_GROUP = { "SHOW_WHEN 0" },
-            VISIBILITY_CONTEXT = { "254 SHOW_WHEN 1" },
-            KEYMAPS = {
                 { key = "a", action = "setView:clips" },
+                -- { key = "s", action = "setView:sub" },
+                { key = "d", action = "setGroup:0" },
             }
         }
     )
