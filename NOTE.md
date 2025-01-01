@@ -11,6 +11,8 @@
 - TODO speed up compile time
   - cross compile for rpi directly on laptop
 
+- TODO keymap shifted? or should we be able to access action from another component...
+
 - IDEA DrumSample is the less consuming CPU, maybe expending it a little bit to a SimpleSample engine
   - skip density
   - skip multi voice

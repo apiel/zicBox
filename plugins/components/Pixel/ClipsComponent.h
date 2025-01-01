@@ -69,6 +69,15 @@ public:
                     }
                 };
             }
+            if (action == ".save") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        int16_t id = view->contextVar[selectionBank];
+                        pluginSerialize->data(pluginSerialize->getDataId("SAVE_VARIATION"), (void*)&id);
+                        renderNext();
+                    }
+                };
+            }
             return func;
         })
     {
@@ -173,7 +182,7 @@ public:
 
             for (int i = 0; i < valVariation->props().max; i++) {
                 bool exists = pluginSerialize->data(pluginSerialize->getDataId("GET_VARIATION"), &i) != NULL;
-                std::string filepath = *(std::string *)pluginSerialize->data(pluginSerialize->getDataId("GET_VARIATION_PATH"), &i);
+                std::string filepath = *(std::string*)pluginSerialize->data(pluginSerialize->getDataId("GET_VARIATION_PATH"), &i);
                 variations.push_back({ exists, filepath });
             }
             return true;

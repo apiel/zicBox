@@ -1,6 +1,7 @@
 local ui = require("config/pixel/libs/ui")
 local textGrid = require("config/pixel/libs/component/textGrid")
 local value = require("config/pixel/libs/component/value")
+local visibility = require("config/pixel/libs/containers/visibility")
 
 local function progressBar(y)
     local progressH = 5
@@ -24,10 +25,13 @@ local function progressBar(y)
 end
 
 local function clips(color, track, group, y)
+    local pos = { x = (track - 1) * W1_8, y = y, w = W1_8 - 2, h = 200 }
+
+    -- visibility(pos, { VISIBILITY_CONTEXT = { "254 SHOW_WHEN 0" } })
     ui.component("Clips",
         { "PLUGIN" },
         { PLUGIN = "SerializeTrack", },
-        { x = (track - 1) * W1_8, y = y, w = W1_8 - 2, h = 200 }, {
+        pos, {
             TRACK = track,
             GROUP = group,
             COLOR = color,
@@ -36,22 +40,23 @@ local function clips(color, track, group, y)
                 { key = "s", action = ".down" },
             }
         })
+
+    -- visibility(pos, { VISIBILITY_CONTEXT = { "254 SHOW_WHEN 1" } })
+    -- ui.component("Clips",
+    --     { "PLUGIN" },
+    --     { PLUGIN = "SerializeTrack", },
+    --     pos, {
+    --         TRACK = track,
+    --         GROUP = group,
+    --         COLOR = color,
+    --         KEYMAPS = {
+    --             { key = "d", action = ".save" },
+    --         }
+    --     })
 end
 
 local function view(viewName)
     ui.view(viewName)
-
-    local y = 5
-    y = progressBar(y)
-
-    clips(ColorTrack1, 1, 0, y)
-    clips(ColorTrack2, 2, 1, y)
-    clips(ColorTrack3, 3, 2, y)
-    clips(ColorTrack4, 4, 3, y)
-    clips(ColorTrack5, 5, 4, y)
-    clips(ColorTrack6, 6, 5, y)
-    clips(ColorTrack7, 7, 6, y)
-    clips(ColorTrack8, 8, 7, y)
 
     -- clips
     textGrid(
@@ -98,6 +103,17 @@ local function view(viewName)
     value("Tempo BPM", { W3_4, KeyInfoPosition.y, W1_4, 22 },
         { SHOW_LABEL_OVER_VALUE = 0, BAR_HEIGHT = 0, VALUE_FONT_SIZE = 16 })
 
+    local y = 5
+    y = progressBar(y)
+
+    clips(ColorTrack1, 1, 0, y)
+    clips(ColorTrack2, 2, 1, y)
+    clips(ColorTrack3, 3, 2, y)
+    clips(ColorTrack4, 4, 3, y)
+    clips(ColorTrack5, 5, 4, y)
+    clips(ColorTrack6, 6, 5, y)
+    clips(ColorTrack7, 7, 6, y)
+    clips(ColorTrack8, 8, 7, y)
 end
 
 return view

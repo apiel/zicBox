@@ -176,6 +176,7 @@ public:
         HYDRATE,
         GET_VARIATION,
         GET_VARIATION_PATH,
+        SAVE_VARIATION,
     };
 
     /*md **Data ID**: */
@@ -196,6 +197,9 @@ public:
         /*md - `GET_VARIATION_PATH` get variation path */
         if (name == "GET_VARIATION_PATH")
             return DATA_ID::GET_VARIATION_PATH;
+        /*md - `SAVE_VARIATION` save variation */
+        if (name == "SAVE_VARIATION")
+            return DATA_ID::SAVE_VARIATION;
         return atoi(name.c_str());
     }
 
@@ -230,6 +234,15 @@ public:
                 int id = *(int16_t*)userdata;
                 dataStr = getVariationFilepath(id);
                 return &dataStr;
+            }
+            return NULL;
+        }
+        case DATA_ID::SAVE_VARIATION: {
+            if (userdata) {
+                int id = *(int16_t*)userdata;
+                m.lock();
+                saveVariation(id);
+                m.unlock();
             }
             return NULL;
         }
