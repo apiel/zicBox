@@ -69,6 +69,7 @@ public:
 
     void setVariation(float value)
     {
+        printf("set variation %f\n", value);
         m.lock();
         int16_t currentVariation = variation.get();
         variation.setFloat((int16_t)value);
@@ -76,8 +77,8 @@ public:
             if (saveBeforeChangingVariation) {
                 saveVariation(currentVariation);
             }
-            loadVariation((int16_t)variation.get());
         }
+        loadVariation((int16_t)variation.get());
         m.unlock();
     }
 
@@ -165,6 +166,11 @@ public:
     void hydrate(std::string value)
     {
         // Do not hydrate this plugin, else it would make a loop
+
+        // Set variation only on first hydration
+        if (!initialized && value.find("VARIATION ") != std::string::npos) {
+            variation.setFloat(std::stoi(value.substr(10)));
+        }
     }
 
     enum DATA_ID {

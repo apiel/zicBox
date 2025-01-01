@@ -87,8 +87,10 @@ public:
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         int16_t id = view->contextVar[selectionBank];
-                        valVariation->set(id);
-                        renderNext();
+                        if (variations[id].exists) {
+                            valVariation->set(id);
+                            renderNext();
+                        }
                     }
                 };
             }

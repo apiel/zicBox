@@ -24,13 +24,10 @@ local function progressBar(y)
 end
 
 local function clips(color, track, group, y)
-    local pos = { x = (track - 1) * W1_8, y = y, w = W1_8 - 2, h = 200 }
-
-    -- visibility(pos, { VISIBILITY_CONTEXT = { "254 SHOW_WHEN 0" } })
     ui.component("Clips",
         { "PLUGIN" },
         { PLUGIN = "SerializeTrack", },
-        pos, {
+        { x = (track - 1) * W1_8, y = y, w = W1_8 - 2, h = 200 }, {
             TRACK = track,
             GROUP = group,
             COLOR = color,
@@ -42,19 +39,6 @@ local function clips(color, track, group, y)
                 { key = "d", action = ".save", context = "254:1" },
             }
         })
-
-    -- visibility(pos, { VISIBILITY_CONTEXT = { "254 SHOW_WHEN 1" } })
-    -- ui.component("Clips",
-    --     { "PLUGIN" },
-    --     { PLUGIN = "SerializeTrack", },
-    --     pos, {
-    --         TRACK = track,
-    --         GROUP = group,
-    --         COLOR = color,
-    --         KEYMAPS = {
-    --             { key = "d", action = ".save" },
-    --         }
-    --     })
 end
 
 local function view(viewName)
