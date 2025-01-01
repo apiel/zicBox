@@ -31,6 +31,7 @@ local function clips(color, track, group, y)
             TRACK = track,
             GROUP = group,
             COLOR = color,
+            SEQ_PLUGIN = "Sequencer",
             KEYMAPS = {
                 { key = "q", action = ".toggle", context = "254:0" },
                 { key = "w", action = ".up", context = "254:0" },
@@ -51,6 +52,8 @@ local function view(viewName)
             "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled"
         }, KeyInfoPosition,
         -- &icon::toggle --> load&play/stop current slected clip
+        --    but should it even be play/stop or load? So if something change, we can reload it again...
+        --    --> maybe this should happen on main view, not here !
         {
             VISIBILITY_CONTEXT = { "254 SHOW_WHEN 0" },
             KEYMAPS = {
@@ -67,15 +70,11 @@ local function view(viewName)
     textGrid(
         {
             "Next &icon::play::filled ^...",
-            "Seq Master Save"
+            "Home ? Save"
         }, KeyInfoPosition,
-        -- save --> save the current track to this clip
-        -- next --> play the clip at the next round (pressing next several time would wait even more rounds...)
-        -- seq should it be called main
-        -- master should we prioritize synth edit instead of master
+        -- TODO next --> play the clip at the next round (pressing next several time would wait even more rounds...)
         --
-        -- how to delete? should it be instead of master/synth an extra action button
-        -- or should it be instead of the save... (but i think save is good to be quickly accessible)
+        -- how to delete?
         {
             VISIBILITY_CONTEXT = { "254 SHOW_WHEN 1" },
             KEYMAPS = {

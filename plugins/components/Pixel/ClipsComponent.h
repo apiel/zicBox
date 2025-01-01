@@ -23,10 +23,13 @@ protected:
     Color textColor;
     Color foreground2;
     Color barColor;
+    Color playColor;
+    Color playNextColor;
 
     AudioPlugin* pluginSerialize = NULL;
     ValueInterface* valVariation = NULL;
     uint8_t saveVariationDataId = -1;
+    ValueInterface* valSeqStatus = NULL;
 
     struct Variation {
         bool exists;
@@ -48,6 +51,8 @@ public:
         , foreground2(lighten(foreground, 0.5))
         , textColor(styles.colors.text)
         , barColor(styles.colors.primary)
+        , playColor({ 0x23, 0xa1, 0x23 }) // #23a123
+        , playNextColor({ 0xfd, 0x6f, 0x0e }) // #fd6f0e
         , keypadLayout(this, [&](std::string action) {
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
             if (action == ".up") {
@@ -88,7 +93,15 @@ public:
                     if (KeypadLayout::isReleased(keymap)) {
                         int16_t id = view->contextVar[selectionBank];
                         if (variations[id].exists) {
-                            valVariation->set(id);
+                            if (valVariation->get() == id) {
+                                if (valSeqStatus->get() == 1) {
+                                    valSeqStatus->set(0);
+                                } else {
+                                    valSeqStatus->set(1);
+                                }
+                            } else {
+                                valVariation->set(id);
+                            }
                             renderNext();
                         }
                     }
@@ -112,6 +125,14 @@ public:
                     if (variation.exists && i == playingId) {
                         draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { darken(barColor, 0.8) });
                         draw.filledRect({ relativePosition.x, y }, { size.w, 2 }, { barColor });
+
+                        if (valSeqStatus) {
+                            if (valSeqStatus->get() == 1) {
+                                draw.filledRect({ relativePosition.x + size.w - 5, y + 3 }, { 3, 3 }, { playColor });
+                            } else if (valSeqStatus->get() == 2) {
+                                draw.filledRect({ relativePosition.x + size.w - 5, y + 3 }, { 3, 3 }, { playNextColor });
+                            }
+                        }
                     } else {
                         draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { foreground });
                         // for (int xx = 0; xx < size.w; xx += 2) {
@@ -201,6 +222,13 @@ public:
                 bool exists = pluginSerialize->data(pluginSerialize->getDataId("GET_VARIATION"), &i) != NULL;
                 variations.push_back({ exists });
             }
+            return true;
+        }
+
+        /*md - `SEQ_PLUGIN: plugin_name` set plugin target for sequencer. */
+        if (strcmp(key, "SEQ_PLUGIN") == 0) {
+            AudioPlugin* pluginSeq = &getPlugin(value, track);
+            valSeqStatus = watch(pluginSeq->getValue("STATUS"));
             return true;
         }
 
