@@ -2,6 +2,8 @@
 
 - FIXME pixel_env.lua
 
+- FIXME fix sequencer counter, when one track is on pause it should keep counting to stay sync with other running track
+
 - TODO variations, clips, ...
 - TODO save, save as, load
 - TODO advance sample player
