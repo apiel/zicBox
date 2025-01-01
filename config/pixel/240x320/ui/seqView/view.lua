@@ -2,6 +2,7 @@ local ui = require("config/pixel/libs/ui")
 local textGrid = require("config/pixel/libs/component/textGrid")
 local values = require("config/pixel/240x320/ui/seqView/values")
 local value = require("config/pixel/libs/component/value")
+local hiddenValue = require("config/pixel/libs/component/hiddenValue")
 
 local function row(color, group, track, y, menuContext, synth, items)
     local rowH = 14
@@ -18,9 +19,9 @@ local function row(color, group, track, y, menuContext, synth, items)
             VOLUME_PLUGIN = "Volume VOLUME",
             KEYMAPS = {
                 { key = "q", action = ".toggleOrPlayNote:" .. synth, context = "254:0" },
-                { key = "a", action = ".left", context = "254:0" },
-                { key = "d", action = ".right", context = "254:0" },
-                { key = "q", action = ".toggle", context = "254:1" },
+                { key = "a", action = ".left",                       context = "254:0" },
+                { key = "d", action = ".right",                      context = "254:0" },
+                { key = "q", action = ".toggle",                     context = "254:1" },
                 -- { key = "a", action = "setView:clips", context = "254:1" },
             },
             SELECT_MENU_CONTEXT = menuContext,
@@ -64,6 +65,12 @@ end
 local function view(viewName)
     ui.view(viewName)
 
+    hiddenValue({
+        KEYMAPS = {
+            { key = "w", action = "incGroup:-1", context = "254:0" },
+            { key = "s", action = "incGroup:+1", context = "254:0" },
+        }
+    })
 
     -- progressbar
     textGrid(
@@ -76,10 +83,9 @@ local function view(viewName)
             VISIBILITY_CONTEXT = { "254 SHOW_WHEN 0" },
             KEYMAPS = {
                 { key = "q", action = "playPause" },
-                { key = "w", action = "incGroup:-1" },
+                -- { key = "w", action = "incGroup:-1" },
                 { key = "e", action = "contextToggle:254:1:0" },
-
-                { key = "s", action = "incGroup:+1" },
+                -- { key = "s", action = "incGroup:+1" },
             }
         }
     )
@@ -111,13 +117,9 @@ local function view(viewName)
             VISIBILITY_GROUP = { "SHOW_WHEN_NOT 0" },
             VISIBILITY_CONTEXT = { "254 SHOW_WHEN 0", "10 SHOW_WHEN 0" },
             KEYMAPS = {
-                { key = "w", action = "incGroup:-1" },
+                -- { key = "w", action = "incGroup:-1" },
                 { key = "e", action = "contextToggle:254:1:0" },
-
-                { key = "s", action = "incGroup:+1" },
-
-                -- { key = "f", action = "noteOn:DrumSample:62" },
-                -- { key = "g", action = "playPause" }
+                -- { key = "s", action = "incGroup:+1" },
             }
         }
     )
@@ -132,13 +134,10 @@ local function view(viewName)
             VISIBILITY_GROUP = { "SHOW_WHEN_NOT 0" },
             VISIBILITY_CONTEXT = { "254 SHOW_WHEN 0", "10 SHOW_WHEN_OVER 0" },
             KEYMAPS = {
-                { key = "w", action = "incGroup:-1" },
+                -- { key = "w", action = "incGroup:-1" },
                 { key = "e", action = "contextToggle:254:1:0" },
 
-                { key = "s", action = "incGroup:+1" },
-
-                -- { key = "f", action = "noteOn:DrumSample:62" },
-                -- { key = "g", action = "playPause" }
+                -- { key = "s", action = "incGroup:+1" },
             }
         }
     )
