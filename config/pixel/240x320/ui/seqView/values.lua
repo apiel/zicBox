@@ -57,14 +57,14 @@ end
 
 
 local function drum23Values(group, track, y, contextIndex)
-    container(group, y, { VISIBILITY_CONTEXT = contextIndex .. " SHOW_WHEN 1" })
+    container(group, y, { VISIBILITY_CONTEXT = { contextIndex .. " SHOW_WHEN 1", "10 SHOW_WHEN 0" } })
 
     value("Distortion WAVESHAPE", topLeft(), tertiary({}, group, track, 0))
     value("Distortion DRIVE", bottomLeft(), primary({}, group, track, 1))
     value("Distortion COMPRESS", topRight(), secondary({}, group, track, 2))
     value("Distortion BASS", bottomRight(), quaternary({}, group, track, 3))
 
-    container(group, y, { VISIBILITY_CONTEXT = contextIndex .. " SHOW_WHEN 2" })
+    container(group, y, { VISIBILITY_CONTEXT = { contextIndex .. " SHOW_WHEN 2", "10 SHOW_WHEN 0" } })
     -- graph(
     --     { PLUGIN = "Drum23", DATA_ID = "WAVEFORM" },
     --     { x = 0, y = 0, w = W3_4 - 2, h = height },
@@ -81,7 +81,7 @@ local function drum23Values(group, track, y, contextIndex)
         { GROUP = group, TRACK = track, RENDER_TITLE_ON_TOP = false, ENCODERS = { "0 WAVEFORM_TYPE", "2 MACRO", "1 SHAPE" } }
     )
 
-    container(group, y, { VISIBILITY_CONTEXT = contextIndex .. " SHOW_WHEN 3" })
+    container(group, y, { VISIBILITY_CONTEXT = { contextIndex .. " SHOW_WHEN 3", "10 SHOW_WHEN 0" } })
     ui.component("Rect", {}, {}, { x = 0, y = 0, w = ScreenWidth, h = height }, {})
     drumEnvelop(
         { PLUGIN = "Drum23", ENVELOP_DATA_ID = "0" },
@@ -94,7 +94,7 @@ local function drum23Values(group, track, y, contextIndex)
         { GROUP = group, COLOR = "quaternary", TRACK = track }
     )
 
-    container(group, y, { VISIBILITY_CONTEXT = contextIndex .. " SHOW_WHEN 4" })
+    container(group, y, { VISIBILITY_CONTEXT = { contextIndex .. " SHOW_WHEN 4", "10 SHOW_WHEN 0" } })
     ui.component("Rect", {}, {}, { x = 0, y = 0, w = ScreenWidth, h = height }, {})
     drumEnvelop(
         { PLUGIN = "Drum23", ENVELOP_DATA_ID = "4" },
@@ -107,7 +107,7 @@ local function drum23Values(group, track, y, contextIndex)
         { GROUP = group, COLOR = "secondary", TRACK = track }
     )
 
-    container(group, y, { VISIBILITY_CONTEXT = contextIndex .. " SHOW_WHEN 5" })
+    container(group, y, { VISIBILITY_CONTEXT = { contextIndex .. " SHOW_WHEN 5", "10 SHOW_WHEN 0" } })
     value("Drum23 CLICK", topLeft(), tertiary({}, group, track, 0))
     value("Drum23 CLICK_DURATION", bottomLeft(), primary({}, group, track, 1))
     value("Drum23 CLICK_CUTOFF", topRight(), secondary({ USE_STRING_VALUE = true }, group, track, 2))
@@ -115,7 +115,7 @@ local function drum23Values(group, track, y, contextIndex)
 end
 
 local function sampleValues(group, track, y, contextIndex)
-    container(group, y, { VISIBILITY_CONTEXT = contextIndex .. " SHOW_WHEN 1" })
+    container(group, y, { VISIBILITY_CONTEXT = { contextIndex .. " SHOW_WHEN 1", "10 SHOW_WHEN 0" } })
 
     value("DrumSample BROWSER", topLeft(), tertiary({ VALUE_FONT_SIZE = 8 }, group, track, 0))
     value("DrumSample START", bottomLeft(), primary({}, group, track, 1))
