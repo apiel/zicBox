@@ -92,6 +92,9 @@ public:
             actionFn,
             action2Fn,
             // actionLongPressFn,
+            props.useContext,
+            props.contextId,
+            props.contextValue,
         });
     };
 
@@ -295,6 +298,7 @@ public:
                 contextId = atoi(strtok((char*)contextStr.c_str(), ":"));
                 contextValue = atof(strtok(NULL, ":"));
                 useContext = true;
+                // printf("use context %d %f\n", contextId, contextValue);
             }
 
             KeypadInterface* controller = NULL;
