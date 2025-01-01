@@ -29,6 +29,7 @@ protected:
     AudioPlugin* pluginSerialize = NULL;
     ValueInterface* valVariation = NULL;
     uint8_t saveVariationDataId = -1;
+    uint8_t deleteVariationDataId = -1;
     ValueInterface* valSeqStatus = NULL;
 
     struct Variation {
@@ -120,6 +121,18 @@ public:
                                 // TODO Would need to set variation only at the next round...
                                 // valVariation->set(id);
                             }
+                            renderNext();
+                        }
+                    }
+                };
+            }
+            if (action == ".delete") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        int16_t id = view->contextVar[selectionBank];
+                        if (variations[id].exists) {
+                            pluginSerialize->data(deleteVariationDataId, (void*)&id);
+                            variations[id].exists = false;
                             renderNext();
                         }
                     }
@@ -235,6 +248,7 @@ public:
             pluginSerialize = &getPlugin(value, track);
             valVariation = watch(pluginSerialize->getValue("VARIATION"));
             saveVariationDataId = pluginSerialize->getDataId("SAVE_VARIATION");
+            deleteVariationDataId = pluginSerialize->getDataId("DELETE_VARIATION");
 
             for (int i = 0; i < valVariation->props().max; i++) {
                 bool exists = pluginSerialize->data(pluginSerialize->getDataId("GET_VARIATION"), &i) != NULL;

@@ -181,6 +181,7 @@ public:
         GET_VARIATION_PATH,
         SAVE_VARIATION,
         LOAD_VARIATION,
+        DELETE_VARIATION,
     };
 
     /*md **Data ID**: */
@@ -207,6 +208,9 @@ public:
         /*md - `LOAD_VARIATION` load variation */
         if (name == "LOAD_VARIATION")
             return DATA_ID::LOAD_VARIATION;
+        /*md - `DELETE_VARIATION` delete variation */
+        if (name == "DELETE_VARIATION")
+            return DATA_ID::DELETE_VARIATION;
         return atoi(name.c_str());
     }
 
@@ -262,6 +266,13 @@ public:
                 m.lock();
                 hydrate();
                 m.unlock();
+            }
+            return NULL;
+        }
+        case DATA_ID::DELETE_VARIATION: {
+            if (userdata) {
+                int id = *(int16_t*)userdata;
+                std::filesystem::remove(getVariationFilepath(id));
             }
             return NULL;
         }
