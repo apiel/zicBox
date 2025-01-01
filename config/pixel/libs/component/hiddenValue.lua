@@ -7,7 +7,7 @@ local ui = require "config/pixel/libs/ui"
 --- - VALUE is used to set the value to control
 --- - ENCODER_ID is used to set the encoder id that will interract with this component
 local function component(options)
-    if options ~= nil then
+    if options ~= nil and options.VALUE ~= nil then
         options.VALUE = type(options.VALUE) == "string" and options.VALUE or
             options.VALUE.pluginName .. " " .. options.VALUE.keyName
     end
