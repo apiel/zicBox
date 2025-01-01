@@ -167,6 +167,13 @@ public:
             };
         }
 
+        /*md - `&icon::trash` */
+        if (name == "&icon::trash") {
+            return [&](Point position, uint8_t size, Color color, Align align) {
+                trash(position, size, color, align);
+            };
+        }
+
         // printf("Unknown icon: %s\n", name.c_str());
 
         return nullptr;
@@ -377,6 +384,19 @@ public:
         draw.rect({ (int)(x - size * 0.5), position.y }, { size * 2, size }, { color });
         // draw.filledCircle({ (int)(x + size * 0.1), (int)(position.y + size * 0.5) }, size * 0.25, { color });
         draw.filledRect({ (int)(x - size * 0.5) + 2, position.y + 2 }, { size - 4, size - 4 }, { color });
+    }
+
+    void trash(Point position, uint8_t size, Color color, Align align = LEFT)
+    {
+        int x = getX(position, size, align, size);
+        // draw.rect({ (int)(x - size * 0.5), position.y + 1 }, { size, size - 1}, { color });
+        // draw.line({ (int)(x - size * 0.75), position.y + 1 }, { (int)(x + size * 0.75), position.y + 1 }, { color });
+        // draw.line({ (int)(x - size * 0.2), position.y }, { (int)(x + size * 0.2), position.y }, { color });
+
+        draw.rect({ x, position.y + 1 }, { size, size - 1 }, { color });
+        int edge = (int)(size * 0.3);
+        draw.line({ x - edge, position.y + 1 }, { x + size + edge, position.y + 1 }, { color });
+        draw.line({ (int)(x + size * 0.3), position.y }, { (int)(x + size * 0.7), position.y }, { color });
     }
 
 protected:

@@ -71,7 +71,7 @@ local function view(viewName)
     textGrid(
         {
             "Next &icon::play::filled ^...",
-            "Home ? Save"
+            "Home &icon::trash Save"
         }, KeyInfoPosition,
         -- TODO next --> play the clip at the next round (pressing next several time would wait even more rounds...)
         --
