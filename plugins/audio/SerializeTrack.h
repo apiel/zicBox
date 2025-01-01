@@ -22,7 +22,7 @@ protected:
     std::string variationFolder = "serialized/track";
     bool initialized = false;
 
-    bool editVariation = true;
+    bool saveBeforeChangingVariation = false;
 
     void setFilepath(std::string newFilepath)
     {
@@ -53,15 +53,20 @@ public:
         return variationFolder + "/" + std::to_string(id) + ".cfg";
     }
 
+    void saveVariation(int16_t id)
+    {
+        std::filesystem::create_directories(variationFolder);
+        std::filesystem::copy(filepath, getVariationFilepath(id), std::filesystem::copy_options::overwrite_existing);
+    }
+
     void setVariation(float value)
     {
         m.lock();
         int16_t currentVariation = variation.get();
         variation.setFloat((int16_t)value);
         if (currentVariation != variation.get()) {
-            std::filesystem::create_directories(variationFolder);
-            if (editVariation) {
-                std::filesystem::copy(filepath, getVariationFilepath(currentVariation), std::filesystem::copy_options::overwrite_existing);
+            if (saveBeforeChangingVariation) {
+                saveVariation(currentVariation);
             }
             if (std::filesystem::exists(getVariationFilepath((int16_t)variation.get()))) {
                 std::filesystem::copy(getVariationFilepath((int16_t)variation.get()), filepath, std::filesystem::copy_options::overwrite_existing);
@@ -89,9 +94,9 @@ public:
             return true;
         }
 
-        /*md - `EDIT_VARIATION: true` toggle to enable variation edit mode. If set to false variation will be read only. If set to true, every changes will be save before to switch to the next variation. Default is true`*/
+        /*md - `EDIT_VARIATION: true` toggle to enable variation edit mode. If set to false variation will be read only. If set to true, every changes will be save before to switch to the next variation. Default is false`*/
         if (strcmp(key, "EDIT_VARIATION") == 0) {
-            editVariation = strcmp(value, "true") == 0;
+            saveBeforeChangingVariation = strcmp(value, "true") == 0;
             return true;
         }
 
