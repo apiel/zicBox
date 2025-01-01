@@ -136,7 +136,8 @@ public:
     {
         // printf("keypad id %d key %d state %d\n", id, key, state);
         for (KeyMap& keyMap : mapping) {
-            if (keyMap.controllerId == id && keyMap.key == key) {
+            if (keyMap.controllerId == id && keyMap.key == key
+                && (!keyMap.useContext || component->view->contextVar[keyMap.contextId] == keyMap.contextValue)) {
                 if (state == 1) {
                     // keyMap.isLongPress = false;
                     // To know if the key is pressed, we set pressedTime to the current time
