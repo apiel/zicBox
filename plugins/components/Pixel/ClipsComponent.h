@@ -76,8 +76,9 @@ public:
                         int16_t id = view->contextVar[selectionBank];
                         if (pluginSerialize) {
                             pluginSerialize->data(saveVariationDataId, (void*)&id);
+                            variations[id].exists = true;
+                            renderNext();
                         }
-                        // renderNext();
                     }
                 };
             }
