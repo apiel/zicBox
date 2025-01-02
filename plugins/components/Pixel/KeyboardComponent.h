@@ -31,6 +31,8 @@ protected:
     Size itemSize = { 20, 20 };
     Point textPos = { 0, 0 };
 
+    int selection = 0;
+
 public:
     KeyboardComponent(ComponentInterface::Props props)
         : Component(props)
@@ -39,7 +41,57 @@ public:
         , textColor(styles.colors.text)
         , itemBackground(lighten(styles.colors.background, 0.5))
         , selectionColor(styles.colors.primary)
-        , keypadLayout(this)
+        , keypadLayout(this, [&](std::string action) {
+            std::function<void(KeypadLayout::KeyMap&)> func = NULL;
+            if (action == ".left") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        selection--;
+                        if (selection < 0) {
+                            selection = keys.size() - 1;
+                        }
+                        renderNext();
+                    }
+                };
+            }
+            if (action == ".right") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        selection++;
+                        if (selection >= keys.size()) {
+                            selection = 0;
+                        }
+                        renderNext();
+                    }
+                };
+            }
+            if (action == ".up") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        int nextSelection = selection - 9;
+                        if (nextSelection >= 0) {
+                            selection = nextSelection;
+                        }
+                        
+                        renderNext();
+                    }
+                };
+            }
+            if (action == ".down") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        int nextSelection = selection + 9;
+                        if (nextSelection < keys.size()) {
+                            selection = nextSelection;
+                        }
+                        
+                        renderNext();
+                    }
+                };
+            }
+
+            return func;
+        })
     {
         if (size.w / 9 < itemSize.w) {
             itemSize.w = size.w / 9;
@@ -73,11 +125,11 @@ public:
                 int row = k / 9;
                 int col = k % 9;
                 pos = { x + col * itemSize.w, y + row * itemSize.h };
-                draw.filledRect(pos, { itemSize.w - 2, itemSize.h - 2 }, { itemBackground });
+                draw.filledRect(pos, { itemSize.w - 2, itemSize.h - 2 }, { k == selection ? selectionColor : itemBackground });
                 draw.textCentered({ pos.x + textPos.x, pos.y + textPos.y }, keys[k], 8, { textColor });
             }
 
-            icon.render("&icon::backspace::filled", { pos.x + textPos.x, pos.y + textPos.y }, 8, { textColor }, Icon::CENTER);
+            icon.render("&icon::backspace::filled", { pos.x + textPos.x, pos.y + textPos.y }, 6, { textColor }, Icon::CENTER);
         }
     }
 
