@@ -76,7 +76,7 @@ public:
                         if (nextSelection >= 0) {
                             selection = nextSelection;
                         }
-                        
+
                         renderNext();
                     }
                 };
@@ -90,7 +90,7 @@ public:
                         } else {
                             selection = keys.size();
                         }
-                        
+
                         renderNext();
                     }
                 };
@@ -103,7 +103,7 @@ public:
                         } else if (selection == keys.size() - 1) {
                             value = value.substr(0, value.size() - 1);
                             printf("%s\n", value.c_str());
-                        } else {
+                        } else if (value.size() < 21) {
                             value += keys[selection];
                             printf("%s\n", value.c_str());
                         }
@@ -140,8 +140,14 @@ public:
     {
         if (updatePosition()) {
             draw.filledRect(relativePosition, size, { bgColor });
-            int y = relativePosition.y + ((size.h - (itemSize.h * 8)) * 0.5);
+            int y = relativePosition.y + ((size.h - (itemSize.h * 9) + 10) * 0.5);
             int x = relativePosition.x + ((size.w - (itemSize.w * 9)) * 0.5);
+
+            draw.filledRect({ x, y }, { itemSize.w * 9, itemSize.h }, { itemBackground });
+            draw.text({ x + 8, y + textPos.y }, value, 8, { textColor });
+
+            y += itemSize.h + 10;
+
             Point pos;
             for (int k = 0; k < keys.size(); k++) {
                 int row = k / 9;
@@ -153,7 +159,7 @@ public:
                     draw.textCentered(posText, keys[k], 8, { textColor });
                 }
             }
-            draw.filledRect({ pos.x + itemSize.w, pos.y } , { (itemSize.w * 4) - 2, itemSize.h - 2 }, { keys.size() == selection ? selectionColor : itemBackground });
+            draw.filledRect({ pos.x + itemSize.w, pos.y }, { (itemSize.w * 4) - 2, itemSize.h - 2 }, { keys.size() == selection ? selectionColor : itemBackground });
             draw.textCentered({ pos.x + itemSize.w + ((itemSize.w * 4) - 2) / 2, pos.y + textPos.y }, "Cancel", 8, { textColor });
         }
     }
