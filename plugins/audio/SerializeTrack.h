@@ -3,6 +3,8 @@
 
 #include <filesystem>
 #include <mutex>
+#include <iostream>
+#include <fstream>
 
 #include "../../helpers/trim.h"
 #include "audioPlugin.h"
@@ -18,20 +20,33 @@ class SerializeTrack : public Mapping {
 protected:
     std::mutex m;
 
+    std::string projectFolder = "projects";
+    std::string filename = "track";
+
     std::string filepath = "serialized/track.cfg";
     std::string variationFolder = "serialized/track";
     bool initialized = false;
 
     bool saveBeforeChangingVariation = false;
 
-    void setFilepath(std::string newFilepath)
+    void initFilepath()
     {
-        filepath = newFilepath;
-        const char* dot = strrchr(filepath.c_str(), '.');
-        const char* slash = strrchr(filepath.c_str(), '/');
-        if (dot && slash && dot > slash) {
-            variationFolder = filepath.substr(0, dot - filepath.c_str());
+        std::filesystem::create_directories(projectFolder);
+        std::string currentProjectFile = projectFolder + "/project.cfg";
+        std::string currentProject = "default";
+        if (std::filesystem::exists(currentProjectFile)) {
+            std::ifstream file(currentProjectFile);
+            std::string line;
+            std::getline(file, line);
+            file.close();
+            if (line.length() > 0) {
+                currentProject = line;
+            }
         }
+        std::string currentProjectFolder = projectFolder + "/" + currentProject;
+        std::filesystem::create_directories(currentProjectFolder);
+        filepath = currentProjectFolder + "/" + filename + ".cfg";
+        variationFolder = currentProjectFolder + "/" + filename;
     }
 
 public:
@@ -42,6 +57,7 @@ public:
     SerializeTrack(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
     {
+        initFilepath();
     }
 
     void sample(float* buf)
@@ -85,9 +101,17 @@ public:
     /*md **Config**: */
     bool config(char* key, char* value)
     {
-        /*md - `FILEPATH: filepath` to set filepath. By default it is `serialized/track.cfg`.*/
-        if (strcmp(key, "FILEPATH") == 0) {
-            setFilepath(value);
+        /*md - `FILENAME: filename` to set filename. By default it is `track`.*/
+        if (strcmp(key, "FILENAME") == 0) {
+            filename = value;
+            initFilepath();
+            return true;
+        }
+
+        /*md - `PROJECT_FOLDER: projectFolder` to set project folder. By default it is `projects`.*/
+        if (strcmp(key, "PROJECT_FOLDER") == 0) {
+            projectFolder = value;
+            initFilepath();
             return true;
         }
 
@@ -174,7 +198,7 @@ public:
     }
 
     enum DATA_ID {
-        SET_FILEPATH,
+        SET_FILENAME,
         SERIALIZE,
         HYDRATE,
         GET_VARIATION,
@@ -187,9 +211,9 @@ public:
     /*md **Data ID**: */
     uint8_t getDataId(std::string name) override
     {
-        /*md - `SET_FILEPATH` set filepath */
-        if (name == "SET_FILEPATH")
-            return DATA_ID::SET_FILEPATH;
+        /*md - `SET_FILENAME` set filename */
+        if (name == "SET_FILENAME")
+            return DATA_ID::SET_FILENAME;
         /*md - `SERIALIZE` serialize */
         if (name == "SERIALIZE")
             return DATA_ID::SERIALIZE;
@@ -218,9 +242,10 @@ public:
     void* data(int id, void* userdata = NULL)
     {
         switch (id) {
-        case DATA_ID::SET_FILEPATH: {
+        case DATA_ID::SET_FILENAME: {
             if (userdata) {
-                setFilepath((char*)userdata);
+                filename = (char*)userdata;
+                initFilepath();
             }
             return NULL;
         }
