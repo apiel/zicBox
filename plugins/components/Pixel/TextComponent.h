@@ -1,8 +1,9 @@
 #ifndef _UI_PIXEL_COMPONENT_TEXT_H_
 #define _UI_PIXEL_COMPONENT_TEXT_H_
 
-#include "../component.h"
-#include "../utils/color.h"
+#include "plugins/components/base/KeypadLayout.h"
+#include "plugins/components/component.h"
+#include "plugins/components/utils/color.h"
 #include "utils/GroupColorComponent.h"
 
 /*md
@@ -22,13 +23,16 @@ class TextComponent : public GroupColorComponent {
     bool centered = false;
     int fontSize = 8;
     int fontHeight = 0;
-    void *font = NULL;
+    void* font = NULL;
+
+    KeypadLayout keypadLayout;
 
 public:
     TextComponent(ComponentInterface::Props props)
         : GroupColorComponent(props, { { "COLOR", &color } })
         , bgColor(styles.colors.background)
         , color(darken(styles.colors.text, 0.5), inactiveColorRatio)
+        , keypadLayout(this)
     {
         updateColors();
     }
@@ -48,9 +52,20 @@ public:
         }
     }
 
+    void onKey(uint16_t id, int key, int8_t state, unsigned long now)
+    {
+        if (isActive) {
+            keypadLayout.onKey(id, key, state, now);
+        }
+    }
+
     /*md **Config**: */
     bool config(char* key, char* value)
     {
+        if (keypadLayout.config(key, value)) {
+            return true;
+        }
+
         /*md - `TEXT: text` is the text of the component. */
         if (strcmp(key, "TEXT") == 0) {
             text = value;
