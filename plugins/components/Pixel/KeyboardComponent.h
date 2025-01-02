@@ -33,9 +33,12 @@ protected:
 
     int selection = 0;
 
-    std::string cancelView = "";
+    std::string redirectView = "";
 
     std::string value = "";
+
+    AudioPlugin* plugin = NULL;
+    uint8_t dataId = 0;
 
 public:
     KeyboardComponent(ComponentInterface::Props props)
@@ -99,7 +102,7 @@ public:
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         if (selection == keys.size()) {
-                            view->setView(cancelView);
+                            view->setView(redirectView);
                         } else if (selection == keys.size() - 1) {
                             value = value.substr(0, value.size() - 1);
                             printf("%s\n", value.c_str());
@@ -108,6 +111,14 @@ public:
                             printf("%s\n", value.c_str());
                         }
                         renderNext();
+                    }
+                };
+            }
+            if (action == ".done") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (plugin != NULL && KeypadLayout::isReleased(keymap)) {
+                        plugin->data(dataId, &value);
+                        view->setView(redirectView);
                     }
                 };
             }
@@ -171,9 +182,16 @@ public:
             return true;
         }
 
-        /*md - `CANCEL_VIEW: viewName` is the view to return when the cancel button is pressed. */
-        if (strcmp(key, "CANCEL_VIEW") == 0) {
-            cancelView = value;
+        /*md - `REDIRECT_VIEW: viewName` is the view to return when the edit is finished. */
+        if (strcmp(key, "REDIRECT_VIEW") == 0) {
+            redirectView = value;
+            return true;
+        }
+
+        /*md - `DONE_DATA: plugin data_id` is the data id to return when the edit is done. */
+        if (strcmp(key, "DONE_DATA") == 0) {
+            plugin = &getPlugin(strtok(value, " "), track);
+            dataId = plugin->getDataId(strtok(NULL, " "));
             return true;
         }
 
