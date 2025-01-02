@@ -84,7 +84,7 @@ public:
                     }
                 };
             }
-            if (action == ".dow") {
+            if (action == ".down") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         if (selection < items.size() - 1) {
@@ -106,12 +106,19 @@ public:
             draw.filledRect(relativePosition, size, { bgColor });
             int y = relativePosition.y;
             int yEnd = y + size.h;
-            for (int k = 0; k < items.size() && y < yEnd; k++) {
-                draw.filledRect({ relativePosition.x, y }, { size.w, itemH }, { k == selection ? selectionColor : itemBackground });
+            int itemW = size.w;
+
+            int countOfVisibleItems = (yEnd - y) / (itemH + 2);
+            int start = 0;
+            if (selection > countOfVisibleItems) {
+                start = selection - countOfVisibleItems;
+            }
+
+            for (int k = start; k < items.size() && y < yEnd; k++) {
+                draw.filledRect({ relativePosition.x, y }, { itemW, itemH }, { k == selection ? selectionColor : itemBackground });
                 draw.text({ relativePosition.x + 8, y + 4 }, items[k], 8, { textColor });
                 y += itemH + 2;
             }
-
         }
     }
 
