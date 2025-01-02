@@ -7,15 +7,12 @@ local function view(viewName)
     ui.component("Keyboard",
         {},
         {},
-        { x = 0, y = 0, w = ScreenWidth, h = 200 }, {
+        { x = 0, y = 80, w = ScreenWidth, h = 200 }, {
             KEYMAPS = {
-                -- { key = "q", action = ".toggle", context = "254:0" },
-                -- { key = "w", action = ".up", context = "254:0" },
-                -- { key = "s", action = ".down", context = "254:0" },
-
-                -- { key = "q", action = ".next", context = "254:1" },
-                -- { key = "s", action = ".delete", context = "254:1" },
-                -- { key = "d", action = ".save", context = "254:1" },
+                { key = "w", action = ".up" },
+                { key = "s", action = ".down" },
+                { key = "a", action = ".left" },
+                { key = "d", action = ".right" },
             }
         })
 
