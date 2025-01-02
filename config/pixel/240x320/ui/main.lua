@@ -1,6 +1,7 @@
 local ui = require("config/pixel/libs/ui")
 local seqView = require("config/pixel/240x320/ui/seqView/view")
 local clipsView = require("config/pixel/240x320/ui/clipsView/view")
+local menuView = require("config/pixel/240x320/ui/menuView/view")
 
 ui.setWindowPosition(400, 500)
 
@@ -23,6 +24,7 @@ W7_8 = W1_8 * 7
 W8_8 = W1_8 * 8
 
 KeyInfoPosition = { x = 0, y = 296, w = W3_4 }
+KeyInfoPositionCenter = { x = W1_8, y = KeyInfoPosition.y, w = KeyInfoPosition.w }
 
 PrimaryBar = "#377275"
 SecondaryBar = "#b54f5e"
@@ -45,3 +47,4 @@ ui.addZoneEncoder({ W3_4, 0, W1_4, ScreenHeight })
 
 seqView("seq")
 clipsView("clips")
+menuView("menu")

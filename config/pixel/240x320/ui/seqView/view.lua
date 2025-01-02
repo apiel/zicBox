@@ -100,6 +100,7 @@ local function view(viewName)
             VISIBILITY_GROUP = { "SHOW_WHEN 0" },
             VISIBILITY_CONTEXT = { "254 SHOW_WHEN 1" },
             KEYMAPS = {
+                { key = "q", action = "setView:menu" },
                 { key = "w", action = "playPause" },
                 { key = "a", action = "setView:clips" },
                 { key = "e", action = "contextToggle:254:1:0" },

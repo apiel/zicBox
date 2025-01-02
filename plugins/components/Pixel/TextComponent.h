@@ -21,6 +21,7 @@ class TextComponent : public GroupColorComponent {
 
     bool centered = false;
     int fontSize = 8;
+    int fontHeight = 0;
     void *font = NULL;
 
 public:
@@ -39,9 +40,9 @@ public:
             if (!text.empty()) {
                 if (centered) {
                     Point textPos = { relativePosition.x + (int)(size.w * 0.5), relativePosition.y + (int)(size.h * 0.5) - 4 };
-                    draw.textCentered(textPos, text, fontSize, { color.color, .font = font });
+                    draw.textCentered(textPos, text, fontSize, { color.color, .font = font, .fontHeight = fontHeight });
                 } else {
-                    draw.text({ relativePosition.x, relativePosition.y }, text, fontSize, { color.color, .font = font });
+                    draw.text({ relativePosition.x, relativePosition.y }, text, fontSize, { color.color, .font = font, .fontHeight = fontHeight });
                 }
             }
         }
@@ -71,6 +72,12 @@ public:
         /*md - `FONT: font` is the font of the component. */
         if (strcmp(key, "FONT") == 0) {
             font = draw.getFont(value);
+            return true;
+        }
+
+        /*md - `FONT_HEIGHT: height` is the font height of the component. */
+        if (strcmp(key, "FONT_HEIGHT") == 0) {
+            fontHeight = atoi(value);
             return true;
         }
 
