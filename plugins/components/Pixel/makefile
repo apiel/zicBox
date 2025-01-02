@@ -36,7 +36,8 @@ $(BUILD_DIR)/libzic_%.so: $(OBJ_DIR)/%.o
 	@mkdir -p $(BUILD_DIR)
 	g++ -shared -o $(BUILD_DIR)/libzic_$*.so $(INC) $(OBJ_DIR)/$*.o
 
--include $(OBJ_DIR)/*.d
+# Safeguard: include only if .d files exist
+-include $(wildcard $(OBJ_DIR)/*.d)
 
 rebuild: clean all
 
