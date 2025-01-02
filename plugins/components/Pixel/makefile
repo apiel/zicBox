@@ -10,6 +10,9 @@ OBJ_DIR ?= $(BUILD_DIR)/obj
 
 INC=-I../../..
 
+# track header file to be sure that build is automatically trigger if any dependency changes
+TRACK_HEADER_FILES = -MMD -MF $(OBJ_DIR)/$*.d
+
 all:
 	+make TextGridComponent DrumEnvelopComponent Encoder3Component GraphEncoderComponent\
 				StepEditComponent HiddenValueComponent FmAlgoComponent AdsrComponent\
@@ -25,13 +28,15 @@ all:
 	make $(OBJ_DIR)/$@.o
 	make $(BUILD_DIR)/libzic_$@.so
 
-$(OBJ_DIR)/%.o: %.h ../component.h
+$(OBJ_DIR)/%.o:
 	@mkdir -p $(OBJ_DIR)
-	g++ -c -o $(OBJ_DIR)/$*.o plugin.cpp $(INC) -fPIC -DPLUGIN_NAME=$* -DPLUGIN_INCLUDE=\"$*.h\"
+	g++ -c -o $(OBJ_DIR)/$*.o plugin.cpp $(INC) -fPIC -DPLUGIN_NAME=$* -DPLUGIN_INCLUDE=\"$*.h\" $(TRACK_HEADER_FILES)
 
 $(BUILD_DIR)/libzic_%.so: $(OBJ_DIR)/%.o
 	@mkdir -p $(BUILD_DIR)
 	g++ -shared -o $(BUILD_DIR)/libzic_$*.so $(INC) $(OBJ_DIR)/$*.o
+
+-include $(OBJ_DIR)/*.d
 
 rebuild: clean all
 
