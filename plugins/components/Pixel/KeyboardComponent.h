@@ -33,6 +33,10 @@ protected:
 
     int selection = 0;
 
+    std::string cancelView = "";
+
+    std::string value = "";
+
 public:
     KeyboardComponent(ComponentInterface::Props props)
         : Component(props)
@@ -91,6 +95,22 @@ public:
                     }
                 };
             }
+            if (action == ".type") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        if (selection == keys.size()) {
+                            view->setView(cancelView);
+                        } else if (selection == keys.size() - 1) {
+                            value = value.substr(0, value.size() - 1);
+                            printf("%s\n", value.c_str());
+                        } else {
+                            value += keys[selection];
+                            printf("%s\n", value.c_str());
+                        }
+                        renderNext();
+                    }
+                };
+            }
 
             return func;
         })
@@ -142,6 +162,12 @@ public:
     bool config(char* key, char* value)
     {
         if (keypadLayout.config(key, value)) {
+            return true;
+        }
+
+        /*md - `CANCEL_VIEW: viewName` is the view to return when the cancel button is pressed. */
+        if (strcmp(key, "CANCEL_VIEW") == 0) {
+            cancelView = value;
             return true;
         }
 
