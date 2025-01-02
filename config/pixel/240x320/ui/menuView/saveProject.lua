@@ -8,8 +8,10 @@ local function view(viewName)
         {},
         {},
         { x = 0, y = 40, w = ScreenWidth, h = 200 }, {
-            CANCEL_VIEW = "menu",
+            REDIRECT_VIEW = "menu",
+            DONE_DATA = "SerializeTrack SAVE_PROJECT",
             KEYMAPS = {
+                { key = "q", action = ".done" },
                 { key = "w", action = ".up" },
                 { key = "s", action = ".down" },
                 { key = "a", action = ".left" },
@@ -24,11 +26,7 @@ local function view(viewName)
             "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled"
         }, KeyInfoPositionCenter,
         {
-            KEYMAPS = {
-                -- { key = "w", action = "incGroup:-1" },
-                -- { key = "s", action = "incGroup:+1" },
-                -- { key = "e", action = "setView:menu" },
-            }
+            KEYMAPS = {}
         }
     )
 end

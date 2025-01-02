@@ -2,9 +2,9 @@
 #define _SERIALIZE_TRACK_H_
 
 #include <filesystem>
-#include <mutex>
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <mutex>
 
 #include "../../helpers/trim.h"
 #include "audioPlugin.h"
@@ -22,6 +22,7 @@ protected:
 
     std::string projectFolder = "projects";
     std::string filename = "track";
+    std::string currentProjectName = "default";
 
     std::string filepath = "serialized/track.cfg";
     std::string variationFolder = "serialized/track";
@@ -33,20 +34,31 @@ protected:
     {
         std::filesystem::create_directories(projectFolder);
         std::string currentProjectFile = projectFolder + "/project.cfg";
-        std::string currentProject = "default";
         if (std::filesystem::exists(currentProjectFile)) {
             std::ifstream file(currentProjectFile);
             std::string line;
             std::getline(file, line);
             file.close();
             if (line.length() > 0) {
-                currentProject = line;
+                currentProjectName = line;
             }
         }
-        std::string currentProjectFolder = projectFolder + "/" + currentProject;
+        std::string currentProjectFolder = projectFolder + "/" + currentProjectName;
         std::filesystem::create_directories(currentProjectFolder);
         filepath = currentProjectFolder + "/" + filename + ".cfg";
         variationFolder = currentProjectFolder + "/" + filename;
+    }
+
+    // instead of saveProject, it could be createProject
+    // and there would be no save. However would be a way to copy a project
+    void saveProject(std::string projectName)
+    {
+        m.lock();
+        if (projectName != currentProjectName) {
+            printf("Save project %s\n", projectName.c_str());
+        }
+
+        m.unlock();
     }
 
 public:
@@ -206,6 +218,7 @@ public:
         SAVE_VARIATION,
         LOAD_VARIATION,
         DELETE_VARIATION,
+        SAVE_PROJECT,
     };
 
     /*md **Data ID**: */
@@ -235,6 +248,9 @@ public:
         /*md - `DELETE_VARIATION` delete variation */
         if (name == "DELETE_VARIATION")
             return DATA_ID::DELETE_VARIATION;
+        /*md - `SAVE_PROJECT` save project */
+        if (name == "SAVE_PROJECT")
+            return DATA_ID::SAVE_PROJECT;
         return atoi(name.c_str());
     }
 
@@ -298,6 +314,13 @@ public:
             if (userdata) {
                 int id = *(int16_t*)userdata;
                 std::filesystem::remove(getVariationFilepath(id));
+            }
+            return NULL;
+        }
+        case DATA_ID::SAVE_PROJECT: {
+            if (userdata) {
+                std::string projectName = *(std::string*)userdata;
+                saveProject(projectName);
             }
             return NULL;
         }
