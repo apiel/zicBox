@@ -51,6 +51,8 @@
     - serialised might want to use filename instead of file index
 
 
+- FIXME might not need action2, just have to insert twice the event...
+
 - IDEA val->setString should it instead get an array of string
     - ["Resonance", "37", "%"]
     - ["LP", "78", "%", "HP", "22", "%"]
