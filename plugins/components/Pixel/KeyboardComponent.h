@@ -134,6 +134,7 @@ public:
                 }
             }
             draw.filledRect({ pos.x + itemSize.w, pos.y } , { (itemSize.w * 4) - 2, itemSize.h - 2 }, { keys.size() == selection ? selectionColor : itemBackground });
+            draw.textCentered({ pos.x + itemSize.w + ((itemSize.w * 4) - 2) / 2, pos.y + textPos.y }, "Cancel", 8, { textColor });
         }
     }
 
