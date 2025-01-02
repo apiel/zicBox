@@ -41,6 +41,13 @@ public:
             };
         }
 
+        /*md - `&icon::backspace::filled` */
+        if (name == "&icon::backspace::filled") {
+            return [&](Point position, uint8_t size, Color color, Align align) {
+                backspaceFilled(position, size, color, align);
+            };
+        }
+
         /*md - `&icon::play` */
         if (name == "&icon::play") {
             return [&](Point position, uint8_t size, Color color, Align align) {
@@ -220,6 +227,20 @@ public:
         draw.line(
             { (int)(x + w * 0.75), (int)(position.y + size * 0.25) },
             { (int)(x + w * 0.4), (int)(position.y + size * 0.75) }, { color });
+    }
+
+    void backspaceFilled(Point position, uint8_t size, Color color, Align align = LEFT)
+    {
+        int w = size * 1.5;
+        int x = getX(position, size, align, w);
+
+        draw.filledPolygon({ { (int)(x + w * 0.25), position.y },
+                               { x + w, position.y },
+                               { x + w, position.y + size },
+                               { (int)(x + w * 0.25), position.y + size },
+                               { x, (int)(position.y + size * 0.5) },
+                               { (int)(x + w * 0.25), position.y } },
+            { color });
     }
 
     void play(Point position, uint8_t size, Color color, Align align = LEFT, bool filled = false)

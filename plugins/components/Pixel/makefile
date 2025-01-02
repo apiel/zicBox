@@ -17,7 +17,7 @@ all:
 	+make TextGridComponent DrumEnvelopComponent Encoder3Component GraphEncoderComponent\
 				StepEditComponent HiddenValueComponent FmAlgoComponent AdsrComponent\
 				TextComponent SeqBarComponent SeqProgressBarComponent SeqSynthBarComponent ValueComponent\
-				SpectrogramComponent RectComponent ClipsComponent
+				SpectrogramComponent RectComponent ClipsComponent KeyboardComponent
 
 # %Component:
 # 	@mkdir -p $(OBJ_DIR)

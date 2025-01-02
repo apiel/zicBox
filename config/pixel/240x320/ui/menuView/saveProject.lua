@@ -4,6 +4,21 @@ local textGrid = require("config/pixel/libs/component/textGrid")
 local function view(viewName)
     ui.view(viewName)
 
+    ui.component("Keyboard",
+        {},
+        {},
+        { x = 0, y = 0, w = ScreenWidth, h = 200 }, {
+            KEYMAPS = {
+                -- { key = "q", action = ".toggle", context = "254:0" },
+                -- { key = "w", action = ".up", context = "254:0" },
+                -- { key = "s", action = ".down", context = "254:0" },
+
+                -- { key = "q", action = ".next", context = "254:1" },
+                -- { key = "s", action = ".delete", context = "254:1" },
+                -- { key = "d", action = ".save", context = "254:1" },
+            }
+        })
+
     textGrid(
         {
             "OK &icon::arrowUp::filled Cancel",
@@ -11,8 +26,8 @@ local function view(viewName)
         }, KeyInfoPositionCenter,
         {
             KEYMAPS = {
-                { key = "w", action = "incGroup:-1" },
-                { key = "s", action = "incGroup:+1" },
+                -- { key = "w", action = "incGroup:-1" },
+                -- { key = "s", action = "incGroup:+1" },
                 { key = "e", action = "setView:menu" },
             }
         }

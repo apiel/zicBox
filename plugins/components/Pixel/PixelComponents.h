@@ -32,6 +32,7 @@ void loadPixelComponents()
     viewManager.loadPlugin("Value " + folder + "ValueComponent.so");
     viewManager.loadPlugin("Rect " + folder + "RectComponent.so");
     viewManager.loadPlugin("Clips " + folder + "ClipsComponent.so");
+    viewManager.loadPlugin("Keyboard " + folder + "KeyboardComponent.so");
 }
 
 #else
@@ -52,6 +53,7 @@ void loadPixelComponents()
 #include "./TextComponent.h"
 #include "./TextGridComponent.h"
 #include "./ValueComponent.h"
+#include "./KeyboardComponent.h"
 
 void loadPixelComponents()
 {
@@ -119,6 +121,10 @@ void loadPixelComponents()
 
     viewManager.plugins.push_back({ "Rect", [](ComponentInterface::Props props) {
                                        return new RectComponent(props);
+                                   } });
+
+    viewManager.plugins.push_back({ "Keyboard", [](ComponentInterface::Props props) {
+                                       return new KeyboardComponent(props);
                                    } });
 }
 #endif
