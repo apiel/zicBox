@@ -95,6 +95,17 @@ public:
                 };
             }
 
+            if (action.find(".data:") == 0) {
+                if (plugin) {
+                    uint8_t dataId = plugin->getDataId(action.substr(6));
+                    func = [this, dataId](KeypadLayout::KeyMap& keymap) {
+                        if (KeypadLayout::isReleased(keymap)) {
+                            plugin->data(dataId, &items[selection]);
+                        }
+                    };
+                }
+            }
+
             return func;
         })
     {
@@ -135,12 +146,12 @@ public:
             return true;
         }
 
-        // /*md - `DONE_DATA: plugin data_id` is the data id to return when the edit is done. */
-        // if (strcmp(key, "DONE_DATA") == 0) {
-        //     plugin = &getPlugin(strtok(value, " "), track);
-        //     dataId = plugin->getDataId(strtok(NULL, " "));
-        //     return true;
-        // }
+        /*md - `PLUGIN: plugin` is the plugin to use to make action on the list. */
+        if (strcmp(key, "PLUGIN") == 0) {
+            plugin = &getPlugin(strtok(value, " "), track);
+            // dataId = plugin->getDataId(strtok(NULL, " "));
+            return true;
+        }
 
         /*md - `BACKGROUND_COLOR: color` is the color of the background. */
         if (strcmp(key, "BACKGROUND_COLOR") == 0) {

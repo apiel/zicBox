@@ -219,6 +219,7 @@ public:
         LOAD_VARIATION,
         DELETE_VARIATION,
         SAVE_PROJECT,
+        LOAD_PROJECT,
     };
 
     /*md **Data ID**: */
@@ -251,6 +252,9 @@ public:
         /*md - `SAVE_PROJECT` save project */
         if (name == "SAVE_PROJECT")
             return DATA_ID::SAVE_PROJECT;
+        /*md - `LOAD_PROJECT` load project */
+        if (name == "LOAD_PROJECT")
+            return DATA_ID::LOAD_PROJECT;
         return atoi(name.c_str());
     }
 
@@ -321,6 +325,13 @@ public:
             if (userdata) {
                 std::string projectName = *(std::string*)userdata;
                 saveProject(projectName);
+            }
+            return NULL;
+        }
+        case DATA_ID::LOAD_PROJECT: {
+            if (userdata) {
+                std::string projectName = *(std::string*)userdata;
+                printf("Load project %s\n", projectName.c_str());
             }
             return NULL;
         }
