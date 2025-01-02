@@ -18,7 +18,7 @@ local function view(viewName)
 
     textGrid(
         {
-            "OK &icon::arrowUp::filled Cancel",
+            "Save &icon::arrowUp::filled Type",
             "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled"
         }, KeyInfoPositionCenter,
         {

@@ -48,7 +48,7 @@ public:
                     if (KeypadLayout::isReleased(keymap)) {
                         selection--;
                         if (selection < 0) {
-                            selection = keys.size() - 1;
+                            selection = keys.size();
                         }
                         renderNext();
                     }
@@ -58,7 +58,7 @@ public:
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         selection++;
-                        if (selection >= keys.size()) {
+                        if (selection > keys.size()) {
                             selection = 0;
                         }
                         renderNext();
@@ -81,8 +81,10 @@ public:
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         int nextSelection = selection + 9;
-                        if (nextSelection < keys.size()) {
+                        if (nextSelection < keys.size() + 1) {
                             selection = nextSelection;
+                        } else {
+                            selection = keys.size();
                         }
                         
                         renderNext();
@@ -111,7 +113,7 @@ public:
         "k", "l", "m", "n", "o", "p", "q", "r", "s",
         "t", "u", "v", "w", "x", "y", "z", "1", "2",
         "3", "4", "5", "6", "7", "8", "9", "0", "-",
-        "=", "_", ".", "!", " "
+        "=", "_", ".", "!", "&icon::backspace::filled"
     };
 
     void render()
@@ -126,10 +128,12 @@ public:
                 int col = k % 9;
                 pos = { x + col * itemSize.w, y + row * itemSize.h };
                 draw.filledRect(pos, { itemSize.w - 2, itemSize.h - 2 }, { k == selection ? selectionColor : itemBackground });
-                draw.textCentered({ pos.x + textPos.x, pos.y + textPos.y }, keys[k], 8, { textColor });
+                Point posText = { pos.x + textPos.x, pos.y + textPos.y };
+                if (!icon.render(keys[k], posText, 6, { textColor }, Icon::CENTER)) {
+                    draw.textCentered(posText, keys[k], 8, { textColor });
+                }
             }
-
-            icon.render("&icon::backspace::filled", { pos.x + textPos.x, pos.y + textPos.y }, 6, { textColor }, Icon::CENTER);
+            draw.filledRect({ pos.x + itemSize.w, pos.y } , { (itemSize.w * 4) - 2, itemSize.h - 2 }, { keys.size() == selection ? selectionColor : itemBackground });
         }
     }
 
