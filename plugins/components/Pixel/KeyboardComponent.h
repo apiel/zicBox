@@ -8,9 +8,7 @@
 #include "plugins/components/utils/VisibilityGroup.h"
 #include "plugins/components/utils/color.h"
 
-#include <cmath>
 #include <string>
-#include <vector>
 
 /*md
 ## Keyboard
