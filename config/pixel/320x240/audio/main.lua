@@ -33,21 +33,21 @@ drumSample(18)
 audio.plugin("Mixer8", { NAME = "MixerDrumSample",  TRACK_START = 11, TRACK = 1 })
 audio.plugin("EffectVolumeDrive", { NAME = "VolumeDrive", TRACK = 1 })
 audio.plugin("EffectFilterMultiMode", { NAME = "MMFilter", TRACK = 1 })
-audio.plugin("SerializeTrack", { TRACK = 1, FILEPATH = "serializedPixel/track_1.cfg" })
+audio.plugin("SerializeTrack", { TRACK = 1, FILENAME = "track_1" })
 
 drum23(2)
 drum23(3)
 drum23(4)
 
 audio.plugin("Mixer4", { NAME = "MixerDrum", TRACK = 9 })
-audio.plugin("SerializeTrack", { TRACK = 9, FILEPATH = "serializedPixel/mixer_drum.cfg" })
+audio.plugin("SerializeTrack", { TRACK = 9, FILENAME = "mixer_drum" })
 
 -- # FM tracks
 fm(5)
 fm(6)
 
 audio.plugin("Mixer4", { NAME = "MixerSynth", TRACK_START = 5, TRACK = 10 })
-audio.plugin("SerializeTrack", { TRACK = 10, FILEPATH = "serializedPixel/mixer_synth.cfg" })
+audio.plugin("SerializeTrack", { TRACK = 10, FILENAME = "mixer_synth" })
 
 -- # Master
 
@@ -55,7 +55,7 @@ audio.plugin("Mixer2", { NAME = "MixerMaster", TRACK_A = 9, TRACK_B = 10, VALUE 
 
 audio.plugin("EffectGainVolume", { NAME = "MasterVolume" })
 audio.plugin("AudioOutput")
-audio.plugin("SerializeTrack", { FILEPATH = "serializedPixel/master.cfg" })
+audio.plugin("SerializeTrack", { FILENAME = "master" })
 
 audio.plugin("Tempo")
 
