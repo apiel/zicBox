@@ -13,11 +13,17 @@ BUILD=-Wno-narrowing -ldl $(RTMIDI)
 
 INC=-I../.
 
+# track header file to be sure that build is automatically trigger if any dependency changes
+TRACK_HEADER_FILES = -MMD -MF libzicHost.$(BIN_PLATFORM).d
+
 main:
 	make libzicHost.$(BIN_PLATFORM).so
 
-libzicHost.$(BIN_PLATFORM).so: zicHost.cpp AudioPluginHandler.h config.h ../plugins/audio/audioPlugin.h
-	g++ -fPIC -shared -o libzicHost.$(BIN_PLATFORM).so zicHost.cpp -fopenmp $(BUILD) $(INC) $(LUA)
+libzicHost.$(BIN_PLATFORM).so:
+	g++ -fPIC -shared -o libzicHost.$(BIN_PLATFORM).so zicHost.cpp -fopenmp $(BUILD) $(INC) $(LUA) $(TRACK_HEADER_FILES)
+
+# Safeguard: include only if .d files exist
+-include $(wildcard libzicHost.$(BIN_PLATFORM).d)
 
 rebuild:
 	rm libzicHost.$(BIN_PLATFORM).so
