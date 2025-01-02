@@ -7,7 +7,7 @@ local function view(viewName)
     ui.component("Keyboard",
         {},
         {},
-        { x = 0, y = 80, w = ScreenWidth, h = 200 }, {
+        { x = 0, y = 40, w = ScreenWidth, h = 200 }, {
             CANCEL_VIEW = "menu",
             KEYMAPS = {
                 { key = "w", action = ".up" },
