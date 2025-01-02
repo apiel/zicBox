@@ -5,16 +5,17 @@ local function view(viewName)
     ui.view(viewName)
 
     ui.component("List",
-        {},
-        {},
+        { "PLUGIN" },
+        {
+            PLUGIN = "SerializeTrack",
+        },
         { x = 0, y = 0, w = ScreenWidth, h = 280 }, {
             REDIRECT_VIEW = "menu",
-            DONE_DATA = "SerializeTrack SAVE_PROJECT",
             KEYMAPS = {
-                { key = "q", action = ".done" },
+                { key = "a", action = ".data:LOAD_PROJECT" },
                 { key = "w", action = ".up" },
                 { key = "s", action = ".down" },
-                { key = "e", action = ".type" },
+                -- { key = "e", action = ".type" },
             }
         })
 
