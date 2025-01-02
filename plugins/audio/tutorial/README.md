@@ -370,6 +370,10 @@ Compile it with:
 g++ 03.cpp -o 03.bin -I../../.. -lpulse-simple -lpulse && ./03.bin
 ```
 
+**Important**: In audio processing, counting time is based on the sample rate instead of using the computer's system clock. It is critical for ensuring accuracy, consistency, and synchronization.
+
+As we have seen in the previous section, in audio processing, we send audio data in chunks (blocks of samples) to the hardware audio interface. The hardware ensures these samples are sent to the audio buffer at the correct time, based on the defined sample rate. If we were to rely on the computer's system clock instead of the sample rate, it could become out of sync with the audio hardware, leading to timing mismatches, glitches, or drift in audio playback or processing. Using the sample rate ensures perfect synchronization with the hardware buffer and consistent timing.
+
 ## Lookup table
 
 A Lookup Table (LUT) is a data structure, typically an array or table, that stores precomputed values. Instead of performing a computation repeatedly, the program retrieves the results directly from the table, offering faster access than recalculating the values on the fly.

@@ -13,6 +13,16 @@
   - cross compile for rpi directly on laptop
 
 - IDEA daw mode...
+  - allow to record a track into a sample
+  - allow to record a single note on into a sample
+  - provide a way to merge sample together on a track view...
+    - This track view would allow to apply amplitude modulation on the Finally
+    - Should it allow to apply filter on the fly in the risk of using CPU?
+      - or should any modulation involve resampling to a file? Maybe the best option as we dont care about hard drive usage.
+
+- TODO clips allow more than 16 by adding a scrolling system
+  - give a way to make some extra color code to classify depending if it is used for playibg live or for generating sample?
+
 
 - IDEA DrumSample is the less consuming CPU, maybe expending it a little bit to a SimpleSample engine
   - skip density
@@ -39,6 +49,7 @@
 
 - TODO filebrowser
     - serialised might want to use filename instead of file index
+
 
 - IDEA val->setString should it instead get an array of string
     - ["Resonance", "37", "%"]
