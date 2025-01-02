@@ -8,11 +8,13 @@ local function view(viewName)
         {},
         {},
         { x = 0, y = 80, w = ScreenWidth, h = 200 }, {
+            CANCEL_VIEW = "menu",
             KEYMAPS = {
                 { key = "w", action = ".up" },
                 { key = "s", action = ".down" },
                 { key = "a", action = ".left" },
                 { key = "d", action = ".right" },
+                { key = "e", action = ".type" },
             }
         })
 
@@ -25,7 +27,7 @@ local function view(viewName)
             KEYMAPS = {
                 -- { key = "w", action = "incGroup:-1" },
                 -- { key = "s", action = "incGroup:+1" },
-                { key = "e", action = "setView:menu" },
+                -- { key = "e", action = "setView:menu" },
             }
         }
     )
