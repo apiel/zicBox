@@ -19,20 +19,20 @@ local function view(viewName)
                 -- { key = "e", action = ".type" },
             }
         })
-    zic("ADD_ITEM", "Workspaces")
-    zic("ADD_ITEM", "Daw")
-    zic("ADD_ITEM", "More")
+    -- zic("ADD_ITEM", "Workspaces")
+    -- zic("ADD_ITEM", "Daw")
+    -- zic("ADD_ITEM", "More")
 
     textGrid(
         {
-            "  &icon::arrowUp::filled  ",
-            "Select &icon::arrowDown::filled Back"
+            "&empty &icon::arrowUp::filled ...",
+            "Use &icon::arrowDown::filled Back"
         }, KeyInfoPositionCenter,
         {
             KEYMAPS = {
                 -- { key = "w", action = "incGroup:-1" },
                 -- { key = "s", action = "incGroup:+1" },
-                { key = "d", action = "setView:seq" },
+                { key = "d", action = "setView:menu" },
             }
         }
     )

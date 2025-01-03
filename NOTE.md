@@ -1,5 +1,7 @@
 ## Pixel TODO
 
+- TODO use ts2lua and jsx
+
 - FIXME pixel_env.lua
 
 - FIXME fix sequencer counter, when one track is on pause it should keep counting to stay sync with other running track

@@ -3,6 +3,7 @@ local seqView = require("config/pixel/240x320/ui/seqView/view")
 local clipsView = require("config/pixel/240x320/ui/clipsView/view")
 local menuView = require("config/pixel/240x320/ui/menuView/view")
 local menuSaveProject = require("config/pixel/240x320/ui/menuView/saveProject")
+local workspaces = require("config/pixel/240x320/ui/menuView/workspaces")
 
 ui.setWindowPosition(400, 500)
 
@@ -50,3 +51,4 @@ seqView("seq")
 clipsView("clips")
 menuView("menu")
 menuSaveProject("menuSaveProject")
+workspaces("Workspaces")

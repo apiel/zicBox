@@ -181,6 +181,11 @@ public:
             };
         }
 
+        /*md - `&empty` */
+        if (name == "&empty") {
+            return [&](Point position, uint8_t size, Color color, Align align) {};
+        }
+
         // printf("Unknown icon: %s\n", name.c_str());
 
         return nullptr;
