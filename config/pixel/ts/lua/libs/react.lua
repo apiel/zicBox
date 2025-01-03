@@ -16,6 +16,6 @@ function ____exports.createElement(self, component, props, ...)
     return {__TS__SparseArraySpread(____array_0)}
 end
 function ____exports.Fragment(self)
-    return {component = "Fragment"}
+    return {{component = "Fragment"}}
 end
 return ____exports

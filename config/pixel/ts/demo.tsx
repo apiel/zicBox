@@ -1,17 +1,13 @@
+import { Adsr } from './libs/components/adsr';
+import { applyZic } from './libs/core';
 import * as React from './libs/react';
 
 function GroupContainer({ a }: { a: string }) {
-    return [
-        'COMPONENT: GroupContainer',
-        `A: ${a}`,
-    ]
+    return [{ COMPONENT: 'GroupContainer' }, { A: a }];
 }
 
 function List({ b }: { b: string }) {
-    return [
-        'COMPONENT: List',
-        `B: ${b}`,
-    ]
+    return [{ COMPONENT: 'List' }, { B: b }];
 }
 
 function MyCustomComponent() {
@@ -28,9 +24,12 @@ const elements = (
         <List b={'test123'} />
         <List b={'test456'} />
         <MyCustomComponent />
+        <Adsr position="0 0" plugin="plugin" values="values" />
     </GroupContainer>
 );
-console.log('end:');
-for (const element of elements) {
-    console.log('- ', element);
-}
+// console.log('end:');
+// for (const element of elements) {
+//     console.log('- ', element);
+// }
+
+applyZic(elements);
