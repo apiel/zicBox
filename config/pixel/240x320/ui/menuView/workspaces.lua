@@ -43,7 +43,7 @@ local function view(viewName)
         {
             VISIBILITY_CONTEXT = { "254 SHOW_WHEN 1" },
             KEYMAPS = {
-                { key = "q", action = "setView:CreateWorkspace" },
+                { key = "q", action = "setView:CreateWorkspace", action2 = "contextToggle:254:1:0" },
                 { key = "e", action = "contextToggle:254:1:0" },
             }
         }
