@@ -1,7 +1,7 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
-local ____adsr = require("libs.components.adsr")
-local Adsr = ____adsr.Adsr
+local ____Adsr = require("libs.components.Adsr")
+local Adsr = ____Adsr.Adsr
 local ____core = require("libs.core")
 local applyZic = ____core.applyZic
 local React = require("libs.react")

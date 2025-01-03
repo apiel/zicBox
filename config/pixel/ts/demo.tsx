@@ -1,4 +1,4 @@
-import { Adsr } from './libs/components/adsr';
+import { Adsr } from './libs/components/Adsr';
 import { applyZic } from './libs/core';
 import * as React from './libs/react';
 
