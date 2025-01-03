@@ -26,7 +26,7 @@ local function view(viewName)
     textGrid(
         {
             "  &icon::arrowUp::filled  ",
-            "Select &icon::arrowDown::filled Back"
+            "Select &icon::arrowDown::filled Exit"
         }, KeyInfoPositionCenter,
         {
             KEYMAPS = {
