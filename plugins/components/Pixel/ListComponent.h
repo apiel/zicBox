@@ -73,6 +73,7 @@ public:
                 func = [this, dataId](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         plugin->data(dataId, &items[selection].text);
+                        renderNext();
                     }
                 };
             }
