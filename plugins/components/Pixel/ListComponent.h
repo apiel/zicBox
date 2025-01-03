@@ -106,13 +106,15 @@ public:
         draw.text({ relativePosition.x + 8, y + 4 }, items[itemIndex].text, 8, { textColor });
     }
 
-    virtual void renderError()
-    {}
+    virtual void renderStart() { }
+    virtual void renderEnd() { }
 
     void render()
     {
         if (updatePosition()) {
             draw.filledRect(relativePosition, size, { bgColor });
+            renderStart();
+
             int y = relativePosition.y;
             int yEnd = y + size.h;
             int itemW = size.w;
@@ -128,7 +130,7 @@ public:
                 renderItem(y, k);
                 y += itemH + 2;
             }
-            renderError();
+            renderEnd();
         }
     }
 
