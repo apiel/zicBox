@@ -30,6 +30,15 @@ protected:
 
     bool saveBeforeChangingVariation = false;
 
+    void saveCurrentWorkspaceName(std::string workspaceName)
+    {
+        std::filesystem::create_directories(workspaceFolder);
+        std::string currentWorkspaceFile = workspaceFolder + "/current.cfg";
+        std::ofstream file(currentWorkspaceFile);
+        file << workspaceName;
+        file.close();
+    }
+
     void initFilepath()
     {
         std::filesystem::create_directories(workspaceFolder);
@@ -141,6 +150,11 @@ public:
             } else {
                 serialize();
             }
+        } else if (event == AudioEventType::RELOAD_WORKSPACE) {
+            m.lock();
+            initFilepath();
+            hydrate();
+            m.unlock();
         }
     }
 
@@ -326,6 +340,10 @@ public:
             if (userdata) {
                 std::string workspaceName = *(std::string*)userdata;
                 printf("Load workspace %s\n", workspaceName.c_str());
+                if (workspaceName != currentWorkspaceName) {
+                    saveCurrentWorkspaceName(workspaceName);
+                    props.audioPluginHandler->sendEvent(AudioEventType::RELOAD_WORKSPACE);
+                }
             }
             return NULL;
         }
