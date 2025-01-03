@@ -32,7 +32,7 @@ local function view(viewName)
             KEYMAPS = {
                 -- { key = "w", action = "incGroup:-1" },
                 -- { key = "s", action = "incGroup:+1" },
-                { key = "d", action = "setView:seq" },
+                { key = "d", action = "setView:Home" },
             }
         }
     )

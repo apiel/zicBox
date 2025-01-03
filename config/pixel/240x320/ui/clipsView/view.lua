@@ -82,7 +82,7 @@ local function view(viewName)
             KEYMAPS = {
                 { key = "w", action = "playPause" },
                 { key = "e", action = "contextToggle:254:1:0" },
-                { key = "a", action = "setView:seq" },
+                { key = "a", action = "setView:Home" },
             }
         }
     )
