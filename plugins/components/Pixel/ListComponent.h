@@ -43,7 +43,7 @@ protected:
     int itemH = 16;
 
 public:
-    std::function<void(KeypadLayout::KeyMap&)> getKeypadAction(std::string action)
+    virtual std::function<void(KeypadLayout::KeyMap&)> getKeypadAction(std::string action)
     {
         std::function<void(KeypadLayout::KeyMap&)> func = NULL;
         if (action == ".up") {
@@ -106,6 +106,9 @@ public:
         draw.text({ relativePosition.x + 8, y + 4 }, items[itemIndex].text, 8, { textColor });
     }
 
+    virtual void renderError()
+    {}
+
     void render()
     {
         if (updatePosition()) {
@@ -125,6 +128,7 @@ public:
                 renderItem(y, k);
                 y += itemH + 2;
             }
+            renderError();
         }
     }
 

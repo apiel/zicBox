@@ -20,6 +20,31 @@ public:
     std::string* currentWorkspaceName = NULL;
 
     Color badgeColor;
+    Color errorColor;
+
+    enum Error {
+        NONE = 0,
+        DELETE = 1,
+    };
+    uint8_t error = Error::NONE;
+
+    std::function<void(KeypadLayout::KeyMap&)> getKeypadAction(std::string action) override
+    {
+        std::function<void(KeypadLayout::KeyMap&)> func = ListComponent::getKeypadAction(action);
+        if (action == ".delete") {
+            func = [this](KeypadLayout::KeyMap& keymap) {
+                if (KeypadLayout::isReleased(keymap)) {
+                    if (currentWorkspaceName != NULL && items[selection].text == *currentWorkspaceName) {
+                        error = Error::DELETE;
+                        renderNext();
+                    } else {
+                        
+                    }
+                }
+            };
+        }
+        return func;
+    }
 
     void initItems()
     {
@@ -33,7 +58,11 @@ public:
     WorkspacesComponent(ComponentInterface::Props props)
         : ListComponent(props)
         , badgeColor({ 39, 128, 39 }) // rgb(39, 128, 39)
+        , errorColor({ 173, 99, 99 }) // rgb(173, 99, 99)
     {
+        keypadLayout.getCustomAction = [this](std::string action) {
+            return getKeypadAction(action);
+        };
         initItems();
     }
 
@@ -45,6 +74,17 @@ public:
             draw.rect(pos, { 10, 10 }, { badgeColor });
             draw.filledRect({ pos.x + 2, pos.y + 2 }, { 6, 7 }, { badgeColor });
             draw.text({ pos.x + 14, pos.y + 2 }, "active", 8, { badgeColor });
+        }
+    }
+
+    void renderError() override
+    {
+        if (error == Error::DELETE) {
+            Point pos = { relativePosition.x + 20, relativePosition.y + 20 };
+            draw.filledRect(pos, { size.w - 40, 20 }, { errorColor });
+            draw.textCentered({ relativePosition.x + (int)(size.w / 2), pos.y + 2 }, "Cannot delete", 8, { textColor });
+            draw.textCentered({ relativePosition.x + (int)(size.w / 2), pos.y + 10 }, "active workspace.", 8, { textColor });
+            error = Error::NONE;
         }
     }
 
@@ -69,6 +109,12 @@ public:
         /*md - `BADGE_COLOR: badgeColor` to set badge color. By default it is `#23a123`.*/
         if (strcmp(key, "BADGE_COLOR") == 0) {
             badgeColor = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `ERROR_COLOR: errorColor` to set error color. By default it is `#ad6363`.*/
+        if (strcmp(key, "ERROR_COLOR") == 0) {
+            errorColor = draw.getColor(value);
             return true;
         }
 
