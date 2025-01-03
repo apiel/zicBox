@@ -1,5 +1,9 @@
 local ____lualib = require("lualib_bundle")
-local __TS__ObjectAssign = ____lualib.__TS__ObjectAssign
+local __TS__Spread = ____lualib.__TS__Spread
+local __TS__ArrayFlat = ____lualib.__TS__ArrayFlat
+local __TS__SparseArrayNew = ____lualib.__TS__SparseArrayNew
+local __TS__SparseArrayPush = ____lualib.__TS__SparseArrayPush
+local __TS__SparseArraySpread = ____lualib.__TS__SparseArraySpread
 local ____exports = {}
 function ____exports.createElement(self, component, props, ...)
     local children = {...}
@@ -10,21 +14,12 @@ function ____exports.createElement(self, component, props, ...)
     if type(element.component) == "function" then
         return ____exports.createElement(nil, element.component, element.props, ...)
     end
-    print(element.component, element.props)
-    if element.props then
-        for prop in pairs(element.props) do
-            print("-" .. prop, element.props[prop])
-        end
-    end
-    print(("Children (" .. tostring(#children)) .. "):")
-    do
-        local i = 0
-        while i < #children do
-            print(children[i + 1])
-            i = i + 1
-        end
-    end
-    return __TS__ObjectAssign({}, element, {children = children})
+    local ____array_0 = __TS__SparseArrayNew(__TS__Spread(element))
+    __TS__SparseArrayPush(
+        ____array_0,
+        unpack(__TS__ArrayFlat(children))
+    )
+    return {__TS__SparseArraySpread(____array_0)}
 end
 function ____exports.Fragment(self)
     return {component = "Fragment"}
