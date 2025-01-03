@@ -1,5 +1,12 @@
 ## Pixel TODO
 
+- TODO advance sample player
+- TODO master track
+- TODO perform / grid effect / scatter effect
+
+
+
+
 - TODO use ts2lua and jsx
 
 - TODO implement shuwdown view
@@ -7,11 +14,6 @@
 - FIXME pixel_env.lua
 
 - FIXME fix sequencer counter, when one track is on pause it should keep counting to stay sync with other running track
-
-- TODO save, save as, load
-- TODO advance sample player
-- TODO master track
-- TODO perform / grid effect / scatter effect
 
 - IDEA DrumSample is the less consuming CPU, maybe expending it a little bit to a SimpleSample engine
   - skip density
