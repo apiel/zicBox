@@ -53,7 +53,7 @@ public:
                     if (KeypadLayout::isReleased(keymap)) {
                         selection--;
                         if (selection < 0) {
-                            selection = keys.size();
+                            selection = keys.size() + 1;
                         }
                         renderNext();
                     }
@@ -63,7 +63,7 @@ public:
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         selection++;
-                        if (selection > keys.size()) {
+                        if (selection > keys.size() + 1) {
                             selection = 0;
                         }
                         renderNext();
@@ -86,10 +86,10 @@ public:
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         int nextSelection = selection + 9;
-                        if (nextSelection < keys.size() + 1) {
+                        if (nextSelection <= keys.size() + 1) {
                             selection = nextSelection;
                         } else {
-                            selection = keys.size();
+                            selection = keys.size() + 1;
                         }
 
                         renderNext();
@@ -99,14 +99,16 @@ public:
             if (action == ".type") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
-                        if (selection == keys.size()) {
+                        if (selection == keys.size() + 1) {
+                            done();
+                        } else if (selection == keys.size()) {
                             view->setView(redirectView);
                         } else if (selection == keys.size() - 1) {
                             value = value.substr(0, value.size() - 1);
-                            printf("%s\n", value.c_str());
+                            // printf("%s\n", value.c_str());
                         } else if (value.size() < 21) {
                             value += keys[selection];
-                            printf("%s\n", value.c_str());
+                            // printf("%s\n", value.c_str());
                         }
                         renderNext();
                     }
@@ -114,9 +116,8 @@ public:
             }
             if (action == ".done") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
-                    if (plugin != NULL && KeypadLayout::isReleased(keymap)) {
-                        plugin->data(dataId, &value);
-                        view->setView(redirectView);
+                    if (KeypadLayout::isReleased(keymap)) {
+                        done();
                     }
                 };
             }
@@ -132,6 +133,14 @@ public:
         }
         textPos.x = itemSize.w / 2;
         textPos.y = (itemSize.h - 8) / 2;
+    }
+
+    void done()
+    {
+        if (plugin != NULL && !value.empty()) {
+            plugin->data(dataId, &value);
+            view->setView(redirectView);
+        }
     }
 
     std::vector<std::string> keys = {
@@ -168,8 +177,11 @@ public:
                     draw.textCentered(posText, keys[k], 8, { textColor });
                 }
             }
-            draw.filledRect({ pos.x + itemSize.w, pos.y }, { (itemSize.w * 4) - 2, itemSize.h - 2 }, { keys.size() == selection ? selectionColor : itemBackground });
-            draw.textCentered({ pos.x + itemSize.w + ((itemSize.w * 4) - 2) / 2, pos.y + textPos.y }, "Cancel", 8, { textColor });
+            draw.filledRect({ pos.x + itemSize.w, pos.y }, { (itemSize.w * 2) - 2, itemSize.h - 2 }, { keys.size() == selection ? selectionColor : itemBackground });
+            draw.textCentered({ pos.x + itemSize.w + ((itemSize.w * 2) - 2) / 2, pos.y + textPos.y }, "Back", 8, { textColor });
+
+            draw.filledRect({ pos.x + itemSize.w * 3, pos.y }, { (itemSize.w * 2) - 2, itemSize.h - 2 }, { keys.size() + 1 == selection ? selectionColor : itemBackground });
+            draw.textCentered({ pos.x + itemSize.w * 3 + ((itemSize.w * 2) - 2) / 2, pos.y + textPos.y }, "Done", 8, { textColor });
         }
     }
 

@@ -44,6 +44,13 @@ protected:
         std::filesystem::remove_all(workspaceFolder + "/" + workspaceName);
     }
 
+    void createWorkspace(std::string workspaceName)
+    {
+        if (!workspaceName.empty()) {
+            std::filesystem::create_directories(workspaceFolder + "/" + workspaceName);
+        }
+    }
+
     void initFilepath()
     {
         std::filesystem::create_directories(workspaceFolder);
@@ -351,6 +358,7 @@ public:
             if (userdata) {
                 std::string workspaceName = *(std::string*)userdata;
                 printf("Create workspace %s\n", workspaceName.c_str());
+                createWorkspace(workspaceName);
             }
             return NULL;
         }
