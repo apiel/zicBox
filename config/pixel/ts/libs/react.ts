@@ -6,7 +6,5 @@ export function createElement(component: Function, props?: Object, ...children: 
 }
 
 export function Fragment() {
-    return {
-        component: 'Fragment',
-    };
+    return [{component: 'Fragment'}];
 }
