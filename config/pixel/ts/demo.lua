@@ -1,15 +1,16 @@
---[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____lualib = require("lualib_bundle")
+local __TS__Iterator = ____lualib.__TS__Iterator
 local ____exports = {}
 local React = require("react")
 local function GroupContainer(self, ____bindingPattern0)
     local a
     a = ____bindingPattern0.a
-    return {component = "GroupContainer", props = {a = a}}
+    return {"COMPONENT: GroupContainer", "A: " .. a}
 end
 local function List(self, ____bindingPattern0)
     local b
     b = ____bindingPattern0.b
-    return {component = "List", props = {b = b}}
+    return {"COMPONENT: List", "B: " .. b}
 end
 local function MyCustomComponent(self)
     return React:createElement(
@@ -26,8 +27,8 @@ local elements = React:createElement(
     React:createElement(List, {b = "test456"}),
     React:createElement(MyCustomComponent, nil)
 )
-print("end:", elements.component)
-for element in pairs(elements) do
+print("end:")
+for ____, element in __TS__Iterator(elements) do
     print("- ", element)
 end
 return ____exports

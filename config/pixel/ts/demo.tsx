@@ -1,25 +1,25 @@
 import * as React from './react';
 
 function GroupContainer({ a }: { a: string }) {
-    return {
-        component: 'GroupContainer',
-        props: { a },
-    };
-    // return [
-    //     'COMPONENT: GroupContainer',
-    //     `A: ${a}`,
-    // ]
+    // return {
+    //     component: 'GroupContainer',
+    //     props: { a },
+    // };
+    return [
+        'COMPONENT: GroupContainer',
+        `A: ${a}`,
+    ]
 }
 
 function List({ b }: { b: string }) {
-    return {
-        component: 'List',
-        props: { b },
-    };
-    // return [
-    //     'COMPONENT: List',
-    //     `B: ${b}`,
-    // ]
+    // return {
+    //     component: 'List',
+    //     props: { b },
+    // };
+    return [
+        'COMPONENT: List',
+        `B: ${b}`,
+    ]
 }
 
 function MyCustomComponent() {
@@ -38,7 +38,7 @@ const elements = (
         <MyCustomComponent />
     </GroupContainer>
 );
-console.log('end:', elements.component);
-for (const element in elements) {
+console.log('end:');
+for (const element of elements) {
     console.log('- ', element);
 }
