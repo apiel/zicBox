@@ -43,6 +43,52 @@ protected:
     int itemH = 16;
 
 public:
+    std::function<void(KeypadLayout::KeyMap&)> getKeypadAction(std::string action)
+    {
+        std::function<void(KeypadLayout::KeyMap&)> func = NULL;
+        if (action == ".up") {
+            func = [this](KeypadLayout::KeyMap& keymap) {
+                if (KeypadLayout::isReleased(keymap)) {
+                    if (selection > 0) {
+                        selection--;
+                        renderNext();
+                    }
+                }
+            };
+        }
+        if (action == ".down") {
+            func = [this](KeypadLayout::KeyMap& keymap) {
+                if (KeypadLayout::isReleased(keymap)) {
+                    if (selection < items.size() - 1) {
+                        selection++;
+                        renderNext();
+                    }
+                }
+            };
+        }
+
+        if (action.find(".data:") == 0) {
+            if (plugin) {
+                uint8_t dataId = plugin->getDataId(action.substr(6));
+                func = [this, dataId](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        plugin->data(dataId, &items[selection].text);
+                    }
+                };
+            }
+        }
+
+        if (action == ".setView") {
+            func = [this](KeypadLayout::KeyMap& keymap) {
+                if (KeypadLayout::isReleased(keymap)) {
+                    view->setView(items[selection].text);
+                }
+            };
+        }
+
+        return func;
+    }
+
     ListComponent(ComponentInterface::Props props)
         : Component(props)
         , icon(props.view->draw)
@@ -50,50 +96,7 @@ public:
         , textColor(styles.colors.text)
         , itemBackground(lighten(styles.colors.background, 0.5))
         , selectionColor(styles.colors.primary)
-        , keypadLayout(this, [&](std::string action) {
-            std::function<void(KeypadLayout::KeyMap&)> func = NULL;
-            if (action == ".up") {
-                func = [this](KeypadLayout::KeyMap& keymap) {
-                    if (KeypadLayout::isReleased(keymap)) {
-                        if (selection > 0) {
-                            selection--;
-                            renderNext();
-                        }
-                    }
-                };
-            }
-            if (action == ".down") {
-                func = [this](KeypadLayout::KeyMap& keymap) {
-                    if (KeypadLayout::isReleased(keymap)) {
-                        if (selection < items.size() - 1) {
-                            selection++;
-                            renderNext();
-                        }
-                    }
-                };
-            }
-
-            if (action.find(".data:") == 0) {
-                if (plugin) {
-                    uint8_t dataId = plugin->getDataId(action.substr(6));
-                    func = [this, dataId](KeypadLayout::KeyMap& keymap) {
-                        if (KeypadLayout::isReleased(keymap)) {
-                            plugin->data(dataId, &items[selection].text);
-                        }
-                    };
-                }
-            }
-
-            if (action == ".setView") {
-                func = [this](KeypadLayout::KeyMap& keymap) {
-                    if (KeypadLayout::isReleased(keymap)) {
-                        view->setView(items[selection].text);
-                    }
-                };
-            }
-
-            return func;
-        })
+        , keypadLayout(this, [&](std::string action) { return getKeypadAction(action); })
     {
     }
 

@@ -12,11 +12,9 @@ local function view(viewName)
         { x = 0, y = 0, w = ScreenWidth, h = 280 }, {
             -- REDIRECT_VIEW = "menu",
             KEYMAPS = {
-                -- { key = "a", action = ".data:LOAD_WORKSPACE" },
-                { key = "a", action = ".setView" },
+                { key = "a", action = ".data:LOAD_WORKSPACE" },
                 { key = "w", action = ".up" },
                 { key = "s", action = ".down" },
-                -- { key = "e", action = ".type" },
             }
         })
 
@@ -27,8 +25,6 @@ local function view(viewName)
         }, KeyInfoPositionCenter,
         {
             KEYMAPS = {
-                -- { key = "w", action = "incGroup:-1" },
-                -- { key = "s", action = "incGroup:+1" },
                 { key = "d", action = "setView:Home" },
             }
         }

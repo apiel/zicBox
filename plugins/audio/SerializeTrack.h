@@ -206,7 +206,7 @@ public:
         SAVE_VARIATION,
         LOAD_VARIATION,
         DELETE_VARIATION,
-        SAVE_WORKSPACE,
+        CREATE_WORKSPACE,
         LOAD_WORKSPACE,
         CURRENT_WORKSPACE,
     };
@@ -238,9 +238,9 @@ public:
         /*md - `DELETE_VARIATION` delete variation */
         if (name == "DELETE_VARIATION")
             return DATA_ID::DELETE_VARIATION;
-        /*md - `SAVE_WORKSPACE` save workspace */
-        if (name == "SAVE_WORKSPACE")
-            return DATA_ID::SAVE_WORKSPACE;
+        /*md - `CREATE_WORKSPACE` create workspace */
+        if (name == "CREATE_WORKSPACE")
+            return DATA_ID::CREATE_WORKSPACE;
         /*md - `LOAD_WORKSPACE` load workspace */
         if (name == "LOAD_WORKSPACE")
             return DATA_ID::LOAD_WORKSPACE;
@@ -315,10 +315,10 @@ public:
         }
         case DATA_ID::CURRENT_WORKSPACE:
             return &currentWorkspaceName;
-        case DATA_ID::SAVE_WORKSPACE: {
+        case DATA_ID::CREATE_WORKSPACE: {
             if (userdata) {
                 std::string workspaceName = *(std::string*)userdata;
-                printf("Save workspace %s\n", workspaceName.c_str());
+                printf("Create workspace %s\n", workspaceName.c_str());
             }
             return NULL;
         }
