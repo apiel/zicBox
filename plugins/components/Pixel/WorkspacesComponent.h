@@ -38,7 +38,10 @@ public:
                         error = Error::DELETE;
                         renderNext();
                     } else {
-                        
+                        uint8_t dataId = plugin->getDataId("DELETE_WORKSPACE");
+                        plugin->data(dataId, &items[selection].text);
+                        initItems();
+                        renderNext();
                     }
                 }
             };

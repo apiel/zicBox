@@ -39,6 +39,11 @@ protected:
         file.close();
     }
 
+    void deleteWorkspace(std::string workspaceName)
+    {
+        std::filesystem::remove_all(workspaceFolder + "/" + workspaceName);
+    }
+
     void initFilepath()
     {
         std::filesystem::create_directories(workspaceFolder);
@@ -222,6 +227,7 @@ public:
         CREATE_WORKSPACE,
         LOAD_WORKSPACE,
         CURRENT_WORKSPACE,
+        DELETE_WORKSPACE
     };
 
     /*md **Data ID**: */
@@ -260,6 +266,9 @@ public:
         /*md - `CURRENT_WORKSPACE` get current workspace */
         if (name == "CURRENT_WORKSPACE")
             return DATA_ID::CURRENT_WORKSPACE;
+        /*md - `DELETE_WORKSPACE` delete workspace */
+        if (name == "DELETE_WORKSPACE")
+            return DATA_ID::DELETE_WORKSPACE;
         return atoi(name.c_str());
     }
 
@@ -330,6 +339,14 @@ public:
         }
         case DATA_ID::CURRENT_WORKSPACE:
             return &currentWorkspaceName;
+        case DATA_ID::DELETE_WORKSPACE: {
+            if (userdata) {
+                std::string workspaceName = *(std::string*)userdata;
+                printf("Delete workspace %s\n", workspaceName.c_str());
+                deleteWorkspace(workspaceName);
+            }
+            return NULL;
+        }
         case DATA_ID::CREATE_WORKSPACE: {
             if (userdata) {
                 std::string workspaceName = *(std::string*)userdata;
