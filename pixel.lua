@@ -8,3 +8,6 @@
 -- end
 
 require "config/pixel/240x320/main"
+
+-- package.path = package.path .. ";config/pixel/lua/?.lua"
+-- require "config/pixel/lua/240x320/main"
