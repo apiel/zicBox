@@ -1,10 +1,6 @@
 import * as React from './react';
 
 function GroupContainer({ a }: { a: string }) {
-    // return {
-    //     component: 'GroupContainer',
-    //     props: { a },
-    // };
     return [
         'COMPONENT: GroupContainer',
         `A: ${a}`,
@@ -12,10 +8,6 @@ function GroupContainer({ a }: { a: string }) {
 }
 
 function List({ b }: { b: string }) {
-    // return {
-    //     component: 'List',
-    //     props: { b },
-    // };
     return [
         'COMPONENT: List',
         `B: ${b}`,
