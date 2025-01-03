@@ -148,10 +148,13 @@ public:
                 m.unlock();
                 initialized = true;
             } else {
+                m.lock();
                 serialize();
+                m.unlock();
             }
         } else if (event == AudioEventType::RELOAD_WORKSPACE) {
             m.lock();
+            serialize();
             initFilepath();
             hydrate();
             m.unlock();
@@ -160,8 +163,6 @@ public:
 
     void serialize()
     {
-        m.lock();
-
         FILE* file = fopen(filepath.c_str(), "w");
         for (AudioPlugin* plugin : props.audioPluginHandler->plugins) {
             if ((track == -1 || track == plugin->track) && plugin->serializable) {
@@ -170,8 +171,6 @@ public:
             }
         }
         fclose(file);
-
-        m.unlock();
     }
 
     void hydrate()
@@ -277,7 +276,9 @@ public:
         }
         case DATA_ID::SERIALIZE:
             data(0, userdata);
+            m.lock();
             serialize();
+            m.unlock();
             return NULL;
         case DATA_ID::HYDRATE:
             data(0, userdata);
