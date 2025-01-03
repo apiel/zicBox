@@ -18,6 +18,8 @@ class WorkspacesComponent : public ListComponent {
 public:
     std::string workspaceFolder = "workspaces";
     std::string* currentWorkspaceName = NULL;
+    int* refreshState = NULL;
+    int currentRefreshState = 0;
 
     Color badgeColor;
     Color errorColor;
@@ -80,7 +82,15 @@ public:
         }
     }
 
-    void renderError() override
+    void renderStart() override
+    {
+        if (currentRefreshState != *refreshState) {
+            currentRefreshState = *refreshState;
+            initItems();
+        }
+    }
+
+    void renderEnd() override
     {
         if (error == Error::DELETE) {
             Point pos = { relativePosition.x + 20, relativePosition.y + 20 };
@@ -99,6 +109,8 @@ public:
             plugin = &getPlugin(strtok(value, " "), track);
             uint8_t dataId = plugin->getDataId("CURRENT_WORKSPACE");
             currentWorkspaceName = (std::string*)plugin->data(dataId);
+            refreshState = (int*)plugin->data(plugin->getDataId("CREATE_WORKSPACE"));
+            currentRefreshState = *refreshState;
             return true;
         }
 

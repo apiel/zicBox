@@ -30,6 +30,7 @@ protected:
 
     bool saveBeforeChangingVariation = false;
 
+    int refreshState = 0;
     void saveCurrentWorkspaceName(std::string workspaceName)
     {
         std::filesystem::create_directories(workspaceFolder);
@@ -48,6 +49,7 @@ protected:
     {
         if (!workspaceName.empty()) {
             std::filesystem::create_directories(workspaceFolder + "/" + workspaceName);
+            refreshState++;
         }
     }
 
@@ -360,7 +362,7 @@ public:
                 printf("Create workspace %s\n", workspaceName.c_str());
                 createWorkspace(workspaceName);
             }
-            return NULL;
+            return &refreshState;
         }
         case DATA_ID::LOAD_WORKSPACE: {
             if (userdata) {
