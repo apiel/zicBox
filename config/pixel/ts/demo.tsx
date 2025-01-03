@@ -1,4 +1,4 @@
-import * as React from './react';
+import * as React from './libs/react';
 
 function GroupContainer({ a }: { a: string }) {
     return [

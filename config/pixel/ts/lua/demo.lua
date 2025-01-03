@@ -1,7 +1,7 @@
 local ____lualib = require("lualib_bundle")
 local __TS__Iterator = ____lualib.__TS__Iterator
 local ____exports = {}
-local React = require("react")
+local React = require("libs.react")
 local function GroupContainer(self, ____bindingPattern0)
     local a
     a = ____bindingPattern0.a
