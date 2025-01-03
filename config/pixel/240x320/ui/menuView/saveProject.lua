@@ -9,7 +9,7 @@ local function view(viewName)
         {},
         { x = 0, y = 40, w = ScreenWidth, h = 200 }, {
             REDIRECT_VIEW = "menu",
-            DONE_DATA = "SerializeTrack SAVE_PROJECT",
+            DONE_DATA = "SerializeTrack SAVE_WORKSPACE",
             KEYMAPS = {
                 { key = "q", action = ".done" },
                 { key = "w", action = ".up" },

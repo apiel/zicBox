@@ -20,9 +20,9 @@ class SerializeTrack : public Mapping {
 protected:
     std::mutex m;
 
-    std::string projectFolder = "projects";
+    std::string workspaceFolder = "workspaces";
     std::string filename = "track";
-    std::string currentProjectName = "default";
+    std::string currentWorkspaceName = "default";
 
     std::string filepath = "serialized/track.cfg";
     std::string variationFolder = "serialized/track";
@@ -32,33 +32,21 @@ protected:
 
     void initFilepath()
     {
-        std::filesystem::create_directories(projectFolder);
-        std::string currentProjectFile = projectFolder + "/project.cfg";
-        if (std::filesystem::exists(currentProjectFile)) {
-            std::ifstream file(currentProjectFile);
+        std::filesystem::create_directories(workspaceFolder);
+        std::string currentWorkspaceFile = workspaceFolder + "/current.cfg";
+        if (std::filesystem::exists(currentWorkspaceFile)) {
+            std::ifstream file(currentWorkspaceFile);
             std::string line;
             std::getline(file, line);
             file.close();
             if (line.length() > 0) {
-                currentProjectName = line;
+                currentWorkspaceName = line;
             }
         }
-        std::string currentProjectFolder = projectFolder + "/" + currentProjectName;
-        std::filesystem::create_directories(currentProjectFolder);
-        filepath = currentProjectFolder + "/" + filename + ".cfg";
-        variationFolder = currentProjectFolder + "/" + filename;
-    }
-
-    // instead of saveProject, it could be createProject
-    // and there would be no save. However would be a way to copy a project
-    void saveProject(std::string projectName)
-    {
-        m.lock();
-        if (projectName != currentProjectName) {
-            printf("Save project %s\n", projectName.c_str());
-        }
-
-        m.unlock();
+        std::string currentWorkspaceFolder = workspaceFolder + "/" + currentWorkspaceName;
+        std::filesystem::create_directories(currentWorkspaceFolder);
+        filepath = currentWorkspaceFolder + "/" + filename + ".cfg";
+        variationFolder = currentWorkspaceFolder + "/" + filename;
     }
 
 public:
@@ -120,9 +108,9 @@ public:
             return true;
         }
 
-        /*md - `PROJECT_FOLDER: projectFolder` to set project folder. By default it is `projects`.*/
-        if (strcmp(key, "PROJECT_FOLDER") == 0) {
-            projectFolder = value;
+        /*md - `WORKSPACE_FOLDER: workspaceFolder` to set workspace folder. By default it is `workspaces`.*/
+        if (strcmp(key, "WORKSPACE_FOLDER") == 0) {
+            workspaceFolder = value;
             initFilepath();
             return true;
         }
@@ -218,8 +206,8 @@ public:
         SAVE_VARIATION,
         LOAD_VARIATION,
         DELETE_VARIATION,
-        SAVE_PROJECT,
-        LOAD_PROJECT,
+        SAVE_WORKSPACE,
+        LOAD_WORKSPACE,
     };
 
     /*md **Data ID**: */
@@ -249,12 +237,12 @@ public:
         /*md - `DELETE_VARIATION` delete variation */
         if (name == "DELETE_VARIATION")
             return DATA_ID::DELETE_VARIATION;
-        /*md - `SAVE_PROJECT` save project */
-        if (name == "SAVE_PROJECT")
-            return DATA_ID::SAVE_PROJECT;
-        /*md - `LOAD_PROJECT` load project */
-        if (name == "LOAD_PROJECT")
-            return DATA_ID::LOAD_PROJECT;
+        /*md - `SAVE_WORKSPACE` save workspace */
+        if (name == "SAVE_WORKSPACE")
+            return DATA_ID::SAVE_WORKSPACE;
+        /*md - `LOAD_WORKSPACE` load workspace */
+        if (name == "LOAD_WORKSPACE")
+            return DATA_ID::LOAD_WORKSPACE;
         return atoi(name.c_str());
     }
 
@@ -321,17 +309,17 @@ public:
             }
             return NULL;
         }
-        case DATA_ID::SAVE_PROJECT: {
+        case DATA_ID::SAVE_WORKSPACE: {
             if (userdata) {
-                std::string projectName = *(std::string*)userdata;
-                saveProject(projectName);
+                std::string workspaceName = *(std::string*)userdata;
+                printf("Save workspace %s\n", workspaceName.c_str());
             }
             return NULL;
         }
-        case DATA_ID::LOAD_PROJECT: {
+        case DATA_ID::LOAD_WORKSPACE: {
             if (userdata) {
-                std::string projectName = *(std::string*)userdata;
-                printf("Load project %s\n", projectName.c_str());
+                std::string workspaceName = *(std::string*)userdata;
+                printf("Load workspace %s\n", workspaceName.c_str());
             }
             return NULL;
         }
