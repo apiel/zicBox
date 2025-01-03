@@ -22,7 +22,7 @@ local function row(color, group, track, y, menuContext, synth, items)
                 { key = "a", action = ".left",                       context = "254:0" },
                 { key = "d", action = ".right",                      context = "254:0" },
                 { key = "q", action = ".toggle",                     context = "254:1" },
-                -- { key = "a", action = "setView:clips", context = "254:1" },
+                -- { key = "a", action = "setView:Clips", context = "254:1" },
             },
             SELECT_MENU_CONTEXT = menuContext,
         })
@@ -100,9 +100,9 @@ local function view(viewName)
             VISIBILITY_GROUP = { "SHOW_WHEN 0" },
             VISIBILITY_CONTEXT = { "254 SHOW_WHEN 1" },
             KEYMAPS = {
-                { key = "q", action = "setView:menu" },
+                { key = "q", action = "setView:Menu" },
                 { key = "w", action = "playPause" },
-                { key = "a", action = "setView:clips" },
+                { key = "a", action = "setView:Clips" },
                 { key = "e", action = "contextToggle:254:1:0" },
             }
         }
@@ -156,8 +156,8 @@ local function view(viewName)
                 -- { key = "q", action = "playPause" },
                 { key = "w", action = "playPause" }, -- stepToggle
                 { key = "e", action = "contextToggle:254:1:0" },
-                -- { key = "a", action = "setView:menu" },
-                { key = "a", action = "setView:clips" },
+                -- { key = "a", action = "setView:Menu" },
+                { key = "a", action = "setView:Clips" },
                 -- { key = "s", action = "setView:sub" },
                 { key = "d", action = "setGroup:0" },
             }

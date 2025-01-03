@@ -21,8 +21,8 @@ end
 local function view(viewName)
     ui.view(viewName)
 
-    menuItem("Save project", 0, "setView:menuSaveProject")
-    menuItem("Load project", 1, "setView:menuLoadProject")
+    menuItem("Save project", 0, "setView:MenuSaveProject")
+    menuItem("Load project", 1, "setView:MenuLoadProject")
 
     textGrid(
         {
@@ -33,7 +33,7 @@ local function view(viewName)
             KEYMAPS = {
                 { key = "w", action = "incGroup:-1" },
                 { key = "s", action = "incGroup:+1" },
-                { key = "d", action = "setView:seq" },
+                { key = "d", action = "setView:Home" },
             }
         }
     )
