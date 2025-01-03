@@ -26,13 +26,13 @@ local function view(viewName)
     textGrid(
         {
             "&empty &icon::arrowUp::filled ...",
-            "Use &icon::arrowDown::filled Back"
+            "Use &icon::arrowDown::filled Exit"
         }, KeyInfoPositionCenter,
         {
             KEYMAPS = {
                 -- { key = "w", action = "incGroup:-1" },
                 -- { key = "s", action = "incGroup:+1" },
-                { key = "d", action = "setView:Menu" },
+                { key = "d", action = "setView:Home" },
             }
         }
     )
