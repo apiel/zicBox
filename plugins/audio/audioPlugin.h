@@ -18,7 +18,8 @@ enum AudioEventType {
     PAUSE,
     TOGGLE_PLAY_PAUSE,
     AUTOSAVE,
-    COUNT
+    COUNT,
+    RELOAD_WORKSPACE
 };
 
 AudioEventType getEventTypeFromName(std::string name)
@@ -53,7 +54,7 @@ public:
 
     virtual bool isPlaying() = 0;
     virtual bool isStopped() = 0;
-    
+
     virtual void loop() = 0;
 };
 
