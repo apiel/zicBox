@@ -2,6 +2,8 @@
 
 - TODO use ts2lua and jsx
 
+- TODO implement shuwdown view
+
 - FIXME pixel_env.lua
 
 - FIXME fix sequencer counter, when one track is on pause it should keep counting to stay sync with other running track
@@ -10,6 +12,14 @@
 - TODO advance sample player
 - TODO master track
 - TODO perform / grid effect / scatter effect
+
+- IDEA DrumSample is the less consuming CPU, maybe expending it a little bit to a SimpleSample engine
+  - skip density
+  - skip multi voice
+  - allow looping point
+  - make usage of wavetable easy?
+  - pitch using granular technic?
+  - would be great to be able to record fm or density effect, modulation and so on into a sample. And then being able to play it with a specific looping point... but is this related to sample or is it more caching system concept??!?
 
 - TODO speed up compile time
   - cross compile for rpi directly on laptop
@@ -24,15 +34,6 @@
 
 - TODO clips allow more than 16 by adding a scrolling system
   - give a way to make some extra color code to classify depending if it is used for playibg live or for generating sample?
-
-
-- IDEA DrumSample is the less consuming CPU, maybe expending it a little bit to a SimpleSample engine
-  - skip density
-  - skip multi voice
-  - allow looping point
-  - make usage of wavetable easy?
-  - pitch using granular technic?
-  - would be great to be able to record fm or density effect, modulation and so on into a sample. And then being able to play it with a specific looping point... but is this related to sample or is it more caching system concept??!?
 
 - TODO drum freq envelop is really good but not easy to use
   - might be great to keep this one as advance version

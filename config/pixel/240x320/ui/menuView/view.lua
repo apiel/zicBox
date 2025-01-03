@@ -4,11 +4,7 @@ local textGrid = require("config/pixel/libs/component/textGrid")
 local function view(viewName)
     ui.view(viewName)
 
-    ui.component("List",
-        { "PLUGIN" },
-        {
-            PLUGIN = "SerializeTrack",
-        },
+    ui.component("List", {}, {},
         { x = 0, y = 0, w = ScreenWidth, h = 280 }, {
             -- REDIRECT_VIEW = "menu",
             KEYMAPS = {
@@ -22,6 +18,7 @@ local function view(viewName)
     zic("ADD_ITEM", "Workspaces")
     zic("ADD_ITEM", "Daw")
     zic("ADD_ITEM", "More")
+    zic("ADD_ITEM", "Shutdown") -- TODO allow different color
 
     textGrid(
         {

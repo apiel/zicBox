@@ -6,11 +6,20 @@
 #include <vector>
 #include <algorithm>
 
-std::vector<std::filesystem::path> getDirectoryList(std::filesystem::path folder)
+struct DirectoryListOptions {
+    bool skipFolder = false;
+    bool skipFiles = false;
+};
+
+std::vector<std::filesystem::path> getDirectoryList(std::filesystem::path folder, DirectoryListOptions options = {})
 {
     std::vector<std::filesystem::path> list;
     for (const auto& entry : std::filesystem::directory_iterator(folder)) {
-        if (entry.is_directory()) {
+        if (options.skipFolder && entry.is_directory()) {
+            continue;
+        }
+
+        if (options.skipFiles && !entry.is_directory()) {
             continue;
         }
 

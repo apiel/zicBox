@@ -4,7 +4,7 @@ local textGrid = require("config/pixel/libs/component/textGrid")
 local function view(viewName)
     ui.view(viewName)
 
-    ui.component("List",
+    ui.component("Workspaces",
         { "PLUGIN" },
         {
             PLUGIN = "SerializeTrack",
@@ -19,9 +19,6 @@ local function view(viewName)
                 -- { key = "e", action = ".type" },
             }
         })
-    -- zic("ADD_ITEM", "Workspaces")
-    -- zic("ADD_ITEM", "Daw")
-    -- zic("ADD_ITEM", "More")
 
     textGrid(
         {
