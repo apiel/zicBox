@@ -11,9 +11,10 @@ local function view(viewName)
         },
         { x = 0, y = 0, w = ScreenWidth, h = 280 }, {
             KEYMAPS = {
-                { key = "a", action = ".data:LOAD_WORKSPACE" },
-                { key = "w", action = ".up" },
-                { key = "s", action = ".down" },
+                { key = "a", action = ".data:LOAD_WORKSPACE", context = "254:0" },
+                { key = "w", action = ".up", context = "254:0" },
+                { key = "s", action = ".down", context = "254:0" },
+                { key = "d", action = ".delete", context = "254:1" },
             }
         })
 
