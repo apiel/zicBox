@@ -29,38 +29,15 @@ protected:
 
     int selection = 0;
 
-    std::string redirectView = "";
-
-    std::string value = "";
+    // std::string redirectView = "";
 
     AudioPlugin* plugin = NULL;
 
-    std::vector<std::string> items = {
-        "default",
-        "tekno 23",
-        "darkpsy",
-        "live 23",
-        "project 1",
-        "project 2",
-        "project 3",
-        "project 4",
-        "project 5",
-        "project 6",
-        "project 7",
-        "project 8",
-        "project 9",
-        "project 10",
-        "project 11",
-        "project 12",
-        "project 13",
-        "project 14",
-        "project 15",
-        "project 16",
-        "project 17",
-        "project 18",
-        "project 19",
-        "project 20"
+    struct Item {
+        std::string text;
     };
+
+    std::vector<Item> items;
 
     int itemH = 16;
 
@@ -100,10 +77,18 @@ public:
                     uint8_t dataId = plugin->getDataId(action.substr(6));
                     func = [this, dataId](KeypadLayout::KeyMap& keymap) {
                         if (KeypadLayout::isReleased(keymap)) {
-                            plugin->data(dataId, &items[selection]);
+                            plugin->data(dataId, &items[selection].text);
                         }
                     };
                 }
+            }
+
+            if (action == ".setView") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        view->setView(items[selection].text);
+                    }
+                };
             }
 
             return func;
@@ -127,7 +112,7 @@ public:
 
             for (int k = start; k < items.size() && y < yEnd; k++) {
                 draw.filledRect({ relativePosition.x, y }, { itemW, itemH }, { k == selection ? selectionColor : itemBackground });
-                draw.text({ relativePosition.x + 8, y + 4 }, items[k], 8, { textColor });
+                draw.text({ relativePosition.x + 8, y + 4 }, items[k].text, 8, { textColor });
                 y += itemH + 2;
             }
         }
@@ -140,9 +125,16 @@ public:
             return true;
         }
 
-        /*md - `REDIRECT_VIEW: viewName` is the view to return when the edit is finished. */
-        if (strcmp(key, "REDIRECT_VIEW") == 0) {
-            redirectView = value;
+        // /*md - `REDIRECT_VIEW: viewName` is the view to return when the edit is finished. */
+        // if (strcmp(key, "REDIRECT_VIEW") == 0) {
+        //     redirectView = value;
+        //     return true;
+        // }
+
+        /*md - `ADD_ITEM: text` is the item to add to the list. */
+        if (strcmp(key, "ADD_ITEM") == 0) {
+            Item item = { value };
+            items.push_back(item);
             return true;
         }
 
