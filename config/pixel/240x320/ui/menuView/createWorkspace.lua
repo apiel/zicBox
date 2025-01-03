@@ -8,21 +8,20 @@ local function view(viewName)
         {},
         {},
         { x = 0, y = 40, w = ScreenWidth, h = 200 }, {
-            REDIRECT_VIEW = "menu",
+            REDIRECT_VIEW = "Workspaces",
             DONE_DATA = "SerializeTrack CREATE_WORKSPACE",
             KEYMAPS = {
-                { key = "q", action = ".done" },
+                { key = "q", action = ".type" },
                 { key = "w", action = ".up" },
                 { key = "s", action = ".down" },
                 { key = "a", action = ".left" },
                 { key = "d", action = ".right" },
-                { key = "e", action = ".type" },
             }
         })
 
     textGrid(
         {
-            "Save &icon::arrowUp::filled Type",
+            "Type &icon::arrowUp::filled &empty",
             "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled"
         }, KeyInfoPositionCenter,
         {

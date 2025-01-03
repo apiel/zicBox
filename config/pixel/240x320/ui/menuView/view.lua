@@ -1,5 +1,6 @@
 local ui = require("config/pixel/libs/ui")
 local textGrid = require("config/pixel/libs/component/textGrid")
+local workspaces = require("config/pixel/240x320/ui/menuView/workspaces")
 
 local function view(viewName)
     ui.view(viewName)
@@ -33,6 +34,8 @@ local function view(viewName)
             }
         }
     )
+
+    workspaces("Workspaces")
 end
 
 return view

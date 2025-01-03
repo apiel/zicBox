@@ -1,5 +1,6 @@
 local ui = require("config/pixel/libs/ui")
 local textGrid = require("config/pixel/libs/component/textGrid")
+local createWorkspace = require("config/pixel/240x320/ui/menuView/createWorkspace")
 
 local function view(viewName)
     ui.view(viewName)
@@ -37,13 +38,18 @@ local function view(viewName)
             "New &empty ^...",
             "&empty &empty &icon::trash"
         }, KeyInfoPositionCenter,
+        -- could introduce copy
+        -- could introduce rename
         {
             VISIBILITY_CONTEXT = { "254 SHOW_WHEN 1" },
             KEYMAPS = {
+                { key = "q", action = "setView:CreateWorkspace" },
                 { key = "e", action = "contextToggle:254:1:0" },
             }
         }
     )
+
+    createWorkspace("CreateWorkspace")
 end
 
 return view
