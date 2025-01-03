@@ -208,6 +208,7 @@ public:
         DELETE_VARIATION,
         SAVE_WORKSPACE,
         LOAD_WORKSPACE,
+        CURRENT_WORKSPACE,
     };
 
     /*md **Data ID**: */
@@ -243,6 +244,9 @@ public:
         /*md - `LOAD_WORKSPACE` load workspace */
         if (name == "LOAD_WORKSPACE")
             return DATA_ID::LOAD_WORKSPACE;
+        /*md - `CURRENT_WORKSPACE` get current workspace */
+        if (name == "CURRENT_WORKSPACE")
+            return DATA_ID::CURRENT_WORKSPACE;
         return atoi(name.c_str());
     }
 
@@ -309,6 +313,8 @@ public:
             }
             return NULL;
         }
+        case DATA_ID::CURRENT_WORKSPACE:
+            return &currentWorkspaceName;
         case DATA_ID::SAVE_WORKSPACE: {
             if (userdata) {
                 std::string workspaceName = *(std::string*)userdata;

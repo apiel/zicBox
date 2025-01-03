@@ -35,6 +35,7 @@ protected:
 
     struct Item {
         std::string text;
+        void* data = NULL;
     };
 
     std::vector<Item> items;
@@ -96,6 +97,11 @@ public:
     {
     }
 
+    virtual void renderItem(int y, int itemIndex)
+    {
+        draw.text({ relativePosition.x + 8, y + 4 }, items[itemIndex].text, 8, { textColor });
+    }
+
     void render()
     {
         if (updatePosition()) {
@@ -112,7 +118,7 @@ public:
 
             for (int k = start; k < items.size() && y < yEnd; k++) {
                 draw.filledRect({ relativePosition.x, y }, { itemW, itemH }, { k == selection ? selectionColor : itemBackground });
-                draw.text({ relativePosition.x + 8, y + 4 }, items[k].text, 8, { textColor });
+                renderItem(y, k);
                 y += itemH + 2;
             }
         }
