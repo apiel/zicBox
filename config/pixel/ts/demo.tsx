@@ -10,6 +10,10 @@ function List({ b }: { b: string }) {
     return [{ COMPONENT: 'List' }, { B: b }];
 }
 
+function Item({ k }: { k: string }) {
+    return [{ ITEM: k }];
+}
+
 function MyCustomComponent() {
     return (
         <>
@@ -19,17 +23,13 @@ function MyCustomComponent() {
     );
 }
 
-const elements = (
+applyZic(
     <GroupContainer a={'test'}>
         <List b={'test123'} />
-        <List b={'test456'} />
+        <List b={'test456'}>
+            <Item k={'yo'} />
+        </List>
         <MyCustomComponent />
         <Adsr position="0 0" plugin="plugin" values="values" />
     </GroupContainer>
 );
-// console.log('end:');
-// for (const element of elements) {
-//     console.log('- ', element);
-// }
-
-applyZic(elements);
