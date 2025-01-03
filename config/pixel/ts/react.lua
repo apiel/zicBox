@@ -8,12 +8,6 @@ local ____exports = {}
 function ____exports.createElement(self, component, props, ...)
     local children = {...}
     local element = component(nil, props)
-    if not element then
-        return
-    end
-    if type(element.component) == "function" then
-        return ____exports.createElement(nil, element.component, element.props, ...)
-    end
     local ____array_0 = __TS__SparseArrayNew(__TS__Spread(element))
     __TS__SparseArrayPush(
         ____array_0,
