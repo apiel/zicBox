@@ -15,6 +15,11 @@ local function List(self, ____bindingPattern0)
     b = ____bindingPattern0.b
     return {{COMPONENT = "List"}, {B = b}}
 end
+local function Item(self, ____bindingPattern0)
+    local k
+    k = ____bindingPattern0.k
+    return {{ITEM = k}}
+end
 local function MyCustomComponent(self)
     return React:createElement(
         React.Fragment,
@@ -23,13 +28,16 @@ local function MyCustomComponent(self)
         React:createElement(List, {b = "blo"})
     )
 end
-local elements = React:createElement(
+applyZic(React:createElement(
     GroupContainer,
     {a = "test"},
     React:createElement(List, {b = "test123"}),
-    React:createElement(List, {b = "test456"}),
+    React:createElement(
+        List,
+        {b = "test456"},
+        React:createElement(Item, {k = "yo"})
+    ),
     React:createElement(MyCustomComponent, nil),
     React:createElement(Adsr, {position = "0 0", plugin = "plugin", values = "values"})
-)
-applyZic(elements)
+))
 return ____exports
