@@ -12,7 +12,7 @@ local function view(viewName)
         { x = 0, y = 0, w = ScreenWidth, h = 280 }, {
             REDIRECT_VIEW = "menu",
             KEYMAPS = {
-                { key = "a", action = ".data:LOAD_PROJECT" },
+                { key = "a", action = ".data:LOAD_WORKSPACE" },
                 { key = "w", action = ".up" },
                 { key = "s", action = ".down" },
                 -- { key = "e", action = ".type" },
