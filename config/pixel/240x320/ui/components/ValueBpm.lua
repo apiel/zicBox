@@ -1,0 +1,19 @@
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+local React = require("config.libs.react")
+local ____Value = require("config.libs.components.Value")
+local Value = ____Value.Value
+local ____constants = require("config.pixel.240x320.ui.constants")
+local KeyInfoPosition = ____constants.KeyInfoPosition
+local W1_4 = ____constants.W1_4
+local W3_4 = ____constants.W3_4
+function ____exports.ValueBpm()
+    return React.createElement(Value, {
+        value = "Tempo BPM",
+        position = {W3_4, KeyInfoPosition[2], W1_4, 22},
+        SHOW_LABEL_OVER_VALUE = 0,
+        BAR_HEIGHT = 0,
+        VALUE_FONT_SIZE = 16
+    })
+end
+return ____exports

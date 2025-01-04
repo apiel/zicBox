@@ -7,6 +7,8 @@ local ____ui = require("config.libs.ui")
 local addZoneEncoder = ____ui.addZoneEncoder
 local setScreenSize = ____ui.setScreenSize
 local setWindowPosition = ____ui.setWindowPosition
+local ____clipsView = require("config.pixel.240x320.ui.clipsView.index")
+local ClipsView = ____clipsView.ClipsView
 local ____constants = require("config.pixel.240x320.ui.constants")
 local ScreenHeight = ____constants.ScreenHeight
 local ScreenWidth = ____constants.ScreenWidth
@@ -22,4 +24,5 @@ addZoneEncoder({W1_4, 0, W1_4, ScreenHeight})
 addZoneEncoder({W1_2, 0, W1_4, ScreenHeight})
 addZoneEncoder({W3_4, 0, W1_4, ScreenHeight})
 applyZic(React.createElement(SeqView, {name = "Home"}))
+applyZic(React.createElement(ClipsView, {name = "Clips"}))
 return ____exports

@@ -5,12 +5,8 @@ local ____HiddenValue = require("config.libs.components.HiddenValue")
 local HiddenValue = ____HiddenValue.HiddenValue
 local ____Keymap = require("config.libs.components.Keymap")
 local Keymap = ____Keymap.Keymap
-local ____SeqProgressBar = require("config.libs.components.SeqProgressBar")
-local SeqProgressBar = ____SeqProgressBar.SeqProgressBar
 local ____Spectrogram = require("config.libs.components.Spectrogram")
 local Spectrogram = ____Spectrogram.Spectrogram
-local ____Value = require("config.libs.components.Value")
-local Value = ____Value.Value
 local ____View = require("config.libs.components.View")
 local View = ____View.View
 local ____constants = require("config.pixel.240x320.ui.constants")
@@ -22,10 +18,11 @@ local ColorTrack5 = ____constants.ColorTrack5
 local ColorTrack6 = ____constants.ColorTrack6
 local ColorTrack7 = ____constants.ColorTrack7
 local ColorTrack8 = ____constants.ColorTrack8
-local KeyInfoPosition = ____constants.KeyInfoPosition
 local ScreenWidth = ____constants.ScreenWidth
-local W1_4 = ____constants.W1_4
-local W3_4 = ____constants.W3_4
+local ____ProgressBar = require("config.pixel.240x320.ui.components.ProgressBar")
+local ProgressBar = ____ProgressBar.ProgressBar
+local ____ValueBpm = require("config.pixel.240x320.ui.components.ValueBpm")
+local ValueBpm = ____ValueBpm.ValueBpm
 local ____Row = require("config.pixel.240x320.ui.seqView.Row")
 local RowDrum23 = ____Row.RowDrum23
 local RowDrumSample = ____Row.RowDrumSample
@@ -52,22 +49,9 @@ function ____exports.SeqView(____bindingPattern0)
         React.createElement(TextGridTrack, nil),
         React.createElement(TextGridTrackStepEdit, nil),
         React.createElement(TextGridTrackShifted, nil),
-        React.createElement(Value, {
-            value = "Tempo BPM",
-            position = {W3_4, KeyInfoPosition[2], W1_4, 22},
-            SHOW_LABEL_OVER_VALUE = 0,
-            BAR_HEIGHT = 0,
-            VALUE_FONT_SIZE = 16
-        }),
+        React.createElement(ValueBpm, nil),
         React.createElement(Spectrogram, {position = {0, 4, ScreenWidth, 70}, track = 0, data = "Spectrogram BUFFER", text = "Pixel"}),
-        React.createElement(SeqProgressBar, {
-            position = {0, 160, ScreenWidth, 5},
-            seq_plugin = "Sequencer 1",
-            track = 0,
-            volume_plugin = "MasterVolume VOLUME",
-            active_color = "#23a123",
-            group = 0
-        }),
+        React.createElement(ProgressBar, {y = 160, volume_plugin = "MasterVolume VOLUME", group = 0}),
         React.createElement(RowDrum23, {group = 1, track = 1, name_color = ColorTrack1, select_menu_context = "11"}),
         React.createElement(RowDrum23, {group = 2, track = 2, name_color = ColorTrack2, select_menu_context = "12"}),
         React.createElement(RowDrumSample, {group = 3, track = 3, name_color = ColorTrack3, select_menu_context = "13"}),
