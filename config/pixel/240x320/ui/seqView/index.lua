@@ -32,6 +32,9 @@ local RowDrumSample = ____Row.RowDrumSample
 local ____TextGrid = require("config.pixel.240x320.ui.seqView.TextGrid")
 local TextGridProgressBar = ____TextGrid.TextGridProgressBar
 local TextGridProgressBarShifted = ____TextGrid.TextGridProgressBarShifted
+local TextGridTrack = ____TextGrid.TextGridTrack
+local TextGridTrackShifted = ____TextGrid.TextGridTrackShifted
+local TextGridTrackStepEdit = ____TextGrid.TextGridTrackStepEdit
 function ____exports.SeqView(____bindingPattern0)
     local name
     name = ____bindingPattern0.name
@@ -46,6 +49,9 @@ function ____exports.SeqView(____bindingPattern0)
         ),
         React.createElement(TextGridProgressBar, nil),
         React.createElement(TextGridProgressBarShifted, nil),
+        React.createElement(TextGridTrack, nil),
+        React.createElement(TextGridTrackStepEdit, nil),
+        React.createElement(TextGridTrackShifted, nil),
         React.createElement(Value, {
             value = "Tempo BPM",
             position = {W3_4, KeyInfoPosition[2], W1_4, 22},

@@ -34,4 +34,33 @@ function ____exports.TextGridProgressBarShifted()
         React.createElement(Keymaps, {keys = {{key = "q", action = "setView:Menu", action2 = "contextToggle:254:1:0"}, {key = "w", action = "playPause"}, {key = "a", action = "setView:Clips"}, {key = "e", action = "contextToggle:254:1:0"}}})
     )
 end
+function ____exports.TextGridTrack()
+    return React.createElement(
+        TextGrid,
+        {position = KeyInfoPosition, rows = {"&icon::musicNote::pixelated &icon::arrowUp::filled ...", "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled"}},
+        React.createElement(VisibilityGroup, {condition = "SHOW_WHEN_NOT", group = 0}),
+        React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 0}),
+        React.createElement(VisibilityContext, {index = 10, condition = "SHOW_WHEN", value = 0}),
+        React.createElement(Keymaps, {keys = {{key = "e", action = "contextToggle:254:1:0"}}})
+    )
+end
+function ____exports.TextGridTrackStepEdit()
+    return React.createElement(
+        TextGrid,
+        {position = KeyInfoPosition, rows = {"&icon::toggle::rect &icon::arrowUp::filled ...", "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled"}},
+        React.createElement(VisibilityGroup, {condition = "SHOW_WHEN_NOT", group = 0}),
+        React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 0}),
+        React.createElement(VisibilityContext, {index = 10, condition = "SHOW_WHEN_OVER", value = 0}),
+        React.createElement(Keymaps, {keys = {{key = "e", action = "contextToggle:254:1:0"}}})
+    )
+end
+function ____exports.TextGridTrackShifted()
+    return React.createElement(
+        TextGrid,
+        {position = KeyInfoPosition, rows = {"&icon::toggle::rect &icon::play::filled ^...", "Clips Edit Master"}},
+        React.createElement(VisibilityGroup, {condition = "SHOW_WHEN_NOT", group = 0}),
+        React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 1}),
+        React.createElement(Keymaps, {keys = {{key = "w", action = "playPause"}, {key = "e", action = "contextToggle:254:1:0"}, {key = "a", action = "setView:Clips"}, {key = "d", action = "setGroup:0"}}})
+    )
+end
 return ____exports
