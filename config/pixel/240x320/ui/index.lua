@@ -17,6 +17,8 @@ local W1_4 = ____constants.W1_4
 local W3_4 = ____constants.W3_4
 local ____menuView = require("config.pixel.240x320.ui.menuView.index")
 local MenuView = ____menuView.MenuView
+local ____CreateWorkspaceView = require("config.pixel.240x320.ui.menuView.CreateWorkspaceView")
+local CreateWorkspaceView = ____CreateWorkspaceView.CreateWorkspaceView
 local ____WorkspacesView = require("config.pixel.240x320.ui.menuView.WorkspacesView")
 local WorkspacesView = ____WorkspacesView.WorkspacesView
 local ____seqView = require("config.pixel.240x320.ui.seqView.index")
@@ -31,4 +33,5 @@ applyZic(React.createElement(SeqView, {name = "Home"}))
 applyZic(React.createElement(ClipsView, {name = "Clips"}))
 applyZic(React.createElement(MenuView, {name = "Menu"}))
 applyZic(React.createElement(WorkspacesView, {name = "Workspaces"}))
+applyZic(React.createElement(CreateWorkspaceView, {name = "CreateWorkspace"}))
 return ____exports
