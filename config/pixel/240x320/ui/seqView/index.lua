@@ -32,6 +32,8 @@ local TextGridProgressBarShifted = ____TextGrid.TextGridProgressBarShifted
 local TextGridTrack = ____TextGrid.TextGridTrack
 local TextGridTrackShifted = ____TextGrid.TextGridTrackShifted
 local TextGridTrackStepEdit = ____TextGrid.TextGridTrackStepEdit
+local ____MasterValues = require("config.pixel.240x320.ui.seqView.values.MasterValues")
+local MasterValues = ____MasterValues.MasterValues
 function ____exports.SeqView(____bindingPattern0)
     local name
     name = ____bindingPattern0.name
@@ -59,7 +61,8 @@ function ____exports.SeqView(____bindingPattern0)
         React.createElement(RowDrumSample, {group = 5, track = 5, name_color = ColorTrack5, select_menu_context = "15"}),
         React.createElement(RowDrumSample, {group = 6, track = 6, name_color = ColorTrack6, select_menu_context = "16"}),
         React.createElement(RowDrumSample, {group = 7, track = 7, name_color = ColorTrack7, select_menu_context = "17"}),
-        React.createElement(RowDrumSample, {group = 8, track = 8, name_color = ColorTrack8, select_menu_context = "18"})
+        React.createElement(RowDrumSample, {group = 8, track = 8, name_color = ColorTrack8, select_menu_context = "18"}),
+        React.createElement(MasterValues, nil)
     )
 end
 return ____exports
