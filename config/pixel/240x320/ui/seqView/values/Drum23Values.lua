@@ -1,7 +1,7 @@
 local ____lualib = require("lualib_bundle")
 local __TS__ObjectAssign = ____lualib.__TS__ObjectAssign
 local ____exports = {}
-local Main, Edit, EditDistortion, EditWaveform, EditEnvAmp, Container
+local Main, Edit, EditDistortion, EditWaveform, EditEnvAmp, EditEnvFreq, Container
 local React = require("config.libs.react")
 local ____DrumEnvelop = require("config.libs.components.DrumEnvelop")
 local DrumEnvelop = ____DrumEnvelop.DrumEnvelop
@@ -99,7 +99,8 @@ function Edit(____bindingPattern0)
         nil,
         React.createElement(EditDistortion, {group = group, track = track, context = context, menu = 1}),
         React.createElement(EditWaveform, {group = group, track = track, context = context, menu = 2}),
-        React.createElement(EditEnvAmp, {group = group, track = track, context = context, menu = 3})
+        React.createElement(EditEnvAmp, {group = group, track = track, context = context, menu = 3}),
+        React.createElement(EditEnvFreq, {group = group, track = track, context = context, menu = 4})
     )
 end
 function EditDistortion(____bindingPattern0)
@@ -197,7 +198,9 @@ function EditEnvAmp(____bindingPattern0)
             plugin = "Drum23",
             envelop_data_id = "0",
             RENDER_TITLE_ON_TOP = false,
-            encoders = {"0 TIME", "1 PHASE", "2 MODULATION"}
+            encoder_time = 0,
+            encoder_phase = 1,
+            encoder_modulation = 2
         }),
         React.createElement(Encoder3, {
             position = {W3_4, (height - encoderH) * 0.5, W1_4, encoderH},
@@ -205,6 +208,38 @@ function EditEnvAmp(____bindingPattern0)
             value = "Drum23 DURATION",
             encoder_id = 3,
             color = "quaternary"
+        })
+    )
+end
+function EditEnvFreq(____bindingPattern0)
+    local menu
+    local context
+    local track
+    local group
+    group = ____bindingPattern0.group
+    track = ____bindingPattern0.track
+    context = ____bindingPattern0.context
+    menu = ____bindingPattern0.menu
+    return React.createElement(
+        Container,
+        {group = group, context = context, values = {seq = 0, menu = menu}},
+        React.createElement(Rect, {position = {0, 0, ScreenWidth, height}}),
+        React.createElement(DrumEnvelop, {
+            position = {0, 0, W3_4 - 2, height},
+            track = track,
+            plugin = "Drum23",
+            envelop_data_id = "4",
+            RENDER_TITLE_ON_TOP = false,
+            encoder_time = 0,
+            encoder_phase = 1,
+            encoder_modulation = 2
+        }),
+        React.createElement(Encoder3, {
+            position = {W3_4, (height - encoderH) * 0.5, W1_4, encoderH},
+            track = track,
+            value = "Drum23 PITCH",
+            encoder_id = 3,
+            color = "secondary"
         })
     )
 end

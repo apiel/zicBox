@@ -86,6 +86,7 @@ function Edit({ group, track, context }: Props) {
             <EditDistortion group={group} track={track} context={context} menu={1} />
             <EditWaveform group={group} track={track} context={context} menu={2} />
             <EditEnvAmp group={group} track={track} context={context} menu={3} />
+            <EditEnvFreq group={group} track={track} context={context} menu={4} />
         </>
     );
 }
@@ -155,7 +156,9 @@ function EditEnvAmp({ group, track, context, menu }: Props & { menu: number }) {
                 plugin="Drum23"
                 envelop_data_id="0"
                 RENDER_TITLE_ON_TOP={false}
-                encoders={['0 TIME', '1 PHASE', '2 MODULATION']}
+                encoder_time={0}
+                encoder_phase={1}
+                encoder_modulation={2}
             />
 
             <Encoder3
@@ -164,6 +167,33 @@ function EditEnvAmp({ group, track, context, menu }: Props & { menu: number }) {
                 value="Drum23 DURATION"
                 encoder_id={3}
                 color="quaternary"
+            />
+        </Container>
+    );
+}
+
+function EditEnvFreq({ group, track, context, menu }: Props & { menu: number }) {
+    return (
+        <Container group={group} context={context} values={{ seq: 0, menu }}>
+            <Rect position={[0, 0, ScreenWidth, height]} />
+
+            <DrumEnvelop
+                position={[0, 0, W3_4 - 2, height]}
+                track={track}
+                plugin="Drum23"
+                envelop_data_id="4"
+                RENDER_TITLE_ON_TOP={false}
+                encoder_time={0}
+                encoder_phase={1}
+                encoder_modulation={2}
+            />
+
+            <Encoder3
+                position={[W3_4, (height - encoderH) * 0.5, W1_4, encoderH]}
+                track={track}
+                value="Drum23 PITCH"
+                encoder_id={3}
+                color="secondary"
             />
         </Container>
     );
