@@ -5,6 +5,6 @@ export function drumSample(track: number) {
     plugin("DrumSample", [{ track }]);
     plugin("Sequencer", [{ track }]);
     plugin("SerializeTrack", [{ track, filename: `track_${track}`, MAX_VARIATION }]);
-    plugin("EffectSampleRateReducer", [{ name: "SampleRateReducer", track }]);
-    plugin("EffectVolumeClipping", [{ name: "Volume", track }]);
+    plugin("SampleRateReducer EffectSampleRateReducer", [{ track }]);
+    plugin("Volume EffectVolumeClipping", [{ track }]);
 }

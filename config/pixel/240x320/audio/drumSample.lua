@@ -15,7 +15,7 @@ function ____exports.drumSample(track)
             MAX_VARIATION = MAX_VARIATION
         }}
     )
-    plugin("EffectSampleRateReducer", {{name = "SampleRateReducer", track = track}})
-    plugin("EffectVolumeClipping", {{name = "Volume", track = track}})
+    plugin("SampleRateReducer EffectSampleRateReducer", {{track = track}})
+    plugin("Volume EffectVolumeClipping", {{track = track}})
 end
 return ____exports

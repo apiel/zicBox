@@ -5,13 +5,13 @@ import { SeqSynthBar } from '@/libs/components/SeqSynthBar';
 import { ScreenWidth } from '../constants';
 
 export type Props = {
-    y: number;
     group: number;
     track: number;
     name_color: string;
     select_menu_context: string;
 };
 
+const y = 170;
 export const RowH = 14;
 
 function RowKeymaps({ synth }: { synth: string }) {
@@ -27,10 +27,14 @@ function RowKeymaps({ synth }: { synth: string }) {
     );
 }
 
-export function rowDrum23({ y, group, track, name_color, select_menu_context }: Props) {
+function getY(track: number) {
+    return y + (track - 1) * (RowH + 1);
+}
+
+export function RowDrum23({ group, track, name_color, select_menu_context }: Props) {
     return (
         <SeqSynthBar
-            position={[0, y, ScreenWidth, RowH]}
+            position={[0, getY(track), ScreenWidth, RowH]}
             seq_plugin="Sequencer"
             track={track}
             group={group}
@@ -45,10 +49,10 @@ export function rowDrum23({ y, group, track, name_color, select_menu_context }: 
     );
 }
 
-export function rowDrumSample({ y, group, track, name_color, select_menu_context }: Props) {
+export function RowDrumSample({ group, track, name_color, select_menu_context }: Props) {
     return (
         <SeqSynthBar
-            position={[0, y, ScreenWidth, RowH]}
+            position={[0, getY(track), ScreenWidth, RowH]}
             seq_plugin="Sequencer"
             track={track}
             group={group}

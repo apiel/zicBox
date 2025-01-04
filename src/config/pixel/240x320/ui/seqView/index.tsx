@@ -3,7 +3,8 @@ import * as React from '@/libs/react';
 import { SeqProgressBar } from '@/libs/components/SeqProgressBar';
 import { Value } from '@/libs/components/Value';
 import { View } from '@/libs/components/View';
-import { KeyInfoPosition, ScreenWidth, W1_4, W3_4 } from '@/pixel/240x320/ui/constants';
+import { ColorTrack1, ColorTrack2, ColorTrack3, ColorTrack4, ColorTrack5, ColorTrack6, ColorTrack7, ColorTrack8, KeyInfoPosition, ScreenWidth, W1_4, W3_4 } from '@/pixel/240x320/ui/constants';
+import { RowDrum23, RowDrumSample } from './Row';
 import { TextGridProgressBar, TextGridProgressBarShifted } from './TextGrid';
 
 export type Props = {
@@ -32,6 +33,15 @@ export function SeqView({ name }: Props) {
                 active_color="#23a123"
                 group={0}
             />
+
+            <RowDrum23 group={1} track={1} name_color={ColorTrack1} select_menu_context='11' />
+            <RowDrum23 group={2} track={2} name_color={ColorTrack2} select_menu_context='12' />
+            <RowDrumSample group={3} track={3} name_color={ColorTrack3} select_menu_context='13' />
+            <RowDrumSample group={4} track={4} name_color={ColorTrack4} select_menu_context='14' />
+            <RowDrumSample group={5} track={5} name_color={ColorTrack5} select_menu_context='15' />
+            <RowDrumSample group={6} track={6} name_color={ColorTrack6} select_menu_context='16' />
+            <RowDrumSample group={7} track={7} name_color={ColorTrack7} select_menu_context='17' />
+            <RowDrumSample group={8} track={8} name_color={ColorTrack8} select_menu_context='18' />
         </View>
     );
 }
