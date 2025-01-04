@@ -13,11 +13,13 @@ import {
     posY,
     primary,
     quaternary,
+    secondary,
     tertiary,
     topLeft,
     topRight,
     valueH,
 } from './constants';
+import { SeqValues } from './SeqValues';
 
 export type Props = Omit<ComponentProps, 'position'> & {
     group: number;
@@ -30,6 +32,7 @@ export function DrumSampleValues({ group, track, context }: Props) {
         <>
             <Edit group={group} track={track} context={context} />
             <Main group={group} track={track} context={context} />
+            <SeqValues group={group} track={track} />
         </>
     );
 }
@@ -59,7 +62,7 @@ function Main({ group, track, context }: Props) {
                 group={group}
                 track={track}
                 encoderId={2}
-                {...quaternary}
+                {...secondary}
             />
             <Value
                 value="SampleRateReducer SAMPLE_STEP"

@@ -20,13 +20,10 @@ local height = ____constants.height
 local posY = ____constants.posY
 local primary = ____constants.primary
 local quaternary = ____constants.quaternary
-local secondary = ____constants.secondary
 local tertiary = ____constants.tertiary
 local topLeft = ____constants.topLeft
 local topRight = ____constants.topRight
 local valueH = ____constants.valueH
-local ____SeqValues = require("config.pixel.240x320.ui.seqView.values.SeqValues")
-local SeqValues = ____SeqValues.SeqValues
 function Main(____bindingPattern0)
     local context
     local track
@@ -65,7 +62,7 @@ function Main(____bindingPattern0)
                 group = group,
                 track = track,
                 encoderId = 2
-            }, secondary)
+            }, quaternary)
         ),
         React.createElement(
             Value,
@@ -147,8 +144,7 @@ function ____exports.DrumSampleValues(____bindingPattern0)
         React.Fragment,
         nil,
         React.createElement(Edit, {group = group, track = track, context = context}),
-        React.createElement(Main, {group = group, track = track, context = context}),
-        React.createElement(SeqValues, {group = group, track = track})
+        React.createElement(Main, {group = group, track = track, context = context})
     )
 end
 return ____exports
