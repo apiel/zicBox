@@ -14,8 +14,8 @@ ____exports.W5_8 = ____exports.W1_8 * 5
 ____exports.W6_8 = ____exports.W1_8 * 6
 ____exports.W7_8 = ____exports.W1_8 * 7
 ____exports.W8_8 = ____exports.W1_8 * 8
-____exports.KeyInfoPosition = {x = 0, y = 296, w = ____exports.W3_4}
-____exports.KeyInfoPositionCenter = {x = ____exports.W1_8, y = ____exports.KeyInfoPosition.y, w = ____exports.KeyInfoPosition.w}
+____exports.KeyInfoPosition = {0, 296, ____exports.W3_4}
+____exports.KeyInfoPositionCenter = {____exports.W1_8, ____exports.KeyInfoPosition[2], ____exports.KeyInfoPosition[3]}
 ____exports.PrimaryBar = "#377275"
 ____exports.SecondaryBar = "#b54f5e"
 ____exports.TertiaryBar = "#368a36"

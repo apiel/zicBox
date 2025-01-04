@@ -17,7 +17,7 @@
         "baseUrl": ".",
     },
     "tstl": {
-        "luaTarget": "JIT",
+        "luaTarget": "5.4",
         "noImplicitSelf": true
     }
 }

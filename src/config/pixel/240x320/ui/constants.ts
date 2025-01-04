@@ -15,8 +15,8 @@ export const W6_8 = W1_8 * 6;
 export const W7_8 = W1_8 * 7;
 export const W8_8 = W1_8 * 8;
 
-export const KeyInfoPosition = { x: 0, y: 296, w: W3_4 };
-export const KeyInfoPositionCenter = { x: W1_8, y: KeyInfoPosition.y, w: KeyInfoPosition.w };
+export const KeyInfoPosition = [0, 296, W3_4];
+export const KeyInfoPositionCenter = [W1_8, KeyInfoPosition[1], KeyInfoPosition[2]];
 
 export const PrimaryBar = '#377275';
 export const SecondaryBar = '#b54f5e';

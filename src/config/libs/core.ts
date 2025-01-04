@@ -9,7 +9,7 @@ export function buildPlateform() {
     return IS_RPI ? 'arm' : 'x86';
 }
 
-export type ZicObj = Record<string, string | number | boolean>;
+export type ZicObj = Record<string, string | number | boolean | undefined>;
 export type ZicValue = ZicObj | ZicValue[];
 
 /**
@@ -19,7 +19,7 @@ export type ZicValue = ZicObj | ZicValue[];
 export function applyZic(values: ZicValue[]) {
     for (const obj of (values as any[]).flat(Infinity)) {
         for (const key in obj) {
-            zic(key, `${obj[key]}`);
+            zic(key.toUpperCase(), `${obj[key]}`);
             // console.log(`${key}: ${obj[key]}`);
         }
     }
