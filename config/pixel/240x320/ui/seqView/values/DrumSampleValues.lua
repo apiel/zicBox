@@ -17,14 +17,13 @@ local ____constants = require("config.pixel.240x320.ui.seqView.values.constants"
 local bottomLeft = ____constants.bottomLeft
 local bottomRight = ____constants.bottomRight
 local height = ____constants.height
-local posY = ____constants.posY
+local posContainer = ____constants.posContainer
 local primary = ____constants.primary
 local quaternary = ____constants.quaternary
 local secondary = ____constants.secondary
 local tertiary = ____constants.tertiary
 local topLeft = ____constants.topLeft
 local topRight = ____constants.topRight
-local valueH = ____constants.valueH
 local ____SeqValues = require("config.pixel.240x320.ui.seqView.values.SeqValues")
 local SeqValues = ____SeqValues.SeqValues
 function Main(____bindingPattern0)
@@ -131,7 +130,7 @@ function Container(____bindingPattern0)
     values = ____bindingPattern0.values
     return React.createElement(
         VisibilityContainer,
-        {position = {0, posY, ScreenWidth, valueH * 2 + 2}, group = group},
+        {position = posContainer, group = group},
         React.createElement(VisibilityContext, {index = 10, condition = "SHOW_WHEN", value = values.seq}),
         React.createElement(VisibilityContext, {index = context, condition = "SHOW_WHEN", value = values.menu})
     )

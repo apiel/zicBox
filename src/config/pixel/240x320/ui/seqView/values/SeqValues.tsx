@@ -4,18 +4,16 @@ import { ComponentProps } from '@/libs/components/component';
 import { Value } from '@/libs/components/Value';
 import { VisibilityContainer } from '@/libs/components/VisibilityContainer';
 import { VisibilityContext } from '@/libs/components/VisibilityContext';
-import { ScreenWidth } from '@/pixel/240x320/ui/constants';
 import {
     bottomLeft,
     bottomRight,
-    posY,
+    posContainer,
     primary,
     quaternary,
     secondary,
     tertiary,
     topLeft,
-    topRight,
-    valueH
+    topRight
 } from './constants';
 
 export type Props = Omit<ComponentProps, 'position'> & {
@@ -25,7 +23,7 @@ export type Props = Omit<ComponentProps, 'position'> & {
 
 export function SeqValues({ group, track }: Props) {
     return (
-        <VisibilityContainer position={[0, posY, ScreenWidth, valueH * 2 + 2]} group={group}>
+        <VisibilityContainer position={posContainer} group={group}>
             <VisibilityContext index={10} condition="SHOW_WHEN_OVER" value={0} />
             <Value
                 value="Sequencer STEP_NOTE"

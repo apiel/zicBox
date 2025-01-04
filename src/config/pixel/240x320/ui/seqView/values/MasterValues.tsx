@@ -3,24 +3,20 @@ import * as React from '@/libs/react';
 import { Rect } from '@/libs/components/Rect';
 import { Value } from '@/libs/components/Value';
 import { VisibilityContainer } from '@/libs/components/VisibilityContainer';
-import { VisibilityGroup } from '@/libs/components/VisibilityGroup';
 import { ScreenWidth } from '@/pixel/240x320/ui/constants';
 import {
     bottomRight,
     height,
-    posY,
+    posContainer,
     quaternary,
     tertiary,
     topLeft,
-    topRight,
-    valueH,
+    topRight
 } from './constants';
 
 export function MasterValues() {
     return (
-        <VisibilityContainer position={[0, posY, ScreenWidth, valueH * 2 + 2]}>
-            <VisibilityGroup condition="SHOW_WHEN" group={0} />
-
+        <VisibilityContainer position={posContainer} group={0}>
             <Rect position={[0, 0, ScreenWidth, height]} />
             <Value
                 value="MasterVolume VOLUME"
