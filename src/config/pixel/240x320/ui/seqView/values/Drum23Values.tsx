@@ -1,11 +1,11 @@
 import * as React from '@/libs/react';
 
 import { ComponentProps } from '@/libs/components/component';
-import { Rect } from '@/libs/components/Rect';
+import { GraphEncoder } from '@/libs/components/GraphEncoder';
 import { Value } from '@/libs/components/Value';
 import { VisibilityContainer } from '@/libs/components/VisibilityContainer';
 import { VisibilityContext } from '@/libs/components/VisibilityContext';
-import { ScreenWidth } from '@/pixel/240x320/ui/constants';
+import { ScreenWidth } from '../../constants';
 import {
     bottomLeft,
     bottomRight,
@@ -13,9 +13,10 @@ import {
     posContainer,
     primary,
     quaternary,
+    secondary,
     tertiary,
     topLeft,
-    topRight
+    topRight,
 } from './constants';
 import { SeqValues } from './SeqValues';
 
@@ -77,34 +78,63 @@ function Main({ group, track, context }: Props) {
 
 function Edit({ group, track, context }: Props) {
     return (
-        <Container group={group} context={context} values={{ seq: 0, menu: 1 }}>
-            <Rect position={[0, 0, ScreenWidth, height]} />
+        <>
+            <EditDistortion group={group} track={track} context={context} menu={1} />
+            <EditWaveform group={group} track={track} context={context} menu={2} />
+        </>
+    );
+}
 
-            {/* <Value
-                value="DrumSample BROWSER"
+function EditDistortion({ group, track, context, menu }: Props & { menu: number }) {
+    return (
+        <Container group={group} context={context} values={{ seq: 0, menu }}>
+            <Value
+                value="Distortion WAVESHAPE"
                 position={topLeft}
                 group={group}
                 track={track}
                 encoderId={0}
                 {...tertiary}
-                // VALUE_FONT_SIZE={8}
             />
             <Value
-                value="DrumSample START"
+                value="Distortion DRIVE"
                 position={bottomLeft}
                 group={group}
                 track={track}
                 encoderId={1}
-                {...quaternary}
+                {...primary}
             />
             <Value
-                value="DrumSample END"
+                value="Distortion COMPRESS"
+                position={topRight}
+                group={group}
+                track={track}
+                encoderId={2}
+                {...secondary}
+            />
+            <Value
+                value="Distortion BASS"
                 position={bottomRight}
                 group={group}
                 track={track}
                 encoderId={3}
                 {...quaternary}
-            /> */}
+            />
+        </Container>
+    );
+}
+
+function EditWaveform({ group, track, context, menu }: Props & { menu: number }) {
+    return (
+        <Container group={group} context={context} values={{ seq: 0, menu }}>
+            <GraphEncoder
+                position={[0, 0, ScreenWidth, height]}
+                track={track}
+                plugin="Drum23"
+                data_id="WAVEFORM"
+                RENDER_TITLE_ON_TOP={false}
+                encoders={['0 WAVEFORM_TYPE', '2 MACRO', '1 SHAPE']}
+            />
         </Container>
     );
 }

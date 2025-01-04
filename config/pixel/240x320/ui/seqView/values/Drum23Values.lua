@@ -1,10 +1,10 @@
 local ____lualib = require("lualib_bundle")
 local __TS__ObjectAssign = ____lualib.__TS__ObjectAssign
 local ____exports = {}
-local Main, Edit, Container
+local Main, Edit, EditDistortion, EditWaveform, Container
 local React = require("config.libs.react")
-local ____Rect = require("config.libs.components.Rect")
-local Rect = ____Rect.Rect
+local ____GraphEncoder = require("config.libs.components.GraphEncoder")
+local GraphEncoder = ____GraphEncoder.GraphEncoder
 local ____Value = require("config.libs.components.Value")
 local Value = ____Value.Value
 local ____VisibilityContainer = require("config.libs.components.VisibilityContainer")
@@ -20,6 +20,7 @@ local height = ____constants.height
 local posContainer = ____constants.posContainer
 local primary = ____constants.primary
 local quaternary = ____constants.quaternary
+local secondary = ____constants.secondary
 local tertiary = ____constants.tertiary
 local topLeft = ____constants.topLeft
 local topRight = ____constants.topRight
@@ -79,14 +80,92 @@ function Main(____bindingPattern0)
 end
 function Edit(____bindingPattern0)
     local context
+    local track
     local group
     group = ____bindingPattern0.group
-    local track = ____bindingPattern0.track
+    track = ____bindingPattern0.track
     context = ____bindingPattern0.context
     return React.createElement(
+        React.Fragment,
+        nil,
+        React.createElement(EditDistortion, {group = group, track = track, context = context, menu = 1}),
+        React.createElement(EditWaveform, {group = group, track = track, context = context, menu = 2})
+    )
+end
+function EditDistortion(____bindingPattern0)
+    local menu
+    local context
+    local track
+    local group
+    group = ____bindingPattern0.group
+    track = ____bindingPattern0.track
+    context = ____bindingPattern0.context
+    menu = ____bindingPattern0.menu
+    return React.createElement(
         Container,
-        {group = group, context = context, values = {seq = 0, menu = 1}},
-        React.createElement(Rect, {position = {0, 0, ScreenWidth, height}})
+        {group = group, context = context, values = {seq = 0, menu = menu}},
+        React.createElement(
+            Value,
+            __TS__ObjectAssign({
+                value = "Distortion WAVESHAPE",
+                position = topLeft,
+                group = group,
+                track = track,
+                encoderId = 0
+            }, tertiary)
+        ),
+        React.createElement(
+            Value,
+            __TS__ObjectAssign({
+                value = "Distortion DRIVE",
+                position = bottomLeft,
+                group = group,
+                track = track,
+                encoderId = 1
+            }, primary)
+        ),
+        React.createElement(
+            Value,
+            __TS__ObjectAssign({
+                value = "Distortion COMPRESS",
+                position = topRight,
+                group = group,
+                track = track,
+                encoderId = 2
+            }, secondary)
+        ),
+        React.createElement(
+            Value,
+            __TS__ObjectAssign({
+                value = "Distortion BASS",
+                position = bottomRight,
+                group = group,
+                track = track,
+                encoderId = 3
+            }, quaternary)
+        )
+    )
+end
+function EditWaveform(____bindingPattern0)
+    local menu
+    local context
+    local track
+    local group
+    group = ____bindingPattern0.group
+    track = ____bindingPattern0.track
+    context = ____bindingPattern0.context
+    menu = ____bindingPattern0.menu
+    return React.createElement(
+        Container,
+        {group = group, context = context, values = {seq = 0, menu = menu}},
+        React.createElement(GraphEncoder, {
+            position = {0, 0, ScreenWidth, height},
+            track = track,
+            plugin = "Drum23",
+            data_id = "WAVEFORM",
+            RENDER_TITLE_ON_TOP = false,
+            encoders = {"0 WAVEFORM_TYPE", "2 MACRO", "1 SHAPE"}
+        })
     )
 end
 function Container(____bindingPattern0)
