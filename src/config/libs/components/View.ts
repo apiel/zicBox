@@ -1,5 +1,5 @@
-import { ZicObj } from '../../libs/core';
-import { getView } from '../../libs/ui';
+import { ZicObj } from '@/libs/core';
+import { getView } from '@/libs/ui';
 
 export interface Props extends ZicObj {
     name: string;

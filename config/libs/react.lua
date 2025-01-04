@@ -7,6 +7,6 @@ function ____exports.createElement(component, props, ...)
     return __TS__ArrayFlat({element, children}, math.huge)
 end
 function ____exports.Fragment()
-    return {{component = "Fragment"}}
+    return {}
 end
 return ____exports

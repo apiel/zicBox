@@ -1,4 +1,4 @@
-import { getComponent, Position } from '../ui';
+import { getComponent, Position } from '@/libs/ui';
 
 export interface Props {
     position: Position;
