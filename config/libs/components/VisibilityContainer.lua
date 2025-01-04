@@ -5,11 +5,14 @@ local ____ui = require("config.libs.ui")
 local getPosition = ____ui.getPosition
 function ____exports.VisibilityContainer(____bindingPattern0)
     local props
+    local group
     local position
     position = ____bindingPattern0.position
-    props = __TS__ObjectRest(____bindingPattern0, {position = true})
+    group = ____bindingPattern0.group
+    props = __TS__ObjectRest(____bindingPattern0, {position = true, group = true})
     return {
         {CONTAINER = "VisibilityContainer " .. getPosition(position)},
+        {VISIBILITY_GROUP = group},
         props
     }
 end
