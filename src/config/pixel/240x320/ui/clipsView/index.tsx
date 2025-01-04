@@ -14,6 +14,7 @@ import {
     ColorTrack8,
 } from '../constants';
 import { Clips } from './Clips';
+import { TextGridClips, TextGridClipsShifted } from './TextGrid';
 
 export type Props = {
     name: string;
@@ -25,14 +26,17 @@ export function ClipsView({ name }: Props) {
             <ProgressBar y={5} />
             <ValueBpm />
 
+            <TextGridClips />
+            <TextGridClipsShifted />
+
             <Clips color={ColorTrack1} track={1} group={0} />
             <Clips color={ColorTrack2} track={2} group={1} />
             <Clips color={ColorTrack3} track={3} group={2} />
             <Clips color={ColorTrack4} track={4} group={3} />
-            <Clips color={ColorTrack5} track={5} group={3} />
-            <Clips color={ColorTrack6} track={6} group={4} />
-            <Clips color={ColorTrack7} track={7} group={4} />
-            <Clips color={ColorTrack8} track={8} group={5} />
+            <Clips color={ColorTrack5} track={5} group={4} />
+            <Clips color={ColorTrack6} track={6} group={5} />
+            <Clips color={ColorTrack7} track={7} group={6} />
+            <Clips color={ColorTrack8} track={8} group={7} />
         </View>
     );
 }
