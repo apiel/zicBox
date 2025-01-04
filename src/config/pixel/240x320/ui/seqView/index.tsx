@@ -25,6 +25,7 @@ import {
     TextGridTrackShifted,
     TextGridTrackStepEdit,
 } from './TextGrid';
+import { DrumSampleValues } from './values/DrumSampleValues';
 import { MasterValues } from './values/MasterValues';
 
 export type Props = {
@@ -66,6 +67,14 @@ export function SeqView({ name }: Props) {
             <RowDrumSample group={8} track={8} name_color={ColorTrack8} select_menu_context="18" />
 
             <MasterValues />
+
+
+            <DrumSampleValues group={3} track={3} context={13} />
+            <DrumSampleValues group={4} track={4} context={14} />
+            <DrumSampleValues group={5} track={5} context={15} />
+            <DrumSampleValues group={6} track={6} context={16} />
+            <DrumSampleValues group={7} track={7} context={17} />
+            <DrumSampleValues group={8} track={8} context={18} />
         </View>
     );
 }
