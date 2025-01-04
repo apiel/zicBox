@@ -1,4 +1,4 @@
-import { PrimaryBar, QuaternaryBar, SecondaryBar, TertiaryBar, W2_4 } from '@/pixel/240x320/ui/constants';
+import { PrimaryBar, QuaternaryBar, ScreenWidth, SecondaryBar, TertiaryBar, W2_4 } from '@/pixel/240x320/ui/constants';
 
 export const valueH = 29;
 export const rowSpacing = 8;
@@ -10,6 +10,8 @@ export const topLeft = [0, 0, W2_4 - 2, valueH];
 export const bottomLeft = [0, valueH + rowSpacing, W2_4 - 2, valueH];
 export const topRight = [W2_4, 0, W2_4 - 2, valueH];
 export const bottomRight = [W2_4, valueH + rowSpacing, W2_4 - 2, valueH];
+
+export const posContainer = [0, posY, ScreenWidth, valueH * 2 + 2];
 
 const base = {
     SHOW_LABEL_OVER_VALUE: 6,

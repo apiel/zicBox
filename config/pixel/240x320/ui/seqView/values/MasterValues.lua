@@ -8,24 +8,20 @@ local ____Value = require("config.libs.components.Value")
 local Value = ____Value.Value
 local ____VisibilityContainer = require("config.libs.components.VisibilityContainer")
 local VisibilityContainer = ____VisibilityContainer.VisibilityContainer
-local ____VisibilityGroup = require("config.libs.components.VisibilityGroup")
-local VisibilityGroup = ____VisibilityGroup.VisibilityGroup
 local ____constants = require("config.pixel.240x320.ui.constants")
 local ScreenWidth = ____constants.ScreenWidth
 local ____constants = require("config.pixel.240x320.ui.seqView.values.constants")
 local bottomRight = ____constants.bottomRight
 local height = ____constants.height
-local posY = ____constants.posY
+local posContainer = ____constants.posContainer
 local quaternary = ____constants.quaternary
 local tertiary = ____constants.tertiary
 local topLeft = ____constants.topLeft
 local topRight = ____constants.topRight
-local valueH = ____constants.valueH
 function ____exports.MasterValues()
     return React.createElement(
         VisibilityContainer,
-        {position = {0, posY, ScreenWidth, valueH * 2 + 2}},
-        React.createElement(VisibilityGroup, {condition = "SHOW_WHEN", group = 0}),
+        {position = posContainer, group = 0},
         React.createElement(Rect, {position = {0, 0, ScreenWidth, height}}),
         React.createElement(
             Value,

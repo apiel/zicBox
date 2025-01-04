@@ -10,14 +10,13 @@ import {
     bottomLeft,
     bottomRight,
     height,
-    posY,
+    posContainer,
     primary,
     quaternary,
     secondary,
     tertiary,
     topLeft,
-    topRight,
-    valueH,
+    topRight
 } from './constants';
 import { SeqValues } from './SeqValues';
 
@@ -120,7 +119,7 @@ function Container({
     values: { seq: number; menu: number };
 }) {
     return (
-        <VisibilityContainer position={[0, posY, ScreenWidth, valueH * 2 + 2]} group={group}>
+        <VisibilityContainer position={posContainer} group={group}>
             <VisibilityContext index={10} condition="SHOW_WHEN" value={values.seq} />
             <VisibilityContext index={context} condition="SHOW_WHEN" value={values.menu} />
         </VisibilityContainer>

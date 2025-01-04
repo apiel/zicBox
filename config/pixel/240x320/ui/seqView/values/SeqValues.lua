@@ -8,19 +8,16 @@ local ____VisibilityContainer = require("config.libs.components.VisibilityContai
 local VisibilityContainer = ____VisibilityContainer.VisibilityContainer
 local ____VisibilityContext = require("config.libs.components.VisibilityContext")
 local VisibilityContext = ____VisibilityContext.VisibilityContext
-local ____constants = require("config.pixel.240x320.ui.constants")
-local ScreenWidth = ____constants.ScreenWidth
 local ____constants = require("config.pixel.240x320.ui.seqView.values.constants")
 local bottomLeft = ____constants.bottomLeft
 local bottomRight = ____constants.bottomRight
-local posY = ____constants.posY
+local posContainer = ____constants.posContainer
 local primary = ____constants.primary
 local quaternary = ____constants.quaternary
 local secondary = ____constants.secondary
 local tertiary = ____constants.tertiary
 local topLeft = ____constants.topLeft
 local topRight = ____constants.topRight
-local valueH = ____constants.valueH
 function ____exports.SeqValues(____bindingPattern0)
     local track
     local group
@@ -28,7 +25,7 @@ function ____exports.SeqValues(____bindingPattern0)
     track = ____bindingPattern0.track
     return React.createElement(
         VisibilityContainer,
-        {position = {0, posY, ScreenWidth, valueH * 2 + 2}, group = group},
+        {position = posContainer, group = group},
         React.createElement(VisibilityContext, {index = 10, condition = "SHOW_WHEN_OVER", value = 0}),
         React.createElement(
             Value,
