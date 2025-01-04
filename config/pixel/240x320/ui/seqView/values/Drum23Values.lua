@@ -1,7 +1,7 @@
 local ____lualib = require("lualib_bundle")
 local __TS__ObjectAssign = ____lualib.__TS__ObjectAssign
 local ____exports = {}
-local Main, Edit, EditDistortion, EditWaveform, EditEnvAmp, EditEnvFreq, Container
+local Main, Edit, EditDistortion, EditWaveform, EditEnvAmp, EditEnvFreq, EditClick, Container
 local React = require("config.libs.react")
 local ____DrumEnvelop = require("config.libs.components.DrumEnvelop")
 local DrumEnvelop = ____DrumEnvelop.DrumEnvelop
@@ -100,7 +100,8 @@ function Edit(____bindingPattern0)
         React.createElement(EditDistortion, {group = group, track = track, context = context, menu = 1}),
         React.createElement(EditWaveform, {group = group, track = track, context = context, menu = 2}),
         React.createElement(EditEnvAmp, {group = group, track = track, context = context, menu = 3}),
-        React.createElement(EditEnvFreq, {group = group, track = track, context = context, menu = 4})
+        React.createElement(EditEnvFreq, {group = group, track = track, context = context, menu = 4}),
+        React.createElement(EditClick, {group = group, track = track, context = context, menu = 5})
     )
 end
 function EditDistortion(____bindingPattern0)
@@ -241,6 +242,60 @@ function EditEnvFreq(____bindingPattern0)
             encoder_id = 3,
             color = "secondary"
         })
+    )
+end
+function EditClick(____bindingPattern0)
+    local menu
+    local context
+    local track
+    local group
+    group = ____bindingPattern0.group
+    track = ____bindingPattern0.track
+    context = ____bindingPattern0.context
+    menu = ____bindingPattern0.menu
+    return React.createElement(
+        Container,
+        {group = group, context = context, values = {seq = 0, menu = menu}},
+        React.createElement(
+            Value,
+            __TS__ObjectAssign({
+                value = "Drum23 CLICK",
+                position = topLeft,
+                group = group,
+                track = track,
+                encoderId = 0
+            }, tertiary)
+        ),
+        React.createElement(
+            Value,
+            __TS__ObjectAssign({
+                value = "Drum23 CLICK_DURATION",
+                position = bottomLeft,
+                group = group,
+                track = track,
+                encoderId = 1
+            }, primary)
+        ),
+        React.createElement(
+            Value,
+            __TS__ObjectAssign({
+                value = "Drum23 CLICK_CUTOFF",
+                position = topRight,
+                group = group,
+                track = track,
+                encoderId = 2
+            }, secondary, {USE_STRING_VALUE = true})
+        ),
+        React.createElement(
+            Value,
+            __TS__ObjectAssign({
+                value = "Drum23 CLICK_RESONANCE",
+                position = bottomRight,
+                group = group,
+                track = track,
+                encoderId = 3
+            }, quaternary)
+        )
     )
 end
 function Container(____bindingPattern0)

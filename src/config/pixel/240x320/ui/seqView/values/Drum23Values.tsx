@@ -87,6 +87,7 @@ function Edit({ group, track, context }: Props) {
             <EditWaveform group={group} track={track} context={context} menu={2} />
             <EditEnvAmp group={group} track={track} context={context} menu={3} />
             <EditEnvFreq group={group} track={track} context={context} menu={4} />
+            <EditClick group={group} track={track} context={context} menu={5} />
         </>
     );
 }
@@ -194,6 +195,46 @@ function EditEnvFreq({ group, track, context, menu }: Props & { menu: number }) 
                 value="Drum23 PITCH"
                 encoder_id={3}
                 color="secondary"
+            />
+        </Container>
+    );
+}
+
+function EditClick({ group, track, context, menu }: Props & { menu: number }) {
+    return (
+        <Container group={group} context={context} values={{ seq: 0, menu }}>
+            <Value
+                value="Drum23 CLICK"
+                position={topLeft}
+                group={group}
+                track={track}
+                encoderId={0}
+                {...tertiary}
+            />
+            <Value
+                value="Drum23 CLICK_DURATION"
+                position={bottomLeft}
+                group={group}
+                track={track}
+                encoderId={1}
+                {...primary}
+            />
+            <Value
+                value="Drum23 CLICK_CUTOFF"
+                position={topRight}
+                group={group}
+                track={track}
+                encoderId={2}
+                {...secondary}
+                USE_STRING_VALUE
+            />
+            <Value
+                value="Drum23 CLICK_RESONANCE"
+                position={bottomRight}
+                group={group}
+                track={track}
+                encoderId={3}
+                {...quaternary}
             />
         </Container>
     );
