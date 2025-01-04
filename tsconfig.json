@@ -18,6 +18,7 @@
     },
     "tstl": {
         "luaTarget": "5.4",
-        "noImplicitSelf": true
+        "noImplicitSelf": true,
+        "luaLibImport": "require-minimal"
     }
 }
