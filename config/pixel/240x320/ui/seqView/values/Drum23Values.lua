@@ -20,7 +20,6 @@ local height = ____constants.height
 local posContainer = ____constants.posContainer
 local primary = ____constants.primary
 local quaternary = ____constants.quaternary
-local secondary = ____constants.secondary
 local tertiary = ____constants.tertiary
 local topLeft = ____constants.topLeft
 local topRight = ____constants.topRight
@@ -49,7 +48,7 @@ function Main(____bindingPattern0)
         React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "Volume GAIN_CLIPPING",
+                value = "Drum23 GAIN_CLIPPING",
                 position = bottomLeft,
                 group = group,
                 track = track,
@@ -59,17 +58,17 @@ function Main(____bindingPattern0)
         React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "Volume DRIVE",
+                value = "MMFilter CUTOFF",
                 position = topRight,
                 group = group,
                 track = track,
                 encoderId = 2
-            }, secondary)
+            }, quaternary, {USE_STRING_VALUE = true})
         ),
         React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "SampleRateReducer SAMPLE_STEP",
+                value = "MMFilter RESONANCE",
                 position = bottomRight,
                 group = group,
                 track = track,
@@ -80,45 +79,14 @@ function Main(____bindingPattern0)
 end
 function Edit(____bindingPattern0)
     local context
-    local track
     local group
     group = ____bindingPattern0.group
-    track = ____bindingPattern0.track
+    local track = ____bindingPattern0.track
     context = ____bindingPattern0.context
     return React.createElement(
         Container,
         {group = group, context = context, values = {seq = 0, menu = 1}},
-        React.createElement(Rect, {position = {0, 0, ScreenWidth, height}}),
-        React.createElement(
-            Value,
-            __TS__ObjectAssign({
-                value = "DrumSample BROWSER",
-                position = topLeft,
-                group = group,
-                track = track,
-                encoderId = 0
-            }, tertiary)
-        ),
-        React.createElement(
-            Value,
-            __TS__ObjectAssign({
-                value = "DrumSample START",
-                position = bottomLeft,
-                group = group,
-                track = track,
-                encoderId = 1
-            }, quaternary)
-        ),
-        React.createElement(
-            Value,
-            __TS__ObjectAssign({
-                value = "DrumSample END",
-                position = bottomRight,
-                group = group,
-                track = track,
-                encoderId = 3
-            }, quaternary)
-        )
+        React.createElement(Rect, {position = {0, 0, ScreenWidth, height}})
     )
 end
 function Container(____bindingPattern0)
@@ -135,7 +103,7 @@ function Container(____bindingPattern0)
         React.createElement(VisibilityContext, {index = context, condition = "SHOW_WHEN", value = values.menu})
     )
 end
-function ____exports.DrumSampleValues(____bindingPattern0)
+function ____exports.Drum23Values(____bindingPattern0)
     local context
     local track
     local group

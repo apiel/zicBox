@@ -32,6 +32,8 @@ local TextGridProgressBarShifted = ____TextGrid.TextGridProgressBarShifted
 local TextGridTrack = ____TextGrid.TextGridTrack
 local TextGridTrackShifted = ____TextGrid.TextGridTrackShifted
 local TextGridTrackStepEdit = ____TextGrid.TextGridTrackStepEdit
+local ____Drum23Values = require("config.pixel.240x320.ui.seqView.values.Drum23Values")
+local Drum23Values = ____Drum23Values.Drum23Values
 local ____DrumSampleValues = require("config.pixel.240x320.ui.seqView.values.DrumSampleValues")
 local DrumSampleValues = ____DrumSampleValues.DrumSampleValues
 local ____MasterValues = require("config.pixel.240x320.ui.seqView.values.MasterValues")
@@ -65,6 +67,8 @@ function ____exports.SeqView(____bindingPattern0)
         React.createElement(RowDrumSample, {group = 7, track = 7, name_color = ColorTrack7, select_menu_context = "17"}),
         React.createElement(RowDrumSample, {group = 8, track = 8, name_color = ColorTrack8, select_menu_context = "18"}),
         React.createElement(MasterValues, nil),
+        React.createElement(Drum23Values, {group = 1, track = 1, context = 11}),
+        React.createElement(Drum23Values, {group = 2, track = 2, context = 12}),
         React.createElement(DrumSampleValues, {group = 3, track = 3, context = 13}),
         React.createElement(DrumSampleValues, {group = 4, track = 4, context = 14}),
         React.createElement(DrumSampleValues, {group = 5, track = 5, context = 15}),
