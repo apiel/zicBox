@@ -21,7 +21,7 @@ import {
     W3_4,
 } from '@/pixel/240x320/ui/constants';
 import { RowDrum23, RowDrumSample } from './Row';
-import { TextGridProgressBar, TextGridProgressBarShifted } from './TextGrid';
+import { TextGridProgressBar, TextGridProgressBarShifted, TextGridTrack, TextGridTrackShifted, TextGridTrackStepEdit } from './TextGrid';
 
 export type Props = {
     name: string;
@@ -37,6 +37,9 @@ export function SeqView({ name }: Props) {
 
             <TextGridProgressBar />
             <TextGridProgressBarShifted />
+            <TextGridTrack />
+            <TextGridTrackStepEdit />
+            <TextGridTrackShifted />
 
             <Value
                 value="Tempo BPM"
