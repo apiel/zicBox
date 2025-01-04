@@ -2,9 +2,7 @@ import * as React from '@/libs/react';
 
 import { HiddenValue } from '@/libs/components/HiddenValue';
 import { Keymap } from '@/libs/components/Keymap';
-import { SeqProgressBar } from '@/libs/components/SeqProgressBar';
 import { Spectrogram } from '@/libs/components/Spectrogram';
-import { Value } from '@/libs/components/Value';
 import { View } from '@/libs/components/View';
 import {
     ColorTrack1,
@@ -15,13 +13,18 @@ import {
     ColorTrack6,
     ColorTrack7,
     ColorTrack8,
-    KeyInfoPosition,
     ScreenWidth,
-    W1_4,
-    W3_4,
 } from '@/pixel/240x320/ui/constants';
+import { ProgressBar } from '../components/ProgressBar';
+import { ValueBpm } from '../components/ValueBpm';
 import { RowDrum23, RowDrumSample } from './Row';
-import { TextGridProgressBar, TextGridProgressBarShifted, TextGridTrack, TextGridTrackShifted, TextGridTrackStepEdit } from './TextGrid';
+import {
+    TextGridProgressBar,
+    TextGridProgressBarShifted,
+    TextGridTrack,
+    TextGridTrackShifted,
+    TextGridTrackStepEdit,
+} from './TextGrid';
 
 export type Props = {
     name: string;
@@ -41,13 +44,7 @@ export function SeqView({ name }: Props) {
             <TextGridTrackStepEdit />
             <TextGridTrackShifted />
 
-            <Value
-                value="Tempo BPM"
-                position={[W3_4, KeyInfoPosition[1], W1_4, 22]}
-                SHOW_LABEL_OVER_VALUE={0}
-                BAR_HEIGHT={0}
-                VALUE_FONT_SIZE={16}
-            />
+            <ValueBpm />
 
             <Spectrogram
                 position={[0, 4, ScreenWidth, 70]}
@@ -56,14 +53,7 @@ export function SeqView({ name }: Props) {
                 text="Pixel"
             />
 
-            <SeqProgressBar
-                position={[0, 160, ScreenWidth, 5]}
-                seq_plugin="Sequencer 1"
-                track={0}
-                volume_plugin="MasterVolume VOLUME"
-                active_color="#23a123"
-                group={0}
-            />
+            <ProgressBar y={160} volume_plugin="MasterVolume VOLUME" group={0} />
 
             <RowDrum23 group={1} track={1} name_color={ColorTrack1} select_menu_context="11" />
             <RowDrum23 group={2} track={2} name_color={ColorTrack2} select_menu_context="12" />
