@@ -7,6 +7,8 @@ local ____Keymap = require("config.libs.components.Keymap")
 local Keymap = ____Keymap.Keymap
 local ____SeqProgressBar = require("config.libs.components.SeqProgressBar")
 local SeqProgressBar = ____SeqProgressBar.SeqProgressBar
+local ____Spectrogram = require("config.libs.components.Spectrogram")
+local Spectrogram = ____Spectrogram.Spectrogram
 local ____Value = require("config.libs.components.Value")
 local Value = ____Value.Value
 local ____View = require("config.libs.components.View")
@@ -51,6 +53,7 @@ function ____exports.SeqView(____bindingPattern0)
             BAR_HEIGHT = 0,
             VALUE_FONT_SIZE = 16
         }),
+        React.createElement(Spectrogram, {position = {0, 4, ScreenWidth, 70}, track = 0, data = "Spectrogram BUFFER", text = "Pixel"}),
         React.createElement(SeqProgressBar, {
             position = {0, 160, ScreenWidth, 5},
             seq_plugin = "Sequencer 1",

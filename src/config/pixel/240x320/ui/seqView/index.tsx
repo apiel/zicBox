@@ -3,6 +3,7 @@ import * as React from '@/libs/react';
 import { HiddenValue } from '@/libs/components/HiddenValue';
 import { Keymap } from '@/libs/components/Keymap';
 import { SeqProgressBar } from '@/libs/components/SeqProgressBar';
+import { Spectrogram } from '@/libs/components/Spectrogram';
 import { Value } from '@/libs/components/Value';
 import { View } from '@/libs/components/View';
 import {
@@ -43,6 +44,13 @@ export function SeqView({ name }: Props) {
                 SHOW_LABEL_OVER_VALUE={0}
                 BAR_HEIGHT={0}
                 VALUE_FONT_SIZE={16}
+            />
+
+            <Spectrogram
+                position={[0, 4, ScreenWidth, 70]}
+                track={0}
+                data="Spectrogram BUFFER"
+                text="Pixel"
             />
 
             <SeqProgressBar
