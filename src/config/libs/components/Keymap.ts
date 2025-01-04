@@ -1,7 +1,7 @@
 
 export type Props = {
     controller?: string;
-    context?: number;
+    context?: string;
     key: string | number;
     action: string;
     action2?: string;

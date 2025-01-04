@@ -29,7 +29,7 @@ drum23(2);
 drumSample(3);
 drumSample(4);
 
-plugin('Mixer4', [{ name: 'MixerDrum', track: 9 }]);
+plugin('MixerDrum Mixer4', [{ track: 9 }]);
 plugin('SerializeTrack', [{ track: 9, filename: 'mixer_drum' }]);
 
 // FM tracks
@@ -38,15 +38,15 @@ drumSample(6);
 drumSample(7);
 drumSample(8);
 
-plugin('Mixer4', [{ name: 'MixerSynth', track_start: 5, track: 10 }]);
+plugin('MixerSynth Mixer4', [{ track_start: 5, track: 10 }]);
 plugin('SerializeTrack', [{ track: 10, filename: 'mixer_synth' }]);
 
 // Master
 
-plugin('Mixer2', [{ name: 'MixerMaster', track_a: 9, track_b: 10, value: 50, track: 0 }]);
+plugin('MixerMaster Mixer2', [{ track_a: 9, track_b: 10, value: 50, track: 0 }]);
 
-plugin('EffectFilterMultiMode', [{ name: 'MasterFilter', STRING_CUTOFF_FORMAT }]);
-plugin('EffectGainVolume', [{ name: 'MasterVolume' }]);
+plugin('MasterFilter EffectFilterMultiMode', [{ STRING_CUTOFF_FORMAT }]);
+plugin('MasterVolume EffectGainVolume');
 plugin('Spectrogram');
 plugin('AudioOutput');
 plugin('SerializeTrack', [{ filename: 'master' }]);
