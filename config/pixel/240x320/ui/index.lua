@@ -15,6 +15,8 @@ local ScreenWidth = ____constants.ScreenWidth
 local W1_2 = ____constants.W1_2
 local W1_4 = ____constants.W1_4
 local W3_4 = ____constants.W3_4
+local ____menuView = require("config.pixel.240x320.ui.menuView.index")
+local MenuView = ____menuView.MenuView
 local ____seqView = require("config.pixel.240x320.ui.seqView.index")
 local SeqView = ____seqView.SeqView
 setWindowPosition(400, 500)
@@ -25,4 +27,5 @@ addZoneEncoder({W1_2, 0, W1_4, ScreenHeight})
 addZoneEncoder({W3_4, 0, W1_4, ScreenHeight})
 applyZic(React.createElement(SeqView, {name = "Home"}))
 applyZic(React.createElement(ClipsView, {name = "Clips"}))
+applyZic(React.createElement(MenuView, {name = "Menu"}))
 return ____exports
