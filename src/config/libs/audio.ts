@@ -21,7 +21,7 @@ export function pluginAlias(name: string, pluginPath: string) {
  * @param pluginAlias string - The alias name of the plugin to load: "aliasName" or "name aliasName". If "name" is provided, it will be used as the name of the plugin in the UI, instead of "aliasName".
  * @param values table - An array of additional Zic values to apply to the plugin.
  */
-export function plugin(pluginAlias: string, values: ZicValue[]) {
+export function plugin(pluginAlias: string, values: ZicValue[] = []) {
     applyZic([{ AUDIO_PLUGIN: pluginAlias }, values]);
 }
 

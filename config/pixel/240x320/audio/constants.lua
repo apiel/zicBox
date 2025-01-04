@@ -1,5 +1,5 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
-require("config.pixel.240x320.audio.index")
-require("config.pixel.240x320.ui.index")
+____exports.STRING_CUTOFF_FORMAT = "%d%% %d%%"
+____exports.MAX_VARIATION = 16
 return ____exports
