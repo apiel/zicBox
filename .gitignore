@@ -31,3 +31,4 @@ pixel_env.lua
 pixel_env_.lua
 *.gch
 *.d
+node_modules
