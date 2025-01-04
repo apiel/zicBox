@@ -1,10 +1,16 @@
 local ____lualib = require("lualib_bundle")
 local __TS__ObjectAssign = ____lualib.__TS__ObjectAssign
 local ____exports = {}
-local Main, Edit, EditDistortion, EditWaveform, Container
+local Main, Edit, EditDistortion, EditWaveform, EditEnvAmp, Container
 local React = require("config.libs.react")
+local ____DrumEnvelop = require("config.libs.components.DrumEnvelop")
+local DrumEnvelop = ____DrumEnvelop.DrumEnvelop
+local ____Encoder3 = require("config.libs.components.Encoder3")
+local Encoder3 = ____Encoder3.Encoder3
 local ____GraphEncoder = require("config.libs.components.GraphEncoder")
 local GraphEncoder = ____GraphEncoder.GraphEncoder
+local ____Rect = require("config.libs.components.Rect")
+local Rect = ____Rect.Rect
 local ____Value = require("config.libs.components.Value")
 local Value = ____Value.Value
 local ____VisibilityContainer = require("config.libs.components.VisibilityContainer")
@@ -13,9 +19,12 @@ local ____VisibilityContext = require("config.libs.components.VisibilityContext"
 local VisibilityContext = ____VisibilityContext.VisibilityContext
 local ____constants = require("config.pixel.240x320.ui.constants")
 local ScreenWidth = ____constants.ScreenWidth
+local W1_4 = ____constants.W1_4
+local W3_4 = ____constants.W3_4
 local ____constants = require("config.pixel.240x320.ui.seqView.values.constants")
 local bottomLeft = ____constants.bottomLeft
 local bottomRight = ____constants.bottomRight
+local encoderH = ____constants.encoderH
 local height = ____constants.height
 local posContainer = ____constants.posContainer
 local primary = ____constants.primary
@@ -89,7 +98,8 @@ function Edit(____bindingPattern0)
         React.Fragment,
         nil,
         React.createElement(EditDistortion, {group = group, track = track, context = context, menu = 1}),
-        React.createElement(EditWaveform, {group = group, track = track, context = context, menu = 2})
+        React.createElement(EditWaveform, {group = group, track = track, context = context, menu = 2}),
+        React.createElement(EditEnvAmp, {group = group, track = track, context = context, menu = 3})
     )
 end
 function EditDistortion(____bindingPattern0)
@@ -165,6 +175,36 @@ function EditWaveform(____bindingPattern0)
             data_id = "WAVEFORM",
             RENDER_TITLE_ON_TOP = false,
             encoders = {"0 WAVEFORM_TYPE", "2 MACRO", "1 SHAPE"}
+        })
+    )
+end
+function EditEnvAmp(____bindingPattern0)
+    local menu
+    local context
+    local track
+    local group
+    group = ____bindingPattern0.group
+    track = ____bindingPattern0.track
+    context = ____bindingPattern0.context
+    menu = ____bindingPattern0.menu
+    return React.createElement(
+        Container,
+        {group = group, context = context, values = {seq = 0, menu = menu}},
+        React.createElement(Rect, {position = {0, 0, ScreenWidth, height}}),
+        React.createElement(DrumEnvelop, {
+            position = {0, 0, W3_4 - 2, height},
+            track = track,
+            plugin = "Drum23",
+            envelop_data_id = "0",
+            RENDER_TITLE_ON_TOP = false,
+            encoders = {"0 TIME", "1 PHASE", "2 MODULATION"}
+        }),
+        React.createElement(Encoder3, {
+            position = {W3_4, (height - encoderH) * 0.5, W1_4, encoderH},
+            track = track,
+            value = "Drum23 DURATION",
+            encoder_id = 3,
+            color = "quaternary"
         })
     )
 end
