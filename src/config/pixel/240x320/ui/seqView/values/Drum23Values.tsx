@@ -1,14 +1,18 @@
 import * as React from '@/libs/react';
 
 import { ComponentProps } from '@/libs/components/component';
+import { DrumEnvelop } from '@/libs/components/DrumEnvelop';
+import { Encoder3 } from '@/libs/components/Encoder3';
 import { GraphEncoder } from '@/libs/components/GraphEncoder';
+import { Rect } from '@/libs/components/Rect';
 import { Value } from '@/libs/components/Value';
 import { VisibilityContainer } from '@/libs/components/VisibilityContainer';
 import { VisibilityContext } from '@/libs/components/VisibilityContext';
-import { ScreenWidth } from '../../constants';
+import { ScreenWidth, W1_4, W3_4 } from '../../constants';
 import {
     bottomLeft,
     bottomRight,
+    encoderH,
     height,
     posContainer,
     primary,
@@ -16,7 +20,7 @@ import {
     secondary,
     tertiary,
     topLeft,
-    topRight,
+    topRight
 } from './constants';
 import { SeqValues } from './SeqValues';
 
@@ -81,6 +85,7 @@ function Edit({ group, track, context }: Props) {
         <>
             <EditDistortion group={group} track={track} context={context} menu={1} />
             <EditWaveform group={group} track={track} context={context} menu={2} />
+            <EditEnvAmp group={group} track={track} context={context} menu={3} />
         </>
     );
 }
@@ -134,6 +139,31 @@ function EditWaveform({ group, track, context, menu }: Props & { menu: number })
                 data_id="WAVEFORM"
                 RENDER_TITLE_ON_TOP={false}
                 encoders={['0 WAVEFORM_TYPE', '2 MACRO', '1 SHAPE']}
+            />
+        </Container>
+    );
+}
+
+function EditEnvAmp({ group, track, context, menu }: Props & { menu: number }) {
+    return (
+        <Container group={group} context={context} values={{ seq: 0, menu }}>
+            <Rect position={[0, 0, ScreenWidth, height]} />
+
+            <DrumEnvelop
+                position={[0, 0, W3_4 - 2, height]}
+                track={track}
+                plugin="Drum23"
+                envelop_data_id="0"
+                RENDER_TITLE_ON_TOP={false}
+                encoders={['0 TIME', '1 PHASE', '2 MODULATION']}
+            />
+
+            <Encoder3
+                position={[W3_4, (height - encoderH) * 0.5, W1_4, encoderH]}
+                track={track}
+                value="Drum23 DURATION"
+                encoder_id={3}
+                color="quaternary"
             />
         </Container>
     );
