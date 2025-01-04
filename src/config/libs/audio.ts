@@ -22,7 +22,7 @@ export function pluginAlias(name: string, pluginPath: string) {
  * @param values table - An array of additional Zic values to apply to the plugin.
  */
 export function plugin(pluginAlias: string, values: ZicValue[]) {
-    applyZic([{ AUDIO_PLUGIN: pluginAlias }, ...values]);
+    applyZic([{ AUDIO_PLUGIN: pluginAlias }, values]);
 }
 
 /**

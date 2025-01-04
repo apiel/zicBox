@@ -1,6 +1,6 @@
 import { applyZic, ZicValue } from './core';
 
-export type Position = string | string[];
+export type Position = string | string[] | number[];
 
 export function getPosition(pos: Position) {
     return Array.isArray(pos) ? pos.join(' ') : pos;
@@ -15,7 +15,7 @@ export function getPosition(pos: Position) {
  * @returns table
  */
 export function getComponent(name: string, position: Position, values: ZicValue[] = []) {
-    return [{ COMPONENT: `${name} ${getPosition(position)}` }, ...values];
+    return [{ COMPONENT: `${name} ${getPosition(position)}` }, values];
 }
 
 /**
@@ -45,7 +45,7 @@ export function addZoneEncoder(position: Position) {
  * @returns table
  */
 export function getView(name: string, values: ZicValue[] = []) {
-    return [{ VIEW: name }, ...values];
+    return [{ VIEW: name }, values];
 }
 
 /**
