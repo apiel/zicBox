@@ -1,10 +1,12 @@
 import * as React from '@/libs/react';
 
 import { Keymap } from '@/libs/components/Keymap';
+import { Keymaps } from '@/libs/components/Keymaps';
 import { TextGrid } from '@/libs/components/TextGrid';
 import { View } from '@/libs/components/View';
 import { VisibilityContext } from '@/libs/components/VisibilityContext';
-import { KeyInfoPositionCenter } from '../constants';
+import { Workspaces } from '@/libs/components/Workspaces';
+import { KeyInfoPositionCenter, ScreenWidth } from '../constants';
 
 export type Props = {
     name: string;
@@ -13,6 +15,16 @@ export type Props = {
 export function WorkspacesView({ name }: Props) {
     return (
         <View name={name}>
+            <Workspaces plugin="SerializeTrack" position={[0, 0, ScreenWidth, 280]}>
+                <Keymaps
+                    keys={[
+                        { key: 'a', action: '.data:LOAD_WORKSPACE', context: '254:0' },
+                        { key: 'w', action: '.up', context: '254:0' },
+                        { key: 's', action: '.down', context: '254:0' },
+                        { key: 'd', action: '.delete', context: '254:1' },
+                    ]}
+                />
+            </Workspaces>
 
             <TextGrid
                 position={KeyInfoPositionCenter}
