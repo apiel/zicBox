@@ -8,8 +8,8 @@ local STRING_CUTOFF_FORMAT = ____constants.STRING_CUTOFF_FORMAT
 function ____exports.drum23(track)
     plugin("Drum23", {{track = track}})
     plugin("Sequencer", {{track = track}})
-    plugin("EffectDistortion2", {{name = "Distortion", track = track}})
-    plugin("EffectFilterMultiMode", {{name = "MMFilter", track = track, STRING_CUTOFF_FORMAT = STRING_CUTOFF_FORMAT}})
+    plugin("Distortion EffectDistortion2", {{track = track}})
+    plugin("MMFilter EffectFilterMultiMode", {{track = track, STRING_CUTOFF_FORMAT = STRING_CUTOFF_FORMAT}})
     plugin(
         "SerializeTrack",
         {{
@@ -18,6 +18,6 @@ function ____exports.drum23(track)
             MAX_VARIATION = MAX_VARIATION
         }}
     )
-    plugin("EffectGainVolume", {{name = "Volume", track = track}})
+    plugin("Volume EffectGainVolume", {{track = track}})
 end
 return ____exports

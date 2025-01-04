@@ -7,19 +7,21 @@ local ____SeqSynthBar = require("config.libs.components.SeqSynthBar")
 local SeqSynthBar = ____SeqSynthBar.SeqSynthBar
 local ____constants = require("config.pixel.240x320.ui.constants")
 local ScreenWidth = ____constants.ScreenWidth
+local y = 170
 ____exports.RowH = 14
 local function RowKeymaps(____bindingPattern0)
     local synth
     synth = ____bindingPattern0.synth
     return React.createElement(Keymaps, {keys = {{key = "q", action = ".toggleOrPlayNote:" .. synth, context = "254:0"}, {key = "a", action = ".left", context = "254:0"}, {key = "d", action = ".right", context = "254:0"}, {key = "q", action = ".toggle", context = "254:1"}}})
 end
-function ____exports.rowDrum23(____bindingPattern0)
+local function getY(track)
+    return y + (track - 1) * (____exports.RowH + 1)
+end
+function ____exports.RowDrum23(____bindingPattern0)
     local select_menu_context
     local name_color
     local track
     local group
-    local y
-    y = ____bindingPattern0.y
     group = ____bindingPattern0.group
     track = ____bindingPattern0.track
     name_color = ____bindingPattern0.name_color
@@ -27,7 +29,12 @@ function ____exports.rowDrum23(____bindingPattern0)
     return React.createElement(
         SeqSynthBar,
         {
-            position = {0, y, ScreenWidth, ____exports.RowH},
+            position = {
+                0,
+                getY(track),
+                ScreenWidth,
+                ____exports.RowH
+            },
             seq_plugin = "Sequencer",
             track = track,
             group = group,
@@ -40,13 +47,11 @@ function ____exports.rowDrum23(____bindingPattern0)
         React.createElement(RowKeymaps, {synth = "Drum23"})
     )
 end
-function ____exports.rowDrumSample(____bindingPattern0)
+function ____exports.RowDrumSample(____bindingPattern0)
     local select_menu_context
     local name_color
     local track
     local group
-    local y
-    y = ____bindingPattern0.y
     group = ____bindingPattern0.group
     track = ____bindingPattern0.track
     name_color = ____bindingPattern0.name_color
@@ -54,7 +59,12 @@ function ____exports.rowDrumSample(____bindingPattern0)
     return React.createElement(
         SeqSynthBar,
         {
-            position = {0, y, ScreenWidth, ____exports.RowH},
+            position = {
+                0,
+                getY(track),
+                ScreenWidth,
+                ____exports.RowH
+            },
             seq_plugin = "Sequencer",
             track = track,
             group = group,

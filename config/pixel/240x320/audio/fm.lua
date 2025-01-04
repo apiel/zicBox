@@ -8,9 +8,9 @@ local STRING_CUTOFF_FORMAT = ____constants.STRING_CUTOFF_FORMAT
 function ____exports.fm(track)
     plugin("SynthFM", {{name = "FM", track = track}})
     plugin("Sequencer", {{track = track}})
-    plugin("EffectFilterMultiMode", {{name = "MMFilter", track = track, STRING_CUTOFF_FORMAT = STRING_CUTOFF_FORMAT}})
-    plugin("EffectSampleRateReducer", {{name = "Bitcrusher", track = track}})
-    plugin("EffectDelay", {{name = "Delay", track = track}})
+    plugin("MMFilter EffectFilterMultiMode", {{track = track, STRING_CUTOFF_FORMAT = STRING_CUTOFF_FORMAT}})
+    plugin("Bitcrusher EffectSampleRateReducer", {{track = track}})
+    plugin("Delay EffectDelay", {{track = track}})
     plugin(
         "SerializeTrack",
         {{
@@ -19,6 +19,6 @@ function ____exports.fm(track)
             MAX_VARIATION = MAX_VARIATION
         }}
     )
-    plugin("EffectGainVolume", {{name = "Volume", track = track}})
+    plugin("Volume EffectGainVolume", {{track = track}})
 end
 return ____exports
