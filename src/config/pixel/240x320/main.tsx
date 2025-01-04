@@ -1,1 +1,3 @@
-import './ui/main';
+import './audio';
+import './ui';
+

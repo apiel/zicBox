@@ -15,6 +15,9 @@ end
 -- @param pluginAlias string - The alias name of the plugin to load: "aliasName" or "name aliasName". If "name" is provided, it will be used as the name of the plugin in the UI, instead of "aliasName".
 -- @param values table - An array of additional Zic values to apply to the plugin.
 function ____exports.plugin(pluginAlias, values)
+    if values == nil then
+        values = {}
+    end
     applyZic({{AUDIO_PLUGIN = pluginAlias}, values})
 end
 --- Set the auto save mode.

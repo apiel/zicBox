@@ -1,7 +1,15 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
 local ____audio = require("config.libs.audio")
+local autoSave = ____audio.autoSave
+local plugin = ____audio.plugin
 local pluginAlias = ____audio.pluginAlias
+local ____constants = require("config.pixel.240x320.audio.constants")
+local STRING_CUTOFF_FORMAT = ____constants.STRING_CUTOFF_FORMAT
+local ____drum23 = require("config.pixel.240x320.audio.drum23")
+local drum23 = ____drum23.drum23
+local ____drumSample = require("config.pixel.240x320.audio.drumSample")
+local drumSample = ____drumSample.drumSample
 pluginAlias("EffectDistortion", "libzic_EffectDistortion.so")
 pluginAlias("EffectDistortion2", "libzic_EffectDistortion2.so")
 pluginAlias("EffectFilterMultiMode", "libzic_EffectFilterMultiMode.so")
@@ -21,4 +29,30 @@ pluginAlias("DrumSample", "libzic_SynthDrumSample.so")
 pluginAlias("Sequencer", "libzic_Sequencer.so")
 pluginAlias("AudioOutput", "libzic_AudioOutputPulse.so")
 pluginAlias("Spectrogram", "libzic_AudioSpectrogram.so")
+drum23(1)
+drum23(2)
+drumSample(3)
+drumSample(4)
+plugin("Mixer4", {{name = "MixerDrum", track = 9}})
+plugin("SerializeTrack", {{track = 9, filename = "mixer_drum"}})
+drumSample(5)
+drumSample(6)
+drumSample(7)
+drumSample(8)
+plugin("Mixer4", {{name = "MixerSynth", track_start = 5, track = 10}})
+plugin("SerializeTrack", {{track = 10, filename = "mixer_synth"}})
+plugin("Mixer2", {{
+    name = "MixerMaster",
+    track_a = 9,
+    track_b = 10,
+    value = 50,
+    track = 0
+}})
+plugin("EffectFilterMultiMode", {{name = "MasterFilter", STRING_CUTOFF_FORMAT = STRING_CUTOFF_FORMAT}})
+plugin("EffectGainVolume", {{name = "MasterVolume"}})
+plugin("Spectrogram")
+plugin("AudioOutput")
+plugin("SerializeTrack", {{filename = "master"}})
+plugin("Tempo")
+autoSave(500)
 return ____exports
