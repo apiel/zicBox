@@ -1,6 +1,10 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
 local React = require("config.libs.react")
+local ____HiddenValue = require("config.libs.components.HiddenValue")
+local HiddenValue = ____HiddenValue.HiddenValue
+local ____Keymap = require("config.libs.components.Keymap")
+local Keymap = ____Keymap.Keymap
 local ____SeqProgressBar = require("config.libs.components.SeqProgressBar")
 local SeqProgressBar = ____SeqProgressBar.SeqProgressBar
 local ____Value = require("config.libs.components.Value")
@@ -32,6 +36,12 @@ function ____exports.SeqView(____bindingPattern0)
     return React.createElement(
         View,
         {name = name},
+        React.createElement(
+            HiddenValue,
+            nil,
+            React.createElement(Keymap, {key = "w", action = "incGroup:-1", context = "254:0"}),
+            React.createElement(Keymap, {key = "s", action = "incGroup:+1", context = "254:0"})
+        ),
         React.createElement(TextGridProgressBar, nil),
         React.createElement(TextGridProgressBarShifted, nil),
         React.createElement(Value, {
