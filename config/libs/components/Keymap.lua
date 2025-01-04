@@ -13,7 +13,7 @@ function ____exports.Keymap(____bindingPattern0)
     action2 = ____bindingPattern0.action2
     controller = controller or "Keyboard"
     if context then
-        controller = controller .. ":" .. tostring(context)
+        controller = controller .. ":" .. context
     end
     if type(key) == "string" then
         key = ("'" .. key) .. "'"
