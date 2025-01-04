@@ -36,10 +36,7 @@ export function DrumSampleValues({ group, track, context }: Props) {
 
 function Main({ group, track, context }: Props) {
     return (
-        <VisibilityContainer position={[0, posY, ScreenWidth, valueH * 2 + 2]} group={group}>
-            <VisibilityContext index={10} condition="SHOW_WHEN" value={0} />
-            <VisibilityContext index={context} condition="SHOW_WHEN" value={0} />
-
+        <Container group={group} context={context} values={{ seq: 0, menu: 0 }}>
             <Value
                 value="Volume VOLUME"
                 position={topLeft}
@@ -72,16 +69,13 @@ function Main({ group, track, context }: Props) {
                 encoderId={3}
                 {...quaternary}
             />
-        </VisibilityContainer>
+        </Container>
     );
 }
 
 function Edit({ group, track, context }: Props) {
     return (
-        <VisibilityContainer position={[0, posY, ScreenWidth, valueH * 2 + 2]} group={group}>
-            <VisibilityContext index={10} condition="SHOW_WHEN" value={0} />
-            <VisibilityContext index={context} condition="SHOW_WHEN" value={1} />
-
+        <Container group={group} context={context} values={{ seq: 0, menu: 1 }}>
             <Rect position={[0, 0, ScreenWidth, height]} />
 
             <Value
@@ -109,6 +103,23 @@ function Edit({ group, track, context }: Props) {
                 encoderId={3}
                 {...quaternary}
             />
+        </Container>
+    );
+}
+
+function Container({
+    group,
+    context,
+    values,
+}: {
+    group: number;
+    context: number;
+    values: { seq: number; menu: number };
+}) {
+    return (
+        <VisibilityContainer position={[0, posY, ScreenWidth, valueH * 2 + 2]} group={group}>
+            <VisibilityContext index={10} condition="SHOW_WHEN" value={values.seq} />
+            <VisibilityContext index={context} condition="SHOW_WHEN" value={values.menu} />
         </VisibilityContainer>
     );
 }

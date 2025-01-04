@@ -1,7 +1,7 @@
 local ____lualib = require("lualib_bundle")
 local __TS__ObjectAssign = ____lualib.__TS__ObjectAssign
 local ____exports = {}
-local Main, Edit
+local Main, Edit, Container
 local React = require("config.libs.react")
 local ____Rect = require("config.libs.components.Rect")
 local Rect = ____Rect.Rect
@@ -32,10 +32,8 @@ function Main(____bindingPattern0)
     track = ____bindingPattern0.track
     context = ____bindingPattern0.context
     return React.createElement(
-        VisibilityContainer,
-        {position = {0, posY, ScreenWidth, valueH * 2 + 2}, group = group},
-        React.createElement(VisibilityContext, {index = 10, condition = "SHOW_WHEN", value = 0}),
-        React.createElement(VisibilityContext, {index = context, condition = "SHOW_WHEN", value = 0}),
+        Container,
+        {group = group, context = context, values = {seq = 0, menu = 0}},
         React.createElement(
             Value,
             __TS__ObjectAssign({
@@ -86,10 +84,8 @@ function Edit(____bindingPattern0)
     track = ____bindingPattern0.track
     context = ____bindingPattern0.context
     return React.createElement(
-        VisibilityContainer,
-        {position = {0, posY, ScreenWidth, valueH * 2 + 2}, group = group},
-        React.createElement(VisibilityContext, {index = 10, condition = "SHOW_WHEN", value = 0}),
-        React.createElement(VisibilityContext, {index = context, condition = "SHOW_WHEN", value = 1}),
+        Container,
+        {group = group, context = context, values = {seq = 0, menu = 1}},
         React.createElement(Rect, {position = {0, 0, ScreenWidth, height}}),
         React.createElement(
             Value,
@@ -121,6 +117,20 @@ function Edit(____bindingPattern0)
                 encoderId = 3
             }, quaternary)
         )
+    )
+end
+function Container(____bindingPattern0)
+    local values
+    local context
+    local group
+    group = ____bindingPattern0.group
+    context = ____bindingPattern0.context
+    values = ____bindingPattern0.values
+    return React.createElement(
+        VisibilityContainer,
+        {position = {0, posY, ScreenWidth, valueH * 2 + 2}, group = group},
+        React.createElement(VisibilityContext, {index = 10, condition = "SHOW_WHEN", value = values.seq}),
+        React.createElement(VisibilityContext, {index = context, condition = "SHOW_WHEN", value = values.menu})
     )
 end
 function ____exports.DrumSampleValues(____bindingPattern0)
