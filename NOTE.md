@@ -1,15 +1,10 @@
 ## Pixel TODO
 
+- TODO digital audio programming tutorial
+
 - TODO advance sample player
 - TODO master track
 - TODO perform / grid effect / scatter effect
-
-
-- TODO implement shuwdown view
-    sudo chmod 4755 /sbin/poweroff 
-    poweroff 
-
-- TODO paragraph --> multiline text component
 
 - FIXME pixel_env.lua
 
@@ -54,8 +49,7 @@
     **All track caching** the whole track caching would make it hard for sequencer motion and probability, most likely not the right way...
 
 - TODO add color code in text char...
-
-- TODO digital audio programming tutorial
+- TODO paragraph --> multiline text component
 
 - TODO filebrowser
     - serialised might want to use filename instead of file index
