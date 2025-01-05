@@ -99,6 +99,13 @@ int main(int argc, char* argv[])
 
 ```
 
+Code example are available here: https://github.com/apiel/zicBox/tree/main/plugins/audio/tutorial
+
+```sh
+git clone https://github.com/apiel/zicBox.git
+cd plugins/audio/tutorial
+```
+
 Compile it with:
 ```sh
 g++ 01.cpp -o 01.bin -I../../.. -lpulse-simple -lpulse && ./01.bin
