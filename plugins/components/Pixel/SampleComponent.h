@@ -25,7 +25,6 @@ protected:
     int bufferDataId = -1;
     int sampleDataId = -1;
     int activeDataId = -1;
-    ValueInterface* browser;
     float lastBrowser = -1.0f;
     ValueInterface* startPosition;
     ValueInterface* sustainPosition;
@@ -95,7 +94,6 @@ protected:
     }
 
     Color background;
-    Color infoColor;
     Color overlayColor;
     Color overlayEdgeColor;
     Color loopLineColor;
@@ -103,8 +101,7 @@ protected:
 public:
     SampleComponent(ComponentInterface::Props props)
         : Component(props)
-        , background(styles.colors.background)
-        , infoColor(styles.colors.primary)
+        , background(lighten(styles.colors.background, 0.2))
         , overlayColor({ 0x90, 0x90, 0x90, 100 })
         , overlayEdgeColor({ 0x90, 0x90, 0x90 })
         , loopLineColor(styles.colors.white)
@@ -130,8 +127,6 @@ public:
         if (plugin != NULL && updatePosition()) {
             draw.filledRect(relativePosition, size, { background });
             renderWaveform();
-            
-            draw.text({ position.x + 5, position.y + 5 }, browser->string().c_str(), 12, { infoColor });
 
             renderStartOverlay();
             renderEndOverlay();
@@ -166,7 +161,7 @@ public:
             plugin = &getPlugin(pluginName, track);
             bufferDataId = plugin->getDataId(strtok(NULL, " "));
 
-            browser = watch(plugin->getValue(valueKeys[0].c_str()));
+            watch(plugin->getValue(valueKeys[0].c_str())); // watch for file change
             startPosition = watch(plugin->getValue(valueKeys[1].c_str()));
             endPosition = watch(plugin->getValue(valueKeys[2].c_str()));
             sustainPosition = watch(plugin->getValue(valueKeys[3].c_str()));
