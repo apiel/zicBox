@@ -32,3 +32,4 @@ pixel_env_.lua
 *.gch
 *.d
 node_modules
+* copy.lua

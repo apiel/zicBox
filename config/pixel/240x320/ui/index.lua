@@ -19,6 +19,8 @@ local ____menuView = require("config.pixel.240x320.ui.menuView.index")
 local MenuView = ____menuView.MenuView
 local ____CreateWorkspaceView = require("config.pixel.240x320.ui.menuView.CreateWorkspaceView")
 local CreateWorkspaceView = ____CreateWorkspaceView.CreateWorkspaceView
+local ____ShutdownView = require("config.pixel.240x320.ui.menuView.ShutdownView")
+local ShutdownView = ____ShutdownView.ShutdownView
 local ____WorkspacesView = require("config.pixel.240x320.ui.menuView.WorkspacesView")
 local WorkspacesView = ____WorkspacesView.WorkspacesView
 local ____seqView = require("config.pixel.240x320.ui.seqView.index")
@@ -34,4 +36,5 @@ applyZic(React.createElement(ClipsView, {name = "Clips"}))
 applyZic(React.createElement(MenuView, {name = "Menu"}))
 applyZic(React.createElement(WorkspacesView, {name = "Workspaces"}))
 applyZic(React.createElement(CreateWorkspaceView, {name = "CreateWorkspace"}))
+applyZic(React.createElement(ShutdownView, {name = "Shutdown"}))
 return ____exports

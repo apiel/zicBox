@@ -5,11 +5,11 @@
 - TODO perform / grid effect / scatter effect
 
 
-
-
-- TODO use ts2lua and jsx
-
 - TODO implement shuwdown view
+    sudo chmod 4755 /sbin/poweroff 
+    poweroff 
+
+- TODO paragraph --> multiline text component
 
 - FIXME pixel_env.lua
 
@@ -40,6 +40,11 @@
 - TODO drum freq envelop is really good but not easy to use
   - might be great to keep this one as advance version
   - and to have one more simple where we could somehow morph between envelops a bit like wavetable...
+    - --> https://www.google.com/search?q=math+draw+line+function
+    - use mathematical function to generate the envelop
+      - first parameter allow to switch between math function
+      - the next parameters allow to change variable value in the function in order to affect the shape
+      - https://codesandbox.io/p/sandbox/green-platform-tzl4pn?file=%2Fsrc%2Findex.js%3A21%2C1
 
 - TODO TODO
 - IDEA cache audio track to reduce computation?
