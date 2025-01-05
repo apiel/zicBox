@@ -49,6 +49,7 @@ protected:
 
     void applyGain()
     {
+        // TODO use utils --> applyGain(sampleBuffer.data, sampleBuffer.count);
         float max = 0.0;
         for (uint64_t i = 0; i < sampleBuffer.count; i++) {
             if (sampleBuffer.data[i] > max) {
