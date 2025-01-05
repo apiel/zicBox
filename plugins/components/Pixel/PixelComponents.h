@@ -35,6 +35,7 @@ void loadPixelComponents()
     viewManager.loadPlugin("Keyboard " + folder + "KeyboardComponent.so");
     viewManager.loadPlugin("List " + folder + "ListComponent.so");
     viewManager.loadPlugin("Workspaces " + folder + "WorkspacesComponent.so");
+    viewManager.loadPlugin("Sample " + folder + "SampleComponent.so");
 }
 
 #else
@@ -58,6 +59,7 @@ void loadPixelComponents()
 #include "./KeyboardComponent.h"
 #include "./ListComponent.h"
 #include "./WorkspacesComponent.h"
+#include "./SampleComponent.h"
 
 void loadPixelComponents()
 {
@@ -137,6 +139,10 @@ void loadPixelComponents()
 
     viewManager.plugins.push_back({ "Workspaces", [](ComponentInterface::Props props) {
                                        return new WorkspacesComponent(props);
+                                   } });
+
+    viewManager.plugins.push_back({ "Sample", [](ComponentInterface::Props props) {
+                                       return new SampleComponent(props);
                                    } });
 }
 #endif
