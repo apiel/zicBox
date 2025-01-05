@@ -17,7 +17,7 @@ import {
 } from '@/pixel/240x320/ui/constants';
 import { ProgressBar } from '../components/ProgressBar';
 import { ValueBpm } from '../components/ValueBpm';
-import { RowDrum23, RowDrumSample } from './Row';
+import { RowDrum23, RowMonoSample } from './Row';
 import {
     TextGridProgressBar,
     TextGridProgressBarShifted,
@@ -26,8 +26,8 @@ import {
     TextGridTrackStepEdit,
 } from './TextGrid';
 import { Drum23Values } from './values/Drum23Values';
-import { DrumSampleValues } from './values/DrumSampleValues';
 import { MasterValues } from './values/MasterValues';
+import { MonoSampleValues } from './values/MonoSampleValues';
 
 export type Props = {
     name: string;
@@ -60,22 +60,22 @@ export function SeqView({ name }: Props) {
 
             <RowDrum23 group={1} track={1} name_color={ColorTrack1} select_menu_context="11" />
             <RowDrum23 group={2} track={2} name_color={ColorTrack2} select_menu_context="12" />
-            <RowDrumSample group={3} track={3} name_color={ColorTrack3} select_menu_context="13" />
-            <RowDrumSample group={4} track={4} name_color={ColorTrack4} select_menu_context="14" />
-            <RowDrumSample group={5} track={5} name_color={ColorTrack5} select_menu_context="15" />
-            <RowDrumSample group={6} track={6} name_color={ColorTrack6} select_menu_context="16" />
-            <RowDrumSample group={7} track={7} name_color={ColorTrack7} select_menu_context="17" />
-            <RowDrumSample group={8} track={8} name_color={ColorTrack8} select_menu_context="18" />
+            <RowMonoSample group={3} track={3} name_color={ColorTrack3} select_menu_context="13" />
+            <RowMonoSample group={4} track={4} name_color={ColorTrack4} select_menu_context="14" />
+            <RowMonoSample group={5} track={5} name_color={ColorTrack5} select_menu_context="15" />
+            <RowMonoSample group={6} track={6} name_color={ColorTrack6} select_menu_context="16" />
+            <RowMonoSample group={7} track={7} name_color={ColorTrack7} select_menu_context="17" />
+            <RowMonoSample group={8} track={8} name_color={ColorTrack8} select_menu_context="18" />
 
             <MasterValues />
             <Drum23Values group={1} track={1} context={11} />
             <Drum23Values group={2} track={2} context={12} />
-            <DrumSampleValues group={3} track={3} context={13} />
-            <DrumSampleValues group={4} track={4} context={14} />
-            <DrumSampleValues group={5} track={5} context={15} />
-            <DrumSampleValues group={6} track={6} context={16} />
-            <DrumSampleValues group={7} track={7} context={17} />
-            <DrumSampleValues group={8} track={8} context={18} />
+            <MonoSampleValues group={3} track={3} context={13} />
+            <MonoSampleValues group={4} track={4} context={14} />
+            <MonoSampleValues group={5} track={5} context={15} />
+            <MonoSampleValues group={6} track={6} context={16} />
+            <MonoSampleValues group={7} track={7} context={17} />
+            <MonoSampleValues group={8} track={8} context={18} />
         </View>
     );
 }
