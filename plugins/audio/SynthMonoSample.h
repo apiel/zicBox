@@ -183,6 +183,28 @@ public:
             open(filepath);
         }
     }
+
+    enum DATA_ID {
+        SAMPLE_BUFFER,
+    };
+
+    /*md **Data ID**: */
+    uint8_t getDataId(std::string name) override
+    {
+        /*md - `SAMPLE_BUFFER` return a representation of the current sample loaded in buffer */
+        if (name == "SAMPLE_BUFFER")
+            return DATA_ID::SAMPLE_BUFFER;
+        return atoi(name.c_str());
+    }
+
+    void* data(int id, void* userdata = NULL)
+    {
+        switch (id) {
+        case DATA_ID::SAMPLE_BUFFER:
+            return &sampleBuffer;
+        }
+        return NULL;
+    }
 };
 
 #endif
