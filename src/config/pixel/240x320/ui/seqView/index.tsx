@@ -56,7 +56,7 @@ export function SeqView({ name }: Props) {
                 text="Pixel"
             /> */}
 
-            <Sample position={[0, 4, ScreenWidth, 70]} track={3} plugin="MonoSample SAMPLE_BUFFER" />
+            <Sample position={[0, 4, ScreenWidth, 70]} track={4} plugin="MonoSample SAMPLE_BUFFER" />
 
             <ProgressBar y={160} volume_plugin="MasterVolume VOLUME" group={0} />
 
