@@ -24,3 +24,4 @@ applyZic(<WorkspacesView name="Workspaces" />);
 applyZic(<CreateWorkspaceView name="CreateWorkspace" />);
 applyZic(<ShutdownView name="Shutdown" />);
 
+// applyZic([{ print: "End aplying UI config" }]);

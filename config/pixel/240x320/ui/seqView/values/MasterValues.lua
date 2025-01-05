@@ -2,6 +2,8 @@ local ____lualib = require("lualib_bundle")
 local __TS__ObjectAssign = ____lualib.__TS__ObjectAssign
 local ____exports = {}
 local React = require("config.libs.react")
+local ____Log = require("config.libs.components.Log")
+local Log = ____Log.Log
 local ____Rect = require("config.libs.components.Rect")
 local Rect = ____Rect.Rect
 local ____Value = require("config.libs.components.Value")
@@ -22,6 +24,7 @@ function ____exports.MasterValues()
     return React.createElement(
         VisibilityContainer,
         {position = posContainer, group = 0},
+        React.createElement(Log, {text = "MasterValues"}),
         React.createElement(Rect, {position = {0, 0, ScreenWidth, height}}),
         React.createElement(
             Value,

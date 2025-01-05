@@ -10,7 +10,8 @@ export type Props = ComponentProps & {
 export function GraphEncoder({ position, track, plugin, data_id, encoders, ...props }: Props) {
     return getComponent('GraphEncoder', position, [
         { track },
-        { plugin, data_id },
+        { plugin },
+        { data_id },
         encoders.map((encoder) => ({ encoder })),
         props,
     ]);

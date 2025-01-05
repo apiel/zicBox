@@ -4,6 +4,7 @@ import { ComponentProps } from '@/libs/components/component';
 import { DrumEnvelop } from '@/libs/components/DrumEnvelop';
 import { Encoder3 } from '@/libs/components/Encoder3';
 import { GraphEncoder } from '@/libs/components/GraphEncoder';
+import { Log } from '@/libs/components/Log';
 import { Rect } from '@/libs/components/Rect';
 import { Value } from '@/libs/components/Value';
 import { VisibilityContainer } from '@/libs/components/VisibilityContainer';
@@ -20,7 +21,7 @@ import {
     secondary,
     tertiary,
     topLeft,
-    topRight
+    topRight,
 } from './constants';
 import { SeqValues } from './SeqValues';
 
@@ -33,6 +34,7 @@ export type Props = Omit<ComponentProps, 'position'> & {
 export function Drum23Values({ group, track, context }: Props) {
     return (
         <>
+            <Log text="Drum23Values" />
             <Edit group={group} track={track} context={context} />
             <Main group={group} track={track} context={context} />
             <SeqValues group={group} track={track} />
