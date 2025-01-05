@@ -78,6 +78,28 @@ public:
     /*md - `BROWSER` to browse between samples to play. */
     Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)fileBrowser.count }, [&](auto p) { open(p.value); });
 
+    /*md - `LOOP_POSITION` set the position of the sustain loop */
+    Val& sustainPosition = val(0.0f, "LOOP_POSITION", { "Loop position", .unit = "%" }, [&](auto p) {
+        if (p.value < start.get() || p.value + sustainLength.get() > end.get()) {
+            return;
+        }
+        sustainPosition.setFloat(p.value);
+        // TODO set loop start position in sample format
+    });
+    /*md - `LOOP_LENGTH` set the length of the sustain loop */
+    Val& sustainLength = val(0.0f, "LOOP_LENGTH", { "Loop length", .unit = "%" }, [&](auto p) {
+        if (p.value + sustainPosition.get() > end.get()) {
+            return;
+        }
+        sustainLength.setFloat(p.value);
+        // TODO set loop end position in sample format
+    });
+    /*md - `LOOP_RELEASE` set a delay before the sustain loop ends when note off is triggered */
+    Val& sustainRelease = val(0.0f, "LOOP_RELEASE", { "Loop Release", .min = 0.0, .max = 5000.0, .step = 50.0, .unit = "ms" }, [&](auto p) {
+        sustainRelease.setFloat(p.value);
+        // TODO set loop count
+    });
+
     SynthMonoSample(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
     {

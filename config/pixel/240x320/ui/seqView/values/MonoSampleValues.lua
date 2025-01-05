@@ -87,6 +87,8 @@ function Edit(____bindingPattern0)
     group = ____bindingPattern0.group
     track = ____bindingPattern0.track
     context = ____bindingPattern0.context
+    local topFull = {table.unpack(topLeft)}
+    topFull[3] = ScreenWidth
     return React.createElement(
         Container,
         {group = group, context = context, values = {seq = 0, menu = 1}},
@@ -95,7 +97,7 @@ function Edit(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "MonoSample BROWSER",
-                position = topLeft,
+                position = topFull,
                 group = group,
                 track = track,
                 encoder_id = 0

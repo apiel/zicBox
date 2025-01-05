@@ -78,13 +78,15 @@ function Main({ group, track, context }: Props) {
 }
 
 function Edit({ group, track, context }: Props) {
+    const topFull = [...topLeft];
+    topFull[2] = ScreenWidth;
     return (
         <Container group={group} context={context} values={{ seq: 0, menu: 1 }}>
             <Rect position={[0, 0, ScreenWidth, height]} />
 
             <Value
                 value="MonoSample BROWSER"
-                position={topLeft}
+                position={topFull}
                 group={group}
                 track={track}
                 encoder_id={0}
