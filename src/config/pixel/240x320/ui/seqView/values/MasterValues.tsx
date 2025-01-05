@@ -25,7 +25,7 @@ export function MasterValues() {
                 position={topLeft}
                 group={0}
                 track={0}
-                encoderId={0}
+                encoder_id={0}
                 {...tertiary}
             />
             <Value
@@ -33,7 +33,7 @@ export function MasterValues() {
                 position={topRight}
                 group={0}
                 track={0}
-                encoderId={2}
+                encoder_id={2}
                 {...quaternary}
                 USE_STRING_VALUE
             />
@@ -42,7 +42,7 @@ export function MasterValues() {
                 position={bottomRight}
                 group={0}
                 track={0}
-                encoderId={3}
+                encoder_id={3}
                 {...quaternary}
             />
         </VisibilityContainer>

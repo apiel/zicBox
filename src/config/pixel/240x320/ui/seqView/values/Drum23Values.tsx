@@ -50,7 +50,7 @@ function Main({ group, track, context }: Props) {
                 position={topLeft}
                 group={group}
                 track={track}
-                encoderId={0}
+                encoder_id={0}
                 {...tertiary}
             />
             <Value
@@ -58,7 +58,7 @@ function Main({ group, track, context }: Props) {
                 position={bottomLeft}
                 group={group}
                 track={track}
-                encoderId={1}
+                encoder_id={1}
                 {...primary}
             />
             <Value
@@ -66,7 +66,7 @@ function Main({ group, track, context }: Props) {
                 position={topRight}
                 group={group}
                 track={track}
-                encoderId={2}
+                encoder_id={2}
                 {...quaternary}
                 USE_STRING_VALUE
             />
@@ -75,7 +75,7 @@ function Main({ group, track, context }: Props) {
                 position={bottomRight}
                 group={group}
                 track={track}
-                encoderId={3}
+                encoder_id={3}
                 {...quaternary}
             />
         </Container>
@@ -102,7 +102,7 @@ function EditDistortion({ group, track, context, menu }: Props & { menu: number 
                 position={topLeft}
                 group={group}
                 track={track}
-                encoderId={0}
+                encoder_id={0}
                 {...tertiary}
             />
             <Value
@@ -110,7 +110,7 @@ function EditDistortion({ group, track, context, menu }: Props & { menu: number 
                 position={bottomLeft}
                 group={group}
                 track={track}
-                encoderId={1}
+                encoder_id={1}
                 {...primary}
             />
             <Value
@@ -118,7 +118,7 @@ function EditDistortion({ group, track, context, menu }: Props & { menu: number 
                 position={topRight}
                 group={group}
                 track={track}
-                encoderId={2}
+                encoder_id={2}
                 {...secondary}
             />
             <Value
@@ -126,7 +126,7 @@ function EditDistortion({ group, track, context, menu }: Props & { menu: number 
                 position={bottomRight}
                 group={group}
                 track={track}
-                encoderId={3}
+                encoder_id={3}
                 {...quaternary}
             />
         </Container>
@@ -210,7 +210,7 @@ function EditClick({ group, track, context, menu }: Props & { menu: number }) {
                 position={topLeft}
                 group={group}
                 track={track}
-                encoderId={0}
+                encoder_id={0}
                 {...tertiary}
             />
             <Value
@@ -218,7 +218,7 @@ function EditClick({ group, track, context, menu }: Props & { menu: number }) {
                 position={bottomLeft}
                 group={group}
                 track={track}
-                encoderId={1}
+                encoder_id={1}
                 {...primary}
             />
             <Value
@@ -226,7 +226,7 @@ function EditClick({ group, track, context, menu }: Props & { menu: number }) {
                 position={topRight}
                 group={group}
                 track={track}
-                encoderId={2}
+                encoder_id={2}
                 {...secondary}
                 USE_STRING_VALUE
             />
@@ -235,7 +235,7 @@ function EditClick({ group, track, context, menu }: Props & { menu: number }) {
                 position={bottomRight}
                 group={group}
                 track={track}
-                encoderId={3}
+                encoder_id={3}
                 {...quaternary}
             />
         </Container>

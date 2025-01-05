@@ -45,7 +45,7 @@ function Main(____bindingPattern0)
                 position = topLeft,
                 group = group,
                 track = track,
-                encoderId = 0
+                encoder_id = 0
             }, tertiary)
         ),
         React.createElement(
@@ -55,7 +55,7 @@ function Main(____bindingPattern0)
                 position = bottomLeft,
                 group = group,
                 track = track,
-                encoderId = 1
+                encoder_id = 1
             }, primary)
         ),
         React.createElement(
@@ -65,7 +65,7 @@ function Main(____bindingPattern0)
                 position = topRight,
                 group = group,
                 track = track,
-                encoderId = 2
+                encoder_id = 2
             }, secondary)
         ),
         React.createElement(
@@ -75,7 +75,7 @@ function Main(____bindingPattern0)
                 position = bottomRight,
                 group = group,
                 track = track,
-                encoderId = 3
+                encoder_id = 3
             }, quaternary)
         )
     )
@@ -98,7 +98,7 @@ function Edit(____bindingPattern0)
                 position = topLeft,
                 group = group,
                 track = track,
-                encoderId = 0
+                encoder_id = 0
             }, tertiary)
         ),
         React.createElement(
@@ -108,7 +108,7 @@ function Edit(____bindingPattern0)
                 position = bottomLeft,
                 group = group,
                 track = track,
-                encoderId = 1
+                encoder_id = 1
             }, quaternary)
         ),
         React.createElement(
@@ -118,7 +118,7 @@ function Edit(____bindingPattern0)
                 position = bottomRight,
                 group = group,
                 track = track,
-                encoderId = 3
+                encoder_id = 3
             }, quaternary)
         )
     )
