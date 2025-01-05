@@ -34,7 +34,7 @@ function ____exports.SeqValues(____bindingPattern0)
                 position = topLeft,
                 group = group,
                 track = track,
-                encoderId = 0
+                encoder_id = 0
             }, tertiary)
         ),
         React.createElement(
@@ -44,7 +44,7 @@ function ____exports.SeqValues(____bindingPattern0)
                 position = bottomLeft,
                 group = group,
                 track = track,
-                encoderId = 1
+                encoder_id = 1
             }, primary)
         ),
         React.createElement(
@@ -54,7 +54,7 @@ function ____exports.SeqValues(____bindingPattern0)
                 position = topRight,
                 group = group,
                 track = track,
-                encoderId = 2
+                encoder_id = 2
             }, secondary)
         ),
         React.createElement(
@@ -64,7 +64,7 @@ function ____exports.SeqValues(____bindingPattern0)
                 position = bottomRight,
                 group = group,
                 track = track,
-                encoderId = 3
+                encoder_id = 3
             }, quaternary)
         )
     )

@@ -33,7 +33,7 @@ function ____exports.MasterValues()
                 position = topLeft,
                 group = 0,
                 track = 0,
-                encoderId = 0
+                encoder_id = 0
             }, tertiary)
         ),
         React.createElement(
@@ -43,7 +43,7 @@ function ____exports.MasterValues()
                 position = topRight,
                 group = 0,
                 track = 0,
-                encoderId = 2
+                encoder_id = 2
             }, quaternary, {USE_STRING_VALUE = true})
         ),
         React.createElement(
@@ -53,7 +53,7 @@ function ____exports.MasterValues()
                 position = bottomRight,
                 group = 0,
                 track = 0,
-                encoderId = 3
+                encoder_id = 3
             }, quaternary)
         )
     )

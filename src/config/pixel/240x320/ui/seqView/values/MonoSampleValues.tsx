@@ -46,7 +46,7 @@ function Main({ group, track, context }: Props) {
                 position={topLeft}
                 group={group}
                 track={track}
-                encoderId={0}
+                encoder_id={0}
                 {...tertiary}
             />
             <Value
@@ -54,7 +54,7 @@ function Main({ group, track, context }: Props) {
                 position={bottomLeft}
                 group={group}
                 track={track}
-                encoderId={1}
+                encoder_id={1}
                 {...primary}
             />
             <Value
@@ -62,7 +62,7 @@ function Main({ group, track, context }: Props) {
                 position={topRight}
                 group={group}
                 track={track}
-                encoderId={2}
+                encoder_id={2}
                 {...secondary}
             />
             <Value
@@ -70,7 +70,7 @@ function Main({ group, track, context }: Props) {
                 position={bottomRight}
                 group={group}
                 track={track}
-                encoderId={3}
+                encoder_id={3}
                 {...quaternary}
             />
         </Container>
@@ -87,7 +87,7 @@ function Edit({ group, track, context }: Props) {
                 position={topLeft}
                 group={group}
                 track={track}
-                encoderId={0}
+                encoder_id={0}
                 {...tertiary}
                 // VALUE_FONT_SIZE={8}
             />
@@ -96,7 +96,7 @@ function Edit({ group, track, context }: Props) {
                 position={bottomLeft}
                 group={group}
                 track={track}
-                encoderId={1}
+                encoder_id={1}
                 {...quaternary}
             />
             <Value
@@ -104,7 +104,7 @@ function Edit({ group, track, context }: Props) {
                 position={bottomRight}
                 group={group}
                 track={track}
-                encoderId={3}
+                encoder_id={3}
                 {...quaternary}
             />
         </Container>
