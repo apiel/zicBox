@@ -12,6 +12,7 @@
 #include "helpers/random.h"
 #include "log.h"
 #include "utils/ValSerializeSndFile.h"
+#include "utils/utils.h"
 
 #ifndef MAX_SAMPLE_VOICES
 #define MAX_SAMPLE_VOICES 4
@@ -44,23 +45,6 @@ protected:
     float stepMultiplier = 1.0;
 
     float velocity = 1.0;
-
-    void applyGain()
-    {
-        float max = 0.0;
-        for (uint64_t i = 0; i < sampleBuffer.count; i++) {
-            if (sampleBuffer.data[i] > max) {
-                max = sampleBuffer.data[i];
-            } else if (-sampleBuffer.data[i] > max) {
-                max = -sampleBuffer.data[i];
-            }
-        }
-        float gain = 1.0 / max;
-        // printf("max sample: %f gain: %f\n", max, gain);
-        for (uint64_t i = 0; i < sampleBuffer.count; i++) {
-            sampleBuffer.data[i] = sampleBuffer.data[i] * gain;
-        }
-    }
 
     uint8_t baseNote = 60;
     float getSampleStep(uint8_t note)
@@ -163,7 +147,7 @@ public:
 
         index = sampleBuffer.count;
         indexEnd = end.pct() * sampleBuffer.count;
-        applyGain();
+        applyGain(sampleBuffer.data, sampleBuffer.count);
     }
 
     void open(float value, bool force = false)

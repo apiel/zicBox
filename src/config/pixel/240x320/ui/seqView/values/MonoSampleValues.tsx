@@ -26,7 +26,7 @@ export type Props = Omit<ComponentProps, 'position'> & {
     context: number;
 };
 
-export function DrumSampleValues({ group, track, context }: Props) {
+export function MonoSampleValues({ group, track, context }: Props) {
     return (
         <>
             <Edit group={group} track={track} context={context} />
@@ -81,7 +81,7 @@ function Edit({ group, track, context }: Props) {
             <Rect position={[0, 0, ScreenWidth, height]} />
 
             <Value
-                value="DrumSample BROWSER"
+                value="MonoSample BROWSER"
                 position={topLeft}
                 group={group}
                 track={track}
@@ -90,7 +90,7 @@ function Edit({ group, track, context }: Props) {
                 // VALUE_FONT_SIZE={8}
             />
             <Value
-                value="DrumSample START"
+                value="MonoSample START"
                 position={bottomLeft}
                 group={group}
                 track={track}
@@ -98,7 +98,7 @@ function Edit({ group, track, context }: Props) {
                 {...quaternary}
             />
             <Value
-                value="DrumSample END"
+                value="MonoSample END"
                 position={bottomRight}
                 group={group}
                 track={track}

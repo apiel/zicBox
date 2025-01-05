@@ -1,7 +1,7 @@
 import { autoSave, plugin, pluginAlias } from '@/libs/audio';
 import { STRING_CUTOFF_FORMAT } from './constants';
 import { drum23 } from './drum23';
-import { drumSample } from './drumSample';
+import { monoSample } from './monoSample';
 
 pluginAlias('EffectDistortion', 'libzic_EffectDistortion.so');
 pluginAlias('EffectDistortion2', 'libzic_EffectDistortion2.so');
@@ -18,7 +18,8 @@ pluginAlias('SerializeTrack', 'libzic_SerializeTrack.so');
 pluginAlias('Tempo', 'libzic_Tempo.so');
 pluginAlias('SynthFM', 'libzic_SynthFM2.so');
 pluginAlias('Drum23', 'libzic_SynthDrum23.so');
-pluginAlias('DrumSample', 'libzic_SynthDrumSample.so');
+pluginAlias('MonoSample', 'libzic_SynthMonoSample.so');
+pluginAlias('MonoSample', 'libzic_SynthMonoSample.so');
 pluginAlias('Sequencer', 'libzic_Sequencer.so');
 pluginAlias('AudioOutput', 'libzic_AudioOutputPulse.so');
 pluginAlias('Spectrogram', 'libzic_AudioSpectrogram.so');
@@ -26,17 +27,17 @@ pluginAlias('Spectrogram', 'libzic_AudioSpectrogram.so');
 // Drum tracks
 drum23(1);
 drum23(2);
-drumSample(3);
-drumSample(4);
+monoSample(3);
+monoSample(4);
 
 plugin('MixerDrum Mixer4', [{ track: 9 }]);
 plugin('SerializeTrack', [{ track: 9, filename: 'mixer_drum' }]);
 
-// FM tracks
-drumSample(5);
-drumSample(6);
-drumSample(7);
-drumSample(8);
+// Synth tracks
+monoSample(5);
+monoSample(6);
+monoSample(7);
+monoSample(8);
 
 plugin('MixerSynth Mixer4', [{ track_start: 5, track: 10 }]);
 plugin('SerializeTrack', [{ track: 10, filename: 'mixer_synth' }]);

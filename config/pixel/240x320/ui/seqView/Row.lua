@@ -47,7 +47,7 @@ function ____exports.RowDrum23(____bindingPattern0)
         React.createElement(RowKeymaps, {synth = "Drum23"})
     )
 end
-function ____exports.RowDrumSample(____bindingPattern0)
+function ____exports.RowMonoSample(____bindingPattern0)
     local select_menu_context
     local name_color
     local track
@@ -74,7 +74,7 @@ function ____exports.RowDrumSample(____bindingPattern0)
             volume_plugin = "Volume VOLUME",
             select_menu_context = select_menu_context
         },
-        React.createElement(RowKeymaps, {synth = "DrumSample"})
+        React.createElement(RowKeymaps, {synth = "MonoSample"})
     )
 end
 return ____exports

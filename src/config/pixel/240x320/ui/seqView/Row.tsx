@@ -49,7 +49,7 @@ export function RowDrum23({ group, track, name_color, select_menu_context }: Pro
     );
 }
 
-export function RowDrumSample({ group, track, name_color, select_menu_context }: Props) {
+export function RowMonoSample({ group, track, name_color, select_menu_context }: Props) {
     return (
         <SeqSynthBar
             position={[0, getY(track), ScreenWidth, RowH]}
@@ -62,7 +62,7 @@ export function RowDrumSample({ group, track, name_color, select_menu_context }:
             volume_plugin="Volume VOLUME"
             select_menu_context={select_menu_context}
         >
-            <RowKeymaps synth={'DrumSample'} />
+            <RowKeymaps synth={'MonoSample'} />
         </SeqSynthBar>
     );
 }
