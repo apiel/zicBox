@@ -5,6 +5,7 @@
 #include "../component.h"
 #include "../utils/color.h"
 #include "utils/GroupColorComponent.h"
+#include <stdexcept>
 
 /*md
 ## Drum envelop
@@ -184,6 +185,9 @@ public:
 
         /*md - `ENVELOP_DATA_ID: id` is the id of the envelope data.*/
         if (strcmp(key, "ENVELOP_DATA_ID") == 0) {
+            if (plugin == NULL) {
+                throw std::runtime_error("DrumEnvelopComponent cannot set ENVELOP_DATA_ID: plugin is not set");
+            }
             uint8_t id = plugin->getDataId(value);
             envData = (std::vector<Data>*)plugin->data(id);
             currentStepDataId = id + 1;
@@ -194,18 +198,27 @@ public:
 
         /*md - `STEP_DATA_ID: id` is the data id to get/set the current step/phase to edit.*/
         if (strcmp(key, "STEP_DATA_ID") == 0) {
+            if (plugin == NULL) {
+                throw std::runtime_error("DrumEnvelopComponent cannot set STEP_DATA_ID: plugin is not set");
+            }
             currentStepDataId = plugin->getDataId(value);
             return true;
         }
 
         /*md - `TIME_DATA_ID: id` is the data id to get/set the step to time.*/
         if (strcmp(key, "TIME_DATA_ID") == 0) {
+            if (plugin == NULL) {
+                throw std::runtime_error("DrumEnvelopComponent cannot set TIME_DATA_ID: plugin is not set");
+            }
             timeDataId = plugin->getDataId(value);
             return true;
         }
 
         /*md - `MOD_DATA_ID: id` is the data id to get/set the step to mod.*/
         if (strcmp(key, "MOD_DATA_ID") == 0) {
+            if (plugin == NULL) {
+                throw std::runtime_error("DrumEnvelopComponent cannot set MOD_DATA_ID: plugin is not set");
+            }
             modDataId = plugin->getDataId(value);
             return true;
         }

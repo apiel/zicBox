@@ -18,7 +18,7 @@
 
 #include <fstream>
 std::ofstream logFile;
-bool logConfigToFile = false;
+bool logConfigToFile = true;
 void logScript(char* key, char* value)
 {
     if (logConfigToFile) {
@@ -26,8 +26,7 @@ void logScript(char* key, char* value)
             logFile.open("pixel.log", std::ios::trunc);
         }
         if (logFile.is_open()) {
-            logFile << "Key: " << (key ? key : "null")
-                    << ", Value: " << (value ? value : "null") << std::endl;
+            logFile << (key ? key : "null") << ": " << (value ? value : "null") << std::endl;
         }
     }
 }
@@ -41,7 +40,7 @@ void closeLog()
 void uiScriptCallback(char* key, char* value, const char* filename, std::vector<Var> variables)
 {
     logScript(key, value);
-    if (strcmp(key, "print") == 0) {
+    if (strcmp(key, "print") == 0 || strcmp(key, "PRINT") == 0) {
         printf(">> LOG: %s\n", value);
     } else if (strcmp(key, "LOG_CONFIG") == 0) {
         logConfigToFile = (strcmp(value, "true") == 0);

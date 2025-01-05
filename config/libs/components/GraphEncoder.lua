@@ -28,7 +28,8 @@ function ____exports.GraphEncoder(____bindingPattern0)
         position,
         {
             {track = track},
-            {plugin = plugin, data_id = data_id},
+            {plugin = plugin},
+            {data_id = data_id},
             __TS__ArrayMap(
                 encoders,
                 function(____, encoder) return {encoder = encoder} end

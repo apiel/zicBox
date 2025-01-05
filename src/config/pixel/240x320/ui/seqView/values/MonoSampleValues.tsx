@@ -1,6 +1,7 @@
 import * as React from '@/libs/react';
 
 import { ComponentProps } from '@/libs/components/component';
+import { Log } from '@/libs/components/Log';
 import { Rect } from '@/libs/components/Rect';
 import { Value } from '@/libs/components/Value';
 import { VisibilityContainer } from '@/libs/components/VisibilityContainer';
@@ -16,7 +17,7 @@ import {
     secondary,
     tertiary,
     topLeft,
-    topRight
+    topRight,
 } from './constants';
 import { SeqValues } from './SeqValues';
 
@@ -29,6 +30,7 @@ export type Props = Omit<ComponentProps, 'position'> & {
 export function MonoSampleValues({ group, track, context }: Props) {
     return (
         <>
+            <Log text="MonoSampleValues" />
             <Edit group={group} track={track} context={context} />
             <Main group={group} track={track} context={context} />
             <SeqValues group={group} track={track} />

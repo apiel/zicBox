@@ -3,6 +3,8 @@ local __TS__ObjectAssign = ____lualib.__TS__ObjectAssign
 local ____exports = {}
 local Main, Edit, Container
 local React = require("config.libs.react")
+local ____Log = require("config.libs.components.Log")
+local Log = ____Log.Log
 local ____Rect = require("config.libs.components.Rect")
 local Rect = ____Rect.Rect
 local ____Value = require("config.libs.components.Value")
@@ -145,6 +147,7 @@ function ____exports.MonoSampleValues(____bindingPattern0)
     return React.createElement(
         React.Fragment,
         nil,
+        React.createElement(Log, {text = "MonoSampleValues"}),
         React.createElement(Edit, {group = group, track = track, context = context}),
         React.createElement(Main, {group = group, track = track, context = context}),
         React.createElement(SeqValues, {group = group, track = track})

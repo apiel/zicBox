@@ -1,5 +1,6 @@
 import * as React from '@/libs/react';
 
+import { Log } from '@/libs/components/Log';
 import { Rect } from '@/libs/components/Rect';
 import { Value } from '@/libs/components/Value';
 import { VisibilityContainer } from '@/libs/components/VisibilityContainer';
@@ -17,6 +18,7 @@ import {
 export function MasterValues() {
     return (
         <VisibilityContainer position={posContainer} group={0}>
+            <Log text="MasterValues" />
             <Rect position={[0, 0, ScreenWidth, height]} />
             <Value
                 value="MasterVolume VOLUME"

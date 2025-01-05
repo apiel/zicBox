@@ -9,6 +9,8 @@ local ____Encoder3 = require("config.libs.components.Encoder3")
 local Encoder3 = ____Encoder3.Encoder3
 local ____GraphEncoder = require("config.libs.components.GraphEncoder")
 local GraphEncoder = ____GraphEncoder.GraphEncoder
+local ____Log = require("config.libs.components.Log")
+local Log = ____Log.Log
 local ____Rect = require("config.libs.components.Rect")
 local Rect = ____Rect.Rect
 local ____Value = require("config.libs.components.Value")
@@ -322,6 +324,7 @@ function ____exports.Drum23Values(____bindingPattern0)
     return React.createElement(
         React.Fragment,
         nil,
+        React.createElement(Log, {text = "Drum23Values"}),
         React.createElement(Edit, {group = group, track = track, context = context}),
         React.createElement(Main, {group = group, track = track, context = context}),
         React.createElement(SeqValues, {group = group, track = track})

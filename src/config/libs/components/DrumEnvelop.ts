@@ -9,7 +9,8 @@ export type Props = ComponentProps & {
 export function DrumEnvelop({ position, track, plugin, envelop_data_id, ...props }: Props) {
     return getComponent('DrumEnvelop', position, [
         { track },
-        { plugin, envelop_data_id },
+        { plugin },
+        {envelop_data_id},
         props,
     ]);
 }

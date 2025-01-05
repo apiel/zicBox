@@ -2,6 +2,7 @@
 #define _UI_PIXEL_COMPONENT_GRAPH_ENCODER_H_
 
 #include "utils/BaseGraphEncoderComponent.h"
+#include <stdexcept>
 
 /*md
 ## GraphEncoderComponent
@@ -90,6 +91,9 @@ public:
     {
         /*md - `DATA_ID: data_id` is the data id to get the shape/graph to draw.*/
         if (strcmp(key, "DATA_ID") == 0) {
+            if (plugin == NULL) {
+                throw std::runtime_error("GraphEncoderComponent cannot set DATA_ID: plugin is not set");
+            }
             dataId = plugin->getDataId(value);
             return true;
         }
