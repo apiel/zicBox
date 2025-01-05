@@ -56,6 +56,8 @@ export function SeqView({ name }: Props) {
                 text="Pixel"
             />
 
+            {/* <Sample */}
+
             <ProgressBar y={160} volume_plugin="MasterVolume VOLUME" group={0} />
 
             <RowDrum23 group={1} track={1} name_color={ColorTrack1} select_menu_context="11" />
