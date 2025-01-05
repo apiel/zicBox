@@ -170,6 +170,7 @@ public:
     unsigned long lastEncoderTick[256] = { 0 };
     void onEncoder(int id, int8_t direction, uint32_t tick)
     {
+        printf("onEncoder %d %d %d\n", id, direction, tick);
         m2.lock();
         if (tick - lastEncoderTick[id] < 25) {
             direction = direction * 5;
