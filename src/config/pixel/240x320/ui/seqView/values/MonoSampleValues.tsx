@@ -133,6 +133,7 @@ function EditLoop({ group, track, context }: Props) {
                 group={group}
                 track={track}
                 encoder_id={0}
+                label="Position"
                 {...tertiary}
             />
             <Value
@@ -141,6 +142,7 @@ function EditLoop({ group, track, context }: Props) {
                 group={group}
                 track={track}
                 encoder_id={2}
+                label="Length"
                 {...tertiary}
             />
             <Value

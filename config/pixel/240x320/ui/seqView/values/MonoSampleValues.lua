@@ -157,7 +157,8 @@ function EditLoop(____bindingPattern0)
                 position = topLeft,
                 group = group,
                 track = track,
-                encoder_id = 0
+                encoder_id = 0,
+                label = "Position"
             }, tertiary)
         ),
         React.createElement(
@@ -167,7 +168,8 @@ function EditLoop(____bindingPattern0)
                 position = topRight,
                 group = group,
                 track = track,
-                encoder_id = 2
+                encoder_id = 2,
+                label = "Length"
             }, tertiary)
         ),
         React.createElement(
