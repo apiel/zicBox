@@ -1,8 +1,8 @@
 #ifndef _UI_COMPONENT_PIXEL_SAMPLE_H_
 #define _UI_COMPONENT_PIXEL_SAMPLE_H_
 
-#include "./utils/SamplePositionBaseComponent.h"
 #include "./utils/BaseWaveComponent.h"
+#include "./utils/SamplePositionBaseComponent.h"
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
@@ -27,9 +27,9 @@ protected:
     int activeDataId = -1;
     float lastBrowser = -1.0f;
     ValueInterface* startPosition;
+    ValueInterface* endPosition;
     ValueInterface* sustainPosition;
     ValueInterface* sustainLength;
-    ValueInterface* endPosition;
 
     std::string valueKeys[5] = {
         "BROWSER",
@@ -52,27 +52,33 @@ protected:
 
     void renderStartOverlay()
     {
-        int w = size.w * startPosition->pct();
-        draw.filledRect({ position.x, overlayYtop }, { w, size.h }, { overlayColor });
-        draw.line({ position.x + w, overlayYtop }, { position.x + w, overlayYbottom }, { overlayEdgeColor });
+        if (startPosition != NULL && startPosition->get() > 0.0f) {
+            int w = size.w * startPosition->pct();
+            draw.filledRect({ position.x, overlayYtop }, { w, size.h }, { overlayColor });
+            draw.line({ position.x + w, overlayYtop }, { position.x + w, overlayYbottom }, { overlayEdgeColor });
+        }
     }
 
     void renderEndOverlay()
     {
-        // FIXME overlay too big
-        int w = size.w * endPosition->pct();
-        draw.filledRect({ position.x + w, overlayYtop }, { size.w - w, size.h }, { overlayColor });
-        draw.line({ position.x + w, overlayYtop }, { position.x + w, overlayYbottom }, { overlayEdgeColor });
+        if (endPosition != NULL && endPosition->get() < 100.0f) {
+            // FIXME overlay too big
+            int w = size.w * endPosition->pct();
+            draw.filledRect({ position.x + w, overlayYtop }, { size.w - w, size.h }, { overlayColor });
+            draw.line({ position.x + w, overlayYtop }, { position.x + w, overlayYbottom }, { overlayEdgeColor });
+        }
     }
 
     void renderSustainOverlay()
     {
-        int x = position.x + size.w * sustainPosition->pct();
-        draw.line({ x, overlayYtop }, { x, overlayYbottom }, { loopLineColor });
+        if (sustainPosition != NULL && sustainLength != NULL && sustainLength->get() > 0.0f) {
+            int x = position.x + size.w * sustainPosition->pct();
+            draw.line({ x, overlayYtop }, { x, overlayYbottom }, { loopLineColor });
 
-        int w = size.w * sustainLength->pct();
-        // draw.filledRect({ x, position.y }, { w, size.h }, styles.colors.overlay);
-        draw.line({ x + w, overlayYtop }, { x + w, overlayYbottom }, { loopLineColor });
+            int w = size.w * sustainLength->pct();
+            // draw.filledRect({ x, position.y }, { w, size.h }, styles.colors.overlay);
+            draw.line({ x + w, overlayYtop }, { x + w, overlayYbottom }, { loopLineColor });
+        }
     }
 
     void renderWaveform()
@@ -130,9 +136,7 @@ public:
 
             renderStartOverlay();
             renderEndOverlay();
-            if (sustainLength->get() > 0.0f) {
-                renderSustainOverlay();
-            }
+            renderSustainOverlay();
             renderActiveSamples();
         }
     }
