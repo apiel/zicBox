@@ -70,7 +70,7 @@ function ____exports.RowMonoSample(____bindingPattern0)
             group = group,
             name_color = name_color,
             name = track,
-            items = "Sample",
+            items = "Loop Sample",
             volume_plugin = "Volume VOLUME",
             select_menu_context = select_menu_context
         },

@@ -80,7 +80,10 @@ public:
 
     /*md - `LOOP_POSITION` set the position of the sustain loop */
     Val& sustainPosition = val(0.0f, "LOOP_POSITION", { "Loop position", .unit = "%" }, [&](auto p) {
-        if (p.value < start.get() || p.value + sustainLength.get() > end.get()) {
+        if (p.value < start.get()) {
+            p.value = start.get();
+        }
+        if (p.value + sustainLength.get() > end.get()) {
             return;
         }
         sustainPosition.setFloat(p.value);

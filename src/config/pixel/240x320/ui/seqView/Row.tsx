@@ -58,7 +58,7 @@ export function RowMonoSample({ group, track, name_color, select_menu_context }:
             group={group}
             name_color={name_color}
             name={track}
-            items="Sample"
+            items="Loop Sample"
             volume_plugin="Volume VOLUME"
             select_menu_context={select_menu_context}
         >
