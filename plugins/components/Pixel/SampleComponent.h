@@ -149,6 +149,24 @@ public:
             return true;
         }
 
+        /*md - `OVERLAY_COLOR:#a2beb8` set overlay color */
+        if (strcmp(key, "OVERLAY_COLOR") == 0) {
+            overlayColor = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `OVERLAY_EDGE_COLOR:#a6b1ab` set overlay edge color */
+        if (strcmp(key, "OVERLAY_EDGE_COLOR") == 0) {
+            overlayEdgeColor = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `LOOP_LINE_COLOR:#548ebe` set loop line color */
+        if (strcmp(key, "LOOP_LINE_COLOR") == 0) {
+            loopLineColor = draw.getColor(value);
+            return true;
+        }
+
         /*md - `KEYS: BROWSER START END SUSTAIN LENGTH` set the key parameter to use from plugin */
         if (strcmp(key, "KEYS") == 0) {
             valueKeys[0] = strtok(value, " ");

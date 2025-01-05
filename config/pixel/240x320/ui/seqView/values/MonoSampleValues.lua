@@ -1,7 +1,7 @@
 local ____lualib = require("lualib_bundle")
 local __TS__ObjectAssign = ____lualib.__TS__ObjectAssign
 local ____exports = {}
-local Main, Edit, Container
+local Main, Edit, EditSample, EditLoop, Container
 local React = require("config.libs.react")
 local ____Log = require("config.libs.components.Log")
 local Log = ____Log.Log
@@ -87,6 +87,20 @@ function Edit(____bindingPattern0)
     group = ____bindingPattern0.group
     track = ____bindingPattern0.track
     context = ____bindingPattern0.context
+    return React.createElement(
+        React.Fragment,
+        nil,
+        React.createElement(EditSample, {group = group, track = track, context = context}),
+        React.createElement(EditLoop, {group = group, track = track, context = context})
+    )
+end
+function EditSample(____bindingPattern0)
+    local context
+    local track
+    local group
+    group = ____bindingPattern0.group
+    track = ____bindingPattern0.track
+    context = ____bindingPattern0.context
     local topFull = {table.unpack(topLeft)}
     topFull[3] = ScreenWidth
     return React.createElement(
@@ -121,6 +135,49 @@ function Edit(____bindingPattern0)
                 group = group,
                 track = track,
                 encoder_id = 3
+            }, quaternary)
+        )
+    )
+end
+function EditLoop(____bindingPattern0)
+    local context
+    local track
+    local group
+    group = ____bindingPattern0.group
+    track = ____bindingPattern0.track
+    context = ____bindingPattern0.context
+    return React.createElement(
+        Container,
+        {group = group, context = context, values = {seq = 0, menu = 2}},
+        React.createElement(Rect, {position = {0, 0, ScreenWidth, height}}),
+        React.createElement(
+            Value,
+            __TS__ObjectAssign({
+                value = "MonoSample LOOP_POSITION",
+                position = topLeft,
+                group = group,
+                track = track,
+                encoder_id = 0
+            }, tertiary)
+        ),
+        React.createElement(
+            Value,
+            __TS__ObjectAssign({
+                value = "MonoSample LOOP_LENGTH",
+                position = topRight,
+                group = group,
+                track = track,
+                encoder_id = 2
+            }, tertiary)
+        ),
+        React.createElement(
+            Value,
+            __TS__ObjectAssign({
+                value = "MonoSample LOOP_RELEASE",
+                position = bottomLeft,
+                group = group,
+                track = track,
+                encoder_id = 1
             }, quaternary)
         )
     )

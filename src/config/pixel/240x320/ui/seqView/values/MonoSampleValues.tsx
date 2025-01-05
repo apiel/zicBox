@@ -78,6 +78,15 @@ function Main({ group, track, context }: Props) {
 }
 
 function Edit({ group, track, context }: Props) {
+    return (
+        <>
+            <EditSample group={group} track={track} context={context} />
+            <EditLoop group={group} track={track} context={context} />
+        </>
+    );
+}
+
+function EditSample({ group, track, context }: Props) {
     const topFull = [...topLeft];
     topFull[2] = ScreenWidth;
     return (
@@ -109,6 +118,47 @@ function Edit({ group, track, context }: Props) {
                 encoder_id={3}
                 {...quaternary}
             />
+        </Container>
+    );
+}
+
+function EditLoop({ group, track, context }: Props) {
+    return (
+        <Container group={group} context={context} values={{ seq: 0, menu: 2 }}>
+            <Rect position={[0, 0, ScreenWidth, height]} />
+
+            <Value
+                value="MonoSample LOOP_POSITION"
+                position={topLeft}
+                group={group}
+                track={track}
+                encoder_id={0}
+                {...tertiary}
+            />
+            <Value
+                value="MonoSample LOOP_LENGTH"
+                position={topRight}
+                group={group}
+                track={track}
+                encoder_id={2}
+                {...tertiary}
+            />
+            <Value
+                value="MonoSample LOOP_RELEASE"
+                position={bottomLeft}
+                group={group}
+                track={track}
+                encoder_id={1}
+                {...quaternary}
+            />
+            {/* <Value
+                value="MonoSample END"
+                position={bottomRight}
+                group={group}
+                track={track}
+                encoder_id={3}
+                {...quaternary}
+            /> */}
         </Container>
     );
 }
