@@ -17,7 +17,7 @@ public:
 
     ValueInterface* watch(ValueInterface* value)
     {
-        if (value) {
+        if (value != NULL) {
             values.push_back(value);
         }
         return value;

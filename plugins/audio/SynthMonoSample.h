@@ -84,6 +84,9 @@ public:
             return;
         }
         sustainPosition.setFloat(p.value);
+        if (sustainLength.get() == 0.0f) {
+            sustainLength.set(5);
+        }
         // TODO set loop start position in sample format
     });
     /*md - `LOOP_LENGTH` set the length of the sustain loop */
