@@ -195,6 +195,14 @@ public:
             };
         }
 
+        if (action == "shutdown") {
+            return [this](KeypadLayout::KeyMap& keymap) {
+                if (isReleased(keymap)) {
+                    system("poweroff");
+                }
+            };
+        }
+
         if (action.rfind("incGroup:") == 0) {
             int direction = action[9] == '-' ? -1 : 1;
             int incValue = atoi(action.substr(10).c_str());

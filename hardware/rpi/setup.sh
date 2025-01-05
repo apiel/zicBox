@@ -75,6 +75,9 @@ EOF
 
 echo "/boot/config.txt has been updated."
 
+# allow shutdown without sudo
+chmod 4755 /sbin/poweroff
+
 # Ask the user if they want to reboot
 read -p "Would you like to reboot now? (y/N): " reboot_choice
 case "$reboot_choice" in
