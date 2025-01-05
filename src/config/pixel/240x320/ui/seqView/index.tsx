@@ -2,7 +2,7 @@ import * as React from '@/libs/react';
 
 import { HiddenValue } from '@/libs/components/HiddenValue';
 import { Keymap } from '@/libs/components/Keymap';
-import { Spectrogram } from '@/libs/components/Spectrogram';
+import { Sample } from '@/libs/components/Sample';
 import { View } from '@/libs/components/View';
 import {
     ColorTrack1,
@@ -49,14 +49,14 @@ export function SeqView({ name }: Props) {
 
             <ValueBpm />
 
-            <Spectrogram
+            {/* <Spectrogram
                 position={[0, 4, ScreenWidth, 70]}
                 track={0}
                 data="Spectrogram BUFFER"
                 text="Pixel"
-            />
+            /> */}
 
-            {/* <Sample */}
+            <Sample position={[0, 4, ScreenWidth, 70]} track={3} plugin="MonoSample SAMPLE_BUFFER" />
 
             <ProgressBar y={160} volume_plugin="MasterVolume VOLUME" group={0} />
 

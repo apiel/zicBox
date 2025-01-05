@@ -163,8 +163,8 @@ public:
         /*md - `PLUGIN: pluginName bufferDataId` set the plugin to use from plugin */
         if (strcmp(key, "PLUGIN") == 0) {
             char* pluginName = strtok(value, " ");
-            bufferDataId = atoi(strtok(NULL, " "));
             plugin = &getPlugin(pluginName, track);
+            bufferDataId = plugin->getDataId(strtok(NULL, " "));
 
             browser = watch(plugin->getValue(valueKeys[0].c_str()));
             startPosition = watch(plugin->getValue(valueKeys[1].c_str()));
