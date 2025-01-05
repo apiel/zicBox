@@ -146,6 +146,8 @@ The only time it becomes important to use chunks is when generating audio across
 
 Multi-threaded audio generation is far away... For now, let’s stick to sample-by-sample processing for its simplicity!
 
+As you might have noted, chunks should be used to enable efficient communication between two entities, such as threads, processes, or hardware. They reduce the overhead of transferring one sample at a time, facilitate synchronization, and balance latency with computational efficiency in real-time audio systems.
+
 **Why Sample-by-Sample Processing is Simpler**:
 1. **Straightforward Logic**: Processing audio one sample at a time aligns naturally with how sound is represented—a continuous stream of individual values. There’s no need to worry about managing multiple samples at once, so the logic is easier to follow and debug.
 

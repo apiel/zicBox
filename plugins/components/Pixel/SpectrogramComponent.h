@@ -26,6 +26,8 @@ protected:
 
     float* buffer;
 
+    bool mirror = true;
+
 public:
     SpectrogramComponent(ComponentInterface::Props props)
         : Component(props)
@@ -49,16 +51,29 @@ public:
                 draw.textCentered({ relativePosition.x + (int)(size.w / 2), relativePosition.y }, text, 16, { textColor });
             }
 
-            for (int i = 0; i < size.w; i++) {
-                int graphH = buffer[i] * size.h;
-                if (graphH) {
-                    int y1 = yCenter - graphH;
-                    int y2 = yCenter + graphH;
-                    draw.line({ i, y1 }, { i, y2 }, { waveIn });
-                    draw.line({ i, (int)(y1 + graphH * 0.25) }, { i, (int)(y2 - graphH * 0.25) }, { waveMiddle });
-                    draw.line({ i, (int)(y1 + graphH * 0.75) }, { i, (int)(y2 - graphH * 0.75) }, { waveOut });
-                } else {
-                    draw.pixel({ i, yCenter }, { waveOut });
+            if (mirror) {
+                for (int i = 0; i < size.w; i++) {
+                    int graphH = buffer[i] * size.h;
+                    if (graphH) {
+                        int y1 = yCenter - graphH;
+                        int y2 = yCenter + graphH;
+                        draw.line({ i, y1 }, { i, y2 }, { waveIn });
+                        draw.line({ i, (int)(y1 + graphH * 0.25) }, { i, (int)(y2 - graphH * 0.25) }, { waveMiddle });
+                        draw.line({ i, (int)(y1 + graphH * 0.75) }, { i, (int)(y2 - graphH * 0.75) }, { waveOut });
+                    } else {
+                        draw.pixel({ i, yCenter }, { waveOut });
+                    }
+                }
+            } else {
+                for (int i = 0; i < size.w; i++) {
+                    int graphH = buffer[i] * size.h;
+                    if (graphH) {
+                        draw.line({ i, yCenter }, { i, yCenter + graphH }, { waveIn });
+                        draw.line({ i, yCenter }, { i, (int)(yCenter + graphH * 0.25) }, { waveMiddle });
+                        draw.line({ i, yCenter }, { i, (int)(yCenter + graphH * 0.75) }, { waveOut });
+                    } else {
+                        draw.pixel({ i, yCenter }, { waveOut });
+                    }
                 }
             }
         }
@@ -100,6 +115,12 @@ public:
         /*md - `TEXT: text` is the text to display. */
         if (strcmp(key, "TEXT") == 0) {
             text = value;
+            return true;
+        }
+
+        /*md - `MIRROR: false` mirror the waveform horizontally (default: true). */
+        if (strcmp(key, "MIRROR") == 0) {
+            mirror = strcmp(value, "true") == 0;
             return true;
         }
 
