@@ -10,8 +10,10 @@ local W3_4 = ____constants.W3_4
 function ____exports.ValueBpm()
     return React.createElement(Value, {
         value = "Tempo BPM",
-        position = {W3_4, KeyInfoPosition[2], W1_4, 22},
+        position = {W3_4, KeyInfoPosition[2] - 2, W1_4, 24},
         SHOW_LABEL_OVER_VALUE = 0,
+        LABEL_OVER_VALUE_X = 16,
+        LABEL_FONT_SIZE = 8,
         BAR_HEIGHT = 0,
         VALUE_FONT_SIZE = 16
     })

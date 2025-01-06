@@ -1,7 +1,8 @@
 ## Pixel TODO
 
-- TODO master track
-- TODO perform / grid effect / scatter effect
+- TODO master track --> add effect: sample reducer, distortion, delay...? 
+    - --> instead of mixer drum and mixer synth, use sent effect to track fx1 and track fx2
+- TODO perform / grid effect / scatter effect: apply effect for some time, apply granular effect, pitch down
 
 - TODO speed up compile time
   - cross compile for rpi directly on laptop
