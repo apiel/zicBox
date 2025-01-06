@@ -19,6 +19,8 @@ const char* MIDI_NOTES_STR[132] = {
     // clang-format on
 };
 
+const uint8_t MIDI_NOTE_C0 = 12;
+
 uint8_t MIDI_NOTE_COUNT = sizeof(MIDI_NOTES_STR) / sizeof(MIDI_NOTES_STR[0]);
 
 #endif

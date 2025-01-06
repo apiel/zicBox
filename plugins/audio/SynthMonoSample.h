@@ -41,10 +41,13 @@ protected:
     float index = 0;
     uint64_t indexStart = 0;
     uint64_t indexEnd = 0;
+    uint64_t loopStart = 0;
+    uint64_t loopEnd = 0;
     float stepIncrement = 1.0;
     float stepMultiplier = 1.0;
 
     float velocity = 1.0;
+    uint8_t sustainedNote = 0;
 
     uint8_t baseNote = 60;
     float getSampleStep(uint8_t note)
@@ -67,6 +70,7 @@ public:
             bool sustainEq = p.val.get() == sustainPosition.get();
             p.val.setFloat(p.value);
             indexStart = p.val.pct() * sampleBuffer.count;
+            // logDebug("- START: %d", indexStart);
             if (p.val.get() > sustainPosition.get() || sustainEq) {
                 sustainPosition.set(p.val.get());
             }
@@ -77,6 +81,7 @@ public:
         if (p.value > start.get()) {
             p.val.setFloat(p.value);
             indexEnd = p.val.pct() * sampleBuffer.count;
+            // logDebug("- END: %d", indexEnd);
             if (p.val.get() < sustainPosition.get() + sustainLength.get()) {
                 sustainPosition.set(p.val.get() - sustainLength.get());
             }
@@ -98,6 +103,8 @@ public:
             sustainLength.set(5);
         }
         // TODO set loop start position in sample format
+        loopStart = p.val.pct() * sampleBuffer.count;
+        // logDebug("- LOOP_POSITION: %d", loopStart);
     });
     /*md - `LOOP_LENGTH` set the length of the sustain loop */
     Val& sustainLength = val(0.0f, "LOOP_LENGTH", { "Loop length", .step = 0.1f, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
@@ -106,6 +113,8 @@ public:
         }
         sustainLength.setFloat(p.value);
         // TODO set loop end position in sample format
+        loopEnd = p.val.pct() * sampleBuffer.count + sustainPosition.pct() * sampleBuffer.count;
+        // logDebug("- LOOP_LENGTH: %d", loopEnd);
     });
     /*md - `LOOP_RELEASE` set a delay before the sustain loop ends when note off is triggered */
     Val& sustainRelease = val(0.0f, "LOOP_RELEASE", { "Loop Release", .min = 0.0, .max = 5000.0, .step = 50.0, .unit = "ms" }, [&](auto p) {
@@ -138,7 +147,13 @@ public:
     void sample(float* buf) override
     {
         float out = 0.0f;
-        if (index < indexEnd) {
+        if (sustainedNote) {
+            out = sampleBuffer.data[(int)index] * velocity;
+            index += stepIncrement;
+            if (index >= loopEnd) {
+                index = loopStart;
+            }
+        } else if (index < indexEnd) {
             out = sampleBuffer.data[(int)index] * velocity;
             index += stepIncrement;
         } else if (index != sampleBuffer.count) {
@@ -154,6 +169,14 @@ public:
         index = indexStart;
         stepIncrement = getSampleStep(note);
         velocity = _velocity;
+        sustainedNote = note;
+    }
+
+    void noteOff(uint8_t note, float velocity) override
+    {
+        if (note == sustainedNote) {
+            sustainedNote = 0;
+        }
     }
 
     void open(std::string filename)
@@ -192,8 +215,9 @@ public:
         if (force || position != fileBrowser.position) {
             browser.setString(fileBrowser.getFile(position));
             std::string filepath = fileBrowser.getFilePath(position);
-            // logDebug("SAMPLE_SELECTOR: %f %s\n", value, filepath);
+            // logDebug("SAMPLE_SELECTOR: %f %s", value, filepath.c_str());
             open(filepath);
+            initValues();
         }
     }
 
