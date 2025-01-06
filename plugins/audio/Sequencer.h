@@ -142,7 +142,7 @@ public:
     /*md - `STEP_MOTION` set selected step motion */
     Val& stepMotion = val(0.0f, "STEP_MOTION", { "Motion", VALUE_STRING, .min = 1.0f, .max = (float)STEP_MOTIONS_COUNT }, [&](auto p) { setStepMotion(p.value); });
     /*md - `STEP_NOTE` set selected step note */
-    Val& stepNote = val(0.0f, "STEP_NOTE", { "Note", VALUE_STRING, .min = 1.0f, .max = (float)MIDI_NOTE_COUNT }, [&](auto p) { setStepNote(p.value); });
+    Val& stepNote = val(0.0f, "STEP_NOTE", { "Note", VALUE_STRING, .min = (float)MIDI_NOTE_C0, .max = (float)MIDI_NOTE_COUNT }, [&](auto p) { setStepNote(p.value); });
     /*md - `STEP_ENABLED` toggle selected step */
     Val& stepEnabled = val(0.0f, "STEP_ENABLED", { "Enabled", VALUE_STRING, .max = 1 }, [&](auto p) { setStepEnabled(p.value); });
     /*md - `STATUS` set status: off, on, next. Default: off
