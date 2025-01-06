@@ -76,7 +76,7 @@ protected:
     AudioPlugin* targetPlugin = NULL;
 
     enum Status {
-        OFF = 0,
+        MUTED = 0,
         ON = 1,
         NEXT = 2
     };
@@ -99,6 +99,7 @@ protected:
     void onStep()
     {
         stepCounter++;
+        // printf("[%d] stepCounter %d\n", track, stepCounter);
         uint8_t state = status.get();
         // If we reach the end of the sequence, we reset the step counter
         if (stepCounter >= MAX_STEPS) {
@@ -202,9 +203,8 @@ public:
     void setStatus(float value)
     {
         status.setFloat(value);
-        if (status.get() == Status::OFF) {
-            status.setString("off");
-            onEvent(AudioEventType::STOP, false);
+        if (status.get() == Status::MUTED) {
+            status.setString("muted");
         } else if (status.get() == Status::ON) {
             status.setString("on");
         } else {
@@ -348,7 +348,7 @@ public:
         }
         case DATA_ID::SELECTED_STEP_PTR: { // Toggle sequencer
             if (status.get() == Status::ON) {
-                status.set(Status::OFF);
+                status.set(Status::MUTED);
             } else {
                 status.set(Status::ON);
             }

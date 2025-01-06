@@ -3,8 +3,6 @@
 - TODO master track
 - TODO perform / grid effect / scatter effect
 
-- FIXME fix sequencer counter, when one track is on pause it should keep counting to stay sync with other running track
-
 - TODO speed up compile time
   - cross compile for rpi directly on laptop
 
