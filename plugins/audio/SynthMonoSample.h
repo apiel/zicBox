@@ -64,8 +64,12 @@ public:
     /*md - `START` set the start position of the sample */
     Val& start = val(0.0f, "START", { "Start", .step = 0.1f, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
         if (p.value < end.get()) {
+            bool sustainEq = p.val.get() == sustainPosition.get();
             p.val.setFloat(p.value);
             indexStart = p.val.pct() * sampleBuffer.count;
+            if (p.val.get() > sustainPosition.get() || sustainEq) {
+                sustainPosition.set(p.val.get());
+            }
         }
     });
     /*md - `END` set the end position of the sample */
@@ -73,13 +77,16 @@ public:
         if (p.value > start.get()) {
             p.val.setFloat(p.value);
             indexEnd = p.val.pct() * sampleBuffer.count;
+            if (p.val.get() < sustainPosition.get() + sustainLength.get()) {
+                sustainPosition.set(p.val.get() - sustainLength.get());
+            }
         }
     });
     /*md - `BROWSER` to browse between samples to play. */
     Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)fileBrowser.count }, [&](auto p) { open(p.value); });
 
     /*md - `LOOP_POSITION` set the position of the sustain loop */
-    Val& sustainPosition = val(0.0f, "LOOP_POSITION", { "Loop position", .unit = "%" }, [&](auto p) {
+    Val& sustainPosition = val(0.0f, "LOOP_POSITION", { "Loop position", .step = 0.1f, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
         if (p.value < start.get()) {
             p.value = start.get();
         }
@@ -93,7 +100,7 @@ public:
         // TODO set loop start position in sample format
     });
     /*md - `LOOP_LENGTH` set the length of the sustain loop */
-    Val& sustainLength = val(0.0f, "LOOP_LENGTH", { "Loop length", .unit = "%" }, [&](auto p) {
+    Val& sustainLength = val(0.0f, "LOOP_LENGTH", { "Loop length", .step = 0.1f, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
         if (p.value + sustainPosition.get() > end.get()) {
             return;
         }
