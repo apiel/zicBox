@@ -62,8 +62,8 @@ public:
 
     WorkspacesComponent(ComponentInterface::Props props)
         : ListComponent(props)
-        , badgeColor({ 39, 128, 39 }) // rgb(39, 128, 39)
-        , errorColor({ 173, 99, 99 }) // rgb(173, 99, 99)
+        , badgeColor(rgb(39, 128, 39))
+        , errorColor(rgb(173, 99, 99))
     {
         keypadLayout.getCustomAction = [this](std::string action) {
             return getKeypadAction(action);

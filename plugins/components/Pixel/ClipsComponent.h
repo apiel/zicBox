@@ -48,12 +48,12 @@ public:
     ClipsComponent(ComponentInterface::Props props)
         : Component(props)
         , bgColor(styles.colors.background)
-        , foreground({ 0x35, 0x35, 0x35 })
+        , foreground(rgb(53, 53, 53))
         , foreground2(lighten(foreground, 0.5))
         , textColor(styles.colors.text)
         , barColor(styles.colors.primary)
-        , playColor({ 0x23, 0xa1, 0x23 }) // #23a123
-        , playNextColor({ 0xfd, 0x6f, 0x0e }) // #fd6f0e
+        , playColor(rgb(35, 161, 35))
+        , playNextColor(rgb(253, 111, 14))
         , keypadLayout(this, [&](std::string action) {
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
             if (action == ".up") {
