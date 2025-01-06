@@ -90,7 +90,9 @@ protected:
     void renderActiveSamples()
     {
         if (sampleIndex != NULL && *sampleIndex != sampleBuffer->count) {
-            draw.filledRect({ sampleIndexX, relativePosition.y }, { 1, size.h }, { sampleColor });
+            // int y = relativePosition.y + size.h / 2 - 2;
+            int y = relativePosition.y + 4;
+            draw.filledRect({ sampleIndexX, y }, { 2, 4 }, { sampleColor });
         }
     }
 
@@ -99,7 +101,7 @@ protected:
     Color overlayEdgeColor;
     Color loopStartColor;
     Color loopEndColor;
-    Color sampleColor = { 0x9d, 0xfe, 0x86 }; // #9dfe89
+    Color sampleColor = rgb(255, 166, 0);
 
 public:
     SampleComponent(ComponentInterface::Props props)

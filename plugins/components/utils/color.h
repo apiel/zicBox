@@ -18,6 +18,16 @@ Color hex2rgb(char* hex)
     });
 }
 
+Color rgb(uint8_t r, uint8_t g, uint8_t b)
+{
+    return Color({ r, g, b, 255 });
+}
+
+Color rgba(uint8_t r, uint8_t g, uint8_t b, float a)
+{
+    return Color({ r, g, b, (uint8_t)(a * 255) });
+}
+
 std::string rgbToString(Color color)
 {
     char buffer[8];
