@@ -43,6 +43,7 @@ protected:
     uint64_t indexEnd = 0;
     uint64_t loopStart = 0;
     uint64_t loopEnd = 0;
+    uint32_t loopCountRelease = 0;
     float stepIncrement = 1.0;
     float stepMultiplier = 1.0;
 
@@ -116,10 +117,19 @@ public:
         loopEnd = p.val.pct() * sampleBuffer.count + sustainPosition.pct() * sampleBuffer.count;
         // logDebug("- LOOP_LENGTH: %d", loopEnd);
     });
+
+    bool showNumberOfLoopsInUnit = true;
     /*md - `LOOP_RELEASE` set a delay before the sustain loop ends when note off is triggered */
     Val& sustainRelease = val(0.0f, "LOOP_RELEASE", { "Loop Release", .min = 0.0, .max = 5000.0, .step = 50.0, .unit = "ms" }, [&](auto p) {
-        sustainRelease.setFloat(p.value);
-        // TODO set loop count
+        p.val.setFloat(p.value);
+        if (p.val.get() > 0) {
+            uint64_t loopLength = sustainLength.pct() * sampleBuffer.count;
+            float msLoopLength = loopLength / props.sampleRate * 1000;
+            loopCountRelease = msLoopLength > 0 ? p.val.get() / msLoopLength : 0;
+        }
+        // if (showNumberOfLoopsInUnit) {
+        //     p.val.props().unit = "ms (" + std::to_string(loopCountRelease) + " loops)";
+        // }
     });
 
     SynthMonoSample(AudioPlugin::Props& props, char* _name)
@@ -138,6 +148,12 @@ public:
             browser.props().max = fileBrowser.count;
             open(0.0, true);
 
+            return true;
+        }
+
+        /*md - `SHOW_LOOP_SUSTAIN_IN_UNIT: false` show the calculated number of loop before to finish release (default: true) */
+        if (strcmp(key, "SHOW_LOOP_SUSTAIN_IN_UNIT") == 0) {
+            showNumberOfLoopsInUnit = strcmp(value, "true") == 0;
             return true;
         }
 
