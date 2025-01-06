@@ -192,8 +192,6 @@ public:
             allOff();
         } else if (event == AudioEventType::PAUSE) {
             allOff();
-        } else if (event == AudioEventType::TOGGLE_PLAY_PAUSE && !isPlaying) {
-            allOff();
         }
     }
 
