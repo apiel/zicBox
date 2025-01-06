@@ -7,7 +7,7 @@ import { VisibilityContext } from '@/libs/components/VisibilityContext';
 import {
     bottomLeft,
     bottomRight,
-    posContainer,
+    posContainerValues,
     primary,
     quaternary,
     secondary,
@@ -23,7 +23,7 @@ export type Props = Omit<ComponentProps, 'position'> & {
 
 export function SeqValues({ group, track }: Props) {
     return (
-        <VisibilityContainer position={posContainer} group={group}>
+        <VisibilityContainer position={posContainerValues} group={group}>
             <VisibilityContext index={10} condition="SHOW_WHEN_OVER" value={0} />
             <Value
                 value="Sequencer STEP_NOTE"

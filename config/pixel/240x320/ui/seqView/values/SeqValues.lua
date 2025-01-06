@@ -11,7 +11,7 @@ local VisibilityContext = ____VisibilityContext.VisibilityContext
 local ____constants = require("config.pixel.240x320.ui.seqView.values.constants")
 local bottomLeft = ____constants.bottomLeft
 local bottomRight = ____constants.bottomRight
-local posContainer = ____constants.posContainer
+local posContainerValues = ____constants.posContainerValues
 local primary = ____constants.primary
 local quaternary = ____constants.quaternary
 local secondary = ____constants.secondary
@@ -25,7 +25,7 @@ function ____exports.SeqValues(____bindingPattern0)
     track = ____bindingPattern0.track
     return React.createElement(
         VisibilityContainer,
-        {position = posContainer, group = group},
+        {position = posContainerValues, group = group},
         React.createElement(VisibilityContext, {index = 10, condition = "SHOW_WHEN_OVER", value = 0}),
         React.createElement(
             Value,

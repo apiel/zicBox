@@ -6,6 +6,7 @@ import { Encoder3 } from '@/libs/components/Encoder3';
 import { GraphEncoder } from '@/libs/components/GraphEncoder';
 import { Log } from '@/libs/components/Log';
 import { Rect } from '@/libs/components/Rect';
+import { Spectrogram } from '@/libs/components/Spectrogram';
 import { Value } from '@/libs/components/Value';
 import { VisibilityContainer } from '@/libs/components/VisibilityContainer';
 import { VisibilityContext } from '@/libs/components/VisibilityContext';
@@ -15,7 +16,8 @@ import {
     bottomRight,
     encoderH,
     height,
-    posContainer,
+    posContainerValues,
+    posTopContainer,
     primary,
     quaternary,
     secondary,
@@ -35,6 +37,16 @@ export function Drum23Values({ group, track, context }: Props) {
     return (
         <>
             <Log text="Drum23Values" />
+            
+            <VisibilityContainer position={posTopContainer} group={group}>
+                <Spectrogram
+                    position={[0, 0, ScreenWidth, 70]}
+                    track={0}
+                    data="Spectrogram BUFFER"
+                    text="Pixel"
+                />
+            </VisibilityContainer>
+
             <Edit group={group} track={track} context={context} />
             <Main group={group} track={track} context={context} />
             <SeqValues group={group} track={track} />
@@ -252,7 +264,7 @@ function Container({
     values: { seq: number; menu: number };
 }) {
     return (
-        <VisibilityContainer position={posContainer} group={group}>
+        <VisibilityContainer position={posContainerValues} group={group}>
             <VisibilityContext index={10} condition="SHOW_WHEN" value={values.seq} />
             <VisibilityContext index={context} condition="SHOW_WHEN" value={values.menu} />
         </VisibilityContainer>

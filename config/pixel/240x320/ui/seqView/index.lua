@@ -5,8 +5,6 @@ local ____HiddenValue = require("config.libs.components.HiddenValue")
 local HiddenValue = ____HiddenValue.HiddenValue
 local ____Keymap = require("config.libs.components.Keymap")
 local Keymap = ____Keymap.Keymap
-local ____Sample = require("config.libs.components.Sample")
-local Sample = ____Sample.Sample
 local ____View = require("config.libs.components.View")
 local View = ____View.View
 local ____constants = require("config.pixel.240x320.ui.constants")
@@ -18,7 +16,6 @@ local ColorTrack5 = ____constants.ColorTrack5
 local ColorTrack6 = ____constants.ColorTrack6
 local ColorTrack7 = ____constants.ColorTrack7
 local ColorTrack8 = ____constants.ColorTrack8
-local ScreenWidth = ____constants.ScreenWidth
 local ____ProgressBar = require("config.pixel.240x320.ui.components.ProgressBar")
 local ProgressBar = ____ProgressBar.ProgressBar
 local ____ValueBpm = require("config.pixel.240x320.ui.components.ValueBpm")
@@ -56,7 +53,6 @@ function ____exports.SeqView(____bindingPattern0)
         React.createElement(TextGridTrackStepEdit, nil),
         React.createElement(TextGridTrackShifted, nil),
         React.createElement(ValueBpm, nil),
-        React.createElement(Sample, {position = {0, 4, ScreenWidth, 70}, track = 4, plugin = "MonoSample SAMPLE_BUFFER SAMPLE_INDEX", loop_points_color = "tertiary"}),
         React.createElement(ProgressBar, {y = 160, volume_plugin = "MasterVolume VOLUME", group = 0}),
         React.createElement(RowDrum23, {group = 1, track = 1, name_color = ColorTrack1, select_menu_context = "11"}),
         React.createElement(RowDrum23, {group = 2, track = 2, name_color = ColorTrack2, select_menu_context = "12"}),

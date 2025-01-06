@@ -13,6 +13,8 @@ local ____Log = require("config.libs.components.Log")
 local Log = ____Log.Log
 local ____Rect = require("config.libs.components.Rect")
 local Rect = ____Rect.Rect
+local ____Spectrogram = require("config.libs.components.Spectrogram")
+local Spectrogram = ____Spectrogram.Spectrogram
 local ____Value = require("config.libs.components.Value")
 local Value = ____Value.Value
 local ____VisibilityContainer = require("config.libs.components.VisibilityContainer")
@@ -28,7 +30,8 @@ local bottomLeft = ____constants.bottomLeft
 local bottomRight = ____constants.bottomRight
 local encoderH = ____constants.encoderH
 local height = ____constants.height
-local posContainer = ____constants.posContainer
+local posContainerValues = ____constants.posContainerValues
+local posTopContainer = ____constants.posTopContainer
 local primary = ____constants.primary
 local quaternary = ____constants.quaternary
 local secondary = ____constants.secondary
@@ -309,7 +312,7 @@ function Container(____bindingPattern0)
     values = ____bindingPattern0.values
     return React.createElement(
         VisibilityContainer,
-        {position = posContainer, group = group},
+        {position = posContainerValues, group = group},
         React.createElement(VisibilityContext, {index = 10, condition = "SHOW_WHEN", value = values.seq}),
         React.createElement(VisibilityContext, {index = context, condition = "SHOW_WHEN", value = values.menu})
     )
@@ -325,6 +328,11 @@ function ____exports.Drum23Values(____bindingPattern0)
         React.Fragment,
         nil,
         React.createElement(Log, {text = "Drum23Values"}),
+        React.createElement(
+            VisibilityContainer,
+            {position = posTopContainer, group = group},
+            React.createElement(Spectrogram, {position = {0, 0, ScreenWidth, 70}, track = 0, data = "Spectrogram BUFFER", text = "Pixel"})
+        ),
         React.createElement(Edit, {group = group, track = track, context = context}),
         React.createElement(Main, {group = group, track = track, context = context}),
         React.createElement(SeqValues, {group = group, track = track})

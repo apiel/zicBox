@@ -2,7 +2,6 @@ import * as React from '@/libs/react';
 
 import { HiddenValue } from '@/libs/components/HiddenValue';
 import { Keymap } from '@/libs/components/Keymap';
-import { Sample } from '@/libs/components/Sample';
 import { View } from '@/libs/components/View';
 import {
     ColorTrack1,
@@ -12,8 +11,7 @@ import {
     ColorTrack5,
     ColorTrack6,
     ColorTrack7,
-    ColorTrack8,
-    ScreenWidth,
+    ColorTrack8
 } from '@/pixel/240x320/ui/constants';
 import { ProgressBar } from '../components/ProgressBar';
 import { ValueBpm } from '../components/ValueBpm';
@@ -56,12 +54,12 @@ export function SeqView({ name }: Props) {
                 text="Pixel"
             /> */}
 
-            <Sample
+            {/* <Sample
                 position={[0, 4, ScreenWidth, 70]}
                 track={4}
                 plugin="MonoSample SAMPLE_BUFFER SAMPLE_INDEX"
                 loop_points_color={'tertiary'}
-            />
+            /> */}
 
             <ProgressBar y={160} volume_plugin="MasterVolume VOLUME" group={0} />
 
