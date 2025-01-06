@@ -494,6 +494,7 @@ public:
             playing = !playing;
             break;
         }
+        // if (event != AUTOSAVE) printf(">>> AudioPluginHandler::sendEvent %d\n", event);
         for (AudioPlugin* plugin : plugins) {
             plugin->onEvent(event, playing);
         }

@@ -193,6 +193,7 @@ public:
 
     void noteOff(uint8_t note, float velocity) override
     {
+        // printf("[%d] drum sample noteOff: %d == %d --> %s\n", track, note, sustainedNote, note == sustainedNote ? "true" : "false");
         if (note == sustainedNote) {
             nbOfLoopBeforeRelease = loopCountRelease;
             sustainedNote = 0;
