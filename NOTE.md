@@ -3,8 +3,6 @@
 - TODO master track
 - TODO perform / grid effect / scatter effect
 
-- FIXME pixel_env.lua
-
 - FIXME fix sequencer counter, when one track is on pause it should keep counting to stay sync with other running track
 
 - TODO speed up compile time
@@ -18,8 +16,7 @@
     - Should it allow to apply filter on the fly in the risk of using CPU?
       - or should any modulation involve resampling to a file? Maybe the best option as we dont care about hard drive usage.
 
-- TODO clips allow more than 16 by adding a scrolling system
-  - give a way to make some extra color code to classify depending if it is used for playibg live or for generating sample?
+- FIXME pixel_env.lua
 
 - TODO drum freq envelop is really good but not easy to use
   - might be great to keep this one as advance version
@@ -38,6 +35,9 @@
     **All track caching** the whole track caching would make it hard for sequencer motion and probability, most likely not the right way...
 
 - IDEA record Drum23 or Fm into sample
+
+- TODO clips allow more than 16 by adding a scrolling system
+  - give a way to make some extra color code to classify depending if it is used for playibg live or for generating sample?
 
 - TODO add color code in text char...
 - TODO paragraph --> multiline text component

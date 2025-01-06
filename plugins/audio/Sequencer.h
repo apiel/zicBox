@@ -3,10 +3,11 @@
 
 #include <string>
 
-#include "../../helpers/midiNote.h"
+#include "helpers/midiNote.h"
 #include "audioPlugin.h"
 #include "mapping.h"
 #include "stepInterface.h"
+#include "log.h"
 
 const uint8_t MAX_STEPS = 32;
 
@@ -99,6 +100,7 @@ protected:
     {
         stepCounter++;
         uint8_t state = status.get();
+        // If we reach the end of the sequence, we reset the step counter
         if (stepCounter >= MAX_STEPS) {
             stepCounter = 0;
             loopCounter++;
@@ -106,6 +108,7 @@ protected:
                 status.set(Status::ON);
             }
         }
+        // Loop through all steps to check if we need to trigger a note off
         for (int i = 0; i < MAX_STEPS; i++) {
             Step& step = steps[i];
             if (step.counter) {
@@ -168,24 +171,28 @@ public:
 
     void allOff()
     {
+        // logDebug("Note off all on track %d", track);
         for (int i = 0; i < MAX_STEPS; i++) {
-            if (targetPlugin && steps[i].counter) {
-                printf("should trigger note off %d\n", steps[i].note);
-                targetPlugin->noteOff(steps[i].note, 0);
-                steps[i].counter = 0;
+            if (steps[i].counter) {
+                // logDebug("should trigger note off %d", steps[i].note);
+                // targetPlugin->noteOff(steps[i].note, 0);
+                props.audioPluginHandler->noteOff(getNote(steps[i]), 0, { track, targetPlugin });
             }
+            steps[i].counter = 0;
         }
     }
 
     void onEvent(AudioEventType event, bool playing) override
     {
         isPlaying = playing;
-        // printf("[%d] seq is playing %d\n", event, isPlaying);
+        // if (event != AudioEventType::AUTOSAVE) logDebug("[%d] event %d seq is playing %d", track, event, isPlaying);
         if (event == AudioEventType::STOP) {
-            printf("in sequencer event STOP\n");
+            // logDebug("in sequencer event STOP\n");
             stepCounter = 0;
             allOff();
         } else if (event == AudioEventType::PAUSE) {
+            allOff();
+        } else if (event == AudioEventType::TOGGLE_PLAY_PAUSE && !isPlaying) {
             allOff();
         }
     }
