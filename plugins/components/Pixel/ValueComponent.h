@@ -40,6 +40,7 @@ protected:
     bool showUnit = true;
     bool showLabel = true;
     int showLabelOverValue = -1;
+    int labelOverValueX = -1;
     bool useStringValue = false;
     bool verticalAlignCenter = false;
     std::string label;
@@ -122,7 +123,7 @@ public:
                 int unitY = textY + maxFontSize - unitFontSize;
 
                 if (showLabelOverValue != -1) {
-                    draw.textCentered({ x, relativePosition.y + showLabelOverValue }, getLabel(), labelFontSize, { labelColor.color, .font = font });
+                    draw.textCentered({ labelOverValueX == -1 ? x : relativePosition.x + labelOverValueX, relativePosition.y + showLabelOverValue }, getLabel(), labelFontSize, { labelColor.color, .font = font });
                 } else if (showLabel) {
                     x = draw.text({ x, labelY }, getLabel(), labelFontSize, { labelColor.color, .font = font }) + 2;
                 }
@@ -222,10 +223,16 @@ public:
         /*md - `SHOW_LABEL_OVER_VALUE: 4` shows the label over the value, 4 px from the top of the component (default: -1) `*/
         if (strcmp(key, "SHOW_LABEL_OVER_VALUE") == 0) {
             showLabelOverValue = atoi(params);
-            if (showLabelOverValue) {
+            if (showLabelOverValue != -1) {
                 showLabel = false;
             }
             setMaxFontSize();
+            return true;
+        }
+
+        /*md - `LABEL_OVER_VALUE_X: 0` set the distance from the left of the component where the label will be placed. If -1 it is centered (default: -1) */
+        if (strcmp(key, "LABEL_OVER_VALUE_X") == 0) {
+            labelOverValueX = atoi(params);
             return true;
         }
 
