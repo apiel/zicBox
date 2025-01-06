@@ -21,13 +21,18 @@ The little green dot are the current playing positions of the sample.
 class SampleComponent : public Component {
 protected:
     AudioPlugin* plugin;
-    int bufferDataId = -1;
-    int sampleIndexDataId = -1;
     float lastBrowser = -1.0f;
     ValueInterface* startPosition;
     ValueInterface* endPosition;
     ValueInterface* sustainPosition;
     ValueInterface* sustainLength;
+
+    struct SampleBuffer {
+        uint64_t count;
+        float* data;
+    }* sampleBuffer = NULL;
+    float* sampleIndex = NULL;
+    int sampleIndexX = -1;
 
     std::string valueKeys[5] = {
         "BROWSER",
@@ -79,20 +84,14 @@ protected:
 
     void renderWaveform()
     {
-        struct SampleBuffer {
-            uint64_t count;
-            float* data;
-        }* sampleBuffer = (struct SampleBuffer*)plugin->data(bufferDataId);
         wave.render(sampleBuffer->data, sampleBuffer->count);
     }
 
     void renderActiveSamples()
     {
-        // if (sampleDataId != -1) {
-        //     samplePosition.position.x = position.x + size.w * startPosition->pct();
-        //     samplePosition.size.w = size.w * endPosition->pct() - samplePosition.position.x;
-        //     samplePosition.render((std::vector<BaseSamplePositionComponent::SampleState>*)plugin->data(sampleDataId));
-        // }
+        if (sampleIndex != NULL && *sampleIndex != sampleBuffer->count) {
+            draw.filledRect({ sampleIndexX, relativePosition.y }, { 1, size.h }, { sampleColor });
+        }
     }
 
     Color background;
@@ -100,6 +99,7 @@ protected:
     Color overlayEdgeColor;
     Color loopStartColor;
     Color loopEndColor;
+    Color sampleColor = { 0x9d, 0xfe, 0x86 }; // #9dfe89
 
 public:
     SampleComponent(ComponentInterface::Props props)
@@ -115,19 +115,21 @@ public:
         overlayYtop = position.y;
         overlayYbottom = position.y + size.h - 2;
 
-        // jobRendering = [this](unsigned long now) {
-        //     if (plugin && activeDataId != -1) {
-        //         if (samplePosition.shouldRender(plugin->data(activeDataId))) {
-        //             renderNext();
-        //         }
-        //     }
-        // };
+        jobRendering = [this](unsigned long now) {
+            if (sampleIndex != NULL) {
+                int x = relativePosition.x + size.w * ((*sampleIndex) / sampleBuffer->count);
+                if (sampleIndexX != x) {
+                    sampleIndexX = x;
+                    renderNext();
+                }
+            }
+        };
     }
 
     void render()
     {
 
-        if (plugin != NULL && updatePosition()) {
+        if (sampleBuffer != NULL && updatePosition()) {
             draw.filledRect(relativePosition, size, { background });
             renderWaveform();
 
@@ -191,10 +193,10 @@ public:
         if (strcmp(key, "PLUGIN") == 0) {
             char* pluginName = strtok(value, " ");
             plugin = &getPlugin(pluginName, track);
-            bufferDataId = plugin->getDataId(strtok(NULL, " "));
-            char * sampleIndexDataIdStr = strtok(NULL, " ");
+            sampleBuffer = (struct SampleBuffer*)plugin->data(plugin->getDataId(strtok(NULL, " ")));
+            char* sampleIndexDataIdStr = strtok(NULL, " ");
             if (sampleIndexDataIdStr != NULL) {
-                sampleIndexDataId = plugin->getDataId(sampleIndexDataIdStr);
+                sampleIndex = (float*)plugin->data(plugin->getDataId(sampleIndexDataIdStr));
             }
 
             watch(plugin->getValue(valueKeys[0].c_str())); // watch for file change
