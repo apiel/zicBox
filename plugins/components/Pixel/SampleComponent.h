@@ -2,7 +2,6 @@
 #define _UI_COMPONENT_PIXEL_SAMPLE_H_
 
 #include "./utils/BaseWaveComponent.h"
-#include "./utils/SamplePositionBaseComponent.h"
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
@@ -23,8 +22,7 @@ class SampleComponent : public Component {
 protected:
     AudioPlugin* plugin;
     int bufferDataId = -1;
-    int sampleDataId = -1;
-    int activeDataId = -1;
+    int sampleIndexDataId = -1;
     float lastBrowser = -1.0f;
     ValueInterface* startPosition;
     ValueInterface* endPosition;
@@ -42,8 +40,6 @@ protected:
     void* textureSampleWaveform = NULL;
 
     BaseWaveComponent wave;
-
-    SamplePositionBaseComponent samplePosition;
 
     int overlayYtop = 0;
     int overlayYbottom = 0;
@@ -73,11 +69,11 @@ protected:
     {
         if (sustainPosition != NULL && sustainLength != NULL && sustainLength->get() > 0.0f) {
             int x = position.x + size.w * sustainPosition->pct();
-            draw.line({ x, overlayYtop }, { x, overlayYbottom }, { loopLineColor });
+            draw.line({ x, overlayYtop }, { x, overlayYbottom }, { loopStartColor });
 
             int w = size.w * sustainLength->pct();
             // draw.filledRect({ x, position.y }, { w, size.h }, styles.colors.overlay);
-            draw.line({ x + w, overlayYtop }, { x + w, overlayYbottom }, { loopLineColor });
+            draw.line({ x + w, overlayYtop }, { x + w, overlayYbottom }, { loopEndColor });
         }
     }
 
@@ -92,17 +88,18 @@ protected:
 
     void renderActiveSamples()
     {
-        if (sampleDataId != -1) {
-            samplePosition.position.x = position.x + size.w * startPosition->pct();
-            samplePosition.size.w = size.w * endPosition->pct() - samplePosition.position.x;
-            samplePosition.render((std::vector<SamplePositionBaseComponent::SampleState>*)plugin->data(sampleDataId));
-        }
+        // if (sampleDataId != -1) {
+        //     samplePosition.position.x = position.x + size.w * startPosition->pct();
+        //     samplePosition.size.w = size.w * endPosition->pct() - samplePosition.position.x;
+        //     samplePosition.render((std::vector<BaseSamplePositionComponent::SampleState>*)plugin->data(sampleDataId));
+        // }
     }
 
     Color background;
     Color overlayColor;
     Color overlayEdgeColor;
-    Color loopLineColor;
+    Color loopStartColor;
+    Color loopEndColor;
 
 public:
     SampleComponent(ComponentInterface::Props props)
@@ -110,9 +107,9 @@ public:
         , background(lighten(styles.colors.background, 0.2))
         , overlayColor(alpha(styles.colors.white, 0.2))
         , overlayEdgeColor(alpha(styles.colors.white, 0.4))
-        , loopLineColor(styles.colors.white)
+        , loopStartColor(styles.colors.white)
+        , loopEndColor(styles.colors.white)
         , wave(props)
-        , samplePosition(props)
         , keypadLayout(this)
     {
         overlayYtop = position.y;
@@ -161,9 +158,22 @@ public:
             return true;
         }
 
-        /*md - `LOOP_LINE_COLOR:#548ebe` set loop line color */
-        if (strcmp(key, "LOOP_LINE_COLOR") == 0) {
-            loopLineColor = draw.getColor(value);
+        /*md - `LOOP_START_COLOR:#548ebe` set loop start point color */
+        if (strcmp(key, "LOOP_START_COLOR") == 0) {
+            loopStartColor = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `LOOP_END_COLOR:#548ebe` set loop end point color */
+        if (strcmp(key, "LOOP_END_COLOR") == 0) {
+            loopEndColor = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `LOOP_POINTS_COLOR:#548ebe` set loop end and start point color */
+        if (strcmp(key, "LOOP_POINTS_COLOR") == 0) {
+            loopStartColor = draw.getColor(value);
+            loopEndColor = draw.getColor(value);
             return true;
         }
 
@@ -177,11 +187,15 @@ public:
             return true;
         }
 
-        /*md - `PLUGIN: pluginName bufferDataId` set the plugin to use from plugin */
+        /*md - `PLUGIN: pluginName bufferDataId [sampleIndexDataId]` set the plugin to use from plugin */
         if (strcmp(key, "PLUGIN") == 0) {
             char* pluginName = strtok(value, " ");
             plugin = &getPlugin(pluginName, track);
             bufferDataId = plugin->getDataId(strtok(NULL, " "));
+            char * sampleIndexDataIdStr = strtok(NULL, " ");
+            if (sampleIndexDataIdStr != NULL) {
+                sampleIndexDataId = plugin->getDataId(sampleIndexDataIdStr);
+            }
 
             watch(plugin->getValue(valueKeys[0].c_str())); // watch for file change
             startPosition = watch(plugin->getValue(valueKeys[1].c_str()));
@@ -191,17 +205,11 @@ public:
             return true;
         }
 
-        if (strcmp(key, "DATA_STATE") == 0) {
-            sampleDataId = atoi(strtok(value, " "));
-            activeDataId = atoi(strtok(NULL, " "));
-            return true;
-        }
-
         if (keypadLayout.config(key, value)) {
             return true;
         }
 
-        return samplePosition.config(key, value) || wave.config(key, value);
+        return wave.config(key, value);
     }
 
     void onKey(uint16_t id, int key, int8_t state, unsigned long now)

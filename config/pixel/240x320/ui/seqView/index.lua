@@ -56,7 +56,7 @@ function ____exports.SeqView(____bindingPattern0)
         React.createElement(TextGridTrackStepEdit, nil),
         React.createElement(TextGridTrackShifted, nil),
         React.createElement(ValueBpm, nil),
-        React.createElement(Sample, {position = {0, 4, ScreenWidth, 70}, track = 4, plugin = "MonoSample SAMPLE_BUFFER", loop_line_color = "tertiary"}),
+        React.createElement(Sample, {position = {0, 4, ScreenWidth, 70}, track = 4, plugin = "MonoSample SAMPLE_BUFFER SAMPLE_INDEX", loop_points_color = "tertiary"}),
         React.createElement(ProgressBar, {y = 160, volume_plugin = "MasterVolume VOLUME", group = 0}),
         React.createElement(RowDrum23, {group = 1, track = 1, name_color = ColorTrack1, select_menu_context = "11"}),
         React.createElement(RowDrum23, {group = 2, track = 2, name_color = ColorTrack2, select_menu_context = "12"}),
