@@ -43,7 +43,8 @@ protected:
     uint64_t indexEnd = 0;
     uint64_t loopStart = 0;
     uint64_t loopEnd = 0;
-    uint32_t loopCountRelease = 0;
+    uint16_t loopCountRelease = 0;
+    int16_t nbOfLoopBeforeRelease = 0;
     float stepIncrement = 1.0;
     float stepMultiplier = 1.0;
 
@@ -103,9 +104,9 @@ public:
         if (sustainLength.get() == 0.0f && p.val.get() > start.get()) {
             sustainLength.set(5);
         }
-        // TODO set loop start position in sample format
         loopStart = p.val.pct() * sampleBuffer.count;
         // logDebug("- LOOP_POSITION: %d", loopStart);
+        sustainLength.set(sustainLength.get());
     });
     /*md - `LOOP_LENGTH` set the length of the sustain loop */
     Val& sustainLength = val(0.0f, "LOOP_LENGTH", { "Loop length", .step = 0.1f, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
@@ -113,9 +114,9 @@ public:
             return;
         }
         sustainLength.setFloat(p.value);
-        // TODO set loop end position in sample format
         loopEnd = p.val.pct() * sampleBuffer.count + sustainPosition.pct() * sampleBuffer.count;
         // logDebug("- LOOP_LENGTH: %d", loopEnd);
+        sustainRelease.set(sustainRelease.get());
     });
 
     bool showNumberOfLoopsInUnit = true;
@@ -124,12 +125,13 @@ public:
         p.val.setFloat(p.value);
         if (p.val.get() > 0) {
             uint64_t loopLength = sustainLength.pct() * sampleBuffer.count;
-            float msLoopLength = loopLength / props.sampleRate * 1000;
+            float msLoopLength = loopLength / (float)props.sampleRate * 1000;
             loopCountRelease = msLoopLength > 0 ? p.val.get() / msLoopLength : 0;
+            // printf(">>>> sustainRelease: %f loopLength: %ld msLoopLength: %f loopCountRelease: %d\n", p.val.get(), loopLength, msLoopLength, loopCountRelease);
         }
-        // if (showNumberOfLoopsInUnit) {
-        //     p.val.props().unit = "ms (" + std::to_string(loopCountRelease) + " loops)";
-        // }
+        if (showNumberOfLoopsInUnit) {
+            p.val.props().unit = "ms(" + std::to_string(loopCountRelease) + ")";
+        }
     });
 
     SynthMonoSample(AudioPlugin::Props& props, char* _name)
@@ -163,11 +165,12 @@ public:
     void sample(float* buf) override
     {
         float out = 0.0f;
-        if (sustainedNote) {
+        if (sustainedNote || nbOfLoopBeforeRelease > 0) {
             out = sampleBuffer.data[(int)index] * velocity;
             index += stepIncrement;
             if (index >= loopEnd) {
                 index = loopStart;
+                nbOfLoopBeforeRelease--;
             }
         } else if (index < indexEnd) {
             out = sampleBuffer.data[(int)index] * velocity;
@@ -191,6 +194,7 @@ public:
     void noteOff(uint8_t note, float velocity) override
     {
         if (note == sustainedNote) {
+            nbOfLoopBeforeRelease = loopCountRelease;
             sustainedNote = 0;
         }
     }
