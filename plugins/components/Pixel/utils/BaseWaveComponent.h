@@ -34,7 +34,6 @@ public:
         , colors(getColorsFromColor(styles.colors.primary))
     {
         lineHeight = props.size.h * 0.5f;
-        yCenter = position.y + lineHeight;
     }
 
     void set(float* buffer, uint64_t count)
@@ -48,6 +47,7 @@ public:
     // Doing this, we are jumping over some sample and miss some of them.
     void render(float* buffer, uint64_t count)
     {
+        yCenter = relativePosition.y + lineHeight;
         for (int i = 0; i < size.w; i++) {
             int index = i * count / size.w;
             int graphH = buffer[index] * lineHeight;

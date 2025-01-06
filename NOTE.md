@@ -1,22 +1,13 @@
 ## Pixel TODO
 
-- TODO digital audio programming tutorial
+- TODO add filter to MonoSample track
 
-- TODO advance sample player
 - TODO master track
 - TODO perform / grid effect / scatter effect
 
 - FIXME pixel_env.lua
 
 - FIXME fix sequencer counter, when one track is on pause it should keep counting to stay sync with other running track
-
-- IDEA DrumSample is the less consuming CPU, maybe expending it a little bit to a SimpleSample engine
-  - skip density
-  - skip multi voice
-  - allow looping point
-  - make usage of wavetable easy?
-  - pitch using granular technic?
-  - would be great to be able to record fm or density effect, modulation and so on into a sample. And then being able to play it with a specific looping point... but is this related to sample or is it more caching system concept??!?
 
 - TODO speed up compile time
   - cross compile for rpi directly on laptop
@@ -47,6 +38,8 @@
     See `void set(float value, void* data = NULL)` in `plugins/audio/mapping.h` calling `onUpdateFn` callback function, could use the same concept to trigger recording of a new cache. However, ui is already using this, so either we could need a vector of callback function, or 2 of them... Some way to debounce it would make sense. How to record the cache, without to impact the audio output?
     **Find a way to record one note:** Create an audio plugin to cache output from all previous plugin. This cache plugin would watch for parameter change. If parameter of one of the previous plugin change, it would cache the audio output for a strategic note (low tone note) and then allowing to speedup reading cache to get higher note.
     **All track caching** the whole track caching would make it hard for sequencer motion and probability, most likely not the right way...
+
+- IDEA record Drum23 or Fm into sample
 
 - TODO add color code in text char...
 - TODO paragraph --> multiline text component

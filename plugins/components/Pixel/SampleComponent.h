@@ -114,13 +114,11 @@ public:
         , wave(props)
         , keypadLayout(this)
     {
-        overlayYtop = position.y;
-        overlayYbottom = position.y + size.h - 2;
-
         jobRendering = [this](unsigned long now) {
             if (sampleIndex != NULL) {
                 int x = relativePosition.x + size.w * ((*sampleIndex) / sampleBuffer->count);
                 if (sampleIndexX != x) {
+                    // printf("rerender sampleIndexX:%d x:%d\n", sampleIndexX, x);
                     sampleIndexX = x;
                     renderNext();
                 }
@@ -132,6 +130,9 @@ public:
     {
 
         if (sampleBuffer != NULL && updatePosition()) {
+            overlayYtop = relativePosition.y;
+            overlayYbottom = relativePosition.y + size.h - 2;
+
             draw.filledRect(relativePosition, size, { background });
             renderWaveform();
 
