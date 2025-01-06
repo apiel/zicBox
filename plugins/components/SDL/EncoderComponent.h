@@ -57,7 +57,7 @@ protected:
         int x = draw.textCentered({ area.xCenter, area.y + valueMarginTop }, valStr.c_str(),
             20, { colors.value, fontBold });
 
-        if (value->props().unit != NULL) {
+        if (value->props().unit.length() > 0) {
             draw.text({ x + 2, area.y + valueMarginTop + 8 }, value->props().unit, 10, { colors.title });
         }
     }

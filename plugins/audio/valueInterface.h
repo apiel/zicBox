@@ -26,7 +26,7 @@ public:
         float max = 100.0f;
         float step = 1.00f;
         uint8_t floatingPoint = 0;
-        const char* unit = nullptr;
+        std::string unit = "";
         ValueIncrementationType incrementationType = VALUE_INCREMENTATION_BASIC;
     };
 
