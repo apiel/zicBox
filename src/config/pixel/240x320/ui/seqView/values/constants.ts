@@ -11,7 +11,8 @@ export const bottomLeft = [0, valueH + rowSpacing, W2_4 - 2, valueH];
 export const topRight = [W2_4, 0, W2_4 - 2, valueH];
 export const bottomRight = [W2_4, valueH + rowSpacing, W2_4 - 2, valueH];
 
-export const posContainer = [0, posY, ScreenWidth, valueH * 2 + 2];
+export const posContainerValues = [0, posY, ScreenWidth, valueH * 2 + 2];
+export const posTopContainer = [0, 4, ScreenWidth, 70];
 
 const base = {
     SHOW_LABEL_OVER_VALUE: 6,

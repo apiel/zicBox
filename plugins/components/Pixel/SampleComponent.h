@@ -55,8 +55,8 @@ protected:
     {
         if (startPosition != NULL && startPosition->get() > 0.0f) {
             int w = size.w * startPosition->pct();
-            draw.filledRect({ position.x, overlayYtop }, { w, size.h }, { overlayColor });
-            draw.line({ position.x + w, overlayYtop }, { position.x + w, overlayYbottom }, { overlayEdgeColor });
+            draw.filledRect({ relativePosition.x, overlayYtop }, { w, size.h }, { overlayColor });
+            draw.line({ relativePosition.x + w, overlayYtop }, { relativePosition.x + w, overlayYbottom }, { overlayEdgeColor });
         }
     }
 
@@ -65,19 +65,19 @@ protected:
         if (endPosition != NULL && endPosition->get() < 100.0f) {
             // FIXME overlay too big
             int w = size.w * endPosition->pct();
-            draw.filledRect({ position.x + w, overlayYtop }, { size.w - w, size.h }, { overlayColor });
-            draw.line({ position.x + w, overlayYtop }, { position.x + w, overlayYbottom }, { overlayEdgeColor });
+            draw.filledRect({ relativePosition.x + w, overlayYtop }, { size.w - w, size.h }, { overlayColor });
+            draw.line({ relativePosition.x + w, overlayYtop }, { relativePosition.x + w, overlayYbottom }, { overlayEdgeColor });
         }
     }
 
     void renderSustainOverlay()
     {
         if (sustainPosition != NULL && sustainLength != NULL && sustainLength->get() > 0.0f) {
-            int x = position.x + size.w * sustainPosition->pct();
+            int x = relativePosition.x + size.w * sustainPosition->pct();
             draw.line({ x, overlayYtop }, { x, overlayYbottom }, { loopStartColor });
 
             int w = size.w * sustainLength->pct();
-            // draw.filledRect({ x, position.y }, { w, size.h }, styles.colors.overlay);
+            // draw.filledRect({ x, relativePosition.y }, { w, size.h }, styles.colors.overlay);
             draw.line({ x + w, overlayYtop }, { x + w, overlayYbottom }, { loopEndColor });
         }
     }

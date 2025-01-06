@@ -3,6 +3,7 @@ import * as React from '@/libs/react';
 import { ComponentProps } from '@/libs/components/component';
 import { Log } from '@/libs/components/Log';
 import { Rect } from '@/libs/components/Rect';
+import { Sample } from '@/libs/components/Sample';
 import { Value } from '@/libs/components/Value';
 import { VisibilityContainer } from '@/libs/components/VisibilityContainer';
 import { VisibilityContext } from '@/libs/components/VisibilityContext';
@@ -11,7 +12,8 @@ import {
     bottomLeft,
     bottomRight,
     height,
-    posContainer,
+    posContainerValues,
+    posTopContainer,
     primary,
     quaternary,
     secondary,
@@ -31,6 +33,16 @@ export function MonoSampleValues({ group, track, context }: Props) {
     return (
         <>
             <Log text="MonoSampleValues" />
+
+            <VisibilityContainer position={posTopContainer} group={group}>
+                <Sample
+                    position={[0, 0, ScreenWidth, 70]}
+                    track={track}
+                    plugin="MonoSample SAMPLE_BUFFER SAMPLE_INDEX"
+                    loop_points_color={'tertiary'}
+                />
+            </VisibilityContainer>
+
             <Edit group={group} track={track} context={context} />
             <Main group={group} track={track} context={context} />
             <SeqValues group={group} track={track} />
@@ -175,7 +187,7 @@ function Container({
     values: { seq: number; menu: number };
 }) {
     return (
-        <VisibilityContainer position={posContainer} group={group}>
+        <VisibilityContainer position={posContainerValues} group={group}>
             <VisibilityContext index={10} condition="SHOW_WHEN" value={values.seq} />
             <VisibilityContext index={context} condition="SHOW_WHEN" value={values.menu} />
         </VisibilityContainer>

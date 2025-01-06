@@ -7,6 +7,8 @@ local ____Log = require("config.libs.components.Log")
 local Log = ____Log.Log
 local ____Rect = require("config.libs.components.Rect")
 local Rect = ____Rect.Rect
+local ____Sample = require("config.libs.components.Sample")
+local Sample = ____Sample.Sample
 local ____Value = require("config.libs.components.Value")
 local Value = ____Value.Value
 local ____VisibilityContainer = require("config.libs.components.VisibilityContainer")
@@ -19,7 +21,8 @@ local ____constants = require("config.pixel.240x320.ui.seqView.values.constants"
 local bottomLeft = ____constants.bottomLeft
 local bottomRight = ____constants.bottomRight
 local height = ____constants.height
-local posContainer = ____constants.posContainer
+local posContainerValues = ____constants.posContainerValues
+local posTopContainer = ____constants.posTopContainer
 local primary = ____constants.primary
 local quaternary = ____constants.quaternary
 local secondary = ____constants.secondary
@@ -193,7 +196,7 @@ function Container(____bindingPattern0)
     values = ____bindingPattern0.values
     return React.createElement(
         VisibilityContainer,
-        {position = posContainer, group = group},
+        {position = posContainerValues, group = group},
         React.createElement(VisibilityContext, {index = 10, condition = "SHOW_WHEN", value = values.seq}),
         React.createElement(VisibilityContext, {index = context, condition = "SHOW_WHEN", value = values.menu})
     )
@@ -209,6 +212,11 @@ function ____exports.MonoSampleValues(____bindingPattern0)
         React.Fragment,
         nil,
         React.createElement(Log, {text = "MonoSampleValues"}),
+        React.createElement(
+            VisibilityContainer,
+            {position = posTopContainer, group = group},
+            React.createElement(Sample, {position = {0, 0, ScreenWidth, 70}, track = track, plugin = "MonoSample SAMPLE_BUFFER SAMPLE_INDEX", loop_points_color = "tertiary"})
+        ),
         React.createElement(Edit, {group = group, track = track, context = context}),
         React.createElement(Main, {group = group, track = track, context = context}),
         React.createElement(SeqValues, {group = group, track = track})

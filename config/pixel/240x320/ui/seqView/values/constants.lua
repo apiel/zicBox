@@ -17,7 +17,8 @@ ____exports.topLeft = {0, 0, W2_4 - 2, ____exports.valueH}
 ____exports.bottomLeft = {0, ____exports.valueH + ____exports.rowSpacing, W2_4 - 2, ____exports.valueH}
 ____exports.topRight = {W2_4, 0, W2_4 - 2, ____exports.valueH}
 ____exports.bottomRight = {W2_4, ____exports.valueH + ____exports.rowSpacing, W2_4 - 2, ____exports.valueH}
-____exports.posContainer = {0, ____exports.posY, ScreenWidth, ____exports.valueH * 2 + 2}
+____exports.posContainerValues = {0, ____exports.posY, ScreenWidth, ____exports.valueH * 2 + 2}
+____exports.posTopContainer = {0, 4, ScreenWidth, 70}
 local base = {SHOW_LABEL_OVER_VALUE = 6, LABEL_FONT_SIZE = 8}
 ____exports.primary = __TS__ObjectAssign({LABEL_COLOR = "primary", BAR_COLOR = PrimaryBar}, base)
 ____exports.secondary = __TS__ObjectAssign({LABEL_COLOR = "secondary", BAR_COLOR = SecondaryBar}, base)
