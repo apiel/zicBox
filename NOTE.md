@@ -1,7 +1,5 @@
 ## Pixel TODO
 
-- TODO add filter to MonoSample track
-
 - TODO master track
 - TODO perform / grid effect / scatter effect
 

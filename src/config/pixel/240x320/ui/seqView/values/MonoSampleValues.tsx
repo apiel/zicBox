@@ -19,7 +19,7 @@ import {
     secondary,
     tertiary,
     topLeft,
-    topRight,
+    topRight
 } from './constants';
 import { SeqValues } from './SeqValues';
 
@@ -62,7 +62,7 @@ function Main({ group, track, context }: Props) {
                 {...tertiary}
             />
             <Value
-                value="Volume GAIN_CLIPPING"
+                value="Volume DRIVE"
                 position={bottomLeft}
                 group={group}
                 track={track}
@@ -70,15 +70,16 @@ function Main({ group, track, context }: Props) {
                 {...primary}
             />
             <Value
-                value="Volume DRIVE"
+                value="MMFilter CUTOFF"
                 position={topRight}
                 group={group}
                 track={track}
                 encoder_id={2}
-                {...secondary}
+                {...quaternary}
+                USE_STRING_VALUE
             />
             <Value
-                value="SampleRateReducer SAMPLE_STEP"
+                value="MMFilter RESONANCE"
                 position={bottomRight}
                 group={group}
                 track={track}
@@ -92,9 +93,37 @@ function Main({ group, track, context }: Props) {
 function Edit({ group, track, context }: Props) {
     return (
         <>
+            <EditFx group={group} track={track} context={context} />
             <EditSample group={group} track={track} context={context} />
             <EditLoop group={group} track={track} context={context} />
         </>
+    );
+}
+
+function EditFx({ group, track, context }: Props) {
+    const topFull = [...topLeft];
+    topFull[2] = ScreenWidth;
+    return (
+        <Container group={group} context={context} values={{ seq: 0, menu: 1 }}>
+            <Rect position={[0, 0, ScreenWidth, height]} />
+
+            <Value
+                value="Volume GAIN_CLIPPING"
+                position={topLeft}
+                group={group}
+                track={track}
+                encoder_id={0}
+                {...secondary}
+            />
+            <Value
+                value="SampleRateReducer SAMPLE_STEP"
+                position={topRight}
+                group={group}
+                track={track}
+                encoder_id={2}
+                {...quaternary}
+            /> 
+        </Container>
     );
 }
 
@@ -102,7 +131,7 @@ function EditSample({ group, track, context }: Props) {
     const topFull = [...topLeft];
     topFull[2] = ScreenWidth;
     return (
-        <Container group={group} context={context} values={{ seq: 0, menu: 1 }}>
+        <Container group={group} context={context} values={{ seq: 0, menu: 2 }}>
             <Rect position={[0, 0, ScreenWidth, height]} />
 
             <Value
@@ -136,7 +165,7 @@ function EditSample({ group, track, context }: Props) {
 
 function EditLoop({ group, track, context }: Props) {
     return (
-        <Container group={group} context={context} values={{ seq: 0, menu: 2 }}>
+        <Container group={group} context={context} values={{ seq: 0, menu: 3 }}>
             <Rect position={[0, 0, ScreenWidth, height]} />
 
             <Value

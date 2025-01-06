@@ -1,7 +1,7 @@
 local ____lualib = require("lualib_bundle")
 local __TS__ObjectAssign = ____lualib.__TS__ObjectAssign
 local ____exports = {}
-local Main, Edit, EditSample, EditLoop, Container
+local Main, Edit, EditFx, EditSample, EditLoop, Container
 local React = require("config.libs.react")
 local ____Log = require("config.libs.components.Log")
 local Log = ____Log.Log
@@ -54,7 +54,7 @@ function Main(____bindingPattern0)
         React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "Volume GAIN_CLIPPING",
+                value = "Volume DRIVE",
                 position = bottomLeft,
                 group = group,
                 track = track,
@@ -64,17 +64,17 @@ function Main(____bindingPattern0)
         React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "Volume DRIVE",
+                value = "MMFilter CUTOFF",
                 position = topRight,
                 group = group,
                 track = track,
                 encoder_id = 2
-            }, secondary)
+            }, quaternary, {USE_STRING_VALUE = true})
         ),
         React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "SampleRateReducer SAMPLE_STEP",
+                value = "MMFilter RESONANCE",
                 position = bottomRight,
                 group = group,
                 track = track,
@@ -93,8 +93,44 @@ function Edit(____bindingPattern0)
     return React.createElement(
         React.Fragment,
         nil,
+        React.createElement(EditFx, {group = group, track = track, context = context}),
         React.createElement(EditSample, {group = group, track = track, context = context}),
         React.createElement(EditLoop, {group = group, track = track, context = context})
+    )
+end
+function EditFx(____bindingPattern0)
+    local context
+    local track
+    local group
+    group = ____bindingPattern0.group
+    track = ____bindingPattern0.track
+    context = ____bindingPattern0.context
+    local topFull = {table.unpack(topLeft)}
+    topFull[3] = ScreenWidth
+    return React.createElement(
+        Container,
+        {group = group, context = context, values = {seq = 0, menu = 1}},
+        React.createElement(Rect, {position = {0, 0, ScreenWidth, height}}),
+        React.createElement(
+            Value,
+            __TS__ObjectAssign({
+                value = "Volume GAIN_CLIPPING",
+                position = topLeft,
+                group = group,
+                track = track,
+                encoder_id = 0
+            }, secondary)
+        ),
+        React.createElement(
+            Value,
+            __TS__ObjectAssign({
+                value = "SampleRateReducer SAMPLE_STEP",
+                position = topRight,
+                group = group,
+                track = track,
+                encoder_id = 2
+            }, quaternary)
+        )
     )
 end
 function EditSample(____bindingPattern0)
@@ -108,7 +144,7 @@ function EditSample(____bindingPattern0)
     topFull[3] = ScreenWidth
     return React.createElement(
         Container,
-        {group = group, context = context, values = {seq = 0, menu = 1}},
+        {group = group, context = context, values = {seq = 0, menu = 2}},
         React.createElement(Rect, {position = {0, 0, ScreenWidth, height}}),
         React.createElement(
             Value,
@@ -151,7 +187,7 @@ function EditLoop(____bindingPattern0)
     context = ____bindingPattern0.context
     return React.createElement(
         Container,
-        {group = group, context = context, values = {seq = 0, menu = 2}},
+        {group = group, context = context, values = {seq = 0, menu = 3}},
         React.createElement(Rect, {position = {0, 0, ScreenWidth, height}}),
         React.createElement(
             Value,
