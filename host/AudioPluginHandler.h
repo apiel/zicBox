@@ -492,6 +492,8 @@ public:
 
         case AudioEventType::TOGGLE_PLAY_PAUSE:
             playing = !playing;
+            // convert event to start or pause to avoid to have to many conditions in the plugins
+            event = playing ? AudioEventType::START : AudioEventType::PAUSE;
             break;
         }
         // if (event != AUTOSAVE) printf(">>> AudioPluginHandler::sendEvent %d\n", event);
