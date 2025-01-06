@@ -54,6 +54,8 @@
 - TODO filebrowser
     - serialised might want to use filename instead of file index
 
+- IDEA instead of 4 op fm synth make a synth with 3 osc (or even only 2?) that can be fm or not but also use different waveform from wavetable
+  - the 3 envelop could be used for amp but also freq?
 
 - FIXME might not need action2, just have to insert twice the event...
 
