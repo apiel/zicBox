@@ -99,7 +99,7 @@ public:
             return;
         }
         sustainPosition.setFloat(p.value);
-        if (sustainLength.get() == 0.0f) {
+        if (sustainLength.get() == 0.0f && p.val.get() > start.get()) {
             sustainLength.set(5);
         }
         // TODO set loop start position in sample format
