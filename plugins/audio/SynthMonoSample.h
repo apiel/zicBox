@@ -223,6 +223,7 @@ public:
 
     enum DATA_ID {
         SAMPLE_BUFFER,
+        SAMPLE_INDEX,
     };
 
     /*md **Data ID**: */
@@ -231,6 +232,9 @@ public:
         /*md - `SAMPLE_BUFFER` return a representation of the current sample loaded in buffer */
         if (name == "SAMPLE_BUFFER")
             return DATA_ID::SAMPLE_BUFFER;
+        /*md - `SAMPLE_INDEX` return the current index of the playing sample */
+        if (name == "SAMPLE_INDEX")
+            return DATA_ID::SAMPLE_INDEX;
         return atoi(name.c_str());
     }
 
@@ -239,6 +243,8 @@ public:
         switch (id) {
         case DATA_ID::SAMPLE_BUFFER:
             return &sampleBuffer;
+        case DATA_ID::SAMPLE_INDEX:
+            return &index;
         }
         return NULL;
     }

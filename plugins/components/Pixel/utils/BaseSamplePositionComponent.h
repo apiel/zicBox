@@ -5,19 +5,11 @@
 #include "plugins/components/utils/color.h"
 #include <string>
 
-class SamplePositionBaseComponent : public Component {
+class BaseSamplePositionComponent : public Component {
 protected:
     bool jobDidRender = false;
 
-    struct Colors {
-        Color sample;
-    } colors;
-
-    Colors getColorsFromColor(Color color)
-    {
-        return Colors({ color });
-    }
-
+    Color sampleColor;
 public:
     struct SampleState {
         float position;
@@ -25,10 +17,9 @@ public:
         float release;
     };
 
-    SamplePositionBaseComponent(ComponentInterface::Props props)
+    BaseSamplePositionComponent(ComponentInterface::Props props)
         : Component(props)
-        // , colors(getColorsFromColor(lighten(draw.getColor((char*)"#9dfe86"), 0.3)))
-        , colors(getColorsFromColor(lighten({ 0x9d, 0xfe, 0x86 }, 0.3)))
+        , sampleColor(lighten({ 0x9d, 0xfe, 0x86 }, 0.3)) // #9dfe89
     {
     }
 
@@ -56,7 +47,7 @@ public:
         int y = position.y + marginTop;
         for (auto& sample : *sampleStates) {
             int x = position.x + sample.position * size.w;
-            Color color = colors.sample;
+            Color color = sampleColor;
             if (sample.release != 1.0) {
                 color = alpha(color, sample.release);
             }
@@ -64,20 +55,10 @@ public:
         }
     }
 
-    void render()
-    {
-        // Should set a pointer to plugin and sample data id...
-    }
-
-    void setColors(Color color)
-    {
-        colors = getColorsFromColor(color);
-    }
-
     bool config(char* key, char* value)
     {
         if (strcmp(key, "SAMPLE_COLOR") == 0) {
-            setColors(draw.getColor(value));
+            sampleColor = draw.getColor(value);
             return true;
         }
 

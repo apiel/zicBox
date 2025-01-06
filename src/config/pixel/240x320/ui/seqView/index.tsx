@@ -59,8 +59,8 @@ export function SeqView({ name }: Props) {
             <Sample
                 position={[0, 4, ScreenWidth, 70]}
                 track={4}
-                plugin="MonoSample SAMPLE_BUFFER"
-                loop_line_color={'tertiary'}
+                plugin="MonoSample SAMPLE_BUFFER SAMPLE_INDEX"
+                loop_points_color={'tertiary'}
             />
 
             <ProgressBar y={160} volume_plugin="MasterVolume VOLUME" group={0} />
