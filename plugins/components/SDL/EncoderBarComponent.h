@@ -47,7 +47,7 @@ protected:
 
             int xEnd = draw.textCentered({ xCenter, yValue }, valStr.c_str(), fontValueSize, { colors.value });
 
-            if (showUnit && value->props().unit != NULL) {
+            if (showUnit && value->props().unit.length() > 0) {
                 draw.text({ xEnd + 2, yUnit }, value->props().unit, fontUnitSize, { colors.unit });
             }
         }

@@ -98,7 +98,7 @@ protected:
 
     void renderUnit()
     {
-        if (showUnit && value->props().unit != NULL) {
+        if (showUnit && value->props().unit.length() > 0) {
             draw.textCentered({ valuePosition.x, valuePosition.y + fontValueSize - 5 }, value->props().unit, fontUnitSize, { unitColor.color });
         }
     }

@@ -44,7 +44,7 @@ protected:
             valStr = valStr.substr(0, valStr.find(".") + valueFloatPrecision + (valueFloatPrecision > 0 ? 1 : 0));
 
             int x = position.x + size.w - 4;
-            if (showUnit && value->props().unit != NULL) {
+            if (showUnit && value->props().unit.length() > 0) {
                 x = draw.textRight({ x, position.y + 1 }, value->props().unit, fontUnitSize, { colors.unit }) - 2;
             }
             void* fontBold = draw.getFont(styles.font.bold);

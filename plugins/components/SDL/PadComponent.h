@@ -32,7 +32,7 @@ protected:
         }
         x = draw.text({ x + 3, position.y }, value->label(), 12, { colors.title });
         x = draw.text({ x + 3, position.y }, std::to_string(val).c_str(), 12, { colors.value, fontBold });
-        if (value->props().unit != NULL) {
+        if (value->props().unit.length() > 0) {
             x = draw.text({ x + 2, position.y }, value->props().unit, 10, { colors.title });
         }
         return x;

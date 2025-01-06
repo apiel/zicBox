@@ -36,7 +36,7 @@ public:
             if (encoder.value) {
                 if (encoder.value->props().type == VALUE_STRING || encoder.toString) {
                     titles.push_back({ encoder.value->string() });
-                } else if (encoder.value->props().unit != NULL) {
+                } else if (encoder.value->props().unit.length() > 0) {
                     titles.push_back({ std::to_string(encoder.value->get()), encoder.value->props().unit });
                 } else {
                     titles.push_back({ std::to_string(encoder.value->get()) });
