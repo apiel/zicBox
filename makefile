@@ -19,21 +19,8 @@ BUILD=-Wno-narrowing -ldl $(RTMIDI)
 
 INC=-I.
 
-main: build run
-all: libs main
-# pixel: buildPixel runPixel
-# allPixel: pixelLibs buildPixel runPixel
 pixel: pixelLibs buildPixel runPixel
 rebuildPixel: pixelRebuild buildPixel runPixel
-
-libs:
-	@echo "\n------------------ plugins ------------------\n"
-	make -C host
-	make -C plugins/audio
-	make -C plugins/components/SDL
-	make -C plugins/controllers
-	make -C plugins/config
-	@echo "\nbuild plugins done."
 
 pixelLibs:
 	@echo "\n------------------ plugins ------------------\n"
@@ -46,14 +33,6 @@ pixelRebuild:
 	make -C host rebuild
 	make -C plugins/audio rebuild
 	make -C plugins/components/Pixel rebuild
-
-build:
-	@echo "\n------------------ build zicBox ------------------\n"
-	g++ -g -fms-extensions -o zicBox.$(BIN_SUFFIX) zicBox.cpp -ldl $(INC) $(SDL2) $(SDL2_ttf) $(RPI) $(RTMIDI) $(LUA)
-
-run:
-	@echo "\n------------------ run zicBox ------------------\n"
-	./zicBox.$(BIN_SUFFIX)
 
 buildPixel:
 	@echo "\n------------------ build zicPixel ------------------\n"

@@ -15,6 +15,7 @@ const ignore = [
     'NOTE.md',
     'node_modules',
     'waveshare/',
+    'plugins/components/__deprecated_SDL',
     'hardware/ZicPad/neotrillis/.pio',
     'hardware/encoderModule/.pio',
     '.git',
