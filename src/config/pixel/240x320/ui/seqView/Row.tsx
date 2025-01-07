@@ -14,7 +14,7 @@ export type Props = {
 const y = 170;
 export const RowH = 14;
 
-function RowKeymaps({ synth }: { synth: string }) {
+function RowKeymaps({ synth, track }: { synth: string; track: number }) {
     return (
         <Keymaps
             keys={[
@@ -22,6 +22,7 @@ function RowKeymaps({ synth }: { synth: string }) {
                 { key: 'a', action: '.left', context: '254:0' },
                 { key: 'd', action: '.right', context: '254:0' },
                 { key: 'q', action: '.toggle', context: '254:1' },
+                { key: 's', action: `setView:Tape_track${track}`, context: '254:1' },
             ]}
         />
     );
@@ -44,7 +45,7 @@ export function RowDrum23({ group, track, name_color, select_menu_context }: Pro
             volume_plugin="Volume VOLUME"
             select_menu_context={select_menu_context}
         >
-            <RowKeymaps synth={'Drum23'} />
+            <RowKeymaps synth="Drum23" track={track} />
         </SeqSynthBar>
     );
 }
@@ -62,7 +63,7 @@ export function RowMonoSample({ group, track, name_color, select_menu_context }:
             volume_plugin="Volume VOLUME"
             select_menu_context={select_menu_context}
         >
-            <RowKeymaps synth={'MonoSample'} />
+            <RowKeymaps synth="MonoSample" track={track} />
         </SeqSynthBar>
     );
 }
