@@ -8,6 +8,7 @@ import { CreateWorkspaceView } from './menuView/CreateWorkspaceView';
 import { ShutdownView } from './menuView/ShutdownView';
 import { WorkspacesView } from './menuView/WorkspacesView';
 import { SeqView } from './seqView';
+import { TapeView } from './tapeView';
 
 setWindowPosition(400, 500);
 setScreenSize(ScreenWidth, ScreenHeight);
@@ -23,5 +24,9 @@ applyZic(<MenuView name="Menu" />);
 applyZic(<WorkspacesView name="Workspaces" />);
 applyZic(<CreateWorkspaceView name="CreateWorkspace" />);
 applyZic(<ShutdownView name="Shutdown" />);
+
+for (let i = 1; i <= 8; i++) {
+    applyZic(<TapeView name={`Tape_track${i}`} />);
+}
 
 // applyZic([{ print: "End aplying UI config" }]);
