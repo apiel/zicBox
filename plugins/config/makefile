@@ -24,9 +24,6 @@ LuaConfig:
 JsConfig:
 	pkg-config --cflags --libs duktape && make compile LIBNAME=JsConfig EXTRA="$(shell pkg-config --cflags --libs duktape)" || true
 
-DustConfig:
-	make compile LIBNAME=DustConfig
-
 %Config:
 	make compile LIBNAME=$@
 
