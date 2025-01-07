@@ -39,7 +39,11 @@
 
 - IDEA record Drum23 or Fm into sample
 
-- TODO clips allow more than 16 by adding a scrolling system
+- TODO clips
+  - instead to play right away when clicking toggle button, maybe it should play at the next loop, and we need to play right away the would be a different combination key
+  - allow to start all the clip from the same row at once, maybe instead of the play button or else add a new column
+  - delete button should ask confirmation (as workspace is saving automatically cannot restore)
+  - clips allow more than 16 by adding a scrolling system
   - give a way to make some extra color code to classify depending if it is used for playibg live or for generating sample?
 
 - TODO add color code in text char...

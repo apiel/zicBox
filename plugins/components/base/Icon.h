@@ -401,9 +401,10 @@ public:
     void tape(Point position, uint8_t size, Color color, Align align = LEFT)
     {
         int x = getX(position, size, align, size);
-        draw.line({ x, position.y + 1 }, { x + size, position.y + 1 }, { color });
+        // draw.line({ x, position.y + 1 }, { x + size, position.y + 1 }, { color });
         draw.filledCircle({ x, (int)(position.y + size * 0.6) }, size * 0.4, { color });
         draw.filledCircle({ x + size, (int)(position.y + size * 0.6) }, size * 0.4, { color });
+        draw.line({ x, (int)(position.y + size * 0.8) }, { x + size, (int)(position.y + size * 0.8) }, { color });
     }
 
     void toggle(Point position, uint8_t size, Color color, Align align = LEFT)
