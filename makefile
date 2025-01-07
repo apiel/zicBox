@@ -9,15 +9,18 @@ LUA=`pkg-config --cflags --libs lua`
 
 ifneq ($(shell uname -m),x86_64)
 RPI := -DIS_RPI=1
-BIN_SUFFIX := arm
+BIN_PLATFORM := arm
 else
 PIXEL_SDL := $(SDL2)
-BIN_SUFFIX := x86
+BIN_PLATFORM := x86
 endif
 
 BUILD=-Wno-narrowing -ldl $(RTMIDI) 
 
 INC=-I.
+
+# track header file to be sure that build is automatically trigger if any dependency changes
+TRACK_HEADER_FILES = -MMD -MF pixel.$(BIN_PLATFORM).d
 
 pixel: pixelLibs buildPixel runPixel
 rebuildPixel: pixelRebuild buildPixel runPixel
@@ -36,11 +39,17 @@ pixelRebuild:
 
 buildPixel:
 	@echo "\n------------------ build zicPixel ------------------\n"
-	g++ -g -fms-extensions -o pixel.$(BIN_SUFFIX) zicPixel.cpp -ldl $(INC) $(RPI) $(RTMIDI) $(PIXEL_SDL) $(SPI_DEV_MEM) $(LUA)
+	make pixel.$(BIN_PLATFORM)
+
+pixel.$(BIN_PLATFORM):
+	g++ -g -fms-extensions -o pixel.$(BIN_PLATFORM) zicPixel.cpp -ldl $(INC) $(RPI) $(RTMIDI) $(PIXEL_SDL) $(SPI_DEV_MEM) $(LUA) $(TRACK_HEADER_FILES)
+
+# Safeguard: include only if .d files exist
+-include $(wildcard pixel.$(BIN_PLATFORM).d)
 
 runPixel:
 	@echo "\n------------------ run zicPixel ------------------\n"
-	./pixel.$(BIN_SUFFIX)
+	./pixel.$(BIN_PLATFORM)
 
 push_wiki:
 	node doc.js
