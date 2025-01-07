@@ -47,20 +47,6 @@ export function SeqView({ name }: Props) {
 
             <ValueBpm />
 
-            {/* <Spectrogram
-                position={[0, 4, ScreenWidth, 70]}
-                track={0}
-                data="Spectrogram BUFFER"
-                text="Pixel"
-            /> */}
-
-            {/* <Sample
-                position={[0, 4, ScreenWidth, 70]}
-                track={4}
-                plugin="MonoSample SAMPLE_BUFFER SAMPLE_INDEX"
-                loop_points_color={'tertiary'}
-            /> */}
-
             <ProgressBar y={160} volume_plugin="MasterVolume VOLUME" group={0} />
 
             <RowDrum23 group={1} track={1} name_color={ColorTrack1} select_menu_context="11" />

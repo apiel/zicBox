@@ -57,7 +57,7 @@ end
 function ____exports.TextGridTrackShifted()
     return React.createElement(
         TextGrid,
-        {position = KeyInfoPosition, rows = {"&icon::toggle::rect &icon::play::filled ^...", "Clips Edit Master"}},
+        {position = KeyInfoPosition, rows = {"&icon::toggle::rect &icon::play::filled ^...", "Clips &icon::tape Master"}},
         React.createElement(VisibilityGroup, {condition = "SHOW_WHEN_NOT", group = 0}),
         React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 1}),
         React.createElement(Keymaps, {keys = {{key = "w", action = "playPause"}, {key = "e", action = "contextToggle:254:1:0"}, {key = "a", action = "setView:Clips"}, {key = "d", action = "setGroup:0"}}})
