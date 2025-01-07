@@ -15,6 +15,10 @@
     - Should it allow to apply filter on the fly in the risk of using CPU?
       - or should any modulation involve resampling to a file? Maybe the best option as we dont care about hard drive usage.
 
+- TODO use https://github.com/nlohmann/json for config
+    - just need to find a way to inform jsx to whether pass json format or string format
+    ---> maybe for the moment should only be for component...
+
 - FIXME pixel_env.lua
 
 - TODO drum freq envelop is really good but not easy to use

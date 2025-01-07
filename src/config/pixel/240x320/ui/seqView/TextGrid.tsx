@@ -85,7 +85,7 @@ export function TextGridTrackShifted() {
     return (
         <TextGrid
             position={KeyInfoPosition}
-            rows={['&icon::toggle::rect &icon::play::filled ^...', 'Clips Edit Master']}
+            rows={['&icon::toggle::rect &icon::play::filled ^...', 'Clips &icon::tape Master']}
         >
             <VisibilityGroup condition="SHOW_WHEN_NOT" group={0} />
             <VisibilityContext index={254} condition="SHOW_WHEN" value={1} />
