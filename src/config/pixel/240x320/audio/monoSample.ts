@@ -8,4 +8,5 @@ export function monoSample(track: number) {
     plugin('MMFilter EffectFilterMultiMode', [{ track, STRING_CUTOFF_FORMAT }]);
     plugin("SampleRateReducer EffectSampleRateReducer", [{ track }]);
     plugin("Volume EffectVolumeClipping", [{ track }]);
+    plugin('Tape', [{ track, filename: `track_${track}` }]);
 }
