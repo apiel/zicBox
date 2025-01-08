@@ -19,5 +19,12 @@ function ____exports.monoSample(track)
     plugin("MMFilter EffectFilterMultiMode", {{track = track, STRING_CUTOFF_FORMAT = STRING_CUTOFF_FORMAT}})
     plugin("SampleRateReducer EffectSampleRateReducer", {{track = track}})
     plugin("Volume EffectVolumeClipping", {{track = track}})
+    plugin(
+        "RamTape",
+        {{
+            track = track,
+            filename = "track_" .. tostring(track)
+        }}
+    )
 end
 return ____exports
