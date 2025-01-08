@@ -25,7 +25,7 @@ all:
 		Sequencer Tempo AudioSpectrogram\
 		Mixer2 Mixer4 Mixer6 Mixer8 Mixer12\
 		AudioInputPulse AudioOutputPulse AudioInputAlsa AudioOutputAlsa\
-		SerializeTrack
+		SerializeTrack TapeRecording
 
 # rebuild: clean all
 
