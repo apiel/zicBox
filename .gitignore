@@ -34,3 +34,4 @@ pixel_env_.lua
 node_modules
 * copy.lua
 tape/.tmp/*
+tape/tmp/*

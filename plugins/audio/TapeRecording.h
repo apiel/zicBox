@@ -16,6 +16,9 @@
 
 TapeRecording plugin is used to record audio buffer for a given track.
 */
+
+// TODO provide a way to start recording at the next bar
+
 class TapeRecording : public Mapping {
 protected:
     std::string folder = "tape";
@@ -27,13 +30,13 @@ protected:
 
     std::vector<float> buffer;
 
-    size_t maxFileSize = 20 * 1024 * 1024; // 200MB
+    size_t maxFileSize = 200 * 1024 * 1024; // 200MB
 
     void writerLoop()
     {
-        std::string filepath = folder + "/.tmp/" + filename + ".wav";
+        std::string filepath = folder + "/tmp/" + filename + ".wav";
 
-        std::filesystem::create_directories(folder + "/.tmp");
+        std::filesystem::create_directories(folder + "/tmp");
 
         sndfile = sf_open(filepath.c_str(), SFM_WRITE, &sfinfo);
         if (!sndfile) {
@@ -62,12 +65,16 @@ protected:
 
 public:
     /*md **Values**: */
-    ///*/md - `VOLUME` to set volume. */
-    // Val& volume = val(100.0f, "VOLUME", { "Volume", .unit = "%" }, [&](auto p) { setVolumeWithGain(p.value, gain.get()); });
+    /*md - `TRACK` to set the track number. */
+    Val& trackNum = val(0.0f, "TRACK", { "Track", .max = 32 }, [&](auto p) {
+        p.val.setFloat(p.value);
+        track = p.val.get();
+    });
 
     TapeRecording(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
     {
+        trackNum.props().max = props.maxTracks;
         initValues();
 
         sfinfo.format = SF_FORMAT_WAV | SF_FORMAT_FLOAT;
