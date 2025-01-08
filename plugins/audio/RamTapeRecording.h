@@ -34,7 +34,7 @@ protected:
     void save()
     {
         std::string filepath = folder + "/tmp/ram_" + filename + ".wav";
-        logInfo("Saving to %s\n", filepath.c_str());
+        logInfo("[%d] Saving to %s", track, filepath.c_str());
         std::filesystem::create_directories(folder + "/tmp");
 
         SF_INFO sfinfo;
@@ -68,7 +68,6 @@ public:
         : Mapping(props, _name)
     {
         trackNum.props().max = props.maxTracks;
-        initValues();
     }
 
     void sample(float* buf)
@@ -92,6 +91,11 @@ public:
     /*md **Config**: */
     bool config(char* key, char* value) override
     {
+        if (strcmp(key, "TRACK") == 0) {
+            trackNum.set(atoi(value));
+            return true;
+        }
+
         /*md - `TAPE_FOLDER` set samples folder path. */
         if (strcmp(key, "TAPE_FOLDER") == 0) {
             folder = value;
