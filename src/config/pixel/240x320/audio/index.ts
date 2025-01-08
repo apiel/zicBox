@@ -24,7 +24,7 @@ pluginAlias('Sequencer', 'libzic_Sequencer.so');
 pluginAlias('AudioOutput', 'libzic_AudioOutputPulse.so');
 pluginAlias('Spectrogram', 'libzic_AudioSpectrogram.so');
 pluginAlias('Tape', 'libzic_TapeRecording.so');
-pluginAlias('MultiTape', 'libzic_MultiTapeRecording.so');
+pluginAlias('RamTape', 'libzic_RamTapeRecording.so');
 
 // Drum tracks
 drum23(1);

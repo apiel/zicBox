@@ -10,4 +10,5 @@ export function monoSample(track: number) {
     plugin("Volume EffectVolumeClipping", [{ track }]);
     // unfortunately, recording every traks doesn't work well on rpi
     // plugin('Tape', [{ track, filename: `track_${track}` }]);
+    plugin('RamTape', [{ track, filename: `track_${track}` }]);
 }

@@ -1,5 +1,5 @@
-#ifndef _TAPE_RECORDING_H_
-#define _TAPE_RECORDING_H_
+#ifndef _RAM_TAPE_RECORDING_H_
+#define _RAM_TAPE_RECORDING_H_
 
 #include "audioPlugin.h"
 #include "mapping.h"
@@ -12,29 +12,27 @@
 #include <vector>
 
 /*md
-## TapeRecording
+## RamTapeRecording
 
-TapeRecording plugin is used to record audio buffer for a given track.
+RamTapeRecording plugin is used to record audio buffer for a given track.
 */
 
 // TODO provide a way to start recording at the next bar
 
-class TapeRecording : public Mapping {
+class RamTapeRecording : public Mapping {
 protected:
     std::string folder = "tape";
     std::string filename = "track";
     SNDFILE* sndfile = nullptr;
-    std::thread writerThread;
-    bool loopRunning = true;
+    bool isPlaying = false;
+    size_t sampleCount = 0;
+    size_t maxSamples = (20 * 1024 * 1024) / sizeof(float); // 20MB
 
     std::vector<float> buffer;
 
-    size_t maxSamples = (200 * 1024 * 1024) / sizeof(float); // 200MB
-
-    void writerLoop()
+    void save()
     {
-        std::string filepath = folder + "/tmp/" + filename + ".wav";
-
+        std::string filepath = folder + "/tmp/ram_" + filename + ".wav";
         std::filesystem::create_directories(folder + "/tmp");
 
         SF_INFO sfinfo;
@@ -46,21 +44,11 @@ protected:
             throw std::runtime_error("Failed to open audio file for writing");
         }
 
-        size_t sampleCount = 0;
-        while (loopRunning && sampleCount < maxSamples) {
-            if (buffer.size() > 1024) {
-                sf_write_float(sndfile, buffer.data(), 1024);
-                buffer.erase(buffer.begin(), buffer.begin() + 1024);
-                sampleCount += 1024;
-            } else {
-                // sleep for 100ms
-                std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            }
-        }
-
-        if (buffer.empty() && sampleCount < maxSamples) {
-            sf_write_float(sndfile, buffer.data(), buffer.size());
-        }
+        // while (!buffer.empty()) {
+        //     sf_write_float(sndfile, buffer.data(), 1024);
+        //     buffer.erase(buffer.begin(), buffer.begin() + 1024);
+        // }
+        sf_write_float(sndfile, buffer.data(), buffer.size());
 
         sf_close(sndfile);
     }
@@ -73,38 +61,29 @@ public:
         track = p.val.get();
     });
 
-    TapeRecording(AudioPlugin::Props& props, char* _name)
+    RamTapeRecording(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
     {
         trackNum.props().max = props.maxTracks;
         initValues();
     }
 
-    ~TapeRecording()
-    {
-        loopRunning = false;
-        if (writerThread.joinable()) {
-            writerThread.join();
-        }
-    }
-
     void sample(float* buf)
     {
-        buffer.push_back(buf[track]);
+        if (isPlaying && sampleCount < maxSamples) {
+            buffer.push_back(buf[track]);
+            sampleCount++;
+        }
     }
 
     void onEvent(AudioEventType event, bool playing) override
     {
         if (event == AudioEventType::STOP || event == AudioEventType::PAUSE) {
-            loopRunning = false;
+            save();
         } else if (event == AudioEventType::START) {
-            if (writerThread.joinable()) {
-                writerThread.join();
-            }
             buffer.clear();
-            loopRunning = true;
-            writerThread = std::thread(&TapeRecording::writerLoop, this);
         }
+        isPlaying = playing;
     }
 
     /*md **Config**: */
@@ -125,12 +104,6 @@ public:
         /*md - `MAX_FILE_SIZE: 200` to set max file size. By default it is `200MB`.*/
         if (strcmp(key, "MAX_FILE_SIZE") == 0) {
             maxSamples = atoi(value) * 1024 * 1024 / sizeof(float);
-            return true;
-        }
-
-        /*md - `MAX_TRACK` to set the max track number. */
-        if (strcmp(key, "MAX_TRACK") == 0) {
-            trackNum.props().max = atoi(value);
             return true;
         }
 
