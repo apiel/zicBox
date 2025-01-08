@@ -23,6 +23,7 @@ pluginAlias('MonoSample', 'libzic_SynthMonoSample.so');
 pluginAlias('Sequencer', 'libzic_Sequencer.so');
 pluginAlias('AudioOutput', 'libzic_AudioOutputPulse.so');
 pluginAlias('Spectrogram', 'libzic_AudioSpectrogram.so');
+pluginAlias('Tape', 'libzic_TapeRecording.so');
 
 // Drum tracks
 drum23(1);

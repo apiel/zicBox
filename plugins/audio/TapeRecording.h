@@ -3,13 +3,13 @@
 
 #include "audioPlugin.h"
 #include "mapping.h"
-#include <sndfile.h>
-#include <thread>
-#include <atomic>
-#include <vector>
+
+#include <filesystem>
 #include <mutex>
-#include <condition_variable>
+#include <sndfile.h>
 #include <stdexcept>
+#include <thread>
+#include <vector>
 
 /*md
 ## TapeRecording
@@ -21,44 +21,38 @@ protected:
     std::string folder = "tape";
     std::string filename = "track";
     SNDFILE* sndfile = nullptr;
-    SF_INFO sfinfo{};
+    SF_INFO sfinfo;
     std::thread writerThread;
-    std::atomic<bool> running{false};
+    bool loopRunning = true;
 
-    // Buffer for thread-safe communication
-    std::vector<float> writeBuffer;
-    std::mutex bufferMutex;
-    std::condition_variable bufferCv;
+    std::vector<float> buffer;
 
-    void initFilepath()
+    void writerLoop()
     {
-        std::string filepath = folder + "/" + filename + ".wav";
-        sfinfo.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
-        sfinfo.channels = props.channels;
-        sfinfo.samplerate = props.sampleRate;
+        std::string filepath = folder + "/.tmp/" + filename + ".wav";
+
+        std::filesystem::create_directories(folder + "/.tmp");
 
         sndfile = sf_open(filepath.c_str(), SFM_WRITE, &sfinfo);
         if (!sndfile) {
             throw std::runtime_error("Failed to open audio file for writing");
         }
-    }
 
-    void writerLoop()
-    {
-        while (running.load()) {
-            std::unique_lock<std::mutex> lock(bufferMutex);
-            bufferCv.wait(lock, [&] { return !writeBuffer.empty() || !running.load(); });
-
-            if (!writeBuffer.empty()) {
-                sf_write_float(sndfile, writeBuffer.data(), writeBuffer.size());
-                writeBuffer.clear();
+        while (loopRunning) {
+            if (buffer.size() > 1024) {
+                sf_write_float(sndfile, buffer.data(), 1024);
+                buffer.erase(buffer.begin(), buffer.begin() + 1024);
+            } else {
+                // sleep for 100ms
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }
         }
 
-        // Flush remaining samples before exiting
-        if (!writeBuffer.empty()) {
-            sf_write_float(sndfile, writeBuffer.data(), writeBuffer.size());
+        if (buffer.empty()) {
+            sf_write_float(sndfile, buffer.data(), buffer.size());
         }
+
+        sf_close(sndfile);
     }
 
 public:
@@ -70,30 +64,37 @@ public:
         : Mapping(props, _name)
     {
         initValues();
-        running.store(true);
-        writerThread = std::thread(&TapeRecording::writerLoop, this);
+
+        sfinfo.format = SF_FORMAT_WAV | SF_FORMAT_FLOAT;
+        sfinfo.channels = props.channels;
+        sfinfo.samplerate = props.sampleRate;
     }
 
     ~TapeRecording()
     {
-        running.store(false);
-        bufferCv.notify_all();
+        loopRunning = false;
         if (writerThread.joinable()) {
             writerThread.join();
-        }
-        if (sndfile) {
-            sf_close(sndfile);
         }
     }
 
     void sample(float* buf)
     {
-        // Push the incoming sample to the write buffer
-        {
-            std::lock_guard<std::mutex> lock(bufferMutex);
-            writeBuffer.push_back(*buf);
+        buffer.push_back(buf[track]);
+    }
+
+    void onEvent(AudioEventType event, bool playing) override
+    {
+        if (event == AudioEventType::STOP || event == AudioEventType::PAUSE) {
+            loopRunning = false;
+        } else if (event == AudioEventType::START) {
+            if (writerThread.joinable()) {
+                writerThread.join();
+            }
+            buffer.clear();
+            loopRunning = true;
+            writerThread = std::thread(&TapeRecording::writerLoop, this);
         }
-        bufferCv.notify_one();
     }
 
     /*md **Config**: */
@@ -116,4 +117,3 @@ public:
 };
 
 #endif
-
