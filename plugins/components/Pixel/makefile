@@ -26,6 +26,7 @@ all:
 # 	g++ -g -shared -o $(BUILD_DIR)/libzic_$@.so $(INC) $(OBJ_DIR)/$@.o
 
 %Component:
+	@echo "-------- :$@: --------"
 	make $(OBJ_DIR)/$@.o
 	make $(BUILD_DIR)/libzic_$@.so
 
