@@ -2,6 +2,7 @@
 #define _RAM_TAPE_RECORDING_H_
 
 #include "audioPlugin.h"
+#include "log.h"
 #include "mapping.h"
 
 #include <filesystem>
@@ -33,6 +34,7 @@ protected:
     void save()
     {
         std::string filepath = folder + "/tmp/ram_" + filename + ".wav";
+        logInfo("Saving to %s\n", filepath.c_str());
         std::filesystem::create_directories(folder + "/tmp");
 
         SF_INFO sfinfo;
@@ -44,11 +46,12 @@ protected:
             throw std::runtime_error("Failed to open audio file for writing");
         }
 
-        // while (!buffer.empty()) {
-        //     sf_write_float(sndfile, buffer.data(), 1024);
-        //     buffer.erase(buffer.begin(), buffer.begin() + 1024);
-        // }
-        sf_write_float(sndfile, buffer.data(), buffer.size());
+        // sf_write_float(sndfile, buffer.data(), buffer.size());
+
+        for (size_t i = 0; i < buffer.size(); i += 1024) {
+            size_t size = buffer.size() - i > 1024 ? 1024 : buffer.size() - i;
+            sf_write_float(sndfile, buffer.data() + i, size);
+        }
 
         sf_close(sndfile);
     }
