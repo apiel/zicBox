@@ -24,6 +24,7 @@ pluginAlias('Sequencer', 'libzic_Sequencer.so');
 pluginAlias('AudioOutput', 'libzic_AudioOutputPulse.so');
 pluginAlias('Spectrogram', 'libzic_AudioSpectrogram.so');
 pluginAlias('Tape', 'libzic_TapeRecording.so');
+pluginAlias('MultiTape', 'libzic_MultiTapeRecording.so');
 
 // Drum tracks
 drum23(1);
@@ -52,6 +53,8 @@ plugin('MasterVolume EffectGainVolume');
 plugin('Spectrogram');
 plugin('AudioOutput');
 plugin('SerializeTrack', [{ filename: 'master' }]);
+
+plugin('MultiTape');
 
 plugin('Tempo');
 

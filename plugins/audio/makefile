@@ -25,7 +25,7 @@ all:
 		Sequencer Tempo AudioSpectrogram\
 		Mixer2 Mixer4 Mixer6 Mixer8 Mixer12\
 		AudioInputPulse AudioOutputPulse AudioInputAlsa AudioOutputAlsa\
-		SerializeTrack TapeRecording
+		SerializeTrack TapeRecording MultiTapeRecording
 
 # rebuild: clean all
 
@@ -62,6 +62,9 @@ SynthMonoSample:
 
 TapeRecording:
 	make compile LIBNAME=TapeRecording EXTRA="$(shell pkg-config --cflags --libs sndfile)"
+
+MultiTapeRecording:
+	make compile LIBNAME=MultiTapeRecording EXTRA="$(shell pkg-config --cflags --libs sndfile)"
 
 AudioInputPulse:
 	make compile LIBNAME=AudioInputPulse EXTRA="$(shell pkg-config --cflags --libs libpulse-simple)"
