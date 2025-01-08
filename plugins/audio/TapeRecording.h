@@ -27,6 +27,8 @@ protected:
 
     std::vector<float> buffer;
 
+    size_t maxFileSize = 20 * 1024 * 1024; // 200MB
+
     void writerLoop()
     {
         std::string filepath = folder + "/.tmp/" + filename + ".wav";
@@ -38,17 +40,20 @@ protected:
             throw std::runtime_error("Failed to open audio file for writing");
         }
 
-        while (loopRunning) {
+        size_t maxSamples = maxFileSize / sizeof(float);
+        size_t sampleCount = 0;
+        while (loopRunning && sampleCount < maxSamples) {
             if (buffer.size() > 1024) {
                 sf_write_float(sndfile, buffer.data(), 1024);
                 buffer.erase(buffer.begin(), buffer.begin() + 1024);
+                sampleCount += 1024;
             } else {
                 // sleep for 100ms
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }
         }
 
-        if (buffer.empty()) {
+        if (buffer.empty() && sampleCount < maxSamples) {
             sf_write_float(sndfile, buffer.data(), buffer.size());
         }
 
@@ -109,6 +114,12 @@ public:
         /*md - `FILENAME: filename` to set filename. By default it is `track`.*/
         if (strcmp(key, "FILENAME") == 0) {
             filename = value;
+            return true;
+        }
+
+        /*md - `MAX_FILE_SIZE: 200` to set max file size. By default it is `200MB`.*/
+        if (strcmp(key, "MAX_FILE_SIZE") == 0) {
+            maxFileSize = atoi(value) * 1024 * 1024;
             return true;
         }
 
