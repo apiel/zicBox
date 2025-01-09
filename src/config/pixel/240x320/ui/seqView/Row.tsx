@@ -22,7 +22,8 @@ function RowKeymaps({ synth, track }: { synth: string; track: number }) {
                 { key: 'a', action: '.left', context: '254:0' },
                 { key: 'd', action: '.right', context: '254:0' },
                 { key: 'q', action: '.toggle', context: '254:1' },
-                { key: 's', action: `setView:Tape_track${track}`, context: '254:1' },
+                // { key: 's', action: `setView:Tape_track${track}`, context: '254:1' },
+                { key: 's', action: `setView:Tape`, context: '254:1' },
             ]}
         />
     );

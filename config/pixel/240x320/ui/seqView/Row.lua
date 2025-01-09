@@ -10,24 +10,16 @@ local ScreenWidth = ____constants.ScreenWidth
 local y = 170
 ____exports.RowH = 14
 local function RowKeymaps(____bindingPattern0)
-    local track
     local synth
     synth = ____bindingPattern0.synth
-    track = ____bindingPattern0.track
-    return React.createElement(
-        Keymaps,
-        {keys = {
-            {key = "q", action = ".toggleOrPlayNote:" .. synth, context = "254:0"},
-            {key = "a", action = ".left", context = "254:0"},
-            {key = "d", action = ".right", context = "254:0"},
-            {key = "q", action = ".toggle", context = "254:1"},
-            {
-                key = "s",
-                action = "setView:Tape_track" .. tostring(track),
-                context = "254:1"
-            }
-        }}
-    )
+    local track = ____bindingPattern0.track
+    return React.createElement(Keymaps, {keys = {
+        {key = "q", action = ".toggleOrPlayNote:" .. synth, context = "254:0"},
+        {key = "a", action = ".left", context = "254:0"},
+        {key = "d", action = ".right", context = "254:0"},
+        {key = "q", action = ".toggle", context = "254:1"},
+        {key = "s", action = "setView:Tape", context = "254:1"}
+    }})
 end
 local function getY(track)
     return y + (track - 1) * (____exports.RowH + 1)
