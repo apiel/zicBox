@@ -26,8 +26,8 @@ protected:
     std::string filename = "track";
     SNDFILE* sndfile = nullptr;
     bool isPlaying = false;
-    size_t sampleCount = 0;
-    size_t maxSamples = (20 * 1024 * 1024) / sizeof(float); // 20MB
+    // size_t maxSamples = (20 * 1024 * 1024) / sizeof(float); // 20MB
+    size_t maxSamples = (5 * 1024 * 1024) / sizeof(float); // 20MB
 
     std::vector<float> buffer;
 
@@ -46,10 +46,15 @@ protected:
             throw std::runtime_error("Failed to open audio file for writing");
         }
 
-        // sf_write_float(sndfile, buffer.data(), buffer.size());
-
-        for (size_t i = 0; i < buffer.size(); i += 1024) {
+        // write the first part of the buffer
+        for (size_t i = bufferIndex; i < buffer.size(); i += 1024) {
             size_t size = buffer.size() - i > 1024 ? 1024 : buffer.size() - i;
+            sf_write_float(sndfile, buffer.data() + i, size);
+        }
+
+        // write the second part of the buffer
+        for (size_t i = 0; i < bufferIndex; i += 1024) {
+            size_t size = bufferIndex - i > 1024 ? 1024 : bufferIndex - i;
             sf_write_float(sndfile, buffer.data() + i, size);
         }
 
@@ -67,14 +72,20 @@ public:
     RamTapeRecording(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
     {
-        trackNum.props().max = props.maxTracks;
+        trackNum.props().max = props.maxTracks - 1;
     }
 
+    bool circularBuffer = true;
+    size_t bufferIndex = 0;
     void sample(float* buf)
     {
-        if (isPlaying && sampleCount < maxSamples) {
-            buffer.push_back(buf[track]);
-            sampleCount++;
+        if (isPlaying) {
+            if (buffer.size() < maxSamples) {
+                buffer.push_back(buf[track]);
+            } else if (circularBuffer) {
+                buffer[bufferIndex] = buf[track];
+                bufferIndex = (bufferIndex + 1) % maxSamples;
+            }
         }
     }
 
@@ -84,6 +95,7 @@ public:
             save();
         } else if (event == AudioEventType::START) {
             buffer.clear();
+            bufferIndex = 0;
         }
         isPlaying = playing;
     }

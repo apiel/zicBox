@@ -76,7 +76,7 @@ public:
     TapeRecording(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
     {
-        trackNum.props().max = props.maxTracks;
+        trackNum.props().max = props.maxTracks - 1;
         initValues();
     }
 
@@ -110,6 +110,11 @@ public:
     /*md **Config**: */
     bool config(char* key, char* value) override
     {
+        if (strcmp(key, "TRACK") == 0) {
+            trackNum.set(atoi(value));
+            return true;
+        }
+
         /*md - `TAPE_FOLDER` set samples folder path. */
         if (strcmp(key, "TAPE_FOLDER") == 0) {
             folder = value;
