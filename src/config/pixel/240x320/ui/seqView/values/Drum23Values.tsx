@@ -44,6 +44,7 @@ export function Drum23Values({ group, track, context }: Props) {
                     track={0}
                     data="Spectrogram BUFFER"
                     text="Pixel"
+                    raw_buffer
                 />
             </VisibilityContainer>
 

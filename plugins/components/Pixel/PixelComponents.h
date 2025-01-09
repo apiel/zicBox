@@ -36,6 +36,7 @@ void loadPixelComponents()
     viewManager.loadPlugin("List " + folder + "ListComponent.so");
     viewManager.loadPlugin("Workspaces " + folder + "WorkspacesComponent.so");
     viewManager.loadPlugin("Sample " + folder + "SampleComponent.so");
+    viewManager.loadPlugin("Tape " + folder + "TapeComponent.so");
 }
 
 #else
@@ -47,19 +48,20 @@ void loadPixelComponents()
 #include "./FmAlgoComponent.h"
 #include "./GraphEncoderComponent.h"
 #include "./HiddenValueComponent.h"
+#include "./KeyboardComponent.h"
+#include "./ListComponent.h"
 #include "./RectComponent.h"
+#include "./SampleComponent.h"
 #include "./SeqBarComponent.h"
 #include "./SeqProgressBarComponent.h"
 #include "./SeqSynthBarComponent.h"
 #include "./SpectrogramComponent.h"
 #include "./StepEditComponent.h"
+#include "./TapeComponent.h"
 #include "./TextComponent.h"
 #include "./TextGridComponent.h"
 #include "./ValueComponent.h"
-#include "./KeyboardComponent.h"
-#include "./ListComponent.h"
 #include "./WorkspacesComponent.h"
-#include "./SampleComponent.h"
 
 void loadPixelComponents()
 {
@@ -143,6 +145,10 @@ void loadPixelComponents()
 
     viewManager.plugins.push_back({ "Sample", [](ComponentInterface::Props props) {
                                        return new SampleComponent(props);
+                                   } });
+
+    viewManager.plugins.push_back({ "Tape", [](ComponentInterface::Props props) {
+                                       return new TapeComponent(props);
                                    } });
 }
 #endif
