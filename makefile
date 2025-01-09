@@ -25,6 +25,10 @@ TRACK_HEADER_FILES = -MMD -MF pixel.$(BIN_PLATFORM).d
 pixel: pixelLibs buildPixel runPixel
 rebuildPixel: pixelRebuild buildPixel runPixel
 
+sync:
+	bash sync.sh
+	make pixel
+
 pixelLibs:
 	@echo "\n------------------ plugins ------------------\n"
 	make -C host
