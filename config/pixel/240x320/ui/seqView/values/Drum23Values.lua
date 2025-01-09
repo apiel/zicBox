@@ -331,7 +331,13 @@ function ____exports.Drum23Values(____bindingPattern0)
         React.createElement(
             VisibilityContainer,
             {position = posTopContainer, group = group},
-            React.createElement(Spectrogram, {position = {0, 0, ScreenWidth, 70}, track = 0, data = "Spectrogram BUFFER", text = "Pixel"})
+            React.createElement(Spectrogram, {
+                position = {0, 0, ScreenWidth, 70},
+                track = 0,
+                data = "Spectrogram BUFFER",
+                text = "Pixel",
+                raw_buffer = true
+            })
         ),
         React.createElement(Edit, {group = group, track = track, context = context}),
         React.createElement(Main, {group = group, track = track, context = context}),

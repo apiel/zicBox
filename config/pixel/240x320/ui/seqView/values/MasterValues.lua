@@ -30,7 +30,13 @@ function ____exports.MasterValues()
         React.createElement(
             VisibilityContainer,
             {position = posTopContainer, group = 0},
-            React.createElement(Spectrogram, {position = {0, 0, ScreenWidth, 70}, track = 0, data = "Spectrogram BUFFER", text = "Pixel"})
+            React.createElement(Spectrogram, {
+                position = {0, 0, ScreenWidth, 70},
+                track = 0,
+                data = "Spectrogram BUFFER",
+                text = "Pixel",
+                raw_buffer = true
+            })
         ),
         React.createElement(
             VisibilityContainer,

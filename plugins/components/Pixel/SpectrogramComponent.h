@@ -27,6 +27,65 @@ protected:
     float* buffer;
 
     bool mirror = true;
+    bool rawBuffer = false;
+
+    void renderRawBuffer()
+    {
+        int yCenter = relativePosition.y + size.h / 2;
+
+        if (mirror) {
+            for (int i = 0; i < size.w; i++) {
+                int graphH = buffer[i] * size.h;
+                if (graphH) {
+                    int y1 = yCenter - graphH;
+                    int y2 = yCenter + graphH;
+                    draw.line({ i, y1 }, { i, y2 }, { waveIn });
+                    draw.line({ i, (int)(y1 + graphH * 0.25) }, { i, (int)(y2 - graphH * 0.25) }, { waveMiddle });
+                    draw.line({ i, (int)(y1 + graphH * 0.75) }, { i, (int)(y2 - graphH * 0.75) }, { waveOut });
+                } else {
+                    draw.pixel({ i, yCenter }, { waveOut });
+                }
+            }
+        } else {
+            for (int i = 0; i < size.w; i++) {
+                int graphH = buffer[i] * size.h;
+                if (graphH) {
+                    draw.line({ i, yCenter }, { i, yCenter + graphH }, { waveIn });
+                    draw.line({ i, yCenter }, { i, (int)(yCenter + graphH * 0.25) }, { waveMiddle });
+                    draw.line({ i, yCenter }, { i, (int)(yCenter + graphH * 0.75) }, { waveOut });
+                } else {
+                    draw.pixel({ i, yCenter }, { waveOut });
+                }
+            }
+        }
+    }
+
+    void renderFrequencyPower()
+    {
+        const int segmentCount = 24; // Divide the buffer into segments
+        const int samplesPerSegment = 128 / segmentCount;
+        float energy[segmentCount] = { 0 };
+
+        // Calculate energy for each segment
+        for (int i = 0; i < segmentCount; i++) {
+            for (int j = 0; j < samplesPerSegment; j++) {
+                float sample = buffer[i * samplesPerSegment + j];
+                energy[i] += sample * sample; // Sum of squared samples
+            }
+            energy[i] = sqrt(energy[i] / samplesPerSegment); // Normalize by the number of samples
+        }
+
+        int bottom = relativePosition.y + size.h;
+        int barWidth = size.w / segmentCount;
+        // Visualize the energy as vertical bars
+        for (int i = 0; i < segmentCount; i++) {
+            int barHeight = (int)(energy[i] * size.h); // Scale energy to fit the display height
+            int x = relativePosition.x + i * barWidth;
+            int y = bottom - barHeight;
+            draw.filledRect({ x, y }, { barWidth - 1, barHeight }, { waveIn });
+            draw.filledRect({ x, y + (int)(barHeight * 0.10) }, { barWidth - 1, (int)(barHeight * 0.90) }, { waveOut });
+        }
+    }
 
 public:
     SpectrogramComponent(ComponentInterface::Props props)
@@ -41,40 +100,20 @@ public:
             renderNext();
         };
     }
+
     void render()
     {
         if (updatePosition()) {
             draw.filledRect(relativePosition, size, { bgColor });
-            int yCenter = relativePosition.y + size.h / 2;
 
             if (!text.empty()) {
                 draw.textCentered({ relativePosition.x + (int)(size.w / 2), relativePosition.y }, text, 16, { textColor });
             }
 
-            if (mirror) {
-                for (int i = 0; i < size.w; i++) {
-                    int graphH = buffer[i] * size.h;
-                    if (graphH) {
-                        int y1 = yCenter - graphH;
-                        int y2 = yCenter + graphH;
-                        draw.line({ i, y1 }, { i, y2 }, { waveIn });
-                        draw.line({ i, (int)(y1 + graphH * 0.25) }, { i, (int)(y2 - graphH * 0.25) }, { waveMiddle });
-                        draw.line({ i, (int)(y1 + graphH * 0.75) }, { i, (int)(y2 - graphH * 0.75) }, { waveOut });
-                    } else {
-                        draw.pixel({ i, yCenter }, { waveOut });
-                    }
-                }
+            if (rawBuffer) {
+                renderRawBuffer();
             } else {
-                for (int i = 0; i < size.w; i++) {
-                    int graphH = buffer[i] * size.h;
-                    if (graphH) {
-                        draw.line({ i, yCenter }, { i, yCenter + graphH }, { waveIn });
-                        draw.line({ i, yCenter }, { i, (int)(yCenter + graphH * 0.25) }, { waveMiddle });
-                        draw.line({ i, yCenter }, { i, (int)(yCenter + graphH * 0.75) }, { waveOut });
-                    } else {
-                        draw.pixel({ i, yCenter }, { waveOut });
-                    }
-                }
+                renderFrequencyPower();
             }
         }
     }
@@ -121,6 +160,12 @@ public:
         /*md - `MIRROR: false` mirror the waveform horizontally (default: true). */
         if (strcmp(key, "MIRROR") == 0) {
             mirror = strcmp(value, "true") == 0;
+            return true;
+        }
+
+        /*md - `RAW_BUFFER: true` display the raw buffer (default: false). */
+        if (strcmp(key, "RAW_BUFFER") == 0) {
+            rawBuffer = strcmp(value, "true") == 0;
             return true;
         }
 

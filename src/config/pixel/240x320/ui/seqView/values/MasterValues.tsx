@@ -26,6 +26,7 @@ export function MasterValues() {
                     track={0}
                     data="Spectrogram BUFFER"
                     text="Pixel"
+                    raw_buffer
                 />
             </VisibilityContainer>
 
