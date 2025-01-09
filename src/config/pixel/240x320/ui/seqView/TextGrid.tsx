@@ -31,7 +31,7 @@ export function TextGridProgressBarShifted() {
     return (
         <TextGrid
             position={KeyInfoPosition}
-            rows={['Menu &icon::play::filled ^...', 'Clips ? Save']}
+            rows={['Menu &icon::play::filled ^...', 'Clips &icon::tape Save']}
         >
             <VisibilityGroup condition="SHOW_WHEN" group={0} />
             <VisibilityContext index={254} condition="SHOW_WHEN" value={1} />
@@ -41,6 +41,7 @@ export function TextGridProgressBarShifted() {
                     { key: 'w', action: 'playPause' },
                     { key: 'a', action: 'setView:Clips' },
                     { key: 'e', action: 'contextToggle:254:1:0' },
+                    { key: 's', action: 'setView:Tape' },
                 ]}
             />
         </TextGrid>

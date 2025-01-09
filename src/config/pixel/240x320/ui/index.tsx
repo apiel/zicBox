@@ -25,8 +25,9 @@ applyZic(<WorkspacesView name="Workspaces" />);
 applyZic(<CreateWorkspaceView name="CreateWorkspace" />);
 applyZic(<ShutdownView name="Shutdown" />);
 
-for (let i = 1; i <= 8; i++) {
-    applyZic(<TapeView name={`Tape_track${i}`} />);
-}
+// for (let i = 1; i <= 8; i++) {
+//     applyZic(<TapeView name={`Tape_track${i}`} />);
+// }
+applyZic(<TapeView name={`Tape`} />);
 
 // applyZic([{ print: "End aplying UI config" }]);

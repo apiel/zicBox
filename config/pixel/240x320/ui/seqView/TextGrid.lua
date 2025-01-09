@@ -28,10 +28,16 @@ end
 function ____exports.TextGridProgressBarShifted()
     return React.createElement(
         TextGrid,
-        {position = KeyInfoPosition, rows = {"Menu &icon::play::filled ^...", "Clips ? Save"}},
+        {position = KeyInfoPosition, rows = {"Menu &icon::play::filled ^...", "Clips &icon::tape Save"}},
         React.createElement(VisibilityGroup, {condition = "SHOW_WHEN", group = 0}),
         React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 1}),
-        React.createElement(Keymaps, {keys = {{key = "q", action = "setView:Menu", action2 = "contextToggle:254:1:0"}, {key = "w", action = "playPause"}, {key = "a", action = "setView:Clips"}, {key = "e", action = "contextToggle:254:1:0"}}})
+        React.createElement(Keymaps, {keys = {
+            {key = "q", action = "setView:Menu", action2 = "contextToggle:254:1:0"},
+            {key = "w", action = "playPause"},
+            {key = "a", action = "setView:Clips"},
+            {key = "e", action = "contextToggle:254:1:0"},
+            {key = "s", action = "setView:Tape"}
+        }})
     )
 end
 function ____exports.TextGridTrack()
