@@ -8,7 +8,4 @@ export function drum23(track: number) {
     plugin('MMFilter EffectFilterMultiMode', [{ track, STRING_CUTOFF_FORMAT }]);
     plugin('SerializeTrack', [{ track, filename: `track_${track}`, MAX_VARIATION }]);
     plugin('Volume EffectGainVolume', [{ track }]);
-    // unfortunately, recording every traks doesn't work well on rpi
-    // plugin('Tape', [{ track, filename: `track_${track}` }]);
-    plugin('RamTape', [{ track, filename: `track_${track}` }]);
 }

@@ -82,7 +82,8 @@ public:
         if (isPlaying) {
             if (buffer.size() < maxSamples) {
                 buffer.push_back(buf[track]);
-            } else if (circularBuffer) {
+            } 
+            else if (circularBuffer) {
                 buffer[bufferIndex] = buf[track];
                 bufferIndex = (bufferIndex + 1) % maxSamples;
             }
@@ -123,6 +124,12 @@ public:
         /*md - `MAX_FILE_SIZE: 200` to set max file size. By default it is `200MB`.*/
         if (strcmp(key, "MAX_FILE_SIZE") == 0) {
             maxSamples = atoi(value) * 1024 * 1024 / sizeof(float);
+            return true;
+        }
+
+        /*md - `CIRCULAR_BUFFER: true` to enable circular buffer. By default it is `true`.*/
+        if (strcmp(key, "CIRCULAR_BUFFER") == 0) {
+            circularBuffer = strcmp(value, "true") == 0;
             return true;
         }
 
