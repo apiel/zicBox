@@ -19,7 +19,6 @@ pluginAlias('Tempo', 'libzic_Tempo.so');
 pluginAlias('SynthFM', 'libzic_SynthFM2.so');
 pluginAlias('Drum23', 'libzic_SynthDrum23.so');
 pluginAlias('MonoSample', 'libzic_SynthMonoSample.so');
-pluginAlias('MonoSample', 'libzic_SynthMonoSample.so');
 pluginAlias('Sequencer', 'libzic_Sequencer.so');
 pluginAlias('AudioOutput', 'libzic_AudioOutputPulse.so');
 pluginAlias('Spectrogram', 'libzic_AudioSpectrogram.so');
@@ -54,7 +53,7 @@ plugin('Spectrogram');
 plugin('AudioOutput');
 plugin('SerializeTrack', [{ filename: 'master' }]);
 
-plugin('MultiTape');
+plugin('Tape', [{ filename: `rec` }]);
 
 plugin('Tempo');
 

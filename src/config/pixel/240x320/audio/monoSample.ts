@@ -8,7 +8,4 @@ export function monoSample(track: number) {
     plugin('MMFilter EffectFilterMultiMode', [{ track, STRING_CUTOFF_FORMAT }]);
     plugin("SampleRateReducer EffectSampleRateReducer", [{ track }]);
     plugin("Volume EffectVolumeClipping", [{ track }]);
-    // unfortunately, recording every traks doesn't work well on rpi
-    // plugin('Tape', [{ track, filename: `track_${track}` }]);
-    plugin('RamTape', [{ track, filename: `track_${track}` }]);
 }

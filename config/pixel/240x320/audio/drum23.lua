@@ -19,12 +19,5 @@ function ____exports.drum23(track)
         }}
     )
     plugin("Volume EffectGainVolume", {{track = track}})
-    plugin(
-        "RamTape",
-        {{
-            track = track,
-            filename = "track_" .. tostring(track)
-        }}
-    )
 end
 return ____exports
