@@ -5,6 +5,7 @@
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
+#include "helpers/format.h"
 
 #include <algorithm>
 #include <cmath>
@@ -25,6 +26,7 @@ protected:
     Color rawColor;
     Color beatColor;
     Color valueColor;
+    Color overlayColor;
 
     KeypadLayout keypadLayout;
 
@@ -42,10 +44,12 @@ protected:
     std::vector<float> avgBuffer;
     std::vector<float> rawBuffer;
 
-    int beatStart = 0;
+    int currentBeat = 0;
     int beatLength = 4;
     int totalBeat = 0;
     int samplesPerBeat = 0;
+    float beatStart = 0;
+    float beatEnd = -1.0f;
 
     void loadAudioFile()
     {
@@ -62,9 +66,12 @@ protected:
         samplesPerBeat = (sampleRate * 60) / (valBpm != NULL ? valBpm->get() : 120);
         int totalSamples = samplesPerBeat * beatLength;
         totalBeat = sfinfo.frames / samplesPerBeat;
+        if (beatEnd < 0) {
+            beatEnd = totalBeat;
+        }
 
-        // Seek to the beatStarting point
-        sf_seek(sndfile, beatStart * samplesPerBeat, SEEK_SET);
+        // Seek to the currentBeating point
+        sf_seek(sndfile, currentBeat * samplesPerBeat, SEEK_SET);
 
         // Resize the buffer to match the width of the UI component
         avgBuffer.resize(size.w);
@@ -107,6 +114,7 @@ public:
         , rawColor(darken(styles.colors.primary, 0.5))
         , beatColor(lighten(styles.colors.background, 0.5))
         , valueColor(applyAlphaColor(styles.colors.background, styles.colors.text, 0.8))
+        , overlayColor(alpha(styles.colors.white, 0.2))
         , keypadLayout(this, [&](std::string action) {
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
             if (action == ".playStop") {
@@ -158,27 +166,49 @@ public:
         }
     }
 
+    void renderOverlay(int y, int h)
+    {
+        if (beatStart > currentBeat) {
+            float count = beatStart - currentBeat;
+            int w = count > beatLength ? size.w : count / beatLength * size.w;
+            draw.filledRect({ relativePosition.x, y }, { w, h }, { overlayColor });
+        }
+
+        if (beatEnd < currentBeat + beatLength) {
+            float count = currentBeat - beatEnd + beatLength;
+            int w = count > beatLength ? size.w : (count / beatLength * size.w);
+            draw.filledRect({ relativePosition.x + size.w - w, y }, { w, h }, { overlayColor });
+        }
+    }
+
     void render()
     {
         if (updatePosition()) {
             draw.filledRect(relativePosition, size, { background });
             renderWavFile(relativePosition.y, size.h);
+            renderOverlay(relativePosition.y, size.h);
 
-            draw.text({ relativePosition.x + 4, relativePosition.y + 2 }, std::to_string(beatStart) + "/" + std::to_string(totalBeat), 8, { valueColor });
+            draw.text({ relativePosition.x + 4, relativePosition.y + 2 }, std::to_string(currentBeat) + "/" + std::to_string(totalBeat), 8, { valueColor });
             if (valTrack != NULL) {
                 draw.textRight({ relativePosition.x + size.w - 4, relativePosition.y + 2 }, "Track " + std::to_string((int)valTrack->get()), 8, { valueColor });
             }
+
+            int bottomTextY = relativePosition.y + size.h - 10;
+            draw.text({ relativePosition.x + 4, bottomTextY }, "Start: " + fToString(beatStart, 2), 8, { valueColor });
+            draw.textRight({ relativePosition.x + size.w - 4, bottomTextY }, "End: " + fToString(beatEnd, 2), 8, { valueColor });
         }
     }
 
     uint8_t beatEncoderId = 0;
     uint8_t trackEncoderId = 2;
+    uint8_t startEncoderId = 1;
+    uint8_t endEncoderId = 3;
 
     void onEncoder(int id, int8_t direction)
     {
         if (id == beatEncoderId) {
-            beatStart += direction;
-            beatStart = range(beatStart, 0, totalBeat);
+            currentBeat += direction;
+            currentBeat = range(currentBeat, 0, totalBeat);
             loadAudioFile();
             renderNext();
         } else if (id == trackEncoderId) {
@@ -186,6 +216,14 @@ public:
                 valTrack->set(valTrack->get() + direction);
                 renderNext();
             }
+        } else if (id == startEncoderId) {
+            beatStart += direction * 0.25f;
+            beatStart = range(beatStart, 0.0f, beatEnd);
+            renderNext();
+        } else if (id == endEncoderId) {
+            beatEnd += direction * 0.25f;
+            beatEnd = range(beatEnd, beatStart, totalBeat);
+            renderNext();
         }
     }
 
