@@ -3,6 +3,7 @@
 
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
+#include "helpers/range.h"
 
 #include <algorithm>
 #include <cmath>
@@ -22,6 +23,7 @@ protected:
     Color avgColor;
     Color rawColor;
     Color beatColor;
+    Color valueColor;
 
     std::string folder = "tape";
     std::string filename = "track";
@@ -31,8 +33,9 @@ protected:
     std::vector<float> avgBuffer;
     std::vector<float> rawBuffer;
 
-    int start = 0;
+    int beatStart = 0;
     int beatLength = 4;
+    int totalBeat = 0;
 
     void loadAudioFile()
     {
@@ -48,9 +51,10 @@ protected:
         int channels = sfinfo.channels;
         int samplesPerBeat = (sampleRate * 60) / 160; // Assuming 160 BPM for now
         int totalSamples = samplesPerBeat * beatLength;
+        totalBeat = sfinfo.frames / samplesPerBeat;
 
-        // Seek to the starting point
-        sf_seek(sndfile, start * samplesPerBeat, SEEK_SET);
+        // Seek to the beatStarting point
+        sf_seek(sndfile, beatStart * samplesPerBeat, SEEK_SET);
 
         // Resize the buffer to match the width of the UI component
         avgBuffer.resize(size.w);
@@ -92,40 +96,60 @@ public:
         , avgColor(styles.colors.primary)
         , rawColor(darken(styles.colors.primary, 0.5))
         , beatColor(lighten(styles.colors.background, 0.5))
+        , valueColor(applyAlphaColor(styles.colors.background, styles.colors.text, 0.8))
     {
+    }
+
+    void renderWavFile(int y, int h)
+    {
+        // Draw beat markers
+        int samplesPerBeat = size.w / beatLength;
+        for (int b = 0; b <= beatLength; ++b) {
+            int x = relativePosition.x + b * samplesPerBeat;
+            draw.line({ x,y }, { x, y + h }, { beatColor });
+        }
+
+        if (!rawBuffer.empty()) {
+            std::vector<Point> waveformPoints;
+            for (int i = 0; i < rawBuffer.size(); ++i) {
+                float normalizedValue = (rawBuffer[i] + 1.0f) / 2.0f; // Normalize to 0-1
+                int yy = y + h - static_cast<int>(normalizedValue * h);
+                waveformPoints.push_back({ relativePosition.x + i, yy });
+            }
+            draw.lines(waveformPoints, { rawColor });
+        }
+
+        if (!avgBuffer.empty()) {
+            std::vector<Point> waveformPoints;
+            for (int i = 0; i < avgBuffer.size(); ++i) {
+                float normalizedValue = (avgBuffer[i] + 1.0f) / 2.0f; // Normalize to 0-1
+                int yy = y + h - static_cast<int>(normalizedValue * h);
+                waveformPoints.push_back({ relativePosition.x + i, yy });
+            }
+            draw.lines(waveformPoints, { avgColor });
+        }
     }
 
     void render()
     {
         if (updatePosition()) {
             draw.filledRect(relativePosition, size, { background });
+            renderWavFile(relativePosition.y, size.h);
 
-            // Draw beat markers
-            int samplesPerBeat = size.w / beatLength;
-            for (int b = 0; b <= beatLength; ++b) {
-                int x = relativePosition.x + b * samplesPerBeat;
-                draw.line({ x, relativePosition.y }, { x, relativePosition.y + size.h }, { beatColor });
-            }
+            // show total count
+            draw.text({ relativePosition.x + 4, relativePosition.y + 2 }, std::to_string(beatStart) + "/" + std::to_string(totalBeat), 8, { valueColor });
+        }
+    }
 
-            if (!rawBuffer.empty()) {
-                std::vector<Point> waveformPoints;
-                for (int i = 0; i < rawBuffer.size(); ++i) {
-                    float normalizedValue = (rawBuffer[i] + 1.0f) / 2.0f; // Normalize to 0-1
-                    int y = relativePosition.y + size.h - static_cast<int>(normalizedValue * size.h);
-                    waveformPoints.push_back({ relativePosition.x + i, y });
-                }
-                draw.lines(waveformPoints, { rawColor });
-            }
+    uint8_t beatEncoderId = 0;
 
-            if (!avgBuffer.empty()) {
-                std::vector<Point> waveformPoints;
-                for (int i = 0; i < avgBuffer.size(); ++i) {
-                    float normalizedValue = (avgBuffer[i] + 1.0f) / 2.0f; // Normalize to 0-1
-                    int y = relativePosition.y + size.h - static_cast<int>(normalizedValue * size.h);
-                    waveformPoints.push_back({ relativePosition.x + i, y });
-                }
-                draw.lines(waveformPoints, { avgColor });
-            }
+    void onEncoder(int id, int8_t direction)
+    {
+        if (id == beatEncoderId) {
+            beatStart += direction;
+            beatStart = range(beatStart, 0, totalBeat);
+            loadAudioFile();
+            renderNext();
         }
     }
 
@@ -148,6 +172,12 @@ public:
         if (strcmp(key, "FILENAME") == 0) {
             filename = value;
             loadAudioFile();
+            return true;
+        }
+
+        /*md - `BEAT_ENCODER: encoderId` to set the encoder id to define the beat where to start to display the waveform (default: 0).*/
+        if (strcmp(key, "BEAT_ENCODER") == 0) {
+            beatEncoderId = atoi(value);
             return true;
         }
 

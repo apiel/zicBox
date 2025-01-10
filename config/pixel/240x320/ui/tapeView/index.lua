@@ -3,8 +3,6 @@ local ____exports = {}
 local React = require("config.libs.react")
 local ____Tape = require("config.libs.components.Tape")
 local Tape = ____Tape.Tape
-local ____Text = require("config.libs.components.Text")
-local Text = ____Text.Text
 local ____View = require("config.libs.components.View")
 local View = ____View.View
 local ____ValueBpm = require("config.pixel.240x320.ui.components.ValueBpm")
@@ -18,8 +16,7 @@ function ____exports.TapeView(____bindingPattern0)
     return React.createElement(
         View,
         {name = name},
-        React.createElement(Text, {text = "view: " .. name, position = {0, 0, 240, 240}}),
-        React.createElement(Tape, {position = {0, 16, 240, 240}, filename = "rec"}),
+        React.createElement(Tape, {position = {0, 0, 240, 280}, filename = "rec"}),
         React.createElement(ValueBpm, nil),
         React.createElement(TextGridTape, nil),
         React.createElement(TextGridTapeShifted, nil)
