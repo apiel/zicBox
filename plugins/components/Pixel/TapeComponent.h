@@ -23,6 +23,19 @@ protected:
 
     std::vector<float> buffer;
 
+    int start = 0;
+    int beatLength = 4;
+
+    void loadAudioFile()
+    {
+        std::string filepath = folder + "/tmp/" + filename + ".wav";
+        sndfile = sf_open(filepath.c_str(), SFM_READ, &sfinfo);
+
+        // here should be some magic to load the file into buffer, generating the 
+        // waveform taking into account the start and beatLength, the available width with size.w
+        // and the audio samplerate...
+    }
+
 public:
     TapeComponent(ComponentInterface::Props props)
         : Component(props)
@@ -33,6 +46,7 @@ public:
     {
         if (updatePosition()) {
             draw.filledRect(relativePosition, size, { background });
+            // here will be the code to draw the waveform
         }
     }
 
@@ -54,6 +68,7 @@ public:
         /*md - `FILENAME: filename` to set filename. By default it is `track`.*/
         if (strcmp(key, "FILENAME") == 0) {
             filename = value;
+            loadAudioFile();
             return true;
         }
 
