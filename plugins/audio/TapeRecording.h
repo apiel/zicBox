@@ -27,6 +27,7 @@ protected:
     SNDFILE* playSndfile = nullptr;
     std::thread writerThread;
     bool loopRunning = true;
+    uint8_t trackPlayback = 0;
 
     std::vector<float> buffer;
 
@@ -99,7 +100,7 @@ public:
     sf_count_t playWhile = 0;
     void play(sf_count_t start, sf_count_t end)
     {
-        printf("Play from %ld till %ld\n", start, end);
+        // printf("Play from %ld till %ld\n", start, end);
         std::string filepath = getFilePath();
         SF_INFO sfinfo;
         playSndfile = sf_open(filepath.c_str(), SFM_READ, &sfinfo);
@@ -139,7 +140,7 @@ public:
                 float tmpBuf = readBuffer[currentSampleIndex++];
                 sampleCount++;
 
-                buf[track] = tmpBuf;
+                buf[trackPlayback] = tmpBuf;
             } else {
                 stop();
             }
@@ -165,6 +166,7 @@ public:
     {
         if (strcmp(key, "TRACK") == 0) {
             trackNum.set(atoi(value));
+            trackPlayback = atoi(value);
             return true;
         }
 
@@ -222,6 +224,7 @@ public:
                 stop();
             } else {
                 play(playData->start, playData->end);
+                return playSndfile;
             }
             return NULL;
         }
