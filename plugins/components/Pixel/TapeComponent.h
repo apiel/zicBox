@@ -7,6 +7,8 @@
 #include "plugins/components/utils/color.h"
 #include "helpers/format.h"
 
+#include "plugins/audio/utils/utils.h"
+
 #include <algorithm>
 #include <cmath>
 #include <sndfile.h>
@@ -65,7 +67,8 @@ protected:
         int channels = sfinfo.channels;
         samplesPerBeat = (sampleRate * 60) / (valBpm != NULL ? valBpm->get() : 120);
         int totalSamples = samplesPerBeat * beatLength;
-        totalBeat = sfinfo.frames / samplesPerBeat;
+        // roud up
+        totalBeat = sfinfo.frames / samplesPerBeat + 1;
         if (beatEnd < 0) {
             beatEnd = totalBeat;
         }
@@ -102,6 +105,9 @@ protected:
             rawBuffer[i] = sampleValue;
         }
 
+        limitBuffer(avgBuffer.data(), avgBuffer.size(), 0.8);
+        limitBuffer(rawBuffer.data(), rawBuffer.size(), 0.8);
+
         sf_close(sndfile);
         sndfile = nullptr;
     }
@@ -125,7 +131,7 @@ public:
                                 sf_count_t start;
                                 sf_count_t end;
                             };
-                            PlayData playData = { beatStart * samplesPerBeat, beatEnd * samplesPerBeat };
+                            PlayData playData = { (sf_count_t)(beatStart * samplesPerBeat), (sf_count_t)(beatEnd * samplesPerBeat) };
                             tapePlugin->data(playStopDataId, &playData);
                         }
                     }
@@ -174,7 +180,7 @@ public:
             draw.filledRect({ relativePosition.x, y }, { w, h }, { overlayColor });
         }
 
-        if (beatEnd < currentBeat + beatLength) {
+        if (beatEnd < currentBeat + beatLength && beatEnd < totalBeat) {
             float count = currentBeat - beatEnd + beatLength;
             int w = count > beatLength ? size.w : (count / beatLength * size.w);
             draw.filledRect({ relativePosition.x + size.w - w, y }, { w, h }, { overlayColor });
@@ -208,7 +214,7 @@ public:
     {
         if (id == beatEncoderId) {
             currentBeat += direction;
-            currentBeat = range(currentBeat, 0, totalBeat);
+            currentBeat = range(currentBeat, 0, totalBeat - 1);
             loadAudioFile();
             renderNext();
         } else if (id == trackEncoderId) {
