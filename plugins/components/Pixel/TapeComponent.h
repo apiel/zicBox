@@ -125,7 +125,7 @@ public:
                                 sf_count_t start;
                                 sf_count_t end;
                             };
-                            PlayData playData = { 0, sfinfo.frames };
+                            PlayData playData = { beatStart * samplesPerBeat, beatEnd * samplesPerBeat };
                             tapePlugin->data(playStopDataId, &playData);
                         }
                     }
