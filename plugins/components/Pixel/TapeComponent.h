@@ -2,6 +2,7 @@
 #define _UI_PIXEL_COMPONENT_TAPE_H_
 
 #include "plugins/components/component.h"
+#include "plugins/components/utils/color.h"
 
 #include <algorithm>
 #include <cmath>
@@ -18,6 +19,9 @@ Tape components to draw a rectangle.
 class TapeComponent : public Component {
 protected:
     Color background;
+    Color avgColor;
+    Color rawColor;
+    Color beatColor;
 
     std::string folder = "tape";
     std::string filename = "track";
@@ -29,43 +33,6 @@ protected:
 
     int start = 0;
     int beatLength = 4;
-
-    // void loadAudioFile()
-    // {
-    //     std::string filepath = folder + "/tmp/" + filename + ".wav";
-    //     // printf("Loading audio file: %s\n", filepath.c_str());
-    //     sndfile = sf_open(filepath.c_str(), SFM_READ, &sfinfo);
-    //     if (!sndfile) {
-    //         // Handle file open error
-    //         return;
-    //     }
-
-    //     // Calculate the number of samples per beat and total samples to load
-    //     int sampleRate = sfinfo.samplerate;
-    //     int channels = sfinfo.channels;
-    //     int samplesPerBeat = (sampleRate * 60) / 120; // Assuming 120 BPM for now
-    //     int totalSamples = samplesPerBeat * beatLength;
-
-    //     // Seek to the starting point
-    //     sf_seek(sndfile, start * samplesPerBeat, SEEK_SET);
-
-    //     // Resize the buffer to match the width of the UI component
-    //     buffer.resize(size.w);
-
-    //     // Temporary buffer to read audio samples
-    //     std::vector<float> tempBuffer(totalSamples * channels);
-    //     sf_read_float(sndfile, tempBuffer.data(), totalSamples * channels);
-
-    //     // Downsample and extract one channel to fit the UI width
-    //     for (int i = 0; i < size.w; ++i) {
-    //         int sampleIndex = i * (totalSamples / size.w);
-    //         float sampleValue = tempBuffer[sampleIndex * channels]; // Take the first channel
-    //         buffer[i] = sampleValue;
-    //     }
-
-    //     sf_close(sndfile);
-    //     sndfile = nullptr;
-    // }
 
     void loadAudioFile()
     {
@@ -79,7 +46,7 @@ protected:
         // Calculate the number of samples per beat and total samples to load
         int sampleRate = sfinfo.samplerate;
         int channels = sfinfo.channels;
-        int samplesPerBeat = (sampleRate * 60) / 120; // Assuming 120 BPM for now
+        int samplesPerBeat = (sampleRate * 60) / 160; // Assuming 160 BPM for now
         int totalSamples = samplesPerBeat * beatLength;
 
         // Seek to the starting point
@@ -122,26 +89,11 @@ public:
     TapeComponent(ComponentInterface::Props props)
         : Component(props)
         , background(styles.colors.background)
+        , avgColor(styles.colors.primary)
+        , rawColor(darken(styles.colors.primary, 0.5))
+        , beatColor(lighten(styles.colors.background, 0.5))
     {
     }
-    // void render()
-    // {
-    //     if (updatePosition()) {
-    //         draw.filledRect(relativePosition, size, { background });
-
-    //         // printf("render %ld\n", buffer.size());
-    //         if (!buffer.empty()) {
-    //             std::vector<Point> waveformPoints;
-    //             for (int i = 0; i < buffer.size(); ++i) {
-    //                 // printf("%f\n", buffer[i]);
-    //                 float normalizedValue = (buffer[i] + 1.0f) / 2.0f; // Normalize to 0-1
-    //                 int y = relativePosition.y + size.h - static_cast<int>(normalizedValue * size.h);
-    //                 waveformPoints.push_back({ relativePosition.x + i, y });
-    //             }
-    //             draw.lines(waveformPoints, { { 255, 255, 255, 255 }, 1 });
-    //         }
-    //     }
-    // }
 
     void render()
     {
@@ -152,7 +104,7 @@ public:
             int samplesPerBeat = size.w / beatLength;
             for (int b = 0; b <= beatLength; ++b) {
                 int x = relativePosition.x + b * samplesPerBeat;
-                draw.line({ x, relativePosition.y }, { x, relativePosition.y + size.h }, { { 50, 50, 50, 255 }, 1 });
+                draw.line({ x, relativePosition.y }, { x, relativePosition.y + size.h }, { beatColor });
             }
 
             if (!rawBuffer.empty()) {
@@ -162,7 +114,7 @@ public:
                     int y = relativePosition.y + size.h - static_cast<int>(normalizedValue * size.h);
                     waveformPoints.push_back({ relativePosition.x + i, y });
                 }
-                draw.lines(waveformPoints, { { 150, 150, 150, 150 }, 1 });
+                draw.lines(waveformPoints, { rawColor });
             }
 
             if (!avgBuffer.empty()) {
@@ -172,7 +124,7 @@ public:
                     int y = relativePosition.y + size.h - static_cast<int>(normalizedValue * size.h);
                     waveformPoints.push_back({ relativePosition.x + i, y });
                 }
-                draw.lines(waveformPoints, { { 255, 255, 255, 255 }, 1 });
+                draw.lines(waveformPoints, { avgColor });
             }
         }
     }
