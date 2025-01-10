@@ -24,7 +24,8 @@ protected:
     SNDFILE* sndfile = nullptr;
     SF_INFO sfinfo;
 
-    std::vector<float> buffer;
+    std::vector<float> avgBuffer;
+    std::vector<float> rawBuffer;
 
     int start = 0;
     int beatLength = 4;
@@ -85,7 +86,8 @@ protected:
         sf_seek(sndfile, start * samplesPerBeat, SEEK_SET);
 
         // Resize the buffer to match the width of the UI component
-        buffer.resize(size.w);
+        avgBuffer.resize(size.w);
+        rawBuffer.resize(size.w);
 
         // Temporary buffer to read audio samples
         std::vector<float> tempBuffer(totalSamples * channels);
@@ -105,7 +107,11 @@ protected:
                 }
             }
 
-            buffer[i] = (count > 0) ? (sum / count) : 0.0f; // Avoid division by zero
+            avgBuffer[i] = (count > 0) ? (sum / count) : 0.0f; // Avoid division by zero
+
+            int sampleIndex = i * (totalSamples / size.w);
+            float sampleValue = tempBuffer[sampleIndex * channels]; // Take the first channel
+            rawBuffer[i] = sampleValue;
         }
 
         sf_close(sndfile);
@@ -118,17 +124,51 @@ public:
         , background(styles.colors.background)
     {
     }
+    // void render()
+    // {
+    //     if (updatePosition()) {
+    //         draw.filledRect(relativePosition, size, { background });
+
+    //         // printf("render %ld\n", buffer.size());
+    //         if (!buffer.empty()) {
+    //             std::vector<Point> waveformPoints;
+    //             for (int i = 0; i < buffer.size(); ++i) {
+    //                 // printf("%f\n", buffer[i]);
+    //                 float normalizedValue = (buffer[i] + 1.0f) / 2.0f; // Normalize to 0-1
+    //                 int y = relativePosition.y + size.h - static_cast<int>(normalizedValue * size.h);
+    //                 waveformPoints.push_back({ relativePosition.x + i, y });
+    //             }
+    //             draw.lines(waveformPoints, { { 255, 255, 255, 255 }, 1 });
+    //         }
+    //     }
+    // }
+
     void render()
     {
         if (updatePosition()) {
             draw.filledRect(relativePosition, size, { background });
 
-            // printf("render %ld\n", buffer.size());
-            if (!buffer.empty()) {
+            // Draw beat markers
+            int samplesPerBeat = size.w / beatLength;
+            for (int b = 0; b <= beatLength; ++b) {
+                int x = relativePosition.x + b * samplesPerBeat;
+                draw.line({ x, relativePosition.y }, { x, relativePosition.y + size.h }, { { 50, 50, 50, 255 }, 1 });
+            }
+
+            if (!rawBuffer.empty()) {
                 std::vector<Point> waveformPoints;
-                for (int i = 0; i < buffer.size(); ++i) {
-                    // printf("%f\n", buffer[i]);
-                    float normalizedValue = (buffer[i] + 1.0f) / 2.0f; // Normalize to 0-1
+                for (int i = 0; i < rawBuffer.size(); ++i) {
+                    float normalizedValue = (rawBuffer[i] + 1.0f) / 2.0f; // Normalize to 0-1
+                    int y = relativePosition.y + size.h - static_cast<int>(normalizedValue * size.h);
+                    waveformPoints.push_back({ relativePosition.x + i, y });
+                }
+                draw.lines(waveformPoints, { { 150, 150, 150, 150 }, 1 });
+            }
+
+            if (!avgBuffer.empty()) {
+                std::vector<Point> waveformPoints;
+                for (int i = 0; i < avgBuffer.size(); ++i) {
+                    float normalizedValue = (avgBuffer[i] + 1.0f) / 2.0f; // Normalize to 0-1
                     int y = relativePosition.y + size.h - static_cast<int>(normalizedValue * size.h);
                     waveformPoints.push_back({ relativePosition.x + i, y });
                 }
