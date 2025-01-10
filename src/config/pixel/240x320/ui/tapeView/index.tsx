@@ -12,7 +12,7 @@ export type Props = {
 export function TapeView({ name }: Props) {
     return (
         <View name={name}>
-            <Tape position={[0, 0, 240, 280]} filename="rec" />
+            <Tape position={[0, 0, 240, 280]} filename="rec" bpm_value="Tempo BPM" />
 
             <ValueBpm />
 

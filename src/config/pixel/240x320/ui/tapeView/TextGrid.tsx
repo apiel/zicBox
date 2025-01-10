@@ -13,7 +13,7 @@ export function TextGridTape() {
         <TextGrid
             position={KeyInfoPosition}
             rows={[
-                '&icon::toggle::rect &icon::arrowUp::filled ...',
+                '&icon::play::filled &icon::arrowUp::filled ...',
                 '&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled',
             ]}
         >
