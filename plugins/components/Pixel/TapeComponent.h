@@ -3,8 +3,11 @@
 
 #include "plugins/components/component.h"
 
-#include <string>
+#include <algorithm>
+#include <cmath>
 #include <sndfile.h>
+#include <string>
+#include <vector>
 
 /*md
 ## Tape
@@ -26,14 +29,87 @@ protected:
     int start = 0;
     int beatLength = 4;
 
+    // void loadAudioFile()
+    // {
+    //     std::string filepath = folder + "/tmp/" + filename + ".wav";
+    //     // printf("Loading audio file: %s\n", filepath.c_str());
+    //     sndfile = sf_open(filepath.c_str(), SFM_READ, &sfinfo);
+    //     if (!sndfile) {
+    //         // Handle file open error
+    //         return;
+    //     }
+
+    //     // Calculate the number of samples per beat and total samples to load
+    //     int sampleRate = sfinfo.samplerate;
+    //     int channels = sfinfo.channels;
+    //     int samplesPerBeat = (sampleRate * 60) / 120; // Assuming 120 BPM for now
+    //     int totalSamples = samplesPerBeat * beatLength;
+
+    //     // Seek to the starting point
+    //     sf_seek(sndfile, start * samplesPerBeat, SEEK_SET);
+
+    //     // Resize the buffer to match the width of the UI component
+    //     buffer.resize(size.w);
+
+    //     // Temporary buffer to read audio samples
+    //     std::vector<float> tempBuffer(totalSamples * channels);
+    //     sf_read_float(sndfile, tempBuffer.data(), totalSamples * channels);
+
+    //     // Downsample and extract one channel to fit the UI width
+    //     for (int i = 0; i < size.w; ++i) {
+    //         int sampleIndex = i * (totalSamples / size.w);
+    //         float sampleValue = tempBuffer[sampleIndex * channels]; // Take the first channel
+    //         buffer[i] = sampleValue;
+    //     }
+
+    //     sf_close(sndfile);
+    //     sndfile = nullptr;
+    // }
+
     void loadAudioFile()
     {
         std::string filepath = folder + "/tmp/" + filename + ".wav";
         sndfile = sf_open(filepath.c_str(), SFM_READ, &sfinfo);
+        if (!sndfile) {
+            // Handle file open error
+            return;
+        }
 
-        // here should be some magic to load the file into buffer, generating the 
-        // waveform taking into account the start and beatLength, the available width with size.w
-        // and the audio samplerate...
+        // Calculate the number of samples per beat and total samples to load
+        int sampleRate = sfinfo.samplerate;
+        int channels = sfinfo.channels;
+        int samplesPerBeat = (sampleRate * 60) / 120; // Assuming 120 BPM for now
+        int totalSamples = samplesPerBeat * beatLength;
+
+        // Seek to the starting point
+        sf_seek(sndfile, start * samplesPerBeat, SEEK_SET);
+
+        // Resize the buffer to match the width of the UI component
+        buffer.resize(size.w);
+
+        // Temporary buffer to read audio samples
+        std::vector<float> tempBuffer(totalSamples * channels);
+        sf_read_float(sndfile, tempBuffer.data(), totalSamples * channels);
+
+        // Downsample using averaging
+        int samplesPerPixel = totalSamples / size.w;
+        for (int i = 0; i < size.w; ++i) {
+            float sum = 0.0f;
+            int count = 0;
+
+            for (int j = 0; j < samplesPerPixel; ++j) {
+                int sampleIndex = (i * samplesPerPixel + j) * channels; // First channel
+                if (sampleIndex < tempBuffer.size()) {
+                    sum += tempBuffer[sampleIndex];
+                    ++count;
+                }
+            }
+
+            buffer[i] = (count > 0) ? (sum / count) : 0.0f; // Avoid division by zero
+        }
+
+        sf_close(sndfile);
+        sndfile = nullptr;
     }
 
 public:
@@ -46,7 +122,18 @@ public:
     {
         if (updatePosition()) {
             draw.filledRect(relativePosition, size, { background });
-            // here will be the code to draw the waveform
+
+            // printf("render %ld\n", buffer.size());
+            if (!buffer.empty()) {
+                std::vector<Point> waveformPoints;
+                for (int i = 0; i < buffer.size(); ++i) {
+                    // printf("%f\n", buffer[i]);
+                    float normalizedValue = (buffer[i] + 1.0f) / 2.0f; // Normalize to 0-1
+                    int y = relativePosition.y + size.h - static_cast<int>(normalizedValue * size.h);
+                    waveformPoints.push_back({ relativePosition.x + i, y });
+                }
+                draw.lines(waveformPoints, { { 255, 255, 255, 255 }, 1 });
+            }
         }
     }
 
