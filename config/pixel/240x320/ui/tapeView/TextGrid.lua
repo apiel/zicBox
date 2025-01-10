@@ -14,7 +14,7 @@ end
 function ____exports.TextGridTape()
     return React.createElement(
         TextGrid,
-        {position = KeyInfoPosition, rows = {"&icon::toggle::rect &icon::arrowUp::filled ...", "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled"}},
+        {position = KeyInfoPosition, rows = {"&icon::play::filled &icon::arrowUp::filled ...", "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled"}},
         React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 0}),
         React.createElement(Keymaps, {keys = {{key = "e", action = "contextToggle:254:1:0"}, {key = "a", action = "incGroup:-1"}, {key = "d", action = "incGroup:+1"}}})
     )

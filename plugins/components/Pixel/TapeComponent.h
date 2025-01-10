@@ -1,9 +1,9 @@
 #ifndef _UI_PIXEL_COMPONENT_TAPE_H_
 #define _UI_PIXEL_COMPONENT_TAPE_H_
 
+#include "helpers/range.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
-#include "helpers/range.h"
 
 #include <algorithm>
 #include <cmath>
@@ -30,6 +30,8 @@ protected:
     SNDFILE* sndfile = nullptr;
     SF_INFO sfinfo;
 
+    ValueInterface* valBpm = NULL;
+
     std::vector<float> avgBuffer;
     std::vector<float> rawBuffer;
 
@@ -49,7 +51,7 @@ protected:
         // Calculate the number of samples per beat and total samples to load
         int sampleRate = sfinfo.samplerate;
         int channels = sfinfo.channels;
-        int samplesPerBeat = (sampleRate * 60) / 160; // Assuming 160 BPM for now
+        int samplesPerBeat = (sampleRate * 60) / (valBpm != NULL ? valBpm->get() : 120);
         int totalSamples = samplesPerBeat * beatLength;
         totalBeat = sfinfo.frames / samplesPerBeat;
 
@@ -106,7 +108,7 @@ public:
         int samplesPerBeat = size.w / beatLength;
         for (int b = 0; b <= beatLength; ++b) {
             int x = relativePosition.x + b * samplesPerBeat;
-            draw.line({ x,y }, { x, y + h }, { beatColor });
+            draw.line({ x, y }, { x, y + h }, { beatColor });
         }
 
         if (!rawBuffer.empty()) {
@@ -178,6 +180,15 @@ public:
         /*md - `BEAT_ENCODER: encoderId` to set the encoder id to define the beat where to start to display the waveform (default: 0).*/
         if (strcmp(key, "BEAT_ENCODER") == 0) {
             beatEncoderId = atoi(value);
+            return true;
+        }
+
+        /*md - `BPM_VALUE: plugin key` to get the bpm value.*/
+        if (strcmp(key, "BPM_VALUE") == 0) {
+            char* pluginName = strtok(value, " ");
+            char* keyValue = strtok(NULL, " ");
+            valBpm = watch(getPlugin(pluginName, track).getValue(keyValue));
+
             return true;
         }
 
