@@ -2,6 +2,7 @@
 #define _UI_PIXEL_COMPONENT_TAPE_H_
 
 #include "helpers/range.h"
+#include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
 
@@ -25,6 +26,8 @@ protected:
     Color beatColor;
     Color valueColor;
 
+    KeypadLayout keypadLayout;
+
     std::string folder = "tape";
     std::string filename = "track";
     SNDFILE* sndfile = nullptr;
@@ -32,12 +35,16 @@ protected:
 
     ValueInterface* valBpm = NULL;
 
+    AudioPlugin* tapePlugin = NULL;
+    uint8_t playStopDataId = 0;
+
     std::vector<float> avgBuffer;
     std::vector<float> rawBuffer;
 
     int beatStart = 0;
     int beatLength = 4;
     int totalBeat = 0;
+    int samplesPerBeat = 0;
 
     void loadAudioFile()
     {
@@ -51,7 +58,7 @@ protected:
         // Calculate the number of samples per beat and total samples to load
         int sampleRate = sfinfo.samplerate;
         int channels = sfinfo.channels;
-        int samplesPerBeat = (sampleRate * 60) / (valBpm != NULL ? valBpm->get() : 120);
+        samplesPerBeat = (sampleRate * 60) / (valBpm != NULL ? valBpm->get() : 120);
         int totalSamples = samplesPerBeat * beatLength;
         totalBeat = sfinfo.frames / samplesPerBeat;
 
@@ -99,6 +106,24 @@ public:
         , rawColor(darken(styles.colors.primary, 0.5))
         , beatColor(lighten(styles.colors.background, 0.5))
         , valueColor(applyAlphaColor(styles.colors.background, styles.colors.text, 0.8))
+        , keypadLayout(this, [&](std::string action) {
+            std::function<void(KeypadLayout::KeyMap&)> func = NULL;
+            if (action == ".playStop") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (tapePlugin != NULL) {
+                        if (KeypadLayout::isReleased(keymap)) {
+                            struct PlayData {
+                                sf_count_t start;
+                                sf_count_t end;
+                            };
+                            PlayData playData = { 0, sfinfo.frames };
+                            tapePlugin->data(playStopDataId, &playData);
+                        }
+                    }
+                };
+            }
+            return func;
+        })
     {
     }
 
@@ -155,9 +180,18 @@ public:
         }
     }
 
+    void onKey(uint16_t id, int key, int8_t state, unsigned long now)
+    {
+        keypadLayout.onKey(id, key, state, now);
+    }
+
     /*md **Config**: */
     bool config(char* key, char* value)
     {
+        if (keypadLayout.config(key, value)) {
+            return true;
+        }
+
         /*md - `BACKGROUND_COLOR: background` is the color of the background of the component. */
         if (strcmp(key, "BACKGROUND_COLOR") == 0) {
             background = draw.getColor(value);
@@ -189,6 +223,14 @@ public:
             char* keyValue = strtok(NULL, " ");
             valBpm = watch(getPlugin(pluginName, track).getValue(keyValue));
 
+            return true;
+        }
+
+        /*md - `TAPE_PLUGIN: plugin playStopDataId` to set the play/stop data id of the tape plugin.*/
+        if (strcmp(key, "TAPE_PLUGIN") == 0) {
+            char* pluginName = strtok(value, " ");
+            tapePlugin = &getPlugin(pluginName, track);
+            playStopDataId = tapePlugin->getDataId(strtok(NULL, " "));
             return true;
         }
 
