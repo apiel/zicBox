@@ -34,6 +34,7 @@ protected:
     SF_INFO sfinfo;
 
     ValueInterface* valBpm = NULL;
+    ValueInterface* valTrack = NULL;
 
     AudioPlugin* tapePlugin = NULL;
     uint8_t playStopDataId = 0;
@@ -163,12 +164,15 @@ public:
             draw.filledRect(relativePosition, size, { background });
             renderWavFile(relativePosition.y, size.h);
 
-            // show total count
             draw.text({ relativePosition.x + 4, relativePosition.y + 2 }, std::to_string(beatStart) + "/" + std::to_string(totalBeat), 8, { valueColor });
+            if (valTrack != NULL) {
+                draw.textRight({ relativePosition.x + size.w - 4, relativePosition.y + 2 }, "Track " + std::to_string((int)valTrack->get()), 8, { valueColor });
+            }
         }
     }
 
     uint8_t beatEncoderId = 0;
+    uint8_t trackEncoderId = 2;
 
     void onEncoder(int id, int8_t direction)
     {
@@ -177,6 +181,11 @@ public:
             beatStart = range(beatStart, 0, totalBeat);
             loadAudioFile();
             renderNext();
+        } else if (id == trackEncoderId) {
+            if (valTrack != NULL) {
+                valTrack->set(valTrack->get() + direction);
+                renderNext();
+            }
         }
     }
 
@@ -217,6 +226,12 @@ public:
             return true;
         }
 
+        /*md - `TRACK_ENCODER: encoderId` to set the encoder id to define the track number to record (default: 2).*/
+        if (strcmp(key, "TRACK_ENCODER") == 0) {
+            trackEncoderId = atoi(value);
+            return true;
+        }
+
         /*md - `BPM_VALUE: plugin key` to get the bpm value.*/
         if (strcmp(key, "BPM_VALUE") == 0) {
             char* pluginName = strtok(value, " ");
@@ -231,6 +246,8 @@ public:
             char* pluginName = strtok(value, " ");
             tapePlugin = &getPlugin(pluginName, track);
             playStopDataId = tapePlugin->getDataId(strtok(NULL, " "));
+
+            valTrack = watch(tapePlugin->getValue("TRACK"));
             return true;
         }
 
