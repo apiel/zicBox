@@ -50,10 +50,9 @@ plugin('MixerMaster Mixer2', [{ track_a: 9, track_b: 10, value: 50, track: 0 }])
 plugin('MasterFilter EffectFilterMultiMode', [{ STRING_CUTOFF_FORMAT }]);
 plugin('MasterVolume EffectGainVolume');
 plugin('Spectrogram');
+plugin('Tape', [{ filename: `rec` }]);
 plugin('AudioOutput');
 plugin('SerializeTrack', [{ filename: 'master' }]);
-
-plugin('Tape', [{ filename: `rec` }]);
 
 plugin('Tempo');
 

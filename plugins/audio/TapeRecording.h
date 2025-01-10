@@ -24,6 +24,7 @@ protected:
     std::string folder = "tape";
     std::string filename = "track";
     SNDFILE* sndfile = nullptr;
+    SNDFILE* playSndfile = nullptr;
     std::thread writerThread;
     bool loopRunning = true;
 
@@ -31,9 +32,14 @@ protected:
 
     size_t maxSamples = (200 * 1024 * 1024) / sizeof(float); // 200MB
 
+    std::string getFilePath()
+    {
+        return folder + "/tmp/" + filename + ".wav";
+    }
+
     void writerLoop()
     {
-        std::string filepath = folder + "/tmp/" + filename + ".wav";
+        std::string filepath = getFilePath();
 
         std::filesystem::create_directories(folder + "/tmp");
 
@@ -88,9 +94,56 @@ public:
         }
     }
 
+    bool playSample = false;
+    sf_count_t sampleCount = 0;
+    sf_count_t playWhile = 0;
+    void play(sf_count_t start, sf_count_t end)
+    {
+        printf("Play from %ld till %ld\n", start, end);
+        std::string filepath = getFilePath();
+        SF_INFO sfinfo;
+        playSndfile = sf_open(filepath.c_str(), SFM_READ, &sfinfo);
+        if (!playSndfile) {
+            return;
+        }
+        sf_seek(playSndfile, start, SEEK_SET);
+        playWhile = end - start;
+        sampleCount = 0;
+        playSample = true;
+    }
+
+    void stop()
+    {
+        playSample = false;
+        sf_close(playSndfile);
+    }
+
+    static const size_t CHUNK_SIZE = 1024;
+    float readBuffer[CHUNK_SIZE];
+    size_t currentSampleIndex = CHUNK_SIZE;
+
     void sample(float* buf)
     {
         buffer.push_back(buf[track]);
+        if (playSample) {
+            if (sampleCount < playWhile) {
+                if (currentSampleIndex >= CHUNK_SIZE) {
+                    sf_count_t count = sf_read_float(playSndfile, readBuffer, CHUNK_SIZE);
+
+                    if (count == 0) {
+                        stop();
+                        return;
+                    }
+                    currentSampleIndex = 0; // Reset index for the new chunk
+                }
+                float tmpBuf = readBuffer[currentSampleIndex++];
+                sampleCount++;
+
+                buf[track] = tmpBuf;
+            } else {
+                stop();
+            }
+        }
     }
 
     void onEvent(AudioEventType event, bool playing) override
@@ -140,6 +193,40 @@ public:
         }
 
         return AudioPlugin::config(key, value);
+    }
+
+    enum DATA_ID {
+        PLAY_STOP,
+    };
+
+    /*md **Data ID**: */
+    uint8_t getDataId(std::string name) override
+    {
+        /*md - `PLAY_STOP` play or stop the recorded wavfile */
+        if (name == "PLAY_STOP")
+            return DATA_ID::PLAY_STOP;
+        return atoi(name.c_str());
+    }
+
+    struct PlayData {
+        sf_count_t start;
+        sf_count_t end;
+    };
+
+    void* data(int id, void* userdata = NULL)
+    {
+        switch (id) {
+        case DATA_ID::PLAY_STOP: {
+            PlayData* playData = (PlayData*)userdata;
+            if (playSample) {
+                stop();
+            } else {
+                play(playData->start, playData->end);
+            }
+            return NULL;
+        }
+        }
+        return NULL;
     }
 };
 
