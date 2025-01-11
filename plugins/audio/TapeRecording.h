@@ -2,7 +2,9 @@
 #define _TAPE_RECORDING_H_
 
 #include "audioPlugin.h"
+#include "log.h"
 #include "mapping.h"
+#include "plugins/audio/utils/audioFile.h"
 
 #include <filesystem>
 #include <mutex>
@@ -34,16 +36,21 @@ protected:
 
     size_t maxSamples = (200 * 1024 * 1024) / sizeof(float); // 200MB
 
-    std::string getFilePath()
+    std::string getTmpFolder()
     {
-        return folder + "/tape_tmp/" + filename + ".wav";
+        return folder + "/tape_tmp/";
+    }
+
+    std::string getTmpFilePath()
+    {
+        return getTmpFolder() + filename + ".wav";
     }
 
     void writerLoop()
     {
-        std::string filepath = getFilePath();
+        std::string filepath = getTmpFilePath();
 
-        std::filesystem::create_directories(folder + "/tmp");
+        std::filesystem::create_directories(getTmpFolder());
 
         SF_INFO sfinfo;
         sfinfo.format = SF_FORMAT_WAV | SF_FORMAT_FLOAT;
@@ -100,10 +107,12 @@ public:
     bool playSample = false;
     sf_count_t sampleCount = 0;
     sf_count_t playWhile = 0;
-    void play(sf_count_t start, sf_count_t end)
+    void openPlay(sf_count_t start, sf_count_t end)
     {
-        // printf("Play from %ld till %ld\n", start, end);
-        std::string filepath = getFilePath();
+        if (playSndfile) {
+            sf_close(playSndfile);
+        }
+        std::string filepath = getTmpFilePath();
         SF_INFO sfinfo;
         playSndfile = sf_open(filepath.c_str(), SFM_READ, &sfinfo);
         if (!playSndfile) {
@@ -111,6 +120,12 @@ public:
         }
         sf_seek(playSndfile, start, SEEK_SET);
         playWhile = (end ? end : sfinfo.frames) - start;
+    }
+
+    void play(sf_count_t start, sf_count_t end)
+    {
+        // printf("Play from %ld till %ld\n", start, end);
+        openPlay(start, end);
         sampleCount = 0;
         playSample = true;
     }
@@ -247,7 +262,31 @@ public:
         case DATA_ID::SAVE: {
             if (userdata) {
                 std::string name = *(std::string*)userdata;
-                printf("Save %s\n", name.c_str());
+                std::string dest = folder + "/" + name + ".wav";
+
+                copyPartialAudioFile(getTmpFilePath(), dest, playData.start, playData.end);
+
+                // SF_INFO sfinfo;
+                // sfinfo.format = SF_FORMAT_WAV | SF_FORMAT_FLOAT;
+                // sfinfo.channels = props.channels;
+                // sfinfo.samplerate = props.sampleRate;
+                // SNDFILE* file = sf_open(dest.c_str(), SFM_WRITE, &sfinfo);
+                // if (!file) {
+                //     logError("Failed to save audio file");
+                //     return NULL;
+                // }
+
+                // stop();
+                // openPlay(playData.start, playData.end);
+                // for (sf_count_t i = 0; i < playWhile; i += 1024) {
+                //     sf_count_t count = sf_read_float(playSndfile, readBuffer, CHUNK_SIZE);
+                //     if (count == 0) {
+                //         break;
+                //     }
+                //     sf_write_float(file, readBuffer, count);
+                // }
+                // sf_close(file);
+                // sf_close(playSndfile);
             }
             return NULL;
         }
