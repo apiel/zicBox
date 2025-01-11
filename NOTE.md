@@ -4,17 +4,6 @@
     - --> instead of mixer drum and mixer synth, use sent effect to track fx1 and track fx2
 - TODO perform / grid effect / scatter effect: apply effect for some time, apply granular effect, pitch down
 
-- TODO speed up compile time
-  - cross compile for rpi directly on laptop
-
-- IDEA daw mode...
-  - allow to record a track into a sample
-  - allow to record a single note on into a sample
-  - provide a way to merge sample together on a track view...
-    - This track view would allow to apply amplitude modulation on the Finally
-    - Should it allow to apply filter on the fly in the risk of using CPU?
-      - or should any modulation involve resampling to a file? Maybe the best option as we dont care about hard drive usage.
-
 - TODO use https://github.com/nlohmann/json for config
     - just need to find a way to inform jsx to whether pass json format or string format
     ---> maybe for the moment should only be for component...
@@ -37,8 +26,6 @@
     **Find a way to record one note:** Create an audio plugin to cache output from all previous plugin. This cache plugin would watch for parameter change. If parameter of one of the previous plugin change, it would cache the audio output for a strategic note (low tone note) and then allowing to speedup reading cache to get higher note.
     **All track caching** the whole track caching would make it hard for sequencer motion and probability, most likely not the right way...
 
-- IDEA record Drum23 or Fm into sample
-
 - TODO clips
   - instead to play right away when clicking toggle button, maybe it should play at the next loop, and we need to play right away the would be a different combination key
   - allow to start all the clip from the same row at once, maybe instead of the play button or else add a new column
@@ -51,6 +38,9 @@
 
 - TODO filebrowser
     - serialised might want to use filename instead of file index
+
+- TODO speed up compile time
+  - cross compile for rpi directly on laptop
 
 - IDEA instead of 4 op fm synth make a synth with 3 osc (or even only 2?) that can be fm or not but also use different waveform from wavetable
   - the 3 envelop could be used for amp but also freq?
