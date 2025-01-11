@@ -33,7 +33,7 @@ function ____exports.FrequencyView(____bindingPattern0)
             encoder_modulation = 2
         }),
         React.createElement(Encoder3, {position = {W3_4, (height - encoderH) * 0.5, W1_4, encoderH}, value = "Drum23 PITCH", encoder_id = 3, color = "secondary"}),
-        React.createElement(TextGridPage1, nil),
+        React.createElement(TextGridPage1, {selected = 4}),
         React.createElement(Common, {selected = 0})
     )
 end

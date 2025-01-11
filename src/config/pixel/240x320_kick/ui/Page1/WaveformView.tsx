@@ -28,7 +28,7 @@ export function WaveformView({ name }: Props) {
                 encoder_id={3}
                 color="quaternary"
             />
-            <TextGridPage1 />
+            <TextGridPage1 selected={3} />
             <Common selected={0} />
         </View>
     );

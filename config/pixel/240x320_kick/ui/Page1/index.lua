@@ -43,7 +43,7 @@ function ____exports.Page1View(____bindingPattern0)
             __TS__ObjectAssign({value = "MMFilter RESONANCE", position = bottomRight, encoder_id = 3}, quaternary)
         ),
         React.createElement(ProgressBar, nil),
-        React.createElement(TextGridPage1, nil),
+        React.createElement(TextGridPage1, {selected = 0}),
         React.createElement(Common, {selected = 0})
     )
 end

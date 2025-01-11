@@ -31,7 +31,7 @@ export function FrequencyView({ name }: Props) {
                 encoder_id={3}
                 color="secondary"
             />
-            <TextGridPage1 />
+            <TextGridPage1 selected={4} />
             <Common selected={0} />
         </View>
     );
