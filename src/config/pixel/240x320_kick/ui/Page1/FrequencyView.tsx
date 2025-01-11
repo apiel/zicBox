@@ -32,7 +32,7 @@ export function FrequencyView({ name }: Props) {
                 color="secondary"
             />
             <TextGridPage1 selected={4} />
-            <Common selected={0} />
+            <Common selected={0} page="Page2" />
         </View>
     );
 }

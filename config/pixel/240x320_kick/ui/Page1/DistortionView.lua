@@ -42,7 +42,7 @@ function ____exports.DistortionView(____bindingPattern0)
             __TS__ObjectAssign({value = "Distortion BASS", position = bottomRight, encoder_id = 3}, quaternary)
         ),
         React.createElement(TextGridPage1, {selected = 1}),
-        React.createElement(Common, {selected = 0})
+        React.createElement(Common, {selected = 0, page = "Page2"})
     )
 end
 return ____exports

@@ -43,7 +43,7 @@ export function ClickView({ name }: Props) {
                 {...quaternary}
             />
             <TextGridPage2 selected={1} />
-            <Common selected={1} />
+            <Common selected={1} page="Page1" />
         </View>
     );
 }

@@ -32,7 +32,7 @@ function ____exports.WaveformView(____bindingPattern0)
         }),
         React.createElement(Encoder3, {position = {W3_4, (height - encoderH) * 0.5, W1_4, encoderH}, value = "Drum23 DURATION", encoder_id = 3, color = "quaternary"}),
         React.createElement(TextGridPage1, {selected = 3}),
-        React.createElement(Common, {selected = 0})
+        React.createElement(Common, {selected = 0, page = "Page2"})
     )
 end
 return ____exports

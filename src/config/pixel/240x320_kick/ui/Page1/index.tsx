@@ -39,7 +39,7 @@ export function Page1View({ name }: Props) {
             />
             <ProgressBar />
             <TextGridPage1 selected={0} />
-            <Common selected={0} />
+            <Common selected={1} page="Page2" />
         </View>
     );
 }
