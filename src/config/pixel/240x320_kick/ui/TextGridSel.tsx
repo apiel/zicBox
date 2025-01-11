@@ -17,7 +17,7 @@ export function TextGridSel({
     contextValue: number;
 }) {
     if (selected >= 0) {
-        items[selected] = `^${items[selected]}`;
+        items[selected] = `!${items[selected]}`;
     }
     return (
         <TextGrid
