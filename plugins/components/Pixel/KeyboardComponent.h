@@ -121,6 +121,13 @@ public:
                     }
                 };
             }
+            if (action == ".cancel") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        view->setView(redirectView);
+                    }
+                };
+            }
 
             return func;
         })
