@@ -16,9 +16,9 @@ local topLeft = ____constantsValue.topLeft
 local topRight = ____constantsValue.topRight
 local ____TextGridCommon = require("config.pixel.240x320_kick.ui.TextGridCommon")
 local TextGridCommon = ____TextGridCommon.TextGridCommon
-local ____TextGrid = require("config.pixel.240x320_kick.ui.mainView.TextGrid")
+local ____TextGrid = require("config.pixel.240x320_kick.ui.Page1View.TextGrid")
 local TextGridMain = ____TextGrid.TextGridMain
-function ____exports.MainView(____bindingPattern0)
+function ____exports.Page1View(____bindingPattern0)
     local name
     name = ____bindingPattern0.name
     return React.createElement(

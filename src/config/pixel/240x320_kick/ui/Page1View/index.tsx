@@ -10,7 +10,7 @@ export type Props = {
     name: string;
 };
 
-export function MainView({ name }: Props) {
+export function Page1View({ name }: Props) {
     return (
         <View name={name}>
             <Value
@@ -39,7 +39,7 @@ export function MainView({ name }: Props) {
                 {...quaternary}
             />
             <TextGridMain />
-            <TextGridCommon />
+            <TextGridCommon selected={0} />
         </View>
     );
 }
