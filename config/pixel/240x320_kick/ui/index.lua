@@ -17,6 +17,8 @@ local ____Page1View = require("config.pixel.240x320_kick.ui.Page1View.index")
 local Page1View = ____Page1View.Page1View
 local ____DistortionView = require("config.pixel.240x320_kick.ui.Page1View.DistortionView")
 local DistortionView = ____DistortionView.DistortionView
+local ____FrequencyView = require("config.pixel.240x320_kick.ui.Page1View.FrequencyView")
+local FrequencyView = ____FrequencyView.FrequencyView
 local ____WaveformView = require("config.pixel.240x320_kick.ui.Page1View.WaveformView")
 local WaveformView = ____WaveformView.WaveformView
 setWindowPosition(400, 500)
@@ -28,4 +30,5 @@ addZoneEncoder({W3_4, 0, W1_4, ScreenHeight})
 applyZic(React.createElement(Page1View, {name = "Page1"}))
 applyZic(React.createElement(DistortionView, {name = "Distortion"}))
 applyZic(React.createElement(WaveformView, {name = "Waveform"}))
+applyZic(React.createElement(FrequencyView, {name = "Frequency"}))
 return ____exports
