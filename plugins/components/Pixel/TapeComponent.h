@@ -193,10 +193,6 @@ public:
     {
         if (updatePosition()) {
             if (lastWatchState != *watcherPtr) {
-                if ( *watcherPtr < lastWatchState) {
-                    currentBeat = 0;
-                    beatEnd = -1.0f;
-                }
                 lastWatchState = *watcherPtr;
                 loadAudioFile();
             }
