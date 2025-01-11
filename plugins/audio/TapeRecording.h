@@ -256,28 +256,6 @@ public:
                 std::string dest = folder + "/" + name + ".wav";
 
                 copyPartialAudioFile(getTmpFilePath(), dest, playData.start, playData.end);
-
-                // SF_INFO sfinfo;
-                // sfinfo.format = SF_FORMAT_WAV | SF_FORMAT_FLOAT;
-                // sfinfo.channels = props.channels;
-                // sfinfo.samplerate = props.sampleRate;
-                // SNDFILE* file = sf_open(dest.c_str(), SFM_WRITE, &sfinfo);
-                // if (!file) {
-                //     logError("Failed to save audio file");
-                //     return NULL;
-                // }
-
-                // stop();
-                // openPlay(playData.start, playData.end);
-                // for (sf_count_t i = 0; i < playWhile; i += 1024) {
-                //     sf_count_t count = sf_read_float(playSndfile, readBuffer, CHUNK_SIZE);
-                //     if (count == 0) {
-                //         break;
-                //     }
-                //     sf_write_float(file, readBuffer, count);
-                // }
-                // sf_close(file);
-                // sf_close(playSndfile);
             }
             return NULL;
         }
