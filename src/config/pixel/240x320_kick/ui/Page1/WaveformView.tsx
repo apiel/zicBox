@@ -3,9 +3,9 @@ import * as React from '@/libs/react';
 import { Encoder3 } from '@/libs/components/Encoder3';
 import { GraphEncoder } from '@/libs/components/GraphEncoder';
 import { View } from '@/libs/components/View';
+import { Common } from '../Common';
 import { W1_4, W3_4 } from '../constants';
 import { encoderH, height } from '../constantsValue';
-import { TextGridCommon } from '../TextGridCommon';
 import { TextGridPage1 } from './TextGridPage1';
 
 export type Props = {
@@ -29,7 +29,7 @@ export function WaveformView({ name }: Props) {
                 color="quaternary"
             />
             <TextGridPage1 />
-            <TextGridCommon selected={0} />
+            <Common selected={0} />
         </View>
     );
 }

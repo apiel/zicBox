@@ -2,6 +2,7 @@ import * as React from '@/libs/react';
 
 import { Value } from '@/libs/components/Value';
 import { View } from '@/libs/components/View';
+import { Common } from '../Common';
 import {
     bottomLeft,
     bottomRight,
@@ -12,7 +13,6 @@ import {
     topLeft,
     topRight,
 } from '../constantsValue';
-import { TextGridCommon } from '../TextGridCommon';
 import { TextGridPage1 } from './TextGridPage1';
 
 export type Props = {
@@ -27,7 +27,7 @@ export function DistortionView({ name }: Props) {
             <Value value="Distortion COMPRESS" position={topRight} encoder_id={2} {...secondary} />
             <Value value="Distortion BASS" position={bottomRight} encoder_id={3} {...quaternary} />
             <TextGridPage1 />
-            <TextGridCommon selected={0} />
+            <Common selected={0} />
         </View>
     );
 }

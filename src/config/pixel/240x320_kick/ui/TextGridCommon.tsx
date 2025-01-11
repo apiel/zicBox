@@ -1,6 +1,3 @@
-{
-    /* progressbar */
-}
 import * as React from '@/libs/react';
 
 import { Keymaps } from '@/libs/components/Keymaps';

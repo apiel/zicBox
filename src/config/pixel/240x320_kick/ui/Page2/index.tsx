@@ -2,9 +2,9 @@ import * as React from '@/libs/react';
 
 import { DrumEnvelop } from '@/libs/components/DrumEnvelop';
 import { View } from '@/libs/components/View';
+import { Common } from '../Common';
 import { W3_4 } from '../constants';
 import { height } from '../constantsValue';
-import { TextGridCommon } from '../TextGridCommon';
 import { TextGridPage2 } from './TextGridPage2';
 
 export type Props = {
@@ -25,7 +25,7 @@ export function Page2View({ name }: Props) {
              />
 
             <TextGridPage2 />
-            <TextGridCommon selected={1} />
+            <Common selected={1} />
         </View>
     );
 }

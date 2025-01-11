@@ -3,8 +3,8 @@ local ____exports = {}
 local React = require("config.libs.react")
 local ____View = require("config.libs.components.View")
 local View = ____View.View
-local ____TextGridCommon = require("config.pixel.240x320_kick.ui.TextGridCommon")
-local TextGridCommon = ____TextGridCommon.TextGridCommon
+local ____Common = require("config.pixel.240x320_kick.ui.Common")
+local Common = ____Common.Common
 local ____TextGridSeq = require("config.pixel.240x320_kick.ui.Seq.TextGridSeq")
 local TextGridSeq = ____TextGridSeq.TextGridSeq
 function ____exports.SeqView(____bindingPattern0)
@@ -14,7 +14,7 @@ function ____exports.SeqView(____bindingPattern0)
         View,
         {name = name},
         React.createElement(TextGridSeq, nil),
-        React.createElement(TextGridCommon, {selected = 3})
+        React.createElement(Common, {selected = 3})
     )
 end
 return ____exports

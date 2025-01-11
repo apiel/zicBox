@@ -9,8 +9,6 @@ local ____VisibilityContext = require("config.libs.components.VisibilityContext"
 local VisibilityContext = ____VisibilityContext.VisibilityContext
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
 local KeyInfoPosition = ____constants.KeyInfoPosition
-do
-end
 function ____exports.TextGridCommon(____bindingPattern0)
     local selected
     selected = ____bindingPattern0.selected
