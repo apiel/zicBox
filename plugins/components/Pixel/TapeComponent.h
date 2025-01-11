@@ -1,11 +1,11 @@
 #ifndef _UI_PIXEL_COMPONENT_TAPE_H_
 #define _UI_PIXEL_COMPONENT_TAPE_H_
 
+#include "helpers/format.h"
 #include "helpers/range.h"
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
-#include "helpers/format.h"
 
 #include "plugins/audio/utils/utils.h"
 
@@ -42,6 +42,8 @@ protected:
 
     AudioPlugin* tapePlugin = NULL;
     uint8_t playStopDataId = 0;
+    int* watcherPtr = NULL;
+    int lastWatchState = -1;
 
     std::vector<float> avgBuffer;
     std::vector<float> rawBuffer;
@@ -190,6 +192,14 @@ public:
     void render()
     {
         if (updatePosition()) {
+            if (lastWatchState != *watcherPtr) {
+                if ( *watcherPtr < lastWatchState) {
+                    currentBeat = 0;
+                    beatEnd = -1.0f;
+                }
+                lastWatchState = *watcherPtr;
+                loadAudioFile();
+            }
             draw.filledRect(relativePosition, size, { background });
             renderWavFile(relativePosition.y, size.h);
             renderOverlay(relativePosition.y, size.h);
@@ -285,11 +295,15 @@ public:
             return true;
         }
 
-        /*md - `TAPE_PLUGIN: plugin playStopDataId` to set the play/stop data id of the tape plugin.*/
+        /*md - `TAPE_PLUGIN: plugin [playStopDataId] [watchDataId]` to set the play/stop data id of the tape plugin.*/
         if (strcmp(key, "TAPE_PLUGIN") == 0) {
             char* pluginName = strtok(value, " ");
             tapePlugin = &getPlugin(pluginName, track);
-            playStopDataId = tapePlugin->getDataId(strtok(NULL, " "));
+            char* playStopDataIdStr = strtok(NULL, " ");
+            playStopDataId = tapePlugin->getDataId(playStopDataIdStr ? playStopDataIdStr : "PLAY_STOP");
+            char* watchDataIdStr = strtok(NULL, " ");
+            uint8_t watchDataId = tapePlugin->getDataId(watchDataIdStr ? watchDataIdStr : "WATCH");
+            watcherPtr = (int*)tapePlugin->data(watchDataId);
 
             valTrack = watch(tapePlugin->getValue("TRACK"));
             return true;
