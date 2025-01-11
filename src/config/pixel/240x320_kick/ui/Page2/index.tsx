@@ -24,7 +24,7 @@ export function Page2View({ name }: Props) {
                  encoder_modulation={2}
              />
 
-            <TextGridPage2 />
+            <TextGridPage2 selected={0} />
             <Common selected={1} />
         </View>
     );
