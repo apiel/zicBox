@@ -38,7 +38,7 @@ export function Page1View({ name }: Props) {
                 {...quaternary}
             />
             <ProgressBar />
-            <TextGridPage1 />
+            <TextGridPage1 selected={0} />
             <Common selected={0} />
         </View>
     );

@@ -5,11 +5,15 @@ import { TextGrid } from '@/libs/components/TextGrid';
 import { VisibilityContext } from '@/libs/components/VisibilityContext';
 import { KeyInfoPosition } from '@/pixel/240x320_kick/ui/constants';
 
-export function TextGridPage1() {
+export function TextGridPage1({ selected }: { selected: number }) {
+    const items = ['Main', 'Dist.', '...', 'Waveform', 'Freq.', '&icon::musicNote::pixelated'];
+    if (selected >= 0) {
+        items[selected] = `^${items[selected]}`;
+    }
     return (
         <TextGrid
             position={KeyInfoPosition}
-            rows={['Main Dist. ...', 'Waveform Freq. &icon::musicNote::pixelated']}
+            rows={[`${items[0]} ${items[1]} ${items[2]}`, `${items[3]} ${items[4]} ${items[5]}`]}
         >
             <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />
             <Keymaps

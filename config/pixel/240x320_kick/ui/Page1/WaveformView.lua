@@ -31,7 +31,7 @@ function ____exports.WaveformView(____bindingPattern0)
             encoders = {"0 WAVEFORM_TYPE", "2 MACRO", "1 SHAPE"}
         }),
         React.createElement(Encoder3, {position = {W3_4, (height - encoderH) * 0.5, W1_4, encoderH}, value = "Drum23 DURATION", encoder_id = 3, color = "quaternary"}),
-        React.createElement(TextGridPage1, nil),
+        React.createElement(TextGridPage1, {selected = 3}),
         React.createElement(Common, {selected = 0})
     )
 end
