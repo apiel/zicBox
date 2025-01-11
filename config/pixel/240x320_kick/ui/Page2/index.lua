@@ -28,7 +28,7 @@ function ____exports.Page2View(____bindingPattern0)
             encoder_phase = 1,
             encoder_modulation = 2
         }),
-        React.createElement(TextGridPage2, nil),
+        React.createElement(TextGridPage2, {selected = 0}),
         React.createElement(Common, {selected = 1})
     )
 end
