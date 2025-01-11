@@ -19,7 +19,7 @@ function ____exports.TextGridSel(____bindingPattern0)
     keys = ____bindingPattern0.keys
     contextValue = ____bindingPattern0.contextValue
     if selected >= 0 then
-        items[selected + 1] = "^" .. items[selected + 1]
+        items[selected + 1] = "!" .. items[selected + 1]
     end
     return React.createElement(
         TextGrid,
