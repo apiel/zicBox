@@ -25,6 +25,8 @@ local ____Page2 = require("config.pixel.240x320_kick.ui.Page2.index")
 local Page2View = ____Page2.Page2View
 local ____ClickView = require("config.pixel.240x320_kick.ui.Page2.ClickView")
 local ClickView = ____ClickView.ClickView
+local ____Seq = require("config.pixel.240x320_kick.ui.Seq.index")
+local SeqView = ____Seq.SeqView
 setWindowPosition(400, 500)
 setScreenSize(ScreenWidth, ScreenHeight)
 addZoneEncoder({0, 0, W1_4, ScreenHeight})
@@ -37,4 +39,5 @@ applyZic(React.createElement(WaveformView, {name = "Waveform"}))
 applyZic(React.createElement(FrequencyView, {name = "Frequency"}))
 applyZic(React.createElement(Page2View, {name = "Page2"}))
 applyZic(React.createElement(ClickView, {name = "Click"}))
+applyZic(React.createElement(SeqView, {name = "Sequencer"}))
 return ____exports
