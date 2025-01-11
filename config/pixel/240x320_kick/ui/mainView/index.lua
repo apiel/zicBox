@@ -14,9 +14,11 @@ local quaternary = ____constantsValue.quaternary
 local tertiary = ____constantsValue.tertiary
 local topLeft = ____constantsValue.topLeft
 local topRight = ____constantsValue.topRight
-local ____TextGrid = require("config.pixel.240x320_kick.ui.kickView.TextGrid")
-local TextGridTape = ____TextGrid.TextGridTape
-function ____exports.KickView(____bindingPattern0)
+local ____TextGridCommon = require("config.pixel.240x320_kick.ui.TextGridCommon")
+local TextGridCommon = ____TextGridCommon.TextGridCommon
+local ____TextGrid = require("config.pixel.240x320_kick.ui.mainView.TextGrid")
+local TextGridMain = ____TextGrid.TextGridMain
+function ____exports.MainView(____bindingPattern0)
     local name
     name = ____bindingPattern0.name
     return React.createElement(
@@ -38,7 +40,8 @@ function ____exports.KickView(____bindingPattern0)
             Value,
             __TS__ObjectAssign({value = "MMFilter RESONANCE", position = bottomRight, encoder_id = 3}, quaternary)
         ),
-        React.createElement(TextGridTape, nil)
+        React.createElement(TextGridMain, nil),
+        React.createElement(TextGridCommon, nil)
     )
 end
 return ____exports
