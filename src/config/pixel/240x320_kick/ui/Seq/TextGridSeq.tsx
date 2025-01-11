@@ -9,7 +9,7 @@ export function TextGridSeq() {
     return (
         <TextGrid
             position={KeyInfoPosition}
-            rows={['&icon::arrowUp::filled &icon::toggle::rect ...', '&icon::arrowDown::filled &empty &icon::musicNote::pixelated']}
+            rows={['&icon::arrowUp::filled &icon::toggle::rect ...', '&icon::arrowDown::filled &icon::play::filled &icon::musicNote::pixelated']}
         >
             <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />
             <Keymaps
@@ -19,7 +19,7 @@ export function TextGridSeq() {
                     { key: 'e', action: 'contextToggle:254:1:0' },
 
                     // { key: 'a', action: 'setView:Waveform' },
-                    // { key: 's', action: 'setView:Frequency' },
+                    { key: 's', action: 'playPause' },
                     { key: 'd', action: 'noteOn:Drum23:60' },
                 ]}
             />

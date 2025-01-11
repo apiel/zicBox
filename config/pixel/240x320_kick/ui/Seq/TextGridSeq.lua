@@ -12,9 +12,9 @@ local KeyInfoPosition = ____constants.KeyInfoPosition
 function ____exports.TextGridSeq()
     return React.createElement(
         TextGrid,
-        {position = KeyInfoPosition, rows = {"&icon::arrowUp::filled &icon::toggle::rect ...", "&icon::arrowDown::filled &empty &icon::musicNote::pixelated"}},
+        {position = KeyInfoPosition, rows = {"&icon::arrowUp::filled &icon::toggle::rect ...", "&icon::arrowDown::filled &icon::play::filled &icon::musicNote::pixelated"}},
         React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 0}),
-        React.createElement(Keymaps, {keys = {{key = "e", action = "contextToggle:254:1:0"}, {key = "d", action = "noteOn:Drum23:60"}}})
+        React.createElement(Keymaps, {keys = {{key = "e", action = "contextToggle:254:1:0"}, {key = "s", action = "playPause"}, {key = "d", action = "noteOn:Drum23:60"}}})
     )
 end
 return ____exports
