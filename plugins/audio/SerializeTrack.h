@@ -24,8 +24,8 @@ protected:
     std::string filename = "track";
     std::string currentWorkspaceName = "default";
 
-    std::string filepath = "serialized/track.cfg";
-    std::string variationFolder = "serialized/track";
+    std::string filepath = "workspaces/default/track.cfg";
+    std::string variationFolder = "workspaces/default/track";
     bool initialized = false;
 
     bool saveBeforeChangingVariation = false;

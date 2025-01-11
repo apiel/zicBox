@@ -1,13 +1,15 @@
--- FIXME need to find a better way because this is shallowing the errors
+local function file_exists(path)
+    local file = io.open(path, "r")
+    if file then
+        file:close()
+        return true
+    else
+        return false
+    end
+end
 
--- local ok = pcall(require, "pixel_env")
-
--- if not ok then
---     print("There is no pixel_env.lua, use default config.")
---     require "config/pixel/320x240/main"
--- end
-
-require "config/pixel/240x320/main"
-
--- package.path = package.path .. ";config/pixel/lua/?.lua"
--- require "config/pixel/lua/240x320/main"
+if file_exists("pixel_env.lua") then
+    require "pixel_env"
+else
+    require "config/pixel/240x320/main"
+end
