@@ -28,6 +28,7 @@ protected:
     std::thread writerThread;
     bool loopRunning = true;
     uint8_t trackPlayback = 0;
+    int fileUpdateState = 0;
 
     std::vector<float> buffer;
 
@@ -59,6 +60,7 @@ protected:
                 sf_write_float(sndfile, buffer.data(), 1024);
                 buffer.erase(buffer.begin(), buffer.begin() + 1024);
                 sampleCount += 1024;
+                fileUpdateState++;
             } else {
                 // sleep for 100ms
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -199,6 +201,7 @@ public:
 
     enum DATA_ID {
         PLAY_STOP,
+        WATCH,
     };
 
     /*md **Data ID**: */
@@ -207,6 +210,9 @@ public:
         /*md - `PLAY_STOP` play or stop the recorded wavfile */
         if (name == "PLAY_STOP")
             return DATA_ID::PLAY_STOP;
+        /*md - `WATCH` watch for file change */
+        if (name == "WATCH")
+            return DATA_ID::WATCH;
         return atoi(name.c_str());
     }
 
@@ -228,7 +234,10 @@ public:
             }
             return NULL;
         }
+        case DATA_ID::WATCH:
+            return (void*)&fileUpdateState;
         }
+
         return NULL;
     }
 };
