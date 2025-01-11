@@ -35,4 +35,4 @@ node_modules
 * copy.lua
 tape/.tmp/*
 tape/tmp/*
-tape_tmp/*
+samples/tape_tmp/*.wav
