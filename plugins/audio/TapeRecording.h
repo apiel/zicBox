@@ -104,36 +104,27 @@ public:
         }
     }
 
-    bool playSample = false;
-    sf_count_t sampleCount = 0;
-    sf_count_t playWhile = 0;
-    void openPlay(sf_count_t start, sf_count_t end)
-    {
-        if (playSndfile) {
-            sf_close(playSndfile);
-        }
-        std::string filepath = getTmpFilePath();
-        SF_INFO sfinfo;
-        playSndfile = sf_open(filepath.c_str(), SFM_READ, &sfinfo);
-        if (!playSndfile) {
-            return;
-        }
-        sf_seek(playSndfile, start, SEEK_SET);
-        playWhile = (end ? end : sfinfo.frames) - start;
-    }
-
+    sf_count_t playSampleCount = 0;
     void play(sf_count_t start, sf_count_t end)
     {
-        // printf("Play from %ld till %ld\n", start, end);
-        openPlay(start, end);
-        sampleCount = 0;
-        playSample = true;
+        std::string filepath = getTmpFilePath();
+        SF_INFO sfinfo;
+        if (playSndfile) {
+            stop();
+        }
+        SNDFILE* file = sf_open(filepath.c_str(), SFM_READ, &sfinfo);
+        if (!file) {
+            return;
+        }
+        sf_seek(file, start, SEEK_SET);
+        playSampleCount = (end ? end : sfinfo.frames) - start;
+        playSndfile = file;
     }
 
     void stop()
     {
-        playSample = false;
         sf_close(playSndfile);
+        playSndfile = NULL;
     }
 
     static const size_t CHUNK_SIZE = 1024;
@@ -143,8 +134,8 @@ public:
     void sample(float* buf)
     {
         buffer.push_back(buf[track]);
-        if (playSample) {
-            if (sampleCount < playWhile) {
+        if (playSndfile) {
+            if (playSampleCount) {
                 if (currentSampleIndex >= CHUNK_SIZE) {
                     sf_count_t count = sf_read_float(playSndfile, readBuffer, CHUNK_SIZE);
 
@@ -155,7 +146,7 @@ public:
                     currentSampleIndex = 0; // Reset index for the new chunk
                 }
                 float tmpBuf = readBuffer[currentSampleIndex++];
-                sampleCount++;
+                playSampleCount--;
 
                 buf[trackPlayback] = tmpBuf;
             } else {
@@ -244,7 +235,7 @@ public:
     {
         switch (id) {
         case DATA_ID::PLAY_STOP: {
-            if (playSample) {
+            if (playSndfile) {
                 stop();
             } else {
                 play(playData.start, playData.end);
