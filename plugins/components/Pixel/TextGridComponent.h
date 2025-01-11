@@ -61,10 +61,11 @@ protected:
     {
         int index = 0;
         int h = 12;
+        int textY = y + 2; // (h - 8) * 0.5;
         for (auto item : row.items) {
-            Point textPos = { relativePosition.x + row.startX + index * row.width, y };
+            Point textPos = { relativePosition.x + row.startX + index * row.width, textY };
             if (item.activeBackground) {
-                draw.filledRect({ textPos.x - row.startX, textPos.y }, { row.width, h - 1 }, { itemBackground });
+                draw.filledRect({ textPos.x - row.startX, y }, { row.width, h - 1 }, { itemBackground });
             }
             Color color = item.secondColor ? textColor2 : textColor;
             if (!icon.render(item.text, textPos, 8, { color }, Icon::CENTER)) {
