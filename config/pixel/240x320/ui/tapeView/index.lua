@@ -11,7 +11,6 @@ local ____ValueBpm = require("config.pixel.240x320.ui.components.ValueBpm")
 local ValueBpm = ____ValueBpm.ValueBpm
 local ____TextGrid = require("config.pixel.240x320.ui.tapeView.TextGrid")
 local TextGridTape = ____TextGrid.TextGridTape
-local TextGridTapeShifted = ____TextGrid.TextGridTapeShifted
 function ____exports.TapeView(____bindingPattern0)
     local name
     name = ____bindingPattern0.name
@@ -21,11 +20,12 @@ function ____exports.TapeView(____bindingPattern0)
         React.createElement(
             Tape,
             {position = {0, 0, 240, 280}, filename = "rec", bpm_value = "Tempo BPM", tape_plugin = "Tape PLAY_STOP"},
-            React.createElement(Keymap, {key = "q", action = ".playStop"})
+            React.createElement(Keymap, {key = "q", action = ".playStop"}),
+            React.createElement(Keymap, {key = "a", action = ".left"}),
+            React.createElement(Keymap, {key = "d", action = ".right"})
         ),
         React.createElement(ValueBpm, nil),
-        React.createElement(TextGridTape, nil),
-        React.createElement(TextGridTapeShifted, nil)
+        React.createElement(TextGridTape, nil)
     )
 end
 return ____exports

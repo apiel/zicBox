@@ -27,6 +27,8 @@ local ____seqView = require("config.pixel.240x320.ui.seqView.index")
 local SeqView = ____seqView.SeqView
 local ____tapeView = require("config.pixel.240x320.ui.tapeView.index")
 local TapeView = ____tapeView.TapeView
+local ____SaveTapeView = require("config.pixel.240x320.ui.tapeView.SaveTapeView")
+local SaveTapeView = ____SaveTapeView.SaveTapeView
 setWindowPosition(400, 500)
 setScreenSize(ScreenWidth, ScreenHeight)
 addZoneEncoder({0, 0, W1_4, ScreenHeight})
@@ -40,4 +42,5 @@ applyZic(React.createElement(WorkspacesView, {name = "Workspaces"}))
 applyZic(React.createElement(CreateWorkspaceView, {name = "CreateWorkspace"}))
 applyZic(React.createElement(ShutdownView, {name = "Shutdown"}))
 applyZic(React.createElement(TapeView, {name = "Tape"}))
+applyZic(React.createElement(SaveTapeView, {name = "SaveTape"}))
 return ____exports

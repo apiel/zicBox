@@ -36,7 +36,7 @@ function ____exports.TextGridProgressBarShifted()
             {key = "w", action = "playPause"},
             {key = "a", action = "setView:Clips"},
             {key = "e", action = "contextToggle:254:1:0"},
-            {key = "s", action = "setView:Tape"}
+            {key = "s", action = "setView:Tape", action2 = "contextToggle:254:1:0"}
         }})
     )
 end

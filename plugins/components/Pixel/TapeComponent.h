@@ -32,7 +32,7 @@ protected:
 
     KeypadLayout keypadLayout;
 
-    std::string folder = "tape";
+    std::string folder = "samples";
     std::string filename = "track";
     SNDFILE* sndfile = nullptr;
     SF_INFO sfinfo;
@@ -42,6 +42,7 @@ protected:
 
     AudioPlugin* tapePlugin = NULL;
     uint8_t playStopDataId = 0;
+    uint8_t syncDataId = 0;
     int* watcherPtr = NULL;
     int lastWatchState = -1;
 
@@ -57,7 +58,7 @@ protected:
 
     void loadAudioFile()
     {
-        std::string filepath = folder + "/tmp/" + filename + ".wav";
+        std::string filepath = folder + "/tape_tmp/" + filename + ".wav";
         sndfile = sf_open(filepath.c_str(), SFM_READ, &sfinfo);
         if (!sndfile) {
             // Handle file open error
@@ -129,19 +130,38 @@ public:
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (tapePlugin != NULL) {
                         if (KeypadLayout::isReleased(keymap)) {
-                            struct PlayData {
-                                sf_count_t start;
-                                sf_count_t end;
-                            };
-                            PlayData playData = { (sf_count_t)(beatStart * samplesPerBeat), (sf_count_t)(beatEnd * samplesPerBeat) };
-                            tapePlugin->data(playStopDataId, &playData);
+                            tapePlugin->data(playStopDataId);
                         }
+                    }
+                };
+            } else if (action == ".left") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        incCurrentBeat(-1);
+                    }
+                };
+            } else if (action == ".right") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        incCurrentBeat(1);
                     }
                 };
             }
             return func;
         })
     {
+    }
+
+    void syncData()
+    {
+        if (tapePlugin != NULL) {
+            struct PlayData {
+                sf_count_t start;
+                sf_count_t end;
+            };
+            PlayData playData = { (sf_count_t)(beatStart * samplesPerBeat), (sf_count_t)(beatEnd * samplesPerBeat) };
+            tapePlugin->data(syncDataId, &playData);
+        }
     }
 
     void renderWavFile(int y, int h)
@@ -219,10 +239,7 @@ public:
     void onEncoder(int id, int8_t direction)
     {
         if (id == beatEncoderId) {
-            currentBeat += direction;
-            currentBeat = range(currentBeat, 0, totalBeat - 1);
-            loadAudioFile();
-            renderNext();
+            incCurrentBeat(direction);
         } else if (id == trackEncoderId) {
             if (valTrack != NULL) {
                 valTrack->set(valTrack->get() + direction);
@@ -231,12 +248,22 @@ public:
         } else if (id == startEncoderId) {
             beatStart += direction * 0.25f;
             beatStart = range(beatStart, 0.0f, beatEnd);
+            syncData();
             renderNext();
         } else if (id == endEncoderId) {
             beatEnd += direction * 0.25f;
             beatEnd = range(beatEnd, beatStart, totalBeat);
+            syncData();
             renderNext();
         }
+    }
+
+    void incCurrentBeat(int8_t direction)
+    {
+        currentBeat += direction;
+        currentBeat = range(currentBeat, 0, totalBeat - 1);
+        loadAudioFile();
+        renderNext();
     }
 
     void onKey(uint16_t id, int key, int8_t state, unsigned long now)
@@ -291,15 +318,15 @@ public:
             return true;
         }
 
-        /*md - `TAPE_PLUGIN: plugin [playStopDataId] [watchDataId]` to set the play/stop data id of the tape plugin.*/
+        /*md - `TAPE_PLUGIN: plugin [playStopDataId] [syncDataId]` to set the play/stop data id of the tape plugin.*/
         if (strcmp(key, "TAPE_PLUGIN") == 0) {
             char* pluginName = strtok(value, " ");
             tapePlugin = &getPlugin(pluginName, track);
             char* playStopDataIdStr = strtok(NULL, " ");
             playStopDataId = tapePlugin->getDataId(playStopDataIdStr ? playStopDataIdStr : "PLAY_STOP");
-            char* watchDataIdStr = strtok(NULL, " ");
-            uint8_t watchDataId = tapePlugin->getDataId(watchDataIdStr ? watchDataIdStr : "WATCH");
-            watcherPtr = (int*)tapePlugin->data(watchDataId);
+            char* syncDataIdStr = strtok(NULL, " ");
+            syncDataId = tapePlugin->getDataId(syncDataIdStr ? syncDataIdStr : "SYNC");
+            watcherPtr = (int*)tapePlugin->data(syncDataId);
 
             valTrack = watch(tapePlugin->getValue("TRACK"));
             return true;

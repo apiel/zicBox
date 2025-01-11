@@ -9,6 +9,7 @@ import { ShutdownView } from './menuView/ShutdownView';
 import { WorkspacesView } from './menuView/WorkspacesView';
 import { SeqView } from './seqView';
 import { TapeView } from './tapeView';
+import { SaveTapeView } from './tapeView/SaveTapeView';
 
 setWindowPosition(400, 500);
 setScreenSize(ScreenWidth, ScreenHeight);
@@ -29,5 +30,7 @@ applyZic(<ShutdownView name="Shutdown" />);
 //     applyZic(<TapeView name={`Tape_track${i}`} />);
 // }
 applyZic(<TapeView name={`Tape`} />);
+applyZic(<SaveTapeView name={`SaveTape`} />);
+
 
 // applyZic([{ print: "End aplying UI config" }]);

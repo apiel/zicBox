@@ -21,7 +21,7 @@ TapeRecording plugin is used to record audio buffer for a given track.
 
 class TapeRecording : public Mapping {
 protected:
-    std::string folder = "tape";
+    std::string folder = "samples";
     std::string filename = "track";
     SNDFILE* sndfile = nullptr;
     SNDFILE* playSndfile = nullptr;
@@ -36,7 +36,7 @@ protected:
 
     std::string getFilePath()
     {
-        return folder + "/tmp/" + filename + ".wav";
+        return folder + "/tape_tmp/" + filename + ".wav";
     }
 
     void writerLoop()
@@ -110,7 +110,7 @@ public:
             return;
         }
         sf_seek(playSndfile, start, SEEK_SET);
-        playWhile = end - start;
+        playWhile = (end ? end : sfinfo.frames) - start;
         sampleCount = 0;
         playSample = true;
     }
@@ -201,7 +201,8 @@ public:
 
     enum DATA_ID {
         PLAY_STOP,
-        WATCH,
+        SYNC,
+        SAVE,
     };
 
     /*md **Data ID**: */
@@ -210,32 +211,46 @@ public:
         /*md - `PLAY_STOP` play or stop the recorded wavfile */
         if (name == "PLAY_STOP")
             return DATA_ID::PLAY_STOP;
-        /*md - `WATCH` watch for file change */
-        if (name == "WATCH")
-            return DATA_ID::WATCH;
+        /*md - `SYNC` watch for file change and set play state */
+        if (name == "SYNC")
+            return DATA_ID::SYNC;
+        /*md - `SAVE` save the recorded wavfile */
+        if (name == "SAVE")
+            return DATA_ID::SAVE;
         return atoi(name.c_str());
     }
 
     struct PlayData {
-        sf_count_t start;
-        sf_count_t end;
-    };
+        sf_count_t start = 0;
+        sf_count_t end = 0;
+    } playData;
 
     void* data(int id, void* userdata = NULL)
     {
         switch (id) {
         case DATA_ID::PLAY_STOP: {
-            PlayData* playData = (PlayData*)userdata;
             if (playSample) {
                 stop();
             } else {
-                play(playData->start, playData->end);
+                play(playData.start, playData.end);
                 return playSndfile;
             }
             return NULL;
         }
-        case DATA_ID::WATCH:
+        case DATA_ID::SYNC: {
+            if (userdata != NULL) {
+                playData.start = ((PlayData*)userdata)->start;
+                playData.end = ((PlayData*)userdata)->end;
+            }
             return (void*)&fileUpdateState;
+        }
+        case DATA_ID::SAVE: {
+            if (userdata) {
+                std::string name = *(std::string*)userdata;
+                printf("Save %s\n", name.c_str());
+            }
+            return NULL;
+        }
         }
 
         return NULL;
