@@ -16,7 +16,7 @@ function ____exports.TextGridMain()
         TextGrid,
         {position = KeyInfoPosition, rows = {"Main Dist. ...", "Waveform Freq. &icon::musicNote::pixelated"}},
         React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 0}),
-        React.createElement(Keymaps, {keys = {{key = "w", action = "setView:SaveTape"}, {key = "s", action = "setView:Home"}, {key = "e", action = "contextToggle:254:1:0"}}})
+        React.createElement(Keymaps, {keys = {{key = "w", action = "setView:SaveTape"}, {key = "s", action = "setView:Home"}, {key = "e", action = "contextToggle:254:1:0"}, {key = "d", action = "noteOn:Drum23:60"}}})
     )
 end
 return ____exports
