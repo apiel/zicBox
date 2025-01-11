@@ -14,7 +14,7 @@ function ____exports.SeqView(____bindingPattern0)
         View,
         {name = name},
         React.createElement(TextGridSeq, nil),
-        React.createElement(Common, {selected = 3})
+        React.createElement(Common, {selected = 3, page = "Page1"})
     )
 end
 return ____exports

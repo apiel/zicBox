@@ -13,7 +13,7 @@ export function SeqView({ name }: Props) {
         <View name={name}>
 
             <TextGridSeq />
-            <Common selected={3} />
+            <Common selected={3} page="Page1" />
         </View>
     );
 }

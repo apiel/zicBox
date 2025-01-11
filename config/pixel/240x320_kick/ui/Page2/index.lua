@@ -29,7 +29,7 @@ function ____exports.Page2View(____bindingPattern0)
             encoder_modulation = 2
         }),
         React.createElement(TextGridPage2, {selected = 0}),
-        React.createElement(Common, {selected = 1})
+        React.createElement(Common, {selected = 1, page = "Page1"})
     )
 end
 return ____exports

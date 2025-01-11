@@ -44,7 +44,7 @@ function ____exports.Page1View(____bindingPattern0)
         ),
         React.createElement(ProgressBar, nil),
         React.createElement(TextGridPage1, {selected = 0}),
-        React.createElement(Common, {selected = 0})
+        React.createElement(Common, {selected = 1, page = "Page2"})
     )
 end
 return ____exports
