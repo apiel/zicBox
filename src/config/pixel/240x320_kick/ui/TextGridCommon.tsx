@@ -5,23 +5,20 @@ import * as React from '@/libs/react';
 
 import { Keymaps } from '@/libs/components/Keymaps';
 import { TextGrid } from '@/libs/components/TextGrid';
+import { VisibilityContext } from '@/libs/components/VisibilityContext';
 import { KeyInfoPosition } from '@/pixel/240x320/ui/constants';
 
-export function TextGridTape() {
+export function TextGridCommon() {
     return (
         <TextGrid
             position={KeyInfoPosition}
             rows={[
-                '&icon::play::filled Save &empty',
-                '&icon::arrowLeft::filled Home &icon::arrowRight::filled',
+                'Page1 Page2 ^...',
+                'Seq. Menu &icon::play::filled',
             ]}
         >
-            <Keymaps
-                keys={[
-                    { key: 'w', action: 'setView:SaveTape' },
-                    { key: 's', action: 'setView:Home' },
-                ]}
-            />
+            <VisibilityContext index={254} condition="SHOW_WHEN" value={1} />
+            <Keymaps keys={[{ key: 'e', action: 'contextToggle:254:1:0' }]} />
         </TextGrid>
     );
 }
