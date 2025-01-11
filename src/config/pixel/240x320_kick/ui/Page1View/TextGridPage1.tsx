@@ -8,7 +8,7 @@ import { TextGrid } from '@/libs/components/TextGrid';
 import { VisibilityContext } from '@/libs/components/VisibilityContext';
 import { KeyInfoPosition } from '@/pixel/240x320_kick/ui/constants';
 
-export function TextGridMain() {
+export function TextGridPage1() {
     return (
         <TextGrid
             position={KeyInfoPosition}
@@ -17,10 +17,12 @@ export function TextGridMain() {
             <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />
             <Keymaps
                 keys={[
-                    { key: 'w', action: 'setView:SaveTape' },
-                    { key: 's', action: 'setView:Home' },
+                    { key: 'q', action: 'setView:Page1' },
+                    { key: 'w', action: 'setView:Distortion' },
                     { key: 'e', action: 'contextToggle:254:1:0' },
 
+                    { key: 'a', action: 'setView:Waveform' },
+                    { key: 's', action: 'setView:Frequency' },
                     { key: 'd', action: 'noteOn:Drum23:60' },
                 ]}
             />
