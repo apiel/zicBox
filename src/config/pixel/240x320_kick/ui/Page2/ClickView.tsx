@@ -2,6 +2,7 @@ import * as React from '@/libs/react';
 
 import { Value } from '@/libs/components/Value';
 import { View } from '@/libs/components/View';
+import { Common } from '../Common';
 import {
     bottomLeft,
     bottomRight,
@@ -12,7 +13,6 @@ import {
     topLeft,
     topRight,
 } from '../constantsValue';
-import { TextGridCommon } from '../TextGridCommon';
 import { TextGridPage2 } from './TextGridPage2';
 
 export type Props = {
@@ -43,7 +43,7 @@ export function ClickView({ name }: Props) {
                 {...quaternary}
             />
             <TextGridPage2 />
-            <TextGridCommon selected={1} />
+            <Common selected={1} />
         </View>
     );
 }

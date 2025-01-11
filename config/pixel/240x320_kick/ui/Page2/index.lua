@@ -5,12 +5,12 @@ local ____DrumEnvelop = require("config.libs.components.DrumEnvelop")
 local DrumEnvelop = ____DrumEnvelop.DrumEnvelop
 local ____View = require("config.libs.components.View")
 local View = ____View.View
+local ____Common = require("config.pixel.240x320_kick.ui.Common")
+local Common = ____Common.Common
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
 local W3_4 = ____constants.W3_4
 local ____constantsValue = require("config.pixel.240x320_kick.ui.constantsValue")
 local height = ____constantsValue.height
-local ____TextGridCommon = require("config.pixel.240x320_kick.ui.TextGridCommon")
-local TextGridCommon = ____TextGridCommon.TextGridCommon
 local ____TextGridPage2 = require("config.pixel.240x320_kick.ui.Page2.TextGridPage2")
 local TextGridPage2 = ____TextGridPage2.TextGridPage2
 function ____exports.Page2View(____bindingPattern0)
@@ -29,7 +29,7 @@ function ____exports.Page2View(____bindingPattern0)
             encoder_modulation = 2
         }),
         React.createElement(TextGridPage2, nil),
-        React.createElement(TextGridCommon, {selected = 1})
+        React.createElement(Common, {selected = 1})
     )
 end
 return ____exports

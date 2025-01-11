@@ -6,6 +6,8 @@ local ____Value = require("config.libs.components.Value")
 local Value = ____Value.Value
 local ____View = require("config.libs.components.View")
 local View = ____View.View
+local ____Common = require("config.pixel.240x320_kick.ui.Common")
+local Common = ____Common.Common
 local ____constantsValue = require("config.pixel.240x320_kick.ui.constantsValue")
 local bottomLeft = ____constantsValue.bottomLeft
 local bottomRight = ____constantsValue.bottomRight
@@ -15,8 +17,6 @@ local secondary = ____constantsValue.secondary
 local tertiary = ____constantsValue.tertiary
 local topLeft = ____constantsValue.topLeft
 local topRight = ____constantsValue.topRight
-local ____TextGridCommon = require("config.pixel.240x320_kick.ui.TextGridCommon")
-local TextGridCommon = ____TextGridCommon.TextGridCommon
 local ____TextGridPage2 = require("config.pixel.240x320_kick.ui.Page2.TextGridPage2")
 local TextGridPage2 = ____TextGridPage2.TextGridPage2
 function ____exports.ClickView(____bindingPattern0)
@@ -42,7 +42,7 @@ function ____exports.ClickView(____bindingPattern0)
             __TS__ObjectAssign({value = "Drum23 CLICK_RESONANCE", position = bottomRight, encoder_id = 3}, quaternary)
         ),
         React.createElement(TextGridPage2, nil),
-        React.createElement(TextGridCommon, {selected = 1})
+        React.createElement(Common, {selected = 1})
     )
 end
 return ____exports
