@@ -8,6 +8,7 @@ import { FrequencyView } from './Page1/FrequencyView';
 import { WaveformView } from './Page1/WaveformView';
 import { Page2View } from './Page2';
 import { ClickView } from './Page2/ClickView';
+import { SeqView } from './Seq';
 
 setWindowPosition(400, 500);
 setScreenSize(ScreenWidth, ScreenHeight);
@@ -24,3 +25,5 @@ applyZic(<FrequencyView name="Frequency" />);
 
 applyZic(<Page2View name="Page2" />);
 applyZic(<ClickView name="Click" />);
+
+applyZic(<SeqView name="Sequencer" />);

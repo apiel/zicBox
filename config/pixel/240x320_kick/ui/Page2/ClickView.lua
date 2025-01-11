@@ -42,7 +42,7 @@ function ____exports.ClickView(____bindingPattern0)
             __TS__ObjectAssign({value = "Drum23 CLICK_RESONANCE", position = bottomRight, encoder_id = 3}, quaternary)
         ),
         React.createElement(TextGridPage2, nil),
-        React.createElement(TextGridCommon, {selected = 0})
+        React.createElement(TextGridCommon, {selected = 1})
     )
 end
 return ____exports

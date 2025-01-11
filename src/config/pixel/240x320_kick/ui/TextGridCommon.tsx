@@ -23,7 +23,7 @@ export function TextGridCommon({ selected }: { selected: number }) {
                 { key: 'q', action: 'setView:Page1' },
                 { key: 'w', action: 'setView:Page2' },
                 { key: 'e', action: 'contextToggle:254:1:0' },
-                { key: 'a', action: 'setView:Seq' },
+                { key: 'a', action: 'setView:Sequencer' },
                 { key: 's', action: 'setView:Menu' },
                 { key: 'd', action: 'playPause' },
             ]} />

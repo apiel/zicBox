@@ -25,7 +25,7 @@ export function Page2View({ name }: Props) {
              />
 
             <TextGridPage2 />
-            <TextGridCommon selected={0} />
+            <TextGridCommon selected={1} />
         </View>
     );
 }
