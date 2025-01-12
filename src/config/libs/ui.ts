@@ -76,3 +76,17 @@ export function setWindowPosition(x: number, y: number) {
 export function setScreenSize(width: number, height: number) {
     applyZic([{ SCREEN: `${width} ${height}` }]);
 }
+
+
+/**
+ * Returns a string representing a color in hexadecimal notation.
+ *
+ * @param r number The red component of the color, between 0 and 255.
+ * @param g number The green component of the color, between 0 and 255.
+ * @param b number The blue component of the color, between 0 and 255.
+ *
+ * @returns string A string in the format `#RRGGBB`, where `RR`, `GG`, and `BB` are the red, green, and blue components of the color, respectively, in hexadecimal notation.
+ */
+export function rgb(r: number, g: number, b: number) {
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+}
