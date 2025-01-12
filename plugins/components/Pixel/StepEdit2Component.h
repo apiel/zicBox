@@ -115,11 +115,25 @@ public:
             draw.filledRect(relativePosition, size, { bgColor });
 
             int y = relativePosition.y;
+            int x = relativePosition.x + 1;
 
-            draw.filledRect({ relativePosition.x + 12, y + 2 }, { 50, 4 }, { barBackground });
-            draw.filledRect({ relativePosition.x + 12, y + 2 }, { (int)(50 * step->velocity), 4 }, { bar });
+            if (isActive) {
+                std::vector<Point> points = {
+                    { x, y },
+                    { x + 6, (int)(y + 3) },
+                    { x, y + 6 },
+                    { x, y },
+                };
+                draw.filledPolygon(points, { selection });
+            } else {
+                draw.filledRect({ x, y }, { 8, 8 }, { bgColor });
+            }
 
-            int x = relativePosition.x + 70;
+            x = relativePosition.x + 12;
+            draw.filledRect({ x, y + 2 }, { 50, 4 }, { barBackground });
+            draw.filledRect({ x, y + 2 }, { (int)(50 * step->velocity), 4 }, { bar });
+
+            x = relativePosition.x + 70;
             if (step->enabled) {
                 renderNote(x, y);
             } else {
