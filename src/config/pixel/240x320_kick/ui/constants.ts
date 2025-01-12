@@ -16,7 +16,6 @@ export const W7_8 = W1_8 * 7;
 export const W8_8 = W1_8 * 8;
 
 export const KeyInfoPosition = [0, 296, ScreenWidth];
-export const ProgressPosition = [0, 285, ScreenWidth, 5]
 
 export const PrimaryBar = '#377275';
 export const SecondaryBar = '#b54f5e';

@@ -15,7 +15,6 @@ ____exports.W6_8 = ____exports.W1_8 * 6
 ____exports.W7_8 = ____exports.W1_8 * 7
 ____exports.W8_8 = ____exports.W1_8 * 8
 ____exports.KeyInfoPosition = {0, 296, ____exports.ScreenWidth}
-____exports.ProgressPosition = {0, 285, ____exports.ScreenWidth, 5}
 ____exports.PrimaryBar = "#377275"
 ____exports.SecondaryBar = "#b54f5e"
 ____exports.TertiaryBar = "#368a36"
