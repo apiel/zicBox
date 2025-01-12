@@ -6,6 +6,8 @@ local ____StepEdit2 = require("config.libs.components.StepEdit2")
 local StepEdit2 = ____StepEdit2.StepEdit2
 local ____View = require("config.libs.components.View")
 local View = ____View.View
+local ____ui = require("config.libs.ui")
+local rgb = ____ui.rgb
 local ____Common = require("config.pixel.240x320_kick.ui.components.Common")
 local Common = ____Common.Common
 local ____TextGridSeq = require("config.pixel.240x320_kick.ui.Seq.TextGridSeq")
@@ -23,7 +25,8 @@ function ____exports.SeqView(____bindingPattern0)
                 {
                     position = {0, i * 8, 0, 0},
                     data = "Sequencer " .. tostring(i),
-                    group = i
+                    group = i,
+                    playing_color = rgb(35, 161, 35)
                 }
             ) end
         ),
