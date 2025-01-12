@@ -19,6 +19,12 @@ export function SeqView({ name }: Props) {
                     data={`Sequencer ${i}`}
                     group={i}
                     playing_color={rgb(35, 161, 35)}
+                    // bar_color={
+                    //     // i % 8 == 0 || i % 8 == 1 || i % 8 == 2 || i % 8 == 3
+                    //     i % 4 == 0
+                    //         ? rgb(104, 149, 160)
+                    //         : rgb(197, 216, 178)
+                    // }
                 />
             ))}
 
