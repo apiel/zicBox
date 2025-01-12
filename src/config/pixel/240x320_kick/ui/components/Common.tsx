@@ -2,6 +2,7 @@ import * as React from '@/libs/react';
 
 import { SeqProgressBar } from '@/libs/components/SeqProgressBar';
 import { Spectrogram } from '@/libs/components/Spectrogram';
+import { rgb } from '@/libs/ui';
 import { ScreenWidth } from '../constants';
 import { TextGridCommon } from './TextGridCommon';
 
@@ -12,14 +13,14 @@ export function Common({ selected }: { selected: number }) {
                 position={[0, 245, ScreenWidth, 35]}
                 data="Spectrogram BUFFER"
                 text="Pixel"
-                wave_color="#23a123"
+                wave_color={rgb(57, 74, 100)}
                 raw_buffer
             />
             <SeqProgressBar
                 position={[0, 285, ScreenWidth, 5]}
                 seq_plugin="Sequencer 0"
-                active_color="#23a123"
-                selection_color="#23a123"
+                active_color={rgb(35, 161, 35)}
+                selection_color={rgb(35, 161, 35)}
                 volume_plugin="Volume VOLUME"
             />
             <TextGridCommon selected={selected} />

@@ -1,6 +1,8 @@
 local ____lualib = require("lualib_bundle")
 local __TS__ArrayIsArray = ____lualib.__TS__ArrayIsArray
 local __TS__ArrayJoin = ____lualib.__TS__ArrayJoin
+local __TS__NumberToString = ____lualib.__TS__NumberToString
+local __TS__StringPadStart = ____lualib.__TS__StringPadStart
 local ____exports = {}
 local ____core = require("config.libs.core")
 local applyZic = ____core.applyZic
@@ -73,5 +75,26 @@ end
 -- @param height number The height of the screen
 function ____exports.setScreenSize(width, height)
     applyZic({{SCREEN = (tostring(width) .. " ") .. tostring(height)}})
+end
+--- Returns a string representing a color in hexadecimal notation.
+-- 
+-- @param r number The red component of the color, between 0 and 255.
+-- @param g number The green component of the color, between 0 and 255.
+-- @param b number The blue component of the color, between 0 and 255.
+-- @returns string A string in the format `#RRGGBB`, where `RR`, `GG`, and `BB` are the red, green, and blue components of the color, respectively, in hexadecimal notation.
+function ____exports.rgb(r, g, b)
+    return (("#" .. __TS__StringPadStart(
+        __TS__NumberToString(r, 16),
+        2,
+        "0"
+    )) .. __TS__StringPadStart(
+        __TS__NumberToString(g, 16),
+        2,
+        "0"
+    )) .. __TS__StringPadStart(
+        __TS__NumberToString(b, 16),
+        2,
+        "0"
+    )
 end
 return ____exports
