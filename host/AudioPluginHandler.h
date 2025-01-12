@@ -241,7 +241,7 @@ public:
         // Create tracks
         // Sorting the tracks would not be mandatory if plugins are instanciated in the right order in the config file
         // However, it is very easy to not think abut it, so introducing this sorting system can save from trouble (even if it introduce complexity)
-        // For example, initializing the tempo plugin at the begining of the file, could just lead to not having sound 
+        // For example, initializing the tempo plugin at the begining of the file, could just lead to not having sound
         // at all because track 0 would design at first position but also be used for audio output, meaning the that the
         // buffer would be cleaned up even before the audio output being consumed...
         std::vector<Track*> tracks = sortTracksByDependencies(createTracks(buffer, masterCv));
@@ -249,7 +249,9 @@ public:
 
         // Init tracks
         for (Track* track : tracks) {
-            track->init(tracks);
+            // For the moment, let's assume that last track is always master track
+            bool isMaster = track->id == tracks.back()->id;
+            track->init(tracks, isMaster);
         }
 
         auto ms = std::chrono::milliseconds(10);
