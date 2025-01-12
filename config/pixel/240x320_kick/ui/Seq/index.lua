@@ -2,6 +2,8 @@ local ____lualib = require("lualib_bundle")
 local __TS__ArrayFrom = ____lualib.__TS__ArrayFrom
 local ____exports = {}
 local React = require("config.libs.react")
+local ____HiddenValue = require("config.libs.components.HiddenValue")
+local HiddenValue = ____HiddenValue.HiddenValue
 local ____StepEdit2 = require("config.libs.components.StepEdit2")
 local StepEdit2 = ____StepEdit2.StepEdit2
 local ____View = require("config.libs.components.View")
@@ -21,6 +23,7 @@ function ____exports.SeqView(____bindingPattern0)
     return React.createElement(
         View,
         {name = name},
+        React.createElement(HiddenValue, {encoder_id = 0, inverted = true}),
         __TS__ArrayFrom(
             {length = 32},
             function(____, _, i)
@@ -34,7 +37,7 @@ function ____exports.SeqView(____bindingPattern0)
                         group = i,
                         playing_color = rgb(35, 161, 35),
                         background_color = (i % 8 == 0 or i % 8 == 1 or i % 8 == 2 or i % 8 == 3) and rgb(42, 54, 56) or "background",
-                        SELECTED_COLOR = rgb(76, 94, 97)
+                        selected_color = rgb(76, 94, 97)
                     }
                 )
             end

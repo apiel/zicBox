@@ -1,5 +1,6 @@
 import * as React from '@/libs/react';
 
+import { HiddenValue } from '@/libs/components/HiddenValue';
 import { StepEdit2 } from '@/libs/components/StepEdit2';
 import { View } from '@/libs/components/View';
 import { rgb } from '@/libs/ui';
@@ -15,6 +16,8 @@ export function SeqView({ name }: Props) {
     let y = 0;
     return (
         <View name={name}>
+            <HiddenValue encoder_id={0} inverted />
+
             {Array.from({ length: 32 }, (_, i) => {
                 const yy = y;
                 y += 8 + (i % 4 == 3 ? 3 : 0);
@@ -29,7 +32,7 @@ export function SeqView({ name }: Props) {
                                 ? rgb(42, 54, 56)
                                 : "background"
                         }
-                        SELECTED_COLOR={rgb(76, 94, 97)}
+                        selected_color={rgb(76, 94, 97)}
                     />
                 );
             })}
