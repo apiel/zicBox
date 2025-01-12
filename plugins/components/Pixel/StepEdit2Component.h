@@ -40,6 +40,8 @@ protected:
     Color bar;
     Color textMotion1;
     Color textMotion2;
+    Color playingColor;
+    // Color playingBgColor;
 
     uint8_t stepIndex = -1;
 
@@ -52,7 +54,7 @@ protected:
 
 public:
     StepEdit2Component(ComponentInterface::Props props)
-        : GroupColorComponent(props, {  })
+        : GroupColorComponent(props, {})
         , bgColor(styles.colors.background)
         , selection(styles.colors.primary)
         , noteColor(styles.colors.primary)
@@ -63,6 +65,7 @@ public:
         , bar(styles.colors.tertiary)
         , textMotion1(styles.colors.secondary)
         , textMotion2(styles.colors.quaternary)
+        , playingColor(styles.colors.tertiary)
         , keypadLayout(this, [&](std::string action) {
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
             if (action == ".toggle") {
@@ -147,9 +150,9 @@ public:
             }
 
             x = relativePosition.x + 233;
-            draw.filledRect({ x, y + 1 }, { 6, 6 }, { barBackground });
+            draw.filledRect({ x, y + 1 }, { 6, 6 }, { bgColor });
             if ((seqPlayingPtr == NULL || seqPlaying) && notePlaying) {
-                draw.filledRect({ x, y + 1 }, { 6, 6 }, { bar });
+                draw.filledRect({ x, y + 1 }, { 6, 6 }, { playingColor });
             }
         }
     }
@@ -231,6 +234,12 @@ public:
         /*md - `BACKGROUND_COLOR: color` is the background color of the component. */
         if (strcmp(key, "BACKGROUND_COLOR") == 0) {
             bgColor = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `PLAYING_COLOR: color` is the color of actual playing step. */
+        if (strcmp(key, "PLAYING_COLOR") == 0) {
+            playingColor = draw.getColor(value);
             return true;
         }
 
