@@ -153,29 +153,31 @@ public:
         int stepsW = stepCount * (stepW + 2 + 0.5); // 2 / 4 adding 2 pixel every 4 steps
         int witdhLeft = size.w - stepsW - 5;
 
-        int nameX = x;
-        int nameW = witdhLeft;
+        if (name.length() > 0) {
+            int nameX = x;
+            int nameW = witdhLeft;
 
-        if (items.size() > 0) {
-            renderArrow(nameX);
-            nameX += 8;
-            nameW -= 8;
-        }
+            if (items.size() > 0) {
+                renderArrow(nameX);
+                nameX += 8;
+                nameW -= 8;
+            }
 
-        bool showVolume = seqStatus != NULL && seqStatus->get() == 1 && valVolume != NULL;
-        draw.filledRect({ nameX, relativePosition.y }, { nameW, size.h }, { showVolume ? darken(nameColor, 0.5) : foreground });
-        if (showVolume) {
-            draw.filledRect({ nameX, relativePosition.y }, { (int)(nameW * valVolume->pct()), size.h }, { nameColor });
-        }
+            bool showVolume = seqStatus != NULL && seqStatus->get() == 1 && valVolume != NULL;
+            draw.filledRect({ nameX, relativePosition.y }, { nameW, size.h }, { showVolume ? darken(nameColor, 0.5) : foreground });
+            if (showVolume) {
+                draw.filledRect({ nameX, relativePosition.y }, { (int)(nameW * valVolume->pct()), size.h }, { nameColor });
+            }
 
-        int textY = (size.h - 8) * 0.5 + relativePosition.y;
-        if (valName != NULL) {
-            draw.text({ nameX + 2, textY }, valName->string(), 8, { textColor, .maxWidth = (nameW - 2) });
-        } else if (name.length() > 0) {
-            draw.text({ nameX + 2, textY }, name, 8, { textColor, .maxWidth = (nameW - 2) });
-        }
-        if (isActive && view->contextVar[selectedItemBank] == 0) {
-            draw.rect({ nameX, relativePosition.y }, { nameW, size.h - 1 }, { selectionColor });
+            int textY = (size.h - 8) * 0.5 + relativePosition.y;
+            if (valName != NULL) {
+                draw.text({ nameX + 2, textY }, valName->string(), 8, { textColor, .maxWidth = (nameW - 2) });
+            } else if (name.length() > 0) {
+                draw.text({ nameX + 2, textY }, name, 8, { textColor, .maxWidth = (nameW - 2) });
+            }
+            if (isActive && view->contextVar[selectedItemBank] == 0) {
+                draw.rect({ nameX, relativePosition.y }, { nameW, size.h - 1 }, { selectionColor });
+            }
         }
 
         return witdhLeft + 4;
