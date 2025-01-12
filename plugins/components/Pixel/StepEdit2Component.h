@@ -6,7 +6,6 @@
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
-#include "utils/GroupColorComponent.h"
 
 #include <stdexcept>
 
@@ -18,8 +17,10 @@
 StepEdit component is used to edit a step value.
 */
 
-class StepEdit2Component : public GroupColorComponent {
+class StepEdit2Component : public Component {
 protected:
+    bool isActive = true;
+
     AudioPlugin* plugin = NULL;
     Step* step;
     uint8_t* stepCounter = NULL;
@@ -45,16 +46,13 @@ protected:
 
     uint8_t stepIndex = -1;
 
-    bool selected = false;
-    int16_t groupRange[2] = { -1, -1 };
-
-    uint8_t encoderId1 = -1;
-    uint8_t encoderId2 = -1;
-    uint8_t encoderId3 = -1;
+    uint8_t encoderId1 = 1;
+    uint8_t encoderId2 = 2;
+    uint8_t encoderId3 = 3;
 
 public:
     StepEdit2Component(ComponentInterface::Props props)
-        : GroupColorComponent(props, {})
+        : Component(props)
         , bgColor(styles.colors.background)
         , selection(lighten(styles.colors.background, 0.5))
         , noteColor(styles.colors.primary)
@@ -79,8 +77,6 @@ public:
             return func;
         })
     {
-        updateColors();
-
         jobRendering = [this](unsigned long now) {
             if (seqPlayingPtr != NULL && *seqPlayingPtr != seqPlaying) {
                 seqPlaying = *seqPlayingPtr;
@@ -189,6 +185,13 @@ public:
         //         renderNext();
         //     }
         // }
+
+        if (isActive) {
+            // if (id == encoderId1) {
+            //     printf("[StepEditComponent] onEncoder: %d %d group %d [%d]\n", id, direction, group + direction, group);
+            //     view->setGroup(group + direction);
+            // }
+        }
     }
 
     void onKey(uint16_t id, int key, int8_t state, unsigned long now)
@@ -198,17 +201,22 @@ public:
         }
     }
 
+    void onGroupChanged(int8_t index) override
+    {
+        bool shouldActivate = false;
+        if (group == index || group == -1) {
+            shouldActivate = true;
+        }
+        if (shouldActivate != isActive) {
+            isActive = shouldActivate;
+            renderNext();
+        }
+    }
+
     /*md **Config**: */
     bool config(char* key, char* value)
     {
         if (keypadLayout.config(key, value)) {
-            return true;
-        }
-
-        /*md - `GROUP_RANGE: index1 index2` is the index of the first and last group for selection.*/
-        if (strcmp(key, "GROUP_RANGE") == 0) {
-            groupRange[0] = atoi(strtok(value, " "));
-            groupRange[1] = atoi(strtok(NULL, " "));
             return true;
         }
 
@@ -289,7 +297,7 @@ public:
             return true;
         }
 
-        return GroupColorComponent::config(key, value);
+        return Component::config(key, value);
     }
 };
 

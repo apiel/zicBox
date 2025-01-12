@@ -16,6 +16,7 @@ protected:
     int8_t encoderId = -1;
 
     ValueInterface* value = NULL;
+    bool inverted = false;
 
     KeypadLayout keypadLayout;
 
@@ -50,6 +51,12 @@ public:
             return true;
         }
 
+        /*md - `INVERTED: true` is used to invert the encoder direction */
+        if (strcmp(key, "INVERTED") == 0) {
+            inverted = strcmp(params, "true") == 0;
+            return true;
+        }
+
         return false;
     }
 
@@ -62,10 +69,13 @@ public:
     void onEncoder(int id, int8_t direction) override
     {
         if (id == encoderId) {
+            if (inverted) {
+                direction = -direction;
+            }
             if (value) {
                 value->increment(direction);
             } else { // By default it will change group
-                view->setGroup(currentGroup + direction);
+                view->setGroup(currentGroup + (direction > 0 ? 1 : -1));
             }
         }
     }
