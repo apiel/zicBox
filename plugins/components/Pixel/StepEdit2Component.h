@@ -112,44 +112,35 @@ public:
             draw.filledRect({ relativePosition.x + 2, y + 2 }, { 50, 4 }, { barBackground.color });
             draw.filledRect({ relativePosition.x + 2, y + 2 }, { (int)(50 * step->velocity), 4 }, { bar.color });
 
+            int x = relativePosition.x + 60;
             if (step->enabled) {
-                renderNote(relativePosition.x + 54, y);
+                renderNote(x, y);
             } else {
-                draw.text({ relativePosition.x + 54, y }, "---", 8, { text.color });
+                draw.text({ x, y }, "---", 8, { text.color });
             }
 
-            // draw.text({ relativePosition.x + 32, y }, stepConditions[step->condition].name, 8, { text2.color });
+            // TODO if 0 make infinit sign
+            x = relativePosition.x + 100;
+            if (!step->len) {
+                draw.text({ x, y }, "O", 8, { text2.color });
+                draw.text({ x + 4, y }, "O", 8, { text2.color });
+            } else {
+                draw.text({ x, y }, std::to_string(step->len) + "/32", 8, { text2.color });
+            }
 
-            // std::string motionSteps = stepMotions[step->motion].name;
-            // int x = relativePosition.x + 32;
-            // if (motionSteps == "---") {
-            //     draw.text({ x, y + 8 }, motionSteps, 8, { text2.color });
-            // } else {
-            //     char* motionStep = strtok((char*)motionSteps.c_str(), ",");
-            //     for (int i = 0; motionStep != NULL; i++) {
-            //         x = draw.text({ x, y + 8 }, motionStep, 8, { i % 2 == 0 ? textMotion1.color : textMotion2.color });
-            //         motionStep = strtok(NULL, ",");
-            //     }
-            // }
+            draw.text({ relativePosition.x + 150, y }, stepConditions[step->condition].name, 8, { text2.color });
 
-            // float centerX = relativePosition.x + size.w * 0.5;
-
-            // int barWidth = size.w * 0.40;
-            // int barX = (int)(centerX - barWidth * 0.5);
-            // draw.filledRect({ barX, y }, { barWidth, 3 }, { barBackground.color });
-
-            // if (step->velocity) {
-            //     draw.filledRect({ barX, y }, { (int)(barWidth * step->velocity), 3 }, { bar.color });
-            // }
-
-            // // TODO if 0 make infinit sign
-            // if (!step->len) {
-            //     // draw.textRight({ relativePosition.x + size.w - 4, y + 6 }, "OO", 8, { text2.color });
-            //     draw.textRight({ relativePosition.x + size.w - 4, y + 6 }, "O", 8, { text2.color });
-            //     draw.textRight({ relativePosition.x + size.w - 4 - 5, y + 6 }, "O", 8, { text2.color });
-            // } else {
-            //     draw.textRight({ relativePosition.x + size.w - 4, y + 6 }, std::to_string(step->len) + "/32", 8, { text2.color });
-            // }
+            std::string motionSteps = stepMotions[step->motion].name;
+            x = relativePosition.x + 190;
+            if (motionSteps == "---") {
+                draw.text({ x, y }, motionSteps, 8, { text2.color });
+            } else {
+                char* motionStep = strtok((char*)motionSteps.c_str(), ",");
+                for (int i = 0; motionStep != NULL; i++) {
+                    x = draw.text({ x, y }, motionStep, 8, { i % 2 == 0 ? textMotion1.color : textMotion2.color });
+                    motionStep = strtok(NULL, ",");
+                }
+            }
 
             // if ((seqPlayingPtr == NULL || seqPlaying) && notePlaying) {
             //     // draw.filledRect({ relativePosition.x, relativePosition.y + size.h - 2 }, { size.w, 2 }, { bar.color });
