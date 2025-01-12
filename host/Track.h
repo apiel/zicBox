@@ -54,11 +54,13 @@ public:
         return false;
     }
 
-    void init(std::vector<Track*> tracks)
+    void init(std::vector<Track*> tracks, bool isMaster)
     {
         // Only start a thread if track doesn't have any dependency on another tracks
         // All mixing and master track will be done in the main loop
-        if (!hasDependencies()) {
+        //
+        // Master track should never start in a thread, else it would cause some glitching noise in audio output
+        if (!hasDependencies() && !isMaster) {
             logDebug(">>> Track %d has no dependency, start a thread", id);
             // There is no dependency, start a thread
             thread = std::thread([this] { loop(); });
