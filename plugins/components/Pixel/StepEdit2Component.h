@@ -33,6 +33,7 @@ protected:
     Color bgColor;
     Color selection;
     ToggleColor noteColor;
+    ToggleColor note2Color;
     ToggleColor text;
     ToggleColor text2;
     ToggleColor barBackground;
@@ -51,10 +52,11 @@ protected:
 
 public:
     StepEdit2Component(ComponentInterface::Props props)
-        : GroupColorComponent(props, { { "NOTE_COLOR", &noteColor }, { "TEXT_COLOR", &text }, { "TEXT2_COLOR", &text2 }, { "BAR_BACKGROUND_COLOR", &barBackground }, { "BAR_COLOR", &bar }, { "TEXT_MOTION1_COLOR", &textMotion1 }, { "TEXT_MOTION2_COLOR", &textMotion2 } })
+        : GroupColorComponent(props, { { "NOTE_COLOR", &noteColor }, { "NOTE2_COLOR", &note2Color }, { "TEXT_COLOR", &text }, { "TEXT2_COLOR", &text2 }, { "BAR_BACKGROUND_COLOR", &barBackground }, { "BAR_COLOR", &bar }, { "TEXT_MOTION1_COLOR", &textMotion1 }, { "TEXT_MOTION2_COLOR", &textMotion2 } })
         , bgColor(styles.colors.background)
         , selection(styles.colors.primary)
         , noteColor(styles.colors.primary, inactiveColorRatio)
+        , note2Color(styles.colors.white, inactiveColorRatio)
         , text(styles.colors.text, inactiveColorRatio)
         , text2(darken(styles.colors.text, 0.3), inactiveColorRatio)
         , barBackground(darken(styles.colors.tertiary, 0.5), inactiveColorRatio)
@@ -101,7 +103,7 @@ public:
         const char noteLetter[2] = { note[0], '\0' };
         const char* noteSuffix = note + 1;
         x = draw.text({ x + 2, y }, noteLetter, 8, { noteColor.color });
-        draw.text({ x - 2, y }, noteSuffix, 8, { text.color });
+        draw.text({ x - 2, y }, noteSuffix, 8, { note2Color.color });
     }
 
     void render() override
@@ -124,10 +126,10 @@ public:
             // TODO if 0 make infinit sign
             x = relativePosition.x + 100;
             if (!step->len) {
-                draw.text({ x, y }, "O", 8, { text2.color });
-                draw.text({ x + 4, y }, "O", 8, { text2.color });
+                draw.text({ x, y }, "O", 8, { text.color });
+                draw.text({ x + 4, y }, "O", 8, { text.color });
             } else {
-                draw.text({ x, y }, std::to_string(step->len) + "/32", 8, { text2.color });
+                draw.text({ x, y }, std::to_string(step->len) + "/32", 8, { text.color });
             }
 
             draw.text({ relativePosition.x + 150, y }, stepConditions[step->condition].name, 8, { text2.color });
@@ -247,6 +249,7 @@ public:
         }
 
         /*md - `NOTE_COLOR: color` is the color of the note. */
+        /*md - `NOTE2_COLOR: color` is the color of the note. */
         /*md - `TEXT_COLOR: color` is the color of the text. */
         /*md - `BAR_COLOR: color` is the color of the velocity bar. */
         /*md - `BAR_BACKGROUND_COLOR: color` is the color of the velocity bar background. */
