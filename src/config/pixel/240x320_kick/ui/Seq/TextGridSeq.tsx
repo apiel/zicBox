@@ -14,11 +14,11 @@ export function TextGridSeq() {
             <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />
             <Keymaps
                 keys={[
-                    // { key: 'q', action: 'setView:Page2' },
+                    { key: 'q', action: 'incGroup:-1' },
                     // { key: 'w', action: 'setView:Click' },
                     { key: 'e', action: 'contextToggle:254:1:0' },
 
-                    // { key: 'a', action: 'setView:Waveform' },
+                    { key: 'a', action: 'incGroup:+1' },
                     { key: 's', action: 'playPause' },
                     { key: 'd', action: 'noteOn:Drum23:60' },
                 ]}
