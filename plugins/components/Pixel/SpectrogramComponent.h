@@ -1,9 +1,9 @@
 #ifndef _UI_PIXEL_COMPONENT_SPECTROGRAM_H_
 #define _UI_PIXEL_COMPONENT_SPECTROGRAM_H_
 
+#include "plugins/audio/utils/utils.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
-#include "plugins/audio/utils/utils.h"
 
 #include <cmath>
 #include <string>
@@ -99,6 +99,9 @@ public:
         , waveOut(darken(styles.colors.primary, 0.4))
         , textColor(lighten(styles.colors.background, 0.9))
     {
+        // waveIn = rgba(35, 73, 117, 0.5);
+        // waveMiddle = darken(waveIn, 0.2);
+        // waveOut = darken(waveIn, 0.4);
         jobRendering = [this](unsigned long now) {
             renderNext();
         };

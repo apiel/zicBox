@@ -10,6 +10,14 @@ Color hex2rgb(char* hex)
 
     hex++;
     unsigned int color = strtol(hex, NULL, 16);
+    if (strlen(hex) == 8) { // rgba
+        return (Color) {
+            .r = (uint8_t)((color & 0xFF000000) >> 24),
+            .g = (uint8_t)((color & 0x00FF0000) >> 16),
+            .b = (uint8_t)((color & 0x0000FF00) >> 8),
+            .a = (uint8_t)(color & 0x000000FF),
+        };
+    }
     return Color({
         .r = (uint8_t)((color & 0x00FF0000) >> 16),
         .g = (uint8_t)((color & 0x0000FF00) >> 8),
