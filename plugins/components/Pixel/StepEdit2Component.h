@@ -78,23 +78,23 @@ public:
     {
         updateColors();
 
-        // jobRendering = [this](unsigned long now) {
-        //     if (seqPlayingPtr != NULL && *seqPlayingPtr != seqPlaying) {
-        //         seqPlaying = *seqPlayingPtr;
-        //         renderNext();
-        //     }
-        //     if (seqPlayingPtr == NULL || seqPlaying) {
-        //         if (stepIndex != *stepCounter) {
-        //             if (notePlaying) {
-        //                 notePlaying = false;
-        //                 renderNext();
-        //             }
-        //         } else if (!notePlaying) {
-        //             notePlaying = true;
-        //             renderNext();
-        //         }
-        //     }
-        // };
+        jobRendering = [this](unsigned long now) {
+            if (seqPlayingPtr != NULL && *seqPlayingPtr != seqPlaying) {
+                seqPlaying = *seqPlayingPtr;
+                renderNext();
+            }
+            if (stepCounter != NULL && seqPlaying) {
+                if (stepIndex != *stepCounter) {
+                    if (notePlaying) {
+                        notePlaying = false;
+                        renderNext();
+                    }
+                } else if (!notePlaying) {
+                    notePlaying = true;
+                    renderNext();
+                }
+            }
+        };
     }
 
     void renderNote(int x, int y)
@@ -146,11 +146,11 @@ public:
                 }
             }
 
-            // if ((seqPlayingPtr == NULL || seqPlaying) && notePlaying) {
-            //     // draw.filledRect({ relativePosition.x, relativePosition.y + size.h - 2 }, { size.w, 2 }, { bar.color });
-            //     // draw.filledRect({ relativePosition.x + (int)(size.w * 0.25), relativePosition.y + size.h - 2 }, { (int)(size.w * 0.5), 2 }, { bar.color });
-            //     draw.filledRect({ relativePosition.x + 2, relativePosition.y + size.h - 4 }, { 16, 4 }, { bar.color });
-            // }
+            x = relativePosition.x + 230;
+            draw.filledRect({ x, y + 1 }, { 6, 6 }, { barBackground.color });
+            if ((seqPlayingPtr == NULL || seqPlaying) && notePlaying) {
+                draw.filledRect({ x, y + 1 }, { 6, 6 }, { bar.color });
+            }
         }
     }
 
@@ -207,30 +207,16 @@ public:
             return true;
         }
 
-        /*md - `DATA: plugin_name data_id step_index` set plugin target */
+        /*md - `DATA: plugin_name get_step_data_id step_index [sequence_data_id] [counter_data_id]` set plugin target */
         if (strcmp(key, "DATA") == 0) {
             plugin = &getPlugin(strtok(value, " "), track);
-            uint8_t dataId = plugin->getDataId(strtok(NULL, " "));
             stepIndex = atoi(strtok(NULL, " "));
-            step = (Step*)plugin->data(dataId, &stepIndex);
-            return true;
-        }
-
-        /*md - `COUNTER_DATA_ID: data_id` is the data id to show active step. */
-        if (strcmp(key, "COUNTER_DATA_ID") == 0) {
-            if (plugin == NULL) {
-                throw std::runtime_error("StepEdit2Component cannot set COUNTER_DATA_ID: plugin is not set");
-            }
-            stepCounter = (uint8_t*)plugin->data(plugin->getDataId(value));
-            return true;
-        }
-
-        /*md - `SEQUENCE_DATA_ID: data_id` is the data id to show if the sequence is playing. */
-        if (strcmp(key, "SEQUENCE_DATA_ID") == 0) {
-            if (plugin == NULL) {
-                throw std::runtime_error("StepEdit2Component cannot set SEQUENCE_DATA_ID: plugin is not set");
-            }
-            seqPlayingPtr = (bool*)plugin->data(plugin->getDataId(value));
+            char* getStepDataIdStr = strtok(NULL, " ");
+            char* sequenceDataIdStr = strtok(NULL, " ");
+            char* counterDataIdStr = strtok(NULL, " ");
+            step = (Step*)plugin->data(plugin->getDataId(getStepDataIdStr != NULL ? getStepDataIdStr : "GET_STEP"), &stepIndex);
+            seqPlayingPtr = (bool*)plugin->data(plugin->getDataId(sequenceDataIdStr != NULL ? sequenceDataIdStr : "IS_PLAYING"));
+            stepCounter = (uint8_t*)plugin->data(plugin->getDataId(counterDataIdStr != NULL ? counterDataIdStr : "STEP_COUNTER"));
             return true;
         }
 
