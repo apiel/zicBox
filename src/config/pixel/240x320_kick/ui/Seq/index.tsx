@@ -1,6 +1,7 @@
 import * as React from '@/libs/react';
 
 import { HiddenValue } from '@/libs/components/HiddenValue';
+import { Keymaps } from '@/libs/components/Keymaps';
 import { StepEdit2 } from '@/libs/components/StepEdit2';
 import { View } from '@/libs/components/View';
 import { rgb } from '@/libs/ui';
@@ -16,7 +17,16 @@ export function SeqView({ name }: Props) {
     let y = 0;
     return (
         <View name={name}>
-            <HiddenValue encoder_id={0} inverted />
+            <HiddenValue encoder_id={0} inverted>
+                <Keymaps
+                    keys={[
+                        { key: '1', action: 'contextToggleOnRelease:100:1:0' },
+                        { key: '2', action: 'contextToggleOnRelease:100:1:0' },
+                        { key: '3', action: 'contextToggleOnRelease:100:1:0' },
+                        { key: '4', action: 'contextToggleOnRelease:100:1:0' },
+                    ]}
+                />
+            </HiddenValue>
 
             {Array.from({ length: 32 }, (_, i) => {
                 const yy = y;
@@ -30,7 +40,7 @@ export function SeqView({ name }: Props) {
                         background_color={
                             i % 8 == 0 || i % 8 == 1 || i % 8 == 2 || i % 8 == 3
                                 ? rgb(42, 54, 56)
-                                : "background"
+                                : 'background'
                         }
                         selected_color={rgb(76, 94, 97)}
                     />
