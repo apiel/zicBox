@@ -18,7 +18,7 @@ all:
 				StepEditComponent HiddenValueComponent FmAlgoComponent AdsrComponent\
 				TextComponent SeqBarComponent SeqProgressBarComponent SeqSynthBarComponent ValueComponent\
 				SpectrogramComponent RectComponent ClipsComponent KeyboardComponent ListComponent\
-				WorkspacesComponent SampleComponent TapeComponent
+				WorkspacesComponent SampleComponent TapeComponent StepEdit2Component
 
 # %Component:
 # 	@mkdir -p $(OBJ_DIR)

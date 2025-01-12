@@ -170,6 +170,7 @@ public:
 
     void hydrate(std::string value)
     {
+        // printf("hydrate %s\n", value.c_str());
         enabled = strtok((char*)value.c_str(), " ")[0] == '1';
         note = atoi(strtok(NULL, " "));
         velocity = atof(strtok(NULL, " "));
