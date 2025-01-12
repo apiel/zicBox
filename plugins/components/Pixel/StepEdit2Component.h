@@ -32,14 +32,14 @@ protected:
 
     Color bgColor;
     Color selection;
-    ToggleColor noteColor;
-    ToggleColor note2Color;
-    ToggleColor text;
-    ToggleColor text2;
-    ToggleColor barBackground;
-    ToggleColor bar;
-    ToggleColor textMotion1;
-    ToggleColor textMotion2;
+    Color noteColor;
+    Color note2Color;
+    Color text;
+    Color text2;
+    Color barBackground;
+    Color bar;
+    Color textMotion1;
+    Color textMotion2;
 
     uint8_t stepIndex = -1;
 
@@ -52,17 +52,17 @@ protected:
 
 public:
     StepEdit2Component(ComponentInterface::Props props)
-        : GroupColorComponent(props, { { "NOTE_COLOR", &noteColor }, { "NOTE2_COLOR", &note2Color }, { "TEXT_COLOR", &text }, { "TEXT2_COLOR", &text2 }, { "BAR_BACKGROUND_COLOR", &barBackground }, { "BAR_COLOR", &bar }, { "TEXT_MOTION1_COLOR", &textMotion1 }, { "TEXT_MOTION2_COLOR", &textMotion2 } })
+        : GroupColorComponent(props, {  })
         , bgColor(styles.colors.background)
         , selection(styles.colors.primary)
-        , noteColor(styles.colors.primary, inactiveColorRatio)
-        , note2Color(styles.colors.white, inactiveColorRatio)
-        , text(styles.colors.text, inactiveColorRatio)
-        , text2(darken(styles.colors.text, 0.3), inactiveColorRatio)
-        , barBackground(darken(styles.colors.tertiary, 0.5), inactiveColorRatio)
-        , bar(styles.colors.tertiary, inactiveColorRatio)
-        , textMotion1(styles.colors.secondary, inactiveColorRatio)
-        , textMotion2(styles.colors.quaternary, inactiveColorRatio)
+        , noteColor(styles.colors.primary)
+        , note2Color(styles.colors.white)
+        , text(styles.colors.text)
+        , text2(darken(styles.colors.text, 0.3))
+        , barBackground(darken(styles.colors.tertiary, 0.5))
+        , bar(styles.colors.tertiary)
+        , textMotion1(styles.colors.secondary)
+        , textMotion2(styles.colors.quaternary)
         , keypadLayout(this, [&](std::string action) {
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
             if (action == ".toggle") {
@@ -102,8 +102,8 @@ public:
         const char* note = MIDI_NOTES_STR[step->note];
         const char noteLetter[2] = { note[0], '\0' };
         const char* noteSuffix = note + 1;
-        x = draw.text({ x + 2, y }, noteLetter, 8, { noteColor.color });
-        draw.text({ x - 2, y }, noteSuffix, 8, { note2Color.color });
+        x = draw.text({ x + 2, y }, noteLetter, 8, { noteColor });
+        draw.text({ x - 2, y }, noteSuffix, 8, { note2Color });
     }
 
     void render() override
@@ -113,43 +113,43 @@ public:
 
             int y = relativePosition.y;
 
-            draw.filledRect({ relativePosition.x + 2, y + 2 }, { 50, 4 }, { barBackground.color });
-            draw.filledRect({ relativePosition.x + 2, y + 2 }, { (int)(50 * step->velocity), 4 }, { bar.color });
+            draw.filledRect({ relativePosition.x + 12, y + 2 }, { 50, 4 }, { barBackground });
+            draw.filledRect({ relativePosition.x + 12, y + 2 }, { (int)(50 * step->velocity), 4 }, { bar });
 
-            int x = relativePosition.x + 60;
+            int x = relativePosition.x + 70;
             if (step->enabled) {
                 renderNote(x, y);
             } else {
-                draw.text({ x, y }, "---", 8, { text2.color });
+                draw.text({ x, y }, "---", 8, { text2 });
             }
 
             // TODO if 0 make infinit sign
-            x = relativePosition.x + 100;
+            x = relativePosition.x + 110;
             if (!step->len) {
-                draw.text({ x, y }, "O", 8, { text.color });
-                draw.text({ x + 4, y }, "O", 8, { text.color });
+                draw.text({ x, y }, "O", 8, { text2 });
+                draw.text({ x + 4, y }, "O", 8, { text2 });
             } else {
-                draw.text({ x, y }, std::to_string(step->len) + "/32", 8, { text.color });
+                draw.text({ x, y }, std::to_string(step->len) + "/32", 8, { text2 });
             }
 
-            draw.text({ relativePosition.x + 150, y }, stepConditions[step->condition].name, 8, { text2.color });
+            draw.text({ relativePosition.x + 158, y }, stepConditions[step->condition].name, 8, { text2 });
 
             std::string motionSteps = stepMotions[step->motion].name;
-            x = relativePosition.x + 190;
+            x = relativePosition.x + 196;
             if (motionSteps == "---") {
-                draw.text({ x, y }, motionSteps, 8, { text2.color });
+                draw.text({ x, y }, motionSteps, 8, { text2 });
             } else {
                 char* motionStep = strtok((char*)motionSteps.c_str(), ",");
                 for (int i = 0; motionStep != NULL; i++) {
-                    x = draw.text({ x, y }, motionStep, 8, { i % 2 == 0 ? textMotion1.color : textMotion2.color });
+                    x = draw.text({ x, y }, motionStep, 8, { i % 2 == 0 ? textMotion1 : textMotion2 });
                     motionStep = strtok(NULL, ",");
                 }
             }
 
-            x = relativePosition.x + 230;
-            draw.filledRect({ x, y + 1 }, { 6, 6 }, { barBackground.color });
+            x = relativePosition.x + 233;
+            draw.filledRect({ x, y + 1 }, { 6, 6 }, { barBackground });
             if ((seqPlayingPtr == NULL || seqPlaying) && notePlaying) {
-                draw.filledRect({ x, y + 1 }, { 6, 6 }, { bar.color });
+                draw.filledRect({ x, y + 1 }, { 6, 6 }, { bar });
             }
         }
     }
