@@ -29,14 +29,10 @@ export function SeqView({ name }: Props) {
                                 ? rgb(42, 54, 56)
                                 : "background"
                         }
-                        SELECTED_COLOR={rgb(68, 85, 88)}
+                        SELECTED_COLOR={rgb(76, 94, 97)}
                     />
                 );
             })}
-
-            {/* {Array.from({ length: 7 }, (_, i) => (
-                <Rect position={[0, ((i + 1) * 35) - 2, ScreenWidth, 1]} color={rgb(58, 74, 78)} />
-            ))} */}
 
             <TextGridSeq />
             <Common selected={0} hideSpectrogram hideSequencer />

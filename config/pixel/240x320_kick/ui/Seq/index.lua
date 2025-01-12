@@ -34,7 +34,7 @@ function ____exports.SeqView(____bindingPattern0)
                         group = i,
                         playing_color = rgb(35, 161, 35),
                         background_color = (i % 8 == 0 or i % 8 == 1 or i % 8 == 2 or i % 8 == 3) and rgb(42, 54, 56) or "background",
-                        SELECTED_COLOR = rgb(68, 85, 88)
+                        SELECTED_COLOR = rgb(76, 94, 97)
                     }
                 )
             end
