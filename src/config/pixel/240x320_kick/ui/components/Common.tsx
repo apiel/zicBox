@@ -9,10 +9,10 @@ export function Common({ selected }: { selected: number }) {
     return (
         <>
             <Spectrogram
-                position={[0, 230, ScreenWidth, 50]}
+                position={[0, 245, ScreenWidth, 35]}
                 data="Spectrogram BUFFER"
                 text="Pixel"
-                // raw_buffer
+                raw_buffer
             />
             <SeqProgressBar
                 position={[0, 285, ScreenWidth, 5]}

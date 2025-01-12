@@ -65,8 +65,8 @@ protected:
 
     void renderFrequencyPower()
     {
-        const int segmentCount = 24; // Divide the buffer into segments
-        const int samplesPerSegment = 128 / segmentCount;
+        const int segmentCount = 48; // Divide the buffer into segments
+        const int samplesPerSegment = bufferCopy.size() / segmentCount;
         float energy[segmentCount] = { 0 };
 
         // Calculate energy for each segment
@@ -114,7 +114,7 @@ public:
             }
 
             bufferCopy.clear();
-            for (int i = 0; i < size.w; i++) {
+            for (int i = 0; i < 1024; i++) {
                 bufferCopy.push_back(buffer[i]);
             }
             limitBuffer(bufferCopy.data(), bufferCopy.size(), 0.9f);
