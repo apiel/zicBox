@@ -1,6 +1,6 @@
 ## Pixel TODO
 
-- TODO Waveform/Amp. Freq./Click
+- TODO Kick module make value component bigger and more representative, e.g filter envelop...
 
 - TODO master track --> add effect: sample reducer, distortion, delay...? 
     - --> instead of mixer drum and mixer synth, use sent effect to track fx1 and track fx2

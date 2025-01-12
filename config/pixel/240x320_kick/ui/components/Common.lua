@@ -15,12 +15,16 @@ local ScreenWidth = ____constants.ScreenWidth
 local ____TextGridCommon = require("config.pixel.240x320_kick.ui.components.TextGridCommon")
 local TextGridCommon = ____TextGridCommon.TextGridCommon
 function ____exports.Common(____bindingPattern0)
+    local hideSequencer
+    local hideSpectrogram
     local selected
     selected = ____bindingPattern0.selected
+    hideSpectrogram = ____bindingPattern0.hideSpectrogram
+    hideSequencer = ____bindingPattern0.hideSequencer
     return React.createElement(
         React.Fragment,
         nil,
-        React.createElement(
+        not hideSpectrogram and React.createElement(
             Spectrogram,
             {
                 position = {0, 230, ScreenWidth, 35},
@@ -30,7 +34,7 @@ function ____exports.Common(____bindingPattern0)
                 raw_buffer = true
             }
         ),
-        React.createElement(SeqSynthBar, {position = {0, 270, ScreenWidth, 10}, seq_plugin = "Sequencer"}),
+        not hideSequencer and React.createElement(SeqSynthBar, {position = {0, 270, ScreenWidth, 10}, seq_plugin = "Sequencer"}),
         React.createElement(
             SeqProgressBar,
             {
