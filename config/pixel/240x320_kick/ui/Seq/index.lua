@@ -4,6 +4,8 @@ local ____exports = {}
 local React = require("config.libs.react")
 local ____HiddenValue = require("config.libs.components.HiddenValue")
 local HiddenValue = ____HiddenValue.HiddenValue
+local ____Keymaps = require("config.libs.components.Keymaps")
+local Keymaps = ____Keymaps.Keymaps
 local ____StepEdit2 = require("config.libs.components.StepEdit2")
 local StepEdit2 = ____StepEdit2.StepEdit2
 local ____View = require("config.libs.components.View")
@@ -23,7 +25,11 @@ function ____exports.SeqView(____bindingPattern0)
     return React.createElement(
         View,
         {name = name},
-        React.createElement(HiddenValue, {encoder_id = 0, inverted = true}),
+        React.createElement(
+            HiddenValue,
+            {encoder_id = 0, inverted = true},
+            React.createElement(Keymaps, {keys = {{key = "1", action = "contextToggleOnRelease:100:1:0"}, {key = "2", action = "contextToggleOnRelease:100:1:0"}, {key = "3", action = "contextToggleOnRelease:100:1:0"}, {key = "4", action = "contextToggleOnRelease:100:1:0"}}})
+        ),
         __TS__ArrayFrom(
             {length = 32},
             function(____, _, i)
