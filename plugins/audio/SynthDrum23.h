@@ -208,8 +208,6 @@ public:
             sampleDurationCounter++;
             // printf("[%d] sample: %d of %d=%f\n", track, sampleDurationCounter, sampleCountDuration, buf[track]);
         }
-
-        buf[track] = buf[track];
     }
 
     void setPitch(float value)
