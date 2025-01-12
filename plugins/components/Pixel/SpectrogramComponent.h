@@ -3,6 +3,7 @@
 
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
+#include "plugins/audio/utils/utils.h"
 
 #include <cmath>
 #include <string>
@@ -25,6 +26,7 @@ protected:
     std::string text;
 
     float* buffer;
+    std::vector<float> bufferCopy;
 
     bool mirror = true;
     bool rawBuffer = false;
@@ -33,9 +35,10 @@ protected:
     {
         int yCenter = relativePosition.y + size.h / 2;
 
+        int lineH = size.h / 2;
         if (mirror) {
             for (int i = 0; i < size.w; i++) {
-                int graphH = buffer[i] * size.h;
+                int graphH = bufferCopy[i] * lineH;
                 if (graphH) {
                     int y1 = yCenter - graphH;
                     int y2 = yCenter + graphH;
@@ -48,7 +51,7 @@ protected:
             }
         } else {
             for (int i = 0; i < size.w; i++) {
-                int graphH = buffer[i] * size.h;
+                int graphH = bufferCopy[i] * lineH;
                 if (graphH) {
                     draw.line({ i, yCenter }, { i, yCenter + graphH }, { waveIn });
                     draw.line({ i, yCenter }, { i, (int)(yCenter + graphH * 0.25) }, { waveMiddle });
@@ -69,7 +72,7 @@ protected:
         // Calculate energy for each segment
         for (int i = 0; i < segmentCount; i++) {
             for (int j = 0; j < samplesPerSegment; j++) {
-                float sample = buffer[i * samplesPerSegment + j];
+                float sample = bufferCopy[i * samplesPerSegment + j];
                 energy[i] += sample * sample; // Sum of squared samples
             }
             energy[i] = sqrt(energy[i] / samplesPerSegment); // Normalize by the number of samples
@@ -110,6 +113,11 @@ public:
                 draw.textCentered({ relativePosition.x + (int)(size.w / 2), relativePosition.y }, text, 16, { textColor });
             }
 
+            bufferCopy.clear();
+            for (int i = 0; i < size.w; i++) {
+                bufferCopy.push_back(buffer[i]);
+            }
+            limitBuffer(bufferCopy.data(), bufferCopy.size(), 0.9f);
             if (rawBuffer) {
                 renderRawBuffer();
             } else {
