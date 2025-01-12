@@ -1,7 +1,7 @@
 import * as React from '@/libs/react';
 
 import { SeqProgressBar } from '@/libs/components/SeqProgressBar';
-import { ProgressPosition } from './constants';
+import { ProgressPosition } from '../constants';
 
 export function ProgressBar() {
     return (

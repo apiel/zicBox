@@ -2,7 +2,8 @@ import * as React from '@/libs/react';
 
 import { Value } from '@/libs/components/Value';
 import { View } from '@/libs/components/View';
-import { Common } from '../Common';
+import { Common } from '../components/Common';
+import { ProgressBar } from '../components/ProgressBar';
 import {
     bottomLeft,
     bottomRight,
@@ -12,14 +13,13 @@ import {
     topLeft,
     topRight,
 } from '../constantsValue';
-import { ProgressBar } from '../ProgressBar';
-import { TextGridPage1 } from './TextGridPage1';
+import { TextGridSynth } from './TextGridSynth';
 
 export type Props = {
     name: string;
 };
 
-export function Page1View({ name }: Props) {
+export function MasterView({ name }: Props) {
     return (
         <View name={name}>
             <Value value="Volume VOLUME" position={topLeft} encoder_id={0} {...tertiary} />
@@ -38,8 +38,8 @@ export function Page1View({ name }: Props) {
                 {...quaternary}
             />
             <ProgressBar />
-            <TextGridPage1 selected={0} />
-            <Common selected={1} page="Page2" />
+            <TextGridSynth selected={0} />
+            <Common selected={1} />
         </View>
     );
 }

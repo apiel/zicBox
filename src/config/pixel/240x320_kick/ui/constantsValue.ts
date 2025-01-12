@@ -1,5 +1,7 @@
 import { PrimaryBar, QuaternaryBar, ScreenWidth, SecondaryBar, TertiaryBar, W2_4 } from '@/pixel/240x320/ui/constants';
 
+// TODO clean me up!!
+
 export const valueH = 29;
 export const rowSpacing = 8;
 export const height = 65;
