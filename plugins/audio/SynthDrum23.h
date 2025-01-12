@@ -171,7 +171,7 @@ public:
     Val& click = val(0, "CLICK", { "Click" });
 
     /*md - `CLICK_DURATION` set the duration of the click.*/
-    Val& clickDuration = val(0.1f, "CLICK_DURATION", { "Click Dur." });
+    Val& clickDuration = val(0.1f, "CLICK_DURATION", { "Click Dur.", .step = 0.1, .floatingPoint = 1, .unit = "%" });
 
     /*md - `CLICK_CUTOFF` set the cutoff frequency of the click.*/
     Val& clickCutoff = val(50.0f, "CLICK_CUTOFF", { "Click LP|HP", VALUE_CENTERED, .min = -100.0, .max = 100.0, .unit = "%" }, [&](auto p) {
