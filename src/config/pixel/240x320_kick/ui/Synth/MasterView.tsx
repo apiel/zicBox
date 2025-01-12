@@ -3,7 +3,6 @@ import * as React from '@/libs/react';
 import { Value } from '@/libs/components/Value';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
-import { ProgressBar } from '../components/ProgressBar';
 import {
     bottomLeft,
     bottomRight,
@@ -37,7 +36,6 @@ export function MasterView({ name }: Props) {
                 encoder_id={3}
                 {...quaternary}
             />
-            <ProgressBar />
             <TextGridSynth selected={0} viewName={name} />
             <Common selected={1} />
         </View>

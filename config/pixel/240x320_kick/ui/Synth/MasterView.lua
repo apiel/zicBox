@@ -8,8 +8,6 @@ local ____View = require("config.libs.components.View")
 local View = ____View.View
 local ____Common = require("config.pixel.240x320_kick.ui.components.Common")
 local Common = ____Common.Common
-local ____ProgressBar = require("config.pixel.240x320_kick.ui.components.ProgressBar")
-local ProgressBar = ____ProgressBar.ProgressBar
 local ____constantsValue = require("config.pixel.240x320_kick.ui.constantsValue")
 local bottomLeft = ____constantsValue.bottomLeft
 local bottomRight = ____constantsValue.bottomRight
@@ -42,7 +40,6 @@ function ____exports.MasterView(____bindingPattern0)
             Value,
             __TS__ObjectAssign({value = "MMFilter RESONANCE", position = bottomRight, encoder_id = 3}, quaternary)
         ),
-        React.createElement(ProgressBar, nil),
         React.createElement(TextGridSynth, {selected = 0, viewName = name}),
         React.createElement(Common, {selected = 1})
     )
