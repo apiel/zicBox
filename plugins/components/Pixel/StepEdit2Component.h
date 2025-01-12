@@ -56,7 +56,7 @@ public:
     StepEdit2Component(ComponentInterface::Props props)
         : GroupColorComponent(props, {})
         , bgColor(styles.colors.background)
-        , selection(styles.colors.primary)
+        , selection(lighten(styles.colors.background, 0.5))
         , noteColor(styles.colors.primary)
         , note2Color(styles.colors.white)
         , text(styles.colors.text)
@@ -112,16 +112,11 @@ public:
     void render() override
     {
         if (updatePosition() && step) {
-            draw.filledRect(relativePosition, size, { bgColor });
+            Color bg = isActive ? selection : bgColor;
+            draw.filledRect(relativePosition, size, { bg });
 
             int y = relativePosition.y;
             int x = relativePosition.x + 1;
-
-            if (isActive) {
-                draw.filledCircle({ x + 4, y + 4 }, 3, { selection });
-            } else {
-                draw.filledRect({ x, y }, { 8, 8 }, { bgColor });
-            }
 
             x = relativePosition.x + 12;
             draw.filledRect({ x, y + 2 }, { 50, 4 }, { barBackground });
@@ -158,7 +153,6 @@ public:
             }
 
             x = relativePosition.x + 233;
-            draw.filledRect({ x, y + 1 }, { 6, 6 }, { bgColor });
             if ((seqPlayingPtr == NULL || seqPlaying) && notePlaying) {
                 draw.filledRect({ x, y + 1 }, { 6, 6 }, { playingColor });
             }

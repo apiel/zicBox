@@ -29,6 +29,7 @@ export function SeqView({ name }: Props) {
                                 ? rgb(42, 54, 56)
                                 : "background"
                         }
+                        SELECTED_COLOR={rgb(68, 85, 88)}
                     />
                 );
             })}
