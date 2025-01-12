@@ -32,6 +32,7 @@ protected:
 
     Color bgColor;
     Color selection;
+    ToggleColor noteColor;
     ToggleColor text;
     ToggleColor text2;
     ToggleColor barBackground;
@@ -50,11 +51,12 @@ protected:
 
 public:
     StepEdit2Component(ComponentInterface::Props props)
-        : GroupColorComponent(props, { { "TEXT_COLOR", &text }, { "TEXT2_COLOR", &text2 }, { "BAR_BACKGROUND_COLOR", &barBackground }, { "BAR_COLOR", &bar }, { "TEXT_MOTION1_COLOR", &textMotion1 }, { "TEXT_MOTION2_COLOR", &textMotion2 } })
+        : GroupColorComponent(props, { { "NOTE_COLOR", &noteColor }, { "TEXT_COLOR", &text }, { "TEXT2_COLOR", &text2 }, { "BAR_BACKGROUND_COLOR", &barBackground }, { "BAR_COLOR", &bar }, { "TEXT_MOTION1_COLOR", &textMotion1 }, { "TEXT_MOTION2_COLOR", &textMotion2 } })
         , bgColor(styles.colors.background)
         , selection(styles.colors.primary)
+        , noteColor(styles.colors.primary, inactiveColorRatio)
         , text(styles.colors.text, inactiveColorRatio)
-        , text2(darken(styles.colors.text, 0.5), inactiveColorRatio)
+        , text2(darken(styles.colors.text, 0.3), inactiveColorRatio)
         , barBackground(darken(styles.colors.tertiary, 0.5), inactiveColorRatio)
         , bar(styles.colors.tertiary, inactiveColorRatio)
         , textMotion1(styles.colors.secondary, inactiveColorRatio)
@@ -98,7 +100,7 @@ public:
         const char* note = MIDI_NOTES_STR[step->note];
         const char noteLetter[2] = { note[0], '\0' };
         const char* noteSuffix = note + 1;
-        x = draw.text({ x + 2, y }, noteLetter, 8, { text.color });
+        x = draw.text({ x + 2, y }, noteLetter, 8, { noteColor.color });
         draw.text({ x - 2, y }, noteSuffix, 8, { text.color });
     }
 
@@ -116,7 +118,7 @@ public:
             if (step->enabled) {
                 renderNote(x, y);
             } else {
-                draw.text({ x, y }, "---", 8, { text.color });
+                draw.text({ x, y }, "---", 8, { text2.color });
             }
 
             // TODO if 0 make infinit sign
@@ -244,6 +246,7 @@ public:
             return true;
         }
 
+        /*md - `NOTE_COLOR: color` is the color of the note. */
         /*md - `TEXT_COLOR: color` is the color of the text. */
         /*md - `BAR_COLOR: color` is the color of the velocity bar. */
         /*md - `BAR_BACKGROUND_COLOR: color` is the color of the velocity bar background. */
