@@ -22,7 +22,7 @@ function ____exports.SeqView(____bindingPattern0)
                 StepEdit2,
                 {
                     position = {0, i * 8, 0, 0},
-                    data = "Sequencer GET_STEP " .. tostring(i),
+                    data = "Sequencer " .. tostring(i),
                     group = i
                 }
             ) end
