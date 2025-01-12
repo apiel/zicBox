@@ -1,7 +1,7 @@
 import * as React from '@/libs/react';
 
 import { View } from '@/libs/components/View';
-import { Common } from '../Common';
+import { Common } from '../components/Common';
 import { TextGridSeq } from './TextGridSeq';
 
 export type Props = {

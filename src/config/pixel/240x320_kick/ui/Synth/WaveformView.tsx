@@ -1,38 +1,35 @@
 import * as React from '@/libs/react';
 
-import { DrumEnvelop } from '@/libs/components/DrumEnvelop';
 import { Encoder3 } from '@/libs/components/Encoder3';
+import { GraphEncoder } from '@/libs/components/GraphEncoder';
 import { View } from '@/libs/components/View';
-import { Common } from '../Common';
+import { Common } from '../components/Common';
 import { W1_4, W3_4 } from '../constants';
 import { encoderH, height } from '../constantsValue';
-import { TextGridPage1 } from './TextGridPage1';
+import { TextGridSynth } from './TextGridSynth';
 
 export type Props = {
     name: string;
 };
 
-export function FrequencyView({ name }: Props) {
+export function WaveformView({ name }: Props) {
     return (
         <View name={name}>
-            <DrumEnvelop
+            <GraphEncoder
                 position={[0, 0, W3_4 - 2, height]}
                 plugin="Drum23"
-                envelop_data_id="4"
+                data_id="WAVEFORM"
                 RENDER_TITLE_ON_TOP={false}
-                encoder_time={0}
-                encoder_phase={1}
-                encoder_modulation={2}
+                encoders={['0 WAVEFORM_TYPE', '2 MACRO', '1 SHAPE']}
             />
-
             <Encoder3
                 position={[W3_4, (height - encoderH) * 0.5, W1_4, encoderH]}
-                value="Drum23 PITCH"
+                value="Drum23 DURATION"
                 encoder_id={3}
-                color="secondary"
+                color="quaternary"
             />
-            <TextGridPage1 selected={4} />
-            <Common selected={0} page="Page2" />
+            <TextGridSynth selected={1} />
+            <Common selected={0} />
         </View>
     );
 }

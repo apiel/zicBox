@@ -2,13 +2,13 @@ import { applyZic } from '@/libs/core';
 import * as React from '@/libs/react';
 import { addZoneEncoder, setScreenSize, setWindowPosition } from '@/libs/ui';
 import { ScreenHeight, ScreenWidth, W1_2, W1_4, W3_4 } from './constants';
-import { Page1View } from './Page1';
-import { DistortionView } from './Page1/DistortionView';
-import { FrequencyView } from './Page1/FrequencyView';
-import { WaveformView } from './Page1/WaveformView';
-import { Page2View } from './Page2';
-import { ClickView } from './Page2/ClickView';
 import { SeqView } from './Seq';
+import { AmpView } from './Synth/AmpView';
+import { ClickView } from './Synth/ClickView';
+import { DistortionView } from './Synth/DistortionView';
+import { FrequencyView } from './Synth/FrequencyView';
+import { MasterView } from './Synth/MasterView';
+import { WaveformView } from './Synth/WaveformView';
 
 setWindowPosition(400, 500);
 setScreenSize(ScreenWidth, ScreenHeight);
@@ -18,12 +18,11 @@ addZoneEncoder([W1_4, 0, W1_4, ScreenHeight]);
 addZoneEncoder([W1_2, 0, W1_4, ScreenHeight]);
 addZoneEncoder([W3_4, 0, W1_4, ScreenHeight]);
 
-applyZic(<Page1View name="Page1" />);
+applyZic(<MasterView name="Master" />);
 applyZic(<DistortionView name="Distortion" />);
 applyZic(<WaveformView name="Waveform" />);
 applyZic(<FrequencyView name="Frequency" />);
-
-applyZic(<Page2View name="Page2" />);
+applyZic(<AmpView name="Amplitude" />);
 applyZic(<ClickView name="Click" />);
 
 applyZic(<SeqView name="Sequencer" />);

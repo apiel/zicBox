@@ -2,16 +2,16 @@ import * as React from '@/libs/react';
 
 import { DrumEnvelop } from '@/libs/components/DrumEnvelop';
 import { View } from '@/libs/components/View';
-import { Common } from '../Common';
+import { Common } from '../components/Common';
 import { W3_4 } from '../constants';
 import { height } from '../constantsValue';
-import { TextGridPage2 } from './TextGridPage2';
+import { TextGridSynth } from './TextGridSynth';
 
 export type Props = {
     name: string;
 };
 
-export function Page2View({ name }: Props) {
+export function AmpView({ name }: Props) {
     return (
         <View name={name}>
              <DrumEnvelop
@@ -24,8 +24,8 @@ export function Page2View({ name }: Props) {
                  encoder_modulation={2}
              />
 
-            <TextGridPage2 selected={0} />
-            <Common selected={1} page="Page1" />
+            <TextGridSynth selected={3} />
+            <Common selected={1} />
         </View>
     );
 }
