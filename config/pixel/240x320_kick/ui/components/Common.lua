@@ -15,7 +15,7 @@ function ____exports.Common(____bindingPattern0)
     return React.createElement(
         React.Fragment,
         nil,
-        React.createElement(Spectrogram, {position = {0, 230, ScreenWidth, 50}, data = "Spectrogram BUFFER", text = "Pixel"}),
+        React.createElement(Spectrogram, {position = {0, 245, ScreenWidth, 35}, data = "Spectrogram BUFFER", text = "Pixel", raw_buffer = true}),
         React.createElement(SeqProgressBar, {
             position = {0, 285, ScreenWidth, 5},
             seq_plugin = "Sequencer 0",
