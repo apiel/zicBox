@@ -21,7 +21,7 @@ uint8_t getKeyCode(std::string keyStr)
 
         // 0 is 30 and 9 is 39
         if (keyStr[1] >= 48 && keyStr[1] <= 57) {
-            return keyStr[1] - 48 + 30;
+            return keyStr[1] - 48 + 29;
         }
 
         logWarn("Unsupported key: " + keyStr + ". Supported keys: a-z, A-Z, 0-9. For other special char, use scancode values.");
