@@ -2,7 +2,7 @@ import * as React from '@/libs/react';
 
 import { SeqProgressBar } from '@/libs/components/SeqProgressBar';
 import { Spectrogram } from '@/libs/components/Spectrogram';
-import { rgb } from '@/libs/ui';
+import { rgb, rgba } from '@/libs/ui';
 import { ScreenWidth } from '../constants';
 import { TextGridCommon } from './TextGridCommon';
 
@@ -13,7 +13,9 @@ export function Common({ selected }: { selected: number }) {
                 position={[0, 245, ScreenWidth, 35]}
                 data="Spectrogram BUFFER"
                 text="Pixel"
-                wave_color={rgb(57, 74, 100)}
+                // wave_color={rgb(35, 73, 117)}
+                // wave_color={rgba(35, 73, 117, 0.6)}
+                wave_color={rgba(35, 105, 117, 0.7)}
                 raw_buffer
             />
             <SeqProgressBar

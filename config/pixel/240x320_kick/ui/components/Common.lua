@@ -7,6 +7,7 @@ local ____Spectrogram = require("config.libs.components.Spectrogram")
 local Spectrogram = ____Spectrogram.Spectrogram
 local ____ui = require("config.libs.ui")
 local rgb = ____ui.rgb
+local rgba = ____ui.rgba
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
 local ScreenWidth = ____constants.ScreenWidth
 local ____TextGridCommon = require("config.pixel.240x320_kick.ui.components.TextGridCommon")
@@ -23,7 +24,7 @@ function ____exports.Common(____bindingPattern0)
                 position = {0, 245, ScreenWidth, 35},
                 data = "Spectrogram BUFFER",
                 text = "Pixel",
-                wave_color = rgb(57, 74, 100),
+                wave_color = rgba(35, 105, 117, 0.7),
                 raw_buffer = true
             }
         ),

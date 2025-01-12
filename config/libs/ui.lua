@@ -97,4 +97,33 @@ function ____exports.rgb(r, g, b)
         "0"
     )
 end
+--- Returns a string representing a color with an alpha channel in hexadecimal notation.
+-- 
+-- @param r number The red component of the color, between 0 and 255.
+-- @param g number The green component of the color, between 0 and 255.
+-- @param b number The blue component of the color, between 0 and 255.
+-- @param a number The alpha component of the color, between 0 and 1.
+-- @returns string A string in the format `#RRGGBBAA`, where `RR`, `GG`, `BB`, and `AA` are the red, green, blue, and alpha components of the color, respectively, in hexadecimal notation.
+function ____exports.rgba(r, g, b, a)
+    return ((("#" .. __TS__StringPadStart(
+        __TS__NumberToString(r, 16),
+        2,
+        "0"
+    )) .. __TS__StringPadStart(
+        __TS__NumberToString(g, 16),
+        2,
+        "0"
+    )) .. __TS__StringPadStart(
+        __TS__NumberToString(b, 16),
+        2,
+        "0"
+    )) .. __TS__StringPadStart(
+        __TS__NumberToString(
+            math.floor(a * 255 + 0.5),
+            16
+        ),
+        2,
+        "0"
+    )
+end
 return ____exports
