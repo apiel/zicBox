@@ -26,7 +26,7 @@ export function DistortionView({ name }: Props) {
             <Value value="Distortion DRIVE" position={bottomLeft} encoder_id={1} {...primary} />
             <Value value="Distortion COMPRESS" position={topRight} encoder_id={2} {...secondary} />
             <Value value="Distortion BASS" position={bottomRight} encoder_id={3} {...quaternary} />
-            <TextGridSynth selected={0} />
+            <TextGridSynth selected={0} viewName={name} />
             <Common selected={0} />
         </View>
     );

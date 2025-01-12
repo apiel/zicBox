@@ -42,7 +42,7 @@ export function ClickView({ name }: Props) {
                 encoder_id={3}
                 {...quaternary}
             />
-            <TextGridSynth selected={3} />
+            <TextGridSynth selected={3} viewName={name} />
             <Common selected={1} />
         </View>
     );

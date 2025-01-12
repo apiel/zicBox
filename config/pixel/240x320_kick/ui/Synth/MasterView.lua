@@ -43,7 +43,7 @@ function ____exports.MasterView(____bindingPattern0)
             __TS__ObjectAssign({value = "MMFilter RESONANCE", position = bottomRight, encoder_id = 3}, quaternary)
         ),
         React.createElement(ProgressBar, nil),
-        React.createElement(TextGridSynth, {selected = 0}),
+        React.createElement(TextGridSynth, {selected = 0, viewName = name}),
         React.createElement(Common, {selected = 1})
     )
 end

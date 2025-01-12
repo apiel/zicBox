@@ -1,10 +1,11 @@
 import * as React from '@/libs/react';
 
 import { DrumEnvelop } from '@/libs/components/DrumEnvelop';
+import { Encoder3 } from '@/libs/components/Encoder3';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
-import { W3_4 } from '../constants';
-import { height } from '../constantsValue';
+import { W1_4, W3_4 } from '../constants';
+import { encoderH, height } from '../constantsValue';
 import { TextGridSynth } from './TextGridSynth';
 
 export type Props = {
@@ -23,8 +24,13 @@ export function AmpView({ name }: Props) {
                  encoder_phase={1}
                  encoder_modulation={2}
              />
-
-            <TextGridSynth selected={3} />
+            <Encoder3
+                position={[W3_4, (height - encoderH) * 0.5, W1_4, encoderH]}
+                value="Drum23 DURATION"
+                encoder_id={3}
+                color="quaternary"
+            />
+            <TextGridSynth selected={3} viewName={name} />
             <Common selected={1} />
         </View>
     );

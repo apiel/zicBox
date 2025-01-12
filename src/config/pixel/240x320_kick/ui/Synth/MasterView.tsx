@@ -38,7 +38,7 @@ export function MasterView({ name }: Props) {
                 {...quaternary}
             />
             <ProgressBar />
-            <TextGridSynth selected={0} />
+            <TextGridSynth selected={0} viewName={name} />
             <Common selected={1} />
         </View>
     );
