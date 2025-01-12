@@ -50,6 +50,8 @@ protected:
     uint8_t encoderId2 = 2;
     uint8_t encoderId3 = 3;
 
+    uint8_t shiftContextIndex = 100;
+
 public:
     StepEdit2Component(ComponentInterface::Props props)
         : Component(props)
@@ -157,40 +159,30 @@ public:
 
     void onEncoder(int id, int8_t direction) override
     {
-        // if (selected) {
-        //     if (id == encoderId1) {
-        //         if (!step->enabled) {
-        //             step->enabled = true;
-        //         } else {
-        //             step->setNote(step->note + direction);
-        //         }
-        //         renderNext();
-        //     } else if (id == encoderId2) {
-        //         if (!step->enabled) {
-        //             step->enabled = true;
-        //         } else if (view->contextVar[shiftModeIndex]) {
-        //             step->setCondition(step->condition + direction);
-        //         } else {
-        //             step->setVelocity(step->velocity + direction * 0.05);
-        //         }
-        //         renderNext();
-        //     } else if (id == encoderId3) {
-        //         if (!step->enabled) {
-        //             step->enabled = true;
-        //         } else if (view->contextVar[shiftModeIndex]) {
-        //             step->setMotion(step->motion + direction);
-        //         } else {
-        //             step->setLength(step->len + direction);
-        //         }
-        //         renderNext();
-        //     }
-        // }
-
         if (isActive) {
-            // if (id == encoderId1) {
-            //     printf("[StepEditComponent] onEncoder: %d %d group %d [%d]\n", id, direction, group + direction, group);
-            //     view->setGroup(group + direction);
-            // }
+            if (id == encoderId1) {
+                if (view->contextVar[shiftContextIndex]) {
+                    step->setCondition(step->condition + direction);
+                    renderNext();
+                } else {
+                    step->setVelocity(step->velocity + direction * 0.01);
+                    renderNext();
+                }
+            } else if (id == encoderId2) {
+                if (view->contextVar[shiftContextIndex]) {
+                    step->setMotion(step->motion + direction);
+                    renderNext();
+                } else {
+                    step->setNote(step->note + direction);
+                    renderNext();
+                }
+            } else if (id == encoderId3) {
+                if (view->contextVar[shiftContextIndex]) {
+                } else {
+                    step->setLength(step->len + direction);
+                    renderNext();
+                }
+            }
         }
     }
 
