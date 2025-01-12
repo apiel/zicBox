@@ -233,6 +233,12 @@ public:
             return true;
         }
 
+        /*md - `SHIFT_CONTEXT_INDEX: index` is the index of the context (default: 100). */
+        if (strcmp(key, "SHIFT_CONTEXT_INDEX") == 0) {
+            shiftContextIndex = atoi(value);
+            return true;
+        }
+
         /*md - `BACKGROUND_COLOR: color` is the background color of the component. */
         if (strcmp(key, "BACKGROUND_COLOR") == 0) {
             bgColor = draw.getColor(value);
