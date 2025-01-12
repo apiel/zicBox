@@ -118,13 +118,7 @@ public:
             int x = relativePosition.x + 1;
 
             if (isActive) {
-                std::vector<Point> points = {
-                    { x, y },
-                    { x + 6, (int)(y + 3) },
-                    { x, y + 6 },
-                    { x, y },
-                };
-                draw.filledPolygon(points, { selection });
+                draw.filledCircle({ x + 4, y + 4 }, 3, { selection });
             } else {
                 draw.filledRect({ x, y }, { 8, 8 }, { bgColor });
             }
@@ -258,12 +252,48 @@ public:
         }
 
         /*md - `NOTE_COLOR: color` is the color of the note. */
+        if (strcmp(key, "NOTE_COLOR") == 0) {
+            noteColor = draw.getColor(value);
+            return true;
+        }
+
         /*md - `NOTE2_COLOR: color` is the color of the note. */
+        if (strcmp(key, "NOTE2_COLOR") == 0) {
+            note2Color = draw.getColor(value);
+            return true;
+        }
+
         /*md - `TEXT_COLOR: color` is the color of the text. */
+        if (strcmp(key, "TEXT_COLOR") == 0) {
+            text = draw.getColor(value);
+            return true;
+        }
+
         /*md - `BAR_COLOR: color` is the color of the velocity bar. */
-        /*md - `BAR_BACKGROUND_COLOR: color` is the color of the velocity bar background. */
+        if (strcmp(key, "BAR_COLOR") == 0) {
+            bar = draw.getColor(value);
+            barBackground = darken(bar, 0.5);
+            return true;
+        }
+
         /*md - `TEXT_MOTION1_COLOR: color` is the first color of the motion text. */
+        if (strcmp(key, "TEXT_MOTION1_COLOR") == 0) {
+            textMotion1 = draw.getColor(value);
+            return true;
+        }
+
         /*md - `TEXT_MOTION2_COLOR: color` is the second color of the motion text. */
+        if (strcmp(key, "TEXT_MOTION2_COLOR") == 0) {
+            textMotion2 = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `SELECTED_COLOR: color` is the color of the selected step. */
+        if (strcmp(key, "SELECTED_COLOR") == 0) {
+            selection = draw.getColor(value);
+            return true;
+        }
+
         return GroupColorComponent::config(key, value);
     }
 };
