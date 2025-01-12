@@ -242,6 +242,7 @@ public:
         /*md - `BACKGROUND_COLOR: color` is the background color of the component. */
         if (strcmp(key, "BACKGROUND_COLOR") == 0) {
             bgColor = draw.getColor(value);
+            // printf("bgColor %d %d %d\n", bgColor.r, bgColor.g, bgColor.b);
             return true;
         }
 
