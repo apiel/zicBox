@@ -14,7 +14,13 @@ function ____exports.TextGridSeq()
         TextGrid,
         {position = KeyInfoPosition, rows = {"&icon::arrowUp::filled &icon::toggle::rect ...", "&icon::arrowDown::filled &icon::play::filled &icon::musicNote::pixelated"}},
         React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 0}),
-        React.createElement(Keymaps, {keys = {{key = "e", action = "contextToggle:254:1:0"}, {key = "s", action = "playPause"}, {key = "d", action = "noteOn:Drum23:60"}}})
+        React.createElement(Keymaps, {keys = {
+            {key = "q", action = "incGroup:-1"},
+            {key = "e", action = "contextToggle:254:1:0"},
+            {key = "a", action = "incGroup:+1"},
+            {key = "s", action = "playPause"},
+            {key = "d", action = "noteOn:Drum23:60"}
+        }})
     )
 end
 return ____exports

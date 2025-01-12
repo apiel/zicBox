@@ -191,21 +191,6 @@ public:
         // }
     }
 
-    void onGroupChanged(int8_t index) override
-    {
-        bool isSameGroup = group == index;
-        bool isInGroupRange = groupRange[0] != -1 && index >= groupRange[0] && index <= groupRange[1];
-        if (isInGroupRange != isActive) {
-            isActive = isInGroupRange;
-            updateColors();
-            renderNext();
-        }
-        if (isSameGroup != selected) {
-            selected = isSameGroup;
-            renderNext();
-        }
-    }
-
     void onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
         if (isActive) {
