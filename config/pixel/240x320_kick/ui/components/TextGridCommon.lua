@@ -15,7 +15,7 @@ function ____exports.TextGridCommon(____bindingPattern0)
         "&icon::play::filled"
     }, keys = {
         {key = "q", action = "setView:Sequencer"},
-        {key = "w", action = "setView:Synth"},
+        {key = "w", action = "setView:Master"},
         {key = "e", action = "contextToggle:254:1:0"},
         {key = "s", action = "setView:Menu"},
         {key = "d", action = "playPause"}

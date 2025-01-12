@@ -8,7 +8,7 @@ export function TextGridCommon({ selected }: { selected: number }) {
             items={['Seq.', 'Synth', '^...', '&empty', 'Menu', '&icon::play::filled']}
             keys={[
                 { key: 'q', action: 'setView:Sequencer' },
-                { key: 'w', action: `setView:Synth` },
+                { key: 'w', action: `setView:Master` },
                 { key: 'e', action: 'contextToggle:254:1:0' },
                 // { key: 'a', action: 'setView:Sequencer' },
                 { key: 's', action: 'setView:Menu' },
