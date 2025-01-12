@@ -135,6 +135,14 @@ public:
             return true;
         }
 
+        /*md - `WAVE_COLOR: color` is the color of the wave. */
+        if (strcmp(key, "WAVE_COLOR") == 0) {
+            waveIn = draw.getColor(value);
+            waveMiddle = darken(waveIn, 0.2);
+            waveOut = darken(waveIn, 0.4);
+            return true;
+        }
+
         /*md - `WAVE_COLOR_OUT: color` is the color of the wave. */
         if (strcmp(key, "WAVE_COLOR_OUT") == 0) {
             waveOut = draw.getColor(value);

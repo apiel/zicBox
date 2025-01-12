@@ -12,6 +12,7 @@ export function Common({ selected }: { selected: number }) {
                 position={[0, 245, ScreenWidth, 35]}
                 data="Spectrogram BUFFER"
                 text="Pixel"
+                wave_color="#23a123"
                 raw_buffer
             />
             <SeqProgressBar
