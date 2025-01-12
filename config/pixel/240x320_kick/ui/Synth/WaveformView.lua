@@ -30,8 +30,8 @@ function ____exports.WaveformView(____bindingPattern0)
             RENDER_TITLE_ON_TOP = false,
             encoders = {"0 WAVEFORM_TYPE", "2 MACRO", "1 SHAPE"}
         }),
-        React.createElement(Encoder3, {position = {W3_4, (height - encoderH) * 0.5, W1_4, encoderH}, value = "Drum23 DURATION", encoder_id = 3, color = "quaternary"}),
-        React.createElement(TextGridSynth, {selected = 1}),
+        React.createElement(Encoder3, {position = {W3_4, (height - encoderH) * 0.5, W1_4, encoderH}, value = "Drum23 PITCH", encoder_id = 3, color = "secondary"}),
+        React.createElement(TextGridSynth, {selected = 1, viewName = name}),
         React.createElement(Common, {selected = 0})
     )
 end

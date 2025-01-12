@@ -24,11 +24,11 @@ export function WaveformView({ name }: Props) {
             />
             <Encoder3
                 position={[W3_4, (height - encoderH) * 0.5, W1_4, encoderH]}
-                value="Drum23 DURATION"
+                value="Drum23 PITCH"
                 encoder_id={3}
-                color="quaternary"
+                color="secondary"
             />
-            <TextGridSynth selected={1} />
+            <TextGridSynth selected={1} viewName={name} />
             <Common selected={0} />
         </View>
     );

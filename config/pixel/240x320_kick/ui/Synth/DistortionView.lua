@@ -41,7 +41,7 @@ function ____exports.DistortionView(____bindingPattern0)
             Value,
             __TS__ObjectAssign({value = "Distortion BASS", position = bottomRight, encoder_id = 3}, quaternary)
         ),
-        React.createElement(TextGridSynth, {selected = 0}),
+        React.createElement(TextGridSynth, {selected = 0, viewName = name}),
         React.createElement(Common, {selected = 0})
     )
 end
