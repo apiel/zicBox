@@ -74,8 +74,12 @@ public:
     // uint8_t madctl = 0x20;
     // bool displayInverted = false;
 
-    // GMT024 display (2)
-    uint8_t madctl = 0x08 | 0x20 | 0x40; // BGR + MV + MX
+    // GMT024 display (2) 320x240 landscape view
+    // uint8_t madctl = 0x08 | 0x20 | 0x40; // BGR + MV + MX
+    // bool displayInverted = true;
+
+    // 240x320 display portrait view
+    uint8_t madctl = 0x08;
     bool displayInverted = true;
 
     // 240x240 display
