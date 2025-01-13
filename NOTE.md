@@ -1,5 +1,8 @@
 ## Pixel TODO
 
+- TODO doc about https://raspberrypi.stackexchange.com/questions/76188/how-to-make-pcm5102-dac-work-on-raspberry-pi-zerow
+      - 
+
 - TODO Kick module make value component bigger and more representative, e.g filter envelop...
 
 - TODO master track --> add effect: sample reducer, distortion, delay...? 
