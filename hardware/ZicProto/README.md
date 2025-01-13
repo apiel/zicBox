@@ -1,6 +1,6 @@
 # 07 Hardware
 
-## Prototypes
+## Zic Prototypes
 
 There has been a bunch of prototypes, to try out multiple design till I find something easy to build, not too expensive and with a good workflow.
 
