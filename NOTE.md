@@ -1,6 +1,6 @@
 ## Pixel TODO
 
-- TODO doc about https://raspberrypi.stackexchange.com/questions/76188/how-to-make-pcm5102-dac-work-on-raspberry-pi-zerow
+- FIXME transition between wavetable and waveform is not so smooth...
       - 
 
 - TODO Kick module make value component bigger and more representative, e.g filter envelop...
