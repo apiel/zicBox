@@ -26,3 +26,8 @@ plugin('SerializeTrack', [{ filename: 'master', MAX_VARIATION, WORKSPACE_FOLDER:
 plugin('Tempo');
 
 autoSave(500);
+
+// MMFilter + Dist. = 75
+// MMFilter = 63
+// Dist. = 62
+// None = 49
