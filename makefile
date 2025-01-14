@@ -55,6 +55,10 @@ runPixel:
 	@echo "\n------------------ run zicPixel ------------------\n"
 	./pixel.$(BIN_PLATFORM)
 
+dev:
+	rm -rf config/
+	npm run dev
+
 push_wiki:
 	node doc.js
 	cd wiki && git add . && git commit -m "wiki" && git push
