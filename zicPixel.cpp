@@ -54,21 +54,27 @@ int main(int argc, char* argv[])
 
     new PixelController(controllerProps, 0);
 
-    unsigned long lastUpdate = getTicks();
+
 #ifdef USE_DRAW_WITH_SDL
+    logInfo("Rendering with SDL.");
+    unsigned long lastUpdate = getTicks();
     EventHandler& event = EventHandler::get();
     while (event.handle()) {
-#else
-    while (true) {
-#endif
         unsigned long now = getTicks();
-        // if (now - lastUpdate > 50) {
-        if (now - lastUpdate > 100) {
+        if (now - lastUpdate > 50) {
             lastUpdate = now;
             viewManager.renderComponents(now);
         }
         usleep(1);
     }
+#else
+    int us = 50 * 1000; // 50ms
+    while (true) {
+        unsigned long now = getTicks();
+        viewManager.renderComponents(now);
+        usleep(us);
+    }
+#endif
 
     viewManager.draw.quit();
 
