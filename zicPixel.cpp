@@ -62,7 +62,8 @@ int main(int argc, char* argv[])
     while (true) {
 #endif
         unsigned long now = getTicks();
-        if (now - lastUpdate > 50) {
+        // if (now - lastUpdate > 50) {
+        if (now - lastUpdate > 100) {
             lastUpdate = now;
             viewManager.renderComponents(now);
         }
