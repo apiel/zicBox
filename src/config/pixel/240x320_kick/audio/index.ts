@@ -18,19 +18,10 @@ plugin('Sequencer');
 plugin('Distortion EffectDistortion2');
 plugin('MMFilter EffectFilterMultiMode', [{ STRING_CUTOFF_FORMAT }]);
 plugin('Volume EffectGainVolume');
-plugin('Tape', [{ filename: 'kick', max_track: 0 }]);
+// plugin('Tape', [{ filename: 'kick', max_track: 0 }]);
 plugin('AudioOutput');
 plugin('SerializeTrack', [{ filename: 'master', MAX_VARIATION, WORKSPACE_FOLDER: 'workspaces_kick' }]);
 
 plugin('Tempo');
 
 autoSave(500);
-
-// MMFilter + Dist. = 75
-// MMFilter = 63
-// Dist. = 62
-// None = 49
-
-
-// main 90 host 62 <-- default
-// main 76 host 62 <-- no spectrogram in UI

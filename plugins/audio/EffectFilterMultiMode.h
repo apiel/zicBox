@@ -45,7 +45,7 @@ public:
 
     void sample(float* buf)
     {
-        // buf[track] = sample(buf[track]);
+        buf[track] = sample(buf[track]);
     }
 
     void setCutoff(float value)
