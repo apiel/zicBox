@@ -247,48 +247,58 @@ public:
         std::vector<Track*> tracks = sortTracksByDependencies(createTracks(buffer, masterCv));
         // std::vector<Track*> tracks = createTracks(buffer, masterCv);
 
+        bool isUsingThread = true;
         // Init tracks
         for (Track* track : tracks) {
             // For the moment, let's assume that last track is always master track
             bool isMaster = track->id == tracks.back()->id;
             track->init(tracks, isMaster);
+            isUsingThread = isUsingThread && track->thread.joinable();
         }
 
-        auto ms = std::chrono::milliseconds(10);
+        if (!isUsingThread) {
+            while (isRunning) {
+                float buffer[MAX_TRACKS] = { 0.0f };
+                for (Track* track : tracks) {
+                    track->process(buffer);
+                }
+            }
+        } else {
+            auto ms = std::chrono::milliseconds(10);
 
-        while (isRunning) {
+            while (isRunning) {
+                for (Track* track : tracks) {
+                    if (track->thread.joinable()) {
+                        track->processing = true;
+                        track->cv.notify_one();
+                    }
+                }
+                masterCv.wait_for(lock, ms, [&] {
+                    for (Track* track : tracks) {
+                        if (track->processing) {
+                            return false;
+                        }
+                    }
+                    return true;
+                });
+                for (Track* track : tracks) {
+                    if (!track->thread.joinable()) {
+                        for (uint8_t i = 0; i < 128; i++) {
+                            track->process(i);
+                        }
+                    }
+                }
+
+                // cleanup buffer
+                for (int i = 0; i < bufferSize; i++) {
+                    buffer[i] = 0.0f;
+                }
+            }
+            // Wait for to finish
             for (Track* track : tracks) {
                 if (track->thread.joinable()) {
-                    track->processing = true;
-                    track->cv.notify_one();
+                    track->thread.join();
                 }
-            }
-            masterCv.wait_for(lock, ms, [&] {
-                for (Track* track : tracks) {
-                    if (track->processing) {
-                        return false;
-                    }
-                }
-                return true;
-            });
-            for (Track* track : tracks) {
-                if (!track->thread.joinable()) {
-                    float* buf = buffer;
-                    for (uint8_t i = 0; i < 128; i++) {
-                        track->process(i);
-                    }
-                }
-            }
-
-            // cleanup buffer
-            for (int i = 0; i < bufferSize; i++) {
-                buffer[i] = 0.0f;
-            }
-        }
-        // Wait for to finish
-        for (Track* track : tracks) {
-            if (track->thread.joinable()) {
-                track->thread.join();
             }
         }
 
