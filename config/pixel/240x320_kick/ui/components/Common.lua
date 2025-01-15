@@ -3,8 +3,6 @@ local ____exports = {}
 local React = require("config.libs.react")
 local ____SeqProgressBar = require("config.libs.components.SeqProgressBar")
 local SeqProgressBar = ____SeqProgressBar.SeqProgressBar
-local ____SeqSynthBar = require("config.libs.components.SeqSynthBar")
-local SeqSynthBar = ____SeqSynthBar.SeqSynthBar
 local ____ui = require("config.libs.ui")
 local rgb = ____ui.rgb
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
@@ -19,15 +17,16 @@ function ____exports.Common(____bindingPattern0)
     return React.createElement(
         React.Fragment,
         nil,
-        not hideSequencer and React.createElement(SeqSynthBar, {position = {0, 270, ScreenWidth, 10}, seq_plugin = "Sequencer"}),
-        React.createElement(
+        not hideSequencer and React.createElement(
             SeqProgressBar,
             {
-                position = {0, 285, ScreenWidth, 5},
-                seq_plugin = "Sequencer 0",
+                position = {0, 0, ScreenWidth, 5},
+                seq_plugin = "Sequencer",
                 active_color = rgb(35, 161, 35),
                 selection_color = rgb(35, 161, 35),
-                volume_plugin = "Volume VOLUME"
+                foreground_color = rgb(34, 110, 34),
+                volume_plugin = "Volume VOLUME",
+                show_steps = true
             }
         ),
         React.createElement(TextGridCommon, {selected = selected})

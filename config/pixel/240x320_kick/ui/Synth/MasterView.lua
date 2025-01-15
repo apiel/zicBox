@@ -1,21 +1,14 @@
-local ____lualib = require("lualib_bundle")
-local __TS__ObjectAssign = ____lualib.__TS__ObjectAssign
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
 local React = require("config.libs.react")
-local ____Value = require("config.libs.components.Value")
-local Value = ____Value.Value
+local ____KnobValue = require("config.libs.components.KnobValue")
+local KnobValue = ____KnobValue.KnobValue
 local ____View = require("config.libs.components.View")
 local View = ____View.View
 local ____Common = require("config.pixel.240x320_kick.ui.components.Common")
 local Common = ____Common.Common
-local ____constantsValue = require("config.pixel.240x320_kick.ui.constantsValue")
-local bottomLeft = ____constantsValue.bottomLeft
-local bottomRight = ____constantsValue.bottomRight
-local primary = ____constantsValue.primary
-local quaternary = ____constantsValue.quaternary
-local tertiary = ____constantsValue.tertiary
-local topLeft = ____constantsValue.topLeft
-local topRight = ____constantsValue.topRight
+local ____constants = require("config.pixel.240x320_kick.ui.constants")
+local W2_4 = ____constants.W2_4
 local ____TextGridSynth = require("config.pixel.240x320_kick.ui.Synth.TextGridSynth")
 local TextGridSynth = ____TextGridSynth.TextGridSynth
 function ____exports.MasterView(____bindingPattern0)
@@ -24,22 +17,17 @@ function ____exports.MasterView(____bindingPattern0)
     return React.createElement(
         View,
         {name = name},
-        React.createElement(
-            Value,
-            __TS__ObjectAssign({value = "Volume VOLUME", position = topLeft, encoder_id = 0}, tertiary)
-        ),
-        React.createElement(
-            Value,
-            __TS__ObjectAssign({value = "Drum23 GAIN_CLIPPING", position = bottomLeft, encoder_id = 1}, primary)
-        ),
-        React.createElement(
-            Value,
-            __TS__ObjectAssign({value = "MMFilter CUTOFF", position = topRight, encoder_id = 2}, quaternary, {USE_STRING_VALUE = true})
-        ),
-        React.createElement(
-            Value,
-            __TS__ObjectAssign({value = "MMFilter RESONANCE", position = bottomRight, encoder_id = 3}, quaternary)
-        ),
+        React.createElement(KnobValue, {value = "Volume VOLUME", position = {0, 50, W2_4 - 2, 80}, encoder_id = 0, COLOR = "tertiary"}),
+        React.createElement(KnobValue, {
+            value = "MMFilter CUTOFF",
+            position = {W2_4, 50, W2_4 - 2, 80},
+            encoder_id = 2,
+            COLOR = "quaternary",
+            FONT_VALUE_SIZE = 8,
+            TYPE = "STRING"
+        }),
+        React.createElement(KnobValue, {value = "Drum23 GAIN_CLIPPING", position = {0, 150, W2_4 - 2, 80}, encoder_id = 1}),
+        React.createElement(KnobValue, {value = "MMFilter RESONANCE", position = {W2_4, 150, W2_4 - 2, 80}, encoder_id = 3, COLOR = "quaternary"}),
         React.createElement(TextGridSynth, {selected = 0, viewName = name}),
         React.createElement(Common, {selected = 1})
     )

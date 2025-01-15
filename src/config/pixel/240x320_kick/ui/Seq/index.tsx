@@ -29,8 +29,8 @@ export function SeqView({ name }: Props) {
             </HiddenValue>
 
             {Array.from({ length: 32 }, (_, i) => {
-                const yy = y;
-                y += 8 + (i % 4 == 3 ? 3 : 0);
+                const yy = y + 5;
+                y += 8 + (i % 4 == 3 ? 4 : 0);
                 return (
                     <StepEdit2
                         position={[0, yy, ScreenWidth, 8]}
