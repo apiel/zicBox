@@ -2,8 +2,8 @@ import { PrimaryBar, QuaternaryBar, ScreenWidth, SecondaryBar, TertiaryBar, W2_4
 
 // TODO clean me up!!
 
-export const valueH = 29;
-export const rowSpacing = 8;
+const valueH = 29;
+const rowSpacing = 8;
 export const height = 65;
 export const posY = 84;
 export const encoderH = 50;

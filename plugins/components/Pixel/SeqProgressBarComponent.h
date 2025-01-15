@@ -22,6 +22,7 @@ protected:
     int16_t lastStepCounter = -1;
     uint8_t* stepCounter = NULL;
     bool* seqPlayingPtr = NULL;
+    Step* steps = NULL;
 
     KeypadLayout keypadLayout;
 
@@ -29,18 +30,21 @@ protected:
     Color selectionColor;
     Color foreground;
     Color activeColor;
+    Color inactiveStepColor;
 
     uint8_t stepIndex = -1;
 
     ValueInterface* valVolume = NULL;
+    bool showSteps = false;
 
 public:
     SeqProgressBarComponent(ComponentInterface::Props props)
         : Component(props)
         , background(styles.colors.background)
         , selectionColor(styles.colors.white)
-        , foreground({ 0x40, 0x40, 0x40 })
+        , foreground(darken(styles.colors.primary, 0.5))
         , activeColor(styles.colors.primary)
+        , inactiveStepColor({ 0x40, 0x40, 0x40 })
         , keypadLayout(this, [&](std::string action) {
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
             return func;
@@ -88,7 +92,7 @@ public:
             x += nameW + 4;
 
             for (int i = 0; i < stepCount; i++) {
-                Color color = lastStepCounter == i ? activeColor : foreground;
+                Color color = lastStepCounter == i ? activeColor : (!showSteps || steps[i].enabled ? foreground : inactiveStepColor);
                 draw.filledRect({ x, relativePosition.y }, { stepW, stepH }, { color });
                 x += stepW + 2;
                 if (i % 4 == 3) {
@@ -128,19 +132,18 @@ public:
             return true;
         }
 
-        /*md - `SEQ_PLUGIN: plugin_name [get_steps_data_id]` set plugin target for sequencer */
+        /*md - `SEQ_PLUGIN: plugin_name [track]` set plugin target for sequencer */
         if (strcmp(key, "SEQ_PLUGIN") == 0) {
             AudioPlugin* seqPlugin = NULL;
 
             char* pluginName = strtok(value, " ");
-            int trackId = atoi(strtok(NULL, " "));
-            // printf("pluginName: %s, trackId: %d\n", pluginName, trackId);
-
-            // seqPlugin = &getPlugin(strtok(value, " "), track);
+            char* trackStr = strtok(NULL, " ");
+            int trackId = trackStr == NULL ? track : atoi(trackStr);
             seqPlugin = &getPlugin(pluginName, trackId);
             stepCount = seqPlugin->getValue("SELECTED_STEP")->props().max;
             stepCounter = (uint8_t*)seqPlugin->data(seqPlugin->getDataId("STEP_COUNTER"));
             seqPlayingPtr = (bool*)seqPlugin->data(seqPlugin->getDataId("IS_PLAYING"));
+            steps = (Step*)seqPlugin->data(seqPlugin->getDataId("STEPS"));
 
             return true;
         }
@@ -166,13 +169,18 @@ public:
         /*md - `ACTIVE_COLOR: color` is the color of the active step. */
         if (strcmp(key, "ACTIVE_COLOR") == 0) {
             activeColor = draw.getColor(value);
-            foreground = darken(activeColor, 0.5);
             return true;
         }
 
         /*md - `SELECTION_COLOR: color` is the selection color. */
         if (strcmp(key, "SELECTION_COLOR") == 0) {
             selectionColor = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `SHOW_STEPS: true` show sequencer step value (default: false). */
+        if (strcmp(key, "SHOW_STEPS") == 0) {
+            showSteps = strcmp(value, "true") == 0;
             return true;
         }
 

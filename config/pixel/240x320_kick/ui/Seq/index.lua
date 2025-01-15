@@ -33,8 +33,8 @@ function ____exports.SeqView(____bindingPattern0)
         __TS__ArrayFrom(
             {length = 32},
             function(____, _, i)
-                local yy = y
-                y = y + (8 + (i % 4 == 3 and 3 or 0))
+                local yy = y + 5
+                y = y + (8 + (i % 4 == 3 and 4 or 0))
                 return React.createElement(
                     StepEdit2,
                     {
