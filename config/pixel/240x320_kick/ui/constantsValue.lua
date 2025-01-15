@@ -17,6 +17,10 @@ ____exports.topLeft = {0, 0, W2_4 - 2, valueH}
 ____exports.bottomLeft = {0, valueH + rowSpacing, W2_4 - 2, valueH}
 ____exports.topRight = {W2_4, 0, W2_4 - 2, valueH}
 ____exports.bottomRight = {W2_4, valueH + rowSpacing, W2_4 - 2, valueH}
+____exports.topLeftKnob = {0, 50, W2_4 - 2, 80}
+____exports.topRightKnob = {W2_4, 50, W2_4 - 2, 80}
+____exports.bottomLeftKnob = {0, 150, W2_4 - 2, 80}
+____exports.bottomRightKnob = {W2_4, 150, W2_4 - 2, 80}
 ____exports.posContainerValues = {0, ____exports.posY, ScreenWidth, valueH * 2 + 2}
 ____exports.posTopContainer = {0, 4, ScreenWidth, 70}
 local base = {SHOW_LABEL_OVER_VALUE = 6, LABEL_FONT_SIZE = 8}
