@@ -100,7 +100,10 @@ public:
 
     void process(float* buf)
     {
-        // for (AudioPlugin* plugin : plugins) { // <--- this is way more slow
+        // Even if compiler should optimze it, it seems that
+        // using iterator is still slower than for (int i = 0; i < pluginsSize; i++)
+        //
+        // for (AudioPlugin* plugin : plugins) { 
         //     plugin->sample(buf);
         // }
 
