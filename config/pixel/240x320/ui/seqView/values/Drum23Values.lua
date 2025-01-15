@@ -5,10 +5,10 @@ local Main, Edit, EditDistortion, EditWaveform, EditEnvAmp, EditEnvFreq, EditCli
 local React = require("config.libs.react")
 local ____DrumEnvelop = require("config.libs.components.DrumEnvelop")
 local DrumEnvelop = ____DrumEnvelop.DrumEnvelop
-local ____Encoder3 = require("config.libs.components.Encoder3")
-local Encoder3 = ____Encoder3.Encoder3
 local ____GraphEncoder = require("config.libs.components.GraphEncoder")
 local GraphEncoder = ____GraphEncoder.GraphEncoder
+local ____KnobValue = require("config.libs.components.KnobValue")
+local KnobValue = ____KnobValue.KnobValue
 local ____Log = require("config.libs.components.Log")
 local Log = ____Log.Log
 local ____Rect = require("config.libs.components.Rect")
@@ -208,7 +208,7 @@ function EditEnvAmp(____bindingPattern0)
             encoder_phase = 1,
             encoder_modulation = 2
         }),
-        React.createElement(Encoder3, {
+        React.createElement(KnobValue, {
             position = {W3_4, (height - encoderH) * 0.5, W1_4, encoderH},
             track = track,
             value = "Drum23 DURATION",
@@ -240,7 +240,7 @@ function EditEnvFreq(____bindingPattern0)
             encoder_phase = 1,
             encoder_modulation = 2
         }),
-        React.createElement(Encoder3, {
+        React.createElement(KnobValue, {
             position = {W3_4, (height - encoderH) * 0.5, W1_4, encoderH},
             track = track,
             value = "Drum23 PITCH",

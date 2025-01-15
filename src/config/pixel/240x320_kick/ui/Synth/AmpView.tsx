@@ -1,7 +1,7 @@
 import * as React from '@/libs/react';
 
 import { DrumEnvelop } from '@/libs/components/DrumEnvelop';
-import { Encoder3 } from '@/libs/components/Encoder3';
+import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
 import { W1_4, W3_4 } from '../constants';
@@ -24,7 +24,7 @@ export function AmpView({ name }: Props) {
                  encoder_phase={1}
                  encoder_modulation={2}
              />
-            <Encoder3
+            <KnobValue
                 position={[W3_4, (height - encoderH) * 0.5, W1_4, encoderH]}
                 value="Drum23 DURATION"
                 encoder_id={3}

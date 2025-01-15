@@ -6,10 +6,9 @@ export type Props = ComponentProps & {
     encoder_id: number;
 };
 
-export function Encoder3({ position, track, value, encoder_id, ...props }: Props) {
-    return getComponent('Encoder3', position, [
+export function KnobValue({ position, track, value, ...props }: Props) {
+    return getComponent('KnobValue', position, [
         { track },
-        { encoder_id },
         { value },
         props,
     ]);

@@ -2,8 +2,8 @@ import * as React from '@/libs/react';
 
 import { ComponentProps } from '@/libs/components/component';
 import { DrumEnvelop } from '@/libs/components/DrumEnvelop';
-import { Encoder3 } from '@/libs/components/Encoder3';
 import { GraphEncoder } from '@/libs/components/GraphEncoder';
+import { KnobValue } from '@/libs/components/KnobValue';
 import { Log } from '@/libs/components/Log';
 import { Rect } from '@/libs/components/Rect';
 import { Spectrogram } from '@/libs/components/Spectrogram';
@@ -177,7 +177,7 @@ function EditEnvAmp({ group, track, context, menu }: Props & { menu: number }) {
                 encoder_modulation={2}
             />
 
-            <Encoder3
+            <KnobValue
                 position={[W3_4, (height - encoderH) * 0.5, W1_4, encoderH]}
                 track={track}
                 value="Drum23 DURATION"
@@ -204,7 +204,7 @@ function EditEnvFreq({ group, track, context, menu }: Props & { menu: number }) 
                 encoder_modulation={2}
             />
 
-            <Encoder3
+            <KnobValue
                 position={[W3_4, (height - encoderH) * 0.5, W1_4, encoderH]}
                 track={track}
                 value="Drum23 PITCH"

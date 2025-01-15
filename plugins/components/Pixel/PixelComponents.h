@@ -18,7 +18,7 @@ void loadPixelComponents()
 
     viewManager.loadPlugin("TextGrid " + folder + "TextGridComponent.so");
     viewManager.loadPlugin("DrumEnvelop " + folder + "DrumEnvelopComponent.so");
-    viewManager.loadPlugin("Encoder3 " + folder + "Encoder3Component.so");
+    viewManager.loadPlugin("KnobValue " + folder + "KnobValueComponent.so");
     viewManager.loadPlugin("HiddenValue " + folder + "HiddenValueComponent.so");
     viewManager.loadPlugin("GraphEncoder " + folder + "GraphEncoderComponent.so");
     viewManager.loadPlugin("StepEdit " + folder + "StepEditComponent.so");
@@ -45,7 +45,7 @@ void loadPixelComponents()
 #include "./AdsrComponent.h"
 #include "./ClipsComponent.h"
 #include "./DrumEnvelopComponent.h"
-#include "./Encoder3Component.h"
+#include "./KnobValueComponent.h"
 #include "./FmAlgoComponent.h"
 #include "./GraphEncoderComponent.h"
 #include "./HiddenValueComponent.h"
@@ -81,8 +81,8 @@ void loadPixelComponents()
                                        return new DrumEnvelopComponent(props);
                                    } });
 
-    viewManager.plugins.push_back({ "Encoder3", [](ComponentInterface::Props props) {
-                                       return new Encoder3Component(props);
+    viewManager.plugins.push_back({ "KnobValue", [](ComponentInterface::Props props) {
+                                       return new KnobValueComponent(props);
                                    } });
 
     viewManager.plugins.push_back({ "HiddenValue", [](ComponentInterface::Props props) {
