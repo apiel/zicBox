@@ -124,7 +124,7 @@ protected:
 
     Track* createTrack(uint8_t id, float* buffer, std::condition_variable& masterCv)
     {
-        Track* track = new Track(id, buffer, masterCv);
+        Track* track = new Track(id, buffer, masterCv, pluginProps.maxTracks);
         for (AudioPlugin* plugin : plugins) {
             if (plugin->track == id) {
                 track->plugins.push_back(plugin);
