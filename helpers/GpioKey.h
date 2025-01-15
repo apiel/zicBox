@@ -43,6 +43,7 @@ public:
     void startThread()
     {
         loopThread = std::thread(&GpioKey::loop, this);
+        pthread_setname_np(loopThread.native_handle(), "gpioKey");
     }
 
     ~GpioKey()

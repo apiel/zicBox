@@ -95,6 +95,7 @@ protected:
         }
 
         readThread = std::thread(&NeotrellisController::readLoop, this);
+        pthread_setname_np(readThread.native_handle(), "neotrellis");
     }
 
 public:

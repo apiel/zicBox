@@ -166,6 +166,7 @@ public:
             buffer.clear();
             loopRunning = true;
             writerThread = std::thread(&TapeRecording::writerLoop, this);
+            pthread_setname_np(writerThread.native_handle(), "tapeWriter");
         }
     }
 

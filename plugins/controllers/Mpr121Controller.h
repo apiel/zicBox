@@ -147,6 +147,7 @@ public:
 
         printf("[Mpr121] %x initialized\n", address);
         loopThread = std::thread(&Mpr121::loop, this);
+        pthread_setname_np(loopThread.native_handle(), "mpr121");
     }
 
     ~Mpr121()

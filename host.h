@@ -131,6 +131,7 @@ void startHostThread()
     logDebug("Starting host in thread\n");
     pthread_t ptid;
     pthread_create(&ptid, NULL, &hostThread, NULL);
+    pthread_setname_np(ptid, "host");
 }
 
 #endif
