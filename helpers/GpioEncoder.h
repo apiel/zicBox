@@ -45,6 +45,7 @@ public:
     void startThread()
     {
         loopThread = std::thread(&GpioEncoder::loop, this);
+        pthread_setname_np(loopThread.native_handle(), "gpioEncoder");
     }
 
     ~GpioEncoder()

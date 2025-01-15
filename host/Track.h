@@ -64,6 +64,7 @@ public:
             logDebug(">>> Track %d has no dependency, start a thread", id);
             // There is no dependency, start a thread
             thread = std::thread([this] { loop(); });
+            pthread_setname_np(thread.native_handle(), ("track_" + std::to_string(id)).c_str());
         }
     }
 

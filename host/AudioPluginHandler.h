@@ -536,6 +536,7 @@ public:
                 std::this_thread::sleep_for(std::chrono::milliseconds(msInterval));
             }
         });
+        pthread_setname_np(autoSaveThread.native_handle(), "autoSave");
 
         // Save a last time before to exit
         sendEvent(AudioEventType::AUTOSAVE);

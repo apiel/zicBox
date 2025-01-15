@@ -45,6 +45,8 @@ int main(int argc, char* argv[])
 
     startHostThread();
 
+    // while(1) { usleep(10000); }
+
     ViewManager& viewManager = ViewManager::get();
     viewManager.init();
     if (!viewManager.render()) {
