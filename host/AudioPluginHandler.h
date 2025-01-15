@@ -124,7 +124,7 @@ protected:
 
     Track* createTrack(uint8_t id, float* buffer, std::condition_variable& masterCv)
     {
-        Track* track = new Track(id, buffer, masterCv, pluginProps.maxTracks);
+        Track* track = new Track(id, buffer, masterCv, MAX_TRACKS);
         for (AudioPlugin* plugin : plugins) {
             if (plugin->track == id) {
                 track->plugins.push_back(plugin);
@@ -267,21 +267,25 @@ public:
             auto ms = std::chrono::milliseconds(10);
 
             while (isRunning) {
-                for (Track* track : tracks) {
+                for (int i = 0; i < MAX_TRACKS; i++) {
+                    Track* track = tracks[i];
                     if (track->thread.joinable()) {
                         track->processing = true;
                         track->cv.notify_one();
                     }
                 }
+
                 masterCv.wait_for(lock, ms, [&] {
-                    for (Track* track : tracks) {
+                    for (int i = 0; i < MAX_TRACKS; i++) {
+                        Track* track = tracks[i];
                         if (track->processing) {
                             return false;
                         }
                     }
                     return true;
                 });
-                for (Track* track : tracks) {
+                for (int i = 0; i < MAX_TRACKS; i++) {
+                    Track* track = tracks[i];
                     if (!track->thread.joinable()) {
                         for (uint8_t i = 0; i < 128; i++) {
                             track->process(i);
