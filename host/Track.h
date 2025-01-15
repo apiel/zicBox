@@ -22,13 +22,15 @@ public:
     std::condition_variable cv;
     // bool processing = false;
     std::atomic<bool> processing = false;
+    int16_t maxTracks;
 
     std::condition_variable& masterCv;
 
-    Track(uint8_t id, float* buffer, std::condition_variable& masterCv)
+    Track(uint8_t id, float* buffer, std::condition_variable& masterCv, int16_t maxTracks)
         : id(id)
         , buffer(buffer)
         , masterCv(masterCv)
+        , maxTracks(maxTracks)
     {
     }
 
@@ -86,8 +88,7 @@ public:
 
     void process(uint8_t index)
     {
-        // FIXME use track number instead of 32
-        process(buffer + index * 32);
+        process(buffer + index * maxTracks);
     }
 
     void process(float *buf)
