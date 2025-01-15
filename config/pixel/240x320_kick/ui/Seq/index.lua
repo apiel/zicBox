@@ -49,7 +49,7 @@ function ____exports.SeqView(____bindingPattern0)
             end
         ),
         React.createElement(TextGridSeq, nil),
-        React.createElement(Common, {selected = 0, hideSpectrogram = true, hideSequencer = true})
+        React.createElement(Common, {selected = 0, hideSequencer = true})
     )
 end
 return ____exports

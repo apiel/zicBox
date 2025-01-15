@@ -48,7 +48,7 @@ export function SeqView({ name }: Props) {
             })}
 
             <TextGridSeq />
-            <Common selected={0} hideSpectrogram hideSequencer />
+            <Common selected={0} hideSequencer />
         </View>
     );
 }
