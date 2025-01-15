@@ -17,6 +17,7 @@ class Track {
 public:
     uint8_t id;
     std::vector<AudioPlugin*> plugins;
+    int pluginsSize = 0;
     std::thread thread;
     float* buffer;
     std::condition_variable cv;
@@ -58,6 +59,7 @@ public:
 
     void init(std::vector<Track*> tracks, bool isMaster)
     {
+        pluginsSize = plugins.size();
         // Only start a thread if track doesn't have any dependency on another tracks
         // All mixing and master track will be done in the main loop
         //
@@ -68,6 +70,11 @@ public:
             thread = std::thread([this] { loop(); });
             pthread_setname_np(thread.native_handle(), ("track_" + std::to_string(id)).c_str());
         }
+
+        // for (int i = 0; i < plugins.size(); i++) {
+        //     AudioPlugin* plugin = plugins[i];
+        //     printf("Track %d plugin %d %s\n", id, i, plugin->name);
+        // }
     }
 
     void loop()
@@ -91,12 +98,35 @@ public:
         process(buffer + index * maxTracks);
     }
 
-    void process(float *buf)
+    void process(float* buf)
     {
-        for (AudioPlugin* plugin : plugins) {
+        // for (AudioPlugin* plugin : plugins) { // <--- this is way more slow
+        //     plugin->sample(buf);
+        // }
+
+        for (int i = 0; i < pluginsSize; i++) {
+            AudioPlugin* plugin = plugins[i];
             plugin->sample(buf);
         }
+
+        // plugins[0]->sample(buf);
+        // plugins[1]->sample(buf);
+        // plugins[2]->sample(buf);
+        // plugins[3]->sample(buf);
+        // plugins[4]->sample(buf);
+        // plugins[5]->sample(buf);
+        // plugins[6]->sample(buf);
+        // plugins[7]->sample(buf);
     }
 };
+
+// Track 0 plugin 0 Drum23
+// Track 0 plugin 1 Sequencer
+// Track 0 plugin 2 Distortion
+// Track 0 plugin 3 MMFilter
+// Track 0 plugin 4 Volume
+// Track 0 plugin 5 AudioOutput
+// Track 0 plugin 6 SerializeTrack
+// Track 0 plugin 7 Tempo
 
 #endif
