@@ -53,23 +53,24 @@ public:
     void sample(float* buf)
     {
         float input = buf[track];
+        if (input != 0.0f) { // <--- could this be a problem?
+            // Get parameters
+            float levelAmount = level.pct();
+            float driveAmount = drive.pct();
+            float compressAmount = compress.pct() * 2 - 1.0f;
+            float bassBoostAmount = bass.pct();
+            float waveshapeAmount = waveshape.pct();
 
-        // Get parameters
-        float levelAmount = level.pct();
-        float driveAmount = drive.pct();
-        float compressAmount = compress.pct() * 2 - 1.0f;
-        float bassBoostAmount = bass.pct();
-        float waveshapeAmount = waveshape.pct();
+            float output = input;
+            output = applyBoost(output, bassBoostAmount, prevInput1, prevOutput1);
+            output = applyDrive(output, driveAmount);
+            output = applyCompression(output, compressAmount);
+            output = applyWaveshape(output, waveshapeAmount);
+            output = blend(input, output, levelAmount);
+            output = applySoftClipping(output);
 
-        float output = input;
-        output = applyBoost(output, bassBoostAmount, prevInput1, prevOutput1);
-        output = applyDrive(output, driveAmount);
-        output = applyCompression(output, compressAmount);
-        output = applyWaveshape(output, waveshapeAmount);
-        output = blend(input, output, levelAmount);
-        output = applySoftClipping(output);
-
-        buf[track] = range(output, -1.0f, 1.0f);
+            buf[track] = range(output, -1.0f, 1.0f);
+        }
     }
 
 protected:
