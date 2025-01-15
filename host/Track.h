@@ -86,8 +86,14 @@ public:
 
     void process(uint8_t index)
     {
+        // FIXME use track number instead of 32
+        process(buffer + index * 32);
+    }
+
+    void process(float *buf)
+    {
         for (AudioPlugin* plugin : plugins) {
-            plugin->sample(buffer + index * 32);
+            plugin->sample(buf);
         }
     }
 };
