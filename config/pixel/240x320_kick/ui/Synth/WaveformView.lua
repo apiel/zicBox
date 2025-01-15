@@ -1,10 +1,10 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
 local React = require("config.libs.react")
-local ____Encoder3 = require("config.libs.components.Encoder3")
-local Encoder3 = ____Encoder3.Encoder3
 local ____GraphEncoder = require("config.libs.components.GraphEncoder")
 local GraphEncoder = ____GraphEncoder.GraphEncoder
+local ____KnobValue = require("config.libs.components.KnobValue")
+local KnobValue = ____KnobValue.KnobValue
 local ____View = require("config.libs.components.View")
 local View = ____View.View
 local ____Common = require("config.pixel.240x320_kick.ui.components.Common")
@@ -30,7 +30,7 @@ function ____exports.WaveformView(____bindingPattern0)
             RENDER_TITLE_ON_TOP = false,
             encoders = {"0 WAVEFORM_TYPE", "2 MACRO", "1 SHAPE"}
         }),
-        React.createElement(Encoder3, {position = {W3_4, (height - encoderH) * 0.5, W1_4, encoderH}, value = "Drum23 PITCH", encoder_id = 3, color = "secondary"}),
+        React.createElement(KnobValue, {position = {W3_4, (height - encoderH) * 0.5, W1_4, encoderH}, value = "Drum23 PITCH", encoder_id = 3, color = "secondary"}),
         React.createElement(TextGridSynth, {selected = 1, viewName = name}),
         React.createElement(Common, {selected = 0})
     )

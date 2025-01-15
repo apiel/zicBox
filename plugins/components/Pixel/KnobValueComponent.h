@@ -9,13 +9,13 @@
 #include "utils/GroupColorComponent.h"
 
 /*md
-## Encoder3
+## KnobValue
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/Encoder3.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/KnobValue.png" />
 
-Encoder3 is used to display current audio plugin value for a given parameter.
+KnobValue is used to display current audio plugin value for a given parameter.
 */
-class Encoder3Component : public GroupColorComponent {
+class KnobValueComponent : public GroupColorComponent {
 protected:
     const char* name = NULL;
     std::string label;
@@ -33,7 +33,6 @@ protected:
     Point valuePosition = { 0, 0 };
 
     bool showValue = true;
-    bool showGroup = false;
     bool showUnit = true;
     bool stringValueReplaceTitle = false;
 
@@ -51,14 +50,6 @@ protected:
             draw.textCentered({ knobCenter.x, relativePosition.y + size.h - fontLabelSize }, value->string(), fontLabelSize, { titleColor.color, NULL, size.w - 4 });
         } else {
             draw.textCentered({ knobCenter.x, relativePosition.y + size.h - fontLabelSize }, label.empty() ? value->label() : label, fontLabelSize, { titleColor.color });
-        }
-    }
-
-    void renderActiveGroup()
-    {
-        if (showGroup && isActive) {
-            draw.filledRect({ relativePosition.x + margin, relativePosition.y + margin }, { 12, 12 }, { idColor.color });
-            draw.textCentered({ relativePosition.x + margin + 6, relativePosition.y + margin }, std::to_string(encoderId + 1).c_str(), 6, { bgColor });
         }
     }
 
@@ -139,8 +130,6 @@ protected:
 
     void renderEncoder()
     {
-        renderActiveGroup();
-
         renderLabel();
         if (value->hasType(VALUE_CENTERED)) {
             renderCenteredBar();
@@ -187,7 +176,7 @@ protected:
     }
 
 public:
-    Encoder3Component(ComponentInterface::Props props)
+    KnobValueComponent(ComponentInterface::Props props)
         : GroupColorComponent(props, {
                                          { "ID_COLOR", &idColor },
                                          { "TITLE_COLOR", &titleColor },
@@ -320,12 +309,6 @@ public:
             return true;
         }
 
-        /*md - `SHOW_GROUP: TRUE` show group if the component is part of the current active group (default FALSE) */
-        if (strcmp(key, "SHOW_GROUP") == 0) {
-            showGroup = (strcmp(params, "TRUE") == 0);
-            return true;
-        }
-
         /*md - `SHOW_VALUE: TRUE` show value (default TRUE) */
         if (strcmp(key, "SHOW_VALUE") == 0) {
             showValue = (strcmp(params, "TRUE") == 0);
@@ -368,7 +351,7 @@ public:
     void onEncoder(int id, int8_t direction)
     {
         // if (isActive && id == encoderId) {
-        //     printf("[track %d group %d][%s] Encoder3Component onEncoder: %d %d\n", track, group, label.c_str(), id, direction);
+        //     printf("[track %d group %d][%s] KnobValueComponent onEncoder: %d %d\n", track, group, label.c_str(), id, direction);
         // }
         if (value && isActive && id == encoderId) {
             value->increment(direction);

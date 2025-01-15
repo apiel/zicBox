@@ -3,8 +3,8 @@ local ____exports = {}
 local React = require("config.libs.react")
 local ____DrumEnvelop = require("config.libs.components.DrumEnvelop")
 local DrumEnvelop = ____DrumEnvelop.DrumEnvelop
-local ____Encoder3 = require("config.libs.components.Encoder3")
-local Encoder3 = ____Encoder3.Encoder3
+local ____KnobValue = require("config.libs.components.KnobValue")
+local KnobValue = ____KnobValue.KnobValue
 local ____View = require("config.libs.components.View")
 local View = ____View.View
 local ____Common = require("config.pixel.240x320_kick.ui.components.Common")
@@ -32,7 +32,7 @@ function ____exports.AmpView(____bindingPattern0)
             encoder_phase = 1,
             encoder_modulation = 2
         }),
-        React.createElement(Encoder3, {position = {W3_4, (height - encoderH) * 0.5, W1_4, encoderH}, value = "Drum23 DURATION", encoder_id = 3, color = "quaternary"}),
+        React.createElement(KnobValue, {position = {W3_4, (height - encoderH) * 0.5, W1_4, encoderH}, value = "Drum23 DURATION", encoder_id = 3, color = "quaternary"}),
         React.createElement(TextGridSynth, {selected = 3, viewName = name}),
         React.createElement(Common, {selected = 1})
     )
