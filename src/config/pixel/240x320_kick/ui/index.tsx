@@ -2,6 +2,10 @@ import { applyZic } from '@/libs/core';
 import * as React from '@/libs/react';
 import { addZoneEncoder, setScreenSize, setWindowPosition } from '@/libs/ui';
 import { ScreenHeight, ScreenWidth, W1_2, W1_4, W3_4 } from './constants';
+import { CreateWorkspaceView } from './menu/CreateWorkspaceView';
+import { MenuView } from './menu/menuView';
+import { ShutdownView } from './menu/ShutdownView';
+import { WorkspacesView } from './menu/WorkspacesView';
 import { SeqView } from './Seq';
 import { AmpView } from './Synth/AmpView';
 import { ClickView } from './Synth/ClickView';
@@ -26,3 +30,8 @@ applyZic(<AmpView name="Amplitude" />);
 applyZic(<ClickView name="Click" />);
 
 applyZic(<SeqView name="Sequencer" />);
+
+applyZic(<MenuView name="Menu" />);
+applyZic(<WorkspacesView name="Workspaces" />);
+applyZic(<CreateWorkspaceView name="CreateWorkspace" />);
+applyZic(<ShutdownView name="Shutdown" />);
