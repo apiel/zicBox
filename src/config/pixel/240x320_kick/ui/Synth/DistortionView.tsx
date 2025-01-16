@@ -18,11 +18,6 @@ export type Props = {
 export function DistortionView({ name }: Props) {
     return (
         <View name={name}>
-            {/* <Value value="Distortion WAVESHAPE" position={topLeft} encoder_id={0} {...tertiary} />
-            <Value value="Distortion DRIVE" position={bottomLeft} encoder_id={1} {...primary} />
-            <Value value="Distortion COMPRESS" position={topRight} encoder_id={2} {...secondary} />
-            <Value value="Distortion BASS" position={bottomRight} encoder_id={3} {...quaternary} /> */}
-
             <KnobValue
                 value="Distortion WAVESHAPE"
                 position={topLeftKnob}

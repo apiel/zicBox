@@ -9,12 +9,9 @@ local ____View = require("config.libs.components.View")
 local View = ____View.View
 local ____Common = require("config.pixel.240x320_kick.ui.components.Common")
 local Common = ____Common.Common
-local ____constants = require("config.pixel.240x320_kick.ui.constants")
-local W1_4 = ____constants.W1_4
-local W3_4 = ____constants.W3_4
 local ____constantsValue = require("config.pixel.240x320_kick.ui.constantsValue")
-local encoderH = ____constantsValue.encoderH
-local height = ____constantsValue.height
+local bottomRightKnob = ____constantsValue.bottomRightKnob
+local topValues = ____constantsValue.topValues
 local ____TextGridSynth = require("config.pixel.240x320_kick.ui.Synth.TextGridSynth")
 local TextGridSynth = ____TextGridSynth.TextGridSynth
 function ____exports.WaveformView(____bindingPattern0)
@@ -24,13 +21,13 @@ function ____exports.WaveformView(____bindingPattern0)
         View,
         {name = name},
         React.createElement(GraphEncoder, {
-            position = {0, 0, W3_4 - 2, height},
+            position = topValues,
             plugin = "Drum23",
             data_id = "WAVEFORM",
             RENDER_TITLE_ON_TOP = false,
             encoders = {"0 WAVEFORM_TYPE", "2 MACRO", "1 SHAPE"}
         }),
-        React.createElement(KnobValue, {position = {W3_4, (height - encoderH) * 0.5, W1_4, encoderH}, value = "Drum23 PITCH", encoder_id = 3, color = "secondary"}),
+        React.createElement(KnobValue, {position = bottomRightKnob, value = "Drum23 PITCH", encoder_id = 3, color = "secondary"}),
         React.createElement(TextGridSynth, {selected = 1, viewName = name}),
         React.createElement(Common, {selected = 0})
     )
