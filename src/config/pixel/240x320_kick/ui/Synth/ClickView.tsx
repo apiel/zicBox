@@ -1,17 +1,13 @@
 import * as React from '@/libs/react';
 
-import { Value } from '@/libs/components/Value';
+import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
 import {
-    bottomLeft,
-    bottomRight,
-    primary,
-    quaternary,
-    secondary,
-    tertiary,
-    topLeft,
-    topRight,
+    bottomLeftKnob,
+    bottomRightKnob,
+    topLeftKnob,
+    topRightKnob
 } from '../constantsValue';
 import { TextGridSynth } from './TextGridSynth';
 
@@ -22,26 +18,33 @@ export type Props = {
 export function ClickView({ name }: Props) {
     return (
         <View name={name}>
-            <Value value="Drum23 CLICK" position={topLeft} encoder_id={0} {...tertiary} />
-            <Value
-                value="Drum23 CLICK_DURATION"
-                position={bottomLeft}
-                encoder_id={1}
-                {...primary}
+            <KnobValue
+                value="Drum23 CLICK"
+                position={topLeftKnob}
+                encoder_id={0}
+                COLOR="tertiary"
             />
-            <Value
+            <KnobValue
                 value="Drum23 CLICK_CUTOFF"
-                position={topRight}
+                position={topRightKnob}
                 encoder_id={2}
-                {...secondary}
-                USE_STRING_VALUE
+                COLOR="primary"
+                TYPE="STRING"
+                FONT_VALUE_SIZE={12}
             />
-            <Value
+            <KnobValue
+                value="Drum23 CLICK_DURATION"
+                position={bottomLeftKnob}
+                encoder_id={1}
+                COLOR="quaternary"
+            />
+            <KnobValue
                 value="Drum23 CLICK_RESONANCE"
-                position={bottomRight}
+                position={bottomRightKnob}
                 encoder_id={3}
-                {...quaternary}
+                COLOR="secondary"
             />
+
             <TextGridSynth selected={3} viewName={name} />
             <Common selected={1} />
         </View>
