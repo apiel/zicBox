@@ -18,6 +18,15 @@ public:
         : data(data)
     {
         setMinEditablePhase(_minEditablePhase);
+        // setMode(1);
+    }
+
+    void setMinEditablePhase(int8_t phase)
+    {
+        minEditablePhase = phase;
+        if (currentEditPhase < minEditablePhase) {
+            currentEditPhase = minEditablePhase;
+        }
     }
 
     float next(float time, unsigned int& indexRef)
@@ -68,14 +77,6 @@ public:
         return &currentEditPhase;
     }
 
-    void setMinEditablePhase(int8_t phase)
-    {
-        minEditablePhase = phase;
-        if (currentEditPhase < minEditablePhase) {
-            currentEditPhase = minEditablePhase;
-        }
-    }
-
     float* updatePhaseTime(int8_t* direction = NULL)
     {
         if (direction && currentEditPhase >= minEditablePhase) {
@@ -83,7 +84,7 @@ public:
                 data.push_back({ 0.0f, 1.0f });
             }
             float value = data[currentEditPhase].time + ((*direction) * 0.01f);
-            
+
             if (currentEditPhase > 1 && value <= data[currentEditPhase - 1].time) {
                 return &data[currentEditPhase].time;
             }
@@ -104,6 +105,58 @@ public:
         }
         return &data[currentEditPhase].modulation;
     }
+
+    int mode = 0;
+    // int type = 0;
+    void setMode(int _mode)
+    {
+        mode = _mode;
+        data.clear();
+
+        if (mode == 0) {
+            data.push_back({ 1.0f, 0.0f });
+            data.push_back({ 0.5f, 0.03f });
+            data.push_back({ 0.3f, 0.07f });
+            data.push_back({ 0.09f, 0.19f });
+            data.push_back({ 0.0f, 1.0f });
+            return;
+        }
+
+        // 1 * exp(-15 * x) +  (0.2 - 0.2 * x)
+        if (mode == 1) {
+            for (float x = 0.0f; x <= 1.0f; x += 0.01f) {
+                data.push_back({ 1.0f * exp(-15 * x) + 0.2f - 0.2f * x, x });
+            }
+        }
+
+        // default
+        data.push_back({ 1.0f, 0.0f });
+        data.push_back({ 0.0f, 1.0f });
+    }
 };
 
 #endif
+
+
+// 100 * exp(-1.0 * x) + 1.0
+/// --> "100 * exp(-0.2 * x) +  (10 - 0.1 * x)",
+// ----> 1 * exp(-10 * x) +  (0.2 - 0.2 * x)
+
+// double exponentialDecay(double x, double a, double b, double c) {
+//     return a * exp(-b * x) + c;
+// }
+
+// int main() {
+//     // Parameters for the function
+//     double a = 10.0; // Initial value
+//     double b = 1.0;  // Decay rate
+//     double c = 1.0;  // Asymptote value
+
+//     // Print the function values for a range of x
+//     for (double x = 0; x <= 10; x += 0.5) {
+//         double y = exponentialDecay(x, a, b, c);
+//         std::cout << "x: " << x << ", y: " << y << std::endl;
+//     }
+
+//     return 0;
+// }
