@@ -101,7 +101,7 @@ protected:
     {
         int x = relativePosition.x;
         if (modePtr != NULL) {
-            draw.text({ x + 2, relativePosition.y }, std::to_string(currentTimeMs) + "ms", fontSize, { textColor.color });
+            draw.text({ x + 2, relativePosition.y }, modePtr->c_str(), fontSize, { textColor.color });
         }
         // draw.textRight({ x + size.w - 2, relativePosition.y }, std::to_string((int)(currentMod * 100)) + "%", fontSize, { textColor.color });
         // draw.text({ x + 2, relativePosition.y + size.h - 8 }, std::to_string(currentstep + 1) + "/" + std::to_string(envData->size()), fontSize, { textColor.color });
@@ -142,7 +142,7 @@ public:
     {
         if (isActive) {
             if (id == encoders[0]) {
-                plugin->data(modeDataId, &direction);
+                modePtr = (std::string*)plugin->data(modeDataId, &direction);
                 renderNext();
             } else if (id == encoders[1]) {
                 plugin->data(macro1DataId, &direction);

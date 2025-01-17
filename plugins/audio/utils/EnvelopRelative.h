@@ -114,10 +114,12 @@ public:
         float c = 0.5;
     } macro;
 
-    char* updateMode(int8_t* direction = NULL)
+    std::string modeStrPtr;
+    std::string* updateMode(int8_t* direction = NULL)
     {
-        setMode(range(mode + *direction, 0, 2));
-        return (char*)getModeStr(mode).c_str();
+        setMode(range(mode + *direction, 0, MODE_COUNT - 1));
+        modeStrPtr = getModeStr(mode);
+        return &modeStrPtr;
     }
 
     float* updateMacro1(int8_t* direction = NULL)
@@ -165,6 +167,9 @@ public:
         DEFAULT,
         KICK,
         EXPO_DECAY,
+        MULTI_PHASE,
+
+        MODE_COUNT
     };
 
     void setMode(int _mode)
@@ -185,12 +190,23 @@ public:
         if (mode == MODE::EXPO_DECAY) {
             useMacro = true;
             for (float x = 0.0f; x <= 1.0f; x += 0.01f) {
-                // data.push_back({ 1.0f * exp(-15 * x) + 0.2f - 0.2f * x, x });
-                // float y = 1 * exp(-15 * x) +  (0.2 - 0.2 * pow(x , 4));
                 float a = 70 * macro.a;
                 float b = 0.5 * macro.b;
                 float c = 100 * macro.c;
                 float y = range(1 * exp(-a * x) + (b - b * pow(x, c)), 0.0f, 1.0f);
+                data.push_back({ y, x });
+            }
+            return;
+        }
+
+        if (mode == MODE::MULTI_PHASE) {
+            useMacro = true;
+            for (float x = 0.0f; x <= 1.0f; x += 0.01f) {
+                float decay = 0.7f * exp(-60.0f * macro.a * x);
+                float tail = 0.2f * exp(-5.0f * macro.b * x);
+                float release = tail - tail * pow(x, macro.c);
+
+                float y = range(decay + release, 0.0f, 1.0f);
                 data.push_back({ y, x });
             }
             return;
@@ -208,7 +224,8 @@ public:
             return "Kick";
         if (_mode == MODE::EXPO_DECAY)
             return "Expo decay";
-
+        if (_mode == MODE::MULTI_PHASE)
+            return "Multi phase";
         return "Default";
     }
 };
