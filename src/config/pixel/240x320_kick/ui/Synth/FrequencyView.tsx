@@ -16,7 +16,7 @@ export function FrequencyView({ name }: Props) {
             <MacroEnvelop
                 position={fullValues}
                 plugin="Drum23"
-                envelop_data_id="ENV_FREQ"
+                envelop_data_id="ENV_FREQ2"
             />
             <TextGridSynth selected={4} viewName={name} />
             <Common selected={0} />

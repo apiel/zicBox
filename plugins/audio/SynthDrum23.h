@@ -295,9 +295,12 @@ public:
         ENV_FREQ_EDIT,
         ENV_FREQ_TIME,
         ENV_FREQ_MOD,
-        ENV_FREQ_USE_MACRO,
-        ENV_FREQ_SET_MACRO,
+        ENV_FREQ2,
         ENV_FREQ_MODE,
+        ENV_FREQ_IS_MACRO,
+        ENV_FREQ_MACRO1,
+        ENV_FREQ_MACRO2,
+        ENV_FREQ_MACRO3,
         WAVEFORM,
     };
 
@@ -316,7 +319,7 @@ public:
         /*md - `ENV_AMP_MOD` update the amplitude modulation value for current step */
         if (name == "ENV_AMP_MOD")
             return ENV_AMP_MOD;
-        /*md - `ENV_FREQ` update the frequency for current step */
+        /*md - `ENV_FREQ` get the frequency envelop */
         if (name == "ENV_FREQ")
             return ENV_FREQ;
         /*md - `ENV_FREQ_EDIT` set/get the frequency edit point for current step */
@@ -328,15 +331,24 @@ public:
         /*md - `ENV_FREQ_MOD` update the frequency modulation value for current step */
         if (name == "ENV_FREQ_MOD")
             return ENV_FREQ_MOD;
+        /*md - `ENV_FREQ2` get the frequency envelop */
+        if (name == "ENV_FREQ2")
+            return ENV_FREQ2;
         /*md - `ENV_FREQ_MODE` update the envelop frequency mode */
         if (name == "ENV_FREQ_MODE")
             return ENV_FREQ_MODE;
-        /*md - `ENV_FREQ_USE_MACRO` get the envelop frequency edit mode */
-        if (name == "ENV_FREQ_USE_MACRO")
-            return ENV_FREQ_USE_MACRO;
-        /*md - `ENV_FREQ_SET_MACRO` set the envelop frequency edit mode */
-        if (name == "ENV_FREQ_SET_MACRO")
-            return ENV_FREQ_SET_MACRO;
+        /*md - `ENV_FREQ_IS_MACRO` get the envelop frequency edit mode */
+        if (name == "ENV_FREQ_IS_MACRO")
+            return ENV_FREQ_IS_MACRO;
+        /*md - `ENV_FREQ_MACRO1` set the macro 1 value for frequency envelop */
+        if (name == "ENV_FREQ_MACRO1")
+            return ENV_FREQ_MACRO1;
+        /*md - `ENV_FREQ_MACRO2` set the macro 2 value for frequency envelop */
+        if (name == "ENV_FREQ_MACRO2")
+            return ENV_FREQ_MACRO2;
+        /*md - `ENV_FREQ_MACRO3` set the macro 3 value for frequency envelop */
+        if (name == "ENV_FREQ_MACRO3")
+            return ENV_FREQ_MACRO3;
         /*md - `WAVEFORM` return a representation of the selected waveform */
         if (name == "WAVEFORM")
             return WAVEFORM;
@@ -368,11 +380,17 @@ public:
         }
         case ENV_FREQ_MOD: // update freq modulation value for current step
             return envelopFreq.updatePhaseModulation((int8_t*)userdata);
+        case ENV_FREQ2:
+            return &envelopFreq.data;
         case ENV_FREQ_MODE: {
             return envelopFreq.updateMode((int8_t*)userdata);
         }
-        case ENV_FREQ_USE_MACRO: // get the envelop frequency edit mode
-            return &envelopFreq.useMacro;
+        case ENV_FREQ_MACRO1:
+            return envelopFreq.updateMacro1((int8_t*)userdata);
+        case ENV_FREQ_MACRO2:
+            return envelopFreq.updateMacro2((int8_t*)userdata);
+        case ENV_FREQ_MACRO3:
+            return envelopFreq.updateMacro3((int8_t*)userdata);
         case WAVEFORM: { // pointer to waveform sample
             if (!wave) {
                 return NULL;

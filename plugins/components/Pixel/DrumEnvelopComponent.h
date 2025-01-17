@@ -160,16 +160,6 @@ public:
             } else if (id == encoderModulation) {
                 plugin->data(modDataId, &direction);
                 renderNext();
-            } else {
-                // printf("DrumEnvelopComponent onEncoder: %d %d\n", id, direction);
-                // ValueInterface* value = plugin->getValue("DURATION");
-                // value->increment(direction);
-
-                if (id > 4) { // just for testing rpi speaker, to be removed
-                    printf("play SynthDrum23 note on (encoder %d)\n", id);
-                    AudioPlugin* plugin = &getPlugin("SynthDrum23", 1);
-                    plugin->noteOn(60, 1.0f);
-                }
             }
         }
     }
