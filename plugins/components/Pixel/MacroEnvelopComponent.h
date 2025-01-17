@@ -30,6 +30,9 @@ protected:
     uint8_t macro2DataId = -1;
     uint8_t macro3DataId = -1;
     std::string* modePtr = NULL;
+    float macro1 = 0.0f;
+    float macro2 = 0.0f;
+    float macro3 = 0.0f;
 
     int8_t currentstep = 0;
     float currentMod = 0.0f;
@@ -103,8 +106,9 @@ protected:
         if (modePtr != NULL) {
             draw.text({ x + 2, relativePosition.y }, modePtr->c_str(), fontSize, { textColor.color });
         }
-        // draw.textRight({ x + size.w - 2, relativePosition.y }, std::to_string((int)(currentMod * 100)) + "%", fontSize, { textColor.color });
-        // draw.text({ x + 2, relativePosition.y + size.h - 8 }, std::to_string(currentstep + 1) + "/" + std::to_string(envData->size()), fontSize, { textColor.color });
+        draw.textRight({ x + size.w - 2, relativePosition.y }, std::to_string((int)(macro2 * 100)) + "%", fontSize, { textColor.color });
+        draw.text({ x + 2, relativePosition.y + size.h - 8 }, std::to_string((int)(macro1 * 100)) + "%", fontSize, { textColor.color });
+        draw.textRight({ x + size.w - 2, relativePosition.y + size.h - 8 }, std::to_string((int)(macro3 * 100)) + "%", fontSize, { textColor.color });
     }
 
 public:
@@ -145,13 +149,13 @@ public:
                 modePtr = (std::string*)plugin->data(modeDataId, &direction);
                 renderNext();
             } else if (id == encoders[1]) {
-                plugin->data(macro1DataId, &direction);
+                macro1 = *(float *)plugin->data(macro1DataId, &direction);
                 renderNext();
             } else if (id == encoders[2]) {
-                plugin->data(macro2DataId, &direction);
+                macro2 = *(float *)plugin->data(macro2DataId, &direction);
                 renderNext();
             } else if (id == encoders[3]) {
-                plugin->data(macro3DataId, &direction);
+                macro3 = *(float *)plugin->data(macro3DataId, &direction);
                 renderNext();
             }
         }

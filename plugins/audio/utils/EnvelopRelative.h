@@ -130,7 +130,7 @@ public:
         if (direction != NULL) {
             macro.a += *direction * 0.01f;
             macro.a = range(macro.a, 0.0f, 1.0f);
-            setMode(mode);
+            setMode(mode, false);
         }
         return &macro.a;
     }
@@ -145,7 +145,7 @@ public:
         if (direction != NULL) {
             macro.b += *direction * 0.01f;
             macro.b = range(macro.b, 0.0f, 1.0f);
-            setMode(mode);
+            setMode(mode, false);
         }
         return &macro.b;
     }
@@ -158,7 +158,7 @@ public:
         if (direction != NULL) {
             macro.c += *direction * 0.01f;
             macro.c = range(macro.c, 0.0f, 1.0f);
-            setMode(mode);
+            setMode(mode, false);
         }
         return &macro.c;
     }
@@ -172,7 +172,7 @@ public:
         MODE_COUNT
     };
 
-    void setMode(int _mode)
+    void setMode(int _mode, bool init = true)
     {
         mode = _mode;
         data.clear();
@@ -189,6 +189,11 @@ public:
 
         if (mode == MODE::EXPO_DECAY) {
             useMacro = true;
+            if (init) {
+                macro.a = 0.5;
+                macro.b = 0.5;
+                macro.c = 0.01;
+            }
             for (float x = 0.0f; x <= 1.0f; x += 0.01f) {
                 float a = 70 * macro.a;
                 float b = 0.5 * macro.b;
@@ -201,6 +206,11 @@ public:
 
         if (mode == MODE::MULTI_DECAY) {
             useMacro = true;
+            if (init) {
+                macro.a = 0.5;
+                macro.b = 0.5;
+                macro.c = 0.5;
+            }
             for (float x = 0.0f; x <= 1.0f; x += 0.01f) {
                 float decay = 0.7f * exp(-60.0f * (macro.a + 0.05f) * x);
                 // printf("decay: %f macro.a: %f\n", decay, macro.a);
