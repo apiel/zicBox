@@ -125,9 +125,10 @@ public:
         if (!useMacro) {
             return updatePhaseModulation(direction);
         }
-        if (direction) {
+        if (direction != NULL) {
             macro.a += *direction * 0.01f;
             macro.a = range(macro.a, 0.0f, 1.0f);
+            setMode(mode);
         }
         return &macro.a;
     }
@@ -139,9 +140,10 @@ public:
             fEditPhase = *updateEditPhase(direction);
             return &fEditPhase;
         }
-        if (direction) {
+        if (direction != NULL) {
             macro.b += *direction * 0.01f;
             macro.b = range(macro.b, 0.0f, 1.0f);
+            setMode(mode);
         }
         return &macro.b;
     }
@@ -151,9 +153,10 @@ public:
         if (!useMacro) {
             return updatePhaseTime(direction);
         }
-        if (direction) {
+        if (direction != NULL) {
             macro.c += *direction * 0.01f;
             macro.c = range(macro.c, 0.0f, 1.0f);
+            setMode(mode);
         }
         return &macro.c;
     }
@@ -190,6 +193,7 @@ public:
                 float y = 1 * exp(-a * x) + (b - b * pow(x, c));
                 data.push_back({ y, x });
             }
+            return;
         }
 
         // default

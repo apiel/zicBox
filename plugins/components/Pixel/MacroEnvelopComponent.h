@@ -150,7 +150,7 @@ public:
             } else if (id == encoders[2]) {
                 plugin->data(macro2DataId, &direction);
                 renderNext();
-            } else if (id == encoders[2]) {
+            } else if (id == encoders[3]) {
                 plugin->data(macro3DataId, &direction);
                 renderNext();
             }
