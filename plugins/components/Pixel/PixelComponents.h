@@ -38,6 +38,7 @@ void loadPixelComponents()
     viewManager.loadPlugin("Workspaces " + folder + "WorkspacesComponent.so");
     viewManager.loadPlugin("Sample " + folder + "SampleComponent.so");
     viewManager.loadPlugin("Tape " + folder + "TapeComponent.so");
+    viewManager.loadPlugin("MacroEnvelop " + folder + "MacroEnvelopComponent.so");
 }
 
 #else
@@ -45,20 +46,21 @@ void loadPixelComponents()
 #include "./AdsrComponent.h"
 #include "./ClipsComponent.h"
 #include "./DrumEnvelopComponent.h"
-#include "./KnobValueComponent.h"
 #include "./FmAlgoComponent.h"
 #include "./GraphEncoderComponent.h"
 #include "./HiddenValueComponent.h"
 #include "./KeyboardComponent.h"
+#include "./KnobValueComponent.h"
 #include "./ListComponent.h"
+#include "./MacroEnvelopComponent.h"
 #include "./RectComponent.h"
 #include "./SampleComponent.h"
 #include "./SeqBarComponent.h"
 #include "./SeqProgressBarComponent.h"
 #include "./SeqSynthBarComponent.h"
 #include "./SpectrogramComponent.h"
-#include "./StepEditComponent.h"
 #include "./StepEdit2Component.h"
+#include "./StepEditComponent.h"
 #include "./TapeComponent.h"
 #include "./TextComponent.h"
 #include "./TextGridComponent.h"
@@ -155,6 +157,10 @@ void loadPixelComponents()
 
     viewManager.plugins.push_back({ "Tape", [](ComponentInterface::Props props) {
                                        return new TapeComponent(props);
+                                   } });
+
+    viewManager.plugins.push_back({ "MacroEnvelop", [](ComponentInterface::Props props) {
+                                       return new MacroEnvelopComponent(props);
                                    } });
 }
 #endif

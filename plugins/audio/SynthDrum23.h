@@ -295,6 +295,9 @@ public:
         ENV_FREQ_EDIT,
         ENV_FREQ_TIME,
         ENV_FREQ_MOD,
+        ENV_FREQ_USE_MACRO,
+        ENV_FREQ_SET_MACRO,
+        ENV_FREQ_MODE,
         WAVEFORM,
     };
 
@@ -325,6 +328,15 @@ public:
         /*md - `ENV_FREQ_MOD` update the frequency modulation value for current step */
         if (name == "ENV_FREQ_MOD")
             return ENV_FREQ_MOD;
+        /*md - `ENV_FREQ_MODE` update the envelop frequency mode */
+        if (name == "ENV_FREQ_MODE")
+            return ENV_FREQ_MODE;
+        /*md - `ENV_FREQ_USE_MACRO` get the envelop frequency edit mode */
+        if (name == "ENV_FREQ_USE_MACRO")
+            return ENV_FREQ_USE_MACRO;
+        /*md - `ENV_FREQ_SET_MACRO` set the envelop frequency edit mode */
+        if (name == "ENV_FREQ_SET_MACRO")
+            return ENV_FREQ_SET_MACRO;
         /*md - `WAVEFORM` return a representation of the selected waveform */
         if (name == "WAVEFORM")
             return WAVEFORM;
@@ -356,6 +368,11 @@ public:
         }
         case ENV_FREQ_MOD: // update freq modulation value for current step
             return envelopFreq.updatePhaseModulation((int8_t*)userdata);
+        case ENV_FREQ_MODE: {
+            return envelopFreq.updateMode((int8_t*)userdata);
+        }
+        case ENV_FREQ_USE_MACRO: // get the envelop frequency edit mode
+            return &envelopFreq.useMacro;
         case WAVEFORM: { // pointer to waveform sample
             if (!wave) {
                 return NULL;

@@ -107,13 +107,38 @@ public:
     }
 
     int mode = 0;
-    // int type = 0;
+    bool useMacro = false;
+    struct Macro {
+        float a = 0.5;
+        float b = 0.5;
+        float c = 0.5;
+    } macro;
+
+    char* updateMode(int8_t* direction = NULL)
+    {
+        setMode(range(mode + *direction, 0, 2));
+        return (char *)getModeStr(mode).c_str();
+    }
+
+    Macro* updateMacro(Macro _macro)
+    {
+        macro = _macro;
+        return &macro;
+    }
+
+    enum MODE {
+        DEFAULT,
+        KICK,
+        EXPO_DECAY,
+    };
+
     void setMode(int _mode)
     {
         mode = _mode;
         data.clear();
 
-        if (mode == 0) {
+        if (mode == MODE::KICK) {
+            useMacro = false;
             data.push_back({ 1.0f, 0.0f });
             data.push_back({ 0.5f, 0.03f });
             data.push_back({ 0.3f, 0.07f });
@@ -122,21 +147,37 @@ public:
             return;
         }
 
-        // 1 * exp(-15 * x) +  (0.2 - 0.2 * x)
-        if (mode == 1) {
+        if (mode == MODE::EXPO_DECAY) {
+            useMacro = true;
             for (float x = 0.0f; x <= 1.0f; x += 0.01f) {
-                data.push_back({ 1.0f * exp(-15 * x) + 0.2f - 0.2f * x, x });
+                // data.push_back({ 1.0f * exp(-15 * x) + 0.2f - 0.2f * x, x });
+                // float y = 1 * exp(-15 * x) +  (0.2 - 0.2 * pow(x , 4));
+                float a = 70 * macro.a;
+                float b = 0.5 * macro.b;
+                float c = 100 * macro.c;
+                float y = 1 * exp(-a * x) + (b - b * pow(x, c));
+                data.push_back({ y, x });
             }
         }
 
         // default
+        useMacro = false;
         data.push_back({ 1.0f, 0.0f });
         data.push_back({ 0.0f, 1.0f });
+    }
+
+    std::string getModeStr(int _mode)
+    {
+        if (_mode == MODE::KICK)
+            return "Kick";
+        if (_mode == MODE::EXPO_DECAY)
+            return "Expo decay";
+
+        return "Default";
     }
 };
 
 #endif
-
 
 // 100 * exp(-1.0 * x) + 1.0
 /// --> "100 * exp(-0.2 * x) +  (10 - 0.1 * x)",

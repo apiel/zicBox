@@ -1,8 +1,8 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
 local React = require("config.libs.react")
-local ____DrumEnvelop = require("config.libs.components.DrumEnvelop")
-local DrumEnvelop = ____DrumEnvelop.DrumEnvelop
+local ____MacroEnvelop = require("config.libs.components.MacroEnvelop")
+local MacroEnvelop = ____MacroEnvelop.MacroEnvelop
 local ____View = require("config.libs.components.View")
 local View = ____View.View
 local ____Common = require("config.pixel.240x320_kick.ui.components.Common")
@@ -17,15 +17,7 @@ function ____exports.FrequencyView(____bindingPattern0)
     return React.createElement(
         View,
         {name = name},
-        React.createElement(DrumEnvelop, {
-            position = fullValues,
-            plugin = "Drum23",
-            envelop_data_id = "4",
-            RENDER_TITLE_ON_TOP = false,
-            encoder_time = 0,
-            encoder_phase = 1,
-            encoder_modulation = 2
-        }),
+        React.createElement(MacroEnvelop, {position = fullValues, plugin = "Drum23", envelop_data_id = "ENV_FREQ"}),
         React.createElement(TextGridSynth, {selected = 4, viewName = name}),
         React.createElement(Common, {selected = 0})
     )
