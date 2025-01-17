@@ -167,7 +167,7 @@ public:
         DEFAULT,
         KICK,
         EXPO_DECAY,
-        MULTI_PHASE,
+        MULTI_DECAY,
 
         MODE_COUNT
     };
@@ -199,10 +199,11 @@ public:
             return;
         }
 
-        if (mode == MODE::MULTI_PHASE) {
+        if (mode == MODE::MULTI_DECAY) {
             useMacro = true;
             for (float x = 0.0f; x <= 1.0f; x += 0.01f) {
-                float decay = 0.7f * exp(-60.0f * macro.a * x);
+                float decay = 0.7f * exp(-60.0f * (macro.a + 0.05f) * x);
+                // printf("decay: %f macro.a: %f\n", decay, macro.a);
                 float tail = 0.2f * exp(-5.0f * macro.b * x);
                 float release = tail - tail * pow(x, macro.c);
 
@@ -224,8 +225,8 @@ public:
             return "Kick";
         if (_mode == MODE::EXPO_DECAY)
             return "Expo decay";
-        if (_mode == MODE::MULTI_PHASE)
-            return "Multi phase";
+        if (_mode == MODE::MULTI_DECAY)
+            return "Multi decay";
         return "Default";
     }
 };
