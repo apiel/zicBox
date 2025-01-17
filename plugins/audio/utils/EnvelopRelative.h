@@ -190,7 +190,7 @@ public:
                 float a = 70 * macro.a;
                 float b = 0.5 * macro.b;
                 float c = 100 * macro.c;
-                float y = 1 * exp(-a * x) + (b - b * pow(x, c));
+                float y = range(1 * exp(-a * x) + (b - b * pow(x, c)), 0.0f, 1.0f);
                 data.push_back({ y, x });
             }
             return;
