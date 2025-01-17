@@ -117,13 +117,45 @@ public:
     char* updateMode(int8_t* direction = NULL)
     {
         setMode(range(mode + *direction, 0, 2));
-        return (char *)getModeStr(mode).c_str();
+        return (char*)getModeStr(mode).c_str();
     }
 
-    Macro* updateMacro(Macro _macro)
+    float* updateMacro1(int8_t* direction = NULL)
     {
-        macro = _macro;
-        return &macro;
+        if (!useMacro) {
+            return updatePhaseModulation(direction);
+        }
+        if (direction) {
+            macro.a += *direction * 0.01f;
+            macro.a = range(macro.a, 0.0f, 1.0f);
+        }
+        return &macro.a;
+    }
+
+    float fEditPhase = 0.0f;
+    float* updateMacro2(int8_t* direction = NULL)
+    {
+        if (!useMacro) {
+            fEditPhase = *updateEditPhase(direction);
+            return &fEditPhase;
+        }
+        if (direction) {
+            macro.b += *direction * 0.01f;
+            macro.b = range(macro.b, 0.0f, 1.0f);
+        }
+        return &macro.b;
+    }
+
+    float* updateMacro3(int8_t* direction = NULL)
+    {
+        if (!useMacro) {
+            return updatePhaseTime(direction);
+        }
+        if (direction) {
+            macro.c += *direction * 0.01f;
+            macro.c = range(macro.c, 0.0f, 1.0f);
+        }
+        return &macro.c;
     }
 
     enum MODE {

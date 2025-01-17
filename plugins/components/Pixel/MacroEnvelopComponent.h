@@ -24,12 +24,11 @@ protected:
 
     AudioPlugin* plugin = NULL;
     std::vector<Data>* envData = NULL;
-    uint8_t currentStepDataId = 1;
-    uint8_t timeDataId = 2;
-    uint8_t modDataId = 3;
-    uint8_t useMacroDataId = -1;
-    uint8_t setMacroDataId = -1;
     uint8_t modeDataId = -1;
+    uint8_t isMacroDataId = -1;
+    uint8_t macro1DataId = -1;
+    uint8_t macro2DataId = -1;
+    uint8_t macro3DataId = -1;
     std::string* modePtr = NULL;
 
     int8_t currentstep = 0;
@@ -128,9 +127,9 @@ public:
             draw.filledRect(relativePosition, size, { bgColor });
 
             if (envData) {
-                currentstep = *(int8_t*)plugin->data(currentStepDataId);
-                currentMod = *(float*)plugin->data(modDataId);
-                currentTimeMs = *(uint16_t*)plugin->data(timeDataId);
+                // currentstep = *(int8_t*)plugin->data(currentStepDataId);
+                // currentMod = *(float*)plugin->data(modDataId);
+                // currentTimeMs = *(uint16_t*)plugin->data(timeDataId);
 
                 renderEnvelop();
                 renderEditStep();
@@ -146,24 +145,14 @@ public:
                 plugin->data(modeDataId, &direction);
                 renderNext();
             } else if (id == encoders[1]) {
-                plugin->data(currentStepDataId, &direction);
+                plugin->data(macro1DataId, &direction);
                 renderNext();
             } else if (id == encoders[2]) {
-                plugin->data(timeDataId, &direction);
+                plugin->data(macro2DataId, &direction);
                 renderNext();
             } else if (id == encoders[2]) {
-                plugin->data(modDataId, &direction);
+                plugin->data(macro3DataId, &direction);
                 renderNext();
-            } else {
-                // printf("MacroEnvelopComponent onEncoder: %d %d\n", id, direction);
-                // ValueInterface* value = plugin->getValue("DURATION");
-                // value->increment(direction);
-
-                if (id > 4) { // just for testing rpi speaker, to be removed
-                    printf("play SynthDrum23 note on (encoder %d)\n", id);
-                    AudioPlugin* plugin = &getPlugin("SynthDrum23", 1);
-                    plugin->noteOn(60, 1.0f);
-                }
             }
         }
     }
@@ -184,39 +173,13 @@ public:
             }
             uint8_t id = plugin->getDataId(value);
             envData = (std::vector<Data>*)plugin->data(id);
-            currentStepDataId = id + 1;
-            timeDataId = id + 2;
-            modDataId = id + 3;
-            useMacroDataId = id + 4;
-            setMacroDataId = id + 5;
-            modeDataId = id + 6;
-            return true;
-        }
 
-        /*md - `STEP_DATA_ID: id` is the data id to get/set the current step/phase to edit.*/
-        if (strcmp(key, "STEP_DATA_ID") == 0) {
-            if (plugin == NULL) {
-                throw std::runtime_error("MacroEnvelopComponent cannot set STEP_DATA_ID: plugin is not set");
-            }
-            currentStepDataId = plugin->getDataId(value);
-            return true;
-        }
+            modeDataId = id + 1;
+            isMacroDataId = id + 2;
+            macro1DataId = id + 3;
+            macro2DataId = id + 4;
+            macro3DataId = id + 5;
 
-        /*md - `TIME_DATA_ID: id` is the data id to get/set the step to time.*/
-        if (strcmp(key, "TIME_DATA_ID") == 0) {
-            if (plugin == NULL) {
-                throw std::runtime_error("MacroEnvelopComponent cannot set TIME_DATA_ID: plugin is not set");
-            }
-            timeDataId = plugin->getDataId(value);
-            return true;
-        }
-
-        /*md - `MOD_DATA_ID: id` is the data id to get/set the step to mod.*/
-        if (strcmp(key, "MOD_DATA_ID") == 0) {
-            if (plugin == NULL) {
-                throw std::runtime_error("MacroEnvelopComponent cannot set MOD_DATA_ID: plugin is not set");
-            }
-            modDataId = plugin->getDataId(value);
             return true;
         }
 
