@@ -13,7 +13,7 @@ export function TextGridSnare({ selected, viewName }: { selected: number, viewNa
 
                     { key: 'a', action: viewName === 'Amplitude' ? 'setView:Click' : 'setView:Amplitude' },
                     { key: 's', action: 'setView:Frequency' },
-                    { key: 'd', action: 'noteOn:Drum23:60' },
+                    { key: 'd', action: 'noteOn:Snare:60' },
             ]}
             selected={selected}
             contextValue={0}

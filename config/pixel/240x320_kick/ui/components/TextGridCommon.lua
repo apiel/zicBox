@@ -8,15 +8,16 @@ function ____exports.TextGridCommon(____bindingPattern0)
     selected = ____bindingPattern0.selected
     return React.createElement(TextGridSel, {items = {
         "Seq.",
-        "Synth",
+        "Kick",
         "^...",
-        "&empty",
+        "Snare",
         "Menu",
         "&icon::play::filled"
     }, keys = {
         {key = "q", action = "setView:Sequencer"},
         {key = "w", action = "setView:Master"},
         {key = "e", action = "contextToggle:254:1:0"},
+        {key = "a", action = "setView:Snare"},
         {key = "s", action = "setView:Menu"},
         {key = "d", action = "playPause"}
     }, selected = selected, contextValue = 1})

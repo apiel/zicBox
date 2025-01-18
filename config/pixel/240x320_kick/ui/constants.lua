@@ -27,4 +27,6 @@ ____exports.ColorTrack5 = "#15a5ca"
 ____exports.ColorTrack6 = "#4643d8"
 ____exports.ColorTrack7 = "#902ed1"
 ____exports.ColorTrack8 = "#cb11ca"
+____exports.Drum23Track = 1
+____exports.SnareTrack = 2
 return ____exports

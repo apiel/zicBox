@@ -21,7 +21,7 @@ function ____exports.TextGridSnare(____bindingPattern0)
         {key = "e", action = "contextToggle:254:1:0"},
         {key = "a", action = viewName == "Amplitude" and "setView:Click" or "setView:Amplitude"},
         {key = "s", action = "setView:Frequency"},
-        {key = "d", action = "noteOn:Drum23:60"}
+        {key = "d", action = "noteOn:Snare:60"}
     }, selected = selected, contextValue = 0})
 end
 return ____exports

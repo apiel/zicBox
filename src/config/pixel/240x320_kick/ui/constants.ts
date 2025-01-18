@@ -30,3 +30,6 @@ export const ColorTrack5 = '#15a5ca';
 export const ColorTrack6 = '#4643d8';
 export const ColorTrack7 = '#902ed1';
 export const ColorTrack8 = '#cb11ca';
+
+export const Drum23Track = 1;
+export const SnareTrack = 2;
