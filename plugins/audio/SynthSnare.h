@@ -24,11 +24,11 @@ public:
     /*md **Values**: */
 
     /*md - `DURATION` set the duration of the envelop.*/
-    Val& duration = val(100.0f, "DURATION", { "Duration", .min = 10.0, .max = 5000.0, .step = 10.0, .unit = "ms" });
+    Val& duration = val(100.0f, "DURATION", { "Duration", .min = 10.0, .max = 2500.0, .step = 10.0, .unit = "ms" });
 
-    Val& toneFreq = val(200.0f, "TONE_FREQ", { "Tone Frequency", .min = 50.0, .max = 1000.0, .step = 1.0, .unit = "Hz" });
+    Val& toneFreq = val(200.0f, "TONE_FREQ", { "Tone Freq.", .min = 50.0, .max = 1000.0, .step = 1.0, .unit = "Hz" });
 
-    Val& noiseMix = val(0.7f, "NOISE_MIX", { "Noise Mix", .min = 0.0, .max = 1.0, .step = 0.01 });
+    Val& noiseMix = val(0.7f, "NOISE_MIX", { "Noise Mix" });
 
     SynthSnare(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -50,7 +50,7 @@ public:
             float t = static_cast<float>(i) / props.sampleRate;
             float tone = sinf(2.0f * M_PI * toneFreq.get() * t) * env;
 
-            buf[track] = (noise * noiseMix.get()) + (tone * (1.0f - noiseMix.get()));
+            buf[track] = (noise * noiseMix.pct()) + (tone * (1.0f - noiseMix.pct()));
             i++;
         }
     }

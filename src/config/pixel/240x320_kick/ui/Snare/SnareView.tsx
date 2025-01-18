@@ -4,9 +4,7 @@ import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
 import { SnareTrack } from '../constants';
-import {
-    topLeftKnob
-} from '../constantsValue';
+import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
 import { TextGridSnare } from './TextGridSnare';
 
 export type Props = {
@@ -23,21 +21,26 @@ export function SnareView({ name }: Props) {
                 COLOR="tertiary"
                 track={SnareTrack}
             />
-            {/* <KnobValue
-                value="MMFilter CUTOFF"
+            <KnobValue
+                value="Snare DURATION"
                 position={topRightKnob}
                 encoder_id={2}
                 COLOR="secondary"
-                FONT_VALUE_SIZE={8}
-                TYPE="STRING"
+                track={SnareTrack}
             />
-            <KnobValue value="Drum23 GAIN_CLIPPING" position={bottomLeftKnob} encoder_id={1} />
             <KnobValue
-                value="MMFilter RESONANCE"
+                value="Snare TONE_FREQ"
+                position={bottomLeftKnob}
+                encoder_id={1}
+                track={SnareTrack}
+            />
+            <KnobValue
+                value="Snare NOISE_MIX"
                 position={bottomRightKnob}
                 encoder_id={3}
                 COLOR="secondary"
-            /> */}
+                track={SnareTrack}
+            />
 
             <TextGridSnare selected={0} viewName={name} />
             <Common selected={1} />

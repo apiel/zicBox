@@ -10,7 +10,10 @@ local Common = ____Common.Common
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
 local SnareTrack = ____constants.SnareTrack
 local ____constantsValue = require("config.pixel.240x320_kick.ui.constantsValue")
+local bottomLeftKnob = ____constantsValue.bottomLeftKnob
+local bottomRightKnob = ____constantsValue.bottomRightKnob
 local topLeftKnob = ____constantsValue.topLeftKnob
+local topRightKnob = ____constantsValue.topRightKnob
 local ____TextGridSnare = require("config.pixel.240x320_kick.ui.Snare.TextGridSnare")
 local TextGridSnare = ____TextGridSnare.TextGridSnare
 function ____exports.SnareView(____bindingPattern0)
@@ -24,6 +27,21 @@ function ____exports.SnareView(____bindingPattern0)
             position = topLeftKnob,
             encoder_id = 0,
             COLOR = "tertiary",
+            track = SnareTrack
+        }),
+        React.createElement(KnobValue, {
+            value = "Snare DURATION",
+            position = topRightKnob,
+            encoder_id = 2,
+            COLOR = "secondary",
+            track = SnareTrack
+        }),
+        React.createElement(KnobValue, {value = "Snare TONE_FREQ", position = bottomLeftKnob, encoder_id = 1, track = SnareTrack}),
+        React.createElement(KnobValue, {
+            value = "Snare NOISE_MIX",
+            position = bottomRightKnob,
+            encoder_id = 3,
+            COLOR = "secondary",
             track = SnareTrack
         }),
         React.createElement(TextGridSnare, {selected = 0, viewName = name}),
