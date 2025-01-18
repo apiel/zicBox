@@ -120,7 +120,7 @@ public:
     std::string* updateMode(int8_t* direction = NULL)
     {
         if (direction != NULL) {
-            setMode(range(mode + *direction, 0, MODE_COUNT - 1));
+            setMode(range(mode + *direction, 0, modes.size()));
         }
         modeStrPtr = getModeStr(mode);
         return &modeStrPtr;
@@ -173,17 +173,6 @@ public:
         }
         return &macro.c;
     }
-
-    enum MODE {
-        DEFAULT,
-        KICK,
-        EXPO_DECAY,
-        MULTI_DECAY,
-        DOWN_HILLS,
-        SIN_POW,
-
-        MODE_COUNT
-    };
 
     struct Mode {
         std::string name;
