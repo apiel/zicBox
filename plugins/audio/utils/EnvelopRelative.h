@@ -1,6 +1,8 @@
 #ifndef _ZIC_ENVELOP_RELATIVE_H_
 #define _ZIC_ENVELOP_RELATIVE_H_
 
+#include <sstream>
+#include <stdio.h>
 #include <vector>
 
 class EnvelopRelative {
@@ -290,6 +292,56 @@ public:
             return "Sin pow";
 
         return "Default";
+    }
+
+    void serialize(FILE* file, std::string separator, std::string name)
+    {
+        fprintf(file, "%s", name.c_str());
+        if (useMacro) {
+            fprintf(file, " %d %f %f %f", mode, macro.a, macro.b, macro.c);
+        } else {
+            fprintf(file, " %d", mode);
+            for (EnvelopRelative::Data& phase : data) {
+                fprintf(file, " %f:%f", phase.modulation, phase.time);
+            }
+            fprintf(file, "%s", separator.c_str());
+        }
+    }
+
+    void hydrate(std::string value)
+    {
+        data.clear();
+        std::stringstream ss(value);
+        std::string token;
+
+        if (ss >> token) {
+            sscanf(token.c_str(), "%d", mode);
+            setMode(mode, false);
+            if (useMacro) {
+                 if (ss >> token) {
+                    sscanf(token.c_str(), "%f %f %f", &macro.a, &macro.b, &macro.c);
+                    printf("hydrate macro.a: %f macro.b: %f macro.c: %f\n", macro.a, macro.b, macro.c);
+                }
+                // if (ss >> token) {
+                //     sscanf(token.c_str(), "%f", &macro.a);
+                // }
+                // if (ss >> token) {
+                //     sscanf(token.c_str(), "%f", &macro.b);
+                // }
+                // if (ss >> token) {
+                //     sscanf(token.c_str(), "%f", &macro.c);
+                // }
+            } else {
+                while (ss >> token) {
+                    float time = 0;
+                    float mod = 0;
+                    sscanf(token.c_str(), "%f:%f", &mod, &time);
+                    // printf("- time: %f mode: %f\n", time, mod);
+                    data.push_back({ mod, time });
+                }
+            }
+            setMode(mode, false);
+        }
     }
 };
 
