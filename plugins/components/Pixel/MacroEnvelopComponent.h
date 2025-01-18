@@ -35,9 +35,6 @@ protected:
     float macro3 = 0.0f;
     bool* isMacro = NULL;
 
-    float currentMod = 0.0f;
-    uint16_t currentTimeMs = 0;
-
     int envelopHeight = 30;
     Point envPosition = { 0, 0 };
 
@@ -113,11 +110,6 @@ protected:
             draw.textRight({ x + size.w - 2, relativePosition.y }, std::to_string((int)(macro2 * 100)) + "%", fontSize, { textColor.color });
             draw.textRight({ x + size.w - 2, relativePosition.y + size.h - 8 }, std::to_string((int)(macro3 * 100)) + "%", fontSize, { textColor.color });
         } else {
-
-            // draw.text({ x + 2, relativePosition.y }, std::to_string(currentTimeMs) + "ms", fontSize, { textColor.color });
-            // draw.textRight({ x + size.w - 2, relativePosition.y }, std::to_string((int)(currentMod * 100)) + "%", fontSize, { textColor.color });
-            // draw.text({ x + 2, relativePosition.y + size.h - 8 }, std::to_string(currentstep + 1) + "/" + std::to_string(envData->size()), fontSize, { textColor.color });
-
             draw.text({ x + 2, relativePosition.y + size.h - 8 }, std::to_string((int)macro1 + 1) + "/" + std::to_string(envData->size()), fontSize, { textColor.color });
             draw.textRight({ x + size.w - 2, relativePosition.y }, std::to_string((int)(macro2 * 100)) + "%", fontSize, { textColor.color });
             draw.textRight({ x + size.w - 2, relativePosition.y + size.h - 8 }, std::to_string((int)macro3) + "ms", fontSize, { textColor.color });
@@ -144,6 +136,11 @@ public:
             draw.filledRect(relativePosition, size, { bgColor });
 
             if (envData) {
+                // modePtr = (std::string*)plugin->data(modeDataId);
+                // macro1 = *(float*)plugin->data(macro1DataId);
+                // macro2 = *(float*)plugin->data(macro2DataId);
+                // macro3 = *(float*)plugin->data(macro3DataId);
+
                 renderEnvelop();
                 renderTitles();
 
