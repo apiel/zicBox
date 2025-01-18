@@ -319,7 +319,7 @@ public:
             if (reset) {
                 shape = 1.00f;
                 macro = 1.00f;
-                printf("FmSquare reset to shape: %f, macro: %f\n", shape, macro);
+                // printf("FmSquare reset to shape: %f, macro: %f\n", shape, macro);
             }
             loadFmSquareType();
             break;
