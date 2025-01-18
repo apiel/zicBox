@@ -126,40 +126,46 @@ public:
 
     float* updateMacro1(int8_t* direction = NULL)
     {
-        if (!useMacro) {
-            fEditPhase = *updateEditPhase(direction);
-            return &fEditPhase;
-        }
         if (direction != NULL) {
-            macro.a += *direction * 0.01f;
-            macro.a = range(macro.a, 0.0f, 1.0f);
-            setMode(mode, false);
+            if (!useMacro) {
+                fEditPhase = *updateEditPhase(direction);
+                return &fEditPhase;
+            }
+            if (direction != NULL) {
+                macro.a += *direction * 0.01f;
+                macro.a = range(macro.a, 0.0f, 1.0f);
+                setMode(mode, false);
+            }
         }
         return &macro.a;
     }
 
     float* updateMacro2(int8_t* direction = NULL)
     {
-        if (!useMacro) {
-            return updatePhaseModulation(direction);
-        }
         if (direction != NULL) {
-            macro.b += *direction * 0.01f;
-            macro.b = range(macro.b, 0.0f, 1.0f);
-            setMode(mode, false);
+            if (!useMacro) {
+                return updatePhaseModulation(direction);
+            }
+            if (direction != NULL) {
+                macro.b += *direction * 0.01f;
+                macro.b = range(macro.b, 0.0f, 1.0f);
+                setMode(mode, false);
+            }
         }
         return &macro.b;
     }
 
     float* updateMacro3(int8_t* direction = NULL)
     {
-        if (!useMacro) {
-            return updatePhaseTime(direction);
-        }
         if (direction != NULL) {
-            macro.c += *direction * 0.01f;
-            macro.c = range(macro.c, 0.0f, 1.0f);
-            setMode(mode, false);
+            if (!useMacro) {
+                return updatePhaseTime(direction);
+            }
+            if (direction != NULL) {
+                macro.c += *direction * 0.01f;
+                macro.c = range(macro.c, 0.0f, 1.0f);
+                setMode(mode, false);
+            }
         }
         return &macro.c;
     }

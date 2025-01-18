@@ -283,7 +283,8 @@ public:
     }
 
 protected:
-    uint16_t msAmp = 0;
+    uint16_t msEnv = 0;
+    float fMsEnv = 0.0f;
 
 public:
     enum DATA_ID {
@@ -364,8 +365,8 @@ public:
             return envelopAmp.updateEditPhase((int8_t*)userdata);
         case ENV_AMP_TIME: { // update amp time for current step
             float* timePct = envelopAmp.updatePhaseTime((int8_t*)userdata);
-            msAmp = (uint16_t)(*timePct * duration.get());
-            return &msAmp;
+            msEnv = (uint16_t)(*timePct * duration.get());
+            return &msEnv;
         }
         case ENV_AMP_MOD: // update amp modulation value for current step
             return envelopAmp.updatePhaseModulation((int8_t*)userdata);
@@ -375,8 +376,8 @@ public:
             return envelopFreq.updateEditPhase((int8_t*)userdata);
         case ENV_FREQ_TIME: { // update freq time for current step
             float* timePct = envelopFreq.updatePhaseTime((int8_t*)userdata);
-            msAmp = (uint16_t)(*timePct * duration.get());
-            return &msAmp;
+            msEnv = (uint16_t)(*timePct * duration.get());
+            return &msEnv;
         }
         case ENV_FREQ_MOD: // update freq modulation value for current step
             return envelopFreq.updatePhaseModulation((int8_t*)userdata);
@@ -391,8 +392,14 @@ public:
             return envelopFreq.updateMacro1((int8_t*)userdata);
         case ENV_FREQ_MACRO2:
             return envelopFreq.updateMacro2((int8_t*)userdata);
-        case ENV_FREQ_MACRO3:
-            return envelopFreq.updateMacro3((int8_t*)userdata);
+        case ENV_FREQ_MACRO3: {
+            float *macro3 = envelopFreq.updateMacro3((int8_t*)userdata);
+            if (!envelopFreq.useMacro) {
+                fMsEnv = *macro3 * duration.get();
+                return &fMsEnv;
+            }
+            return macro3;
+        }
         case WAVEFORM: { // pointer to waveform sample
             if (!wave) {
                 return NULL;
