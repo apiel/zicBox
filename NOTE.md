@@ -1,35 +1,13 @@
 ## Pixel TODO
 
 - FIXME transition between wavetable and waveform is not so smooth...
-      - 
 
-- TODO Kick module make value component bigger and more representative, e.g filter envelop...
-
-- TODO master track --> add effect: sample reducer, distortion, delay...? 
-    - --> instead of mixer drum and mixer synth, use sent effect to track fx1 and track fx2
-- TODO perform / grid effect / scatter effect: apply effect for some time, apply granular effect, pitch down
+- TODO reduce data id in SynthDrum23 and update DrumEnvelopComponent or simply remove it
+- TODO fix envelop step edit
 
 - TODO use https://github.com/nlohmann/json for config
     - just need to find a way to inform jsx to whether pass json format or string format
     ---> maybe for the moment should only be for component...
-
-- FIXME pixel_env.lua
-
-- TODO drum freq envelop is really good but not easy to use
-  - might be great to keep this one as advance version
-  - and to have one more simple where we could somehow morph between envelops a bit like wavetable...
-    - --> https://www.google.com/search?q=math+draw+line+function
-    - use mathematical function to generate the envelop
-      - first parameter allow to switch between math function
-      - the next parameters allow to change variable value in the function in order to affect the shape
-      - https://codesandbox.io/p/sandbox/green-platform-tzl4pn?file=%2Fsrc%2Findex.js%3A21%2C1
-
-- TODO TODO
-- IDEA cache audio track to reduce computation?
-    We should cache several plugin at once, caching a single plugin is not bringing signitificant improvement: e.g. SynthDrumSample (very close to what cache would be) is using about 2% cpu and SynthDrum23 is using 4% cpu. However, SynthDrum23 + Distortion + MMFilter is using 10% cpu.
-    See `void set(float value, void* data = NULL)` in `plugins/audio/mapping.h` calling `onUpdateFn` callback function, could use the same concept to trigger recording of a new cache. However, ui is already using this, so either we could need a vector of callback function, or 2 of them... Some way to debounce it would make sense. How to record the cache, without to impact the audio output?
-    **Find a way to record one note:** Create an audio plugin to cache output from all previous plugin. This cache plugin would watch for parameter change. If parameter of one of the previous plugin change, it would cache the audio output for a strategic note (low tone note) and then allowing to speedup reading cache to get higher note.
-    **All track caching** the whole track caching would make it hard for sequencer motion and probability, most likely not the right way...
 
 - TODO clips
   - instead to play right away when clicking toggle button, maybe it should play at the next loop, and we need to play right away the would be a different combination key
@@ -37,6 +15,10 @@
   - delete button should ask confirmation (as workspace is saving automatically cannot restore)
   - clips allow more than 16 by adding a scrolling system
   - give a way to make some extra color code to classify depending if it is used for playibg live or for generating sample?
+
+- TODO master track --> add effect: sample reducer, distortion, delay...? 
+    - --> instead of mixer drum and mixer synth, use sent effect to track fx1 and track fx2
+- TODO perform / grid effect / scatter effect: apply effect for some time, apply granular effect, pitch down
 
 - TODO add color code in text char...
 - TODO paragraph --> multiline text component
@@ -119,6 +101,13 @@
 - IDEA extra keypad extension: make a 5x5 rgb keypad using keycap but with transparent cap. They can be put in chain, so we could have a 5x10 keypad, or even more...
 
 - TODO Filter... make an advance filter with muliple choice, basic LPF filter, HPF, MMfilter, moog filter, and more...
+
+- TODO TODO
+- IDEA cache audio track to reduce computation?
+    We should cache several plugin at once, caching a single plugin is not bringing signitificant improvement: e.g. SynthDrumSample (very close to what cache would be) is using about 2% cpu and SynthDrum23 is using 4% cpu. However, SynthDrum23 + Distortion + MMFilter is using 10% cpu.
+    See `void set(float value, void* data = NULL)` in `plugins/audio/mapping.h` calling `onUpdateFn` callback function, could use the same concept to trigger recording of a new cache. However, ui is already using this, so either we could need a vector of callback function, or 2 of them... Some way to debounce it would make sense. How to record the cache, without to impact the audio output?
+    **Find a way to record one note:** Create an audio plugin to cache output from all previous plugin. This cache plugin would watch for parameter change. If parameter of one of the previous plugin change, it would cache the audio output for a strategic note (low tone note) and then allowing to speedup reading cache to get higher note.
+    **All track caching** the whole track caching would make it hard for sequencer motion and probability, most likely not the right way...
 
 ## Next TODO
 
