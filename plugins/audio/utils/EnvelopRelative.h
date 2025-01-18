@@ -318,25 +318,19 @@ public:
         if (ss >> token) {
             int mode = 0;
             sscanf(token.c_str(), "%d", &mode); // Parse the mode as an integer
-            printf("hydrate mode: %d\n", mode);
-
             setMode(mode, false);
 
             if (useMacro) { // Handle macro type
-                float a, b, c;
                 // Parse each value separately
                 if (ss >> token) {
-                    sscanf(token.c_str(), "%f", &a);
+                    sscanf(token.c_str(), "%f", &macro.a);
                 }
                 if (ss >> token) {
-                    sscanf(token.c_str(), "%f", &b);
+                    sscanf(token.c_str(), "%f", &macro.b);
                 }
                 if (ss >> token) {
-                    sscanf(token.c_str(), "%f", &c);
+                    sscanf(token.c_str(), "%f", &macro.c);
                 }
-                macro.a = a;
-                macro.b = b;
-                macro.c = c;
                 setMode(mode, false);
             } else { // Handle mod:time pairs
                 while (ss >> token) {
