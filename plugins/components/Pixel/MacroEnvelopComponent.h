@@ -151,6 +151,9 @@ public:
         if (isActive) {
             if (id == encoders[0]) {
                 modePtr = (std::string*)plugin->data(modeDataId, &direction);
+                macro1 = *(float*)plugin->data(macro1DataId);
+                macro2 = *(float*)plugin->data(macro2DataId);
+                macro3 = *(float*)plugin->data(macro3DataId);
                 renderNext();
             } else if (id == encoders[1]) {
                 macro1 = *(float*)plugin->data(macro1DataId, &direction);
