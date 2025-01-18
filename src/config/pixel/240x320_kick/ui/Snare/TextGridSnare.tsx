@@ -5,10 +5,10 @@ import { TextGridSel } from '../components/TextGridSel';
 export function TextGridSnare({ selected, viewName }: { selected: number, viewName: string }) {
     return (
         <TextGridSel
-            items={['Fx1/Fx2', 'Waveform', '...', 'Amp/Click', 'Freq.', '&icon::musicNote::pixelated']}
+            items={['Page1', 'Page2', '...', 'Amp/Click', 'Freq.', '&icon::musicNote::pixelated']}
             keys={[
-                    { key: 'q', action: viewName === 'Master' ? 'setView:Distortion' : 'setView:Master' },
-                    { key: 'w', action: 'setView:Waveform' },
+                    { key: 'q', action: 'setView:Snare' },
+                    { key: 'w', action: 'setView:Snare2' },
                     { key: 'e', action: 'contextToggle:254:1:0' },
 
                     { key: 'a', action: viewName === 'Amplitude' ? 'setView:Click' : 'setView:Amplitude' },
