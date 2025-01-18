@@ -4,48 +4,40 @@ import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
 import {
-    bottomLeftKnob,
-    bottomRightKnob,
-    topLeftKnob,
-    topRightKnob
+    topLeftKnob
 } from '../constantsValue';
-import { TextGridSynth } from './TextGridSynth';
+import { TextGridSnare } from './TextGridSnare';
 
 export type Props = {
     name: string;
 };
 
-export function ClickView({ name }: Props) {
+export function SnareView({ name }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                value="Drum23 CLICK"
+                value="Volume VOLUME"
                 position={topLeftKnob}
                 encoder_id={0}
                 COLOR="tertiary"
             />
-            <KnobValue
-                value="Drum23 CLICK_CUTOFF"
+            {/* <KnobValue
+                value="MMFilter CUTOFF"
                 position={topRightKnob}
                 encoder_id={2}
-                COLOR="primary"
+                COLOR="secondary"
+                FONT_VALUE_SIZE={8}
                 TYPE="STRING"
-                FONT_VALUE_SIZE={12}
             />
+            <KnobValue value="Drum23 GAIN_CLIPPING" position={bottomLeftKnob} encoder_id={1} />
             <KnobValue
-                value="Drum23 CLICK_DURATION"
-                position={bottomLeftKnob}
-                encoder_id={1}
-                COLOR="quaternary"
-            />
-            <KnobValue
-                value="Drum23 CLICK_RESONANCE"
+                value="MMFilter RESONANCE"
                 position={bottomRightKnob}
                 encoder_id={3}
                 COLOR="secondary"
-            />
+            /> */}
 
-            <TextGridSynth selected={3} viewName={name} />
+            <TextGridSnare selected={0} viewName={name} />
             <Common selected={1} />
         </View>
     );

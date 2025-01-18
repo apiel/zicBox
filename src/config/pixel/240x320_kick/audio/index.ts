@@ -25,6 +25,12 @@ plugin('MMFilter EffectFilterMultiMode', [{ STRING_CUTOFF_FORMAT, track }]);
 plugin('Volume EffectGainVolume', [{ track }]);
 plugin('SerializeTrack', [{ track, filename: 'drum23', MAX_VARIATION, WORKSPACE_FOLDER }]);
 
+track = 2;
+plugin('Snare', [{ track }]);
+plugin('Sequencer', [{ track }]);
+plugin('Volume EffectGainVolume', [{ track }]);
+plugin('SerializeTrack', [{ track, filename: 'snare', MAX_VARIATION, WORKSPACE_FOLDER }]);
+
 plugin('MixerDrum Mixer4');
 plugin('SerializeTrack', [{ filename: 'mixer', MAX_VARIATION, WORKSPACE_FOLDER }]);
 

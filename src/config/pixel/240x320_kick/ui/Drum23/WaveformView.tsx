@@ -5,7 +5,7 @@ import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
 import { bottomRightKnob, topValues } from '../constantsValue';
-import { TextGridSynth } from './TextGridSynth';
+import { TextGridDrum23 } from './TextGridDrum23';
 
 export type Props = {
     name: string;
@@ -27,7 +27,7 @@ export function WaveformView({ name }: Props) {
                 encoder_id={3}
                 color="secondary"
             />
-            <TextGridSynth selected={1} viewName={name} />
+            <TextGridDrum23 selected={1} viewName={name} />
             <Common selected={0} />
         </View>
     );

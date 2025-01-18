@@ -2,7 +2,7 @@ import * as React from '@/libs/react';
 
 import { TextGridSel } from '../components/TextGridSel';
 
-export function TextGridSynth({ selected, viewName }: { selected: number, viewName: string }) {
+export function TextGridSnare({ selected, viewName }: { selected: number, viewName: string }) {
     return (
         <TextGridSel
             items={['Fx1/Fx2', 'Waveform', '...', 'Amp/Click', 'Freq.', '&icon::musicNote::pixelated']}
