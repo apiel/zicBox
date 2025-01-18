@@ -2,6 +2,8 @@
 
 - FIXME transition between wavetable and waveform is not so smooth...
 
+- TODO instead of EffectGainVolume could use Mixer to set volume
+
 - TODO reduce data id in SynthDrum23 and update DrumEnvelopComponent or simply remove it
 - TODO fix envelop step edit
 
