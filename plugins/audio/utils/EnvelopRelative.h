@@ -122,10 +122,13 @@ public:
         return &modeStrPtr;
     }
 
+    float fEditPhase = 0.0f;
+
     float* updateMacro1(int8_t* direction = NULL)
     {
         if (!useMacro) {
-            return updatePhaseModulation(direction);
+            fEditPhase = *updateEditPhase(direction);
+            return &fEditPhase;
         }
         if (direction != NULL) {
             macro.a += *direction * 0.01f;
@@ -135,12 +138,10 @@ public:
         return &macro.a;
     }
 
-    float fEditPhase = 0.0f;
     float* updateMacro2(int8_t* direction = NULL)
     {
         if (!useMacro) {
-            fEditPhase = *updateEditPhase(direction);
-            return &fEditPhase;
+            return updatePhaseModulation(direction);
         }
         if (direction != NULL) {
             macro.b += *direction * 0.01f;
