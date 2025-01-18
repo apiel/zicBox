@@ -168,6 +168,8 @@ public:
         KICK,
         EXPO_DECAY,
         MULTI_DECAY,
+        DOWN_HILLS,
+        SIN_POW,
 
         MODE_COUNT
     };
@@ -223,6 +225,42 @@ public:
             return;
         }
 
+        if (mode == MODE::DOWN_HILLS) {
+            useMacro = true;
+            if (init) {
+                macro.a = 0.5;
+                macro.b = 0.5;
+                macro.c = 0.01;
+            }
+            for (float x = 0.0f; x <= 1.0f; x += 0.01f) {
+                float a = 100 * macro.a + 5;
+                float b = macro.b;
+                float c = 100 * macro.c;
+                float y = range(1 * exp(-a * x) + b * sin(x) - pow(x, c), 0.0f, 1.0f);
+                data.push_back({ y, x });
+            }
+            return;
+        }
+
+        if (mode == MODE::SIN_POW) {
+            useMacro = true;
+            if (init) {
+                macro.a = 0.1;
+                macro.b = 0.2;
+                macro.c = 0.00;
+            }
+            for (float x = 0.0f; x <= 1.0f; x += 0.01f) {
+                float a = macro.b;
+                int b = macro.a * 100;
+                b = b * 2 + 4;
+                float c = 0.5 * macro.c;
+
+                float y = range(-a * sin(-1 + x) + pow(-1 + x, b) + c * acos(x), 0.0f, 1.0f);
+                data.push_back({ y, x });
+            }
+            return;
+        }
+
         // default
         useMacro = false;
         data.push_back({ 1.0f, 0.0f });
@@ -237,6 +275,11 @@ public:
             return "Expo decay";
         if (_mode == MODE::MULTI_DECAY)
             return "Multi decay";
+        if (_mode == MODE::DOWN_HILLS)
+            return "Down hills";
+        if (_mode == MODE::SIN_POW)
+            return "Sin pow";
+
         return "Default";
     }
 };
