@@ -5,7 +5,7 @@ import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
 import { bottomRightKnob, topValues } from '../constantsValue';
-import { TextGridSynth } from './TextGridSynth';
+import { TextGridDrum23 } from './TextGridDrum23';
 
 export type Props = {
     name: string;
@@ -29,7 +29,7 @@ export function AmpView({ name }: Props) {
                 encoder_id={3}
                 color="quaternary"
             />
-            <TextGridSynth selected={3} viewName={name} />
+            <TextGridDrum23 selected={3} viewName={name} />
             <Common selected={1} />
         </View>
     );

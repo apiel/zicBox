@@ -4,7 +4,7 @@ import { MacroEnvelop } from '@/libs/components/MacroEnvelop';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
 import { fullValues } from '../constantsValue';
-import { TextGridSynth } from './TextGridSynth';
+import { TextGridDrum23 } from './TextGridDrum23';
 
 export type Props = {
     name: string;
@@ -18,7 +18,7 @@ export function FrequencyView({ name }: Props) {
                 plugin="Drum23"
                 envelop_data_id="ENV_FREQ2"
             />
-            <TextGridSynth selected={4} viewName={name} />
+            <TextGridDrum23 selected={4} viewName={name} />
             <Common selected={0} />
         </View>
     );

@@ -9,36 +9,39 @@ import {
     topLeftKnob,
     topRightKnob
 } from '../constantsValue';
-import { TextGridSynth } from './TextGridSynth';
+import { TextGridDrum23 } from './TextGridDrum23';
 
 export type Props = {
     name: string;
 };
 
-export function DistortionView({ name }: Props) {
+export function MasterView({ name }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                value="Distortion WAVESHAPE"
+                value="Volume VOLUME"
                 position={topLeftKnob}
                 encoder_id={0}
                 COLOR="tertiary"
             />
             <KnobValue
-                value="Distortion COMPRESS"
+                value="MMFilter CUTOFF"
                 position={topRightKnob}
                 encoder_id={2}
-                COLOR="primary"
+                COLOR="secondary"
+                FONT_VALUE_SIZE={8}
+                TYPE="STRING"
             />
-            <KnobValue value="Distortion DRIVE" position={bottomLeftKnob} encoder_id={1} COLOR="quaternary" />
+            <KnobValue value="Drum23 GAIN_CLIPPING" position={bottomLeftKnob} encoder_id={1} />
             <KnobValue
-                value="Distortion BASS"
+                value="MMFilter RESONANCE"
                 position={bottomRightKnob}
                 encoder_id={3}
                 COLOR="secondary"
             />
-            <TextGridSynth selected={0} viewName={name} />
-            <Common selected={0} />
+
+            <TextGridDrum23 selected={0} viewName={name} />
+            <Common selected={1} />
         </View>
     );
 }
