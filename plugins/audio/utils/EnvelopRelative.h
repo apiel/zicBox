@@ -304,43 +304,47 @@ public:
             for (EnvelopRelative::Data& phase : data) {
                 fprintf(file, " %f:%f", phase.modulation, phase.time);
             }
-            fprintf(file, "%s", separator.c_str());
         }
+        fprintf(file, "%s", separator.c_str());
     }
 
     void hydrate(std::string value)
     {
-        data.clear();
+        data.clear(); // Clear existing data
         std::stringstream ss(value);
         std::string token;
 
+        // Read the mode
         if (ss >> token) {
-            sscanf(token.c_str(), "%d", mode);
+            int mode = 0;
+            sscanf(token.c_str(), "%d", &mode); // Parse the mode as an integer
+            printf("hydrate mode: %d\n", mode);
+
             setMode(mode, false);
-            if (useMacro) {
-                 if (ss >> token) {
-                    sscanf(token.c_str(), "%f %f %f", &macro.a, &macro.b, &macro.c);
-                    printf("hydrate macro.a: %f macro.b: %f macro.c: %f\n", macro.a, macro.b, macro.c);
+
+            if (useMacro) { // Handle macro type
+                float a, b, c;
+                // Parse each value separately
+                if (ss >> token) {
+                    sscanf(token.c_str(), "%f", &a);
                 }
-                // if (ss >> token) {
-                //     sscanf(token.c_str(), "%f", &macro.a);
-                // }
-                // if (ss >> token) {
-                //     sscanf(token.c_str(), "%f", &macro.b);
-                // }
-                // if (ss >> token) {
-                //     sscanf(token.c_str(), "%f", &macro.c);
-                // }
-            } else {
+                if (ss >> token) {
+                    sscanf(token.c_str(), "%f", &b);
+                }
+                if (ss >> token) {
+                    sscanf(token.c_str(), "%f", &c);
+                }
+                macro.a = a;
+                macro.b = b;
+                macro.c = c;
+                setMode(mode, false);
+            } else { // Handle mod:time pairs
                 while (ss >> token) {
-                    float time = 0;
-                    float mod = 0;
-                    sscanf(token.c_str(), "%f:%f", &mod, &time);
-                    // printf("- time: %f mode: %f\n", time, mod);
+                    float mod = 0, time = 0;
+                    sscanf(token.c_str(), "%f:%f", &mod, &time); // Parse mod:time pair
                     data.push_back({ mod, time });
                 }
             }
-            setMode(mode, false);
         }
     }
 };
