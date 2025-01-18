@@ -50,7 +50,21 @@ protected:
             env->data.push_back({ 0.3f, 0.07f });
             env->data.push_back({ 0.09f, 0.19f });
             env->data.push_back({ 0.0f, 1.0f }); } },
-
+        { "Down hills", [](EnvelopRelative* env, bool init = true) {
+             env->useMacro = true;
+             if (init) {
+                 env->macro.a = 0.5;
+                 env->macro.b = 0.5;
+                 env->macro.c = 0.01;
+             }
+             for (float x = 0.0f; x <= 1.0f; x += 0.01f) {
+                 float a = 100 * env->macro.a + 5;
+                 float b = env->macro.b;
+                 float c = 100 * env->macro.c;
+                 float y = range(1 * exp(-a * x) + b * sin(x) - pow(x, c), 0.0f, 1.0f);
+                 env->data.push_back({ y, x });
+             }
+         } },
         { "Expo decay", [](EnvelopRelative* env, bool init = true) {
              env->useMacro = true;
              if (init) {
@@ -80,21 +94,6 @@ protected:
                  float release = tail - tail * pow(x, env->macro.c);
 
                  float y = range(decay + release, 0.0f, 1.0f);
-                 env->data.push_back({ y, x });
-             }
-         } },
-        { "Down hills", [](EnvelopRelative* env, bool init = true) {
-             env->useMacro = true;
-             if (init) {
-                 env->macro.a = 0.5;
-                 env->macro.b = 0.5;
-                 env->macro.c = 0.01;
-             }
-             for (float x = 0.0f; x <= 1.0f; x += 0.01f) {
-                 float a = 100 * env->macro.a + 5;
-                 float b = env->macro.b;
-                 float c = 100 * env->macro.c;
-                 float y = range(1 * exp(-a * x) + b * sin(x) - pow(x, c), 0.0f, 1.0f);
                  env->data.push_back({ y, x });
              }
          } },

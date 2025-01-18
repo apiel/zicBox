@@ -132,7 +132,7 @@ public:
     std::string* updateMode(int8_t* direction = NULL)
     {
         if (direction != NULL) {
-            setMode(range(mode + *direction, 0, modes.size()));
+            setMode(mode + *direction);
         }
         modeStrPtr = getModeStr(mode);
         return &modeStrPtr;
@@ -188,7 +188,7 @@ public:
 
     void setMode(int _mode, bool init = true)
     {
-        mode = _mode;
+        mode = range(_mode, 0, (int)modes.size());
         data.clear();
 
         if (mode >= 0 && mode < modes.size()) {
