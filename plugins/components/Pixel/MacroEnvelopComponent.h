@@ -33,8 +33,8 @@ protected:
     float macro1 = 0.0f;
     float macro2 = 0.0f;
     float macro3 = 0.0f;
+    bool* isMacro = NULL;
 
-    int8_t currentstep = 0;
     float currentMod = 0.0f;
     uint16_t currentTimeMs = 0;
 
@@ -89,6 +89,7 @@ protected:
     void renderEditStep()
     {
         int cursorY = envPosition.y + envelopHeight + 5;
+        int8_t currentstep = macro1;
         if (currentstep < envData->size() - 1) {
             float currentTime = envData->at(currentstep).time;
             float nextTime = envData->at(currentstep + 1).time;
@@ -106,10 +107,21 @@ protected:
         if (modePtr != NULL) {
             draw.text({ x + 2, relativePosition.y }, modePtr->c_str(), fontSize, { textColor.color });
         }
-        draw.text({ x + 2, relativePosition.y + size.h - 8 }, std::to_string((int)(macro1 * 100)) + "%", fontSize, { textColor.color });
 
-        draw.textRight({ x + size.w - 2, relativePosition.y }, std::to_string((int)(macro2 * 100)) + "%", fontSize, { textColor.color });
-        draw.textRight({ x + size.w - 2, relativePosition.y + size.h - 8 }, std::to_string((int)(macro3 * 100)) + "%", fontSize, { textColor.color });
+        if (*isMacro) {
+            draw.text({ x + 2, relativePosition.y + size.h - 8 }, std::to_string((int)(macro1 * 100)) + "%", fontSize, { textColor.color });
+            draw.textRight({ x + size.w - 2, relativePosition.y }, std::to_string((int)(macro2 * 100)) + "%", fontSize, { textColor.color });
+            draw.textRight({ x + size.w - 2, relativePosition.y + size.h - 8 }, std::to_string((int)(macro3 * 100)) + "%", fontSize, { textColor.color });
+        } else {
+
+            // draw.text({ x + 2, relativePosition.y }, std::to_string(currentTimeMs) + "ms", fontSize, { textColor.color });
+            // draw.textRight({ x + size.w - 2, relativePosition.y }, std::to_string((int)(currentMod * 100)) + "%", fontSize, { textColor.color });
+            // draw.text({ x + 2, relativePosition.y + size.h - 8 }, std::to_string(currentstep + 1) + "/" + std::to_string(envData->size()), fontSize, { textColor.color });
+
+            draw.text({ x + 2, relativePosition.y + size.h - 8 }, std::to_string((int)macro1 + 1) + "/" + std::to_string(envData->size()), fontSize, { textColor.color });
+            draw.textRight({ x + size.w - 2, relativePosition.y }, std::to_string((int)(macro2 * 100)) + "%", fontSize, { textColor.color });
+            draw.textRight({ x + size.w - 2, relativePosition.y + size.h - 8 }, std::to_string((int)macro3) + "ms", fontSize, { textColor.color });
+        }
     }
 
 public:
@@ -132,13 +144,12 @@ public:
             draw.filledRect(relativePosition, size, { bgColor });
 
             if (envData) {
-                // currentstep = *(int8_t*)plugin->data(currentStepDataId);
-                // currentMod = *(float*)plugin->data(modDataId);
-                // currentTimeMs = *(uint16_t*)plugin->data(timeDataId);
-
                 renderEnvelop();
-                renderEditStep();
                 renderTitles();
+
+                if (!(*isMacro)) {
+                    renderEditStep();
+                }
             }
         }
     }
@@ -150,13 +161,13 @@ public:
                 modePtr = (std::string*)plugin->data(modeDataId, &direction);
                 renderNext();
             } else if (id == encoders[1]) {
-                macro1 = *(float *)plugin->data(macro1DataId, &direction);
+                macro1 = *(float*)plugin->data(macro1DataId, &direction);
                 renderNext();
             } else if (id == encoders[2]) {
-                macro2 = *(float *)plugin->data(macro2DataId, &direction);
+                macro2 = *(float*)plugin->data(macro2DataId, &direction);
                 renderNext();
             } else if (id == encoders[3]) {
-                macro3 = *(float *)plugin->data(macro3DataId, &direction);
+                macro3 = *(float*)plugin->data(macro3DataId, &direction);
                 renderNext();
             }
         }
@@ -184,6 +195,8 @@ public:
             macro1DataId = id + 3;
             macro2DataId = id + 4;
             macro3DataId = id + 5;
+
+            isMacro = (bool*)plugin->data(isMacroDataId);
 
             return true;
         }
