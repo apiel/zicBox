@@ -385,6 +385,8 @@ public:
         case ENV_FREQ_MODE: {
             return envelopFreq.updateMode((int8_t*)userdata);
         }
+        case ENV_FREQ_IS_MACRO:
+            return &envelopFreq.useMacro;
         case ENV_FREQ_MACRO1:
             return envelopFreq.updateMacro1((int8_t*)userdata);
         case ENV_FREQ_MACRO2:
