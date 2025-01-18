@@ -1,7 +1,6 @@
 #ifndef _SYNTH_DRUM23_H_
 #define _SYNTH_DRUM23_H_
 
-// #include <sstream>
 #include <vector>
 
 #include "./utils/Waveform.h"
@@ -9,14 +8,7 @@
 #include "audioPlugin.h"
 #include "filter.h"
 #include "mapping.h"
-// #include "utils/Envelop.h"
 #include "utils/EnvelopRelative.h"
-
-#define ZIC_DRUM_ENV_AMP_STEP 4
-#define ZIC_DRUM_ENV_FREQ_STEP 4
-#define ZIC_DRUM_UI 1000
-
-// Instead to have a fix envelop, should we use an envelop with customizable steps...??
 
 /*md
 ## SynthDrum23
