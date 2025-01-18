@@ -136,7 +136,7 @@ public:
             draw.filledRect(relativePosition, size, { bgColor });
 
             if (envData) {
-                // modePtr = (std::string*)plugin->data(modeDataId);
+                modePtr = (std::string*)plugin->data(modeDataId);
                 macro1 = *(float*)plugin->data(macro1DataId);
                 macro2 = *(float*)plugin->data(macro2DataId);
                 macro3 = *(float*)plugin->data(macro3DataId);

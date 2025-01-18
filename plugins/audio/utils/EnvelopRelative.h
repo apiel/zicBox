@@ -117,7 +117,9 @@ public:
     std::string modeStrPtr;
     std::string* updateMode(int8_t* direction = NULL)
     {
-        setMode(range(mode + *direction, 0, MODE_COUNT - 1));
+        if (direction != NULL) {
+            setMode(range(mode + *direction, 0, MODE_COUNT - 1));
+        }
         modeStrPtr = getModeStr(mode);
         return &modeStrPtr;
     }
