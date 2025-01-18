@@ -310,18 +310,15 @@ public:
 
     void hydrate(std::string value)
     {
-        data.clear(); // Clear existing data
         std::stringstream ss(value);
         std::string token;
 
-        // Read the mode
         if (ss >> token) {
             int mode = 0;
-            sscanf(token.c_str(), "%d", &mode); // Parse the mode as an integer
+            sscanf(token.c_str(), "%d", &mode);
             setMode(mode, false);
 
-            if (useMacro) { // Handle macro type
-                // Parse each value separately
+            if (useMacro) {
                 if (ss >> token) {
                     sscanf(token.c_str(), "%f", &macro.a);
                 }
@@ -332,10 +329,11 @@ public:
                     sscanf(token.c_str(), "%f", &macro.c);
                 }
                 setMode(mode, false);
-            } else { // Handle mod:time pairs
+            } else {
+                data.clear();
                 while (ss >> token) {
                     float mod = 0, time = 0;
-                    sscanf(token.c_str(), "%f:%f", &mod, &time); // Parse mod:time pair
+                    sscanf(token.c_str(), "%f:%f", &mod, &time);
                     data.push_back({ mod, time });
                 }
             }
@@ -344,26 +342,3 @@ public:
 };
 
 #endif
-
-// 100 * exp(-1.0 * x) + 1.0
-/// --> "100 * exp(-0.2 * x) +  (10 - 0.1 * x)",
-// ----> 1 * exp(-10 * x) +  (0.2 - 0.2 * x)
-
-// double exponentialDecay(double x, double a, double b, double c) {
-//     return a * exp(-b * x) + c;
-// }
-
-// int main() {
-//     // Parameters for the function
-//     double a = 10.0; // Initial value
-//     double b = 1.0;  // Decay rate
-//     double c = 1.0;  // Asymptote value
-
-//     // Print the function values for a range of x
-//     for (double x = 0; x <= 10; x += 0.5) {
-//         double y = exponentialDecay(x, a, b, c);
-//         std::cout << "x: " << x << ", y: " << y << std::endl;
-//     }
-
-//     return 0;
-// }

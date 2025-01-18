@@ -1,7 +1,7 @@
 import { applyZic } from '@/libs/core';
 import * as React from '@/libs/react';
 import { addZoneEncoder, setScreenSize, setWindowPosition } from '@/libs/ui';
-import { ScreenHeight, ScreenWidth, W1_2, W1_4, W3_4 } from './constants';
+import { ScreenHeight, ScreenWidth, W1_2 } from './constants';
 import { CreateWorkspaceView } from './menu/CreateWorkspaceView';
 import { MenuView } from './menu/menuView';
 import { ShutdownView } from './menu/ShutdownView';
@@ -17,10 +17,11 @@ import { WaveformView } from './Synth/WaveformView';
 setWindowPosition(400, 500);
 setScreenSize(ScreenWidth, ScreenHeight);
 
-addZoneEncoder([0, 0, W1_4, ScreenHeight]);
-addZoneEncoder([W1_4, 0, W1_4, ScreenHeight]);
-addZoneEncoder([W1_2, 0, W1_4, ScreenHeight]);
-addZoneEncoder([W3_4, 0, W1_4, ScreenHeight]);
+const halfHeight = ScreenHeight / 2;
+addZoneEncoder([0, 0, W1_2, halfHeight]);
+addZoneEncoder([0, halfHeight, W1_2, halfHeight]);
+addZoneEncoder([W1_2, 0, W1_2, halfHeight]);
+addZoneEncoder([W1_2, halfHeight, W1_2, halfHeight]);
 
 applyZic(<MasterView name="Master" />);
 applyZic(<DistortionView name="Distortion" />);
