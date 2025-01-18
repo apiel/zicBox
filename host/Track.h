@@ -93,17 +93,17 @@ public:
         }
     }
 
-    // void process(uint8_t index)
-    // {
-    //     process(buffer + index * maxTracks);
-    // }
     void process(uint8_t index)
     {
-        for (int i = 0; i < pluginsSize; i++) {
-            AudioPlugin* plugin = plugins[i];
-            plugin->sample(buffer + index * maxTracks);
-        }
+        process(buffer + index * maxTracks);
     }
+    // void process(uint8_t index)
+    // {
+    //     for (int i = 0; i < pluginsSize; i++) {
+    //         AudioPlugin* plugin = plugins[i];
+    //         plugin->sample(buffer + index * maxTracks);
+    //     }
+    // }
 
     void process(float* buf)
     {
