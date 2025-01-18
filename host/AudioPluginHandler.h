@@ -257,15 +257,14 @@ public:
             // For the moment, let's assume that last track is always master track
             bool isMaster = track->id == tracks.back()->id;
             track->init(tracks, isMaster);
-            // if (track->thread.joinable()) {
-            //     threadTracks[threadCount++] = track;
-            // } else {
+            if (track->thread.joinable()) {
+                threadTracks[threadCount++] = track;
+            } else {
                 hostTracks[hostCount++] = track;
-            // }
+            }
         }
 
-        // if (threadCount == 0) {
-        if (threadCount == 99) {
+        if (threadCount == 0) {
             while (isRunning) {
                 float buffer[MAX_TRACKS] = { 0.0f };
                 for (int i = 0; i < hostCount; i++) {
@@ -276,23 +275,21 @@ public:
             auto ms = std::chrono::milliseconds(10);
 
             while (isRunning) {
-                // for (int i = 0; i < MAX_TRACKS; i++) {
-                //     Track* track = tracks[i];
-                //     if (track->thread.joinable()) {
-                //         track->processing = true;
-                //         track->cv.notify_one();
-                //     }
-                // }
+                for (int t = 0; t < threadCount; t++) {
+                    Track* track = threadTracks[t];
+                    track->processing = true;
+                    track->cv.notify_one();
+                }
 
-                // masterCv.wait_for(lock, ms, [&] {
-                //     for (int i = 0; i < MAX_TRACKS; i++) {
-                //         Track* track = tracks[i];
-                //         if (track->processing) {
-                //             return false;
-                //         }
-                //     }
-                //     return true;
-                // });
+                masterCv.wait_for(lock, ms, [&] {
+                    for (int t = 0; t < threadCount; t++) {
+                        Track* track = threadTracks[t];
+                        if (track->processing) {
+                            return false;
+                        }
+                    }
+                    return true;
+                });
 
                 for (int t = 0; t < hostCount; t++) {
                     for (uint8_t i = 0; i < 128; i++) {
