@@ -99,10 +99,6 @@ public:
     // }
     void process(uint8_t index)
     {
-        // for (AudioPlugin* plugin : plugins) {
-        // plugin->sample(buffer + index * maxTracks);
-        // }
-
         for (int i = 0; i < pluginsSize; i++) {
             AudioPlugin* plugin = plugins[i];
             plugin->sample(buffer + index * maxTracks);
