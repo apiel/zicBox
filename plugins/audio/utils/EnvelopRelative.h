@@ -187,11 +187,11 @@ public:
 
     struct Mode {
         std::string name;
-        std::function<void(int, bool)> func;
+        std::function<void(bool)> func;
     };
 
     std::vector<Mode> modes = {
-        { "Kick", [&](int _mode, bool init = true) {             
+        { "Kick", [&](bool init = true) {             
             useMacro = false;
             data.push_back({ 1.0f, 0.0f });
             data.push_back({ 0.5f, 0.03f });
@@ -199,7 +199,7 @@ public:
             data.push_back({ 0.09f, 0.19f });
             data.push_back({ 0.0f, 1.0f }); } },
 
-        { "Expo decay", [&](int _mode, bool init = true) {
+        { "Expo decay", [&](bool init = true) {
              useMacro = true;
              if (init) {
                  macro.a = 0.5;
@@ -214,7 +214,7 @@ public:
                  data.push_back({ y, x });
              }
          } },
-        { "Multi decay", [&](int _mode, bool init = true) {
+        { "Multi decay", [&](bool init = true) {
              useMacro = true;
              if (init) {
                  macro.a = 0.5;
@@ -231,7 +231,7 @@ public:
                  data.push_back({ y, x });
              }
          } },
-        { "Down hills", [&](int _mode, bool init = true) {
+        { "Down hills", [&](bool init = true) {
              useMacro = true;
              if (init) {
                  macro.a = 0.5;
@@ -246,7 +246,7 @@ public:
                  data.push_back({ y, x });
              }
          } },
-        { "Sin pow", [&](int _mode, bool init = true) {
+        { "Sin pow", [&](bool init = true) {
              useMacro = true;
              if (init) {
                  macro.a = 0.1;
@@ -271,7 +271,7 @@ public:
         data.clear();
 
         if (mode >= 0 && mode < modes.size()) {
-            modes[mode].func(mode, init);
+            modes[mode].func(init);
             return;
         }
 
@@ -283,16 +283,9 @@ public:
 
     std::string getModeStr(int _mode)
     {
-        if (_mode == MODE::KICK)
-            return "Kick";
-        if (_mode == MODE::EXPO_DECAY)
-            return "Expo decay";
-        if (_mode == MODE::MULTI_DECAY)
-            return "Multi decay";
-        if (_mode == MODE::DOWN_HILLS)
-            return "Down hills";
-        if (_mode == MODE::SIN_POW)
-            return "Sin pow";
+        if (mode >= 0 && mode < modes.size()) {
+            return modes[mode].name;
+        }
 
         return "Default";
     }
