@@ -93,9 +93,20 @@ public:
         }
     }
 
+    // void process(uint8_t index)
+    // {
+    //     process(buffer + index * maxTracks);
+    // }
     void process(uint8_t index)
     {
-        process(buffer + index * maxTracks);
+        // for (AudioPlugin* plugin : plugins) {
+        // plugin->sample(buffer + index * maxTracks);
+        // }
+
+        for (int i = 0; i < pluginsSize; i++) {
+            AudioPlugin* plugin = plugins[i];
+            plugin->sample(buffer + index * maxTracks);
+        }
     }
 
     void process(float* buf)
@@ -103,7 +114,7 @@ public:
         // Even if compiler should optimze it, it seems that
         // using iterator is still slower than for (int i = 0; i < pluginsSize; i++)
         //
-        // for (AudioPlugin* plugin : plugins) { 
+        // for (AudioPlugin* plugin : plugins) {
         //     plugin->sample(buf);
         // }
 
