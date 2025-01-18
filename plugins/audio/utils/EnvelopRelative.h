@@ -20,7 +20,19 @@ public:
         : data(data)
     {
         setMinEditablePhase(_minEditablePhase);
-        // setMode(1);
+    }
+
+    struct Mode {
+        std::string name;
+        std::function<void(EnvelopRelative*, bool)> func;
+    };
+
+    std::vector<Mode> modes;
+
+    EnvelopRelative(std::vector<Mode> modes, int8_t _minEditablePhase = 0)
+        : modes(modes)
+    {
+        setMinEditablePhase(_minEditablePhase);
     }
 
     void setMinEditablePhase(int8_t phase)
@@ -174,93 +186,13 @@ public:
         return &macro.c;
     }
 
-    struct Mode {
-        std::string name;
-        std::function<void(bool)> func;
-    };
-
-    std::vector<Mode> modes = {
-        { "Kick", [&](bool init = true) {             
-            useMacro = false;
-            data.push_back({ 1.0f, 0.0f });
-            data.push_back({ 0.5f, 0.03f });
-            data.push_back({ 0.3f, 0.07f });
-            data.push_back({ 0.09f, 0.19f });
-            data.push_back({ 0.0f, 1.0f }); } },
-
-        { "Expo decay", [&](bool init = true) {
-             useMacro = true;
-             if (init) {
-                 macro.a = 0.5;
-                 macro.b = 0.5;
-                 macro.c = 0.01;
-             }
-             for (float x = 0.0f; x <= 1.0f; x += 0.01f) {
-                 float a = 70 * macro.a;
-                 float b = 0.5 * macro.b;
-                 float c = 100 * macro.c;
-                 float y = range(1 * exp(-a * x) + (b - b * pow(x, c)), 0.0f, 1.0f);
-                 data.push_back({ y, x });
-             }
-         } },
-        { "Multi decay", [&](bool init = true) {
-             useMacro = true;
-             if (init) {
-                 macro.a = 0.5;
-                 macro.b = 0.5;
-                 macro.c = 0.5;
-             }
-             for (float x = 0.0f; x <= 1.0f; x += 0.01f) {
-                 float decay = 0.7f * exp(-60.0f * (macro.a + 0.05f) * x);
-                 // printf("decay: %f macro.a: %f\n", decay, macro.a);
-                 float tail = 0.2f * exp(-5.0f * macro.b * x);
-                 float release = tail - tail * pow(x, macro.c);
-
-                 float y = range(decay + release, 0.0f, 1.0f);
-                 data.push_back({ y, x });
-             }
-         } },
-        { "Down hills", [&](bool init = true) {
-             useMacro = true;
-             if (init) {
-                 macro.a = 0.5;
-                 macro.b = 0.5;
-                 macro.c = 0.01;
-             }
-             for (float x = 0.0f; x <= 1.0f; x += 0.01f) {
-                 float a = 100 * macro.a + 5;
-                 float b = macro.b;
-                 float c = 100 * macro.c;
-                 float y = range(1 * exp(-a * x) + b * sin(x) - pow(x, c), 0.0f, 1.0f);
-                 data.push_back({ y, x });
-             }
-         } },
-        { "Sin pow", [&](bool init = true) {
-             useMacro = true;
-             if (init) {
-                 macro.a = 0.1;
-                 macro.b = 0.2;
-                 macro.c = 0.00;
-             }
-             for (float x = 0.0f; x <= 1.0f; x += 0.01f) {
-                 float a = macro.b;
-                 int b = macro.a * 100;
-                 b = b * 2 + 4;
-                 float c = 0.5 * macro.c;
-
-                 float y = range(-a * sin(-1 + x) + pow(-1 + x, b) + c * acos(x), 0.0f, 1.0f);
-                 data.push_back({ y, x });
-             }
-         } },
-    };
-
     void setMode(int _mode, bool init = true)
     {
         mode = _mode;
         data.clear();
 
         if (mode >= 0 && mode < modes.size()) {
-            modes[mode].func(init);
+            modes[mode].func(this, init);
             return;
         }
 

@@ -42,7 +42,80 @@ protected:
     EffectFilterData clickFilter;
 
     EnvelopRelative envelopAmp = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.0f, 1.0f } }, 1);
-    EnvelopRelative envelopFreq = EnvelopRelative({ { 0.5f, 0.0f }, { 1.0f, 0.5f }, { 0.0f, 1.0f } });
+    EnvelopRelative envelopFreq = EnvelopRelative({
+        { "Kick", [](EnvelopRelative* env, bool init = true) {
+            env->useMacro = false;
+            env->data.push_back({ 1.0f, 0.0f });
+            env->data.push_back({ 0.5f, 0.03f });
+            env->data.push_back({ 0.3f, 0.07f });
+            env->data.push_back({ 0.09f, 0.19f });
+            env->data.push_back({ 0.0f, 1.0f }); } },
+
+        { "Expo decay", [](EnvelopRelative* env, bool init = true) {
+             env->useMacro = true;
+             if (init) {
+                 env->macro.a = 0.5;
+                 env->macro.b = 0.5;
+                 env->macro.c = 0.01;
+             }
+             for (float x = 0.0f; x <= 1.0f; x += 0.01f) {
+                 float a = 70 * env->macro.a;
+                 float b = 0.5 * env->macro.b;
+                 float c = 100 * env->macro.c;
+                 float y = range(1 * exp(-a * x) + (b - b * pow(x, c)), 0.0f, 1.0f);
+                 env->data.push_back({ y, x });
+             }
+         } },
+        { "Multi decay", [](EnvelopRelative* env, bool init = true) {
+             env->useMacro = true;
+             if (init) {
+                 env->macro.a = 0.5;
+                 env->macro.b = 0.5;
+                 env->macro.c = 0.5;
+             }
+             for (float x = 0.0f; x <= 1.0f; x += 0.01f) {
+                 float decay = 0.7f * exp(-60.0f * (env->macro.a + 0.05f) * x);
+                 // printf("decay: %f macro.a: %f\n", decay, macro.a);
+                 float tail = 0.2f * exp(-5.0f * env->macro.b * x);
+                 float release = tail - tail * pow(x, env->macro.c);
+
+                 float y = range(decay + release, 0.0f, 1.0f);
+                 env->data.push_back({ y, x });
+             }
+         } },
+        { "Down hills", [](EnvelopRelative* env, bool init = true) {
+             env->useMacro = true;
+             if (init) {
+                 env->macro.a = 0.5;
+                 env->macro.b = 0.5;
+                 env->macro.c = 0.01;
+             }
+             for (float x = 0.0f; x <= 1.0f; x += 0.01f) {
+                 float a = 100 * env->macro.a + 5;
+                 float b = env->macro.b;
+                 float c = 100 * env->macro.c;
+                 float y = range(1 * exp(-a * x) + b * sin(x) - pow(x, c), 0.0f, 1.0f);
+                 env->data.push_back({ y, x });
+             }
+         } },
+        { "Sin pow", [](EnvelopRelative* env, bool init = true) {
+             env->useMacro = true;
+             if (init) {
+                 env->macro.a = 0.1;
+                 env->macro.b = 0.2;
+                 env->macro.c = 0.00;
+             }
+             for (float x = 0.0f; x <= 1.0f; x += 0.01f) {
+                 float a = env->macro.b;
+                 int b = env->macro.a * 100;
+                 b = b * 2 + 4;
+                 float c = 0.5 * env->macro.c;
+
+                 float y = range(-a * sin(-1 + x) + pow(-1 + x, b) + c * acos(x), 0.0f, 1.0f);
+                 env->data.push_back({ y, x });
+             }
+         } },
+    });
 
     float addClicking(float time, float out, EffectFilterData& _clickFilter)
     {
@@ -368,7 +441,7 @@ public:
         case ENV_FREQ_MACRO2:
             return envelopFreq.updateMacro2((int8_t*)userdata);
         case ENV_FREQ_MACRO3: {
-            float *macro3 = envelopFreq.updateMacro3((int8_t*)userdata);
+            float* macro3 = envelopFreq.updateMacro3((int8_t*)userdata);
             if (!envelopFreq.useMacro) {
                 fMsEnv = *macro3 * duration.get();
                 return &fMsEnv;
