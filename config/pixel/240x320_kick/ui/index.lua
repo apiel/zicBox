@@ -33,6 +33,8 @@ local ____WorkspacesView = require("config.pixel.240x320_kick.ui.menu.Workspaces
 local WorkspacesView = ____WorkspacesView.WorkspacesView
 local ____Seq = require("config.pixel.240x320_kick.ui.Seq.index")
 local SeqView = ____Seq.SeqView
+local ____SnareView = require("config.pixel.240x320_kick.ui.Snare.SnareView")
+local SnareView = ____SnareView.SnareView
 setWindowPosition(400, 500)
 setScreenSize(ScreenWidth, ScreenHeight)
 local halfHeight = ScreenHeight / 2
@@ -47,6 +49,7 @@ applyZic(React.createElement(FrequencyView, {name = "Frequency"}))
 applyZic(React.createElement(AmpView, {name = "Amplitude"}))
 applyZic(React.createElement(ClickView, {name = "Click"}))
 applyZic(React.createElement(SeqView, {name = "Sequencer"}))
+applyZic(React.createElement(SnareView, {name = "Snare"}))
 applyZic(React.createElement(MenuView, {name = "Menu"}))
 applyZic(React.createElement(WorkspacesView, {name = "Workspaces"}))
 applyZic(React.createElement(CreateWorkspaceView, {name = "CreateWorkspace"}))

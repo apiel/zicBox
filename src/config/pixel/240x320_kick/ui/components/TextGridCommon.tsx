@@ -5,12 +5,12 @@ import { TextGridSel } from './TextGridSel';
 export function TextGridCommon({ selected }: { selected: number }) {
     return (
         <TextGridSel
-            items={['Seq.', 'Synth', '^...', '&empty', 'Menu', '&icon::play::filled']}
+            items={['Seq.', 'Kick', '^...', 'Snare', 'Menu', '&icon::play::filled']}
             keys={[
                 { key: 'q', action: 'setView:Sequencer' },
                 { key: 'w', action: `setView:Master` },
                 { key: 'e', action: 'contextToggle:254:1:0' },
-                // { key: 'a', action: 'setView:Sequencer' },
+                { key: 'a', action: 'setView:Snare' },
                 { key: 's', action: 'setView:Menu' },
                 { key: 'd', action: 'playPause' },
             ]}

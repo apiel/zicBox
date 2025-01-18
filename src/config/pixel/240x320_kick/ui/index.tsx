@@ -13,6 +13,7 @@ import { MenuView } from './menu/menuView';
 import { ShutdownView } from './menu/ShutdownView';
 import { WorkspacesView } from './menu/WorkspacesView';
 import { SeqView } from './Seq';
+import { SnareView } from './Snare/SnareView';
 
 setWindowPosition(400, 500);
 setScreenSize(ScreenWidth, ScreenHeight);
@@ -31,6 +32,10 @@ applyZic(<AmpView name="Amplitude" />);
 applyZic(<ClickView name="Click" />);
 
 applyZic(<SeqView name="Sequencer" />);
+
+
+applyZic(<SnareView name="Snare" />);
+
 
 applyZic(<MenuView name="Menu" />);
 applyZic(<WorkspacesView name="Workspaces" />);

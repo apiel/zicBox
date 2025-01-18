@@ -9,6 +9,8 @@ local ____View = require("config.libs.components.View")
 local View = ____View.View
 local ____Common = require("config.pixel.240x320_kick.ui.components.Common")
 local Common = ____Common.Common
+local ____constants = require("config.pixel.240x320_kick.ui.constants")
+local Drum23Track = ____constants.Drum23Track
 local ____constantsValue = require("config.pixel.240x320_kick.ui.constantsValue")
 local bottomRightKnob = ____constantsValue.bottomRightKnob
 local topValues = ____constantsValue.topValues
@@ -27,9 +29,16 @@ function ____exports.AmpView(____bindingPattern0)
             RENDER_TITLE_ON_TOP = false,
             encoder_time = 0,
             encoder_phase = 1,
-            encoder_modulation = 2
+            encoder_modulation = 2,
+            track = Drum23Track
         }),
-        React.createElement(KnobValue, {position = bottomRightKnob, value = "Drum23 DURATION", encoder_id = 3, color = "quaternary"}),
+        React.createElement(KnobValue, {
+            position = bottomRightKnob,
+            value = "Drum23 DURATION",
+            encoder_id = 3,
+            color = "quaternary",
+            track = Drum23Track
+        }),
         React.createElement(TextGridDrum23, {selected = 3, viewName = name}),
         React.createElement(Common, {selected = 1})
     )

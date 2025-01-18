@@ -7,6 +7,8 @@ local ____View = require("config.libs.components.View")
 local View = ____View.View
 local ____Common = require("config.pixel.240x320_kick.ui.components.Common")
 local Common = ____Common.Common
+local ____constants = require("config.pixel.240x320_kick.ui.constants")
+local SnareTrack = ____constants.SnareTrack
 local ____constantsValue = require("config.pixel.240x320_kick.ui.constantsValue")
 local topLeftKnob = ____constantsValue.topLeftKnob
 local ____TextGridSnare = require("config.pixel.240x320_kick.ui.Snare.TextGridSnare")
@@ -17,7 +19,13 @@ function ____exports.SnareView(____bindingPattern0)
     return React.createElement(
         View,
         {name = name},
-        React.createElement(KnobValue, {value = "Volume VOLUME", position = topLeftKnob, encoder_id = 0, COLOR = "tertiary"}),
+        React.createElement(KnobValue, {
+            value = "Volume VOLUME",
+            position = topLeftKnob,
+            encoder_id = 0,
+            COLOR = "tertiary",
+            track = SnareTrack
+        }),
         React.createElement(TextGridSnare, {selected = 0, viewName = name}),
         React.createElement(Common, {selected = 1})
     )

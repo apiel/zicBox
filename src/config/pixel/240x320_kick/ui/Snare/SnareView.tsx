@@ -3,6 +3,7 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
+import { SnareTrack } from '../constants';
 import {
     topLeftKnob
 } from '../constantsValue';
@@ -20,6 +21,7 @@ export function SnareView({ name }: Props) {
                 position={topLeftKnob}
                 encoder_id={0}
                 COLOR="tertiary"
+                track={SnareTrack}
             />
             {/* <KnobValue
                 value="MMFilter CUTOFF"
