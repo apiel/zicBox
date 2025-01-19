@@ -49,6 +49,8 @@ public:
     /*md - `TRANSIENT_INTENSITY` set the transient intensity. */
     Val& transientIntensity = val(1.0f, "TRANSIENT_INTENSITY", { "Transient", .min = 0.0, .max = 2.0, .step = 0.1, .floatingPoint = 1 });
 
+    Val& metallicToneMix = val(50.0f, "METALLIC_TONE_MIX", { "Tone Mix", .unit = "%" });
+
     SynthHiHat(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
     {
@@ -74,6 +76,8 @@ public:
             if (i < totalSamples / 10) {
                 metallicNoise += transientIntensity.get() * whiteNoise();
             }
+
+            metallicNoise = (metallicToneMix.pct() * metallicNoise) + ((1.0f - metallicToneMix.pct()) * rawNoise);
 
             buf[track] = metallicNoise * env;
             i++;

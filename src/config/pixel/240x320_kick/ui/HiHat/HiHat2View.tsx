@@ -4,7 +4,7 @@ import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
 import { HiHatTrack } from '../constants';
-import { bottomLeftKnob, topLeftKnob } from '../constantsValue';
+import { topLeftKnob, topRightKnob } from '../constantsValue';
 import { TextGridHiHat } from './TextGridHiHat';
 
 export type Props = {
@@ -21,19 +21,19 @@ export function HiHat2View({ name }: Props) {
                 COLOR="tertiary"
                 track={HiHatTrack}
             />
-            {/* <KnobValue
-                value="HiHat BAND_FREQ2"
+            <KnobValue
+                value="HiHat BAND_Q"
                 position={topRightKnob}
                 encoder_id={2}
                 COLOR="secondary"
                 track={HiHatTrack}
-            /> */}
-            <KnobValue
+            />
+            {/* <KnobValue
                 value="HiHat BAND_Q"
                 position={bottomLeftKnob}
                 encoder_id={1}
                 track={HiHatTrack}
-            />
+            /> */}
             {/* <KnobValue
                 value="HiHat TRANSIENT_INTENSITY"
                 position={bottomRightKnob}
