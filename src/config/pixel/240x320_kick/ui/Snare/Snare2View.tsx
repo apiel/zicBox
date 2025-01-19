@@ -4,7 +4,7 @@ import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
 import { SnareTrack } from '../constants';
-import { bottomLeftKnob, bottomRightKnob, topRightKnob } from '../constantsValue';
+import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
 import { TextGridSnare } from './TextGridSnare';
 
 export type Props = {
@@ -14,13 +14,13 @@ export type Props = {
 export function Snare2View({ name }: Props) {
     return (
         <View name={name}>
-            {/* <KnobValue
-                value="Snare HARMONICS_MIX"
+            <KnobValue
+                value="Snare PINK_NOISE"
                 position={topLeftKnob}
                 encoder_id={0}
                 COLOR="tertiary"
                 track={SnareTrack}
-            /> */}
+            />
             <KnobValue
                 value="Snare HARMONICS_COUNT"
                 position={topRightKnob}

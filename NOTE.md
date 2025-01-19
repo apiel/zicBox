@@ -18,6 +18,8 @@
   - clips allow more than 16 by adding a scrolling system
   - give a way to make some extra color code to classify depending if it is used for playibg live or for generating sample?
 
+- TODO Filter... make an advance filter with muliple choice, basic LPF filter, HPF, MMfilter, moog filter, and more...
+
 - TODO master track --> add effect: sample reducer, distortion, delay...? 
     - --> instead of mixer drum and mixer synth, use sent effect to track fx1 and track fx2
 - TODO perform / grid effect / scatter effect: apply effect for some time, apply granular effect, pitch down
@@ -33,6 +35,7 @@
 
 - IDEA instead of 4 op fm synth make a synth with 3 osc (or even only 2?) that can be fm or not but also use different waveform from wavetable
   - the 3 envelop could be used for amp but also freq?
+  - instead of LUT use sinf
 
 - FIXME might not need action2, just have to insert twice the event...
 
@@ -40,10 +43,6 @@
     - ["Resonance", "37", "%"]
     - ["LP", "78", "%", "HP", "22", "%"]
     - by default using the props to build the string value but can be customised using setString
-
-- FIXME fix FM on rpi
-
-- TODO advance sample synth UI
 
 - TODO make everything start automatically on RPi
     ---> also provide a way to auto update system
@@ -60,12 +59,6 @@
 - TODO can EffectGrain and EffectDelay be one single effect to make an advance GrainDelay effect...?
 - TODO make a simple EffectDelay with preset... or re-use the exisiting one?
 - TODO or should it just be GRAIN track, DELAY track and REVERB track (alias delay?)
-
-- TODO Save button or project:
-    - save yes
-    - restore 
-    - save as
-    - copy to ? Track? Variation/clip ?
 
 - IDEA clip/variation could be on one single page for every track
     --> 1 row per track, each row moving from left to right to select a clip
@@ -84,7 +77,7 @@
 
 - TODO sudo display
 
-- TODO get rid of SDL component andunify everything
+- TODO get rid of SDL component and unify everything
       --> move everything to buffer base UI and only pass use the SDL to render buffer to the screen
       --> same for ST7789 and SSD1306
       --> at the end there should be a common draw library to draw shapes
@@ -93,16 +86,12 @@
 
 - FIXME thickness on rectangle
 
-- FIXME encoder3 should remove marginTop
-
 - TODO Encoder group: OnEncoder event should take group as param, so if we put an external encoder Interface, we can overwrite the current group? Should it really do this? Maybe it should be the view manager... maybe not :p might still be a good idea to pass it and use this to make the comparison.
 
 - IDEA try deno compile and see if in anyway can be used as config file
       --> https://docs.deno.com/runtime/reference/cli/compile/
 
 - IDEA extra keypad extension: make a 5x5 rgb keypad using keycap but with transparent cap. They can be put in chain, so we could have a 5x10 keypad, or even more...
-
-- TODO Filter... make an advance filter with muliple choice, basic LPF filter, HPF, MMfilter, moog filter, and more...
 
 - TODO TODO
 - IDEA cache audio track to reduce computation?
