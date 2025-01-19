@@ -23,7 +23,7 @@ function ____exports.Clap2View(____bindingPattern0)
         View,
         {name = name},
         React.createElement(KnobValue, {
-            value = "Clap ATTACK_TIME",
+            value = "Clap DISTORTION",
             position = topLeftKnob,
             encoder_id = 0,
             COLOR = "tertiary",
@@ -38,7 +38,7 @@ function ____exports.Clap2View(____bindingPattern0)
         }),
         React.createElement(KnobValue, {value = "Clap NOISE_LEVEL", position = bottomLeftKnob, encoder_id = 1, track = ClapTrack}),
         React.createElement(KnobValue, {
-            value = "Clap DISTORTION",
+            value = "Clap REVERB",
             position = bottomRightKnob,
             encoder_id = 3,
             COLOR = "secondary",
