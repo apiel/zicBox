@@ -1,6 +1,8 @@
 import { applyZic } from '@/libs/core';
 import * as React from '@/libs/react';
 import { addZoneEncoder, setScreenSize, setWindowPosition } from '@/libs/ui';
+import { Bass2View } from './303/Bass2View';
+import { BassView } from './303/BassView';
 import { ScreenHeight, ScreenWidth, W1_2 } from './constants';
 import { AmpView } from './Drum23/AmpView';
 import { ClickView } from './Drum23/ClickView';
@@ -40,6 +42,9 @@ applyZic(<Snare2View name="Snare2" />);
 
 applyZic(<HiHatView name="HiHat" />);
 applyZic(<HiHat2View name="HiHat2" />);
+
+applyZic(<BassView name="Bass" />);
+applyZic(<Bass2View name="Bass2" />);
 
 applyZic(<MenuView name="Menu" />);
 applyZic(<WorkspacesView name="Workspaces" />);

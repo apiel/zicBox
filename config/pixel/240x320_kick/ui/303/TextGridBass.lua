@@ -5,7 +5,7 @@ local ____TextGridSel = require("config.pixel.240x320_kick.ui.components.TextGri
 local TextGridSel = ____TextGridSel.TextGridSel
 local ____Title = require("config.pixel.240x320_kick.ui.components.Title")
 local Title = ____Title.Title
-function ____exports.TextGridHiHat(____bindingPattern0)
+function ____exports.TextGridBass(____bindingPattern0)
     local viewName
     local selected
     selected = ____bindingPattern0.selected
@@ -13,7 +13,7 @@ function ____exports.TextGridHiHat(____bindingPattern0)
     return React.createElement(
         React.Fragment,
         nil,
-        React.createElement(Title, {title = "HiHat"}),
+        React.createElement(Title, {title = "303"}),
         React.createElement(TextGridSel, {items = {
             "Snare",
             "303",
@@ -26,7 +26,7 @@ function ____exports.TextGridHiHat(____bindingPattern0)
             {key = "w", action = viewName == "Bass" and "setView:Bass2" or "setView:Bass"},
             {key = "e", action = "contextToggle:254:1:0"},
             {key = "a", action = viewName == "HiHat" and "setView:HiHat2" or "setView:HiHat"},
-            {key = "d", action = "noteOn:HiHat:60"}
+            {key = "d", action = "noteOn:303:60"}
         }, selected = selected, contextValue = 0})
     )
 end
