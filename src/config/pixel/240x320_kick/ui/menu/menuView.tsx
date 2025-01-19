@@ -26,7 +26,7 @@ export function MenuView({ name }: Props) {
                 position={KeyInfoPosition}
                 rows={['  &icon::arrowUp::filled  ', 'Select &icon::arrowDown::filled Exit']}
             >
-                <Keymap key="d" action="setView:Master" />
+                <Keymap key="d" action="setView:Drum23" />
             </TextGrid>
         </View>
     );

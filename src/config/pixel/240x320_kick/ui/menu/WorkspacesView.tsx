@@ -31,7 +31,7 @@ export function WorkspacesView({ name }: Props) {
                 rows={['&empty &icon::arrowUp::filled ...', 'Use &icon::arrowDown::filled Exit']}
             >
                 <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />
-                <Keymap key="d" action="setView:Master" />
+                <Keymap key="d" action="setView:Drum23" />
                 <Keymap key="e" action="contextToggle:254:1:0" />
             </TextGrid>
 

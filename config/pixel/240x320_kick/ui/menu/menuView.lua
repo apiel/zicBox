@@ -28,7 +28,7 @@ function ____exports.MenuView(____bindingPattern0)
         React.createElement(
             TextGrid,
             {position = KeyInfoPosition, rows = {"  &icon::arrowUp::filled  ", "Select &icon::arrowDown::filled Exit"}},
-            React.createElement(Keymap, {key = "d", action = "setView:Master"})
+            React.createElement(Keymap, {key = "d", action = "setView:Drum23"})
         )
     )
 end
