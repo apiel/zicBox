@@ -14,9 +14,9 @@ local bottomLeftKnob = ____constantsValue.bottomLeftKnob
 local bottomRightKnob = ____constantsValue.bottomRightKnob
 local topLeftKnob = ____constantsValue.topLeftKnob
 local topRightKnob = ____constantsValue.topRightKnob
-local ____TextGridSnare = require("config.pixel.240x320_kick.ui.Snare copy.TextGridSnare")
+local ____TextGridSnare = require("config.pixel.240x320_kick.ui.303.TextGridSnare")
 local TextGridSnare = ____TextGridSnare.TextGridSnare
-function ____exports.Snare2View(____bindingPattern0)
+function ____exports.Bass2View(____bindingPattern0)
     local name
     name = ____bindingPattern0.name
     return React.createElement(

@@ -3,10 +3,10 @@ import * as React from '@/libs/react';
 import { TextGridSel } from '../components/TextGridSel';
 import { Title } from '../components/Title';
 
-export function TextGridHiHat({ selected, viewName }: { selected: number; viewName: string }) {
+export function TextGridBass({ selected, viewName }: { selected: number; viewName: string }) {
     return (
         <>
-            <Title title="HiHat" />
+            <Title title="303" />
             <TextGridSel
                 items={['Snare', '303', '...', 'HiHat', 'Seq.', '&icon::musicNote::pixelated']}
                 keys={[
@@ -19,7 +19,7 @@ export function TextGridHiHat({ selected, viewName }: { selected: number; viewNa
                         action: viewName === 'HiHat' ? 'setView:HiHat2' : 'setView:HiHat',
                     },
                     // { key: 's', action: 'setView:Frequency' },
-                    { key: 'd', action: 'noteOn:HiHat:60' },
+                    { key: 'd', action: 'noteOn:303:60' },
                 ]}
                 selected={selected}
                 contextValue={0}

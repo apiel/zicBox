@@ -8,10 +8,10 @@ export function TextGridSnare({ selected, viewName }: { selected: number; viewNa
         <>
             <Title title="Snare" />
             <TextGridSel
-                items={['Snare', 'Seq.', '...', 'HiHat', 'Seq.', '&icon::musicNote::pixelated']}
+                items={['Snare', '303', '...', 'HiHat', 'Seq.', '&icon::musicNote::pixelated']}
                 keys={[
                     { key: 'q', action: viewName === 'Snare' ? 'setView:Snare2' : 'setView:Snare' },
-                    // { key: 'w', action: 'setView:Snare2' },
+                    { key: 'w', action: viewName === 'Bass' ? 'setView:Bass2' : 'setView:Bass' },
                     { key: 'e', action: 'contextToggle:254:1:0' },
 
                     {
