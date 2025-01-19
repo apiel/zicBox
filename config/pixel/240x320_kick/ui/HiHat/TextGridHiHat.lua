@@ -5,7 +5,7 @@ local ____TextGridSel = require("config.pixel.240x320_kick.ui.components.TextGri
 local TextGridSel = ____TextGridSel.TextGridSel
 local ____Title = require("config.pixel.240x320_kick.ui.components.Title")
 local Title = ____Title.Title
-function ____exports.TextGridSnare(____bindingPattern0)
+function ____exports.TextGridHiHat(____bindingPattern0)
     local viewName
     local selected
     selected = ____bindingPattern0.selected
@@ -13,7 +13,7 @@ function ____exports.TextGridSnare(____bindingPattern0)
     return React.createElement(
         React.Fragment,
         nil,
-        React.createElement(Title, {title = "Snare"}),
+        React.createElement(Title, {title = "HiHat"}),
         React.createElement(TextGridSel, {items = {
             "Snare",
             "Seq.",
@@ -21,7 +21,7 @@ function ____exports.TextGridSnare(____bindingPattern0)
             "HiHat",
             "Seq.",
             "&icon::musicNote::pixelated"
-        }, keys = {{key = "q", action = viewName == "Snare" and "setView:Snare2" or "setView:Snare"}, {key = "e", action = "contextToggle:254:1:0"}, {key = "a", action = viewName == "HiHat" and "setView:HiHat2" or "setView:HiHat"}, {key = "d", action = "noteOn:Snare:60"}}, selected = selected, contextValue = 0})
+        }, keys = {{key = "q", action = viewName == "Snare" and "setView:Snare2" or "setView:Snare"}, {key = "e", action = "contextToggle:254:1:0"}, {key = "a", action = viewName == "HiHat" and "setView:HiHat2" or "setView:HiHat"}, {key = "d", action = "noteOn:HiHat:60"}}, selected = selected, contextValue = 0})
     )
 end
 return ____exports

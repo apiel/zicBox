@@ -7,7 +7,7 @@ function ____exports.TextGridCommon(____bindingPattern0)
     local selected
     selected = ____bindingPattern0.selected
     return React.createElement(TextGridSel, {items = {
-        "Snare",
+        "Snare/HH.",
         "Kick",
         "^...",
         "Snare",

@@ -5,7 +5,7 @@ import { TextGridSel } from './TextGridSel';
 export function TextGridCommon({ selected }: { selected: number }) {
     return (
         <TextGridSel
-            items={['Snare', 'Kick', '^...', 'Snare', 'Menu', '&icon::play::filled']}
+            items={['Snare/HH.', 'Kick', '^...', 'Snare', 'Menu', '&icon::play::filled']}
             keys={[
                 { key: 'q', action: 'setView:Snare' },
                 { key: 'w', action: `setView:Drum23` },
