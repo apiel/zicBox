@@ -71,6 +71,9 @@ protected:
     float applyReverb(float signal)
     {
         float reverbAmount = reverb.pct();
+        if (reverbAmount == 0.0f) {
+            return signal;
+        }
         int reverbSamples = static_cast<int>((reverbAmount * 0.5f) * props.sampleRate); // Reverb duration scaled
         float feedback = reverbAmount * 0.7f; // Feedback scaled proportionally
         float mix = reverbAmount * 0.5f; // Mix scaled proportionally
@@ -102,16 +105,9 @@ public:
     /*md - DECAY_TIME sets the decay time of the envelope. */
     Val& decayTime = val(0.2f, "DECAY_TIME", { "Decay Time", .min = 0.01, .max = 2.0, .step = 0.01, .unit = "s" });
     /*md - NOISE_LEVEL adds white noise to the output. */
-    Val& noiseLevel = val(0.0f, "NOISE_LEVEL", { "Noise Level", .unit = "%" });
+    Val& noiseLevel = val(0.0f, "NOISE_LEVEL", { "Noise", .unit = "%" });
     /*md - `DISTORTION` to set distortion. */
     Val& distortion = val(0.0, "DISTORTION", { "Distortion", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
-
-    // /*md - DELAY_TIME sets the delay time in seconds. */
-    // Val& delayTime = val(0.1f, "DELAY_TIME", { "Delay Time", .min = 0.0, .max = 1.0, .step = 0.01, .unit = "s" });
-    // /*md - DELAY_FEEDBACK controls the amount of signal fed back into the delay. */
-    // Val& delayFeedback = val(0.3f, "DELAY_FEEDBACK", { "Delay Feedback", .min = 0.0, .max = 1.0, .step = 0.01 });
-    // /*md - DELAY_MIX sets the mix level between dry and wet signals for the delay. */
-    // Val& delayMix = val(0.5f, "DELAY_MIX", { "Delay Mix", .min = 0.0, .max = 1.0, .step = 0.01 });
     /*md - REVERB controls delay time, feedback, and mix with one parameter. */
     Val& reverb = val(0.3f, "REVERB", { "Reverb", .unit = "%" });
 
@@ -133,8 +129,6 @@ public:
             // Generate envelope
             float env = envelope(i, attackTime.get() * props.sampleRate, decayTime.get() * props.sampleRate);
 
-            // Add white noise
-            // TODO brown noise when negative
             float noise = props.lookupTable->getNoise() * noiseLevel.pct();
 
             // Combine FM signal and noise, then scale by envelope and velocity
