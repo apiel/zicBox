@@ -51,7 +51,7 @@ export function ClickView({ name }: Props) {
             />
 
             <TextGridDrum23 selected={3} viewName={name} />
-            <Common selected={1} />
+            <Common selected={1} track={Drum23Track} />
         </View>
     );
 }

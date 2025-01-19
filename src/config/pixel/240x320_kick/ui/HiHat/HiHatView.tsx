@@ -43,7 +43,7 @@ export function HiHatView({ name }: Props) {
             />
 
             <TextGridHiHat selected={3} viewName={name} />
-            <Common selected={1} />
+            <Common selected={1} track={HiHatTrack} />
         </View>
     );
 }

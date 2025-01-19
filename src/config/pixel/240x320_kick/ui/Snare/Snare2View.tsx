@@ -43,7 +43,7 @@ export function Snare2View({ name }: Props) {
             />
 
             <TextGridSnare selected={0} viewName={name} />
-            <Common selected={0} />
+            <Common selected={0} track={SnareTrack} />
         </View>
     );
 }

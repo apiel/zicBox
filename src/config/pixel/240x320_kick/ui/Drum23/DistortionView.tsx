@@ -43,7 +43,7 @@ export function DistortionView({ name }: Props) {
                 track={Drum23Track}
             />
             <TextGridDrum23 selected={0} viewName={name} />
-            <Common selected={0} />
+            <Common selected={0} track={Drum23Track} />
         </View>
     );
 }
