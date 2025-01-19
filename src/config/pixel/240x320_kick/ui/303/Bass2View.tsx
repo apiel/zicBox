@@ -4,7 +4,7 @@ import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
 import { BassTrack } from '../constants';
-import { topLeftKnob, topRightKnob } from '../constantsValue';
+import { topLeftKnob } from '../constantsValue';
 import { TextGridBass } from './TextGridBass';
 
 export type Props = {
@@ -21,13 +21,13 @@ export function Bass2View({ name }: Props) {
                 COLOR="tertiary"
                 track={BassTrack}
             />
-            <KnobValue
+            {/* <KnobValue
                 value="303 GLIDE"
                 position={topRightKnob}
                 encoder_id={2}
                 COLOR="secondary"
                 track={BassTrack}
-            />
+            /> */}
             {/* <KnobValue
                 value="Snare TRANSIENT_DURATION"
                 position={bottomLeftKnob}

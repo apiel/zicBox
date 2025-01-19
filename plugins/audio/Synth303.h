@@ -20,7 +20,7 @@ protected:
     float resonantFilter(float input, float cutoff, float resonance)
     {
         float f = 2.0f * sinf(M_PI * cutoff / props.sampleRate);
-        float q = 1.0f - resonance;
+        float q = 1.0f - (resonance * 0.9f);
 
         filterLow += f * filterBand;
         float high = input - filterLow - q * filterBand;
@@ -47,9 +47,8 @@ public:
     Val& waveform = val(0.0f, "WAVEFORM", { "Waveform", .min = 0.0, .max = 1.0, .step = 1.0 }); // 0 = Saw, 1 = Square
     Val& cutoff = val(1000.0f, "CUTOFF", { "Cutoff Frequency", .min = 100.0, .max = 5000.0, .step = 10.0, .unit = "Hz" });
     Val& resonance = val(0.5f, "RESONANCE", { "Resonance", .unit = "%" });
-    Val& envMod = val(0.5f, "ENV_MOD", { "Envelope Modulation", .unit = "%" });
+    Val& envMod = val(0.5f, "ENV_MOD", { "Env. Mod.", .unit = "%" });
     Val& decay = val(300.0f, "DECAY", { "Decay", .min = 50.0, .max = 1000.0, .step = 10.0, .unit = "ms" });
-    Val& glide = val(0.0f, "GLIDE", { "Glide", .min = 0.0, .max = 1.0, .step = 0.01 });
 
     Synth303(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -58,25 +57,22 @@ public:
     }
 
     float phase = 0.0f;
-    float currentFreq = 440.0f; // Default frequency
+    float freq = 110.0f; // Default frequency
     float amplitude = 0.0f;
     float decayFactor = 0.0f;
-    float targetFreq = 440.0f;
     int i = 0;
     void sample(float* buf) override
     {
         if (amplitude != 0.0f) {
-            // Apply glide
-            currentFreq += (targetFreq - currentFreq) * glide.get();
-
-            // Update phase
-            phase += currentFreq / props.sampleRate;
+            phase += freq / props.sampleRate;
             if (phase >= 1.0f) {
                 phase -= 1.0f;
             }
 
             // Generate waveform
-            float rawWave = waveform.get() < 0.5f ? sawWave(phase) : squareWave(phase);
+            // float rawWave = waveform.get() < 0.5f ? sawWave(phase) : squareWave(phase);
+            // float rawWave = squareWave(phase);
+            float rawWave = sawWave(phase);
 
             // Apply filter envelope
             float env = amplitude * envMod.pct();
@@ -96,17 +92,13 @@ public:
     void noteOn(uint8_t note, float _velocity) override
     {
         // Convert MIDI note to frequency
-        float freq = 220.0f * powf(2.0f, (note - 69) / 12.0f);
+        freq = 110.0f * powf(2.0f, (note - 69) / 12.0f);
 
         // Adjust amplitude based on velocity
         amplitude = _velocity;
 
         // Set target frequency (for glide)
-        targetFreq = freq;
-
         phase = 0.0f;
-        currentFreq = 220.0f; // Default frequency
-
         decayFactor = 1.0f / (props.sampleRate * (decay.get() / 1000.0f));
         amplitude = 1.0f;
 
