@@ -35,7 +35,7 @@ export function Clap2View({ name }: Props) {
                 track={ClapTrack}
             />
             <KnobValue
-                value="Clap HARMONICITY"
+                value="Clap DISTORTION"
                 position={bottomRightKnob}
                 encoder_id={3}
                 COLOR="secondary"
