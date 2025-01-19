@@ -26,7 +26,7 @@ public:
     /*md - `BASS` to set bass boost. */
     Val& bass = val(50.0, "BASS", { "Bass Boost", .min = 0.0, .max = 100.0, .step = 1.0, .unit = "%" });
     /*md - `WAVESHAPE` to set waveshape. */
-    Val& waveshape = val(0.0, "WAVESHAPE", { "Waveshape", .min = 0.0, .max = 100.0, .step = 1.0, .unit = "%" });
+    Val& waveshape = val(0.0, "WAVESHAPE", { "Waveshape", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
 
     float prevInput1 = 0.0f, prevOutput1 = 0.0f; // State for pass 1
     // float prevInput2 = 0.0f, prevOutput2 = 0.0f; // State for pass 2
@@ -59,7 +59,7 @@ public:
             float driveAmount = drive.pct();
             float compressAmount = compress.pct() * 2 - 1.0f;
             float bassBoostAmount = bass.pct();
-            float waveshapeAmount = waveshape.pct();
+            float waveshapeAmount = waveshape.pct() * 2 - 1.0f;
 
             float output = input;
             output = applyBoost(output, bassBoostAmount, prevInput1, prevOutput1);
@@ -87,8 +87,13 @@ protected:
     float applyWaveshape(float input, float waveshapeAmount)
     {
         if (waveshapeAmount > 0.0f) {
+            // float sineValue = sineLookupInterpolated(input);
+            float sineValue = sinf(input);
+            return input + waveshapeAmount * sineValue * 2;
+        }
+        if (waveshapeAmount < 0.0f) {
             float sineValue = sineLookupInterpolated(input);
-            return input + waveshapeAmount * sineValue;
+            return input + (-waveshapeAmount) * sineValue;
         }
         return input;
     }
