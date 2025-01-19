@@ -65,6 +65,27 @@ protected:
         return input;
     }
 
+    static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
+    float reverbBuffer[REVERB_BUFFER_SIZE] = { 0.0f };
+    int reverbIndex = 0;
+    void applyReverb(float& signal)
+    {
+        float reverbAmount = reverb.pct();
+        int reverbSamples = static_cast<int>((reverbAmount * 0.5f) * props.sampleRate); // Reverb duration scaled
+        float feedback = reverbAmount * 0.7f; // Feedback scaled proportionally
+        float mix = reverbAmount * 0.5f; // Mix scaled proportionally
+
+        if (reverbSamples > REVERB_BUFFER_SIZE) {
+            reverbSamples = REVERB_BUFFER_SIZE; // Cap the reverb duration to buffer size
+        }
+
+        float reverbSignal = reverbBuffer[reverbIndex];
+        reverbBuffer[reverbIndex] = signal + reverbSignal * feedback;
+        reverbIndex = (reverbIndex + 1) % reverbSamples;
+
+        signal = signal * (1.0f - mix) + reverbSignal * mix;
+    }
+
     int totalSamples = 0;
     int i = 0;
 
@@ -82,10 +103,17 @@ public:
     Val& decayTime = val(0.2f, "DECAY_TIME", { "Decay Time", .min = 0.01, .max = 2.0, .step = 0.01, .unit = "s" });
     /*md - NOISE_LEVEL adds white noise to the output. */
     Val& noiseLevel = val(0.2f, "NOISE_LEVEL", { "Noise Level", .min = 0.0, .max = 1.0, .step = 0.01 });
-    // /*md - HARMONICITY adjusts the harmonic relationship between carrier and modulator frequencies. */
-    // Val& harmonicity = val(2.0f, "HARMONICITY", { "Harmonicity", .min = 0.5, .max = 4.0, .step = 0.1 });
     /*md - `DISTORTION` to set distortion. */
     Val& distortion = val(0.0, "DISTORTION", { "Distortion", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
+
+    // /*md - DELAY_TIME sets the delay time in seconds. */
+    // Val& delayTime = val(0.1f, "DELAY_TIME", { "Delay Time", .min = 0.0, .max = 1.0, .step = 0.01, .unit = "s" });
+    // /*md - DELAY_FEEDBACK controls the amount of signal fed back into the delay. */
+    // Val& delayFeedback = val(0.3f, "DELAY_FEEDBACK", { "Delay Feedback", .min = 0.0, .max = 1.0, .step = 0.01 });
+    // /*md - DELAY_MIX sets the mix level between dry and wet signals for the delay. */
+    // Val& delayMix = val(0.5f, "DELAY_MIX", { "Delay Mix", .min = 0.0, .max = 1.0, .step = 0.01 });
+    /*md - REVERB controls delay time, feedback, and mix with one parameter. */
+    Val& reverb = val(0.3f, "REVERB", { "Reverb", .unit = "%" });
 
     SynthFmDrum(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -114,8 +142,12 @@ public:
 
             output = applyDistortion(output);
 
+            applyReverb(output);
+
             buf[track] = output;
             i++;
+        } else {
+            applyReverb(buf[track]);
         }
     }
 

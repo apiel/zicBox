@@ -14,8 +14,15 @@ export type Props = {
 export function Clap2View({ name }: Props) {
     return (
         <View name={name}>
-            <KnobValue
+            {/* <KnobValue
                 value="Clap ATTACK_TIME"
+                position={topLeftKnob}
+                encoder_id={0}
+                COLOR="tertiary"
+                track={ClapTrack}
+            /> */}
+            <KnobValue
+                value="Clap DISTORTION"
                 position={topLeftKnob}
                 encoder_id={0}
                 COLOR="tertiary"
@@ -35,7 +42,7 @@ export function Clap2View({ name }: Props) {
                 track={ClapTrack}
             />
             <KnobValue
-                value="Clap DISTORTION"
+                value="Clap REVERB"
                 position={bottomRightKnob}
                 encoder_id={3}
                 COLOR="secondary"
