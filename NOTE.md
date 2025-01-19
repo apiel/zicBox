@@ -1,5 +1,7 @@
 ## Pixel TODO
 
+- TODO remove step length from kick seq...
+
 - FIXME transition between wavetable and waveform is not so smooth...
 
 - TODO instead of EffectGainVolume could use Mixer to set volume

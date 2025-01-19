@@ -68,7 +68,7 @@ protected:
     static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
     float reverbBuffer[REVERB_BUFFER_SIZE] = { 0.0f };
     int reverbIndex = 0;
-    void applyReverb(float& signal)
+    float applyReverb(float signal)
     {
         float reverbAmount = reverb.pct();
         int reverbSamples = static_cast<int>((reverbAmount * 0.5f) * props.sampleRate); // Reverb duration scaled
@@ -83,7 +83,7 @@ protected:
         reverbBuffer[reverbIndex] = signal + reverbSignal * feedback;
         reverbIndex = (reverbIndex + 1) % reverbSamples;
 
-        signal = signal * (1.0f - mix) + reverbSignal * mix;
+        return signal * (1.0f - mix) + reverbSignal * mix;
     }
 
     int totalSamples = 0;
@@ -96,13 +96,13 @@ public:
     /*md - MOD_FREQ sets the frequency of the modulator wave. */
     Val& modFreq = val(50.0f, "MOD_FREQ", { "Modulator Frequency", .min = 10.0, .max = 500.0, .step = 1.0, .unit = "Hz" });
     /*md - MOD_INDEX controls the intensity of frequency modulation. */
-    Val& modIndex = val(10.0f, "MOD_INDEX", { "Modulation Index", .min = 0.0, .max = 100.0, .step = 0.1 });
+    Val& modIndex = val(10.0f, "MOD_INDEX", { "Modulation Index", .min = 0.0, .max = 100.0, .step = 0.1, .floatingPoint = 1 });
     /*md - ATTACK_TIME sets the attack time of the envelope. */
     Val& attackTime = val(0.01f, "ATTACK_TIME", { "Attack Time", .min = 0.001, .max = 1.0, .step = 0.001, .unit = "s" });
     /*md - DECAY_TIME sets the decay time of the envelope. */
     Val& decayTime = val(0.2f, "DECAY_TIME", { "Decay Time", .min = 0.01, .max = 2.0, .step = 0.01, .unit = "s" });
     /*md - NOISE_LEVEL adds white noise to the output. */
-    Val& noiseLevel = val(0.2f, "NOISE_LEVEL", { "Noise Level", .min = 0.0, .max = 1.0, .step = 0.01 });
+    Val& noiseLevel = val(0.0f, "NOISE_LEVEL", { "Noise Level", .unit = "%" });
     /*md - `DISTORTION` to set distortion. */
     Val& distortion = val(0.0, "DISTORTION", { "Distortion", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
 
@@ -135,19 +135,19 @@ public:
 
             // Add white noise
             // TODO brown noise when negative
-            float noise = props.lookupTable->getNoise() * noiseLevel.get();
+            float noise = props.lookupTable->getNoise() * noiseLevel.pct();
 
             // Combine FM signal and noise, then scale by envelope and velocity
             float output = (fmSignal + noise) * env * currentVelocity;
 
             output = applyDistortion(output);
 
-            applyReverb(output);
+            output = applyReverb(output);
 
             buf[track] = output;
             i++;
         } else {
-            applyReverb(buf[track]);
+            buf[track] = applyReverb(buf[track]);
         }
     }
 
