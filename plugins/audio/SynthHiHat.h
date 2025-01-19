@@ -38,6 +38,20 @@ protected:
         return out;
     }
 
+    // Low-pass filter for tone brightness control
+    float prevInput = 0.0f;
+    float prevOutput = 0.0f;
+    float lowPassFilter(float input)
+    {
+        float rc = 1.0f / (2.0f * M_PI * toneBrightness.get());
+        float dt = 1.0f / props.sampleRate;
+        float alpha = dt / (rc + dt);
+        float output = alpha * input + (1.0f - alpha) * prevOutput;
+        prevInput = input;
+        prevOutput = output;
+        return output;
+    }
+
 public:
     /*md **Values**: */
     /*md - `DURATION` set the duration of the envelop.*/
@@ -48,8 +62,10 @@ public:
     Val& bandQ = val(1.0f, "BAND_Q", { "Band Q", .min = 0.5, .max = 10.0, .step = 0.1, .floatingPoint = 1 });
     /*md - `TRANSIENT_INTENSITY` set the transient intensity. */
     Val& transientIntensity = val(1.0f, "TRANSIENT_INTENSITY", { "Transient", .min = 0.0, .max = 2.0, .step = 0.1, .floatingPoint = 1 });
-
+    /*md - `METALLIC_TONE_MIX` set the metallic tone mix. */
     Val& metallicToneMix = val(50.0f, "METALLIC_TONE_MIX", { "Tone Mix", .unit = "%" });
+    /*md - `TONE_BRIGHTNESS` set the tone brightness. */
+    Val& toneBrightness = val(5000.0f, "TONE_BRIGHTNESS", { "Tone Brightness", .min = 1000.0, .max = 10000.0, .step = 100.0, .unit = "Hz" });
 
     SynthHiHat(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -79,6 +95,9 @@ public:
 
             metallicNoise = (metallicToneMix.pct() * metallicNoise) + ((1.0f - metallicToneMix.pct()) * rawNoise);
 
+            // Apply tone brightness (low-pass filter)
+            metallicNoise = lowPassFilter(metallicNoise);
+
             buf[track] = metallicNoise * env;
             i++;
         }
@@ -96,3 +115,50 @@ public:
 };
 
 #endif
+
+// float env = 1.0f - (i * decayFactor); // Linear envelope
+
+// // Generate raw noise
+// float rawNoise = whiteNoise();
+
+// // Apply bandpass filters for metallic noise
+// float filteredNoise1 = bandpassFilter(rawNoise, bandFreq1.get(), bandQ.get(), low1, high1);
+// float filteredNoise2 = bandpassFilter(rawNoise, bandFreq2.get(), bandQ.get(), low2, high2);
+
+// // Mix filtered noise
+// float metallicNoise = (filteredNoise1 + filteredNoise2) * 0.5f;
+
+// // Modulate band frequencies
+// float modulation = sinf(2.0f * M_PI * modFreq.get() * i / sampleRate);
+// metallicNoise *= (1.0f + 0.1f * modulation);
+
+// // Transient component with decay
+// if (i < transientSamples) {
+//     float transientEnv = 1.0f - (static_cast<float>(i) / transientSamples);
+//     metallicNoise += transientIntensity.get() * transientEnv * whiteNoise();
+// }
+
+// // Apply metallic tone mix
+// metallicNoise = (metallicToneMix.get() * metallicNoise) + ((1.0f - metallicToneMix.get()) * rawNoise);
+
+// // Apply tone brightness (low-pass filter)
+// metallicNoise = lowPassFilter(metallicNoise, toneBrightness.get(), prevInput, prevOutput);
+
+// // Apply attack envelope
+// if (i < attackSamples) {
+//     float attackEnv = static_cast<float>(i) / attackSamples;
+//     metallicNoise *= attackEnv;
+// }
+
+// // Apply low-cut filter (manual attenuation)
+// float lowCut = std::max(0.0f, lowCutFreq.get());
+// if (lowCut > 0.0f && metallicNoise < lowCut) {
+//     metallicNoise = 0.0f;
+// }
+
+// // Apply high-frequency emphasis (gain adjustment)
+// float highGain = powf(10.0f, highFreqEmphasis.get() / 20.0f);
+// metallicNoise *= highGain;
+
+// // Apply noise mix and write to buffer
+// buf[i] = metallicNoise * noiseMix.get() * env;
