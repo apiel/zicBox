@@ -11,6 +11,7 @@ local ____constants = require("config.pixel.240x320_kick.ui.constants")
 local HiHatTrack = ____constants.HiHatTrack
 local ____constantsValue = require("config.pixel.240x320_kick.ui.constantsValue")
 local bottomLeftKnob = ____constantsValue.bottomLeftKnob
+local bottomRightKnob = ____constantsValue.bottomRightKnob
 local topLeftKnob = ____constantsValue.topLeftKnob
 local topRightKnob = ____constantsValue.topRightKnob
 local ____TextGridHiHat = require("config.pixel.240x320_kick.ui.HiHat.TextGridHiHat")
@@ -36,6 +37,13 @@ function ____exports.HiHatView(____bindingPattern0)
             track = HiHatTrack
         }),
         React.createElement(KnobValue, {value = "HiHat TRANSIENT_INTENSITY", position = bottomLeftKnob, encoder_id = 1, track = HiHatTrack}),
+        React.createElement(KnobValue, {
+            value = "HiHat METALLIC_TONE_MIX",
+            position = bottomRightKnob,
+            encoder_id = 3,
+            COLOR = "secondary",
+            track = HiHatTrack
+        }),
         React.createElement(TextGridHiHat, {selected = 3, viewName = name}),
         React.createElement(Common, {selected = 1})
     )
