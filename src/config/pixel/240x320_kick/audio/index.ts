@@ -8,6 +8,7 @@ pluginAlias('SerializeTrack', 'libzic_SerializeTrack.so');
 pluginAlias('Tempo', 'libzic_Tempo.so');
 pluginAlias('Drum23', 'libzic_SynthDrum23.so');
 pluginAlias('Snare', 'libzic_SynthSnare.so');
+pluginAlias('HiHat', 'libzic_SynthHiHat.so');
 pluginAlias('Sequencer', 'libzic_Sequencer.so');
 pluginAlias('AudioOutput', 'libzic_AudioOutputPulse.so');
 pluginAlias('Mixer4', 'libzic_Mixer4.so');
@@ -30,6 +31,12 @@ plugin('Snare', [{ track }]);
 plugin('Sequencer', [{ track }]);
 plugin('Volume EffectGainVolume', [{ track }]);
 plugin('SerializeTrack', [{ track, filename: 'snare', MAX_VARIATION, WORKSPACE_FOLDER }]);
+
+track = 3;
+plugin('HiHat', [{ track }]);
+plugin('Sequencer', [{ track }]);
+plugin('Volume EffectGainVolume', [{ track }]);
+plugin('SerializeTrack', [{ track, filename: 'hihat', MAX_VARIATION, WORKSPACE_FOLDER }]);
 
 plugin('MixerDrum Mixer4');
 plugin('SerializeTrack', [{ filename: 'mixer', MAX_VARIATION, WORKSPACE_FOLDER }]);

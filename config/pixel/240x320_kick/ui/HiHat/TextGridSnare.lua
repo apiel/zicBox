@@ -18,10 +18,17 @@ function ____exports.TextGridSnare(____bindingPattern0)
             "Snare",
             "Seq.",
             "...",
-            "HiHat",
-            "Seq.",
+            "Amp/Click",
+            "Freq.",
             "&icon::musicNote::pixelated"
-        }, keys = {{key = "q", action = viewName == "Snare" and "setView:Snare2" or "setView:Snare"}, {key = "e", action = "contextToggle:254:1:0"}, {key = "a", action = viewName == "HiHat" and "setView:HiHat2" or "setView:HiHat"}, {key = "d", action = "noteOn:Snare:60"}}, selected = selected, contextValue = 0})
+        }, keys = {
+            {key = "q", action = viewName == "Snare" and "setView:Snare2" or "setView:Snare"},
+            {key = "w", action = "setView:Snare2"},
+            {key = "e", action = "contextToggle:254:1:0"},
+            {key = "a", action = viewName == "Amplitude" and "setView:Click" or "setView:Amplitude"},
+            {key = "s", action = "setView:Frequency"},
+            {key = "d", action = "noteOn:Snare:60"}
+        }, selected = selected, contextValue = 0})
     )
 end
 return ____exports

@@ -33,3 +33,4 @@ export const ColorTrack8 = '#cb11ca';
 
 export const Drum23Track = 1;
 export const SnareTrack = 2;
+export const HiHatTrack = 3;

@@ -9,6 +9,8 @@ import { Drum23View } from './Drum23/Drum23View';
 import { FrequencyView } from './Drum23/FrequencyView';
 import { Drum23SeqView } from './Drum23/SeqView';
 import { WaveformView } from './Drum23/WaveformView';
+import { HiHat2View } from './HiHat/HiHat2View';
+import { HiHatView } from './HiHat/HiHatView';
 import { CreateWorkspaceView } from './menu/CreateWorkspaceView';
 import { MenuView } from './menu/menuView';
 import { ShutdownView } from './menu/ShutdownView';
@@ -33,10 +35,11 @@ applyZic(<AmpView name="Amplitude" />);
 applyZic(<ClickView name="Click" />);
 applyZic(<Drum23SeqView name="Sequencer" />);
 
-
 applyZic(<SnareView name="Snare" />);
 applyZic(<Snare2View name="Snare2" />);
 
+applyZic(<HiHatView name="HiHat" />);
+applyZic(<HiHat2View name="HiHat2" />);
 
 applyZic(<MenuView name="Menu" />);
 applyZic(<WorkspacesView name="Workspaces" />);
