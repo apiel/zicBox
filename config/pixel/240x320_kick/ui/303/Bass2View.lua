@@ -11,7 +11,6 @@ local ____constants = require("config.pixel.240x320_kick.ui.constants")
 local BassTrack = ____constants.BassTrack
 local ____constantsValue = require("config.pixel.240x320_kick.ui.constantsValue")
 local topLeftKnob = ____constantsValue.topLeftKnob
-local topRightKnob = ____constantsValue.topRightKnob
 local ____TextGridBass = require("config.pixel.240x320_kick.ui.303.TextGridBass")
 local TextGridBass = ____TextGridBass.TextGridBass
 function ____exports.Bass2View(____bindingPattern0)
@@ -25,13 +24,6 @@ function ____exports.Bass2View(____bindingPattern0)
             position = topLeftKnob,
             encoder_id = 0,
             COLOR = "tertiary",
-            track = BassTrack
-        }),
-        React.createElement(KnobValue, {
-            value = "303 GLIDE",
-            position = topRightKnob,
-            encoder_id = 2,
-            COLOR = "secondary",
             track = BassTrack
         }),
         React.createElement(TextGridBass, {selected = 0, viewName = name}),
