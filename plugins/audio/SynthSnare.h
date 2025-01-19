@@ -75,6 +75,7 @@ public:
             for (int h = 1; h <= harmonicsCount.get(); ++h) {
                 tone += (1.0f / h) * sinf(2.0f * M_PI * toneFreq.get() * h * t);
             }
+            // Using LUT
             // for (int h = 1; h <= harmonicsCount.get(); ++h) {
             //     float phase = fmodf(t * toneFreq.get() * h, 1.0f); // Phase wraps around [0, 1)
             //     tone += (1.0f / h) * props.lookupTable->sine[(int)(phase * props.lookupTable->size)];
