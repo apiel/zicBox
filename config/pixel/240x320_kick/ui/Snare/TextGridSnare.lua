@@ -16,14 +16,14 @@ function ____exports.TextGridSnare(____bindingPattern0)
         React.createElement(Title, {title = "Snare"}),
         React.createElement(TextGridSel, {items = {
             "Snare",
-            "303",
+            "Clap",
             "...",
             "HiHat",
             "Seq.",
             "&icon::musicNote::pixelated"
         }, keys = {
             {key = "q", action = viewName == "Snare" and "setView:Snare2" or "setView:Snare"},
-            {key = "w", action = viewName == "Bass" and "setView:Bass2" or "setView:Bass"},
+            {key = "w", action = viewName == "Clap" and "setView:Clap2" or "setView:Clap"},
             {key = "e", action = "contextToggle:254:1:0"},
             {key = "a", action = viewName == "HiHat" and "setView:HiHat2" or "setView:HiHat"},
             {key = "d", action = "noteOn:Snare:60"}

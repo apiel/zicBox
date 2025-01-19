@@ -30,5 +30,5 @@ ____exports.ColorTrack8 = "#cb11ca"
 ____exports.Drum23Track = 1
 ____exports.SnareTrack = 2
 ____exports.HiHatTrack = 3
-____exports.BassTrack = 4
+____exports.ClapTrack = 4
 return ____exports

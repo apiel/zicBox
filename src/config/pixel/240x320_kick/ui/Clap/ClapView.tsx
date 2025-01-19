@@ -3,15 +3,15 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
-import { BassTrack } from '../constants';
+import { ClapTrack } from '../constants';
 import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
-import { TextGridBass } from './TextGridBass';
+import { TextGridClap } from './TextGridClap';
 
 export type Props = {
     name: string;
 };
 
-export function BassView({ name }: Props) {
+export function ClapView({ name }: Props) {
     return (
         <View name={name}>
             <KnobValue
@@ -19,31 +19,31 @@ export function BassView({ name }: Props) {
                 position={topLeftKnob}
                 encoder_id={0}
                 COLOR="tertiary"
-                track={BassTrack}
+                track={ClapTrack}
             />
             <KnobValue
-                value="303 CUTOFF"
+                value="Clap DURATION"
                 position={topRightKnob}
                 encoder_id={2}
                 COLOR="secondary"
-                track={BassTrack}
+                track={ClapTrack}
             />
             <KnobValue
-                value="303 ENV_MOD"
+                value="Clap TONE_CUTOFF"
                 position={bottomLeftKnob}
                 encoder_id={1}
-                track={BassTrack}
+                track={ClapTrack}
             />
             <KnobValue
-                value="303 RESONANCE"
+                value="Clap TRANSIENT_SPREAD"
                 position={bottomRightKnob}
                 encoder_id={3}
                 COLOR="secondary"
-                track={BassTrack}
+                track={ClapTrack}
             />
 
-            <TextGridBass selected={0} viewName={name} />
-            <Common selected={0} track={BassTrack} />
+            <TextGridClap selected={1} viewName={name} />
+            <Common selected={1} track={ClapTrack} />
         </View>
     );
 }
