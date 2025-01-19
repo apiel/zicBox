@@ -4,7 +4,7 @@ import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
 import { ClapTrack } from '../constants';
-import { bottomLeftKnob, topLeftKnob, topRightKnob } from '../constantsValue';
+import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
 import { TextGridClap } from './TextGridClap';
 
 export type Props = {
@@ -34,13 +34,13 @@ export function Clap2View({ name }: Props) {
                 encoder_id={1}
                 track={ClapTrack}
             />
-            {/* <KnobValue
-                value="Clap TONE_BRIGHTNESS"
+            <KnobValue
+                value="Clap HARMONICITY"
                 position={bottomRightKnob}
                 encoder_id={3}
                 COLOR="secondary"
                 track={ClapTrack}
-            /> */}
+            />
 
             <TextGridClap selected={1} viewName={name} />
             <Common selected={1} track={ClapTrack} />
