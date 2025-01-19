@@ -38,7 +38,7 @@ function ____exports.Clap2View(____bindingPattern0)
         }),
         React.createElement(KnobValue, {value = "Clap NOISE_LEVEL", position = bottomLeftKnob, encoder_id = 1, track = ClapTrack}),
         React.createElement(KnobValue, {
-            value = "Clap HARMONICITY",
+            value = "Clap DISTORTION",
             position = bottomRightKnob,
             encoder_id = 3,
             COLOR = "secondary",
