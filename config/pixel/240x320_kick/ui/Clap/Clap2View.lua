@@ -11,6 +11,7 @@ local ____constants = require("config.pixel.240x320_kick.ui.constants")
 local ClapTrack = ____constants.ClapTrack
 local ____constantsValue = require("config.pixel.240x320_kick.ui.constantsValue")
 local bottomLeftKnob = ____constantsValue.bottomLeftKnob
+local bottomRightKnob = ____constantsValue.bottomRightKnob
 local topLeftKnob = ____constantsValue.topLeftKnob
 local topRightKnob = ____constantsValue.topRightKnob
 local ____TextGridClap = require("config.pixel.240x320_kick.ui.Clap.TextGridClap")
@@ -36,6 +37,13 @@ function ____exports.Clap2View(____bindingPattern0)
             track = ClapTrack
         }),
         React.createElement(KnobValue, {value = "Clap NOISE_LEVEL", position = bottomLeftKnob, encoder_id = 1, track = ClapTrack}),
+        React.createElement(KnobValue, {
+            value = "Clap HARMONICITY",
+            position = bottomRightKnob,
+            encoder_id = 3,
+            COLOR = "secondary",
+            track = ClapTrack
+        }),
         React.createElement(TextGridClap, {selected = 1, viewName = name}),
         React.createElement(Common, {selected = 1, track = ClapTrack})
     )
