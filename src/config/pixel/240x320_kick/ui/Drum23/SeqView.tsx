@@ -6,7 +6,7 @@ import { StepEdit2 } from '@/libs/components/StepEdit2';
 import { View } from '@/libs/components/View';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
-import { ScreenWidth } from '../constants';
+import { Drum23Track, ScreenWidth } from '../constants';
 import { TextGridSeq } from './TextGridSeq';
 
 export type Props = {
@@ -48,7 +48,7 @@ export function Drum23SeqView({ name }: Props) {
             })}
 
             <TextGridSeq />
-            <Common selected={0} hideSequencer />
+            <Common selected={0} hideSequencer track={Drum23Track} />
         </View>
     );
 }

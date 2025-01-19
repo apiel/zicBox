@@ -15,6 +15,7 @@ local rgb = ____ui.rgb
 local ____Common = require("config.pixel.240x320_kick.ui.components.Common")
 local Common = ____Common.Common
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
+local Drum23Track = ____constants.Drum23Track
 local ScreenWidth = ____constants.ScreenWidth
 local ____TextGridSeq = require("config.pixel.240x320_kick.ui.Drum23.TextGridSeq")
 local TextGridSeq = ____TextGridSeq.TextGridSeq
@@ -49,7 +50,7 @@ function ____exports.Drum23SeqView(____bindingPattern0)
             end
         ),
         React.createElement(TextGridSeq, nil),
-        React.createElement(Common, {selected = 0, hideSequencer = true})
+        React.createElement(Common, {selected = 0, hideSequencer = true, track = Drum23Track})
     )
 end
 return ____exports

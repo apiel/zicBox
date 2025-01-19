@@ -21,7 +21,7 @@ export function FrequencyView({ name }: Props) {
                 track={Drum23Track}
             />
             <TextGridDrum23 selected={4} viewName={name} />
-            <Common selected={0} />
+            <Common selected={0} track={Drum23Track} />
         </View>
     );
 }

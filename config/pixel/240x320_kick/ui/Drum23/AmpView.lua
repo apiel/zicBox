@@ -40,7 +40,7 @@ function ____exports.AmpView(____bindingPattern0)
             track = Drum23Track
         }),
         React.createElement(TextGridDrum23, {selected = 3, viewName = name}),
-        React.createElement(Common, {selected = 1})
+        React.createElement(Common, {selected = 1, track = Drum23Track})
     )
 end
 return ____exports

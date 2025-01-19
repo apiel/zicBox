@@ -5,7 +5,15 @@ import { rgb } from '@/libs/ui';
 import { ScreenWidth } from '../constants';
 import { TextGridCommon } from './TextGridCommon';
 
-export function Common({ selected, hideSequencer }: { selected: number; hideSequencer?: boolean }) {
+export function Common({
+    selected,
+    hideSequencer,
+    track,
+}: {
+    selected: number;
+    hideSequencer?: boolean;
+    track: number;
+}) {
     return (
         <>
             {!hideSequencer && (
@@ -17,6 +25,7 @@ export function Common({ selected, hideSequencer }: { selected: number; hideSequ
                     foreground_color={rgb(34, 110, 34)}
                     volume_plugin="Volume VOLUME"
                     show_steps
+                    track={track}
                 />
             )}
 

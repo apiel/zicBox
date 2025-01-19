@@ -37,7 +37,7 @@ function ____exports.HiHat2View(____bindingPattern0)
         }),
         React.createElement(KnobValue, {value = "HiHat TONE_BRIGHTNESS", position = bottomLeftKnob, encoder_id = 1, track = HiHatTrack}),
         React.createElement(TextGridHiHat, {selected = 3, viewName = name}),
-        React.createElement(Common, {selected = 1})
+        React.createElement(Common, {selected = 1, track = HiHatTrack})
     )
 end
 return ____exports

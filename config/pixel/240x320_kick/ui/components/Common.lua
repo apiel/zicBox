@@ -10,10 +10,12 @@ local ScreenWidth = ____constants.ScreenWidth
 local ____TextGridCommon = require("config.pixel.240x320_kick.ui.components.TextGridCommon")
 local TextGridCommon = ____TextGridCommon.TextGridCommon
 function ____exports.Common(____bindingPattern0)
+    local track
     local hideSequencer
     local selected
     selected = ____bindingPattern0.selected
     hideSequencer = ____bindingPattern0.hideSequencer
+    track = ____bindingPattern0.track
     return React.createElement(
         React.Fragment,
         nil,
@@ -26,7 +28,8 @@ function ____exports.Common(____bindingPattern0)
                 selection_color = rgb(35, 161, 35),
                 foreground_color = rgb(34, 110, 34),
                 volume_plugin = "Volume VOLUME",
-                show_steps = true
+                show_steps = true,
+                track = track
             }
         ),
         React.createElement(TextGridCommon, {selected = selected})

@@ -45,7 +45,7 @@ function ____exports.HiHatView(____bindingPattern0)
             track = HiHatTrack
         }),
         React.createElement(TextGridHiHat, {selected = 3, viewName = name}),
-        React.createElement(Common, {selected = 1})
+        React.createElement(Common, {selected = 1, track = HiHatTrack})
     )
 end
 return ____exports
