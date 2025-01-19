@@ -70,9 +70,15 @@ public:
             // Tonal component with harmonics
             float t = (float)(i) / props.sampleRate;
             float tone = 0.0f;
+            // WARN strangly enough, using sinf is faster than using lookup table
+            // After looking at the CPU load on rpi, using sinf is faster than using lookup table...
             for (int h = 1; h <= harmonicsCount.get(); ++h) {
                 tone += (1.0f / h) * sinf(2.0f * M_PI * toneFreq.get() * h * t);
             }
+            // for (int h = 1; h <= harmonicsCount.get(); ++h) {
+            //     float phase = fmodf(t * toneFreq.get() * h, 1.0f); // Phase wraps around [0, 1)
+            //     tone += (1.0f / h) * props.lookupTable->sine[(int)(phase * props.lookupTable->size)];
+            // }
             tone = tone / harmonicsCount.get() * env;
 
             buf[track] = (noise * noiseMix.pct()) + (tone * (1.0f - noiseMix.pct()));
