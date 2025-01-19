@@ -5,9 +5,9 @@ import { TextGridSel } from '../components/TextGridSel';
 export function TextGridSnare({ selected, viewName }: { selected: number, viewName: string }) {
     return (
         <TextGridSel
-            items={['Page1', 'Page2', '...', 'Amp/Click', 'Freq.', '&icon::musicNote::pixelated']}
+            items={['Snare', 'Seq.', '...', 'Amp/Click', 'Freq.', '&icon::musicNote::pixelated']}
             keys={[
-                    { key: 'q', action: 'setView:Snare' },
+                    { key: 'q', action: viewName === 'Snare' ? 'setView:Snare2' : 'setView:Snare' },
                     { key: 'w', action: 'setView:Snare2' },
                     { key: 'e', action: 'contextToggle:254:1:0' },
 

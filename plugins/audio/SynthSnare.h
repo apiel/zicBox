@@ -20,10 +20,11 @@ protected:
     // For Pink noise, make encoder for pink noise amount...
     // Pink noise approximation (simple filter-based approach)
     float pinkNoiseState = 0.0f;
-    float pinkNoise(float input, float& state)
+    float pinkNoise(float input)
     {
-        state = 0.98f * state + 0.02f * input; // Low-pass filter approximation for pink noise
-        return state;
+        // Low-pass filter approximation for pink noise
+        pinkNoiseState = pinkNoiseAmount.pct() * pinkNoiseState + (1.0f - pinkNoiseAmount.pct()) * input;
+        return pinkNoiseState;
     }
 
 public:
@@ -31,18 +32,21 @@ public:
 
     /*md - `DURATION` set the duration of the envelop.*/
     Val& duration = val(100.0f, "DURATION", { "Duration", .min = 10.0, .max = 2500.0, .step = 10.0, .unit = "ms" });
+
+    /*md - `TONE_FREQ` set the frequency of the tone. */
     Val& toneFreq = val(200.0f, "TONE_FREQ", { "Tone Freq.", .min = 50.0, .max = 1000.0, .step = 1.0, .unit = "Hz" });
-    Val& noiseMix = val(70.0f, "NOISE_MIX", { "Noise Mix" });
-
-    // Transient control parameters
-    Val& transientDuration = val(10.0f, "TRANSIENT_DURATION", { "Transient", .min = 1.0, .max = 50.0, .step = 1.0, .unit = "ms" });
-    Val& transientIntensity = val(0.0f, "TRANSIENT_INTENSITY", { "Transient", .unit = "%" });
-
-    // Noise type parameter (0 = White, 1 = Pink)
-    Val& noiseType = val(0, "NOISE_TYPE", { "Noise Type", .min = 0, .max = 1, .step = 1 });
-
-    // Harmonics control
+    /*md - `HARMONICS_COUNT` set the harmonics count in the tone. */
     Val& harmonicsCount = val(1, "HARMONICS_COUNT", { "Harmonics Count", .min = 1, .max = 10, .step = 1 });
+
+    /*md - `PINK_NOISE` set the pink noise amount. */
+    Val& pinkNoiseAmount = val(0.0f, "PINK_NOISE", { "Pink Noise", .unit = "%" });
+    /*md - `NOISE_MIX` set the noise mix. */
+    Val& noiseMix = val(70.0f, "NOISE_MIX", { "Noise Mix", .unit = "%" });
+
+    /*md - `TRANSIENT_DURATION` set the transient duration. */
+    Val& transientDuration = val(10.0f, "TRANSIENT_DURATION", { "Transient", .min = 1.0, .max = 50.0, .step = 1.0, .unit = "ms" });
+    /*md - `TRANSIENT_INTENSITY` set the transient intensity. */
+    Val& transientIntensity = val(0.0f, "TRANSIENT_INTENSITY", { "Transient", .unit = "%" });
 
     SynthSnare(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -59,8 +63,8 @@ public:
         if (i < totalSamples) {
             float env = 1.0f - (i * decayFactor); // Envelope
 
-            float noise = whiteNoise() * env;
-            // float noise = pinkNoise(whiteNoise(), pinkNoiseState) * env;
+            // float noise = whiteNoise() * env;
+            float noise = pinkNoise(whiteNoise()) * env;
 
             // Transient component
             if (i < transientSamples && transientIntensity.pct() > 0.0f) {

@@ -12,6 +12,7 @@ local SnareTrack = ____constants.SnareTrack
 local ____constantsValue = require("config.pixel.240x320_kick.ui.constantsValue")
 local bottomLeftKnob = ____constantsValue.bottomLeftKnob
 local bottomRightKnob = ____constantsValue.bottomRightKnob
+local topLeftKnob = ____constantsValue.topLeftKnob
 local topRightKnob = ____constantsValue.topRightKnob
 local ____TextGridSnare = require("config.pixel.240x320_kick.ui.Snare.TextGridSnare")
 local TextGridSnare = ____TextGridSnare.TextGridSnare
@@ -21,6 +22,13 @@ function ____exports.Snare2View(____bindingPattern0)
     return React.createElement(
         View,
         {name = name},
+        React.createElement(KnobValue, {
+            value = "Snare PINK_NOISE",
+            position = topLeftKnob,
+            encoder_id = 0,
+            COLOR = "tertiary",
+            track = SnareTrack
+        }),
         React.createElement(KnobValue, {
             value = "Snare HARMONICS_COUNT",
             position = topRightKnob,
