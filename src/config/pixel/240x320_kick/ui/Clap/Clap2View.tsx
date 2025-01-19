@@ -3,47 +3,47 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
-import { BassTrack } from '../constants';
-import { topLeftKnob } from '../constantsValue';
-import { TextGridBass } from './TextGridBass';
+import { ClapTrack } from '../constants';
+import { topLeftKnob, topRightKnob } from '../constantsValue';
+import { TextGridClap } from './TextGridClap';
 
 export type Props = {
     name: string;
 };
 
-export function Bass2View({ name }: Props) {
+export function Clap2View({ name }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                value="303 DECAY"
+                value="Clap SINE_FREQUENCY"
                 position={topLeftKnob}
                 encoder_id={0}
                 COLOR="tertiary"
-                track={BassTrack}
+                track={ClapTrack}
             />
-            {/* <KnobValue
-                value="303 GLIDE"
+            <KnobValue
+                value="Clap SINE_BLEND"
                 position={topRightKnob}
                 encoder_id={2}
                 COLOR="secondary"
-                track={BassTrack}
-            /> */}
+                track={ClapTrack}
+            />
             {/* <KnobValue
-                value="Snare TRANSIENT_DURATION"
+                value="Clap TONE_BRIGHTNESS"
                 position={bottomLeftKnob}
                 encoder_id={1}
-                track={SnareTrack}
+                track={ClapTrack}
             /> */}
             {/* <KnobValue
-                value="Snare TRANSIENT_INTENSITY"
+                value="Clap TONE_BRIGHTNESS"
                 position={bottomRightKnob}
                 encoder_id={3}
                 COLOR="secondary"
-                track={SnareTrack}
+                track={ClapTrack}
             /> */}
 
-            <TextGridBass selected={0} viewName={name} />
-            <Common selected={0} track={BassTrack} />
+            <TextGridClap selected={1} viewName={name} />
+            <Common selected={1} track={ClapTrack} />
         </View>
     );
 }
