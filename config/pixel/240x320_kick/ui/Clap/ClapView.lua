@@ -30,15 +30,15 @@ function ____exports.ClapView(____bindingPattern0)
             track = ClapTrack
         }),
         React.createElement(KnobValue, {
-            value = "Clap DURATION",
+            value = "Clap CARRIER_FREQ",
             position = topRightKnob,
             encoder_id = 2,
             COLOR = "secondary",
             track = ClapTrack
         }),
-        React.createElement(KnobValue, {value = "Clap TONE_CUTOFF", position = bottomLeftKnob, encoder_id = 1, track = ClapTrack}),
+        React.createElement(KnobValue, {value = "Clap MOD_FREQ", position = bottomLeftKnob, encoder_id = 1, track = ClapTrack}),
         React.createElement(KnobValue, {
-            value = "Clap TRANSIENT_SPREAD",
+            value = "Clap MOD_INDEX",
             position = bottomRightKnob,
             encoder_id = 3,
             COLOR = "secondary",
