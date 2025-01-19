@@ -477,9 +477,19 @@ It may seem surprising that `sinf` performs better than the lookup table (LUT), 
    
 3. **Pipeline and SIMD Optimization**: Modern CPUs can execute floating-point operations in parallel using vectorized instructions (like SIMD), but accessing LUTs involves sequential memory operations, which cannot benefit from such optimizations.
 
+However, in contrast to `sinf`, I found that using a lookup table for `tanh` is more efficient than directly calling `tanh`. This can be explained by the fact that `sinf` is computationally simpler than `tanh`, and on the RPi0, `sinf` is likely optimized for performance, whereas `tanh` involves more complex computations that benefit more from precomputed values.
+
+- `sinf`: The sine function is typically implemented using efficient approximations, such as Taylor series, polynomial approximations (like Chebyshev), or CORDIC algorithms. Modern libraries optimize `sinf` heavily for performance, especially on common architectures like ARM (used in the RPi0).
+
+- `tanh`: The hyperbolic tangent (tanh) is computationally more complex than `sinf`. It involves exponentials in its definition. Computing  is costly on hardware without dedicated acceleration. Consequently, `tanh` is more expensive to compute directly than `sinf`.
+
+- `sinf` function is likely optimized in the RPi0's math library (e.g., GNU C Library or newlib). These libraries use platform-specific optimizations like vectorization or approximation algorithms tailored to the ARM architecture.
+
+- `tanh` being less common in many applications, may not be as optimized. This lack of optimization makes the LUT approach more favorable for `tanh`.
+
 **Conclusion**
 
-In audio programming, using a lookup table for sine wave generation can significantly enhance performance, reduce CPU/MCU load, and help meet real-time constraints. By trading a small amount of memory for faster and consistent calculations, this technique is a common optimization in many real-time audio systems. However, this approach is not universally ideal and should be applied cautiously depending on your hardware. Always perform benchmarking to ensure it benefit to your application.
+In audio programming, using a lookup table for wave generation can significantly enhance performance, reduce CPU/MCU load, and help meet real-time constraints. By trading a small amount of memory for faster and consistent calculations, this technique is a common optimization in many real-time audio systems. However, this approach is not universally ideal and should be applied cautiously depending on your hardware. Always perform benchmarking to ensure it benefit to your application.
 
 
 Full example:
