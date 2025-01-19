@@ -9,7 +9,7 @@ pluginAlias('Tempo', 'libzic_Tempo.so');
 pluginAlias('Drum23', 'libzic_SynthDrum23.so');
 pluginAlias('Snare', 'libzic_SynthSnare.so');
 pluginAlias('HiHat', 'libzic_SynthHiHat.so');
-pluginAlias('Clap', 'libzic_SynthClap.so');
+pluginAlias('Clap', 'libzic_SynthFmDrum.so');
 pluginAlias('Sequencer', 'libzic_Sequencer.so');
 pluginAlias('AudioOutput', 'libzic_AudioOutputPulse.so');
 pluginAlias('Mixer4', 'libzic_Mixer4.so');
