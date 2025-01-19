@@ -11,7 +11,7 @@ export type Props = {
     name: string;
 };
 
-export function MasterView({ name }: Props) {
+export function Drum23View({ name }: Props) {
     return (
         <View name={name}>
             <KnobValue

@@ -24,8 +24,8 @@ function ____exports.ShutdownView(____bindingPattern0)
             {position = KeyInfoPosition, rows = {"&empty &empty &empty", "Yes &empty No"}},
             React.createElement(Keymap, {key = "q", action = "shutdown"}),
             React.createElement(Keymap, {key = "a", action = "shutdown"}),
-            React.createElement(Keymap, {key = "d", action = "setView:Master"}),
-            React.createElement(Keymap, {key = "e", action = "setView:Master"})
+            React.createElement(Keymap, {key = "d", action = "setView:Drum23"}),
+            React.createElement(Keymap, {key = "e", action = "setView:Drum23"})
         )
     )
 end

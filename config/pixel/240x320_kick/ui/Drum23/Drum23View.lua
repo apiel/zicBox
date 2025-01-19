@@ -8,44 +8,46 @@ local View = ____View.View
 local ____Common = require("config.pixel.240x320_kick.ui.components.Common")
 local Common = ____Common.Common
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
-local SnareTrack = ____constants.SnareTrack
+local Drum23Track = ____constants.Drum23Track
 local ____constantsValue = require("config.pixel.240x320_kick.ui.constantsValue")
 local bottomLeftKnob = ____constantsValue.bottomLeftKnob
 local bottomRightKnob = ____constantsValue.bottomRightKnob
 local topLeftKnob = ____constantsValue.topLeftKnob
 local topRightKnob = ____constantsValue.topRightKnob
-local ____TextGridSnare = require("config.pixel.240x320_kick.ui.Snare.TextGridSnare")
-local TextGridSnare = ____TextGridSnare.TextGridSnare
-function ____exports.Snare2View(____bindingPattern0)
+local ____TextGridDrum23 = require("config.pixel.240x320_kick.ui.Drum23.TextGridDrum23")
+local TextGridDrum23 = ____TextGridDrum23.TextGridDrum23
+function ____exports.Drum23View(____bindingPattern0)
     local name
     name = ____bindingPattern0.name
     return React.createElement(
         View,
         {name = name},
         React.createElement(KnobValue, {
-            value = "Snare PINK_NOISE",
+            value = "Volume VOLUME",
             position = topLeftKnob,
             encoder_id = 0,
             COLOR = "tertiary",
-            track = SnareTrack
+            track = Drum23Track
         }),
         React.createElement(KnobValue, {
-            value = "Snare HARMONICS_COUNT",
+            value = "MMFilter CUTOFF",
             position = topRightKnob,
             encoder_id = 2,
             COLOR = "secondary",
-            track = SnareTrack
+            FONT_VALUE_SIZE = 8,
+            TYPE = "STRING",
+            track = Drum23Track
         }),
-        React.createElement(KnobValue, {value = "Snare TRANSIENT_DURATION", position = bottomLeftKnob, encoder_id = 1, track = SnareTrack}),
+        React.createElement(KnobValue, {value = "Drum23 GAIN_CLIPPING", position = bottomLeftKnob, encoder_id = 1, track = Drum23Track}),
         React.createElement(KnobValue, {
-            value = "Snare TRANSIENT_INTENSITY",
+            value = "MMFilter RESONANCE",
             position = bottomRightKnob,
             encoder_id = 3,
             COLOR = "secondary",
-            track = SnareTrack
+            track = Drum23Track
         }),
-        React.createElement(TextGridSnare, {selected = 0, viewName = name}),
-        React.createElement(Common, {selected = 0})
+        React.createElement(TextGridDrum23, {selected = 0, viewName = name}),
+        React.createElement(Common, {selected = 1})
     )
 end
 return ____exports

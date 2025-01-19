@@ -13,7 +13,7 @@ export type Props = {
     name: string;
 };
 
-export function SeqView({ name }: Props) {
+export function Drum23SeqView({ name }: Props) {
     let y = 0;
     return (
         <View name={name}>

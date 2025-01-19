@@ -45,7 +45,7 @@ function ____exports.SnareView(____bindingPattern0)
             track = SnareTrack
         }),
         React.createElement(TextGridSnare, {selected = 0, viewName = name}),
-        React.createElement(Common, {selected = 1})
+        React.createElement(Common, {selected = 0})
     )
 end
 return ____exports

@@ -10,17 +10,17 @@ function ____exports.TextGridDrum23(____bindingPattern0)
     viewName = ____bindingPattern0.viewName
     return React.createElement(TextGridSel, {items = {
         "Fx1/Fx2",
-        "Waveform",
+        "Wave/Freq",
         "...",
         "Amp/Click",
-        "Freq.",
+        "Sequencer",
         "&icon::musicNote::pixelated"
     }, keys = {
-        {key = "q", action = viewName == "Master" and "setView:Distortion" or "setView:Master"},
-        {key = "w", action = "setView:Waveform"},
+        {key = "q", action = viewName == "Drum23" and "setView:Distortion" or "setView:Drum23"},
+        {key = "w", action = viewName == "Waveform" and "setView:Frequency" or "setView:Waveform"},
         {key = "e", action = "contextToggle:254:1:0"},
         {key = "a", action = viewName == "Amplitude" and "setView:Click" or "setView:Amplitude"},
-        {key = "s", action = "setView:Frequency"},
+        {key = "s", action = "setView:Sequencer"},
         {key = "d", action = "noteOn:Drum23:60"}
     }, selected = selected, contextValue = 0})
 end
