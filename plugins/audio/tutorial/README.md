@@ -394,10 +394,10 @@ A Lookup Table (LUT) is a data structure, typically an array or table, that stor
 1. **Precompute Values:**
 Values (such as sine wave points, logarithms, etc.) are precomputed and stored in the table. These values are indexed by a specific key, often an integer or floating-point value.
 
-2. **Indexing:**
+1. **Indexing:**
 To retrieve a value, you use an index. For example, if you want to get the sine of 30 degrees, you look up the corresponding precomputed value from the table using the index for that angle.
 
-3. **Direct Access:**
+1. **Direct Access:**
 Instead of computing the sine of each angle in real-time (which can be computationally expensive), you directly access the value from the table. This is much faster, as memory access (loading a value) is typically faster than performing mathematical operations.
 
 **Example of a Simple LUT**
@@ -464,10 +464,22 @@ While lookup tables are very efficient, they do come with some trade-offs:
 
 - **Precision:** The resolution of the lookup table depends on how many values you precompute. A higher resolution table gives more accurate results, but it also takes up more memory. For many applications, a balance between performance and precision is required.
 
+> [!CAUTION]
+> While lookup tables can be an efficient way to store and retrieve precomputed values, they are not always the optimal choice.
+
+After conducting benchmarks, I discovered that lookup tables (LUTs) are not always more efficient. For example, while implementing a drum snare, I benchmarked tone generation on my Raspberry Pi Zero using both a LUT and `sinf`. Surprisingly, the **LUT approach consumed 5% more CPU** than using `sinf`. This highlights the importance of testing optimizations in the context of specific use cases and hardware.
+
+It may seem surprising that `sinf` performs better than the lookup table (LUT), but this behavior can be explained by several factors:
+
+1. **Efficient Floating-Point Math**: The `sinf` function on modern CPUs, including ARM-based processors like those in the Raspberry Pi, is highly optimized. These processors often include hardware acceleration or highly efficient implementations for trigonometric functions in their standard math libraries. For small and predictable workloads, sinf can be faster than fetching values from memory, especially for a highly repetitive task.
+
+2. **Memory Access Costs**: Using a lookup table introduces memory access overhead. Each access to the LUT involves an index calculation and memory fetch. On a constrained system like the Raspberry Pi, memory latency and cache misses can significantly impact performance.
+   
+3. **Pipeline and SIMD Optimization**: Modern CPUs can execute floating-point operations in parallel using vectorized instructions (like SIMD), but accessing LUTs involves sequential memory operations, which cannot benefit from such optimizations.
 
 **Conclusion**
 
-In audio programming, using a lookup table for sine wave generation can drastically improve performance, reduce CPU load, and ensure that real-time constraints are met. By trading off a small amount of memory usage for faster, consistent calculations, this method becomes a go-to optimization in many real-time audio systems.
+In audio programming, using a lookup table for sine wave generation can significantly enhance performance, reduce CPU/MCU load, and help meet real-time constraints. By trading a small amount of memory for faster and consistent calculations, this technique is a common optimization in many real-time audio systems. However, this approach is not universally ideal and should be applied cautiously depending on your hardware. Always perform benchmarking to ensure it benefit to your application.
 
 
 Full example:
