@@ -23,22 +23,22 @@ function ____exports.Perc2View(____bindingPattern0)
         View,
         {name = name},
         React.createElement(KnobValue, {
-            value = "Perc ATTACK_TIME",
+            value = "Perc RES_DECAY",
             position = topLeftKnob,
             encoder_id = 0,
             COLOR = "tertiary",
             track = PercTrack
         }),
         React.createElement(KnobValue, {
-            value = "Perc DECAY_TIME",
+            value = "Perc PUNCH",
             position = topRightKnob,
             encoder_id = 2,
             COLOR = "secondary",
             track = PercTrack
         }),
-        React.createElement(KnobValue, {value = "Perc DISTORTION", position = bottomLeftKnob, encoder_id = 1, track = PercTrack}),
+        React.createElement(KnobValue, {value = "Perc HARMONIC_BALANCE", position = bottomLeftKnob, encoder_id = 1, track = PercTrack}),
         React.createElement(KnobValue, {
-            value = "Perc REVERB",
+            value = "Perc DECAY_SHAPE",
             position = bottomRightKnob,
             encoder_id = 3,
             COLOR = "secondary",

@@ -22,20 +22,20 @@ export function PercView({ name }: Props) {
                 track={PercTrack}
             />
             <KnobValue
-                value="Perc CARRIER_FREQ"
+                value="Perc DURATION"
                 position={topRightKnob}
                 encoder_id={2}
                 COLOR="secondary"
                 track={PercTrack}
             />
             <KnobValue
-                value="Perc MOD_FREQ"
+                value="Perc BASE_FREQ"
                 position={bottomLeftKnob}
                 encoder_id={1}
                 track={PercTrack}
             />
             <KnobValue
-                value="Perc MOD_INDEX"
+                value="Perc OVERTONES"
                 position={bottomRightKnob}
                 encoder_id={3}
                 COLOR="secondary"

@@ -16,14 +16,14 @@ function ____exports.TextGridHiHat(____bindingPattern0)
         React.createElement(Title, {title = "HiHat"}),
         React.createElement(TextGridSel, {items = {
             "Snare",
-            "Clap",
+            "Perc",
             "...",
             "HiHat",
             "Seq.",
             "&icon::musicNote::pixelated"
         }, keys = {
             {key = "q", action = viewName == "Snare" and "setView:Snare2" or "setView:Snare"},
-            {key = "w", action = viewName == "Clap" and "setView:Clap2" or "setView:Clap"},
+            {key = "w", action = viewName == "Perc" and "setView:Perc2" or "setView:Perc"},
             {key = "e", action = "contextToggle:254:1:0"},
             {key = "a", action = viewName == "HiHat" and "setView:HiHat2" or "setView:HiHat"},
             {key = "d", action = "noteOn:HiHat:60"}

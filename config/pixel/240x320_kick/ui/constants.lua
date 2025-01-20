@@ -1,5 +1,13 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
+do
+    local ____export = require("config.pixel.240x320_kick.constants")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
 ____exports.ScreenWidth = 240
 ____exports.ScreenHeight = 320
 ____exports.W1_4 = ____exports.ScreenWidth / 4
@@ -27,9 +35,4 @@ ____exports.ColorTrack5 = "#15a5ca"
 ____exports.ColorTrack6 = "#4643d8"
 ____exports.ColorTrack7 = "#902ed1"
 ____exports.ColorTrack8 = "#cb11ca"
-____exports.Drum23Track = 1
-____exports.FmTrack = 2
-____exports.SnareTrack = 3
-____exports.HiHatTrack = 4
-____exports.PercTrack = 5
 return ____exports

@@ -22,9 +22,9 @@ all:
 		EffectGrain EffectDistortion2 EffectVolumeDrive EffectVolumeClipping \
 		SynthKick23 SynthDrum23 SynthGranular SynthBass SynthFM SynthFM2 \
 		SynthSample SynthDrumSample SynthMonoSample\
-		SynthSnare SynthHiHat Synth303 SynthClap SynthFmDrum\
+		SynthSnare SynthHiHat Synth303 SynthClap SynthFmDrum SynthPerc\
 		Sequencer Tempo AudioSpectrogram\
-		Mixer2 Mixer4 Mixer6 Mixer8 Mixer12\
+		Mixer2 Mixer4 Mixer5 Mixer6 Mixer8 Mixer12\
 		AudioInputPulse AudioOutputPulse AudioInputAlsa AudioOutputAlsa\
 		SerializeTrack TapeRecording RamTapeRecording
 

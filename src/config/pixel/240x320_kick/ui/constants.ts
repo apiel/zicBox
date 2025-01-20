@@ -1,3 +1,5 @@
+export * from "../constants";
+
 export const ScreenWidth = 240;
 export const ScreenHeight = 320;
 
@@ -30,9 +32,3 @@ export const ColorTrack5 = '#15a5ca';
 export const ColorTrack6 = '#4643d8';
 export const ColorTrack7 = '#902ed1';
 export const ColorTrack8 = '#cb11ca';
-
-export const Drum23Track = 1;
-export const FmTrack = 2;
-export const SnareTrack = 3;
-export const HiHatTrack = 4;
-export const PercTrack = 5;

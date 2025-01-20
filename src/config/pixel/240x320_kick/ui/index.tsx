@@ -17,6 +17,8 @@ import { CreateWorkspaceView } from './menu/CreateWorkspaceView';
 import { MenuView } from './menu/menuView';
 import { ShutdownView } from './menu/ShutdownView';
 import { WorkspacesView } from './menu/WorkspacesView';
+import { Perc2View } from './Perc/Perc2View';
+import { PercView } from './Perc/PercView';
 import { Snare2View } from './Snare/Snare2View';
 import { SnareView } from './Snare/SnareView';
 
@@ -45,6 +47,9 @@ applyZic(<HiHat2View name="HiHat2" />);
 
 applyZic(<FmView name="Fm" />);
 applyZic(<Fm2View name="Fm2" />);
+
+applyZic(<PercView name="Perc" />);
+applyZic(<Perc2View name="Perc2" />);
 
 applyZic(<MenuView name="Menu" />);
 applyZic(<WorkspacesView name="Workspaces" />);
