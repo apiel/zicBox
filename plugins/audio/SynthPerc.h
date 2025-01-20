@@ -42,19 +42,19 @@ public:
     Val& baseFreq = val(100.0f, "BASE_FREQ", { "Base Freq", .min = 40.0, .max = 400.0, .step = 1.0, .unit = "Hz" });
 
     /*md - `TONE_DECAY` adjusts the decay rate of the tonal component. */
-    Val& toneDecay = val(0.02f, "TONE_DECAY", { "Tone Decay", .min = 0.005f, .max = 1.0f, .step = 0.005f, .floatingPoint = 2 });
+    Val& toneDecay = val(0.02f, "TONE_DECAY", { "Tone Decay", .min = 0.001f, .max = 0.1f, .step = 0.001f });
 
     /*md - `BODY_RESONANCE` controls the strength of the resonator. */
-    Val& bodyResonance = val(0.8f, "BODY_RESONANCE", { "Resonance", .min = 0.1f, .max = 1.5f, .step = 0.01f, .floatingPoint = 2 });
+    Val& bodyResonance = val(0.8f, "BODY_RESONANCE", { "Resonance", .min = 0.1f, .max = 1.5f, .step = 0.1f });
 
-    /*md - `PUNCH` controls the attack sharpness of the transient. */
-    Val& punch = val(0.8f, "PUNCH", { "Punch", .min = 0.5f, .max = 2.0f, .step = 0.1f });
+    /*md - `TIMBRE` adjusts the tonal character by shaping the harmonic content. */
+    Val& timbre = val(0.5f, "TIMBRE", { "Timbre", .min = 0.0f, .max = 1.0f, .step = 0.1f });
 
-    /*md - `HIT_POSITION` modulates the tonal quality based on hit position. */
-    Val& hitPosition = val(0.5f, "HIT_POSITION", { "Hit Position", .min = 0.0f, .max = 1.0f, .step = 0.1f });
+    /*md - `TRANSIENT_BOOST` amplifies the sharpness and volume of the attack transient. */
+    Val& transientBoost = val(1.0f, "TRANSIENT_BOOST", { "Transient Boost", .min = 0.5f, .max = 3.0f, .step = 0.1f });
 
-    /*md - `DECAY_SHAPE` controls the exponential decay curve shape. */
-    Val& decayShape = val(2.0f, "DECAY_SHAPE", { "Decay Shape", .min = 1.0f, .max = 5.0f, .step = 0.1f, .floatingPoint = 1 });
+    /*md - `DISTORTION` adds a nonlinear distortion effect to the tone for aggressive and punchy sounds. */
+    Val& distortion = val(0.0f, "DISTORTION", { "Distortion", .min = 0.0f, .max = 1.0f, .step = 0.1f });
 
     SynthPerc(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -71,19 +71,22 @@ public:
     {
         if (i < totalSamples) {
             float t = (float)i / totalSamples; // Time normalized to [0, 1]
-            float env = envelope(t, decayShape.get());
+            float env = envelope(t, 2.0f); // Fixed shape for simpler design
 
             // Tonal component with resonance
             float tone = sineWave(baseFreq.get(), phase);
             tone = resonator(tone * env, baseFreq.get() * bodyResonance.get(), toneDecay.get(), resonatorState);
 
-            // Modulate tonality based on hit position
-            float modulatedTone = tone * (1.0f - hitPosition.get()) + tone * hitPosition.get() * 1.5f;
+            // Adjust timbre by filtering harmonics dynamically
+            tone *= (1.0f - timbre.get()) + timbre.get() * sinf(2.0f * M_PI * baseFreq.get() * 0.5f * t);
 
-            // Add punchy attack transient
-            float transient = punch.get() * env * sineWave(baseFreq.get() * 2.0f, phase);
+            // Apply distortion for a more aggressive tone
+            tone = tone * (1.0f - distortion.get()) + tanh(tone * distortion.get());
 
-            buf[track] = env * (modulatedTone + transient);
+            // Add boosted attack transient
+            float transient = transientBoost.get() * env * sineWave(baseFreq.get() * 2.0f, phase);
+
+            buf[track] = env * (tone + transient);
 
             phase += 1.0f / props.sampleRate;
             i++;
