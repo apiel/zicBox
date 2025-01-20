@@ -33,7 +33,7 @@ export function AmpView({ name }: Props) {
                 track={Drum23Track}
             />
             <TextGridDrum23 selected={3} viewName={name} />
-            <Common selected={1} track={Drum23Track} />
+            <Common selected={0} track={Drum23Track} />
         </View>
     );
 }

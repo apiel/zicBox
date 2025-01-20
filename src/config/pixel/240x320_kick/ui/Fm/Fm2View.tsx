@@ -49,7 +49,7 @@ export function Fm2View({ name }: Props) {
             />
 
             <TextGridFm selected={1} viewName={name} />
-            <Common selected={1} track={FmTrack} />
+            <Common selected={3} track={FmTrack} />
         </View>
     );
 }

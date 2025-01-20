@@ -45,7 +45,7 @@ export function Drum23View({ name }: Props) {
             />
 
             <TextGridDrum23 selected={0} viewName={name} />
-            <Common selected={1} track={Drum23Track} />
+            <Common selected={0} track={Drum23Track} />
         </View>
     );
 }
