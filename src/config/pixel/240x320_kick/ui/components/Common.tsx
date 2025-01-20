@@ -3,7 +3,7 @@ import * as React from '@/libs/react';
 import { SeqProgressBar } from '@/libs/components/SeqProgressBar';
 import { rgb } from '@/libs/ui';
 import { ScreenWidth } from '../constants';
-import { TextGridCommon } from './TextGridCommon';
+import { TextGridSel } from './TextGridSel';
 
 export function Common({
     selected,
@@ -29,7 +29,19 @@ export function Common({
                 />
             )}
 
-            <TextGridCommon selected={selected} />
+            <TextGridSel
+                items={['Kick', 'Drums', '^...', 'Fm', 'Menu', '&icon::play::filled']}
+                keys={[
+                    { key: 'q', action: 'setView:Drum23' },
+                    { key: 'w', action: `setView:Snare` },
+                    { key: 'e', action: 'contextToggle:254:1:0' },
+                    { key: 'a', action: 'setView:Fm' },
+                    { key: 's', action: 'setView:Menu' },
+                    { key: 'd', action: 'playPause' },
+                ]}
+                selected={selected}
+                contextValue={1}
+            />
         </>
     );
 }

@@ -1,8 +1,6 @@
 import { applyZic } from '@/libs/core';
 import * as React from '@/libs/react';
 import { addZoneEncoder, setScreenSize, setWindowPosition } from '@/libs/ui';
-import { Clap2View } from './Clap/Clap2View';
-import { ClapView } from './Clap/ClapView';
 import { ScreenHeight, ScreenWidth, W1_2 } from './constants';
 import { AmpView } from './Drum23/AmpView';
 import { ClickView } from './Drum23/ClickView';
@@ -11,6 +9,8 @@ import { Drum23View } from './Drum23/Drum23View';
 import { FrequencyView } from './Drum23/FrequencyView';
 import { Drum23SeqView } from './Drum23/SeqView';
 import { WaveformView } from './Drum23/WaveformView';
+import { Fm2View } from './Fm/Fm2View';
+import { FmView } from './Fm/FmView';
 import { HiHat2View } from './HiHat/HiHat2View';
 import { HiHatView } from './HiHat/HiHatView';
 import { CreateWorkspaceView } from './menu/CreateWorkspaceView';
@@ -43,8 +43,8 @@ applyZic(<Snare2View name="Snare2" />);
 applyZic(<HiHatView name="HiHat" />);
 applyZic(<HiHat2View name="HiHat2" />);
 
-applyZic(<ClapView name="Clap" />);
-applyZic(<Clap2View name="Clap2" />);
+applyZic(<FmView name="Fm" />);
+applyZic(<Fm2View name="Fm2" />);
 
 applyZic(<MenuView name="Menu" />);
 applyZic(<WorkspacesView name="Workspaces" />);

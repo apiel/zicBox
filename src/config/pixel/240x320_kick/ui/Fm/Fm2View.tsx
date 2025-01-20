@@ -3,47 +3,53 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
-import { ClapTrack } from '../constants';
+import { FmTrack } from '../constants';
 import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
-import { TextGridClap } from './TextGridClap';
+import { TextGridFm } from './TextGridFm';
 
 export type Props = {
     name: string;
 };
 
-export function ClapView({ name }: Props) {
+export function Fm2View({ name }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                value="Volume VOLUME"
+                value="FmDrum ATTACK_TIME"
                 position={topLeftKnob}
                 encoder_id={0}
                 COLOR="tertiary"
-                track={ClapTrack}
+                track={FmTrack}
             />
             <KnobValue
-                value="Clap CARRIER_FREQ"
+                value="FmDrum DECAY_TIME"
                 position={topRightKnob}
                 encoder_id={2}
                 COLOR="secondary"
-                track={ClapTrack}
+                track={FmTrack}
             />
-            <KnobValue
-                value="Clap MOD_FREQ"
+            {/* <KnobValue
+                value="FmDrum NOISE_LEVEL"
                 position={bottomLeftKnob}
                 encoder_id={1}
-                track={ClapTrack}
+                track={FmTrack}
+            /> */}
+            <KnobValue
+                value="FmDrum DISTORTION"
+                position={bottomLeftKnob}
+                encoder_id={1}
+                track={FmTrack}
             />
             <KnobValue
-                value="Clap MOD_INDEX"
+                value="FmDrum REVERB"
                 position={bottomRightKnob}
                 encoder_id={3}
                 COLOR="secondary"
-                track={ClapTrack}
+                track={FmTrack}
             />
 
-            <TextGridClap selected={1} viewName={name} />
-            <Common selected={1} track={ClapTrack} />
+            <TextGridFm selected={1} viewName={name} />
+            <Common selected={1} track={FmTrack} />
         </View>
     );
 }
