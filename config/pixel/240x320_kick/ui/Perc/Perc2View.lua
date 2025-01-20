@@ -23,14 +23,14 @@ function ____exports.Perc2View(____bindingPattern0)
         View,
         {name = name},
         React.createElement(KnobValue, {
-            value = "Perc BODY_RESONANCE",
+            value = "Perc RESONATOR",
             position = topLeftKnob,
             encoder_id = 0,
             COLOR = "tertiary",
             track = PercTrack
         }),
         React.createElement(KnobValue, {
-            value = "Perc DISTORTION",
+            value = "Perc BOOST",
             position = topRightKnob,
             encoder_id = 2,
             COLOR = "secondary",
