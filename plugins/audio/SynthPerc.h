@@ -149,7 +149,7 @@ public:
         totalSamples = static_cast<int>(sampleRate * durationSec);
         phase = 0.0f;
         resonatorState = 0.0f;
-        noteFreq = baseFreq.get() * powf(2.0f, (note - baseNote) / 12.0f); // what with baseFreq.get()
+        noteFreq = baseFreq.get() * powf(2.0f, (note - baseNote) / 12.0f);
         i = 0;
     }
 };

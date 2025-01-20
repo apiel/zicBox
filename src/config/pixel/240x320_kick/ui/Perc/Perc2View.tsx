@@ -3,9 +3,9 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
+import { TextGridDrums } from '../components/TextGridDrums';
 import { PercTrack } from '../constants';
 import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
-import { TextGridPerc } from './TextGridPerc';
 
 export type Props = {
     name: string;
@@ -42,7 +42,7 @@ export function Perc2View({ name }: Props) {
                 track={PercTrack}
             />
 
-            <TextGridPerc selected={1} viewName={name} />
+            <TextGridDrums selected={1} viewName={name} title="Perc" />
             <Common selected={1} track={PercTrack} />
         </View>
     );

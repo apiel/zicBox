@@ -3,9 +3,9 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
+import { TextGridDrums } from '../components/TextGridDrums';
 import { HiHatTrack } from '../constants';
 import { bottomLeftKnob, topLeftKnob, topRightKnob } from '../constantsValue';
-import { TextGridHiHat } from './TextGridHiHat';
 
 export type Props = {
     name: string;
@@ -42,7 +42,7 @@ export function HiHat2View({ name }: Props) {
                 track={HiHatTrack}
             /> */}
 
-            <TextGridHiHat selected={3} viewName={name} />
+            <TextGridDrums selected={3} viewName={name} title="Hi-Hat" />
             <Common selected={1} track={HiHatTrack} />
         </View>
     );

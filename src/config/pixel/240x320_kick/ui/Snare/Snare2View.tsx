@@ -3,9 +3,9 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
+import { TextGridDrums } from '../components/TextGridDrums';
 import { SnareTrack } from '../constants';
 import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
-import { TextGridSnare } from './TextGridSnare';
 
 export type Props = {
     name: string;
@@ -42,7 +42,7 @@ export function Snare2View({ name }: Props) {
                 track={SnareTrack}
             />
 
-            <TextGridSnare selected={0} viewName={name} />
+            <TextGridDrums selected={0} viewName={name} title="Snare" />
             <Common selected={1} track={SnareTrack} />
         </View>
     );
