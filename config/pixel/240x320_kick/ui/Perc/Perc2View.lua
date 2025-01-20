@@ -30,15 +30,15 @@ function ____exports.Perc2View(____bindingPattern0)
             track = PercTrack
         }),
         React.createElement(KnobValue, {
-            value = "Perc PUNCH",
+            value = "Perc DISTORTION",
             position = topRightKnob,
             encoder_id = 2,
             COLOR = "secondary",
             track = PercTrack
         }),
-        React.createElement(KnobValue, {value = "Perc HIT_POSITION", position = bottomLeftKnob, encoder_id = 1, track = PercTrack}),
+        React.createElement(KnobValue, {value = "Perc TIMBRE", position = bottomLeftKnob, encoder_id = 1, track = PercTrack}),
         React.createElement(KnobValue, {
-            value = "Perc DECAY_SHAPE",
+            value = "Perc TRANSIENT_BOOST",
             position = bottomRightKnob,
             encoder_id = 3,
             COLOR = "secondary",

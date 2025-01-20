@@ -22,20 +22,20 @@ export function Perc2View({ name }: Props) {
                 track={PercTrack}
             />
             <KnobValue
-                value="Perc PUNCH"
+                value="Perc DISTORTION"
                 position={topRightKnob}
                 encoder_id={2}
                 COLOR="secondary"
                 track={PercTrack}
             />
             <KnobValue
-                value="Perc HIT_POSITION"
+                value="Perc TIMBRE"
                 position={bottomLeftKnob}
                 encoder_id={1}
                 track={PercTrack}
             />
             <KnobValue
-                value="Perc DECAY_SHAPE"
+                value="Perc TRANSIENT_BOOST"
                 position={bottomRightKnob}
                 encoder_id={3}
                 COLOR="secondary"
