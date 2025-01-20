@@ -13,7 +13,7 @@ export function TextGridDrum23({ selected, viewName }: { selected: number; viewN
                     'Wave/Freq',
                     '...',
                     'Amp/Click',
-                    'Sequencer',
+                    'Seq.',
                     '&icon::musicNote::pixelated',
                 ]}
                 keys={[

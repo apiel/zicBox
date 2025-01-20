@@ -1,8 +1,6 @@
 import * as React from '@/libs/react';
 
-import { HiddenValue } from '@/libs/components/HiddenValue';
-import { Keymaps } from '@/libs/components/Keymaps';
-import { StepEdit2 } from '@/libs/components/StepEdit2';
+import { StepEditDrum } from '@/libs/components/StepEditDrum';
 import { View } from '@/libs/components/View';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
@@ -17,22 +15,11 @@ export function Drum23SeqView({ name }: Props) {
     let y = 0;
     return (
         <View name={name}>
-            <HiddenValue encoder_id={0} inverted>
-                <Keymaps
-                    keys={[
-                        { key: '1', action: 'contextToggleOnRelease:100:1:0' },
-                        { key: '2', action: 'contextToggleOnRelease:100:1:0' },
-                        { key: '3', action: 'contextToggleOnRelease:100:1:0' },
-                        { key: '4', action: 'contextToggleOnRelease:100:1:0' },
-                    ]}
-                />
-            </HiddenValue>
-
             {Array.from({ length: 32 }, (_, i) => {
                 const yy = y + 5;
                 y += 8 + (i % 4 == 3 ? 4 : 0);
                 return (
-                    <StepEdit2
+                    <StepEditDrum
                         position={[0, yy, ScreenWidth, 8]}
                         data={`Sequencer ${i}`}
                         group={i}
