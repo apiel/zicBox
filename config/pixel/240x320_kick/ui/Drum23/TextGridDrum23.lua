@@ -19,7 +19,7 @@ function ____exports.TextGridDrum23(____bindingPattern0)
             "Wave/Freq",
             "...",
             "Amp/Click",
-            "Sequencer",
+            "Seq.",
             "&icon::musicNote::pixelated"
         }, keys = {
             {key = "q", action = viewName == "Drum23" and "setView:Distortion" or "setView:Drum23"},
