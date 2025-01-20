@@ -32,6 +32,19 @@ protected:
         return output;
     }
 
+    float applyBoost(float input, float env)
+    {
+        float amount = boost.pct() * 2 - 1.0f;
+        if (amount > 0.0f) {
+            return input + amount * 3.0f * env * sineWave(baseFreq.get() * 2.0f, phase);
+        }
+        if (amount < 0.0f) {
+            float distortion = -amount;
+            return input * (1.0f - distortion) + tanh(input * distortion);
+        }
+        return input;
+    }
+
 public:
     /*md **Values**: */
 
@@ -42,19 +55,22 @@ public:
     Val& baseFreq = val(100.0f, "BASE_FREQ", { "Base Freq", .min = 40.0, .max = 400.0, .step = 1.0, .unit = "Hz" });
 
     /*md - `TONE_DECAY` adjusts the decay rate of the tonal component. */
-    Val& toneDecay = val(0.02f, "TONE_DECAY", { "Tone Decay", .min = 0.001f, .max = 0.1f, .step = 0.001f });
+    Val& toneDecay = val(0.02f, "TONE_DECAY", { "Tone Decay", .min = 0.005f, .max = 1.0f, .step = 0.005f, .floatingPoint = 2 });
 
-    /*md - `BODY_RESONANCE` controls the strength of the resonator. */
-    Val& bodyResonance = val(0.8f, "BODY_RESONANCE", { "Resonance", .min = 0.1f, .max = 1.5f, .step = 0.1f });
+    /*md - `RESONATOR` controls the strength of the resonator. */
+    Val& bodyResonance = val(0.8f, "RESONATOR", { "resonator", .min = 0.01f, .max = 1.5f, .step = 0.01f, .floatingPoint = 2 });
 
     /*md - `TIMBRE` adjusts the tonal character by shaping the harmonic content. */
-    Val& timbre = val(0.5f, "TIMBRE", { "Timbre", .min = 0.0f, .max = 1.0f, .step = 0.1f });
+    Val& timbre = val(5.0f, "TIMBRE", { "Timbre", .unit = "%" });
 
-    /*md - `TRANSIENT_BOOST` amplifies the sharpness and volume of the attack transient. */
-    Val& transientBoost = val(1.0f, "TRANSIENT_BOOST", { "Transient Boost", .min = 0.5f, .max = 3.0f, .step = 0.1f });
+    /*md - `BOOST` boost transient or add some distortion. */
+    Val& boost = val(0.0, "BOOST", { "Boost", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
 
-    /*md - `DISTORTION` adds a nonlinear distortion effect to the tone for aggressive and punchy sounds. */
-    Val& distortion = val(0.0f, "DISTORTION", { "Distortion", .min = 0.0f, .max = 1.0f, .step = 0.1f });
+    // /*md - `TRANSIENT_BOOST` amplifies the sharpness and volume of the attack transient. */
+    // Val& transientBoost = val(1.0f, "TRANSIENT_BOOST", { "Transient Boost", .min = 0.5f, .max = 3.0f, .step = 0.1f });
+
+    // /*md - `DISTORTION` adds a nonlinear distortion effect to the tone for aggressive and punchy sounds. */
+    // Val& distortion = val(0.0f, "DISTORTION", { "Distortion", .min = 0.0f, .max = 1.0f, .step = 0.1f });
 
     SynthPerc(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -77,16 +93,12 @@ public:
             float tone = sineWave(baseFreq.get(), phase);
             tone = resonator(tone * env, baseFreq.get() * bodyResonance.get(), toneDecay.get(), resonatorState);
 
-            // Adjust timbre by filtering harmonics dynamically
-            tone *= (1.0f - timbre.get()) + timbre.get() * sinf(2.0f * M_PI * baseFreq.get() * 0.5f * t);
+            if (timbre.pct() > 0.0f) {
+                // Adjust timbre by filtering harmonics dynamically
+                tone *= (1.0f - timbre.pct()) + timbre.pct() * sinf(2.0f * M_PI * baseFreq.get() * 0.5f * t);
+            }
 
-            // Apply distortion for a more aggressive tone
-            tone = tone * (1.0f - distortion.get()) + tanh(tone * distortion.get());
-
-            // Add boosted attack transient
-            float transient = transientBoost.get() * env * sineWave(baseFreq.get() * 2.0f, phase);
-
-            buf[track] = env * (tone + transient);
+            buf[track] = applyBoost(tone, env) * env;
 
             phase += 1.0f / props.sampleRate;
             i++;

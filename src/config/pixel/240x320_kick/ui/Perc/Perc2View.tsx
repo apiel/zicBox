@@ -15,14 +15,14 @@ export function Perc2View({ name }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                value="Perc BODY_RESONANCE"
+                value="Perc RESONATOR"
                 position={topLeftKnob}
                 encoder_id={0}
                 COLOR="tertiary"
                 track={PercTrack}
             />
             <KnobValue
-                value="Perc DISTORTION"
+                value="Perc BOOST"
                 position={topRightKnob}
                 encoder_id={2}
                 COLOR="secondary"

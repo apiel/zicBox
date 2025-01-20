@@ -4,6 +4,9 @@
 - TODO kick tail
 - TODO kick try to make high frequency boost to get a more punchy sound
 
+- TODO FM synth --> algo param to decide which kind of waveform to combine
+              - --> and if it does FM or substractive ...
+
 - FIXME transition between wavetable and waveform is not so smooth...
 
 - TODO instead of EffectGainVolume could use Mixer to set volume
