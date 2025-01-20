@@ -44,7 +44,7 @@ function ____exports.SnareView(____bindingPattern0)
             COLOR = "secondary",
             track = SnareTrack
         }),
-        React.createElement(TextGridDrums, {selected = 0, viewName = name, title = "Snare"}),
+        React.createElement(TextGridDrums, {selected = 0, viewName = name, target = "Snare"}),
         React.createElement(Common, {selected = 1, track = SnareTrack})
     )
 end

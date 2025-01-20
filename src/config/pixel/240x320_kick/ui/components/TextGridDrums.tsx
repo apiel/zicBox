@@ -6,15 +6,15 @@ import { Title } from './Title';
 export function TextGridDrums({
     selected,
     viewName,
-    title,
+    target,
 }: {
     selected: number;
     viewName: string;
-    title: string;
+    target: string;
 }) {
     return (
         <>
-            <Title title={title} />
+            <Title title={target} />
             <TextGridSel
                 items={['Snare', 'Perc', '...', 'HiHat', 'Seq.', '&icon::musicNote::pixelated']}
                 keys={[
@@ -27,7 +27,7 @@ export function TextGridDrums({
                         action: viewName === 'HiHat' ? 'setView:HiHat2' : 'setView:HiHat',
                     },
                     // { key: 's', action: 'setView:Frequency' },
-                    { key: 'd', action: 'noteOn:HiHat:60' },
+                    { key: 'd', action: `noteOn:${target}:60` },
                 ]}
                 selected={selected}
                 contextValue={0}

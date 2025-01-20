@@ -44,7 +44,7 @@ function ____exports.Perc2View(____bindingPattern0)
             COLOR = "secondary",
             track = PercTrack
         }),
-        React.createElement(TextGridDrums, {selected = 1, viewName = name, title = "Perc"}),
+        React.createElement(TextGridDrums, {selected = 1, viewName = name, target = "Perc"}),
         React.createElement(Common, {selected = 1, track = PercTrack})
     )
 end

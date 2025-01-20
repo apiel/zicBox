@@ -6,16 +6,16 @@ local TextGridSel = ____TextGridSel.TextGridSel
 local ____Title = require("config.pixel.240x320_kick.ui.components.Title")
 local Title = ____Title.Title
 function ____exports.TextGridDrums(____bindingPattern0)
-    local title
+    local target
     local viewName
     local selected
     selected = ____bindingPattern0.selected
     viewName = ____bindingPattern0.viewName
-    title = ____bindingPattern0.title
+    target = ____bindingPattern0.target
     return React.createElement(
         React.Fragment,
         nil,
-        React.createElement(Title, {title = title}),
+        React.createElement(Title, {title = target}),
         React.createElement(TextGridSel, {items = {
             "Snare",
             "Perc",
@@ -28,7 +28,7 @@ function ____exports.TextGridDrums(____bindingPattern0)
             {key = "w", action = viewName == "Perc" and "setView:Perc2" or "setView:Perc"},
             {key = "e", action = "contextToggle:254:1:0"},
             {key = "a", action = viewName == "HiHat" and "setView:HiHat2" or "setView:HiHat"},
-            {key = "d", action = "noteOn:HiHat:60"}
+            {key = "d", action = ("noteOn:" .. target) .. ":60"}
         }, selected = selected, contextValue = 0})
     )
 end

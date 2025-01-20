@@ -42,7 +42,7 @@ export function Snare2View({ name }: Props) {
                 track={SnareTrack}
             />
 
-            <TextGridDrums selected={0} viewName={name} title="Snare" />
+            <TextGridDrums selected={0} viewName={name} target="Snare" />
             <Common selected={1} track={SnareTrack} />
         </View>
     );

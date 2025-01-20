@@ -42,7 +42,7 @@ export function HiHat2View({ name }: Props) {
                 track={HiHatTrack}
             /> */}
 
-            <TextGridDrums selected={3} viewName={name} title="Hi-Hat" />
+            <TextGridDrums selected={3} viewName={name} target="HiHat" />
             <Common selected={1} track={HiHatTrack} />
         </View>
     );
