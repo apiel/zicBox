@@ -27,9 +27,9 @@ protected:
     // Resonance simulation for body tone
     float resonator(float input, float freq, float decay, float& state)
     {
-        float damped = input * expf(-decay * state);
-        state += freq;
-        return damped;
+        state += freq / props.sampleRate;
+        float output = input * expf(-decay * state) * sinf(2.0f * M_PI * freq * state);
+        return output;
     }
 
 public:
@@ -41,20 +41,20 @@ public:
     /*md - `BASE_FREQ` sets the base frequency of the percussive tone. */
     Val& baseFreq = val(100.0f, "BASE_FREQ", { "Base Freq", .min = 40.0, .max = 400.0, .step = 1.0, .unit = "Hz" });
 
-    /*md - `OVERTONES` adjusts the number of harmonic overtones. */
-    Val& overtones = val(3, "OVERTONES", { "Overtones", .min = 1, .max = 8, .step = 1 });
+    /*md - `TONE_DECAY` adjusts the decay rate of the tonal component. */
+    Val& toneDecay = val(0.02f, "TONE_DECAY", { "Tone Decay", .min = 0.005f, .max = 1.0f, .step = 0.005f, .floatingPoint = 2 });
 
-    /*md - `RES_DECAY` sets the decay rate of the resonator for body tone. */
-    Val& resDecay = val(0.01f, "RES_DECAY", { "Resonance Decay", .min = 0.001f, .max = 0.1f, .step = 0.001f });
+    /*md - `BODY_RESONANCE` controls the strength of the resonator. */
+    Val& bodyResonance = val(0.8f, "BODY_RESONANCE", { "Resonance", .min = 0.1f, .max = 1.5f, .step = 0.01f, .floatingPoint = 2 });
 
     /*md - `PUNCH` controls the attack sharpness of the transient. */
     Val& punch = val(0.8f, "PUNCH", { "Punch", .min = 0.5f, .max = 2.0f, .step = 0.1f });
 
-    /*md - `HARMONIC_BALANCE` balances the strength of overtones. */
-    Val& harmonicBalance = val(0.5f, "HARMONIC_BALANCE", { "Harmonic Balance", .min = 0.0f, .max = 1.0f, .step = 0.05f });
+    /*md - `HIT_POSITION` modulates the tonal quality based on hit position. */
+    Val& hitPosition = val(0.5f, "HIT_POSITION", { "Hit Position", .min = 0.0f, .max = 1.0f, .step = 0.1f });
 
     /*md - `DECAY_SHAPE` controls the exponential decay curve shape. */
-    Val& decayShape = val(2.0f, "DECAY_SHAPE", { "Decay Shape", .min = 1.0f, .max = 5.0f, .step = 0.1f });
+    Val& decayShape = val(2.0f, "DECAY_SHAPE", { "Decay Shape", .min = 1.0f, .max = 5.0f, .step = 0.1f, .floatingPoint = 1 });
 
     SynthPerc(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -73,20 +73,17 @@ public:
             float t = (float)i / totalSamples; // Time normalized to [0, 1]
             float env = envelope(t, decayShape.get());
 
-            float tone = 0.0f;
-            for (int h = 1; h <= overtones.get(); ++h) {
-                float harmonicFreq = baseFreq.get() * h;
-                float harmonicAmp = 1.0f / powf(h, harmonicBalance.get());
-                tone += harmonicAmp * sineWave(harmonicFreq, phase);
-            }
+            // Tonal component with resonance
+            float tone = sineWave(baseFreq.get(), phase);
+            tone = resonator(tone * env, baseFreq.get() * bodyResonance.get(), toneDecay.get(), resonatorState);
 
-            // Apply resonance for body simulation
-            tone = resonator(tone * env, baseFreq.get(), resDecay.get(), resonatorState);
+            // Modulate tonality based on hit position
+            float modulatedTone = tone * (1.0f - hitPosition.get()) + tone * hitPosition.get() * 1.5f;
 
             // Add punchy attack transient
             float transient = punch.get() * env * sineWave(baseFreq.get() * 2.0f, phase);
 
-            buf[track] = env * (tone + transient);
+            buf[track] = env * (modulatedTone + transient);
 
             phase += 1.0f / props.sampleRate;
             i++;

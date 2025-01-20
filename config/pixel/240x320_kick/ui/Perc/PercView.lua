@@ -38,7 +38,7 @@ function ____exports.PercView(____bindingPattern0)
         }),
         React.createElement(KnobValue, {value = "Perc BASE_FREQ", position = bottomLeftKnob, encoder_id = 1, track = PercTrack}),
         React.createElement(KnobValue, {
-            value = "Perc OVERTONES",
+            value = "Perc TONE_DECAY",
             position = bottomRightKnob,
             encoder_id = 3,
             COLOR = "secondary",
