@@ -18,10 +18,11 @@ protected:
         return sinf(2.0f * M_PI * frequency * phase);
     }
 
-    // Exponential decay envelope
-    float envelope(float t, float shape)
+    float tanhLookup(float x)
     {
-        return powf(1.0f - t, shape);
+        x = range(x, -1.0f, 1.0f);
+        int index = static_cast<int>((x + 1.0f) * 0.5f * (props.lookupTable->size - 1));
+        return props.lookupTable->tanh[index];
     }
 
     // Resonance simulation for body tone
@@ -40,7 +41,8 @@ protected:
         }
         if (amount < 0.0f) {
             float distortion = -amount;
-            return input * (1.0f - distortion) + tanh(input * distortion);
+            return input * (1.0f - distortion) + tanhLookup(input * distortion);
+            // return input * (1.0f - distortion) + tanh(input * distortion);
         }
         return input;
     }
@@ -82,8 +84,6 @@ public:
     Val& timbre = val(5.0f, "TIMBRE", { "Timbre", .unit = "%" });
     /*md - `BOOST` boost transient or add some distortion. */
     Val& boost = val(0.0, "BOOST", { "Boost", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
-
-    // TODO tone decay and reverb doesnt work well together, so we could put them on the same parameter...
     /*md - `TONE_DECAY` adjusts the decay rate of the tonal component. */
     Val& toneDecay = val(0.02f, "TONE_DECAY", { "Tone Decay", .min = 0.005f, .max = 1.0f, .step = 0.005f, .floatingPoint = 2 });
     /*md - REVERB controls delay time, feedback, and mix with one parameter. */
@@ -93,10 +93,12 @@ public:
         : Mapping(props, _name)
     {
         initValues();
+        phaseIncrement = 1.0f / props.sampleRate;
     }
 
     int totalSamples = 0;
     float phase = 0.0f;
+    float phaseIncrement = 0.0f;
     float resonatorState = 0.0f;
     int i = 0;
 
@@ -104,7 +106,7 @@ public:
     {
         if (i < totalSamples) {
             float t = (float)i / totalSamples; // Time normalized to [0, 1]
-            float env = envelope(t, 2.0f); // Fixed shape for simpler design
+            float env = 1.0f - t;
 
             // Tonal component with resonance
             float tone = sineWave(baseFreq.get(), phase);
@@ -119,7 +121,7 @@ public:
             output = applyBoost(tone, env);
             buf[track] = output;
 
-            phase += 1.0f / props.sampleRate;
+            phase += phaseIncrement;
             i++;
         } else {
             buf[track] = applyReverb(buf[track]);
