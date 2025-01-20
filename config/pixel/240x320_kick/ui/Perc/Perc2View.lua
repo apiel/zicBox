@@ -38,7 +38,7 @@ function ____exports.Perc2View(____bindingPattern0)
         }),
         React.createElement(KnobValue, {value = "Perc TIMBRE", position = bottomLeftKnob, encoder_id = 1, track = PercTrack}),
         React.createElement(KnobValue, {
-            value = "Perc TRANSIENT_BOOST",
+            value = "Perc REVERB",
             position = bottomRightKnob,
             encoder_id = 3,
             COLOR = "secondary",

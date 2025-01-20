@@ -35,7 +35,7 @@ export function Perc2View({ name }: Props) {
                 track={PercTrack}
             />
             <KnobValue
-                value="Perc TRANSIENT_BOOST"
+                value="Perc REVERB"
                 position={bottomRightKnob}
                 encoder_id={3}
                 COLOR="secondary"
