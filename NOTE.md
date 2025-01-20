@@ -1,6 +1,8 @@
 ## Pixel TODO
 
 - TODO remove step length from kick seq...
+- TODO kick tail
+- TODO kick try to make high frequency boost to get a more punchy sound
 
 - FIXME transition between wavetable and waveform is not so smooth...
 

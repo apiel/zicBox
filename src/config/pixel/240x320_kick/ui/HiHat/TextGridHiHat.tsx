@@ -8,10 +8,10 @@ export function TextGridHiHat({ selected, viewName }: { selected: number; viewNa
         <>
             <Title title="HiHat" />
             <TextGridSel
-                items={['Snare', 'Clap', '...', 'HiHat', 'Seq.', '&icon::musicNote::pixelated']}
+                items={['Snare', 'Perc', '...', 'HiHat', 'Seq.', '&icon::musicNote::pixelated']}
                 keys={[
                     { key: 'q', action: viewName === 'Snare' ? 'setView:Snare2' : 'setView:Snare' },
-                    { key: 'w', action: viewName === 'Clap' ? 'setView:Clap2' : 'setView:Clap' },
+                    { key: 'w', action: viewName === 'Perc' ? 'setView:Perc2' : 'setView:Perc' },
                     { key: 'e', action: 'contextToggle:254:1:0' },
 
                     {
