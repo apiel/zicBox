@@ -23,6 +23,7 @@ protected:
     float fmModulation(float carrierFreq, float modFreq, float modIndex, int sampleIndex)
     {
         float modulator = sineWave(modFreq, sampleIndex) * modIndex;
+        // float modulator = sineWave(carrierFreq, sampleIndex) * modIndex;
         return sineWave(carrierFreq + modulator, sampleIndex);
     }
 
@@ -117,14 +118,12 @@ public:
         initValues();
     }
 
+    float noteFrquency = 220.0f;
     void sample(float* buf) override
     {
         if (i < totalSamples) {
-            // Adjust carrier frequency based on MIDI note
-            float baseFrequency = carrierFreq.get() * powf(2.0f, (currentNote - 60) / 12.0f);
-
             // Generate FM modulated signal
-            float fmSignal = fmModulation(baseFrequency, baseFrequency, modIndex.get(), i);
+            float fmSignal = fmModulation(noteFrquency, modFreq.get(), modIndex.get(), i);
 
             // Generate envelope
             float env = envelope(i, attackTime.get() * props.sampleRate, decayTime.get() * props.sampleRate);
@@ -154,6 +153,8 @@ public:
         totalSamples = static_cast<int>((attackTime.get() + decayTime.get()) * sampleRate);
         currentNote = note;
         currentVelocity = _velocity;
+        // Adjust carrier frequency based on MIDI note
+        noteFrquency = carrierFreq.get() * powf(2.0f, (currentNote - 60) / 12.0f);
         i = 0;
     }
 };

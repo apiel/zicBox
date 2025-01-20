@@ -7,8 +7,8 @@ local ____ui = require("config.libs.ui")
 local rgb = ____ui.rgb
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
 local ScreenWidth = ____constants.ScreenWidth
-local ____TextGridCommon = require("config.pixel.240x320_kick.ui.components.TextGridCommon")
-local TextGridCommon = ____TextGridCommon.TextGridCommon
+local ____TextGridSel = require("config.pixel.240x320_kick.ui.components.TextGridSel")
+local TextGridSel = ____TextGridSel.TextGridSel
 function ____exports.Common(____bindingPattern0)
     local track
     local hideSequencer
@@ -32,7 +32,21 @@ function ____exports.Common(____bindingPattern0)
                 track = track
             }
         ),
-        React.createElement(TextGridCommon, {selected = selected})
+        React.createElement(TextGridSel, {items = {
+            "Kick",
+            "Drums",
+            "^...",
+            "Fm",
+            "Menu",
+            "&icon::play::filled"
+        }, keys = {
+            {key = "q", action = "setView:Drum23"},
+            {key = "w", action = "setView:Snare"},
+            {key = "e", action = "contextToggle:254:1:0"},
+            {key = "a", action = "setView:Fm"},
+            {key = "s", action = "setView:Menu"},
+            {key = "d", action = "playPause"}
+        }, selected = selected, contextValue = 1})
     )
 end
 return ____exports

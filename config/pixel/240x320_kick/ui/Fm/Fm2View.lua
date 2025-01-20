@@ -8,44 +8,44 @@ local View = ____View.View
 local ____Common = require("config.pixel.240x320_kick.ui.components.Common")
 local Common = ____Common.Common
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
-local SnareTrack = ____constants.SnareTrack
+local FmTrack = ____constants.FmTrack
 local ____constantsValue = require("config.pixel.240x320_kick.ui.constantsValue")
 local bottomLeftKnob = ____constantsValue.bottomLeftKnob
 local bottomRightKnob = ____constantsValue.bottomRightKnob
 local topLeftKnob = ____constantsValue.topLeftKnob
 local topRightKnob = ____constantsValue.topRightKnob
-local ____TextGridSnare = require("config.pixel.240x320_kick.ui.303.TextGridSnare")
-local TextGridSnare = ____TextGridSnare.TextGridSnare
-function ____exports.SnareView(____bindingPattern0)
+local ____TextGridFm = require("config.pixel.240x320_kick.ui.Fm.TextGridFm")
+local TextGridFm = ____TextGridFm.TextGridFm
+function ____exports.Fm2View(____bindingPattern0)
     local name
     name = ____bindingPattern0.name
     return React.createElement(
         View,
         {name = name},
         React.createElement(KnobValue, {
-            value = "Volume VOLUME",
+            value = "FmDrum ATTACK_TIME",
             position = topLeftKnob,
             encoder_id = 0,
             COLOR = "tertiary",
-            track = SnareTrack
+            track = FmTrack
         }),
         React.createElement(KnobValue, {
-            value = "Snare DURATION",
+            value = "FmDrum DECAY_TIME",
             position = topRightKnob,
             encoder_id = 2,
             COLOR = "secondary",
-            track = SnareTrack
+            track = FmTrack
         }),
-        React.createElement(KnobValue, {value = "Snare TONE_FREQ", position = bottomLeftKnob, encoder_id = 1, track = SnareTrack}),
+        React.createElement(KnobValue, {value = "FmDrum DISTORTION", position = bottomLeftKnob, encoder_id = 1, track = FmTrack}),
         React.createElement(KnobValue, {
-            value = "Snare NOISE_MIX",
+            value = "FmDrum REVERB",
             position = bottomRightKnob,
             encoder_id = 3,
             COLOR = "secondary",
-            track = SnareTrack
+            track = FmTrack
         }),
-        React.createElement(TextGridSnare, {selected = 0, viewName = name}),
-        React.createElement(Common, {selected = 0, track = SnareTrack})
+        React.createElement(TextGridFm, {selected = 1, viewName = name}),
+        React.createElement(Common, {selected = 1, track = FmTrack})
     )
 end
 return ____exports

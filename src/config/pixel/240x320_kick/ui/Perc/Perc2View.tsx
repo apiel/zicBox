@@ -3,54 +3,53 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
-import { ClapTrack } from '../constants';
+import { PercTrack } from '../constants';
 import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
-import { TextGridClap } from './TextGridClap';
+import { TextGridPerc } from './TextGridPerc';
 
 export type Props = {
     name: string;
 };
 
-export function Clap2View({ name }: Props) {
+export function Perc2View({ name }: Props) {
     return (
         <View name={name}>
-            {/* <KnobValue
-                value="Clap ATTACK_TIME"
-                position={topLeftKnob}
-                encoder_id={0}
-                COLOR="tertiary"
-                track={ClapTrack}
-            /> */}
             <KnobValue
-                value="Clap DISTORTION"
+                value="Perc ATTACK_TIME"
                 position={topLeftKnob}
                 encoder_id={0}
                 COLOR="tertiary"
-                track={ClapTrack}
+                track={PercTrack}
             />
             <KnobValue
-                value="Clap DECAY_TIME"
+                value="Perc DECAY_TIME"
                 position={topRightKnob}
                 encoder_id={2}
                 COLOR="secondary"
-                track={ClapTrack}
+                track={PercTrack}
             />
-            <KnobValue
-                value="Clap NOISE_LEVEL"
+            {/* <KnobValue
+                value="Perc NOISE_LEVEL"
                 position={bottomLeftKnob}
                 encoder_id={1}
-                track={ClapTrack}
+                track={PercTrack}
+            /> */}
+            <KnobValue
+                value="Perc DISTORTION"
+                position={bottomLeftKnob}
+                encoder_id={1}
+                track={PercTrack}
             />
             <KnobValue
-                value="Clap REVERB"
+                value="Perc REVERB"
                 position={bottomRightKnob}
                 encoder_id={3}
                 COLOR="secondary"
-                track={ClapTrack}
+                track={PercTrack}
             />
 
-            <TextGridClap selected={1} viewName={name} />
-            <Common selected={1} track={ClapTrack} />
+            <TextGridPerc selected={1} viewName={name} />
+            <Common selected={1} track={PercTrack} />
         </View>
     );
 }

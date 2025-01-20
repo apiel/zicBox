@@ -8,15 +8,15 @@ local View = ____View.View
 local ____Common = require("config.pixel.240x320_kick.ui.components.Common")
 local Common = ____Common.Common
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
-local SnareTrack = ____constants.SnareTrack
+local PercTrack = ____constants.PercTrack
 local ____constantsValue = require("config.pixel.240x320_kick.ui.constantsValue")
 local bottomLeftKnob = ____constantsValue.bottomLeftKnob
 local bottomRightKnob = ____constantsValue.bottomRightKnob
 local topLeftKnob = ____constantsValue.topLeftKnob
 local topRightKnob = ____constantsValue.topRightKnob
-local ____TextGridSnare = require("config.pixel.240x320_kick.ui.HiHat.TextGridSnare")
-local TextGridSnare = ____TextGridSnare.TextGridSnare
-function ____exports.SnareView(____bindingPattern0)
+local ____TextGridPerc = require("config.pixel.240x320_kick.ui.Perc.TextGridPerc")
+local TextGridPerc = ____TextGridPerc.TextGridPerc
+function ____exports.PercView(____bindingPattern0)
     local name
     name = ____bindingPattern0.name
     return React.createElement(
@@ -27,25 +27,25 @@ function ____exports.SnareView(____bindingPattern0)
             position = topLeftKnob,
             encoder_id = 0,
             COLOR = "tertiary",
-            track = SnareTrack
+            track = PercTrack
         }),
         React.createElement(KnobValue, {
-            value = "Snare DURATION",
+            value = "Perc CARRIER_FREQ",
             position = topRightKnob,
             encoder_id = 2,
             COLOR = "secondary",
-            track = SnareTrack
+            track = PercTrack
         }),
-        React.createElement(KnobValue, {value = "Snare TONE_FREQ", position = bottomLeftKnob, encoder_id = 1, track = SnareTrack}),
+        React.createElement(KnobValue, {value = "Perc MOD_FREQ", position = bottomLeftKnob, encoder_id = 1, track = PercTrack}),
         React.createElement(KnobValue, {
-            value = "Snare NOISE_MIX",
+            value = "Perc MOD_INDEX",
             position = bottomRightKnob,
             encoder_id = 3,
             COLOR = "secondary",
-            track = SnareTrack
+            track = PercTrack
         }),
-        React.createElement(TextGridSnare, {selected = 0, viewName = name}),
-        React.createElement(Common, {selected = 0})
+        React.createElement(TextGridPerc, {selected = 1, viewName = name}),
+        React.createElement(Common, {selected = 1, track = PercTrack})
     )
 end
 return ____exports
