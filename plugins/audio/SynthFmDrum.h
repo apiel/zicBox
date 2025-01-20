@@ -144,7 +144,8 @@ public:
         }
     }
 
-    uint8_t currentNote = 60;
+    uint8_t baseNote = 60;
+    uint8_t currentNote = 0;
     float currentVelocity = 1.0f;
 
     void noteOn(uint8_t note, float _velocity) override
@@ -154,7 +155,7 @@ public:
         currentNote = note;
         currentVelocity = _velocity;
         // Adjust carrier frequency based on MIDI note
-        noteFrquency = carrierFreq.get() * powf(2.0f, (currentNote - 60) / 12.0f);
+        noteFrquency = carrierFreq.get() * powf(2.0f, (currentNote - baseNote) / 12.0f);
         i = 0;
     }
 };

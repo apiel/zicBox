@@ -45,7 +45,7 @@ protected:
     {
         float amount = boost.pct() * 2 - 1.0f;
         if (amount > 0.0f) {
-            return input + amount * 3.0f * env * sineWave(baseFreq.get() * 2.0f, phase);
+            return input + amount * 3.0f * env * sineWave(noteFreq * 2.0f, phase);
         }
         if (amount < 0.0f) {
             // Might consider using another kind of distortion
@@ -111,7 +111,7 @@ public:
     float phaseIncrement = 0.0f;
     float resonatorState = 0.0f;
     int i = 0;
-
+    float noteFreq = 440.0f;
     void sample(float* buf) override
     {
         if (i < totalSamples) {
@@ -119,12 +119,12 @@ public:
             float env = 1.0f - t;
 
             // Tonal component with resonance
-            float tone = sineWave(baseFreq.get(), phase);
-            tone = resonator(tone * env, baseFreq.get() * bodyResonance.get(), toneDecay.get(), resonatorState);
+            float tone = sineWave(noteFreq, phase);
+            tone = resonator(tone * env, noteFreq * bodyResonance.get(), toneDecay.get(), resonatorState);
 
             if (timbre.pct() > 0.0f) {
                 // Adjust timbre by filtering harmonics dynamically
-                tone *= (1.0f - timbre.pct()) + timbre.pct() * sinf(2.0f * M_PI * baseFreq.get() * 0.5f * t);
+                tone *= (1.0f - timbre.pct()) + timbre.pct() * sinf(2.0f * M_PI * noteFreq * 0.5f * t);
             }
             float output = tone * env;
             output = applyBoost(tone, env);
@@ -139,6 +139,9 @@ public:
         }
     }
 
+    uint8_t baseNote = 60;
+    uint8_t currentNote = 0;
+
     void noteOn(uint8_t note, float _velocity) override
     {
         const float sampleRate = props.sampleRate;
@@ -146,6 +149,7 @@ public:
         totalSamples = static_cast<int>(sampleRate * durationSec);
         phase = 0.0f;
         resonatorState = 0.0f;
+        noteFreq = baseFreq.get() * powf(2.0f, (note - baseNote) / 12.0f); // what with baseFreq.get()
         i = 0;
     }
 };
