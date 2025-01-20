@@ -2,12 +2,36 @@ import * as React from '@/libs/react';
 
 import { Keymaps } from '@/libs/components/Keymaps';
 import { StepEditSmall } from '@/libs/components/StepEditSmall';
+import { Text } from '@/libs/components/Text';
 import { TextGrid } from '@/libs/components/TextGrid';
 import { View } from '@/libs/components/View';
 import { VisibilityContext } from '@/libs/components/VisibilityContext';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
-import { Drum23Track, KeyInfoPosition, ScreenWidth } from '../constants';
+import { HiHatTrack, KeyInfoPosition, PercTrack, ScreenWidth, SnareTrack } from '../constants';
+
+function Seq({ x, w, track }: { x: number; w: number, track: number }) {
+    let y = 0;
+    return Array.from({ length: 32 }, (_, i) => {
+        const yy = y + 12;
+        y += 8 + (i % 4 == 3 ? 3 : 0);
+        return (
+            <StepEditSmall
+                position={[x, yy, w, 8]}
+                data={`Sequencer ${i}`}
+                group={i}
+                playing_color={rgb(35, 161, 35)}
+                background_color={
+                    i % 8 == 0 || i % 8 == 1 || i % 8 == 2 || i % 8 == 3
+                        ? rgb(42, 54, 56)
+                        : 'background'
+                }
+                selected_color={rgb(76, 94, 97)}
+                track={track}
+            />
+        );
+    });
+}
 
 export type Props = {
     name: string;
@@ -18,25 +42,12 @@ export function DrumsSeqView({ name }: Props) {
     let y = 0;
     return (
         <View name={name}>
-            {Array.from({ length: 32 }, (_, i) => {
-                const yy = y + 5;
-                y += 8 + (i % 4 == 3 ? 4 : 0);
-                return (
-                    <StepEditSmall
-                        position={[0, yy, w, 8]}
-                        data={`Sequencer ${i}`}
-                        group={i}
-                        playing_color={rgb(35, 161, 35)}
-                        background_color={
-                            i % 8 == 0 || i % 8 == 1 || i % 8 == 2 || i % 8 == 3
-                                ? rgb(42, 54, 56)
-                                : 'background'
-                        }
-                        selected_color={rgb(76, 94, 97)}
-                    />
-                );
-            })}
-
+            <Text text="Snare" position={[0, 0, w, 8]} />
+            <Seq x={0} w={w} track={SnareTrack} />
+            <Text text="HiHat" position={[w, 0, w, 8]} />
+            <Seq x={w} w={w} track={HiHatTrack} />
+            <Text text="Perc" position={[2 * w, 0, w, 8]} />
+            <Seq x={w * 2} w={w} track={PercTrack} />
             <TextGrid
                 position={KeyInfoPosition}
                 rows={[
@@ -52,12 +63,12 @@ export function DrumsSeqView({ name }: Props) {
                         { key: 'e', action: 'contextToggle:254:1:0' },
 
                         { key: 'a', action: 'incGroup:+1' },
-                        { key: 's', action: 'setView:Drum23' },
-                        { key: 'd', action: 'noteOn:Drum23:60' },
+                        { key: 's', action: 'setView:Snare' },
+                        { key: 'd', action: 'noteOn:Snare:60' },
                     ]}
                 />
             </TextGrid>
-            <Common selected={0} hideSequencer track={Drum23Track} />
+            <Common selected={0} hideSequencer track={SnareTrack} />
         </View>
     );
 }
