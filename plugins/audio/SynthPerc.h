@@ -89,7 +89,7 @@ public:
     /*md - `BASE_FREQ` sets the base frequency of the percussive tone. */
     Val& baseFreq = val(100.0f, "BASE_FREQ", { "Base Freq", .min = 40.0, .max = 400.0, .step = 1.0, .unit = "Hz" });
     /*md - `RESONATOR` controls the strength of the resonator. */
-    Val& bodyResonance = val(0.8f, "RESONATOR", { "resonator", .min = 0.01f, .max = 1.5f, .step = 0.01f, .floatingPoint = 2 });
+    Val& bodyResonance = val(0.8f, "RESONATOR", { "Resonator", .min = 0.01f, .max = 1.5f, .step = 0.01f, .floatingPoint = 2 });
     /*md - `TIMBRE` adjusts the tonal character by shaping the harmonic content. */
     Val& timbre = val(5.0f, "TIMBRE", { "Timbre", .unit = "%" });
     /*md - `BOOST` boost transient or add some distortion. */
