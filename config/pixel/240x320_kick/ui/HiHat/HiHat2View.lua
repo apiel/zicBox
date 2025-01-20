@@ -7,14 +7,14 @@ local ____View = require("config.libs.components.View")
 local View = ____View.View
 local ____Common = require("config.pixel.240x320_kick.ui.components.Common")
 local Common = ____Common.Common
+local ____TextGridDrums = require("config.pixel.240x320_kick.ui.components.TextGridDrums")
+local TextGridDrums = ____TextGridDrums.TextGridDrums
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
 local HiHatTrack = ____constants.HiHatTrack
 local ____constantsValue = require("config.pixel.240x320_kick.ui.constantsValue")
 local bottomLeftKnob = ____constantsValue.bottomLeftKnob
 local topLeftKnob = ____constantsValue.topLeftKnob
 local topRightKnob = ____constantsValue.topRightKnob
-local ____TextGridHiHat = require("config.pixel.240x320_kick.ui.HiHat.TextGridHiHat")
-local TextGridHiHat = ____TextGridHiHat.TextGridHiHat
 function ____exports.HiHat2View(____bindingPattern0)
     local name
     name = ____bindingPattern0.name
@@ -36,7 +36,7 @@ function ____exports.HiHat2View(____bindingPattern0)
             track = HiHatTrack
         }),
         React.createElement(KnobValue, {value = "HiHat TONE_BRIGHTNESS", position = bottomLeftKnob, encoder_id = 1, track = HiHatTrack}),
-        React.createElement(TextGridHiHat, {selected = 3, viewName = name}),
+        React.createElement(TextGridDrums, {selected = 3, viewName = name, title = "Hi-Hat"}),
         React.createElement(Common, {selected = 1, track = HiHatTrack})
     )
 end

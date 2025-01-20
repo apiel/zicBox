@@ -1,12 +1,20 @@
 import * as React from '@/libs/react';
 
-import { TextGridSel } from '../components/TextGridSel';
-import { Title } from '../components/Title';
+import { TextGridSel } from './TextGridSel';
+import { Title } from './Title';
 
-export function TextGridHiHat({ selected, viewName }: { selected: number; viewName: string }) {
+export function TextGridDrums({
+    selected,
+    viewName,
+    title,
+}: {
+    selected: number;
+    viewName: string;
+    title: string;
+}) {
     return (
         <>
-            <Title title="HiHat" />
+            <Title title={title} />
             <TextGridSel
                 items={['Snare', 'Perc', '...', 'HiHat', 'Seq.', '&icon::musicNote::pixelated']}
                 keys={[
