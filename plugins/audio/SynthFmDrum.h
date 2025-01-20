@@ -5,6 +5,8 @@
 #include "mapping.h"
 #include "plugins/audio/utils/utils.h"
 
+#include <climits>
+
 /*md
 ## SynthFmDrum
 
@@ -139,8 +141,23 @@ public:
 
             buf[track] = output;
             i++;
-        } else {
+        } else if (i != INT_MAX) {
             buf[track] = applyReverb(buf[track]);
+            // Stop processing reverb if empty
+            if (buf[track] == 0.0f) {
+                // check that buffer is empty
+                bool isEmpty = true;
+                for (int j = 0; j < REVERB_BUFFER_SIZE; j++) {
+                    if (reverbBuffer[j] != 0.0f) {
+                        isEmpty = false;
+                        break;
+                    }
+                }
+                if (isEmpty) {
+                    i = INT_MAX;
+                    printf("stop reverb process\n");
+                }
+            }
         }
     }
 
