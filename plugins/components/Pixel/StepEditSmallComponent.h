@@ -10,14 +10,14 @@
 #include <stdexcept>
 
 /*md
-## StepEditDrum
+## StepEditSmall
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/stepEditDrum.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/stepEditSmall.png" />
 
-StepEditDrum component is used to edit a step value for drums.
+StepEditSmall component is used to edit a step value using only one knob.
 */
 
-class StepEditDrumComponent : public Component {
+class StepEditSmallComponent : public Component {
 protected:
     bool isActive = true;
 
@@ -46,10 +46,10 @@ protected:
 
     uint8_t stepIndex = -1;
 
-    uint8_t encoders[4] = { 0, 1, 2, 3 };
+    uint8_t encoder = 0;
 
 public:
-    StepEditDrumComponent(ComponentInterface::Props props)
+    StepEditSmallComponent(ComponentInterface::Props props)
         : Component(props)
         , bgColor(styles.colors.background)
         , selection(lighten(styles.colors.background, 0.5))
@@ -75,23 +75,23 @@ public:
             return func;
         })
     {
-        jobRendering = [this](unsigned long now) {
-            if (seqPlayingPtr != NULL && *seqPlayingPtr != seqPlaying) {
-                seqPlaying = *seqPlayingPtr;
-                renderNext();
-            }
-            if (stepCounter != NULL && seqPlaying) {
-                if (stepIndex != *stepCounter) {
-                    if (notePlaying) {
-                        notePlaying = false;
-                        renderNext();
-                    }
-                } else if (!notePlaying) {
-                    notePlaying = true;
-                    renderNext();
-                }
-            }
-        };
+        // jobRendering = [this](unsigned long now) {
+        //     if (seqPlayingPtr != NULL && *seqPlayingPtr != seqPlaying) {
+        //         seqPlaying = *seqPlayingPtr;
+        //         renderNext();
+        //     }
+        //     if (stepCounter != NULL && seqPlaying) {
+        //         if (stepIndex != *stepCounter) {
+        //             if (notePlaying) {
+        //                 notePlaying = false;
+        //                 renderNext();
+        //             }
+        //         } else if (!notePlaying) {
+        //             notePlaying = true;
+        //             renderNext();
+        //         }
+        //     }
+        // };
     }
 
     void renderNote(int x, int y)
@@ -103,6 +103,16 @@ public:
         draw.text({ x - 2, y }, noteSuffix, 8, { note2Color });
     }
 
+    void renderMotion(int x, int y)
+    {
+        std::string motionSteps = stepMotions[step->motion].name;
+        char* motionStep = strtok((char*)motionSteps.c_str(), ",");
+        for (int i = 0; motionStep != NULL; i++) {
+            x = draw.text({ x, y }, motionStep, 8, { i % 2 == 0 ? textMotion1 : textMotion2 });
+            motionStep = strtok(NULL, ",");
+        }
+    }
+
     void render() override
     {
         if (updatePosition() && step) {
@@ -110,57 +120,42 @@ public:
             draw.filledRect(relativePosition, size, { bg });
 
             int y = relativePosition.y;
-            int x = relativePosition.x + 1;
+            int x = relativePosition.x;
 
-            x = relativePosition.x + 12;
-            draw.filledRect({ x, y + 2 }, { 50, 4 }, { barBackground });
-            draw.filledRect({ x, y + 2 }, { (int)(50 * step->velocity), 4 }, { bar });
-
-            x = relativePosition.x + 70;
-            if (step->enabled) {
-                renderNote(x, y);
-            } else {
+            if (!step->enabled) {
                 draw.text({ x, y }, "---", 8, { text2 });
-            }
-
-            draw.text({ relativePosition.x + 110, y }, stepConditions[step->condition].name, 8, { text2 });
-
-            std::string motionSteps = stepMotions[step->motion].name;
-            x = relativePosition.x + 156;
-            if (motionSteps == "---") {
-                draw.text({ x, y }, motionSteps, 8, { text2 });
+            } else if (step->condition) {
+                draw.text({ x, y }, stepConditions[step->condition].name, 8, { text2 });
+            } else if (step->motion) {
+                renderMotion(x, y);
             } else {
-                char* motionStep = strtok((char*)motionSteps.c_str(), ",");
-                for (int i = 0; motionStep != NULL; i++) {
-                    x = draw.text({ x, y }, motionStep, 8, { i % 2 == 0 ? textMotion1 : textMotion2 });
-                    motionStep = strtok(NULL, ",");
-                }
+                renderNote(x, y);
             }
 
-            x = relativePosition.x + 193;
-            if ((seqPlayingPtr == NULL || seqPlaying) && notePlaying) {
-                draw.filledRect({ x, y + 1 }, { 6, 6 }, { playingColor });
-            }
+            // render active step
+            // if ((seqPlayingPtr == NULL || seqPlaying) && notePlaying) {
+            //     draw.filledRect({ x, y + 1 }, { 6, 6 }, { playingColor });
+            // }
         }
     }
 
     void onEncoder(int id, int8_t direction) override
     {
-        if (isActive) {
-            if (id == encoders[0]) {
-                step->setVelocity(step->velocity + direction * 0.01);
-                renderNext();
-            } else if (id == encoders[1]) {
-                step->setCondition(step->condition + direction);
-                renderNext();
-            } else if (id == encoders[2]) {
-                step->setNote(step->note + direction);
-                renderNext();
-            } else if (id == encoders[3]) {
-                step->setMotion(step->motion + direction);
-                renderNext();
-            }
-        }
+        // if (isActive) {
+        //     if (id == encoders[0]) {
+        //         step->setVelocity(step->velocity + direction * 0.01);
+        //         renderNext();
+        //     } else if (id == encoders[1]) {
+        //         step->setCondition(step->condition + direction);
+        //         renderNext();
+        //     } else if (id == encoders[2]) {
+        //         step->setNote(step->note + direction);
+        //         renderNext();
+        //     } else if (id == encoders[3]) {
+        //         step->setMotion(step->motion + direction);
+        //         renderNext();
+        //     }
+        // }
     }
 
     void onKey(uint16_t id, int key, int8_t state, unsigned long now)
@@ -202,14 +197,14 @@ public:
             return true;
         }
 
-        /*md - `ENCODERS: encoder_id1 encoder_id2 encoder_id3 encoder_id4` is the id of the encoder to update step value. */
-        if (strcmp(key, "ENCODERS") == 0) {
-            encoders[0] = atoi(strtok(value, " "));
-            encoders[1] = atoi(strtok(NULL, " "));
-            encoders[2] = atoi(strtok(NULL, " "));
-            encoders[3] = atoi(strtok(NULL, " "));
-            return true;
-        }
+        // /*md - `ENCODERS: encoder_id1 encoder_id2 encoder_id3 encoder_id4` is the id of the encoder to update step value. */
+        // if (strcmp(key, "ENCODERS") == 0) {
+        //     encoders[0] = atoi(strtok(value, " "));
+        //     encoders[1] = atoi(strtok(NULL, " "));
+        //     encoders[2] = atoi(strtok(NULL, " "));
+        //     encoders[3] = atoi(strtok(NULL, " "));
+        //     return true;
+        // }
 
         /*md - `BACKGROUND_COLOR: color` is the background color of the component. */
         if (strcmp(key, "BACKGROUND_COLOR") == 0) {

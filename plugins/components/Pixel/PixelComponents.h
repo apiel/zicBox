@@ -24,6 +24,7 @@ void loadPixelComponents()
     viewManager.loadPlugin("StepEdit " + folder + "StepEditComponent.so");
     viewManager.loadPlugin("StepEdit2 " + folder + "StepEdit2Component.so");
     viewManager.loadPlugin("StepEditDrum " + folder + "StepEditDrumComponent.so");
+    viewManager.loadPlugin("StepEditSmall " + folder + "StepEditSmallComponent.so");
     viewManager.loadPlugin("FmAlgo " + folder + "FmAlgoComponent.so");
     viewManager.loadPlugin("Adsr " + folder + "AdsrComponent.so");
     viewManager.loadPlugin("Text " + folder + "TextComponent.so");
@@ -63,6 +64,7 @@ void loadPixelComponents()
 #include "./StepEdit2Component.h"
 #include "./StepEditComponent.h"
 #include "./StepEditDrumComponent.h"
+#include "./StepEditSmallComponent.h"
 #include "./TapeComponent.h"
 #include "./TextComponent.h"
 #include "./TextGridComponent.h"
@@ -107,6 +109,10 @@ void loadPixelComponents()
 
     viewManager.plugins.push_back({ "StepEditDrum", [](ComponentInterface::Props props) {
                                        return new StepEditDrumComponent(props);
+                                   } });
+
+    viewManager.plugins.push_back({ "StepEditSmall", [](ComponentInterface::Props props) {
+                                       return new StepEditSmallComponent(props);
                                    } });
 
     viewManager.plugins.push_back({ "FmAlgo", [](ComponentInterface::Props props) {
