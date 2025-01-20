@@ -42,7 +42,7 @@ export function PercView({ name }: Props) {
                 track={PercTrack}
             />
 
-            <TextGridDrums selected={1} viewName={name} title="Perc" />
+            <TextGridDrums selected={1} viewName={name} target="Perc" />
             <Common selected={1} track={PercTrack} />
         </View>
     );

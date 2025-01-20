@@ -44,7 +44,7 @@ function ____exports.HiHatView(____bindingPattern0)
             COLOR = "secondary",
             track = HiHatTrack
         }),
-        React.createElement(TextGridDrums, {selected = 3, viewName = name, title = "Hi-Hat"}),
+        React.createElement(TextGridDrums, {selected = 3, viewName = name, target = "HiHat"}),
         React.createElement(Common, {selected = 1, track = HiHatTrack})
     )
 end

@@ -36,7 +36,7 @@ function ____exports.HiHat2View(____bindingPattern0)
             track = HiHatTrack
         }),
         React.createElement(KnobValue, {value = "HiHat TONE_BRIGHTNESS", position = bottomLeftKnob, encoder_id = 1, track = HiHatTrack}),
-        React.createElement(TextGridDrums, {selected = 3, viewName = name, title = "Hi-Hat"}),
+        React.createElement(TextGridDrums, {selected = 3, viewName = name, target = "HiHat"}),
         React.createElement(Common, {selected = 1, track = HiHatTrack})
     )
 end
