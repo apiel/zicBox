@@ -1,0 +1,63 @@
+import * as React from '@/libs/react';
+
+import { Keymaps } from '@/libs/components/Keymaps';
+import { StepEditSmall } from '@/libs/components/StepEditSmall';
+import { TextGrid } from '@/libs/components/TextGrid';
+import { View } from '@/libs/components/View';
+import { VisibilityContext } from '@/libs/components/VisibilityContext';
+import { rgb } from '@/libs/ui';
+import { Common } from '../components/Common';
+import { Drum23Track, KeyInfoPosition, ScreenWidth } from '../constants';
+
+export type Props = {
+    name: string;
+};
+
+export function DrumsSeqView({ name }: Props) {
+    const w = ScreenWidth / 3;
+    let y = 0;
+    return (
+        <View name={name}>
+            {Array.from({ length: 32 }, (_, i) => {
+                const yy = y + 5;
+                y += 8 + (i % 4 == 3 ? 4 : 0);
+                return (
+                    <StepEditSmall
+                        position={[0, yy, w, 8]}
+                        data={`Sequencer ${i}`}
+                        group={i}
+                        playing_color={rgb(35, 161, 35)}
+                        background_color={
+                            i % 8 == 0 || i % 8 == 1 || i % 8 == 2 || i % 8 == 3
+                                ? rgb(42, 54, 56)
+                                : 'background'
+                        }
+                        selected_color={rgb(76, 94, 97)}
+                    />
+                );
+            })}
+
+            <TextGrid
+                position={KeyInfoPosition}
+                rows={[
+                    '&icon::arrowUp::filled &icon::toggle::rect ...',
+                    '&icon::arrowDown::filled Synth &icon::musicNote::pixelated',
+                ]}
+            >
+                <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />
+                <Keymaps
+                    keys={[
+                        { key: 'q', action: 'incGroup:-1' },
+                        // { key: 'w', action: 'setView:Click' },
+                        { key: 'e', action: 'contextToggle:254:1:0' },
+
+                        { key: 'a', action: 'incGroup:+1' },
+                        { key: 's', action: 'setView:Drum23' },
+                        { key: 'd', action: 'noteOn:Drum23:60' },
+                    ]}
+                />
+            </TextGrid>
+            <Common selected={0} hideSequencer track={Drum23Track} />
+        </View>
+    );
+}

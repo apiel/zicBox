@@ -26,7 +26,7 @@ export function TextGridDrums({
                         key: 'a',
                         action: viewName === 'HiHat' ? 'setView:HiHat2' : 'setView:HiHat',
                     },
-                    // { key: 's', action: 'setView:Frequency' },
+                    { key: 's', action: 'setView:DrumsSeq' },
                     { key: 'd', action: `noteOn:${target}:60` },
                 ]}
                 selected={selected}

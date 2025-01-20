@@ -28,6 +28,7 @@ function ____exports.TextGridDrums(____bindingPattern0)
             {key = "w", action = viewName == "Perc" and "setView:Perc2" or "setView:Perc"},
             {key = "e", action = "contextToggle:254:1:0"},
             {key = "a", action = viewName == "HiHat" and "setView:HiHat2" or "setView:HiHat"},
+            {key = "s", action = "setView:DrumsSeq"},
             {key = "d", action = ("noteOn:" .. target) .. ":60"}
         }, selected = selected, contextValue = 0})
     )
