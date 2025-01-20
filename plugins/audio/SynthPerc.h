@@ -4,6 +4,8 @@
 #include "audioPlugin.h"
 #include "mapping.h"
 
+#include "plugins/audio/utils/utils.h"
+
 /*md
 ## SynthPerc
 
@@ -25,6 +27,12 @@ protected:
         return props.lookupTable->tanh[index];
     }
 
+    float sineLookupInterpolated(float x)
+    {
+        x -= std::floor(x);
+        return linearInterpolation(x, props.lookupTable->size, props.lookupTable->sine);
+    }
+
     // Resonance simulation for body tone
     float resonator(float input, float freq, float decay, float& state)
     {
@@ -40,9 +48,11 @@ protected:
             return input + amount * 3.0f * env * sineWave(baseFreq.get() * 2.0f, phase);
         }
         if (amount < 0.0f) {
-            float distortion = -amount;
-            return input * (1.0f - distortion) + tanhLookup(input * distortion);
-            // return input * (1.0f - distortion) + tanh(input * distortion);
+            // Might consider using another kind of distortion
+            amount = -amount;
+            // return input + amount * sinf(input) * 2; // Waveshape <-- this mainly amplify the output
+            return input + amount * sineLookupInterpolated(input); // Waveshape LUT
+            // return tanhLookup(input * (1.0f + amount * 5.0f)); // Drive
         }
         return input;
     }
@@ -117,8 +127,9 @@ public:
                 tone *= (1.0f - timbre.pct()) + timbre.pct() * sinf(2.0f * M_PI * baseFreq.get() * 0.5f * t);
             }
             float output = tone * env;
-            output = applyReverb(output);
             output = applyBoost(tone, env);
+            output = applyReverb(output);
+
             buf[track] = output;
 
             phase += phaseIncrement;
