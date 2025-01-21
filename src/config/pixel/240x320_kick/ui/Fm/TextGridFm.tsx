@@ -11,6 +11,7 @@ export function TextGridFm({ selected, viewName }: { selected: number; viewName:
             <Title title="Fm" />
             <Rect position={[85, 28, 6, 6]} color={ColorTrack2} />
             <TextGridSel
+                ITEM_BACKGROUND={ColorTrack2}
                 items={['Snare', 'Fm', '...', 'HiHat', 'Seq.', '&icon::musicNote::pixelated']}
                 keys={[
                     { key: 'q', action: viewName === 'Snare' ? 'setView:Snare2' : 'setView:Snare' },
