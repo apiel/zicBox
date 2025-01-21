@@ -1,5 +1,7 @@
 ## Pixel TODO
 
+- NOTE should we move Ui in separate thread to have better understanding of CPU usage
+
 - IDEA load/unload instrument dynamically
     - --> drum (or simple) only with 7 parameters (should it even allow to have something else than knob/values representation..?)
         - sorting ofr the params, would define how they show in the UI

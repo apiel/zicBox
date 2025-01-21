@@ -22,6 +22,8 @@ import { Sample2View } from './Sample/Sample2View';
 import { SampleView } from './Sample/SampleView';
 import { Snare2View } from './Snare/Snare2View';
 import { SnareView } from './Snare/SnareView';
+import { SaveTapeView } from './tapeView/SaveTapeView';
+import { TapeView } from './tapeView/TapeView';
 
 setWindowPosition(400, 500);
 setScreenSize(ScreenWidth, ScreenHeight);
@@ -61,3 +63,6 @@ applyZic(<MenuView name="Menu" />);
 applyZic(<WorkspacesView name="Workspaces" />);
 applyZic(<CreateWorkspaceView name="CreateWorkspace" />);
 applyZic(<ShutdownView name="Shutdown" />);
+
+applyZic(<TapeView name="Tape" />);
+applyZic(<SaveTapeView name="SaveTape" />);
