@@ -7,6 +7,8 @@ local ____ui = require("config.libs.ui")
 local addZoneEncoder = ____ui.addZoneEncoder
 local setScreenSize = ____ui.setScreenSize
 local setWindowPosition = ____ui.setWindowPosition
+local ____ClipsView = require("config.pixel.240x320_kick.ui.clipsView.ClipsView")
+local ClipsView = ____ClipsView.ClipsView
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
 local ScreenHeight = ____constants.ScreenHeight
 local ScreenWidth = ____constants.ScreenWidth
@@ -84,4 +86,5 @@ applyZic(React.createElement(CreateWorkspaceView, {name = "CreateWorkspace"}))
 applyZic(React.createElement(ShutdownView, {name = "Shutdown"}))
 applyZic(React.createElement(TapeView, {name = "Tape"}))
 applyZic(React.createElement(SaveTapeView, {name = "SaveTape"}))
+applyZic(React.createElement(ClipsView, {name = "Clips"}))
 return ____exports
