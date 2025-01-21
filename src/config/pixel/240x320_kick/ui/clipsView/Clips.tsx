@@ -17,6 +17,7 @@ export function Clips({ color, track, group, title }: Props) {
     return (
         <>
             <Text text={title} position={[(track - 1) * w, 2, w, 8]} centered color={color} />
+            {/* <Text text={title} position={[(track - 1) * w, 2, w, 8]} centered background_color={color} color="text" /> */}
             <ClipsComponent
                 position={[(track - 1) * w, 15, w - 2, 200]}
                 plugin="SerializeTrack"
