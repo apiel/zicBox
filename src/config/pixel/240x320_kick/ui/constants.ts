@@ -24,10 +24,10 @@ export const SecondaryBar = '#b54f5e';
 export const TertiaryBar = '#368a36';
 export const QuaternaryBar = '#94854b';
 
-export const ColorTrack1 = '#fd6f0e';
-export const ColorTrack2 = '#ffcd04';
-export const ColorTrack3 = '#a3c912';
-export const ColorTrack4 = '#23a123';
+export const ColorTrack1 = '#a3c912';
+export const ColorTrack2 = '#23a123';
+export const ColorTrack3 = '#fd6f0e';
+export const ColorTrack4 = '#ffcd04';
 export const ColorTrack5 = '#15a5ca';
 export const ColorTrack6 = '#4643d8';
 export const ColorTrack7 = '#902ed1';
