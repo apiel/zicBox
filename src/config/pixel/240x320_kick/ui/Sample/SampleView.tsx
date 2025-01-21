@@ -15,13 +15,6 @@ export type Props = {
 export function SampleView({ name }: Props) {
     return (
         <View name={name}>
-            <Sample
-                position={[0, 245, ScreenWidth, 50]}
-                track={SampleTrack}
-                plugin="Sample SAMPLE_BUFFER SAMPLE_INDEX"
-                loop_points_color={'tertiary'}
-            />
-
             <KnobValue
                 value="Volume VOLUME"
                 position={topLeftKnob}
@@ -33,7 +26,6 @@ export function SampleView({ name }: Props) {
                 value="Sample BROWSER"
                 position={topRightKnob}
                 encoder_id={2}
-                COLOR="secondary"
                 track={SampleTrack}
                 STRING_VALUE_REPLACE_TITLE
             />
@@ -41,6 +33,7 @@ export function SampleView({ name }: Props) {
                 value="Sample START"
                 position={bottomLeftKnob}
                 encoder_id={1}
+                COLOR="secondary"
                 track={SampleTrack}
             />
             <KnobValue
@@ -49,6 +42,14 @@ export function SampleView({ name }: Props) {
                 encoder_id={3}
                 COLOR="secondary"
                 track={SampleTrack}
+            />
+
+            <Sample
+                position={[0, 245, ScreenWidth, 50]}
+                track={SampleTrack}
+                plugin="Sample SAMPLE_BUFFER SAMPLE_INDEX"
+                loop_points_color={'tertiary'}
+                BACKGROUND_COLOR="background"
             />
 
             <TextGridDrums selected={1} viewName={name} target="Sample" />
