@@ -12,6 +12,7 @@ local Common = ____Common.Common
 local ____TextGridDrums = require("config.pixel.240x320_kick.ui.components.TextGridDrums")
 local TextGridDrums = ____TextGridDrums.TextGridDrums
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
+local ComboColorTrack5 = ____constants.ComboColorTrack5
 local SampleTrack = ____constants.SampleTrack
 local ScreenWidth = ____constants.ScreenWidth
 local ____constantsValue = require("config.pixel.240x320_kick.ui.constantsValue")
@@ -61,7 +62,7 @@ function ____exports.SampleView(____bindingPattern0)
             BACKGROUND_COLOR = "background"
         }),
         React.createElement(TextGridDrums, {selected = 1, viewName = name, target = "Sample"}),
-        React.createElement(Common, {selected = 1, track = SampleTrack})
+        React.createElement(Common, {selected = 1, track = SampleTrack, colors = ComboColorTrack5})
     )
 end
 return ____exports

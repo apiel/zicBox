@@ -4,7 +4,7 @@ import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
 import { TextGridDrums } from '../components/TextGridDrums';
-import { SnareTrack } from '../constants';
+import { ComboColorTrack3, SnareTrack } from '../constants';
 import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
 
 export type Props = {
@@ -43,7 +43,7 @@ export function SnareView({ name }: Props) {
             />
 
             <TextGridDrums selected={0} viewName={name} target="Snare" />
-            <Common selected={1} track={SnareTrack} />
+            <Common selected={1} track={SnareTrack} colors={ComboColorTrack3} />
         </View>
     );
 }

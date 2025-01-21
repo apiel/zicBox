@@ -1,5 +1,7 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
+local ____ui = require("config.libs.ui")
+local rgb = ____ui.rgb
 do
     local ____export = require("config.pixel.240x320_kick.constants")
     for ____exportKey, ____exportValue in pairs(____export) do
@@ -35,4 +37,24 @@ ____exports.ColorTrack5 = "#15a5ca"
 ____exports.ColorTrack6 = "#4643d8"
 ____exports.ColorTrack7 = "#902ed1"
 ____exports.ColorTrack8 = "#cb11ca"
+____exports.ComboColorTrack1 = {
+    ____exports.ColorTrack1,
+    rgb(196, 90, 20)
+}
+____exports.ComboColorTrack2 = {
+    ____exports.ColorTrack2,
+    rgb(172, 143, 28)
+}
+____exports.ComboColorTrack3 = {
+    ____exports.ColorTrack3,
+    rgb(121, 145, 26)
+}
+____exports.ComboColorTrack4 = {
+    ____exports.ColorTrack4,
+    rgb(37, 117, 37)
+}
+____exports.ComboColorTrack5 = {
+    ____exports.ColorTrack5,
+    rgb(38, 107, 124)
+}
 return ____exports

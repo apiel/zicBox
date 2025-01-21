@@ -8,6 +8,7 @@ local View = ____View.View
 local ____Common = require("config.pixel.240x320_kick.ui.components.Common")
 local Common = ____Common.Common
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
+local ComboColorTrack2 = ____constants.ComboColorTrack2
 local FmTrack = ____constants.FmTrack
 local ____constantsValue = require("config.pixel.240x320_kick.ui.constantsValue")
 local bottomLeftKnob = ____constantsValue.bottomLeftKnob
@@ -45,7 +46,7 @@ function ____exports.FmView(____bindingPattern0)
             track = FmTrack
         }),
         React.createElement(TextGridFm, {selected = 1, viewName = name}),
-        React.createElement(Common, {selected = 3, track = FmTrack})
+        React.createElement(Common, {selected = 3, track = FmTrack, colors = ComboColorTrack2})
     )
 end
 return ____exports

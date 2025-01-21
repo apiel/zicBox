@@ -10,6 +10,7 @@ local Common = ____Common.Common
 local ____TextGridDrums = require("config.pixel.240x320_kick.ui.components.TextGridDrums")
 local TextGridDrums = ____TextGridDrums.TextGridDrums
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
+local ComboColorTrack4 = ____constants.ComboColorTrack4
 local HiHatTrack = ____constants.HiHatTrack
 local ____constantsValue = require("config.pixel.240x320_kick.ui.constantsValue")
 local bottomLeftKnob = ____constantsValue.bottomLeftKnob
@@ -45,7 +46,7 @@ function ____exports.HiHatView(____bindingPattern0)
             track = HiHatTrack
         }),
         React.createElement(TextGridDrums, {selected = 3, viewName = name, target = "HiHat"}),
-        React.createElement(Common, {selected = 1, track = HiHatTrack})
+        React.createElement(Common, {selected = 1, track = HiHatTrack, colors = ComboColorTrack4})
     )
 end
 return ____exports

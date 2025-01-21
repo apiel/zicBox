@@ -10,6 +10,7 @@ local Common = ____Common.Common
 local ____TextGridDrums = require("config.pixel.240x320_kick.ui.components.TextGridDrums")
 local TextGridDrums = ____TextGridDrums.TextGridDrums
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
+local ComboColorTrack3 = ____constants.ComboColorTrack3
 local SnareTrack = ____constants.SnareTrack
 local ____constantsValue = require("config.pixel.240x320_kick.ui.constantsValue")
 local bottomLeftKnob = ____constantsValue.bottomLeftKnob
@@ -45,7 +46,7 @@ function ____exports.SnareView(____bindingPattern0)
             track = SnareTrack
         }),
         React.createElement(TextGridDrums, {selected = 0, viewName = name, target = "Snare"}),
-        React.createElement(Common, {selected = 1, track = SnareTrack})
+        React.createElement(Common, {selected = 1, track = SnareTrack, colors = ComboColorTrack3})
     )
 end
 return ____exports

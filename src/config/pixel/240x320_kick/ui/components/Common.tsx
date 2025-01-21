@@ -9,10 +9,12 @@ export function Common({
     selected,
     hideSequencer,
     track,
+    colors,
 }: {
     selected: number;
     hideSequencer?: boolean;
     track: number;
+    colors?: string[];
 }) {
     return (
         <>
@@ -20,9 +22,9 @@ export function Common({
                 <SeqProgressBar
                     position={[0, 0, ScreenWidth, 5]}
                     seq_plugin="Sequencer"
-                    active_color={rgb(35, 161, 35)}
-                    selection_color={rgb(35, 161, 35)}
-                    foreground_color={rgb(34, 110, 34)}
+                    active_color={colors?.[0] || rgb(35, 161, 35)}
+                    selection_color={colors?.[0] || rgb(35, 161, 35)}
+                    foreground_color={colors?.[1] || rgb(34, 110, 34)}
                     volume_plugin="Volume VOLUME"
                     show_steps
                     track={track}

@@ -8,6 +8,7 @@ local View = ____View.View
 local ____Common = require("config.pixel.240x320_kick.ui.components.Common")
 local Common = ____Common.Common
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
+local ComboColorTrack1 = ____constants.ComboColorTrack1
 local Drum23Track = ____constants.Drum23Track
 local ____constantsValue = require("config.pixel.240x320_kick.ui.constantsValue")
 local bottomLeftKnob = ____constantsValue.bottomLeftKnob
@@ -47,7 +48,7 @@ function ____exports.Drum23View(____bindingPattern0)
             track = Drum23Track
         }),
         React.createElement(TextGridDrum23, {selected = 0, viewName = name}),
-        React.createElement(Common, {selected = 0, track = Drum23Track})
+        React.createElement(Common, {selected = 0, track = Drum23Track, colors = ComboColorTrack1})
     )
 end
 return ____exports

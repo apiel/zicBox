@@ -1,4 +1,6 @@
-export * from "../constants";
+import { rgb } from '@/libs/ui';
+
+export * from '../constants';
 
 export const ScreenWidth = 240;
 export const ScreenHeight = 320;
@@ -32,3 +34,9 @@ export const ColorTrack5 = '#15a5ca';
 export const ColorTrack6 = '#4643d8';
 export const ColorTrack7 = '#902ed1';
 export const ColorTrack8 = '#cb11ca';
+
+export const ComboColorTrack1 = [ColorTrack1, rgb(196, 90, 20)];
+export const ComboColorTrack2 = [ColorTrack2, rgb(172, 143, 28)];
+export const ComboColorTrack3 = [ColorTrack3, rgb(121, 145, 26)];
+export const ComboColorTrack4 = [ColorTrack4, rgb(37, 117, 37)];
+export const ComboColorTrack5 = [ColorTrack5, rgb(38, 107, 124)];

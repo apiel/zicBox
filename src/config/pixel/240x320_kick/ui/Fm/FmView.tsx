@@ -3,7 +3,7 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
-import { FmTrack } from '../constants';
+import { ComboColorTrack2, FmTrack } from '../constants';
 import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
 import { TextGridFm } from './TextGridFm';
 
@@ -43,7 +43,7 @@ export function FmView({ name }: Props) {
             />
 
             <TextGridFm selected={1} viewName={name} />
-            <Common selected={3} track={FmTrack} />
+            <Common selected={3} track={FmTrack} colors={ComboColorTrack2} />
         </View>
     );
 }

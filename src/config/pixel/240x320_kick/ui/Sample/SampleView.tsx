@@ -5,7 +5,7 @@ import { Sample } from '@/libs/components/Sample';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
 import { TextGridDrums } from '../components/TextGridDrums';
-import { SampleTrack, ScreenWidth } from '../constants';
+import { ComboColorTrack5, SampleTrack, ScreenWidth } from '../constants';
 import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
 
 export type Props = {
@@ -53,7 +53,7 @@ export function SampleView({ name }: Props) {
             />
 
             <TextGridDrums selected={1} viewName={name} target="Sample" />
-            <Common selected={1} track={SampleTrack} />
+            <Common selected={1} track={SampleTrack} colors={ComboColorTrack5} />
         </View>
     );
 }

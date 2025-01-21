@@ -4,7 +4,7 @@ import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
 import { TextGridDrums } from '../components/TextGridDrums';
-import { HiHatTrack } from '../constants';
+import { ComboColorTrack4, HiHatTrack } from '../constants';
 import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
 
 export type Props = {
@@ -43,7 +43,7 @@ export function HiHatView({ name }: Props) {
             />
 
             <TextGridDrums selected={3} viewName={name} target="HiHat" />
-            <Common selected={1} track={HiHatTrack} />
+            <Common selected={1} track={HiHatTrack} colors={ComboColorTrack4} />
         </View>
     );
 }

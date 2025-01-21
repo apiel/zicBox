@@ -10,12 +10,14 @@ local ScreenWidth = ____constants.ScreenWidth
 local ____TextGridSel = require("config.pixel.240x320_kick.ui.components.TextGridSel")
 local TextGridSel = ____TextGridSel.TextGridSel
 function ____exports.Common(____bindingPattern0)
+    local colors
     local track
     local hideSequencer
     local selected
     selected = ____bindingPattern0.selected
     hideSequencer = ____bindingPattern0.hideSequencer
     track = ____bindingPattern0.track
+    colors = ____bindingPattern0.colors
     return React.createElement(
         React.Fragment,
         nil,
@@ -24,9 +26,9 @@ function ____exports.Common(____bindingPattern0)
             {
                 position = {0, 0, ScreenWidth, 5},
                 seq_plugin = "Sequencer",
-                active_color = rgb(35, 161, 35),
-                selection_color = rgb(35, 161, 35),
-                foreground_color = rgb(34, 110, 34),
+                active_color = colors and colors[1] or rgb(35, 161, 35),
+                selection_color = colors and colors[1] or rgb(35, 161, 35),
+                foreground_color = colors and colors[2] or rgb(34, 110, 34),
                 volume_plugin = "Volume VOLUME",
                 show_steps = true,
                 track = track
