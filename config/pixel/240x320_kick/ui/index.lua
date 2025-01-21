@@ -51,6 +51,10 @@ local ____Snare2View = require("config.pixel.240x320_kick.ui.Snare.Snare2View")
 local Snare2View = ____Snare2View.Snare2View
 local ____SnareView = require("config.pixel.240x320_kick.ui.Snare.SnareView")
 local SnareView = ____SnareView.SnareView
+local ____SaveTapeView = require("config.pixel.240x320_kick.ui.tapeView.SaveTapeView")
+local SaveTapeView = ____SaveTapeView.SaveTapeView
+local ____TapeView = require("config.pixel.240x320_kick.ui.tapeView.TapeView")
+local TapeView = ____TapeView.TapeView
 setWindowPosition(400, 500)
 setScreenSize(ScreenWidth, ScreenHeight)
 local halfHeight = ScreenHeight / 2
@@ -78,4 +82,6 @@ applyZic(React.createElement(MenuView, {name = "Menu"}))
 applyZic(React.createElement(WorkspacesView, {name = "Workspaces"}))
 applyZic(React.createElement(CreateWorkspaceView, {name = "CreateWorkspace"}))
 applyZic(React.createElement(ShutdownView, {name = "Shutdown"}))
+applyZic(React.createElement(TapeView, {name = "Tape"}))
+applyZic(React.createElement(SaveTapeView, {name = "SaveTape"}))
 return ____exports

@@ -15,7 +15,7 @@ export function MenuView({ name }: Props) {
         <View name={name}>
             <List
                 position={[0, 0, ScreenWidth, 280]}
-                items={['Workspaces', 'Shutdown']}
+                items={['Workspaces', 'Tape', 'Shutdown']}
             >
                 <Keymap key="a" action=".setView" />
                 <Keymap key="w" action=".up" />
