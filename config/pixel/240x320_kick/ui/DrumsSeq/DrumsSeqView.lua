@@ -21,7 +21,7 @@ local Common = ____Common.Common
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
 local HiHatTrack = ____constants.HiHatTrack
 local KeyInfoPosition = ____constants.KeyInfoPosition
-local PercTrack = ____constants.PercTrack
+local SampleTrack = ____constants.SampleTrack
 local ScreenWidth = ____constants.ScreenWidth
 local SnareTrack = ____constants.SnareTrack
 local function Seq(____bindingPattern0)
@@ -74,7 +74,7 @@ function ____exports.DrumsSeqView(____bindingPattern0)
         React.createElement(Seq, {
             x = w * 2,
             w = w,
-            track = PercTrack,
+            track = SampleTrack,
             encoder = 2,
             show_playing_step = true
         }),

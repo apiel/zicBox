@@ -5,4 +5,5 @@ ____exports.FmTrack = 2
 ____exports.SnareTrack = 3
 ____exports.HiHatTrack = 4
 ____exports.PercTrack = 5
+____exports.SampleTrack = 5
 return ____exports

@@ -8,7 +8,7 @@ local ____constants = require("config.pixel.240x320_kick.constants")
 local Drum23Track = ____constants.Drum23Track
 local FmTrack = ____constants.FmTrack
 local HiHatTrack = ____constants.HiHatTrack
-local PercTrack = ____constants.PercTrack
+local SampleTrack = ____constants.SampleTrack
 local SnareTrack = ____constants.SnareTrack
 pluginAlias("EffectDistortion2", "libzic_EffectDistortion2.so")
 pluginAlias("EffectFilterMultiMode", "libzic_EffectFilterMultiMode.so")
@@ -19,7 +19,7 @@ pluginAlias("Drum23", "libzic_SynthDrum23.so")
 pluginAlias("Snare", "libzic_SynthSnare.so")
 pluginAlias("HiHat", "libzic_SynthHiHat.so")
 pluginAlias("FmDrum", "libzic_SynthFmDrum.so")
-pluginAlias("Perc", "libzic_SynthPerc.so")
+pluginAlias("Sample", "libzic_SynthMonoSample.so")
 pluginAlias("Sequencer", "libzic_Sequencer.so")
 pluginAlias("AudioOutput", "libzic_AudioOutputPulse.so")
 pluginAlias("Mixer", "libzic_Mixer5.so")
@@ -49,11 +49,11 @@ plugin("HiHat", {{track = track}})
 plugin("Sequencer", {{track = track}})
 plugin("Volume EffectGainVolume", {{track = track}})
 plugin("SerializeTrack", {{track = track, filename = "hihat", MAX_VARIATION = ____exports.MAX_VARIATION, WORKSPACE_FOLDER = WORKSPACE_FOLDER}})
-track = PercTrack
-plugin("Perc", {{track = track}})
+track = SampleTrack
+plugin("Sample", {{track = track}})
 plugin("Sequencer", {{track = track}})
 plugin("Volume EffectGainVolume", {{track = track}})
-plugin("SerializeTrack", {{track = track, filename = "perc", MAX_VARIATION = ____exports.MAX_VARIATION, WORKSPACE_FOLDER = WORKSPACE_FOLDER}})
+plugin("SerializeTrack", {{track = track, filename = "sample", MAX_VARIATION = ____exports.MAX_VARIATION, WORKSPACE_FOLDER = WORKSPACE_FOLDER}})
 plugin("Mixer")
 plugin("SerializeTrack", {{filename = "mixer", MAX_VARIATION = ____exports.MAX_VARIATION, WORKSPACE_FOLDER = WORKSPACE_FOLDER}})
 plugin("AudioOutput")

@@ -9,6 +9,7 @@
 struct DirectoryListOptions {
     bool skipFolder = false;
     bool skipFiles = false;
+    bool skipHidden = false;
 };
 
 std::vector<std::filesystem::path> getDirectoryList(std::filesystem::path folder, DirectoryListOptions options = {})
@@ -20,6 +21,10 @@ std::vector<std::filesystem::path> getDirectoryList(std::filesystem::path folder
         }
 
         if (options.skipFiles && !entry.is_directory()) {
+            continue;
+        }
+
+        if (options.skipHidden && entry.path().filename().string().at(0) == '.') {
             continue;
         }
 

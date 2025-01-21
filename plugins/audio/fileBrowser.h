@@ -1,18 +1,19 @@
 #ifndef FILE_BROWSER_H
 #define FILE_BROWSER_H
 
-#include "../../helpers/range.h"
-#include <dirent.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-#include <vector>
-#include <algorithm>
+#include "helpers/range.h"
+#include "helpers/fs/directoryList.h"
+// #include <dirent.h>
+// #include <stdint.h>
+// #include <stdio.h>
+// #include <string.h>
+// #include <vector>
+// #include <algorithm>
 
 class FileBrowser {
 protected:
     std::string folder;
-    std::vector<std::string> files;
+    std::vector<std::filesystem::path> files;
 
 public:
     uint16_t position = 0;
@@ -27,35 +28,23 @@ public:
     {
     }
 
-    void openFolder(std::string _folder)
+    void openFolder(std::string _folder, DirectoryListOptions options = { .skipFolder = true, .skipHidden = true })
     {
         folder = _folder;
-        files.clear();
-        DIR* dir = opendir(folder.c_str());
-        if (dir != NULL) {
-            struct dirent* directory;
-            count = 0;
-            while ((directory = readdir(dir)) != NULL) {
-                if (directory->d_name[0] != '.') { // Ignore all file starting with '.'
-                    files.push_back(directory->d_name);
-                    count++;
-                }
-            }
-            closedir(dir);
-
-            std::sort(files.begin(), files.end());
-        }
+        files = getDirectoryList(folder, options);
+        count = files.size();
     }
 
     std::string getFilePath(uint16_t pos)
     {
-        return folder + "/" + getFile(pos);
+        position = range(pos, 0, count - 1);
+        return files[position];
     }
 
     std::string getFile(uint16_t pos)
     {
         position = range(pos, 0, count - 1);
-        return files[position];
+        return files[position].filename();
     }
 
     std::string getFileWithoutExtension(uint16_t pos)

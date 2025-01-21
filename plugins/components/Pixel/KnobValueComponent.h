@@ -309,15 +309,15 @@ public:
             return true;
         }
 
-        /*md - `SHOW_VALUE: TRUE` show value (default TRUE) */
+        /*md - `SHOW_VALUE: true` show value (default true) */
         if (strcmp(key, "SHOW_VALUE") == 0) {
-            showValue = (strcmp(params, "TRUE") == 0);
+            showValue = (strcmp(params, "true") == 0);
             return true;
         }
 
-        /*md - `SHOW_UNIT: TRUE` show unit (default TRUE) */
+        /*md - `SHOW_UNIT: true` show unit (default true) */
         if (strcmp(key, "SHOW_UNIT") == 0) {
-            showUnit = (strcmp(params, "TRUE") == 0);
+            showUnit = (strcmp(params, "true") == 0);
             return true;
         }
 
@@ -341,7 +341,7 @@ public:
 
         /*md - `STRING_VALUE_REPLACE_TITLE: true` instead to show string value in knob, show under the knob. Can be useful for long string value. */
         if (strcmp(key, "STRING_VALUE_REPLACE_TITLE") == 0) {
-            stringValueReplaceTitle = (strcmp(params, "TRUE") == 0);
+            stringValueReplaceTitle = (strcmp(params, "true") == 0);
             return true;
         }
 
