@@ -15,6 +15,12 @@ protected:
     std::string folder;
     std::vector<std::filesystem::path> files;
 
+    std::filesystem::path get(uint16_t pos)
+    {
+        position = range(pos, 1, files.size());
+        return files.at(position - 1);
+    }
+
 public:
     uint16_t position = 0;
     uint16_t count = 0;
@@ -37,14 +43,12 @@ public:
 
     std::string getFilePath(uint16_t pos)
     {
-        position = range(pos, 0, count - 1);
-        return files[position];
+        return get(position);
     }
 
     std::string getFile(uint16_t pos)
     {
-        position = range(pos, 0, count - 1);
-        return files[position].filename();
+        return get(pos).filename();
     }
 
     std::string getFileWithoutExtension(uint16_t pos)

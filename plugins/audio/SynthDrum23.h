@@ -194,7 +194,7 @@ public:
             waveform.setShape(p.val.pct());
             p.val.setString(std::to_string((int)(p.val.get() * 0.1)) + "%");
         } else {
-            int value = range(p.value, 0.0f, wavetable.fileBrowser.count);
+            int value = range(p.value, 1.0f, wavetable.fileBrowser.count);
             p.val.setFloat(value);
 
             int position = p.val.get();

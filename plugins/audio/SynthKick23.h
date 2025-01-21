@@ -68,7 +68,7 @@ protected:
 public:
     /*md **Values**: */
     /*md - `BROWSER` Select wavetable.*/
-    Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)wavetable.fileBrowser.count }, [&](auto p) { open(p.value); });
+    Val& browser = val(1.0f, "BROWSER", { "Browser", VALUE_STRING, .min = 1.0f, .max = (float)wavetable.fileBrowser.count }, [&](auto p) { open(p.value); });
     /*md - `MORPH` Morhp over the wavetable.*/
     Val& morph = val(0.0f, "MORPH", { "Morph", .min = 1.0, .max = ZIC_WAVETABLE_WAVEFORMS_COUNT, .step = 0.1, .floatingPoint = 1 }, [&](auto p) { setMorph(p.value); });
     /*md - `PITCH` Modulate the pitch.*/

@@ -76,7 +76,7 @@ public:
         }
     });
     /*md - `BROWSER` to browse between samples to play. */
-    Val& browser = val(0.0f, "BROWSER", { "Browser", VALUE_STRING, .max = (float)fileBrowser.count }, [&](auto p) { open(p.value); });
+    Val& browser = val(1.0f, "BROWSER", { "Browser", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count }, [&](auto p) { open(p.value); });
 
     SynthDrumSample(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
