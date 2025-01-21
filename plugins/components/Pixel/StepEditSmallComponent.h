@@ -16,6 +16,8 @@
 
 StepEditSmall component is used to edit a step value using only one knob.
 */
+// NOTE should this allow to edit semitone and motion
+// -12 to +12 semitone and motion...?
 
 class StepEditSmallComponent : public Component {
 protected:
@@ -33,15 +35,9 @@ protected:
 
     Color bgColor;
     Color selection;
-    Color noteColor;
-    Color note2Color;
-    Color text;
-    Color text2;
-    Color barBackground;
-    Color bar;
-    Color textMotion1;
-    Color textMotion2;
-    Color playingColor;
+    Color onColor;
+    Color conditionColor;
+    Color offColor;
     // Color playingBgColor;
 
     uint8_t stepIndex = -1;
@@ -53,15 +49,9 @@ public:
         : Component(props)
         , bgColor(styles.colors.background)
         , selection(lighten(styles.colors.background, 0.5))
-        , noteColor(styles.colors.primary)
-        , note2Color(styles.colors.white)
-        , text(styles.colors.text)
-        , text2(darken(styles.colors.text, 0.3))
-        , barBackground(darken(styles.colors.tertiary, 0.5))
-        , bar(styles.colors.tertiary)
-        , textMotion1(styles.colors.secondary)
-        , textMotion2(styles.colors.quaternary)
-        , playingColor(styles.colors.tertiary)
+        , onColor(styles.colors.primary)
+        , offColor(darken(styles.colors.text, 0.3))
+        , conditionColor(styles.colors.text)
         , keypadLayout(this, [&](std::string action) {
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
             if (action == ".toggle") {
@@ -94,25 +84,6 @@ public:
         // };
     }
 
-    // void renderNote(int x, int y)
-    // {
-    //     const char* note = MIDI_NOTES_STR[step->note];
-    //     const char noteLetter[2] = { note[0], '\0' };
-    //     const char* noteSuffix = note + 1;
-    //     x = draw.text({ x + 2, y }, noteLetter, 8, { noteColor });
-    //     draw.text({ x - 2, y }, noteSuffix, 8, { note2Color });
-    // }
-
-    void renderMotion(int x, int y)
-    {
-        std::string motionSteps = stepMotions[step->motion].name;
-        char* motionStep = strtok((char*)motionSteps.c_str(), ",");
-        for (int i = 0; motionStep != NULL; i++) {
-            x = draw.text({ x, y }, motionStep, 8, { i % 2 == 0 ? textMotion1 : textMotion2 });
-            motionStep = strtok(NULL, ",");
-        }
-    }
-
     void render() override
     {
         if (updatePosition() && step) {
@@ -123,20 +94,13 @@ public:
             int x = relativePosition.x;
 
             if (!step->enabled) {
-                draw.text({ x, y }, "---", 8, { text2 });
+                draw.text({ x, y }, "---", 8, { offColor });
             } else if (step->condition) {
-                draw.text({ x, y }, stepConditions[step->condition].name, 8, { text });
-            } else if (step->motion) {
-                renderMotion(x, y);
+                draw.text({ x, y }, stepConditions[step->condition].name, 8, { conditionColor });
             } else {
                 // renderNote(x, y);
-                draw.text({ x, y }, "on", 8, { noteColor });
+                draw.text({ x, y }, "on", 8, { onColor });
             }
-
-            // render active step
-            // if ((seqPlayingPtr == NULL || seqPlaying) && notePlaying) {
-            //     draw.filledRect({ x, y + 1 }, { 6, 6 }, { playingColor });
-            // }
         }
     }
 
@@ -161,29 +125,7 @@ public:
                         renderNext();
                     }
                 }
-
-                // if (!step->enabled) {
-                //     draw.text({ x, y }, "---", 8, { text2 });
-                // } else if (step->condition) {
-                //     draw.text({ x, y }, stepConditions[step->condition].name, 8, { text2 });
-                // } else if (step->motion) {
-                //     renderMotion(x, y);
-                // } else {
-                //     renderNote(x, y);
-                // }
             }
-            //         step->setVelocity(step->velocity + direction * 0.01);
-            //         renderNext();
-            //     } else if (id == encoders[1]) {
-            //         step->setCondition(step->condition + direction);
-            //         renderNext();
-            //     } else if (id == encoders[2]) {
-            //         step->setNote(step->note + direction);
-            //         renderNext();
-            //     } else if (id == encoders[3]) {
-            //         step->setMotion(step->motion + direction);
-            //         renderNext();
-            //     }
         }
     }
 
@@ -241,44 +183,25 @@ public:
 
         /*md - `PLAYING_COLOR: color` is the color of actual playing step. */
         if (strcmp(key, "PLAYING_COLOR") == 0) {
-            playingColor = draw.getColor(value);
+            // playingColor = draw.getColor(value);
             return true;
         }
 
-        /*md - `NOTE_COLOR: color` is the color of the note. */
-        if (strcmp(key, "NOTE_COLOR") == 0) {
-            noteColor = draw.getColor(value);
+        /*md - `ON_COLOR: color` is the color of the note. */
+        if (strcmp(key, "ON_COLOR") == 0) {
+            onColor = draw.getColor(value);
             return true;
         }
 
-        /*md - `NOTE2_COLOR: color` is the color of the note. */
-        if (strcmp(key, "NOTE2_COLOR") == 0) {
-            note2Color = draw.getColor(value);
+        /*md - `OFF_COLOR: color` is the color of the text. */
+        if (strcmp(key, "OFF_COLOR") == 0) {
+            offColor = draw.getColor(value);
             return true;
         }
 
-        /*md - `TEXT_COLOR: color` is the color of the text. */
-        if (strcmp(key, "TEXT_COLOR") == 0) {
-            text = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `BAR_COLOR: color` is the color of the velocity bar. */
-        if (strcmp(key, "BAR_COLOR") == 0) {
-            bar = draw.getColor(value);
-            barBackground = darken(bar, 0.5);
-            return true;
-        }
-
-        /*md - `TEXT_MOTION1_COLOR: color` is the first color of the motion text. */
-        if (strcmp(key, "TEXT_MOTION1_COLOR") == 0) {
-            textMotion1 = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `TEXT_MOTION2_COLOR: color` is the second color of the motion text. */
-        if (strcmp(key, "TEXT_MOTION2_COLOR") == 0) {
-            textMotion2 = draw.getColor(value);
+        /*md - `CONDITION_COLOR: color` is the color of the text. */
+        if (strcmp(key, "CONDITION_COLOR") == 0) {
+            conditionColor = draw.getColor(value);
             return true;
         }
 
