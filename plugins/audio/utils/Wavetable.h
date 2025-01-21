@@ -3,6 +3,7 @@
 
 #include <sndfile.h>
 #include <string>
+#include <string.h>
 
 #include "plugins/audio/fileBrowser.h"
 #include "plugins/audio/utils/WaveformInterface.h"

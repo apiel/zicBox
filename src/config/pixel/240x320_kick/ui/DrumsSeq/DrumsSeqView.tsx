@@ -8,7 +8,7 @@ import { View } from '@/libs/components/View';
 import { VisibilityContext } from '@/libs/components/VisibilityContext';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
-import { HiHatTrack, KeyInfoPosition, PercTrack, ScreenWidth, SnareTrack } from '../constants';
+import { HiHatTrack, KeyInfoPosition, SampleTrack, ScreenWidth, SnareTrack } from '../constants';
 
 // SHOW_PLAYING_STEP
 function Seq({
@@ -62,7 +62,7 @@ export function DrumsSeqView({ name }: Props) {
             <Text text="HiHat" position={[w, 0, w, 8]} />
             <Seq x={w} w={w} track={HiHatTrack} encoder={1} />
             <Text text="Perc" position={[2 * w, 0, w, 8]} />
-            <Seq x={w * 2} w={w} track={PercTrack} encoder={2} show_playing_step />
+            <Seq x={w * 2} w={w} track={SampleTrack} encoder={2} show_playing_step />
             <TextGrid
                 position={KeyInfoPosition}
                 rows={[

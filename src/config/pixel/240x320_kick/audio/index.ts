@@ -1,5 +1,5 @@
 import { autoSave, plugin, pluginAlias } from '@/libs/audio';
-import { Drum23Track, FmTrack, HiHatTrack, PercTrack, SnareTrack } from '../constants';
+import { Drum23Track, FmTrack, HiHatTrack, SampleTrack, SnareTrack } from '../constants';
 
 pluginAlias('EffectDistortion2', 'libzic_EffectDistortion2.so');
 pluginAlias('EffectFilterMultiMode', 'libzic_EffectFilterMultiMode.so');
@@ -11,7 +11,8 @@ pluginAlias('Drum23', 'libzic_SynthDrum23.so');
 pluginAlias('Snare', 'libzic_SynthSnare.so');
 pluginAlias('HiHat', 'libzic_SynthHiHat.so');
 pluginAlias('FmDrum', 'libzic_SynthFmDrum.so');
-pluginAlias('Perc', 'libzic_SynthPerc.so');
+// pluginAlias('Perc', 'libzic_SynthPerc.so');
+pluginAlias('Sample', 'libzic_SynthMonoSample.so');
 pluginAlias('Sequencer', 'libzic_Sequencer.so');
 pluginAlias('AudioOutput', 'libzic_AudioOutputPulse.so');
 pluginAlias('Mixer', 'libzic_Mixer5.so');
@@ -47,11 +48,17 @@ plugin('Sequencer', [{ track }]);
 plugin('Volume EffectGainVolume', [{ track }]);
 plugin('SerializeTrack', [{ track, filename: 'hihat', MAX_VARIATION, WORKSPACE_FOLDER }]);
 
-track = PercTrack;
-plugin('Perc', [{ track }]);
+// track = PercTrack;
+// plugin('Perc', [{ track }]);
+// plugin('Sequencer', [{ track }]);
+// plugin('Volume EffectGainVolume', [{ track }]);
+// plugin('SerializeTrack', [{ track, filename: 'perc', MAX_VARIATION, WORKSPACE_FOLDER }]);
+
+track = SampleTrack;
+plugin('Sample', [{ track }]);
 plugin('Sequencer', [{ track }]);
 plugin('Volume EffectGainVolume', [{ track }]);
-plugin('SerializeTrack', [{ track, filename: 'perc', MAX_VARIATION, WORKSPACE_FOLDER }]);
+plugin('SerializeTrack', [{ track, filename: 'sample', MAX_VARIATION, WORKSPACE_FOLDER }]);
 
 plugin('Mixer');
 plugin('SerializeTrack', [{ filename: 'mixer', MAX_VARIATION, WORKSPACE_FOLDER }]);

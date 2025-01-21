@@ -16,10 +16,10 @@ export function TextGridDrums({
         <>
             <Title title={target} />
             <TextGridSel
-                items={['Snare', 'Perc', '...', 'HiHat', 'Seq.', '&icon::musicNote::pixelated']}
+                items={['Snare', 'Sample', '...', 'HiHat', 'Seq.', '&icon::musicNote::pixelated']}
                 keys={[
                     { key: 'q', action: viewName === 'Snare' ? 'setView:Snare2' : 'setView:Snare' },
-                    { key: 'w', action: viewName === 'Perc' ? 'setView:Perc2' : 'setView:Perc' },
+                    { key: 'w', action: viewName === 'Sample' ? 'setView:Sample2' : 'setView:Sample' },
                     { key: 'e', action: 'contextToggle:254:1:0' },
 
                     {
