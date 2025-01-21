@@ -8,7 +8,7 @@ import { View } from '@/libs/components/View';
 import { VisibilityContext } from '@/libs/components/VisibilityContext';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
-import { HiHatTrack, KeyInfoPosition, SampleTrack, ScreenWidth, SnareTrack } from '../constants';
+import { ColorTrack3, ColorTrack4, ColorTrack5, HiHatTrack, KeyInfoPosition, SampleTrack, ScreenWidth, SnareTrack } from '../constants';
 
 // SHOW_PLAYING_STEP
 function Seq({
@@ -16,12 +16,14 @@ function Seq({
     w,
     track,
     encoder,
+    color,
     show_playing_step,
 }: {
     x: number;
     w: number;
     track: number;
     encoder: number;
+    color: string;
     show_playing_step?: boolean;
 }) {
     let y = 0;
@@ -43,6 +45,7 @@ function Seq({
                 track={track}
                 encoder={encoder}
                 show_playing_step={show_playing_step}
+                on_color={color}
             />
         );
     });
@@ -57,12 +60,12 @@ export function DrumsSeqView({ name }: Props) {
     let y = 0;
     return (
         <View name={name}>
-            <Text text="Snare" position={[0, 0, w, 8]} />
-            <Seq x={0} w={w} track={SnareTrack} encoder={0} />
-            <Text text="HiHat" position={[w, 0, w, 8]} />
-            <Seq x={w} w={w} track={HiHatTrack} encoder={1} />
-            <Text text="Perc" position={[2 * w, 0, w, 8]} />
-            <Seq x={w * 2} w={w} track={SampleTrack} encoder={2} show_playing_step />
+            <Text text=" Snare" position={[0, 0, w, 9]} background_color={ColorTrack3} color="text" />
+            <Seq x={0} w={w} track={SnareTrack} encoder={0} color={ColorTrack3} />
+            <Text text=" HiHat" position={[w, 0, w, 9]} background_color={ColorTrack4} color="text" />
+            <Seq x={w} w={w} track={HiHatTrack} encoder={1} color={ColorTrack4} />
+            <Text text=" Sample" position={[2 * w, 0, w, 9]} background_color={ColorTrack5} color="text" />
+            <Seq x={w * 2} w={w} track={SampleTrack} encoder={2} color={ColorTrack5} show_playing_step />
             <TextGrid
                 position={KeyInfoPosition}
                 rows={[

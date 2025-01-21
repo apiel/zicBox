@@ -19,6 +19,9 @@ local rgb = ____ui.rgb
 local ____Common = require("config.pixel.240x320_kick.ui.components.Common")
 local Common = ____Common.Common
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
+local ColorTrack3 = ____constants.ColorTrack3
+local ColorTrack4 = ____constants.ColorTrack4
+local ColorTrack5 = ____constants.ColorTrack5
 local HiHatTrack = ____constants.HiHatTrack
 local KeyInfoPosition = ____constants.KeyInfoPosition
 local SampleTrack = ____constants.SampleTrack
@@ -26,6 +29,7 @@ local ScreenWidth = ____constants.ScreenWidth
 local SnareTrack = ____constants.SnareTrack
 local function Seq(____bindingPattern0)
     local show_playing_step
+    local color
     local encoder
     local track
     local w
@@ -34,6 +38,7 @@ local function Seq(____bindingPattern0)
     w = ____bindingPattern0.w
     track = ____bindingPattern0.track
     encoder = ____bindingPattern0.encoder
+    color = ____bindingPattern0.color
     show_playing_step = ____bindingPattern0.show_playing_step
     local y = 0
     return __TS__ArrayFrom(
@@ -52,7 +57,8 @@ local function Seq(____bindingPattern0)
                     selected_color = rgb(76, 94, 97),
                     track = track,
                     encoder = encoder,
-                    show_playing_step = show_playing_step
+                    show_playing_step = show_playing_step,
+                    on_color = color
                 }
             )
         end
@@ -66,16 +72,29 @@ function ____exports.DrumsSeqView(____bindingPattern0)
     return React.createElement(
         View,
         {name = name},
-        React.createElement(Text, {text = "Snare", position = {0, 0, w, 8}}),
-        React.createElement(Seq, {x = 0, w = w, track = SnareTrack, encoder = 0}),
-        React.createElement(Text, {text = "HiHat", position = {w, 0, w, 8}}),
-        React.createElement(Seq, {x = w, w = w, track = HiHatTrack, encoder = 1}),
-        React.createElement(Text, {text = "Perc", position = {2 * w, 0, w, 8}}),
+        React.createElement(Text, {text = " Snare", position = {0, 0, w, 9}, background_color = ColorTrack3, color = "text"}),
+        React.createElement(Seq, {
+            x = 0,
+            w = w,
+            track = SnareTrack,
+            encoder = 0,
+            color = ColorTrack3
+        }),
+        React.createElement(Text, {text = " HiHat", position = {w, 0, w, 9}, background_color = ColorTrack4, color = "text"}),
+        React.createElement(Seq, {
+            x = w,
+            w = w,
+            track = HiHatTrack,
+            encoder = 1,
+            color = ColorTrack4
+        }),
+        React.createElement(Text, {text = " Sample", position = {2 * w, 0, w, 9}, background_color = ColorTrack5, color = "text"}),
         React.createElement(Seq, {
             x = w * 2,
             w = w,
             track = SampleTrack,
             encoder = 2,
+            color = ColorTrack5,
             show_playing_step = true
         }),
         React.createElement(
