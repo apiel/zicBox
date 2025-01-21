@@ -1,7 +1,7 @@
 import * as React from '@/libs/react';
 
 import { Keymaps } from '@/libs/components/Keymaps';
-import { StepEditSmall } from '@/libs/components/StepEditSmall';
+import { StepEditMono } from '@/libs/components/StepEditMono';
 import { Text } from '@/libs/components/Text';
 import { TextGrid } from '@/libs/components/TextGrid';
 import { View } from '@/libs/components/View';
@@ -29,7 +29,7 @@ function Seq({
         const yy = y + 12;
         y += 8 + (i % 4 == 3 ? 3 : 0);
         return (
-            <StepEditSmall
+            <StepEditMono
                 position={[x, yy, w, 8]}
                 data={`Sequencer ${i}`}
                 group={i}
@@ -66,8 +66,8 @@ export function DrumsSeqView({ name }: Props) {
             <TextGrid
                 position={KeyInfoPosition}
                 rows={[
-                    '&icon::arrowUp::filled &icon::toggle::rect ...',
-                    '&icon::arrowDown::filled Synth &icon::musicNote::pixelated',
+                    '&icon::arrowUp::filled &empty ...',
+                    '&icon::arrowDown::filled Drums &icon::musicNote::pixelated',
                 ]}
             >
                 <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />

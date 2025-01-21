@@ -10,16 +10,16 @@
 #include <stdexcept>
 
 /*md
-## StepEditSmall
+## StepEditMono
 
 <img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/stepEditSmall.png" />
 
-StepEditSmall component is used to edit a step value using only one knob.
+StepEditMono component is used to edit a step value using only one knob.
 */
 // NOTE should this allow to edit semitone and motion
 // -12 to +12 semitone and motion...?
 
-class StepEditSmallComponent : public Component {
+class StepEditMonoComponent : public Component {
 protected:
     bool isActive = true;
 
@@ -46,7 +46,7 @@ protected:
     uint8_t encoder = 0;
 
 public:
-    StepEditSmallComponent(ComponentInterface::Props props)
+    StepEditMonoComponent(ComponentInterface::Props props)
         : Component(props)
         , bgColor(styles.colors.background)
         , selection(lighten(styles.colors.background, 0.5))
