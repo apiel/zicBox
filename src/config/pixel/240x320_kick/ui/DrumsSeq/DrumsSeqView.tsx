@@ -10,7 +10,7 @@ import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
 import { HiHatTrack, KeyInfoPosition, PercTrack, ScreenWidth, SnareTrack } from '../constants';
 
-function Seq({ x, w, track }: { x: number; w: number, track: number }) {
+function Seq({ x, w, track, encoder }: { x: number; w: number, track: number, encoder: number }) {
     let y = 0;
     return Array.from({ length: 32 }, (_, i) => {
         const yy = y + 12;
@@ -28,6 +28,7 @@ function Seq({ x, w, track }: { x: number; w: number, track: number }) {
                 }
                 selected_color={rgb(76, 94, 97)}
                 track={track}
+                encoder={encoder}
             />
         );
     });
@@ -43,11 +44,11 @@ export function DrumsSeqView({ name }: Props) {
     return (
         <View name={name}>
             <Text text="Snare" position={[0, 0, w, 8]} />
-            <Seq x={0} w={w} track={SnareTrack} />
+            <Seq x={0} w={w} track={SnareTrack} encoder={0} />
             <Text text="HiHat" position={[w, 0, w, 8]} />
-            <Seq x={w} w={w} track={HiHatTrack} />
+            <Seq x={w} w={w} track={HiHatTrack} encoder={1} />
             <Text text="Perc" position={[2 * w, 0, w, 8]} />
-            <Seq x={w * 2} w={w} track={PercTrack} />
+            <Seq x={w * 2} w={w} track={PercTrack} encoder={2} />
             <TextGrid
                 position={KeyInfoPosition}
                 rows={[
