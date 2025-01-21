@@ -1,5 +1,7 @@
 import * as React from '@/libs/react';
 
+import { Rect } from '@/libs/components/Rect';
+import { ColorTrack3, ColorTrack4, ColorTrack5 } from '../constants';
 import { TextGridSel } from './TextGridSel';
 import { Title } from './Title';
 
@@ -12,9 +14,19 @@ export function TextGridDrums({
     viewName: string;
     target: string;
 }) {
+    let color = ColorTrack3;
+    let rectX = 62;
+    if (target === 'HiHat') {
+        color = ColorTrack4;
+        rectX = 58;
+    } else if (target === 'Sample') {
+        color = ColorTrack5;
+        rectX = 55;
+    }
     return (
         <>
             <Title title={target} />
+            <Rect position={[rectX, 28, 6, 6]} color={color} />
             <TextGridSel
                 items={['Snare', 'Sample', '...', 'HiHat', 'Seq.', '&icon::musicNote::pixelated']}
                 keys={[
@@ -31,6 +43,7 @@ export function TextGridDrums({
                 ]}
                 selected={selected}
                 contextValue={0}
+                ITEM_BACKGROUND={color}
             />
         </>
     );

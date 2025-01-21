@@ -1,12 +1,15 @@
 import * as React from '@/libs/react';
 
+import { Rect } from '@/libs/components/Rect';
 import { TextGridSel } from '../components/TextGridSel';
 import { Title } from '../components/Title';
+import { ColorTrack2 } from '../constants';
 
 export function TextGridFm({ selected, viewName }: { selected: number; viewName: string }) {
     return (
         <>
             <Title title="Fm" />
+            <Rect position={[85, 28, 6, 6]} color={ColorTrack2} />
             <TextGridSel
                 items={['Snare', 'Fm', '...', 'HiHat', 'Seq.', '&icon::musicNote::pixelated']}
                 keys={[
