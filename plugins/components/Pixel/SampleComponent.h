@@ -82,11 +82,6 @@ protected:
         }
     }
 
-    void renderWaveform()
-    {
-        wave.render(sampleBuffer->data, sampleBuffer->count);
-    }
-
     void renderActiveSamples()
     {
         if (sampleIndex != NULL && *sampleIndex != sampleBuffer->count) {
@@ -134,7 +129,8 @@ public:
             overlayYbottom = relativePosition.y + size.h - 2;
 
             draw.filledRect(relativePosition, size, { background });
-            renderWaveform();
+            wave.relativePosition.y = relativePosition.y;
+            wave.render(sampleBuffer->data, sampleBuffer->count);
 
             renderStartOverlay();
             renderEndOverlay();

@@ -12,6 +12,7 @@ local SampleTrack = ____constants.SampleTrack
 local SnareTrack = ____constants.SnareTrack
 pluginAlias("EffectDistortion2", "libzic_EffectDistortion2.so")
 pluginAlias("EffectFilterMultiMode", "libzic_EffectFilterMultiMode.so")
+pluginAlias("EffectVolumeClipping", "libzic_EffectVolumeClipping.so")
 pluginAlias("EffectGainVolume", "libzic_EffectGainVolume.so")
 pluginAlias("SerializeTrack", "libzic_SerializeTrack.so")
 pluginAlias("Tempo", "libzic_Tempo.so")
@@ -52,7 +53,7 @@ plugin("SerializeTrack", {{track = track, filename = "hihat", MAX_VARIATION = __
 track = SampleTrack
 plugin("Sample", {{track = track}})
 plugin("Sequencer", {{track = track}})
-plugin("Volume EffectGainVolume", {{track = track}})
+plugin("Volume EffectVolumeClipping", {{track = track}})
 plugin("SerializeTrack", {{track = track, filename = "sample", MAX_VARIATION = ____exports.MAX_VARIATION, WORKSPACE_FOLDER = WORKSPACE_FOLDER}})
 plugin("Mixer")
 plugin("SerializeTrack", {{filename = "mixer", MAX_VARIATION = ____exports.MAX_VARIATION, WORKSPACE_FOLDER = WORKSPACE_FOLDER}})

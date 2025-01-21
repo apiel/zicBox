@@ -4,6 +4,7 @@ import { Drum23Track, FmTrack, HiHatTrack, SampleTrack, SnareTrack } from '../co
 pluginAlias('EffectDistortion2', 'libzic_EffectDistortion2.so');
 pluginAlias('EffectFilterMultiMode', 'libzic_EffectFilterMultiMode.so');
 // pluginAlias('EffectSampleRateReducer', 'libzic_EffectSampleRateReducer.so');
+pluginAlias('EffectVolumeClipping', 'libzic_EffectVolumeClipping.so');
 pluginAlias('EffectGainVolume', 'libzic_EffectGainVolume.so');
 pluginAlias('SerializeTrack', 'libzic_SerializeTrack.so');
 pluginAlias('Tempo', 'libzic_Tempo.so');
@@ -57,7 +58,8 @@ plugin('SerializeTrack', [{ track, filename: 'hihat', MAX_VARIATION, WORKSPACE_F
 track = SampleTrack;
 plugin('Sample', [{ track }]);
 plugin('Sequencer', [{ track }]);
-plugin('Volume EffectGainVolume', [{ track }]);
+// plugin('Volume EffectGainVolume', [{ track }]);
+plugin("Volume EffectVolumeClipping", [{ track }]);
 plugin('SerializeTrack', [{ track, filename: 'sample', MAX_VARIATION, WORKSPACE_FOLDER }]);
 
 plugin('Mixer');
