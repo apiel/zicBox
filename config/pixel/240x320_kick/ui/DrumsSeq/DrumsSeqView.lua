@@ -4,8 +4,8 @@ local ____exports = {}
 local React = require("config.libs.react")
 local ____Keymaps = require("config.libs.components.Keymaps")
 local Keymaps = ____Keymaps.Keymaps
-local ____StepEditSmall = require("config.libs.components.StepEditSmall")
-local StepEditSmall = ____StepEditSmall.StepEditSmall
+local ____StepEditMono = require("config.libs.components.StepEditMono")
+local StepEditMono = ____StepEditMono.StepEditMono
 local ____Text = require("config.libs.components.Text")
 local Text = ____Text.Text
 local ____TextGrid = require("config.libs.components.TextGrid")
@@ -42,7 +42,7 @@ local function Seq(____bindingPattern0)
             local yy = y + 12
             y = y + (8 + (i % 4 == 3 and 3 or 0))
             return React.createElement(
-                StepEditSmall,
+                StepEditMono,
                 {
                     position = {x, yy, w, 8},
                     data = "Sequencer " .. tostring(i),
@@ -80,7 +80,7 @@ function ____exports.DrumsSeqView(____bindingPattern0)
         }),
         React.createElement(
             TextGrid,
-            {position = KeyInfoPosition, rows = {"&icon::arrowUp::filled &icon::toggle::rect ...", "&icon::arrowDown::filled Synth &icon::musicNote::pixelated"}},
+            {position = KeyInfoPosition, rows = {"&icon::arrowUp::filled &empty ...", "&icon::arrowDown::filled Drums &icon::musicNote::pixelated"}},
             React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 0}),
             React.createElement(Keymaps, {keys = {
                 {key = "q", action = "incGroup:-1"},

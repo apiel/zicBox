@@ -19,7 +19,7 @@ all:
 				TextComponent SeqBarComponent SeqProgressBarComponent SeqSynthBarComponent ValueComponent\
 				SpectrogramComponent RectComponent ClipsComponent KeyboardComponent ListComponent\
 				WorkspacesComponent SampleComponent TapeComponent StepEdit2Component StepEditDrumComponent\
-				StepEditSmallComponent MacroEnvelopComponent
+				StepEditMonoComponent MacroEnvelopComponent
 
 # %Component:
 # 	@mkdir -p $(OBJ_DIR)

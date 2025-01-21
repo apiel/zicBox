@@ -1,13 +1,19 @@
 ## Pixel TODO
 
-- TODO remove step length from kick seq...
-- TODO kick tail
+- IDEA load/unload instrument dynamically
+    - --> drum (or simple) only with 7 parameters (should it even allow to have something else than knob/values representation..?)
+        - sorting ofr the params, would define how they show in the UI
+        - show we allow noteOn to get note value? If yes, StepEditMono would need to allow semitone edition...
+    - --> synth 23 parameters.. but more complex because for sure we want to show waveform, envelop... also how to name the page of each parameters..
+
+- TODO need to rework the snare to have this clappy sound
+
+- TODO kick tail for bass feedback
 - TODO kick try to make high frequency boost to get a more punchy sound
 
 - TODO FM synth --> algo param to decide which kind of waveform to combine
               - --> and if it does FM or substractive ...
               - --> filter envelop
-- TODO need to rework the snare to have this clappy sound
 - TODO synth bass (303?)
             - --> SAW
             - --> Filter envelop

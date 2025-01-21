@@ -3,7 +3,7 @@ local __TS__ObjectRest = ____lualib.__TS__ObjectRest
 local ____exports = {}
 local ____ui = require("config.libs.ui")
 local getComponent = ____ui.getComponent
-function ____exports.StepEditSmall(____bindingPattern0)
+function ____exports.StepEditMono(____bindingPattern0)
     local props
     local data
     local track
@@ -12,6 +12,6 @@ function ____exports.StepEditSmall(____bindingPattern0)
     track = ____bindingPattern0.track
     data = ____bindingPattern0.data
     props = __TS__ObjectRest(____bindingPattern0, {position = true, track = true, data = true})
-    return getComponent("StepEditSmall", position, {{track = track}, {data = data}, props})
+    return getComponent("StepEditMono", position, {{track = track}, {data = data}, props})
 end
 return ____exports
