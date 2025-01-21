@@ -19,20 +19,26 @@ function ____exports.TextGridFm(____bindingPattern0)
         nil,
         React.createElement(Title, {title = "Fm"}),
         React.createElement(Rect, {position = {85, 28, 6, 6}, color = ColorTrack2}),
-        React.createElement(TextGridSel, {items = {
-            "Snare",
-            "Fm",
-            "...",
-            "HiHat",
-            "Seq.",
-            "&icon::musicNote::pixelated"
-        }, keys = {
-            {key = "q", action = viewName == "Snare" and "setView:Snare2" or "setView:Snare"},
-            {key = "w", action = viewName == "Fm" and "setView:Fm2" or "setView:Fm"},
-            {key = "e", action = "contextToggle:254:1:0"},
-            {key = "a", action = viewName == "HiHat" and "setView:HiHat2" or "setView:HiHat"},
-            {key = "d", action = "noteOn:FmDrum:60"}
-        }, selected = selected, contextValue = 0})
+        React.createElement(TextGridSel, {
+            ITEM_BACKGROUND = ColorTrack2,
+            items = {
+                "Snare",
+                "Fm",
+                "...",
+                "HiHat",
+                "Seq.",
+                "&icon::musicNote::pixelated"
+            },
+            keys = {
+                {key = "q", action = viewName == "Snare" and "setView:Snare2" or "setView:Snare"},
+                {key = "w", action = viewName == "Fm" and "setView:Fm2" or "setView:Fm"},
+                {key = "e", action = "contextToggle:254:1:0"},
+                {key = "a", action = viewName == "HiHat" and "setView:HiHat2" or "setView:HiHat"},
+                {key = "d", action = "noteOn:FmDrum:60"}
+            },
+            selected = selected,
+            contextValue = 0
+        })
     )
 end
 return ____exports
