@@ -10,6 +10,7 @@ local VisibilityContext = ____VisibilityContext.VisibilityContext
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
 local KeyInfoPosition = ____constants.KeyInfoPosition
 function ____exports.TextGridSel(____bindingPattern0)
+    local ITEM_BACKGROUND
     local contextValue
     local keys
     local items
@@ -18,12 +19,13 @@ function ____exports.TextGridSel(____bindingPattern0)
     items = ____bindingPattern0.items
     keys = ____bindingPattern0.keys
     contextValue = ____bindingPattern0.contextValue
+    ITEM_BACKGROUND = ____bindingPattern0.ITEM_BACKGROUND
     if selected >= 0 then
         items[selected + 1] = "!" .. items[selected + 1]
     end
     return React.createElement(
         TextGrid,
-        {position = KeyInfoPosition, rows = {(((items[1] .. " ") .. items[2]) .. " ") .. items[3], (((items[4] .. " ") .. items[5]) .. " ") .. items[6]}},
+        {position = KeyInfoPosition, rows = {(((items[1] .. " ") .. items[2]) .. " ") .. items[3], (((items[4] .. " ") .. items[5]) .. " ") .. items[6]}, ITEM_BACKGROUND = ITEM_BACKGROUND},
         React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = contextValue}),
         React.createElement(Keymaps, {keys = keys})
     )
