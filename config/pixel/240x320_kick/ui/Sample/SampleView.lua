@@ -25,7 +25,6 @@ function ____exports.SampleView(____bindingPattern0)
     return React.createElement(
         View,
         {name = name},
-        React.createElement(Sample, {position = {0, 245, ScreenWidth, 50}, track = SampleTrack, plugin = "Sample SAMPLE_BUFFER SAMPLE_INDEX", loop_points_color = "tertiary"}),
         React.createElement(KnobValue, {
             value = "Volume VOLUME",
             position = topLeftKnob,
@@ -37,17 +36,29 @@ function ____exports.SampleView(____bindingPattern0)
             value = "Sample BROWSER",
             position = topRightKnob,
             encoder_id = 2,
-            COLOR = "secondary",
             track = SampleTrack,
             STRING_VALUE_REPLACE_TITLE = true
         }),
-        React.createElement(KnobValue, {value = "Sample START", position = bottomLeftKnob, encoder_id = 1, track = SampleTrack}),
+        React.createElement(KnobValue, {
+            value = "Sample START",
+            position = bottomLeftKnob,
+            encoder_id = 1,
+            COLOR = "secondary",
+            track = SampleTrack
+        }),
         React.createElement(KnobValue, {
             value = "Sample END",
             position = bottomRightKnob,
             encoder_id = 3,
             COLOR = "secondary",
             track = SampleTrack
+        }),
+        React.createElement(Sample, {
+            position = {0, 245, ScreenWidth, 50},
+            track = SampleTrack,
+            plugin = "Sample SAMPLE_BUFFER SAMPLE_INDEX",
+            loop_points_color = "tertiary",
+            BACKGROUND_COLOR = "background"
         }),
         React.createElement(TextGridDrums, {selected = 1, viewName = name, target = "Sample"}),
         React.createElement(Common, {selected = 1, track = SampleTrack})
