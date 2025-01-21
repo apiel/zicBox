@@ -25,12 +25,14 @@ local PercTrack = ____constants.PercTrack
 local ScreenWidth = ____constants.ScreenWidth
 local SnareTrack = ____constants.SnareTrack
 local function Seq(____bindingPattern0)
+    local encoder
     local track
     local w
     local x
     x = ____bindingPattern0.x
     w = ____bindingPattern0.w
     track = ____bindingPattern0.track
+    encoder = ____bindingPattern0.encoder
     local y = 0
     return __TS__ArrayFrom(
         {length = 32},
@@ -46,7 +48,8 @@ local function Seq(____bindingPattern0)
                     playing_color = rgb(35, 161, 35),
                     background_color = (i % 8 == 0 or i % 8 == 1 or i % 8 == 2 or i % 8 == 3) and rgb(42, 54, 56) or "background",
                     selected_color = rgb(76, 94, 97),
-                    track = track
+                    track = track,
+                    encoder = encoder
                 }
             )
         end
@@ -61,11 +64,11 @@ function ____exports.DrumsSeqView(____bindingPattern0)
         View,
         {name = name},
         React.createElement(Text, {text = "Snare", position = {0, 0, w, 8}}),
-        React.createElement(Seq, {x = 0, w = w, track = SnareTrack}),
+        React.createElement(Seq, {x = 0, w = w, track = SnareTrack, encoder = 0}),
         React.createElement(Text, {text = "HiHat", position = {w, 0, w, 8}}),
-        React.createElement(Seq, {x = w, w = w, track = HiHatTrack}),
+        React.createElement(Seq, {x = w, w = w, track = HiHatTrack, encoder = 1}),
         React.createElement(Text, {text = "Perc", position = {2 * w, 0, w, 8}}),
-        React.createElement(Seq, {x = w * 2, w = w, track = PercTrack}),
+        React.createElement(Seq, {x = w * 2, w = w, track = PercTrack, encoder = 2}),
         React.createElement(
             TextGrid,
             {position = KeyInfoPosition, rows = {"&icon::arrowUp::filled &icon::toggle::rect ...", "&icon::arrowDown::filled Synth &icon::musicNote::pixelated"}},

@@ -6,6 +6,12 @@
 
 - TODO FM synth --> algo param to decide which kind of waveform to combine
               - --> and if it does FM or substractive ...
+              - --> filter envelop
+- TODO need to rework the snare to have this clappy sound
+- TODO synth bass (303?)
+            - --> SAW
+            - --> Filter envelop
+            - --> delay/reverb
 
 - FIXME transition between wavetable and waveform is not so smooth...
 

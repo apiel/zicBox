@@ -94,14 +94,14 @@ public:
         // };
     }
 
-    void renderNote(int x, int y)
-    {
-        const char* note = MIDI_NOTES_STR[step->note];
-        const char noteLetter[2] = { note[0], '\0' };
-        const char* noteSuffix = note + 1;
-        x = draw.text({ x + 2, y }, noteLetter, 8, { noteColor });
-        draw.text({ x - 2, y }, noteSuffix, 8, { note2Color });
-    }
+    // void renderNote(int x, int y)
+    // {
+    //     const char* note = MIDI_NOTES_STR[step->note];
+    //     const char noteLetter[2] = { note[0], '\0' };
+    //     const char* noteSuffix = note + 1;
+    //     x = draw.text({ x + 2, y }, noteLetter, 8, { noteColor });
+    //     draw.text({ x - 2, y }, noteSuffix, 8, { note2Color });
+    // }
 
     void renderMotion(int x, int y)
     {
@@ -125,11 +125,12 @@ public:
             if (!step->enabled) {
                 draw.text({ x, y }, "---", 8, { text2 });
             } else if (step->condition) {
-                draw.text({ x, y }, stepConditions[step->condition].name, 8, { text2 });
+                draw.text({ x, y }, stepConditions[step->condition].name, 8, { text });
             } else if (step->motion) {
                 renderMotion(x, y);
             } else {
-                renderNote(x, y);
+                // renderNote(x, y);
+                draw.text({ x, y }, "on", 8, { noteColor });
             }
 
             // render active step
@@ -141,21 +142,49 @@ public:
 
     void onEncoder(int id, int8_t direction) override
     {
-        // if (isActive) {
-        //     if (id == encoders[0]) {
-        //         step->setVelocity(step->velocity + direction * 0.01);
-        //         renderNext();
-        //     } else if (id == encoders[1]) {
-        //         step->setCondition(step->condition + direction);
-        //         renderNext();
-        //     } else if (id == encoders[2]) {
-        //         step->setNote(step->note + direction);
-        //         renderNext();
-        //     } else if (id == encoders[3]) {
-        //         step->setMotion(step->motion + direction);
-        //         renderNext();
-        //     }
-        // }
+        if (isActive) {
+            if (id == encoder) {
+                if (direction > 0) {
+                    if (!step->enabled) {
+                        step->enabled = true;
+                        renderNext();
+                    } else {
+                        step->setCondition(step->condition + direction);
+                        renderNext();
+                    }
+                } else if (direction < 0) {
+                    if (step->condition) {
+                        step->setCondition(step->condition + direction);
+                        renderNext();
+                    } else {
+                        step->enabled = false;
+                        renderNext();
+                    }
+                }
+
+                // if (!step->enabled) {
+                //     draw.text({ x, y }, "---", 8, { text2 });
+                // } else if (step->condition) {
+                //     draw.text({ x, y }, stepConditions[step->condition].name, 8, { text2 });
+                // } else if (step->motion) {
+                //     renderMotion(x, y);
+                // } else {
+                //     renderNote(x, y);
+                // }
+            }
+            //         step->setVelocity(step->velocity + direction * 0.01);
+            //         renderNext();
+            //     } else if (id == encoders[1]) {
+            //         step->setCondition(step->condition + direction);
+            //         renderNext();
+            //     } else if (id == encoders[2]) {
+            //         step->setNote(step->note + direction);
+            //         renderNext();
+            //     } else if (id == encoders[3]) {
+            //         step->setMotion(step->motion + direction);
+            //         renderNext();
+            //     }
+        }
     }
 
     void onKey(uint16_t id, int key, int8_t state, unsigned long now)
@@ -197,14 +226,11 @@ public:
             return true;
         }
 
-        // /*md - `ENCODERS: encoder_id1 encoder_id2 encoder_id3 encoder_id4` is the id of the encoder to update step value. */
-        // if (strcmp(key, "ENCODERS") == 0) {
-        //     encoders[0] = atoi(strtok(value, " "));
-        //     encoders[1] = atoi(strtok(NULL, " "));
-        //     encoders[2] = atoi(strtok(NULL, " "));
-        //     encoders[3] = atoi(strtok(NULL, " "));
-        //     return true;
-        // }
+        /*md - `ENCODER: encoder_id` is the id of the encoder to update step value. */
+        if (strcmp(key, "ENCODER") == 0) {
+            encoder = atoi(value);
+            return true;
+        }
 
         /*md - `BACKGROUND_COLOR: color` is the background color of the component. */
         if (strcmp(key, "BACKGROUND_COLOR") == 0) {
