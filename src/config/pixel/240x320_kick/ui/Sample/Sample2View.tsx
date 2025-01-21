@@ -15,27 +15,27 @@ export function Sample2View({ name }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                value="Sample RESONATOR"
+                value="Sample LOOP_POSITION"
                 position={topLeftKnob}
                 encoder_id={0}
                 COLOR="tertiary"
                 track={SampleTrack}
             />
             <KnobValue
-                value="Sample BOOST"
+                value="Sample LOOP_LENGTH"
                 position={topRightKnob}
                 encoder_id={2}
                 COLOR="secondary"
                 track={SampleTrack}
             />
             <KnobValue
-                value="Sample TIMBRE"
+                value="Sample LOOP_RELEASE"
                 position={bottomLeftKnob}
                 encoder_id={1}
                 track={SampleTrack}
             />
             <KnobValue
-                value="Sample REVERB"
+                value="Volume GAIN_CLIPPING"
                 position={bottomRightKnob}
                 encoder_id={3}
                 COLOR="secondary"

@@ -23,22 +23,22 @@ function ____exports.Sample2View(____bindingPattern0)
         View,
         {name = name},
         React.createElement(KnobValue, {
-            value = "Sample RESONATOR",
+            value = "Sample LOOP_POSITION",
             position = topLeftKnob,
             encoder_id = 0,
             COLOR = "tertiary",
             track = SampleTrack
         }),
         React.createElement(KnobValue, {
-            value = "Sample BOOST",
+            value = "Sample LOOP_LENGTH",
             position = topRightKnob,
             encoder_id = 2,
             COLOR = "secondary",
             track = SampleTrack
         }),
-        React.createElement(KnobValue, {value = "Sample TIMBRE", position = bottomLeftKnob, encoder_id = 1, track = SampleTrack}),
+        React.createElement(KnobValue, {value = "Sample LOOP_RELEASE", position = bottomLeftKnob, encoder_id = 1, track = SampleTrack}),
         React.createElement(KnobValue, {
-            value = "Sample REVERB",
+            value = "Volume GAIN_CLIPPING",
             position = bottomRightKnob,
             encoder_id = 3,
             COLOR = "secondary",

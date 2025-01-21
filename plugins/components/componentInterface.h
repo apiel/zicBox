@@ -29,8 +29,6 @@ protected:
     DrawInterface& draw;
     Styles& styles;
 
-    Point relativePosition = { 0, 0 };
-
     Props getNewPropsRect(Props props, Rect rect)
     {
         props.position = rect.position;
@@ -52,6 +50,7 @@ public:
     std::function<void(uint8_t index, float value)> setContext;
     std::vector<ValueInterface*> values;
     Point position;
+    Point relativePosition = { 0, 0 };
     Size size;
     int16_t track;
     int8_t group = -1;
