@@ -30,6 +30,7 @@ protected:
     bool notePlaying = false;
     bool* seqPlayingPtr = NULL;
     bool seqPlaying = false;
+    bool showPlayingStep = false;
 
     KeypadLayout keypadLayout;
 
@@ -38,7 +39,7 @@ protected:
     Color onColor;
     Color conditionColor;
     Color offColor;
-    // Color playingBgColor;
+    Color playingColor;
 
     uint8_t stepIndex = -1;
 
@@ -52,6 +53,7 @@ public:
         , onColor(styles.colors.primary)
         , offColor(darken(styles.colors.text, 0.3))
         , conditionColor(styles.colors.text)
+        , playingColor(styles.colors.tertiary)
         , keypadLayout(this, [&](std::string action) {
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
             if (action == ".toggle") {
@@ -65,23 +67,25 @@ public:
             return func;
         })
     {
-        // jobRendering = [this](unsigned long now) {
-        //     if (seqPlayingPtr != NULL && *seqPlayingPtr != seqPlaying) {
-        //         seqPlaying = *seqPlayingPtr;
-        //         renderNext();
-        //     }
-        //     if (stepCounter != NULL && seqPlaying) {
-        //         if (stepIndex != *stepCounter) {
-        //             if (notePlaying) {
-        //                 notePlaying = false;
-        //                 renderNext();
-        //             }
-        //         } else if (!notePlaying) {
-        //             notePlaying = true;
-        //             renderNext();
-        //         }
-        //     }
-        // };
+        jobRendering = [this](unsigned long now) {
+            if (showPlayingStep) {
+                if (seqPlayingPtr != NULL && *seqPlayingPtr != seqPlaying) {
+                    seqPlaying = *seqPlayingPtr;
+                    renderNext();
+                }
+                if (stepCounter != NULL && seqPlaying) {
+                    if (stepIndex != *stepCounter) {
+                        if (notePlaying) {
+                            notePlaying = false;
+                            renderNext();
+                        }
+                    } else if (!notePlaying) {
+                        notePlaying = true;
+                        renderNext();
+                    }
+                }
+            }
+        };
     }
 
     void render() override
@@ -98,8 +102,11 @@ public:
             } else if (step->condition) {
                 draw.text({ x, y }, stepConditions[step->condition].name, 8, { conditionColor });
             } else {
-                // renderNote(x, y);
                 draw.text({ x, y }, "on", 8, { onColor });
+            }
+
+            if (showPlayingStep && (seqPlayingPtr == NULL || seqPlaying) && notePlaying) {
+                draw.filledRect({ x + size.w - 10, y + 1 }, { 6, 6 }, { playingColor });
             }
         }
     }
@@ -183,7 +190,15 @@ public:
 
         /*md - `PLAYING_COLOR: color` is the color of actual playing step. */
         if (strcmp(key, "PLAYING_COLOR") == 0) {
-            // playingColor = draw.getColor(value);
+            playingColor = draw.getColor(value);
+            return true;
+        }
+
+        /*md - `SHOW_PLAYING_STEP: true` is to enable the task to show actual playing step. */
+        if (strcmp(key, "SHOW_PLAYING_STEP") == 0) {
+            if (strcmp(value, "true") == 0) {
+                showPlayingStep = true;
+            }
             return true;
         }
 
