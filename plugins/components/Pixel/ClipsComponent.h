@@ -40,7 +40,7 @@ protected:
 
     int clipH = 17;
 
-    int visibleCount = 10;
+    int visibleCount = 16;
 
     uint8_t selectionBank = 30;
 

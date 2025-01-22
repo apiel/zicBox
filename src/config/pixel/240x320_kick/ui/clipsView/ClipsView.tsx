@@ -15,6 +15,7 @@ import {
 } from '../constants';
 import { Clips } from './Clips';
 import { TextGridClips, TextGridClipsShifted } from './TextGrid';
+import { Drum23Values, SampleValues } from './Values';
 
 export type Props = {
     name: string;
@@ -31,6 +32,11 @@ export function ClipsView({ name }: Props) {
             <Clips color={ColorTrack3} track={SnareTrack} group={2} title='Snare' />
             <Clips color={ColorTrack4} track={HiHatTrack} group={3} title='Hihat' />
             <Clips color={ColorTrack5} track={SampleTrack} group={4} title='Sample' />
+
+            <Drum23Values group={0} track={Drum23Track} />
+
+
+            <SampleValues group={4} track={SampleTrack} />
         </View>
     );
 }

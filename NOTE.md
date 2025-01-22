@@ -1,5 +1,7 @@
 ## Pixel TODO
 
+- TODO clip scrollbar
+- TODO add invisible group, that when it is selected, all clips group are selected, so we can start multiple group at once
 - TODO toggle clip should play next, instead of right away. If it is already selected to play next, a second clip would trigger it to play right away. 
 - TODO clips should be the master view
     - from there allow to do the mixing part giving free slot for extra parameter in drum synths

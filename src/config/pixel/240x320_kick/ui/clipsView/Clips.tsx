@@ -19,12 +19,13 @@ export function Clips({ color, track, group, title }: Props) {
             <Text text={title} position={[(track - 1) * w, 2, w, 8]} centered color={color} />
             {/* <Text text={title} position={[(track - 1) * w, 2, w, 8]} centered background_color={color} color="text" /> */}
             <ClipsComponent
-                position={[(track - 1) * w, 15, w - 2, 200]}
+                position={[(track - 1) * w, 15, w - 2, 100]}
                 plugin="SerializeTrack"
                 track={track}
                 group={group}
                 color={color}
                 seq_plugin="Sequencer"
+                visible_count={12}
             >
                 <Keymaps
                     keys={[
