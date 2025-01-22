@@ -8,7 +8,6 @@ pluginAlias('EffectDistortion2', 'libzic_EffectDistortion2.so');
 pluginAlias('EffectFilterMultiMode', 'libzic_EffectFilterMultiMode.so');
 pluginAlias('EffectSampleRateReducer', 'libzic_EffectSampleRateReducer.so');
 pluginAlias('EffectGainVolume', 'libzic_EffectGainVolume.so');
-pluginAlias('EffectVolumeDrive', 'libzic_EffectVolumeDrive.so');
 pluginAlias('EffectVolumeClipping', 'libzic_EffectVolumeClipping.so');
 pluginAlias('EffectDelay', 'libzic_EffectDelay.so');
 pluginAlias('Mixer2', 'libzic_Mixer2.so');

@@ -27,7 +27,7 @@ function ____exports.Common(____bindingPattern0)
                 active_color = rgb(35, 161, 35),
                 selection_color = rgb(35, 161, 35),
                 foreground_color = rgb(34, 110, 34),
-                volume_plugin = "Volume VOLUME",
+                volume_plugin = "TrackFx VOLUME",
                 show_steps = true,
                 track = track
             }

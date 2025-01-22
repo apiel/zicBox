@@ -37,7 +37,7 @@ export function Sample2View({ name }: Props) {
                 track={SampleTrack}
             />
             <KnobValue
-                value="Volume GAIN_CLIPPING"
+                value="TrackFx GAIN_CLIPPING"
                 position={bottomRightKnob}
                 encoder_id={3}
                 track={SampleTrack}

@@ -15,7 +15,7 @@ export function HiHatView({ name }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                value="Volume VOLUME"
+                value="TrackFx VOLUME_DRIVE"
                 position={topLeftKnob}
                 encoder_id={0}
                 COLOR="tertiary"

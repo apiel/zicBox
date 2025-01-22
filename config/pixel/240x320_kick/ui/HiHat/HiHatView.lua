@@ -23,7 +23,7 @@ function ____exports.HiHatView(____bindingPattern0)
         View,
         {name = name},
         React.createElement(KnobValue, {
-            value = "Volume VOLUME",
+            value = "TrackFx VOLUME_DRIVE",
             position = topLeftKnob,
             encoder_id = 0,
             COLOR = "tertiary",

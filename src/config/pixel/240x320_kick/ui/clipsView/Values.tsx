@@ -89,7 +89,7 @@ export function Drum23Values({ group, track }: { group: number; track: number })
     return (
         <VisibilityContainer position={posContainer} group={group}>
             <Value
-                value="Volume VOLUME"
+                value="TrackFx VOLUME"
                 position={topLeft}
                 group={group}
                 track={track}
@@ -129,7 +129,7 @@ export function FmValues({ group, track }: { group: number; track: number }) {
     return (
         <VisibilityContainer position={posContainer} group={group}>
             <Value
-                value="Volume VOLUME"
+                value="TrackFx VOLUME"
                 position={topLeft}
                 group={group}
                 track={track}
@@ -169,7 +169,7 @@ export function SnareValues({ group, track }: { group: number; track: number }) 
     return (
         <VisibilityContainer position={posContainer} group={group}>
             <Value
-                value="Volume VOLUME"
+                value="TrackFx VOLUME_DRIVE"
                 position={topLeft}
                 group={group}
                 track={track}
@@ -177,7 +177,7 @@ export function SnareValues({ group, track }: { group: number; track: number }) 
                 {...tertiary}
             />
             <Value
-                value="Snare DURATION"
+                value="TrackFx REVERB"
                 position={bottomLeft}
                 group={group}
                 track={track}
@@ -209,7 +209,7 @@ export function HiHatValues({ group, track }: { group: number; track: number }) 
     return (
         <VisibilityContainer position={posContainer} group={group}>
             <Value
-                value="Volume VOLUME"
+                value="TrackFx VOLUME_DRIVE"
                 position={topLeft}
                 group={group}
                 track={track}
@@ -217,7 +217,7 @@ export function HiHatValues({ group, track }: { group: number; track: number }) 
                 {...tertiary}
             />
             <Value
-                value="HiHat DURATION"
+                value="TrackFx REVERB"
                 position={bottomLeft}
                 group={group}
                 track={track}
@@ -249,7 +249,7 @@ export function SampleValues({ group, track }: { group: number; track: number })
     return (
         <VisibilityContainer position={posContainer} group={group}>
             <Value
-                value="Volume VOLUME"
+                value="TrackFx VOLUME_DRIVE"
                 position={topLeft}
                 group={group}
                 track={track}
@@ -257,7 +257,7 @@ export function SampleValues({ group, track }: { group: number; track: number })
                 {...tertiary}
             />
             <Value
-                value="Volume GAIN_CLIPPING"
+                value="TrackFx REVERB"
                 position={bottomLeft}
                 group={group}
                 track={track}

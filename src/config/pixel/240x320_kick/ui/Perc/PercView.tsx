@@ -15,7 +15,7 @@ export function PercView({ name }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                value="Volume VOLUME"
+                value="TrackFx VOLUME"
                 position={topLeftKnob}
                 encoder_id={0}
                 COLOR="tertiary"
