@@ -26,8 +26,8 @@ export function ShutdownView({ name }: Props) {
             >
                 <Keymap key="q" action="shutdown" />
                 <Keymap key="a" action="shutdown" />
-                <Keymap key="d" action="setView:Drum23" />
-                <Keymap key="e" action="setView:Drum23" />
+                <Keymap key="d" action="setView:Clips" />
+                <Keymap key="e" action="setView:Clips" />
             </TextGrid>
         </View>
     );

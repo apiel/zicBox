@@ -20,7 +20,8 @@ function ____exports.MenuView(____bindingPattern0)
         {name = name},
         React.createElement(
             List,
-            {position = {0, 0, ScreenWidth, 280}, items = {"Clips", "Tape", "Workspaces", "Shutdown"}},
+            {position = {0, 0, ScreenWidth, 280}, items = {"Tape", "Workspaces", "Shutdown"}},
+            React.createElement(Keymap, {key = "q", action = ".setView"}),
             React.createElement(Keymap, {key = "a", action = ".setView"}),
             React.createElement(Keymap, {key = "w", action = ".up"}),
             React.createElement(Keymap, {key = "s", action = ".down"})
@@ -28,7 +29,7 @@ function ____exports.MenuView(____bindingPattern0)
         React.createElement(
             TextGrid,
             {position = KeyInfoPosition, rows = {"  &icon::arrowUp::filled  ", "Select &icon::arrowDown::filled Exit"}},
-            React.createElement(Keymap, {key = "d", action = "setView:Drum23"})
+            React.createElement(Keymap, {key = "d", action = "setView:Clips"})
         )
     )
 end

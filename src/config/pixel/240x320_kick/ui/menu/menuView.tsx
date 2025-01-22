@@ -15,8 +15,9 @@ export function MenuView({ name }: Props) {
         <View name={name}>
             <List
                 position={[0, 0, ScreenWidth, 280]}
-                items={['Clips', 'Tape', 'Workspaces', 'Shutdown']}
+                items={['Tape', 'Workspaces', 'Shutdown']}
             >
+                <Keymap key="q" action=".setView" />
                 <Keymap key="a" action=".setView" />
                 <Keymap key="w" action=".up" />
                 <Keymap key="s" action=".down" />
@@ -26,7 +27,7 @@ export function MenuView({ name }: Props) {
                 position={KeyInfoPosition}
                 rows={['  &icon::arrowUp::filled  ', 'Select &icon::arrowDown::filled Exit']}
             >
-                <Keymap key="d" action="setView:Drum23" />
+                <Keymap key="d" action="setView:Clips" />
             </TextGrid>
         </View>
     );
