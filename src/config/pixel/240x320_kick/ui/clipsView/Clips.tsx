@@ -10,9 +10,10 @@ export type Props = {
     track: number;
     group: number;
     title: string;
+    group_all: number;
 };
 
-export function Clips({ color, track, group, title }: Props) {
+export function Clips({ color, track, group, title, group_all }: Props) {
     const w = ScreenWidth / 5;
     return (
         <>
@@ -26,6 +27,7 @@ export function Clips({ color, track, group, title }: Props) {
                 color={color}
                 seq_plugin="Sequencer"
                 visible_count={12}
+                group_all={group_all}
             >
                 <Keymaps
                     keys={[

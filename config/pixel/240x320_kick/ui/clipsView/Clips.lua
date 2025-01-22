@@ -10,6 +10,7 @@ local Text = ____Text.Text
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
 local ScreenWidth = ____constants.ScreenWidth
 function ____exports.Clips(____bindingPattern0)
+    local group_all
     local title
     local group
     local track
@@ -18,6 +19,7 @@ function ____exports.Clips(____bindingPattern0)
     track = ____bindingPattern0.track
     group = ____bindingPattern0.group
     title = ____bindingPattern0.title
+    group_all = ____bindingPattern0.group_all
     local w = ScreenWidth / 5
     return React.createElement(
         React.Fragment,
@@ -32,7 +34,8 @@ function ____exports.Clips(____bindingPattern0)
                 group = group,
                 color = color,
                 seq_plugin = "Sequencer",
-                visible_count = 12
+                visible_count = 12,
+                group_all = group_all
             },
             React.createElement(Keymaps, {keys = {
                 {key = "q", action = ".toggle", context = "254:0"},
