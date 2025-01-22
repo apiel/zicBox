@@ -44,7 +44,7 @@ function ____exports.FmView(____bindingPattern0)
             COLOR = "secondary",
             track = FmTrack
         }),
-        React.createElement(TextGridFm, {selected = 1, viewName = name}),
+        React.createElement(TextGridFm, {selected = 0, viewName = name}),
         React.createElement(Common, {selected = 3, track = FmTrack})
     )
 end
