@@ -1,5 +1,9 @@
 ## Pixel TODO
 
+- TODO getData and data, instead to use enum, use struct array
+
+- TODO should we merge sequencer and serializeTrack?
+
 - TODO clip scrollbar
 - TODO toggle clip should play next, instead of right away. If it is already selected to play next, a second clip would trigger it to play right away. 
 

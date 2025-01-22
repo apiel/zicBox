@@ -494,31 +494,35 @@ public:
         return !playing && clockCounter == 0;
     }
 
-    void sendEvent(AudioEventType event)
+    void sendEvent(AudioEventType event, int16_t track = -1)
     {
-        switch (event) {
-        case AudioEventType::START:
-            playing = true;
-            break;
+        if (track == -1) { // there is no point to check those events if it is a specific track event
+            switch (event) {
+            case AudioEventType::START:
+                playing = true;
+                break;
 
-        case AudioEventType::STOP:
-            playing = false;
-            clockCounter = 0;
-            break;
+            case AudioEventType::STOP:
+                playing = false;
+                clockCounter = 0;
+                break;
 
-        case AudioEventType::PAUSE:
-            playing = false;
-            break;
+            case AudioEventType::PAUSE:
+                playing = false;
+                break;
 
-        case AudioEventType::TOGGLE_PLAY_PAUSE:
-            playing = !playing;
-            // convert event to start or pause to avoid to have to many conditions in the plugins
-            event = playing ? AudioEventType::START : AudioEventType::PAUSE;
-            break;
+            case AudioEventType::TOGGLE_PLAY_PAUSE:
+                playing = !playing;
+                // convert event to start or pause to avoid to have to many conditions in the plugins
+                event = playing ? AudioEventType::START : AudioEventType::PAUSE;
+                break;
+            }
         }
         // if (event != AUTOSAVE) printf(">>> AudioPluginHandler::sendEvent %d\n", event);
         for (AudioPlugin* plugin : plugins) {
-            plugin->onEvent(event, playing);
+            if (track == -1 || plugin->track == track) {
+                plugin->onEvent(event, playing);
+            }
         }
     }
 
