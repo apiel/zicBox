@@ -121,6 +121,9 @@ public:
                                 } else {
                                     valSeqStatus->set(1);
                                 }
+                                // Ultimately we could check if sequencer is playing so it only start next if it is...
+                                // however, to do this, we would have to track another data id again: IS_PLAYING
+                                // for the moment let's stick to double press, it is fine...
                             } else if (nextVariationToPlay != NULL && *nextVariationToPlay == -1) {
                                 pluginSerialize->data(loadVariationNextDataId, &id);
                             } else {
@@ -131,24 +134,6 @@ public:
                     }
                 };
             }
-            // if (action == ".next") {
-            //     func = [this](KeypadLayout::KeyMap& keymap) {
-            //         if (KeypadLayout::isReleased(keymap)) {
-            //             int16_t id = view->contextVar[selectionBank];
-            //             if (variations[id].exists) {
-            //                 if (valVariation->get() == id) {
-            //                     if (valSeqStatus->get() == 0) {
-            //                         valSeqStatus->set(2);
-            //                     }
-            //                 } else {
-            //                     // TODO Would need to set variation only at the next round...
-            //                     // valVariation->set(id);
-            //                 }
-            //                 renderNext();
-            //             }
-            //         }
-            //     };
-            // }
             if (action == ".delete") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
