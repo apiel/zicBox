@@ -3,7 +3,14 @@ import * as React from '@/libs/react';
 import { Rect } from '@/libs/components/Rect';
 import { Value } from '@/libs/components/Value';
 import { VisibilityContainer } from '@/libs/components/VisibilityContainer';
-import { PrimaryBar, QuaternaryBar, ScreenWidth, SecondaryBar, TertiaryBar, W2_4 } from '../constants';
+import {
+    PrimaryBar,
+    QuaternaryBar,
+    ScreenWidth,
+    SecondaryBar,
+    TertiaryBar,
+    W2_4,
+} from '../constants';
 
 const valueH = 29;
 const rowSpacing = 8;
@@ -184,7 +191,7 @@ export function SnareValues({ group, track }: { group: number; track: number }) 
                 encoder_id={1}
                 {...primary}
             />
-            <Value
+            {/* <Value
                 value="Snare NOISE_MIX"
                 position={topRight}
                 group={group}
@@ -200,6 +207,23 @@ export function SnareValues({ group, track }: { group: number; track: number }) 
                 track={track}
                 encoder_id={3}
                 {...secondary}
+            /> */}
+            <Value
+                value="TrackFx CUTOFF"
+                position={topRight}
+                group={group}
+                track={track}
+                encoder_id={2}
+                {...quaternary}
+                USE_STRING_VALUE
+            />
+            <Value
+                value="TrackFx RESONANCE"
+                position={bottomRight}
+                group={group}
+                track={track}
+                encoder_id={3}
+                {...quaternary}
             />
         </VisibilityContainer>
     );
@@ -224,7 +248,7 @@ export function HiHatValues({ group, track }: { group: number; track: number }) 
                 encoder_id={1}
                 {...primary}
             />
-            <Value
+            {/* <Value
                 value="HiHat METALLIC_TONE_MIX"
                 position={topRight}
                 group={group}
@@ -240,6 +264,23 @@ export function HiHatValues({ group, track }: { group: number; track: number }) 
                 track={track}
                 encoder_id={3}
                 {...secondary}
+            /> */}
+            <Value
+                value="TrackFx CUTOFF"
+                position={topRight}
+                group={group}
+                track={track}
+                encoder_id={2}
+                {...quaternary}
+                USE_STRING_VALUE
+            />
+            <Value
+                value="TrackFx RESONANCE"
+                position={bottomRight}
+                group={group}
+                track={track}
+                encoder_id={3}
+                {...quaternary}
             />
         </VisibilityContainer>
     );
@@ -264,7 +305,7 @@ export function SampleValues({ group, track }: { group: number; track: number })
                 encoder_id={1}
                 {...primary}
             />
-            <Value
+            {/* <Value
                 value="Sample START"
                 position={topRight}
                 group={group}
@@ -275,6 +316,23 @@ export function SampleValues({ group, track }: { group: number; track: number })
             />
             <Value
                 value="Sample LOOP_LENGTH"
+                position={bottomRight}
+                group={group}
+                track={track}
+                encoder_id={3}
+                {...quaternary}
+            /> */}
+            <Value
+                value="TrackFx CUTOFF"
+                position={topRight}
+                group={group}
+                track={track}
+                encoder_id={2}
+                {...quaternary}
+                USE_STRING_VALUE
+            />
+            <Value
+                value="TrackFx RESONANCE"
                 position={bottomRight}
                 group={group}
                 track={track}

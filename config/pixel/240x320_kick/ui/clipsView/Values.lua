@@ -189,7 +189,7 @@ function ____exports.SnareValues(____bindingPattern0)
         React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "Snare NOISE_MIX",
+                value = "TrackFx CUTOFF",
                 position = topRight,
                 group = group,
                 track = track,
@@ -199,12 +199,12 @@ function ____exports.SnareValues(____bindingPattern0)
         React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "Snare TRANSIENT_INTENSITY",
+                value = "TrackFx RESONANCE",
                 position = bottomRight,
                 group = group,
                 track = track,
                 encoder_id = 3
-            }, ____exports.secondary)
+            }, ____exports.quaternary)
         )
     )
 end
@@ -239,7 +239,7 @@ function ____exports.HiHatValues(____bindingPattern0)
         React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "HiHat METALLIC_TONE_MIX",
+                value = "TrackFx CUTOFF",
                 position = topRight,
                 group = group,
                 track = track,
@@ -249,12 +249,12 @@ function ____exports.HiHatValues(____bindingPattern0)
         React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "HiHat BAND_Q",
+                value = "TrackFx RESONANCE",
                 position = bottomRight,
                 group = group,
                 track = track,
                 encoder_id = 3
-            }, ____exports.secondary)
+            }, ____exports.quaternary)
         )
     )
 end
@@ -289,7 +289,7 @@ function ____exports.SampleValues(____bindingPattern0)
         React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "Sample START",
+                value = "TrackFx CUTOFF",
                 position = topRight,
                 group = group,
                 track = track,
@@ -299,7 +299,7 @@ function ____exports.SampleValues(____bindingPattern0)
         React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "Sample LOOP_LENGTH",
+                value = "TrackFx RESONANCE",
                 position = bottomRight,
                 group = group,
                 track = track,
