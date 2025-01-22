@@ -46,7 +46,7 @@ function ____exports.Sample2View(____bindingPattern0)
             COLOR = "tertiary",
             track = SampleTrack
         }),
-        React.createElement(KnobValue, {value = "Volume GAIN_CLIPPING", position = bottomRightKnob, encoder_id = 3, track = SampleTrack}),
+        React.createElement(KnobValue, {value = "TrackFx GAIN_CLIPPING", position = bottomRightKnob, encoder_id = 3, track = SampleTrack}),
         React.createElement(Sample, {
             position = {0, 245, ScreenWidth, 50},
             track = SampleTrack,

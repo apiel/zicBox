@@ -69,7 +69,7 @@ function ____exports.Drum23Values(____bindingPattern0)
         React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "Volume VOLUME",
+                value = "TrackFx VOLUME",
                 position = topLeft,
                 group = group,
                 track = track,
@@ -119,7 +119,7 @@ function ____exports.FmValues(____bindingPattern0)
         React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "Volume VOLUME",
+                value = "TrackFx VOLUME",
                 position = topLeft,
                 group = group,
                 track = track,
@@ -169,7 +169,7 @@ function ____exports.SnareValues(____bindingPattern0)
         React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "Volume VOLUME",
+                value = "TrackFx VOLUME_DRIVE",
                 position = topLeft,
                 group = group,
                 track = track,
@@ -179,7 +179,7 @@ function ____exports.SnareValues(____bindingPattern0)
         React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "Snare DURATION",
+                value = "TrackFx REVERB",
                 position = bottomLeft,
                 group = group,
                 track = track,
@@ -219,7 +219,7 @@ function ____exports.HiHatValues(____bindingPattern0)
         React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "Volume VOLUME",
+                value = "TrackFx VOLUME_DRIVE",
                 position = topLeft,
                 group = group,
                 track = track,
@@ -229,7 +229,7 @@ function ____exports.HiHatValues(____bindingPattern0)
         React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "HiHat DURATION",
+                value = "TrackFx REVERB",
                 position = bottomLeft,
                 group = group,
                 track = track,
@@ -269,7 +269,7 @@ function ____exports.SampleValues(____bindingPattern0)
         React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "Volume VOLUME",
+                value = "TrackFx VOLUME_DRIVE",
                 position = topLeft,
                 group = group,
                 track = track,
@@ -279,7 +279,7 @@ function ____exports.SampleValues(____bindingPattern0)
         React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "Volume GAIN_CLIPPING",
+                value = "TrackFx REVERB",
                 position = bottomLeft,
                 group = group,
                 track = track,

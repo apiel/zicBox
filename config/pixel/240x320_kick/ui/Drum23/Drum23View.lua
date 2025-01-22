@@ -23,7 +23,7 @@ function ____exports.Drum23View(____bindingPattern0)
         View,
         {name = name},
         React.createElement(KnobValue, {
-            value = "Volume VOLUME",
+            value = "TrackFx VOLUME",
             position = topLeftKnob,
             encoder_id = 0,
             COLOR = "tertiary",
