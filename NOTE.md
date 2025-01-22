@@ -1,5 +1,8 @@
 ## Pixel TODO
 
+- TODO clips should be the master view
+    - from there allow to do the mixing part giving free slot for extra parameter in drum synths
+
 - NOTE should we move Ui in separate thread to have better understanding of CPU usage
 
 - IDEA load/unload instrument dynamically

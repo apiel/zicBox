@@ -39,7 +39,7 @@ void loadPixelComponents()
     viewManager.loadPlugin("List " + folder + "ListComponent.so");
     viewManager.loadPlugin("Workspaces " + folder + "WorkspacesComponent.so");
     viewManager.loadPlugin("Sample " + folder + "SampleComponent.so");
-    viewManager.loadPlugin("Tape " + folder + "TapeComponent.so");
+    // viewManager.loadPlugin("Tape " + folder + "TapeComponent.so");
     viewManager.loadPlugin("MacroEnvelop " + folder + "MacroEnvelopComponent.so");
 }
 

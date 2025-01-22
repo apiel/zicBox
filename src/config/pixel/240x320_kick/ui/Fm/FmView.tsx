@@ -42,7 +42,7 @@ export function FmView({ name }: Props) {
                 track={FmTrack}
             />
 
-            <TextGridFm selected={1} viewName={name} />
+            <TextGridFm selected={0} viewName={name} />
             <Common selected={3} track={FmTrack} />
         </View>
     );
