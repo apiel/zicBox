@@ -27,11 +27,11 @@ export function ClipsView({ name }: Props) {
             <TextGridClips />
             <TextGridClipsShifted />
 
-            <Clips color={ColorTrack1} track={Drum23Track} group={0} title="Kick" />
-            <Clips color={ColorTrack2} track={FmTrack} group={1} title="Fm" />
-            <Clips color={ColorTrack3} track={SnareTrack} group={2} title="Snare" />
-            <Clips color={ColorTrack4} track={HiHatTrack} group={3} title="Hihat" />
-            <Clips color={ColorTrack5} track={SampleTrack} group={4} title="Sample" />
+            <Clips color={ColorTrack1} track={Drum23Track} group={0} title="Kick" group_all={5} />
+            <Clips color={ColorTrack2} track={FmTrack} group={1} title="Fm" group_all={5} />
+            <Clips color={ColorTrack3} track={SnareTrack} group={2} title="Snare" group_all={5} />
+            <Clips color={ColorTrack4} track={HiHatTrack} group={3} title="Hihat" group_all={5} />
+            <Clips color={ColorTrack5} track={SampleTrack} group={4} title="Sample" group_all={5} />
 
             <Drum23Values group={0} track={Drum23Track} />
             <FmValues group={1} track={FmTrack} />

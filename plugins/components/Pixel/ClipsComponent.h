@@ -18,6 +18,9 @@ class ClipsComponent : public Component {
 protected:
     bool isActive = true;
 
+    int8_t groupAll = -1;
+    bool isGroupAll = false;
+
     Color bgColor;
     Color foreground;
     Color textColor;
@@ -46,6 +49,16 @@ protected:
 
     KeypadLayout keypadLayout;
 
+    bool shouldDoAction() {
+        // Not all action should happen when it is in groupAll mode
+        // For example, up/down should not happen in all clips component,
+        // else instead to go up/down for one step, it will go as much as clip group exist...
+        if (!isGroupAll || groupAll - 1 == group) {
+            return true;
+        }
+        return false;
+    }
+
 public:
     ClipsComponent(ComponentInterface::Props props)
         : Component(props)
@@ -61,7 +74,7 @@ public:
             if (action == ".up") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
-                        if (view->contextVar[selectionBank] > 0) {
+                        if (shouldDoAction() && view->contextVar[selectionBank] > 0) {
                             setContext(selectionBank, view->contextVar[selectionBank] - 1);
                         }
                         renderNext();
@@ -71,7 +84,7 @@ public:
             if (action == ".down") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
-                        if (view->contextVar[selectionBank] < valVariation->props().max - 1) {
+                        if (shouldDoAction() && view->contextVar[selectionBank] < valVariation->props().max - 1) {
                             setContext(selectionBank, view->contextVar[selectionBank] + 1);
                         }
                         renderNext();
@@ -96,7 +109,9 @@ public:
                     if (KeypadLayout::isReleased(keymap)) {
                         int16_t id = view->contextVar[selectionBank];
                         if (variations[id].exists) {
-                            if (valVariation->get() == id) {
+                            if (isGroupAll) {
+                                valVariation->set(id);
+                            } else if (valVariation->get() == id) {
                                 if (valSeqStatus->get() == 1) {
                                     valSeqStatus->set(0);
                                 } else {
@@ -185,7 +200,7 @@ public:
                         draw.textCentered({ relativePosition.x + (int)(size.w * 0.5), y + (int)((clipH - 8) * 0.5) }, std::to_string(i + 1), 8, { textColor, .maxWidth = size.w });
                     }
 
-                    if (isActive && i == selection) {
+                    if ((isActive || isGroupAll) && i == selection) {
                         draw.rect({ relativePosition.x, y }, { size.w, clipH - 2 }, { barColor });
                     }
                 }
@@ -195,7 +210,7 @@ public:
 
     void onKey(uint16_t id, int key, int8_t state, unsigned long now) override
     {
-        if (isActive) {
+        if (isActive || isGroupAll) {
             keypadLayout.onKey(id, key, state, now);
         }
     }
@@ -214,12 +229,27 @@ public:
             isActive = shouldActivate;
             renderNext();
         }
+
+        bool shouldUpdateGroupAll = false;
+        if (groupAll == index) {
+            shouldUpdateGroupAll = true;
+        }
+        if (shouldUpdateGroupAll != isGroupAll) {
+            isGroupAll = shouldUpdateGroupAll;
+            renderNext();
+        }
     }
 
     /*md **Config**: */
     bool config(char* key, char* value)
     {
         if (keypadLayout.config(key, value)) {
+            return true;
+        }
+
+        /*md - `GROUP_ALL: group` is the group to change clips for all tracks. */
+        if (strcmp(key, "GROUP_ALL") == 0) {
+            groupAll = atoi(value);
             return true;
         }
 

@@ -34,11 +34,41 @@ function ____exports.ClipsView(____bindingPattern0)
         {name = name},
         React.createElement(TextGridClips, nil),
         React.createElement(TextGridClipsShifted, nil),
-        React.createElement(Clips, {color = ColorTrack1, track = Drum23Track, group = 0, title = "Kick"}),
-        React.createElement(Clips, {color = ColorTrack2, track = FmTrack, group = 1, title = "Fm"}),
-        React.createElement(Clips, {color = ColorTrack3, track = SnareTrack, group = 2, title = "Snare"}),
-        React.createElement(Clips, {color = ColorTrack4, track = HiHatTrack, group = 3, title = "Hihat"}),
-        React.createElement(Clips, {color = ColorTrack5, track = SampleTrack, group = 4, title = "Sample"}),
+        React.createElement(Clips, {
+            color = ColorTrack1,
+            track = Drum23Track,
+            group = 0,
+            title = "Kick",
+            group_all = 5
+        }),
+        React.createElement(Clips, {
+            color = ColorTrack2,
+            track = FmTrack,
+            group = 1,
+            title = "Fm",
+            group_all = 5
+        }),
+        React.createElement(Clips, {
+            color = ColorTrack3,
+            track = SnareTrack,
+            group = 2,
+            title = "Snare",
+            group_all = 5
+        }),
+        React.createElement(Clips, {
+            color = ColorTrack4,
+            track = HiHatTrack,
+            group = 3,
+            title = "Hihat",
+            group_all = 5
+        }),
+        React.createElement(Clips, {
+            color = ColorTrack5,
+            track = SampleTrack,
+            group = 4,
+            title = "Sample",
+            group_all = 5
+        }),
         React.createElement(Drum23Values, {group = 0, track = Drum23Track}),
         React.createElement(FmValues, {group = 1, track = FmTrack}),
         React.createElement(SnareValues, {group = 2, track = SnareTrack}),
