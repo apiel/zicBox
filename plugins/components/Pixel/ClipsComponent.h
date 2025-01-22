@@ -52,7 +52,8 @@ protected:
 
     KeypadLayout keypadLayout;
 
-    bool shouldDoAction() {
+    bool shouldDoAction()
+    {
         // Not all action should happen when it is in groupAll mode
         // For example, up/down should not happen in all clips component,
         // else instead to go up/down for one step, it will go as much as clip group exist...
@@ -179,11 +180,13 @@ public:
                     // int y = relativePosition.y + i * clipH;
                     int y = relativePosition.y + (i - start) * clipH;
 
-                    if (variation.exists && i == playingId) {
+                    if (variation.exists && (i == playingId || i == *nextVariationToPlay)) {
                         draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { darken(barColor, 0.8) });
                         draw.filledRect({ relativePosition.x, y }, { size.w, 2 }, { barColor });
 
-                        if (valSeqStatus) {
+                        if (i == *nextVariationToPlay) {
+                            draw.filledRect({ relativePosition.x + size.w - 5, y + 3 }, { 3, 3 }, { playNextColor });
+                        } else if (valSeqStatus) {
                             if (valSeqStatus->get() == 1) {
                                 draw.filledRect({ relativePosition.x + size.w - 5, y + 3 }, { 3, 3 }, { playColor });
                             } else if (valSeqStatus->get() == 2) {
@@ -192,12 +195,6 @@ public:
                         }
                     } else {
                         draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { foreground });
-                        // for (int xx = 0; xx < size.w; xx += 2) {
-                        //     if (rand() % 2) {
-                        //         int c = rand() % 7;
-                        //         draw.filledRect({ relativePosition.x + xx, y + c + 4 }, { 2, 1 }, { foreground2 });
-                        //     }
-                        // }
                         draw.filledRect({ relativePosition.x, y }, { size.w, 1 }, { darken(barColor, 0.3) });
                     }
 
@@ -293,7 +290,7 @@ public:
             loadVariationDataId = pluginSerialize->getDataId("LOAD_VARIATION");
             loadVariationNextDataId = pluginSerialize->getDataId("LOAD_VARIATION_NEXT");
             int nextVariation = -1;
-            nextVariationToPlay = (int *)pluginSerialize->data(loadVariationNextDataId, &nextVariation);
+            nextVariationToPlay = (int*)pluginSerialize->data(loadVariationNextDataId, &nextVariation);
 
             for (int i = 0; i < valVariation->props().max; i++) {
                 bool exists = pluginSerialize->data(pluginSerialize->getDataId("GET_VARIATION"), &i) != NULL;
