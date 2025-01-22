@@ -5,7 +5,6 @@
 - TODO should we merge sequencer and serializeTrack?
 
 - TODO clip scrollbar
-- TODO toggle clip should play next, instead of right away. If it is already selected to play next, a second clip would trigger it to play right away. 
 
 - NOTE should we move Ui in separate thread to have better understanding of CPU usage
 
