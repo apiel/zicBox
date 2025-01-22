@@ -84,15 +84,17 @@ public:
         p.val.setFloat(p.value);
         float mixValue = p.val.pct() * 2 - 1;
         if (mixValue > 0) {
-           filter.setCutoff((0.20 * mixValue) + 0.00707); 
-        } else {
+           filter.setCutoff((0.20 * mixValue) + 0.00707);
+           p.val.setString("HP " + std::to_string((int)mixValue * 100) + "%");
+        } else if (mixValue < 0) {
             filter.setCutoff(0.85 * (-mixValue) + 0.1);
+            p.val.setString("LP " + std::to_string((int)(-mixValue) * 100) + "%");
+        } else {
+            p.val.setString("0%");
         }
-        // hpf.setCutoff((0.20 * mixValue) + 0.00707);
-        // lpf.setCutoff(0.85 * mixValue + 0.1);
-        char strBuf[128];
-        sprintf(strBuf, valueFmt.c_str(), (int)((1 - mixValue) * 100), (int)(mixValue * 100));
-        p.val.setString(strBuf);
+        // char strBuf[128];
+        // sprintf(strBuf, valueFmt.c_str(), (int)((1 - mixValue) * 100), (int)(mixValue * 100));
+        // p.val.setString(strBuf);
     });
     /*md - `RESONANCE` to set resonance. */
     Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
