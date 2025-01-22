@@ -34,7 +34,7 @@ export function Clips({ color, track, group, title }: Props) {
 
                         { key: 'q', action: '.next', context: '254:1' },
                         { key: 's', action: '.delete', context: '254:1' },
-                        { key: 'd', action: '.save', context: '254:1' },
+                        { key: 'w', action: '.save', context: '254:1' },
                     ]}
                 />
             </ClipsComponent>

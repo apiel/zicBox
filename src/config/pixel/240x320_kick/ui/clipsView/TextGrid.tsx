@@ -30,12 +30,12 @@ export function TextGridClipsShifted() {
     return (
         <TextGrid
             position={KeyInfoPosition}
-            rows={['Next &icon::play::filled ^...', 'Exit &icon::trash Save']}
+            rows={['Next Save ^...', 'Exit &icon::trash &icon::play::filled']}
         >
             <VisibilityContext index={254} condition="SHOW_WHEN" value={1} />
             <Keymaps
                 keys={[
-                    { key: 'w', action: 'playPause' },
+                    { key: 'd', action: 'playPause' },
                     { key: 'e', action: 'contextToggle:254:1:0' },
                     { key: 'a', action: 'setView:Drum23' },
                 ]}

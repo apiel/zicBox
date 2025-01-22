@@ -20,9 +20,9 @@ end
 function ____exports.TextGridClipsShifted()
     return React.createElement(
         TextGrid,
-        {position = KeyInfoPosition, rows = {"Next &icon::play::filled ^...", "Exit &icon::trash Save"}},
+        {position = KeyInfoPosition, rows = {"Next Save ^...", "Exit &icon::trash &icon::play::filled"}},
         React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 1}),
-        React.createElement(Keymaps, {keys = {{key = "w", action = "playPause"}, {key = "e", action = "contextToggle:254:1:0"}, {key = "a", action = "setView:Drum23"}}})
+        React.createElement(Keymaps, {keys = {{key = "d", action = "playPause"}, {key = "e", action = "contextToggle:254:1:0"}, {key = "a", action = "setView:Drum23"}}})
     )
 end
 return ____exports
