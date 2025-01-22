@@ -21,7 +21,11 @@ local TextGridClips = ____TextGrid.TextGridClips
 local TextGridClipsShifted = ____TextGrid.TextGridClipsShifted
 local ____Values = require("config.pixel.240x320_kick.ui.clipsView.Values")
 local Drum23Values = ____Values.Drum23Values
+local FmValues = ____Values.FmValues
+local HiHatValues = ____Values.HiHatValues
+local MasterValues = ____Values.MasterValues
 local SampleValues = ____Values.SampleValues
+local SnareValues = ____Values.SnareValues
 function ____exports.ClipsView(____bindingPattern0)
     local name
     name = ____bindingPattern0.name
@@ -36,7 +40,11 @@ function ____exports.ClipsView(____bindingPattern0)
         React.createElement(Clips, {color = ColorTrack4, track = HiHatTrack, group = 3, title = "Hihat"}),
         React.createElement(Clips, {color = ColorTrack5, track = SampleTrack, group = 4, title = "Sample"}),
         React.createElement(Drum23Values, {group = 0, track = Drum23Track}),
-        React.createElement(SampleValues, {group = 4, track = SampleTrack})
+        React.createElement(FmValues, {group = 1, track = FmTrack}),
+        React.createElement(SnareValues, {group = 2, track = SnareTrack}),
+        React.createElement(HiHatValues, {group = 3, track = HiHatTrack}),
+        React.createElement(SampleValues, {group = 4, track = SampleTrack}),
+        React.createElement(MasterValues, {group = 5, track = 0})
     )
 end
 return ____exports

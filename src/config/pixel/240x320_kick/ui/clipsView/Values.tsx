@@ -1,5 +1,6 @@
 import * as React from '@/libs/react';
 
+import { Rect } from '@/libs/components/Rect';
 import { Value } from '@/libs/components/Value';
 import { VisibilityContainer } from '@/libs/components/VisibilityContainer';
 import { PrimaryBar, QuaternaryBar, ScreenWidth, SecondaryBar, TertiaryBar, W2_4 } from '../constants';
@@ -12,7 +13,7 @@ const bottomLeft = [0, valueH + rowSpacing, W2_4 - 2, valueH];
 const topRight = [W2_4, 0, W2_4 - 2, valueH];
 const bottomRight = [W2_4, valueH + rowSpacing, W2_4 - 2, valueH];
 
-const posContainer = [0, 222, ScreenWidth, valueH * 2 + 2];
+const posContainer = [0, 222, ScreenWidth, valueH * 2 + rowSpacing];
 
 const base = {
     SHOW_LABEL_OVER_VALUE: 6,
@@ -43,11 +44,46 @@ export const quaternary = {
     ...base,
 };
 
-// export function Drum23Values({ group, track }: { group: number; track: number }) {
-//     return (
-//             <Text text="Drum23Values" position={posContainer} />
-//     );
-// }
+export function MasterValues({ group, track }: { group: number; track: number }) {
+    return (
+        <VisibilityContainer position={posContainer} group={group}>
+            <Rect position={[0, 0, ScreenWidth, posContainer[3]]} />
+            <Value
+                value="Volume VOLUME"
+                position={topLeft}
+                group={group}
+                track={track}
+                encoder_id={0}
+                {...tertiary}
+            />
+            <Value
+                value="Volume GAIN_CLIPPING"
+                position={bottomLeft}
+                group={group}
+                track={track}
+                encoder_id={1}
+                {...primary}
+            />
+            {/* <Value
+                value="MMFilter CUTOFF"
+                position={topRight}
+                group={group}
+                track={track}
+                encoder_id={2}
+                {...quaternary}
+                USE_STRING_VALUE
+            />
+            <Value
+                value="MMFilter RESONANCE"
+                position={bottomRight}
+                group={group}
+                track={track}
+                encoder_id={3}
+                {...quaternary}
+            /> */}
+        </VisibilityContainer>
+    );
+}
 
 export function Drum23Values({ group, track }: { group: number; track: number }) {
     return (
@@ -84,6 +120,126 @@ export function Drum23Values({ group, track }: { group: number; track: number })
                 track={track}
                 encoder_id={3}
                 {...quaternary}
+            />
+        </VisibilityContainer>
+    );
+}
+
+export function FmValues({ group, track }: { group: number; track: number }) {
+    return (
+        <VisibilityContainer position={posContainer} group={group}>
+            <Value
+                value="Volume VOLUME"
+                position={topLeft}
+                group={group}
+                track={track}
+                encoder_id={0}
+                {...tertiary}
+            />
+            <Value
+                value="FmDrum DISTORTION"
+                position={bottomLeft}
+                group={group}
+                track={track}
+                encoder_id={1}
+                {...primary}
+            />
+            <Value
+                value="FmDrum REVERB"
+                position={topRight}
+                group={group}
+                track={track}
+                encoder_id={2}
+                {...quaternary}
+                USE_STRING_VALUE
+            />
+            <Value
+                value="FmDrum MOD_INDEX"
+                position={bottomRight}
+                group={group}
+                track={track}
+                encoder_id={3}
+                {...secondary}
+            />
+        </VisibilityContainer>
+    );
+}
+
+export function SnareValues({ group, track }: { group: number; track: number }) {
+    return (
+        <VisibilityContainer position={posContainer} group={group}>
+            <Value
+                value="Volume VOLUME"
+                position={topLeft}
+                group={group}
+                track={track}
+                encoder_id={0}
+                {...tertiary}
+            />
+            <Value
+                value="Snare DURATION"
+                position={bottomLeft}
+                group={group}
+                track={track}
+                encoder_id={1}
+                {...primary}
+            />
+            <Value
+                value="Snare NOISE_MIX"
+                position={topRight}
+                group={group}
+                track={track}
+                encoder_id={2}
+                {...quaternary}
+                USE_STRING_VALUE
+            />
+            <Value
+                value="Snare TRANSIENT_INTENSITY"
+                position={bottomRight}
+                group={group}
+                track={track}
+                encoder_id={3}
+                {...secondary}
+            />
+        </VisibilityContainer>
+    );
+}
+
+export function HiHatValues({ group, track }: { group: number; track: number }) {
+    return (
+        <VisibilityContainer position={posContainer} group={group}>
+            <Value
+                value="Volume VOLUME"
+                position={topLeft}
+                group={group}
+                track={track}
+                encoder_id={0}
+                {...tertiary}
+            />
+            <Value
+                value="HiHat DURATION"
+                position={bottomLeft}
+                group={group}
+                track={track}
+                encoder_id={1}
+                {...primary}
+            />
+            <Value
+                value="HiHat METALLIC_TONE_MIX"
+                position={topRight}
+                group={group}
+                track={track}
+                encoder_id={2}
+                {...quaternary}
+                USE_STRING_VALUE
+            />
+            <Value
+                value="HiHat BAND_Q"
+                position={bottomRight}
+                group={group}
+                track={track}
+                encoder_id={3}
+                {...secondary}
             />
         </VisibilityContainer>
     );
