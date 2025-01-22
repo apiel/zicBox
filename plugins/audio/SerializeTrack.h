@@ -153,10 +153,17 @@ public:
         return AudioPlugin::config(key, value);
     }
 
+    int nextVariationToPlay = -1;
     void onEvent(AudioEventType event, bool isPlaying) override
     {
         if (event == AudioEventType::SEQ_LOOP) {
-            // printf(">>> SerializeTrack::onEvent SEQ_LOOP on track %d\n", track);
+            if (nextVariationToPlay != -1) {
+                // m.lock();
+                // loadVariation(nextVariationToPlay);
+                // m.unlock();
+                setVariation(nextVariationToPlay);
+                nextVariationToPlay = -1;
+            }
         } else if (event == AudioEventType::AUTOSAVE) {
             if (!initialized) {
                 m.lock();
@@ -234,6 +241,7 @@ public:
         GET_VARIATION_PATH,
         SAVE_VARIATION,
         LOAD_VARIATION,
+        LOAD_VARIATION_NEXT,
         DELETE_VARIATION,
         CREATE_WORKSPACE,
         LOAD_WORKSPACE,
@@ -265,6 +273,9 @@ public:
         /*md - `LOAD_VARIATION` load variation */
         if (name == "LOAD_VARIATION")
             return DATA_ID::LOAD_VARIATION;
+        /*md - `LOAD_VARIATION_NEXT` load variation at the next sequencer loop */
+        if (name == "LOAD_VARIATION_NEXT")
+            return DATA_ID::LOAD_VARIATION_NEXT;
         /*md - `DELETE_VARIATION` delete variation */
         if (name == "DELETE_VARIATION")
             return DATA_ID::DELETE_VARIATION;
@@ -334,13 +345,18 @@ public:
         }
         case DATA_ID::LOAD_VARIATION: {
             if (userdata) {
+                nextVariationToPlay = -1;
                 int id = *(int16_t*)userdata;
-                m.lock();
-                hydrate();
-                m.unlock();
+                // m.lock();
+                // loadVariation(id);
+                // m.unlock();
+                setVariation(id);
             }
             return NULL;
         }
+        case DATA_ID::LOAD_VARIATION_NEXT:
+            nextVariationToPlay = *(int16_t*)userdata;
+            return &nextVariationToPlay;
         case DATA_ID::DELETE_VARIATION: {
             if (userdata) {
                 int id = *(int16_t*)userdata;

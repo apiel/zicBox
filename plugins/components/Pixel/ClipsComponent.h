@@ -31,9 +31,12 @@ protected:
 
     AudioPlugin* pluginSerialize = NULL;
     ValueInterface* valVariation = NULL;
+    uint8_t loadVariationDataId = -1;
+    uint8_t loadVariationNextDataId = -1;
     uint8_t saveVariationDataId = -1;
     uint8_t deleteVariationDataId = -1;
     ValueInterface* valSeqStatus = NULL;
+    int* nextVariationToPlay = NULL;
 
     struct Variation {
         bool exists;
@@ -110,39 +113,41 @@ public:
                         int16_t id = view->contextVar[selectionBank];
                         if (variations[id].exists) {
                             if (isGroupAll) {
-                                valVariation->set(id);
+                                pluginSerialize->data(loadVariationNextDataId, &id);
                             } else if (valVariation->get() == id) {
                                 if (valSeqStatus->get() == 1) {
                                     valSeqStatus->set(0);
                                 } else {
                                     valSeqStatus->set(1);
                                 }
+                            } else if (nextVariationToPlay != NULL && *nextVariationToPlay == -1) {
+                                pluginSerialize->data(loadVariationNextDataId, &id);
                             } else {
-                                valVariation->set(id);
+                                pluginSerialize->data(loadVariationDataId, &id);
                             }
                             renderNext();
                         }
                     }
                 };
             }
-            if (action == ".next") {
-                func = [this](KeypadLayout::KeyMap& keymap) {
-                    if (KeypadLayout::isReleased(keymap)) {
-                        int16_t id = view->contextVar[selectionBank];
-                        if (variations[id].exists) {
-                            if (valVariation->get() == id) {
-                                if (valSeqStatus->get() == 0) {
-                                    valSeqStatus->set(2);
-                                }
-                            } else {
-                                // TODO Would need to set variation only at the next round...
-                                // valVariation->set(id);
-                            }
-                            renderNext();
-                        }
-                    }
-                };
-            }
+            // if (action == ".next") {
+            //     func = [this](KeypadLayout::KeyMap& keymap) {
+            //         if (KeypadLayout::isReleased(keymap)) {
+            //             int16_t id = view->contextVar[selectionBank];
+            //             if (variations[id].exists) {
+            //                 if (valVariation->get() == id) {
+            //                     if (valSeqStatus->get() == 0) {
+            //                         valSeqStatus->set(2);
+            //                     }
+            //                 } else {
+            //                     // TODO Would need to set variation only at the next round...
+            //                     // valVariation->set(id);
+            //                 }
+            //                 renderNext();
+            //             }
+            //         }
+            //     };
+            // }
             if (action == ".delete") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
@@ -285,6 +290,10 @@ public:
             valVariation = watch(pluginSerialize->getValue("VARIATION"));
             saveVariationDataId = pluginSerialize->getDataId("SAVE_VARIATION");
             deleteVariationDataId = pluginSerialize->getDataId("DELETE_VARIATION");
+            loadVariationDataId = pluginSerialize->getDataId("LOAD_VARIATION");
+            loadVariationNextDataId = pluginSerialize->getDataId("LOAD_VARIATION_NEXT");
+            int nextVariation = -1;
+            nextVariationToPlay = (int *)pluginSerialize->data(loadVariationNextDataId, &nextVariation);
 
             for (int i = 0; i < valVariation->props().max; i++) {
                 bool exists = pluginSerialize->data(pluginSerialize->getDataId("GET_VARIATION"), &i) != NULL;
