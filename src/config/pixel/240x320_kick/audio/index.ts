@@ -65,7 +65,7 @@ plugin('SerializeTrack', [{ track, filename: 'sample', MAX_VARIATION, WORKSPACE_
 plugin('Mixer');
 plugin('SerializeTrack', [{ filename: 'mixer', MAX_VARIATION, WORKSPACE_FOLDER }]);
 
-plugin('Tape', [{ filename: 'kick', max_track: 0 }]);
+plugin('Tape', [{ filename: 'kick', max_track: 5 }]);
 plugin('AudioOutput');
 plugin('SerializeTrack', [{ filename: 'master', MAX_VARIATION, WORKSPACE_FOLDER }]);
 

@@ -21,10 +21,10 @@ all:
 				WorkspacesComponent SampleComponent TapeComponent StepEdit2Component StepEditDrumComponent\
 				StepEditMonoComponent MacroEnvelopComponent
 
-# %Component:
-# 	@mkdir -p $(OBJ_DIR)
-# 	g++ -g -c -o $(OBJ_DIR)/$@.o plugin.cpp $(INC) -fPIC -DPLUGIN_NAME=$@ -DPLUGIN_INCLUDE=\"$@.h\"
-# 	g++ -g -shared -o $(BUILD_DIR)/libzic_$@.so $(INC) $(OBJ_DIR)/$@.o
+TapeComponent:
+	@echo "-------- :$@: --------"
+	make $(OBJ_DIR)/$@.o EXTRA="$(shell pkg-config --cflags --libs sndfile)"
+	make $(BUILD_DIR)/libzic_$@.so EXTRA="$(shell pkg-config --cflags --libs sndfile)"
 
 %Component:
 	@echo "-------- :$@: --------"
@@ -33,11 +33,11 @@ all:
 
 $(OBJ_DIR)/%.o:
 	@mkdir -p $(OBJ_DIR)
-	g++ -c -o $(OBJ_DIR)/$*.o plugin.cpp $(INC) -fPIC -DPLUGIN_NAME=$* -DPLUGIN_INCLUDE=\"$*.h\" $(TRACK_HEADER_FILES)
+	g++ -c -o $(OBJ_DIR)/$*.o plugin.cpp $(INC) -fPIC -DPLUGIN_NAME=$* -DPLUGIN_INCLUDE=\"$*.h\" $(TRACK_HEADER_FILES) $(EXTRA)
 
 $(BUILD_DIR)/libzic_%.so: $(OBJ_DIR)/%.o
 	@mkdir -p $(BUILD_DIR)
-	g++ -shared -o $(BUILD_DIR)/libzic_$*.so $(INC) $(OBJ_DIR)/$*.o
+	g++ -shared -o $(BUILD_DIR)/libzic_$*.so $(INC) $(OBJ_DIR)/$*.o $(EXTRA)
 
 # Safeguard: include only if .d files exist
 -include $(wildcard $(OBJ_DIR)/*.d)

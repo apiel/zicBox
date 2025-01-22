@@ -40,6 +40,8 @@ protected:
 
     int clipH = 17;
 
+    int visibleCount = 10;
+
     uint8_t selectionBank = 30;
 
     KeypadLayout keypadLayout;
@@ -142,6 +144,7 @@ public:
         })
     {
     }
+
     void render()
     {
         if (updatePosition()) {
@@ -149,9 +152,12 @@ public:
             if (valVariation) {
                 int playingId = valVariation->get();
                 int count = variations.size();
-                for (int i = 0; i < count; i++) {
+                int selection = view->contextVar[selectionBank];
+                int start = selection >= visibleCount ? selection - visibleCount + 1 : 0;
+                for (int i = start, v = 0; i < count && v < visibleCount; i++, v++) {
                     Variation& variation = variations[i];
-                    int y = relativePosition.y + i * clipH;
+                    // int y = relativePosition.y + i * clipH;
+                    int y = relativePosition.y + (i - start) * clipH;
 
                     if (variation.exists && i == playingId) {
                         draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { darken(barColor, 0.8) });
@@ -179,7 +185,7 @@ public:
                         draw.textCentered({ relativePosition.x + (int)(size.w * 0.5), y + (int)((clipH - 8) * 0.5) }, std::to_string(i + 1), 8, { textColor, .maxWidth = size.w });
                     }
 
-                    if (isActive && i == view->contextVar[selectionBank]) {
+                    if (isActive && i == selection) {
                         draw.rect({ relativePosition.x, y }, { size.w, clipH - 2 }, { barColor });
                     }
                 }
@@ -254,6 +260,12 @@ public:
                 bool exists = pluginSerialize->data(pluginSerialize->getDataId("GET_VARIATION"), &i) != NULL;
                 variations.push_back({ exists });
             }
+            return true;
+        }
+
+        /*md - `VISIBLE_COUNT: number` set the number of visible clips. */
+        if (strcmp(key, "VISIBLE_COUNT") == 0) {
+            visibleCount = atoi(value);
             return true;
         }
 

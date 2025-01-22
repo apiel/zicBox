@@ -1,5 +1,6 @@
 ## Pixel TODO
 
+- TODO toggle clip should play next, instead of right away. If it is already selected to play next, a second clip would trigger it to play right away. 
 - TODO clips should be the master view
     - from there allow to do the mixing part giving free slot for extra parameter in drum synths
 

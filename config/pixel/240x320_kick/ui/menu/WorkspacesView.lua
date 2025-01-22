@@ -31,7 +31,7 @@ function ____exports.WorkspacesView(____bindingPattern0)
             TextGrid,
             {position = KeyInfoPosition, rows = {"&empty &icon::arrowUp::filled ...", "Use &icon::arrowDown::filled Exit"}},
             React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 0}),
-            React.createElement(Keymap, {key = "d", action = "setView:Drum23"}),
+            React.createElement(Keymap, {key = "d", action = "setView:Clips"}),
             React.createElement(Keymap, {key = "e", action = "contextToggle:254:1:0"})
         ),
         React.createElement(
