@@ -63,8 +63,7 @@ plugin("Volume EffectVolumeClipping", [{ track }]);
 plugin('SerializeTrack', [{ track, filename: 'sample', MAX_VARIATION, WORKSPACE_FOLDER }]);
 
 plugin('Mixer');
-plugin('SerializeTrack', [{ filename: 'mixer', MAX_VARIATION, WORKSPACE_FOLDER }]);
-
+plugin("Volume EffectVolumeClipping");
 plugin('Tape', [{ filename: 'kick', max_track: 5 }]);
 plugin('AudioOutput');
 plugin('SerializeTrack', [{ filename: 'master', MAX_VARIATION, WORKSPACE_FOLDER }]);
