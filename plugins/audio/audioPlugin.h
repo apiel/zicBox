@@ -18,8 +18,9 @@ enum AudioEventType {
     PAUSE,
     TOGGLE_PLAY_PAUSE,
     AUTOSAVE,
+    RELOAD_WORKSPACE,
+    SEQ_LOOP,
     COUNT,
-    RELOAD_WORKSPACE
 };
 
 AudioEventType getEventTypeFromName(std::string name)
@@ -32,6 +33,12 @@ AudioEventType getEventTypeFromName(std::string name)
         return AudioEventType::PAUSE;
     } else if (name == "TOGGLE_PLAY_PAUSE") {
         return AudioEventType::TOGGLE_PLAY_PAUSE;
+    } else if (name == "AUTOSAVE") {
+        return AudioEventType::AUTOSAVE;
+    } else if (name == "RELOAD_WORKSPACE") {
+        return AudioEventType::RELOAD_WORKSPACE;
+    } else if (name == "SEQ_LOOP") {
+        return AudioEventType::SEQ_LOOP;
     }
     return AudioEventType::COUNT;
 }
@@ -43,7 +50,7 @@ public:
     virtual AudioPlugin* getPluginPtr(const char* name, int16_t track = -1) = 0;
     virtual AudioPlugin& getPlugin(const char* name, int16_t track = -1) = 0;
     virtual void clockTick() = 0;
-    virtual void sendEvent(AudioEventType event) = 0;
+    virtual void sendEvent(AudioEventType event, int16_t track = -1) = 0;
 
     struct NoteTarget {
         int16_t track = -1;

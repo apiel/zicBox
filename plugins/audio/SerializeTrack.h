@@ -155,7 +155,9 @@ public:
 
     void onEvent(AudioEventType event, bool isPlaying) override
     {
-        if (event == AudioEventType::AUTOSAVE) {
+        if (event == AudioEventType::SEQ_LOOP) {
+            // printf(">>> SerializeTrack::onEvent SEQ_LOOP on track %d\n", track);
+        } else if (event == AudioEventType::AUTOSAVE) {
             if (!initialized) {
                 m.lock();
                 hydrate();

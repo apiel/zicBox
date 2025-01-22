@@ -105,6 +105,7 @@ protected:
         if (stepCounter >= MAX_STEPS) {
             stepCounter = 0;
             loopCounter++;
+            props.audioPluginHandler->sendEvent(AudioEventType::SEQ_LOOP, track);
             if (state == Status::NEXT) {
                 status.set(Status::ON);
             }
