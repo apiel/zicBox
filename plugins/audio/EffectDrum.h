@@ -2,6 +2,7 @@
 #define _EFFECT_DRUM_H_
 
 #include "audioPlugin.h"
+#include "filter.h"
 #include "mapping.h"
 
 /*md
@@ -11,6 +12,8 @@ EffectDrum plugin is used to apply effect to drum tracks.
 */
 class EffectDrum : public Mapping {
 protected:
+    EffectFilterData filter;
+
     float applyDrive(float input)
     {
         if (driveAmount == 0.0f) {
@@ -50,6 +53,8 @@ protected:
         return signal * (1.0f - mix) + reverbSignal * mix;
     }
 
+    std::string valueFmt = "%d%% LP|HP %d%%";
+
 public:
     float vol = 1.0;
     float driveAmount = 0.0f;
@@ -73,6 +78,27 @@ public:
     // TODO negative should do something else...
     /*md - REVERB controls delay time, feedback, and mix with one parameter. */
     Val& reverb = val(0.0f, "REVERB", { "Reverb", .unit = "%" });
+    /*md - `CUTOFF` to set cutoff frequency and switch between low and high pass filter. */
+    Val& cutoff = val(50.0, "CUTOFF", { "LPF | HPF", .type = VALUE_CENTERED }, [&](auto p) {
+        // setCutoff(p.value);
+        p.val.setFloat(p.value);
+        float mixValue = p.val.pct() * 2 - 1;
+        if (mixValue > 0) {
+           filter.setCutoff((0.20 * mixValue) + 0.00707); 
+        } else {
+            filter.setCutoff(0.85 * (-mixValue) + 0.1);
+        }
+        // hpf.setCutoff((0.20 * mixValue) + 0.00707);
+        // lpf.setCutoff(0.85 * mixValue + 0.1);
+        char strBuf[128];
+        sprintf(strBuf, valueFmt.c_str(), (int)((1 - mixValue) * 100), (int)(mixValue * 100));
+        p.val.setString(strBuf);
+    });
+    /*md - `RESONANCE` to set resonance. */
+    Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        filter.setResonance(resonance.pct());
+    });
 
     EffectDrum(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -83,6 +109,13 @@ public:
     void sample(float* buf)
     {
         float output = buf[track];
+        if (cutoff.pct() > 0.5) {
+            filter.setSampleData(output);
+            output = filter.hp;
+        } else if (cutoff.pct() < 0.5) {
+            filter.setSampleData(output);
+            output = filter.lp;
+        }
         output = applyDrive(output);
         output = applyReverb(output);
         buf[track] = output * vol;
