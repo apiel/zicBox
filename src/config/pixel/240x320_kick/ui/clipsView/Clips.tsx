@@ -36,7 +36,7 @@ export function Clips({ color, track, group, title, group_all }: Props) {
                         { key: 's', action: '.down', context: '254:0' },
 
                         // { key: 'q', action: '.next', context: '254:1' },
-                        { key: 's', action: '.delete', context: '254:1' },
+                        { key: 'a', action: '.delete', context: '254:1' },
                         { key: 'w', action: '.save', context: '254:1' },
                     ]}
                 />

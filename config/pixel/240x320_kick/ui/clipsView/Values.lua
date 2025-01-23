@@ -2,6 +2,10 @@ local ____lualib = require("lualib_bundle")
 local __TS__ObjectAssign = ____lualib.__TS__ObjectAssign
 local ____exports = {}
 local React = require("config.libs.react")
+local ____HiddenValue = require("config.libs.components.HiddenValue")
+local HiddenValue = ____HiddenValue.HiddenValue
+local ____Keymap = require("config.libs.components.Keymap")
+local Keymap = ____Keymap.Keymap
 local ____Rect = require("config.libs.components.Rect")
 local Rect = ____Rect.Rect
 local ____Value = require("config.libs.components.Value")
@@ -35,6 +39,11 @@ function ____exports.MasterValues(____bindingPattern0)
     return React.createElement(
         VisibilityContainer,
         {position = posContainer, group = group},
+        React.createElement(
+            HiddenValue,
+            nil,
+            React.createElement(Keymap, {key = "s", action = "setView:Drum23", context = "254:1"})
+        ),
         React.createElement(Rect, {position = {0, 0, ScreenWidth, posContainer[4]}}),
         React.createElement(
             Value,
@@ -66,6 +75,11 @@ function ____exports.Drum23Values(____bindingPattern0)
     return React.createElement(
         VisibilityContainer,
         {position = posContainer, group = group},
+        React.createElement(
+            HiddenValue,
+            nil,
+            React.createElement(Keymap, {key = "s", action = "setView:Drum23", context = "254:1"})
+        ),
         React.createElement(
             Value,
             __TS__ObjectAssign({
@@ -117,6 +131,11 @@ function ____exports.FmValues(____bindingPattern0)
         VisibilityContainer,
         {position = posContainer, group = group},
         React.createElement(
+            HiddenValue,
+            nil,
+            React.createElement(Keymap, {key = "s", action = "setView:Fm", context = "254:1"})
+        ),
+        React.createElement(
             Value,
             __TS__ObjectAssign({
                 value = "TrackFx VOLUME",
@@ -167,9 +186,14 @@ function ____exports.SnareValues(____bindingPattern0)
         VisibilityContainer,
         {position = posContainer, group = group},
         React.createElement(
+            HiddenValue,
+            nil,
+            React.createElement(Keymap, {key = "s", action = "setView:Snare", context = "254:1"})
+        ),
+        React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "TrackFx VOLUME_DRIVE",
+                value = "TrackFx VOLUME",
                 position = topLeft,
                 group = group,
                 track = track,
@@ -217,9 +241,14 @@ function ____exports.HiHatValues(____bindingPattern0)
         VisibilityContainer,
         {position = posContainer, group = group},
         React.createElement(
+            HiddenValue,
+            nil,
+            React.createElement(Keymap, {key = "s", action = "setView:HiHat", context = "254:1"})
+        ),
+        React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "TrackFx VOLUME_DRIVE",
+                value = "TrackFx VOLUME",
                 position = topLeft,
                 group = group,
                 track = track,
@@ -267,9 +296,14 @@ function ____exports.SampleValues(____bindingPattern0)
         VisibilityContainer,
         {position = posContainer, group = group},
         React.createElement(
+            HiddenValue,
+            nil,
+            React.createElement(Keymap, {key = "s", action = "setView:Sample", context = "254:1"})
+        ),
+        React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "TrackFx VOLUME_DRIVE",
+                value = "TrackFx VOLUME",
                 position = topLeft,
                 group = group,
                 track = track,

@@ -41,7 +41,7 @@ function ____exports.Clips(____bindingPattern0)
                 {key = "q", action = ".toggle", context = "254:0"},
                 {key = "w", action = ".up", context = "254:0"},
                 {key = "s", action = ".down", context = "254:0"},
-                {key = "s", action = ".delete", context = "254:1"},
+                {key = "a", action = ".delete", context = "254:1"},
                 {key = "w", action = ".save", context = "254:1"}
             }})
         )

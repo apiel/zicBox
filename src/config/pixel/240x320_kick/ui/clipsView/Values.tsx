@@ -1,5 +1,7 @@
 import * as React from '@/libs/react';
 
+import { HiddenValue } from '@/libs/components/HiddenValue';
+import { Keymap } from '@/libs/components/Keymap';
 import { Rect } from '@/libs/components/Rect';
 import { Value } from '@/libs/components/Value';
 import { VisibilityContainer } from '@/libs/components/VisibilityContainer';
@@ -54,6 +56,9 @@ export const quaternary = {
 export function MasterValues({ group, track }: { group: number; track: number }) {
     return (
         <VisibilityContainer position={posContainer} group={group}>
+            <HiddenValue>
+                <Keymap key="s" action="setView:Drum23" context="254:1" />
+            </HiddenValue>
             <Rect position={[0, 0, ScreenWidth, posContainer[3]]} />
             <Value
                 value="Volume VOLUME"
@@ -95,6 +100,9 @@ export function MasterValues({ group, track }: { group: number; track: number })
 export function Drum23Values({ group, track }: { group: number; track: number }) {
     return (
         <VisibilityContainer position={posContainer} group={group}>
+            <HiddenValue>
+                <Keymap key="s" action="setView:Drum23" context="254:1" />
+            </HiddenValue>
             <Value
                 value="TrackFx VOLUME"
                 position={topLeft}
@@ -135,6 +143,9 @@ export function Drum23Values({ group, track }: { group: number; track: number })
 export function FmValues({ group, track }: { group: number; track: number }) {
     return (
         <VisibilityContainer position={posContainer} group={group}>
+            <HiddenValue>
+                <Keymap key="s" action="setView:Fm" context="254:1" />
+            </HiddenValue>
             <Value
                 value="TrackFx VOLUME"
                 position={topLeft}
@@ -175,8 +186,11 @@ export function FmValues({ group, track }: { group: number; track: number }) {
 export function SnareValues({ group, track }: { group: number; track: number }) {
     return (
         <VisibilityContainer position={posContainer} group={group}>
+            <HiddenValue>
+                <Keymap key="s" action="setView:Snare" context="254:1" />
+            </HiddenValue>
             <Value
-                value="TrackFx VOLUME_DRIVE"
+                value="TrackFx VOLUME"
                 position={topLeft}
                 group={group}
                 track={track}
@@ -232,8 +246,11 @@ export function SnareValues({ group, track }: { group: number; track: number }) 
 export function HiHatValues({ group, track }: { group: number; track: number }) {
     return (
         <VisibilityContainer position={posContainer} group={group}>
+            <HiddenValue>
+                <Keymap key="s" action="setView:HiHat" context="254:1" />
+            </HiddenValue>
             <Value
-                value="TrackFx VOLUME_DRIVE"
+                value="TrackFx VOLUME"
                 position={topLeft}
                 group={group}
                 track={track}
@@ -289,8 +306,11 @@ export function HiHatValues({ group, track }: { group: number; track: number }) 
 export function SampleValues({ group, track }: { group: number; track: number }) {
     return (
         <VisibilityContainer position={posContainer} group={group}>
+            <HiddenValue>
+                <Keymap key="s" action="setView:Sample" context="254:1" />
+            </HiddenValue>
             <Value
-                value="TrackFx VOLUME_DRIVE"
+                value="TrackFx VOLUME"
                 position={topLeft}
                 group={group}
                 track={track}
