@@ -23,7 +23,7 @@ function ____exports.SnareView(____bindingPattern0)
         View,
         {name = name},
         React.createElement(KnobValue, {
-            value = "TrackFx VOLUME_DRIVE",
+            value = "TrackFx VOLUME",
             position = topLeftKnob,
             encoder_id = 0,
             COLOR = "tertiary",

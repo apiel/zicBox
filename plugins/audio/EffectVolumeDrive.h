@@ -1,5 +1,5 @@
-#ifndef _EFFECT_VOLUME_DRIVE_H_
-#define _EFFECT_VOLUME_DRIVE_H_
+#ifndef _EFFECT_VOLUME_H_
+#define _EFFECT_VOLUME_H_
 
 #include "audioPlugin.h"
 #include "mapping.h"

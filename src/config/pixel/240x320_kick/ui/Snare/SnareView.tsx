@@ -15,7 +15,7 @@ export function SnareView({ name }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                value="TrackFx VOLUME_DRIVE"
+                value="TrackFx VOLUME"
                 position={topLeftKnob}
                 encoder_id={0}
                 COLOR="tertiary"

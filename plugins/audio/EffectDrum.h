@@ -60,8 +60,8 @@ public:
     float driveAmount = 0.0f;
 
     /*md **Values**: */
-    /*md - `VOLUME_DRIVE` to set volume. Till 100, it is the volume percentage, after 100 it is the gain. */
-    Val& volume = val(100.0f, "VOLUME_DRIVE", { "Vol.|Drive", VALUE_STRING, .max = 200.0f }, [&](auto p) {
+    /*md - `VOLUME` to set volume. Till 100, it is the volume percentage, after 100 it is the gain. */
+    Val& volume = val(100.0f, "VOLUME", { "Vol.|Drive", VALUE_STRING, .max = 200.0f }, [&](auto p) {
         p.val.setFloat(p.value);
         if (p.val.get() <= 100.0f) {
             driveAmount = 0.0f;
@@ -85,10 +85,10 @@ public:
         float mixValue = p.val.pct() * 2 - 1;
         if (mixValue > 0) {
            filter.setCutoff((0.20 * mixValue) + 0.00707);
-           p.val.setString("HP " + std::to_string((int)mixValue * 100) + "%");
+           p.val.setString("HP " + std::to_string((int)(mixValue * 100)) + "%");
         } else if (mixValue < 0) {
             filter.setCutoff(0.85 * (-mixValue) + 0.1);
-            p.val.setString("LP " + std::to_string((int)(-mixValue) * 100) + "%");
+            p.val.setString("LP " + std::to_string((int)((-mixValue) * 100)) + "%");
         } else {
             p.val.setString("0%");
         }
