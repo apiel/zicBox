@@ -30,11 +30,12 @@ export function Common({
             )}
 
             <TextGridSel
-                items={['Kick', 'Sample', '^...', '&empty', 'Clips', '&icon::play::filled']}
+                items={['Kick', 'Seq.', '^...', 'Seq.', 'Clips', '&icon::play::filled']}
                 keys={[
                     { key: 'q', action: 'setView:Drum23' },
-                    { key: 'w', action: `setView:Sample` },
+                    { key: 'w', action: `setView:Sequencer` },
                     { key: 'e', action: 'contextToggle:254:1:0' },
+                    { key: 'a', action: `setView:DrumsSeq` },
                     { key: 's', action: `setView:Clips` },
                     { key: 'd', action: 'playPause' },
                 ]}

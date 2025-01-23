@@ -66,7 +66,7 @@ export function DrumsSeqView({ name }: Props) {
                 position={KeyInfoPosition}
                 rows={[
                     '&icon::arrowUp::filled &empty ...',
-                    '&icon::arrowDown::filled Drums &icon::musicNote::pixelated',
+                    '&icon::arrowDown::filled Sample &icon::musicNote::pixelated',
                 ]}
             >
                 <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />

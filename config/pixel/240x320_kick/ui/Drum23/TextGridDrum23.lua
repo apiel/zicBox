@@ -26,7 +26,7 @@ function ____exports.TextGridDrum23(____bindingPattern0)
                 "Wave/Freq",
                 "...",
                 "Amp/Click",
-                "Seq.",
+                "Sample",
                 "&icon::musicNote::pixelated"
             },
             keys = {
@@ -34,7 +34,7 @@ function ____exports.TextGridDrum23(____bindingPattern0)
                 {key = "w", action = viewName == "Waveform" and "setView:Frequency" or "setView:Waveform"},
                 {key = "e", action = "contextToggle:254:1:0"},
                 {key = "a", action = viewName == "Amplitude" and "setView:Click" or "setView:Amplitude"},
-                {key = "s", action = "setView:Sequencer"},
+                {key = "s", action = viewName == "Sample" and "setView:Sample2" or "setView:Sample"},
                 {key = "d", action = "noteOn:Drum23:60"}
             },
             selected = selected,

@@ -79,7 +79,7 @@ function ____exports.DrumsSeqView(____bindingPattern0)
         }),
         React.createElement(
             TextGrid,
-            {position = KeyInfoPosition, rows = {"&icon::arrowUp::filled &empty ...", "&icon::arrowDown::filled Drums &icon::musicNote::pixelated"}},
+            {position = KeyInfoPosition, rows = {"&icon::arrowUp::filled &empty ...", "&icon::arrowDown::filled Sample &icon::musicNote::pixelated"}},
             React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 0}),
             React.createElement(Keymaps, {keys = {
                 {key = "q", action = "incGroup:-1"},
