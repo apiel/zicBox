@@ -6,7 +6,7 @@ import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
 import { TextGridDrums } from '../components/TextGridDrums';
 import { SampleTrack, ScreenWidth } from '../constants';
-import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
+import { bottomLeftKnob, topLeftKnob, topRightKnob } from '../constantsValue';
 
 export type Props = {
     name: string;
@@ -36,12 +36,12 @@ export function Sample2View({ name }: Props) {
                 COLOR="tertiary"
                 track={SampleTrack}
             />
-            <KnobValue
+            {/* <KnobValue
                 value="TrackFx REVERB"
                 position={bottomRightKnob}
                 encoder_id={3}
                 track={SampleTrack}
-            />
+            /> */}
 
             <Sample
                 position={[0, 245, ScreenWidth, 50]}

@@ -28,16 +28,16 @@ export function TextGridDrums({
             <Title title={target} />
             <Rect position={[rectX, 28, 6, 6]} color={color} />
             <TextGridSel
-                items={['Snare', 'Sample', '...', 'HiHat', 'Seq.', '&icon::musicNote::pixelated']}
+                items={['&empty', 'Sample', '...', '&empty', 'Seq.', '&icon::musicNote::pixelated']}
                 keys={[
-                    { key: 'q', action: viewName === 'Snare' ? 'setView:Snare2' : 'setView:Snare' },
+                    // { key: 'q', action: viewName === 'Snare' ? 'setView:Snare2' : 'setView:Snare' },
                     { key: 'w', action: viewName === 'Sample' ? 'setView:Sample2' : 'setView:Sample' },
                     { key: 'e', action: 'contextToggle:254:1:0' },
 
-                    {
-                        key: 'a',
-                        action: viewName === 'HiHat' ? 'setView:HiHat2' : 'setView:HiHat',
-                    },
+                    // {
+                    //     key: 'a',
+                    //     action: viewName === 'HiHat' ? 'setView:HiHat2' : 'setView:HiHat',
+                    // },
                     { key: 's', action: 'setView:DrumsSeq' },
                     { key: 'd', action: `noteOn:${target}:60` },
                 ]}

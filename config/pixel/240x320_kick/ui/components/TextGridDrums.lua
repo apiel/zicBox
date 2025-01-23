@@ -34,21 +34,14 @@ function ____exports.TextGridDrums(____bindingPattern0)
         React.createElement(Rect, {position = {rectX, 28, 6, 6}, color = color}),
         React.createElement(TextGridSel, {
             items = {
-                "Snare",
+                "&empty",
                 "Sample",
                 "...",
-                "HiHat",
+                "&empty",
                 "Seq.",
                 "&icon::musicNote::pixelated"
             },
-            keys = {
-                {key = "q", action = viewName == "Snare" and "setView:Snare2" or "setView:Snare"},
-                {key = "w", action = viewName == "Sample" and "setView:Sample2" or "setView:Sample"},
-                {key = "e", action = "contextToggle:254:1:0"},
-                {key = "a", action = viewName == "HiHat" and "setView:HiHat2" or "setView:HiHat"},
-                {key = "s", action = "setView:DrumsSeq"},
-                {key = "d", action = ("noteOn:" .. target) .. ":60"}
-            },
+            keys = {{key = "w", action = viewName == "Sample" and "setView:Sample2" or "setView:Sample"}, {key = "e", action = "contextToggle:254:1:0"}, {key = "s", action = "setView:DrumsSeq"}, {key = "d", action = ("noteOn:" .. target) .. ":60"}},
             selected = selected,
             contextValue = 0,
             ITEM_BACKGROUND = color

@@ -16,7 +16,6 @@ local SampleTrack = ____constants.SampleTrack
 local ScreenWidth = ____constants.ScreenWidth
 local ____constantsValue = require("config.pixel.240x320_kick.ui.constantsValue")
 local bottomLeftKnob = ____constantsValue.bottomLeftKnob
-local bottomRightKnob = ____constantsValue.bottomRightKnob
 local topLeftKnob = ____constantsValue.topLeftKnob
 local topRightKnob = ____constantsValue.topRightKnob
 function ____exports.Sample2View(____bindingPattern0)
@@ -46,7 +45,6 @@ function ____exports.Sample2View(____bindingPattern0)
             COLOR = "tertiary",
             track = SampleTrack
         }),
-        React.createElement(KnobValue, {value = "TrackFx REVERB", position = bottomRightKnob, encoder_id = 3, track = SampleTrack}),
         React.createElement(Sample, {
             position = {0, 245, ScreenWidth, 50},
             track = SampleTrack,

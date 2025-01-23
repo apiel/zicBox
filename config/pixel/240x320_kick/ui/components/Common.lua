@@ -34,16 +34,15 @@ function ____exports.Common(____bindingPattern0)
         ),
         React.createElement(TextGridSel, {items = {
             "Kick",
-            "Drums",
+            "Sample",
             "^...",
-            "Fm",
+            "&empty",
             "Clips",
             "&icon::play::filled"
         }, keys = {
             {key = "q", action = "setView:Drum23"},
-            {key = "w", action = "setView:Snare"},
+            {key = "w", action = "setView:Sample"},
             {key = "e", action = "contextToggle:254:1:0"},
-            {key = "a", action = "setView:Fm"},
             {key = "s", action = "setView:Clips"},
             {key = "d", action = "playPause"}
         }, selected = selected, contextValue = 1})
