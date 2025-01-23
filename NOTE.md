@@ -1,5 +1,13 @@
 ## Pixel TODO
 
+- IDEA could have a sample engine with 3 audio buffer, 3 browsers...
+    - and then a special sequencer to start a specific buffer (should it handle multi voice? not sure)
+        - seq can select buffer
+        - start point and end point
+        - velo ? but then it is more than 4 enc
+        - --> another option would be to load multiple sample in a single buffer, so only start and endpoint matter...
+        - or maybe not even sequencer but a way to build a sample...
+
 - TODO workspsace folder...
 
 - TODO getData and data, instead to use enum, use struct array
