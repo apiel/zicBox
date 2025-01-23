@@ -1,5 +1,7 @@
 ## Pixel TODO
 
+- TODO workspsace folder...
+
 - TODO getData and data, instead to use enum, use struct array
 
 - TODO should we merge sequencer and serializeTrack?

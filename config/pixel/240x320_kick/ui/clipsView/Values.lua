@@ -54,16 +54,6 @@ function ____exports.MasterValues(____bindingPattern0)
                 track = track,
                 encoder_id = 0
             }, ____exports.tertiary)
-        ),
-        React.createElement(
-            Value,
-            __TS__ObjectAssign({
-                value = "Volume GAIN_CLIPPING",
-                position = bottomLeft,
-                group = group,
-                track = track,
-                encoder_id = 1
-            }, ____exports.primary)
         )
     )
 end
@@ -93,16 +83,6 @@ function ____exports.Drum23Values(____bindingPattern0)
         React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "Drum23 GAIN_CLIPPING",
-                position = bottomLeft,
-                group = group,
-                track = track,
-                encoder_id = 1
-            }, ____exports.primary)
-        ),
-        React.createElement(
-            Value,
-            __TS__ObjectAssign({
                 value = "MMFilter CUTOFF",
                 position = topRight,
                 group = group,
@@ -114,171 +94,6 @@ function ____exports.Drum23Values(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "MMFilter RESONANCE",
-                position = bottomRight,
-                group = group,
-                track = track,
-                encoder_id = 3
-            }, ____exports.quaternary)
-        )
-    )
-end
-function ____exports.FmValues(____bindingPattern0)
-    local track
-    local group
-    group = ____bindingPattern0.group
-    track = ____bindingPattern0.track
-    return React.createElement(
-        VisibilityContainer,
-        {position = posContainer, group = group},
-        React.createElement(
-            HiddenValue,
-            nil,
-            React.createElement(Keymap, {key = "s", action = "setView:Fm", context = "254:1"})
-        ),
-        React.createElement(
-            Value,
-            __TS__ObjectAssign({
-                value = "TrackFx VOLUME",
-                position = topLeft,
-                group = group,
-                track = track,
-                encoder_id = 0
-            }, ____exports.tertiary)
-        ),
-        React.createElement(
-            Value,
-            __TS__ObjectAssign({
-                value = "FmDrum DISTORTION",
-                position = bottomLeft,
-                group = group,
-                track = track,
-                encoder_id = 1
-            }, ____exports.primary)
-        ),
-        React.createElement(
-            Value,
-            __TS__ObjectAssign({
-                value = "FmDrum REVERB",
-                position = topRight,
-                group = group,
-                track = track,
-                encoder_id = 2
-            }, ____exports.quaternary, {USE_STRING_VALUE = true})
-        ),
-        React.createElement(
-            Value,
-            __TS__ObjectAssign({
-                value = "FmDrum MOD_INDEX",
-                position = bottomRight,
-                group = group,
-                track = track,
-                encoder_id = 3
-            }, ____exports.secondary)
-        )
-    )
-end
-function ____exports.SnareValues(____bindingPattern0)
-    local track
-    local group
-    group = ____bindingPattern0.group
-    track = ____bindingPattern0.track
-    return React.createElement(
-        VisibilityContainer,
-        {position = posContainer, group = group},
-        React.createElement(
-            HiddenValue,
-            nil,
-            React.createElement(Keymap, {key = "s", action = "setView:Snare", context = "254:1"})
-        ),
-        React.createElement(
-            Value,
-            __TS__ObjectAssign({
-                value = "TrackFx VOLUME",
-                position = topLeft,
-                group = group,
-                track = track,
-                encoder_id = 0
-            }, ____exports.tertiary)
-        ),
-        React.createElement(
-            Value,
-            __TS__ObjectAssign({
-                value = "TrackFx REVERB",
-                position = bottomLeft,
-                group = group,
-                track = track,
-                encoder_id = 1
-            }, ____exports.primary)
-        ),
-        React.createElement(
-            Value,
-            __TS__ObjectAssign({
-                value = "TrackFx CUTOFF",
-                position = topRight,
-                group = group,
-                track = track,
-                encoder_id = 2
-            }, ____exports.quaternary, {USE_STRING_VALUE = true})
-        ),
-        React.createElement(
-            Value,
-            __TS__ObjectAssign({
-                value = "TrackFx RESONANCE",
-                position = bottomRight,
-                group = group,
-                track = track,
-                encoder_id = 3
-            }, ____exports.quaternary)
-        )
-    )
-end
-function ____exports.HiHatValues(____bindingPattern0)
-    local track
-    local group
-    group = ____bindingPattern0.group
-    track = ____bindingPattern0.track
-    return React.createElement(
-        VisibilityContainer,
-        {position = posContainer, group = group},
-        React.createElement(
-            HiddenValue,
-            nil,
-            React.createElement(Keymap, {key = "s", action = "setView:HiHat", context = "254:1"})
-        ),
-        React.createElement(
-            Value,
-            __TS__ObjectAssign({
-                value = "TrackFx VOLUME",
-                position = topLeft,
-                group = group,
-                track = track,
-                encoder_id = 0
-            }, ____exports.tertiary)
-        ),
-        React.createElement(
-            Value,
-            __TS__ObjectAssign({
-                value = "TrackFx REVERB",
-                position = bottomLeft,
-                group = group,
-                track = track,
-                encoder_id = 1
-            }, ____exports.primary)
-        ),
-        React.createElement(
-            Value,
-            __TS__ObjectAssign({
-                value = "TrackFx CUTOFF",
-                position = topRight,
-                group = group,
-                track = track,
-                encoder_id = 2
-            }, ____exports.quaternary, {USE_STRING_VALUE = true})
-        ),
-        React.createElement(
-            Value,
-            __TS__ObjectAssign({
-                value = "TrackFx RESONANCE",
                 position = bottomRight,
                 group = group,
                 track = track,
@@ -309,36 +124,6 @@ function ____exports.SampleValues(____bindingPattern0)
                 track = track,
                 encoder_id = 0
             }, ____exports.tertiary)
-        ),
-        React.createElement(
-            Value,
-            __TS__ObjectAssign({
-                value = "TrackFx REVERB",
-                position = bottomLeft,
-                group = group,
-                track = track,
-                encoder_id = 1
-            }, ____exports.primary)
-        ),
-        React.createElement(
-            Value,
-            __TS__ObjectAssign({
-                value = "TrackFx CUTOFF",
-                position = topRight,
-                group = group,
-                track = track,
-                encoder_id = 2
-            }, ____exports.quaternary, {USE_STRING_VALUE = true})
-        ),
-        React.createElement(
-            Value,
-            __TS__ObjectAssign({
-                value = "TrackFx RESONANCE",
-                position = bottomRight,
-                group = group,
-                track = track,
-                encoder_id = 3
-            }, ____exports.quaternary)
         )
     )
 end

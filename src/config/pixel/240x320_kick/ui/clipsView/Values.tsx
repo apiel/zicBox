@@ -68,14 +68,14 @@ export function MasterValues({ group, track }: { group: number; track: number })
                 encoder_id={0}
                 {...tertiary}
             />
-            <Value
+            {/* <Value
                 value="Volume GAIN_CLIPPING"
                 position={bottomLeft}
                 group={group}
                 track={track}
                 encoder_id={1}
                 {...primary}
-            />
+            /> */}
             {/* <Value
                 value="MMFilter CUTOFF"
                 position={topRight}
@@ -111,14 +111,14 @@ export function Drum23Values({ group, track }: { group: number; track: number })
                 encoder_id={0}
                 {...tertiary}
             />
-            <Value
+            {/* <Value
                 value="Drum23 GAIN_CLIPPING"
                 position={bottomLeft}
                 group={group}
                 track={track}
                 encoder_id={1}
                 {...primary}
-            />
+            /> */}
             <Value
                 value="MMFilter CUTOFF"
                 position={topRight}
@@ -130,169 +130,6 @@ export function Drum23Values({ group, track }: { group: number; track: number })
             />
             <Value
                 value="MMFilter RESONANCE"
-                position={bottomRight}
-                group={group}
-                track={track}
-                encoder_id={3}
-                {...quaternary}
-            />
-        </VisibilityContainer>
-    );
-}
-
-export function FmValues({ group, track }: { group: number; track: number }) {
-    return (
-        <VisibilityContainer position={posContainer} group={group}>
-            <HiddenValue>
-                <Keymap key="s" action="setView:Fm" context="254:1" />
-            </HiddenValue>
-            <Value
-                value="TrackFx VOLUME"
-                position={topLeft}
-                group={group}
-                track={track}
-                encoder_id={0}
-                {...tertiary}
-            />
-            <Value
-                value="FmDrum DISTORTION"
-                position={bottomLeft}
-                group={group}
-                track={track}
-                encoder_id={1}
-                {...primary}
-            />
-            <Value
-                value="FmDrum REVERB"
-                position={topRight}
-                group={group}
-                track={track}
-                encoder_id={2}
-                {...quaternary}
-                USE_STRING_VALUE
-            />
-            <Value
-                value="FmDrum MOD_INDEX"
-                position={bottomRight}
-                group={group}
-                track={track}
-                encoder_id={3}
-                {...secondary}
-            />
-        </VisibilityContainer>
-    );
-}
-
-export function SnareValues({ group, track }: { group: number; track: number }) {
-    return (
-        <VisibilityContainer position={posContainer} group={group}>
-            <HiddenValue>
-                <Keymap key="s" action="setView:Snare" context="254:1" />
-            </HiddenValue>
-            <Value
-                value="TrackFx VOLUME"
-                position={topLeft}
-                group={group}
-                track={track}
-                encoder_id={0}
-                {...tertiary}
-            />
-            <Value
-                value="TrackFx REVERB"
-                position={bottomLeft}
-                group={group}
-                track={track}
-                encoder_id={1}
-                {...primary}
-            />
-            {/* <Value
-                value="Snare NOISE_MIX"
-                position={topRight}
-                group={group}
-                track={track}
-                encoder_id={2}
-                {...quaternary}
-                USE_STRING_VALUE
-            />
-            <Value
-                value="Snare TRANSIENT_INTENSITY"
-                position={bottomRight}
-                group={group}
-                track={track}
-                encoder_id={3}
-                {...secondary}
-            /> */}
-            <Value
-                value="TrackFx CUTOFF"
-                position={topRight}
-                group={group}
-                track={track}
-                encoder_id={2}
-                {...quaternary}
-                USE_STRING_VALUE
-            />
-            <Value
-                value="TrackFx RESONANCE"
-                position={bottomRight}
-                group={group}
-                track={track}
-                encoder_id={3}
-                {...quaternary}
-            />
-        </VisibilityContainer>
-    );
-}
-
-export function HiHatValues({ group, track }: { group: number; track: number }) {
-    return (
-        <VisibilityContainer position={posContainer} group={group}>
-            <HiddenValue>
-                <Keymap key="s" action="setView:HiHat" context="254:1" />
-            </HiddenValue>
-            <Value
-                value="TrackFx VOLUME"
-                position={topLeft}
-                group={group}
-                track={track}
-                encoder_id={0}
-                {...tertiary}
-            />
-            <Value
-                value="TrackFx REVERB"
-                position={bottomLeft}
-                group={group}
-                track={track}
-                encoder_id={1}
-                {...primary}
-            />
-            {/* <Value
-                value="HiHat METALLIC_TONE_MIX"
-                position={topRight}
-                group={group}
-                track={track}
-                encoder_id={2}
-                {...quaternary}
-                USE_STRING_VALUE
-            />
-            <Value
-                value="HiHat BAND_Q"
-                position={bottomRight}
-                group={group}
-                track={track}
-                encoder_id={3}
-                {...secondary}
-            /> */}
-            <Value
-                value="TrackFx CUTOFF"
-                position={topRight}
-                group={group}
-                track={track}
-                encoder_id={2}
-                {...quaternary}
-                USE_STRING_VALUE
-            />
-            <Value
-                value="TrackFx RESONANCE"
                 position={bottomRight}
                 group={group}
                 track={track}
@@ -317,14 +154,14 @@ export function SampleValues({ group, track }: { group: number; track: number })
                 encoder_id={0}
                 {...tertiary}
             />
-            <Value
+            {/* <Value
                 value="TrackFx REVERB"
                 position={bottomLeft}
                 group={group}
                 track={track}
                 encoder_id={1}
                 {...primary}
-            />
+            /> */}
             {/* <Value
                 value="Sample START"
                 position={topRight}
@@ -342,7 +179,7 @@ export function SampleValues({ group, track }: { group: number; track: number })
                 encoder_id={3}
                 {...quaternary}
             /> */}
-            <Value
+            {/* <Value
                 value="TrackFx CUTOFF"
                 position={topRight}
                 group={group}
@@ -350,15 +187,15 @@ export function SampleValues({ group, track }: { group: number; track: number })
                 encoder_id={2}
                 {...quaternary}
                 USE_STRING_VALUE
-            />
-            <Value
+            /> */}
+            {/* <Value
                 value="TrackFx RESONANCE"
                 position={bottomRight}
                 group={group}
                 track={track}
                 encoder_id={3}
                 {...quaternary}
-            />
+            /> */}
         </VisibilityContainer>
     );
 }

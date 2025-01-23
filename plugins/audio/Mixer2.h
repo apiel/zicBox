@@ -7,8 +7,8 @@
 class Mixer2 : public Mapping {
 public:
     Val& mix = val(50.0f, "MIX", { "Mix", .type = VALUE_CENTERED });
-    uint8_t trackA = 0;
-    uint8_t trackB = 1;
+    uint8_t trackA = 1;
+    uint8_t trackB = 2;
 
     Mixer2(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)

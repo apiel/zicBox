@@ -8,7 +8,7 @@ import { View } from '@/libs/components/View';
 import { VisibilityContext } from '@/libs/components/VisibilityContext';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
-import { ColorTrack3, ColorTrack4, ColorTrack5, HiHatTrack, KeyInfoPosition, SampleTrack, ScreenWidth, SnareTrack } from '../constants';
+import { ColorTrack5, KeyInfoPosition, SampleTrack, ScreenWidth } from '../constants';
 
 // SHOW_PLAYING_STEP
 function Seq({
@@ -60,10 +60,6 @@ export function DrumsSeqView({ name }: Props) {
     let y = 0;
     return (
         <View name={name}>
-            <Text text=" Snare" position={[0, 0, w, 9]} background_color={ColorTrack3} color="text" />
-            <Seq x={0} w={w} track={SnareTrack} encoder={0} color={ColorTrack3} />
-            <Text text=" HiHat" position={[w, 0, w, 9]} background_color={ColorTrack4} color="text" />
-            <Seq x={w} w={w} track={HiHatTrack} encoder={1} color={ColorTrack4} />
             <Text text=" Sample" position={[2 * w, 0, w, 9]} background_color={ColorTrack5} color="text" />
             <Seq x={w * 2} w={w} track={SampleTrack} encoder={2} color={ColorTrack5} show_playing_step />
             <TextGrid
@@ -81,12 +77,12 @@ export function DrumsSeqView({ name }: Props) {
                         { key: 'e', action: 'contextToggle:254:1:0' },
 
                         { key: 'a', action: 'incGroup:+1' },
-                        { key: 's', action: 'setView:Snare' },
-                        { key: 'd', action: 'noteOn:Snare:60' },
+                        { key: 's', action: 'setView:Sample' },
+                        { key: 'd', action: 'noteOn:Sample:60' },
                     ]}
                 />
             </TextGrid>
-            <Common selected={0} hideSequencer track={SnareTrack} />
+            <Common selected={0} hideSequencer track={SampleTrack} />
         </View>
     );
 }
