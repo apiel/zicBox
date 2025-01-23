@@ -12,7 +12,7 @@
     </tr>
     <tr>
         <td><a href="https://github.com/apiel/zicBox/wiki/07-Hardware#zicpad"><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPad/zicpad.png" /></a></td>
-        <td><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPixel/pixel2.png" width='480' /></td>
+        <td><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPixel/pixel.png" width='480' /></td>
     </tr>
 </table>
 
