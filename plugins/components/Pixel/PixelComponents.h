@@ -40,6 +40,7 @@ void loadPixelComponents()
     viewManager.loadPlugin("Workspaces " + folder + "WorkspacesComponent.so");
     viewManager.loadPlugin("Sample " + folder + "SampleComponent.so");
     viewManager.loadPlugin("Tape " + folder + "TapeComponent.so");
+    viewManager.loadPlugin("SampleEditor " + folder + "SampleEditorComponent.so");
     viewManager.loadPlugin("MacroEnvelop " + folder + "MacroEnvelopComponent.so");
 }
 
@@ -66,6 +67,7 @@ void loadPixelComponents()
 #include "./StepEditDrumComponent.h"
 #include "./StepEditMonoComponent.h"
 #include "./TapeComponent.h"
+#include "./SampleEditorComponent.h"
 #include "./TextComponent.h"
 #include "./TextGridComponent.h"
 #include "./ValueComponent.h"
@@ -169,6 +171,10 @@ void loadPixelComponents()
 
     viewManager.plugins.push_back({ "Tape", [](ComponentInterface::Props props) {
                                        return new TapeComponent(props);
+                                   } });
+
+    viewManager.plugins.push_back({ "SampleEditor", [](ComponentInterface::Props props) {
+                                       return new SampleEditorComponent(props);
                                    } });
 
     viewManager.plugins.push_back({ "MacroEnvelop", [](ComponentInterface::Props props) {

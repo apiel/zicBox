@@ -22,7 +22,7 @@ function ____exports.TextGridClipsShifted()
         TextGrid,
         {position = KeyInfoPosition, rows = {"Menu Save ^...", "&icon::trash Back &icon::play::filled"}},
         React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 1}),
-        React.createElement(Keymaps, {keys = {{key = "d", action = "playPause"}, {key = "e", action = "contextToggle:254:1:0"}, {key = "q", action = "setView:Menu"}}})
+        React.createElement(Keymaps, {keys = {{key = "d", action = "playPause"}, {key = "e", action = "contextToggle:254:1:0"}, {key = "q", action = "setView:Drum23"}}})
     )
 end
 return ____exports

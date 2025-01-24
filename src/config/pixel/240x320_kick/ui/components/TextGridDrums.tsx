@@ -28,9 +28,9 @@ export function TextGridDrums({
             <Title title={target} />
             <Rect position={[rectX, 28, 6, 6]} color={color} />
             <TextGridSel
-                items={['&empty', 'Sample', '...', '&empty', 'Seq.', '&icon::musicNote::pixelated']}
+                items={['Editor', 'Sample', '...', '&empty', 'Seq.', '&icon::musicNote::pixelated']}
                 keys={[
-                    // { key: 'q', action: viewName === 'Snare' ? 'setView:Snare2' : 'setView:Snare' },
+                    { key: 'q', action: 'setView:SampleEditor' },
                     { key: 'w', action: viewName === 'Sample' ? 'setView:Sample2' : 'setView:Sample' },
                     { key: 'e', action: 'contextToggle:254:1:0' },
 
