@@ -37,7 +37,7 @@ export function TextGridClipsShifted() {
                 keys={[
                     { key: 'd', action: 'playPause' },
                     { key: 'e', action: 'contextToggle:254:1:0' },
-                    { key: 'q', action: 'setView:Drum23' },
+                    { key: 'q', action: 'setView:Menu' },
                 ]}
             />
         </TextGrid>
