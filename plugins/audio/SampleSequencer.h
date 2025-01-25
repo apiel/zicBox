@@ -59,7 +59,6 @@ public:
             // printf("Load filename %s\n", filename.c_str());
             file = sf_open(filename.c_str(), SFM_READ, &sfinfo);
             if (file) {
-                printf(">>>>>> success sampleCount %ld\n", (long)sfinfo.frames);
                 sampleCount = sfinfo.frames;
                 if (sfinfo.channels < channels) {
                     stepIncrement = 0.5f;
@@ -71,7 +70,6 @@ public:
                 setStart(fStart);
                 setEnd(fEnd);
             } else {
-                printf(">>>>>> failed\n");
                 logWarn("SampleSequencer: Could not open step file %s [%s]", filename.c_str(), sf_strerror(file));
             }
         }
@@ -120,6 +118,14 @@ protected:
         NEXT = 2
     };
 
+    static const uint64_t bufferSize = 48000 * 30; // 30sec at 48000Hz, 32sec at 44100Hz...
+    float sampleData[bufferSize];
+    struct SampleBuffer {
+        uint64_t count = 0;
+        float* data;
+    } sampleBuffer;
+    SNDFILE* yofile = NULL;
+
     void onStep()
     {
         stepCounter++;
@@ -141,6 +147,11 @@ protected:
             if (step.file && step.enabled && step.velocity > 0.0f) {
                 // printf("[%d] Play step %d\n", track, stepCounter);
                 activeStep = &step;
+                if (!yofile) {
+                    yofile = activeStep->file;
+                    sampleBuffer.count = sf_read_float(yofile, sampleData, bufferSize);
+                    sampleBuffer.data = sampleData;
+                }
                 sampleIndex = step.start;
             }
         }
@@ -253,25 +264,40 @@ public:
         }
     }
 
-#define CHUNK_SIZE 128
+    // #define CHUNK_SIZE 128
+    //     float sampleIndex = 0.0f;
+    //     float chunkBuffer[CHUNK_SIZE];
+    //     size_t chunkPosition = CHUNK_SIZE; // Start at CHUNK_SIZE to trigger initial load
+    //     void sample(float* buf) override
+    //     {
+    //         if (activeStep && activeStep->file && sampleIndex < activeStep->end) {
+    //             if (chunkPosition >= CHUNK_SIZE) {
+    //                 // sf_seek(activeStep->file, (int)sampleIndex, SEEK_SET);
+    //                 // size_t samplesRead = sf_read_float(activeStep->file, chunkBuffer, CHUNK_SIZE);
+
+    //                 sf_seek(yofile, (int)sampleIndex, SEEK_SET);
+    //                 size_t samplesRead = sf_read_float(yofile, chunkBuffer, CHUNK_SIZE);
+
+    //                 for (size_t i = samplesRead; i < CHUNK_SIZE; i++) {
+    //                     chunkBuffer[i] = 0.0f;
+    //                 }
+    //                 chunkPosition = 0;
+    //             }
+    //             buf[track] = chunkBuffer[chunkPosition];
+    //             chunkPosition++;
+    //             sampleIndex += activeStep->stepIncrement;
+    //         }
+    //     }
+
     float sampleIndex = 0.0f;
-    float chunkBuffer[CHUNK_SIZE];
-    size_t chunkPosition = CHUNK_SIZE; // Start at CHUNK_SIZE to trigger initial load
-    void sample(float* buf)
+    void sample(float* buf) override
     {
+        float out = 0.0f;
         if (activeStep && activeStep->file && sampleIndex < activeStep->end) {
-            if (chunkPosition >= CHUNK_SIZE) {
-                sf_seek(activeStep->file, (int)sampleIndex, SEEK_SET);
-                size_t samplesRead = sf_read_float(activeStep->file, chunkBuffer, CHUNK_SIZE);
-                for (size_t i = samplesRead; i < CHUNK_SIZE; i++) {
-                    chunkBuffer[i] = 0.0f;
-                }
-                chunkPosition = 0;
-            }
-            buf[track] = chunkBuffer[chunkPosition];
-            chunkPosition++;
+            out = sampleBuffer.data[(int)sampleIndex] * activeStep->velocity;
             sampleIndex += activeStep->stepIncrement;
         }
+        buf[track] = out;
     }
 
     // enum DATA_ID {
