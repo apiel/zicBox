@@ -56,6 +56,18 @@ public:
         std::string file = getFile(pos);
         return file.substr(0, file.find_last_of("."));
     }
+
+    bool find(std::string filename)
+    {
+        for (int i = 0; i < count; i++) {
+            if (files[i].filename() == filename) {
+                position = i + 1;
+                return true;
+            }
+        }
+        position = 0;
+        return false;
+    }
 };
 
 #endif

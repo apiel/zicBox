@@ -192,6 +192,12 @@ public:
         stepStart.set(selectedStepPtr->fStart * 100);
         stepEnd.set(selectedStepPtr->fEnd * 100);
         stepEnabled.set(selectedStepPtr->enabled ? 1.0 : 0.0);
+
+        if (fileBrowser.find(selectedStepPtr->filename)) {
+            stepFilename.set(fileBrowser.position);
+        } else {
+            stepFilename.set(0.0);
+        }
     });
 
     /*md - `STATUS` set status: off, on, next. Default: off
