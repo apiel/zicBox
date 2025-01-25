@@ -173,6 +173,18 @@ public:
             draw.line({ x, y }, { x, y + h }, { beatColor });
         }
 
+        // // Draw beat and quarter steps
+        // Color bg2 = lighten(background, 0.2);
+        // int w = size.w / 4;
+        // int x = relativePosition.x + (currentBeat % 2 ? w : 0);
+        // draw.filledRect({ x, relativePosition.y }, { w, size.h }, { bg2 });
+        // draw.filledRect({ x + w * 2, relativePosition.y }, { w, size.h }, { bg2 });
+
+        // int space = w / 4;
+        // for (int x = space; x < size.w; x += space) {
+        //     draw.line({ x, relativePosition.y }, { x, relativePosition.y + size.h }, { beatColor });
+        // }
+
         if (!rawBuffer.empty()) {
             std::vector<Point> waveformPoints;
             for (int i = 0; i < rawBuffer.size(); ++i) {
