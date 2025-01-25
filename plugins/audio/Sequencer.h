@@ -99,7 +99,7 @@ protected:
     void onStep()
     {
         stepCounter++;
-        // printf("[%d] stepCounter %d\n", track, stepCounter);
+        // printf("[%d] ------------------- seq stepCounter %d\n", track, stepCounter);
         uint8_t state = status.get();
         // If we reach the end of the sequence, we reset the step counter
         if (stepCounter >= MAX_STEPS) {
@@ -163,6 +163,7 @@ public:
 
     void onClockTick(uint64_t* clockCounter)
     {
+        // printf("[%d] Seq onClockTick %ld\n", track, *clockCounter);
         clockCounterPtr = clockCounter;
         // Clock events are sent at a rate of 24 pulses per quarter note
         // (24/4 = 6)
