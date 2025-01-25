@@ -1,9 +1,9 @@
 #ifndef _SAMPLE_SEQUENCER_H_
 #define _SAMPLE_SEQUENCER_H_
 
+#include <limits>
 #include <sndfile.h>
 #include <string>
-#include <limits>
 
 #include "audioPlugin.h"
 #include "helpers/midiNote.h"
@@ -80,13 +80,15 @@ protected:
     void onStep()
     {
         stepCounter++;
-        // printf("[%d] stepCounter %d\n", track, stepCounter);
+        printf("[%d] stepCounter %d\n", track, stepCounter);
         uint8_t state = status.get();
         // If we reach the end of the sequence, we reset the step counter
         if (stepCounter >= MAX_STEPS) {
             stepCounter = 0;
             loopCounter++;
-            props.audioPluginHandler->sendEvent(AudioEventType::SEQ_LOOP, track);
+            if (props.audioPluginHandler) {
+                props.audioPluginHandler->sendEvent(AudioEventType::SEQ_LOOP, track);
+            }
             if (state == Status::NEXT) {
                 status.set(Status::ON);
             }
@@ -113,7 +115,7 @@ public:
         selectedStepPtr->velocity = p.val.pct();
     });
     /*md - `STEP_LENGTH` set selected step length */
-    Val& stepLength = val(0.0f, "STEP_LENGTH", { "Len", .min = 1.0f, .max = std::numeric_limits<float>::max() }, [&](auto p) { 
+    Val& stepLength = val(0.0f, "STEP_LENGTH", { "Len", .min = 1.0f, .max = std::numeric_limits<float>::max() }, [&](auto p) {
         p.val.setFloat(p.value);
         selectedStepPtr->sampleCount = p.val.get();
     });
