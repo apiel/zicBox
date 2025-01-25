@@ -18,35 +18,24 @@ public:
     bool enabled = false;
     float velocity = 0.8f;
     uint64_t sampleCount = 0;
-    // uint64_t len = 0; // ?
+    uint64_t len = 0;
+    uint64_t start = 0;
     std::string filename;
     SNDFILE* file = NULL;
-
-    void reset()
-    {
-        enabled = false;
-        velocity = 0;
-        sampleCount = 0;
-        filename = "";
-        file = NULL;
-    }
-
-    bool equal(SampleStep& other)
-    {
-        return enabled == other.enabled
-            && velocity == other.velocity
-            && filename == other.filename
-            && sampleCount == other.sampleCount;
-    }
 
     void setVelocity(float velocity)
     {
         this->velocity = range(velocity, 0.0, 1.0);
     }
 
-    void setSampleCount(uint64_t count)
+    void setLength(uint64_t len)
     {
-        this->sampleCount = count;
+        this->len = range(len, start, sampleCount);
+    }
+
+    void setStart(uint64_t start)
+    {
+        this->start = range(start, 0, sampleCount);
     }
 
     std::string serialize()
