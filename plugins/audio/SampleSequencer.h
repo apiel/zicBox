@@ -103,6 +103,7 @@ protected:
     SampleStep* activeStep = NULL;
     SampleStep* selectedStepPtr = &steps[0];
 
+    // uint8_t stepCounter = 31;
     uint8_t stepCounter = 0;
     bool isPlaying = false;
     uint8_t loopCounter = 0;
@@ -130,7 +131,7 @@ protected:
     {
         stepCounter++;
         uint8_t state = status.get();
-        // printf("[%d] stepCounter %d status %d\n", track, stepCounter, state);
+        // printf("[%d] ------------------- sampleSeq stepCounter %d status %d\n", track, stepCounter, state);
         // If we reach the end of the sequence, we reset the step counter
         if (stepCounter >= MAX_STEPS) {
             stepCounter = 0;
@@ -145,7 +146,7 @@ protected:
         if (state == Status::ON) {
             SampleStep& step = steps[stepCounter];
             if (step.file && step.enabled && step.velocity > 0.0f) {
-                // printf("[%d] Play step %d\n", track, stepCounter);
+                // printf("[%d] ++++++Sample seq Play step %d\n", track, stepCounter);
                 activeStep = &step;
                 if (!yofile) {
                     yofile = activeStep->file;
@@ -238,6 +239,7 @@ public:
 
     void onClockTick(uint64_t* clockCounter)
     {
+        // printf("[%d] sampleSeq onClockTick %ld\n", track, *clockCounter);
         clockCounterPtr = clockCounter;
         // Clock events are sent at a rate of 24 pulses per quarter note
         // (24/4 = 6)
@@ -264,41 +266,41 @@ public:
         }
     }
 
-    // #define CHUNK_SIZE 128
-    //     float sampleIndex = 0.0f;
-    //     float chunkBuffer[CHUNK_SIZE];
-    //     size_t chunkPosition = CHUNK_SIZE; // Start at CHUNK_SIZE to trigger initial load
-    //     void sample(float* buf) override
-    //     {
-    //         if (activeStep && activeStep->file && sampleIndex < activeStep->end) {
-    //             if (chunkPosition >= CHUNK_SIZE) {
-    //                 // sf_seek(activeStep->file, (int)sampleIndex, SEEK_SET);
-    //                 // size_t samplesRead = sf_read_float(activeStep->file, chunkBuffer, CHUNK_SIZE);
+    #define CHUNK_SIZE 128
+        float sampleIndex = 0.0f;
+        float chunkBuffer[CHUNK_SIZE];
+        size_t chunkPosition = CHUNK_SIZE; // Start at CHUNK_SIZE to trigger initial load
+        void sample(float* buf) override
+        {
+            if (activeStep && activeStep->file && sampleIndex < activeStep->end) {
+                if (chunkPosition >= CHUNK_SIZE) {
+                    sf_seek(activeStep->file, (int)sampleIndex, SEEK_SET);
+                    size_t samplesRead = sf_read_float(activeStep->file, chunkBuffer, CHUNK_SIZE);
 
-    //                 sf_seek(yofile, (int)sampleIndex, SEEK_SET);
-    //                 size_t samplesRead = sf_read_float(yofile, chunkBuffer, CHUNK_SIZE);
+                    // sf_seek(yofile, (int)sampleIndex, SEEK_SET);
+                    // size_t samplesRead = sf_read_float(yofile, chunkBuffer, CHUNK_SIZE);
 
-    //                 for (size_t i = samplesRead; i < CHUNK_SIZE; i++) {
-    //                     chunkBuffer[i] = 0.0f;
-    //                 }
-    //                 chunkPosition = 0;
-    //             }
-    //             buf[track] = chunkBuffer[chunkPosition];
-    //             chunkPosition++;
-    //             sampleIndex += activeStep->stepIncrement;
-    //         }
-    //     }
-
-    float sampleIndex = 0.0f;
-    void sample(float* buf) override
-    {
-        float out = 0.0f;
-        if (activeStep && activeStep->file && sampleIndex < activeStep->end) {
-            out = sampleBuffer.data[(int)sampleIndex] * activeStep->velocity;
-            sampleIndex += activeStep->stepIncrement;
+                    for (size_t i = samplesRead; i < CHUNK_SIZE; i++) {
+                        chunkBuffer[i] = 0.0f;
+                    }
+                    chunkPosition = 0;
+                }
+                buf[track] = chunkBuffer[chunkPosition];
+                chunkPosition++;
+                sampleIndex += activeStep->stepIncrement;
+            }
         }
-        buf[track] = out;
-    }
+
+    // float sampleIndex = 0.0f;
+    // void sample(float* buf) override
+    // {
+    //     float out = 0.0f;
+    //     if (activeStep && activeStep->file && sampleIndex < activeStep->end) {
+    //         out = sampleBuffer.data[(int)sampleIndex] * activeStep->velocity;
+    //         sampleIndex += activeStep->stepIncrement;
+    //     }
+    //     buf[track] = out;
+    // }
 
     // enum DATA_ID {
     //     STEPS,
