@@ -1,9 +1,18 @@
-import { applyZic, ZicValue } from './core';
+import { applyZic, buildPlateform, ZicValue } from './core';
 
 export type Position = string | string[] | number[];
 
 export function getPosition(pos: Position) {
     return Array.isArray(pos) ? pos.join(' ') : pos;
+}
+
+export function pluginComponent(name: string, pluginPath: string) {
+    applyZic([
+        {
+            PLUGIN_COMPONENT:
+                name + ' @/plugins/components/Pixel/build/' + buildPlateform() + '/' + pluginPath,
+        },
+    ]);
 }
 
 /**

@@ -16,7 +16,7 @@ void loadPixelComponents()
 
     ViewManager& viewManager = ViewManager::get();
 
-    viewManager.loadPlugin("TextGrid " + folder + "TextGridComponent.so");
+    // viewManager.loadPlugin("TextGrid " + folder + "TextGridComponent.so");
     viewManager.loadPlugin("DrumEnvelop " + folder + "DrumEnvelopComponent.so");
     viewManager.loadPlugin("KnobValue " + folder + "KnobValueComponent.so");
     viewManager.loadPlugin("HiddenValue " + folder + "HiddenValueComponent.so");

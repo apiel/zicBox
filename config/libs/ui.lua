@@ -6,8 +6,12 @@ local __TS__StringPadStart = ____lualib.__TS__StringPadStart
 local ____exports = {}
 local ____core = require("config.libs.core")
 local applyZic = ____core.applyZic
+local buildPlateform = ____core.buildPlateform
 function ____exports.getPosition(pos)
     return __TS__ArrayIsArray(pos) and __TS__ArrayJoin(pos, " ") or pos
+end
+function ____exports.pluginComponent(name, pluginPath)
+    applyZic({{PLUGIN_COMPONENT = (((name .. " @/plugins/components/Pixel/build/") .. buildPlateform()) .. "/") .. pluginPath}})
 end
 --- Create a component
 -- 
