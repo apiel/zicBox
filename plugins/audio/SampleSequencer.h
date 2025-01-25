@@ -6,6 +6,7 @@
 #include <string>
 
 #include "audioPlugin.h"
+#include "fileBrowser.h"
 #include "helpers/midiNote.h"
 #include "log.h"
 #include "mapping.h"
@@ -106,6 +107,8 @@ protected:
 
     AudioPlugin* targetPlugin = NULL;
 
+    FileBrowser fileBrowser = FileBrowser("./samples");
+
     enum Status {
         MUTED = 0,
         ON = 1,
@@ -161,6 +164,23 @@ public:
         selectedStepPtr->enabled = p.val.get() > 0.5;
         p.val.setString(selectedStepPtr->enabled ? (char*)"ON" : (char*)"OFF");
     });
+    /*md - `STEP_FILENAME` select sample file for selected step */
+    Val& stepFilename = val(0.0f, "STEP_FILENAME", { "Wavefile", VALUE_STRING, .min = 0.0f, .max = (float)fileBrowser.count }, [&](auto p) {
+        p.val.setFloat(p.value);
+        int position = p.val.get();
+        if (position == 0) {
+            p.val.setString("---");
+            selectedStepPtr->setFilename("---", props.channels);
+        } else {
+            p.val.setString(fileBrowser.getFile(position));
+            std::string filepath = fileBrowser.getFilePath(position);
+
+            if (filepath != selectedStepPtr->filename || selectedStepPtr->file == NULL) {
+                selectedStepPtr->setFilename(filepath, props.channels);
+            }
+        }
+    });
+
     /*md - `SELECTED_STEP` select the step to edit */
     Val& selectedStep = val(0.0f, "SELECTED_STEP", { "Step", .min = 1.0f, .max = MAX_STEPS }, [&](auto p) {
         selectedStep.setFloat(p.value);
