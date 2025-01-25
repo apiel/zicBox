@@ -1,9 +1,9 @@
 import * as React from '@/libs/react';
 
-import { SampleEditor } from '@/libs/components/SampleEditor';
+import { StepEditSample } from '@/libs/components/StepEditSample';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
-import { TextGridDrums } from '../components/TextGridDrums';
+import { TextGridSel } from '../components/TextGridSel';
 import { SampleTrack, ScreenWidth } from '../constants';
 
 export type Props = {
@@ -13,10 +13,33 @@ export type Props = {
 export function SampleEditorView({ name }: Props) {
     return (
         <View name={name}>
-            <SampleEditor position={[0, 80, ScreenWidth, 100]} track={SampleTrack} />
+            <StepEditSample
+                position={[0, 0, ScreenWidth, 8]}
+                data={`SampleSequencer`}
+                // group={i}
+            />
 
-            <TextGridDrums selected={1} viewName={name} target="Sample" />
-            <Common selected={1} track={SampleTrack} />
+            <TextGridSel
+                items={['Editor', 'Sample', '...', '&empty', 'Seq.', '&icon::musicNote::pixelated']}
+                keys={[
+                    // { key: 'q', action: 'setView:SampleEditor' },
+                    // {
+                    //     key: 'w',
+                    //     action: viewName === 'Sample' ? 'setView:Sample2' : 'setView:Sample',
+                    // },
+                    // { key: 'e', action: 'contextToggle:254:1:0' },
+
+                    // // {
+                    // //     key: 'a',
+                    // //     action: viewName === 'HiHat' ? 'setView:HiHat2' : 'setView:HiHat',
+                    // // },
+                    // { key: 's', action: 'setView:DrumsSeq' },
+                    // { key: 'd', action: `noteOn:${target}:60` },
+                ]}
+                selected={0}
+                contextValue={0}
+            />
+            <Common selected={1} track={SampleTrack} hideSequencer />
         </View>
     );
 }

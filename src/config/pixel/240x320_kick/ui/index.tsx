@@ -16,7 +16,6 @@ import { MenuView } from './menu/menuView';
 import { ShutdownView } from './menu/ShutdownView';
 import { WorkspacesView } from './menu/WorkspacesView';
 import { Sample2View } from './Sample/Sample2View';
-import { SampleEditorView } from './Sample/SampleEditorView';
 import { SampleView } from './Sample/SampleView';
 import { SaveTapeView } from './tapeView/SaveTapeView';
 import { TapeView } from './tapeView/TapeView';
@@ -40,7 +39,7 @@ applyZic(<Drum23SeqView name="Sequencer" />);
 
 applyZic(<SampleView name="Sample" />);
 applyZic(<Sample2View name="Sample2" />);
-applyZic(<SampleEditorView name="SampleEditor" />);
+// applyZic(<SampleEditorView name="SampleEditor" />);
 
 applyZic(<DrumsSeqView name="DrumsSeq" />);
 

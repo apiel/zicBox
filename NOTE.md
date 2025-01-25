@@ -2,6 +2,8 @@
 
 - TODO should kick only version be instead bass line version ^^
 
+- TODO more steps in sample seq and sequencer
+
 - TODO workspsace folder...
 
 - TODO getData and data, instead to use enum, use struct array

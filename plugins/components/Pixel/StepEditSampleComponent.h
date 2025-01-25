@@ -112,35 +112,35 @@ public:
             int y = relativePosition.y;
             int x = relativePosition.x + 1;
 
-            x = relativePosition.x + 12;
-            draw.filledRect({ x, y + 2 }, { 50, 4 }, { barBackground });
-            draw.filledRect({ x, y + 2 }, { (int)(50 * step->velocity), 4 }, { bar });
+            // x = relativePosition.x + 12;
+            // draw.filledRect({ x, y + 2 }, { 50, 4 }, { barBackground });
+            // draw.filledRect({ x, y + 2 }, { (int)(50 * step->velocity), 4 }, { bar });
 
-            x = relativePosition.x + 70;
-            if (step->enabled) {
-                renderNote(x, y);
-            } else {
-                draw.text({ x, y }, "---", 8, { text2 });
-            }
+            // x = relativePosition.x + 70;
+            // if (step->enabled) {
+            //     renderNote(x, y);
+            // } else {
+            //     draw.text({ x, y }, "---", 8, { text2 });
+            // }
 
-            draw.text({ relativePosition.x + 110, y }, stepConditions[step->condition].name, 8, { text2 });
+            // draw.text({ relativePosition.x + 110, y }, stepConditions[step->condition].name, 8, { text2 });
 
-            std::string motionSteps = stepMotions[step->motion].name;
-            x = relativePosition.x + 156;
-            if (motionSteps == "---") {
-                draw.text({ x, y }, motionSteps, 8, { text2 });
-            } else {
-                char* motionStep = strtok((char*)motionSteps.c_str(), ",");
-                for (int i = 0; motionStep != NULL; i++) {
-                    x = draw.text({ x, y }, motionStep, 8, { i % 2 == 0 ? textMotion1 : textMotion2 });
-                    motionStep = strtok(NULL, ",");
-                }
-            }
+            // std::string motionSteps = stepMotions[step->motion].name;
+            // x = relativePosition.x + 156;
+            // if (motionSteps == "---") {
+            //     draw.text({ x, y }, motionSteps, 8, { text2 });
+            // } else {
+            //     char* motionStep = strtok((char*)motionSteps.c_str(), ",");
+            //     for (int i = 0; motionStep != NULL; i++) {
+            //         x = draw.text({ x, y }, motionStep, 8, { i % 2 == 0 ? textMotion1 : textMotion2 });
+            //         motionStep = strtok(NULL, ",");
+            //     }
+            // }
 
-            x = relativePosition.x + 193;
-            if ((seqPlayingPtr == NULL || seqPlaying) && notePlaying) {
-                draw.filledRect({ x, y + 1 }, { 6, 6 }, { playingColor });
-            }
+            // x = relativePosition.x + 193;
+            // if ((seqPlayingPtr == NULL || seqPlaying) && notePlaying) {
+            //     draw.filledRect({ x, y + 1 }, { 6, 6 }, { playingColor });
+            // }
         }
     }
 
@@ -191,14 +191,14 @@ public:
 
         /*md - `DATA: plugin_name get_step_data_id step_index [sequence_data_id] [counter_data_id]` set plugin target */
         if (strcmp(key, "DATA") == 0) {
-            plugin = &getPlugin(strtok(value, " "), track);
-            stepIndex = atoi(strtok(NULL, " "));
-            char* getStepDataIdStr = strtok(NULL, " ");
-            char* sequenceDataIdStr = strtok(NULL, " ");
-            char* counterDataIdStr = strtok(NULL, " ");
-            step = (Step*)plugin->data(plugin->getDataId(getStepDataIdStr != NULL ? getStepDataIdStr : "GET_STEP"), &stepIndex);
-            seqPlayingPtr = (bool*)plugin->data(plugin->getDataId(sequenceDataIdStr != NULL ? sequenceDataIdStr : "IS_PLAYING"));
-            stepCounter = (uint8_t*)plugin->data(plugin->getDataId(counterDataIdStr != NULL ? counterDataIdStr : "STEP_COUNTER"));
+            // plugin = &getPlugin(strtok(value, " "), track);
+            // stepIndex = atoi(strtok(NULL, " "));
+            // char* getStepDataIdStr = strtok(NULL, " ");
+            // char* sequenceDataIdStr = strtok(NULL, " ");
+            // char* counterDataIdStr = strtok(NULL, " ");
+            // step = (Step*)plugin->data(plugin->getDataId(getStepDataIdStr != NULL ? getStepDataIdStr : "GET_STEP"), &stepIndex);
+            // seqPlayingPtr = (bool*)plugin->data(plugin->getDataId(sequenceDataIdStr != NULL ? sequenceDataIdStr : "IS_PLAYING"));
+            // stepCounter = (uint8_t*)plugin->data(plugin->getDataId(counterDataIdStr != NULL ? counterDataIdStr : "STEP_COUNTER"));
             return true;
         }
 

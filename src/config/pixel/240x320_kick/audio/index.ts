@@ -31,6 +31,9 @@ plugin('Sequencer', [{ track }]);
 plugin('TrackFx EffectGainVolume', [{ track }]);
 plugin('SerializeTrack', [{ track, filename: 'sample', MAX_VARIATION, WORKSPACE_FOLDER }]);
 
+// plugin('SampleSequencer', [{ track: SampleTrack }]);
+// plugin('SerializeTrack', [{ track: SampleTrack, filename: 'sampleSeq', MAX_VARIATION, WORKSPACE_FOLDER }]);
+
 plugin('Mixer');
 plugin('Volume EffectGainVolume');
 plugin('Tape', [{ filename: 'kick', max_track: 2 }]);
