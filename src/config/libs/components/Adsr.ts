@@ -1,4 +1,4 @@
-import { getComponent, Position } from '@/libs/ui';
+import { getComponent, initializePlugin, Position } from '@/libs/ui';
 
 export interface Props {
     position: Position;
@@ -8,6 +8,7 @@ export interface Props {
 }
 
 export function Adsr({ position, plugin, values, ...props }: Props) {
+    initializePlugin('Adsr', 'libzic_AdsrComponent.so');
     return getComponent('Adsr', position, [
         { PLUGIN: plugin }, 
         { VALUES: values },

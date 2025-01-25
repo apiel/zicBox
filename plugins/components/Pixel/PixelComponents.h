@@ -17,31 +17,31 @@ void loadPixelComponents()
     ViewManager& viewManager = ViewManager::get();
 
     // viewManager.loadPlugin("TextGrid " + folder + "TextGridComponent.so");
-    viewManager.loadPlugin("DrumEnvelop " + folder + "DrumEnvelopComponent.so");
-    viewManager.loadPlugin("KnobValue " + folder + "KnobValueComponent.so");
-    viewManager.loadPlugin("HiddenValue " + folder + "HiddenValueComponent.so");
-    viewManager.loadPlugin("GraphEncoder " + folder + "GraphEncoderComponent.so");
-    viewManager.loadPlugin("StepEdit " + folder + "StepEditComponent.so");
-    viewManager.loadPlugin("StepEdit2 " + folder + "StepEdit2Component.so");
-    viewManager.loadPlugin("StepEditDrum " + folder + "StepEditDrumComponent.so");
-    viewManager.loadPlugin("StepEditMono " + folder + "StepEditMonoComponent.so");
-    viewManager.loadPlugin("FmAlgo " + folder + "FmAlgoComponent.so");
-    viewManager.loadPlugin("Adsr " + folder + "AdsrComponent.so");
-    viewManager.loadPlugin("Text " + folder + "TextComponent.so");
-    viewManager.loadPlugin("SeqBar " + folder + "SeqBarComponent.so");
-    viewManager.loadPlugin("SeqProgressBar " + folder + "SeqProgressBarComponent.so");
-    viewManager.loadPlugin("SeqSynthBar " + folder + "SeqSynthBarComponent.so");
-    viewManager.loadPlugin("Spectrogram " + folder + "SpectrogramComponent.so");
-    viewManager.loadPlugin("Value " + folder + "ValueComponent.so");
-    viewManager.loadPlugin("Rect " + folder + "RectComponent.so");
-    viewManager.loadPlugin("Clips " + folder + "ClipsComponent.so");
-    viewManager.loadPlugin("Keyboard " + folder + "KeyboardComponent.so");
-    viewManager.loadPlugin("List " + folder + "ListComponent.so");
-    viewManager.loadPlugin("Workspaces " + folder + "WorkspacesComponent.so");
-    viewManager.loadPlugin("Sample " + folder + "SampleComponent.so");
-    viewManager.loadPlugin("Tape " + folder + "TapeComponent.so");
-    viewManager.loadPlugin("SampleEditor " + folder + "SampleEditorComponent.so");
-    viewManager.loadPlugin("MacroEnvelop " + folder + "MacroEnvelopComponent.so");
+    // viewManager.loadPlugin("DrumEnvelop " + folder + "DrumEnvelopComponent.so");
+    // viewManager.loadPlugin("KnobValue " + folder + "KnobValueComponent.so");
+    // viewManager.loadPlugin("HiddenValue " + folder + "HiddenValueComponent.so");
+    // viewManager.loadPlugin("GraphEncoder " + folder + "GraphEncoderComponent.so");
+    // viewManager.loadPlugin("StepEdit " + folder + "StepEditComponent.so");
+    // viewManager.loadPlugin("StepEdit2 " + folder + "StepEdit2Component.so");
+    // viewManager.loadPlugin("StepEditDrum " + folder + "StepEditDrumComponent.so");
+    // viewManager.loadPlugin("StepEditMono " + folder + "StepEditMonoComponent.so");
+    // viewManager.loadPlugin("FmAlgo " + folder + "FmAlgoComponent.so");
+    // viewManager.loadPlugin("Adsr " + folder + "AdsrComponent.so");
+    // viewManager.loadPlugin("Text " + folder + "TextComponent.so");
+    // viewManager.loadPlugin("SeqBar " + folder + "SeqBarComponent.so");
+    // viewManager.loadPlugin("SeqProgressBar " + folder + "SeqProgressBarComponent.so");
+    // viewManager.loadPlugin("SeqSynthBar " + folder + "SeqSynthBarComponent.so");
+    // viewManager.loadPlugin("Spectrogram " + folder + "SpectrogramComponent.so");
+    // viewManager.loadPlugin("Value " + folder + "ValueComponent.so");
+    // viewManager.loadPlugin("Rect " + folder + "RectComponent.so");
+    // viewManager.loadPlugin("Clips " + folder + "ClipsComponent.so");
+    // viewManager.loadPlugin("Keyboard " + folder + "KeyboardComponent.so");
+    // viewManager.loadPlugin("List " + folder + "ListComponent.so");
+    // viewManager.loadPlugin("Workspaces " + folder + "WorkspacesComponent.so");
+    // viewManager.loadPlugin("Sample " + folder + "SampleComponent.so");
+    // viewManager.loadPlugin("Tape " + folder + "TapeComponent.so");
+    // viewManager.loadPlugin("SampleEditor " + folder + "SampleEditorComponent.so");
+    // viewManager.loadPlugin("MacroEnvelop " + folder + "MacroEnvelopComponent.so");
 }
 
 #else

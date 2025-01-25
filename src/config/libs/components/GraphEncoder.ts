@@ -1,4 +1,4 @@
-import { getComponent } from '@/libs/ui';
+import { getComponent, initializePlugin } from '@/libs/ui';
 import { ComponentProps } from './component';
 
 export type Props = ComponentProps & {
@@ -8,6 +8,7 @@ export type Props = ComponentProps & {
 };
 
 export function GraphEncoder({ position, track, plugin, data_id, encoders, ...props }: Props) {
+    initializePlugin('GraphEncoder', 'libzic_GraphEncoderComponent.so');
     return getComponent('GraphEncoder', position, [
         { track },
         { plugin },

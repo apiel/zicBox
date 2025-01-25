@@ -4,6 +4,7 @@ local __TS__ObjectRest = ____lualib.__TS__ObjectRest
 local ____exports = {}
 local ____ui = require("config.libs.ui")
 local getComponent = ____ui.getComponent
+local initializePlugin = ____ui.initializePlugin
 function ____exports.List(____bindingPattern0)
     local props
     local items
@@ -11,6 +12,7 @@ function ____exports.List(____bindingPattern0)
     position = ____bindingPattern0.position
     items = ____bindingPattern0.items
     props = __TS__ObjectRest(____bindingPattern0, {position = true, items = true})
+    initializePlugin("List", "libzic_ListComponent.so")
     return getComponent(
         "List",
         position,

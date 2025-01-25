@@ -1,3 +1,4 @@
+import { initializePlugin } from "../ui";
 
 export type Props = {
     controller?: string;
@@ -8,6 +9,7 @@ export type Props = {
 };
 
 export function Keymap({ controller, context, key, action, action2 }: Props) {
+    initializePlugin('Keymap', 'libzic_KeymapComponent.so');
     controller = controller || "Keyboard";
     if (context) {
         controller += `:${context}`;

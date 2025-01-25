@@ -3,6 +3,7 @@ local __TS__ObjectRest = ____lualib.__TS__ObjectRest
 local ____exports = {}
 local ____ui = require("config.libs.ui")
 local getComponent = ____ui.getComponent
+local initializePlugin = ____ui.initializePlugin
 function ____exports.Tape(____bindingPattern0)
     local props
     local track
@@ -10,6 +11,7 @@ function ____exports.Tape(____bindingPattern0)
     position = ____bindingPattern0.position
     track = ____bindingPattern0.track
     props = __TS__ObjectRest(____bindingPattern0, {position = true, track = true})
+    initializePlugin("Tape", "libzic_TapeComponent.so")
     return getComponent("Tape", position, {{track = track}, props})
 end
 return ____exports
