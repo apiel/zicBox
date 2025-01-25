@@ -23,7 +23,7 @@ public:
     float fEnd = 0.0f;
     uint64_t start = 0;
     float fStart = 0.0f;
-    std::string filename;
+    std::string filename = "---";
     SNDFILE* file = NULL;
     float stepIncrement = 1.0f;
 
@@ -45,17 +45,9 @@ public:
         start = fStart * sampleCount;
     }
 
-    std::string serialize()
-    {
-        return std::to_string(enabled) + " "
-            + fToString(velocity, 2) + " "
-            + std::to_string(fStart) + " "
-            + std::to_string(fEnd) + " "
-            + filename;
-    }
-
     void setFilename(std::string filename, uint8_t channels)
     {
+        printf(">>>>>> setFilename %s\n", filename.c_str());
         // Let's keep it easy for the moment each step has his own instance of SNDFILE
         // We gonna try to optimize later only if necessary by reusing the same SNDFILE
         if (file != NULL) {
@@ -67,6 +59,7 @@ public:
             // printf("Load filename %s\n", filename.c_str());
             file = sf_open(filename.c_str(), SFM_READ, &sfinfo);
             if (file) {
+                printf(">>>>>> success sampleCount %ld\n", (long)sfinfo.frames);
                 sampleCount = sfinfo.frames;
                 if (sfinfo.channels < channels) {
                     stepIncrement = 0.5f;
@@ -77,8 +70,20 @@ public:
                 }
                 setStart(fStart);
                 setEnd(fEnd);
+            } else {
+                printf(">>>>>> failed\n");
+                logWarn("SampleSequencer: Could not open step file %s [%s]", filename.c_str(), sf_strerror(file));
             }
         }
+    }
+
+    std::string serialize()
+    {
+        return std::to_string(enabled) + " "
+            + fToString(velocity, 2) + " "
+            + std::to_string(fStart) + " "
+            + std::to_string(fEnd) + " "
+            + filename;
     }
 
     void hydrate(std::string value, uint8_t channels)
