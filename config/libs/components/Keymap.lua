@@ -1,7 +1,5 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
-local ____ui = require("config.libs.ui")
-local initializePlugin = ____ui.initializePlugin
 function ____exports.Keymap(____bindingPattern0)
     local action2
     local action
@@ -13,7 +11,6 @@ function ____exports.Keymap(____bindingPattern0)
     key = ____bindingPattern0.key
     action = ____bindingPattern0.action
     action2 = ____bindingPattern0.action2
-    initializePlugin("Keymap", "libzic_KeymapComponent.so")
     controller = controller or "Keyboard"
     if context then
         controller = controller .. ":" .. context
