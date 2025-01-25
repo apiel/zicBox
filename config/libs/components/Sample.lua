@@ -3,6 +3,7 @@ local __TS__ObjectRest = ____lualib.__TS__ObjectRest
 local ____exports = {}
 local ____ui = require("config.libs.ui")
 local getComponent = ____ui.getComponent
+local initializePlugin = ____ui.initializePlugin
 function ____exports.Sample(____bindingPattern0)
     local props
     local plugin
@@ -20,6 +21,7 @@ function ____exports.Sample(____bindingPattern0)
         data_id = true,
         encoders = true
     })
+    initializePlugin("Sample", "libzic_SampleComponent.so")
     return getComponent("Sample", position, {{track = track}, {plugin = plugin}, props})
 end
 return ____exports

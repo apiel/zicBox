@@ -3,6 +3,7 @@ local __TS__ObjectRest = ____lualib.__TS__ObjectRest
 local ____exports = {}
 local ____ui = require("config.libs.ui")
 local getComponent = ____ui.getComponent
+local initializePlugin = ____ui.initializePlugin
 function ____exports.Workspaces(____bindingPattern0)
     local props
     local plugin
@@ -12,6 +13,7 @@ function ____exports.Workspaces(____bindingPattern0)
     track = ____bindingPattern0.track
     plugin = ____bindingPattern0.plugin
     props = __TS__ObjectRest(____bindingPattern0, {position = true, track = true, plugin = true})
+    initializePlugin("Workspaces", "libzic_WorkspacesComponent.so")
     return getComponent("Workspaces", position, {{track = track}, {plugin = plugin}, props})
 end
 return ____exports

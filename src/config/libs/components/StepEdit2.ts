@@ -1,4 +1,4 @@
-import { getComponent } from '@/libs/ui';
+import { getComponent, initializePlugin } from '@/libs/ui';
 import { ComponentProps } from './component';
 
 export type Props = ComponentProps & {
@@ -6,5 +6,6 @@ export type Props = ComponentProps & {
 };
 
 export function StepEdit2({ position, track, data, ...props }: Props) {
+    initializePlugin('StepEdit2', 'libzic_StepEdit2Component.so');
     return getComponent('StepEdit2', position, [{ track }, { data }, props]);
 }
