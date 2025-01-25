@@ -2,8 +2,6 @@
 
 - TODO should kick only version be instead bass line version ^^
 
-- TODO get rid of plugins/components/Pixel/PixelComponents.h and let .ts component taking care to load alias...
-
 - TODO workspsace folder...
 
 - TODO getData and data, instead to use enum, use struct array

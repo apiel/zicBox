@@ -6,6 +6,8 @@
 #define USE_COMPONENTS_SO
 #ifdef USE_COMPONENTS_SO
 
+// TODO to be removed?
+
 void loadPixelComponents()
 {
 #ifdef IS_RPI
