@@ -18,41 +18,73 @@ public:
     bool enabled = false;
     float velocity = 0.8f;
     uint64_t sampleCount = 0;
-    uint64_t len = 0;
+    uint64_t end = 0;
+    float fEnd = 0.0f;
     uint64_t start = 0;
+    float fStart = 0.0f;
     std::string filename;
     SNDFILE* file = NULL;
+    float stepIncrement = 1.0f;
 
     void setVelocity(float velocity)
     {
         this->velocity = range(velocity, 0.0, 1.0);
     }
 
-    void setLength(uint64_t len)
+    void setEnd(float value)
     {
-        this->len = range(len, start, sampleCount);
+        fEnd = range(value, fStart, 100.0);
+        end = fEnd * sampleCount;
     }
 
-    void setStart(uint64_t start)
+    void setStart(float value)
     {
-        this->start = range(start, 0, sampleCount);
+        // this->start = range(start, 0, sampleCount);
+        fStart = range(value, 0.0, fEnd);
+        start = fStart * sampleCount;
     }
 
     std::string serialize()
     {
         return std::to_string(enabled) + " "
             + fToString(velocity, 2) + " "
-            + std::to_string(sampleCount)
-            + " " + filename;
+            + std::to_string(fStart) + " "
+            + std::to_string(fEnd) + " "
+            + filename;
     }
 
-    void hydrate(std::string value)
+    void hydrate(std::string value, uint8_t channels)
     {
         // printf("hydrate %s\n", value.c_str());
         enabled = strtok((char*)value.c_str(), " ")[0] == '1';
         velocity = atof(strtok(NULL, " "));
-        sampleCount = atoi(strtok(NULL, " "));
+        fStart = atof(strtok(NULL, " "));
+        fEnd = atof(strtok(NULL, " "));
         filename = strtok(NULL, " ");
+
+        // Let's keep it easy for the moment each step has his own instance of SNDFILE
+        // We gonna try to optimize later only if necessary by reusing the same SNDFILE
+        if (file != NULL) {
+            sf_close(file);
+            file = NULL;
+        }
+        if (filename != "---") {
+            SF_INFO sfinfo;
+            // printf("Load filename %s\n", filename.c_str());
+            file = sf_open(filename.c_str(), SFM_READ, &sfinfo);
+            if (file) {
+                sampleCount = sfinfo.frames;
+                if (sfinfo.channels < channels) {
+                    stepIncrement = 0.5f;
+                } else if (sfinfo.channels > channels) {
+                    stepIncrement = 2.0f;
+                } else {
+                    stepIncrement = 1.0f;
+                }
+                setStart(fStart);
+                setEnd(fEnd);
+            }
+        }
     }
 };
 
@@ -80,8 +112,8 @@ protected:
     void onStep()
     {
         stepCounter++;
-        printf("[%d] stepCounter %d\n", track, stepCounter);
         uint8_t state = status.get();
+        // printf("[%d] stepCounter %d status %d\n", track, stepCounter, state);
         // If we reach the end of the sequence, we reset the step counter
         if (stepCounter >= MAX_STEPS) {
             stepCounter = 0;
@@ -92,12 +124,13 @@ protected:
             if (state == Status::NEXT) {
                 status.set(Status::ON);
             }
-
-            if (state == Status::ON) {
-                SampleStep& step = steps[stepCounter];
-                if (step.file && step.enabled && step.velocity > 0.0f) {
-                    activeStep = &step;
-                }
+        }
+        if (state == Status::ON) {
+            SampleStep& step = steps[stepCounter];
+            if (step.file && step.enabled && step.velocity > 0.0f) {
+                // printf("[%d] Play step %d\n", track, stepCounter);
+                activeStep = &step;
+                sampleIndex = step.start;
             }
         }
     }
@@ -173,8 +206,25 @@ public:
         }
     }
 
+#define CHUNK_SIZE 128
+    float sampleIndex = 0.0f;
+    float chunkBuffer[CHUNK_SIZE];
+    size_t chunkPosition = CHUNK_SIZE; // Start at CHUNK_SIZE to trigger initial load
     void sample(float* buf)
     {
+        if (activeStep && activeStep->file && sampleIndex < activeStep->end) {
+            if (chunkPosition >= CHUNK_SIZE) {
+                sf_seek(activeStep->file, (int)sampleIndex, SEEK_SET);
+                size_t samplesRead = sf_read_float(activeStep->file, chunkBuffer, CHUNK_SIZE);
+                for (size_t i = samplesRead; i < CHUNK_SIZE; i++) {
+                    chunkBuffer[i] = 0.0f;
+                }
+                chunkPosition = 0;
+            }
+            buf[track] = chunkBuffer[chunkPosition];
+            chunkPosition++;
+            sampleIndex += activeStep->stepIncrement;
+        }
     }
 
     void setSelectedStep(float value)
@@ -289,7 +339,7 @@ public:
         char* key = strtok((char*)value.c_str(), " ");
         if (strcmp(key, "STEP") == 0) {
             int index = atoi(strtok(NULL, " "));
-            steps[index].hydrate(strtok(NULL, ""));
+            steps[index].hydrate(strtok(NULL, ""), props.channels);
             return;
         }
         Mapping::hydrate(valCopy);
