@@ -18,6 +18,7 @@ pluginAlias("Sequencer", "libzic_Sequencer.so")
 pluginAlias("AudioOutput", "libzic_AudioOutputPulse.so")
 pluginAlias("Mixer", "libzic_Mixer2.so")
 pluginAlias("Tape", "libzic_TapeRecording.so")
+pluginAlias("SampleSequencer", "libzic_SampleSequencer.so")
 ____exports.STRING_CUTOFF_FORMAT = "%d%% %d%%"
 ____exports.MAX_VARIATION = 16
 local WORKSPACE_FOLDER = "workspaces_kick"
@@ -28,11 +29,8 @@ plugin("Distortion EffectDistortion2", {{track = track}})
 plugin("MMFilter EffectFilterMultiMode", {{STRING_CUTOFF_FORMAT = ____exports.STRING_CUTOFF_FORMAT, track = track}})
 plugin("TrackFx EffectGainVolume", {{track = track}})
 plugin("SerializeTrack", {{track = track, filename = "drum23", MAX_VARIATION = ____exports.MAX_VARIATION, WORKSPACE_FOLDER = WORKSPACE_FOLDER}})
-track = SampleTrack
-plugin("Sample", {{track = track}})
-plugin("Sequencer", {{track = track}})
-plugin("TrackFx EffectGainVolume", {{track = track}})
-plugin("SerializeTrack", {{track = track, filename = "sample", MAX_VARIATION = ____exports.MAX_VARIATION, WORKSPACE_FOLDER = WORKSPACE_FOLDER}})
+plugin("SampleSequencer", {{track = SampleTrack}})
+plugin("SerializeTrack", {{track = SampleTrack, filename = "sampleSeq", MAX_VARIATION = ____exports.MAX_VARIATION, WORKSPACE_FOLDER = WORKSPACE_FOLDER}})
 plugin("Mixer")
 plugin("Volume EffectGainVolume")
 plugin("Tape", {{filename = "kick", max_track = 2}})

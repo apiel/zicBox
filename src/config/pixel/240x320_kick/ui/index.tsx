@@ -1,7 +1,6 @@
 import { applyZic } from '@/libs/core';
 import * as React from '@/libs/react';
 import { addZoneEncoder, setScreenSize, setWindowPosition } from '@/libs/ui';
-import { ClipsView } from './clipsView/ClipsView';
 import { ScreenHeight, ScreenWidth, W1_2 } from './constants';
 import { AmpView } from './Drum23/AmpView';
 import { ClickView } from './Drum23/ClickView';
@@ -10,13 +9,10 @@ import { Drum23View } from './Drum23/Drum23View';
 import { FrequencyView } from './Drum23/FrequencyView';
 import { Drum23SeqView } from './Drum23/SeqView';
 import { WaveformView } from './Drum23/WaveformView';
-import { DrumsSeqView } from './DrumsSeq/DrumsSeqView';
 import { CreateWorkspaceView } from './menu/CreateWorkspaceView';
 import { MenuView } from './menu/menuView';
 import { ShutdownView } from './menu/ShutdownView';
 import { WorkspacesView } from './menu/WorkspacesView';
-import { Sample2View } from './Sample/Sample2View';
-import { SampleView } from './Sample/SampleView';
 import { SaveTapeView } from './tapeView/SaveTapeView';
 import { TapeView } from './tapeView/TapeView';
 
@@ -37,11 +33,11 @@ applyZic(<AmpView name="Amplitude" />);
 applyZic(<ClickView name="Click" />);
 applyZic(<Drum23SeqView name="Sequencer" />);
 
-applyZic(<SampleView name="Sample" />);
-applyZic(<Sample2View name="Sample2" />);
+// applyZic(<SampleView name="Sample" />);
+// applyZic(<Sample2View name="Sample2" />);
 // applyZic(<SampleEditorView name="SampleEditor" />);
 
-applyZic(<DrumsSeqView name="DrumsSeq" />);
+// applyZic(<DrumsSeqView name="DrumsSeq" />);
 
 applyZic(<MenuView name="Menu" />);
 applyZic(<WorkspacesView name="Workspaces" />);
@@ -51,4 +47,4 @@ applyZic(<ShutdownView name="Shutdown" />);
 applyZic(<TapeView name="Tape" />);
 applyZic(<SaveTapeView name="SaveTape" />);
 
-applyZic(<ClipsView name="Clips" />);
+// applyZic(<ClipsView name="Clips" />);

@@ -4,6 +4,8 @@
 
 - TODO more steps in sample seq and sequencer
 
+- TODO audio plugin do same as for component to load .so file
+
 - TODO workspsace folder...
 
 - TODO getData and data, instead to use enum, use struct array
