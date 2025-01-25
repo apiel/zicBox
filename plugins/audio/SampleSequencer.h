@@ -53,15 +53,8 @@ public:
             + filename;
     }
 
-    void hydrate(std::string value, uint8_t channels)
+    void setFilename(std::string filename, uint8_t channels)
     {
-        // printf("hydrate %s\n", value.c_str());
-        enabled = strtok((char*)value.c_str(), " ")[0] == '1';
-        velocity = atof(strtok(NULL, " "));
-        fStart = atof(strtok(NULL, " "));
-        fEnd = atof(strtok(NULL, " "));
-        filename = strtok(NULL, " ");
-
         // Let's keep it easy for the moment each step has his own instance of SNDFILE
         // We gonna try to optimize later only if necessary by reusing the same SNDFILE
         if (file != NULL) {
@@ -85,6 +78,16 @@ public:
                 setEnd(fEnd);
             }
         }
+    }
+
+    void hydrate(std::string value, uint8_t channels)
+    {
+        // printf("hydrate %s\n", value.c_str());
+        enabled = strtok((char*)value.c_str(), " ")[0] == '1';
+        velocity = atof(strtok(NULL, " "));
+        fStart = atof(strtok(NULL, " "));
+        fEnd = atof(strtok(NULL, " "));
+        setFilename(strtok(NULL, " "), channels);
     }
 };
 
@@ -137,20 +140,20 @@ protected:
 
 public:
     /*md **Values**: */
-    /*md - `DETUNE` detuning all playing step notes by semitones */
-    Val& detune = val(0.0f, "DETUNE", { "Detune", VALUE_CENTERED, -24.0f, 24.0f });
-
-    /*md - `SELECTED_STEP` select the step to edit */
-    Val& selectedStep = val(0.0f, "SELECTED_STEP", { "Step", .min = 1.0f, .max = MAX_STEPS }, [&](auto p) { setSelectedStep(p.value); });
     /*md - `STEP_VELOCITY` set selected step velocity */
     Val& stepVelocity = val(0.0f, "STEP_VELOCITY", { "Velocity" }, [&](auto p) {
         p.val.setFloat(p.value);
-        selectedStepPtr->velocity = p.val.pct();
+        selectedStepPtr->setVelocity(p.val.pct());
     });
-    /*md - `STEP_LENGTH` set selected step length */
-    Val& stepLength = val(0.0f, "STEP_LENGTH", { "Len", .min = 1.0f, .max = std::numeric_limits<float>::max() }, [&](auto p) {
+    /*md - `STEP_START` set selected step sample start point */
+    Val& stepStart = val(0.0f, "STEP_START", { "Start", .step = 0.1f, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
-        selectedStepPtr->sampleCount = p.val.get();
+        selectedStepPtr->setStart(p.val.pct());
+    });
+    /*md - `STEP_END` set selected step sample end point */
+    Val& stepEnd = val(0.0f, "STEP_END", { "End", .step = 0.1f, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        selectedStepPtr->setEnd(p.val.pct());
     });
     /*md - `STEP_ENABLED` toggle selected step */
     Val& stepEnabled = val(0.0f, "STEP_ENABLED", { "Enabled", VALUE_STRING, .max = 1 }, [&](auto p) {
@@ -158,6 +161,19 @@ public:
         selectedStepPtr->enabled = p.val.get() > 0.5;
         p.val.setString(selectedStepPtr->enabled ? (char*)"ON" : (char*)"OFF");
     });
+    /*md - `SELECTED_STEP` select the step to edit */
+    Val& selectedStep = val(0.0f, "SELECTED_STEP", { "Step", .min = 1.0f, .max = MAX_STEPS }, [&](auto p) {
+        selectedStep.setFloat(p.value);
+        uint8_t index = selectedStep.get() - 1;
+        selectedStepPtr = &steps[index];
+        // printf("Selected step: %d note: %d = %s\n", index, selectedStepPtr->note, (char*)MIDI_NOTES_STR[selectedStepPtr->note]);
+
+        stepVelocity.set(selectedStepPtr->velocity * 100);
+        stepStart.set(selectedStepPtr->fStart * 100);
+        stepEnd.set(selectedStepPtr->fEnd * 100);
+        stepEnabled.set(selectedStepPtr->enabled ? 1.0 : 0.0);
+    });
+
     /*md - `STATUS` set status: off, on, next. Default: off
     Play/Stop will answer to global event. However, you may want to the sequencer to not listen to those events or to only start to play on the next sequence iteration. */
     Val& status = val(1.0f, "STATUS", { "Status", VALUE_STRING, .max = 2 }, [&](auto p) {
@@ -225,17 +241,6 @@ public:
             chunkPosition++;
             sampleIndex += activeStep->stepIncrement;
         }
-    }
-
-    void setSelectedStep(float value)
-    {
-        selectedStep.setFloat(value);
-        uint8_t index = selectedStep.get() - 1;
-        selectedStepPtr = &steps[index];
-        // printf("Selected step: %d note: %d = %s\n", index, selectedStepPtr->note, (char*)MIDI_NOTES_STR[selectedStepPtr->note]);
-
-        stepVelocity.set(selectedStepPtr->velocity * 100);
-        stepEnabled.set(selectedStepPtr->enabled ? 1.0 : 0.0);
     }
 
     // enum DATA_ID {

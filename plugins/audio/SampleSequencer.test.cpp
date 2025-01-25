@@ -4,7 +4,7 @@
 
 #define MAX_TRACKS 16
 
-// g++ plugins/audio/SampleSequencer.test.cpp ---o test ---I./ ---pthread ---D_REENTRANT ---lpulse-simple ---lpulse ---I/usr/include/opus ---I/usr/include/x86_64-linux-gnu ---lsndfile  && ./test
+// g++ plugins/audio/SampleSequencer.test.cpp -o test -I./ -pthread -D_REENTRANT -lpulse-simple -lpulse -I/usr/include/opus -I/usr/include/x86_64-linux-gnu -lsndfile  && ./test
 
 int noDebug(const char* format, ...) { return 0; }
 
