@@ -47,13 +47,13 @@ public:
 
     void setFilename(std::string filename, uint8_t channels)
     {
-        printf(">>>>>> setFilename %s\n", filename.c_str());
         // Let's keep it easy for the moment each step has his own instance of SNDFILE
         // We gonna try to optimize later only if necessary by reusing the same SNDFILE
         if (file != NULL) {
             sf_close(file);
             file = NULL;
         }
+        this->filename = filename;
         if (filename != "---") {
             SF_INFO sfinfo;
             // printf("Load filename %s\n", filename.c_str());
