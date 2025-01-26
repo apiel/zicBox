@@ -10,6 +10,7 @@ local View = ____View.View
 local ____Common = require("config.pixel.240x320_kick.ui.components.Common")
 local Common = ____Common.Common
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
+local ColorTrack1 = ____constants.ColorTrack1
 local Drum23Track = ____constants.Drum23Track
 local ____constantsValue = require("config.pixel.240x320_kick.ui.constantsValue")
 local bottomRightKnob = ____constantsValue.bottomRightKnob
@@ -40,7 +41,7 @@ function ____exports.AmpView(____bindingPattern0)
             track = Drum23Track
         }),
         React.createElement(TextGridDrum23, {selected = 4, viewName = name}),
-        React.createElement(Common, {selected = 0, track = Drum23Track})
+        React.createElement(Common, {selected = 0, track = Drum23Track, selectedBackground = ColorTrack1})
     )
 end
 return ____exports

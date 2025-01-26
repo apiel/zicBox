@@ -9,10 +9,12 @@ export function Common({
     selected,
     hideSequencer,
     track,
+    selectedBackground,
 }: {
     selected: number;
     hideSequencer?: boolean;
     track: number;
+    selectedBackground?: string;
 }) {
     return (
         <>
@@ -42,6 +44,7 @@ export function Common({
                 ]}
                 selected={selected}
                 contextValue={1}
+                {...(selectedBackground && { ITEM_BACKGROUND: selectedBackground })}
             />
         </>
     );

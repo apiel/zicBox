@@ -3,7 +3,7 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
-import { Drum23Track } from '../constants';
+import { ColorTrack1, Drum23Track } from '../constants';
 import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
 import { TextGridDrum23 } from './TextGridDrum23';
 
@@ -45,7 +45,7 @@ export function Drum23View({ name }: Props) {
             />
 
             <TextGridDrum23 selected={0} viewName={name} />
-            <Common selected={0} track={Drum23Track} />
+            <Common selected={0} track={Drum23Track} selectedBackground={ColorTrack1} />
         </View>
     );
 }

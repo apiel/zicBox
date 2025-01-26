@@ -17,6 +17,7 @@ local rgb = ____ui.rgb
 local ____Common = require("config.pixel.240x320_kick.ui.components.Common")
 local Common = ____Common.Common
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
+local ColorTrack1 = ____constants.ColorTrack1
 local Drum23Track = ____constants.Drum23Track
 local KeyInfoPosition = ____constants.KeyInfoPosition
 local ScreenWidth = ____constants.ScreenWidth
@@ -48,7 +49,7 @@ function ____exports.Drum23SeqView(____bindingPattern0)
         ),
         React.createElement(
             TextGrid,
-            {position = KeyInfoPosition, rows = {"&icon::toggle::rect &icon::arrowUp::filled ...", "Kick &icon::arrowDown::filled &icon::musicNote::pixelated"}},
+            {position = KeyInfoPosition, rows = {"&icon::toggle::rect &icon::arrowUp::filled ...", "Seq./Kick &icon::arrowDown::filled &icon::musicNote::pixelated"}, ITEM_BACKGROUND = ColorTrack1},
             React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 0}),
             React.createElement(Keymaps, {keys = {
                 {key = "w", action = "incGroup:-1"},
@@ -58,7 +59,7 @@ function ____exports.Drum23SeqView(____bindingPattern0)
                 {key = "d", action = "noteOn:Drum23:60"}
             }})
         ),
-        React.createElement(Common, {selected = 0, hideSequencer = true, track = Drum23Track})
+        React.createElement(Common, {selected = 0, hideSequencer = true, track = Drum23Track, selectedBackground = ColorTrack1})
     )
 end
 return ____exports

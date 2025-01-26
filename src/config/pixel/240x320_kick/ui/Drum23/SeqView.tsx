@@ -7,7 +7,7 @@ import { View } from '@/libs/components/View';
 import { VisibilityContext } from '@/libs/components/VisibilityContext';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
-import { Drum23Track, KeyInfoPosition, ScreenWidth } from '../constants';
+import { ColorTrack1, Drum23Track, KeyInfoPosition, ScreenWidth } from '../constants';
 
 export type Props = {
     name: string;
@@ -42,8 +42,10 @@ export function Drum23SeqView({ name }: Props) {
                 position={KeyInfoPosition}
                 rows={[
                     '&icon::toggle::rect &icon::arrowUp::filled ...',
-                    'Kick &icon::arrowDown::filled &icon::musicNote::pixelated',
+                    'Seq./Kick &icon::arrowDown::filled &icon::musicNote::pixelated',
+                    // '!Seq/Kick &icon::arrowDown::filled &icon::musicNote::pixelated',
                 ]}
+                ITEM_BACKGROUND={ColorTrack1}
             >
                 <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />
                 <Keymaps
@@ -57,7 +59,7 @@ export function Drum23SeqView({ name }: Props) {
                     ]}
                 />
             </TextGrid>
-            <Common selected={0} hideSequencer track={Drum23Track} />
+            <Common selected={0} hideSequencer track={Drum23Track}  selectedBackground={ColorTrack1} />
         </View>
     );
 }
