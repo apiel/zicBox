@@ -121,14 +121,8 @@ protected:
             float rawClick = noise * clickAmplitude * clickEnv;
 
             clickFilter.setSampleData(rawClick);
-            if (clickCutoff.get() > 0.0f) {
-                out += clickFilter.hp;
-
-            } else {
-                out += clickFilter.lp;
-            }
+            out += clickFilter.lp;
         }
-
         return out;
     }
 
@@ -237,18 +231,17 @@ public:
     Val& clickDuration = val(0.1f, "CLICK_DURATION", { "Click Dur.", .step = 0.1, .floatingPoint = 1, .unit = "%" });
 
     /*md - `CLICK_CUTOFF` set the cutoff frequency of the click.*/
-    Val& clickCutoff = val(50.0f, "CLICK_CUTOFF", { "Click LP|HP", VALUE_CENTERED, .min = -100.0, .max = 100.0, .unit = "%" }, [&](auto p) {
+    Val& clickCutoff = val(50.0f, "CLICK_CUTOFF", { "Click Cutoff", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
-        int value = std::abs(p.val.get());
-        clickFilter.setCutoff(value * 0.01f);
-        p.val.setString((p.val.get() < 0 ? "LP" : "HP") + std::to_string(value));
+        if (p.val.pct() < 0.3f) {
+            clickFilter.setCutoff(p.val.pct());
+        } else {
+            clickFilter.setResonance(p.val.pct() - 0.3f);
+        }
     });
 
-    /*md - `CLICK_RESONANCE` set the resonance of the click.*/
-    Val& clickResonance = val(75.0f, "CLICK_RESONANCE", { "Click Reso." }, [&](auto p) {
-        p.val.setFloat(p.value);
-        clickFilter.setResonance(p.val.pct());
-    });
+    /*md - `CLICK_TONE` set the click level.*/
+    Val& clickTone = val(0, "CLICK_TONE", { "Click tone", .unit = "%" });
 
     SynthDrum23(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
