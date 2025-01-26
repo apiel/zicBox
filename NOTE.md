@@ -30,7 +30,6 @@
 
 - TODO need to rework the snare to have this clappy sound
 
-- TODO kick add resonator
 - TODO kick tail for bass feedback
 - TODO kick try to make high frequency boost to get a more punchy sound
 
