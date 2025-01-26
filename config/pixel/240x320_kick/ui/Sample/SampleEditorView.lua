@@ -4,6 +4,8 @@ local ____exports = {}
 local React = require("config.libs.react")
 local ____StepEditSample = require("config.libs.components.StepEditSample")
 local StepEditSample = ____StepEditSample.StepEditSample
+local ____Text = require("config.libs.components.Text")
+local Text = ____Text.Text
 local ____View = require("config.libs.components.View")
 local View = ____View.View
 local ____ui = require("config.libs.ui")
@@ -22,6 +24,10 @@ function ____exports.SampleEditorView(____bindingPattern0)
     return React.createElement(
         View,
         {name = name},
+        React.createElement(Text, {text = "Vel.", position = {0, 0, 25, 9}}),
+        React.createElement(Text, {text = "Sample", position = {60, 0, 100, 9}}),
+        React.createElement(Text, {text = "Start", position = {ScreenWidth - 84, 0, 50, 9}}),
+        React.createElement(Text, {text = "End", position = {ScreenWidth - 38, 0, 50, 9}}),
         __TS__ArrayFrom(
             {length = 32},
             function(____, _, i)
