@@ -5,7 +5,6 @@ import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
 import { Drum23Track } from '../constants';
 import {
-    bottomLeftKnob,
     topLeftKnob,
     topRightKnob
 } from '../constantsValue';
@@ -15,31 +14,31 @@ export type Props = {
     name: string;
 };
 
-export function ClickView({ name }: Props) {
+export function ResonatorView({ name }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                value="Drum23 CLICK"
+                value="Drum23 RESONATOR"
                 position={topLeftKnob}
                 encoder_id={0}
                 COLOR="tertiary"
                 track={Drum23Track}
             />
             <KnobValue
-                value="Drum23 CLICK_CUTOFF"
+                value="Drum23 TONE_DECAY"
                 position={topRightKnob}
                 encoder_id={2}
                 COLOR="primary"
                 track={Drum23Track}
             />
-            <KnobValue
+            {/* <KnobValue
                 value="Drum23 CLICK_DURATION"
                 position={bottomLeftKnob}
                 encoder_id={1}
                 COLOR="quaternary"
                 track={Drum23Track}
             />
-            {/* <KnobValue
+            <KnobValue
                 value="Drum23 RESONATOR"
                 position={bottomRightKnob}
                 encoder_id={3}
@@ -47,7 +46,7 @@ export function ClickView({ name }: Props) {
                 track={Drum23Track}
             /> */}
 
-            <TextGridDrum23 selected={4} viewName={name} />
+            <TextGridDrum23 selected={3} viewName={name} />
             <Common selected={0} track={Drum23Track} />
         </View>
     );

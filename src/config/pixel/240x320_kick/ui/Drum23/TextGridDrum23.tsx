@@ -33,7 +33,7 @@ export function TextGridDrum23({ selected, viewName }: { selected: number; viewN
 
                     {
                         key: 'a',
-                        action: 'setView:Sequencer',
+                        action: viewName === 'Resonator' ? 'setView:Sequencer' : 'setView:Resonator',
                     },
                     {
                         key: 's',
