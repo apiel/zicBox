@@ -218,14 +218,17 @@ public:
         }
         Mapping::hydrate(valCopy);
     }
+    
+    #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
 
-    Data dataFunctions[1] = {
+    DataFn dataFunctions[1] = {
         { "GET_STEP", [this](void* userdata) {
              uint8_t* index = (uint8_t*)userdata;
              return &steps[*index >= MAX_STEPS ? 0 : *index];
          } },
     };
     DEFINE_GETDATAID_AND_DATA
+
 };
 
 #endif
