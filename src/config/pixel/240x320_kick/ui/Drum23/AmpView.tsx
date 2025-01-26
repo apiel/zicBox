@@ -4,7 +4,7 @@ import { DrumEnvelop } from '@/libs/components/DrumEnvelop';
 import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
-import { Drum23Track } from '../constants';
+import { ColorTrack1, Drum23Track } from '../constants';
 import { bottomRightKnob, topValues } from '../constantsValue';
 import { TextGridDrum23 } from './TextGridDrum23';
 
@@ -33,7 +33,7 @@ export function AmpView({ name }: Props) {
                 track={Drum23Track}
             />
             <TextGridDrum23 selected={4} viewName={name} />
-            <Common selected={0} track={Drum23Track} />
+            <Common selected={0} track={Drum23Track} selectedBackground={ColorTrack1} />
         </View>
     );
 }
