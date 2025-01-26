@@ -1,15 +1,15 @@
 #ifndef _UI_PIXEL_COMPONENT_STEP_EDIT_SAMPLE_H_
 #define _UI_PIXEL_COMPONENT_STEP_EDIT_SAMPLE_H_
 
+#include "helpers/format.h"
 #include "helpers/midiNote.h"
 #include "plugins/audio/SampleStep.h"
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
-#include "helpers/format.h"
 
-#include <stdexcept>
 #include <filesystem>
+#include <stdexcept>
 
 /*md
 ## StepEditSample
@@ -96,13 +96,24 @@ public:
         };
     }
 
-    void renderNote(int x, int y)
+    int renderPct(int x, int y, float pct)
     {
-        // const char* note = MIDI_NOTES_STR[step->note];
-        // const char noteLetter[2] = { note[0], '\0' };
-        // const char* noteSuffix = note + 1;
-        // x = draw.text({ x + 2, y }, noteLetter, 8, { fileColor });
-        // draw.text({ x - 2, y }, noteSuffix, 8, { note2Color });
+        x = draw.text({ x + 2, y }, std::to_string((int)(pct)), 8, { text });
+        draw.text({ x - 4, y }, ".", 8, { text });
+        int decimal = (pct - (int)pct) * 10;
+        x = draw.text({ x + 2, y }, std::to_string(decimal), 8, { text2 });
+        x = draw.text({ x, y + 4 }, "%", 4, { text2 });
+
+        return x;
+    }
+
+    void renderStartEnd(int y, Color bg)
+    {
+        int x = relativePosition.x + size.w - 84;
+        draw.filledRect({ x, y }, { 84, 8 }, { bg });
+
+        renderPct(x + 2, y, step->fStart);
+        renderPct(x + 42, y, step->fEnd);
     }
 
     void render() override
@@ -120,19 +131,11 @@ public:
 
             x = relativePosition.x + 25;
             if (step->enabled) {
-                x = draw.text({ x, y }, std::to_string((int)(step->fStart)), 8, { text });
-                draw.text({ x - 4, y }, ".", 8, { text });
-                int decimal = (step->fStart - (int)step->fStart) * 10;
-                x = draw.text({ x + 2, y }, std::to_string(decimal), 8, { text2 });
-                x = draw.text({ x, y + 4 }, "%", 4, { text2 });
-                x += 5;
-                x = draw.text({ x, y }, std::to_string((int)(step->fEnd)), 8, { text });
-                draw.text({ x - 4, y }, ".", 8, { text });
-                decimal = (step->fEnd - (int)step->fEnd) * 10;
-                x = draw.text({ x + 2, y }, std::to_string(decimal), 8, { text2 });
-                x = draw.text({ x, y + 4 }, "%", 4, { text2 });
-                x += 5;
                 draw.text({ x, y }, std::filesystem::path(step->filename).filename(), 8, { fileColor });
+
+                // if (step->fStart != 0 || step->fEnd != 100) {
+                renderStartEnd(y, bg);
+                // }
             } else {
                 draw.text({ x, y }, "---", 8, { text2 });
             }
