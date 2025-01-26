@@ -113,7 +113,7 @@ protected:
         float duration = clickDuration.pct(); // Duration of the click in seconds
         float clickAmplitude = click.pct();
 
-        if (clickAmplitude && time < duration) {
+        if (clickAmplitude && time < duration && clickCutoff.pct() > 0.0f) {
             float noise = props.lookupTable->getNoise(); // Get noise sample
             float clickEnv = 1.0f - (time / duration); // Linear fade-out for the click
 
@@ -239,9 +239,6 @@ public:
             clickFilter.setResonance(p.val.pct() - 0.3f);
         }
     });
-
-    /*md - `CLICK_TONE` set the click level.*/
-    Val& clickTone = val(0, "CLICK_TONE", { "Click tone", .unit = "%" });
 
     SynthDrum23(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
