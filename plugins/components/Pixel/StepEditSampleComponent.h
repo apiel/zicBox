@@ -6,8 +6,10 @@
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
+#include "helpers/format.h"
 
 #include <stdexcept>
+#include <filesystem>
 
 /*md
 ## StepEditSample
@@ -33,7 +35,7 @@ protected:
 
     Color bgColor;
     Color selection;
-    Color noteColor;
+    Color fileColor;
     Color note2Color;
     Color text;
     Color text2;
@@ -53,7 +55,7 @@ public:
         : Component(props)
         , bgColor(styles.colors.background)
         , selection(lighten(styles.colors.background, 0.5))
-        , noteColor(styles.colors.primary)
+        , fileColor(styles.colors.primary)
         , note2Color(styles.colors.white)
         , text(styles.colors.text)
         , text2(darken(styles.colors.text, 0.3))
@@ -99,7 +101,7 @@ public:
         // const char* note = MIDI_NOTES_STR[step->note];
         // const char noteLetter[2] = { note[0], '\0' };
         // const char* noteSuffix = note + 1;
-        // x = draw.text({ x + 2, y }, noteLetter, 8, { noteColor });
+        // x = draw.text({ x + 2, y }, noteLetter, 8, { fileColor });
         // draw.text({ x - 2, y }, noteSuffix, 8, { note2Color });
     }
 
@@ -112,35 +114,28 @@ public:
             int y = relativePosition.y;
             int x = relativePosition.x + 1;
 
-            x = relativePosition.x + 12;
-            draw.filledRect({ x, y + 2 }, { 50, 4 }, { barBackground });
-            draw.filledRect({ x, y + 2 }, { (int)(50 * step->velocity), 4 }, { bar });
+            x = relativePosition.x + 2;
+            draw.filledRect({ x, y + 2 }, { 20, 4 }, { barBackground });
+            draw.filledRect({ x, y + 2 }, { (int)(20 * step->velocity), 4 }, { bar });
 
-            x = relativePosition.x + 70;
+            x = relativePosition.x + 25;
             if (step->enabled) {
-                // renderNote(x, y);
+                x = draw.text({ x, y }, std::to_string((int)(step->fStart)), 8, { text });
+                draw.text({ x - 4, y }, ".", 8, { text });
+                int decimal = (step->fStart - (int)step->fStart) * 10;
+                x = draw.text({ x + 2, y }, std::to_string(decimal), 8, { text2 });
+                x = draw.text({ x, y + 4 }, "%", 4, { text2 });
+                x += 5;
+                x = draw.text({ x, y }, std::to_string((int)(step->fEnd)), 8, { text });
+                draw.text({ x - 4, y }, ".", 8, { text });
+                decimal = (step->fEnd - (int)step->fEnd) * 10;
+                x = draw.text({ x + 2, y }, std::to_string(decimal), 8, { text2 });
+                x = draw.text({ x, y + 4 }, "%", 4, { text2 });
+                x += 5;
+                draw.text({ x, y }, std::filesystem::path(step->filename).filename(), 8, { fileColor });
             } else {
                 draw.text({ x, y }, "---", 8, { text2 });
             }
-
-            // draw.text({ relativePosition.x + 110, y }, stepConditions[step->condition].name, 8, { text2 });
-
-            // std::string motionSteps = stepMotions[step->motion].name;
-            // x = relativePosition.x + 156;
-            // if (motionSteps == "---") {
-            //     draw.text({ x, y }, motionSteps, 8, { text2 });
-            // } else {
-            //     char* motionStep = strtok((char*)motionSteps.c_str(), ",");
-            //     for (int i = 0; motionStep != NULL; i++) {
-            //         x = draw.text({ x, y }, motionStep, 8, { i % 2 == 0 ? textMotion1 : textMotion2 });
-            //         motionStep = strtok(NULL, ",");
-            //     }
-            // }
-
-            // x = relativePosition.x + 193;
-            // if ((seqPlayingPtr == NULL || seqPlaying) && notePlaying) {
-            //     draw.filledRect({ x, y + 1 }, { 6, 6 }, { playingColor });
-            // }
         }
     }
 
@@ -221,9 +216,9 @@ public:
             return true;
         }
 
-        /*md - `NOTE_COLOR: color` is the color of the note. */
-        if (strcmp(key, "NOTE_COLOR") == 0) {
-            noteColor = draw.getColor(value);
+        /*md - `FILE_COLOR: color` is the color of the file. */
+        if (strcmp(key, "FILE_COLOR") == 0) {
+            fileColor = draw.getColor(value);
             return true;
         }
 
