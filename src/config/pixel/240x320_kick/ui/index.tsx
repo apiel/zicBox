@@ -8,6 +8,7 @@ import { ClickView } from './Drum23/ClickView';
 import { DistortionView } from './Drum23/DistortionView';
 import { Drum23View } from './Drum23/Drum23View';
 import { FrequencyView } from './Drum23/FrequencyView';
+import { ResonatorView } from './Drum23/ResonatorView';
 import { Drum23SeqView } from './Drum23/SeqView';
 import { WaveformView } from './Drum23/WaveformView';
 import { CreateWorkspaceView } from './menu/CreateWorkspaceView';
@@ -34,6 +35,7 @@ applyZic(<FrequencyView name="Frequency" />);
 applyZic(<AmpView name="Amplitude" />);
 applyZic(<ClickView name="Click" />);
 applyZic(<Drum23SeqView name="Sequencer" />);
+applyZic(<ResonatorView name="Resonator" />);
 
 // applyZic(<SampleView name="Sample" />);
 // applyZic(<Sample2View name="Sample2" />);
