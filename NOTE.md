@@ -9,6 +9,7 @@
 - TODO workspsace folder...
 
 - TODO getData and data, instead to use enum, use struct array
+- IDEA data function instead to call it using an index, maybe we could get a pointer to the data function!
 
 - TODO should we merge sequencer and serializeTrack?
 

@@ -119,19 +119,10 @@ protected:
         NEXT = 2
     };
 
-    static const uint64_t bufferSize = 48000 * 30; // 30sec at 48000Hz, 32sec at 44100Hz...
-    float sampleData[bufferSize];
-    struct SampleBuffer {
-        uint64_t count = 0;
-        float* data;
-    } sampleBuffer;
-    SNDFILE* yofile = NULL;
-
     void onStep()
     {
         stepCounter++;
         uint8_t state = status.get();
-        // printf("[%d] ------------------- sampleSeq stepCounter %d status %d\n", track, stepCounter, state);
         // If we reach the end of the sequence, we reset the step counter
         if (stepCounter >= MAX_STEPS) {
             stepCounter = 0;
@@ -146,13 +137,7 @@ protected:
         if (state == Status::ON) {
             SampleStep& step = steps[stepCounter];
             if (step.file && step.enabled && step.velocity > 0.0f) {
-                // printf("[%d] ++++++Sample seq Play step %d\n", track, stepCounter);
                 activeStep = &step;
-                if (!yofile) {
-                    yofile = activeStep->file;
-                    sampleBuffer.count = sf_read_float(yofile, sampleData, bufferSize);
-                    sampleBuffer.data = sampleData;
-                }
                 sampleIndex = step.start;
             }
         }
@@ -203,7 +188,6 @@ public:
         selectedStep.setFloat(p.value);
         uint8_t index = selectedStep.get() - 1;
         selectedStepPtr = &steps[index];
-        // printf("Selected step: %d note: %d = %s\n", index, selectedStepPtr->note, (char*)MIDI_NOTES_STR[selectedStepPtr->note]);
 
         stepVelocity.set(selectedStepPtr->velocity * 100);
         stepStart.set(selectedStepPtr->fStart * 100);
@@ -256,9 +240,7 @@ public:
     void onEvent(AudioEventType event, bool playing) override
     {
         isPlaying = playing;
-        // if (event != AudioEventType::AUTOSAVE) logDebug("[%d] event %d seq is playing %d", track, event, isPlaying);
         if (event == AudioEventType::STOP) {
-            // logDebug("in sequencer event STOP\n");
             stepCounter = 0;
             allOff();
         } else if (event == AudioEventType::PAUSE) {
@@ -266,119 +248,27 @@ public:
         }
     }
 
-    #define CHUNK_SIZE 256
-        float sampleIndex = 0.0f;
-        float chunkBuffer[CHUNK_SIZE];
-        size_t chunkPosition = CHUNK_SIZE; // Start at CHUNK_SIZE to trigger initial load
-        void sample(float* buf) override
-        {
-            if (activeStep && activeStep->file && sampleIndex < activeStep->end) {
-                if (chunkPosition >= CHUNK_SIZE) {
-                    sf_seek(activeStep->file, (int)sampleIndex, SEEK_SET);
-                    size_t samplesRead = sf_read_float(activeStep->file, chunkBuffer, CHUNK_SIZE);
+#define CHUNK_SIZE 256
+    float sampleIndex = 0.0f;
+    float chunkBuffer[CHUNK_SIZE];
+    size_t chunkPosition = CHUNK_SIZE; // Start at CHUNK_SIZE to trigger initial load
+    void sample(float* buf) override
+    {
+        if (activeStep && activeStep->file && sampleIndex < activeStep->end) {
+            if (chunkPosition >= CHUNK_SIZE) {
+                sf_seek(activeStep->file, (int)sampleIndex, SEEK_SET);
+                size_t samplesRead = sf_read_float(activeStep->file, chunkBuffer, CHUNK_SIZE);
 
-                    // sf_seek(yofile, (int)sampleIndex, SEEK_SET);
-                    // size_t samplesRead = sf_read_float(yofile, chunkBuffer, CHUNK_SIZE);
-
-                    for (size_t i = samplesRead; i < CHUNK_SIZE; i++) {
-                        chunkBuffer[i] = 0.0f;
-                    }
-                    chunkPosition = 0;
+                for (size_t i = samplesRead; i < CHUNK_SIZE; i++) {
+                    chunkBuffer[i] = 0.0f;
                 }
-                buf[track] = chunkBuffer[chunkPosition];
-                chunkPosition++;
-                sampleIndex += activeStep->stepIncrement;
+                chunkPosition = 0;
             }
+            buf[track] = chunkBuffer[chunkPosition];
+            chunkPosition++;
+            sampleIndex += activeStep->stepIncrement;
         }
-
-    // float sampleIndex = 0.0f;
-    // void sample(float* buf) override
-    // {
-    //     float out = 0.0f;
-    //     if (activeStep && activeStep->file && sampleIndex < activeStep->end) {
-    //         out = sampleBuffer.data[(int)sampleIndex] * activeStep->velocity;
-    //         sampleIndex += activeStep->stepIncrement;
-    //     }
-    //     buf[track] = out;
-    // }
-
-    // enum DATA_ID {
-    //     STEPS,
-    //     STEP_COUNTER,
-    //     IS_PLAYING,
-    //     STEP_CONDITION,
-    //     CLOCK_COUNTER,
-    //     GET_STEP,
-    //     SELECTED_STEP_PTR,
-    //     STEP_TOGGLE
-    // };
-
-    // /*md **Data ID**: */
-    // uint8_t getDataId(std::string name) override
-    // {
-    //     /*md - `STEPS` return steps */
-    //     if (name == "STEPS")
-    //         return DATA_ID::STEPS;
-    //     /*md - `STEP_COUNTER` return current played step */
-    //     if (name == "STEP_COUNTER")
-    //         return DATA_ID::STEP_COUNTER;
-    //     /*md - `IS_PLAYING` return is playing */
-    //     if (name == "IS_PLAYING")
-    //         return DATA_ID::IS_PLAYING;
-    //     /*md - `STEP_CONDITION` return current step condition */
-    //     if (name == "STEP_CONDITION")
-    //         return DATA_ID::STEP_CONDITION;
-    //     /*md - `CLOCK_COUNTER` return clock counter */
-    //     if (name == "CLOCK_COUNTER")
-    //         return DATA_ID::CLOCK_COUNTER;
-    //     /*md - `GET_STEP` get step by index */
-    //     if (name == "GET_STEP")
-    //         return DATA_ID::GET_STEP;
-    //     /*md - `SELECTED_STEP_PTR` return selected step pointer */
-    //     if (name == "SELECTED_STEP_PTR")
-    //         return DATA_ID::SELECTED_STEP_PTR;
-    //     /*md - `STEP_TOGGLE` toggle selected step */
-    //     if (name == "STEP_TOGGLE")
-    //         return DATA_ID::STEP_TOGGLE;
-    //     return atoi(name.c_str());
-    // }
-
-    // void* data(int id, void* userdata = NULL)
-    // {
-    //     switch (id) {
-    //     case DATA_ID::STEPS:
-    //         return &steps;
-    //     case DATA_ID::STEP_COUNTER:
-    //         return &stepCounter;
-    //     case DATA_ID::IS_PLAYING:
-    //         return &isPlaying;
-    //     case DATA_ID::STEP_CONDITION: { // Get step condition name
-    //         uint8_t* index = (uint8_t*)userdata;
-    //         return (void*)stepConditions[*index].name;
-    //     }
-    //     case DATA_ID::CLOCK_COUNTER:
-    //         return clockCounterPtr;
-    //     case DATA_ID::GET_STEP: {
-    //         uint8_t* index = (uint8_t*)userdata;
-    //         if (*index >= MAX_STEPS) {
-    //             return NULL;
-    //         }
-    //         return &steps[*index];
-    //     }
-    //     case DATA_ID::SELECTED_STEP_PTR: { // Toggle sequencer
-    //         if (status.get() == Status::ON) {
-    //             status.set(Status::MUTED);
-    //         } else {
-    //             status.set(Status::ON);
-    //         }
-    //         return NULL;
-    //     }
-    //     case DATA_ID::STEP_TOGGLE: // Step toggle
-    //         stepEnabled.set(selectedStepPtr->enabled ? 0.0 : 1.0);
-    //         return NULL;
-    //     }
-    //     return NULL;
-    // }
+    }
 
     bool config(char* key, char* value)
     {
