@@ -61,6 +61,9 @@ SynthDrumSample:
 SynthMonoSample:
 	make compile LIBNAME=SynthMonoSample EXTRA="$(shell pkg-config --cflags --libs sndfile)"
 
+SampleSequencer:
+	make compile LIBNAME=SampleSequencer EXTRA="$(shell pkg-config --cflags --libs sndfile)"
+
 TapeRecording:
 	make compile LIBNAME=TapeRecording EXTRA="$(shell pkg-config --cflags --libs sndfile)"
 
