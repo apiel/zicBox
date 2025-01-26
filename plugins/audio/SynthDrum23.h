@@ -240,11 +240,6 @@ public:
         }
     });
 
-    // /*md - `RESONATOR` controls the strength of the resonator. */
-    // Val& bodyResonance = val(0.8f, "RESONATOR", { "Resonator", .min = 0.01f, .max = 1.5f, .step = 0.01f, .floatingPoint = 2 });
-    // /*md - `TONE_DECAY` adjusts the decay rate of the tonal component. */
-    // Val& toneDecay = val(0.02f, "TONE_DECAY", { "Tone Decay", .min = 0.005f, .max = 1.0f, .step = 0.005f, .floatingPoint = 2 });
-
     SynthDrum23(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
         , waveform(props.lookupTable, props.sampleRate)
