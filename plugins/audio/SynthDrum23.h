@@ -226,13 +226,7 @@ public:
         }
     });
 
-    Val& highBoost = val(0.0, "HIGH_FREQ_BOOST", { "High boost", .unit = "%" });
-
-//     freqThreshold acts as a multiplier for how much the high-frequency portion grows over time.
-// Suggested range: 1.0 to 2.5, where:
-// Values near 1.0 produce a subtle boost.
-// Values near 2.0 or higher create a more aggressive punch.
-    Val& freqThreshold = val(1.0, "FREQ_THRESHOLD", { "High threshold", .min = 1.0, .max = 5.0, .step = 0.1, .floatingPoint = 1 });
+    Val& highBoost = val(0.0, "HIGH_FREQ_BOOST", { "High boost", .min = 0.0, .max = 5.0, .step = 0.1, .floatingPoint = 1 });
 
     SynthDrum23(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -245,14 +239,14 @@ public:
         clickFilter.setCutoff(0.10);
     }
 
-    float highShelfBoost(float input, float time)
+    float highFreqBoost(float input, float time)
     {
-        if (highBoost.pct() == 0) {
+        if (highBoost.get() == 0) {
             return input;
         }
         // Simple high-shelf boost logic
-        float highFreqComponent = input * (freqThreshold.get() * time); // Emphasize high frequencies
-        return input + highFreqComponent * highBoost.pct();
+        float highFreqComponent = input * (highBoost.get() * time); // Emphasize high frequencies
+        return input + highFreqComponent;
     }
 
     float scaledClipping = 0.0f;
@@ -267,7 +261,7 @@ public:
             float out = wave->sample(&wavetable.sampleIndex, freq) * envAmp;
             out = addClicking(time, out);
 
-            out = highShelfBoost(out, time);
+            out = highFreqBoost(out, time);
 
             out = out + out * scaledClipping;
             buf[track] = range(out, -1.0f, 1.0f) * velocity;
