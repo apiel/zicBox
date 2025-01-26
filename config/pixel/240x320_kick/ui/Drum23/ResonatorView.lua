@@ -21,14 +21,14 @@ function ____exports.ResonatorView(____bindingPattern0)
         View,
         {name = name},
         React.createElement(KnobValue, {
-            value = "Drum23 RESONATOR",
+            value = "Drum23 HIGH_FREQ_BOOST",
             position = topLeftKnob,
             encoder_id = 0,
             COLOR = "tertiary",
             track = Drum23Track
         }),
         React.createElement(KnobValue, {
-            value = "Drum23 TONE_DECAY",
+            value = "Drum23 FREQ_THRESHOLD",
             position = topRightKnob,
             encoder_id = 2,
             COLOR = "primary",
