@@ -219,34 +219,13 @@ public:
         Mapping::hydrate(valCopy);
     }
 
-    static const int DATA_COUNT = 1;
-    struct Data {
-        std::string name;
-        std::function<void*(void*)> fn;
-    } dataFunctions[DATA_COUNT] = {
+    Data dataFunctions[1] = {
         { "GET_STEP", [this](void* userdata) {
              uint8_t* index = (uint8_t*)userdata;
              return &steps[*index >= MAX_STEPS ? 0 : *index];
          } },
     };
-
-    uint8_t getDataId(std::string name) override
-    {
-        for (int i = 0; i < DATA_COUNT; i++) {
-            if (name == dataFunctions[i].name) {
-                return i;
-            }
-        }
-        return atoi(name.c_str());
-    }
-
-    void* data(int id, void* userdata = NULL) override
-    {
-        if (id >= DATA_COUNT) {
-            return NULL;
-        }
-        return dataFunctions[id].fn(userdata);
-    }
+    DEFINE_GETDATAID_AND_DATA
 };
 
 #endif
