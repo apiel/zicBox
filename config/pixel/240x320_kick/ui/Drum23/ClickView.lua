@@ -52,7 +52,7 @@ function ____exports.ClickView(____bindingPattern0)
             COLOR = "secondary",
             track = Drum23Track
         }),
-        React.createElement(TextGridDrum23, {selected = 3, viewName = name}),
+        React.createElement(TextGridDrum23, {selected = 4, viewName = name}),
         React.createElement(Common, {selected = 0, track = Drum23Track})
     )
 end

@@ -32,7 +32,7 @@ export function AmpView({ name }: Props) {
                 color="quaternary"
                 track={Drum23Track}
             />
-            <TextGridDrum23 selected={3} viewName={name} />
+            <TextGridDrum23 selected={4} viewName={name} />
             <Common selected={0} track={Drum23Track} />
         </View>
     );

@@ -16,8 +16,8 @@ export function TextGridDrum23({ selected, viewName }: { selected: number; viewN
                     'Fx1/Fx2',
                     'Wave/Freq',
                     '...',
+                    'Seq.',
                     'Amp/Click',
-                    'Sample',
                     '&icon::musicNote::pixelated',
                 ]}
                 keys={[
@@ -33,11 +33,11 @@ export function TextGridDrum23({ selected, viewName }: { selected: number; viewN
 
                     {
                         key: 'a',
-                        action: viewName === 'Amplitude' ? 'setView:Click' : 'setView:Amplitude',
+                        action: 'setView:Sequencer',
                     },
                     {
                         key: 's',
-                        action: viewName === 'Sample' ? 'setView:Sample2' : 'setView:Sample',
+                        action: viewName === 'Amplitude' ? 'setView:Click' : 'setView:Amplitude',
                     },
                     { key: 'd', action: 'noteOn:Drum23:60' },
                 ]}
