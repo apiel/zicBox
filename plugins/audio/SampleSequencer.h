@@ -10,90 +10,10 @@
 #include "helpers/midiNote.h"
 #include "log.h"
 #include "mapping.h"
+#include "plugins/audio/SampleStep.h"
 #include "stepInterface.h"
 
 const uint8_t MAX_STEPS = 32;
-
-class SampleStep {
-public:
-    bool enabled = false;
-    float velocity = 0.8f;
-    uint64_t sampleCount = 0;
-    uint64_t end = 0;
-    float fEnd = 0.0f;
-    uint64_t start = 0;
-    float fStart = 0.0f;
-    std::string filename = "---";
-    SNDFILE* file = NULL;
-    float stepIncrement = 1.0f;
-
-    void setVelocity(float velocity)
-    {
-        this->velocity = range(velocity, 0.0, 1.0);
-    }
-
-    void setEnd(float value)
-    {
-        fEnd = range(value, fStart, 100.0);
-        end = fEnd * sampleCount;
-    }
-
-    void setStart(float value)
-    {
-        // this->start = range(start, 0, sampleCount);
-        fStart = range(value, 0.0, fEnd);
-        start = fStart * sampleCount;
-    }
-
-    void setFilename(std::string filename, uint8_t channels)
-    {
-        // Let's keep it easy for the moment each step has his own instance of SNDFILE
-        // We gonna try to optimize later only if necessary by reusing the same SNDFILE
-        if (file != NULL) {
-            sf_close(file);
-            file = NULL;
-        }
-        this->filename = filename;
-        if (filename != "---") {
-            SF_INFO sfinfo;
-            // printf("Load filename %s\n", filename.c_str());
-            file = sf_open(filename.c_str(), SFM_READ, &sfinfo);
-            if (file) {
-                sampleCount = sfinfo.frames;
-                if (sfinfo.channels < channels) {
-                    stepIncrement = 0.5f;
-                } else if (sfinfo.channels > channels) {
-                    stepIncrement = 2.0f;
-                } else {
-                    stepIncrement = 1.0f;
-                }
-                setStart(fStart);
-                setEnd(fEnd);
-            } else {
-                logWarn("SampleSequencer: Could not open step file %s [%s]", filename.c_str(), sf_strerror(file));
-            }
-        }
-    }
-
-    std::string serialize()
-    {
-        return std::to_string(enabled) + " "
-            + fToString(velocity, 2) + " "
-            + std::to_string(fStart) + " "
-            + std::to_string(fEnd) + " "
-            + filename;
-    }
-
-    void hydrate(std::string value, uint8_t channels)
-    {
-        // printf("hydrate %s\n", value.c_str());
-        enabled = strtok((char*)value.c_str(), " ")[0] == '1';
-        velocity = atof(strtok(NULL, " "));
-        fStart = atof(strtok(NULL, " "));
-        fEnd = atof(strtok(NULL, " "));
-        setFilename(strtok(NULL, " "), channels);
-    }
-};
 
 class SampleSequencer : public Mapping {
 protected:
@@ -221,7 +141,7 @@ public:
         initValues();
     }
 
-    void onClockTick(uint64_t* clockCounter)
+    void onClockTick(uint64_t* clockCounter) override
     {
         // printf("[%d] sampleSeq onClockTick %ld\n", track, *clockCounter);
         clockCounterPtr = clockCounter;
@@ -270,7 +190,7 @@ public:
         }
     }
 
-    bool config(char* key, char* value)
+    bool config(char* key, char* value) override
     {
         if (strcmp(key, "TARGET") == 0) {
             targetPlugin = &props.audioPluginHandler->getPlugin(value, track);
@@ -297,6 +217,35 @@ public:
             return;
         }
         Mapping::hydrate(valCopy);
+    }
+
+    static const int DATA_COUNT = 1;
+    struct Data {
+        std::string name;
+        std::function<void*(void*)> fn;
+    } dataFunctions[DATA_COUNT] = {
+        { "GET_STEP", [this](void* userdata) {
+             uint8_t* index = (uint8_t*)userdata;
+             return &steps[*index >= MAX_STEPS ? 0 : *index];
+         } },
+    };
+
+    uint8_t getDataId(std::string name) override
+    {
+        for (int i = 0; i < DATA_COUNT; i++) {
+            if (name == dataFunctions[i].name) {
+                return i;
+            }
+        }
+        return atoi(name.c_str());
+    }
+
+    void* data(int id, void* userdata = NULL) override
+    {
+        if (id >= DATA_COUNT) {
+            return NULL;
+        }
+        return dataFunctions[id].fn(userdata);
     }
 };
 

@@ -2,7 +2,7 @@
 #define _UI_PIXEL_COMPONENT_STEP_EDIT_SAMPLE_H_
 
 #include "helpers/midiNote.h"
-#include "plugins/audio/stepInterface.h"
+#include "plugins/audio/SampleStep.h"
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
@@ -22,7 +22,7 @@ protected:
     bool isActive = true;
 
     AudioPlugin* plugin = NULL;
-    Step* step;
+    SampleStep* step;
     uint8_t* stepCounter = NULL;
 
     bool notePlaying = false;
@@ -96,11 +96,11 @@ public:
 
     void renderNote(int x, int y)
     {
-        const char* note = MIDI_NOTES_STR[step->note];
-        const char noteLetter[2] = { note[0], '\0' };
-        const char* noteSuffix = note + 1;
-        x = draw.text({ x + 2, y }, noteLetter, 8, { noteColor });
-        draw.text({ x - 2, y }, noteSuffix, 8, { note2Color });
+        // const char* note = MIDI_NOTES_STR[step->note];
+        // const char noteLetter[2] = { note[0], '\0' };
+        // const char* noteSuffix = note + 1;
+        // x = draw.text({ x + 2, y }, noteLetter, 8, { noteColor });
+        // draw.text({ x - 2, y }, noteSuffix, 8, { note2Color });
     }
 
     void render() override
@@ -112,16 +112,16 @@ public:
             int y = relativePosition.y;
             int x = relativePosition.x + 1;
 
-            // x = relativePosition.x + 12;
-            // draw.filledRect({ x, y + 2 }, { 50, 4 }, { barBackground });
-            // draw.filledRect({ x, y + 2 }, { (int)(50 * step->velocity), 4 }, { bar });
+            x = relativePosition.x + 12;
+            draw.filledRect({ x, y + 2 }, { 50, 4 }, { barBackground });
+            draw.filledRect({ x, y + 2 }, { (int)(50 * step->velocity), 4 }, { bar });
 
-            // x = relativePosition.x + 70;
-            // if (step->enabled) {
-            //     renderNote(x, y);
-            // } else {
-            //     draw.text({ x, y }, "---", 8, { text2 });
-            // }
+            x = relativePosition.x + 70;
+            if (step->enabled) {
+                // renderNote(x, y);
+            } else {
+                draw.text({ x, y }, "---", 8, { text2 });
+            }
 
             // draw.text({ relativePosition.x + 110, y }, stepConditions[step->condition].name, 8, { text2 });
 
@@ -151,13 +151,13 @@ public:
                 step->setVelocity(step->velocity + direction * 0.01);
                 renderNext();
             } else if (id == encoders[1]) {
-                step->setCondition(step->condition + direction);
+                // step->setCondition(step->condition + direction);
                 renderNext();
             } else if (id == encoders[2]) {
-                step->setNote(step->note + direction);
+                // step->setNote(step->note + direction);
                 renderNext();
             } else if (id == encoders[3]) {
-                step->setMotion(step->motion + direction);
+                // step->setMotion(step->motion + direction);
                 renderNext();
             }
         }
@@ -189,16 +189,13 @@ public:
             return true;
         }
 
-        /*md - `DATA: plugin_name get_step_data_id step_index [sequence_data_id] [counter_data_id]` set plugin target */
+        /*md - `DATA: plugin_name step_index [get_step_data_id]` set plugin target */
         if (strcmp(key, "DATA") == 0) {
-            // plugin = &getPlugin(strtok(value, " "), track);
-            // stepIndex = atoi(strtok(NULL, " "));
-            // char* getStepDataIdStr = strtok(NULL, " ");
-            // char* sequenceDataIdStr = strtok(NULL, " ");
-            // char* counterDataIdStr = strtok(NULL, " ");
-            // step = (Step*)plugin->data(plugin->getDataId(getStepDataIdStr != NULL ? getStepDataIdStr : "GET_STEP"), &stepIndex);
-            // seqPlayingPtr = (bool*)plugin->data(plugin->getDataId(sequenceDataIdStr != NULL ? sequenceDataIdStr : "IS_PLAYING"));
-            // stepCounter = (uint8_t*)plugin->data(plugin->getDataId(counterDataIdStr != NULL ? counterDataIdStr : "STEP_COUNTER"));
+            plugin = &getPlugin(strtok(value, " "), track);
+            stepIndex = atoi(strtok(NULL, " "));
+            char* getStepDataIdStr = strtok(NULL, " ");
+
+            step = (SampleStep*)plugin->data(plugin->getDataId(getStepDataIdStr != NULL ? getStepDataIdStr : "GET_STEP"), &stepIndex);
             return true;
         }
 
