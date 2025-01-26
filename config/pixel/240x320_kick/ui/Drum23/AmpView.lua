@@ -39,7 +39,7 @@ function ____exports.AmpView(____bindingPattern0)
             color = "quaternary",
             track = Drum23Track
         }),
-        React.createElement(TextGridDrum23, {selected = 3, viewName = name}),
+        React.createElement(TextGridDrum23, {selected = 4, viewName = name}),
         React.createElement(Common, {selected = 0, track = Drum23Track})
     )
 end
