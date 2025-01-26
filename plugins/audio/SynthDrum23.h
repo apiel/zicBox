@@ -226,7 +226,7 @@ public:
         }
     });
 
-    Val& highBoost = val(0.0, "HIGH_FREQ_BOOST", { "High boost", .min = 0.0, .max = 5.0, .step = 0.1, .floatingPoint = 1 });
+    Val& highBoost = val(0.0, "HIGH_FREQ_BOOST", { "High boost", .min = 0.0, .max = 20.0, .step = 0.1, .floatingPoint = 1 });
 
     SynthDrum23(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
