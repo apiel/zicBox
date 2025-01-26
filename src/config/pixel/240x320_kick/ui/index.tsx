@@ -1,6 +1,7 @@
 import { applyZic } from '@/libs/core';
 import * as React from '@/libs/react';
 import { addZoneEncoder, setScreenSize, setWindowPosition } from '@/libs/ui';
+import { ClipsView } from './clipsView/ClipsView';
 import { ScreenHeight, ScreenWidth, W1_2 } from './constants';
 import { AmpView } from './Drum23/AmpView';
 import { ClickView } from './Drum23/ClickView';
@@ -50,4 +51,4 @@ applyZic(<ShutdownView name="Shutdown" />);
 applyZic(<TapeView name="Tape" />);
 applyZic(<SaveTapeView name="SaveTape" />);
 
-// applyZic(<ClipsView name="Clips" />);
+applyZic(<ClipsView name="Clips" />);
