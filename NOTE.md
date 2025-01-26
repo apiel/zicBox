@@ -1,6 +1,6 @@
 ## Pixel TODO
 
-- TODO should kick only version be instead bass line version ^^
+- TODO should kick only version, be instead bass line version ^^
 
 - TODO change the order of the encoder ...
 
@@ -29,8 +29,6 @@
     - --> synth 23 parameters.. but more complex because for sure we want to show waveform, envelop... also how to name the page of each parameters..
 
 - TODO need to rework the snare to have this clappy sound
-
-- TODO kick tail for bass feedback
 
 - TODO FM synth --> algo param to decide which kind of waveform to combine
               - --> and if it does FM or substractive ...
