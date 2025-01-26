@@ -42,6 +42,7 @@ export function SampleEditorView({ name }: Props) {
                         <Keymaps
                             keys={[
                                 { key: 'q', action: '.toggle' },
+                                { key: 'd', action: '.play' },
                             ]}
                         />
                     </StepEditSample>

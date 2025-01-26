@@ -29,6 +29,7 @@ protected:
 
     uint8_t nextFileDataId = 0;
     uint8_t prevFileDataId = 0;
+    uint8_t playStepDataId = 0;
 
     bool notePlaying = false;
     bool* seqPlayingPtr = NULL;
@@ -74,6 +75,13 @@ public:
                     if (KeypadLayout::isReleased(keymap)) {
                         step->enabled = !step->enabled;
                         renderNext();
+                    }
+                };
+            }
+            if (action == ".play") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        plugin->data(playStepDataId, &stepIndex);
                     }
                 };
             }
@@ -203,6 +211,7 @@ public:
             step = (SampleStep*)plugin->data(plugin->getDataId(getStepDataIdStr != NULL ? getStepDataIdStr : "GET_STEP"), &stepIndex);
             nextFileDataId = plugin->getDataId("NEXT_FILE");
             prevFileDataId = plugin->getDataId("PREVIOUS_FILE");
+            playStepDataId = plugin->getDataId("PLAY_STEP");
             return true;
         }
 
