@@ -6,7 +6,6 @@ import { Common } from '../components/Common';
 import { Drum23Track } from '../constants';
 import {
     bottomLeftKnob,
-    bottomRightKnob,
     topLeftKnob,
     topRightKnob
 } from '../constantsValue';
@@ -40,13 +39,13 @@ export function ClickView({ name }: Props) {
                 COLOR="quaternary"
                 track={Drum23Track}
             />
-            <KnobValue
+            {/* <KnobValue
                 value="Drum23 CLICK_TONE"
                 position={bottomRightKnob}
                 encoder_id={3}
                 COLOR="secondary"
                 track={Drum23Track}
-            />
+            /> */}
 
             <TextGridDrum23 selected={4} viewName={name} />
             <Common selected={0} track={Drum23Track} />
