@@ -10,8 +10,9 @@
 
 #include "audioPlugin.h"
 
-#define DEFINE_GETDATAID_AND_DATA                                                   \
-    uint8_t getDataId(const std::string& name) override                             \
+#define DEFINE_GETDATAID_AND_DATA                                                  \
+    static const int DATA_COUNT = sizeof(dataFunctions) / sizeof(dataFunctions[0]);\
+    uint8_t getDataId(std::string name) override                                   \
     {                                                                              \
         for (size_t i = 0; i < DATA_COUNT; ++i) {                                  \
             if (name == dataFunctions[i].name) {                                   \

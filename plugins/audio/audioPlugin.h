@@ -137,6 +137,11 @@ public:
         return false;
     }
 
+    struct Data {
+        std::string name;
+        std::function<void*(void*)> fn;
+    };
+
     virtual void* data(int id, void* userdata = NULL)
     {
         return NULL;
