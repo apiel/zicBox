@@ -55,12 +55,17 @@ protected:
             }
         }
         if (state == Status::ON) {
-            SampleStep& step = steps[stepCounter];
-            if (step.file && step.enabled && step.velocity > 0.0f) {
-                activeStep = &step;
-                sampleIndex = step.start;
+            SampleStep* step = &steps[stepCounter];
+            if (step->file && step->enabled && step->velocity > 0.0f) {
+                setActiveStep(step);
             }
         }
+    }
+
+    void setActiveStep(SampleStep* step)
+    {
+        activeStep = step;
+        sampleIndex = step->start;
     }
 
 public:
@@ -214,9 +219,7 @@ public:
         Mapping::hydrate(valCopy);
     }
 
-#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
-
-    DataFn dataFunctions[3] = {
+    DataFn dataFunctions[4] = {
         { "GET_STEP", [this](void* userdata) {
              uint8_t* index = (uint8_t*)userdata;
              return &steps[*index >= MAX_STEPS ? 0 : *index];
@@ -233,6 +236,12 @@ public:
              SampleStep* step = &steps[*index >= MAX_STEPS ? 0 : *index];
              uint16_t pos = fileBrowser.next(step->filename, -1);
              step->setFilename(fileBrowser.getFilePath(pos), props.channels);
+             return (void*)NULL;
+         } },
+        { "PLAY_STEP", [this](void* userdata) {
+             uint8_t* index = (uint8_t*)userdata;
+             SampleStep* step = &steps[*index >= MAX_STEPS ? 0 : *index];
+             setActiveStep(step);
              return (void*)NULL;
          } },
     };
