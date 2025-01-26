@@ -10,23 +10,28 @@
 
 #include "audioPlugin.h"
 
-#define DEFINE_GETDATAID_AND_DATA                                                  \
-    static const int DATA_COUNT = sizeof(dataFunctions) / sizeof(dataFunctions[0]);\
-    uint8_t getDataId(std::string name) override                                   \
-    {                                                                              \
-        for (size_t i = 0; i < DATA_COUNT; ++i) {                                  \
-            if (name == dataFunctions[i].name) {                                   \
-                return static_cast<uint8_t>(i);                                    \
-            }                                                                      \
-        }                                                                          \
-        return static_cast<uint8_t>(atoi(name.c_str()));                           \
-    }                                                                              \
-    void* data(int id, void* userdata = nullptr) override                          \
-    {                                                                              \
-        if (id >= static_cast<int>(DATA_COUNT)) {                                  \
-            return nullptr;                                                        \
-        }                                                                          \
-        return dataFunctions[id].fn(userdata);                                     \
+struct DataFn {
+    std::string name;
+    std::function<void*(void*)> fn;
+};
+
+#define DEFINE_GETDATAID_AND_DATA                                                   \
+    static const int DATA_COUNT = sizeof(dataFunctions) / sizeof(dataFunctions[0]); \
+    uint8_t getDataId(std::string name) override                                    \
+    {                                                                               \
+        for (size_t i = 0; i < DATA_COUNT; ++i) {                                   \
+            if (name == dataFunctions[i].name) {                                    \
+                return static_cast<uint8_t>(i);                                     \
+            }                                                                       \
+        }                                                                           \
+        return static_cast<uint8_t>(atoi(name.c_str()));                            \
+    }                                                                               \
+    void* data(int id, void* userdata = nullptr) override                           \
+    {                                                                               \
+        if (id >= static_cast<int>(DATA_COUNT)) {                                   \
+            return nullptr;                                                         \
+        }                                                                           \
+        return dataFunctions[id].fn(userdata);                                      \
     }
 
 class Val : public ValueInterface {
