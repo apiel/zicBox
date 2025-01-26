@@ -3,12 +3,6 @@
 
 #include "helpers/fs/directoryList.h"
 #include "helpers/range.h"
-// #include <dirent.h>
-// #include <stdint.h>
-// #include <stdio.h>
-// #include <string.h>
-// #include <vector>
-// #include <algorithm>
 
 class FileBrowser {
 protected:
