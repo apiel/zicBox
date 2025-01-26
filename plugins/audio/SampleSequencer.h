@@ -113,12 +113,7 @@ public:
         stepStart.set(selectedStepPtr->fStart * 100);
         stepEnd.set(selectedStepPtr->fEnd * 100);
         stepEnabled.set(selectedStepPtr->enabled ? 1.0 : 0.0);
-
-        if (fileBrowser.find(selectedStepPtr->filename)) {
-            stepFilename.set(fileBrowser.position);
-        } else {
-            stepFilename.set(0.0);
-        }
+        stepFilename.set(fileBrowser.find(selectedStepPtr->filename));
     });
 
     /*md - `STATUS` set status: off, on, next. Default: off
@@ -218,17 +213,30 @@ public:
         }
         Mapping::hydrate(valCopy);
     }
-    
-    #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
 
-    DataFn dataFunctions[1] = {
+#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
+
+    DataFn dataFunctions[3] = {
         { "GET_STEP", [this](void* userdata) {
              uint8_t* index = (uint8_t*)userdata;
              return &steps[*index >= MAX_STEPS ? 0 : *index];
          } },
+        { "NEXT_FILE", [this](void* userdata) {
+             uint8_t* index = (uint8_t*)userdata;
+             SampleStep* step = &steps[*index >= MAX_STEPS ? 0 : *index];
+             uint16_t pos = fileBrowser.next(step->filename);
+             step->setFilename(fileBrowser.getFilePath(pos), props.channels);
+             return (void*)NULL;
+         } },
+        { "PREVIOUS_FILE", [this](void* userdata) {
+             uint8_t* index = (uint8_t*)userdata;
+             SampleStep* step = &steps[*index >= MAX_STEPS ? 0 : *index];
+             uint16_t pos = fileBrowser.next(step->filename, -1);
+             step->setFilename(fileBrowser.getFilePath(pos), props.channels);
+             return (void*)NULL;
+         } },
     };
     DEFINE_GETDATAID_AND_DATA
-
 };
 
 #endif

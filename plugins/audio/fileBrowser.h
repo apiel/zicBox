@@ -1,8 +1,8 @@
 #ifndef FILE_BROWSER_H
 #define FILE_BROWSER_H
 
-#include "helpers/range.h"
 #include "helpers/fs/directoryList.h"
+#include "helpers/range.h"
 // #include <dirent.h>
 // #include <stdint.h>
 // #include <stdio.h>
@@ -43,7 +43,7 @@ public:
 
     std::string getFilePath(uint16_t pos)
     {
-        return get(position);
+        return get(pos);
     }
 
     std::string getFile(uint16_t pos)
@@ -57,16 +57,22 @@ public:
         return file.substr(0, file.find_last_of("."));
     }
 
-    bool find(std::string filename)
+    uint16_t find(std::string filename)
     {
+        filename = std::filesystem::path(filename).filename();
         for (int i = 0; i < count; i++) {
             if (files[i].filename() == filename) {
-                position = i + 1;
-                return true;
+                return i + 1;
             }
         }
-        position = 0;
-        return false;
+        return 0;
+    }
+
+    uint16_t next(std::string filename, int8_t direction = 1)
+    {
+        filename = std::filesystem::path(filename).filename();
+        uint16_t pos = find(filename);
+        return pos ? pos + direction : 0;
     }
 };
 

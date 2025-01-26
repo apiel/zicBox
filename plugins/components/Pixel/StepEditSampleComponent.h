@@ -27,6 +27,9 @@ protected:
     SampleStep* step;
     uint8_t* stepCounter = NULL;
 
+    uint8_t nextFileDataId = 0;
+    uint8_t prevFileDataId = 0;
+
     bool notePlaying = false;
     bool* seqPlayingPtr = NULL;
     bool seqPlaying = false;
@@ -149,7 +152,11 @@ public:
                 step->setVelocity(step->velocity + direction * 0.05);
                 renderNext();
             } else if (id == encoders[2]) {
-                // step->setCondition(step->condition + direction);
+                if (direction > 0) {
+                    plugin->data(nextFileDataId, &stepIndex);
+                } else {
+                    plugin->data(prevFileDataId, &stepIndex);
+                }
                 renderNext();
             } else if (id == encoders[1]) {
                 step->setStart(step->fStart + direction * 0.1);
@@ -194,6 +201,8 @@ public:
             char* getStepDataIdStr = strtok(NULL, " ");
 
             step = (SampleStep*)plugin->data(plugin->getDataId(getStepDataIdStr != NULL ? getStepDataIdStr : "GET_STEP"), &stepIndex);
+            nextFileDataId = plugin->getDataId("NEXT_FILE");
+            prevFileDataId = plugin->getDataId("PREVIOUS_FILE");
             return true;
         }
 
