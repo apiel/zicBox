@@ -266,7 +266,7 @@ public:
         }
     }
 
-    #define CHUNK_SIZE 128
+    #define CHUNK_SIZE 256
         float sampleIndex = 0.0f;
         float chunkBuffer[CHUNK_SIZE];
         size_t chunkPosition = CHUNK_SIZE; // Start at CHUNK_SIZE to trigger initial load
