@@ -31,10 +31,7 @@ export function TextGridDrum23({ selected, viewName }: { selected: number; viewN
                     },
                     { key: 'e', action: 'contextToggle:254:1:0' },
 
-                    {
-                        key: 'a',
-                        action: viewName === 'Resonator' ? 'setView:Sequencer' : 'setView:Resonator',
-                    },
+                    { key: 'a', action: 'setView:Sequencer' },
                     {
                         key: 's',
                         action: viewName === 'Amplitude' ? 'setView:Click' : 'setView:Amplitude',

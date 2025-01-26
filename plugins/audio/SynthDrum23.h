@@ -260,9 +260,7 @@ public:
             float freq = envFreq + pitchMult * noteMult;
             float out = wave->sample(&wavetable.sampleIndex, freq) * envAmp;
             out = addClicking(time, out);
-
             out = highFreqBoost(out, time);
-
             out = out + out * scaledClipping;
             buf[track] = range(out, -1.0f, 1.0f) * velocity;
 
