@@ -38,7 +38,13 @@ export function SampleEditorView({ name }: Props) {
                                 : 'background'
                         }
                         selected_color={rgb(76, 94, 97)}
-                    />
+                    >
+                        <Keymaps
+                            keys={[
+                                { key: 'q', action: '.toggle' },
+                            ]}
+                        />
+                    </StepEditSample>
                 );
             })}
 
