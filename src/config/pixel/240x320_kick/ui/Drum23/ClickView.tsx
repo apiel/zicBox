@@ -31,8 +31,6 @@ export function ClickView({ name }: Props) {
                 position={topRightKnob}
                 encoder_id={2}
                 COLOR="primary"
-                TYPE="STRING"
-                FONT_VALUE_SIZE={12}
                 track={Drum23Track}
             />
             <KnobValue
@@ -43,7 +41,7 @@ export function ClickView({ name }: Props) {
                 track={Drum23Track}
             />
             <KnobValue
-                value="Drum23 CLICK_RESONANCE"
+                value="Drum23 CLICK_TONE"
                 position={bottomRightKnob}
                 encoder_id={3}
                 COLOR="secondary"

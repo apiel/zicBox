@@ -34,8 +34,6 @@ function ____exports.ClickView(____bindingPattern0)
             position = topRightKnob,
             encoder_id = 2,
             COLOR = "primary",
-            TYPE = "STRING",
-            FONT_VALUE_SIZE = 12,
             track = Drum23Track
         }),
         React.createElement(KnobValue, {
@@ -46,7 +44,7 @@ function ____exports.ClickView(____bindingPattern0)
             track = Drum23Track
         }),
         React.createElement(KnobValue, {
-            value = "Drum23 CLICK_RESONANCE",
+            value = "Drum23 CLICK_TONE",
             position = bottomRightKnob,
             encoder_id = 3,
             COLOR = "secondary",
