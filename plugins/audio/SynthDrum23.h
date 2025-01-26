@@ -31,8 +31,6 @@ protected:
     float velocity = 1.0f;
     float noteMult = 1.0f;
 
-    EffectFilterData clickFilter;
-
     EnvelopRelative envelopAmp = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.0f, 1.0f } }, 1);
     EnvelopRelative envelopFreq = EnvelopRelative({
         { "Kick", [](EnvelopRelative* env, bool init = true) {
@@ -108,7 +106,8 @@ protected:
          } },
     });
 
-    float addClicking(float time, float out, EffectFilterData& _clickFilter)
+    EffectFilterData clickFilter;
+    float addClicking(float time, float out)
     {
         // Add a click at the beginning
         float duration = clickDuration.pct(); // Duration of the click in seconds
@@ -121,12 +120,12 @@ protected:
             // Apply the envelope to the noise
             float rawClick = noise * clickAmplitude * clickEnv;
 
-            _clickFilter.setSampleData(rawClick);
+            clickFilter.setSampleData(rawClick);
             if (clickCutoff.get() > 0.0f) {
-                out += _clickFilter.hp;
+                out += clickFilter.hp;
 
             } else {
-                out += _clickFilter.lp;
+                out += clickFilter.lp;
             }
         }
 
@@ -141,7 +140,7 @@ protected:
 
         float out = wave->sample(index, freq) * ampModulation;
 
-        out = addClicking(time, out, _clickFilter);
+        out = addClicking(time, out);
 
         out = out + out * scaledClipping;
         return range(out, -1.0f, 1.0f) * _velocity;
