@@ -126,20 +126,6 @@ protected:
         return out;
     }
 
-    float scaledClipping = 0.0f;
-
-    float sample(float time, float* index, float ampModulation, float freqModulation, float _noteMult, float _velocity, EffectFilterData& _clickFilter)
-    {
-        float freq = freqModulation + pitchMult * _noteMult;
-
-        float out = wave->sample(index, freq) * ampModulation;
-
-        out = addClicking(time, out);
-
-        out = out + out * scaledClipping;
-        return range(out, -1.0f, 1.0f) * _velocity;
-    }
-
 #define DRUM23_WAVEFORMS_COUNT 7
     struct WaveformType {
         std::string name;
@@ -251,13 +237,20 @@ public:
         clickFilter.setCutoff(0.10);
     }
 
+    float scaledClipping = 0.0f;
     void sample(float* buf)
     {
         if (sampleDurationCounter < sampleCountDuration) {
             float time = (float)sampleDurationCounter / (float)sampleCountDuration;
             float envAmp = envelopAmp.next(time);
             float envFreq = envelopFreq.next(time);
-            buf[track] = sample(time, &wavetable.sampleIndex, envAmp, envFreq, noteMult, velocity, clickFilter);
+
+            float freq = envFreq + pitchMult * noteMult;
+            float out = wave->sample(&wavetable.sampleIndex, freq) * envAmp;
+            out = addClicking(time, out);
+            out = out + out * scaledClipping;
+            buf[track] = range(out, -1.0f, 1.0f) * velocity;
+
             sampleDurationCounter++;
             // printf("[%d] sample: %d of %d=%f\n", track, sampleDurationCounter, sampleCountDuration, buf[track]);
         }
