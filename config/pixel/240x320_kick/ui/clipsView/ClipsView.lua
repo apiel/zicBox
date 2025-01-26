@@ -12,6 +12,7 @@ local ____TextGrid = require("config.pixel.240x320_kick.ui.clipsView.TextGrid")
 local TextGridClips = ____TextGrid.TextGridClips
 local TextGridClipsShifted = ____TextGrid.TextGridClipsShifted
 local ____Values = require("config.pixel.240x320_kick.ui.clipsView.Values")
+local Drum23Values = ____Values.Drum23Values
 local MasterValues = ____Values.MasterValues
 function ____exports.ClipsView(____bindingPattern0)
     local name
@@ -28,6 +29,7 @@ function ____exports.ClipsView(____bindingPattern0)
             title = "Kick",
             group_all = 2
         }),
+        React.createElement(Drum23Values, {group = 0, track = Drum23Track}),
         React.createElement(MasterValues, {group = 2, track = 0})
     )
 end
