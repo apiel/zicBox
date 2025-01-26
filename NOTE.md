@@ -2,6 +2,8 @@
 
 - TODO should kick only version be instead bass line version ^^
 
+- TODO change the order of the encoder ...
+
 - TODO more steps in sample seq and sequencer
 
 - TODO audio plugin do same as for component to load .so file

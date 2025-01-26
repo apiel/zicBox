@@ -146,16 +146,16 @@ public:
     {
         if (isActive) {
             if (id == encoders[0]) {
-                step->setVelocity(step->velocity + direction * 0.01);
-                renderNext();
-            } else if (id == encoders[1]) {
-                // step->setCondition(step->condition + direction);
+                step->setVelocity(step->velocity + direction * 0.05);
                 renderNext();
             } else if (id == encoders[2]) {
-                // step->setNote(step->note + direction);
+                // step->setCondition(step->condition + direction);
+                renderNext();
+            } else if (id == encoders[1]) {
+                step->setStart(step->fStart + direction * 0.1);
                 renderNext();
             } else if (id == encoders[3]) {
-                // step->setMotion(step->motion + direction);
+                step->setEnd(step->fEnd + direction * 0.1);
                 renderNext();
             }
         }
