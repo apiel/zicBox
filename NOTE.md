@@ -1,5 +1,7 @@
 ## Pixel TODO
 
+- TODO if step is not enable, if turning encoder step is enable. Todo for all seqs...
+
 - TODO should kick only version, be instead bass line version ^^
 
 - TODO change the order of the encoder ...

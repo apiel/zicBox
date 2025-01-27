@@ -50,7 +50,7 @@ export function BassWaveformView({ name }: Props) {
             />
 
             <TextGridBass selected={4} viewName={name} />
-            <Common selected={0} track={BassTrack} selectedBackground={ColorTrack3} />
+            <Common selected={3} track={BassTrack} selectedBackground={ColorTrack3} />
         </View>
     );
 }

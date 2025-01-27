@@ -20,6 +20,7 @@ protected:
     uint8_t baseNote = 60;
 
     EffectFilterData filter;
+    // EffectFilterData filter2;
 
     // Envelop might need a bit of curve??
     EnvelopRelative envelop = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.3f, 0.4f }, { 0.0f, 1.0f } });
@@ -63,35 +64,31 @@ public:
         initValues();
     }
 
-    float sample(EffectFilterData& _filter, float env, float& _sampleValue, float _velocity, float _stepIncrement)
-    {
-        _sampleValue += _stepIncrement;
-        if (_sampleValue >= 1.0) {
-            _sampleValue = -1.0;
-        }
-        _filter.setCutoff(0.85 * cutoff.pct() * env + 0.1);
-        float val = _sampleValue;
-        if (stairRatio) {
-            val = stairRatio * floor(_sampleValue / stairRatio);
-            if (staircase.get() < 1.0f) {
-                val = val + floor(_sampleValue / stairRatio);
-            }
-        }
-        if (noise.get() > 0.0f) {
-            val += 0.01 * props.lookupTable->getNoise() * noise.get();
-        }
-        _filter.setSampleData(val * _velocity * env);
-        float out = _filter.lp + _filter.lp * clipping.pct() * 8;
-        return range(out, -1.0f, 1.0f);
-    }
-
     void sample(float* buf)
     {
         if (sampleIndex < sampleCountDuration) {
             sampleIndex++;
             float time = (float)sampleIndex / (float)sampleCountDuration;
             float env = envelop.next(time);
-            buf[track] = sample(filter, env, sampleValue, velocity, stepIncrement * noteMult);
+
+            sampleValue += stepIncrement * noteMult;
+            if (sampleValue >= 1.0) {
+                sampleValue = -1.0;
+            }
+            filter.setCutoff(0.85 * cutoff.pct() * env + 0.1);
+            float val = sampleValue;
+            if (stairRatio) {
+                val = stairRatio * floor(sampleValue / stairRatio);
+                if (staircase.get() < 1.0f) {
+                    val = val + floor(sampleValue / stairRatio);
+                }
+            }
+            if (noise.get() > 0.0f) {
+                val += 0.01 * props.lookupTable->getNoise() * noise.get();
+            }
+            filter.setSampleData(val * velocity * env);
+            float out = filter.lp + filter.lp * clipping.pct() * 8;
+            buf[track] = range(out, -1.0f, 1.0f);
         }
     }
 
