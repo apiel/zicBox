@@ -43,8 +43,8 @@ export function BassSeqView({ name }: Props) {
                 position={KeyInfoPosition}
                 rows={[
                     '&icon::toggle::rect &icon::arrowUp::filled ...',
-                    'Seq./Kick &icon::arrowDown::filled &icon::musicNote::pixelated',
-                    // '!Seq/Kick &icon::arrowDown::filled &icon::musicNote::pixelated',
+                    'Seq./Bass &icon::arrowDown::filled &icon::musicNote::pixelated',
+                    // '!Seq/Bass &icon::arrowDown::filled &icon::musicNote::pixelated',
                 ]}
                 ITEM_BACKGROUND={ColorTrack3}
             >
