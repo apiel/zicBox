@@ -148,8 +148,8 @@ public:
     void setResonance(float value)
     {
         resonance.setFloat(value);
-        filter.setResonance(resonance.pct());
-        filter2.setResonance(resonance.pct());
+        filter.setResonance(resonance.pct() * 0.95);
+        filter2.setResonance(resonance.pct() * 0.95);
     };
 
     // TODO get rid of this, instead use frequency...
