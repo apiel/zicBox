@@ -12,6 +12,7 @@ local BassTrack = ____constants.BassTrack
 local ColorTrack3 = ____constants.ColorTrack3
 local ____constantsValue = require("config.pixel.240x320_kick.ui.constantsValue")
 local bottomLeftKnob = ____constantsValue.bottomLeftKnob
+local bottomRightKnob = ____constantsValue.bottomRightKnob
 local topLeftKnob = ____constantsValue.topLeftKnob
 local topRightKnob = ____constantsValue.topRightKnob
 local ____TextGridBass = require("config.pixel.240x320_kick.ui.Bass.TextGridBass")
@@ -41,6 +42,13 @@ function ____exports.BassEnvView(____bindingPattern0)
             position = bottomLeftKnob,
             encoder_id = 1,
             COLOR = "quaternary",
+            track = BassTrack
+        }),
+        React.createElement(KnobValue, {
+            value = "Bass REVERB",
+            position = bottomRightKnob,
+            encoder_id = 3,
+            COLOR = "secondary",
             track = BassTrack
         }),
         React.createElement(TextGridBass, {selected = 1, viewName = name}),

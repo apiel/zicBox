@@ -6,6 +6,7 @@ import { Common } from '../components/Common';
 import { BassTrack, ColorTrack3 } from '../constants';
 import {
     bottomLeftKnob,
+    bottomRightKnob,
     topLeftKnob,
     topRightKnob
 } from '../constantsValue';
@@ -39,13 +40,13 @@ export function BassEnvView({ name }: Props) {
                 COLOR="quaternary"
                 track={BassTrack}
             />
-            {/* <KnobValue
-                value="Bass HIGH_FREQ_BOOST"
+            <KnobValue
+                value="Bass REVERB"
                 position={bottomRightKnob}
                 encoder_id={3}
                 COLOR="secondary"
                 track={BassTrack}
-            /> */}
+            />
 
             <TextGridBass selected={1} viewName={name} />
             <Common selected={3} track={BassTrack} selectedBackground={ColorTrack3} />

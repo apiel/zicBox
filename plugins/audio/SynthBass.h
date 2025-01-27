@@ -35,6 +35,30 @@ protected:
 
     float noteMult = 1.0f;
 
+    static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
+    float reverbBuffer[REVERB_BUFFER_SIZE] = { 0.0f };
+    int reverbIndex = 0;
+    float applyReverb(float signal)
+    {
+        float reverbAmount = reverb.pct();
+        if (reverbAmount == 0.0f) {
+            return signal;
+        }
+        int reverbSamples = static_cast<int>((reverbAmount * 0.5f) * props.sampleRate); // Reverb duration scaled
+        float feedback = reverbAmount * 0.7f; // Feedback scaled proportionally
+        float mix = reverbAmount * 0.5f; // Mix scaled proportionally
+
+        if (reverbSamples > REVERB_BUFFER_SIZE) {
+            reverbSamples = REVERB_BUFFER_SIZE; // Cap the reverb duration to buffer size
+        }
+
+        float reverbSignal = reverbBuffer[reverbIndex];
+        reverbBuffer[reverbIndex] = signal + reverbSignal * feedback;
+        reverbIndex = (reverbIndex + 1) % reverbSamples;
+
+        return signal * (1.0f - mix) + reverbSignal * mix;
+    }
+
 public:
     /*md **Values**: */
     /*md - `PITCH` set the pitch.*/
@@ -57,6 +81,8 @@ public:
     Val& noise = val(0.0, "NOISE", { "Noise", .unit = "%" });
     /*md - `GAIN_CLIPPING` set the clipping level.*/
     Val& clipping = val(0.0, "GAIN_CLIPPING", { "Gain Clipping", .unit = "%" });
+    /*md - REVERB controls delay time, feedback, and mix with one parameter. */
+    Val& reverb = val(0.3f, "REVERB", { "Reverb", .unit = "%" });
 
     SynthBass(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name) // clang-format on
@@ -64,10 +90,10 @@ public:
         initValues();
     }
 
-    // TODO add reverb
     // TODO add waveform morphing
     // TODO add distortion
     // TODO replace stepFreq with frequency
+    // TODO improve filter perf by adding multiple pass... so cutoff and resonance is only calculated once..
 
     void sample(float* buf)
     {
@@ -97,8 +123,11 @@ public:
             out = filter.lp;
             filter2.setSampleData(out);
             out = filter2.lp;
-            out = out + out * clipping.pct() * 8;
-            buf[track] = range(out, -1.0f, 1.0f);
+            out = range(out + out * clipping.pct() * 8, -1.0f, 1.0f);
+            out = applyReverb(out);
+            buf[track] = out;
+        } else {
+            buf[track] = applyReverb(buf[track]);
         }
     }
 
