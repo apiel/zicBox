@@ -73,6 +73,8 @@ public:
     Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) { setResonance(p.value); });
     /*md - `STAIRCASE` set how much the saw waveform morph to staircase.*/
     Val& staircase = val(9.0, "STAIRCASE", { "Stairs", .min = 1, .max = 9 }, [&](auto p) { setStaircase(p.value); });
+    /*md - `MORPH` morph between sawtooth and triangle.*/
+    Val& morph = val(0.0, "MORPH", { "Morph" });
     /*md - `NOISE` set the noise level.*/
     Val& noise = val(0.0, "NOISE", { "Noise", .unit = "%" });
     /*md - `GAIN_CLIPPING` set the clipping level.*/
@@ -94,17 +96,43 @@ public:
     // TODO add distortion
     // TODO improve filter perf by adding multiple pass... so cutoff and resonance is only calculated once..
 
+    // float getWaveform(float& sampleVal, float increment)
+    // {
+    //     sampleVal += increment;
+    //     if (sampleVal >= 1.0) {
+    //         sampleVal = -1.0;
+    //     }
+    //     float out = sampleVal;
+    //     if (stairRatio) {
+    //         out = stairRatio * floor(sampleVal / stairRatio);
+    //     }
+    //     return out;
+    // }
+
     float getWaveform(float& sampleVal, float increment)
     {
         sampleVal += increment;
-        if (sampleVal >= 1.0) {
-            sampleVal = -1.0;
+        if (sampleVal >= 1.0f) {
+            sampleVal = -1.0f;
         }
-        float out = sampleVal;
-        if (stairRatio) {
-            out = stairRatio * floor(sampleVal / stairRatio);
+
+        // Base waveform: Sawtooth
+        float sawtoothWave = sampleVal;
+
+        // Triangle waveform (calculated from sawtooth)
+        float triangleWave = (sampleVal < 0)
+            ? (2.0f * sampleVal + 1.0f)
+            : (-2.0f * sampleVal + 1.0f);
+
+        // Morphing between sawtooth and triangle
+        float baseWave = (1.0f - morph.pct()) * sawtoothWave + morph.pct() * triangleWave;
+
+        // Apply staircase effect
+        if (stairRatio > 0) {
+            baseWave = stairRatio * floor(baseWave / stairRatio);
         }
-        return out;
+
+        return baseWave;
     }
 
     void sample(float* buf)
