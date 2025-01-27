@@ -28,8 +28,7 @@ function ____exports.BassWaveformView(____bindingPattern0)
             position = topValues,
             plugin = "Bass",
             data_id = "WAVEFORM",
-            RENDER_TITLE_ON_TOP = false,
-            encoders = {"2 STAIRCASE"},
+            encoders = {"0 MORPH", "2 STAIRCASE"},
             track = BassTrack,
             is_array = true
         }),

@@ -34,8 +34,8 @@ export function BassWaveformView({ name }: Props) {
                 position={topValues}
                 plugin="Bass"
                 data_id="WAVEFORM"
-                RENDER_TITLE_ON_TOP={false}
-                encoders={['2 STAIRCASE']}
+                // RENDER_TITLE_ON_TOP={false}
+                encoders={['0 MORPH', '2 STAIRCASE']}
                 track={BassTrack}
                 is_array
             />
