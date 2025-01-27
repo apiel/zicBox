@@ -20,7 +20,7 @@ protected:
     uint8_t baseNote = 60;
 
     EffectFilterData filter;
-    // EffectFilterData filter2;
+    EffectFilterData filter2;
 
     // Envelop might need a bit of curve??
     EnvelopRelative envelop = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.3f, 0.4f }, { 0.0f, 1.0f } });
@@ -64,6 +64,11 @@ public:
         initValues();
     }
 
+    // TODO add reverb
+    // TODO add waveform morphing
+    // TODO add distortion
+    // TODO replace stepFreq with frequency
+
     void sample(float* buf)
     {
         if (sampleIndex < sampleCountDuration) {
@@ -76,18 +81,23 @@ public:
                 sampleValue = -1.0;
             }
             filter.setCutoff(0.85 * cutoff.pct() * env + 0.1);
-            float val = sampleValue;
+            filter2.setCutoff(0.85 * cutoff.pct() * env + 0.1);
+            float out = sampleValue;
             if (stairRatio) {
-                val = stairRatio * floor(sampleValue / stairRatio);
+                out = stairRatio * floor(sampleValue / stairRatio);
                 if (staircase.get() < 1.0f) {
-                    val = val + floor(sampleValue / stairRatio);
+                    out = out + floor(sampleValue / stairRatio);
                 }
             }
             if (noise.get() > 0.0f) {
-                val += 0.01 * props.lookupTable->getNoise() * noise.get();
+                out += 0.01 * props.lookupTable->getNoise() * noise.get();
             }
-            filter.setSampleData(val * velocity * env);
-            float out = filter.lp + filter.lp * clipping.pct() * 8;
+            out = out * velocity * env;
+            filter.setSampleData(out);
+            out = filter.lp;
+            filter2.setSampleData(out);
+            out = filter2.lp;
+            out = out + out * clipping.pct() * 8;
             buf[track] = range(out, -1.0f, 1.0f);
         }
     }
@@ -104,12 +114,6 @@ public:
         } else {
             stairRatio = 0;
         }
-    }
-
-    void setStepFreq(float value)
-    {
-        stepFreq.setFloat(value);
-        stepIncrement = stepFreq.pct() * 0.002 + 0.0006f;
     }
 
     void setDecayLevel(float value)
@@ -138,13 +142,22 @@ public:
     {
         cutoff.setFloat(value);
         filter.setCutoff(0.85 * cutoff.pct() + 0.1);
+        filter2.setCutoff(0.85 * cutoff.pct() + 0.1);
     }
 
     void setResonance(float value)
     {
         resonance.setFloat(value);
         filter.setResonance(resonance.pct());
+        filter2.setResonance(resonance.pct());
     };
+
+    // TODO get rid of this, instead use frequency...
+    void setStepFreq(float value)
+    {
+        stepFreq.setFloat(value);
+        stepIncrement = stepFreq.pct() * 0.002 + 0.0006f;
+    }
 
     void noteOn(uint8_t note, float _velocity) override
     {
