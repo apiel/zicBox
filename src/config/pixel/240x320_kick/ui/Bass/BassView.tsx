@@ -34,7 +34,7 @@ export function BassView({ name }: Props) {
                 track={BassTrack}
             />
             <KnobValue
-                value="Bass FREQ"
+                value="Bass FREQ_RATIO"
                 position={bottomLeftKnob}
                 encoder_id={1}
                 COLOR="quaternary"
