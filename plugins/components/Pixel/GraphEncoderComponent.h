@@ -23,6 +23,8 @@ class GraphEncoderComponent : public BaseGraphEncoderComponent {
 
     uint8_t dataId = -1;
 
+    bool isArray = false;
+
 public:
     GraphEncoderComponent(ComponentInterface::Props props)
         : BaseGraphEncoderComponent(props)
@@ -52,13 +54,25 @@ public:
         if (dataId != -1) {
             float halfHeight = waveformHeight * 0.5;
             points.push_back({ 0, (int)(halfHeight) });
-            for (int i = 0; i < size.w; i++) {
-                float index = i / (float)(size.w - 1);
-                float* value = (float*)plugin->data(dataId, &index);
-                if (value != NULL) {
+
+            if (isArray) {
+                float* value = (float*)plugin->data(dataId, &size.w);
+                for (int i = 0; i < size.w; i++) {
                     points.push_back({ i, (int)(*value * halfHeight + halfHeight) });
+                    // printf("%f,", *value);
+                    value++;
+                }
+                // printf("\n\n");
+            } else {
+                for (int i = 0; i < size.w; i++) {
+                    float index = i / (float)(size.w - 1);
+                    float* value = (float*)plugin->data(dataId, &index);
+                    if (value != NULL) {
+                        points.push_back({ i, (int)(*value * halfHeight + halfHeight) });
+                    }
                 }
             }
+
             points.push_back({ size.w, (int)(halfHeight) });
         }
         return points;
@@ -106,6 +120,12 @@ public:
             encoders.push_back({ encoderId,
                 watch(plugin->getValue(encoderValue)),
                 toString != NULL && strcmp(toString, "string") == 0 });
+            return true;
+        }
+
+        /*md - `IS_ARRAY: true/false` is if the data is an array.*/
+        if (strcmp(key, "IS_ARRAY") == 0) {
+            isArray = strcmp(value, "true") == 0;
             return true;
         }
 

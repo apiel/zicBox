@@ -72,7 +72,7 @@ public:
     /*md - `RESONANCE` to set resonance. */
     Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) { setResonance(p.value); });
     /*md - `STAIRCASE` set how much the saw waveform morph to staircase.*/
-    Val& staircase = val(9.0, "STAIRCASE", { "Stairs", .min = -10, .max = 9 }, [&](auto p) { setStaircase(p.value); });
+    Val& staircase = val(9.0, "STAIRCASE", { "Stairs", .min = 1, .max = 9 }, [&](auto p) { setStaircase(p.value); });
     /*md - `NOISE` set the noise level.*/
     Val& noise = val(0.0, "NOISE", { "Noise", .unit = "%" });
     /*md - `GAIN_CLIPPING` set the clipping level.*/
@@ -94,7 +94,7 @@ public:
     // TODO add distortion
     // TODO improve filter perf by adding multiple pass... so cutoff and resonance is only calculated once..
 
-    float getWaveform(float time, float& sampleVal, float increment)
+    float getWaveform(float& sampleVal, float increment)
     {
         sampleVal += increment;
         if (sampleVal >= 1.0) {
@@ -103,9 +103,6 @@ public:
         float out = sampleVal;
         if (stairRatio) {
             out = stairRatio * floor(sampleVal / stairRatio);
-            if (staircase.get() < 1.0f) {
-                out = out + floor(sampleVal / stairRatio);
-            }
         }
         return out;
     }
@@ -116,7 +113,7 @@ public:
             sampleIndex++;
             float time = (float)sampleIndex / (float)sampleCountDuration;
             float env = envelop.next(time);
-            float out = getWaveform(time, sampleValue, stepIncrement);
+            float out = getWaveform(sampleValue, stepIncrement);
             if (noise.get() > 0.0f) {
                 out += 0.01 * props.lookupTable->getNoise() * noise.get();
             }
@@ -139,11 +136,7 @@ public:
     {
         staircase.setFloat(value);
         if (staircase.get() < 9.0f) {
-            if (staircase.get() > 0.0f) {
-                stairRatio = -1.0f / (float)staircase.get();
-            } else {
-                stairRatio = 1.0f / (float)abs(staircase.get() - 1);
-            }
+            stairRatio = -1.0f / (float)staircase.get();
         } else {
             stairRatio = 0;
         }
@@ -207,6 +200,34 @@ public:
         // Calculate step increment, including pitch adjustment
         stepIncrement = (targetFrequency / props.sampleRate) * pow(2.0, ((note - baseNote + pitch.get()) / 12.0)) * 2.0f;
     }
+
+    std::vector<float> waveformData;
+    DataFn dataFunctions[1] = {
+        { "WAVEFORM", [this](void* userdata) {
+             int* width = (int*)userdata;
+             float increment = 1 / (float)*width;
+             waveformData.clear();
+             float sampleVal = 0.0f;
+             for (int i = 0; i < *width; i++) {
+                 waveformData.push_back(getWaveform(sampleVal, increment));
+             }
+             return waveformData.data();
+         } },
+    };
+    DEFINE_GETDATAID_AND_DATA
 };
 
 #endif
+
+// float getWaveform(float& sampleVal, float increment)
+// {
+//     sampleVal += increment;
+//     if (sampleVal >= 1.0) {
+//         sampleVal = -1.0;
+//     }
+//     float out = sampleVal;
+//     if (stairRatio) {
+//         out = stairRatio * floor(sampleVal / stairRatio);
+//     }
+//     return out;
+// }
