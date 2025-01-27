@@ -19,6 +19,7 @@ local rgb = ____ui.rgb
 local ____Common = require("config.pixel.240x320_kick.ui.components.Common")
 local Common = ____Common.Common
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
+local ColorTrack3 = ____constants.ColorTrack3
 local KeyInfoPosition = ____constants.KeyInfoPosition
 local SampleTrack = ____constants.SampleTrack
 local ScreenWidth = ____constants.ScreenWidth
@@ -59,7 +60,7 @@ function ____exports.SampleEditorView(____bindingPattern0)
             React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 0}),
             React.createElement(Keymaps, {keys = {{key = "e", action = "contextToggle:254:1:0"}, {key = "w", action = "incGroup:-1"}, {key = "s", action = "incGroup:+1"}}})
         ),
-        React.createElement(Common, {selected = 1, track = SampleTrack, hideSequencer = true})
+        React.createElement(Common, {selected = 1, track = SampleTrack, hideSequencer = true, selectedBackground = ColorTrack3})
     )
 end
 return ____exports

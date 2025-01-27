@@ -25,10 +25,6 @@ export const TertiaryBar = '#368a36';
 export const QuaternaryBar = '#94854b';
 
 export const ColorTrack1 = '#a3c912';
-export const ColorTrack2 = '#23a123';
-export const ColorTrack3 = '#fd6f0e';
+export const ColorTrack2 = '#fd6f0e';
+export const ColorTrack3 = '#15a5ca';
 export const ColorTrack4 = '#ffcd04';
-export const ColorTrack5 = '#15a5ca';
-export const ColorTrack6 = '#4643d8';
-export const ColorTrack7 = '#902ed1';
-export const ColorTrack8 = '#cb11ca';

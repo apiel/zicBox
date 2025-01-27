@@ -8,7 +8,7 @@ import { View } from '@/libs/components/View';
 import { VisibilityContext } from '@/libs/components/VisibilityContext';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
-import { KeyInfoPosition, SampleTrack, ScreenWidth } from '../constants';
+import { ColorTrack3, KeyInfoPosition, SampleTrack, ScreenWidth } from '../constants';
 
 export type Props = {
     name: string;
@@ -65,7 +65,7 @@ export function SampleEditorView({ name }: Props) {
                     ]}
                 />
             </TextGrid>
-            <Common selected={1} track={SampleTrack} hideSequencer />
+            <Common selected={1} track={SampleTrack} hideSequencer selectedBackground={ColorTrack3} />
         </View>
     );
 }
