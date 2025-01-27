@@ -93,7 +93,24 @@ public:
     // TODO add waveform morphing
     // TODO add distortion
     // TODO replace stepFreq with frequency
+    //      should we even get rid of pitch? or leave it but not show it in the UI... but only use for grid effect
     // TODO improve filter perf by adding multiple pass... so cutoff and resonance is only calculated once..
+
+    float getWaveform(float time, float& sampleVal, float increment)
+    {
+        sampleVal += increment;
+        if (sampleVal >= 1.0) {
+            sampleVal = -1.0;
+        }
+        float out = sampleVal;
+        if (stairRatio) {
+            out = stairRatio * floor(sampleVal / stairRatio);
+            if (staircase.get() < 1.0f) {
+                out = out + floor(sampleVal / stairRatio);
+            }
+        }
+        return out;
+    }
 
     void sample(float* buf)
     {
@@ -101,26 +118,15 @@ public:
             sampleIndex++;
             float time = (float)sampleIndex / (float)sampleCountDuration;
             float env = envelop.next(time);
-
-            sampleValue += stepIncrement * noteMult;
-            if (sampleValue >= 1.0) {
-                sampleValue = -1.0;
-            }
-            filter.setCutoff(0.85 * cutoff.pct() * env + 0.1);
-            filter2.setCutoff(0.85 * cutoff.pct() * env + 0.1);
-            float out = sampleValue;
-            if (stairRatio) {
-                out = stairRatio * floor(sampleValue / stairRatio);
-                if (staircase.get() < 1.0f) {
-                    out = out + floor(sampleValue / stairRatio);
-                }
-            }
+            float out = getWaveform(time, sampleValue, stepIncrement * noteMult);
             if (noise.get() > 0.0f) {
                 out += 0.01 * props.lookupTable->getNoise() * noise.get();
             }
             out = out * velocity * env;
+            filter.setCutoff(0.85 * cutoff.pct() * env + 0.1);
             filter.setSampleData(out);
             out = filter.lp;
+            filter2.setCutoff(0.85 * cutoff.pct() * env + 0.1);
             filter2.setSampleData(out);
             out = filter2.lp;
             out = range(out + out * clipping.pct() * 8, -1.0f, 1.0f);
