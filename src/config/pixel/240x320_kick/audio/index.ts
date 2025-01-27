@@ -27,14 +27,14 @@ plugin('MMFilter EffectFilterMultiMode', [{ STRING_CUTOFF_FORMAT, track }]);
 plugin('TrackFx EffectGainVolume', [{ track }]);
 plugin('SerializeTrack', [{ track, filename: 'drum23', MAX_VARIATION, WORKSPACE_FOLDER }]);
 
-plugin('SampleSequencer', [{ track: SampleTrack }]);
-plugin('SerializeTrack', [{ track: SampleTrack, filename: 'sampleSeq', MAX_VARIATION, WORKSPACE_FOLDER }]);
-
 track = BassTrack;
 plugin('Bass', [{ track }]);
 plugin('Sequencer', [{ track }]);
 plugin('TrackFx EffectGainVolume', [{ track }]);
 plugin('SerializeTrack', [{ track, filename: 'bass', MAX_VARIATION, WORKSPACE_FOLDER }]);
+
+plugin('SampleSequencer', [{ track: SampleTrack }]);
+plugin('SerializeTrack', [{ track: SampleTrack, filename: 'sampleSeq', MAX_VARIATION, WORKSPACE_FOLDER }]);
 
 plugin('Mixer');
 plugin('Volume EffectGainVolume');

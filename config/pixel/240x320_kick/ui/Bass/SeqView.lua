@@ -18,7 +18,7 @@ local ____Common = require("config.pixel.240x320_kick.ui.components.Common")
 local Common = ____Common.Common
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
 local BassTrack = ____constants.BassTrack
-local ColorTrack3 = ____constants.ColorTrack3
+local ColorTrack2 = ____constants.ColorTrack2
 local KeyInfoPosition = ____constants.KeyInfoPosition
 local ScreenWidth = ____constants.ScreenWidth
 function ____exports.BassSeqView(____bindingPattern0)
@@ -50,7 +50,7 @@ function ____exports.BassSeqView(____bindingPattern0)
         ),
         React.createElement(
             TextGrid,
-            {position = KeyInfoPosition, rows = {"&icon::toggle::rect &icon::arrowUp::filled ...", "Seq./Bass &icon::arrowDown::filled &icon::musicNote::pixelated"}, ITEM_BACKGROUND = ColorTrack3},
+            {position = KeyInfoPosition, rows = {"&icon::toggle::rect &icon::arrowUp::filled ...", "Seq./Bass &icon::arrowDown::filled &icon::musicNote::pixelated"}, ITEM_BACKGROUND = ColorTrack2},
             React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 0}),
             React.createElement(Keymaps, {keys = {
                 {key = "w", action = "incGroup:-1"},
@@ -60,7 +60,7 @@ function ____exports.BassSeqView(____bindingPattern0)
                 {key = "d", action = "noteOn:Bass:60"}
             }})
         ),
-        React.createElement(Common, {selected = 0, hideSequencer = true, track = BassTrack, selectedBackground = ColorTrack3})
+        React.createElement(Common, {selected = 0, hideSequencer = true, track = BassTrack, selectedBackground = ColorTrack2})
     )
 end
 return ____exports

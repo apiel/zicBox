@@ -7,7 +7,7 @@ import { View } from '@/libs/components/View';
 import { VisibilityContext } from '@/libs/components/VisibilityContext';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
-import { BassTrack, ColorTrack3, KeyInfoPosition, ScreenWidth } from '../constants';
+import { BassTrack, ColorTrack2, KeyInfoPosition, ScreenWidth } from '../constants';
 
 export type Props = {
     name: string;
@@ -46,7 +46,7 @@ export function BassSeqView({ name }: Props) {
                     'Seq./Bass &icon::arrowDown::filled &icon::musicNote::pixelated',
                     // '!Seq/Bass &icon::arrowDown::filled &icon::musicNote::pixelated',
                 ]}
-                ITEM_BACKGROUND={ColorTrack3}
+                ITEM_BACKGROUND={ColorTrack2}
             >
                 <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />
                 <Keymaps
@@ -60,7 +60,7 @@ export function BassSeqView({ name }: Props) {
                     ]}
                 />
             </TextGrid>
-            <Common selected={0} hideSequencer track={BassTrack}  selectedBackground={ColorTrack3} />
+            <Common selected={0} hideSequencer track={BassTrack}  selectedBackground={ColorTrack2} />
         </View>
     );
 }

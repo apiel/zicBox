@@ -9,7 +9,7 @@ local ____Common = require("config.pixel.240x320_kick.ui.components.Common")
 local Common = ____Common.Common
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
 local BassTrack = ____constants.BassTrack
-local ColorTrack3 = ____constants.ColorTrack3
+local ColorTrack2 = ____constants.ColorTrack2
 local ____constantsValue = require("config.pixel.240x320_kick.ui.constantsValue")
 local bottomLeftKnob = ____constantsValue.bottomLeftKnob
 local bottomRightKnob = ____constantsValue.bottomRightKnob
@@ -52,7 +52,7 @@ function ____exports.BassEnvView(____bindingPattern0)
             track = BassTrack
         }),
         React.createElement(TextGridBass, {selected = 1, viewName = name}),
-        React.createElement(Common, {selected = 3, track = BassTrack, selectedBackground = ColorTrack3})
+        React.createElement(Common, {selected = 3, track = BassTrack, selectedBackground = ColorTrack2})
     )
 end
 return ____exports
