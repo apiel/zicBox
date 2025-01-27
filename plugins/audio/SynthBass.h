@@ -79,8 +79,10 @@ public:
     Val& clipping = val(0.0, "GAIN_CLIPPING", { "Gain Clipping", .unit = "%" });
     /*md - REVERB controls delay time, feedback, and mix with one parameter. */
     Val& reverb = val(0.3f, "REVERB", { "Reverb", .unit = "%" });
-    /*md - FREQ sets the frequency of the bass. */
-    Val& freq = val(30.0f, "FREQ", { "Frequency", .min = 10.0, .max = 200.0, .step = 0.1, .floatingPoint = 1, .unit = "Hz" });
+    // /*/md - FREQ sets the frequency of the bass. */
+    // Val& freq = val(30.0f, "FREQ", { "Frequency", .min = 10.0, .max = 200.0, .step = 0.1, .floatingPoint = 1, .unit = "Hz" });
+    /*md - FREQ_RATIO sets the frequency of the bass. */
+    Val& freqRatio = val(25.0f, "FREQ_RATIO", { "Freq. ratio", .step = 0.1, .floatingPoint = 1, .unit = "%" });
 
     SynthBass(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name) // clang-format on
@@ -196,7 +198,14 @@ public:
         sampleValue = 0.0f;
         envelop.reset();
 
-        stepIncrement = (freq.get() / props.sampleRate) * 2.0 * pow(2.0, ((note - baseNote + pitch.get()) / 12.0));
+        // stepIncrement = (freq.get() / props.sampleRate) * 2.0 * pow(2.0, ((note - baseNote + pitch.get()) / 12.0));
+
+        // Base frequency for the highest frequency (210 + 10 = 220 Hz)
+        float baseFrequency = 210.0f;
+        // Calculate target frequency using freqRatio
+        float targetFrequency = baseFrequency * freqRatio.pct() * freqRatio.pct() + 10.0f; // +10.0f to never go below 10 Hz
+        // Calculate step increment, including pitch adjustment
+        stepIncrement = (targetFrequency / props.sampleRate) * pow(2.0, ((note - baseNote + pitch.get()) / 12.0)) * 2.0f;
     }
 };
 
