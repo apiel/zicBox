@@ -136,7 +136,7 @@ public:
     {
         staircase.setFloat(value);
         if (staircase.get() < 9.0f) {
-            stairRatio = -1.0f / (float)staircase.get();
+            stairRatio = 1.0f / (float)staircase.get();
         } else {
             stairRatio = 0;
         }
