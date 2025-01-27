@@ -141,15 +141,19 @@ public:
     void setCutoff(float value)
     {
         cutoff.setFloat(value);
-        filter.setCutoff(0.85 * cutoff.pct() + 0.1);
-        filter2.setCutoff(0.85 * cutoff.pct() + 0.1);
+
+        float cutoffValue = 0.85 * cutoff.pct() + 0.1;
+        filter.setCutoff(cutoffValue);
+        filter2.setCutoff(cutoffValue);
     }
 
     void setResonance(float value)
     {
         resonance.setFloat(value);
-        filter.setResonance(resonance.pct() * 0.95);
-        filter2.setResonance(resonance.pct() * 0.95);
+        // float res = 0.95 * (1.0 - std::pow(1.0 - resonance.pct(), 3));
+        float res = 0.95 * (1.0 - std::pow(1.0 - resonance.pct(), 2));
+        filter.setResonance(res);
+        filter2.setResonance(res);
     };
 
     // TODO get rid of this, instead use frequency...
