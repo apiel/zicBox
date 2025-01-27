@@ -7,13 +7,13 @@ import { View } from '@/libs/components/View';
 import { VisibilityContext } from '@/libs/components/VisibilityContext';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
-import { ColorTrack1, Drum23Track, KeyInfoPosition, ScreenWidth } from '../constants';
+import { BassTrack, ColorTrack3, KeyInfoPosition, ScreenWidth } from '../constants';
 
 export type Props = {
     name: string;
 };
 
-export function Drum23SeqView({ name }: Props) {
+export function BassSeqView({ name }: Props) {
     let y = 0;
     return (
         <View name={name}>
@@ -24,8 +24,8 @@ export function Drum23SeqView({ name }: Props) {
                     <StepEditDrum
                         position={[0, yy, ScreenWidth, 8]}
                         data={`Sequencer ${i}`}
+                        track={BassTrack}
                         group={i}
-                        track={Drum23Track}
                         playing_color={rgb(35, 161, 35)}
                         background_color={
                             i % 8 == 0 || i % 8 == 1 || i % 8 == 2 || i % 8 == 3
@@ -46,7 +46,7 @@ export function Drum23SeqView({ name }: Props) {
                     'Seq./Kick &icon::arrowDown::filled &icon::musicNote::pixelated',
                     // '!Seq/Kick &icon::arrowDown::filled &icon::musicNote::pixelated',
                 ]}
-                ITEM_BACKGROUND={ColorTrack1}
+                ITEM_BACKGROUND={ColorTrack3}
             >
                 <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />
                 <Keymaps
@@ -54,13 +54,13 @@ export function Drum23SeqView({ name }: Props) {
                         { key: 'w', action: 'incGroup:-1' },
                         { key: 'e', action: 'contextToggle:254:1:0' },
 
-                        { key: 'a', action: 'setView:Drum23' },
+                        { key: 'a', action: 'setView:Bass' },
                         { key: 's', action: 'incGroup:+1' },
-                        { key: 'd', action: 'noteOn:Drum23:60' },
+                        { key: 'd', action: 'noteOn:Bass:60' },
                     ]}
                 />
             </TextGrid>
-            <Common selected={0} hideSequencer track={Drum23Track}  selectedBackground={ColorTrack1} />
+            <Common selected={0} hideSequencer track={BassTrack}  selectedBackground={ColorTrack3} />
         </View>
     );
 }

@@ -14,17 +14,12 @@
 
 Synth engine to generate bass sounds.
 
-> [!NOTE] _deprecated_ in favor of **SynthKick23** that can produce bass with much more possibilities...
-> maybe transforming this synth in a virtual 303 would bring value to it but for the moment better to focus on **SynthKick23**
 */
 class SynthBass : public Mapping {
 protected:
     uint8_t baseNote = 60;
 
     EffectFilterData filter;
-
-    // could be use make sample representation for a note duration
-    float bufferUi[ZIC_BASS_UI];
 
     // Envelop might need a bit of curve??
     EnvelopRelative envelop = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.3f, 0.4f }, { 0.0f, 1.0f } });
@@ -35,9 +30,6 @@ protected:
     float stepIncrement = 0.001f;
     float velocity = 1.0f;
 
-    int bufferUiState = -1;
-    int updateUiState = 0;
-
     float stairRatio = 0.0f;
 
     float noteMult = 1.0f;
@@ -45,7 +37,7 @@ protected:
 public:
     /*md **Values**: */
     /*md - `PITCH` set the pitch.*/
-    Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24 }, [&](auto p) { setPitch(p.value); });
+    Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24 });
     /*md - `DURATION` set the duration of the envelop.*/
     Val& duration = val(100.0f, "DURATION", { "Duration", .min = 10.0, .max = 5000.0, .step = 10.0, .unit = "ms" }, [&](auto p) { setDuration(p.value); });
     /*md - `DECAY_LEVEL` set the decay level.*/
@@ -61,9 +53,9 @@ public:
     /*md - `STAIRCASE` set how much the saw waveform morph to staircase.*/
     Val& staircase = val(9.0, "STAIRCASE", { "Stairs", .min = -10, .max = 9 }, [&](auto p) { setStaircase(p.value); });
     /*md - `NOISE` set the noise level.*/
-    Val& noise = val(0.0, "NOISE", { "Noise", .unit = "%" }, [&](auto p) { setNoise(p.value); });
+    Val& noise = val(0.0, "NOISE", { "Noise", .unit = "%" });
     /*md - `GAIN_CLIPPING` set the clipping level.*/
-    Val& clipping = val(0.0, "GAIN_CLIPPING", { "Gain Clipping", .unit = "%" }, [&](auto p) { setClipping(p.value); });
+    Val& clipping = val(0.0, "GAIN_CLIPPING", { "Gain Clipping", .unit = "%" });
 
     SynthBass(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name) // clang-format on
@@ -103,18 +95,6 @@ public:
         }
     }
 
-    void setClipping(float value)
-    {
-        clipping.setFloat(value);
-        updateUiState++;
-    }
-
-    void setNoise(float value)
-    {
-        noise.setFloat(value);
-        updateUiState++;
-    }
-
     void setStaircase(float value)
     {
         staircase.setFloat(value);
@@ -127,35 +107,24 @@ public:
         } else {
             stairRatio = 0;
         }
-        updateUiState++;
     }
 
     void setStepFreq(float value)
     {
         stepFreq.setFloat(value);
         stepIncrement = stepFreq.pct() * 0.002 + 0.0006f;
-        updateUiState++;
     }
 
     void setDecayLevel(float value)
     {
         decayLevel.setFloat(value);
         envelop.data[2].modulation = decayLevel.pct();
-        updateUiState++;
     }
 
     void setDecayTime(float value)
     {
         decayTime.setFloat(value);
         envelop.data[2].time = decayTime.pct();
-        updateUiState++;
-    }
-
-    void setPitch(float value)
-    {
-        pitch.setFloat(value);
-        // pitchMult = pitch.pct() + 0.5f; // FIXME
-        updateUiState++;
     }
 
     void setDuration(float value)
@@ -166,22 +135,18 @@ public:
         if (isOff) {
             sampleIndex = sampleCountDuration;
         }
-        // printf(">>>>>>>>>>>>>>.... sampleCountDuration: %d (%d)\n", sampleCountDuration, duration.getAsInt());
-        updateUiState++;
     }
 
     void setCutoff(float value)
     {
         cutoff.setFloat(value);
         filter.setCutoff(0.85 * cutoff.pct() + 0.1);
-        updateUiState++;
     }
 
     void setResonance(float value)
     {
         resonance.setFloat(value);
         filter.setResonance(resonance.pct());
-        updateUiState++;
     };
 
     void noteOn(uint8_t note, float _velocity) override
@@ -194,37 +159,6 @@ public:
         envelop.reset();
 
         noteMult = pow(2, ((note - baseNote + pitch.get()) / 12.0));
-    }
-
-    void* data(int id, void* userdata = NULL)
-    {
-        switch (id) {
-        case 0:
-            return &updateUiState;
-
-        case 1: {
-            if (bufferUiState != updateUiState) {
-                bufferUiState = updateUiState;
-                EffectFilterData _filter;
-                _filter.setCutoff(filter.cutoff);
-                _filter.setResonance(filter.resonance);
-                float _sampleValue = 0.0f;
-                unsigned int envIndex = 0;
-                // printf("render bass waveform: %d\n", updateUiState);
-                for (int i = 0; i < sampleCountDuration; i++) {
-                    float time = (float)i / (float)sampleCountDuration;
-                    float env = envelop.next(time, envIndex);
-
-                    int bufIndex = i * (float)ZIC_BASS_UI / (float)sampleCountDuration;
-                    bufferUi[bufIndex] = sample(_filter, env, _sampleValue, 1.0f, stepIncrement);
-                }
-            }
-            return (void*)&bufferUi;
-        }
-        case 2:
-            return &envelop.data;
-        }
-        return NULL;
     }
 };
 
