@@ -205,9 +205,9 @@ public:
     DataFn dataFunctions[1] = {
         { "WAVEFORM", [this](void* userdata) {
              int* width = (int*)userdata;
-             float increment = 1 / (float)*width;
+             float increment = 2.0f / (float)*width;
              waveformData.clear();
-             float sampleVal = 0.0f;
+             float sampleVal = -1.0f;
              for (int i = 0; i < *width; i++) {
                  waveformData.push_back(getWaveform(sampleVal, increment));
              }
@@ -218,16 +218,3 @@ public:
 };
 
 #endif
-
-// float getWaveform(float& sampleVal, float increment)
-// {
-//     sampleVal += increment;
-//     if (sampleVal >= 1.0) {
-//         sampleVal = -1.0;
-//     }
-//     float out = sampleVal;
-//     if (stairRatio) {
-//         out = stairRatio * floor(sampleVal / stairRatio);
-//     }
-//     return out;
-// }
