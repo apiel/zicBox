@@ -4,7 +4,7 @@ import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 
 import { Common } from '../components/Common';
-import { BassTrack, ColorTrack3 } from '../constants';
+import { BassTrack, ColorTrack2 } from '../constants';
 import {
     bottomLeftKnob,
     bottomRightKnob,
@@ -50,7 +50,7 @@ export function BassWaveformView({ name }: Props) {
             />
 
             <TextGridBass selected={4} viewName={name} />
-            <Common selected={3} track={BassTrack} selectedBackground={ColorTrack3} />
+            <Common selected={3} track={BassTrack} selectedBackground={ColorTrack2} />
         </View>
     );
 }

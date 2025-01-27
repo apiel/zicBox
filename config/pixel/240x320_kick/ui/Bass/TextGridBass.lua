@@ -8,7 +8,7 @@ local TextGridSel = ____TextGridSel.TextGridSel
 local ____Title = require("config.pixel.240x320_kick.ui.components.Title")
 local Title = ____Title.Title
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
-local ColorTrack3 = ____constants.ColorTrack3
+local ColorTrack2 = ____constants.ColorTrack2
 function ____exports.TextGridBass(____bindingPattern0)
     local selected
     selected = ____bindingPattern0.selected
@@ -17,9 +17,9 @@ function ____exports.TextGridBass(____bindingPattern0)
         React.Fragment,
         nil,
         React.createElement(Title, {title = "Bass"}),
-        React.createElement(Rect, {position = {70, 28, 6, 6}, color = ColorTrack3}),
+        React.createElement(Rect, {position = {70, 28, 6, 6}, color = ColorTrack2}),
         React.createElement(TextGridSel, {
-            ITEM_BACKGROUND = ColorTrack3,
+            ITEM_BACKGROUND = ColorTrack2,
             items = {
                 "Main",
                 "Env",

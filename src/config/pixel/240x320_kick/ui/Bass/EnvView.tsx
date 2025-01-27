@@ -3,7 +3,7 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
-import { BassTrack, ColorTrack3 } from '../constants';
+import { BassTrack, ColorTrack2 } from '../constants';
 import {
     bottomLeftKnob,
     bottomRightKnob,
@@ -49,7 +49,7 @@ export function BassEnvView({ name }: Props) {
             />
 
             <TextGridBass selected={1} viewName={name} />
-            <Common selected={3} track={BassTrack} selectedBackground={ColorTrack3} />
+            <Common selected={3} track={BassTrack} selectedBackground={ColorTrack2} />
         </View>
     );
 }
