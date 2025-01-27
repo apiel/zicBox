@@ -33,8 +33,6 @@ protected:
 
     float stairRatio = 0.0f;
 
-    float noteMult = 1.0f;
-
     static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
     float reverbBuffer[REVERB_BUFFER_SIZE] = { 0.0f };
     int reverbIndex = 0;
@@ -73,8 +71,6 @@ public:
     Val& cutoff = val(50.0, "CUTOFF", { "Cutoff", .unit = "%" }, [&](auto p) { setCutoff(p.value); });
     /*md - `RESONANCE` to set resonance. */
     Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) { setResonance(p.value); });
-    /*md - `STEP_FREQ` set how much the saw waveform ramp up increases on each sample.*/
-    Val& stepFreq = val(10.0, "STEP_FREQ", { "Step Frequency", .max = 100 }, [&](auto p) { setStepFreq(p.value); });
     /*md - `STAIRCASE` set how much the saw waveform morph to staircase.*/
     Val& staircase = val(9.0, "STAIRCASE", { "Stairs", .min = -10, .max = 9 }, [&](auto p) { setStaircase(p.value); });
     /*md - `NOISE` set the noise level.*/
@@ -83,6 +79,8 @@ public:
     Val& clipping = val(0.0, "GAIN_CLIPPING", { "Gain Clipping", .unit = "%" });
     /*md - REVERB controls delay time, feedback, and mix with one parameter. */
     Val& reverb = val(0.3f, "REVERB", { "Reverb", .unit = "%" });
+    /*md - FREQ sets the frequency of the bass. */
+    Val& freq = val(30.0f, "FREQ", { "Frequency", .min = 10.0, .max = 200.0, .step = 0.1, .floatingPoint = 1, .unit = "Hz" });
 
     SynthBass(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name) // clang-format on
@@ -92,8 +90,6 @@ public:
 
     // TODO add waveform morphing
     // TODO add distortion
-    // TODO replace stepFreq with frequency
-    //      should we even get rid of pitch? or leave it but not show it in the UI... but only use for grid effect
     // TODO improve filter perf by adding multiple pass... so cutoff and resonance is only calculated once..
 
     float getWaveform(float time, float& sampleVal, float increment)
@@ -118,7 +114,7 @@ public:
             sampleIndex++;
             float time = (float)sampleIndex / (float)sampleCountDuration;
             float env = envelop.next(time);
-            float out = getWaveform(time, sampleValue, stepIncrement * noteMult);
+            float out = getWaveform(time, sampleValue, stepIncrement);
             if (noise.get() > 0.0f) {
                 out += 0.01 * props.lookupTable->getNoise() * noise.get();
             }
@@ -191,13 +187,6 @@ public:
         filter2.setResonance(res);
     };
 
-    // TODO get rid of this, instead use frequency...
-    void setStepFreq(float value)
-    {
-        stepFreq.setFloat(value);
-        stepIncrement = stepFreq.pct() * 0.002 + 0.0006f;
-    }
-
     void noteOn(uint8_t note, float _velocity) override
     {
         velocity = _velocity;
@@ -207,7 +196,7 @@ public:
         sampleValue = 0.0f;
         envelop.reset();
 
-        noteMult = pow(2, ((note - baseNote + pitch.get()) / 12.0));
+        stepIncrement = (freq.get() / props.sampleRate) * 2.0 * pow(2.0, ((note - baseNote + pitch.get()) / 12.0));
     }
 };
 
