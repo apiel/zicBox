@@ -38,7 +38,7 @@ function ____exports.BassView(____bindingPattern0)
             track = BassTrack
         }),
         React.createElement(KnobValue, {
-            value = "Bass PITCH",
+            value = "Bass FREQ",
             position = bottomLeftKnob,
             encoder_id = 1,
             COLOR = "quaternary",
