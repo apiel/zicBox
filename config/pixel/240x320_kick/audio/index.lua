@@ -5,6 +5,7 @@ local autoSave = ____audio.autoSave
 local plugin = ____audio.plugin
 local pluginAlias = ____audio.pluginAlias
 local ____constants = require("config.pixel.240x320_kick.constants")
+local BassTrack = ____constants.BassTrack
 local Drum23Track = ____constants.Drum23Track
 local SampleTrack = ____constants.SampleTrack
 pluginAlias("EffectDistortion2", "libzic_EffectDistortion2.so")
@@ -13,10 +14,11 @@ pluginAlias("EffectGainVolume", "libzic_EffectGainVolume.so")
 pluginAlias("SerializeTrack", "libzic_SerializeTrack.so")
 pluginAlias("Tempo", "libzic_Tempo.so")
 pluginAlias("Drum23", "libzic_SynthDrum23.so")
+pluginAlias("Bass", "libzic_SynthBass.so")
 pluginAlias("Sample", "libzic_SynthMonoSample.so")
 pluginAlias("Sequencer", "libzic_Sequencer.so")
 pluginAlias("AudioOutput", "libzic_AudioOutputPulse.so")
-pluginAlias("Mixer", "libzic_Mixer2.so")
+pluginAlias("Mixer", "libzic_Mixer4.so")
 pluginAlias("Tape", "libzic_TapeRecording.so")
 pluginAlias("SampleSequencer", "libzic_SampleSequencer.so")
 ____exports.STRING_CUTOFF_FORMAT = "%d%% %d%%"
@@ -31,9 +33,14 @@ plugin("TrackFx EffectGainVolume", {{track = track}})
 plugin("SerializeTrack", {{track = track, filename = "drum23", MAX_VARIATION = ____exports.MAX_VARIATION, WORKSPACE_FOLDER = WORKSPACE_FOLDER}})
 plugin("SampleSequencer", {{track = SampleTrack}})
 plugin("SerializeTrack", {{track = SampleTrack, filename = "sampleSeq", MAX_VARIATION = ____exports.MAX_VARIATION, WORKSPACE_FOLDER = WORKSPACE_FOLDER}})
+track = BassTrack
+plugin("Bass", {{track = track}})
+plugin("Sequencer", {{track = track}})
+plugin("TrackFx EffectGainVolume", {{track = track}})
+plugin("SerializeTrack", {{track = track, filename = "bass", MAX_VARIATION = ____exports.MAX_VARIATION, WORKSPACE_FOLDER = WORKSPACE_FOLDER}})
 plugin("Mixer")
 plugin("Volume EffectGainVolume")
-plugin("Tape", {{filename = "kick", max_track = 2}})
+plugin("Tape", {{filename = "kick", max_track = 3}})
 plugin("AudioOutput")
 plugin("SerializeTrack", {{filename = "master", MAX_VARIATION = ____exports.MAX_VARIATION, WORKSPACE_FOLDER = WORKSPACE_FOLDER}})
 plugin("Tempo")

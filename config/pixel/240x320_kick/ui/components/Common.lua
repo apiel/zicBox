@@ -41,14 +41,14 @@ function ____exports.Common(____bindingPattern0)
                 "Kick",
                 "Sample",
                 "^...",
-                "Sequencer",
+                "Bass",
                 "Clips",
                 "&icon::play::filled"
             }, keys = {
                 {key = "q", action = "setView:Drum23"},
                 {key = "w", action = "setView:Sample"},
                 {key = "e", action = "contextToggle:254:1:0"},
-                {key = "a", action = "setView:Sequencer"},
+                {key = "a", action = "setView:Bass"},
                 {key = "s", action = "setView:Clips"},
                 {key = "d", action = "playPause"}
             }, selected = selected, contextValue = 1}, selectedBackground and ({ITEM_BACKGROUND = selectedBackground}))

@@ -1,6 +1,10 @@
 import { applyZic } from '@/libs/core';
 import * as React from '@/libs/react';
 import { addZoneEncoder, setScreenSize, setWindowPosition } from '@/libs/ui';
+import { BassView } from './Bass/BassView';
+import { BassEnvView } from './Bass/EnvView';
+import { BassSeqView } from './Bass/SeqView';
+import { BassWaveformView } from './Bass/WaveformView';
 import { ClipsView } from './clipsView/ClipsView';
 import { ScreenHeight, ScreenWidth, W1_2 } from './constants';
 import { AmpView } from './Drum23/AmpView';
@@ -35,13 +39,13 @@ applyZic(<AmpView name="Amplitude" />);
 applyZic(<ClickView name="Click" />);
 applyZic(<Drum23SeqView name="Sequencer" />);
 
-// applyZic(<SampleView name="Sample" />);
-// applyZic(<Sample2View name="Sample2" />);
-// applyZic(<SampleEditorView name="SampleEditor" />);
-
 applyZic(<SampleEditorView name="Sample" />);
 
-// applyZic(<DrumsSeqView name="DrumsSeq" />);
+applyZic(<BassView name="Bass" />);
+applyZic(<BassEnvView name="BassEnv" />);
+applyZic(<BassSeqView name="BassSeq" />);
+applyZic(<BassWaveformView name="BassWaveform" />);
+
 
 applyZic(<MenuView name="Menu" />);
 applyZic(<WorkspacesView name="Workspaces" />);
