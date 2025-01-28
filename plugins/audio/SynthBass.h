@@ -80,21 +80,39 @@ public:
     /*md - `PITCH` set the pitch.*/
     Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24 });
     /*md - `DURATION` set the duration of the envelop.*/
-    Val& duration = val(100.0f, "DURATION", { "Duration", .min = 10.0, .max = 5000.0, .step = 10.0, .unit = "ms" }, [&](auto p) { setDuration(p.value); });
+    Val& duration = val(100.0f, "DURATION", { "Duration", .min = 10.0, .max = 5000.0, .step = 10.0, .unit = "ms" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        bool isOff = sampleCountDuration == sampleIndex;
+        sampleCountDuration = p.val.get() * (props.sampleRate * 0.001f);
+        if (isOff) {
+            sampleIndex = sampleCountDuration;
+        }
+    });
     /*md - `DECAY_LEVEL` set the decay level.*/
-    Val& decayLevel = val(0.5f, "DECAY_LEVEL", { "Decay Level", .unit = "%" }, [&](auto p) { setDecayLevel(p.value); });
+    Val& decayLevel = val(0.5f, "DECAY_LEVEL", { "Decay Level", .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        envelop.data[2].modulation = p.val.pct();
+    });
     /*md - `DECAY_TIME` set the decay time percentage base on the total duration.*/
-    Val& decayTime = val(100.0f, "DECAY_TIME", { "Decay Time", .unit = "%" }, [&](auto p) { setDecayTime(p.value); });
+    Val& decayTime = val(100.0f, "DECAY_TIME", { "Decay Time", .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        envelop.data[2].time = p.val.pct();
+    });
     /*md - `CUTOFF` to set cutoff frequency of low pass filter. */
-    Val& cutoff = val(50.0, "CUTOFF", { "Cutoff", .unit = "%" }, [&](auto p) { setCutoff(p.value); });
+    Val& cutoff = val(50.0, "CUTOFF", { "Cutoff", .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        float cutoffValue = 0.85 * p.val.pct() + 0.1;
+        filter.setCutoff(cutoffValue);
+        filter2.setCutoff(cutoffValue);
+    });
     /*md - `RESONANCE` to set resonance. */
-    Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) { setResonance(p.value); });
-    /*md - `STAIRCASE` set how much the saw waveform morph to staircase.*/
-    Val& staircase = val(9.0, "STAIRCASE", { "Stairs", .min = 1, .max = 9 }, [&](auto p) { setStaircase(p.value); });
-    /*md - `MORPH` morph between sawtooth and triangle.*/
-    Val& morph = val(0.0, "MORPH", { "Morph" });
-    /*md - `NOISE` set the noise level.*/
-    Val& noise = val(0.0, "NOISE", { "Noise", .unit = "%" });
+    Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        // float res = 0.95 * (1.0 - std::pow(1.0 - p.val.pct(), 3));
+        float res = 0.95 * (1.0 - std::pow(1.0 - p.val.pct(), 2));
+        filter.setResonance(res);
+        filter2.setResonance(res);
+    });
     /*md - `GAIN_CLIPPING` set the clipping level.*/
     Val& clipping = val(0.0, "GAIN_CLIPPING", { "Gain Clipping", .unit = "%" });
     /*md - REVERB controls delay time, feedback, and mix with one parameter. */
@@ -104,8 +122,8 @@ public:
     /*md - FREQ_RATIO sets the frequency of the bass. */
     Val& freqRatio = val(25.0f, "FREQ_RATIO", { "Freq. ratio", .step = 0.1, .floatingPoint = 1, .unit = "%" });
 
-    /*md - `WAVEFORM_TYPE` Select waveform type (wavetable, sine, triangle...).*/
-    Val& waveformType = val(0.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = BASS_WAVEFORMS_COUNT - 1 }, [&](auto p) {
+    /*md - `WAVEFORM_TYPE` Select waveform type (wavetable, sawtooth, square...).*/
+    Val& waveformType = val(1.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = BASS_WAVEFORMS_COUNT - 1 }, [&](auto p) {
         float current = p.val.get();
         p.val.setFloat(p.value);
         if (wave && current == p.val.get()) {
@@ -167,47 +185,8 @@ public:
         initValues();
     }
 
-    // TODO add waveform morphing
     // TODO add distortion
     // TODO improve filter perf by adding multiple pass... so cutoff and resonance is only calculated once..
-
-    float getWaveform(float& sampleVal, float increment)
-    {
-        sampleVal += increment;
-        if (sampleVal >= 1.0) {
-            sampleVal = -1.0;
-        }
-        float out = sampleVal;
-        if (stairRatio) {
-            out = stairRatio * floor(sampleVal / stairRatio);
-        }
-        return out;
-    }
-
-    // void sample(float* buf)
-    // {
-    //     if (sampleIndex < sampleCountDuration) {
-    //         sampleIndex++;
-    //         float time = (float)sampleIndex / (float)sampleCountDuration;
-    //         float env = envelop.next(time);
-    //         float out = getWaveform(sampleValue, stepIncrement);
-    //         if (noise.get() > 0.0f) {
-    //             out += 0.01 * props.lookupTable->getNoise() * noise.get();
-    //         }
-    //         out = out * velocity * env;
-    //         filter.setCutoff(0.85 * cutoff.pct() * env + 0.1);
-    //         filter.setSampleData(out);
-    //         out = filter.lp;
-    //         filter2.setCutoff(0.85 * cutoff.pct() * env + 0.1);
-    //         filter2.setSampleData(out);
-    //         out = filter2.lp;
-    //         out = range(out + out * clipping.pct() * 8, -1.0f, 1.0f);
-    //         out = applyReverb(out);
-    //         buf[track] = out;
-    //     } else {
-    //         buf[track] = applyReverb(buf[track]);
-    //     }
-    // }
 
     // unsigned int sampleCountDuration = 0;
     unsigned int sampleDurationCounter = 0;
@@ -236,56 +215,6 @@ public:
         }
     }
 
-    void setStaircase(float value)
-    {
-        staircase.setFloat(value);
-        if (staircase.get() < 9.0f) {
-            stairRatio = 1.0f / (float)staircase.get();
-        } else {
-            stairRatio = 0;
-        }
-    }
-
-    void setDecayLevel(float value)
-    {
-        decayLevel.setFloat(value);
-        envelop.data[2].modulation = decayLevel.pct();
-    }
-
-    void setDecayTime(float value)
-    {
-        decayTime.setFloat(value);
-        envelop.data[2].time = decayTime.pct();
-    }
-
-    void setDuration(float value)
-    {
-        duration.setFloat(value);
-        bool isOff = sampleCountDuration == sampleIndex;
-        sampleCountDuration = duration.get() * (props.sampleRate * 0.001f);
-        if (isOff) {
-            sampleIndex = sampleCountDuration;
-        }
-    }
-
-    void setCutoff(float value)
-    {
-        cutoff.setFloat(value);
-
-        float cutoffValue = 0.85 * cutoff.pct() + 0.1;
-        filter.setCutoff(cutoffValue);
-        filter2.setCutoff(cutoffValue);
-    }
-
-    void setResonance(float value)
-    {
-        resonance.setFloat(value);
-        // float res = 0.95 * (1.0 - std::pow(1.0 - resonance.pct(), 3));
-        float res = 0.95 * (1.0 - std::pow(1.0 - resonance.pct(), 2));
-        filter.setResonance(res);
-        filter2.setResonance(res);
-    };
-
     void noteOn(uint8_t note, float _velocity) override
     {
         velocity = _velocity;
@@ -313,15 +242,6 @@ public:
     std::vector<float> waveformData;
     DataFn dataFunctions[1] = {
         { "WAVEFORM", [this](void* userdata) {
-             //  int* width = (int*)userdata;
-             //  float increment = 2.0f / (float)*width;
-             //  waveformData.clear();
-             //  float sampleVal = -1.0f;
-             //  for (int i = 0; i < *width; i++) {
-             //      waveformData.push_back(getWaveform(sampleVal, increment));
-             //  }
-             //  return waveformData.data();
-
              if (!wave) {
                  return (void*)NULL;
              }

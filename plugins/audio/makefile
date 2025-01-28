@@ -52,6 +52,9 @@ SynthKick23:
 SynthDrum23:
 	make compile LIBNAME=SynthDrum23 EXTRA="$(shell pkg-config --cflags --libs sndfile)"
 
+SynthBass:
+	make compile LIBNAME=SynthBass EXTRA="$(shell pkg-config --cflags --libs sndfile)"
+
 SynthSample:
 	make compile LIBNAME=SynthSample EXTRA="$(shell pkg-config --cflags --libs sndfile)"
 

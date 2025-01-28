@@ -13,11 +13,11 @@ public:
     enum Type {
         Sine,
         Triangle,
+        Sawtooth,
         Square,
         Pulse,
         Fm,
         FmSquare,
-        Sawtooth,
     };
 
 protected:
