@@ -96,43 +96,17 @@ public:
     // TODO add distortion
     // TODO improve filter perf by adding multiple pass... so cutoff and resonance is only calculated once..
 
-    // float getWaveform(float& sampleVal, float increment)
-    // {
-    //     sampleVal += increment;
-    //     if (sampleVal >= 1.0) {
-    //         sampleVal = -1.0;
-    //     }
-    //     float out = sampleVal;
-    //     if (stairRatio) {
-    //         out = stairRatio * floor(sampleVal / stairRatio);
-    //     }
-    //     return out;
-    // }
-
     float getWaveform(float& sampleVal, float increment)
     {
         sampleVal += increment;
-        if (sampleVal >= 1.0f) {
-            sampleVal = -1.0f;
+        if (sampleVal >= 1.0) {
+            sampleVal = -1.0;
         }
-
-        // Base waveform: Sawtooth
-        float sawtoothWave = sampleVal;
-
-        // Triangle waveform (calculated from sawtooth)
-        float triangleWave = (sampleVal < 0)
-            ? (2.0f * sampleVal + 1.0f)
-            : (-2.0f * sampleVal + 1.0f);
-
-        // Morphing between sawtooth and triangle
-        float baseWave = (1.0f - morph.pct()) * sawtoothWave + morph.pct() * triangleWave;
-
-        // Apply staircase effect
-        if (stairRatio > 0) {
-            baseWave = stairRatio * floor(baseWave / stairRatio);
+        float out = sampleVal;
+        if (stairRatio) {
+            out = stairRatio * floor(sampleVal / stairRatio);
         }
-
-        return baseWave;
+        return out;
     }
 
     void sample(float* buf)
