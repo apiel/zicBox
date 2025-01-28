@@ -12,9 +12,9 @@ export function TextGridBass({ selected, viewName }: { selected: number; viewNam
             <Rect position={[70, 28, 6, 6]} color={ColorTrack2} />
             <TextGridSel
                 ITEM_BACKGROUND={ColorTrack2}
-                items={['Main', 'Env', '...', 'Seq.', 'Waveform', '&icon::musicNote::pixelated']}
+                items={['Fx1/Fx2', 'Env', '...', 'Seq.', 'Waveform', '&icon::musicNote::pixelated']}
                 keys={[
-                    { key: 'q', action: 'setView:Bass' },
+                    { key: 'q', action: viewName === 'Bass' ? 'setView:BassDistortion' : 'setView:Bass' },
                     { key: 'w', action: 'setView:BassEnv' },
                     { key: 'e', action: 'contextToggle:254:1:0' },
 
