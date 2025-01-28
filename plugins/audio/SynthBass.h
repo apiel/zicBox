@@ -30,8 +30,6 @@ protected:
 
     unsigned int sampleCountDuration = 0;
     unsigned int sampleIndex = 0;
-    float sampleValue = 0.0f;
-    float stepIncrement = 0.001f;
     float velocity = 1.0f;
 
     WaveformInterface* wave = nullptr;
@@ -48,8 +46,6 @@ protected:
         { "Square", &waveform, Waveform::Type::Square },
         { "Pulse", &waveform, Waveform::Type::Pulse },
     };
-
-    float stairRatio = 0.0f;
 
     static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
     float reverbBuffer[REVERB_BUFFER_SIZE] = { 0.0f };
@@ -159,8 +155,8 @@ public:
             wavetable.open(position, false);
             p.val.setString(wavetable.fileBrowser.getFileWithoutExtension(position));
 
-            // sampleDurationCounter = -1; // set counter to the maximum
-            // sampleDurationCounter = sampleCountDuration;
+            // sampleIndex = -1; // set counter to the maximum
+            // sampleIndex = sampleCountDuration;
         }
     });
 
@@ -188,16 +184,13 @@ public:
     // TODO add distortion
     // TODO improve filter perf by adding multiple pass... so cutoff and resonance is only calculated once..
 
-    // unsigned int sampleCountDuration = 0;
-    unsigned int sampleDurationCounter = 0;
     float scaledClipping = 0.0f;
-    float noteMult = 1.0f;
+    float freq = 1.0f;
     void sample(float* buf)
     {
-        if (sampleDurationCounter < sampleCountDuration) {
-            float time = (float)sampleDurationCounter / (float)sampleCountDuration;
+        if (sampleIndex < sampleCountDuration) {
+            float time = (float)sampleIndex / (float)sampleCountDuration;
             float env = envelop.next(time);
-            float freq = noteMult;
             float out = wave->sample(&wavetable.sampleIndex, freq);
             out = out * velocity * env;
             filter.setCutoff(0.85 * cutoff.pct() * env + 0.1);
@@ -209,7 +202,7 @@ public:
             out = range(out + out * clipping.pct() * 8, -1.0f, 1.0f);
             out = applyReverb(out);
             buf[track] = out;
-            sampleDurationCounter++;
+            sampleIndex++;
         } else {
             buf[track] = applyReverb(buf[track]);
         }
@@ -221,22 +214,10 @@ public:
         // printf("bass noteOn: %d %f\n", note, velocity);
 
         sampleIndex = 0;
-        sampleValue = 0.0f;
         envelop.reset();
-
-        // stepIncrement = (freq.get() / props.sampleRate) * 2.0 * pow(2.0, ((note - baseNote + pitch.get()) / 12.0));
-
-        // Base frequency for the highest frequency (210 + 10 = 220 Hz)
-        float baseFrequency = 210.0f;
-        // Calculate target frequency using freqRatio
-        float targetFrequency = baseFrequency * freqRatio.pct() * freqRatio.pct() + 10.0f; // +10.0f to never go below 10 Hz
-        // Calculate step increment, including pitch adjustment
-        stepIncrement = (targetFrequency / props.sampleRate) * pow(2.0, ((note - baseNote + pitch.get()) / 12.0)) * 2.0f;
-
         wavetable.sampleIndex = 0;
-        sampleDurationCounter = 0;
-        noteMult = freqRatio.pct() * pow(2, ((note - baseNote + pitch.get()) / 12.0)) + 0.05;
-        printf("noteMult: %f\n", noteMult);
+        freq = freqRatio.pct() * pow(2, ((note - baseNote + pitch.get()) / 12.0)) + 0.05;
+        // printf("freq: %f\n", freq);
     }
 
     std::vector<float> waveformData;
