@@ -4,6 +4,7 @@
 #include "../../helpers/range.h"
 #include "audioPlugin.h"
 #include "filter.h"
+#include "filter8.h"
 #include "mapping.h"
 #include "utils/EnvelopRelative.h"
 
@@ -24,6 +25,8 @@ protected:
 
     EffectFilterData filter;
     EffectFilterData filter2;
+
+    EffectFilter8Data filter8;
 
     // Envelop might need a bit of curve??
     EnvelopRelative envelop = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.3f, 0.4f }, { 0.0f, 1.0f } });
@@ -71,6 +74,29 @@ protected:
         return signal * (1.0f - mix) + reverbSignal * mix;
     }
 
+    float prevInput = 0.0f, prevOutput = 0.0f;
+    float applyBoost(float input)
+    {
+        if (boost.pct() == 0.5f) {
+            return input;
+        }
+        if (boost.pct() > 0.5f) {
+            float amount = boost.pct() * 2 - 1.0f;
+            if (input > 0.0f) {
+                return std::pow(input, 1.0f - amount * 0.8f);
+            }
+            return -std::pow(-input, 1.0f - amount * 0.8f);
+        }
+        float amount = 1 - boost.pct() * 2;
+        float bassFreq = 0.2f + 0.8f * amount;
+        float bassBoosted = (1.0f - bassFreq) * prevOutput + bassFreq * (input + prevInput) * 0.5f;
+        prevInput = input;
+        prevOutput = bassBoosted;
+        bassBoosted *= 1.0f + amount * 2.0f;
+
+        return bassBoosted;
+    }
+
 public:
     /*md **Values**: */
     /*md - `PITCH` set the pitch.*/
@@ -100,6 +126,7 @@ public:
         float cutoffValue = 0.85 * p.val.pct() + 0.1;
         filter.setCutoff(cutoffValue);
         filter2.setCutoff(cutoffValue);
+        filter8.setCutoff(cutoffValue);
     });
     /*md - `RESONANCE` to set resonance. */
     Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
@@ -108,6 +135,7 @@ public:
         float res = 0.95 * (1.0 - std::pow(1.0 - p.val.pct(), 2));
         filter.setResonance(res);
         filter2.setResonance(res);
+        filter8.setResonance(res);
     });
     /*md - `GAIN_CLIPPING` set the clipping level.*/
     Val& clipping = val(0.0, "GAIN_CLIPPING", { "Gain Clipping", .unit = "%" });
@@ -184,29 +212,6 @@ public:
         initValues();
     }
 
-    float prevInput = 0.0f, prevOutput = 0.0f;
-    float applyBoost(float input)
-    {
-        if (boost.pct() == 0.5f) {
-            return input;
-        }
-        if (boost.pct() > 0.5f) {
-            float amount = boost.pct() * 2 - 1.0f;
-            if (input > 0.0f) {
-                return std::pow(input, 1.0f - amount * 0.8f);
-            }
-            return -std::pow(-input, 1.0f - amount * 0.8f);
-        }
-        float amount = 1 - boost.pct() * 2;
-        float bassFreq = 0.2f + 0.8f * amount;
-        float bassBoosted = (1.0f - bassFreq) * prevOutput + bassFreq * (input + prevInput) * 0.5f;
-        prevInput = input;
-        prevOutput = bassBoosted;
-        bassBoosted *= 1.0f + amount * 2.0f;
-
-        return bassBoosted;
-    }
-
     // TODO improve filter perf by adding multiple pass... so cutoff and resonance is only calculated once..
 
     float scaledClipping = 0.0f;
@@ -218,12 +223,19 @@ public:
             float env = envelop.next(time);
             float out = wave->sample(&wavetable.sampleIndex, freq);
             out = out * velocity * env;
-            filter.setCutoff(0.85 * cutoff.pct() * env + 0.1);
-            filter.setSampleData(out);
-            out = filter.lp;
-            filter2.setCutoff(0.85 * cutoff.pct() * env + 0.1);
-            filter2.setSampleData(out);
-            out = filter2.lp;
+
+            // filter.setCutoff(0.85 * cutoff.pct() * env + 0.1);
+            // filter.setSampleData(out);
+            // out = filter.lp;
+            // filter2.setCutoff(0.85 * cutoff.pct() * env + 0.1);
+            // filter2.setSampleData(out);
+            // out = filter2.lp;
+
+            filter8.setCutoff(0.85 * cutoff.pct() * env + 0.1);
+            filter8.setSampleData(out, 0);
+            filter8.setSampleData(filter8.lp[0], 1);
+            out = filter8.lp[1];
+
             out = range(out + out * clipping.pct() * 8, -1.0f, 1.0f);
             out = applyReverb(out);
             out = applyBoost(out);
