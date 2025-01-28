@@ -2,6 +2,7 @@ import { applyZic } from '@/libs/core';
 import * as React from '@/libs/react';
 import { addZoneEncoder, setScreenSize, setWindowPosition } from '@/libs/ui';
 import { BassView } from './Bass/BassView';
+import { BassDistortionView } from './Bass/DistortionView';
 import { BassEnvView } from './Bass/EnvView';
 import { BassSeqView } from './Bass/SeqView';
 import { BassWaveformView } from './Bass/WaveformView';
@@ -42,6 +43,7 @@ applyZic(<Drum23SeqView name="Sequencer" />);
 applyZic(<SampleEditorView name="Sample" />);
 
 applyZic(<BassView name="Bass" />);
+applyZic(<BassDistortionView name="BassDistortion" />);
 applyZic(<BassEnvView name="BassEnv" />);
 applyZic(<BassSeqView name="BassSeq" />);
 applyZic(<BassWaveformView name="BassWaveform" />);

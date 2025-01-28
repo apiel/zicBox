@@ -174,11 +174,37 @@ public:
         }
     });
 
+    /*md - `BOOST` to set compression or bass boost. */
+    Val& boost = val(0.0f, "BOOST", { "Boost", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
+
     SynthBass(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name) // clang-format on
         , waveform(props.lookupTable, props.sampleRate)
     {
         initValues();
+    }
+
+    float prevInput = 0.0f, prevOutput = 0.0f;
+    float applyBoost(float input)
+    {
+        if (boost.pct() == 0.5f) {
+            return input;
+        }
+        if (boost.pct() > 0.5f) {
+            float amount = boost.pct() * 2 - 1.0f;
+            if (input > 0.0f) {
+                return std::pow(input, 1.0f - amount * 0.8f);
+            }
+            return -std::pow(-input, 1.0f - amount * 0.8f);
+        }
+        float amount = 1 - boost.pct() * 2;
+        float bassFreq = 0.2f + 0.8f * amount;
+        float bassBoosted = (1.0f - bassFreq) * prevOutput + bassFreq * (input + prevInput) * 0.5f;
+        prevInput = input;
+        prevOutput = bassBoosted;
+        bassBoosted *= 1.0f + amount * 2.0f;
+
+        return bassBoosted;
     }
 
     // TODO add distortion
@@ -201,6 +227,7 @@ public:
             out = filter2.lp;
             out = range(out + out * clipping.pct() * 8, -1.0f, 1.0f);
             out = applyReverb(out);
+            out = applyBoost(out);
             buf[track] = out;
             sampleIndex++;
         } else {

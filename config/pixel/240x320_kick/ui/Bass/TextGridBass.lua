@@ -10,9 +10,10 @@ local Title = ____Title.Title
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
 local ColorTrack2 = ____constants.ColorTrack2
 function ____exports.TextGridBass(____bindingPattern0)
+    local viewName
     local selected
     selected = ____bindingPattern0.selected
-    local viewName = ____bindingPattern0.viewName
+    viewName = ____bindingPattern0.viewName
     return React.createElement(
         React.Fragment,
         nil,
@@ -21,7 +22,7 @@ function ____exports.TextGridBass(____bindingPattern0)
         React.createElement(TextGridSel, {
             ITEM_BACKGROUND = ColorTrack2,
             items = {
-                "Main",
+                "Fx1/Fx2",
                 "Env",
                 "...",
                 "Seq.",
@@ -29,7 +30,7 @@ function ____exports.TextGridBass(____bindingPattern0)
                 "&icon::musicNote::pixelated"
             },
             keys = {
-                {key = "q", action = "setView:Bass"},
+                {key = "q", action = viewName == "Bass" and "setView:BassDistortion" or "setView:Bass"},
                 {key = "w", action = "setView:BassEnv"},
                 {key = "e", action = "contextToggle:254:1:0"},
                 {key = "a", action = "setView:BassSeq"},
