@@ -1,8 +1,9 @@
 ## Pixel TODO
 
-- TODO if step is not enable, if turning encoder step is enable. Todo for all seqs...
+- TODO envelop, instead to always calculate time ratio and do linear interpolation, could precalculate step value for each sample by using props.samplerRate to define incrementation steps...
+- TODO in waveform float sample(float* index, float freq) instead pass step increment... instead to calculate it all the time
 
-- TODO should kick only version, be instead bass line version ^^
+- TODO if step is not enable, if turning encoder step is enable. Todo for all seqs...
 
 - TODO change the order of the encoder ...
 
@@ -14,11 +15,7 @@
 
 - TODO use helpers/format.h fToString everywhere instead of custom precision formating
 
-- TODO getData and data, instead to use enum, use struct array
-- IDEA data function instead to call it using an index, maybe we could get a pointer to the data function!
 - TODO data id, do something if the ID does not exist... and maybe not rely at all on numeric id anymore!
-
-- TODO should we merge sequencer and serializeTrack?
 
 - TODO clip scrollbar
 
