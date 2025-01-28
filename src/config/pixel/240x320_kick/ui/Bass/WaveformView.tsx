@@ -6,7 +6,7 @@ import { View } from '@/libs/components/View';
 import { GraphEncoder } from '@/libs/components/GraphEncoder';
 import { Common } from '../components/Common';
 import { BassTrack, ColorTrack2 } from '../constants';
-import { bottomLeftKnob, bottomRightKnob, topValues } from '../constantsValue';
+import { bottomRightKnob, topValues } from '../constantsValue';
 import { TextGridBass } from './TextGridBass';
 
 export type Props = {
@@ -35,17 +35,19 @@ export function BassWaveformView({ name }: Props) {
                 plugin="Bass"
                 data_id="WAVEFORM"
                 // RENDER_TITLE_ON_TOP={false}
-                encoders={['0 MORPH', '2 STAIRCASE']}
+                // encoders={['0 MORPH', '2 STAIRCASE']}
+                // is_array
                 track={BassTrack}
-                is_array
+                RENDER_TITLE_ON_TOP={false}
+                encoders={['0 WAVEFORM_TYPE', '2 MACRO', '1 SHAPE']}
             />
-            <KnobValue
+            {/* <KnobValue
                 value="Bass NOISE"
                 position={bottomLeftKnob}
                 encoder_id={1}
                 COLOR="quaternary"
                 track={BassTrack}
-            />
+            /> */}
             <KnobValue
                 value="Bass GAIN_CLIPPING"
                 position={bottomRightKnob}
