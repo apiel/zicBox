@@ -207,7 +207,6 @@ public:
         return bassBoosted;
     }
 
-    // TODO add distortion
     // TODO improve filter perf by adding multiple pass... so cutoff and resonance is only calculated once..
 
     float scaledClipping = 0.0f;
