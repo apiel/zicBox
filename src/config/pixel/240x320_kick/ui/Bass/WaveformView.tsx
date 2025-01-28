@@ -13,6 +13,8 @@ export type Props = {
 };
 
 export function BassWaveformView({ name }: Props) {
+    const pos = topValues;
+    pos[1] += pos[3] * 0.5;
     return (
         <View name={name}>
             {/* <KnobValue
@@ -30,7 +32,8 @@ export function BassWaveformView({ name }: Props) {
                 track={BassTrack}
             /> */}
             <GraphEncoder
-                position={topValues}
+                // position={topValues}
+                position={pos}
                 plugin="Bass"
                 data_id="WAVEFORM"
                 // RENDER_TITLE_ON_TOP={false}
