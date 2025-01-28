@@ -17,6 +17,7 @@ public:
         Pulse,
         Fm,
         FmSquare,
+        Sawtooth,
     };
 
 protected:
@@ -50,6 +51,44 @@ protected:
         // Second pass: Normalize to fit within [-1.0, 1.0]
         for (uint16_t i = 0; i < sampleCount; i++) {
             lut[i] /= maxAmplitude; // Scale down to fit within [-1.0, 1.0]
+        }
+    }
+
+    void loadSawtoothType()
+    {
+        for (uint16_t i = 0; i < sampleCount; i++) {
+            float phase = i / (float)sampleCount; // Normalized phase [0, 1)
+
+            // Base sawtooth wave
+            float sawtooth1 = 2.0f * (phase - std::floor(phase + 0.5f)); // Generates a sawtooth wave in [-1, 1]
+
+            // Second sawtooth wave at double the frequency
+            float sawtooth2 = 2.0f * ((phase * 2.0f) - std::floor((phase * 2.0f) + 0.5f));
+
+            // Split macro into two regions
+            if (macro <= 0.5f) {
+                // First behavior: Phase shift modulation
+                float phaseShift = macro * 2.0f; // Scale macro for 0-0.5 range
+                float modulatedPhase = std::fmod(phase + phaseShift, 1.0f); // Apply phase shift
+                float modulatedSawtooth = 2.0f * (modulatedPhase - std::floor(modulatedPhase + 0.5f));
+
+                // Blend the base and phase-shifted sawtooth waves using the shape parameter
+                lut[i] = (1.0f - shape) * sawtooth1 + shape * modulatedSawtooth;
+            } else {
+                // Second behavior: Frequency modulation
+                float fmAmount = (macro - 0.5f) * 4.0f; // Scale FM strength for 0.5-1.0 range
+                float modulatedPhase = std::fmod(phase + fmAmount * std::sin(phase * M_PI * 2), 1.0f); // Apply FM
+                float modulatedSawtooth = 2.0f * (modulatedPhase - std::floor(modulatedPhase + 0.5f));
+
+                // Blend the base and frequency-modulated sawtooth waves using the shape parameter
+                lut[i] = (1.0f - shape) * sawtooth1 + shape * modulatedSawtooth;
+            }
+
+            // Optional: Apply a staircase effect using the shape parameter
+            if (shape > 0.5f) {
+                int steps = static_cast<int>(shape * 10.0f); // Number of steps based on shape
+                lut[i] = std::floor(lut[i] * steps) / steps; // Quantize the waveform
+            }
         }
     }
 
@@ -281,6 +320,14 @@ public:
                 macro = 0.0f;
             }
             loadSineType();
+            break;
+        }
+        case Type::Sawtooth: {
+            if (reset) {
+                shape = 0.0f; // sawtooth
+                macro = 0.0f;
+            }
+            loadSawtoothType();
             break;
         }
         case Type::Triangle: {

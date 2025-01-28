@@ -7,6 +7,9 @@
 #include "mapping.h"
 #include "utils/EnvelopRelative.h"
 
+#include "./utils/Waveform.h"
+#include "./utils/Wavetable.h"
+
 #define ZIC_BASS_UI 1000
 
 /*md
@@ -30,6 +33,21 @@ protected:
     float sampleValue = 0.0f;
     float stepIncrement = 0.001f;
     float velocity = 1.0f;
+
+    WaveformInterface* wave = nullptr;
+    Waveform waveform;
+    Wavetable wavetable;
+#define BASS_WAVEFORMS_COUNT 4
+    struct WaveformType {
+        std::string name;
+        WaveformInterface* wave;
+        uint8_t indexType = 0;
+    } waveformTypes[BASS_WAVEFORMS_COUNT] = {
+        { "Wavetable", &wavetable },
+        { "Sawtooth", &waveform, Waveform::Type::Sawtooth },
+        { "Square", &waveform, Waveform::Type::Square },
+        { "Pulse", &waveform, Waveform::Type::Pulse },
+    };
 
     float stairRatio = 0.0f;
 
@@ -86,8 +104,65 @@ public:
     /*md - FREQ_RATIO sets the frequency of the bass. */
     Val& freqRatio = val(25.0f, "FREQ_RATIO", { "Freq. ratio", .step = 0.1, .floatingPoint = 1, .unit = "%" });
 
+    /*md - `WAVEFORM_TYPE` Select waveform type (wavetable, sine, triangle...).*/
+    Val& waveformType = val(0.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = BASS_WAVEFORMS_COUNT - 1 }, [&](auto p) {
+        float current = p.val.get();
+        p.val.setFloat(p.value);
+        if (wave && current == p.val.get()) {
+            return;
+        }
+        WaveformType type = waveformTypes[(int)p.val.get()];
+        p.val.setString(type.name);
+        wave = type.wave;
+        if (p.val.get() != 0.0f) {
+            waveform.setWaveformType((Waveform::Type)type.indexType);
+            printf("Waveform type: %s shape: %f macro: %f\n", type.name.c_str(), waveform.shape * 100.0f, waveform.macro * 100.0f);
+            shape.set(waveform.shape * 1000.0f);
+            macro.set(waveform.macro * 100.0f);
+        } else {
+            shape.set(wavetable.fileBrowser.position);
+            macro.set(wavetable.getIndex());
+        }
+    });
+    /*md - `SHAPE` Morhp over the waveform shape.*/
+    Val& shape = val(0.0f, "SHAPE", { "Shape", VALUE_STRING, .max = 1000 }, [&](auto p) {
+        if (waveformType.get() != 0.0f) {
+            int direction = p.value - p.val.get();
+            int value = p.val.get() + direction * 10;
+            // printf("val: %f, direction: %d, value: %d\n", p.value, direction, value);
+            p.val.setFloat(value);
+            waveform.setShape(p.val.pct());
+            p.val.setString(std::to_string((int)(p.val.get() * 0.1)) + "%");
+        } else {
+            int value = range(p.value, 1.0f, wavetable.fileBrowser.count);
+            p.val.setFloat(value);
+
+            int position = p.val.get();
+            wavetable.open(position, false);
+            p.val.setString(wavetable.fileBrowser.getFileWithoutExtension(position));
+
+            // sampleDurationCounter = -1; // set counter to the maximum
+            // sampleDurationCounter = sampleCountDuration;
+        }
+    });
+
+    /*md - `MACRO` Macro is arbitrary parameter depending of selected waveform type. */
+    Val& macro = val(0.0f, "MACRO", { "Macro", VALUE_STRING }, [&](auto p) {
+        if (waveformType.get() != 0.0f) {
+            p.val.setFloat(p.value);
+            waveform.setMacro(p.val.pct());
+            p.val.setString(std::to_string((int)p.val.get()) + "%");
+        } else {
+            float value = range(p.value, 1.0f, ZIC_WAVETABLE_WAVEFORMS_COUNT);
+            p.val.setFloat(value);
+            wavetable.morph((int)p.val.get() - 1);
+            p.val.setString(std::to_string((int)p.val.get()) + "/" + std::to_string(ZIC_WAVETABLE_WAVEFORMS_COUNT));
+        }
+    });
+
     SynthBass(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name) // clang-format on
+        , waveform(props.lookupTable, props.sampleRate)
     {
         initValues();
     }
@@ -109,16 +184,42 @@ public:
         return out;
     }
 
+    // void sample(float* buf)
+    // {
+    //     if (sampleIndex < sampleCountDuration) {
+    //         sampleIndex++;
+    //         float time = (float)sampleIndex / (float)sampleCountDuration;
+    //         float env = envelop.next(time);
+    //         float out = getWaveform(sampleValue, stepIncrement);
+    //         if (noise.get() > 0.0f) {
+    //             out += 0.01 * props.lookupTable->getNoise() * noise.get();
+    //         }
+    //         out = out * velocity * env;
+    //         filter.setCutoff(0.85 * cutoff.pct() * env + 0.1);
+    //         filter.setSampleData(out);
+    //         out = filter.lp;
+    //         filter2.setCutoff(0.85 * cutoff.pct() * env + 0.1);
+    //         filter2.setSampleData(out);
+    //         out = filter2.lp;
+    //         out = range(out + out * clipping.pct() * 8, -1.0f, 1.0f);
+    //         out = applyReverb(out);
+    //         buf[track] = out;
+    //     } else {
+    //         buf[track] = applyReverb(buf[track]);
+    //     }
+    // }
+
+    // unsigned int sampleCountDuration = 0;
+    unsigned int sampleDurationCounter = 0;
+    float scaledClipping = 0.0f;
+    float noteMult = 1.0f;
     void sample(float* buf)
     {
-        if (sampleIndex < sampleCountDuration) {
-            sampleIndex++;
-            float time = (float)sampleIndex / (float)sampleCountDuration;
+        if (sampleDurationCounter < sampleCountDuration) {
+            float time = (float)sampleDurationCounter / (float)sampleCountDuration;
             float env = envelop.next(time);
-            float out = getWaveform(sampleValue, stepIncrement);
-            if (noise.get() > 0.0f) {
-                out += 0.01 * props.lookupTable->getNoise() * noise.get();
-            }
+            float freq = noteMult;
+            float out = wave->sample(&wavetable.sampleIndex, freq);
             out = out * velocity * env;
             filter.setCutoff(0.85 * cutoff.pct() * env + 0.1);
             filter.setSampleData(out);
@@ -129,6 +230,7 @@ public:
             out = range(out + out * clipping.pct() * 8, -1.0f, 1.0f);
             out = applyReverb(out);
             buf[track] = out;
+            sampleDurationCounter++;
         } else {
             buf[track] = applyReverb(buf[track]);
         }
@@ -201,19 +303,30 @@ public:
         float targetFrequency = baseFrequency * freqRatio.pct() * freqRatio.pct() + 10.0f; // +10.0f to never go below 10 Hz
         // Calculate step increment, including pitch adjustment
         stepIncrement = (targetFrequency / props.sampleRate) * pow(2.0, ((note - baseNote + pitch.get()) / 12.0)) * 2.0f;
+
+        wavetable.sampleIndex = 0;
+        sampleDurationCounter = 0;
+        noteMult = freqRatio.pct() * pow(2, ((note - baseNote + pitch.get()) / 12.0)) + 0.05;
+        printf("noteMult: %f\n", noteMult);
     }
 
     std::vector<float> waveformData;
     DataFn dataFunctions[1] = {
         { "WAVEFORM", [this](void* userdata) {
-             int* width = (int*)userdata;
-             float increment = 2.0f / (float)*width;
-             waveformData.clear();
-             float sampleVal = -1.0f;
-             for (int i = 0; i < *width; i++) {
-                 waveformData.push_back(getWaveform(sampleVal, increment));
+             //  int* width = (int*)userdata;
+             //  float increment = 2.0f / (float)*width;
+             //  waveformData.clear();
+             //  float sampleVal = -1.0f;
+             //  for (int i = 0; i < *width; i++) {
+             //      waveformData.push_back(getWaveform(sampleVal, increment));
+             //  }
+             //  return waveformData.data();
+
+             if (!wave) {
+                 return (void*)NULL;
              }
-             return waveformData.data();
+             float* index = (float*)userdata;
+             return (void*)wave->sample(index);
          } },
     };
     DEFINE_GETDATAID_AND_DATA

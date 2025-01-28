@@ -13,7 +13,6 @@ local ____constants = require("config.pixel.240x320_kick.ui.constants")
 local BassTrack = ____constants.BassTrack
 local ColorTrack2 = ____constants.ColorTrack2
 local ____constantsValue = require("config.pixel.240x320_kick.ui.constantsValue")
-local bottomLeftKnob = ____constantsValue.bottomLeftKnob
 local bottomRightKnob = ____constantsValue.bottomRightKnob
 local topValues = ____constantsValue.topValues
 local ____TextGridBass = require("config.pixel.240x320_kick.ui.Bass.TextGridBass")
@@ -28,16 +27,9 @@ function ____exports.BassWaveformView(____bindingPattern0)
             position = topValues,
             plugin = "Bass",
             data_id = "WAVEFORM",
-            encoders = {"0 MORPH", "2 STAIRCASE"},
             track = BassTrack,
-            is_array = true
-        }),
-        React.createElement(KnobValue, {
-            value = "Bass NOISE",
-            position = bottomLeftKnob,
-            encoder_id = 1,
-            COLOR = "quaternary",
-            track = BassTrack
+            RENDER_TITLE_ON_TOP = false,
+            encoders = {"0 WAVEFORM_TYPE", "2 MACRO", "1 SHAPE"}
         }),
         React.createElement(KnobValue, {
             value = "Bass GAIN_CLIPPING",
