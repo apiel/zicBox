@@ -288,8 +288,7 @@ public:
 
     float sample(float* index, float freq) override
     {
-        float modulatedFreq = 110.0f * freq;
-        float phaseIncrement = modulatedFreq / sampleRate;
+        float phaseIncrement = (110.0f * freq) / sampleRate;
 
         *index += phaseIncrement;
         while (*index >= 1.0f) {
