@@ -10,7 +10,7 @@
 
 class EffectFilterData {
 protected:
-    float fix(double s)
+    float fix(float s)
     {
         if (isnan(s)) {
             return 0.0;
@@ -21,10 +21,10 @@ protected:
 public:
     float cutoff = 0.0f;
     float feedback = 0.0f;
-    double buf = 0.0;
-    double lp = 0.0;
-    double hp = 0.0;
-    double bp = 0.0;
+    float buf = 0.0;
+    float lp = 0.0;
+    float hp = 0.0;
+    float bp = 0.0;
     float resonance = 0.0f;
    
     void setCutoff(float _cutoff)

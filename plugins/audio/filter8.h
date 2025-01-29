@@ -13,10 +13,10 @@ public:
     const static int SIZE = 8;
     float cutoff = 0.0f;
     float feedback = 0.0f;
-    double buf[SIZE] = { 0.0 };
-    double lp[SIZE] = { 0.0 };
-    double hp[SIZE] = { 0.0 };
-    double bp[SIZE] = { 0.0 };
+    float buf[SIZE] = { 0.0 };
+    float lp[SIZE] = { 0.0 };
+    float hp[SIZE] = { 0.0 };
+    float bp[SIZE] = { 0.0 };
     float resonance = 0.0f;
 
     void setCutoff(float _cutoff)

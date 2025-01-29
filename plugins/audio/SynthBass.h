@@ -3,7 +3,6 @@
 
 #include "../../helpers/range.h"
 #include "audioPlugin.h"
-#include "filter.h"
 #include "filter8.h"
 #include "mapping.h"
 #include "utils/EnvelopRelative.h"
@@ -22,9 +21,6 @@ Synth engine to generate bass sounds.
 class SynthBass : public Mapping {
 protected:
     uint8_t baseNote = 60;
-
-    EffectFilterData filter;
-    EffectFilterData filter2;
 
     EffectFilter8Data filter8;
 
@@ -124,8 +120,6 @@ public:
     Val& cutoff = val(50.0, "CUTOFF", { "Cutoff", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         float cutoffValue = 0.85 * p.val.pct() + 0.1;
-        filter.setCutoff(cutoffValue);
-        filter2.setCutoff(cutoffValue);
         filter8.setCutoff(cutoffValue);
     });
     /*md - `RESONANCE` to set resonance. */
@@ -133,8 +127,6 @@ public:
         p.val.setFloat(p.value);
         // float res = 0.95 * (1.0 - std::pow(1.0 - p.val.pct(), 3));
         float res = 0.95 * (1.0 - std::pow(1.0 - p.val.pct(), 2));
-        filter.setResonance(res);
-        filter2.setResonance(res);
         filter8.setResonance(res);
     });
     /*md - `GAIN_CLIPPING` set the clipping level.*/
@@ -224,13 +216,6 @@ public:
             float out = wave->sample(&wavetable.sampleIndex, freq);
             out = out * velocity * env;
 
-            // filter.setCutoff(0.85 * cutoff.pct() * env + 0.1);
-            // filter.setSampleData(out);
-            // out = filter.lp;
-            // filter2.setCutoff(0.85 * cutoff.pct() * env + 0.1);
-            // filter2.setSampleData(out);
-            // out = filter2.lp;
-
             filter8.setCutoff(0.85 * cutoff.pct() * env + 0.1);
             filter8.setSampleData(out, 0);
             filter8.setSampleData(filter8.lp[0], 1);
@@ -242,7 +227,7 @@ public:
             buf[track] = out;
             sampleIndex++;
         } else {
-            buf[track] = applyReverb(buf[track]);
+            // buf[track] = applyReverb(buf[track]);
         }
     }
 
