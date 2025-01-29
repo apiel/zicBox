@@ -1,7 +1,8 @@
 ## Pixel TODO
 
+- TODO reuse clip view, but instead give a way to assign any track to a given spot, but also scatter/grid effect... and then 4 button to select them...
+
 - TODO envelop, instead to always calculate time ratio and do linear interpolation, could precalculate step value for each sample by using props.samplerRate to define incrementation steps...
-- TODO in waveform float sample(float* index, float freq) instead pass step increment... instead to calculate it all the time
 
 - TODO if step is not enable, if turning encoder step is enable. Todo for all seqs...
 
@@ -32,10 +33,6 @@
 - TODO FM synth --> algo param to decide which kind of waveform to combine
               - --> and if it does FM or substractive ...
               - --> filter envelop
-- TODO synth bass (303?)
-            - --> SAW
-            - --> Filter envelop
-            - --> delay/reverb
 
 - FIXME transition between wavetable and waveform is not so smooth...
 
@@ -66,9 +63,6 @@
 
 - TODO filebrowser
     - serialised might want to use filename instead of file index
-
-- TODO speed up compile time
-  - cross compile for rpi directly on laptop
 
 - IDEA instead of 4 op fm synth make a synth with 3 osc (or even only 2?) that can be fm or not but also use different waveform from wavetable
   - the 3 envelop could be used for amp but also freq?
@@ -136,6 +130,9 @@
     See `void set(float value, void* data = NULL)` in `plugins/audio/mapping.h` calling `onUpdateFn` callback function, could use the same concept to trigger recording of a new cache. However, ui is already using this, so either we could need a vector of callback function, or 2 of them... Some way to debounce it would make sense. How to record the cache, without to impact the audio output?
     **Find a way to record one note:** Create an audio plugin to cache output from all previous plugin. This cache plugin would watch for parameter change. If parameter of one of the previous plugin change, it would cache the audio output for a strategic note (low tone note) and then allowing to speedup reading cache to get higher note.
     **All track caching** the whole track caching would make it hard for sequencer motion and probability, most likely not the right way...
+
+- TODO speed up compile time
+  - cross compile for rpi directly on laptop
 
 ## Next TODO
 
