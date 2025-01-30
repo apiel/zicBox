@@ -52,7 +52,7 @@ export function Drum23SeqView({ name }: Props) {
                 <Keymaps
                     keys={[
                         { key: 'w', action: 'incGroup:-1' },
-                        { key: 'shift', action: 'contextToggle:254:1:0' },
+                        { key: 'b', action: 'contextToggle:254:1:0' },
 
                         { key: 'a', action: 'setView:Drum23' },
                         { key: 's', action: 'incGroup:+1' },

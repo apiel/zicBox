@@ -52,7 +52,7 @@ export function BassSeqView({ name }: Props) {
                 <Keymaps
                     keys={[
                         { key: 'w', action: 'incGroup:-1' },
-                        { key: 'shift', action: 'contextToggle:254:1:0' },
+                        { key: 'b', action: 'contextToggle:254:1:0' },
 
                         { key: 'a', action: 'setView:Bass' },
                         { key: 's', action: 'incGroup:+1' },

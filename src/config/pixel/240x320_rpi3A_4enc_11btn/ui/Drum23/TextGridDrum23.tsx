@@ -29,7 +29,7 @@ export function TextGridDrum23({ selected, viewName }: { selected: number; viewN
                         key: 'w',
                         action: viewName === 'Waveform' ? 'setView:Frequency' : 'setView:Waveform',
                     },
-                    { key: 'shift', action: 'contextToggle:254:1:0' },
+                    { key: 'b', action: 'contextToggle:254:1:0' },
 
                     { key: 'a', action: 'setView:Sequencer' },
                     {

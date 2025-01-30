@@ -22,7 +22,7 @@ export function SaveTapeView({ name }: Props) {
                     keys={[
                         { key: 'q', action: '.type' },
                         { key: 'w', action: '.up' },
-                        { key: 'shift', action: '.cancel' },
+                        { key: 'b', action: '.cancel' },
                         { key: 's', action: '.down' },
                         { key: 'a', action: '.left' },
                         { key: 'd', action: '.right' },
