@@ -16,7 +16,7 @@ export function TextGridBass({ selected, viewName }: { selected: number; viewNam
                 keys={[
                     { key: 'q', action: viewName === 'Bass' ? 'setView:BassDistortion' : 'setView:Bass' },
                     { key: 'w', action: 'setView:BassEnv' },
-                    { key: 'shift', action: 'contextToggle:254:1:0' },
+                    { key: 'b', action: 'contextToggle:254:1:0' },
 
                     { key: 'a', action: 'setView:BassSeq' },
                     { key: 's', action: 'setView:BassWaveform' },

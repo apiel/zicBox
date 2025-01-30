@@ -32,7 +32,7 @@ function ____exports.TextGridDrum23(____bindingPattern0)
             keys = {
                 {key = "q", action = viewName == "Drum23" and "setView:Distortion" or "setView:Drum23"},
                 {key = "w", action = viewName == "Waveform" and "setView:Frequency" or "setView:Waveform"},
-                {key = "shift", action = "contextToggle:254:1:0"},
+                {key = "b", action = "contextToggle:254:1:0"},
                 {key = "a", action = "setView:Sequencer"},
                 {key = "s", action = viewName == "Amplitude" and "setView:Click" or "setView:Amplitude"},
                 {key = "d", action = "noteOn:Drum23:60"}

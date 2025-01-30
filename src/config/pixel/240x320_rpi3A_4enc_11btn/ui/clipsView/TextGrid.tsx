@@ -17,7 +17,7 @@ export function TextGridClips() {
             <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />
             <Keymaps
                 keys={[
-                    { key: 'shift', action: 'contextToggle:254:1:0' },
+                    { key: 'b', action: 'contextToggle:254:1:0' },
                     { key: 'a', action: 'incGroup:-1' },
                     { key: 'd', action: 'incGroup:+1' },
                 ]}
@@ -36,7 +36,7 @@ export function TextGridClipsShifted() {
             <Keymaps
                 keys={[
                     { key: 'd', action: 'playPause' },
-                    { key: 'shift', action: 'contextToggle:254:1:0' },
+                    { key: 'b', action: 'contextToggle:254:1:0' },
                     { key: 'q', action: 'setView:Menu' },
                 ]}
             />

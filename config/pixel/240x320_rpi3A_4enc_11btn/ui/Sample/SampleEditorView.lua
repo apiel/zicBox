@@ -58,7 +58,7 @@ function ____exports.SampleEditorView(____bindingPattern0)
             TextGrid,
             {position = KeyInfoPosition, rows = {"&icon::toggle::rect &icon::arrowUp::filled ...", "&empty &icon::arrowDown::filled &icon::musicNote::pixelated"}},
             React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 0}),
-            React.createElement(Keymaps, {keys = {{key = "shift", action = "contextToggle:254:1:0"}, {key = "w", action = "incGroup:-1"}, {key = "s", action = "incGroup:+1"}}})
+            React.createElement(Keymaps, {keys = {{key = "b", action = "contextToggle:254:1:0"}, {key = "w", action = "incGroup:-1"}, {key = "s", action = "incGroup:+1"}}})
         ),
         React.createElement(Common, {selected = 1, track = SampleTrack, hideSequencer = true, selectedBackground = ColorTrack3})
     )

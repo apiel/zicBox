@@ -59,7 +59,7 @@ export function SampleEditorView({ name }: Props) {
                 <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />
                 <Keymaps
                     keys={[
-                        { key: 'shift', action: 'contextToggle:254:1:0' },
+                        { key: 'b', action: 'contextToggle:254:1:0' },
                         { key: 'w', action: 'incGroup:-1' },
                         { key: 's', action: 'incGroup:+1' },
                     ]}

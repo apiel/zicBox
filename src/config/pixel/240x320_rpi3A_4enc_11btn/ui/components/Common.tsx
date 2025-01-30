@@ -36,7 +36,7 @@ export function Common({
                 keys={[
                     { key: 'q', action: 'setView:Drum23' },
                     { key: 'w', action: `setView:Sample` },
-                    { key: 'shift', action: 'contextToggle:254:1:0' },
+                    { key: 'b', action: 'contextToggle:254:1:0' },
 
                     { key: 'a', action: 'setView:Bass' },
                     { key: 's', action: `setView:Clips` },

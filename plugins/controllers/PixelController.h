@@ -57,9 +57,9 @@ public:
                 }
             } else if (strcmp(params, "rpi3A_4enc_11btn") == 0) {
                 gpioKey.keys = {
-                    { 27, getKeyCode("shift") }, // pin 13 = gpio 27
-                    { 4, getKeyCode("up") }, // pin 7 = gpio 4
-                    { 14, getKeyCode("down") }, // pin 8 = gpio 14
+                    { 27, getKeyCode("'t'") }, // pin 13 = gpio 27
+                    { 4, getKeyCode("'g'") }, // pin 7 = gpio 4
+                    { 14, getKeyCode("'b'") }, // pin 8 = gpio 14
 
                     { 16, getKeyCode("'q'") }, // pin 36 = gpio 16
                     { 1, getKeyCode("'w'") }, // pin 28 = gpio 1
