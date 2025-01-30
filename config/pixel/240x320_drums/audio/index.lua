@@ -28,7 +28,7 @@ pluginAlias("Mixer", "libzic_Mixer5.so")
 pluginAlias("Tape", "libzic_TapeRecording.so")
 ____exports.STRING_CUTOFF_FORMAT = "%d%% %d%%"
 ____exports.MAX_VARIATION = 16
-local WORKSPACE_FOLDER = "workspaces_drums"
+local WORKSPACE_FOLDER = "workspaces/drums"
 local track = Drum23Track
 plugin("Drum23", {{track = track}})
 plugin("Sequencer", {{track = track}})
