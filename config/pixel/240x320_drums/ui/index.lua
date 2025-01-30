@@ -1,5 +1,7 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
+local ____pixelController = require("config.libs.controllers.pixelController")
+local pixelController = ____pixelController.pixelController
 local ____core = require("config.libs.core")
 local applyZic = ____core.applyZic
 local React = require("config.libs.react")
@@ -57,6 +59,7 @@ local ____SaveTapeView = require("config.pixel.240x320_drums.ui.tapeView.SaveTap
 local SaveTapeView = ____SaveTapeView.SaveTapeView
 local ____TapeView = require("config.pixel.240x320_drums.ui.tapeView.TapeView")
 local TapeView = ____TapeView.TapeView
+pixelController("rpi0_4enc_6btn")
 setWindowPosition(400, 500)
 setScreenSize(ScreenWidth, ScreenHeight)
 local halfHeight = ScreenHeight / 2

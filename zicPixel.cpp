@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
     styles.colors.tertiary = { 0xc5, 0xd8, 0xb2 }; // #c5d8b2
     styles.colors.quaternary = { 0xf7, 0xda, 0x6d }; // #f7da6d
 
-    // loadPixelComponents();
+    lastPluginControllerInstance = new PixelController(controllerProps, 0);
 
     // loadUiConfig(argc >= 2 ? argv[1] : "pixel.cfg", argc >= 3 ? argv[2] : NULL, styles);
     // loadUiConfig("config/pixel/main.lua", "lua", styles);
@@ -52,8 +52,6 @@ int main(int argc, char* argv[])
         printf("No view were initialized to be rendered.");
         return 1;
     }
-
-    new PixelController(controllerProps, 0);
 
     // int ms = 50;
     int ms = 80;

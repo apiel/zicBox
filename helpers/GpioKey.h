@@ -24,13 +24,11 @@ public:
         int key;
         uint8_t lastState = 0;
     };
+    std::vector<Key> keys;
 
 protected:
     std::thread loopThread;
     bool loopRunning = true;
-
-    std::vector<Key> keys;
-
     std::function<void(Key, uint8_t)> onKey;
 
 public:
@@ -51,17 +49,20 @@ public:
         loopRunning = false;
     }
 
-    int init()
-    {
-        if (initGpio() == -1) {
-            return -1;
-        }
-
+    void initKeys() {
         for (auto& key : keys) {
             gpioSetMode(key.gpio, GPIO_INPUT);
             gpioSetPullUp(key.gpio);
             key.lastState = gpioRead(key.gpio);
         }
+    }
+
+    int init()
+    {
+        if (initGpio() == -1) {
+            return -1;
+        }
+        initKeys();
         return 0;
     }
 

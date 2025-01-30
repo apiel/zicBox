@@ -1,6 +1,10 @@
 declare var IS_RPI: boolean;
 declare var zic: (key: string, value: string) => void;
 
+export function _zic(key: string, value: string) {
+    zic(key, value);
+}
+
 /**
  * Get the build the plateform
  * @returns string The plateform
