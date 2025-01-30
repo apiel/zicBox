@@ -8,6 +8,11 @@ local TextGridSel = ____TextGridSel.TextGridSel
 local ____Title = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.Title")
 local Title = ____Title.Title
 local ____constants = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constants")
+local btn1 = ____constants.btn1
+local btn2 = ____constants.btn2
+local btn5 = ____constants.btn5
+local btn6 = ____constants.btn6
+local btn7 = ____constants.btn7
 local btnShift = ____constants.btnShift
 local ColorTrack1 = ____constants.ColorTrack1
 function ____exports.TextGridDrum23(____bindingPattern0)
@@ -31,12 +36,12 @@ function ____exports.TextGridDrum23(____bindingPattern0)
                 "&icon::musicNote::pixelated"
             },
             keys = {
-                {key = "q", action = viewName == "Drum23" and "setView:Distortion" or "setView:Drum23"},
-                {key = "w", action = viewName == "Waveform" and "setView:Frequency" or "setView:Waveform"},
+                {key = btn1, action = viewName == "Drum23" and "setView:Distortion" or "setView:Drum23"},
+                {key = btn2, action = viewName == "Waveform" and "setView:Frequency" or "setView:Waveform"},
                 {key = btnShift, action = "contextToggle:254:1:0"},
-                {key = "a", action = "setView:Sequencer"},
-                {key = "s", action = viewName == "Amplitude" and "setView:Click" or "setView:Amplitude"},
-                {key = "d", action = "noteOn:Drum23:60"}
+                {key = btn5, action = "setView:Sequencer"},
+                {key = btn6, action = viewName == "Amplitude" and "setView:Click" or "setView:Amplitude"},
+                {key = btn7, action = "noteOn:Drum23:60"}
             },
             selected = selected,
             contextValue = 0

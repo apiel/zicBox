@@ -2,7 +2,7 @@ import * as React from '@/libs/react';
 
 import { SeqProgressBar } from '@/libs/components/SeqProgressBar';
 import { rgb } from '@/libs/ui';
-import { btnShift, ScreenWidth } from '../constants';
+import { btn1, btn2, btn5, btn6, btn7, btnShift, ScreenWidth } from '../constants';
 import { TextGridSel } from './TextGridSel';
 
 export function Common({
@@ -34,13 +34,13 @@ export function Common({
             <TextGridSel
                 items={['Kick', 'Sample', '^...', 'Bass', 'Clips', '&icon::play::filled']}
                 keys={[
-                    { key: 'q', action: 'setView:Drum23' },
-                    { key: 'w', action: `setView:Sample` },
+                    { key: btn1, action: 'setView:Drum23' },
+                    { key: btn2, action: `setView:Sample` },
                     { key: btnShift, action: 'contextToggle:254:1:0' },
 
-                    { key: 'a', action: 'setView:Bass' },
-                    { key: 's', action: `setView:Clips` },
-                    { key: 'd', action: 'playPause' },
+                    { key: btn5, action: 'setView:Bass' },
+                    { key: btn6, action: `setView:Clips` },
+                    { key: btn7, action: 'playPause' },
                 ]}
                 selected={selected}
                 contextValue={1}

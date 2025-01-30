@@ -7,7 +7,7 @@ import { View } from '@/libs/components/View';
 import { VisibilityContext } from '@/libs/components/VisibilityContext';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
-import { BassTrack, btnShift, ColorTrack2, KeyInfoPosition, ScreenWidth } from '../constants';
+import { BassTrack, btn1, btn2, btn5, btn6, btn7, btnShift, ColorTrack2, KeyInfoPosition, ScreenWidth } from '../constants';
 
 export type Props = {
     name: string;
@@ -34,7 +34,7 @@ export function BassSeqView({ name }: Props) {
                         }
                         selected_color={rgb(76, 94, 97)}
                     >
-                        <Keymaps keys={[{ key: 'q', action: '.toggle' }]} />
+                        <Keymaps keys={[{ key: btn1, action: '.toggle' }]} />
                     </StepEditDrum>
                 );
             })}
@@ -51,12 +51,12 @@ export function BassSeqView({ name }: Props) {
                 <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />
                 <Keymaps
                     keys={[
-                        { key: 'w', action: 'incGroup:-1' },
+                        { key: btn2, action: 'incGroup:-1' },
                         { key: btnShift, action: 'contextToggle:254:1:0' },
 
-                        { key: 'a', action: 'setView:Bass' },
-                        { key: 's', action: 'incGroup:+1' },
-                        { key: 'd', action: 'noteOn:Bass:60' },
+                        { key: btn5, action: 'setView:Bass' },
+                        { key: btn6, action: 'incGroup:+1' },
+                        { key: btn7, action: 'noteOn:Bass:60' },
                     ]}
                 />
             </TextGrid>

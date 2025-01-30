@@ -3,7 +3,7 @@ import * as React from '@/libs/react';
 import { Keymaps } from '@/libs/components/Keymaps';
 import { TextGrid } from '@/libs/components/TextGrid';
 import { VisibilityContext } from '@/libs/components/VisibilityContext';
-import { btnShift, KeyInfoPosition } from '../constants';
+import { btn1, btn5, btn7, btnShift, KeyInfoPosition } from '../constants';
 
 export function TextGridClips() {
     return (
@@ -18,8 +18,8 @@ export function TextGridClips() {
             <Keymaps
                 keys={[
                     { key: btnShift, action: 'contextToggle:254:1:0' },
-                    { key: 'a', action: 'incGroup:-1' },
-                    { key: 'd', action: 'incGroup:+1' },
+                    { key: btn5, action: 'incGroup:-1' },
+                    { key: btn7, action: 'incGroup:+1' },
                 ]}
             />
         </TextGrid>
@@ -35,9 +35,9 @@ export function TextGridClipsShifted() {
             <VisibilityContext index={254} condition="SHOW_WHEN" value={1} />
             <Keymaps
                 keys={[
-                    { key: 'd', action: 'playPause' },
+                    { key: btn7, action: 'playPause' },
                     { key: btnShift, action: 'contextToggle:254:1:0' },
-                    { key: 'q', action: 'setView:Menu' },
+                    { key: btn1, action: 'setView:Menu' },
                 ]}
             />
         </TextGrid>

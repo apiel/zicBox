@@ -3,7 +3,7 @@ import * as React from '@/libs/react';
 import { Rect } from '@/libs/components/Rect';
 import { TextGridSel } from '../components/TextGridSel';
 import { Title } from '../components/Title';
-import { btnShift, ColorTrack1 } from '../constants';
+import { btn1, btn2, btn5, btn6, btn7, btnShift, ColorTrack1 } from '../constants';
 
 export function TextGridDrum23({ selected, viewName }: { selected: number; viewName: string }) {
     return (
@@ -22,21 +22,21 @@ export function TextGridDrum23({ selected, viewName }: { selected: number; viewN
                 ]}
                 keys={[
                     {
-                        key: 'q',
+                        key: btn1,
                         action: viewName === 'Drum23' ? 'setView:Distortion' : 'setView:Drum23',
                     },
                     {
-                        key: 'w',
+                        key: btn2,
                         action: viewName === 'Waveform' ? 'setView:Frequency' : 'setView:Waveform',
                     },
                     { key: btnShift, action: 'contextToggle:254:1:0' },
 
-                    { key: 'a', action: 'setView:Sequencer' },
+                    { key: btn5, action: 'setView:Sequencer' },
                     {
-                        key: 's',
+                        key: btn6,
                         action: viewName === 'Amplitude' ? 'setView:Click' : 'setView:Amplitude',
                     },
-                    { key: 'd', action: 'noteOn:Drum23:60' },
+                    { key: btn7, action: 'noteOn:Drum23:60' },
                 ]}
                 selected={selected}
                 contextValue={0}

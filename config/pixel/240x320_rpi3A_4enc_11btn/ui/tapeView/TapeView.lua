@@ -12,6 +12,8 @@ local TextGrid = ____TextGrid.TextGrid
 local ____View = require("config.libs.components.View")
 local View = ____View.View
 local ____constants = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constants")
+local btn2 = ____constants.btn2
+local btn6 = ____constants.btn6
 local KeyInfoPosition = ____constants.KeyInfoPosition
 function ____exports.TapeView(____bindingPattern0)
     local name
@@ -29,7 +31,7 @@ function ____exports.TapeView(____bindingPattern0)
         React.createElement(
             TextGrid,
             {position = KeyInfoPosition, rows = {"&icon::play::filled Save &empty", "&icon::arrowLeft::filled Exit &icon::arrowRight::filled"}},
-            React.createElement(Keymaps, {keys = {{key = "w", action = "setView:SaveTape"}, {key = "s", action = "setView:Menu"}}})
+            React.createElement(Keymaps, {keys = {{key = btn2, action = "setView:SaveTape"}, {key = btn6, action = "setView:Menu"}}})
         )
     )
 end

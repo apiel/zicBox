@@ -6,7 +6,7 @@ import { TextGrid } from '@/libs/components/TextGrid';
 import { View } from '@/libs/components/View';
 import { VisibilityContext } from '@/libs/components/VisibilityContext';
 import { Workspaces } from '@/libs/components/Workspaces';
-import { KeyInfoPosition, ScreenWidth } from '../constants';
+import { btn2, btn5, btn6, btn7, KeyInfoPosition, ScreenWidth } from '../constants';
 
 export type Props = {
     name: string;
@@ -18,10 +18,10 @@ export function WorkspacesView({ name }: Props) {
             <Workspaces plugin="SerializeTrack" position={[0, 0, ScreenWidth, 280]}>
                 <Keymaps
                     keys={[
-                        { key: 'a', action: '.data:LOAD_WORKSPACE', context: '254:0' },
-                        { key: 'w', action: '.up', context: '254:0' },
-                        { key: 's', action: '.down', context: '254:0' },
-                        { key: 'd', action: '.delete', context: '254:1' },
+                        { key: btn5, action: '.data:LOAD_WORKSPACE', context: '254:0' },
+                        { key: btn2, action: '.up', context: '254:0' },
+                        { key: btn6, action: '.down', context: '254:0' },
+                        { key: btn7, action: '.delete', context: '254:1' },
                     ]}
                 />
             </Workspaces>
