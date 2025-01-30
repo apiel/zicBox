@@ -11,6 +11,15 @@ uint8_t getKeyCode(std::string keyStr)
     if (keyStr == "shift") {
         return 229;
     }
+    if (keyStr == "space") {
+        return 44;
+    }
+    if (keyStr == "altleft") {
+        return 226;
+    }
+    if (keyStr == "altright") {
+        return 230;
+    }
     if (keyStr == "up") {
         return 82;
     }

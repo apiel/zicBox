@@ -44,6 +44,6 @@ export const btn6 = 's';
 export const btn7 = 'd';
 export const btn8 = 'f';
 
-export const btnUp = 't';
-export const btnDown = 'g';
-export const btnShift = 'b';
+export const btnUp = 'x';
+export const btnDown = 'altleft';
+export const btnShift = 'space';
