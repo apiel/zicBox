@@ -55,6 +55,35 @@ public:
                 if (gpioEncoder.init() == 0) {
                     gpioEncoder.startThread(); // might want to use the same thread for encoder...
                 }
+            } else if (strcmp(params, "rpi3A_4enc_11btn") == 0) {
+                gpioKey.keys = {
+                    { 27, getKeyCode("shift") }, // pin 13 = gpio 27
+                    { 4, getKeyCode("up") }, // pin 7 = gpio 4
+                    { 14, getKeyCode("down") }, // pin 8 = gpio 14
+
+                    { 16, getKeyCode("'q'") }, // pin 36 = gpio 16
+                    { 1, getKeyCode("'w'") }, // pin 28 = gpio 1
+                    { 7, getKeyCode("'e'") }, // pin 26 = gpio 7
+                    { 15, getKeyCode("'r'") }, // pin 10 = gpio 15
+
+                    { 12, getKeyCode("'a'") }, // pin 32 = gpio 12
+                    { 5, getKeyCode("'s'") }, // pin 29 = gpio 5
+                    { 0, getKeyCode("'d'") }, // pin 27 = gpio 0
+                    { 8, getKeyCode("'f'") }, // pin 24 = gpio 8
+
+                };
+                if (gpioKey.init() == 0) {
+                    gpioKey.startThread(); // might want to use the same thread for encoder...
+                }
+                gpioEncoder.encoders = {
+                    { 0, 26, 13 }, // pin 37 = gpio 26, pin 33 = gpio 13
+                    { 1, 20, 6 }, // pin 38 = gpio 20, pin 31 = gpio 6
+                    { 2, 7, 9 }, // pin 26 = gpio 7, pin 21 = gpio 9
+                    { 3, 15, 4 }, // pin 10 = gpio 15, pin 7 = gpio 4
+                };
+                if (gpioEncoder.init() == 0) {
+                    gpioEncoder.startThread(); // might want to use the same thread for encoder...
+                }
             }
             return true;
         }

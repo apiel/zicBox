@@ -12,7 +12,7 @@ export function Keymap({ controller, context, key, action, action2 }: Props) {
     if (context) {
         controller += `:${context}`;
     }
-    if (typeof key === "string") {
+    if (typeof key === "string" && key.length === 1) {
         key = `'${key}'`;
     }
     return [

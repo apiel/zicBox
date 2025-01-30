@@ -187,6 +187,7 @@ public:
 
     void onKey(uint16_t id, int key, int8_t state)
     {
+        // printf("onKey %d %d %d\n", id, key, state);
         unsigned long now = getTicks();
         m2.lock();
         for (auto& component : components) {
