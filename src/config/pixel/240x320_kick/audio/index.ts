@@ -17,7 +17,7 @@ pluginAlias('SampleSequencer', 'libzic_SampleSequencer.so');
 
 export const STRING_CUTOFF_FORMAT = '%d%% %d%%';
 export const MAX_VARIATION = 16;
-const WORKSPACE_FOLDER = 'workspaces_kick';
+const WORKSPACE_FOLDER = 'workspaces/kick';
 
 let track = Drum23Track;
 plugin('Drum23', [{ track }]);

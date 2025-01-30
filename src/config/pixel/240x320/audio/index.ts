@@ -1,5 +1,5 @@
 import { autoSave, plugin, pluginAlias } from '@/libs/audio';
-import { STRING_CUTOFF_FORMAT } from './constants';
+import { STRING_CUTOFF_FORMAT, WORKSPACE_FOLDER } from './constants';
 import { drum23 } from './drum23';
 import { monoSample } from './monoSample';
 
@@ -31,7 +31,7 @@ monoSample(3);
 monoSample(4);
 
 plugin('MixerDrum Mixer4', [{ track: 9 }]);
-plugin('SerializeTrack', [{ track: 9, filename: 'mixer_drum' }]);
+plugin('SerializeTrack', [{ track: 9, filename: 'mixer_drum', WORKSPACE_FOLDER }]);
 
 // Synth tracks
 monoSample(5);
@@ -40,7 +40,7 @@ monoSample(7);
 monoSample(8);
 
 plugin('MixerSynth Mixer4', [{ track_start: 5, track: 10 }]);
-plugin('SerializeTrack', [{ track: 10, filename: 'mixer_synth' }]);
+plugin('SerializeTrack', [{ track: 10, filename: 'mixer_synth', WORKSPACE_FOLDER }]);
 
 // Master
 
@@ -51,7 +51,7 @@ plugin('MasterVolume EffectGainVolume');
 plugin('Spectrogram');
 plugin('Tape', [{ filename: `rec`, max_track: 8 }]);
 plugin('AudioOutput');
-plugin('SerializeTrack', [{ filename: 'master' }]);
+plugin('SerializeTrack', [{ filename: 'master', WORKSPACE_FOLDER }]);
 
 plugin('Tempo');
 

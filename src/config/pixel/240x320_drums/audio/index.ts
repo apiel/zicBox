@@ -22,7 +22,7 @@ pluginAlias('Tape', 'libzic_TapeRecording.so');
 
 export const STRING_CUTOFF_FORMAT = '%d%% %d%%';
 export const MAX_VARIATION = 16;
-const WORKSPACE_FOLDER = 'workspaces_drums';
+const WORKSPACE_FOLDER = 'workspaces/drums';
 
 let track = Drum23Track;
 plugin('Drum23', [{ track }]);

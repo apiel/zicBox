@@ -6,6 +6,7 @@ local plugin = ____audio.plugin
 local pluginAlias = ____audio.pluginAlias
 local ____constants = require("config.pixel.240x320.audio.constants")
 local STRING_CUTOFF_FORMAT = ____constants.STRING_CUTOFF_FORMAT
+local WORKSPACE_FOLDER = ____constants.WORKSPACE_FOLDER
 local ____drum23 = require("config.pixel.240x320.audio.drum23")
 local drum23 = ____drum23.drum23
 local ____monoSample = require("config.pixel.240x320.audio.monoSample")
@@ -35,20 +36,20 @@ drum23(2)
 monoSample(3)
 monoSample(4)
 plugin("MixerDrum Mixer4", {{track = 9}})
-plugin("SerializeTrack", {{track = 9, filename = "mixer_drum"}})
+plugin("SerializeTrack", {{track = 9, filename = "mixer_drum", WORKSPACE_FOLDER = WORKSPACE_FOLDER}})
 monoSample(5)
 monoSample(6)
 monoSample(7)
 monoSample(8)
 plugin("MixerSynth Mixer4", {{track_start = 5, track = 10}})
-plugin("SerializeTrack", {{track = 10, filename = "mixer_synth"}})
+plugin("SerializeTrack", {{track = 10, filename = "mixer_synth", WORKSPACE_FOLDER = WORKSPACE_FOLDER}})
 plugin("MixerMaster Mixer2", {{track_a = 9, track_b = 10, value = 50, track = 0}})
 plugin("MasterFilter EffectFilterMultiMode", {{STRING_CUTOFF_FORMAT = STRING_CUTOFF_FORMAT}})
 plugin("MasterVolume EffectGainVolume")
 plugin("Spectrogram")
 plugin("Tape", {{filename = "rec", max_track = 8}})
 plugin("AudioOutput")
-plugin("SerializeTrack", {{filename = "master"}})
+plugin("SerializeTrack", {{filename = "master", WORKSPACE_FOLDER = WORKSPACE_FOLDER}})
 plugin("Tempo")
 autoSave(500)
 return ____exports
