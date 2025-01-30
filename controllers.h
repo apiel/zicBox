@@ -55,11 +55,6 @@ void loadPluginController(char* value, const char* filename)
 
 bool pluginControllerConfig(char* key, char* value)
 {
-    // if (strcmp(key, "PIXEL_CONTROLLER") == 0) {
-    //     printf("@@@@@@@@@@@@@@@@@@@@@@@@ PIXEL_CONTROLLER: %s %d\n", value, lastPluginControllerInstance == NULL ? -11111 : lastPluginControllerInstance->id);
-    //     return true;
-    // }
-
     if (lastPluginControllerInstance) {
         return lastPluginControllerInstance->config(key, value);
     }

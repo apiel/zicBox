@@ -8,6 +8,21 @@
 
 uint8_t getKeyCode(std::string keyStr)
 {
+    if (keyStr == "shift") {
+        return 229;
+    }
+    if (keyStr == "up") {
+        return 82;
+    }
+    if (keyStr == "down") {
+        return 81;
+    }
+    if (keyStr == "left") {
+        return 80;
+    }
+    if (keyStr == "right") {
+        return 79;
+    }
     if (keyStr[0] == '\'' && keyStr[2] == '\'') {
         // A is 4 and Z is 29
         if (keyStr[1] >= 97 && keyStr[1] <= 123) {

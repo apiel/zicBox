@@ -15,7 +15,7 @@ function ____exports.Keymap(____bindingPattern0)
     if context then
         controller = controller .. ":" .. context
     end
-    if type(key) == "string" then
+    if type(key) == "string" and #key == 1 then
         key = ("'" .. key) .. "'"
     end
     return {{KEYMAP = ((((controller .. " ") .. tostring(key)) .. " ") .. action) .. (action2 and " " .. action2 or "")}}
