@@ -33,14 +33,14 @@ function ____exports.BassView(____bindingPattern0)
         React.createElement(KnobValue, {
             value = "Bass CUTOFF",
             position = topRightKnob,
-            encoder_id = 2,
+            encoder_id = 1,
             COLOR = "primary",
             track = BassTrack
         }),
         React.createElement(KnobValue, {
             value = "Bass FREQ_RATIO",
             position = bottomLeftKnob,
-            encoder_id = 1,
+            encoder_id = 2,
             COLOR = "quaternary",
             track = BassTrack
         }),

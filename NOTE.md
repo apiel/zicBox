@@ -6,13 +6,9 @@
 
 - TODO if step is not enable, if turning encoder step is enable. Todo for all seqs...
 
-- TODO change the order of the encoder ...
-
 - TODO more steps in sample seq and sequencer
 
 - TODO audio plugin do same as for component to load .so file
-
-- TODO workspsace folder...
 
 - TODO use helpers/format.h fToString everywhere instead of custom precision formating
 

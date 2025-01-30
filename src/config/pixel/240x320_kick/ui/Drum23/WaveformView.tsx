@@ -20,7 +20,7 @@ export function WaveformView({ name }: Props) {
                 plugin="Drum23"
                 data_id="WAVEFORM"
                 RENDER_TITLE_ON_TOP={false}
-                encoders={['0 WAVEFORM_TYPE', '2 MACRO', '1 SHAPE']}
+                encoders={['0 WAVEFORM_TYPE', '1 SHAPE', '2 MACRO']}
                 track={Drum23Track}
             />
             <KnobValue

@@ -33,13 +33,13 @@ function ____exports.Drum23View(____bindingPattern0)
         React.createElement(KnobValue, {
             value = "MMFilter CUTOFF",
             position = topRightKnob,
-            encoder_id = 2,
+            encoder_id = 1,
             COLOR = "secondary",
             FONT_VALUE_SIZE = 8,
             TYPE = "STRING",
             track = Drum23Track
         }),
-        React.createElement(KnobValue, {value = "Drum23 GAIN_CLIPPING", position = bottomLeftKnob, encoder_id = 1, track = Drum23Track}),
+        React.createElement(KnobValue, {value = "Drum23 GAIN_CLIPPING", position = bottomLeftKnob, encoder_id = 2, track = Drum23Track}),
         React.createElement(KnobValue, {
             value = "MMFilter RESONANCE",
             position = bottomRightKnob,

@@ -29,14 +29,14 @@ export function BassView({ name }: Props) {
             <KnobValue
                 value="Bass CUTOFF"
                 position={topRightKnob}
-                encoder_id={2}
+                encoder_id={1}
                 COLOR="primary"
                 track={BassTrack}
             />
             <KnobValue
                 value="Bass FREQ_RATIO"
                 position={bottomLeftKnob}
-                encoder_id={1}
+                encoder_id={2}
                 COLOR="quaternary"
                 track={BassTrack}
             />

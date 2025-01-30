@@ -12,6 +12,10 @@ local Common = ____Common.Common
 local ____constants = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constants")
 local ColorTrack1 = ____constants.ColorTrack1
 local Drum23Track = ____constants.Drum23Track
+local encBottomLeft = ____constants.encBottomLeft
+local encBottomRight = ____constants.encBottomRight
+local encTopLeft = ____constants.encTopLeft
+local encTopRight = ____constants.encTopRight
 local ____constantsValue = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constantsValue")
 local bottomRightKnob = ____constantsValue.bottomRightKnob
 local topValues = ____constantsValue.topValues
@@ -28,15 +32,15 @@ function ____exports.AmpView(____bindingPattern0)
             plugin = "Drum23",
             envelop_data_id = "0",
             RENDER_TITLE_ON_TOP = false,
-            encoder_time = 0,
-            encoder_phase = 1,
-            encoder_modulation = 2,
+            encoder_time = encTopLeft,
+            encoder_modulation = encTopRight,
+            encoder_phase = encBottomLeft,
             track = Drum23Track
         }),
         React.createElement(KnobValue, {
             position = bottomRightKnob,
             value = "Drum23 DURATION",
-            encoder_id = 3,
+            encoder_id = encBottomRight,
             color = "quaternary",
             track = Drum23Track
         }),

@@ -4,7 +4,7 @@ import { GraphEncoder } from '@/libs/components/GraphEncoder';
 import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
-import { ColorTrack1, Drum23Track } from '../constants';
+import { ColorTrack1, Drum23Track, encBottomLeft, encBottomRight, encTopLeft, encTopRight } from '../constants';
 import { bottomRightKnob, topValues } from '../constantsValue';
 import { TextGridDrum23 } from './TextGridDrum23';
 
@@ -20,13 +20,13 @@ export function WaveformView({ name }: Props) {
                 plugin="Drum23"
                 data_id="WAVEFORM"
                 RENDER_TITLE_ON_TOP={false}
-                encoders={['0 WAVEFORM_TYPE', '2 MACRO', '1 SHAPE']}
+                encoders={[`${encTopLeft} WAVEFORM_TYPE`, `${encTopRight} SHAPE`, `${encBottomLeft} MACRO`]}
                 track={Drum23Track}
             />
             <KnobValue
                 position={bottomRightKnob}
                 value="Drum23 PITCH"
-                encoder_id={3}
+                encoder_id={encBottomRight}
                 color="secondary"
                 track={Drum23Track}
             />

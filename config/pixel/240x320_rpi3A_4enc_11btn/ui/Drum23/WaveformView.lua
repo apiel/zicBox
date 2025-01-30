@@ -12,6 +12,10 @@ local Common = ____Common.Common
 local ____constants = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constants")
 local ColorTrack1 = ____constants.ColorTrack1
 local Drum23Track = ____constants.Drum23Track
+local encBottomLeft = ____constants.encBottomLeft
+local encBottomRight = ____constants.encBottomRight
+local encTopLeft = ____constants.encTopLeft
+local encTopRight = ____constants.encTopRight
 local ____constantsValue = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constantsValue")
 local bottomRightKnob = ____constantsValue.bottomRightKnob
 local topValues = ____constantsValue.topValues
@@ -23,18 +27,25 @@ function ____exports.WaveformView(____bindingPattern0)
     return React.createElement(
         View,
         {name = name},
-        React.createElement(GraphEncoder, {
-            position = topValues,
-            plugin = "Drum23",
-            data_id = "WAVEFORM",
-            RENDER_TITLE_ON_TOP = false,
-            encoders = {"0 WAVEFORM_TYPE", "2 MACRO", "1 SHAPE"},
-            track = Drum23Track
-        }),
+        React.createElement(
+            GraphEncoder,
+            {
+                position = topValues,
+                plugin = "Drum23",
+                data_id = "WAVEFORM",
+                RENDER_TITLE_ON_TOP = false,
+                encoders = {
+                    tostring(encTopLeft) .. " WAVEFORM_TYPE",
+                    tostring(encTopRight) .. " SHAPE",
+                    tostring(encBottomLeft) .. " MACRO"
+                },
+                track = Drum23Track
+            }
+        ),
         React.createElement(KnobValue, {
             position = bottomRightKnob,
             value = "Drum23 PITCH",
-            encoder_id = 3,
+            encoder_id = encBottomRight,
             color = "secondary",
             track = Drum23Track
         }),

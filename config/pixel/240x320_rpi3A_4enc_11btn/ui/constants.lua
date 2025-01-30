@@ -31,4 +31,8 @@ ____exports.ColorTrack1 = "#a3c912"
 ____exports.ColorTrack2 = "#fd6f0e"
 ____exports.ColorTrack3 = "#15a5ca"
 ____exports.ColorTrack4 = "#ffcd04"
+____exports.encTopLeft = 0
+____exports.encTopRight = 1
+____exports.encBottomLeft = 2
+____exports.encBottomRight = 3
 return ____exports

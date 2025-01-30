@@ -159,14 +159,14 @@ public:
             if (id == encoders[0]) {
                 step->setVelocity(step->velocity + direction * 0.05);
                 renderNext();
-            } else if (id == encoders[2]) {
+            } else if (id == encoders[1]) {
                 if (direction > 0) {
                     plugin->data(nextFileDataId, &stepIndex);
                 } else {
                     plugin->data(prevFileDataId, &stepIndex);
                 }
                 renderNext();
-            } else if (id == encoders[1]) {
+            } else if (id == encoders[2]) {
                 step->setStart(step->fStart + direction * 0.1);
                 renderNext();
             } else if (id == encoders[3]) {
