@@ -8,6 +8,7 @@ local TextGridSel = ____TextGridSel.TextGridSel
 local ____Title = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.Title")
 local Title = ____Title.Title
 local ____constants = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constants")
+local btnShift = ____constants.btnShift
 local ColorTrack2 = ____constants.ColorTrack2
 function ____exports.TextGridBass(____bindingPattern0)
     local viewName
@@ -32,7 +33,7 @@ function ____exports.TextGridBass(____bindingPattern0)
             keys = {
                 {key = "q", action = viewName == "Bass" and "setView:BassDistortion" or "setView:Bass"},
                 {key = "w", action = "setView:BassEnv"},
-                {key = "b", action = "contextToggle:254:1:0"},
+                {key = btnShift, action = "contextToggle:254:1:0"},
                 {key = "a", action = "setView:BassSeq"},
                 {key = "s", action = "setView:BassWaveform"},
                 {key = "d", action = "noteOn:Bass:60"}

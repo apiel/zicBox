@@ -2,7 +2,7 @@ import * as React from '@/libs/react';
 
 import { SeqProgressBar } from '@/libs/components/SeqProgressBar';
 import { rgb } from '@/libs/ui';
-import { ScreenWidth } from '../constants';
+import { btnShift, ScreenWidth } from '../constants';
 import { TextGridSel } from './TextGridSel';
 
 export function Common({
@@ -36,7 +36,7 @@ export function Common({
                 keys={[
                     { key: 'q', action: 'setView:Drum23' },
                     { key: 'w', action: `setView:Sample` },
-                    { key: 'b', action: 'contextToggle:254:1:0' },
+                    { key: btnShift, action: 'contextToggle:254:1:0' },
 
                     { key: 'a', action: 'setView:Bass' },
                     { key: 's', action: `setView:Clips` },

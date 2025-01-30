@@ -8,7 +8,7 @@ import { View } from '@/libs/components/View';
 import { VisibilityContext } from '@/libs/components/VisibilityContext';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
-import { ColorTrack3, KeyInfoPosition, SampleTrack, ScreenWidth } from '../constants';
+import { btnShift, ColorTrack3, KeyInfoPosition, SampleTrack, ScreenWidth } from '../constants';
 
 export type Props = {
     name: string;
@@ -59,7 +59,7 @@ export function SampleEditorView({ name }: Props) {
                 <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />
                 <Keymaps
                     keys={[
-                        { key: 'b', action: 'contextToggle:254:1:0' },
+                        { key: btnShift, action: 'contextToggle:254:1:0' },
                         { key: 'w', action: 'incGroup:-1' },
                         { key: 's', action: 'incGroup:+1' },
                     ]}

@@ -3,7 +3,7 @@ import * as React from '@/libs/react';
 import { Rect } from '@/libs/components/Rect';
 import { TextGridSel } from '../components/TextGridSel';
 import { Title } from '../components/Title';
-import { ColorTrack1 } from '../constants';
+import { btnShift, ColorTrack1 } from '../constants';
 
 export function TextGridDrum23({ selected, viewName }: { selected: number; viewName: string }) {
     return (
@@ -29,7 +29,7 @@ export function TextGridDrum23({ selected, viewName }: { selected: number; viewN
                         key: 'w',
                         action: viewName === 'Waveform' ? 'setView:Frequency' : 'setView:Waveform',
                     },
-                    { key: 'b', action: 'contextToggle:254:1:0' },
+                    { key: btnShift, action: 'contextToggle:254:1:0' },
 
                     { key: 'a', action: 'setView:Sequencer' },
                     {

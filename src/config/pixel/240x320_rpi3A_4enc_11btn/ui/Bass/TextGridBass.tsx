@@ -3,7 +3,7 @@ import * as React from '@/libs/react';
 import { Rect } from '@/libs/components/Rect';
 import { TextGridSel } from '../components/TextGridSel';
 import { Title } from '../components/Title';
-import { ColorTrack2 } from '../constants';
+import { btnShift, ColorTrack2 } from '../constants';
 
 export function TextGridBass({ selected, viewName }: { selected: number; viewName: string }) {
     return (
@@ -16,7 +16,7 @@ export function TextGridBass({ selected, viewName }: { selected: number; viewNam
                 keys={[
                     { key: 'q', action: viewName === 'Bass' ? 'setView:BassDistortion' : 'setView:Bass' },
                     { key: 'w', action: 'setView:BassEnv' },
-                    { key: 'b', action: 'contextToggle:254:1:0' },
+                    { key: btnShift, action: 'contextToggle:254:1:0' },
 
                     { key: 'a', action: 'setView:BassSeq' },
                     { key: 's', action: 'setView:BassWaveform' },

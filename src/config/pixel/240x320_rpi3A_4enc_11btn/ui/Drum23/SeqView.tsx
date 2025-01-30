@@ -7,7 +7,7 @@ import { View } from '@/libs/components/View';
 import { VisibilityContext } from '@/libs/components/VisibilityContext';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
-import { ColorTrack1, Drum23Track, KeyInfoPosition, ScreenWidth } from '../constants';
+import { btnShift, ColorTrack1, Drum23Track, KeyInfoPosition, ScreenWidth } from '../constants';
 
 export type Props = {
     name: string;
@@ -52,7 +52,7 @@ export function Drum23SeqView({ name }: Props) {
                 <Keymaps
                     keys={[
                         { key: 'w', action: 'incGroup:-1' },
-                        { key: 'b', action: 'contextToggle:254:1:0' },
+                        { key: btnShift, action: 'contextToggle:254:1:0' },
 
                         { key: 'a', action: 'setView:Drum23' },
                         { key: 's', action: 'incGroup:+1' },
