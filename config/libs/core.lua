@@ -2,6 +2,9 @@ local ____lualib = require("lualib_bundle")
 local __TS__ArrayFlat = ____lualib.__TS__ArrayFlat
 local __TS__ArrayIsArray = ____lualib.__TS__ArrayIsArray
 local ____exports = {}
+function ____exports._zic(key, value)
+    zic(key, value)
+end
 --- Get the build the plateform
 -- 
 -- @returns string The plateform

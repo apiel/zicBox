@@ -26,13 +26,11 @@ public:
         int levelB = 0;
         int lastGpio = -1;
     };
+    std::vector<Encoder> encoders;
 
 protected:
     std::thread loopThread;
     bool loopRunning = true;
-
-    std::vector<Encoder> encoders;
-
     std::function<void(Encoder, int8_t)> onEncoder;
 
 public:
@@ -53,12 +51,8 @@ public:
         loopRunning = false;
     }
 
-    int init()
+    void initEncoders()
     {
-        if (initGpio() == -1) {
-            return -1;
-        }
-
         for (auto& encoder : encoders) {
             gpioSetMode(encoder.gpioA, GPIO_INPUT);
             gpioSetPullUp(encoder.gpioA);
@@ -67,6 +61,14 @@ public:
             gpioSetPullUp(encoder.gpioB);
             encoder.levelB = gpioRead(encoder.gpioB);
         }
+    }
+
+    int init()
+    {
+        if (initGpio() == -1) {
+            return -1;
+        }
+        initEncoders();
         return 0;
     }
 

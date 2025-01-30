@@ -1,3 +1,4 @@
+import { pixelController } from '@/libs/controllers/pixelController';
 import { applyZic } from '@/libs/core';
 import * as React from '@/libs/react';
 import { addZoneEncoder, setScreenSize, setWindowPosition } from '@/libs/ui';
@@ -22,6 +23,8 @@ import { WorkspacesView } from './menu/WorkspacesView';
 import { SampleEditorView } from './Sample/SampleEditorView';
 import { SaveTapeView } from './tapeView/SaveTapeView';
 import { TapeView } from './tapeView/TapeView';
+
+pixelController('rpi0_4enc_6btn');
 
 setWindowPosition(400, 500);
 setScreenSize(ScreenWidth, ScreenHeight);
