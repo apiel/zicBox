@@ -4,7 +4,7 @@ import { Keyboard } from '@/libs/components/Keyboard';
 import { Keymaps } from '@/libs/components/Keymaps';
 import { TextGrid } from '@/libs/components/TextGrid';
 import { View } from '@/libs/components/View';
-import { KeyInfoPosition, ScreenWidth } from '../constants';
+import { btnShift, KeyInfoPosition, ScreenWidth } from '../constants';
 
 export type Props = {
     name: string;
@@ -22,7 +22,7 @@ export function SaveTapeView({ name }: Props) {
                     keys={[
                         { key: 'q', action: '.type' },
                         { key: 'w', action: '.up' },
-                        { key: 'b', action: '.cancel' },
+                        { key: btnShift, action: '.cancel' },
                         { key: 's', action: '.down' },
                         { key: 'a', action: '.left' },
                         { key: 'd', action: '.right' },

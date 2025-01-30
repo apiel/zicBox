@@ -7,6 +7,7 @@ local SeqProgressBar = ____SeqProgressBar.SeqProgressBar
 local ____ui = require("config.libs.ui")
 local rgb = ____ui.rgb
 local ____constants = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constants")
+local btnShift = ____constants.btnShift
 local ScreenWidth = ____constants.ScreenWidth
 local ____TextGridSel = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.TextGridSel")
 local TextGridSel = ____TextGridSel.TextGridSel
@@ -47,7 +48,7 @@ function ____exports.Common(____bindingPattern0)
             }, keys = {
                 {key = "q", action = "setView:Drum23"},
                 {key = "w", action = "setView:Sample"},
-                {key = "b", action = "contextToggle:254:1:0"},
+                {key = btnShift, action = "contextToggle:254:1:0"},
                 {key = "a", action = "setView:Bass"},
                 {key = "s", action = "setView:Clips"},
                 {key = "d", action = "playPause"}

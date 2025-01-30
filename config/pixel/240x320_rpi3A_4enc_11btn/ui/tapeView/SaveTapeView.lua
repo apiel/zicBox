@@ -10,6 +10,7 @@ local TextGrid = ____TextGrid.TextGrid
 local ____View = require("config.libs.components.View")
 local View = ____View.View
 local ____constants = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constants")
+local btnShift = ____constants.btnShift
 local KeyInfoPosition = ____constants.KeyInfoPosition
 local ScreenWidth = ____constants.ScreenWidth
 function ____exports.SaveTapeView(____bindingPattern0)
@@ -24,7 +25,7 @@ function ____exports.SaveTapeView(____bindingPattern0)
             React.createElement(Keymaps, {keys = {
                 {key = "q", action = ".type"},
                 {key = "w", action = ".up"},
-                {key = "b", action = ".cancel"},
+                {key = btnShift, action = ".cancel"},
                 {key = "s", action = ".down"},
                 {key = "a", action = ".left"},
                 {key = "d", action = ".right"}

@@ -17,6 +17,7 @@ local rgb = ____ui.rgb
 local ____Common = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.Common")
 local Common = ____Common.Common
 local ____constants = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constants")
+local btnShift = ____constants.btnShift
 local ColorTrack1 = ____constants.ColorTrack1
 local Drum23Track = ____constants.Drum23Track
 local KeyInfoPosition = ____constants.KeyInfoPosition
@@ -54,7 +55,7 @@ function ____exports.Drum23SeqView(____bindingPattern0)
             React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 0}),
             React.createElement(Keymaps, {keys = {
                 {key = "w", action = "incGroup:-1"},
-                {key = "b", action = "contextToggle:254:1:0"},
+                {key = btnShift, action = "contextToggle:254:1:0"},
                 {key = "a", action = "setView:Drum23"},
                 {key = "s", action = "incGroup:+1"},
                 {key = "d", action = "noteOn:Drum23:60"}

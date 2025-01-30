@@ -8,6 +8,7 @@ local TextGridSel = ____TextGridSel.TextGridSel
 local ____Title = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.Title")
 local Title = ____Title.Title
 local ____constants = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constants")
+local btnShift = ____constants.btnShift
 local ColorTrack1 = ____constants.ColorTrack1
 function ____exports.TextGridDrum23(____bindingPattern0)
     local viewName
@@ -32,7 +33,7 @@ function ____exports.TextGridDrum23(____bindingPattern0)
             keys = {
                 {key = "q", action = viewName == "Drum23" and "setView:Distortion" or "setView:Drum23"},
                 {key = "w", action = viewName == "Waveform" and "setView:Frequency" or "setView:Waveform"},
-                {key = "b", action = "contextToggle:254:1:0"},
+                {key = btnShift, action = "contextToggle:254:1:0"},
                 {key = "a", action = "setView:Sequencer"},
                 {key = "s", action = viewName == "Amplitude" and "setView:Click" or "setView:Amplitude"},
                 {key = "d", action = "noteOn:Drum23:60"}

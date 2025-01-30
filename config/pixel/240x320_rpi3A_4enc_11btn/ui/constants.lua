@@ -35,4 +35,15 @@ ____exports.encTopLeft = 0
 ____exports.encTopRight = 1
 ____exports.encBottomLeft = 2
 ____exports.encBottomRight = 3
+____exports.btn1 = "q"
+____exports.btn2 = "w"
+____exports.btn3 = "e"
+____exports.btn4 = "r"
+____exports.btn5 = "a"
+____exports.btn6 = "s"
+____exports.btn7 = "d"
+____exports.btn8 = "f"
+____exports.btnUp = "t"
+____exports.btnDown = "g"
+____exports.btnShift = "b"
 return ____exports

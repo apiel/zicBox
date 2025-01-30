@@ -18,6 +18,7 @@ local ____Common = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.
 local Common = ____Common.Common
 local ____constants = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constants")
 local BassTrack = ____constants.BassTrack
+local btnShift = ____constants.btnShift
 local ColorTrack2 = ____constants.ColorTrack2
 local KeyInfoPosition = ____constants.KeyInfoPosition
 local ScreenWidth = ____constants.ScreenWidth
@@ -54,7 +55,7 @@ function ____exports.BassSeqView(____bindingPattern0)
             React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 0}),
             React.createElement(Keymaps, {keys = {
                 {key = "w", action = "incGroup:-1"},
-                {key = "b", action = "contextToggle:254:1:0"},
+                {key = btnShift, action = "contextToggle:254:1:0"},
                 {key = "a", action = "setView:Bass"},
                 {key = "s", action = "incGroup:+1"},
                 {key = "d", action = "noteOn:Bass:60"}

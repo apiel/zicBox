@@ -33,3 +33,17 @@ export const encTopLeft = 0;
 export const encTopRight = 1;
 export const encBottomLeft = 2;
 export const encBottomRight = 3;
+
+export const btn1 = 'q';
+export const btn2 = 'w';
+export const btn3 = 'e';
+export const btn4 = 'r';
+
+export const btn5 = 'a';
+export const btn6 = 's';
+export const btn7 = 'd';
+export const btn8 = 'f';
+
+export const btnUp = 't';
+export const btnDown = 'g';
+export const btnShift = 'b';
