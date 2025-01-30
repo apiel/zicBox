@@ -31,8 +31,8 @@ setScreenSize(ScreenWidth, ScreenHeight);
 
 const halfHeight = ScreenHeight / 2;
 addZoneEncoder([0, 0, W1_2, halfHeight]);
-addZoneEncoder([0, halfHeight, W1_2, halfHeight]);
 addZoneEncoder([W1_2, 0, W1_2, halfHeight]);
+addZoneEncoder([0, halfHeight, W1_2, halfHeight]);
 addZoneEncoder([W1_2, halfHeight, W1_2, halfHeight]);
 
 applyZic(<Drum23View name="Drum23" />);

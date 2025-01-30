@@ -33,14 +33,14 @@ function ____exports.ClickView(____bindingPattern0)
         React.createElement(KnobValue, {
             value = "Drum23 CLICK_CUTOFF",
             position = topRightKnob,
-            encoder_id = 2,
+            encoder_id = 1,
             COLOR = "primary",
             track = Drum23Track
         }),
         React.createElement(KnobValue, {
             value = "Drum23 CLICK_DURATION",
             position = bottomLeftKnob,
-            encoder_id = 1,
+            encoder_id = 2,
             COLOR = "quaternary",
             track = Drum23Track
         }),

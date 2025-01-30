@@ -28,7 +28,7 @@ function ____exports.BassWaveformView(____bindingPattern0)
             data_id = "WAVEFORM",
             track = BassTrack,
             RENDER_TITLE_ON_TOP = false,
-            encoders = {"0 WAVEFORM_TYPE", "2 MACRO", "1 SHAPE"}
+            encoders = {"0 WAVEFORM_TYPE", "1 SHAPE", "2 MACRO"}
         }),
         React.createElement(TextGridBass, {selected = 4, viewName = name}),
         React.createElement(Common, {selected = 3, track = BassTrack, selectedBackground = ColorTrack2})

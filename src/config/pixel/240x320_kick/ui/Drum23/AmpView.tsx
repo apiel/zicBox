@@ -21,8 +21,8 @@ export function AmpView({ name }: Props) {
                  envelop_data_id="0"
                  RENDER_TITLE_ON_TOP={false}
                  encoder_time={0}
-                 encoder_phase={1}
-                 encoder_modulation={2}
+                 encoder_phase={2}
+                 encoder_modulation={1}
                  track={Drum23Track}
              />
             <KnobValue

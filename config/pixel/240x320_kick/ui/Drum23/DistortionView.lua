@@ -33,14 +33,14 @@ function ____exports.DistortionView(____bindingPattern0)
         React.createElement(KnobValue, {
             value = "Distortion COMPRESS",
             position = topRightKnob,
-            encoder_id = 2,
+            encoder_id = 1,
             COLOR = "primary",
             track = Drum23Track
         }),
         React.createElement(KnobValue, {
             value = "Distortion DRIVE",
             position = bottomLeftKnob,
-            encoder_id = 1,
+            encoder_id = 2,
             COLOR = "quaternary",
             track = Drum23Track
         }),

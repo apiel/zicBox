@@ -106,12 +106,12 @@ protected:
         }
 
         if (*isMacro) {
-            draw.text({ x + 2, relativePosition.y + size.h - 8 }, std::to_string((int)(macro1 * 100)) + "%", fontSize, { textColor.color });
-            draw.textRight({ x + size.w - 2, relativePosition.y }, std::to_string((int)(macro2 * 100)) + "%", fontSize, { textColor.color });
+            draw.textRight({ x + size.w - 2, relativePosition.y }, std::to_string((int)(macro1 * 100)) + "%", fontSize, { textColor.color });
+            draw.text({ x + 2, relativePosition.y + size.h - 8 }, std::to_string((int)(macro2 * 100)) + "%", fontSize, { textColor.color });
             draw.textRight({ x + size.w - 2, relativePosition.y + size.h - 8 }, std::to_string((int)(macro3 * 100)) + "%", fontSize, { textColor.color });
         } else {
-            draw.text({ x + 2, relativePosition.y + size.h - 8 }, std::to_string((int)macro1 + 1) + "/" + std::to_string(envData->size()), fontSize, { textColor.color });
-            draw.textRight({ x + size.w - 2, relativePosition.y }, std::to_string((int)(macro2 * 100)) + "%", fontSize, { textColor.color });
+            draw.text({ x + size.w - 2, relativePosition.y }, std::to_string((int)macro1 + 1) + "/" + std::to_string(envData->size()), fontSize, { textColor.color });
+            draw.textRight({ x + 2, relativePosition.y + size.h - 8 }, std::to_string((int)(macro2 * 100)) + "%", fontSize, { textColor.color });
             draw.textRight({ x + size.w - 2, relativePosition.y + size.h - 8 }, std::to_string((int)macro3) + "ms", fontSize, { textColor.color });
         }
     }

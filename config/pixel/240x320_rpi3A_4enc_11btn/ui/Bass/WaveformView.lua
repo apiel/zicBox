@@ -10,6 +10,9 @@ local Common = ____Common.Common
 local ____constants = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constants")
 local BassTrack = ____constants.BassTrack
 local ColorTrack2 = ____constants.ColorTrack2
+local encBottomLeft = ____constants.encBottomLeft
+local encTopLeft = ____constants.encTopLeft
+local encTopRight = ____constants.encTopRight
 local ____constantsValue = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constantsValue")
 local topValues = ____constantsValue.topValues
 local ____TextGridBass = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.Bass.TextGridBass")
@@ -22,14 +25,21 @@ function ____exports.BassWaveformView(____bindingPattern0)
     return React.createElement(
         View,
         {name = name},
-        React.createElement(GraphEncoder, {
-            position = pos,
-            plugin = "Bass",
-            data_id = "WAVEFORM",
-            track = BassTrack,
-            RENDER_TITLE_ON_TOP = false,
-            encoders = {"0 WAVEFORM_TYPE", "2 MACRO", "1 SHAPE"}
-        }),
+        React.createElement(
+            GraphEncoder,
+            {
+                position = pos,
+                plugin = "Bass",
+                data_id = "WAVEFORM",
+                track = BassTrack,
+                RENDER_TITLE_ON_TOP = false,
+                encoders = {
+                    tostring(encTopLeft) .. " WAVEFORM_TYPE",
+                    tostring(encTopRight) .. " SHAPE",
+                    tostring(encBottomLeft) .. " MACRO"
+                }
+            }
+        ),
         React.createElement(TextGridBass, {selected = 4, viewName = name}),
         React.createElement(Common, {selected = 3, track = BassTrack, selectedBackground = ColorTrack2})
     )

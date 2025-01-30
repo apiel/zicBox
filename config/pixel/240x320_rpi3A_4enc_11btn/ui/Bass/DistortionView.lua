@@ -10,6 +10,8 @@ local Common = ____Common.Common
 local ____constants = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constants")
 local BassTrack = ____constants.BassTrack
 local ColorTrack2 = ____constants.ColorTrack2
+local encTopLeft = ____constants.encTopLeft
+local encTopRight = ____constants.encTopRight
 local ____constantsValue = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constantsValue")
 local topLeftKnob = ____constantsValue.topLeftKnob
 local topRightKnob = ____constantsValue.topRightKnob
@@ -24,14 +26,14 @@ function ____exports.BassDistortionView(____bindingPattern0)
         React.createElement(KnobValue, {
             value = "Bass BOOST",
             position = topLeftKnob,
-            encoder_id = 0,
+            encoder_id = encTopLeft,
             COLOR = "tertiary",
             track = BassTrack
         }),
         React.createElement(KnobValue, {
             value = "Bass GAIN_CLIPPING",
             position = topRightKnob,
-            encoder_id = 2,
+            encoder_id = encTopRight,
             COLOR = "primary",
             track = BassTrack
         }),

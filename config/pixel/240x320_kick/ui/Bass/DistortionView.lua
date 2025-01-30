@@ -31,7 +31,7 @@ function ____exports.BassDistortionView(____bindingPattern0)
         React.createElement(KnobValue, {
             value = "Bass GAIN_CLIPPING",
             position = topRightKnob,
-            encoder_id = 2,
+            encoder_id = 1,
             COLOR = "primary",
             track = BassTrack
         }),

@@ -3,7 +3,7 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
-import { BassTrack, ColorTrack2 } from '../constants';
+import { BassTrack, ColorTrack2, encTopLeft, encTopRight } from '../constants';
 import { topLeftKnob, topRightKnob } from '../constantsValue';
 import { TextGridBass } from './TextGridBass';
 
@@ -17,28 +17,28 @@ export function BassDistortionView({ name }: Props) {
             <KnobValue
                 value="Bass BOOST"
                 position={topLeftKnob}
-                encoder_id={0}
+                encoder_id={encTopLeft}
                 COLOR="tertiary"
                 track={BassTrack}
             />
             <KnobValue
                 value="Bass GAIN_CLIPPING"
                 position={topRightKnob}
-                encoder_id={2}
+                encoder_id={encTopRight}
                 COLOR="primary"
                 track={BassTrack}
             />
             {/* <KnobValue
                 value="Distortion DRIVE"
                 position={bottomLeftKnob}
-                encoder_id={1}
+                encoder_id={encBottomLeft}
                 COLOR="quaternary"
                 track={BassTrack}
             />
             <KnobValue
                 value="Distortion BASS"
                 position={bottomRightKnob}
-                encoder_id={3}
+                encoder_id={encBottomRight}
                 COLOR="secondary"
                 track={BassTrack}
             /> */}

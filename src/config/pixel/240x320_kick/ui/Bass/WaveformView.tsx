@@ -41,7 +41,7 @@ export function BassWaveformView({ name }: Props) {
                 // is_array
                 track={BassTrack}
                 RENDER_TITLE_ON_TOP={false}
-                encoders={['0 WAVEFORM_TYPE', '2 MACRO', '1 SHAPE']}
+                encoders={['0 WAVEFORM_TYPE', '1 SHAPE', '2 MACRO']}
             />
             {/* <KnobValue
                 value="Bass NOISE"

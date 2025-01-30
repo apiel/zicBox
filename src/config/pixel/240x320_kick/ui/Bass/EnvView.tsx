@@ -29,14 +29,14 @@ export function BassEnvView({ name }: Props) {
             <KnobValue
                 value="Bass DECAY_LEVEL"
                 position={topRightKnob}
-                encoder_id={2}
+                encoder_id={1}
                 COLOR="primary"
                 track={BassTrack}
             />
             <KnobValue
                 value="Bass DECAY_TIME"
                 position={bottomLeftKnob}
-                encoder_id={1}
+                encoder_id={2}
                 COLOR="quaternary"
                 track={BassTrack}
             />

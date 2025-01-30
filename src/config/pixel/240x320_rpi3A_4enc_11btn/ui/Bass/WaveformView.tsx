@@ -4,7 +4,7 @@ import { View } from '@/libs/components/View';
 
 import { GraphEncoder } from '@/libs/components/GraphEncoder';
 import { Common } from '../components/Common';
-import { BassTrack, ColorTrack2 } from '../constants';
+import { BassTrack, ColorTrack2, encBottomLeft, encTopLeft, encTopRight } from '../constants';
 import { topValues } from '../constantsValue';
 import { TextGridBass } from './TextGridBass';
 
@@ -20,14 +20,14 @@ export function BassWaveformView({ name }: Props) {
             {/* <KnobValue
                 value="Bass STEP_FREQ"
                 position={topLeftKnob}
-                encoder_id={0}
+                encoder_id={encTopLeft}
                 COLOR="tertiary"
                 track={BassTrack}
             />
             <KnobValue
                 value="Bass STAIRCASE"
                 position={topRightKnob}
-                encoder_id={2}
+                encoder_id={encTopRight}
                 COLOR="primary"
                 track={BassTrack}
             /> */}
@@ -41,19 +41,19 @@ export function BassWaveformView({ name }: Props) {
                 // is_array
                 track={BassTrack}
                 RENDER_TITLE_ON_TOP={false}
-                encoders={['0 WAVEFORM_TYPE', '2 MACRO', '1 SHAPE']}
+                encoders={[`${encTopLeft} WAVEFORM_TYPE`, `${encTopRight} SHAPE`, `${encBottomLeft} MACRO`]}
             />
             {/* <KnobValue
                 value="Bass NOISE"
                 position={bottomLeftKnob}
-                encoder_id={1}
+                encoder_id={encBottomLeft}
                 COLOR="quaternary"
                 track={BassTrack}
             /> */}
             {/* <KnobValue
                 value="Bass GAIN_CLIPPING"
                 position={bottomRightKnob}
-                encoder_id={3}
+                encoder_id={encBottomRight}
                 COLOR="secondary"
                 track={BassTrack}
             /> */}

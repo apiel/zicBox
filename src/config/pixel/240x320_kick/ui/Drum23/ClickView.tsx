@@ -29,14 +29,14 @@ export function ClickView({ name }: Props) {
             <KnobValue
                 value="Drum23 CLICK_CUTOFF"
                 position={topRightKnob}
-                encoder_id={2}
+                encoder_id={1}
                 COLOR="primary"
                 track={Drum23Track}
             />
             <KnobValue
                 value="Drum23 CLICK_DURATION"
                 position={bottomLeftKnob}
-                encoder_id={1}
+                encoder_id={2}
                 COLOR="quaternary"
                 track={Drum23Track}
             />

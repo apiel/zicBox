@@ -3,7 +3,7 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
-import { BassTrack, ColorTrack2 } from '../constants';
+import { BassTrack, ColorTrack2, encBottomLeft, encBottomRight, encTopLeft, encTopRight } from '../constants';
 import {
     bottomLeftKnob,
     bottomRightKnob,
@@ -22,28 +22,28 @@ export function BassView({ name }: Props) {
             <KnobValue
                 value="TrackFx VOLUME"
                 position={topLeftKnob}
-                encoder_id={0}
+                encoder_id={encTopLeft}
                 COLOR="tertiary"
                 track={BassTrack}
             />
             <KnobValue
                 value="Bass CUTOFF"
                 position={topRightKnob}
-                encoder_id={2}
+                encoder_id={encTopRight}
                 COLOR="primary"
                 track={BassTrack}
             />
             <KnobValue
                 value="Bass FREQ_RATIO"
                 position={bottomLeftKnob}
-                encoder_id={1}
+                encoder_id={encBottomLeft}
                 COLOR="quaternary"
                 track={BassTrack}
             />
             <KnobValue
                 value="Bass RESONANCE"
                 position={bottomRightKnob}
-                encoder_id={3}
+                encoder_id={encBottomRight}
                 COLOR="secondary"
                 track={BassTrack}
             />

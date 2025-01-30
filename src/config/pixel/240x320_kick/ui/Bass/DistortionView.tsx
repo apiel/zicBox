@@ -24,14 +24,14 @@ export function BassDistortionView({ name }: Props) {
             <KnobValue
                 value="Bass GAIN_CLIPPING"
                 position={topRightKnob}
-                encoder_id={2}
+                encoder_id={1}
                 COLOR="primary"
                 track={BassTrack}
             />
             {/* <KnobValue
                 value="Distortion DRIVE"
                 position={bottomLeftKnob}
-                encoder_id={1}
+                encoder_id={2}
                 COLOR="quaternary"
                 track={BassTrack}
             />

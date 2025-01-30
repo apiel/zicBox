@@ -33,14 +33,14 @@ function ____exports.BassEnvView(____bindingPattern0)
         React.createElement(KnobValue, {
             value = "Bass DECAY_LEVEL",
             position = topRightKnob,
-            encoder_id = 2,
+            encoder_id = 1,
             COLOR = "primary",
             track = BassTrack
         }),
         React.createElement(KnobValue, {
             value = "Bass DECAY_TIME",
             position = bottomLeftKnob,
-            encoder_id = 1,
+            encoder_id = 2,
             COLOR = "quaternary",
             track = BassTrack
         }),

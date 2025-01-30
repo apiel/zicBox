@@ -3,7 +3,7 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
-import { ColorTrack1, Drum23Track } from '../constants';
+import { ColorTrack1, Drum23Track, encBottomLeft, encBottomRight, encTopLeft, encTopRight } from '../constants';
 import {
     bottomLeftKnob,
     bottomRightKnob,
@@ -22,28 +22,28 @@ export function ClickView({ name }: Props) {
             <KnobValue
                 value="Drum23 CLICK"
                 position={topLeftKnob}
-                encoder_id={0}
+                encoder_id={encTopLeft}
                 COLOR="tertiary"
                 track={Drum23Track}
             />
             <KnobValue
                 value="Drum23 CLICK_CUTOFF"
                 position={topRightKnob}
-                encoder_id={2}
+                encoder_id={encTopRight}
                 COLOR="primary"
                 track={Drum23Track}
             />
             <KnobValue
                 value="Drum23 CLICK_DURATION"
                 position={bottomLeftKnob}
-                encoder_id={1}
+                encoder_id={encBottomLeft}
                 COLOR="quaternary"
                 track={Drum23Track}
             />
             <KnobValue
                 value="Drum23 HIGH_FREQ_BOOST"
                 position={bottomRightKnob}
-                encoder_id={3}
+                encoder_id={encBottomRight}
                 COLOR="secondary"
                 track={Drum23Track}
             />

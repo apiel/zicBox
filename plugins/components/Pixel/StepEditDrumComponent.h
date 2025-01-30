@@ -151,14 +151,14 @@ public:
                 step->setVelocity(step->velocity + direction * 0.01);
                 renderNext();
             } else if (id == encoders[1]) {
-                step->setCondition(step->condition + direction);
-                renderNext();
-            } else if (id == encoders[2]) {
                 if (step->enabled) {
                     step->setNote(step->note + direction);
                 } else {
                     step->enabled = true;
                 }
+                renderNext();
+            } else if (id == encoders[2]) {
+                step->setCondition(step->condition + direction);
                 renderNext();
             } else if (id == encoders[3]) {
                 step->setMotion(step->motion + direction);

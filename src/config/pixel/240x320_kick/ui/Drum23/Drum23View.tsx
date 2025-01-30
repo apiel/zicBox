@@ -24,7 +24,7 @@ export function Drum23View({ name }: Props) {
             <KnobValue
                 value="MMFilter CUTOFF"
                 position={topRightKnob}
-                encoder_id={2}
+                encoder_id={1}
                 COLOR="secondary"
                 FONT_VALUE_SIZE={8}
                 TYPE="STRING"
@@ -33,7 +33,7 @@ export function Drum23View({ name }: Props) {
             <KnobValue
                 value="Drum23 GAIN_CLIPPING"
                 position={bottomLeftKnob}
-                encoder_id={1}
+                encoder_id={2}
                 track={Drum23Track}
             />
             <KnobValue

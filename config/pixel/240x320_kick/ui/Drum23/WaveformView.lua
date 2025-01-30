@@ -28,7 +28,7 @@ function ____exports.WaveformView(____bindingPattern0)
             plugin = "Drum23",
             data_id = "WAVEFORM",
             RENDER_TITLE_ON_TOP = false,
-            encoders = {"0 WAVEFORM_TYPE", "2 MACRO", "1 SHAPE"},
+            encoders = {"0 WAVEFORM_TYPE", "1 SHAPE", "2 MACRO"},
             track = Drum23Track
         }),
         React.createElement(KnobValue, {

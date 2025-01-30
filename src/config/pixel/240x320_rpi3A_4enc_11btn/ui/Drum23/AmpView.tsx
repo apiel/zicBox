@@ -4,7 +4,7 @@ import { DrumEnvelop } from '@/libs/components/DrumEnvelop';
 import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
-import { ColorTrack1, Drum23Track } from '../constants';
+import { ColorTrack1, Drum23Track, encBottomLeft, encBottomRight, encTopLeft, encTopRight } from '../constants';
 import { bottomRightKnob, topValues } from '../constantsValue';
 import { TextGridDrum23 } from './TextGridDrum23';
 
@@ -20,15 +20,15 @@ export function AmpView({ name }: Props) {
                  plugin="Drum23"
                  envelop_data_id="0"
                  RENDER_TITLE_ON_TOP={false}
-                 encoder_time={0}
-                 encoder_phase={1}
-                 encoder_modulation={2}
+                 encoder_time={encTopLeft}
+                 encoder_modulation={encTopRight}
+                 encoder_phase={encBottomLeft}
                  track={Drum23Track}
              />
             <KnobValue
                 position={bottomRightKnob}
                 value="Drum23 DURATION"
-                encoder_id={3}
+                encoder_id={encBottomRight}
                 color="quaternary"
                 track={Drum23Track}
             />
