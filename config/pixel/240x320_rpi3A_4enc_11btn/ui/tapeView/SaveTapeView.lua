@@ -10,6 +10,11 @@ local TextGrid = ____TextGrid.TextGrid
 local ____View = require("config.libs.components.View")
 local View = ____View.View
 local ____constants = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constants")
+local btn1 = ____constants.btn1
+local btn2 = ____constants.btn2
+local btn5 = ____constants.btn5
+local btn6 = ____constants.btn6
+local btn7 = ____constants.btn7
 local btnShift = ____constants.btnShift
 local KeyInfoPosition = ____constants.KeyInfoPosition
 local ScreenWidth = ____constants.ScreenWidth
@@ -23,12 +28,12 @@ function ____exports.SaveTapeView(____bindingPattern0)
             Keyboard,
             {position = {0, 40, ScreenWidth, 200}, redirect_view = "Tape", done_data = "Tape SAVE"},
             React.createElement(Keymaps, {keys = {
-                {key = "q", action = ".type"},
-                {key = "w", action = ".up"},
+                {key = btn1, action = ".type"},
+                {key = btn2, action = ".up"},
                 {key = btnShift, action = ".cancel"},
-                {key = "s", action = ".down"},
-                {key = "a", action = ".left"},
-                {key = "d", action = ".right"}
+                {key = btn6, action = ".down"},
+                {key = btn5, action = ".left"},
+                {key = btn7, action = ".right"}
             }})
         ),
         React.createElement(TextGrid, {position = KeyInfoPosition, rows = {"Type &icon::arrowUp::filled Cancel", "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled"}})

@@ -14,6 +14,10 @@ local VisibilityContext = ____VisibilityContext.VisibilityContext
 local ____Workspaces = require("config.libs.components.Workspaces")
 local Workspaces = ____Workspaces.Workspaces
 local ____constants = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constants")
+local btn2 = ____constants.btn2
+local btn5 = ____constants.btn5
+local btn6 = ____constants.btn6
+local btn7 = ____constants.btn7
 local KeyInfoPosition = ____constants.KeyInfoPosition
 local ScreenWidth = ____constants.ScreenWidth
 function ____exports.WorkspacesView(____bindingPattern0)
@@ -25,7 +29,7 @@ function ____exports.WorkspacesView(____bindingPattern0)
         React.createElement(
             Workspaces,
             {plugin = "SerializeTrack", position = {0, 0, ScreenWidth, 280}},
-            React.createElement(Keymaps, {keys = {{key = "a", action = ".data:LOAD_WORKSPACE", context = "254:0"}, {key = "w", action = ".up", context = "254:0"}, {key = "s", action = ".down", context = "254:0"}, {key = "d", action = ".delete", context = "254:1"}}})
+            React.createElement(Keymaps, {keys = {{key = btn5, action = ".data:LOAD_WORKSPACE", context = "254:0"}, {key = btn2, action = ".up", context = "254:0"}, {key = btn6, action = ".down", context = "254:0"}, {key = btn7, action = ".delete", context = "254:1"}}})
         ),
         React.createElement(
             TextGrid,

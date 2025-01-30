@@ -8,7 +8,7 @@ import { View } from '@/libs/components/View';
 import { VisibilityContext } from '@/libs/components/VisibilityContext';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
-import { btnShift, ColorTrack3, KeyInfoPosition, SampleTrack, ScreenWidth } from '../constants';
+import { btn1, btn2, btn6, btn7, btnShift, ColorTrack3, KeyInfoPosition, SampleTrack, ScreenWidth } from '../constants';
 
 export type Props = {
     name: string;
@@ -41,8 +41,8 @@ export function SampleEditorView({ name }: Props) {
                     >
                         <Keymaps
                             keys={[
-                                { key: 'q', action: '.toggle' },
-                                { key: 'd', action: '.play' },
+                                { key: btn1, action: '.toggle' },
+                                { key: btn7, action: '.play' },
                             ]}
                         />
                     </StepEditSample>
@@ -60,8 +60,8 @@ export function SampleEditorView({ name }: Props) {
                 <Keymaps
                     keys={[
                         { key: btnShift, action: 'contextToggle:254:1:0' },
-                        { key: 'w', action: 'incGroup:-1' },
-                        { key: 's', action: 'incGroup:+1' },
+                        { key: btn2, action: 'incGroup:-1' },
+                        { key: btn6, action: 'incGroup:+1' },
                     ]}
                 />
             </TextGrid>

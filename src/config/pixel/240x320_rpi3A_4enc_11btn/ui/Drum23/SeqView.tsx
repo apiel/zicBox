@@ -7,7 +7,7 @@ import { View } from '@/libs/components/View';
 import { VisibilityContext } from '@/libs/components/VisibilityContext';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
-import { btnShift, ColorTrack1, Drum23Track, KeyInfoPosition, ScreenWidth } from '../constants';
+import { btn1, btn2, btn5, btn6, btn7, btnShift, ColorTrack1, Drum23Track, KeyInfoPosition, ScreenWidth } from '../constants';
 
 export type Props = {
     name: string;
@@ -34,7 +34,7 @@ export function Drum23SeqView({ name }: Props) {
                         }
                         selected_color={rgb(76, 94, 97)}
                     >
-                        <Keymaps keys={[{ key: 'q', action: '.toggle' }]} />
+                        <Keymaps keys={[{ key: btn1, action: '.toggle' }]} />
                     </StepEditDrum>
                 );
             })}
@@ -51,12 +51,12 @@ export function Drum23SeqView({ name }: Props) {
                 <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />
                 <Keymaps
                     keys={[
-                        { key: 'w', action: 'incGroup:-1' },
+                        { key: btn2, action: 'incGroup:-1' },
                         { key: btnShift, action: 'contextToggle:254:1:0' },
 
-                        { key: 'a', action: 'setView:Drum23' },
-                        { key: 's', action: 'incGroup:+1' },
-                        { key: 'd', action: 'noteOn:Drum23:60' },
+                        { key: btn5, action: 'setView:Drum23' },
+                        { key: btn6, action: 'incGroup:+1' },
+                        { key: btn7, action: 'noteOn:Drum23:60' },
                     ]}
                 />
             </TextGrid>

@@ -5,7 +5,7 @@ import { Keymaps } from '@/libs/components/Keymaps';
 import { Tape } from '@/libs/components/Tape';
 import { TextGrid } from '@/libs/components/TextGrid';
 import { View } from '@/libs/components/View';
-import { KeyInfoPosition } from '../constants';
+import { btn2, btn6, KeyInfoPosition } from '../constants';
 
 export type Props = {
     name: string;
@@ -34,8 +34,8 @@ export function TapeView({ name }: Props) {
             >
                 <Keymaps
                     keys={[
-                        { key: 'w', action: 'setView:SaveTape' },
-                        { key: 's', action: 'setView:Menu' },
+                        { key: btn2, action: 'setView:SaveTape' },
+                        { key: btn6, action: 'setView:Menu' },
                     ]}
                 />
             </TextGrid>

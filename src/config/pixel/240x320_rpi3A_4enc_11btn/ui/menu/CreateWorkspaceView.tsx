@@ -4,7 +4,7 @@ import { Keyboard } from '@/libs/components/Keyboard';
 import { Keymaps } from '@/libs/components/Keymaps';
 import { TextGrid } from '@/libs/components/TextGrid';
 import { View } from '@/libs/components/View';
-import { KeyInfoPosition, ScreenWidth } from '../constants';
+import { btn1, btn2, btn5, btn6, btn7, KeyInfoPosition, ScreenWidth } from '../constants';
 
 export type Props = {
     name: string;
@@ -20,11 +20,11 @@ export function CreateWorkspaceView({ name }: Props) {
             >
                 <Keymaps
                     keys={[
-                        { key: 'q', action: '.type' },
-                        { key: 'w', action: '.up' },
-                        { key: 's', action: '.down' },
-                        { key: 'a', action: '.left' },
-                        { key: 'd', action: '.right' },
+                        { key: btn1, action: '.type' },
+                        { key: btn2, action: '.up' },
+                        { key: btn6, action: '.down' },
+                        { key: btn5, action: '.left' },
+                        { key: btn7, action: '.right' },
                     ]}
                 />
             </Keyboard>
