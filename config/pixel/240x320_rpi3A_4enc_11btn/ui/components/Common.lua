@@ -11,7 +11,7 @@ local btn1 = ____constants.btn1
 local btn2 = ____constants.btn2
 local btn5 = ____constants.btn5
 local btn6 = ____constants.btn6
-local btn7 = ____constants.btn7
+local btnDown = ____constants.btnDown
 local btnShift = ____constants.btnShift
 local ScreenWidth = ____constants.ScreenWidth
 local ____TextGridSel = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.TextGridSel")
@@ -53,10 +53,10 @@ function ____exports.Common(____bindingPattern0)
             }, keys = {
                 {key = btn1, action = "setView:Drum23"},
                 {key = btn2, action = "setView:Sample"},
-                {key = btnShift, action = "contextToggle:254:1:0"},
                 {key = btn5, action = "setView:Bass"},
                 {key = btn6, action = "setView:Clips"},
-                {key = btn7, action = "playPause"}
+                {key = btnShift, action = "contextToggle:254:1:0"},
+                {key = btnDown, action = "playPause"}
             }, selected = selected, contextValue = 1}, selectedBackground and ({ITEM_BACKGROUND = selectedBackground}))
         )
     )
