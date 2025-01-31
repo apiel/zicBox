@@ -227,7 +227,7 @@ public:
             buf[track] = out;
             sampleIndex++;
         } else {
-            // buf[track] = applyReverb(buf[track]);
+            buf[track] = applyReverb(buf[track]);
         }
     }
 

@@ -3,10 +3,9 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
-import { BassTrack, ColorTrack2, encBottomLeft, encBottomRight, encTopLeft, encTopRight } from '../constants';
+import { BassTrack, ColorTrack2, encBottomLeft, encTopLeft, encTopRight } from '../constants';
 import {
     bottomLeftKnob,
-    bottomRightKnob,
     topLeftKnob,
     topRightKnob
 } from '../constantsValue';
@@ -40,13 +39,13 @@ export function BassEnvView({ name }: Props) {
                 COLOR="quaternary"
                 track={BassTrack}
             />
-            <KnobValue
+            {/* <KnobValue
                 value="Bass REVERB"
                 position={bottomRightKnob}
                 encoder_id={encBottomRight}
                 COLOR="secondary"
                 track={BassTrack}
-            />
+            /> */}
 
             <TextGridBass selected={'Env'} viewName={name} />
             <Common selected={'Bass'} track={BassTrack} selectedBackground={ColorTrack2} />
