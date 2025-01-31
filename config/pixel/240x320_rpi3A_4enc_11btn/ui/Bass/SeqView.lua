@@ -66,7 +66,7 @@ function ____exports.BassSeqView(____bindingPattern0)
                 {key = btn7, action = "noteOn:Bass:60"}
             }})
         ),
-        React.createElement(Common, {selected = 0, hideSequencer = true, track = BassTrack, selectedBackground = ColorTrack2})
+        React.createElement(Common, {selected = "Bass", hideSequencer = true, track = BassTrack, selectedBackground = ColorTrack2})
     )
 end
 return ____exports

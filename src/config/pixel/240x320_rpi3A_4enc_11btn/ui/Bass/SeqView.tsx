@@ -60,7 +60,7 @@ export function BassSeqView({ name }: Props) {
                     ]}
                 />
             </TextGrid>
-            <Common selected={0} hideSequencer track={BassTrack}  selectedBackground={ColorTrack2} />
+            <Common selected={'Bass'} hideSequencer track={BassTrack}  selectedBackground={ColorTrack2} />
         </View>
     );
 }

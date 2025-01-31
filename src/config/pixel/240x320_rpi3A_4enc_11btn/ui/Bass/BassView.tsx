@@ -48,8 +48,8 @@ export function BassView({ name }: Props) {
                 track={BassTrack}
             />
 
-            <TextGridBass selected={0} viewName={name} />
-            <Common selected={3} track={BassTrack} selectedBackground={ColorTrack2} />
+            <TextGridBass selected={'Main'} viewName={name} />
+            <Common selected={'Bass'} track={BassTrack} selectedBackground={ColorTrack2} />
         </View>
     );
 }

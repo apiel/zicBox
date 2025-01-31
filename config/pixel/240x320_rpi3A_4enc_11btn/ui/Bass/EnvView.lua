@@ -55,8 +55,8 @@ function ____exports.BassEnvView(____bindingPattern0)
             COLOR = "secondary",
             track = BassTrack
         }),
-        React.createElement(TextGridBass, {selected = 1, viewName = name}),
-        React.createElement(Common, {selected = 3, track = BassTrack, selectedBackground = ColorTrack2})
+        React.createElement(TextGridBass, {selected = "Env", viewName = name}),
+        React.createElement(Common, {selected = "Bass", track = BassTrack, selectedBackground = ColorTrack2})
     )
 end
 return ____exports

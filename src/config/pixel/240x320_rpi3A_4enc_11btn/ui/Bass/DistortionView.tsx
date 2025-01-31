@@ -42,8 +42,8 @@ export function BassDistortionView({ name }: Props) {
                 COLOR="secondary"
                 track={BassTrack}
             /> */}
-            <TextGridBass selected={0} viewName={name} />
-            <Common selected={0} track={BassTrack} selectedBackground={ColorTrack2} />
+            <TextGridBass selected={'Fx'} viewName={name} />
+            <Common selected={'Bass'} track={BassTrack} selectedBackground={ColorTrack2} />
         </View>
     );
 }

@@ -66,7 +66,7 @@ function ____exports.Drum23SeqView(____bindingPattern0)
                 {key = btn7, action = "noteOn:Drum23:60"}
             }})
         ),
-        React.createElement(Common, {selected = 0, hideSequencer = true, track = Drum23Track, selectedBackground = ColorTrack1})
+        React.createElement(Common, {selected = "Kick", hideSequencer = true, track = Drum23Track, selectedBackground = ColorTrack1})
     )
 end
 return ____exports

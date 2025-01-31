@@ -60,7 +60,7 @@ export function Drum23SeqView({ name }: Props) {
                     ]}
                 />
             </TextGrid>
-            <Common selected={0} hideSequencer track={Drum23Track}  selectedBackground={ColorTrack1} />
+            <Common selected={'Kick'} hideSequencer track={Drum23Track}  selectedBackground={ColorTrack1} />
         </View>
     );
 }

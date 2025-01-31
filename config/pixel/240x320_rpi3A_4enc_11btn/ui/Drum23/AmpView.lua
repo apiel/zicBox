@@ -44,8 +44,8 @@ function ____exports.AmpView(____bindingPattern0)
             color = "quaternary",
             track = Drum23Track
         }),
-        React.createElement(TextGridDrum23, {selected = 4, viewName = name}),
-        React.createElement(Common, {selected = 0, track = Drum23Track, selectedBackground = ColorTrack1})
+        React.createElement(TextGridDrum23, {selected = "Amp", viewName = name}),
+        React.createElement(Common, {selected = "Kick", track = Drum23Track, selectedBackground = ColorTrack1})
     )
 end
 return ____exports
