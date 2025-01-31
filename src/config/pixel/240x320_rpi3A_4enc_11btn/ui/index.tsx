@@ -21,8 +21,6 @@ import { MenuView } from './menu/menuView';
 import { ShutdownView } from './menu/ShutdownView';
 import { WorkspacesView } from './menu/WorkspacesView';
 import { SampleEditorView } from './Sample/SampleEditorView';
-import { SaveTapeView } from './tapeView/SaveTapeView';
-import { TapeView } from './tapeView/TapeView';
 
 pixelController('rpi3A_4enc_11btn');
 
@@ -57,7 +55,8 @@ applyZic(<WorkspacesView name="Workspaces" />);
 applyZic(<CreateWorkspaceView name="CreateWorkspace" />);
 applyZic(<ShutdownView name="Shutdown" />);
 
-applyZic(<TapeView name="Tape" />);
-applyZic(<SaveTapeView name="SaveTape" />);
+// Tape is messing up the memory, need to fix it!
+// applyZic(<TapeView name="Tape" />);
+// applyZic(<SaveTapeView name="SaveTape" />);
 
 applyZic(<ClipsView name="Clips" />);

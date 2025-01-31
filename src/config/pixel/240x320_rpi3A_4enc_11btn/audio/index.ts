@@ -38,7 +38,7 @@ plugin('SerializeTrack', [{ track: SampleTrack, filename: 'sampleSeq', MAX_VARIA
 
 plugin('Mixer');
 plugin('Volume EffectGainVolume');
-plugin('Tape', [{ filename: 'kick', max_track: 3 }]);
+// plugin('Tape', [{ filename: 'kick', max_track: 3 }]);
 plugin('AudioOutput');
 plugin('SerializeTrack', [{ filename: 'master', MAX_VARIATION, WORKSPACE_FOLDER }]);
 
