@@ -2,5 +2,6 @@
 local ____exports = {}
 ____exports.Drum23Track = 1
 ____exports.BassTrack = 2
-____exports.SampleTrack = 3
+____exports.Fm1Track = 3
+____exports.SampleTrack = 4
 return ____exports
