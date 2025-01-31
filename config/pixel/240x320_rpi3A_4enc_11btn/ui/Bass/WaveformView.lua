@@ -40,7 +40,7 @@ function ____exports.BassWaveformView(____bindingPattern0)
                 }
             }
         ),
-        React.createElement(TextGridBass, {selected = "Waveform", viewName = name}),
+        React.createElement(TextGridBass, {selected = "Wave", viewName = name}),
         React.createElement(Common, {selected = "Bass", track = BassTrack, selectedBackground = ColorTrack2})
     )
 end

@@ -33,7 +33,7 @@ function ____exports.TextGridBass(____bindingPattern0)
         React.createElement(Rect, {position = {70, 28, 6, 6}, color = ColorTrack2}),
         React.createElement(TextGridSel, {
             selectedBackground = ColorTrack2,
-            rows = {"Main Fx Env Waveform", "Seq. &empty &empty &empty"},
+            rows = {"Main Fx Env Wave", "Seq. &empty &empty &empty"},
             keys = {
                 {key = btn1, action = "setView:Bass"},
                 {key = btn2, action = "setView:BassDistortion"},
@@ -43,8 +43,8 @@ function ____exports.TextGridBass(____bindingPattern0)
                 {key = btn6, action = "noteOn:Bass:60"},
                 {key = btn7, action = "noteOn:Bass:60"},
                 {key = btn8, action = "noteOn:Bass:60"},
-                {key = btnUp, action = "noteOn:Drum23:60"},
-                {key = btnDown, action = "noteOn:Drum23:60"},
+                {key = btnUp, action = "noteOn:Bass:60"},
+                {key = btnDown, action = "noteOn:Bass:60"},
                 {key = btnShift, action = "contextToggle:254:1:0"}
             },
             selected = selected,

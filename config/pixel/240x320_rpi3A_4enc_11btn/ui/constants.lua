@@ -1,5 +1,7 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
+local ____ui = require("config.libs.ui")
+local rgb = ____ui.rgb
 do
     local ____export = require("config.pixel.240x320_rpi3A_4enc_11btn.constants")
     for ____exportKey, ____exportValue in pairs(____export) do
@@ -22,7 +24,9 @@ ____exports.W5_8 = ____exports.W1_8 * 5
 ____exports.W6_8 = ____exports.W1_8 * 6
 ____exports.W7_8 = ____exports.W1_8 * 7
 ____exports.W8_8 = ____exports.W1_8 * 8
-____exports.KeyInfoPosition = {0, 296, ____exports.ScreenWidth}
+____exports.KeyInfoPosition = {0, 296, ____exports.ScreenWidth - 16}
+____exports.SideKeyInfoPosition = {____exports.ScreenWidth - 16, 296, 16}
+____exports.SideColor = rgb(58, 84, 92)
 ____exports.PrimaryBar = "#377275"
 ____exports.SecondaryBar = "#b54f5e"
 ____exports.TertiaryBar = "#368a36"

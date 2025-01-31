@@ -13,7 +13,7 @@ export function TextGridBass({ selected, viewName }: { selected: string; viewNam
             <Rect position={[70, 28, 6, 6]} color={ColorTrack2} />
             <TextGridSel
                 selectedBackground={ColorTrack2}
-                rows={['Main Fx Env Waveform', 'Seq. &empty &empty &empty']}
+                rows={['Main Fx Env Wave', 'Seq. &empty &empty &empty']}
                 keys={[
                     { key: btn1, action: 'setView:Bass' },
                     { key: btn2, action: 'setView:BassDistortion' },
@@ -25,8 +25,8 @@ export function TextGridBass({ selected, viewName }: { selected: string; viewNam
                     { key: btn7, action: 'noteOn:Bass:60' },
                     { key: btn8, action: 'noteOn:Bass:60' },
 
-                    { key: btnUp, action: 'noteOn:Drum23:60' }, // when not used, let's play noteOn...
-                    { key: btnDown, action: 'noteOn:Drum23:60' }, // <--- this should be the default noteOn!
+                    { key: btnUp, action: 'noteOn:Bass:60' }, // when not used, let's play noteOn...
+                    { key: btnDown, action: 'noteOn:Bass:60' }, // <--- this should be the default noteOn!
                     { key: btnShift, action: 'contextToggle:254:1:0' },
                 ]}
                 selected={selected}

@@ -8,7 +8,7 @@ local ____TextGrid = require("config.libs.components.TextGrid")
 local TextGrid = ____TextGrid.TextGrid
 local ____VisibilityContext = require("config.libs.components.VisibilityContext")
 local VisibilityContext = ____VisibilityContext.VisibilityContext
-local ____constants = require("config.pixel.240x320_kick.ui.constants")
+local ____constants = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constants")
 local KeyInfoPosition = ____constants.KeyInfoPosition
 function ____exports.TextGridSel(____bindingPattern0)
     local selectedBackground
