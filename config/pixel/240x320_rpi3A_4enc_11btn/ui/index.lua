@@ -49,10 +49,6 @@ local ____WorkspacesView = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.men
 local WorkspacesView = ____WorkspacesView.WorkspacesView
 local ____SampleEditorView = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.Sample.SampleEditorView")
 local SampleEditorView = ____SampleEditorView.SampleEditorView
-local ____SaveTapeView = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.tapeView.SaveTapeView")
-local SaveTapeView = ____SaveTapeView.SaveTapeView
-local ____TapeView = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.tapeView.TapeView")
-local TapeView = ____TapeView.TapeView
 pixelController("rpi3A_4enc_11btn")
 setWindowPosition(400, 500)
 setScreenSize(ScreenWidth, ScreenHeight)
@@ -78,7 +74,5 @@ applyZic(React.createElement(MenuView, {name = "Menu"}))
 applyZic(React.createElement(WorkspacesView, {name = "Workspaces"}))
 applyZic(React.createElement(CreateWorkspaceView, {name = "CreateWorkspace"}))
 applyZic(React.createElement(ShutdownView, {name = "Shutdown"}))
-applyZic(React.createElement(TapeView, {name = "Tape"}))
-applyZic(React.createElement(SaveTapeView, {name = "SaveTape"}))
 applyZic(React.createElement(ClipsView, {name = "Clips"}))
 return ____exports

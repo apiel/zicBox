@@ -133,7 +133,9 @@ public:
 
     void sample(float* buf)
     {
-        buffer.push_back(buf[track]);
+        if (loopRunning) { // we could even check for buffer size...
+            buffer.push_back(buf[track]);
+        }
         if (playSndfile) {
             if (playSampleCount) {
                 if (currentSampleIndex >= CHUNK_SIZE) {

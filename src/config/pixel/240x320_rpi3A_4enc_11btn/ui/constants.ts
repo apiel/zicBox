@@ -21,6 +21,8 @@ export const W8_8 = W1_8 * 8;
 
 export const KeyInfoPosition = [0, 296, ScreenWidth - 16];
 export const SideKeyInfoPosition = [ScreenWidth - 16, 296, 16];
+// export const KeyInfoPosition = [0, 296, ScreenWidth];
+// export const SideKeyInfoPosition = [ScreenWidth - 16, 270, 16, 26];
 
 export const SideColor =rgb(58, 84, 92);
 
