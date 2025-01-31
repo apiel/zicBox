@@ -8,7 +8,7 @@ import {
     topLeftKnob,
     topRightKnob
 } from '../constantsValue';
-import { TextGridBass } from './TextGridBass';
+import { TextGridFm1 } from './TextGridFm1';
 
 export type Props = {
     name: string;
@@ -46,7 +46,7 @@ export function Fm1EnvView({ name }: Props) {
                 track={BassTrack}
             /> */}
 
-            <TextGridBass selected={'Env'} viewName={name} />
+            <TextGridFm1 selected={'Env'} viewName={name} />
             <Common selected={'Fm1'} track={Fm1Track} selectedBackground={ColorTrack3} />
         </View>
     );

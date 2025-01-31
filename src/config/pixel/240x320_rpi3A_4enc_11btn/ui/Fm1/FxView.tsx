@@ -5,7 +5,7 @@ import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
 import { ColorTrack3, encBottomLeft, encTopLeft, encTopRight, Fm1Track } from '../constants';
 import { bottomLeftKnob, topLeftKnob, topRightKnob } from '../constantsValue';
-import { TextGridBass } from './TextGridBass';
+import { TextGridFm1 } from './TextGridFm1';
 
 export type Props = {
     name: string;
@@ -42,7 +42,7 @@ export function Fm1FxView({ name }: Props) {
                 COLOR="secondary"
                 track={BassTrack}
             /> */}
-            <TextGridBass selected={'Fx'} viewName={name} />
+            <TextGridFm1 selected={'Fx'} viewName={name} />
             <Common selected={'Fm1'} track={Fm1Track} selectedBackground={ColorTrack3} />
         </View>
     );

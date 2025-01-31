@@ -2,9 +2,23 @@ import * as React from '@/libs/react';
 
 import { Rect } from '@/libs/components/Rect';
 import { Bass } from '../components/Common';
+import { SideInfo } from '../components/SideInfo';
 import { TextGridSel } from '../components/TextGridSel';
 import { Title } from '../components/Title';
-import { btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btnDown, btnShift, btnUp, ColorTrack2 } from '../constants';
+import {
+    btn1,
+    btn2,
+    btn3,
+    btn4,
+    btn5,
+    btn6,
+    btn7,
+    btn8,
+    btnDown,
+    btnShift,
+    btnUp,
+    ColorTrack2,
+} from '../constants';
 
 export function TextGridBass({ selected, viewName }: { selected: string; viewName: string }) {
     return (
@@ -32,6 +46,7 @@ export function TextGridBass({ selected, viewName }: { selected: string; viewNam
                 selected={selected}
                 contextValue={0}
             />
+            <SideInfo up="*" down="&icon::musicNote::pixelated" ctxValue={0} />
         </>
     );
 }

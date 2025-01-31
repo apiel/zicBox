@@ -19,8 +19,8 @@ local bottomLeftKnob = ____constantsValue.bottomLeftKnob
 local bottomRightKnob = ____constantsValue.bottomRightKnob
 local topLeftKnob = ____constantsValue.topLeftKnob
 local topRightKnob = ____constantsValue.topRightKnob
-local ____TextGridBass = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.Fm1.TextGridBass")
-local TextGridBass = ____TextGridBass.TextGridBass
+local ____TextGridFm1 = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.Fm1.TextGridFm1")
+local TextGridFm1 = ____TextGridFm1.TextGridFm1
 function ____exports.Fm1View(____bindingPattern0)
     local name
     name = ____bindingPattern0.name
@@ -55,7 +55,7 @@ function ____exports.Fm1View(____bindingPattern0)
             COLOR = "secondary",
             track = Fm1Track
         }),
-        React.createElement(TextGridBass, {selected = "Main", viewName = name}),
+        React.createElement(TextGridFm1, {selected = "Main", viewName = name}),
         React.createElement(Common, {selected = "Fm1", track = Fm1Track, selectedBackground = ColorTrack3})
     )
 end
