@@ -16,7 +16,7 @@ export function TextGridBass({ selected, viewName }: { selected: string; viewNam
                 rows={['Main Fx Env Wave', 'Seq. &empty &empty &empty']}
                 keys={[
                     { key: btn1, action: 'setView:Bass' },
-                    { key: btn2, action: 'setView:BassDistortion' },
+                    { key: btn2, action: 'setView:BassFx' },
                     { key: btn3, action: 'setView:BassEnv' },
                     { key: btn4, action: 'setView:BassWaveform' },
 

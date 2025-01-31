@@ -3,15 +3,15 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
-import { BassTrack, ColorTrack2, encTopLeft, encTopRight } from '../constants';
-import { topLeftKnob, topRightKnob } from '../constantsValue';
+import { BassTrack, ColorTrack2, encBottomRight, encTopLeft, encTopRight } from '../constants';
+import { bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
 import { TextGridBass } from './TextGridBass';
 
 export type Props = {
     name: string;
 };
 
-export function BassDistortionView({ name }: Props) {
+export function BassFxView({ name }: Props) {
     return (
         <View name={name}>
             <KnobValue
@@ -42,6 +42,13 @@ export function BassDistortionView({ name }: Props) {
                 COLOR="secondary"
                 track={BassTrack}
             /> */}
+            <KnobValue
+                value="Bass REVERB"
+                position={bottomRightKnob}
+                encoder_id={encBottomRight}
+                COLOR="secondary"
+                track={BassTrack}
+            />
             <TextGridBass selected={'Fx'} viewName={name} />
             <Common selected={'Bass'} track={BassTrack} selectedBackground={ColorTrack2} />
         </View>
