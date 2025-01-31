@@ -44,8 +44,8 @@ export function Drum23View({ name }: Props) {
                 track={Drum23Track}
             />
 
-            <TextGridDrum23 selected={0} viewName={name} />
-            <Common selected={0} track={Drum23Track} selectedBackground={ColorTrack1} />
+            <TextGridDrum23 selected={'Main'} viewName={name} />
+            <Common selected={'Kick'} track={Drum23Track} selectedBackground={ColorTrack1} />
         </View>
     );
 }

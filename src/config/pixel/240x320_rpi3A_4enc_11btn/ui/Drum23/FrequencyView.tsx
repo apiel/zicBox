@@ -20,8 +20,8 @@ export function FrequencyView({ name }: Props) {
                 envelop_data_id="ENV_FREQ2"
                 track={Drum23Track}
             />
-            <TextGridDrum23 selected={1} viewName={name} />
-            <Common selected={0} track={Drum23Track}  selectedBackground={ColorTrack1} />
+            <TextGridDrum23 selected={'Freq'} viewName={name} />
+            <Common selected={'Kick'} track={Drum23Track}  selectedBackground={ColorTrack1} />
         </View>
     );
 }

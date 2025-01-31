@@ -20,10 +20,10 @@ local ____Common = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.
 local Common = ____Common.Common
 local ____constants = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constants")
 local btn1 = ____constants.btn1
-local btn2 = ____constants.btn2
-local btn6 = ____constants.btn6
 local btn7 = ____constants.btn7
+local btnDown = ____constants.btnDown
 local btnShift = ____constants.btnShift
+local btnUp = ____constants.btnUp
 local ColorTrack3 = ____constants.ColorTrack3
 local KeyInfoPosition = ____constants.KeyInfoPosition
 local SampleTrack = ____constants.SampleTrack
@@ -63,9 +63,9 @@ function ____exports.SampleEditorView(____bindingPattern0)
             TextGrid,
             {position = KeyInfoPosition, rows = {"&icon::toggle::rect &icon::arrowUp::filled ...", "&empty &icon::arrowDown::filled &icon::musicNote::pixelated"}},
             React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 0}),
-            React.createElement(Keymaps, {keys = {{key = btnShift, action = "contextToggle:254:1:0"}, {key = btn2, action = "incGroup:-1"}, {key = btn6, action = "incGroup:+1"}}})
+            React.createElement(Keymaps, {keys = {{key = btnShift, action = "contextToggle:254:1:0"}, {key = btnDown, action = "incGroup:-1"}, {key = btnUp, action = "incGroup:+1"}}})
         ),
-        React.createElement(Common, {selected = 1, track = SampleTrack, hideSequencer = true, selectedBackground = ColorTrack3})
+        React.createElement(Common, {selected = "Sampl1", track = SampleTrack, hideSequencer = true, selectedBackground = ColorTrack3})
     )
 end
 return ____exports

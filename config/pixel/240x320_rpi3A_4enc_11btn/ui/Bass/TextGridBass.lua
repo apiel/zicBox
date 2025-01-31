@@ -3,6 +3,8 @@ local ____exports = {}
 local React = require("config.libs.react")
 local ____Rect = require("config.libs.components.Rect")
 local Rect = ____Rect.Rect
+local ____Common = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.Common")
+local Bass = ____Common.Bass
 local ____TextGridSel = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.TextGridSel")
 local TextGridSel = ____TextGridSel.TextGridSel
 local ____Title = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.Title")
@@ -10,38 +12,40 @@ local Title = ____Title.Title
 local ____constants = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constants")
 local btn1 = ____constants.btn1
 local btn2 = ____constants.btn2
+local btn3 = ____constants.btn3
+local btn4 = ____constants.btn4
 local btn5 = ____constants.btn5
 local btn6 = ____constants.btn6
 local btn7 = ____constants.btn7
+local btn8 = ____constants.btn8
+local btnDown = ____constants.btnDown
 local btnShift = ____constants.btnShift
+local btnUp = ____constants.btnUp
 local ColorTrack2 = ____constants.ColorTrack2
 function ____exports.TextGridBass(____bindingPattern0)
-    local viewName
     local selected
     selected = ____bindingPattern0.selected
-    viewName = ____bindingPattern0.viewName
+    local viewName = ____bindingPattern0.viewName
     return React.createElement(
         React.Fragment,
         nil,
-        React.createElement(Title, {title = "Bass"}),
+        React.createElement(Title, {title = Bass}),
         React.createElement(Rect, {position = {70, 28, 6, 6}, color = ColorTrack2}),
         React.createElement(TextGridSel, {
-            ITEM_BACKGROUND = ColorTrack2,
-            items = {
-                "Fx1/Fx2",
-                "Env",
-                "...",
-                "Seq.",
-                "Waveform",
-                "&icon::musicNote::pixelated"
-            },
+            selectedBackground = ColorTrack2,
+            rows = {"Main Fx Env Waveform", "Seq. &empty &empty &empty"},
             keys = {
-                {key = btn1, action = viewName == "Bass" and "setView:BassDistortion" or "setView:Bass"},
-                {key = btn2, action = "setView:BassEnv"},
-                {key = btnShift, action = "contextToggle:254:1:0"},
+                {key = btn1, action = "setView:Bass"},
+                {key = btn2, action = "setView:BassDistortion"},
+                {key = btn3, action = "setView:BassEnv"},
+                {key = btn4, action = "setView:BassWaveform"},
                 {key = btn5, action = "setView:BassSeq"},
-                {key = btn6, action = "setView:BassWaveform"},
-                {key = btn7, action = "noteOn:Bass:60"}
+                {key = btn6, action = "noteOn:Bass:60"},
+                {key = btn7, action = "noteOn:Bass:60"},
+                {key = btn8, action = "noteOn:Bass:60"},
+                {key = btnUp, action = "noteOn:Drum23:60"},
+                {key = btnDown, action = "noteOn:Drum23:60"},
+                {key = btnShift, action = "contextToggle:254:1:0"}
             },
             selected = selected,
             contextValue = 0

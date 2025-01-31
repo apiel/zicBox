@@ -8,7 +8,17 @@ import { View } from '@/libs/components/View';
 import { VisibilityContext } from '@/libs/components/VisibilityContext';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
-import { btn1, btn2, btn6, btn7, btnShift, ColorTrack3, KeyInfoPosition, SampleTrack, ScreenWidth } from '../constants';
+import {
+    btn1,
+    btn7,
+    btnDown,
+    btnShift,
+    btnUp,
+    ColorTrack3,
+    KeyInfoPosition,
+    SampleTrack,
+    ScreenWidth
+} from '../constants';
 
 export type Props = {
     name: string;
@@ -60,12 +70,17 @@ export function SampleEditorView({ name }: Props) {
                 <Keymaps
                     keys={[
                         { key: btnShift, action: 'contextToggle:254:1:0' },
-                        { key: btn2, action: 'incGroup:-1' },
-                        { key: btn6, action: 'incGroup:+1' },
+                        { key: btnDown, action: 'incGroup:-1' },
+                        { key: btnUp, action: 'incGroup:+1' },
                     ]}
                 />
             </TextGrid>
-            <Common selected={1} track={SampleTrack} hideSequencer selectedBackground={ColorTrack3} />
+            <Common
+                selected={'Sampl1'}
+                track={SampleTrack}
+                hideSequencer
+                selectedBackground={ColorTrack3}
+            />
         </View>
     );
 }

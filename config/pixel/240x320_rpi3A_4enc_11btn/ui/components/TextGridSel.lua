@@ -1,4 +1,5 @@
---[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____lualib = require("lualib_bundle")
+local __TS__StringReplace = ____lualib.__TS__StringReplace
 local ____exports = {}
 local React = require("config.libs.react")
 local ____Keymaps = require("config.libs.components.Keymaps")
@@ -10,22 +11,28 @@ local VisibilityContext = ____VisibilityContext.VisibilityContext
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
 local KeyInfoPosition = ____constants.KeyInfoPosition
 function ____exports.TextGridSel(____bindingPattern0)
-    local ITEM_BACKGROUND
+    local selectedBackground
     local contextValue
     local keys
-    local items
+    local rows
     local selected
     selected = ____bindingPattern0.selected
-    items = ____bindingPattern0.items
+    rows = ____bindingPattern0.rows
     keys = ____bindingPattern0.keys
     contextValue = ____bindingPattern0.contextValue
-    ITEM_BACKGROUND = ____bindingPattern0.ITEM_BACKGROUND
-    if selected >= 0 then
-        items[selected + 1] = "!" .. items[selected + 1]
+    selectedBackground = ____bindingPattern0.selectedBackground
+    if selected then
+        do
+            local i = 0
+            while i < #rows do
+                rows[i + 1] = __TS__StringReplace(rows[i + 1], selected, "!" .. selected)
+                i = i + 1
+            end
+        end
     end
     return React.createElement(
         TextGrid,
-        {position = KeyInfoPosition, rows = {(((items[1] .. " ") .. items[2]) .. " ") .. items[3], (((items[4] .. " ") .. items[5]) .. " ") .. items[6]}, ITEM_BACKGROUND = ITEM_BACKGROUND},
+        {position = KeyInfoPosition, rows = rows, ITEM_BACKGROUND = selectedBackground},
         React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = contextValue}),
         React.createElement(Keymaps, {keys = keys})
     )

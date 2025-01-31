@@ -37,8 +37,8 @@ function ____exports.BassDistortionView(____bindingPattern0)
             COLOR = "primary",
             track = BassTrack
         }),
-        React.createElement(TextGridBass, {selected = 0, viewName = name}),
-        React.createElement(Common, {selected = 0, track = BassTrack, selectedBackground = ColorTrack2})
+        React.createElement(TextGridBass, {selected = "Fx", viewName = name}),
+        React.createElement(Common, {selected = "Bass", track = BassTrack, selectedBackground = ColorTrack2})
     )
 end
 return ____exports

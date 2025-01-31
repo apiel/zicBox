@@ -49,8 +49,8 @@ function ____exports.WaveformView(____bindingPattern0)
             color = "secondary",
             track = Drum23Track
         }),
-        React.createElement(TextGridDrum23, {selected = 1, viewName = name}),
-        React.createElement(Common, {selected = 0, track = Drum23Track, selectedBackground = ColorTrack1})
+        React.createElement(TextGridDrum23, {selected = "Wave", viewName = name}),
+        React.createElement(Common, {selected = "Kick", track = Drum23Track, selectedBackground = ColorTrack1})
     )
 end
 return ____exports
