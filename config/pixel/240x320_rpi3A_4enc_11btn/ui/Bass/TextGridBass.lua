@@ -5,6 +5,8 @@ local ____Rect = require("config.libs.components.Rect")
 local Rect = ____Rect.Rect
 local ____Common = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.Common")
 local Bass = ____Common.Bass
+local ____SideInfo = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.SideInfo")
+local SideInfo = ____SideInfo.SideInfo
 local ____TextGridSel = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.TextGridSel")
 local TextGridSel = ____TextGridSel.TextGridSel
 local ____Title = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.Title")
@@ -49,7 +51,8 @@ function ____exports.TextGridBass(____bindingPattern0)
             },
             selected = selected,
             contextValue = 0
-        })
+        }),
+        React.createElement(SideInfo, {up = "*", down = "&icon::musicNote::pixelated", ctxValue = 0})
     )
 end
 return ____exports

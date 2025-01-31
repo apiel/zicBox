@@ -17,8 +17,8 @@ local ____constantsValue = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.con
 local bottomLeftKnob = ____constantsValue.bottomLeftKnob
 local topLeftKnob = ____constantsValue.topLeftKnob
 local topRightKnob = ____constantsValue.topRightKnob
-local ____TextGridBass = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.Fm1.TextGridBass")
-local TextGridBass = ____TextGridBass.TextGridBass
+local ____TextGridFm1 = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.Fm1.TextGridFm1")
+local TextGridFm1 = ____TextGridFm1.TextGridFm1
 function ____exports.Fm1FxView(____bindingPattern0)
     local name
     name = ____bindingPattern0.name
@@ -46,7 +46,7 @@ function ____exports.Fm1FxView(____bindingPattern0)
             COLOR = "quaternary",
             track = Fm1Track
         }),
-        React.createElement(TextGridBass, {selected = "Fx", viewName = name}),
+        React.createElement(TextGridFm1, {selected = "Fx", viewName = name}),
         React.createElement(Common, {selected = "Fm1", track = Fm1Track, selectedBackground = ColorTrack3})
     )
 end
