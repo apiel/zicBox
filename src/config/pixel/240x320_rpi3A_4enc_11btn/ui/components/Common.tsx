@@ -2,7 +2,7 @@ import * as React from '@/libs/react';
 
 import { SeqProgressBar } from '@/libs/components/SeqProgressBar';
 import { rgb } from '@/libs/ui';
-import { btn1, btn2, btn5, btn8, btnDown, btnShift, btnUp, ScreenWidth } from '../constants';
+import { btn1, btn2, btn3, btn4, btn5, btn8, btnDown, btnShift, btnUp, ScreenWidth } from '../constants';
 import { SideInfo } from './SideInfo';
 import { TextGridSel } from './TextGridSel';
 
@@ -59,6 +59,8 @@ export function Common({
                 keys={[
                     { key: btn1, action: 'setView:Drum23' },
                     { key: btn2, action: 'setView:Bass' },
+                    { key: btn3, action: 'setView:Fm1' },
+                    { key: btn4, action: 'setView:Fm2' },
 
                     { key: btn5, action: `setView:Sample` },
                     { key: btn8, action: `setView:Clips` },

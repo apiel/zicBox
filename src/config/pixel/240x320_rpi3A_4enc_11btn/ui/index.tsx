@@ -16,6 +16,10 @@ import { Drum23View } from './Drum23/Drum23View';
 import { FrequencyView } from './Drum23/FrequencyView';
 import { Drum23SeqView } from './Drum23/SeqView';
 import { WaveformView } from './Drum23/WaveformView';
+import { Fm1EnvView } from './Fm1/EnvView';
+import { Fm1View } from './Fm1/Fm1View';
+import { Fm1FxView } from './Fm1/FxView';
+import { Fm1SeqView } from './Fm1/SeqView';
 import { CreateWorkspaceView } from './menu/CreateWorkspaceView';
 import { MenuView } from './menu/menuView';
 import { ShutdownView } from './menu/ShutdownView';
@@ -49,6 +53,10 @@ applyZic(<BassEnvView name="BassEnv" />);
 applyZic(<BassSeqView name="BassSeq" />);
 applyZic(<BassWaveformView name="BassWaveform" />);
 
+applyZic(<Fm1View name="Fm1" />);
+applyZic(<Fm1FxView name="Fm1Fx" />);
+applyZic(<Fm1EnvView name="Fm1Env" />);
+applyZic(<Fm1SeqView name="Fm1Seq" />);
 
 applyZic(<MenuView name="Menu" />);
 applyZic(<WorkspacesView name="Workspaces" />);
