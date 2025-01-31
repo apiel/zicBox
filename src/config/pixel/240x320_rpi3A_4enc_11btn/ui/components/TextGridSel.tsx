@@ -3,7 +3,7 @@ import * as React from '@/libs/react';
 import { Keymaps } from '@/libs/components/Keymaps';
 import { TextGrid } from '@/libs/components/TextGrid';
 import { VisibilityContext } from '@/libs/components/VisibilityContext';
-import { KeyInfoPosition } from '@/pixel/240x320_kick/ui/constants';
+import { KeyInfoPosition } from '../constants';
 
 export function TextGridSel({
     selected,

@@ -13,7 +13,10 @@ local btn5 = ____constants.btn5
 local btn8 = ____constants.btn8
 local btnDown = ____constants.btnDown
 local btnShift = ____constants.btnShift
+local btnUp = ____constants.btnUp
 local ScreenWidth = ____constants.ScreenWidth
+local ____SideInfo = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.SideInfo")
+local SideInfo = ____SideInfo.SideInfo
 local ____TextGridSel = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.TextGridSel")
 local TextGridSel = ____TextGridSel.TextGridSel
 ____exports.Kick = "Kick"
@@ -56,10 +59,12 @@ function ____exports.Common(____bindingPattern0)
                 {key = btn2, action = "setView:Bass"},
                 {key = btn5, action = "setView:Sample"},
                 {key = btn8, action = "setView:Clips"},
-                {key = btnShift, action = "contextToggle:254:1:0"},
-                {key = btnDown, action = "playPause"}
+                {key = btnUp, action = "setView:Menu"},
+                {key = btnDown, action = "playPause"},
+                {key = btnShift, action = "contextToggle:254:1:0"}
             }, selected = selected, contextValue = 1}, selectedBackground and ({selectedBackground = selectedBackground}))
-        )
+        ),
+        React.createElement(SideInfo, {up = "*", down = "&icon::play::filled", ctxValue = 1})
     )
 end
 return ____exports
