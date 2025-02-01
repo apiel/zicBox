@@ -1,30 +1,22 @@
 import * as React from '@/libs/react';
 
 import { GraphEncoder } from '@/libs/components/GraphEncoder';
+import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
-import { ColorTrack4, encBottomLeft, encBottomRight, encTopLeft, encTopRight, SynthTrack } from '../constants';
-import { bottomValues, topValues } from '../constantsValue';
+import { ColorTrack4, encBottomLeft, encBottomRight, SynthTrack } from '../constants';
+import { bottomLeftKnob, topValues } from '../constantsValue';
 import { TextGridSynth } from './TextGridSynth';
 
 export type Props = {
     name: string;
 };
 
-export function SynthWaveformView({ name }: Props) {
+export function SynthWaveform2View({ name }: Props) {
     return (
         <View name={name}>
             <GraphEncoder
                 position={topValues}
-                plugin="Synth"
-                data_id="WAVEFORM1"
-                RENDER_TITLE_ON_TOP={true}
-                encoders={[`${encTopLeft} SHAPE_1`, `${encTopRight} MORPH_1`]}
-                track={SynthTrack}
-            />
-
-            <GraphEncoder
-                position={bottomValues}
                 plugin="Synth"
                 data_id="WAVEFORM2"
                 RENDER_TITLE_ON_TOP={true}
@@ -32,7 +24,15 @@ export function SynthWaveformView({ name }: Props) {
                 track={SynthTrack}
             />
 
-            <TextGridSynth selected={'Wave'} viewName={name} />
+            <KnobValue
+                value="Synth FREQ_2"
+                position={bottomLeftKnob}
+                encoder_id={encBottomLeft}
+                COLOR="quaternary"
+                track={SynthTrack}
+            />
+
+            <TextGridSynth selected={'E/Osc2'} viewName={name} />
             <Common selected={'Synth'} track={SynthTrack} selectedBackground={ColorTrack4} />
         </View>
     );

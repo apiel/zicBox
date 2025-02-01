@@ -36,12 +36,12 @@ function ____exports.TextGridSynth(____bindingPattern0)
         React.createElement(Rect, {position = {70, 28, 6, 6}, color = ColorTrack4}),
         React.createElement(TextGridSel, {
             selectedBackground = ColorTrack4,
-            rows = {"Main Fx Env1/2 Wave", "Seq. &empty &empty &empty"},
+            rows = {"Main Fx E/Osc1 E/Osc2", "Seq. &empty &empty &empty"},
             keys = {
                 {key = btn1, action = "setView:Synth"},
                 {key = btn2, action = "setView:SynthFx"},
-                {key = btn3, action = viewName == "SynthEnv1" and "setView:SynthEnv2" or "setView:SynthEnv1"},
-                {key = btn4, action = "setView:SynthWaveform"},
+                {key = btn3, action = viewName == "SynthEnv1" and "setView:SynthWaveform1" or "setView:SynthEnv1"},
+                {key = btn4, action = viewName == "SynthEnv2" and "setView:SynthWaveform2" or "setView:SynthEnv2"},
                 {key = btn5, action = "setView:SynthSeq"},
                 {key = btn6, action = "noteOn:Synth:60"},
                 {key = btn7, action = "noteOn:Synth:60"},

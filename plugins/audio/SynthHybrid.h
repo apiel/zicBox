@@ -15,8 +15,10 @@ public:
     Val release;
     Val shape;
     Val morph;
+    Val freq;
     AdsrEnvelop envelop;
     Wavetable wavetable;
+    float freqFactor = 1.0f;
 
     void setAttack(float ms)
     {
@@ -58,10 +60,12 @@ public:
         morph.setString(std::to_string((int)morph.get()) + "/" + std::to_string(ZIC_WAVETABLE_WAVEFORMS_COUNT));
     }
 
-    void noteOn()
+    uint8_t baseNote = 60;
+    void noteOn(uint8_t note)
     {
         envelop.reset();
         wavetable.sampleIndex = 0;
+        freqFactor = pow(2, ((note - baseNote) / 12.0)); // need to do something with freq.get();
     }
 
     void noteOff()
@@ -77,7 +81,8 @@ class SynthHybrid : public Mapping {
         { 80.0f, "SUSTAIN_1", { "Sustain 1", .unit = "%" }, [&](auto p) { osc1.setSustain(p.value); } },
         { 50.0f, "RELEASE_1", { "Release 1", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc1.setRelease(p.value); } },
         { 0.0f, "SHAPE_1", { "SHAPE 1", VALUE_STRING, .max = 1000 }, [&](auto p) { osc1.setShape(p.value); } },
-        { 0.0f, "MORPH_1", { "MORPH 1", VALUE_STRING }, [&](auto p) { osc1.setMorph(p.value); } }
+        { 0.0f, "MORPH_1", { "MORPH 1", VALUE_STRING }, [&](auto p) { osc1.setMorph(p.value); } },
+        { 200.0f, "FREQ_1", { "Freq. 1", .min = 10.0, .max = 2000.0, .step = 10.0, .unit = "Hz" } },
     };
     Osc osc2 = {
         { 50.0f, "ATTACK_2", { "Attack 2", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc2.setAttack(p.value); } },
@@ -85,7 +90,8 @@ class SynthHybrid : public Mapping {
         { 80.0f, "SUSTAIN_2", { "Sustain 2", .unit = "%" }, [&](auto p) { osc2.setSustain(p.value); } },
         { 50.0f, "RELEASE_2", { "Release 2", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc2.setRelease(p.value); } },
         { 0.0f, "SHAPE_2", { "SHAPE 2", VALUE_STRING, .max = 1000 }, [&](auto p) { osc2.setShape(p.value); } },
-        { 0.0f, "MORPH_2", { "MORPH 2", VALUE_STRING }, [&](auto p) { osc2.setMorph(p.value); } }
+        { 0.0f, "MORPH_2", { "MORPH 2", VALUE_STRING }, [&](auto p) { osc2.setMorph(p.value); } },
+        { 200.0f, "FREQ_2", { "Freq. 2", .min = 10.0, .max = 2000.0, .step = 10.0, .unit = "Hz" } },
     };
 
     float tanhLookup(float x)
@@ -156,8 +162,8 @@ public:
     SynthHybrid(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name, {
                                     // clang-format off
-        &osc1.attack, &osc1.decay, &osc1.sustain, &osc1.release, &osc1.shape, &osc1.morph,
-        &osc2.attack, &osc2.decay, &osc2.sustain, &osc2.release, &osc2.shape, &osc2.morph,
+        &osc1.attack, &osc1.decay, &osc1.sustain, &osc1.release, &osc1.shape, &osc1.morph, &osc1.freq,
+        &osc2.attack, &osc2.decay, &osc2.sustain, &osc2.release, &osc2.shape, &osc2.morph, &osc2.freq,
                                     // clang-format on
                                 })
     {
@@ -171,10 +177,9 @@ public:
         float env2 = osc2.envelop.next();
 
         if (env1 || env2) {
-            float freq = 1.0f;
-            float wave1 = osc1.wavetable.sample(&osc1.wavetable.sampleIndex, freq) * env1;
+            float wave1 = osc1.wavetable.sample(&osc1.wavetable.sampleIndex, osc1.freqFactor) * env1;
 
-            float wave2 = osc2.wavetable.sample(&osc2.wavetable.sampleIndex, freq + freq * wave1 * fmAmount.pct()) * env2;
+            float wave2 = osc2.wavetable.sample(&osc2.wavetable.sampleIndex, osc2.freqFactor + osc2.freqFactor * wave1 * fmAmount.pct()) * env2;
 
             float output = wave2 * oscMix.pct() + wave1 * (1.0f - oscMix.pct());
 
@@ -198,8 +203,8 @@ public:
         currentNote = note;
         currentVelocity = _velocity;
 
-        osc1.noteOn();
-        osc2.noteOn();
+        osc1.noteOn(note);
+        osc2.noteOn(note);
     }
 
     void noteOff(uint8_t note, float _velocity) override
@@ -211,12 +216,12 @@ public:
     std::vector<float> waveformData;
     DataFn dataFunctions[2] = {
         { "WAVEFORM1", [this](void* userdata) {
-            float* index = (float*)userdata;
-            return osc1.wavetable.sample(index);
+             float* index = (float*)userdata;
+             return osc1.wavetable.sample(index);
          } },
         { "WAVEFORM2", [this](void* userdata) {
-            float* index = (float*)userdata;
-            return osc2.wavetable.sample(index);
+             float* index = (float*)userdata;
+             return osc2.wavetable.sample(index);
          } },
     };
     DEFINE_GETDATAID_AND_DATA
