@@ -7,6 +7,7 @@ import { TextGridSel } from '../components/TextGridSel';
 import { Title } from '../components/Title';
 import {
     btn1,
+    btn2,
     btn3,
     btn4,
     btn5,
@@ -29,7 +30,7 @@ export function TextGridSynth({ selected, viewName }: { selected: string; viewNa
                 rows={['Main Fx Env1/2 Wave', 'Seq. &empty &empty &empty']}
                 keys={[
                     { key: btn1, action: 'setView:Synth' },
-                    // { key: btn2, action: 'setView:SynthFx' },
+                    { key: btn2, action: 'setView:SynthFx' },
                     { key: btn3, action: viewName === 'SynthEnv1' ? 'setView:SynthEnv2' : 'setView:SynthEnv1' },
                     { key: btn4, action: 'setView:SynthWaveform' },
 
