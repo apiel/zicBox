@@ -79,7 +79,8 @@ class SynthHybrid : public Mapping {
         { 50.0f, "RELEASE_1", { "Release 1", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc1.setRelease(p.value); } },
         { 0.0f, "SHAPE_1", { "SHAPE 1", VALUE_STRING, .max = 1000 }, [&](auto p) { osc1.setShape(p.value); } },
         { 0.0f, "MORPH_1", { "MORPH 1", VALUE_STRING }, [&](auto p) { osc1.setMorph(p.value); } },
-        { 200.0f, "FREQ_1", { "Freq. 1", .min = 10.0, .max = 8000.0, .step = 10.0, .unit = "Hz" } },
+        // TODO under 10 step 0.1 and over 10 step 1, over 100 step 10.
+        { 200.0f, "FREQ_1", { "Freq. 1", .min = 0.1, .max = 8000.0, .step = 0.1, .floatingPoint = 1, .unit = "Hz" } },
     };
     Osc osc2 = {
         { 50.0f, "ATTACK_2", { "Attack 2", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc2.setAttack(p.value); } },
@@ -155,6 +156,7 @@ public:
     Val& oscMix = val(50.0f, "OSC_MIX", { "Osc1 Osc2", .type = VALUE_CENTERED, .unit = "%" });
     /*md - `FM_AMOUNT` to set FM amount. */
     Val& fmAmount = val(0.0, "FM_AMOUNT", { "FM Amount", .unit = "%" });
+    // IDEA should there be a ratio for the fm frequency...
 
     SynthHybrid(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name, {
@@ -211,7 +213,7 @@ public:
         // Precompute note step factor (frequency scaling per sample)
         noteFactor = pow(2.0f, (note - baseNote) / 12.0f) / props.sampleRate;
         // noteFactor = pow(2.0f, (note - baseNote) / 12.0f);
-        printf("note: %d, factor: %f\n", note, noteFactor);
+        // printf("note: %d, factor: %f\n", note, noteFactor);
         osc1.noteOn();
         osc2.noteOn();
     }
