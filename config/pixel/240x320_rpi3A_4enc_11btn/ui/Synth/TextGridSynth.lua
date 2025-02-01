@@ -13,6 +13,7 @@ local ____Title = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.T
 local Title = ____Title.Title
 local ____constants = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constants")
 local btn1 = ____constants.btn1
+local btn2 = ____constants.btn2
 local btn3 = ____constants.btn3
 local btn4 = ____constants.btn4
 local btn5 = ____constants.btn5
@@ -38,6 +39,7 @@ function ____exports.TextGridSynth(____bindingPattern0)
             rows = {"Main Fx Env1/2 Wave", "Seq. &empty &empty &empty"},
             keys = {
                 {key = btn1, action = "setView:Synth"},
+                {key = btn2, action = "setView:SynthFx"},
                 {key = btn3, action = viewName == "SynthEnv1" and "setView:SynthEnv2" or "setView:SynthEnv1"},
                 {key = btn4, action = "setView:SynthWaveform"},
                 {key = btn5, action = "setView:SynthSeq"},
