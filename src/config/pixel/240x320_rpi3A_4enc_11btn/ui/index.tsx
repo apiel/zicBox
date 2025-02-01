@@ -29,7 +29,8 @@ import { SynthEnv1View } from './Synth/Env1View';
 import { SynthEnv2View } from './Synth/Env2View';
 import { SynthFxView } from './Synth/FxhView';
 import { SynthView } from './Synth/SynthView';
-import { SynthWaveformView } from './Synth/WaveformView';
+import { SynthWaveform1View } from './Synth/Waveform1View';
+import { SynthWaveform2View } from './Synth/Waveform2View';
 
 pixelController('rpi3A_4enc_11btn');
 
@@ -67,7 +68,8 @@ applyZic(<SynthView name="Synth" />);
 applyZic(<SynthFxView name="SynthFx" />);
 applyZic(<SynthEnv1View name="SynthEnv1" />);
 applyZic(<SynthEnv2View name="SynthEnv2" />);
-applyZic(<SynthWaveformView name="SynthWaveform" />);
+applyZic(<SynthWaveform1View name="SynthWaveform1" />);
+applyZic(<SynthWaveform2View name="SynthWaveform2" />);
 
 applyZic(<MenuView name="Menu" />);
 applyZic(<WorkspacesView name="Workspaces" />);
