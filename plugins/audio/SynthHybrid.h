@@ -174,13 +174,15 @@ public:
         float env2 = osc2.envelop.next();
 
         if (env1 || env2) {
-            float freq1 = noteFactor * props.sampleRate;
+            // float freq1 = noteFactor * props.sampleRate;
             // float freq1 = osc1.freq.get() * noteFactor;
+            float freq1 = osc1.freq.get() * noteFactor * osc1.wavetable.sampleCount;
             // float freq1 = (osc1.freq.get() * noteFactor) / props.sampleRate;
             float wave1 = osc1.wavetable.sample(&osc1.wavetable.sampleIndex, freq1) * env1;
 
-            float freq2 = noteFactor * props.sampleRate;
+            // float freq2 = noteFactor * props.sampleRate;
             // float freq2 = osc2.freq.get() * noteFactor;
+            float freq2 = osc2.freq.get() * noteFactor * osc2.wavetable.sampleCount;
             // float freq2 = (osc2.freq.get() * noteFactor) / props.sampleRate;
             float wave2 = osc2.wavetable.sample(&osc2.wavetable.sampleIndex, freq2 + freq2 * wave1 * fmAmount.pct()) * env2;
 
