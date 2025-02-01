@@ -24,7 +24,7 @@ local TextGridSel = ____TextGridSel.TextGridSel
 ____exports.Kick = "Kick"
 ____exports.Bass = "Bass"
 ____exports.Fm1 = "Fm1"
-____exports.Fm2 = "Fm2"
+____exports.Synth = "Synth"
 ____exports.Sample1 = "Sampl1"
 ____exports.Sample2 = "Sampl2"
 ____exports.Sample3 = "Sampl3"
@@ -56,11 +56,11 @@ function ____exports.Common(____bindingPattern0)
         ),
         React.createElement(
             TextGridSel,
-            __TS__ObjectAssign({rows = {(((((____exports.Kick .. " ") .. ____exports.Bass) .. " ") .. ____exports.Fm1) .. " ") .. ____exports.Fm2, (((((____exports.Sample1 .. " ") .. ____exports.Sample2) .. " ") .. ____exports.Sample3) .. " ") .. ____exports.Clips}, keys = {
+            __TS__ObjectAssign({rows = {(((((____exports.Kick .. " ") .. ____exports.Bass) .. " ") .. ____exports.Fm1) .. " ") .. ____exports.Synth, (((((____exports.Sample1 .. " ") .. ____exports.Sample2) .. " ") .. ____exports.Sample3) .. " ") .. ____exports.Clips}, keys = {
                 {key = btn1, action = "setView:Drum23"},
                 {key = btn2, action = "setView:Bass"},
                 {key = btn3, action = "setView:Fm1"},
-                {key = btn4, action = "setView:Fm2"},
+                {key = btn4, action = "setView:Synth"},
                 {key = btn5, action = "setView:Sample"},
                 {key = btn8, action = "setView:Clips"},
                 {key = btnUp, action = "setView:Menu"},

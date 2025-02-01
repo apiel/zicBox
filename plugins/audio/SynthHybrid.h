@@ -1,115 +1,205 @@
 #ifndef _SYNTH_HYBRID_H_
 #define _SYNTH_HYBRID_H_
 
+#include "./utils/Wavetable.h"
 #include "audioPlugin.h"
 #include "mapping.h"
 #include "plugins/audio/utils/utils.h"
+#include "utils/AdsrEnvelop.h"
+
+class Osc {
+public:
+    Val attack;
+    Val decay;
+    Val sustain;
+    Val release;
+    Val shape;
+    Val morph;
+    AdsrEnvelop envelop;
+    Wavetable wavetable;
+
+    void setAttack(float ms)
+    {
+        attack.setFloat(ms);
+        envelop.setAttack(attack.get());
+    }
+
+    void setDecay(float ms)
+    {
+        decay.setFloat(ms);
+        envelop.setDecay(decay.get());
+    }
+
+    void setSustain(float v)
+    {
+        sustain.setFloat(v);
+        envelop.setSustain(sustain.pct());
+    }
+
+    void setRelease(float ms)
+    {
+        release.setFloat(ms);
+        envelop.setRelease(release.get());
+    }
+
+    void setShape(float value)
+    {
+        shape.setFloat(range(value, 1.0f, wavetable.fileBrowser.count));
+
+        int position = shape.get();
+        wavetable.open(position, false);
+        shape.setString(wavetable.fileBrowser.getFileWithoutExtension(position));
+    }
+
+    void setMorph(float value)
+    {
+        morph.setFloat(range(value, 1.0f, ZIC_WAVETABLE_WAVEFORMS_COUNT));
+        wavetable.morph((int)morph.get() - 1);
+        morph.setString(std::to_string((int)morph.get()) + "/" + std::to_string(ZIC_WAVETABLE_WAVEFORMS_COUNT));
+    }
+
+    void noteOn()
+    {
+        envelop.reset();
+        wavetable.sampleIndex = 0;
+    }
+
+    void noteOff()
+    {
+        envelop.release();
+    }
+};
 
 class SynthHybrid : public Mapping {
-protected:
+    Osc osc1 = {
+        { 50.0f, "ATTACK_0", { "Attack 1", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc1.setAttack(p.value); } },
+        { 20.0f, "DECAY_0", { "Decay 1", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc1.setDecay(p.value); } },
+        { 80.0f, "SUSTAIN_0", { "Sustain 1", .unit = "%" }, [&](auto p) { osc1.setSustain(p.value); } },
+        { 50.0f, "RELEASE_0", { "Release 1", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc1.setRelease(p.value); } },
+        { 0.0f, "SHAPE", { "SHAPE", VALUE_STRING, .max = 1000 }, [&](auto p) { osc1.setShape(p.value); } },
+        { 0.0f, "MORPH", { "MORPH", VALUE_STRING }, [&](auto p) { osc1.setMorph(p.value); } }
+    };
+    Osc osc2 = {
+        { 50.0f, "ATTACK_1", { "Attack 2", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc2.setAttack(p.value); } },
+        { 20.0f, "DECAY_1", { "Decay 2", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc2.setDecay(p.value); } },
+        { 80.0f, "SUSTAIN_1", { "Sustain 2", .unit = "%" }, [&](auto p) { osc2.setSustain(p.value); } },
+        { 50.0f, "RELEASE_1", { "Release 2", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc2.setRelease(p.value); } },
+        { 0.0f, "SHAPE", { "SHAPE", VALUE_STRING, .max = 1000 }, [&](auto p) { osc2.setShape(p.value); } },
+        { 0.0f, "MORPH", { "MORPH", VALUE_STRING }, [&](auto p) { osc2.setMorph(p.value); } }
+    };
+
+    float tanhLookup(float x)
+    {
+        x = range(x, -1.0f, 1.0f);
+        int index = static_cast<int>((x + 1.0f) * 0.5f * (props.lookupTable->size - 1));
+        return props.lookupTable->tanh[index];
+    }
+    float sineLookupInterpolated(float x)
+    {
+        x -= std::floor(x);
+        return linearInterpolation(x, props.lookupTable->size, props.lookupTable->sine);
+    }
+    float applyDistortion(float input)
+    {
+        float amount = distortion.pct() * 2 - 1.0f;
+        if (amount > 0.0f) {
+            return tanhLookup(input * (1.0f + amount * 5.0f));
+
+            // return std::pow(input, 1.0f - amount * 0.8f);
+        }
+        if (amount < 0.0f) {
+            float sineValue = sineLookupInterpolated(input);
+            return input + (-amount) * sineValue;
+        }
+        return input;
+    }
+
+    static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
+    float reverbBuffer[REVERB_BUFFER_SIZE] = { 0.0f };
+    int reverbIndex = 0;
+    float applyReverb(float signal)
+    {
+        float reverbAmount = reverb.pct();
+        if (reverbAmount == 0.0f) {
+            return signal;
+        }
+        int reverbSamples = static_cast<int>((reverbAmount * 0.5f) * props.sampleRate); // Reverb duration scaled
+        float feedback = reverbAmount * 0.7f; // Feedback scaled proportionally
+        float mix = reverbAmount * 0.5f; // Mix scaled proportionally
+
+        if (reverbSamples > REVERB_BUFFER_SIZE) {
+            reverbSamples = REVERB_BUFFER_SIZE; // Cap the reverb duration to buffer size
+        }
+
+        float reverbSignal = reverbBuffer[reverbIndex];
+        reverbBuffer[reverbIndex] = signal + reverbSignal * feedback;
+        reverbIndex = (reverbIndex + 1) % reverbSamples;
+
+        return signal * (1.0f - mix) + reverbSignal * mix;
+    }
+
+    int totalSamples = 0;
+    int i = 0;
+
 public:
-    // Oscillator 1 (Subtractive)
-    Val& osc1Waveform = val(0.0f, "OSC1_WAVE", { "Osc 1 Waveform", .min = 0.0, .max = 3.0, .step = 1.0, .unit = "" }); // 0 = Sine, 1 = Square, 2 = Saw, 3 = Triangle
-    Val& osc1Pitch = val(440.0f, "OSC1_PITCH", { "Osc 1 Pitch", .min = 20.0, .max = 2000.0, .step = 1.0, .unit = "Hz" });
+    /*md **Values**: */
 
-    // Oscillator 2 (FM Modulation)
-    Val& osc2Waveform = val(0.0f, "OSC2_WAVE", { "Osc 2 Waveform", .min = 0.0, .max = 3.0, .step = 1.0, .unit = "" }); // 0 = Sine, 1 = Square, 2 = Saw, 3 = Triangle
-    Val& osc2PitchRatio = val(1.0f, "OSC2_RATIO", { "Osc 2 Ratio", .min = 0.1, .max = 10.0, .step = 0.1, .unit = "" }); // Ratio relative to Osc 1
-    Val& fmDepth = val(0.0f, "FM_DEPTH", { "FM Depth", .min = 0.0, .max = 1.0, .step = 0.01, .unit = "" }); // FM modulation depth
-
-    // Filter
-    Val& filterCutoff = val(1000.0f, "FILTER_CUT", { "Filter Cutoff", .min = 20.0, .max = 20000.0, .step = 10.0, .unit = "Hz" });
-    Val& filterResonance = val(0.5f, "FILTER_RES", { "Filter Resonance", .min = 0.0, .max = 1.0, .step = 0.01, .unit = "" });
-
-    // Amplitude Envelope (ADSR)
-    Val& attack = val(0.01f, "ATTACK", { "Attack", .min = 0.01, .max = 1.0, .step = 0.01, .unit = "s" });
-    Val& decay = val(0.1f, "DECAY", { "Decay", .min = 0.01, .max = 1.0, .step = 0.01, .unit = "s" });
-    Val& sustain = val(0.7f, "SUSTAIN", { "Sustain", .min = 0.0, .max = 1.0, .step = 0.01, .unit = "" });
-    Val& release = val(0.2f, "RELEASE", { "Release", .min = 0.01, .max = 1.0, .step = 0.01, .unit = "s" });
-
-    // Internal state
-    float phase1 = 0.0f; // Oscillator 1 phase
-    float phase2 = 0.0f; // Oscillator 2 phase
-    float envelopeLevel = 0.0f; // Current envelope level
-    bool isNoteOn = false; // Note state
+    /*md - `DISTORTION` to set distortion. */
+    Val& distortion = val(0.0, "DISTORTION", { "Distortion", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
+    /*md - REVERB controls delay time, feedback, and mix with one parameter. */
+    Val& reverb = val(0.3f, "REVERB", { "Reverb", .unit = "%" });
 
     SynthHybrid(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+        : Mapping(props, _name, {
+                                    // clang-format off
+        &osc1.attack, &osc1.decay, &osc1.sustain, &osc1.release,
+        &osc2.attack, &osc2.decay, &osc2.sustain, &osc2.release,
+                                    // clang-format on
+                                })
     {
         initValues();
     }
 
-    // Generate a waveform sample
-    float generateWaveform(float phase, int waveform) {
-        switch (waveform) {
-            case 0: return sinf(phase * 2.0f * M_PI); // Sine
-            case 1: return (fmodf(phase, 1.0f) < 0.5f) ? 1.0f : -1.0f; // Square
-            case 2: return 2.0f * (phase - floorf(phase + 0.5f)); // Saw
-            case 3: return 4.0f * fabsf(phase - floorf(phase + 0.75f) + 0.25f) - 1.0f; // Triangle
-            default: return 0.0f;
-        }
-    }
+    float noteFrquency = 220.0f;
+    void sample(float* buf) override
+    {
+        float env1 = osc1.envelop.next();
+        float env2 = osc2.envelop.next();
 
-    // Process the amplitude envelope
-    float processEnvelope() {
-        static float env = 0.0f;
-        if (isNoteOn) {
-            if (env < 1.0f) {
-                env += 1.0f / (attack.get() * props.sampleRate); // Attack
-            } else {
-                env = sustain.get(); // Sustain
-            }
+        if (env1 || env2) {
+            float freq = 1.0f;
+            float wave1 = osc1.wavetable.sample(&osc1.wavetable.sampleIndex, freq) * env1;
+
+            float output = wave1;
+
+            output = applyDistortion(output);
+
+            output = applyReverb(output);
+
+            buf[track] = output;
+            i++;
         } else {
-            env -= 1.0f / (release.get() * props.sampleRate); // Release
-            if (env < 0.0f) env = 0.0f;
+            buf[track] = applyReverb(buf[track]);
         }
-        return env;
     }
 
-    float freq1 = 0.0f;
-    void sample(float* buf) override {
-        // Calculate oscillator frequencies
-        float freq2 = freq1 * osc2PitchRatio.get();
+    uint8_t baseNote = 60;
+    uint8_t currentNote = 0;
+    float currentVelocity = 1.0f;
 
-        // Update oscillator phases
-        phase1 += freq1 / props.sampleRate;
-        phase2 += freq2 / props.sampleRate;
-        if (phase1 >= 1.0f) phase1 -= 1.0f;
-        if (phase2 >= 1.0f) phase2 -= 1.0f;
+    void noteOn(uint8_t note, float _velocity) override
+    {
+        currentNote = note;
+        currentVelocity = _velocity;
 
-        // Generate waveforms
-        float osc1Out = generateWaveform(phase1, osc1Waveform.get()); // Subtractive oscillator
-        float modOut = generateWaveform(phase2, osc2Waveform.get());  // FM modulator
-
-        // Apply FM modulation to the subtractive oscillator
-        float fmPhaseOffset = fmDepth.get() * modOut; // Modulation index * modulator output
-        float fmOut = generateWaveform(phase1 + fmPhaseOffset, osc1Waveform.get());
-
-        // Blend subtractive and FM signals (50/50 mix)
-        float oscOut = 0.5f * osc1Out + 0.5f * fmOut;
-        
-        // Apply filter (simple low-pass)
-        static float filterState = 0.0f;
-        float cutoff = filterCutoff.get() / props.sampleRate;
-        float resonance = filterResonance.get();
-        filterState += cutoff * (oscOut - filterState);
-        oscOut = filterState;
-
-        // Apply envelope
-        envelopeLevel = processEnvelope();
-        oscOut *= envelopeLevel;
-
-        // Output to buffer
-        buf[track] = oscOut;
+        osc1.noteOn();
+        osc2.noteOn();
     }
 
-    void noteOn(uint8_t note, float _velocity) override {
-        isNoteOn = true;
-        freq1 = osc1Pitch.get() * powf(2.0f, (note - 69) / 12.0f); // Convert MIDI note to frequency
-    }
-
-    void noteOff(uint8_t note, float _velocity) override {
-        isNoteOn = false;
+    void noteOff(uint8_t note, float _velocity) override
+    {
+        osc1.noteOff();
+        osc2.noteOff();
     }
 };
 

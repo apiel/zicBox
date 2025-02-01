@@ -9,6 +9,7 @@ local BassTrack = ____constants.BassTrack
 local Drum23Track = ____constants.Drum23Track
 local Fm1Track = ____constants.Fm1Track
 local SampleTrack = ____constants.SampleTrack
+local SynthTrack = ____constants.SynthTrack
 pluginAlias("EffectDistortion2", "libzic_EffectDistortion2.so")
 pluginAlias("EffectFilterMultiMode", "libzic_EffectFilterMultiMode.so")
 pluginAlias("EffectGainVolume", "libzic_EffectGainVolume.so")
@@ -17,10 +18,11 @@ pluginAlias("Tempo", "libzic_Tempo.so")
 pluginAlias("Drum23", "libzic_SynthDrum23.so")
 pluginAlias("FmDrum", "libzic_SynthFmDrum.so")
 pluginAlias("Bass", "libzic_SynthBass.so")
+pluginAlias("Synth", "libzic_SynthHybrid.so")
 pluginAlias("Sample", "libzic_SynthMonoSample.so")
 pluginAlias("Sequencer", "libzic_Sequencer.so")
 pluginAlias("AudioOutput", "libzic_AudioOutputPulse.so")
-pluginAlias("Mixer", "libzic_Mixer4.so")
+pluginAlias("Mixer", "libzic_Mixer6.so")
 pluginAlias("Tape", "libzic_TapeRecording.so")
 pluginAlias("SampleSequencer", "libzic_SampleSequencer.so")
 ____exports.STRING_CUTOFF_FORMAT = "%d%% %d%%"
@@ -43,6 +45,11 @@ plugin("FmDrum", {{track = track}})
 plugin("Sequencer", {{track = track}})
 plugin("TrackFx EffectGainVolume", {{track = track}})
 plugin("SerializeTrack", {{track = track, filename = "fmDrum", MAX_VARIATION = ____exports.MAX_VARIATION, WORKSPACE_FOLDER = WORKSPACE_FOLDER}})
+track = SynthTrack
+plugin("Synth", {{track = track}})
+plugin("Sequencer", {{track = track}})
+plugin("TrackFx EffectGainVolume", {{track = track}})
+plugin("SerializeTrack", {{track = track, filename = "synth", MAX_VARIATION = ____exports.MAX_VARIATION, WORKSPACE_FOLDER = WORKSPACE_FOLDER}})
 plugin("SampleSequencer", {{track = SampleTrack}})
 plugin("SerializeTrack", {{track = SampleTrack, filename = "sampleSeq", MAX_VARIATION = ____exports.MAX_VARIATION, WORKSPACE_FOLDER = WORKSPACE_FOLDER}})
 plugin("Mixer")

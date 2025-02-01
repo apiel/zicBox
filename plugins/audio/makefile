@@ -26,7 +26,8 @@ all:
 		Sequencer Tempo AudioSpectrogram\
 		Mixer2 Mixer4 Mixer5 Mixer6 Mixer8 Mixer12\
 		AudioInputPulse AudioOutputPulse AudioInputAlsa AudioOutputAlsa\
-		SerializeTrack TapeRecording RamTapeRecording EffectDrum SampleSequencer
+		SerializeTrack TapeRecording RamTapeRecording EffectDrum SampleSequencer\
+		SynthHybrid
 
 # rebuild: clean all
 
@@ -54,6 +55,9 @@ SynthDrum23:
 
 SynthBass:
 	make compile LIBNAME=SynthBass EXTRA="$(shell pkg-config --cflags --libs sndfile)"
+
+SynthHybrid:
+	make compile LIBNAME=SynthHybrid EXTRA="$(shell pkg-config --cflags --libs sndfile)"
 
 SynthSample:
 	make compile LIBNAME=SynthSample EXTRA="$(shell pkg-config --cflags --libs sndfile)"
