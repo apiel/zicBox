@@ -43,9 +43,9 @@ public:
         return &bufferSamples[(uint16_t)(*index * sampleCount) + sampleStart];
     }
 
-    float sample(float* index, float freq) override
+    float sample(float* index, float sampleInc) override
     {
-        (*index) += freq;
+        (*index) += sampleInc;
         while ((*index) >= sampleCount) {
             (*index) -= sampleCount;
         }

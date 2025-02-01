@@ -12,7 +12,8 @@ local Common = ____Common.Common
 local ____constants = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constants")
 local ColorTrack4 = ____constants.ColorTrack4
 local encBottomLeft = ____constants.encBottomLeft
-local encBottomRight = ____constants.encBottomRight
+local encTopLeft = ____constants.encTopLeft
+local encTopRight = ____constants.encTopRight
 local SynthTrack = ____constants.SynthTrack
 local ____constantsValue = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constantsValue")
 local bottomLeftKnob = ____constantsValue.bottomLeftKnob
@@ -33,8 +34,8 @@ function ____exports.SynthWaveform2View(____bindingPattern0)
                 data_id = "WAVEFORM2",
                 RENDER_TITLE_ON_TOP = true,
                 encoders = {
-                    tostring(encBottomLeft) .. " SHAPE_2",
-                    tostring(encBottomRight) .. " MORPH_2"
+                    tostring(encTopLeft) .. " SHAPE_2",
+                    tostring(encTopRight) .. " MORPH_2"
                 },
                 track = SynthTrack
             }
