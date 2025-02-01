@@ -4,7 +4,7 @@ import { GraphEncoder } from '@/libs/components/GraphEncoder';
 import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
-import { ColorTrack4, encBottomLeft, encBottomRight, SynthTrack } from '../constants';
+import { ColorTrack4, encBottomLeft, encTopLeft, encTopRight, SynthTrack } from '../constants';
 import { bottomLeftKnob, topValues } from '../constantsValue';
 import { TextGridSynth } from './TextGridSynth';
 
@@ -20,7 +20,7 @@ export function SynthWaveform2View({ name }: Props) {
                 plugin="Synth"
                 data_id="WAVEFORM2"
                 RENDER_TITLE_ON_TOP={true}
-                encoders={[`${encBottomLeft} SHAPE_2`, `${encBottomRight} MORPH_2`]}
+                encoders={[`${encTopLeft} SHAPE_2`, `${encTopRight} MORPH_2`]}
                 track={SynthTrack}
             />
 

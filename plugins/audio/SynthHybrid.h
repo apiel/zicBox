@@ -60,12 +60,11 @@ public:
         morph.setString(std::to_string((int)morph.get()) + "/" + std::to_string(ZIC_WAVETABLE_WAVEFORMS_COUNT));
     }
 
-    uint8_t baseNote = 60;
-    void noteOn(uint8_t note)
+    void noteOn(float noteStep)
     {
         envelop.reset();
         wavetable.sampleIndex = 0;
-        freqFactor = pow(2, ((note - baseNote) / 12.0)); // need to do something with freq.get();
+        freqFactor = noteStep;
     }
 
     void noteOff()
@@ -82,7 +81,7 @@ class SynthHybrid : public Mapping {
         { 50.0f, "RELEASE_1", { "Release 1", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc1.setRelease(p.value); } },
         { 0.0f, "SHAPE_1", { "SHAPE 1", VALUE_STRING, .max = 1000 }, [&](auto p) { osc1.setShape(p.value); } },
         { 0.0f, "MORPH_1", { "MORPH 1", VALUE_STRING }, [&](auto p) { osc1.setMorph(p.value); } },
-        { 200.0f, "FREQ_1", { "Freq. 1", .min = 10.0, .max = 2000.0, .step = 10.0, .unit = "Hz" } },
+        { 200.0f, "FREQ_1", { "Freq. 1", .min = 10.0, .max = 8000.0, .step = 10.0, .unit = "Hz" } },
     };
     Osc osc2 = {
         { 50.0f, "ATTACK_2", { "Attack 2", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc2.setAttack(p.value); } },
@@ -91,7 +90,7 @@ class SynthHybrid : public Mapping {
         { 50.0f, "RELEASE_2", { "Release 2", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc2.setRelease(p.value); } },
         { 0.0f, "SHAPE_2", { "SHAPE 2", VALUE_STRING, .max = 1000 }, [&](auto p) { osc2.setShape(p.value); } },
         { 0.0f, "MORPH_2", { "MORPH 2", VALUE_STRING }, [&](auto p) { osc2.setMorph(p.value); } },
-        { 200.0f, "FREQ_2", { "Freq. 2", .min = 10.0, .max = 2000.0, .step = 10.0, .unit = "Hz" } },
+        { 200.0f, "FREQ_2", { "Freq. 2", .min = 10.0, .max = 8000.0, .step = 10.0, .unit = "Hz" } },
     };
 
     float tanhLookup(float x)
@@ -177,9 +176,11 @@ public:
         float env2 = osc2.envelop.next();
 
         if (env1 || env2) {
-            float wave1 = osc1.wavetable.sample(&osc1.wavetable.sampleIndex, osc1.freqFactor) * env1;
+            float freq1 = osc1.freq.get() * osc1.freqFactor;
+            float wave1 = osc1.wavetable.sample(&osc1.wavetable.sampleIndex, freq1) * env1;
 
-            float wave2 = osc2.wavetable.sample(&osc2.wavetable.sampleIndex, osc2.freqFactor + osc2.freqFactor * wave1 * fmAmount.pct()) * env2;
+            float freq2 = osc2.freq.get() * osc2.freqFactor;
+            float wave2 = osc2.wavetable.sample(&osc2.wavetable.sampleIndex, freq2 + freq2 * wave1 * fmAmount.pct()) * env2;
 
             float output = wave2 * oscMix.pct() + wave1 * (1.0f - oscMix.pct());
 
@@ -197,14 +198,15 @@ public:
     uint8_t baseNote = 60;
     uint8_t currentNote = 0;
     float currentVelocity = 1.0f;
-
     void noteOn(uint8_t note, float _velocity) override
     {
         currentNote = note;
         currentVelocity = _velocity;
 
-        osc1.noteOn(note);
-        osc2.noteOn(note);
+        // Precompute note step factor (frequency scaling per sample)
+        float noteStep = pow(2.0f, (note - baseNote) / 12.0f) / props.sampleRate;
+        osc1.noteOn(noteStep);
+        osc2.noteOn(noteStep);
     }
 
     void noteOff(uint8_t note, float _velocity) override
