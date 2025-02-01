@@ -5,6 +5,7 @@ local ScreenWidth = ____constants.ScreenWidth
 local W2_4 = ____constants.W2_4
 local top = 60
 ____exports.fullValues = {0, top, ScreenWidth - 1, 180}
+____exports.halfFullValues = {0, top + ____exports.fullValues[4] / 4, ScreenWidth - 1, ____exports.fullValues[4] / 2}
 ____exports.topValues = {0, top, ScreenWidth - 1, 80}
 ____exports.bottomValues = {0, top + 100, ScreenWidth - 1, 80}
 ____exports.topLeftKnob = {0, top, W2_4 - 2, 80}

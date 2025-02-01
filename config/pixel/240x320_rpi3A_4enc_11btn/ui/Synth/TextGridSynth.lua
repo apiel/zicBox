@@ -13,6 +13,7 @@ local ____Title = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.T
 local Title = ____Title.Title
 local ____constants = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constants")
 local btn1 = ____constants.btn1
+local btn3 = ____constants.btn3
 local btn5 = ____constants.btn5
 local btn6 = ____constants.btn6
 local btn7 = ____constants.btn7
@@ -22,9 +23,10 @@ local btnShift = ____constants.btnShift
 local btnUp = ____constants.btnUp
 local ColorTrack4 = ____constants.ColorTrack4
 function ____exports.TextGridSynth(____bindingPattern0)
+    local viewName
     local selected
     selected = ____bindingPattern0.selected
-    local viewName = ____bindingPattern0.viewName
+    viewName = ____bindingPattern0.viewName
     return React.createElement(
         React.Fragment,
         nil,
@@ -32,9 +34,10 @@ function ____exports.TextGridSynth(____bindingPattern0)
         React.createElement(Rect, {position = {70, 28, 6, 6}, color = ColorTrack4}),
         React.createElement(TextGridSel, {
             selectedBackground = ColorTrack4,
-            rows = {"Main Fx Env &empty", "Seq. &empty &empty &empty"},
+            rows = {"Main Fx Env1/2 &empty", "Seq. &empty &empty &empty"},
             keys = {
                 {key = btn1, action = "setView:Synth"},
+                {key = btn3, action = viewName == "SynthEnv1" and "setView:SynthEnv2" or "setView:SynthEnv1"},
                 {key = btn5, action = "setView:SynthSeq"},
                 {key = btn6, action = "noteOn:Synth:60"},
                 {key = btn7, action = "noteOn:Synth:60"},
