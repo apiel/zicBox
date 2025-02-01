@@ -20,7 +20,7 @@ function ____exports.SynthEnv2View(____bindingPattern0)
     return React.createElement(
         View,
         {name = name},
-        React.createElement(Adsr, {position = halfFullValues, plugin = "Synth", values = "ATTACK_1 DECAY_1 SUSTAIN_1 RELEASE_1"}),
+        React.createElement(Adsr, {position = halfFullValues, plugin = "Synth", values = "ATTACK_2 DECAY_2 SUSTAIN_2 RELEASE_2"}),
         React.createElement(TextGridSynth, {selected = "Env1/2", viewName = name}),
         React.createElement(Common, {selected = "Synth", track = SynthTrack, selectedBackground = ColorTrack4})
     )

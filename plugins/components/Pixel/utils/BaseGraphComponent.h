@@ -24,19 +24,23 @@ protected:
     void renderGraph()
     {
         std::vector<Point> relativePoints = getPoints();
+        // printf("renderGraph %ld points\n", relativePoints.size());
         if (relativePoints.size() > 2) {
             float halfHeight = waveformHeight * 0.5;
 
             for (auto& point : relativePoints) {
                 point.y += waveformY;
                 point.x += relativePosition.x;
+                // printf("[x %d y %d]\n", point.x, point.y);
             }
+            // printf("draw\n");
             if (filled) {
                 draw.filledPolygon(relativePoints, { fillColor.color });
             }
             if (outline) {
                 draw.lines(relativePoints, { outlineColor.color });
             }
+            // printf("draw end\n");
         }
     }
 

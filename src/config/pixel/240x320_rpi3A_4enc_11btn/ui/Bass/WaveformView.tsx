@@ -13,7 +13,7 @@ export type Props = {
 };
 
 export function BassWaveformView({ name }: Props) {
-    const pos = topValues;
+    const pos = [...topValues];
     pos[1] += pos[3] * 0.5;
     return (
         <View name={name}>

@@ -32,17 +32,19 @@ protected:
     void renderTitles()
     {
         std::vector<Title> titles = getTitles();
-        if (renderTitleOnTop) {
-            int cellWidth = size.w / titles.size();
-            renderTitles(titles, relativePosition.y, cellWidth);
-        } else {
-            // Calculate the midpoint, rounding up
-            size_t midpoint = (titles.size() + 1) * 0.5; // +1 to round up
-            std::vector<Title> top(titles.begin(), titles.begin() + midpoint);
-            std::vector<Title> bottom(titles.begin() + midpoint, titles.end());
-            int cellWidth = size.w / top.size();
-            renderTitles(top, relativePosition.y, cellWidth);
-            renderTitles(bottom, relativePosition.y + waveformHeight + 9 + 1, cellWidth);
+        if (titles.size() > 0) {
+            if (renderTitleOnTop) {
+                int cellWidth = size.w / titles.size();
+                renderTitles(titles, relativePosition.y, cellWidth);
+            } else {
+                // Calculate the midpoint, rounding up
+                size_t midpoint = (titles.size() + 1) * 0.5; // +1 to round up
+                std::vector<Title> top(titles.begin(), titles.begin() + midpoint);
+                std::vector<Title> bottom(titles.begin() + midpoint, titles.end());
+                int cellWidth = size.w / top.size();
+                renderTitles(top, relativePosition.y, cellWidth);
+                renderTitles(bottom, relativePosition.y + waveformHeight + 9 + 1, cellWidth);
+            }
         }
     }
 

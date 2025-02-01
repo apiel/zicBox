@@ -63,6 +63,8 @@ local ____Env2View = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.Synth.Env
 local SynthEnv2View = ____Env2View.SynthEnv2View
 local ____SynthView = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.Synth.SynthView")
 local SynthView = ____SynthView.SynthView
+local ____WaveformView = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.Synth.WaveformView")
+local SynthWaveformView = ____WaveformView.SynthWaveformView
 pixelController("rpi3A_4enc_11btn")
 setWindowPosition(400, 500)
 setScreenSize(ScreenWidth, ScreenHeight)
@@ -91,6 +93,7 @@ applyZic(React.createElement(Fm1SeqView, {name = "Fm1Seq"}))
 applyZic(React.createElement(SynthView, {name = "Synth"}))
 applyZic(React.createElement(SynthEnv1View, {name = "SynthEnv1"}))
 applyZic(React.createElement(SynthEnv2View, {name = "SynthEnv2"}))
+applyZic(React.createElement(SynthWaveformView, {name = "SynthWaveform"}))
 applyZic(React.createElement(MenuView, {name = "Menu"}))
 applyZic(React.createElement(WorkspacesView, {name = "Workspaces"}))
 applyZic(React.createElement(CreateWorkspaceView, {name = "CreateWorkspace"}))
