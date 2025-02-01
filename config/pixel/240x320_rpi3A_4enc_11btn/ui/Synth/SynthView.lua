@@ -33,14 +33,14 @@ function ____exports.SynthView(____bindingPattern0)
             track = SynthTrack
         }),
         React.createElement(KnobValue, {
-            value = "Synth DISTORTION",
+            value = "Synth OSC_MIX",
             position = topRightKnob,
             encoder_id = encTopRight,
             COLOR = "primary",
             track = SynthTrack
         }),
         React.createElement(KnobValue, {
-            value = "Synth REVERB",
+            value = "Synth FM_AMOUNT",
             position = bottomLeftKnob,
             encoder_id = encBottomLeft,
             COLOR = "quaternary",

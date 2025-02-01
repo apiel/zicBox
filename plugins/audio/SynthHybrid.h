@@ -148,6 +148,10 @@ public:
     Val& distortion = val(0.0, "DISTORTION", { "Distortion", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
     /*md - REVERB controls delay time, feedback, and mix with one parameter. */
     Val& reverb = val(0.3f, "REVERB", { "Reverb", .unit = "%" });
+    /*md - `OSC_MIX` to set oscillator substractive mix. */
+    Val& oscMix = val(50.0f, "OSC_MIX", { "Osc1 Osc2", .type = VALUE_CENTERED, .unit = "%" });
+    /*md - `FM_AMOUNT` to set FM amount. */
+    Val& fmAmount = val(0.0, "FM_AMOUNT", { "FM Amount", .unit = "%" });
 
     SynthHybrid(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name, {
@@ -170,7 +174,9 @@ public:
             float freq = 1.0f;
             float wave1 = osc1.wavetable.sample(&osc1.wavetable.sampleIndex, freq) * env1;
 
-            float output = wave1;
+            float wave2 = osc2.wavetable.sample(&osc2.wavetable.sampleIndex, freq + freq * wave1 * fmAmount.pct()) * env2;
+
+            float output = wave2 * oscMix.pct() + wave1 * (1.0f - oscMix.pct());
 
             output = applyDistortion(output);
 
