@@ -1,0 +1,28 @@
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+local React = require("config.libs.react")
+local ____Adsr = require("config.libs.components.Adsr")
+local Adsr = ____Adsr.Adsr
+local ____View = require("config.libs.components.View")
+local View = ____View.View
+local ____Common = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.Common")
+local Common = ____Common.Common
+local ____constants = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constants")
+local ColorTrack4 = ____constants.ColorTrack4
+local SynthTrack = ____constants.SynthTrack
+local ____constantsValue = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constantsValue")
+local halfFullValues = ____constantsValue.halfFullValues
+local ____TextGridSynth = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.Synth.TextGridSynth")
+local TextGridSynth = ____TextGridSynth.TextGridSynth
+function ____exports.SynthEnv1View(____bindingPattern0)
+    local name
+    name = ____bindingPattern0.name
+    return React.createElement(
+        View,
+        {name = name},
+        React.createElement(Adsr, {position = halfFullValues, plugin = "Synth", values = "ATTACK_0 DECAY_0 SUSTAIN_0 RELEASE_0"}),
+        React.createElement(TextGridSynth, {selected = "Env1/2", viewName = name}),
+        React.createElement(Common, {selected = "Synth", track = SynthTrack, selectedBackground = ColorTrack4})
+    )
+end
+return ____exports
