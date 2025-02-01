@@ -32,7 +32,7 @@ export function SynthWaveform1View({ name }: Props) {
                 track={SynthTrack}
             />
 
-            <TextGridSynth selected={'E/Osc1'} viewName={name} />
+            <TextGridSynth selected={'Osc1'} viewName={name} />
             <Common selected={'Synth'} track={SynthTrack} selectedBackground={ColorTrack4} />
         </View>
     );
