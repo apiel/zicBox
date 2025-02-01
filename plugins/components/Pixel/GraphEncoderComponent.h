@@ -29,6 +29,7 @@ public:
     GraphEncoderComponent(ComponentInterface::Props props)
         : BaseGraphEncoderComponent(props)
     {
+        printf(">>>>>>>>>>>>>>>>>> GraphEncoderComponent y %d h %d\n", position.y, size.h);
     }
 
     std::vector<Title> getTitles() override
@@ -68,6 +69,7 @@ public:
                     float index = i / (float)(size.w - 1);
                     float* value = (float*)plugin->data(dataId, &index);
                     if (value != NULL) {
+                        // printf("[%d:%f] value %f\n", i, index, *value);
                         points.push_back({ i, (int)(*value * halfHeight + halfHeight) });
                     }
                 }

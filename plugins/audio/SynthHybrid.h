@@ -72,20 +72,20 @@ public:
 
 class SynthHybrid : public Mapping {
     Osc osc1 = {
-        { 50.0f, "ATTACK_0", { "Attack 1", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc1.setAttack(p.value); } },
-        { 20.0f, "DECAY_0", { "Decay 1", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc1.setDecay(p.value); } },
-        { 80.0f, "SUSTAIN_0", { "Sustain 1", .unit = "%" }, [&](auto p) { osc1.setSustain(p.value); } },
-        { 50.0f, "RELEASE_0", { "Release 1", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc1.setRelease(p.value); } },
-        { 0.0f, "SHAPE", { "SHAPE", VALUE_STRING, .max = 1000 }, [&](auto p) { osc1.setShape(p.value); } },
-        { 0.0f, "MORPH", { "MORPH", VALUE_STRING }, [&](auto p) { osc1.setMorph(p.value); } }
+        { 50.0f, "ATTACK_1", { "Attack 1", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc1.setAttack(p.value); } },
+        { 20.0f, "DECAY_1", { "Decay 1", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc1.setDecay(p.value); } },
+        { 80.0f, "SUSTAIN_1", { "Sustain 1", .unit = "%" }, [&](auto p) { osc1.setSustain(p.value); } },
+        { 50.0f, "RELEASE_1", { "Release 1", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc1.setRelease(p.value); } },
+        { 0.0f, "SHAPE_1", { "SHAPE 1", VALUE_STRING, .max = 1000 }, [&](auto p) { osc1.setShape(p.value); } },
+        { 0.0f, "MORPH_1", { "MORPH 1", VALUE_STRING }, [&](auto p) { osc1.setMorph(p.value); } }
     };
     Osc osc2 = {
-        { 50.0f, "ATTACK_1", { "Attack 2", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc2.setAttack(p.value); } },
-        { 20.0f, "DECAY_1", { "Decay 2", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc2.setDecay(p.value); } },
-        { 80.0f, "SUSTAIN_1", { "Sustain 2", .unit = "%" }, [&](auto p) { osc2.setSustain(p.value); } },
-        { 50.0f, "RELEASE_1", { "Release 2", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc2.setRelease(p.value); } },
-        { 0.0f, "SHAPE", { "SHAPE", VALUE_STRING, .max = 1000 }, [&](auto p) { osc2.setShape(p.value); } },
-        { 0.0f, "MORPH", { "MORPH", VALUE_STRING }, [&](auto p) { osc2.setMorph(p.value); } }
+        { 50.0f, "ATTACK_2", { "Attack 2", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc2.setAttack(p.value); } },
+        { 20.0f, "DECAY_2", { "Decay 2", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc2.setDecay(p.value); } },
+        { 80.0f, "SUSTAIN_2", { "Sustain 2", .unit = "%" }, [&](auto p) { osc2.setSustain(p.value); } },
+        { 50.0f, "RELEASE_2", { "Release 2", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc2.setRelease(p.value); } },
+        { 0.0f, "SHAPE_2", { "SHAPE 2", VALUE_STRING, .max = 1000 }, [&](auto p) { osc2.setShape(p.value); } },
+        { 0.0f, "MORPH_2", { "MORPH 2", VALUE_STRING }, [&](auto p) { osc2.setMorph(p.value); } }
     };
 
     float tanhLookup(float x)
@@ -152,8 +152,8 @@ public:
     SynthHybrid(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name, {
                                     // clang-format off
-        &osc1.attack, &osc1.decay, &osc1.sustain, &osc1.release,
-        &osc2.attack, &osc2.decay, &osc2.sustain, &osc2.release,
+        &osc1.attack, &osc1.decay, &osc1.sustain, &osc1.release, &osc1.shape, &osc1.morph,
+        &osc2.attack, &osc2.decay, &osc2.sustain, &osc2.release, &osc2.shape, &osc2.morph,
                                     // clang-format on
                                 })
     {
@@ -201,6 +201,19 @@ public:
         osc1.noteOff();
         osc2.noteOff();
     }
+
+    std::vector<float> waveformData;
+    DataFn dataFunctions[2] = {
+        { "WAVEFORM1", [this](void* userdata) {
+            float* index = (float*)userdata;
+            return osc1.wavetable.sample(index);
+         } },
+        { "WAVEFORM2", [this](void* userdata) {
+            float* index = (float*)userdata;
+            return osc2.wavetable.sample(index);
+         } },
+    };
+    DEFINE_GETDATAID_AND_DATA
 };
 
 #endif

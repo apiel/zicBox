@@ -20,7 +20,7 @@ local TextGridBass = ____TextGridBass.TextGridBass
 function ____exports.BassWaveformView(____bindingPattern0)
     local name
     name = ____bindingPattern0.name
-    local pos = topValues
+    local pos = {table.unpack(topValues)}
     pos[2] = pos[2] + pos[4] * 0.5
     return React.createElement(
         View,
