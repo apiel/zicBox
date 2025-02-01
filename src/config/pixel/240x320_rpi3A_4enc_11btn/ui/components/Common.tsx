@@ -9,7 +9,7 @@ import { TextGridSel } from './TextGridSel';
 export const Kick = 'Kick';
 export const Bass = 'Bass';
 export const Fm1 = 'Fm1';
-export const Fm2 = 'Fm2';
+export const Synth = 'Synth';
 export const Sample1 = 'Sampl1';
 export const Sample2 = 'Sampl2';
 export const Sample3 = 'Sampl3';
@@ -19,7 +19,7 @@ type ItemType =
     | typeof Kick
     | typeof Bass
     | typeof Fm1
-    | typeof Fm2
+    | typeof Synth
     | typeof Sample1
     | typeof Sample2
     | typeof Sample3
@@ -53,14 +53,14 @@ export function Common({
 
             <TextGridSel
                 rows={[
-                    `${Kick} ${Bass} ${Fm1} ${Fm2}`,
+                    `${Kick} ${Bass} ${Fm1} ${Synth}`,
                     `${Sample1} ${Sample2} ${Sample3} ${Clips}`,
                 ]}
                 keys={[
                     { key: btn1, action: 'setView:Drum23' },
                     { key: btn2, action: 'setView:Bass' },
                     { key: btn3, action: 'setView:Fm1' },
-                    { key: btn4, action: 'setView:Fm2' },
+                    { key: btn4, action: 'setView:Synth' },
 
                     { key: btn5, action: `setView:Sample` },
                     { key: btn8, action: `setView:Clips` },

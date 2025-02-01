@@ -4,7 +4,7 @@ local React = require("config.libs.react")
 local ____Rect = require("config.libs.components.Rect")
 local Rect = ____Rect.Rect
 local ____Common = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.Common")
-local Bass = ____Common.Bass
+local Fm1 = ____Common.Fm1
 local ____SideInfo = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.SideInfo")
 local SideInfo = ____SideInfo.SideInfo
 local ____TextGridSel = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.TextGridSel")
@@ -30,7 +30,7 @@ function ____exports.TextGridFm1(____bindingPattern0)
     return React.createElement(
         React.Fragment,
         nil,
-        React.createElement(Title, {title = Bass}),
+        React.createElement(Title, {title = Fm1}),
         React.createElement(Rect, {position = {70, 28, 6, 6}, color = ColorTrack2}),
         React.createElement(TextGridSel, {
             selectedBackground = ColorTrack2,

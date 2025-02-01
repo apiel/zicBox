@@ -25,6 +25,7 @@ import { MenuView } from './menu/menuView';
 import { ShutdownView } from './menu/ShutdownView';
 import { WorkspacesView } from './menu/WorkspacesView';
 import { SampleEditorView } from './Sample/SampleEditorView';
+import { SynthView } from './Synth/SynthView';
 
 pixelController('rpi3A_4enc_11btn');
 
@@ -57,6 +58,8 @@ applyZic(<Fm1View name="Fm1" />);
 applyZic(<Fm1FxView name="Fm1Fx" />);
 applyZic(<Fm1EnvView name="Fm1Env" />);
 applyZic(<Fm1SeqView name="Fm1Seq" />);
+
+applyZic(<SynthView name="Synth" />);
 
 applyZic(<MenuView name="Menu" />);
 applyZic(<WorkspacesView name="Workspaces" />);

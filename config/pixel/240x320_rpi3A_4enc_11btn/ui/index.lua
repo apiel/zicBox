@@ -57,6 +57,8 @@ local ____WorkspacesView = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.men
 local WorkspacesView = ____WorkspacesView.WorkspacesView
 local ____SampleEditorView = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.Sample.SampleEditorView")
 local SampleEditorView = ____SampleEditorView.SampleEditorView
+local ____SynthView = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.Synth.SynthView")
+local SynthView = ____SynthView.SynthView
 pixelController("rpi3A_4enc_11btn")
 setWindowPosition(400, 500)
 setScreenSize(ScreenWidth, ScreenHeight)
@@ -82,6 +84,7 @@ applyZic(React.createElement(Fm1View, {name = "Fm1"}))
 applyZic(React.createElement(Fm1FxView, {name = "Fm1Fx"}))
 applyZic(React.createElement(Fm1EnvView, {name = "Fm1Env"}))
 applyZic(React.createElement(Fm1SeqView, {name = "Fm1Seq"}))
+applyZic(React.createElement(SynthView, {name = "Synth"}))
 applyZic(React.createElement(MenuView, {name = "Menu"}))
 applyZic(React.createElement(WorkspacesView, {name = "Workspaces"}))
 applyZic(React.createElement(CreateWorkspaceView, {name = "CreateWorkspace"}))

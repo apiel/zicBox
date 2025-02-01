@@ -1,7 +1,7 @@
 import * as React from '@/libs/react';
 
 import { Rect } from '@/libs/components/Rect';
-import { Bass } from '../components/Common';
+import { Fm1 } from '../components/Common';
 import { SideInfo } from '../components/SideInfo';
 import { TextGridSel } from '../components/TextGridSel';
 import { Title } from '../components/Title';
@@ -22,7 +22,7 @@ import {
 export function TextGridFm1({ selected, viewName }: { selected: string; viewName: string }) {
     return (
         <>
-            <Title title={Bass} />
+            <Title title={Fm1} />
             <Rect position={[70, 28, 6, 6]} color={ColorTrack2} />
             <TextGridSel
                 selectedBackground={ColorTrack2}
