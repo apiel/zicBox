@@ -47,7 +47,7 @@ function ____exports.SynthWaveform2View(____bindingPattern0)
             COLOR = "quaternary",
             track = SynthTrack
         }),
-        React.createElement(TextGridSynth, {selected = "E/Osc2", viewName = name}),
+        React.createElement(TextGridSynth, {selected = "Osc2", viewName = name}),
         React.createElement(Common, {selected = "Synth", track = SynthTrack, selectedBackground = ColorTrack4})
     )
 end

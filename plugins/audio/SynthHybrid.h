@@ -18,7 +18,6 @@ public:
     Val freq;
     AdsrEnvelop envelop;
     Wavetable wavetable;
-    float freqFactor = 1.0f;
 
     void setAttack(float ms)
     {
@@ -60,11 +59,10 @@ public:
         morph.setString(std::to_string((int)morph.get()) + "/" + std::to_string(ZIC_WAVETABLE_WAVEFORMS_COUNT));
     }
 
-    void noteOn(float noteStep)
+    void noteOn()
     {
         envelop.reset();
         wavetable.sampleIndex = 0;
-        freqFactor = noteStep;
     }
 
     void noteOff()
@@ -176,10 +174,14 @@ public:
         float env2 = osc2.envelop.next();
 
         if (env1 || env2) {
-            float freq1 = osc1.freq.get() * osc1.freqFactor;
+            float freq1 = noteFactor * props.sampleRate;
+            // float freq1 = osc1.freq.get() * noteFactor;
+            // float freq1 = (osc1.freq.get() * noteFactor) / props.sampleRate;
             float wave1 = osc1.wavetable.sample(&osc1.wavetable.sampleIndex, freq1) * env1;
 
-            float freq2 = osc2.freq.get() * osc2.freqFactor;
+            float freq2 = noteFactor * props.sampleRate;
+            // float freq2 = osc2.freq.get() * noteFactor;
+            // float freq2 = (osc2.freq.get() * noteFactor) / props.sampleRate;
             float wave2 = osc2.wavetable.sample(&osc2.wavetable.sampleIndex, freq2 + freq2 * wave1 * fmAmount.pct()) * env2;
 
             float output = wave2 * oscMix.pct() + wave1 * (1.0f - oscMix.pct());
@@ -197,6 +199,7 @@ public:
 
     uint8_t baseNote = 60;
     uint8_t currentNote = 0;
+    double noteFactor = 0.0;
     float currentVelocity = 1.0f;
     void noteOn(uint8_t note, float _velocity) override
     {
@@ -204,9 +207,11 @@ public:
         currentVelocity = _velocity;
 
         // Precompute note step factor (frequency scaling per sample)
-        float noteStep = pow(2.0f, (note - baseNote) / 12.0f) / props.sampleRate;
-        osc1.noteOn(noteStep);
-        osc2.noteOn(noteStep);
+        noteFactor = pow(2.0f, (note - baseNote) / 12.0f) / props.sampleRate;
+        // noteFactor = pow(2.0f, (note - baseNote) / 12.0f);
+        printf("note: %d, factor: %f\n", note, noteFactor);
+        osc1.noteOn();
+        osc2.noteOn();
     }
 
     void noteOff(uint8_t note, float _velocity) override
