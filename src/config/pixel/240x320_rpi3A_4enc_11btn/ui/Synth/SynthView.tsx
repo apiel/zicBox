@@ -26,14 +26,14 @@ export function SynthView({ name }: Props) {
                 track={SynthTrack}
             />
             <KnobValue
-                value="Synth DISTORTION"
+                value="Synth OSC_MIX"
                 position={topRightKnob}
                 encoder_id={encTopRight}
                 COLOR="primary"
                 track={SynthTrack}
             />
             <KnobValue
-                value="Synth REVERB"
+                value="Synth FM_AMOUNT"
                 position={bottomLeftKnob}
                 encoder_id={encBottomLeft}
                 COLOR="quaternary"
