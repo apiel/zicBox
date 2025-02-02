@@ -80,7 +80,16 @@ class SynthHybrid : public Mapping {
         { 0.0f, "SHAPE_1", { "SHAPE 1", VALUE_STRING, .max = 1000 }, [&](auto p) { osc1.setShape(p.value); } },
         { 0.0f, "MORPH_1", { "MORPH 1", VALUE_STRING }, [&](auto p) { osc1.setMorph(p.value); } },
         // TODO under 10 step 0.1 and over 10 step 1, over 100 step 10.
-        { 200.0f, "FREQ_1", { "Freq. 1", .min = 0.1, .max = 8000.0, .step = 0.1, .floatingPoint = 1, .unit = "Hz" } },
+        { 200.0f, "FREQ_1", { "Freq. 1", .min = 0.1, .max = 8000.0, .step = 0.1, .floatingPoint = 1, .unit = "Hz" }, [&](auto p) {
+             osc1.freq.setFloat(p.value);
+             if (osc1.freq.get() < 11.0f) {
+                 osc1.freq.props().step = 0.1f;
+             } else if (osc1.freq.get() > 80.0f) {
+                 osc1.freq.props().step = 10.0f;
+             } else {
+                 osc1.freq.props().step = 1.0f;
+             }
+         } },
     };
     Osc osc2 = {
         { 50.0f, "ATTACK_2", { "Attack 2", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { osc2.setAttack(p.value); } },
@@ -176,16 +185,10 @@ public:
         float env2 = osc2.envelop.next();
 
         if (env1 || env2) {
-            // float freq1 = noteFactor * props.sampleRate;
-            // float freq1 = osc1.freq.get() * noteFactor;
             float freq1 = osc1.freq.get() * noteFactor * osc1.wavetable.sampleCount;
-            // float freq1 = (osc1.freq.get() * noteFactor) / props.sampleRate;
             float wave1 = osc1.wavetable.sample(&osc1.wavetable.sampleIndex, freq1) * env1;
 
-            // float freq2 = noteFactor * props.sampleRate;
-            // float freq2 = osc2.freq.get() * noteFactor;
             float freq2 = osc2.freq.get() * noteFactor * osc2.wavetable.sampleCount;
-            // float freq2 = (osc2.freq.get() * noteFactor) / props.sampleRate;
             float wave2 = osc2.wavetable.sample(&osc2.wavetable.sampleIndex, freq2 + freq2 * wave1 * fmAmount.pct()) * env2;
 
             float output = wave2 * oscMix.pct() + wave1 * (1.0f - oscMix.pct());
@@ -211,9 +214,9 @@ public:
         currentVelocity = _velocity;
 
         // Precompute note step factor (frequency scaling per sample)
-        noteFactor = pow(2.0f, (note - baseNote) / 12.0f) / props.sampleRate;
-        // noteFactor = pow(2.0f, (note - baseNote) / 12.0f);
-        // printf("note: %d, factor: %f\n", note, noteFactor);
+        // to check right frequency:https://onlinetonegenerator.com/
+        noteFactor = (pow(2.0f, (note - baseNote) / 12.0f) / props.sampleRate) / props.channels;
+        // printf("note %d noteFactor: %f\n", note, noteFactor);
         osc1.noteOn();
         osc2.noteOn();
     }
