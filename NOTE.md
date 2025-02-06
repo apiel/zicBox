@@ -1,3 +1,19 @@
+## Framework improvement
+
+- TODO draw should use gpu to render --> opengl
+
+- TODO use https://github.com/nlohmann/json for config
+    - just need to find a way to inform jsx to whether pass json format or string format
+    ---> maybe for the moment should only be for component...
+
+- TODO use `#pragma once`
+
+- TODO make plugin removable
+
+- TODO ui component, should they be allowed to have child...
+
+- TODO load vst and lv2 plugin?
+
 ## Pixel TODO
 
 - TODO fix envelop when we release before to reach decay point...
@@ -42,10 +58,6 @@
 
 - TODO reduce data id in SynthDrum23 and update DrumEnvelopComponent or simply remove it
 - TODO fix envelop step edit
-
-- TODO use https://github.com/nlohmann/json for config
-    - just need to find a way to inform jsx to whether pass json format or string format
-    ---> maybe for the moment should only be for component...
 
 - TODO clips
   - instead to play right away when clicking toggle button, maybe it should play at the next loop, and we need to play right away the would be a different combination key
