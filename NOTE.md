@@ -13,6 +13,8 @@
 - TODO ui component, should they be allowed to have child...
 
 - TODO load vst and lv2 plugin?
+  
+- FIXME since track run on different thread, they might be out of sync, as tempo is running only after... Would need to run tempo first and define for which sample clock tick happen...
 
 ## Pixel TODO
 
