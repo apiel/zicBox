@@ -1,20 +1,33 @@
 ## Framework improvement
 
+- FIXME since track run on different thread, they might be out of sync, as tempo is running only after... Would need to run tempo first and define for which sample clock tick happen...
+
+### component
 - TODO use https://github.com/nlohmann/json for config
     - just need to find a way to inform jsx to whether pass json format or string format
     ---> maybe for the moment should only be for component...
 
+- TODO use std::string as much as possible and other C++ thing to simplify life :p
+
+- TODO look if container concept is fully used...
+  - for example, is plugin still listed under the main view, and receive event if parent container is not visible?
+  - ...
+
+### other
+
 - TODO use `#pragma once`
 
+- TODO Use Smart Pointers (std::unique_ptr or std::shared_ptr)
+   Use tools like Valgrind (Linux/macOS) or AddressSanitizer (Clang/GCC) to check for memory leaks:
+```sh
+valgrind --leak-check=full ./pixel.x86
+```
+
 - TODO make plugin removable
-
-- TODO ui component, should they be allowed to have child...
-
-- TODO load vst and lv2 plugin?
-  
-- FIXME since track run on different thread, they might be out of sync, as tempo is running only after... Would need to run tempo first and define for which sample clock tick happen...
   
 ## Pixel TODO
+
+- TODO equalizer!
 
 - TODO fix envelop when we release before to reach decay point...
 
@@ -301,6 +314,8 @@ Render Text (Bitmap or Vector)
     - FIXME missing libpd on rpi
 
 - TODO use clap plugin https://nakst.gitlab.io/tutorial/clap-part-1.html
+- TODO load vst and lv2 plugin?
+  - or even use clap format for audio plugin?
 
 - TODO explore usage of Tensorflow Nsynth
 

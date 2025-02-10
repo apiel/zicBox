@@ -84,7 +84,8 @@
         "synthpd.h": "c",
         "mapping.h": "c",
         "unordered_set": "cpp",
-        "audioplugin.h": "c"
+        "audioplugin.h": "c",
+        "bitset": "c"
     },
     "C_Cpp.errorSquiggles": "enabled",
     "makefile.configureOnOpen": false,

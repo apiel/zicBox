@@ -1,5 +1,4 @@
-#ifndef _UI_COMPONENT_INTERFACE_H_
-#define _UI_COMPONENT_INTERFACE_H_
+#pragma once
 
 #include "./ViewInterface.h"
 #include "./container/ComponentContainer.h"
@@ -75,14 +74,14 @@ public:
         // printf("ComponentInterface: %d x %d\n", props.position.x, props.position.y);
     }
 
-    virtual void clear() = 0;
+    virtual void clear() = 0; // Doesnt seems to be used... to be deprecated ?
     virtual void render() = 0;
     virtual void renderNext() = 0;
     virtual void initView(uint16_t counter) = 0;
     virtual void onMotion(MotionInterface& motion) = 0;
-    virtual void handleMotion(MotionInterface& motion) = 0;
+    virtual void handleMotion(MotionInterface& motion) = 0; // <--- should this go away?
     virtual void onMotionRelease(MotionInterface& motion) = 0;
-    virtual void handleMotionRelease(MotionInterface& motion) = 0;
+    virtual void handleMotionRelease(MotionInterface& motion) = 0; // <--- should this go away?
     virtual void onEncoder(int id, int8_t direction) = 0;
     virtual void onKey(uint16_t id, int key, int8_t state, unsigned long now) = 0;
     virtual bool config(char* key, char* value) = 0;
@@ -95,5 +94,3 @@ public:
         return NULL;
     }
 };
-
-#endif
