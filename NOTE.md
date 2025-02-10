@@ -1,11 +1,8 @@
 ## Framework improvement
 
-- TODO draw should use gpu to render --> opengl
-
 - TODO use https://github.com/nlohmann/json for config
     - just need to find a way to inform jsx to whether pass json format or string format
     ---> maybe for the moment should only be for component...
-
 
 - TODO use `#pragma once`
 
@@ -16,7 +13,7 @@
 - TODO load vst and lv2 plugin?
   
 - FIXME since track run on different thread, they might be out of sync, as tempo is running only after... Would need to run tempo first and define for which sample clock tick happen...
-
+  
 ## Pixel TODO
 
 - TODO fix envelop when we release before to reach decay point...
@@ -151,17 +148,131 @@
 - TODO speed up compile time
   - cross compile for rpi directly on laptop
 
+## Improvement performance
+
+
+- TODO draw should use gpu to render --> opengl
+  - does seems to be necessary for the moment, UI on rpi use almost no CPU (at least with the current design)
+  - cpu load seems to be higher on desktop because of SDL (i think mainly because of hardware event like keyboard...)
+
+Since Raspberry Pi uses **embedded graphics** and doesn’t always support full OpenGL, **OpenGL ES (GLES) is the best choice**. Here's why:
+
+| Feature         | OpenGL (GLEW) | OpenGL ES (GLES) |
+|---------------|--------------|----------------|
+| **Supported on Raspberry Pi** | ❌ No (unless using full Mesa OpenGL) | ✅ Yes (default GPU driver) |
+| **Supported on Ubuntu Desktop** | ✅ Yes | ✅ Yes (via `libgles2-mesa-dev`) |
+| **Lightweight for Embedded** | ❌ No (heavier, desktop-focused) | ✅ Yes (optimized for embedded) |
+| **Framebuffer Rendering Support** | 🚧 Harder to configure | ✅ Easier on Raspberry Pi |
+| **Anti-Aliasing (MSAA)** | ✅ Yes | ✅ Yes (simpler, but works) |
+| **Simple 2D Drawing (Lines, Shapes, AA)** | ✅ Yes | ✅ Yes |
+| **Text Rendering** | ✅ Yes (via FreeType/GLFW) | ✅ Yes (but slightly different method) |
+
+- **Raspberry Pi prefers OpenGL ES** → It’s lightweight and works with its GPU.
+- **Ubuntu supports OpenGL ES** through `libgles2-mesa-dev`.
+- **Framebuffer rendering (SPI Display)** is easier with **GLES on Raspberry Pi**.
+
+Since your **application is 2D-focused**, you don't need full OpenGL. OpenGL ES is enough for **lines, shapes, anti-aliasing, and text rendering**.
+
+How to Set Up GLES for Both Platforms:
+**For Ubuntu Desktop (Windowed Rendering)**
+Install the necessary packages:
+```bash
+sudo apt update
+sudo apt install libgles2-mesa-dev libglfw3-dev
+```
+**For Raspberry Pi (Framebuffer Rendering)**
+Raspberry Pi’s VideoCore GPU supports GLES natively.
+Use EGL (instead of GLFW) to create an OpenGL ES context without a window and render to a framebuffer.
+
+On Raspberry Pi OS, install:
+```bash
+sudo apt install libegl1-mesa-dev libgles2-mesa-dev
+```
+
+Code Approach for Both Platforms:
+```cpp
+#ifdef USE_GLFWWINDOW // Define this for Ubuntu
+#include <GLFW/glfw3.h>
+#else
+#include <EGL/egl.h>
+#include <GLES2/gl2.h> // OpenGL ES 2.0 headers
+#endif
+
+#include <iostream>
+
+void renderScene() {
+    glClear(GL_COLOR_BUFFER_BIT);
+    
+    // Draw a simple rectangle
+    glBegin(GL_QUADS);
+        glColor3f(1.0f, 0.0f, 0.0f);
+        glVertex2f(-0.5f, -0.5f);
+        glVertex2f(0.5f, -0.5f);
+        glVertex2f(0.5f, 0.5f);
+        glVertex2f(-0.5f, 0.5f);
+    glEnd();
+    
+    glFlush();
+}
+
+int main() {
+#ifdef USE_GLFWWINDOW
+    // Ubuntu version (GLFW windowed rendering)
+    if (!glfwInit()) {
+        std::cerr << "Failed to initialize GLFW" << std::endl;
+        return -1;
+    }
+    GLFWwindow* window = glfwCreateWindow(800, 600, "GLES Window", nullptr, nullptr);
+    glfwMakeContextCurrent(window);
+
+    while (!glfwWindowShouldClose(window)) {
+        renderScene();
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    glfwDestroyWindow(window);
+    glfwTerminate();
+#else
+    // Raspberry Pi version (Framebuffer rendering)
+    EGLDisplay display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+    eglInitialize(display, nullptr, nullptr);
+    
+    EGLConfig config;
+    EGLint numConfigs;
+    eglChooseConfig(display, nullptr, &config, 1, &numConfigs);
+
+    EGLContext context = eglCreateContext(display, config, EGL_NO_CONTEXT, nullptr);
+    eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, context);
+
+    while (true) { // Infinite loop for embedded display
+        renderScene();
+    }
+
+    eglDestroyContext(display, context);
+    eglTerminate(display);
+#endif
+
+    return 0;
+}
+```
+
+Next Steps, enable Anti-Aliasing (MSAA):
+```cpp
+glEnable(GL_MULTISAMPLE);
+```
+Draw Shapes (Lines, Circles, Arcs)
+- Use GL_LINES, GL_LINE_LOOP, GL_TRIANGLE_FAN for smooth shapes.
+- You may need a simple 2D shader for better anti-aliasing.
+Render Text (Bitmap or Vector)
+- Use FreeType or bitmap fonts.
+- Convert text to triangles for GLES compatibility.
+
 ## Next TODO
 
 - TODO create separate asset folder > might put it in wiki...
 
 - TODO start thread in https://llllllll.co/
-
-- FIXME open playing noteOn
-
-- TODO EffectGrain can be active without triggering any note...
-
-- TODO save/load project
 
 - TODO scatter/grid effect
     - when pressing a btn it would apply (only while button is pressed and then revert original setting):
@@ -170,14 +281,6 @@
         - update sequencer pattern, for example to make kick rolling
         - apply a reverb/delay or any other kind of effect
         --> So all in all it should be able to apply a set of plugin value for a certain amount of time and reset once the key is released. Also, it might need to be able to trigger noteOn, e.g. for EffectGrain? or maybe not, EffectGrain should be able to run without noteOn
-
-- TODO advance clip/variation transition...
-    - should sequencer take care to load variation?
-- TODO sequencer STATUS change logic:
-    - -1 should be infinite loop
-    - 0 off
-    - 1,2,3,... should be how long it wait before to start 
-      (or should it be to toggle status, so if it is already playing, it will stop)
 
 - TODO keyboad should handle longpress (see button...)
 
@@ -190,156 +293,16 @@
     - granularize sample...
     - sample slice
 
-- TODO kick23 could change morph position on every noteON. It would either be an incrementation or random or...
-    Would this principle make sense as on pitch or other drum parameter?
-
-- TODO FM ui waveform, maybe just show the 4 envelop...
-
-## zicUi
-
-- Responsive UI ?
-
-- TODO python config https://docs.python.org/3/extending/embedding.html
-
-- TODO keyboard / keypad
-    - see we can extract some logic to have global action that are not specific to a UI plugin
-    - should LED and keypad be the same object
-        or could we assume that some LED doesn't necessarly belong to a key
-        LED could be associated to an encoder or just completely standalone...
-
-- TODO Delay make a visual representation of the delay.
-
-- TODO live waveform visualisation
-    - might need for this to create an audio plugin to keep a buffer of the audio output
-
-- TODO GridSequencer
-    - TODO touch could be used to move up/down/left/right
-    - TODO save single track variation/clip under a given name
-    - TODO load a specific track variation/clip
-
-- TODO make label all at the same position...
-
-- TODO dekstop version
-    - display multiple view at once...
-    - ZicBox hardware can control ZicBox desktop throw OSC or USB...
-
-- TODO pattern selector in sequencer
-       pattern category
-
 - TODO popup message
 
-- TODO spectrum analyser, to show current sound coming out base on frequency and amplitude...
-
-- TODO when touching the screen, it could either play a note and change pitch base on Y
-                              or start ARP change pitch with Y and change pattern with X
-                              or act as a chaos pad
-     --> maybe there should be a way to stop the motion populating, so a component could
-         take over the motion, e.g. an invisible frame on top of the whole view that would trigger the notes.
-
-- TODO pad ARP, y is taking care of semi tone and x change ARP pattern. Could it even be multi touch?
-
-- TODO pad motion recorder
-
-- INFO Should SDL in draw be injectable? What if we want to use those i2c 1306 display or similar...
-
-- TODO can button show a state
-       can button show a value
-
-- TODO make pad possibility, like dual touch... same as resize in the granular synth ...
-
-- TODO slider, e.g. for mixer
-
-- TODO encoder responsive for small size
-- TODO use function pointer on encoder initialisation to assign draw function base on type
-
-- TODO button can call data? Example for saving granular synth...
-
-- TODO list of value, e.g.:
-                file1.wav
-                file2.wav
-              > file3.wav
-                file4.wav
-                file5.wav
-
-- TODO optimized onUpdate value...?
-
-- TODO ? SequencerBarComponent: Remove text info
-                                Make motion optional
-
-- TODO component option rotate 90°
-
-```cpp
-float rotationAngle = 90.0f;
-SDL_RenderCopyEx(renderer, texture, NULL, &destRect, rotationAngle , NULL, SDL_FLIP_NONE);
-```
-
-See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
-`blitRotated` is actually using `SDL_RenderCopyEx` https://www.parallelrealities.co.uk/tutorials/bad/bad2.php
-
-- TODO auto update...
-    - from release
-    - from git repo?
-
-- filter frequency response curve https://stackoverflow.com/questions/76193236/implement-2nd-order-low-pass-filter-in-c-how-to-compute-coefficients
-
-## zicHost
-
-- TODO libpd do the same as for lua, if lib not installed, skip...?
-
 - TODO instead of usual sequencer, link multiple sample together and then a note would trigger the series of samples... A bit like wavetstate
-
-- TODO look at https://github.com/pichenettes/eurorack/tree/master/shades
-
-- TODO could use lookup table for filter resolution
-
-- TODO SynthSample 
-    - fix openned voice
-    - multi sample mix 2 (or even 3) sample together
-
-- TODO make audio input and output selectable with val...
-
-- TODO Fm plugin
 
 - TODO puredata plugin
     - FIXME missing libpd on rpi
 
-- TODO save track patch
-
 - TODO use clap plugin https://nakst.gitlab.io/tutorial/clap-part-1.html
 
-- TODO SynthSample
-    - fix start position of sample marker when start pos is not to 0
-    - morph on wavetable, start and end stick to sustain position when both are touching sustain window
-    - spray window
-
-- TODO tempo plugin, that would shalow midi clock in favour of custom clock
-    --> give a way to select either midi or internal clock
-
 - TODO explore usage of Tensorflow Nsynth
-
-- TODO modulation that would be a mix of envelop and lfo:
-    - multiphase envelop (up to 8 or even more)
-    - each phase can configure time and amplitude (should it be ms or percentage of a global amount?)
-    - each phase can be linear or a curve to be able to simulate sin...
-    - a sustain point can be set at any point of the envelop, also in the middle of a phase
-    - to simulate an LFO, the sustain point can loop over a certain window, meaning that sustain as a starting point and a end point
-
-- TODO Sequencer Polyend play style ???
-
-- TODO sequencer 
-        - 1/2 step length
-        - if step len is 0 it should play infinite
-
-- TODO MIXER track=1 vs track_b... should it be track_1 but ...?
-
-- TODO wavetable player as in granular it doesnt make sense
-        pad one wavetable where X and Y morph on different wavetable...
-
-- TODO reverb, delay
-     - load/save different kind of delay and reverb from a config file
-                save last state of the delay config... load the last state on start
-                base on this state, we can create config files...
-     - add lfo on time ratio
 
 - INFO IPC in order to have a main thread that is running all the time, even if the rest crash...
        https://en.wikipedia.org/wiki/Inter-process_communication
@@ -359,68 +322,6 @@ See also https://www.parallelrealities.co.uk/tutorials/ttf/ttf1.php
        https://github.com/lv2/lilv/blob/master/tools/lv2apply.c
        https://github.com/jeremysalwen/lv2file
 
-## Pixel
-
-- FIXME
-    - mpr121 labelling
-    - smaller hole for encoder
-    - make alphanum in white instead of silver and may reduce special char
-    - make icon in silver instead of white in order to make it more conductive
-    - pad effect seem not to work properlly
-    - display hole is too big
-    - might move number in empty spot? Or need to find a better way to utilize those empty spot..
-    - add a pin going to front panel for LED (and 5v)
-    - expose Lout and Rout via pin
-    
-- use all the encoder left to make a mega midi interface...
-
-## method function pointer
-
-See if I can use
-
-```cpp
-#include <functional>
-#include <vector>
-
-class MyClass1{
-public:
-    void hello(float value)
-    {
-        printf("hello %f\n", value);
-    }
-};
-
-class MyClass2 {
-public:
-    void world(float value)
-    {
-        printf("world %f\n", value);
-    }
-};
-
-using Callback_t = std::function<void()>;
-
-template <typename T>
-Callback_t MakeCallback(void (T::*f)(float), float val)
-{
-    T* p = new T;
-    return [=]() { (p->*f)(val); };
-}
-
-int main()
-{
-    std::vector<Callback_t> vetcor = {
-        MakeCallback(&MyClass1::hello, 0.123),
-        MakeCallback(&MyClass2::world, 0.456)
-    };
-
-    for (std::size_t i = 0; i < vetcor.size(); i++) {
-        vetcor[i]();
-    }
-    return 0;
-}
-```
-
 ## Hardware
 
 - TODO hardware look for touch encoder or button encoder
@@ -433,13 +334,6 @@ int main()
 
 - TODO pixel harmonic https://www.ziaspace.com/_academic/BP_Scale/BP_modes/files/1_3_sharp4_6-copy.png
     https://www.youtube.com/watch?v=DREjkHQpCYQ
-
-- TODO make gpio interface run as service
-
-- TODO gpio interface use config file
-
-- TODO install file (make setup/prepare and make install ?)
-- TODO update using makefile?
 
 ## Audio app inspirations
 
