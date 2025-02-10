@@ -1,5 +1,4 @@
-#ifndef _TEMPLATE_DEMO_H_
-#define _TEMPLATE_DEMO_H_
+#pragma once
 
 #include "audioPlugin.h"
 #include "mapping.h"
@@ -44,5 +43,3 @@ public:
     {
     }
 };
-
-#endif

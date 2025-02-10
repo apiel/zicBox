@@ -1,5 +1,4 @@
-#ifndef _EFFECT_GAIN_VOLUME_H_
-#define _EFFECT_GAIN_VOLUME_H_
+#pragma once
 
 #include "audioPlugin.h"
 #include "mapping.h"
@@ -38,5 +37,3 @@ public:
         return *this;
     }
 };
-
-#endif
