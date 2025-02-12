@@ -1,8 +1,58 @@
-# ZicBox
+# ZicBox: A Modular Framework for Building Music Applications
 
-Customizable digital synth / groovebox...
+**ZicBox** is a versatile C++ framework designed to simplify the development of music applications, with a primary focus on creating grooveboxes and drum machines for custom hardware running on **Raspberry Pi**. However, it is not limited to embedded devices, it also runs on **Linux desktops**, making it a basic foundation for building full-fledged music production software.
 
-ZicBox is fully customizable using configuration files. Everyhting is build base on plugins, from user interface, to audio module and hardware controller. ZicBox then wire everything so that everything can communicate together.
+## 🚀 Features
+
+### **Modular Architecture**
+ZicBox is built around a highly modular system that ensures flexibility and extensibility:
+
+- **UI Components as Modules** – Every UI element is encapsulated as a module, allowing for easy customization and expansion.
+- **Audio Processing as Modules** – Synth engines (such as drum synthesizers, sample players, ...) and effect processors (like filters, distortion, etc.) are also modular, enabling seamless integration of new sound-processing capabilities.
+- **Hardware Interfaces as Modules** – The system abstracts hardware interactions into modules, making it simple to add support for new devices without modifying the core application.
+
+This modular design allows developers to extend ZicBox effortlessly by adding new modules without altering the framework’s core logic.
+
+### **Real-Time Performance & Multi-Threading**
+ZicBox efficiently manages system resources to ensure **low-latency audio performance**. It achieves this by:
+
+- Running the **UI in a dedicated thread** to ensure smooth rendering and interaction.
+- **Routing all control data** between the UI and the audio engine efficiently.
+- Running each **audio track in a separate thread**, ensuring optimal real-time processing.
+- Handling **audio thread synchronization** to maintain precise timing and tempo accuracy.
+
+### **Scripting & UI Configuration with TypeScript-to-Lua & JSX**
+For configuring the framework, ZicBox provides a **Lua scripting interface**. However, instead of writing pure Lua, developers can use **TypeScript**, thanks to the **TypeScript-to-Lua** transpiler. This allows for a **strongly typed** configuration system while still benefiting from Lua's lightweight runtime.
+
+Additionally, ZicBox leverages **JSX (React-style syntax)** for UI configuration, making it intuitive to define interface components. Unlike traditional React, there is no component state management involved, JSX is used purely for declarative UI structure.
+
+## 🎛 Why Choose ZicBox?
+
+- **🖥️ Designed for Custom Hardware** – Optimized for Raspberry Pi but also runs on Linux desktop.
+- **🧩 Extensible & Modular** – Easily add new UI components, synth engines, effects, and hardware integrations.
+- **⚡ High-Performance Audio** – Multi-threaded design ensures real-time audio processing with precise synchronization.
+- **💡 Type-Safe Configuration** – Use TypeScript instead of Lua for a structured, maintainable setup.
+- **🎨 JSX-Based UI** – Define interfaces declaratively with React-style syntax.
+
+ZicBox is an ideal solution for developers looking to build **custom music applications**, whether for standalone hardware or full desktop music production environments.
+
+---
+
+## 📥 Get Started
+
+Clone the repository and start building with **ZicBox** today! 🎵
+
+```sh
+git clone --recurse-submodules https://github.com/apiel/zicBox.git
+cd zicBox
+```
+
+Stay tuned with more [documentation](https://github.com/apiel/zicBox/wiki/01-Getting-started).
+
+---
+
+🎧 Built for musicians & developers
+
 
 | <img src='https://github.com/apiel/zicBox/blob/main/images/zicpad.png?raw=true' width='480'> | :arrow_forward: see [Video](https://github.com/apiel/zicBox/#Video) | <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel.png?raw=true' width='480'> | 
 | :---:   | :---: | :---: |
