@@ -40,7 +40,7 @@ ZicBox is an ideal solution for developers looking to build **custom music appli
 
 ## 📥 Get Started
 
-Clone the repository and start building with **ZicBox** today! 🎵
+Clone the repo and start building with **ZicBox**! 🎵
 
 ```sh
 git clone --recurse-submodules https://github.com/apiel/zicBox.git
