@@ -147,7 +147,7 @@ fileList.sort((a, b) => a.filename.localeCompare(b.filename));
 
 for (const [index, fileActive] of fileList.entries()) {
     const sidebar =
-        ` - [Home: Getting started](https://github.com/apiel/zicBox/wiki)\n` +
+        ` - [Home: Getting started](https://github.com/apiel/zicBox/wiki)\n\n` +
         fileList
             .map((file) => {
                 if (file.filename === fileActive.filename) {
