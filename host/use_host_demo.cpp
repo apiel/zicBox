@@ -1,4 +1,4 @@
-/*md
+/*//md
 > Find an example on how to use the host embedded in your own application: `use_host_demo.cpp`.
 */
 
