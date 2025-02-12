@@ -1,11 +1,4 @@
-const {
-    rmSync,
-    readdirSync,
-    lstatSync,
-    readFileSync,
-    writeFileSync,
-    mkdirSync,
-} = require('fs');
+const { rmSync, readdirSync, lstatSync, readFileSync, writeFileSync, mkdirSync } = require('fs');
 const path = require('path');
 
 const ignore = [
@@ -153,27 +146,41 @@ docs(rootFolder);
 fileList.sort((a, b) => a.filename.localeCompare(b.filename));
 
 for (const [index, fileActive] of fileList.entries()) {
-    const sidebar = fileList
-        .map((file) => {
-            if (file.filename === fileActive.filename) {
-                const title2 = file.title2
-                    .map(
-                        (title) =>
-                            ` - [${title}](https://github.com/apiel/zicBox/wiki/${
-                                file.filename
-                            }#${title.toLowerCase().replaceAll(' ', '-')})`
-                    )
-                    .join('\n');
+    const sidebar =
+        ` - [Home: Getting started](https://github.com/apiel/zicBox/wiki)` +
+        fileList
+            .map((file) => {
+                if (file.filename === fileActive.filename) {
+                    const title2 = file.title2
+                        .map(
+                            (title) =>
+                                ` - [${title}](https://github.com/apiel/zicBox/wiki/${
+                                    file.filename
+                                }#${title.toLowerCase().replaceAll(' ', '-')})`
+                        )
+                        .join('\n');
 
-                return `**${file.filename}**\n${title2}`;
-            }
-            return `[${file.filename}](https://github.com/apiel/zicBox/wiki/${file.filename})`;
-        })
-        .join('\n\n');
+                    return `**${file.filename}**\n${title2}`;
+                }
+                return `[${file.filename}](https://github.com/apiel/zicBox/wiki/${file.filename})`;
+            })
+            .join('\n\n');
     writeFileSync(path.join(docsFolder, fileActive.filename, '_Sidebar.md'), sidebar);
 
-    const previous = index > 0 ? `<b>Previous</b>: <a href="https://github.com/apiel/zicBox/wiki/${fileList[index - 1].filename}">${fileList[index - 1].filename}</a>` : `<b>Previous</b>: <a href="https://github.com/apiel/zicBox/wiki">Home</a>`;
-    const next = index < fileList.length - 1 ? '<b>Next</b>: <a href="https://github.com/apiel/zicBox/wiki/' + fileList[index + 1].filename + '">' + fileList[index + 1].filename + '</a>' : '';
+    const previous =
+        index > 0
+            ? `<b>Previous</b>: <a href="https://github.com/apiel/zicBox/wiki/${
+                  fileList[index - 1].filename
+              }">${fileList[index - 1].filename}</a>`
+            : `<b>Previous</b>: <a href="https://github.com/apiel/zicBox/wiki">Home</a>`;
+    const next =
+        index < fileList.length - 1
+            ? '<b>Next</b>: <a href="https://github.com/apiel/zicBox/wiki/' +
+              fileList[index + 1].filename +
+              '">' +
+              fileList[index + 1].filename +
+              '</a>'
+            : '';
     const footer = `
 <p align="center">
     ${previous} ${previous && next ? ' | ' : ''} ${next}
