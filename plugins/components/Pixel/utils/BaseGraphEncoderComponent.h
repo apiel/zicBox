@@ -1,5 +1,4 @@
-#ifndef _UI_PIXEL_COMPONENT_BASE_GRAPH_ENCODER_H_
-#define _UI_PIXEL_COMPONENT_BASE_GRAPH_ENCODER_H_
+#pragma once
 
 #include "./BaseGraphComponent.h"
 #include "helpers/range.h"
@@ -14,8 +13,8 @@ public:
     };
 
 protected:
-    ToggleColor textColor1;
-    ToggleColor textColor2;
+    Color textColor1;
+    Color textColor2;
 
     void renderTitles(std::vector<Title> titles, int y, int cellWidth)
     {
@@ -23,8 +22,8 @@ protected:
         for (int i = 0; i < titles.size(); i++) {
             int len = titles[i].text1.length() + titles[i].text2.length();
             int w = len * 8;
-            int x2 = draw.text({ (int)(x + cellWidth * i - w * 0.5), y }, titles[i].text1, 8, { textColor1.color });
-            draw.text({ x2, y }, titles[i].text2, 8, { textColor2.color });
+            int x2 = draw.text({ (int)(x + cellWidth * i - w * 0.5), y }, titles[i].text1, 8, { textColor1 });
+            draw.text({ x2, y }, titles[i].text2, 8, { textColor2 });
         }
     }
 
@@ -60,12 +59,9 @@ protected:
 public:
     BaseGraphEncoderComponent(ComponentInterface::Props props)
         : BaseGraphComponent(props)
-        , textColor1(styles.colors.text, inactiveColorRatio)
-        , textColor2(darken(styles.colors.text, 0.5), inactiveColorRatio)
+        , textColor1(styles.colors.text)
+        , textColor2(darken(styles.colors.text, 0.5))
     {
-        colors.push_back({ "TEXT_COLOR1", &textColor1 });
-        colors.push_back({ "TEXT_COLOR2", &textColor2 });
-        updateColors();
         updateWaveformHeight();
     }
     virtual std::vector<Title> getTitles() = 0;
@@ -75,6 +71,19 @@ public:
         if (updatePosition()) {
             BaseGraphComponent::render();
             renderTitles();
+        }
+    }
+
+    bool isActive = true;
+    void onGroupChanged(int8_t index) override
+    {
+        bool shouldActivate = false;
+        if (group == index || group == -1) {
+            shouldActivate = true;
+        }
+        if (shouldActivate != isActive) {
+            isActive = shouldActivate;
+            renderNext();
         }
     }
 
@@ -106,19 +115,16 @@ public:
             return true;
         }
 
-        return GroupColorComponent::config(key, value);
+        if (strcmp(key, "TEXT_COLOR1") == 0) {
+            textColor1 = draw.getColor(value);
+            return true;
+        }
+
+        if (strcmp(key, "TEXT_COLOR2") == 0) {
+            textColor2 = draw.getColor(value);
+            return true;
+        }
+
+        return false;
     }
 };
-
-/*.md **Config**: */
-/*.md - `PLUGIN: plugin_name` set plugin target */
-/*.md - `OUTLINE: true/false` is if the envelop should be outlined (default: true). */
-/*.md - `FILLED: true/false` is if the envelop should be filled (default: true). */
-/*.md - `BACKGROUND_COLOR: color` is the background color of the component. */
-/*.md - `FILL_COLOR: color` is the color of the envelop. */
-/*.md - `OUTLINE_COLOR: color` is the color of the envelop outline. */
-/*.md - `TEXT_COLOR1: color` is the color of the text1. */
-/*.md - `TEXT_COLOR2: color` is the color of the text2. */
-/*.md - `INACTIVE_COLOR_RATIO: 0.0 - 1.0` is the ratio of darkness for the inactive color (default: 0.5). */
-
-#endif
