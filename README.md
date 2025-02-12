@@ -1,4 +1,4 @@
-# 00 ZicBox: A Modular Framework for Building Music Applications 00
+# ZicBox: A Modular Framework for Building Music Applications
 
 **ZicBox** is a versatile C++ framework designed to simplify the development of music applications, with a primary focus on creating grooveboxes and drum machines for custom hardware running on **Raspberry Pi**. However, it is not limited to embedded devices, it also runs on **Linux desktops**, making it a basic foundation for building full-fledged music production software.
 
@@ -91,7 +91,7 @@ Once everything is set up, you can run the demo project using:
 make pixel
 ```
 
-More [documentation here](https://github.com/apiel/zicBox/wiki/01-Getting-started).
+More [documentation here](https://github.com/apiel/zicBox/wiki).
 
 ---
 
@@ -100,7 +100,7 @@ More [documentation here](https://github.com/apiel/zicBox/wiki/01-Getting-starte
 
 | <img src='https://github.com/apiel/zicBox/blob/main/images/zicpad.png?raw=true' width='480'> | :arrow_forward: see [Video](https://github.com/apiel/zicBox/#Video) | <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel.png?raw=true' width='480'> | 
 | :---:   | :---: | :---: |
-| <img src='https://github.com/apiel/zicBox/blob/main/images/demo3.png?raw=true' width='480'> | <img src='https://github.com/apiel/zicBox/blob/main/images/demo4.png?raw=true' width='480'> | :book: See [Documentation](https://github.com/apiel/zicBox/wiki/01-Getting-started) :books: | 
+| <img src='https://github.com/apiel/zicBox/blob/main/images/demo3.png?raw=true' width='480'> | <img src='https://github.com/apiel/zicBox/blob/main/images/demo4.png?raw=true' width='480'> | :book: See [Documentation](https://github.com/apiel/zicBox/wiki) :books: | 
 | :speech_balloon: [Discussions](https://github.com/apiel/zicBox/discussions) | <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel.png?raw=true' width='480'> | [<img src='https://github.com/apiel/zicBox/blob/main/images/proto2.png?raw=true' width='480'>](https://github.com/apiel/zicBox/blob/main/images/proto2.jpg?raw=true) | 
 
 ## Video
