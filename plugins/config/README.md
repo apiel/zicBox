@@ -1,4 +1,4 @@
-# 06 Config plugins
+# Config plugins
 
 By default ZicBox use [DustScript](https://github.com/apiel/dustscript) to set configuration. Configuration are set using a plugin, script language can be used, like Lua.
 
