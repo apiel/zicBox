@@ -126,11 +126,21 @@ protected:
     {
         Track* track = new Track(id, buffer, masterCv, MAX_TRACKS);
         for (AudioPlugin* plugin : plugins) {
-            if (plugin->track == id) {
+            if (plugin->track == id && plugin->getType() != AudioPlugin::Type::TEMPO) {
                 track->plugins.push_back(plugin);
             }
         }
         return track;
+    }
+
+    AudioPlugin* getTempoPlugin()
+    {
+        for (AudioPlugin* plugin : plugins) {
+            if (plugin->getType() == AudioPlugin::Type::TEMPO) {
+                return plugin;
+            }
+        }
+        return NULL;
     }
 
     std::vector<Track*> createTracks(float* buffer, std::condition_variable& masterCv)
@@ -231,8 +241,8 @@ public:
 
     void loop()
     {
-        int bufferSize = 128 * MAX_TRACKS;
-        float buffer[128 * MAX_TRACKS] = { 0.0f };
+        int bufferSize = 128 * TOTAL_TRACKS;
+        float buffer[128 * TOTAL_TRACKS] = { 0.0f };
 
         std::mutex masterMtx;
         std::condition_variable masterCv;
@@ -247,10 +257,12 @@ public:
         std::vector<Track*> tracks = sortTracksByDependencies(createTracks(buffer, masterCv));
         // std::vector<Track*> tracks = createTracks(buffer, masterCv);
 
-        Track* threadTracks[MAX_TRACKS];
-        Track* hostTracks[MAX_TRACKS];
+        Track* threadTracks[TOTAL_TRACKS];
+        Track* hostTracks[TOTAL_TRACKS];
         int threadCount = 0;
         int hostCount = 0;
+
+        AudioPlugin* tempoPlugin = getTempoPlugin();
 
         // Init tracks
         for (Track* track : tracks) {
@@ -266,7 +278,8 @@ public:
 
         if (threadCount == 0) {
             while (isRunning) {
-                float buffer[MAX_TRACKS] = { 0.0f };
+                float buffer[TOTAL_TRACKS] = { 0.0f };
+                tempoPlugin->sample(buffer);
                 for (int i = 0; i < hostCount; i++) {
                     hostTracks[i]->process(buffer);
                 }
@@ -275,6 +288,10 @@ public:
             auto ms = std::chrono::milliseconds(10);
 
             while (isRunning) {
+                for (uint8_t i = 0; i < 128; i++) {
+                    tempoPlugin->sample(buffer + i * CLOCK_TRACK);
+                }
+
                 for (int t = 0; t < threadCount; t++) {
                     Track* track = threadTracks[t];
                     track->processing = true;
@@ -291,6 +308,7 @@ public:
                     return true;
                 });
 
+                // NOTE: why multiple tracks here? one should be enough...
                 for (int t = 0; t < hostCount; t++) {
                     for (uint8_t i = 0; i < 128; i++) {
                         hostTracks[t]->process(i);
@@ -470,16 +488,6 @@ public:
         for (MidiNoteEvent& target : midiNoteEvents) {
             if (target.channel == channel) {
                 noteOn(note, velocity, target.target);
-            }
-        }
-    }
-
-    void clockTick()
-    {
-        if (playing) {
-            clockCounter++;
-            for (AudioPlugin* plugin : plugins) {
-                plugin->onClockTick(&clockCounter);
             }
         }
     }
