@@ -1,17 +1,15 @@
 const {
-    copyFileSync,
     rmSync,
     readdirSync,
     lstatSync,
     readFileSync,
     writeFileSync,
     mkdirSync,
-    appendFileSync,
 } = require('fs');
 const path = require('path');
 
 const ignore = [
-    './README.md',
+    // './README.md',
     'NOTE.md',
     'node_modules',
     'waveshare/',
@@ -21,6 +19,7 @@ const ignore = [
     '.git',
     'dustscript',
     'wiki',
+    'plugins/config',
 ];
 const extensions = ['.c', '.h', '.cpp'];
 

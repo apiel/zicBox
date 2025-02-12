@@ -1,4 +1,4 @@
-# ZicBox: A Modular Framework for Building Music Applications
+# 00 ZicBox: A Modular Framework for Building Music Applications 00
 
 **ZicBox** is a versatile C++ framework designed to simplify the development of music applications, with a primary focus on creating grooveboxes and drum machines for custom hardware running on **Raspberry Pi**. However, it is not limited to embedded devices, it also runs on **Linux desktops**, making it a basic foundation for building full-fledged music production software.
 
@@ -47,7 +47,51 @@ git clone --recurse-submodules https://github.com/apiel/zicBox.git
 cd zicBox
 ```
 
-Stay tuned with more [documentation](https://github.com/apiel/zicBox/wiki/01-Getting-started).
+> **Note:** If the repository has already been cloned but submodules are missing, run the following command to pull them:
+>
+> ```sh
+> git submodule update --init
+> ```
+>
+> For SSH submodules, use:
+>
+> ```sh
+> git submodule update --init .gitmodules_ssh
+> ```
+
+### Install Dependencies
+Update package lists and install required dependencies:
+
+```sh
+apt-get update
+apt-get install build-essential librtmidi-dev libsndfile1-dev pulseaudio alsa-utils liblua5.4-dev -y
+```
+
+### Additional Dependencies for Desktop
+If you are setting up on a desktop, install SDL2 development libraries:
+
+```sh
+sudo apt-get install libsdl2-dev
+```
+
+### Setup for Raspberry Pi
+For Raspberry Pi, a setup script is available. Run the following commands:
+
+```sh
+cd hardware/rpi
+sudo ./setup.sh
+```
+
+[View the setup script here](https://github.com/apiel/zicBox/blob/main/hardware/rpi/setup.sh)
+
+## Run the Demo Project
+Once everything is set up, you can run the demo project using:
+
+```sh
+make pixel
+```
+
+More [documentation here](https://github.com/apiel/zicBox/wiki/01-Getting-started).
 
 ---
 
