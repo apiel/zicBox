@@ -246,7 +246,7 @@ public:
             loadPlugin(value, filename);
             return true;
         }
-        /*md
+        /*//md
         ### COMPONENT
 
         To place previously loaded components inside a view, use `COMPONENT: given_name_to_component x y w h`.
