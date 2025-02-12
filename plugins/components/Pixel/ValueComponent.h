@@ -1,9 +1,7 @@
-#ifndef _UI_PIXEL_COMPONENT_VALUE_H_
-#define _UI_PIXEL_COMPONENT_VALUE_H_
+#pragma once
 
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
-#include "utils/GroupColorComponent.h"
 
 /*md
 ## Value
@@ -14,13 +12,13 @@
 Value component is used to display an audio plugin value.
 */
 
-class ValueComponent : public GroupColorComponent {
+class ValueComponent : public Component {
 protected:
     Color bgColor;
-    ToggleColor valueColor;
-    ToggleColor barColor;
-    ToggleColor unitColor;
-    ToggleColor labelColor;
+    Color valueColor;
+    Color barColor;
+    Color unitColor;
+    Color labelColor;
 
     int valueFontSize = 8;
     int labelFontSize = 6;
@@ -75,29 +73,28 @@ protected:
 
 public:
     ValueComponent(ComponentInterface::Props props)
-        : GroupColorComponent(props, { { "VALUE_COLOR", &valueColor }, { "BAR_COLOR", &barColor }, { "UNIT_COLOR", &unitColor }, { "LABEL_COLOR", &labelColor } })
+        : Component(props)
         , bgColor(styles.colors.background)
-        , valueColor(styles.colors.text, inactiveColorRatio)
-        , barColor(lighten(styles.colors.background, 0.5), inactiveColorRatio)
-        , unitColor(darken(styles.colors.text, 0.5), inactiveColorRatio)
-        , labelColor(darken(styles.colors.text, 0.5), inactiveColorRatio)
+        , valueColor(styles.colors.text)
+        , barColor(lighten(styles.colors.background, 0.5))
+        , unitColor(darken(styles.colors.text, 0.5))
+        , labelColor(darken(styles.colors.text, 0.5))
     {
-        updateColors();
     }
 
     void renderBar()
     {
-        draw.filledRect({ relativePosition.x, relativePosition.y }, { size.w, barBgH }, { darken(barColor.color, 0.4) });
+        draw.filledRect({ relativePosition.x, relativePosition.y }, { size.w, barBgH }, { darken(barColor, 0.4) });
         if (val->hasType(VALUE_CENTERED)) {
             float valPct = val->pct();
             if (valPct < 0.5) {
                 int w = size.w * (0.5 - valPct);
-                draw.filledRect({ relativePosition.x + (int)(size.w * 0.5) - w, relativePosition.y }, { w, barH }, { barColor.color });
+                draw.filledRect({ relativePosition.x + (int)(size.w * 0.5) - w, relativePosition.y }, { w, barH }, { barColor });
             } else {
-                draw.filledRect({ relativePosition.x + (int)(size.w * 0.5), relativePosition.y }, { (int)(size.w * (valPct - 0.5)), barH }, { barColor.color });
+                draw.filledRect({ relativePosition.x + (int)(size.w * 0.5), relativePosition.y }, { (int)(size.w * (valPct - 0.5)), barH }, { barColor });
             }
         } else {
-            draw.filledRect({ relativePosition.x, relativePosition.y }, { (int)(size.w * val->pct()), barH }, { barColor.color });
+            draw.filledRect({ relativePosition.x, relativePosition.y }, { (int)(size.w * val->pct()), barH }, { barColor });
         }
     }
 
@@ -123,19 +120,32 @@ public:
                 int unitY = textY + maxFontSize - unitFontSize;
 
                 if (showLabelOverValue != -1) {
-                    draw.textCentered({ labelOverValueX == -1 ? x : relativePosition.x + labelOverValueX, relativePosition.y + showLabelOverValue }, getLabel(), labelFontSize, { labelColor.color, .font = font });
+                    draw.textCentered({ labelOverValueX == -1 ? x : relativePosition.x + labelOverValueX, relativePosition.y + showLabelOverValue }, getLabel(), labelFontSize, { labelColor, .font = font });
                 } else if (showLabel) {
-                    x = draw.text({ x, labelY }, getLabel(), labelFontSize, { labelColor.color, .font = font }) + 2;
+                    x = draw.text({ x, labelY }, getLabel(), labelFontSize, { labelColor, .font = font }) + 2;
                 }
 
                 if (showValue) {
-                    x = showLabel ? draw.text({ x, valueY }, getValStr(), valueFontSize, { valueColor.color, .font = font, .fontHeight = fontHeightValue })
-                                  : draw.textCentered({ x, valueY }, getValStr(), valueFontSize, { valueColor.color, .font = font, .maxWidth = size.w - 4, .fontHeight = fontHeightValue });
+                    x = showLabel ? draw.text({ x, valueY }, getValStr(), valueFontSize, { valueColor, .font = font, .fontHeight = fontHeightValue })
+                                  : draw.textCentered({ x, valueY }, getValStr(), valueFontSize, { valueColor, .font = font, .maxWidth = size.w - 4, .fontHeight = fontHeightValue });
                     if (showUnit && val->props().unit.length() > 0) {
-                        draw.text({ x + 2, unitY }, val->props().unit, unitFontSize, { unitColor.color, .font = font });
+                        draw.text({ x + 2, unitY }, val->props().unit, unitFontSize, { unitColor, .font = font });
                     }
                 }
             }
+        }
+    }
+
+    bool isActive = true;
+    void onGroupChanged(int8_t index) override
+    {
+        bool shouldActivate = false;
+        if (group == index || group == -1) {
+            shouldActivate = true;
+        }
+        if (shouldActivate != isActive) {
+            isActive = shouldActivate;
+            renderNext();
         }
     }
 
@@ -283,11 +293,30 @@ public:
         }
 
         /*md - `VALUE_COLOR: color` is the color of the value. */
+        if (strcmp(key, "VALUE_COLOR") == 0) {
+            valueColor = draw.getColor(params);
+            return true;
+        }
+
         /*md - `BAR_COLOR: color` is the color of the bar. */
+        if (strcmp(key, "BAR_COLOR") == 0) {
+            barColor = draw.getColor(params);
+            return true;
+        }
+
         /*md - `UNIT_COLOR: color` is the color of the unit. */
+        if (strcmp(key, "UNIT_COLOR") == 0) {
+            unitColor = draw.getColor(params);
+            return true;
+        }
+
         /*md - `LABEL_COLOR: color` is the color of the label. */
-        return GroupColorComponent::config(key, params);
+        if (strcmp(key, "LABEL_COLOR") == 0) {
+            labelColor = draw.getColor(params);
+            return true;
+        }
+        
+        return false;
     }
 };
 
-#endif

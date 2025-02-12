@@ -1,12 +1,9 @@
-#ifndef _UI_COMPONENT3_ENCODER_H_
-#define _UI_COMPONENT3_ENCODER_H_
+#pragma once
 
 #include "../component.h"
 #include "../utils/color.h"
 #include <math.h>
 #include <string>
-
-#include "utils/GroupColorComponent.h"
 
 /*md
 ## KnobValue
@@ -15,7 +12,7 @@
 
 KnobValue is used to display current audio plugin value for a given parameter.
 */
-class KnobValueComponent : public GroupColorComponent {
+class KnobValueComponent : public Component {
 protected:
     const char* name = NULL;
     std::string label;
@@ -47,9 +44,9 @@ protected:
     void renderLabel()
     {
         if (stringValueReplaceTitle && value->hasType(VALUE_STRING)) {
-            draw.textCentered({ knobCenter.x, relativePosition.y + size.h - fontLabelSize }, value->string(), fontLabelSize, { titleColor.color, NULL, size.w - 4 });
+            draw.textCentered({ knobCenter.x, relativePosition.y + size.h - fontLabelSize }, value->string(), fontLabelSize, { titleColor, NULL, size.w - 4 });
         } else {
-            draw.textCentered({ knobCenter.x, relativePosition.y + size.h - fontLabelSize }, label.empty() ? value->label() : label, fontLabelSize, { titleColor.color });
+            draw.textCentered({ knobCenter.x, relativePosition.y + size.h - fontLabelSize }, label.empty() ? value->label() : label, fontLabelSize, { titleColor });
         }
     }
 
@@ -58,14 +55,14 @@ protected:
         int val = 280 * value->pct();
 
         if (val < 280) {
-            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, -230, 50, { barBackgroundColor.color, .thickness = 3 });
+            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, -230, 50, { barBackgroundColor, .thickness = 3 });
         }
         if (val > 0) {
             int endAngle = 130 + val;
             if (endAngle > 360) {
                 endAngle = endAngle - 360;
             }
-            Color color = useBar2Color != -1 && value->pct() > useBar2Color ? bar2Color.color : barColor.color;
+            Color color = useBar2Color != -1 && value->pct() > useBar2Color ? bar2Color : barColor;
             draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, endAngle, { color, .thickness = 5 });
         }
     }
@@ -74,30 +71,30 @@ protected:
     {
         int val = 280 * value->pct();
 
-        draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, -230, 50, { barBackgroundColor.color, .thickness = 3 });
+        draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, -230, 50, { barBackgroundColor, .thickness = 3 });
         if (val > 140) {
             int endAngle = 130 + val;
             if (endAngle > 360) {
                 endAngle = endAngle - 360;
             }
 
-            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 270, endAngle, { barColor.color, .thickness = 5 });
+            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 270, endAngle, { barColor, .thickness = 5 });
         } else if (val < 140) {
-            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, -230 + val, 270, { barColor.color, .thickness = 5 });
+            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, -230 + val, 270, { barColor, .thickness = 5 });
         }
     }
 
     void renderUnit()
     {
         if (showUnit && value->props().unit.length() > 0) {
-            draw.textCentered({ valuePosition.x, valuePosition.y + fontValueSize - 5 }, value->props().unit, fontUnitSize, { unitColor.color });
+            draw.textCentered({ valuePosition.x, valuePosition.y + fontValueSize - 5 }, value->props().unit, fontUnitSize, { unitColor });
         }
     }
 
     void renderValue()
     {
         if (!stringValueReplaceTitle && ((value->hasType(VALUE_STRING) && type != 3) || type == ENCODER_TYPE::STRING)) {
-            draw.textCentered({ valuePosition.x, valuePosition.y - 5 }, value->string(), fontValueSize, { valueColor.color });
+            draw.textCentered({ valuePosition.x, valuePosition.y - 5 }, value->string(), fontValueSize, { valueColor });
         } else {
             float val = value->get();
             if (type == ENCODER_TYPE::TWO_VALUES) {
@@ -111,7 +108,7 @@ protected:
             std::string valStr = std::to_string(val);
             valStr = valStr.substr(0, valStr.find(".") + valueFloatPrecision + (valueFloatPrecision > 0 ? 1 : 0));
 
-            draw.textCentered({ valuePosition.x, valuePosition.y - 5 }, valStr.c_str(), fontValueSize, { valueColor.color });
+            draw.textCentered({ valuePosition.x, valuePosition.y - 5 }, valStr.c_str(), fontValueSize, { valueColor });
         }
     }
 
@@ -120,12 +117,12 @@ protected:
         int val = value->get();
         // FIXME use floating point...
         draw.textRight({ valuePosition.x - twoSideMargin, valuePosition.y - 2 }, std::to_string((int)value->props().max - val).c_str(),
-            fontValueSize - 3, { valueColor.color });
+            fontValueSize - 3, { valueColor });
         draw.text({ valuePosition.x + twoSideMargin, valuePosition.y - 2 }, std::to_string(val).c_str(),
-            fontValueSize - 3, { valueColor.color });
+            fontValueSize - 3, { valueColor });
 
-        draw.line({ valuePosition.x, valuePosition.y - 10 }, { valuePosition.x, valuePosition.y + 10 }, { barTwoSideColor.color });
-        draw.line({ valuePosition.x - 1, valuePosition.y - 10 }, { valuePosition.x - 1, valuePosition.y + 10 }, { barTwoSideColor.color });
+        draw.line({ valuePosition.x, valuePosition.y - 10 }, { valuePosition.x, valuePosition.y + 10 }, { barTwoSideColor });
+        draw.line({ valuePosition.x - 1, valuePosition.y - 10 }, { valuePosition.x - 1, valuePosition.y + 10 }, { barTwoSideColor });
     }
 
     void renderEncoder()
@@ -149,14 +146,14 @@ protected:
 
     Color bgColor;
 
-    ToggleColor idColor;
-    ToggleColor titleColor;
-    ToggleColor valueColor;
-    ToggleColor unitColor;
-    ToggleColor barColor;
-    ToggleColor bar2Color;
-    ToggleColor barBackgroundColor;
-    ToggleColor barTwoSideColor;
+    Color idColor;
+    Color titleColor;
+    Color valueColor;
+    Color unitColor;
+    Color barColor;
+    Color bar2Color;
+    Color barBackgroundColor;
+    Color barTwoSideColor;
 
     float useBar2Color = -1.0f;
 
@@ -177,26 +174,17 @@ protected:
 
 public:
     KnobValueComponent(ComponentInterface::Props props)
-        : GroupColorComponent(props, {
-                                         { "ID_COLOR", &idColor },
-                                         { "TITLE_COLOR", &titleColor },
-                                         { "VALUE_COLOR", &valueColor },
-                                         { "UNIT_COLOR", &unitColor },
-                                         { "BAR_COLOR", &barColor },
-                                         { "BAR_2_COLOR", &bar2Color },
-                                         { "BAR_BACKGROUND_COLOR", &barBackgroundColor },
-                                         { "BAR_TWOSIDE_COLOR", &barTwoSideColor },
-                                     })
+        : Component(props)
         , margin(styles.margin)
         , bgColor(styles.colors.background)
-        , idColor({ 0x60, 0x60, 0x60, 255 }, inactiveColorRatio)
-        , titleColor(alpha(styles.colors.text, 0.4), inactiveColorRatio) // instead of alpha color should we use plain color?
-        , valueColor(alpha(styles.colors.text, 0.4), inactiveColorRatio)
-        , unitColor(alpha(styles.colors.text, 0.2), inactiveColorRatio)
-        , barColor(styles.colors.primary, inactiveColorRatio)
-        , bar2Color(styles.colors.secondary, inactiveColorRatio)
-        , barBackgroundColor(alpha(styles.colors.primary, 0.7), inactiveColorRatio)
-        , barTwoSideColor(alpha(styles.colors.primary, 0.2), inactiveColorRatio)
+        , idColor({ 0x60, 0x60, 0x60, 255 })
+        , titleColor(alpha(styles.colors.text, 0.4)) // instead of alpha color should we use plain color?
+        , valueColor(alpha(styles.colors.text, 0.4))
+        , unitColor(alpha(styles.colors.text, 0.2))
+        , barColor(styles.colors.primary)
+        , bar2Color(styles.colors.secondary)
+        , barBackgroundColor(alpha(styles.colors.primary, 0.7))
+        , barTwoSideColor(alpha(styles.colors.primary, 0.2))
     {
         if (size.h < 50) {
             printf("Encoder component height too small: %dx%d. Min height is 50.\n", size.w, size.h);
@@ -277,9 +265,9 @@ public:
 
         /*md - `COLOR: #3791a1` set the ring color */
         if (strcmp(key, "COLOR") == 0) {
-            barColor.setColor(draw.getColor(params), inactiveColorRatio);
-            barBackgroundColor.setColor(alpha(barColor.color, 0.7), inactiveColorRatio);
-            barTwoSideColor.setColor(alpha(barColor.color, 0.2), inactiveColorRatio);
+            barColor = draw.getColor(params);
+            barBackgroundColor = alpha(barColor, 0.7);
+            barTwoSideColor = alpha(barColor, 0.2);
             return true;
         }
 
@@ -291,9 +279,9 @@ public:
 
         /*md - `TEXT_COLOR: #ffffff` set the text color */
         if (strcmp(key, "TEXT_COLOR") == 0) {
-            titleColor.setColor(alpha(draw.getColor(params), 0.4), inactiveColorRatio);
-            valueColor.setColor(alpha(draw.getColor(params), 0.4), inactiveColorRatio);
-            unitColor.setColor(alpha(draw.getColor(params), 0.2), inactiveColorRatio);
+            titleColor = alpha(draw.getColor(params), 0.4);
+            valueColor = alpha(draw.getColor(params), 0.4);
+            unitColor = alpha(draw.getColor(params), 0.2);
             return true;
         }
 
@@ -345,7 +333,20 @@ public:
             return true;
         }
 
-        return GroupColorComponent::config(key, params);
+        return false;
+    }
+
+    bool isActive = true;
+    void onGroupChanged(int8_t index) override
+    {
+        bool shouldActivate = false;
+        if (group == index || group == -1) {
+            shouldActivate = true;
+        }
+        if (shouldActivate != isActive) {
+            isActive = shouldActivate;
+            renderNext();
+        }
     }
 
     void onEncoder(int id, int8_t direction)
@@ -368,5 +369,3 @@ public:
         return NULL;
     }
 };
-
-#endif

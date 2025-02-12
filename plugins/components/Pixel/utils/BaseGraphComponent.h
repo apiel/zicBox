@@ -1,12 +1,10 @@
-#ifndef _UI_PIXEL_COMPONENT_BASE_GRAPH_H_
-#define _UI_PIXEL_COMPONENT_BASE_GRAPH_H_
+#pragma once
 
-#include "./GroupColorComponent.h"
 #include "helpers/range.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
 
-class BaseGraphComponent : public GroupColorComponent {
+class BaseGraphComponent : public Component {
 protected:
     AudioPlugin* plugin = NULL;
 
@@ -15,8 +13,8 @@ protected:
 
     Color bgColor;
 
-    ToggleColor fillColor;
-    ToggleColor outlineColor;
+    Color fillColor;
+    Color outlineColor;
 
     int waveformHeight = 30;
     int waveformY = 0;
@@ -35,10 +33,10 @@ protected:
             }
             // printf("draw\n");
             if (filled) {
-                draw.filledPolygon(relativePoints, { fillColor.color });
+                draw.filledPolygon(relativePoints, { fillColor });
             }
             if (outline) {
-                draw.lines(relativePoints, { outlineColor.color });
+                draw.lines(relativePoints, { outlineColor });
             }
             // printf("draw end\n");
         }
@@ -46,12 +44,11 @@ protected:
 
 public:
     BaseGraphComponent(ComponentInterface::Props props)
-        : GroupColorComponent(props, { { "FILL_COLOR", &fillColor }, { "OUTLINE_COLOR", &outlineColor } })
+        : Component(props)
         , bgColor(styles.colors.background)
-        , fillColor(styles.colors.primary, inactiveColorRatio)
-        , outlineColor(lighten(styles.colors.primary, 0.5), inactiveColorRatio)
+        , fillColor(styles.colors.primary)
+        , outlineColor(lighten(styles.colors.primary, 0.5))
     {
-        updateColors();
         waveformHeight = props.size.h;
     }
     virtual std::vector<Point> getPoints() = 0;
@@ -61,6 +58,19 @@ public:
         waveformY = relativePosition.y + 8;
         draw.filledRect(relativePosition, size, { bgColor });
         renderGraph();
+    }
+
+    bool isActive = true;
+    void onGroupChanged(int8_t index) override
+    {
+        bool shouldActivate = false;
+        if (group == index || group == -1) {
+            shouldActivate = true;
+        }
+        if (shouldActivate != isActive) {
+            isActive = shouldActivate;
+            renderNext();
+        }
     }
 
     bool config(char* key, char* value)
@@ -85,17 +95,6 @@ public:
             return true;
         }
 
-        return GroupColorComponent::config(key, value);
+        return false;
     }
 };
-
-/*.md **Config**: */
-/*.md - `PLUGIN: plugin_name` set plugin target */
-/*.md - `OUTLINE: true/false` is if the envelop should be outlined (default: true). */
-/*.md - `FILLED: true/false` is if the envelop should be filled (default: true). */
-/*.md - `BACKGROUND_COLOR: color` is the background color of the component. */
-/*.md - `FILL_COLOR: color` is the color of the envelop. */
-/*.md - `OUTLINE_COLOR: color` is the color of the envelop outline. */
-/*.md - `INACTIVE_COLOR_RATIO: 0.0 - 1.0` is the ratio of darkness for the inactive color (default: 0.5). */
-
-#endif

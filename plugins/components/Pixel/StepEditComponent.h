@@ -1,12 +1,10 @@
-#ifndef _UI_PIXEL_COMPONENT_STEP_EDIT_H_
-#define _UI_PIXEL_COMPONENT_STEP_EDIT_H_
+#pragma once
 
 #include "helpers/midiNote.h"
 #include "plugins/audio/stepInterface.h"
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
-#include "utils/GroupColorComponent.h"
 
 /*md
 ## StepEdit
@@ -16,7 +14,7 @@
 StepEdit component is used to edit a step value.
 */
 
-class StepEditComponent : public GroupColorComponent {
+class StepEditComponent : public Component {
 protected:
     AudioPlugin* plugin = NULL;
     Step* step;
@@ -30,12 +28,12 @@ protected:
 
     Color bgColor;
     Color selection;
-    ToggleColor text;
-    ToggleColor text2;
-    ToggleColor barBackground;
-    ToggleColor bar;
-    ToggleColor textMotion1;
-    ToggleColor textMotion2;
+    Color text;
+    Color text2;
+    Color barBackground;
+    Color bar;
+    Color textMotion1;
+    Color textMotion2;
 
     uint8_t stepIndex = -1;
 
@@ -53,15 +51,15 @@ protected:
 
 public:
     StepEditComponent(ComponentInterface::Props props)
-        : GroupColorComponent(props, { { "TEXT_COLOR", &text }, { "TEXT2_COLOR", &text2 }, { "BAR_BACKGROUND_COLOR", &barBackground }, { "BAR_COLOR", &bar }, { "TEXT_MOTION1_COLOR", &textMotion1 }, { "TEXT_MOTION2_COLOR", &textMotion2 } })
+        : Component(props)
         , bgColor(styles.colors.background)
         , selection(styles.colors.primary)
-        , text(styles.colors.text, inactiveColorRatio)
-        , text2(darken(styles.colors.text, 0.5), inactiveColorRatio)
-        , barBackground(darken(styles.colors.tertiary, 0.5), inactiveColorRatio)
-        , bar(styles.colors.tertiary, inactiveColorRatio)
-        , textMotion1(styles.colors.secondary, inactiveColorRatio)
-        , textMotion2(styles.colors.quaternary, inactiveColorRatio)
+        , text(styles.colors.text)
+        , text2(darken(styles.colors.text, 0.5))
+        , barBackground(darken(styles.colors.tertiary, 0.5))
+        , bar(styles.colors.tertiary)
+        , textMotion1(styles.colors.secondary)
+        , textMotion2(styles.colors.quaternary)
         , keypadLayout(this, [&](std::string action) {
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
             if (action == ".toggle") {
@@ -92,8 +90,6 @@ public:
             return func;
         })
     {
-        updateColors();
-
         jobRendering = [this](unsigned long now) {
             if (seqPlayingPtr != NULL && *seqPlayingPtr != seqPlaying) {
                 seqPlaying = *seqPlayingPtr;
@@ -125,8 +121,8 @@ public:
         const char* note = MIDI_NOTES_STR[step->note];
         const char noteLetter[2] = { note[0], '\0' };
         const char* noteSuffix = note + 1;
-        int x = draw.text({ relativePosition.x + 2, y }, noteLetter, 16, { text.color });
-        draw.text({ x - 2, y + 6 }, noteSuffix, 8, { text.color });
+        int x = draw.text({ relativePosition.x + 2, y }, noteLetter, 16, { text });
+        draw.text({ x - 2, y + 6 }, noteSuffix, 8, { text });
     }
 
     void render() override
@@ -138,16 +134,16 @@ public:
             if (step->enabled) {
                 renderNote(y);
                 if (view->contextVar[shiftModeIndex]) {
-                    draw.text({ relativePosition.x + 32, y }, stepConditions[step->condition].name, 8, { text2.color });
+                    draw.text({ relativePosition.x + 32, y }, stepConditions[step->condition].name, 8, { text2 });
 
                     std::string motionSteps = stepMotions[step->motion].name;
                     int x = relativePosition.x + 32;
                     if (motionSteps == "---") {
-                        draw.text({ x, y + 8 }, motionSteps, 8, { text2.color });
+                        draw.text({ x, y + 8 }, motionSteps, 8, { text2 });
                     } else {
                         char* motionStep = strtok((char*)motionSteps.c_str(), ",");
                         for (int i = 0; motionStep != NULL; i++) {
-                            x = draw.text({ x, y + 8 }, motionStep, 8, { i % 2 == 0 ? textMotion1.color : textMotion2.color });
+                            x = draw.text({ x, y + 8 }, motionStep, 8, { i % 2 == 0 ? textMotion1 : textMotion2 });
                             motionStep = strtok(NULL, ",");
                         }
                     }
@@ -156,23 +152,23 @@ public:
 
                     int barWidth = size.w * 0.40;
                     int barX = (int)(centerX - barWidth * 0.5);
-                    draw.filledRect({ barX, y }, { barWidth, 3 }, { barBackground.color });
+                    draw.filledRect({ barX, y }, { barWidth, 3 }, { barBackground });
 
                     if (step->velocity) {
-                        draw.filledRect({ barX, y }, { (int)(barWidth * step->velocity), 3 }, { bar.color });
+                        draw.filledRect({ barX, y }, { (int)(barWidth * step->velocity), 3 }, { bar });
                     }
 
                     // TODO if 0 make infinit sign
                     if (!step->len) {
-                        // draw.textRight({ relativePosition.x + size.w - 4, y + 6 }, "OO", 8, { text2.color });
-                        draw.textRight({ relativePosition.x + size.w - 4, y + 6 }, "O", 8, { text2.color });
-                        draw.textRight({ relativePosition.x + size.w - 4 - 5, y + 6 }, "O", 8, { text2.color });
+                        // draw.textRight({ relativePosition.x + size.w - 4, y + 6 }, "OO", 8, { text2 });
+                        draw.textRight({ relativePosition.x + size.w - 4, y + 6 }, "O", 8, { text2 });
+                        draw.textRight({ relativePosition.x + size.w - 4 - 5, y + 6 }, "O", 8, { text2 });
                     } else {
-                        draw.textRight({ relativePosition.x + size.w - 4, y + 6 }, std::to_string(step->len) + "/32", 8, { text2.color });
+                        draw.textRight({ relativePosition.x + size.w - 4, y + 6 }, std::to_string(step->len) + "/32", 8, { text2 });
                     }
                 }
             } else {
-                draw.textCentered({ (int)(relativePosition.x + size.w * 0.5), y }, "---", 16, { text.color });
+                draw.textCentered({ (int)(relativePosition.x + size.w * 0.5), y }, "---", 16, { text });
             }
 
             if (selected) {
@@ -180,10 +176,23 @@ public:
             }
 
             if ((seqPlayingPtr == NULL || seqPlaying) && notePlaying) {
-                // draw.filledRect({ relativePosition.x, relativePosition.y + size.h - 2 }, { size.w, 2 }, { bar.color });
-                // draw.filledRect({ relativePosition.x + (int)(size.w * 0.25), relativePosition.y + size.h - 2 }, { (int)(size.w * 0.5), 2 }, { bar.color });
-                draw.filledRect({ relativePosition.x + 2, relativePosition.y + size.h - 4 }, { 16, 4 }, { bar.color });
+                // draw.filledRect({ relativePosition.x, relativePosition.y + size.h - 2 }, { size.w, 2 }, { bar });
+                // draw.filledRect({ relativePosition.x + (int)(size.w * 0.25), relativePosition.y + size.h - 2 }, { (int)(size.w * 0.5), 2 }, { bar });
+                draw.filledRect({ relativePosition.x + 2, relativePosition.y + size.h - 4 }, { 16, 4 }, { bar });
             }
+        }
+    }
+
+    bool isActive = true;
+    void onGroupChanged(int8_t index) override
+    {
+        bool shouldActivate = false;
+        if (group == index || group == -1) {
+            shouldActivate = true;
+        }
+        if (shouldActivate != isActive) {
+            isActive = shouldActivate;
+            renderNext();
         }
     }
 
@@ -216,21 +225,6 @@ public:
                 }
                 renderNext();
             }
-        }
-    }
-
-    void onGroupChanged(int8_t index) override
-    {
-        bool isSameGroup = group == index;
-        bool isInGroupRange = groupRange[0] != -1 && index >= groupRange[0] && index <= groupRange[1];
-        if (isInGroupRange != isActive) {
-            isActive = isInGroupRange;
-            updateColors();
-            renderNext();
-        }
-        if (isSameGroup != selected) {
-            selected = isSameGroup;
-            renderNext();
         }
     }
 
@@ -303,12 +297,35 @@ public:
         }
 
         /*md - `TEXT_COLOR: color` is the color of the text. */
+        if (strcmp(key, "TEXT_COLOR") == 0) {
+            text = draw.getColor(value);
+            return true;
+        }
+
         /*md - `BAR_COLOR: color` is the color of the velocity bar. */
+        if (strcmp(key, "BAR_COLOR") == 0) {
+            bar = draw.getColor(value);
+            return true;
+        }
+
         /*md - `BAR_BACKGROUND_COLOR: color` is the color of the velocity bar background. */
+        if (strcmp(key, "BAR_BACKGROUND_COLOR") == 0) {
+            barBackground = draw.getColor(value);
+            return true;
+        }
+
         /*md - `TEXT_MOTION1_COLOR: color` is the first color of the motion text. */
+        if (strcmp(key, "TEXT_MOTION1_COLOR") == 0) {
+            textMotion1 = draw.getColor(value);
+            return true;
+        }
+
         /*md - `TEXT_MOTION2_COLOR: color` is the second color of the motion text. */
-        return GroupColorComponent::config(key, value);
+        if (strcmp(key, "TEXT_MOTION2_COLOR") == 0) {
+            textMotion2 = draw.getColor(value);
+            return true;
+        }
+
+        return false;
     }
 };
-
-#endif

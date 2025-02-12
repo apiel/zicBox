@@ -1,10 +1,8 @@
-#ifndef _UI_PIXEL_COMPONENT_TEXT_H_
-#define _UI_PIXEL_COMPONENT_TEXT_H_
+#pragma once
 
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
-#include "utils/GroupColorComponent.h"
 
 /*md
 ## Text
@@ -14,9 +12,9 @@
 Text component is used to display text.
 */
 
-class TextComponent : public GroupColorComponent {
+class TextComponent : public Component {
     Color bgColor;
-    ToggleColor color;
+    Color color;
 
     std::string text;
 
@@ -29,12 +27,11 @@ class TextComponent : public GroupColorComponent {
 
 public:
     TextComponent(ComponentInterface::Props props)
-        : GroupColorComponent(props, { { "COLOR", &color } })
+        : Component(props)
         , bgColor(styles.colors.background)
-        , color(darken(styles.colors.text, 0.5), inactiveColorRatio)
+        , color(darken(styles.colors.text, 0.5))
         , keypadLayout(this)
     {
-        updateColors();
     }
 
     void render() override
@@ -44,11 +41,24 @@ public:
             if (!text.empty()) {
                 if (centered) {
                     Point textPos = { relativePosition.x + (int)(size.w * 0.5), relativePosition.y + (int)(size.h * 0.5) - 4 };
-                    draw.textCentered(textPos, text, fontSize, { color.color, .font = font, .fontHeight = fontHeight });
+                    draw.textCentered(textPos, text, fontSize, { color, .font = font, .fontHeight = fontHeight });
                 } else {
-                    draw.text({ relativePosition.x, relativePosition.y }, text, fontSize, { color.color, .font = font, .fontHeight = fontHeight });
+                    draw.text({ relativePosition.x, relativePosition.y }, text, fontSize, { color, .font = font, .fontHeight = fontHeight });
                 }
             }
+        }
+    }
+
+    bool isActive = true;
+    void onGroupChanged(int8_t index) override
+    {
+        bool shouldActivate = false;
+        if (group == index || group == -1) {
+            shouldActivate = true;
+        }
+        if (shouldActivate != isActive) {
+            isActive = shouldActivate;
+            renderNext();
         }
     }
 
@@ -103,8 +113,11 @@ public:
         }
 
         /*md - `COLOR: color` is the color of the component. */
-        return GroupColorComponent::config(key, value);
+        if (strcmp(key, "COLOR") == 0) {
+            color = draw.getColor(value);
+            return true;
+        }
+
+        return false;
     }
 };
-
-#endif

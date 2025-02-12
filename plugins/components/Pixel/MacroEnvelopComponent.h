@@ -1,10 +1,8 @@
-#ifndef _UI_PIXEL_COMPONENT_MACRO_ENV_H_
-#define _UI_PIXEL_COMPONENT_MACRO_ENV_H_
+#pragma once
 
 #include "helpers/range.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
-#include "utils/GroupColorComponent.h"
 #include <stdexcept>
 
 /*md
@@ -15,7 +13,7 @@
 Show a representation of a macro envelop (envelop with relative time and modulation, without sustain).
 */
 
-class MacroEnvelopComponent : public GroupColorComponent {
+class MacroEnvelopComponent : public Component {
 protected:
     struct Data {
         float modulation;
@@ -43,10 +41,10 @@ protected:
 
     Color bgColor;
 
-    ToggleColor fillColor;
-    ToggleColor outlineColor;
-    ToggleColor textColor;
-    ToggleColor cursorColor;
+    Color fillColor;
+    Color outlineColor;
+    Color textColor;
+    Color cursorColor;
 
     int encoders[4] = { 0, 1, 2, 3 };
 
@@ -76,10 +74,10 @@ protected:
         }
 
         if (filled) {
-            draw.filledPolygon(points, { fillColor.color });
+            draw.filledPolygon(points, { fillColor });
         }
         if (outline) {
-            draw.lines(points, { outlineColor.color });
+            draw.lines(points, { outlineColor });
         }
     }
 
@@ -90,11 +88,11 @@ protected:
         if (currentstep < envData->size() - 1) {
             float currentTime = envData->at(currentstep).time;
             float nextTime = envData->at(currentstep + 1).time;
-            draw.line({ (int)(relativePosition.x + size.w * currentTime), cursorY }, { (int)(relativePosition.x + size.w * currentTime), cursorY - 3 }, { cursorColor.color });
-            draw.line({ (int)(relativePosition.x + size.w * currentTime), cursorY - 1 }, { (int)(relativePosition.x + size.w * nextTime), cursorY - 1 }, { cursorColor.color });
-            draw.line({ (int)(relativePosition.x + size.w * nextTime), cursorY }, { (int)(relativePosition.x + size.w * nextTime), cursorY - 3 }, { cursorColor.color });
+            draw.line({ (int)(relativePosition.x + size.w * currentTime), cursorY }, { (int)(relativePosition.x + size.w * currentTime), cursorY - 3 }, { cursorColor });
+            draw.line({ (int)(relativePosition.x + size.w * currentTime), cursorY - 1 }, { (int)(relativePosition.x + size.w * nextTime), cursorY - 1 }, { cursorColor });
+            draw.line({ (int)(relativePosition.x + size.w * nextTime), cursorY }, { (int)(relativePosition.x + size.w * nextTime), cursorY - 3 }, { cursorColor });
         } else {
-            draw.line({ relativePosition.x + size.w, cursorY }, { relativePosition.x + size.w, cursorY - 3 }, { cursorColor.color });
+            draw.line({ relativePosition.x + size.w, cursorY }, { relativePosition.x + size.w, cursorY - 3 }, { cursorColor });
         }
     }
 
@@ -102,30 +100,29 @@ protected:
     {
         int x = relativePosition.x;
         if (modePtr != NULL) {
-            draw.text({ x + 2, relativePosition.y }, modePtr->c_str(), fontSize, { textColor.color });
+            draw.text({ x + 2, relativePosition.y }, modePtr->c_str(), fontSize, { textColor });
         }
 
         if (*isMacro) {
-            draw.textRight({ x + size.w - 2, relativePosition.y }, std::to_string((int)(macro1 * 100)) + "%", fontSize, { textColor.color });
-            draw.text({ x + 2, relativePosition.y + size.h - 8 }, std::to_string((int)(macro2 * 100)) + "%", fontSize, { textColor.color });
-            draw.textRight({ x + size.w - 2, relativePosition.y + size.h - 8 }, std::to_string((int)(macro3 * 100)) + "%", fontSize, { textColor.color });
+            draw.textRight({ x + size.w - 2, relativePosition.y }, std::to_string((int)(macro1 * 100)) + "%", fontSize, { textColor });
+            draw.text({ x + 2, relativePosition.y + size.h - 8 }, std::to_string((int)(macro2 * 100)) + "%", fontSize, { textColor });
+            draw.textRight({ x + size.w - 2, relativePosition.y + size.h - 8 }, std::to_string((int)(macro3 * 100)) + "%", fontSize, { textColor });
         } else {
-            draw.text({ x + size.w - 2, relativePosition.y }, std::to_string((int)macro1 + 1) + "/" + std::to_string(envData->size()), fontSize, { textColor.color });
-            draw.textRight({ x + 2, relativePosition.y + size.h - 8 }, std::to_string((int)(macro2 * 100)) + "%", fontSize, { textColor.color });
-            draw.textRight({ x + size.w - 2, relativePosition.y + size.h - 8 }, std::to_string((int)macro3) + "ms", fontSize, { textColor.color });
+            draw.text({ x + size.w - 2, relativePosition.y }, std::to_string((int)macro1 + 1) + "/" + std::to_string(envData->size()), fontSize, { textColor });
+            draw.textRight({ x + 2, relativePosition.y + size.h - 8 }, std::to_string((int)(macro2 * 100)) + "%", fontSize, { textColor });
+            draw.textRight({ x + size.w - 2, relativePosition.y + size.h - 8 }, std::to_string((int)macro3) + "ms", fontSize, { textColor });
         }
     }
 
 public:
     MacroEnvelopComponent(ComponentInterface::Props props)
-        : GroupColorComponent(props, { { "FILL_COLOR", &fillColor }, { "OUTLINE_COLOR", &outlineColor }, { "TEXT_COLOR", &textColor }, { "CURSOR_COLOR", &cursorColor } })
+        : Component(props)
         , bgColor(styles.colors.background)
-        , textColor(styles.colors.text, inactiveColorRatio)
-        , cursorColor(styles.colors.text, inactiveColorRatio)
-        , fillColor(styles.colors.primary, inactiveColorRatio)
-        , outlineColor(lighten(styles.colors.primary, 0.5), inactiveColorRatio)
+        , textColor(styles.colors.text)
+        , cursorColor(styles.colors.text)
+        , fillColor(styles.colors.primary)
+        , outlineColor(lighten(styles.colors.primary, 0.5))
     {
-        updateColors();
         updateGraphHeight();
     }
 
@@ -143,6 +140,19 @@ public:
                     renderEditStep();
                 }
             }
+        }
+    }
+
+    bool isActive = true;
+    void onGroupChanged(int8_t index) override
+    {
+        bool shouldActivate = false;
+        if (group == index || group == -1) {
+            shouldActivate = true;
+        }
+        if (shouldActivate != isActive) {
+            isActive = shouldActivate;
+            renderNext();
         }
     }
 
@@ -229,12 +239,29 @@ public:
         }
 
         /*md - `FILL_COLOR: color` is the color of the envelop. */
+        if (strcmp(key, "FILL_COLOR") == 0) {
+            fillColor = draw.getColor(value);
+            return true;
+        }
+
         /*md - `OUTLINE_COLOR: color` is the color of the envelop outline. */
+        if (strcmp(key, "OUTLINE_COLOR") == 0) {
+            outlineColor = draw.getColor(value);
+            return true;
+        }
+
         /*md - `TEXT_COLOR: color` is the color of the text. */
+        if (strcmp(key, "TEXT_COLOR") == 0) {
+            textColor = draw.getColor(value);
+            return true;
+        }
+
         /*md - `CURSOR_COLOR: color` is the color of the cursor. */
-        /*md - `INACTIVE_COLOR_RATIO: 0.0 - 1.0` is the ratio of darkness for the inactive color (default: 0.5). */
-        return GroupColorComponent::config(key, value);
+        if (strcmp(key, "CURSOR_COLOR") == 0) {
+            cursorColor = draw.getColor(value);
+            return true;
+        }
+
+        return false;
     }
 };
-
-#endif

@@ -24,8 +24,8 @@ public:
     AdsrComponent(ComponentInterface::Props props)
         : BaseGraphEncoderComponent(props)
     {
-        textColor1.setColor(styles.colors.secondary, inactiveColorRatio);
-        textColor2.setColor(styles.colors.text, inactiveColorRatio);
+        textColor1 = styles.colors.secondary;
+        textColor2 = styles.colors.text;
     }
 
     std::vector<Title> getTitles() override

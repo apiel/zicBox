@@ -1,6 +1,9 @@
 ## Framework improvement
 
-- FIXME since track run on different thread, they might be out of sync, as tempo is running only after... Would need to run tempo first and define for which sample clock tick happen...
+- TODO enable motion/mouse on desktop
+
+- TODO make all component having keyboard
+- TODO make all component access to group and context visibility
 
 ### component
 - TODO use https://github.com/nlohmann/json for config
