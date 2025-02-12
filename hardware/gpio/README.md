@@ -1,4 +1,4 @@
-# 07 Hardware
+# 04 Hardware
 
 ## zicBox GPIO
 
