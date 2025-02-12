@@ -17,7 +17,7 @@ using namespace std;
 #include "plugins/audio/audioPlugin.h"
 #include "plugins/audio/lookupTable.h"
 
-/*md
+/*//md
 ## Global and generic config
 
 > [!NOTE]
