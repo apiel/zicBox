@@ -9,6 +9,10 @@
 - TODO use https://github.com/nlohmann/json for config
     - just need to find a way to inform jsx to whether pass json format or string format
     ---> maybe for the moment should only be for component...
+    wget -O json.hpp https://github.com/nlohmann/json/releases/latest/download/json.hpp
+    or
+    sudo apt install nlohmann-json3-dev
+
 
 - TODO use std::string as much as possible and other C++ thing to simplify life :p
 
