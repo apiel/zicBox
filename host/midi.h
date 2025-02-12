@@ -11,7 +11,9 @@ RtMidiOut midiOut;
 extern "C" void midiHandler(std::vector<unsigned char>* message)
 {
     if (message->at(0) == 0xf8) {
-        AudioPluginHandler::get().clockTick();
+        // FIXME
+        // AudioPluginHandler::get().clockTick();
+        printf("midi clock tick to be implemented\n");
     } else if (message->at(0) == 0xfa) {
         AudioPluginHandler::get().start();
     } else if (message->at(0) == 0xfb) {

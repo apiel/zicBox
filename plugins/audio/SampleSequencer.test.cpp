@@ -80,7 +80,8 @@ STATUS 1.000000)");
         if (sampleCounter >= sampleCountTarget) {
             sampleCounter = 0;
             clockCounter++;
-            plugin.onClockTick(&clockCounter);
+            // FIXME
+            // plugin.onClockTick(&clockCounter);
         }
         plugin.sample(buffer);
         audioOutput.sample(buffer);

@@ -8,8 +8,7 @@
 #include "mapping.h"
 #include "stepInterface.h"
 #include "log.h"
-
-const uint8_t MAX_STEPS = 32;
+#include "Tempo.h"
 
 // { "---", [](uint8_t loopCounter) { return true; } },
 // { "Pair", [](uint8_t loopCounter) { return loopCounter % 2 == 0; } },
@@ -61,7 +60,7 @@ Sequencer audio module can be used to sequence another audio plugin on 32 steps.
 - `99%` - 99% probability
 
 */
-class Sequencer : public Mapping {
+class Sequencer : public Mapping, public UseClock {
 protected:
     AudioPlugin::Props& props;
 
@@ -71,7 +70,6 @@ protected:
     uint8_t stepCounter = 0;
     bool isPlaying = false;
     uint8_t loopCounter = 0;
-    uint64_t* clockCounterPtr = NULL;
 
     AudioPlugin* targetPlugin = NULL;
 
@@ -96,12 +94,14 @@ protected:
         return step.note + motion(step);
     }
 
-    void onStep()
+    void onStep() override
     {
         stepCounter++;
         // printf("[%d] ------------------- seq stepCounter %d\n", track, stepCounter);
         uint8_t state = status.get();
         // If we reach the end of the sequence, we reset the step counter
+        // TODO
+        // TODO might want to use onPatternLoop!!
         if (stepCounter >= MAX_STEPS) {
             stepCounter = 0;
             loopCounter++;
@@ -161,15 +161,9 @@ public:
         initValues();
     }
 
-    void onClockTick(uint64_t* clockCounter)
+    void sample(float* buf) override
     {
-        // printf("[%d] Seq onClockTick %ld\n", track, *clockCounter);
-        clockCounterPtr = clockCounter;
-        // Clock events are sent at a rate of 24 pulses per quarter note
-        // (24/4 = 6)
-        if (*clockCounter % 6 == 0) {
-            onStep();
-        }
+        UseClock::sample(buf);
     }
 
     void allOff()
@@ -196,10 +190,6 @@ public:
         } else if (event == AudioEventType::PAUSE) {
             allOff();
         }
-    }
-
-    void sample(float* buf)
-    {
     }
 
     void setStatus(float value)
@@ -340,7 +330,7 @@ public:
             return (void*)stepConditions[*index].name;
         }
         case DATA_ID::CLOCK_COUNTER:
-            return clockCounterPtr;
+            return &clockCounter;
         case DATA_ID::GET_STEP: {
             uint8_t* index = (uint8_t*)userdata;
             if (*index >= MAX_STEPS) {

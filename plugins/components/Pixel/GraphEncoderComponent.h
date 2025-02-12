@@ -29,7 +29,7 @@ public:
     GraphEncoderComponent(ComponentInterface::Props props)
         : BaseGraphEncoderComponent(props)
     {
-        printf(">>>>>>>>>>>>>>>>>> GraphEncoderComponent y %d h %d\n", position.y, size.h);
+        // printf(">>>>>>>>>>>>>>>>>> GraphEncoderComponent y %d h %d\n", position.y, size.h);
     }
 
     std::vector<Title> getTitles() override

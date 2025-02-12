@@ -5,6 +5,7 @@
 #include <sndfile.h>
 #include <string>
 
+#include "Tempo.h"
 #include "audioPlugin.h"
 #include "fileBrowser.h"
 #include "helpers/midiNote.h"
@@ -13,9 +14,7 @@
 #include "plugins/audio/SampleStep.h"
 #include "stepInterface.h"
 
-const uint8_t MAX_STEPS = 32;
-
-class SampleSequencer : public Mapping {
+class SampleSequencer : public Mapping, public UseClock {
 protected:
     AudioPlugin::Props& props;
 
@@ -27,7 +26,6 @@ protected:
     uint8_t stepCounter = 0;
     bool isPlaying = false;
     uint8_t loopCounter = 0;
-    uint64_t* clockCounterPtr = NULL;
 
     AudioPlugin* targetPlugin = NULL;
 
@@ -39,11 +37,13 @@ protected:
         NEXT = 2
     };
 
-    void onStep()
+    void onStep() override
     {
         stepCounter++;
         uint8_t state = status.get();
         // If we reach the end of the sequence, we reset the step counter
+        // TODO
+        // TODO might want to use onPatternLoop!!
         if (stepCounter >= MAX_STEPS) {
             stepCounter = 0;
             loopCounter++;
@@ -141,16 +141,17 @@ public:
         initValues();
     }
 
-    void onClockTick(uint64_t* clockCounter) override
-    {
-        // printf("[%d] sampleSeq onClockTick %ld\n", track, *clockCounter);
-        clockCounterPtr = clockCounter;
-        // Clock events are sent at a rate of 24 pulses per quarter note
-        // (24/4 = 6)
-        if (*clockCounter % 6 == 0) {
-            onStep();
-        }
-    }
+    // FIXME
+    // void onClockTick(uint64_t* clockCounter)
+    // {
+    //     // printf("[%d] sampleSeq onClockTick %ld\n", track, *clockCounter);
+    //     clockCounterPtr = clockCounter;
+    //     // Clock events are sent at a rate of 24 pulses per quarter note
+    //     // (24/4 = 6)
+    //     if (*clockCounter % 6 == 0) {
+    //         onStep();
+    //     }
+    // }
 
     void allOff()
     {
@@ -174,6 +175,7 @@ public:
     size_t chunkPosition = CHUNK_SIZE; // Start at CHUNK_SIZE to trigger initial load
     void sample(float* buf) override
     {
+        UseClock::sample(buf);
         if (activeStep && activeStep->file && sampleIndex < activeStep->end) {
             if (chunkPosition >= CHUNK_SIZE) {
                 sf_seek(activeStep->file, (int)sampleIndex, SEEK_SET);

@@ -9,31 +9,7 @@
 #include <dlfcn.h>
 #include <atomic>
 
-#ifndef SAMPLE_RATE
-// #define SAMPLE_RATE 44100
-#define SAMPLE_RATE 48000
-#endif
-
-#ifndef APP_CHANNELS
-#define APP_CHANNELS 2
-// #define APP_CHANNELS 1
-#endif
-
-#ifndef APP_AUDIO_CHUNK
-#define APP_AUDIO_CHUNK 128
-#endif
-
-#ifndef APP_PRINT
-#define APP_PRINT printf
-#endif
-
-#ifndef APP_INFO
-#define APP_INFO APP_PRINT
-#endif
-
-#ifndef MAX_TRACKS
-#define MAX_TRACKS 32
-#endif
+#include "constants.h"
 
 float midiFreq[128] = {
     8.1757989156, 8.6619572180, 9.1770239974, 9.7227182413, 10.3008611535, 10.9133822323, 11.5623257097, 12.2498573744, 12.9782717994, 13.7500000000, 14.5676175474, 15.4338531643,

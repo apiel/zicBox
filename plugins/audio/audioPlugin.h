@@ -49,7 +49,6 @@ public:
 
     virtual AudioPlugin* getPluginPtr(const char* name, int16_t track = -1) = 0;
     virtual AudioPlugin& getPlugin(const char* name, int16_t track = -1) = 0;
-    virtual void clockTick() = 0;
     virtual void sendEvent(AudioEventType event, int16_t track = -1) = 0;
 
     struct NoteTarget {
@@ -67,6 +66,17 @@ public:
 
 class AudioPlugin {
 public:
+    enum Type {
+        AUDIO = 1 << 0, // 1
+        TEMPO = 1 << 1, // 2
+        SEQUENCER = 1 << 2, // 4
+        SYNTH = 1 << 3, // 8
+        EFFECT = 1 << 4, // 16
+        MIXER = 1 << 5, // 32
+    };
+
+    virtual int16_t getType() { return AudioPlugin::Type::AUDIO; }
+
     struct Props {
         uint64_t sampleRate;
         uint8_t channels;
@@ -145,10 +155,6 @@ public:
     virtual uint8_t getDataId(std::string name)
     {
         return atoi(name.c_str());
-    }
-
-    virtual void onClockTick(uint64_t* clockCounter)
-    {
     }
 
     virtual void onStart()
