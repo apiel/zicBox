@@ -1,4 +1,4 @@
-# 05 Controller plugins
+# 03 Controller plugins
 
 Beside the user interface, there is as well hardware controllers, like external midi controller or the builtin buttons and pots. To be able to interact with the user interface, those hardware controllers must also be loaded in the application, using `PLUGIN_CONTROLLER: ../path/of/the/controller.so`
 
