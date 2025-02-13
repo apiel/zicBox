@@ -41,7 +41,7 @@ export function PercFxView({ name }: Props) {
                 track={PercTrack}
             />
             <KnobValue
-                value="Perc TIMBRE"
+                value="Perc TONE_DECAY"
                 position={bottomRightKnob}
                 encoder_id={encBottomRight}
                 COLOR="secondary"

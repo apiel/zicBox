@@ -49,7 +49,7 @@ function ____exports.PercView(____bindingPattern0)
             track = PercTrack
         }),
         React.createElement(KnobValue, {
-            value = "Perc TONE_DECAY",
+            value = "Perc TIMBRE",
             position = bottomRightKnob,
             encoder_id = encBottomRight,
             COLOR = "secondary",
