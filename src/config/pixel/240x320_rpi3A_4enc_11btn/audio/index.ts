@@ -1,5 +1,5 @@
 import { autoSave, plugin, pluginAlias } from '@/libs/audio';
-import { BassTrack, Drum23Track, Fm1Track, SampleTrack, SynthTrack } from '../constants';
+import { BassTrack, Drum23Track, Fm1Track, PercTrack, SampleTrack, SynthTrack } from '../constants';
 
 pluginAlias('EffectDistortion2', 'libzic_EffectDistortion2.so');
 pluginAlias('EffectFilterMultiMode', 'libzic_EffectFilterMultiMode.so');
@@ -8,6 +8,7 @@ pluginAlias('SerializeTrack', 'libzic_SerializeTrack.so');
 pluginAlias('Tempo', 'libzic_Tempo.so');
 pluginAlias('Drum23', 'libzic_SynthDrum23.so');
 pluginAlias('FmDrum', 'libzic_SynthFmDrum.so');
+pluginAlias('Perc', 'libzic_SynthPerc.so');
 pluginAlias('Bass', 'libzic_SynthBass.so');
 pluginAlias('Synth', 'libzic_SynthHybrid.so');
 pluginAlias('Sample', 'libzic_SynthMonoSample.so');
@@ -49,6 +50,12 @@ plugin('SerializeTrack', [{ track, filename: 'synth', MAX_VARIATION, WORKSPACE_F
 
 plugin('SampleSequencer', [{ track: SampleTrack }]);
 plugin('SerializeTrack', [{ track: SampleTrack, filename: 'sampleSeq', MAX_VARIATION, WORKSPACE_FOLDER }]);
+
+track = PercTrack;
+plugin('Perc', [{ track }]);
+plugin('Sequencer', [{ track }]);
+plugin('TrackFx EffectGainVolume', [{ track }]);
+plugin('SerializeTrack', [{ track, filename: 'perc', MAX_VARIATION, WORKSPACE_FOLDER }]);
 
 plugin('Mixer');
 plugin('Volume EffectGainVolume');

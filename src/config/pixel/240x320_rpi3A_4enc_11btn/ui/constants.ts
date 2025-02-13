@@ -35,6 +35,8 @@ export const ColorTrack1 = '#a3c912';
 export const ColorTrack2 = '#fd6f0e';
 export const ColorTrack3 = '#15a5ca';
 export const ColorTrack4 = '#ffcd04';
+export const ColorTrack5 = '#b54f5e';
+export const ColorTrack6 = '#377275';
 
 export const encTopLeft = 0;
 export const encTopRight = 1;

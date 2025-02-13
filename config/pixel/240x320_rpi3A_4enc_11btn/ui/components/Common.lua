@@ -12,6 +12,7 @@ local btn2 = ____constants.btn2
 local btn3 = ____constants.btn3
 local btn4 = ____constants.btn4
 local btn5 = ____constants.btn5
+local btn6 = ____constants.btn6
 local btn8 = ____constants.btn8
 local btnDown = ____constants.btnDown
 local btnShift = ____constants.btnShift
@@ -29,6 +30,7 @@ ____exports.Sample1 = "Sampl1"
 ____exports.Sample2 = "Sampl2"
 ____exports.Sample3 = "Sampl3"
 ____exports.Clips = "Clips"
+____exports.Perc = "Perc"
 function ____exports.Common(____bindingPattern0)
     local selectedBackground
     local track
@@ -56,12 +58,13 @@ function ____exports.Common(____bindingPattern0)
         ),
         React.createElement(
             TextGridSel,
-            __TS__ObjectAssign({rows = {(((((____exports.Kick .. " ") .. ____exports.Bass) .. " ") .. ____exports.Fm1) .. " ") .. ____exports.Synth, (((((____exports.Sample1 .. " ") .. ____exports.Sample2) .. " ") .. ____exports.Sample3) .. " ") .. ____exports.Clips}, keys = {
+            __TS__ObjectAssign({rows = {(((((____exports.Kick .. " ") .. ____exports.Bass) .. " ") .. ____exports.Fm1) .. " ") .. ____exports.Synth, (((((____exports.Sample1 .. " ") .. ____exports.Perc) .. " ") .. ____exports.Sample3) .. " ") .. ____exports.Clips}, keys = {
                 {key = btn1, action = "setView:Drum23"},
                 {key = btn2, action = "setView:Bass"},
                 {key = btn3, action = "setView:Fm1"},
                 {key = btn4, action = "setView:Synth"},
                 {key = btn5, action = "setView:Sample"},
+                {key = btn6, action = "setView:Perc"},
                 {key = btn8, action = "setView:Clips"},
                 {key = btnUp, action = "setView:Menu"},
                 {key = btnDown, action = "playPause"},

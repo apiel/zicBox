@@ -5,4 +5,5 @@ ____exports.BassTrack = 2
 ____exports.Fm1Track = 3
 ____exports.SynthTrack = 4
 ____exports.SampleTrack = 5
+____exports.PercTrack = 6
 return ____exports
