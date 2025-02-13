@@ -14,6 +14,11 @@ Synth engine to generate percussion.
 
 class SynthPerc : public Mapping {
 protected:
+    float whiteNoise()
+    {
+        return props.lookupTable->getNoise();
+    }
+
     // Sine wave oscillator
     float sineWave(float frequency, float phase)
     {
@@ -55,6 +60,41 @@ protected:
             // return tanhLookup(input * (1.0f + amount * 5.0f)); // Drive
         }
         return input;
+    }
+
+    // Bandpass filter for metallic noise characteristics
+    float low = 0.0f, high = 0.0f;
+    float bandpassFilter(float input)
+    {
+        float omega = 2.0f * M_PI * bandFreq.get() / props.sampleRate;
+        float alpha = sinf(omega) / (2.0f * bandQ.get());
+
+        float a0 = 1.0f + alpha;
+        float a1 = -2.0f * cosf(omega);
+        float a2 = 1.0f - alpha;
+
+        float b0 = alpha;
+        float b1 = 0.0f;
+        float b2 = -alpha;
+
+        float out = (b0 / a0) * input + (b1 / a0) * low + (b2 / a0) * high - (a1 / a0) * low - (a2 / a0) * high;
+        high = low;
+        low = out;
+        return out;
+    }
+
+    // Low-pass filter for tone brightness control
+    float prevInput = 0.0f;
+    float prevOutput = 0.0f;
+    float lowPassFilter(float input)
+    {
+        float rc = 1.0f / (2.0f * M_PI * noiseBrightness.get());
+        float dt = 1.0f / props.sampleRate;
+        float alpha = dt / (rc + dt);
+        float output = alpha * input + (1.0f - alpha) * prevOutput;
+        prevInput = input;
+        prevOutput = output;
+        return output;
     }
 
     static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
@@ -99,6 +139,23 @@ public:
     /*md - REVERB controls delay time, feedback, and mix with one parameter. */
     Val& reverb = val(0.3f, "REVERB", { "Reverb", .unit = "%" });
 
+    /*md - `TRANSIENT_DURATION` set the transient duration. */
+    Val& transientDuration = val(10.0f, "TRANSIENT_DURATION", { "Transient", .min = 1.0, .max = 50.0, .step = 1.0, .unit = "ms" });
+    /*md - `TRANSIENT_INTENSITY` set the transient intensity. */
+    Val& transientIntensity = val(0.0f, "TRANSIENT_INTENSITY", { "Transient", .unit = "%" });
+
+    /*md - `BAND_FREQ` set the band frequency. */
+    Val& bandFreq = val(5000.0f, "BAND_FREQ", { "Band Freq.", .min = 2000.0, .max = 9900.0, .step = 100.0, .unit = "Hz" });
+    /*md - `BAND_Q` set the band Q. */
+    Val& bandQ = val(1.0f, "BAND_Q", { "Band Q", .min = 0.5, .max = 10.0, .step = 0.1, .floatingPoint = 1 });
+    /*md - `METALLIC_NOISE_MIX` set the metallic noise mix. */
+    Val& metallicNoiseMix = val(50.0f, "METALLIC_NOISE_MIX", { "Noise morph", .unit = "%" });
+    /*md - `NOISE_BRIGHTNESS` set the noise brightness. */
+    Val& noiseBrightness = val(5000.0f, "NOISE_BRIGHTNESS", { "Noise Brightness", .min = 1000.0, .max = 10000.0, .step = 100.0, .unit = "Hz" });
+
+    /*md - `MIX` set the mix between tone and noise. */
+    Val& mix = val(50.0f, "MIX", { "Mix", .step = 0.1, .floatingPoint = 1, .unit = "%" });
+
     SynthPerc(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
     {
@@ -112,6 +169,7 @@ public:
     float resonatorState = 0.0f;
     int i = 0;
     float noteFreq = 440.0f;
+    int transientSamples = 0;
     void sample(float* buf) override
     {
         if (i < totalSamples) {
@@ -126,8 +184,30 @@ public:
                 // Adjust timbre by filtering harmonics dynamically
                 tone *= (1.0f - timbre.pct()) + timbre.pct() * sinf(2.0f * M_PI * noteFreq * 0.5f * t);
             }
-            float output = tone * env;
-            output = applyBoost(tone, env);
+
+            // Generate raw noise
+            float rawNoise = whiteNoise();
+
+            // Apply bandpass filters for metallic noise
+            float metallicNoise = bandpassFilter(rawNoise);
+
+            // Transient component
+            if (i < totalSamples / 10) {
+                metallicNoise += transientIntensity.get() * whiteNoise();
+            }
+
+            metallicNoise = (metallicNoiseMix.pct() * metallicNoise) + ((1.0f - metallicNoiseMix.pct()) * rawNoise);
+
+            // Apply tone brightness (low-pass filter)
+            float noise = lowPassFilter(metallicNoise) * env;
+
+            // Transient component
+            if (i < transientSamples && transientIntensity.pct() > 0.0f) {
+                noise += transientIntensity.pct() * 5 * whiteNoise() * (1.0f - ((float)(i) / transientSamples));
+            }
+
+            float output = applyBoost(tone, env);
+            output = mix.pct() * noise + (1.0f - mix.pct()) * output;
             output = applyReverb(output);
 
             buf[track] = output;
@@ -145,8 +225,8 @@ public:
     void noteOn(uint8_t note, float _velocity) override
     {
         const float sampleRate = props.sampleRate;
-        const float durationSec = duration.get() / 1000.0f;
-        totalSamples = static_cast<int>(sampleRate * durationSec);
+        totalSamples = static_cast<int>(sampleRate * (duration.get() / 1000.0f));
+        transientSamples = static_cast<int>(sampleRate * (transientDuration.get() / 1000.0f));
         phase = 0.0f;
         resonatorState = 0.0f;
         noteFreq = baseFreq.get() * powf(2.0f, (note - baseNote) / 12.0f);

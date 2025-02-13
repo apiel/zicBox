@@ -15,6 +15,7 @@ local ____constants = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constant
 local btn1 = ____constants.btn1
 local btn2 = ____constants.btn2
 local btn3 = ____constants.btn3
+local btn4 = ____constants.btn4
 local btn5 = ____constants.btn5
 local btn6 = ____constants.btn6
 local btn7 = ____constants.btn7
@@ -22,7 +23,7 @@ local btn8 = ____constants.btn8
 local btnDown = ____constants.btnDown
 local btnShift = ____constants.btnShift
 local btnUp = ____constants.btnUp
-local ColorTrack2 = ____constants.ColorTrack2
+local ColorTrack6 = ____constants.ColorTrack6
 function ____exports.TextGridPerc(____bindingPattern0)
     local selected
     selected = ____bindingPattern0.selected
@@ -31,18 +32,19 @@ function ____exports.TextGridPerc(____bindingPattern0)
         React.Fragment,
         nil,
         React.createElement(Title, {title = Perc}),
-        React.createElement(Rect, {position = {70, 28, 6, 6}, color = ColorTrack2}),
+        React.createElement(Rect, {position = {70, 28, 6, 6}, color = ColorTrack6}),
         React.createElement(TextGridSel, {
-            selectedBackground = ColorTrack2,
-            rows = {"Main Fx Env &empty", "Seq. &empty &empty &empty"},
+            selectedBackground = ColorTrack6,
+            rows = {"Main Fx Env Noise1", "Seq. &empty &empty Noise2"},
             keys = {
                 {key = btn1, action = "setView:Perc"},
                 {key = btn2, action = "setView:PercFx"},
                 {key = btn3, action = "setView:PercEnv"},
+                {key = btn4, action = "setView:PercNoise"},
                 {key = btn5, action = "setView:PercSeq"},
                 {key = btn6, action = "noteOn:Perc:60"},
                 {key = btn7, action = "noteOn:Perc:60"},
-                {key = btn8, action = "noteOn:Perc:60"},
+                {key = btn8, action = "setView:PercNoise2"},
                 {key = btnUp, action = "noteOn:Perc:60"},
                 {key = btnDown, action = "noteOn:Perc:60"},
                 {key = btnShift, action = "contextToggle:254:1:0"}

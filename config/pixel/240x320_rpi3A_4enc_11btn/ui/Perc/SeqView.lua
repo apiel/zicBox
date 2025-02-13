@@ -25,6 +25,7 @@ local btn6 = ____constants.btn6
 local btn7 = ____constants.btn7
 local btnShift = ____constants.btnShift
 local ColorTrack3 = ____constants.ColorTrack3
+local ColorTrack6 = ____constants.ColorTrack6
 local KeyInfoPosition = ____constants.KeyInfoPosition
 local PercTrack = ____constants.PercTrack
 local ScreenWidth = ____constants.ScreenWidth
@@ -67,7 +68,7 @@ function ____exports.PercSeqView(____bindingPattern0)
                 {key = btn7, action = "noteOn:Perc:60"}
             }})
         ),
-        React.createElement(Common, {selected = "Perc", hideSequencer = true, track = PercTrack, selectedBackground = ColorTrack3})
+        React.createElement(Common, {selected = "Perc", hideSequencer = true, track = PercTrack, selectedBackground = ColorTrack6})
     )
 end
 return ____exports
