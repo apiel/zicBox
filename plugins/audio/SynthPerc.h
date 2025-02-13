@@ -169,7 +169,8 @@ public:
     Val& fmFreq = val(50.0f, "FM_FREQ", { "Fm. Freq.", .min = 0.1, .max = 500.0, .step = 0.1, .floatingPoint = 1, .unit = "Hz" });
     /*md - FM_AMP controls the intensity of frequency modulation. */
     Val& fmdAmp = val(0.0f, "FM_AMP", { "Fm. Amp.", .step = 0.1, .floatingPoint = 1, .unit = "%" });
-
+    /*md - ENV_MOD intensity of envelope modulation. */
+    Val& envMod = val(0.0f, "ENV_MOD", { "Env. Mod.", .unit = "%" });
 
 
     SynthPerc(AudioPlugin::Props& props, char* _name)
@@ -199,9 +200,14 @@ public:
             float noise = 0.0f;
 
             if (mixTone > 0.0f) {
+                float freq = noteFreq;
+                if (envMod.pct() > 0.0f) {
+                    // freq *= (1.0f - envMod.pct()) + envMod.pct() * (1.0f - env);
+                    freq = freq + freq * envMod.pct() * env;
+                }
                 // Tonal component with resonance
-                // tone = sineWave(noteFreq, phase);
-                tone = fmModulation(noteFreq, phase);
+                // tone = sineWave(freq, phase);
+                tone = fmModulation(freq, phase);
                 tone = resonator(tone * env, noteFreq * bodyResonance.get(), toneDecay.get(), resonatorState);
 
                 if (timbre.pct() > 0.0f) {
