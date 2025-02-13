@@ -13,6 +13,12 @@
     or
     sudo apt install nlohmann-json3-dev
 
+    Keep the config key (command) and only value/params would become json:
+    - COMPONENT { pluginName: "Rect", position: [0, 0, 240, 320], color: "background" }
+    - PLUGIN_COMPONENT { pluginName: "Rect", path: "@/plugins/components/Pixel/build/x86/libzic_rectComponent.so"  }
+    - AUDIO_PLUGIN { pluginName: "Effect", track: 1 }
+    - AUDIO_PLUGIN_ALIAS { pluginName: "Effect", path: "@/plugins/audio/build/x86/libzic_effect.so"  }
+
 
 - TODO use std::string as much as possible and other C++ thing to simplify life :p
 
