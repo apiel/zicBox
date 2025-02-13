@@ -27,8 +27,8 @@ protected:
 
     float fmModulation(float freq, float phase)
     {
-        float modAmplitude = modAmp.pct();
-        float modulator = modAmplitude > 0.0f ? sineWave(modFreq.get(), phase) * modAmplitude * 10.0f : 0.0f;
+        float fmdAmplitude = fmdAmp.pct();
+        float modulator = fmdAmplitude > 0.0f ? sineWave(fmFreq.get(), phase) * fmdAmplitude * 10.0f : 0.0f;
         return sineWave(freq + modulator, phase);
 
         // return sineWave(freq, phase);
@@ -165,10 +165,12 @@ public:
     /*md - `MIX` set the mix between tone and noise. */
     Val& mix = val(50.0f, "MIX", { "Mix", .step = 0.1, .floatingPoint = 1, .unit = "%" });
 
-    /*md - MOD_FREQ sets the frequency of the modulator wave. */
-    Val& modFreq = val(50.0f, "MOD_FREQ", { "Fm. Freq.", .min = 0.1, .max = 500.0, .step = 0.1, .floatingPoint = 1, .unit = "Hz" });
-    /*md - MOD_AMP controls the intensity of frequency modulation. */
-    Val& modAmp = val(0.0f, "MOD_AMP", { "Fm. Amp.", .step = 0.1, .floatingPoint = 1, .unit = "%" });
+    /*md - FM_FREQ sets the frequency of the modulator wave. */
+    Val& fmFreq = val(50.0f, "FM_FREQ", { "Fm. Freq.", .min = 0.1, .max = 500.0, .step = 0.1, .floatingPoint = 1, .unit = "Hz" });
+    /*md - FM_AMP controls the intensity of frequency modulation. */
+    Val& fmdAmp = val(0.0f, "FM_AMP", { "Fm. Amp.", .step = 0.1, .floatingPoint = 1, .unit = "%" });
+
+
 
     SynthPerc(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)

@@ -24,14 +24,14 @@ function ____exports.PercFmView(____bindingPattern0)
         View,
         {name = name},
         React.createElement(KnobValue, {
-            value = "Perc MOD_FREQ",
+            value = "Perc FM_FREQ",
             position = topLeftKnob,
             encoder_id = encTopLeft,
             COLOR = "tertiary",
             track = PercTrack
         }),
         React.createElement(KnobValue, {
-            value = "Perc MOD_AMP",
+            value = "Perc FM_AMP",
             position = topRightKnob,
             encoder_id = encTopRight,
             COLOR = "primary",
