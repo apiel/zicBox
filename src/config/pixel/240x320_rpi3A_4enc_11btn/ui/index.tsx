@@ -24,6 +24,9 @@ import { CreateWorkspaceView } from './menu/CreateWorkspaceView';
 import { MenuView } from './menu/menuView';
 import { ShutdownView } from './menu/ShutdownView';
 import { WorkspacesView } from './menu/WorkspacesView';
+import { PercFxView } from './Perc/PercFxView';
+import { PercView } from './Perc/PercView';
+import { PercSeqView } from './Perc/SeqView';
 import { SampleEditorView } from './Sample/SampleEditorView';
 import { SynthEnv1View } from './Synth/Env1View';
 import { SynthEnv2View } from './Synth/Env2View';
@@ -63,6 +66,11 @@ applyZic(<Fm1View name="Fm1" />);
 applyZic(<Fm1FxView name="Fm1Fx" />);
 applyZic(<Fm1EnvView name="Fm1Env" />);
 applyZic(<Fm1SeqView name="Fm1Seq" />);
+
+applyZic(<PercView name="Perc" />);
+applyZic(<PercFxView name="PercFx" />);
+// applyZic(<PercEnvView name="PercEnv" />);
+applyZic(<PercSeqView name="PercSeq" />);
 
 applyZic(<SynthView name="Synth" />);
 applyZic(<SynthFxView name="SynthFx" />);

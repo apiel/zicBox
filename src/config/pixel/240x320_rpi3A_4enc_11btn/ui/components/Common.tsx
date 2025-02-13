@@ -2,7 +2,7 @@ import * as React from '@/libs/react';
 
 import { SeqProgressBar } from '@/libs/components/SeqProgressBar';
 import { rgb } from '@/libs/ui';
-import { btn1, btn2, btn3, btn4, btn5, btn8, btnDown, btnShift, btnUp, ScreenWidth } from '../constants';
+import { btn1, btn2, btn3, btn4, btn5, btn6, btn8, btnDown, btnShift, btnUp, ScreenWidth } from '../constants';
 import { SideInfo } from './SideInfo';
 import { TextGridSel } from './TextGridSel';
 
@@ -14,6 +14,7 @@ export const Sample1 = 'Sampl1';
 export const Sample2 = 'Sampl2';
 export const Sample3 = 'Sampl3';
 export const Clips = 'Clips';
+export const Perc = 'Perc';
 
 type ItemType =
     | typeof Kick
@@ -23,7 +24,8 @@ type ItemType =
     | typeof Sample1
     | typeof Sample2
     | typeof Sample3
-    | typeof Clips;
+    | typeof Clips
+    | typeof Perc;
 
 export function Common({
     selected,
@@ -54,7 +56,7 @@ export function Common({
             <TextGridSel
                 rows={[
                     `${Kick} ${Bass} ${Fm1} ${Synth}`,
-                    `${Sample1} ${Sample2} ${Sample3} ${Clips}`,
+                    `${Sample1} ${Perc} ${Sample3} ${Clips}`,
                 ]}
                 keys={[
                     { key: btn1, action: 'setView:Drum23' },
@@ -63,6 +65,7 @@ export function Common({
                     { key: btn4, action: 'setView:Synth' },
 
                     { key: btn5, action: `setView:Sample` },
+                    { key: btn6, action: `setView:Perc` },
                     { key: btn8, action: `setView:Clips` },
 
                     { key: btnUp, action: 'setView:Menu' },
