@@ -18,14 +18,14 @@ export function PercFmView({ name }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                value="Perc MOD_FREQ"
+                value="Perc FM_FREQ"
                 position={topLeftKnob}
                 encoder_id={encTopLeft}
                 COLOR="tertiary"
                 track={PercTrack}
             />
             <KnobValue
-                value="Perc MOD_AMP"
+                value="Perc FM_AMP"
                 position={topRightKnob}
                 encoder_id={encTopRight}
                 COLOR="primary"
