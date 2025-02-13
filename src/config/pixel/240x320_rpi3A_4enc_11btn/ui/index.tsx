@@ -24,6 +24,7 @@ import { CreateWorkspaceView } from './menu/CreateWorkspaceView';
 import { MenuView } from './menu/menuView';
 import { ShutdownView } from './menu/ShutdownView';
 import { WorkspacesView } from './menu/WorkspacesView';
+import { PercFmView } from './Perc/PercFmView';
 import { PercFxView } from './Perc/PercFxView';
 import { PercNoise2View } from './Perc/PercNoise2View';
 import { PercNoiseView } from './Perc/PercNoiseView';
@@ -75,6 +76,7 @@ applyZic(<PercFxView name="PercFx" />);
 applyZic(<PercSeqView name="PercSeq" />);
 applyZic(<PercNoiseView name="PercNoise" />);
 applyZic(<PercNoise2View name="PercNoise2" />);
+applyZic(<PercFmView name="PercFm" />);
 
 applyZic(<SynthView name="Synth" />);
 applyZic(<SynthFxView name="SynthFx" />);

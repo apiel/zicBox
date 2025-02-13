@@ -25,6 +25,15 @@ protected:
         return sinf(2.0f * M_PI * frequency * phase);
     }
 
+    float fmModulation(float freq, float phase)
+    {
+        float modAmplitude = modAmp.pct();
+        float modulator = modAmplitude > 0.0f ? sineWave(modFreq.get(), phase) * modAmplitude * 10.0f : 0.0f;
+        return sineWave(freq + modulator, phase);
+
+        // return sineWave(freq, phase);
+    }
+
     float tanhLookup(float x)
     {
         x = range(x, -1.0f, 1.0f);
@@ -151,10 +160,15 @@ public:
     /*md - `METALLIC_NOISE_MIX` set the metallic noise mix. */
     Val& metallicNoiseMix = val(50.0f, "METALLIC_NOISE_MIX", { "Noise morph", .unit = "%" });
     /*md - `NOISE_BRIGHTNESS` set the noise brightness. */
-    Val& noiseBrightness = val(5000.0f, "NOISE_BRIGHTNESS", { "Noise Brightness", .min = 1000.0, .max = 10000.0, .step = 100.0, .unit = "Hz" });
+    Val& noiseBrightness = val(5000.0f, "NOISE_BRIGHTNESS", { "Noise Brightness", .min = 1000.0, .max = 9900.0, .step = 100.0, .unit = "Hz" });
 
     /*md - `MIX` set the mix between tone and noise. */
     Val& mix = val(50.0f, "MIX", { "Mix", .step = 0.1, .floatingPoint = 1, .unit = "%" });
+
+    /*md - MOD_FREQ sets the frequency of the modulator wave. */
+    Val& modFreq = val(50.0f, "MOD_FREQ", { "Fm. Freq.", .min = 0.1, .max = 500.0, .step = 0.1, .floatingPoint = 1, .unit = "Hz" });
+    /*md - MOD_AMP controls the intensity of frequency modulation. */
+    Val& modAmp = val(0.0f, "MOD_AMP", { "Fm. Amp.", .step = 0.1, .floatingPoint = 1, .unit = "%" });
 
     SynthPerc(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -177,7 +191,8 @@ public:
             float env = 1.0f - t;
 
             // Tonal component with resonance
-            float tone = sineWave(noteFreq, phase);
+            // float tone = sineWave(noteFreq, phase);
+            float tone = fmModulation(noteFreq, phase);
             tone = resonator(tone * env, noteFreq * bodyResonance.get(), toneDecay.get(), resonatorState);
 
             if (timbre.pct() > 0.0f) {
