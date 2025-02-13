@@ -16,6 +16,7 @@ import {
     btn7,
     btnShift,
     ColorTrack3,
+    ColorTrack6,
     KeyInfoPosition,
     PercTrack,
     ScreenWidth,
@@ -76,7 +77,7 @@ export function PercSeqView({ name }: Props) {
                 selected={'Perc'}
                 hideSequencer
                 track={PercTrack}
-                selectedBackground={ColorTrack3}
+                selectedBackground={ColorTrack6}
             />
         </View>
     );
