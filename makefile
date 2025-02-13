@@ -1,7 +1,5 @@
 RTMIDI=`pkg-config --cflags --libs rtmidi`
 SDL2=`sdl2-config --cflags --libs`
-# SDL2=`../test/SDL/build/sdl2-config --cflags --libs`
-SDL2_ttf=`pkg-config --cflags --libs SDL2_ttf`
 
 LUA=`pkg-config --cflags --libs lua`
 
