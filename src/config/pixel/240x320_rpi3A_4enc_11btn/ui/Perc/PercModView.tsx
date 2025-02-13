@@ -3,8 +3,9 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
-import { ColorTrack6, encTopLeft, encTopRight, PercTrack } from '../constants';
+import { ColorTrack6, encBottomLeft, encTopLeft, encTopRight, PercTrack } from '../constants';
 import {
+    bottomLeftKnob,
     topLeftKnob,
     topRightKnob
 } from '../constantsValue';
@@ -14,7 +15,7 @@ export type Props = {
     name: string;
 };
 
-export function PercFmView({ name }: Props) {
+export function PercModView({ name }: Props) {
     return (
         <View name={name}>
             <KnobValue
@@ -31,14 +32,14 @@ export function PercFmView({ name }: Props) {
                 COLOR="primary"
                 track={PercTrack}
             />
-            {/* <KnobValue
-                value="Perc RESONATOR"
+            <KnobValue
+                value="Perc ENV_MOD"
                 position={bottomLeftKnob}
                 encoder_id={encBottomLeft}
                 COLOR="quaternary"
                 track={PercTrack}
             />
-            <KnobValue
+            {/* <KnobValue
                 value="Perc TIMBRE"
                 position={bottomRightKnob}
                 encoder_id={encBottomRight}
@@ -46,7 +47,7 @@ export function PercFmView({ name }: Props) {
                 track={PercTrack}
             /> */}
 
-            <TextGridPerc selected={'Fm'} viewName={name} />
+            <TextGridPerc selected={'Mod.'} viewName={name} />
             <Common selected={'Perc'} track={PercTrack} selectedBackground={ColorTrack6} />
         </View>
     );
