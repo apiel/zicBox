@@ -190,40 +190,48 @@ public:
             float t = (float)i / totalSamples; // Time normalized to [0, 1]
             float env = 1.0f - t;
 
-            // Tonal component with resonance
-            // float tone = sineWave(noteFreq, phase);
-            float tone = fmModulation(noteFreq, phase);
-            tone = resonator(tone * env, noteFreq * bodyResonance.get(), toneDecay.get(), resonatorState);
+            float mixTone = (1.0f - mix.pct());
+            float mixNoise = mix.pct();
 
-            if (timbre.pct() > 0.0f) {
-                // Adjust timbre by filtering harmonics dynamically
-                tone *= (1.0f - timbre.pct()) + timbre.pct() * sinf(2.0f * M_PI * noteFreq * 0.5f * t);
+            float tone = 0.0f;
+            float noise = 0.0f;
+
+            if (mixTone > 0.0f) {
+                // Tonal component with resonance
+                // tone = sineWave(noteFreq, phase);
+                tone = fmModulation(noteFreq, phase);
+                tone = resonator(tone * env, noteFreq * bodyResonance.get(), toneDecay.get(), resonatorState);
+
+                if (timbre.pct() > 0.0f) {
+                    // Adjust timbre by filtering harmonics dynamically
+                    tone *= (1.0f - timbre.pct()) + timbre.pct() * sinf(2.0f * M_PI * noteFreq * 0.5f * t);
+                }
+                tone = applyBoost(tone, env);
             }
 
-            // Generate raw noise
-            float rawNoise = whiteNoise();
+            if (mixNoise > 0.0f) {
+                // Generate raw noise
+                float rawNoise = whiteNoise();
 
-            // Apply bandpass filters for metallic noise
-            float metallicNoise = bandpassFilter(rawNoise);
+                // Apply bandpass filters for metallic noise
+                float metallicNoise = bandpassFilter(rawNoise);
 
-            // Transient component
-            if (i < totalSamples / 10) {
-                metallicNoise += transientIntensity.get() * whiteNoise();
+                // Transient component
+                if (i < totalSamples / 10) {
+                    metallicNoise += transientIntensity.get() * whiteNoise();
+                }
+
+                noise = (metallicNoiseMix.pct() * metallicNoise) + ((1.0f - metallicNoiseMix.pct()) * rawNoise);
+
+                // Transient component
+                if (i < transientSamples && transientIntensity.pct() > 0.0f) {
+                    noise += transientIntensity.pct() * 0.35 * whiteNoise() * (1.0f - ((float)(i) / transientSamples));
+                    noise = range(noise, -1.0f, 1.0f);
+                }
+                noise = lowPassFilter(noise) * env;
             }
 
-            float noise = (metallicNoiseMix.pct() * metallicNoise) + ((1.0f - metallicNoiseMix.pct()) * rawNoise);
-
-            // Transient component
-            if (i < transientSamples && transientIntensity.pct() > 0.0f) {
-                noise += transientIntensity.pct() * 0.35 * whiteNoise() * (1.0f - ((float)(i) / transientSamples));
-                noise = range(noise, -1.0f, 1.0f);
-                // printf("[%d] noise: %f env %f\n",i, noise, (1.0f - ((float)(i) / transientSamples)));
-            }
-
-            noise = lowPassFilter(noise) * env;
-
-            float output = applyBoost(tone, env);
-            output = mix.pct() * noise + (1.0f - mix.pct()) * output;
+            float output = mix.pct() * noise + (1.0f - mix.pct()) * tone;
             output = applyReverb(output);
 
             buf[track] = output;
