@@ -3,12 +3,15 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/components/KnobValue';
 import { View } from '@/libs/components/View';
 import { Common } from '../components/Common';
-import { ColorTrack6, encBottomLeft, encTopLeft, encTopRight, PercTrack } from '../constants';
 import {
-    bottomLeftKnob,
-    topLeftKnob,
-    topRightKnob
-} from '../constantsValue';
+    ColorTrack6,
+    encBottomLeft,
+    encBottomRight,
+    encTopLeft,
+    encTopRight,
+    PercTrack,
+} from '../constants';
+import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
 import { TextGridPerc } from './TextGridPerc';
 
 export type Props = {
@@ -39,13 +42,13 @@ export function PercModView({ name }: Props) {
                 COLOR="quaternary"
                 track={PercTrack}
             />
-            {/* <KnobValue
-                value="Perc TIMBRE"
+            <KnobValue
+                value="Perc ENV_SHAPE"
                 position={bottomRightKnob}
                 encoder_id={encBottomRight}
                 COLOR="secondary"
                 track={PercTrack}
-            /> */}
+            />
 
             <TextGridPerc selected={'Mod.'} viewName={name} />
             <Common selected={'Perc'} track={PercTrack} selectedBackground={ColorTrack6} />

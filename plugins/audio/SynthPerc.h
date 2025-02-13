@@ -138,7 +138,7 @@ public:
     /*md - `BASE_FREQ` sets the base frequency of the percussive tone. */
     Val& baseFreq = val(100.0f, "BASE_FREQ", { "Base Freq", .min = 40.0, .max = 400.0, .step = 1.0, .unit = "Hz" });
     /*md - `RESONATOR` controls the strength of the resonator. */
-    Val& bodyResonance = val(0.8f, "RESONATOR", { "Resonator", .min = 0.01f, .max = 1.5f, .step = 0.01f, .floatingPoint = 2 });
+    Val& bodyResonance = val(0.8f, "RESONATOR", { "Resonator", .min = 0.00f, .max = 1.5f, .step = 0.01f, .floatingPoint = 2 });
     /*md - `TIMBRE` adjusts the tonal character by shaping the harmonic content. */
     Val& timbre = val(5.0f, "TIMBRE", { "Timbre", .unit = "%" });
     /*md - `BOOST` boost transient or add some distortion. */
@@ -171,7 +171,9 @@ public:
     Val& fmdAmp = val(0.0f, "FM_AMP", { "Fm. Amp.", .step = 0.1, .floatingPoint = 1, .unit = "%" });
     /*md - ENV_MOD intensity of envelope modulation. */
     Val& envMod = val(0.0f, "ENV_MOD", { "Env. Mod.", .unit = "%" });
-
+    /*md - ENV_SHAPE controls the shape of the envelope. */
+    // Val& envShape = val(0.5f, "ENV_SHAPE", { "Env. Shape", .min = 1 });
+    Val& envShape = val(0.5f, "ENV_SHAPE", { "Env. Shape", .min = 0.1, .max = 5.0, .step = 0.1, .floatingPoint = 1 });
 
     SynthPerc(AudioPlugin::Props& props, char* _name)
         : Mapping(props, _name)
@@ -199,16 +201,33 @@ public:
             float tone = 0.0f;
             float noise = 0.0f;
 
+            // https://codesandbox.io/p/sandbox/green-platform-tzl4pn?file=%2Fsrc%2Findex.js%3A18%2C13
             if (mixTone > 0.0f) {
                 float freq = noteFreq;
                 if (envMod.pct() > 0.0f) {
-                    // freq *= (1.0f - envMod.pct()) + envMod.pct() * (1.0f - env);
-                    freq = freq + freq * envMod.pct() * env;
+                    // freq = freq + freq * envMod.pct() * env;
+                    // // freq = freq + freq * envMod.pct() * exp((-t * envShape.pct()));
+
+                    float shape = envShape.get(); // Absolute shape parameter
+                    float envFactor;
+
+                    // Ensure the envelope always decays
+                    if (shape > 1.0f) {
+                        envFactor = pow(1.0f - t, shape); // Power curve decay
+                    } else if (shape > 0.0f) {
+                        envFactor = exp(-t * shape); // Exponential decay
+                    } else {
+                        envFactor = exp(-t); // Default exponential decay if shape is invalid
+                    }
+
+                    freq = freq + freq * envMod.pct() * envFactor;
                 }
                 // Tonal component with resonance
                 // tone = sineWave(freq, phase);
                 tone = fmModulation(freq, phase);
-                tone = resonator(tone * env, freq * bodyResonance.get(), toneDecay.get(), resonatorState);
+                if (bodyResonance.get() > 0.0f) {
+                    tone = resonator(tone * env, freq * bodyResonance.get(), toneDecay.get(), resonatorState);
+                }
 
                 if (timbre.pct() > 0.0f) {
                     // Adjust timbre by filtering harmonics dynamically
@@ -224,18 +243,25 @@ public:
                 // Apply bandpass filters for metallic noise
                 float metallicNoise = bandpassFilter(rawNoise);
 
+                // // Transient component
+                // if (i < totalSamples / 10) {
+                //     metallicNoise += transientIntensity.get() * whiteNoise();
+                // }
+
                 // Transient component
-                if (i < totalSamples / 10) {
-                    metallicNoise += transientIntensity.get() * whiteNoise();
+                if (i < transientSamples && transientIntensity.get() > 0.0f) {
+                    // metallicNoise += transientIntensity.pct() * 5 * whiteNoise() * (1.0f - ((float)(i) / transientSamples));
+                    metallicNoise += transientIntensity.get() * whiteNoise(); // * (1.0f - ((float)(i) / transientSamples));
+                    // metallicNoise = range(metallicNoise, -1.0f, 1.0f);
                 }
 
                 noise = (metallicNoiseMix.pct() * metallicNoise) + ((1.0f - metallicNoiseMix.pct()) * rawNoise);
 
-                // Transient component
-                if (i < transientSamples && transientIntensity.pct() > 0.0f) {
-                    noise += transientIntensity.pct() * 0.35 * whiteNoise() * (1.0f - ((float)(i) / transientSamples));
-                    noise = range(noise, -1.0f, 1.0f);
-                }
+                // // Transient component
+                // if (i < transientSamples && transientIntensity.pct() > 0.0f) {
+                //     noise += transientIntensity.pct() * 5 * whiteNoise() * (1.0f - ((float)(i) / transientSamples));
+                //     noise = range(noise, -1.0f, 1.0f);
+                // }
                 noise = lowPassFilter(noise) * env;
             }
 
