@@ -196,15 +196,16 @@ public:
                 metallicNoise += transientIntensity.get() * whiteNoise();
             }
 
-            metallicNoise = (metallicNoiseMix.pct() * metallicNoise) + ((1.0f - metallicNoiseMix.pct()) * rawNoise);
-
-            // Apply tone brightness (low-pass filter)
-            float noise = lowPassFilter(metallicNoise) * env;
+            float noise = (metallicNoiseMix.pct() * metallicNoise) + ((1.0f - metallicNoiseMix.pct()) * rawNoise);
 
             // Transient component
             if (i < transientSamples && transientIntensity.pct() > 0.0f) {
-                noise += transientIntensity.pct() * 5 * whiteNoise() * (1.0f - ((float)(i) / transientSamples));
+                noise += transientIntensity.pct() * 0.35 * whiteNoise() * (1.0f - ((float)(i) / transientSamples));
+                noise = range(noise, -1.0f, 1.0f);
+                // printf("[%d] noise: %f env %f\n",i, noise, (1.0f - ((float)(i) / transientSamples)));
             }
+
+            noise = lowPassFilter(noise) * env;
 
             float output = applyBoost(tone, env);
             output = mix.pct() * noise + (1.0f - mix.pct()) * output;
@@ -227,6 +228,7 @@ public:
         const float sampleRate = props.sampleRate;
         totalSamples = static_cast<int>(sampleRate * (duration.get() / 1000.0f));
         transientSamples = static_cast<int>(sampleRate * (transientDuration.get() / 1000.0f));
+        // printf("totalSamples: %d transientSamples: %d\n", totalSamples, transientSamples);
         phase = 0.0f;
         resonatorState = 0.0f;
         noteFreq = baseFreq.get() * powf(2.0f, (note - baseNote) / 12.0f);
