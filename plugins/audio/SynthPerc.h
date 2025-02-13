@@ -208,11 +208,11 @@ public:
                 // Tonal component with resonance
                 // tone = sineWave(freq, phase);
                 tone = fmModulation(freq, phase);
-                tone = resonator(tone * env, noteFreq * bodyResonance.get(), toneDecay.get(), resonatorState);
+                tone = resonator(tone * env, freq * bodyResonance.get(), toneDecay.get(), resonatorState);
 
                 if (timbre.pct() > 0.0f) {
                     // Adjust timbre by filtering harmonics dynamically
-                    tone *= (1.0f - timbre.pct()) + timbre.pct() * sinf(2.0f * M_PI * noteFreq * 0.5f * t);
+                    tone *= (1.0f - timbre.pct()) + timbre.pct() * sinf(2.0f * M_PI * freq * 0.5f * t);
                 }
                 tone = applyBoost(tone, env);
             }
