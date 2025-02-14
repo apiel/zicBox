@@ -8,7 +8,6 @@ import { VisibilityContext } from '@/libs/components/VisibilityContext';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
 import {
-    BassTrack,
     btn1,
     btn2,
     btn5,
@@ -19,7 +18,7 @@ import {
     ColorTrack6,
     KeyInfoPosition,
     PercTrack,
-    ScreenWidth,
+    ScreenWidth
 } from '../constants';
 
 export type Props = {
@@ -37,7 +36,7 @@ export function PercSeqView({ name }: Props) {
                     <StepEditDrum
                         position={[0, yy, ScreenWidth, 8]}
                         data={`Sequencer ${i}`}
-                        track={BassTrack}
+                        track={PercTrack}
                         group={i}
                         playing_color={rgb(35, 161, 35)}
                         background_color={
@@ -56,7 +55,7 @@ export function PercSeqView({ name }: Props) {
                 position={KeyInfoPosition}
                 rows={[
                     '&icon::toggle::rect &icon::arrowUp::filled ...',
-                    'Seq./Bass &icon::arrowDown::filled &icon::musicNote::pixelated',
+                    'Seq./Perc &icon::arrowDown::filled &icon::musicNote::pixelated',
                     // '!Seq/Bass &icon::arrowDown::filled &icon::musicNote::pixelated',
                 ]}
                 ITEM_BACKGROUND={ColorTrack3}

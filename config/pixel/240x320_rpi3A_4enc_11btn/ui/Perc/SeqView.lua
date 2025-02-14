@@ -17,7 +17,6 @@ local rgb = ____ui.rgb
 local ____Common = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.Common")
 local Common = ____Common.Common
 local ____constants = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constants")
-local BassTrack = ____constants.BassTrack
 local btn1 = ____constants.btn1
 local btn2 = ____constants.btn2
 local btn5 = ____constants.btn5
@@ -46,7 +45,7 @@ function ____exports.PercSeqView(____bindingPattern0)
                     {
                         position = {0, yy, ScreenWidth, 8},
                         data = "Sequencer " .. tostring(i),
-                        track = BassTrack,
+                        track = PercTrack,
                         group = i,
                         playing_color = rgb(35, 161, 35),
                         background_color = (i % 8 == 0 or i % 8 == 1 or i % 8 == 2 or i % 8 == 3) and rgb(42, 54, 56) or "background",
@@ -58,7 +57,7 @@ function ____exports.PercSeqView(____bindingPattern0)
         ),
         React.createElement(
             TextGrid,
-            {position = KeyInfoPosition, rows = {"&icon::toggle::rect &icon::arrowUp::filled ...", "Seq./Bass &icon::arrowDown::filled &icon::musicNote::pixelated"}, ITEM_BACKGROUND = ColorTrack3},
+            {position = KeyInfoPosition, rows = {"&icon::toggle::rect &icon::arrowUp::filled ...", "Seq./Perc &icon::arrowDown::filled &icon::musicNote::pixelated"}, ITEM_BACKGROUND = ColorTrack3},
             React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 0}),
             React.createElement(Keymaps, {keys = {
                 {key = btn2, action = "incGroup:-1"},

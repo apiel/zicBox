@@ -136,7 +136,7 @@ public:
     /*md - `DURATION` controls the duration of the envelope. */
     Val& duration = val(500.0f, "DURATION", { "Duration", .min = 50.0, .max = 3000.0, .step = 10.0, .unit = "ms" });
     /*md - `BASE_FREQ` sets the base frequency of the percussive tone. */
-    Val& baseFreq = val(100.0f, "BASE_FREQ", { "Base Freq", .min = 40.0, .max = 400.0, .step = 1.0, .unit = "Hz" });
+    Val& baseFreq = val(100.0f, "BASE_FREQ", { "Base Freq", .min = 10.0, .max = 400.0, .step = 1.0, .unit = "Hz" });
     /*md - `RESONATOR` controls the strength of the resonator. */
     Val& bodyResonance = val(0.8f, "RESONATOR", { "Resonator", .min = 0.00f, .max = 1.5f, .step = 0.01f, .floatingPoint = 2 });
     /*md - `TIMBRE` adjusts the tonal character by shaping the harmonic content. */
@@ -205,9 +205,6 @@ public:
             if (mixTone > 0.0f) {
                 float freq = noteFreq;
                 if (envMod.pct() > 0.0f) {
-                    // freq = freq + freq * envMod.pct() * env;
-                    // // freq = freq + freq * envMod.pct() * exp((-t * envShape.pct()));
-
                     float shape = envShape.get(); // Absolute shape parameter
                     float envFactor;
 
@@ -262,10 +259,10 @@ public:
                 //     noise += transientIntensity.pct() * 5 * whiteNoise() * (1.0f - ((float)(i) / transientSamples));
                 //     noise = range(noise, -1.0f, 1.0f);
                 // }
-                noise = lowPassFilter(noise) * env;
+                noise = lowPassFilter(noise);
             }
 
-            float output = mix.pct() * noise + (1.0f - mix.pct()) * tone;
+            float output = (mix.pct() * noise + (1.0f - mix.pct()) * tone) * env;
             output = applyReverb(output);
 
             buf[track] = output;
