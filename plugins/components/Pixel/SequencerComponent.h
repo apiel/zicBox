@@ -26,13 +26,12 @@ protected:
     Color seqBarColour = lighten(seqBeatColour, 0.4);
     Color seqColSeparatorColour = darken(seqBeatColour, 0.6);
 
-    // juce::Colour seqRowWhiteKeyColour = juce::Colours::black.brighter(0.3);
-    // juce::Colour seqRowBlackKeyColour = juce::Colours::black.brighter(0.35);
-    // juce::Colour seqRowSeparatorColour = juce::Colours::black.brighter(0.40);
-
     Color seqRowBlackKeyColour;
     Color seqRowWhiteKeyColour;
     Color seqRowSeparatorColour;
+
+    Color seqNoteColour;
+    Color seqNote2Colour;
 
 public:
     SequencerComponent(ComponentInterface::Props props)
@@ -41,6 +40,8 @@ public:
         , seqRowBlackKeyColour(styles.colors.background)
         , seqRowWhiteKeyColour(lighten(styles.colors.background, 0.2))
         , seqRowSeparatorColour(lighten(styles.colors.background, 0.4))
+        , seqNoteColour(darken(styles.colors.white, 0.3))
+        , seqNote2Colour(lighten(styles.colors.background, 1.5))
     {
         resize();
     }
@@ -66,23 +67,19 @@ public:
                 draw.filledRect({ x, y }, { size.w, stepHeight }, { color });
                 draw.line({ x, y }, { x + size.w, y }, { seqRowSeparatorColour });
 
-                // // g.setColour(midiPitch % 12 == 0 ? seqNoteColour : seqNoteLighterColour);
-                // if (midiPitch % 12 == 0) {
-                //     g.setColour(seqNoteColour);
-                //     g.setFont(juce::Font(juce::FontOptions(12.0f, juce::Font::bold)));
-                // } else {
-                //     g.setColour(seqNoteLighterColour);
-                //     g.setFont(juce::Font(juce::FontOptions(10.0f, juce::Font::plain)));
-                // }
-                // g.drawText(juce::MidiMessage::getMidiNoteName(midiPitch, true, true, 4), 2, y, 40, stepHeight, juce::Justification::centredLeft);
-                // g.drawText(juce::MidiMessage::getMidiNoteName(midiPitch, true, true, 4), 2 + stepWidth * 16, y, 40, stepHeight, juce::Justification::centredLeft);
-                // g.drawText(juce::MidiMessage::getMidiNoteName(midiPitch, true, true, 4), 2 + stepWidth * 32, y, 40, stepHeight, juce::Justification::centredLeft);
-                // g.drawText(juce::MidiMessage::getMidiNoteName(midiPitch, true, true, 4), 2 + stepWidth * 48, y, 40, stepHeight, juce::Justification::centredLeft);
+                if (midiNote % 12 == 0) {
+                    draw.text({ x, y + 1 }, MIDI_NOTES_STR[midiNote], 8, { seqNoteColour });
+                } else if (!isBlackKey(midiNote)) {
+                    draw.text({ x, y + 1 }, MIDI_NOTES_STR[midiNote], 8, { seqNote2Colour });
+                } else {
+                    draw.text({ x, y + 1 }, " #", 8, { seqNote2Colour });
+                }
             }
 
             // Draw Beat & Bar Separations
+            int xStart = size.w - stepWidth * numSteps;
             for (int i = 0; i <= numSteps; ++i) {
-                int x = relativePosition.x + i * stepWidth;
+                int x = xStart + relativePosition.x + i * stepWidth;
                 int y = relativePosition.y;
                 Color color;
                 if (i % 16 == 0)
