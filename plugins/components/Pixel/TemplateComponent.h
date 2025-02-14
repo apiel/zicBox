@@ -1,5 +1,4 @@
-#ifndef _UI_PIXEL_COMPONENT_RECT_H_
-#define _UI_PIXEL_COMPONENT_RECT_H_
+#pragma once
 
 #include "plugins/components/component.h"
 
@@ -40,5 +39,3 @@ public:
         return false;
     }
 };
-
-#endif

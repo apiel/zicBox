@@ -27,7 +27,7 @@ export function TextGridPerc({ selected, viewName }: { selected: string; viewNam
             <Rect position={[70, 28, 6, 6]} color={ColorTrack6} />
             <TextGridSel
                 selectedBackground={ColorTrack6}
-                rows={['Main Fx Env Noise1', 'Seq. &empty Mod. Noise2']}
+                rows={['Main Fx Env Noise1', 'Seq. Seq2 Mod. Noise2']}
                 keys={[
                     { key: btn1, action: 'setView:Perc' },
                     { key: btn2, action: 'setView:PercFx' },
@@ -35,7 +35,7 @@ export function TextGridPerc({ selected, viewName }: { selected: string; viewNam
                     { key: btn4, action: 'setView:PercNoise' },
 
                     { key: btn5, action: 'setView:PercSeq' },
-                    { key: btn6, action: 'noteOn:Perc:60' },
+                    { key: btn6, action: 'setView:PercSeq2' },
                     { key: btn7, action: 'setView:PercMod' },
                     { key: btn8, action: 'setView:PercNoise2' },
 

@@ -20,7 +20,25 @@ const char* MIDI_NOTES_STR[132] = {
 };
 
 const uint8_t MIDI_NOTE_C0 = 12;
+const uint8_t MIDI_NOTE_C1 = 24;
+const uint8_t MIDI_NOTE_C2 = 36;
+const uint8_t MIDI_NOTE_C3 = 48;
+const uint8_t MIDI_NOTE_C4 = 60;
+const uint8_t MIDI_NOTE_C5 = 72;
+const uint8_t MIDI_NOTE_C6 = 84;
+const uint8_t MIDI_NOTE_C7 = 96;
+const uint8_t MIDI_NOTE_C8 = 108;
+const uint8_t MIDI_NOTE_C9 = 120;
 
 uint8_t MIDI_NOTE_COUNT = sizeof(MIDI_NOTES_STR) / sizeof(MIDI_NOTES_STR[0]);
+
+bool isBlackKey(int midiNote) {
+    // MIDI notes repeat every 12 notes (one octave)
+    int noteInOctave = midiNote % 12;
+    
+    // Black keys in an octave (relative to C=0 in MIDI numbering)
+    return noteInOctave == 1 || noteInOctave == 3 || noteInOctave == 6 || 
+           noteInOctave == 8 || noteInOctave == 10;
+}
 
 #endif

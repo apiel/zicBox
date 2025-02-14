@@ -19,7 +19,8 @@ all:
 				TextComponent SeqBarComponent SeqProgressBarComponent SeqSynthBarComponent ValueComponent\
 				SpectrogramComponent RectComponent ClipsComponent KeyboardComponent ListComponent\
 				WorkspacesComponent SampleComponent TapeComponent StepEdit2Component StepEditDrumComponent\
-				StepEditMonoComponent MacroEnvelopComponent SampleEditorComponent StepEditSampleComponent
+				StepEditMonoComponent MacroEnvelopComponent SampleEditorComponent StepEditSampleComponent\
+				SequencerComponent
 
 TapeComponent:
 	@echo "-------- :$@: --------"
