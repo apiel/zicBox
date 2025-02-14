@@ -21,6 +21,7 @@ protected:
     int stepHeight = 10;
     int numSteps = MAX_STEPS; // TODO instead load from plugin seq
     int numNotes = 24;
+    bool drawNoteStr = true;
 
     Color seqBeatColour = { 0x80, 0x80, 0x80 };
     Color seqBarColour = lighten(seqBeatColour, 0.4);
@@ -40,7 +41,7 @@ public:
         , seqRowBlackKeyColour(styles.colors.background)
         , seqRowWhiteKeyColour(lighten(styles.colors.background, 0.2))
         , seqRowSeparatorColour(lighten(styles.colors.background, 0.4))
-        , seqNoteColour(darken(styles.colors.white, 0.3))
+        , seqNoteColour(darken(styles.colors.white, 0.2))
         , seqNote2Colour(lighten(styles.colors.background, 1.5))
     {
         resize();
@@ -50,12 +51,19 @@ public:
     {
         stepWidth = size.w / numSteps;
         stepHeight = size.h / numNotes;
+        drawNoteStr = stepHeight >= 10;
     }
 
     void render()
     {
         if (updatePosition()) {
             draw.filledRect(relativePosition, size, { background });
+
+            // xStart for steps (margin left)
+            int xStart = drawNoteStr ? size.w - stepWidth * numSteps : 0;
+            if (xStart < 16) {
+                xStart = 0;
+            }
 
             int midiStartNote = MIDI_NOTE_C4;
             // Draw Grid with Piano Roll Styling & Note Names
@@ -67,17 +75,18 @@ public:
                 draw.filledRect({ x, y }, { size.w, stepHeight }, { color });
                 draw.line({ x, y }, { x + size.w, y }, { seqRowSeparatorColour });
 
-                if (midiNote % 12 == 0) {
-                    draw.text({ x, y + 1 }, MIDI_NOTES_STR[midiNote], 8, { seqNoteColour });
-                } else if (!isBlackKey(midiNote)) {
-                    draw.text({ x, y + 1 }, MIDI_NOTES_STR[midiNote], 8, { seqNote2Colour });
-                } else {
-                    draw.text({ x, y + 1 }, " #", 8, { seqNote2Colour });
+                if (xStart) {
+                    if (midiNote % 12 == 0) {
+                        draw.text({ x, y + 1 }, MIDI_NOTES_STR[midiNote], 8, { seqNoteColour });
+                    } else if (!isBlackKey(midiNote)) {
+                        draw.text({ x, y + 1 }, MIDI_NOTES_STR[midiNote], 8, { seqNote2Colour });
+                    } else {
+                        draw.text({ x, y + 1 }, " #", 8, { seqNote2Colour });
+                    }
                 }
             }
 
             // Draw Beat & Bar Separations
-            int xStart = size.w - stepWidth * numSteps;
             for (int i = 0; i <= numSteps; ++i) {
                 int x = xStart + relativePosition.x + i * stepWidth;
                 int y = relativePosition.y;
