@@ -25,7 +25,7 @@ public:
         , color(styles.colors.background)
     {
         /*md
-**Config**:
+
 ```tsx
 <Text
         */
