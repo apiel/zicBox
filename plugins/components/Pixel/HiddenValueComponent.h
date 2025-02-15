@@ -9,7 +9,8 @@
 /*md
 ## HiddenValue
 
-Hidden value component is used to change a value without showing it.
+Hidden value component is used to change a value without to have a specific UI for it.
+By default it will update the group number. If a plugin parameter is set, it will update the value of this parameter.
 */
 class HiddenValueComponent : public Component {
 protected:
@@ -25,39 +26,34 @@ public:
         : Component(props)
         , keypadLayout(this)
     {
+        /*md md_config:HiddenValue */
+        nlohmann::json config = props.config;
+
+        /*md   // The audio plugin to get control on. */
+        /*md   audioPlugin="audio_plugin_name" */
+        if (config.contains("audioPlugin")) {
+            std::string audioPlugin = config["audioPlugin"].get<std::string>();
+            /*md   // The audio plugin key parameter to get control on. */
+            /*md   param="parameter_name" */
+            if (config.contains("param")) {
+                std::string param = config["param"].get<std::string>();
+                value = getPlugin(audioPlugin.c_str(), track).getValue(param);
+            }
+        }
+
+        /*md   // The encoder id that will interract with this component. */
+        /*md   encoderId={0} */
+        encoderId = config.value("encoderId", encoderId);
+
+        /*md  // Invert the encoder direction */
+        /*md  inverted */
+        inverted = config.value("inverted", inverted);
+
+        /*md md_config_end */
     }
 
     void render()
     {
-    }
-
-    bool config(char* key, char* params)
-    {
-        if (keypadLayout.config(key, params)) {
-            return true;
-        }
-
-        /*md - `VALUE: pluginName keyName` is used to set the value to control */
-        if (strcmp(key, "VALUE") == 0) {
-            char* pluginName = strtok(params, " ");
-            char* keyValue = strtok(NULL, " ");
-            value = getPlugin(pluginName, track).getValue(keyValue);
-            return true;
-        }
-
-        /*md - `ENCODER_ID: 0` is used to set the encoder id that will interract with this component */
-        if (strcmp(key, "ENCODER_ID") == 0) {
-            encoderId = atoi(params);
-            return true;
-        }
-
-        /*md - `INVERTED: true` is used to invert the encoder direction */
-        if (strcmp(key, "INVERTED") == 0) {
-            inverted = strcmp(params, "true") == 0;
-            return true;
-        }
-
-        return false;
     }
 
     int8_t currentGroup = 0;
