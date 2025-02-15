@@ -64,7 +64,7 @@ content
 */
 // use https://regexr.com/ to test
 // const reg = /\/\*md\s*((.*?[^\*\/]\n)+|(.*?))\s*\*\//g;
-const reg = /\*md\s*((?:.|\n)*?)\s*\*\//g;
+const reg = /\*md\s((?:.|\n)*?)\s*\*\//g;
 function extractMdComment(content) {
     const result = [];
     let match;
