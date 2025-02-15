@@ -56,5 +56,5 @@ export function TextGrid({
         marginTop += h;
     }
 
-    return <>{children}</>;
+    return children;
 }

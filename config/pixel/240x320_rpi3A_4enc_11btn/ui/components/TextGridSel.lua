@@ -32,7 +32,7 @@ function ____exports.TextGridSel(____bindingPattern0)
     end
     return React.createElement(
         TextGrid,
-        {bounds = KeyInfoPosition, rows = rows, ITEM_BACKGROUND = selectedBackground},
+        {bounds = KeyInfoPosition, rows = rows, activeBgColor = selectedBackground},
         React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = contextValue}),
         React.createElement(Keymaps, {keys = keys})
     )

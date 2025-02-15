@@ -12,7 +12,7 @@ export function SideInfo({ up, down, ctxValue }: { up: string; down: string; ctx
         <TextGrid
             bounds={SideKeyInfoPosition}
             rows={[up, down]}
-            BACKGROUND_COLOR={SideColor}
+            bgColor={SideColor}
         >
             <VisibilityContext index={254} condition="SHOW_WHEN" value={ctxValue} />
         </TextGrid>

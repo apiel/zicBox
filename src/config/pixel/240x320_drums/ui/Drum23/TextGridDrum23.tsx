@@ -11,7 +11,7 @@ export function TextGridDrum23({ selected, viewName }: { selected: number; viewN
             <Title title="Kick" />
             <Rect bounds={[70, 28, 6, 6]} color={ColorTrack1} />
             <TextGridSel
-                ITEM_BACKGROUND={ColorTrack1}
+                activeBgColor={ColorTrack1}
                 items={[
                     'Fx1/Fx2',
                     'Wave/Freq',

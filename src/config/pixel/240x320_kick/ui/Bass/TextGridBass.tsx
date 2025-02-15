@@ -11,7 +11,7 @@ export function TextGridBass({ selected, viewName }: { selected: number; viewNam
             <Title title="Bass" />
             <Rect bounds={[70, 28, 6, 6]} color={ColorTrack2} />
             <TextGridSel
-                ITEM_BACKGROUND={ColorTrack2}
+                activeBgColor={ColorTrack2}
                 items={['Fx1/Fx2', 'Env', '...', 'Seq.', 'Waveform', '&icon::musicNote::pixelated']}
                 keys={[
                     { key: 'q', action: viewName === 'Bass' ? 'setView:BassDistortion' : 'setView:Bass' },

@@ -43,7 +43,7 @@ export function TextGridDrums({
                 ]}
                 selected={selected}
                 contextValue={0}
-                ITEM_BACKGROUND={color}
+                activeBgColor={color}
             />
         </>
     );
