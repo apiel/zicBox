@@ -42,13 +42,13 @@ public:
         if (!config.contains("text")) {
             logWarn("Text component is missing text parameter.");
         }
-        /*md  // The text to display. */
-        /*md  text="Hello World" */
+        /*md   // The text to display. */
+        /*md   text="Hello World" */
         text = config["text"].get<std::string>();
-        /*md  // If true, the text will be centered. Default is false. */
-        /*md  centered=true */
-        /*md  // or simply */
-        /*md  centered */
+        /*md   // If true, the text will be centered. Default is false. */
+        /*md   centered=true */
+        /*md   // or simply */
+        /*md   centered */
         centered = config.value("centered", false);
 /*md
 />
