@@ -8,6 +8,6 @@ local ScreenWidth = ____constants.ScreenWidth
 function ____exports.Title(____bindingPattern0)
     local title
     title = ____bindingPattern0.title
-    return React.createElement(Text, {font_size = 16, text = title, bounds = {0, 20, ScreenWidth, 16}, centered = true})
+    return React.createElement(Text, {fontSize = 16, text = title, bounds = {0, 20, ScreenWidth, 16}, centered = true})
 end
 return ____exports

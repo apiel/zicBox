@@ -72,7 +72,7 @@ function ____exports.DrumsSeqView(____bindingPattern0)
     return React.createElement(
         View,
         {name = name},
-        React.createElement(Text, {text = " Snare", bounds = {0, 0, w, 9}, background_color = ColorTrack3, color = "text"}),
+        React.createElement(Text, {text = " Snare", bounds = {0, 0, w, 9}, bgColor = ColorTrack3, color = "text"}),
         React.createElement(Seq, {
             x = 0,
             w = w,
@@ -80,7 +80,7 @@ function ____exports.DrumsSeqView(____bindingPattern0)
             encoder = 0,
             color = ColorTrack3
         }),
-        React.createElement(Text, {text = " HiHat", bounds = {w, 0, w, 9}, background_color = ColorTrack4, color = "text"}),
+        React.createElement(Text, {text = " HiHat", bounds = {w, 0, w, 9}, bgColor = ColorTrack4, color = "text"}),
         React.createElement(Seq, {
             x = w,
             w = w,
@@ -88,7 +88,7 @@ function ____exports.DrumsSeqView(____bindingPattern0)
             encoder = 1,
             color = ColorTrack4
         }),
-        React.createElement(Text, {text = " Sample", bounds = {2 * w, 0, w, 9}, background_color = ColorTrack5, color = "text"}),
+        React.createElement(Text, {text = " Sample", bounds = {2 * w, 0, w, 9}, bgColor = ColorTrack5, color = "text"}),
         React.createElement(Seq, {
             x = w * 2,
             w = w,

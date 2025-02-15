@@ -1,4 +1,5 @@
-import { applyZic, buildPlateform, ZicValue } from './core';
+import { ComponentProps } from './components/component';
+import { applyZic, buildPlateform, jsonStringify, ZicValue } from './core';
 
 export type Bounds = string | string[] | number[];
 
@@ -34,6 +35,18 @@ export function initializePlugin(componentName: string, pluginPath: string) {
         initializedPlugins.add(componentName);
         pluginComponent(componentName, pluginPath);
     }
+}
+
+export function getJsonComponent<P>(componentName: string, pluginPath: string) {
+    return (props: ComponentProps<P>) => {
+        initializePlugin(componentName, pluginPath);
+        const COMPONENT = jsonStringify({
+            ...props,
+            componentName,
+            bounds: getBounds(props.bounds),
+        });
+        return [{ COMPONENT }];
+    };
 }
 
 /**
