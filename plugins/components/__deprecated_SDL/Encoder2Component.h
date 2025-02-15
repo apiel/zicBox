@@ -232,7 +232,7 @@ public:
             styles.colors.primary,
             alpha(styles.colors.primary, 0.5),
             alpha(styles.colors.primary, 0.2),
-            draw.getColor((char*)"#35373b"),
+            draw.getColor("#35373b"),
             alpha(styles.colors.white, 0.6),
         };
 

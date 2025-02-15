@@ -62,12 +62,12 @@ public:
         /*md   // The background color of the text. */
         /*md   bgColor="#000000" */
         if (config.contains("bgColor")) {
-            bgColor = draw.getColor((char*)config["bgColor"].get<std::string>().c_str());
+            bgColor = draw.getColor(config["bgColor"].get<std::string>());
         }
         /*md   // The color of the text */
         /*md   color="#ffffff" */
         if (config.contains("color")) {
-            color = draw.getColor((char*)config["color"].get<std::string>().c_str());
+            color = draw.getColor(config["color"].get<std::string>());
         }
 
         /*md md_config_end */

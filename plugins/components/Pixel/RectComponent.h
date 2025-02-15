@@ -29,7 +29,7 @@ public:
         /*md   // The color of the rectangle. */
         /*md   color="#000000" */
         if (config.contains("color")) {
-            color = draw.getColor((char*)config["color"].get<std::string>().c_str());
+            color = draw.getColor(config["color"].get<std::string>());
         }
 
         /*md   // If true, the rectangle will be filled. Default is true. */
