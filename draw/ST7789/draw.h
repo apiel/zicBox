@@ -1,5 +1,4 @@
-#ifndef _UI_DRAW_H_
-#define _UI_DRAW_H_
+#pragma once
 
 #include "helpers/gpio.h"
 #include "helpers/st7789.h"
@@ -288,33 +287,33 @@ protected:
         }
     }
 
-    Color* getStyleColor(char* color)
+    Color* getStyleColor(std::string& color)
     {
-        if (strcmp(color, "background") == 0) {
+        if (color == "background") {
             return &styles.colors.background;
         }
 
-        if (strcmp(color, "white") == 0) {
+        if (color == "white") {
             return &styles.colors.white;
         }
 
-        if (strcmp(color, "primary") == 0) {
+        if (color == "primary") {
             return &styles.colors.primary;
         }
 
-        if (strcmp(color, "secondary") == 0) {
+        if (color == "secondary") {
             return &styles.colors.secondary;
         }
 
-        if (strcmp(color, "tertiary") == 0) {
+        if (color == "tertiary") {
             return &styles.colors.tertiary;
         }
 
-        if (strcmp(color, "quaternary") == 0) {
+        if (color == "quaternary") {
             return &styles.colors.quaternary;
         }
 
-        if (strcmp(color, "text") == 0) {
+        if (color == "text") {
             return &styles.colors.text;
         }
 
@@ -988,7 +987,7 @@ public:
         }
     }
 
-    Color getColor(char* color) override
+    Color getColor(std::string color) override
     {
         // if first char is # then call hex2rgb
         if (color[0] == '#') {
@@ -1006,8 +1005,8 @@ public:
     bool config(char* key, char* value) override
     {
         if (strcmp(key, "SET_COLOR") == 0) {
-            char* name = strtok(value, " ");
-            char* color = strtok(NULL, " ");
+            std::string name = strtok(value, " ");
+            std::string color = strtok(NULL, " ");
             Color* styleColor = getStyleColor(name);
             if (styleColor != NULL) {
                 Color newColor = hex2rgb(color);
@@ -1038,5 +1037,3 @@ public:
         return false;
     }
 };
-
-#endif

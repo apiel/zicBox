@@ -1,7 +1,9 @@
 #pragma once
 
-#include "../component.h"
-#include "../utils/color.h"
+#include "log.h"
+#include "plugins/components/component.h"
+#include "plugins/components/utils/color.h"
+
 #include <math.h>
 #include <string>
 
@@ -16,7 +18,6 @@ class KnobValueComponent : public Component {
 protected:
     const char* name = NULL;
     std::string label;
-    char labelBuffer[32];
 
     int radius = 20;
     int insideRadius = 15;
@@ -93,7 +94,7 @@ protected:
 
     void renderValue()
     {
-        if (!stringValueReplaceTitle && ((value->hasType(VALUE_STRING) && type != 3) || type == ENCODER_TYPE::STRING)) {
+        if (!stringValueReplaceTitle && ((value->hasType(VALUE_STRING) && type != ENCODER_TYPE::NUMBER) || type == ENCODER_TYPE::STRING)) {
             draw.textCentered({ valuePosition.x, valuePosition.y - 5 }, value->string(), fontValueSize, { valueColor });
         } else {
             float val = value->get();
@@ -198,17 +199,68 @@ public:
 
         setRadius((size.h - 6) * 0.5);
 
-        /*md
+        /*md md_config:KnobValue */
+        nlohmann::json config = props.config;
 
-```tsx
-<Text
-        */
-       nlohmann::json config = props.config;
+        /*md   // The audio plugin to get control on. */
+        /*md   audioPlugin="audio_plugin_name" */
+        if (!config.contains("audioPlugin")) {
+            logWarn("KnobValue component is missing audioPlugin parameter.");
+            return;
+        }
+        std::string audioPlugin = config["audioPlugin"].get<std::string>();
 
-        /*md
-/>
-```
-        */
+        /*md   // The audio plugin key parameter to get control on. */
+        /*md   param="parameter_name" */
+        if (!config.contains("param")) {
+            logWarn("KnobValue component is missing param parameter.");
+            return;
+        }
+        std::string param = config["param"].get<std::string>();
+
+        value = watch(getPlugin(audioPlugin.c_str(), track).getValue(param));
+        if (value != NULL) {
+            valueFloatPrecision = value->props().floatingPoint;
+        }
+
+        /*md   // The encoder id that will interract with this component. */
+        /*md   encoderId={0} */
+        encoderId = config.value("encoderId", encoderId);
+
+        // TODO see if this could be simplified
+        /*md   // The type of the encoder. By default the component will define the type own his own. */
+        /*md   type="TWO_SIDED" // when there is a centered value like PAN and you want to show both side value: 20%|80% */
+        /*md   type="TWO_VALUES" // when there is 2 possible values, for example one side is drive and the other side is compressor. */
+        /*md   type="NUMBER" // when the value is of type string but we still want to enforce to see his numeric value */
+        /*md   type="STRING" */
+        if (config.contains("type")) {
+            std::string typeStr = config["type"].get<std::string>();
+            if (typeStr == "TWO_SIDED") {
+                type = ENCODER_TYPE::TWO_SIDED;
+            } else if (typeStr == "STRING") {
+                type = ENCODER_TYPE::STRING;
+            } else if (typeStr == "NUMBER") {
+                type = ENCODER_TYPE::NUMBER;
+            } else if (typeStr == "TWO_VALUES") {
+                type = ENCODER_TYPE::TWO_VALUES;
+            }
+        }
+
+        /*md   // Override the label of the parameter. */
+        /*md   label="custom_label" */
+        if (config.contains("label")) {
+            label = config["label"].get<std::string>();
+        }
+
+        /*md   // Set the color of the knob. */
+        /*md   color="#FF0000" */
+        if (config.contains("color")) {
+            barColor = draw.getColor((char *)config["color"].get<std::string>().c_str());
+            barBackgroundColor = alpha(barColor, 0.7);
+            barTwoSideColor = alpha(barColor, 0.2);
+        }
+
+        /*md md_config_end */
     }
 
     void render()
@@ -232,48 +284,8 @@ public:
 
     bool config(char* key, char* params)
     {
-        /*md - `VALUE: pluginName keyName` is used to set the value to control */
-        if (strcmp(key, "VALUE") == 0) {
-            char* pluginName = strtok(params, " ");
-            char* keyValue = strtok(NULL, " ");
-            value = watch(getPlugin(pluginName, track).getValue(keyValue));
-            if (value != NULL) {
-                valueFloatPrecision = value->props().floatingPoint;
-            }
-            return true;
-        }
 
-        /*md - `ENCODER_ID: 0` is used to set the encoder id that will interract with this component */
-        if (strcmp(key, "ENCODER_ID") == 0) {
-            encoderId = atoi(params);
-            return true;
-        }
 
-        /*md
-- `TYPE: TWO_SIDED` is used to set the encoder type
-    - `TYPE: TWO_SIDED` when there is a centered value like PAN and you want to show both side value: 20%|80%
-        */
-        if (strcmp(key, "TYPE") == 0) {
-            if (strcmp(params, "TWO_SIDED") == 0) {
-                type = ENCODER_TYPE::TWO_SIDED;
-            } else if (strcmp(params, "STRING") == 0) {
-                type = ENCODER_TYPE::STRING;
-            } else if (strcmp(params, "NUMBER") == 0) {
-                type = ENCODER_TYPE::NUMBER;
-            } else if (strcmp(params, "TWO_VALUES") == 0) {
-                type = ENCODER_TYPE::TWO_VALUES;
-            } else {
-                type = (ENCODER_TYPE)atoi(params);
-            }
-            return true;
-        }
-
-        /*md - `LABEL: custom_label` overwrite the value label */
-        if (strcmp(key, "LABEL") == 0) {
-            strcpy(labelBuffer, params);
-            label = labelBuffer;
-            return true;
-        }
 
         /*md - `COLOR: #3791a1` set the ring color */
         if (strcmp(key, "COLOR") == 0) {
