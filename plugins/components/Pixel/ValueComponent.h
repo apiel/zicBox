@@ -1,5 +1,6 @@
 #pragma once
 
+#include "log.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
 
@@ -9,7 +10,7 @@
 <img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/value.png" />
 <img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/value2.png" />
 
-Value component is used to display an audio plugin value.
+Value component is used to display an audio plugin parameter value.
 */
 
 class ValueComponent : public Component {
@@ -80,6 +81,144 @@ public:
         , unitColor(darken(styles.colors.text, 0.5))
         , labelColor(darken(styles.colors.text, 0.5))
     {
+
+        /*md md_config:KnobValue */
+        nlohmann::json config = props.config;
+
+        /*md   // The audio plugin to get control on. */
+        /*md   audioPlugin="audio_plugin_name" */
+        if (!config.contains("audioPlugin")) {
+            logWarn("KnobValue component is missing audioPlugin parameter.");
+            return;
+        }
+        std::string audioPlugin = config["audioPlugin"].get<std::string>();
+
+        /*md   // The audio plugin key parameter to get control on. */
+        /*md   param="parameter_name" */
+        if (!config.contains("param")) {
+            logWarn("KnobValue component is missing param parameter.");
+            return;
+        }
+        std::string param = config["param"].get<std::string>();
+
+        val = watch(getPlugin(audioPlugin.c_str(), track).getValue(param));
+        if (val != NULL) {
+            floatPrecision = val->props().floatingPoint;
+        }
+        useStringValue = val->hasType(VALUE_STRING);
+
+        /*md   // The encoder id that will interract with this component. */
+        /*md   encoderId={0} */
+        encoderId = config.value("encoderId", encoderId);
+
+        /*md   // Override the label of the parameter. */
+        /*md   label="custom_label" */
+        if (config.contains("label")) {
+            label = config["label"].get<std::string>();
+        }
+
+        /*md   // Set how many digits after the decimal point (by default none. */
+        /*md   floatPrecision={2} */
+        floatPrecision = config.value("floatPrecision", floatPrecision);
+
+        /*md   // Hide the value of the parameter. */
+        /*md   hideValue */
+        showValue = !config.value("hideValue", false);
+
+        /*md   // Hide the unit of the parameter. */
+        /*md   hideUnit */
+        showUnit = !config.value("hideUnit", false);
+
+        /*md   // Use the string value instead of the floating point one (default: false). */
+        /*md   useStringValue */
+        useStringValue = config.value("useStringValue", useStringValue);
+
+        /*md   // Set the bar height (default: 2). */
+        /*md   barHeight={2} */
+        barH = config.value("barHeight", barH);
+
+        /*md   // Set the bar background height (default: 1). */
+        /*md   barBgHeight={1} */
+        barBgH = config.value("barBgHeight", barBgH);
+
+        /*md   // Set the text vertical alignment to center (default: false). */
+        /*md   verticalAlignCenter */
+        verticalAlignCenter = config.value("verticalAlignCenter", verticalAlignCenter);
+
+        /*md   // Hide the label (default: false). */
+        /*md   hideLabel */
+        showLabel = !config.value("hideLabel", !showLabel);
+
+        /*md   // Hide the unit (default: false). */
+        /*md   hideUnit */
+        showUnit = !config.value("hideUnit", !showUnit);
+
+        /*md   // Hide the value (default: false). */
+        /*md   hideValue */
+        showValue = !config.value("hideValue", !showValue);
+
+        /*md   // Shows the label over the value, 4 px from the top of the component (default: -1) `*/
+        /*md   showLabelOverValue={4} */
+        showLabelOverValue = config.value("showLabelOverValue", showLabelOverValue);
+
+        /*md   // Set the distance from the left of the component where the label will be placed. If -1 it is centered (default: -1) */
+        /*md   labelOverValueX={0} */
+        labelOverValueX = config.value("labelOverValueX", labelOverValueX);
+
+        /*md   // Set the font size of the value (default: 8). */
+        /*md   valueSize={8} */
+        valueFontSize = config.value("valueSize", valueFontSize);
+
+        /*md   // Set the font size of the label (default: 6). */
+        /*md   labelSize={6} */
+        labelFontSize = config.value("labelSize", labelFontSize);
+
+        /*md   // Set the font size of the unit (default: 6). */
+        /*md   unitSize={6} */
+        unitFontSize = config.value("unitSize", unitFontSize);
+
+        /*md   // The font of the text. Default is null. */
+        /*md   font="Sinclair_S" */
+        if (config.contains("font")) {
+            font = draw.getFont(config["font"].get<std::string>().c_str());
+        }
+
+        /*md   // The font height of the text. Default is 0. */
+        /*md   valueHeight=16 */
+        fontHeightValue = config.value("valueHeight", fontHeightValue);
+        setMaxFontSize();
+
+        /*md   // Set the background color of the component. */
+        /*md   bgColor="#000000" */
+        if (config.contains("bgColor")) {
+            bgColor = draw.getColor(config["bgColor"].get<std::string>());
+        }
+
+        /*md   // Set the color of the label. */
+        /*md   valueColor="#FF0000" */
+        if (config.contains("valueColor")) {
+            valueColor = draw.getColor(config["valueColor"].get<std::string>());
+        }
+
+        /*md   // Set the color of the bar. */
+        /*md   barColor="#FF0000" */
+        if (config.contains("barColor")) {
+            barColor = draw.getColor(config["barColor"].get<std::string>());
+        }
+
+        /*md   // Set the color of the unit. */
+        /*md   unitColor="#00FF00" */
+        if (config.contains("unitColor")) {
+            unitColor = draw.getColor(config["unitColor"].get<std::string>());
+        }
+
+        /*md   // Set the color of the label. */
+        /*md   labelColor="#00FF00" */
+        if (config.contains("labelColor")) {
+            labelColor = draw.getColor(config["labelColor"].get<std::string>());
+        }
+
+        /*md md_config_end */
     }
 
     void renderBar()
@@ -157,166 +296,4 @@ public:
             val->increment(direction);
         }
     }
-
-    /*md **Config**: */
-    bool config(char* key, char* params)
-    {
-        /*md - `VALUE: pluginName keyName` is used to set the value to control */
-        if (strcmp(key, "VALUE") == 0) {
-            char* pluginName = strtok(params, " ");
-            char* keyValue = strtok(NULL, " ");
-            val = watch(getPlugin(pluginName, track).getValue(keyValue));
-            if (val != NULL) {
-                floatPrecision = val->props().floatingPoint;
-            }
-            useStringValue = val->hasType(VALUE_STRING);
-            return true;
-        }
-
-        /*md - `ENCODER_ID: 0` is used to set the encoder id that will interract with this component */
-        if (strcmp(key, "ENCODER_ID") == 0) {
-            encoderId = atoi(params);
-            return true;
-        }
-
-        /*md - `FLOAT_PRECISION: 2` set how many digits after the decimal point (by default none) */
-        if (strcmp(key, "FLOAT_PRECISION") == 0) {
-            floatPrecision = atoi(params);
-            return true;
-        }
-
-        /*md - `USE_STRING_VALUE: true` use the string value instead of the floating point one (default: false) */
-        if (strcmp(key, "USE_STRING_VALUE") == 0) {
-            useStringValue = strcmp(params, "true") == 0;
-            return true;
-        }
-
-        /*md - `BAR_HEIGHT: 2` set the bar height (default: 2) */
-        if (strcmp(key, "BAR_HEIGHT") == 0) {
-            barH = atoi(params);
-            return true;
-        }
-
-        /*md - `BAR_BG_HEIGHT: 1` set the bar background height (default: 1) */
-        if (strcmp(key, "BAR_BG_HEIGHT") == 0) {
-            barBgH = atoi(params);
-            return true;
-        }
-
-        /*md - `VERTICAL_ALIGN_CENTER: true` set the text vertical alignment to center (default: false) */
-        if (strcmp(key, "VERTICAL_ALIGN_CENTER") == 0) {
-            verticalAlignCenter = strcmp(params, "true") == 0;
-            return true;
-        }
-
-        /*md - `SHOW_VALUE: true` shows the value (default: true) */
-        if (strcmp(key, "SHOW_VALUE") == 0) {
-            showValue = strcmp(params, "true") == 0;
-            setMaxFontSize();
-            return true;
-        }
-
-        /*md - `SHOW_UNIT: true` shows the unit (default: true) */
-        if (strcmp(key, "SHOW_UNIT") == 0) {
-            showUnit = strcmp(params, "true") == 0;
-            setMaxFontSize();
-            return true;
-        }
-
-        /*md - `SHOW_LABEL: true` shows the label (default: true) */
-        if (strcmp(key, "SHOW_LABEL") == 0) {
-            showLabel = strcmp(params, "true") == 0;
-            setMaxFontSize();
-            return true;
-        }
-
-        /*md - `SHOW_LABEL_OVER_VALUE: 4` shows the label over the value, 4 px from the top of the component (default: -1) `*/
-        if (strcmp(key, "SHOW_LABEL_OVER_VALUE") == 0) {
-            showLabelOverValue = atoi(params);
-            if (showLabelOverValue != -1) {
-                showLabel = false;
-            }
-            setMaxFontSize();
-            return true;
-        }
-
-        /*md - `LABEL_OVER_VALUE_X: 0` set the distance from the left of the component where the label will be placed. If -1 it is centered (default: -1) */
-        if (strcmp(key, "LABEL_OVER_VALUE_X") == 0) {
-            labelOverValueX = atoi(params);
-            return true;
-        }
-
-        /*md - `LABEL: label` is the label of the component. */
-        if (strcmp(key, "LABEL") == 0) {
-            label = params;
-            return true;
-        }
-
-        /*md - `VALUE_FONT_SIZE: size` is the font size of the component. */
-        if (strcmp(key, "VALUE_FONT_SIZE") == 0) {
-            valueFontSize = atoi(params);
-            setMaxFontSize();
-            return true;
-        }
-
-        /*md - `LABEL_FONT_SIZE: size` is the font size of the component. */
-        if (strcmp(key, "LABEL_FONT_SIZE") == 0) {
-            labelFontSize = atoi(params);
-            setMaxFontSize();
-            return true;
-        }
-
-        /*md - `UNIT_FONT_SIZE: size` is the font size of the component. */
-        if (strcmp(key, "UNIT_FONT_SIZE") == 0) {
-            unitFontSize = atoi(params);
-            setMaxFontSize();
-            return true;
-        }
-
-        /*md - `FONT: font` is the font of the component. */
-        if (strcmp(key, "FONT") == 0) {
-            font = draw.getFont(params);
-            return true;
-        }
-
-        /*md - `VALUE_FONT_HEIGHT: 16` is the font height of the value. */
-        if (strcmp(key, "VALUE_FONT_HEIGHT") == 0) {
-            fontHeightValue = atoi(params);
-            setMaxFontSize();
-            return true;
-        }
-
-        /*md - `BACKGROUND_COLOR: color` is the background color of the component. */
-        if (strcmp(key, "BACKGROUND_COLOR") == 0) {
-            bgColor = draw.getColor(params);
-            return true;
-        }
-
-        /*md - `VALUE_COLOR: color` is the color of the value. */
-        if (strcmp(key, "VALUE_COLOR") == 0) {
-            valueColor = draw.getColor(params);
-            return true;
-        }
-
-        /*md - `BAR_COLOR: color` is the color of the bar. */
-        if (strcmp(key, "BAR_COLOR") == 0) {
-            barColor = draw.getColor(params);
-            return true;
-        }
-
-        /*md - `UNIT_COLOR: color` is the color of the unit. */
-        if (strcmp(key, "UNIT_COLOR") == 0) {
-            unitColor = draw.getColor(params);
-            return true;
-        }
-
-        /*md - `LABEL_COLOR: color` is the color of the label. */
-        if (strcmp(key, "LABEL_COLOR") == 0) {
-            labelColor = draw.getColor(params);
-            return true;
-        }
-        
-        return false;
-    }
 };
-

@@ -57,7 +57,7 @@ function Main(____bindingPattern0)
                 bounds = topLeft,
                 group = group,
                 track = track,
-                encoder_id = 0
+                encoderId = 0
             }, tertiary)
         ),
         React.createElement(
@@ -67,7 +67,7 @@ function Main(____bindingPattern0)
                 bounds = bottomLeft,
                 group = group,
                 track = track,
-                encoder_id = 1
+                encoderId = 1
             }, primary)
         ),
         React.createElement(
@@ -77,7 +77,7 @@ function Main(____bindingPattern0)
                 bounds = topRight,
                 group = group,
                 track = track,
-                encoder_id = 2
+                encoderId = 2
             }, quaternary, {USE_STRING_VALUE = true})
         ),
         React.createElement(
@@ -87,7 +87,7 @@ function Main(____bindingPattern0)
                 bounds = bottomRight,
                 group = group,
                 track = track,
-                encoder_id = 3
+                encoderId = 3
             }, quaternary)
         )
     )
@@ -128,7 +128,7 @@ function EditDistortion(____bindingPattern0)
                 bounds = topLeft,
                 group = group,
                 track = track,
-                encoder_id = 0
+                encoderId = 0
             }, tertiary)
         ),
         React.createElement(
@@ -138,7 +138,7 @@ function EditDistortion(____bindingPattern0)
                 bounds = bottomLeft,
                 group = group,
                 track = track,
-                encoder_id = 1
+                encoderId = 1
             }, primary)
         ),
         React.createElement(
@@ -148,7 +148,7 @@ function EditDistortion(____bindingPattern0)
                 bounds = topRight,
                 group = group,
                 track = track,
-                encoder_id = 2
+                encoderId = 2
             }, secondary)
         ),
         React.createElement(
@@ -158,7 +158,7 @@ function EditDistortion(____bindingPattern0)
                 bounds = bottomRight,
                 group = group,
                 track = track,
-                encoder_id = 3
+                encoderId = 3
             }, quaternary)
         )
     )
@@ -212,7 +212,7 @@ function EditEnvAmp(____bindingPattern0)
             bounds = {W3_4, (height - encoderH) * 0.5, W1_4, encoderH},
             track = track,
             value = "Drum23 DURATION",
-            encoder_id = 3,
+            encoderId = 3,
             color = "quaternary"
         })
     )
@@ -244,7 +244,7 @@ function EditEnvFreq(____bindingPattern0)
             bounds = {W3_4, (height - encoderH) * 0.5, W1_4, encoderH},
             track = track,
             value = "Drum23 PITCH",
-            encoder_id = 3,
+            encoderId = 3,
             color = "secondary"
         })
     )
@@ -268,7 +268,7 @@ function EditClick(____bindingPattern0)
                 bounds = topLeft,
                 group = group,
                 track = track,
-                encoder_id = 0
+                encoderId = 0
             }, tertiary)
         ),
         React.createElement(
@@ -278,7 +278,7 @@ function EditClick(____bindingPattern0)
                 bounds = bottomLeft,
                 group = group,
                 track = track,
-                encoder_id = 1
+                encoderId = 1
             }, primary)
         ),
         React.createElement(
@@ -288,7 +288,7 @@ function EditClick(____bindingPattern0)
                 bounds = topRight,
                 group = group,
                 track = track,
-                encoder_id = 2
+                encoderId = 2
             }, secondary, {USE_STRING_VALUE = true})
         ),
         React.createElement(
@@ -298,7 +298,7 @@ function EditClick(____bindingPattern0)
                 bounds = bottomRight,
                 group = group,
                 track = track,
-                encoder_id = 3
+                encoderId = 3
             }, quaternary)
         )
     )

@@ -20,31 +20,31 @@ export function PercView({ name }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                value="TrackFx VOLUME"
+                audioPlugin="TrackFx" param="VOLUME"
                 bounds={topLeftKnob}
-                encoder_id={encTopLeft}
-                COLOR="tertiary"
+                encoderId={encTopLeft}
+                color="tertiary"
                 track={PercTrack}
             />
             <KnobValue
-                value="Perc DURATION"
+                audioPlugin="Perc" param="DURATION"
                 bounds={topRightKnob}
-                encoder_id={encTopRight}
-                COLOR="primary"
+                encoderId={encTopRight}
+                color="primary"
                 track={PercTrack}
             />
             <KnobValue
-                value="Perc BASE_FREQ"
+                audioPlugin="Perc" param="BASE_FREQ"
                 bounds={bottomLeftKnob}
-                encoder_id={encBottomLeft}
-                COLOR="quaternary"
+                encoderId={encBottomLeft}
+                color="quaternary"
                 track={PercTrack}
             />
             <KnobValue
-                value="Perc TIMBRE"
+                audioPlugin="Perc" param="TIMBRE"
                 bounds={bottomRightKnob}
-                encoder_id={encBottomRight}
-                COLOR="secondary"
+                encoderId={encBottomRight}
+                color="secondary"
                 track={PercTrack}
             />
 

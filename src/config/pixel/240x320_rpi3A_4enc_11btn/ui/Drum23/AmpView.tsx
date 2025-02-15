@@ -34,8 +34,8 @@ export function AmpView({ name }: Props) {
             />
             <KnobValue
                 bounds={bottomRightKnob}
-                value="Drum23 DURATION"
-                encoder_id={encBottomRight}
+                audioPlugin="Drum23" param="DURATION"
+                encoderId={encBottomRight}
                 color="quaternary"
                 track={Drum23Track}
             />

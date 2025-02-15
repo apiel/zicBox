@@ -35,8 +35,9 @@ function ____exports.AmpView(____bindingPattern0)
         }),
         React.createElement(KnobValue, {
             bounds = bottomRightKnob,
-            value = "Drum23 DURATION",
-            encoder_id = 3,
+            audioPlugin = "Drum23",
+            param = "DURATION",
+            encoderId = 3,
             color = "quaternary",
             track = Drum23Track
         }),

@@ -24,17 +24,19 @@ function ____exports.Fm1EnvView(____bindingPattern0)
         View,
         {name = name},
         React.createElement(KnobValue, {
-            value = "FmDrum ATTACK_TIME",
+            audioPlugin = "FmDrum",
+            param = "ATTACK_TIME",
             bounds = topLeftKnob,
-            encoder_id = encTopLeft,
-            COLOR = "tertiary",
+            encoderId = encTopLeft,
+            color = "tertiary",
             track = Fm1Track
         }),
         React.createElement(KnobValue, {
-            value = "FmDrum DECAY_TIME",
+            audioPlugin = "FmDrum",
+            param = "DECAY_TIME",
             bounds = topRightKnob,
-            encoder_id = encTopRight,
-            COLOR = "primary",
+            encoderId = encTopRight,
+            color = "primary",
             track = Fm1Track
         }),
         React.createElement(TextGridFm1, {selected = "Env", viewName = name}),

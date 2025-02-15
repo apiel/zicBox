@@ -28,31 +28,35 @@ function ____exports.ClickView(____bindingPattern0)
         View,
         {name = name},
         React.createElement(KnobValue, {
-            value = "Drum23 CLICK",
+            audioPlugin = "Drum23",
+            param = "CLICK",
             bounds = topLeftKnob,
-            encoder_id = encTopLeft,
-            COLOR = "tertiary",
+            encoderId = encTopLeft,
+            color = "tertiary",
             track = Drum23Track
         }),
         React.createElement(KnobValue, {
-            value = "Drum23 CLICK_CUTOFF",
+            audioPlugin = "Drum23",
+            param = "CLICK_CUTOFF",
             bounds = topRightKnob,
-            encoder_id = encTopRight,
-            COLOR = "primary",
+            encoderId = encTopRight,
+            color = "primary",
             track = Drum23Track
         }),
         React.createElement(KnobValue, {
-            value = "Drum23 CLICK_DURATION",
+            audioPlugin = "Drum23",
+            param = "CLICK_DURATION",
             bounds = bottomLeftKnob,
-            encoder_id = encBottomLeft,
-            COLOR = "quaternary",
+            encoderId = encBottomLeft,
+            color = "quaternary",
             track = Drum23Track
         }),
         React.createElement(KnobValue, {
-            value = "Drum23 HIGH_FREQ_BOOST",
+            audioPlugin = "Drum23",
+            param = "HIGH_FREQ_BOOST",
             bounds = bottomRightKnob,
-            encoder_id = encBottomRight,
-            COLOR = "secondary",
+            encoderId = encBottomRight,
+            color = "secondary",
             track = Drum23Track
         }),
         React.createElement(TextGridDrum23, {selected = "Click", viewName = name}),

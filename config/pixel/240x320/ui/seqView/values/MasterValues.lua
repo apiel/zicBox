@@ -50,7 +50,7 @@ function ____exports.MasterValues()
                     bounds = topLeft,
                     group = 0,
                     track = 0,
-                    encoder_id = 0
+                    encoderId = 0
                 }, tertiary)
             ),
             React.createElement(
@@ -60,7 +60,7 @@ function ____exports.MasterValues()
                     bounds = topRight,
                     group = 0,
                     track = 0,
-                    encoder_id = 2
+                    encoderId = 2
                 }, quaternary, {USE_STRING_VALUE = true})
             ),
             React.createElement(
@@ -70,7 +70,7 @@ function ____exports.MasterValues()
                     bounds = bottomRight,
                     group = 0,
                     track = 0,
-                    encoder_id = 3
+                    encoderId = 3
                 }, quaternary)
             )
         )

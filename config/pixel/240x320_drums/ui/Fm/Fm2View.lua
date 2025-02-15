@@ -25,22 +25,22 @@ function ____exports.Fm2View(____bindingPattern0)
         React.createElement(KnobValue, {
             value = "FmDrum ATTACK_TIME",
             bounds = topLeftKnob,
-            encoder_id = 0,
+            encoderId = 0,
             COLOR = "tertiary",
             track = FmTrack
         }),
         React.createElement(KnobValue, {
             value = "FmDrum DECAY_TIME",
             bounds = topRightKnob,
-            encoder_id = 2,
+            encoderId = 2,
             COLOR = "secondary",
             track = FmTrack
         }),
-        React.createElement(KnobValue, {value = "FmDrum DISTORTION", bounds = bottomLeftKnob, encoder_id = 1, track = FmTrack}),
+        React.createElement(KnobValue, {value = "FmDrum DISTORTION", bounds = bottomLeftKnob, encoderId = 1, track = FmTrack}),
         React.createElement(KnobValue, {
             value = "FmDrum REVERB",
             bounds = bottomRightKnob,
-            encoder_id = 3,
+            encoderId = 3,
             COLOR = "secondary",
             track = FmTrack
         }),

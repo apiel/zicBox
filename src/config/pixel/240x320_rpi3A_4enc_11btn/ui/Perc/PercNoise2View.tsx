@@ -20,31 +20,31 @@ export function PercNoise2View({ name }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                value="Perc BAND_FREQ"
+                audioPlugin="Perc" param="BAND_FREQ"
                 bounds={topLeftKnob}
-                encoder_id={encTopLeft}
-                COLOR="tertiary"
+                encoderId={encTopLeft}
+                color="tertiary"
                 track={PercTrack}
             />
             <KnobValue
-                value="Perc BAND_Q"
+                audioPlugin="Perc" param="BAND_Q"
                 bounds={topRightKnob}
-                encoder_id={encTopRight}
-                COLOR="primary"
+                encoderId={encTopRight}
+                color="primary"
                 track={PercTrack}
             />
             <KnobValue
-                value="Perc METALLIC_NOISE_MIX"
+                audioPlugin="Perc" param="METALLIC_NOISE_MIX"
                 bounds={bottomLeftKnob}
-                encoder_id={encBottomLeft}
-                COLOR="quaternary"
+                encoderId={encBottomLeft}
+                color="quaternary"
                 track={PercTrack}
             />
             <KnobValue
-                value="Perc NOISE_BRIGHTNESS"
+                audioPlugin="Perc" param="NOISE_BRIGHTNESS"
                 bounds={bottomRightKnob}
-                encoder_id={encBottomRight}
-                COLOR="secondary"
+                encoderId={encBottomRight}
+                color="secondary"
                 track={PercTrack}
             />
 

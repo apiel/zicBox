@@ -52,7 +52,7 @@ function ____exports.MasterValues(____bindingPattern0)
                 bounds = topLeft,
                 group = group,
                 track = track,
-                encoder_id = 0
+                encoderId = 0
             }, ____exports.tertiary)
         ),
         React.createElement(
@@ -62,7 +62,7 @@ function ____exports.MasterValues(____bindingPattern0)
                 bounds = bottomLeft,
                 group = group,
                 track = track,
-                encoder_id = 1
+                encoderId = 1
             }, ____exports.primary)
         )
     )
@@ -87,7 +87,7 @@ function ____exports.Drum23Values(____bindingPattern0)
                 bounds = topLeft,
                 group = group,
                 track = track,
-                encoder_id = 0
+                encoderId = 0
             }, ____exports.tertiary)
         ),
         React.createElement(
@@ -97,7 +97,7 @@ function ____exports.Drum23Values(____bindingPattern0)
                 bounds = bottomLeft,
                 group = group,
                 track = track,
-                encoder_id = 1
+                encoderId = 1
             }, ____exports.primary)
         ),
         React.createElement(
@@ -107,7 +107,7 @@ function ____exports.Drum23Values(____bindingPattern0)
                 bounds = topRight,
                 group = group,
                 track = track,
-                encoder_id = 2
+                encoderId = 2
             }, ____exports.quaternary, {USE_STRING_VALUE = true})
         ),
         React.createElement(
@@ -117,7 +117,7 @@ function ____exports.Drum23Values(____bindingPattern0)
                 bounds = bottomRight,
                 group = group,
                 track = track,
-                encoder_id = 3
+                encoderId = 3
             }, ____exports.quaternary)
         )
     )
@@ -142,7 +142,7 @@ function ____exports.FmValues(____bindingPattern0)
                 bounds = topLeft,
                 group = group,
                 track = track,
-                encoder_id = 0
+                encoderId = 0
             }, ____exports.tertiary)
         ),
         React.createElement(
@@ -152,7 +152,7 @@ function ____exports.FmValues(____bindingPattern0)
                 bounds = bottomLeft,
                 group = group,
                 track = track,
-                encoder_id = 1
+                encoderId = 1
             }, ____exports.primary)
         ),
         React.createElement(
@@ -162,7 +162,7 @@ function ____exports.FmValues(____bindingPattern0)
                 bounds = topRight,
                 group = group,
                 track = track,
-                encoder_id = 2
+                encoderId = 2
             }, ____exports.quaternary, {USE_STRING_VALUE = true})
         ),
         React.createElement(
@@ -172,7 +172,7 @@ function ____exports.FmValues(____bindingPattern0)
                 bounds = bottomRight,
                 group = group,
                 track = track,
-                encoder_id = 3
+                encoderId = 3
             }, ____exports.secondary)
         )
     )
@@ -197,7 +197,7 @@ function ____exports.SnareValues(____bindingPattern0)
                 bounds = topLeft,
                 group = group,
                 track = track,
-                encoder_id = 0
+                encoderId = 0
             }, ____exports.tertiary)
         ),
         React.createElement(
@@ -207,7 +207,7 @@ function ____exports.SnareValues(____bindingPattern0)
                 bounds = bottomLeft,
                 group = group,
                 track = track,
-                encoder_id = 1
+                encoderId = 1
             }, ____exports.primary)
         ),
         React.createElement(
@@ -217,7 +217,7 @@ function ____exports.SnareValues(____bindingPattern0)
                 bounds = topRight,
                 group = group,
                 track = track,
-                encoder_id = 2
+                encoderId = 2
             }, ____exports.quaternary, {USE_STRING_VALUE = true})
         ),
         React.createElement(
@@ -227,7 +227,7 @@ function ____exports.SnareValues(____bindingPattern0)
                 bounds = bottomRight,
                 group = group,
                 track = track,
-                encoder_id = 3
+                encoderId = 3
             }, ____exports.quaternary)
         )
     )
@@ -252,7 +252,7 @@ function ____exports.HiHatValues(____bindingPattern0)
                 bounds = topLeft,
                 group = group,
                 track = track,
-                encoder_id = 0
+                encoderId = 0
             }, ____exports.tertiary)
         ),
         React.createElement(
@@ -262,7 +262,7 @@ function ____exports.HiHatValues(____bindingPattern0)
                 bounds = bottomLeft,
                 group = group,
                 track = track,
-                encoder_id = 1
+                encoderId = 1
             }, ____exports.primary)
         ),
         React.createElement(
@@ -272,7 +272,7 @@ function ____exports.HiHatValues(____bindingPattern0)
                 bounds = topRight,
                 group = group,
                 track = track,
-                encoder_id = 2
+                encoderId = 2
             }, ____exports.quaternary, {USE_STRING_VALUE = true})
         ),
         React.createElement(
@@ -282,7 +282,7 @@ function ____exports.HiHatValues(____bindingPattern0)
                 bounds = bottomRight,
                 group = group,
                 track = track,
-                encoder_id = 3
+                encoderId = 3
             }, ____exports.quaternary)
         )
     )
@@ -307,7 +307,7 @@ function ____exports.SampleValues(____bindingPattern0)
                 bounds = topLeft,
                 group = group,
                 track = track,
-                encoder_id = 0
+                encoderId = 0
             }, ____exports.tertiary)
         ),
         React.createElement(
@@ -317,7 +317,7 @@ function ____exports.SampleValues(____bindingPattern0)
                 bounds = bottomLeft,
                 group = group,
                 track = track,
-                encoder_id = 1
+                encoderId = 1
             }, ____exports.primary)
         ),
         React.createElement(
@@ -327,7 +327,7 @@ function ____exports.SampleValues(____bindingPattern0)
                 bounds = topRight,
                 group = group,
                 track = track,
-                encoder_id = 2
+                encoderId = 2
             }, ____exports.quaternary, {USE_STRING_VALUE = true})
         ),
         React.createElement(
@@ -337,7 +337,7 @@ function ____exports.SampleValues(____bindingPattern0)
                 bounds = bottomRight,
                 group = group,
                 track = track,
-                encoder_id = 3
+                encoderId = 3
             }, ____exports.quaternary)
         )
     )

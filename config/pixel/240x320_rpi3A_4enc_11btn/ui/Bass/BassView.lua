@@ -28,31 +28,35 @@ function ____exports.BassView(____bindingPattern0)
         View,
         {name = name},
         React.createElement(KnobValue, {
-            value = "TrackFx VOLUME",
+            audioPlugin = "TrackFx",
+            param = "VOLUME",
             bounds = topLeftKnob,
-            encoder_id = encTopLeft,
-            COLOR = "tertiary",
+            encoderId = encTopLeft,
+            color = "tertiary",
             track = BassTrack
         }),
         React.createElement(KnobValue, {
-            value = "Bass CUTOFF",
+            audioPlugin = "Bass",
+            param = "CUTOFF",
             bounds = topRightKnob,
-            encoder_id = encTopRight,
-            COLOR = "primary",
+            encoderId = encTopRight,
+            color = "primary",
             track = BassTrack
         }),
         React.createElement(KnobValue, {
-            value = "Bass FREQ_RATIO",
+            audioPlugin = "Bass",
+            param = "FREQ_RATIO",
             bounds = bottomLeftKnob,
-            encoder_id = encBottomLeft,
-            COLOR = "quaternary",
+            encoderId = encBottomLeft,
+            color = "quaternary",
             track = BassTrack
         }),
         React.createElement(KnobValue, {
-            value = "Bass RESONANCE",
+            audioPlugin = "Bass",
+            param = "RESONANCE",
             bounds = bottomRightKnob,
-            encoder_id = encBottomRight,
-            COLOR = "secondary",
+            encoderId = encBottomRight,
+            color = "secondary",
             track = BassTrack
         }),
         React.createElement(TextGridBass, {selected = "Main", viewName = name}),

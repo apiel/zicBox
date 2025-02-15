@@ -22,17 +22,19 @@ function ____exports.BassDistortionView(____bindingPattern0)
         View,
         {name = name},
         React.createElement(KnobValue, {
-            value = "Bass BOOST",
+            audioPlugin = "Bass",
+            param = "BOOST",
             bounds = topLeftKnob,
-            encoder_id = 0,
-            COLOR = "tertiary",
+            encoderId = 0,
+            color = "tertiary",
             track = BassTrack
         }),
         React.createElement(KnobValue, {
-            value = "Bass GAIN_CLIPPING",
+            audioPlugin = "Bass",
+            param = "GAIN_CLIPPING",
             bounds = topRightKnob,
-            encoder_id = 1,
-            COLOR = "primary",
+            encoderId = 1,
+            color = "primary",
             track = BassTrack
         }),
         React.createElement(TextGridBass, {selected = 0, viewName = name}),

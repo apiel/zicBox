@@ -20,31 +20,31 @@ export function Fm1View({ name }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                value="TrackFx VOLUME"
+                audioPlugin="TrackFx" param="VOLUME"
                 bounds={topLeftKnob}
-                encoder_id={encTopLeft}
-                COLOR="tertiary"
+                encoderId={encTopLeft}
+                color="tertiary"
                 track={Fm1Track}
             />
             <KnobValue
-                value="FmDrum CARRIER_FREQ"
+                audioPlugin="FmDrum" param="CARRIER_FREQ"
                 bounds={topRightKnob}
-                encoder_id={encTopRight}
-                COLOR="primary"
+                encoderId={encTopRight}
+                color="primary"
                 track={Fm1Track}
             />
             <KnobValue
-                value="FmDrum MOD_FREQ"
+                audioPlugin="FmDrum" param="MOD_FREQ"
                 bounds={bottomLeftKnob}
-                encoder_id={encBottomLeft}
-                COLOR="quaternary"
+                encoderId={encBottomLeft}
+                color="quaternary"
                 track={Fm1Track}
             />
             <KnobValue
-                value="FmDrum MOD_INDEX"
+                audioPlugin="FmDrum" param="MOD_INDEX"
                 bounds={bottomRightKnob}
-                encoder_id={encBottomRight}
-                COLOR="secondary"
+                encoderId={encBottomRight}
+                color="secondary"
                 track={Fm1Track}
             />
 

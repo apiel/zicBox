@@ -24,31 +24,35 @@ function ____exports.DistortionView(____bindingPattern0)
         View,
         {name = name},
         React.createElement(KnobValue, {
-            value = "Distortion WAVESHAPE",
+            audioPlugin = "Distortion",
+            param = "WAVESHAPE",
             bounds = topLeftKnob,
-            encoder_id = 0,
-            COLOR = "tertiary",
+            encoderId = 0,
+            color = "tertiary",
             track = Drum23Track
         }),
         React.createElement(KnobValue, {
-            value = "Distortion COMPRESS",
+            audioPlugin = "Distortion",
+            param = "COMPRESS",
             bounds = topRightKnob,
-            encoder_id = 1,
-            COLOR = "primary",
+            encoderId = 1,
+            color = "primary",
             track = Drum23Track
         }),
         React.createElement(KnobValue, {
-            value = "Distortion DRIVE",
+            audioPlugin = "Distortion",
+            param = "DRIVE",
             bounds = bottomLeftKnob,
-            encoder_id = 2,
-            COLOR = "quaternary",
+            encoderId = 2,
+            color = "quaternary",
             track = Drum23Track
         }),
         React.createElement(KnobValue, {
-            value = "Distortion BASS",
+            audioPlugin = "Distortion",
+            param = "BASS",
             bounds = bottomRightKnob,
-            encoder_id = 3,
-            COLOR = "secondary",
+            encoderId = 3,
+            color = "secondary",
             track = Drum23Track
         }),
         React.createElement(TextGridDrum23, {selected = 0, viewName = name}),

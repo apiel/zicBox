@@ -18,17 +18,17 @@ export function BassWaveformView({ name }: Props) {
     return (
         <View name={name}>
             {/* <KnobValue
-                value="Bass STEP_FREQ"
+                audioPlugin="Bass" param="STEP_FREQ"
                 bounds={topLeftKnob}
-                encoder_id={0}
-                COLOR="tertiary"
+                encoderId={0}
+                color="tertiary"
                 track={BassTrack}
             />
             <KnobValue
-                value="Bass STAIRCASE"
+                audioPlugin="Bass" param="STAIRCASE"
                 bounds={topRightKnob}
-                encoder_id={2}
-                COLOR="primary"
+                encoderId={2}
+                color="primary"
                 track={BassTrack}
             /> */}
             <GraphEncoder
@@ -44,17 +44,17 @@ export function BassWaveformView({ name }: Props) {
                 encoders={['0 WAVEFORM_TYPE', '1 SHAPE', '2 MACRO']}
             />
             {/* <KnobValue
-                value="Bass NOISE"
+                audioPlugin="Bass" param="NOISE"
                 bounds={bottomLeftKnob}
-                encoder_id={1}
-                COLOR="quaternary"
+                encoderId={1}
+                color="quaternary"
                 track={BassTrack}
             /> */}
             {/* <KnobValue
-                value="Bass GAIN_CLIPPING"
+                audioPlugin="Bass" param="GAIN_CLIPPING"
                 bounds={bottomRightKnob}
-                encoder_id={3}
-                COLOR="secondary"
+                encoderId={3}
+                color="secondary"
                 track={BassTrack}
             /> */}
 

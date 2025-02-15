@@ -18,31 +18,31 @@ export function Fm1EnvView({ name }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                value="FmDrum ATTACK_TIME"
+                audioPlugin="FmDrum" param="ATTACK_TIME"
                 bounds={topLeftKnob}
-                encoder_id={encTopLeft}
-                COLOR="tertiary"
+                encoderId={encTopLeft}
+                color="tertiary"
                 track={Fm1Track}
             />
             <KnobValue
-                value="FmDrum DECAY_TIME"
+                audioPlugin="FmDrum" param="DECAY_TIME"
                 bounds={topRightKnob}
-                encoder_id={encTopRight}
-                COLOR="primary"
+                encoderId={encTopRight}
+                color="primary"
                 track={Fm1Track}
             />
             {/* <KnobValue
-                value="Bass DECAY_TIME"
+                audioPlugin="Bass" param="DECAY_TIME"
                 bounds={bottomLeftKnob}
-                encoder_id={encBottomLeft}
-                COLOR="quaternary"
+                encoderId={encBottomLeft}
+                color="quaternary"
                 track={BassTrack}
             /> */}
             {/* <KnobValue
-                value="Bass REVERB"
+                audioPlugin="Bass" param="REVERB"
                 bounds={bottomRightKnob}
-                encoder_id={encBottomRight}
-                COLOR="secondary"
+                encoderId={encBottomRight}
+                color="secondary"
                 track={BassTrack}
             /> */}
 

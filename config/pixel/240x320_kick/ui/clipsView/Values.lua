@@ -48,11 +48,12 @@ function ____exports.MasterValues(____bindingPattern0)
         React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "Volume VOLUME",
+                audioPlugin = "Volume",
+                param = "VOLUME",
                 bounds = topLeft,
                 group = group,
                 track = track,
-                encoder_id = 0
+                encoderId = 0
             }, ____exports.tertiary)
         )
     )
@@ -73,31 +74,34 @@ function ____exports.Drum23Values(____bindingPattern0)
         React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "TrackFx VOLUME",
+                audioPlugin = "TrackFx",
+                param = "VOLUME",
                 bounds = topLeft,
                 group = group,
                 track = track,
-                encoder_id = 0
+                encoderId = 0
             }, ____exports.tertiary)
         ),
         React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "MMFilter CUTOFF",
+                audioPlugin = "MMFilter",
+                param = "CUTOFF",
                 bounds = topRight,
                 group = group,
                 track = track,
-                encoder_id = 2
+                encoderId = 2
             }, ____exports.quaternary, {USE_STRING_VALUE = true})
         ),
         React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "MMFilter RESONANCE",
+                audioPlugin = "MMFilter",
+                param = "RESONANCE",
                 bounds = bottomRight,
                 group = group,
                 track = track,
-                encoder_id = 3
+                encoderId = 3
             }, ____exports.quaternary)
         )
     )
@@ -118,11 +122,12 @@ function ____exports.SampleValues(____bindingPattern0)
         React.createElement(
             Value,
             __TS__ObjectAssign({
-                value = "TrackFx VOLUME",
+                audioPlugin = "TrackFx",
+                param = "VOLUME",
                 bounds = topLeft,
                 group = group,
                 track = track,
-                encoder_id = 0
+                encoderId = 0
             }, ____exports.tertiary)
         )
     )

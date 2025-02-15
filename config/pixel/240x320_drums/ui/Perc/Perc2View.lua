@@ -25,22 +25,22 @@ function ____exports.Perc2View(____bindingPattern0)
         React.createElement(KnobValue, {
             value = "Perc RESONATOR",
             bounds = topLeftKnob,
-            encoder_id = 0,
+            encoderId = 0,
             COLOR = "tertiary",
             track = PercTrack
         }),
         React.createElement(KnobValue, {
             value = "Perc BOOST",
             bounds = topRightKnob,
-            encoder_id = 2,
+            encoderId = 2,
             COLOR = "secondary",
             track = PercTrack
         }),
-        React.createElement(KnobValue, {value = "Perc TIMBRE", bounds = bottomLeftKnob, encoder_id = 1, track = PercTrack}),
+        React.createElement(KnobValue, {value = "Perc TIMBRE", bounds = bottomLeftKnob, encoderId = 1, track = PercTrack}),
         React.createElement(KnobValue, {
             value = "Perc REVERB",
             bounds = bottomRightKnob,
-            encoder_id = 3,
+            encoderId = 3,
             COLOR = "secondary",
             track = PercTrack
         }),

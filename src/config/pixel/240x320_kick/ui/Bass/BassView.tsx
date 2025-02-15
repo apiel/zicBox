@@ -20,31 +20,31 @@ export function BassView({ name }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                value="TrackFx VOLUME"
+                audioPlugin="TrackFx" param="VOLUME"
                 bounds={topLeftKnob}
-                encoder_id={0}
-                COLOR="tertiary"
+                encoderId={0}
+                color="tertiary"
                 track={BassTrack}
             />
             <KnobValue
-                value="Bass CUTOFF"
+                audioPlugin="Bass" param="CUTOFF"
                 bounds={topRightKnob}
-                encoder_id={1}
-                COLOR="primary"
+                encoderId={1}
+                color="primary"
                 track={BassTrack}
             />
             <KnobValue
-                value="Bass FREQ_RATIO"
+                audioPlugin="Bass" param="FREQ_RATIO"
                 bounds={bottomLeftKnob}
-                encoder_id={2}
-                COLOR="quaternary"
+                encoderId={2}
+                color="quaternary"
                 track={BassTrack}
             />
             <KnobValue
-                value="Bass RESONANCE"
+                audioPlugin="Bass" param="RESONANCE"
                 bounds={bottomRightKnob}
-                encoder_id={3}
-                COLOR="secondary"
+                encoderId={3}
+                color="secondary"
                 track={BassTrack}
             />
 

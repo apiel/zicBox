@@ -25,28 +25,28 @@ function ____exports.DistortionView(____bindingPattern0)
         React.createElement(KnobValue, {
             value = "Distortion WAVESHAPE",
             bounds = topLeftKnob,
-            encoder_id = 0,
+            encoderId = 0,
             COLOR = "tertiary",
             track = Drum23Track
         }),
         React.createElement(KnobValue, {
             value = "Distortion COMPRESS",
             bounds = topRightKnob,
-            encoder_id = 2,
+            encoderId = 2,
             COLOR = "primary",
             track = Drum23Track
         }),
         React.createElement(KnobValue, {
             value = "Distortion DRIVE",
             bounds = bottomLeftKnob,
-            encoder_id = 1,
+            encoderId = 1,
             COLOR = "quaternary",
             track = Drum23Track
         }),
         React.createElement(KnobValue, {
             value = "Distortion BASS",
             bounds = bottomRightKnob,
-            encoder_id = 3,
+            encoderId = 3,
             COLOR = "secondary",
             track = Drum23Track
         }),
