@@ -1,6 +1,6 @@
 import * as React from '@/libs/react';
 
-import { Rect } from '@/libs/components/Rect';
+import { Rect } from '@/libs/nativeComponents/Rect';
 import { ColorTrack3, ColorTrack4, ColorTrack5 } from '../constants';
 import { TextGridSel } from './TextGridSel';
 import { Title } from './Title';

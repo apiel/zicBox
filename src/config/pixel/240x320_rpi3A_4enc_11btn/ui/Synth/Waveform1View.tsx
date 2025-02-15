@@ -1,8 +1,8 @@
 import * as React from '@/libs/react';
 
-import { GraphEncoder } from '@/libs/components/GraphEncoder';
-import { KnobValue } from '@/libs/components/KnobValue';
-import { View } from '@/libs/components/View';
+import { GraphEncoder } from '@/libs/nativeComponents/GraphEncoder';
+import { KnobValue } from '@/libs/nativeComponents/KnobValue';
+import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
 import { ColorTrack4, encBottomLeft, encTopLeft, encTopRight, SynthTrack } from '../constants';
 import { bottomLeftKnob, topValues } from '../constantsValue';

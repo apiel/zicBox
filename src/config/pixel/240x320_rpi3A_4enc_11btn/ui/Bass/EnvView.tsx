@@ -1,7 +1,7 @@
 import * as React from '@/libs/react';
 
-import { KnobValue } from '@/libs/components/KnobValue';
-import { View } from '@/libs/components/View';
+import { KnobValue } from '@/libs/nativeComponents/KnobValue';
+import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
 import { BassTrack, ColorTrack2, encBottomLeft, encTopLeft, encTopRight } from '../constants';
 import {

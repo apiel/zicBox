@@ -1,10 +1,10 @@
 import * as React from '@/libs/react';
 
-import { HiddenValue } from '@/libs/components/HiddenValue';
-import { Keymap } from '@/libs/components/Keymap';
-import { Rect } from '@/libs/components/Rect';
-import { Value } from '@/libs/components/Value';
-import { VisibilityContainer } from '@/libs/components/VisibilityContainer';
+import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
+import { Keymap } from '@/libs/nativeComponents/Keymap';
+import { Rect } from '@/libs/nativeComponents/Rect';
+import { Value } from '@/libs/nativeComponents/Value';
+import { VisibilityContainer } from '@/libs/nativeComponents/VisibilityContainer';
 import {
     PrimaryBar,
     QuaternaryBar,

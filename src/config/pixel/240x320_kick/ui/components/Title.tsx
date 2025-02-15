@@ -1,6 +1,6 @@
 import * as React from '@/libs/react';
 
-import { Text } from '@/libs/components/Text';
+import { Text } from '@/libs/nativeComponents/Text';
 import { ScreenWidth } from '../constants';
 
 export function Title({ title }: { title: string }) {

@@ -1,9 +1,9 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
 local React = require("config.libs.react")
-local ____TextGrid = require("config.libs.components.TextGrid")
+local ____TextGrid = require("config.libs.nativeComponents.TextGrid")
 local TextGrid = ____TextGrid.TextGrid
-local ____VisibilityContext = require("config.libs.components.VisibilityContext")
+local ____VisibilityContext = require("config.libs.nativeComponents.VisibilityContext")
 local VisibilityContext = ____VisibilityContext.VisibilityContext
 local ____constants = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constants")
 local SideColor = ____constants.SideColor

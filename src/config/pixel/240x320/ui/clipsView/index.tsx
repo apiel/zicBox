@@ -1,6 +1,6 @@
 import * as React from '@/libs/react';
 
-import { View } from '@/libs/components/View';
+import { View } from '@/libs/nativeComponents/View';
 import { ProgressBar } from '../components/ProgressBar';
 import { ValueBpm } from '../components/ValueBpm';
 import {

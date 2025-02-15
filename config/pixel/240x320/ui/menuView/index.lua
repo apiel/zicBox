@@ -1,13 +1,13 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
 local React = require("config.libs.react")
-local ____Keymap = require("config.libs.components.Keymap")
+local ____Keymap = require("config.libs.nativeComponents.Keymap")
 local Keymap = ____Keymap.Keymap
-local ____List = require("config.libs.components.List")
+local ____List = require("config.libs.nativeComponents.List")
 local List = ____List.List
-local ____TextGrid = require("config.libs.components.TextGrid")
+local ____TextGrid = require("config.libs.nativeComponents.TextGrid")
 local TextGrid = ____TextGrid.TextGrid
-local ____View = require("config.libs.components.View")
+local ____View = require("config.libs.nativeComponents.View")
 local View = ____View.View
 local ____constants = require("config.pixel.240x320.ui.constants")
 local KeyInfoPositionCenter = ____constants.KeyInfoPositionCenter

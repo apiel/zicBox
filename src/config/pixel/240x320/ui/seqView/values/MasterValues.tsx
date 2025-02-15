@@ -1,10 +1,10 @@
 import * as React from '@/libs/react';
 
-import { Log } from '@/libs/components/Log';
-import { Rect } from '@/libs/components/Rect';
-import { Spectrogram } from '@/libs/components/Spectrogram';
-import { Value } from '@/libs/components/Value';
-import { VisibilityContainer } from '@/libs/components/VisibilityContainer';
+import { Log } from '@/libs/nativeComponents/Log';
+import { Rect } from '@/libs/nativeComponents/Rect';
+import { Spectrogram } from '@/libs/nativeComponents/Spectrogram';
+import { Value } from '@/libs/nativeComponents/Value';
+import { VisibilityContainer } from '@/libs/nativeComponents/VisibilityContainer';
 import { ScreenWidth } from '@/pixel/240x320/ui/constants';
 import {
     bottomRight,

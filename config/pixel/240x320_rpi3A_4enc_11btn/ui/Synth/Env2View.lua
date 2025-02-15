@@ -1,9 +1,9 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
 local React = require("config.libs.react")
-local ____Adsr = require("config.libs.components.Adsr")
+local ____Adsr = require("config.libs.nativeComponents.Adsr")
 local Adsr = ____Adsr.Adsr
-local ____View = require("config.libs.components.View")
+local ____View = require("config.libs.nativeComponents.View")
 local View = ____View.View
 local ____Common = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.Common")
 local Common = ____Common.Common

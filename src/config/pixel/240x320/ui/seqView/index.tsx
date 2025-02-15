@@ -1,8 +1,8 @@
 import * as React from '@/libs/react';
 
-import { HiddenValue } from '@/libs/components/HiddenValue';
-import { Keymap } from '@/libs/components/Keymap';
-import { View } from '@/libs/components/View';
+import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
+import { Keymap } from '@/libs/nativeComponents/Keymap';
+import { View } from '@/libs/nativeComponents/View';
 import {
     ColorTrack1,
     ColorTrack2,

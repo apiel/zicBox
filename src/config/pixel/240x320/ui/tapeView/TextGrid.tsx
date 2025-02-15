@@ -3,8 +3,8 @@
 }
 import * as React from '@/libs/react';
 
-import { Keymaps } from '@/libs/components/Keymaps';
-import { TextGrid } from '@/libs/components/TextGrid';
+import { Keymaps } from '@/libs/nativeComponents/Keymaps';
+import { TextGrid } from '@/libs/nativeComponents/TextGrid';
 import { KeyInfoPosition } from '@/pixel/240x320/ui/constants';
 
 export function TextGridTape() {

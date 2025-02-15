@@ -1,10 +1,10 @@
 import * as React from '@/libs/react';
 
-import { Keymap } from '@/libs/components/Keymap';
-import { Keymaps } from '@/libs/components/Keymaps';
-import { Tape } from '@/libs/components/Tape';
-import { TextGrid } from '@/libs/components/TextGrid';
-import { View } from '@/libs/components/View';
+import { Keymap } from '@/libs/nativeComponents/Keymap';
+import { Keymaps } from '@/libs/nativeComponents/Keymaps';
+import { Tape } from '@/libs/nativeComponents/Tape';
+import { TextGrid } from '@/libs/nativeComponents/TextGrid';
+import { View } from '@/libs/nativeComponents/View';
 import { btn2, btn6, KeyInfoPosition } from '../constants';
 
 export type Props = {

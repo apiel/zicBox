@@ -1,6 +1,6 @@
 import * as React from '@/libs/react';
 
-import { Value } from '@/libs/components/Value';
+import { Value } from '@/libs/nativeComponents/Value';
 import { KeyInfoPosition, W1_4, W3_4 } from '../constants';
 
 export function ValueBpm() {

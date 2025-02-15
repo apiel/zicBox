@@ -1,11 +1,11 @@
 import * as React from '@/libs/react';
 
-import { Keymap } from '@/libs/components/Keymap';
-import { Keymaps } from '@/libs/components/Keymaps';
-import { TextGrid } from '@/libs/components/TextGrid';
-import { View } from '@/libs/components/View';
-import { VisibilityContext } from '@/libs/components/VisibilityContext';
-import { Workspaces } from '@/libs/components/Workspaces';
+import { Keymap } from '@/libs/nativeComponents/Keymap';
+import { Keymaps } from '@/libs/nativeComponents/Keymaps';
+import { TextGrid } from '@/libs/nativeComponents/TextGrid';
+import { View } from '@/libs/nativeComponents/View';
+import { VisibilityContext } from '@/libs/nativeComponents/VisibilityContext';
+import { Workspaces } from '@/libs/nativeComponents/Workspaces';
 import { KeyInfoPositionCenter, ScreenWidth } from '../constants';
 
 export type Props = {

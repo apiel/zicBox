@@ -1,9 +1,9 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
 local React = require("config.libs.react")
-local ____MacroEnvelop = require("config.libs.components.MacroEnvelop")
+local ____MacroEnvelop = require("config.libs.nativeComponents.MacroEnvelop")
 local MacroEnvelop = ____MacroEnvelop.MacroEnvelop
-local ____View = require("config.libs.components.View")
+local ____View = require("config.libs.nativeComponents.View")
 local View = ____View.View
 local ____Common = require("config.pixel.240x320_kick.ui.components.Common")
 local Common = ____Common.Common

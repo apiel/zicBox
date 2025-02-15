@@ -1,11 +1,11 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
 local React = require("config.libs.react")
-local ____DrumEnvelop = require("config.libs.components.DrumEnvelop")
+local ____DrumEnvelop = require("config.libs.nativeComponents.DrumEnvelop")
 local DrumEnvelop = ____DrumEnvelop.DrumEnvelop
-local ____KnobValue = require("config.libs.components.KnobValue")
+local ____KnobValue = require("config.libs.nativeComponents.KnobValue")
 local KnobValue = ____KnobValue.KnobValue
-local ____View = require("config.libs.components.View")
+local ____View = require("config.libs.nativeComponents.View")
 local View = ____View.View
 local ____Common = require("config.pixel.240x320_drums.ui.components.Common")
 local Common = ____Common.Common

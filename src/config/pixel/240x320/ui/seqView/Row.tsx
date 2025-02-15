@@ -1,7 +1,7 @@
 import * as React from '@/libs/react';
 
-import { Keymaps } from '@/libs/components/Keymaps';
-import { SeqSynthBar } from '@/libs/components/SeqSynthBar';
+import { Keymaps } from '@/libs/nativeComponents/Keymaps';
+import { SeqSynthBar } from '@/libs/nativeComponents/SeqSynthBar';
 import { ScreenWidth } from '../constants';
 
 export type Props = {

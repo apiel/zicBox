@@ -1,8 +1,8 @@
 import * as React from '@/libs/react';
 
-import { Keymap } from '@/libs/components/Keymap';
-import { Tape } from '@/libs/components/Tape';
-import { View } from '@/libs/components/View';
+import { Keymap } from '@/libs/nativeComponents/Keymap';
+import { Tape } from '@/libs/nativeComponents/Tape';
+import { View } from '@/libs/nativeComponents/View';
 import { ValueBpm } from '../components/ValueBpm';
 import { TextGridTape } from './TextGrid';
 

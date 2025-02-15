@@ -1,6 +1,6 @@
 import * as React from '@/libs/react';
 
-import { SeqProgressBar } from '@/libs/components/SeqProgressBar';
+import { SeqProgressBar } from '@/libs/nativeComponents/SeqProgressBar';
 import { rgb } from '@/libs/ui';
 import { ScreenWidth } from '../constants';
 import { TextGridSel } from './TextGridSel';

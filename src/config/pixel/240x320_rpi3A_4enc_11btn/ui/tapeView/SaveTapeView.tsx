@@ -1,9 +1,9 @@
 import * as React from '@/libs/react';
 
-import { Keyboard } from '@/libs/components/Keyboard';
-import { Keymaps } from '@/libs/components/Keymaps';
-import { TextGrid } from '@/libs/components/TextGrid';
-import { View } from '@/libs/components/View';
+import { Keyboard } from '@/libs/nativeComponents/Keyboard';
+import { Keymaps } from '@/libs/nativeComponents/Keymaps';
+import { TextGrid } from '@/libs/nativeComponents/TextGrid';
+import { View } from '@/libs/nativeComponents/View';
 import { btn1, btn2, btn5, btn6, btn7, btnShift, KeyInfoPosition, ScreenWidth } from '../constants';
 
 export type Props = {

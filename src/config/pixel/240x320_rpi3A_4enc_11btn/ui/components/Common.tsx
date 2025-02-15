@@ -1,6 +1,6 @@
 import * as React from '@/libs/react';
 
-import { SeqProgressBar } from '@/libs/components/SeqProgressBar';
+import { SeqProgressBar } from '@/libs/nativeComponents/SeqProgressBar';
 import { rgb } from '@/libs/ui';
 import { btn1, btn2, btn3, btn4, btn5, btn6, btn8, btnDown, btnShift, btnUp, ScreenWidth } from '../constants';
 import { SideInfo } from './SideInfo';

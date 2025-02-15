@@ -1,12 +1,12 @@
 import * as React from '@/libs/react';
 
-import { ComponentProps } from '@/libs/components/component';
-import { Log } from '@/libs/components/Log';
-import { Rect } from '@/libs/components/Rect';
-import { Sample } from '@/libs/components/Sample';
-import { Value } from '@/libs/components/Value';
-import { VisibilityContainer } from '@/libs/components/VisibilityContainer';
-import { VisibilityContext } from '@/libs/components/VisibilityContext';
+import { ComponentProps } from '@/libs/nativeComponents/component';
+import { Log } from '@/libs/nativeComponents/Log';
+import { Rect } from '@/libs/nativeComponents/Rect';
+import { Sample } from '@/libs/nativeComponents/Sample';
+import { Value } from '@/libs/nativeComponents/Value';
+import { VisibilityContainer } from '@/libs/nativeComponents/VisibilityContainer';
+import { VisibilityContext } from '@/libs/nativeComponents/VisibilityContext';
 import { ScreenWidth } from '@/pixel/240x320/ui/constants';
 import {
     bottomLeft,

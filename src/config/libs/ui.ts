@@ -1,5 +1,5 @@
-import { ComponentProps } from './components/component';
 import { applyZic, buildPlateform, jsonStringify, ZicValue } from './core';
+import { ComponentProps } from './nativeComponents/component';
 
 export type Bounds = string | string[] | number[];
 
@@ -49,27 +49,9 @@ export function getJsonComponent<P>(componentName: string, pluginPath: string) {
     };
 }
 
-/**
- * Create a component
- *
- * @param name string - The name of the component to create.
- * @param position string | string[] - The position of the component.
- * @param values table - An array of Zic values to apply to the component.
- * @returns table
- */
+// TODO to be deprecated
 export function getComponent(name: string, bounds: Bounds, values: ZicValue[] = []) {
     return [{ COMPONENT: `${name} ${getPosition(bounds)}` }, values];
-}
-
-/**
- * Create a component
- *
- * @param name string - The name of the component to create.
- * @param position string | string[] - The position of the component.
- * @param values table - An array of Zic values to apply to the component.
- */
-export function component(name: string, bounds: Bounds, values: ZicValue[] = []) {
-    applyZic(getComponent(name, bounds, values));
 }
 
 /**

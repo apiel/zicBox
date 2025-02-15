@@ -1,11 +1,11 @@
 import * as React from '@/libs/react';
 
-import { Keymaps } from '@/libs/components/Keymaps';
-import { StepEditMono } from '@/libs/components/StepEditMono';
-import { Text } from '@/libs/components/Text';
-import { TextGrid } from '@/libs/components/TextGrid';
-import { View } from '@/libs/components/View';
-import { VisibilityContext } from '@/libs/components/VisibilityContext';
+import { Keymaps } from '@/libs/nativeComponents/Keymaps';
+import { StepEditMono } from '@/libs/nativeComponents/StepEditMono';
+import { Text } from '@/libs/nativeComponents/Text';
+import { TextGrid } from '@/libs/nativeComponents/TextGrid';
+import { View } from '@/libs/nativeComponents/View';
+import { VisibilityContext } from '@/libs/nativeComponents/VisibilityContext';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
 import { ColorTrack3, ColorTrack4, ColorTrack5, HiHatTrack, KeyInfoPosition, SampleTrack, ScreenWidth, SnareTrack } from '../constants';

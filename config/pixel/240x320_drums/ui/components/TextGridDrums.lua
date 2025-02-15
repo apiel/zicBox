@@ -1,7 +1,7 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
 local React = require("config.libs.react")
-local ____Rect = require("config.libs.components.Rect")
+local ____Rect = require("config.libs.nativeComponents.Rect")
 local Rect = ____Rect.Rect
 local ____constants = require("config.pixel.240x320_drums.ui.constants")
 local ColorTrack3 = ____constants.ColorTrack3
