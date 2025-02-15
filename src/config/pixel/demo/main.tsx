@@ -5,6 +5,7 @@ import { applyZic } from '@/libs/core';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { Text } from '@/libs/nativeComponents/Text';
+import { Value } from '@/libs/nativeComponents/Value';
 import { View } from '@/libs/nativeComponents/View';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { setScreenSize, setWindowPosition } from '@/libs/ui';
@@ -36,11 +37,19 @@ applyZic(
         <Rect color="primary" bounds={[120, 100, 100, 50]} />
 
         <KnobValue
-            audioPlugin='Tempo'
-            param='BPM'
+            audioPlugin="Tempo"
+            param="BPM"
             bounds={[0, 150, 50, 50]}
             encoderId={0}
             color="secondary"
+            track={0}
+        />
+
+        <Value
+            audioPlugin="Tempo"
+            param="BPM"
+            bounds={[50, 150, 50, 20]}
+            encoderId={0}
             track={0}
         />
     </View>

@@ -83,7 +83,7 @@ export function MasterValues({ group, track }: { group: number; track: number })
                 track={track}
                 encoderId={2}
                 {...quaternary}
-                USE_STRING_VALUE
+                useStringValue
             />
             <Value
                 audioPlugin="MMFilter" param="RESONANCE"
@@ -126,7 +126,7 @@ export function Drum23Values({ group, track }: { group: number; track: number })
                 track={track}
                 encoderId={2}
                 {...quaternary}
-                USE_STRING_VALUE
+                useStringValue
             />
             <Value
                 audioPlugin="MMFilter" param="RESONANCE"
@@ -169,7 +169,7 @@ export function SampleValues({ group, track }: { group: number; track: number })
                 track={track}
                 encoderId={2}
                 {...quaternary}
-                USE_STRING_VALUE
+                useStringValue
             />
             <Value
                 audioPlugin="Sample" param="LOOP_LENGTH"
@@ -186,7 +186,7 @@ export function SampleValues({ group, track }: { group: number; track: number })
                 track={track}
                 encoderId={2}
                 {...quaternary}
-                USE_STRING_VALUE
+                useStringValue
             /> */}
             {/* <Value
                 audioPlugin="TrackFx" param="RESONANCE"

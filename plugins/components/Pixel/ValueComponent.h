@@ -121,14 +121,6 @@ public:
         /*md   floatPrecision={2} */
         floatPrecision = config.value("floatPrecision", floatPrecision);
 
-        /*md   // Hide the value of the parameter. */
-        /*md   hideValue */
-        showValue = !config.value("hideValue", false);
-
-        /*md   // Hide the unit of the parameter. */
-        /*md   hideUnit */
-        showUnit = !config.value("hideUnit", false);
-
         /*md   // Use the string value instead of the floating point one (default: false). */
         /*md   useStringValue */
         useStringValue = config.value("useStringValue", useStringValue);

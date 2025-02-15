@@ -91,7 +91,7 @@ function ____exports.Drum23Values(____bindingPattern0)
                 group = group,
                 track = track,
                 encoderId = 2
-            }, ____exports.quaternary, {USE_STRING_VALUE = true})
+            }, ____exports.quaternary, {useStringValue = true})
         ),
         React.createElement(
             Value,

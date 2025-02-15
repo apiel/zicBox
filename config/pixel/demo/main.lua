@@ -12,6 +12,8 @@ local ____Rect = require("config.libs.nativeComponents.Rect")
 local Rect = ____Rect.Rect
 local ____Text = require("config.libs.nativeComponents.Text")
 local Text = ____Text.Text
+local ____Value = require("config.libs.nativeComponents.Value")
+local Value = ____Value.Value
 local ____View = require("config.libs.nativeComponents.View")
 local View = ____View.View
 local ____TextGrid = require("config.libs.tsComponents.TextGrid")
@@ -43,6 +45,13 @@ applyZic(React.createElement(
         bounds = {0, 150, 50, 50},
         encoderId = 0,
         color = "secondary",
+        track = 0
+    }),
+    React.createElement(Value, {
+        audioPlugin = "Tempo",
+        param = "BPM",
+        bounds = {50, 150, 50, 20},
+        encoderId = 0,
         track = 0
     })
 ))
