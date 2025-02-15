@@ -3,6 +3,7 @@ import { Bounds } from '../ui';
 export type ComponentProps<P = unknown> = {
     bounds: Bounds;
     group?: number;
+    track?: number;
 } &
     (P extends {}
         ? P

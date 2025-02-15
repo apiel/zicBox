@@ -12,7 +12,7 @@
 
 <img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/KnobValue.png" />
 
-KnobValue is used to display current audio plugin value for a given parameter.
+KnobValue is used to display current value of a parameter for a given audio plugin.
 */
 class KnobValueComponent : public Component {
 protected:
