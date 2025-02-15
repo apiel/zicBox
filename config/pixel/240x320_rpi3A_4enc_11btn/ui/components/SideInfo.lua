@@ -17,7 +17,7 @@ function ____exports.SideInfo(____bindingPattern0)
     ctxValue = ____bindingPattern0.ctxValue
     return React.createElement(
         TextGrid,
-        {bounds = SideKeyInfoPosition, rows = {up, down}, BACKGROUND_COLOR = SideColor},
+        {bounds = SideKeyInfoPosition, rows = {up, down}, bgColor = SideColor},
         React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = ctxValue})
     )
 end

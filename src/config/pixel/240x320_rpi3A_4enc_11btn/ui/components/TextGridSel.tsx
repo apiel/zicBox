@@ -27,7 +27,7 @@ export function TextGridSel({
         <TextGrid
             bounds={KeyInfoPosition}
             rows={rows}
-            ITEM_BACKGROUND={selectedBackground}
+            activeBgColor={selectedBackground}
         >
             <VisibilityContext index={254} condition="SHOW_WHEN" value={contextValue} />
             <Keymaps keys={keys} />

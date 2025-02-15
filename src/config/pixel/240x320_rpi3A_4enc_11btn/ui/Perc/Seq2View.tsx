@@ -35,7 +35,7 @@ export function PercSeq2View({ name }: Props) {
                     'Seq./Perc &icon::arrowDown::filled &icon::musicNote::pixelated',
                     // '!Seq/Bass &icon::arrowDown::filled &icon::musicNote::pixelated',
                 ]}
-                ITEM_BACKGROUND={ColorTrack3}
+                activeBgColor={ColorTrack3}
             >
                 <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />
                 <Keymaps

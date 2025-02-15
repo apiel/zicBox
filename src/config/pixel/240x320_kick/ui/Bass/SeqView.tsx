@@ -46,7 +46,7 @@ export function BassSeqView({ name }: Props) {
                     'Seq./Bass &icon::arrowDown::filled &icon::musicNote::pixelated',
                     // '!Seq/Bass &icon::arrowDown::filled &icon::musicNote::pixelated',
                 ]}
-                ITEM_BACKGROUND={ColorTrack2}
+                activeBgColor={ColorTrack2}
             >
                 <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />
                 <Keymaps

@@ -14,7 +14,7 @@ INC=-I../../..
 TRACK_HEADER_FILES = -MMD -MF $(OBJ_DIR)/$*.d
 
 all:
-	+make TextGridComponent DrumEnvelopComponent KnobValueComponent GraphEncoderComponent\
+	+make DrumEnvelopComponent KnobValueComponent GraphEncoderComponent\
 				StepEditComponent HiddenValueComponent FmAlgoComponent AdsrComponent\
 				TextComponent SeqBarComponent SeqProgressBarComponent SeqSynthBarComponent ValueComponent\
 				SpectrogramComponent RectComponent ClipsComponent KeyboardComponent ListComponent\

@@ -10,13 +10,13 @@ export function TextGridSel({
     items,
     keys,
     contextValue,
-    ITEM_BACKGROUND
+    activeBgColor
 }: {
     selected: number;
     items: [string, string, string, string, string, string];
     keys: { key: string; action: string; action2?: string }[];
     contextValue: number;
-    ITEM_BACKGROUND?: string;
+    activeBgColor?: string;
 }) {
     if (selected >= 0) {
         items[selected] = `!${items[selected]}`;
@@ -25,7 +25,7 @@ export function TextGridSel({
         <TextGrid
             bounds={KeyInfoPosition}
             rows={[`${items[0]} ${items[1]} ${items[2]}`, `${items[3]} ${items[4]} ${items[5]}`]}
-            ITEM_BACKGROUND={ITEM_BACKGROUND}
+            activeBgColor={activeBgColor}
         >
             <VisibilityContext index={254} condition="SHOW_WHEN" value={contextValue} />
             <Keymaps keys={keys} />

@@ -86,6 +86,6 @@ function ____exports.TextGrid(____bindingPattern0)
         end
         marginTop = marginTop + h
     end
-    return React.createElement(React.Fragment, nil, children)
+    return children
 end
 return ____exports

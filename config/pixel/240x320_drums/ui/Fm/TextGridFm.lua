@@ -20,7 +20,7 @@ function ____exports.TextGridFm(____bindingPattern0)
         React.createElement(Title, {title = "Fm"}),
         React.createElement(Rect, {bounds = {85, 28, 6, 6}, color = ColorTrack2}),
         React.createElement(TextGridSel, {
-            ITEM_BACKGROUND = ColorTrack2,
+            activeBgColor = ColorTrack2,
             items = {
                 "Fm",
                 "&empty",

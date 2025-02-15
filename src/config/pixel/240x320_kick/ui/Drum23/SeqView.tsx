@@ -46,7 +46,7 @@ export function Drum23SeqView({ name }: Props) {
                     'Seq./Kick &icon::arrowDown::filled &icon::musicNote::pixelated',
                     // '!Seq/Kick &icon::arrowDown::filled &icon::musicNote::pixelated',
                 ]}
-                ITEM_BACKGROUND={ColorTrack1}
+                activeBgColor={ColorTrack1}
             >
                 <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />
                 <Keymaps

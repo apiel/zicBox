@@ -20,7 +20,7 @@ function ____exports.TextGridDrum23(____bindingPattern0)
         React.createElement(Title, {title = "Kick"}),
         React.createElement(Rect, {bounds = {70, 28, 6, 6}, color = ColorTrack1}),
         React.createElement(TextGridSel, {
-            ITEM_BACKGROUND = ColorTrack1,
+            activeBgColor = ColorTrack1,
             items = {
                 "Fx1/Fx2",
                 "Wave/Freq",

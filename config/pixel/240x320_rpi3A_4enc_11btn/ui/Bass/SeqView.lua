@@ -56,7 +56,7 @@ function ____exports.BassSeqView(____bindingPattern0)
         ),
         React.createElement(
             TextGrid,
-            {bounds = KeyInfoPosition, rows = {"&icon::toggle::rect &icon::arrowUp::filled ...", "Seq./Bass &icon::arrowDown::filled &icon::musicNote::pixelated"}, ITEM_BACKGROUND = ColorTrack2},
+            {bounds = KeyInfoPosition, rows = {"&icon::toggle::rect &icon::arrowUp::filled ...", "Seq./Bass &icon::arrowDown::filled &icon::musicNote::pixelated"}, activeBgColor = ColorTrack2},
             React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 0}),
             React.createElement(Keymaps, {keys = {
                 {key = btn2, action = "incGroup:-1"},

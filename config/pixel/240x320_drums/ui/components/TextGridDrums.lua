@@ -51,7 +51,7 @@ function ____exports.TextGridDrums(____bindingPattern0)
             },
             selected = selected,
             contextValue = 0,
-            ITEM_BACKGROUND = color
+            activeBgColor = color
         })
     )
 end

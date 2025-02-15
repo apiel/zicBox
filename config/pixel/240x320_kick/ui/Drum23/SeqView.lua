@@ -50,7 +50,7 @@ function ____exports.Drum23SeqView(____bindingPattern0)
         ),
         React.createElement(
             TextGrid,
-            {bounds = KeyInfoPosition, rows = {"&icon::toggle::rect &icon::arrowUp::filled ...", "Seq./Kick &icon::arrowDown::filled &icon::musicNote::pixelated"}, ITEM_BACKGROUND = ColorTrack1},
+            {bounds = KeyInfoPosition, rows = {"&icon::toggle::rect &icon::arrowUp::filled ...", "Seq./Kick &icon::arrowDown::filled &icon::musicNote::pixelated"}, activeBgColor = ColorTrack1},
             React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 0}),
             React.createElement(Keymaps, {keys = {
                 {key = "w", action = "incGroup:-1"},
