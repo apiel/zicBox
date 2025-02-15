@@ -38,7 +38,7 @@ public:
         , keypadLayout(this)
     {
         /*md
-**Config**:
+
 ```tsx
 <Text
         */
