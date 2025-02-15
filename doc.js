@@ -71,7 +71,7 @@ function extractMdComment(content) {
     while ((match = reg.exec(content)) !== null) {
         result.push(match[1]);
     }
-    return result.join('\n\n');
+    return result.join('\n');
 }
 
 function ensureDir(file) {
