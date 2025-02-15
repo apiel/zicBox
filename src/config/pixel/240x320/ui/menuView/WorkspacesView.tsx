@@ -2,10 +2,10 @@ import * as React from '@/libs/react';
 
 import { Keymap } from '@/libs/nativeComponents/Keymap';
 import { Keymaps } from '@/libs/nativeComponents/Keymaps';
-import { TextGrid } from '@/libs/nativeComponents/TextGrid';
 import { View } from '@/libs/nativeComponents/View';
 import { VisibilityContext } from '@/libs/nativeComponents/VisibilityContext';
 import { Workspaces } from '@/libs/nativeComponents/Workspaces';
+import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { KeyInfoPositionCenter, ScreenWidth } from '../constants';
 
 export type Props = {

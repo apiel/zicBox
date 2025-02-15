@@ -1,8 +1,8 @@
 import * as React from '@/libs/react';
 
 import { Keymaps } from '@/libs/nativeComponents/Keymaps';
-import { TextGrid } from '@/libs/nativeComponents/TextGrid';
 import { VisibilityContext } from '@/libs/nativeComponents/VisibilityContext';
+import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { btn1, btn5, btn7, btnShift, KeyInfoPosition } from '../constants';
 
 export function TextGridClips() {

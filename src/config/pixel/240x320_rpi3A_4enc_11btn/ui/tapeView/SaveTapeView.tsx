@@ -2,8 +2,8 @@ import * as React from '@/libs/react';
 
 import { Keyboard } from '@/libs/nativeComponents/Keyboard';
 import { Keymaps } from '@/libs/nativeComponents/Keymaps';
-import { TextGrid } from '@/libs/nativeComponents/TextGrid';
 import { View } from '@/libs/nativeComponents/View';
+import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { btn1, btn2, btn5, btn6, btn7, btnShift, KeyInfoPosition, ScreenWidth } from '../constants';
 
 export type Props = {

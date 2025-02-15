@@ -4,10 +4,10 @@ local ____exports = {}
 local React = require("config.libs.react")
 local ____Keymaps = require("config.libs.nativeComponents.Keymaps")
 local Keymaps = ____Keymaps.Keymaps
-local ____TextGrid = require("config.libs.nativeComponents.TextGrid")
-local TextGrid = ____TextGrid.TextGrid
 local ____VisibilityContext = require("config.libs.nativeComponents.VisibilityContext")
 local VisibilityContext = ____VisibilityContext.VisibilityContext
+local ____TextGrid = require("config.libs.tsComponents.TextGrid")
+local TextGrid = ____TextGrid.TextGrid
 local ____constants = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constants")
 local KeyInfoPosition = ____constants.KeyInfoPosition
 function ____exports.TextGridSel(____bindingPattern0)

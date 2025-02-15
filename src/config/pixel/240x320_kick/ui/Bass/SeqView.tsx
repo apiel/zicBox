@@ -2,9 +2,9 @@ import * as React from '@/libs/react';
 
 import { Keymaps } from '@/libs/nativeComponents/Keymaps';
 import { StepEditDrum } from '@/libs/nativeComponents/StepEditDrum';
-import { TextGrid } from '@/libs/nativeComponents/TextGrid';
 import { View } from '@/libs/nativeComponents/View';
 import { VisibilityContext } from '@/libs/nativeComponents/VisibilityContext';
+import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
 import { BassTrack, ColorTrack2, KeyInfoPosition, ScreenWidth } from '../constants';

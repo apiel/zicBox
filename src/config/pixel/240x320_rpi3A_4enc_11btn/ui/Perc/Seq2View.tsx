@@ -2,9 +2,9 @@ import * as React from '@/libs/react';
 
 import { Keymaps } from '@/libs/nativeComponents/Keymaps';
 import { Sequencer } from '@/libs/nativeComponents/Sequencer';
-import { TextGrid } from '@/libs/nativeComponents/TextGrid';
 import { View } from '@/libs/nativeComponents/View';
 import { VisibilityContext } from '@/libs/nativeComponents/VisibilityContext';
+import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { Common } from '../components/Common';
 import {
     btn2,
