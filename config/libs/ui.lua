@@ -1,6 +1,7 @@
 local ____lualib = require("lualib_bundle")
 local __TS__ArrayIsArray = ____lualib.__TS__ArrayIsArray
 local __TS__ArrayJoin = ____lualib.__TS__ArrayJoin
+local __TS__StringSplit = ____lualib.__TS__StringSplit
 local Set = ____lualib.Set
 local __TS__New = ____lualib.__TS__New
 local __TS__NumberToString = ____lualib.__TS__NumberToString
@@ -11,6 +12,9 @@ local applyZic = ____core.applyZic
 local buildPlateform = ____core.buildPlateform
 function ____exports.getPosition(pos)
     return __TS__ArrayIsArray(pos) and __TS__ArrayJoin(pos, " ") or pos
+end
+function ____exports.getBounds(pos)
+    return __TS__ArrayIsArray(pos) and pos or __TS__StringSplit(pos, " ")
 end
 --- Load a plugin component from a specified path and assign it a name.
 -- 

@@ -3,6 +3,7 @@
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
+#include "log.h"
 
 /*md
 ## Text
@@ -32,6 +33,26 @@ public:
         , color(darken(styles.colors.text, 0.5))
         , keypadLayout(this)
     {
+        /*md 
+**Config**: 
+```tsx
+<Text
+*/
+        nlohmann::json config = props.config;
+        if (!config.contains("text")) {
+            logWarn("Text component is missing text parameter.");
+        }
+        /*md  // The text to display. */
+        /*md  text="Hello World" */
+        text = config["text"].get<std::string>();
+        /*md  // If true, the text will be centered. Default is false. */
+        /*md  centered=true */
+        /*md  // or simply */
+        /*md  centered */
+        centered = config.value("centered", false);
+/*md/>
+```
+*/
     }
 
     void render() override
