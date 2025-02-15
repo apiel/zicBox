@@ -8,6 +8,11 @@
 
 #include <stdlib.h>
 
+#define MD_CONFIG(COMPONENT_NAME, ...) \
+    /*md\n\n```tsx\n<COMPONENT_NAME\n        */ \
+    __VA_ARGS__ \
+    /*md\n/>\n```\n        */
+
 class Component : public ComponentInterface {
 public:
     Component(ComponentInterface::Props props)
