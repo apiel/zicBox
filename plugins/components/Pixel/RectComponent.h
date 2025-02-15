@@ -24,12 +24,12 @@ public:
         , color(styles.colors.background)
     {
         /*md md_config:Rect */
-       nlohmann::json config = props.config;
+        nlohmann::json config = props.config;
 
         /*md   // The color of the rectangle. */
         /*md   color="#000000" */
         if (config.contains("color")) {
-            color = draw.getColor((char *)config["color"].get<std::string>().c_str());
+            color = draw.getColor((char*)config["color"].get<std::string>().c_str());
         }
 
         /*md   // If true, the rectangle will be filled. Default is true. */

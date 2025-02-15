@@ -37,11 +37,7 @@ public:
         , color(styles.colors.text)
         , keypadLayout(this)
     {
-        /*md
-
-```tsx
-<Text
-        */
+        /*md md_config:Text */
         nlohmann::json config = props.config;
         if (!config.contains("text")) {
             logWarn("Text component is missing text parameter.");
@@ -74,10 +70,7 @@ public:
             color = draw.getColor((char*)config["color"].get<std::string>().c_str());
         }
 
-        /*md
-/>
-```
-        */
+        /*md md_config_end */
     }
 
     void render() override
