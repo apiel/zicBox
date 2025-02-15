@@ -38,9 +38,9 @@ public:
         , keypadLayout(this)
     {
         /*md
-        **Config**:
-        ```tsx
-        <Text
+**Config**:
+```tsx
+<Text
         */
         nlohmann::json config = props.config;
         if (!config.contains("text")) {
@@ -75,8 +75,8 @@ public:
         }
 
         /*md
-        />
-        ```
+/>
+```
         */
     }
 
