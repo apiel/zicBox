@@ -8,10 +8,15 @@
 
 #include <stdlib.h>
 
-#define MD_CONFIG(COMPONENT_NAME, ...) \
-    /*md\n\n```tsx\n<COMPONENT_NAME\n        */ \
-    __VA_ARGS__ \
-    /*md\n/>\n```\n        */
+#define MD_CONFIG(COMPONENT_NAME, ...)   \
+    /*md                                 \
+                                       \ \
+    ```tsx                               \
+    <COMPONENT_NAME */                   \
+    __VA_ARGS__                          \
+    /*md                                 \
+    />                                   \
+    ```        */
 
 class Component : public ComponentInterface {
 public:
