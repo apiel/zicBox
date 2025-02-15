@@ -15,31 +15,31 @@ export function DistortionView({ name }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                value="Distortion WAVESHAPE"
+                audioPlugin="Distortion" param="WAVESHAPE"
                 bounds={topLeftKnob}
-                encoder_id={encTopLeft}
-                COLOR="tertiary"
+                encoderId={encTopLeft}
+                color="tertiary"
                 track={Drum23Track}
             />
             <KnobValue
-                value="Distortion COMPRESS"
+                audioPlugin="Distortion" param="COMPRESS"
                 bounds={topRightKnob}
-                encoder_id={encTopRight}
-                COLOR="primary"
+                encoderId={encTopRight}
+                color="primary"
                 track={Drum23Track}
             />
             <KnobValue
-                value="Distortion DRIVE"
+                audioPlugin="Distortion" param="DRIVE"
                 bounds={bottomLeftKnob}
-                encoder_id={encBottomLeft}
-                COLOR="quaternary"
+                encoderId={encBottomLeft}
+                color="quaternary"
                 track={Drum23Track}
             />
             <KnobValue
-                value="Distortion BASS"
+                audioPlugin="Distortion" param="BASS"
                 bounds={bottomRightKnob}
-                encoder_id={encBottomRight}
-                COLOR="secondary"
+                encoderId={encBottomRight}
+                color="secondary"
                 track={Drum23Track}
             />
             <TextGridDrum23 selected={'Fx'} viewName={name} />

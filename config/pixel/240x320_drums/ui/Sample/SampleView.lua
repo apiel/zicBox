@@ -28,28 +28,28 @@ function ____exports.SampleView(____bindingPattern0)
         React.createElement(KnobValue, {
             value = "TrackFx VOLUME",
             bounds = topLeftKnob,
-            encoder_id = 0,
+            encoderId = 0,
             COLOR = "tertiary",
             track = SampleTrack
         }),
         React.createElement(KnobValue, {
             value = "Sample BROWSER",
             bounds = topRightKnob,
-            encoder_id = 2,
+            encoderId = 2,
             track = SampleTrack,
             STRING_VALUE_REPLACE_TITLE = true
         }),
         React.createElement(KnobValue, {
             value = "Sample START",
             bounds = bottomLeftKnob,
-            encoder_id = 1,
+            encoderId = 1,
             COLOR = "secondary",
             track = SampleTrack
         }),
         React.createElement(KnobValue, {
             value = "Sample END",
             bounds = bottomRightKnob,
-            encoder_id = 3,
+            encoderId = 3,
             COLOR = "secondary",
             track = SampleTrack
         }),

@@ -25,22 +25,22 @@ function ____exports.SnareView(____bindingPattern0)
         React.createElement(KnobValue, {
             value = "TrackFx VOLUME",
             bounds = topLeftKnob,
-            encoder_id = 0,
+            encoderId = 0,
             COLOR = "tertiary",
             track = SnareTrack
         }),
         React.createElement(KnobValue, {
             value = "Snare DURATION",
             bounds = topRightKnob,
-            encoder_id = 2,
+            encoderId = 2,
             COLOR = "secondary",
             track = SnareTrack
         }),
-        React.createElement(KnobValue, {value = "Snare TONE_FREQ", bounds = bottomLeftKnob, encoder_id = 1, track = SnareTrack}),
+        React.createElement(KnobValue, {value = "Snare TONE_FREQ", bounds = bottomLeftKnob, encoderId = 1, track = SnareTrack}),
         React.createElement(KnobValue, {
             value = "Snare NOISE_MIX",
             bounds = bottomRightKnob,
-            encoder_id = 3,
+            encoderId = 3,
             COLOR = "secondary",
             track = SnareTrack
         }),

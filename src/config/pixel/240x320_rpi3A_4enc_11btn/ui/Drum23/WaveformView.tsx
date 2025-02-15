@@ -25,8 +25,8 @@ export function WaveformView({ name }: Props) {
             />
             <KnobValue
                 bounds={bottomRightKnob}
-                value="Drum23 PITCH"
-                encoder_id={encBottomRight}
+                audioPlugin="Drum23" param="PITCH"
+                encoderId={encBottomRight}
                 color="secondary"
                 track={Drum23Track}
             />

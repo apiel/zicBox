@@ -26,24 +26,27 @@ function ____exports.BassFxView(____bindingPattern0)
         View,
         {name = name},
         React.createElement(KnobValue, {
-            value = "Bass BOOST",
+            audioPlugin = "Bass",
+            param = "BOOST",
             bounds = topLeftKnob,
-            encoder_id = encTopLeft,
-            COLOR = "tertiary",
+            encoderId = encTopLeft,
+            color = "tertiary",
             track = BassTrack
         }),
         React.createElement(KnobValue, {
-            value = "Bass GAIN_CLIPPING",
+            audioPlugin = "Bass",
+            param = "GAIN_CLIPPING",
             bounds = topRightKnob,
-            encoder_id = encTopRight,
-            COLOR = "primary",
+            encoderId = encTopRight,
+            color = "primary",
             track = BassTrack
         }),
         React.createElement(KnobValue, {
-            value = "Bass REVERB",
+            audioPlugin = "Bass",
+            param = "REVERB",
             bounds = bottomRightKnob,
-            encoder_id = encBottomRight,
-            COLOR = "secondary",
+            encoderId = encBottomRight,
+            color = "secondary",
             track = BassTrack
         }),
         React.createElement(TextGridBass, {selected = "Fx", viewName = name}),

@@ -25,10 +25,11 @@ export function SynthWaveform2View({ name }: Props) {
             />
 
             <KnobValue
-                value="Synth FREQ_2"
+                audioPlugin='Synth'
+                param='FREQ_2'
                 bounds={bottomLeftKnob}
-                encoder_id={encBottomLeft}
-                COLOR="quaternary"
+                encoderId={encBottomLeft}
+                color="quaternary"
                 track={SynthTrack}
             />
 

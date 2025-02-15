@@ -26,24 +26,27 @@ function ____exports.SynthFxView(____bindingPattern0)
         View,
         {name = name},
         React.createElement(KnobValue, {
-            value = "TrackFx VOLUME",
+            audioPlugin = "TrackFx",
+            param = "VOLUME",
             bounds = topLeftKnob,
-            encoder_id = encTopLeft,
-            COLOR = "tertiary",
+            encoderId = encTopLeft,
+            color = "tertiary",
             track = SynthTrack
         }),
         React.createElement(KnobValue, {
-            value = "Synth DISTORTION",
+            audioPlugin = "Synth",
+            param = "DISTORTION",
             bounds = topRightKnob,
-            encoder_id = encTopRight,
-            COLOR = "primary",
+            encoderId = encTopRight,
+            color = "primary",
             track = SynthTrack
         }),
         React.createElement(KnobValue, {
-            value = "Synth REVERB",
+            audioPlugin = "Synth",
+            param = "REVERB",
             bounds = bottomLeftKnob,
-            encoder_id = encBottomLeft,
-            COLOR = "quaternary",
+            encoderId = encBottomLeft,
+            color = "quaternary",
             track = SynthTrack
         }),
         React.createElement(TextGridSynth, {selected = "Fx", viewName = name}),

@@ -17,7 +17,7 @@ export function TapeView({ name }: Props) {
             <Tape
                 bounds={[0, 0, 240, 280]}
                 filename="rec"
-                bpm_value="Tempo BPM"
+                bpm_audioPlugin="Tempo" param="BPM"
                 tape_plugin="Tape PLAY_STOP"
             >
                 <Keymap key="q" action=".playStop" />

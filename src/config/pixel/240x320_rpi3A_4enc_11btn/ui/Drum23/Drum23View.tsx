@@ -3,7 +3,14 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
-import { ColorTrack1, Drum23Track, encBottomLeft, encBottomRight, encTopLeft, encTopRight } from '../constants';
+import {
+    ColorTrack1,
+    Drum23Track,
+    encBottomLeft,
+    encBottomRight,
+    encTopLeft,
+    encTopRight,
+} from '../constants';
 import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
 import { TextGridDrum23 } from './TextGridDrum23';
 
@@ -15,32 +22,36 @@ export function Drum23View({ name }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                value="TrackFx VOLUME"
+                audioPlugin="TrackFx"
+                param="VOLUME"
                 bounds={topLeftKnob}
-                encoder_id={encTopLeft}
-                COLOR="tertiary"
+                encoderId={encTopLeft}
+                color="tertiary"
                 track={Drum23Track}
             />
             <KnobValue
-                value="MMFilter CUTOFF"
+                audioPlugin="MMFilter"
+                param="CUTOFF"
                 bounds={topRightKnob}
-                encoder_id={encTopRight}
-                COLOR="secondary"
-                FONT_VALUE_SIZE={8}
-                TYPE="STRING"
+                encoderId={encTopRight}
+                color="secondary"
+                valueSize={8}
+                type="STRING"
                 track={Drum23Track}
             />
             <KnobValue
-                value="Drum23 GAIN_CLIPPING"
+                audioPlugin="Drum23"
+                param="GAIN_CLIPPING"
                 bounds={bottomLeftKnob}
-                encoder_id={encBottomLeft}
+                encoderId={encBottomLeft}
                 track={Drum23Track}
             />
             <KnobValue
-                value="MMFilter RESONANCE"
+                audioPlugin="MMFilter"
+                param="RESONANCE"
                 bounds={bottomRightKnob}
-                encoder_id={encBottomRight}
-                COLOR="secondary"
+                encoderId={encBottomRight}
+                color="secondary"
                 track={Drum23Track}
             />
 

@@ -25,22 +25,22 @@ function ____exports.Snare2View(____bindingPattern0)
         React.createElement(KnobValue, {
             value = "Snare PINK_NOISE",
             bounds = topLeftKnob,
-            encoder_id = 0,
+            encoderId = 0,
             COLOR = "tertiary",
             track = SnareTrack
         }),
         React.createElement(KnobValue, {
             value = "Snare HARMONICS_COUNT",
             bounds = topRightKnob,
-            encoder_id = 2,
+            encoderId = 2,
             COLOR = "secondary",
             track = SnareTrack
         }),
-        React.createElement(KnobValue, {value = "Snare TRANSIENT_DURATION", bounds = bottomLeftKnob, encoder_id = 1, track = SnareTrack}),
+        React.createElement(KnobValue, {value = "Snare TRANSIENT_DURATION", bounds = bottomLeftKnob, encoderId = 1, track = SnareTrack}),
         React.createElement(KnobValue, {
             value = "Snare TRANSIENT_INTENSITY",
             bounds = bottomRightKnob,
-            encoder_id = 3,
+            encoderId = 3,
             COLOR = "secondary",
             track = SnareTrack
         }),

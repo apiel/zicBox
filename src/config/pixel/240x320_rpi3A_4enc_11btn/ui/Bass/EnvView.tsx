@@ -19,31 +19,31 @@ export function BassEnvView({ name }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                value="Bass DURATION"
+                audioPlugin="Bass" param="DURATION"
                 bounds={topLeftKnob}
-                encoder_id={encTopLeft}
-                COLOR="tertiary"
+                encoderId={encTopLeft}
+                color="tertiary"
                 track={BassTrack}
             />
             <KnobValue
-                value="Bass DECAY_LEVEL"
+                audioPlugin="Bass" param="DECAY_LEVEL"
                 bounds={topRightKnob}
-                encoder_id={encTopRight}
-                COLOR="primary"
+                encoderId={encTopRight}
+                color="primary"
                 track={BassTrack}
             />
             <KnobValue
-                value="Bass DECAY_TIME"
+                audioPlugin="Bass" param="DECAY_TIME"
                 bounds={bottomLeftKnob}
-                encoder_id={encBottomLeft}
-                COLOR="quaternary"
+                encoderId={encBottomLeft}
+                color="quaternary"
                 track={BassTrack}
             />
             {/* <KnobValue
-                value="Bass REVERB"
+                audioPlugin="Bass" param="REVERB"
                 bounds={bottomRightKnob}
-                encoder_id={encBottomRight}
-                COLOR="secondary"
+                encoderId={encBottomRight}
+                color="secondary"
                 track={BassTrack}
             /> */}
 

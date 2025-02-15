@@ -28,25 +28,25 @@ function ____exports.Sample2View(____bindingPattern0)
         React.createElement(KnobValue, {
             value = "Sample LOOP_POSITION",
             bounds = topLeftKnob,
-            encoder_id = 0,
+            encoderId = 0,
             COLOR = "tertiary",
             track = SampleTrack
         }),
         React.createElement(KnobValue, {
             value = "Sample LOOP_LENGTH",
             bounds = topRightKnob,
-            encoder_id = 2,
+            encoderId = 2,
             COLOR = "tertiary",
             track = SampleTrack
         }),
         React.createElement(KnobValue, {
             value = "Sample LOOP_RELEASE",
             bounds = bottomLeftKnob,
-            encoder_id = 1,
+            encoderId = 1,
             COLOR = "tertiary",
             track = SampleTrack
         }),
-        React.createElement(KnobValue, {value = "TrackFx REVERB", bounds = bottomRightKnob, encoder_id = 3, track = SampleTrack}),
+        React.createElement(KnobValue, {value = "TrackFx REVERB", bounds = bottomRightKnob, encoderId = 3, track = SampleTrack}),
         React.createElement(Sample, {
             bounds = {0, 245, ScreenWidth, 50},
             track = SampleTrack,

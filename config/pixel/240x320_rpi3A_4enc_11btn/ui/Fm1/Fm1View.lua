@@ -28,31 +28,35 @@ function ____exports.Fm1View(____bindingPattern0)
         View,
         {name = name},
         React.createElement(KnobValue, {
-            value = "TrackFx VOLUME",
+            audioPlugin = "TrackFx",
+            param = "VOLUME",
             bounds = topLeftKnob,
-            encoder_id = encTopLeft,
-            COLOR = "tertiary",
+            encoderId = encTopLeft,
+            color = "tertiary",
             track = Fm1Track
         }),
         React.createElement(KnobValue, {
-            value = "FmDrum CARRIER_FREQ",
+            audioPlugin = "FmDrum",
+            param = "CARRIER_FREQ",
             bounds = topRightKnob,
-            encoder_id = encTopRight,
-            COLOR = "primary",
+            encoderId = encTopRight,
+            color = "primary",
             track = Fm1Track
         }),
         React.createElement(KnobValue, {
-            value = "FmDrum MOD_FREQ",
+            audioPlugin = "FmDrum",
+            param = "MOD_FREQ",
             bounds = bottomLeftKnob,
-            encoder_id = encBottomLeft,
-            COLOR = "quaternary",
+            encoderId = encBottomLeft,
+            color = "quaternary",
             track = Fm1Track
         }),
         React.createElement(KnobValue, {
-            value = "FmDrum MOD_INDEX",
+            audioPlugin = "FmDrum",
+            param = "MOD_INDEX",
             bounds = bottomRightKnob,
-            encoder_id = encBottomRight,
-            COLOR = "secondary",
+            encoderId = encBottomRight,
+            color = "secondary",
             track = Fm1Track
         }),
         React.createElement(TextGridFm1, {selected = "Main", viewName = name}),

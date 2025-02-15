@@ -48,7 +48,7 @@ function Main(____bindingPattern0)
                 bounds = topLeft,
                 group = group,
                 track = track,
-                encoder_id = 0
+                encoderId = 0
             }, tertiary)
         ),
         React.createElement(
@@ -58,7 +58,7 @@ function Main(____bindingPattern0)
                 bounds = bottomLeft,
                 group = group,
                 track = track,
-                encoder_id = 1
+                encoderId = 1
             }, primary)
         ),
         React.createElement(
@@ -68,7 +68,7 @@ function Main(____bindingPattern0)
                 bounds = topRight,
                 group = group,
                 track = track,
-                encoder_id = 2
+                encoderId = 2
             }, quaternary, {USE_STRING_VALUE = true})
         ),
         React.createElement(
@@ -78,7 +78,7 @@ function Main(____bindingPattern0)
                 bounds = bottomRight,
                 group = group,
                 track = track,
-                encoder_id = 3
+                encoderId = 3
             }, quaternary)
         )
     )
@@ -118,7 +118,7 @@ function EditFx(____bindingPattern0)
                 bounds = topLeft,
                 group = group,
                 track = track,
-                encoder_id = 0
+                encoderId = 0
             }, secondary)
         ),
         React.createElement(
@@ -128,7 +128,7 @@ function EditFx(____bindingPattern0)
                 bounds = topRight,
                 group = group,
                 track = track,
-                encoder_id = 2
+                encoderId = 2
             }, quaternary)
         )
     )
@@ -153,7 +153,7 @@ function EditSample(____bindingPattern0)
                 bounds = topFull,
                 group = group,
                 track = track,
-                encoder_id = 0
+                encoderId = 0
             }, tertiary)
         ),
         React.createElement(
@@ -163,7 +163,7 @@ function EditSample(____bindingPattern0)
                 bounds = bottomLeft,
                 group = group,
                 track = track,
-                encoder_id = 1
+                encoderId = 1
             }, quaternary)
         ),
         React.createElement(
@@ -173,7 +173,7 @@ function EditSample(____bindingPattern0)
                 bounds = bottomRight,
                 group = group,
                 track = track,
-                encoder_id = 3
+                encoderId = 3
             }, quaternary)
         )
     )
@@ -196,7 +196,7 @@ function EditLoop(____bindingPattern0)
                 bounds = topLeft,
                 group = group,
                 track = track,
-                encoder_id = 0,
+                encoderId = 0,
                 label = "Position"
             }, tertiary)
         ),
@@ -207,7 +207,7 @@ function EditLoop(____bindingPattern0)
                 bounds = topRight,
                 group = group,
                 track = track,
-                encoder_id = 2,
+                encoderId = 2,
                 label = "Length"
             }, tertiary)
         ),
@@ -218,7 +218,7 @@ function EditLoop(____bindingPattern0)
                 bounds = bottomLeft,
                 group = group,
                 track = track,
-                encoder_id = 1
+                encoderId = 1
             }, quaternary)
         )
     )

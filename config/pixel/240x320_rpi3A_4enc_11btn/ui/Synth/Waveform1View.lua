@@ -41,10 +41,11 @@ function ____exports.SynthWaveform1View(____bindingPattern0)
             }
         ),
         React.createElement(KnobValue, {
-            value = "Synth FREQ_1",
+            audioPlugin = "Synth",
+            param = "FREQ_1",
             bounds = bottomLeftKnob,
-            encoder_id = encBottomLeft,
-            COLOR = "quaternary",
+            encoderId = encBottomLeft,
+            color = "quaternary",
             track = SynthTrack
         }),
         React.createElement(TextGridSynth, {selected = "Osc1", viewName = name}),

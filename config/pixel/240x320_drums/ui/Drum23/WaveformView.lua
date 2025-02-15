@@ -33,7 +33,7 @@ function ____exports.WaveformView(____bindingPattern0)
         React.createElement(KnobValue, {
             bounds = bottomRightKnob,
             value = "Drum23 PITCH",
-            encoder_id = 3,
+            encoderId = 3,
             color = "secondary",
             track = Drum23Track
         }),

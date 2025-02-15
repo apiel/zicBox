@@ -61,36 +61,36 @@ export function MasterValues({ group, track }: { group: number; track: number })
             </HiddenValue>
             <Rect bounds={[0, 0, ScreenWidth, posContainer[3]]} />
             <Value
-                value="Volume VOLUME"
+                audioPlugin="Volume" param="VOLUME"
                 bounds={topLeft}
                 group={group}
                 track={track}
-                encoder_id={0}
+                encoderId={0}
                 {...tertiary}
             />
             {/* <Value
-                value="Volume GAIN_CLIPPING"
+                audioPlugin="Volume" param="GAIN_CLIPPING"
                 bounds={bottomLeft}
                 group={group}
                 track={track}
-                encoder_id={1}
+                encoderId={1}
                 {...primary}
             /> */}
             {/* <Value
-                value="MMFilter CUTOFF"
+                audioPlugin="MMFilter" param="CUTOFF"
                 bounds={topRight}
                 group={group}
                 track={track}
-                encoder_id={2}
+                encoderId={2}
                 {...quaternary}
                 USE_STRING_VALUE
             />
             <Value
-                value="MMFilter RESONANCE"
+                audioPlugin="MMFilter" param="RESONANCE"
                 bounds={bottomRight}
                 group={group}
                 track={track}
-                encoder_id={3}
+                encoderId={3}
                 {...quaternary}
             /> */}
         </VisibilityContainer>
@@ -104,36 +104,36 @@ export function Drum23Values({ group, track }: { group: number; track: number })
                 <Keymap key="s" action="setView:Drum23" context="254:1" />
             </HiddenValue>
             <Value
-                value="TrackFx VOLUME"
+                audioPlugin="TrackFx" param="VOLUME"
                 bounds={topLeft}
                 group={group}
                 track={track}
-                encoder_id={0}
+                encoderId={0}
                 {...tertiary}
             />
             {/* <Value
-                value="Drum23 GAIN_CLIPPING"
+                audioPlugin="Drum23" param="GAIN_CLIPPING"
                 bounds={bottomLeft}
                 group={group}
                 track={track}
-                encoder_id={1}
+                encoderId={1}
                 {...primary}
             /> */}
             <Value
-                value="MMFilter CUTOFF"
+                audioPlugin="MMFilter" param="CUTOFF"
                 bounds={topRight}
                 group={group}
                 track={track}
-                encoder_id={2}
+                encoderId={2}
                 {...quaternary}
                 USE_STRING_VALUE
             />
             <Value
-                value="MMFilter RESONANCE"
+                audioPlugin="MMFilter" param="RESONANCE"
                 bounds={bottomRight}
                 group={group}
                 track={track}
-                encoder_id={3}
+                encoderId={3}
                 {...quaternary}
             />
         </VisibilityContainer>
@@ -147,53 +147,53 @@ export function SampleValues({ group, track }: { group: number; track: number })
                 <Keymap key="s" action="setView:Sample" context="254:1" />
             </HiddenValue>
             <Value
-                value="TrackFx VOLUME"
+                audioPlugin="TrackFx" param="VOLUME"
                 bounds={topLeft}
                 group={group}
                 track={track}
-                encoder_id={0}
+                encoderId={0}
                 {...tertiary}
             />
             {/* <Value
-                value="TrackFx REVERB"
+                audioPlugin="TrackFx" param="REVERB"
                 bounds={bottomLeft}
                 group={group}
                 track={track}
-                encoder_id={1}
+                encoderId={1}
                 {...primary}
             /> */}
             {/* <Value
-                value="Sample START"
+                audioPlugin="Sample" param="START"
                 bounds={topRight}
                 group={group}
                 track={track}
-                encoder_id={2}
+                encoderId={2}
                 {...quaternary}
                 USE_STRING_VALUE
             />
             <Value
-                value="Sample LOOP_LENGTH"
+                audioPlugin="Sample" param="LOOP_LENGTH"
                 bounds={bottomRight}
                 group={group}
                 track={track}
-                encoder_id={3}
+                encoderId={3}
                 {...quaternary}
             /> */}
             {/* <Value
-                value="TrackFx CUTOFF"
+                audioPlugin="TrackFx" param="CUTOFF"
                 bounds={topRight}
                 group={group}
                 track={track}
-                encoder_id={2}
+                encoderId={2}
                 {...quaternary}
                 USE_STRING_VALUE
             /> */}
             {/* <Value
-                value="TrackFx RESONANCE"
+                audioPlugin="TrackFx" param="RESONANCE"
                 bounds={bottomRight}
                 group={group}
                 track={track}
-                encoder_id={3}
+                encoderId={3}
                 {...quaternary}
             /> */}
         </VisibilityContainer>

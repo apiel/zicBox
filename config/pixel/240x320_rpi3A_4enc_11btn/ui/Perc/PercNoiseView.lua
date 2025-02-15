@@ -26,24 +26,27 @@ function ____exports.PercNoiseView(____bindingPattern0)
         View,
         {name = name},
         React.createElement(KnobValue, {
-            value = "Perc MIX",
+            audioPlugin = "Perc",
+            param = "MIX",
             bounds = topLeftKnob,
-            encoder_id = encTopLeft,
-            COLOR = "tertiary",
+            encoderId = encTopLeft,
+            color = "tertiary",
             track = PercTrack
         }),
         React.createElement(KnobValue, {
-            value = "Perc TRANSIENT_DURATION",
+            audioPlugin = "Perc",
+            param = "TRANSIENT_DURATION",
             bounds = topRightKnob,
-            encoder_id = encTopRight,
-            COLOR = "primary",
+            encoderId = encTopRight,
+            color = "primary",
             track = PercTrack
         }),
         React.createElement(KnobValue, {
-            value = "Perc TRANSIENT_INTENSITY",
+            audioPlugin = "Perc",
+            param = "TRANSIENT_INTENSITY",
             bounds = bottomLeftKnob,
-            encoder_id = encBottomLeft,
-            COLOR = "quaternary",
+            encoderId = encBottomLeft,
+            color = "quaternary",
             track = PercTrack
         }),
         React.createElement(TextGridPerc, {selected = "Noise1", viewName = name}),

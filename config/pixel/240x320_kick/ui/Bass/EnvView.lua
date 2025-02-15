@@ -24,31 +24,35 @@ function ____exports.BassEnvView(____bindingPattern0)
         View,
         {name = name},
         React.createElement(KnobValue, {
-            value = "Bass DURATION",
+            audioPlugin = "Bass",
+            param = "DURATION",
             bounds = topLeftKnob,
-            encoder_id = 0,
-            COLOR = "tertiary",
+            encoderId = 0,
+            color = "tertiary",
             track = BassTrack
         }),
         React.createElement(KnobValue, {
-            value = "Bass DECAY_LEVEL",
+            audioPlugin = "Bass",
+            param = "DECAY_LEVEL",
             bounds = topRightKnob,
-            encoder_id = 1,
-            COLOR = "primary",
+            encoderId = 1,
+            color = "primary",
             track = BassTrack
         }),
         React.createElement(KnobValue, {
-            value = "Bass DECAY_TIME",
+            audioPlugin = "Bass",
+            param = "DECAY_TIME",
             bounds = bottomLeftKnob,
-            encoder_id = 2,
-            COLOR = "quaternary",
+            encoderId = 2,
+            color = "quaternary",
             track = BassTrack
         }),
         React.createElement(KnobValue, {
-            value = "Bass REVERB",
+            audioPlugin = "Bass",
+            param = "REVERB",
             bounds = bottomRightKnob,
-            encoder_id = 3,
-            COLOR = "secondary",
+            encoderId = 3,
+            color = "secondary",
             track = BassTrack
         }),
         React.createElement(TextGridBass, {selected = 1, viewName = name}),
