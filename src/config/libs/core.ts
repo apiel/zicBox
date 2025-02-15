@@ -5,6 +5,38 @@ export function _zic(key: string, value: string) {
     zic(key, value);
 }
 
+
+  /**
+   * Convert a value to a JSON string. Since Lua doesn't have builtin JSON support, 
+   * this function is a custom function to serialize values to JSON strings.
+   *
+   * @param value The value to convert
+   * @returns A JSON string representing the value
+   * @throws {Error} If the value is of an unsupported type
+   */
+export function jsonStringify(value: any): string {
+    // Handle primitive types
+    if (typeof value === "string") {
+      return `"${value}"`; // Wrap strings in double quotes
+    } else if (typeof value === "number" || typeof value === "boolean") {
+      return String(value); // Convert numbers and booleans to strings
+    } else if (value === null) {
+      return "null"; // Handle null
+    } else if (Array.isArray(value)) {
+      // Handle arrays
+      const elements = value.map((item) => jsonStringify(item)).join(",");
+      return `[${elements}]`;
+    } else if (typeof value === "object") {
+      // Handle objects
+      const properties = Object.keys(value)
+        .map((key) => `"${key}":${jsonStringify(value[key])}`)
+        .join(",");
+      return `{${properties}}`;
+    } else {
+      throw new Error(`Unsupported type: ${typeof value}`);
+    }
+  }
+
 /**
  * Get the build the plateform
  * @returns string The plateform

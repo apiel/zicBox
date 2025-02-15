@@ -2,8 +2,13 @@ import { applyZic, buildPlateform, ZicValue } from './core';
 
 export type Position = string | string[] | number[];
 
+// TODO to be deprecated
 export function getPosition(pos: Position) {
     return Array.isArray(pos) ? pos.join(' ') : pos;
+}
+
+export function getBounds(pos: Position) {
+    return Array.isArray(pos) ? pos : pos.split(' ');
 }
 
 /**

@@ -8,6 +8,7 @@
 #include "plugins/controllers/controllerInterface.h"
 
 #include <functional>
+#include <nlohmann/json.hpp>
 #include <string.h>
 #include <vector>
 
@@ -15,6 +16,7 @@ class ComponentInterface {
 public:
     struct Props {
         ComponentContainer* container;
+        nlohmann::json config;
         Point position;
         Size size;
         AudioPlugin& (*getPlugin)(const char* name, int16_t track);
@@ -27,13 +29,6 @@ public:
 protected:
     DrawInterface& draw;
     Styles& styles;
-
-    Props getNewPropsRect(Props props, Rect rect)
-    {
-        props.position = rect.position;
-        props.size = rect.size;
-        return props;
-    }
 
     bool updatePosition()
     {

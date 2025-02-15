@@ -3,6 +3,7 @@
 
 #include <dlfcn.h>
 #include <mutex>
+#include <nlohmann/json.hpp>
 #include <vector>
 
 #include "controllerList.h"
@@ -121,10 +122,19 @@ protected:
         plugins.push_back(plugin);
     }
 
-    void addComponent(std::string name, Point position, Size size)
+    void addComponent(nlohmann::json config)
     {
+        std::string name = config["componentName"].get<std::string>();
+        Point position = { config["bounds"][0].get<int>(), config["bounds"][1].get<int>() };
+
+        // Check if width and height exist, otherwise use default values
+        int w = config.contains("bounds") && config["bounds"].size() > 2 ? config["bounds"][2].get<int>() : styles.screen.w;
+        int h = config.contains("bounds") && config["bounds"].size() > 3 ? config["bounds"][3].get<int>() : styles.screen.h;
+        Size size = { w, h };
+
         ComponentInterface::Props props = {
             NULL,
+            config,
             position,
             size,
             getPlugin,
@@ -208,7 +218,7 @@ public:
         if (lastView != NULL) {
             for (auto& component : lastView->components) {
                 for (auto* value : component->values) {
-                    value->setOnUpdateCallback([](float, void* data) {}, NULL);
+                    value->setOnUpdateCallback([](float, void* data) { }, NULL);
                 }
             }
         }
@@ -261,13 +271,13 @@ public:
         In this example, we assign the hardware encoder id 1 to this component and we assign it to the resonance value from the multi mode filter audio plugin.
         */
         if (strcmp(key, "COMPONENT") == 0) {
-            char* name = strtok(value, " ");
-            Point position = { atoi(strtok(NULL, " ")), atoi(strtok(NULL, " ")) };
-            char* w = strtok(NULL, " ");
-            char* h = strtok(NULL, " ");
-            Size size = { w ? atoi(w) : styles.screen.w, h ? atoi(h) : styles.screen.h };
-            addComponent(name, position, size);
-            return true;
+            try {
+                nlohmann::json config = nlohmann::json::parse(value);
+                addComponent(config);
+                return true;
+            } catch (const std::exception& e) {
+                logError("COMPONENT: JSON Parsing Error: %s", e.what());
+            }
         }
 
         /*//md

@@ -276,6 +276,12 @@ public:
             }
         }
 
+        if (!tempoPlugin) {
+            // Should we allow to start without tempo?? then would need if statement around the loops..
+            logError("No tempo plugin loaded. There should be at one to start audio loop.");
+            return;
+        }
+
         if (threadCount == 0) {
             while (isRunning) {
                 float buffer[TOTAL_TRACKS] = { 0.0f };
