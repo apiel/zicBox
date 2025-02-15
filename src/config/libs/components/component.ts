@@ -1,8 +1,11 @@
 import { Bounds } from '../ui';
 
-export type ComponentProps = {
+export type ComponentProps<P = unknown> = {
     bounds: Bounds;
-    track?: number;
     group?: number;
-    [key: string]: any;
-};
+} &
+    (P extends {}
+        ? P
+        : {
+              [key: string]: any; // Allow random parameters if P is not specified
+          });

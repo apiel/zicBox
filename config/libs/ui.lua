@@ -4,12 +4,14 @@ local __TS__ArrayJoin = ____lualib.__TS__ArrayJoin
 local __TS__StringSplit = ____lualib.__TS__StringSplit
 local Set = ____lualib.Set
 local __TS__New = ____lualib.__TS__New
+local __TS__ObjectAssign = ____lualib.__TS__ObjectAssign
 local __TS__NumberToString = ____lualib.__TS__NumberToString
 local __TS__StringPadStart = ____lualib.__TS__StringPadStart
 local ____exports = {}
 local ____core = require("config.libs.core")
 local applyZic = ____core.applyZic
 local buildPlateform = ____core.buildPlateform
+local jsonStringify = ____core.jsonStringify
 function ____exports.getPosition(pos)
     return __TS__ArrayIsArray(pos) and __TS__ArrayJoin(pos, " ") or pos
 end
@@ -29,6 +31,20 @@ function ____exports.initializePlugin(componentName, pluginPath)
         print(">>>> Initializing plugin: " .. componentName)
         initializedPlugins:add(componentName)
         ____exports.pluginComponent(componentName, pluginPath)
+    end
+end
+function ____exports.getJsonComponent(componentName, pluginPath)
+    return function(props)
+        ____exports.initializePlugin(componentName, pluginPath)
+        local COMPONENT = jsonStringify(__TS__ObjectAssign(
+            {},
+            props,
+            {
+                componentName = componentName,
+                bounds = ____exports.getBounds(props.bounds)
+            }
+        ))
+        return {{COMPONENT = COMPONENT}}
     end
 end
 --- Create a component

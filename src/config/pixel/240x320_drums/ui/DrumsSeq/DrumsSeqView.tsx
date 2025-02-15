@@ -60,11 +60,11 @@ export function DrumsSeqView({ name }: Props) {
     let y = 0;
     return (
         <View name={name}>
-            <Text text=" Snare" bounds={[0, 0, w, 9]} background_color={ColorTrack3} color="text" />
+            <Text text=" Snare" bounds={[0, 0, w, 9]} bgColor={ColorTrack3} color="text" />
             <Seq x={0} w={w} track={SnareTrack} encoder={0} color={ColorTrack3} />
-            <Text text=" HiHat" bounds={[w, 0, w, 9]} background_color={ColorTrack4} color="text" />
+            <Text text=" HiHat" bounds={[w, 0, w, 9]} bgColor={ColorTrack4} color="text" />
             <Seq x={w} w={w} track={HiHatTrack} encoder={1} color={ColorTrack4} />
-            <Text text=" Sample" bounds={[2 * w, 0, w, 9]} background_color={ColorTrack5} color="text" />
+            <Text text=" Sample" bounds={[2 * w, 0, w, 9]} bgColor={ColorTrack5} color="text" />
             <Seq x={w * 2} w={w} track={SampleTrack} encoder={2} color={ColorTrack5} show_playing_step />
             <TextGrid
                 bounds={KeyInfoPosition}

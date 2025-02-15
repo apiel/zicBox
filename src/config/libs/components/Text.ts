@@ -1,25 +1,11 @@
-import { getBounds, initializePlugin } from '@/libs/ui';
-import { jsonStringify } from '../core';
-import { ComponentProps } from './component';
+import { getJsonComponent } from '../ui';
 
-export type Props = ComponentProps & {
-};
-
-export function Text({ bounds, track, ...props }: Props) {
-    initializePlugin('Text', 'libzic_TextComponent.so');
-    // return getComponent('Text', bounds, [{ track }, props]);
-
-    const jsonConfig = jsonStringify({ 
-        componentName: 'Text',
-        bounds: getBounds(bounds), // TODO rename to getBounds
-        ...props,
-     });
-     console.log('My config:', jsonConfig);
-
-    return [{ COMPONENT: jsonConfig }];
-}
-
-
-// export function getComponent(name: string, position: Position, values: ZicValue[] = []) {
-//     return [{ COMPONENT: `${name} ${getPosition(bounds)}` }, values];
-// }
+export const Text = getJsonComponent<{
+    text: string;
+    fontSize?: number;
+    fontHeight?: number;
+    color?: string;
+    bgColor?: string;
+    centered?: boolean;
+    font?: string;
+}>('Text', 'libzic_TextComponent.so');
