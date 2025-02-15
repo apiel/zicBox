@@ -1,15 +1,19 @@
-import { getComponent, initializePlugin } from '../ui';
-import { ComponentProps } from './component';
+import { getJsonComponent } from '../ui';
 
-export type Props = ComponentProps & {
-    value: string;
-};
-
-export function KnobValue({ bounds, track, value, ...props }: Props) {
-    initializePlugin('KnobValue', 'libzic_KnobValueComponent.so');
-    return getComponent('KnobValue', bounds, [
-        { track },
-        { value },
-        props,
-    ]);
-}
+export const KnobValue = getJsonComponent<{
+    audioPlugin: string;
+    param: string;
+    encoderId?: number;
+    type?: string;
+    label?: string;
+    color?: string;
+    bgColor?: string;
+    textColor?: string;
+    floatPrecision?: number;
+    hideValue?: boolean;
+    hideUnit?: boolean;
+    unitSize?: number;
+    valueSize?: number;
+    titleSize?: number;
+    valueReplaceTitle?: boolean;
+}>('KnobValue', 'libzic_KnobValueComponent.so');

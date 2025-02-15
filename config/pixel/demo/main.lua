@@ -6,6 +6,8 @@ local plugin = ____audio.plugin
 local pluginAlias = ____audio.pluginAlias
 local ____core = require("config.libs.core")
 local applyZic = ____core.applyZic
+local ____KnobValue = require("config.libs.nativeComponents.KnobValue")
+local KnobValue = ____KnobValue.KnobValue
 local ____Rect = require("config.libs.nativeComponents.Rect")
 local Rect = ____Rect.Rect
 local ____Text = require("config.libs.nativeComponents.Text")
@@ -34,6 +36,14 @@ applyZic(React.createElement(
     React.createElement(Text, {text = "hello world", bounds = {5, 5, ScreenWidth, 16}, color = "secondary"}),
     React.createElement(TextGrid, {bounds = {0, 50, ScreenWidth, 20}, rows = {"Hello !world &empty", "^123 abc &icon::arrowRight::filled"}}),
     React.createElement(Rect, {color = "secondary", filled = false, bounds = {10, 100, 100, 100}}),
-    React.createElement(Rect, {color = "primary", bounds = {120, 100, 100, 50}})
+    React.createElement(Rect, {color = "primary", bounds = {120, 100, 100, 50}}),
+    React.createElement(KnobValue, {
+        audioPlugin = "Tempo",
+        param = "BPM",
+        bounds = {0, 150, 50, 50},
+        encoderId = 0,
+        color = "secondary",
+        track = 0
+    })
 ))
 return ____exports

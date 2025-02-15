@@ -2,6 +2,7 @@ import * as React from '@/libs/react';
 
 import { plugin, pluginAlias } from '@/libs/audio';
 import { applyZic } from '@/libs/core';
+import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { Text } from '@/libs/nativeComponents/Text';
 import { View } from '@/libs/nativeComponents/View';
@@ -28,13 +29,19 @@ applyZic(
 
         <TextGrid
             bounds={[0, 50, ScreenWidth, 20]}
-            rows={[
-                'Hello !world &empty',
-                '^123 abc &icon::arrowRight::filled',
-            ]}
+            rows={['Hello !world &empty', '^123 abc &icon::arrowRight::filled']}
         ></TextGrid>
 
         <Rect color="secondary" filled={false} bounds={[10, 100, 100, 100]} />
         <Rect color="primary" bounds={[120, 100, 100, 50]} />
+
+        <KnobValue
+            audioPlugin='Tempo'
+            param='BPM'
+            bounds={[0, 150, 50, 50]}
+            encoderId={0}
+            color="secondary"
+            track={0}
+        />
     </View>
 );
