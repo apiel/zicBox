@@ -5,7 +5,7 @@ export type Props = ComponentProps & {
     plugin: string;
 };
 
-export function Clips({ position, track, ...props }: Props) {
+export function Clips({ bounds, track, ...props }: Props) {
     initializePlugin('Clips', 'libzic_ClipsComponent.so');
-    return getComponent('Clips', position, [{ track }, props]);
+    return getComponent('Clips', bounds, [{ track }, props]);
 }

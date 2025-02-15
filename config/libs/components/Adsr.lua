@@ -8,12 +8,12 @@ function ____exports.Adsr(____bindingPattern0)
     local props
     local values
     local plugin
-    local position
-    position = ____bindingPattern0.position
+    local bounds
+    bounds = ____bindingPattern0.bounds
     plugin = ____bindingPattern0.plugin
     values = ____bindingPattern0.values
-    props = __TS__ObjectRest(____bindingPattern0, {position = true, plugin = true, values = true})
+    props = __TS__ObjectRest(____bindingPattern0, {bounds = true, plugin = true, values = true})
     initializePlugin("Adsr", "libzic_AdsrComponent.so")
-    return getComponent("Adsr", position, {{PLUGIN = plugin}, {VALUES = values}, props})
+    return getComponent("Adsr", bounds, {{PLUGIN = plugin}, {VALUES = values}, props})
 end
 return ____exports

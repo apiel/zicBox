@@ -31,7 +31,7 @@ function ____exports.TextGridDrums(____bindingPattern0)
         React.Fragment,
         nil,
         React.createElement(Title, {title = target}),
-        React.createElement(Rect, {position = {rectX, 28, 6, 6}, color = color}),
+        React.createElement(Rect, {bounds = {rectX, 28, 6, 6}, color = color}),
         React.createElement(TextGridSel, {
             items = {
                 "Snare",

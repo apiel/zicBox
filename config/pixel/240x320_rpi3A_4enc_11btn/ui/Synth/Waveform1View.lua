@@ -29,7 +29,7 @@ function ____exports.SynthWaveform1View(____bindingPattern0)
         React.createElement(
             GraphEncoder,
             {
-                position = topValues,
+                bounds = topValues,
                 plugin = "Synth",
                 data_id = "WAVEFORM1",
                 RENDER_TITLE_ON_TOP = true,
@@ -42,7 +42,7 @@ function ____exports.SynthWaveform1View(____bindingPattern0)
         ),
         React.createElement(KnobValue, {
             value = "Synth FREQ_1",
-            position = bottomLeftKnob,
+            bounds = bottomLeftKnob,
             encoder_id = encBottomLeft,
             COLOR = "quaternary",
             track = SynthTrack

@@ -16,7 +16,7 @@ export function AmpView({ name }: Props) {
     return (
         <View name={name}>
              <DrumEnvelop
-                 position={topValues}
+                 bounds={topValues}
                  plugin="Drum23"
                  envelop_data_id="0"
                  RENDER_TITLE_ON_TOP={false}
@@ -26,7 +26,7 @@ export function AmpView({ name }: Props) {
                  track={Drum23Track}
              />
             <KnobValue
-                position={bottomRightKnob}
+                bounds={bottomRightKnob}
                 value="Drum23 DURATION"
                 encoder_id={3}
                 color="quaternary"

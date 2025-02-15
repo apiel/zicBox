@@ -29,24 +29,24 @@ function ____exports.Drum23View(____bindingPattern0)
         {name = name},
         React.createElement(KnobValue, {
             value = "TrackFx VOLUME",
-            position = topLeftKnob,
+            bounds = topLeftKnob,
             encoder_id = encTopLeft,
             COLOR = "tertiary",
             track = Drum23Track
         }),
         React.createElement(KnobValue, {
             value = "MMFilter CUTOFF",
-            position = topRightKnob,
+            bounds = topRightKnob,
             encoder_id = encTopRight,
             COLOR = "secondary",
             FONT_VALUE_SIZE = 8,
             TYPE = "STRING",
             track = Drum23Track
         }),
-        React.createElement(KnobValue, {value = "Drum23 GAIN_CLIPPING", position = bottomLeftKnob, encoder_id = encBottomLeft, track = Drum23Track}),
+        React.createElement(KnobValue, {value = "Drum23 GAIN_CLIPPING", bounds = bottomLeftKnob, encoder_id = encBottomLeft, track = Drum23Track}),
         React.createElement(KnobValue, {
             value = "MMFilter RESONANCE",
-            position = bottomRightKnob,
+            bounds = bottomRightKnob,
             encoder_id = encBottomRight,
             COLOR = "secondary",
             track = Drum23Track

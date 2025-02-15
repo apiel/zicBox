@@ -24,22 +24,22 @@ function ____exports.PercView(____bindingPattern0)
         {name = name},
         React.createElement(KnobValue, {
             value = "TrackFx VOLUME",
-            position = topLeftKnob,
+            bounds = topLeftKnob,
             encoder_id = 0,
             COLOR = "tertiary",
             track = PercTrack
         }),
         React.createElement(KnobValue, {
             value = "Perc DURATION",
-            position = topRightKnob,
+            bounds = topRightKnob,
             encoder_id = 2,
             COLOR = "secondary",
             track = PercTrack
         }),
-        React.createElement(KnobValue, {value = "Perc BASE_FREQ", position = bottomLeftKnob, encoder_id = 1, track = PercTrack}),
+        React.createElement(KnobValue, {value = "Perc BASE_FREQ", bounds = bottomLeftKnob, encoder_id = 1, track = PercTrack}),
         React.createElement(KnobValue, {
             value = "Perc TONE_DECAY",
-            position = bottomRightKnob,
+            bounds = bottomRightKnob,
             encoder_id = 3,
             COLOR = "secondary",
             track = PercTrack

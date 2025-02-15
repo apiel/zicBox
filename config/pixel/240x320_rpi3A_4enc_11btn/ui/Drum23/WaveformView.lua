@@ -30,7 +30,7 @@ function ____exports.WaveformView(____bindingPattern0)
         React.createElement(
             GraphEncoder,
             {
-                position = topValues,
+                bounds = topValues,
                 plugin = "Drum23",
                 data_id = "WAVEFORM",
                 RENDER_TITLE_ON_TOP = false,
@@ -43,7 +43,7 @@ function ____exports.WaveformView(____bindingPattern0)
             }
         ),
         React.createElement(KnobValue, {
-            position = bottomRightKnob,
+            bounds = bottomRightKnob,
             value = "Drum23 PITCH",
             encoder_id = encBottomRight,
             color = "secondary",

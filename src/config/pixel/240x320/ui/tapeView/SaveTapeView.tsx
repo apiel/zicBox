@@ -14,7 +14,7 @@ export function SaveTapeView({ name }: Props) {
     return (
         <View name={name}>
             <Keyboard
-                position={[0, 40, ScreenWidth, 200]}
+                bounds={[0, 40, ScreenWidth, 200]}
                 redirect_view="Tape"
                 done_data="Tape SAVE"
             >
@@ -31,7 +31,7 @@ export function SaveTapeView({ name }: Props) {
             </Keyboard>
 
             <TextGrid
-                position={KeyInfoPositionCenter}
+                bounds={KeyInfoPositionCenter}
                 rows={[
                     'Type &icon::arrowUp::filled Cancel',
                     '&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled',

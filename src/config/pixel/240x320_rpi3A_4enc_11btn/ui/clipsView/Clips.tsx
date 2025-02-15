@@ -17,10 +17,10 @@ export function Clips({ color, track, group, title, group_all }: Props) {
     const w = ScreenWidth / 5;
     return (
         <>
-            <Text text={title} position={[(track - 1) * w, 2, w, 8]} centered color={color} />
-            {/* <Text text={title} position={[(track - 1) * w, 2, w, 8]} centered background_color={color} color="text" /> */}
+            <Text text={title} bounds={[(track - 1) * w, 2, w, 8]} centered color={color} />
+            {/* <Text text={title} bounds={[(track - 1) * w, 2, w, 8]} centered background_color={color} color="text" /> */}
             <ClipsComponent
-                position={[(track - 1) * w, 15, w - 2, 100]}
+                bounds={[(track - 1) * w, 15, w - 2, 100]}
                 plugin="SerializeTrack"
                 track={track}
                 group={group}

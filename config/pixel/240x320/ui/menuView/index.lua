@@ -20,14 +20,14 @@ function ____exports.MenuView(____bindingPattern0)
         {name = name},
         React.createElement(
             List,
-            {position = {0, 0, ScreenWidth, 280}, items = {"Workspaces", "Daw", "More", "Shutdown"}},
+            {bounds = {0, 0, ScreenWidth, 280}, items = {"Workspaces", "Daw", "More", "Shutdown"}},
             React.createElement(Keymap, {key = "a", action = ".setView"}),
             React.createElement(Keymap, {key = "w", action = ".up"}),
             React.createElement(Keymap, {key = "s", action = ".down"})
         ),
         React.createElement(
             TextGrid,
-            {position = KeyInfoPositionCenter, rows = {"  &icon::arrowUp::filled  ", "Select &icon::arrowDown::filled Exit"}},
+            {bounds = KeyInfoPositionCenter, rows = {"  &icon::arrowUp::filled  ", "Select &icon::arrowDown::filled Exit"}},
             React.createElement(Keymap, {key = "d", action = "setView:Home"})
         )
     )

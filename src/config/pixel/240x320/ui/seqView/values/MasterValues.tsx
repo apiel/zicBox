@@ -20,9 +20,9 @@ import {
 export function MasterValues() {
     return (
         <>
-            <VisibilityContainer position={posTopContainer} group={0}>
+            <VisibilityContainer bounds={posTopContainer} group={0}>
                 <Spectrogram
-                    position={[0, 0, ScreenWidth, 70]}
+                    bounds={[0, 0, ScreenWidth, 70]}
                     track={0}
                     data="Spectrogram BUFFER"
                     text="Pixel"
@@ -30,12 +30,12 @@ export function MasterValues() {
                 />
             </VisibilityContainer>
 
-            <VisibilityContainer position={posContainerValues} group={0}>
+            <VisibilityContainer bounds={posContainerValues} group={0}>
                 <Log text="MasterValues" />
-                <Rect position={[0, 0, ScreenWidth, height]} />
+                <Rect bounds={[0, 0, ScreenWidth, height]} />
                 <Value
                     value="MasterVolume VOLUME"
-                    position={topLeft}
+                    bounds={topLeft}
                     group={0}
                     track={0}
                     encoder_id={0}
@@ -43,7 +43,7 @@ export function MasterValues() {
                 />
                 <Value
                     value="MasterFilter CUTOFF"
-                    position={topRight}
+                    bounds={topRight}
                     group={0}
                     track={0}
                     encoder_id={2}
@@ -52,7 +52,7 @@ export function MasterValues() {
                 />
                 <Value
                     value="MasterFilter RESONANCE"
-                    position={bottomRight}
+                    bounds={bottomRight}
                     group={0}
                     track={0}
                     encoder_id={3}

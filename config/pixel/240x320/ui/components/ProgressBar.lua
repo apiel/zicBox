@@ -18,7 +18,7 @@ function ____exports.ProgressBar(____bindingPattern0)
         SeqProgressBar,
         __TS__ObjectAssign(
             {
-                position = {0, y, ScreenWidth, 5},
+                bounds = {0, y, ScreenWidth, 5},
                 seq_plugin = "Sequencer 1",
                 track = 0,
                 active_color = rgb(35, 161, 35),

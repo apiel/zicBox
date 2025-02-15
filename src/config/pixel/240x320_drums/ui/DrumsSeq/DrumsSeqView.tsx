@@ -32,7 +32,7 @@ function Seq({
         y += 8 + (i % 4 == 3 ? 3 : 0);
         return (
             <StepEditMono
-                position={[x, yy, w, 8]}
+                bounds={[x, yy, w, 8]}
                 data={`Sequencer ${i}`}
                 group={i}
                 playing_color={rgb(35, 161, 35)}
@@ -60,14 +60,14 @@ export function DrumsSeqView({ name }: Props) {
     let y = 0;
     return (
         <View name={name}>
-            <Text text=" Snare" position={[0, 0, w, 9]} background_color={ColorTrack3} color="text" />
+            <Text text=" Snare" bounds={[0, 0, w, 9]} background_color={ColorTrack3} color="text" />
             <Seq x={0} w={w} track={SnareTrack} encoder={0} color={ColorTrack3} />
-            <Text text=" HiHat" position={[w, 0, w, 9]} background_color={ColorTrack4} color="text" />
+            <Text text=" HiHat" bounds={[w, 0, w, 9]} background_color={ColorTrack4} color="text" />
             <Seq x={w} w={w} track={HiHatTrack} encoder={1} color={ColorTrack4} />
-            <Text text=" Sample" position={[2 * w, 0, w, 9]} background_color={ColorTrack5} color="text" />
+            <Text text=" Sample" bounds={[2 * w, 0, w, 9]} background_color={ColorTrack5} color="text" />
             <Seq x={w * 2} w={w} track={SampleTrack} encoder={2} color={ColorTrack5} show_playing_step />
             <TextGrid
-                position={KeyInfoPosition}
+                bounds={KeyInfoPosition}
                 rows={[
                     '&icon::arrowUp::filled &empty ...',
                     '&icon::arrowDown::filled Drums &icon::musicNote::pixelated',

@@ -5,7 +5,7 @@ export type Props = ComponentProps & {
     data: string;
 };
 
-export function StepEditSample({ position, track, data, ...props }: Props) {
+export function StepEditSample({ bounds, track, data, ...props }: Props) {
     initializePlugin('StepEditSample', 'libzic_StepEditSampleComponent.so');
-    return getComponent('StepEditSample', position, [{ track }, { data }, props]);
+    return getComponent('StepEditSample', bounds, [{ track }, { data }, props]);
 }

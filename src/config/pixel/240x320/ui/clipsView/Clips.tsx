@@ -13,7 +13,7 @@ export type Props = {
 export function Clips({ color, track, group }: Props) {
     return (
         <ClipsComponent
-            position={[(track - 1) * W1_8, 15, W1_8 - 2, 200]}
+            bounds={[(track - 1) * W1_8, 15, W1_8 - 2, 200]}
             plugin="SerializeTrack"
             track={track}
             group={group}

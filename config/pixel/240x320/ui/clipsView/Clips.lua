@@ -17,7 +17,7 @@ function ____exports.Clips(____bindingPattern0)
     return React.createElement(
         ClipsComponent,
         {
-            position = {(track - 1) * W1_8, 15, W1_8 - 2, 200},
+            bounds = {(track - 1) * W1_8, 15, W1_8 - 2, 200},
             plugin = "SerializeTrack",
             track = track,
             group = group,

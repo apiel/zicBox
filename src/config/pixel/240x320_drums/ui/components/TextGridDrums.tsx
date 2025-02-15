@@ -26,7 +26,7 @@ export function TextGridDrums({
     return (
         <>
             <Title title={target} />
-            <Rect position={[rectX, 28, 6, 6]} color={color} />
+            <Rect bounds={[rectX, 28, 6, 6]} color={color} />
             <TextGridSel
                 items={['Snare', 'Sample', '...', 'HiHat', 'Seq.', '&icon::musicNote::pixelated']}
                 keys={[

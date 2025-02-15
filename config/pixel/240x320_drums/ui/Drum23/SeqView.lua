@@ -30,7 +30,7 @@ function ____exports.Drum23SeqView(____bindingPattern0)
                 return React.createElement(
                     StepEditDrum,
                     {
-                        position = {0, yy, ScreenWidth, 8},
+                        bounds = {0, yy, ScreenWidth, 8},
                         data = "Sequencer " .. tostring(i),
                         group = i,
                         playing_color = rgb(35, 161, 35),

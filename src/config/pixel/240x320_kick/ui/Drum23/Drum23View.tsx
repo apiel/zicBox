@@ -16,14 +16,14 @@ export function Drum23View({ name }: Props) {
         <View name={name}>
             <KnobValue
                 value="TrackFx VOLUME"
-                position={topLeftKnob}
+                bounds={topLeftKnob}
                 encoder_id={0}
                 COLOR="tertiary"
                 track={Drum23Track}
             />
             <KnobValue
                 value="MMFilter CUTOFF"
-                position={topRightKnob}
+                bounds={topRightKnob}
                 encoder_id={1}
                 COLOR="secondary"
                 FONT_VALUE_SIZE={8}
@@ -32,13 +32,13 @@ export function Drum23View({ name }: Props) {
             />
             <KnobValue
                 value="Drum23 GAIN_CLIPPING"
-                position={bottomLeftKnob}
+                bounds={bottomLeftKnob}
                 encoder_id={2}
                 track={Drum23Track}
             />
             <KnobValue
                 value="MMFilter RESONANCE"
-                position={bottomRightKnob}
+                bounds={bottomRightKnob}
                 encoder_id={3}
                 COLOR="secondary"
                 track={Drum23Track}

@@ -5,9 +5,9 @@ export type Props = ComponentProps & {
     rows: string[];
 };
 
-export function TextGrid({ position, track, rows, ...props }: Props) {
+export function TextGrid({ bounds, track, rows, ...props }: Props) {
     initializePlugin('TextGrid', 'libzic_TextGridComponent.so');
-    return getComponent('TextGrid', position, [
+    return getComponent('TextGrid', bounds, [
         { track },
         rows.map((row) => ({ ROW: row })),
         props,

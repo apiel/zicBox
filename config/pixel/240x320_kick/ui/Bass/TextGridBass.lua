@@ -18,7 +18,7 @@ function ____exports.TextGridBass(____bindingPattern0)
         React.Fragment,
         nil,
         React.createElement(Title, {title = "Bass"}),
-        React.createElement(Rect, {position = {70, 28, 6, 6}, color = ColorTrack2}),
+        React.createElement(Rect, {bounds = {70, 28, 6, 6}, color = ColorTrack2}),
         React.createElement(TextGridSel, {
             ITEM_BACKGROUND = ColorTrack2,
             items = {

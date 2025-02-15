@@ -8,12 +8,12 @@ function ____exports.KnobValue(____bindingPattern0)
     local props
     local value
     local track
-    local position
-    position = ____bindingPattern0.position
+    local bounds
+    bounds = ____bindingPattern0.bounds
     track = ____bindingPattern0.track
     value = ____bindingPattern0.value
-    props = __TS__ObjectRest(____bindingPattern0, {position = true, track = true, value = true})
+    props = __TS__ObjectRest(____bindingPattern0, {bounds = true, track = true, value = true})
     initializePlugin("KnobValue", "libzic_KnobValueComponent.so")
-    return getComponent("KnobValue", position, {{track = track}, {value = value}, props})
+    return getComponent("KnobValue", bounds, {{track = track}, {value = value}, props})
 end
 return ____exports

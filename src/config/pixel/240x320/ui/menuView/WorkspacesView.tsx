@@ -15,7 +15,7 @@ export type Props = {
 export function WorkspacesView({ name }: Props) {
     return (
         <View name={name}>
-            <Workspaces plugin="SerializeTrack" position={[0, 0, ScreenWidth, 280]}>
+            <Workspaces plugin="SerializeTrack" bounds={[0, 0, ScreenWidth, 280]}>
                 <Keymaps
                     keys={[
                         { key: 'a', action: '.data:LOAD_WORKSPACE', context: '254:0' },
@@ -27,7 +27,7 @@ export function WorkspacesView({ name }: Props) {
             </Workspaces>
 
             <TextGrid
-                position={KeyInfoPositionCenter}
+                bounds={KeyInfoPositionCenter}
                 rows={['&empty &icon::arrowUp::filled ...', 'Use &icon::arrowDown::filled Exit']}
             >
                 <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />
@@ -36,7 +36,7 @@ export function WorkspacesView({ name }: Props) {
             </TextGrid>
 
             <TextGrid
-                position={KeyInfoPositionCenter}
+                bounds={KeyInfoPositionCenter}
                 rows={['New &empty ^...', '&empty &empty &icon::trash']}
             >
                 <VisibilityContext index={254} condition="SHOW_WHEN" value={1} />

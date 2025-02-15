@@ -29,28 +29,28 @@ function ____exports.ClickView(____bindingPattern0)
         {name = name},
         React.createElement(KnobValue, {
             value = "Drum23 CLICK",
-            position = topLeftKnob,
+            bounds = topLeftKnob,
             encoder_id = encTopLeft,
             COLOR = "tertiary",
             track = Drum23Track
         }),
         React.createElement(KnobValue, {
             value = "Drum23 CLICK_CUTOFF",
-            position = topRightKnob,
+            bounds = topRightKnob,
             encoder_id = encTopRight,
             COLOR = "primary",
             track = Drum23Track
         }),
         React.createElement(KnobValue, {
             value = "Drum23 CLICK_DURATION",
-            position = bottomLeftKnob,
+            bounds = bottomLeftKnob,
             encoder_id = encBottomLeft,
             COLOR = "quaternary",
             track = Drum23Track
         }),
         React.createElement(KnobValue, {
             value = "Drum23 HIGH_FREQ_BOOST",
-            position = bottomRightKnob,
+            bounds = bottomRightKnob,
             encoder_id = encBottomRight,
             COLOR = "secondary",
             track = Drum23Track

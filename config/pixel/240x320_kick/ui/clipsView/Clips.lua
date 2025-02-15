@@ -24,11 +24,11 @@ function ____exports.Clips(____bindingPattern0)
     return React.createElement(
         React.Fragment,
         nil,
-        React.createElement(Text, {text = title, position = {(track - 1) * w, 2, w, 8}, centered = true, color = color}),
+        React.createElement(Text, {text = title, bounds = {(track - 1) * w, 2, w, 8}, centered = true, color = color}),
         React.createElement(
             ClipsComponent,
             {
-                position = {(track - 1) * w, 15, w - 2, 100},
+                bounds = {(track - 1) * w, 15, w - 2, 100},
                 plugin = "SerializeTrack",
                 track = track,
                 group = group,

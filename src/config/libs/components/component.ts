@@ -1,7 +1,7 @@
-import { Position } from '../ui';
+import { Bounds } from '../ui';
 
 export type ComponentProps = {
-    position: Position;
+    bounds: Bounds;
     track?: number;
     group?: number;
     [key: string]: any;

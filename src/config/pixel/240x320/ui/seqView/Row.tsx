@@ -36,7 +36,7 @@ function getY(track: number) {
 export function RowDrum23({ group, track, name_color, select_menu_context }: Props) {
     return (
         <SeqSynthBar
-            position={[0, getY(track), ScreenWidth, RowH]}
+            bounds={[0, getY(track), ScreenWidth, RowH]}
             seq_plugin="Sequencer"
             track={track}
             group={group}
@@ -54,7 +54,7 @@ export function RowDrum23({ group, track, name_color, select_menu_context }: Pro
 export function RowMonoSample({ group, track, name_color, select_menu_context }: Props) {
     return (
         <SeqSynthBar
-            position={[0, getY(track), ScreenWidth, RowH]}
+            bounds={[0, getY(track), ScreenWidth, RowH]}
             seq_plugin="Sequencer"
             track={track}
             group={group}

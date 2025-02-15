@@ -25,14 +25,14 @@ function ____exports.Fm1EnvView(____bindingPattern0)
         {name = name},
         React.createElement(KnobValue, {
             value = "FmDrum ATTACK_TIME",
-            position = topLeftKnob,
+            bounds = topLeftKnob,
             encoder_id = encTopLeft,
             COLOR = "tertiary",
             track = Fm1Track
         }),
         React.createElement(KnobValue, {
             value = "FmDrum DECAY_TIME",
-            position = topRightKnob,
+            bounds = topRightKnob,
             encoder_id = encTopRight,
             COLOR = "primary",
             track = Fm1Track

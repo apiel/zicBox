@@ -23,7 +23,7 @@ export function TextGridFm1({ selected, viewName }: { selected: string; viewName
     return (
         <>
             <Title title={Fm1} />
-            <Rect position={[70, 28, 6, 6]} color={ColorTrack2} />
+            <Rect bounds={[70, 28, 6, 6]} color={ColorTrack2} />
             <TextGridSel
                 selectedBackground={ColorTrack2}
                 rows={['Main Fx Env &empty', 'Seq. &empty &empty &empty']}

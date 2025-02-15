@@ -5,7 +5,7 @@ export type Props = ComponentProps & {
     seq_plugin: string;
 };
 
-export function SeqProgressBar({ position, track, seq_plugin, ...props }: Props) {
+export function SeqProgressBar({ bounds, track, seq_plugin, ...props }: Props) {
     initializePlugin('SeqProgressBar', 'libzic_SeqProgressBarComponent.so');
-    return getComponent('SeqProgressBar', position, [{ track }, { seq_plugin }, props]);
+    return getComponent('SeqProgressBar', bounds, [{ track }, { seq_plugin }, props]);
 }

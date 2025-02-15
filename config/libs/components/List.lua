@@ -8,14 +8,14 @@ local initializePlugin = ____ui.initializePlugin
 function ____exports.List(____bindingPattern0)
     local props
     local items
-    local position
-    position = ____bindingPattern0.position
+    local bounds
+    bounds = ____bindingPattern0.bounds
     items = ____bindingPattern0.items
-    props = __TS__ObjectRest(____bindingPattern0, {position = true, items = true})
+    props = __TS__ObjectRest(____bindingPattern0, {bounds = true, items = true})
     initializePlugin("List", "libzic_ListComponent.so")
     return getComponent(
         "List",
-        position,
+        bounds,
         {
             __TS__ArrayMap(
                 items,

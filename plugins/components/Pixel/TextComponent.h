@@ -110,12 +110,13 @@ public:
         }
     }
 
-    bool config(char* key, char* value)
-    {
-        if (keypadLayout.config(key, value)) {
-            return true;
-        }
+    // FIXME
+    // bool config(char* key, char* value)
+    // {
+    //     if (keypadLayout.config(key, value)) {
+    //         return true;
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 };

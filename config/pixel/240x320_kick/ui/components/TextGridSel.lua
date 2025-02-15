@@ -25,7 +25,7 @@ function ____exports.TextGridSel(____bindingPattern0)
     end
     return React.createElement(
         TextGrid,
-        {position = KeyInfoPosition, rows = {(((items[1] .. " ") .. items[2]) .. " ") .. items[3], (((items[4] .. " ") .. items[5]) .. " ") .. items[6]}, ITEM_BACKGROUND = ITEM_BACKGROUND},
+        {bounds = KeyInfoPosition, rows = {(((items[1] .. " ") .. items[2]) .. " ") .. items[3], (((items[4] .. " ") .. items[5]) .. " ") .. items[6]}, ITEM_BACKGROUND = ITEM_BACKGROUND},
         React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = contextValue}),
         React.createElement(Keymaps, {keys = keys})
     )

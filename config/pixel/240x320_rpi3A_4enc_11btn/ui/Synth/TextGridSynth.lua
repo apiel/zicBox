@@ -33,7 +33,7 @@ function ____exports.TextGridSynth(____bindingPattern0)
         React.Fragment,
         nil,
         React.createElement(Title, {title = Synth}),
-        React.createElement(Rect, {position = {70, 28, 6, 6}, color = ColorTrack4}),
+        React.createElement(Rect, {bounds = {70, 28, 6, 6}, color = ColorTrack4}),
         React.createElement(TextGridSel, {
             selectedBackground = ColorTrack4,
             rows = {"Main Fx Osc1 Osc2", "Seq. &empty Env1 Env2"},

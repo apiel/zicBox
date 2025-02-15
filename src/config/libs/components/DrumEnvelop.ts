@@ -6,9 +6,9 @@ export type Props = ComponentProps & {
     envelop_data_id: string;
 };
 
-export function DrumEnvelop({ position, track, plugin, envelop_data_id, ...props }: Props) {
+export function DrumEnvelop({ bounds, track, plugin, envelop_data_id, ...props }: Props) {
     initializePlugin('DrumEnvelop', 'libzic_DrumEnvelopComponent.so');
-    return getComponent('DrumEnvelop', position, [
+    return getComponent('DrumEnvelop', bounds, [
         { track },
         { plugin },
         {envelop_data_id},

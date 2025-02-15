@@ -5,9 +5,9 @@ export type Props = ComponentProps & {
     value: string;
 };
 
-export function KnobValue({ position, track, value, ...props }: Props) {
+export function KnobValue({ bounds, track, value, ...props }: Props) {
     initializePlugin('KnobValue', 'libzic_KnobValueComponent.so');
-    return getComponent('KnobValue', position, [
+    return getComponent('KnobValue', bounds, [
         { track },
         { value },
         props,

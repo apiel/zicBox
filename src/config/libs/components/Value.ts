@@ -5,9 +5,9 @@ export type Props = ComponentProps & {
     value: string;
 };
 
-export function Value({ position, track, value, ...props }: Props) {
+export function Value({ bounds, track, value, ...props }: Props) {
     initializePlugin('Value', 'libzic_ValueComponent.so');
-    return getComponent('Value', position, [
+    return getComponent('Value', bounds, [
         { track },
         { value },
         props,

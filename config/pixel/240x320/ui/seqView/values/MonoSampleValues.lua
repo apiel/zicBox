@@ -45,7 +45,7 @@ function Main(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "Volume VOLUME",
-                position = topLeft,
+                bounds = topLeft,
                 group = group,
                 track = track,
                 encoder_id = 0
@@ -55,7 +55,7 @@ function Main(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "Volume DRIVE",
-                position = bottomLeft,
+                bounds = bottomLeft,
                 group = group,
                 track = track,
                 encoder_id = 1
@@ -65,7 +65,7 @@ function Main(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "MMFilter CUTOFF",
-                position = topRight,
+                bounds = topRight,
                 group = group,
                 track = track,
                 encoder_id = 2
@@ -75,7 +75,7 @@ function Main(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "MMFilter RESONANCE",
-                position = bottomRight,
+                bounds = bottomRight,
                 group = group,
                 track = track,
                 encoder_id = 3
@@ -110,12 +110,12 @@ function EditFx(____bindingPattern0)
     return React.createElement(
         Container,
         {group = group, context = context, values = {seq = 0, menu = 1}},
-        React.createElement(Rect, {position = {0, 0, ScreenWidth, height}}),
+        React.createElement(Rect, {bounds = {0, 0, ScreenWidth, height}}),
         React.createElement(
             Value,
             __TS__ObjectAssign({
                 value = "Volume GAIN_CLIPPING",
-                position = topLeft,
+                bounds = topLeft,
                 group = group,
                 track = track,
                 encoder_id = 0
@@ -125,7 +125,7 @@ function EditFx(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "SampleRateReducer SAMPLE_STEP",
-                position = topRight,
+                bounds = topRight,
                 group = group,
                 track = track,
                 encoder_id = 2
@@ -145,12 +145,12 @@ function EditSample(____bindingPattern0)
     return React.createElement(
         Container,
         {group = group, context = context, values = {seq = 0, menu = 2}},
-        React.createElement(Rect, {position = {0, 0, ScreenWidth, height}}),
+        React.createElement(Rect, {bounds = {0, 0, ScreenWidth, height}}),
         React.createElement(
             Value,
             __TS__ObjectAssign({
                 value = "MonoSample BROWSER",
-                position = topFull,
+                bounds = topFull,
                 group = group,
                 track = track,
                 encoder_id = 0
@@ -160,7 +160,7 @@ function EditSample(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "MonoSample START",
-                position = bottomLeft,
+                bounds = bottomLeft,
                 group = group,
                 track = track,
                 encoder_id = 1
@@ -170,7 +170,7 @@ function EditSample(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "MonoSample END",
-                position = bottomRight,
+                bounds = bottomRight,
                 group = group,
                 track = track,
                 encoder_id = 3
@@ -188,12 +188,12 @@ function EditLoop(____bindingPattern0)
     return React.createElement(
         Container,
         {group = group, context = context, values = {seq = 0, menu = 3}},
-        React.createElement(Rect, {position = {0, 0, ScreenWidth, height}}),
+        React.createElement(Rect, {bounds = {0, 0, ScreenWidth, height}}),
         React.createElement(
             Value,
             __TS__ObjectAssign({
                 value = "MonoSample LOOP_POSITION",
-                position = topLeft,
+                bounds = topLeft,
                 group = group,
                 track = track,
                 encoder_id = 0,
@@ -204,7 +204,7 @@ function EditLoop(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "MonoSample LOOP_LENGTH",
-                position = topRight,
+                bounds = topRight,
                 group = group,
                 track = track,
                 encoder_id = 2,
@@ -215,7 +215,7 @@ function EditLoop(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "MonoSample LOOP_RELEASE",
-                position = bottomLeft,
+                bounds = bottomLeft,
                 group = group,
                 track = track,
                 encoder_id = 1
@@ -232,7 +232,7 @@ function Container(____bindingPattern0)
     values = ____bindingPattern0.values
     return React.createElement(
         VisibilityContainer,
-        {position = posContainerValues, group = group},
+        {bounds = posContainerValues, group = group},
         React.createElement(VisibilityContext, {index = 10, condition = "SHOW_WHEN", value = values.seq}),
         React.createElement(VisibilityContext, {index = context, condition = "SHOW_WHEN", value = values.menu})
     )
@@ -250,8 +250,8 @@ function ____exports.MonoSampleValues(____bindingPattern0)
         React.createElement(Log, {text = "MonoSampleValues"}),
         React.createElement(
             VisibilityContainer,
-            {position = posTopContainer, group = group},
-            React.createElement(Sample, {position = {0, 0, ScreenWidth, 70}, track = track, plugin = "MonoSample SAMPLE_BUFFER SAMPLE_INDEX", loop_points_color = "tertiary"})
+            {bounds = posTopContainer, group = group},
+            React.createElement(Sample, {bounds = {0, 0, ScreenWidth, 70}, track = track, plugin = "MonoSample SAMPLE_BUFFER SAMPLE_INDEX", loop_points_color = "tertiary"})
         ),
         React.createElement(Edit, {group = group, track = track, context = context}),
         React.createElement(Main, {group = group, track = track, context = context}),

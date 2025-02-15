@@ -15,7 +15,7 @@ export function TapeView({ name }: Props) {
     return (
         <View name={name}>
             <Tape
-                position={[0, 0, 240, 280]}
+                bounds={[0, 0, 240, 280]}
                 filename="rec"
                 bpm_value="Tempo BPM"
                 tape_plugin="Tape PLAY_STOP"
@@ -26,7 +26,7 @@ export function TapeView({ name }: Props) {
             </Tape>
 
             <TextGrid
-                position={KeyInfoPosition}
+                bounds={KeyInfoPosition}
                 rows={[
                     '&icon::play::filled Save &empty',
                     '&icon::arrowLeft::filled Exit &icon::arrowRight::filled',

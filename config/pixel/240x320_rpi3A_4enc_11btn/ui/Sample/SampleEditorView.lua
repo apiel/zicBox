@@ -35,10 +35,10 @@ function ____exports.SampleEditorView(____bindingPattern0)
     return React.createElement(
         View,
         {name = name},
-        React.createElement(Text, {text = "Vel.", position = {0, 0, 25, 9}}),
-        React.createElement(Text, {text = "Sample", position = {60, 0, 100, 9}}),
-        React.createElement(Text, {text = "Start", position = {ScreenWidth - 84, 0, 50, 9}}),
-        React.createElement(Text, {text = "End", position = {ScreenWidth - 38, 0, 50, 9}}),
+        React.createElement(Text, {text = "Vel.", bounds = {0, 0, 25, 9}}),
+        React.createElement(Text, {text = "Sample", bounds = {60, 0, 100, 9}}),
+        React.createElement(Text, {text = "Start", bounds = {ScreenWidth - 84, 0, 50, 9}}),
+        React.createElement(Text, {text = "End", bounds = {ScreenWidth - 38, 0, 50, 9}}),
         __TS__ArrayFrom(
             {length = 32},
             function(____, _, i)
@@ -47,7 +47,7 @@ function ____exports.SampleEditorView(____bindingPattern0)
                 return React.createElement(
                     StepEditSample,
                     {
-                        position = {0, yy, ScreenWidth, 8},
+                        bounds = {0, yy, ScreenWidth, 8},
                         data = "SampleSequencer " .. tostring(i),
                         track = SampleTrack,
                         group = i,
@@ -61,7 +61,7 @@ function ____exports.SampleEditorView(____bindingPattern0)
         ),
         React.createElement(
             TextGrid,
-            {position = KeyInfoPosition, rows = {"&icon::toggle::rect &icon::arrowUp::filled ...", "&empty &icon::arrowDown::filled &icon::musicNote::pixelated"}},
+            {bounds = KeyInfoPosition, rows = {"&icon::toggle::rect &icon::arrowUp::filled ...", "&empty &icon::arrowDown::filled &icon::musicNote::pixelated"}},
             React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 0}),
             React.createElement(Keymaps, {keys = {{key = btnShift, action = "contextToggle:254:1:0"}, {key = btnDown, action = "incGroup:-1"}, {key = btnUp, action = "incGroup:+1"}}})
         ),

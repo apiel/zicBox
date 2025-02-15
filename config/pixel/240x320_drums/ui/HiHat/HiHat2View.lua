@@ -23,19 +23,19 @@ function ____exports.HiHat2View(____bindingPattern0)
         {name = name},
         React.createElement(KnobValue, {
             value = "HiHat BAND_FREQ",
-            position = topLeftKnob,
+            bounds = topLeftKnob,
             encoder_id = 0,
             COLOR = "tertiary",
             track = HiHatTrack
         }),
         React.createElement(KnobValue, {
             value = "HiHat BAND_Q",
-            position = topRightKnob,
+            bounds = topRightKnob,
             encoder_id = 2,
             COLOR = "secondary",
             track = HiHatTrack
         }),
-        React.createElement(KnobValue, {value = "HiHat TONE_BRIGHTNESS", position = bottomLeftKnob, encoder_id = 1, track = HiHatTrack}),
+        React.createElement(KnobValue, {value = "HiHat TONE_BRIGHTNESS", bounds = bottomLeftKnob, encoder_id = 1, track = HiHatTrack}),
         React.createElement(TextGridDrums, {selected = 3, viewName = name, target = "HiHat"}),
         React.createElement(Common, {selected = 1, track = HiHatTrack})
     )

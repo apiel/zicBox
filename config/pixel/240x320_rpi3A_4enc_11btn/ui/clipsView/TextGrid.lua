@@ -16,7 +16,7 @@ local KeyInfoPosition = ____constants.KeyInfoPosition
 function ____exports.TextGridClips()
     return React.createElement(
         TextGrid,
-        {position = KeyInfoPosition, rows = {"&icon::toggle::rect &icon::arrowUp::filled ...", "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled"}},
+        {bounds = KeyInfoPosition, rows = {"&icon::toggle::rect &icon::arrowUp::filled ...", "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled"}},
         React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 0}),
         React.createElement(Keymaps, {keys = {{key = btnShift, action = "contextToggle:254:1:0"}, {key = btn5, action = "incGroup:-1"}, {key = btn7, action = "incGroup:+1"}}})
     )
@@ -24,7 +24,7 @@ end
 function ____exports.TextGridClipsShifted()
     return React.createElement(
         TextGrid,
-        {position = KeyInfoPosition, rows = {"Menu Save ^...", "&icon::trash Back &icon::play::filled"}},
+        {bounds = KeyInfoPosition, rows = {"Menu Save ^...", "&icon::trash Back &icon::play::filled"}},
         React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 1}),
         React.createElement(Keymaps, {keys = {{key = btn7, action = "playPause"}, {key = btnShift, action = "contextToggle:254:1:0"}, {key = btn1, action = "setView:Menu"}}})
     )

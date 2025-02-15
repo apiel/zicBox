@@ -3,9 +3,9 @@ import { ComponentProps } from './component';
 
 export type Props = ComponentProps & {};
 
-export function VisibilityContainer({ position, group, ...props }: Props) {
+export function VisibilityContainer({ bounds, group, ...props }: Props) {
     return [
-        { CONTAINER: 'VisibilityContainer ' + getPosition(position) },
+        { CONTAINER: 'VisibilityContainer ' + getPosition(bounds) },
         { VISIBILITY_GROUP: group },
         props,
     ];

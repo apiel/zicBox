@@ -24,22 +24,22 @@ function ____exports.HiHatView(____bindingPattern0)
         {name = name},
         React.createElement(KnobValue, {
             value = "TrackFx VOLUME",
-            position = topLeftKnob,
+            bounds = topLeftKnob,
             encoder_id = 0,
             COLOR = "tertiary",
             track = HiHatTrack
         }),
         React.createElement(KnobValue, {
             value = "HiHat DURATION",
-            position = topRightKnob,
+            bounds = topRightKnob,
             encoder_id = 2,
             COLOR = "secondary",
             track = HiHatTrack
         }),
-        React.createElement(KnobValue, {value = "HiHat TRANSIENT_INTENSITY", position = bottomLeftKnob, encoder_id = 1, track = HiHatTrack}),
+        React.createElement(KnobValue, {value = "HiHat TRANSIENT_INTENSITY", bounds = bottomLeftKnob, encoder_id = 1, track = HiHatTrack}),
         React.createElement(KnobValue, {
             value = "HiHat METALLIC_TONE_MIX",
-            position = bottomRightKnob,
+            bounds = bottomRightKnob,
             encoder_id = 3,
             COLOR = "secondary",
             track = HiHatTrack

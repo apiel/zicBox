@@ -7,9 +7,9 @@ export type Props = ComponentProps & {
     encoders: string[];
 };
 
-export function GraphEncoder({ position, track, plugin, data_id, encoders, ...props }: Props) {
+export function GraphEncoder({ bounds, track, plugin, data_id, encoders, ...props }: Props) {
     initializePlugin('GraphEncoder', 'libzic_GraphEncoderComponent.so');
-    return getComponent('GraphEncoder', position, [
+    return getComponent('GraphEncoder', bounds, [
         { track },
         { plugin },
         { data_id },

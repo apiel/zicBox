@@ -28,7 +28,7 @@ function ____exports.BassWaveformView(____bindingPattern0)
         React.createElement(
             GraphEncoder,
             {
-                position = pos,
+                bounds = pos,
                 plugin = "Bass",
                 data_id = "WAVEFORM",
                 track = BassTrack,

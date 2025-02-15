@@ -22,7 +22,7 @@ export function Fm1SeqView({ name }: Props) {
                 y += 8 + (i % 4 == 3 ? 4 : 0);
                 return (
                     <StepEditDrum
-                        position={[0, yy, ScreenWidth, 8]}
+                        bounds={[0, yy, ScreenWidth, 8]}
                         data={`Sequencer ${i}`}
                         track={BassTrack}
                         group={i}
@@ -40,7 +40,7 @@ export function Fm1SeqView({ name }: Props) {
             })}
 
             <TextGrid
-                position={KeyInfoPosition}
+                bounds={KeyInfoPosition}
                 rows={[
                     '&icon::toggle::rect &icon::arrowUp::filled ...',
                     'Seq./Bass &icon::arrowDown::filled &icon::musicNote::pixelated',

@@ -21,28 +21,28 @@ export function PercFxView({ name }: Props) {
         <View name={name}>
             <KnobValue
                 value="Perc BOOST"
-                position={topLeftKnob}
+                bounds={topLeftKnob}
                 encoder_id={encTopLeft}
                 COLOR="tertiary"
                 track={PercTrack}
             />
             <KnobValue
                 value="Perc REVERB"
-                position={topRightKnob}
+                bounds={topRightKnob}
                 encoder_id={encTopRight}
                 COLOR="primary"
                 track={PercTrack}
             />
             <KnobValue
                 value="Perc RESONATOR"
-                position={bottomLeftKnob}
+                bounds={bottomLeftKnob}
                 encoder_id={encBottomLeft}
                 COLOR="quaternary"
                 track={PercTrack}
             />
             <KnobValue
                 value="Perc TONE_DECAY"
-                position={bottomRightKnob}
+                bounds={bottomRightKnob}
                 encoder_id={encBottomRight}
                 COLOR="secondary"
                 track={PercTrack}

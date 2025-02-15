@@ -1,15 +1,15 @@
-import { getComponent, initializePlugin, Position } from '@/libs/ui';
+import { Bounds, getComponent, initializePlugin } from '@/libs/ui';
 
 export interface Props {
-    position: Position;
+    bounds: Bounds;
     plugin: string;
     values: string;
     [key: string]: any;
 }
 
-export function Adsr({ position, plugin, values, ...props }: Props) {
+export function Adsr({ bounds, plugin, values, ...props }: Props) {
     initializePlugin('Adsr', 'libzic_AdsrComponent.so');
-    return getComponent('Adsr', position, [
+    return getComponent('Adsr', bounds, [
         { PLUGIN: plugin }, 
         { VALUES: values },
         props

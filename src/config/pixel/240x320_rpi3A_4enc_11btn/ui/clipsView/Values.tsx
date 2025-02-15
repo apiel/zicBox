@@ -55,14 +55,14 @@ export const quaternary = {
 
 export function MasterValues({ group, track }: { group: number; track: number }) {
     return (
-        <VisibilityContainer position={posContainer} group={group}>
+        <VisibilityContainer bounds={posContainer} group={group}>
             <HiddenValue>
                 <Keymap key="s" action="setView:Drum23" context="254:1" />
             </HiddenValue>
-            <Rect position={[0, 0, ScreenWidth, posContainer[3]]} />
+            <Rect bounds={[0, 0, ScreenWidth, posContainer[3]]} />
             <Value
                 value="Volume VOLUME"
-                position={topLeft}
+                bounds={topLeft}
                 group={group}
                 track={track}
                 encoder_id={0}
@@ -70,7 +70,7 @@ export function MasterValues({ group, track }: { group: number; track: number })
             />
             {/* <Value
                 value="Volume GAIN_CLIPPING"
-                position={bottomLeft}
+                bounds={bottomLeft}
                 group={group}
                 track={track}
                 encoder_id={1}
@@ -78,7 +78,7 @@ export function MasterValues({ group, track }: { group: number; track: number })
             /> */}
             {/* <Value
                 value="MMFilter CUTOFF"
-                position={topRight}
+                bounds={topRight}
                 group={group}
                 track={track}
                 encoder_id={2}
@@ -87,7 +87,7 @@ export function MasterValues({ group, track }: { group: number; track: number })
             />
             <Value
                 value="MMFilter RESONANCE"
-                position={bottomRight}
+                bounds={bottomRight}
                 group={group}
                 track={track}
                 encoder_id={3}
@@ -99,13 +99,13 @@ export function MasterValues({ group, track }: { group: number; track: number })
 
 export function Drum23Values({ group, track }: { group: number; track: number }) {
     return (
-        <VisibilityContainer position={posContainer} group={group}>
+        <VisibilityContainer bounds={posContainer} group={group}>
             <HiddenValue>
                 <Keymap key="s" action="setView:Drum23" context="254:1" />
             </HiddenValue>
             <Value
                 value="TrackFx VOLUME"
-                position={topLeft}
+                bounds={topLeft}
                 group={group}
                 track={track}
                 encoder_id={0}
@@ -113,7 +113,7 @@ export function Drum23Values({ group, track }: { group: number; track: number })
             />
             {/* <Value
                 value="Drum23 GAIN_CLIPPING"
-                position={bottomLeft}
+                bounds={bottomLeft}
                 group={group}
                 track={track}
                 encoder_id={1}
@@ -121,7 +121,7 @@ export function Drum23Values({ group, track }: { group: number; track: number })
             /> */}
             <Value
                 value="MMFilter CUTOFF"
-                position={topRight}
+                bounds={topRight}
                 group={group}
                 track={track}
                 encoder_id={2}
@@ -130,7 +130,7 @@ export function Drum23Values({ group, track }: { group: number; track: number })
             />
             <Value
                 value="MMFilter RESONANCE"
-                position={bottomRight}
+                bounds={bottomRight}
                 group={group}
                 track={track}
                 encoder_id={3}
@@ -142,13 +142,13 @@ export function Drum23Values({ group, track }: { group: number; track: number })
 
 export function SampleValues({ group, track }: { group: number; track: number }) {
     return (
-        <VisibilityContainer position={posContainer} group={group}>
+        <VisibilityContainer bounds={posContainer} group={group}>
             <HiddenValue>
                 <Keymap key="s" action="setView:Sample" context="254:1" />
             </HiddenValue>
             <Value
                 value="TrackFx VOLUME"
-                position={topLeft}
+                bounds={topLeft}
                 group={group}
                 track={track}
                 encoder_id={0}
@@ -156,7 +156,7 @@ export function SampleValues({ group, track }: { group: number; track: number })
             />
             {/* <Value
                 value="TrackFx REVERB"
-                position={bottomLeft}
+                bounds={bottomLeft}
                 group={group}
                 track={track}
                 encoder_id={1}
@@ -164,7 +164,7 @@ export function SampleValues({ group, track }: { group: number; track: number })
             /> */}
             {/* <Value
                 value="Sample START"
-                position={topRight}
+                bounds={topRight}
                 group={group}
                 track={track}
                 encoder_id={2}
@@ -173,7 +173,7 @@ export function SampleValues({ group, track }: { group: number; track: number })
             />
             <Value
                 value="Sample LOOP_LENGTH"
-                position={bottomRight}
+                bounds={bottomRight}
                 group={group}
                 track={track}
                 encoder_id={3}
@@ -181,7 +181,7 @@ export function SampleValues({ group, track }: { group: number; track: number })
             /> */}
             {/* <Value
                 value="TrackFx CUTOFF"
-                position={topRight}
+                bounds={topRight}
                 group={group}
                 track={track}
                 encoder_id={2}
@@ -190,7 +190,7 @@ export function SampleValues({ group, track }: { group: number; track: number })
             /> */}
             {/* <Value
                 value="TrackFx RESONANCE"
-                position={bottomRight}
+                bounds={bottomRight}
                 group={group}
                 track={track}
                 encoder_id={3}

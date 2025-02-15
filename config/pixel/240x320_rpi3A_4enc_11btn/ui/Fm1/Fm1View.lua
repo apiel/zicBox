@@ -29,28 +29,28 @@ function ____exports.Fm1View(____bindingPattern0)
         {name = name},
         React.createElement(KnobValue, {
             value = "TrackFx VOLUME",
-            position = topLeftKnob,
+            bounds = topLeftKnob,
             encoder_id = encTopLeft,
             COLOR = "tertiary",
             track = Fm1Track
         }),
         React.createElement(KnobValue, {
             value = "FmDrum CARRIER_FREQ",
-            position = topRightKnob,
+            bounds = topRightKnob,
             encoder_id = encTopRight,
             COLOR = "primary",
             track = Fm1Track
         }),
         React.createElement(KnobValue, {
             value = "FmDrum MOD_FREQ",
-            position = bottomLeftKnob,
+            bounds = bottomLeftKnob,
             encoder_id = encBottomLeft,
             COLOR = "quaternary",
             track = Fm1Track
         }),
         React.createElement(KnobValue, {
             value = "FmDrum MOD_INDEX",
-            position = bottomRightKnob,
+            bounds = bottomRightKnob,
             encoder_id = encBottomRight,
             COLOR = "secondary",
             track = Fm1Track

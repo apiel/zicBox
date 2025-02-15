@@ -13,7 +13,7 @@ import { KeyInfoPosition } from '@/pixel/240x320/ui/constants';
 export function TextGridProgressBar() {
     return (
         <TextGrid
-            position={KeyInfoPosition}
+            bounds={KeyInfoPosition}
             rows={[
                 '&icon::play::filled &icon::arrowUp::filled ...',
                 '&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled',
@@ -30,7 +30,7 @@ export function TextGridProgressBar() {
 export function TextGridProgressBarShifted() {
     return (
         <TextGrid
-            position={KeyInfoPosition}
+            bounds={KeyInfoPosition}
             rows={['Menu &icon::play::filled ^...', 'Clips &icon::tape Save']}
         >
             <VisibilityGroup condition="SHOW_WHEN" group={0} />
@@ -51,7 +51,7 @@ export function TextGridProgressBarShifted() {
 export function TextGridTrack() {
     return (
         <TextGrid
-            position={KeyInfoPosition}
+            bounds={KeyInfoPosition}
             rows={[
                 '&icon::musicNote::pixelated &icon::arrowUp::filled ...',
                 '&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled',
@@ -68,7 +68,7 @@ export function TextGridTrack() {
 export function TextGridTrackStepEdit() {
     return (
         <TextGrid
-            position={KeyInfoPosition}
+            bounds={KeyInfoPosition}
             rows={[
                 '&icon::toggle::rect &icon::arrowUp::filled ...',
                 '&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled',
@@ -85,7 +85,7 @@ export function TextGridTrackStepEdit() {
 export function TextGridTrackShifted() {
     return (
         <TextGrid
-            position={KeyInfoPosition}
+            bounds={KeyInfoPosition}
             rows={['&icon::toggle::rect &icon::play::filled ^...', 'Clips &icon::tape Master']}
         >
             <VisibilityGroup condition="SHOW_WHEN_NOT" group={0} />

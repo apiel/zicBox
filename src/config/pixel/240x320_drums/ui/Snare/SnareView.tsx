@@ -16,27 +16,27 @@ export function SnareView({ name }: Props) {
         <View name={name}>
             <KnobValue
                 value="TrackFx VOLUME"
-                position={topLeftKnob}
+                bounds={topLeftKnob}
                 encoder_id={0}
                 COLOR="tertiary"
                 track={SnareTrack}
             />
             <KnobValue
                 value="Snare DURATION"
-                position={topRightKnob}
+                bounds={topRightKnob}
                 encoder_id={2}
                 COLOR="secondary"
                 track={SnareTrack}
             />
             <KnobValue
                 value="Snare TONE_FREQ"
-                position={bottomLeftKnob}
+                bounds={bottomLeftKnob}
                 encoder_id={1}
                 track={SnareTrack}
             />
             <KnobValue
                 value="Snare NOISE_MIX"
-                position={bottomRightKnob}
+                bounds={bottomRightKnob}
                 encoder_id={3}
                 COLOR="secondary"
                 track={SnareTrack}

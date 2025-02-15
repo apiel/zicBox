@@ -16,33 +16,33 @@ export function Fm2View({ name }: Props) {
         <View name={name}>
             <KnobValue
                 value="FmDrum ATTACK_TIME"
-                position={topLeftKnob}
+                bounds={topLeftKnob}
                 encoder_id={0}
                 COLOR="tertiary"
                 track={FmTrack}
             />
             <KnobValue
                 value="FmDrum DECAY_TIME"
-                position={topRightKnob}
+                bounds={topRightKnob}
                 encoder_id={2}
                 COLOR="secondary"
                 track={FmTrack}
             />
             {/* <KnobValue
                 value="FmDrum NOISE_LEVEL"
-                position={bottomLeftKnob}
+                bounds={bottomLeftKnob}
                 encoder_id={1}
                 track={FmTrack}
             /> */}
             <KnobValue
                 value="FmDrum DISTORTION"
-                position={bottomLeftKnob}
+                bounds={bottomLeftKnob}
                 encoder_id={1}
                 track={FmTrack}
             />
             <KnobValue
                 value="FmDrum REVERB"
-                position={bottomRightKnob}
+                bounds={bottomRightKnob}
                 encoder_id={3}
                 COLOR="secondary"
                 track={FmTrack}

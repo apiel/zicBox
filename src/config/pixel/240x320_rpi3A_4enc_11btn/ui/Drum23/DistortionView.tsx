@@ -16,28 +16,28 @@ export function DistortionView({ name }: Props) {
         <View name={name}>
             <KnobValue
                 value="Distortion WAVESHAPE"
-                position={topLeftKnob}
+                bounds={topLeftKnob}
                 encoder_id={encTopLeft}
                 COLOR="tertiary"
                 track={Drum23Track}
             />
             <KnobValue
                 value="Distortion COMPRESS"
-                position={topRightKnob}
+                bounds={topRightKnob}
                 encoder_id={encTopRight}
                 COLOR="primary"
                 track={Drum23Track}
             />
             <KnobValue
                 value="Distortion DRIVE"
-                position={bottomLeftKnob}
+                bounds={bottomLeftKnob}
                 encoder_id={encBottomLeft}
                 COLOR="quaternary"
                 track={Drum23Track}
             />
             <KnobValue
                 value="Distortion BASS"
-                position={bottomRightKnob}
+                bounds={bottomRightKnob}
                 encoder_id={encBottomRight}
                 COLOR="secondary"
                 track={Drum23Track}

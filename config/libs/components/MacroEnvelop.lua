@@ -8,12 +8,12 @@ function ____exports.MacroEnvelop(____bindingPattern0)
     local props
     local plugin
     local track
-    local position
-    position = ____bindingPattern0.position
+    local bounds
+    bounds = ____bindingPattern0.bounds
     track = ____bindingPattern0.track
     plugin = ____bindingPattern0.plugin
-    props = __TS__ObjectRest(____bindingPattern0, {position = true, track = true, plugin = true})
+    props = __TS__ObjectRest(____bindingPattern0, {bounds = true, track = true, plugin = true})
     initializePlugin("MacroEnvelop", "libzic_MacroEnvelopComponent.so")
-    return getComponent("MacroEnvelop", position, {{track = track}, {plugin = plugin}, props})
+    return getComponent("MacroEnvelop", bounds, {{track = track}, {plugin = plugin}, props})
 end
 return ____exports

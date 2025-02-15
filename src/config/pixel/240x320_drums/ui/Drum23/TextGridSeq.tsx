@@ -8,7 +8,7 @@ import { KeyInfoPosition } from '@/pixel/240x320_drums/ui/constants';
 export function TextGridSeq() {
     return (
         <TextGrid
-            position={KeyInfoPosition}
+            bounds={KeyInfoPosition}
             rows={['&icon::arrowUp::filled &icon::toggle::rect ...', '&icon::arrowDown::filled Synth &icon::musicNote::pixelated']}
         >
             <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />

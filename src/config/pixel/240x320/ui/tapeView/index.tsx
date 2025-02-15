@@ -13,7 +13,7 @@ export type Props = {
 export function TapeView({ name }: Props) {
     return (
         <View name={name}>
-            <Tape position={[0, 0, 240, 280]} filename="rec" bpm_value="Tempo BPM" tape_plugin="Tape PLAY_STOP">
+            <Tape bounds={[0, 0, 240, 280]} filename="rec" bpm_value="Tempo BPM" tape_plugin="Tape PLAY_STOP">
                 <Keymap key="q" action=".playStop" />
                 <Keymap key="a" action=".left" />
                 <Keymap key="d" action=".right" />

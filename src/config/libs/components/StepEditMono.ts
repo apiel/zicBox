@@ -5,7 +5,7 @@ export type Props = ComponentProps & {
     data: string;
 };
 
-export function StepEditMono({ position, track, data, ...props }: Props) {
+export function StepEditMono({ bounds, track, data, ...props }: Props) {
     initializePlugin('StepEditMono', 'libzic_StepEditMonoComponent.so');
-    return getComponent('StepEditMono', position, [{ track }, { data }, props]);
+    return getComponent('StepEditMono', bounds, [{ track }, { data }, props]);
 }

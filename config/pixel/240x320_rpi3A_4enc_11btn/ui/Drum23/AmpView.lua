@@ -28,7 +28,7 @@ function ____exports.AmpView(____bindingPattern0)
         View,
         {name = name},
         React.createElement(DrumEnvelop, {
-            position = topValues,
+            bounds = topValues,
             plugin = "Drum23",
             envelop_data_id = "0",
             RENDER_TITLE_ON_TOP = false,
@@ -38,7 +38,7 @@ function ____exports.AmpView(____bindingPattern0)
             track = Drum23Track
         }),
         React.createElement(KnobValue, {
-            position = bottomRightKnob,
+            bounds = bottomRightKnob,
             value = "Drum23 DURATION",
             encoder_id = encBottomRight,
             color = "quaternary",

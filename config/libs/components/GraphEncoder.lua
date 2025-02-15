@@ -11,14 +11,14 @@ function ____exports.GraphEncoder(____bindingPattern0)
     local data_id
     local plugin
     local track
-    local position
-    position = ____bindingPattern0.position
+    local bounds
+    bounds = ____bindingPattern0.bounds
     track = ____bindingPattern0.track
     plugin = ____bindingPattern0.plugin
     data_id = ____bindingPattern0.data_id
     encoders = ____bindingPattern0.encoders
     props = __TS__ObjectRest(____bindingPattern0, {
-        position = true,
+        bounds = true,
         track = true,
         plugin = true,
         data_id = true,
@@ -27,7 +27,7 @@ function ____exports.GraphEncoder(____bindingPattern0)
     initializePlugin("GraphEncoder", "libzic_GraphEncoderComponent.so")
     return getComponent(
         "GraphEncoder",
-        position,
+        bounds,
         {
             {track = track},
             {plugin = plugin},

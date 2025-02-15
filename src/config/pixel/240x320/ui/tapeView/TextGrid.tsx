@@ -10,7 +10,7 @@ import { KeyInfoPosition } from '@/pixel/240x320/ui/constants';
 export function TextGridTape() {
     return (
         <TextGrid
-            position={KeyInfoPosition}
+            bounds={KeyInfoPosition}
             rows={[
                 '&icon::play::filled Save &empty',
                 '&icon::arrowLeft::filled Home &icon::arrowRight::filled',

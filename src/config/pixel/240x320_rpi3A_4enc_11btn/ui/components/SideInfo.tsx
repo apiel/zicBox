@@ -10,7 +10,7 @@ import {
 export function SideInfo({ up, down, ctxValue }: { up: string; down: string; ctxValue: number }) {
     return (
         <TextGrid
-            position={SideKeyInfoPosition}
+            bounds={SideKeyInfoPosition}
             rows={[up, down]}
             BACKGROUND_COLOR={SideColor}
         >

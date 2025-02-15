@@ -25,7 +25,7 @@ export function TextGridSel({
     }
     return (
         <TextGrid
-            position={KeyInfoPosition}
+            bounds={KeyInfoPosition}
             rows={rows}
             ITEM_BACKGROUND={selectedBackground}
         >

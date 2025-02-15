@@ -18,10 +18,10 @@ function ____exports.ShutdownView(____bindingPattern0)
     return React.createElement(
         View,
         {name = name},
-        React.createElement(Text, {position = {0, 0, ScreenWidth, 280}, text = "Are you sure to shutdown?", color = "#ffacac", centered = true}),
+        React.createElement(Text, {bounds = {0, 0, ScreenWidth, 280}, text = "Are you sure to shutdown?", color = "#ffacac", centered = true}),
         React.createElement(
             TextGrid,
-            {position = KeyInfoPosition, rows = {"&empty &empty &empty", "Yes &empty No"}},
+            {bounds = KeyInfoPosition, rows = {"&empty &empty &empty", "Yes &empty No"}},
             React.createElement(Keymap, {key = "q", action = "shutdown"}),
             React.createElement(Keymap, {key = "a", action = "shutdown"}),
             React.createElement(Keymap, {key = "d", action = "setView:Clips"}),

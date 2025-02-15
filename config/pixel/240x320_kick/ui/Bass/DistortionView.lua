@@ -23,14 +23,14 @@ function ____exports.BassDistortionView(____bindingPattern0)
         {name = name},
         React.createElement(KnobValue, {
             value = "Bass BOOST",
-            position = topLeftKnob,
+            bounds = topLeftKnob,
             encoder_id = 0,
             COLOR = "tertiary",
             track = BassTrack
         }),
         React.createElement(KnobValue, {
             value = "Bass GAIN_CLIPPING",
-            position = topRightKnob,
+            bounds = topRightKnob,
             encoder_id = 1,
             COLOR = "primary",
             track = BassTrack

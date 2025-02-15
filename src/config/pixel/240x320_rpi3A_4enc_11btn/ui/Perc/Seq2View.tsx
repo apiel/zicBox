@@ -26,10 +26,10 @@ export type Props = {
 export function PercSeq2View({ name }: Props) {
     return (
         <View name={name}>
-            <Sequencer position={[0, 0, ScreenWidth, 240]} track={PercTrack} />
+            <Sequencer bounds={[0, 0, ScreenWidth, 240]} track={PercTrack} />
 
             <TextGrid
-                position={KeyInfoPosition}
+                bounds={KeyInfoPosition}
                 rows={[
                     '&icon::toggle::rect &icon::arrowUp::filled ...',
                     'Seq./Perc &icon::arrowDown::filled &icon::musicNote::pixelated',

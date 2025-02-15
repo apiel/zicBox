@@ -27,21 +27,21 @@ function ____exports.BassFxView(____bindingPattern0)
         {name = name},
         React.createElement(KnobValue, {
             value = "Bass BOOST",
-            position = topLeftKnob,
+            bounds = topLeftKnob,
             encoder_id = encTopLeft,
             COLOR = "tertiary",
             track = BassTrack
         }),
         React.createElement(KnobValue, {
             value = "Bass GAIN_CLIPPING",
-            position = topRightKnob,
+            bounds = topRightKnob,
             encoder_id = encTopRight,
             COLOR = "primary",
             track = BassTrack
         }),
         React.createElement(KnobValue, {
             value = "Bass REVERB",
-            position = bottomRightKnob,
+            bounds = bottomRightKnob,
             encoder_id = encBottomRight,
             COLOR = "secondary",
             track = BassTrack

@@ -9,7 +9,7 @@ export function TextGridFm({ selected, viewName }: { selected: number; viewName:
     return (
         <>
             <Title title="Fm" />
-            <Rect position={[85, 28, 6, 6]} color={ColorTrack2} />
+            <Rect bounds={[85, 28, 6, 6]} color={ColorTrack2} />
             <TextGridSel
                 ITEM_BACKGROUND={ColorTrack2}
                 items={[ 'Fm', '&empty', '...', '&empty', 'Seq.', '&icon::musicNote::pixelated']}

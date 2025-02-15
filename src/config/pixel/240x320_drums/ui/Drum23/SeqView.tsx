@@ -20,7 +20,7 @@ export function Drum23SeqView({ name }: Props) {
                 y += 8 + (i % 4 == 3 ? 4 : 0);
                 return (
                     <StepEditDrum
-                        position={[0, yy, ScreenWidth, 8]}
+                        bounds={[0, yy, ScreenWidth, 8]}
                         data={`Sequencer ${i}`}
                         group={i}
                         playing_color={rgb(35, 161, 35)}
