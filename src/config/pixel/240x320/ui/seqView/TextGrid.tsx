@@ -5,9 +5,9 @@ import * as React from '@/libs/react';
 
 import { Keymap } from '@/libs/nativeComponents/Keymap';
 import { Keymaps } from '@/libs/nativeComponents/Keymaps';
-import { TextGrid } from '@/libs/nativeComponents/TextGrid';
 import { VisibilityContext } from '@/libs/nativeComponents/VisibilityContext';
 import { VisibilityGroup } from '@/libs/nativeComponents/VisibilityGroup';
+import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { KeyInfoPosition } from '@/pixel/240x320/ui/constants';
 
 export function TextGridProgressBar() {

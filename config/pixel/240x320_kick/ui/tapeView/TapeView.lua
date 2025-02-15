@@ -7,10 +7,10 @@ local ____Keymaps = require("config.libs.nativeComponents.Keymaps")
 local Keymaps = ____Keymaps.Keymaps
 local ____Tape = require("config.libs.nativeComponents.Tape")
 local Tape = ____Tape.Tape
-local ____TextGrid = require("config.libs.nativeComponents.TextGrid")
-local TextGrid = ____TextGrid.TextGrid
 local ____View = require("config.libs.nativeComponents.View")
 local View = ____View.View
+local ____TextGrid = require("config.libs.tsComponents.TextGrid")
+local TextGrid = ____TextGrid.TextGrid
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
 local KeyInfoPosition = ____constants.KeyInfoPosition
 function ____exports.TapeView(____bindingPattern0)

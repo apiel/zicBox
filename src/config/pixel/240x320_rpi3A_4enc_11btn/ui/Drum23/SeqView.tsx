@@ -2,9 +2,9 @@ import * as React from '@/libs/react';
 
 import { Keymaps } from '@/libs/nativeComponents/Keymaps';
 import { StepEditDrum } from '@/libs/nativeComponents/StepEditDrum';
-import { TextGrid } from '@/libs/nativeComponents/TextGrid';
 import { View } from '@/libs/nativeComponents/View';
 import { VisibilityContext } from '@/libs/nativeComponents/VisibilityContext';
+import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
 import { btn1, btn2, btn5, btn6, btn7, btnShift, ColorTrack1, Drum23Track, KeyInfoPosition, ScreenWidth } from '../constants';

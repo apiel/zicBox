@@ -1,9 +1,10 @@
 #pragma once
 
+#include "log.h"
+#include "plugins/components/base/Icon.h"
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
-#include "log.h"
 
 /*md
 ## Text
@@ -14,6 +15,8 @@ Text component is used to display text.
 */
 
 class TextComponent : public Component {
+    Icon icon;
+
     Color bgColor;
     Color color;
 
@@ -29,15 +32,16 @@ class TextComponent : public Component {
 public:
     TextComponent(ComponentInterface::Props props)
         : Component(props)
+        , icon(props.view->draw)
         , bgColor(styles.colors.background)
-        , color(darken(styles.colors.text, 0.5))
+        , color(styles.colors.text)
         , keypadLayout(this)
     {
-/*md 
-**Config**: 
-```tsx
-<Text
-*/
+        /*md
+        **Config**:
+        ```tsx
+        <Text
+        */
         nlohmann::json config = props.config;
         if (!config.contains("text")) {
             logWarn("Text component is missing text parameter.");
@@ -62,17 +66,18 @@ public:
         /*md   // The background color of the text. */
         /*md   bgColor="#000000" */
         if (config.contains("bgColor")) {
-            bgColor = draw.getColor((char *)config["bgColor"].get<std::string>().c_str());
+            bgColor = draw.getColor((char*)config["bgColor"].get<std::string>().c_str());
         }
         /*md   // The color of the text */
         /*md   color="#ffffff" */
         if (config.contains("color")) {
-            color = draw.getColor((char *)config["color"].get<std::string>().c_str());
+            color = draw.getColor((char*)config["color"].get<std::string>().c_str());
         }
-/*md
-/>
-```
-*/
+
+        /*md
+        />
+        ```
+        */
     }
 
     void render() override
@@ -82,9 +87,14 @@ public:
             if (!text.empty()) {
                 if (centered) {
                     Point textPos = { relativePosition.x + (int)(size.w * 0.5), relativePosition.y + (int)(size.h * 0.5) - 4 };
-                    draw.textCentered(textPos, text, fontSize, { color, .font = font, .fontHeight = fontHeight });
+                    if (!icon.render(text, textPos, 8, { color }, Icon::CENTER)) {
+
+                        draw.textCentered(textPos, text, fontSize, { color, .font = font, .maxWidth = size.w, .fontHeight = fontHeight });
+                    }
                 } else {
-                    draw.text({ relativePosition.x, relativePosition.y }, text, fontSize, { color, .font = font, .fontHeight = fontHeight });
+                    if (!icon.render(text, { relativePosition.x, relativePosition.y }, fontSize, { color }, Icon::LEFT)) {
+                        draw.text({ relativePosition.x, relativePosition.y }, text, fontSize, { color, .font = font, .maxWidth = size.w, .fontHeight = fontHeight });
+                    }
                 }
             }
         }

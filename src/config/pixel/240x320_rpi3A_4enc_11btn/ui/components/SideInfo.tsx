@@ -1,7 +1,7 @@
 import * as React from '@/libs/react';
 
-import { TextGrid } from '@/libs/nativeComponents/TextGrid';
 import { VisibilityContext } from '@/libs/nativeComponents/VisibilityContext';
+import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import {
     SideColor,
     SideKeyInfoPosition

@@ -3,8 +3,8 @@ import * as React from '@/libs/react';
 import { Keymap } from '@/libs/nativeComponents/Keymap';
 import { Keymaps } from '@/libs/nativeComponents/Keymaps';
 import { Tape } from '@/libs/nativeComponents/Tape';
-import { TextGrid } from '@/libs/nativeComponents/TextGrid';
 import { View } from '@/libs/nativeComponents/View';
+import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { btn2, btn6, KeyInfoPosition } from '../constants';
 
 export type Props = {

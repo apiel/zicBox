@@ -4,7 +4,7 @@
 import * as React from '@/libs/react';
 
 import { Keymaps } from '@/libs/nativeComponents/Keymaps';
-import { TextGrid } from '@/libs/nativeComponents/TextGrid';
+import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { KeyInfoPosition } from '@/pixel/240x320/ui/constants';
 
 export function TextGridTape() {

@@ -10,6 +10,8 @@ local ____Text = require("config.libs.nativeComponents.Text")
 local Text = ____Text.Text
 local ____View = require("config.libs.nativeComponents.View")
 local View = ____View.View
+local ____TextGrid = require("config.libs.tsComponents.TextGrid")
+local TextGrid = ____TextGrid.TextGrid
 local ____ui = require("config.libs.ui")
 local setScreenSize = ____ui.setScreenSize
 local setWindowPosition = ____ui.setWindowPosition
@@ -27,6 +29,7 @@ applyZic(React.createElement(
     View,
     {name = "Demo"},
     React.createElement(Text, {fontSize = 16, text = "title", bounds = {0, 20, ScreenWidth, 16}, centered = true}),
-    React.createElement(Text, {text = "hello world", bounds = {5, 5, ScreenWidth, 16}, color = "secondary"})
+    React.createElement(Text, {text = "hello world", bounds = {5, 5, ScreenWidth, 16}, color = "secondary"}),
+    React.createElement(TextGrid, {bounds = {0, 50, ScreenWidth, 20}, rows = {"Hello !world &empty", "^123 abc &icon::arrowRight::filled"}})
 ))
 return ____exports
