@@ -1,5 +1,4 @@
-#ifndef _UI_PIXEL_COMPONENT_RECT_H_
-#define _UI_PIXEL_COMPONENT_RECT_H_
+#pragma once
 
 #include "plugins/components/component.h"
 
@@ -24,27 +23,20 @@ public:
         : Component(props)
         , color(styles.colors.background)
     {
-        /*md
+        MD_CONFIG(Rect,
+            {
+                nlohmann::json config = props.config;
 
-```tsx
-<Text
-        */
-       nlohmann::json config = props.config;
+                /*md   // The color of the rectangle. */
+                /*md   color="#000000" */
+                if (config.contains("color")) {
+                    color = draw.getColor((char*)config["color"].get<std::string>().c_str());
+                }
 
-        /*md   // The color of the rectangle. */
-        /*md   color="#000000" */
-        if (config.contains("color")) {
-            color = draw.getColor((char *)config["color"].get<std::string>().c_str());
-        }
-
-        /*md   // If true, the rectangle will be filled. Default is true. */
-        /*md   filled={false} */
-        filled = config.value("filled", filled);
-
-        /*md
-/>
-```
-        */
+                /*md   // If true, the rectangle will be filled. Default is true. */
+                /*md   filled={false} */
+                filled = config.value("filled", filled);
+            })
     }
     void render()
     {
@@ -57,5 +49,3 @@ public:
         }
     }
 };
-
-#endif

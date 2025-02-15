@@ -197,6 +197,18 @@ public:
         }
 
         setRadius((size.h - 6) * 0.5);
+
+        /*md
+
+```tsx
+<Text
+        */
+       nlohmann::json config = props.config;
+
+        /*md
+/>
+```
+        */
     }
 
     void render()
