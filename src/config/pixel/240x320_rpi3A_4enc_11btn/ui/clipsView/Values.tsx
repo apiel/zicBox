@@ -61,7 +61,8 @@ export function MasterValues({ group, track }: { group: number; track: number })
             </HiddenValue>
             <Rect bounds={[0, 0, ScreenWidth, posContainer[3]]} />
             <Value
-                audioPlugin="Volume" param="VOLUME"
+                audioPlugin="Volume"
+                param="VOLUME"
                 bounds={topLeft}
                 group={group}
                 track={track}
@@ -104,7 +105,8 @@ export function Drum23Values({ group, track }: { group: number; track: number })
                 <Keymap key="s" action="setView:Drum23" context="254:1" />
             </HiddenValue>
             <Value
-                audioPlugin="TrackFx" param="VOLUME"
+                audioPlugin="TrackFx"
+                param="VOLUME"
                 bounds={topLeft}
                 group={group}
                 track={track}
@@ -120,7 +122,8 @@ export function Drum23Values({ group, track }: { group: number; track: number })
                 {...primary}
             /> */}
             <Value
-                audioPlugin="MMFilter" param="CUTOFF"
+                audioPlugin="MMFilter"
+                param="CUTOFF"
                 bounds={topRight}
                 group={group}
                 track={track}
@@ -129,7 +132,8 @@ export function Drum23Values({ group, track }: { group: number; track: number })
                 useStringValue
             />
             <Value
-                audioPlugin="MMFilter" param="RESONANCE"
+                audioPlugin="MMFilter"
+                param="RESONANCE"
                 bounds={bottomRight}
                 group={group}
                 track={track}
@@ -147,7 +151,8 @@ export function SampleValues({ group, track }: { group: number; track: number })
                 <Keymap key="s" action="setView:Sample" context="254:1" />
             </HiddenValue>
             <Value
-                audioPlugin="TrackFx" param="VOLUME"
+                audioPlugin="TrackFx"
+                param="VOLUME"
                 bounds={topLeft}
                 group={group}
                 track={track}

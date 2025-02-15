@@ -1,6 +1,6 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
-local ____constants = require("config.pixel.240x320.ui.constants")
+local ____constants = require("config.pixel.240x320_kick.ui.constants")
 local ScreenWidth = ____constants.ScreenWidth
 local W2_4 = ____constants.W2_4
 local top = 60
