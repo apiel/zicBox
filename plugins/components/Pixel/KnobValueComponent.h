@@ -63,8 +63,7 @@ protected:
             if (endAngle > 360) {
                 endAngle = endAngle - 360;
             }
-            Color color = useBar2Color != -1 && value->pct() > useBar2Color ? bar2Color : barColor;
-            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, endAngle, { color, .thickness = 5 });
+            draw.arc({ knobCenter.x, knobCenter.y - marginTop }, radius, 130, endAngle, { barColor, .thickness = 5 });
         }
     }
 
@@ -152,7 +151,6 @@ protected:
     Color valueColor;
     Color unitColor;
     Color barColor;
-    Color bar2Color;
     Color barBackgroundColor;
     Color barTwoSideColor;
 
@@ -183,7 +181,6 @@ public:
         , valueColor(alpha(styles.colors.text, 0.4))
         , unitColor(alpha(styles.colors.text, 0.2))
         , barColor(styles.colors.primary)
-        , bar2Color(styles.colors.secondary)
         , barBackgroundColor(alpha(styles.colors.primary, 0.7))
         , barTwoSideColor(alpha(styles.colors.primary, 0.2))
     {
@@ -253,12 +250,55 @@ public:
         }
 
         /*md   // Set the color of the knob. */
-        /*md   color="#FF0000" */
+        /*md   color="#3791a1" */
         if (config.contains("color")) {
-            barColor = draw.getColor((char *)config["color"].get<std::string>().c_str());
+            barColor = draw.getColor(config["color"].get<std::string>());
             barBackgroundColor = alpha(barColor, 0.7);
             barTwoSideColor = alpha(barColor, 0.2);
         }
+
+        /*md   // Set the background color of the component. */
+        /*md   bgColor="#000000" */
+        if (config.contains("bgColor")) {
+            bgColor = draw.getColor(config["bgColor"].get<std::string>());
+        }
+
+        /*md   // Set the color of the text. */
+        /*md   textColor="#ffffff" */
+        if (config.contains("textColor")) {
+            Color textColor = draw.getColor(config["textColor"].get<std::string>());
+            titleColor = alpha(textColor, 0.4);
+            valueColor = alpha(textColor, 0.4);
+            unitColor = alpha(textColor, 0.2);
+        }
+
+        /*md   // Set how many digits after the decimal point (by default none. */
+        /*md   floatPrecision={2} */
+        valueFloatPrecision = config.value("floatPrecision", valueFloatPrecision);
+
+        /*md   // Hide the value of the parameter. */
+        /*md   hideValue */
+        showValue = !config.value("hideValue", false);
+
+        /*md   // Hide the unit of the parameter. */
+        /*md   hideUnit */
+        showUnit = !config.value("hideUnit", false);
+
+        /*md   // Set the font size of the unit. */
+        /*md   unitSize={8} */
+        fontUnitSize = config.value("unitSize", fontUnitSize);
+
+        /*md   // Set the font size of the value. */
+        /*md   valueSize={8} */
+        fontValueSize = config.value("valueSize", fontValueSize);
+
+        /*md   // Set the font size of the title. */
+        /*md   titleSize={8} */
+        fontLabelSize = config.value("titleSize", fontLabelSize);
+
+        /*md   // Instead to show the value of the parameter in knob, show it under the knob. Can be useful for long string value. */
+        /*md   valueReplaceTitle */
+        stringValueReplaceTitle = config.value("valueReplaceTitle", stringValueReplaceTitle);
 
         /*md md_config_end */
     }
@@ -281,84 +321,6 @@ public:
         TWO_VALUES,
     } type
         = ENCODER_TYPE::NORMAL;
-
-    bool config(char* key, char* params)
-    {
-
-
-
-        /*md - `COLOR: #3791a1` set the ring color */
-        if (strcmp(key, "COLOR") == 0) {
-            barColor = draw.getColor(params);
-            barBackgroundColor = alpha(barColor, 0.7);
-            barTwoSideColor = alpha(barColor, 0.2);
-            return true;
-        }
-
-        /*md - `BACKGROUND_COLOR: #000000` set the background color */
-        if (strcmp(key, "BACKGROUND_COLOR") == 0) {
-            bgColor = draw.getColor(params);
-            return true;
-        }
-
-        /*md - `TEXT_COLOR: #ffffff` set the text color */
-        if (strcmp(key, "TEXT_COLOR") == 0) {
-            titleColor = alpha(draw.getColor(params), 0.4);
-            valueColor = alpha(draw.getColor(params), 0.4);
-            unitColor = alpha(draw.getColor(params), 0.2);
-            return true;
-        }
-
-        /*md - `FLOAT_PRECISION: 2` set how many digits after the decimal point (by default none) */
-        if (strcmp(key, "FLOAT_PRECISION") == 0) {
-            valueFloatPrecision = atoi(params);
-            return true;
-        }
-
-        /*md - `USE_SECOND_COLOR: value` set the percentage value when `BAR2_COLOR` should be used instead of `BAR_COLOR`, e.g. 0.5 will switch at 50% */
-        if (strcmp(key, "USE_SECOND_COLOR") == 0) {
-            useBar2Color = atof(params);
-            return true;
-        }
-
-        /*md - `SHOW_VALUE: true` show value (default true) */
-        if (strcmp(key, "SHOW_VALUE") == 0) {
-            showValue = (strcmp(params, "true") == 0);
-            return true;
-        }
-
-        /*md - `SHOW_UNIT: true` show unit (default true) */
-        if (strcmp(key, "SHOW_UNIT") == 0) {
-            showUnit = (strcmp(params, "true") == 0);
-            return true;
-        }
-
-        /*md - `FONT_UNIT_SIZE: 12` set the unit font size */
-        if (strcmp(key, "FONT_UNIT_SIZE") == 0) {
-            fontUnitSize = atoi(params);
-            return true;
-        }
-
-        /*md - `FONT_VALUE_SIZE: 12` set the value font size */
-        if (strcmp(key, "FONT_VALUE_SIZE") == 0) {
-            fontValueSize = atoi(params);
-            return true;
-        }
-
-        /*md - `FONT_TITLE_SIZE: 12` set the title font size */
-        if (strcmp(key, "FONT_TITLE_SIZE") == 0) {
-            fontLabelSize = atoi(params);
-            return true;
-        }
-
-        /*md - `STRING_VALUE_REPLACE_TITLE: true` instead to show string value in knob, show under the knob. Can be useful for long string value. */
-        if (strcmp(key, "STRING_VALUE_REPLACE_TITLE") == 0) {
-            stringValueReplaceTitle = (strcmp(params, "true") == 0);
-            return true;
-        }
-
-        return false;
-    }
 
     bool isActive = true;
     void onGroupChanged(int8_t index) override
