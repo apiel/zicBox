@@ -1,10 +1,6 @@
-import { getComponent, initializePlugin } from '@/libs/ui';
-import { ComponentProps } from './component';
+import { getJsonComponent } from '../ui';
 
-export type Props = ComponentProps & {
-};
-
-export function Rect({ bounds, track, ...props }: Props) {
-    initializePlugin('Rect', 'libzic_RectComponent.so');
-    return getComponent('Rect', bounds, [{ track }, props]);
-}
+export const Rect = getJsonComponent<{
+    color?: string;
+    filled?: boolean;
+}>('Rect', 'libzic_RectComponent.so');

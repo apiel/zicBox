@@ -2,6 +2,7 @@ import * as React from '@/libs/react';
 
 import { plugin, pluginAlias } from '@/libs/audio';
 import { applyZic } from '@/libs/core';
+import { Rect } from '@/libs/nativeComponents/Rect';
 import { Text } from '@/libs/nativeComponents/Text';
 import { View } from '@/libs/nativeComponents/View';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
@@ -32,5 +33,8 @@ applyZic(
                 '^123 abc &icon::arrowRight::filled',
             ]}
         ></TextGrid>
+
+        <Rect color="secondary" filled={false} bounds={[10, 100, 100, 100]} />
+        <Rect color="primary" bounds={[120, 100, 100, 50]} />
     </View>
 );

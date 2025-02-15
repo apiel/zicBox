@@ -6,6 +6,8 @@ local plugin = ____audio.plugin
 local pluginAlias = ____audio.pluginAlias
 local ____core = require("config.libs.core")
 local applyZic = ____core.applyZic
+local ____Rect = require("config.libs.nativeComponents.Rect")
+local Rect = ____Rect.Rect
 local ____Text = require("config.libs.nativeComponents.Text")
 local Text = ____Text.Text
 local ____View = require("config.libs.nativeComponents.View")
@@ -30,6 +32,8 @@ applyZic(React.createElement(
     {name = "Demo"},
     React.createElement(Text, {fontSize = 16, text = "title", bounds = {0, 20, ScreenWidth, 16}, centered = true}),
     React.createElement(Text, {text = "hello world", bounds = {5, 5, ScreenWidth, 16}, color = "secondary"}),
-    React.createElement(TextGrid, {bounds = {0, 50, ScreenWidth, 20}, rows = {"Hello !world &empty", "^123 abc &icon::arrowRight::filled"}})
+    React.createElement(TextGrid, {bounds = {0, 50, ScreenWidth, 20}, rows = {"Hello !world &empty", "^123 abc &icon::arrowRight::filled"}}),
+    React.createElement(Rect, {color = "secondary", filled = false, bounds = {10, 100, 100, 100}}),
+    React.createElement(Rect, {color = "primary", bounds = {120, 100, 100, 50}})
 ))
 return ____exports
