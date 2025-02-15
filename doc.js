@@ -69,7 +69,20 @@ function extractMdComment(content) {
     const result = [];
     let match;
     while ((match = reg.exec(content)) !== null) {
-        result.push(match[1]);
+        const mdConfigMacro = 'md_config:';
+        const mdConfigEndMacro = 'md_config_end';
+        if (match[1].startsWith(mdConfigMacro)) {
+            const componentName = match[1].slice(mdConfigMacro.length);
+            result.push(`
+\`\`\`tsx
+<${componentName}`);
+        } else if (match[1].startsWith(mdConfigEndMacro)) {
+            result.push(`/>
+\`\`\`
+                `);
+        } else {
+            result.push(match[1]);
+        }
     }
     return result.join('\n');
 }
