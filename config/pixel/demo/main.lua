@@ -26,6 +26,7 @@ setScreenSize(ScreenWidth, ScreenHeight)
 applyZic(React.createElement(
     View,
     {name = "Demo"},
-    React.createElement(Text, {fontSize = 16, text = "title", position = {0, 20, ScreenWidth, 16}, centered = true})
+    React.createElement(Text, {fontSize = 16, text = "title", position = {0, 20, ScreenWidth, 16}, centered = true}),
+    React.createElement(Text, {text = "hello world", position = {5, 5, ScreenWidth, 16}, color = "secondary"})
 ))
 return ____exports
