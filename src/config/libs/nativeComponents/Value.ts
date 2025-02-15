@@ -1,15 +1,29 @@
-import { getComponent, initializePlugin } from '@/libs/ui';
-import { ComponentProps } from './component';
+import { getJsonComponent } from '../ui';
 
-export type Props = ComponentProps & {
-    value: string;
-};
+export const Value = getJsonComponent<{
+    audioPlugin: string;
+    param: string;
+    encoderId?: number;
+    label?: string;
+    floatPrecision?: number;
+    useStringValue?: boolean;
+    barHeight?: number;
+    barBgHeight?: number;
+    verticalAlignCenter?: boolean;
+    hideLabel?: boolean;
+    hideUnit?: boolean;
+    hideValue?: boolean;
+    showLabelOverValue?: number;
+    labelOverValueX?: number;
+    valueSize?: number;
+    labelSize?: number;
+    unitSize?: number;
+    font?: string;
+    valueHeight?: number;
+    bgColor?: string;
+    labelColor?: string;
+    valueColor?: string;
+    barColor?: string;
+    unitColor?: string;
 
-export function Value({ bounds, track, value, ...props }: Props) {
-    initializePlugin('Value', 'libzic_ValueComponent.so');
-    return getComponent('Value', bounds, [
-        { track },
-        { value },
-        props,
-    ]);
-}
+}>('Value', 'libzic_ValueComponent.so');
