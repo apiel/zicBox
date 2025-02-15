@@ -50,7 +50,8 @@ public:
         /*md  // or simply */
         /*md  centered */
         centered = config.value("centered", false);
-/*md/>
+/*md
+/>
 ```
 */
     }
