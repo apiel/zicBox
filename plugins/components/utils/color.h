@@ -1,16 +1,15 @@
-#ifndef _COLOR_H_
-#define _COLOR_H_
+#pragma once
 
 #include "../drawInterface.h"
 
 #include <string>
 
-Color hex2rgb(char* hex)
+Color hex2rgb(std::string& hex)
 {
-
-    hex++;
-    unsigned int color = strtol(hex, NULL, 16);
-    if (strlen(hex) == 8) { // rgba
+    const char *hexPtr = hex.c_str();
+    hexPtr++;
+    unsigned int color = strtol(hexPtr, NULL, 16);
+    if (strlen(hexPtr) == 8) { // rgba
         return (Color) {
             .r = (uint8_t)((color & 0xFF000000) >> 24),
             .g = (uint8_t)((color & 0x00FF0000) >> 16),
@@ -103,5 +102,3 @@ Color applyAlphaColor(Color sourceColor, Color appliedColor, float pct)
     appliedColor.a = (uint8_t)(pct * 255.0f);
     return applyAlphaColor(sourceColor, appliedColor);
 }
-
-#endif

@@ -106,7 +106,7 @@ public:
     virtual void applyTexture(void* texture, Rect dest) { }
 
     virtual void* getFont(const char* name = NULL, int size = -1) { return NULL; }
-    virtual Color getColor(char* color) { return styles.colors.white; }
+    virtual Color getColor(std::string color) { return styles.colors.white; }
     virtual bool config(char* key, char* value) { return false; }
 };
 
