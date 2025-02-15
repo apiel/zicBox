@@ -33,7 +33,7 @@ public:
         , color(darken(styles.colors.text, 0.5))
         , keypadLayout(this)
     {
-        /*md 
+/*md 
 **Config**: 
 ```tsx
 <Text
@@ -46,10 +46,29 @@ public:
         /*md   text="Hello World" */
         text = config["text"].get<std::string>();
         /*md   // If true, the text will be centered. Default is false. */
-        /*md   centered=true */
-        /*md   // or simply */
         /*md   centered */
-        centered = config.value("centered", false);
+        centered = config.value("centered", centered);
+        /*md   // The font size of the text. Default is 8. */
+        /*md   fontSize=8 */
+        fontSize = config.value("fontSize", 8);
+        /*md   // The font of the text. Default is null. */
+        /*md   font="Sinclair_S" */
+        if (config.contains("font")) {
+            font = draw.getFont(config["font"].get<std::string>().c_str());
+        }
+        /*md   // The font height of the text. Default is 0. */
+        /*md   fontHeight=0 */
+        fontHeight = config.value("fontHeight", fontHeight);
+        /*md   // The background color of the text. */
+        /*md   bgColor="#000000" */
+        if (config.contains("bgColor")) {
+            bgColor = draw.getColor((char *)config["bgColor"].get<std::string>().c_str());
+        }
+        /*md   // The color of the text */
+        /*md   color="#ffffff" */
+        if (config.contains("color")) {
+            color = draw.getColor((char *)config["color"].get<std::string>().c_str());
+        }
 /*md
 />
 ```
@@ -91,52 +110,9 @@ public:
         }
     }
 
-    /*md **Config**: */
     bool config(char* key, char* value)
     {
         if (keypadLayout.config(key, value)) {
-            return true;
-        }
-
-        /*md - `TEXT: text` is the text of the component. */
-        if (strcmp(key, "TEXT") == 0) {
-            text = value;
-            return true;
-        }
-
-        /*md - `CENTERED: true/false` is if the text should be centered (default: false). */
-        if (strcmp(key, "CENTERED") == 0) {
-            centered = strcmp(value, "true") == 0;
-            return true;
-        }
-
-        /*md - `FONT_SIZE: size` is the font size of the component. */
-        if (strcmp(key, "FONT_SIZE") == 0) {
-            fontSize = atoi(value);
-            return true;
-        }
-
-        /*md - `FONT: font` is the font of the component. */
-        if (strcmp(key, "FONT") == 0) {
-            font = draw.getFont(value);
-            return true;
-        }
-
-        /*md - `FONT_HEIGHT: height` is the font height of the component. */
-        if (strcmp(key, "FONT_HEIGHT") == 0) {
-            fontHeight = atoi(value);
-            return true;
-        }
-
-        /*md - `BACKGROUND_COLOR: color` is the background color of the component. */
-        if (strcmp(key, "BACKGROUND_COLOR") == 0) {
-            bgColor = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `COLOR: color` is the color of the component. */
-        if (strcmp(key, "COLOR") == 0) {
-            color = draw.getColor(value);
             return true;
         }
 
