@@ -8,6 +8,8 @@
 /*md
 ## Rect
 
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/rect.png" />
+
 Rect components to draw a rectangle.
 */
 
@@ -22,6 +24,27 @@ public:
         : Component(props)
         , color(styles.colors.background)
     {
+        /*md
+**Config**:
+```tsx
+<Text
+        */
+       nlohmann::json config = props.config;
+
+        /*md   // The color of the rectangle. */
+        /*md   color="#000000" */
+        if (config.contains("color")) {
+            color = draw.getColor((char *)config["color"].get<std::string>().c_str());
+        }
+
+        /*md   // If true, the rectangle will be filled. Default is true. */
+        /*md   filled={false} */
+        filled = config.value("filled", filled);
+
+        /*md
+/>
+```
+        */
     }
     void render()
     {
@@ -32,24 +55,6 @@ public:
                 draw.rect(relativePosition, size, { color });
             }
         }
-    }
-
-    /*md **Config**: */
-    bool config(char* key, char* value)
-    {
-        /*md - `COLOR: color` is the color of the component. */
-        if (strcmp(key, "COLOR") == 0) {
-            color = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `FILLED: true/false` is if the rectangle should be filled (default: true). */
-        if (strcmp(key, "FILLED") == 0) {
-            filled = strcmp(value, "true") == 0;
-            return true;
-        }
-
-        return false;
     }
 };
 
