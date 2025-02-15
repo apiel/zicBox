@@ -1,7 +1,7 @@
 local ____lualib = require("lualib_bundle")
 local __TS__ArrayMap = ____lualib.__TS__ArrayMap
 local ____exports = {}
-local ____Keymap = require("config.libs.components.Keymap")
+local ____Keymap = require("config.libs.nativeComponents.Keymap")
 local Keymap = ____Keymap.Keymap
 function ____exports.Keymaps(____bindingPattern0)
     local keys

@@ -1,8 +1,8 @@
 import * as React from '@/libs/react';
 
-import { View } from '@/libs/components/View';
+import { View } from '@/libs/nativeComponents/View';
 
-import { GraphEncoder } from '@/libs/components/GraphEncoder';
+import { GraphEncoder } from '@/libs/nativeComponents/GraphEncoder';
 import { Common } from '../components/Common';
 import { BassTrack, ColorTrack2 } from '../constants';
 import { topValues } from '../constantsValue';

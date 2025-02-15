@@ -1,9 +1,9 @@
 import * as React from '@/libs/react';
 
-import { ComponentProps } from '@/libs/components/component';
-import { Value } from '@/libs/components/Value';
-import { VisibilityContainer } from '@/libs/components/VisibilityContainer';
-import { VisibilityContext } from '@/libs/components/VisibilityContext';
+import { ComponentProps } from '@/libs/nativeComponents/component';
+import { Value } from '@/libs/nativeComponents/Value';
+import { VisibilityContainer } from '@/libs/nativeComponents/VisibilityContainer';
+import { VisibilityContext } from '@/libs/nativeComponents/VisibilityContext';
 import {
     bottomLeft,
     bottomRight,

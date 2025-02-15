@@ -1,8 +1,8 @@
 import * as React from '@/libs/react';
 
-import { Keymaps } from '@/libs/components/Keymaps';
-import { TextGrid } from '@/libs/components/TextGrid';
-import { VisibilityContext } from '@/libs/components/VisibilityContext';
+import { Keymaps } from '@/libs/nativeComponents/Keymaps';
+import { TextGrid } from '@/libs/nativeComponents/TextGrid';
+import { VisibilityContext } from '@/libs/nativeComponents/VisibilityContext';
 import { KeyInfoPosition } from '@/pixel/240x320_drums/ui/constants';
 
 export function TextGridSeq() {

@@ -1,7 +1,7 @@
 import * as React from '@/libs/react';
 
-import { StepEditDrum } from '@/libs/components/StepEditDrum';
-import { View } from '@/libs/components/View';
+import { StepEditDrum } from '@/libs/nativeComponents/StepEditDrum';
+import { View } from '@/libs/nativeComponents/View';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
 import { Drum23Track, ScreenWidth } from '../constants';

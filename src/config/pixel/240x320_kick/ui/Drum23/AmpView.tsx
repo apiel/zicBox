@@ -1,8 +1,8 @@
 import * as React from '@/libs/react';
 
-import { DrumEnvelop } from '@/libs/components/DrumEnvelop';
-import { KnobValue } from '@/libs/components/KnobValue';
-import { View } from '@/libs/components/View';
+import { DrumEnvelop } from '@/libs/nativeComponents/DrumEnvelop';
+import { KnobValue } from '@/libs/nativeComponents/KnobValue';
+import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
 import { ColorTrack1, Drum23Track } from '../constants';
 import { bottomRightKnob, topValues } from '../constantsValue';

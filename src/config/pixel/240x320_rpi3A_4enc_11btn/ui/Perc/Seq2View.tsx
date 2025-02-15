@@ -1,10 +1,10 @@
 import * as React from '@/libs/react';
 
-import { Keymaps } from '@/libs/components/Keymaps';
-import { Sequencer } from '@/libs/components/Sequencer';
-import { TextGrid } from '@/libs/components/TextGrid';
-import { View } from '@/libs/components/View';
-import { VisibilityContext } from '@/libs/components/VisibilityContext';
+import { Keymaps } from '@/libs/nativeComponents/Keymaps';
+import { Sequencer } from '@/libs/nativeComponents/Sequencer';
+import { TextGrid } from '@/libs/nativeComponents/TextGrid';
+import { View } from '@/libs/nativeComponents/View';
+import { VisibilityContext } from '@/libs/nativeComponents/VisibilityContext';
 import { Common } from '../components/Common';
 import {
     btn2,

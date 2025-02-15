@@ -1,15 +1,15 @@
 import * as React from '@/libs/react';
 
-import { ComponentProps } from '@/libs/components/component';
-import { DrumEnvelop } from '@/libs/components/DrumEnvelop';
-import { GraphEncoder } from '@/libs/components/GraphEncoder';
-import { KnobValue } from '@/libs/components/KnobValue';
-import { Log } from '@/libs/components/Log';
-import { Rect } from '@/libs/components/Rect';
-import { Spectrogram } from '@/libs/components/Spectrogram';
-import { Value } from '@/libs/components/Value';
-import { VisibilityContainer } from '@/libs/components/VisibilityContainer';
-import { VisibilityContext } from '@/libs/components/VisibilityContext';
+import { ComponentProps } from '@/libs/nativeComponents/component';
+import { DrumEnvelop } from '@/libs/nativeComponents/DrumEnvelop';
+import { GraphEncoder } from '@/libs/nativeComponents/GraphEncoder';
+import { KnobValue } from '@/libs/nativeComponents/KnobValue';
+import { Log } from '@/libs/nativeComponents/Log';
+import { Rect } from '@/libs/nativeComponents/Rect';
+import { Spectrogram } from '@/libs/nativeComponents/Spectrogram';
+import { Value } from '@/libs/nativeComponents/Value';
+import { VisibilityContainer } from '@/libs/nativeComponents/VisibilityContainer';
+import { VisibilityContext } from '@/libs/nativeComponents/VisibilityContext';
 import { ScreenWidth, W1_4, W3_4 } from '../../constants';
 import {
     bottomLeft,

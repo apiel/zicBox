@@ -1,9 +1,9 @@
 import * as React from '@/libs/react';
 
 import { plugin, pluginAlias } from '@/libs/audio';
-import { Text } from '@/libs/components/Text';
-import { View } from '@/libs/components/View';
 import { applyZic } from '@/libs/core';
+import { Text } from '@/libs/nativeComponents/Text';
+import { View } from '@/libs/nativeComponents/View';
 import { setScreenSize, setWindowPosition } from '@/libs/ui';
 
 pluginAlias('AudioOutput', 'libzic_AudioOutputPulse.so');

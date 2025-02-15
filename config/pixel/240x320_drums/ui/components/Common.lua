@@ -1,7 +1,7 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
 local React = require("config.libs.react")
-local ____SeqProgressBar = require("config.libs.components.SeqProgressBar")
+local ____SeqProgressBar = require("config.libs.nativeComponents.SeqProgressBar")
 local SeqProgressBar = ____SeqProgressBar.SeqProgressBar
 local ____ui = require("config.libs.ui")
 local rgb = ____ui.rgb

@@ -1,8 +1,8 @@
 import * as React from '@/libs/react';
 
-import { KnobValue } from '@/libs/components/KnobValue';
-import { Sample } from '@/libs/components/Sample';
-import { View } from '@/libs/components/View';
+import { KnobValue } from '@/libs/nativeComponents/KnobValue';
+import { Sample } from '@/libs/nativeComponents/Sample';
+import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
 import { TextGridDrums } from '../components/TextGridDrums';
 import { SampleTrack, ScreenWidth } from '../constants';

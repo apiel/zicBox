@@ -1,9 +1,9 @@
 import * as React from '@/libs/react';
 
-import { Keymap } from '@/libs/components/Keymap';
-import { Text } from '@/libs/components/Text';
-import { TextGrid } from '@/libs/components/TextGrid';
-import { View } from '@/libs/components/View';
+import { Keymap } from '@/libs/nativeComponents/Keymap';
+import { Text } from '@/libs/nativeComponents/Text';
+import { TextGrid } from '@/libs/nativeComponents/TextGrid';
+import { View } from '@/libs/nativeComponents/View';
 import { KeyInfoPosition, ScreenWidth } from '../constants';
 
 export type Props = {

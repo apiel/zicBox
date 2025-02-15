@@ -1,8 +1,8 @@
 import * as React from '@/libs/react';
 
-import { Clips as ClipsComponent } from '@/libs/components/Clips';
-import { Keymaps } from '@/libs/components/Keymaps';
-import { Text } from '@/libs/components/Text';
+import { Clips as ClipsComponent } from '@/libs/nativeComponents/Clips';
+import { Keymaps } from '@/libs/nativeComponents/Keymaps';
+import { Text } from '@/libs/nativeComponents/Text';
 import { btn1, btn2, btn5, btn6, ScreenWidth } from '../constants';
 
 export type Props = {

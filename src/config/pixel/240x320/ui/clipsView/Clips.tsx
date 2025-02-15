@@ -1,7 +1,7 @@
 import * as React from '@/libs/react';
 
-import { Clips as ClipsComponent } from '@/libs/components/Clips';
-import { Keymaps } from '@/libs/components/Keymaps';
+import { Clips as ClipsComponent } from '@/libs/nativeComponents/Clips';
+import { Keymaps } from '@/libs/nativeComponents/Keymaps';
 import { W1_8 } from '../constants';
 
 export type Props = {

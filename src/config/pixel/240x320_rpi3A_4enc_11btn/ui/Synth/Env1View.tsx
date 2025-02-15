@@ -1,7 +1,7 @@
 import * as React from '@/libs/react';
 
-import { Adsr } from '@/libs/components/Adsr';
-import { View } from '@/libs/components/View';
+import { Adsr } from '@/libs/nativeComponents/Adsr';
+import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
 import { ColorTrack4, SynthTrack } from '../constants';
 import { halfFullValues } from '../constantsValue';

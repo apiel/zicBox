@@ -1,7 +1,7 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
 local React = require("config.libs.react")
-local ____Value = require("config.libs.components.Value")
+local ____Value = require("config.libs.nativeComponents.Value")
 local Value = ____Value.Value
 local ____constants = require("config.pixel.240x320.ui.constants")
 local KeyInfoPosition = ____constants.KeyInfoPosition

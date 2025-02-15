@@ -1,11 +1,11 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
 local React = require("config.libs.react")
-local ____Clips = require("config.libs.components.Clips")
+local ____Clips = require("config.libs.nativeComponents.Clips")
 local ClipsComponent = ____Clips.Clips
-local ____Keymaps = require("config.libs.components.Keymaps")
+local ____Keymaps = require("config.libs.nativeComponents.Keymaps")
 local Keymaps = ____Keymaps.Keymaps
-local ____Text = require("config.libs.components.Text")
+local ____Text = require("config.libs.nativeComponents.Text")
 local Text = ____Text.Text
 local ____constants = require("config.pixel.240x320_kick.ui.constants")
 local ScreenWidth = ____constants.ScreenWidth

@@ -47,12 +47,6 @@ function ____exports.getJsonComponent(componentName, pluginPath)
         return {{COMPONENT = COMPONENT}}
     end
 end
---- Create a component
--- 
--- @param name string - The name of the component to create.
--- @param position string | string[] - The position of the component.
--- @param values table - An array of Zic values to apply to the component.
--- @returns table
 function ____exports.getComponent(name, bounds, values)
     if values == nil then
         values = {}
@@ -61,17 +55,6 @@ function ____exports.getComponent(name, bounds, values)
         {COMPONENT = (name .. " ") .. ____exports.getPosition(bounds)},
         values
     }
-end
---- Create a component
--- 
--- @param name string - The name of the component to create.
--- @param position string | string[] - The position of the component.
--- @param values table - An array of Zic values to apply to the component.
-function ____exports.component(name, bounds, values)
-    if values == nil then
-        values = {}
-    end
-    applyZic(____exports.getComponent(name, bounds, values))
 end
 --- Add a zone encoder
 -- 

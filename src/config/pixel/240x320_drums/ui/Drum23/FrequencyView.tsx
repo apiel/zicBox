@@ -1,7 +1,7 @@
 import * as React from '@/libs/react';
 
-import { MacroEnvelop } from '@/libs/components/MacroEnvelop';
-import { View } from '@/libs/components/View';
+import { MacroEnvelop } from '@/libs/nativeComponents/MacroEnvelop';
+import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
 import { Drum23Track } from '../constants';
 import { fullValues } from '../constantsValue';

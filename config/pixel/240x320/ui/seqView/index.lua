@@ -1,11 +1,11 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
 local React = require("config.libs.react")
-local ____HiddenValue = require("config.libs.components.HiddenValue")
+local ____HiddenValue = require("config.libs.nativeComponents.HiddenValue")
 local HiddenValue = ____HiddenValue.HiddenValue
-local ____Keymap = require("config.libs.components.Keymap")
+local ____Keymap = require("config.libs.nativeComponents.Keymap")
 local Keymap = ____Keymap.Keymap
-local ____View = require("config.libs.components.View")
+local ____View = require("config.libs.nativeComponents.View")
 local View = ____View.View
 local ____constants = require("config.pixel.240x320.ui.constants")
 local ColorTrack1 = ____constants.ColorTrack1

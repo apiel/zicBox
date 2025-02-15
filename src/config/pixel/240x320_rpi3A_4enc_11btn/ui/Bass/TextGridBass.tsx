@@ -1,6 +1,6 @@
 import * as React from '@/libs/react';
 
-import { Rect } from '@/libs/components/Rect';
+import { Rect } from '@/libs/nativeComponents/Rect';
 import { Bass } from '../components/Common';
 import { SideInfo } from '../components/SideInfo';
 import { TextGridSel } from '../components/TextGridSel';
