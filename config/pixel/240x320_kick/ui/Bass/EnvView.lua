@@ -25,28 +25,28 @@ function ____exports.BassEnvView(____bindingPattern0)
         {name = name},
         React.createElement(KnobValue, {
             value = "Bass DURATION",
-            position = topLeftKnob,
+            bounds = topLeftKnob,
             encoder_id = 0,
             COLOR = "tertiary",
             track = BassTrack
         }),
         React.createElement(KnobValue, {
             value = "Bass DECAY_LEVEL",
-            position = topRightKnob,
+            bounds = topRightKnob,
             encoder_id = 1,
             COLOR = "primary",
             track = BassTrack
         }),
         React.createElement(KnobValue, {
             value = "Bass DECAY_TIME",
-            position = bottomLeftKnob,
+            bounds = bottomLeftKnob,
             encoder_id = 2,
             COLOR = "quaternary",
             track = BassTrack
         }),
         React.createElement(KnobValue, {
             value = "Bass REVERB",
-            position = bottomRightKnob,
+            bounds = bottomRightKnob,
             encoder_id = 3,
             COLOR = "secondary",
             track = BassTrack

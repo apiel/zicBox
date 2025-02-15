@@ -5,14 +5,14 @@ import { SeqProgressBar } from '@/libs/components/SeqProgressBar';
 import { rgb } from '@/libs/ui';
 import { ScreenWidth } from '../constants';
 
-export type Props = Omit<ComponentProps, 'position'> & {
+export type Props = Omit<ComponentProps, 'bounds'> & {
     y: number;
 };
 
 export function ProgressBar({ y, ...props }: Props) {
     return (
         <SeqProgressBar
-            position={[0, y, ScreenWidth, 5]}
+            bounds={[0, y, ScreenWidth, 5]}
             seq_plugin="Sequencer 1"
             track={0}
             active_color={rgb(35, 161, 35)}

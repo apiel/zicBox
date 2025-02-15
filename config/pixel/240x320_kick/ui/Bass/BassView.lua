@@ -25,28 +25,28 @@ function ____exports.BassView(____bindingPattern0)
         {name = name},
         React.createElement(KnobValue, {
             value = "TrackFx VOLUME",
-            position = topLeftKnob,
+            bounds = topLeftKnob,
             encoder_id = 0,
             COLOR = "tertiary",
             track = BassTrack
         }),
         React.createElement(KnobValue, {
             value = "Bass CUTOFF",
-            position = topRightKnob,
+            bounds = topRightKnob,
             encoder_id = 1,
             COLOR = "primary",
             track = BassTrack
         }),
         React.createElement(KnobValue, {
             value = "Bass FREQ_RATIO",
-            position = bottomLeftKnob,
+            bounds = bottomLeftKnob,
             encoder_id = 2,
             COLOR = "quaternary",
             track = BassTrack
         }),
         React.createElement(KnobValue, {
             value = "Bass RESONANCE",
-            position = bottomRightKnob,
+            bounds = bottomRightKnob,
             encoder_id = 3,
             COLOR = "secondary",
             track = BassTrack

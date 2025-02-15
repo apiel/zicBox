@@ -27,21 +27,21 @@ function ____exports.Fm1FxView(____bindingPattern0)
         {name = name},
         React.createElement(KnobValue, {
             value = "FmDrum NOISE_LEVEL",
-            position = topLeftKnob,
+            bounds = topLeftKnob,
             encoder_id = encTopLeft,
             COLOR = "tertiary",
             track = Fm1Track
         }),
         React.createElement(KnobValue, {
             value = "FmDrum DISTORTION",
-            position = topRightKnob,
+            bounds = topRightKnob,
             encoder_id = encTopRight,
             COLOR = "primary",
             track = Fm1Track
         }),
         React.createElement(KnobValue, {
             value = "FmDrum REVERB",
-            position = bottomLeftKnob,
+            bounds = bottomLeftKnob,
             encoder_id = encBottomLeft,
             COLOR = "quaternary",
             track = Fm1Track

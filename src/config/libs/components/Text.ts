@@ -5,13 +5,13 @@ import { ComponentProps } from './component';
 export type Props = ComponentProps & {
 };
 
-export function Text({ position, track, ...props }: Props) {
+export function Text({ bounds, track, ...props }: Props) {
     initializePlugin('Text', 'libzic_TextComponent.so');
-    // return getComponent('Text', position, [{ track }, props]);
+    // return getComponent('Text', bounds, [{ track }, props]);
 
     const jsonConfig = jsonStringify({ 
         componentName: 'Text',
-        bounds: getBounds(position), // TODO rename to getBounds
+        bounds: getBounds(bounds), // TODO rename to getBounds
         ...props,
      });
      console.log('My config:', jsonConfig);
@@ -21,5 +21,5 @@ export function Text({ position, track, ...props }: Props) {
 
 
 // export function getComponent(name: string, position: Position, values: ZicValue[] = []) {
-//     return [{ COMPONENT: `${name} ${getPosition(position)}` }, values];
+//     return [{ COMPONENT: `${name} ${getPosition(bounds)}` }, values];
 // }

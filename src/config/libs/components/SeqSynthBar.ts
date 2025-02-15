@@ -5,9 +5,9 @@ export type Props = ComponentProps & {
     seq_plugin: string;
 };
 
-export function SeqSynthBar({ position, track, seq_plugin, ...props }: Props) {
+export function SeqSynthBar({ bounds, track, seq_plugin, ...props }: Props) {
     initializePlugin('SeqSynthBar', 'libzic_SeqSynthBarComponent.so');
-    return getComponent('SeqSynthBar', position, [
+    return getComponent('SeqSynthBar', bounds, [
         { track },
         { seq_plugin },
         props,

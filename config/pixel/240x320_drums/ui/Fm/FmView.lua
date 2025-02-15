@@ -24,22 +24,22 @@ function ____exports.FmView(____bindingPattern0)
         {name = name},
         React.createElement(KnobValue, {
             value = "TrackFx VOLUME",
-            position = topLeftKnob,
+            bounds = topLeftKnob,
             encoder_id = 0,
             COLOR = "tertiary",
             track = FmTrack
         }),
         React.createElement(KnobValue, {
             value = "FmDrum CARRIER_FREQ",
-            position = topRightKnob,
+            bounds = topRightKnob,
             encoder_id = 2,
             COLOR = "secondary",
             track = FmTrack
         }),
-        React.createElement(KnobValue, {value = "FmDrum MOD_FREQ", position = bottomLeftKnob, encoder_id = 1, track = FmTrack}),
+        React.createElement(KnobValue, {value = "FmDrum MOD_FREQ", bounds = bottomLeftKnob, encoder_id = 1, track = FmTrack}),
         React.createElement(KnobValue, {
             value = "FmDrum MOD_INDEX",
-            position = bottomRightKnob,
+            bounds = bottomRightKnob,
             encoder_id = 3,
             COLOR = "secondary",
             track = FmTrack

@@ -15,7 +15,7 @@ export function FrequencyView({ name }: Props) {
     return (
         <View name={name}>
             <MacroEnvelop
-                position={fullValues}
+                bounds={fullValues}
                 plugin="Drum23"
                 envelop_data_id="ENV_FREQ2"
                 track={Drum23Track}

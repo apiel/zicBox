@@ -6,7 +6,7 @@ export type Props = ComponentProps & {
     text?: string;
 };
 
-export function Spectrogram({ position, track, data, text, ...props }: Props) {
+export function Spectrogram({ bounds, track, data, text, ...props }: Props) {
     initializePlugin('Spectrogram', 'libzic_SpectrogramComponent.so');
-    return getComponent('Spectrogram', position, [{ track }, { data, text }, props]);
+    return getComponent('Spectrogram', bounds, [{ track }, { data, text }, props]);
 }

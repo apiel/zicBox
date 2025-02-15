@@ -6,12 +6,12 @@ local getPosition = ____ui.getPosition
 function ____exports.VisibilityContainer(____bindingPattern0)
     local props
     local group
-    local position
-    position = ____bindingPattern0.position
+    local bounds
+    bounds = ____bindingPattern0.bounds
     group = ____bindingPattern0.group
-    props = __TS__ObjectRest(____bindingPattern0, {position = true, group = true})
+    props = __TS__ObjectRest(____bindingPattern0, {bounds = true, group = true})
     return {
-        {CONTAINER = "VisibilityContainer " .. getPosition(position)},
+        {CONTAINER = "VisibilityContainer " .. getPosition(bounds)},
         {VISIBILITY_GROUP = group},
         props
     }

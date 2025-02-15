@@ -24,7 +24,7 @@ export function TextGridPerc({ selected, viewName }: { selected: string; viewNam
     return (
         <>
             <Title title={Perc} />
-            <Rect position={[70, 28, 6, 6]} color={ColorTrack6} />
+            <Rect bounds={[70, 28, 6, 6]} color={ColorTrack6} />
             <TextGridSel
                 selectedBackground={ColorTrack6}
                 rows={['Main Fx Env Noise1', 'Seq. Seq2 Mod. Noise2']}

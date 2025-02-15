@@ -20,7 +20,7 @@ function ____exports.CreateWorkspaceView(____bindingPattern0)
         {name = name},
         React.createElement(
             Keyboard,
-            {position = {0, 40, ScreenWidth, 200}, redirect_view = "Workspaces", done_data = "SerializeTrack CREATE_WORKSPACE"},
+            {bounds = {0, 40, ScreenWidth, 200}, redirect_view = "Workspaces", done_data = "SerializeTrack CREATE_WORKSPACE"},
             React.createElement(Keymaps, {keys = {
                 {key = "q", action = ".type"},
                 {key = "w", action = ".up"},
@@ -29,7 +29,7 @@ function ____exports.CreateWorkspaceView(____bindingPattern0)
                 {key = "d", action = ".right"}
             }})
         ),
-        React.createElement(TextGrid, {position = KeyInfoPositionCenter, rows = {"Type &icon::arrowUp::filled &empty", "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled"}})
+        React.createElement(TextGrid, {bounds = KeyInfoPositionCenter, rows = {"Type &icon::arrowUp::filled &empty", "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled"}})
     )
 end
 return ____exports

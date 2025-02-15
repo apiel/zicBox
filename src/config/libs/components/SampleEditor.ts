@@ -4,7 +4,7 @@ import { ComponentProps } from './component';
 export type Props = ComponentProps & {
 };
 
-export function SampleEditor({ position, track, ...props }: Props) {
+export function SampleEditor({ bounds, track, ...props }: Props) {
     initializePlugin('SampleEditor', 'libzic_SampleEditorComponent.so');
-    return getComponent('SampleEditor', position, [{ track }, props]);
+    return getComponent('SampleEditor', bounds, [{ track }, props]);
 }

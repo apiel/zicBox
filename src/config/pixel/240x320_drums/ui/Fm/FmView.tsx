@@ -16,27 +16,27 @@ export function FmView({ name }: Props) {
         <View name={name}>
             <KnobValue
                 value="TrackFx VOLUME"
-                position={topLeftKnob}
+                bounds={topLeftKnob}
                 encoder_id={0}
                 COLOR="tertiary"
                 track={FmTrack}
             />
             <KnobValue
                 value="FmDrum CARRIER_FREQ"
-                position={topRightKnob}
+                bounds={topRightKnob}
                 encoder_id={2}
                 COLOR="secondary"
                 track={FmTrack}
             />
             <KnobValue
                 value="FmDrum MOD_FREQ"
-                position={bottomLeftKnob}
+                bounds={bottomLeftKnob}
                 encoder_id={1}
                 track={FmTrack}
             />
             <KnobValue
                 value="FmDrum MOD_INDEX"
-                position={bottomRightKnob}
+                bounds={bottomRightKnob}
                 encoder_id={3}
                 COLOR="secondary"
                 track={FmTrack}

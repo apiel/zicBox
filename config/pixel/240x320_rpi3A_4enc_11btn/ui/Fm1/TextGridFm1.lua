@@ -31,7 +31,7 @@ function ____exports.TextGridFm1(____bindingPattern0)
         React.Fragment,
         nil,
         React.createElement(Title, {title = Fm1}),
-        React.createElement(Rect, {position = {70, 28, 6, 6}, color = ColorTrack2}),
+        React.createElement(Rect, {bounds = {70, 28, 6, 6}, color = ColorTrack2}),
         React.createElement(TextGridSel, {
             selectedBackground = ColorTrack2,
             rows = {"Main Fx Env &empty", "Seq. &empty &empty &empty"},

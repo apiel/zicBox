@@ -9,7 +9,7 @@ export function TextGridDrum23({ selected, viewName }: { selected: number; viewN
     return (
         <>
             <Title title="Kick" />
-            <Rect position={[70, 28, 6, 6]} color={ColorTrack1} />
+            <Rect bounds={[70, 28, 6, 6]} color={ColorTrack1} />
             <TextGridSel
                 ITEM_BACKGROUND={ColorTrack1}
                 items={[

@@ -14,7 +14,7 @@ export function CreateWorkspaceView({ name }: Props) {
     return (
         <View name={name}>
             <Keyboard
-                position={[0, 40, ScreenWidth, 200]}
+                bounds={[0, 40, ScreenWidth, 200]}
                 redirect_view="Workspaces"
                 done_data="SerializeTrack CREATE_WORKSPACE"
             >
@@ -30,7 +30,7 @@ export function CreateWorkspaceView({ name }: Props) {
             </Keyboard>
 
             <TextGrid
-                position={KeyInfoPositionCenter}
+                bounds={KeyInfoPositionCenter}
                 rows={[
                     'Type &icon::arrowUp::filled &empty',
                     '&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled',

@@ -20,28 +20,28 @@ export function SynthView({ name }: Props) {
         <View name={name}>
             <KnobValue
                 value="TrackFx VOLUME"
-                position={topLeftKnob}
+                bounds={topLeftKnob}
                 encoder_id={encTopLeft}
                 COLOR="tertiary"
                 track={SynthTrack}
             />
             <KnobValue
                 value="Synth OSC_MIX"
-                position={topRightKnob}
+                bounds={topRightKnob}
                 encoder_id={encTopRight}
                 COLOR="primary"
                 track={SynthTrack}
             />
             <KnobValue
                 value="Synth FM_AMOUNT"
-                position={bottomLeftKnob}
+                bounds={bottomLeftKnob}
                 encoder_id={encBottomLeft}
                 COLOR="quaternary"
                 track={SynthTrack}
             />
             {/* <KnobValue
                 value="Synth MOD_INDEX"
-                position={bottomRightKnob}
+                bounds={bottomRightKnob}
                 encoder_id={encBottomRight}
                 COLOR="secondary"
                 track={SynthTrack}

@@ -14,14 +14,14 @@ export function ShutdownView({ name }: Props) {
     return (
         <View name={name}>
             <Text
-                position={[0, 0, ScreenWidth, 280]}
+                bounds={[0, 0, ScreenWidth, 280]}
                 text="Are you sure to shutdown?"
                 color="#ffacac" //#ffacac
                 centered
             />
 
             <TextGrid
-                position={KeyInfoPositionCenter}
+                bounds={KeyInfoPositionCenter}
                 rows={['&empty &empty &empty', 'Yes &empty No']}
             >
                 <Keymap key="q" action="shutdown" />

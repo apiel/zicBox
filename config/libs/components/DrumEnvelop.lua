@@ -9,13 +9,13 @@ function ____exports.DrumEnvelop(____bindingPattern0)
     local envelop_data_id
     local plugin
     local track
-    local position
-    position = ____bindingPattern0.position
+    local bounds
+    bounds = ____bindingPattern0.bounds
     track = ____bindingPattern0.track
     plugin = ____bindingPattern0.plugin
     envelop_data_id = ____bindingPattern0.envelop_data_id
-    props = __TS__ObjectRest(____bindingPattern0, {position = true, track = true, plugin = true, envelop_data_id = true})
+    props = __TS__ObjectRest(____bindingPattern0, {bounds = true, track = true, plugin = true, envelop_data_id = true})
     initializePlugin("DrumEnvelop", "libzic_DrumEnvelopComponent.so")
-    return getComponent("DrumEnvelop", position, {{track = track}, {plugin = plugin}, {envelop_data_id = envelop_data_id}, props})
+    return getComponent("DrumEnvelop", bounds, {{track = track}, {plugin = plugin}, {envelop_data_id = envelop_data_id}, props})
 end
 return ____exports

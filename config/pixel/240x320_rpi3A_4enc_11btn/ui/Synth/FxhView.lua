@@ -27,21 +27,21 @@ function ____exports.SynthFxView(____bindingPattern0)
         {name = name},
         React.createElement(KnobValue, {
             value = "TrackFx VOLUME",
-            position = topLeftKnob,
+            bounds = topLeftKnob,
             encoder_id = encTopLeft,
             COLOR = "tertiary",
             track = SynthTrack
         }),
         React.createElement(KnobValue, {
             value = "Synth DISTORTION",
-            position = topRightKnob,
+            bounds = topRightKnob,
             encoder_id = encTopRight,
             COLOR = "primary",
             track = SynthTrack
         }),
         React.createElement(KnobValue, {
             value = "Synth REVERB",
-            position = bottomLeftKnob,
+            bounds = bottomLeftKnob,
             encoder_id = encBottomLeft,
             COLOR = "quaternary",
             track = SynthTrack

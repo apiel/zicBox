@@ -49,7 +49,7 @@ local function Seq(____bindingPattern0)
             return React.createElement(
                 StepEditMono,
                 {
-                    position = {x, yy, w, 8},
+                    bounds = {x, yy, w, 8},
                     data = "Sequencer " .. tostring(i),
                     group = i,
                     playing_color = rgb(35, 161, 35),
@@ -72,7 +72,7 @@ function ____exports.DrumsSeqView(____bindingPattern0)
     return React.createElement(
         View,
         {name = name},
-        React.createElement(Text, {text = " Snare", position = {0, 0, w, 9}, background_color = ColorTrack3, color = "text"}),
+        React.createElement(Text, {text = " Snare", bounds = {0, 0, w, 9}, background_color = ColorTrack3, color = "text"}),
         React.createElement(Seq, {
             x = 0,
             w = w,
@@ -80,7 +80,7 @@ function ____exports.DrumsSeqView(____bindingPattern0)
             encoder = 0,
             color = ColorTrack3
         }),
-        React.createElement(Text, {text = " HiHat", position = {w, 0, w, 9}, background_color = ColorTrack4, color = "text"}),
+        React.createElement(Text, {text = " HiHat", bounds = {w, 0, w, 9}, background_color = ColorTrack4, color = "text"}),
         React.createElement(Seq, {
             x = w,
             w = w,
@@ -88,7 +88,7 @@ function ____exports.DrumsSeqView(____bindingPattern0)
             encoder = 1,
             color = ColorTrack4
         }),
-        React.createElement(Text, {text = " Sample", position = {2 * w, 0, w, 9}, background_color = ColorTrack5, color = "text"}),
+        React.createElement(Text, {text = " Sample", bounds = {2 * w, 0, w, 9}, background_color = ColorTrack5, color = "text"}),
         React.createElement(Seq, {
             x = w * 2,
             w = w,
@@ -99,7 +99,7 @@ function ____exports.DrumsSeqView(____bindingPattern0)
         }),
         React.createElement(
             TextGrid,
-            {position = KeyInfoPosition, rows = {"&icon::arrowUp::filled &empty ...", "&icon::arrowDown::filled Drums &icon::musicNote::pixelated"}},
+            {bounds = KeyInfoPosition, rows = {"&icon::arrowUp::filled &empty ...", "&icon::arrowDown::filled Drums &icon::musicNote::pixelated"}},
             React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 0}),
             React.createElement(Keymaps, {keys = {
                 {key = "q", action = "incGroup:-1"},

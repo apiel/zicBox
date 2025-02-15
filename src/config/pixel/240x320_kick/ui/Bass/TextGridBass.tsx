@@ -9,7 +9,7 @@ export function TextGridBass({ selected, viewName }: { selected: number; viewNam
     return (
         <>
             <Title title="Bass" />
-            <Rect position={[70, 28, 6, 6]} color={ColorTrack2} />
+            <Rect bounds={[70, 28, 6, 6]} color={ColorTrack2} />
             <TextGridSel
                 ITEM_BACKGROUND={ColorTrack2}
                 items={['Fx1/Fx2', 'Env', '...', 'Seq.', 'Waveform', '&icon::musicNote::pixelated']}

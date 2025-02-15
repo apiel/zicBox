@@ -32,7 +32,7 @@ function ____exports.TextGridPerc(____bindingPattern0)
         React.Fragment,
         nil,
         React.createElement(Title, {title = Perc}),
-        React.createElement(Rect, {position = {70, 28, 6, 6}, color = ColorTrack6}),
+        React.createElement(Rect, {bounds = {70, 28, 6, 6}, color = ColorTrack6}),
         React.createElement(TextGridSel, {
             selectedBackground = ColorTrack6,
             rows = {"Main Fx Env Noise1", "Seq. Seq2 Mod. Noise2"},

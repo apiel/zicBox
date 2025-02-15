@@ -27,7 +27,7 @@ import {
 } from './constants';
 import { SeqValues } from './SeqValues';
 
-export type Props = Omit<ComponentProps, 'position'> & {
+export type Props = Omit<ComponentProps, 'bounds'> & {
     group: number;
     track: number;
     context: number;
@@ -38,9 +38,9 @@ export function Drum23Values({ group, track, context }: Props) {
         <>
             <Log text="Drum23Values" />
             
-            <VisibilityContainer position={posTopContainer} group={group}>
+            <VisibilityContainer bounds={posTopContainer} group={group}>
                 <Spectrogram
-                    position={[0, 0, ScreenWidth, 70]}
+                    bounds={[0, 0, ScreenWidth, 70]}
                     track={0}
                     data="Spectrogram BUFFER"
                     text="Pixel"
@@ -60,7 +60,7 @@ function Main({ group, track, context }: Props) {
         <Container group={group} context={context} values={{ seq: 0, menu: 0 }}>
             <Value
                 value="Volume VOLUME"
-                position={topLeft}
+                bounds={topLeft}
                 group={group}
                 track={track}
                 encoder_id={0}
@@ -68,7 +68,7 @@ function Main({ group, track, context }: Props) {
             />
             <Value
                 value="Drum23 GAIN_CLIPPING"
-                position={bottomLeft}
+                bounds={bottomLeft}
                 group={group}
                 track={track}
                 encoder_id={1}
@@ -76,7 +76,7 @@ function Main({ group, track, context }: Props) {
             />
             <Value
                 value="MMFilter CUTOFF"
-                position={topRight}
+                bounds={topRight}
                 group={group}
                 track={track}
                 encoder_id={2}
@@ -85,7 +85,7 @@ function Main({ group, track, context }: Props) {
             />
             <Value
                 value="MMFilter RESONANCE"
-                position={bottomRight}
+                bounds={bottomRight}
                 group={group}
                 track={track}
                 encoder_id={3}
@@ -112,7 +112,7 @@ function EditDistortion({ group, track, context, menu }: Props & { menu: number 
         <Container group={group} context={context} values={{ seq: 0, menu }}>
             <Value
                 value="Distortion WAVESHAPE"
-                position={topLeft}
+                bounds={topLeft}
                 group={group}
                 track={track}
                 encoder_id={0}
@@ -120,7 +120,7 @@ function EditDistortion({ group, track, context, menu }: Props & { menu: number 
             />
             <Value
                 value="Distortion DRIVE"
-                position={bottomLeft}
+                bounds={bottomLeft}
                 group={group}
                 track={track}
                 encoder_id={1}
@@ -128,7 +128,7 @@ function EditDistortion({ group, track, context, menu }: Props & { menu: number 
             />
             <Value
                 value="Distortion COMPRESS"
-                position={topRight}
+                bounds={topRight}
                 group={group}
                 track={track}
                 encoder_id={2}
@@ -136,7 +136,7 @@ function EditDistortion({ group, track, context, menu }: Props & { menu: number 
             />
             <Value
                 value="Distortion BASS"
-                position={bottomRight}
+                bounds={bottomRight}
                 group={group}
                 track={track}
                 encoder_id={3}
@@ -150,7 +150,7 @@ function EditWaveform({ group, track, context, menu }: Props & { menu: number })
     return (
         <Container group={group} context={context} values={{ seq: 0, menu }}>
             <GraphEncoder
-                position={[0, 0, ScreenWidth, height]}
+                bounds={[0, 0, ScreenWidth, height]}
                 track={track}
                 plugin="Drum23"
                 data_id="WAVEFORM"
@@ -164,10 +164,10 @@ function EditWaveform({ group, track, context, menu }: Props & { menu: number })
 function EditEnvAmp({ group, track, context, menu }: Props & { menu: number }) {
     return (
         <Container group={group} context={context} values={{ seq: 0, menu }}>
-            <Rect position={[0, 0, ScreenWidth, height]} />
+            <Rect bounds={[0, 0, ScreenWidth, height]} />
 
             <DrumEnvelop
-                position={[0, 0, W3_4 - 2, height]}
+                bounds={[0, 0, W3_4 - 2, height]}
                 track={track}
                 plugin="Drum23"
                 envelop_data_id="0"
@@ -178,7 +178,7 @@ function EditEnvAmp({ group, track, context, menu }: Props & { menu: number }) {
             />
 
             <KnobValue
-                position={[W3_4, (height - encoderH) * 0.5, W1_4, encoderH]}
+                bounds={[W3_4, (height - encoderH) * 0.5, W1_4, encoderH]}
                 track={track}
                 value="Drum23 DURATION"
                 encoder_id={3}
@@ -191,10 +191,10 @@ function EditEnvAmp({ group, track, context, menu }: Props & { menu: number }) {
 function EditEnvFreq({ group, track, context, menu }: Props & { menu: number }) {
     return (
         <Container group={group} context={context} values={{ seq: 0, menu }}>
-            <Rect position={[0, 0, ScreenWidth, height]} />
+            <Rect bounds={[0, 0, ScreenWidth, height]} />
 
             <DrumEnvelop
-                position={[0, 0, W3_4 - 2, height]}
+                bounds={[0, 0, W3_4 - 2, height]}
                 track={track}
                 plugin="Drum23"
                 envelop_data_id="4"
@@ -205,7 +205,7 @@ function EditEnvFreq({ group, track, context, menu }: Props & { menu: number }) 
             />
 
             <KnobValue
-                position={[W3_4, (height - encoderH) * 0.5, W1_4, encoderH]}
+                bounds={[W3_4, (height - encoderH) * 0.5, W1_4, encoderH]}
                 track={track}
                 value="Drum23 PITCH"
                 encoder_id={3}
@@ -220,7 +220,7 @@ function EditClick({ group, track, context, menu }: Props & { menu: number }) {
         <Container group={group} context={context} values={{ seq: 0, menu }}>
             <Value
                 value="Drum23 CLICK"
-                position={topLeft}
+                bounds={topLeft}
                 group={group}
                 track={track}
                 encoder_id={0}
@@ -228,7 +228,7 @@ function EditClick({ group, track, context, menu }: Props & { menu: number }) {
             />
             <Value
                 value="Drum23 CLICK_DURATION"
-                position={bottomLeft}
+                bounds={bottomLeft}
                 group={group}
                 track={track}
                 encoder_id={1}
@@ -236,7 +236,7 @@ function EditClick({ group, track, context, menu }: Props & { menu: number }) {
             />
             <Value
                 value="Drum23 CLICK_CUTOFF"
-                position={topRight}
+                bounds={topRight}
                 group={group}
                 track={track}
                 encoder_id={2}
@@ -245,7 +245,7 @@ function EditClick({ group, track, context, menu }: Props & { menu: number }) {
             />
             <Value
                 value="Drum23 CLICK_RESONANCE"
-                position={bottomRight}
+                bounds={bottomRight}
                 group={group}
                 track={track}
                 encoder_id={3}
@@ -265,7 +265,7 @@ function Container({
     values: { seq: number; menu: number };
 }) {
     return (
-        <VisibilityContainer position={posContainerValues} group={group}>
+        <VisibilityContainer bounds={posContainerValues} group={group}>
             <VisibilityContext index={10} condition="SHOW_WHEN" value={values.seq} />
             <VisibilityContext index={context} condition="SHOW_WHEN" value={values.menu} />
         </VisibilityContainer>

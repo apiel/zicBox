@@ -24,7 +24,7 @@ export function TextGridBass({ selected, viewName }: { selected: string; viewNam
     return (
         <>
             <Title title={Bass} />
-            <Rect position={[70, 28, 6, 6]} color={ColorTrack2} />
+            <Rect bounds={[70, 28, 6, 6]} color={ColorTrack2} />
             <TextGridSel
                 selectedBackground={ColorTrack2}
                 rows={['Main Fx Env Wave', 'Seq. &empty &empty &empty']}

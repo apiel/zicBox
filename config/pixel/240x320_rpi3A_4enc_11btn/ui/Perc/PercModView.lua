@@ -29,28 +29,28 @@ function ____exports.PercModView(____bindingPattern0)
         {name = name},
         React.createElement(KnobValue, {
             value = "Perc FM_FREQ",
-            position = topLeftKnob,
+            bounds = topLeftKnob,
             encoder_id = encTopLeft,
             COLOR = "tertiary",
             track = PercTrack
         }),
         React.createElement(KnobValue, {
             value = "Perc FM_AMP",
-            position = topRightKnob,
+            bounds = topRightKnob,
             encoder_id = encTopRight,
             COLOR = "primary",
             track = PercTrack
         }),
         React.createElement(KnobValue, {
             value = "Perc ENV_MOD",
-            position = bottomLeftKnob,
+            bounds = bottomLeftKnob,
             encoder_id = encBottomLeft,
             COLOR = "quaternary",
             track = PercTrack
         }),
         React.createElement(KnobValue, {
             value = "Perc ENV_SHAPE",
-            position = bottomRightKnob,
+            bounds = bottomRightKnob,
             encoder_id = encBottomRight,
             COLOR = "secondary",
             track = PercTrack

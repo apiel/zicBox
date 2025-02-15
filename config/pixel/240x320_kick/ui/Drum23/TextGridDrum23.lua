@@ -18,7 +18,7 @@ function ____exports.TextGridDrum23(____bindingPattern0)
         React.Fragment,
         nil,
         React.createElement(Title, {title = "Kick"}),
-        React.createElement(Rect, {position = {70, 28, 6, 6}, color = ColorTrack1}),
+        React.createElement(Rect, {bounds = {70, 28, 6, 6}, color = ColorTrack1}),
         React.createElement(TextGridSel, {
             ITEM_BACKGROUND = ColorTrack1,
             items = {

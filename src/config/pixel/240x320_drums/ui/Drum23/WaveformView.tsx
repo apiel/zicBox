@@ -16,7 +16,7 @@ export function WaveformView({ name }: Props) {
     return (
         <View name={name}>
             <GraphEncoder
-                position={topValues}
+                bounds={topValues}
                 plugin="Drum23"
                 data_id="WAVEFORM"
                 RENDER_TITLE_ON_TOP={false}
@@ -24,7 +24,7 @@ export function WaveformView({ name }: Props) {
                 track={Drum23Track}
             />
             <KnobValue
-                position={bottomRightKnob}
+                bounds={bottomRightKnob}
                 value="Drum23 PITCH"
                 encoder_id={3}
                 color="secondary"

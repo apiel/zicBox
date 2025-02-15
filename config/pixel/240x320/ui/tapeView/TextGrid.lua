@@ -12,7 +12,7 @@ end
 function ____exports.TextGridTape()
     return React.createElement(
         TextGrid,
-        {position = KeyInfoPosition, rows = {"&icon::play::filled Save &empty", "&icon::arrowLeft::filled Home &icon::arrowRight::filled"}},
+        {bounds = KeyInfoPosition, rows = {"&icon::play::filled Save &empty", "&icon::arrowLeft::filled Home &icon::arrowRight::filled"}},
         React.createElement(Keymaps, {keys = {{key = "w", action = "setView:SaveTape"}, {key = "s", action = "setView:Home"}}})
     )
 end

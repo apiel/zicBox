@@ -16,35 +16,35 @@ export function BassFxView({ name }: Props) {
         <View name={name}>
             <KnobValue
                 value="Bass BOOST"
-                position={topLeftKnob}
+                bounds={topLeftKnob}
                 encoder_id={encTopLeft}
                 COLOR="tertiary"
                 track={BassTrack}
             />
             <KnobValue
                 value="Bass GAIN_CLIPPING"
-                position={topRightKnob}
+                bounds={topRightKnob}
                 encoder_id={encTopRight}
                 COLOR="primary"
                 track={BassTrack}
             />
             {/* <KnobValue
                 value="Distortion DRIVE"
-                position={bottomLeftKnob}
+                bounds={bottomLeftKnob}
                 encoder_id={encBottomLeft}
                 COLOR="quaternary"
                 track={BassTrack}
             />
             <KnobValue
                 value="Distortion BASS"
-                position={bottomRightKnob}
+                bounds={bottomRightKnob}
                 encoder_id={encBottomRight}
                 COLOR="secondary"
                 track={BassTrack}
             /> */}
             <KnobValue
                 value="Bass REVERB"
-                position={bottomRightKnob}
+                bounds={bottomRightKnob}
                 encoder_id={encBottomRight}
                 COLOR="secondary"
                 track={BassTrack}

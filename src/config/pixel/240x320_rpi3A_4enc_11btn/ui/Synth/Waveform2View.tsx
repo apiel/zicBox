@@ -16,7 +16,7 @@ export function SynthWaveform2View({ name }: Props) {
     return (
         <View name={name}>
             <GraphEncoder
-                position={topValues}
+                bounds={topValues}
                 plugin="Synth"
                 data_id="WAVEFORM2"
                 RENDER_TITLE_ON_TOP={true}
@@ -26,7 +26,7 @@ export function SynthWaveform2View({ name }: Props) {
 
             <KnobValue
                 value="Synth FREQ_2"
-                position={bottomLeftKnob}
+                bounds={bottomLeftKnob}
                 encoder_id={encBottomLeft}
                 COLOR="quaternary"
                 track={SynthTrack}

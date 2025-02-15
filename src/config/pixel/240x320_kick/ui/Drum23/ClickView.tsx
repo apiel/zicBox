@@ -21,28 +21,28 @@ export function ClickView({ name }: Props) {
         <View name={name}>
             <KnobValue
                 value="Drum23 CLICK"
-                position={topLeftKnob}
+                bounds={topLeftKnob}
                 encoder_id={0}
                 COLOR="tertiary"
                 track={Drum23Track}
             />
             <KnobValue
                 value="Drum23 CLICK_CUTOFF"
-                position={topRightKnob}
+                bounds={topRightKnob}
                 encoder_id={1}
                 COLOR="primary"
                 track={Drum23Track}
             />
             <KnobValue
                 value="Drum23 CLICK_DURATION"
-                position={bottomLeftKnob}
+                bounds={bottomLeftKnob}
                 encoder_id={2}
                 COLOR="quaternary"
                 track={Drum23Track}
             />
             <KnobValue
                 value="Drum23 HIGH_FREQ_BOOST"
-                position={bottomRightKnob}
+                bounds={bottomRightKnob}
                 encoder_id={3}
                 COLOR="secondary"
                 track={Drum23Track}

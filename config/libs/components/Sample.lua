@@ -8,20 +8,20 @@ function ____exports.Sample(____bindingPattern0)
     local props
     local plugin
     local track
-    local position
-    position = ____bindingPattern0.position
+    local bounds
+    bounds = ____bindingPattern0.bounds
     track = ____bindingPattern0.track
     plugin = ____bindingPattern0.plugin
     local data_id = ____bindingPattern0.data_id
     local encoders = ____bindingPattern0.encoders
     props = __TS__ObjectRest(____bindingPattern0, {
-        position = true,
+        bounds = true,
         track = true,
         plugin = true,
         data_id = true,
         encoders = true
     })
     initializePlugin("Sample", "libzic_SampleComponent.so")
-    return getComponent("Sample", position, {{track = track}, {plugin = plugin}, props})
+    return getComponent("Sample", bounds, {{track = track}, {plugin = plugin}, props})
 end
 return ____exports

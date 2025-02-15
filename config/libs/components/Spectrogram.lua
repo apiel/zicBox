@@ -9,13 +9,13 @@ function ____exports.Spectrogram(____bindingPattern0)
     local text
     local data
     local track
-    local position
-    position = ____bindingPattern0.position
+    local bounds
+    bounds = ____bindingPattern0.bounds
     track = ____bindingPattern0.track
     data = ____bindingPattern0.data
     text = ____bindingPattern0.text
-    props = __TS__ObjectRest(____bindingPattern0, {position = true, track = true, data = true, text = true})
+    props = __TS__ObjectRest(____bindingPattern0, {bounds = true, track = true, data = true, text = true})
     initializePlugin("Spectrogram", "libzic_SpectrogramComponent.so")
-    return getComponent("Spectrogram", position, {{track = track}, {data = data, text = text}, props})
+    return getComponent("Spectrogram", bounds, {{track = track}, {data = data, text = text}, props})
 end
 return ____exports

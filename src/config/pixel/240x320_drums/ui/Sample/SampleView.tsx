@@ -17,35 +17,35 @@ export function SampleView({ name }: Props) {
         <View name={name}>
             <KnobValue
                 value="TrackFx VOLUME"
-                position={topLeftKnob}
+                bounds={topLeftKnob}
                 encoder_id={0}
                 COLOR="tertiary"
                 track={SampleTrack}
             />
             <KnobValue
                 value="Sample BROWSER"
-                position={topRightKnob}
+                bounds={topRightKnob}
                 encoder_id={2}
                 track={SampleTrack}
                 STRING_VALUE_REPLACE_TITLE
             />
             <KnobValue
                 value="Sample START"
-                position={bottomLeftKnob}
+                bounds={bottomLeftKnob}
                 encoder_id={1}
                 COLOR="secondary"
                 track={SampleTrack}
             />
             <KnobValue
                 value="Sample END"
-                position={bottomRightKnob}
+                bounds={bottomRightKnob}
                 encoder_id={3}
                 COLOR="secondary"
                 track={SampleTrack}
             />
 
             <Sample
-                position={[0, 245, ScreenWidth, 50]}
+                bounds={[0, 245, ScreenWidth, 50]}
                 track={SampleTrack}
                 plugin="Sample SAMPLE_BUFFER SAMPLE_INDEX"
                 loop_points_color={'tertiary'}

@@ -4,7 +4,7 @@ import { ComponentProps } from './component';
 export type Props = ComponentProps & {
 };
 
-export function Tape({ position, track, ...props }: Props) {
+export function Tape({ bounds, track, ...props }: Props) {
     initializePlugin('Tape', 'libzic_TapeComponent.so');
-    return getComponent('Tape', position, [{ track }, props]);
+    return getComponent('Tape', bounds, [{ track }, props]);
 }

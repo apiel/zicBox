@@ -42,7 +42,7 @@ export function Common({
         <>
             {!hideSequencer && (
                 <SeqProgressBar
-                    position={[0, 0, ScreenWidth, 5]}
+                    bounds={[0, 0, ScreenWidth, 5]}
                     seq_plugin="Sequencer"
                     active_color={rgb(35, 161, 35)}
                     selection_color={rgb(35, 161, 35)}

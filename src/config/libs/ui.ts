@@ -1,13 +1,13 @@
 import { applyZic, buildPlateform, ZicValue } from './core';
 
-export type Position = string | string[] | number[];
+export type Bounds = string | string[] | number[];
 
 // TODO to be deprecated
-export function getPosition(pos: Position) {
+export function getPosition(pos: Bounds) {
     return Array.isArray(pos) ? pos.join(' ') : pos;
 }
 
-export function getBounds(pos: Position) {
+export function getBounds(pos: Bounds) {
     return Array.isArray(pos) ? pos : pos.split(' ');
 }
 
@@ -44,8 +44,8 @@ export function initializePlugin(componentName: string, pluginPath: string) {
  * @param values table - An array of Zic values to apply to the component.
  * @returns table
  */
-export function getComponent(name: string, position: Position, values: ZicValue[] = []) {
-    return [{ COMPONENT: `${name} ${getPosition(position)}` }, values];
+export function getComponent(name: string, bounds: Bounds, values: ZicValue[] = []) {
+    return [{ COMPONENT: `${name} ${getPosition(bounds)}` }, values];
 }
 
 /**
@@ -55,16 +55,16 @@ export function getComponent(name: string, position: Position, values: ZicValue[
  * @param position string | string[] - The position of the component.
  * @param values table - An array of Zic values to apply to the component.
  */
-export function component(name: string, position: Position, values: ZicValue[] = []) {
-    applyZic(getComponent(name, position, values));
+export function component(name: string, bounds: Bounds, values: ZicValue[] = []) {
+    applyZic(getComponent(name, bounds, values));
 }
 
 /**
  * Add a zone encoder
  * @param position string | string[] - The position of the component.
  */
-export function addZoneEncoder(position: Position) {
-    applyZic([{ ADD_ZONE_ENCODER: getPosition(position) }]);
+export function addZoneEncoder(bounds: Bounds) {
+    applyZic([{ ADD_ZONE_ENCODER: getPosition(bounds) }]);
 }
 
 /**

@@ -29,28 +29,28 @@ function ____exports.PercFxView(____bindingPattern0)
         {name = name},
         React.createElement(KnobValue, {
             value = "Perc BOOST",
-            position = topLeftKnob,
+            bounds = topLeftKnob,
             encoder_id = encTopLeft,
             COLOR = "tertiary",
             track = PercTrack
         }),
         React.createElement(KnobValue, {
             value = "Perc REVERB",
-            position = topRightKnob,
+            bounds = topRightKnob,
             encoder_id = encTopRight,
             COLOR = "primary",
             track = PercTrack
         }),
         React.createElement(KnobValue, {
             value = "Perc RESONATOR",
-            position = bottomLeftKnob,
+            bounds = bottomLeftKnob,
             encoder_id = encBottomLeft,
             COLOR = "quaternary",
             track = PercTrack
         }),
         React.createElement(KnobValue, {
             value = "Perc TONE_DECAY",
-            position = bottomRightKnob,
+            bounds = bottomRightKnob,
             encoder_id = encBottomRight,
             COLOR = "secondary",
             track = PercTrack

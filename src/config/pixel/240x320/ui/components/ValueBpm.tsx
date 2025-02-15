@@ -7,7 +7,7 @@ export function ValueBpm() {
     return (
         <Value
             value="Tempo BPM"
-            position={[W3_4, KeyInfoPosition[1] - 2, W1_4, 24]}
+            bounds={[W3_4, KeyInfoPosition[1] - 2, W1_4, 24]}
             SHOW_LABEL_OVER_VALUE={0}
             LABEL_OVER_VALUE_X={16}
             LABEL_FONT_SIZE={8}

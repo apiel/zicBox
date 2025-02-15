@@ -38,18 +38,18 @@ function ____exports.MasterValues(____bindingPattern0)
     track = ____bindingPattern0.track
     return React.createElement(
         VisibilityContainer,
-        {position = posContainer, group = group},
+        {bounds = posContainer, group = group},
         React.createElement(
             HiddenValue,
             nil,
             React.createElement(Keymap, {key = "s", action = "setView:Drum23", context = "254:1"})
         ),
-        React.createElement(Rect, {position = {0, 0, ScreenWidth, posContainer[4]}}),
+        React.createElement(Rect, {bounds = {0, 0, ScreenWidth, posContainer[4]}}),
         React.createElement(
             Value,
             __TS__ObjectAssign({
                 value = "Volume VOLUME",
-                position = topLeft,
+                bounds = topLeft,
                 group = group,
                 track = track,
                 encoder_id = 0
@@ -59,7 +59,7 @@ function ____exports.MasterValues(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "Volume GAIN_CLIPPING",
-                position = bottomLeft,
+                bounds = bottomLeft,
                 group = group,
                 track = track,
                 encoder_id = 1
@@ -74,7 +74,7 @@ function ____exports.Drum23Values(____bindingPattern0)
     track = ____bindingPattern0.track
     return React.createElement(
         VisibilityContainer,
-        {position = posContainer, group = group},
+        {bounds = posContainer, group = group},
         React.createElement(
             HiddenValue,
             nil,
@@ -84,7 +84,7 @@ function ____exports.Drum23Values(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "TrackFx VOLUME",
-                position = topLeft,
+                bounds = topLeft,
                 group = group,
                 track = track,
                 encoder_id = 0
@@ -94,7 +94,7 @@ function ____exports.Drum23Values(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "Drum23 GAIN_CLIPPING",
-                position = bottomLeft,
+                bounds = bottomLeft,
                 group = group,
                 track = track,
                 encoder_id = 1
@@ -104,7 +104,7 @@ function ____exports.Drum23Values(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "MMFilter CUTOFF",
-                position = topRight,
+                bounds = topRight,
                 group = group,
                 track = track,
                 encoder_id = 2
@@ -114,7 +114,7 @@ function ____exports.Drum23Values(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "MMFilter RESONANCE",
-                position = bottomRight,
+                bounds = bottomRight,
                 group = group,
                 track = track,
                 encoder_id = 3
@@ -129,7 +129,7 @@ function ____exports.FmValues(____bindingPattern0)
     track = ____bindingPattern0.track
     return React.createElement(
         VisibilityContainer,
-        {position = posContainer, group = group},
+        {bounds = posContainer, group = group},
         React.createElement(
             HiddenValue,
             nil,
@@ -139,7 +139,7 @@ function ____exports.FmValues(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "TrackFx VOLUME",
-                position = topLeft,
+                bounds = topLeft,
                 group = group,
                 track = track,
                 encoder_id = 0
@@ -149,7 +149,7 @@ function ____exports.FmValues(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "FmDrum DISTORTION",
-                position = bottomLeft,
+                bounds = bottomLeft,
                 group = group,
                 track = track,
                 encoder_id = 1
@@ -159,7 +159,7 @@ function ____exports.FmValues(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "FmDrum REVERB",
-                position = topRight,
+                bounds = topRight,
                 group = group,
                 track = track,
                 encoder_id = 2
@@ -169,7 +169,7 @@ function ____exports.FmValues(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "FmDrum MOD_INDEX",
-                position = bottomRight,
+                bounds = bottomRight,
                 group = group,
                 track = track,
                 encoder_id = 3
@@ -184,7 +184,7 @@ function ____exports.SnareValues(____bindingPattern0)
     track = ____bindingPattern0.track
     return React.createElement(
         VisibilityContainer,
-        {position = posContainer, group = group},
+        {bounds = posContainer, group = group},
         React.createElement(
             HiddenValue,
             nil,
@@ -194,7 +194,7 @@ function ____exports.SnareValues(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "TrackFx VOLUME",
-                position = topLeft,
+                bounds = topLeft,
                 group = group,
                 track = track,
                 encoder_id = 0
@@ -204,7 +204,7 @@ function ____exports.SnareValues(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "TrackFx REVERB",
-                position = bottomLeft,
+                bounds = bottomLeft,
                 group = group,
                 track = track,
                 encoder_id = 1
@@ -214,7 +214,7 @@ function ____exports.SnareValues(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "TrackFx CUTOFF",
-                position = topRight,
+                bounds = topRight,
                 group = group,
                 track = track,
                 encoder_id = 2
@@ -224,7 +224,7 @@ function ____exports.SnareValues(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "TrackFx RESONANCE",
-                position = bottomRight,
+                bounds = bottomRight,
                 group = group,
                 track = track,
                 encoder_id = 3
@@ -239,7 +239,7 @@ function ____exports.HiHatValues(____bindingPattern0)
     track = ____bindingPattern0.track
     return React.createElement(
         VisibilityContainer,
-        {position = posContainer, group = group},
+        {bounds = posContainer, group = group},
         React.createElement(
             HiddenValue,
             nil,
@@ -249,7 +249,7 @@ function ____exports.HiHatValues(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "TrackFx VOLUME",
-                position = topLeft,
+                bounds = topLeft,
                 group = group,
                 track = track,
                 encoder_id = 0
@@ -259,7 +259,7 @@ function ____exports.HiHatValues(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "TrackFx REVERB",
-                position = bottomLeft,
+                bounds = bottomLeft,
                 group = group,
                 track = track,
                 encoder_id = 1
@@ -269,7 +269,7 @@ function ____exports.HiHatValues(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "TrackFx CUTOFF",
-                position = topRight,
+                bounds = topRight,
                 group = group,
                 track = track,
                 encoder_id = 2
@@ -279,7 +279,7 @@ function ____exports.HiHatValues(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "TrackFx RESONANCE",
-                position = bottomRight,
+                bounds = bottomRight,
                 group = group,
                 track = track,
                 encoder_id = 3
@@ -294,7 +294,7 @@ function ____exports.SampleValues(____bindingPattern0)
     track = ____bindingPattern0.track
     return React.createElement(
         VisibilityContainer,
-        {position = posContainer, group = group},
+        {bounds = posContainer, group = group},
         React.createElement(
             HiddenValue,
             nil,
@@ -304,7 +304,7 @@ function ____exports.SampleValues(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "TrackFx VOLUME",
-                position = topLeft,
+                bounds = topLeft,
                 group = group,
                 track = track,
                 encoder_id = 0
@@ -314,7 +314,7 @@ function ____exports.SampleValues(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "TrackFx REVERB",
-                position = bottomLeft,
+                bounds = bottomLeft,
                 group = group,
                 track = track,
                 encoder_id = 1
@@ -324,7 +324,7 @@ function ____exports.SampleValues(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "TrackFx CUTOFF",
-                position = topRight,
+                bounds = topRight,
                 group = group,
                 track = track,
                 encoder_id = 2
@@ -334,7 +334,7 @@ function ____exports.SampleValues(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "TrackFx RESONANCE",
-                position = bottomRight,
+                bounds = bottomRight,
                 group = group,
                 track = track,
                 encoder_id = 3

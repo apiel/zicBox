@@ -24,7 +24,7 @@ export function TextGridSynth({ selected, viewName }: { selected: string; viewNa
     return (
         <>
             <Title title={Synth} />
-            <Rect position={[70, 28, 6, 6]} color={ColorTrack4} />
+            <Rect bounds={[70, 28, 6, 6]} color={ColorTrack4} />
             <TextGridSel
                 selectedBackground={ColorTrack4}
                 rows={['Main Fx Osc1 Osc2', 'Seq. &empty Env1 Env2']}

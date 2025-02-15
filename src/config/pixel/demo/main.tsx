@@ -21,7 +21,7 @@ setScreenSize(ScreenWidth, ScreenHeight);
 
 applyZic(
     <View name="Demo">
-        <Text fontSize={16} text="title" position={[0, 20, ScreenWidth, 16]} centered />
-        <Text text="hello world" position={[5, 5, ScreenWidth, 16]} color="secondary" />
+        <Text fontSize={16} text="title" bounds={[0, 20, ScreenWidth, 16]} centered />
+        <Text text="hello world" bounds={[5, 5, ScreenWidth, 16]} color="secondary" />
     </View>
 );

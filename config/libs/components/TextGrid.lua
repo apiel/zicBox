@@ -9,15 +9,15 @@ function ____exports.TextGrid(____bindingPattern0)
     local props
     local rows
     local track
-    local position
-    position = ____bindingPattern0.position
+    local bounds
+    bounds = ____bindingPattern0.bounds
     track = ____bindingPattern0.track
     rows = ____bindingPattern0.rows
-    props = __TS__ObjectRest(____bindingPattern0, {position = true, track = true, rows = true})
+    props = __TS__ObjectRest(____bindingPattern0, {bounds = true, track = true, rows = true})
     initializePlugin("TextGrid", "libzic_TextGridComponent.so")
     return getComponent(
         "TextGrid",
-        position,
+        bounds,
         {
             {track = track},
             __TS__ArrayMap(

@@ -37,12 +37,12 @@ end
 -- @param position string | string[] - The position of the component.
 -- @param values table - An array of Zic values to apply to the component.
 -- @returns table
-function ____exports.getComponent(name, position, values)
+function ____exports.getComponent(name, bounds, values)
     if values == nil then
         values = {}
     end
     return {
-        {COMPONENT = (name .. " ") .. ____exports.getPosition(position)},
+        {COMPONENT = (name .. " ") .. ____exports.getPosition(bounds)},
         values
     }
 end
@@ -51,17 +51,17 @@ end
 -- @param name string - The name of the component to create.
 -- @param position string | string[] - The position of the component.
 -- @param values table - An array of Zic values to apply to the component.
-function ____exports.component(name, position, values)
+function ____exports.component(name, bounds, values)
     if values == nil then
         values = {}
     end
-    applyZic(____exports.getComponent(name, position, values))
+    applyZic(____exports.getComponent(name, bounds, values))
 end
 --- Add a zone encoder
 -- 
 -- @param position string | string[] - The position of the component.
-function ____exports.addZoneEncoder(position)
-    applyZic({{ADD_ZONE_ENCODER = ____exports.getPosition(position)}})
+function ____exports.addZoneEncoder(bounds)
+    applyZic({{ADD_ZONE_ENCODER = ____exports.getPosition(bounds)}})
 end
 --- Create a view
 -- 

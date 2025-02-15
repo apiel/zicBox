@@ -23,7 +23,7 @@ import {
 } from './constants';
 import { SeqValues } from './SeqValues';
 
-export type Props = Omit<ComponentProps, 'position'> & {
+export type Props = Omit<ComponentProps, 'bounds'> & {
     group: number;
     track: number;
     context: number;
@@ -34,9 +34,9 @@ export function MonoSampleValues({ group, track, context }: Props) {
         <>
             <Log text="MonoSampleValues" />
 
-            <VisibilityContainer position={posTopContainer} group={group}>
+            <VisibilityContainer bounds={posTopContainer} group={group}>
                 <Sample
-                    position={[0, 0, ScreenWidth, 70]}
+                    bounds={[0, 0, ScreenWidth, 70]}
                     track={track}
                     plugin="MonoSample SAMPLE_BUFFER SAMPLE_INDEX"
                     loop_points_color={'tertiary'}
@@ -55,7 +55,7 @@ function Main({ group, track, context }: Props) {
         <Container group={group} context={context} values={{ seq: 0, menu: 0 }}>
             <Value
                 value="Volume VOLUME"
-                position={topLeft}
+                bounds={topLeft}
                 group={group}
                 track={track}
                 encoder_id={0}
@@ -63,7 +63,7 @@ function Main({ group, track, context }: Props) {
             />
             <Value
                 value="Volume DRIVE"
-                position={bottomLeft}
+                bounds={bottomLeft}
                 group={group}
                 track={track}
                 encoder_id={1}
@@ -71,7 +71,7 @@ function Main({ group, track, context }: Props) {
             />
             <Value
                 value="MMFilter CUTOFF"
-                position={topRight}
+                bounds={topRight}
                 group={group}
                 track={track}
                 encoder_id={2}
@@ -80,7 +80,7 @@ function Main({ group, track, context }: Props) {
             />
             <Value
                 value="MMFilter RESONANCE"
-                position={bottomRight}
+                bounds={bottomRight}
                 group={group}
                 track={track}
                 encoder_id={3}
@@ -105,11 +105,11 @@ function EditFx({ group, track, context }: Props) {
     topFull[2] = ScreenWidth;
     return (
         <Container group={group} context={context} values={{ seq: 0, menu: 1 }}>
-            <Rect position={[0, 0, ScreenWidth, height]} />
+            <Rect bounds={[0, 0, ScreenWidth, height]} />
 
             <Value
                 value="Volume GAIN_CLIPPING"
-                position={topLeft}
+                bounds={topLeft}
                 group={group}
                 track={track}
                 encoder_id={0}
@@ -117,7 +117,7 @@ function EditFx({ group, track, context }: Props) {
             />
             <Value
                 value="SampleRateReducer SAMPLE_STEP"
-                position={topRight}
+                bounds={topRight}
                 group={group}
                 track={track}
                 encoder_id={2}
@@ -132,11 +132,11 @@ function EditSample({ group, track, context }: Props) {
     topFull[2] = ScreenWidth;
     return (
         <Container group={group} context={context} values={{ seq: 0, menu: 2 }}>
-            <Rect position={[0, 0, ScreenWidth, height]} />
+            <Rect bounds={[0, 0, ScreenWidth, height]} />
 
             <Value
                 value="MonoSample BROWSER"
-                position={topFull}
+                bounds={topFull}
                 group={group}
                 track={track}
                 encoder_id={0}
@@ -145,7 +145,7 @@ function EditSample({ group, track, context }: Props) {
             />
             <Value
                 value="MonoSample START"
-                position={bottomLeft}
+                bounds={bottomLeft}
                 group={group}
                 track={track}
                 encoder_id={1}
@@ -153,7 +153,7 @@ function EditSample({ group, track, context }: Props) {
             />
             <Value
                 value="MonoSample END"
-                position={bottomRight}
+                bounds={bottomRight}
                 group={group}
                 track={track}
                 encoder_id={3}
@@ -166,11 +166,11 @@ function EditSample({ group, track, context }: Props) {
 function EditLoop({ group, track, context }: Props) {
     return (
         <Container group={group} context={context} values={{ seq: 0, menu: 3 }}>
-            <Rect position={[0, 0, ScreenWidth, height]} />
+            <Rect bounds={[0, 0, ScreenWidth, height]} />
 
             <Value
                 value="MonoSample LOOP_POSITION"
-                position={topLeft}
+                bounds={topLeft}
                 group={group}
                 track={track}
                 encoder_id={0}
@@ -179,7 +179,7 @@ function EditLoop({ group, track, context }: Props) {
             />
             <Value
                 value="MonoSample LOOP_LENGTH"
-                position={topRight}
+                bounds={topRight}
                 group={group}
                 track={track}
                 encoder_id={2}
@@ -188,7 +188,7 @@ function EditLoop({ group, track, context }: Props) {
             />
             <Value
                 value="MonoSample LOOP_RELEASE"
-                position={bottomLeft}
+                bounds={bottomLeft}
                 group={group}
                 track={track}
                 encoder_id={1}
@@ -196,7 +196,7 @@ function EditLoop({ group, track, context }: Props) {
             />
             {/* <Value
                 value="MonoSample END"
-                position={bottomRight}
+                bounds={bottomRight}
                 group={group}
                 track={track}
                 encoder_id={3}
@@ -216,7 +216,7 @@ function Container({
     values: { seq: number; menu: number };
 }) {
     return (
-        <VisibilityContainer position={posContainerValues} group={group}>
+        <VisibilityContainer bounds={posContainerValues} group={group}>
             <VisibilityContext index={10} condition="SHOW_WHEN" value={values.seq} />
             <VisibilityContext index={context} condition="SHOW_WHEN" value={values.menu} />
         </VisibilityContainer>

@@ -14,7 +14,7 @@ export function MenuView({ name }: Props) {
     return (
         <View name={name}>
             <List
-                position={[0, 0, ScreenWidth, 280]}
+                bounds={[0, 0, ScreenWidth, 280]}
                 items={['Tape', 'Workspaces', 'Shutdown']}
             >
                 <Keymap key="q" action=".setView" />
@@ -24,7 +24,7 @@ export function MenuView({ name }: Props) {
             </List>
 
             <TextGrid
-                position={KeyInfoPosition}
+                bounds={KeyInfoPosition}
                 rows={['  &icon::arrowUp::filled  ', 'Select &icon::arrowDown::filled Exit']}
             >
                 <Keymap key="d" action="setView:Clips" />

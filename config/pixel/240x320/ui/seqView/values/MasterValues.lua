@@ -29,9 +29,9 @@ function ____exports.MasterValues()
         nil,
         React.createElement(
             VisibilityContainer,
-            {position = posTopContainer, group = 0},
+            {bounds = posTopContainer, group = 0},
             React.createElement(Spectrogram, {
-                position = {0, 0, ScreenWidth, 70},
+                bounds = {0, 0, ScreenWidth, 70},
                 track = 0,
                 data = "Spectrogram BUFFER",
                 text = "Pixel",
@@ -40,14 +40,14 @@ function ____exports.MasterValues()
         ),
         React.createElement(
             VisibilityContainer,
-            {position = posContainerValues, group = 0},
+            {bounds = posContainerValues, group = 0},
             React.createElement(Log, {text = "MasterValues"}),
-            React.createElement(Rect, {position = {0, 0, ScreenWidth, height}}),
+            React.createElement(Rect, {bounds = {0, 0, ScreenWidth, height}}),
             React.createElement(
                 Value,
                 __TS__ObjectAssign({
                     value = "MasterVolume VOLUME",
-                    position = topLeft,
+                    bounds = topLeft,
                     group = 0,
                     track = 0,
                     encoder_id = 0
@@ -57,7 +57,7 @@ function ____exports.MasterValues()
                 Value,
                 __TS__ObjectAssign({
                     value = "MasterFilter CUTOFF",
-                    position = topRight,
+                    bounds = topRight,
                     group = 0,
                     track = 0,
                     encoder_id = 2
@@ -67,7 +67,7 @@ function ____exports.MasterValues()
                 Value,
                 __TS__ObjectAssign({
                     value = "MasterFilter RESONANCE",
-                    position = bottomRight,
+                    bounds = bottomRight,
                     group = 0,
                     track = 0,
                     encoder_id = 3

@@ -16,18 +16,18 @@ import {
     topRight
 } from './constants';
 
-export type Props = Omit<ComponentProps, 'position'> & {
+export type Props = Omit<ComponentProps, 'bounds'> & {
     group: number;
     track: number;
 };
 
 export function SeqValues({ group, track }: Props) {
     return (
-        <VisibilityContainer position={posContainerValues} group={group}>
+        <VisibilityContainer bounds={posContainerValues} group={group}>
             <VisibilityContext index={10} condition="SHOW_WHEN_OVER" value={0} />
             <Value
                 value="Sequencer STEP_NOTE"
-                position={topLeft}
+                bounds={topLeft}
                 group={group}
                 track={track}
                 encoder_id={0}
@@ -35,7 +35,7 @@ export function SeqValues({ group, track }: Props) {
             />
             <Value
                 value="Sequencer STEP_CONDITION"
-                position={bottomLeft}
+                bounds={bottomLeft}
                 group={group}
                 track={track}
                 encoder_id={1}
@@ -43,7 +43,7 @@ export function SeqValues({ group, track }: Props) {
             />
             <Value
                 value="Sequencer STEP_VELOCITY"
-                position={topRight}
+                bounds={topRight}
                 group={group}
                 track={track}
                 encoder_id={2}
@@ -51,7 +51,7 @@ export function SeqValues({ group, track }: Props) {
             />
             <Value
                 value="Sequencer STEP_MOTION"
-                position={bottomRight}
+                bounds={bottomRight}
                 group={group}
                 track={track}
                 encoder_id={3}

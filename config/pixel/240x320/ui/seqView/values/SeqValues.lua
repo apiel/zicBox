@@ -25,13 +25,13 @@ function ____exports.SeqValues(____bindingPattern0)
     track = ____bindingPattern0.track
     return React.createElement(
         VisibilityContainer,
-        {position = posContainerValues, group = group},
+        {bounds = posContainerValues, group = group},
         React.createElement(VisibilityContext, {index = 10, condition = "SHOW_WHEN_OVER", value = 0}),
         React.createElement(
             Value,
             __TS__ObjectAssign({
                 value = "Sequencer STEP_NOTE",
-                position = topLeft,
+                bounds = topLeft,
                 group = group,
                 track = track,
                 encoder_id = 0
@@ -41,7 +41,7 @@ function ____exports.SeqValues(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "Sequencer STEP_CONDITION",
-                position = bottomLeft,
+                bounds = bottomLeft,
                 group = group,
                 track = track,
                 encoder_id = 1
@@ -51,7 +51,7 @@ function ____exports.SeqValues(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "Sequencer STEP_VELOCITY",
-                position = topRight,
+                bounds = topRight,
                 group = group,
                 track = track,
                 encoder_id = 2
@@ -61,7 +61,7 @@ function ____exports.SeqValues(____bindingPattern0)
             Value,
             __TS__ObjectAssign({
                 value = "Sequencer STEP_MOTION",
-                position = bottomRight,
+                bounds = bottomRight,
                 group = group,
                 track = track,
                 encoder_id = 3

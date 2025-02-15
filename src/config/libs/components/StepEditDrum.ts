@@ -5,7 +5,7 @@ export type Props = ComponentProps & {
     data: string;
 };
 
-export function StepEditDrum({ position, track, data, ...props }: Props) {
+export function StepEditDrum({ bounds, track, data, ...props }: Props) {
     initializePlugin('StepEditDrum', 'libzic_StepEditDrumComponent.so');
-    return getComponent('StepEditDrum', position, [{ track }, { data }, props]);
+    return getComponent('StepEditDrum', bounds, [{ track }, { data }, props]);
 }

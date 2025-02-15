@@ -20,7 +20,7 @@ function ____exports.SaveTapeView(____bindingPattern0)
         {name = name},
         React.createElement(
             Keyboard,
-            {position = {0, 40, ScreenWidth, 200}, redirect_view = "Tape", done_data = "Tape SAVE"},
+            {bounds = {0, 40, ScreenWidth, 200}, redirect_view = "Tape", done_data = "Tape SAVE"},
             React.createElement(Keymaps, {keys = {
                 {key = "q", action = ".type"},
                 {key = "w", action = ".up"},
@@ -30,7 +30,7 @@ function ____exports.SaveTapeView(____bindingPattern0)
                 {key = "d", action = ".right"}
             }})
         ),
-        React.createElement(TextGrid, {position = KeyInfoPosition, rows = {"Type &icon::arrowUp::filled Cancel", "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled"}})
+        React.createElement(TextGrid, {bounds = KeyInfoPosition, rows = {"Type &icon::arrowUp::filled Cancel", "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled"}})
     )
 end
 return ____exports

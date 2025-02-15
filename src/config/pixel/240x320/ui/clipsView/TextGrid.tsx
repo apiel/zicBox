@@ -11,7 +11,7 @@ import { KeyInfoPosition } from '@/pixel/240x320/ui/constants';
 export function TextGridClips() {
     return (
         <TextGrid
-            position={KeyInfoPosition}
+            bounds={KeyInfoPosition}
             rows={[
                 '&icon::toggle::rect &icon::arrowUp::filled ...',
                 '&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled',
@@ -32,7 +32,7 @@ export function TextGridClips() {
 export function TextGridClipsShifted() {
     return (
         <TextGrid
-            position={KeyInfoPosition}
+            bounds={KeyInfoPosition}
             rows={['Next &icon::play::filled ^...', 'Home &icon::trash Save']}
         >
             <VisibilityContext index={254} condition="SHOW_WHEN" value={1} />

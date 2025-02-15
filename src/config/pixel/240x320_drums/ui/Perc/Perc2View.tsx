@@ -16,27 +16,27 @@ export function Perc2View({ name }: Props) {
         <View name={name}>
             <KnobValue
                 value="Perc RESONATOR"
-                position={topLeftKnob}
+                bounds={topLeftKnob}
                 encoder_id={0}
                 COLOR="tertiary"
                 track={PercTrack}
             />
             <KnobValue
                 value="Perc BOOST"
-                position={topRightKnob}
+                bounds={topRightKnob}
                 encoder_id={2}
                 COLOR="secondary"
                 track={PercTrack}
             />
             <KnobValue
                 value="Perc TIMBRE"
-                position={bottomLeftKnob}
+                bounds={bottomLeftKnob}
                 encoder_id={1}
                 track={PercTrack}
             />
             <KnobValue
                 value="Perc REVERB"
-                position={bottomRightKnob}
+                bounds={bottomRightKnob}
                 encoder_id={3}
                 COLOR="secondary"
                 track={PercTrack}

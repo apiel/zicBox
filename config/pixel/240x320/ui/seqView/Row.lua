@@ -36,7 +36,7 @@ function ____exports.RowDrum23(____bindingPattern0)
     return React.createElement(
         SeqSynthBar,
         {
-            position = {
+            bounds = {
                 0,
                 getY(track),
                 ScreenWidth,
@@ -66,7 +66,7 @@ function ____exports.RowMonoSample(____bindingPattern0)
     return React.createElement(
         SeqSynthBar,
         {
-            position = {
+            bounds = {
                 0,
                 getY(track),
                 ScreenWidth,

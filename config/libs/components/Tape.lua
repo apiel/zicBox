@@ -7,11 +7,11 @@ local initializePlugin = ____ui.initializePlugin
 function ____exports.Tape(____bindingPattern0)
     local props
     local track
-    local position
-    position = ____bindingPattern0.position
+    local bounds
+    bounds = ____bindingPattern0.bounds
     track = ____bindingPattern0.track
-    props = __TS__ObjectRest(____bindingPattern0, {position = true, track = true})
+    props = __TS__ObjectRest(____bindingPattern0, {bounds = true, track = true})
     initializePlugin("Tape", "libzic_TapeComponent.so")
-    return getComponent("Tape", position, {{track = track}, props})
+    return getComponent("Tape", bounds, {{track = track}, props})
 end
 return ____exports

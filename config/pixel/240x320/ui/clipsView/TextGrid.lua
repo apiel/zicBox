@@ -14,7 +14,7 @@ end
 function ____exports.TextGridClips()
     return React.createElement(
         TextGrid,
-        {position = KeyInfoPosition, rows = {"&icon::toggle::rect &icon::arrowUp::filled ...", "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled"}},
+        {bounds = KeyInfoPosition, rows = {"&icon::toggle::rect &icon::arrowUp::filled ...", "&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled"}},
         React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 0}),
         React.createElement(Keymaps, {keys = {{key = "e", action = "contextToggle:254:1:0"}, {key = "a", action = "incGroup:-1"}, {key = "d", action = "incGroup:+1"}}})
     )
@@ -22,7 +22,7 @@ end
 function ____exports.TextGridClipsShifted()
     return React.createElement(
         TextGrid,
-        {position = KeyInfoPosition, rows = {"Next &icon::play::filled ^...", "Home &icon::trash Save"}},
+        {bounds = KeyInfoPosition, rows = {"Next &icon::play::filled ^...", "Home &icon::trash Save"}},
         React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 1}),
         React.createElement(Keymaps, {keys = {{key = "w", action = "playPause"}, {key = "e", action = "contextToggle:254:1:0"}, {key = "a", action = "setView:Home"}}})
     )
