@@ -9,9 +9,7 @@ export function SideInfo({ up, down, ctxValue }: { up: string; down: string; ctx
             bounds={SideKeyInfoPosition}
             rows={[up, down]}
             bgColor={SideColor}
-            visibilityCondition="SHOW_WHEN"
-            visibilityContext={254}
-            visibilityValue={ctxValue}
+            contextValue={ctxValue}
         />
     );
 }

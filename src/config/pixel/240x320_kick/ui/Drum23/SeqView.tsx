@@ -3,7 +3,6 @@ import * as React from '@/libs/react';
 import { Keymaps } from '@/libs/nativeComponents/Keymaps';
 import { StepEditDrum } from '@/libs/nativeComponents/StepEditDrum';
 import { View } from '@/libs/nativeComponents/View';
-import { VisibilityContext } from '@/libs/nativeComponents/VisibilityContext';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
@@ -46,21 +45,23 @@ export function Drum23SeqView({ name }: Props) {
                     'Seq./Kick &icon::arrowDown::filled &icon::musicNote::pixelated',
                     // '!Seq/Kick &icon::arrowDown::filled &icon::musicNote::pixelated',
                 ]}
-                activeBgColor={ColorTrack1}
-            >
-                <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />
-                <Keymaps
-                    keys={[
-                        { key: 'w', action: 'incGroup:-1' },
-                        { key: 'e', action: 'contextToggle:254:1:0' },
+                selectedBackground={ColorTrack1}
+                keys={[
+                    { key: 'w', action: 'incGroup:-1' },
+                    { key: 'e', action: 'contextToggle:254:1:0' },
 
-                        { key: 'a', action: 'setView:Drum23' },
-                        { key: 's', action: 'incGroup:+1' },
-                        { key: 'd', action: 'noteOn:Drum23:60' },
-                    ]}
-                />
-            </TextGrid>
-            <Common selected={0} hideSequencer track={Drum23Track}  selectedBackground={ColorTrack1} />
+                    { key: 'a', action: 'setView:Drum23' },
+                    { key: 's', action: 'incGroup:+1' },
+                    { key: 'd', action: 'noteOn:Drum23:60' },
+                ]}
+                contextValue={0}
+            />
+            <Common
+                selected={0}
+                hideSequencer
+                track={Drum23Track}
+                selectedBackground={ColorTrack1}
+            />
         </View>
     );
 }

@@ -4,7 +4,6 @@ import { Keymaps } from '@/libs/nativeComponents/Keymaps';
 import { StepEditSample } from '@/libs/nativeComponents/StepEditSample';
 import { Text } from '@/libs/nativeComponents/Text';
 import { View } from '@/libs/nativeComponents/View';
-import { VisibilityContext } from '@/libs/nativeComponents/VisibilityContext';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
@@ -55,17 +54,19 @@ export function SampleEditorView({ name }: Props) {
                     '&icon::toggle::rect &icon::arrowUp::filled ...',
                     '&empty &icon::arrowDown::filled &icon::musicNote::pixelated',
                 ]}
-            >
-                <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />
-                <Keymaps
-                    keys={[
-                        { key: 'e', action: 'contextToggle:254:1:0' },
-                        { key: 'w', action: 'incGroup:-1' },
-                        { key: 's', action: 'incGroup:+1' },
-                    ]}
-                />
-            </TextGrid>
-            <Common selected={1} track={SampleTrack} hideSequencer selectedBackground={ColorTrack3} />
+                keys={[
+                    { key: 'e', action: 'contextToggle:254:1:0' },
+                    { key: 'w', action: 'incGroup:-1' },
+                    { key: 's', action: 'incGroup:+1' },
+                ]}
+                contextValue={0}
+            />
+            <Common
+                selected={1}
+                track={SampleTrack}
+                hideSequencer
+                selectedBackground={ColorTrack3}
+            />
         </View>
     );
 }

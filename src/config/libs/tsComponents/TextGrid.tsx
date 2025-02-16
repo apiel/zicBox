@@ -1,31 +1,82 @@
 import * as React from '@/libs/react';
 
-import { getBounds, rgb } from '@/libs/ui';
-import { ComponentProps } from '../nativeComponents/component';
-import { Text } from '../nativeComponents/Text';
-import { VisibilityContext } from '../nativeComponents/VisibilityContext';
+import { ComponentProps } from '@/libs/nativeComponents/component';
+import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
+import { Keymaps } from '@/libs/nativeComponents/Keymaps';
+import { Text } from '@/libs/nativeComponents/Text';
+import { VisibilityContext } from '@/libs/nativeComponents/VisibilityContext';
+import { Bounds, getBounds, rgb } from '@/libs/ui';
+
+const visibilityContextIndex = 254;
 
 export function TextGrid({
     bounds,
+    selected,
+    rows,
+    keys,
+    contextValue,
+    selectedBackground,
+    bgColor = 'background',
+}: {
+    bounds: Bounds;
+    selected?: string;
+    rows: string[];
+    keys?: { key: string; action: string; action2?: string }[];
+    contextValue?: number;
+    selectedBackground?: string;
+    bgColor?: string;
+}) {
+    if (selected) {
+        for (let i = 0; i < rows.length; i++) {
+            rows[i] = rows[i].replace(selected, `!${selected}`);
+        }
+    }
+
+    return (
+        <>
+            <HiddenValue>
+                {contextValue !== undefined && (
+                    <VisibilityContext
+                        index={visibilityContextIndex}
+                        condition="SHOW_WHEN"
+                        value={contextValue}
+                    />
+                )}
+                {keys && <Keymaps keys={keys} />}
+            </HiddenValue>
+            <TextGridRender
+                bounds={bounds}
+                rows={rows}
+                activeBgColor={selectedBackground}
+                contextValue={contextValue}
+                bgColor={bgColor}
+            />
+        </>
+    );
+}
+
+// function Visibility({ contextValue }: { contextValue?: number }) {
+//     return contextValue !== undefined ? (
+//         <VisibilityContext index={visibilityContextIndex} condition="SHOW_WHEN" value={contextValue} />
+//     ) : null;
+// }
+
+function TextGridRender({
+    bounds,
     rows,
     bgColor = 'background',
-    textColor = 'text',
     activeBgColor = 'primary',
     shiftedTextColor = rgb(80, 75, 75),
-    visibilityCondition,
-    visibilityContext,
-    visibilityValue,
+    contextValue,
     ...props
 }: ComponentProps<{
     rows: string[];
     bgColor?: string;
-    textColor?: string;
     activeBgColor?: string;
     shiftedTextColor?: string;
-    visibilityContext?: number;
-    visibilityCondition?: 'SHOW_WHEN_NOT' | 'SHOW_WHEN_OVER' | 'SHOW_WHEN_UNDER' | 'SHOW_WHEN';
-    visibilityValue?: number;
+    contextValue?: number;
 }>) {
+    const textColor = 'text';
     const h = 11;
     const [x, y, w] = getBounds(bounds);
     const textY = Number(y) + 2;
@@ -57,11 +108,11 @@ export function TextGrid({
                     bgColor={bg}
                     color={color}
                 >
-                    {visibilityContext && visibilityCondition && visibilityValue && (
+                    {contextValue !== undefined && (
                         <VisibilityContext
-                            index={visibilityContext}
-                            condition={visibilityCondition}
-                            value={visibilityValue}
+                            index={visibilityContextIndex}
+                            condition="SHOW_WHEN"
+                            value={contextValue}
                         />
                     )}
                 </Text>

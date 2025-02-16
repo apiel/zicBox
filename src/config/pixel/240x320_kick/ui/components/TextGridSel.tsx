@@ -1,7 +1,5 @@
 import * as React from '@/libs/react';
 
-import { Keymaps } from '@/libs/nativeComponents/Keymaps';
-import { VisibilityContext } from '@/libs/nativeComponents/VisibilityContext';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { KeyInfoPosition } from '@/pixel/240x320_kick/ui/constants';
 
@@ -25,10 +23,9 @@ export function TextGridSel({
         <TextGrid
             bounds={KeyInfoPosition}
             rows={[`${items[0]} ${items[1]} ${items[2]}`, `${items[3]} ${items[4]} ${items[5]}`]}
-            activeBgColor={activeBgColor}
-        >
-            <VisibilityContext index={254} condition="SHOW_WHEN" value={contextValue} />
-            <Keymaps keys={keys} />
-        </TextGrid>
+            selectedBackground={activeBgColor}
+            keys={keys}
+            contextValue={contextValue}
+        />
     );
 }
