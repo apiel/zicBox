@@ -1,17 +1,15 @@
-import { Bounds, getOldComponentToBeDeprecated, initializePlugin } from '@/libs/ui';
+import { getJsonComponent } from '../ui';
 
-export interface Props {
-    bounds: Bounds;
-    plugin: string;
-    values: string;
-    [key: string]: any;
-}
-
-export function Adsr({ bounds, plugin, values, ...props }: Props) {
-    initializePlugin('Adsr', 'libzic_AdsrComponent.so');
-    return getOldComponentToBeDeprecated('Adsr', bounds, [
-        { PLUGIN: plugin }, 
-        { VALUES: values },
-        props
-    ]);
-}
+export const Adsr = getJsonComponent<{
+    outline?: boolean;
+    fillColor?: string;
+    filled?: boolean;
+    outlineColor?: string;
+    textColor1?: string;
+    textColor2?: string;
+    bgColor?: string;
+    audioPlugin: string;
+    encoders?: [number, number, number, number];
+    values?: [string, string, string, string];
+    renderValuesOnTop?: boolean;
+}>('Adsr', 'libzic_AdsrComponent.so');

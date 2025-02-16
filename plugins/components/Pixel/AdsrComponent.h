@@ -26,6 +26,57 @@ public:
     {
         textColor1 = styles.colors.secondary;
         textColor2 = styles.colors.text;
+
+        /*md md_config:Adsr */
+        nlohmann::json config = props.config;
+
+        /*md   // If true, the rectangle will be outlined. Default is true. */
+        /*md   outline={false} */
+
+        /*md   // Set the color of the graph. */
+        /*md   fillColor="#000000" */
+
+        /*md   // If true, the rectangle will be filled. Default is true. */
+        /*md   filled={false} */
+
+        /*md   // Set the color of the graph outline. */
+        /*md   outlineColor="#000000" */
+
+        /*md   // Set the color of the text. */
+        /*md   textColor1="#000000" */
+
+        /*md   // Set the color of the unit. */
+        /*md   textColor2="#000000" */
+
+        /*md   // Set the color of the background. */
+        /*md   bgColor="#000000" */
+
+        /*md   // If true, the title will be rendered on top of the graph. Default is true. */
+        /*md   renderValuesOnTop={false} */
+
+        /*md   // The audio plugin to get control on. */
+        /*md   plugin="audio_plugin_name" */
+
+
+        /*md   // The encoders that will interract with the ADSR envelop. */
+        /*md   encoders={[0, 1, 2, 3]} */
+        if (config.contains("encoders") && config["encoders"].is_array() && config["encoders"].size() == 4) {
+            encoders[0].id = config["encoders"][0].get<int>();
+            encoders[1].id = config["encoders"][1].get<int>();
+            encoders[2].id = config["encoders"][2].get<int>();
+            encoders[3].id = config["encoders"][3].get<int>();
+        }
+
+        /*md   // The values that will interract with the ADSR envelop. */
+        /*md   values={["ATTACK", "DECAY", "SUSTAIN", "RELEASE"]} */
+        if (config.contains("values") && config["values"].is_array() && config["values"].size() == 4) {
+            encoders[0].value = watch(plugin->getValue(config["values"][0].get<std::string>()));
+            encoders[1].value = watch(plugin->getValue(config["values"][1].get<std::string>()));
+            encoders[2].value = watch(plugin->getValue(config["values"][2].get<std::string>()));
+            encoders[3].value = watch(plugin->getValue(config["values"][3].get<std::string>()));
+        }
+
+        /*md md_config_end */
     }
 
     std::vector<Title> getTitles() override
@@ -68,39 +119,6 @@ public:
         }
     }
 
-    /*md **Config**: */
-    /*md - `PLUGIN: plugin_name` set plugin target */
-    /*md - `OUTLINE: true/false` is if the envelop should be outlined (default: true). */
-    /*md - `FILLED: true/false` is if the envelop should be filled (default: true). */
-    /*md - `BACKGROUND_COLOR: color` is the background color of the component. */
-    /*md - `FILL_COLOR: color` is the color of the envelop. */
-    /*md - `OUTLINE_COLOR: color` is the color of the envelop outline. */
-    /*md - `TEXT_COLOR1: color` is the color of the value. */
-    /*md - `TEXT_COLOR2: color` is the color of the unit. */
-    /*md - `INACTIVE_COLOR_RATIO: 0.0 - 1.0` is the ratio of darkness for the inactive color (default: 0.5). */
-    bool config(char* key, char* value)
-    {
-        /*md - `ENCODERS: A_encoder_id D_encoder_id S_encoder_id R_encoder_id` is the id of the encoder to update given value. */
-        if (strcmp(key, "ENCODERS") == 0) {
-            encoders[0].id = atoi(strtok(value, " "));
-            encoders[1].id = atoi(strtok(NULL, " "));
-            encoders[2].id = atoi(strtok(NULL, " "));
-            encoders[3].id = atoi(strtok(NULL, " "));
-
-            return true;
-        }
-
-        /*md - `VALUES: A_value D_value S_value R_value` are the values id for the encoders and data point. */
-        if (strcmp(key, "VALUES") == 0) {
-            encoders[0].value = watch(plugin->getValue(strtok(value, " ")));
-            encoders[1].value = watch(plugin->getValue(strtok(NULL, " ")));
-            encoders[2].value = watch(plugin->getValue(strtok(NULL, " ")));
-            encoders[3].value = watch(plugin->getValue(strtok(NULL, " ")));
-            return true;
-        }
-
-        return BaseGraphEncoderComponent::config(key, value);
-    }
 };
 
 #endif

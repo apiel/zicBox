@@ -14,7 +14,11 @@ export type Props = {
 export function SynthEnv2View({ name }: Props) {
     return (
         <View name={name}>
-            <Adsr bounds={halfFullValues} plugin="Synth" values="ATTACK_2 DECAY_2 SUSTAIN_2 RELEASE_2" />
+            <Adsr
+                bounds={halfFullValues}
+                audioPlugin="Synth"
+                values={['ATTACK_2', 'DECAY_2', 'SUSTAIN_2', 'RELEASE_2']}
+            />
 
             <TextGridSynth selected={'Env2'} viewName={name} />
             <Common selected={'Synth'} track={SynthTrack} selectedBackground={ColorTrack4} />

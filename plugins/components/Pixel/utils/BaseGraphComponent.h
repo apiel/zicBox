@@ -70,33 +70,6 @@ public:
         }
     }
 
-
-    // TODO to be deprecated
-    bool config(char* key, char* value)
-    {
-        if (strcmp(key, "PLUGIN") == 0) {
-            plugin = &getPlugin(value, track);
-            return true;
-        }
-
-        if (strcmp(key, "OUTLINE") == 0) {
-            outline = strcmp(value, "true") == 0;
-            return true;
-        }
-
-        if (strcmp(key, "FILLED") == 0) {
-            filled = strcmp(value, "true") == 0;
-            return true;
-        }
-
-        if (strcmp(key, "BACKGROUND_COLOR") == 0) {
-            bgColor = draw.getColor(value);
-            return true;
-        }
-
-        return false;
-    }
-
     virtual std::vector<Point> getPoints() = 0;
 
     void render() override
