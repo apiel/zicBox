@@ -52,7 +52,7 @@ function ____exports.getComponent(name, bounds, values)
         values = {}
     end
     return {
-        {COMPONENT = (name .. " ") .. ____exports.getPosition(bounds)},
+        {OLD_COMPONENT = (name .. " ") .. ____exports.getPosition(bounds)},
         values
     }
 end
