@@ -1,4 +1,4 @@
-import { Bounds, getComponent, initializePlugin } from '@/libs/ui';
+import { Bounds, getOldComponentToBeDeprecated, initializePlugin } from '@/libs/ui';
 
 export interface Props {
     bounds: Bounds;
@@ -9,7 +9,7 @@ export interface Props {
 
 export function Adsr({ bounds, plugin, values, ...props }: Props) {
     initializePlugin('Adsr', 'libzic_AdsrComponent.so');
-    return getComponent('Adsr', bounds, [
+    return getOldComponentToBeDeprecated('Adsr', bounds, [
         { PLUGIN: plugin }, 
         { VALUES: values },
         props

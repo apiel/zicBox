@@ -189,7 +189,7 @@ public:
         /*md md_config_end */
     }
 
-    bool config(char* key, char* value)
+    bool config(char* key, char* value) override
     {
         if (keypadLayout.config(key, value)) {
             return true;

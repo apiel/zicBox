@@ -47,7 +47,7 @@ function ____exports.getJsonComponent(componentName, pluginPath)
         return {{COMPONENT = COMPONENT}}
     end
 end
-function ____exports.getComponent(name, bounds, values)
+function ____exports.getOldComponentToBeDeprecated(name, bounds, values)
     if values == nil then
         values = {}
     end

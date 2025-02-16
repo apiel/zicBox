@@ -1,4 +1,4 @@
-import { getComponent, initializePlugin } from '@/libs/ui';
+import { getOldComponentToBeDeprecated, initializePlugin } from '@/libs/ui';
 import { ComponentProps } from './component';
 
 export type Props = ComponentProps & {
@@ -7,7 +7,7 @@ export type Props = ComponentProps & {
 
 export function MacroEnvelop({ bounds, track, plugin, ...props }: Props) {
     initializePlugin('MacroEnvelop', 'libzic_MacroEnvelopComponent.so');
-    return getComponent('MacroEnvelop', bounds, [
+    return getOldComponentToBeDeprecated('MacroEnvelop', bounds, [
         { track },
         { plugin },
         props,

@@ -80,6 +80,15 @@ public:
     {
         keypadLayout.onKey(id, key, state, now);
     }
+
+    bool config(char* key, char* value) override
+    {
+        if (keypadLayout.config(key, value)) {
+            return true;
+        }
+
+        return false;
+    }
 };
 
 #endif

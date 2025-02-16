@@ -1,4 +1,4 @@
-import { getComponent, initializePlugin } from '@/libs/ui';
+import { getOldComponentToBeDeprecated, initializePlugin } from '@/libs/ui';
 import { ComponentProps } from './component';
 
 export type Props = ComponentProps & {
@@ -7,5 +7,5 @@ export type Props = ComponentProps & {
 
 export function Sequencer({ bounds, track, ...props }: Props) {
     initializePlugin('Sequencer', 'libzic_SequencerComponent.so');
-    return getComponent('Sequencer', bounds, [{ track }, props]);
+    return getOldComponentToBeDeprecated('Sequencer', bounds, [{ track }, props]);
 }

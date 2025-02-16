@@ -5,7 +5,7 @@ export const HiddenValue = (props: {
     param?: string;
     encoderId?: number;
     inverted?: boolean;
-}) =>
+} = {}) => // Seems like we need to give a default value, else Lua cannot handle it...
     getJsonComponent(
         'HiddenValue',
         'libzic_HiddenValueComponent.so'

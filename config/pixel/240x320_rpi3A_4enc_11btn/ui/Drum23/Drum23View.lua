@@ -60,8 +60,8 @@ function ____exports.Drum23View(____bindingPattern0)
             color = "secondary",
             track = Drum23Track
         }),
-        React.createElement(TextGridDrum23, {selected = "Main", viewName = name}),
-        React.createElement(Common, {selected = "Kick", track = Drum23Track, selectedBackground = ColorTrack1})
+        React.createElement(Common, {selected = "Kick", track = Drum23Track, selectedBackground = ColorTrack1}),
+        React.createElement(TextGridDrum23, {selected = "Main", viewName = name})
     )
 end
 return ____exports

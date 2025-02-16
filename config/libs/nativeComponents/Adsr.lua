@@ -2,7 +2,7 @@ local ____lualib = require("lualib_bundle")
 local __TS__ObjectRest = ____lualib.__TS__ObjectRest
 local ____exports = {}
 local ____ui = require("config.libs.ui")
-local getComponent = ____ui.getComponent
+local getOldComponentToBeDeprecated = ____ui.getOldComponentToBeDeprecated
 local initializePlugin = ____ui.initializePlugin
 function ____exports.Adsr(____bindingPattern0)
     local props
@@ -14,6 +14,6 @@ function ____exports.Adsr(____bindingPattern0)
     values = ____bindingPattern0.values
     props = __TS__ObjectRest(____bindingPattern0, {bounds = true, plugin = true, values = true})
     initializePlugin("Adsr", "libzic_AdsrComponent.so")
-    return getComponent("Adsr", bounds, {{PLUGIN = plugin}, {VALUES = values}, props})
+    return getOldComponentToBeDeprecated("Adsr", bounds, {{PLUGIN = plugin}, {VALUES = values}, props})
 end
 return ____exports
