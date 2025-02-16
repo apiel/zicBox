@@ -63,30 +63,19 @@ public:
         , textColor2(darken(styles.colors.text, 0.5))
     {
         updateWaveformHeight();
-    }
-    virtual std::vector<Title> getTitles() = 0;
+        nlohmann::json config = props.config;
+        renderTitleOnTop = config.value("renderTitleOnTop", renderTitleOnTop);
 
-    void render() override
-    {
-        if (updatePosition()) {
-            BaseGraphComponent::render();
-            renderTitles();
+        if (config.contains("textColor1")) {
+            textColor1 = draw.getColor(config["textColor1"].get<std::string>());
+        }
+
+        if (config.contains("textColor2")) {
+            textColor2 = draw.getColor(config["textColor2"].get<std::string>());
         }
     }
 
-    bool isActive = true;
-    void onGroupChanged(int8_t index) override
-    {
-        bool shouldActivate = false;
-        if (group == index || group == -1) {
-            shouldActivate = true;
-        }
-        if (shouldActivate != isActive) {
-            isActive = shouldActivate;
-            renderNext();
-        }
-    }
-
+    // TODO to be deprecated
     bool config(char* key, char* value)
     {
         if (strcmp(key, "PLUGIN") == 0) {
@@ -126,5 +115,28 @@ public:
         }
 
         return false;
+    }
+
+    virtual std::vector<Title> getTitles() = 0;
+
+    void render() override
+    {
+        if (updatePosition()) {
+            BaseGraphComponent::render();
+            renderTitles();
+        }
+    }
+
+    bool isActive = true;
+    void onGroupChanged(int8_t index) override
+    {
+        bool shouldActivate = false;
+        if (group == index || group == -1) {
+            shouldActivate = true;
+        }
+        if (shouldActivate != isActive) {
+            isActive = shouldActivate;
+            renderNext();
+        }
     }
 };
