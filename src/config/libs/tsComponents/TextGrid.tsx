@@ -1,13 +1,10 @@
 import * as React from '@/libs/react';
 
-import { ComponentProps } from '@/libs/nativeComponents/component';
+import { ComponentProps, VisibilityContext } from '@/libs/nativeComponents/component';
 import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
 import { Keymaps } from '@/libs/nativeComponents/Keymaps';
 import { Text } from '@/libs/nativeComponents/Text';
-import { VisibilityContext } from '@/libs/nativeComponents/VisibilityContext';
 import { Bounds, getBounds, rgb } from '@/libs/ui';
-
-const visibilityContextIndex = 254;
 
 export function TextGrid({
     bounds,
@@ -34,14 +31,7 @@ export function TextGrid({
 
     return (
         <>
-            <HiddenValue>
-                {contextValue !== undefined && (
-                    <VisibilityContext
-                        index={visibilityContextIndex}
-                        condition="SHOW_WHEN"
-                        value={contextValue}
-                    />
-                )}
+            <HiddenValue visibilityContext={visibilityContext(contextValue)}>
                 {keys && <Keymaps keys={keys} />}
             </HiddenValue>
             <TextGridRender
@@ -54,12 +44,6 @@ export function TextGrid({
         </>
     );
 }
-
-// function Visibility({ contextValue }: { contextValue?: number }) {
-//     return contextValue !== undefined ? (
-//         <VisibilityContext index={visibilityContextIndex} condition="SHOW_WHEN" value={contextValue} />
-//     ) : null;
-// }
 
 function TextGridRender({
     bounds,
@@ -107,13 +91,7 @@ function TextGridRender({
                     centered
                     bgColor={bg}
                     color={color}
-                    visibilityContext={contextValue != undefined ? [
-                        {
-                            index: visibilityContextIndex,
-                            condition: 'SHOW_WHEN',
-                            value: contextValue,
-                        },
-                    ] : undefined}
+                    visibilityContext={visibilityContext(contextValue)}
                 />
             );
             marginLeft += width;
@@ -122,4 +100,15 @@ function TextGridRender({
     }
 
     return children;
+}
+
+function visibilityContext(contextValue?: number) {
+    if (contextValue !== undefined) {
+        const statement: VisibilityContext = {
+            index: 254,
+            condition: 'SHOW_WHEN',
+            value: contextValue,
+        };
+        return [statement];
+    }
 }
