@@ -140,7 +140,8 @@ public:
             char* trackStr = strtok(NULL, " ");
             int trackId = trackStr == NULL ? track : atoi(trackStr);
             seqPlugin = &getPlugin(pluginName, trackId);
-            stepCount = seqPlugin->getValue("SELECTED_STEP")->props().max;
+            // stepCount = seqPlugin->getValue("SELECTED_STEP")->props().max;
+            stepCount = *(uint8_t*)seqPlugin->data(seqPlugin->getDataId("STEP_COUNT"));
             stepCounter = (uint8_t*)seqPlugin->data(seqPlugin->getDataId("STEP_COUNTER"));
             seqPlayingPtr = (bool*)seqPlugin->data(seqPlugin->getDataId("IS_PLAYING"));
             steps = (Step*)seqPlugin->data(seqPlugin->getDataId("STEPS"));

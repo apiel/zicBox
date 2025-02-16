@@ -16,7 +16,7 @@ TRACK_HEADER_FILES = -MMD -MF $(OBJ_DIR)/$*.d
 all:
 	+make DrumEnvelopComponent KnobValueComponent GraphEncoderComponent\
 				HiddenValueComponent FmAlgoComponent AdsrComponent\
-				TextComponent SeqProgressBarComponent SeqSynthBarComponent ValueComponent\
+				TextComponent SeqProgressBarComponent ValueComponent\
 				SpectrogramComponent RectComponent ClipsComponent KeyboardComponent ListComponent\
 				WorkspacesComponent SampleComponent TapeComponent StepEditDrumComponent\
 				MacroEnvelopComponent SampleEditorComponent StepEditSampleComponent\

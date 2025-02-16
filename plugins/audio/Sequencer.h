@@ -1,36 +1,13 @@
-#ifndef _SEQUENCER_H_
-#define _SEQUENCER_H_
+#pragma once
 
 #include <string>
 
-#include "helpers/midiNote.h"
+#include "Tempo.h"
 #include "audioPlugin.h"
+#include "helpers/midiNote.h"
+#include "log.h"
 #include "mapping.h"
 #include "stepInterface.h"
-#include "log.h"
-#include "Tempo.h"
-
-// { "---", [](uint8_t loopCounter) { return true; } },
-// { "Pair", [](uint8_t loopCounter) { return loopCounter % 2 == 0; } },
-// { "4th", [](uint8_t loopCounter) { return loopCounter % 4 == 0; } },
-// { "6th", [](uint8_t loopCounter) { return loopCounter % 6 == 0; } },
-// { "8th", [](uint8_t loopCounter) { return loopCounter % 8 == 0; } },
-// { "Impair", [](uint8_t loopCounter) { return loopCounter % 2 == 1; } },
-// { "1%", [](uint8_t loopCounter) { return (getRand() % 100) == 0; } },
-// { "2%", [](uint8_t loopCounter) { return (getRand() % 100) < 2; } },
-// { "5%", [](uint8_t loopCounter) { return (getRand() % 100) < 5; } },
-// { "10%", [](uint8_t loopCounter) { return (getRand() % 100) < 10; } },
-// { "20%", [](uint8_t loopCounter) { return (getRand() % 100) < 20; } },
-// { "30%", [](uint8_t loopCounter) { return (getRand() % 100) < 30; } },
-// { "40%", [](uint8_t loopCounter) { return (getRand() % 100) < 40; } },
-// { "50%", [](uint8_t loopCounter) { return (getRand() % 100) < 50; } },
-// { "60%", [](uint8_t loopCounter) { return (getRand() % 100) < 60; } },
-// { "70%", [](uint8_t loopCounter) { return (getRand() % 100) < 70; } },
-// { "80%", [](uint8_t loopCounter) { return (getRand() % 100) < 80; } },
-// { "90%", [](uint8_t loopCounter) { return (getRand() % 100) < 90; } },
-// { "95%", [](uint8_t loopCounter) { return (getRand() % 100) < 95; } },
-// { "98%", [](uint8_t loopCounter) { return (getRand() % 100) < 98; } },
-// { "99%", [](uint8_t loopCounter) { return (getRand() % 100) < 99; } },
 
 /*md
 ## Sequencer
@@ -64,6 +41,7 @@ class Sequencer : public Mapping, public UseClock {
 protected:
     AudioPlugin::Props& props;
 
+    uint8_t stepCount = MAX_STEPS;
     Step steps[MAX_STEPS];
     Step* selectedStepPtr = &steps[0];
 
@@ -100,8 +78,6 @@ protected:
         // printf("[%d] ------------------- seq stepCounter %d\n", track, stepCounter);
         uint8_t state = status.get();
         // If we reach the end of the sequence, we reset the step counter
-        // TODO
-        // TODO might want to use onPatternLoop!!
         if (stepCounter >= MAX_STEPS) {
             stepCounter = 0;
             loopCounter++;
@@ -136,20 +112,20 @@ public:
     /*md - `DETUNE` detuning all playing step notes by semitones */
     Val& detune = val(0.0f, "DETUNE", { "Detune", VALUE_CENTERED, -24.0f, 24.0f });
 
-    /*md - `SELECTED_STEP` select the step to edit */
-    Val& selectedStep = val(0.0f, "SELECTED_STEP", { "Step", .min = 1.0f, .max = MAX_STEPS }, [&](auto p) { setSelectedStep(p.value); });
-    /*md - `STEP_VELOCITY` set selected step velocity */
-    Val& stepVelocity = val(0.0f, "STEP_VELOCITY", { "Velocity" }, [&](auto p) { setStepVelocity(p.value); });
-    /*md - `STEP_LENGTH` set selected step length */
-    Val& stepLength = val(0.0f, "STEP_LENGTH", { "Len", .min = 1.0f, .max = MAX_STEPS }, [&](auto p) { setStepLength(p.value); });
-    /*md - `STEP_CONDITION` set selected step condition */
-    Val& stepCondition = val(1.0f, "STEP_CONDITION", { "Condition", VALUE_STRING, .min = 1.0f, .max = (float)STEP_CONDITIONS_COUNT }, [&](auto p) { setStepCondition(p.value); });
-    /*md - `STEP_MOTION` set selected step motion */
-    Val& stepMotion = val(0.0f, "STEP_MOTION", { "Motion", VALUE_STRING, .min = 1.0f, .max = (float)STEP_MOTIONS_COUNT }, [&](auto p) { setStepMotion(p.value); });
-    /*md - `STEP_NOTE` set selected step note */
-    Val& stepNote = val(0.0f, "STEP_NOTE", { "Note", VALUE_STRING, .min = (float)MIDI_NOTE_C0, .max = (float)MIDI_NOTE_COUNT }, [&](auto p) { setStepNote(p.value); });
-    /*md - `STEP_ENABLED` toggle selected step */
-    Val& stepEnabled = val(0.0f, "STEP_ENABLED", { "Enabled", VALUE_STRING, .max = 1 }, [&](auto p) { setStepEnabled(p.value); });
+    // /*md - `SELECTED_STEP` select the step to edit */
+    // Val& selectedStep = val(0.0f, "SELECTED_STEP", { "Step", .min = 1.0f, .max = MAX_STEPS }, [&](auto p) { setSelectedStep(p.value); });
+    // /*md - `STEP_VELOCITY` set selected step velocity */
+    // Val& stepVelocity = val(0.0f, "STEP_VELOCITY", { "Velocity" }, [&](auto p) { setStepVelocity(p.value); });
+    // /*md - `STEP_LENGTH` set selected step length */
+    // Val& stepLength = val(0.0f, "STEP_LENGTH", { "Len", .min = 1.0f, .max = MAX_STEPS }, [&](auto p) { setStepLength(p.value); });
+    // /*md - `STEP_CONDITION` set selected step condition */
+    // Val& stepCondition = val(1.0f, "STEP_CONDITION", { "Condition", VALUE_STRING, .min = 1.0f, .max = (float)STEP_CONDITIONS_COUNT }, [&](auto p) { setStepCondition(p.value); });
+    // /*md - `STEP_MOTION` set selected step motion */
+    // Val& stepMotion = val(0.0f, "STEP_MOTION", { "Motion", VALUE_STRING, .min = 1.0f, .max = (float)STEP_MOTIONS_COUNT }, [&](auto p) { setStepMotion(p.value); });
+    // /*md - `STEP_NOTE` set selected step note */
+    // Val& stepNote = val(0.0f, "STEP_NOTE", { "Note", VALUE_STRING, .min = (float)MIDI_NOTE_C0, .max = (float)MIDI_NOTE_COUNT }, [&](auto p) { setStepNote(p.value); });
+    // /*md - `STEP_ENABLED` toggle selected step */
+    // Val& stepEnabled = val(0.0f, "STEP_ENABLED", { "Enabled", VALUE_STRING, .max = 1 }, [&](auto p) { setStepEnabled(p.value); });
     /*md - `STATUS` set status: off, on, next. Default: off
     Play/Stop will answer to global event. However, you may want to the sequencer to not listen to those events or to only start to play on the next sequence iteration. */
     Val& status = val(1.0f, "STATUS", { "Status", VALUE_STRING, .max = 2 }, [&](auto p) { setStatus(p.value); });
@@ -211,69 +187,61 @@ public:
     //     }
     // }
 
-    Sequencer& setSelectedStep(float value)
-    {
-        selectedStep.setFloat(value);
-        uint8_t index = selectedStep.get() - 1;
-        selectedStepPtr = &steps[index];
-        // printf("Selected step: %d note: %d = %s\n", index, selectedStepPtr->note, (char*)MIDI_NOTES_STR[selectedStepPtr->note]);
+    // void setSelectedStep(float value)
+    // {
+    //     selectedStep.setFloat(value);
+    //     uint8_t index = selectedStep.get() - 1;
+    //     selectedStepPtr = &steps[index];
+    //     // printf("Selected step: %d note: %d = %s\n", index, selectedStepPtr->note, (char*)MIDI_NOTES_STR[selectedStepPtr->note]);
 
-        stepVelocity.set(selectedStepPtr->velocity * 100);
-        stepLength.set(selectedStepPtr->len);
-        stepCondition.set(selectedStepPtr->condition + 1);
-        stepMotion.set(selectedStepPtr->motion + 1);
-        stepNote.set(selectedStepPtr->note);
-        stepEnabled.set(selectedStepPtr->enabled ? 1.0 : 0.0);
+    //     stepVelocity.set(selectedStepPtr->velocity * 100);
+    //     stepLength.set(selectedStepPtr->len);
+    //     stepCondition.set(selectedStepPtr->condition + 1);
+    //     stepMotion.set(selectedStepPtr->motion + 1);
+    //     stepNote.set(selectedStepPtr->note);
+    //     stepEnabled.set(selectedStepPtr->enabled ? 1.0 : 0.0);
+    // }
 
-        return *this;
-    }
+    // void setStepNote(float value)
+    // {
+    //     stepNote.setFloat(value);
+    //     selectedStepPtr->note = stepNote.get();
+    //     stepNote.setString((char*)MIDI_NOTES_STR[selectedStepPtr->note]);
+    //     // printf("Note: %d = %s\n", selectedStepPtr->note, (char*)MIDI_NOTES_STR[selectedStepPtr->note]);
+    // }
 
-    Sequencer& setStepNote(float value)
-    {
-        stepNote.setFloat(value);
-        selectedStepPtr->note = stepNote.get();
-        stepNote.setString((char*)MIDI_NOTES_STR[selectedStepPtr->note]);
-        // printf("Note: %d = %s\n", selectedStepPtr->note, (char*)MIDI_NOTES_STR[selectedStepPtr->note]);
-        return *this;
-    }
+    // void setStepLength(float value)
+    // {
+    //     stepLength.setFloat(value);
+    //     selectedStepPtr->len = stepLength.get();
+    // }
 
-    Sequencer& setStepLength(float value)
-    {
-        stepLength.setFloat(value);
-        selectedStepPtr->len = stepLength.get();
-        return *this;
-    }
+    // void setStepVelocity(float value)
+    // {
+    //     stepVelocity.setFloat(value);
+    //     selectedStepPtr->velocity = stepVelocity.pct();
+    // }
 
-    Sequencer& setStepVelocity(float value)
-    {
-        stepVelocity.setFloat(value);
-        selectedStepPtr->velocity = stepVelocity.pct();
-        return *this;
-    }
+    // void setStepCondition(float value)
+    // {
+    //     stepCondition.setFloat(value);
+    //     selectedStepPtr->condition = stepCondition.get() - 1;
+    //     stepCondition.setString((char*)stepConditions[selectedStepPtr->condition].name);
+    // }
 
-    Sequencer& setStepCondition(float value)
-    {
-        stepCondition.setFloat(value);
-        selectedStepPtr->condition = stepCondition.get() - 1;
-        stepCondition.setString((char*)stepConditions[selectedStepPtr->condition].name);
-        return *this;
-    }
+    // void setStepMotion(float value)
+    // {
+    //     stepMotion.setFloat(value);
+    //     selectedStepPtr->motion = stepMotion.get() - 1;
+    //     stepMotion.setString((char*)stepMotions[selectedStepPtr->motion].name);
+    // }
 
-    Sequencer& setStepMotion(float value)
-    {
-        stepMotion.setFloat(value);
-        selectedStepPtr->motion = stepMotion.get() - 1;
-        stepMotion.setString((char*)stepMotions[selectedStepPtr->motion].name);
-        return *this;
-    }
-
-    Sequencer& setStepEnabled(float value)
-    {
-        stepEnabled.setFloat(value);
-        selectedStepPtr->enabled = stepEnabled.get() > 0.5;
-        stepEnabled.setString(selectedStepPtr->enabled ? (char*)"ON" : (char*)"OFF");
-        return *this;
-    }
+    // void setStepEnabled(float value)
+    // {
+    //     stepEnabled.setFloat(value);
+    //     selectedStepPtr->enabled = stepEnabled.get() > 0.5;
+    //     stepEnabled.setString(selectedStepPtr->enabled ? (char*)"ON" : (char*)"OFF");
+    // }
 
     enum DATA_ID {
         STEPS,
@@ -283,7 +251,8 @@ public:
         CLOCK_COUNTER,
         GET_STEP,
         SELECTED_STEP_PTR,
-        STEP_TOGGLE
+        STEP_COUNT,
+        // STEP_TOGGLE,
     };
 
     /*md **Data ID**: */
@@ -310,9 +279,12 @@ public:
         /*md - `SELECTED_STEP_PTR` return selected step pointer */
         if (name == "SELECTED_STEP_PTR")
             return DATA_ID::SELECTED_STEP_PTR;
-        /*md - `STEP_TOGGLE` toggle selected step */
-        if (name == "STEP_TOGGLE")
-            return DATA_ID::STEP_TOGGLE;
+        /*md - `STEP_COUNT` return step count */
+        if (name == "STEP_COUNT")
+            return DATA_ID::STEP_COUNT;
+        // /*md - `STEP_TOGGLE` toggle selected step */
+        // if (name == "STEP_TOGGLE")
+        //     return DATA_ID::STEP_TOGGLE;
         return atoi(name.c_str());
     }
 
@@ -331,6 +303,8 @@ public:
         }
         case DATA_ID::CLOCK_COUNTER:
             return &clockCounter;
+        case DATA_ID::STEP_COUNT:
+            return &stepCount;
         case DATA_ID::GET_STEP: {
             uint8_t* index = (uint8_t*)userdata;
             if (*index >= MAX_STEPS) {
@@ -346,9 +320,9 @@ public:
             }
             return NULL;
         }
-        case DATA_ID::STEP_TOGGLE: // Step toggle
-            stepEnabled.set(selectedStepPtr->enabled ? 0.0 : 1.0);
-            return NULL;
+            // case DATA_ID::STEP_TOGGLE: // Step toggle
+            //     stepEnabled.set(selectedStepPtr->enabled ? 0.0 : 1.0);
+            //     return NULL;
         }
         return NULL;
     }
@@ -382,5 +356,3 @@ public:
         Mapping::hydrate(valCopy);
     }
 };
-
-#endif
