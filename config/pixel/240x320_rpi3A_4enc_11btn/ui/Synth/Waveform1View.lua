@@ -26,20 +26,14 @@ function ____exports.SynthWaveform1View(____bindingPattern0)
     return React.createElement(
         View,
         {name = name},
-        React.createElement(
-            GraphEncoder,
-            {
-                bounds = topValues,
-                plugin = "Synth",
-                data_id = "WAVEFORM1",
-                RENDER_TITLE_ON_TOP = true,
-                encoders = {
-                    tostring(encTopLeft) .. " SHAPE_1",
-                    tostring(encTopRight) .. " MORPH_1"
-                },
-                track = SynthTrack
-            }
-        ),
+        React.createElement(GraphEncoder, {
+            bounds = topValues,
+            audioPlugin = "Synth",
+            dataId = "WAVEFORM1",
+            renderValuesOnTop = true,
+            encoders = {{encoderId = encTopLeft, value = "SHAPE_1"}, {encoderId = encTopRight, value = "MORPH_1"}},
+            track = SynthTrack
+        }),
         React.createElement(KnobValue, {
             audioPlugin = "Synth",
             param = "FREQ_1",

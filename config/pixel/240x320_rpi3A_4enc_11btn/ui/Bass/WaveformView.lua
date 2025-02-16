@@ -25,21 +25,14 @@ function ____exports.BassWaveformView(____bindingPattern0)
     return React.createElement(
         View,
         {name = name},
-        React.createElement(
-            GraphEncoder,
-            {
-                bounds = pos,
-                plugin = "Bass",
-                data_id = "WAVEFORM",
-                track = BassTrack,
-                RENDER_TITLE_ON_TOP = false,
-                encoders = {
-                    tostring(encTopLeft) .. " WAVEFORM_TYPE",
-                    tostring(encTopRight) .. " SHAPE",
-                    tostring(encBottomLeft) .. " MACRO"
-                }
-            }
-        ),
+        React.createElement(GraphEncoder, {
+            bounds = pos,
+            audioPlugin = "Bass",
+            dataId = "WAVEFORM",
+            track = BassTrack,
+            renderValuesOnTop = false,
+            encoders = {{encoderId = encTopLeft, value = "WAVEFORM_TYPE"}, {encoderId = encTopRight, value = "SHAPE"}, {encoderId = encBottomLeft, value = "MACRO"}}
+        }),
         React.createElement(TextGridBass, {selected = "Wave", viewName = name}),
         React.createElement(Common, {selected = "Bass", track = BassTrack, selectedBackground = ColorTrack2})
     )

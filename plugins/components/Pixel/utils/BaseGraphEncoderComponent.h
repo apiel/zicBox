@@ -27,12 +27,12 @@ protected:
         }
     }
 
-    bool renderTitleOnTop = true;
+    bool renderValuesOnTop = true;
     void renderTitles()
     {
         std::vector<Title> titles = getTitles();
         if (titles.size() > 0) {
-            if (renderTitleOnTop) {
+            if (renderValuesOnTop) {
                 int cellWidth = size.w / titles.size();
                 renderTitles(titles, relativePosition.y, cellWidth);
             } else {
@@ -49,7 +49,7 @@ protected:
 
     void updateWaveformHeight()
     {
-        if (renderTitleOnTop) {
+        if (renderValuesOnTop) {
             waveformHeight = size.h - 9;
         } else {
             waveformHeight = size.h - 9 - 9;
@@ -64,7 +64,7 @@ public:
     {
         updateWaveformHeight();
         nlohmann::json config = props.config;
-        renderTitleOnTop = config.value("renderTitleOnTop", renderTitleOnTop);
+        renderValuesOnTop = config.value("renderValuesOnTop", renderValuesOnTop);
 
         if (config.contains("textColor1")) {
             textColor1 = draw.getColor(config["textColor1"].get<std::string>());
@@ -94,7 +94,7 @@ public:
         }
 
         if (strcmp(key, "RENDER_TITLE_ON_TOP") == 0) {
-            renderTitleOnTop = strcmp(value, "true") == 0;
+            renderValuesOnTop = strcmp(value, "true") == 0;
             updateWaveformHeight();
             return true;
         }

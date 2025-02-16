@@ -17,16 +17,26 @@ export function SynthWaveform2View({ name }: Props) {
         <View name={name}>
             <GraphEncoder
                 bounds={topValues}
-                plugin="Synth"
-                data_id="WAVEFORM2"
-                RENDER_TITLE_ON_TOP={true}
-                encoders={[`${encTopLeft} SHAPE_2`, `${encTopRight} MORPH_2`]}
+                audioPlugin="Synth"
+                dataId="WAVEFORM2"
+                renderValuesOnTop={true}
+                // encoders={[`${encTopLeft} SHAPE_2`, `${encTopRight} MORPH_2`]}
+                encoders={[
+                    {
+                        encoderId: encTopLeft,
+                        value: 'SHAPE_2',
+                    },
+                    {
+                        encoderId: encTopRight,
+                        value: 'MORPH_2',
+                    },
+                ]}
                 track={SynthTrack}
             />
 
             <KnobValue
-                audioPlugin='Synth'
-                param='FREQ_2'
+                audioPlugin="Synth"
+                param="FREQ_2"
                 bounds={bottomLeftKnob}
                 encoderId={encBottomLeft}
                 color="quaternary"

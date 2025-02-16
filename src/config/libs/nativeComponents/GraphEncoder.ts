@@ -1,19 +1,16 @@
-import { getOldComponentToBeDeprecated, initializePlugin } from '@/libs/ui';
-import { ComponentProps } from './component';
+import { getJsonComponent } from '../ui';
 
-export type Props = ComponentProps & {
-    plugin: string;
-    data_id: string;
-    encoders: string[];
-};
-
-export function GraphEncoder({ bounds, track, plugin, data_id, encoders, ...props }: Props) {
-    initializePlugin('GraphEncoder', 'libzic_GraphEncoderComponent.so');
-    return getOldComponentToBeDeprecated('GraphEncoder', bounds, [
-        { track },
-        { plugin },
-        { data_id },
-        encoders.map((encoder) => ({ encoder })),
-        props,
-    ]);
-}
+export const GraphEncoder = getJsonComponent<{
+    outline?: boolean;
+    fillColor?: string;
+    filled?: boolean;
+    outlineColor?: string;
+    textColor1?: string;
+    textColor2?: string;
+    bgColor?: string;
+    audioPlugin: string;
+    dataId: string;
+    encoders?: { encoderId: number; value: string; string?: boolean }[];
+    isArrayData?: boolean;
+    renderValuesOnTop?: boolean;
+}>('GraphEncoder', 'libzic_GraphEncoderComponent.so');
