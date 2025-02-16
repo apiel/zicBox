@@ -2,7 +2,7 @@
 
 **ZicBox** is a versatile C++ framework designed to simplify the development of music applications, with a primary focus on creating grooveboxes and drum machines for custom hardware running on **Raspberry Pi**. However, it is not limited to embedded devices, it also runs on **Linux desktops**, making it a basic foundation for building full-fledged music production software.
 
-## 🚀 Features
+## 🎵 Features 🎶
 
 ### **Modular Architecture**
 ZicBox is built around a highly modular system that ensures flexibility and extensibility:
