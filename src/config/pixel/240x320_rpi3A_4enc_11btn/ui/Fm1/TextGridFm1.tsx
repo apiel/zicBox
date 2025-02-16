@@ -1,9 +1,9 @@
 import * as React from '@/libs/react';
 
 import { Rect } from '@/libs/nativeComponents/Rect';
+import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { Fm1 } from '../components/Common';
 import { SideInfo } from '../components/SideInfo';
-import { TextGridSel } from '../components/TextGridSel';
 import { Title } from '../components/Title';
 import {
     btn1,
@@ -17,6 +17,7 @@ import {
     btnShift,
     btnUp,
     ColorTrack2,
+    KeyInfoPosition,
 } from '../constants';
 
 export function TextGridFm1({ selected, viewName }: { selected: string; viewName: string }) {
@@ -24,7 +25,8 @@ export function TextGridFm1({ selected, viewName }: { selected: string; viewName
         <>
             <Title title={Fm1} />
             <Rect bounds={[70, 28, 6, 6]} color={ColorTrack2} />
-            <TextGridSel
+            <TextGrid
+                bounds={KeyInfoPosition}
                 selectedBackground={ColorTrack2}
                 rows={['Main Fx Env &empty', 'Seq. &empty &empty &empty']}
                 keys={[

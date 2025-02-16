@@ -1,9 +1,9 @@
 import * as React from '@/libs/react';
 
 import { Rect } from '@/libs/nativeComponents/Rect';
+import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { Kick } from '../components/Common';
 import { SideInfo } from '../components/SideInfo';
-import { TextGridSel } from '../components/TextGridSel';
 import { Title } from '../components/Title';
 import {
     btn1,
@@ -17,7 +17,8 @@ import {
     btnDown,
     btnShift,
     btnUp,
-    ColorTrack1
+    ColorTrack1,
+    KeyInfoPosition,
 } from '../constants';
 
 export function TextGridDrum23({ selected, viewName }: { selected: string; viewName: string }) {
@@ -25,7 +26,8 @@ export function TextGridDrum23({ selected, viewName }: { selected: string; viewN
         <>
             <Title title={Kick} />
             <Rect bounds={[70, 28, 6, 6]} color={ColorTrack1} />
-            <TextGridSel
+            <TextGrid
+                bounds={KeyInfoPosition}
                 selectedBackground={ColorTrack1}
                 rows={[
                     'Main Fx Wave Freq',

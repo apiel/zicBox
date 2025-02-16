@@ -3,12 +3,12 @@ local ____exports = {}
 local React = require("config.libs.react")
 local ____Rect = require("config.libs.nativeComponents.Rect")
 local Rect = ____Rect.Rect
+local ____TextGrid = require("config.libs.tsComponents.TextGrid")
+local TextGrid = ____TextGrid.TextGrid
 local ____Common = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.Common")
 local Kick = ____Common.Kick
 local ____SideInfo = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.SideInfo")
 local SideInfo = ____SideInfo.SideInfo
-local ____TextGridSel = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.TextGridSel")
-local TextGridSel = ____TextGridSel.TextGridSel
 local ____Title = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.components.Title")
 local Title = ____Title.Title
 local ____constants = require("config.pixel.240x320_rpi3A_4enc_11btn.ui.constants")
@@ -24,6 +24,7 @@ local btnDown = ____constants.btnDown
 local btnShift = ____constants.btnShift
 local btnUp = ____constants.btnUp
 local ColorTrack1 = ____constants.ColorTrack1
+local KeyInfoPosition = ____constants.KeyInfoPosition
 function ____exports.TextGridDrum23(____bindingPattern0)
     local selected
     selected = ____bindingPattern0.selected
@@ -33,7 +34,8 @@ function ____exports.TextGridDrum23(____bindingPattern0)
         nil,
         React.createElement(Title, {title = Kick}),
         React.createElement(Rect, {bounds = {70, 28, 6, 6}, color = ColorTrack1}),
-        React.createElement(TextGridSel, {
+        React.createElement(TextGrid, {
+            bounds = KeyInfoPosition,
             selectedBackground = ColorTrack1,
             rows = {"Main Fx Wave Freq", "Seq. Amp Click &empty"},
             keys = {

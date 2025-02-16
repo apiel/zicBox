@@ -1,9 +1,9 @@
 import * as React from '@/libs/react';
 
 import { Rect } from '@/libs/nativeComponents/Rect';
+import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { Perc } from '../components/Common';
 import { SideInfo } from '../components/SideInfo';
-import { TextGridSel } from '../components/TextGridSel';
 import { Title } from '../components/Title';
 import {
     btn1,
@@ -17,7 +17,8 @@ import {
     btnDown,
     btnShift,
     btnUp,
-    ColorTrack6
+    ColorTrack6,
+    KeyInfoPosition,
 } from '../constants';
 
 export function TextGridPerc({ selected, viewName }: { selected: string; viewName: string }) {
@@ -25,7 +26,8 @@ export function TextGridPerc({ selected, viewName }: { selected: string; viewNam
         <>
             <Title title={Perc} />
             <Rect bounds={[70, 28, 6, 6]} color={ColorTrack6} />
-            <TextGridSel
+            <TextGrid
+                bounds={KeyInfoPosition}
                 selectedBackground={ColorTrack6}
                 rows={['Main Fx Env Noise1', 'Seq. Seq2 Mod. Noise2']}
                 keys={[

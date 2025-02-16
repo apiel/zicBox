@@ -1,9 +1,9 @@
 import * as React from '@/libs/react';
 
 import { Rect } from '@/libs/nativeComponents/Rect';
+import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { Bass } from '../components/Common';
 import { SideInfo } from '../components/SideInfo';
-import { TextGridSel } from '../components/TextGridSel';
 import { Title } from '../components/Title';
 import {
     btn1,
@@ -18,6 +18,7 @@ import {
     btnShift,
     btnUp,
     ColorTrack2,
+    KeyInfoPosition,
 } from '../constants';
 
 export function TextGridBass({ selected, viewName }: { selected: string; viewName: string }) {
@@ -25,7 +26,8 @@ export function TextGridBass({ selected, viewName }: { selected: string; viewNam
         <>
             <Title title={Bass} />
             <Rect bounds={[70, 28, 6, 6]} color={ColorTrack2} />
-            <TextGridSel
+            <TextGrid
+                bounds={KeyInfoPosition}
                 selectedBackground={ColorTrack2}
                 rows={['Main Fx Env Wave', 'Seq. &empty &empty &empty']}
                 keys={[

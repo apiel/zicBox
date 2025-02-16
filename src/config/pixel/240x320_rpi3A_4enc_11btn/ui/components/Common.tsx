@@ -1,10 +1,23 @@
 import * as React from '@/libs/react';
 
 import { SeqProgressBar } from '@/libs/nativeComponents/SeqProgressBar';
+import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { rgb } from '@/libs/ui';
-import { btn1, btn2, btn3, btn4, btn5, btn6, btn8, btnDown, btnShift, btnUp, ScreenWidth } from '../constants';
+import {
+    btn1,
+    btn2,
+    btn3,
+    btn4,
+    btn5,
+    btn6,
+    btn8,
+    btnDown,
+    btnShift,
+    btnUp,
+    KeyInfoPosition,
+    ScreenWidth,
+} from '../constants';
 import { SideInfo } from './SideInfo';
-import { TextGridSel } from './TextGridSel';
 
 export const Kick = 'Kick';
 export const Bass = 'Bass';
@@ -53,11 +66,9 @@ export function Common({
                 />
             )}
 
-            <TextGridSel
-                rows={[
-                    `${Kick} ${Bass} ${Fm1} ${Synth}`,
-                    `${Sample1} ${Perc} ${Sample3} ${Clips}`,
-                ]}
+            <TextGrid
+                bounds={KeyInfoPosition}
+                rows={[`${Kick} ${Bass} ${Fm1} ${Synth}`, `${Sample1} ${Perc} ${Sample3} ${Clips}`]}
                 keys={[
                     { key: btn1, action: 'setView:Drum23' },
                     { key: btn2, action: 'setView:Bass' },
