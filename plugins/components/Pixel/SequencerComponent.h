@@ -23,35 +23,65 @@ protected:
     int numNotes = 24;
     bool drawNoteStr = true;
 
-    Color seqBeatColour = { 0x80, 0x80, 0x80 };
-    Color seqBarColour = lighten(seqBeatColour, 0.4);
-    Color seqColSeparatorColour = darken(seqBeatColour, 0.6);
+    Color beatColor = { 0x80, 0x80, 0x80 };
+    Color barColor = lighten(beatColor, 0.4);
+    Color colSeparatorColor = darken(beatColor, 0.6);
 
-    Color seqRowBlackKeyColour;
-    Color seqRowWhiteKeyColour;
-    Color seqRowSeparatorColour;
+    Color blackKeyColor;
+    Color whiteKeyColor;
+    Color rowSeparatorColor;
 
-    Color seqNoteColour;
-    Color seqNote2Colour;
+    Color noteColor;
+    Color note2Color;
 
 public:
     SequencerComponent(ComponentInterface::Props props)
         : Component(props)
         , background(styles.colors.background)
-        , seqRowBlackKeyColour(styles.colors.background)
-        , seqRowWhiteKeyColour(lighten(styles.colors.background, 0.2))
-        , seqRowSeparatorColour(lighten(styles.colors.background, 0.4))
-        , seqNoteColour(darken(styles.colors.white, 0.2))
-        , seqNote2Colour(lighten(styles.colors.background, 1.5))
+        , blackKeyColor(styles.colors.background)
+        , whiteKeyColor(lighten(styles.colors.background, 0.2))
+        , rowSeparatorColor(lighten(styles.colors.background, 0.4))
+        , noteColor(darken(styles.colors.white, 0.2))
+        , note2Color(lighten(styles.colors.background, 1.5))
     {
         /*md md_config:Sequencer */
         nlohmann::json config = props.config;
 
         /*md   // The background color of the text. */
         /*md   bgColor="#000000" */
-        if (config.contains("bgColor")) {
-            background = draw.getColor(config["bgColor"].get<std::string>());
-        }
+        background = draw.getColor(config["bgColor"], background);
+
+        /*md   // The color of the black keys. */
+        /*md   blackKeyColor="#000000" */
+        blackKeyColor = draw.getColor(config["blackKeyColor"], blackKeyColor);
+
+        /*md   // The color of the white keys. */
+        /*md   whiteKeyColor="#000000" */
+        whiteKeyColor = draw.getColor(config["whiteKeyColor"], whiteKeyColor);
+
+        /*md   // The color of the row separators. */
+        /*md   rowSeparatorColor="#000000" */
+        rowSeparatorColor = draw.getColor(config["rowSeparatorColor"], rowSeparatorColor);
+
+        /*md   // The color of the beats. */
+        /*md   beatColor="#000000" */
+        beatColor = draw.getColor(config["beatColor"], beatColor);
+
+        /*md   // The color of the bars. */
+        /*md   barColor="#000000" */
+        barColor = draw.getColor(config["barColor"], barColor);
+
+        /*md   // The color of the column separators. */
+        /*md   colSeparatorColor="#000000" */
+        colSeparatorColor = draw.getColor(config["colSeparatorColor"], colSeparatorColor);
+
+        /*md   // The color of the C notes. */
+        /*md   noteColor="#000000" */
+        noteColor = draw.getColor(config["noteColor"], noteColor);
+
+        /*md   // The color of the other notes. */
+        /*md   note2Color="#000000" */
+        note2Color = draw.getColor(config["note2Color"], note2Color);
 
         /*md md_config_end */
 
@@ -82,17 +112,17 @@ public:
                 int y = relativePosition.y + i * stepHeight;
                 int x = relativePosition.x;
                 int midiNote = midiStartNote + i;
-                Color color = isBlackKey(midiNote) ? seqRowBlackKeyColour : seqRowWhiteKeyColour;
+                Color color = isBlackKey(midiNote) ? blackKeyColor : whiteKeyColor;
                 draw.filledRect({ x, y }, { size.w, stepHeight }, { color });
-                draw.line({ x, y }, { x + size.w, y }, { seqRowSeparatorColour });
+                draw.line({ x, y }, { x + size.w, y }, { rowSeparatorColor });
 
                 if (xStart) {
                     if (midiNote % 12 == 0) {
-                        draw.text({ x, y + 1 }, MIDI_NOTES_STR[midiNote], 8, { seqNoteColour });
+                        draw.text({ x, y + 1 }, MIDI_NOTES_STR[midiNote], 8, { noteColor });
                     } else if (!isBlackKey(midiNote)) {
-                        draw.text({ x, y + 1 }, MIDI_NOTES_STR[midiNote], 8, { seqNote2Colour });
+                        draw.text({ x, y + 1 }, MIDI_NOTES_STR[midiNote], 8, { note2Color });
                     } else {
-                        draw.text({ x, y + 1 }, " #", 8, { seqNote2Colour });
+                        draw.text({ x, y + 1 }, " #", 8, { note2Color });
                     }
                 }
             }
@@ -103,11 +133,11 @@ public:
                 int y = relativePosition.y;
                 Color color;
                 if (i % 16 == 0)
-                    color = seqBarColour; // Bar line
+                    color = barColor; // Bar line
                 else if (i % 4 == 0)
-                    color = seqBeatColour; // Beat line
+                    color = beatColor; // Beat line
                 else
-                    color = seqColSeparatorColour;
+                    color = colSeparatorColor;
 
                 draw.line({ x, y }, { x, y + size.h }, { color });
             }
