@@ -51,7 +51,7 @@ export function getJsonComponent<P>(componentName: string, pluginPath: string) {
 
 // TODO to be deprecated
 export function getComponent(name: string, bounds: Bounds, values: ZicValue[] = []) {
-    return [{ COMPONENT: `${name} ${getPosition(bounds)}` }, values];
+    return [{ OLD_COMPONENT: `${name} ${getPosition(bounds)}` }, values];
 }
 
 /**

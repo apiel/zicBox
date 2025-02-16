@@ -1,8 +1,8 @@
 #pragma once
 
+#include "libs/nlohmann/json.hpp"
 #include <dlfcn.h>
 #include <mutex>
-#include "libs/nlohmann/json.hpp"
 #include <vector>
 
 #include "controllerList.h"
@@ -277,6 +277,24 @@ public:
             } catch (const std::exception& e) {
                 logError("COMPONENT: JSON Parsing Error: %s", e.what());
             }
+        }
+
+        // TODO migrate all component to use JSON config
+        if (strcmp(key, "OLD_COMPONENT") == 0) {
+            nlohmann::json config;
+            config["componentName"] = strtok(value, " ");
+
+            Point position = { atoi(strtok(NULL, " ")), atoi(strtok(NULL, " ")) };
+            char* w = strtok(NULL, " ");
+            char* h = strtok(NULL, " ");
+            Size size = { w ? atoi(w) : styles.screen.w, h ? atoi(h) : styles.screen.h };
+            config["bounds"][0] = position.x;
+            config["bounds"][1] = position.y;
+            config["bounds"][2] = size.w;
+            config["bounds"][3] = size.h;
+
+            addComponent(config);
+            return true;
         }
 
         /*//md
