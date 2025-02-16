@@ -1,5 +1,4 @@
-#ifndef _COMPONENT_VISIBILITY_CONTEXT_H_
-#define _COMPONENT_VISIBILITY_CONTEXT_H_
+#pragma once
 
 #include <cstdint>
 #include <string>
@@ -70,5 +69,3 @@ public:
         return false;
     }
 };
-
-#endif

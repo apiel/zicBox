@@ -1,5 +1,4 @@
-#ifndef _COMPONENT_VISIBILITY_GROUP_H_
-#define _COMPONENT_VISIBILITY_GROUP_H_
+#pragma once
 
 #include <cstdint>
 #include <string.h>
@@ -65,5 +64,3 @@ public:
         return false;
     }
 };
-
-#endif

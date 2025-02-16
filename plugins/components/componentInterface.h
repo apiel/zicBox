@@ -48,8 +48,7 @@ public:
     Size size;
     int16_t track;
     int8_t group = -1;
-    bool active = true;
-    std::string id = "";
+    std::string id = ""; // TO be removed?
 
     std::function<void(unsigned long now)> jobRendering;
 
@@ -84,6 +83,7 @@ public:
     virtual void onGroupChanged(int8_t index) = 0;
     virtual void onContext(uint8_t index, float value) = 0;
     virtual void onUpdate(ValueInterface* value) = 0;
+    virtual bool isVisible() = 0;
     virtual void* data(int id, void* userdata = NULL)
     {
         return NULL;

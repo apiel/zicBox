@@ -114,12 +114,12 @@ public:
     }
 
     // FIXME
-    // bool config(char* key, char* value)
-    // {
-    //     if (keypadLayout.config(key, value)) {
-    //         return true;
-    //     }
+    bool config(char* key, char* value) override
+    {
+        if (keypadLayout.config(key, value)) {
+            return true;
+        }
 
-    //     return false;
-    // }
+        return false;
+    }
 };

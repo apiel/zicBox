@@ -22,7 +22,7 @@
 
 - TODO use std::string as much as possible and other C++ thing to simplify life :p
 
-- TODO look if container concept is fully used...
+- TODO look if container concept is fully used... OR maybe get rid of it!!
   - for example, is plugin still listed under the main view, and receive event if parent container is not visible?
   - ...
   - instead of updatePosition and updateCompontentPosition, container should be responsible to render the child component and decide wether on child should be rendered or not.

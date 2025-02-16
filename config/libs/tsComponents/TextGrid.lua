@@ -12,8 +12,13 @@ local getBounds = ____ui.getBounds
 local rgb = ____ui.rgb
 local ____Text = require("config.libs.nativeComponents.Text")
 local Text = ____Text.Text
+local ____VisibilityContext = require("config.libs.nativeComponents.VisibilityContext")
+local VisibilityContext = ____VisibilityContext.VisibilityContext
 function ____exports.TextGrid(____bindingPattern0)
     local props
+    local visibilityValue
+    local visibilityContext
+    local visibilityCondition
     local shiftedTextColor
     local activeBgColor
     local textColor
@@ -38,15 +43,21 @@ function ____exports.TextGrid(____bindingPattern0)
     if shiftedTextColor == nil then
         shiftedTextColor = rgb(80, 75, 75)
     end
+    visibilityCondition = ____bindingPattern0.visibilityCondition
+    visibilityContext = ____bindingPattern0.visibilityContext
+    visibilityValue = ____bindingPattern0.visibilityValue
     props = __TS__ObjectRest(____bindingPattern0, {
         bounds = true,
         rows = true,
         bgColor = true,
         textColor = true,
         activeBgColor = true,
-        shiftedTextColor = true
+        shiftedTextColor = true,
+        visibilityCondition = true,
+        visibilityContext = true,
+        visibilityValue = true
     })
-    local h = 12
+    local h = 11
     local x, y, w = table.unpack(getBounds(bounds))
     local textY = __TS__Number(y) + 2
     local children = {}
@@ -80,7 +91,8 @@ function ____exports.TextGrid(____bindingPattern0)
                     },
                     props,
                     {centered = true, bgColor = bg, color = color}
-                )
+                ),
+                visibilityContext and visibilityCondition and visibilityValue and React.createElement(VisibilityContext, {index = visibilityContext, condition = visibilityCondition, value = visibilityValue})
             )
             marginLeft = marginLeft + width
         end

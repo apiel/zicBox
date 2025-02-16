@@ -95,7 +95,9 @@ public:
         }
 
         for (auto& component : components) {
-            component->onContext(index, value);
+            // if (component->isVisible()) {
+                component->onContext(index, value);                
+            // }
         }
     }
 
@@ -116,7 +118,7 @@ public:
     {
         if (componentsJob.size()) {
             for (auto& component : componentsJob) {
-                if (component->active) {
+                if (component->isVisible()) {
                     component->jobRendering(now);
                 }
             }
@@ -124,7 +126,7 @@ public:
 
         if (componentsToRender.size()) {
             for (auto& component : componentsToRender) {
-                if (component->active) {
+                if (component->isVisible()) {
                     component->render();
                 }
             }
@@ -143,9 +145,10 @@ public:
         }
     }
 
+    // Might want to rework this 
     bool isVisible(ComponentInterface* component)
     {
-        return component->container->isVisible(component->position, component->size);
+        return component->isVisible() && component->container->isVisible(component->position, component->size);
     }
 
     void onMotion(MotionInterface& motion)
