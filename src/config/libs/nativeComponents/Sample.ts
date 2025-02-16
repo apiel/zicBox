@@ -1,4 +1,4 @@
-import { getComponent, initializePlugin } from '@/libs/ui';
+import { getOldComponentToBeDeprecated, initializePlugin } from '@/libs/ui';
 import { ComponentProps } from './component';
 
 export type Props = ComponentProps & {
@@ -7,7 +7,7 @@ export type Props = ComponentProps & {
 
 export function Sample({ bounds, track, plugin, data_id, encoders, ...props }: Props) {
     initializePlugin('Sample', 'libzic_SampleComponent.so');
-    return getComponent('Sample', bounds, [
+    return getOldComponentToBeDeprecated('Sample', bounds, [
         { track },
         { plugin },
         props,

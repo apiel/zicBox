@@ -3,7 +3,7 @@ local __TS__ArrayMap = ____lualib.__TS__ArrayMap
 local __TS__ObjectRest = ____lualib.__TS__ObjectRest
 local ____exports = {}
 local ____ui = require("config.libs.ui")
-local getComponent = ____ui.getComponent
+local getOldComponentToBeDeprecated = ____ui.getOldComponentToBeDeprecated
 local initializePlugin = ____ui.initializePlugin
 function ____exports.GraphEncoder(____bindingPattern0)
     local props
@@ -25,7 +25,7 @@ function ____exports.GraphEncoder(____bindingPattern0)
         encoders = true
     })
     initializePlugin("GraphEncoder", "libzic_GraphEncoderComponent.so")
-    return getComponent(
+    return getOldComponentToBeDeprecated(
         "GraphEncoder",
         bounds,
         {

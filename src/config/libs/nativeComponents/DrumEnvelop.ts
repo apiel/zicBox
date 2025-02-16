@@ -1,4 +1,4 @@
-import { getComponent, initializePlugin } from '@/libs/ui';
+import { getOldComponentToBeDeprecated, initializePlugin } from '@/libs/ui';
 import { ComponentProps } from './component';
 
 export type Props = ComponentProps & {
@@ -8,7 +8,7 @@ export type Props = ComponentProps & {
 
 export function DrumEnvelop({ bounds, track, plugin, envelop_data_id, ...props }: Props) {
     initializePlugin('DrumEnvelop', 'libzic_DrumEnvelopComponent.so');
-    return getComponent('DrumEnvelop', bounds, [
+    return getOldComponentToBeDeprecated('DrumEnvelop', bounds, [
         { track },
         { plugin },
         {envelop_data_id},

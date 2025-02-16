@@ -1,4 +1,4 @@
-import { getComponent, initializePlugin } from '@/libs/ui';
+import { getOldComponentToBeDeprecated, initializePlugin } from '@/libs/ui';
 import { ComponentProps } from './component';
 
 export type Props = ComponentProps & {
@@ -9,7 +9,7 @@ export type Props = ComponentProps & {
 
 export function GraphEncoder({ bounds, track, plugin, data_id, encoders, ...props }: Props) {
     initializePlugin('GraphEncoder', 'libzic_GraphEncoderComponent.so');
-    return getComponent('GraphEncoder', bounds, [
+    return getOldComponentToBeDeprecated('GraphEncoder', bounds, [
         { track },
         { plugin },
         { data_id },

@@ -50,7 +50,7 @@ export function getJsonComponent<P>(componentName: string, pluginPath: string) {
 }
 
 // TODO to be deprecated
-export function getComponent(name: string, bounds: Bounds, values: ZicValue[] = []) {
+export function getOldComponentToBeDeprecated(name: string, bounds: Bounds, values: ZicValue[] = []) {
     return [{ OLD_COMPONENT: `${name} ${getPosition(bounds)}` }, values];
 }
 

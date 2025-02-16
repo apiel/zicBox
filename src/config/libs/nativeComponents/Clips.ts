@@ -1,4 +1,4 @@
-import { getComponent, initializePlugin } from '@/libs/ui';
+import { getOldComponentToBeDeprecated, initializePlugin } from '@/libs/ui';
 import { ComponentProps } from './component';
 
 export type Props = ComponentProps & {
@@ -7,5 +7,5 @@ export type Props = ComponentProps & {
 
 export function Clips({ bounds, track, ...props }: Props) {
     initializePlugin('Clips', 'libzic_ClipsComponent.so');
-    return getComponent('Clips', bounds, [{ track }, props]);
+    return getOldComponentToBeDeprecated('Clips', bounds, [{ track }, props]);
 }

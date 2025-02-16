@@ -57,12 +57,12 @@ function ____exports.TextGrid(____bindingPattern0)
         local marginLeft = 0
         for ____, item in ipairs(items) do
             local bg = bgColor
-            if __TS__StringAccess(item, 0) == "^" then
+            if __TS__StringAccess(item, 0) == "!" then
                 item = __TS__StringSubstr(item, 1)
                 bg = activeBgColor
             end
             local color = textColor
-            if __TS__StringAccess(item, 0) == "!" then
+            if __TS__StringAccess(item, 0) == "^" then
                 item = __TS__StringSubstr(item, 1)
                 color = shiftedTextColor
             end

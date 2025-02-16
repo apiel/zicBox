@@ -1,4 +1,4 @@
-import { getComponent, initializePlugin } from '@/libs/ui';
+import { getOldComponentToBeDeprecated, initializePlugin } from '@/libs/ui';
 import { ComponentProps } from './component';
 
 export type Props = ComponentProps & {
@@ -7,5 +7,5 @@ export type Props = ComponentProps & {
 
 export function SeqProgressBar({ bounds, track, seq_plugin, ...props }: Props) {
     initializePlugin('SeqProgressBar', 'libzic_SeqProgressBarComponent.so');
-    return getComponent('SeqProgressBar', bounds, [{ track }, { seq_plugin }, props]);
+    return getOldComponentToBeDeprecated('SeqProgressBar', bounds, [{ track }, { seq_plugin }, props]);
 }

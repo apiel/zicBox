@@ -2,7 +2,7 @@ local ____lualib = require("lualib_bundle")
 local __TS__ObjectRest = ____lualib.__TS__ObjectRest
 local ____exports = {}
 local ____ui = require("config.libs.ui")
-local getComponent = ____ui.getComponent
+local getOldComponentToBeDeprecated = ____ui.getOldComponentToBeDeprecated
 local initializePlugin = ____ui.initializePlugin
 function ____exports.Sample(____bindingPattern0)
     local props
@@ -22,6 +22,6 @@ function ____exports.Sample(____bindingPattern0)
         encoders = true
     })
     initializePlugin("Sample", "libzic_SampleComponent.so")
-    return getComponent("Sample", bounds, {{track = track}, {plugin = plugin}, props})
+    return getOldComponentToBeDeprecated("Sample", bounds, {{track = track}, {plugin = plugin}, props})
 end
 return ____exports

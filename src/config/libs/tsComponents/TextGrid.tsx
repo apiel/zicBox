@@ -30,13 +30,13 @@ export function TextGrid({
         let marginLeft = 0;
         for (let item of items) {
             let bg = bgColor;
-            if (item[0] === '^') {
+            if (item[0] === '!') {
                 item = item.substr(1);
                 bg = activeBgColor;
             }
 
             let color = textColor;
-            if (item[0] === '!') {
+            if (item[0] === '^') {
                 item = item.substr(1);
                 color = shiftedTextColor;
             }
