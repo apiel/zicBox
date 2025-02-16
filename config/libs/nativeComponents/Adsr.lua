@@ -1,19 +1,6 @@
-local ____lualib = require("lualib_bundle")
-local __TS__ObjectRest = ____lualib.__TS__ObjectRest
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
 local ____ui = require("config.libs.ui")
-local getOldComponentToBeDeprecated = ____ui.getOldComponentToBeDeprecated
-local initializePlugin = ____ui.initializePlugin
-function ____exports.Adsr(____bindingPattern0)
-    local props
-    local values
-    local plugin
-    local bounds
-    bounds = ____bindingPattern0.bounds
-    plugin = ____bindingPattern0.plugin
-    values = ____bindingPattern0.values
-    props = __TS__ObjectRest(____bindingPattern0, {bounds = true, plugin = true, values = true})
-    initializePlugin("Adsr", "libzic_AdsrComponent.so")
-    return getOldComponentToBeDeprecated("Adsr", bounds, {{PLUGIN = plugin}, {VALUES = values}, props})
-end
+local getJsonComponent = ____ui.getJsonComponent
+____exports.Adsr = getJsonComponent("Adsr", "libzic_AdsrComponent.so")
 return ____exports
