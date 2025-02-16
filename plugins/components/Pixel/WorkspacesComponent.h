@@ -30,27 +30,6 @@ public:
     };
     uint8_t error = Error::NONE;
 
-    std::function<void(KeypadLayout::KeyMap&)> getKeypadAction(std::string action) override
-    {
-        std::function<void(KeypadLayout::KeyMap&)> func = ListComponent::getKeypadAction(action);
-        if (action == ".delete") {
-            func = [this](KeypadLayout::KeyMap& keymap) {
-                if (KeypadLayout::isReleased(keymap)) {
-                    if (currentWorkspaceName != NULL && items[selection].text == *currentWorkspaceName) {
-                        error = Error::DELETE;
-                        renderNext();
-                    } else {
-                        uint8_t dataId = plugin->getDataId("DELETE_WORKSPACE");
-                        plugin->data(dataId, &items[selection].text);
-                        initItems();
-                        renderNext();
-                    }
-                }
-            };
-        }
-        return func;
-    }
-
     void initItems()
     {
         items.clear();
@@ -61,13 +40,31 @@ public:
     }
 
     WorkspacesComponent(ComponentInterface::Props props)
-        : ListComponent(props)
+        : ListComponent(props, [&](std::string action) {
+            std::function<void(KeypadLayout::KeyMap&)> func = NULL;
+            if (action == ".delete") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        if (currentWorkspaceName != NULL && items[selection].text == *currentWorkspaceName) {
+                            error = Error::DELETE;
+                            renderNext();
+                        } else {
+                            uint8_t dataId = plugin->getDataId("DELETE_WORKSPACE");
+                            plugin->data(dataId, &items[selection].text);
+                            initItems();
+                            renderNext();
+                        }
+                    }
+                };
+            }
+            return func;
+        })
         , badgeColor(rgb(39, 128, 39))
         , errorColor(rgb(173, 99, 99))
     {
-        keypadLayout.getCustomAction = [this](std::string action) {
-            return getKeypadAction(action);
-        };
+        // keypadLayout.getCustomAction = [this](std::string action) {
+        //     return getKeypadAction(action);
+        // };
         initItems();
     }
 

@@ -149,6 +149,7 @@ public:
         }
     }
 
+    // TODO to be deprecated
     bool config(char* key, char* value)
     {
         if (strcmp(key, "KEYMAP") == 0) {

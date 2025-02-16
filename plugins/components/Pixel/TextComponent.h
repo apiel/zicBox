@@ -2,7 +2,6 @@
 
 #include "log.h"
 #include "plugins/components/base/Icon.h"
-#include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
 
@@ -27,15 +26,12 @@ class TextComponent : public Component {
     int fontHeight = 0;
     void* font = NULL;
 
-    KeypadLayout keypadLayout;
-
 public:
     TextComponent(ComponentInterface::Props props)
         : Component(props)
         , icon(props.view->draw)
         , bgColor(styles.colors.background)
         , color(styles.colors.text)
-        , keypadLayout(this)
     {
         /*md md_config:Text */
         nlohmann::json config = props.config;
@@ -104,22 +100,5 @@ public:
             isActive = shouldActivate;
             renderNext();
         }
-    }
-
-    void onKey(uint16_t id, int key, int8_t state, unsigned long now)
-    {
-        if (isActive) {
-            keypadLayout.onKey(id, key, state, now);
-        }
-    }
-
-    // FIXME
-    bool config(char* key, char* value) override
-    {
-        if (keypadLayout.config(key, value)) {
-            return true;
-        }
-
-        return false;
     }
 };

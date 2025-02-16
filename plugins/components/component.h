@@ -20,7 +20,7 @@ public:
 
     Component(
         ComponentInterface::Props props,
-        std::function<std::function<void(KeypadLayout::KeyMap& keymap)>(std::string action)> keypadCustomAction = [](std::string) { return [](KeypadLayout::KeyMap&) { }; })
+        std::function<std::function<void(KeypadLayout::KeyMap& keymap)>(std::string action)> keypadCustomAction = nullptr)
         : ComponentInterface(props)
         , keypadLayout(this, keypadCustomAction)
     {
