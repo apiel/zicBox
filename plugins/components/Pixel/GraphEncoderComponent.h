@@ -8,6 +8,7 @@
 ## GraphEncoderComponent
 
 <img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/graphEncoder.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/graphEncoder2.png" />
 
 Show a representation of data points and provide a way to control them.
 
@@ -29,7 +30,57 @@ public:
     GraphEncoderComponent(ComponentInterface::Props props)
         : BaseGraphEncoderComponent(props)
     {
-        // printf(">>>>>>>>>>>>>>>>>> GraphEncoderComponent y %d h %d\n", position.y, size.h);
+        /*md md_config:GraphEncoder */
+        nlohmann::json config = props.config;
+
+        /*md   // If true, the rectangle will be outlined. Default is true. */
+        /*md   outline={false} */
+
+        /*md   // Set the color of the graph. */
+        /*md   fillColor="#000000" */
+
+        /*md   // If true, the rectangle will be filled. Default is true. */
+        /*md   filled={false} */
+
+        /*md   // Set the color of the graph outline. */
+        /*md   outlineColor="#000000" */
+
+        /*md   // Set the color of the text. */
+        /*md   textColor1="#000000" */
+
+        /*md   // Set the color of the unit. */
+        /*md   textColor2="#000000" */
+
+        /*md   // Set the color of the background. */
+        /*md   bgColor="#000000" */
+
+        /*md   // The audio plugin to get control on. */
+        /*md   plugin="audio_plugin_name" */
+
+        if (!config.contains("dataId") || plugin == NULL) {
+            logWarn("GraphEncoderComponent cannot init: dataId is not set");
+            return;
+        }
+
+        /*md   // The data id of the audio plugin where the input value will be sent. */
+        /*md   dataId="data_id" */
+        dataId = plugin->getDataId(config["dataId"].get<std::string>());
+
+        /*md   // The encoders that will interract with this component. Set `string` to force using string rendering. */
+        /*md   encoders={[{encoder_id: 0, value: "LEVEL", string: false}]} */
+        if (config.contains("encoders") && config["encoders"].is_array()) {
+            for (auto& encoder : config["encoders"]) {
+                encoders.push_back({ encoder["encoder_id"].get<int>(),
+                    watch(plugin->getValue(encoder["value"].get<std::string>())),
+                    encoder.contains("string") && encoder["string"].get<bool>() });
+            }
+        }
+
+        /*md   // If true, the data is an array. Default is false. */
+        /*md   isArrayData={false} */
+        isArray = config.value("isArrayData", isArray);
+
+        /*md md_config_end */
     }
 
     std::vector<Title> getTitles() override
@@ -91,47 +142,6 @@ public:
                 }
             }
         }
-    }
-
-    /*md **Config**: */
-    /*md - `PLUGIN: plugin_name` set plugin target */
-    /*md - `OUTLINE: true/false` is if the envelop should be outlined (default: true). */
-    /*md - `FILLED: true/false` is if the envelop should be filled (default: true). */
-    /*md - `BACKGROUND_COLOR: color` is the background color of the component. */
-    /*md - `FILL_COLOR: color` is the color of the envelop. */
-    /*md - `OUTLINE_COLOR: color` is the color of the envelop outline. */
-    /*md - `TEXT_COLOR1: color` is the color of the value. */
-    /*md - `TEXT_COLOR2: color` is the color of the unit. */
-    /*md - `INACTIVE_COLOR_RATIO: 0.0 - 1.0` is the ratio of darkness for the inactive color (default: 0.5). */
-    bool config(char* key, char* value)
-    {
-        /*md - `DATA_ID: data_id` is the data id to get the shape/graph to draw.*/
-        if (strcmp(key, "DATA_ID") == 0) {
-            if (plugin == NULL) {
-                throw std::runtime_error("GraphEncoderComponent cannot set DATA_ID: plugin is not set");
-            }
-            dataId = plugin->getDataId(value);
-            return true;
-        }
-
-        /*md - `ENCODER: encoder_id value [string]` is the id of the encoder to update given value, e.g. `ENCODER: 0 LEVEL`. Set `string` to force using string rendering. */
-        if (strcmp(key, "ENCODER") == 0) {
-            uint8_t encoderId = atoi(strtok(value, " "));
-            char* encoderValue = strtok(NULL, " ");
-            char* toString = strtok(NULL, " ");
-            encoders.push_back({ encoderId,
-                watch(plugin->getValue(encoderValue)),
-                toString != NULL && strcmp(toString, "string") == 0 });
-            return true;
-        }
-
-        /*md - `IS_ARRAY: true/false` is if the data is an array.*/
-        if (strcmp(key, "IS_ARRAY") == 0) {
-            isArray = strcmp(value, "true") == 0;
-            return true;
-        }
-
-        return BaseGraphEncoderComponent::config(key, value);
     }
 };
 

@@ -50,29 +50,28 @@ public:
         , outlineColor(lighten(styles.colors.primary, 0.5))
     {
         waveformHeight = props.size.h;
-    }
-    virtual std::vector<Point> getPoints() = 0;
 
-    void render() override
-    {
-        waveformY = relativePosition.y + 8;
-        draw.filledRect(relativePosition, size, { bgColor });
-        renderGraph();
-    }
-
-    bool isActive = true;
-    void onGroupChanged(int8_t index) override
-    {
-        bool shouldActivate = false;
-        if (group == index || group == -1) {
-            shouldActivate = true;
+        nlohmann::json config = props.config;
+        if (!config.contains("audioPlugin")) {
+            logWarn("GraphComponent cannot init: audioPlugin is not set");
+            return;
         }
-        if (shouldActivate != isActive) {
-            isActive = shouldActivate;
-            renderNext();
+
+        plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track);
+        outline = config.value("outline", outline);
+        filled = config.value("filled", filled);
+
+        if (config.contains("bgColor")) {
+            bgColor = draw.getColor(config["bgColor"].get<std::string>());
+        }
+
+        if (config.contains("fillColor")) {
+            fillColor = draw.getColor(config["fillColor"].get<std::string>());
         }
     }
 
+
+    // TODO to be deprecated
     bool config(char* key, char* value)
     {
         if (strcmp(key, "PLUGIN") == 0) {
@@ -96,5 +95,27 @@ public:
         }
 
         return false;
+    }
+
+    virtual std::vector<Point> getPoints() = 0;
+
+    void render() override
+    {
+        waveformY = relativePosition.y + 8;
+        draw.filledRect(relativePosition, size, { bgColor });
+        renderGraph();
+    }
+
+    bool isActive = true;
+    void onGroupChanged(int8_t index) override
+    {
+        bool shouldActivate = false;
+        if (group == index || group == -1) {
+            shouldActivate = true;
+        }
+        if (shouldActivate != isActive) {
+            isActive = shouldActivate;
+            renderNext();
+        }
     }
 };
