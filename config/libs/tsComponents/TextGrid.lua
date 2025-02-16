@@ -7,7 +7,7 @@ local __TS__StringSubstr = ____lualib.__TS__StringSubstr
 local __TS__ObjectAssign = ____lualib.__TS__ObjectAssign
 local __TS__ObjectRest = ____lualib.__TS__ObjectRest
 local ____exports = {}
-local TextGridRender, visibilityContextIndex
+local TextGridRender, visibilityContext
 local React = require("config.libs.react")
 local ____HiddenValue = require("config.libs.nativeComponents.HiddenValue")
 local HiddenValue = ____HiddenValue.HiddenValue
@@ -15,8 +15,6 @@ local ____Keymaps = require("config.libs.nativeComponents.Keymaps")
 local Keymaps = ____Keymaps.Keymaps
 local ____Text = require("config.libs.nativeComponents.Text")
 local Text = ____Text.Text
-local ____VisibilityContext = require("config.libs.nativeComponents.VisibilityContext")
-local VisibilityContext = ____VisibilityContext.VisibilityContext
 local ____ui = require("config.libs.ui")
 local getBounds = ____ui.getBounds
 local rgb = ____ui.rgb
@@ -85,7 +83,12 @@ function TextGridRender(____bindingPattern0)
                         }
                     },
                     props,
-                    {centered = true, bgColor = bg, color = color, visibilityContext = contextValue ~= nil and ({{index = visibilityContextIndex, condition = "SHOW_WHEN", value = contextValue}}) or nil}
+                    {
+                        centered = true,
+                        bgColor = bg,
+                        color = color,
+                        visibilityContext = visibilityContext(contextValue)
+                    }
                 )
             )
             marginLeft = marginLeft + width
@@ -94,7 +97,12 @@ function TextGridRender(____bindingPattern0)
     end
     return children
 end
-visibilityContextIndex = 254
+function visibilityContext(contextValue)
+    if contextValue ~= nil then
+        local statement = {index = 254, condition = "SHOW_WHEN", value = contextValue}
+        return {statement}
+    end
+end
 function ____exports.TextGrid(____bindingPattern0)
     local bgColor
     local selectedBackground
@@ -127,8 +135,7 @@ function ____exports.TextGrid(____bindingPattern0)
         nil,
         React.createElement(
             HiddenValue,
-            nil,
-            contextValue ~= nil and React.createElement(VisibilityContext, {index = visibilityContextIndex, condition = "SHOW_WHEN", value = contextValue}),
+            {visibilityContext = visibilityContext(contextValue)},
             keys and React.createElement(Keymaps, {keys = keys})
         ),
         React.createElement(TextGridRender, {
