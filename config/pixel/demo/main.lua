@@ -8,6 +8,8 @@ local ____pixelController = require("config.libs.controllers.pixelController")
 local pixelController = ____pixelController.pixelController
 local ____core = require("config.libs.core")
 local applyZic = ____core.applyZic
+local ____Keyboard = require("config.libs.nativeComponents.Keyboard")
+local Keyboard = ____Keyboard.Keyboard
 local ____KnobValue = require("config.libs.nativeComponents.KnobValue")
 local KnobValue = ____KnobValue.KnobValue
 local ____List = require("config.libs.nativeComponents.List")
@@ -33,24 +35,24 @@ setScreenSize(ScreenWidth, ScreenHeight)
 applyZic(React.createElement(
     View,
     {name = "Demo"},
-    React.createElement(Text, {text = "hello world", bounds = {5, 5, ScreenWidth, 16}, color = "secondary"}),
-    React.createElement(Text, {fontSize = 16, text = "title", bounds = {0, 20, ScreenWidth, 16}, centered = true}),
-    React.createElement(Rect, {color = "tertiary", filled = false, bounds = {10, 50, 100, 60}}),
-    React.createElement(Rect, {color = "primary", bounds = {120, 50, 110, 20}}),
+    React.createElement(Text, {fontSize = 16, text = "title", bounds = {0, 0, ScreenWidth, 16}, centered = true}),
+    React.createElement(Rect, {color = "tertiary", filled = false, bounds = {10, 30, 100, 50}}),
+    React.createElement(Rect, {color = "primary", bounds = {120, 30, 110, 20}}),
     React.createElement(Value, {
         audioPlugin = "Tempo",
         param = "BPM",
-        bounds = {120, 80, 110, 20},
+        bounds = {120, 60, 110, 20},
         encoderId = 0,
         barColor = "quaternary"
     }),
     React.createElement(KnobValue, {
         audioPlugin = "Tempo",
         param = "BPM",
-        bounds = {10, 120, 80, 80},
+        bounds = {10, 90, 70, 70},
         encoderId = 1,
         color = "secondary"
     }),
-    React.createElement(List, {items = {"item1", "item2", "item3"}, bounds = {120, 120, 110, 80}})
+    React.createElement(List, {items = {"item1", "item2", "item3"}, bounds = {120, 100, 110, 60}}),
+    React.createElement(Keyboard, {bounds = {0, 175, ScreenWidth, 120}})
 ))
 return ____exports
