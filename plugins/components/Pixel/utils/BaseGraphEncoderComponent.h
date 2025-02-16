@@ -62,7 +62,6 @@ public:
         , textColor1(styles.colors.text)
         , textColor2(darken(styles.colors.text, 0.5))
     {
-        updateWaveformHeight();
         nlohmann::json config = props.config;
         renderValuesOnTop = config.value("renderValuesOnTop", renderValuesOnTop);
 
@@ -73,6 +72,8 @@ public:
         if (config.contains("textColor2")) {
             textColor2 = draw.getColor(config["textColor2"].get<std::string>());
         }
+
+        updateWaveformHeight();
     }
 
     // TODO to be deprecated
