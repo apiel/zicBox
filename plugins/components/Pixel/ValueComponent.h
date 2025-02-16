@@ -182,33 +182,24 @@ public:
 
         /*md   // Set the background color of the component. */
         /*md   bgColor="#000000" */
-        if (config.contains("bgColor")) {
-            bgColor = draw.getColor(config["bgColor"].get<std::string>());
-        }
+        bgColor = draw.getColor(config["bgColor"], bgColor);
 
         /*md   // Set the color of the label. */
         /*md   valueColor="#FF0000" */
-        if (config.contains("valueColor")) {
-            valueColor = draw.getColor(config["valueColor"].get<std::string>());
-        }
+        valueColor = draw.getColor(config["valueColor"], valueColor);
 
         /*md   // Set the color of the bar. */
         /*md   barColor="#FF0000" */
-        if (config.contains("barColor")) {
-            barColor = draw.getColor(config["barColor"].get<std::string>());
-        }
+        barColor = draw.getColor(config["barColor"], barColor);
 
         /*md   // Set the color of the unit. */
         /*md   unitColor="#00FF00" */
-        if (config.contains("unitColor")) {
-            unitColor = draw.getColor(config["unitColor"].get<std::string>());
-        }
+        unitColor = draw.getColor(config["unitColor"], unitColor);
 
         /*md   // Set the color of the label. */
         /*md   labelColor="#00FF00" */
-        if (config.contains("labelColor")) {
-            labelColor = draw.getColor(config["labelColor"].get<std::string>());
-        }
+        labelColor = draw.getColor(config["labelColor"], labelColor);
+
 
         /*md md_config_end */
     }

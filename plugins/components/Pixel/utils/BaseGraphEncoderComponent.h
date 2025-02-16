@@ -65,13 +65,8 @@ public:
         nlohmann::json config = props.config;
         renderValuesOnTop = config.value("renderValuesOnTop", renderValuesOnTop);
 
-        if (config.contains("textColor1")) {
-            textColor1 = draw.getColor(config["textColor1"].get<std::string>());
-        }
-
-        if (config.contains("textColor2")) {
-            textColor2 = draw.getColor(config["textColor2"].get<std::string>());
-        }
+        textColor1 = draw.getColor(config["textColor1"], textColor1);
+        textColor2 = draw.getColor(config["textColor2"], textColor2);
 
         updateWaveformHeight();
     }
