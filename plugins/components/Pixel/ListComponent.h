@@ -1,7 +1,6 @@
 #pragma once
 
 #include "plugins/components/base/Icon.h"
-#include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/VisibilityContext.h"
 #include "plugins/components/utils/VisibilityGroup.h"
@@ -21,7 +20,6 @@ List components to display list of items.
 class ListComponent : public Component {
 protected:
     Icon icon;
-    KeypadLayout keypadLayout;
 
     Color bgColor;
     Color itemBackground;
@@ -44,61 +42,58 @@ protected:
     int itemH = 16;
 
 public:
-    virtual std::function<void(KeypadLayout::KeyMap&)> getKeypadAction(std::string action)
-    {
-        std::function<void(KeypadLayout::KeyMap&)> func = NULL;
-        if (action == ".up") {
-            func = [this](KeypadLayout::KeyMap& keymap) {
-                if (KeypadLayout::isReleased(keymap)) {
-                    if (selection > 0) {
-                        selection--;
-                        renderNext();
-                    }
-                }
-            };
-        }
-        if (action == ".down") {
-            func = [this](KeypadLayout::KeyMap& keymap) {
-                if (KeypadLayout::isReleased(keymap)) {
-                    if (selection < items.size() - 1) {
-                        selection++;
-                        renderNext();
-                    }
-                }
-            };
-        }
-
-        if (action.find(".data:") == 0) {
-            if (plugin) {
-                uint8_t dataId = plugin->getDataId(action.substr(6));
-                func = [this, dataId](KeypadLayout::KeyMap& keymap) {
+    ListComponent(ComponentInterface::Props props, std::function<std::function<void(KeypadLayout::KeyMap& keymap)>(std::string action)> keypadCustomAction = nullptr)
+        : Component(props, [&](std::string action) {
+            std::function<void(KeypadLayout::KeyMap&)> func = NULL;
+            if (action == ".up") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
-                        plugin->data(dataId, &items[selection].text);
-                        renderNext();
+                        if (selection > 0) {
+                            selection--;
+                            renderNext();
+                        }
                     }
                 };
             }
-        }
+            if (action == ".down") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        if (selection < items.size() - 1) {
+                            selection++;
+                            renderNext();
+                        }
+                    }
+                };
+            }
 
-        if (action == ".setView") {
-            func = [this](KeypadLayout::KeyMap& keymap) {
-                if (KeypadLayout::isReleased(keymap)) {
-                    view->setView(items[selection].text);
+            if (action.find(".data:") == 0) {
+                if (plugin) {
+                    uint8_t dataId = plugin->getDataId(action.substr(6));
+                    func = [this, dataId](KeypadLayout::KeyMap& keymap) {
+                        if (KeypadLayout::isReleased(keymap)) {
+                            plugin->data(dataId, &items[selection].text);
+                            renderNext();
+                        }
+                    };
                 }
-            };
-        }
+            }
 
-        return func;
-    }
+            if (action == ".setView") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        view->setView(items[selection].text);
+                    }
+                };
+            }
 
-    ListComponent(ComponentInterface::Props props)
-        : Component(props)
-        , icon(props.view->draw)
-        , bgColor(styles.colors.background)
-        , textColor(styles.colors.text)
-        , itemBackground(lighten(styles.colors.background, 0.5))
-        , selectionColor(styles.colors.primary)
-        , keypadLayout(this, [&](std::string action) { return getKeypadAction(action); })
+            if (keypadCustomAction) {
+                func = keypadCustomAction(action);
+            }
+
+            return func;
+        })
+        ,
+        icon(props.view->draw), bgColor(styles.colors.background), textColor(styles.colors.text), itemBackground(lighten(styles.colors.background, 0.5)), selectionColor(styles.colors.primary)
     {
         /*md md_config:List */
         nlohmann::json config = props.config;
@@ -144,16 +139,6 @@ public:
         /*md md_config_end */
     }
 
-    bool config(char* key, char* value) override
-    {
-        // FIXME
-        if (keypadLayout.config(key, value)) {
-            return true;
-        }
-
-        return false;
-    }
-
     virtual void renderItem(int y, int itemIndex)
     {
         draw.text({ relativePosition.x + 8, y + 4 }, items[itemIndex].text, 8, { textColor });
@@ -185,10 +170,5 @@ public:
             }
             renderEnd();
         }
-    }
-
-    void onKey(uint16_t id, int key, int8_t state, unsigned long now)
-    {
-        keypadLayout.onKey(id, key, state, now);
     }
 };

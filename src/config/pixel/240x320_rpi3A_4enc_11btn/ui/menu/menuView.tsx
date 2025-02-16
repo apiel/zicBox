@@ -1,10 +1,9 @@
 import * as React from '@/libs/react';
 
-import { Keymap } from '@/libs/nativeComponents/Keymap';
 import { List } from '@/libs/nativeComponents/List';
 import { View } from '@/libs/nativeComponents/View';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
-import { KeyInfoPosition, ScreenWidth } from '../constants';
+import { btn1, btn2, btn5, btn6, btn7, KeyInfoPosition, ScreenWidth } from '../constants';
 
 export type Props = {
     name: string;
@@ -16,19 +15,19 @@ export function MenuView({ name }: Props) {
             <List
                 bounds={[0, 0, ScreenWidth, 280]}
                 items={['Tape', 'Workspaces', 'Shutdown']}
-            >
-                <Keymap key="q" action=".setView" />
-                <Keymap key="a" action=".setView" />
-                <Keymap key="w" action=".up" />
-                <Keymap key="s" action=".down" />
-            </List>
+                keys={[
+                    { key: btn1, action: '.setView' },
+                    { key: btn2, action: '.up' },
+                    { key: btn5, action: '.setView' },
+                    { key: btn6, action: '.down' },
+                ]}
+            />
 
             <TextGrid
                 bounds={KeyInfoPosition}
                 rows={['  &icon::arrowUp::filled  ', 'Select &icon::arrowDown::filled Exit']}
-            >
-                <Keymap key="d" action="setView:Clips" />
-            </TextGrid>
+                keys={[{ key: btn7, action: 'setView:Clips' }]}
+            />
         </View>
     );
 }
