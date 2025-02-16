@@ -27,21 +27,14 @@ function ____exports.WaveformView(____bindingPattern0)
     return React.createElement(
         View,
         {name = name},
-        React.createElement(
-            GraphEncoder,
-            {
-                bounds = topValues,
-                plugin = "Drum23",
-                data_id = "WAVEFORM",
-                RENDER_TITLE_ON_TOP = false,
-                encoders = {
-                    tostring(encTopLeft) .. " WAVEFORM_TYPE",
-                    tostring(encTopRight) .. " SHAPE",
-                    tostring(encBottomLeft) .. " MACRO"
-                },
-                track = Drum23Track
-            }
-        ),
+        React.createElement(GraphEncoder, {
+            bounds = topValues,
+            audioPlugin = "Drum23",
+            dataId = "WAVEFORM",
+            renderValuesOnTop = false,
+            encoders = {{encoderId = encTopLeft, value = "WAVEFORM_TYPE"}, {encoderId = encTopRight, value = "SHAPE"}, {encoderId = encBottomLeft, value = "MACRO"}},
+            track = Drum23Track
+        }),
         React.createElement(KnobValue, {
             bounds = bottomRightKnob,
             audioPlugin = "Drum23",

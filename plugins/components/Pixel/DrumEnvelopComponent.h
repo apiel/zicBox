@@ -47,13 +47,13 @@ protected:
     int encoderTime = -1;
     int encoderModulation = -1;
 
-    bool renderTitleOnTop = true;
+    bool renderValuesOnTop = true;
 
     int fontSize = 8;
 
     void updateGraphHeight()
     {
-        if (renderTitleOnTop) {
+        if (renderValuesOnTop) {
             envelopHeight = size.h - 6 - 10;
         } else {
             envelopHeight = size.h - 6 - 10 - 9;
@@ -101,7 +101,7 @@ protected:
 
     void renderTitles()
     {
-        if (renderTitleOnTop) {
+        if (renderValuesOnTop) {
             int cellWidth = size.w / 3;
             int x = relativePosition.x + cellWidth * 0.5;
             draw.textCentered({ x, relativePosition.y }, std::to_string(currentstep + 1) + "/" + std::to_string(envData->size()), fontSize, { textColor });
@@ -249,7 +249,7 @@ public:
 
         /*md - `RENDER_TITLE_ON_TOP: true/false` is if the title should be rendered on top (default: true). */
         if (strcmp(key, "RENDER_TITLE_ON_TOP") == 0) {
-            renderTitleOnTop = strcmp(value, "true") == 0;
+            renderValuesOnTop = strcmp(value, "true") == 0;
             updateGraphHeight();
             return true;
         }

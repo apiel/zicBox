@@ -34,14 +34,24 @@ export function BassWaveformView({ name }: Props) {
             <GraphEncoder
                 // bounds={topValues}
                 bounds={pos}
-                plugin="Bass"
-                data_id="WAVEFORM"
-                // RENDER_TITLE_ON_TOP={false}
-                // encoders={['0 MORPH', '2 STAIRCASE']}
-                // is_array
+                audioPlugin="Bass"
+                dataId="WAVEFORM"
                 track={BassTrack}
-                RENDER_TITLE_ON_TOP={false}
-                encoders={[`${encTopLeft} WAVEFORM_TYPE`, `${encTopRight} SHAPE`, `${encBottomLeft} MACRO`]}
+                renderValuesOnTop={false}
+                encoders={[
+                    {
+                        encoderId: encTopLeft,
+                        value: 'WAVEFORM_TYPE',
+                    },
+                    {
+                        encoderId: encTopRight,
+                        value: 'SHAPE',
+                    },
+                    {
+                        encoderId: encBottomLeft,
+                        value: 'MACRO',
+                    },
+                ]}
             />
             {/* <KnobValue
                 audioPlugin="Bass" param="NOISE"

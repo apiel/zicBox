@@ -17,10 +17,19 @@ export function SynthWaveform1View({ name }: Props) {
         <View name={name}>
             <GraphEncoder
                 bounds={topValues}
-                plugin="Synth"
-                data_id="WAVEFORM1"
-                RENDER_TITLE_ON_TOP={true}
-                encoders={[`${encTopLeft} SHAPE_1`, `${encTopRight} MORPH_1`]}
+                audioPlugin="Synth"
+                dataId="WAVEFORM1"
+                renderValuesOnTop={true}
+                encoders={[
+                    {
+                        encoderId: encTopLeft,
+                        value: 'SHAPE_1',
+                    },
+                    {
+                        encoderId: encTopRight,
+                        value: 'MORPH_1',
+                    },
+                ]}
                 track={SynthTrack}
             />
 
