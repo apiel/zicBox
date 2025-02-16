@@ -27,13 +27,13 @@ applyZic(
         <Text text="hello world" bounds={[5, 5, ScreenWidth, 16]} color="secondary" />
         <Text fontSize={16} text="title" bounds={[0, 20, ScreenWidth, 16]} centered />
 
-        <Rect color="tertiary" filled={false} bounds={[10, 100, 100, 100]} />
-        <Rect color="primary" bounds={[120, 100, 100, 50]} />
+        <Rect color="tertiary" filled={false} bounds={[10, 50, 100, 60]} />
+        <Rect color="primary" bounds={[120, 50, 110, 20]} />
 
         <Value
             audioPlugin="Tempo"
             param="BPM"
-            bounds={[120, 160, 100, 20]}
+            bounds={[120, 80, 110, 20]}
             encoderId={0}
             barColor="quaternary"
         />
@@ -41,11 +41,11 @@ applyZic(
         <KnobValue
             audioPlugin="Tempo"
             param="BPM"
-            bounds={[10, 210, 80, 80]}
+            bounds={[10, 120, 80, 80]}
             encoderId={1}
             color="secondary"
         />
 
-        <List items={['item1', 'item2', 'item3']} bounds={[120, 210, 110, 80]} />
+        <List items={['item1', 'item2', 'item3']} bounds={[120, 120, 110, 80]} />
     </View>
 );
