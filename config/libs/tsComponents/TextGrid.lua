@@ -11,8 +11,6 @@ local TextGridRender, visibilityContext
 local React = require("config.libs.react")
 local ____HiddenValue = require("config.libs.nativeComponents.HiddenValue")
 local HiddenValue = ____HiddenValue.HiddenValue
-local ____Keymaps = require("config.libs.nativeComponents.Keymaps")
-local Keymaps = ____Keymaps.Keymaps
 local ____Text = require("config.libs.nativeComponents.Text")
 local Text = ____Text.Text
 local ____ui = require("config.libs.ui")
@@ -135,8 +133,10 @@ function ____exports.TextGrid(____bindingPattern0)
         nil,
         React.createElement(
             HiddenValue,
-            {visibilityContext = visibilityContext(contextValue)},
-            keys and React.createElement(Keymaps, {keys = keys})
+            {
+                visibilityContext = visibilityContext(contextValue),
+                keys = keys
+            }
         ),
         React.createElement(TextGridRender, {
             bounds = bounds,

@@ -1,7 +1,6 @@
 #ifndef _UI_COMPONENT_HIDDEN_VALUE_H_
 #define _UI_COMPONENT_HIDDEN_VALUE_H_
 
-#include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
 
 #include <string>
@@ -19,12 +18,9 @@ protected:
     ValueInterface* value = NULL;
     bool inverted = false;
 
-    KeypadLayout keypadLayout;
-
 public:
     HiddenValueComponent(ComponentInterface::Props props)
         : Component(props)
-        , keypadLayout(this)
     {
         /*md md_config:HiddenValue */
         nlohmann::json config = props.config;
@@ -74,11 +70,6 @@ public:
                 view->setGroup(currentGroup + (direction > 0 ? 1 : -1));
             }
         }
-    }
-
-    void onKey(uint16_t id, int key, int8_t state, unsigned long now)
-    {
-        keypadLayout.onKey(id, key, state, now);
     }
 
     bool config(char* key, char* value) override

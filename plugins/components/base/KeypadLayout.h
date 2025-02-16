@@ -1,5 +1,4 @@
-#ifndef _KEYPAD_LAYOUT_H
-#define _KEYPAD_LAYOUT_H
+#pragma once
 
 #include <functional>
 #include <stdint.h>
@@ -12,12 +11,6 @@
 #include "plugins/components/componentInterface.h"
 #include "plugins/controllers/keypadInterface.h"
 
-/*md
-## KeypadLayout
-
-Some components might want to use a keypad layout.
-
-*/
 class KeypadLayout {
 public:
     std::string name = "default";
@@ -109,6 +102,97 @@ public:
     {
     }
 
+    void init(nlohmann::json config)
+    {
+        if (config.contains("keys") && config["keys"].is_array()) {
+            for (auto& key : config["keys"]) {
+                AddKeyMapProps props;
+                if (key.contains("controller")) {
+                    props.controller = (KeypadInterface*)component->getController(key["controller"].get<std::string>().c_str());
+                    props.controllerId = props.controller->id;
+                } else {
+                    props.controllerId = 0; // Keyboard
+                    props.controller = NULL;
+                }
+                if (!key.contains("key") || !key.contains("action")) {
+                    logWarn("Keypad layout config is missing mandatory parameter");
+                    continue;
+                }
+
+                if (key["key"].is_number_integer()) {
+                    props.key = key["key"].get<uint8_t>();
+                } else {
+                    std::string keyStr = key["key"].get<std::string>();
+                    if (keyStr.length() == 1) {
+                        keyStr = "'" + keyStr + "'";
+                    }
+                    props.key = getKeyCode(keyStr.c_str());
+                }
+
+                props.action = key["action"].get<std::string>();
+                if (key.contains("action2")) {
+                    props.action2 = key["action2"].get<std::string>();
+                }
+                // if (key.contains("actionLongPress")) {
+                //     props.actionLongPress = key["actionLongPress"].get<std::string>();
+                // }
+
+                props.useContext = false;
+                if (key.contains("context")) {
+                    props.useContext = true;
+                    props.contextId = key["context"]["id"].get<uint8_t>();
+                    props.contextValue = key["context"]["value"].get<float>();
+                }
+
+                addKeyMap(props);
+            }
+        }
+    }
+
+    bool config(char* key, char* value)
+    {
+        if (strcmp(key, "KEYMAP") == 0) {
+            std::string controllerName = strtok(value, " ");
+            uint8_t key = getKeyCode(strtok(NULL, " "));
+
+            std::string action = strtok(NULL, " ");
+            char* actionLongPressPtr = strtok(NULL, " ");
+            std::string actionLongPress = actionLongPressPtr ? actionLongPressPtr : "";
+
+            bool useContext = false;
+            uint8_t contextId = 0;
+            float contextValue = 0.0f;
+            size_t pos = controllerName.find(":");
+            if (pos != std::string::npos) {
+                std::string contextStr = controllerName.c_str() + pos + 1;
+                controllerName = controllerName.substr(0, pos);
+                contextId = atoi(strtok((char*)contextStr.c_str(), ":"));
+                contextValue = atof(strtok(NULL, ":"));
+                useContext = true;
+                // printf("use context %d %f\n", contextId, contextValue);
+            }
+
+            KeypadInterface* controller = NULL;
+            uint16_t controllerId = -1;
+            // printf("........search controller %s\n", controllerName.c_str());
+            if (strcmp(controllerName.c_str(), "Keyboard") == 0) {
+                controllerId = 0;
+            } else {
+                controller = (KeypadInterface*)component->getController(controllerName.c_str());
+                if (controller == NULL) {
+                    // printf("..................controller %s NOT fount\n", controllerName.c_str());
+                    return true;
+                }
+                // printf("........controller %s id %d\n", controllerName.c_str(), controller->id);
+                controllerId = controller->id;
+            }
+            // printf("add keymap %d %d action: %s longpress: %s\n", controllerId, key, action.c_str(), actionLongPress.c_str());
+            addKeyMap({ controller, controllerId, key, action, actionLongPress, useContext, contextId, contextValue });
+            return true;
+        }
+        return false;
+    }
+
     static bool isPressed(KeyMap& keyMap)
     {
         return keyMap.pressedTime != -1;
@@ -137,7 +221,7 @@ public:
 
     void onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
-        // printf("keypad id %d key %d state %d\n", id, key, state);
+        // printf("keypad id %d key %d state %d mapping.size %ld\n", id, key, state, mapping.size());
         for (KeyMap& keyMap : mapping) {
             if (keyMap.controllerId == id && keyMap.key == key
                 && (!keyMap.useContext || component->view->contextVar[keyMap.contextId] == keyMap.contextValue)) {
@@ -284,51 +368,4 @@ public:
     {
         return NULL;
     }
-
-    bool config(char* key, char* value)
-    {
-        /*md - `KEYMAP: controllerName key action [param] [color]` Map an action to a controller key. Use `Keyboard` as `controllerName` to use computer keyboard. Use 'A' to 'Z' and '0' to '9' to use computer keyboard. Other key should use scancode number without quotes. */
-        if (strcmp(key, "KEYMAP") == 0) {
-            std::string controllerName = strtok(value, " ");
-            uint8_t key = getKeyCode(strtok(NULL, " "));
-
-            std::string action = strtok(NULL, " ");
-            char* actionLongPressPtr = strtok(NULL, " ");
-            std::string actionLongPress = actionLongPressPtr ? actionLongPressPtr : "";
-
-            bool useContext = false;
-            uint8_t contextId = 0;
-            float contextValue = 0.0f;
-            size_t pos = controllerName.find(":");
-            if (pos != std::string::npos) {
-                std::string contextStr = controllerName.c_str() + pos + 1;
-                controllerName = controllerName.substr(0, pos);
-                contextId = atoi(strtok((char*)contextStr.c_str(), ":"));
-                contextValue = atof(strtok(NULL, ":"));
-                useContext = true;
-                // printf("use context %d %f\n", contextId, contextValue);
-            }
-
-            KeypadInterface* controller = NULL;
-            uint16_t controllerId = -1;
-            // printf("........search controller %s\n", controllerName.c_str());
-            if (strcmp(controllerName.c_str(), "Keyboard") == 0) {
-                controllerId = 0;
-            } else {
-                controller = (KeypadInterface*)component->getController(controllerName.c_str());
-                if (controller == NULL) {
-                    // printf("..................controller %s NOT fount\n", controllerName.c_str());
-                    return true;
-                }
-                // printf("........controller %s id %d\n", controllerName.c_str(), controller->id);
-                controllerId = controller->id;
-            }
-            // printf("add keymap %d %d action: %s longpress: %s\n", controllerId, key, action.c_str(), actionLongPress.c_str());
-            addKeyMap({ controller, controllerId, key, action, actionLongPress, useContext, contextId, contextValue });
-            return true;
-        }
-        return false;
-    }
 };
-
-#endif
