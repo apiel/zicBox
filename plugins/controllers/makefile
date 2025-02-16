@@ -1,4 +1,4 @@
-MAKEFLAGS += -j$(shell nproc)
+# MAKEFLAGS += -j$(shell nproc)
 
 ifneq ($(shell uname -m),x86_64)
 SUB_DIR := arm

@@ -11,5 +11,5 @@ end
 if file_exists("pixel_env.lua") then
     require "pixel_env"
 else
-    require "config/pixel/240x320/main"
+    require "config/pixel/demo/main"
 end
