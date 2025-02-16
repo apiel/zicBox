@@ -7,6 +7,7 @@ const ignore = [
     'node_modules',
     'waveshare/',
     'plugins/components/__deprecated_SDL',
+    'plugins/components/__deprecated_Pixel',
     'hardware/ZicPad/neotrillis/.pio',
     'hardware/encoderModule/.pio',
     '.git',
