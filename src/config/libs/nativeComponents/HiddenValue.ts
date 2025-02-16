@@ -1,5 +1,5 @@
 import { getJsonComponent } from '../ui';
-import { VisibilityContext } from './component';
+import { KeypadLayout, VisibilityContext } from './component';
 
 export const HiddenValue = (props: {
     audioPlugin?: string;
@@ -7,6 +7,7 @@ export const HiddenValue = (props: {
     encoderId?: number;
     inverted?: boolean;
     visibilityContext?: VisibilityContext[];
+    keys?: KeypadLayout[];
 } = {}) => // Seems like we need to give a default value, else Lua cannot handle it...
     getJsonComponent(
         'HiddenValue',

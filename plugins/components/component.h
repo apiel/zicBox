@@ -1,5 +1,6 @@
 #pragma once
 
+#include "base/KeypadLayout.h"
 #include "componentInterface.h"
 #include "drawInterface.h"
 #include "motionInterface.h"
@@ -15,13 +16,19 @@ protected:
     // VisibilityGroup visibilityGroup; // TODO
 
 public:
-    Component(ComponentInterface::Props props)
+    KeypadLayout keypadLayout;
+
+    Component(
+        ComponentInterface::Props props,
+        std::function<std::function<void(KeypadLayout::KeyMap& keymap)>(std::string action)> keypadCustomAction = [](std::string) { return [](KeypadLayout::KeyMap&) { }; })
         : ComponentInterface(props)
+        , keypadLayout(this, keypadCustomAction)
     {
         nlohmann::json config = props.config;
         track = config.value("track", track);
         group = config.value("group", group);
         visibilityContext.init(config);
+        keypadLayout.init(config);
     }
 
     ValueInterface* watch(ValueInterface* value)
@@ -87,6 +94,8 @@ public:
 
     virtual void onKey(uint16_t id, int key, int8_t state, unsigned long now) override
     {
+        // printf("[%s]\n", this->id.c_str());
+        keypadLayout.onKey(id, key, state, now);
     }
 
     virtual void onResize() override

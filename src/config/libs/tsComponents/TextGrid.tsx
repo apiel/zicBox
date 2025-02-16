@@ -2,7 +2,6 @@ import * as React from '@/libs/react';
 
 import { ComponentProps, VisibilityContext } from '@/libs/nativeComponents/component';
 import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
-import { Keymaps } from '@/libs/nativeComponents/Keymaps';
 import { Text } from '@/libs/nativeComponents/Text';
 import { Bounds, getBounds, rgb } from '@/libs/ui';
 
@@ -31,9 +30,7 @@ export function TextGrid({
 
     return (
         <>
-            <HiddenValue visibilityContext={visibilityContext(contextValue)}>
-                {keys && <Keymaps keys={keys} />}
-            </HiddenValue>
+            <HiddenValue visibilityContext={visibilityContext(contextValue)} keys={keys} />
             <TextGridRender
                 bounds={bounds}
                 rows={rows}

@@ -6,11 +6,23 @@ export interface VisibilityContext {
     value: number;
 }
 
+export interface KeypadLayout {
+    controller?: string;
+    key: string | number;
+    action: string;
+    action2?: string;
+    context? : {
+        id: number;
+        value: number
+    }
+}
+
 export type ComponentProps<P = unknown> = {
     bounds: Bounds;
     group?: number;
     track?: number;
     visibilityContext?: VisibilityContext[];
+    keys?: KeypadLayout[];
 } &
     (P extends {}
         ? P
