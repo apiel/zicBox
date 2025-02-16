@@ -18,6 +18,10 @@ public:
     Component(ComponentInterface::Props props)
         : ComponentInterface(props)
     {
+        nlohmann::json config = props.config;
+        track = config.value("track", track);
+        group = config.value("group", group);
+        visibilityContext.init(config);
     }
 
     ValueInterface* watch(ValueInterface* value)
@@ -82,6 +86,10 @@ public:
     }
 
     virtual void onKey(uint16_t id, int key, int8_t state, unsigned long now) override
+    {
+    }
+
+    virtual void onResize() override
     {
     }
 
