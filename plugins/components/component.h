@@ -1,14 +1,19 @@
-#ifndef _UI_COMPONENT_H_
-#define _UI_COMPONENT_H_
+#pragma once
 
 #include "componentInterface.h"
 #include "drawInterface.h"
 #include "motionInterface.h"
+#include "utils/VisibilityContext.h"
+// #include "utils/VisibilityGroup.h" // TODO
 #include "valueInterface.h"
 
 #include <stdlib.h>
 
 class Component : public ComponentInterface {
+protected:
+    VisibilityContext visibilityContext;
+    // VisibilityGroup visibilityGroup; // TODO
+
 public:
     Component(ComponentInterface::Props props)
         : ComponentInterface(props)
@@ -33,10 +38,12 @@ public:
 
     virtual void renderNext() override
     {
-        if (active) {
+        if (isVisible()) {
             view->pushToRenderingQueue(this);
         }
     }
+
+    virtual bool isVisible() override { return visibilityContext.visible; }
 
     virtual void onUpdate(ValueInterface* value) override
     {
@@ -101,6 +108,15 @@ public:
             return true;
         }
 
+        if (visibilityContext.config(key, value)) {
+            return true;
+        }
+
+        // TODO
+        // if (visibilityGroup.config(key, value)) {
+        //     return true;
+        // }
+
         return config(key, value);
     }
 
@@ -110,7 +126,8 @@ public:
 
     virtual void onContext(uint8_t index, float value) override
     {
+        if (visibilityContext.onContext(index, value)) {
+            renderNext();
+        }
     }
 };
-
-#endif
