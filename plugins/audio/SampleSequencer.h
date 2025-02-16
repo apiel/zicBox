@@ -42,8 +42,6 @@ protected:
         stepCounter++;
         uint8_t state = status.get();
         // If we reach the end of the sequence, we reset the step counter
-        // TODO
-        // TODO might want to use onPatternLoop!!
         if (stepCounter >= MAX_STEPS) {
             stepCounter = 0;
             loopCounter++;

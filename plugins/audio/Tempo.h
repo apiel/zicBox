@@ -122,23 +122,15 @@ public:
         uint32_t clockValue = (uint32_t)buf[CLOCK_TRACK];
         if (clockValue != 0) {
             clockCounter = clockValue;
-            onClock();
             if (clockValue % 6 == 0) {
                 onStep();
-                if (clockValue % (getStepCount() * 6) == 0) {
-                    onPatternLoop();
-                }
             }
+            onClock();
         }
     }
 
     virtual void onClock() { }
     virtual void onStep() { }
-    virtual void onPatternLoop() { }
-    virtual uint16_t getStepCount()
-    {
-        return MAX_STEPS;
-    }
 };
 
 #endif
