@@ -170,11 +170,18 @@ More [documentation here](https://github.com/apiel/zicBox/wiki).
 
 🎧 Built for musicians & developers
 
-
-| <img src='https://github.com/apiel/zicBox/blob/main/images/zicpad.png?raw=true' width='480'> | :arrow_forward: see [Video](https://github.com/apiel/zicBox/#Video) | <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel.png?raw=true' width='480'> | 
-| :---:   | :---: | :---: |
-| <img src='https://github.com/apiel/zicBox/blob/main/images/demo3.png?raw=true' width='480'> | <img src='https://github.com/apiel/zicBox/blob/main/images/demo4.png?raw=true' width='480'> | :book: See [Documentation](https://github.com/apiel/zicBox/wiki) :books: | 
-| :speech_balloon: [Discussions](https://github.com/apiel/zicBox/discussions) | <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel.png?raw=true' width='480'> | [<img src='https://github.com/apiel/zicBox/blob/main/images/proto2.png?raw=true' width='480'>](https://github.com/apiel/zicBox/blob/main/images/proto2.jpg?raw=true) | 
+<table>
+    <tr>
+        <td><img src='https://github.com/apiel/zicBox/blob/main/images/zicpad.png?raw=true' width='480'></td>
+        <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel3A.png?raw=true' width='480'></td>
+        <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel.png?raw=true' width='480'></td>
+    </tr>
+        <tr>
+        <td><img src='https://github.com/apiel/zicBox/blob/main/images/pixelUi.png?raw=true' width='480'></td>
+        <td><img src='https://github.com/apiel/zicBox/blob/main/images/demo3.png?raw=true' width='480'></td>
+        <td><img src='https://github.com/apiel/zicBox/blob/main/images/proto2.jpg?raw=true' width='480'></td>
+    </tr>
+</table>
 
 ## Video
 

@@ -1,9 +1,60 @@
 local ____lualib = require("lualib_bundle")
-local __TS__ArrayFlat = ____lualib.__TS__ArrayFlat
 local __TS__ArrayIsArray = ____lualib.__TS__ArrayIsArray
+local __TS__ArrayMap = ____lualib.__TS__ArrayMap
+local __TS__ObjectKeys = ____lualib.__TS__ObjectKeys
+local __TS__TypeOf = ____lualib.__TS__TypeOf
+local Error = ____lualib.Error
+local RangeError = ____lualib.RangeError
+local ReferenceError = ____lualib.ReferenceError
+local SyntaxError = ____lualib.SyntaxError
+local TypeError = ____lualib.TypeError
+local URIError = ____lualib.URIError
+local __TS__New = ____lualib.__TS__New
+local __TS__ArrayFlat = ____lualib.__TS__ArrayFlat
 local ____exports = {}
 function ____exports._zic(key, value)
     zic(key, value)
+end
+--- Convert a value to a JSON string. Since Lua doesn't have builtin JSON support, 
+-- this function is a custom function to serialize values to JSON strings.
+-- 
+-- @param value The value to convert
+-- @returns A JSON string representing the value
+-- @throws {Error} If the value is of an unsupported type
+function ____exports.jsonStringify(value)
+    if type(value) == "string" then
+        return ("\"" .. value) .. "\""
+    elseif type(value) == "number" or type(value) == "boolean" then
+        return tostring(value)
+    elseif value == nil then
+        return "null"
+    elseif __TS__ArrayIsArray(value) then
+        local elements = table.concat(
+            __TS__ArrayMap(
+                value,
+                function(____, item) return ____exports.jsonStringify(item) end
+            ),
+            ","
+        )
+        return ("[" .. elements) .. "]"
+    elseif type(value) == "table" then
+        local properties = table.concat(
+            __TS__ArrayMap(
+                __TS__ObjectKeys(value),
+                function(____, key) return (("\"" .. key) .. "\":") .. ____exports.jsonStringify(value[key]) end
+            ),
+            ","
+        )
+        return ("{" .. properties) .. "}"
+    else
+        error(
+            __TS__New(
+                Error,
+                "Unsupported type: " .. __TS__TypeOf(value)
+            ),
+            0
+        )
+    end
 end
 --- Get the build the plateform
 -- 
