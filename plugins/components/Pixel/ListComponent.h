@@ -114,27 +114,19 @@ public:
 
         /*md   // Set the background color of the component. */
         /*md   bgColor="#000000" */
-        if (config.contains("bgColor")) {
-            bgColor = draw.getColor(config["bgColor"].get<std::string>());
-        }
+        bgColor = draw.getColor(config["bgColor"], bgColor);
 
         /*md   // Set the color of the text. */
         /*md   textColor="#ffffff" */
-        if (config.contains("textColor")) {
-            textColor = draw.getColor(config["textColor"].get<std::string>());
-        }
+        textColor = draw.getColor(config["textColor"], textColor);
 
         /*md   // Set the color of the selection. */
         /*md   selectionColor="#ffffff" */
-        if (config.contains("selectionColor")) {
-            selectionColor = draw.getColor(config["selectionColor"].get<std::string>());
-        }
+        selectionColor = draw.getColor(config["selectionColor"], selectionColor);
 
         /*md   // Set the color of the item background. */
         /*md   itemBackground="#ffffff" */
-        if (config.contains("itemBackground")) {
-            itemBackground = draw.getColor(config["itemBackground"].get<std::string>());
-        }
+        itemBackground = draw.getColor(config["itemBackground"], itemBackground);
 
         /*md md_config_end */
     }

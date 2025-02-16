@@ -251,26 +251,20 @@ public:
 
         /*md   // Set the color of the knob. */
         /*md   color="#3791a1" */
-        if (config.contains("color")) {
-            barColor = draw.getColor(config["color"].get<std::string>());
-            barBackgroundColor = alpha(barColor, 0.7);
-            barTwoSideColor = alpha(barColor, 0.2);
-        }
+        barColor = draw.getColor(config["color"], barColor);
+        barBackgroundColor = alpha(barColor, 0.7);
+        barTwoSideColor = alpha(barColor, 0.2);
 
         /*md   // Set the background color of the component. */
         /*md   bgColor="#000000" */
-        if (config.contains("bgColor")) {
-            bgColor = draw.getColor(config["bgColor"].get<std::string>());
-        }
+        bgColor = draw.getColor(config["bgColor"], bgColor);
 
         /*md   // Set the color of the text. */
         /*md   textColor="#ffffff" */
-        if (config.contains("textColor")) {
-            Color textColor = draw.getColor(config["textColor"].get<std::string>());
-            titleColor = alpha(textColor, 0.4);
-            valueColor = alpha(textColor, 0.4);
-            unitColor = alpha(textColor, 0.2);
-        }
+        Color textColor = draw.getColor(config["textColor"], styles.colors.text);
+        titleColor = alpha(textColor, 0.4);
+        valueColor = alpha(textColor, 0.4);
+        unitColor = alpha(textColor, 0.2);
 
         /*md   // Set how many digits after the decimal point (by default none. */
         /*md   floatPrecision={2} */

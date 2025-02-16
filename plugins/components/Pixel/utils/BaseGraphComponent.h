@@ -61,13 +61,9 @@ public:
         outline = config.value("outline", outline);
         filled = config.value("filled", filled);
 
-        if (config.contains("bgColor")) {
-            bgColor = draw.getColor(config["bgColor"].get<std::string>());
-        }
-
-        if (config.contains("fillColor")) {
-            fillColor = draw.getColor(config["fillColor"].get<std::string>());
-        }
+        bgColor = draw.getColor(config["bgColor"], bgColor);
+        fillColor = draw.getColor(config["fillColor"], fillColor);
+        outlineColor = draw.getColor(config["outlineColor"], outlineColor);
     }
 
     virtual std::vector<Point> getPoints() = 0;
