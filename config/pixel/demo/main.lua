@@ -51,6 +51,6 @@ applyZic(React.createElement(
         encoderId = 1,
         color = "secondary"
     }),
-    React.createElement(List, {items = {"item1", "item2", "item3"}, bounds = {120, 210, 120, 80}})
+    React.createElement(List, {items = {"item1", "item2", "item3"}, bounds = {120, 210, 110, 80}})
 ))
 return ____exports
