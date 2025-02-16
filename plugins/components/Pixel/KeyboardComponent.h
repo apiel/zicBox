@@ -140,6 +140,62 @@ public:
         }
         textPos.x = itemSize.w / 2;
         textPos.y = (itemSize.h - 8) / 2;
+
+        /*md md_config:Keyboard */
+        nlohmann::json config = props.config;
+
+        /*md   // The view to redirect once edit is finished. */
+        /*md   redirectView="view_name" */
+        if (config.contains("redirectView")) {
+            redirectView = config["redirectView"].get<std::string>();
+        }
+
+        /*md   // The audio plugin to send the input value. */
+        /*md   audioPlugin="audio_plugin_name" */
+        if (config.contains("audioPlugin")) {
+            plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track);
+        }
+
+        /*md   // The data id of the audio plugin where the input value will be sent. */
+        /*md   dataId="data_id" */
+        if (config.contains("dataId")) {
+            dataId = plugin->getDataId(config["dataId"].get<std::string>());
+        }
+
+        /*md   // Set the background color of the component. */
+        /*md   bgColor="#000000" */
+        if (config.contains("bgColor")) {
+            bgColor = draw.getColor(config["bgColor"].get<std::string>());
+        }
+
+        /*md   // Set the color of the text. */
+        /*md   textColor="#ffffff" */
+        if (config.contains("textColor")) {
+            textColor = draw.getColor(config["textColor"].get<std::string>());
+        }
+
+        /*md   // Set the color of the selection. */
+        /*md   selectionColor="#ffffff" */
+        if (config.contains("selectionColor")) {
+            selectionColor = draw.getColor(config["selectionColor"].get<std::string>());
+        }
+
+        /*md   // Set the color of the item background. */
+        /*md   itemBackground="#ffffff" */
+        if (config.contains("itemBackground")) {
+            itemBackground = draw.getColor(config["itemBackground"].get<std::string>());
+        }
+
+        /*md md_config_end */
+    }
+
+    bool config(char* key, char* value)
+    {
+        if (keypadLayout.config(key, value)) {
+            return true;
+        }
+
+        return false;
     }
 
     void done()
@@ -190,53 +246,6 @@ public:
             draw.filledRect({ pos.x + itemSize.w * 3, pos.y }, { (itemSize.w * 2) - 2, itemSize.h - 2 }, { keys.size() + 1 == selection ? selectionColor : itemBackground });
             draw.textCentered({ pos.x + itemSize.w * 3 + ((itemSize.w * 2) - 2) / 2, pos.y + textPos.y }, "Done", 8, { textColor });
         }
-    }
-
-    /*md **Config**: */
-    bool config(char* key, char* value)
-    {
-        if (keypadLayout.config(key, value)) {
-            return true;
-        }
-
-        /*md - `REDIRECT_VIEW: viewName` is the view to return when the edit is finished. */
-        if (strcmp(key, "REDIRECT_VIEW") == 0) {
-            redirectView = value;
-            return true;
-        }
-
-        /*md - `DONE_DATA: plugin data_id` is the data id to return when the edit is done. */
-        if (strcmp(key, "DONE_DATA") == 0) {
-            plugin = &getPlugin(strtok(value, " "), track);
-            dataId = plugin->getDataId(strtok(NULL, " "));
-            return true;
-        }
-
-        /*md - `BACKGROUND_COLOR: color` is the color of the background. */
-        if (strcmp(key, "BACKGROUND_COLOR") == 0) {
-            bgColor = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `TEXT_COLOR: color` is the color of the text. */
-        if (strcmp(key, "TEXT_COLOR") == 0) {
-            textColor = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `SELECTION_COLOR: color` is the color of the selection. */
-        if (strcmp(key, "SELECTION_COLOR") == 0) {
-            selectionColor = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `ITEM_BACKGROUND: color` is the color of the item background. */
-        if (strcmp(key, "ITEM_BACKGROUND") == 0) {
-            itemBackground = draw.getColor(value);
-            return true;
-        }
-
-        return false;
     }
 
     void onKey(uint16_t id, int key, int8_t state, unsigned long now)
