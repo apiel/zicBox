@@ -1,22 +1,16 @@
 local ____lualib = require("lualib_bundle")
 local __TS__ArrayIsArray = ____lualib.__TS__ArrayIsArray
 local __TS__ArrayJoin = ____lualib.__TS__ArrayJoin
-local __TS__StringSplit = ____lualib.__TS__StringSplit
 local Set = ____lualib.Set
 local __TS__New = ____lualib.__TS__New
-local __TS__ObjectAssign = ____lualib.__TS__ObjectAssign
 local __TS__NumberToString = ____lualib.__TS__NumberToString
 local __TS__StringPadStart = ____lualib.__TS__StringPadStart
 local ____exports = {}
 local ____core = require("config.libs.core")
 local applyZic = ____core.applyZic
 local buildPlateform = ____core.buildPlateform
-local jsonStringify = ____core.jsonStringify
 function ____exports.getPosition(pos)
     return __TS__ArrayIsArray(pos) and __TS__ArrayJoin(pos, " ") or pos
-end
-function ____exports.getBounds(pos)
-    return __TS__ArrayIsArray(pos) and pos or __TS__StringSplit(pos, " ")
 end
 --- Load a plugin component from a specified path and assign it a name.
 -- 
@@ -33,34 +27,37 @@ function ____exports.initializePlugin(componentName, pluginPath)
         ____exports.pluginComponent(componentName, pluginPath)
     end
 end
-function ____exports.getJsonComponent(componentName, pluginPath)
-    return function(props)
-        ____exports.initializePlugin(componentName, pluginPath)
-        local COMPONENT = jsonStringify(__TS__ObjectAssign(
-            {},
-            props,
-            {
-                componentName = componentName,
-                bounds = ____exports.getBounds(props.bounds)
-            }
-        ))
-        return {{COMPONENT = COMPONENT}}
-    end
-end
-function ____exports.getOldComponentToBeDeprecated(name, bounds, values)
+--- Create a component
+-- 
+-- @param name string - The name of the component to create.
+-- @param position string | string[] - The position of the component.
+-- @param values table - An array of Zic values to apply to the component.
+-- @returns table
+function ____exports.getComponent(name, position, values)
     if values == nil then
         values = {}
     end
     return {
-        {OLD_COMPONENT = (name .. " ") .. ____exports.getPosition(bounds)},
+        {COMPONENT = (name .. " ") .. ____exports.getPosition(position)},
         values
     }
+end
+--- Create a component
+-- 
+-- @param name string - The name of the component to create.
+-- @param position string | string[] - The position of the component.
+-- @param values table - An array of Zic values to apply to the component.
+function ____exports.component(name, position, values)
+    if values == nil then
+        values = {}
+    end
+    applyZic(____exports.getComponent(name, position, values))
 end
 --- Add a zone encoder
 -- 
 -- @param position string | string[] - The position of the component.
-function ____exports.addZoneEncoder(bounds)
-    applyZic({{ADD_ZONE_ENCODER = ____exports.getPosition(bounds)}})
+function ____exports.addZoneEncoder(position)
+    applyZic({{ADD_ZONE_ENCODER = ____exports.getPosition(position)}})
 end
 --- Create a view
 -- 
