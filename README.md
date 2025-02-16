@@ -91,6 +91,79 @@ Once everything is set up, you can run the demo project using:
 make pixel
 ```
 
+Now you should get something like:
+
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/demo.png" />
+
+**Yes, I know, it sounds boring!** But before we complicate things, let's take a moment to understand how everything works. First, let's take a look at the code:
+
+```tsx
+import * as React from '@/libs/react';
+
+import { plugin, pluginAlias } from '@/libs/audio';
+import { pixelController } from '@/libs/controllers/pixelController';
+import { applyZic } from '@/libs/core';
+import { Keyboard } from '@/libs/nativeComponents/Keyboard';
+import { KnobValue } from '@/libs/nativeComponents/KnobValue';
+import { List } from '@/libs/nativeComponents/List';
+import { Rect } from '@/libs/nativeComponents/Rect';
+import { Text } from '@/libs/nativeComponents/Text';
+import { Value } from '@/libs/nativeComponents/Value';
+import { View } from '@/libs/nativeComponents/View';
+import { setScreenSize, setWindowPosition } from '@/libs/ui';
+
+// Initialized our first audio plugin, just the tempo plugin.
+pluginAlias('Tempo', 'libzic_Tempo.so');
+plugin('Tempo');
+
+const ScreenWidth = 240;
+const ScreenHeight = 320;
+
+// Initialized our hardware controller ('rpi3A_4enc_11btn' is to define the hardware version)
+pixelController('rpi3A_4enc_11btn');
+
+// For conveniency, on dekstop, set the window to a specifc location
+setWindowPosition(400, 500);
+// Define the screen size
+setScreenSize(ScreenWidth, ScreenHeight);
+
+// Finally define the UI
+applyZic(
+    <View name="Demo"> { /* UI components must be contain in a view, there can be as many view as you want */ }
+        <Text fontSize={16} text="title" bounds={[0, 0, ScreenWidth, 16]} centered />
+
+        <Rect color="tertiary" filled={false} bounds={[10, 30, 100, 50]} />
+        <Rect color="primary" bounds={[120, 30, 110, 20]} />
+
+        <Value
+            audioPlugin="Tempo" // Here we define which audio plugin to control
+            param="BPM" // Here we define which parameter of the audio plugin to control
+            bounds={[120, 60, 110, 20]}
+            encoderId={0} // Specify which hardware encoder will change the value of this parameter
+            barColor="quaternary"
+        />
+
+        <KnobValue
+            audioPlugin="Tempo"
+            param="BPM"
+            bounds={[10, 90, 70, 70]}
+            encoderId={1}
+            color="secondary"
+        />
+
+        <List items={['item1', 'item2', 'item3']} bounds={[120, 100, 110, 60]} />
+
+        <Keyboard bounds={[0, 175, ScreenWidth, 120]} />
+    </View>
+);
+```
+
+If you prefer not to use TypeScript for the configuration file, you have alternatives, you can use Lua, or even define everything directly in C++. However, I personally find TypeScript/JSX to be the most convenient option due to its strong typing, ease of use, and developer-friendly tooling.
+
+Now, you might be wondering about performance, don’t worry! The configuration process is purely declarative, meaning TypeScript is only used to define settings and structure. Once the configurations are initialized, the actual execution happens entirely in C++, ensuring optimal performance. TypeScript is only invoked at runtime to process the configuration, but after that, everything runs natively in C++ without any overhead from TypeScript itself.
+
+In short, you get the best of both worlds, TypeScript for a clean and manageable configuration setup, and C++ for high-performance execution.
+
 More [documentation here](https://github.com/apiel/zicBox/wiki).
 
 ---
