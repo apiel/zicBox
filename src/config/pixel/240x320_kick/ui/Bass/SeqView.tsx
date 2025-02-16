@@ -3,7 +3,6 @@ import * as React from '@/libs/react';
 import { Keymaps } from '@/libs/nativeComponents/Keymaps';
 import { StepEditDrum } from '@/libs/nativeComponents/StepEditDrum';
 import { View } from '@/libs/nativeComponents/View';
-import { VisibilityContext } from '@/libs/nativeComponents/VisibilityContext';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
@@ -46,21 +45,18 @@ export function BassSeqView({ name }: Props) {
                     'Seq./Bass &icon::arrowDown::filled &icon::musicNote::pixelated',
                     // '!Seq/Bass &icon::arrowDown::filled &icon::musicNote::pixelated',
                 ]}
-                activeBgColor={ColorTrack2}
-            >
-                <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />
-                <Keymaps
-                    keys={[
-                        { key: 'w', action: 'incGroup:-1' },
-                        { key: 'e', action: 'contextToggle:254:1:0' },
+                selectedBackground={ColorTrack2}
+                keys={[
+                    { key: 'w', action: 'incGroup:-1' },
+                    { key: 'e', action: 'contextToggle:254:1:0' },
 
-                        { key: 'a', action: 'setView:Bass' },
-                        { key: 's', action: 'incGroup:+1' },
-                        { key: 'd', action: 'noteOn:Bass:60' },
-                    ]}
-                />
-            </TextGrid>
-            <Common selected={0} hideSequencer track={BassTrack}  selectedBackground={ColorTrack2} />
+                    { key: 'a', action: 'setView:Bass' },
+                    { key: 's', action: 'incGroup:+1' },
+                    { key: 'd', action: 'noteOn:Bass:60' },
+                ]}
+                contextValue={0}
+            />
+            <Common selected={0} hideSequencer track={BassTrack} selectedBackground={ColorTrack2} />
         </View>
     );
 }

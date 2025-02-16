@@ -3,8 +3,6 @@ local ____exports = {}
 local React = require("config.libs.react")
 local ____Keymap = require("config.libs.nativeComponents.Keymap")
 local Keymap = ____Keymap.Keymap
-local ____Keymaps = require("config.libs.nativeComponents.Keymaps")
-local Keymaps = ____Keymaps.Keymaps
 local ____Tape = require("config.libs.nativeComponents.Tape")
 local Tape = ____Tape.Tape
 local ____View = require("config.libs.nativeComponents.View")
@@ -34,11 +32,7 @@ function ____exports.TapeView(____bindingPattern0)
             React.createElement(Keymap, {key = "a", action = ".left"}),
             React.createElement(Keymap, {key = "d", action = ".right"})
         ),
-        React.createElement(
-            TextGrid,
-            {bounds = KeyInfoPosition, rows = {"&icon::play::filled Save &empty", "&icon::arrowLeft::filled Exit &icon::arrowRight::filled"}},
-            React.createElement(Keymaps, {keys = {{key = btn2, action = "setView:SaveTape"}, {key = btn6, action = "setView:Menu"}}})
-        )
+        React.createElement(TextGrid, {bounds = KeyInfoPosition, rows = {"&icon::play::filled Save &empty", "&icon::arrowLeft::filled Exit &icon::arrowRight::filled"}, keys = {{key = btn2, action = "setView:SaveTape"}, {key = btn6, action = "setView:Menu"}}})
     )
 end
 return ____exports

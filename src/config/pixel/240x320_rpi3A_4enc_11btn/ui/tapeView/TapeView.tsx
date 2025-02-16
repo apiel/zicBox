@@ -1,7 +1,6 @@
 import * as React from '@/libs/react';
 
 import { Keymap } from '@/libs/nativeComponents/Keymap';
-import { Keymaps } from '@/libs/nativeComponents/Keymaps';
 import { Tape } from '@/libs/nativeComponents/Tape';
 import { View } from '@/libs/nativeComponents/View';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
@@ -31,14 +30,11 @@ export function TapeView({ name }: Props) {
                     '&icon::play::filled Save &empty',
                     '&icon::arrowLeft::filled Exit &icon::arrowRight::filled',
                 ]}
-            >
-                <Keymaps
-                    keys={[
-                        { key: btn2, action: 'setView:SaveTape' },
-                        { key: btn6, action: 'setView:Menu' },
-                    ]}
-                />
-            </TextGrid>
+                keys={[
+                    { key: btn2, action: 'setView:SaveTape' },
+                    { key: btn6, action: 'setView:Menu' },
+                ]}
+            />
         </View>
     );
 }

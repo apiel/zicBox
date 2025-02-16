@@ -3,7 +3,6 @@ import * as React from '@/libs/react';
 import { Keymaps } from '@/libs/nativeComponents/Keymaps';
 import { StepEditDrum } from '@/libs/nativeComponents/StepEditDrum';
 import { View } from '@/libs/nativeComponents/View';
-import { VisibilityContext } from '@/libs/nativeComponents/VisibilityContext';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
@@ -18,7 +17,7 @@ import {
     ColorTrack6,
     KeyInfoPosition,
     PercTrack,
-    ScreenWidth
+    ScreenWidth,
 } from '../constants';
 
 export type Props = {
@@ -58,20 +57,17 @@ export function PercSeqView({ name }: Props) {
                     'Seq./Perc &icon::arrowDown::filled &icon::musicNote::pixelated',
                     // '!Seq/Bass &icon::arrowDown::filled &icon::musicNote::pixelated',
                 ]}
-                activeBgColor={ColorTrack3}
-            >
-                <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />
-                <Keymaps
-                    keys={[
-                        { key: btn2, action: 'incGroup:-1' },
-                        { key: btnShift, action: 'contextToggle:254:1:0' },
+                selectedBackground={ColorTrack3}
+                contextValue={0}
+                keys={[
+                    { key: btn2, action: 'incGroup:-1' },
+                    { key: btnShift, action: 'contextToggle:254:1:0' },
 
-                        { key: btn5, action: 'setView:Perc' },
-                        { key: btn6, action: 'incGroup:+1' },
-                        { key: btn7, action: 'noteOn:Perc:60' },
-                    ]}
-                />
-            </TextGrid>
+                    { key: btn5, action: 'setView:Perc' },
+                    { key: btn6, action: 'incGroup:+1' },
+                    { key: btn7, action: 'noteOn:Perc:60' },
+                ]}
+            />
             <Common
                 selected={'Perc'}
                 hideSequencer

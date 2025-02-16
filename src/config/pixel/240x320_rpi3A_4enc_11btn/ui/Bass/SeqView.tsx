@@ -3,11 +3,21 @@ import * as React from '@/libs/react';
 import { Keymaps } from '@/libs/nativeComponents/Keymaps';
 import { StepEditDrum } from '@/libs/nativeComponents/StepEditDrum';
 import { View } from '@/libs/nativeComponents/View';
-import { VisibilityContext } from '@/libs/nativeComponents/VisibilityContext';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
-import { BassTrack, btn1, btn2, btn5, btn6, btn7, btnShift, ColorTrack2, KeyInfoPosition, ScreenWidth } from '../constants';
+import {
+    BassTrack,
+    btn1,
+    btn2,
+    btn5,
+    btn6,
+    btn7,
+    btnShift,
+    ColorTrack2,
+    KeyInfoPosition,
+    ScreenWidth,
+} from '../constants';
 
 export type Props = {
     name: string;
@@ -46,21 +56,23 @@ export function BassSeqView({ name }: Props) {
                     'Seq./Bass &icon::arrowDown::filled &icon::musicNote::pixelated',
                     // '!Seq/Bass &icon::arrowDown::filled &icon::musicNote::pixelated',
                 ]}
-                activeBgColor={ColorTrack2}
-            >
-                <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />
-                <Keymaps
-                    keys={[
-                        { key: btn2, action: 'incGroup:-1' },
-                        { key: btnShift, action: 'contextToggle:254:1:0' },
+                selectedBackground={ColorTrack2}
+                contextValue={0}
+                keys={[
+                    { key: btn2, action: 'incGroup:-1' },
+                    { key: btnShift, action: 'contextToggle:254:1:0' },
 
-                        { key: btn5, action: 'setView:Bass' },
-                        { key: btn6, action: 'incGroup:+1' },
-                        { key: btn7, action: 'noteOn:Bass:60' },
-                    ]}
-                />
-            </TextGrid>
-            <Common selected={'Bass'} hideSequencer track={BassTrack}  selectedBackground={ColorTrack2} />
+                    { key: btn5, action: 'setView:Bass' },
+                    { key: btn6, action: 'incGroup:+1' },
+                    { key: btn7, action: 'noteOn:Bass:60' },
+                ]}
+            />
+            <Common
+                selected={'Bass'}
+                hideSequencer
+                track={BassTrack}
+                selectedBackground={ColorTrack2}
+            />
         </View>
     );
 }

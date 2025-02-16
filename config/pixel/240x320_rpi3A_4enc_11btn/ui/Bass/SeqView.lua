@@ -8,8 +8,6 @@ local ____StepEditDrum = require("config.libs.nativeComponents.StepEditDrum")
 local StepEditDrum = ____StepEditDrum.StepEditDrum
 local ____View = require("config.libs.nativeComponents.View")
 local View = ____View.View
-local ____VisibilityContext = require("config.libs.nativeComponents.VisibilityContext")
-local VisibilityContext = ____VisibilityContext.VisibilityContext
 local ____TextGrid = require("config.libs.tsComponents.TextGrid")
 local TextGrid = ____TextGrid.TextGrid
 local ____ui = require("config.libs.ui")
@@ -54,18 +52,19 @@ function ____exports.BassSeqView(____bindingPattern0)
                 )
             end
         ),
-        React.createElement(
-            TextGrid,
-            {bounds = KeyInfoPosition, rows = {"&icon::toggle::rect &icon::arrowUp::filled ...", "Seq./Bass &icon::arrowDown::filled &icon::musicNote::pixelated"}, activeBgColor = ColorTrack2},
-            React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 0}),
-            React.createElement(Keymaps, {keys = {
+        React.createElement(TextGrid, {
+            bounds = KeyInfoPosition,
+            rows = {"&icon::toggle::rect &icon::arrowUp::filled ...", "Seq./Bass &icon::arrowDown::filled &icon::musicNote::pixelated"},
+            selectedBackground = ColorTrack2,
+            contextValue = 0,
+            keys = {
                 {key = btn2, action = "incGroup:-1"},
                 {key = btnShift, action = "contextToggle:254:1:0"},
                 {key = btn5, action = "setView:Bass"},
                 {key = btn6, action = "incGroup:+1"},
                 {key = btn7, action = "noteOn:Bass:60"}
-            }})
-        ),
+            }
+        }),
         React.createElement(Common, {selected = "Bass", hideSequencer = true, track = BassTrack, selectedBackground = ColorTrack2})
     )
 end

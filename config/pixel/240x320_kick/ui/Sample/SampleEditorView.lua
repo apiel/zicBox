@@ -10,8 +10,6 @@ local ____Text = require("config.libs.nativeComponents.Text")
 local Text = ____Text.Text
 local ____View = require("config.libs.nativeComponents.View")
 local View = ____View.View
-local ____VisibilityContext = require("config.libs.nativeComponents.VisibilityContext")
-local VisibilityContext = ____VisibilityContext.VisibilityContext
 local ____TextGrid = require("config.libs.tsComponents.TextGrid")
 local TextGrid = ____TextGrid.TextGrid
 local ____ui = require("config.libs.ui")
@@ -54,12 +52,7 @@ function ____exports.SampleEditorView(____bindingPattern0)
                 )
             end
         ),
-        React.createElement(
-            TextGrid,
-            {bounds = KeyInfoPosition, rows = {"&icon::toggle::rect &icon::arrowUp::filled ...", "&empty &icon::arrowDown::filled &icon::musicNote::pixelated"}},
-            React.createElement(VisibilityContext, {index = 254, condition = "SHOW_WHEN", value = 0}),
-            React.createElement(Keymaps, {keys = {{key = "e", action = "contextToggle:254:1:0"}, {key = "w", action = "incGroup:-1"}, {key = "s", action = "incGroup:+1"}}})
-        ),
+        React.createElement(TextGrid, {bounds = KeyInfoPosition, rows = {"&icon::toggle::rect &icon::arrowUp::filled ...", "&empty &icon::arrowDown::filled &icon::musicNote::pixelated"}, keys = {{key = "e", action = "contextToggle:254:1:0"}, {key = "w", action = "incGroup:-1"}, {key = "s", action = "incGroup:+1"}}, contextValue = 0}),
         React.createElement(Common, {selected = 1, track = SampleTrack, hideSequencer = true, selectedBackground = ColorTrack3})
     )
 end

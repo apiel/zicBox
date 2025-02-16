@@ -38,10 +38,8 @@ export function TextGridSel({
             <TextGrid
                 bounds={KeyInfoPosition}
                 rows={rows}
-                activeBgColor={selectedBackground}
-                visibilityContext={254}
-                visibilityCondition="SHOW_WHEN"
-                visibilityValue={contextValue}
+                selectedBackground={selectedBackground}
+                contextValue={contextValue}
             />
         </>
     );

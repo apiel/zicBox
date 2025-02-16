@@ -13,13 +13,6 @@ function ____exports.SideInfo(____bindingPattern0)
     up = ____bindingPattern0.up
     down = ____bindingPattern0.down
     ctxValue = ____bindingPattern0.ctxValue
-    return React.createElement(TextGrid, {
-        bounds = SideKeyInfoPosition,
-        rows = {up, down},
-        bgColor = SideColor,
-        visibilityCondition = "SHOW_WHEN",
-        visibilityContext = 254,
-        visibilityValue = ctxValue
-    })
+    return React.createElement(TextGrid, {bounds = SideKeyInfoPosition, rows = {up, down}, bgColor = SideColor, contextValue = ctxValue})
 end
 return ____exports
