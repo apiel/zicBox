@@ -44,10 +44,21 @@ public:
         , seqNoteColour(darken(styles.colors.white, 0.2))
         , seqNote2Colour(lighten(styles.colors.background, 1.5))
     {
+        /*md md_config:Sequencer */
+        nlohmann::json config = props.config;
+
+        /*md   // The background color of the text. */
+        /*md   bgColor="#000000" */
+        if (config.contains("bgColor")) {
+            background = draw.getColor(config["bgColor"].get<std::string>());
+        }
+
+        /*md md_config_end */
+
         resize();
     }
 
-    void resize()
+    void resize() override
     {
         stepWidth = size.w / numSteps;
         stepHeight = size.h / numNotes;
@@ -101,17 +112,5 @@ public:
                 draw.line({ x, y }, { x, y + size.h }, { color });
             }
         }
-    }
-
-    /*md **Config**: */
-    bool config(char* key, char* value)
-    {
-        /*md - `BACKGROUND_COLOR: color` is the color of the component. */
-        if (strcmp(key, "BACKGROUND_COLOR") == 0) {
-            background = draw.getColor(value);
-            return true;
-        }
-
-        return false;
     }
 };
