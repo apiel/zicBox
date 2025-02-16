@@ -102,7 +102,7 @@ public:
         nlohmann::json config = props.config;
 
         /*md   // The list of items to add in the list. */
-        /*md   items=["item1", "item2", "item3"] */
+        /*md   items={["item1", "item2", "item3"]} */
         if (config.contains("items") && config["items"].is_array()) {
             for (int i = 0; i < config["items"].size(); i++) {
                 items.push_back({ config["items"][i].get<std::string>() });

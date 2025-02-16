@@ -1,11 +1,10 @@
-import { getComponent, initializePlugin } from '@/libs/ui';
-import { ComponentProps } from './component';
+import { getJsonComponent } from '../ui';
 
-export type Props = ComponentProps & {
+export const List = getJsonComponent<{
     items: string[];
-};
-
-export function List({ bounds, items, ...props }: Props) {
-    initializePlugin('List', 'libzic_ListComponent.so');
-    return getComponent('List', bounds, [items.map((item) => ({ ADD_ITEM: item })), props]);
-}
+    audioPlugin?: string;
+    bgColor?: string;
+    textColor?: string;
+    selectionColor?: string;
+    itemBackground?: string;
+}>('List', 'libzic_ListComponent.so');

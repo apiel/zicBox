@@ -4,6 +4,7 @@ import { plugin, pluginAlias } from '@/libs/audio';
 import { pixelController } from '@/libs/controllers/pixelController';
 import { applyZic } from '@/libs/core';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
+import { List } from '@/libs/nativeComponents/List';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { Text } from '@/libs/nativeComponents/Text';
 import { Value } from '@/libs/nativeComponents/Value';
@@ -44,5 +45,7 @@ applyZic(
             encoderId={1}
             color="secondary"
         />
+
+        <List items={['item1', 'item2', 'item3']} bounds={[120, 210, 120, 80]} />
     </View>
 );

@@ -10,6 +10,8 @@ local ____core = require("config.libs.core")
 local applyZic = ____core.applyZic
 local ____KnobValue = require("config.libs.nativeComponents.KnobValue")
 local KnobValue = ____KnobValue.KnobValue
+local ____List = require("config.libs.nativeComponents.List")
+local List = ____List.List
 local ____Rect = require("config.libs.nativeComponents.Rect")
 local Rect = ____Rect.Rect
 local ____Text = require("config.libs.nativeComponents.Text")
@@ -48,6 +50,7 @@ applyZic(React.createElement(
         bounds = {10, 210, 80, 80},
         encoderId = 1,
         color = "secondary"
-    })
+    }),
+    React.createElement(List, {items = {"item1", "item2", "item3"}, bounds = {120, 210, 120, 80}})
 ))
 return ____exports
