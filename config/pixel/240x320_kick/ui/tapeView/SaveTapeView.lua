@@ -20,7 +20,7 @@ function ____exports.SaveTapeView(____bindingPattern0)
         {name = name},
         React.createElement(
             Keyboard,
-            {bounds = {0, 40, ScreenWidth, 200}, redirect_view = "Tape", done_data = "Tape SAVE"},
+            {bounds = {0, 40, ScreenWidth, 200}, redirectView = "Tape", audioPlugin = "Tape", dataId = "SAVE"},
             React.createElement(Keymaps, {keys = {
                 {key = "q", action = ".type"},
                 {key = "w", action = ".up"},

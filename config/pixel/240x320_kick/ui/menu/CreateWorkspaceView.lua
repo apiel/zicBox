@@ -20,7 +20,7 @@ function ____exports.CreateWorkspaceView(____bindingPattern0)
         {name = name},
         React.createElement(
             Keyboard,
-            {bounds = {0, 40, ScreenWidth, 200}, redirect_view = "Workspaces", done_data = "SerializeTrack CREATE_WORKSPACE"},
+            {bounds = {0, 40, ScreenWidth, 200}, redirectView = "Workspaces", audioPlugin = "SerializeTrack", dataId = "CREATE_WORKSPACE"},
             React.createElement(Keymaps, {keys = {
                 {key = "q", action = ".type"},
                 {key = "w", action = ".up"},

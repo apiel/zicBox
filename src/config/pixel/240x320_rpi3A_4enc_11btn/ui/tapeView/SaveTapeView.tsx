@@ -15,8 +15,9 @@ export function SaveTapeView({ name }: Props) {
         <View name={name}>
             <Keyboard
                 bounds={[0, 40, ScreenWidth, 200]}
-                redirect_view="Tape"
-                done_data="Tape SAVE"
+                redirectView="Tape"
+                audioPlugin='Tape'
+                dataId='SAVE'
             >
                 <Keymaps
                     keys={[

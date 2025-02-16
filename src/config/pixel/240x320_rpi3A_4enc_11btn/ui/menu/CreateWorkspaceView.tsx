@@ -15,8 +15,9 @@ export function CreateWorkspaceView({ name }: Props) {
         <View name={name}>
             <Keyboard
                 bounds={[0, 40, ScreenWidth, 200]}
-                redirect_view="Workspaces"
-                done_data="SerializeTrack CREATE_WORKSPACE"
+                redirectView="Workspaces"
+                audioPlugin="SerializeTrack"
+                dataId="CREATE_WORKSPACE"
             >
                 <Keymaps
                     keys={[
