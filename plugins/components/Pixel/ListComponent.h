@@ -13,6 +13,8 @@
 /*md
 ## List
 
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/list.png" />
+
 List components to display list of items.
 */
 

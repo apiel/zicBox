@@ -46,6 +46,6 @@ applyZic(
             color="secondary"
         />
 
-        <List items={['item1', 'item2', 'item3']} bounds={[120, 210, 120, 80]} />
+        <List items={['item1', 'item2', 'item3']} bounds={[120, 210, 110, 80]} />
     </View>
 );
