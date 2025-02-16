@@ -47,6 +47,10 @@ public:
         /*md md_config:Sequencer */
         nlohmann::json config = props.config;
 
+        /*md   // The number of piano notes to display on the screen. */
+        /*md   numNotes=24 */
+        numNotes = config.value("numNotes", numNotes);
+
         /*md   // The background color of the text. */
         /*md   bgColor="#000000" */
         background = draw.getColor(config["bgColor"], background);
