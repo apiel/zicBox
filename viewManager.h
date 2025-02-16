@@ -1,9 +1,8 @@
-#ifndef _VIEW_MANAGER_H
-#define _VIEW_MANAGER_H
+#pragma once
 
 #include <dlfcn.h>
 #include <mutex>
-#include <nlohmann/json.hpp>
+#include "libs/nlohmann/json.hpp"
 #include <vector>
 
 #include "controllerList.h"
@@ -349,5 +348,3 @@ VIEW: Mixer
 };
 
 ViewManager* ViewManager::instance = NULL;
-
-#endif

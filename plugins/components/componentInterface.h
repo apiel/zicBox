@@ -8,7 +8,7 @@
 #include "plugins/controllers/controllerInterface.h"
 
 #include <functional>
-#include <nlohmann/json.hpp>
+#include "libs/nlohmann/json.hpp"
 #include <string.h>
 #include <vector>
 
