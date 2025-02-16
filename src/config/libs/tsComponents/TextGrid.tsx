@@ -107,15 +107,14 @@ function TextGridRender({
                     centered
                     bgColor={bg}
                     color={color}
-                >
-                    {contextValue !== undefined && (
-                        <VisibilityContext
-                            index={visibilityContextIndex}
-                            condition="SHOW_WHEN"
-                            value={contextValue}
-                        />
-                    )}
-                </Text>
+                    visibilityContext={contextValue != undefined ? [
+                        {
+                            index: visibilityContextIndex,
+                            condition: 'SHOW_WHEN',
+                            value: contextValue,
+                        },
+                    ] : undefined}
+                />
             );
             marginLeft += width;
         }

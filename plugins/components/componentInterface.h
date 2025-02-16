@@ -46,7 +46,7 @@ public:
     Point position;
     Point relativePosition = { 0, 0 };
     Size size;
-    int16_t track;
+    int16_t track = 0;
     int8_t group = -1;
     std::string id = ""; // TO be removed?
 
@@ -84,6 +84,7 @@ public:
     virtual void onContext(uint8_t index, float value) = 0;
     virtual void onUpdate(ValueInterface* value) = 0;
     virtual bool isVisible() = 0;
+    virtual void onResize() = 0;
     virtual void* data(int id, void* userdata = NULL)
     {
         return NULL;

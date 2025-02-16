@@ -85,9 +85,8 @@ function TextGridRender(____bindingPattern0)
                         }
                     },
                     props,
-                    {centered = true, bgColor = bg, color = color}
-                ),
-                contextValue ~= nil and React.createElement(VisibilityContext, {index = visibilityContextIndex, condition = "SHOW_WHEN", value = contextValue})
+                    {centered = true, bgColor = bg, color = color, visibilityContext = contextValue ~= nil and ({{index = visibilityContextIndex, condition = "SHOW_WHEN", value = contextValue}}) or nil}
+                )
             )
             marginLeft = marginLeft + width
         end
