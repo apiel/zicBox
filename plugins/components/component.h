@@ -98,7 +98,7 @@ public:
         keypadLayout.onKey(id, key, state, now);
     }
 
-    virtual void onResize() override
+    virtual void resize() override
     {
     }
 

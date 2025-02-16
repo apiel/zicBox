@@ -84,7 +84,7 @@ public:
     virtual void onContext(uint8_t index, float value) = 0;
     virtual void onUpdate(ValueInterface* value) = 0;
     virtual bool isVisible() = 0;
-    virtual void onResize() = 0;
+    virtual void resize() = 0;
     virtual void* data(int id, void* userdata = NULL)
     {
         return NULL;
