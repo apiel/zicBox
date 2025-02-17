@@ -2,12 +2,7 @@
 
 ## Zic Pixel
 
-<table>
-<tr>
-<td><img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel3A.png?raw=true' width='480'></td><td>
-<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel.png?raw=true' width='480'></td>
-<tr>
-<table>
+<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel3A.png?raw=true' width='250'>
 
 <table>
 <tr>
@@ -59,3 +54,38 @@
     <td>2.73€ for 1 piece at <a href="https://www.aliexpress.com/item/1005006198619536.html">Aliexpress</a></td>
 </tr>
 </table>
+
+<table>
+<tr>
+    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pcb.png?raw=true' width='200'></td>
+    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pcb2d.png?raw=true' width='200'></td>
+</tr>
+</table>
+
+
+The PCB has been designed using EasyEDA. If you need to access or modify the project, you can do so by loading the provided JSON file:
+
+📁 **File**: [`st7789_240x320_rpi3A_REDRAGON_11btn_easyeda.json`](https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicPixel/st7789_240x320_rpi3A_REDRAGON_11btn_easyeda.json)
+
+Simply import this file into EasyEDA to access the full schematic and layout of the board.
+
+**Ordering the PCB**
+To manufacture the PCB, you need to generate and submit the Gerber files to a PCB fabrication service. For this project, the Gerber files are already prepared and available as:
+
+📁 **File**: [`st7789_240x320_rpi3A_REDRAGON_11btn_Gerber.zip`](https://github.com/apiel/zicBox/raw/refs/heads/main/hardware/ZicPixel/st7789_240x320_rpi3A_REDRAGON_11btn_Gerber.zip)
+
+You can order the PCB from JLCPCB by following these steps:
+
+1. Visit JLCPCB.
+2. Click on the "Add Gerber File" button and upload the provided Gerber file (.zip).
+3. The default settings should work fine, and no changes are necessary.
+4. If desired, you can change the PCB color from green to black—this typically does not affect the price.
+5. Click "Save to Cart", then proceed to checkout.
+   
+💰 **Estimated Cost**: ~4€ (with standard shipping, approximately 10 days delivery time).
+
+---
+
+*Another old prototype of the Pixel*:
+
+<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel.png?raw=true' width='250'>
