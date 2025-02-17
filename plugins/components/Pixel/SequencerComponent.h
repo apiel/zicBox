@@ -139,7 +139,7 @@ public:
             for (int i = 0; i < numNotes; ++i) {
                 int y = relativePosition.y + i * stepHeight;
                 int x = relativePosition.x;
-                int midiNote = midiStartNote + i;
+                int midiNote = midiStartNote + numNotes - i -1;
                 Color color = isBlackKey(midiNote) ? blackKeyColor : whiteKeyColor;
                 draw.filledRect({ x, y }, { size.w, stepHeight }, { color });
                 draw.line({ x, y }, { x + size.w, y }, { rowSeparatorColor });
@@ -174,9 +174,9 @@ public:
                 // Draw MIDI Notes
                 for (const auto& step : *steps) {
                     if (step.note >= midiStartNote && step.note < midiStartNote + numNotes) {
-                        int x = step.position * stepWidth;
+                        int x = xStart + step.position * stepWidth + 1;
                         int y = (numNotes - (step.note - midiStartNote) - 1) * stepHeight;
-                        int width = step.len * stepWidth;
+                        int width = step.len * stepWidth - 2;
                         int height = stepHeight;
 
                         draw.filledRect({ x, y }, { width, height }, { stepColor });
