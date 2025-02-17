@@ -22,7 +22,7 @@ protected:
     int16_t lastStepCounter = -1;
     uint16_t* stepCounter = NULL;
     bool* seqPlayingPtr = NULL;
-    Step* steps = NULL;
+    std::vector<Step>* steps = NULL;
 
     KeypadLayout keypadLayout;
 
@@ -90,7 +90,7 @@ public:
             x += nameW + 4;
 
             for (int i = 0; i < stepCount; i++) {
-                Color color = lastStepCounter == i ? activeColor : (!showSteps || steps[i].enabled ? foreground : inactiveStepColor);
+                Color color = lastStepCounter == i ? activeColor : (!showSteps || getStep(i) != NULL ? foreground : inactiveStepColor);
                 draw.filledRect({ x, relativePosition.y }, { stepW, stepH }, { color });
                 x += stepW + 2;
                 if (i % 4 == 3) {
@@ -98,6 +98,15 @@ public:
                 }
             }
         }
+    }
+
+    Step* getStep(uint16_t position) {
+        for (auto& step : *steps) {
+            if (step.position == position && step.enabled) {
+                return &step;
+            }
+        }
+        return NULL;
     }
 
     void onKey(uint16_t id, int key, int8_t state, unsigned long now) override
@@ -142,7 +151,7 @@ public:
             stepCount = *(uint16_t*)seqPlugin->data(seqPlugin->getDataId("STEP_COUNT"));
             stepCounter = (uint16_t*)seqPlugin->data(seqPlugin->getDataId("STEP_COUNTER"));
             seqPlayingPtr = (bool*)seqPlugin->data(seqPlugin->getDataId("IS_PLAYING"));
-            steps = (Step*)seqPlugin->data(seqPlugin->getDataId("STEPS"));
+            steps = (std::vector<Step>*)seqPlugin->data(seqPlugin->getDataId("STEPS"));
 
             return true;
         }
