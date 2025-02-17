@@ -26,7 +26,7 @@ function ____exports.PercSeq2View(____bindingPattern0)
     return React.createElement(
         View,
         {name = name},
-        React.createElement(Sequencer, {bounds = {0, 0, ScreenWidth, 240}, track = PercTrack}),
+        React.createElement(Sequencer, {bounds = {0, 0, ScreenWidth, 240}, track = PercTrack, audioPlugin = "Sequencer"}),
         React.createElement(TextGrid, {
             bounds = KeyInfoPosition,
             rows = {"&icon::toggle::rect &icon::arrowUp::filled ...", "Seq./Perc &icon::arrowDown::filled &icon::musicNote::pixelated"},

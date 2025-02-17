@@ -173,7 +173,7 @@ public:
     uint8_t getDataId(std::string name) override
     {
         /*md - `STEPS` return steps */
-        if (name == "STEPS") // in seq progress bar
+        if (name == "STEPS")
             return DATA_ID::STEPS;
         /*md - `STEP_COUNTER` return current played step */
         if (name == "STEP_COUNTER")
@@ -199,8 +199,9 @@ public:
     void* data(int id, void* userdata = NULL)
     {
         switch (id) {
-        case DATA_ID::STEPS:
+        case DATA_ID::STEPS: {
             return &steps;
+        }
         case DATA_ID::STEP_COUNTER:
             return &stepCounter;
         case DATA_ID::IS_PLAYING:

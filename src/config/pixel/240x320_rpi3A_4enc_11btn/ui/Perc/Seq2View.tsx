@@ -24,7 +24,7 @@ export type Props = {
 export function PercSeq2View({ name }: Props) {
     return (
         <View name={name}>
-            <Sequencer bounds={[0, 0, ScreenWidth, 240]} track={PercTrack} />
+            <Sequencer bounds={[0, 0, ScreenWidth, 240]} track={PercTrack} audioPlugin="Sequencer" />
 
             <TextGrid
                 bounds={KeyInfoPosition}
