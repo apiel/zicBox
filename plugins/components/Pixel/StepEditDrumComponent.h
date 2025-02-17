@@ -23,7 +23,7 @@ protected:
 
     AudioPlugin* plugin = NULL;
     Step* step;
-    uint8_t* stepCounter = NULL;
+    uint16_t* stepCounter = NULL;
 
     bool notePlaying = false;
     bool* seqPlayingPtr = NULL;
@@ -44,7 +44,7 @@ protected:
     Color playingColor;
     // Color playingBgColor;
 
-    uint8_t stepIndex = -1;
+    uint16_t stepIndex = -1;
 
     uint8_t encoders[4] = { 0, 1, 2, 3 };
 
@@ -202,7 +202,7 @@ public:
             char* counterDataIdStr = strtok(NULL, " ");
             step = (Step*)plugin->data(plugin->getDataId(getStepDataIdStr != NULL ? getStepDataIdStr : "GET_STEP"), &stepIndex);
             seqPlayingPtr = (bool*)plugin->data(plugin->getDataId(sequenceDataIdStr != NULL ? sequenceDataIdStr : "IS_PLAYING"));
-            stepCounter = (uint8_t*)plugin->data(plugin->getDataId(counterDataIdStr != NULL ? counterDataIdStr : "STEP_COUNTER"));
+            stepCounter = (uint16_t*)plugin->data(plugin->getDataId(counterDataIdStr != NULL ? counterDataIdStr : "STEP_COUNTER"));
             return true;
         }
 
