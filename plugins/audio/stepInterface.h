@@ -107,7 +107,8 @@ public:
     bool enabled = false;
     float velocity = 0.8f;
     uint8_t condition = 0;
-    uint8_t len = 1; // len 0 is infinite?
+    uint16_t position = 0;
+    uint16_t len = 1; // len 0 is infinite?
     uint8_t counter = 0;
     uint8_t note = 60;
     uint8_t motion = 0;
@@ -117,6 +118,7 @@ public:
         enabled = false;
         velocity = 0;
         condition = 0;
+        position = 0;
         len = 1;
         counter = 0;
         note = 60;
@@ -129,6 +131,7 @@ public:
             && velocity == other.velocity
             && condition == other.condition
             && motion == other.motion
+            && position == other.position
             && len == other.len
             && note == other.note;
     }
@@ -155,12 +158,18 @@ public:
 
     void setLength(int len)
     {
-        this->len = range(len, 0, 255);
+        this->len = range(len, 0, 4096);
+    }
+
+    void setPosition(int position)
+    {
+        this->position = range(position, 0, 4096);
     }
 
     std::string serialize()
     {
         return std::to_string(enabled) + " "
+            // + std::to_string(position) + " "
             + std::to_string(note) + " "
             + fToString(velocity, 2) + " "
             + stepConditions[condition].name + " "
