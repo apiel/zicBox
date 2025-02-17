@@ -6,21 +6,6 @@
 - TODO make all component access to group and context visibility
 
 ### component
-- TODO use https://github.com/nlohmann/json for config
-    - just need to find a way to inform jsx to whether pass json format or string format
-    ---> maybe for the moment should only be for component...
-    wget -O json.hpp https://github.com/nlohmann/json/releases/latest/download/json.hpp
-    or
-    sudo apt install nlohmann-json3-dev
-
-    Keep the config key (command) and only value/params would become json:
-    - COMPONENT { pluginName: "Rect", position: [0, 0, 240, 320], color: "background" }
-    - PLUGIN_COMPONENT { pluginName: "Rect", path: "@/plugins/components/Pixel/build/x86/libzic_rectComponent.so"  }
-    - AUDIO_PLUGIN { pluginName: "Effect", track: 1 }
-    - AUDIO_PLUGIN_ALIAS { pluginName: "Effect", path: "@/plugins/audio/build/x86/libzic_effect.so"  }
-
-
-- TODO use std::string as much as possible and other C++ thing to simplify life :p
 
 - TODO look if container concept is fully used... OR maybe get rid of it!!
   - for example, is plugin still listed under the main view, and receive event if parent container is not visible?
@@ -28,8 +13,6 @@
   - instead of updatePosition and updateCompontentPosition, container should be responsible to render the child component and decide wether on child should be rendered or not.
 
 ### other
-
-- TODO use `#pragma once`
 
 - TODO Use Smart Pointers (std::unique_ptr or std::shared_ptr)
    Use tools like Valgrind (Linux/macOS) or AddressSanitizer (Clang/GCC) to check for memory leaks:
@@ -40,6 +23,8 @@ valgrind --leak-check=full ./pixel.x86
 - TODO make plugin removable
   
 ## Pixel TODO
+
+- TODO random patch
 
 - TODO equalizer!
 
