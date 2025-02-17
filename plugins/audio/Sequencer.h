@@ -112,20 +112,6 @@ public:
     /*md - `DETUNE` detuning all playing step notes by semitones */
     Val& detune = val(0.0f, "DETUNE", { "Detune", VALUE_CENTERED, -24.0f, 24.0f });
 
-    // /*md - `SELECTED_STEP` select the step to edit */
-    // Val& selectedStep = val(0.0f, "SELECTED_STEP", { "Step", .min = 1.0f, .max = MAX_STEPS }, [&](auto p) { setSelectedStep(p.value); });
-    // /*md - `STEP_VELOCITY` set selected step velocity */
-    // Val& stepVelocity = val(0.0f, "STEP_VELOCITY", { "Velocity" }, [&](auto p) { setStepVelocity(p.value); });
-    // /*md - `STEP_LENGTH` set selected step length */
-    // Val& stepLength = val(0.0f, "STEP_LENGTH", { "Len", .min = 1.0f, .max = MAX_STEPS }, [&](auto p) { setStepLength(p.value); });
-    // /*md - `STEP_CONDITION` set selected step condition */
-    // Val& stepCondition = val(1.0f, "STEP_CONDITION", { "Condition", VALUE_STRING, .min = 1.0f, .max = (float)STEP_CONDITIONS_COUNT }, [&](auto p) { setStepCondition(p.value); });
-    // /*md - `STEP_MOTION` set selected step motion */
-    // Val& stepMotion = val(0.0f, "STEP_MOTION", { "Motion", VALUE_STRING, .min = 1.0f, .max = (float)STEP_MOTIONS_COUNT }, [&](auto p) { setStepMotion(p.value); });
-    // /*md - `STEP_NOTE` set selected step note */
-    // Val& stepNote = val(0.0f, "STEP_NOTE", { "Note", VALUE_STRING, .min = (float)MIDI_NOTE_C0, .max = (float)MIDI_NOTE_COUNT }, [&](auto p) { setStepNote(p.value); });
-    // /*md - `STEP_ENABLED` toggle selected step */
-    // Val& stepEnabled = val(0.0f, "STEP_ENABLED", { "Enabled", VALUE_STRING, .max = 1 }, [&](auto p) { setStepEnabled(p.value); });
     /*md - `STATUS` set status: off, on, next. Default: off
     Play/Stop will answer to global event. However, you may want to the sequencer to not listen to those events or to only start to play on the next sequence iteration. */
     Val& status = val(1.0f, "STATUS", { "Status", VALUE_STRING, .max = 2 }, [&](auto p) { setStatus(p.value); });
@@ -180,77 +166,12 @@ public:
         }
     }
 
-    // void reset()
-    // {
-    //     for (int i = 0; i < MAX_STEPS; i++) {
-    //         steps[i].reset();
-    //     }
-    // }
-
-    // void setSelectedStep(float value)
-    // {
-    //     selectedStep.setFloat(value);
-    //     uint8_t index = selectedStep.get() - 1;
-    //     selectedStepPtr = &steps[index];
-    //     // printf("Selected step: %d note: %d = %s\n", index, selectedStepPtr->note, (char*)MIDI_NOTES_STR[selectedStepPtr->note]);
-
-    //     stepVelocity.set(selectedStepPtr->velocity * 100);
-    //     stepLength.set(selectedStepPtr->len);
-    //     stepCondition.set(selectedStepPtr->condition + 1);
-    //     stepMotion.set(selectedStepPtr->motion + 1);
-    //     stepNote.set(selectedStepPtr->note);
-    //     stepEnabled.set(selectedStepPtr->enabled ? 1.0 : 0.0);
-    // }
-
-    // void setStepNote(float value)
-    // {
-    //     stepNote.setFloat(value);
-    //     selectedStepPtr->note = stepNote.get();
-    //     stepNote.setString((char*)MIDI_NOTES_STR[selectedStepPtr->note]);
-    //     // printf("Note: %d = %s\n", selectedStepPtr->note, (char*)MIDI_NOTES_STR[selectedStepPtr->note]);
-    // }
-
-    // void setStepLength(float value)
-    // {
-    //     stepLength.setFloat(value);
-    //     selectedStepPtr->len = stepLength.get();
-    // }
-
-    // void setStepVelocity(float value)
-    // {
-    //     stepVelocity.setFloat(value);
-    //     selectedStepPtr->velocity = stepVelocity.pct();
-    // }
-
-    // void setStepCondition(float value)
-    // {
-    //     stepCondition.setFloat(value);
-    //     selectedStepPtr->condition = stepCondition.get() - 1;
-    //     stepCondition.setString((char*)stepConditions[selectedStepPtr->condition].name);
-    // }
-
-    // void setStepMotion(float value)
-    // {
-    //     stepMotion.setFloat(value);
-    //     selectedStepPtr->motion = stepMotion.get() - 1;
-    //     stepMotion.setString((char*)stepMotions[selectedStepPtr->motion].name);
-    // }
-
-    // void setStepEnabled(float value)
-    // {
-    //     stepEnabled.setFloat(value);
-    //     selectedStepPtr->enabled = stepEnabled.get() > 0.5;
-    //     stepEnabled.setString(selectedStepPtr->enabled ? (char*)"ON" : (char*)"OFF");
-    // }
-
     enum DATA_ID {
         STEPS,
         STEP_COUNTER,
         IS_PLAYING,
-        STEP_CONDITION,
         CLOCK_COUNTER,
         GET_STEP,
-        SELECTED_STEP_PTR,
         STEP_COUNT,
         // STEP_TOGGLE,
     };
@@ -259,7 +180,7 @@ public:
     uint8_t getDataId(std::string name) override
     {
         /*md - `STEPS` return steps */
-        if (name == "STEPS")
+        if (name == "STEPS") // in seq progress bar
             return DATA_ID::STEPS;
         /*md - `STEP_COUNTER` return current played step */
         if (name == "STEP_COUNTER")
@@ -267,18 +188,12 @@ public:
         /*md - `IS_PLAYING` return is playing */
         if (name == "IS_PLAYING")
             return DATA_ID::IS_PLAYING;
-        /*md - `STEP_CONDITION` return current step condition */
-        if (name == "STEP_CONDITION")
-            return DATA_ID::STEP_CONDITION;
         /*md - `CLOCK_COUNTER` return clock counter */
         if (name == "CLOCK_COUNTER")
             return DATA_ID::CLOCK_COUNTER;
         /*md - `GET_STEP` get step by index */
         if (name == "GET_STEP")
             return DATA_ID::GET_STEP;
-        /*md - `SELECTED_STEP_PTR` return selected step pointer */
-        if (name == "SELECTED_STEP_PTR")
-            return DATA_ID::SELECTED_STEP_PTR;
         /*md - `STEP_COUNT` return step count */
         if (name == "STEP_COUNT")
             return DATA_ID::STEP_COUNT;
@@ -297,10 +212,6 @@ public:
             return &stepCounter;
         case DATA_ID::IS_PLAYING:
             return &isPlaying;
-        case DATA_ID::STEP_CONDITION: { // Get step condition name
-            uint8_t* index = (uint8_t*)userdata;
-            return (void*)stepConditions[*index].name;
-        }
         case DATA_ID::CLOCK_COUNTER:
             return &clockCounter;
         case DATA_ID::STEP_COUNT:
@@ -312,17 +223,6 @@ public:
             }
             return &steps[*index];
         }
-        case DATA_ID::SELECTED_STEP_PTR: { // Toggle sequencer
-            if (status.get() == Status::ON) {
-                status.set(Status::MUTED);
-            } else {
-                status.set(Status::ON);
-            }
-            return NULL;
-        }
-            // case DATA_ID::STEP_TOGGLE: // Step toggle
-            //     stepEnabled.set(selectedStepPtr->enabled ? 0.0 : 1.0);
-            //     return NULL;
         }
         return NULL;
     }
