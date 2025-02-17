@@ -5,6 +5,8 @@
 - TODO make all component having keyboard
 - TODO make all component access to group and context visibility
 
+- TODO serialize in json format!
+
 ### component
 
 - TODO look if container concept is fully used... OR maybe get rid of it!!
