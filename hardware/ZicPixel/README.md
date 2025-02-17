@@ -2,7 +2,7 @@
 
 ## Zic Pixel
 
-<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel3A.png?raw=true' width='250'>
+<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel3A.png?raw=true' width='500'>
 
 <table>
 <tr>
@@ -57,8 +57,8 @@
 
 <table>
 <tr>
-    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pcb.png?raw=true' width='200'></td>
-    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pcb2d.png?raw=true' width='200'></td>
+    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pcb.png?raw=true' width='400'></td>
+    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pcb2d.png?raw=true' width='400'></td>
 </tr>
 </table>
 
