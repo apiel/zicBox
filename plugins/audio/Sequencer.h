@@ -239,7 +239,7 @@ public:
     void serialize(FILE* file, std::string separator) override
     {
         for (int i = 0; i < MAX_STEPS; i++) {
-            fprintf(file, "STEP %d %s %s", i, steps[i].serialize().c_str(), separator.c_str());
+            fprintf(file, "STEP %s %s", steps[i].serialize().c_str(), separator.c_str());
         }
         fprintf(file, "STATUS %f%s", status.get(), separator.c_str());
     }
@@ -249,8 +249,9 @@ public:
         std::string valCopy = value;
         char* key = strtok((char*)value.c_str(), " ");
         if (strcmp(key, "STEP") == 0) {
-            int index = atoi(strtok(NULL, " "));
-            steps[index].hydrate(strtok(NULL, ""));
+            Step step;
+            step.hydrate(strtok(NULL, ""));
+            steps[step.position] = step;
             return;
         }
         Mapping::hydrate(valCopy);

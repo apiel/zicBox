@@ -9,8 +9,8 @@
 #include <time.h>
 
 // #include "helpers/midiNote.h"
-#include "helpers/range.h"
 #include "helpers/format.h"
+#include "helpers/range.h"
 
 int randCounter = 0;
 int getRand()
@@ -168,19 +168,20 @@ public:
 
     std::string serialize()
     {
-        return std::to_string(enabled) + " "
-            // + std::to_string(position) + " "
+        return std::to_string(position) + " "
+            + std::to_string(len) + " "
+            + std::to_string(enabled) + " "
             + std::to_string(note) + " "
             + fToString(velocity, 2) + " "
             + stepConditions[condition].name + " "
-            + stepMotions[motion].name + " "
-            + std::to_string(len);
+            + stepMotions[motion].name;
     }
 
     void hydrate(std::string value)
     {
-        // printf("hydrate %s\n", value.c_str());
-        enabled = strtok((char*)value.c_str(), " ")[0] == '1';
+        position = atoi(strtok((char*)value.c_str(), " "));
+        len = atoi(strtok(NULL, " "));
+        enabled = strtok(NULL, " ")[0] == '1';
         note = atoi(strtok(NULL, " "));
         velocity = atof(strtok(NULL, " "));
         char* conditionName = strtok(NULL, " ");
@@ -197,7 +198,7 @@ public:
                 break;
             }
         }
-        len = atoi(strtok(NULL, " "));
+        
     }
 };
 
