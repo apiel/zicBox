@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include "Tempo.h"
 #include "audioPlugin.h"
@@ -41,13 +42,12 @@ class Sequencer : public Mapping, public UseClock {
 protected:
     AudioPlugin::Props& props;
 
-    uint8_t stepCount = MAX_STEPS;
-    Step steps[MAX_STEPS];
-    Step* selectedStepPtr = &steps[0];
+    uint16_t stepCount = MAX_STEPS;
+    std::vector<Step> steps;
 
-    uint8_t stepCounter = 0;
+    uint16_t stepCounter = 0;
     bool isPlaying = false;
-    uint8_t loopCounter = 0;
+    uint16_t loopCounter = 0;
 
     AudioPlugin* targetPlugin = NULL;
 
@@ -86,20 +86,16 @@ protected:
                 status.set(Status::ON);
             }
         }
-        // Loop through all steps to check if we need to trigger a note off
-        for (int i = 0; i < MAX_STEPS; i++) {
-            Step& step = steps[i];
+
+        for (auto& step : steps) {
             if (step.counter) {
                 step.counter--;
                 if (step.counter == 0) {
                     props.audioPluginHandler->noteOff(getNote(step), 0, { track, targetPlugin });
-                    // printf("should trigger note off %d track %d\n", step.note, track);
                 }
             }
-        }
-        if (state == Status::ON) {
-            Step& step = steps[stepCounter];
-            if (step.enabled && conditionMet(step) && step.velocity > 0.0f) {
+            // here might want to check for state == Status::ON
+            if (state == Status::ON && step.enabled && stepCounter == step.position && conditionMet(step) && step.velocity > 0.0f) {
                 step.counter = step.len;
                 props.audioPluginHandler->noteOn(getNote(step), step.velocity, { track, targetPlugin });
                 // printf("should trigger note on %d track %d len %d velocity %.2f\n", step.note, track, step.len, step.velocity);
@@ -217,11 +213,13 @@ public:
         case DATA_ID::STEP_COUNT:
             return &stepCount;
         case DATA_ID::GET_STEP: {
-            uint8_t* index = (uint8_t*)userdata;
-            if (*index >= MAX_STEPS) {
-                return NULL;
+            uint16_t* position = (uint16_t*)userdata;
+            for (auto& step : steps) {
+                if (step.position == *position) {
+                    return &step;
+                }
             }
-            return &steps[*index];
+            return NULL;
         }
         }
         return NULL;
@@ -251,7 +249,8 @@ public:
         if (strcmp(key, "STEP") == 0) {
             Step step;
             step.hydrate(strtok(NULL, ""));
-            steps[step.position] = step;
+            // steps[step.position] = step;
+            steps.push_back(step);
             return;
         }
         Mapping::hydrate(valCopy);

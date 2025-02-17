@@ -18,9 +18,9 @@ class SeqProgressBarComponent : public Component {
 protected:
     bool isActive = true;
 
-    uint8_t stepCount = 32;
+    uint16_t stepCount = 32;
     int16_t lastStepCounter = -1;
-    uint8_t* stepCounter = NULL;
+    uint16_t* stepCounter = NULL;
     bool* seqPlayingPtr = NULL;
     Step* steps = NULL;
 
@@ -31,8 +31,6 @@ protected:
     Color foreground;
     Color activeColor;
     Color inactiveStepColor;
-
-    uint8_t stepIndex = -1;
 
     ValueInterface* valVolume = NULL;
     bool showSteps = false;
@@ -141,8 +139,8 @@ public:
             int trackId = trackStr == NULL ? track : atoi(trackStr);
             seqPlugin = &getPlugin(pluginName, trackId);
             // stepCount = seqPlugin->getValue("SELECTED_STEP")->props().max;
-            stepCount = *(uint8_t*)seqPlugin->data(seqPlugin->getDataId("STEP_COUNT"));
-            stepCounter = (uint8_t*)seqPlugin->data(seqPlugin->getDataId("STEP_COUNTER"));
+            stepCount = *(uint16_t*)seqPlugin->data(seqPlugin->getDataId("STEP_COUNT"));
+            stepCounter = (uint16_t*)seqPlugin->data(seqPlugin->getDataId("STEP_COUNTER"));
             seqPlayingPtr = (bool*)seqPlugin->data(seqPlugin->getDataId("IS_PLAYING"));
             steps = (Step*)seqPlugin->data(seqPlugin->getDataId("STEPS"));
 
