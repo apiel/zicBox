@@ -55,14 +55,6 @@
 </tr>
 </table>
 
-<table>
-<tr>
-    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pcb.png?raw=true' width='400'></td>
-    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pcb2d.png?raw=true' width='400'></td>
-</tr>
-</table>
-
-
 The PCB has been designed using EasyEDA. If you need to access or modify the project, you can do so by loading the provided JSON file:
 
 📁 **File**: [`st7789_240x320_rpi3A_REDRAGON_11btn_easyeda.json`](https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicPixel/st7789_240x320_rpi3A_REDRAGON_11btn_easyeda.json)
@@ -83,6 +75,13 @@ You can order the PCB from JLCPCB by following these steps:
 5. Click "Save to Cart", then proceed to checkout.
    
 💰 **Estimated Cost**: ~4€ (with standard shipping, approximately 10 days delivery time).
+
+<table>
+<tr>
+    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pcb.png?raw=true' width='400'></td>
+    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pcb2d.png?raw=true' width='400'></td>
+</tr>
+</table>
 
 ---
 
