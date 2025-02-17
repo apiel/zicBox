@@ -21,7 +21,7 @@ protected:
     int stepWidth = 0;
     int stepHeight = 10;
     int numSteps = MAX_STEPS; // TODO instead load from plugin seq
-    int numNotes = 24;
+    int numNotes = 25;
     bool drawNoteStr = true;
 
     Color beatColor = { 0x80, 0x80, 0x80 };
