@@ -57,14 +57,11 @@ public:
         fontHeight = config.value("fontHeight", fontHeight);
         /*md   // The background color of the text. */
         /*md   bgColor="#000000" */
-        if (config.contains("bgColor")) {
-            bgColor = draw.getColor(config["bgColor"].get<std::string>());
-        }
+        bgColor = draw.getColor(config["bgColor"], bgColor);
+        
         /*md   // The color of the text */
         /*md   color="#ffffff" */
-        if (config.contains("color")) {
-            color = draw.getColor(config["color"].get<std::string>());
-        }
+        color = draw.getColor(config["color"], color);
 
         /*md md_config_end */
     }

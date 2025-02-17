@@ -53,6 +53,48 @@ public:
             position.y += (size.h - size.w) * 0.5f;
             size.h = size.w;
         }
+
+        /*md md_config:FmAlgo */
+        nlohmann::json config = props.config;
+
+        /*md   // The background color of the text. */
+        /*md   bgColor="#000000" */
+        background = draw.getColor(config["bgColor"], background);
+
+        /*md   // The color of the text */
+        /*md   textColor="#ffffff" */
+        text = draw.getColor(config["textColor"], text);
+
+        /*md   // The color of the border */
+        /*md   borderColor="#ffffff" */
+        border = draw.getColor(config["borderColor"], border);
+
+        /*md   // The encoder id that will interract with this component.
+        /*md   encoderId={0} */
+        encoderId = config["encoderId"].get<int8_t>();
+
+        /*md   // The audio plugin to get control on. */
+        /*md   audioPlugin="audio_plugin_name" */
+        if (!config.contains("audioPlugin")) {
+            logWarn("FmAlgo component is missing audioPlugin parameter.");
+            return;
+        }
+        plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track);
+
+                /*md   // The audio plugin key parameter to get control on. */
+        /*md   param="parameter_name" */
+        if (!config.contains("param")) {
+            logWarn("FmAlgo component is missing param parameter.");
+            return;
+        }
+        std::string param = config["param"].get<std::string>();
+        value = watch(plugin->getValue(param));
+
+        /*md   // The data id that will return the current algorithm layout.
+        /*md   dataId="ALGO" */
+        dataId = plugin->getDataId(config.value("dataId", "ALGO"));
+
+        /*md md_config_end */
     }
 
     void render()
@@ -150,51 +192,6 @@ public:
         }
     }
 
-    bool config(char* key, char* params)
-    {
-        /*md - `BACKGROUND_COLOR: #333333` set the background color. */
-        if (strcmp(key, "BACKGROUND_COLOR") == 0) {
-            background = draw.getColor(params);
-            return true;
-        }
-
-        /*md - `VALUE: pluginName keyName` is used to set the value to control. */
-        if (strcmp(key, "VALUE") == 0) {
-            char* pluginName = strtok(params, " ");
-            char* keyValue = strtok(NULL, " ");
-            plugin = &getPlugin(pluginName, track);
-            value = watch(plugin->getValue(keyValue));
-            dataId = plugin->getDataId("ALGO");
-            return true;
-        }
-
-        /*md - `ENCODER_ID: 0` is used to set the encoder id that will interract with this component. */
-        if (strcmp(key, "ENCODER_ID") == 0) {
-            encoderId = atoi(params);
-            return true;
-        }
-
-        /*md - `DATA_ID: 0` is used to set the data id that will return the current algorithm layout. */
-        if (strcmp(key, "DATA_ID") == 0) {
-            dataId = plugin->getDataId(params);
-            return true;
-        }
-
-        /*md - `TEXT_COLOR: #FFFFFF` set the text color. */
-        if (strcmp(key, "TEXT_COLOR") == 0) {
-            text = draw.getColor(params);
-            return true;
-        }
-
-        /*md - `BORDER_COLOR: #888888` set the border color. */
-        if (strcmp(key, "BORDER_COLOR") == 0) {
-            border = draw.getColor(params);
-            return true;
-        }
-
-        return false;
-    }
-
     bool isActive = true;
     void onGroupChanged(int8_t index) override
     {
@@ -207,7 +204,7 @@ public:
             renderNext();
         }
     }
-    
+
     void onEncoder(int id, int8_t direction)
     {
         if (value && isActive && id == encoderId) {
