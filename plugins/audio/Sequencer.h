@@ -126,14 +126,11 @@ public:
 
     void allOff()
     {
-        // logDebug("Note off all on track %d", track);
-        for (int i = 0; i < MAX_STEPS; i++) {
-            if (steps[i].counter) {
-                // logDebug("should trigger note off %d", steps[i].note);
-                // targetPlugin->noteOff(steps[i].note, 0);
-                props.audioPluginHandler->noteOff(getNote(steps[i]), 0, { track, targetPlugin });
+        for (auto& step : steps) {
+            if (step.counter) {
+                props.audioPluginHandler->noteOff(getNote(step), 0, { track, targetPlugin });
             }
-            steps[i].counter = 0;
+            step.counter = 0;
         }
     }
 
@@ -236,9 +233,10 @@ public:
 
     void serialize(FILE* file, std::string separator) override
     {
-        for (int i = 0; i < MAX_STEPS; i++) {
-            fprintf(file, "STEP %s %s", steps[i].serialize().c_str(), separator.c_str());
+        for (auto& step : steps) {
+            fprintf(file, "STEP %s %s", step.serialize().c_str(), separator.c_str());
         }
+
         fprintf(file, "STATUS %f%s", status.get(), separator.c_str());
     }
 
