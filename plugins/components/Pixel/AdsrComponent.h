@@ -4,7 +4,7 @@
 #include "utils/BaseGraphEncoderComponent.h"
 
 /*md
-## GraphComponent
+## AdsrComponent
 
 <img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/adsr.png" />
 
