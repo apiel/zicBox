@@ -33,8 +33,6 @@
   - ...
   - instead of updatePosition and updateCompontentPosition, container should be responsible to render the child component and decide wether on child should be rendered or not.
 
-- TODO get rid of shared component
-
 ### other
 
 - TODO Use Smart Pointers (std::unique_ptr or std::shared_ptr)

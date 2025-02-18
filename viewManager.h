@@ -43,7 +43,6 @@ protected:
         std::string name;
         ComponentInterface* component;
     };
-    std::vector<SharedComponent> sharedComponents;
 
     View* lastView = NULL;
 
@@ -307,16 +306,6 @@ VIEW: Mixer
             return true;
         }
 
-        if (strcmp(key, "USE_SHARED_COMPONENT") == 0) {
-            for (auto& shared : sharedComponents) {
-                if (shared.name == value) {
-                    addComponent(shared.component);
-                    return true;
-                }
-            }
-            printf("ERROR: Shared component not found: %s\n", value);
-        }
-
         if (draw.config(key, value)) {
             return true;
         }
@@ -325,16 +314,8 @@ VIEW: Mixer
             if (views.back()->config(key, value)) {
                 return true;
             }
-            if (views.back()->components.size() > 0) {
-                if (strcmp(key, "SHARED_COMPONENT") == 0) {
-                    SharedComponent shared;
-                    shared.name = value;
-                    shared.component = views.back()->components.back();
-                    sharedComponents.push_back(shared);
-                }
-                if (views.back()->components.back()->baseConfig(key, value)) {
-                    return true;
-                }
+            if (views.back()->components.size() > 0 && views.back()->components.back()->baseConfig(key, value)) {
+                return true;
             }
         }
 
