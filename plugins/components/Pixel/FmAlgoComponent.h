@@ -90,7 +90,7 @@ public:
         std::string param = config["param"].get<std::string>();
         value = watch(plugin->getValue(param));
 
-        /*md   // The data id that will return the current algorithm layout.
+        /*md   // The data id that will return the current algorithm layout. */
         /*md   dataId="ALGO" */
         dataId = plugin->getDataId(config.value("dataId", "ALGO"));
 
