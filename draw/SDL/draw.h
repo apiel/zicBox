@@ -386,7 +386,7 @@ public:
 
     bool config(char* key, char* value) override
     {
-        /*//md
+        /*#md
 ### SET_COLOR
 
 `SET_COLOR` give the possibility to customize the pre-defined color for the UI. To change a color, use `SET_COLOR: name_of_color #xxxxxx`.
