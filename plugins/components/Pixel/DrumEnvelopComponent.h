@@ -129,61 +129,53 @@ public:
         /*md md_config:DrumEnvelop */
         nlohmann::json config = props.config;
 
-        /*md   // The audio plugin to get control on. */
-        /*md   audioPlugin="audio_plugin_name" */
+        /// The audio plugin to get control on.
         if (!config.contains("audioPlugin")) {
             logWarn("DrumEnvelop component is missing audioPlugin parameter.");
             return;
         }
-        plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track);
+        plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track); //eg: "audio_plugin_name"
 
-        /*md   // Envelop data id to get/set data in the audio plugin. */
-        /*md   envelopDataId="ENV_AMP" */
+        /// Envelop data id to get/set data in the audio plugin.
         if (!config.contains("envelopDataId")) {
             logWarn("DrumEnvelop component is missing envelopDataId parameter.");
             return;
         }
-        uint8_t id = plugin->getDataId(config["envelopDataId"].get<std::string>().c_str());
+        uint8_t id = plugin->getDataId(config["envelopDataId"].get<std::string>().c_str()); //eg: "ENV_AMP"
         envData = (std::vector<Data>*)plugin->data(id);
         currentStepDataId = id + 1; // This is a bit cluncky, should try to find something better...
         timeDataId = id + 2;
         modDataId = id + 3;
 
-        /*md   // Set if the envelop should be outlined or not. (default: true) */
-        /*md   outline={false} */
-        outline = config.value("outline", outline);
+        /// Set if the envelop should be outlined or not. (default: true)
+        outline = config.value("outline", outline); //eg: false
 
-        /*md   // Set if the envelop should be filled or not. (default: true) */
-        /*md   filled={false} */
-        filled = config.value("filled", filled);
+        /// Set if the envelop should be filled or not. (default: true)
+        filled = config.value("filled", filled); //eg: false
 
-        /*md   // Set if the title should be rendered on top or not. (default: true) */
-        /*md   renderTitleOnTop={false} */
-        renderValuesOnTop = config.value("renderTitleOnTop", renderValuesOnTop);
+        /// Set if the title should be rendered on top or not. (default: true)
+        renderValuesOnTop = config.value("renderTitleOnTop", renderValuesOnTop); //eg: false
 
-        /*md   // Set the color of the graph. */
-        /*md   fillColor="#000000" */
-        fillColor = draw.getColor(config["fillColor"], fillColor);
+        /// Set the color of the graph.
+        fillColor = draw.getColor(config["fillColor"], fillColor); //eg: "#ffffff"
 
-        /*md   // Set the color of the outline. */
-        /*md   outlineColor="#000000" */
-        outlineColor = draw.getColor(config["outlineColor"], outlineColor);
+        /// Set the color of the outline.
+        outlineColor = draw.getColor(config["outlineColor"], outlineColor); //eg: "#000000"
 
-        //md   // Set the color of the cursor.
+        /// Set the color of the cursor.
         cursorColor = draw.getColor(config["cursorColor"], cursorColor); //eg: "#ffffff"
 
         /// Set the color of the text.
         textColor = draw.getColor(config["textColor"], textColor); //eg: "#ffffff"
 
-        //md   // Set the id of the encoder to change time parameter.
+        /// Set the id of the encoder to change time parameter.
         encoderTime = config.value("encoderTime", encoderTime); //eg: 0
 
-        //md   // Set the id of the encoder to change phase parameter.
+        /// Set the id of the encoder to change phase parameter.
         encoderPhase = config.value("encoderPhase", encoderPhase); //eg: 0
 
-        //md   // Set the id of the encoder to change modulation parameter.
-        //md   encoderModulation={0}
-        encoderModulation = config.value("encoderModulation", encoderModulation);
+        /// Set the id of the encoder to change modulation parameter.
+        encoderModulation = config.value("encoderModulation", encoderModulation); //eg: 0
 
         /*md md_config_end */
     }
