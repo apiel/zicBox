@@ -151,40 +151,34 @@ public:
         /*md md_config:Clips */
         nlohmann::json config = props.config;
 
-        /*md   // The group to change clips for all tracks. */
-        /*md   groupAll={10} */
-        groupAll = config.value("groupAll", groupAll);
+        /// The group to change clips for all tracks.
+        groupAll = config.value("groupAll", groupAll); //eg: 10
 
-        /*md   // The background color of the text. */
-        /*md   bgColor="#000000" */
-        bgColor = draw.getColor(config["bgColor"], bgColor);
+        /// The background color of the text.
+        bgColor = draw.getColor(config["bgColor"], bgColor); //eg: "#000000"
 
-        /*md   // The foreground color of the text. */
-        /*md   foregroundColor="#ffffff" */
-        foreground = draw.getColor(config["foregroundColor"], foreground);
+        /// The foreground color of the text.
+        foreground = draw.getColor(config["foregroundColor"], foreground); //eg: "#ffffff"
         foreground2 = lighten(foreground, 0.2);
 
-        /*md   // The color of the text */
-        /*md   textColor="#ffffff" */
-        textColor = draw.getColor(config["textColor"], textColor);
+        /// The color of the text
+        textColor = draw.getColor(config["textColor"], textColor); //eg: "#ffffff"
 
-        /*md   // The identifier color of the component... */
-        /*md   color="#ffffff" */
-        barColor = draw.getColor(config["color"], barColor);
+        /// The identifier color of the component...
+        barColor = draw.getColor(config["color"], barColor); //eg: "#ffffff"
 
-        /*md   // The number of visible clips */
-        /*md   visibleCount={10} */
-        visibleCount = config.value("visibleCount", visibleCount);
+        /// The number of visible clips
+        visibleCount = config.value("visibleCount", visibleCount); //eg: 10
 
-        /*md   // The sequencer audio plugin. */
-        /*md   sequencerPlugin="audio_plugin_name" */
+        /// The sequencer audio plugin.
+        //md   sequencerPlugin="audio_plugin_name"
         AudioPlugin* pluginSeq = &getPlugin(config.value("sequencerPlugin", "Sequencer").c_str(), track);
         if (pluginSeq != NULL) {
             valSeqStatus = watch(pluginSeq->getValue("STATUS"));
         }
 
-        /*md   // The audio plugin to get serialized data. */
-        /*md   serializerPlugin="audio_plugin_name" */
+        /// The audio plugin to get serialized data.
+        //md   serializerPlugin="audio_plugin_name"
         pluginSerialize = &getPlugin(config.value("serializerPlugin", "SerializeTrack").c_str(), track);
         if (!pluginSerialize) {
             logWarn("Clips component is missing serializerPlugin.");
