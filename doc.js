@@ -65,19 +65,13 @@ function isAllowedExtension(file) {
 content
 */
 // use https://regexr.com/ to test
-// combine /\*md\s((?:.|\n)*?)\s*\*\//g; --> /*md content */
-// and /\/\/md\s(.*)/g; --> //md content
-// const reg = /\/\/md\s(.*)|\/\*md\s((?:.|\n)*?)\s*\*\//g;
-
 const reg1 = /\*md\s((?:.|\n)*?)\s*\*\//g; //--> /*md content */
 const reg2 = /\/\/md\s(.*)/g; //--> //md content
 
 function extractMdComment(content) {
     const result = [];
     let match;
-    // while ((match = reg.exec(content)) !== null) {
     while ((match = reg1.exec(content)) !== null || (match = reg2.exec(content)) !== null) {
-        // console.log(match);
         const mdConfigMacro = 'md_config:';
         const mdConfigEndMacro = 'md_config_end';
         if (match[1].startsWith(mdConfigMacro)) {
