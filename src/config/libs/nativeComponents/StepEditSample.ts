@@ -1,11 +1,10 @@
-import { getOldComponentToBeDeprecated, initializePlugin } from '@/libs/ui';
-import { ComponentProps } from './component';
+import { getJsonComponent } from '../ui';
 
-export type Props = ComponentProps & {
-    data: string;
-};
-
-export function StepEditSample({ bounds, track, data, ...props }: Props) {
-    initializePlugin('StepEditSample', 'libzic_StepEditSampleComponent.so');
-    return getOldComponentToBeDeprecated('StepEditSample', bounds, [{ track }, { data }, props]);
-}
+export const StepEditSample = getJsonComponent<{
+    audioPlugin: string;
+    stepIndex: number;
+    bgColor?: string;
+    textColor?: string;
+    playingColor?: string;
+    selectedColor?: string;
+}>('StepEditSample', 'libzic_StepEditSampleComponent.so');

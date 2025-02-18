@@ -1,5 +1,4 @@
-#ifndef _UI_PIXEL_COMPONENT_STEP_EDIT_SAMPLE_H_
-#define _UI_PIXEL_COMPONENT_STEP_EDIT_SAMPLE_H_
+#pragma once
 
 #include "helpers/format.h"
 #include "helpers/midiNote.h"
@@ -105,6 +104,48 @@ public:
                 }
             }
         };
+
+        /*md md_config:StepEditSample */
+        nlohmann::json config = props.config;
+
+        /*md   // The audio plugin to get control on. */
+        /*md   audioPlugin="audio_plugin_name" */
+        if (!config.contains("audioPlugin")) {
+            logWarn("StepEditSample component is missing audioPlugin parameter.");
+            return;
+        }
+        plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track);
+
+        /*md   // Index of the step. */
+        /*md   stepIndex={0} */
+        if (!config.contains("stepIndex")) {
+            logWarn("StepEditSample component is missing stepIndex parameter.");
+            return;
+        }
+        stepIndex = config["stepIndex"].get<uint8_t>();
+
+        step = (SampleStep*)plugin->data(plugin->getDataId("GET_STEP"), &stepIndex);
+        nextFileDataId = plugin->getDataId("NEXT_FILE");
+        prevFileDataId = plugin->getDataId("PREVIOUS_FILE");
+        playStepDataId = plugin->getDataId("PLAY_STEP");
+
+        /*md   // The background color of the text. */
+        /*md   bgColor="#000000" */
+        bgColor = draw.getColor(config["bgColor"], bgColor);
+
+        /*md   // The color of the text */
+        /*md   textColor="#ffffff" */
+        text = draw.getColor(config["textColor"], text);
+
+        /*md The color of the actual playing step. */
+        /*md playingColor="#ffffff" */
+        playingColor = draw.getColor(config["playingColor"], playingColor);
+
+        /*md The color of the selected step. */
+        /*md selectedColor="#ffffff" */
+        selection = draw.getColor(config["selectedColor"], selection);
+
+        /*md md_config_end */
     }
 
     int renderPct(int x, int y, float pct)
@@ -194,94 +235,4 @@ public:
             renderNext();
         }
     }
-
-    /*md **Config**: */
-    bool config(char* key, char* value)
-    {
-        if (keypadLayout.config(key, value)) {
-            return true;
-        }
-
-        /*md - `DATA: plugin_name step_index [get_step_data_id]` set plugin target */
-        if (strcmp(key, "DATA") == 0) {
-            plugin = &getPlugin(strtok(value, " "), track);
-            stepIndex = atoi(strtok(NULL, " "));
-            char* getStepDataIdStr = strtok(NULL, " ");
-
-            step = (SampleStep*)plugin->data(plugin->getDataId(getStepDataIdStr != NULL ? getStepDataIdStr : "GET_STEP"), &stepIndex);
-            nextFileDataId = plugin->getDataId("NEXT_FILE");
-            prevFileDataId = plugin->getDataId("PREVIOUS_FILE");
-            playStepDataId = plugin->getDataId("PLAY_STEP");
-            return true;
-        }
-
-        /*md - `ENCODERS: encoder_id1 encoder_id2 encoder_id3 encoder_id4` is the id of the encoder to update step value. */
-        if (strcmp(key, "ENCODERS") == 0) {
-            encoders[0] = atoi(strtok(value, " "));
-            encoders[1] = atoi(strtok(NULL, " "));
-            encoders[2] = atoi(strtok(NULL, " "));
-            encoders[3] = atoi(strtok(NULL, " "));
-            return true;
-        }
-
-        /*md - `BACKGROUND_COLOR: color` is the background color of the component. */
-        if (strcmp(key, "BACKGROUND_COLOR") == 0) {
-            bgColor = draw.getColor(value);
-            // printf("bgColor %d %d %d\n", bgColor.r, bgColor.g, bgColor.b);
-            return true;
-        }
-
-        /*md - `PLAYING_COLOR: color` is the color of actual playing step. */
-        if (strcmp(key, "PLAYING_COLOR") == 0) {
-            playingColor = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `FILE_COLOR: color` is the color of the file. */
-        if (strcmp(key, "FILE_COLOR") == 0) {
-            fileColor = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `NOTE2_COLOR: color` is the color of the note. */
-        if (strcmp(key, "NOTE2_COLOR") == 0) {
-            note2Color = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `TEXT_COLOR: color` is the color of the text. */
-        if (strcmp(key, "TEXT_COLOR") == 0) {
-            text = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `BAR_COLOR: color` is the color of the velocity bar. */
-        if (strcmp(key, "BAR_COLOR") == 0) {
-            bar = draw.getColor(value);
-            barBackground = darken(bar, 0.5);
-            return true;
-        }
-
-        /*md - `TEXT_MOTION1_COLOR: color` is the first color of the motion text. */
-        if (strcmp(key, "TEXT_MOTION1_COLOR") == 0) {
-            textMotion1 = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `TEXT_MOTION2_COLOR: color` is the second color of the motion text. */
-        if (strcmp(key, "TEXT_MOTION2_COLOR") == 0) {
-            textMotion2 = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `SELECTED_COLOR: color` is the color of the selected step. */
-        if (strcmp(key, "SELECTED_COLOR") == 0) {
-            selection = draw.getColor(value);
-            return true;
-        }
-
-        return Component::config(key, value);
-    }
 };
-
-#endif

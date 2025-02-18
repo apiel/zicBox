@@ -17,9 +17,9 @@ all:
 	+make DrumEnvelopComponent KnobValueComponent GraphEncoderComponent\
 				HiddenValueComponent FmAlgoComponent AdsrComponent\
 				TextComponent SeqProgressBarComponent ValueComponent\
-				SpectrogramComponent RectComponent ClipsComponent KeyboardComponent ListComponent\
-				WorkspacesComponent StepEditDrumComponent\
-				MacroEnvelopComponent SampleEditorComponent StepEditSampleComponent\
+				RectComponent ClipsComponent KeyboardComponent ListComponent\
+				WorkspacesComponent\
+				MacroEnvelopComponent StepEditSampleComponent\
 				SequencerComponent
 
 TapeComponent:

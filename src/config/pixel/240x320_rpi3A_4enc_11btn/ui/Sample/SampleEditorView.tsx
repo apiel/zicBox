@@ -38,16 +38,17 @@ export function SampleEditorView({ name }: Props) {
                 return (
                     <StepEditSample
                         bounds={[0, yy, ScreenWidth, 8]}
-                        data={`SampleSequencer ${i}`}
+                        audioPlugin="SampleSequencer"
+                        stepIndex={i}
                         track={SampleTrack}
                         group={i}
-                        playing_color={rgb(35, 161, 35)}
-                        background_color={
+                        playingColor={rgb(35, 161, 35)}
+                        bgColor={
                             i % 8 == 0 || i % 8 == 1 || i % 8 == 2 || i % 8 == 3
                                 ? rgb(42, 54, 56)
                                 : 'background'
                         }
-                        selected_color={rgb(76, 94, 97)}
+                        selectedColor={rgb(76, 94, 97)}
                     >
                         <Keymaps
                             keys={[
