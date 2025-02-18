@@ -1,15 +1,14 @@
-import { getOldComponentToBeDeprecated, initializePlugin } from '@/libs/ui';
-import { ComponentProps } from './component';
+import { getJsonComponent } from '../ui';
 
-export type Props = ComponentProps & {
-    plugin: string;
-};
-
-export function MacroEnvelop({ bounds, track, plugin, ...props }: Props) {
-    initializePlugin('MacroEnvelop', 'libzic_MacroEnvelopComponent.so');
-    return getOldComponentToBeDeprecated('MacroEnvelop', bounds, [
-        { track },
-        { plugin },
-        props,
-    ]);
-}
+export const MacroEnvelop = getJsonComponent<{
+    audioPlugin: string;
+    envelopDataId: string;
+    outline?: boolean;
+    fillColor?: string;
+    filled?: boolean;
+    outlineColor?: string;
+    bgColor?: string;
+    textColor?: string;
+    cursorColor?: string;
+    encoders?: [number, number, number, number];
+}>('MacroEnvelop', 'libzic_MacroEnvelopComponent.so');

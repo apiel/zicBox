@@ -16,8 +16,8 @@ export function FrequencyView({ name }: Props) {
         <View name={name}>
             <MacroEnvelop
                 bounds={fullValues}
-                plugin="Drum23"
-                envelop_data_id="ENV_FREQ2"
+                audioPlugin="Drum23"
+                envelopDataId="ENV_FREQ2"
                 track={Drum23Track}
             />
             <TextGridDrum23 selected={'Freq'} viewName={name} />
