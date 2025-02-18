@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../component.h"
-#include "../utils/color.h"
+#include "plugins/components/component.h"
+#include "plugins/components/utils/color.h"
 #include "helpers/range.h"
 #include <stdexcept>
 

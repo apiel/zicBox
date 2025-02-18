@@ -24,6 +24,9 @@
 
 ### component
 
+- IDEA to simplify: could we get rid of PLUGIN_COMPONENT component command and make it part of COMPONENT
+  - should we just have a naming convention, to say how the file should look like... and eventually give a way to overwrite it through the config...
+
 - TODO make native component more minimalistic, e.g macroEnvelop vs drumEnvelop
       - also the label/value could be extracted...
     - ---> then use typescript component to make more complex component
