@@ -314,9 +314,6 @@ VIEW: Mixer
             if (views.back()->config(key, value)) {
                 return true;
             }
-            if (views.back()->components.size() > 0 && views.back()->components.back()->baseConfig(key, value)) {
-                return true;
-            }
         }
 
         return false;

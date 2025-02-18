@@ -78,8 +78,6 @@ public:
     virtual void handleMotionRelease(MotionInterface& motion) = 0; // <--- should this go away?
     virtual void onEncoder(int id, int8_t direction) = 0;
     virtual void onKey(uint16_t id, int key, int8_t state, unsigned long now) = 0;
-    virtual bool config(char* key, char* value) = 0;
-    virtual bool baseConfig(char* key, char* value) = 0;
     virtual void onGroupChanged(int8_t index) = 0;
     virtual void onContext(uint8_t index, float value) = 0;
     virtual void onUpdate(ValueInterface* value) = 0;

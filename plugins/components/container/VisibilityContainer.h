@@ -84,10 +84,10 @@ public:
             return true;
         }
 
-        /*md - `VISIBILITY_CONTEXT: index SHOW_WHEN/SHOW_WHEN_NOT/SHOW_WHEN_OVER/SHOW_WHEN_UNDER value` the context index to show/hide the components for a given value. */
-        if (visibility.config(key, value)) {
-            return true;
-        }
+        // /*md - `VISIBILITY_CONTEXT: index SHOW_WHEN/SHOW_WHEN_NOT/SHOW_WHEN_OVER/SHOW_WHEN_UNDER value` the context index to show/hide the components for a given value. */
+        // if (visibility.config(key, value)) {
+        //     return true;
+        // }
 
         return false;
     }

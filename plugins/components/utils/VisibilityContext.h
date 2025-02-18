@@ -69,26 +69,4 @@ public:
             }
         }
     }
-
-    bool config(char* key, char* value)
-    {
-        if (strcmp(key, "VISIBILITY_CONTEXT") == 0) {
-            ContextCondition context;
-            context.index = atoi(strtok(value, " "));
-            std::string condStr = strtok(NULL, " ");
-            context.value = atof(strtok(NULL, " "));
-            if (condStr == "SHOW_WHEN_NOT") {
-                context.cond = SHOW_WHEN_NOT;
-            } else if (condStr == "SHOW_WHEN_OVER") {
-                context.cond = SHOW_WHEN_OVER;
-            } else if (condStr == "SHOW_WHEN_UNDER") {
-                context.cond = SHOW_WHEN_UNDER;
-            } else {
-                context.cond = SHOW_WHEN;
-            }
-            contextConditions.push_back(context);
-            return true;
-        }
-        return false;
-    }
 };
