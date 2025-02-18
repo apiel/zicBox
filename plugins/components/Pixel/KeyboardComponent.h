@@ -140,39 +140,32 @@ public:
         /*md md_config:Keyboard */
         nlohmann::json config = props.config;
 
-        /*md   // The view to redirect once edit is finished. */
-        /*md   redirectView="view_name" */
+        /// The view to redirect once edit is finished.
         if (config.contains("redirectView")) {
-            redirectView = config["redirectView"].get<std::string>();
+            redirectView = config["redirectView"].get<std::string>(); //eg: "view_name"
         }
 
-        /*md   // The audio plugin to send the input value. */
-        /*md   audioPlugin="audio_plugin_name" */
+        /// The audio plugin to send the input value.
         if (config.contains("audioPlugin")) {
-            plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track);
+            plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track); //eg: "audio_plugin_name"
         }
 
-        /*md   // The data id of the audio plugin where the input value will be sent. */
-        /*md   dataId="data_id" */
+        /// The data id of the audio plugin where the input value will be sent.
         if (config.contains("dataId")) {
-            dataId = plugin->getDataId(config["dataId"].get<std::string>());
+            dataId = plugin->getDataId(config["dataId"].get<std::string>()); //eg: "data_id"
         }
 
-        /*md   // Set the background color of the component. */
-        /*md   bgColor="#000000" */
-        bgColor = draw.getColor(config["bgColor"], bgColor);
+        /// Set the background color of the component.
+        bgColor = draw.getColor(config["bgColor"], bgColor); //eg: "#000000"
 
-        /*md   // Set the color of the text. */
-        /*md   textColor="#ffffff" */
-        textColor = draw.getColor(config["textColor"], textColor);
+        /// Set the color of the text.
+        textColor = draw.getColor(config["textColor"], textColor); //eg: "#ffffff"
 
-        /*md   // Set the color of the selection. */
-        /*md   selectionColor="#ffffff" */
-        selectionColor = draw.getColor(config["selectionColor"], selectionColor);
+        /// Set the color of the selection.
+        selectionColor = draw.getColor(config["selectionColor"], selectionColor); //eg: "#ffffff"
 
-        /*md   // Set the color of the item background. */
-        /*md   itemBackground="#ffffff" */
-        itemBackground = draw.getColor(config["itemBackground"], itemBackground);
+        /// Set the color of the item background.
+        itemBackground = draw.getColor(config["itemBackground"], itemBackground); //eg: "#ffffff"
 
         /*md md_config_end */
     }
