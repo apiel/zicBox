@@ -66,8 +66,8 @@ public:
         /// The color of the border.
         border = draw.getColor(config["borderColor"], border); //eg: "#ffffff"
 
-        /// The encoder id that will interract with this component. */
-        encoderId = config["encoderId"].get<int8_t>(); // eg: 0
+        /// The encoder id that will interract with this component.
+        encoderId = config["encoderId"].get<int8_t>(); //eg: 0
 
         /// The audio plugin to get control on.
         if (!config.contains("audioPlugin")) {
