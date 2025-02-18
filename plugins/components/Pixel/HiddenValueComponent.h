@@ -25,25 +25,21 @@ public:
         /*md md_config:HiddenValue */
         nlohmann::json config = props.config;
 
-        /*md   // The audio plugin to get control on. */
-        /*md   audioPlugin="audio_plugin_name" */
+        /// The audio plugin to get control on.
         if (config.contains("audioPlugin")) {
-            std::string audioPlugin = config["audioPlugin"].get<std::string>();
-            /*md   // The audio plugin key parameter to get control on. */
-            /*md   param="parameter_name" */
+            std::string audioPlugin = config["audioPlugin"].get<std::string>(); //eg: "audio_plugin_name"
+            /// The audio plugin key parameter to get control on.
             if (config.contains("param")) {
-                std::string param = config["param"].get<std::string>();
+                std::string param = config["param"].get<std::string>(); //eg: "parameter_name"
                 value = getPlugin(audioPlugin.c_str(), track).getValue(param);
             }
         }
 
-        /*md   // The encoder id that will interract with this component. */
-        /*md   encoderId={0} */
-        encoderId = config.value("encoderId", encoderId);
+        /// The encoder id that will interract with this component.
+        encoderId = config.value("encoderId", encoderId); //eg: 0
 
-        /*md  // Invert the encoder direction */
-        /*md  inverted */
-        inverted = config.value("inverted", inverted);
+        /// Invert the encoder direction
+        inverted = config.value("inverted", inverted); //eg: true
 
         /*md md_config_end */
     }

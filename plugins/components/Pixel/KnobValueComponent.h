@@ -199,7 +199,7 @@ public:
         /*md md_config:KnobValue */
         nlohmann::json config = props.config;
 
-        /*md   // The audio plugin to get control on. */
+        /// The audio plugin to get control on. */
         /*md   audioPlugin="audio_plugin_name" */
         if (!config.contains("audioPlugin")) {
             logWarn("KnobValue component is missing audioPlugin parameter.");
@@ -207,7 +207,7 @@ public:
         }
         std::string audioPlugin = config["audioPlugin"].get<std::string>();
 
-        /*md   // The audio plugin key parameter to get control on. */
+        /// The audio plugin key parameter to get control on. */
         /*md   param="parameter_name" */
         if (!config.contains("param")) {
             logWarn("KnobValue component is missing param parameter.");
@@ -220,12 +220,12 @@ public:
             valueFloatPrecision = value->props().floatingPoint;
         }
 
-        /*md   // The encoder id that will interract with this component. */
+        /// The encoder id that will interract with this component. */
         /*md   encoderId={0} */
         encoderId = config.value("encoderId", encoderId);
 
         // TODO see if this could be simplified
-        /*md   // The type of the encoder. By default the component will define the type own his own. */
+        /// The type of the encoder. By default the component will define the type own his own. */
         /*md   type="TWO_SIDED" // when there is a centered value like PAN and you want to show both side value: 20%|80% */
         /*md   type="TWO_VALUES" // when there is 2 possible values, for example one side is drive and the other side is compressor. */
         /*md   type="NUMBER" // when the value is of type string but we still want to enforce to see his numeric value */
@@ -243,56 +243,45 @@ public:
             }
         }
 
-        /*md   // Override the label of the parameter. */
-        /*md   label="custom_label" */
+        /// Override the label of the parameter.
         if (config.contains("label")) {
-            label = config["label"].get<std::string>();
+            label = config["label"].get<std::string>(); //eg: "custom_label"
         }
 
-        /*md   // Set the color of the knob. */
-        /*md   color="#3791a1" */
-        barColor = draw.getColor(config["color"], barColor);
+        /// Set the color of the knob.
+        barColor = draw.getColor(config["color"], barColor); //eg: "#3791a1"
         barBackgroundColor = alpha(barColor, 0.7);
         barTwoSideColor = alpha(barColor, 0.2);
 
-        /*md   // Set the background color of the component. */
-        /*md   bgColor="#000000" */
-        bgColor = draw.getColor(config["bgColor"], bgColor);
+        /// Set the background color of the component.
+        bgColor = draw.getColor(config["bgColor"], bgColor); //eg: "#000000"
 
-        /*md   // Set the color of the text. */
-        /*md   textColor="#ffffff" */
-        Color textColor = draw.getColor(config["textColor"], styles.colors.text);
+        /// Set the color of the text.
+        Color textColor = draw.getColor(config["textColor"], styles.colors.text); //eg: "#ffffff"
         titleColor = alpha(textColor, 0.4);
         valueColor = alpha(textColor, 0.4);
         unitColor = alpha(textColor, 0.2);
 
-        /*md   // Set how many digits after the decimal point (by default none. */
-        /*md   floatPrecision={2} */
-        valueFloatPrecision = config.value("floatPrecision", valueFloatPrecision);
+        /// Set how many digits after the decimal point (by default none.
+        valueFloatPrecision = config.value("floatPrecision", valueFloatPrecision); //eg: 2
 
-        /*md   // Hide the value of the parameter. */
-        /*md   hideValue */
-        showValue = !config.value("hideValue", false);
+        /// Hide the value of the parameter.
+        showValue = !config.value("hideValue", false); //eg: true
 
-        /*md   // Hide the unit of the parameter. */
-        /*md   hideUnit */
-        showUnit = !config.value("hideUnit", false);
+        /// Hide the unit of the parameter.
+        showUnit = !config.value("hideUnit", false); //eg: true
 
-        /*md   // Set the font size of the unit. */
-        /*md   unitSize={8} */
-        fontUnitSize = config.value("unitSize", fontUnitSize);
+        /// Set the font size of the unit.
+        fontUnitSize = config.value("unitSize", fontUnitSize); //eg: 8
 
-        /*md   // Set the font size of the value. */
-        /*md   valueSize={8} */
-        fontValueSize = config.value("valueSize", fontValueSize);
+        /// Set the font size of the value.
+        fontValueSize = config.value("valueSize", fontValueSize); //eg: 8
 
-        /*md   // Set the font size of the title. */
-        /*md   titleSize={8} */
-        fontLabelSize = config.value("titleSize", fontLabelSize);
+        /// Set the font size of the title.
+        fontLabelSize = config.value("titleSize", fontLabelSize); //eg: 8
 
-        /*md   // Instead to show the value of the parameter in knob, show it under the knob. Can be useful for long string value. */
-        /*md   valueReplaceTitle */
-        stringValueReplaceTitle = config.value("valueReplaceTitle", stringValueReplaceTitle);
+        /// Instead to show the value of the parameter in knob, show it under the knob. Can be useful for long string value.
+        stringValueReplaceTitle = config.value("valueReplaceTitle", stringValueReplaceTitle); //eg: true
 
         /*md md_config_end */
     }
