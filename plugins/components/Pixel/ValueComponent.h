@@ -85,21 +85,19 @@ public:
         /*md md_config:KnobValue */
         nlohmann::json config = props.config;
 
-        /*md   // The audio plugin to get control on. */
-        /*md   audioPlugin="audio_plugin_name" */
+        /// The audio plugin to get control on.
         if (!config.contains("audioPlugin")) {
             logWarn("KnobValue component is missing audioPlugin parameter.");
             return;
         }
-        std::string audioPlugin = config["audioPlugin"].get<std::string>();
+        std::string audioPlugin = config["audioPlugin"].get<std::string>(); //eg: "audio_plugin_name"
 
-        /*md   // The audio plugin key parameter to get control on. */
-        /*md   param="parameter_name" */
+        /// The audio plugin key parameter to get control on.
         if (!config.contains("param")) {
             logWarn("KnobValue component is missing param parameter.");
             return;
         }
-        std::string param = config["param"].get<std::string>();
+        std::string param = config["param"].get<std::string>(); //eg: "parameter_name"
 
         val = watch(getPlugin(audioPlugin.c_str(), track).getValue(param));
         if (val != NULL) {
@@ -107,99 +105,76 @@ public:
         }
         useStringValue = val->hasType(VALUE_STRING);
 
-        /*md   // The encoder id that will interract with this component. */
-        /*md   encoderId={0} */
-        encoderId = config.value("encoderId", encoderId);
+        /// The encoder id that will interract with this component.
+        encoderId = config.value("encoderId", encoderId); //eg: 0
 
-        /*md   // Override the label of the parameter. */
-        /*md   label="custom_label" */
+        /// Override the label of the parameter.
         if (config.contains("label")) {
-            label = config["label"].get<std::string>();
+            label = config["label"].get<std::string>(); //eg: "custom_label"
         }
 
-        /*md   // Set how many digits after the decimal point (by default none. */
-        /*md   floatPrecision={2} */
-        floatPrecision = config.value("floatPrecision", floatPrecision);
+        /// Set how many digits after the decimal point (by default none.
+        floatPrecision = config.value("floatPrecision", floatPrecision); //eg: 2
 
-        /*md   // Use the string value instead of the floating point one (default: false). */
-        /*md   useStringValue */
-        useStringValue = config.value("useStringValue", useStringValue);
+        /// Use the string value instead of the floating point one (default: false).
+        useStringValue = config.value("useStringValue", useStringValue); //eg: true
 
-        /*md   // Set the bar height (default: 2). */
-        /*md   barHeight={2} */
-        barH = config.value("barHeight", barH);
+        /// Set the bar height (default: 2).
+        barH = config.value("barHeight", barH); //eg: 2
 
-        /*md   // Set the bar background height (default: 1). */
-        /*md   barBgHeight={1} */
-        barBgH = config.value("barBgHeight", barBgH);
+        /// Set the bar background height (default: 1).
+        barBgH = config.value("barBgHeight", barBgH); //eg: 1
 
-        /*md   // Set the text vertical alignment to center (default: false). */
-        /*md   verticalAlignCenter */
-        verticalAlignCenter = config.value("verticalAlignCenter", verticalAlignCenter);
+        /// Set the text vertical alignment to center (default: false).
+        verticalAlignCenter = config.value("verticalAlignCenter", verticalAlignCenter); //eg: true
 
-        /*md   // Hide the label (default: false). */
-        /*md   hideLabel */
-        showLabel = !config.value("hideLabel", !showLabel);
+        /// Hide the label (default: false).
+        showLabel = !config.value("hideLabel", !showLabel); //eg: true
 
-        /*md   // Hide the unit (default: false). */
-        /*md   hideUnit */
-        showUnit = !config.value("hideUnit", !showUnit);
+        /// Hide the unit (default: false).
+        showUnit = !config.value("hideUnit", !showUnit); //eg: true
 
-        /*md   // Hide the value (default: false). */
-        /*md   hideValue */
-        showValue = !config.value("hideValue", !showValue);
+        /// Hide the value (default: false).
+        showValue = !config.value("hideValue", !showValue); //eg: true
 
-        /*md   // Shows the label over the value, 4 px from the top of the component (default: -1) `*/
-        /*md   showLabelOverValue={4} */
-        showLabelOverValue = config.value("showLabelOverValue", showLabelOverValue);
+        /// Shows the label over the value, 4 px from the top of the component (default: -1) `
+        showLabelOverValue = config.value("showLabelOverValue", showLabelOverValue); //eg: 4
 
-        /*md   // Set the distance from the left of the component where the label will be placed. If -1 it is centered (default: -1) */
-        /*md   labelOverValueX={0} */
-        labelOverValueX = config.value("labelOverValueX", labelOverValueX);
+        /// Set the distance from the left of the component where the label will be placed. If -1 it is centered (default: -1)
+        labelOverValueX = config.value("labelOverValueX", labelOverValueX); //eg: 0
 
-        /*md   // Set the font size of the value (default: 8). */
-        /*md   valueSize={8} */
-        valueFontSize = config.value("valueSize", valueFontSize);
+        /// Set the font size of the value (default: 8).
+        valueFontSize = config.value("valueSize", valueFontSize); //eg: 8
 
-        /*md   // Set the font size of the label (default: 6). */
-        /*md   labelSize={6} */
-        labelFontSize = config.value("labelSize", labelFontSize);
+        /// Set the font size of the label (default: 6).
+        labelFontSize = config.value("labelSize", labelFontSize); //eg: 6
 
-        /*md   // Set the font size of the unit (default: 6). */
-        /*md   unitSize={6} */
-        unitFontSize = config.value("unitSize", unitFontSize);
+        /// Set the font size of the unit (default: 6).
+        unitFontSize = config.value("unitSize", unitFontSize); //eg: 6
 
-        /*md   // The font of the text. Default is null. */
-        /*md   font="Sinclair_S" */
+        /// The font of the text. Default is null.
         if (config.contains("font")) {
-            font = draw.getFont(config["font"].get<std::string>().c_str());
+            font = draw.getFont(config["font"].get<std::string>().c_str()); //eg: "Sinclair_S"
         }
 
-        /*md   // The font height of the text. Default is 0. */
-        /*md   valueHeight=16 */
-        fontHeightValue = config.value("valueHeight", fontHeightValue);
+        /// The font height of the text. Default is 0.
+        fontHeightValue = config.value("valueHeight", fontHeightValue); //eg: 16
         setMaxFontSize();
 
-        /*md   // Set the background color of the component. */
-        /*md   bgColor="#000000" */
-        bgColor = draw.getColor(config["bgColor"], bgColor);
+        /// Set the background color of the component.
+        bgColor = draw.getColor(config["bgColor"], bgColor); //eg: "#000000"
 
-        /*md   // Set the color of the label. */
-        /*md   valueColor="#FF0000" */
-        valueColor = draw.getColor(config["valueColor"], valueColor);
+        /// Set the color of the label.
+        valueColor = draw.getColor(config["valueColor"], valueColor); //eg: "#FF0000"
 
-        /*md   // Set the color of the bar. */
-        /*md   barColor="#FF0000" */
-        barColor = draw.getColor(config["barColor"], barColor);
+        /// Set the color of the bar.
+        barColor = draw.getColor(config["barColor"], barColor); //eg: "#FF0000"
 
-        /*md   // Set the color of the unit. */
-        /*md   unitColor="#00FF00" */
-        unitColor = draw.getColor(config["unitColor"], unitColor);
+        /// Set the color of the unit.
+        unitColor = draw.getColor(config["unitColor"], unitColor); //eg: "#FF0000"
 
-        /*md   // Set the color of the label. */
-        /*md   labelColor="#00FF00" */
-        labelColor = draw.getColor(config["labelColor"], labelColor);
-
+        /// Set the color of the label.
+        labelColor = draw.getColor(config["labelColor"], labelColor); //eg: "#FF0000"
 
         /*md md_config_end */
     }

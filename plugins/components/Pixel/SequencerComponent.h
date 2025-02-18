@@ -55,13 +55,12 @@ public:
         nlohmann::json config = props.config;
 
         // TODO make a getter function
-        /// The audio plugin sequencer. */
-        /*md   audioPlugin="audio_plugin_name" */
+        /// The audio plugin sequencer.
         if (!config.contains("audioPlugin")) {
             logWarn("Sequencer component is missing audioPlugin parameter.");
             return;
         }
-        plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track);
+        plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track); //eq: "audio_plugin_name"
 
         /// The data id to get steps from audio plugin sequencer.
         steps = (std::vector<Step>*)plugin->data(plugin->getDataId(config.value("stepsDataId", "STEPS"))); //eg: "STEPS"
