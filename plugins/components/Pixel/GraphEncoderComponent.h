@@ -33,45 +33,43 @@ public:
         /*md md_config:GraphEncoder */
         nlohmann::json config = props.config;
 
-        /*md   // If true, the rectangle will be outlined. Default is true. */
-        /*md   outline={false} */
+        /// If true, the rectangle will be outlined. Default is true.
+        //md   outline={false}
 
-        /*md   // Set the color of the graph. */
-        /*md   fillColor="#000000" */
+        /// Set the color of the graph.
+        //md   fillColor="#000000"
 
-        /*md   // If true, the rectangle will be filled. Default is true. */
-        /*md   filled={false} */
+        /// If true, the rectangle will be filled. Default is true.
+        //md   filled={false}
 
-        /*md   // Set the color of the graph outline. */
-        /*md   outlineColor="#000000" */
+        /// Set the color of the graph outline.
+        //md   outlineColor="#000000"
 
-        /*md   // Set the color of the text. */
-        /*md   textColor1="#000000" */
+        /// Set the color of the text.
+        //md   textColor1="#000000"
 
-        /*md   // Set the color of the unit. */
-        /*md   textColor2="#000000" */
+        /// Set the color of the unit.
+        //md   textColor2="#000000"
 
-        /*md   // Set the color of the background. */
-        /*md   bgColor="#000000" */
+        /// Set the color of the background.
+        //md   bgColor="#000000"
 
-        /*md   // If true, the title will be rendered on top of the graph. Default is true. */
-        /*md   renderValuesOnTop={false} */
+        /// If true, the title will be rendered on top of the graph. Default is true.
+        //md   renderValuesOnTop={false}
 
-        /*md   // The audio plugin to get control on. */
-        /*md   plugin="audio_plugin_name" */
+        /// The audio plugin to get control on.
+        //md   plugin="audio_plugin_name"
 
         if (!config.contains("dataId") || plugin == NULL) {
             logWarn("GraphEncoderComponent cannot init: dataId is not set");
             return;
         }
 
-        /*md   // The data id of the audio plugin where the input value will be sent. */
-        /*md   dataId="data_id" */
-        dataId = plugin->getDataId(config["dataId"].get<std::string>());
+        /// The data id of the audio plugin where the input value will be sent.
+        dataId = plugin->getDataId(config["dataId"].get<std::string>()); //eg: "data_id"
 
-        /*md   // The encoders that will interract with this component. Set `string` to force using string rendering. */
-        /*md   encoders={[{encoderId: 0, value: "LEVEL", string: false}]} */
-        if (config.contains("encoders") && config["encoders"].is_array()) {
+        /// The encoders that will interract with this component. Set `string` to force using string rendering. */
+        if (config.contains("encoders") && config["encoders"].is_array()) { //eg: [{encoderId: 0, value: "LEVEL", string: false}]
             for (auto& encoder : config["encoders"]) {
                 encoders.push_back({ encoder["encoderId"].get<int>(),
                     watch(plugin->getValue(encoder["value"].get<std::string>())),
@@ -79,9 +77,8 @@ public:
             }
         }
 
-        /*md   // If true, the data is an array. Default is false. */
-        /*md   isArrayData={false} */
-        isArray = config.value("isArrayData", isArray);
+        /// If true, the data is an array. Default is false.
+        isArray = config.value("isArrayData", isArray); //eg: false
 
         /*md md_config_end */
     }
