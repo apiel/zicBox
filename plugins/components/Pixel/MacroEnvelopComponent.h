@@ -158,32 +158,32 @@ public:
         macro3 = *(float*)plugin->data(macro3DataId);
 
 
-        /*md Set if the envelop should be outlined or not. (default: true) */        
-        /*md outline={false} */
+        /*md   // Set if the envelop should be outlined or not. (default: true) */        
+        /*md   outline={false} */
         outline = config.value("outline", outline);
 
-        /*md Set if the envelop should be filled or not. (default: true) */
-        /*md filled={false} */
+        /*md   // Set if the envelop should be filled or not. (default: true) */
+        /*md   filled={false} */
         filled = config.value("filled", filled);
 
-        /*md Set the color of the graph. */
-        /*md fillColor="#000000" */
+        /*md   // Set the color of the graph. */
+        /*md   fillColor="#000000" */
         fillColor = draw.getColor(config["fillColor"], fillColor);
 
-        /*md Set the color of the outline. */
-        /*md outlineColor="#000000" */
+        /*md   // Set the color of the outline. */
+        /*md   outlineColor="#000000" */
         outlineColor = draw.getColor(config["outlineColor"], outlineColor);
 
-        /*md Set the color of the cursor. */
-        /*md cursorColor="#000000" */
+        /*md   // Set the color of the cursor. */
+        /*md   cursorColor="#000000" */
         cursorColor = draw.getColor(config["cursorColor"], cursorColor);
 
-        /*md Set the color of the text. */
-        /*md textColor="#000000" */
+        /*md   // Set the color of the text. */
+        /*md   textColor="#000000" */
         textColor = draw.getColor(config["textColor"], textColor);
 
-        /*md Set the id of the encoder to change the envelop prarameters. */
-        /*md encoders={[0, 1, 2, 3]} */
+        /*md   // Set the id of the encoder to change the envelop prarameters. */
+        /*md   encoders={[0, 1, 2, 3]} */
         if (config.contains("encoders") && config["encoders"].is_array()) {
             encoders[0] = config["encoders"][0].get<int>();
             encoders[1] = config["encoders"][1].get<int>();
