@@ -152,7 +152,7 @@ public:
         nlohmann::json config = props.config;
 
         /*md   // The group to change clips for all tracks. */
-        /*md   groupAll=10 */
+        /*md   groupAll={10} */
         groupAll = config.value("groupAll", groupAll);
 
         /*md   // The background color of the text. */
@@ -173,7 +173,7 @@ public:
         barColor = draw.getColor(config["color"], barColor);
 
         /*md   // The number of visible clips */
-        /*md   visibleCount=10 */
+        /*md   visibleCount={10} */
         visibleCount = config.value("visibleCount", visibleCount);
 
         /*md   // The sequencer audio plugin. */

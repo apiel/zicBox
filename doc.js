@@ -67,28 +67,34 @@ content
 // use https://regexr.com/ to test
 const reg1 = /\*md\s((?:.|\n)*?)\s*\*\//g; //--> /*md content */
 const reg2 = /\/\/md\s(.*)/g; //--> //md content
+const reg3 = /"(\w+)".*\/\/eg:\s*(.*)/g; //--> textColor = draw.getColor(config["textColor"], textColor); //eg: "#ffffff"
 
-const reg = new RegExp(reg1.source + '|' + reg2.source, 'g');
+const reg = new RegExp(reg1.source + '|' + reg2.source + '|' + reg3.source, 'g');
 
 function extractMdComment(content) {
     const result = [];
     let match;
     // while ((match = reg1.exec(content)) !== null || (match = reg2.exec(content)) !== null) {
     while ((match = reg.exec(content)) !== null) {
-        const extractedContent = match[1] || match[2];
-        const mdConfigMacro = 'md_config:';
-        const mdConfigEndMacro = 'md_config_end';
-        if (extractedContent.startsWith(mdConfigMacro)) {
-            const componentName = extractedContent.slice(mdConfigMacro.length);
-            result.push(`
+        if (match[3] && match[4]) {
+            const value = match[4][0] === '"' ? match[4] : `{${match[4]}}`;
+            result.push(`  ${match[3]}=${value}`);
+        } else {
+            const extractedContent = match[1] || match[2];
+            const mdConfigMacro = 'md_config:';
+            const mdConfigEndMacro = 'md_config_end';
+            if (extractedContent.startsWith(mdConfigMacro)) {
+                const componentName = extractedContent.slice(mdConfigMacro.length);
+                result.push(`
 \`\`\`tsx
 <${componentName}`);
-        } else if (extractedContent.startsWith(mdConfigEndMacro)) {
-            result.push(`/>
+            } else if (extractedContent.startsWith(mdConfigEndMacro)) {
+                result.push(`/>
 \`\`\`
                 `);
-        } else {
-            result.push(extractedContent);
+            } else {
+                result.push(extractedContent);
+            }
         }
     }
     return result.join('\n');

@@ -1,8 +1,8 @@
 #pragma once
 
+#include "helpers/range.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
-#include "helpers/range.h"
 #include <stdexcept>
 
 /*md
@@ -149,7 +149,7 @@ public:
         timeDataId = id + 2;
         modDataId = id + 3;
 
-        /*md   // Set if the envelop should be outlined or not. (default: true) */        
+        /*md   // Set if the envelop should be outlined or not. (default: true) */
         /*md   outline={false} */
         outline = config.value("outline", outline);
 
@@ -175,7 +175,7 @@ public:
 
         /*md   // Set the color of the text. */
         /*md   textColor="#000000" */
-        textColor = draw.getColor(config["textColor"], textColor);
+        textColor = draw.getColor(config["textColor"], textColor); //eg: "#ffffff"
 
         /*md   // Set the id of the encoder to change time parameter. */
         /*md   encoderTime={0} */
