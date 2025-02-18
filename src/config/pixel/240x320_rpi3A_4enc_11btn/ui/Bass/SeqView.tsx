@@ -1,22 +1,17 @@
 import * as React from '@/libs/react';
 
-import { Keymaps } from '@/libs/nativeComponents/Keymaps';
-import { StepEditDrum } from '@/libs/nativeComponents/StepEditDrum';
 import { View } from '@/libs/nativeComponents/View';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
-import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
 import {
     BassTrack,
-    btn1,
     btn2,
     btn5,
     btn6,
     btn7,
     btnShift,
     ColorTrack2,
-    KeyInfoPosition,
-    ScreenWidth,
+    KeyInfoPosition
 } from '../constants';
 
 export type Props = {
@@ -27,7 +22,7 @@ export function BassSeqView({ name }: Props) {
     let y = 0;
     return (
         <View name={name}>
-            {Array.from({ length: 32 }, (_, i) => {
+            {/* {Array.from({ length: 32 }, (_, i) => {
                 const yy = y + 5;
                 y += 8 + (i % 4 == 3 ? 4 : 0);
                 return (
@@ -47,7 +42,7 @@ export function BassSeqView({ name }: Props) {
                         <Keymaps keys={[{ key: btn1, action: '.toggle' }]} />
                     </StepEditDrum>
                 );
-            })}
+            })} */}
 
             <TextGrid
                 bounds={KeyInfoPosition}

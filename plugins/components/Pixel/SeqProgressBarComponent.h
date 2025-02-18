@@ -63,6 +63,53 @@ public:
                 }
             }
         };
+
+        /*md md_config:SeqProgressBar */
+        nlohmann::json config = props.config;
+
+        // TODO make a getter function
+        /*md   // The audio plugin sequencer. */
+        /*md   audioPlugin="audio_plugin_name" */
+        if (!config.contains("audioPlugin")) {
+            logWarn("SeqProgressBar component is missing audioPlugin parameter.");
+            return;
+        }
+        AudioPlugin* seqPlugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track);
+        stepCount = *(uint16_t*)seqPlugin->data(seqPlugin->getDataId("STEP_COUNT"));
+        stepCounter = (uint16_t*)seqPlugin->data(seqPlugin->getDataId("STEP_COUNTER"));
+        seqPlayingPtr = (bool*)seqPlugin->data(seqPlugin->getDataId("IS_PLAYING"));
+        steps = (std::vector<Step>*)seqPlugin->data(seqPlugin->getDataId("STEPS"));
+
+        /*md   volumePlugin={{ plugin: "Volume", param: "VOLUME" }} */
+        if (config.contains("volumePlugin")) {
+            valVolume = watch(getPlugin(config["volumePlugin"]["plugin"].get<std::string>().c_str(), track).getValue(config["volumePlugin"]["param"].get<std::string>().c_str()));
+        }
+
+        /*md   // The background color of the text. */
+        /*md   bgColor="#000000" */
+        background = draw.getColor(config["bgColor"], background);
+
+        /*md   // The foreground color of the text. */
+        /*md   fgColor="#ffffff" */
+        foreground = draw.getColor(config["fgColor"], foreground);
+
+        /*md   // The color of the active step. */
+        /*md   activeColor="#ffffff" */
+        activeColor = draw.getColor(config["activeColor"], activeColor);
+
+        /*md   // The color of the inactive step. */
+        /*md   inactiveStepColor="#ffffff" */
+        inactiveStepColor = draw.getColor(config["inactiveStepColor"], inactiveStepColor);
+
+        /*md   // The color of the selection. */
+        /*md   selectionColor="#ffffff" */
+        selectionColor = draw.getColor(config["selectionColor"], selectionColor);
+
+        /*md   // Show sequencer step value. */
+        /*md   showSteps */
+        showSteps = config.value("showSteps", showSteps);
+
+        /*md md_config_end */
     }
 
     void render() override
@@ -132,68 +179,6 @@ public:
         }
     }
 
-    /*md **Config**: */
-    bool config(char* key, char* value)
-    {
-        if (keypadLayout.config(key, value)) {
-            return true;
-        }
-
-        /*md - `SEQ_PLUGIN: plugin_name [track]` set plugin target for sequencer */
-        if (strcmp(key, "SEQ_PLUGIN") == 0) {
-            AudioPlugin* seqPlugin = NULL;
-
-            char* pluginName = strtok(value, " ");
-            char* trackStr = strtok(NULL, " ");
-            int trackId = trackStr == NULL ? track : atoi(trackStr);
-            seqPlugin = &getPlugin(pluginName, trackId);
-            // stepCount = seqPlugin->getValue("SELECTED_STEP")->props().max;
-            stepCount = *(uint16_t*)seqPlugin->data(seqPlugin->getDataId("STEP_COUNT"));
-            stepCounter = (uint16_t*)seqPlugin->data(seqPlugin->getDataId("STEP_COUNTER"));
-            seqPlayingPtr = (bool*)seqPlugin->data(seqPlugin->getDataId("IS_PLAYING"));
-            steps = (std::vector<Step>*)seqPlugin->data(seqPlugin->getDataId("STEPS"));
-
-            return true;
-        }
-
-        /*md - `VOLUME_PLUGIN: plugin_name value_key` is used for the volume bar (but can be any else). */
-        if (strcmp(key, "VOLUME_PLUGIN") == 0) {
-            valVolume = watch(getPlugin(strtok(value, " "), track).getValue(strtok(NULL, " ")));
-            return true;
-        }
-
-        /*md - `BACKGROUND_COLOR: color` is the background color of the component. */
-        if (strcmp(key, "BACKGROUND_COLOR") == 0) {
-            background = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `FOREGROUND_COLOR: color` is the foreground color. */
-        if (strcmp(key, "FOREGROUND_COLOR") == 0) {
-            foreground = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `ACTIVE_COLOR: color` is the color of the active step. */
-        if (strcmp(key, "ACTIVE_COLOR") == 0) {
-            activeColor = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `SELECTION_COLOR: color` is the selection color. */
-        if (strcmp(key, "SELECTION_COLOR") == 0) {
-            selectionColor = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `SHOW_STEPS: true` show sequencer step value (default: false). */
-        if (strcmp(key, "SHOW_STEPS") == 0) {
-            showSteps = strcmp(value, "true") == 0;
-            return true;
-        }
-
-        return false;
-    }
 };
 
 #endif

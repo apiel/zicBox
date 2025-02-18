@@ -1,11 +1,12 @@
-import { getOldComponentToBeDeprecated, initializePlugin } from '@/libs/ui';
-import { ComponentProps } from './component';
+import { getJsonComponent } from '../ui';
 
-export type Props = ComponentProps & {
-    seq_plugin: string;
-};
-
-export function SeqProgressBar({ bounds, track, seq_plugin, ...props }: Props) {
-    initializePlugin('SeqProgressBar', 'libzic_SeqProgressBarComponent.so');
-    return getOldComponentToBeDeprecated('SeqProgressBar', bounds, [{ track }, { seq_plugin }, props]);
-}
+export const SeqProgressBar = getJsonComponent<{
+    audioPlugin: string;
+    volumePlugin?: { plugin: string; param: string };
+    bgColor?: string;
+    fgColor?: string;
+    activeColor?: string;
+    inactiveStepColor?: string;
+    selectionColor?: string;
+    showSteps?: boolean;
+}>('SeqProgressBar', 'libzic_SeqProgressBarComponent.so');

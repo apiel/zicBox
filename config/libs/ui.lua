@@ -47,15 +47,6 @@ function ____exports.getJsonComponent(componentName, pluginPath)
         return {{COMPONENT = COMPONENT}}
     end
 end
-function ____exports.getOldComponentToBeDeprecated(name, bounds, values)
-    if values == nil then
-        values = {}
-    end
-    return {
-        {OLD_COMPONENT = (name .. " ") .. ____exports.getPosition(bounds)},
-        values
-    }
-end
 --- Add a zone encoder
 -- 
 -- @param position string | string[] - The position of the component.

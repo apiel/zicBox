@@ -1,7 +1,5 @@
 import * as React from '@/libs/react';
 
-import { Keymap } from '@/libs/nativeComponents/Keymap';
-import { Tape } from '@/libs/nativeComponents/Tape';
 import { View } from '@/libs/nativeComponents/View';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { btn2, btn6, KeyInfoPosition } from '../constants';
@@ -13,7 +11,7 @@ export type Props = {
 export function TapeView({ name }: Props) {
     return (
         <View name={name}>
-            <Tape
+            {/* <Tape
                 bounds={[0, 0, 240, 280]}
                 filename="rec"
                 bpm_audioPlugin="Tempo" param="BPM"
@@ -22,7 +20,7 @@ export function TapeView({ name }: Props) {
                 <Keymap key="q" action=".playStop" />
                 <Keymap key="a" action=".left" />
                 <Keymap key="d" action=".right" />
-            </Tape>
+            </Tape> */}
 
             <TextGrid
                 bounds={KeyInfoPosition}
