@@ -1,11 +1,12 @@
-import { getOldComponentToBeDeprecated, initializePlugin } from '@/libs/ui';
-import { ComponentProps } from './component';
+import { getJsonComponent } from '../ui';
 
-export type Props = ComponentProps & {
-    plugin: string;
-};
-
-export function Clips({ bounds, track, ...props }: Props) {
-    initializePlugin('Clips', 'libzic_ClipsComponent.so');
-    return getOldComponentToBeDeprecated('Clips', bounds, [{ track }, props]);
-}
+export const Clips = getJsonComponent<{
+  groupAll?: number;
+  bgColor?: string;
+  textColor?: string;
+  foregroundColor?: string;
+  color?: string;
+  visibleCount?: number;
+  sequencerPlugin?: string;
+  serializerPlugin?: string;
+}>('Clips', 'libzic_ClipsComponent.so');

@@ -105,7 +105,15 @@ public:
 
     void render() override
     {
-        if (updatePosition() && step) {
+
+        Step* _step = step;
+
+        Step dummyStep;
+        if (_step == NULL) {
+            _step = &dummyStep;
+        }
+
+        if (updatePosition() && _step) {
             Color bg = isActive ? selection : bgColor;
             draw.filledRect(relativePosition, size, { bg });
 
@@ -114,18 +122,18 @@ public:
 
             x = relativePosition.x + 12;
             draw.filledRect({ x, y + 2 }, { 50, 4 }, { barBackground });
-            draw.filledRect({ x, y + 2 }, { (int)(50 * step->velocity), 4 }, { bar });
+            draw.filledRect({ x, y + 2 }, { (int)(50 * _step->velocity), 4 }, { bar });
 
             x = relativePosition.x + 70;
-            if (step->enabled) {
+            if (_step->enabled) {
                 renderNote(x, y);
             } else {
                 draw.text({ x, y }, "---", 8, { text2 });
             }
 
-            draw.text({ relativePosition.x + 110, y }, stepConditions[step->condition].name, 8, { text2 });
+            draw.text({ relativePosition.x + 110, y }, stepConditions[_step->condition].name, 8, { text2 });
 
-            std::string motionSteps = stepMotions[step->motion].name;
+            std::string motionSteps = stepMotions[_step->motion].name;
             x = relativePosition.x + 156;
             if (motionSteps == "---") {
                 draw.text({ x, y }, motionSteps, 8, { text2 });
@@ -147,15 +155,15 @@ public:
     void onEncoder(int id, int8_t direction) override
     {
         if (isActive) {
+            if (step == NULL && (id == encoders[0] || id == encoders[1] || id == encoders[2] || id == encoders[3])) {
+                printf("[StepEditDrumComponent] step is NULL, not gonna fix it as it should be deprecated\n");
+                return;
+            }
             if (id == encoders[0]) {
                 step->setVelocity(step->velocity + direction * 0.01);
                 renderNext();
             } else if (id == encoders[1]) {
-                if (step->enabled) {
-                    step->setNote(step->note + direction);
-                } else {
-                    step->enabled = true;
-                }
+                step->setNote(step->note + direction);
                 renderNext();
             } else if (id == encoders[2]) {
                 step->setCondition(step->condition + direction);
