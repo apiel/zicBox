@@ -1,5 +1,4 @@
-#ifndef _UI_PIXEL_COMPONENT_CLIPS_H_
-#define _UI_PIXEL_COMPONENT_CLIPS_H_
+#pragma once
 
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
@@ -149,6 +148,63 @@ public:
             return func;
         })
     {
+        /*md md_config:Clips */
+        nlohmann::json config = props.config;
+
+        /*md   // The group to change clips for all tracks. */
+        /*md   groupAll=10 */
+        groupAll = config.value("groupAll", groupAll);
+
+        /*md   // The background color of the text. */
+        /*md   bgColor="#000000" */
+        bgColor = draw.getColor(config["bgColor"], bgColor);
+
+        /*md   // The foreground color of the text. */
+        /*md   foregroundColor="#ffffff" */
+        foreground = draw.getColor(config["foregroundColor"], foreground);
+        foreground2 = lighten(foreground, 0.2);
+
+        /*md   // The color of the text */
+        /*md   textColor="#ffffff" */
+        textColor = draw.getColor(config["textColor"], textColor);
+
+        /*md   // The identifier color of the component... */
+        /*md   color="#ffffff" */
+        barColor = draw.getColor(config["color"], barColor);
+
+        /*md   // The number of visible clips */
+        /*md   visibleCount=10 */
+        visibleCount = config.value("visibleCount", visibleCount);
+
+        /*md   // The sequencer audio plugin. */
+        /*md   sequencerPlugin="audio_plugin_name" */
+        AudioPlugin* pluginSeq = &getPlugin(config.value("sequencerPlugin", "Sequencer").c_str(), track);
+        if (pluginSeq != NULL) {
+            valSeqStatus = watch(pluginSeq->getValue("STATUS"));
+        }
+
+        /*md   // The audio plugin to get serialized data. */
+        /*md   serializerPlugin="audio_plugin_name" */
+        pluginSerialize = &getPlugin(config.value("serializerPlugin", "SerializeTrack").c_str(), track);
+        if (!pluginSerialize) {
+            logWarn("Clips component is missing serializerPlugin.");
+            return;
+        }
+        
+        valVariation = watch(pluginSerialize->getValue("VARIATION"));
+        saveVariationDataId = pluginSerialize->getDataId("SAVE_VARIATION");
+        deleteVariationDataId = pluginSerialize->getDataId("DELETE_VARIATION");
+        loadVariationDataId = pluginSerialize->getDataId("LOAD_VARIATION");
+        loadVariationNextDataId = pluginSerialize->getDataId("LOAD_VARIATION_NEXT");
+        int nextVariation = -1;
+        nextVariationToPlay = (int*)pluginSerialize->data(loadVariationNextDataId, &nextVariation);
+
+        for (int i = 0; i < valVariation->props().max; i++) {
+            bool exists = pluginSerialize->data(pluginSerialize->getDataId("GET_VARIATION"), &i) != NULL;
+            variations.push_back({ exists });
+        }
+
+        /*md md_config_end */
     }
 
     void render()
@@ -198,7 +254,7 @@ public:
     void onKey(uint16_t id, int key, int8_t state, unsigned long now) override
     {
         if (isActive || isGroupAll) {
-            keypadLayout.onKey(id, key, state, now);
+            Component::onKey(id, key, state, now);
         }
     }
 
@@ -226,79 +282,4 @@ public:
             renderNext();
         }
     }
-
-    /*md **Config**: */
-    bool config(char* key, char* value)
-    {
-        if (keypadLayout.config(key, value)) {
-            return true;
-        }
-
-        /*md - `GROUP_ALL: group` is the group to change clips for all tracks. */
-        if (strcmp(key, "GROUP_ALL") == 0) {
-            groupAll = atoi(value);
-            return true;
-        }
-
-        /*md - `BACKGROUND_COLOR: color` is the background color of the component. */
-        if (strcmp(key, "BACKGROUND_COLOR") == 0) {
-            bgColor = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `FOREGROUND_COLOR: color` is the foreground color of the component. */
-        if (strcmp(key, "FOREGROUND_COLOR") == 0) {
-            foreground = draw.getColor(value);
-            foreground2 = lighten(foreground, 0.2);
-            return true;
-        }
-
-        /*md - `TEXT_COLOR: color` is the text color of the component. */
-        if (strcmp(key, "TEXT_COLOR") == 0) {
-            textColor = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `COLOR: color` is the foreground color of the component. */
-        if (strcmp(key, "COLOR") == 0) {
-            barColor = draw.getColor(value);
-            // textColor = barColor;
-            return true;
-        }
-
-        /*md - `PLUGIN: plugin_name` set plugin target for serializer */
-        if (strcmp(key, "PLUGIN") == 0) {
-            pluginSerialize = &getPlugin(value, track);
-            valVariation = watch(pluginSerialize->getValue("VARIATION"));
-            saveVariationDataId = pluginSerialize->getDataId("SAVE_VARIATION");
-            deleteVariationDataId = pluginSerialize->getDataId("DELETE_VARIATION");
-            loadVariationDataId = pluginSerialize->getDataId("LOAD_VARIATION");
-            loadVariationNextDataId = pluginSerialize->getDataId("LOAD_VARIATION_NEXT");
-            int nextVariation = -1;
-            nextVariationToPlay = (int*)pluginSerialize->data(loadVariationNextDataId, &nextVariation);
-
-            for (int i = 0; i < valVariation->props().max; i++) {
-                bool exists = pluginSerialize->data(pluginSerialize->getDataId("GET_VARIATION"), &i) != NULL;
-                variations.push_back({ exists });
-            }
-            return true;
-        }
-
-        /*md - `VISIBLE_COUNT: number` set the number of visible clips. */
-        if (strcmp(key, "VISIBLE_COUNT") == 0) {
-            visibleCount = atoi(value);
-            return true;
-        }
-
-        /*md - `SEQ_PLUGIN: plugin_name` set plugin target for sequencer. */
-        if (strcmp(key, "SEQ_PLUGIN") == 0) {
-            AudioPlugin* pluginSeq = &getPlugin(value, track);
-            valSeqStatus = watch(pluginSeq->getValue("STATUS"));
-            return true;
-        }
-
-        return false;
-    }
 };
-
-#endif

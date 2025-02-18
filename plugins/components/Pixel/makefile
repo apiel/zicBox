@@ -18,7 +18,7 @@ all:
 				HiddenValueComponent FmAlgoComponent AdsrComponent\
 				TextComponent SeqProgressBarComponent ValueComponent\
 				SpectrogramComponent RectComponent ClipsComponent KeyboardComponent ListComponent\
-				WorkspacesComponent SampleComponent TapeComponent StepEditDrumComponent\
+				WorkspacesComponent StepEditDrumComponent\
 				MacroEnvelopComponent SampleEditorComponent StepEditSampleComponent\
 				SequencerComponent
 

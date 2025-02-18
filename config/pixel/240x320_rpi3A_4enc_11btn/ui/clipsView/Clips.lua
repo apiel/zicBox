@@ -33,13 +33,11 @@ function ____exports.Clips(____bindingPattern0)
             ClipsComponent,
             {
                 bounds = {(track - 1) * w, 15, w - 2, 100},
-                plugin = "SerializeTrack",
                 track = track,
                 group = group,
                 color = color,
-                seq_plugin = "Sequencer",
-                visible_count = 12,
-                group_all = group_all
+                visibleCount = 12,
+                groupAll = group_all
             },
             React.createElement(Keymaps, {keys = {
                 {key = btn1, action = ".toggle", context = "254:0"},

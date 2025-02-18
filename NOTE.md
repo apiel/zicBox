@@ -7,6 +7,8 @@
 
 - TODO serialize in json format!
 
+- TODO migrate everything to JSON!! Get rid of lua, and js should only be there to generate JSON...
+
 ### component
 
 - TODO look if container concept is fully used... OR maybe get rid of it!!
@@ -21,6 +23,10 @@
 ```sh
 valgrind --leak-check=full ./pixel.x86
 ```
+
+- comment for doc order: 
+    [//]: # (This is a comment.)
+    <!-- … -->
 
 - TODO make plugin removable
   
