@@ -31,16 +31,13 @@ public:
         nlohmann::json config = props.config;
 
         /// If true, the rectangle will be outlined. Default is true.
-        /*md   outline={false} */
-        outline = config.value("outline", outline);
+        outline = config.value("outline", outline); //eg: false
 
         /// Set the color of the graph.
-        /*md   fillColor="#000000" */
         fillColor = draw.getColor(config["fillColor"], fillColor); //eg: "#ffffff"
 
         /// If true, the rectangle will be filled. Default is true.
-        /*md   filled={false} */
-        filled = config.value("filled", filled);
+        filled = config.value("filled", filled); //eg: false
 
         /// Set the color of the graph outline.
         //md   outlineColor="#000000"
