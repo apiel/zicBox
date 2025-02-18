@@ -64,36 +64,29 @@ public:
         /*md md_config:Workspaces */
         nlohmann::json config = props.config;
 
-        /*md   // The audio plugin to load serialized data. */
-        /*md   audioPlugin="audio_plugin_name" */
+        /// The audio plugin to load serialized data.
         if (!config.contains("audioPlugin")) {
             logWarn("Workspaces component is missing audioPlugin parameter.");
             return;
         }
-        plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track);
+        plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track); //eg: "audio_plugin_name"
 
-        /*md   currentWorkspaceDataId="CURRENT_WORKSPACE" */
-        currentWorkspaceName = (std::string*)plugin->data(plugin->getDataId(config.value("currentWorkspaceDataId", "CURRENT_WORKSPACE")));
+        currentWorkspaceName = (std::string*)plugin->data(plugin->getDataId(config.value("currentWorkspaceDataId", "CURRENT_WORKSPACE"))); //eg: "CURRENT_WORKSPACE"
 
-        /*md   refreshStateDataId="CREATE_WORKSPACE" */
-        refreshState = (int*)plugin->data(plugin->getDataId(config.value("refreshStateDataId", "CREATE_WORKSPACE")));
+        refreshState = (int*)plugin->data(plugin->getDataId(config.value("refreshStateDataId", "CREATE_WORKSPACE"))); //eg: "CREATE_WORKSPACE"
         currentRefreshState = *refreshState;
 
-        /*md   workspaceFolder="workspaces" */
         if (config.contains("workspaceFolder")) {
-            workspaceFolder = config["workspaceFolder"].get<std::string>();
+            workspaceFolder = config["workspaceFolder"].get<std::string>(); //eg: "workspaces"
             initItems();
         }
 
-        /*md   // The background color of the text. */
-        /*md   bgColor="#000000" */
-        bgColor = draw.getColor(config["bgColor"], bgColor);
+        /// The background color of the text.
+        bgColor = draw.getColor(config["bgColor"], bgColor); //eg: "#000000"
 
-        /*md   badgeColor="#23a123" */
-        badgeColor = draw.getColor(config["badgeColor"], badgeColor);
+        badgeColor = draw.getColor(config["badgeColor"], badgeColor); //eg: "#23a123"
 
-        /*md   errorColor="#ab6363" */
-        errorColor = draw.getColor(config["errorColor"], errorColor);
+        errorColor = draw.getColor(config["errorColor"], errorColor); //eg: "#ab6363"
 
         /*md md_config_end */
 
