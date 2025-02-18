@@ -23,7 +23,6 @@ import { Fm1SeqView } from './Fm1/SeqView';
 import { CreateWorkspaceView } from './menu/CreateWorkspaceView';
 import { MenuView } from './menu/menuView';
 import { ShutdownView } from './menu/ShutdownView';
-import { WorkspacesView } from './menu/WorkspacesView';
 import { PercFxView } from './Perc/PercFxView';
 import { PercModView } from './Perc/PercModView';
 import { PercNoise2View } from './Perc/PercNoise2View';
@@ -88,7 +87,7 @@ applyZic(<SynthWaveform1View name="SynthWaveform1" />);
 applyZic(<SynthWaveform2View name="SynthWaveform2" />);
 
 applyZic(<MenuView name="Menu" />);
-applyZic(<WorkspacesView name="Workspaces" />);
+// applyZic(<WorkspacesView name="Workspaces" />);
 applyZic(<CreateWorkspaceView name="CreateWorkspace" />);
 applyZic(<ShutdownView name="Shutdown" />);
 
