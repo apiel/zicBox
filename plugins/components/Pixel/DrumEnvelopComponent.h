@@ -172,7 +172,7 @@ public:
         //md   // Set the color of the cursor.
         cursorColor = draw.getColor(config["cursorColor"], cursorColor); //eg: "#ffffff"
 
-        //md   // Set the color of the text.
+        /// Set the color of the text.
         textColor = draw.getColor(config["textColor"], textColor); //eg: "#ffffff"
 
         //md   // Set the id of the encoder to change time parameter.
