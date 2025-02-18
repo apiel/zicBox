@@ -30,36 +30,39 @@ public:
         /*md md_config:Adsr */
         nlohmann::json config = props.config;
 
-        /*md   // If true, the rectangle will be outlined. Default is true. */
+        /// If true, the rectangle will be outlined. Default is true.
         /*md   outline={false} */
+        outline = config.value("outline", outline);
 
-        /*md   // Set the color of the graph. */
+        /// Set the color of the graph.
         /*md   fillColor="#000000" */
+        fillColor = draw.getColor(config["fillColor"], fillColor); //eg: "#ffffff"
 
-        /*md   // If true, the rectangle will be filled. Default is true. */
+        /// If true, the rectangle will be filled. Default is true.
         /*md   filled={false} */
+        filled = config.value("filled", filled);
 
-        /*md   // Set the color of the graph outline. */
-        /*md   outlineColor="#000000" */
+        /// Set the color of the graph outline.
+        //md   outlineColor="#000000"
 
-        /*md   // Set the color of the text. */
-        /*md   textColor1="#000000" */
+        /// Set the color of the text.
+        //md   textColor1="#000000"
 
-        /*md   // Set the color of the unit. */
-        /*md   textColor2="#000000" */
+        /// Set the color of the unit.
+        //md   textColor2="#000000"
 
-        /*md   // Set the color of the background. */
-        /*md   bgColor="#000000" */
+        /// Set the color of the background.
+        //md   bgColor="#000000"
 
-        /*md   // If true, the title will be rendered on top of the graph. Default is true. */
-        /*md   renderValuesOnTop={false} */
+        /// If true, the title will be rendered on top of the graph. Default is true.
+        //md   renderValuesOnTop={false}
 
-        /*md   // The audio plugin to get control on. */
-        /*md   plugin="audio_plugin_name" */
+        /// The audio plugin to get control on.
+        //md   plugin="audio_plugin_name"
 
 
-        /*md   // The encoders that will interract with the ADSR envelop. */
-        /*md   encoders={[0, 1, 2, 3]} */
+        /// The encoders that will interract with the ADSR envelop.
+        //md   encoders={[0, 1, 2, 3]}
         if (config.contains("encoders") && config["encoders"].is_array() && config["encoders"].size() == 4) {
             encoders[0].id = config["encoders"][0].get<int>();
             encoders[1].id = config["encoders"][1].get<int>();
@@ -67,8 +70,8 @@ public:
             encoders[3].id = config["encoders"][3].get<int>();
         }
 
-        /*md   // The values that will interract with the ADSR envelop. */
-        /*md   values={["ATTACK", "DECAY", "SUSTAIN", "RELEASE"]} */
+        /// The values that will interract with the ADSR envelop.
+        //md   values={["ATTACK", "DECAY", "SUSTAIN", "RELEASE"]}
         if (config.contains("values") && config["values"].is_array() && config["values"].size() == 4) {
             encoders[0].value = watch(plugin->getValue(config["values"][0].get<std::string>()));
             encoders[1].value = watch(plugin->getValue(config["values"][1].get<std::string>()));
