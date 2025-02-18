@@ -102,41 +102,6 @@ public:
     {
     }
 
-    virtual bool config(char* key, char* value) override
-    {
-        return false;
-    }
-    virtual bool baseConfig(char* key, char* value) override
-    {
-        if (strcmp(key, "GROUP") == 0) {
-            group = atoi(value);
-            // By default set active group to 0
-            onGroupChanged(0);
-            return true;
-        }
-
-        if (strcmp(key, "TRACK") == 0) {
-            track = atoi(value);
-            return true;
-        }
-
-        if (strcmp(key, "ID") == 0) {
-            id = value;
-            return true;
-        }
-
-        if (visibilityContext.config(key, value)) {
-            return true;
-        }
-
-        // TODO
-        // if (visibilityGroup.config(key, value)) {
-        //     return true;
-        // }
-
-        return config(key, value);
-    }
-
     virtual void onGroupChanged(int8_t index) override
     {
     }
