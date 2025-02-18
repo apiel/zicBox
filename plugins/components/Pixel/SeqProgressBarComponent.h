@@ -68,46 +68,38 @@ public:
         nlohmann::json config = props.config;
 
         // TODO make a getter function
-        /*md   // The audio plugin sequencer. */
-        /*md   audioPlugin="audio_plugin_name" */
+        /// The audio plugin sequencer.
         if (!config.contains("audioPlugin")) {
             logWarn("SeqProgressBar component is missing audioPlugin parameter.");
             return;
         }
-        AudioPlugin* seqPlugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track);
+        AudioPlugin* seqPlugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track); //eg: "audio_plugin_name"
         stepCount = *(uint16_t*)seqPlugin->data(seqPlugin->getDataId("STEP_COUNT"));
         stepCounter = (uint16_t*)seqPlugin->data(seqPlugin->getDataId("STEP_COUNTER"));
         seqPlayingPtr = (bool*)seqPlugin->data(seqPlugin->getDataId("IS_PLAYING"));
         steps = (std::vector<Step>*)seqPlugin->data(seqPlugin->getDataId("STEPS"));
 
-        /*md   volumePlugin={{ plugin: "Volume", param: "VOLUME" }} */
-        if (config.contains("volumePlugin")) {
+        if (config.contains("volumePlugin")) { //eg: { "plugin": "Volume", "param": "VOLUME" }
             valVolume = watch(getPlugin(config["volumePlugin"]["plugin"].get<std::string>().c_str(), track).getValue(config["volumePlugin"]["param"].get<std::string>().c_str()));
         }
 
-        /*md   // The background color of the text. */
-        /*md   bgColor="#000000" */
-        background = draw.getColor(config["bgColor"], background);
+        /// The background color of the text.
+        background = draw.getColor(config["bgColor"], background); //eg: "#000000"
 
-        /*md   // The foreground color of the text. */
-        /*md   fgColor="#ffffff" */
-        foreground = draw.getColor(config["fgColor"], foreground);
+        /// The foreground color of the text.
+        foreground = draw.getColor(config["fgColor"], foreground); //eg: "#ffffff"
 
-        /*md   // The color of the active step. */
-        /*md   activeColor="#ffffff" */
-        activeColor = draw.getColor(config["activeColor"], activeColor);
+        /// The color of the active step.
+        activeColor = draw.getColor(config["activeColor"], activeColor); //eg: "#ffffff"
 
-        /*md   // The color of the inactive step. */
-        /*md   inactiveStepColor="#ffffff" */
-        inactiveStepColor = draw.getColor(config["inactiveStepColor"], inactiveStepColor);
+        /// The color of the inactive step.
+        inactiveStepColor = draw.getColor(config["inactiveStepColor"], inactiveStepColor); //eg: "#ffffff"
 
-        /*md   // The color of the selection. */
-        /*md   selectionColor="#ffffff" */
-        selectionColor = draw.getColor(config["selectionColor"], selectionColor);
+        /// The color of the selection.
+        selectionColor = draw.getColor(config["selectionColor"], selectionColor); //eg: "#ffffff"
 
-        /*md   // Show sequencer step value. */
-        /*md   showSteps */
-        showSteps = config.value("showSteps", showSteps);
+        /// Show sequencer step value.
+        showSteps = config.value("showSteps", showSteps); //eg: true
 
         /*md md_config_end */
     }

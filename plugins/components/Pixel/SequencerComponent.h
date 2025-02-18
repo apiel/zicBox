@@ -55,7 +55,7 @@ public:
         nlohmann::json config = props.config;
 
         // TODO make a getter function
-        /*md   // The audio plugin sequencer. */
+        /// The audio plugin sequencer. */
         /*md   audioPlugin="audio_plugin_name" */
         if (!config.contains("audioPlugin")) {
             logWarn("Sequencer component is missing audioPlugin parameter.");
@@ -63,53 +63,41 @@ public:
         }
         plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track);
 
-        /*md   // The data id to get steps from audio plugin sequencer. */
-        /*md   stepsDataId="STEPS" */
-        steps = (std::vector<Step>*)plugin->data(plugin->getDataId(config.value("stepsDataId", "STEPS")));
+        /// The data id to get steps from audio plugin sequencer.
+        steps = (std::vector<Step>*)plugin->data(plugin->getDataId(config.value("stepsDataId", "STEPS"))); //eg: "STEPS"
 
-        /*md   // The number of piano notes to display on the screen. */
-        /*md   numNotes=24 */
-        numNotes = config.value("numNotes", numNotes);
+        /// The number of piano notes to display on the screen.
+        numNotes = config.value("numNotes", numNotes); //eg: 24
 
-        /*md   // The background color of the text. */
-        /*md   bgColor="#000000" */
-        background = draw.getColor(config["bgColor"], background);
+        /// The background color of the text.
+        background = draw.getColor(config["bgColor"], background); //eg: "#000000"
 
-        /*md   // The color of the black keys. */
-        /*md   blackKeyColor="#000000" */
-        blackKeyColor = draw.getColor(config["blackKeyColor"], blackKeyColor);
+        /// The color of the black keys.
+        blackKeyColor = draw.getColor(config["blackKeyColor"], blackKeyColor); //eg: "#000000"
 
-        /*md   // The color of the white keys. */
-        /*md   whiteKeyColor="#000000" */
-        whiteKeyColor = draw.getColor(config["whiteKeyColor"], whiteKeyColor);
+        /// The color of the white keys.
+        whiteKeyColor = draw.getColor(config["whiteKeyColor"], whiteKeyColor); //eg: "#000000"
 
-        /*md   // The color of the row separators. */
-        /*md   rowSeparatorColor="#000000" */
-        rowSeparatorColor = draw.getColor(config["rowSeparatorColor"], rowSeparatorColor);
+        /// The color of the row separators.
+        rowSeparatorColor = draw.getColor(config["rowSeparatorColor"], rowSeparatorColor); //eg: "#000000"
 
-        /*md   // The color of the beats. */
-        /*md   beatColor="#000000" */
-        beatColor = draw.getColor(config["beatColor"], beatColor);
+        /// The color of the beats.
+        beatColor = draw.getColor(config["beatColor"], beatColor); //eg: "#000000"
 
-        /*md   // The color of the bars. */
-        /*md   barColor="#000000" */
-        barColor = draw.getColor(config["barColor"], barColor);
+        /// The color of the bars.
+        barColor = draw.getColor(config["barColor"], barColor); //eg: "#000000"
 
-        /*md   // The color of the column separators. */
-        /*md   colSeparatorColor="#000000" */
-        colSeparatorColor = draw.getColor(config["colSeparatorColor"], colSeparatorColor);
+        /// The color of the column separators.
+        colSeparatorColor = draw.getColor(config["colSeparatorColor"], colSeparatorColor); //eg: "#000000"
 
-        /*md   // The color of the C notes. */
-        /*md   noteColor="#000000" */
-        noteColor = draw.getColor(config["noteColor"], noteColor);
+        /// The color of the C notes.
+        noteColor = draw.getColor(config["noteColor"], noteColor); //eg: "#000000"
 
-        /*md   // The color of the other notes. */
-        /*md   note2Color="#000000" */
-        note2Color = draw.getColor(config["note2Color"], note2Color);
+        /// The color of the other notes.
+        note2Color = draw.getColor(config["note2Color"], note2Color); //eg: "#000000"
 
-        /*md   // The color of the steps. */
-        /*md   stepColor="#000000" */
-        stepColor = draw.getColor(config["stepColor"], stepColor);
+        /// The color of the steps.
+        stepColor = draw.getColor(config["stepColor"], stepColor); //eg: "#000000"
 
         /*md md_config_end */
 
