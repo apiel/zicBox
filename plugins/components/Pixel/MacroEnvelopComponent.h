@@ -128,21 +128,19 @@ public:
         /*md md_config:MacroEnvelop */
         nlohmann::json config = props.config;
 
-        /*md   // The audio plugin to get control on. */
-        /*md   audioPlugin="audio_plugin_name" */
+        /// The audio plugin to get control on.
         if (!config.contains("audioPlugin")) {
             logWarn("MacroEnvelop component is missing audioPlugin parameter.");
             return;
         }
-        plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track);
+        plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track); //eg: "audio_plugin_name"
 
-        /*md   // Envelop data id to get/set data in the audio plugin. */
-        /*md   envelopDataId="ENV_AMP" */
+        /// Envelop data id to get/set data in the audio plugin.
         if (!config.contains("envelopDataId")) {
             logWarn("MacroEnvelop component is missing envelopDataId parameter.");
             return;
         }
-        uint8_t id = plugin->getDataId(config["envelopDataId"].get<std::string>().c_str());
+        uint8_t id = plugin->getDataId(config["envelopDataId"].get<std::string>().c_str()); //eg: "ENV_AMP"
         envData = (std::vector<Data>*)plugin->data(id);
         modeDataId = id + 1; // A bit cluncky, need to find better solution..
         isMacroDataId = id + 2;
@@ -158,33 +156,26 @@ public:
         macro3 = *(float*)plugin->data(macro3DataId);
 
 
-        /*md   // Set if the envelop should be outlined or not. (default: true) */        
-        /*md   outline={false} */
-        outline = config.value("outline", outline);
+        /// Set if the envelop should be outlined or not. (default: true)
+        outline = config.value("outline", outline); //eg: false
 
-        /*md   // Set if the envelop should be filled or not. (default: true) */
-        /*md   filled={false} */
-        filled = config.value("filled", filled);
+        /// Set if the envelop should be filled or not. (default: true)
+        filled = config.value("filled", filled); //eg: false
 
-        /*md   // Set the color of the graph. */
-        /*md   fillColor="#000000" */
-        fillColor = draw.getColor(config["fillColor"], fillColor);
+        /// Set the color of the graph.
+        fillColor = draw.getColor(config["fillColor"], fillColor); //eg: "#ffffff"
 
-        /*md   // Set the color of the outline. */
-        /*md   outlineColor="#000000" */
-        outlineColor = draw.getColor(config["outlineColor"], outlineColor);
+        /// Set the color of the outline.
+        outlineColor = draw.getColor(config["outlineColor"], outlineColor); //eg: "#000000"
 
-        /*md   // Set the color of the cursor. */
-        /*md   cursorColor="#000000" */
-        cursorColor = draw.getColor(config["cursorColor"], cursorColor);
+        /// Set the color of the cursor.
+        cursorColor = draw.getColor(config["cursorColor"], cursorColor); //eg: "#000000"
 
-        /*md   // Set the color of the text. */
-        /*md   textColor="#000000" */
-        textColor = draw.getColor(config["textColor"], textColor);
+        /// Set the color of the text.
+        textColor = draw.getColor(config["textColor"], textColor); //eg: "#000000"
 
-        /*md   // Set the id of the encoder to change the envelop prarameters. */
-        /*md   encoders={[0, 1, 2, 3]} */
-        if (config.contains("encoders") && config["encoders"].is_array()) {
+        /// Set the id of the encoder to change the envelop prarameters.
+        if (config.contains("encoders") && config["encoders"].is_array()) { //eg: [0, 1, 2, 3]
             encoders[0] = config["encoders"][0].get<int>();
             encoders[1] = config["encoders"][1].get<int>();
             encoders[2] = config["encoders"][2].get<int>();

@@ -98,35 +98,29 @@ public:
         /*md md_config:List */
         nlohmann::json config = props.config;
 
-        /*md   // The list of items to add in the list. */
-        /*md   items={["item1", "item2", "item3"]} */
-        if (config.contains("items") && config["items"].is_array()) {
+        /// The list of items to add in the list.
+        if (config.contains("items") && config["items"].is_array()) { //eg: ["item1", "item2", "item3"]
             for (int i = 0; i < config["items"].size(); i++) {
                 items.push_back({ config["items"][i].get<std::string>() });
             }
         }
 
-        /*md   // The audio plugin to get control on. */
-        /*md   audioPlugin="audio_plugin_name" */
+        /// The audio plugin to get control on.
         if (config.contains("audioPlugin")) {
-            plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track);
+            plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track); //eg: "audio_plugin_name"
         }
 
-        /*md   // Set the background color of the component. */
-        /*md   bgColor="#000000" */
-        bgColor = draw.getColor(config["bgColor"], bgColor);
+        /// Set the background color of the component.
+        bgColor = draw.getColor(config["bgColor"], bgColor); //eg: "#000000"
 
-        /*md   // Set the color of the text. */
-        /*md   textColor="#ffffff" */
-        textColor = draw.getColor(config["textColor"], textColor);
+        /// Set the color of the text.
+        textColor = draw.getColor(config["textColor"], textColor); //eg: "#ffffff"
 
-        /*md   // Set the color of the selection. */
-        /*md   selectionColor="#ffffff" */
-        selectionColor = draw.getColor(config["selectionColor"], selectionColor);
+        /// Set the color of the selection.
+        selectionColor = draw.getColor(config["selectionColor"], selectionColor); //eg: "#ffffff"
 
-        /*md   // Set the color of the item background. */
-        /*md   itemBackground="#ffffff" */
-        itemBackground = draw.getColor(config["itemBackground"], itemBackground);
+        /// Set the color of the item background.
+        itemBackground = draw.getColor(config["itemBackground"], itemBackground); //eg: "#ffffff"
 
         /*md md_config_end */
     }

@@ -26,13 +26,11 @@ public:
         /*md md_config:Rect */
         nlohmann::json config = props.config;
 
-        /*md   // The color of the rectangle. */
-        /*md   color="#000000" */
-        color = draw.getColor(config["color"], color);
+        /// The color of the rectangle.
+        color = draw.getColor(config["color"], color); //eg: "#000000"
 
-        /*md   // If true, the rectangle will be filled. Default is true. */
-        /*md   filled={false} */
-        filled = config.value("filled", filled);
+        /// If true, the rectangle will be filled. Default is true.
+        filled = config.value("filled", filled); //eg: false
 
         /*md md_config_end */
     }
