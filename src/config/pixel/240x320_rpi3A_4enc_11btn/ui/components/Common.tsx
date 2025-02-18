@@ -56,12 +56,12 @@ export function Common({
             {!hideSequencer && (
                 <SeqProgressBar
                     bounds={[0, 0, ScreenWidth, 5]}
-                    seq_plugin="Sequencer"
-                    active_color={rgb(35, 161, 35)}
-                    selection_color={rgb(35, 161, 35)}
-                    foreground_color={rgb(34, 110, 34)}
-                    volume_plugin="TrackFx VOLUME"
-                    show_steps
+                    audioPlugin="Sequencer"
+                    activeColor={rgb(35, 161, 35)}
+                    selectionColor={rgb(35, 161, 35)}
+                    fgColor={rgb(34, 110, 34)}
+                    volumePlugin={{ plugin: 'TrackFx', param: 'VOLUME' }}
+                    showSteps
                     track={track}
                 />
             )}

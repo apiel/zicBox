@@ -49,11 +49,6 @@ export function getJsonComponent<P>(componentName: string, pluginPath: string) {
     };
 }
 
-// TODO to be deprecated
-export function getOldComponentToBeDeprecated(name: string, bounds: Bounds, values: ZicValue[] = []) {
-    return [{ OLD_COMPONENT: `${name} ${getPosition(bounds)}` }, values];
-}
-
 /**
  * Add a zone encoder
  * @param position string | string[] - The position of the component.

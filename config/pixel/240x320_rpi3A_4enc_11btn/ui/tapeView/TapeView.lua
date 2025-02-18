@@ -1,10 +1,6 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
 local React = require("config.libs.react")
-local ____Keymap = require("config.libs.nativeComponents.Keymap")
-local Keymap = ____Keymap.Keymap
-local ____Tape = require("config.libs.nativeComponents.Tape")
-local Tape = ____Tape.Tape
 local ____View = require("config.libs.nativeComponents.View")
 local View = ____View.View
 local ____TextGrid = require("config.libs.tsComponents.TextGrid")
@@ -19,19 +15,6 @@ function ____exports.TapeView(____bindingPattern0)
     return React.createElement(
         View,
         {name = name},
-        React.createElement(
-            Tape,
-            {
-                bounds = {0, 0, 240, 280},
-                filename = "rec",
-                bpm_audioPlugin = "Tempo",
-                param = "BPM",
-                tape_plugin = "Tape PLAY_STOP"
-            },
-            React.createElement(Keymap, {key = "q", action = ".playStop"}),
-            React.createElement(Keymap, {key = "a", action = ".left"}),
-            React.createElement(Keymap, {key = "d", action = ".right"})
-        ),
         React.createElement(TextGrid, {bounds = KeyInfoPosition, rows = {"&icon::play::filled Save &empty", "&icon::arrowLeft::filled Exit &icon::arrowRight::filled"}, keys = {{key = btn2, action = "setView:SaveTape"}, {key = btn6, action = "setView:Menu"}}})
     )
 end

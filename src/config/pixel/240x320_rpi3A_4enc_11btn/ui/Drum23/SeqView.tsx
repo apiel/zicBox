@@ -1,12 +1,9 @@
 import * as React from '@/libs/react';
 
-import { Keymaps } from '@/libs/nativeComponents/Keymaps';
-import { StepEditDrum } from '@/libs/nativeComponents/StepEditDrum';
 import { View } from '@/libs/nativeComponents/View';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
-import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
-import { btn1, btn2, btn5, btn6, btn7, btnShift, ColorTrack1, Drum23Track, KeyInfoPosition, ScreenWidth } from '../constants';
+import { btn2, btn5, btn6, btn7, btnShift, ColorTrack1, Drum23Track, KeyInfoPosition } from '../constants';
 
 export type Props = {
     name: string;
@@ -16,7 +13,7 @@ export function Drum23SeqView({ name }: Props) {
     let y = 0;
     return (
         <View name={name}>
-            {Array.from({ length: 32 }, (_, i) => {
+            {/* {Array.from({ length: 32 }, (_, i) => {
                 const yy = y + 5;
                 y += 8 + (i % 4 == 3 ? 4 : 0);
                 return (
@@ -36,7 +33,7 @@ export function Drum23SeqView({ name }: Props) {
                         <Keymaps keys={[{ key: btn1, action: '.toggle' }]} />
                     </StepEditDrum>
                 );
-            })}
+            })} */}
 
             <TextGrid
                 bounds={KeyInfoPosition}
