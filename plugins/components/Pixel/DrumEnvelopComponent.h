@@ -149,43 +149,43 @@ public:
         timeDataId = id + 2;
         modDataId = id + 3;
 
-        /*md Set if the envelop should be outlined or not. (default: true) */        
+        /*md // Set if the envelop should be outlined or not. (default: true) */        
         /*md outline={false} */
         outline = config.value("outline", outline);
 
-        /*md Set if the envelop should be filled or not. (default: true) */
+        /*md // Set if the envelop should be filled or not. (default: true) */
         /*md filled={false} */
         filled = config.value("filled", filled);
 
-        /*md Set if the title should be rendered on top or not. (default: true) */
+        /*md // Set if the title should be rendered on top or not. (default: true) */
         /*md renderTitleOnTop={false} */
         renderValuesOnTop = config.value("renderTitleOnTop", renderValuesOnTop);
 
-        /*md Set the color of the graph. */
+        /*md // Set the color of the graph. */
         /*md fillColor="#000000" */
         fillColor = draw.getColor(config["fillColor"], fillColor);
 
-        /*md Set the color of the outline. */
+        /*md // Set the color of the outline. */
         /*md outlineColor="#000000" */
         outlineColor = draw.getColor(config["outlineColor"], outlineColor);
 
-        /*md Set the color of the cursor. */
+        /*md // Set the color of the cursor. */
         /*md cursorColor="#000000" */
         cursorColor = draw.getColor(config["cursorColor"], cursorColor);
 
-        /*md Set the color of the text. */
+        /*md // Set the color of the text. */
         /*md textColor="#000000" */
         textColor = draw.getColor(config["textColor"], textColor);
 
-        /*md Set the id of the encoder to change time parameter. */
+        /*md // Set the id of the encoder to change time parameter. */
         /*md encoderTime={0} */
         encoderTime = config.value("encoderTime", encoderTime);
 
-        /*md Set the id of the encoder to change phase parameter. */
+        /*md // Set the id of the encoder to change phase parameter. */
         /*md encoderPhase={0} */
         encoderPhase = config.value("encoderPhase", encoderPhase);
 
-        //md Set the id of the encoder to change modulation parameter.
+        //md // Set the id of the encoder to change modulation parameter.
         //md encoderModulation={0}
         encoderModulation = config.value("encoderModulation", encoderModulation);
 
