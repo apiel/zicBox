@@ -69,7 +69,7 @@ public:
         /*md   borderColor="#ffffff" */
         border = draw.getColor(config["borderColor"], border);
 
-        /*md   // The encoder id that will interract with this component.
+        /*md   // The encoder id that will interract with this component. */
         /*md   encoderId={0} */
         encoderId = config["encoderId"].get<int8_t>();
 
@@ -81,7 +81,7 @@ public:
         }
         plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track);
 
-                /*md   // The audio plugin key parameter to get control on. */
+        /*md   // The audio plugin key parameter to get control on. */
         /*md   param="parameter_name" */
         if (!config.contains("param")) {
             logWarn("FmAlgo component is missing param parameter.");
