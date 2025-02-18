@@ -169,21 +169,17 @@ public:
         /*md   outlineColor="#000000" */
         outlineColor = draw.getColor(config["outlineColor"], outlineColor);
 
-        /*md   // Set the color of the cursor. */
-        /*md   cursorColor="#000000" */
-        cursorColor = draw.getColor(config["cursorColor"], cursorColor);
+        //md   // Set the color of the cursor.
+        cursorColor = draw.getColor(config["cursorColor"], cursorColor); //eg: "#ffffff"
 
-        /*md   // Set the color of the text. */
-        /*md   textColor="#000000" */
+        //md   // Set the color of the text.
         textColor = draw.getColor(config["textColor"], textColor); //eg: "#ffffff"
 
-        /*md   // Set the id of the encoder to change time parameter. */
-        /*md   encoderTime={0} */
-        encoderTime = config.value("encoderTime", encoderTime);
+        //md   // Set the id of the encoder to change time parameter.
+        encoderTime = config.value("encoderTime", encoderTime); //eg: 0
 
-        /*md   // Set the id of the encoder to change phase parameter. */
-        /*md   encoderPhase={0} */
-        encoderPhase = config.value("encoderPhase", encoderPhase);
+        //md   // Set the id of the encoder to change phase parameter.
+        encoderPhase = config.value("encoderPhase", encoderPhase); //eg: 0
 
         //md   // Set the id of the encoder to change modulation parameter.
         //md   encoderModulation={0}
