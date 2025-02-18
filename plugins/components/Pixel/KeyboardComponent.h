@@ -1,8 +1,6 @@
-#ifndef _UI_PIXEL_COMPONENT_KEYBOARD_H_
-#define _UI_PIXEL_COMPONENT_KEYBOARD_H_
+#pragma once
 
 #include "plugins/components/base/Icon.h"
-#include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/VisibilityContext.h"
 #include "plugins/components/utils/VisibilityGroup.h"
@@ -19,7 +17,6 @@ Keyboard components to display keyboard.
 class KeyboardComponent : public Component {
 protected:
     Icon icon;
-    KeypadLayout keypadLayout;
 
     Color bgColor;
     Color itemBackground;
@@ -40,13 +37,7 @@ protected:
 
 public:
     KeyboardComponent(ComponentInterface::Props props)
-        : Component(props)
-        , icon(props.view->draw)
-        , bgColor(styles.colors.background)
-        , textColor(styles.colors.text)
-        , itemBackground(lighten(styles.colors.background, 0.5))
-        , selectionColor(styles.colors.primary)
-        , keypadLayout(this, [&](std::string action) {
+        : Component(props, [&](std::string action) {
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
             if (action == ".left") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
@@ -131,6 +122,11 @@ public:
 
             return func;
         })
+        , icon(props.view->draw)
+        , bgColor(styles.colors.background)
+        , textColor(styles.colors.text)
+        , itemBackground(lighten(styles.colors.background, 0.5))
+        , selectionColor(styles.colors.primary)
     {
         if (size.w / 9 < itemSize.w) {
             itemSize.w = size.w / 9;
@@ -179,15 +175,6 @@ public:
         itemBackground = draw.getColor(config["itemBackground"], itemBackground);
 
         /*md md_config_end */
-    }
-
-    bool config(char* key, char* value) override
-    {
-        if (keypadLayout.config(key, value)) {
-            return true;
-        }
-
-        return false;
     }
 
     void done()
@@ -239,11 +226,4 @@ public:
             draw.textCentered({ pos.x + itemSize.w * 3 + ((itemSize.w * 2) - 2) / 2, pos.y + textPos.y }, "Done", 8, { textColor });
         }
     }
-
-    void onKey(uint16_t id, int key, int8_t state, unsigned long now)
-    {
-        keypadLayout.onKey(id, key, state, now);
-    }
 };
-
-#endif

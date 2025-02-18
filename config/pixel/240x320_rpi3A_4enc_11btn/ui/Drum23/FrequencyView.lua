@@ -20,7 +20,7 @@ function ____exports.FrequencyView(____bindingPattern0)
     return React.createElement(
         View,
         {name = name},
-        React.createElement(MacroEnvelop, {bounds = fullValues, plugin = "Drum23", envelop_data_id = "ENV_FREQ2", track = Drum23Track}),
+        React.createElement(MacroEnvelop, {bounds = fullValues, audioPlugin = "Drum23", envelopDataId = "ENV_FREQ2", track = Drum23Track}),
         React.createElement(TextGridDrum23, {selected = "Freq", viewName = name}),
         React.createElement(Common, {selected = "Kick", track = Drum23Track, selectedBackground = ColorTrack1})
     )

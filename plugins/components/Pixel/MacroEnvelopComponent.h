@@ -124,6 +124,74 @@ public:
         , outlineColor(lighten(styles.colors.primary, 0.5))
     {
         updateGraphHeight();
+
+        /*md md_config:MacroEnvelop */
+        nlohmann::json config = props.config;
+
+        /*md   // The audio plugin to get control on. */
+        /*md   audioPlugin="audio_plugin_name" */
+        if (!config.contains("audioPlugin")) {
+            logWarn("MacroEnvelop component is missing audioPlugin parameter.");
+            return;
+        }
+        plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track);
+
+        /*md   // Envelop data id to get/set data in the audio plugin. */
+        /*md   envelopDataId="ENV_AMP" */
+        if (!config.contains("envelopDataId")) {
+            logWarn("MacroEnvelop component is missing envelopDataId parameter.");
+            return;
+        }
+        uint8_t id = plugin->getDataId(config["envelopDataId"].get<std::string>().c_str());
+        envData = (std::vector<Data>*)plugin->data(id);
+        modeDataId = id + 1; // A bit cluncky, need to find better solution..
+        isMacroDataId = id + 2;
+        macro1DataId = id + 3;
+        macro2DataId = id + 4;
+        macro3DataId = id + 5;
+
+        isMacro = (bool*)plugin->data(isMacroDataId);
+
+        modePtr = (std::string*)plugin->data(modeDataId);
+        macro1 = *(float*)plugin->data(macro1DataId);
+        macro2 = *(float*)plugin->data(macro2DataId);
+        macro3 = *(float*)plugin->data(macro3DataId);
+
+
+        /*md Set if the envelop should be outlined or not. (default: true) */        
+        /*md outline={false} */
+        outline = config.value("outline", outline);
+
+        /*md Set if the envelop should be filled or not. (default: true) */
+        /*md filled={false} */
+        filled = config.value("filled", filled);
+
+        /*md Set the color of the graph. */
+        /*md fillColor="#000000" */
+        fillColor = draw.getColor(config["fillColor"], fillColor);
+
+        /*md Set the color of the outline. */
+        /*md outlineColor="#000000" */
+        outlineColor = draw.getColor(config["outlineColor"], outlineColor);
+
+        /*md Set the color of the cursor. */
+        /*md cursorColor="#000000" */
+        cursorColor = draw.getColor(config["cursorColor"], cursorColor);
+
+        /*md Set the color of the text. */
+        /*md textColor="#000000" */
+        textColor = draw.getColor(config["textColor"], textColor);
+
+        /*md Set the id of the encoder to change the envelop prarameters. */
+        /*md encoders={[0, 1, 2, 3]} */
+        if (config.contains("encoders") && config["encoders"].is_array()) {
+            encoders[0] = config["encoders"][0].get<int>();
+            encoders[1] = config["encoders"][1].get<int>();
+            encoders[2] = config["encoders"][2].get<int>();
+            encoders[3] = config["encoders"][3].get<int>();
+        }
+
+        /*md md_config_end */
     }
 
     void render() override
@@ -176,92 +244,5 @@ public:
                 renderNext();
             }
         }
-    }
-
-    /*md **Config**: */
-    bool config(char* key, char* value)
-    {
-        /*md - `PLUGIN: plugin_name` set plugin target */
-        if (strcmp(key, "PLUGIN") == 0) {
-            plugin = &getPlugin(value, track);
-            return true;
-        }
-
-        /*md - `ENVELOP_DATA_ID: id` is the id of the envelope data.*/
-        if (strcmp(key, "ENVELOP_DATA_ID") == 0) {
-            if (plugin == NULL) {
-                throw std::runtime_error("MacroEnvelopComponent cannot set ENVELOP_DATA_ID: plugin is not set");
-            }
-            uint8_t id = plugin->getDataId(value);
-            envData = (std::vector<Data>*)plugin->data(id);
-
-            modeDataId = id + 1;
-            isMacroDataId = id + 2;
-            macro1DataId = id + 3;
-            macro2DataId = id + 4;
-            macro3DataId = id + 5;
-
-            isMacro = (bool*)plugin->data(isMacroDataId);
-
-            modePtr = (std::string*)plugin->data(modeDataId);
-            macro1 = *(float*)plugin->data(macro1DataId);
-            macro2 = *(float*)plugin->data(macro2DataId);
-            macro3 = *(float*)plugin->data(macro3DataId);
-
-            return true;
-        }
-
-        /*md - `OUTLINE: true/false` is if the envelop should be outlined (default: true). */
-        if (strcmp(key, "OUTLINE") == 0) {
-            outline = strcmp(value, "true") == 0;
-            return true;
-        }
-
-        /*md - `FILLED: true/false` is if the envelop should be filled (default: true). */
-        if (strcmp(key, "FILLED") == 0) {
-            filled = strcmp(value, "true") == 0;
-            return true;
-        }
-
-        /*md - `ENCODER_PHASE: mode macro1 macro2 macro3` is the id of the encoders. */
-        if (strcmp(key, "ENCODERS") == 0) {
-            encoders[0] = atoi(strtok(value, " "));
-            encoders[1] = atoi(strtok(NULL, " "));
-            encoders[2] = atoi(strtok(NULL, " "));
-            encoders[3] = atoi(strtok(NULL, " "));
-            return true;
-        }
-
-        /*md - `BACKGROUND_COLOR: color` is the background color of the component. */
-        if (strcmp(key, "BACKGROUND_COLOR") == 0) {
-            bgColor = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `FILL_COLOR: color` is the color of the envelop. */
-        if (strcmp(key, "FILL_COLOR") == 0) {
-            fillColor = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `OUTLINE_COLOR: color` is the color of the envelop outline. */
-        if (strcmp(key, "OUTLINE_COLOR") == 0) {
-            outlineColor = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `TEXT_COLOR: color` is the color of the text. */
-        if (strcmp(key, "TEXT_COLOR") == 0) {
-            textColor = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `CURSOR_COLOR: color` is the color of the cursor. */
-        if (strcmp(key, "CURSOR_COLOR") == 0) {
-            cursorColor = draw.getColor(value);
-            return true;
-        }
-
-        return false;
     }
 };
