@@ -1,7 +1,6 @@
 import * as React from '@/libs/react';
 
 import { Keymap } from '@/libs/nativeComponents/Keymap';
-import { Keymaps } from '@/libs/nativeComponents/Keymaps';
 import { View } from '@/libs/nativeComponents/View';
 import { VisibilityContext } from '@/libs/nativeComponents/VisibilityContext';
 import { Workspaces } from '@/libs/nativeComponents/Workspaces';
@@ -15,16 +14,16 @@ export type Props = {
 export function WorkspacesView({ name }: Props) {
     return (
         <View name={name}>
-            <Workspaces plugin="SerializeTrack" bounds={[0, 0, ScreenWidth, 280]}>
-                <Keymaps
-                    keys={[
-                        { key: btn5, action: '.data:LOAD_WORKSPACE', context: '254:0' },
-                        { key: btn2, action: '.up', context: '254:0' },
-                        { key: btn6, action: '.down', context: '254:0' },
-                        { key: btn7, action: '.delete', context: '254:1' },
-                    ]}
-                />
-            </Workspaces>
+            <Workspaces
+                audioPlugin="SerializeTrack"
+                bounds={[0, 0, ScreenWidth, 280]}
+                keys={[
+                    { key: btn5, action: '.data:LOAD_WORKSPACE', context: { id: 254, value: 0 } },
+                    { key: btn2, action: '.up', context: { id: 254, value: 0 } },
+                    { key: btn6, action: '.down', context: { id: 254, value: 0 } },
+                    { key: btn7, action: '.delete', context: { id: 254, value: 1 } },
+                ]}
+            />
 
             <TextGrid
                 bounds={KeyInfoPosition}

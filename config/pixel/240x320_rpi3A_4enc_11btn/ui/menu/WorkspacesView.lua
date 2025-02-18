@@ -3,8 +3,6 @@ local ____exports = {}
 local React = require("config.libs.react")
 local ____Keymap = require("config.libs.nativeComponents.Keymap")
 local Keymap = ____Keymap.Keymap
-local ____Keymaps = require("config.libs.nativeComponents.Keymaps")
-local Keymaps = ____Keymaps.Keymaps
 local ____View = require("config.libs.nativeComponents.View")
 local View = ____View.View
 local ____VisibilityContext = require("config.libs.nativeComponents.VisibilityContext")
@@ -26,11 +24,7 @@ function ____exports.WorkspacesView(____bindingPattern0)
     return React.createElement(
         View,
         {name = name},
-        React.createElement(
-            Workspaces,
-            {plugin = "SerializeTrack", bounds = {0, 0, ScreenWidth, 280}},
-            React.createElement(Keymaps, {keys = {{key = btn5, action = ".data:LOAD_WORKSPACE", context = "254:0"}, {key = btn2, action = ".up", context = "254:0"}, {key = btn6, action = ".down", context = "254:0"}, {key = btn7, action = ".delete", context = "254:1"}}})
-        ),
+        React.createElement(Workspaces, {audioPlugin = "SerializeTrack", bounds = {0, 0, ScreenWidth, 280}, keys = {{key = btn5, action = ".data:LOAD_WORKSPACE", context = {id = 254, value = 0}}, {key = btn2, action = ".up", context = {id = 254, value = 0}}, {key = btn6, action = ".down", context = {id = 254, value = 0}}, {key = btn7, action = ".delete", context = {id = 254, value = 1}}}}),
         React.createElement(
             TextGrid,
             {bounds = KeyInfoPosition, rows = {"&empty &icon::arrowUp::filled ...", "Use &icon::arrowDown::filled Exit"}},

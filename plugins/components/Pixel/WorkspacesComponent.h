@@ -1,5 +1,4 @@
-#ifndef _UI_PIXEL_COMPONENT_WORKSPACES_H_
-#define _UI_PIXEL_COMPONENT_WORKSPACES_H_
+#pragma once
 
 #include "./ListComponent.h"
 
@@ -62,9 +61,42 @@ public:
         , badgeColor(rgb(39, 128, 39))
         , errorColor(rgb(173, 99, 99))
     {
-        // keypadLayout.getCustomAction = [this](std::string action) {
-        //     return getKeypadAction(action);
-        // };
+        /*md md_config:Workspaces */
+        nlohmann::json config = props.config;
+
+        /*md   // The audio plugin to load serialized data. */
+        /*md   audioPlugin="audio_plugin_name" */
+        if (!config.contains("audioPlugin")) {
+            logWarn("Workspaces component is missing audioPlugin parameter.");
+            return;
+        }
+        plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track);
+
+        /*md   currentWorkspaceDataId="CURRENT_WORKSPACE" */
+        currentWorkspaceName = (std::string*)plugin->data(plugin->getDataId(config.value("currentWorkspaceDataId", "CURRENT_WORKSPACE")));
+
+        /*md   refreshStateDataId="CREATE_WORKSPACE" */
+        refreshState = (int*)plugin->data(plugin->getDataId(config.value("refreshStateDataId", "CREATE_WORKSPACE")));
+        currentRefreshState = *refreshState;
+
+        /*md   workspaceFolder="workspaces" */
+        if (config.contains("workspaceFolder")) {
+            workspaceFolder = config["workspaceFolder"].get<std::string>();
+            initItems();
+        }
+
+        /*md   // The background color of the text. */
+        /*md   bgColor="#000000" */
+        bgColor = draw.getColor(config["bgColor"], bgColor);
+
+        /*md   badgeColor="#23a123" */
+        badgeColor = draw.getColor(config["badgeColor"], badgeColor);
+
+        /*md   errorColor="#ab6363" */
+        errorColor = draw.getColor(config["errorColor"], errorColor);
+
+        /*md md_config_end */
+
         initItems();
     }
 
@@ -97,45 +129,4 @@ public:
             error = Error::NONE;
         }
     }
-
-    /*md **Config**: */
-    bool config(char* key, char* value)
-    {
-        /*md - `PLUGIN: plugin` is the plugin to use to make action on the list. */
-        if (strcmp(key, "PLUGIN") == 0) {
-            plugin = &getPlugin(strtok(value, " "), track);
-            uint8_t dataId = plugin->getDataId("CURRENT_WORKSPACE");
-            currentWorkspaceName = (std::string*)plugin->data(dataId);
-            refreshState = (int*)plugin->data(plugin->getDataId("CREATE_WORKSPACE"));
-            currentRefreshState = *refreshState;
-            return true;
-        }
-
-        /*md - `WORKSPACE_FOLDER: workspaceFolder` to set workspace folder. By default it is `workspaces`.*/
-        if (strcmp(key, "WORKSPACE_FOLDER") == 0) {
-            workspaceFolder = value;
-            initItems();
-            return true;
-        }
-
-        /*md - `BADGE_COLOR: badgeColor` to set badge color. By default it is `#23a123`.*/
-        if (strcmp(key, "BADGE_COLOR") == 0) {
-            badgeColor = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `ERROR_COLOR: errorColor` to set error color. By default it is `#ad6363`.*/
-        if (strcmp(key, "ERROR_COLOR") == 0) {
-            errorColor = draw.getColor(value);
-            return true;
-        }
-
-        if (ListComponent::config(key, value)) {
-            return true;
-        }
-
-        return false;
-    }
 };
-
-#endif
