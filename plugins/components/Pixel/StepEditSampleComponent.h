@@ -108,42 +108,36 @@ public:
         /*md md_config:StepEditSample */
         nlohmann::json config = props.config;
 
-        /*md   // The audio plugin to get control on. */
-        /*md   audioPlugin="audio_plugin_name" */
+        /// The audio plugin to get control on.
         if (!config.contains("audioPlugin")) {
             logWarn("StepEditSample component is missing audioPlugin parameter.");
             return;
         }
-        plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track);
+        plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track); //eq: "audio_plugin_name"
 
-        /*md   // Index of the step. */
-        /*md   stepIndex={0} */
+        /// Index of the step.
         if (!config.contains("stepIndex")) {
             logWarn("StepEditSample component is missing stepIndex parameter.");
             return;
         }
-        stepIndex = config["stepIndex"].get<uint8_t>();
+        stepIndex = config["stepIndex"].get<uint8_t>(); //eg: 0
 
         step = (SampleStep*)plugin->data(plugin->getDataId("GET_STEP"), &stepIndex);
         nextFileDataId = plugin->getDataId("NEXT_FILE");
         prevFileDataId = plugin->getDataId("PREVIOUS_FILE");
         playStepDataId = plugin->getDataId("PLAY_STEP");
 
-        /*md   // The background color of the text. */
-        /*md   bgColor="#000000" */
-        bgColor = draw.getColor(config["bgColor"], bgColor);
+        /// The background color of the text.
+        bgColor = draw.getColor(config["bgColor"], bgColor); //eg: "#000000"
 
-        /*md   // The color of the text */
-        /*md   textColor="#ffffff" */
-        text = draw.getColor(config["textColor"], text);
+        /// The color of the text
+        text = draw.getColor(config["textColor"], text); //eg: "#ffffff"
 
-        /*md The color of the actual playing step. */
-        /*md playingColor="#ffffff" */
-        playingColor = draw.getColor(config["playingColor"], playingColor);
+        /// The color of the actual playing step.
+        playingColor = draw.getColor(config["playingColor"], playingColor); //eg: "#ffffff"
 
-        /*md The color of the selected step. */
-        /*md selectedColor="#ffffff" */
-        selection = draw.getColor(config["selectedColor"], selection);
+        /// The color of the selected step.
+        selection = draw.getColor(config["selectedColor"], selection); //eg: "#ffffff"
 
         /*md md_config_end */
     }

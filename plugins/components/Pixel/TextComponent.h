@@ -38,30 +38,23 @@ public:
         if (!config.contains("text")) {
             logWarn("Text component is missing text parameter.");
         }
-        /*md   // The text to display. */
-        /*md   text="Hello World" */
-        text = config["text"].get<std::string>();
-        /*md   // If true, the text will be centered. Default is false. */
-        /*md   centered */
-        centered = config.value("centered", centered);
-        /*md   // The font size of the text. Default is 8. */
-        /*md   fontSize=8 */
-        fontSize = config.value("fontSize", 8);
-        /*md   // The font of the text. Default is null. */
-        /*md   font="Sinclair_S" */
+        /// The text to display.
+        text = config["text"].get<std::string>(); //eg: "Hello World"
+        /// If true, the text will be centered. Default is false.
+        centered = config.value("centered", centered); //eg: true
+        /// The font size of the text. Default is 8.
+        fontSize = config.value("fontSize", 8); //eg: 8
+        /// The font of the text. Default is null.
         if (config.contains("font")) {
-            font = draw.getFont(config["font"].get<std::string>().c_str());
+            font = draw.getFont(config["font"].get<std::string>().c_str()); //eg: "Sinclair_S"
         }
-        /*md   // The font height of the text. Default is 0. */
-        /*md   fontHeight=0 */
-        fontHeight = config.value("fontHeight", fontHeight);
-        /*md   // The background color of the text. */
-        /*md   bgColor="#000000" */
-        bgColor = draw.getColor(config["bgColor"], bgColor);
-        
-        /*md   // The color of the text */
-        /*md   color="#ffffff" */
-        color = draw.getColor(config["color"], color);
+        /// The font height of the text. Default is 0.
+        fontHeight = config.value("fontHeight", fontHeight); //eg: 0
+        /// The background color of the text.
+        bgColor = draw.getColor(config["bgColor"], bgColor); //eg: "#000000"
+
+        /// The color of the text
+        color = draw.getColor(config["color"], color); //eg: "#ffffff"
 
         /*md md_config_end */
     }
