@@ -48,12 +48,13 @@ function ____exports.SampleEditorView(____bindingPattern0)
                     StepEditSample,
                     {
                         bounds = {0, yy, ScreenWidth, 8},
-                        data = "SampleSequencer " .. tostring(i),
+                        audioPlugin = "SampleSequencer",
+                        stepIndex = i,
                         track = SampleTrack,
                         group = i,
-                        playing_color = rgb(35, 161, 35),
-                        background_color = (i % 8 == 0 or i % 8 == 1 or i % 8 == 2 or i % 8 == 3) and rgb(42, 54, 56) or "background",
-                        selected_color = rgb(76, 94, 97)
+                        playingColor = rgb(35, 161, 35),
+                        bgColor = (i % 8 == 0 or i % 8 == 1 or i % 8 == 2 or i % 8 == 3) and rgb(42, 54, 56) or "background",
+                        selectedColor = rgb(76, 94, 97)
                     },
                     React.createElement(Keymaps, {keys = {{key = btn1, action = ".toggle"}, {key = btn7, action = ".play"}}})
                 )

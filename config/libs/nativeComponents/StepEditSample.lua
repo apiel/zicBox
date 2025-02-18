@@ -1,19 +1,6 @@
-local ____lualib = require("lualib_bundle")
-local __TS__ObjectRest = ____lualib.__TS__ObjectRest
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
 local ____ui = require("config.libs.ui")
-local getOldComponentToBeDeprecated = ____ui.getOldComponentToBeDeprecated
-local initializePlugin = ____ui.initializePlugin
-function ____exports.StepEditSample(____bindingPattern0)
-    local props
-    local data
-    local track
-    local bounds
-    bounds = ____bindingPattern0.bounds
-    track = ____bindingPattern0.track
-    data = ____bindingPattern0.data
-    props = __TS__ObjectRest(____bindingPattern0, {bounds = true, track = true, data = true})
-    initializePlugin("StepEditSample", "libzic_StepEditSampleComponent.so")
-    return getOldComponentToBeDeprecated("StepEditSample", bounds, {{track = track}, {data = data}, props})
-end
+local getJsonComponent = ____ui.getJsonComponent
+____exports.StepEditSample = getJsonComponent("StepEditSample", "libzic_StepEditSampleComponent.so")
 return ____exports
