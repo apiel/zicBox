@@ -57,42 +57,35 @@ public:
         /*md md_config:FmAlgo */
         nlohmann::json config = props.config;
 
-        /*md   // The background color of the text. */
-        /*md   bgColor="#000000" */
-        background = draw.getColor(config["bgColor"], background);
+        /// The background color of the text.
+        background = draw.getColor(config["bgColor"], background); //eg: "#000000"
 
-        /*md   // The color of the text */
-        /*md   textColor="#ffffff" */
-        text = draw.getColor(config["textColor"], text);
+        /// The color of the text.
+        text = draw.getColor(config["textColor"], text); //eg: "#ffffff"
 
-        /*md   // The color of the border */
-        /*md   borderColor="#ffffff" */
-        border = draw.getColor(config["borderColor"], border);
+        /// The color of the border.
+        border = draw.getColor(config["borderColor"], border); //eg: "#ffffff"
 
-        /*md   // The encoder id that will interract with this component. */
-        /*md   encoderId={0} */
-        encoderId = config["encoderId"].get<int8_t>();
+        /// The encoder id that will interract with this component. */
+        encoderId = config["encoderId"].get<int8_t>(); // eg: 0
 
-        /*md   // The audio plugin to get control on. */
-        /*md   audioPlugin="audio_plugin_name" */
+        /// The audio plugin to get control on.
         if (!config.contains("audioPlugin")) {
             logWarn("FmAlgo component is missing audioPlugin parameter.");
             return;
         }
-        plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track);
+        plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track); //eg: "audio_plugin_name"
 
-        /*md   // The audio plugin key parameter to get control on. */
-        /*md   param="parameter_name" */
+        /// The audio plugin key parameter to get control on.
         if (!config.contains("param")) {
             logWarn("FmAlgo component is missing param parameter.");
             return;
         }
-        std::string param = config["param"].get<std::string>();
+        std::string param = config["param"].get<std::string>(); //eg: "parameter_name"
         value = watch(plugin->getValue(param));
 
-        /*md   // The data id that will return the current algorithm layout. */
-        /*md   dataId="ALGO" */
-        dataId = plugin->getDataId(config.value("dataId", "ALGO"));
+        /// The data id that will return the current algorithm layout.
+        dataId = plugin->getDataId(config.value("dataId", "ALGO")); //eg: "ALGO"
 
         /*md md_config_end */
     }
