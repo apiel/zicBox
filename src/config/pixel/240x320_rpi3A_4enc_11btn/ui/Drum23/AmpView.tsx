@@ -24,12 +24,12 @@ export function AmpView({ name }: Props) {
         <View name={name}>
             <DrumEnvelop
                 bounds={topValues}
-                plugin="Drum23"
-                envelop_data_id="0"
-                RENDER_TITLE_ON_TOP={false}
-                encoder_time={encTopLeft}
-                encoder_modulation={encTopRight}
-                encoder_phase={encBottomLeft}
+                audioPlugin="Drum23"
+                envelopDataId="ENV_AMP"
+                renderValuesOnTop={false}
+                encoderTime={encTopLeft}
+                encoderModulation={encTopRight}
+                encoderPhase={encBottomLeft}
                 track={Drum23Track}
             />
             <KnobValue

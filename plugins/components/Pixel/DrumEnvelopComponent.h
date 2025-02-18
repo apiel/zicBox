@@ -1,8 +1,8 @@
 #pragma once
 
-#include "helpers/range.h"
 #include "../component.h"
 #include "../utils/color.h"
+#include "helpers/range.h"
 #include <stdexcept>
 
 /*md
@@ -125,6 +125,71 @@ public:
         , outlineColor(lighten(styles.colors.primary, 0.5))
     {
         updateGraphHeight();
+
+        /*md md_config:DrumEnvelop */
+        nlohmann::json config = props.config;
+
+        /*md   // The audio plugin to get control on. */
+        /*md   audioPlugin="audio_plugin_name" */
+        if (!config.contains("audioPlugin")) {
+            logWarn("DrumEnvelop component is missing audioPlugin parameter.");
+            return;
+        }
+        plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track);
+
+        /*md   // Envelop data id to get/set data in the audio plugin. */
+        /*md   envelopDataId="ENV_AMP" */
+        if (!config.contains("envelopDataId")) {
+            logWarn("DrumEnvelop component is missing envelopDataId parameter.");
+            return;
+        }
+        uint8_t id = plugin->getDataId(config["envelopDataId"].get<std::string>().c_str());
+        envData = (std::vector<Data>*)plugin->data(id);
+        currentStepDataId = id + 1; // This is a bit cluncky, should try to find something better...
+        timeDataId = id + 2;
+        modDataId = id + 3;
+
+        /*md Set if the envelop should be outlined or not. (default: true) */        
+        /*md outline={false} */
+        outline = config.value("outline", outline);
+
+        /*md Set if the envelop should be filled or not. (default: true) */
+        /*md filled={false} */
+        filled = config.value("filled", filled);
+
+        /*md Set if the title should be rendered on top or not. (default: true) */
+        /*md renderTitleOnTop={false} */
+        renderValuesOnTop = config.value("renderTitleOnTop", renderValuesOnTop);
+
+        /*md Set the color of the graph. */
+        /*md fillColor="#000000" */
+        fillColor = draw.getColor(config["fillColor"], fillColor);
+
+        /*md Set the color of the outline. */
+        /*md outlineColor="#000000" */
+        outlineColor = draw.getColor(config["outlineColor"], outlineColor);
+
+        /*md Set the color of the cursor. */
+        /*md cursorColor="#000000" */
+        cursorColor = draw.getColor(config["cursorColor"], cursorColor);
+
+        /*md Set the color of the text. */
+        /*md textColor="#000000" */
+        textColor = draw.getColor(config["textColor"], textColor);
+
+        /*md Set the id of the encoder to change time parameter. */
+        /*md encoderTime={0} */
+        encoderTime = config.value("encoderTime", encoderTime);
+
+        /*md Set the id of the encoder to change phase parameter. */
+        /*md encoderPhase={0} */
+        encoderPhase = config.value("encoderPhase", encoderPhase);
+
+        /*md Set the id of the encoder to change modulation parameter. */
+        /*md encoderModulation={0} */
+        encoderModulation = config.value("encoderModulation", encoderModulation);
+
+        /*md md_config_end */
     }
 
     void render() override
@@ -172,123 +237,5 @@ public:
                 renderNext();
             }
         }
-    }
-
-    /*md **Config**: */
-    bool config(char* key, char* value)
-    {
-        /*md - `PLUGIN: plugin_name` set plugin target */
-        if (strcmp(key, "PLUGIN") == 0) {
-            plugin = &getPlugin(value, track);
-            return true;
-        }
-
-        /*md - `ENVELOP_DATA_ID: id` is the id of the envelope data.*/
-        if (strcmp(key, "ENVELOP_DATA_ID") == 0) {
-            if (plugin == NULL) {
-                throw std::runtime_error("DrumEnvelopComponent cannot set ENVELOP_DATA_ID: plugin is not set");
-            }
-            uint8_t id = plugin->getDataId(value);
-            envData = (std::vector<Data>*)plugin->data(id);
-            currentStepDataId = id + 1;
-            timeDataId = id + 2;
-            modDataId = id + 3;
-            return true;
-        }
-
-        /*md - `STEP_DATA_ID: id` is the data id to get/set the current step/phase to edit.*/
-        if (strcmp(key, "STEP_DATA_ID") == 0) {
-            if (plugin == NULL) {
-                throw std::runtime_error("DrumEnvelopComponent cannot set STEP_DATA_ID: plugin is not set");
-            }
-            currentStepDataId = plugin->getDataId(value);
-            return true;
-        }
-
-        /*md - `TIME_DATA_ID: id` is the data id to get/set the step to time.*/
-        if (strcmp(key, "TIME_DATA_ID") == 0) {
-            if (plugin == NULL) {
-                throw std::runtime_error("DrumEnvelopComponent cannot set TIME_DATA_ID: plugin is not set");
-            }
-            timeDataId = plugin->getDataId(value);
-            return true;
-        }
-
-        /*md - `MOD_DATA_ID: id` is the data id to get/set the step to mod.*/
-        if (strcmp(key, "MOD_DATA_ID") == 0) {
-            if (plugin == NULL) {
-                throw std::runtime_error("DrumEnvelopComponent cannot set MOD_DATA_ID: plugin is not set");
-            }
-            modDataId = plugin->getDataId(value);
-            return true;
-        }
-
-        /*md - `OUTLINE: true/false` is if the envelop should be outlined (default: true). */
-        if (strcmp(key, "OUTLINE") == 0) {
-            outline = strcmp(value, "true") == 0;
-            return true;
-        }
-
-        /*md - `FILLED: true/false` is if the envelop should be filled (default: true). */
-        if (strcmp(key, "FILLED") == 0) {
-            filled = strcmp(value, "true") == 0;
-            return true;
-        }
-
-        /*md - `ENCODER_PHASE: id` is the id of the encoder to control the phase. */
-        if (strcmp(key, "ENCODER_PHASE") == 0) {
-            encoderPhase = atoi(value);
-            return true;
-        }
-
-        /*md - `ENCODER_TIME: id` is the id of the encoder to control the time. */
-        if (strcmp(key, "ENCODER_TIME") == 0) {
-            encoderTime = atoi(value);
-            return true;
-        }
-
-        /*md - `RENDER_TITLE_ON_TOP: true/false` is if the title should be rendered on top (default: true). */
-        if (strcmp(key, "RENDER_TITLE_ON_TOP") == 0) {
-            renderValuesOnTop = strcmp(value, "true") == 0;
-            updateGraphHeight();
-            return true;
-        }
-
-        /*md - `ENCODER_MODULATION: id` is the id of the encoder to control the modulation. */
-        if (strcmp(key, "ENCODER_MODULATION") == 0) {
-            encoderModulation = atoi(value);
-            return true;
-        }
-
-        /*md - `BACKGROUND_COLOR: color` is the background color of the component. */
-        if (strcmp(key, "BACKGROUND_COLOR") == 0) {
-            bgColor = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `FILL_COLOR: color` is the color of the envelop. */
-        if (strcmp(key, "FILL_COLOR") == 0) {
-            fillColor = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `OUTLINE_COLOR: color` is the color of the envelop outline. */
-        if (strcmp(key, "OUTLINE_COLOR") == 0) {
-            outlineColor = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `TEXT_COLOR: color` is the color of the text. */
-        if (strcmp(key, "TEXT_COLOR") == 0) {
-            textColor = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `CURSOR_COLOR: color` is the color of the cursor. */
-        if (strcmp(key, "CURSOR_COLOR") == 0) {
-            cursorColor = draw.getColor(value);
-            return true;
-        }
-        return false;
     }
 };
