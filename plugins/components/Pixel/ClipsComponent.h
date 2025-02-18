@@ -171,15 +171,13 @@ public:
         visibleCount = config.value("visibleCount", visibleCount); //eg: 10
 
         /// The sequencer audio plugin.
-        //md   sequencerPlugin="audio_plugin_name"
-        AudioPlugin* pluginSeq = &getPlugin(config.value("sequencerPlugin", "Sequencer").c_str(), track);
+        AudioPlugin* pluginSeq = &getPlugin(config.value("sequencerPlugin", "Sequencer").c_str(), track); //eg: "audio_plugin_name"
         if (pluginSeq != NULL) {
             valSeqStatus = watch(pluginSeq->getValue("STATUS"));
         }
 
         /// The audio plugin to get serialized data.
-        //md   serializerPlugin="audio_plugin_name"
-        pluginSerialize = &getPlugin(config.value("serializerPlugin", "SerializeTrack").c_str(), track);
+        pluginSerialize = &getPlugin(config.value("serializerPlugin", "SerializeTrack").c_str(), track); //eg: "audio_plugin_name"
         if (!pluginSerialize) {
             logWarn("Clips component is missing serializerPlugin.");
             return;
