@@ -186,7 +186,7 @@ public:
         encoderPhase = config.value("encoderPhase", encoderPhase);
 
         /*md // Set the id of the encoder to change modulation parameter. */
-        /* md encoderModulation={0} */
+        /*md encoderModulation={0} */
         encoderModulation = config.value("encoderModulation", encoderModulation);
 
         /*md md_config_end */
