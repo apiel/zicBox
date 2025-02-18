@@ -84,11 +84,11 @@ public:
     /*md - `RESONANCE_ENV` set resonance using amplitude envelope.*/
     Val& resEnv = val(0.0f, "RESONANCE_ENV", { "Resonance Env.", .unit = "%" }, [&](auto p) { setResonance(p.value); });
 
-    /*//md - `MIX` set mix between audio input and output.*/
+    /*#md - `MIX` set mix between audio input and output.*/
     Val& mix = val(100.0f, "MIX", { "Mix in/out", .type = VALUE_CENTERED });
-    /*//md - `FM_AMP_MOD` set amplitude modulation amount using audio input.*/
+    /*#md - `FM_AMP_MOD` set amplitude modulation amount using audio input.*/
     Val& fmAmpMod = val(0.0f, "FM_AMP_MOD", { "FM.Amp", .unit = "%" });
-    /*//md - `FM_FREQ_MOD` set frequency modulation amount using audio input.*/
+    /*#md - `FM_FREQ_MOD` set frequency modulation amount using audio input.*/
     Val& fmFreqMod = val(0.0f, "FM_FREQ_MOD", { "FM.Freq", .unit = "%" });
 
     Val envAmpMod[ZIC_KICK_ENV_AMP_STEP + 1] = {

@@ -68,23 +68,27 @@ content
 const reg1 = /\*md\s((?:.|\n)*?)\s*\*\//g; //--> /*md content */
 const reg2 = /\/\/md\s(.*)/g; //--> //md content
 
+const reg = new RegExp(reg1.source + '|' + reg2.source, 'g');
+
 function extractMdComment(content) {
     const result = [];
     let match;
-    while ((match = reg1.exec(content)) !== null || (match = reg2.exec(content)) !== null) {
+    // while ((match = reg1.exec(content)) !== null || (match = reg2.exec(content)) !== null) {
+    while ((match = reg.exec(content)) !== null) {
+        const extractedContent = match[1] || match[2];
         const mdConfigMacro = 'md_config:';
         const mdConfigEndMacro = 'md_config_end';
-        if (match[1].startsWith(mdConfigMacro)) {
-            const componentName = match[1].slice(mdConfigMacro.length);
+        if (extractedContent.startsWith(mdConfigMacro)) {
+            const componentName = extractedContent.slice(mdConfigMacro.length);
             result.push(`
 \`\`\`tsx
 <${componentName}`);
-        } else if (match[1].startsWith(mdConfigEndMacro)) {
+        } else if (extractedContent.startsWith(mdConfigEndMacro)) {
             result.push(`/>
 \`\`\`
                 `);
         } else {
-            result.push(match[1]);
+            result.push(extractedContent);
         }
     }
     return result.join('\n');

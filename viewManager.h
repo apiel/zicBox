@@ -239,7 +239,7 @@ public:
 
     bool config(char* key, char* value, const char* filename)
     {
-        /*//md
+        /*#md
         ### PLUGIN_COMPONENT
 
         A component must be load from a shared library (those `.so` files). To load those plugin components, use `PLUGIN_COMPONENT: given_name_to_component ../path/of/the/component.so`.
@@ -254,7 +254,7 @@ public:
             loadPlugin(value, filename);
             return true;
         }
-        /*//md
+        /*#md
         ### COMPONENT
 
         To place previously loaded components inside a view, use `COMPONENT: given_name_to_component x y w h`.
@@ -278,7 +278,7 @@ public:
             }
         }
 
-        /*//md
+        /*#md
 ### VIEW
 
 The user interface is composed of multiple views that contain the components. A view, represent a full screen layout. Use `VIEW: name_of_the_veiw` to create a view. All the following `COMPONENT: ` will be assign to this view, till the next view.
