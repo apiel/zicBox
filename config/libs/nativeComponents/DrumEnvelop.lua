@@ -1,21 +1,6 @@
-local ____lualib = require("lualib_bundle")
-local __TS__ObjectRest = ____lualib.__TS__ObjectRest
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
 local ____ui = require("config.libs.ui")
-local getOldComponentToBeDeprecated = ____ui.getOldComponentToBeDeprecated
-local initializePlugin = ____ui.initializePlugin
-function ____exports.DrumEnvelop(____bindingPattern0)
-    local props
-    local envelop_data_id
-    local plugin
-    local track
-    local bounds
-    bounds = ____bindingPattern0.bounds
-    track = ____bindingPattern0.track
-    plugin = ____bindingPattern0.plugin
-    envelop_data_id = ____bindingPattern0.envelop_data_id
-    props = __TS__ObjectRest(____bindingPattern0, {bounds = true, track = true, plugin = true, envelop_data_id = true})
-    initializePlugin("DrumEnvelop", "libzic_DrumEnvelopComponent.so")
-    return getOldComponentToBeDeprecated("DrumEnvelop", bounds, {{track = track}, {plugin = plugin}, {envelop_data_id = envelop_data_id}, props})
-end
+local getJsonComponent = ____ui.getJsonComponent
+____exports.DrumEnvelop = getJsonComponent("DrumEnvelop", "libzic_DrumEnvelopComponent.so")
 return ____exports

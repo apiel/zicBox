@@ -1,17 +1,17 @@
-import { getOldComponentToBeDeprecated, initializePlugin } from '@/libs/ui';
-import { ComponentProps } from './component';
+import { getJsonComponent } from '../ui';
 
-export type Props = ComponentProps & {
-    plugin: string;
-    envelop_data_id: string;
-};
-
-export function DrumEnvelop({ bounds, track, plugin, envelop_data_id, ...props }: Props) {
-    initializePlugin('DrumEnvelop', 'libzic_DrumEnvelopComponent.so');
-    return getOldComponentToBeDeprecated('DrumEnvelop', bounds, [
-        { track },
-        { plugin },
-        {envelop_data_id},
-        props,
-    ]);
-}
+export const DrumEnvelop = getJsonComponent<{
+    audioPlugin: string;
+    envelopDataId: string;
+    outline?: boolean;
+    fillColor?: string;
+    filled?: boolean;
+    outlineColor?: string;
+    bgColor?: string;
+    renderValuesOnTop?: boolean;
+    textColor?: string;
+    cursorColor?: string;
+    encoderTime?: number;
+    encoderModulation?: number;
+    encoderPhase?: number;
+}>('DrumEnvelop', 'libzic_DrumEnvelopComponent.so');
