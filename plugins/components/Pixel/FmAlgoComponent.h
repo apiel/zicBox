@@ -70,18 +70,10 @@ public:
         encoderId = config["encoderId"].get<int8_t>(); //eg: 0
 
         /// The audio plugin to get control on.
-        if (!config.contains("audioPlugin")) {
-            logWarn("FmAlgo component is missing audioPlugin parameter.");
-            return;
-        }
-        plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track); //eg: "audio_plugin_name"
+        plugin = getPluginPtr(config, "audioPlugin", track); //eg: "audio_plugin_name"
 
         /// The audio plugin key parameter to get control on.
-        if (!config.contains("param")) {
-            logWarn("FmAlgo component is missing param parameter.");
-            return;
-        }
-        std::string param = config["param"].get<std::string>(); //eg: "parameter_name"
+        std::string param = getConfig(config, "param"); //eg: "parameter_name"
         value = watch(plugin->getValue(param));
 
         /// The data id that will return the current algorithm layout.
