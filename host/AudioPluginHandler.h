@@ -29,7 +29,7 @@ class AudioPluginHandler : public AudioPluginHandlerInterface {
 public:
     struct PluginAlias {
         string name;
-        std::function<AudioPlugin*(AudioPlugin::Props& props, char* name)> allocator;
+        std::function<AudioPlugin*(AudioPlugin::Props& props, AudioPlugin::Config& config)> allocator;
     };
     std::vector<PluginAlias> pluginAliases;
 
@@ -355,9 +355,9 @@ public:
 
         dlerror();
         pluginAllocator.name = name;
-        pluginAllocator.allocator = [handle](AudioPlugin::Props& props, char* name) {
+        pluginAllocator.allocator = [handle](AudioPlugin::Props& props, AudioPlugin::Config& config) {
             void* allocator = dlsym(handle, "allocator");
-            return ((AudioPlugin * (*)(AudioPlugin::Props & props, char* name)) allocator)(props, name);
+            return ((AudioPlugin * (*)(AudioPlugin::Props & props, AudioPlugin::Config& config)) allocator)(props, config);
         };
         const char* dlsym_error = dlerror();
         if (dlsym_error) {
@@ -372,7 +372,7 @@ public:
 
     void loadPlugin(char* value)
     {
-        char* name = strtok(value, " ");
+        std::string name = strtok(value, " ");
         char* pathPtr = strtok(NULL, " ");
         string path = pathPtr ? pathPtr : name;
 
@@ -383,7 +383,9 @@ public:
             // look to alias if plugins is already loaded and allocate it
             for (PluginAlias& pluginAllocator : pluginAliases) {
                 if (pluginAllocator.name == path) {
-                    plugins.push_back(pluginAllocator.allocator(pluginProps, name));
+                    nlohmann::json config; // TODO
+                    AudioPlugin::Config pluginConfig = { name, config };
+                    plugins.push_back(pluginAllocator.allocator(pluginProps, pluginConfig));
                     logInfo("audio plugin loaded: %s", plugins.back()->name.c_str());
                     return;
                 }
@@ -392,7 +394,7 @@ public:
         }
     }
 
-    void loadPlugin(char* name, const char* path)
+    void loadPlugin(std::string& name, const char* path)
     {
         void* handle = dlopen(path, RTLD_LAZY);
 
