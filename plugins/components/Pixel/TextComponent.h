@@ -35,11 +35,8 @@ public:
     {
         /*md md_config:Text */
         nlohmann::json config = props.config;
-        if (!config.contains("text")) {
-            logWarn("Text component is missing text parameter.");
-        }
         /// The text to display.
-        text = config["text"].get<std::string>(); //eg: "Hello World"
+        text = getConfig(config, "text"); //eg: "Hello World"
         /// If true, the text will be centered. Default is false.
         centered = config.value("centered", centered); //eg: true
         /// The font size of the text. Default is 8.

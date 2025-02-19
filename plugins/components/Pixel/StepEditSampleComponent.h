@@ -109,18 +109,10 @@ public:
         nlohmann::json config = props.config;
 
         /// The audio plugin to get control on.
-        if (!config.contains("audioPlugin")) {
-            logWarn("StepEditSample component is missing audioPlugin parameter.");
-            return;
-        }
-        plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track); //eq: "audio_plugin_name"
+        plugin = getPluginPtr(config, "audioPlugin", track); //eq: "audio_plugin_name"
 
         /// Index of the step.
-        if (!config.contains("stepIndex")) {
-            logWarn("StepEditSample component is missing stepIndex parameter.");
-            return;
-        }
-        stepIndex = config["stepIndex"].get<uint8_t>(); //eg: 0
+        stepIndex = getConfig<uint8_t>(config, "stepIndex"); //eg: 0
 
         step = (SampleStep*)plugin->data(plugin->getDataId("GET_STEP"), &stepIndex);
         nextFileDataId = plugin->getDataId("NEXT_FILE");

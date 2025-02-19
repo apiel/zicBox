@@ -52,12 +52,7 @@ public:
         waveformHeight = props.size.h;
 
         nlohmann::json config = props.config;
-        if (!config.contains("audioPlugin")) {
-            logWarn("GraphComponent cannot init: audioPlugin is not set");
-            return;
-        }
-
-        plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track);
+        plugin = getPluginPtr(config, "audioPlugin", track);
         outline = config.value("outline", outline);
         filled = config.value("filled", filled);
 

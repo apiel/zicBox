@@ -67,13 +67,8 @@ public:
         /*md md_config:SeqProgressBar */
         nlohmann::json config = props.config;
 
-        // TODO make a getter function
         /// The audio plugin sequencer.
-        if (!config.contains("audioPlugin")) {
-            logWarn("SeqProgressBar component is missing audioPlugin parameter.");
-            return;
-        }
-        AudioPlugin* seqPlugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track); //eg: "audio_plugin_name"
+        AudioPlugin* seqPlugin = getPluginPtr(config, "audioPlugin", track); //eg: "audio_plugin_name"
         stepCount = *(uint16_t*)seqPlugin->data(seqPlugin->getDataId("STEP_COUNT"));
         stepCounter = (uint16_t*)seqPlugin->data(seqPlugin->getDataId("STEP_COUNTER"));
         seqPlayingPtr = (bool*)seqPlugin->data(seqPlugin->getDataId("IS_PLAYING"));

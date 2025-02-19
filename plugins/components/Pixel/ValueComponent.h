@@ -86,20 +86,12 @@ public:
         nlohmann::json config = props.config;
 
         /// The audio plugin to get control on.
-        if (!config.contains("audioPlugin")) {
-            logWarn("KnobValue component is missing audioPlugin parameter.");
-            return;
-        }
-        std::string audioPlugin = config["audioPlugin"].get<std::string>(); //eg: "audio_plugin_name"
+        AudioPlugin* audioPlugin = getPluginPtr(config, "audioPlugin", track); //eg: "audio_plugin_name"
 
         /// The audio plugin key parameter to get control on.
-        if (!config.contains("param")) {
-            logWarn("KnobValue component is missing param parameter.");
-            return;
-        }
-        std::string param = config["param"].get<std::string>(); //eg: "parameter_name"
+        std::string param = getConfig(config, "param"); //eg: "parameter_name"
 
-        val = watch(getPlugin(audioPlugin.c_str(), track).getValue(param));
+        val = watch(audioPlugin->getValue(param));
         if (val != NULL) {
             floatPrecision = val->props().floatingPoint;
         }
