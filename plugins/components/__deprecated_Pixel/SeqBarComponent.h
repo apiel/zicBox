@@ -133,7 +133,7 @@ public:
 
     void render() override
     {
-        if (updatePosition() && steps) {
+        if (steps) {
             draw.filledRect(relativePosition, size, { background });
 
             int x = relativePosition.x + 1;

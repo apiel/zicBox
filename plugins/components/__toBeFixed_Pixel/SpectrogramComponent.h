@@ -109,23 +109,21 @@ public:
 
     void render()
     {
-        if (updatePosition()) {
-            draw.filledRect(relativePosition, size, { bgColor });
+        draw.filledRect(relativePosition, size, { bgColor });
 
-            if (!text.empty()) {
-                draw.textCentered({ relativePosition.x + (int)(size.w / 2), relativePosition.y }, text, 16, { textColor });
-            }
+        if (!text.empty()) {
+            draw.textCentered({ relativePosition.x + (int)(size.w / 2), relativePosition.y }, text, 16, { textColor });
+        }
 
-            bufferCopy.clear();
-            for (int i = 0; i < 1024; i++) {
-                bufferCopy.push_back(buffer[i]);
-            }
-            limitBuffer(bufferCopy.data(), bufferCopy.size(), 0.9f);
-            if (rawBuffer) {
-                renderRawBuffer();
-            } else {
-                renderFrequencyPower();
-            }
+        bufferCopy.clear();
+        for (int i = 0; i < 1024; i++) {
+            bufferCopy.push_back(buffer[i]);
+        }
+        limitBuffer(bufferCopy.data(), bufferCopy.size(), 0.9f);
+        if (rawBuffer) {
+            renderRawBuffer();
+        } else {
+            renderFrequencyPower();
         }
     }
 

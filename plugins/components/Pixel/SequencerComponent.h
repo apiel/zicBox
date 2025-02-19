@@ -107,67 +107,65 @@ public:
 
     void render()
     {
-        if (updatePosition()) {
-            draw.filledRect(relativePosition, size, { background });
+        draw.filledRect(relativePosition, size, { background });
 
-            // xStart for steps (margin left)
-            int xStart = drawNoteStr ? size.w - stepWidth * numSteps : 0;
-            if (xStart < 16) {
-                xStart = 0;
-            }
+        // xStart for steps (margin left)
+        int xStart = drawNoteStr ? size.w - stepWidth * numSteps : 0;
+        if (xStart < 16) {
+            xStart = 0;
+        }
 
-            int midiStartNote = MIDI_NOTE_C4;
-            // Draw Grid with Piano Roll Styling & Note Names
-            for (int i = 0; i < numNotes; ++i) {
-                int y = relativePosition.y + i * stepHeight;
-                int x = relativePosition.x;
-                int midiNote = midiStartNote + numNotes - i -1;
-                Color color = isBlackKey(midiNote) ? blackKeyColor : whiteKeyColor;
-                draw.filledRect({ x, y }, { size.w, stepHeight }, { color });
-                draw.line({ x, y }, { x + size.w, y }, { rowSeparatorColor });
+        int midiStartNote = MIDI_NOTE_C4;
+        // Draw Grid with Piano Roll Styling & Note Names
+        for (int i = 0; i < numNotes; ++i) {
+            int y = relativePosition.y + i * stepHeight;
+            int x = relativePosition.x;
+            int midiNote = midiStartNote + numNotes - i - 1;
+            Color color = isBlackKey(midiNote) ? blackKeyColor : whiteKeyColor;
+            draw.filledRect({ x, y }, { size.w, stepHeight }, { color });
+            draw.line({ x, y }, { x + size.w, y }, { rowSeparatorColor });
 
-                if (xStart) {
-                    if (midiNote % 12 == 0) {
-                        draw.text({ x, y + 1 }, MIDI_NOTES_STR[midiNote], 8, { noteColor });
-                    } else if (!isBlackKey(midiNote)) {
-                        draw.text({ x, y + 1 }, MIDI_NOTES_STR[midiNote], 8, { note2Color });
-                    } else {
-                        draw.text({ x, y + 1 }, " #", 8, { note2Color });
-                    }
+            if (xStart) {
+                if (midiNote % 12 == 0) {
+                    draw.text({ x, y + 1 }, MIDI_NOTES_STR[midiNote], 8, { noteColor });
+                } else if (!isBlackKey(midiNote)) {
+                    draw.text({ x, y + 1 }, MIDI_NOTES_STR[midiNote], 8, { note2Color });
+                } else {
+                    draw.text({ x, y + 1 }, " #", 8, { note2Color });
                 }
             }
+        }
 
-            // Draw Beat & Bar Separations
-            for (int i = 0; i <= numSteps; ++i) {
-                int x = xStart + relativePosition.x + i * stepWidth;
-                int y = relativePosition.y;
-                Color color;
-                if (i % 16 == 0)
-                    color = barColor; // Bar line
-                else if (i % 4 == 0)
-                    color = beatColor; // Beat line
-                else
-                    color = colSeparatorColor;
+        // Draw Beat & Bar Separations
+        for (int i = 0; i <= numSteps; ++i) {
+            int x = xStart + relativePosition.x + i * stepWidth;
+            int y = relativePosition.y;
+            Color color;
+            if (i % 16 == 0)
+                color = barColor; // Bar line
+            else if (i % 4 == 0)
+                color = beatColor; // Beat line
+            else
+                color = colSeparatorColor;
 
-                draw.line({ x, y }, { x, y + size.h }, { color });
-            }
+            draw.line({ x, y }, { x, y + size.h }, { color });
+        }
 
-            if (steps != NULL) {
-                // Draw MIDI Notes
-                for (const auto& step : *steps) {
-                    if (step.note >= midiStartNote && step.note < midiStartNote + numNotes) {
-                        int x = xStart + step.position * stepWidth + 1;
-                        int y = (numNotes - (step.note - midiStartNote) - 1) * stepHeight;
-                        int width = step.len * stepWidth - 2;
-                        int height = stepHeight;
+        if (steps != NULL) {
+            // Draw MIDI Notes
+            for (const auto& step : *steps) {
+                if (step.note >= midiStartNote && step.note < midiStartNote + numNotes) {
+                    int x = xStart + step.position * stepWidth + 1;
+                    int y = (numNotes - (step.note - midiStartNote) - 1) * stepHeight;
+                    int width = step.len * stepWidth - 2;
+                    int height = stepHeight;
 
-                        draw.filledRect({ x, y }, { width, height }, { stepColor });
+                    draw.filledRect({ x, y }, { width, height }, { stepColor });
 
-                        // if (selectedNote == &step) {
-                        //     g.setColour(juce::Colours::white);
-                        //     g.drawRect(x, y, width, height);
-                        // }
-                    }
+                    // if (selectedNote == &step) {
+                    //     g.setColour(juce::Colours::white);
+                    //     g.drawRect(x, y, width, height);
+                    // }
                 }
             }
         }

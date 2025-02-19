@@ -211,35 +211,33 @@ public:
 
     void render()
     {
-        if (updatePosition()) {
-            // if (lastWatchState != *watcherPtr) {
-            //     lastWatchState = *watcherPtr;
-            //     // loadAudioFile();
-            // }
-            draw.filledRect(relativePosition, size, { background });
+        // if (lastWatchState != *watcherPtr) {
+        //     lastWatchState = *watcherPtr;
+        //     // loadAudioFile();
+        // }
+        draw.filledRect(relativePosition, size, { background });
 
-            Color bg2 = lighten(background, 0.2);
-            int w = size.w / 4;
-            draw.filledRect({ relativePosition.x, relativePosition.y }, { w, size.h }, { bg2 });
-            draw.filledRect({ relativePosition.x + w * 2, relativePosition.y }, { w, size.h }, { bg2 });
+        Color bg2 = lighten(background, 0.2);
+        int w = size.w / 4;
+        draw.filledRect({ relativePosition.x, relativePosition.y }, { w, size.h }, { bg2 });
+        draw.filledRect({ relativePosition.x + w * 2, relativePosition.y }, { w, size.h }, { bg2 });
 
-            int space = w / 4;
-            for (int x = space; x < size.w; x += space) {
-                draw.line({ x, relativePosition.y }, { x, relativePosition.y + size.h }, { beatColor });
-            }
-
-            // renderWavFile(relativePosition.y, size.h);
-            // renderOverlay(relativePosition.y, size.h);
-
-            // draw.text({ relativePosition.x + 4, relativePosition.y + 2 }, std::to_string(currentBeat) + "/" + std::to_string(totalBeat), 8, { valueColor });
-            // if (valTrack != NULL) {
-            //     draw.textRight({ relativePosition.x + size.w - 4, relativePosition.y + 2 }, "Track " + std::to_string((int)valTrack->get()), 8, { valueColor });
-            // }
-
-            // int bottomTextY = relativePosition.y + size.h - 10;
-            // draw.text({ relativePosition.x + 4, bottomTextY }, "Start: " + fToString(beatStart, 2), 8, { valueColor });
-            // draw.textRight({ relativePosition.x + size.w - 4, bottomTextY }, "End: " + fToString(beatEnd, 2), 8, { valueColor });
+        int space = w / 4;
+        for (int x = space; x < size.w; x += space) {
+            draw.line({ x, relativePosition.y }, { x, relativePosition.y + size.h }, { beatColor });
         }
+
+        // renderWavFile(relativePosition.y, size.h);
+        // renderOverlay(relativePosition.y, size.h);
+
+        // draw.text({ relativePosition.x + 4, relativePosition.y + 2 }, std::to_string(currentBeat) + "/" + std::to_string(totalBeat), 8, { valueColor });
+        // if (valTrack != NULL) {
+        //     draw.textRight({ relativePosition.x + size.w - 4, relativePosition.y + 2 }, "Track " + std::to_string((int)valTrack->get()), 8, { valueColor });
+        // }
+
+        // int bottomTextY = relativePosition.y + size.h - 10;
+        // draw.text({ relativePosition.x + 4, bottomTextY }, "Start: " + fToString(beatStart, 2), 8, { valueColor });
+        // draw.textRight({ relativePosition.x + size.w - 4, bottomTextY }, "End: " + fToString(beatEnd, 2), 8, { valueColor });
     }
 
     uint8_t beatEncoderId = 0;

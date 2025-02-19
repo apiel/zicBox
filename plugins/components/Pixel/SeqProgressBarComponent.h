@@ -101,40 +101,39 @@ public:
 
     void render() override
     {
-        if (updatePosition()) {
-            draw.filledRect(relativePosition, size, { background });
+        draw.filledRect(relativePosition, size, { background });
 
-            int stepW = 4;
-            int stepH = size.h;
+        int stepW = 4;
+        int stepH = size.h;
 
-            int textY = (size.h - 8) * 0.5 + relativePosition.y;
+        int textY = (size.h - 8) * 0.5 + relativePosition.y;
 
-            int stepsW = stepCount * (stepW + 2 + 0.5); // 2 / 4 adding 2 pixel every 4 steps
-            int nameW = size.w - stepsW - 5;
-            int x = relativePosition.x + 1;
+        int stepsW = stepCount * (stepW + 2 + 0.5); // 2 / 4 adding 2 pixel every 4 steps
+        int nameW = size.w - stepsW - 5;
+        int x = relativePosition.x + 1;
 
-            if (valVolume != NULL) {
-                draw.filledRect({ x, relativePosition.y }, { nameW, stepH }, { darken(activeColor, 0.5) });
-                draw.filledRect({ x, relativePosition.y }, { (int)(nameW * valVolume->pct()), stepH }, { activeColor });
-                if (isActive) {
-                    draw.rect({ x, relativePosition.y }, { nameW, stepH - 1 }, { selectionColor });
-                }
+        if (valVolume != NULL) {
+            draw.filledRect({ x, relativePosition.y }, { nameW, stepH }, { darken(activeColor, 0.5) });
+            draw.filledRect({ x, relativePosition.y }, { (int)(nameW * valVolume->pct()), stepH }, { activeColor });
+            if (isActive) {
+                draw.rect({ x, relativePosition.y }, { nameW, stepH - 1 }, { selectionColor });
             }
+        }
 
-            x += nameW + 4;
+        x += nameW + 4;
 
-            for (int i = 0; i < stepCount; i++) {
-                Color color = lastStepCounter == i ? activeColor : (!showSteps || getStep(i) != NULL ? foreground : inactiveStepColor);
-                draw.filledRect({ x, relativePosition.y }, { stepW, stepH }, { color });
-                x += stepW + 2;
-                if (i % 4 == 3) {
-                    x += 2;
-                }
+        for (int i = 0; i < stepCount; i++) {
+            Color color = lastStepCounter == i ? activeColor : (!showSteps || getStep(i) != NULL ? foreground : inactiveStepColor);
+            draw.filledRect({ x, relativePosition.y }, { stepW, stepH }, { color });
+            x += stepW + 2;
+            if (i % 4 == 3) {
+                x += 2;
             }
         }
     }
 
-    Step* getStep(uint16_t position) {
+    Step* getStep(uint16_t position)
+    {
         for (auto& step : *steps) {
             if (step.position == position && step.enabled) {
                 return &step;
@@ -165,7 +164,6 @@ public:
             renderNext();
         }
     }
-
 };
 
 #endif

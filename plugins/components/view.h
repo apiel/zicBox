@@ -1,8 +1,6 @@
-#ifndef _VIEW_COMPONENT_H_
-#define _VIEW_COMPONENT_H_
+#pragma once
 
 #include "./ViewInterface.h"
-#include "./container/containers.h"
 #include "helpers/getTicks.h"
 
 #include <mutex>
@@ -11,7 +9,6 @@
 
 class View : public ViewInterface, public ComponentContainer {
 public:
-    std::vector<ComponentContainer*> containers = { this };
     std::vector<ComponentInterface*> components = {};
     std::vector<ComponentInterface*> componentsToRender = {};
     std::vector<ComponentInterface*> componentsJob = {};
@@ -25,10 +22,6 @@ public:
     int8_t lastGroupId = 0;
     void init()
     {
-        for (auto& container : containers) {
-            container->initContainer();
-        }
-
         for (auto& component : components) {
             if (component->group > lastGroupId) {
                 lastGroupId = component->group;
@@ -77,10 +70,6 @@ public:
             }
         }
         activeGroup = group;
-        for (auto& container : containers) {
-            container->onGroupChanged(group);
-        }
-
         for (auto& component : components) {
             component->onGroupChanged(group);
         }
@@ -88,12 +77,6 @@ public:
 
     void onContext(uint8_t index, float value)
     {
-        for (auto& container : containers) {
-            if (container != this) {
-                container->onContext(index, value);
-            }
-        }
-
         for (auto& component : components) {
             // if (component->isVisible()) {
                 component->onContext(index, value);                
@@ -136,19 +119,10 @@ public:
         draw.triggerRendering();
     }
 
-    void renderAllNext(void* container)
-    {
-        for (auto& component : components) {
-            if (component->container == container) {
-                component->renderNext();
-            }
-        }
-    }
-
     // Might want to rework this 
     bool isVisible(ComponentInterface* component)
     {
-        return component->isVisible() && component->container->isVisible(component->position, component->size);
+        return component->isVisible();
     }
 
     void onMotion(MotionInterface& motion)
@@ -201,17 +175,6 @@ public:
         m2.unlock();
     }
 
-    void* getContainer(std::string name) override
-    {
-        for (auto& container : containers) {
-            // printf("Container: %s == %s ?\n", container->name.c_str(), name.c_str());
-            if (container->name == name) {
-                return container;
-            }
-        }
-        return NULL;
-    }
-
     bool resetGroupOnSetView = false;
     bool config(char* key, char* value)
     {
@@ -226,49 +189,11 @@ public:
             return true;
         }
 
-        if (strcmp(key, "CONTAINER") == 0) {
-            std::string type = strtok(value, " ");
-            Point position = {
-                atoi(strtok(NULL, " ")),
-                atoi(strtok(NULL, " ")),
-            };
-            Size size = { 0, 0 };
-            char* w = strtok(NULL, " ");
-            if (w != NULL) {
-                size.w = atoi(w);
-                char* h = strtok(NULL, " ");
-                if (h != NULL) {
-                    size.h = atoi(h);
-                }
-            }
-            std::string name = "container_" + std::to_string(containers.size());
-            ComponentContainer* container = newContainer(type, this, name, position, size);
-            if (container != NULL) {
-                logInfo("Adding container (%s): %s %dx%d %dx%d", type.c_str(), name.c_str(), position.x, position.y, size.w, size.h);
-                containers.push_back(container);
-            } else {
-                logWarn("Unknown container: %s", type.c_str());
-            }
-            return true;
-        }
-
-        if (strcmp(key, "CONTAINER_NAME") == 0) {
-            std::string name = strtok(value, " ");
-            containers.back()->name = name;
-            return true;
-        }
-
         if (strcmp(key, "GROUP_LOOP") == 0) {
             groupLoop = strcmp(value, "true") == 0;
-            return true;
-        }
-
-        if (containers.size() > 1 && containers.back()->config(key, value)) {
             return true;
         }
 
         return false;
     }
 };
-
-#endif

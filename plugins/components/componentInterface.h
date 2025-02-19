@@ -1,7 +1,7 @@
 #pragma once
 
 #include "./ViewInterface.h"
-#include "./container/ComponentContainer.h"
+#include "./ComponentContainer.h"
 #include "./drawInterface.h"
 #include "./motionInterface.h"
 #include "./valueInterface.h"
@@ -16,7 +16,6 @@ class ComponentInterface {
 public:
     struct Props {
         std::string nameUID;
-        ComponentContainer* container;
         nlohmann::json config;
         Point position;
         Size size;
@@ -31,14 +30,8 @@ protected:
     DrawInterface& draw;
     Styles& styles;
 
-    bool updatePosition()
-    {
-        return container->updateCompontentPosition(position, size, relativePosition);
-    }
-
 public:
     ViewInterface* view;
-    ComponentContainer* container;
     AudioPlugin& (*getPlugin)(const char* name, int16_t track);
     ControllerInterface* (*getController)(const char* name);
     void (*sendAudioEvent)(AudioEventType event);
@@ -57,13 +50,13 @@ public:
         : draw(props.view->draw)
         , styles(props.view->draw.styles)
         , nameUID(props.nameUID)
-        , container(props.container)
         , getPlugin(props.getPlugin)
         , sendAudioEvent(props.sendAudioEvent)
         , getController(props.getController)
         , view(props.view)
         , setContext(props.setContext)
         , position(props.position)
+        , relativePosition(props.position)
         , size(props.size)
         , track(props.view->track)
     {

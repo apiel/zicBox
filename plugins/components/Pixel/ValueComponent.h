@@ -189,37 +189,35 @@ public:
 
     void render() override
     {
-        if (updatePosition()) {
-            draw.filledRect(relativePosition, size, { bgColor });
-            if (val != NULL) {
-                if (barH > 0) {
-                    renderBar();
-                }
+        draw.filledRect(relativePosition, size, { bgColor });
+        if (val != NULL) {
+            if (barH > 0) {
+                renderBar();
+            }
 
-                int x = relativePosition.x + (size.w) * 0.5;
+            int x = relativePosition.x + (size.w) * 0.5;
 
-                if (showLabel && showValue) {
-                    x -= labelFontSize * val->props().label.length() + 2;
-                }
+            if (showLabel && showValue) {
+                x -= labelFontSize * val->props().label.length() + 2;
+            }
 
-                int textY = verticalAlignCenter ? (size.h - maxFontSize) * 0.5 + relativePosition.y : (size.h - maxFontSize) + relativePosition.y;
-                // Put all text in the same line
-                int labelY = textY + maxFontSize - labelFontSize;
-                int valueY = textY + maxFontSize - valueH;
-                int unitY = textY + maxFontSize - unitFontSize;
+            int textY = verticalAlignCenter ? (size.h - maxFontSize) * 0.5 + relativePosition.y : (size.h - maxFontSize) + relativePosition.y;
+            // Put all text in the same line
+            int labelY = textY + maxFontSize - labelFontSize;
+            int valueY = textY + maxFontSize - valueH;
+            int unitY = textY + maxFontSize - unitFontSize;
 
-                if (showLabelOverValue != -1) {
-                    draw.textCentered({ labelOverValueX == -1 ? x : relativePosition.x + labelOverValueX, relativePosition.y + showLabelOverValue }, getLabel(), labelFontSize, { labelColor, .font = font });
-                } else if (showLabel) {
-                    x = draw.text({ x, labelY }, getLabel(), labelFontSize, { labelColor, .font = font }) + 2;
-                }
+            if (showLabelOverValue != -1) {
+                draw.textCentered({ labelOverValueX == -1 ? x : relativePosition.x + labelOverValueX, relativePosition.y + showLabelOverValue }, getLabel(), labelFontSize, { labelColor, .font = font });
+            } else if (showLabel) {
+                x = draw.text({ x, labelY }, getLabel(), labelFontSize, { labelColor, .font = font }) + 2;
+            }
 
-                if (showValue) {
-                    x = showLabel ? draw.text({ x, valueY }, getValStr(), valueFontSize, { valueColor, .font = font, .fontHeight = fontHeightValue })
-                                  : draw.textCentered({ x, valueY }, getValStr(), valueFontSize, { valueColor, .font = font, .maxWidth = size.w - 4, .fontHeight = fontHeightValue });
-                    if (showUnit && val->props().unit.length() > 0) {
-                        draw.text({ x + 2, unitY }, val->props().unit, unitFontSize, { unitColor, .font = font });
-                    }
+            if (showValue) {
+                x = showLabel ? draw.text({ x, valueY }, getValStr(), valueFontSize, { valueColor, .font = font, .fontHeight = fontHeightValue })
+                              : draw.textCentered({ x, valueY }, getValStr(), valueFontSize, { valueColor, .font = font, .maxWidth = size.w - 4, .fontHeight = fontHeightValue });
+                if (showUnit && val->props().unit.length() > 0) {
+                    draw.text({ x + 2, unitY }, val->props().unit, unitFontSize, { unitColor, .font = font });
                 }
             }
         }

@@ -174,19 +174,17 @@ public:
 
     void render() override
     {
-        if (updatePosition()) {
-            envPosition = { relativePosition.x, relativePosition.y + 10 };
-            draw.filledRect(relativePosition, size, { bgColor });
+        envPosition = { relativePosition.x, relativePosition.y + 10 };
+        draw.filledRect(relativePosition, size, { bgColor });
 
-            if (envData) {
-                currentstep = *(int8_t*)plugin->data(currentStepDataId);
-                currentMod = *(float*)plugin->data(modDataId);
-                currentTimeMs = *(uint16_t*)plugin->data(timeDataId);
+        if (envData) {
+            currentstep = *(int8_t*)plugin->data(currentStepDataId);
+            currentMod = *(float*)plugin->data(modDataId);
+            currentTimeMs = *(uint16_t*)plugin->data(timeDataId);
 
-                renderEnvelop();
-                renderEditStep();
-                renderTitles();
-            }
+            renderEnvelop();
+            renderEditStep();
+            renderTitles();
         }
     }
 

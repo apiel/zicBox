@@ -90,7 +90,7 @@ public:
 
     void render() override
     {
-        if (updatePosition() && step) {
+        if (step) {
             Color bg = isActive ? selection : bgColor;
             draw.filledRect(relativePosition, size, { bg });
 

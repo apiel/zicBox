@@ -191,32 +191,30 @@ public:
 
     void render()
     {
-        if (updatePosition()) {
-            draw.filledRect(relativePosition, size, { bgColor });
-            int y = relativePosition.y + ((size.h - (itemSize.h * 9) + 10) * 0.5);
-            int x = relativePosition.x + ((size.w - (itemSize.w * 9)) * 0.5);
+        draw.filledRect(relativePosition, size, { bgColor });
+        int y = relativePosition.y + ((size.h - (itemSize.h * 9) + 10) * 0.5);
+        int x = relativePosition.x + ((size.w - (itemSize.w * 9)) * 0.5);
 
-            draw.filledRect({ x, y }, { itemSize.w * 9, itemSize.h }, { itemBackground });
-            draw.text({ x + 8, y + textPos.y }, value, 8, { textColor });
+        draw.filledRect({ x, y }, { itemSize.w * 9, itemSize.h }, { itemBackground });
+        draw.text({ x + 8, y + textPos.y }, value, 8, { textColor });
 
-            y += itemSize.h + 10;
+        y += itemSize.h + 10;
 
-            Point pos;
-            for (int k = 0; k < keys.size(); k++) {
-                int row = k / 9;
-                int col = k % 9;
-                pos = { x + col * itemSize.w, y + row * itemSize.h };
-                draw.filledRect(pos, { itemSize.w - 2, itemSize.h - 2 }, { k == selection ? selectionColor : itemBackground });
-                Point posText = { pos.x + textPos.x, pos.y + textPos.y };
-                if (!icon.render(keys[k], posText, 6, { textColor }, Icon::CENTER)) {
-                    draw.textCentered(posText, keys[k], 8, { textColor });
-                }
+        Point pos;
+        for (int k = 0; k < keys.size(); k++) {
+            int row = k / 9;
+            int col = k % 9;
+            pos = { x + col * itemSize.w, y + row * itemSize.h };
+            draw.filledRect(pos, { itemSize.w - 2, itemSize.h - 2 }, { k == selection ? selectionColor : itemBackground });
+            Point posText = { pos.x + textPos.x, pos.y + textPos.y };
+            if (!icon.render(keys[k], posText, 6, { textColor }, Icon::CENTER)) {
+                draw.textCentered(posText, keys[k], 8, { textColor });
             }
-            draw.filledRect({ pos.x + itemSize.w, pos.y }, { (itemSize.w * 2) - 2, itemSize.h - 2 }, { keys.size() == selection ? selectionColor : itemBackground });
-            draw.textCentered({ pos.x + itemSize.w + ((itemSize.w * 2) - 2) / 2, pos.y + textPos.y }, "Back", 8, { textColor });
-
-            draw.filledRect({ pos.x + itemSize.w * 3, pos.y }, { (itemSize.w * 2) - 2, itemSize.h - 2 }, { keys.size() + 1 == selection ? selectionColor : itemBackground });
-            draw.textCentered({ pos.x + itemSize.w * 3 + ((itemSize.w * 2) - 2) / 2, pos.y + textPos.y }, "Done", 8, { textColor });
         }
+        draw.filledRect({ pos.x + itemSize.w, pos.y }, { (itemSize.w * 2) - 2, itemSize.h - 2 }, { keys.size() == selection ? selectionColor : itemBackground });
+        draw.textCentered({ pos.x + itemSize.w + ((itemSize.w * 2) - 2) / 2, pos.y + textPos.y }, "Back", 8, { textColor });
+
+        draw.filledRect({ pos.x + itemSize.w * 3, pos.y }, { (itemSize.w * 2) - 2, itemSize.h - 2 }, { keys.size() + 1 == selection ? selectionColor : itemBackground });
+        draw.textCentered({ pos.x + itemSize.w * 3 + ((itemSize.w * 2) - 2) / 2, pos.y + textPos.y }, "Done", 8, { textColor });
     }
 };
