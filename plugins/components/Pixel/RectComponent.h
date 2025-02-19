@@ -36,12 +36,10 @@ public:
     }
     void render()
     {
-        if (updatePosition()) {
-            if (filled) {
-                draw.filledRect(relativePosition, size, { color });
-            } else {
-                draw.rect(relativePosition, size, { color });
-            }
+        if (filled) {
+            draw.filledRect(relativePosition, size, { color });
+        } else {
+            draw.rect(relativePosition, size, { color });
         }
     }
 };

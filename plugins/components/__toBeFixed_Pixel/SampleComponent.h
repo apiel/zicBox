@@ -124,7 +124,7 @@ public:
     void render()
     {
 
-        if (sampleBuffer != NULL && updatePosition()) {
+        if (sampleBuffer != NULL) {
             overlayYtop = relativePosition.y;
             overlayYbottom = relativePosition.y + size.h - 2;
 

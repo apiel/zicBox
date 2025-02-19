@@ -75,10 +75,8 @@ public:
 
     void render() override
     {
-        if (updatePosition()) {
-            BaseGraphComponent::render();
-            renderTitles();
-        }
+        BaseGraphComponent::render();
+        renderTitles();
     }
 
     bool isActive = true;

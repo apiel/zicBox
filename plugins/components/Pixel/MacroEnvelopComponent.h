@@ -147,7 +147,6 @@ public:
         macro2 = *(float*)plugin->data(macro2DataId);
         macro3 = *(float*)plugin->data(macro3DataId);
 
-
         /// Set if the envelop should be outlined or not. (default: true)
         outline = config.value("outline", outline); //eg: false
 
@@ -179,17 +178,15 @@ public:
 
     void render() override
     {
-        if (updatePosition()) {
-            envPosition = { relativePosition.x, relativePosition.y + 10 };
-            draw.filledRect(relativePosition, size, { bgColor });
+        envPosition = { relativePosition.x, relativePosition.y + 10 };
+        draw.filledRect(relativePosition, size, { bgColor });
 
-            if (envData) {
-                renderEnvelop();
-                renderTitles();
+        if (envData) {
+            renderEnvelop();
+            renderTitles();
 
-                if (!(*isMacro)) {
-                    renderEditStep();
-                }
+            if (!(*isMacro)) {
+                renderEditStep();
             }
         }
     }

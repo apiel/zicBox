@@ -127,7 +127,7 @@ public:
 
     void render() override
     {
-        if (updatePosition() && step) {
+        if (step) {
             draw.filledRect(relativePosition, size, { bgColor });
 
             int y = relativePosition.y + (size.h - 16) * 0.5;

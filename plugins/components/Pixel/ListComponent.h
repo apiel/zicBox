@@ -92,8 +92,11 @@ public:
 
             return func;
         })
-        ,
-        icon(props.view->draw), bgColor(styles.colors.background), textColor(styles.colors.text), itemBackground(lighten(styles.colors.background, 0.5)), selectionColor(styles.colors.primary)
+        , icon(props.view->draw)
+        , bgColor(styles.colors.background)
+        , textColor(styles.colors.text)
+        , itemBackground(lighten(styles.colors.background, 0.5))
+        , selectionColor(styles.colors.primary)
     {
         /*md md_config:List */
         nlohmann::json config = props.config;
@@ -135,26 +138,24 @@ public:
 
     void render()
     {
-        if (updatePosition()) {
-            draw.filledRect(relativePosition, size, { bgColor });
-            renderStart();
+        draw.filledRect(relativePosition, size, { bgColor });
+        renderStart();
 
-            int y = relativePosition.y;
-            int yEnd = y + size.h;
-            int itemW = size.w;
+        int y = relativePosition.y;
+        int yEnd = y + size.h;
+        int itemW = size.w;
 
-            int countOfVisibleItems = (yEnd - y) / (itemH + 2);
-            int start = 0;
-            if (selection > countOfVisibleItems) {
-                start = selection - countOfVisibleItems;
-            }
-
-            for (int k = start; k < items.size() && y < yEnd; k++) {
-                draw.filledRect({ relativePosition.x, y }, { itemW, itemH }, { k == selection ? selectionColor : itemBackground });
-                renderItem(y, k);
-                y += itemH + 2;
-            }
-            renderEnd();
+        int countOfVisibleItems = (yEnd - y) / (itemH + 2);
+        int start = 0;
+        if (selection > countOfVisibleItems) {
+            start = selection - countOfVisibleItems;
         }
+
+        for (int k = start; k < items.size() && y < yEnd; k++) {
+            draw.filledRect({ relativePosition.x, y }, { itemW, itemH }, { k == selection ? selectionColor : itemBackground });
+            renderItem(y, k);
+            y += itemH + 2;
+        }
+        renderEnd();
     }
 };

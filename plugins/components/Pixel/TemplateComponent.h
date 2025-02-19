@@ -16,8 +16,6 @@ public:
     }
     void render()
     {
-        if (updatePosition()) {
-            draw.filledRect(relativePosition, size, { background });
-        }
+        draw.filledRect(relativePosition, size, { background });
     }
 };

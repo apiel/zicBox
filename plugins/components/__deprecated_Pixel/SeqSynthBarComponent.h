@@ -220,7 +220,7 @@ public:
 
     void render() override
     {
-        if (updatePosition() && steps) {
+        if (steps) {
             draw.filledRect(relativePosition, size, { background });
 
             if (items.size() > 0 && view->contextVar[selectedItemBank] == 0 && view->contextVar[selectedMenuBank] > 0) {

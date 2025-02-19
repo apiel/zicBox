@@ -1,5 +1,4 @@
-#ifndef _VIEW_INTERFACE_COMPONENT_H_
-#define _VIEW_INTERFACE_COMPONENT_H_
+#pragma once
 
 #include <string>
 #include <vector>
@@ -23,10 +22,6 @@ public:
     }
 
     virtual void setGroup(int8_t index) = 0;
-    virtual void* getContainer(std::string name) = 0;
     virtual void pushToRenderingQueue(void* component) = 0;
     virtual std::vector<void*>* getComponents() = 0;
-    virtual void renderAllNext(void* container) = 0;
 };
-
-#endif

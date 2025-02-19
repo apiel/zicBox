@@ -84,96 +84,94 @@ public:
 
     void render()
     {
-        if (updatePosition()) {
-            // printf("updated position %d value=%f\n", dataId, value->get());
-            draw.filledRect(relativePosition, size, { background });
+        // printf("updated position %d value=%f\n", dataId, value->get());
+        draw.filledRect(relativePosition, size, { background });
 
-            bool(*algo)[3] = (bool(*)[3])plugin->data(dataId);
+        bool(*algo)[3] = (bool(*)[3])plugin->data(dataId);
 
-            // draw modulation link
-            if (algo[0][0]) // 1 to 2
-            {
-                Point start = { relativePosition.x + opSize.w, (int)(relativePosition.y + opSize.h * 0.5) };
-                Point dest = { relativePosition.x + size.w - opSize.w, (int)(relativePosition.y + opSize.h * 0.5) };
-                draw.line(start, dest, { text });
+        // draw modulation link
+        if (algo[0][0]) // 1 to 2
+        {
+            Point start = { relativePosition.x + opSize.w, (int)(relativePosition.y + opSize.h * 0.5) };
+            Point dest = { relativePosition.x + size.w - opSize.w, (int)(relativePosition.y + opSize.h * 0.5) };
+            draw.line(start, dest, { text });
 
-                draw.line({ dest.x - 4, dest.y - 4 }, dest, { text });
-                draw.line({ dest.x - 4, dest.y + 4 }, dest, { text });
-            }
-            if (algo[1][1]) // 2 to 3
-            {
-                Point start = { relativePosition.x + size.w - opSize.w, relativePosition.y + opSize.h };
-                Point dest = { relativePosition.x + opSize.w, relativePosition.y + size.h - opSize.h };
-                draw.line(start, dest, { text });
+            draw.line({ dest.x - 4, dest.y - 4 }, dest, { text });
+            draw.line({ dest.x - 4, dest.y + 4 }, dest, { text });
+        }
+        if (algo[1][1]) // 2 to 3
+        {
+            Point start = { relativePosition.x + size.w - opSize.w, relativePosition.y + opSize.h };
+            Point dest = { relativePosition.x + opSize.w, relativePosition.y + size.h - opSize.h };
+            draw.line(start, dest, { text });
 
-                draw.line({ dest.x, dest.y - 5 }, dest, { text });
-                draw.line({ dest.x + 5, dest.y }, dest, { text });
-            }
-            if (algo[2][2]) // 3 to 4
-            {
-                Point start = { relativePosition.x + opSize.w, (int)(relativePosition.y + size.h - opSize.h * 0.5) };
-                Point dest = { relativePosition.x + size.w - opSize.w, (int)(relativePosition.y + size.h - opSize.h * 0.5) };
-                draw.line(start, dest, { text });
+            draw.line({ dest.x, dest.y - 5 }, dest, { text });
+            draw.line({ dest.x + 5, dest.y }, dest, { text });
+        }
+        if (algo[2][2]) // 3 to 4
+        {
+            Point start = { relativePosition.x + opSize.w, (int)(relativePosition.y + size.h - opSize.h * 0.5) };
+            Point dest = { relativePosition.x + size.w - opSize.w, (int)(relativePosition.y + size.h - opSize.h * 0.5) };
+            draw.line(start, dest, { text });
 
-                draw.line({ dest.x - 4, dest.y - 4 }, dest, { text });
-                draw.line({ dest.x - 4, dest.y + 4 }, dest, { text });
-            }
-            if (algo[0][1]) // 1 to 3
-            {
-                Point start = { (int)(relativePosition.x + opSize.w * 0.5), relativePosition.y + opSize.h };
-                Point dest = { (int)(relativePosition.x + opSize.w * 0.5), relativePosition.y + size.h - opSize.h };
-                draw.line(start, dest, { text });
+            draw.line({ dest.x - 4, dest.y - 4 }, dest, { text });
+            draw.line({ dest.x - 4, dest.y + 4 }, dest, { text });
+        }
+        if (algo[0][1]) // 1 to 3
+        {
+            Point start = { (int)(relativePosition.x + opSize.w * 0.5), relativePosition.y + opSize.h };
+            Point dest = { (int)(relativePosition.x + opSize.w * 0.5), relativePosition.y + size.h - opSize.h };
+            draw.line(start, dest, { text });
 
-                draw.line({ dest.x - 4, dest.y - 4 }, dest, { text });
-                draw.line({ dest.x + 4, dest.y - 4 }, dest, { text });
-            }
-            if (algo[0][2]) // 1 to 4
-            {
-                Point start = { relativePosition.x + opSize.w, relativePosition.y + opSize.h };
-                Point dest = { relativePosition.x + size.w - opSize.w, relativePosition.y + size.h - opSize.h };
-                draw.line(start, dest, { text });
+            draw.line({ dest.x - 4, dest.y - 4 }, dest, { text });
+            draw.line({ dest.x + 4, dest.y - 4 }, dest, { text });
+        }
+        if (algo[0][2]) // 1 to 4
+        {
+            Point start = { relativePosition.x + opSize.w, relativePosition.y + opSize.h };
+            Point dest = { relativePosition.x + size.w - opSize.w, relativePosition.y + size.h - opSize.h };
+            draw.line(start, dest, { text });
 
-                draw.line({ dest.x, dest.y - 5 }, dest, { text });
-                draw.line({ dest.x - 5, dest.y }, dest, { text });
-            }
-            if (algo[1][2]) // 2 to 4
-            {
-                Point start = { (int)(relativePosition.x + size.w - opSize.w * 0.5), relativePosition.y + opSize.h };
-                Point end = { (int)(relativePosition.x + size.w - opSize.w * 0.5), relativePosition.y + size.h - opSize.h };
-                draw.line(start, end, { text });
+            draw.line({ dest.x, dest.y - 5 }, dest, { text });
+            draw.line({ dest.x - 5, dest.y }, dest, { text });
+        }
+        if (algo[1][2]) // 2 to 4
+        {
+            Point start = { (int)(relativePosition.x + size.w - opSize.w * 0.5), relativePosition.y + opSize.h };
+            Point end = { (int)(relativePosition.x + size.w - opSize.w * 0.5), relativePosition.y + size.h - opSize.h };
+            draw.line(start, end, { text });
 
-                draw.line({ end.x - 4, end.y - 4 }, end, { text });
-                draw.line({ end.x + 4, end.y - 4 }, end, { text });
-            }
+            draw.line({ end.x - 4, end.y - 4 }, end, { text });
+            draw.line({ end.x + 4, end.y - 4 }, end, { text });
+        }
 
-            // draw operators and carriers
-            // 4 is always carrier
-            draw.filledRect({ relativePosition.x + size.w - opSize.w, relativePosition.y + size.h - opSize.h }, opSize, { border }); // 4
-            draw.textCentered({ (int)(relativePosition.x + size.w - opSize.w + opSize.w * 0.5 + textMarginLeft), relativePosition.y + size.h - opSize.h + textMarginTop }, "4", fontSize, { background });
+        // draw operators and carriers
+        // 4 is always carrier
+        draw.filledRect({ relativePosition.x + size.w - opSize.w, relativePosition.y + size.h - opSize.h }, opSize, { border }); // 4
+        draw.textCentered({ (int)(relativePosition.x + size.w - opSize.w + opSize.w * 0.5 + textMarginLeft), relativePosition.y + size.h - opSize.h + textMarginTop }, "4", fontSize, { background });
 
-            if (!algo[0][0] && !algo[0][1] && !algo[0][2]) { // 1
-                draw.filledRect(position, opSize, { border }); // 1
-                draw.textCentered({ (int)(relativePosition.x + opSize.w * 0.5 + textMarginLeft), relativePosition.y + textMarginTop }, "1", fontSize, { background });
-            } else {
-                draw.rect(position, opSize, { border }); // 1
-                draw.textCentered({ (int)(relativePosition.x + opSize.w * 0.5 + textMarginLeft), relativePosition.y + textMarginTop }, "1", fontSize, { text });
-            }
+        if (!algo[0][0] && !algo[0][1] && !algo[0][2]) { // 1
+            draw.filledRect(position, opSize, { border }); // 1
+            draw.textCentered({ (int)(relativePosition.x + opSize.w * 0.5 + textMarginLeft), relativePosition.y + textMarginTop }, "1", fontSize, { background });
+        } else {
+            draw.rect(position, opSize, { border }); // 1
+            draw.textCentered({ (int)(relativePosition.x + opSize.w * 0.5 + textMarginLeft), relativePosition.y + textMarginTop }, "1", fontSize, { text });
+        }
 
-            if (!algo[1][0] && !algo[1][1] && !algo[1][2]) { // 2
-                draw.filledRect({ relativePosition.x + size.w - opSize.w, relativePosition.y }, opSize, { border }); // 2
-                draw.textCentered({ (int)(relativePosition.x + size.w - opSize.w + opSize.w * 0.5 + textMarginLeft), relativePosition.y + textMarginTop }, "2", fontSize, { background });
-            } else {
-                draw.rect({ relativePosition.x + size.w - opSize.w, relativePosition.y }, opSize, { border }); // 2
-                draw.textCentered({ (int)(relativePosition.x + size.w - opSize.w + opSize.w * 0.5 + textMarginLeft), relativePosition.y + textMarginTop }, "2", fontSize, { text });
-            }
+        if (!algo[1][0] && !algo[1][1] && !algo[1][2]) { // 2
+            draw.filledRect({ relativePosition.x + size.w - opSize.w, relativePosition.y }, opSize, { border }); // 2
+            draw.textCentered({ (int)(relativePosition.x + size.w - opSize.w + opSize.w * 0.5 + textMarginLeft), relativePosition.y + textMarginTop }, "2", fontSize, { background });
+        } else {
+            draw.rect({ relativePosition.x + size.w - opSize.w, relativePosition.y }, opSize, { border }); // 2
+            draw.textCentered({ (int)(relativePosition.x + size.w - opSize.w + opSize.w * 0.5 + textMarginLeft), relativePosition.y + textMarginTop }, "2", fontSize, { text });
+        }
 
-            if (!algo[2][0] && !algo[2][1] && !algo[2][2]) { // 3
-                draw.filledRect({ relativePosition.x, relativePosition.y + size.h - opSize.h }, opSize, { border }); // 3
-                draw.textCentered({ (int)(relativePosition.x + opSize.w * 0.5 + textMarginLeft), relativePosition.y + size.h - opSize.h + textMarginTop }, "3", fontSize, { background });
-            } else {
-                draw.rect({ relativePosition.x, relativePosition.y + size.h - opSize.h }, opSize, { border }); // 3
-                draw.textCentered({ (int)(relativePosition.x + opSize.w * 0.5 + textMarginLeft), relativePosition.y + size.h - opSize.h + textMarginTop }, "3", fontSize, { text });
-            }
+        if (!algo[2][0] && !algo[2][1] && !algo[2][2]) { // 3
+            draw.filledRect({ relativePosition.x, relativePosition.y + size.h - opSize.h }, opSize, { border }); // 3
+            draw.textCentered({ (int)(relativePosition.x + opSize.w * 0.5 + textMarginLeft), relativePosition.y + size.h - opSize.h + textMarginTop }, "3", fontSize, { background });
+        } else {
+            draw.rect({ relativePosition.x, relativePosition.y + size.h - opSize.h }, opSize, { border }); // 3
+            draw.textCentered({ (int)(relativePosition.x + opSize.w * 0.5 + textMarginLeft), relativePosition.y + size.h - opSize.h + textMarginTop }, "3", fontSize, { text });
         }
     }
 

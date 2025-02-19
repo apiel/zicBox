@@ -58,19 +58,17 @@ public:
 
     void render() override
     {
-        if (updatePosition()) {
-            draw.filledRect(relativePosition, size, { bgColor });
-            if (!text.empty()) {
-                if (centered) {
-                    Point textPos = { relativePosition.x + (int)(size.w * 0.5), relativePosition.y + (int)(size.h * 0.5) - 4 };
-                    if (!icon.render(text, textPos, 8, { color }, Icon::CENTER)) {
+        draw.filledRect(relativePosition, size, { bgColor });
+        if (!text.empty()) {
+            if (centered) {
+                Point textPos = { relativePosition.x + (int)(size.w * 0.5), relativePosition.y + (int)(size.h * 0.5) - 4 };
+                if (!icon.render(text, textPos, 8, { color }, Icon::CENTER)) {
 
-                        draw.textCentered(textPos, text, fontSize, { color, .font = font, .maxWidth = size.w, .fontHeight = fontHeight });
-                    }
-                } else {
-                    if (!icon.render(text, { relativePosition.x, relativePosition.y }, fontSize, { color }, Icon::LEFT)) {
-                        draw.text({ relativePosition.x, relativePosition.y }, text, fontSize, { color, .font = font, .maxWidth = size.w, .fontHeight = fontHeight });
-                    }
+                    draw.textCentered(textPos, text, fontSize, { color, .font = font, .maxWidth = size.w, .fontHeight = fontHeight });
+                }
+            } else {
+                if (!icon.render(text, { relativePosition.x, relativePosition.y }, fontSize, { color }, Icon::LEFT)) {
+                    draw.text({ relativePosition.x, relativePosition.y }, text, fontSize, { color, .font = font, .maxWidth = size.w, .fontHeight = fontHeight });
                 }
             }
         }

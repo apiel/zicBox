@@ -113,7 +113,7 @@ public:
             _step = &dummyStep;
         }
 
-        if (updatePosition() && _step) {
+        if (_step) {
             Color bg = isActive ? selection : bgColor;
             draw.filledRect(relativePosition, size, { bg });
 

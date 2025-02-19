@@ -182,7 +182,7 @@ public:
             logWarn("Clips component is missing serializerPlugin.");
             return;
         }
-        
+
         valVariation = watch(pluginSerialize->getValue("VARIATION"));
         saveVariationDataId = pluginSerialize->getDataId("SAVE_VARIATION");
         deleteVariationDataId = pluginSerialize->getDataId("DELETE_VARIATION");
@@ -201,43 +201,41 @@ public:
 
     void render()
     {
-        if (updatePosition()) {
-            draw.filledRect(relativePosition, size, { bgColor });
-            if (valVariation) {
-                int playingId = valVariation->get();
-                int count = variations.size();
-                int selection = view->contextVar[selectionBank];
-                int start = selection >= visibleCount ? selection - visibleCount + 1 : 0;
-                for (int i = start, v = 0; i < count && v < visibleCount; i++, v++) {
-                    Variation& variation = variations[i];
-                    // int y = relativePosition.y + i * clipH;
-                    int y = relativePosition.y + (i - start) * clipH;
+        draw.filledRect(relativePosition, size, { bgColor });
+        if (valVariation) {
+            int playingId = valVariation->get();
+            int count = variations.size();
+            int selection = view->contextVar[selectionBank];
+            int start = selection >= visibleCount ? selection - visibleCount + 1 : 0;
+            for (int i = start, v = 0; i < count && v < visibleCount; i++, v++) {
+                Variation& variation = variations[i];
+                // int y = relativePosition.y + i * clipH;
+                int y = relativePosition.y + (i - start) * clipH;
 
-                    if (variation.exists && (i == playingId || i == *nextVariationToPlay)) {
-                        draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { darken(barColor, 0.8) });
-                        draw.filledRect({ relativePosition.x, y }, { size.w, 2 }, { barColor });
+                if (variation.exists && (i == playingId || i == *nextVariationToPlay)) {
+                    draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { darken(barColor, 0.8) });
+                    draw.filledRect({ relativePosition.x, y }, { size.w, 2 }, { barColor });
 
-                        if (i == *nextVariationToPlay) {
+                    if (i == *nextVariationToPlay) {
+                        draw.filledRect({ relativePosition.x + size.w - 5, y + 3 }, { 3, 3 }, { playNextColor });
+                    } else if (valSeqStatus) {
+                        if (valSeqStatus->get() == 1) {
+                            draw.filledRect({ relativePosition.x + size.w - 5, y + 3 }, { 3, 3 }, { playColor });
+                        } else if (valSeqStatus->get() == 2) {
                             draw.filledRect({ relativePosition.x + size.w - 5, y + 3 }, { 3, 3 }, { playNextColor });
-                        } else if (valSeqStatus) {
-                            if (valSeqStatus->get() == 1) {
-                                draw.filledRect({ relativePosition.x + size.w - 5, y + 3 }, { 3, 3 }, { playColor });
-                            } else if (valSeqStatus->get() == 2) {
-                                draw.filledRect({ relativePosition.x + size.w - 5, y + 3 }, { 3, 3 }, { playNextColor });
-                            }
                         }
-                    } else {
-                        draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { foreground });
-                        draw.filledRect({ relativePosition.x, y }, { size.w, 1 }, { darken(barColor, 0.3) });
                     }
+                } else {
+                    draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { foreground });
+                    draw.filledRect({ relativePosition.x, y }, { size.w, 1 }, { darken(barColor, 0.3) });
+                }
 
-                    if (variation.exists) {
-                        draw.textCentered({ relativePosition.x + (int)(size.w * 0.5), y + (int)((clipH - 8) * 0.5) }, std::to_string(i + 1), 8, { textColor, .maxWidth = size.w });
-                    }
+                if (variation.exists) {
+                    draw.textCentered({ relativePosition.x + (int)(size.w * 0.5), y + (int)((clipH - 8) * 0.5) }, std::to_string(i + 1), 8, { textColor, .maxWidth = size.w });
+                }
 
-                    if ((isActive || isGroupAll) && i == selection) {
-                        draw.rect({ relativePosition.x, y }, { size.w, clipH - 2 }, { barColor });
-                    }
+                if ((isActive || isGroupAll) && i == selection) {
+                    draw.rect({ relativePosition.x, y }, { size.w, clipH - 2 }, { barColor });
                 }
             }
         }

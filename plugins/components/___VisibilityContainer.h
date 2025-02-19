@@ -7,12 +7,6 @@
 
 #include <vector>
 
-/*md
-## Visibility
-
-Visibility is a container that show/hide the components for a given group index.
-*/
-
 class VisibilityContainer : public ComponentContainer {
 protected:
     int group = -1;
@@ -72,22 +66,15 @@ public:
 
     bool config(char* key, char* value) override
     {
-        /*md - `CONTAINER_BACKGROUND_COLOR: color` is the background color of the component. */
         if (strcmp(key, "CONTAINER_BACKGROUND_COLOR") == 0) {
             bgColor = view->draw.getColor(value);
             return true;
         }
 
-        /*md - `VISIBILITY_GROUP: 0` the group index to show/hide the components. */
         if (strcmp(key, "VISIBILITY_GROUP") == 0) {
             group = atoi(value);
             return true;
         }
-
-        // /*md - `VISIBILITY_CONTEXT: index SHOW_WHEN/SHOW_WHEN_NOT/SHOW_WHEN_OVER/SHOW_WHEN_UNDER value` the context index to show/hide the components for a given value. */
-        // if (visibility.config(key, value)) {
-        //     return true;
-        // }
 
         return false;
     }

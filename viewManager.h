@@ -132,7 +132,6 @@ protected:
 
         ComponentInterface::Props props = {
             view->name + "_" + name + "_x" + std::to_string(position.x) + "_y" + std::to_string(position.y),
-            NULL,
             config,
             position,
             size,
@@ -159,7 +158,6 @@ protected:
     {
         if (views.size() > 0) {
             View* lastView = views.back();
-            component->container = lastView->containers.back();
             lastView->components.push_back(component);
             if (component->jobRendering) {
                 lastView->componentsJob.push_back(component);
