@@ -8,6 +8,7 @@
 // #include "utils/VisibilityGroup.h" // TODO
 #include "valueInterface.h"
 
+#include <optional>
 #include <stdlib.h>
 
 class Component : public ComponentInterface {
@@ -113,21 +114,49 @@ public:
         }
     }
 
-    std::string getParam(const nlohmann::json& config, std::string parameterKey, const char* errorDescription = NULL)
+    // // Get a parameter from the JSON config, throwing an exception if it's missing
+    // std::string getParam(const nlohmann::json& config, const std::string& parameterKey, const char* errorDescription = nullptr) const
+    // {
+    //     if (!config.contains(parameterKey)) {
+    //         if (errorDescription) {
+    //             throw std::runtime_error(errorDescription);
+    //         }
+    //         throw std::runtime_error(
+    //             nameUID + ": Component is missing " + parameterKey + " parameter.");
+    //     }
+    //     return config[parameterKey].get<std::string>();
+    // }
+
+    // // Get a plugin pointer, propagating any exceptions from getParam
+    // AudioPlugin* getPluginPtr(const nlohmann::json& config, const std::string& parameterKey, int16_t track, const char* errorDescription = nullptr) const
+    // {
+    //     std::string pluginName = getParam(config, parameterKey, errorDescription);
+    //     return &getPlugin(pluginName.c_str(), track);
+    // }
+
+    // Generic getParam function that can return any type
+    template <typename T>
+    T getParam(const nlohmann::json& config, const std::string& parameterKey, const char* errorDescription = nullptr) const
     {
         if (!config.contains(parameterKey)) {
-            if (errorDescription == NULL) {
-                logWarn("%s: Component is missing %s parameter.", this->nameUID.c_str(), parameterKey.c_str());
-            } else {
-                logWarn(errorDescription);
+            if (errorDescription) {
+                throw std::runtime_error(errorDescription);
             }
-            return "undefined";
+            throw std::runtime_error(
+                nameUID + ": Component is missing " + parameterKey + " parameter.");
         }
-        return config[parameterKey].get<std::string>();
+        try {
+            return config[parameterKey].get<T>();
+        } catch (const nlohmann::json::exception& e) {
+            throw std::runtime_error(
+                nameUID + ": Invalid type for parameter " + parameterKey + ". Expected type: " + typeid(T).name() + ". Error: " + e.what());
+        }
     }
 
-    AudioPlugin* getPluginPtr(const nlohmann::json& config, std::string parameterKey, int16_t track, const char* errorDescription = NULL)
+    // Example usage with getPluginPtr
+    AudioPlugin* getPluginPtr(const nlohmann::json& config, const std::string& parameterKey, int16_t track, const char* errorDescription = nullptr) const
     {
-        return &getPlugin(getParam(config, parameterKey, errorDescription).c_str(), track);
+        std::string pluginName = getParam<std::string>(config, parameterKey, errorDescription);
+        return &getPlugin(pluginName.c_str(), track);
     }
 };
