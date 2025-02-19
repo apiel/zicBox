@@ -131,6 +131,7 @@ protected:
         Size size = { w, h };
 
         ComponentInterface::Props props = {
+            view->name + "_" + name + "_x" + std::to_string(position.x) + "_y" + std::to_string(position.y),
             NULL,
             config,
             position,
@@ -147,7 +148,6 @@ protected:
         for (auto& plugin : plugins) {
             if (plugin.name == name) {
                 ComponentInterface* component = plugin.allocator(props);
-                component->id = name;
                 addComponent(component);
                 return;
             }
@@ -160,7 +160,6 @@ protected:
         if (views.size() > 0) {
             View* lastView = views.back();
             component->container = lastView->containers.back();
-            component->id = lastView->name + "_" + component->id + "_" + std::to_string(lastView->components.size());
             lastView->components.push_back(component);
             if (component->jobRendering) {
                 lastView->componentsJob.push_back(component);

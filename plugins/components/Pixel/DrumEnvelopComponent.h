@@ -130,11 +130,7 @@ public:
         nlohmann::json config = props.config;
 
         /// The audio plugin to get control on.
-        if (!config.contains("audioPlugin")) {
-            logWarn("DrumEnvelop component is missing audioPlugin parameter.");
-            return;
-        }
-        plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track); //eg: "audio_plugin_name"
+        plugin = getPluginPtr(config, "audioPlugin", track); //eg: "audio_plugin_name"
 
         /// Envelop data id to get/set data in the audio plugin.
         if (!config.contains("envelopDataId")) {
