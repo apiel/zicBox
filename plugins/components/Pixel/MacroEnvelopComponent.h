@@ -129,18 +129,10 @@ public:
         nlohmann::json config = props.config;
 
         /// The audio plugin to get control on.
-        if (!config.contains("audioPlugin")) {
-            logWarn("MacroEnvelop component is missing audioPlugin parameter.");
-            return;
-        }
-        plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track); //eg: "audio_plugin_name"
+        plugin = getPluginPtr(config, "audioPlugin", track); //eg: "audio_plugin_name"
 
         /// Envelop data id to get/set data in the audio plugin.
-        if (!config.contains("envelopDataId")) {
-            logWarn("MacroEnvelop component is missing envelopDataId parameter.");
-            return;
-        }
-        uint8_t id = plugin->getDataId(config["envelopDataId"].get<std::string>().c_str()); //eg: "ENV_AMP"
+        uint8_t id = plugin->getDataId(getConfig(config, "envelopDataId")); //eg: "ENV_AMP"
         envData = (std::vector<Data>*)plugin->data(id);
         modeDataId = id + 1; // A bit cluncky, need to find better solution..
         isMacroDataId = id + 2;
