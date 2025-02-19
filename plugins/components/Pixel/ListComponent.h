@@ -110,7 +110,7 @@ public:
 
         /// The audio plugin to get control on.
         if (config.contains("audioPlugin")) {
-            plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track); //eg: "audio_plugin_name"
+            plugin = &getPlugin(config["audioPlugin"].get<std::string>(), track); //eg: "audio_plugin_name"
         }
 
         /// Set the background color of the component.

@@ -19,7 +19,7 @@ public:
         nlohmann::json config;
         Point position;
         Size size;
-        AudioPlugin& (*getPlugin)(const char* name, int16_t track);
+        AudioPlugin& (*getPlugin)(std::string name, int16_t track);
         void (*sendAudioEvent)(AudioEventType event);
         ControllerInterface* (*getController)(const char* name);
         ViewInterface* view;
@@ -32,7 +32,7 @@ protected:
 
 public:
     ViewInterface* view;
-    AudioPlugin& (*getPlugin)(const char* name, int16_t track);
+    AudioPlugin& (*getPlugin)(std::string name, int16_t track);
     ControllerInterface* (*getController)(const char* name);
     void (*sendAudioEvent)(AudioEventType event);
     std::function<void(uint8_t index, float value)> setContext;

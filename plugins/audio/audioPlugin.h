@@ -47,8 +47,8 @@ class AudioPluginHandlerInterface {
 public:
     std::vector<AudioPlugin*> plugins;
 
-    virtual AudioPlugin* getPluginPtr(const char* name, int16_t track = -1) = 0;
-    virtual AudioPlugin& getPlugin(const char* name, int16_t track = -1) = 0;
+    virtual AudioPlugin* getPluginPtr(std::string name, int16_t track = -1) = 0;
+    virtual AudioPlugin& getPlugin(std::string name, int16_t track = -1) = 0;
     virtual void sendEvent(AudioEventType event, int16_t track = -1) = 0;
 
     struct NoteTarget {
@@ -89,14 +89,14 @@ protected:
     Props props;
 
 public:
-    char name[64];
+    std::string name;
     int16_t track = 0;
     bool serializable = true;
 
-    AudioPlugin(Props& props, char* _name)
+    AudioPlugin(Props& props, std::string name)
         : props(props)
+        , name(name)
     {
-        strcpy(name, _name);
     }
 
     virtual void sample(float* buf) = 0;

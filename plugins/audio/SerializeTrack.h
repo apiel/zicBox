@@ -189,7 +189,7 @@ public:
         FILE* file = fopen(filepath.c_str(), "w");
         for (AudioPlugin* plugin : props.audioPluginHandler->plugins) {
             if ((track == -1 || track == plugin->track) && plugin->serializable) {
-                fprintf(file, "# %s\n", plugin->name);
+                fprintf(file, "# %s\n", plugin->name.c_str());
                 plugin->serialize(file, "\n");
             }
         }
@@ -212,7 +212,7 @@ public:
                 if (line[0] == '#') {
                     plugin = props.audioPluginHandler->getPluginPtr(line + 2, track);
                     if (plugin && !plugin->serializable) {
-                        printf("Cannot hydrate plugin: %s (not serializable)\n", plugin->name);
+                        printf("Cannot hydrate plugin: %s (not serializable)\n", plugin->name.c_str());
                         plugin = NULL;
                     }
                 } else if (plugin) {
