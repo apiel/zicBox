@@ -51,7 +51,7 @@ public:
     {
         waveformHeight = props.size.h;
 
-        nlohmann::json config = props.config;
+        nlohmann::json& config = props.config;
         plugin = getPluginPtr(config, "audioPlugin", track);
         outline = config.value("outline", outline);
         filled = config.value("filled", filled);

@@ -31,7 +31,7 @@ public:
         : BaseGraphEncoderComponent(props)
     {
         /*md md_config:GraphEncoder */
-        nlohmann::json config = props.config;
+        nlohmann::json& config = props.config;
 
         /// If true, the rectangle will be outlined. Default is true.
         //md   outline={false}

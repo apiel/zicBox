@@ -34,7 +34,7 @@ public:
         , color(styles.colors.text)
     {
         /*md md_config:Text */
-        nlohmann::json config = props.config;
+        nlohmann::json& config = props.config;
         /// The text to display.
         text = getConfig(config, "text"); //eg: "Hello World"
         /// If true, the text will be centered. Default is false.

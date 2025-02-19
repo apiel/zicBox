@@ -175,8 +175,8 @@ public:
     // Val& envShape = val(0.5f, "ENV_SHAPE", { "Env. Shape", .min = 1 });
     Val& envShape = val(0.5f, "ENV_SHAPE", { "Env. Shape", .min = 0.1, .max = 5.0, .step = 0.1, .floatingPoint = 1 });
 
-    SynthPerc(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    SynthPerc(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
         initValues();
         phaseIncrement = 1.0f / props.sampleRate;

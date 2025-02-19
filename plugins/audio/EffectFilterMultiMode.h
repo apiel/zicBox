@@ -25,8 +25,8 @@ public:
     /*md - `RESONANCE` to set resonance. */
     Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) { setResonance(p.value); });
 
-    EffectFilterMultiMode(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    EffectFilterMultiMode(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
         initValues();
     };

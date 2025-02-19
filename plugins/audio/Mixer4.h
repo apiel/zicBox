@@ -5,8 +5,8 @@
 
 class Mixer4 : public Mixer<4> {
 public:
-    Mixer4(AudioPlugin::Props& props, char* _name)
-        : Mixer<4>(props, _name)
+    Mixer4(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mixer<4>(props, config)
     {
     }
 };

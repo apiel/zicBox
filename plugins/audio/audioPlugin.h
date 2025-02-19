@@ -1,6 +1,7 @@
 #ifndef _AUDIO_PLUGIN_H_
 #define _AUDIO_PLUGIN_H_
 
+#include "libs/nlohmann/json.hpp"
 #include <cstdlib>
 #include <set>
 #include <stdint.h>
@@ -85,6 +86,11 @@ public:
         LookupTable* lookupTable;
     };
 
+    struct Config {
+        std::string name;
+        nlohmann::json& json;
+    };
+
 protected:
     Props props;
 
@@ -93,9 +99,9 @@ public:
     int16_t track = 0;
     bool serializable = true;
 
-    AudioPlugin(Props& props, std::string name)
+    AudioPlugin(Props& props, Config& config)
         : props(props)
-        , name(name)
+        , name(config.name)
     {
     }
 

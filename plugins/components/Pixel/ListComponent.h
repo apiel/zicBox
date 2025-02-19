@@ -99,7 +99,7 @@ public:
         , selectionColor(styles.colors.primary)
     {
         /*md md_config:List */
-        nlohmann::json config = props.config;
+        nlohmann::json& config = props.config;
 
         /// The list of items to add in the list.
         if (config.contains("items") && config["items"].is_array()) { //eg: ["item1", "item2", "item3"]

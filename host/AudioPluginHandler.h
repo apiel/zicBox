@@ -410,7 +410,9 @@ public:
             return;
         }
 
-        AudioPlugin* instance = ((AudioPlugin * (*)(AudioPlugin::Props & props, char* name)) allocator)(pluginProps, name);
+        nlohmann::json config; // TODO
+        AudioPlugin::Config pluginConfig = { name, config };
+        AudioPlugin* instance = ((AudioPlugin * (*)(AudioPlugin::Props & props, AudioPlugin::Config& config)) allocator)(pluginProps, pluginConfig);
         logInfo("audio plugin loaded: %s", instance->name.c_str());
 
         // plugin.instance->set(0, 0.1f);

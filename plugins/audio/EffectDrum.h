@@ -102,8 +102,8 @@ public:
         filter.setResonance(resonance.pct());
     });
 
-    EffectDrum(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    EffectDrum(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
         initValues();
     }

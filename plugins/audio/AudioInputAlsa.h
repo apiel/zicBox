@@ -19,8 +19,8 @@ protected:
     }
 
 public:
-    AudioInputAlsa(AudioPlugin::Props& props, char* _name)
-        : AudioAlsa(props, _name)
+    AudioInputAlsa(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : AudioAlsa(props, config)
     {
         open();
     }

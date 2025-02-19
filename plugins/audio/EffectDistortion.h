@@ -98,8 +98,8 @@ public:
         }
     });
 
-    EffectDistortion(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    EffectDistortion(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
         initValues();
     };

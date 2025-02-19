@@ -28,7 +28,7 @@ public:
         textColor2 = styles.colors.text;
 
         /*md md_config:Adsr */
-        nlohmann::json config = props.config;
+        nlohmann::json& config = props.config;
 
         /// If true, the rectangle will be outlined. Default is true.
         outline = config.value("outline", outline); //eg: false

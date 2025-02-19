@@ -67,8 +67,8 @@ public:
     /*md - `TONE_BRIGHTNESS` set the tone brightness. */
     Val& toneBrightness = val(5000.0f, "TONE_BRIGHTNESS", { "Tone Brightness", .min = 1000.0, .max = 10000.0, .step = 100.0, .unit = "Hz" });
 
-    SynthHiHat(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    SynthHiHat(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
         initValues();
     }

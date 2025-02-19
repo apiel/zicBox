@@ -56,8 +56,8 @@ public:
         }
     });
 
-    EffectVolumeDrive(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    EffectVolumeDrive(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
         initValues();
     }

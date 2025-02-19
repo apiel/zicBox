@@ -173,8 +173,8 @@ public:
 
     // TODO add pitch randomization per grain
 
-    SynthGranular(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    SynthGranular(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
         setSampleRate(props.sampleRate);
         open(browser.get(), true);

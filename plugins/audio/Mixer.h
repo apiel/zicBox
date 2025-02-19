@@ -23,8 +23,8 @@ public:
     uint8_t tracks[TRACK_COUNT];
     float divider = 1.0f / (float)TRACK_COUNT;
 
-    Mixer(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    Mixer(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
         /*md And input tracks start at 1, then 2, 3, ....*/
         for (uint8_t i = 0; i < TRACK_COUNT; i++) {

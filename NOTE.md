@@ -14,7 +14,7 @@
 ```cpp
 // need to be much more granular
             try {
-                nlohmann::json config = nlohmann::json::parse(value);
+                nlohmann::json& config = nlohmann::json::parse(value);
                 addComponent(config);
                 return true;
             } catch (const std::exception& e) {

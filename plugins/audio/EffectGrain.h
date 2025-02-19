@@ -70,8 +70,8 @@ public:
     /*md - `DIRECTION` set the direction of the grain. */
     Val& direction = val(1, "DIRECTION", { "Direction", VALUE_CENTERED, .min = -1, .max = 1, .step = 2 });
 
-    EffectGrain(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    EffectGrain(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
         initValues();
     }

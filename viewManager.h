@@ -95,7 +95,7 @@ protected:
         view->onContext(index, value);
     }
 
-    Plugin& loadPlugin(std::string name, nlohmann::json config)
+    Plugin& loadPlugin(std::string name, nlohmann::json& config)
     {
         for (auto& plugin : plugins) {
             if (plugin.name == name) {
@@ -133,7 +133,7 @@ protected:
         return plugins.back();
     }
 
-    void addComponent(nlohmann::json config)
+    void addComponent(nlohmann::json& config)
     {
         std::string name = config["componentName"].get<std::string>();
         Point position = { config["bounds"][0].get<int>(), config["bounds"][1].get<int>() };

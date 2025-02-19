@@ -31,8 +31,8 @@ public:
     float prevInput1 = 0.0f, prevOutput1 = 0.0f; // State for pass 1
     // float prevInput2 = 0.0f, prevOutput2 = 0.0f; // State for pass 2
 
-    EffectDistortion2(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    EffectDistortion2(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
         initValues();
     }

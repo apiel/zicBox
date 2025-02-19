@@ -112,8 +112,8 @@ public:
     Play/Stop will answer to global event. However, you may want to the sequencer to not listen to those events or to only start to play on the next sequence iteration. */
     Val& status = val(1.0f, "STATUS", { "Status", VALUE_STRING, .max = 2 }, [&](auto p) { setStatus(p.value); });
 
-    Sequencer(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    Sequencer(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
         , props(props)
     {
         initValues();

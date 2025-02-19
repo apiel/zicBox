@@ -120,8 +120,8 @@ public:
     /*md - `VOICE_SEC` to set sec on selected voice.*/
     Val& voiceSec = val(0.0f, "VOICE_TIME", { "Voice time", .min = 0.0f, .max = 1000.0f, .step = 5.0f, .unit = "ms" }, [&](auto p) { p.val.setFloat(p.value); setSec(selectedVoice, p.value); });
 
-    EffectDelay(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name, {
+    EffectDelay(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config, {
                                     // clang-format off
             &timeRatio, &masterAmplitude, 
             &voices[0].amplitude, &voices[0].feedback, &voices[0].sec, 
@@ -135,7 +135,7 @@ public:
         })
         // clang-format on
         , sampleRate(props.sampleRate)
-        , filter(props, _name)
+        , filter(props, config)
     {
         /*md - `CUTOFF` to set cutoff on delay buffer.*/
         val(&filter.cutoff);

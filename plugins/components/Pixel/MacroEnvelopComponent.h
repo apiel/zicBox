@@ -126,7 +126,7 @@ public:
         updateGraphHeight();
 
         /*md md_config:MacroEnvelop */
-        nlohmann::json config = props.config;
+        nlohmann::json& config = props.config;
 
         /// The audio plugin to get control on.
         plugin = getPluginPtr(config, "audioPlugin", track); //eg: "audio_plugin_name"

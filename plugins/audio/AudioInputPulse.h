@@ -23,8 +23,8 @@ protected:
     }
 
 public:
-    AudioInputPulse(AudioPlugin::Props& props, char* _name)
-        : AudioPulse(props, _name)
+    AudioInputPulse(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : AudioPulse(props, config)
     {
         open();
     }

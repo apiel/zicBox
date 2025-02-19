@@ -33,8 +33,8 @@ public:
     /*md - `BPM` in beats per minute*/
     Val& bpm = val(120.0f, "BPM", { "Bpm", .min = 60.0f, .max = 240.0f }, [&](auto p) { setBpm(p.value); });
 
-    Tempo(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    Tempo(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
         initValues();
     }

@@ -95,8 +95,8 @@ public:
     const char* deviceName = NULL;
     pa_mainloop_api* paMainLoopApi;
 
-    AudioPulse(AudioPlugin::Props& props, char * _name)
-        : AudioPlugin(props, _name)
+    AudioPulse(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : AudioPlugin(props, config)
         , props(props)
     {
         for (uint32_t i = 0; i < audioChunk; i++) {

@@ -16,8 +16,8 @@ public:
     // params value can be accessed using .get() for absolute value and .pct() for percentage
     // e.g: param2.get() would be 50, param2.pct() would be 0.5
 
-    MyAudioPlugin(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    MyAudioPlugin(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
         initValues();
     }

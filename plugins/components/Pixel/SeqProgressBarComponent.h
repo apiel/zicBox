@@ -65,7 +65,7 @@ public:
         };
 
         /*md md_config:SeqProgressBar */
-        nlohmann::json config = props.config;
+        nlohmann::json& config = props.config;
 
         /// The audio plugin sequencer.
         AudioPlugin* seqPlugin = getPluginPtr(config, "audioPlugin", track); //eg: "audio_plugin_name"

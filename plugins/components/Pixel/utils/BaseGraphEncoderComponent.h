@@ -62,7 +62,7 @@ public:
         , textColor1(styles.colors.text)
         , textColor2(darken(styles.colors.text, 0.5))
     {
-        nlohmann::json config = props.config;
+        nlohmann::json& config = props.config;
         renderValuesOnTop = config.value("renderValuesOnTop", renderValuesOnTop);
 
         textColor1 = draw.getColor(config["textColor1"], textColor1);

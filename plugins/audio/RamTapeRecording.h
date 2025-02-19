@@ -69,8 +69,8 @@ public:
         track = p.val.get();
     });
 
-    RamTapeRecording(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    RamTapeRecording(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
         trackNum.props().max = props.maxTracks - 1;
     }

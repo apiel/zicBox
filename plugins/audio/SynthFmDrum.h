@@ -112,8 +112,8 @@ public:
     /*md - REVERB controls delay time, feedback, and mix with one parameter. */
     Val& reverb = val(0.3f, "REVERB", { "Reverb", .unit = "%" });
 
-    SynthFmDrum(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    SynthFmDrum(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
         initValues();
     }

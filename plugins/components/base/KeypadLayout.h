@@ -102,7 +102,7 @@ public:
     {
     }
 
-    void init(nlohmann::json config)
+    void init(nlohmann::json& config)
     {
         if (config.contains("keys") && config["keys"].is_array()) {
             for (auto& key : config["keys"]) {

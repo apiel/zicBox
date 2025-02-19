@@ -167,8 +167,8 @@ public:
     Val& fmAmount = val(0.0, "FM_AMOUNT", { "FM Amount", .unit = "%" });
     // IDEA should there be a ratio for the fm frequency...
 
-    SynthHybrid(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name, {
+    SynthHybrid(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config, {
                                     // clang-format off
         &osc1.attack, &osc1.decay, &osc1.sustain, &osc1.release, &osc1.shape, &osc1.morph, &osc1.freq,
         &osc2.attack, &osc2.decay, &osc2.sustain, &osc2.release, &osc2.shape, &osc2.morph, &osc2.freq,

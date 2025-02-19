@@ -89,8 +89,8 @@ public:
         track = p.val.get();
     });
 
-    TapeRecording(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    TapeRecording(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
         trackNum.props().max = props.maxTracks - 1;
         initValues();

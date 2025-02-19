@@ -62,7 +62,7 @@ public:
         , errorColor(rgb(173, 99, 99))
     {
         /*md md_config:Workspaces */
-        nlohmann::json config = props.config;
+        nlohmann::json& config = props.config;
 
         /// The audio plugin to load serialized data.
         plugin = getPluginPtr(config, "audioPlugin", track); //eg: "audio_plugin_name"
