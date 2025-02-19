@@ -9,4 +9,4 @@ export const Clips = getJsonComponent<{
   visibleCount?: number;
   sequencerPlugin?: string;
   serializerPlugin?: string;
-}>('Clips', 'libzic_ClipsComponent.so');
+}>('Clips');

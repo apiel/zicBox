@@ -7,4 +7,4 @@ export const StepEditSample = getJsonComponent<{
     textColor?: string;
     playingColor?: string;
     selectedColor?: string;
-}>('StepEditSample', 'libzic_StepEditSampleComponent.so');
+}>('StepEditSample');

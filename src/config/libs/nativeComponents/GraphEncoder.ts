@@ -13,4 +13,4 @@ export const GraphEncoder = getJsonComponent<{
     encoders?: { encoderId: number; value: string; string?: boolean }[];
     isArrayData?: boolean;
     renderValuesOnTop?: boolean;
-}>('GraphEncoder', 'libzic_GraphEncoderComponent.so');
+}>('GraphEncoder');

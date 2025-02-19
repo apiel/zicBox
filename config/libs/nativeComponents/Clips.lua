@@ -2,5 +2,5 @@
 local ____exports = {}
 local ____ui = require("config.libs.ui")
 local getJsonComponent = ____ui.getJsonComponent
-____exports.Clips = getJsonComponent("Clips", "libzic_ClipsComponent.so")
+____exports.Clips = getJsonComponent("Clips")
 return ____exports

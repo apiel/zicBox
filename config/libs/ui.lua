@@ -2,15 +2,12 @@ local ____lualib = require("lualib_bundle")
 local __TS__ArrayIsArray = ____lualib.__TS__ArrayIsArray
 local __TS__ArrayJoin = ____lualib.__TS__ArrayJoin
 local __TS__StringSplit = ____lualib.__TS__StringSplit
-local Set = ____lualib.Set
-local __TS__New = ____lualib.__TS__New
 local __TS__ObjectAssign = ____lualib.__TS__ObjectAssign
 local __TS__NumberToString = ____lualib.__TS__NumberToString
 local __TS__StringPadStart = ____lualib.__TS__StringPadStart
 local ____exports = {}
 local ____core = require("config.libs.core")
 local applyZic = ____core.applyZic
-local buildPlateform = ____core.buildPlateform
 local jsonStringify = ____core.jsonStringify
 function ____exports.getPosition(pos)
     return __TS__ArrayIsArray(pos) and __TS__ArrayJoin(pos, " ") or pos
@@ -18,24 +15,8 @@ end
 function ____exports.getBounds(pos)
     return __TS__ArrayIsArray(pos) and pos or __TS__StringSplit(pos, " ")
 end
---- Load a plugin component from a specified path and assign it a name.
--- 
--- @param name string - The name to assign to the plugin component.
--- @param pluginPath string - The path to the plugin component file.
-function ____exports.pluginComponent(name, pluginPath)
-    applyZic({{PLUGIN_COMPONENT = (((name .. " @/plugins/components/Pixel/build/") .. buildPlateform()) .. "/") .. pluginPath}})
-end
-local initializedPlugins = __TS__New(Set)
-function ____exports.initializePlugin(componentName, pluginPath)
-    if not initializedPlugins:has(componentName) then
-        print(">>>> Initializing plugin: " .. componentName)
-        initializedPlugins:add(componentName)
-        ____exports.pluginComponent(componentName, pluginPath)
-    end
-end
-function ____exports.getJsonComponent(componentName, pluginPath)
+function ____exports.getJsonComponent(componentName)
     return function(props)
-        ____exports.initializePlugin(componentName, pluginPath)
         local COMPONENT = jsonStringify(__TS__ObjectAssign(
             {},
             props,

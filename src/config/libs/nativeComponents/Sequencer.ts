@@ -6,4 +6,4 @@ export const Sequencer = getJsonComponent<{
     blackKeyColor?: string;
     whiteKeyColor?: string;
     // TODO add the rest of params
-}>('Sequencer', 'libzic_SequencerComponent.so');
+}>('Sequencer');

@@ -7,4 +7,4 @@ export const List = getJsonComponent<{
     textColor?: string;
     selectionColor?: string;
     itemBackground?: string;
-}>('List', 'libzic_ListComponent.so');
+}>('List');

@@ -8,4 +8,4 @@ export const Text = getJsonComponent<{
     bgColor?: string;
     centered?: boolean;
     font?: string;
-}>('Text', 'libzic_TextComponent.so');
+}>('Text');

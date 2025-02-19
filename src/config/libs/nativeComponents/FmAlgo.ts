@@ -8,4 +8,4 @@ export const FmAlgo = getJsonComponent<{
     audioPlugin: string;
     param: string;
     dataId?: string;
-}>('FmAlgo', 'libzic_FmAlgoComponent.so');
+}>('FmAlgo');

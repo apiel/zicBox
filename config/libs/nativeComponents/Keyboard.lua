@@ -2,5 +2,5 @@
 local ____exports = {}
 local ____ui = require("config.libs.ui")
 local getJsonComponent = ____ui.getJsonComponent
-____exports.Keyboard = getJsonComponent("Keyboard", "libzic_KeyboardComponent.so")
+____exports.Keyboard = getJsonComponent("Keyboard")
 return ____exports

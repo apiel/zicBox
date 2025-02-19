@@ -95,15 +95,28 @@ protected:
         view->onContext(index, value);
     }
 
-    void loadPlugin(char* value, std::string filename)
+    Plugin& loadPlugin(std::string name, nlohmann::json config)
     {
+        for (auto& plugin : plugins) {
+            if (plugin.name == name) {
+                return plugin;
+            }
+        }
+
         Plugin plugin;
-        plugin.name = strtok(value, " ");
-        char* path = strtok(NULL, " ");
-        void* handle = dlopen(getFullpath(path, filename).c_str(), RTLD_LAZY);
+        plugin.name = name;
+#ifdef IS_RPI
+        std::string path = "./plugins/components/Pixel/build/arm/libzic_" + name + "Component.so";
+#else
+        std::string path = "./plugins/components/Pixel/build/x86/libzic_" + name + "Component.so";
+#endif
+        if (config.contains("pluginPath")) {
+            path = config["pluginPath"].get<std::string>();
+        }
+
+        void* handle = dlopen(path.c_str(), RTLD_LAZY);
         if (!handle) {
-            logError("Cannot open component library %s [%s]: %s\n", path, filename.c_str(), dlerror());
-            return;
+            throw std::runtime_error("Cannot open component library " + path + ": " + dlerror());
         }
 
         dlerror();
@@ -113,11 +126,11 @@ protected:
         };
         const char* dlsym_error = dlerror();
         if (dlsym_error) {
-            logError("Cannot load symbol: %s\n", dlsym_error);
             dlclose(handle);
-            return;
+            throw std::runtime_error("Cannot load symbol: " + std::string(dlsym_error));
         }
         plugins.push_back(plugin);
+        return plugins.back();
     }
 
     void addComponent(nlohmann::json config)
@@ -142,16 +155,9 @@ protected:
             [this](uint8_t index, float value) { setContext(index, value); }
         };
 
-        // printf("addComponent: %s pos %d %d size %d %d\n", name, position.x, position.y, size.w, size.h);
-
-        for (auto& plugin : plugins) {
-            if (plugin.name == name) {
-                ComponentInterface* component = plugin.allocator(props);
-                addComponent(component);
-                return;
-            }
-        }
-        logWarn("Unknown component: %s", name.c_str());
+        Plugin& plugin = loadPlugin(name, config);
+        ComponentInterface* component = plugin.allocator(props);
+        addComponent(component);
     }
 
     void addComponent(ComponentInterface* component)
@@ -196,11 +202,6 @@ public:
         }
     }
 
-    void loadPlugin(std::string value)
-    {
-        loadPlugin((char*)value.c_str(), "");
-    }
-
     bool render()
     {
         m.lock();
@@ -236,35 +237,6 @@ public:
 
     bool config(char* key, char* value, const char* filename)
     {
-        /*#md
-        ### PLUGIN_COMPONENT
-
-        A component must be load from a shared library (those `.so` files). To load those plugin components, use `PLUGIN_COMPONENT: given_name_to_component ../path/of/the/component.so`.
-
-        ```coffee
-        PLUGIN_COMPONENT: Encoder ../plugins/build/libzic_EncoderComponent.so
-        ```
-
-        In this example, we load the shared library `../plugins/build/libzic_EncoderComponent.so` and we give it the name of `Encoder`. The `Encoder` name will be used later to place the components in the view.
-        */
-        if (strcmp(key, "PLUGIN_COMPONENT") == 0) {
-            loadPlugin(value, filename);
-            return true;
-        }
-        /*#md
-        ### COMPONENT
-
-        To place previously loaded components inside a view, use `COMPONENT: given_name_to_component x y w h`.
-
-        ```coffee
-        COMPONENT: Encoder 100 0 100 50
-        ENCODER_ID: 1
-        VALUE: MultiModeFilter RESONANCE
-        ```
-
-        A component can get extra configuration settings and any `KEY: VALUE` following `COMPONENT: ` will be forwarded to the component.
-        In this example, we assign the hardware encoder id 1 to this component and we assign it to the resonance value from the multi mode filter audio plugin.
-        */
         if (strcmp(key, "COMPONENT") == 0) {
             try {
                 nlohmann::json config = nlohmann::json::parse(value);

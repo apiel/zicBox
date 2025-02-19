@@ -1,4 +1,4 @@
-import { applyZic, buildPlateform, jsonStringify, ZicValue } from './core';
+import { applyZic, jsonStringify, ZicValue } from './core';
 import { ComponentProps } from './nativeComponents/component';
 
 export type Bounds = string | string[] | number[];
@@ -12,34 +12,8 @@ export function getBounds(pos: Bounds) {
     return Array.isArray(pos) ? pos : pos.split(' ');
 }
 
-/**
- * Load a plugin component from a specified path and assign it a name.
- *
- * @param name string - The name to assign to the plugin component.
- * @param pluginPath string - The path to the plugin component file.
- */
-
-export function pluginComponent(name: string, pluginPath: string) {
-    applyZic([
-        {
-            PLUGIN_COMPONENT:
-                name + ' @/plugins/components/Pixel/build/' + buildPlateform() + '/' + pluginPath,
-        },
-    ]);
-}
-
-const initializedPlugins = new Set();
-export function initializePlugin(componentName: string, pluginPath: string) {
-    if (!initializedPlugins.has(componentName)) {
-        console.log(`>>>> Initializing plugin: ${componentName}`);
-        initializedPlugins.add(componentName);
-        pluginComponent(componentName, pluginPath);
-    }
-}
-
-export function getJsonComponent<P>(componentName: string, pluginPath: string) {
+export function getJsonComponent<P>(componentName: string) {
     return (props: ComponentProps<P>) => {
-        initializePlugin(componentName, pluginPath);
         const COMPONENT = jsonStringify({
             ...props,
             componentName,

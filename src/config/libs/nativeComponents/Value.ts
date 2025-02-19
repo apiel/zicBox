@@ -26,4 +26,4 @@ export const Value = getJsonComponent<{
     barColor?: string;
     unitColor?: string;
 
-}>('Value', 'libzic_ValueComponent.so');
+}>('Value');

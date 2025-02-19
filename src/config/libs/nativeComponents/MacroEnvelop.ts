@@ -11,4 +11,4 @@ export const MacroEnvelop = getJsonComponent<{
     textColor?: string;
     cursorColor?: string;
     encoders?: [number, number, number, number];
-}>('MacroEnvelop', 'libzic_MacroEnvelopComponent.so');
+}>('MacroEnvelop');
