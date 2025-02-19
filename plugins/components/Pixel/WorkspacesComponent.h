@@ -65,11 +65,7 @@ public:
         nlohmann::json config = props.config;
 
         /// The audio plugin to load serialized data.
-        if (!config.contains("audioPlugin")) {
-            logWarn("Workspaces component is missing audioPlugin parameter.");
-            return;
-        }
-        plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track); //eg: "audio_plugin_name"
+        plugin = getPluginPtr(config, "audioPlugin", track); //eg: "audio_plugin_name"
 
         currentWorkspaceName = (std::string*)plugin->data(plugin->getDataId(config.value("currentWorkspaceDataId", "CURRENT_WORKSPACE"))); //eg: "CURRENT_WORKSPACE"
 
@@ -84,13 +80,13 @@ public:
         /// The background color of the text.
         bgColor = draw.getColor(config["bgColor"], bgColor); //eg: "#000000"
 
+        /// Color the active workspace badge.
         badgeColor = draw.getColor(config["badgeColor"], badgeColor); //eg: "#23a123"
 
+        /// Color of the error message.
         errorColor = draw.getColor(config["errorColor"], errorColor); //eg: "#ab6363"
 
         /*md md_config_end */
-
-        initItems();
     }
 
     void renderItem(int y, int itemIndex) override

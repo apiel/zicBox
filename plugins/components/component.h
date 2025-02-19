@@ -112,4 +112,22 @@ public:
             renderNext();
         }
     }
+
+    std::string getParam(const nlohmann::json& config, std::string parameterKey, const char* errorDescription = NULL)
+    {
+        if (!config.contains(parameterKey)) {
+            if (errorDescription == NULL) {
+                logWarn("%s: Component is missing %s parameter.", this->nameUID.c_str(), parameterKey.c_str());
+            } else {
+                logWarn(errorDescription);
+            }
+            return "undefined";
+        }
+        return config[parameterKey].get<std::string>();
+    }
+
+    AudioPlugin* getPluginPtr(const nlohmann::json& config, std::string parameterKey, int16_t track, const char* errorDescription = NULL)
+    {
+        return &getPlugin(getParam(config, parameterKey, errorDescription).c_str(), track);
+    }
 };

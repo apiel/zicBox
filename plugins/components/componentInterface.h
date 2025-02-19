@@ -15,6 +15,7 @@
 class ComponentInterface {
 public:
     struct Props {
+        std::string nameUID;
         ComponentContainer* container;
         nlohmann::json config;
         Point position;
@@ -48,13 +49,14 @@ public:
     Size size;
     int16_t track = 0;
     int8_t group = -1;
-    std::string id = ""; // TO be removed?
+    std::string nameUID;
 
     std::function<void(unsigned long now)> jobRendering;
 
     ComponentInterface(Props props)
         : draw(props.view->draw)
         , styles(props.view->draw.styles)
+        , nameUID(props.nameUID)
         , container(props.container)
         , getPlugin(props.getPlugin)
         , sendAudioEvent(props.sendAudioEvent)
