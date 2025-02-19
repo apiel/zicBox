@@ -229,8 +229,8 @@ public:
 
     Val& highBoost = val(0.0, "HIGH_FREQ_BOOST", { "High boost", .min = 0.0, .max = 20.0, .step = 0.1, .floatingPoint = 1 });
 
-    SynthDrum23(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    SynthDrum23(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
         , waveform(props.lookupTable, props.sampleRate)
         , sampleRate(props.sampleRate)
     {

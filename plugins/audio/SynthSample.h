@@ -246,8 +246,8 @@ public:
     /*md - `BROWSER` to browse between samples to play. */
     Val& browser = val(1.0f, "BROWSER", { "Browser", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count }, [&](auto p) { open(p.value); });
 
-    SynthSample(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    SynthSample(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
         open(browser.get(), true);
         initValues();

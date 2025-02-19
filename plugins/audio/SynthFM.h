@@ -127,8 +127,8 @@ public:
     /*md - `ALGO` set the FM algorithm.*/
     Val& algo = val(1, "ALGO", { "Algorithm", .min = 1, .max = sizeof(algorithm) / sizeof(algorithm[0]) });
 
-    SynthFM(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name, {
+    SynthFM(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config, {
                                     // clang-format off
              &operators[0].attack, &operators[0].decay, &operators[0].sustain, &operators[0].release, &operators[0].freq, &operators[0].feedback,
              &operators[1].attack, &operators[1].decay, &operators[1].sustain, &operators[1].release, &operators[1].freq, &operators[1].feedback,

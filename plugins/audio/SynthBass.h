@@ -197,8 +197,8 @@ public:
     /*md - `BOOST` to set compression or bass boost. */
     Val& boost = val(0.0f, "BOOST", { "Boost", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
 
-    SynthBass(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name) // clang-format on
+    SynthBass(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config) // clang-format on
         , waveform(props.lookupTable, props.sampleRate)
     {
         initValues();

@@ -149,7 +149,7 @@ public:
         })
     {
         /*md md_config:Clips */
-        nlohmann::json config = props.config;
+        nlohmann::json& config = props.config;
 
         /// The group to change clips for all tracks.
         groupAll = config.value("groupAll", groupAll); //eg: 10

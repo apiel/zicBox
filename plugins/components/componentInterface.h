@@ -16,7 +16,7 @@ class ComponentInterface {
 public:
     struct Props {
         std::string nameUID;
-        nlohmann::json config;
+        nlohmann::json& config;
         Point position;
         Size size;
         AudioPlugin& (*getPlugin)(std::string name, int16_t track);

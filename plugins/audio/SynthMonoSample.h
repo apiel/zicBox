@@ -134,8 +134,8 @@ public:
         }
     });
 
-    SynthMonoSample(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    SynthMonoSample(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
         open(browser.get(), true);
         initValues();

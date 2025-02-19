@@ -33,8 +33,8 @@ public:
     float envelopeLevel = 0.0f; // Current envelope level
     bool isNoteOn = false; // Note state
 
-    SynthHybrid(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    SynthHybrid(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
         initValues();
     }

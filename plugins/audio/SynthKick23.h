@@ -118,8 +118,8 @@ public:
         { 50.0f, "ENVELOP_FREQ_TIME_4", { "Freq.Time 4", .unit = "%" }, [&](auto p) { setEnvFreqTime(p.value, 3); } },
     };
 
-    SynthKick23(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name, {
+    SynthKick23(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config, {
                                     // clang-format off
             &envAmpMod[0], &envAmpMod[1], &envAmpMod[2], &envAmpMod[3], &envAmpMod[4],
             &envAmpTime[0], &envAmpTime[1], &envAmpTime[2], &envAmpTime[3],

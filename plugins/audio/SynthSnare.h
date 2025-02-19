@@ -48,8 +48,8 @@ public:
     /*md - `TRANSIENT_INTENSITY` set the transient intensity. */
     Val& transientIntensity = val(0.0f, "TRANSIENT_INTENSITY", { "Transient", .unit = "%" });
 
-    SynthSnare(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    SynthSnare(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
         initValues();
     }

@@ -39,8 +39,8 @@ public:
     /*md - `RESONANCE` to set resonance. */
     Val& resonance = val(0.0, "RESONANCE", { "Resonance" }, [&](auto p) { setResonance(p.value); });
 
-    EffectFilterMultiModeMoog(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    EffectFilterMultiModeMoog(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
         initValues();
     };

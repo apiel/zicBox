@@ -23,7 +23,7 @@ public:
         : Component(props)
     {
         /*md md_config:HiddenValue */
-        nlohmann::json config = props.config;
+        nlohmann::json& config = props.config;
 
         /// The audio plugin to get control on.
         if (config.contains("audioPlugin")) {

@@ -106,7 +106,7 @@ public:
         };
 
         /*md md_config:StepEditSample */
-        nlohmann::json config = props.config;
+        nlohmann::json& config = props.config;
 
         /// The audio plugin to get control on.
         plugin = getPluginPtr(config, "audioPlugin", track); //eq: "audio_plugin_name"

@@ -44,8 +44,8 @@ public:
     /*md - `SAMPLE_STEP` to set sample step reduction. */
     Val& sampleStep = val(0.0f, "SAMPLE_STEP", { "Step Reducer", .max = 256.0, .unit = "steps" }, [&](auto p) { setSampleStep(p.value); });
 
-    EffectSampleRateReducer(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    EffectSampleRateReducer(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
         initValues();
     };

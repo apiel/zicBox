@@ -47,8 +47,8 @@ public:
         }
     });
 
-    EffectVolumeClipping(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    EffectVolumeClipping(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
         initValues();
     }

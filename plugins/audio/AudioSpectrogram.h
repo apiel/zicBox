@@ -15,8 +15,8 @@ protected:
     int bufferIndex = 0;
 
 public:
-    AudioSpectrogram(AudioPlugin::Props& props, char* _name)
-        : AudioPlugin(props, _name)
+    AudioSpectrogram(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : AudioPlugin(props, config)
     {
     }
 

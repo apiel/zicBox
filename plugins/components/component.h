@@ -24,7 +24,7 @@ public:
         : ComponentInterface(props)
         , keypadLayout(this, keypadCustomAction)
     {
-        nlohmann::json config = props.config;
+        nlohmann::json& config = props.config;
         track = config.value("track", track);
         group = config.value("group", group);
         visibilityContext.init(config);

@@ -17,8 +17,8 @@ public:
     Val& gain = val(1.0f, "GAIN", { "Gain", .min = 1.0f, .max = 20.0f, .step = .1f }, [&](auto p) { setVolumeWithGain(volume.get(), p.value); });
     float volumeWithGain = volume.get();
 
-    EffectGainVolume(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    EffectGainVolume(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
         initValues();
     }

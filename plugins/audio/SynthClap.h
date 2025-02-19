@@ -97,8 +97,8 @@ public:
     /*md - SINE_BLEND sets the amplitude of the sine wave transient component. */
     Val& sineBlend = val(50.0f, "SINE_BLEND", { "Sine Blend", .unit = "%" });
 
-    SynthClap(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    SynthClap(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
         initValues();
     }

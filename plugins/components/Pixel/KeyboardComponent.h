@@ -138,7 +138,7 @@ public:
         textPos.y = (itemSize.h - 8) / 2;
 
         /*md md_config:Keyboard */
-        nlohmann::json config = props.config;
+        nlohmann::json& config = props.config;
 
         /// The view to redirect once edit is finished.
         if (config.contains("redirectView")) {

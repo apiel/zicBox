@@ -132,8 +132,8 @@ public:
         }
     });
 
-    SampleSequencer(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    SampleSequencer(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
         , props(props)
     {
         initValues();

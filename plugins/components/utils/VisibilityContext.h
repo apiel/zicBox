@@ -49,7 +49,7 @@ public:
         return update;
     }
 
-    void init(nlohmann::json config) {
+    void init(nlohmann::json& config) {
         if (config.contains("visibilityContext") && config["visibilityContext"].is_array()) {
             for (auto& context : config["visibilityContext"]) {
                 ContextCondition cond;

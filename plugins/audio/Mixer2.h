@@ -10,8 +10,8 @@ public:
     uint8_t trackA = 1;
     uint8_t trackB = 2;
 
-    Mixer2(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    Mixer2(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
     }
 

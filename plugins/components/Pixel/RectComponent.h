@@ -24,7 +24,7 @@ public:
         , color(styles.colors.background)
     {
         /*md md_config:Rect */
-        nlohmann::json config = props.config;
+        nlohmann::json& config = props.config;
 
         /// The color of the rectangle.
         color = draw.getColor(config["color"], color); //eg: "#000000"

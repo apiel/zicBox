@@ -44,8 +44,8 @@ void pdprint(const char* s)
 
 class SynthPd : public Mapping {
 public:
-    SynthPd(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    SynthPd(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
         libpd_set_printhook(pdprint);
         libpd_init();

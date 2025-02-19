@@ -35,8 +35,8 @@ public:
     /*md - `MODE` set filter mode. */
     Val& mode_value = val(0.0, "MODE", { "Mode", VALUE_STRING, .max = MODE_COUNT - 1, }, [&](auto p) { setMode(p.value); });
 
-    EffectFilter(AudioPlugin::Props& props, char* _name)
-        : Mapping(props, _name)
+    EffectFilter(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
     {
     }
 

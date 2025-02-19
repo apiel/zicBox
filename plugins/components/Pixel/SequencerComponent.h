@@ -52,7 +52,7 @@ public:
         , stepColor(styles.colors.primary)
     {
         /*md md_config:Sequencer */
-        nlohmann::json config = props.config;
+        nlohmann::json& config = props.config;
 
         /// The audio plugin sequencer.
         plugin = getPluginPtr(config, "audioPlugin", track); //eq: "audio_plugin_name"

@@ -197,7 +197,7 @@ public:
         setRadius((size.h - 6) * 0.5);
 
         /*md md_config:KnobValue */
-        nlohmann::json config = props.config;
+        nlohmann::json& config = props.config;
 
         /// The audio plugin to get control on. */
         AudioPlugin* plugin = getPluginPtr(config, "audioPlugin", track); //eg: "audio_plugin_name"

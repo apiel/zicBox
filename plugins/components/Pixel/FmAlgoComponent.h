@@ -55,7 +55,7 @@ public:
         }
 
         /*md md_config:FmAlgo */
-        nlohmann::json config = props.config;
+        nlohmann::json& config = props.config;
 
         /// The background color of the text.
         background = draw.getColor(config["bgColor"], background); //eg: "#000000"
