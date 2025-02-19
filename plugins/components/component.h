@@ -8,7 +8,6 @@
 // #include "utils/VisibilityGroup.h" // TODO
 #include "valueInterface.h"
 
-#include <optional>
 #include <stdlib.h>
 
 class Component : public ComponentInterface {
@@ -113,26 +112,6 @@ public:
             renderNext();
         }
     }
-
-    // // Get a parameter from the JSON config, throwing an exception if it's missing
-    // std::string getParam(const nlohmann::json& config, const std::string& parameterKey, const char* errorDescription = nullptr) const
-    // {
-    //     if (!config.contains(parameterKey)) {
-    //         if (errorDescription) {
-    //             throw std::runtime_error(errorDescription);
-    //         }
-    //         throw std::runtime_error(
-    //             nameUID + ": Component is missing " + parameterKey + " parameter.");
-    //     }
-    //     return config[parameterKey].get<std::string>();
-    // }
-
-    // // Get a plugin pointer, propagating any exceptions from getParam
-    // AudioPlugin* getPluginPtr(const nlohmann::json& config, const std::string& parameterKey, int16_t track, const char* errorDescription = nullptr) const
-    // {
-    //     std::string pluginName = getParam(config, parameterKey, errorDescription);
-    //     return &getPlugin(pluginName.c_str(), track);
-    // }
 
     // Generic getParam function that can return any type
     template <typename T>
