@@ -31,7 +31,7 @@ public:
             /// The audio plugin key parameter to get control on.
             if (config.contains("param")) {
                 std::string param = config["param"].get<std::string>(); //eg: "parameter_name"
-                value = getPlugin(audioPlugin.c_str(), track).getValue(param);
+                value = getPluginPtr(config, "audioPlugin", track)->getValue(param);
             }
         }
 

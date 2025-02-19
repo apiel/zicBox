@@ -60,13 +60,13 @@ public:
         /// The audio plugin to get control on.
         //md   plugin="audio_plugin_name"
 
-        if (!config.contains("dataId") || plugin == NULL) {
-            logWarn("GraphEncoderComponent cannot init: dataId is not set");
+        if (plugin == NULL) {
+            logWarn("GraphEncoderComponent cannot init: plugin is not set");
             return;
         }
 
         /// The data id of the audio plugin where the input value will be sent.
-        dataId = plugin->getDataId(config["dataId"].get<std::string>()); //eg: "data_id"
+        dataId = plugin->getDataId(getConfig(config, "dataId")); //eg: "data_id"
 
         /// The encoders that will interract with this component. Set `string` to force using string rendering. */
         if (config.contains("encoders") && config["encoders"].is_array()) { //eg: [{encoderId: 0, value: "LEVEL", string: false}]

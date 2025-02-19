@@ -113,9 +113,9 @@ public:
         }
     }
 
-    // Generic getParam function that can return any type
-    template <typename T>
-    T getParam(const nlohmann::json& config, const std::string& parameterKey, const char* errorDescription = nullptr) const
+    // Generic getConfig function that can return any type
+    template <typename T = std::string>
+    T getConfig(const nlohmann::json& config, const std::string& parameterKey, const char* errorDescription = nullptr) const
     {
         if (!config.contains(parameterKey)) {
             if (errorDescription) {
@@ -135,7 +135,7 @@ public:
     // Example usage with getPluginPtr
     AudioPlugin* getPluginPtr(const nlohmann::json& config, const std::string& parameterKey, int16_t track, const char* errorDescription = nullptr) const
     {
-        std::string pluginName = getParam<std::string>(config, parameterKey, errorDescription);
+        std::string pluginName = getConfig<std::string>(config, parameterKey, errorDescription);
         return &getPlugin(pluginName.c_str(), track);
     }
 };

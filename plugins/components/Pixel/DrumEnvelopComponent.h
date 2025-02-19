@@ -133,11 +133,7 @@ public:
         plugin = getPluginPtr(config, "audioPlugin", track); //eg: "audio_plugin_name"
 
         /// Envelop data id to get/set data in the audio plugin.
-        if (!config.contains("envelopDataId")) {
-            logWarn("DrumEnvelop component is missing envelopDataId parameter.");
-            return;
-        }
-        uint8_t id = plugin->getDataId(config["envelopDataId"].get<std::string>().c_str()); //eg: "ENV_AMP"
+        uint8_t id = plugin->getDataId(getConfig<std::string>(config, "envelopDataId")); //eg: "ENV_AMP"
         envData = (std::vector<Data>*)plugin->data(id);
         currentStepDataId = id + 1; // This is a bit cluncky, should try to find something better...
         timeDataId = id + 2;
