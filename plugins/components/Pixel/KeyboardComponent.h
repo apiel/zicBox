@@ -147,7 +147,7 @@ public:
 
         /// The audio plugin to send the input value.
         if (config.contains("audioPlugin")) {
-            plugin = &getPlugin(config["audioPlugin"].get<std::string>().c_str(), track); //eg: "audio_plugin_name"
+            plugin = &getPlugin(config["audioPlugin"].get<std::string>(), track); //eg: "audio_plugin_name"
         }
 
         /// The data id of the audio plugin where the input value will be sent.

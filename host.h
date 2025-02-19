@@ -34,7 +34,7 @@ void midiHandler(std::vector<unsigned char>* message)
     }
 }
 
-AudioPlugin& getPlugin(const char* name, int16_t track = -1)
+AudioPlugin& getPlugin(std::string name, int16_t track = -1)
 {
     return host->audioPluginHandler->getPlugin(name, track);
 }
@@ -109,7 +109,7 @@ void* hostThread(void* = NULL)
     return NULL;
 }
 
-AudioPlugin& getPlugin(const char* name, int16_t track = -1)
+AudioPlugin& getPlugin(std::string name, int16_t track = -1)
 {
     return AudioPluginHandler::get().getPlugin(name, track);
 }

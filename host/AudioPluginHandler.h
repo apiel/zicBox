@@ -216,17 +216,17 @@ public:
         return *instance;
     }
 
-    AudioPlugin* getPluginPtr(const char* name, int16_t track = -1)
+    AudioPlugin* getPluginPtr(std::string name, int16_t track = -1) override
     {
         for (AudioPlugin* plugin : plugins) {
-            if (strcmp(plugin->name, name) == 0 && (track == -1 || plugin->track == track)) {
+            if (plugin->name == name && (track == -1 || plugin->track == track)) {
                 return plugin;
             }
         }
         return NULL;
     }
 
-    AudioPlugin& getPlugin(const char* name, int16_t track = -1)
+    AudioPlugin& getPlugin(std::string name, int16_t track = -1) override
     {
         AudioPlugin* plugin = getPluginPtr(name, track);
         if (!plugin) {
@@ -384,7 +384,7 @@ public:
             for (PluginAlias& pluginAllocator : pluginAliases) {
                 if (pluginAllocator.name == path) {
                     plugins.push_back(pluginAllocator.allocator(pluginProps, name));
-                    logInfo("audio plugin loaded: %s", plugins.back()->name);
+                    logInfo("audio plugin loaded: %s", plugins.back()->name.c_str());
                     return;
                 }
             }
@@ -411,7 +411,7 @@ public:
         }
 
         AudioPlugin* instance = ((AudioPlugin * (*)(AudioPlugin::Props & props, char* name)) allocator)(pluginProps, name);
-        logInfo("audio plugin loaded: %s", instance->name);
+        logInfo("audio plugin loaded: %s", instance->name.c_str());
 
         // plugin.instance->set(0, 0.1f);
         // printf("---> getParamKey: %d\n", plugin.instance->getParamKey("volume"));

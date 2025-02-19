@@ -75,7 +75,7 @@ public:
         steps = (std::vector<Step>*)seqPlugin->data(seqPlugin->getDataId("STEPS"));
 
         if (config.contains("volumePlugin")) { //eg: { "plugin": "Volume", "param": "VOLUME" }
-            valVolume = watch(getPlugin(config["volumePlugin"]["plugin"].get<std::string>().c_str(), track).getValue(config["volumePlugin"]["param"].get<std::string>().c_str()));
+            valVolume = watch(getPlugin(config["volumePlugin"]["plugin"].get<std::string>(), track).getValue(config["volumePlugin"]["param"].get<std::string>().c_str()));
         }
 
         /// The background color of the text.

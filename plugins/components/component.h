@@ -136,6 +136,6 @@ public:
     AudioPlugin* getPluginPtr(const nlohmann::json& config, const std::string& parameterKey, int16_t track, const char* errorDescription = nullptr) const
     {
         std::string pluginName = getConfig<std::string>(config, parameterKey, errorDescription);
-        return &getPlugin(pluginName.c_str(), track);
+        return &getPlugin(pluginName, track);
     }
 };
