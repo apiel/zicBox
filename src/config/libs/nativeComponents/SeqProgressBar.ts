@@ -9,4 +9,4 @@ export const SeqProgressBar = getJsonComponent<{
     inactiveStepColor?: string;
     selectionColor?: string;
     showSteps?: boolean;
-}>('SeqProgressBar', 'libzic_SeqProgressBarComponent.so');
+}>('SeqProgressBar');

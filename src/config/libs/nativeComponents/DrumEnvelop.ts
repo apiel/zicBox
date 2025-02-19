@@ -14,4 +14,4 @@ export const DrumEnvelop = getJsonComponent<{
     encoderTime?: number;
     encoderModulation?: number;
     encoderPhase?: number;
-}>('DrumEnvelop', 'libzic_DrumEnvelopComponent.so');
+}>('DrumEnvelop');

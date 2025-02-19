@@ -23,6 +23,7 @@ export type ComponentProps<P = unknown> = {
     track?: number;
     visibilityContext?: VisibilityContext[];
     keys?: KeypadLayout[];
+    pluginPath?: string;
 } &
     (P extends {}
         ? P

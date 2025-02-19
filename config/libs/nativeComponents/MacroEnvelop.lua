@@ -2,5 +2,5 @@
 local ____exports = {}
 local ____ui = require("config.libs.ui")
 local getJsonComponent = ____ui.getJsonComponent
-____exports.MacroEnvelop = getJsonComponent("MacroEnvelop", "libzic_MacroEnvelopComponent.so")
+____exports.MacroEnvelop = getJsonComponent("MacroEnvelop")
 return ____exports

@@ -1,18 +1,13 @@
 import { getJsonComponent } from '../ui';
 import { KeypadLayout, VisibilityContext } from './component';
 
-export const HiddenValue = (props: {
-    audioPlugin?: string;
-    param?: string;
-    encoderId?: number;
-    inverted?: boolean;
-    visibilityContext?: VisibilityContext[];
-    keys?: KeypadLayout[];
-} = {}) => // Seems like we need to give a default value, else Lua cannot handle it...
-    getJsonComponent(
-        'HiddenValue',
-        'libzic_HiddenValueComponent.so'
-    )({
-        ...props,
-        bounds: [0, 0, 0, 0],
-    });
+export const HiddenValue = (
+    props: {
+        audioPlugin?: string;
+        param?: string;
+        encoderId?: number;
+        inverted?: boolean;
+        visibilityContext?: VisibilityContext[];
+        keys?: KeypadLayout[];
+    } = {} // Seems like we need to give a default value, else Lua cannot handle it...
+) => getJsonComponent('HiddenValue')({ ...props, bounds: [0, 0, 0, 0] });

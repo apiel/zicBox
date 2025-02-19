@@ -12,4 +12,4 @@ export const Adsr = getJsonComponent<{
     encoders?: [number, number, number, number];
     values?: [string, string, string, string];
     renderValuesOnTop?: boolean;
-}>('Adsr', 'libzic_AdsrComponent.so');
+}>('Adsr');

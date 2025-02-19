@@ -2,5 +2,5 @@
 local ____exports = {}
 local ____ui = require("config.libs.ui")
 local getJsonComponent = ____ui.getJsonComponent
-____exports.SeqProgressBar = getJsonComponent("SeqProgressBar", "libzic_SeqProgressBarComponent.so")
+____exports.SeqProgressBar = getJsonComponent("SeqProgressBar")
 return ____exports
