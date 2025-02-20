@@ -6,13 +6,12 @@ export const maxVariation = 16;
 const workspaceFolder = 'workspaces/rpi3A_4enc_11btn';
 
 let track = Drum23Track;
-audioPlugin({ plugin: 'SynthDrum23', aliasName: 'Drum23', track });
-audioPlugin({ plugin: 'Sequencer', track });
-audioPlugin({ plugin: 'EffectDistortion2', aliasName: 'Distortion', track });
-audioPlugin({ plugin: 'EffectFilterMultiMode', aliasName: 'MMFilter', cutoffStringFormat, track });
-audioPlugin({ plugin: 'EffectGainVolume', aliasName: 'TrackFx', track });
-audioPlugin({
-    plugin: 'SerializeTrack',
+audioPlugin('SynthDrum23', { aliasName: 'Drum23', track });
+audioPlugin('Sequencer', { track });
+audioPlugin('EffectDistortion2', { aliasName: 'Distortion', track });
+audioPlugin('EffectFilterMultiMode', { aliasName: 'MMFilter', cutoffStringFormat, track });
+audioPlugin('EffectGainVolume', { aliasName: 'TrackFx', track });
+audioPlugin('SerializeTrack', {
     track,
     filename: 'drum23',
     maxVariation,
@@ -20,11 +19,10 @@ audioPlugin({
 });
 
 track = BassTrack;
-audioPlugin({ plugin: 'SynthBass', aliasName: 'Bass', track });
-audioPlugin({ plugin: 'Sequencer', track });
-audioPlugin({ plugin: 'EffectGainVolume', aliasName: 'TrackFx', track });
-audioPlugin({
-    plugin: 'SerializeTrack',
+audioPlugin('SynthBass', { aliasName: 'Bass', track });
+audioPlugin('Sequencer', { track });
+audioPlugin('EffectGainVolume', { aliasName: 'TrackFx', track });
+audioPlugin('SerializeTrack', {
     track,
     filename: 'bass',
     maxVariation,
@@ -32,11 +30,10 @@ audioPlugin({
 });
 
 track = Fm1Track;
-audioPlugin({ plugin: 'SynthFmDrum', aliasName: 'FmDrum', track });
-audioPlugin({ plugin: 'Sequencer', track });
-audioPlugin({ plugin: 'EffectGainVolume', aliasName: 'TrackFx', track });
-audioPlugin({
-    plugin: 'SerializeTrack',
+audioPlugin('SynthFmDrum', { aliasName: 'FmDrum', track });
+audioPlugin('Sequencer', { track });
+audioPlugin('EffectGainVolume', { aliasName: 'TrackFx', track });
+audioPlugin('SerializeTrack', {
     track,
     filename: 'fmDrum',
     maxVariation,
@@ -44,20 +41,18 @@ audioPlugin({
 });
 
 track = SynthTrack;
-audioPlugin({ plugin: 'SynthHybrid', aliasName: 'Synth', track });
-audioPlugin({ plugin: 'Sequencer', track });
-audioPlugin({ plugin: 'EffectGainVolume', aliasName: 'TrackFx', track });
-audioPlugin({
-    plugin: 'SerializeTrack',
+audioPlugin('SynthHybrid', { aliasName: 'Synth', track });
+audioPlugin('Sequencer', { track });
+audioPlugin('EffectGainVolume', { aliasName: 'TrackFx', track });
+audioPlugin('SerializeTrack', {
     track,
     filename: 'synth',
     maxVariation,
     workspaceFolder,
 });
 
-audioPlugin({ plugin: 'SampleSequencer', track: SampleTrack });
-audioPlugin({
-    plugin: 'SerializeTrack',
+audioPlugin('SampleSequencer', { track: SampleTrack });
+audioPlugin('SerializeTrack', {
     track: SampleTrack,
     filename: 'sampleSeq',
     maxVariation,
@@ -65,27 +60,25 @@ audioPlugin({
 });
 
 track = PercTrack;
-audioPlugin({ plugin: 'SynthPerc', aliasName: 'Perc', track });
-audioPlugin({ plugin: 'Sequencer', track });
-audioPlugin({ plugin: 'EffectGainVolume', aliasName: 'TrackFx', track });
-audioPlugin({
-    plugin: 'SerializeTrack',
+audioPlugin('SynthPerc', { aliasName: 'Perc', track });
+audioPlugin('Sequencer', { track });
+audioPlugin('EffectGainVolume', { aliasName: 'TrackFx', track });
+audioPlugin('SerializeTrack', {
     track,
     filename: 'perc',
     maxVariation,
     workspaceFolder,
 });
 
-audioPlugin({ plugin: 'Mixer6', aliasName: 'Mixer' });
-audioPlugin({ plugin: 'EffectGainVolume', aliasName: 'Volume' });
-audioPlugin({ plugin: 'AudioOutputPulse', aliasName: 'AudioOutput' });
-audioPlugin({
-    plugin: 'SerializeTrack',
+audioPlugin('Mixer6', { aliasName: 'Mixer' });
+audioPlugin('EffectGainVolume', { aliasName: 'Volume' });
+audioPlugin('AudioOutputPulse', { aliasName: 'AudioOutput' });
+audioPlugin('SerializeTrack', {
     filename: 'master',
     maxVariation,
     workspaceFolder,
 });
 
-audioPlugin({ plugin: 'Tempo' });
+audioPlugin('Tempo');
 
 autoSave(500);

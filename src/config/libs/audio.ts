@@ -1,40 +1,22 @@
 import { applyZic, jsonStringify } from './core';
 
-export function audioPlugin(config: {
-    // name or path of the plugin
-    plugin: string;
+export function audioPlugin(plugin: string, config: {
     // name alias of the plugin that will be used in the UI to interact with the plugin
     aliasName?: string;
     // additional values to apply to the plugin
     [key: string]: unknown;
-}) {
+} = {}) {
+    config.plugin = plugin;
     if (!config.aliasName) {
-        if (config.plugin.endsWith('.so')) {
+        if (plugin.endsWith('.so')) {
             throw new Error(
                 'Missing alias name. When providing a plugin path, an alias name must be provided.'
             );
         }
-        config.aliasName = config.plugin;
+        config.aliasName = plugin;
     }
     applyZic([{ AUDIO_PLUGIN: jsonStringify(config) }]);
 }
-
-// export function audioPlugin({aliasName, plugin, ...config}: {
-//     // name or path of the plugin
-//     plugin: string;
-//     // name alias of the plugin that will be used in the UI to interact with the plugin
-//     aliasName?: string;
-//     // additional values to apply to the plugin
-//     [key: string]: unknown;
-// }) {
-//     if (!aliasName) {
-//         if (plugin.endsWith('.so')) {
-//             throw new Error('Missing alias name. When providing a plugin path, an alias name must be provided.');
-//         }
-//         aliasName = plugin;
-//     }
-//     applyZic([{ AUDIO_PLUGIN: jsonStringify({aliasName, plugin, ...config}) }, [ config as any ]]);
-// }
 
 /**
  * Set the auto save mode.
