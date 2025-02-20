@@ -340,7 +340,7 @@ public:
         nlohmann::json config = nlohmann::json::parse(value);
         loadPlugin(config);
     }
-    
+
     void loadPlugin(nlohmann::json& config)
     {
         std::string path = config["plugin"]; // plugin name or path
@@ -402,6 +402,12 @@ public:
         if (config.contains("plugins") && config["plugins"].is_array()) {
             for (nlohmann::json& plugin : config["plugins"]) {
                 loadPlugin(plugin);
+            }
+        }
+        if (config.contains("autoSave")) {
+            uint32_t msInterval = config["autoSave"].get<uint32_t>();
+            if (msInterval > 0) {
+                startAutoSave(msInterval);
             }
         }
     }
