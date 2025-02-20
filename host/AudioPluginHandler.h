@@ -338,6 +338,11 @@ public:
     void loadPlugin(char* value)
     {
         nlohmann::json config = nlohmann::json::parse(value);
+        loadPlugin(config);
+    }
+    
+    void loadPlugin(nlohmann::json& config)
+    {
         std::string path = config["plugin"]; // plugin name or path
         if (path.substr(path.length() - 3) != ".so") {
 #ifdef IS_RPI
@@ -393,6 +398,11 @@ public:
         }
         if (config.contains("midiOutput")) {
             loadMidiOutput(config["midiOutput"].get<std::string>());
+        }
+        if (config.contains("plugins") && config["plugins"].is_array()) {
+            for (nlohmann::json& plugin : config["plugins"]) {
+                loadPlugin(plugin);
+            }
         }
     }
 
