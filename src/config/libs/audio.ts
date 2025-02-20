@@ -2,18 +2,18 @@ import { applyZic, jsonStringify } from './core';
 
 export function audioPlugin(plugin: string, config: {
     // name alias of the plugin that will be used in the UI to interact with the plugin
-    aliasName?: string;
+    alias?: string;
     // additional values to apply to the plugin
     [key: string]: unknown;
 } = {}) {
     config.plugin = plugin;
-    if (!config.aliasName) {
+    if (!config.alias) {
         if (plugin.endsWith('.so')) {
             throw new Error(
                 'Missing alias name. When providing a plugin path, an alias name must be provided.'
             );
         }
-        config.aliasName = plugin;
+        config.alias = plugin;
     }
     applyZic([{ AUDIO_PLUGIN: jsonStringify(config) }]);
 }

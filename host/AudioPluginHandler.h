@@ -360,7 +360,7 @@ public:
             return;
         }
 
-        std::string name = config["aliasName"];
+        std::string name = config["alias"];
         AudioPlugin::Config pluginConfig = { name, config };
         AudioPlugin* instance = ((AudioPlugin * (*)(AudioPlugin::Props & props, AudioPlugin::Config & config)) allocator)(pluginProps, pluginConfig);
         logInfo("audio plugin loaded: %s", instance->name.c_str());
