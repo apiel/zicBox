@@ -22,6 +22,8 @@
             }
 ```
 
+- TODO use freetype to load font from file, see on bottom for details...
+
 ### component
 
 - IDEA to simplify: could we get rid of PLUGIN_COMPONENT component command and make it part of COMPONENT
@@ -456,4 +458,117 @@ hdmi_force_hotplug=1
 and comment out:
 ```
 # dtoverlay=vc4-kms-v3d
+```
+
+### freetype
+
+To load and use fonts from a font file (such as .ttf or .otf) in your framebuffer, you would typically use a library like FreeType. FreeType is a popular, open-source library designed to load, process, and render fonts. It supports a wide range of font formats and provides the necessary tools to extract glyphs (characters) and render them into a buffer.
+
+Here’s a step-by-step guide to using FreeType to load fonts and draw text into your framebuffer:
+
+1. Install FreeType
+If you don’t already have FreeType installed, you can install it using your package manager:
+
+On Ubuntu/Debian:
+
+```sh
+sudo apt install libfreetype6-dev
+```
+
+1. Include FreeType Headers
+Include the FreeType headers in your code:
+
+```cpp
+#include <ft2build.h>
+#include FT_FREETYPE_H
+3. Initialize FreeType and Load a Font
+Initialize FreeType and load a font file:
+
+```cpp
+FT_Library ft;
+if (FT_Init_FreeType(&ft)) {
+    std::cerr << "Could not initialize FreeType library" << std::endl;
+    return;
+}
+
+FT_Face face;
+if (FT_New_Face(ft, "path/to/your/font.ttf", 0, &face)) {
+    std::cerr << "Failed to load font" << std::endl;
+    return;
+}
+
+// Set the font size (e.g., 48 pixels)
+FT_Set_Pixel_Sizes(face, 0, 48);
+```
+
+4. Render a Character
+Use FreeType to render a character into a bitmap and then draw it into your framebuffer:
+
+```cpp
+void drawChar(Point position, char character, FT_Face face, float scale = 1.0, DrawOptions options = {}) {
+    // Load the glyph for the character
+    if (FT_Load_Char(face, character, FT_LOAD_RENDER)) {
+        std::cerr << "Failed to load glyph for character: " << character << std::endl;
+        return;
+    }
+
+    FT_Bitmap* bitmap = &face->glyph->bitmap;
+    int x = position.x + face->glyph->bitmap_left * scale;
+    int y = position.y - face->glyph->bitmap_top * scale;
+
+    // Iterate over the bitmap and draw pixels
+    for (int row = 0; row < bitmap->rows; row++) {
+        for (int col = 0; col < bitmap->width; col++) {
+            unsigned char pixel = bitmap->buffer[row * bitmap->pitch + col];
+            if (pixel) { // Only draw non-zero pixels
+                for (int i = 0; i < scale; i++) {
+                    for (int j = 0; j < scale; j++) {
+                        pixel({ (int)(x + col * scale + i), (int)(y + row * scale + j) }, options);
+                    }
+                }
+            }
+        }
+    }
+}
+```
+5. Draw a String
+You can now use the drawChar function to draw an entire string:
+
+```cpp
+void drawText(Point position, const std::string& text, FT_Face face, float scale = 1.0, DrawOptions options = {}) {
+    int x = position.x;
+    for (char c : text) {
+        drawChar({ x, position.y }, c, face, scale, options);
+        x += (face->glyph->advance.x >> 6) * scale; // Move to the next character position
+    }
+}
+```
+6. Clean Up
+When you’re done using the font, clean up the FreeType objects:
+
+```cpp
+FT_Done_Face(face);
+FT_Done_FreeType(ft);
+```
+7. Example Usage
+Here’s how you might use the above functions:
+```cpp
+int main() {
+    // Initialize FreeType and load a font
+    FT_Library ft;
+    FT_Face face;
+    if (FT_Init_FreeType(&ft) || FT_New_Face(ft, "path/to/font.ttf", 0, &face)) {
+        std::cerr << "Failed to initialize FreeType or load font" << std::endl;
+        return -1;
+    }
+    FT_Set_Pixel_Sizes(face, 0, 48);
+
+    // Draw some text
+    drawText({ 100, 100 }, "Hello, World!", face, 1.0, { /* DrawOptions */ });
+
+    // Clean up
+    FT_Done_Face(face);
+    FT_Done_FreeType(ft);
+    return 0;
+}
 ```
