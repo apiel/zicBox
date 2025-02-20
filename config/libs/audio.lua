@@ -7,49 +7,21 @@ local SyntaxError = ____lualib.SyntaxError
 local TypeError = ____lualib.TypeError
 local URIError = ____lualib.URIError
 local __TS__New = ____lualib.__TS__New
-local __TS__ObjectAssign = ____lualib.__TS__ObjectAssign
-local __TS__ObjectRest = ____lualib.__TS__ObjectRest
 local ____exports = {}
 local ____core = require("config.libs.core")
 local applyZic = ____core.applyZic
-local buildPlateform = ____core.buildPlateform
 local jsonStringify = ____core.jsonStringify
---- Pre-load an audio plugin to the zic configuration and assign it an alias.
--- 
--- @param name string - The alias name of the plugin to load.
--- @param pluginPath string - The path of the plugin to load.
-function ____exports.pluginAlias(name, pluginPath)
-    applyZic({{AUDIO_PLUGIN_ALIAS = (((name .. " @/plugins/audio/build/") .. buildPlateform()) .. "/") .. pluginPath}})
-end
---- Assign an audio plugin to the zic configuration using a specified alias and additional values.
--- 
--- @param pluginAlias string - The alias name of the plugin to load: "aliasName" or "name aliasName". If "name" is provided, it will be used as the name of the plugin in the UI, instead of "aliasName".
--- @param values table - An array of additional Zic values to apply to the plugin.
-function ____exports.pluginOld(pluginAlias, values)
-    if values == nil then
-        values = {}
-    end
-end
-function ____exports.audioPlugin(____bindingPattern0)
-    local config
-    local plugin
-    local aliasName
-    aliasName = ____bindingPattern0.aliasName
-    plugin = ____bindingPattern0.plugin
-    config = __TS__ObjectRest(____bindingPattern0, {aliasName = true, plugin = true})
-    if not aliasName then
-        if __TS__StringEndsWith(plugin, ".so") then
+function ____exports.audioPlugin(config)
+    if not config.aliasName then
+        if __TS__StringEndsWith(config.plugin, ".so") then
             error(
                 __TS__New(Error, "Missing alias name. When providing a plugin path, an alias name must be provided."),
                 0
             )
         end
-        aliasName = plugin
+        config.aliasName = config.plugin
     end
-    applyZic({
-        {AUDIO_PLUGIN = jsonStringify(__TS__ObjectAssign({aliasName = aliasName, plugin = plugin}, config))},
-        {config}
-    })
+    applyZic({{AUDIO_PLUGIN = jsonStringify(config)}})
 end
 --- Set the auto save mode.
 -- 
