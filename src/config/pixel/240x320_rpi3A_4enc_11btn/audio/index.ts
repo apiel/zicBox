@@ -6,11 +6,11 @@ export const maxVariation = 16;
 const workspaceFolder = 'workspaces/rpi3A_4enc_11btn';
 
 let track = Drum23Track;
-audioPlugin('SynthDrum23', { aliasName: 'Drum23', track });
+audioPlugin('SynthDrum23', { alias: 'Drum23', track });
 audioPlugin('Sequencer', { track });
-audioPlugin('EffectDistortion2', { aliasName: 'Distortion', track });
-audioPlugin('EffectFilterMultiMode', { aliasName: 'MMFilter', cutoffStringFormat, track });
-audioPlugin('EffectGainVolume', { aliasName: 'TrackFx', track });
+audioPlugin('EffectDistortion2', { alias: 'Distortion', track });
+audioPlugin('EffectFilterMultiMode', { alias: 'MMFilter', cutoffStringFormat, track });
+audioPlugin('EffectGainVolume', { alias: 'TrackFx', track });
 audioPlugin('SerializeTrack', {
     track,
     filename: 'drum23',
@@ -19,9 +19,9 @@ audioPlugin('SerializeTrack', {
 });
 
 track = BassTrack;
-audioPlugin('SynthBass', { aliasName: 'Bass', track });
+audioPlugin('SynthBass', { alias: 'Bass', track });
 audioPlugin('Sequencer', { track });
-audioPlugin('EffectGainVolume', { aliasName: 'TrackFx', track });
+audioPlugin('EffectGainVolume', { alias: 'TrackFx', track });
 audioPlugin('SerializeTrack', {
     track,
     filename: 'bass',
@@ -30,9 +30,9 @@ audioPlugin('SerializeTrack', {
 });
 
 track = Fm1Track;
-audioPlugin('SynthFmDrum', { aliasName: 'FmDrum', track });
+audioPlugin('SynthFmDrum', { alias: 'FmDrum', track });
 audioPlugin('Sequencer', { track });
-audioPlugin('EffectGainVolume', { aliasName: 'TrackFx', track });
+audioPlugin('EffectGainVolume', { alias: 'TrackFx', track });
 audioPlugin('SerializeTrack', {
     track,
     filename: 'fmDrum',
@@ -41,9 +41,9 @@ audioPlugin('SerializeTrack', {
 });
 
 track = SynthTrack;
-audioPlugin('SynthHybrid', { aliasName: 'Synth', track });
+audioPlugin('SynthHybrid', { alias: 'Synth', track });
 audioPlugin('Sequencer', { track });
-audioPlugin('EffectGainVolume', { aliasName: 'TrackFx', track });
+audioPlugin('EffectGainVolume', { alias: 'TrackFx', track });
 audioPlugin('SerializeTrack', {
     track,
     filename: 'synth',
@@ -60,9 +60,9 @@ audioPlugin('SerializeTrack', {
 });
 
 track = PercTrack;
-audioPlugin('SynthPerc', { aliasName: 'Perc', track });
+audioPlugin('SynthPerc', { alias: 'Perc', track });
 audioPlugin('Sequencer', { track });
-audioPlugin('EffectGainVolume', { aliasName: 'TrackFx', track });
+audioPlugin('EffectGainVolume', { alias: 'TrackFx', track });
 audioPlugin('SerializeTrack', {
     track,
     filename: 'perc',
@@ -70,9 +70,9 @@ audioPlugin('SerializeTrack', {
     workspaceFolder,
 });
 
-audioPlugin('Mixer6', { aliasName: 'Mixer' });
-audioPlugin('EffectGainVolume', { aliasName: 'Volume' });
-audioPlugin('AudioOutputPulse', { aliasName: 'AudioOutput' });
+audioPlugin('Mixer6', { alias: 'Mixer' });
+audioPlugin('EffectGainVolume', { alias: 'Volume' });
+audioPlugin('AudioOutputPulse', { alias: 'AudioOutput' });
 audioPlugin('SerializeTrack', {
     filename: 'master',
     maxVariation,

@@ -16,14 +16,14 @@ function ____exports.audioPlugin(plugin, config)
         config = {}
     end
     config.plugin = plugin
-    if not config.aliasName then
+    if not config.alias then
         if __TS__StringEndsWith(plugin, ".so") then
             error(
                 __TS__New(Error, "Missing alias name. When providing a plugin path, an alias name must be provided."),
                 0
             )
         end
-        config.aliasName = plugin
+        config.alias = plugin
     end
     applyZic({{AUDIO_PLUGIN = jsonStringify(config)}})
 end
