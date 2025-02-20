@@ -1,12 +1,11 @@
-#ifndef _SERIALIZE_TRACK_H_
-#define _SERIALIZE_TRACK_H_
+#pragma once
 
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <mutex>
 
-#include "../../helpers/trim.h"
+#include "helpers/trim.h"
 #include "audioPlugin.h"
 #include "mapping.h"
 
@@ -81,6 +80,28 @@ public:
         : Mapping(props, config)
     {
         initFilepath();
+
+        //md **Config**:
+        auto& json = config.json;
+        //md - `"filename": "track"` to set filename. By default it is `track`.
+        if (json.contains("filename")) {
+            filename = json["filename"].get<std::string>();
+            initFilepath();
+        }
+
+        //md - `"workspaceFolder": "workspaces"` to set workspace folder. By default it is `workspaces`.
+        if (json.contains("workspaceFolder")) {
+            workspaceFolder = json["workspaceFolder"].get<std::string>();
+            initFilepath();
+        }
+
+        //md - `"maxVariation": 12` to set max variation. By default it is `12`.
+        if (json.contains("maxVariation")) {
+            variation.props().max = json["maxVariation"].get<int>();
+        }
+
+        //md - `"saveBeforeChangingVariation": true` toggle to enable variation edit mode. If set to false variation will be read only. If set to true, every changes will be save before to switch to the next variation. Default is false`.
+        saveBeforeChangingVariation = json.value("saveBeforeChangingVariation", saveBeforeChangingVariation);
     }
 
     void sample(float* buf)
@@ -119,38 +140,6 @@ public:
         }
         loadVariation((int16_t)variation.get());
         m.unlock();
-    }
-
-    /*md **Config**: */
-    bool config(char* key, char* value)
-    {
-        /*md - `FILENAME: filename` to set filename. By default it is `track`.*/
-        if (strcmp(key, "FILENAME") == 0) {
-            filename = value;
-            initFilepath();
-            return true;
-        }
-
-        /*md - `WORKSPACE_FOLDER: workspaceFolder` to set workspace folder. By default it is `workspaces`.*/
-        if (strcmp(key, "WORKSPACE_FOLDER") == 0) {
-            workspaceFolder = value;
-            initFilepath();
-            return true;
-        }
-
-        /*md - `MAX_VARIATION: 12` to set max variation. By default it is `12`.*/
-        if (strcmp(key, "MAX_VARIATION") == 0) {
-            variation.props().max = atof(value);
-            return true;
-        }
-
-        /*md - `EDIT_VARIATION: true` toggle to enable variation edit mode. If set to false variation will be read only. If set to true, every changes will be save before to switch to the next variation. Default is false`*/
-        if (strcmp(key, "EDIT_VARIATION") == 0) {
-            saveBeforeChangingVariation = strcmp(value, "true") == 0;
-            return true;
-        }
-
-        return AudioPlugin::config(key, value);
     }
 
     int nextVariationToPlay = -1;
@@ -397,5 +386,3 @@ public:
         return NULL;
     }
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef _SYNTH_FM_DRUM_H_
-#define _SYNTH_FM_DRUM_H_
+#pragma once
 
 #include "audioPlugin.h"
 #include "mapping.h"
@@ -159,30 +158,3 @@ public:
         i = 0;
     }
 };
-
-#endif
-
-// void sample(float* buf) override {
-//     if (i < totalSamples) {
-//         // Generate FM modulated signal
-//         float fmSignal = fmModulation(carrierFreq.get(), modFreq.get(), modIndex.get(), i);
-
-//         // Generate envelope
-//         float env = envelope(i, attackTime.get() * props.sampleRate, decayTime.get() * props.sampleRate);
-
-//         // Add white noise
-//         float noise = props.lookupTable->getNoise() * noiseLevel.get();
-
-//         // Combine FM signal and noise, then scale by envelope and output level
-//         float output = (fmSignal + noise) * env * outputLevel.get();
-
-//         buf[track] = output;
-//         i++;
-//     }
-// }
-
-// void noteOn(uint8_t note, float _velocity) override {
-//     const float sampleRate = props.sampleRate;
-//     totalSamples = static_cast<int>((attackTime.get() + decayTime.get()) * sampleRate);
-//     i = 0;
-// }

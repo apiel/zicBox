@@ -1,5 +1,4 @@
-#ifndef _FILTER8_H_
-#define _FILTER8_H_
+#pragma once
 
 #include "audioPlugin.h"
 
@@ -49,5 +48,3 @@ public:
         lp[index] = lp[index] + cutoff * (buf[index] - lp[index]);
     }
 };
-
-#endif

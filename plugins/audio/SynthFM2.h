@@ -1,5 +1,4 @@
-#ifndef _SYNTH_FM2_H_
-#define _SYNTH_FM2_H_
+#pragma once
 
 #include "audioPlugin.h"
 #include "helpers/range.h"
@@ -258,58 +257,3 @@ public:
         return NULL;
     }
 };
-
-#endif // _SYNTH_FM2_H_
-
-/*
-void sample(float* buf)
-{
-    float output[ZIC_FM_OPS_COUNT] = { 0.0f, 0.0f, 0.0f, 0.0f };
-    bool anyActive = false;
-
-    // Calculate output for each operator
-    for (int i = 0; i < ZIC_FM_OPS_COUNT; i++) {
-        FMoperator& op = operators[i];
-        float env = op.envelop.next();
-        // printf("[%d] env: %f\n", i + 1, env);
-        if (env > 0.0f) {
-            anyActive = true;
-            if (op.feedback.get() > 0.0f) {
-                op.feedbackMod = op.mod * op.feedback.pct();
-            }
-
-            float sampleValue = props.lookupTable->sine[(int)(op.index + op.feedbackMod)];
-            op.mod = sampleValue * env;
-
-            op.index += op.stepIncrement;
-            while (op.index >= props.lookupTable->size) {
-                op.index -= props.lookupTable->size;
-            }
-
-            output[i] = operators[i].mod;
-        }
-    }
-
-    if (!anyActive) {
-        return 0.0f;
-    }
-
-    // Combine operator outputs based on the selected algorithm
-    float finalOutput = 0.0f;
-    auto& algoMatrix = algorithm[(uint8_t)(algo.get() - 1)];
-    for (int i = 0; i < ZIC_FM_OPS_COUNT - 1; i++) {
-        for (int j = 0; j < ZIC_FM_OPS_COUNT - 1; j++) {
-            if (algoMatrix[i][j]) {
-                output[i] += output[j];
-            }
-        }
-    }
-
-    // Sum up all outputs
-    for (int i = 0; i < ZIC_FM_OPS_COUNT; i++) {
-        finalOutput += output[i];
-    }
-
-    buf[track] = finalOutput * velocity;
-}
-*/

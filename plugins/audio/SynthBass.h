@@ -1,7 +1,6 @@
-#ifndef _SYNTH_BASS_H_
-#define _SYNTH_BASS_H_
+#pragma once
 
-#include "../../helpers/range.h"
+#include "helpers/range.h"
 #include "audioPlugin.h"
 #include "filter8.h"
 #include "mapping.h"
@@ -255,5 +254,3 @@ public:
     };
     DEFINE_GETDATAID_AND_DATA
 };
-
-#endif

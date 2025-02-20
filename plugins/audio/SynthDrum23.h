@@ -1,5 +1,4 @@
-#ifndef _SYNTH_DRUM23_H_
-#define _SYNTH_DRUM23_H_
+#pragma once
 
 #include <vector>
 
@@ -446,5 +445,3 @@ public:
         return NULL;
     }
 };
-
-#endif

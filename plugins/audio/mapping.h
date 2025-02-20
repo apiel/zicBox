@@ -1,12 +1,11 @@
-#ifndef _MAPPING_H_
-#define _MAPPING_H_
+#pragma once
 
 #include <functional>
 #include <math.h>
 #include <stdint.h>
 #include <vector>
 
-#include "../../helpers/range.h"
+#include "helpers/range.h"
 
 #include "audioPlugin.h"
 
@@ -237,5 +236,3 @@ public:
         }
     }
 };
-
-#endif

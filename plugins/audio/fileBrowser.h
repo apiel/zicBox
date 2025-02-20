@@ -1,5 +1,4 @@
-#ifndef FILE_BROWSER_H
-#define FILE_BROWSER_H
+#pragma once
 
 #include "helpers/fs/directoryList.h"
 #include "helpers/range.h"
@@ -69,5 +68,3 @@ public:
         return pos ? pos + direction : 0;
     }
 };
-
-#endif

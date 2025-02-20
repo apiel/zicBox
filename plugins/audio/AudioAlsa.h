@@ -1,5 +1,4 @@
-#ifndef _AUDIO_ALSA_H_
-#define _AUDIO_ALSA_H_
+#pragma once
 
 #include <alsa/asoundlib.h>
 
@@ -74,18 +73,14 @@ public:
         for (uint32_t i = 0; i < audioChunk * ALSA_MAX_CHANNELS; i++) {
             buffer[i] = 0;
         }
-    }
 
-    bool config(char* key, char* value) override
-    {
-        if (strcmp(key, "DEVICE") == 0) {
-            logDebug("Load output device: %s\n", value);
-            deviceName = value;
-            search(); // TODO implement search
+        auto& json = config.json;
+        if (json.contains("device")) {
+            deviceName = (char *)json["device"].get<std::string>().c_str();
+            logDebug("Load output device: %s\n", deviceName);
+            search();
             open();
-            return true;
         }
-        return AudioPlugin::config(key, value);
     }
 
     virtual bool isSink()
@@ -93,5 +88,3 @@ public:
         return true;
     }
 };
-
-#endif

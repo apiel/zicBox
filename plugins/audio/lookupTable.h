@@ -1,5 +1,4 @@
-#ifndef _LOOKUP_TABLE_H_
-#define _LOOKUP_TABLE_H_
+#pragma once
 
 #include <math.h>
 
@@ -33,5 +32,3 @@ public:
         return noise[noiseIndex++];
     }
 };
-
-#endif

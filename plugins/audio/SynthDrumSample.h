@@ -1,5 +1,4 @@
-#ifndef _SYNTH_DRUM_SAMPLE_H_
-#define _SYNTH_DRUM_SAMPLE_H_
+#pragma once
 
 #include <math.h>
 #include <sndfile.h>
@@ -83,21 +82,16 @@ public:
     {
         open(browser.get(), true);
         initValues();
-    }
 
-    /*md **Config**: */
-    bool config(char* key, char* value) override
-    {
-        /*md - `SAMPLES_FOLDER` set samples folder path. */
-        if (strcmp(key, "SAMPLES_FOLDER") == 0) {
-            fileBrowser.openFolder(value);
+        //md **Config**:
+        auto& json = config.json;
+        
+        //md - `"samplesFolder": "samples"` set samples folder path.
+        if (json.contains("samplesFolder")) {
+            fileBrowser.openFolder(json["samplesFolder"].get<std::string>());
             browser.props().max = fileBrowser.count;
             open(0.0, true);
-
-            return true;
         }
-
-        return AudioPlugin::config(key, value);
     }
 
     void sample(float* buf) override
@@ -162,5 +156,3 @@ public:
         }
     }
 };
-
-#endif

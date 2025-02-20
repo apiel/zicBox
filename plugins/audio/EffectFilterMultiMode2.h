@@ -1,7 +1,6 @@
-#ifndef _EFFECT_FILTER_H_
-#define _EFFECT_FILTER_H_
+#pragma once
 
-#include "../../helpers/range.h"
+#include "helpers/range.h"
 #include "filter.h"
 #include "mapping.h"
 
@@ -66,5 +65,3 @@ public:
         hpf.setResonance(resonance.pct());
     };
 };
-
-#endif

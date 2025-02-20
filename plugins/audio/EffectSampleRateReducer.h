@@ -1,5 +1,4 @@
-#ifndef _EFFECT_SAMPLE_RATE_REDUCER_H_
-#define _EFFECT_SAMPLE_RATE_REDUCER_H_
+#pragma once
 
 #include "audioPlugin.h"
 #include "mapping.h"
@@ -69,5 +68,3 @@ public:
         buf[track] = (this->*samplePtr)(buf[track]);
     }
 };
-
-#endif

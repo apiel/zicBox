@@ -1,5 +1,4 @@
-#ifndef _SYNTH_KICK23_H_
-#define _SYNTH_KICK23_H_
+#pragma once
 
 #include "./utils/Wavetable.h"
 #include "audioPlugin.h"
@@ -294,5 +293,3 @@ public:
         return NULL;
     }
 };
-
-#endif

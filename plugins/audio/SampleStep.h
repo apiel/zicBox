@@ -1,5 +1,4 @@
-#ifndef _SAMPLE_STEP_H_
-#define _SAMPLE_STEP_H_
+#pragma once
 
 #include <cstdint>
 #include <string>
@@ -90,5 +89,3 @@ public:
         setFilename(strtok(NULL, " "), channels);
     }
 };
-
-#endif

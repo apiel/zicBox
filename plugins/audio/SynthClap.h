@@ -1,5 +1,4 @@
-#ifndef _SYNTH_CLAP_H_
-#define _SYNTH_CLAP_H_
+#pragma once
 
 #include "audioPlugin.h"
 #include "mapping.h"
@@ -150,5 +149,3 @@ public:
         i = 0;
     }
 };
-
-#endif

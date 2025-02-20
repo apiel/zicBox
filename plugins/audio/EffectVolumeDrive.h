@@ -1,5 +1,4 @@
-#ifndef _EFFECT_VOLUME_H_
-#define _EFFECT_VOLUME_H_
+#pragma once
 
 #include "audioPlugin.h"
 #include "mapping.h"
@@ -93,5 +92,3 @@ public:
         return props.lookupTable->tanh[index];
     }
 };
-
-#endif

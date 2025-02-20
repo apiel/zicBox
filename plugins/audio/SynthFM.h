@@ -1,7 +1,6 @@
-#ifndef _SYNTH_FM_H_
-#define _SYNTH_FM_H_
+#pragma once
 
-#include "../../helpers/range.h"
+#include "helpers/range.h"
 #include "audioPlugin.h"
 #include "mapping.h"
 #include "utils/AdsrEnvelop.h"
@@ -245,5 +244,3 @@ public:
         return NULL;
     }
 };
-
-#endif

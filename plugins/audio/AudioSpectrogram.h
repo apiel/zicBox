@@ -1,5 +1,4 @@
-#ifndef _AUDIO_SPECTROGRAM_H_
-#define _AUDIO_SPECTROGRAM_H_
+#pragma once
 
 #include "audioPlugin.h"
 
@@ -53,5 +52,3 @@ public:
         return NULL;
     }
 };
-
-#endif

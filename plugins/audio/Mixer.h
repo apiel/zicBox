@@ -1,5 +1,4 @@
-#ifndef _MIXER_H_
-#define _MIXER_H_
+#pragma once
 
 #include "audioPlugin.h"
 #include "mapping.h"
@@ -41,6 +40,19 @@ public:
             /*md - ...*/
             mutes[i] = &val(0.0f, "MUTE_" + std::to_string(i + 1), { "Mute " + std::to_string(i + 1), .max = 1.0f });
         }
+
+        //md **Config**:
+        auto& json = config.json;
+        //md - `"trackStart": 7` to set track 7 as first track, then 8, 9, ...
+        if (json.contains("trackStart")) {
+            uint16_t trackStart = json["trackStart"].get<uint16_t>();
+            for (uint16_t i = 0; i < TRACK_COUNT; i++) {
+                tracks[i] = trackStart + i;
+            }
+        }
+
+        //md  - `"divider": 0.5` to set a custom divider. By default, divider equals 1 divided by the number of tracks.
+        divider = json.value("divider", divider);
     }
 
     std::set<uint8_t> trackDependencies() override
@@ -63,49 +75,4 @@ public:
         }
         buf[track] = out;
     }
-
-    /*md **Config**: */
-    bool config(char* key, char* value) override
-    {
-        /*md - `TRACK_START: 7` to set track 7 as first track, then 8, 9, ...*/
-        if (strcmp(key, "TRACK_START") == 0) {
-            uint16_t trackStart = atoi(value);
-            // printf("------------------------------------ trackStart: %d\n", trackStart);
-            for (uint16_t i = 0; i < TRACK_COUNT; i++) {
-                tracks[i] = trackStart + i;
-                // printf("- tracks[%d]: %d\n", i, tracks[i]);
-            }
-            return true;
-        }
-
-        /*md - `DIVIDER: 0.5` to set a custom divider. By default, divider equals 1 divided by the number of tracks.*/
-        if (strcmp(key, "DIVIDER") == 0) {
-            divider = atof(value);
-            return true;
-        }
-
-        /*md - `VALUE_1: 0.5` to set track 1 volume to 50%.*/
-        if (strncmp(key, "VALUE_", strlen("VALUE_")) == 0) {
-            uint16_t i = atoi(key + strlen("VALUE_")) - 1;
-            if (i < TRACK_COUNT) {
-                mix[i]->set(atof(value));
-            }
-            return true;
-        }
-
-        /*md - `TRACK_1: 1` to set track input 1 on track buffer 1.*/
-        /*md - `TRACK_2: 2` to set track input 2 on track buffer 2.*/
-        /*md - ...*/
-        if (strncmp(key, "TRACK_", strlen("TRACK_")) == 0) {
-            uint16_t i = atoi(key + strlen("TRACK_")) - 1;
-            if (i < TRACK_COUNT) {
-                tracks[i] = atoi(value);
-            }
-            return true;
-        }
-
-        return AudioPlugin::config(key, value);
-    }
 };
-
-#endif

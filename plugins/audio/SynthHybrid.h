@@ -1,5 +1,4 @@
-#ifndef _SYNTH_HYBRID_H_
-#define _SYNTH_HYBRID_H_
+#pragma once
 
 #include "./utils/Wavetable.h"
 #include "audioPlugin.h"
@@ -240,5 +239,3 @@ public:
     };
     DEFINE_GETDATAID_AND_DATA
 };
-
-#endif

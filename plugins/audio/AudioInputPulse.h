@@ -1,5 +1,4 @@
-#ifndef _AUDIO_INPUT_PULSE_H_
-#define _AUDIO_INPUT_PULSE_H_
+#pragma once
 
 #include "AudioPulse.h"
 
@@ -45,5 +44,3 @@ public:
         return false;
     }
 };
-
-#endif

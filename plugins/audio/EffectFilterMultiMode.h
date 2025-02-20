@@ -1,7 +1,6 @@
-#ifndef _EFFECT_FILTER_H_
-#define _EFFECT_FILTER_H_
+#pragma once
 
-#include "../../helpers/range.h"
+#include "helpers/range.h"
 #include "filter.h"
 #include "mapping.h"
 
@@ -29,6 +28,7 @@ public:
         : Mapping(props, config)
     {
         initValues();
+        valueFmt = config.json.value("cutoffStringFormat", valueFmt);
     };
 
     float sample(float inputValue)
@@ -66,16 +66,4 @@ public:
         lpf.setResonance(resonance.pct());
         hpf.setResonance(resonance.pct());
     };
-
-    bool config(char* key, char* value) override
-    {
-        /*md - `STRING_CUTOFF_FORMAT` set the string value format for the cutoff. */
-        if (strcmp(key, "STRING_CUTOFF_FORMAT") == 0) {
-            valueFmt = value;
-            return true;
-        }
-        return Mapping::config(key, value);
-    }
 };
-
-#endif

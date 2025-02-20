@@ -117,6 +117,12 @@ public:
         , props(props)
     {
         initValues();
+
+        //md **Config**:
+        //md - `"target": "pluginName"` the plugin to send notes to
+        if (config.json.contains("target")) {
+            targetPlugin = &props.audioPluginHandler->getPlugin(config.json["target"].get<std::string>(), track);
+        }
     }
 
     void sample(float* buf) override
@@ -221,15 +227,6 @@ public:
         }
         }
         return NULL;
-    }
-
-    bool config(char* key, char* value)
-    {
-        if (strcmp(key, "TARGET") == 0) {
-            targetPlugin = &props.audioPluginHandler->getPlugin(value, track);
-            return true;
-        }
-        return AudioPlugin::config(key, value);
     }
 
     void serialize(FILE* file, std::string separator) override

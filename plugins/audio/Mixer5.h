@@ -1,5 +1,4 @@
-#ifndef _MIXER5_H_
-#define _MIXER5_H_
+#pragma once
 
 #include "Mixer.h"
 
@@ -11,4 +10,3 @@ public:
     }
 };
 
-#endif

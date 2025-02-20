@@ -1,5 +1,4 @@
-#ifndef _AUDIO_OUTPUT_PULSE_H_
-#define _AUDIO_OUTPUT_PULSE_H_
+#pragma once
 
 #include "AudioPulse.h"
 
@@ -39,5 +38,3 @@ public:
         buffer[bufferIndex++] = buf[track];
     }
 };
-
-#endif

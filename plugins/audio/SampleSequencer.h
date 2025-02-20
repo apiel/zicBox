@@ -1,5 +1,4 @@
-#ifndef _SAMPLE_SEQUENCER_H_
-#define _SAMPLE_SEQUENCER_H_
+#pragma once
 
 #include <limits>
 #include <sndfile.h>
@@ -137,6 +136,10 @@ public:
         , props(props)
     {
         initValues();
+
+        if (config.json.contains("target")) {
+            targetPlugin = &props.audioPluginHandler->getPlugin(config.json["target"].get<std::string>(), track);
+        }
     }
 
     // FIXME
@@ -190,15 +193,6 @@ public:
         }
     }
 
-    bool config(char* key, char* value) override
-    {
-        if (strcmp(key, "TARGET") == 0) {
-            targetPlugin = &props.audioPluginHandler->getPlugin(value, track);
-            return true;
-        }
-        return AudioPlugin::config(key, value);
-    }
-
     void serialize(FILE* file, std::string separator) override
     {
         for (int i = 0; i < MAX_STEPS; i++) {
@@ -247,5 +241,3 @@ public:
     };
     DEFINE_GETDATAID_AND_DATA
 };
-
-#endif

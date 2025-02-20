@@ -1,5 +1,4 @@
-#ifndef _EFFECT_GRAIN_H_
-#define _EFFECT_GRAIN_H_
+#pragma once
 
 #include "audioBuffer.h"
 #include "audioPlugin.h"
@@ -149,5 +148,3 @@ public:
         }
     }
 };
-
-#endif

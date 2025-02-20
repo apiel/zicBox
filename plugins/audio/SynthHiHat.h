@@ -1,5 +1,4 @@
-#ifndef _SYNTH_HIHAT_H_
-#define _SYNTH_HIHAT_H_
+#pragma once
 
 #include "audioPlugin.h"
 #include "mapping.h"
@@ -113,5 +112,3 @@ public:
         i = 0;
     }
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef _AUDIO_PLUGIN_H_
-#define _AUDIO_PLUGIN_H_
+#pragma once
 
 #include "libs/nlohmann/json.hpp"
 #include <cstdlib>
@@ -103,6 +102,12 @@ public:
         : props(props)
         , name(config.name)
     {
+        auto& json = config.json;
+        track = json.value("track", track);
+        if (track >= props.maxTracks) {
+            track = props.maxTracks - 1;
+        }
+        serializable = json.value("serializable", serializable);
     }
 
     virtual void sample(float* buf) = 0;
@@ -133,24 +138,6 @@ public:
 
     virtual void noteOff(uint8_t note, float velocity)
     {
-    }
-
-    virtual bool config(char* key, char* value)
-    {
-        if (strcmp(key, "TRACK") == 0) {
-            track = atoi(value);
-            if (track >= props.maxTracks) {
-                track = props.maxTracks - 1;
-            }
-            return true;
-        }
-
-        if (strcmp(key, "SERIALIZABLE") == 0) {
-            serializable = strcmp(value, "true") == 0;
-            return true;
-        }
-
-        return false;
     }
 
     virtual void* data(int id, void* userdata = NULL)
@@ -198,5 +185,3 @@ AudioPlugin::Props defaultAudioProps = {
     .maxTracks = 16,
     .lookupTable = nullptr,
 };
-
-#endif

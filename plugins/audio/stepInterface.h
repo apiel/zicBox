@@ -1,5 +1,4 @@
-#ifndef _STEP_SEQUENCER_H_
-#define _STEP_SEQUENCER_H_
+#pragma once
 
 #include <cstring>
 #include <functional>
@@ -201,5 +200,3 @@ public:
         
     }
 };
-
-#endif
