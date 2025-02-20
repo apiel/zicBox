@@ -26,13 +26,6 @@ using namespace std;
 */
 
 class AudioPluginHandler : public AudioPluginHandlerInterface {
-public:
-    struct PluginAlias {
-        string name;
-        std::function<AudioPlugin*(AudioPlugin::Props& props, AudioPlugin::Config& config)> allocator;
-    };
-    std::vector<PluginAlias> pluginAliases;
-
 protected:
     LookupTable lookupTable;
 
@@ -230,9 +223,9 @@ public:
     {
         AudioPlugin* plugin = getPluginPtr(name, track);
         if (!plugin) {
-            logInfo("Could not find plugin %s on track %d. List of available plugins:", name, track);
+            logInfo("Could not find plugin %s on track %d. List of available plugins:", name.c_str(), track);
             for (AudioPlugin* plugin : plugins) {
-                logInfo("- Found plugin %s on track %d", plugin->name, plugin->track);
+                logInfo("- Found plugin %s on track %d", plugin->name.c_str(), plugin->track);
             }
             throw std::runtime_error("Could not find plugin " + std::string(name) + " on track " + std::to_string(track));
         }
@@ -340,69 +333,24 @@ public:
         }
     }
 
-    void loadPluginAlias(char* value, const char* filename)
-    {
-        PluginAlias pluginAllocator;
-
-        char* name = strtok(value, " ");
-        char* path = strtok(NULL, " ");
-
-        void* handle = dlopen(getFullpath(path, filename).c_str(), RTLD_LAZY);
-        if (!handle) {
-            logError("Cannot load audio library %s [%s]: %s", path, name, dlerror());
-            return;
-        }
-
-        dlerror();
-        pluginAllocator.name = name;
-        pluginAllocator.allocator = [handle](AudioPlugin::Props& props, AudioPlugin::Config& config) {
-            void* allocator = dlsym(handle, "allocator");
-            return ((AudioPlugin * (*)(AudioPlugin::Props & props, AudioPlugin::Config& config)) allocator)(props, config);
-        };
-        const char* dlsym_error = dlerror();
-        if (dlsym_error) {
-            logError("Cannot load symbol: %s", dlsym_error);
-            dlclose(handle);
-            return;
-        }
-        pluginAliases.push_back(pluginAllocator);
-
-        logInfo("audio plugin alias loaded: %s", name);
-    }
-
     void loadPlugin(char* value)
     {
-        std::string name = strtok(value, " ");
-        char* pathPtr = strtok(NULL, " ");
-        string path = pathPtr ? pathPtr : name;
-
-        // if path end by .so load it as plugin
-        if (path.substr(path.length() - 3) == ".so") {
-            loadPlugin(name, path.c_str());
-        } else {
-            // look to alias if plugins is already loaded and allocate it
-            for (PluginAlias& pluginAllocator : pluginAliases) {
-                if (pluginAllocator.name == path) {
-                    nlohmann::json config; // TODO
-                    AudioPlugin::Config pluginConfig = { name, config };
-                    plugins.push_back(pluginAllocator.allocator(pluginProps, pluginConfig));
-                    logInfo("audio plugin loaded: %s", plugins.back()->name.c_str());
-                    return;
-                }
-            }
-            logWarn("Cannot find audio plugin alias %s [%s]", path.c_str(), name);
+        nlohmann::json config = nlohmann::json::parse(value);
+        std::string path = config["plugin"]; // plugin name or path
+        if (path.substr(path.length() - 3) != ".so") {
+#ifdef IS_RPI
+        path = "./plugins/audio/build/arm/libzic_" + path + ".so";
+#else
+        path = "./plugins/audio/build/x86/libzic_" + path + ".so";
+#endif
         }
-    }
 
-    void loadPlugin(std::string& name, const char* path)
-    {
-        void* handle = dlopen(path, RTLD_LAZY);
+        void* handle = dlopen(path.c_str(), RTLD_LAZY);
 
         if (!handle) {
-            logWarn("Cannot open audio library %s [%s]: %s", path, name, dlerror());
+            logWarn("Cannot open audio library %s: %s", path.c_str(), dlerror());
             return;
         }
-
         dlerror();
         void* allocator = (AudioPlugin*)dlsym(handle, "allocator");
         const char* dlsym_error = dlerror();
@@ -412,14 +360,10 @@ public:
             return;
         }
 
-        nlohmann::json config; // TODO
+        std::string name = config["aliasName"];
         AudioPlugin::Config pluginConfig = { name, config };
-        AudioPlugin* instance = ((AudioPlugin * (*)(AudioPlugin::Props & props, AudioPlugin::Config& config)) allocator)(pluginProps, pluginConfig);
+        AudioPlugin* instance = ((AudioPlugin * (*)(AudioPlugin::Props & props, AudioPlugin::Config & config)) allocator)(pluginProps, pluginConfig);
         logInfo("audio plugin loaded: %s", instance->name.c_str());
-
-        // plugin.instance->set(0, 0.1f);
-        // printf("---> getParamKey: %d\n", plugin.instance->getParamKey("volume"));
-
         plugins.push_back(instance);
     }
 
