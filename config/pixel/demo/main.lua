@@ -1,9 +1,6 @@
 --[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
 local ____exports = {}
 local React = require("config.libs.react")
-local ____audio = require("config.libs.audio")
-local plugin = ____audio.plugin
-local pluginAlias = ____audio.pluginAlias
 local ____pixelController = require("config.libs.controllers.pixelController")
 local pixelController = ____pixelController.pixelController
 local ____core = require("config.libs.core")
@@ -25,8 +22,6 @@ local View = ____View.View
 local ____ui = require("config.libs.ui")
 local setScreenSize = ____ui.setScreenSize
 local setWindowPosition = ____ui.setWindowPosition
-pluginAlias("Tempo", "libzic_Tempo.so")
-plugin("Tempo")
 local ScreenWidth = 240
 local ScreenHeight = 320
 pixelController("rpi3A_4enc_11btn")

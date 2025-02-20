@@ -1,6 +1,5 @@
 import * as React from '@/libs/react';
 
-import { plugin, pluginAlias } from '@/libs/audio';
 import { pixelController } from '@/libs/controllers/pixelController';
 import { applyZic } from '@/libs/core';
 import { Keyboard } from '@/libs/nativeComponents/Keyboard';
@@ -12,8 +11,8 @@ import { Value } from '@/libs/nativeComponents/Value';
 import { View } from '@/libs/nativeComponents/View';
 import { setScreenSize, setWindowPosition } from '@/libs/ui';
 
-pluginAlias('Tempo', 'libzic_Tempo.so');
-plugin('Tempo');
+// pluginAlias('Tempo', 'libzic_Tempo.so');
+// plugin('Tempo');
 
 const ScreenWidth = 240;
 const ScreenHeight = 320;
