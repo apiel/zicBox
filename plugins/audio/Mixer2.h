@@ -1,5 +1,4 @@
-#ifndef _MIXER2_H_
-#define _MIXER2_H_
+#pragma once
 
 #include "audioPlugin.h"
 #include "mapping.h"
@@ -13,6 +12,9 @@ public:
     Mixer2(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
     {
+        trackA = config.json.value("trackA", trackA);
+        trackB = config.json.value("trackB", trackB);
+        mix.set(config.json.value("mix", mix.get()));
     }
 
     std::set<uint8_t> trackDependencies() override
@@ -24,23 +26,4 @@ public:
     {
         buf[track] = buf[trackA] * (1.0f - mix.pct()) + buf[trackB] * mix.pct();
     }
-
-    bool config(char* key, char* value)
-    {
-        if (strcmp(key, "TRACK_A") == 0) {
-            trackA = atoi(value);
-            return true;
-        }
-        if (strcmp(key, "TRACK_B") == 0) {
-            trackB = atoi(value);
-            return true;
-        }
-        if (strcmp(key, "VALUE") == 0) {
-            mix.set(atof(value));
-            return true;
-        }
-        return AudioPlugin::config(key, value);
-    }
 };
-
-#endif

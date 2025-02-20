@@ -1,5 +1,4 @@
-#ifndef _RAM_TAPE_RECORDING_H_
-#define _RAM_TAPE_RECORDING_H_
+#pragma once
 
 #include "audioPlugin.h"
 #include "log.h"
@@ -73,6 +72,26 @@ public:
         : Mapping(props, config)
     {
         trackNum.props().max = props.maxTracks - 1;
+
+        /*md **Config**: */
+        auto& json = config.json;
+        if (json.contains("track")) {
+            trackNum.set(json["track"].get<float>());
+        }
+
+        //md - `"folder": "tape"` to set samples folder path.
+        folder = json.value("folder", folder);
+
+        //md - `"filename": "track"` to set filename. By default it is `track`.
+        filename = json.value("filename", filename);
+
+        //md - `"maxFileSize": 200` to set max file size. By default it is `200MB`.
+        if (json.contains("maxFileSize")) {
+            maxSamples = json["maxFileSize"].get<float>() * 1024 * 1024 / sizeof(float);
+        }
+
+        //md - `"circularBuffer": true` to enable circular buffer. By default it is `true`.
+        circularBuffer = json.value("circularBuffer", circularBuffer);
     }
 
     bool circularBuffer = true;
@@ -82,8 +101,7 @@ public:
         if (isPlaying) {
             if (buffer.size() < maxSamples) {
                 buffer.push_back(buf[track]);
-            } 
-            else if (circularBuffer) {
+            } else if (circularBuffer) {
                 buffer[bufferIndex] = buf[track];
                 bufferIndex = (bufferIndex + 1) % maxSamples;
             }
@@ -100,41 +118,4 @@ public:
         }
         isPlaying = playing;
     }
-
-    /*md **Config**: */
-    bool config(char* key, char* value) override
-    {
-        if (strcmp(key, "TRACK") == 0) {
-            trackNum.set(atoi(value));
-            return true;
-        }
-
-        /*md - `TAPE_FOLDER` set samples folder path. */
-        if (strcmp(key, "TAPE_FOLDER") == 0) {
-            folder = value;
-            return true;
-        }
-
-        /*md - `FILENAME: filename` to set filename. By default it is `track`.*/
-        if (strcmp(key, "FILENAME") == 0) {
-            filename = value;
-            return true;
-        }
-
-        /*md - `MAX_FILE_SIZE: 200` to set max file size. By default it is `200MB`.*/
-        if (strcmp(key, "MAX_FILE_SIZE") == 0) {
-            maxSamples = atoi(value) * 1024 * 1024 / sizeof(float);
-            return true;
-        }
-
-        /*md - `CIRCULAR_BUFFER: true` to enable circular buffer. By default it is `true`.*/
-        if (strcmp(key, "CIRCULAR_BUFFER") == 0) {
-            circularBuffer = strcmp(value, "true") == 0;
-            return true;
-        }
-
-        return AudioPlugin::config(key, value);
-    }
 };
-
-#endif

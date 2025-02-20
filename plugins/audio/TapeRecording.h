@@ -1,5 +1,4 @@
-#ifndef _TAPE_RECORDING_H_
-#define _TAPE_RECORDING_H_
+#pragma once
 
 #include "audioPlugin.h"
 #include "log.h"
@@ -94,6 +93,30 @@ public:
     {
         trackNum.props().max = props.maxTracks - 1;
         initValues();
+
+        //md **Config**:
+        auto& json = config.json;
+
+        if (json.contains("track")) {
+            trackNum.set(json["track"].get<float>());
+            trackPlayback = json["track"].get<float>();
+        }
+
+        //md - `"folder": "tape"` to set samples folder path.
+        folder = json.value("folder", folder);
+
+        //md - `"filename": "track"` to set filename. By default it is `track`.
+        filename = json.value("filename", filename);
+
+        //md - `"maxFileSize": 200` to set max file size. By default it is `200MB`.
+        if (json.contains("maxFileSize")) {
+            maxSamples = json["maxFileSize"].get<float>() * 1024 * 1024 / sizeof(float);
+        }
+
+        //md - `"maxTrack": 32` to set the max track number. By default it is `32`.
+        if (json.contains("maxTrack")) {
+            trackNum.props().max = json["maxTrack"].get<float>();
+        }
     }
 
     ~TapeRecording()
@@ -172,42 +195,6 @@ public:
         }
     }
 
-    /*md **Config**: */
-    bool config(char* key, char* value) override
-    {
-        if (strcmp(key, "TRACK") == 0) {
-            trackNum.set(atoi(value));
-            trackPlayback = atoi(value);
-            return true;
-        }
-
-        /*md - `TAPE_FOLDER` set samples folder path. */
-        if (strcmp(key, "TAPE_FOLDER") == 0) {
-            folder = value;
-            return true;
-        }
-
-        /*md - `FILENAME: filename` to set filename. By default it is `track`.*/
-        if (strcmp(key, "FILENAME") == 0) {
-            filename = value;
-            return true;
-        }
-
-        /*md - `MAX_FILE_SIZE: 200` to set max file size. By default it is `200MB`.*/
-        if (strcmp(key, "MAX_FILE_SIZE") == 0) {
-            maxSamples = atoi(value) * 1024 * 1024 / sizeof(float);
-            return true;
-        }
-
-        /*md - `MAX_TRACK` to set the max track number. */
-        if (strcmp(key, "MAX_TRACK") == 0) {
-            trackNum.props().max = atoi(value);
-            return true;
-        }
-
-        return AudioPlugin::config(key, value);
-    }
-
     enum DATA_ID {
         PLAY_STOP,
         SYNC,
@@ -267,5 +254,3 @@ public:
         return NULL;
     }
 };
-
-#endif

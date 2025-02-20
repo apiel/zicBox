@@ -1,5 +1,4 @@
-#ifndef _TEMPO_H_
-#define _TEMPO_H_
+#pragma once
 
 #include "audioPlugin.h"
 #include "host/constants.h"
@@ -37,6 +36,15 @@ public:
         : Mapping(props, config)
     {
         initValues();
+
+        //md **Config**:
+        //md - `"bpm": 120.0` to set default beat per minute
+        if (config.json.contains("bpm")) {
+            bpm.set(config.json["bpm"].get<float>());
+        }
+
+        //md - `"clockTrack": 32` set the track for clock
+        clockTrack = config.json.value("clockTrack", clockTrack);
     }
 
     // Clock events are sent at a rate of 24 pulses per quarter note
@@ -74,24 +82,6 @@ public:
         if (event == AudioEventType::STOP) {
             clockCounter = 0;
         }
-    }
-
-    /*md **Config**: */
-    bool config(char* key, char* value)
-    {
-        /*md - `BPM: 120.0` to set default beat per minute */
-        if (strcmp(key, "BPM") == 0) {
-            bpm.set(atof(value));
-            return true;
-        }
-
-        /*md - `CLOCK_TRACK: 32` set the track for clock */
-        if (strcmp(key, "CLOCK_TRACK") == 0) {
-            clockTrack = atoi(value);
-            return true;
-        }
-
-        return AudioPlugin::config(key, value);
     }
 
     // TODO should this be removed?
@@ -132,5 +122,3 @@ public:
     virtual void onClock() { }
     virtual void onStep() { }
 };
-
-#endif

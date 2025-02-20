@@ -339,9 +339,9 @@ public:
         std::string path = config["plugin"]; // plugin name or path
         if (path.substr(path.length() - 3) != ".so") {
 #ifdef IS_RPI
-        path = "./plugins/audio/build/arm/libzic_" + path + ".so";
+            path = "./plugins/audio/build/arm/libzic_" + path + ".so";
 #else
-        path = "./plugins/audio/build/x86/libzic_" + path + ".so";
+            path = "./plugins/audio/build/x86/libzic_" + path + ".so";
 #endif
         }
 
@@ -370,10 +370,8 @@ public:
     bool config(char* key, char* value)
     {
         if (plugins.size() > 0) {
-            if (plugins.back()->config(key, value)) {
-                return true;
-                /*#md - `MIDI_CC: CUTOFF b0 4c xx` assign a midi CC command to a given plugin value (this is a generic config). */
-            } else if (strcmp(key, "MIDI_CC") == 0) {
+            /*#md - `MIDI_CC: CUTOFF b0 4c xx` assign a midi CC command to a given plugin value (this is a generic config). */
+            if (strcmp(key, "MIDI_CC") == 0) {
                 return assignMidiMapping(value);
                 /*#md - `MIDI_CHANNEL: 1` assign a midi channel to a given plugin for a note on/off (this is a generic config). */
             } else if (strcmp(key, "MIDI_CHANNEL") == 0) {

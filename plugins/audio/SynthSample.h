@@ -1,5 +1,4 @@
-#ifndef _SYNTH_SAMPLE_H_
-#define _SYNTH_SAMPLE_H_
+#pragma once
 
 #include <math.h>
 #include <sndfile.h>
@@ -10,8 +9,8 @@
 #include "mapping.h"
 
 #include "helpers/random.h"
-#include "utils/ValSerializeSndFile.h"
 #include "log.h"
+#include "utils/ValSerializeSndFile.h"
 
 #ifndef MAX_SAMPLE_VOICES
 #define MAX_SAMPLE_VOICES 4
@@ -251,34 +250,22 @@ public:
     {
         open(browser.get(), true);
         initValues();
-    }
 
-    /*md **Config**: */
-    bool config(char* key, char* value) override
-    {
-        /*md - `SAMPLES_FOLDER` set samples folder path. */
-        if (strcmp(key, "SAMPLES_FOLDER") == 0) {
-            fileBrowser.openFolder(value);
+        //md **Config**:
+        auto& json = config.json;
+
+        //md - `"sampleFolder": "samples"` set samples folder path.
+        if (json.contains("sampleFolder")) {
+            fileBrowser.openFolder(json["sampleFolder"].get<std::string>().c_str());
             browser.props().max = fileBrowser.count;
             open(0.0, true);
-
-            return true;
         }
 
-        /*md - `VOICE_ALLOW_SAME_NOTE: false` toggle voice playing the same note. If true, same note can be played at the same time on different voices. Default is `true`. */
-        if (strcmp(key, "VOICE_ALLOW_SAME_NOTE") == 0) {
-            voiceAllowSameNote = strcmp(value, "true") == 0;
-            return true;
-        }
+        //md - `"voiceAllowSameNote": false` toggle voice playing the same note. If true, same note can be played at the same time on different voices. Default is `true`.
+        voiceAllowSameNote = json.value("voiceAllowSameNote", voiceAllowSameNote);
 
-        /*md - `BASE_NOTE: 52` set the base note. The base note is used to determine how many semitone must be added compare to the original sample. Default is `60` (middle C). */
-        if (strcmp(key, "BASE_NOTE") == 0) {
-            baseNote = atoi(value);
-            baseNote = range(baseNote, 0, 127);
-            return true;
-        }
-
-        return AudioPlugin::config(key, value);
+        //md - `"baseNote": 52` set the base note. The base note is used to determine how many semitone must be added compare to the original sample. Default is `60` (middle C).
+        baseNote = json.value("baseNote", baseNote);
     }
 
     void sample(float* buf)
@@ -514,5 +501,3 @@ public:
         return NULL;
     }
 };
-
-#endif

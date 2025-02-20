@@ -1,5 +1,4 @@
-#ifndef _EFFECT_DISTORTION2_H_
-#define _EFFECT_DISTORTION2_H_
+#pragma once
 
 #include "audioPlugin.h"
 #include "helpers/range.h"
@@ -131,5 +130,3 @@ protected:
         return -std::pow(-input, 1.0f - compressAmount * 0.8f);
     }
 };
-
-#endif

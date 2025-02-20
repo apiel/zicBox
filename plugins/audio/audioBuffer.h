@@ -1,5 +1,4 @@
-#ifndef _AUDIO_BUFFER_H_
-#define _AUDIO_BUFFER_H_
+#pragma once
 
 #include <stdint.h>
 
@@ -32,5 +31,3 @@ public:
         }
     }
 };
-
-#endif

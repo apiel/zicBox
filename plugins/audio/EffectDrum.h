@@ -1,5 +1,4 @@
-#ifndef _EFFECT_DRUM_H_
-#define _EFFECT_DRUM_H_
+#pragma once
 
 #include "audioPlugin.h"
 #include "filter.h"
@@ -123,5 +122,3 @@ public:
         buf[track] = output * vol;
     }
 };
-
-#endif

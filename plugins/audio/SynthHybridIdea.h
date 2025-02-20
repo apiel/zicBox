@@ -1,5 +1,4 @@
-#ifndef _SYNTH_HYBRID_H_
-#define _SYNTH_HYBRID_H_
+#pragma once
 
 #include "audioPlugin.h"
 #include "mapping.h"
@@ -125,5 +124,3 @@ public:
         isNoteOn = false;
     }
 };
-
-#endif

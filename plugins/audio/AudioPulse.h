@@ -1,5 +1,4 @@
-#ifndef _AUDIO_PULSE_H_
-#define _AUDIO_PULSE_H_
+#pragma once
 
 #include <pulse/pulseaudio.h>
 #include <pulse/simple.h>
@@ -102,18 +101,14 @@ public:
         for (uint32_t i = 0; i < audioChunk; i++) {
             buffer[i] = 0.0f;
         }
-    }
 
-    bool config(char* key, char* value) override
-    {
-        if (strcmp(key, "DEVICE") == 0) {
-            logDebug("Load output device: %s.", value);
-            deviceName = value;
+        auto& json = config.json;
+        if (json.contains("device")) {
+            deviceName = (char *)json["device"].get<std::string>().c_str();
+            logDebug("Load output device: %s\n", deviceName);
             search();
             open();
-            return true;
         }
-        return AudioPlugin::config(key, value);
     }
 
     virtual bool isSink()
@@ -187,5 +182,3 @@ static void pa_context_state_callback(pa_context* context, void* userdata)
         api->paMainLoopApi->quit(api->paMainLoopApi, 0);
     }
 }
-
-#endif

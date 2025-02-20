@@ -1,5 +1,4 @@
-#ifndef _AUDIO_INPUT_ALSA_H_
-#define _AUDIO_INPUT_ALSA_H_
+#pragma once
 
 #include "AudioAlsa.h"
 
@@ -39,5 +38,3 @@ public:
         buf[track] = buffer[bufferIndex++] / 2147483647.0f;
     }
 };
-
-#endif

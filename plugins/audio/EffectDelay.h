@@ -1,5 +1,4 @@
-#ifndef _EFFECT_DELAY_H_
-#define _EFFECT_DELAY_H_
+#pragma once
 
 #include "EffectFilter.h"
 #include "audioBuffer.h"
@@ -197,5 +196,3 @@ public:
         }
     }
 };
-
-#endif

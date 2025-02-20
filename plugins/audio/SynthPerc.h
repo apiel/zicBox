@@ -1,5 +1,4 @@
-#ifndef _SYNTH_PERC_H_
-#define _SYNTH_PERC_H_
+#pragma once
 
 #include "audioPlugin.h"
 #include "mapping.h"
@@ -289,5 +288,3 @@ public:
         i = 0;
     }
 };
-
-#endif

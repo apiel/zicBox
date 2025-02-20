@@ -1,5 +1,4 @@
-#ifndef _SYNTH_GRANULAR_H_
-#define _SYNTH_GRANULAR_H_
+#pragma once
 
 #include <math.h>
 #include <sndfile.h>
@@ -180,19 +179,13 @@ public:
         open(browser.get(), true);
 
         initValues();
-    }
 
-    bool config(char* key, char* value) override
-    {
-        if (strcmp(key, "SAMPLES_FOLDER") == 0) {
-            logDebug("Granular SAMPLES_FOLDER: %s\n", value);
-            fileBrowser.openFolder(value);
+        auto& json = config.json;
+        if (json.contains("samplesFolder")) {
+            fileBrowser.openFolder(json["samplesFolder"].get<std::string>());
             browser.props().max = fileBrowser.count;
             open(0.0, true);
-
-            return true;
         }
-        return AudioPlugin::config(key, value);
     }
 
     SynthGranular& save()
@@ -409,5 +402,3 @@ public:
         return NULL;
     }
 };
-
-#endif

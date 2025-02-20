@@ -1,5 +1,4 @@
-#ifndef _SYNTH_MONO_SAMPLE_H_
-#define _SYNTH_MONO_SAMPLE_H_
+#pragma once
 
 #include <math.h>
 #include <sndfile.h>
@@ -139,27 +138,19 @@ public:
     {
         open(browser.get(), true);
         initValues();
-    }
 
-    /*md **Config**: */
-    bool config(char* key, char* value) override
-    {
-        /*md - `SAMPLES_FOLDER` set samples folder path. */
-        if (strcmp(key, "SAMPLES_FOLDER") == 0) {
-            fileBrowser.openFolder(value);
+        //md **Config**:
+        auto& json = config.json;
+        
+        //md - `"samplesFolder": "samples"` set samples folder path.
+        if (json.contains("samplesFolder")) {
+            fileBrowser.openFolder(json["samplesFolder"].get<std::string>());
             browser.props().max = fileBrowser.count;
             open(0.0, true);
-
-            return true;
         }
 
-        /*md - `SHOW_LOOP_SUSTAIN_IN_UNIT: false` show the calculated number of loop before to finish release (default: true) */
-        if (strcmp(key, "SHOW_LOOP_SUSTAIN_IN_UNIT") == 0) {
-            showNumberOfLoopsInUnit = strcmp(value, "true") == 0;
-            return true;
-        }
-
-        return AudioPlugin::config(key, value);
+        //md - `"showLoopSustainInUnit": false` show the calculated number of loop before to finish release (default: true)
+        showNumberOfLoopsInUnit = json.value("showLoopSustainInUnit", showNumberOfLoopsInUnit);
     }
 
     void sample(float* buf) override
@@ -270,5 +261,3 @@ public:
         return NULL;
     }
 };
-
-#endif

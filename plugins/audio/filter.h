@@ -1,5 +1,4 @@
-#ifndef _FILTER_H_
-#define _FILTER_H_
+#pragma once
 
 #include "audioPlugin.h"
 
@@ -57,5 +56,3 @@ public:
         lp = fix(lp + cutoff * (buf - lp));
     }
 };
-
-#endif
