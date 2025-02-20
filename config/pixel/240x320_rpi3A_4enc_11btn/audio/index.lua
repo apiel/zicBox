@@ -14,74 +14,38 @@ ____exports.cutoffStringFormat = "%d%% %d%%"
 ____exports.maxVariation = 16
 local workspaceFolder = "workspaces/rpi3A_4enc_11btn"
 local track = Drum23Track
-audioPlugin({plugin = "SynthDrum23", aliasName = "Drum23", track = track})
-audioPlugin({plugin = "Sequencer", track = track})
-audioPlugin({plugin = "EffectDistortion2", aliasName = "Distortion", track = track})
-audioPlugin({plugin = "EffectFilterMultiMode", aliasName = "MMFilter", cutoffStringFormat = ____exports.cutoffStringFormat, track = track})
-audioPlugin({plugin = "EffectGainVolume", aliasName = "TrackFx", track = track})
-audioPlugin({
-    plugin = "SerializeTrack",
-    track = track,
-    filename = "drum23",
-    maxVariation = ____exports.maxVariation,
-    workspaceFolder = workspaceFolder
-})
+audioPlugin("SynthDrum23", {aliasName = "Drum23", track = track})
+audioPlugin("Sequencer", {track = track})
+audioPlugin("EffectDistortion2", {aliasName = "Distortion", track = track})
+audioPlugin("EffectFilterMultiMode", {aliasName = "MMFilter", cutoffStringFormat = ____exports.cutoffStringFormat, track = track})
+audioPlugin("EffectGainVolume", {aliasName = "TrackFx", track = track})
+audioPlugin("SerializeTrack", {track = track, filename = "drum23", maxVariation = ____exports.maxVariation, workspaceFolder = workspaceFolder})
 track = BassTrack
-audioPlugin({plugin = "SynthBass", aliasName = "Bass", track = track})
-audioPlugin({plugin = "Sequencer", track = track})
-audioPlugin({plugin = "EffectGainVolume", aliasName = "TrackFx", track = track})
-audioPlugin({
-    plugin = "SerializeTrack",
-    track = track,
-    filename = "bass",
-    maxVariation = ____exports.maxVariation,
-    workspaceFolder = workspaceFolder
-})
+audioPlugin("SynthBass", {aliasName = "Bass", track = track})
+audioPlugin("Sequencer", {track = track})
+audioPlugin("EffectGainVolume", {aliasName = "TrackFx", track = track})
+audioPlugin("SerializeTrack", {track = track, filename = "bass", maxVariation = ____exports.maxVariation, workspaceFolder = workspaceFolder})
 track = Fm1Track
-audioPlugin({plugin = "SynthFmDrum", aliasName = "FmDrum", track = track})
-audioPlugin({plugin = "Sequencer", track = track})
-audioPlugin({plugin = "EffectGainVolume", aliasName = "TrackFx", track = track})
-audioPlugin({
-    plugin = "SerializeTrack",
-    track = track,
-    filename = "fmDrum",
-    maxVariation = ____exports.maxVariation,
-    workspaceFolder = workspaceFolder
-})
+audioPlugin("SynthFmDrum", {aliasName = "FmDrum", track = track})
+audioPlugin("Sequencer", {track = track})
+audioPlugin("EffectGainVolume", {aliasName = "TrackFx", track = track})
+audioPlugin("SerializeTrack", {track = track, filename = "fmDrum", maxVariation = ____exports.maxVariation, workspaceFolder = workspaceFolder})
 track = SynthTrack
-audioPlugin({plugin = "SynthHybrid", aliasName = "Synth", track = track})
-audioPlugin({plugin = "Sequencer", track = track})
-audioPlugin({plugin = "EffectGainVolume", aliasName = "TrackFx", track = track})
-audioPlugin({
-    plugin = "SerializeTrack",
-    track = track,
-    filename = "synth",
-    maxVariation = ____exports.maxVariation,
-    workspaceFolder = workspaceFolder
-})
-audioPlugin({plugin = "SampleSequencer", track = SampleTrack})
-audioPlugin({
-    plugin = "SerializeTrack",
-    track = SampleTrack,
-    filename = "sampleSeq",
-    maxVariation = ____exports.maxVariation,
-    workspaceFolder = workspaceFolder
-})
+audioPlugin("SynthHybrid", {aliasName = "Synth", track = track})
+audioPlugin("Sequencer", {track = track})
+audioPlugin("EffectGainVolume", {aliasName = "TrackFx", track = track})
+audioPlugin("SerializeTrack", {track = track, filename = "synth", maxVariation = ____exports.maxVariation, workspaceFolder = workspaceFolder})
+audioPlugin("SampleSequencer", {track = SampleTrack})
+audioPlugin("SerializeTrack", {track = SampleTrack, filename = "sampleSeq", maxVariation = ____exports.maxVariation, workspaceFolder = workspaceFolder})
 track = PercTrack
-audioPlugin({plugin = "SynthPerc", aliasName = "Perc", track = track})
-audioPlugin({plugin = "Sequencer", track = track})
-audioPlugin({plugin = "EffectGainVolume", aliasName = "TrackFx", track = track})
-audioPlugin({
-    plugin = "SerializeTrack",
-    track = track,
-    filename = "perc",
-    maxVariation = ____exports.maxVariation,
-    workspaceFolder = workspaceFolder
-})
-audioPlugin({plugin = "Mixer6", aliasName = "Mixer"})
-audioPlugin({plugin = "EffectGainVolume", aliasName = "Volume"})
-audioPlugin({plugin = "AudioOutputPulse", aliasName = "AudioOutput"})
-audioPlugin({plugin = "SerializeTrack", filename = "master", maxVariation = ____exports.maxVariation, workspaceFolder = workspaceFolder})
-audioPlugin({plugin = "Tempo"})
+audioPlugin("SynthPerc", {aliasName = "Perc", track = track})
+audioPlugin("Sequencer", {track = track})
+audioPlugin("EffectGainVolume", {aliasName = "TrackFx", track = track})
+audioPlugin("SerializeTrack", {track = track, filename = "perc", maxVariation = ____exports.maxVariation, workspaceFolder = workspaceFolder})
+audioPlugin("Mixer6", {aliasName = "Mixer"})
+audioPlugin("EffectGainVolume", {aliasName = "Volume"})
+audioPlugin("AudioOutputPulse", {aliasName = "AudioOutput"})
+audioPlugin("SerializeTrack", {filename = "master", maxVariation = ____exports.maxVariation, workspaceFolder = workspaceFolder})
+audioPlugin("Tempo")
 autoSave(500)
 return ____exports

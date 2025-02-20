@@ -11,15 +11,19 @@ local ____exports = {}
 local ____core = require("config.libs.core")
 local applyZic = ____core.applyZic
 local jsonStringify = ____core.jsonStringify
-function ____exports.audioPlugin(config)
+function ____exports.audioPlugin(plugin, config)
+    if config == nil then
+        config = {}
+    end
+    config.plugin = plugin
     if not config.aliasName then
-        if __TS__StringEndsWith(config.plugin, ".so") then
+        if __TS__StringEndsWith(plugin, ".so") then
             error(
                 __TS__New(Error, "Missing alias name. When providing a plugin path, an alias name must be provided."),
                 0
             )
         end
-        config.aliasName = config.plugin
+        config.aliasName = plugin
     end
     applyZic({{AUDIO_PLUGIN = jsonStringify(config)}})
 end
