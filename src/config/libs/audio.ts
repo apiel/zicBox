@@ -18,3 +18,7 @@ export function audioPlugin(plugin: string, config: {
     return config;
 }
 
+export interface Track {
+    id: number;
+    plugins: ReturnType<typeof audioPlugin>[];
+}

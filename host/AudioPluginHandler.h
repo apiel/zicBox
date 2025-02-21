@@ -476,20 +476,7 @@ public:
         }
     }
 
-    void start()
-    {
-        sendEvent(AudioEventType::START);
-    }
 
-    void stop()
-    {
-        sendEvent(AudioEventType::STOP);
-    }
-
-    void pause()
-    {
-        sendEvent(AudioEventType::PAUSE);
-    }
 
     void startAutoSave(uint32_t msInterval)
     {
@@ -516,6 +503,7 @@ public:
 
     RtMidiIn midiController;
     RtMidiOut midiOut;
+
     void midiControllerCallback(double deltatime, std::vector<unsigned char>* message, void* userData = NULL)
     {
         if (message->at(0) == 0xf8) {
@@ -523,11 +511,11 @@ public:
             // clockTick();
             printf("midi clock tick to be implemented\n");
         } else if (message->at(0) == 0xfa) {
-            start();
+            sendEvent(AudioEventType::START); // Should we instead use midi number.. ?
         } else if (message->at(0) == 0xfb) {
-            pause();
+            sendEvent(AudioEventType::PAUSE);
         } else if (message->at(0) == 0xfc) {
-            stop();
+            sendEvent(AudioEventType::STOP);
         } else if (message->at(0) == 0xfe) {
             // ignore active sensing
         } else if (message->at(0) >= 0x90 && message->at(0) < 0xa0) {
