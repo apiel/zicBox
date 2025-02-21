@@ -16,6 +16,7 @@ using namespace std;
 #include "midiMapping.h"
 #include "plugins/audio/audioPlugin.h"
 #include "plugins/audio/lookupTable.h"
+#include "helpers/range.h"
 
 /*#md
 ## Global and generic config
@@ -282,13 +283,7 @@ public:
         }
     }
 
-    void loadPlugin(char* value)
-    {
-        nlohmann::json config = nlohmann::json::parse(value);
-        loadPlugin(config);
-    }
-
-    void loadPlugin(nlohmann::json& config)
+    void loadPlugin(nlohmann::json& config, uint8_t trackId)
     {
         std::string path = config["plugin"]; // plugin name or path
         if (path.substr(path.length() - 3) != ".so") {
@@ -315,9 +310,9 @@ public:
         }
 
         std::string name = config["alias"];
-        AudioPlugin::Config pluginConfig = { name, config };
+        AudioPlugin::Config pluginConfig = { name, config, trackId };
         AudioPlugin* instance = ((AudioPlugin * (*)(AudioPlugin::Props & props, AudioPlugin::Config & config)) allocator)(pluginProps, pluginConfig);
-        logInfo("audio plugin loaded: %s", instance->name.c_str());
+        logInfo("- audio plugin loaded: %s", instance->name.c_str());
         plugins.push_back(instance);
     }
 
@@ -329,9 +324,15 @@ public:
         if (config.contains("midiOutput")) {
             loadMidiOutput(config["midiOutput"].get<std::string>());
         }
-        if (config.contains("plugins") && config["plugins"].is_array()) {
-            for (nlohmann::json& plugin : config["plugins"]) {
-                loadPlugin(plugin);
+        if (config.contains("tracks") && config["tracks"].is_array()) {
+            for (nlohmann::json& track : config["tracks"]) {
+                uint8_t trackId = range(track["id"].get<uint8_t>(), 0, MAX_TRACKS - 1);
+                logInfo("*** Init plugins for track %d", trackId);
+                if (track.contains("plugins") && track["plugins"].is_array()) {
+                    for (nlohmann::json& plugin : track["plugins"]) {
+                        loadPlugin(plugin, trackId);
+                    }
+                }
             }
         }
         if (config.contains("autoSave")) {
