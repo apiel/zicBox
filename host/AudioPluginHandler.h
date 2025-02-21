@@ -51,31 +51,6 @@ protected:
     static AudioPluginHandler* instance;
     AudioPluginHandler() { }
 
-    bool assignMidiPluginChannel(char* value)
-    {
-        uint8_t channel = atoi(value);
-        if (channel < 1 || channel > 16) {
-            logInfo("Invalid midi note channel, set to 1");
-            channel = 1;
-        }
-        midiNoteEvents.push_back({ (uint8_t)(channel - 1), { .plugin = plugins.back() } });
-        logInfo("[%s] Midi plugin channel set to %d", plugins.back()->name, channel);
-        return true;
-    }
-
-    bool assignMidiTrackChannel(char* value)
-    {
-        int16_t track = atoi(strtok(value, " "));
-        uint8_t channel = atoi(strtok(NULL, " "));
-        if (channel < 1 || channel > 16) {
-            logInfo("Invalid midi note channel, set to 1");
-            channel = 1;
-        }
-        midiNoteEvents.push_back({ (uint8_t)(channel - 1), { track } });
-        logInfo("[%s] Midi track channel set to %d", plugins.back()->name, channel);
-        return true;
-    }
-
     bool assignMidiMapping(char* value)
     {
         // split value by space
@@ -380,12 +355,6 @@ public:
             /*#md - `MIDI_CC: CUTOFF b0 4c xx` assign a midi CC command to a given plugin value (this is a generic config). */
             if (strcmp(key, "MIDI_CC") == 0) {
                 return assignMidiMapping(value);
-                /*#md - `MIDI_CHANNEL: 1` assign a midi channel to a given plugin for a note on/off (this is a generic config). */
-            } else if (strcmp(key, "MIDI_CHANNEL") == 0) {
-                return assignMidiPluginChannel(value);
-                /*#md - `TRACK_MIDI_CHANNEL: track channel` assign a midi channel to a given track for a note on/off, e.g. `TRACK_MIDI_CHANNEL: 1 2` */
-            } else if (strcmp(key, "TRACK_MIDI_CHANNEL") == 0) {
-                return assignMidiTrackChannel(value);
             }
         }
         return false;
@@ -412,17 +381,7 @@ public:
         }
     }
 
-    bool midi(std::vector<unsigned char>* message)
-    {
-        for (MidiMapping& mapping : midiMapping) {
-            if (mapping.handle(message)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    void noteOn(uint8_t note, float velocity, NoteTarget target)
+    void noteOn(uint8_t note, float velocity, NoteTarget target) override
     {
         if (target.plugin) {
             target.plugin->noteOn(note, velocity);
@@ -435,7 +394,7 @@ public:
         }
     }
 
-    void noteOff(uint8_t note, float velocity, NoteTarget target)
+    void noteOff(uint8_t note, float velocity, NoteTarget target) override
     {
         if (target.plugin) {
             target.plugin->noteOff(note, velocity);
@@ -448,21 +407,41 @@ public:
         }
     }
 
-    void noteOn(uint8_t channel, uint8_t note, float velocity)
+    bool midi(std::vector<unsigned char>* message)
     {
+        for (MidiMapping& mapping : midiMapping) {
+            if (mapping.handle(message)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void assignPluginToMidiChannel(uint8_t channel, AudioPlugin* plugin) override
+    {
+        if (channel < 1 || channel > 16) {
+            logInfo("Invalid midi note channel, set to 1");
+            channel = 1;
+        }
+        midiNoteEvents.push_back({ (uint8_t)(channel - 1), { .plugin = plugin } });
+        logInfo("Assign %s to midi channel %d", plugin->name, channel);
+    }
+
+    void midiNoteOn(uint8_t channel, uint8_t note, float velocity)
+    {
+        if (velocity == 0) {
+            midiNoteOff(channel, note, velocity);
+        }
+
         // printf("-------------- noteOn %d %d %f\n", channel, note, velocity);
         for (MidiNoteEvent& target : midiNoteEvents) {
             if (target.channel == channel) {
-                if (velocity == 0) {
-                    noteOff(note, velocity, target.target);
-                } else {
-                    noteOn(note, velocity, target.target);
-                }
+                noteOn(note, velocity, target.target);
             }
         }
     }
 
-    void noteOff(uint8_t channel, uint8_t note, float velocity)
+    void midiNoteOff(uint8_t channel, uint8_t note, float velocity)
     {
         // printf("------------- noteOff %d %d %f\n", channel, note, velocity);
         for (MidiNoteEvent& target : midiNoteEvents) {
@@ -570,10 +549,10 @@ public:
             // ignore active sensing
         } else if (message->at(0) >= 0x90 && message->at(0) < 0xa0) {
             uint8_t channel = message->at(0) - 0x90;
-            noteOn(channel, message->at(1), message->at(2) / 127.0);
+            midiNoteOn(channel, message->at(1), message->at(2) / 127.0);
         } else if (message->at(0) >= 0x80 && message->at(0) < 0x90) {
             uint8_t channel = message->at(0) - 0x80;
-            noteOff(channel, message->at(1), message->at(2) / 127.0);
+            midiNoteOff(channel, message->at(1), message->at(2) / 127.0);
         } else {
             if (midi(message)) {
                 return;
