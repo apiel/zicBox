@@ -13,14 +13,14 @@
 class AudioPlugin;
 
 enum AudioEventType {
-    STOP,
-    START,
-    PAUSE,
     TOGGLE_PLAY_PAUSE,
     AUTOSAVE,
     RELOAD_WORKSPACE,
     SEQ_LOOP,
-    COUNT,
+    START = 0xfa,
+    PAUSE = 0xfb,
+    STOP = 0xfc,
+    UNKNOWN,
 };
 
 AudioEventType getEventTypeFromName(std::string name)
@@ -40,7 +40,7 @@ AudioEventType getEventTypeFromName(std::string name)
     } else if (name == "SEQ_LOOP") {
         return AudioEventType::SEQ_LOOP;
     }
-    return AudioEventType::COUNT;
+    return AudioEventType::UNKNOWN;
 }
 
 class AudioPluginHandlerInterface {
