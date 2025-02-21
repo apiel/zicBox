@@ -1,5 +1,3 @@
-import { applyZic, jsonStringify } from './core';
-
 export function audioPlugin(plugin: string, config: {
     // name alias of the plugin that will be used in the UI to interact with the plugin
     alias?: string;
@@ -17,15 +15,6 @@ export function audioPlugin(plugin: string, config: {
         }
         config.alias = plugin;
     }
-    applyZic([{ AUDIO_PLUGIN: jsonStringify(config) }]);
+    return config;
 }
 
-/**
- * Set the auto save mode.
- *
- * @param time number - The time between each auto save in ms.
- * This will be apply only to plugins that has been already loaded.
- */
-export function autoSave(time: number) {
-    applyZic([{ AUTO_SAVE: time }]);
-}
