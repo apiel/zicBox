@@ -57,6 +57,7 @@ public:
     };
     virtual void noteOn(uint8_t note, float velocity, NoteTarget target) = 0;
     virtual void noteOff(uint8_t note, float velocity, NoteTarget target) = 0;
+    virtual void assignPluginToMidiChannel(uint8_t channel, AudioPlugin* plugin) = 0;
 
     virtual bool isPlaying() = 0;
     virtual bool isStopped() = 0;
@@ -108,6 +109,10 @@ public:
             track = props.maxTracks - 1;
         }
         serializable = json.value("serializable", serializable);
+
+        if (json.contains("midiChannel")) {
+            props.audioPluginHandler->assignPluginToMidiChannel(json["midiChannel"].get<uint8_t>(), this);
+        }
     }
 
     virtual void sample(float* buf) = 0;
