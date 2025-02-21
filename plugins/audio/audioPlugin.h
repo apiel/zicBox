@@ -58,6 +58,7 @@ public:
     virtual void noteOn(uint8_t note, float velocity, NoteTarget target) = 0;
     virtual void noteOff(uint8_t note, float velocity, NoteTarget target) = 0;
     virtual void assignPluginToMidiChannel(uint8_t channel, AudioPlugin* plugin) = 0;
+    virtual void mapMidiCmd(AudioPlugin* plugin, int valueIndex, const std::string& cmd) = 0;
 
     virtual bool isPlaying() = 0;
     virtual bool isStopped() = 0;
@@ -110,8 +111,21 @@ public:
         }
         serializable = json.value("serializable", serializable);
 
+        //#md `{ "midiChannel": 1 }` assign a midi channel to the plugin
         if (json.contains("midiChannel")) {
             props.audioPluginHandler->assignPluginToMidiChannel(json["midiChannel"].get<uint8_t>(), this);
+        }
+
+        //#md `{ "midiCmd": [{"parameter": "VOLUME", "cmd": "b0 4c xx"}] }` assign a midi command to a given plugin value. `xx` is the position of the value changing in the target parameter.
+        if (json.contains("b0 4c xx") && json["midiCmd"].is_array()) {
+            for (nlohmann::json& cmd : json["midiCmd"]) {
+                if (cmd.contains("parameter") && cmd.contains("cmd")) {
+                    int valueIndex = getValueIndex(cmd["parameter"].get<std::string>());
+                    if (valueIndex >= 0) {
+                        props.audioPluginHandler->mapMidiCmd(this, valueIndex, cmd["cmd"].get<std::string>());
+                    }
+                }
+            }
         }
     }
 
