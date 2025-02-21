@@ -1,7 +1,6 @@
-#ifndef _MIDI_MAPPING_H_
-#define _MIDI_MAPPING_H_
+#pragma once
 
-#include "../plugins/audio/audioPlugin.h"
+#include "plugins/audio/audioPlugin.h"
 #include <vector>
 
 class MidiMapping {
@@ -63,5 +62,3 @@ public:
         return (this->*handlePtr)(message);
     }
 };
-
-#endif

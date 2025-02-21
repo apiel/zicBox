@@ -3,6 +3,8 @@ import { applyZic, jsonStringify } from './core';
 export function audioPlugin(plugin: string, config: {
     // name alias of the plugin that will be used in the UI to interact with the plugin
     alias?: string;
+    midiChannel?: number;
+    midiCmd?: { parameter: string; cmd: string }[];
     // additional values to apply to the plugin
     [key: string]: unknown;
 } = {}) {

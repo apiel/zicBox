@@ -51,34 +51,6 @@ protected:
     static AudioPluginHandler* instance;
     AudioPluginHandler() { }
 
-    bool assignMidiMapping(char* value)
-    {
-        // split value by space
-        char* pluginKey = strtok(value, " ");
-        char* msg0 = strtok(NULL, " ");
-        char* msg1 = strtok(NULL, " ");
-        char* msg2 = strtok(NULL, " ");
-
-        if (msg0 == NULL || msg1 == NULL) {
-            logInfo("Invalid midi mapping");
-            return false;
-        }
-
-        uint8_t size = msg2 == NULL ? 2 : 3;
-        uint8_t valuePosition = msg1[0] == 'x' && msg1[1] == 'x' ? 2 : 3;
-        uint8_t msg0Int = strtol(msg0, NULL, 16);
-        uint8_t msg1Int = strtol(msg1, NULL, 16);
-
-        // try to assign value to last plugin
-        int valueIndex = plugins.back()->getValueIndex(pluginKey);
-        if (valueIndex != -1) {
-            midiMapping.push_back({ plugins.back(), valueIndex, size, valuePosition, msg0Int, msg1Int });
-            logInfo("[%s] Midi mapping assigned: %s", plugins.back()->name, pluginKey);
-            return true;
-        }
-        return false;
-    }
-
     std::vector<uint8_t> getTrackIds()
     {
         std::set<uint8_t> trackIdsSet;
@@ -349,17 +321,6 @@ public:
         plugins.push_back(instance);
     }
 
-    bool config(char* key, char* value)
-    {
-        if (plugins.size() > 0) {
-            /*#md - `MIDI_CC: CUTOFF b0 4c xx` assign a midi CC command to a given plugin value (this is a generic config). */
-            if (strcmp(key, "MIDI_CC") == 0) {
-                return assignMidiMapping(value);
-            }
-        }
-        return false;
-    }
-
     void config(nlohmann::json& config)
     {
         if (config.contains("midiInput")) {
@@ -415,6 +376,27 @@ public:
             }
         }
         return false;
+    }
+
+    // `b0 4c xx` assign a midi command to a given plugin value.
+    void mapMidiCmd(AudioPlugin* plugin, int valueIndex, const std::string& cmd) override
+    {
+        std::istringstream stream(cmd);
+        std::string msg0, msg1, msg2;
+        stream >> msg0 >> msg1 >> msg2;
+
+        try {
+            auto msg0Int = static_cast<uint8_t>(std::stoi(msg0, nullptr, 16));
+            auto msg1Int = static_cast<uint8_t>(std::stoi(msg1, nullptr, 16));
+
+            uint8_t size = msg2.empty() ? 2 : 3;
+            uint8_t valuePosition = (msg1 == "xx") ? 2 : 3;
+
+            midiMapping.push_back({ plugin, valueIndex, size, valuePosition, msg0Int, msg1Int });
+            logInfo("Assign MIDI command %s to plugin %s value %s", cmd.c_str(), plugin->name, plugin->getValue(valueIndex)->key().c_str());
+        } catch (...) {
+            logError("Invalid MIDI mapping "  + cmd);
+        }
     }
 
     void assignPluginToMidiChannel(uint8_t channel, AudioPlugin* plugin) override
