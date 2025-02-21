@@ -15,40 +15,79 @@ local SynthTrack = ____constants.SynthTrack
 ____exports.cutoffStringFormat = "%d%% %d%%"
 ____exports.maxVariation = 16
 local workspaceFolder = "workspaces/rpi3A_4enc_11btn"
-local plugins = {}
-local track = Drum23Track
-plugins[#plugins + 1] = audioPlugin("SynthDrum23", {alias = "Drum23", track = track})
-plugins[#plugins + 1] = audioPlugin("Sequencer", {track = track})
-plugins[#plugins + 1] = audioPlugin("EffectDistortion2", {alias = "Distortion", track = track})
-plugins[#plugins + 1] = audioPlugin("EffectFilterMultiMode", {alias = "MMFilter", cutoffStringFormat = ____exports.cutoffStringFormat, track = track})
-plugins[#plugins + 1] = audioPlugin("EffectGainVolume", {alias = "TrackFx", track = track})
-plugins[#plugins + 1] = audioPlugin("SerializeTrack", {track = track, filename = "drum23", maxVariation = ____exports.maxVariation, workspaceFolder = workspaceFolder})
-track = BassTrack
-plugins[#plugins + 1] = audioPlugin("SynthBass", {alias = "Bass", track = track})
-plugins[#plugins + 1] = audioPlugin("Sequencer", {track = track})
-plugins[#plugins + 1] = audioPlugin("EffectGainVolume", {alias = "TrackFx", track = track})
-plugins[#plugins + 1] = audioPlugin("SerializeTrack", {track = track, filename = "bass", maxVariation = ____exports.maxVariation, workspaceFolder = workspaceFolder})
-track = Fm1Track
-plugins[#plugins + 1] = audioPlugin("SynthFmDrum", {alias = "FmDrum", track = track})
-plugins[#plugins + 1] = audioPlugin("Sequencer", {track = track})
-plugins[#plugins + 1] = audioPlugin("EffectGainVolume", {alias = "TrackFx", track = track})
-plugins[#plugins + 1] = audioPlugin("SerializeTrack", {track = track, filename = "fmDrum", maxVariation = ____exports.maxVariation, workspaceFolder = workspaceFolder})
-track = SynthTrack
-plugins[#plugins + 1] = audioPlugin("SynthHybrid", {alias = "Synth", track = track})
-plugins[#plugins + 1] = audioPlugin("Sequencer", {track = track})
-plugins[#plugins + 1] = audioPlugin("EffectGainVolume", {alias = "TrackFx", track = track})
-plugins[#plugins + 1] = audioPlugin("SerializeTrack", {track = track, filename = "synth", maxVariation = ____exports.maxVariation, workspaceFolder = workspaceFolder})
-plugins[#plugins + 1] = audioPlugin("SampleSequencer", {track = SampleTrack})
-plugins[#plugins + 1] = audioPlugin("SerializeTrack", {track = SampleTrack, filename = "sampleSeq", maxVariation = ____exports.maxVariation, workspaceFolder = workspaceFolder})
-track = PercTrack
-plugins[#plugins + 1] = audioPlugin("SynthPerc", {alias = "Perc", track = track})
-plugins[#plugins + 1] = audioPlugin("Sequencer", {track = track})
-plugins[#plugins + 1] = audioPlugin("EffectGainVolume", {alias = "TrackFx", track = track})
-plugins[#plugins + 1] = audioPlugin("SerializeTrack", {track = track, filename = "perc", maxVariation = ____exports.maxVariation, workspaceFolder = workspaceFolder})
-plugins[#plugins + 1] = audioPlugin("Mixer6", {alias = "Mixer"})
-plugins[#plugins + 1] = audioPlugin("EffectGainVolume", {alias = "Volume"})
-plugins[#plugins + 1] = audioPlugin("AudioOutputPulse", {alias = "AudioOutput"})
-plugins[#plugins + 1] = audioPlugin("SerializeTrack", {filename = "master", maxVariation = ____exports.maxVariation, workspaceFolder = workspaceFolder})
-plugins[#plugins + 1] = audioPlugin("Tempo")
-applyZic({{AUDIO = jsonStringify({plugins = plugins, autoSave = 500})}})
+local drum23Track = {
+    id = Drum23Track,
+    plugins = {
+        audioPlugin("SynthDrum23", {alias = "Drum23"}),
+        audioPlugin("Sequencer"),
+        audioPlugin("EffectDistortion2", {alias = "Distortion"}),
+        audioPlugin("EffectFilterMultiMode", {alias = "MMFilter", cutoffStringFormat = ____exports.cutoffStringFormat}),
+        audioPlugin("EffectGainVolume", {alias = "TrackFx"}),
+        audioPlugin("SerializeTrack", {filename = "drum23", maxVariation = ____exports.maxVariation, workspaceFolder = workspaceFolder})
+    }
+}
+local bassTrack = {
+    id = BassTrack,
+    plugins = {
+        audioPlugin("SynthBass", {alias = "Bass"}),
+        audioPlugin("Sequencer"),
+        audioPlugin("EffectGainVolume", {alias = "TrackFx"}),
+        audioPlugin("SerializeTrack", {filename = "bass", maxVariation = ____exports.maxVariation, workspaceFolder = workspaceFolder})
+    }
+}
+local fm1Track = {
+    id = Fm1Track,
+    plugins = {
+        audioPlugin("SynthFmDrum", {alias = "FmDrum"}),
+        audioPlugin("Sequencer"),
+        audioPlugin("EffectGainVolume", {alias = "TrackFx"}),
+        audioPlugin("SerializeTrack", {filename = "fmDrum", maxVariation = ____exports.maxVariation, workspaceFolder = workspaceFolder})
+    }
+}
+local synthTrack = {
+    id = SynthTrack,
+    plugins = {
+        audioPlugin("SynthHybrid", {alias = "Synth"}),
+        audioPlugin("Sequencer"),
+        audioPlugin("EffectGainVolume", {alias = "TrackFx"}),
+        audioPlugin("SerializeTrack", {filename = "synth", maxVariation = ____exports.maxVariation, workspaceFolder = workspaceFolder})
+    }
+}
+local sampleTrack = {
+    id = SampleTrack,
+    plugins = {
+        audioPlugin("SampleSequencer"),
+        audioPlugin("Sequencer"),
+        audioPlugin("EffectGainVolume", {alias = "TrackFx"}),
+        audioPlugin("SerializeTrack", {filename = "sampleSeq", maxVariation = ____exports.maxVariation, workspaceFolder = workspaceFolder})
+    }
+}
+local percTrack = {
+    id = PercTrack,
+    plugins = {
+        audioPlugin("SynthPerc", {alias = "Perc"}),
+        audioPlugin("Sequencer"),
+        audioPlugin("EffectGainVolume", {alias = "TrackFx"}),
+        audioPlugin("SerializeTrack", {filename = "perc", maxVariation = ____exports.maxVariation, workspaceFolder = workspaceFolder})
+    }
+}
+local masterTrack = {
+    id = 0,
+    plugins = {
+        audioPlugin("Mixer6", {alias = "Mixer"}),
+        audioPlugin("EffectGainVolume", {alias = "Volume"}),
+        audioPlugin("AudioOutputPulse", {alias = "AudioOutput"}),
+        audioPlugin("SerializeTrack", {filename = "master", maxVariation = ____exports.maxVariation, workspaceFolder = workspaceFolder}),
+        audioPlugin("Tempo")
+    }
+}
+applyZic({{AUDIO = jsonStringify({tracks = {
+    drum23Track,
+    bassTrack,
+    fm1Track,
+    synthTrack,
+    sampleTrack,
+    percTrack,
+    masterTrack
+}, autoSave = 500})}})
 return ____exports

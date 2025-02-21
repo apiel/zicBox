@@ -90,6 +90,7 @@ public:
     struct Config {
         std::string name;
         nlohmann::json& json;
+        uint8_t trackId = 0;
     };
 
 protected:
@@ -103,12 +104,9 @@ public:
     AudioPlugin(Props& props, Config& config)
         : props(props)
         , name(config.name)
+        , track(config.trackId)
     {
         auto& json = config.json;
-        track = json.value("track", track);
-        if (track >= props.maxTracks) {
-            track = props.maxTracks - 1;
-        }
         serializable = json.value("serializable", serializable);
 
         //#md `{ "midiChannel": 1 }` assign a midi channel to the plugin
