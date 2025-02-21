@@ -510,11 +510,11 @@ public:
             // FIXME
             // clockTick();
             printf("midi clock tick to be implemented\n");
-        } else if (message->at(0) == 0xfa) {
+        } else if (message->at(0) == AudioEventType::START) {
             sendEvent(AudioEventType::START); // Should we instead use midi number.. ?
-        } else if (message->at(0) == 0xfb) {
+        } else if (message->at(0) == AudioEventType::PAUSE) {
             sendEvent(AudioEventType::PAUSE);
-        } else if (message->at(0) == 0xfc) {
+        } else if (message->at(0) == AudioEventType::STOP) {
             sendEvent(AudioEventType::STOP);
         } else if (message->at(0) == 0xfe) {
             // ignore active sensing
