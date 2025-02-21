@@ -8,9 +8,6 @@ local TypeError = ____lualib.TypeError
 local URIError = ____lualib.URIError
 local __TS__New = ____lualib.__TS__New
 local ____exports = {}
-local ____core = require("config.libs.core")
-local applyZic = ____core.applyZic
-local jsonStringify = ____core.jsonStringify
 function ____exports.audioPlugin(plugin, config)
     if config == nil then
         config = {}
@@ -25,13 +22,6 @@ function ____exports.audioPlugin(plugin, config)
         end
         config.alias = plugin
     end
-    applyZic({{AUDIO_PLUGIN = jsonStringify(config)}})
-end
---- Set the auto save mode.
--- 
--- @param time number - The time between each auto save in ms.
--- This will be apply only to plugins that has been already loaded.
-function ____exports.autoSave(time)
-    applyZic({{AUTO_SAVE = time}})
+    return config
 end
 return ____exports
