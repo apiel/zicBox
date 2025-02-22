@@ -57,8 +57,9 @@ void uiScriptCallback(char* key, char* value, const char* filename, std::vector<
 #endif
         || ViewManager::get().config(key, value, filename)) {
         return;
-    } else {
-        hostScriptCallback(key, value, filename, variables);
+    } else if (strcmp(key, "AUDIO") == 0) {
+        nlohmann::json config = nlohmann::json::parse(value);
+        hostConfig(config);
     }
 }
 

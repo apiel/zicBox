@@ -39,6 +39,13 @@ AudioPlugin& getPlugin(std::string name, int16_t track = -1)
     return host->audioPluginHandler->getPlugin(name, track);
 }
 
+void hostConfig(nlohmann::json& config)
+{
+    if (host) {
+        host->audioPluginHandler->config(config);
+    }
+}
+
 void sendAudioEvent(AudioEventType event)
 {
     host->audioPluginHandler->sendEvent(event);
