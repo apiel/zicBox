@@ -70,14 +70,6 @@ void loadHostPlugin()
     dlerror();
 
     host = new Host();
-    // host->hostScriptCallback = (void (*)(char* key, char* value, const char* filename, std::vector<Var> variables))dlsym(handle, "hostScriptCallback");
-    // const char* dlsym_error = dlerror();
-    // if (dlsym_error) {
-    //     logError("Host plugin, cannot load symbol: %s", dlsym_error);
-    //     dlclose(handle);
-    //     return;
-    // }
-
     host->load = (AudioPluginHandlerInterface * (*)()) dlsym(handle, "load");
     const char* dlsym_error = dlerror();
     if (dlsym_error) {
