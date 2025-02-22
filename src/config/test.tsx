@@ -8,6 +8,7 @@ import { Value } from '@/libs/nativeComponents/Value';
 import { View } from '@/libs/nativeComponents/View';
 import { setScreenSize, setWindowPosition } from '@/libs/ui';
 import { Keymap } from './libs/nativeComponents/Keymap';
+import { Yo } from './yo';
 import { Yo2 } from './yo2';
 
 // pluginAlias('Tempo', 'libzic_Tempo.so');
@@ -22,22 +23,24 @@ setWindowPosition(400, 500);
 setScreenSize(ScreenWidth, ScreenHeight);
 
 applyZic(
-    <View name="Demo">
-        <Text fontSize={16} text="title" bounds={[0, 0, ScreenWidth, 16]} centered />
+    <>
+        <View name="Demo">
+            <Text fontSize={16} text="title" bounds={[0, 0, ScreenWidth, 16]} centered />
 
-        <Rect color="tertiary" filled={false} bounds={[10, 30, 100, 50]} />
+            <Rect color="tertiary" filled={false} bounds={[10, 30, 100, 50]} />
 
-        <Value
-            audioPlugin="Tempo"
-            param="BPM"
-            bounds={[120, 60, 110, 20]}
-            encoderId={0}
-            barColor="quaternary"
-        >
-            <Keymap key="s" action="setView:Drum23" context="254:1" />
-        </Value>
+            <Value
+                audioPlugin="Tempo"
+                param="BPM"
+                bounds={[120, 60, 110, 20]}
+                encoderId={0}
+                barColor="quaternary"
+            >
+                <Keymap key="s" action="setView:Drum23" context="254:1" />
+            </Value>
 
-        {/* <Yo name="Yo" /> */}
-        <Yo2 />
-    </View>
+            <Yo2 />
+        </View>
+        <Yo name="Yo" />
+    </>
 );
