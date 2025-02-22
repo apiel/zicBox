@@ -110,6 +110,19 @@ public:
         }
         return Draw::config(key, value);
     }
+
+    void config(nlohmann::json& config) override
+    {
+        if (config.contains("windowPosition")) {
+            nlohmann::json windowPosition = config["windowPosition"];
+            if (windowPosition.contains("x") && windowPosition.contains("y")) {
+                windowX = windowPosition["x"];
+                windowY = windowPosition["y"];
+            }
+        }
+
+        Draw::config(config);
+    }
 };
 
 #endif

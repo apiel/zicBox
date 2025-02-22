@@ -1,6 +1,4 @@
-import { pixelController } from '@/libs/controllers/pixelController';
 import * as React from '@/libs/react';
-import { setScreenSize, setWindowPosition } from '@/libs/ui';
 import { BassView } from './Bass/BassView';
 import { BassEnvView } from './Bass/EnvView';
 import { BassFxView } from './Bass/FxView';
@@ -44,15 +42,17 @@ const halfHeight = ScreenHeight / 2;
 // addZoneEncoder([W1_2, halfHeight, W1_2, halfHeight]);
 
 export const ui = {
-    ...pixelController('rpi3A_4enc_11btn'),
-    ...setWindowPosition(400, 500),
-    ...setScreenSize(ScreenWidth, ScreenHeight),
-    zonesEncoders: [
-        [0, 0, W1_2, halfHeight],
-        [W1_2, 0, W1_2, halfHeight],
-        [0, halfHeight, W1_2, halfHeight],
-        [W1_2, halfHeight, W1_2, halfHeight],
-    ],
+    pixelController: 'rpi3A_4enc_11btn',
+    screen: {
+        windowPosition: { x: 400, y: 500 },
+        screenSize: { width: ScreenWidth, height: ScreenHeight },
+        zonesEncoders: [
+            [0, 0, W1_2, halfHeight],
+            [W1_2, 0, W1_2, halfHeight],
+            [0, halfHeight, W1_2, halfHeight],
+            [W1_2, halfHeight, W1_2, halfHeight],
+        ],
+    },
     views: (
         <>
             <Drum23View name="Drum23" />

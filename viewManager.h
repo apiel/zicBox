@@ -133,43 +133,45 @@ protected:
         return plugins.back();
     }
 
-    void addComponent(nlohmann::json& config)
+    void addComponent(nlohmann::json& config, View* targetView)
     {
-        std::string name = config["componentName"].get<std::string>();
-        Point position = { config["bounds"][0].get<int>(), config["bounds"][1].get<int>() };
-
-        // Check if width and height exist, otherwise use default values
-        int w = config.contains("bounds") && config["bounds"].size() > 2 ? config["bounds"][2].get<int>() : styles.screen.w;
-        int h = config.contains("bounds") && config["bounds"].size() > 3 ? config["bounds"][3].get<int>() : styles.screen.h;
-        Size size = { w, h };
-
-        ComponentInterface::Props props = {
-            view->name + "_" + name + "_x" + std::to_string(position.x) + "_y" + std::to_string(position.y),
-            config,
-            position,
-            size,
-            getPlugin,
-            sendAudioEvent,
-            getController,
-            view,
-            [this](uint8_t index, float value) { setContext(index, value); }
-        };
-
-        Plugin& plugin = loadPlugin(name, config);
-        ComponentInterface* component = plugin.allocator(props);
-        addComponent(component);
-    }
-
-    void addComponent(ComponentInterface* component)
-    {
-        if (views.size() > 0) {
-            View* lastView = views.back();
-            lastView->components.push_back(component);
-            if (component->jobRendering) {
-                lastView->componentsJob.push_back(component);
+        try {
+            if (!config.contains("componentName")) {
+                logWarn("Missing componentName in component config.");
+                return;
             }
-        } else {
-            logError("ERROR: No view to add component to. Create first a view to be able to add components.\n");
+            if (!config.contains("bounds") || !config["bounds"].is_array() || config["bounds"].size() < 2) {
+                logWarn("Missing bounds in component config.");
+                return;
+            }
+            std::string name = config["componentName"].get<std::string>();
+            // printf("Adding component %s %s\n", name.c_str(), config.dump().c_str());
+            Point position = { config["bounds"][0].get<int>(), config["bounds"][1].get<int>() };
+
+            // Check if width and height exist, otherwise use default values
+            int w = config.contains("bounds") && config["bounds"].size() > 2 ? config["bounds"][2].get<int>() : styles.screen.w;
+            int h = config.contains("bounds") && config["bounds"].size() > 3 ? config["bounds"][3].get<int>() : styles.screen.h;
+            Size size = { w, h };
+
+            ComponentInterface::Props props = {
+                targetView->name + "_" + name + "_x" + std::to_string(position.x) + "_y" + std::to_string(position.y),
+                config,
+                position,
+                size,
+                getPlugin,
+                sendAudioEvent,
+                getController,
+                targetView,
+                [this](uint8_t index, float value) { setContext(index, value); }
+            };
+            Plugin& plugin = loadPlugin(name, config);
+            ComponentInterface* component = plugin.allocator(props);
+            targetView->components.push_back(component);
+            if (component->jobRendering) {
+                targetView->componentsJob.push_back(component);
+            }
+        } catch (const std::exception& e) {
+            logError("Error adding component: %s", e.what());
         }
     }
 
@@ -240,7 +242,7 @@ public:
         if (strcmp(key, "COMPONENT") == 0) {
             try {
                 nlohmann::json config = nlohmann::json::parse(value);
-                addComponent(config);
+                addComponent(config, views.back());
                 return true;
             } catch (const std::exception& e) {
                 logError("COMPONENT: JSON Parsing Error: %s", e.what());
@@ -291,6 +293,28 @@ VIEW: Mixer
     void config(const char* key, const char* value)
     {
         config((char*)key, (char*)value);
+    }
+
+    void config(nlohmann::json& config)
+    {
+        if (config.is_array()) {
+            for (auto& v : config) {
+                // TODO Might want to move all this in view!!!
+                if (v.contains("name") && v.contains("components") && v["components"].is_array()) {
+                    View* newView = new View(draw, [&](std::string name) { setView(name); }, contextVar);
+                    newView->name = v["name"];
+                    try {
+                        // TODO how to handle extra config?
+                        views.push_back(newView);
+                        for (auto& component : v["components"]) {
+                            addComponent(component, newView);
+                        }
+                    } catch (const std::exception& e) {
+                        logError("view %s config: %s", newView->name.c_str(), e.what());
+                    }
+                }
+            }
+        }
     }
 };
 

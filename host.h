@@ -15,15 +15,7 @@
 struct Host {
     AudioPluginHandlerInterface* (*load)();
     AudioPluginHandlerInterface* audioPluginHandler = NULL;
-    void (*midiHandler)(std::vector<unsigned char>* message);
 }* host = NULL;
-
-void midiHandler(std::vector<unsigned char>* message)
-{
-    if (host) {
-        host->midiHandler(message);
-    }
-}
 
 AudioPlugin& getPlugin(std::string name, int16_t track = -1)
 {
@@ -78,14 +70,6 @@ void loadHostPlugin()
         return;
     }
     host->audioPluginHandler = host->load();
-
-    host->midiHandler = (void (*)(std::vector<unsigned char>* message))dlsym(handle, "midiHandler");
-    dlsym_error = dlerror();
-    if (dlsym_error) {
-        logError("Host plugin, cannot load symbol: %s", dlsym_error);
-        dlclose(handle);
-        return;
-    }
 }
 #else
 #include "host/AudioPluginHandler.h"

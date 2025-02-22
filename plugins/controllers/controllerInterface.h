@@ -9,18 +9,15 @@
 class ControllerInterface {
 public:
     uint16_t id;
-    void (*midi)(std::vector<unsigned char>* message) = NULL;
     void (*encoder)(int id, int8_t direction, uint32_t tick) = NULL;
     void (*onKey)(uint16_t id, int key, int8_t state) = NULL;
 
     struct Props {
-        void (*midi)(std::vector<unsigned char>* message) = NULL;
         void (*encoder)(int id, int8_t direction, uint32_t tick) = NULL;
         void (*onKey)(uint16_t id, int key, int8_t state) = NULL;
     };
     ControllerInterface(Props& props, uint16_t id)
         : id(id)
-        , midi(props.midi)
         , encoder(props.encoder)
         , onKey(props.onKey)
     {
@@ -29,6 +26,11 @@ public:
     virtual bool config(char* key, char* params)
     {
         return false;
+    }
+
+    virtual void config(nlohmann::json& config)
+    {
+
     }
 
     // virtual void* data(int id, void* userdata = NULL)

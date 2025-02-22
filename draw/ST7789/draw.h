@@ -1045,4 +1045,32 @@ public:
 
         return false;
     }
+
+    void config(nlohmann::json& config) override
+    {
+        try {
+            if (config.contains("colors") && config["colors"].is_array()) {
+                for (auto& color : config["colors"]) {
+                    std::string name = color["name"].get<std::string>();
+                    Color* styleColor = getStyleColor(name);
+                    if (styleColor != NULL) {
+                        Color newColor = getColor(color["color"]);
+                        styleColor->r = newColor.r;
+                        styleColor->g = newColor.g;
+                        styleColor->b = newColor.b;
+                    }
+                }
+            }
+            if (config.contains("screenSize")) {
+                styles.screen.w = config["screenSize"]["width"].get<int>();
+                styles.screen.h = config["screenSize"]["height"].get<int>();
+            }
+            if (config.contains("st7789")) {
+                st7789.madctl = config["st7789"].value("madctl", st7789.madctl);
+                st7789.displayInverted = config["st7789"].value("inverted", st7789.displayInverted);
+            }
+        } catch (const std::exception& e) {
+            logError("screen config: %s", e.what());
+        }
+    }
 };
