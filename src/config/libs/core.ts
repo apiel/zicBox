@@ -54,6 +54,7 @@ export type ZicValue = ZicObj | ZicValue[];
  */
 export function applyZic(values: ZicValue[]) {
   console.log(values);
+  console.log(JSON.stringify(values, null, 2));
     // for (const obj of (values as any[]).flat(Infinity)) {
     //     for (const key in obj) {
     //         zic(key.toUpperCase(), `${obj[key]}`);
