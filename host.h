@@ -11,21 +11,12 @@
 
 #define USE_HOST_SO
 #ifdef USE_HOST_SO
-#include "plugins/config/LuaConfig.h"
 
 struct Host {
-    void (*hostScriptCallback)(char* key, char* value, const char* filename, std::vector<Var> variables);
-    AudioPluginHandlerInterface* (*load)(const char* scriptPath);
+    AudioPluginHandlerInterface* (*load)();
     AudioPluginHandlerInterface* audioPluginHandler = NULL;
     void (*midiHandler)(std::vector<unsigned char>* message);
 }* host = NULL;
-
-void hostScriptCallback(char* key, char* value, const char* filename, std::vector<Var> variables)
-{
-    if (host) {
-        host->hostScriptCallback(key, value, filename, variables);
-    }
-}
 
 void midiHandler(std::vector<unsigned char>* message)
 {
@@ -59,7 +50,6 @@ void* hostThread(void* = NULL)
     return NULL;
 }
 
-
 void loadHostPlugin()
 {
     if (host) {
@@ -80,22 +70,22 @@ void loadHostPlugin()
     dlerror();
 
     host = new Host();
-    host->hostScriptCallback = (void (*)(char* key, char* value, const char* filename, std::vector<Var> variables))dlsym(handle, "hostScriptCallback");
+    // host->hostScriptCallback = (void (*)(char* key, char* value, const char* filename, std::vector<Var> variables))dlsym(handle, "hostScriptCallback");
+    // const char* dlsym_error = dlerror();
+    // if (dlsym_error) {
+    //     logError("Host plugin, cannot load symbol: %s", dlsym_error);
+    //     dlclose(handle);
+    //     return;
+    // }
+
+    host->load = (AudioPluginHandlerInterface * (*)()) dlsym(handle, "load");
     const char* dlsym_error = dlerror();
     if (dlsym_error) {
         logError("Host plugin, cannot load symbol: %s", dlsym_error);
         dlclose(handle);
         return;
     }
-
-    host->load = (AudioPluginHandlerInterface * (*)(const char* scriptPath)) dlsym(handle, "load");
-    dlsym_error = dlerror();
-    if (dlsym_error) {
-        logError("Host plugin, cannot load symbol: %s", dlsym_error);
-        dlclose(handle);
-        return;
-    }
-    host->audioPluginHandler = host->load(NULL);
+    host->audioPluginHandler = host->load();
 
     host->midiHandler = (void (*)(std::vector<unsigned char>* message))dlsym(handle, "midiHandler");
     dlsym_error = dlerror();
@@ -107,7 +97,6 @@ void loadHostPlugin()
 }
 #else
 #include "host/AudioPluginHandler.h"
-#include "host/config.h"
 #include "plugins/audio/valueInterface.h"
 
 void* hostThread(void* = NULL)
@@ -130,8 +119,6 @@ void loadHostPlugin()
 {
 }
 #endif
-
-
 
 void startHostThread()
 {
