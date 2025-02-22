@@ -1,7 +1,6 @@
 import { pixelController } from '@/libs/controllers/pixelController';
-import { applyZic } from '@/libs/core';
 import * as React from '@/libs/react';
-import { addZoneEncoder, setScreenSize, setWindowPosition } from '@/libs/ui';
+import { setScreenSize, setWindowPosition } from '@/libs/ui';
 import { BassView } from './Bass/BassView';
 import { BassEnvView } from './Bass/EnvView';
 import { BassFxView } from './Bass/FxView';
@@ -38,61 +37,65 @@ import { SynthView } from './Synth/SynthView';
 import { SynthWaveform1View } from './Synth/Waveform1View';
 import { SynthWaveform2View } from './Synth/Waveform2View';
 
-pixelController('rpi3A_4enc_11btn');
-
-setWindowPosition(400, 500);
-setScreenSize(ScreenWidth, ScreenHeight);
-
 const halfHeight = ScreenHeight / 2;
-addZoneEncoder([0, 0, W1_2, halfHeight]);
-addZoneEncoder([W1_2, 0, W1_2, halfHeight]);
-addZoneEncoder([0, halfHeight, W1_2, halfHeight]);
-addZoneEncoder([W1_2, halfHeight, W1_2, halfHeight]);
+// addZoneEncoder([0, 0, W1_2, halfHeight]);
+// addZoneEncoder([W1_2, 0, W1_2, halfHeight]);
+// addZoneEncoder([0, halfHeight, W1_2, halfHeight]);
+// addZoneEncoder([W1_2, halfHeight, W1_2, halfHeight]);
 
-applyZic(<Drum23View name="Drum23" />);
-applyZic(<DistortionView name="Distortion" />);
-applyZic(<WaveformView name="Waveform" />);
-applyZic(<FrequencyView name="Frequency" />);
-applyZic(<AmpView name="Amplitude" />);
-applyZic(<ClickView name="Click" />);
-applyZic(<Drum23SeqView name="Sequencer" />);
+export const ui = {
+    ...pixelController('rpi3A_4enc_11btn'),
+    ...setWindowPosition(400, 500),
+    ...setScreenSize(ScreenWidth, ScreenHeight),
+    zonesEncoders: [
+        [0, 0, W1_2, halfHeight],
+        [W1_2, 0, W1_2, halfHeight],
+        [0, halfHeight, W1_2, halfHeight],
+        [W1_2, halfHeight, W1_2, halfHeight],
+    ],
+    views: (
+        <>
+            <Drum23View name="Drum23" />
+            <DistortionView name="Distortion" />
+            <WaveformView name="Waveform" />
+            <FrequencyView name="Frequency" />
+            <AmpView name="Amplitude" />
+            <ClickView name="Click" />
+            <Drum23SeqView name="Sequencer" />
 
-applyZic(<SampleEditorView name="Sample" />);
+            <SampleEditorView name="Sample" />
 
-applyZic(<BassView name="Bass" />);
-applyZic(<BassFxView name="BassFx" />);
-applyZic(<BassEnvView name="BassEnv" />);
-applyZic(<BassSeqView name="BassSeq" />);
-applyZic(<BassWaveformView name="BassWaveform" />);
+            <BassView name="Bass" />
+            <BassFxView name="BassFx" />
+            <BassEnvView name="BassEnv" />
+            <BassSeqView name="BassSeq" />
+            <BassWaveformView name="BassWaveform" />
 
-applyZic(<Fm1View name="Fm1" />);
-applyZic(<Fm1FxView name="Fm1Fx" />);
-applyZic(<Fm1EnvView name="Fm1Env" />);
-applyZic(<Fm1SeqView name="Fm1Seq" />);
+            <Fm1View name="Fm1" />
+            <Fm1FxView name="Fm1Fx" />
+            <Fm1EnvView name="Fm1Env" />
+            <Fm1SeqView name="Fm1Seq" />
 
-applyZic(<PercView name="Perc" />);
-applyZic(<PercFxView name="PercFx" />);
-// applyZic(<PercEnvView name="PercEnv" />);
-applyZic(<PercSeqView name="PercSeq" />);
-applyZic(<PercSeq2View name="PercSeq2" />);
-applyZic(<PercNoiseView name="PercNoise" />);
-applyZic(<PercNoise2View name="PercNoise2" />);
-applyZic(<PercModView name="PercMod" />);
+            <PercView name="Perc" />
+            <PercFxView name="PercFx" />
+            <PercSeqView name="PercSeq" />
+            <PercSeq2View name="PercSeq2" />
+            <PercNoiseView name="PercNoise" />
+            <PercNoise2View name="PercNoise2" />
+            <PercModView name="PercMod" />
 
-applyZic(<SynthView name="Synth" />);
-applyZic(<SynthFxView name="SynthFx" />);
-applyZic(<SynthEnv1View name="SynthEnv1" />);
-applyZic(<SynthEnv2View name="SynthEnv2" />);
-applyZic(<SynthWaveform1View name="SynthWaveform1" />);
-applyZic(<SynthWaveform2View name="SynthWaveform2" />);
+            <SynthView name="Synth" />
+            <SynthFxView name="SynthFx" />
+            <SynthEnv1View name="SynthEnv1" />
+            <SynthEnv2View name="SynthEnv2" />
+            <SynthWaveform1View name="SynthWaveform1" />
+            <SynthWaveform2View name="SynthWaveform2" />
 
-applyZic(<MenuView name="Menu" />);
-// applyZic(<WorkspacesView name="Workspaces" />);
-applyZic(<CreateWorkspaceView name="CreateWorkspace" />);
-applyZic(<ShutdownView name="Shutdown" />);
+            <MenuView name="Menu" />
+            <CreateWorkspaceView name="CreateWorkspace" />
+            <ShutdownView name="Shutdown" />
 
-// Tape is messing up the memory, need to fix it!
-// applyZic(<TapeView name="Tape" />);
-// applyZic(<SaveTapeView name="SaveTape" />);
-
-applyZic(<ClipsView name="Clips" />);
+            <ClipsView name="Clips" />
+        </>
+    ),
+};

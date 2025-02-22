@@ -4,6 +4,7 @@ local ____pixelController = require("config.libs.controllers.pixelController")
 local pixelController = ____pixelController.pixelController
 local ____core = require("config.libs.core")
 local applyZic = ____core.applyZic
+local jsonStringify = ____core.jsonStringify
 local React = require("config.libs.react")
 local ____ui = require("config.libs.ui")
 local addZoneEncoder = ____ui.addZoneEncoder
@@ -89,38 +90,44 @@ addZoneEncoder({0, 0, W1_2, halfHeight})
 addZoneEncoder({W1_2, 0, W1_2, halfHeight})
 addZoneEncoder({0, halfHeight, W1_2, halfHeight})
 addZoneEncoder({W1_2, halfHeight, W1_2, halfHeight})
-applyZic(React.createElement(Drum23View, {name = "Drum23"}))
-applyZic(React.createElement(DistortionView, {name = "Distortion"}))
-applyZic(React.createElement(WaveformView, {name = "Waveform"}))
-applyZic(React.createElement(FrequencyView, {name = "Frequency"}))
-applyZic(React.createElement(AmpView, {name = "Amplitude"}))
-applyZic(React.createElement(ClickView, {name = "Click"}))
-applyZic(React.createElement(Drum23SeqView, {name = "Sequencer"}))
-applyZic(React.createElement(SampleEditorView, {name = "Sample"}))
-applyZic(React.createElement(BassView, {name = "Bass"}))
-applyZic(React.createElement(BassFxView, {name = "BassFx"}))
-applyZic(React.createElement(BassEnvView, {name = "BassEnv"}))
-applyZic(React.createElement(BassSeqView, {name = "BassSeq"}))
-applyZic(React.createElement(BassWaveformView, {name = "BassWaveform"}))
-applyZic(React.createElement(Fm1View, {name = "Fm1"}))
-applyZic(React.createElement(Fm1FxView, {name = "Fm1Fx"}))
-applyZic(React.createElement(Fm1EnvView, {name = "Fm1Env"}))
-applyZic(React.createElement(Fm1SeqView, {name = "Fm1Seq"}))
-applyZic(React.createElement(PercView, {name = "Perc"}))
-applyZic(React.createElement(PercFxView, {name = "PercFx"}))
-applyZic(React.createElement(PercSeqView, {name = "PercSeq"}))
-applyZic(React.createElement(PercSeq2View, {name = "PercSeq2"}))
-applyZic(React.createElement(PercNoiseView, {name = "PercNoise"}))
-applyZic(React.createElement(PercNoise2View, {name = "PercNoise2"}))
-applyZic(React.createElement(PercModView, {name = "PercMod"}))
-applyZic(React.createElement(SynthView, {name = "Synth"}))
-applyZic(React.createElement(SynthFxView, {name = "SynthFx"}))
-applyZic(React.createElement(SynthEnv1View, {name = "SynthEnv1"}))
-applyZic(React.createElement(SynthEnv2View, {name = "SynthEnv2"}))
-applyZic(React.createElement(SynthWaveform1View, {name = "SynthWaveform1"}))
-applyZic(React.createElement(SynthWaveform2View, {name = "SynthWaveform2"}))
-applyZic(React.createElement(MenuView, {name = "Menu"}))
-applyZic(React.createElement(CreateWorkspaceView, {name = "CreateWorkspace"}))
-applyZic(React.createElement(ShutdownView, {name = "Shutdown"}))
-applyZic(React.createElement(ClipsView, {name = "Clips"}))
+local ui = React.createElement(
+    React.Fragment,
+    nil,
+    React.createElement(Drum23View, {name = "Drum23"}),
+    React.createElement(DistortionView, {name = "Distortion"}),
+    React.createElement(WaveformView, {name = "Waveform"}),
+    React.createElement(FrequencyView, {name = "Frequency"}),
+    React.createElement(AmpView, {name = "Amplitude"}),
+    React.createElement(ClickView, {name = "Click"}),
+    React.createElement(Drum23SeqView, {name = "Sequencer"}),
+    React.createElement(SampleEditorView, {name = "Sample"}),
+    React.createElement(BassView, {name = "Bass"}),
+    React.createElement(BassFxView, {name = "BassFx"}),
+    React.createElement(BassEnvView, {name = "BassEnv"}),
+    React.createElement(BassSeqView, {name = "BassSeq"}),
+    React.createElement(BassWaveformView, {name = "BassWaveform"}),
+    React.createElement(Fm1View, {name = "Fm1"}),
+    React.createElement(Fm1FxView, {name = "Fm1Fx"}),
+    React.createElement(Fm1EnvView, {name = "Fm1Env"}),
+    React.createElement(Fm1SeqView, {name = "Fm1Seq"}),
+    React.createElement(PercView, {name = "Perc"}),
+    React.createElement(PercFxView, {name = "PercFx"}),
+    React.createElement(PercSeqView, {name = "PercSeq"}),
+    React.createElement(PercSeq2View, {name = "PercSeq2"}),
+    React.createElement(PercNoiseView, {name = "PercNoise"}),
+    React.createElement(PercNoise2View, {name = "PercNoise2"}),
+    React.createElement(PercModView, {name = "PercMod"}),
+    React.createElement(SynthView, {name = "Synth"}),
+    React.createElement(SynthFxView, {name = "SynthFx"}),
+    React.createElement(SynthEnv1View, {name = "SynthEnv1"}),
+    React.createElement(SynthEnv2View, {name = "SynthEnv2"}),
+    React.createElement(SynthWaveform1View, {name = "SynthWaveform1"}),
+    React.createElement(SynthWaveform2View, {name = "SynthWaveform2"}),
+    React.createElement(MenuView, {name = "Menu"}),
+    React.createElement(CreateWorkspaceView, {name = "CreateWorkspace"}),
+    React.createElement(ShutdownView, {name = "Shutdown"}),
+    React.createElement(ClipsView, {name = "Clips"})
+)
+print(jsonStringify(ui))
+applyZic({{UI = jsonStringify(ui)}})
 return ____exports

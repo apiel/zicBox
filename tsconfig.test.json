@@ -7,7 +7,7 @@
         "target": "ESNext",
         "lib": ["ESNext", "DOM"],
         "jsx": "react",
-        "types": [],
+        "types": ["node"],
         "strict": true,
         "paths": {
             "@/*": ["./src/config/*"]

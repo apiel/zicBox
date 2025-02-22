@@ -62,7 +62,8 @@ export function view(name: string, values: ZicValue[] = []) {
  * @param y number The y position
  */
 export function setWindowPosition(x: number, y: number) {
-    applyZic([{ WINDOW_POSITION: `${x} ${y}` }]);
+    // applyZic([{ WINDOW_POSITION: `${x} ${y}` }]);
+    return { windowPosition: { x, y } };
 }
 
 /**
@@ -71,7 +72,8 @@ export function setWindowPosition(x: number, y: number) {
  * @param height number The height of the screen
  */
 export function setScreenSize(width: number, height: number) {
-    applyZic([{ SCREEN: `${width} ${height}` }]);
+    // applyZic([{ SCREEN: `${width} ${height}` }]);
+    return { screenSize: { width, height } };
 }
 
 /**
