@@ -1,4 +1,4 @@
-import { applyZic, jsonStringify, ZicValue } from './core';
+import { applyZic, ZicValue } from './core';
 import { ComponentProps } from './nativeComponents/component';
 
 export type Bounds = string | string[] | number[];
@@ -13,12 +13,15 @@ export function getBounds(pos: Bounds) {
 }
 
 export function getJsonComponent<P>(componentName: string) {
-    return (props: ComponentProps<P>) => {
-        const COMPONENT = jsonStringify({
+    return function (this: any, props: ComponentProps<P>) {
+        const COMPONENT = {
             ...props,
             componentName,
             bounds: getBounds(props.bounds),
-        });
+        };
+        // const children: [] = this.children;
+        // const flatChildren = children.filter((child) => child).flat(Infinity);
+        // console.log({ flatChildren });
         return [{ COMPONENT }];
     };
 }
@@ -71,7 +74,6 @@ export function setScreenSize(width: number, height: number) {
     applyZic([{ SCREEN: `${width} ${height}` }]);
 }
 
-
 /**
  * Returns a string representing a color in hexadecimal notation.
  *
@@ -82,7 +84,9 @@ export function setScreenSize(width: number, height: number) {
  * @returns string A string in the format `#RRGGBB`, where `RR`, `GG`, and `BB` are the red, green, and blue components of the color, respectively, in hexadecimal notation.
  */
 export function rgb(r: number, g: number, b: number) {
-    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b
+        .toString(16)
+        .padStart(2, '0')}`;
 }
 
 /**
@@ -96,5 +100,9 @@ export function rgb(r: number, g: number, b: number) {
  * @returns string A string in the format `#RRGGBBAA`, where `RR`, `GG`, `BB`, and `AA` are the red, green, blue, and alpha components of the color, respectively, in hexadecimal notation.
  */
 export function rgba(r: number, g: number, b: number, a: number) {
-    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}${(Math.round(a * 255)).toString(16).padStart(2, '0')}`;
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b
+        .toString(16)
+        .padStart(2, '0')}${Math.round(a * 255)
+        .toString(16)
+        .padStart(2, '0')}`;
 }

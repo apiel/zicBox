@@ -8,7 +8,7 @@ import { Value } from '@/libs/nativeComponents/Value';
 import { View } from '@/libs/nativeComponents/View';
 import { setScreenSize, setWindowPosition } from '@/libs/ui';
 import { Keymap } from './libs/nativeComponents/Keymap';
-import { Yo } from './yo';
+import { Yo2 } from './yo2';
 
 // pluginAlias('Tempo', 'libzic_Tempo.so');
 // plugin('Tempo');
@@ -37,6 +37,7 @@ applyZic(
             <Keymap key="s" action="setView:Drum23" context="254:1" />
         </Value>
 
-        <Yo name="Yo" />
+        {/* <Yo name="Yo" /> */}
+        <Yo2 />
     </View>
 );
