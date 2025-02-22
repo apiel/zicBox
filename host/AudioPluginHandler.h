@@ -316,7 +316,7 @@ public:
         plugins.push_back(instance);
     }
 
-    void config(nlohmann::json& config)
+    AudioPluginHandler& config(nlohmann::json& config)
     {
         if (config.contains("midiInput")) {
             loadMidiInput(config["midiInput"].get<std::string>());
@@ -341,6 +341,7 @@ public:
                 startAutoSave(msInterval);
             }
         }
+        return *this;
     }
 
     void noteOn(uint8_t note, float velocity, NoteTarget target) override
