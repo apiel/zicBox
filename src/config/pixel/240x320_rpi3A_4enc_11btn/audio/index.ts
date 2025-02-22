@@ -1,5 +1,4 @@
 import { audioPlugin } from '@/libs/audio';
-import { applyZic, jsonStringify } from '@/libs/core';
 import { BassTrack, Drum23Track, Fm1Track, PercTrack, SampleTrack, SynthTrack } from '../constants';
 
 export const cutoffStringFormat = '%d%% %d%%';
@@ -79,19 +78,7 @@ const masterTrack = {
     ],
 };
 
-applyZic([
-    {
-        AUDIO: jsonStringify({
-            tracks: [
-                drum23Track,
-                bassTrack,
-                fm1Track,
-                synthTrack,
-                sampleTrack,
-                percTrack,
-                masterTrack,
-            ],
-            autoSave: 500,
-        }),
-    },
-]);
+export const audio = {
+    tracks: [drum23Track, bassTrack, fm1Track, synthTrack, sampleTrack, percTrack, masterTrack],
+    autoSave: 500,
+};

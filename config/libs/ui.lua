@@ -8,7 +8,6 @@ local __TS__StringPadStart = ____lualib.__TS__StringPadStart
 local ____exports = {}
 local ____core = require("config.libs.core")
 local applyZic = ____core.applyZic
-local jsonStringify = ____core.jsonStringify
 function ____exports.getPosition(pos)
     return __TS__ArrayIsArray(pos) and __TS__ArrayJoin(pos, " ") or pos
 end
@@ -16,15 +15,15 @@ function ____exports.getBounds(pos)
     return __TS__ArrayIsArray(pos) and pos or __TS__StringSplit(pos, " ")
 end
 function ____exports.getJsonComponent(componentName)
-    return function(props)
-        local COMPONENT = jsonStringify(__TS__ObjectAssign(
+    return function(self, props)
+        local COMPONENT = __TS__ObjectAssign(
             {},
             props,
             {
                 componentName = componentName,
                 bounds = ____exports.getBounds(props.bounds)
             }
-        ))
+        )
         return {{COMPONENT = COMPONENT}}
     end
 end

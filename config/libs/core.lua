@@ -68,10 +68,6 @@ end
 function ____exports.applyZic(values)
     for ____, obj in ipairs(__TS__ArrayFlat(values, math.huge)) do
         for key in pairs(obj) do
-            zic(
-                string.upper(key),
-                tostring(obj[key])
-            )
         end
     end
 end

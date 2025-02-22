@@ -7,6 +7,9 @@ ____exports.HiddenValue = function(props)
     if props == nil then
         props = {}
     end
-    return getJsonComponent("HiddenValue")(__TS__ObjectAssign({}, props, {bounds = {0, 0, 0, 0}}))
+    return getJsonComponent("HiddenValue")(
+        nil,
+        __TS__ObjectAssign({}, props, {bounds = {0, 0, 0, 0}})
+    )
 end
 return ____exports
