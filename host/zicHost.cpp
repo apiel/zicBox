@@ -1,5 +1,4 @@
 #include "AudioPluginHandler.h"
-#include "config.h"
 #include "def.h"
 
 #include <iostream>
