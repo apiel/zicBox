@@ -1,10 +1,12 @@
 {
   "scripts": {
     "build": "tstl",
-    "dev": "tstl --watch"
+    "dev": "tstl --watch",
+    "test": "npx ts-node -r tsconfig-paths/register -P ./tsconfig.test.json src/config/test.tsx"
   },
   "devDependencies": {
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.2",
     "typescript-to-lua": "^1.29.0"
   }
