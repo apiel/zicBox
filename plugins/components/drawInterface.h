@@ -111,6 +111,7 @@ public:
     virtual Color getColor(std::string color, Color defaultColor = { 0xFF, 0xFF, 0xFF }) { return styles.colors.white; }
     virtual Color getColor(const nlohmann::json& node, Color defaultColor) { return defaultColor; }
     virtual bool config(char* key, char* value) { return false; }
+    virtual void config(nlohmann::json& config) { }
 };
 
 #endif

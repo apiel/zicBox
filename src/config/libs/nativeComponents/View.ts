@@ -8,12 +8,8 @@ export function View(this: any, { name }: Props) {
     const children: [] = this.children;
     return [
         {
-            view: {
-                name,
-                components: (children || [])
-                    .filter((child) => child)
-                    .flat(Infinity),
-            },
+            name,
+            components: (children || []).filter((child) => child).flat(Infinity),
         },
     ];
 }

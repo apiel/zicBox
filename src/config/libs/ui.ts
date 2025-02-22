@@ -14,7 +14,7 @@ export function getBounds(pos: Bounds) {
 
 export function getJsonComponent<P>(componentName: string) {
     return function (this: any, props: ComponentProps<P>) {
-        const COMPONENT = {
+        const component = {
             ...props,
             componentName,
             bounds: getBounds(props.bounds),
@@ -22,7 +22,7 @@ export function getJsonComponent<P>(componentName: string) {
         // const children: [] = this.children;
         // const flatChildren = children.filter((child) => child).flat(Infinity);
         // console.log({ flatChildren });
-        return [{ COMPONENT }];
+        return [component];
     };
 }
 

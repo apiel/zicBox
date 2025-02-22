@@ -22,7 +22,6 @@
 
 void* uiThread(void* = NULL)
 {
-
     ViewManager& viewManager = ViewManager::get();
     viewManager.init();
     if (!viewManager.render()) {
@@ -75,7 +74,9 @@ int main(int argc, char* argv[])
 
     // loadUiConfig(argc >= 2 ? argv[1] : "pixel.cfg", argc >= 3 ? argv[2] : NULL, styles);
     // loadUiConfig("config/pixel/main.lua", "lua", styles);
-    loadUiConfig(argc >= 2 ? argv[1] : "pixel.lua", argc >= 3 ? argv[2] : NULL, styles);
+    // loadUiConfig(argc >= 2 ? argv[1] : "pixel.lua", argc >= 3 ? argv[2] : NULL, styles);
+
+    loadJsonConfig(argc >= 2 ? argv[1] : "config.json");
 
     showLogLevel();
 

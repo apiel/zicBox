@@ -22,7 +22,7 @@ void keyHandler(uint16_t id, int key, int8_t state)
 }
 
 uint16_t controllerId = 1;
-ControllerInterface::Props controllerProps = { midiHandler, encoderHandler, keyHandler };
+ControllerInterface::Props controllerProps = { encoderHandler, keyHandler };
 
 void loadPluginController(char* value, const char* filename)
 {
