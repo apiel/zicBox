@@ -1,0 +1,17 @@
+{
+    "include": ["src/**/*"],
+    "exclude": [],
+    "compilerOptions": {
+        "rootDir": "src",
+        "moduleResolution": "Node",
+        "target": "ESNext",
+        "lib": ["ESNext", "DOM"],
+        "jsx": "react",
+        "types": [],
+        "strict": true,
+        "paths": {
+            "@/*": ["./src/config/*"]
+        },
+        "baseUrl": "."
+    }
+}

@@ -53,12 +53,13 @@ export type ZicValue = ZicObj | ZicValue[];
  * @param values table Zic values
  */
 export function applyZic(values: ZicValue[]) {
-    for (const obj of (values as any[]).flat(Infinity)) {
-        for (const key in obj) {
-            zic(key.toUpperCase(), `${obj[key]}`);
-            // console.log(`${key}: ${obj[key]}`);
-        }
-    }
+  console.log(values);
+    // for (const obj of (values as any[]).flat(Infinity)) {
+    //     for (const key in obj) {
+    //         zic(key.toUpperCase(), `${obj[key]}`);
+    //         // console.log(`${key}: ${obj[key]}`);
+    //     }
+    // }
 }
 // applyZic([{ VIEW: "hello" }, [{HELLO: 'world'}]]);
 

@@ -1,9 +1,8 @@
-
-
 export function createElement(component: Function, props?: Object, ...children: any[]) {
     const element = component(props);
+    console.log({ component, props, children, element });
     // filter child for && condition component
-    return [element, children.filter(child => child)].flat(Infinity);
+    return [element, children.filter((child) => child)].flat(Infinity);
 }
 
 export function Fragment() {
