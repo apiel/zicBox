@@ -59,6 +59,7 @@ public:
     virtual void noteOff(uint8_t note, float velocity, NoteTarget target) = 0;
     virtual void assignPluginToMidiChannel(uint8_t channel, AudioPlugin* plugin) = 0;
     virtual void mapMidiCmd(AudioPlugin* plugin, int valueIndex, const std::string& cmd) = 0;
+    virtual AudioPluginHandlerInterface& config(nlohmann::json& config) = 0;
 
     virtual bool isPlaying() = 0;
     virtual bool isStopped() = 0;

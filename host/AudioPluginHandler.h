@@ -316,7 +316,7 @@ public:
         plugins.push_back(instance);
     }
 
-    AudioPluginHandler& config(nlohmann::json& config)
+    AudioPluginHandler& config(nlohmann::json& config) override
     {
         if (config.contains("midiInput")) {
             loadMidiInput(config["midiInput"].get<std::string>());
