@@ -1,8 +1,6 @@
 RTMIDI=`pkg-config --cflags --libs rtmidi`
 SDL2=`sdl2-config --cflags --libs`
 
-LUA=`pkg-config --cflags --libs lua`
-
 # SPI_DEV_MEM=`-lbcm2835 -lbcm_host -DUSE_SPI_DEV_MEM`
 
 ifneq ($(shell uname -m),x86_64)
@@ -44,7 +42,7 @@ buildPixel:
 	make pixel.$(BIN_PLATFORM)
 
 pixel.$(BIN_PLATFORM):
-	g++ -g -fms-extensions -o pixel.$(BIN_PLATFORM) zicPixel.cpp -ldl $(INC) $(RPI) $(RTMIDI) $(PIXEL_SDL) $(SPI_DEV_MEM) $(LUA) $(TRACK_HEADER_FILES)
+	g++ -g -fms-extensions -o pixel.$(BIN_PLATFORM) zicPixel.cpp -ldl $(INC) $(RPI) $(RTMIDI) $(PIXEL_SDL) $(SPI_DEV_MEM) $(TRACK_HEADER_FILES)
 
 # Safeguard: include only if .d files exist
 -include $(wildcard pixel.$(BIN_PLATFORM).d)

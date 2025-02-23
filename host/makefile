@@ -1,7 +1,5 @@
 RTMIDI=`pkg-config --cflags --libs rtmidi`
 
-LUA=`pkg-config --cflags --libs lua`
-
 ifneq ($(shell uname -m),x86_64)
 RPI := -DIS_RPI=1
 BIN_PLATFORM := arm
@@ -20,7 +18,7 @@ main:
 	make libzicHost.$(BIN_PLATFORM).so
 
 libzicHost.$(BIN_PLATFORM).so:
-	g++ -fPIC -shared -o libzicHost.$(BIN_PLATFORM).so zicHost.cpp -fopenmp $(BUILD) $(INC) $(LUA) $(TRACK_HEADER_FILES)
+	g++ -fPIC -shared -o libzicHost.$(BIN_PLATFORM).so zicHost.cpp -fopenmp $(BUILD) $(INC) $(TRACK_HEADER_FILES)
 
 # Safeguard: include only if .d files exist
 -include $(wildcard libzicHost.$(BIN_PLATFORM).d)
@@ -32,7 +30,7 @@ rebuild:
 standalone: buildStandaloneHost runStandaloneHost
 
 buildStandaloneHost:
-	g++ -g -o zicHost -Wall zicHost.cpp -fopenmp $(BUILD) $(INC) $(LUA)
+	g++ -g -o zicHost -Wall zicHost.cpp -fopenmp $(BUILD) $(INC)
 
 runStandaloneHost:
 	./zicHost
