@@ -11,12 +11,6 @@
 #include <cstring>
 #include <stdio.h>
 
-/*md
-## EncoderController
-
-EncoderController is a controller for rotary encoders.
-*/
-
 class RotaryEncoder {
 protected:
     int levelA = 0;
@@ -112,10 +106,8 @@ public:
 #endif
     }
 
-    /*md **Config:** */
     bool config(char* key, char* params)
     {
-        /*md - `ENCODER: id gpioA gpioB [gpioBtn]` will connect to gpioA and gpioB as an encoder. If gpioBtn is set, then it will connect to gpioBtn as a button. */
         if (strcmp(key, "ENCODER") == 0) {
             int encoderId = atoi(strtok(params, " "));
             int gpioA = atoi(strtok(NULL, " "));
