@@ -150,7 +150,7 @@ public:
     }
 
     // TODO to be deprecated
-    bool config(char* key, char* value)
+    bool config(char* key, char* value) // TODO remove me?
     {
         if (strcmp(key, "KEYMAP") == 0) {
             std::string controllerName = strtok(value, " ");

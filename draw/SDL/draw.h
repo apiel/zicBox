@@ -369,7 +369,7 @@ public:
         SDL_RenderPresent(renderer);
     }
 
-    Color getColor(std::string color) override
+    Color getColor(std::string color, Color defaultColor = { 0xFF, 0xFF, 0xFF }) override
     {
         // if first char is # then call hex2rgb
         if (color[0] == '#') {
@@ -381,7 +381,7 @@ public:
             return *styleColor;
         }
 
-        return styles.colors.white;
+        return defaultColor;
     }
 
     bool config(char* key, char* value) override

@@ -83,9 +83,8 @@ public:
     virtual void applyTexture(void* texture, Rect dest) { }
 
     virtual void* getFont(const char* name = NULL, int size = -1) { return NULL; }
-    virtual Color getColor(std::string color, Color defaultColor = { 0xFF, 0xFF, 0xFF }) { return styles.colors.white; }
+    virtual Color getColor(std::string color, Color defaultColor = { 0xFF, 0xFF, 0xFF }) { return defaultColor; }
     virtual Color getColor(const nlohmann::json& node, Color defaultColor) { return defaultColor; }
-    virtual bool config(char* key, char* value) { return false; }
     virtual void config(nlohmann::json& config) { }
 
     virtual bool handleEvent(EventInterface* view) { return true; }

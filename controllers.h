@@ -56,7 +56,7 @@ void loadPluginController(char* value, const char* filename)
 bool pluginControllerConfig(char* key, char* value)
 {
     if (lastPluginControllerInstance) {
-        return lastPluginControllerInstance->config(key, value);
+        // return lastPluginControllerInstance->config(key, value);
     }
     return false;
 }

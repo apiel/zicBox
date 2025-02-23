@@ -1011,41 +1011,6 @@ public:
         return getColor(color.get<std::string>(), defaultColor);
     }
 
-    bool config(char* key, char* value) override
-    {
-        if (strcmp(key, "SET_COLOR") == 0) {
-            std::string name = strtok(value, " ");
-            std::string color = strtok(NULL, " ");
-            Color* styleColor = getStyleColor(name);
-            if (styleColor != NULL) {
-                Color newColor = hex2rgb(color);
-                //    *styleColor = newColor; // Dont do like this, to keep transparency
-                styleColor->r = newColor.r;
-                styleColor->g = newColor.g;
-                styleColor->b = newColor.b;
-            }
-            return true;
-        }
-
-        if (strcmp(key, "SCREEN") == 0) {
-            styles.screen.w = atoi(strtok(value, " "));
-            styles.screen.h = atoi(strtok(NULL, " "));
-            return true;
-        }
-
-        if (strcmp(key, "ST7789_MADCTL") == 0) {
-            st7789.madctl = atoi(value);
-            return true;
-        }
-
-        if (strcmp(key, "ST7789_INVERTED") == 0) {
-            st7789.displayInverted = strcmp(value, "true") == 0;
-            return true;
-        }
-
-        return false;
-    }
-
     void config(nlohmann::json& config) override
     {
         try {

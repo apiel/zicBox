@@ -23,11 +23,6 @@ public:
     {
     }
 
-    virtual bool config(char* key, char* params)
-    {
-        return false;
-    }
-
     virtual void config(nlohmann::json& config)
     {
 

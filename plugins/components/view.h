@@ -177,7 +177,7 @@ public:
     }
 
     bool resetGroupOnSetView = false;
-    bool config(char* key, char* value)
+    bool config(char* key, char* value) // TODO to be fixed
     {
         if (strcmp(key, "RESET_GROUP_ON_SET_VIEW") == 0) {
             resetGroupOnSetView = strcmp(value, "true") == 0;
