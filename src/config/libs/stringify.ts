@@ -36,6 +36,42 @@ export function stringifyWithLimitedIndentation(
     return format(obj, 1);
 }
 
+// export function stringifyWithCompactedKeys(
+//     obj: unknown,
+//     compactKeys: string[] = ['plugins', 'components', 'zonesEncoders'],
+//     space: number = 2
+// ): string {
+//     // Helper function to recursively format the object
+//     const format = (obj: unknown, level: number, parentKey?: string): string => {
+//         if (Array.isArray(obj)) {
+//             // Format arrays
+//             const items = obj.map((item) => format(item, level + 1, parentKey));
+//             return `[\n${' '.repeat(level * space)}${items.join(
+//                 ',\n' + ' '.repeat(level * space)
+//             )}\n${' '.repeat((level - 1) * space)}]`;
+//         } else if ((parentKey && compactKeys.includes(parentKey)) || level > 5) {
+//             return JSON.stringify(obj);
+//         } else if (typeof obj === 'object' && obj !== null) {
+//             // Format objects
+//             const keys = Object.keys(obj);
+//             const items = keys.map(
+//                 (k) =>
+//                     `${' '.repeat(level * space)}"${k}": ${format(
+//                         (obj as Record<string, unknown>)[k],
+//                         level + 1,
+//                         k // Pass the key to check if it should be compacted
+//                     )}`
+//             );
+//             return `{\n${items.join(',\n')}\n${' '.repeat((level - 1) * space)}}`;
+//         } else {
+//             // Format primitives (strings, numbers, booleans, null)
+//             return JSON.stringify(obj);
+//         }
+//     };
+
+//     return format(obj, 1);
+// }
+
 export function stringifyWithCompactedKeys(
     obj: unknown,
     compactKeys: string[] = ['plugins', 'components', 'zonesEncoders'],
@@ -72,3 +108,4 @@ export function stringifyWithCompactedKeys(
 
     return format(obj, 1);
 }
+

@@ -1,10 +1,8 @@
 import * as React from '@/libs/react';
 
 import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
-import { Keymap } from '@/libs/nativeComponents/Keymap';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { Value } from '@/libs/nativeComponents/Value';
-import { VisibilityContainer } from '@/libs/nativeComponents/VisibilityContainer';
 import {
     PrimaryBar,
     QuaternaryBar,
@@ -55,16 +53,18 @@ export const quaternary = {
 
 export function MasterValues({ group, track }: { group: number; track: number }) {
     return (
-        <VisibilityContainer bounds={posContainer} group={group}>
-            <HiddenValue>
-                <Keymap key="s" action="setView:Drum23" context="254:1" />
-            </HiddenValue>
+        <>
+            <HiddenValue
+                keys={[{ key: 's', action: 'setView:Drum23', context: { id: 254, value: 1 } }]}
+                visibilityGroup={group}
+            />
             <Rect bounds={[0, 0, ScreenWidth, posContainer[3]]} />
             <Value
                 audioPlugin="Volume"
                 param="VOLUME"
                 bounds={topLeft}
                 group={group}
+                visibilityGroup={group}
                 track={track}
                 encoderId={0}
                 {...tertiary}
@@ -94,21 +94,23 @@ export function MasterValues({ group, track }: { group: number; track: number })
                 encoderId={3}
                 {...quaternary}
             /> */}
-        </VisibilityContainer>
+        </>
     );
 }
 
 export function Drum23Values({ group, track }: { group: number; track: number }) {
     return (
-        <VisibilityContainer bounds={posContainer} group={group}>
-            <HiddenValue>
-                <Keymap key="s" action="setView:Drum23" context="254:1" />
-            </HiddenValue>
+        <>
+            <HiddenValue
+                keys={[{ key: 's', action: 'setView:Drum23', context: { id: 254, value: 1 } }]}
+                visibilityGroup={group}
+            />
             <Value
                 audioPlugin="TrackFx"
                 param="VOLUME"
                 bounds={topLeft}
                 group={group}
+                visibilityGroup={group}
                 track={track}
                 encoderId={0}
                 {...tertiary}
@@ -140,21 +142,23 @@ export function Drum23Values({ group, track }: { group: number; track: number })
                 encoderId={3}
                 {...quaternary}
             />
-        </VisibilityContainer>
+        </>
     );
 }
 
 export function SampleValues({ group, track }: { group: number; track: number }) {
     return (
-        <VisibilityContainer bounds={posContainer} group={group}>
-            <HiddenValue>
-                <Keymap key="s" action="setView:Sample" context="254:1" />
-            </HiddenValue>
+        <>
+            <HiddenValue
+                keys={[{ key: 's', action: 'setView:Sample', context: { id: 254, value: 1 } }]}
+                visibilityGroup={group}
+            />
             <Value
                 audioPlugin="TrackFx"
                 param="VOLUME"
                 bounds={topLeft}
                 group={group}
+                visibilityGroup={group}
                 track={track}
                 encoderId={0}
                 {...tertiary}
@@ -201,6 +205,6 @@ export function SampleValues({ group, track }: { group: number; track: number })
                 encoderId={3}
                 {...quaternary}
             /> */}
-        </VisibilityContainer>
+        </>
     );
 }

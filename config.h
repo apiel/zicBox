@@ -10,9 +10,7 @@
 #include "styles.h"
 #include "viewManager.h"
 
-#include "helpers/configPlugin.h"
 #include "plugins/components/utils/color.h"
-#include "plugins/config/LuaConfig.h"
 
 #include <fstream>
 

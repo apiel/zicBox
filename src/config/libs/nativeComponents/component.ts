@@ -22,6 +22,7 @@ export type ComponentProps<P = unknown> = {
     group?: number;
     track?: number;
     visibilityContext?: VisibilityContext[];
+    visibilityGroup?: number; // TODO to be implemented
     keys?: KeypadLayout[];
     pluginPath?: string;
 } &

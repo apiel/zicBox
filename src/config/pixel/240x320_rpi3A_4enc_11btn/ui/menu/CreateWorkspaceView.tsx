@@ -1,7 +1,6 @@
 import * as React from '@/libs/react';
 
 import { Keyboard } from '@/libs/nativeComponents/Keyboard';
-import { Keymaps } from '@/libs/nativeComponents/Keymaps';
 import { View } from '@/libs/nativeComponents/View';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { btn1, btn2, btn5, btn6, btn7, KeyInfoPosition, ScreenWidth } from '../constants';
@@ -18,17 +17,14 @@ export function CreateWorkspaceView({ name }: Props) {
                 redirectView="Workspaces"
                 audioPlugin="SerializeTrack"
                 dataId="CREATE_WORKSPACE"
-            >
-                <Keymaps
-                    keys={[
-                        { key: btn1, action: '.type' },
-                        { key: btn2, action: '.up' },
-                        { key: btn6, action: '.down' },
-                        { key: btn5, action: '.left' },
-                        { key: btn7, action: '.right' },
-                    ]}
-                />
-            </Keyboard>
+                keys={[
+                    { key: btn1, action: '.type' },
+                    { key: btn2, action: '.up' },
+                    { key: btn6, action: '.down' },
+                    { key: btn5, action: '.left' },
+                    { key: btn7, action: '.right' },
+                ]}
+            />
 
             <TextGrid
                 bounds={KeyInfoPosition}

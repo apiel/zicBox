@@ -1,10 +1,9 @@
 import * as React from '@/libs/react';
 
-import { Keymaps } from '@/libs/nativeComponents/Keymaps';
+import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
 import { StepEditSample } from '@/libs/nativeComponents/StepEditSample';
 import { Text } from '@/libs/nativeComponents/Text';
 import { View } from '@/libs/nativeComponents/View';
-import { VisibilityContext } from '@/libs/nativeComponents/VisibilityContext';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
@@ -17,7 +16,7 @@ import {
     ColorTrack3,
     KeyInfoPosition,
     SampleTrack,
-    ScreenWidth
+    ScreenWidth,
 } from '../constants';
 
 export type Props = {
@@ -49,33 +48,30 @@ export function SampleEditorView({ name }: Props) {
                                 : 'background'
                         }
                         selectedColor={rgb(76, 94, 97)}
-                    >
-                        <Keymaps
-                            keys={[
-                                { key: btn1, action: '.toggle' },
-                                { key: btn7, action: '.play' },
-                            ]}
-                        />
-                    </StepEditSample>
+                        keys={[
+                            { key: btn1, action: '.toggle' },
+                            { key: btn7, action: '.play' },
+                        ]}
+                    />
                 );
             })}
 
+            <HiddenValue
+                visibilityContext={[{ index: 254, condition: 'SHOW_WHEN', value: 0 }]}
+                keys={[
+                    { key: btnShift, action: 'contextToggle:254:1:0' },
+                    { key: btnDown, action: 'incGroup:-1' },
+                    { key: btnUp, action: 'incGroup:+1' },
+                ]}
+            />
             <TextGrid
                 bounds={KeyInfoPosition}
                 rows={[
                     '&icon::toggle::rect &icon::arrowUp::filled ...',
                     '&empty &icon::arrowDown::filled &icon::musicNote::pixelated',
                 ]}
-            >
-                <VisibilityContext index={254} condition="SHOW_WHEN" value={0} />
-                <Keymaps
-                    keys={[
-                        { key: btnShift, action: 'contextToggle:254:1:0' },
-                        { key: btnDown, action: 'incGroup:-1' },
-                        { key: btnUp, action: 'incGroup:+1' },
-                    ]}
-                />
-            </TextGrid>
+                contextValue={0}
+            />
             <Common
                 selected={'Sampl1'}
                 track={SampleTrack}
