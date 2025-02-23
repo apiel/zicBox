@@ -1,10 +1,12 @@
 {
   "scripts": {
-    "build": "npx ts-node -r tsconfig-paths/register src/config/pixel/240x320_rpi3A_4enc_11btn/main.tsx"
+    "build": "ts-node src/config/pixel/240x320_rpi3A_4enc_11btn/main.tsx",
+    "dev": "ts-node-dev --respawn src/config/pixel/240x320_rpi3A_4enc_11btn/main.tsx"
   },
   "devDependencies": {
     "@types/node": "^22.13.5",
     "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.2"
   }
