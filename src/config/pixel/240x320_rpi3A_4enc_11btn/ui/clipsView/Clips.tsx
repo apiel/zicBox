@@ -1,7 +1,6 @@
 import * as React from '@/libs/react';
 
 import { Clips as ClipsComponent } from '@/libs/nativeComponents/Clips';
-import { Keymaps } from '@/libs/nativeComponents/Keymaps';
 import { Text } from '@/libs/nativeComponents/Text';
 import { btn1, btn2, btn5, btn6, ScreenWidth } from '../constants';
 
@@ -26,19 +25,16 @@ export function Clips({ color, track, group, title, group_all }: Props) {
                 color={color}
                 visibleCount={12}
                 groupAll={group_all}
-            >
-                <Keymaps
-                    keys={[
-                        { key: btn1, action: '.toggle', context: '254:0' },
-                        { key: btn2, action: '.up', context: '254:0' },
-                        { key: btn6, action: '.down', context: '254:0' },
+                keys={[
+                    { key: btn1, action: '.toggle', context: {id: 254, value: 0} },
+                    { key: btn2, action: '.up', context: {id: 254, value: 0} },
+                    { key: btn6, action: '.down', context: {id: 254, value: 0} },
 
-                        // { key: btn1, action: '.next', context: '254:1' },
-                        { key: btn5, action: '.delete', context: '254:1' },
-                        { key: btn2, action: '.save', context: '254:1' },
-                    ]}
-                />
-            </ClipsComponent>
+                    // { key: btn1, action: '.next', context: '254:1' },
+                    { key: btn5, action: '.delete', context: {id: 254, value: 1} },
+                    { key: btn2, action: '.save', context: {id: 254, value: 1} },       
+                ]}
+            />
         </>
     );
 }

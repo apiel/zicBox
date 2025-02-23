@@ -149,51 +149,6 @@ public:
         }
     }
 
-    // TODO to be deprecated
-    bool config(char* key, char* value) // TODO remove me?
-    {
-        if (strcmp(key, "KEYMAP") == 0) {
-            std::string controllerName = strtok(value, " ");
-            uint8_t key = getKeyCode(strtok(NULL, " "));
-
-            std::string action = strtok(NULL, " ");
-            char* actionLongPressPtr = strtok(NULL, " ");
-            std::string actionLongPress = actionLongPressPtr ? actionLongPressPtr : "";
-
-            bool useContext = false;
-            uint8_t contextId = 0;
-            float contextValue = 0.0f;
-            size_t pos = controllerName.find(":");
-            if (pos != std::string::npos) {
-                std::string contextStr = controllerName.c_str() + pos + 1;
-                controllerName = controllerName.substr(0, pos);
-                contextId = atoi(strtok((char*)contextStr.c_str(), ":"));
-                contextValue = atof(strtok(NULL, ":"));
-                useContext = true;
-                // printf("use context %d %f\n", contextId, contextValue);
-            }
-
-            KeypadInterface* controller = NULL;
-            uint16_t controllerId = -1;
-            // printf("........search controller %s\n", controllerName.c_str());
-            if (strcmp(controllerName.c_str(), "Keyboard") == 0) {
-                controllerId = 0;
-            } else {
-                controller = (KeypadInterface*)component->getController(controllerName.c_str());
-                if (controller == NULL) {
-                    // printf("..................controller %s NOT fount\n", controllerName.c_str());
-                    return true;
-                }
-                // printf("........controller %s id %d\n", controllerName.c_str(), controller->id);
-                controllerId = controller->id;
-            }
-            // printf("add keymap %d %d action: %s longpress: %s\n", controllerId, key, action.c_str(), actionLongPress.c_str());
-            addKeyMap({ controller, controllerId, key, action, actionLongPress, useContext, contextId, contextValue });
-            return true;
-        }
-        return false;
-    }
-
     static bool isPressed(KeyMap& keyMap)
     {
         return keyMap.pressedTime != -1;
