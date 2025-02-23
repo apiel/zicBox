@@ -1,8 +1,8 @@
 {
-    "include": ["src/**/*"],
+    "include": ["config/**/*"],
     "exclude": [],
     "compilerOptions": {
-        "rootDir": "src",
+        "rootDir": "config",
         "moduleResolution": "Node",
         "target": "ESNext",
         "lib": ["ESNext", "DOM"],
@@ -10,7 +10,7 @@
         "types": ["node"],
         "strict": true,
         "paths": {
-            "@/*": ["./src/config/*"]
+            "@/*": ["config/*"]
         },
         "baseUrl": "."
     },

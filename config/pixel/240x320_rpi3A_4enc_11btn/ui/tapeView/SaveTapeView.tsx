@@ -33,7 +33,7 @@ export function SaveTapeView({ name }: Props) {
                     'Type &icon::arrowUp::filled Cancel',
                     '&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled',
                 ]}
-            ></TextGrid>
+            />
         </View>
     );
 }

@@ -1,7 +1,7 @@
 {
   "scripts": {
-    "build": "ts-node src/config/pixel/240x320_rpi3A_4enc_11btn/main.tsx",
-    "dev": "ts-node-dev --respawn src/config/pixel/240x320_rpi3A_4enc_11btn/main.tsx"
+    "build": "ts-node config/pixel/240x320_rpi3A_4enc_11btn/main.tsx",
+    "dev": "ts-node-dev --respawn config/pixel/240x320_rpi3A_4enc_11btn/main.tsx"
   },
   "devDependencies": {
     "@types/node": "^22.13.5",
