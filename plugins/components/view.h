@@ -2,12 +2,13 @@
 
 #include "./ViewInterface.h"
 #include "helpers/getTicks.h"
+#include "EventInterface.h"
 
 #include <mutex>
 #include <string>
 #include <vector>
 
-class View : public ViewInterface, public ComponentContainer {
+class View : public ViewInterface, public ComponentContainer, public EventInterface {
 public:
     std::vector<ComponentInterface*> components = {};
     std::vector<ComponentInterface*> componentsToRender = {};
@@ -125,7 +126,7 @@ public:
         return component->isVisible();
     }
 
-    void onMotion(MotionInterface& motion)
+    void onMotion(MotionInterface& motion) override
     {
         for (auto& component : components) {
             if (isVisible(component)) {
@@ -134,7 +135,7 @@ public:
         }
     }
 
-    void onMotionRelease(MotionInterface& motion)
+    void onMotionRelease(MotionInterface& motion) override
     {
         for (auto& component : components) {
             if (isVisible(component)) {
@@ -145,7 +146,7 @@ public:
 
     // there should be about 4 to 12 encoders, however with 256 we are sure to not be out of bounds
     unsigned long lastEncoderTick[256] = { 0 };
-    void onEncoder(int id, int8_t direction, uint32_t tick)
+    void onEncoder(int id, int8_t direction, uint32_t tick) override
     {
         // printf("onEncoder %d %d %d\n", id, direction, tick);
         m2.lock();
@@ -162,7 +163,7 @@ public:
         m2.unlock();
     }
 
-    void onKey(uint16_t id, int key, int8_t state)
+    void onKey(uint16_t id, int key, int8_t state) override
     {
         // printf("onKey %d %d %d\n", id, key, state);
         unsigned long now = getTicks();

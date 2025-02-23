@@ -1,10 +1,10 @@
-#ifndef _CONTROLLER_INTERFACE_H_
-#define _CONTROLLER_INTERFACE_H_
+#pragma once
 
 #include <stdint.h>
 #include <string>
 #include <unistd.h>
 #include <vector>
+#include "libs/nlohmann/json.hpp"
 
 class ControllerInterface {
 public:
@@ -38,5 +38,3 @@ public:
     //     return NULL;
     // }
 };
-
-#endif

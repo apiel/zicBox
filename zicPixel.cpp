@@ -5,11 +5,6 @@
 #define USE_DRAW_WITH_SDL
 #endif
 
-#ifdef USE_DRAW_WITH_SDL
-// Define before config else ADD_ZONE_ENCODER not working
-#include "SDL_EventHandler.h"
-#endif
-
 #include "config.h"
 #include "draw/ST7789/draw.h"
 #include "helpers/getTicks.h"
@@ -34,8 +29,7 @@ void* uiThread(void* = NULL)
 #ifdef USE_DRAW_WITH_SDL
     logInfo("Rendering with SDL.");
     unsigned long lastUpdate = getTicks();
-    EventHandler& event = EventHandler::get();
-    while (event.handle()) {
+    while (viewManager.draw.handleEvent(viewManager.view)) {
         unsigned long now = getTicks();
         if (now - lastUpdate > ms) {
             lastUpdate = now;

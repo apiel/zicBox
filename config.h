@@ -38,12 +38,7 @@ void closeLog()
 
 void uiScriptCallback(char* key, char* value, const char* filename, std::vector<Var> variables)
 {
-    if (
-        pluginControllerConfig(key, value)
-#ifdef _UI_SDL_EVENT_HANDLER_H_
-        || EventHandler::get().config(key, value)
-#endif
-    ) {
+    if (pluginControllerConfig(key, value)) {
         return;
     } else if (strcmp(key, "AUDIO") == 0) {
         nlohmann::json config = nlohmann::json::parse(value);

@@ -1,5 +1,4 @@
-#ifndef _COMPONENT_CONTAINER_H_
-#define _COMPONENT_CONTAINER_H_
+#pragma once
 
 #include "plugins/components/ViewInterface.h"
 #include "plugins/components/drawInterface.h"
@@ -21,5 +20,3 @@ public:
     {
     }
 };
-
-#endif
