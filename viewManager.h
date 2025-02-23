@@ -136,14 +136,6 @@ protected:
     void addComponent(nlohmann::json& config, View* targetView)
     {
         try {
-            if (!config.contains("componentName")) {
-                logWarn("Missing componentName in component config.");
-                return;
-            }
-            if (!config.contains("bounds") || !config["bounds"].is_array() || config["bounds"].size() < 2) {
-                logWarn("Missing bounds in component config.");
-                return;
-            }
             std::string name = config["componentName"].get<std::string>();
             // printf("Adding component %s %s\n", name.c_str(), config.dump().c_str());
             Point position = { config["bounds"][0].get<int>(), config["bounds"][1].get<int>() };
@@ -171,7 +163,7 @@ protected:
                 targetView->componentsJob.push_back(component);
             }
         } catch (const std::exception& e) {
-            logError("Error adding component: %s", e.what());
+            logError("Error adding component: %s in %s", e.what(), config.dump().c_str());
         }
     }
 
@@ -235,64 +227,6 @@ public:
         m.lock();
         view->renderComponents(now);
         m.unlock();
-    }
-
-    bool config(char* key, char* value, const char* filename)
-    {
-        if (strcmp(key, "COMPONENT") == 0) {
-            try {
-                nlohmann::json config = nlohmann::json::parse(value);
-                addComponent(config, views.back());
-                return true;
-            } catch (const std::exception& e) {
-                logError("COMPONENT: JSON Parsing Error: %s", e.what());
-            }
-        }
-
-        /*#md
-### VIEW
-
-The user interface is composed of multiple views that contain the components. A view, represent a full screen layout. Use `VIEW: name_of_the_veiw` to create a view. All the following `COMPONENT: ` will be assign to this view, till the next view.
-
-```coffee
-# VIEW: ViewName
-
-VIEW: Main
-
-# some components...
-
-VIEW: Mixer
-
-# some components...
-# ...
-```
-*/
-        if (strcmp(key, "VIEW") == 0) {
-            View* v = new View(draw, [&](std::string name) { setView(name); }, contextVar);
-            v->name = value;
-
-            views.push_back(v);
-            setView(v->name);
-
-            return true;
-        }
-
-        if (draw.config(key, value)) {
-            return true;
-        }
-
-        if (views.size() > 0) {
-            if (views.back()->config(key, value)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    void config(const char* key, const char* value)
-    {
-        config((char*)key, (char*)value);
     }
 
     void config(nlohmann::json& config)
