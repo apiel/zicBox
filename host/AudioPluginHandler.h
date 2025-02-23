@@ -10,7 +10,6 @@ using namespace std;
 
 #include "Track.h"
 #include "def.h"
-#include "helpers/getFullpath.h"
 #include "helpers/trim.h"
 #include "log.h"
 #include "midiMapping.h"

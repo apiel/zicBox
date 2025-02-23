@@ -1,7 +1,6 @@
 #ifndef _CONFIG_PLUGIN_H
 #define _CONFIG_PLUGIN_H
 
-#include "getFullpath.h"
 #include "plugins/config/LuaConfig.h"
 
 #include <dlfcn.h>
