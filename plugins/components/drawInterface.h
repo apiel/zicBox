@@ -8,34 +8,9 @@
 
 #include "libs/nlohmann/json.hpp"
 
-struct Size {
-    int w;
-    int h;
-};
+#include "plugins/components/EventInterface.h"
 
-struct Point {
-    int x;
-    int y;
-};
-
-struct Rect {
-    Point position;
-    Size size;
-};
-
-struct Xywh {
-    int x;
-    int y;
-    int w;
-    int h;
-};
-
-typedef struct Color {
-    uint8_t r = 255;
-    uint8_t g = 255;
-    uint8_t b = 255;
-    uint8_t a = 255;
-} Color;
+#include "baseInterface.h"
 
 struct Styles {
     Size screen;
@@ -112,6 +87,8 @@ public:
     virtual Color getColor(const nlohmann::json& node, Color defaultColor) { return defaultColor; }
     virtual bool config(char* key, char* value) { return false; }
     virtual void config(nlohmann::json& config) { }
+
+    virtual bool handleEvent(EventInterface* view) { return true; }
 };
 
 #endif

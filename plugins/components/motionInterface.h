@@ -1,7 +1,6 @@
-#ifndef _UI_MOTION_INTERFACE_H_
-#define _UI_MOTION_INTERFACE_H_
+#pragma once
 
-#include "drawInterface.h"
+#include "baseInterface.h"
 
 class MotionInterface
 {
@@ -18,5 +17,3 @@ public:
     virtual bool in(Rect rect) = 0;
     virtual bool originIn(Rect rect) = 0;
 };
-
-#endif

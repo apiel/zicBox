@@ -4,9 +4,12 @@
 #include <SDL2/SDL.h>
 
 #include "./draw.h"
+#include "SDL_EventHandler.h"
 
 class DrawWithSDL : public Draw {
 protected:
+    EventHandler eventHandler;
+
     SDL_Texture* texture = NULL;
     SDL_Renderer* renderer = NULL;
     SDL_Window* window = NULL;
@@ -121,7 +124,14 @@ public:
             }
         }
 
+        eventHandler.config(config);
+
         Draw::config(config);
+    }
+
+    bool handleEvent(EventInterface* view) override
+    {
+        return eventHandler.handle(view);
     }
 };
 

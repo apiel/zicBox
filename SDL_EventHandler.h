@@ -2,8 +2,8 @@
 #define _UI_SDL_EVENT_HANDLER_H_
 
 #include "motion.h"
-#include "viewManager.h"
 #include "helpers/getTicks.h"
+#include "plugins/components/EventInterface.h"
 
 #ifndef MAX_SCREEN_MOTION
 // The current display only support 5 touch point
@@ -13,14 +13,10 @@
 class EventHandler {
 protected:
     Motion motions[MAX_SCREEN_MOTION];
-    ViewManager& viewManager = ViewManager::get();
 
 #if SDL_MINOR_VERSION <= 24
     uint8_t emulateEncoderId = 0;
 #endif
-
-    static EventHandler* instance;
-    EventHandler() { }
 
     MotionInterface* getMotion(int id)
     {
@@ -43,7 +39,7 @@ protected:
         return oldest;
     }
 
-    void handleMotion(int x, int y, int id)
+    void handleMotion(EventInterface* view, int x, int y, int id)
     {
         if (id < 0) {
             return;
@@ -58,11 +54,11 @@ protected:
         MotionInterface* motion = getMotion(id);
         if (motion) {
             motion->move(x, y);
-            viewManager.view->onMotion(*motion);
+            view->onMotion(*motion);
         }
     }
 
-    void handleMotionUp(int x, int y, int id)
+    void handleMotionUp(EventInterface* view, int x, int y, int id)
     {
         if (id < 0) {
             return;
@@ -71,12 +67,12 @@ protected:
         MotionInterface* motion = getMotion(id);
         if (motion) {
             motion->move(x, y);
-            viewManager.view->onMotionRelease(*motion);
+            view->onMotionRelease(*motion);
             motion->setId(-1);
         }
     }
 
-    void handleMotionDown(int x, int y, int id)
+    void handleMotionDown(EventInterface* view, int x, int y, int id)
     {
         if (id < 0) {
             return;
@@ -84,7 +80,7 @@ protected:
 
         MotionInterface* motion = getOldestMotion();
         motion->init(id, x, y);
-        viewManager.view->onMotion(*motion);
+        view->onMotion(*motion);
     }
 
     std::vector<Rect> zoneEncoders = {};
@@ -101,38 +97,29 @@ protected:
         return 255;
     }
 
-    void emulateEncoder(SDL_MouseWheelEvent wheel)
+    void emulateEncoder(EventInterface* view, SDL_MouseWheelEvent wheel)
     {
 #if SDL_MINOR_VERSION > 24
         uint8_t emulateEncoderId = getEmulatedEncoderId(wheel.mouseX, wheel.mouseY);
 #endif
-        viewManager.view->onEncoder(emulateEncoderId, wheel.y, getTicks());
+        view->onEncoder(emulateEncoderId, wheel.y, getTicks());
     }
 
 public:
-    static EventHandler& get()
+    void config(nlohmann::json& config)
     {
-        if (!instance) {
-            instance = new EventHandler();
+        if (config.contains("zonesEncoders")) {
+            for (nlohmann::json zoneEncoder : config["zonesEncoders"]) {
+                int x = zoneEncoder[0];
+                int y = zoneEncoder[1];
+                int w = zoneEncoder[2];
+                int h = zoneEncoder[3];
+                zoneEncoders.push_back({ { x, y }, { w, h } });
+            }
         }
-        return *instance;
     }
 
-    bool config(char* key, char* value)
-    {
-        if (strcmp(key, "ADD_ZONE_ENCODER") == 0) {
-            int x = atoi(strtok(value, " "));
-            int y = atoi(strtok(NULL, " "));
-            int w = atoi(strtok(NULL, " "));
-            int h = atoi(strtok(NULL, " "));
-            zoneEncoders.push_back({ { x, y }, { w, h } });
-            return true;
-        }
-
-        return false;
-    }
-
-    bool handle()
+    bool handle(EventInterface* view)
     {
         SDL_Event event;
 
@@ -143,31 +130,31 @@ public:
                 return false;
 
             case SDL_MOUSEMOTION:
-                handleMotion(event.motion.x, event.motion.y, event.motion.which);
+                handleMotion(view, event.motion.x, event.motion.y, event.motion.which);
                 return true;
 
             case SDL_MOUSEBUTTONDOWN:
-                handleMotionDown(event.motion.x, event.motion.y, event.motion.which);
+                handleMotionDown(view, event.motion.x, event.motion.y, event.motion.which);
                 return true;
 
             case SDL_MOUSEBUTTONUP:
-                handleMotionUp(event.motion.x, event.motion.y, event.motion.which);
+                handleMotionUp(view, event.motion.x, event.motion.y, event.motion.which);
                 return true;
 
             case SDL_MOUSEWHEEL:
-                emulateEncoder(event.wheel);
+                emulateEncoder(view, event.wheel);
                 return true;
 
             case SDL_FINGERMOTION:
-                handleMotion(event.tfinger.x * styles.screen.w, event.tfinger.y * styles.screen.h, event.tfinger.fingerId);
+                handleMotion(view, event.tfinger.x * styles.screen.w, event.tfinger.y * styles.screen.h, event.tfinger.fingerId);
                 return true;
 
             case SDL_FINGERDOWN:
-                handleMotionDown(event.tfinger.x * styles.screen.w, event.tfinger.y * styles.screen.h, event.tfinger.fingerId);
+                handleMotionDown(view, event.tfinger.x * styles.screen.w, event.tfinger.y * styles.screen.h, event.tfinger.fingerId);
                 return true;
 
             case SDL_FINGERUP:
-                handleMotionUp(event.tfinger.x * styles.screen.w, event.tfinger.y * styles.screen.h, event.tfinger.fingerId);
+                handleMotionUp(view, event.tfinger.x * styles.screen.w, event.tfinger.y * styles.screen.h, event.tfinger.fingerId);
                 return true;
 
             case SDL_KEYDOWN: {
@@ -175,7 +162,7 @@ public:
                     return true;
                 }
                 // printf("key %d\n", event.key.keysym.scancode);
-                viewManager.view->onKey(0, event.key.keysym.scancode, 1);
+                view->onKey(0, event.key.keysym.scancode, 1);
                 return true;
             }
 
@@ -183,7 +170,7 @@ public:
                 if (event.key.repeat) {
                     return true;
                 }
-                viewManager.view->onKey(0, event.key.keysym.scancode, 0);
+                view->onKey(0, event.key.keysym.scancode, 0);
                 return true;
             }
             }
@@ -191,7 +178,5 @@ public:
         return true;
     }
 };
-
-EventHandler* EventHandler::instance = NULL;
 
 #endif
