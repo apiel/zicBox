@@ -1,24 +1,17 @@
 {
-    "$schema": "https://raw.githubusercontent.com/TypeScriptToLua/TypeScriptToLua/master/tsconfig-schema.json",
     "include": ["src/**/*"],
     "exclude": [],
     "compilerOptions": {
-        "outDir": ".",
         "rootDir": "src",
+        "moduleResolution": "Node",
         "target": "ESNext",
         "lib": ["ESNext", "DOM"],
-        "moduleResolution": "Node",
         "jsx": "react",
-        "types": [],
+        "types": ["node"],
         "strict": true,
         "paths": {
-            "@/*": ["./src/config/*"],
+            "@/*": ["./src/config/*"]
         },
-        "baseUrl": ".",
-    },
-    "tstl": {
-        "luaTarget": "5.4",
-        "noImplicitSelf": true,
-        // "luaLibImport": "require-minimal"
+        "baseUrl": "."
     }
 }

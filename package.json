@@ -1,14 +1,11 @@
 {
   "scripts": {
-    "build": "tstl",
-    "dev": "tstl --watch",
-    "test": "npx ts-node -r tsconfig-paths/register -P ./tsconfig.test.json src/config/pixel/240x320_rpi3A_4enc_11btn/main.tsx"
+    "build": "npx ts-node -r tsconfig-paths/register src/config/pixel/240x320_rpi3A_4enc_11btn/main.tsx"
   },
   "devDependencies": {
     "@types/node": "^22.13.5",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.7.2",
-    "typescript-to-lua": "^1.29.0"
+    "typescript": "^5.7.2"
   }
 }
