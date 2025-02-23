@@ -38,23 +38,12 @@ void closeLog()
 
 void uiScriptCallback(char* key, char* value, const char* filename, std::vector<Var> variables)
 {
-    logScript(key, value);
-    if (strcmp(key, "print") == 0 || strcmp(key, "PRINT") == 0) {
-        printf(">> LOG: %s\n", value);
-    } else if (strcmp(key, "LOG_CONFIG") == 0) {
-        logConfigToFile = (strcmp(value, "true") == 0);
-    } else if (strcmp(key, "LOAD_CONFIG") == 0) {
-        char* script = strtok(value, " ");
-        char* plugin = strtok(NULL, " ");
-        loadConfigPlugin(getFullpath(plugin, filename).c_str(), script, uiScriptCallback, variables);
-    } else if (strcmp(key, "PLUGIN_CONTROLLER") == 0) {
-        loadPluginController(value, filename);
-    } else if (
+    if (
         pluginControllerConfig(key, value)
 #ifdef _UI_SDL_EVENT_HANDLER_H_
         || EventHandler::get().config(key, value)
 #endif
-        || ViewManager::get().config(key, value, filename)) {
+    ) {
         return;
     } else if (strcmp(key, "AUDIO") == 0) {
         nlohmann::json config = nlohmann::json::parse(value);
