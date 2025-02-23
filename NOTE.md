@@ -7,21 +7,6 @@
 
 - TODO serialize in json format!
 
-- TODO migrate everything to JSON!! Get rid of lua, and js should only be there to generate JSON...
-
-- TODO validate schema or use helper function to validate (and generate doc? )
-    - https://github.com/pboettch/json-schema-validator
-```cpp
-// need to be much more granular
-            try {
-                nlohmann::json& config = nlohmann::json::parse(value);
-                addComponent(config);
-                return true;
-            } catch (const std::exception& e) {
-                logError("COMPONENT: JSON Parsing Error: %s", e.what());
-            }
-```
-
 - TODO use freetype to load font from file, see on bottom for details...
 
 ### component
