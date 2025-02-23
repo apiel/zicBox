@@ -30,7 +30,7 @@ void loadPluginController(char* value, const char* filename)
     strcpy(plugin.name, strtok(value, " "));
     char* path = strtok(NULL, " ");
 
-    void* handle = dlopen(getFullpath(path, filename).c_str(), RTLD_LAZY);
+    void* handle = dlopen(path, RTLD_LAZY);
 
     if (!handle) {
         logError("Cannot open controller library %s [%s]: %s\n", path, filename, dlerror());
@@ -46,19 +46,13 @@ void loadPluginController(char* value, const char* filename)
         return;
     }
 
+    // TODO pass the controller config here...
+
     plugin.instance = ((ControllerInterface * (*)(ControllerInterface::Props & props, uint16_t id)) allocator)(controllerProps, controllerId++);
     lastPluginControllerInstance = plugin.instance;
     logDebug("plugin interface loaded: %s\n", path);
 
     controllers.push_back(plugin);
-}
-
-bool pluginControllerConfig(char* key, char* value)
-{
-    if (lastPluginControllerInstance) {
-        // return lastPluginControllerInstance->config(key, value);
-    }
-    return false;
 }
 
 #endif
