@@ -104,16 +104,6 @@ public:
         SDL_SetRenderTarget(renderer, texture);
     }
 
-    bool config(char* key, char* value)
-    {
-        if (strcmp(key, "WINDOW_POSITION") == 0) {
-            windowX = atoi(value);
-            windowY = atoi(value);
-            return true;
-        }
-        return Draw::config(key, value);
-    }
-
     void config(nlohmann::json& config) override
     {
         if (config.contains("windowPosition")) {

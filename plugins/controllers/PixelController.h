@@ -89,15 +89,6 @@ public:
     {
         setLayout(config.value("pixelController", "rpi3A_4enc_11btn"));
     }
-
-    bool config(char* key, char* params) override
-    {
-        if (strcmp(key, "PIXEL_CONTROLLER") == 0) {
-            setLayout(params);
-            return true;
-        }
-        return false;
-    }
 };
 
 #endif

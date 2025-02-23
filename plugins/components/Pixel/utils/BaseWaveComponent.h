@@ -73,15 +73,15 @@ public:
         colors = getColorsFromColor(color);
     }
 
-    bool config(char* key, char* value)
-    {
-        if (strcmp(key, "WAVE_COLOR") == 0) {
-            setColors(draw.getColor(value));
-            return true;
-        }
+    // bool config(char* key, char* value)
+    // {
+    //     if (strcmp(key, "WAVE_COLOR") == 0) {
+    //         setColors(draw.getColor(value));
+    //         return true;
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 };
 
 #endif

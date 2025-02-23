@@ -55,15 +55,15 @@ public:
         }
     }
 
-    bool config(char* key, char* value)
-    {
-        if (strcmp(key, "SAMPLE_COLOR") == 0) {
-            sampleColor = draw.getColor(value);
-            return true;
-        }
+    // bool config(char* key, char* value)
+    // {
+    //     if (strcmp(key, "SAMPLE_COLOR") == 0) {
+    //         sampleColor = draw.getColor(value);
+    //         return true;
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 };
 
 #endif
