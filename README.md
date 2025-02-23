@@ -22,7 +22,7 @@ ZicBox efficiently manages system resources to ensure **low-latency audio perfor
 - Handling **audio thread synchronization** to maintain precise timing and tempo accuracy.
 
 ### **Scripting & UI Configuration with TypeScript-to-Lua & JSX**
-For configuring the framework, ZicBox provides a **Lua scripting interface**. However, instead of writing pure Lua, developers can use **TypeScript**, thanks to the **TypeScript-to-Lua** transpiler. This allows for a **strongly typed** configuration system while still benefiting from Lua's lightweight runtime.
+For configuring the framework, ZicBox use **JSON**. However, instead of writing pure JSON, developers can use **TypeScript** to generate the configuration file. This allows for a **strongly typed** configuration system while still benefiting from JSON lightweight runtime.
 
 Additionally, ZicBox leverages **JSX (React-style syntax)** for UI configuration, making it intuitive to define interface components. Unlike traditional React, there is no component state management involved, JSX is used purely for declarative UI structure.
 
@@ -64,7 +64,7 @@ Update package lists and install required dependencies:
 
 ```sh
 apt-get update
-apt-get install build-essential librtmidi-dev libsndfile1-dev pulseaudio alsa-utils liblua5.4-dev -y
+apt-get install build-essential librtmidi-dev libsndfile1-dev pulseaudio alsa-utils -y
 ```
 
 ### Additional Dependencies for Desktop
@@ -100,9 +100,10 @@ Now you should get something like:
 ```tsx
 import * as React from '@/libs/react';
 
-import { plugin, pluginAlias } from '@/libs/audio';
-import { pixelController } from '@/libs/controllers/pixelController';
-import { applyZic } from '@/libs/core';
+import { writeFileSync } from 'fs';
+import 'tsconfig-paths/register'; // To solve imported alias
+
+import { audioPlugin } from '@/libs/audio';
 import { Keyboard } from '@/libs/nativeComponents/Keyboard';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { List } from '@/libs/nativeComponents/List';
@@ -110,36 +111,22 @@ import { Rect } from '@/libs/nativeComponents/Rect';
 import { Text } from '@/libs/nativeComponents/Text';
 import { Value } from '@/libs/nativeComponents/Value';
 import { View } from '@/libs/nativeComponents/View';
-import { setScreenSize, setWindowPosition } from '@/libs/ui';
-
-// Initialized our first audio plugin, just the tempo plugin.
-pluginAlias('Tempo', 'libzic_Tempo.so');
-plugin('Tempo');
 
 const ScreenWidth = 240;
 const ScreenHeight = 320;
 
-// Initialized our hardware controller ('rpi3A_4enc_11btn' is to define the hardware version)
-pixelController('rpi3A_4enc_11btn');
-
-// For conveniency, on dekstop, set the window to a specifc location
-setWindowPosition(400, 500);
-// Define the screen size
-setScreenSize(ScreenWidth, ScreenHeight);
-
-// Finally define the UI
-applyZic(
-    <View name="Demo"> { /* UI components must be contain in a view, there can be as many view as you want */ }
+const demoView = (
+    <View name="Demo">
         <Text fontSize={16} text="title" bounds={[0, 0, ScreenWidth, 16]} centered />
 
         <Rect color="tertiary" filled={false} bounds={[10, 30, 100, 50]} />
         <Rect color="primary" bounds={[120, 30, 110, 20]} />
 
         <Value
-            audioPlugin="Tempo" // Here we define which audio plugin to control
-            param="BPM" // Here we define which parameter of the audio plugin to control
+            audioPlugin="Tempo"
+            param="BPM"
             bounds={[120, 60, 110, 20]}
-            encoderId={0} // Specify which hardware encoder will change the value of this parameter
+            encoderId={0}
             barColor="quaternary"
         />
 
@@ -156,11 +143,25 @@ applyZic(
         <Keyboard bounds={[0, 175, ScreenWidth, 120]} />
     </View>
 );
+
+const output = JSON.stringify(
+    {
+        audio: { tracks: [{ id: 0, plugins: [audioPlugin('Tempo')] }] },
+        pixelController: 'rpi3A_4enc_11btn',
+        screen: { screenSize: { width: ScreenWidth, height: ScreenHeight } },
+        views: [demoView],
+    },
+    null,
+    2
+);
+
+writeFileSync('config.json', output);
+console.log('done');
 ```
 
-If you prefer not to use TypeScript for the configuration file, you have alternatives, you can use Lua, or even define everything directly in C++. However, I personally find TypeScript/JSX to be the most convenient option due to its strong typing, ease of use, and developer-friendly tooling.
+If you prefer not to use TypeScript for the configuration file, you directly edit the JSON file or use any scripting language, Lua, Python, or even define everything directly in C++. However, I personally find TypeScript/JSX to be the most convenient option due to its strong typing, ease of use, and developer-friendly tooling (and maybe also because I am orginally web developer ^^).
 
-Now, you might be wondering about performance, don’t worry! The configuration process is purely declarative, meaning TypeScript is only used to define settings and structure. Once the configurations are initialized, the actual execution happens entirely in C++, ensuring optimal performance. TypeScript is only invoked at runtime to process the configuration, but after that, everything runs natively in C++ without any overhead from TypeScript itself.
+Now, you might be wondering about performance, don’t worry! The configuration process is purely declarative, meaning TypeScript is only used to define settings and structure. Once the JSON configurations are initialized, the actual execution happens entirely in C++, ensuring optimal performance.
 
 In short, you get the best of both worlds, TypeScript for a clean and manageable configuration setup, and C++ for high-performance execution.
 

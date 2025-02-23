@@ -1,7 +1,9 @@
 import * as React from '@/libs/react';
 
-import { pixelController } from '@/libs/controllers/pixelController';
-import { applyZic } from '@/libs/core';
+import { writeFileSync } from 'fs';
+import 'tsconfig-paths/register'; // To solve imported alias
+
+import { audioPlugin } from '@/libs/audio';
 import { Keyboard } from '@/libs/nativeComponents/Keyboard';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { List } from '@/libs/nativeComponents/List';
@@ -9,20 +11,11 @@ import { Rect } from '@/libs/nativeComponents/Rect';
 import { Text } from '@/libs/nativeComponents/Text';
 import { Value } from '@/libs/nativeComponents/Value';
 import { View } from '@/libs/nativeComponents/View';
-import { setScreenSize, setWindowPosition } from '@/libs/ui';
-
-// pluginAlias('Tempo', 'libzic_Tempo.so');
-// plugin('Tempo');
 
 const ScreenWidth = 240;
 const ScreenHeight = 320;
 
-pixelController('rpi3A_4enc_11btn');
-
-setWindowPosition(400, 500);
-setScreenSize(ScreenWidth, ScreenHeight);
-
-applyZic(
+const demoView = (
     <View name="Demo">
         <Text fontSize={16} text="title" bounds={[0, 0, ScreenWidth, 16]} centered />
 
@@ -50,3 +43,17 @@ applyZic(
         <Keyboard bounds={[0, 175, ScreenWidth, 120]} />
     </View>
 );
+
+const output = JSON.stringify(
+    {
+        audio: { tracks: [{ id: 0, plugins: [audioPlugin('Tempo')] }] },
+        pixelController: 'rpi3A_4enc_11btn',
+        screen: { screenSize: { width: ScreenWidth, height: ScreenHeight } },
+        views: [demoView],
+    },
+    null,
+    2
+);
+
+writeFileSync('config.json', output);
+console.log('done');
