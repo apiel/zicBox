@@ -1,18 +1,14 @@
 ## Framework improvement
 
+- TODO serialize in json format!
+
 - TODO enable motion/mouse on desktop
 
-- TODO make all component having keyboard
-- TODO make all component access to group and context visibility
-
-- TODO serialize in json format!
+- TODO make all component access to group visibility
 
 - TODO use freetype to load font from file, see on bottom for details...
 
 ### component
-
-- IDEA to simplify: could we get rid of PLUGIN_COMPONENT component command and make it part of COMPONENT
-  - should we just have a naming convention, to say how the file should look like... and eventually give a way to overwrite it through the config...
 
 - TODO make native component more minimalistic, e.g macroEnvelop vs drumEnvelop
       - also the label/value could be extracted...
@@ -31,8 +27,6 @@ valgrind --leak-check=full ./pixel.x86
 - comment for doc order: 
     [//]: # (This is a comment.)
     <!-- … -->
-
-- TODO make plugin removable
   
 ## Pixel TODO
 

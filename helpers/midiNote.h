@@ -32,6 +32,8 @@ const uint8_t MIDI_NOTE_C9 = 120;
 
 uint8_t MIDI_NOTE_COUNT = sizeof(MIDI_NOTES_STR) / sizeof(MIDI_NOTES_STR[0]);
 
+const uint8_t MIDI_LAST_NOTE = MIDI_NOTE_COUNT - 1;
+
 bool isBlackKey(int midiNote) {
     // MIDI notes repeat every 12 notes (one octave)
     int noteInOctave = midiNote % 12;

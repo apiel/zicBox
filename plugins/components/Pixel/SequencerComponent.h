@@ -37,8 +37,15 @@ protected:
 
     Color stepColor;
 
+    Color selectedColor;
+
     AudioPlugin* plugin;
     std::vector<Step>* steps = NULL;
+
+    int selectedStep = 0;
+    int selectedNote = MIDI_NOTE_C4;
+
+    int midiStartNote = MIDI_NOTE_C4;
 
 public:
     SequencerComponent(ComponentInterface::Props props)
@@ -50,6 +57,7 @@ public:
         , noteColor(darken(styles.colors.white, 0.2))
         , note2Color(lighten(styles.colors.background, 1.5))
         , stepColor(styles.colors.primary)
+        , selectedColor(styles.colors.white)
     {
         /*md md_config:Sequencer */
         nlohmann::json& config = props.config;
@@ -93,6 +101,9 @@ public:
         /// The color of the steps.
         stepColor = draw.getColor(config["stepColor"], stepColor); //eg: "#000000"
 
+        /// The color of the selected step.
+        selectedColor = draw.getColor(config["selectedColor"], selectedColor); //eg: "#000000"
+
         /*md md_config_end */
 
         resize();
@@ -115,7 +126,6 @@ public:
             xStart = 0;
         }
 
-        int midiStartNote = MIDI_NOTE_C4;
         // Draw Grid with Piano Roll Styling & Note Names
         for (int i = 0; i < numNotes; ++i) {
             int y = relativePosition.y + i * stepHeight;
@@ -168,6 +178,27 @@ public:
                     // }
                 }
             }
+        }
+
+        int x = xStart + selectedStep * stepWidth + 1;
+        int y = (numNotes - (selectedNote - midiStartNote) - 1) * stepHeight;
+        draw.rect({ x, y }, { stepWidth - 1, stepHeight - 1 }, { selectedColor });
+    }
+
+    void onEncoder(int id, int8_t direction) override
+    {
+        if (id == 0) {
+            direction = direction > 0 ? 1 : -1;
+            selectedNote = range((selectedNote + direction), MIDI_NOTE_C0, MIDI_NOTE_C9);
+            if (selectedNote < midiStartNote) {
+                midiStartNote = selectedNote;
+            } else if (selectedNote >= midiStartNote + numNotes) {
+                midiStartNote = selectedNote - numNotes + 1;
+            }
+            renderNext();
+        } else if (id == 1) {
+            selectedStep = range((selectedStep + direction), 0, numSteps - 1);
+            renderNext();
         }
     }
 };
