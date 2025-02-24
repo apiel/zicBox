@@ -126,7 +126,7 @@ public:
         if (steps != NULL && steps->size() > 0) {
             Step& step = (*steps)[0];
             selectedNote = step.note;
-            midiStartNote =  range((selectedNote - numNotes / 2), MIDI_NOTE_C0, MIDI_NOTE_C9 - numNotes);
+            midiStartNote = range((selectedNote - numNotes / 2), MIDI_NOTE_C0, MIDI_NOTE_C9 - numNotes);
         }
 
         resize();
@@ -210,15 +210,16 @@ public:
         draw.filledCircle({ x + stepWidth / 2, y + stepHeight / 2 }, 3, { selectedColor });
 
         // Toolbox
+        Step* step = getSelectedStep();
         y = size.h - toolboxHeight + 1;
         draw.text({ relativePosition.x, y }, "Stp Note Len Vel. Cond. Motion", 8, { text2Color });
         y += 8;
-        draw.textRight({ relativePosition.x + 24, y }, std::to_string(selectedStep + 1), 8, { textColor });
+        draw.textRight({ relativePosition.x + 24, y }, std::to_string(step ? step->position + 1 : selectedStep + 1), 8, { textColor });
         draw.text({ relativePosition.x + 32, y }, MIDI_NOTES_STR[selectedNote], 8, { stepColor });
-        draw.textRight({ relativePosition.x + 96, y }, "1", 8, { textColor });
-        draw.textRight({ relativePosition.x + 136, y }, "100%", 8, { textColor });
-        draw.text({ relativePosition.x + 144, y }, "---", 8, { textColor });
-        draw.text({ relativePosition.x + 192, y }, "---", 8, { textColor });
+        draw.textRight({ relativePosition.x + 96, y }, std::to_string(step ? step->len : 0), 8, { textColor });
+        draw.textRight({ relativePosition.x + 136, y }, step ? std::to_string((int)(step->velocity * 100)) + "%" : "---", 8, { textColor });
+        draw.text({ relativePosition.x + 144, y }, step ? std::to_string(step->condition) : "---", 8, { textColor });
+        draw.text({ relativePosition.x + 192, y }, step ? std::to_string(step->motion) : "---", 8, { textColor });
         y += 8;
         if (parameterSelection == 0) {
             draw.line({ relativePosition.x + 104, y }, { relativePosition.x + 136, y }, { stepColor });
@@ -227,6 +228,16 @@ public:
         } else if (parameterSelection == 2) {
             draw.line({ relativePosition.x + 192, y }, { relativePosition.x + 232, y }, { stepColor });
         }
+    }
+
+    Step* getSelectedStep()
+    {
+        for (auto& step : *steps) {
+            if (step.note == selectedNote && selectedStep >= step.position && selectedStep < step.position + step.len) {
+                return &step;
+            }
+        }
+        return nullptr;
     }
 
     void onEncoder(int id, int8_t direction) override
