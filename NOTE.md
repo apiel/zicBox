@@ -30,6 +30,10 @@ valgrind --leak-check=full ./pixel.x86
   
 ## Pixel TODO
 
+- TODO drum rack
+
+- TODO synth!!
+
 - TODO random patch
 
 - TODO equalizer!
