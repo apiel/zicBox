@@ -218,8 +218,8 @@ public:
         draw.text({ relativePosition.x + 32, y }, MIDI_NOTES_STR[selectedNote], 8, { stepColor });
         draw.textRight({ relativePosition.x + 96, y }, std::to_string(step ? step->len : 0), 8, { textColor });
         draw.textRight({ relativePosition.x + 136, y }, step ? std::to_string((int)(step->velocity * 100)) + "%" : "---", 8, { textColor });
-        draw.text({ relativePosition.x + 144, y }, step ? std::to_string(step->condition) : "---", 8, { textColor });
-        draw.text({ relativePosition.x + 192, y }, step ? std::to_string(step->motion) : "---", 8, { textColor });
+        draw.text({ relativePosition.x + 144, y }, step ? stepConditions[step->condition].name : "---", 8, { textColor });
+        draw.text({ relativePosition.x + 192, y }, step ? stepMotions[step->motion].name : "---", 8, { textColor });
         y += 8;
         if (parameterSelection == 0) {
             draw.line({ relativePosition.x + 104, y }, { relativePosition.x + 136, y }, { stepColor });
