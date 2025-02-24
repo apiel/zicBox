@@ -28,17 +28,15 @@ protected:
     Color beatColor = { 0x80, 0x80, 0x80 };
     Color barColor = lighten(beatColor, 0.4);
     Color colSeparatorColor = darken(beatColor, 0.6);
-
     Color blackKeyColor;
     Color whiteKeyColor;
     Color rowSeparatorColor;
-
     Color textColor;
     Color text2Color;
-
     Color stepColor;
-
     Color selectedColor;
+    Color textMotion1;
+    Color textMotion2;
 
     AudioPlugin* plugin;
     std::vector<Step>* steps = NULL;
@@ -71,6 +69,8 @@ public:
         , text2Color(lighten(styles.colors.background, 1.5))
         , stepColor(styles.colors.primary)
         , selectedColor(styles.colors.white)
+        , textMotion1(styles.colors.secondary)
+        , textMotion2(styles.colors.quaternary)
     {
         /*md md_config:Sequencer */
         nlohmann::json& config = props.config;
@@ -116,6 +116,12 @@ public:
 
         /// The color of the selected step.
         selectedColor = draw.getColor(config["selectedColor"], selectedColor); //eg: "#000000"
+
+        /// The color of the motion 1.
+        textMotion1 = draw.getColor(config["textMotion1"], textMotion1); //eg: "#000000"
+
+        /// The color of the motion 2.
+        textMotion2 = draw.getColor(config["textMotion2"], textMotion2); //eg: "#000000"
 
         /// Parameter selection. 0 = Velocity, 1 = Condition, 2 = Motion, -1 = Deactivated
         parameterSelection = config.value("parameterSelection", parameterSelection); //eg: 0
@@ -219,7 +225,12 @@ public:
         draw.textRight({ relativePosition.x + 96, y }, std::to_string(step ? step->len : 0), 8, { textColor });
         draw.textRight({ relativePosition.x + 136, y }, step ? std::to_string((int)(step->velocity * 100)) + "%" : "---", 8, { textColor });
         draw.text({ relativePosition.x + 144, y }, step ? stepConditions[step->condition].name : "---", 8, { textColor });
-        draw.text({ relativePosition.x + 192, y }, step ? stepMotions[step->motion].name : "---", 8, { textColor });
+        // draw.text({ relativePosition.x + 192, y }, step ? stepMotions[step->motion].name : "---", 8, { textColor });
+        if (step == NULL || step->motion == 0) {
+            draw.text({ relativePosition.x + 192, y }, "---", 8, { textColor });
+        } else {
+            renderStepMotion({ relativePosition.x + 192, y }, stepMotions[step->motion].name);
+        }
         y += 8;
         if (parameterSelection == 0) {
             draw.line({ relativePosition.x + 104, y }, { relativePosition.x + 136, y }, { stepColor });
@@ -227,6 +238,16 @@ public:
             draw.line({ relativePosition.x + 144, y }, { relativePosition.x + 176, y }, { stepColor });
         } else if (parameterSelection == 2) {
             draw.line({ relativePosition.x + 192, y }, { relativePosition.x + 232, y }, { stepColor });
+        }
+    }
+
+    void renderStepMotion(Point pos, std::string motionSteps)
+    {
+        int x = pos.x;
+        char* motionStep = strtok((char*)motionSteps.c_str(), ",");
+        for (int i = 0; motionStep != NULL; i++) {
+            x = draw.text({ x, pos.y }, motionStep, 8, { i % 2 == 0 ? textMotion1 : textMotion2 });
+            motionStep = strtok(NULL, ",");
         }
     }
 
