@@ -51,7 +51,18 @@ protected:
 
 public:
     SequencerComponent(ComponentInterface::Props props)
-        : Component(props)
+        : Component(props, [&](std::string action) {
+            std::function<void(KeypadLayout::KeyMap&)> func = NULL;
+            if (action == ".toggleParam") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        parameterSelection = (parameterSelection + 1) % 3;
+                        renderNext();
+                    }
+                };
+            }
+            return func;
+        })
         , background(styles.colors.background)
         , blackKeyColor(styles.colors.background)
         , whiteKeyColor(lighten(styles.colors.background, 0.2))
@@ -204,9 +215,9 @@ public:
         if (parameterSelection == 0) {
             draw.line({ relativePosition.x + 104, y }, { relativePosition.x + 136, y }, { stepColor });
         } else if (parameterSelection == 1) {
-            draw.line({ relativePosition.x + 144, y }, { relativePosition.x + 184, y }, { stepColor }); 
+            draw.line({ relativePosition.x + 144, y }, { relativePosition.x + 176, y }, { stepColor }); 
         } else if (parameterSelection == 2) {
-            draw.line({ relativePosition.x + 192, y }, { relativePosition.x + 240, y }, { stepColor });
+            draw.line({ relativePosition.x + 192, y }, { relativePosition.x + 232, y }, { stepColor });
         }
     }
 

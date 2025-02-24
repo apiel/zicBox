@@ -34,8 +34,6 @@ protected:
     bool* seqPlayingPtr = NULL;
     bool seqPlaying = false;
 
-    KeypadLayout keypadLayout;
-
     Color bgColor;
     Color selection;
     Color fileColor;
@@ -55,19 +53,7 @@ protected:
 
 public:
     StepEditSampleComponent(ComponentInterface::Props props)
-        : Component(props)
-        , bgColor(styles.colors.background)
-        , selection(lighten(styles.colors.background, 0.5))
-        , fileColor(styles.colors.primary)
-        , note2Color(styles.colors.white)
-        , text(styles.colors.text)
-        , text2(darken(styles.colors.text, 0.3))
-        , barBackground(darken(styles.colors.tertiary, 0.5))
-        , bar(styles.colors.tertiary)
-        , textMotion1(styles.colors.secondary)
-        , textMotion2(styles.colors.quaternary)
-        , playingColor(styles.colors.tertiary)
-        , keypadLayout(this, [&](std::string action) {
+        : Component(props, [&](std::string action) {
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
             if (action == ".toggle") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
@@ -86,6 +72,17 @@ public:
             }
             return func;
         })
+        , bgColor(styles.colors.background)
+        , selection(lighten(styles.colors.background, 0.5))
+        , fileColor(styles.colors.primary)
+        , note2Color(styles.colors.white)
+        , text(styles.colors.text)
+        , text2(darken(styles.colors.text, 0.3))
+        , barBackground(darken(styles.colors.tertiary, 0.5))
+        , bar(styles.colors.tertiary)
+        , textMotion1(styles.colors.secondary)
+        , textMotion2(styles.colors.quaternary)
+        , playingColor(styles.colors.tertiary)
     {
         jobRendering = [this](unsigned long now) {
             if (seqPlayingPtr != NULL && *seqPlayingPtr != seqPlaying) {

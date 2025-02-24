@@ -10,6 +10,7 @@ import {
     btn6,
     btn7,
     btnShift,
+    btnUp,
     ColorTrack3,
     ColorTrack6,
     KeyInfoPosition,
@@ -24,7 +25,12 @@ export type Props = {
 export function PercSeq2View({ name }: Props) {
     return (
         <View name={name}>
-            <Sequencer bounds={[0, 0, ScreenWidth, 270]} track={PercTrack} audioPlugin="Sequencer" />
+            <Sequencer
+                bounds={[0, 0, ScreenWidth, 270]}
+                track={PercTrack}
+                audioPlugin="Sequencer"
+                keys={[{ key: btnUp, action: '.toggleParam' }]}
+            />
 
             <TextGrid
                 bounds={KeyInfoPosition}
