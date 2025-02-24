@@ -47,6 +47,8 @@ protected:
     int selectedNote = MIDI_NOTE_C5;
     int midiStartNote = MIDI_NOTE_C4;
 
+    int parameterSelection = 0;
+
 public:
     SequencerComponent(ComponentInterface::Props props)
         : Component(props)
@@ -103,6 +105,9 @@ public:
 
         /// The color of the selected step.
         selectedColor = draw.getColor(config["selectedColor"], selectedColor); //eg: "#000000"
+
+        /// Parameter selection. 0 = Velocity, 1 = Condition, 2 = Motion, -1 = Deactivated
+        parameterSelection = config.value("parameterSelection", parameterSelection); //eg: 0
 
         /*md md_config_end */
 
@@ -195,6 +200,14 @@ public:
         draw.textRight({ relativePosition.x + 136, y }, "100%", 8, { textColor });
         draw.text({ relativePosition.x + 144, y }, "---", 8, { textColor });
         draw.text({ relativePosition.x + 192, y }, "---", 8, { textColor });
+        y += 8;
+        if (parameterSelection == 0) {
+            draw.line({ relativePosition.x + 104, y }, { relativePosition.x + 136, y }, { stepColor });
+        } else if (parameterSelection == 1) {
+            draw.line({ relativePosition.x + 144, y }, { relativePosition.x + 184, y }, { stepColor }); 
+        } else if (parameterSelection == 2) {
+            draw.line({ relativePosition.x + 192, y }, { relativePosition.x + 240, y }, { stepColor });
+        }
     }
 
     void onEncoder(int id, int8_t direction) override
