@@ -773,7 +773,7 @@
     {
       "name": "PercSeq2",
       "components": [
-        {"bounds":[0,0,240,270],"track":6,"audioPlugin":"Sequencer","keys":[{"key":"x","action":".toggleParam"}],"componentName":"Sequencer"},
+        {"bounds":[0,0,240,270],"track":6,"audioPlugin":"Sequencer","keys":[{"key":"x","action":".toggleParam"}],"selectedColor":"#c41598","stepColor":"#a3c912","componentName":"Sequencer"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"w","action":"incGroup:-1"},{"key":"space","action":"contextToggle:254:1:0"},{"key":"a","action":"setView:Perc"},{"key":"s","action":"incGroup:+1"},{"key":"d","action":"noteOn:Perc:60"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"text":"&icon::toggle::rect","bounds":[0,298,74.66666666666667,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"componentName":"Text"},
         {"text":"&icon::arrowUp::filled","bounds":[74.66666666666667,298,74.66666666666667,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"componentName":"Text"},

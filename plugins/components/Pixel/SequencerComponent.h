@@ -206,7 +206,8 @@ public:
         // Draw Selection
         int x = xStart + selectedStep * stepWidth + 1;
         int y = (numNotes - (selectedNote - midiStartNote) - 1) * stepHeight;
-        draw.rect({ x, y }, { stepWidth - 1, stepHeight - 1 }, { selectedColor });
+        // draw.rect({ x, y }, { stepWidth - 1, stepHeight - 1 }, { selectedColor });
+        draw.filledCircle({ x + stepWidth / 2, y + stepHeight / 2 }, 3, { selectedColor });
 
         // Toolbox
         y = size.h - toolboxHeight + 1;
