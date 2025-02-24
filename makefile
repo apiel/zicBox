@@ -52,7 +52,6 @@ runPixel:
 	./pixel.$(BIN_PLATFORM)
 
 dev:
-	rm -rf config/
 	npm run dev
 
 push_wiki:
