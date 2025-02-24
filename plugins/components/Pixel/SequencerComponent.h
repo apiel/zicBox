@@ -122,6 +122,13 @@ public:
 
         /*md md_config_end */
 
+        // Initialize selected note with first midi note
+        if (steps != NULL && steps->size() > 0) {
+            Step& step = (*steps)[0];
+            selectedNote = step.note;
+            midiStartNote =  range((selectedNote - numNotes / 2), MIDI_NOTE_C0, MIDI_NOTE_C9 - numNotes);
+        }
+
         resize();
     }
 
@@ -215,7 +222,7 @@ public:
         if (parameterSelection == 0) {
             draw.line({ relativePosition.x + 104, y }, { relativePosition.x + 136, y }, { stepColor });
         } else if (parameterSelection == 1) {
-            draw.line({ relativePosition.x + 144, y }, { relativePosition.x + 176, y }, { stepColor }); 
+            draw.line({ relativePosition.x + 144, y }, { relativePosition.x + 176, y }, { stepColor });
         } else if (parameterSelection == 2) {
             draw.line({ relativePosition.x + 192, y }, { relativePosition.x + 232, y }, { stepColor });
         }
