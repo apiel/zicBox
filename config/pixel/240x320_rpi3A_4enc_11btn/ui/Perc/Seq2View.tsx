@@ -3,6 +3,7 @@ import * as React from '@/libs/react';
 import { Sequencer } from '@/libs/nativeComponents/Sequencer';
 import { View } from '@/libs/nativeComponents/View';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
+import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
 import {
     btn2,
@@ -11,6 +12,7 @@ import {
     btn7,
     btnShift,
     btnUp,
+    ColorTrack1,
     ColorTrack3,
     ColorTrack6,
     KeyInfoPosition,
@@ -30,6 +32,8 @@ export function PercSeq2View({ name }: Props) {
                 track={PercTrack}
                 audioPlugin="Sequencer"
                 keys={[{ key: btnUp, action: '.toggleParam' }]}
+                selectedColor={rgb(196, 21, 152)}
+                stepColor={ColorTrack1}
             />
 
             <TextGrid
