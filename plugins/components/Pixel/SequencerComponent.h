@@ -18,6 +18,7 @@ class SequencerComponent : public Component {
 protected:
     Color background;
 
+    int toolboxHeight = 20;
     int stepWidth = 0;
     int stepHeight = 10;
     int numSteps = MAX_STEPS; // TODO instead load from plugin seq
@@ -32,8 +33,8 @@ protected:
     Color whiteKeyColor;
     Color rowSeparatorColor;
 
-    Color noteColor;
-    Color note2Color;
+    Color textColor;
+    Color text2Color;
 
     Color stepColor;
 
@@ -43,8 +44,7 @@ protected:
     std::vector<Step>* steps = NULL;
 
     int selectedStep = 0;
-    int selectedNote = MIDI_NOTE_C4;
-
+    int selectedNote = MIDI_NOTE_C5;
     int midiStartNote = MIDI_NOTE_C4;
 
 public:
@@ -54,8 +54,8 @@ public:
         , blackKeyColor(styles.colors.background)
         , whiteKeyColor(lighten(styles.colors.background, 0.2))
         , rowSeparatorColor(lighten(styles.colors.background, 0.4))
-        , noteColor(darken(styles.colors.white, 0.2))
-        , note2Color(lighten(styles.colors.background, 1.5))
+        , textColor(darken(styles.colors.white, 0.2))
+        , text2Color(lighten(styles.colors.background, 1.5))
         , stepColor(styles.colors.primary)
         , selectedColor(styles.colors.white)
     {
@@ -92,11 +92,11 @@ public:
         /// The color of the column separators.
         colSeparatorColor = draw.getColor(config["colSeparatorColor"], colSeparatorColor); //eg: "#000000"
 
-        /// The color of the C notes.
-        noteColor = draw.getColor(config["noteColor"], noteColor); //eg: "#000000"
+        /// The color of the C notes and parameter values.
+        textColor = draw.getColor(config["textColor"], textColor); //eg: "#000000"
 
-        /// The color of the other notes.
-        note2Color = draw.getColor(config["note2Color"], note2Color); //eg: "#000000"
+        /// The color of the other notes and parameter labels.
+        text2Color = draw.getColor(config["text2Color"], text2Color); //eg: "#000000"
 
         /// The color of the steps.
         stepColor = draw.getColor(config["stepColor"], stepColor); //eg: "#000000"
@@ -112,7 +112,7 @@ public:
     void resize() override
     {
         stepWidth = size.w / numSteps;
-        stepHeight = size.h / numNotes;
+        stepHeight = (size.h - 20) / numNotes;
         drawNoteStr = stepHeight >= 10;
     }
 
@@ -137,11 +137,11 @@ public:
 
             if (xStart) {
                 if (midiNote % 12 == 0) {
-                    draw.text({ x, y + 1 }, MIDI_NOTES_STR[midiNote], 8, { noteColor });
+                    draw.text({ x, y + 1 }, MIDI_NOTES_STR[midiNote], 8, { textColor });
                 } else if (!isBlackKey(midiNote)) {
-                    draw.text({ x, y + 1 }, MIDI_NOTES_STR[midiNote], 8, { note2Color });
+                    draw.text({ x, y + 1 }, MIDI_NOTES_STR[midiNote], 8, { text2Color });
                 } else {
-                    draw.text({ x, y + 1 }, " #", 8, { note2Color });
+                    draw.text({ x, y + 1 }, " #", 8, { text2Color });
                 }
             }
         }
@@ -158,7 +158,7 @@ public:
             else
                 color = colSeparatorColor;
 
-            draw.line({ x, y }, { x, y + size.h }, { color });
+            draw.line({ x, y }, { x, y + size.h - toolboxHeight }, { color });
         }
 
         if (steps != NULL) {
@@ -180,9 +180,21 @@ public:
             }
         }
 
+        // Draw Selection
         int x = xStart + selectedStep * stepWidth + 1;
         int y = (numNotes - (selectedNote - midiStartNote) - 1) * stepHeight;
         draw.rect({ x, y }, { stepWidth - 1, stepHeight - 1 }, { selectedColor });
+
+        // Toolbox
+        y = size.h - toolboxHeight + 1;
+        draw.text({ relativePosition.x, y }, "Stp Note Len Vel. Cond. Motion", 8, { text2Color });
+        y += 8;
+        draw.textRight({ relativePosition.x + 24, y }, std::to_string(selectedStep + 1), 8, { textColor });
+        draw.text({ relativePosition.x + 32, y }, MIDI_NOTES_STR[selectedNote], 8, { stepColor });
+        draw.textRight({ relativePosition.x + 96, y }, "1", 8, { textColor });
+        draw.textRight({ relativePosition.x + 136, y }, "100%", 8, { textColor });
+        draw.text({ relativePosition.x + 144, y }, "---", 8, { textColor });
+        draw.text({ relativePosition.x + 192, y }, "---", 8, { textColor });
     }
 
     void onEncoder(int id, int8_t direction) override
@@ -197,6 +209,7 @@ public:
             }
             renderNext();
         } else if (id == 1) {
+            direction = direction > 0 ? 1 : -1;
             selectedStep = range((selectedStep + direction), 0, numSteps - 1);
             renderNext();
         }
