@@ -286,7 +286,13 @@ public:
         } else if (id == 3) {
             Step* step = getSelectedStep();
             if (step != nullptr) {
-                step->setVelocity(step->velocity + direction * 0.01);
+                if (parameterSelection == 0) {
+                    step->setVelocity(step->velocity + direction * 0.01);
+                } else if (parameterSelection == 1) {
+                    step->setCondition(step->condition + direction);
+                } else if (parameterSelection == 2) {
+                    step->setMotion(step->motion + direction);
+                }
                 renderNext();
             }
         }
