@@ -281,6 +281,13 @@ public:
                 step->len = range((step->len + direction), 0, numSteps);
                 // TODO check if len doesn't conflict with another step
                 // TODO if len is out screen, we should start at the beginning
+                // TODO how to delete step??? Could be shift + len knob?
+            } else {
+                // Create a step and push it to the end
+                Step newStep;
+                newStep.note = selectedNote;
+                newStep.position = selectedStep;
+                steps->push_back(newStep);
             }
             renderNext();
         } else if (id == 3) {
