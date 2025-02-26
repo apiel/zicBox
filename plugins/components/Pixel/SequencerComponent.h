@@ -196,15 +196,16 @@ public:
                 if (step.len && step.note >= midiStartNote && step.note < midiStartNote + numNotes) {
                     int x = xStart + step.position * stepWidth + 1;
                     int y = (numNotes - (step.note - midiStartNote) - 1) * stepHeight;
-                    int width = step.len * stepWidth - 2;
-                    int height = stepHeight;
 
-                    draw.filledRect({ x, y }, { width, height }, { stepColor });
-
-                    // if (selectedNote == &step) {
-                    //     g.setColour(juce::Colours::white);
-                    //     g.drawRect(x, y, width, height);
-                    // }
+                    if (step.position + step.len > numSteps) {
+                        int width = (numSteps - step.position) * stepWidth - 2;
+                        draw.filledRect({ x, y }, { width, stepHeight }, { stepColor });
+                        width = (step.len - (numSteps - step.position)) * stepWidth - 2;
+                        draw.filledRect({ xStart + 1, y }, { width, stepHeight }, { stepColor });
+                    } else {
+                        int width = step.len * stepWidth - 2;
+                        draw.filledRect({ x, y }, { width, stepHeight }, { stepColor });
+                    }
                 }
             }
         }
