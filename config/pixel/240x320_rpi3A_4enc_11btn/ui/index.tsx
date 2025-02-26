@@ -25,7 +25,6 @@ import { PercModView } from './Perc/PercModView';
 import { PercNoise2View } from './Perc/PercNoise2View';
 import { PercNoiseView } from './Perc/PercNoiseView';
 import { PercView } from './Perc/PercView';
-import { PercSeq2View } from './Perc/Seq2View';
 import { PercSeqView } from './Perc/SeqView';
 import { SampleEditorView } from './Sample/SampleEditorView';
 import { SynthEnv1View } from './Synth/Env1View';
@@ -79,7 +78,6 @@ export const ui = {
             <PercView name="Perc" />
             <PercFxView name="PercFx" />
             <PercSeqView name="PercSeq" />
-            <PercSeq2View name="PercSeq2" />
             <PercNoiseView name="PercNoise" />
             <PercNoise2View name="PercNoise2" />
             <PercModView name="PercMod" />
