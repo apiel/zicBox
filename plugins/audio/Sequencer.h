@@ -95,7 +95,7 @@ protected:
                 }
             }
             // here might want to check for state == Status::ON
-            if (state == Status::ON && step.enabled && stepCounter == step.position && conditionMet(step) && step.velocity > 0.0f) {
+            if (state == Status::ON && step.enabled && step.len && stepCounter == step.position && conditionMet(step) && step.velocity > 0.0f) {
                 step.counter = step.len;
                 props.audioPluginHandler->noteOn(getNote(step), step.velocity, { track, targetPlugin });
                 // printf("should trigger note on %d track %d len %d velocity %.2f\n", step.note, track, step.len, step.velocity);
