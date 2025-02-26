@@ -193,7 +193,7 @@ public:
         if (steps != NULL) {
             // Draw MIDI Notes
             for (const auto& step : *steps) {
-                if (step.note >= midiStartNote && step.note < midiStartNote + numNotes) {
+                if (step.len && step.note >= midiStartNote && step.note < midiStartNote + numNotes) {
                     int x = xStart + step.position * stepWidth + 1;
                     int y = (numNotes - (step.note - midiStartNote) - 1) * stepHeight;
                     int width = step.len * stepWidth - 2;
@@ -254,7 +254,7 @@ public:
     Step* getSelectedStep()
     {
         for (auto& step : *steps) {
-            if (step.note == selectedNote && selectedStep >= step.position && selectedStep < step.position + step.len) {
+            if (step.note == selectedNote && (selectedStep == step.position || (selectedStep >= step.position && selectedStep < step.position + step.len))) {
                 return &step;
             }
         }
@@ -263,8 +263,8 @@ public:
 
     void onEncoder(int id, int8_t direction) override
     {
+        direction = direction > 0 ? 1 : -1;
         if (id == 0) {
-            direction = direction > 0 ? 1 : -1;
             selectedNote = range((selectedNote + direction), MIDI_NOTE_C0, MIDI_NOTE_C9);
             if (selectedNote < midiStartNote) {
                 midiStartNote = selectedNote;
@@ -273,9 +273,22 @@ public:
             }
             renderNext();
         } else if (id == 1) {
-            direction = direction > 0 ? 1 : -1;
             selectedStep = range((selectedStep + direction), 0, numSteps - 1);
             renderNext();
+        } else if (id == 2) {
+            Step* step = getSelectedStep();
+            if (step != nullptr) {
+                step->len = range((step->len + direction), 0, numSteps);
+                // TODO check if len doesn't conflict with another step
+                // TODO if len is out screen, we should start at the beginning
+            }
+            renderNext();
+        } else if (id == 3) {
+            Step* step = getSelectedStep();
+            if (step != nullptr) {
+                step->setVelocity(step->velocity + direction * 0.01);
+                renderNext();
+            }
         }
     }
 };

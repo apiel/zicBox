@@ -30,6 +30,22 @@ valgrind --leak-check=full ./pixel.x86
   
 ## Pixel TODO
 
+- TODO electribe synth
+   - osc is sample base, each sample should define in header:
+      -  one shot or loop
+      -  looping point, loop length
+      -  step increment for start point (if wave table we might want to increate by the size of the table, e.g. 2024)
+   - edit: define start point, so if it is a wave table we morph, if it is normal sample we just change start point
+   - pitch: change tge pitch :p
+   - filter: cuttoff, reso, envelop filter, and filter type selection...
+   - modulation
+     - type: select type of modulation from a range of pre-defined modulation
+     - macro 1 and 2 (even 3?) instead of depth and speed, we gonna prefer to use macro
+   - Envelop, let's use ASR envelop like on the electribe, good enough.
+   - Fx:
+     - Type: select type of the effect from a range of predefined effect
+     - Edit: define the amount of effect applied... 
+
 - TODO drum rack
 
 - TODO synth!!
