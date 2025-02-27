@@ -47,6 +47,7 @@ protected:
     int midiStartNote = MIDI_NOTE_C4;
 
     int parameterSelection = 0;
+    bool shift = false;
 
 public:
     SequencerComponent(ComponentInterface::Props props)
@@ -57,6 +58,15 @@ public:
                     if (KeypadLayout::isReleased(keymap)) {
                         parameterSelection = (parameterSelection + 1) % 3;
                         renderNext();
+                    }
+                };
+            }
+            if (action == ".shift") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isPressed(keymap)) {
+                        shift = true;
+                    } else if (KeypadLayout::isReleased(keymap)) {
+                        shift = false;
                     }
                 };
             }
@@ -284,9 +294,16 @@ public:
             Step* step = getSelectedStep();
             if (step != nullptr) {
                 step->len = range((step->len + direction), 0, maxStepLen);
+                // Use shift to delete the step
+                if (shift && step->len == 0) {
+                    for (int i = 0; i < steps->size(); i++) {
+                        if (step == &steps->at(i)) {
+                            steps->erase(steps->begin() + i);
+                            break;
+                        }
+                    }
+                }
                 // TODO check if len doesn't conflict with another step
-                // TODO if len is out screen, we should start at the beginning
-                // TODO how to delete step??? Could be shift + len knob?
             } else {
                 // Create a step and push it to the end
                 Step newStep;

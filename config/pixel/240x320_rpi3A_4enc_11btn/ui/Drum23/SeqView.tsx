@@ -16,7 +16,7 @@ import {
     ColorTrack3,
     Drum23Track,
     KeyInfoPosition,
-    ScreenWidth
+    ScreenWidth,
 } from '../constants';
 
 export type Props = {
@@ -30,7 +30,10 @@ export function Drum23SeqView({ name }: Props) {
                 bounds={[0, 0, ScreenWidth, 270]}
                 track={Drum23Track}
                 audioPlugin="Sequencer"
-                keys={[{ key: btnUp, action: '.toggleParam' }]}
+                keys={[
+                    { key: btnUp, action: '.toggleParam' },
+                    { key: btnShift, action: '.shift' },
+                ]}
                 selectedColor={rgb(196, 21, 152)}
                 stepColor={ColorTrack1}
                 maxStepLen={1}
