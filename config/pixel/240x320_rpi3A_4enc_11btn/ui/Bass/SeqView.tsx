@@ -1,7 +1,9 @@
 import * as React from '@/libs/react';
 
+import { Sequencer } from '@/libs/nativeComponents/Sequencer';
 import { View } from '@/libs/nativeComponents/View';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
+import { rgb } from '@/libs/ui';
 import { Common } from '../components/Common';
 import {
     BassTrack,
@@ -10,8 +12,10 @@ import {
     btn6,
     btn7,
     btnShift,
+    btnUp,
     ColorTrack2,
-    KeyInfoPosition
+    KeyInfoPosition,
+    ScreenWidth
 } from '../constants';
 
 export type Props = {
@@ -19,48 +23,34 @@ export type Props = {
 };
 
 export function BassSeqView({ name }: Props) {
-    let y = 0;
     return (
         <View name={name}>
-            {/* {Array.from({ length: 32 }, (_, i) => {
-                const yy = y + 5;
-                y += 8 + (i % 4 == 3 ? 4 : 0);
-                return (
-                    <StepEditDrum
-                        bounds={[0, yy, ScreenWidth, 8]}
-                        data={`Sequencer ${i}`}
-                        track={BassTrack}
-                        group={i}
-                        playing_color={rgb(35, 161, 35)}
-                        background_color={
-                            i % 8 == 0 || i % 8 == 1 || i % 8 == 2 || i % 8 == 3
-                                ? rgb(42, 54, 56)
-                                : 'background'
-                        }
-                        selected_color={rgb(76, 94, 97)}
-                    >
-                        <Keymaps keys={[{ key: btn1, action: '.toggle' }]} />
-                    </StepEditDrum>
-                );
-            })} */}
+            <Sequencer
+                bounds={[0, 0, ScreenWidth, 270]}
+                track={BassTrack}
+                audioPlugin="Sequencer"
+                keys={[{ key: btnUp, action: '.toggleParam' }]}
+                selectedColor={rgb(196, 21, 152)}
+                stepColor={ColorTrack2}
+            />
 
             <TextGrid
                 bounds={KeyInfoPosition}
                 rows={[
                     '&icon::toggle::rect &icon::arrowUp::filled ...',
-                    'Seq./Bass &icon::arrowDown::filled &icon::musicNote::pixelated',
+                    'Seq./Perc &icon::arrowDown::filled &icon::musicNote::pixelated',
                     // '!Seq/Bass &icon::arrowDown::filled &icon::musicNote::pixelated',
                 ]}
                 selectedBackground={ColorTrack2}
-                contextValue={0}
                 keys={[
                     { key: btn2, action: 'incGroup:-1' },
                     { key: btnShift, action: 'contextToggle:254:1:0' },
 
-                    { key: btn5, action: 'setView:Bass' },
+                    { key: btn5, action: 'setView:Perc' },
                     { key: btn6, action: 'incGroup:+1' },
-                    { key: btn7, action: 'noteOn:Bass:60' },
+                    { key: btn7, action: 'noteOn:Perc:60' },
                 ]}
+                contextValue={0}
             />
             <Common
                 selected={'Bass'}
@@ -71,3 +61,4 @@ export function BassSeqView({ name }: Props) {
         </View>
     );
 }
+

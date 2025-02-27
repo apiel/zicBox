@@ -33,6 +33,7 @@ export function Drum23SeqView({ name }: Props) {
                 keys={[{ key: btnUp, action: '.toggleParam' }]}
                 selectedColor={rgb(196, 21, 152)}
                 stepColor={ColorTrack1}
+                maxStepLen={1}
             />
 
             <TextGrid

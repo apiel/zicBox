@@ -300,7 +300,7 @@
     {
       "name": "Sequencer",
       "components": [
-        {"bounds":[0,0,240,270],"track":1,"audioPlugin":"Sequencer","keys":[{"key":"x","action":".toggleParam"}],"selectedColor":"#c41598","stepColor":"#a3c912","componentName":"Sequencer"},
+        {"bounds":[0,0,240,270],"track":1,"audioPlugin":"Sequencer","keys":[{"key":"x","action":".toggleParam"}],"selectedColor":"#c41598","stepColor":"#a3c912","maxStepLen":1,"componentName":"Sequencer"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"w","action":"incGroup:-1"},{"key":"space","action":"contextToggle:254:1:0"},{"key":"a","action":"setView:Drum23"},{"key":"s","action":"incGroup:+1"},{"key":"d","action":"noteOn:Drum23:60"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"text":"&icon::toggle::rect","bounds":[0,298,74.66666666666667,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"componentName":"Text"},
         {"text":"&icon::arrowUp::filled","bounds":[74.66666666666667,298,74.66666666666667,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"componentName":"Text"},
@@ -492,11 +492,12 @@
     {
       "name": "BassSeq",
       "components": [
-        {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"w","action":"incGroup:-1"},{"key":"space","action":"contextToggle:254:1:0"},{"key":"a","action":"setView:Bass"},{"key":"s","action":"incGroup:+1"},{"key":"d","action":"noteOn:Bass:60"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
+        {"bounds":[0,0,240,270],"track":2,"audioPlugin":"Sequencer","keys":[{"key":"x","action":".toggleParam"}],"selectedColor":"#c41598","stepColor":"#fd6f0e","componentName":"Sequencer"},
+        {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"w","action":"incGroup:-1"},{"key":"space","action":"contextToggle:254:1:0"},{"key":"a","action":"setView:Perc"},{"key":"s","action":"incGroup:+1"},{"key":"d","action":"noteOn:Perc:60"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"text":"&icon::toggle::rect","bounds":[0,298,74.66666666666667,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"componentName":"Text"},
         {"text":"&icon::arrowUp::filled","bounds":[74.66666666666667,298,74.66666666666667,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"componentName":"Text"},
         {"text":"...","bounds":[149.33333333333334,298,74.66666666666667,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"componentName":"Text"},
-        {"text":"Seq./Bass","bounds":[0,309,74.66666666666667,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"componentName":"Text"},
+        {"text":"Seq./Perc","bounds":[0,309,74.66666666666667,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"componentName":"Text"},
         {"text":"&icon::arrowDown::filled","bounds":[74.66666666666667,309,74.66666666666667,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"componentName":"Text"},
         {"text":"&icon::musicNote::pixelated","bounds":[149.33333333333334,309,74.66666666666667,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"componentName":"Text"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":1}],"keys":[{"key":"q","action":"setView:Drum23"},{"key":"w","action":"setView:Bass"},{"key":"e","action":"setView:Fm1"},{"key":"r","action":"setView:Synth"},{"key":"a","action":"setView:Sample"},{"key":"s","action":"setView:Perc"},{"key":"f","action":"setView:Clips"},{"key":"x","action":"setView:Menu"},{"key":"altleft","action":"playPause"},{"key":"space","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},

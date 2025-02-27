@@ -7,5 +7,6 @@ export const Sequencer = getJsonComponent<{
     whiteKeyColor?: string;
     selectedColor?: string;
     stepColor?: string;
+    maxStepLen?: number;
     // TODO add the rest of params
 }>('Sequencer');
