@@ -11,6 +11,10 @@
 /*md
 ## Sequencer
 
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/sequencer.png" />
+
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/sequencer2.png" />
+
 Sequencer components to draw the sequencer interface.
 */
 
