@@ -22,6 +22,7 @@ protected:
     int stepWidth = 0;
     int stepHeight = 10;
     int numSteps = MAX_STEPS; // TODO instead load from plugin seq
+    int maxStepLen = MAX_STEPS;
     int numNotes = 25;
     bool drawNoteStr = true;
 
@@ -125,6 +126,9 @@ public:
 
         /// Parameter selection. 0 = Velocity, 1 = Condition, 2 = Motion, -1 = Deactivated
         parameterSelection = config.value("parameterSelection", parameterSelection); //eg: 0
+
+        /// Max step length
+        maxStepLen = config.value("maxStepLen", maxStepLen); //eg: 1
 
         /*md md_config_end */
 
@@ -279,7 +283,7 @@ public:
         } else if (id == 2) {
             Step* step = getSelectedStep();
             if (step != nullptr) {
-                step->len = range((step->len + direction), 0, numSteps);
+                step->len = range((step->len + direction), 0, maxStepLen);
                 // TODO check if len doesn't conflict with another step
                 // TODO if len is out screen, we should start at the beginning
                 // TODO how to delete step??? Could be shift + len knob?
