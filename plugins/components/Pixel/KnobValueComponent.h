@@ -14,6 +14,7 @@
 
 KnobValue is used to display current value of a parameter for a given audio plugin.
 */
+
 class KnobValueComponent : public Component {
 protected:
     const char* name = NULL;

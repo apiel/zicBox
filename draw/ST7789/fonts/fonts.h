@@ -1,5 +1,4 @@
-#ifndef _FONTS_DRAW_H_
-#define _FONTS_DRAW_H_
+#pragma once
 
 #include "ArialBold.h"
 #include "ArialNormal.h"
@@ -9,11 +8,13 @@
 #include "Sinclair_S.h"
 #include "Ubuntu.h"
 #include "UbuntuBold.h"
+#include "5x6.h"
 
 #include <string.h>
 
 uint8_t* getFontPtr(const char* name = nullptr) 
 {
+    printf("load font %s\n", name);
     if (name == nullptr || strcmp(name, "default") == 0) {
         return Sinclair_S;
     }
@@ -34,9 +35,10 @@ uint8_t* getFontPtr(const char* name = nullptr)
         return Ubuntu;
     } else if (strcmp(name, "UbuntuBold") == 0) {
         return UbuntuBold;
+    } else if (strcmp(name, "5x6") == 0) {
+        printf("-----------------------> try to use font 5x6\n");
+        return Font5x6;
     }
 
     return nullptr;
 }
-
-#endif
