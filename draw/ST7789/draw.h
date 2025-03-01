@@ -464,7 +464,7 @@ public:
         fullRendering = true;
     }
 
-    void* getFont(const char* name = NULL, int size = -1) override
+    void* getFont(std::string name = NULL, int size = -1) override
     {
         void* font = getFontPtr(name);
         if (!font) {

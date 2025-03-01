@@ -82,7 +82,7 @@ public:
     virtual void destroyTexture(void* texture) { }
     virtual void applyTexture(void* texture, Rect dest) { }
 
-    virtual void* getFont(const char* name = NULL, int size = -1) { return NULL; }
+    virtual void* getFont(std::string name = NULL, int size = -1) { return NULL; }
     virtual Color getColor(std::string color, Color defaultColor = { 0xFF, 0xFF, 0xFF }) { return defaultColor; }
     virtual Color getColor(const nlohmann::json& node, Color defaultColor) { return defaultColor; }
     virtual void config(nlohmann::json& config) { }
