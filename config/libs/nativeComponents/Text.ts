@@ -7,5 +7,6 @@ export const Text = getJsonComponent<{
     color?: string;
     bgColor?: string;
     centered?: boolean;
+    right?: boolean;
     font?: string;
 }>('Text');
