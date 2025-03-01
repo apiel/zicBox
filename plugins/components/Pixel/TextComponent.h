@@ -68,7 +68,7 @@ public:
                 if (!icon.render(text, textPos, 8, { color }, Icon::RIGHT)) {
                     draw.textRight(textPos, text, fontSize, { color, .font = font, .maxWidth = size.w, .fontHeight = fontHeight });
                 }
-            } if (centered) {
+            } else if (centered) {
                 Point textPos = { relativePosition.x + (int)(size.w * 0.5), relativePosition.y + (int)(size.h * 0.5) - 4 };
                 if (!icon.render(text, textPos, 8, { color }, Icon::CENTER)) {
 

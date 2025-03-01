@@ -40,4 +40,12 @@ public:
         }
         return width;
     }
+
+    int getWidth(char c) {
+        if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
+            logWarn("Could not load character: " + std::string(1, c));
+            return 0;
+        }
+        return face->glyph->bitmap.width;
+    }
 };
