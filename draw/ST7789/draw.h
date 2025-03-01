@@ -19,6 +19,8 @@
 #include "fonts/fonts.h"
 #include "log.h"
 #include "plugins/components/drawInterface.h"
+#include "helpers/range.h"
+
 #include <cmath>
 #include <stdexcept>
 #include <string.h>
@@ -306,7 +308,7 @@ protected:
                         options.color.r,
                         options.color.g,
                         options.color.b,
-                        a,
+                        (uint8_t)range(a * 2, 0, 255),
                     };
                     // Color color = alpha(options.color, a / 255.0f); // Apply alpha for anti alias
                     pixel({ (int)(x + col), (int)(y + row) }, { color });
@@ -559,11 +561,7 @@ public:
 
         TtfFont* ttfFont = getTtfFont(options);
         if (ttfFont) {
-            // TO be tested :p
             FT_Set_Pixel_Sizes(ttfFont->face, 0, size);
-            if (FT_Load_Char(ttfFont->face, 'm', FT_LOAD_RENDER)) {
-                return x;
-            }
             for (uint16_t i = 0; i < len && x > 0; i++) {
                 char c = text[len-i-1];
                 x -= ttfFont->getWidth(c);
