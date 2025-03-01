@@ -8,7 +8,6 @@
 #include "Sinclair_S.h"
 #include "Ubuntu.h"
 #include "UbuntuBold.h"
-#include "5x6.h"
 
 #include "TtfFont.h"
 
@@ -54,9 +53,6 @@ void* getFontPtr(std::string& name)
         return &Ubuntu;
     } else if (name == "UbuntuBold") {
         return &UbuntuBold;
-    } else if (name == "5x6") {
-        printf("-----------------------> try to use font 5x6\n");
-        return &Font5x6;
     }
 
     return nullptr;

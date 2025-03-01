@@ -95,7 +95,7 @@
         {"audioPlugin":"MMFilter","param":"CUTOFF","bounds":[120,60,118,80],"encoderId":1,"color":"secondary","valueSize":8,"type":"STRING","track":1,"componentName":"KnobValue"},
         {"audioPlugin":"Drum23","param":"GAIN_CLIPPING","bounds":[0,160,118,80],"encoderId":2,"track":1,"componentName":"KnobValue"},
         {"audioPlugin":"MMFilter","param":"RESONANCE","bounds":[120,160,118,80],"encoderId":3,"color":"secondary","track":1,"componentName":"KnobValue"},
-        {"text":"HELLO 1234 hello","bounds":[10,260,200,20],"fontSize":8,"font":"draw/ST7789/fonts/Roboto-Thin.ttf","componentName":"Text"},
+        {"text":"HELLO 1234 hello","bounds":[10,260,200,20],"fontSize":16,"font":"draw/ST7789/fonts/Roboto-Thin.ttf","componentName":"Text"},
         {"fontSize":16,"text":"Kick","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[70,28,6,6],"color":"#a3c912","componentName":"Rect"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"q","action":"setView:Drum23"},{"key":"w","action":"setView:Distortion"},{"key":"e","action":"setView:Waveform"},{"key":"r","action":"setView:Frequency"},{"key":"a","action":"setView:Sequencer"},{"key":"s","action":"setView:Amplitude"},{"key":"d","action":"setView:Click"},{"key":"f","action":"noteOn:Drum23:60"},{"key":"x","action":"noteOn:Drum23:60"},{"key":"altleft","action":"noteOn:Drum23:60"},{"key":"space","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},

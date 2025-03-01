@@ -40,7 +40,8 @@ struct DrawTextOptions {
     Color color = { 255, 255, 255, 255 };
     void* font = NULL;
     int maxWidth = 0;
-    int fontHeight = 0;
+    int fontHeight = 0; // Compiled
+    int fontSpacing = 2; // Ttf
 };
 
 class DrawInterface {

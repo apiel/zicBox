@@ -56,7 +56,7 @@ export function Drum23View({ name }: Props) {
                 track={Drum23Track}
             />
 
-            <Text text="HELLO 1234 hello" bounds={[10, 260, 200, 20]} fontSize={8} font="draw/ST7789/fonts/Roboto-Thin.ttf" />
+            <Text text="HELLO 1234 hello" bounds={[10, 260, 200, 20]} fontSize={16} font="draw/ST7789/fonts/Roboto-Thin.ttf" />
 
             <TextGridDrum23 selected={'Main'} viewName={name} />
             <Common selected={'Kick'} track={Drum23Track} selectedBackground={ColorTrack1} />
