@@ -1,6 +1,7 @@
 import * as React from '@/libs/react';
 
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
+import { Rect } from '@/libs/nativeComponents/Rect';
 import { Text } from '@/libs/nativeComponents/Text';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
@@ -56,7 +57,8 @@ export function Drum23View({ name }: Props) {
                 track={Drum23Track}
             />
 
-            <Text right text="HELLO 1234 hello" bounds={[10, 260, 220, 20]} fontSize={16} font="draw/ST7789/fonts/Roboto-Thin.ttf" />
+            <Text right text="HELLO 1234 hello" bounds={[10, 250, 220, 20]} fontSize={16} font="draw/ST7789/fonts/Roboto-Thin.ttf" />
+            <Rect bounds={[10, 250, 220, 20]} color="white" filled={false} />
 
             <Text right text="HELLO 1234 hello" bounds={[10, 275, 220, 20]} fontSize={8} />
 

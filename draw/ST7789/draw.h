@@ -289,7 +289,7 @@ protected:
         }
     }
 
-    int drawChar(Point position, char character, FT_Face& face, DrawOptions options = {}, int maxX = 0)
+    int drawChar(Point position, char character, FT_Face& face, int lineHeight, DrawOptions options = {}, int maxX = 0)
     {
         if (FT_Load_Char(face, character, FT_LOAD_RENDER)) {
             return 0;
@@ -297,7 +297,7 @@ protected:
 
         FT_Bitmap* bitmap = &face->glyph->bitmap;
         int x = position.x + face->glyph->bitmap_left;
-        int y = position.y - face->glyph->bitmap_top;
+        int y = position.y - face->glyph->bitmap_top + lineHeight;
         int w = maxX && (x + bitmap->width > maxX) ? maxX - x : bitmap->width;
 
         for (int row = 0; row < bitmap->rows; row++) {
@@ -531,7 +531,7 @@ public:
         if (ttfFont) {
             FT_Set_Pixel_Sizes(ttfFont->face, 0, size);
             for (uint16_t i = 0; i < len && x < maxX; i++) {
-                x += drawChar({ (int)x, position.y }, text[i], ttfFont->face, { .color = { options.color } }, maxX);
+                x += drawChar({ (int)x, position.y }, text[i], ttfFont->face, size, { .color = { options.color } }, maxX);
                 x += options.fontSpacing;
             }
             return x;
@@ -568,7 +568,7 @@ public:
                 if (x < 0) {
                     break;
                 }
-                drawChar({ (int)x, position.y }, c, ttfFont->face, { .color = { options.color } });
+                drawChar({ (int)x, position.y }, c, ttfFont->face, size, { .color = { options.color } });
                 x -= options.fontSpacing;
             }
             return x;
@@ -606,7 +606,7 @@ public:
             float x = position.x - w / 2;
             for (uint16_t i = 0; i < len && x < styles.screen.w; i++) {
                 if (x > 0) {
-                    x += drawChar({ (int)x, position.y }, text[i], ttfFont->face, { .color = { options.color } });
+                    x += drawChar({ (int)x, position.y }, text[i], ttfFont->face, size, { .color = { options.color } });
                 }
                 x += options.fontSpacing;
             }
