@@ -473,6 +473,14 @@ public:
         return font;
     }
 
+    TtfFont* getTtfFont(DrawTextOptions options)
+    {
+        if (options.font && ((TtfFont*)options.font)->type == TTF_FONT) {
+            return (TtfFont*)options.font;
+        }
+        return nullptr;
+    }
+
     uint8_t* getFont(DrawTextOptions options)
     {
         if (options.font) {
@@ -483,6 +491,12 @@ public:
 
     int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
+        TtfFont* ttfFont = getTtfFont(options);
+        if (ttfFont) {
+            printf("TTF font not supported yet...\n");
+            return 0;
+        }
+
         uint8_t* font = getFont(options);
         uint16_t height = font[0];
         uint16_t width = font[1];

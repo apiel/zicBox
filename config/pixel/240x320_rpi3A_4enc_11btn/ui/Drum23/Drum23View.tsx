@@ -1,6 +1,7 @@
 import * as React from '@/libs/react';
 
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
+import { Text } from '@/libs/nativeComponents/Text';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
 import {
@@ -55,7 +56,7 @@ export function Drum23View({ name }: Props) {
                 track={Drum23Track}
             />
 
-            {/* <Text text="HELLO 1234 hello" bounds={[10, 260, 200, 20]} fontSize={8} font="5x6" /> */}
+            <Text text="HELLO 1234 hello" bounds={[10, 260, 200, 20]} fontSize={8} font="draw/ST7789/fonts/Roboto-Thin.ttf" />
 
             <TextGridDrum23 selected={'Main'} viewName={name} />
             <Common selected={'Kick'} track={Drum23Track} selectedBackground={ColorTrack1} />

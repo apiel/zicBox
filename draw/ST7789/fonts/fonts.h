@@ -10,13 +10,32 @@
 #include "UbuntuBold.h"
 #include "5x6.h"
 
+#include "TtfFont.h"
+
 #include <string.h>
+#include <set>
+
+std::set<TtfFont*> ttfFonts;
 
 void* getFontPtr(std::string& name) 
 {
     // if (name == nullptr || strcmp(name, "default") == 0) {
     if (name.empty() || name == "default") {
         return &Sinclair_S;
+    }
+
+    // If name end with .ttf, it's a ttf font
+    if (name.find(".ttf") != std::string::npos) {
+        // First search to see if it's ttf font already loaded
+        for (TtfFont* font : ttfFonts) {
+            if (font->fontPath == name) {
+                return font;
+            }
+        }
+        // Else create a new ttf font
+        TtfFont* font = new TtfFont(name);
+        ttfFonts.insert(font);
+        return font;
     }
 
     if (name == "ArialBold") {
