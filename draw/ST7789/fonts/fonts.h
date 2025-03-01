@@ -12,30 +12,30 @@
 
 #include <string.h>
 
-void* getFontPtr(const char* name = nullptr) 
+void* getFontPtr(std::string& name) 
 {
-    printf("load font %s\n", name);
-    if (name == nullptr || strcmp(name, "default") == 0) {
+    // if (name == nullptr || strcmp(name, "default") == 0) {
+    if (name.empty() || name == "default") {
         return &Sinclair_S;
     }
 
-    if (strcmp(name, "ArialBold") == 0) {
+    if (name == "ArialBold") {
         return &ArialBold;
-    } else if (strcmp(name, "ArialNormal") == 0) {
+    } else if (name == "ArialNormal") {
         return &ArialNormal;
-    } else if (strcmp(name, "BigFont") == 0) {
+    } else if (name == "BigFont") {
         return &BigFont;
-    } else if (strcmp(name, "Sinclair_M") == 0) {
+    } else if (name == "Sinclair_M") {
         return &Sinclair_M;
-    } else if (strcmp(name, "Sinclair_S") == 0) {
+    } else if (name == "Sinclair_S") {
         return &Sinclair_S;
-    } else if (strcmp(name, "MusicNote") == 0) {
+    } else if (name == "MusicNote") {
         return &FontMusicNote;
-    } else if (strcmp(name, "Ubuntu") == 0) {
+    } else if (name == "Ubuntu") {
         return &Ubuntu;
-    } else if (strcmp(name, "UbuntuBold") == 0) {
+    } else if (name == "UbuntuBold") {
         return &UbuntuBold;
-    } else if (strcmp(name, "5x6") == 0) {
+    } else if (name == "5x6") {
         printf("-----------------------> try to use font 5x6\n");
         return &Font5x6;
     }
