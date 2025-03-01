@@ -22,6 +22,7 @@ class TextComponent : public Component {
     std::string text;
 
     bool centered = false;
+    bool rightAligned = false;
     int fontSize = 8;
     int fontHeight = 0;
     void* font = NULL;
@@ -39,6 +40,8 @@ public:
         text = getConfig(config, "text"); //eg: "Hello World"
         /// If true, the text will be centered. Default is false.
         centered = config.value("centered", centered); //eg: true
+        /// If true, the text will be right aligned. Default is false.
+        rightAligned = config.value("right", rightAligned); //eg: true
         /// The font size of the text. Default is 8.
         fontSize = config.value("fontSize", 8); //eg: 8
         /// The font of the text. Default is null.
@@ -60,7 +63,12 @@ public:
     {
         draw.filledRect(relativePosition, size, { bgColor });
         if (!text.empty()) {
-            if (centered) {
+            if (rightAligned) {
+                Point textPos = { relativePosition.x + size.w, relativePosition.y };
+                if (!icon.render(text, textPos, 8, { color }, Icon::RIGHT)) {
+                    draw.textRight(textPos, text, fontSize, { color, .font = font, .maxWidth = size.w, .fontHeight = fontHeight });
+                }
+            } if (centered) {
                 Point textPos = { relativePosition.x + (int)(size.w * 0.5), relativePosition.y + (int)(size.h * 0.5) - 4 };
                 if (!icon.render(text, textPos, 8, { color }, Icon::CENTER)) {
 

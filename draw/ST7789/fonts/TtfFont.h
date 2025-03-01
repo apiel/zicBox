@@ -28,4 +28,16 @@ public:
             return;
         }
     }
+
+    int getWidth(std::string& text, int spacing = 0) {
+        int width = 0;
+        for (char& c : text) {
+            if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
+                logWarn("Could not load character: " + std::string(1, c));
+                return 0;
+            }
+            width += face->glyph->bitmap.width + spacing;
+        }
+        return width;
+    }
 };

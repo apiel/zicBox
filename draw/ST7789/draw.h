@@ -600,20 +600,13 @@ public:
         TtfFont* ttfFont = getTtfFont(options);
         if (ttfFont) {
             FT_Set_Pixel_Sizes(ttfFont->face, 0, size);
-            if (FT_Load_Char(ttfFont->face, 'm', FT_LOAD_RENDER)) {
-                return position.x;
-            }
-            float xInc = ttfFont->face->glyph->bitmap.width;
 
-            int w = len * (xInc + options.fontSpacing);
+            int w = ttfFont->getWidth(text, options.fontSpacing);
             if (options.maxWidth && w > options.maxWidth) {
                 w = options.maxWidth;
             }
             float x = position.x - w / 2;
-            for (uint16_t i = 0; i < len; i++) {
-                if ((x + xInc) > styles.screen.w) {
-                    break;
-                }
+            for (uint16_t i = 0; i < len && x < styles.screen.w; i++) {
                 if (x > 0) {
                     x += drawChar({ (int)x, position.y }, text[i], ttfFont->face, { .color = { options.color } });
                 }
