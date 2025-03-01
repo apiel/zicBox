@@ -564,13 +564,13 @@ public:
             if (FT_Load_Char(ttfFont->face, 'm', FT_LOAD_RENDER)) {
                 return x;
             }
-            float xInc = ttfFont->face->glyph->bitmap.width;
-            for (uint16_t i = 0; i < len; i++) {
-                x -= xInc;
+            for (uint16_t i = 0; i < len && x > 0; i++) {
+                char c = text[len-i-1];
+                x -= ttfFont->getWidth(c);
                 if (x < 0) {
                     break;
                 }
-                drawChar({ (int)x, position.y }, text[i], ttfFont->face, { .color = { options.color } });
+                drawChar({ (int)x, position.y }, c, ttfFont->face, { .color = { options.color } });
                 x -= options.fontSpacing;
             }
             return x;
