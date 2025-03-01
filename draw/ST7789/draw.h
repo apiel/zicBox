@@ -287,6 +287,36 @@ protected:
         }
     }
 
+    int drawChar(Point position, char character, FT_Face face, int maxX, DrawOptions options = {})
+    {
+        if (FT_Load_Char(face, character, FT_LOAD_RENDER)) {
+            return 0;
+        }
+
+        FT_Bitmap* bitmap = &face->glyph->bitmap;
+        int x = position.x + face->glyph->bitmap_left;
+        int y = position.y - face->glyph->bitmap_top;
+        int w = x + bitmap->width > maxX ? maxX - x : bitmap->width;
+
+        for (int row = 0; row < bitmap->rows; row++) {
+            for (int col = 0; col < w; col++) {
+                unsigned char a = bitmap->buffer[row * bitmap->pitch + col];
+                if (a) { // Only draw non-zero pixels
+                    Color color = { 
+                        options.color.r,
+                        options.color.g,
+                        options.color.b,
+                        a,
+                    };
+                    // Color color = alpha(options.color, a / 255.0f); // Apply alpha for anti alias
+                    pixel({ (int)(x + col), (int)(y + row) }, { color });
+                }
+            }
+        }
+
+        return bitmap->width;
+    }
+
     Color* getStyleColor(std::string& color)
     {
         if (color == "background") {
@@ -491,22 +521,28 @@ public:
 
     int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
+        float x = position.x;
+        float maxX = x + (options.maxWidth ? options.maxWidth : (styles.screen.w - x));
+        uint16_t len = text.length();
+
         TtfFont* ttfFont = getTtfFont(options);
         if (ttfFont) {
             printf("TTF font not supported yet...\n");
-            return 0;
+            FT_Set_Pixel_Sizes(ttfFont->face, 0, size);
+            for (uint16_t i = 0; i < len && x < maxX; i++) {
+                x += drawChar({ (int)x, position.y }, text[i], ttfFont->face, maxX, { .color = { options.color } });
+                x += options.fontSpacing;
+            }
+            return x;
         }
 
         uint8_t* font = getFont(options);
         uint16_t height = font[0];
         uint16_t width = font[1];
         float scale = size / (float)height;
-        uint16_t len = text.length();
         uint8_t heightRatio = options.fontHeight == 0 ? 1 : (options.fontHeight / height);
 
-        float x = position.x;
         float xInc = width * scale;
-        float maxX = x + (options.maxWidth ? options.maxWidth : (styles.screen.w - x));
         for (uint16_t i = 0; i < len; i++) {
             if (x + xInc > maxX) {
                 break;
