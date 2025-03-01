@@ -1,5 +1,6 @@
 RTMIDI=`pkg-config --cflags --libs rtmidi`
 SDL2=`sdl2-config --cflags --libs`
+TTF=`pkg-config --cflags --libs freetype2`
 
 # SPI_DEV_MEM=`-lbcm2835 -lbcm_host -DUSE_SPI_DEV_MEM`
 
@@ -42,7 +43,7 @@ buildPixel:
 	make pixel.$(BIN_PLATFORM)
 
 pixel.$(BIN_PLATFORM):
-	g++ -g -fms-extensions -o pixel.$(BIN_PLATFORM) zicPixel.cpp -ldl $(INC) $(RPI) $(RTMIDI) $(PIXEL_SDL) $(SPI_DEV_MEM) $(TRACK_HEADER_FILES)
+	g++ -g -fms-extensions -o pixel.$(BIN_PLATFORM) zicPixel.cpp -ldl $(INC) $(RPI) $(TTF) $(RTMIDI) $(PIXEL_SDL) $(SPI_DEV_MEM) $(TRACK_HEADER_FILES)
 
 # Safeguard: include only if .d files exist
 -include $(wildcard pixel.$(BIN_PLATFORM).d)
