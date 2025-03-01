@@ -331,10 +331,10 @@ public:
 
         // drawChar({ 10, 10 }, 'A', ArialBold);
         // drawChar({ 10, 10 }, 'B', UbuntuBold);
-        drawChar({ 10, 10 }, 'B', UbuntuBold, 0.5, 1);
+        // drawChar({ 10, 10 }, 'B', UbuntuBold.data, 0.5, 1);
 
         filledRect({ 58, 10 }, { 20, 20 });
-        drawChar({ 60, 10 }, 'B', Sinclair_S, 2.0, 1, { .color = { 255, 0, 0 } });
+        // drawChar({ 60, 10 }, 'B', Sinclair_S.data, 2.0, 1, { .color = { 255, 0, 0 } });
 
         filledRect({ 40, 45 }, { 30, 20 });
         textRight({ 120, 50 }, "Hello World!", 16, { .color = { 0, 255, 0 }, .font = &Sinclair_S });
@@ -476,9 +476,9 @@ public:
     uint8_t* getFont(DrawTextOptions options)
     {
         if (options.font) {
-            return (uint8_t*)options.font;
+            return (uint8_t*)((Font*)options.font)->data;
         }
-        return Sinclair_S;
+        return (uint8_t*)Sinclair_S.data;
     }
 
     int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
