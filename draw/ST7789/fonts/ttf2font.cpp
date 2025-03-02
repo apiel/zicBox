@@ -53,8 +53,12 @@ int main(int argc, char* argv[])
 
     headerFile << "#pragma once\n\n";
     headerFile << "#include <cstdint>\n\n";
+    headerFile << "// First raw define the font height\n";
+    headerFile << "// Then each line is a character\n";
+    headerFile << "// Each character is a tuple of (width, bitmap)\n";
+    headerFile << "// Bitmap is a series of pixels, where each pixel is a byte representing the alpha color for anti aliasing\n\n";
     headerFile << "uint8_t " << fontName << "[] = {\n";
-    headerFile << "    " << fontSize << ", " << fontSize << ", // " << fontSize << "x" << fontSize << " pixels\n";
+    headerFile << "    " << fontSize << ", // font height: " << fontSize << " pixels\n";
 
     for (int i = 32; i < 128; i++) { // ASCII characters from 32 to 127
         if (FT_Load_Char(face, i, FT_LOAD_RENDER)) {
@@ -62,17 +66,14 @@ int main(int argc, char* argv[])
             continue;
         }
 
-        // headerFile << "    ";
-        // for (int y = 0; y < fontSize; y++) {
-        //     uint8_t byte = 0;
-        //     for (int x = 0; x < fontSize; x++) {
-        //         if (x < face->glyph->bitmap.width && y < face->glyph->bitmap.rows) {
-        //             byte |= (face->glyph->bitmap.buffer[y * face->glyph->bitmap.pitch + x] > 0) ? (1 << (7 - x)) : 0;
-        //         }
-        //     }
-        //     headerFile << "0x" << std::hex << std::setw(2) << std::setfill('0') << (int)byte << ", ";
-        // }
-        // headerFile << "// " << (char)i << "\n";
+        headerFile << "    /* " << (char)i << " */ " << face->glyph->bitmap.width << ", ";
+        for (int y = 0; y < fontSize; y++) {
+            for (int x = 0; x < face->glyph->bitmap.width; x++) {
+                unsigned char *alpha = &face->glyph->bitmap.buffer[y * face->glyph->bitmap.pitch + x];
+                headerFile << "0x" << std::hex << std::setw(2) << std::setfill('0') << (int)*alpha << ", ";
+            }
+        }
+        headerFile << "\n";
     }
 
     headerFile << "};\n";

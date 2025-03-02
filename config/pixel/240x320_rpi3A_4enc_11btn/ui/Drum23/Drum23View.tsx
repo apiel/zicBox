@@ -57,7 +57,13 @@ export function Drum23View({ name }: Props) {
                 track={Drum23Track}
             />
 
-            <Text right text="HELLO 1234 hello" bounds={[10, 250, 220, 20]} fontSize={16} font="draw/ST7789/fonts/Roboto-Thin.ttf" />
+            <Text
+                right
+                text={'HELLO " 1234 hello'}
+                bounds={[10, 250, 220, 20]}
+                fontSize={16}
+                font="draw/ST7789/fonts/Roboto-Thin.ttf"
+            />
             <Rect bounds={[10, 250, 220, 20]} color="white" filled={false} />
 
             <Text right text="HELLO 1234 hello" bounds={[10, 275, 220, 20]} fontSize={8} />
