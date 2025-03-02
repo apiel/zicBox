@@ -296,27 +296,47 @@ protected:
         }
 
         FT_Bitmap* bitmap = &face->glyph->bitmap;
-        int x = position.x + face->glyph->bitmap_left;
-        int y = position.y - face->glyph->bitmap_top + lineHeight;
-        int w = maxX && (x + bitmap->width > maxX) ? maxX - x : bitmap->width;
+        // int x = position.x + face->glyph->bitmap_left;
+        // int y = position.y - face->glyph->bitmap_top + lineHeight;
+        // int w = maxX && (x + bitmap->width > maxX) ? maxX - x : bitmap->width;
 
-        for (int row = 0; row < bitmap->rows; row++) {
-            for (int col = 0; col < w; col++) {
-                unsigned char a = bitmap->buffer[row * bitmap->pitch + col];
+        if (maxX && (position.x + bitmap->width > maxX)) {
+            return position.x + bitmap->width;
+        }
+
+        // for (int row = 0; row < bitmap->rows; row++) {
+        //     for (int col = 0; col < w; col++) {
+        //         unsigned char a = bitmap->buffer[row * bitmap->pitch + col];
+        //         if (a) { // Only draw non-zero pixels
+        //             Color color = {
+        //                 options.color.r,
+        //                 options.color.g,
+        //                 options.color.b,
+        //                 (uint8_t)range(a * 2, 0, 255),
+        //             };
+        //             // Color color = alpha(options.color, a / 255.0f); // Apply alpha for anti alias
+        //             pixel({ (int)(x + col), (int)(y + row) }, { color });
+        //         }
+        //     }
+        // }
+        // return bitmap->width;
+
+        int marginTop = lineHeight - face->glyph->bitmap_top;
+        return drawChar(position, bitmap->buffer, bitmap->width, marginTop, bitmap->rows, options.color);
+    }
+
+    int drawChar(Point pos, uint8_t* charPtr, int width, int marginTop, int rows, Color color)
+    {
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < width; col++) {
+                uint8_t a = charPtr[col + row * width];
                 if (a) { // Only draw non-zero pixels
-                    Color color = {
-                        options.color.r,
-                        options.color.g,
-                        options.color.b,
-                        (uint8_t)range(a * 2, 0, 255),
-                    };
-                    // Color color = alpha(options.color, a / 255.0f); // Apply alpha for anti alias
-                    pixel({ (int)(x + col), (int)(y + row) }, { color });
+                    color.a = (uint8_t)range(a * 2, 0, 255);
+                    pixel({ (int)(pos.x + col), (int)(pos.y + row + marginTop) }, { color });
                 }
             }
         }
-
-        return bitmap->width;
+        return width;
     }
 
     Color* getStyleColor(std::string& color)
@@ -569,20 +589,6 @@ public:
             x += drawChar({ (int)x, y }, (uint8_t*)charPtr + 3, width, marginTop, rows, options.color) + options.fontSpacing;
         }
         return x;
-    }
-
-    int drawChar(Point pos, uint8_t* charPtr, int width, int marginTop, int rows, Color color)
-    {
-        for (int row = 0; row < rows; row++) {
-            for (int col = 0; col < width; col++) {
-                uint8_t a = charPtr[col + row * width];
-                if (a) { // Only draw non-zero pixels
-                    color.a = (uint8_t)range(a * 2, 0, 255);
-                    pixel({ (int)(pos.x + col), (int)(pos.y + row + marginTop) }, { color });
-                }
-            }
-        }
-        return width;
     }
 
     int textRight(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
