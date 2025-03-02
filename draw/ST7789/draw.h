@@ -304,18 +304,18 @@ protected:
         return drawChar(position, bitmap->buffer, bitmap->width, marginTop, bitmap->rows, options.color);
     }
 
-    int drawChar(Point pos, uint8_t* charPtr, int width, int marginTop, int rows, Color color)
+    int drawChar(Point pos, uint8_t* charPtr, int width, int marginTop, int rows, Color color, int scale = 1)
     {
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < width; col++) {
                 uint8_t a = charPtr[col + row * width];
                 if (a) { // Only draw non-zero pixels
                     color.a = (uint8_t)range(a * 2, 0, 255);
-                    pixel({ (int)(pos.x + col), (int)(pos.y + row + marginTop) }, { color });
+                    pixel({ (int)(pos.x + col * scale), (int)(pos.y + row * scale + marginTop) }, { color });
                 }
             }
         }
-        return width;
+        return width * scale;
     }
 
     Color* getStyleColor(std::string& color)
@@ -538,19 +538,20 @@ public:
 
         const uint8_t** font = (const uint8_t**)getFont(options); // TODO fix getFont
         uint8_t height = *font[0];
-        float scale = size / (float)height;
+        int scale = size / (float)height;
+        scale = scale == 0 ? 1 : scale;
         int heightRatio = options.fontHeight == 0 ? 1 : (options.fontHeight / height);
         int y = position.y;
         for (uint16_t i = 0; i < len && x < maxX; i++) {
             char c = text[i];
             const uint8_t* charPtr = font[1 + (c - ' ')]; // Get the glyph data for the character
             uint8_t width = charPtr[0];
-            uint8_t marginTop = charPtr[1];
+            uint8_t marginTop = charPtr[1] * scale;
             uint8_t rows = charPtr[2];
-            if (x + width > maxX) {
+            if (x + width * scale > maxX) {
                 break;
             }
-            x += drawChar({ (int)x, y }, (uint8_t*)charPtr + 3, width, marginTop, rows, options.color) + options.fontSpacing;
+            x += drawChar({ (int)x, y }, (uint8_t*)charPtr + 3, width, marginTop, rows, options.color, scale) + options.fontSpacing;
         }
         return x;
     }
