@@ -563,23 +563,23 @@ public:
             uint8_t width = charPtr[0];
             uint8_t marginTop = charPtr[1];
             uint8_t rows = charPtr[2];
-            for (int row = 0; row < rows; row++) {
-                for (int col = 0; col < width; col++) {
-                    uint8_t a = charPtr[3 + col + row * width];
-                    if (a) { // Only draw non-zero pixels
-                        Color color = {
-                            options.color.r,
-                            options.color.g,
-                            options.color.b,
-                            (uint8_t)range(a * 2, 0, 255),
-                        };
-                        pixel({ (int)(x + col), (int)(y + row + marginTop) }, { color });
-                    }
-                }
-            }
-            x += width + options.fontSpacing;
+            x += drawChar({ (int)x, y }, (uint8_t*)charPtr + 3, width, marginTop, rows, options.color) + options.fontSpacing;
         }
         return x;
+    }
+
+    int drawChar(Point pos, uint8_t* charPtr, int width, int marginTop, int rows, Color color)
+    {
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < width; col++) {
+                uint8_t a = charPtr[col + row * width];
+                if (a) { // Only draw non-zero pixels
+                    color.a = (uint8_t)range(a * 2, 0, 255);
+                    pixel({ (int)(pos.x + col), (int)(pos.y + row + marginTop) }, { color });
+                }
+            }
+        }
+        return width;
     }
 
     int textRight(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
