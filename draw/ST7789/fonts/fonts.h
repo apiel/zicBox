@@ -8,6 +8,7 @@
 #include "Sinclair_S.h"
 #include "Ubuntu.h"
 #include "UbuntuBold.h"
+#include "RobotoThin_8.h"
 
 #include "TtfFont.h"
 
@@ -53,6 +54,8 @@ void* getFontPtr(std::string& name)
         return &Ubuntu;
     } else if (name == "UbuntuBold") {
         return &UbuntuBold;
+    } else if (name == "RobotoThin_8") {
+        return &RobotoThin_8;
     }
 
     return nullptr;

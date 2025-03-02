@@ -55,19 +55,30 @@ int main(int argc, char* argv[])
     headerFile << "#include <cstdint>\n\n";
     headerFile << "#include \"Font.h\"\n\n";
     headerFile << "// First raw define the font height\n";
-    headerFile << "// Then each line is a character\n";
-    headerFile << "// Each character is a tuple of (width, bitmap)\n";
+    headerFile << "// Then we define the address of each character\n";
+    headerFile << "// Finally each line is a character represented by a tuple of (width, bitmap)\n";
     headerFile << "// Bitmap is a series of pixels, where each pixel is a byte representing the alpha color for anti aliasing\n\n";
     headerFile << "const uint8_t " << fontName << "_data[] = {\n";
     headerFile << "    " << fontSize << ", // font height: " << fontSize << " pixels\n";
 
-    for (int i = 32; i < 128; i++) { // ASCII characters from 32 to 127
+    uint16_t address = 0;
+    // Need to define the address of each character
+    for (int i = 32; i < 127; i++) {
+        if (FT_Load_Char(face, i, FT_LOAD_RENDER)) {
+            std::cerr << "Could not load character " << i << std::endl;
+            continue;
+        }
+        headerFile << "    0x" << std::hex << std::setw(2) << std::setfill('0') << (address >> 8) << ", 0x" << std::hex << std::setw(2) << std::setfill('0') << (address & 0xFF) << ", // " << (char)i << " => " << std::to_string(address) << "\n";
+        address += face->glyph->bitmap.width + 1; // +1 for the width (if width is bigger than 255, we have a problem :p)
+    }
+
+    for (int i = 32; i < 127; i++) { // ASCII characters from 32 to 127
         if (FT_Load_Char(face, i, FT_LOAD_RENDER)) {
             std::cerr << "Could not load character " << i << std::endl;
             continue;
         }
 
-        headerFile << "    /* " << (char)i << " */ " << face->glyph->bitmap.width << ", ";
+        headerFile << "    /* " << (char)i << " */ " << std::to_string(face->glyph->bitmap.width) << ", ";
         for (int y = 0; y < fontSize; y++) {
             for (int x = 0; x < face->glyph->bitmap.width; x++) {
                 unsigned char *alpha = &face->glyph->bitmap.buffer[y * face->glyph->bitmap.pitch + x];

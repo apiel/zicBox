@@ -17,9 +17,9 @@
 #endif
 
 #include "fonts/fonts.h"
+#include "helpers/range.h"
 #include "log.h"
 #include "plugins/components/drawInterface.h"
-#include "helpers/range.h"
 
 #include <cmath>
 #include <stdexcept>
@@ -551,6 +551,16 @@ public:
             drawChar({ (int)x, position.y }, text[i], font, scale, heightRatio, { .color = { options.color } });
             x += xInc;
         }
+
+        // uint8_t* font = getFont(options);
+        // int height = font[0];
+        // float scale = size / (float)height;
+        // int heightRatio = options.fontHeight == 0 ? 1 : (options.fontHeight / height);
+
+        // for (uint16_t i = 0; i < len; i++) {
+        //     char c = text[i];
+
+        // }
         return x;
     }
 
@@ -563,7 +573,7 @@ public:
         if (ttfFont) {
             FT_Set_Pixel_Sizes(ttfFont->face, 0, size);
             for (uint16_t i = 0; i < len && x > 0; i++) {
-                char c = text[len-i-1];
+                char c = text[len - i - 1];
                 x -= ttfFont->getWidth(c);
                 if (x < 0) {
                     break;
