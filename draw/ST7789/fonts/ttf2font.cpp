@@ -64,8 +64,8 @@ int main(int argc, char* argv[])
         }
         headerFile << "const uint8_t " << fontName << "_char" << std::to_string(i) << "[] = { // \"" << (char)i << "\"\n";
         headerFile << "    " << std::to_string(face->glyph->bitmap.width) << ", // width: " << std::to_string(face->glyph->bitmap.width) << "\n";
-        //face->glyph->bitmap_top
         headerFile << "    " << std::to_string(fontSize - face->glyph->bitmap_top) << ", // margin-top: " << std::to_string(fontSize - face->glyph->bitmap_top) << "\n";
+        headerFile << "    " << std::to_string(face->glyph->bitmap.rows) << ", // rows: " << std::to_string(face->glyph->bitmap.rows) << "\n";
         headerFile << "    ";
         for (int y = 0; y < fontSize; y++) {
             for (int x = 0; x < face->glyph->bitmap.width; x++) {
