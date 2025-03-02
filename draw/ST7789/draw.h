@@ -296,30 +296,9 @@ protected:
         }
 
         FT_Bitmap* bitmap = &face->glyph->bitmap;
-        // int x = position.x + face->glyph->bitmap_left;
-        // int y = position.y - face->glyph->bitmap_top + lineHeight;
-        // int w = maxX && (x + bitmap->width > maxX) ? maxX - x : bitmap->width;
-
         if (maxX && (position.x + bitmap->width > maxX)) {
             return position.x + bitmap->width;
         }
-
-        // for (int row = 0; row < bitmap->rows; row++) {
-        //     for (int col = 0; col < w; col++) {
-        //         unsigned char a = bitmap->buffer[row * bitmap->pitch + col];
-        //         if (a) { // Only draw non-zero pixels
-        //             Color color = {
-        //                 options.color.r,
-        //                 options.color.g,
-        //                 options.color.b,
-        //                 (uint8_t)range(a * 2, 0, 255),
-        //             };
-        //             // Color color = alpha(options.color, a / 255.0f); // Apply alpha for anti alias
-        //             pixel({ (int)(x + col), (int)(y + row) }, { color });
-        //         }
-        //     }
-        // }
-        // return bitmap->width;
 
         int marginTop = lineHeight - face->glyph->bitmap_top;
         return drawChar(position, bitmap->buffer, bitmap->width, marginTop, bitmap->rows, options.color);
@@ -556,21 +535,6 @@ public:
             }
             return x;
         }
-
-        // uint8_t* font = getFont(options);
-        // uint16_t height = font[0];
-        // uint16_t width = font[1];
-        // float scale = size / (float)height;
-        // uint8_t heightRatio = options.fontHeight == 0 ? 1 : (options.fontHeight / height);
-
-        // float xInc = width * scale;
-        // for (uint16_t i = 0; i < len; i++) {
-        //     if (x + xInc > maxX) {
-        //         break;
-        //     }
-        //     drawChar({ (int)x, position.y }, text[i], font, scale, heightRatio, { .color = { options.color } });
-        //     x += xInc;
-        // }
 
         const uint8_t** font = (const uint8_t**)getFont(options); // TODO fix getFont
         uint8_t height = *font[0];
