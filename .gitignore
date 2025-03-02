@@ -36,3 +36,4 @@ node_modules
 tape/.tmp/*
 tape/tmp/*
 samples/tape_tmp/*.wav
+ttf2font
