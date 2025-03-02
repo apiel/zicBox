@@ -9,6 +9,7 @@
 #include "Ubuntu.h"
 #include "UbuntuBold.h"
 #include "RobotoThin_8.h"
+#include "RobotoThin_16.h"
 
 #include "TtfFont.h"
 
@@ -56,6 +57,8 @@ void* getFontPtr(std::string& name)
         return &UbuntuBold;
     } else if (name == "RobotoThin_8") {
         return &RobotoThin_8;
+    } else if (name == "RobotoThin_16") {
+        return &RobotoThin_16;
     }
 
     return nullptr;

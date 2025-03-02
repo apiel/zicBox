@@ -97,7 +97,7 @@
         {"audioPlugin":"MMFilter","param":"RESONANCE","bounds":[120,160,118,80],"encoderId":3,"color":"secondary","track":1,"componentName":"KnobValue"},
         {"text":"HELLO \" 1234 hello","bounds":[10,245,220,20],"fontSize":16,"font":"draw/ST7789/fonts/Roboto-Thin.ttf","componentName":"Text"},
         {"bounds":[10,245,220,20],"color":"white","filled":false,"componentName":"Rect"},
-        {"text":"HELLO 1234 hello","bounds":[10,270,220,20],"fontSize":8,"font":"RobotoThin_8","componentName":"Text"},
+        {"text":"HELLO 1234 hello","bounds":[10,270,220,20],"fontSize":16,"font":"RobotoThin_16","componentName":"Text"},
         {"bounds":[10,270,220,20],"color":"white","filled":false,"componentName":"Rect"},
         {"fontSize":16,"text":"Kick","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[70,28,6,6],"color":"#a3c912","componentName":"Rect"},

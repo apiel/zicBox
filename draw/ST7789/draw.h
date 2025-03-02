@@ -537,30 +537,53 @@ public:
             return x;
         }
 
-        uint8_t* font = getFont(options);
-        uint16_t height = font[0];
-        uint16_t width = font[1];
-        float scale = size / (float)height;
-        uint8_t heightRatio = options.fontHeight == 0 ? 1 : (options.fontHeight / height);
-
-        float xInc = width * scale;
-        for (uint16_t i = 0; i < len; i++) {
-            if (x + xInc > maxX) {
-                break;
-            }
-            drawChar({ (int)x, position.y }, text[i], font, scale, heightRatio, { .color = { options.color } });
-            x += xInc;
-        }
-
         // uint8_t* font = getFont(options);
-        // int height = font[0];
+        // uint16_t height = font[0];
+        // uint16_t width = font[1];
         // float scale = size / (float)height;
-        // int heightRatio = options.fontHeight == 0 ? 1 : (options.fontHeight / height);
+        // uint8_t heightRatio = options.fontHeight == 0 ? 1 : (options.fontHeight / height);
 
+        // float xInc = width * scale;
         // for (uint16_t i = 0; i < len; i++) {
-        //     char c = text[i];
-
+        //     if (x + xInc > maxX) {
+        //         break;
+        //     }
+        //     drawChar({ (int)x, position.y }, text[i], font, scale, heightRatio, { .color = { options.color } });
+        //     x += xInc;
         // }
+
+        // const uint8_t** font = (const uint8_t**)RobotoThin_8.data;
+        const uint8_t** font = (const uint8_t**)getFont(options); // todo fix getFont
+        uint8_t height = *font[0];
+        float scale = size / (float)height;
+        int heightRatio = options.fontHeight == 0 ? 1 : (options.fontHeight / height);
+        int y = position.y;
+        for (uint16_t i = 0; i < len; i++) {
+            char c = text[i];
+            // const uint8_t** charPtr = &font[1 + (c - 32)];
+            // int width = *charPtr[0];
+            const uint8_t* charPtr = font[1 + (c - ' ')]; // Get the glyph data for the character
+            uint8_t width = charPtr[0];
+            uint8_t marginTop = charPtr[1];
+            // printf("\n%c: %d\n", c, width);
+            // charPtr++;
+            for (int row = 0; row < height; row++) {
+                for (int col = 0; col < width; col++) {
+                    uint8_t a = charPtr[2 + col + row * width];
+                    // printf("%d = %d, ", col + row * width, a);
+                    if (a) { // Only draw non-zero pixels
+                        Color color = {
+                            options.color.r,
+                            options.color.g,
+                            options.color.b,
+                            (uint8_t)range(a * 2, 0, 255),
+                        };
+                        pixel({ (int)(x + col), (int)(y + row + marginTop) }, { color });
+                    }
+                }
+            }
+            x += width + options.fontSpacing;
+        }
         return x;
     }
 

@@ -7,3 +7,4 @@ compile:
 
 run:
 	./ttf2font Roboto-Thin.ttf 8
+	./ttf2font Roboto-Thin.ttf 16
