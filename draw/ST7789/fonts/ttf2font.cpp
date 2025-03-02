@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
     if (argc > 3) {
         outputHeaderPath = argv[3];
     } else {
-        outputHeaderPath = fontPath.substr(0, fontPath.find_last_of(".")) + ".h";
+        outputHeaderPath = fontPath.substr(0, fontPath.find_last_of(".")) + "_" + std::to_string(fontSize) + ".h";
         outputHeaderPath = std::regex_replace(outputHeaderPath, std::regex("-"), "");
     }
 
@@ -53,11 +53,12 @@ int main(int argc, char* argv[])
 
     headerFile << "#pragma once\n\n";
     headerFile << "#include <cstdint>\n\n";
+    headerFile << "#include \"Font.h\"\n\n";
     headerFile << "// First raw define the font height\n";
     headerFile << "// Then each line is a character\n";
     headerFile << "// Each character is a tuple of (width, bitmap)\n";
     headerFile << "// Bitmap is a series of pixels, where each pixel is a byte representing the alpha color for anti aliasing\n\n";
-    headerFile << "uint8_t " << fontName << "[] = {\n";
+    headerFile << "const uint8_t " << fontName << "_data[] = {\n";
     headerFile << "    " << fontSize << ", // font height: " << fontSize << " pixels\n";
 
     for (int i = 32; i < 128; i++) { // ASCII characters from 32 to 127
@@ -76,7 +77,11 @@ int main(int argc, char* argv[])
         headerFile << "\n";
     }
 
-    headerFile << "};\n";
+    headerFile << "};\n\n";
+
+    headerFile << "Font " << fontName << " = {\n";
+    headerFile << "    (void*)" << fontName << "_data\n";
+    headerFile << "};\n\n";
 
     headerFile.close();
     FT_Done_Face(face);

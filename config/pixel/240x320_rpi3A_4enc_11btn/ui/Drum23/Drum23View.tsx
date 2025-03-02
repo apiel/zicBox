@@ -58,15 +58,16 @@ export function Drum23View({ name }: Props) {
             />
 
             <Text
-                right
+                // right
                 text={'HELLO " 1234 hello'}
-                bounds={[10, 250, 220, 20]}
+                bounds={[10, 245, 220, 20]}
                 fontSize={16}
                 font="draw/ST7789/fonts/Roboto-Thin.ttf"
             />
-            <Rect bounds={[10, 250, 220, 20]} color="white" filled={false} />
+            <Rect bounds={[10, 245, 220, 20]} color="white" filled={false} />
 
-            <Text right text="HELLO 1234 hello" bounds={[10, 275, 220, 20]} fontSize={8} />
+            <Text right text="HELLO 1234 hello" bounds={[10, 270, 220, 20]} fontSize={8} />
+            <Rect bounds={[10, 270, 220, 20]} color="white" filled={false} />
 
             <TextGridDrum23 selected={'Main'} viewName={name} />
             <Common selected={'Kick'} track={Drum23Track} selectedBackground={ColorTrack1} />
