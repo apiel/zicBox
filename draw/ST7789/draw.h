@@ -517,7 +517,7 @@ public:
         if (options.font) {
             return (uint8_t*)((Font*)options.font)->data;
         }
-        return (uint8_t*)Sinclair_S.data;
+        return (uint8_t*)RobotoThin_8.data;
     }
 
     int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
@@ -556,6 +556,85 @@ public:
         return x;
     }
 
+    int textCentered(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
+    {
+        uint16_t len = text.length();
+
+        TtfFont* ttfFont = getTtfFont(options);
+        if (ttfFont) {
+            FT_Set_Pixel_Sizes(ttfFont->face, 0, size);
+
+            int w = ttfFont->getWidth(text, options.fontSpacing);
+            if (options.maxWidth && w > options.maxWidth) {
+                w = options.maxWidth;
+            }
+            float x = position.x - w / 2;
+            for (uint16_t i = 0; i < len && x < styles.screen.w; i++) {
+                if (x > 0) {
+                    x += drawChar({ (int)x, position.y }, text[i], ttfFont->face, size, { .color = { options.color } });
+                }
+                x += options.fontSpacing;
+            }
+            return x;
+        }
+
+        // uint8_t* font = getFont(options);
+        // uint16_t height = font[0];
+        // uint16_t width = font[1];
+        // float scale = size / (float)height;
+        // uint8_t heightRatio = options.fontHeight == 0 ? 1 : (options.fontHeight / height);
+
+        // int w = len * width * scale;
+        // if (options.maxWidth && w > options.maxWidth) {
+        //     w = options.maxWidth;
+        // }
+        // float x = position.x - w / 2;
+        // float xInc = width * scale;
+        // for (uint16_t i = 0; i < len; i++) {
+        //     if ((x + xInc) > styles.screen.w) {
+        //         break;
+        //     }
+        //     if (x > 0) {
+        //         drawChar({ (int)x, position.y }, text[i], font, scale, heightRatio, { .color = { options.color } });
+        //     }
+        //     x += xInc;
+        // }
+        // return x;
+
+        const uint8_t** font = (const uint8_t**)getFont(options); // TODO fix getFont
+        uint8_t height = *font[0];
+        int scale = size / (float)height;
+        scale = scale == 0 ? 1 : scale;
+        int heightRatio = options.fontHeight == 0 ? 1 : (options.fontHeight / height);
+        int y = position.y;
+
+        int textWidth = getTextWidth(text, font, options.fontSpacing) * scale;
+        int x = position.x - textWidth / 2;
+
+        // How to handle maxWidth?
+
+        for (uint16_t i = 0; i < len; i++) {
+            char c = text[i];
+            const uint8_t* charPtr = font[1 + (c - ' ')]; // Get the glyph data for the character
+            uint8_t width = charPtr[0];
+            uint8_t marginTop = charPtr[1] * scale;
+            uint8_t rows = charPtr[2];
+            x += drawChar({ (int)x, y }, (uint8_t*)charPtr + 3, width, marginTop, rows, options.color, scale) + options.fontSpacing;
+        }
+        return x;
+    }
+
+    int getTextWidth(std::string text, const uint8_t** font, int spacing)
+    {
+        int width = 0;
+        for (uint16_t i = 0; i < text.length(); i++) {
+            char c = text[i];
+            const uint8_t* charPtr = font[1 + (c - ' ')];
+            width += charPtr[0] + spacing;
+        }
+        return width;
+    }
+
     int textRight(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
         uint16_t len = text.length();
@@ -589,52 +668,6 @@ public:
                 break;
             }
             drawChar({ (int)x, position.y }, text[len - i - 1], font, scale, heightRatio, { .color = { options.color } });
-        }
-        return x;
-    }
-
-    int textCentered(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
-    {
-        uint16_t len = text.length();
-
-        TtfFont* ttfFont = getTtfFont(options);
-        if (ttfFont) {
-            FT_Set_Pixel_Sizes(ttfFont->face, 0, size);
-
-            int w = ttfFont->getWidth(text, options.fontSpacing);
-            if (options.maxWidth && w > options.maxWidth) {
-                w = options.maxWidth;
-            }
-            float x = position.x - w / 2;
-            for (uint16_t i = 0; i < len && x < styles.screen.w; i++) {
-                if (x > 0) {
-                    x += drawChar({ (int)x, position.y }, text[i], ttfFont->face, size, { .color = { options.color } });
-                }
-                x += options.fontSpacing;
-            }
-            return x;
-        }
-
-        uint8_t* font = getFont(options);
-        uint16_t height = font[0];
-        uint16_t width = font[1];
-        float scale = size / (float)height;
-        uint8_t heightRatio = options.fontHeight == 0 ? 1 : (options.fontHeight / height);
-
-        int w = len * width * scale;
-        if (options.maxWidth && w > options.maxWidth) {
-            w = options.maxWidth;
-        }
-        float x = position.x - w / 2;
-        float xInc = width * scale;
-        for (uint16_t i = 0; i < len; i++) {
-            if ((x + xInc) > styles.screen.w) {
-                break;
-            }
-            if (x > 0) {
-                drawChar({ (int)x, position.y }, text[i], font, scale, heightRatio, { .color = { options.color } });
-            }
-            x += xInc;
         }
         return x;
     }

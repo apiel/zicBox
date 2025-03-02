@@ -22,7 +22,7 @@ void* getFontPtr(std::string& name)
 {
     // if (name == nullptr || strcmp(name, "default") == 0) {
     if (name.empty() || name == "default") {
-        return &Sinclair_S;
+        return &RobotoThin_8;
     }
 
     // If name end with .ttf, it's a ttf font

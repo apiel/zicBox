@@ -59,6 +59,7 @@ export function Drum23View({ name }: Props) {
 
             <Text
                 // right
+                centered
                 text={'HELLO " 1234 hello'}
                 bounds={[10, 245, 220, 20]}
                 fontSize={16}
@@ -68,11 +69,12 @@ export function Drum23View({ name }: Props) {
 
             <Text
                 // right
+                centered
                 text="HELLO 1234 hello"
                 bounds={[10, 270, 220, 20]}
-                // fontSize={16}
                 fontSize={16}
-                font="RobotoThin_8"
+                // font="RobotoThin_8"
+                font="RobotoThin_16"
             />
             <Rect bounds={[10, 270, 220, 20]} color="white" filled={false} />
 
