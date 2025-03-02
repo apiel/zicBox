@@ -5,8 +5,8 @@
 #include <ft2build.h>
 #include <iomanip>
 #include <iostream>
-#include <vector>
 #include <regex>
+#include <vector>
 #include FT_FREETYPE_H
 
 int main(int argc, char* argv[])
@@ -54,40 +54,34 @@ int main(int argc, char* argv[])
     headerFile << "#pragma once\n\n";
     headerFile << "#include <cstdint>\n\n";
     headerFile << "#include \"Font.h\"\n\n";
-    headerFile << "// First raw define the font height\n";
-    headerFile << "// Then we define the address of each character\n";
-    headerFile << "// Finally each line is a character represented by a tuple of (width, bitmap)\n";
-    headerFile << "// Bitmap is a series of pixels, where each pixel is a byte representing the alpha color for anti aliasing\n\n";
-    headerFile << "const uint8_t " << fontName << "_data[] = {\n";
-    headerFile << "    " << fontSize << ", // font height: " << fontSize << " pixels\n";
 
-    uint16_t address = 0;
-    // Need to define the address of each character
+    headerFile << "const uint8_t " << fontName << "_font_height = " << fontSize << ";\n\n";
+
     for (int i = 32; i < 127; i++) {
         if (FT_Load_Char(face, i, FT_LOAD_RENDER)) {
             std::cerr << "Could not load character " << i << std::endl;
-            continue;
+            return 1;
         }
-        headerFile << "    0x" << std::hex << std::setw(2) << std::setfill('0') << (address >> 8) << ", 0x" << std::hex << std::setw(2) << std::setfill('0') << (address & 0xFF) << ", // " << (char)i << " => " << std::to_string(address) << "\n";
-        address += face->glyph->bitmap.width + 1; // +1 for the width (if width is bigger than 255, we have a problem :p)
-    }
-
-    for (int i = 32; i < 127; i++) { // ASCII characters from 32 to 127
-        if (FT_Load_Char(face, i, FT_LOAD_RENDER)) {
-            std::cerr << "Could not load character " << i << std::endl;
-            continue;
-        }
-
-        headerFile << "    /* " << (char)i << " */ " << std::to_string(face->glyph->bitmap.width) << ", ";
+        headerFile << "const uint8_t " << fontName << "_char" << std::to_string(i) << "[] = { // \"" << (char)i << "\"\n";
+        headerFile << "    " << std::to_string(face->glyph->bitmap.width) << ", // width: " << std::to_string(face->glyph->bitmap.width) << "\n";
+        //face->glyph->bitmap_top
+        headerFile << "    " << std::to_string(fontSize - face->glyph->bitmap_top) << ", // margin-top: " << std::to_string(fontSize - face->glyph->bitmap_top) << "\n";
+        headerFile << "    ";
         for (int y = 0; y < fontSize; y++) {
             for (int x = 0; x < face->glyph->bitmap.width; x++) {
-                unsigned char *alpha = &face->glyph->bitmap.buffer[y * face->glyph->bitmap.pitch + x];
+                unsigned char* alpha = &face->glyph->bitmap.buffer[y * face->glyph->bitmap.pitch + x];
                 headerFile << "0x" << std::hex << std::setw(2) << std::setfill('0') << (int)*alpha << ", ";
             }
         }
         headerFile << "\n";
+        headerFile << "};\n";
     }
 
+    headerFile << "const uint8_t* " << fontName << "_data[] = {\n";
+    headerFile << "    &" << fontName << "_font_height,\n";
+    for (int i = 32; i < 127; i++) {
+        headerFile << "    &" << fontName << "_char" << std::to_string(i) << "[0],\n";
+    }
     headerFile << "};\n\n";
 
     headerFile << "Font " << fontName << " = {\n";
