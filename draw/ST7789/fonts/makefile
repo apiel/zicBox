@@ -6,4 +6,4 @@ compile:
 	g++ ttf2font.cpp -o ttf2font $(TTF)
 
 run:
-	./ttf2font Roboto-Thin.ttf
+	./ttf2font Roboto-Thin.ttf 8
