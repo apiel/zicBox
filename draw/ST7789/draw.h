@@ -557,12 +557,15 @@ public:
         float scale = size / (float)height;
         int heightRatio = options.fontHeight == 0 ? 1 : (options.fontHeight / height);
         int y = position.y;
-        for (uint16_t i = 0; i < len; i++) {
+        for (uint16_t i = 0; i < len && x < maxX; i++) {
             char c = text[i];
             const uint8_t* charPtr = font[1 + (c - ' ')]; // Get the glyph data for the character
             uint8_t width = charPtr[0];
             uint8_t marginTop = charPtr[1];
             uint8_t rows = charPtr[2];
+            if (x + width > maxX) {
+                break;
+            }
             x += drawChar({ (int)x, y }, (uint8_t*)charPtr + 3, width, marginTop, rows, options.color) + options.fontSpacing;
         }
         return x;
