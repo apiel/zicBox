@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
 
     std::ofstream headerFile(outputHeaderPath);
     if (!headerFile.is_open()) {
-        std::cerr << "Could not open output header file" << std::endl;
+        std::cerr << "Could not open output header file: " << outputHeaderPath << std::endl;
         return 1;
     }
 

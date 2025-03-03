@@ -578,29 +578,6 @@ public:
             return x;
         }
 
-        // uint8_t* font = getFont(options);
-        // uint16_t height = font[0];
-        // uint16_t width = font[1];
-        // float scale = size / (float)height;
-        // uint8_t heightRatio = options.fontHeight == 0 ? 1 : (options.fontHeight / height);
-
-        // int w = len * width * scale;
-        // if (options.maxWidth && w > options.maxWidth) {
-        //     w = options.maxWidth;
-        // }
-        // float x = position.x - w / 2;
-        // float xInc = width * scale;
-        // for (uint16_t i = 0; i < len; i++) {
-        //     if ((x + xInc) > styles.screen.w) {
-        //         break;
-        //     }
-        //     if (x > 0) {
-        //         drawChar({ (int)x, position.y }, text[i], font, scale, heightRatio, { .color = { options.color } });
-        //     }
-        //     x += xInc;
-        // }
-        // return x;
-
         const uint8_t** font = (const uint8_t**)getFont(options); // TODO fix getFont
         uint8_t height = *font[0];
         int scale = size / (float)height;
