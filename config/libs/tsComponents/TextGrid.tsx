@@ -60,7 +60,7 @@ function TextGridRender({
     const textColor = 'text';
     const h = 11;
     const [x, y, w] = getBounds(bounds);
-    const textY = Number(y) + 2;
+    const textY = Number(y);
     const children = [];
     let marginTop = 0;
     for (const row of rows) {
@@ -89,6 +89,7 @@ function TextGridRender({
                     bgColor={bg}
                     color={color}
                     visibilityContext={visibilityContext(contextValue)}
+                    font="PoppinsLight_8"
                 />
             );
             marginLeft += width;
