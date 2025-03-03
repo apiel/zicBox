@@ -256,39 +256,6 @@ protected:
         pixel(position, options);
     }
 
-    void drawChar(Point position, unsigned char character, uint8_t* font, float scale = 1.0, uint8_t heightRatio = 1, DrawOptions options = {})
-    {
-        float x = position.x;
-        float y = position.y;
-        uint16_t height = font[0];
-        uint16_t width = font[1];
-
-        uint8_t diff = width % 8;
-        uint8_t mod = (width + diff) / 8;
-        float x0 = x;
-        uint16_t len = (mod * height);
-        uint16_t temp = ((character - 32) * len) + 2;
-        for (uint16_t i = 0; i < len; i++) {
-            uint8_t ch = font[temp];
-            for (uint8_t j = 0; j < 8; j++) {
-                if (ch & 0x80) {
-                    for (int i = 0; i < heightRatio; i++) {
-                        pixel({ (int)x, (int)y + i }, options);
-                    }
-                    // pixel({ (int)x, (int)y }, options);
-                }
-                ch <<= 1;
-                x += scale;
-                if ((x - x0) == height * scale) {
-                    x = x0;
-                    y += scale * heightRatio;
-                    break;
-                }
-            }
-            temp++;
-        }
-    }
-
     int drawChar(Point position, char character, FT_Face& face, int lineHeight, DrawOptions options = {}, int maxX = 0)
     {
         if (FT_Load_Char(face, character, FT_LOAD_RENDER)) {
@@ -306,16 +273,28 @@ protected:
 
     int drawChar(Point pos, uint8_t* charPtr, int width, int marginTop, int rows, Color color, int scale = 1)
     {
+        float alpha = color.a / 255.0;
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < width; col++) {
                 uint8_t a = charPtr[col + row * width];
                 if (a) { // Only draw non-zero pixels
-                    color.a = (uint8_t)range(a * 2, 0, 255);
+                    color.a = (uint8_t)(range(a * 2 * alpha, 0, 255));
                     pixel({ (int)(pos.x + col * scale), (int)(pos.y + row * scale + marginTop) }, { color });
                 }
             }
         }
         return width * scale;
+    }
+
+    int getTextWidth(std::string text, const uint8_t** font, int spacing)
+    {
+        int width = 0;
+        for (uint16_t i = 0; i < text.length(); i++) {
+            char c = text[i];
+            const uint8_t* charPtr = font[1 + (c - ' ')];
+            width += charPtr[0] + spacing;
+        }
+        return width;
     }
 
     Color* getStyleColor(std::string& color)
@@ -537,6 +516,7 @@ public:
 
     int textCentered(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
+        printf("textCentered '%s' alpha %d = %f\n", text.c_str(), options.color.a, options.color.a / 255.0);
         uint16_t len = text.length();
 
         TtfFont* ttfFont = getTtfFont(options);
@@ -578,17 +558,6 @@ public:
             x += drawChar({ (int)x, y }, (uint8_t*)charPtr + 3, width, marginTop, rows, options.color, scale) + options.fontSpacing;
         }
         return x;
-    }
-
-    int getTextWidth(std::string text, const uint8_t** font, int spacing)
-    {
-        int width = 0;
-        for (uint16_t i = 0; i < text.length(); i++) {
-            char c = text[i];
-            const uint8_t* charPtr = font[1 + (c - ' ')];
-            width += charPtr[0] + spacing;
-        }
-        return width;
     }
 
     int textRight(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
