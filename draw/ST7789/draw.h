@@ -352,27 +352,6 @@ protected:
     }
 
 public:
-    void test()
-    {
-        // line({ 0, 0 }, { 127, 64 });
-        // line({ 0, 64 }, { 127, 0 });
-        // rect({ 10, 10 }, { 30, 30 }, 5);
-        // filledPie({ 100, 32 }, 10, 4, 6);
-        circle({ 100, 32 }, 10);
-
-        // drawChar({ 10, 10 }, 'A', ArialBold);
-        // drawChar({ 10, 10 }, 'B', UbuntuBold);
-        // drawChar({ 10, 10 }, 'B', UbuntuBold.data, 0.5, 1);
-
-        filledRect({ 58, 10 }, { 20, 20 });
-        // drawChar({ 60, 10 }, 'B', Sinclair_S.data, 2.0, 1, { .color = { 255, 0, 0 } });
-
-        filledRect({ 40, 45 }, { 30, 20 });
-        textRight({ 120, 50 }, "Hello World!", 16, { .color = { 0, 255, 0 }, .font = &Sinclair_S });
-
-        render();
-    }
-
     Draw(Styles& styles)
         : DrawInterface(styles)
         , st7789([&](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); })
@@ -517,7 +496,7 @@ public:
         if (options.font) {
             return (uint8_t*)((Font*)options.font)->data;
         }
-        return (uint8_t*)RobotoThin_8.data;
+        return (uint8_t*)DEFAULT_FONT.data;
     }
 
     int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
