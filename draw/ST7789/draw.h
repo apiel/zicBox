@@ -611,20 +611,24 @@ public:
             return x;
         }
 
-        uint8_t* font = getFont(options);
-        uint16_t height = font[0];
-        uint16_t width = font[1];
-        float scale = size / (float)height;
-        uint8_t heightRatio = options.fontHeight == 0 ? 1 : (options.fontHeight / height);
+        const uint8_t** font = (const uint8_t**)getFont(options); // TODO fix getFont
+        uint8_t height = *font[0];
+        int scale = size / (float)height;
+        scale = scale == 0 ? 1 : scale;
+        int heightRatio = options.fontHeight == 0 ? 1 : (options.fontHeight / height);
+        int y = position.y;
 
-        float xInc = width * scale;
         for (uint16_t i = 0; i < len; i++) {
-            x -= xInc;
-            if (x < 0) {
-                break;
-            }
-            drawChar({ (int)x, position.y }, text[len - i - 1], font, scale, heightRatio, { .color = { options.color } });
+            char c = text[len - i - 1];
+            const uint8_t* charPtr = font[1 + (c - ' ')]; // Get the glyph data for the character
+            uint8_t width = charPtr[0];
+            uint8_t marginTop = charPtr[1] * scale;
+            uint8_t rows = charPtr[2];
+            x -= width * scale;
+            drawChar({ (int)x, y }, (uint8_t*)charPtr + 3, width, marginTop, rows, options.color, scale);
+            x -= options.fontSpacing;
         }
+
         return x;
     }
 
