@@ -1,28 +1,34 @@
 #pragma once
 
-#include "ArialBold.h"
-#include "ArialNormal.h"
-#include "BigFont.h"
-#include "MusicNote.h"
-#include "Sinclair_M.h"
-#include "Sinclair_S.h"
-#include "Ubuntu.h"
-#include "UbuntuBold.h"
-#include "RobotoThin_8.h"
+// #include "MusicNote.h"
+#include "DejaVuSans_12.h"
+#include "DejaVuSans_16.h"
+#include "DejaVuSans_24.h"
+#include "DejaVuSans_8.h"
+#include "PoppinsLight_12.h"
+#include "PoppinsLight_16.h"
+#include "PoppinsLight_24.h"
+#include "PoppinsLight_8.h"
+#include "RobotoThin_12.h"
 #include "RobotoThin_16.h"
+#include "RobotoThin_24.h"
+#include "RobotoThin_8.h"
 
 #include "TtfFont.h"
 
-#include <string.h>
 #include <set>
+#include <string.h>
+
+#define DEFAULT_FONT_SIZE 12
+#define DEFAULT_FONT PoppinsLight_12
 
 std::set<TtfFont*> ttfFonts;
 
-void* getFontPtr(std::string& name) 
+void* getFontPtr(std::string& name)
 {
     // if (name == nullptr || strcmp(name, "default") == 0) {
     if (name.empty() || name == "default") {
-        return &RobotoThin_8;
+        return &DEFAULT_FONT;
     }
 
     // If name end with .ttf, it's a ttf font
@@ -39,26 +45,30 @@ void* getFontPtr(std::string& name)
         return font;
     }
 
-    if (name == "ArialBold") {
-        return &ArialBold;
-    } else if (name == "ArialNormal") {
-        return &ArialNormal;
-    } else if (name == "BigFont") {
-        return &BigFont;
-    } else if (name == "Sinclair_M") {
-        return &Sinclair_M;
-    } else if (name == "Sinclair_S") {
-        return &Sinclair_S;
-    } else if (name == "MusicNote") {
-        return &FontMusicNote;
-    } else if (name == "Ubuntu") {
-        return &Ubuntu;
-    } else if (name == "UbuntuBold") {
-        return &UbuntuBold;
-    } else if (name == "RobotoThin_8") {
+    if (name == "RobotoThin_8") {
         return &RobotoThin_8;
+    } else if (name == "RobotoThin_12") {
+        return &RobotoThin_12;
     } else if (name == "RobotoThin_16") {
         return &RobotoThin_16;
+    } else if (name == "RobotoThin_24") {
+        return &RobotoThin_24;
+    } else if (name == "PoppinsLight_8") {
+        return &PoppinsLight_8;
+    } else if (name == "PoppinsLight_12") {
+        return &PoppinsLight_12;
+    } else if (name == "PoppinsLight_16") {
+        return &PoppinsLight_16;
+    } else if (name == "PoppinsLight_24") {
+        return &PoppinsLight_24;
+    } else if (name == "DejaVuSans_8") {
+        return &DejaVuSans_8;
+    } else if (name == "DejaVuSans_12") {
+        return &DejaVuSans_12;
+    } else if (name == "DejaVuSans_16") {
+        return &DejaVuSans_16;
+    } else if (name == "DejaVuSans_24") {
+        return &DejaVuSans_24;
     }
 
     return nullptr;

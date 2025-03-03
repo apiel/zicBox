@@ -25,6 +25,7 @@ int main(int argc, char* argv[])
     } else {
         outputHeaderPath = fontPath.substr(0, fontPath.find_last_of(".")) + "_" + std::to_string(fontSize) + ".h";
         outputHeaderPath = std::regex_replace(outputHeaderPath, std::regex("-"), "");
+        outputHeaderPath = outputHeaderPath.substr(outputHeaderPath.find_last_of("/\\") + 1);
     }
 
     FT_Library ft;
@@ -48,8 +49,7 @@ int main(int argc, char* argv[])
     }
 
     // remove full path and get only filemame
-    std::string fontName = outputHeaderPath.substr(outputHeaderPath.find_last_of("/\\") + 1);
-    fontName = fontName.substr(0, fontName.find_last_of("."));
+    std::string fontName = outputHeaderPath.substr(0, outputHeaderPath.find_last_of("."));
 
     headerFile << "#pragma once\n\n";
     headerFile << "#include <cstdint>\n\n";
@@ -64,7 +64,11 @@ int main(int argc, char* argv[])
         }
         headerFile << "const uint8_t " << fontName << "_char" << std::to_string(i) << "[] = { // \"" << (char)i << "\"\n";
         headerFile << "    " << std::to_string(face->glyph->bitmap.width) << ", // width: " << std::to_string(face->glyph->bitmap.width) << "\n";
-        headerFile << "    " << std::to_string(fontSize - face->glyph->bitmap_top) << ", // margin-top: " << std::to_string(fontSize - face->glyph->bitmap_top) << "\n";
+        int top = fontSize - face->glyph->bitmap_top;
+        if (top < 0) {
+            top = 0;
+        } 
+        headerFile << "    " << std::to_string(top) << ", // margin-top: " << std::to_string(top) << "\n";
         headerFile << "    " << std::to_string(face->glyph->bitmap.rows) << ", // rows: " << std::to_string(face->glyph->bitmap.rows) << "\n";
         headerFile << "    ";
         for (int y = 0; y < fontSize; y++) {
