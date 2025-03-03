@@ -53,6 +53,8 @@ protected:
     int parameterSelection = 0;
     bool shift = false;
 
+    void* font = NULL;
+
 public:
     SequencerComponent(ComponentInterface::Props props)
         : Component(props, [&](std::string action) {
@@ -87,6 +89,8 @@ public:
         , textMotion1(styles.colors.secondary)
         , textMotion2(styles.colors.quaternary)
     {
+        font = draw.getFont("PoppinsLight_8");
+
         /*md md_config:Sequencer */
         nlohmann::json& config = props.config;
 
@@ -184,11 +188,11 @@ public:
 
             if (xStart) {
                 if (midiNote % 12 == 0) {
-                    draw.text({ x, y + 1 }, MIDI_NOTES_STR[midiNote], 8, { textColor });
+                    draw.text({ x, y + 1 }, MIDI_NOTES_STR[midiNote], 8, { textColor, .font = font });
                 } else if (!isBlackKey(midiNote)) {
-                    draw.text({ x, y + 1 }, MIDI_NOTES_STR[midiNote], 8, { text2Color });
+                    draw.text({ x, y + 1 }, MIDI_NOTES_STR[midiNote], 8, { text2Color, .font = font });
                 } else {
-                    draw.text({ x, y + 1 }, " #", 8, { text2Color });
+                    draw.text({ x, y + 1 }, " #", 8, { text2Color, .font = font });
                 }
             }
         }
@@ -237,26 +241,32 @@ public:
         // Toolbox
         Step* step = getSelectedStep();
         y = size.h - toolboxHeight + 1;
-        draw.text({ relativePosition.x, y }, "Stp Note Len Vel. Cond. Motion", 8, { text2Color });
+        // "Step Note Len Vel. Cond. Motion"
+        draw.text({ relativePosition.x + 2, y }, "Step", 8, { text2Color, .font = font });
+        draw.text({ relativePosition.x + 32, y }, "Note", 8, { text2Color, .font = font });
+        draw.text({ relativePosition.x + 64, y }, "Len", 8, { text2Color, .font = font });
+        draw.text({ relativePosition.x + 86, y }, "Vel.", 8, { text2Color, .font = font });
+        draw.text({ relativePosition.x + 120, y }, "Cond.", 8, { text2Color, .font = font });
+        draw.text({ relativePosition.x + 160, y }, "Motion", 8, { text2Color, .font = font });
         y += 8;
-        draw.textRight({ relativePosition.x + 24, y }, std::to_string(step ? step->position + 1 : selectedStep + 1), 8, { textColor });
-        draw.text({ relativePosition.x + 32, y }, MIDI_NOTES_STR[selectedNote], 8, { stepColor });
-        draw.textRight({ relativePosition.x + 96, y }, std::to_string(step ? step->len : 0), 8, { textColor });
-        draw.textRight({ relativePosition.x + 136, y }, step ? std::to_string((int)(step->velocity * 100)) + "%" : "---", 8, { textColor });
-        draw.text({ relativePosition.x + 144, y }, step ? stepConditions[step->condition].name : "---", 8, { textColor });
-        // draw.text({ relativePosition.x + 192, y }, step ? stepMotions[step->motion].name : "---", 8, { textColor });
+        draw.textRight({ relativePosition.x + 22, y }, std::to_string(step ? step->position + 1 : selectedStep + 1), 8, { textColor, .font = font });
+        draw.text({ relativePosition.x + 32, y }, MIDI_NOTES_STR[selectedNote], 8, { stepColor, .font = font });
+        draw.textRight({ relativePosition.x + 78, y }, std::to_string(step ? step->len : 0), 8, { textColor , .font = font});
+        draw.textRight({ relativePosition.x + 110, y }, step ? std::to_string((int)(step->velocity * 100)) + "%" : "---", 8, { textColor, .font = font });
+        draw.text({ relativePosition.x + 120, y }, step ? stepConditions[step->condition].name : "---", 8, { textColor, .font = font });
+        // draw.text({ relativePosition.x + 192, y }, step ? stepMotions[step->motion].name : "---", 8, { textColor, .font = font });
         if (step == NULL || step->motion == 0) {
-            draw.text({ relativePosition.x + 192, y }, "---", 8, { textColor });
+            draw.text({ relativePosition.x + 160, y }, "---", 8, { textColor, .font = font });
         } else {
-            renderStepMotion({ relativePosition.x + 192, y }, stepMotions[step->motion].name);
+            renderStepMotion({ relativePosition.x + 160, y }, stepMotions[step->motion].name);
         }
         y += 8;
         if (parameterSelection == 0) {
-            draw.line({ relativePosition.x + 104, y }, { relativePosition.x + 136, y }, { stepColor });
+            draw.line({ relativePosition.x + 86, y }, { relativePosition.x + 110, y }, { stepColor });
         } else if (parameterSelection == 1) {
-            draw.line({ relativePosition.x + 144, y }, { relativePosition.x + 176, y }, { stepColor });
+            draw.line({ relativePosition.x + 120, y }, { relativePosition.x + 150, y }, { stepColor });
         } else if (parameterSelection == 2) {
-            draw.line({ relativePosition.x + 192, y }, { relativePosition.x + 232, y }, { stepColor });
+            draw.line({ relativePosition.x + 160, y }, { relativePosition.x + 190, y }, { stepColor });
         }
     }
 
@@ -265,7 +275,7 @@ public:
         int x = pos.x;
         char* motionStep = strtok((char*)motionSteps.c_str(), ",");
         for (int i = 0; motionStep != NULL; i++) {
-            x = draw.text({ x, pos.y }, motionStep, 8, { i % 2 == 0 ? textMotion1 : textMotion2 });
+            x = draw.text({ x, pos.y }, motionStep, 8, { i % 2 == 0 ? textMotion1 : textMotion2, .font = font });
             motionStep = strtok(NULL, ",");
         }
     }
