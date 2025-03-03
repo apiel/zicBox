@@ -516,7 +516,6 @@ public:
 
     int textCentered(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
     {
-        printf("textCentered '%s' alpha %d = %f\n", text.c_str(), options.color.a, options.color.a / 255.0);
         uint16_t len = text.length();
 
         TtfFont* ttfFont = getTtfFont(options);
