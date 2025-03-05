@@ -1,5 +1,4 @@
-#ifndef _HELPER_GPIO_H_
-#define _HELPER_GPIO_H_
+#pragma once
 
 // read
 #define GPIO_INPUT 0x00
@@ -156,5 +155,4 @@ void gpioSetPullUp(uint8_t gpio)
     gpioSetPullUpDown(gpio, PI_PUD_UP);
 }
 
-#endif
 #endif
