@@ -23,9 +23,10 @@ protected:
     int radius = 20;
     int insideRadius = 15;
 
-    int fontValueSize = 8;
+    int fontValueSize = 12;
     int fontUnitSize = 8;
-    int fontLabelSize = 6;
+    void* fontUnit = NULL;
+    int fontLabelSize = 12;
     int twoSideMargin = 2;
 
     Point knobCenter = { 0, 0 };
@@ -88,7 +89,7 @@ protected:
     void renderUnit()
     {
         if (showUnit && value->props().unit.length() > 0) {
-            draw.textCentered({ valuePosition.x, valuePosition.y + fontValueSize - 5 }, value->props().unit, fontUnitSize, { unitColor });
+            draw.textCentered({ valuePosition.x, valuePosition.y + fontValueSize - 5 }, value->props().unit, fontUnitSize, { unitColor, .font = fontUnit });
         }
     }
 
@@ -117,10 +118,8 @@ protected:
     {
         int val = value->get();
         // FIXME use floating point...
-        draw.textRight({ valuePosition.x - twoSideMargin, valuePosition.y - 2 }, std::to_string((int)value->props().max - val).c_str(),
-            fontValueSize - 3, { valueColor });
-        draw.text({ valuePosition.x + twoSideMargin, valuePosition.y - 2 }, std::to_string(val).c_str(),
-            fontValueSize - 3, { valueColor });
+        draw.textRight({ valuePosition.x - twoSideMargin, valuePosition.y - 2 }, std::to_string((int)value->props().max - val).c_str(), fontValueSize, { valueColor });
+        draw.text({ valuePosition.x + twoSideMargin, valuePosition.y - 2 }, std::to_string(val).c_str(), fontValueSize, { valueColor });
 
         draw.line({ valuePosition.x, valuePosition.y - 10 }, { valuePosition.x, valuePosition.y + 10 }, { barTwoSideColor });
         draw.line({ valuePosition.x - 1, valuePosition.y - 10 }, { valuePosition.x - 1, valuePosition.y + 10 }, { barTwoSideColor });
@@ -164,12 +163,12 @@ protected:
         radius = _radius;
         insideRadius = radius - 5;
 
-        if (radius > 30) {
-            // should then change the font to bigger one
-            fontValueSize = 16;
-            fontLabelSize = 8;
-            twoSideMargin = 3;
-        }
+        // if (radius > 30) {
+        //     // should then change the font to bigger one
+        //     fontValueSize = 16;
+        //     fontLabelSize = 8;
+        //     twoSideMargin = 3;
+        // }
     }
 
 public:
@@ -195,6 +194,7 @@ public:
             size.w = 50;
         }
 
+        fontUnit = draw.getFont("PoppinsLight_8");
         setRadius((size.h - 6) * 0.5);
 
         /*md md_config:KnobValue */

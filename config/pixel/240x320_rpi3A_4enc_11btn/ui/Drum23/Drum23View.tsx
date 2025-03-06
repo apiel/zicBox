@@ -35,7 +35,6 @@ export function Drum23View({ name }: Props) {
                 bounds={topRightKnob}
                 encoderId={encTopRight}
                 color="secondary"
-                valueSize={8}
                 type="STRING"
                 track={Drum23Track}
             />
