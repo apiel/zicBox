@@ -1,6 +1,6 @@
 ## Framework improvement
 
-- TODO drag and drop!! 
+- TODO drag and drop editor!! 
 
 - TODO serialize in json format!
 
@@ -459,3 +459,7 @@ and comment out:
 ```
 # dtoverlay=vc4-kms-v3d
 ```
+
+# i2s expender
+
+MCP23017
