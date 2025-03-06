@@ -20,7 +20,7 @@ all:
 	make EffectGainVolume EffectSampleRateReducer EffectFilter EffectDistortion EffectDelay\
 		EffectFilter EffectFilterMultiMode EffectFilterMultiMode2 EffectFilterMultiModeMoog\
 		EffectGrain EffectDistortion2 EffectVolumeDrive EffectVolumeClipping \
-		SynthKick23 SynthDrum23 SynthGranular SynthBass SynthFM SynthFM2 \
+		SynthDrum23 SynthGranular SynthBass SynthFM SynthFM2 \
 		SynthSample SynthDrumSample SynthMonoSample\
 		SynthSnare SynthHiHat SynthClap SynthFmDrum SynthPerc\
 		Sequencer Tempo AudioSpectrogram\
@@ -46,9 +46,6 @@ SynthPd:
 
 SynthGranular:
 	make compile LIBNAME=SynthGranular EXTRA="$(shell pkg-config --cflags --libs sndfile)"
-
-SynthKick23:
-	make compile LIBNAME=SynthKick23 EXTRA="$(shell pkg-config --cflags --libs sndfile)"
 
 SynthDrum23:
 	make compile LIBNAME=SynthDrum23 EXTRA="$(shell pkg-config --cflags --libs sndfile)"
