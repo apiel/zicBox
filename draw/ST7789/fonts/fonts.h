@@ -14,7 +14,9 @@
 #include "RobotoThin_24.h"
 #include "RobotoThin_8.h"
 
+#ifdef FT_FREETYPE_H
 #include "TtfFont.h"
+#endif
 
 #include <set>
 #include <string.h>
@@ -22,7 +24,9 @@
 #define DEFAULT_FONT_SIZE 12
 #define DEFAULT_FONT PoppinsLight_12
 
+#ifdef FT_FREETYPE_H
 std::set<TtfFont*> ttfFonts;
+#endif
 
 void* getFontPtr(std::string& name)
 {
@@ -31,6 +35,7 @@ void* getFontPtr(std::string& name)
         return &DEFAULT_FONT;
     }
 
+#ifdef FT_FREETYPE_H
     // If name end with .ttf, it's a ttf font
     if (name.find(".ttf") != std::string::npos) {
         // First search to see if it's ttf font already loaded
@@ -44,6 +49,7 @@ void* getFontPtr(std::string& name)
         ttfFonts.insert(font);
         return font;
     }
+#endif
 
     if (name == "RobotoThin_8") {
         return &RobotoThin_8;
