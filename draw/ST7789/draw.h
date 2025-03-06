@@ -256,6 +256,7 @@ protected:
         pixel(position, options);
     }
 
+#ifdef FT_FREETYPE_H
     int drawChar(Point position, char character, FT_Face& face, int lineHeight, DrawOptions options = {}, int maxX = 0)
     {
         if (FT_Load_Char(face, character, FT_LOAD_RENDER)) {
@@ -270,6 +271,7 @@ protected:
         int marginTop = lineHeight - face->glyph->bitmap_top;
         return drawChar(position, bitmap->buffer, bitmap->width, marginTop, bitmap->rows, options.color);
     }
+#endif
 
     int drawChar(Point pos, uint8_t* charPtr, int width, int marginTop, int rows, Color color, float scale = 1.00f)
     {
@@ -462,6 +464,7 @@ public:
         return font;
     }
 
+#ifdef FT_FREETYPE_H
     TtfFont* getTtfFont(DrawTextOptions options)
     {
         if (options.font && ((TtfFont*)options.font)->type == TTF_FONT) {
@@ -469,6 +472,7 @@ public:
         }
         return nullptr;
     }
+#endif
 
     const uint8_t** getFont(DrawTextOptions options)
     {
@@ -484,6 +488,7 @@ public:
         float maxX = x + (options.maxWidth ? options.maxWidth : (styles.screen.w - x));
         uint16_t len = text.length();
 
+#ifdef FT_FREETYPE_H
         TtfFont* ttfFont = getTtfFont(options);
         if (ttfFont) {
             FT_Set_Pixel_Sizes(ttfFont->face, 0, size);
@@ -493,6 +498,7 @@ public:
             }
             return x;
         }
+#endif
 
         const uint8_t** font = getFont(options);
         uint8_t height = *font[0];
@@ -518,6 +524,7 @@ public:
     {
         uint16_t len = text.length();
 
+#ifdef FT_FREETYPE_H
         TtfFont* ttfFont = getTtfFont(options);
         if (ttfFont) {
             FT_Set_Pixel_Sizes(ttfFont->face, 0, size);
@@ -535,6 +542,7 @@ public:
             }
             return x;
         }
+#endif
 
         const uint8_t** font = getFont(options);
         uint8_t height = *font[0];
@@ -564,6 +572,7 @@ public:
         uint16_t len = text.length();
         float x = position.x;
 
+#ifdef FT_FREETYPE_H
         TtfFont* ttfFont = getTtfFont(options);
         if (ttfFont) {
             FT_Set_Pixel_Sizes(ttfFont->face, 0, size);
@@ -578,6 +587,7 @@ public:
             }
             return x;
         }
+#endif
 
         const uint8_t** font = getFont(options);
         uint8_t height = *font[0];

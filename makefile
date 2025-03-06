@@ -1,6 +1,7 @@
 RTMIDI=`pkg-config --cflags --libs rtmidi`
 SDL2=`sdl2-config --cflags --libs`
-TTF=`pkg-config --cflags --libs freetype2`
+# uncomment to enable to load ttf file as font with absolute path to ttf file
+# TTF=`pkg-config --cflags --libs freetype2`
 
 # SPI_DEV_MEM=`-lbcm2835 -lbcm_host -DUSE_SPI_DEV_MEM`
 
