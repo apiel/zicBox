@@ -271,7 +271,7 @@ protected:
         return drawChar(position, bitmap->buffer, bitmap->width, marginTop, bitmap->rows, options.color);
     }
 
-    int drawChar(Point pos, uint8_t* charPtr, int width, int marginTop, int rows, Color color, int scale = 1)
+    int drawChar(Point pos, uint8_t* charPtr, int width, int marginTop, int rows, Color color, float scale = 1.00f)
     {
         float alpha = color.a / 255.0;
         for (int row = 0; row < rows; row++) {
@@ -470,12 +470,12 @@ public:
         return nullptr;
     }
 
-    uint8_t* getFont(DrawTextOptions options)
+    const uint8_t** getFont(DrawTextOptions options)
     {
         if (options.font) {
-            return (uint8_t*)((Font*)options.font)->data;
+            return (const uint8_t**)((Font*)options.font)->data;
         }
-        return (uint8_t*)DEFAULT_FONT.data;
+        return (const uint8_t**)DEFAULT_FONT.data;
     }
 
     int text(Point position, std::string text, uint32_t size, DrawTextOptions options = {}) override
@@ -494,9 +494,9 @@ public:
             return x;
         }
 
-        const uint8_t** font = (const uint8_t**)getFont(options); // TODO fix getFont
+        const uint8_t** font = getFont(options);
         uint8_t height = *font[0];
-        int scale = size / (float)height;
+        float scale = size / (float)height;
         scale = scale == 0 ? 1 : scale;
         int heightRatio = options.fontHeight == 0 ? 1 : (options.fontHeight / height);
         int y = position.y;
@@ -536,9 +536,9 @@ public:
             return x;
         }
 
-        const uint8_t** font = (const uint8_t**)getFont(options); // TODO fix getFont
+        const uint8_t** font = getFont(options);
         uint8_t height = *font[0];
-        int scale = size / (float)height;
+        float scale = size / (float)height;
         scale = scale == 0 ? 1 : scale;
         int heightRatio = options.fontHeight == 0 ? 1 : (options.fontHeight / height);
         int y = position.y;
@@ -579,9 +579,9 @@ public:
             return x;
         }
 
-        const uint8_t** font = (const uint8_t**)getFont(options); // TODO fix getFont
+        const uint8_t** font = getFont(options);
         uint8_t height = *font[0];
-        int scale = size / (float)height;
+        float scale = size / (float)height;
         scale = scale == 0 ? 1 : scale;
         int heightRatio = options.fontHeight == 0 ? 1 : (options.fontHeight / height);
         int y = position.y;
