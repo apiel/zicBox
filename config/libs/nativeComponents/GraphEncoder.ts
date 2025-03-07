@@ -10,7 +10,7 @@ export const GraphEncoder = getJsonComponent<{
     bgColor?: string;
     audioPlugin: string;
     dataId: string;
-    encoders?: { encoderId: number; value: string; string?: boolean }[];
+    values?: string[];
     isArrayData?: boolean;
     renderValuesOnTop?: boolean;
 }>('GraphEncoder');

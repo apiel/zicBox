@@ -41,7 +41,7 @@ struct DrawTextOptions {
     void* font = NULL;
     int maxWidth = 0;
     int fontHeight = 0; // Compiled
-    int fontSpacing = 2; // Ttf
+    int fontSpacing = 1; // Ttf
 };
 
 class DrawInterface {
@@ -84,6 +84,7 @@ public:
     virtual void applyTexture(void* texture, Rect dest) { }
 
     virtual void* getFont(std::string name = NULL, int size = -1) { return NULL; }
+    virtual uint8_t getDefaultFontSize(void *font) { return 0; }
     virtual Color getColor(std::string color, Color defaultColor = { 0xFF, 0xFF, 0xFF }) { return defaultColor; }
     virtual Color getColor(const nlohmann::json& node, Color defaultColor) { return defaultColor; }
     virtual void config(nlohmann::json& config) { }

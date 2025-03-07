@@ -103,7 +103,8 @@
         "queue": "cpp",
         "stack": "cpp",
         "__config": "cpp",
-        "json.hpp": "c"
+        "json.hpp": "c",
+        "regex": "cpp"
     },
     "C_Cpp.errorSquiggles": "enabled",
     "makefile.configureOnOpen": false,

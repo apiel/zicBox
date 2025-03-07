@@ -13,12 +13,14 @@ export const Value = getJsonComponent<{
     hideLabel?: boolean;
     hideUnit?: boolean;
     hideValue?: boolean;
+    alignLeft?: boolean;
     showLabelOverValue?: number;
     labelOverValueX?: number;
     valueSize?: number;
     labelSize?: number;
     unitSize?: number;
-    font?: string;
+    fontValue?: string;
+    fontLabel?: string;
     valueHeight?: number;
     bgColor?: string;
     labelColor?: string;

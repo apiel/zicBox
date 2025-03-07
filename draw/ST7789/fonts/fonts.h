@@ -9,6 +9,7 @@
 #include "PoppinsLight_16.h"
 #include "PoppinsLight_24.h"
 #include "PoppinsLight_8.h"
+#include "PoppinsLight_6.h"
 #include "RobotoThin_12.h"
 #include "RobotoThin_16.h"
 #include "RobotoThin_24.h"
@@ -59,6 +60,8 @@ void* getFontPtr(std::string& name)
         return &RobotoThin_16;
     } else if (name == "RobotoThin_24") {
         return &RobotoThin_24;
+    } else if (name == "PoppinsLight_6") {
+        return &PoppinsLight_6;
     } else if (name == "PoppinsLight_8") {
         return &PoppinsLight_8;
     } else if (name == "PoppinsLight_12") {

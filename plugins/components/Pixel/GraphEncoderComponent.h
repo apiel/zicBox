@@ -1,7 +1,6 @@
-#ifndef _UI_PIXEL_COMPONENT_GRAPH_ENCODER_H_
-#define _UI_PIXEL_COMPONENT_GRAPH_ENCODER_H_
+#pragma once
 
-#include "utils/BaseGraphEncoderComponent.h"
+#include "utils/BaseGraphComponent.h"
 #include <stdexcept>
 
 /*md
@@ -14,21 +13,14 @@ Show a representation of data points and provide a way to control them.
 
 */
 
-class GraphEncoderComponent : public BaseGraphEncoderComponent {
-    struct EncoderParam {
-        int id = -1;
-        ValueInterface* value = NULL;
-        bool toString = false;
-    };
-    std::vector<EncoderParam> encoders;
-
+class GraphEncoderComponent : public BaseGraphComponent {
     uint8_t dataId = -1;
 
     bool isArray = false;
 
 public:
     GraphEncoderComponent(ComponentInterface::Props props)
-        : BaseGraphEncoderComponent(props)
+        : BaseGraphComponent(props)
     {
         /*md md_config:GraphEncoder */
         nlohmann::json& config = props.config;
@@ -68,12 +60,10 @@ public:
         /// The data id of the audio plugin where the input value will be sent.
         dataId = plugin->getDataId(getConfig(config, "dataId")); //eg: "data_id"
 
-        /// The encoders that will interract with this component. Set `string` to force using string rendering. */
-        if (config.contains("encoders") && config["encoders"].is_array()) { //eg: [{encoderId: 0, value: "LEVEL", string: false}]
-            for (auto& encoder : config["encoders"]) {
-                encoders.push_back({ encoder["encoderId"].get<int>(),
-                    watch(plugin->getValue(encoder["value"].get<std::string>())),
-                    encoder.contains("string") && encoder["string"].get<bool>() });
+        /// The values that will interract with this component in order to watch them for refreshing the graph. */
+        if (config.contains("values") && config["values"].is_array()) { //eg: ["LEVEL", "VOLUME"]
+            for (auto& value : config["values"]) {
+                watch(plugin->getValue(value.get<std::string>()));
             }
         }
 
@@ -83,28 +73,12 @@ public:
         /*md md_config_end */
     }
 
-    std::vector<Title> getTitles() override
-    {
-        std::vector<Title> titles = {};
-        for (auto& encoder : encoders) {
-            if (encoder.value) {
-                if (encoder.value->props().type == VALUE_STRING || encoder.toString) {
-                    titles.push_back({ encoder.value->string() });
-                } else if (encoder.value->props().unit.length() > 0) {
-                    titles.push_back({ std::to_string(encoder.value->get()), encoder.value->props().unit });
-                } else {
-                    titles.push_back({ std::to_string(encoder.value->get()) });
-                }
-            }
-        }
-        return titles;
-    }
-
     std::vector<Point> getPoints() override
     {
         std::vector<Point> points = {};
         if (dataId != -1) {
-            float halfHeight = waveformHeight * 0.5;
+            float halfHeight = waveformHeight * 0.49;
+            printf("GraphEncoderComponent: halfHeight %f\n", halfHeight);
             points.push_back({ 0, (int)(halfHeight) });
 
             if (isArray) {
@@ -130,19 +104,4 @@ public:
         }
         return points;
     }
-
-    void onEncoder(int id, int8_t direction) override
-    {
-        if (isActive) {
-            for (auto& encoder : encoders) {
-                if (encoder.id == id) {
-                    encoder.value->increment(direction);
-                    renderNext();
-                    break;
-                }
-            }
-        }
-    }
 };
-
-#endif

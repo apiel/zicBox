@@ -21,11 +21,12 @@ protected:
     Color unitColor;
     Color labelColor;
 
-    int valueFontSize = 8;
-    int labelFontSize = 6;
-    int unitFontSize = 6;
+    int valueFontSize = 12;
+    int labelFontSize = 8;
+    int unitFontSize = 8;
     int maxFontSize = 8;
-    void* font = NULL;
+    void* fontValue = NULL;
+    void* fontLabel = NULL;
     int fontHeightValue = 0;
     int valueH = 8;
     int barH = 2;
@@ -42,6 +43,7 @@ protected:
     int labelOverValueX = -1;
     bool useStringValue = false;
     bool verticalAlignCenter = false;
+    bool alignLeft = false;
     std::string label;
 
     std::string getLabel()
@@ -81,6 +83,7 @@ public:
         , unitColor(darken(styles.colors.text, 0.5))
         , labelColor(darken(styles.colors.text, 0.5))
     {
+        fontLabel = draw.getFont("PoppinsLight_8");
 
         /*md md_config:KnobValue */
         nlohmann::json& config = props.config;
@@ -120,6 +123,9 @@ public:
         /// Set the text vertical alignment to center (default: false).
         verticalAlignCenter = config.value("verticalAlignCenter", verticalAlignCenter); //eg: true
 
+        /// Set the text horizontal alignment to left (default: false).
+        alignLeft = config.value("alignLeft", alignLeft); //eg: true
+
         /// Hide the label (default: false).
         showLabel = !config.value("hideLabel", !showLabel); //eg: true
 
@@ -135,6 +141,24 @@ public:
         /// Set the distance from the left of the component where the label will be placed. If -1 it is centered (default: -1)
         labelOverValueX = config.value("labelOverValueX", labelOverValueX); //eg: 0
 
+        /// The font of the value. Default is null.
+        if (config.contains("fontValue")) {
+            fontValue = draw.getFont(config["fontValue"].get<std::string>().c_str()); //eg: "PoppinsLight_8"
+            int fontSize = draw.getDefaultFontSize(fontValue);
+            if (fontSize > 0) {
+                valueFontSize = fontSize;
+            }
+        }
+
+        /// The font of the label. Default is null.
+        if (config.contains("fontLabel")) {
+            fontLabel = draw.getFont(config["fontLabel"].get<std::string>().c_str()); //eg: "PoppinsLight_8"
+            int fontSize = draw.getDefaultFontSize(fontLabel);
+            if (fontSize > 0) {
+                labelFontSize = fontSize;
+            }
+        }
+
         /// Set the font size of the value (default: 8).
         valueFontSize = config.value("valueSize", valueFontSize); //eg: 8
 
@@ -143,11 +167,6 @@ public:
 
         /// Set the font size of the unit (default: 6).
         unitFontSize = config.value("unitSize", unitFontSize); //eg: 6
-
-        /// The font of the text. Default is null.
-        if (config.contains("font")) {
-            font = draw.getFont(config["font"].get<std::string>().c_str()); //eg: "Sinclair_S"
-        }
 
         /// The font height of the text. Default is 0.
         fontHeightValue = config.value("valueHeight", fontHeightValue); //eg: 16
@@ -197,7 +216,9 @@ public:
 
             int x = relativePosition.x + (size.w) * 0.5;
 
-            if (showLabel && showValue) {
+            if (alignLeft) {
+                x = relativePosition.x + 2;
+            } else if (showLabel && showValue) {
                 x -= labelFontSize * val->props().label.length() + 2;
             }
 
@@ -208,16 +229,20 @@ public:
             int unitY = textY + maxFontSize - unitFontSize;
 
             if (showLabelOverValue != -1) {
-                draw.textCentered({ labelOverValueX == -1 ? x : relativePosition.x + labelOverValueX, relativePosition.y + showLabelOverValue }, getLabel(), labelFontSize, { labelColor, .font = font });
+                if (alignLeft) {
+                    draw.text({ x, relativePosition.y + showLabelOverValue }, getLabel(), labelFontSize, { labelColor, .font = fontLabel });
+                } else {
+                    draw.textCentered({ labelOverValueX == -1 ? x : relativePosition.x + labelOverValueX, relativePosition.y + showLabelOverValue }, getLabel(), labelFontSize, { labelColor, .font = fontLabel });
+                }
             } else if (showLabel) {
-                x = draw.text({ x, labelY }, getLabel(), labelFontSize, { labelColor, .font = font }) + 2;
+                x = draw.text({ x, labelY }, getLabel(), labelFontSize, { labelColor, .font = fontLabel }) + 2;
             }
 
             if (showValue) {
-                x = showLabel ? draw.text({ x, valueY }, getValStr(), valueFontSize, { valueColor, .font = font, .fontHeight = fontHeightValue })
-                              : draw.textCentered({ x, valueY }, getValStr(), valueFontSize, { valueColor, .font = font, .maxWidth = size.w - 4, .fontHeight = fontHeightValue });
+                x = showLabel ? draw.text({ x, valueY }, getValStr(), valueFontSize, { valueColor, .font = fontValue, .fontHeight = fontHeightValue })
+                              : draw.textCentered({ x, valueY }, getValStr(), valueFontSize, { valueColor, .font = fontValue, .maxWidth = size.w - 4, .fontHeight = fontHeightValue });
                 if (showUnit && val->props().unit.length() > 0) {
-                    draw.text({ x + 2, unitY }, val->props().unit, unitFontSize, { unitColor, .font = font });
+                    draw.text({ x + 2, unitY }, val->props().unit, unitFontSize, { unitColor, .font = fontLabel });
                 }
             }
         }
