@@ -37,12 +37,6 @@ public:
         /// Set the color of the graph outline.
         //md   outlineColor="#000000"
 
-        /// Set the color of the text.
-        //md   textColor1="#000000"
-
-        /// Set the color of the unit.
-        //md   textColor2="#000000"
-
         /// Set the color of the background.
         //md   bgColor="#000000"
 

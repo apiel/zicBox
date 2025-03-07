@@ -62,7 +62,6 @@ public:
 
     void render() override
     {
-        printf("render pos %dx%d size %dx%d\n", relativePosition.x, relativePosition.y, size.w, size.h);
         draw.filledRect(relativePosition, size, { bgColor });
         renderGraph();
     }

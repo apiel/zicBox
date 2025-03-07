@@ -1,7 +1,6 @@
-#ifndef _UI_PIXEL_COMPONENT_ADSR_H_
-#define _UI_PIXEL_COMPONENT_ADSR_H_
+#pragma once
 
-#include "utils/BaseGraphEncoderComponent.h"
+#include "utils/BaseGraphComponent.h"
 
 /*md
 ## AdsrComponent
@@ -12,7 +11,7 @@ Show a representation of the ADSR envdelop.
 
 */
 
-class AdsrComponent : public BaseGraphEncoderComponent {
+class AdsrComponent : public BaseGraphComponent {
     struct EncoderParam {
         std::string name;
         int id = -1;
@@ -22,11 +21,8 @@ class AdsrComponent : public BaseGraphEncoderComponent {
 
 public:
     AdsrComponent(ComponentInterface::Props props)
-        : BaseGraphEncoderComponent(props)
+        : BaseGraphComponent(props)
     {
-        textColor1 = styles.colors.secondary;
-        textColor2 = styles.colors.text;
-
         /*md md_config:Adsr */
         nlohmann::json& config = props.config;
 
@@ -41,12 +37,6 @@ public:
 
         /// Set the color of the graph outline.
         //md   outlineColor="#000000"
-
-        /// Set the color of the text.
-        //md   textColor1="#000000"
-
-        /// Set the color of the unit.
-        //md   textColor2="#000000"
 
         /// Set the color of the background.
         //md   bgColor="#000000"
@@ -77,15 +67,6 @@ public:
         }
 
         /*md md_config_end */
-    }
-
-    std::vector<Title> getTitles() override
-    {
-        std::vector<Title> titles = {};
-        for (auto& encoder : encoders) {
-            titles.push_back({ encoder.name, std::to_string((int)encoder.value->get()) + encoder.value->props().unit });
-        }
-        return titles;
     }
 
     std::vector<Point> getPoints() override
@@ -120,5 +101,3 @@ public:
     }
 
 };
-
-#endif
