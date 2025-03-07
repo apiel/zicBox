@@ -28,7 +28,7 @@ protected:
     void* fontValue = NULL;
     void* fontLabel = NULL;
     int fontHeightValue = 0;
-    int valueH = 8;
+    int valueH = 12;
     int barH = 2;
     int barBgH = 1;
 
@@ -222,7 +222,7 @@ public:
                 x -= labelFontSize * val->props().label.length() + 2;
             }
 
-            int textY = verticalAlignCenter ? (size.h - maxFontSize) * 0.5 + relativePosition.y : (size.h - maxFontSize) + relativePosition.y;
+            int textY = verticalAlignCenter ? (size.h - maxFontSize) * 0.5 + relativePosition.y : ((size.h - maxFontSize) * 0.7) + relativePosition.y;
             // Put all text in the same line
             int labelY = textY + maxFontSize - labelFontSize;
             int valueY = textY + maxFontSize - valueH;

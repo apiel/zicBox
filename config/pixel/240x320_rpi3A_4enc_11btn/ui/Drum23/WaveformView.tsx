@@ -34,36 +34,36 @@ export function WaveformView({ name }: Props) {
             />
 
             <Value
-                bounds={[0, 55, ScreenWidth / 2 - 2, 20]}
+                bounds={[0, 55, ScreenWidth / 2 - 2, 22]}
                 audioPlugin="Drum23"
                 param="WAVEFORM_TYPE"
                 track={Drum23Track}
                 fontLabel="PoppinsLight_6"
-                barHeight={0}
+                barHeight={1}
                 encoderId={encTopLeft}
                 alignLeft
                 showLabelOverValue={0}
             />
 
             <Value
-                bounds={[ScreenWidth / 2 + 2, 55, ScreenWidth / 2, 20]}
+                bounds={[ScreenWidth / 2 + 2, 55, ScreenWidth / 2, 22]}
                 audioPlugin="Drum23"
                 param="SHAPE"
                 track={Drum23Track}
                 fontLabel="PoppinsLight_6"
-                barHeight={0}
+                barHeight={1}
                 encoderId={encTopRight}
                 alignLeft
                 showLabelOverValue={0}
             />
 
             <Value
-                bounds={[0, 145, ScreenWidth / 2 - 2, 20]}
+                bounds={[0, 145, ScreenWidth / 2 - 2, 22]}
                 audioPlugin="Drum23"
                 param="MACRO"
                 track={Drum23Track}
                 fontLabel="PoppinsLight_6"
-                barHeight={0}
+                barHeight={1}
                 encoderId={encBottomLeft}
                 alignLeft
                 showLabelOverValue={0}
