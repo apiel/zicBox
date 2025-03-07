@@ -164,9 +164,9 @@
       "name": "Waveform",
       "components": [
         {"bounds":[0,80,239,60],"audioPlugin":"Drum23","dataId":"WAVEFORM","renderValuesOnTop":false,"values":["WAVEFORM_TYPE","SHAPE","MACRO"],"track":1,"componentName":"GraphEncoder"},
-        {"bounds":[0,55,118,20],"audioPlugin":"Drum23","param":"WAVEFORM_TYPE","track":1,"fontLabel":"PoppinsLight_6","barHeight":0,"encoderId":0,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
-        {"bounds":[122,55,120,20],"audioPlugin":"Drum23","param":"SHAPE","track":1,"fontLabel":"PoppinsLight_6","barHeight":0,"encoderId":1,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
-        {"bounds":[0,145,118,20],"audioPlugin":"Drum23","param":"MACRO","track":1,"fontLabel":"PoppinsLight_6","barHeight":0,"encoderId":2,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
+        {"bounds":[0,55,118,22],"audioPlugin":"Drum23","param":"WAVEFORM_TYPE","track":1,"fontLabel":"PoppinsLight_6","barHeight":1,"encoderId":0,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
+        {"bounds":[122,55,120,22],"audioPlugin":"Drum23","param":"SHAPE","track":1,"fontLabel":"PoppinsLight_6","barHeight":1,"encoderId":1,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
+        {"bounds":[0,145,118,22],"audioPlugin":"Drum23","param":"MACRO","track":1,"fontLabel":"PoppinsLight_6","barHeight":1,"encoderId":2,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
         {"bounds":[120,160,118,80],"audioPlugin":"Drum23","param":"PITCH","encoderId":3,"color":"secondary","track":1,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Kick","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[70,28,6,6],"color":"#a3c912","componentName":"Rect"},
