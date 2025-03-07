@@ -610,6 +610,20 @@ public:
         return x;
     }
 
+    uint8_t getDefaultFontSize(void* font) override
+    {
+#ifdef FT_FREETYPE_H
+        TtfFont* ttfFont = getTtfFont(options);
+        if (ttfFont) {
+            return 0;
+        }
+#endif
+
+        const uint8_t** fontData = getFont({ .font = font });
+        uint8_t height = *fontData[0];
+        return height;
+    }
+
     void filledRect(Point position, Size size, DrawOptions options = {}) override
     {
         for (int y = position.y; y < position.y + size.h; y++) {

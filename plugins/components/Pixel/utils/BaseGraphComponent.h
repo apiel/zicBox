@@ -17,17 +17,14 @@ protected:
     Color outlineColor;
 
     int waveformHeight = 30;
-    int waveformY = 0;
 
     void renderGraph()
     {
         std::vector<Point> relativePoints = getPoints();
         // printf("renderGraph %ld points\n", relativePoints.size());
         if (relativePoints.size() > 2) {
-            float halfHeight = waveformHeight * 0.5;
-
             for (auto& point : relativePoints) {
-                point.y += waveformY;
+                point.y += relativePosition.y;
                 point.x += relativePosition.x;
                 // printf("[x %d y %d]\n", point.x, point.y);
             }
@@ -65,7 +62,7 @@ public:
 
     void render() override
     {
-        waveformY = relativePosition.y + 8;
+        printf("render pos %dx%d size %dx%d\n", relativePosition.x, relativePosition.y, size.w, size.h);
         draw.filledRect(relativePosition, size, { bgColor });
         renderGraph();
     }
