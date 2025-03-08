@@ -48,11 +48,12 @@ protected:
 
     int encoders[4] = { 0, 1, 2, 3 };
 
-    int fontSize = 8;
+    int fontSize = 12;
+    int margin = 6;
 
     void updateGraphHeight()
     {
-        envelopHeight = size.h - 6 - 10 - 9;
+        envelopHeight = size.h - ((fontSize + margin) * 2);
     }
 
     void renderEnvelop()
@@ -105,12 +106,12 @@ protected:
 
         if (*isMacro) {
             draw.textRight({ x + size.w - 2, relativePosition.y }, std::to_string((int)(macro1 * 100)) + "%", fontSize, { textColor });
-            draw.text({ x + 2, relativePosition.y + size.h - 8 }, std::to_string((int)(macro2 * 100)) + "%", fontSize, { textColor });
-            draw.textRight({ x + size.w - 2, relativePosition.y + size.h - 8 }, std::to_string((int)(macro3 * 100)) + "%", fontSize, { textColor });
+            draw.text({ x + 2, relativePosition.y + size.h - (fontSize + margin - 4) }, std::to_string((int)(macro2 * 100)) + "%", fontSize, { textColor });
+            draw.textRight({ x + size.w - 2, relativePosition.y + size.h - (fontSize + margin - 4) }, std::to_string((int)(macro3 * 100)) + "%", fontSize, { textColor });
         } else {
-            draw.text({ x + size.w - 2, relativePosition.y }, std::to_string((int)macro1 + 1) + "/" + std::to_string(envData->size()), fontSize, { textColor });
-            draw.textRight({ x + 2, relativePosition.y + size.h - 8 }, std::to_string((int)(macro2 * 100)) + "%", fontSize, { textColor });
-            draw.textRight({ x + size.w - 2, relativePosition.y + size.h - 8 }, std::to_string((int)macro3) + "ms", fontSize, { textColor });
+            draw.textRight({ x + size.w - 2, relativePosition.y }, std::to_string((int)macro1 + 1) + "/" + std::to_string(envData->size()), fontSize, { textColor });
+            draw.text({ x + 2, relativePosition.y + size.h - (fontSize + margin - 4)}, std::to_string((int)(macro2 * 100)) + "%", fontSize, { textColor });
+            draw.textRight({ x + size.w - 2, relativePosition.y + size.h - (fontSize + margin - 4) }, std::to_string((int)macro3) + "ms", fontSize, { textColor });
         }
     }
 
@@ -178,7 +179,7 @@ public:
 
     void render() override
     {
-        envPosition = { relativePosition.x, relativePosition.y + 10 };
+        envPosition = { relativePosition.x, relativePosition.y + fontSize + 5 };
         draw.filledRect(relativePosition, size, { bgColor });
 
         if (envData) {
