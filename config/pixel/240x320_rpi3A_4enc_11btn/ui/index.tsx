@@ -13,10 +13,6 @@ import { Drum23View } from './Drum23/Drum23View';
 import { FrequencyView } from './Drum23/FrequencyView';
 import { Drum23SeqView } from './Drum23/SeqView';
 import { WaveformView } from './Drum23/WaveformView';
-import { Fm1EnvView } from './Fm1/EnvView';
-import { Fm1View } from './Fm1/Fm1View';
-import { Fm1FxView } from './Fm1/FxView';
-import { Fm1SeqView } from './Fm1/SeqView';
 import { CreateWorkspaceView } from './menu/CreateWorkspaceView';
 import { MenuView } from './menu/menuView';
 import { ShutdownView } from './menu/ShutdownView';
@@ -70,10 +66,10 @@ export const ui = {
             <BassSeqView name="BassSeq" />
             <BassWaveformView name="BassWaveform" />
 
-            <Fm1View name="Fm1" />
-            <Fm1FxView name="Fm1Fx" />
-            <Fm1EnvView name="Fm1Env" />
-            <Fm1SeqView name="Fm1Seq" />
+            {/* <Fm1View name="Fm1" /> */}
+            {/* <Fm1FxView name="Fm1Fx" /> */}
+            {/* <Fm1EnvView name="Fm1Env" /> */}
+            {/* <Fm1SeqView name="Fm1Seq" /> */}
 
             <PercView name="Perc" />
             <PercFxView name="PercFx" />

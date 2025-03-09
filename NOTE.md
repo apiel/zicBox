@@ -5,6 +5,7 @@
 - TODO serialize in json format!
 
 - TODO enable motion/mouse on desktop
+  - when mouse over envelop, some point/circle appear to show what can be dragged...
 
 - TODO make all component access to group visibility
 
