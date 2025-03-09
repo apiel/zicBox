@@ -18,16 +18,18 @@ TRACK_HEADER_FILES = -MMD -MF $(OBJ_DIR)/$*.d
 
 all:
 	make EffectGainVolume EffectSampleRateReducer EffectFilter EffectDistortion EffectDelay\
-		EffectFilter EffectFilterMultiMode EffectFilterMultiMode2 EffectFilterMultiModeMoog\
+		EffectFilter EffectFilterMultiMode EffectFilterMultiModeMoog\
 		EffectGrain EffectDistortion2 EffectVolumeDrive EffectVolumeClipping \
-		SynthDrum23 SynthGranular SynthBass SynthFM SynthFM2 \
+		SynthDrum23 SynthPerc SynthBass SynthFM2 \
 		SynthSample SynthDrumSample SynthMonoSample\
-		SynthSnare SynthHiHat SynthClap SynthFmDrum SynthPerc\
 		Sequencer Tempo AudioSpectrogram\
 		Mixer2 Mixer4 Mixer5 Mixer6 Mixer8 Mixer12\
 		AudioInputPulse AudioOutputPulse AudioInputAlsa AudioOutputAlsa\
-		SerializeTrack TapeRecording RamTapeRecording EffectDrum SampleSequencer\
-		SynthHybrid
+		SerializeTrack TapeRecording  SampleSequencer
+		
+
+# SynthSnare SynthHiHat SynthClap SynthFmDrum SynthHybrid SynthGranular SynthFM RamTapeRecording EffectDrum EffectFilterMultiMode2
+
 
 # rebuild: clean all
 

@@ -10,6 +10,7 @@ const ignore = [
     'plugins/components/__deprecated_Pixel',
     'plugins/components/__toBeFixed_Pixel',
     'plugins/controllers/__deprecated',
+    'plugins/audio/__deprecated',
     'hardware/ZicPad/neotrillis/.pio',
     'hardware/encoderModule/.pio',
     '.git',

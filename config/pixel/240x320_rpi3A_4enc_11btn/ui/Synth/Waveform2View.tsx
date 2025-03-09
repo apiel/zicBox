@@ -4,7 +4,7 @@ import { GraphEncoder } from '@/libs/nativeComponents/GraphEncoder';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
-import { ColorTrack4, encBottomLeft, encTopLeft, encTopRight, SynthTrack } from '../constants';
+import { ColorTrack4, encBottomLeft, SynthTrack } from '../constants';
 import { bottomLeftKnob, topValues } from '../constantsValue';
 import { TextGridSynth } from './TextGridSynth';
 
@@ -21,16 +21,17 @@ export function SynthWaveform2View({ name }: Props) {
                 dataId="WAVEFORM2"
                 renderValuesOnTop={true}
                 // encoders={[`${encTopLeft} SHAPE_2`, `${encTopRight} MORPH_2`]}
-                encoders={[
-                    {
-                        encoderId: encTopLeft,
-                        value: 'SHAPE_2',
-                    },
-                    {
-                        encoderId: encTopRight,
-                        value: 'MORPH_2',
-                    },
-                ]}
+                // encoders={[
+                //     {
+                //         encoderId: encTopLeft,
+                //         value: 'SHAPE_2',
+                //     },
+                //     {
+                //         encoderId: encTopRight,
+                //         value: 'MORPH_2',
+                //     },
+                // ]}
+                values={['SHAPE_2', 'MORPH_2']}
                 track={SynthTrack}
             />
 

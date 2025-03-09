@@ -1,5 +1,5 @@
 import { audioPlugin } from '@/libs/audio';
-import { BassTrack, Drum23Track, Fm1Track, PercTrack, SampleTrack, SynthTrack } from '../constants';
+import { BassTrack, Drum23Track, PercTrack, SampleTrack, SynthTrack } from '../constants';
 
 export const cutoffStringFormat = '%d%% %d%%';
 export const maxVariation = 16;
@@ -27,15 +27,15 @@ const bassTrack = {
     ],
 };
 
-const fm1Track = {
-    id: Fm1Track,
-    plugins: [
-        audioPlugin('SynthFmDrum', { alias: 'FmDrum' }),
-        audioPlugin('Sequencer'),
-        audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
-        audioPlugin('SerializeTrack', { filename: 'fmDrum', maxVariation, workspaceFolder }),
-    ],
-};
+// const fm1Track = {
+//     id: Fm1Track,
+//     plugins: [
+//         audioPlugin('SynthFmDrum', { alias: 'FmDrum' }),
+//         audioPlugin('Sequencer'),
+//         audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
+//         audioPlugin('SerializeTrack', { filename: 'fmDrum', maxVariation, workspaceFolder }),
+//     ],
+// };
 
 const synthTrack = {
     id: SynthTrack,
@@ -79,6 +79,6 @@ const masterTrack = {
 };
 
 export const audio = {
-    tracks: [drum23Track, bassTrack, fm1Track, synthTrack, sampleTrack, percTrack, masterTrack],
+    tracks: [drum23Track, bassTrack, synthTrack, sampleTrack, percTrack, masterTrack],
     autoSave: 500,
 };

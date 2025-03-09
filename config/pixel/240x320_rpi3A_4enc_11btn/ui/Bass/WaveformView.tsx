@@ -4,7 +4,7 @@ import { View } from '@/libs/nativeComponents/View';
 
 import { GraphEncoder } from '@/libs/nativeComponents/GraphEncoder';
 import { Common } from '../components/Common';
-import { BassTrack, ColorTrack2, encBottomLeft, encTopLeft, encTopRight } from '../constants';
+import { BassTrack, ColorTrack2 } from '../constants';
 import { topValues } from '../constantsValue';
 import { TextGridBass } from './TextGridBass';
 
@@ -38,20 +38,7 @@ export function BassWaveformView({ name }: Props) {
                 dataId="WAVEFORM"
                 track={BassTrack}
                 renderValuesOnTop={false}
-                encoders={[
-                    {
-                        encoderId: encTopLeft,
-                        value: 'WAVEFORM_TYPE',
-                    },
-                    {
-                        encoderId: encTopRight,
-                        value: 'SHAPE',
-                    },
-                    {
-                        encoderId: encBottomLeft,
-                        value: 'MACRO',
-                    },
-                ]}
+                values={['WAVEFORM_TYPE', 'SHAPE', 'MACRO']}
             />
             {/* <KnobValue
                 audioPlugin="Bass" param="NOISE"
