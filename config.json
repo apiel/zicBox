@@ -24,7 +24,7 @@
       {
         "id": 4,
         "plugins": [
-          {"alias":"Synth","plugin":"SynthHybrid"},
+          {"alias":"Synth","plugin":"SynthBuddy"},
           {"plugin":"Sequencer","alias":"Sequencer"},
           {"alias":"TrackFx","plugin":"EffectGainVolume"},
           {"filename":"synth","maxVariation":16,"workspaceFolder":"workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"}
