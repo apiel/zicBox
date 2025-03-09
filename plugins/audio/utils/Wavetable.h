@@ -2,8 +2,8 @@
 #define _WAVETABLE_H_
 
 #include <sndfile.h>
-#include <string>
 #include <string.h>
+#include <string>
 
 #include "plugins/audio/fileBrowser.h"
 #include "plugins/audio/utils/WaveformInterface.h"
@@ -50,16 +50,8 @@ public:
         while ((*index) >= sampleCount) {
             (*index) -= sampleCount;
         }
-        return bufferSamples[(uint16_t)(*index) + sampleStart];
-    }
-
-    float linearSample(float* index, float sampleInc)
-    {
-        (*index) += sampleInc;
-        while ((*index) >= sampleCount) {
-            (*index) -= sampleCount;
-        }
-        return linearInterpolation(*index, sampleCount, bufferSamples + sampleStart);
+        // return bufferSamples[(uint16_t)(*index) + sampleStart];
+        return linearInterpolationAbsolute(*index, sampleCount, bufferSamples + sampleStart);
     }
 
     void close()
