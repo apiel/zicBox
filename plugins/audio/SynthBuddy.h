@@ -29,13 +29,13 @@ public:
     /*md - `PITCH` set the pitch.*/
     Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -36, .max = 36 });
     /*md - `ATTACK` set the attack time.*/
-    Val& attack = val(0, "ATTACK", { "Attack", .min = 10, .max = 5000, .unit = "ms" }, [&](auto p) {
+    Val& attack = val(0, "ATTACK", { "Attack", .min = 10, .max = 5000, .step = 10, .unit = "ms" }, [&](auto p) {
         p.val.setFloat(p.value);
         int sampleCount = p.val.get() * props.sampleRate * 0.001f * props.channels;
         attackStepInc = 1.0f / sampleCount;
     });
     /*md - `RELEASE` set the release time.*/
-    Val& release = val(100, "RELEASE", { "Release", .min = 10, .max = 10000, .unit = "ms" }, [&](auto p) {
+    Val& release = val(100, "RELEASE", { "Release", .min = 10, .max = 10000, .step = 10, .unit = "ms" }, [&](auto p) {
         p.val.setFloat(p.value);
         int sampleCount = p.val.get() * props.sampleRate * 0.001f * props.channels;
         releaseStepInc = 1.0f / sampleCount;
@@ -57,8 +57,8 @@ public:
             }
             float out = wavetable.sample(&wavetable.sampleIndex, freq);
             out = out * velocity * env;
-    
-            buf[track] = out;   
+
+            buf[track] = out;
         }
     }
 
