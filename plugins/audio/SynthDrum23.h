@@ -22,7 +22,6 @@ protected:
     WaveformInterface* wave = nullptr;
     Waveform waveform;
     Wavetable wavetable;
-    float pitchMult = 1.0f;
 
     unsigned int sampleCountDuration = 0;
     unsigned int sampleDurationCounter = 0;
@@ -200,7 +199,7 @@ public:
     });
 
     /*md - `PITCH` Modulate the pitch.*/
-    Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -36, .max = 36 }, [&](auto p) { setPitch(p.value); });
+    Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -36, .max = 36 });
     /*md - `DURATION` set the duration of the envelop.*/
     Val& duration = val(100.0f, "DURATION", { "Duration", .min = 10.0, .max = 5000.0, .step = 10.0, .unit = "ms" }, [&](auto p) { setDuration(p.value); });
 
@@ -257,7 +256,7 @@ public:
             float envAmp = envelopAmp.next(time);
             float envFreq = envelopFreq.next(time);
 
-            float freq = envFreq + pitchMult * noteMult;
+            float freq = envFreq + noteMult;
             float out = wave->sample(&wavetable.sampleIndex, freq) * envAmp;
             out = addClicking(time, out);
             out = highFreqBoost(out, time);
@@ -267,12 +266,6 @@ public:
             sampleDurationCounter++;
             // printf("[%d] sample: %d of %d=%f\n", track, sampleDurationCounter, sampleCountDuration, buf[track]);
         }
-    }
-
-    void setPitch(float value)
-    {
-        pitch.setFloat(value);
-        pitchMult = pitch.pct() + 0.5f; // FIXME
     }
 
     void setDuration(float value)
