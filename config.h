@@ -22,20 +22,26 @@ void loadJsonConfig(std::string configPath)
             nlohmann::json config = nlohmann::json::parse(configFile);
             configFile.close();
             if (config.contains("audio")) {
+                logInfo("----------- init audio -------------");
                 hostConfig(config["audio"]);
             }
+            logInfo("----------- init controllers -------------");
             lastPluginControllerInstance->config(config); // <--- not very nice!!!!
             if (config.contains("controllers")) {
+
                 // TODO to be implemented...
             }
             // Should happen before views
             if (config.contains("screen")) {
+                logInfo("----------- init screen / draw -------------");
                 ViewManager::get().draw.config(config["screen"]);
             }
             if (config.contains("views")) {
+                logInfo("----------- init views -------------");
                 ViewManager::get().config(config["views"]);
             }
         }
+        logInfo("----------- config done -------------");
     } catch (const std::exception& e) {
         logError("load json config: %s", e.what());
     }
