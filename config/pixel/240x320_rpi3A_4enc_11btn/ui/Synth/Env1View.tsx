@@ -1,10 +1,10 @@
 import * as React from '@/libs/react';
 
-import { Adsr } from '@/libs/nativeComponents/Adsr';
+import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
-import { ColorTrack4, SynthTrack } from '../constants';
-import { halfFullValues } from '../constantsValue';
+import { ColorTrack4, encTopLeft, encTopRight, SynthTrack } from '../constants';
+import { topLeftKnob, topRightKnob } from '../constantsValue';
 import { TextGridSynth } from './TextGridSynth';
 
 export type Props = {
@@ -14,11 +14,34 @@ export type Props = {
 export function SynthEnv1View({ name }: Props) {
     return (
         <View name={name}>
-            <Adsr
-                bounds={halfFullValues}
-                audioPlugin="Synth"
-                values={['ATTACK_1', 'DECAY_1', 'SUSTAIN_1', 'RELEASE_1']}
+            <KnobValue
+                audioPlugin="Synth" param="ATTACK"
+                bounds={topLeftKnob}
+                encoderId={encTopLeft}
+                color="tertiary"
+                track={SynthTrack}
             />
+            <KnobValue
+                audioPlugin="Synth" param="RELEASE"
+                bounds={topRightKnob}
+                encoderId={encTopRight}
+                color="primary"
+                track={SynthTrack}
+            />
+            {/* <KnobValue
+                audioPlugin="Synth" param="REVERB"
+                bounds={bottomLeftKnob}
+                encoderId={encBottomLeft}
+                color="quaternary"
+                track={SynthTrack}
+            /> */}
+            {/* <KnobValue
+                audioPlugin="Synth" param="MOD_INDEX"
+                bounds={bottomRightKnob}
+                encoderId={encBottomRight}
+                color="secondary"
+                track={SynthTrack}
+            /> */}
 
             <TextGridSynth selected={'Env1'} viewName={name} />
             <Common selected={'Synth'} track={SynthTrack} selectedBackground={ColorTrack4} />
