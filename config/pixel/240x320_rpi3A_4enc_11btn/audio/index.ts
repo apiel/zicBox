@@ -40,7 +40,7 @@ const bassTrack = {
 const synthTrack = {
     id: SynthTrack,
     plugins: [
-        audioPlugin('SynthHybrid', { alias: 'Synth' }),
+        audioPlugin('SynthBuddy', { alias: 'Synth' }),
         audioPlugin('Sequencer'),
         audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
         audioPlugin('SerializeTrack', { filename: 'synth', maxVariation, workspaceFolder }),
