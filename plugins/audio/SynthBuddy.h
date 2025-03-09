@@ -46,6 +46,8 @@ public:
         p.val.setFloat(p.value);
         freqMod = pow(2.0f, p.val.pct());
     });
+    // /* md - `OSC_MOD` set the oscillator modulation using the envelope output (morph on wavetable and change start point on sample).*/
+    // Val& oscMod = val(0, "OSC_MOD", { "Osc. Mod." });
 
     SynthBuddy(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config) // clang-format on
@@ -66,9 +68,9 @@ public:
                 // modulatedFreq = modulatedFreq * pow(2.0f, env * (frequencyMod.pct() - 0.5f));
                 // modulatedFreq = modulatedFreq + (modulatedFreq * env * (frequencyMod.pct() - 0.5f));
                 modulatedFreq += env * (frequencyMod.pct() - 0.5f);
+                // modulatedFreq += env * (pow(2.0f, env * (frequencyMod.pct() - 0.5f)) - 1.0f);
             }
             float out = wavetable.sample(&wavetable.sampleIndex, modulatedFreq);
-            // float out = wavetable.linearSample(&wavetable.sampleIndex, modulatedFreq);
             out = out * velocity * env;
 
             buf[track] = out;

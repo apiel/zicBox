@@ -136,7 +136,7 @@ protected:
     {
         try {
             std::string name = config["componentName"].get<std::string>();
-            // printf("Adding component %s %s\n", name.c_str(), config.dump().c_str());
+            // logDebug("Adding component %s", name.c_str());
             Point position = { config["bounds"][0].get<int>(), config["bounds"][1].get<int>() };
 
             // Check if width and height exist, otherwise use default values
@@ -234,6 +234,7 @@ public:
             for (auto& v : config) {
                 // TODO Might want to move all this in view!!!
                 if (v.contains("name") && v.contains("components") && v["components"].is_array()) {
+                    logInfo("Loading view %s", v["name"].get<std::string>().c_str());
                     View* newView = new View(draw, [&](std::string name) { setView(name); }, contextVar);
                     newView->name = v["name"];
                     try {

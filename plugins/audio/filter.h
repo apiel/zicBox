@@ -48,11 +48,19 @@ public:
         feedback = reso + reso / ratio;
     }
 
+    // void setSampleData(float inputValue)
+    // {
+    //     hp = fix(inputValue - buf);
+    //     bp = fix(buf - lp);
+    //     buf = fix(buf + cutoff * (hp + feedback * bp));
+    //     lp = fix(lp + cutoff * (buf - lp));
+    // }
+
     void setSampleData(float inputValue)
     {
-        hp = fix(inputValue - buf);
-        bp = fix(buf - lp);
-        buf = fix(buf + cutoff * (hp + feedback * bp));
-        lp = fix(lp + cutoff * (buf - lp));
+        hp = inputValue - buf;
+        bp = buf - lp;
+        buf = buf + cutoff * (hp + feedback * bp);
+        lp = lp + cutoff * (buf - lp);
     }
 };
