@@ -7,6 +7,7 @@
 
 #include "plugins/audio/fileBrowser.h"
 #include "plugins/audio/utils/WaveformInterface.h"
+#include "plugins/audio/utils/utils.h"
 
 #define ZIC_WAVETABLE_WAVEFORMS_COUNT 64
 
@@ -50,6 +51,15 @@ public:
             (*index) -= sampleCount;
         }
         return bufferSamples[(uint16_t)(*index) + sampleStart];
+    }
+
+    float linearSample(float* index, float sampleInc)
+    {
+        (*index) += sampleInc;
+        while ((*index) >= sampleCount) {
+            (*index) -= sampleCount;
+        }
+        return linearInterpolation(*index, sampleCount, bufferSamples + sampleStart);
     }
 
     void close()

@@ -63,10 +63,12 @@ public:
             }
             float modulatedFreq = freq;
             if (frequencyMod.pct() != 0.5f) {
-                modulatedFreq = modulatedFreq * pow(2.0f, env * (frequencyMod.pct() + 0.5f));
+                // modulatedFreq = modulatedFreq * pow(2.0f, env * (frequencyMod.pct() - 0.5f));
                 // modulatedFreq = modulatedFreq + (modulatedFreq * env * (frequencyMod.pct() - 0.5f));
+                modulatedFreq += env * (frequencyMod.pct() - 0.5f);
             }
             float out = wavetable.sample(&wavetable.sampleIndex, modulatedFreq);
+            // float out = wavetable.linearSample(&wavetable.sampleIndex, modulatedFreq);
             out = out * velocity * env;
 
             buf[track] = out;
