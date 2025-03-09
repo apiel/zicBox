@@ -23,6 +23,7 @@ protected:
     float releaseStepInc = 0.0f;
     float env = -1.0f;
     bool released = false;
+    float freqMod = 1.0f;
 
 public:
     /*md **Values**: */
@@ -40,6 +41,11 @@ public:
         int sampleCount = p.val.get() * props.sampleRate * 0.001f * props.channels;
         releaseStepInc = 1.0f / sampleCount;
     });
+    /*md - `FREQUENCY_MOD` set the frequency modulation using the envelope output.*/
+    Val& frequencyMod = val(0, "FREQUENCY_MOD", { "Freq. Mod.", VALUE_CENTERED, .min = -100.0f }, [&](auto p) {
+        p.val.setFloat(p.value);
+        freqMod = pow(2.0f, p.val.pct());
+    });
 
     SynthBuddy(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config) // clang-format on
@@ -55,7 +61,12 @@ public:
             } else if (env < 1.0f) {
                 env += attackStepInc;
             }
-            float out = wavetable.sample(&wavetable.sampleIndex, freq);
+            float modulatedFreq = freq;
+            if (frequencyMod.pct() != 0.5f) {
+                modulatedFreq = modulatedFreq * pow(2.0f, env * (frequencyMod.pct() + 0.5f));
+                // modulatedFreq = modulatedFreq + (modulatedFreq * env * (frequencyMod.pct() - 0.5f));
+            }
+            float out = wavetable.sample(&wavetable.sampleIndex, modulatedFreq);
             out = out * velocity * env;
 
             buf[track] = out;
