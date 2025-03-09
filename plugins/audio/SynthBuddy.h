@@ -3,7 +3,7 @@
 #include "audioPlugin.h"
 #include "helpers/range.h"
 #include "mapping.h"
-
+#include "plugins/audio/filter.h"
 #include "./utils/Wavetable.h"
 
 /*md
@@ -19,11 +19,20 @@ protected:
     float freq = 1.0f;
 
     Wavetable wavetable;
+    EffectFilterData filter; 
+
     float attackStepInc = 0.0f;
     float releaseStepInc = 0.0f;
     float env = -1.0f;
     bool released = false;
     float freqMod = 1.0f;
+
+    enum FilterType {
+        LP,
+        BP,
+        HP,
+        FILTER_COUNT
+    };
 
 public:
     /*md **Values**: */
@@ -49,6 +58,36 @@ public:
     // /* md - `OSC_MOD` set the oscillator modulation using the envelope output (morph on wavetable and change start point on sample).*/
     // Val& oscMod = val(0, "OSC_MOD", { "Osc. Mod." });
 
+    /*md - `FILTER_TYPE` Select filter type.*/
+    Val& filterType = val(0, "FILTER_TYPE", { "Filter", VALUE_STRING, .max = SynthBuddy::FilterType::FILTER_COUNT - 1 }, [&](auto p) {
+        p.val.setFloat(p.value);
+        if (p.val.get() == SynthBuddy::FilterType::LP) {
+            p.val.setString("LPF");
+        } else if (p.val.get() == SynthBuddy::FilterType::BP) {
+            p.val.setString("BPF");
+        } else if (p.val.get() == SynthBuddy::FilterType::HP) {
+            p.val.setString("HPF");
+        }
+    });
+
+    /*md - `FILTER_CUTOFF` set the filter cutoff frequency.*/
+    Val& filterCutoff = val(0, "FILTER_CUTOFF", { "Cutoff", .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        if (filterType.get() == SynthBuddy::FilterType::LP) {
+            filter.setLpCutoff(p.val.pct());
+        } else if (filterType.get() == SynthBuddy::FilterType::BP) {
+            filter.setBpCutoff(p.val.pct());
+        } else if (filterType.get() == SynthBuddy::FilterType::HP) {
+            filter.setHpCutoff(p.val.pct());
+        }
+    });
+
+    /*md - `FILTER_RESONANCE` set the filter resonance.*/
+    Val& filterResonance = val(0, "FILTER_RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        filter.setResonance(p.val.pct());
+    });
+
     SynthBuddy(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config) // clang-format on
     {
@@ -71,6 +110,17 @@ public:
                 // modulatedFreq += env * (pow(2.0f, env * (frequencyMod.pct() - 0.5f)) - 1.0f);
             }
             float out = wavetable.sample(&wavetable.sampleIndex, modulatedFreq);
+
+            if (filterCutoff.get() > 0.0f) {
+                filter.setSampleData(out);
+                if (filterType.get() == SynthBuddy::FilterType::LP) {
+                    out = filter.lp;
+                } else if (filterType.get() == SynthBuddy::FilterType::BP) {
+                    out = filter.bp;
+                } else if (filterType.get() == SynthBuddy::FilterType::HP) {
+                    out = filter.hp;
+                }
+            }
             out = out * velocity * env;
 
             buf[track] = out;

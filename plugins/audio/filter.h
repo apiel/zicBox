@@ -25,11 +25,26 @@ public:
     float hp = 0.0;
     float bp = 0.0;
     float resonance = 0.0f;
-   
+
     void setCutoff(float _cutoff)
     {
         cutoff = _cutoff;
         setResonance(resonance);
+    }
+
+    void setLpCutoff(float _cutoff)
+    {
+        setCutoff(0.85 * _cutoff + 0.1);
+    }
+
+    void setHpCutoff(float _cutoff)
+    {
+        setCutoff((0.20 * _cutoff) + 0.00707);
+    }
+
+    void setBpCutoff(float _cutoff)
+    {
+        setCutoff(0.85 * _cutoff + 0.1);
     }
 
     void setResonance(float _resonance)

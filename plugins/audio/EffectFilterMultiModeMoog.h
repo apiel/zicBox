@@ -44,18 +44,29 @@ public:
         initValues();
     };
 
+    float fix(float s)
+    {
+        if (isnan(s)) {
+            return 0.0;
+        }
+        return s;
+    }
+
     float sample(float inputValue)
     {
         inputValue -= q * b4; // feedback
         t1 = b1;
-        b1 = (inputValue + b0) * p - b1 * f;
+        b1 = fix((inputValue + b0) * p - b1 * f);
         t2 = b2;
-        b2 = (b1 + t1) * p - b2 * f;
+        b2 = fix((b1 + t1) * p - b2 * f);
         t1 = b3;
-        b3 = (b2 + t2) * p - b3 * f;
-        b4 = (b3 + t1) * p - b4 * f;
-        b4 = b4 - b4 * b4 * b4 * 0.166667f; // clipping
+        b3 = fix((b2 + t2) * p - b3 * f);
+        b4 = fix((b3 + t1) * p - b4 * f);
+        b4 = fix(b4 - b4 * b4 * b4 * 0.166667f); // clipping
         b0 = inputValue;
+
+        // printf("q: %f p: %f b0: %f b1: %f b2: %f b3: %f b4: %f t1: %f t2: %f f: %f\n", q, p, b0, b1, b2, b3, b4, t1, t2, f);
+
 
         // Lowpass  output:  b4
         // Highpass output:  in - b4;

@@ -25,6 +25,7 @@ import { PercSeqView } from './Perc/SeqView';
 import { SampleEditorView } from './Sample/SampleEditorView';
 import { SynthEnv1View } from './Synth/Env1View';
 import { SynthEnv2View } from './Synth/Env2View';
+import { SynthFilterView } from './Synth/FilterView';
 import { SynthFxView } from './Synth/FxhView';
 import { SynthView } from './Synth/SynthView';
 import { SynthWaveform1View } from './Synth/Waveform1View';
@@ -80,6 +81,7 @@ export const ui = {
 
             <SynthView name="Synth" />
             <SynthFxView name="SynthFx" />
+            <SynthFilterView name="SynthFilter" />
             <SynthEnv1View name="SynthEnv1" />
             <SynthEnv2View name="SynthEnv2" />
             <SynthWaveform1View name="SynthWaveform1" />

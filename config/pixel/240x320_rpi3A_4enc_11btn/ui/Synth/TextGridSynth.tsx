@@ -29,7 +29,7 @@ export function TextGridSynth({ selected, viewName }: { selected: string; viewNa
             <TextGrid
                 bounds={KeyInfoPosition}
                 selectedBackground={ColorTrack4}
-                rows={['Main Fx Osc1 Osc2', 'Seq. &empty Env1 Env2']}
+                rows={['Main Fx Osc1 Osc2', 'Seq. Filter Env1 Env2']}
                 keys={[
                     { key: btn1, action: 'setView:Synth' },
                     { key: btn2, action: 'setView:SynthFx' },
@@ -49,7 +49,7 @@ export function TextGridSynth({ selected, viewName }: { selected: string; viewNa
                     },
 
                     { key: btn5, action: 'setView:SynthSeq' },
-                    { key: btn6, action: 'noteOn:Synth:56' },
+                    { key: btn6, action: 'setView:SynthFilter' },
                     {
                         key: btn7,
                         action:
