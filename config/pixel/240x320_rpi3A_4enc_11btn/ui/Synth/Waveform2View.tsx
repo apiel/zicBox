@@ -1,11 +1,8 @@
 import * as React from '@/libs/react';
 
-import { GraphEncoder } from '@/libs/nativeComponents/GraphEncoder';
-import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
-import { ColorTrack4, encBottomLeft, SynthTrack } from '../constants';
-import { bottomLeftKnob, topValues } from '../constantsValue';
+import { ColorTrack4, SynthTrack } from '../constants';
 import { TextGridSynth } from './TextGridSynth';
 
 export type Props = {
@@ -15,7 +12,7 @@ export type Props = {
 export function SynthWaveform2View({ name }: Props) {
     return (
         <View name={name}>
-            <GraphEncoder
+            {/* <GraphEncoder
                 bounds={topValues}
                 audioPlugin="Synth"
                 dataId="WAVEFORM2"
@@ -33,16 +30,16 @@ export function SynthWaveform2View({ name }: Props) {
                 // ]}
                 values={['SHAPE_2', 'MORPH_2']}
                 track={SynthTrack}
-            />
+            /> */}
 
-            <KnobValue
+            {/* <KnobValue
                 audioPlugin="Synth"
                 param="FREQ_2"
                 bounds={bottomLeftKnob}
                 encoderId={encBottomLeft}
                 color="quaternary"
                 track={SynthTrack}
-            />
+            /> */}
 
             <TextGridSynth selected={'Osc2'} viewName={name} />
             <Common selected={'Synth'} track={SynthTrack} selectedBackground={ColorTrack4} />
