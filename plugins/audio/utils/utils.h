@@ -1,29 +1,22 @@
-#ifndef _AUDIO_UTILS_H_
-#define _AUDIO_UTILS_H_
+#pragma once
 
 #include <cstdint>
 
-float linearInterpolation(float index, uint16_t lutSize, float* lut)
+float linearInterpolationAbsolute(float index, uint16_t lutSize, float* lut)
 {
-    // Linear Interpolation to get smoother transitions between discrete LUT values
-    float lutIndex = index * (lutSize - 1);
-    uint16_t index1 = (uint16_t)lutIndex;
+    uint16_t index1 = static_cast<uint16_t>(index);
     uint16_t index2 = (index1 + 1) % lutSize;
-    float fractional = lutIndex - index1;
+    float fractional = index - index1;
 
+    // Interpolate between the two LUT values
     return lut[index1] * (1.0f - fractional) + lut[index2] * fractional;
 }
 
-// float linearInterpolation(float x, uint16_t lutSize, float* lut)
-// {
-//     float scaledIndex = x * (lutSize - 1);
-//     int index = static_cast<int>(scaledIndex);
-//     float fraction = scaledIndex - index;
-
-//     float value1 = lut[index];
-//     float value2 = lut[(index + 1) % lutSize];
-//     return value1 + fraction * (value2 - value1);
-// }
+// Linear interpolation relative where index is between 0.0f and 1.0f
+float linearInterpolation(float index, uint16_t lutSize, float* lut)
+{
+    return linearInterpolationAbsolute(index * (lutSize - 1), lutSize, lut);
+}
 
 void applyGain(float* buffer, uint64_t count)
 {
@@ -60,5 +53,3 @@ void limitBuffer(float* buffer, uint64_t count, float limit)
         }
     }
 }
-
-#endif
