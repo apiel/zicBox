@@ -64,6 +64,11 @@ public:
     // /* md - `OSC_MOD` set the oscillator modulation using the envelope output (morph on wavetable and change start point on sample).*/
     // Val& oscMod = val(0, "OSC_MOD", { "Osc. Mod." });
 
+    /*md - `CUTOFF_MOD` set the cutoff modulation using the envelope output. */
+    Val& cutoffMod = val(0, "CUTOFF_MOD", { "Cutoff Mod.", VALUE_CENTERED, .min = -100.0f });
+    /*md - `RESONANCE_MOD` set the resonance modulation using the envelope output. */
+    Val& resonanceMod = val(0, "RESONANCE_MOD", { "Resonance Mod.", VALUE_CENTERED, .min = -100.0f });
+
     /*md - `FILTER_TYPE` Select filter type.*/
     Val& filterType = val(1, "FILTER_TYPE", { "Filter", VALUE_STRING, .max = SynthBuddy::FilterType::FILTER_COUNT - 1 }, [&](auto p) {
         p.val.setFloat(p.value);
@@ -152,26 +157,32 @@ public:
                 env += attackStepInc;
             }
             float modulatedFreq = freq;
+            float invEnv = 1.0f - env;
             if (frequencyMod.pct() != 0.5f) {
-                // modulatedFreq = modulatedFreq * pow(2.0f, env * (frequencyMod.pct() - 0.5f));
-                // modulatedFreq = modulatedFreq + (modulatedFreq * env * (frequencyMod.pct() - 0.5f));
-                modulatedFreq += (1.0f - env) * (frequencyMod.pct() - 0.5f);
-                // modulatedFreq += env * (pow(2.0f, env * (frequencyMod.pct() - 0.5f)) - 1.0f);
+                modulatedFreq += invEnv * (frequencyMod.pct() - 0.5f);
             }
             float out = wavetable.sample(&wavetable.sampleIndex, modulatedFreq);
 
-            if (filterType.get() == SynthBuddy::FilterType::LP) {
-                out = filter.processLp(out);
-            } else if (filterType.get() == SynthBuddy::FilterType::BP) {
-                out = filter.processBp(out);
-            } else if (filterType.get() == SynthBuddy::FilterType::HP) {
-                out = filter.processHp(out);
-            // } else if (filterType.get() == SynthBuddy::FilterType::LP2) {
-            //     out = filter2.processLp(out);
-            // } else if (filterType.get() == SynthBuddy::FilterType::HP2) {
-            //     out = filter2.processHp(out);
-            // } else if (filterType.get() == SynthBuddy::FilterType::BP2) {
-            //     out = filter2.processBp(out);
+            if (filterType.get() != SynthBuddy::FilterType::OFF) {
+                if (cutoffMod.pct() != 0.5f || resonanceMod.pct() != 0.5f) {
+                    filter.setLpCutoff(
+                        range(filterCutoff.pct() + invEnv * (cutoffMod.pct() - 0.5f), 0.0f, 1.0f),
+                        range(filterResonance.pct() + invEnv * (resonanceMod.pct() - 0.5f), 0.0f, 1.0f));
+                }
+
+                if (filterType.get() == SynthBuddy::FilterType::LP) {
+                    out = filter.processLp(out);
+                } else if (filterType.get() == SynthBuddy::FilterType::BP) {
+                    out = filter.processBp(out);
+                } else if (filterType.get() == SynthBuddy::FilterType::HP) {
+                    out = filter.processHp(out);
+                    // } else if (filterType.get() == SynthBuddy::FilterType::LP2) {
+                    //     out = filter2.processLp(out);
+                    // } else if (filterType.get() == SynthBuddy::FilterType::HP2) {
+                    //     out = filter2.processHp(out);
+                    // } else if (filterType.get() == SynthBuddy::FilterType::BP2) {
+                    //     out = filter2.processBp(out);
+                }
             }
             out = out * velocity * env;
 

@@ -30,21 +30,40 @@ public:
         setResonance(resonance);
     }
 
+    void setCutoff(float _cutoff, float _resonance)
+    {
+        cutoff = _cutoff;
+        setResonance(_resonance);
+    }
+
     void setLpCutoff(float _cutoff)
     {
-        // setCutoff((0.85 - (0.85 * _cutoff)) + 0.1);
-        setCutoff((0.90 - (0.90 * _cutoff)) + 0.1);
+        setLpCutoff(_cutoff, resonance);
+    }
+
+    void setLpCutoff(float _cutoff, float _resonance)
+    {
+        setCutoff((0.90 - (0.90 * _cutoff)) + 0.1, _resonance);
     }
 
     void setHpCutoff(float _cutoff)
     {
-        setCutoff((0.20 * _cutoff) + 0.00707);
+        setHpCutoff(_cutoff, resonance);
+    }
+
+    void setHpCutoff(float _cutoff, float _resonance)
+    {
+        setCutoff((0.20 * _cutoff) + 0.00707, _resonance);
     }
 
     void setBpCutoff(float _cutoff)
     {
-        // setCutoff(0.85 * _cutoff + 0.1);
-        setCutoff(0.95 * _cutoff + 0.1);
+        setBpCutoff(_cutoff, resonance);
+    }
+
+    void setBpCutoff(float _cutoff, float _resonance)
+    {
+        setCutoff(0.95 * _cutoff + 0.1, _resonance);
     }
 
     void setResonance(float _resonance)
