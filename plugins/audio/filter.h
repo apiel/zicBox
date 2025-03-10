@@ -1,7 +1,5 @@
 #pragma once
 
-#include "audioPlugin.h"
-
 // https://www.martin-finke.de/articles/audio-plugins-013-filter/
 // https://www.musicdsp.org/en/latest/Filters/29-resonant-filter.html
 
@@ -34,7 +32,8 @@ public:
 
     void setLpCutoff(float _cutoff)
     {
-        setCutoff(0.85 * _cutoff + 0.1);
+        // setCutoff((0.85 - (0.85 * _cutoff)) + 0.1);
+        setCutoff((0.90 - (0.90 * _cutoff)) + 0.1);
     }
 
     void setHpCutoff(float _cutoff)
@@ -44,7 +43,8 @@ public:
 
     void setBpCutoff(float _cutoff)
     {
-        setCutoff(0.85 * _cutoff + 0.1);
+        // setCutoff(0.85 * _cutoff + 0.1);
+        setCutoff(0.95 * _cutoff + 0.1);
     }
 
     void setResonance(float _resonance)
@@ -77,5 +77,23 @@ public:
         bp = buf - lp;
         buf = buf + cutoff * (hp + feedback * bp);
         lp = lp + cutoff * (buf - lp);
+    }
+
+    float processLp(float inputValue)
+    {
+        setSampleData(inputValue);
+        return lp;
+    }
+
+    float processHp(float inputValue)
+    {
+        setSampleData(inputValue);
+        return hp;
+    }
+
+    float processBp(float inputValue)
+    {
+        setSampleData(inputValue);
+        return bp;
     }
 };
