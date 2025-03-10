@@ -1,10 +1,11 @@
 #pragma once
 
+#include "./utils/Wavetable.h"
 #include "audioPlugin.h"
 #include "helpers/range.h"
 #include "mapping.h"
 #include "plugins/audio/filter.h"
-#include "./utils/Wavetable.h"
+// #include "plugins/audio/filter2.h"
 
 /*md
 ## SynthBuddy
@@ -19,7 +20,8 @@ protected:
     float freq = 1.0f;
 
     Wavetable wavetable;
-    EffectFilterData filter; 
+    EffectFilterData filter;
+    // EffectFilter2Data filter2;
 
     float attackStepInc = 0.0f;
     float releaseStepInc = 0.0f;
@@ -28,9 +30,13 @@ protected:
     float freqMod = 1.0f;
 
     enum FilterType {
+        OFF,
         LP,
+        // LP2,
         BP,
+        // BP2,
         HP,
+        // HP2,
         FILTER_COUNT
     };
 
@@ -59,15 +65,25 @@ public:
     // Val& oscMod = val(0, "OSC_MOD", { "Osc. Mod." });
 
     /*md - `FILTER_TYPE` Select filter type.*/
-    Val& filterType = val(0, "FILTER_TYPE", { "Filter", VALUE_STRING, .max = SynthBuddy::FilterType::FILTER_COUNT - 1 }, [&](auto p) {
+    Val& filterType = val(1, "FILTER_TYPE", { "Filter", VALUE_STRING, .max = SynthBuddy::FilterType::FILTER_COUNT - 1 }, [&](auto p) {
         p.val.setFloat(p.value);
-        if (p.val.get() == SynthBuddy::FilterType::LP) {
+        if (p.val.get() == SynthBuddy::FilterType::OFF) {
+            p.val.setString("OFF");
+        } else if (p.val.get() == SynthBuddy::FilterType::LP) {
             p.val.setString("LPF");
         } else if (p.val.get() == SynthBuddy::FilterType::BP) {
             p.val.setString("BPF");
         } else if (p.val.get() == SynthBuddy::FilterType::HP) {
             p.val.setString("HPF");
+            // } else if (p.val.get() == SynthBuddy::FilterType::LP2) {
+            //     p.val.setString("LPF2");
+            // } else if (p.val.get() == SynthBuddy::FilterType::HP2) {
+            //     p.val.setString("HPF2");
+            // } else if (p.val.get() == SynthBuddy::FilterType::BP2) {
+            //     p.val.setString("BPF2");
         }
+        filterCutoff.set(filterCutoff.get());
+        filterResonance.set(filterResonance.get());
     });
 
     /*md - `FILTER_CUTOFF` set the filter cutoff frequency.*/
@@ -79,18 +95,51 @@ public:
             filter.setBpCutoff(p.val.pct());
         } else if (filterType.get() == SynthBuddy::FilterType::HP) {
             filter.setHpCutoff(p.val.pct());
+            // } else if (filterType.get() == SynthBuddy::FilterType::LP2) {
+            //     filter2.setCutoff(p.val.pct());
+            // } else if (filterType.get() == SynthBuddy::FilterType::HP2) {
+            //     filter2.setCutoff(p.val.pct());
+            // } else if (filterType.get() == SynthBuddy::FilterType::BP2) {
+            //     filter2.setCutoff(p.val.pct());
         }
     });
 
     /*md - `FILTER_RESONANCE` set the filter resonance.*/
     Val& filterResonance = val(0, "FILTER_RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
-        filter.setResonance(p.val.pct());
+        if (filterType.get() == SynthBuddy::FilterType::LP) {
+            filter.setResonance(p.val.pct());
+        } else if (filterType.get() == SynthBuddy::FilterType::BP) {
+            filter.setResonance(p.val.pct());
+        } else if (filterType.get() == SynthBuddy::FilterType::HP) {
+            filter.setResonance(p.val.pct());
+            // } else if (filterType.get() == SynthBuddy::FilterType::LP2) {
+            //     filter2.setResonance(p.val.pct());
+            // } else if (filterType.get() == SynthBuddy::FilterType::HP2) {
+            //     filter2.setResonance(p.val.pct());
+        }
+    });
+
+    /*md - `WAVE` select the wavetable.*/
+    Val& wave = val(0, "WAVE", { "Wave", VALUE_STRING }, [&](auto p) {
+        p.val.setFloat(p.value);
+        int position = p.val.get();
+        wavetable.open(position, false);
+        p.val.setString(wavetable.fileBrowser.getFileWithoutExtension(position));
+    });
+
+    /*md - `WAVE_EDIT` morph the wavetable.*/
+    Val& waveEdit = val(0, "WAVE_EDIT", { "Wave Edit", VALUE_STRING, .min = 1.0, .max = ZIC_WAVETABLE_WAVEFORMS_COUNT }, [&](auto p) {
+        p.val.setFloat(p.value);
+        wavetable.morph((int)p.val.get() - 1);
+        p.val.setString(std::to_string((int)p.val.get()) + "/" + std::to_string(ZIC_WAVETABLE_WAVEFORMS_COUNT));
     });
 
     SynthBuddy(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config) // clang-format on
+    // , filter2(props.sampleRate)
     {
+        wave.props().max = wavetable.fileBrowser.count - 1;
         initValues();
     }
 
@@ -106,20 +155,23 @@ public:
             if (frequencyMod.pct() != 0.5f) {
                 // modulatedFreq = modulatedFreq * pow(2.0f, env * (frequencyMod.pct() - 0.5f));
                 // modulatedFreq = modulatedFreq + (modulatedFreq * env * (frequencyMod.pct() - 0.5f));
-                modulatedFreq += env * (frequencyMod.pct() - 0.5f);
+                modulatedFreq += (1.0f - env) * (frequencyMod.pct() - 0.5f);
                 // modulatedFreq += env * (pow(2.0f, env * (frequencyMod.pct() - 0.5f)) - 1.0f);
             }
             float out = wavetable.sample(&wavetable.sampleIndex, modulatedFreq);
 
-            if (filterCutoff.get() > 0.0f) {
-                filter.setSampleData(out);
-                if (filterType.get() == SynthBuddy::FilterType::LP) {
-                    out = filter.lp;
-                } else if (filterType.get() == SynthBuddy::FilterType::BP) {
-                    out = filter.bp;
-                } else if (filterType.get() == SynthBuddy::FilterType::HP) {
-                    out = filter.hp;
-                }
+            if (filterType.get() == SynthBuddy::FilterType::LP) {
+                out = filter.processLp(out);
+            } else if (filterType.get() == SynthBuddy::FilterType::BP) {
+                out = filter.processBp(out);
+            } else if (filterType.get() == SynthBuddy::FilterType::HP) {
+                out = filter.processHp(out);
+            // } else if (filterType.get() == SynthBuddy::FilterType::LP2) {
+            //     out = filter2.processLp(out);
+            // } else if (filterType.get() == SynthBuddy::FilterType::HP2) {
+            //     out = filter2.processHp(out);
+            // } else if (filterType.get() == SynthBuddy::FilterType::BP2) {
+            //     out = filter2.processBp(out);
             }
             out = out * velocity * env;
 

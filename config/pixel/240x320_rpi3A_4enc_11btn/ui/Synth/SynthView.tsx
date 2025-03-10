@@ -3,8 +3,10 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
-import { ColorTrack4, encTopLeft, encTopRight, SynthTrack } from '../constants';
+import { ColorTrack4, encBottomLeft, encBottomRight, encTopLeft, encTopRight, SynthTrack } from '../constants';
 import {
+    bottomLeftKnob,
+    bottomRightKnob,
     topLeftKnob,
     topRightKnob
 } from '../constantsValue';
@@ -31,20 +33,20 @@ export function SynthView({ name }: Props) {
                 color="primary"
                 track={SynthTrack}
             />
-            {/* <KnobValue
-                audioPlugin="Synth" param="FM_AMOUNT"
+            <KnobValue
+                audioPlugin="Synth" param="WAVE"
                 bounds={bottomLeftKnob}
                 encoderId={encBottomLeft}
                 color="quaternary"
                 track={SynthTrack}
-            /> */}
-            {/* <KnobValue
-                audioPlugin="Synth" param="MOD_INDEX"
+            />
+            <KnobValue
+                audioPlugin="Synth" param="WAVE_EDIT"
                 bounds={bottomRightKnob}
                 encoderId={encBottomRight}
                 color="secondary"
                 track={SynthTrack}
-            /> */}
+            />
 
             <TextGridSynth selected={'Main'} viewName={name} />
             <Common selected={'Synth'} track={SynthTrack} selectedBackground={ColorTrack4} />
