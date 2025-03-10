@@ -4,6 +4,7 @@
 
 <!-- https://discord.gg/65HTx7z9qg -->
 
+If you have any questions, feel free to ask on Discord:
 [![](https://dcbadge.limes.pink/api/server/65HTx7z9qg)](https://discord.gg/65HTx7z9qg)
 
 ## 🎵 Features 🎶
