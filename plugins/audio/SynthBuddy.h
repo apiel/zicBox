@@ -163,26 +163,33 @@ public:
             }
             float out = wavetable.sample(&wavetable.sampleIndex, modulatedFreq);
 
-            if (filterType.get() != SynthBuddy::FilterType::OFF) {
+            if (filterType.get() == SynthBuddy::FilterType::LP) {
                 if (cutoffMod.pct() != 0.5f || resonanceMod.pct() != 0.5f) {
                     filter.setLpCutoff(
                         range(filterCutoff.pct() + invEnv * (cutoffMod.pct() - 0.5f), 0.0f, 1.0f),
                         range(filterResonance.pct() + invEnv * (resonanceMod.pct() - 0.5f), 0.0f, 1.0f));
                 }
-
-                if (filterType.get() == SynthBuddy::FilterType::LP) {
-                    out = filter.processLp(out);
-                } else if (filterType.get() == SynthBuddy::FilterType::BP) {
-                    out = filter.processBp(out);
-                } else if (filterType.get() == SynthBuddy::FilterType::HP) {
-                    out = filter.processHp(out);
-                    // } else if (filterType.get() == SynthBuddy::FilterType::LP2) {
-                    //     out = filter2.processLp(out);
-                    // } else if (filterType.get() == SynthBuddy::FilterType::HP2) {
-                    //     out = filter2.processHp(out);
-                    // } else if (filterType.get() == SynthBuddy::FilterType::BP2) {
-                    //     out = filter2.processBp(out);
+                out = filter.processLp(out);
+            } else if (filterType.get() == SynthBuddy::FilterType::BP) {
+                if (cutoffMod.pct() != 0.5f || resonanceMod.pct() != 0.5f) {
+                    filter.setBpCutoff(
+                        range(filterCutoff.pct() + invEnv * (cutoffMod.pct() - 0.5f), 0.0f, 1.0f),
+                        range(filterResonance.pct() + invEnv * (resonanceMod.pct() - 0.5f), 0.0f, 1.0f));
                 }
+                out = filter.processBp(out);
+            } else if (filterType.get() == SynthBuddy::FilterType::HP) {
+                if (cutoffMod.pct() != 0.5f || resonanceMod.pct() != 0.5f) {
+                    filter.setHpCutoff(
+                        range(filterCutoff.pct() + invEnv * (cutoffMod.pct() - 0.5f), 0.0f, 1.0f),
+                        range(filterResonance.pct() + invEnv * (resonanceMod.pct() - 0.5f), 0.0f, 1.0f));
+                }
+                out = filter.processHp(out);
+                // } else if (filterType.get() == SynthBuddy::FilterType::LP2) {
+                //     out = filter2.processLp(out);
+                // } else if (filterType.get() == SynthBuddy::FilterType::HP2) {
+                //     out = filter2.processHp(out);
+                // } else if (filterType.get() == SynthBuddy::FilterType::BP2) {
+                //     out = filter2.processBp(out);
             }
             out = out * velocity * env;
 
