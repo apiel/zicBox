@@ -3,6 +3,7 @@
 // https://www.martin-finke.de/articles/audio-plugins-013-filter/
 // https://www.musicdsp.org/en/latest/Filters/29-resonant-filter.html
 
+#include <functional>
 #include <math.h> // fabs
 
 class EffectFilterData {
@@ -24,6 +25,48 @@ public:
     float bp = 0.0;
     float resonance = 0.0f;
 
+    EffectFilterData() {
+        setType(LP);
+    }
+
+    std::function<void(float, float)> setCutoffFn;
+    std::function<float(float)> processFn;
+
+    float getLp(float _cutoff) { return 0.90 - (0.90 * _cutoff) + 0.1; }
+    float getHp(float _cutoff) { return (0.20 * _cutoff) + 0.00707; }
+    float getBp(float _cutoff) { return 0.95 * _cutoff + 0.1; }
+
+    enum Type { LP, HP, BP };
+
+    void setType(Type type)
+    {
+        if (type == LP) {
+            setCutoffFn = [&](float _cutoff, float _resonance) {
+                setCutoff(getLp(_cutoff), _resonance);
+            };
+            processFn = [&](float inputValue) { 
+                setSampleData(inputValue);
+                return lp; 
+            };
+        } else if (type == HP) {
+            setCutoffFn = [&](float _cutoff, float _resonance) {
+                setCutoff(getHp(_cutoff), _resonance);
+            };
+            processFn = [&](float inputValue) { 
+                setSampleData(inputValue);
+                return hp;
+            };
+        } else if (type == BP) {
+            setCutoffFn = [&](float _cutoff, float _resonance) {
+                setCutoff(getBp(_cutoff), _resonance);
+            };
+            processFn = [&](float inputValue) { 
+                setSampleData(inputValue);
+                return bp;
+            };
+        }
+    }
+
     void setCutoff(float _cutoff)
     {
         cutoff = _cutoff;
@@ -34,36 +77,6 @@ public:
     {
         cutoff = _cutoff;
         setResonance(_resonance);
-    }
-
-    void setLpCutoff(float _cutoff)
-    {
-        setLpCutoff(_cutoff, resonance);
-    }
-
-    void setLpCutoff(float _cutoff, float _resonance)
-    {
-        setCutoff((0.90 - (0.90 * _cutoff)) + 0.1, _resonance);
-    }
-
-    void setHpCutoff(float _cutoff)
-    {
-        setHpCutoff(_cutoff, resonance);
-    }
-
-    void setHpCutoff(float _cutoff, float _resonance)
-    {
-        setCutoff((0.20 * _cutoff) + 0.00707, _resonance);
-    }
-
-    void setBpCutoff(float _cutoff)
-    {
-        setBpCutoff(_cutoff, resonance);
-    }
-
-    void setBpCutoff(float _cutoff, float _resonance)
-    {
-        setCutoff(0.95 * _cutoff + 0.1, _resonance);
     }
 
     void setResonance(float _resonance)
@@ -96,23 +109,5 @@ public:
         bp = buf - lp;
         buf = buf + cutoff * (hp + feedback * bp);
         lp = lp + cutoff * (buf - lp);
-    }
-
-    float processLp(float inputValue)
-    {
-        setSampleData(inputValue);
-        return lp;
-    }
-
-    float processHp(float inputValue)
-    {
-        setSampleData(inputValue);
-        return hp;
-    }
-
-    float processBp(float inputValue)
-    {
-        setSampleData(inputValue);
-        return bp;
     }
 };
