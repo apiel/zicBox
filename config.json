@@ -82,10 +82,10 @@
     {
       "name": "Drum23",
       "components": [
-        {"audioPlugin":"TrackFx","param":"VOLUME","bounds":[0,60,118,80],"encoderId":0,"color":"tertiary","track":1,"componentName":"KnobValue"},
-        {"audioPlugin":"MMFilter","param":"CUTOFF","bounds":[120,60,118,80],"encoderId":1,"color":"secondary","type":"STRING","track":1,"componentName":"KnobValue"},
-        {"audioPlugin":"Drum23","param":"GAIN_CLIPPING","bounds":[0,160,118,80],"encoderId":2,"track":1,"componentName":"KnobValue"},
-        {"audioPlugin":"MMFilter","param":"RESONANCE","bounds":[120,160,118,80],"encoderId":3,"color":"secondary","track":1,"componentName":"KnobValue"},
+        {"audioPlugin":"TrackFx","param":"VOLUME","bounds":[0,60,118,100],"encoderId":0,"color":"tertiary","track":1,"componentName":"KnobValue"},
+        {"audioPlugin":"MMFilter","param":"CUTOFF","bounds":[120,60,118,100],"encoderId":1,"color":"secondary","type":"STRING","track":1,"componentName":"KnobValue"},
+        {"audioPlugin":"Drum23","param":"GAIN_CLIPPING","bounds":[0,160,118,100],"encoderId":2,"track":1,"componentName":"KnobValue"},
+        {"audioPlugin":"MMFilter","param":"RESONANCE","bounds":[120,160,118,100],"encoderId":3,"color":"secondary","track":1,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Kick","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[70,28,6,6],"color":"#a3c912","componentName":"Rect"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"q","action":"setView:Drum23"},{"key":"w","action":"setView:Distortion"},{"key":"e","action":"setView:Waveform"},{"key":"r","action":"setView:Frequency"},{"key":"a","action":"setView:Sequencer"},{"key":"s","action":"setView:Amplitude"},{"key":"d","action":"setView:Click"},{"key":"f","action":"noteOn:Drum23:60"},{"key":"x","action":"noteOn:Drum23:60"},{"key":"altleft","action":"noteOn:Drum23:60"},{"key":"space","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
@@ -118,10 +118,10 @@
     {
       "name": "Distortion",
       "components": [
-        {"audioPlugin":"Distortion","param":"WAVESHAPE","bounds":[0,60,118,80],"encoderId":0,"color":"tertiary","track":1,"componentName":"KnobValue"},
-        {"audioPlugin":"Distortion","param":"COMPRESS","bounds":[120,60,118,80],"encoderId":1,"color":"primary","track":1,"componentName":"KnobValue"},
-        {"audioPlugin":"Distortion","param":"DRIVE","bounds":[0,160,118,80],"encoderId":2,"color":"quaternary","track":1,"componentName":"KnobValue"},
-        {"audioPlugin":"Distortion","param":"BASS","bounds":[120,160,118,80],"encoderId":3,"color":"secondary","track":1,"componentName":"KnobValue"},
+        {"audioPlugin":"Distortion","param":"WAVESHAPE","bounds":[0,60,118,100],"encoderId":0,"color":"tertiary","track":1,"componentName":"KnobValue"},
+        {"audioPlugin":"Distortion","param":"COMPRESS","bounds":[120,60,118,100],"encoderId":1,"color":"primary","track":1,"componentName":"KnobValue"},
+        {"audioPlugin":"Distortion","param":"DRIVE","bounds":[0,160,118,100],"encoderId":2,"color":"quaternary","track":1,"componentName":"KnobValue"},
+        {"audioPlugin":"Distortion","param":"BASS","bounds":[120,160,118,100],"encoderId":3,"color":"secondary","track":1,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Kick","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[70,28,6,6],"color":"#a3c912","componentName":"Rect"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"q","action":"setView:Drum23"},{"key":"w","action":"setView:Distortion"},{"key":"e","action":"setView:Waveform"},{"key":"r","action":"setView:Frequency"},{"key":"a","action":"setView:Sequencer"},{"key":"s","action":"setView:Amplitude"},{"key":"d","action":"setView:Click"},{"key":"f","action":"noteOn:Drum23:60"},{"key":"x","action":"noteOn:Drum23:60"},{"key":"altleft","action":"noteOn:Drum23:60"},{"key":"space","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
@@ -158,7 +158,7 @@
         {"bounds":[0,55,118,22],"audioPlugin":"Drum23","param":"WAVEFORM_TYPE","track":1,"fontLabel":"PoppinsLight_6","barHeight":1,"encoderId":0,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
         {"bounds":[122,55,120,22],"audioPlugin":"Drum23","param":"SHAPE","track":1,"fontLabel":"PoppinsLight_6","barHeight":1,"encoderId":1,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
         {"bounds":[0,145,118,22],"audioPlugin":"Drum23","param":"MACRO","track":1,"fontLabel":"PoppinsLight_6","barHeight":1,"encoderId":2,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
-        {"bounds":[120,160,118,80],"audioPlugin":"Drum23","param":"PITCH","encoderId":3,"color":"secondary","track":1,"componentName":"KnobValue"},
+        {"bounds":[120,160,118,100],"audioPlugin":"Drum23","param":"PITCH","encoderId":3,"color":"secondary","track":1,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Kick","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[70,28,6,6],"color":"#a3c912","componentName":"Rect"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"q","action":"setView:Drum23"},{"key":"w","action":"setView:Distortion"},{"key":"e","action":"setView:Waveform"},{"key":"r","action":"setView:Frequency"},{"key":"a","action":"setView:Sequencer"},{"key":"s","action":"setView:Amplitude"},{"key":"d","action":"setView:Click"},{"key":"f","action":"noteOn:Drum23:60"},{"key":"x","action":"noteOn:Drum23:60"},{"key":"altleft","action":"noteOn:Drum23:60"},{"key":"space","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
@@ -225,7 +225,7 @@
       "name": "Amplitude",
       "components": [
         {"bounds":[0,60,239,80],"audioPlugin":"Drum23","envelopDataId":"ENV_AMP","renderValuesOnTop":false,"encoderTime":0,"encoderModulation":1,"encoderPhase":2,"track":1,"componentName":"DrumEnvelop"},
-        {"bounds":[120,160,118,80],"audioPlugin":"Drum23","param":"DURATION","encoderId":3,"color":"quaternary","track":1,"componentName":"KnobValue"},
+        {"bounds":[120,160,118,100],"audioPlugin":"Drum23","param":"DURATION","encoderId":3,"color":"quaternary","track":1,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Kick","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[70,28,6,6],"color":"#a3c912","componentName":"Rect"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"q","action":"setView:Drum23"},{"key":"w","action":"setView:Distortion"},{"key":"e","action":"setView:Waveform"},{"key":"r","action":"setView:Frequency"},{"key":"a","action":"setView:Sequencer"},{"key":"s","action":"setView:Amplitude"},{"key":"d","action":"setView:Click"},{"key":"f","action":"noteOn:Drum23:60"},{"key":"x","action":"noteOn:Drum23:60"},{"key":"altleft","action":"noteOn:Drum23:60"},{"key":"space","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
@@ -258,10 +258,10 @@
     {
       "name": "Click",
       "components": [
-        {"audioPlugin":"Drum23","param":"CLICK","bounds":[0,60,118,80],"encoderId":0,"color":"tertiary","track":1,"componentName":"KnobValue"},
-        {"audioPlugin":"Drum23","param":"CLICK_CUTOFF","bounds":[120,60,118,80],"encoderId":1,"color":"primary","track":1,"componentName":"KnobValue"},
-        {"audioPlugin":"Drum23","param":"CLICK_DURATION","bounds":[0,160,118,80],"encoderId":2,"color":"quaternary","track":1,"componentName":"KnobValue"},
-        {"audioPlugin":"Drum23","param":"HIGH_FREQ_BOOST","bounds":[120,160,118,80],"encoderId":3,"color":"secondary","track":1,"componentName":"KnobValue"},
+        {"audioPlugin":"Drum23","param":"CLICK","bounds":[0,60,118,100],"encoderId":0,"color":"tertiary","track":1,"componentName":"KnobValue"},
+        {"audioPlugin":"Drum23","param":"CLICK_CUTOFF","bounds":[120,60,118,100],"encoderId":1,"color":"primary","track":1,"componentName":"KnobValue"},
+        {"audioPlugin":"Drum23","param":"CLICK_DURATION","bounds":[0,160,118,100],"encoderId":2,"color":"quaternary","track":1,"componentName":"KnobValue"},
+        {"audioPlugin":"Drum23","param":"HIGH_FREQ_BOOST","bounds":[120,160,118,100],"encoderId":3,"color":"secondary","track":1,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Kick","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[70,28,6,6],"color":"#a3c912","componentName":"Rect"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"q","action":"setView:Drum23"},{"key":"w","action":"setView:Distortion"},{"key":"e","action":"setView:Waveform"},{"key":"r","action":"setView:Frequency"},{"key":"a","action":"setView:Sequencer"},{"key":"s","action":"setView:Amplitude"},{"key":"d","action":"setView:Click"},{"key":"f","action":"noteOn:Drum23:60"},{"key":"x","action":"noteOn:Drum23:60"},{"key":"altleft","action":"noteOn:Drum23:60"},{"key":"space","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
@@ -380,10 +380,10 @@
     {
       "name": "Bass",
       "components": [
-        {"audioPlugin":"TrackFx","param":"VOLUME","bounds":[0,60,118,80],"encoderId":0,"color":"tertiary","track":2,"componentName":"KnobValue"},
-        {"audioPlugin":"Bass","param":"CUTOFF","bounds":[120,60,118,80],"encoderId":1,"color":"primary","track":2,"componentName":"KnobValue"},
-        {"audioPlugin":"Bass","param":"FREQ_RATIO","bounds":[0,160,118,80],"encoderId":2,"color":"quaternary","track":2,"componentName":"KnobValue"},
-        {"audioPlugin":"Bass","param":"RESONANCE","bounds":[120,160,118,80],"encoderId":3,"color":"secondary","track":2,"componentName":"KnobValue"},
+        {"audioPlugin":"TrackFx","param":"VOLUME","bounds":[0,60,118,100],"encoderId":0,"color":"tertiary","track":2,"componentName":"KnobValue"},
+        {"audioPlugin":"Bass","param":"CUTOFF","bounds":[120,60,118,100],"encoderId":1,"color":"primary","track":2,"componentName":"KnobValue"},
+        {"audioPlugin":"Bass","param":"FREQ_RATIO","bounds":[0,160,118,100],"encoderId":2,"color":"quaternary","track":2,"componentName":"KnobValue"},
+        {"audioPlugin":"Bass","param":"RESONANCE","bounds":[120,160,118,100],"encoderId":3,"color":"secondary","track":2,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Bass","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[70,28,6,6],"color":"#fd6f0e","componentName":"Rect"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"q","action":"setView:Bass"},{"key":"w","action":"setView:BassFx"},{"key":"e","action":"setView:BassEnv"},{"key":"r","action":"setView:BassWaveform"},{"key":"a","action":"setView:BassSeq"},{"key":"s","action":"noteOn:Bass:60"},{"key":"d","action":"noteOn:Bass:60"},{"key":"f","action":"noteOn:Bass:60"},{"key":"x","action":"noteOn:Bass:60"},{"key":"altleft","action":"noteOn:Bass:60"},{"key":"space","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
@@ -416,9 +416,9 @@
     {
       "name": "BassFx",
       "components": [
-        {"audioPlugin":"Bass","param":"BOOST","bounds":[0,60,118,80],"encoderId":0,"color":"tertiary","track":2,"componentName":"KnobValue"},
-        {"audioPlugin":"Bass","param":"GAIN_CLIPPING","bounds":[120,60,118,80],"encoderId":1,"color":"primary","track":2,"componentName":"KnobValue"},
-        {"audioPlugin":"Bass","param":"REVERB","bounds":[120,160,118,80],"encoderId":3,"color":"secondary","track":2,"componentName":"KnobValue"},
+        {"audioPlugin":"Bass","param":"BOOST","bounds":[0,60,118,100],"encoderId":0,"color":"tertiary","track":2,"componentName":"KnobValue"},
+        {"audioPlugin":"Bass","param":"GAIN_CLIPPING","bounds":[120,60,118,100],"encoderId":1,"color":"primary","track":2,"componentName":"KnobValue"},
+        {"audioPlugin":"Bass","param":"REVERB","bounds":[120,160,118,100],"encoderId":3,"color":"secondary","track":2,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Bass","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[70,28,6,6],"color":"#fd6f0e","componentName":"Rect"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"q","action":"setView:Bass"},{"key":"w","action":"setView:BassFx"},{"key":"e","action":"setView:BassEnv"},{"key":"r","action":"setView:BassWaveform"},{"key":"a","action":"setView:BassSeq"},{"key":"s","action":"noteOn:Bass:60"},{"key":"d","action":"noteOn:Bass:60"},{"key":"f","action":"noteOn:Bass:60"},{"key":"x","action":"noteOn:Bass:60"},{"key":"altleft","action":"noteOn:Bass:60"},{"key":"space","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
@@ -451,9 +451,9 @@
     {
       "name": "BassEnv",
       "components": [
-        {"audioPlugin":"Bass","param":"DURATION","bounds":[0,60,118,80],"encoderId":0,"color":"tertiary","track":2,"componentName":"KnobValue"},
-        {"audioPlugin":"Bass","param":"DECAY_LEVEL","bounds":[120,60,118,80],"encoderId":1,"color":"primary","track":2,"componentName":"KnobValue"},
-        {"audioPlugin":"Bass","param":"DECAY_TIME","bounds":[0,160,118,80],"encoderId":2,"color":"quaternary","track":2,"componentName":"KnobValue"},
+        {"audioPlugin":"Bass","param":"DURATION","bounds":[0,60,118,100],"encoderId":0,"color":"tertiary","track":2,"componentName":"KnobValue"},
+        {"audioPlugin":"Bass","param":"DECAY_LEVEL","bounds":[120,60,118,100],"encoderId":1,"color":"primary","track":2,"componentName":"KnobValue"},
+        {"audioPlugin":"Bass","param":"DECAY_TIME","bounds":[0,160,118,100],"encoderId":2,"color":"quaternary","track":2,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Bass","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[70,28,6,6],"color":"#fd6f0e","componentName":"Rect"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"q","action":"setView:Bass"},{"key":"w","action":"setView:BassFx"},{"key":"e","action":"setView:BassEnv"},{"key":"r","action":"setView:BassWaveform"},{"key":"a","action":"setView:BassSeq"},{"key":"s","action":"noteOn:Bass:60"},{"key":"d","action":"noteOn:Bass:60"},{"key":"f","action":"noteOn:Bass:60"},{"key":"x","action":"noteOn:Bass:60"},{"key":"altleft","action":"noteOn:Bass:60"},{"key":"space","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
@@ -544,10 +544,10 @@
     {
       "name": "Perc",
       "components": [
-        {"audioPlugin":"TrackFx","param":"VOLUME","bounds":[0,60,118,80],"encoderId":0,"color":"tertiary","track":6,"componentName":"KnobValue"},
-        {"audioPlugin":"Perc","param":"DURATION","bounds":[120,60,118,80],"encoderId":1,"color":"primary","track":6,"componentName":"KnobValue"},
-        {"audioPlugin":"Perc","param":"BASE_FREQ","bounds":[0,160,118,80],"encoderId":2,"color":"quaternary","track":6,"componentName":"KnobValue"},
-        {"audioPlugin":"Perc","param":"TIMBRE","bounds":[120,160,118,80],"encoderId":3,"color":"secondary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"TrackFx","param":"VOLUME","bounds":[0,60,118,100],"encoderId":0,"color":"tertiary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"Perc","param":"DURATION","bounds":[120,60,118,100],"encoderId":1,"color":"primary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"Perc","param":"BASE_FREQ","bounds":[0,160,118,100],"encoderId":2,"color":"quaternary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"Perc","param":"TIMBRE","bounds":[120,160,118,100],"encoderId":3,"color":"secondary","track":6,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Perc","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[70,28,6,6],"color":"#377275","componentName":"Rect"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"q","action":"setView:Perc"},{"key":"w","action":"setView:PercFx"},{"key":"e","action":"setView:PercEnv"},{"key":"r","action":"setView:PercNoise"},{"key":"a","action":"setView:PercSeq"},{"key":"s","action":"setView:PercSeq2"},{"key":"d","action":"setView:PercMod"},{"key":"f","action":"setView:PercNoise2"},{"key":"x","action":"noteOn:Perc:60"},{"key":"altleft","action":"noteOn:Perc:60"},{"key":"space","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
@@ -580,10 +580,10 @@
     {
       "name": "PercFx",
       "components": [
-        {"audioPlugin":"Perc","param":"BOOST","bounds":[0,60,118,80],"encoderId":0,"color":"tertiary","track":6,"componentName":"KnobValue"},
-        {"audioPlugin":"Perc","param":"REVERB","bounds":[120,60,118,80],"encoderId":1,"color":"primary","track":6,"componentName":"KnobValue"},
-        {"audioPlugin":"Perc","param":"RESONATOR","bounds":[0,160,118,80],"encoderId":2,"color":"quaternary","track":6,"componentName":"KnobValue"},
-        {"audioPlugin":"Perc","param":"TONE_DECAY","bounds":[120,160,118,80],"encoderId":3,"color":"secondary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"Perc","param":"BOOST","bounds":[0,60,118,100],"encoderId":0,"color":"tertiary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"Perc","param":"REVERB","bounds":[120,60,118,100],"encoderId":1,"color":"primary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"Perc","param":"RESONATOR","bounds":[0,160,118,100],"encoderId":2,"color":"quaternary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"Perc","param":"TONE_DECAY","bounds":[120,160,118,100],"encoderId":3,"color":"secondary","track":6,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Perc","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[70,28,6,6],"color":"#377275","componentName":"Rect"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"q","action":"setView:Perc"},{"key":"w","action":"setView:PercFx"},{"key":"e","action":"setView:PercEnv"},{"key":"r","action":"setView:PercNoise"},{"key":"a","action":"setView:PercSeq"},{"key":"s","action":"setView:PercSeq2"},{"key":"d","action":"setView:PercMod"},{"key":"f","action":"setView:PercNoise2"},{"key":"x","action":"noteOn:Perc:60"},{"key":"altleft","action":"noteOn:Perc:60"},{"key":"space","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
@@ -641,9 +641,9 @@
     {
       "name": "PercNoise",
       "components": [
-        {"audioPlugin":"Perc","param":"MIX","bounds":[0,60,118,80],"encoderId":0,"color":"tertiary","track":6,"componentName":"KnobValue"},
-        {"audioPlugin":"Perc","param":"TRANSIENT_DURATION","bounds":[120,60,118,80],"encoderId":1,"color":"primary","track":6,"componentName":"KnobValue"},
-        {"audioPlugin":"Perc","param":"TRANSIENT_INTENSITY","bounds":[0,160,118,80],"encoderId":2,"color":"quaternary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"Perc","param":"MIX","bounds":[0,60,118,100],"encoderId":0,"color":"tertiary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"Perc","param":"TRANSIENT_DURATION","bounds":[120,60,118,100],"encoderId":1,"color":"primary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"Perc","param":"TRANSIENT_INTENSITY","bounds":[0,160,118,100],"encoderId":2,"color":"quaternary","track":6,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Perc","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[70,28,6,6],"color":"#377275","componentName":"Rect"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"q","action":"setView:Perc"},{"key":"w","action":"setView:PercFx"},{"key":"e","action":"setView:PercEnv"},{"key":"r","action":"setView:PercNoise"},{"key":"a","action":"setView:PercSeq"},{"key":"s","action":"setView:PercSeq2"},{"key":"d","action":"setView:PercMod"},{"key":"f","action":"setView:PercNoise2"},{"key":"x","action":"noteOn:Perc:60"},{"key":"altleft","action":"noteOn:Perc:60"},{"key":"space","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
@@ -676,10 +676,10 @@
     {
       "name": "PercNoise2",
       "components": [
-        {"audioPlugin":"Perc","param":"BAND_FREQ","bounds":[0,60,118,80],"encoderId":0,"color":"tertiary","track":6,"componentName":"KnobValue"},
-        {"audioPlugin":"Perc","param":"BAND_Q","bounds":[120,60,118,80],"encoderId":1,"color":"primary","track":6,"componentName":"KnobValue"},
-        {"audioPlugin":"Perc","param":"METALLIC_NOISE_MIX","bounds":[0,160,118,80],"encoderId":2,"color":"quaternary","track":6,"componentName":"KnobValue"},
-        {"audioPlugin":"Perc","param":"NOISE_BRIGHTNESS","bounds":[120,160,118,80],"encoderId":3,"color":"secondary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"Perc","param":"BAND_FREQ","bounds":[0,60,118,100],"encoderId":0,"color":"tertiary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"Perc","param":"BAND_Q","bounds":[120,60,118,100],"encoderId":1,"color":"primary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"Perc","param":"METALLIC_NOISE_MIX","bounds":[0,160,118,100],"encoderId":2,"color":"quaternary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"Perc","param":"NOISE_BRIGHTNESS","bounds":[120,160,118,100],"encoderId":3,"color":"secondary","track":6,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Perc","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[70,28,6,6],"color":"#377275","componentName":"Rect"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"q","action":"setView:Perc"},{"key":"w","action":"setView:PercFx"},{"key":"e","action":"setView:PercEnv"},{"key":"r","action":"setView:PercNoise"},{"key":"a","action":"setView:PercSeq"},{"key":"s","action":"setView:PercSeq2"},{"key":"d","action":"setView:PercMod"},{"key":"f","action":"setView:PercNoise2"},{"key":"x","action":"noteOn:Perc:60"},{"key":"altleft","action":"noteOn:Perc:60"},{"key":"space","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
@@ -712,10 +712,10 @@
     {
       "name": "PercMod",
       "components": [
-        {"audioPlugin":"Perc","param":"FM_FREQ","bounds":[0,60,118,80],"encoderId":0,"color":"tertiary","track":6,"componentName":"KnobValue"},
-        {"audioPlugin":"Perc","param":"FM_AMP","bounds":[120,60,118,80],"encoderId":1,"color":"primary","track":6,"componentName":"KnobValue"},
-        {"audioPlugin":"Perc","param":"ENV_MOD","bounds":[0,160,118,80],"encoderId":2,"color":"quaternary","track":6,"componentName":"KnobValue"},
-        {"audioPlugin":"Perc","param":"ENV_SHAPE","bounds":[120,160,118,80],"encoderId":3,"color":"secondary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"Perc","param":"FM_FREQ","bounds":[0,60,118,100],"encoderId":0,"color":"tertiary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"Perc","param":"FM_AMP","bounds":[120,60,118,100],"encoderId":1,"color":"primary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"Perc","param":"ENV_MOD","bounds":[0,160,118,100],"encoderId":2,"color":"quaternary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"Perc","param":"ENV_SHAPE","bounds":[120,160,118,100],"encoderId":3,"color":"secondary","track":6,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Perc","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[70,28,6,6],"color":"#377275","componentName":"Rect"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"q","action":"setView:Perc"},{"key":"w","action":"setView:PercFx"},{"key":"e","action":"setView:PercEnv"},{"key":"r","action":"setView:PercNoise"},{"key":"a","action":"setView:PercSeq"},{"key":"s","action":"setView:PercSeq2"},{"key":"d","action":"setView:PercMod"},{"key":"f","action":"setView:PercNoise2"},{"key":"x","action":"noteOn:Perc:60"},{"key":"altleft","action":"noteOn:Perc:60"},{"key":"space","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
@@ -748,10 +748,10 @@
     {
       "name": "Synth",
       "components": [
-        {"audioPlugin":"TrackFx","param":"VOLUME","bounds":[0,60,118,80],"encoderId":0,"color":"tertiary","track":4,"componentName":"KnobValue"},
-        {"audioPlugin":"Synth","param":"PITCH","bounds":[120,60,118,80],"encoderId":1,"color":"primary","track":4,"componentName":"KnobValue"},
-        {"audioPlugin":"Synth","param":"WAVE","bounds":[0,160,118,80],"encoderId":2,"color":"quaternary","track":4,"componentName":"KnobValue"},
-        {"audioPlugin":"Synth","param":"WAVE_EDIT","bounds":[120,160,118,80],"encoderId":3,"color":"secondary","track":4,"componentName":"KnobValue"},
+        {"audioPlugin":"TrackFx","param":"VOLUME","bounds":[0,60,118,100],"encoderId":0,"color":"tertiary","track":4,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth","param":"PITCH","bounds":[120,60,118,100],"encoderId":1,"color":"primary","track":4,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth","param":"WAVE","bounds":[0,160,118,100],"encoderId":2,"color":"quaternary","track":4,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth","param":"WAVE_EDIT","bounds":[120,160,118,100],"encoderId":3,"color":"secondary","track":4,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Synth","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[70,28,6,6],"color":"#ffcd04","componentName":"Rect"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"q","action":"setView:Synth"},{"key":"w","action":"setView:SynthFx"},{"key":"e","action":"setView:SynthWaveform1"},{"key":"r","action":"setView:SynthWaveform2"},{"key":"a","action":"setView:SynthSeq"},{"key":"s","action":"setView:SynthFilter"},{"key":"d","action":"setView:SynthEnv1"},{"key":"f","action":"setView:SynthEnv2"},{"key":"x","action":"noteOn:Synth:58"},{"key":"altleft","action":"noteOn:Synth:60"},{"key":"space","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
@@ -784,9 +784,9 @@
     {
       "name": "SynthFx",
       "components": [
-        {"audioPlugin":"TrackFx","param":"VOLUME","bounds":[0,60,118,80],"encoderId":0,"color":"tertiary","track":4,"componentName":"KnobValue"},
-        {"audioPlugin":"Synth","param":"FX_TYPE","bounds":[120,60,118,80],"encoderId":1,"color":"primary","track":4,"valueReplaceTitle":true,"componentName":"KnobValue"},
-        {"audioPlugin":"Synth","param":"FX_AMOUNT","bounds":[0,160,118,80],"encoderId":2,"color":"quaternary","track":4,"componentName":"KnobValue"},
+        {"audioPlugin":"TrackFx","param":"VOLUME","bounds":[0,60,118,100],"encoderId":0,"color":"tertiary","track":4,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth","param":"FX_TYPE","bounds":[120,60,118,100],"encoderId":1,"color":"primary","track":4,"valueReplaceTitle":true,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth","param":"FX_AMOUNT","bounds":[0,160,118,100],"encoderId":2,"color":"quaternary","track":4,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Synth","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[70,28,6,6],"color":"#ffcd04","componentName":"Rect"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"q","action":"setView:Synth"},{"key":"w","action":"setView:SynthFx"},{"key":"e","action":"setView:SynthWaveform1"},{"key":"r","action":"setView:SynthWaveform2"},{"key":"a","action":"setView:SynthSeq"},{"key":"s","action":"setView:SynthFilter"},{"key":"d","action":"setView:SynthEnv1"},{"key":"f","action":"setView:SynthEnv2"},{"key":"x","action":"noteOn:Synth:58"},{"key":"altleft","action":"noteOn:Synth:60"},{"key":"space","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
@@ -819,9 +819,9 @@
     {
       "name": "SynthFilter",
       "components": [
-        {"audioPlugin":"Synth","param":"FILTER_TYPE","bounds":[0,60,118,80],"encoderId":0,"color":"tertiary","track":4,"componentName":"KnobValue"},
-        {"audioPlugin":"Synth","param":"FILTER_CUTOFF","bounds":[120,60,118,80],"encoderId":1,"color":"primary","track":4,"componentName":"KnobValue"},
-        {"audioPlugin":"Synth","param":"FILTER_RESONANCE","bounds":[0,160,118,80],"encoderId":2,"color":"quaternary","track":4,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth","param":"FILTER_TYPE","bounds":[0,60,118,100],"encoderId":0,"color":"tertiary","track":4,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth","param":"FILTER_CUTOFF","bounds":[120,60,118,100],"encoderId":1,"color":"primary","track":4,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth","param":"FILTER_RESONANCE","bounds":[0,160,118,100],"encoderId":2,"color":"quaternary","track":4,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Synth","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[70,28,6,6],"color":"#ffcd04","componentName":"Rect"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"q","action":"setView:Synth"},{"key":"w","action":"setView:SynthFx"},{"key":"e","action":"setView:SynthWaveform1"},{"key":"r","action":"setView:SynthWaveform2"},{"key":"a","action":"setView:SynthSeq"},{"key":"s","action":"setView:SynthFilter"},{"key":"d","action":"setView:SynthEnv1"},{"key":"f","action":"setView:SynthEnv2"},{"key":"x","action":"noteOn:Synth:58"},{"key":"altleft","action":"noteOn:Synth:60"},{"key":"space","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
@@ -854,10 +854,10 @@
     {
       "name": "SynthEnv1",
       "components": [
-        {"audioPlugin":"Synth","param":"ATTACK","bounds":[0,60,118,80],"encoderId":0,"color":"tertiary","track":4,"componentName":"KnobValue"},
-        {"audioPlugin":"Synth","param":"RELEASE","bounds":[120,60,118,80],"encoderId":1,"color":"primary","track":4,"componentName":"KnobValue"},
-        {"audioPlugin":"Synth","param":"FREQUENCY_MOD","bounds":[0,160,118,80],"encoderId":2,"color":"quaternary","track":4,"componentName":"KnobValue"},
-        {"audioPlugin":"Synth","param":"OSC_MOD","bounds":[120,160,118,80],"encoderId":3,"color":"secondary","track":4,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth","param":"ATTACK","bounds":[0,60,118,100],"encoderId":0,"color":"tertiary","track":4,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth","param":"RELEASE","bounds":[120,60,118,100],"encoderId":1,"color":"primary","track":4,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth","param":"FREQUENCY_MOD","bounds":[0,160,118,100],"encoderId":2,"color":"quaternary","track":4,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth","param":"OSC_MOD","bounds":[120,160,118,100],"encoderId":3,"color":"secondary","track":4,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Synth","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[70,28,6,6],"color":"#ffcd04","componentName":"Rect"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"q","action":"setView:Synth"},{"key":"w","action":"setView:SynthFx"},{"key":"e","action":"setView:SynthWaveform1"},{"key":"r","action":"setView:SynthWaveform2"},{"key":"a","action":"setView:SynthSeq"},{"key":"s","action":"setView:SynthFilter"},{"key":"d","action":"setView:SynthWaveform1"},{"key":"f","action":"setView:SynthEnv2"},{"key":"x","action":"noteOn:Synth:58"},{"key":"altleft","action":"noteOn:Synth:60"},{"key":"space","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
@@ -890,8 +890,8 @@
     {
       "name": "SynthEnv2",
       "components": [
-        {"audioPlugin":"Synth","param":"CUTOFF_MOD","bounds":[0,60,118,80],"encoderId":0,"color":"tertiary","track":4,"componentName":"KnobValue"},
-        {"audioPlugin":"Synth","param":"RESONANCE_MOD","bounds":[120,60,118,80],"encoderId":1,"color":"primary","track":4,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth","param":"CUTOFF_MOD","bounds":[0,60,118,100],"encoderId":0,"color":"tertiary","track":4,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth","param":"RESONANCE_MOD","bounds":[120,60,118,100],"encoderId":1,"color":"primary","track":4,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Synth","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[70,28,6,6],"color":"#ffcd04","componentName":"Rect"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"q","action":"setView:Synth"},{"key":"w","action":"setView:SynthFx"},{"key":"e","action":"setView:SynthWaveform1"},{"key":"r","action":"setView:SynthWaveform2"},{"key":"a","action":"setView:SynthSeq"},{"key":"s","action":"setView:SynthFilter"},{"key":"d","action":"setView:SynthEnv1"},{"key":"f","action":"setView:SynthWaveform2"},{"key":"x","action":"noteOn:Synth:58"},{"key":"altleft","action":"noteOn:Synth:60"},{"key":"space","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
