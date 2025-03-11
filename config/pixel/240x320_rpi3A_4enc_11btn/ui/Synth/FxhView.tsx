@@ -3,10 +3,8 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
-import { ColorTrack4, encTopLeft, SynthTrack } from '../constants';
-import {
-    topLeftKnob
-} from '../constantsValue';
+import { ColorTrack4, encBottomLeft, encTopLeft, encTopRight, SynthTrack } from '../constants';
+import { bottomLeftKnob, topLeftKnob, topRightKnob } from '../constantsValue';
 import { TextGridSynth } from './TextGridSynth';
 
 export type Props = {
@@ -17,26 +15,30 @@ export function SynthFxView({ name }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                audioPlugin="TrackFx" param="VOLUME"
+                audioPlugin="TrackFx"
+                param="VOLUME"
                 bounds={topLeftKnob}
                 encoderId={encTopLeft}
                 color="tertiary"
                 track={SynthTrack}
             />
-            {/* <KnobValue
-                audioPlugin="Synth" param="DISTORTION"
+            <KnobValue
+                audioPlugin="Synth"
+                param="FX_TYPE"
                 bounds={topRightKnob}
                 encoderId={encTopRight}
                 color="primary"
                 track={SynthTrack}
-            /> */}
-            {/* <KnobValue
-                audioPlugin="Synth" param="REVERB"
+                valueReplaceTitle
+            />
+            <KnobValue
+                audioPlugin="Synth"
+                param="FX_AMOUNT"
                 bounds={bottomLeftKnob}
                 encoderId={encBottomLeft}
                 color="quaternary"
                 track={SynthTrack}
-            /> */}
+            />
             {/* <KnobValue
                 audioPlugin="Synth" param="MOD_INDEX"
                 bounds={bottomRightKnob}

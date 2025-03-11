@@ -7,6 +7,8 @@
 #include "plugins/audio/filter.h"
 // #include "plugins/audio/filter2.h"
 
+#include <functional>
+
 /*md
 ## SynthBuddy
 
@@ -21,7 +23,6 @@ protected:
 
     Wavetable wavetable;
     EffectFilterData filter;
-    // EffectFilter2Data filter2;
 
     float attackStepInc = 0.0f;
     float releaseStepInc = 0.0f;
@@ -29,16 +30,60 @@ protected:
     bool released = false;
     float freqMod = 1.0f;
 
-    enum FilterType {
-        OFF,
-        LP,
-        // LP2,
-        BP,
-        // BP2,
-        HP,
-        // HP2,
-        FILTER_COUNT
-    };
+    std::function<float(float)> fxFn = [](float input) { return input; };
+
+    static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
+    float reverbBuffer[REVERB_BUFFER_SIZE] = { 0.0f };
+    int reverbIndex = 0;
+    float applyReverb(float signal)
+    {
+        float reverbAmount = fxAmount.pct();
+        if (reverbAmount == 0.0f) {
+            return signal;
+        }
+        int reverbSamples = static_cast<int>((reverbAmount * 0.5f) * props.sampleRate); // Reverb duration scaled
+        float feedback = reverbAmount * 0.7f; // Feedback scaled proportionally
+        float mix = reverbAmount * 0.5f; // Mix scaled proportionally
+
+        if (reverbSamples > REVERB_BUFFER_SIZE) {
+            reverbSamples = REVERB_BUFFER_SIZE; // Cap the reverb duration to buffer size
+        }
+
+        float reverbSignal = reverbBuffer[reverbIndex];
+        reverbBuffer[reverbIndex] = signal + reverbSignal * feedback;
+        reverbIndex = (reverbIndex + 1) % reverbSamples;
+
+        return signal * (1.0f - mix) + reverbSignal * mix;
+    }
+
+    float tanhLookup(float x)
+    {
+        x = range(x, -1.0f, 1.0f);
+        int index = static_cast<int>((x + 1.0f) * 0.5f * (props.lookupTable->size - 1));
+        return props.lookupTable->tanh[index];
+    }
+
+    float sineLookupInterpolated(float x)
+    {
+        x -= std::floor(x);
+        return linearInterpolation(x, props.lookupTable->size, props.lookupTable->sine);
+    }
+
+    float prevInput = 0;
+    float prevOutput = 0;
+    float applyBoost(float input)
+    {
+        if (fxAmount.pct() == 0.0f) {
+            return input;
+        }
+        float bassFreq = 0.2f + 0.8f * fxAmount.pct();
+        float bassBoosted = (1.0f - bassFreq) * prevOutput + bassFreq * (input + prevInput) * 0.5f;
+        prevInput = input;
+        prevOutput = bassBoosted;
+        bassBoosted *= 1.0f + fxAmount.pct() * 2.0f;
+
+        return bassBoosted;
+    }
 
 public:
     /*md **Values**: */
@@ -70,9 +115,16 @@ public:
     Val& resonanceMod = val(0, "RESONANCE_MOD", { "Resonance Mod.", VALUE_CENTERED, .min = -100.0f });
 
     /*md - `FILTER_TYPE` Select filter type.*/
+    enum FilterType {
+        FILTER_OFF,
+        LP,
+        BP,
+        HP,
+        FILTER_COUNT
+    };
     Val& filterType = val(1, "FILTER_TYPE", { "Filter", VALUE_STRING, .max = SynthBuddy::FilterType::FILTER_COUNT - 1 }, [&](auto p) {
         p.val.setFloat(p.value);
-        if (p.val.get() == SynthBuddy::FilterType::OFF) {
+        if (p.val.get() == SynthBuddy::FilterType::FILTER_OFF) {
             p.val.setString("OFF");
         } else if (p.val.get() == SynthBuddy::FilterType::LP) {
             p.val.setString("LPF");
@@ -83,12 +135,6 @@ public:
         } else if (p.val.get() == SynthBuddy::FilterType::HP) {
             p.val.setString("HPF");
             filter.setType(EffectFilterData::Type::HP);
-            // } else if (p.val.get() == SynthBuddy::FilterType::LP2) {
-            //     p.val.setString("LPF2");
-            // } else if (p.val.get() == SynthBuddy::FilterType::HP2) {
-            //     p.val.setString("HPF2");
-            // } else if (p.val.get() == SynthBuddy::FilterType::BP2) {
-            //     p.val.setString("BPF2");
         }
         filterCutoff.set(filterCutoff.get());
         filterResonance.set(filterResonance.get());
@@ -121,6 +167,78 @@ public:
         p.val.setString(std::to_string((int)p.val.get()) + "/" + std::to_string(ZIC_WAVETABLE_WAVEFORMS_COUNT));
     });
 
+    /*md - `FX_TYPE` select the effect.*/
+    enum FXType {
+        FX_OFF,
+        REVERB,
+        BASS_BOOST,
+        DRIVE,
+        COMPRESSION,
+        WAVESHAPER,
+        WAVESHAPER2,
+        CLIPPING,
+        FX_COUNT
+    };
+    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = SynthBuddy::FXType::FX_COUNT - 1 }, [&](auto p) {
+        p.val.setFloat(p.value);
+        if (p.val.get() == SynthBuddy::FXType::FX_OFF) {
+            p.val.setString("OFF");
+            fxFn = [](float input) { return input; };
+        } else if (p.val.get() == SynthBuddy::FXType::REVERB) {
+            p.val.setString("Reverb");
+            fxFn = [&](float input) { return applyReverb(input); };
+        } else if (p.val.get() == SynthBuddy::FXType::BASS_BOOST) {
+            p.val.setString("Bass boost");
+            fxFn = [&](float input) { return applyBoost(input); };
+        } else if (p.val.get() == SynthBuddy::FXType::DRIVE) {
+            p.val.setString("Drive");
+            fxFn = [&](float input) {
+                if (fxAmount.pct() == 0.0f) {
+                    return input;
+                }
+                return tanhLookup(input * (1.0f + fxAmount.pct() * 5.0f));
+            };
+        } else if (p.val.get() == SynthBuddy::FXType::COMPRESSION) {
+            p.val.setString("Compression");
+            fxFn = [&](float input) {
+                if (fxAmount.pct() == 0.0f) {
+                    return input;
+                }
+                return std::pow(input, 1.0f - fxAmount.pct() * 0.8f);
+            };
+        } else if (p.val.get() == SynthBuddy::FXType::WAVESHAPER) {
+            p.val.setString("Waveshaper");
+            fxFn = [&](float input) {
+                if (fxAmount.pct() == 0.0f) {
+                    return input;
+                }
+                float sineValue = sinf(input);
+                return input + fxAmount.pct() * sineValue * 2;
+            };
+        } else if (p.val.get() == SynthBuddy::FXType::WAVESHAPER2) {
+            p.val.setString("Waveshaper2");
+            fxFn = [&](float input) {
+                if (fxAmount.pct() == 0.0f) {
+                    return input;
+                }
+                float sineValue = sineLookupInterpolated(input);
+                return input + fxAmount.pct() * sineValue;
+            };
+        } else if (p.val.get() == SynthBuddy::FXType::CLIPPING) {
+            p.val.setString("Clipping");
+            fxFn = [&](float input) {
+                if (fxAmount.pct() == 0.0f) {
+                    return input;
+                }
+                float scaledClipping = fxAmount.pct() * fxAmount.pct() * 20;
+                return range(input + input * scaledClipping, -1.0f, 1.0f);
+            };
+        }
+    });
+
+    /*md - `FX_AMOUNT` set the effect amount.*/
+    Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
+
     SynthBuddy(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config) // clang-format on
     // , filter2(props.sampleRate)
@@ -144,18 +262,20 @@ public:
             }
             float out = wavetable.sample(&wavetable.sampleIndex, modulatedFreq);
 
-            if (filterType.get() != SynthBuddy::FilterType::OFF) {
+            if (filterType.get() != SynthBuddy::FilterType::FILTER_OFF) {
                 if (cutoffMod.pct() != 0.5f || resonanceMod.pct() != 0.5f) {
                     filter.setCutoffFn(
                         range(filterCutoff.pct() + invEnv * (cutoffMod.pct() - 0.5f), 0.0f, 1.0f),
                         range(filterResonance.pct() + invEnv * (resonanceMod.pct() - 0.5f), 0.0f, 1.0f));
                 }
                 out = filter.processFn(out);
-            } 
+            }
 
             out = out * velocity * env;
-
+            out = fxFn(out);
             buf[track] = out;
+        } else if (fxType.get() == SynthBuddy::FXType::REVERB) {
+            buf[track] = applyReverb(buf[track]);
         }
     }
 
