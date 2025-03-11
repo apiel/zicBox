@@ -41,18 +41,16 @@ protected:
         if (reverbAmount == 0.0f) {
             return signal;
         }
-        int reverbSamples = static_cast<int>((reverbAmount * 0.5f) * props.sampleRate); // Reverb duration scaled
-        float feedback = reverbAmount * 0.7f; // Feedback scaled proportionally
-        float mix = reverbAmount * 0.5f; // Mix scaled proportionally
-
-        if (reverbSamples > REVERB_BUFFER_SIZE) {
-            reverbSamples = REVERB_BUFFER_SIZE; // Cap the reverb duration to buffer size
-        }
 
         float reverbSignal = reverbBuffer[reverbIndex];
+
+        float feedback = reverbAmount * 0.7f; // Feedback scaled proportionally
         reverbBuffer[reverbIndex] = signal + reverbSignal * feedback;
+
+        int reverbSamples = reverbAmount * REVERB_BUFFER_SIZE; // Reverb duration scaled
         reverbIndex = (reverbIndex + 1) % reverbSamples;
 
+        float mix = reverbAmount * 0.5f; // Mix scaled proportionally
         return signal * (1.0f - mix) + reverbSignal * mix;
     }
 
@@ -204,7 +202,7 @@ public:
                 if (fxAmount.pct() == 0.0f) {
                     return input;
                 }
-                return std::pow(input, 1.0f - fxAmount.pct() * 0.8f);
+                return (input * (1 - fxAmount.pct())) + (range(std::pow(input, fxAmount.pct() * 0.8f), -1.0f, 1.0f) * fxAmount.pct());
             };
         } else if (p.val.get() == SynthBuddy::FXType::WAVESHAPER) {
             p.val.setString("Waveshaper");
@@ -271,11 +269,12 @@ public:
                 out = filter.processFn(out);
             }
 
+            
             out = out * velocity * env;
             out = fxFn(out);
             buf[track] = out;
         } else if (fxType.get() == SynthBuddy::FXType::REVERB) {
-            buf[track] = applyReverb(buf[track]);
+            buf[track] = fxFn(buf[track]);
         }
     }
 
