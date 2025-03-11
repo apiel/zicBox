@@ -35,6 +35,7 @@ protected:
     bool showValue = true;
     bool showUnit = true;
     bool stringValueReplaceTitle = false;
+    bool renderInnerCircle = true;
 
     // FIXME should remove marginTop
     const int marginTop = 2;
@@ -47,9 +48,9 @@ protected:
     void renderLabel()
     {
         if (stringValueReplaceTitle && value->hasType(VALUE_STRING)) {
-            draw.textCentered({ knobCenter.x, relativePosition.y + size.h - fontLabelSize }, value->string(), fontLabelSize, { titleColor, NULL, size.w - 4 });
+            draw.textCentered({ knobCenter.x, relativePosition.y + size.h - fontLabelSize - 4 }, value->string(), fontLabelSize, { titleColor, NULL, size.w - 4 });
         } else {
-            draw.textCentered({ knobCenter.x, relativePosition.y + size.h - fontLabelSize }, label.empty() ? value->label() : label, fontLabelSize, { titleColor });
+            draw.textCentered({ knobCenter.x, relativePosition.y + size.h - fontLabelSize - 4}, label.empty() ? value->label() : label, fontLabelSize, { titleColor });
         }
     }
 
@@ -134,6 +135,10 @@ protected:
             renderBar();
         }
 
+        if (renderInnerCircle) {
+            draw.filledCircle({ knobCenter.x, knobCenter.y - marginTop }, insideRadius, { centerColor });            
+        }
+
         if (showValue) {
             renderUnit();
             if (value->hasType(VALUE_CENTERED) && type == ENCODER_TYPE::TWO_SIDED) {
@@ -153,6 +158,7 @@ protected:
     Color barColor;
     Color barBackgroundColor;
     Color barTwoSideColor;
+    Color centerColor;
 
     float useBar2Color = -1.0f;
 
@@ -183,6 +189,7 @@ public:
         , barColor(styles.colors.primary)
         , barBackgroundColor(alpha(styles.colors.primary, 0.7))
         , barTwoSideColor(alpha(styles.colors.primary, 0.2))
+        , centerColor(lighten(styles.colors.background, 0.3))
     {
         if (size.h < 50) {
             printf("Encoder component height too small: %dx%d. Min height is 50.\n", size.w, size.h);
@@ -195,7 +202,7 @@ public:
         }
 
         fontUnit = draw.getFont("PoppinsLight_8");
-        setRadius((size.h - 6) * 0.5);
+        setRadius((size.h - fontLabelSize - 8) * 0.5);
 
         /*md md_config:KnobValue */
         nlohmann::json& config = props.config;
@@ -261,6 +268,9 @@ public:
 
         /// Hide the unit of the parameter.
         showUnit = !config.value("hideUnit", false); //eg: true
+
+        /// Hide middle circle background.
+        renderInnerCircle = !config.value("hideCenterBackground", !renderInnerCircle); //eg: true
 
         /// Set the font size of the unit.
         fontUnitSize = config.value("unitSize", fontUnitSize); //eg: 8
