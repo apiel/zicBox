@@ -141,7 +141,7 @@ public:
     /*md - `FILTER_CUTOFF` set the filter cutoff frequency.*/
     Val& filterCutoff = val(0, "FILTER_CUTOFF", { "Cutoff", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
-        filter.setCutoffFn(p.val.pct(), filterResonance.pct());
+        filter.setCutoff(p.val.pct(), filterResonance.pct());
     });
 
     /*md - `FILTER_RESONANCE` set the filter resonance.*/
