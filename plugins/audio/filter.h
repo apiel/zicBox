@@ -52,21 +52,12 @@ public:
     void setType(Type type)
     {
         if (type == LP) {
-            // setCutoffFn = [&](float _cutoff, float _resonance) {
-            //     setCutoff(getLp(_cutoff), _resonance);
-            // };
             setCutoffFn = &EffectFilterData::setLpCutoff;
             processFn = &EffectFilterData::processLp;
         } else if (type == HP) {
-            // setCutoffFn = [&](float _cutoff, float _resonance) {
-            //     setCutoff(getHp(_cutoff), _resonance);
-            // };
             setCutoffFn = &EffectFilterData::setHpCutoff;
             processFn = &EffectFilterData::processHp;
         } else if (type == BP) {
-            // setCutoffFn = [&](float _cutoff, float _resonance) {
-            //     setCutoff(getBp(_cutoff), _resonance);
-            // };
             setCutoffFn = &EffectFilterData::setBpCutoff;
             processFn = &EffectFilterData::processBp;
         }
@@ -85,7 +76,7 @@ public:
     void setRawCutoff(float _cutoff)
     {
         cutoff = _cutoff;
-        setResonance(resonance);
+        feedback = getFeedback();
     }
 
     void setRawCutoff(float _cutoff, float _resonance)
@@ -97,17 +88,19 @@ public:
     void setResonance(float _resonance)
     {
         resonance = _resonance;
+        feedback = getFeedback();
+    }
+
+    float getFeedback() {
         if (resonance == 0.0f) {
-            feedback = 0.0f;
-            return;
+            return 0.0;
         }
-        float reso = resonance * 0.99;
+        if (cutoff >= 1.0f) {
+            return 0.0;
+        }
         float ratio = 1.0f - cutoff;
-        if (ratio <= 0.0f) {
-            feedback = 0.0f;
-            return;
-        }
-        feedback = reso + reso / ratio;
+        float reso = resonance * 0.99;
+        return reso + reso / ratio;
     }
 
     // void setSampleData(float inputValue)
