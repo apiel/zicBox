@@ -30,12 +30,19 @@ protected:
     bool released = false;
     float freqMod = 1.0f;
 
-    std::function<float(float)> fxFn = [](float input) { return input; };
+    // typedef float (EffectFilterData::*ProcessFnPtr)(float);
+    // ProcessFnPtr processFn;
+
+    // std::function<float(float)> fxFn = [](float input) { return input; };
+    typedef float (SynthBuddy::*FnPtr)(float);
+    FnPtr fxFn = &SynthBuddy::fxOff;
+
+    float fxOff(float input) { return input; }
 
     static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
     float reverbBuffer[REVERB_BUFFER_SIZE] = { 0.0f };
     int reverbIndex = 0;
-    float applyReverb(float signal)
+    float fxReverb(float signal)
     {
         float reverbAmount = fxAmount.pct();
         if (reverbAmount == 0.0f) {
@@ -69,7 +76,7 @@ protected:
 
     float prevInput = 0;
     float prevOutput = 0;
-    float applyBoost(float input)
+    float fxBoost(float input)
     {
         if (fxAmount.pct() == 0.0f) {
             return input;
@@ -81,6 +88,49 @@ protected:
         bassBoosted *= 1.0f + fxAmount.pct() * 2.0f;
 
         return bassBoosted;
+    }
+
+    float fxDrive(float input)
+    {
+        if (fxAmount.pct() == 0.0f) {
+            return input;
+        }
+        return tanhLookup(input * (1.0f + fxAmount.pct() * 5.0f));
+    }
+
+    float fxCompressor(float input)
+    {
+        if (fxAmount.pct() == 0.0f) {
+            return input;
+        }
+        return (input * (1 - fxAmount.pct())) + (range(std::pow(input, fxAmount.pct() * 0.8f), -1.0f, 1.0f) * fxAmount.pct());
+    }
+
+    float fxWaveshaper(float input)
+    {
+        if (fxAmount.pct() == 0.0f) {
+            return input;
+        }
+        float sineValue = sinf(input);
+        return input + fxAmount.pct() * sineValue * 2;
+    }
+
+    float fxWaveshaper2(float input)
+    {
+        if (fxAmount.pct() == 0.0f) {
+            return input;
+        }
+        float sineValue = sineLookupInterpolated(input);
+        return input + fxAmount.pct() * sineValue;
+    }
+
+    float fxClipping(float input)
+    {
+        if (fxAmount.pct() == 0.0f) {
+            return input;
+        }
+        float scaledClipping = fxAmount.pct() * fxAmount.pct() * 20;
+        return range(input + input * scaledClipping, -1.0f, 1.0f);
     }
 
 public:
@@ -181,57 +231,33 @@ public:
         p.val.setFloat(p.value);
         if (p.val.get() == SynthBuddy::FXType::FX_OFF) {
             p.val.setString("OFF");
-            fxFn = [](float input) { return input; };
+            fxFn = &SynthBuddy::fxOff;
         } else if (p.val.get() == SynthBuddy::FXType::REVERB) {
             p.val.setString("Reverb");
-            fxFn = [&](float input) { return applyReverb(input); };
+            fxFn = &SynthBuddy::fxReverb;
         } else if (p.val.get() == SynthBuddy::FXType::BASS_BOOST) {
             p.val.setString("Bass boost");
-            fxFn = [&](float input) { return applyBoost(input); };
+            fxFn = &SynthBuddy::fxBoost;
         } else if (p.val.get() == SynthBuddy::FXType::DRIVE) {
             p.val.setString("Drive");
-            fxFn = [&](float input) {
-                if (fxAmount.pct() == 0.0f) {
-                    return input;
-                }
-                return tanhLookup(input * (1.0f + fxAmount.pct() * 5.0f));
-            };
+            fxFn = &SynthBuddy::fxDrive;
         } else if (p.val.get() == SynthBuddy::FXType::COMPRESSION) {
             p.val.setString("Compression");
-            fxFn = [&](float input) {
-                if (fxAmount.pct() == 0.0f) {
-                    return input;
-                }
-                return (input * (1 - fxAmount.pct())) + (range(std::pow(input, fxAmount.pct() * 0.8f), -1.0f, 1.0f) * fxAmount.pct());
-            };
+            fxFn = &SynthBuddy::fxCompressor;
         } else if (p.val.get() == SynthBuddy::FXType::WAVESHAPER) {
             p.val.setString("Waveshaper");
-            fxFn = [&](float input) {
-                if (fxAmount.pct() == 0.0f) {
-                    return input;
-                }
-                float sineValue = sinf(input);
-                return input + fxAmount.pct() * sineValue * 2;
-            };
+            fxFn = &SynthBuddy::fxWaveshaper;
         } else if (p.val.get() == SynthBuddy::FXType::WAVESHAPER2) {
             p.val.setString("Waveshaper2");
-            fxFn = [&](float input) {
-                if (fxAmount.pct() == 0.0f) {
-                    return input;
-                }
-                float sineValue = sineLookupInterpolated(input);
-                return input + fxAmount.pct() * sineValue;
-            };
+            fxFn = &SynthBuddy::fxWaveshaper2;
         } else if (p.val.get() == SynthBuddy::FXType::CLIPPING) {
             p.val.setString("Clipping");
-            fxFn = [&](float input) {
-                if (fxAmount.pct() == 0.0f) {
-                    return input;
-                }
-                float scaledClipping = fxAmount.pct() * fxAmount.pct() * 20;
-                return range(input + input * scaledClipping, -1.0f, 1.0f);
-            };
+            fxFn = &SynthBuddy::fxClipping;
         }
+        // TODO: add fx sample reducer
+        //       add fx sub osc
+        //       add fx noise
+        //       add fx transient --> click or whatever
     });
 
     /*md - `FX_AMOUNT` set the effect amount.*/
@@ -261,20 +287,19 @@ public:
             float out = wavetable.sample(&wavetable.sampleIndex, modulatedFreq);
 
             if (filterType.get() != SynthBuddy::FilterType::FILTER_OFF) {
-            //     if (cutoffMod.pct() != 0.5f || resonanceMod.pct() != 0.5f) {
-            //         filter.setCutoffFn(
-            //             range(filterCutoff.pct() + invEnv * (cutoffMod.pct() - 0.5f), 0.0f, 1.0f),
-            //             range(filterResonance.pct() + invEnv * (resonanceMod.pct() - 0.5f), 0.0f, 1.0f));
-            //     }
+                //     if (cutoffMod.pct() != 0.5f || resonanceMod.pct() != 0.5f) {
+                //         filter.setCutoffFn(
+                //             range(filterCutoff.pct() + invEnv * (cutoffMod.pct() - 0.5f), 0.0f, 1.0f),
+                //             range(filterResonance.pct() + invEnv * (resonanceMod.pct() - 0.5f), 0.0f, 1.0f));
+                //     }
                 out = filter.process(out);
             }
 
-            
             out = out * velocity * env;
-            out = fxFn(out);
+            out = (this->*fxFn)(out);
             buf[track] = out;
         } else if (fxType.get() == SynthBuddy::FXType::REVERB) {
-            buf[track] = fxFn(buf[track]);
+            buf[track] = (this->*fxFn)(buf[track]);
         }
     }
 
