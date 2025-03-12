@@ -83,11 +83,11 @@ public:
         cutoff.setString(getMode(mode));
 
         if (mode == LPF) {
-            data.setCutoff(0.85 * cutoff.pct() + 0.1);
+            data.setRawCutoff(0.85 * cutoff.pct() + 0.1);
         } else if (mode == BPF) {
-            data.setCutoff(0.85 * cutoff.pct() + 0.1);
+            data.setRawCutoff(0.85 * cutoff.pct() + 0.1);
         } else { // HPF
-            data.setCutoff((0.20 * cutoff.pct()) + 0.00707);
+            data.setRawCutoff((0.20 * cutoff.pct()) + 0.00707);
         }
 
         return *this;

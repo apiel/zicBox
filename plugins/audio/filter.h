@@ -82,7 +82,7 @@ public:
         (this->*setCutoffFn)(_cutoff, _resonance);
     }
 
-    void setCutoff(float _cutoff)
+    void setRawCutoff(float _cutoff)
     {
         cutoff = _cutoff;
         setResonance(resonance);

@@ -219,7 +219,7 @@ public:
     Val& clickCutoff = val(50.0f, "CLICK_CUTOFF", { "Click Cutoff", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         if (p.val.pct() < 0.3f) {
-            clickFilter.setCutoff(p.val.pct());
+            clickFilter.setRawCutoff(p.val.pct());
         } else {
             clickFilter.setResonance(p.val.pct() - 0.3f);
         }
@@ -235,7 +235,7 @@ public:
         initValues();
 
         clickFilter.setResonance(0.85);
-        clickFilter.setCutoff(0.10);
+        clickFilter.setRawCutoff(0.10);
     }
 
     float highFreqBoost(float input, float time)
