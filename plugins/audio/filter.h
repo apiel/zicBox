@@ -30,8 +30,8 @@ public:
         setType(LP);
     }
 
-    typedef void (EffectFilterData::*SetCutoffFnPtr)(float, float);
-    SetCutoffFnPtr setCutoffFn;
+    typedef void (EffectFilterData::*SetFnPtr)(float, float);
+    SetFnPtr setFn;
 
     typedef float (EffectFilterData::*ProcessFnPtr)(float);
     ProcessFnPtr processFn;
@@ -39,9 +39,9 @@ public:
     float getLp(float _cutoff) { return 0.90 - (0.90 * _cutoff) + 0.1; }
     float getHp(float _cutoff) { return (0.20 * _cutoff) + 0.00707; }
     float getBp(float _cutoff) { return 0.95 * _cutoff + 0.1; }
-    void setLpCutoff(float _cutoff, float _resonance) { setRawCutoff(getLp(_cutoff), _resonance); }
-    void setHpCutoff(float _cutoff, float _resonance) { setRawCutoff(getHp(_cutoff), _resonance); }
-    void setBpCutoff(float _cutoff, float _resonance) { setRawCutoff(getBp(_cutoff), _resonance); }
+    void setLp(float _cutoff, float _resonance) { setRawCutoff(getLp(_cutoff), _resonance); }
+    void setHp(float _cutoff, float _resonance) { setRawCutoff(getHp(_cutoff), _resonance); }
+    void setBp(float _cutoff, float _resonance) { setRawCutoff(getBp(_cutoff), _resonance); }
 
     enum Type {
         LP,
@@ -52,13 +52,13 @@ public:
     void setType(Type type)
     {
         if (type == LP) {
-            setCutoffFn = &EffectFilterData::setLpCutoff;
+            setFn = &EffectFilterData::setLp;
             processFn = &EffectFilterData::processLp;
         } else if (type == HP) {
-            setCutoffFn = &EffectFilterData::setHpCutoff;
+            setFn = &EffectFilterData::setHp;
             processFn = &EffectFilterData::processHp;
         } else if (type == BP) {
-            setCutoffFn = &EffectFilterData::setBpCutoff;
+            setFn = &EffectFilterData::setBp;
             processFn = &EffectFilterData::processBp;
         }
     }
@@ -68,9 +68,9 @@ public:
         return (this->*processFn)(inputValue);
     }
 
-    void setCutoff(float _cutoff, float _resonance)
+    void set(float _cutoff, float _resonance)
     {
-        (this->*setCutoffFn)(_cutoff, _resonance);
+        (this->*setFn)(_cutoff, _resonance);
     }
 
     void setRawCutoff(float _cutoff)
