@@ -261,12 +261,12 @@ public:
             float out = wavetable.sample(&wavetable.sampleIndex, modulatedFreq);
 
             if (filterType.get() != SynthBuddy::FilterType::FILTER_OFF) {
-                if (cutoffMod.pct() != 0.5f || resonanceMod.pct() != 0.5f) {
-                    filter.setCutoffFn(
-                        range(filterCutoff.pct() + invEnv * (cutoffMod.pct() - 0.5f), 0.0f, 1.0f),
-                        range(filterResonance.pct() + invEnv * (resonanceMod.pct() - 0.5f), 0.0f, 1.0f));
-                }
-                out = filter.processFn(out);
+            //     if (cutoffMod.pct() != 0.5f || resonanceMod.pct() != 0.5f) {
+            //         filter.setCutoffFn(
+            //             range(filterCutoff.pct() + invEnv * (cutoffMod.pct() - 0.5f), 0.0f, 1.0f),
+            //             range(filterResonance.pct() + invEnv * (resonanceMod.pct() - 0.5f), 0.0f, 1.0f));
+            //     }
+                out = filter.process(out);
             }
 
             
