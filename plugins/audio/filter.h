@@ -25,18 +25,23 @@ public:
     float bp = 0.0;
     float resonance = 0.0f;
 
-    EffectFilterData() {
+    EffectFilterData()
+    {
         setType(LP);
     }
 
     std::function<void(float, float)> setCutoffFn;
-    std::function<float(float)> processFn;
+    // std::function<float(float)> processFn;
+    typedef float (EffectFilterData::*ProcessFnPtr)(float);
+    ProcessFnPtr processFn;
 
     float getLp(float _cutoff) { return 0.90 - (0.90 * _cutoff) + 0.1; }
     float getHp(float _cutoff) { return (0.20 * _cutoff) + 0.00707; }
     float getBp(float _cutoff) { return 0.95 * _cutoff + 0.1; }
 
-    enum Type { LP, HP, BP };
+    enum Type { LP,
+        HP,
+        BP };
 
     void setType(Type type)
     {
@@ -44,27 +49,23 @@ public:
             setCutoffFn = [&](float _cutoff, float _resonance) {
                 setCutoff(getLp(_cutoff), _resonance);
             };
-            processFn = [&](float inputValue) { 
-                setSampleData(inputValue);
-                return lp; 
-            };
+            processFn = &EffectFilterData::processLp;
         } else if (type == HP) {
             setCutoffFn = [&](float _cutoff, float _resonance) {
                 setCutoff(getHp(_cutoff), _resonance);
             };
-            processFn = [&](float inputValue) { 
-                setSampleData(inputValue);
-                return hp;
-            };
+            processFn = &EffectFilterData::processHp;
         } else if (type == BP) {
             setCutoffFn = [&](float _cutoff, float _resonance) {
                 setCutoff(getBp(_cutoff), _resonance);
             };
-            processFn = [&](float inputValue) { 
-                setSampleData(inputValue);
-                return bp;
-            };
+            processFn = &EffectFilterData::processBp;
         }
+    }
+
+    float process(float inputValue)
+    {
+        return (this->*processFn)(inputValue);
     }
 
     void setCutoff(float _cutoff)
@@ -109,5 +110,23 @@ public:
         bp = buf - lp;
         buf = buf + cutoff * (hp + feedback * bp);
         lp = lp + cutoff * (buf - lp);
+    }
+
+    float processLp(float inputValue)
+    {
+        setSampleData(inputValue);
+        return lp;
+    }
+
+    float processHp(float inputValue)
+    {
+        setSampleData(inputValue);
+        return hp;
+    }
+
+    float processBp(float inputValue)
+    {
+        setSampleData(inputValue);
+        return bp;
     }
 };
