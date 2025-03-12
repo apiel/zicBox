@@ -83,10 +83,10 @@ public:
         p.val.setFloat(p.value);
         float mixValue = p.val.pct() * 2 - 1;
         if (mixValue > 0) {
-           filter.setCutoff((0.20 * mixValue) + 0.00707);
+           filter.setRawCutoff((0.20 * mixValue) + 0.00707);
            p.val.setString("HP " + std::to_string((int)(mixValue * 100)) + "%");
         } else if (mixValue < 0) {
-            filter.setCutoff(0.85 * (-mixValue) + 0.1);
+            filter.setRawCutoff(0.85 * (-mixValue) + 0.1);
             p.val.setString("LP " + std::to_string((int)((-mixValue) * 100)) + "%");
         } else {
             p.val.setString("0%");

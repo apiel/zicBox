@@ -52,8 +52,8 @@ public:
     {
         mix.setFloat(value);
         float mixValue = mix.pct();
-        hpf.setCutoff((0.20 * mixValue) + 0.00707);
-        lpf.setCutoff(0.85 * mixValue + 0.1);
+        hpf.setRawCutoff((0.20 * mixValue) + 0.00707);
+        lpf.setRawCutoff(0.85 * mixValue + 0.1);
         char strBuf[128];
         sprintf(strBuf, valueFmt.c_str(), (int)((1 - mixValue) * 100), (int)(mixValue * 100));
         mix.setString(strBuf);

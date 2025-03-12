@@ -48,13 +48,13 @@ public:
         if (value > 0.5) {
             // 0 to 0.10
             float cutoff = (0.10 * ((mix.pct() - 0.5) * 2)) + 0.00707;
-            hpf.setCutoff(cutoff);
-            lpf.setCutoff(0.99);
+            hpf.setRawCutoff(cutoff);
+            lpf.setRawCutoff(0.99);
         } else {
             // From 0.95 to 0.1
             float cutoff = 0.85 * (mix.pct() * 2) + 0.1;
-            hpf.setCutoff(0.00707);
-            lpf.setCutoff(cutoff);
+            hpf.setRawCutoff(0.00707);
+            lpf.setRawCutoff(cutoff);
         }
     }
 
