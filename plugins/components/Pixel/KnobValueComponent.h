@@ -35,7 +35,7 @@ protected:
     bool showValue = true;
     bool showUnit = true;
     bool stringValueReplaceTitle = false;
-    bool renderInnerCircle = true;
+    bool showInnerCircle = true;
 
     // FIXME should remove marginTop
     const int marginTop = 2;
@@ -50,7 +50,7 @@ protected:
         if (stringValueReplaceTitle && value->hasType(VALUE_STRING)) {
             draw.textCentered({ knobCenter.x, relativePosition.y + size.h - fontLabelSize - 4 }, value->string(), fontLabelSize, { titleColor, NULL, size.w - 4 });
         } else {
-            draw.textCentered({ knobCenter.x, relativePosition.y + size.h - fontLabelSize - 4}, label.empty() ? value->label() : label, fontLabelSize, { titleColor });
+            draw.textCentered({ knobCenter.x, relativePosition.y + size.h - fontLabelSize - 4 }, label.empty() ? value->label() : label, fontLabelSize, { titleColor });
         }
     }
 
@@ -126,6 +126,22 @@ protected:
         draw.line({ valuePosition.x - 1, valuePosition.y - 10 }, { valuePosition.x - 1, valuePosition.y + 10 }, { barTwoSideColor });
     }
 
+    void renderInnerCircle()
+    {
+        draw.filledCircle({ knobCenter.x, knobCenter.y - marginTop }, insideRadius, { centerColor });
+
+        // // draw dot at value position
+        // int cx = knobCenter.x;
+        // int cy = knobCenter.y - marginTop;
+        // int r = radius - 8;
+        // float angleDegrees = 280 * value->pct();
+        // float angleRadians = angleDegrees * M_PI / 180.0 - 180;
+        // int x = cx + r * cos(angleRadians);
+        // int y = cy + r * sin(angleRadians);
+
+        // draw.filledCircle({ x, y }, 2, { valueColor });
+    }
+
     void renderEncoder()
     {
         renderLabel();
@@ -135,8 +151,8 @@ protected:
             renderBar();
         }
 
-        if (renderInnerCircle) {
-            draw.filledCircle({ knobCenter.x, knobCenter.y - marginTop }, insideRadius, { centerColor });            
+        if (showInnerCircle) {
+            renderInnerCircle();
         }
 
         if (showValue) {
@@ -270,7 +286,7 @@ public:
         showUnit = !config.value("hideUnit", false); //eg: true
 
         /// Hide middle circle background.
-        renderInnerCircle = !config.value("hideCenterBackground", !renderInnerCircle); //eg: true
+        showInnerCircle = !config.value("hideCenterBackground", !showInnerCircle); //eg: true
 
         /// Set the font size of the unit.
         fontUnitSize = config.value("unitSize", fontUnitSize); //eg: 8
