@@ -271,6 +271,7 @@ public:
         initValues();
     }
 
+    float lastInvEnv = -111.0f;
     void sample(float* buf)
     {
         if (env >= 0.0f) {
@@ -287,11 +288,12 @@ public:
             float out = wavetable.sample(&wavetable.sampleIndex, modulatedFreq);
 
             if (filterType.get() != SynthBuddy::FilterType::FILTER_OFF) {
-                //     if (cutoffMod.pct() != 0.5f || resonanceMod.pct() != 0.5f) {
-                //         filter.setCutoffFn(
-                //             range(filterCutoff.pct() + invEnv * (cutoffMod.pct() - 0.5f), 0.0f, 1.0f),
-                //             range(filterResonance.pct() + invEnv * (resonanceMod.pct() - 0.5f), 0.0f, 1.0f));
-                //     }
+                if (lastInvEnv != invEnv && (cutoffMod.pct() != 0.5f || resonanceMod.pct() != 0.5f)) {
+                    filter.set(
+                        range(filterCutoff.pct() + invEnv * (cutoffMod.pct() - 0.5f), 0.0f, 1.0f),
+                        range(filterResonance.pct() + invEnv * (resonanceMod.pct() - 0.5f), 0.0f, 1.0f));
+                }
+                lastInvEnv = invEnv;
                 out = filter.process(out);
             }
 
