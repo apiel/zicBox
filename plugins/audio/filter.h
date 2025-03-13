@@ -16,6 +16,8 @@ protected:
         return s;
     }
 
+    float feedbackLut[101*101];
+    
 public:
     float cutoff = 0.0f;
     float feedback = 0.0f;
@@ -28,6 +30,11 @@ public:
     EffectFilterData()
     {
         setType(LP);
+        for (int c = 0; c <= 100; c++) {
+            for (int r = 0; r <= 100; r++) {
+                feedbackLut[c * 100 + r] = getFeedback(c / 100.0f, r / 100.0f);
+            }
+        }
     }
 
     typedef void (EffectFilterData::*SetFnPtr)(float, float);
@@ -85,21 +92,38 @@ public:
         setResonance(_resonance);
     }
 
-    void setResonance(float _resonance)
+    void setRawResonance(float _resonance)
     {
         resonance = _resonance;
         feedback = getFeedback();
     }
 
+    void setResonance(float _resonance)
+    {
+        resonance = _resonance;
+        feedback = getLutFeedback();
+        // feedback = getFeedback();
+    }
+
+    float getLutFeedback() {
+        int c = cutoff * 100;
+        int r = resonance * 100;
+        return feedbackLut[c * 100 + r];
+    }
+
     float getFeedback() {
-        if (resonance == 0.0f) {
+        return getFeedback(cutoff, resonance);
+    }
+
+    float getFeedback(float _cutoff, float _resonance) {
+        if (_resonance == 0.0f) {
             return 0.0;
         }
-        if (cutoff >= 1.0f) {
+        if (_cutoff >= 1.0f) {
             return 0.0;
         }
-        float ratio = 1.0f - cutoff;
-        float reso = resonance * 0.99;
+        float ratio = 1.0f - _cutoff;
+        float reso = _resonance * 0.99;
         return reso + reso / ratio;
     }
 
