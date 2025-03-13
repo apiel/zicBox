@@ -6,6 +6,8 @@
 #include <functional>
 #include <math.h> // fabs
 
+// #define FILTER_USE_LUT
+
 class EffectFilterData {
 protected:
     float fix(float s)
@@ -16,8 +18,10 @@ protected:
         return s;
     }
 
-    float feedbackLut[101*101];
-    
+#ifdef FILTER_USE_LUT
+    float feedbackLut[101 * 101];
+#endif
+
 public:
     float cutoff = 0.0f;
     float feedback = 0.0f;
@@ -30,11 +34,13 @@ public:
     EffectFilterData()
     {
         setType(LP);
+#ifdef FILTER_USE_LUT
         for (int c = 0; c <= 100; c++) {
             for (int r = 0; r <= 100; r++) {
                 feedbackLut[c * 100 + r] = getFeedback(c / 100.0f, r / 100.0f);
             }
         }
+#endif
     }
 
     typedef void (EffectFilterData::*SetFnPtr)(float, float);
@@ -101,21 +107,29 @@ public:
     void setResonance(float _resonance)
     {
         resonance = _resonance;
+#ifdef FILTER_USE_LUT
         feedback = getLutFeedback();
-        // feedback = getFeedback();
+#else
+        feedback = getFeedback();
+#endif
     }
 
-    float getLutFeedback() {
+#ifdef FILTER_USE_LUT
+    float getLutFeedback()
+    {
         int c = cutoff * 100;
         int r = resonance * 100;
         return feedbackLut[c * 100 + r];
     }
+#endif
 
-    float getFeedback() {
+    float getFeedback()
+    {
         return getFeedback(cutoff, resonance);
     }
 
-    float getFeedback(float _cutoff, float _resonance) {
+    float getFeedback(float _cutoff, float _resonance)
+    {
         if (_resonance == 0.0f) {
             return 0.0;
         }
