@@ -128,7 +128,7 @@ protected:
 
     void renderInnerCircle()
     {
-        draw.filledCircle({ knobCenter.x, knobCenter.y - marginTop + 2 }, insideRadius, { darken(centerColor, 0.4) }); // shaddow effect
+        draw.filledCircle({ knobCenter.x, knobCenter.y - marginTop + 2 }, insideRadius, { shadowColor }); // shadow effect
         draw.filledCircle({ knobCenter.x, knobCenter.y - marginTop }, insideRadius - 2, { centerColor });
 
         // // draw dot at value position
@@ -176,6 +176,7 @@ protected:
     Color barBackgroundColor;
     Color barTwoSideColor;
     Color centerColor;
+    Color shadowColor;
 
     float useBar2Color = -1.0f;
 
@@ -207,6 +208,7 @@ public:
         , barBackgroundColor(alpha(styles.colors.primary, 0.7))
         , barTwoSideColor(alpha(styles.colors.primary, 0.2))
         , centerColor(lighten(styles.colors.background, 0.3))
+        , shadowColor(darken(styles.colors.background, 0.1))
     {
         if (size.h < 50) {
             printf("Encoder component height too small: %dx%d. Min height is 50.\n", size.w, size.h);
@@ -270,6 +272,7 @@ public:
 
         /// Set the background color of the component.
         bgColor = draw.getColor(config["bgColor"], bgColor); //eg: "#000000"
+        shadowColor = darken(bgColor, 0.1);
 
         /// Set the color of the text.
         Color textColor = draw.getColor(config["textColor"], styles.colors.text); //eg: "#ffffff"
