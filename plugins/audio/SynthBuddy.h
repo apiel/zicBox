@@ -15,6 +15,8 @@
 A simple synth engine that can generate a wide range of sounds but still quiet simple to use and cpu efficient.
 
 */
+// TODO use filter8
+
 class SynthBuddy : public Mapping {
 protected:
     uint8_t baseNote = 60;
@@ -30,10 +32,6 @@ protected:
     bool released = false;
     float freqMod = 1.0f;
 
-    // typedef float (EffectFilterData::*ProcessFnPtr)(float);
-    // ProcessFnPtr processFn;
-
-    // std::function<float(float)> fxFn = [](float input) { return input; };
     typedef float (SynthBuddy::*FnPtr)(float);
     FnPtr fxFn = &SynthBuddy::fxOff;
 
@@ -319,15 +317,12 @@ public:
         released = true;
     }
 
-    // std::vector<float> waveformData;
-    // DataFn dataFunctions[1] = {
-    //     { "WAVEFORM", [this](void* userdata) {
-    //          if (!wave) {
-    //              return (void*)NULL;
-    //          }
-    //          float* index = (float*)userdata;
-    //          return (void*)wave->sample(index);
-    //      } },
-    // };
-    // DEFINE_GETDATAID_AND_DATA
+    std::vector<float> waveformData;
+    DataFn dataFunctions[1] = {
+        { "WAVEFORM", [this](void* userdata) {
+             float* index = (float*)userdata;
+             return (void*)wavetable.sample(index);
+         } },
+    };
+    DEFINE_GETDATAID_AND_DATA
 };
