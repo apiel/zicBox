@@ -128,7 +128,8 @@ protected:
 
     void renderInnerCircle()
     {
-        draw.filledCircle({ knobCenter.x, knobCenter.y - marginTop }, insideRadius, { centerColor });
+        draw.filledCircle({ knobCenter.x, knobCenter.y - marginTop + 2 }, insideRadius, { darken(centerColor, 0.4) }); // shaddow effect
+        draw.filledCircle({ knobCenter.x, knobCenter.y - marginTop }, insideRadius - 2, { centerColor });
 
         // // draw dot at value position
         // int cx = knobCenter.x;

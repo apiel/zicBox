@@ -464,3 +464,11 @@ and comment out:
 # i2s expender
 
 MCP23017
+
+# bare metal or rtos
+
+Try to build a baremetal synth https://github.com/rsta2/circle/tree/master/sample/29-miniorgan
+                               https://github.com/rsta2/circle/blob/master/sample/34-sounddevices/oscillator.cpp
+                               https://github.com/rsta2/minisynth
+
+or to build something on freertos

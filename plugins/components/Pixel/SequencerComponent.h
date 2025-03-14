@@ -20,8 +20,6 @@ Sequencer components to draw the sequencer interface.
 
 class SequencerComponent : public Component {
 protected:
-    Color background;
-
     int toolboxHeight = 20;
     int stepWidth = 0;
     int stepHeight = 10;
@@ -30,9 +28,10 @@ protected:
     int numNotes = 25;
     bool drawNoteStr = true;
 
-    Color beatColor = { 0x80, 0x80, 0x80 };
-    Color barColor = lighten(beatColor, 0.4);
-    Color colSeparatorColor = darken(beatColor, 0.6);
+    Color background;
+    Color beatColor;
+    Color barColor;
+    Color colSeparatorColor;
     Color blackKeyColor;
     Color whiteKeyColor;
     Color rowSeparatorColor;
@@ -78,6 +77,10 @@ public:
             }
             return func;
         })
+        , beatColor(lighten(styles.colors.background, 1.0))
+        , barColor(lighten(styles.colors.background, 2.0))
+        // , colSeparatorColor(lighten(styles.colors.background, 0.7))
+        , colSeparatorColor(darken(styles.colors.background, 0.3))
         , background(styles.colors.background)
         , blackKeyColor(styles.colors.background)
         , whiteKeyColor(lighten(styles.colors.background, 0.2))
@@ -251,7 +254,7 @@ public:
         y += 8;
         draw.textRight({ relativePosition.x + 22, y }, std::to_string(step ? step->position + 1 : selectedStep + 1), 8, { textColor, .font = font });
         draw.text({ relativePosition.x + 32, y }, MIDI_NOTES_STR[selectedNote], 8, { stepColor, .font = font });
-        draw.textRight({ relativePosition.x + 78, y }, std::to_string(step ? step->len : 0), 8, { textColor , .font = font});
+        draw.textRight({ relativePosition.x + 78, y }, std::to_string(step ? step->len : 0), 8, { textColor, .font = font });
         draw.textRight({ relativePosition.x + 110, y }, step ? std::to_string((int)(step->velocity * 100)) + "%" : "---", 8, { textColor, .font = font });
         draw.text({ relativePosition.x + 120, y }, step ? stepConditions[step->condition].name : "---", 8, { textColor, .font = font });
         // draw.text({ relativePosition.x + 192, y }, step ? stepMotions[step->motion].name : "---", 8, { textColor, .font = font });
