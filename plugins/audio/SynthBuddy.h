@@ -16,6 +16,9 @@ A simple synth engine that can generate a wide range of sounds but still quiet s
 
 */
 // TODO use filter8
+// TODO lfo modulation/fm/mix
+// TODO fx sample reducer
+// TODO envlope curve!!
 
 class SynthBuddy : public Mapping {
 protected:
