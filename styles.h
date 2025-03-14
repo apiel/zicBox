@@ -12,7 +12,10 @@ Styles styles = {
         "/usr/share/fonts/truetype/roboto/unhinted/RobotoTTF/Roboto-Bold.ttf",
         "/usr/share/fonts/truetype/roboto/unhinted/RobotoTTF/Roboto-Italic.ttf" },
     .colors = {
-        .background =rgb(33, 37, 43),
+        // .background =rgb(33, 37, 43),
+        // .background =rgb(36, 41, 49),
+        .background =rgb(52, 50, 51),
+        // .background =rgb(43, 41, 42),
         .white = rgb(255, 255, 255),
         .text = rgb(255, 255, 255),
         .primary = rgb(173, 205, 255),
