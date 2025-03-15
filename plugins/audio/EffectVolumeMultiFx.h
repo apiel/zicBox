@@ -38,6 +38,47 @@ protected:
         return signal * (1.0f - mix) + reverbSignal * mix;
     }
 
+    static constexpr int ReverbVoiceCount = 8;
+    struct ReverbVoice {
+        uint64_t index; // voice sample postion to define delay time
+        float amplitude;
+        float feedback;
+    } voices[ReverbVoiceCount] = {
+        { 10, 0.05f, 0.9f },
+        { 20, 0.10f, 0.85f },
+        { 30, 0.15f, 0.8f },
+        { 40, 0.20f, 0.75f },
+        { 50, 0.25f, 0.7f },
+        { 60, 0.30f, 0.65f },
+        { 70, 0.35f, 0.6f },
+        { 80, 0.40f, 0.55f },
+    };
+    float fxReverb2(float signal)
+    {
+        float reverbAmount = fxAmount.pct();
+        if (reverbAmount == 0.0f) {
+            return signal;
+        }
+
+        reverbBuffer[reverbIndex] = signal;
+        reverbIndex++;
+        if (reverbIndex >= REVERB_BUFFER_SIZE) {
+            reverbIndex = 0;
+        }
+
+        float reverbOut = 0.0f;
+        for (uint8_t i = 0; i < ReverbVoiceCount; i++) {
+            ReverbVoice& voice = voices[i];
+            if (voice.index++ >= REVERB_BUFFER_SIZE) {
+                voice.index = 0;
+            }
+            reverbOut += reverbBuffer[voice.index] * voice.amplitude;
+            reverbBuffer[reverbIndex] += reverbOut * voice.feedback;
+        }
+
+        return signal + reverbOut * reverbAmount;
+    }
+
     float tanhLookup(float x)
     {
         x = range(x, -1.0f, 1.0f);
@@ -240,6 +281,7 @@ public:
     enum FXType {
         FX_OFF,
         REVERB,
+        REVERB2,
         BASS_BOOST,
         DRIVE,
         COMPRESSION,
@@ -261,6 +303,9 @@ public:
         } else if (p.val.get() == EffectVolumeMultiFx::FXType::REVERB) {
             p.val.setString("Reverb");
             fxFn = &EffectVolumeMultiFx::fxReverb;
+        } else if (p.val.get() == EffectVolumeMultiFx::FXType::REVERB2) {
+            p.val.setString("Reverb2");
+            fxFn = &EffectVolumeMultiFx::fxReverb2;
         } else if (p.val.get() == EffectVolumeMultiFx::FXType::BASS_BOOST) {
             p.val.setString("Bass boost");
             fxFn = &EffectVolumeMultiFx::fxBoost;
