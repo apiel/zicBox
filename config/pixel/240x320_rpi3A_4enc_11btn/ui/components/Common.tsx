@@ -58,7 +58,7 @@ export function Common({
                 bounds={KeyInfoPosition}
                 rows={[`${Kick} ${Synth1} ${Synth2} ${Synth3}`, `${Bass} ${Perc} Nix ${Clips}`]}
                 keys={[
-                    { key: btn1, action: 'setView:Drum23' },
+                    { key: btn1, action: 'setView:Kick' },
                     { key: btn2, action: 'setView:Synth1' },
                     { key: btn3, action: 'setView:Synth2' },
                     { key: btn4, action: 'setView:Synth3' },
