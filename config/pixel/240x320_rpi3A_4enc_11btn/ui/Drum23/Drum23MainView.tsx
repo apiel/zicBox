@@ -3,13 +3,13 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
-import { encBottomLeft, encBottomRight, encTopLeft, encTopRight } from '../constants';
 import {
-    bottomLeftKnob,
-    bottomRightKnob,
-    topLeftKnob,
-    topRightKnob
-} from '../constantsValue';
+    encBottomLeft,
+    encBottomRight,
+    encTopLeft,
+    encTopRight
+} from '../constants';
+import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
 import { TextGridDrum23 } from './TextGridDrum23';
 
 export type Props = {
@@ -19,39 +19,43 @@ export type Props = {
     color: string;
 };
 
-export function ClickView({ name, track, synthName, color }: Props) {
+export function Drum23MainView({ name, track, synthName, color }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                audioPlugin={synthName} param="CLICK"
+                audioPlugin="TrackFx"
+                param="VOLUME"
                 bounds={topLeftKnob}
                 encoderId={encTopLeft}
                 color="tertiary"
                 track={track}
             />
             <KnobValue
-                audioPlugin={synthName} param="CLICK_CUTOFF"
+                audioPlugin="MMFilter"
+                param="CUTOFF"
                 bounds={topRightKnob}
                 encoderId={encTopRight}
-                color="primary"
+                color="secondary"
+                type="STRING"
                 track={track}
             />
             <KnobValue
-                audioPlugin={synthName} param="CLICK_DURATION"
+                audioPlugin={synthName}
+                param="GAIN_CLIPPING"
                 bounds={bottomLeftKnob}
                 encoderId={encBottomLeft}
-                color="quaternary"
                 track={track}
             />
             <KnobValue
-                audioPlugin={synthName} param="HIGH_FREQ_BOOST"
+                audioPlugin="MMFilter"
+                param="RESONANCE"
                 bounds={bottomRightKnob}
                 encoderId={encBottomRight}
                 color="secondary"
                 track={track}
             />
 
-            <TextGridDrum23 selected={'Click'} color={color} synthName={synthName} />
+            <TextGridDrum23 selected={'Main'} color={color} synthName={synthName} />
             <Common selected={name} track={track} selectedBackground={color} />
         </View>
     );

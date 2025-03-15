@@ -6,9 +6,11 @@ import { BassSeqView } from './Bass/SeqView';
 import { BassWaveformView } from './Bass/WaveformView';
 import { ClipsView } from './clipsView/ClipsView';
 import {
+    ColorTrack1,
     ColorTrack2,
     ColorTrack3,
     ColorTrack4,
+    Drum23Track,
     ScreenHeight,
     ScreenWidth,
     Synth1Track,
@@ -16,13 +18,7 @@ import {
     Synth3Track,
     W1_2,
 } from './constants';
-import { AmpView } from './Drum23/AmpView';
-import { ClickView } from './Drum23/ClickView';
-import { DistortionView } from './Drum23/DistortionView';
 import { Drum23View } from './Drum23/Drum23View';
-import { FrequencyView } from './Drum23/FrequencyView';
-import { Drum23SeqView } from './Drum23/SeqView';
-import { WaveformView } from './Drum23/WaveformView';
 import { CreateWorkspaceView } from './menu/CreateWorkspaceView';
 import { MenuView } from './menu/menuView';
 import { ShutdownView } from './menu/ShutdownView';
@@ -32,7 +28,6 @@ import { PercNoise2View } from './Perc/PercNoise2View';
 import { PercNoiseView } from './Perc/PercNoiseView';
 import { PercView } from './Perc/PercView';
 import { PercSeqView } from './Perc/SeqView';
-import { SampleEditorView } from './Sample/SampleEditorView';
 import { SynthView } from './Synth/SynthView';
 
 const halfHeight = ScreenHeight / 2;
@@ -55,19 +50,11 @@ export const ui = {
     },
     views: (
         <>
-            <Drum23View name="Drum23" />
-            <DistortionView name="Distortion" />
-            <WaveformView name="Waveform" />
-            <FrequencyView name="Frequency" />
-            <AmpView name="Amplitude" />
-            <ClickView name="Click" />
-            <Drum23SeqView name="Sequencer" />
+            <Drum23View track={Drum23Track} synthName="Kick" color={ColorTrack1} />
 
-            <SynthView name="Synth1" track={Synth1Track} synthName="Synth1" color={ColorTrack2} />
-            <SynthView name="Synth2" track={Synth2Track} synthName="Synth2" color={ColorTrack3} />
-            <SynthView name="Synth3" track={Synth3Track} synthName="Synth3" color={ColorTrack4} />
-
-            <SampleEditorView name="Sample" />
+            <SynthView track={Synth1Track} synthName="Synth1" color={ColorTrack2} />
+            <SynthView track={Synth2Track} synthName="Synth2" color={ColorTrack3} />
+            <SynthView track={Synth3Track} synthName="Synth3" color={ColorTrack4} />
 
             <BassView name="Bass" />
             <BassFxView name="BassFx" />

@@ -6,38 +6,39 @@ import { Value } from '@/libs/nativeComponents/Value';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
 import {
-    ColorTrack1,
-    Drum23Track,
     encBottomLeft,
     encBottomRight,
     encTopLeft,
     encTopRight,
-    ScreenWidth,
+    ScreenWidth
 } from '../constants';
 import { bottomRightKnob, graphTopValues } from '../constantsValue';
 import { TextGridDrum23 } from './TextGridDrum23';
 
 export type Props = {
     name: string;
+    track: number;
+    synthName: string;
+    color: string;
 };
 
-export function WaveformView({ name }: Props) {
+export function WaveformView({ name, track, synthName, color }: Props) {
     return (
         <View name={name}>
             <GraphEncoder
                 bounds={graphTopValues}
-                audioPlugin="Drum23"
+                audioPlugin={synthName}
                 dataId="WAVEFORM"
                 renderValuesOnTop={false}
                 values={['WAVEFORM_TYPE', 'SHAPE', 'MACRO']}
-                track={Drum23Track}
+                track={track}
             />
 
             <Value
                 bounds={[0, 55, ScreenWidth / 2 - 2, 22]}
-                audioPlugin="Drum23"
+                audioPlugin={synthName}
                 param="WAVEFORM_TYPE"
-                track={Drum23Track}
+                track={track}
                 fontLabel="PoppinsLight_6"
                 barHeight={1}
                 encoderId={encTopLeft}
@@ -47,9 +48,9 @@ export function WaveformView({ name }: Props) {
 
             <Value
                 bounds={[ScreenWidth / 2 + 2, 55, ScreenWidth / 2, 22]}
-                audioPlugin="Drum23"
+                audioPlugin={synthName}
                 param="SHAPE"
-                track={Drum23Track}
+                track={track}
                 fontLabel="PoppinsLight_6"
                 barHeight={1}
                 encoderId={encTopRight}
@@ -59,9 +60,9 @@ export function WaveformView({ name }: Props) {
 
             <Value
                 bounds={[0, 145, ScreenWidth / 2 - 2, 22]}
-                audioPlugin="Drum23"
+                audioPlugin={synthName}
                 param="MACRO"
-                track={Drum23Track}
+                track={track}
                 fontLabel="PoppinsLight_6"
                 barHeight={1}
                 encoderId={encBottomLeft}
@@ -71,14 +72,14 @@ export function WaveformView({ name }: Props) {
 
             <KnobValue
                 bounds={bottomRightKnob}
-                audioPlugin="Drum23"
+                audioPlugin={synthName}
                 param="PITCH"
                 encoderId={encBottomRight}
                 color="secondary"
-                track={Drum23Track}
+                track={track}
             />
-            <TextGridDrum23 selected={'Wave'} viewName={name} />
-            <Common selected={'Kick'} track={Drum23Track} selectedBackground={ColorTrack1} />
+            <TextGridDrum23 selected={'Wave'} color={color} synthName={synthName} />
+            <Common selected={name} track={track} selectedBackground={color} />
         </View>
     );
 }

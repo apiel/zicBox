@@ -17,36 +17,43 @@ import {
     btnDown,
     btnShift,
     btnUp,
-    ColorTrack1,
-    KeyInfoPosition,
+    KeyInfoPosition
 } from '../constants';
 
-export function TextGridDrum23({ selected, viewName }: { selected: string; viewName: string }) {
+export function TextGridDrum23({
+    selected,
+    color,
+    synthName,
+}: {
+    selected: string;
+    color: string;
+    synthName: string;
+}) {
     return (
         <>
             <Title title={Kick} />
-            <Rect bounds={[70, 28, 6, 6]} color={ColorTrack1} />
+            <Rect bounds={[70, 28, 6, 6]} color={color} />
             <TextGrid
                 bounds={KeyInfoPosition}
-                selectedBackground={ColorTrack1}
+                selectedBackground={color}
                 rows={[
                     'Main Fx Wave Freq',
                     'Seq. Amp Click &empty',
                     // '&icon::musicNote::pixelated',
                 ]}
                 keys={[
-                    { key: btn1, action: 'setView:Drum23' }, // viewName === 'Drum23' ? 'setView:Distortion' :
-                    { key: btn2, action: 'setView:Distortion' },
-                    { key: btn3, action: 'setView:Waveform' },
-                    { key: btn4, action: 'setView:Frequency' },
+                    { key: btn1, action: `setView:${synthName}` },
+                    { key: btn2, action: `setView:${synthName}Distortion` },
+                    { key: btn3, action: `setView:${synthName}Waveform` },
+                    { key: btn4, action: `setView:${synthName}Frequency` },
 
-                    { key: btn5, action: 'setView:Sequencer' },
-                    { key: btn6, action: 'setView:Amplitude' },
-                    { key: btn7, action: 'setView:Click' },
-                    { key: btn8, action: 'noteOn:Drum23:60' }, // when not used, let's play noteOn...
+                    { key: btn5, action: `setView:${synthName}Sequencer` },
+                    { key: btn6, action: `setView:${synthName}Amplitude` },
+                    { key: btn7, action: `setView:${synthName}Click` },
+                    { key: btn8, action: `noteOn:${synthName}:60` }, // when not used, let's play noteOn...
 
-                    { key: btnUp, action: 'noteOn:Drum23:60' }, // when not used, let's play noteOn...
-                    { key: btnDown, action: 'noteOn:Drum23:60' }, // <--- this should be the default noteOn!
+                    { key: btnUp, action: `noteOn:${synthName}:60` }, // when not used, let's play noteOn...
+                    { key: btnDown, action: `noteOn:${synthName}:60` }, // <--- this should be the default noteOn!
                     { key: btnShift, action: 'contextToggle:254:1:0' },
                 ]}
                 selected={selected}
