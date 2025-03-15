@@ -40,7 +40,7 @@ protected:
 
     static constexpr int ReverbVoiceCount = 8;
     struct ReverbVoice {
-        uint64_t index; // Voice sample position for delay time
+        uint64_t index; // voice sample postion to define delay time
         float amplitude;
         float feedback;
     } voices[ReverbVoiceCount] = {
@@ -59,35 +59,25 @@ protected:
         if (reverbAmount == 0.0f) {
             return signal;
         }
-    
-        // Store input signal in buffer
+
         reverbBuffer[reverbIndex] = signal;
+
         float reverbOut = 0.0f;
-    
-        // Process reverb voices
         for (uint8_t i = 0; i < ReverbVoiceCount; i++) {
             ReverbVoice& voice = voices[i];
-    
-            // Get delayed sample
             int readIndex = (reverbIndex + REVERB_BUFFER_SIZE - voice.index) % REVERB_BUFFER_SIZE;
             float delayedSample = reverbBuffer[readIndex];
-    
-            // Apply dynamic scaling based on `reverbAmount`
-            float voiceGain = voice.amplitude * (0.5f + 0.5f * reverbAmount);  // Makes amplitude scale with `reverbAmount`
-            float voiceFeedback = voice.feedback * reverbAmount;  // Reduces feedback at lower levels
-    
-            // Accumulate reverb signal
-            reverbOut += delayedSample * voiceGain;
-    
-            // Apply feedback into buffer
-            reverbBuffer[reverbIndex] += delayedSample * voiceFeedback;
+
+            reverbOut += delayedSample * voice.amplitude;
+            reverbBuffer[readIndex] += reverbOut * (voice.feedback * reverbAmount * 2.0f);
         }
-    
-        // Advance buffer index
-        reverbIndex = (reverbIndex + 1) % REVERB_BUFFER_SIZE;
-    
-        // Apply wet/dry mix with normalization
-        float mix = reverbAmount * 0.8f;  // More aggressive mixing at high values
+
+        reverbIndex++;
+        if (reverbIndex >= REVERB_BUFFER_SIZE) {
+            reverbIndex = 0;
+        }
+
+        float mix = reverbAmount * 0.5f; // Prevents over-dominating effect
         return signal * (1.0f - mix) + reverbOut * mix;
     }
 
