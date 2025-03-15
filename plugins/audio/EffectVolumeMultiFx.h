@@ -127,6 +127,14 @@ protected:
         return sampleSqueeze;
     }
 
+    float fxInverter(float input)
+    {
+        if (input > fxAmount.pct() || input < -fxAmount.pct()) {
+            return -input;
+        }
+        return input;
+    }
+
 public:
     /*md **Values**: */
     /*md - `VOLUME` to set volume. */
@@ -146,6 +154,7 @@ public:
         WAVESHAPER2,
         CLIPPING,
         SAMPLE_REDUCER,
+        INVERTER,
         FX_COUNT
     };
     Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = EffectVolumeMultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
@@ -177,6 +186,9 @@ public:
         } else if (p.val.get() == EffectVolumeMultiFx::FXType::SAMPLE_REDUCER) {
             p.val.setString("Sample reducer");
             fxFn = &EffectVolumeMultiFx::fxSampleReducer;
+        } else if (p.val.get() == EffectVolumeMultiFx::FXType::INVERTER) {
+            p.val.setString("Inverter");
+            fxFn = &EffectVolumeMultiFx::fxInverter;
         }
         // TODO: add fx sample reducer
     });
