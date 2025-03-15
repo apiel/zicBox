@@ -4,8 +4,8 @@ import { SeqView } from '../components/SeqView';
 import { AmpView } from './AmpView';
 import { ClickView } from './ClickView';
 import { DistortionView } from './DistortionView';
-import { Drum23MainView } from './Drum23MainView';
 import { FrequencyView } from './FrequencyView';
+import { Drum23MainView } from './MainView';
 import { TextGridDrum23 } from './TextGridDrum23';
 import { WaveformView } from './WaveformView';
 
