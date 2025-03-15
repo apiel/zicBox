@@ -17,22 +17,24 @@ import {
     btnDown,
     btnShift,
     btnUp,
-    KeyInfoPosition
+    KeyInfoPosition,
 } from '../constants';
 
 export function TextGridDrum23({
     selected,
     color,
     synthName,
+    hideTitle,
 }: {
     selected: string;
     color: string;
     synthName: string;
+    hideTitle?: boolean;
 }) {
     return (
         <>
-            <Title title={Kick} />
-            <Rect bounds={[70, 28, 6, 6]} color={color} />
+            {!hideTitle && <Title title={Kick} />}
+            {!hideTitle && <Rect bounds={[70, 28, 6, 6]} color={color} />}
             <TextGrid
                 bounds={KeyInfoPosition}
                 selectedBackground={color}

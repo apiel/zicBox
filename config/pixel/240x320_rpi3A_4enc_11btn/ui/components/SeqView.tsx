@@ -2,17 +2,11 @@ import * as React from '@/libs/react';
 
 import { Sequencer } from '@/libs/nativeComponents/Sequencer';
 import { View } from '@/libs/nativeComponents/View';
-import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { rgb } from '@/libs/ui';
 import {
-    btn2,
-    btn5,
-    btn6,
-    btn7,
     btnShift,
     btnUp,
     ColorTrack1,
-    KeyInfoPosition,
     ScreenWidth
 } from '../constants';
 import { Common } from './Common';
@@ -22,9 +16,10 @@ export type Props = {
     track: number;
     synthName: string;
     color: string;
+    textGrid: any;
 };
 
-export function SeqView({ name, track, synthName, color }: Props) {
+export function SeqView({ name, track, synthName, color, textGrid }: Props) {
     return (
         <View name={name}>
             <Sequencer
@@ -40,7 +35,7 @@ export function SeqView({ name, track, synthName, color }: Props) {
                 maxStepLen={1}
             />
 
-            <TextGrid
+            {/* <TextGrid
                 bounds={KeyInfoPosition}
                 rows={[
                     '&icon::toggle::rect &icon::arrowUp::filled ...',
@@ -57,7 +52,8 @@ export function SeqView({ name, track, synthName, color }: Props) {
                     { key: btn7, action: `noteOn:${synthName}:60` },
                 ]}
                 contextValue={0}
-            />
+            /> */}
+            {textGrid}
             <Common
                 selected={name}
                 hideSequencer
