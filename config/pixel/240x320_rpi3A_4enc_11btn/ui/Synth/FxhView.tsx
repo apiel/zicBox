@@ -23,7 +23,7 @@ export function SynthFxView({ name }: Props) {
                 track={SynthTrack}
             />
             <KnobValue
-                audioPlugin="Synth"
+                audioPlugin="TrackFx"
                 param="FX_TYPE"
                 bounds={topRightKnob}
                 encoderId={encTopRight}
@@ -32,7 +32,7 @@ export function SynthFxView({ name }: Props) {
                 valueReplaceTitle
             />
             <KnobValue
-                audioPlugin="Synth"
+                audioPlugin="TrackFx"
                 param="FX_AMOUNT"
                 bounds={bottomLeftKnob}
                 encoderId={encBottomLeft}

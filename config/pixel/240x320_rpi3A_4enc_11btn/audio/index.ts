@@ -42,7 +42,7 @@ const synthTrack = {
     plugins: [
         audioPlugin('SynthBuddy', { alias: 'Synth' }),
         audioPlugin('Sequencer'),
-        audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
+        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
         audioPlugin('SerializeTrack', { filename: 'synth', maxVariation, workspaceFolder }),
     ],
 };
