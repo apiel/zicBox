@@ -10,7 +10,7 @@
 #include <functional>
 
 /*md
-## SynthBuddy
+## SynthWavetable
 
 A simple synth engine that can generate a wide range of sounds but still quiet simple to use and cpu efficient.
 
@@ -19,7 +19,7 @@ A simple synth engine that can generate a wide range of sounds but still quiet s
 // TODO lfo modulation/fm/mix
 // TODO envlope curve!!
 
-class SynthBuddy : public Mapping {
+class SynthWavetable : public Mapping {
 protected:
     uint8_t baseNote = 60;
     float velocity = 1.0f;
@@ -72,17 +72,17 @@ public:
         HP,
         FILTER_COUNT
     };
-    Val& filterType = val(1, "FILTER_TYPE", { "Filter", VALUE_STRING, .max = SynthBuddy::FilterType::FILTER_COUNT - 1 }, [&](auto p) {
+    Val& filterType = val(1, "FILTER_TYPE", { "Filter", VALUE_STRING, .max = SynthWavetable::FilterType::FILTER_COUNT - 1 }, [&](auto p) {
         p.val.setFloat(p.value);
-        if (p.val.get() == SynthBuddy::FilterType::FILTER_OFF) {
+        if (p.val.get() == SynthWavetable::FilterType::FILTER_OFF) {
             p.val.setString("OFF");
-        } else if (p.val.get() == SynthBuddy::FilterType::LP) {
+        } else if (p.val.get() == SynthWavetable::FilterType::LP) {
             p.val.setString("LPF");
             filter.setType(EffectFilterData::Type::LP);
-        } else if (p.val.get() == SynthBuddy::FilterType::BP) {
+        } else if (p.val.get() == SynthWavetable::FilterType::BP) {
             p.val.setString("BPF");
             filter.setType(EffectFilterData::Type::BP);
-        } else if (p.val.get() == SynthBuddy::FilterType::HP) {
+        } else if (p.val.get() == SynthWavetable::FilterType::HP) {
             p.val.setString("HPF");
             filter.setType(EffectFilterData::Type::HP);
         }
@@ -117,7 +117,7 @@ public:
         p.val.setString(std::to_string((int)p.val.get()) + "/" + std::to_string(ZIC_WAVETABLE_WAVEFORMS_COUNT));
     });
 
-    SynthBuddy(AudioPlugin::Props& props, AudioPlugin::Config& config)
+    SynthWavetable(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config) // clang-format on
     // , filter2(props.sampleRate)
     {
@@ -141,7 +141,7 @@ public:
             }
             float out = wavetable.sample(&wavetable.sampleIndex, modulatedFreq);
 
-            if (filterType.get() != SynthBuddy::FilterType::FILTER_OFF) {
+            if (filterType.get() != SynthWavetable::FilterType::FILTER_OFF) {
                 if (lastInvEnv != invEnv && (cutoffMod.pct() != 0.5f || resonanceMod.pct() != 0.5f)) {
                     filter.set(
                         range(filterCutoff.pct() + invEnv * (cutoffMod.pct() - 0.5f), 0.0f, 1.0f),
