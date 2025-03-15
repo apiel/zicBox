@@ -127,12 +127,54 @@ protected:
         return sampleSqueeze;
     }
 
+    float sampleHold = 0.0f;
+    int sampleCounter = 0;
+    float fxBitcrusher(float input)
+    {
+        if (fxAmount.pct() == 0.0f) {
+            return input;
+        }
+
+        // Reduce Bit Depth
+        int bitDepth = 2 + fxAmount.pct() * 10; // Stronger effect
+        float step = 1.0f / (1 << bitDepth); // Quantization step
+        float crushed = round(input / step) * step; // Apply bit reduction
+
+        // Reduce Sample Rate
+        int sampleRateDivider = 1 + fxAmount.pct() * 20; // Reduces update rate
+        if (sampleCounter % sampleRateDivider == 0) {
+            sampleHold = crushed; // Hold the value for "stepping" effect
+        }
+        sampleCounter++;
+
+        if (fxAmount.pct() < 0.1f) {
+            // mix with original signal
+            return sampleHold * (fxAmount.pct() * 10) + input * (1.0f - (fxAmount.pct() * 10));
+        }
+
+        return sampleHold;
+    }
+
     float fxInverter(float input)
     {
         if (input > fxAmount.pct() || input < -fxAmount.pct()) {
             return -input;
         }
         return input;
+    }
+
+    float tremoloPhase = 0.0f;
+    float fxTremolo(float input)
+    {
+        if (fxAmount.pct() == 0.0f) {
+            return input;
+        }
+
+        float speed = 1.0f; // Tremolo speed in Hz
+        tremoloPhase += 0.05f * speed;
+        float mod = (sin(tremoloPhase) + 1.0f) / 2.0f; // Modulation between 0-1
+
+        return input * (1.0f - fxAmount.pct() + fxAmount.pct() * mod);
     }
 
     // static const int delaySamples = 88; // Fixed delay for ~500 Hz resonance
@@ -144,23 +186,23 @@ protected:
     //     if (fxAmount.pct() == 0.0f) {
     //         return input;
     //     }
-    
+
     //     // Circular buffer read index
     //     int readIndex = (writeIndex - delaySamples + delaySamples) % delaySamples;
     //     float delayedSample = buffer[readIndex];
-    
+
     //     // Simple low-pass filter on feedback path
     //     static float lastSample = 0.0f;
     //     float filteredSample = damping * delayedSample + (1.0f - damping) * lastSample;
     //     lastSample = filteredSample;
-    
+
     //     // Apply stronger feedback loop
     //     float resonated = filteredSample * feedback + input;
-    
+
     //     // Store in delay buffer
     //     buffer[writeIndex] = resonated;
     //     writeIndex = (writeIndex + 1) % delaySamples;
-    
+
     //     // Mix dry & wet signal
     //     return (1.0f - fxAmount.pct()) * input + fxAmount.pct() * resonated;
     // }
@@ -184,8 +226,9 @@ public:
         WAVESHAPER2,
         CLIPPING,
         SAMPLE_REDUCER,
+        BITCRUSHER,
         INVERTER,
-        // RESONATOR,
+        TREMOLO,
         FX_COUNT
     };
     Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = EffectVolumeMultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
@@ -217,12 +260,15 @@ public:
         } else if (p.val.get() == EffectVolumeMultiFx::FXType::SAMPLE_REDUCER) {
             p.val.setString("Sample reducer");
             fxFn = &EffectVolumeMultiFx::fxSampleReducer;
+        } else if (p.val.get() == EffectVolumeMultiFx::FXType::BITCRUSHER) {
+            p.val.setString("Bitcrusher");
+            fxFn = &EffectVolumeMultiFx::fxBitcrusher;
         } else if (p.val.get() == EffectVolumeMultiFx::FXType::INVERTER) {
             p.val.setString("Inverter");
             fxFn = &EffectVolumeMultiFx::fxInverter;
-        // } else if (p.val.get() == EffectVolumeMultiFx::FXType::RESONATOR) {
-        //     p.val.setString("Resonator");
-        //     fxFn = &EffectVolumeMultiFx::fxResonator;
+        } else if (p.val.get() == EffectVolumeMultiFx::FXType::TREMOLO) {
+            p.val.setString("Tremolo");
+            fxFn = &EffectVolumeMultiFx::fxTremolo;
         }
         // TODO: add fx sample reducer
     });
