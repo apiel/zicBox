@@ -26,10 +26,8 @@ import { SampleEditorView } from './Sample/SampleEditorView';
 import { SynthEnv1View } from './Synth/Env1View';
 import { SynthEnv2View } from './Synth/Env2View';
 import { SynthFilterView } from './Synth/FilterView';
-import { SynthFxView } from './Synth/FxhView';
+import { SynthFxView } from './Synth/FxView';
 import { SynthView } from './Synth/SynthView';
-import { SynthWaveform1View } from './Synth/Waveform1View';
-import { SynthWaveform2View } from './Synth/Waveform2View';
 
 const halfHeight = ScreenHeight / 2;
 // addZoneEncoder([0, 0, W1_2, halfHeight]);
@@ -84,8 +82,6 @@ export const ui = {
             <SynthFilterView name="SynthFilter" />
             <SynthEnv1View name="SynthEnv1" />
             <SynthEnv2View name="SynthEnv2" />
-            <SynthWaveform1View name="SynthWaveform1" />
-            <SynthWaveform2View name="SynthWaveform2" />
 
             <MenuView name="Menu" />
             <CreateWorkspaceView name="CreateWorkspace" />
