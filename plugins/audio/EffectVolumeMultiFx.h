@@ -135,6 +135,36 @@ protected:
         return input;
     }
 
+    // static const int delaySamples = 88; // Fixed delay for ~500 Hz resonance
+    // float buffer[delaySamples] = {0.0f}; // Circular buffer
+    // int writeIndex = 0;
+    // float feedback = 0.95f;
+    // float damping = 0.8f;    // Low-pass filter coefficient
+    // float fxResonator(float input) {
+    //     if (fxAmount.pct() == 0.0f) {
+    //         return input;
+    //     }
+    
+    //     // Circular buffer read index
+    //     int readIndex = (writeIndex - delaySamples + delaySamples) % delaySamples;
+    //     float delayedSample = buffer[readIndex];
+    
+    //     // Simple low-pass filter on feedback path
+    //     static float lastSample = 0.0f;
+    //     float filteredSample = damping * delayedSample + (1.0f - damping) * lastSample;
+    //     lastSample = filteredSample;
+    
+    //     // Apply stronger feedback loop
+    //     float resonated = filteredSample * feedback + input;
+    
+    //     // Store in delay buffer
+    //     buffer[writeIndex] = resonated;
+    //     writeIndex = (writeIndex + 1) % delaySamples;
+    
+    //     // Mix dry & wet signal
+    //     return (1.0f - fxAmount.pct()) * input + fxAmount.pct() * resonated;
+    // }
+
 public:
     /*md **Values**: */
     /*md - `VOLUME` to set volume. */
@@ -155,6 +185,7 @@ public:
         CLIPPING,
         SAMPLE_REDUCER,
         INVERTER,
+        // RESONATOR,
         FX_COUNT
     };
     Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = EffectVolumeMultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
@@ -189,6 +220,9 @@ public:
         } else if (p.val.get() == EffectVolumeMultiFx::FXType::INVERTER) {
             p.val.setString("Inverter");
             fxFn = &EffectVolumeMultiFx::fxInverter;
+        // } else if (p.val.get() == EffectVolumeMultiFx::FXType::RESONATOR) {
+        //     p.val.setString("Resonator");
+        //     fxFn = &EffectVolumeMultiFx::fxResonator;
         }
         // TODO: add fx sample reducer
     });
