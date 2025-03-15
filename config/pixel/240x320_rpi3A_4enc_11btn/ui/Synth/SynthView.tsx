@@ -1,9 +1,11 @@
 import * as React from '@/libs/react';
+import { SeqView } from '../components/SeqView';
 import { SynthEnv1View } from './Env1View';
 import { SynthEnv2View } from './Env2View';
 import { SynthFilterView } from './FilterView';
 import { SynthFxView } from './FxView';
 import { SynthMainView } from './Main';
+import { TextGridSynth } from './TextGridSynth';
 
 export type Props = {
     track: number;
@@ -38,6 +40,21 @@ export function SynthView({ track, synthName, color }: Props) {
                 track={track}
                 synthName={synthName}
                 color={color}
+            />
+            <SeqView
+                name={`${synthName}Seq`}
+                track={track}
+                synthName={synthName}
+                color={color}
+                textGrid={
+                    <TextGridSynth
+                        selected={'Seq.'}
+                        viewName={`${synthName}Seq`}
+                        color={color}
+                        synthName={synthName}
+                        hideTitle
+                    />
+                }
             />
         </>
     );

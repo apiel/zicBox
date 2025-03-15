@@ -24,16 +24,18 @@ export function TextGridSynth({
     viewName,
     synthName,
     color,
+    hideTitle,
 }: {
     selected: string;
     viewName: string;
     synthName: string;
     color: string;
+    hideTitle?: boolean;
 }) {
     return (
         <>
-            <Title title={synthName} />
-            <Rect bounds={[70, 28, 6, 6]} color={color} />
+            {!hideTitle && <Title title={synthName} />}
+            {!hideTitle && <Rect bounds={[60, 28, 6, 6]} color={color} />}
             <TextGrid
                 bounds={KeyInfoPosition}
                 selectedBackground={color}
