@@ -4,7 +4,6 @@ import { Sequencer } from '@/libs/nativeComponents/Sequencer';
 import { View } from '@/libs/nativeComponents/View';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { rgb } from '@/libs/ui';
-import { Common } from '../components/Common';
 import {
     btn2,
     btn5,
@@ -13,10 +12,10 @@ import {
     btnShift,
     btnUp,
     ColorTrack1,
-    ColorTrack3,
     KeyInfoPosition,
     ScreenWidth
 } from '../constants';
+import { Common } from './Common';
 
 export type Props = {
     name: string;
@@ -25,7 +24,7 @@ export type Props = {
     color: string;
 };
 
-export function Drum23SeqView({ name, track, synthName, color }: Props) {
+export function SeqView({ name, track, synthName, color }: Props) {
     return (
         <View name={name}>
             <Sequencer
@@ -48,7 +47,7 @@ export function Drum23SeqView({ name, track, synthName, color }: Props) {
                     'Seq./Kick &icon::arrowDown::filled &icon::musicNote::pixelated',
                     // '!Seq/Bass &icon::arrowDown::filled &icon::musicNote::pixelated',
                 ]}
-                selectedBackground={ColorTrack3}
+                selectedBackground={color}
                 keys={[
                     { key: btn2, action: 'incGroup:-1' },
                     { key: btnShift, action: 'contextToggle:254:1:0' },
