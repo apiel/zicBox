@@ -38,21 +38,17 @@ protected:
         return signal * (1.0f - mix) + reverbSignal * mix;
     }
 
-    static constexpr int ReverbVoiceCount = 8;
+    static constexpr int ReverbVoiceCount = 4; // Reduced from 8 to 4 for efficiency
     struct ReverbVoice {
-        uint64_t index; // voice sample postion to define delay time
-        float amplitude;
-        float feedback;
+        int delay; // Fixed delay offset
+        float gain;
     } voices[ReverbVoiceCount] = {
-        { 120, 0.05f, 0.9f },
-        { 240, 0.10f, 0.85f },
-        { 360, 0.15f, 0.8f },
-        { 480, 0.20f, 0.75f },
-        { 600, 0.25f, 0.7f },
-        { 720, 0.30f, 0.65f },
-        { 840, 0.35f, 0.6f },
-        { 960, 0.40f, 0.55f },
+        { 180 * 2, 0.6f }, // First early reflection
+        { 420 * 2, 0.4f }, // Mid reflection
+        { 690 * 2, 0.3f }, // Late reflection
+        { 960 * 2, 0.2f }, // Very late tail
     };
+
     float fxReverb2(float signal)
     {
         float reverbAmount = fxAmount.pct();
@@ -60,24 +56,26 @@ protected:
             return signal;
         }
 
+        // Store input signal in buffer
         reverbBuffer[reverbIndex] = signal;
 
         float reverbOut = 0.0f;
+
+        // Process only 4 key delay taps
         for (uint8_t i = 0; i < ReverbVoiceCount; i++) {
-            ReverbVoice& voice = voices[i];
-            int readIndex = (reverbIndex + REVERB_BUFFER_SIZE - voice.index) % REVERB_BUFFER_SIZE;
-            float delayedSample = reverbBuffer[readIndex];
-
-            reverbOut += delayedSample * voice.amplitude;
-            reverbBuffer[readIndex] += reverbOut * (voice.feedback * reverbAmount * 2.0f);
+            int readIndex = (reverbIndex + REVERB_BUFFER_SIZE - voices[i].delay) % REVERB_BUFFER_SIZE;
+            reverbOut += reverbBuffer[readIndex] * voices[i].gain;
         }
 
-        reverbIndex++;
-        if (reverbIndex >= REVERB_BUFFER_SIZE) {
-            reverbIndex = 0;
-        }
+        // Apply global feedback (reduces CPU by avoiding per-voice feedback writes)
+        float globalFeedback = reverbAmount * 0.6f;
+        reverbBuffer[reverbIndex] = signal + reverbOut * globalFeedback;
 
-        float mix = reverbAmount * 0.5f; // Prevents over-dominating effect
+        // Advance buffer index
+        reverbIndex = (reverbIndex + 1) % REVERB_BUFFER_SIZE;
+
+        // Final wet/dry mix
+        float mix = reverbAmount * 0.8f;
         return signal * (1.0f - mix) + reverbOut * mix;
     }
 
