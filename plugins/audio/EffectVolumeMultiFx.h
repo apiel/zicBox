@@ -110,6 +110,23 @@ protected:
         return range(input + input * scaledClipping, -1.0f, 1.0f);
     }
 
+    float sampleSqueeze;
+    int samplePosition = 0;
+    float fxSampleReducer(float input)
+    {
+        if (fxAmount.get() == 0.0f) {
+            return input;
+        }
+        if (samplePosition < fxAmount.get() * 2) {
+            samplePosition++;
+        } else {
+            samplePosition = 0;
+            sampleSqueeze = input;
+        }
+
+        return sampleSqueeze;
+    }
+
 public:
     /*md **Values**: */
     /*md - `VOLUME` to set volume. */
@@ -128,6 +145,7 @@ public:
         WAVESHAPER,
         WAVESHAPER2,
         CLIPPING,
+        SAMPLE_REDUCER,
         FX_COUNT
     };
     Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = EffectVolumeMultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
@@ -156,6 +174,9 @@ public:
         } else if (p.val.get() == EffectVolumeMultiFx::FXType::CLIPPING) {
             p.val.setString("Clipping");
             fxFn = &EffectVolumeMultiFx::fxClipping;
+        } else if (p.val.get() == EffectVolumeMultiFx::FXType::SAMPLE_REDUCER) {
+            p.val.setString("Sample reducer");
+            fxFn = &EffectVolumeMultiFx::fxSampleReducer;
         }
         // TODO: add fx sample reducer
     });
