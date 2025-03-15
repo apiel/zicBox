@@ -177,6 +177,27 @@ protected:
         return input * (1.0f - fxAmount.pct() + fxAmount.pct() * mod);
     }
 
+    float ringPhase = 0.0f; // Phase for the sine wave oscillator
+    float fxRingMod(float input)
+    {
+        if (fxAmount.pct() == 0.0f) {
+            return input;
+        }
+
+        float ringFreq = 200.0f + fxAmount.pct() * 800.0f; // Modulation frequency (200Hz - 1000Hz)
+        ringPhase += 2.0f * M_PI * ringFreq / props.sampleRate;
+
+        // Keep phase in the [0, 2π] range
+        if (ringPhase > 2.0f * M_PI) {
+            ringPhase -= 2.0f * M_PI;
+        }
+
+        float modulator = sin(ringPhase); // Sine wave oscillator
+        float modulated = input * modulator; // Apply ring modulation
+
+        return (1.0f - fxAmount.pct()) * input + fxAmount.pct() * modulated;
+    }
+
     // static const int delaySamples = 88; // Fixed delay for ~500 Hz resonance
     // float buffer[delaySamples] = {0.0f}; // Circular buffer
     // int writeIndex = 0;
@@ -229,6 +250,7 @@ public:
         BITCRUSHER,
         INVERTER,
         TREMOLO,
+        RING_MOD,
         FX_COUNT
     };
     Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = EffectVolumeMultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
@@ -269,6 +291,9 @@ public:
         } else if (p.val.get() == EffectVolumeMultiFx::FXType::TREMOLO) {
             p.val.setString("Tremolo");
             fxFn = &EffectVolumeMultiFx::fxTremolo;
+        } else if (p.val.get() == EffectVolumeMultiFx::FXType::RING_MOD) {
+            p.val.setString("Ring mod.");
+            fxFn = &EffectVolumeMultiFx::fxRingMod;
         }
         // TODO: add fx sample reducer
     });
