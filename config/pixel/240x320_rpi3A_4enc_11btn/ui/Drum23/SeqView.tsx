@@ -14,21 +14,23 @@ import {
     btnUp,
     ColorTrack1,
     ColorTrack3,
-    Drum23Track,
     KeyInfoPosition,
-    ScreenWidth,
+    ScreenWidth
 } from '../constants';
 
 export type Props = {
     name: string;
+    track: number;
+    synthName: string;
+    color: string;
 };
 
-export function Drum23SeqView({ name }: Props) {
+export function Drum23SeqView({ name, track, synthName, color }: Props) {
     return (
         <View name={name}>
             <Sequencer
                 bounds={[0, 0, ScreenWidth, 270]}
-                track={Drum23Track}
+                track={track}
                 audioPlugin="Sequencer"
                 keys={[
                     { key: btnUp, action: '.toggleParam' },
@@ -51,17 +53,17 @@ export function Drum23SeqView({ name }: Props) {
                     { key: btn2, action: 'incGroup:-1' },
                     { key: btnShift, action: 'contextToggle:254:1:0' },
 
-                    { key: btn5, action: 'setView:Drum23' },
+                    { key: btn5, action: `setView:${synthName}` },
                     { key: btn6, action: 'incGroup:+1' },
-                    { key: btn7, action: 'noteOn:Drum23:60' },
+                    { key: btn7, action: `noteOn:${synthName}:60` },
                 ]}
                 contextValue={0}
             />
             <Common
-                selected={'Kick'}
+                selected={name}
                 hideSequencer
-                track={Drum23Track}
-                selectedBackground={ColorTrack1}
+                track={track}
+                selectedBackground={color}
             />
         </View>
     );

@@ -1,61 +1,29 @@
 import * as React from '@/libs/react';
 
-import { KnobValue } from '@/libs/nativeComponents/KnobValue';
-import { View } from '@/libs/nativeComponents/View';
-import { Common } from '../components/Common';
-import {
-    ColorTrack1,
-    Drum23Track,
-    encBottomLeft,
-    encBottomRight,
-    encTopLeft,
-    encTopRight,
-} from '../constants';
-import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
-import { TextGridDrum23 } from './TextGridDrum23';
+import { AmpView } from './AmpView';
+import { ClickView } from './ClickView';
+import { DistortionView } from './DistortionView';
+import { Drum23MainView } from './Drum23MainView';
+import { FrequencyView } from './FrequencyView';
+import { Drum23SeqView } from './SeqView';
+import { WaveformView } from './WaveformView';
 
 export type Props = {
-    name: string;
+    track: number;
+    synthName: string;
+    color: string;
 };
 
-export function Drum23View({ name }: Props) {
+export function Drum23View({ track, synthName, color }: Props) {
     return (
-        <View name={name}>
-            <KnobValue
-                audioPlugin="TrackFx"
-                param="VOLUME"
-                bounds={topLeftKnob}
-                encoderId={encTopLeft}
-                color="tertiary"
-                track={Drum23Track}
-            />
-            <KnobValue
-                audioPlugin="MMFilter"
-                param="CUTOFF"
-                bounds={topRightKnob}
-                encoderId={encTopRight}
-                color="secondary"
-                type="STRING"
-                track={Drum23Track}
-            />
-            <KnobValue
-                audioPlugin="Drum23"
-                param="GAIN_CLIPPING"
-                bounds={bottomLeftKnob}
-                encoderId={encBottomLeft}
-                track={Drum23Track}
-            />
-            <KnobValue
-                audioPlugin="MMFilter"
-                param="RESONANCE"
-                bounds={bottomRightKnob}
-                encoderId={encBottomRight}
-                color="secondary"
-                track={Drum23Track}
-            />
-
-            <TextGridDrum23 selected={'Main'} viewName={name} />
-            <Common selected={'Kick'} track={Drum23Track} selectedBackground={ColorTrack1} />
-        </View>
+        <>
+            <Drum23MainView name={synthName} track={track} synthName={synthName} color={color} />
+            <DistortionView name={`${synthName}Distortion`} track={track} synthName={synthName} color={color} />
+            <WaveformView name={`${synthName}Waveform`} track={track} synthName={synthName} color={color} />
+            <FrequencyView name={`${synthName}Frequency`} track={track} synthName={synthName} color={color} />
+            <AmpView name={`${synthName}Amplitude`} track={track} synthName={synthName} color={color} />
+            <ClickView name={`${synthName}Click`} track={track} synthName={synthName} color={color} />
+            <Drum23SeqView name={`${synthName}Sequencer`} track={track} synthName={synthName} color={color} />
+        </>
     );
 }

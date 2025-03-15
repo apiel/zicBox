@@ -6,13 +6,12 @@ import { SynthFxView } from './FxView';
 import { SynthMainView } from './Main';
 
 export type Props = {
-    name: string;
     track: number;
     synthName: string;
     color: string;
 };
 
-export function SynthView({ name, track, synthName, color }: Props) {
+export function SynthView({ track, synthName, color }: Props) {
     return (
         <>
             <SynthMainView name={synthName} track={track} synthName={synthName} color={color} />

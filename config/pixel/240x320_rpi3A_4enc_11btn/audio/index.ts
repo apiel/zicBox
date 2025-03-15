@@ -15,7 +15,7 @@ const workspaceFolder = 'workspaces/rpi3A_4enc_11btn';
 const drum23Track = {
     id: Drum23Track,
     plugins: [
-        audioPlugin('SynthDrum23', { alias: 'Drum23' }),
+        audioPlugin('SynthDrum23', { alias: 'Kick' }),
         audioPlugin('Sequencer'),
         audioPlugin('EffectDistortion2', { alias: 'Distortion' }),
         audioPlugin('EffectFilterMultiMode', { alias: 'MMFilter', cutoffStringFormat }),

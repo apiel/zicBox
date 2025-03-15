@@ -5,42 +5,43 @@ import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
 import {
-    ColorTrack1,
-    Drum23Track,
     encBottomLeft,
     encBottomRight,
     encTopLeft,
-    encTopRight,
+    encTopRight
 } from '../constants';
 import { bottomRightKnob, topValues } from '../constantsValue';
 import { TextGridDrum23 } from './TextGridDrum23';
 
 export type Props = {
     name: string;
+    track: number;
+    synthName: string;
+    color: string;
 };
 
-export function AmpView({ name }: Props) {
+export function AmpView({ name, track, synthName, color }: Props) {
     return (
         <View name={name}>
             <DrumEnvelop
                 bounds={topValues}
-                audioPlugin="Drum23"
+                audioPlugin={synthName}
                 envelopDataId="ENV_AMP"
                 renderValuesOnTop={false}
                 encoderTime={encTopLeft}
                 encoderModulation={encTopRight}
                 encoderPhase={encBottomLeft}
-                track={Drum23Track}
+                track={track}
             />
             <KnobValue
                 bounds={bottomRightKnob}
-                audioPlugin="Drum23" param="DURATION"
+                audioPlugin={synthName} param="DURATION"
                 encoderId={encBottomRight}
                 color="quaternary"
-                track={Drum23Track}
+                track={track}
             />
-            <TextGridDrum23 selected={'Amp'} viewName={name} />
-            <Common selected={'Kick'} track={Drum23Track} selectedBackground={ColorTrack1} />
+            <TextGridDrum23 selected={'Amp'} color={color} synthName={synthName} />
+            <Common selected={name} track={track} selectedBackground={color} />
         </View>
     );
 }
