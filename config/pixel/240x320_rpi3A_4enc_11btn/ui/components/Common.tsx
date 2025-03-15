@@ -21,35 +21,23 @@ import { SideInfo } from './SideInfo';
 
 export const Kick = 'Kick';
 export const Bass = 'Bass';
-export const Fm1 = 'Fm1';
-export const Synth = 'Synth';
-export const Sample1 = 'Sampl1';
-export const Sample2 = 'Sampl2';
-export const Sample3 = 'Sampl3';
+export const Synth1 = 'Synth1';
+export const Synth2 = 'Synth2';
+export const Synth3 = 'Synth3';
 export const Clips = 'Clips';
 export const Perc = 'Perc';
 
-type ItemType =
-    | typeof Kick
-    | typeof Bass
-    | typeof Fm1
-    | typeof Synth
-    | typeof Sample1
-    | typeof Sample2
-    | typeof Sample3
-    | typeof Clips
-    | typeof Perc;
 
 export function Common({
-    selected,
     hideSequencer,
     track,
     selectedBackground,
+    selected,
 }: {
-    selected: ItemType;
     hideSequencer?: boolean;
     track: number;
     selectedBackground?: string;
+    selected: string;
 }) {
     return (
         <>
@@ -68,14 +56,14 @@ export function Common({
 
             <TextGrid
                 bounds={KeyInfoPosition}
-                rows={[`${Kick} ${Bass} ${Fm1} ${Synth}`, `${Sample1} ${Perc} ${Sample3} ${Clips}`]}
+                rows={[`${Kick} ${Synth1} ${Synth2} ${Synth3}`, `${Bass} ${Perc} Nix ${Clips}`]}
                 keys={[
                     { key: btn1, action: 'setView:Drum23' },
-                    { key: btn2, action: 'setView:Bass' },
-                    { key: btn3, action: 'setView:Fm1' },
-                    { key: btn4, action: 'setView:Synth' },
+                    { key: btn2, action: 'setView:Synth1' },
+                    { key: btn3, action: 'setView:Synth2' },
+                    { key: btn4, action: 'setView:Synth3' },
 
-                    { key: btn5, action: `setView:Sample` },
+                    { key: btn5, action: `setView:Bass` },
                     { key: btn6, action: `setView:Perc` },
                     { key: btn8, action: `setView:Clips` },
 

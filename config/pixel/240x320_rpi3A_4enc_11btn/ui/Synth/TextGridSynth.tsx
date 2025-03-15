@@ -2,7 +2,6 @@ import * as React from '@/libs/react';
 
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
-import { Synth } from '../components/Common';
 import { SideInfo } from '../components/SideInfo';
 import { Title } from '../components/Title';
 import {
@@ -17,56 +16,65 @@ import {
     btnDown,
     btnShift,
     btnUp,
-    ColorTrack4,
     KeyInfoPosition,
 } from '../constants';
 
-export function TextGridSynth({ selected, viewName }: { selected: string; viewName: string }) {
+export function TextGridSynth({
+    selected,
+    viewName,
+    synthName,
+    color,
+}: {
+    selected: string;
+    viewName: string;
+    synthName: string;
+    color: string;
+}) {
     return (
         <>
-            <Title title={Synth} />
-            <Rect bounds={[70, 28, 6, 6]} color={ColorTrack4} />
+            <Title title={synthName} />
+            <Rect bounds={[70, 28, 6, 6]} color={color} />
             <TextGrid
                 bounds={KeyInfoPosition}
-                selectedBackground={ColorTrack4}
+                selectedBackground={color}
                 rows={['Main Filter Env Mod.', 'Seq. Fx Lfo Mod']}
                 keys={[
-                    { key: btn1, action: 'setView:Synth' },
-                    { key: btn2, action: 'setView:SynthFilter' },
+                    { key: btn1, action: `setView:${synthName}` },
+                    { key: btn2, action: `setView:${synthName}Filter` },
                     {
                         key: btn3,
                         action:
-                            viewName === 'SynthEnv1'
-                                ? 'setView:SynthEnv2'
-                                : 'setView:SynthEnv1',
+                            viewName === `${synthName}Env1`
+                                ? `setView:${synthName}Env2`
+                                : `setView:${synthName}Env1`,
                     },
                     {
                         key: btn4,
                         action:
-                            viewName === 'SynthEnv2'
-                                ? 'setView:SynthEnv1'
-                                : 'setView:SynthEnv2',
+                            viewName === `${synthName}Env2`
+                                ? `setView:${synthName}Env1`
+                                : `setView:${synthName}Env2`,
                     },
 
-                    { key: btn5, action: 'setView:SynthSeq' },
-                    { key: btn6, action: 'setView:SynthFx' },
+                    { key: btn5, action: `setView:${synthName}Seq` },
+                    { key: btn6, action: `setView:${synthName}Fx` },
                     {
                         key: btn7,
                         action:
-                            viewName === 'SynthLfo1'
-                                ? 'setView:SynthLfo2'
-                                : 'setView:SynthLfo1',
+                            viewName === `${synthName}Lfo1`
+                                ? `setView:${synthName}Lfo2`
+                                : `setView:${synthName}Lfo1`,
                     },
                     {
                         key: btn8,
                         action:
-                            viewName === 'SynthLfo2'
-                                ? 'setView:SynthLfo1'
-                                : 'setView:SynthLfo2',
+                            viewName === `${synthName}Lfo2`
+                                ? `setView:${synthName}Lfo1`
+                                : `setView:${synthName}Lfo2`,
                     },
 
-                    { key: btnUp, action: 'noteOn:Synth:58' }, // when not used, let's play noteOn...
-                    { key: btnDown, action: 'noteOn:Synth:60' }, // <--- this should be the default noteOn!
+                    { key: btnUp, action: `noteOn:${synthName}:58` }, // when not used, let's play noteOn...
+                    { key: btnDown, action: `noteOn:${synthName}:60` }, // <--- this should be the default noteOn!
                     { key: btnShift, action: 'contextToggle:254:1:0' },
                 ]}
                 selected={selected}

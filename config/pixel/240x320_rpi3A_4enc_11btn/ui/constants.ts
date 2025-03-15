@@ -1,6 +1,6 @@
-import { rgb } from "@/libs/ui";
+import { rgb } from '@/libs/ui';
 
-export * from "../constants";
+export * from '../constants';
 
 export const ScreenWidth = 240;
 export const ScreenHeight = 320;
@@ -24,13 +24,14 @@ export const SideKeyInfoPosition = [ScreenWidth - 16, 296, 16];
 // export const KeyInfoPosition = [0, 296, ScreenWidth];
 // export const SideKeyInfoPosition = [ScreenWidth - 16, 270, 16, 26];
 
-export const SideColor =rgb(58, 84, 92);
+export const SideColor = rgb(58, 84, 92);
 
 export const PrimaryBar = '#377275';
 export const SecondaryBar = '#b54f5e';
 export const TertiaryBar = '#368a36';
 export const QuaternaryBar = '#94854b';
 
+export const ColorTrackMaster = rgb(114, 55, 111);
 export const ColorTrack1 = '#a3c912';
 export const ColorTrack2 = '#fd6f0e';
 export const ColorTrack3 = '#15a5ca';
