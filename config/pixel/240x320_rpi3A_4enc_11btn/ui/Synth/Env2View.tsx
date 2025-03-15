@@ -3,8 +3,8 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
-import { ColorTrack4, encTopLeft, encTopRight, SynthTrack } from '../constants';
-import { topLeftKnob, topRightKnob } from '../constantsValue';
+import { ColorTrack4, encBottomLeft, encTopLeft, encTopRight, SynthTrack } from '../constants';
+import { bottomLeftKnob, topLeftKnob, topRightKnob } from '../constantsValue';
 import { TextGridSynth } from './TextGridSynth';
 
 export type Props = {
@@ -30,13 +30,14 @@ export function SynthEnv2View({ name }: Props) {
                 color="primary"
                 track={SynthTrack}
             />
-            {/* <KnobValue
-                            audioPlugin="Synth" param="FREQUENCY_MOD"
-                            bounds={bottomLeftKnob}
-                            encoderId={encBottomLeft}
-                            color="quaternary"
-                            track={SynthTrack}
-                        /> */}
+            <KnobValue
+                audioPlugin="Synth"
+                param="FREQUENCY_MOD"
+                bounds={bottomLeftKnob}
+                encoderId={encBottomLeft}
+                color="quaternary"
+                track={SynthTrack}
+            />
             {/* <KnobValue
                             audioPlugin="Synth" param="OSC_MOD"
                             bounds={bottomRightKnob}
@@ -45,7 +46,7 @@ export function SynthEnv2View({ name }: Props) {
                             track={SynthTrack}
                         /> */}
 
-            <TextGridSynth selected={'Env2'} viewName={name} />
+            <TextGridSynth selected={'Mod.'} viewName={name} />
             <Common selected={'Synth'} track={SynthTrack} selectedBackground={ColorTrack4} />
         </View>
     );
