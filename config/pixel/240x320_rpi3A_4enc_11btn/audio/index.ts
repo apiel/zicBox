@@ -1,5 +1,12 @@
 import { audioPlugin } from '@/libs/audio';
-import { BassTrack, Drum23Track, PercTrack, SampleTrack, SynthTrack } from '../constants';
+import {
+    BassTrack,
+    Drum23Track,
+    PercTrack,
+    Synth1Track,
+    Synth2Track,
+    Synth3Track,
+} from '../constants';
 
 export const cutoffStringFormat = '%d%% %d%%';
 export const maxVariation = 16;
@@ -17,6 +24,36 @@ const drum23Track = {
     ],
 };
 
+const synth1Track = {
+    id: Synth1Track,
+    plugins: [
+        audioPlugin('SynthWavetable', { alias: 'Synth1' }),
+        audioPlugin('Sequencer'),
+        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
+        audioPlugin('SerializeTrack', { filename: 'synth1', maxVariation, workspaceFolder }),
+    ],
+};
+
+const synth2Track = {
+    id: Synth2Track,
+    plugins: [
+        audioPlugin('SynthWavetable', { alias: 'Synth2' }),
+        audioPlugin('Sequencer'),
+        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
+        audioPlugin('SerializeTrack', { filename: 'synth2', maxVariation, workspaceFolder }),
+    ],
+};
+
+const synth3Track = {
+    id: Synth3Track,
+    plugins: [
+        audioPlugin('SynthWavetable', { alias: 'Synth3' }),
+        audioPlugin('Sequencer'),
+        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
+        audioPlugin('SerializeTrack', { filename: 'synth3', maxVariation, workspaceFolder }),
+    ],
+};
+
 const bassTrack = {
     id: BassTrack,
     plugins: [
@@ -24,36 +61,6 @@ const bassTrack = {
         audioPlugin('Sequencer'),
         audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
         audioPlugin('SerializeTrack', { filename: 'bass', maxVariation, workspaceFolder }),
-    ],
-};
-
-// const fm1Track = {
-//     id: Fm1Track,
-//     plugins: [
-//         audioPlugin('SynthFmDrum', { alias: 'FmDrum' }),
-//         audioPlugin('Sequencer'),
-//         audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
-//         audioPlugin('SerializeTrack', { filename: 'fmDrum', maxVariation, workspaceFolder }),
-//     ],
-// };
-
-const synthTrack = {
-    id: SynthTrack,
-    plugins: [
-        audioPlugin('SynthWavetable', { alias: 'Synth' }),
-        audioPlugin('Sequencer'),
-        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
-        audioPlugin('SerializeTrack', { filename: 'synth', maxVariation, workspaceFolder }),
-    ],
-};
-
-const sampleTrack = {
-    id: SampleTrack,
-    plugins: [
-        audioPlugin('SampleSequencer'),
-        audioPlugin('Sequencer'),
-        audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
-        audioPlugin('SerializeTrack', { filename: 'sampleSeq', maxVariation, workspaceFolder }),
     ],
 };
 
@@ -79,6 +86,6 @@ const masterTrack = {
 };
 
 export const audio = {
-    tracks: [drum23Track, bassTrack, synthTrack, sampleTrack, percTrack, masterTrack],
+    tracks: [drum23Track, synth1Track, synth2Track, synth3Track, bassTrack, percTrack, masterTrack],
     autoSave: 500,
 };

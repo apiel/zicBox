@@ -1,6 +1,6 @@
 export const Drum23Track = 1;
-export const BassTrack = 2;
-export const Fm1Track = 3;
-export const SynthTrack = 4;
-export const SampleTrack = 5;
-export const PercTrack = 6;
+export const Synth1Track = 4;
+export const Synth2Track = 4;
+export const Synth3Track = 4;
+export const PercTrack = 5;
+export const BassTrack = 6;

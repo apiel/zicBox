@@ -5,7 +5,17 @@ import { BassFxView } from './Bass/FxView';
 import { BassSeqView } from './Bass/SeqView';
 import { BassWaveformView } from './Bass/WaveformView';
 import { ClipsView } from './clipsView/ClipsView';
-import { ScreenHeight, ScreenWidth, W1_2 } from './constants';
+import {
+    ColorTrack2,
+    ColorTrack3,
+    ColorTrack4,
+    ScreenHeight,
+    ScreenWidth,
+    Synth1Track,
+    Synth2Track,
+    Synth3Track,
+    W1_2,
+} from './constants';
 import { AmpView } from './Drum23/AmpView';
 import { ClickView } from './Drum23/ClickView';
 import { DistortionView } from './Drum23/DistortionView';
@@ -23,10 +33,6 @@ import { PercNoiseView } from './Perc/PercNoiseView';
 import { PercView } from './Perc/PercView';
 import { PercSeqView } from './Perc/SeqView';
 import { SampleEditorView } from './Sample/SampleEditorView';
-import { SynthEnv1View } from './Synth/Env1View';
-import { SynthEnv2View } from './Synth/Env2View';
-import { SynthFilterView } from './Synth/FilterView';
-import { SynthFxView } from './Synth/FxView';
 import { SynthView } from './Synth/SynthView';
 
 const halfHeight = ScreenHeight / 2;
@@ -57,6 +63,10 @@ export const ui = {
             <ClickView name="Click" />
             <Drum23SeqView name="Sequencer" />
 
+            <SynthView name="Synth1" track={Synth1Track} synthName="Synth1" color={ColorTrack2} />
+            <SynthView name="Synth2" track={Synth2Track} synthName="Synth2" color={ColorTrack3} />
+            <SynthView name="Synth3" track={Synth3Track} synthName="Synth3" color={ColorTrack4} />
+
             <SampleEditorView name="Sample" />
 
             <BassView name="Bass" />
@@ -76,12 +86,6 @@ export const ui = {
             <PercNoiseView name="PercNoise" />
             <PercNoise2View name="PercNoise2" />
             <PercModView name="PercMod" />
-
-            <SynthView name="Synth" />
-            <SynthFxView name="SynthFx" />
-            <SynthFilterView name="SynthFilter" />
-            <SynthEnv1View name="SynthEnv1" />
-            <SynthEnv2View name="SynthEnv2" />
 
             <MenuView name="Menu" />
             <CreateWorkspaceView name="CreateWorkspace" />

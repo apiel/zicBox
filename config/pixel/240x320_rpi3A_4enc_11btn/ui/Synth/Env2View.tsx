@@ -3,51 +3,54 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
-import { ColorTrack4, encBottomLeft, encTopLeft, encTopRight, SynthTrack } from '../constants';
+import { encBottomLeft, encTopLeft, encTopRight } from '../constants';
 import { bottomLeftKnob, topLeftKnob, topRightKnob } from '../constantsValue';
 import { TextGridSynth } from './TextGridSynth';
 
 export type Props = {
     name: string;
+    track: number;
+    synthName: string;
+    color: string;
 };
 
-export function SynthEnv2View({ name }: Props) {
+export function SynthEnv2View({ name, track, synthName, color }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                audioPlugin="Synth"
+                audioPlugin={synthName}
                 param="CUTOFF_MOD"
                 bounds={topLeftKnob}
                 encoderId={encTopLeft}
                 color="tertiary"
-                track={SynthTrack}
+                track={track}
             />
             <KnobValue
-                audioPlugin="Synth"
+                audioPlugin={synthName}
                 param="RESONANCE_MOD"
                 bounds={topRightKnob}
                 encoderId={encTopRight}
                 color="primary"
-                track={SynthTrack}
+                track={track}
             />
             <KnobValue
-                audioPlugin="Synth"
+                audioPlugin={synthName}
                 param="FREQUENCY_MOD"
                 bounds={bottomLeftKnob}
                 encoderId={encBottomLeft}
                 color="quaternary"
-                track={SynthTrack}
+                track={track}
             />
             {/* <KnobValue
-                            audioPlugin="Synth" param="OSC_MOD"
+                            audioPlugin={synthName} param="OSC_MOD"
                             bounds={bottomRightKnob}
                             encoderId={encBottomRight}
                             color="secondary"
-                            track={SynthTrack}
+                            track={track}
                         /> */}
 
-            <TextGridSynth selected={'Mod.'} viewName={name} />
-            <Common selected={'Synth'} track={SynthTrack} selectedBackground={ColorTrack4} />
+            <TextGridSynth selected={'Mod.'} viewName={name} synthName={synthName} color={color} />
+            <Common track={track} selectedBackground={color} selected={synthName} />
         </View>
     );
 }
