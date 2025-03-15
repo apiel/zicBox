@@ -40,18 +40,18 @@ protected:
 
     static constexpr int ReverbVoiceCount = 8;
     struct ReverbVoice {
-        uint64_t index; // voice sample postion to define delay time
+        uint64_t index; // Voice sample position for delay time
         float amplitude;
         float feedback;
     } voices[ReverbVoiceCount] = {
-        { 10, 0.05f, 0.9f },
-        { 20, 0.10f, 0.85f },
-        { 30, 0.15f, 0.8f },
-        { 40, 0.20f, 0.75f },
-        { 50, 0.25f, 0.7f },
-        { 60, 0.30f, 0.65f },
-        { 70, 0.35f, 0.6f },
-        { 80, 0.40f, 0.55f },
+        { 120, 0.05f, 0.9f },
+        { 240, 0.10f, 0.85f },
+        { 360, 0.15f, 0.8f },
+        { 480, 0.20f, 0.75f },
+        { 600, 0.25f, 0.7f },
+        { 720, 0.30f, 0.65f },
+        { 840, 0.35f, 0.6f },
+        { 960, 0.40f, 0.55f },
     };
     float fxReverb2(float signal)
     {
@@ -59,24 +59,36 @@ protected:
         if (reverbAmount == 0.0f) {
             return signal;
         }
-
+    
+        // Store input signal in buffer
         reverbBuffer[reverbIndex] = signal;
-        reverbIndex++;
-        if (reverbIndex >= REVERB_BUFFER_SIZE) {
-            reverbIndex = 0;
-        }
-
         float reverbOut = 0.0f;
+    
+        // Process reverb voices
         for (uint8_t i = 0; i < ReverbVoiceCount; i++) {
             ReverbVoice& voice = voices[i];
-            if (voice.index++ >= REVERB_BUFFER_SIZE) {
-                voice.index = 0;
-            }
-            reverbOut += reverbBuffer[voice.index] * voice.amplitude;
-            reverbBuffer[reverbIndex] += reverbOut * voice.feedback;
+    
+            // Get delayed sample
+            int readIndex = (reverbIndex + REVERB_BUFFER_SIZE - voice.index) % REVERB_BUFFER_SIZE;
+            float delayedSample = reverbBuffer[readIndex];
+    
+            // Apply dynamic scaling based on `reverbAmount`
+            float voiceGain = voice.amplitude * (0.5f + 0.5f * reverbAmount);  // Makes amplitude scale with `reverbAmount`
+            float voiceFeedback = voice.feedback * reverbAmount;  // Reduces feedback at lower levels
+    
+            // Accumulate reverb signal
+            reverbOut += delayedSample * voiceGain;
+    
+            // Apply feedback into buffer
+            reverbBuffer[reverbIndex] += delayedSample * voiceFeedback;
         }
-
-        return signal + reverbOut * reverbAmount;
+    
+        // Advance buffer index
+        reverbIndex = (reverbIndex + 1) % REVERB_BUFFER_SIZE;
+    
+        // Apply wet/dry mix with normalization
+        float mix = reverbAmount * 0.8f;  // More aggressive mixing at high values
+        return signal * (1.0f - mix) + reverbOut * mix;
     }
 
     float tanhLookup(float x)
