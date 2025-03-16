@@ -10,6 +10,7 @@ import {
     btn4,
     btn5,
     btn6,
+    btn7,
     btn8,
     btnDown,
     btnShift,
@@ -64,10 +65,11 @@ export function Common({
                     { key: btn4, action: 'setView:Synth3' },
 
                     { key: btn5, action: `setView:Perc` },
-                    { key: btn6, action: `setView:Bass` },
-                    { key: btn8, action: `setView:Clips` },
+                    { key: btn6, action: `setView:Sample1` },
+                    { key: btn7, action: `setView:Sample2` },
+                    { key: btn8, action: `setView:Sample3` },
 
-                    { key: btnUp, action: 'setView:Menu' },
+                    { key: btnUp, action: 'setView:Clips' },
                     { key: btnDown, action: 'playPause' },
                     { key: btnShift, action: 'contextToggle:254:1:0' },
                 ]}

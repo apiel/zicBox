@@ -1,8 +1,10 @@
 import { audioPlugin } from '@/libs/audio';
 import {
-    BassTrack,
     Drum23Track,
     PercTrack,
+    Sample1Track,
+    Sample2Track,
+    Sample3Track,
     Synth1Track,
     Synth2Track,
     Synth3Track,
@@ -64,20 +66,40 @@ const percTrack = {
     ],
 };
 
-const bassTrack = {
-    id: BassTrack,
+const sample1Track = {
+    id: Sample1Track,
     plugins: [
-        audioPlugin('SynthBass', { alias: 'Bass' }),
+        audioPlugin('SynthMonoSample', { alias: 'Sample1' }),
         audioPlugin('Sequencer'),
-        audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
-        audioPlugin('SerializeTrack', { filename: 'bass', maxVariation, workspaceFolder }),
+        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
+        audioPlugin('SerializeTrack', { filename: 'sample1', maxVariation, workspaceFolder }),
+    ],
+};
+
+const sample2Track = {
+    id: Sample2Track,
+    plugins: [
+        audioPlugin('SynthMonoSample', { alias: 'Sample2' }),
+        audioPlugin('Sequencer'),
+        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
+        audioPlugin('SerializeTrack', { filename: 'sample2', maxVariation, workspaceFolder }),
+    ],
+};
+
+const sample3Track = {
+    id: Sample3Track,
+    plugins: [
+        audioPlugin('SynthMonoSample', { alias: 'Sample3' }),
+        audioPlugin('Sequencer'),
+        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
+        audioPlugin('SerializeTrack', { filename: 'sample3', maxVariation, workspaceFolder }),
     ],
 };
 
 const masterTrack = {
     id: 0,
     plugins: [
-        audioPlugin('Mixer6', { alias: 'Mixer' }),
+        audioPlugin('Mixer8', { alias: 'Mixer' }),
         audioPlugin('EffectGainVolume', { alias: 'Volume' }),
         audioPlugin('AudioOutputPulse', { alias: 'AudioOutput' }),
         audioPlugin('SerializeTrack', { filename: 'master', maxVariation, workspaceFolder }),
@@ -86,6 +108,16 @@ const masterTrack = {
 };
 
 export const audio = {
-    tracks: [drum23Track, synth1Track, synth2Track, synth3Track, percTrack, bassTrack, masterTrack],
+    tracks: [
+        drum23Track,
+        synth1Track,
+        synth2Track,
+        synth3Track,
+        percTrack,
+        sample1Track,
+        sample2Track,
+        sample3Track,
+        masterTrack,
+    ],
     autoSave: 500,
 };
