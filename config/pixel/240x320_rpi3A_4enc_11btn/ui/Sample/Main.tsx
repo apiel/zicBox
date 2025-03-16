@@ -26,7 +26,7 @@ export function MainView({ name, track, synthName, color }: Props) {
                 track={track}
             />
             <KnobValue
-                audioPlugin={synthName}
+                audioPlugin="Filter"
                 param="FILTER_TYPE"
                 bounds={topRightKnob}
                 encoderId={encTopRight}
@@ -34,7 +34,7 @@ export function MainView({ name, track, synthName, color }: Props) {
                 track={track}
             />
             <KnobValue
-                audioPlugin={synthName}
+                audioPlugin="Filter"
                 param="FILTER_CUTOFF"
                 bounds={bottomLeftKnob}
                 encoderId={encBottomLeft}
@@ -42,7 +42,7 @@ export function MainView({ name, track, synthName, color }: Props) {
                 track={track}
             />
             <KnobValue
-                audioPlugin={synthName}
+                audioPlugin="Filter"
                 param="FILTER_RESONANCE"
                 bounds={bottomRightKnob}
                 encoderId={encBottomRight}

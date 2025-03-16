@@ -71,6 +71,7 @@ const sample1Track = {
     plugins: [
         audioPlugin('SynthMonoSample', { alias: 'Sample1' }),
         audioPlugin('Sequencer'),
+        audioPlugin('EffectFilter', { alias: 'Filter' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
         audioPlugin('SerializeTrack', { filename: 'sample1', maxVariation, workspaceFolder }),
     ],
@@ -81,6 +82,7 @@ const sample2Track = {
     plugins: [
         audioPlugin('SynthMonoSample', { alias: 'Sample2' }),
         audioPlugin('Sequencer'),
+        audioPlugin('EffectFilter', { alias: 'Filter' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
         audioPlugin('SerializeTrack', { filename: 'sample2', maxVariation, workspaceFolder }),
     ],
@@ -91,6 +93,7 @@ const sample3Track = {
     plugins: [
         audioPlugin('SynthMonoSample', { alias: 'Sample3' }),
         audioPlugin('Sequencer'),
+        audioPlugin('EffectFilter', { alias: 'Filter' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
         audioPlugin('SerializeTrack', { filename: 'sample3', maxVariation, workspaceFolder }),
     ],
