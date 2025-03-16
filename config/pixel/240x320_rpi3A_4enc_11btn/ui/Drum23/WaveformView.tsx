@@ -79,7 +79,7 @@ export function WaveformView({ name, track, synthName, color }: Props) {
                 track={track}
             />
             <TextGridDrum23 selected={'Wave'} color={color} synthName={synthName} />
-            <Common selected={name} track={track} selectedBackground={color} />
+            <Common selected={synthName} track={track} selectedBackground={color} />
         </View>
     );
 }

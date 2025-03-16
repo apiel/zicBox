@@ -36,7 +36,7 @@ export function SeqView({ name, track, synthName, color, textGrid }: Props) {
 
             {textGrid}
             <Common
-                selected={name}
+                selected={synthName}
                 hideSequencer
                 track={track}
                 selectedBackground={color}

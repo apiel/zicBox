@@ -52,7 +52,7 @@ export function ClickView({ name, track, synthName, color }: Props) {
             />
 
             <TextGridDrum23 selected={'Click'} color={color} synthName={synthName} />
-            <Common selected={name} track={track} selectedBackground={color} />
+            <Common selected={synthName} track={track} selectedBackground={color} />
         </View>
     );
 }
