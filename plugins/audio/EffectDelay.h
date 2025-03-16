@@ -39,7 +39,7 @@ protected:
             }
         }
 
-        return in + filter.sample(delay);
+        return in + filter.process(delay);
     }
 
     /*md **Values**: */
@@ -137,11 +137,11 @@ public:
         , filter(props, config)
     {
         /*md - `CUTOFF` to set cutoff on delay buffer.*/
-        val(&filter.cutoff);
+        val(&filter.filterCutoff);
         /*md - `RESONANCE` to set resonance on delay buffer.*/
-        val(&filter.resonance);
-        /*md - `MODE` to set filter mode.*/
-        val(&filter.mode_value);
+        val(&filter.filterResonance);
+        /*md - `FILTER_TYPE` to set filter mode.*/
+        val(&filter.filterType);
 
         initValues();
         initVoice(0, 100.0f, 60.0f, 0.0f);
@@ -151,7 +151,8 @@ public:
         initVoice(4, 500.0f, 20.0f, 0.0f);
         setVoiceEdit(voiceEdit.get());
 
-        filter.setResonance(0.95f).setMode(EffectFilter::Mode::HPF);
+        filter.filterResonance.set(0.95f);
+        filter.filterType.set(EffectFilter::FilterType::LP);
 
         // // make reverb
         // initVoice(0, 0.05f, 0.9f, 0.0f);
