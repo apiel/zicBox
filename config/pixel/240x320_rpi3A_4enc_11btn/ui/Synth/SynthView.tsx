@@ -2,10 +2,10 @@ import * as React from '@/libs/react';
 import { SeqView } from '../components/SeqView';
 import { Env1View } from './Env1View';
 import { Env2View } from './Env2View';
-import { FilterView } from './FilterView';
 import { FxView } from './FxView';
 import { MainView } from './Main';
 import { ViewSelector } from './ViewSelector';
+import { WaveView } from './Wave';
 
 export type Props = {
     track: number;
@@ -23,8 +23,8 @@ export function SynthView({ track, synthName, color }: Props) {
                 synthName={synthName}
                 color={color}
             />
-            <FilterView
-                name={`${synthName}Filter`}
+            <WaveView
+                name={`${synthName}Wave`}
                 track={track}
                 synthName={synthName}
                 color={color}
