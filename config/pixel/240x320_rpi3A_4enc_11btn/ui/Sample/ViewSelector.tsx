@@ -39,16 +39,22 @@ export function ViewSelector({
             <TextGrid
                 bounds={KeyInfoPosition}
                 selectedBackground={color}
-                rows={['Main Wave Env Mod.', 'Seq. Fx Lfo Mod']}
+                rows={['Main Wave Browse Mod.', 'Seq. Fx Lfo Mod']}
                 keys={[
                     { key: btn1, action: `setView:${synthName}` },
-                    { key: btn2, action: `setView:${synthName}Wave` },
+                    {
+                        key: btn2,
+                        action:
+                            viewName === `${synthName}Wave`
+                                ? `setView:${synthName}Browse`
+                                : `setView:${synthName}Wave`,
+                    },
                     {
                         key: btn3,
                         action:
-                            viewName === `${synthName}Env1`
-                                ? `setView:${synthName}Env2`
-                                : `setView:${synthName}Env1`,
+                            viewName === `${synthName}Browse`
+                                ? `setView:${synthName}Wave`
+                                : `setView:${synthName}Browse`,
                     },
                     {
                         key: btn4,
