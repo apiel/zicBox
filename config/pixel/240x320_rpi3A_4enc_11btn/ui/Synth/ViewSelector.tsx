@@ -38,7 +38,10 @@ export function ViewSelector({
             <TextGrid
                 bounds={KeyInfoPosition}
                 selectedBackground={color}
-                rows={['Main Env/Fx Lfo Wave', 'Seq. Mod. Mod &icon::musicNote::pixelated']}
+                rows={[
+                    'Main Env/Fx Lfo Wave',
+                    `Seq. Mod. Mod ${selected === 'Seq.' ? '___' : '&icon::musicNote::pixelated'}`,
+                ]}
                 keys={[
                     { key: btn1, action: `setView:${synthName}` },
                     {
@@ -72,7 +75,7 @@ export function ViewSelector({
                                 ? `setView:${synthName}Lfo1`
                                 : `setView:${synthName}Lfo2`,
                     },
-                    { key: btn8, action: `noteOn:${synthName}:60` },
+                    ...(selected === 'Seq.' ? [] : [{ key: btn8, action: `noteOn:${synthName}:60` }]),
 
                     { key: btnUp, action: 'contextToggle:253:1:0' }, // when not used, let's play noteOn...
                     { key: btnDown, action: 'contextToggleOnRelease:252:1:0' },

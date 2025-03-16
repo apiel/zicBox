@@ -40,7 +40,9 @@ export function ViewSelector({
                 selectedBackground={color}
                 rows={[
                     'Main Fx Wave Browse',
-                    'Seq. &icon::musicNote::pixelated &icon::musicNote::pixelated &icon::musicNote::pixelated',
+                    `Seq. &icon::musicNote::pixelated &icon::musicNote::pixelated ${
+                        selected === 'Seq.' ? '___' : '&icon::musicNote::pixelated'
+                    }`,
                 ]}
                 keys={[
                     { key: btn1, action: `setView:${synthName}` },
@@ -63,7 +65,7 @@ export function ViewSelector({
                     { key: btn5, action: `setView:${synthName}Seq` },
                     { key: btn6, action: `noteOn:${synthName}:72` },
                     { key: btn7, action: `noteOn:${synthName}:48` },
-                    { key: btn8, action: `noteOn:${synthName}:60` },
+                    ...(selected === 'Seq.' ? [] : [{ key: btn8, action: `noteOn:${synthName}:60` }]),
 
                     { key: btnUp, action: 'contextToggle:253:1:0' }, // when not used, let's play noteOn...
                     { key: btnDown, action: 'contextToggleOnRelease:252:1:0' },

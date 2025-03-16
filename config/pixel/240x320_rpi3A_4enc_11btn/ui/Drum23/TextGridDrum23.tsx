@@ -39,7 +39,7 @@ export function TextGridDrum23({
                 selectedBackground={color}
                 rows={[
                     'Main Fx Wave Freq',
-                    'Seq. Amp Click &icon::musicNote::pixelated',
+                    `Seq. Amp Click ${selected === 'Seq.' ? '___' : '&icon::musicNote::pixelated'}`,
                 ]}
                 keys={[
                     { key: btn1, action: `setView:${synthName}` },
@@ -50,7 +50,7 @@ export function TextGridDrum23({
                     { key: btn5, action: `setView:${synthName}Sequencer` },
                     { key: btn6, action: `setView:${synthName}Amplitude` },
                     { key: btn7, action: `setView:${synthName}Click` },
-                    { key: btn8, action: `noteOn:${synthName}:60` }, // when not used, let's play noteOn...
+                    ...(selected === 'Seq.' ? [] : [{ key: btn8, action: `noteOn:${synthName}:60` }]),
 
                     { key: btnUp, action: 'contextToggle:253:1:0' }, // when not used, let's play noteOn...
                     { key: btnDown, action: 'contextToggleOnRelease:252:1:0' },
