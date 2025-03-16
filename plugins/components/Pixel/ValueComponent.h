@@ -23,7 +23,7 @@ protected:
 
     int valueFontSize = 12;
     int labelFontSize = 8;
-    int unitFontSize = 8;
+    int unitFontSize = 12;
     int maxFontSize = 8;
     void* fontValue = NULL;
     void* fontLabel = NULL;
@@ -242,7 +242,7 @@ public:
                 x = showLabel ? draw.text({ x, valueY }, getValStr(), valueFontSize, { valueColor, .font = fontValue, .fontHeight = fontHeightValue })
                               : draw.textCentered({ x, valueY }, getValStr(), valueFontSize, { valueColor, .font = fontValue, .maxWidth = size.w - 4, .fontHeight = fontHeightValue });
                 if (showUnit && val->props().unit.length() > 0) {
-                    draw.text({ x + 2, unitY }, val->props().unit, unitFontSize, { unitColor, .font = fontLabel });
+                    draw.text({ x + 2, unitY }, val->props().unit, unitFontSize, { unitColor });
                 }
             }
         }

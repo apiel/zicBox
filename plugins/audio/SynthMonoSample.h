@@ -116,6 +116,9 @@ public:
         loopEnd = p.val.pct() * sampleBuffer.count + sustainPosition.pct() * sampleBuffer.count;
         // logDebug("- LOOP_LENGTH: %d", loopEnd);
         sustainRelease.set(sustainRelease.get());
+        if (sustainLength.get() == 0) {
+            sustainedNote = 0;
+        }
     });
 
     bool showNumberOfLoopsInUnit = true;
@@ -141,7 +144,7 @@ public:
 
         //md **Config**:
         auto& json = config.json;
-        
+
         //md - `"samplesFolder": "samples"` set samples folder path.
         if (json.contains("samplesFolder")) {
             fileBrowser.openFolder(json["samplesFolder"].get<std::string>());
@@ -179,7 +182,9 @@ public:
         index = indexStart;
         stepIncrement = getSampleStep(note);
         velocity = _velocity;
-        sustainedNote = note;
+        if (sustainLength.get() > 0.0f) {
+            sustainedNote = note;
+        }
     }
 
     void noteOff(uint8_t note, float velocity) override
