@@ -11,7 +11,6 @@ export function TextGrid({
     rows,
     keys,
     contextValue,
-    contextValue2,
     selectedBackground,
     bgColor = 'background',
 }: {
@@ -19,8 +18,7 @@ export function TextGrid({
     selected?: string;
     rows: string[];
     keys?: { key: string; action: string; action2?: string }[];
-    contextValue?: number;
-    contextValue2?: number;
+    contextValue?: number[];
     selectedBackground?: string;
     bgColor?: string;
 }) {
@@ -32,19 +30,13 @@ export function TextGrid({
 
     const context: VisibilityContext[] = [];
     if (contextValue !== undefined) {
-        context.push({
-            index: 254,
-            condition: 'SHOW_WHEN',
-            value: contextValue,
-        });
-    }
-
-    if (contextValue2 !== undefined) {
-        context.push({
-            index: 253,
-            condition: 'SHOW_WHEN',
-            value: contextValue2,
-        });
+        for (let i = 0; i < contextValue.length; i++) {
+            context.push({
+                index: 254 - i,
+                condition: 'SHOW_WHEN',
+                value: contextValue[i],
+            });   
+        }
     }
 
     return (
