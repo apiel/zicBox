@@ -85,23 +85,44 @@ export function Common({
             />
             <TextGrid
                 bounds={KeyInfoPosition}
-                rows={['A4 C5 D5 E5', 'C4 D4 E4 G4']}
+                // C major pentatonic scale
+                // rows={['A4 C5 D5 E5', 'C4 D4 E4 G4']}
+                // keys={[
+                //     { key: btn1, action: `noteOn:${synthName}:69` },
+                //     { key: btn2, action: `noteOn:${synthName}:72` },
+                //     { key: btn3, action: `noteOn:${synthName}:74` },
+                //     { key: btn4, action: `noteOn:${synthName}:76` },
+
+                //     { key: btn5, action: `noteOn:${synthName}:60` },
+                //     { key: btn6, action: `noteOn:${synthName}:62` },
+                //     { key: btn7, action: `noteOn:${synthName}:64` },
+                //     { key: btn8, action: `noteOn:${synthName}:67` },
+
+                //     { key: btnUp, action: `noteOn:${synthName}:60` },
+                //     { key: btnDown, action: 'contextToggle:253:1:0' },
+                //     // { key: btnDown, action: 'debug:yoyoyoyo' },
+                //     { key: btnShift, action: 'contextToggle:254:1:0' },
+                // ]}
+
+                // C Major scale
+                rows={['G4 A4 B4 C5', 'C4 D4 E4 F4']}
                 keys={[
-                    { key: btn1, action: `noteOn:${synthName}:69` },
-                    { key: btn2, action: `noteOn:${synthName}:72` },
-                    { key: btn3, action: `noteOn:${synthName}:74` },
-                    { key: btn4, action: `noteOn:${synthName}:76` },
+                    { key: btn1, action: `noteOn:${synthName}:67` },
+                    { key: btn2, action: `noteOn:${synthName}:69` },
+                    { key: btn3, action: `noteOn:${synthName}:71` },
+                    { key: btn4, action: `noteOn:${synthName}:72` },
 
                     { key: btn5, action: `noteOn:${synthName}:60` },
                     { key: btn6, action: `noteOn:${synthName}:62` },
                     { key: btn7, action: `noteOn:${synthName}:64` },
-                    { key: btn8, action: `noteOn:${synthName}:67` },
+                    { key: btn8, action: `noteOn:${synthName}:65` },
 
                     { key: btnUp, action: `noteOn:${synthName}:60` },
                     { key: btnDown, action: 'contextToggle:253:1:0' },
                     // { key: btnDown, action: 'debug:yoyoyoyo' },
                     { key: btnShift, action: 'contextToggle:254:1:0' },
                 ]}
+
                 selected={selected}
                 contextValue={0}
                 contextValue2={1}
