@@ -1,4 +1,5 @@
 import * as React from '@/libs/react';
+import { FxView } from './FxView';
 import { MainView } from './Main';
 import { WaveView } from './Wave';
 
@@ -18,7 +19,7 @@ export function SampleView({ track, synthName, color }: Props) {
                 synthName={synthName}
                 color={color}
             />
-            {/* <FxView name={`${synthName}Fx`} track={track} synthName={synthName} color={color} /> */}
+            <FxView name={`${synthName}Fx`} track={track} synthName={synthName} color={color} />
             {/* <Env1View name={`${synthName}Env1`} track={track} synthName={synthName} color={color} /> */}
             {/* <Env2View name={`${synthName}Env2`} track={track} synthName={synthName} color={color} /> */}
             {/* <SeqView
