@@ -56,15 +56,15 @@ export function Common({
 
             <TextGrid
                 bounds={KeyInfoPosition}
-                rows={[`${Kick} ${Synth1} ${Synth2} ${Synth3}`, `${Bass} ${Perc} Nix ${Clips}`]}
+                rows={[`${Kick} ${Synth1} ${Synth2} ${Synth3}`, `${Perc} ${Bass} Nix ${Clips}`]}
                 keys={[
                     { key: btn1, action: 'setView:Kick' },
                     { key: btn2, action: 'setView:Synth1' },
                     { key: btn3, action: 'setView:Synth2' },
                     { key: btn4, action: 'setView:Synth3' },
 
-                    { key: btn5, action: `setView:Bass` },
-                    { key: btn6, action: `setView:Perc` },
+                    { key: btn5, action: `setView:Perc` },
+                    { key: btn6, action: `setView:Bass` },
                     { key: btn8, action: `setView:Clips` },
 
                     { key: btnUp, action: 'setView:Menu' },

@@ -56,23 +56,18 @@ export const ui = {
             <SynthView track={Synth2Track} synthName="Synth2" color={ColorTrack3} />
             <SynthView track={Synth3Track} synthName="Synth3" color={ColorTrack4} />
 
-            <BassView name="Bass" />
-            <BassFxView name="BassFx" />
-            <BassEnvView name="BassEnv" />
-            <BassSeqView name="BassSeq" />
-            <BassWaveformView name="BassWaveform" />
-
-            {/* <Fm1View name="Fm1" /> */}
-            {/* <Fm1FxView name="Fm1Fx" /> */}
-            {/* <Fm1EnvView name="Fm1Env" /> */}
-            {/* <Fm1SeqView name="Fm1Seq" /> */}
-
             <PercView name="Perc" />
             <PercFxView name="PercFx" />
             <PercSeqView name="PercSeq" />
             <PercNoiseView name="PercNoise" />
             <PercNoise2View name="PercNoise2" />
             <PercModView name="PercMod" />
+
+            <BassView name="Bass" />
+            <BassFxView name="BassFx" />
+            <BassEnvView name="BassEnv" />
+            <BassSeqView name="BassSeq" />
+            <BassWaveformView name="BassWaveform" />
 
             <MenuView name="Menu" />
             <CreateWorkspaceView name="CreateWorkspace" />
