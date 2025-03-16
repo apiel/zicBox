@@ -36,7 +36,6 @@ export function WaveView({ name, track, synthName, color }: Props) {
                 bounds={graphBottomValues}
                 audioPlugin={synthName}
                 dataId="WAVEFORM"
-                renderValuesOnTop={false}
                 values={['WAVE', 'WAVE_EDIT']}
                 track={track}
             />

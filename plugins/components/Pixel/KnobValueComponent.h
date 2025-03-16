@@ -226,10 +226,10 @@ public:
         /*md md_config:KnobValue */
         nlohmann::json& config = props.config;
 
-        /// The audio plugin to get control on. */
+        /// The audio plugin to get control on.
         AudioPlugin* plugin = getPluginPtr(config, "audioPlugin", track); //eg: "audio_plugin_name"
 
-        /// The audio plugin key parameter to get control on. */
+        /// The audio plugin key parameter to get control on.
         std::string param = getConfig(config, "param"); //eg: "parameter_name"
 
         value = watch(plugin->getValue(param));
@@ -237,7 +237,7 @@ public:
             valueFloatPrecision = value->props().floatingPoint;
         }
 
-        /// The encoder id that will interract with this component. */
+        /// The encoder id that will interract with this component.
         /*md   encoderId={0} */
         encoderId = config.value("encoderId", encoderId);
 
