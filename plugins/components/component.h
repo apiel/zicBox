@@ -94,8 +94,10 @@ public:
 
     virtual void onKey(uint16_t id, int key, int8_t state, unsigned long now) override
     {
-        // printf("[%s]\n", this->id.c_str());
-        keypadLayout.onKey(id, key, state, now);
+        if (isVisible()) {
+            // printf("[%s]\n", this->nameUID.c_str());
+            keypadLayout.onKey(id, key, state, now);
+        }
     }
 
     virtual void resize() override

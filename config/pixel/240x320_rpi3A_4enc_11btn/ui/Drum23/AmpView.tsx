@@ -41,7 +41,7 @@ export function AmpView({ name, track, synthName, color }: Props) {
                 track={track}
             />
             <TextGridDrum23 selected={'Amp'} color={color} synthName={synthName} />
-            <Common selected={synthName} track={track} selectedBackground={color} />
+            <Common selected={synthName} track={track} selectedBackground={color} synthName={synthName} />
         </View>
     );
 }

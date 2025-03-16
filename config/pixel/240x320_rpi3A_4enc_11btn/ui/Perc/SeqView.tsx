@@ -57,6 +57,7 @@ export function PercSeqView({ name }: Props) {
                 hideSequencer
                 track={PercTrack}
                 selectedBackground={ColorTrack5}
+                synthName="Perc"
             />
         </View>
     );

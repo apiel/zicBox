@@ -269,6 +269,7 @@ public:
             uint8_t* shiftPressed = new uint8_t(atoi(strtok(NULL, ":")));
             uint8_t* shiftReleased = new uint8_t(atoi(strtok(NULL, ":")));
             return [this, indexVar, shiftPressed, shiftReleased](KeypadLayout::KeyMap& keymap) {
+                // printf("contextToggle %d %d %d %f\n", *indexVar, *shiftPressed, *shiftReleased, component->view->contextVar[*indexVar]);
                 component->setContext(*indexVar, isReleased(keymap) ? *shiftReleased : *shiftPressed);
             };
         }
@@ -281,7 +282,9 @@ public:
             uint8_t* shiftB = new uint8_t(atoi(strtok(NULL, ":")));
             return [this, indexVar, shiftA, shiftB](KeypadLayout::KeyMap& keymap) {
                 if (isReleased(keymap)) {
+                    // printf("contextToggleOnRelease %d %d %d %f\n", *indexVar, *shiftA, *shiftB, component->view->contextVar[*indexVar]);
                     component->setContext(*indexVar, component->view->contextVar[*indexVar] == *shiftA ? *shiftB : *shiftA);
+                    // printf("result: %f\n", component->view->contextVar[*indexVar]);
                 }
             };
         }
@@ -314,6 +317,18 @@ public:
                     }
                 };
             }
+        }
+
+        if (action.rfind("debug:") == 0) {
+            std::string substring = action.substr(6);
+            std::vector<char> text(substring.begin(), substring.end());
+            text.push_back('\0');
+
+            return [this, text](KeypadLayout::KeyMap& keymap) {
+                if (isReleased(keymap)) {
+                    printf(">>> keypad debug: %s\n", text.data());
+                }
+            };
         }
 
         return NULL;
