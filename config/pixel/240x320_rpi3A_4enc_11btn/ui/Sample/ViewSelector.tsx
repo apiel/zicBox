@@ -35,14 +35,14 @@ export function ViewSelector({
     return (
         <>
             {!hideTitle && <Title title={synthName} />}
-            {!hideTitle && <Rect bounds={[60, 28, 6, 6]} color={color} />}
+            {!hideTitle && <Rect bounds={[55, 28, 6, 6]} color={color} />}
             <TextGrid
                 bounds={KeyInfoPosition}
                 selectedBackground={color}
-                rows={['Main Filter Env Mod.', 'Seq. Fx Lfo Mod']}
+                rows={['Main Wave Env Mod.', 'Seq. Fx Lfo Mod']}
                 keys={[
                     { key: btn1, action: `setView:${synthName}` },
-                    { key: btn2, action: `setView:${synthName}Filter` },
+                    { key: btn2, action: `setView:${synthName}Wave` },
                     {
                         key: btn3,
                         action:

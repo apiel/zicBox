@@ -17,30 +17,10 @@ export function SynthView({ track, synthName, color }: Props) {
     return (
         <>
             <MainView name={synthName} track={track} synthName={synthName} color={color} />
-            <FxView
-                name={`${synthName}Fx`}
-                track={track}
-                synthName={synthName}
-                color={color}
-            />
-            <WaveView
-                name={`${synthName}Wave`}
-                track={track}
-                synthName={synthName}
-                color={color}
-            />
-            <Env1View
-                name={`${synthName}Env1`}
-                track={track}
-                synthName={synthName}
-                color={color}
-            />
-            <Env2View
-                name={`${synthName}Env2`}
-                track={track}
-                synthName={synthName}
-                color={color}
-            />
+            <WaveView name={`${synthName}Wave`} track={track} synthName={synthName} color={color} />
+            <FxView name={`${synthName}Fx`} track={track} synthName={synthName} color={color} />
+            <Env1View name={`${synthName}Env1`} track={track} synthName={synthName} color={color} />
+            <Env2View name={`${synthName}Env2`} track={track} synthName={synthName} color={color} />
             <SeqView
                 name={`${synthName}Seq`}
                 track={track}

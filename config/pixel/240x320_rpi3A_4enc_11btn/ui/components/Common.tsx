@@ -21,12 +21,14 @@ import {
 import { SideInfo } from './SideInfo';
 
 export const Kick = 'Kick';
-export const Bass = 'Bass';
 export const Synth1 = 'Synth1';
 export const Synth2 = 'Synth2';
 export const Synth3 = 'Synth3';
 export const Clips = 'Clips';
 export const Perc = 'Perc';
+export const Sample1 = 'Sample1';
+export const Sample2 = 'Sample2';
+export const Sample3 = 'Sample3';
 
 
 export function Common({
@@ -57,7 +59,7 @@ export function Common({
 
             <TextGrid
                 bounds={KeyInfoPosition}
-                rows={[`${Kick} ${Synth1} ${Synth2} ${Synth3}`, `${Perc} ${Bass} Nix ${Clips}`]}
+                rows={[`${Kick} ${Synth1} ${Synth2} ${Synth3}`, `${Perc} ${Sample1} ${Sample2} ${Sample3}`]}
                 keys={[
                     { key: btn1, action: 'setView:Kick' },
                     { key: btn2, action: 'setView:Synth1' },

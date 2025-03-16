@@ -51,6 +51,7 @@ export function WaveView({ name, track, synthName, color }: Props) {
                 alignLeft
                 showLabelOverValue={0}
             />
+
             <Value
                 bounds={[ScreenWidth / 2 + 2, 240, ScreenWidth / 2, 22]}
                 audioPlugin={synthName}

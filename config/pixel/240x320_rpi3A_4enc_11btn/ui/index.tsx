@@ -5,13 +5,19 @@ import {
     ColorTrack2,
     ColorTrack3,
     ColorTrack4,
+    ColorTrack6,
+    ColorTrack7,
+    ColorTrack8,
     Drum23Track,
+    Sample1Track,
+    Sample2Track,
+    Sample3Track,
     ScreenHeight,
     ScreenWidth,
     Synth1Track,
     Synth2Track,
     Synth3Track,
-    W1_2,
+    W1_2
 } from './constants';
 import { Drum23View } from './Drum23/Drum23View';
 import { CreateWorkspaceView } from './menu/CreateWorkspaceView';
@@ -23,6 +29,7 @@ import { PercNoise2View } from './Perc/PercNoise2View';
 import { PercNoiseView } from './Perc/PercNoiseView';
 import { PercView } from './Perc/PercView';
 import { PercSeqView } from './Perc/SeqView';
+import { SampleView } from './Sample/SampleView';
 import { SynthView } from './Synth/SynthView';
 
 const halfHeight = ScreenHeight / 2;
@@ -58,7 +65,9 @@ export const ui = {
             <PercNoise2View name="PercNoise2" />
             <PercModView name="PercMod" />
 
-
+            <SampleView track={Sample1Track} synthName="Sample1" color={ColorTrack6} />
+            <SampleView track={Sample2Track} synthName="Sample2" color={ColorTrack7} />
+            <SampleView track={Sample3Track} synthName="Sample3" color={ColorTrack8} />
 
             <MenuView name="Menu" />
             <CreateWorkspaceView name="CreateWorkspace" />
