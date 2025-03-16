@@ -1,6 +1,5 @@
 # Pixel basic working one
 
-- TODO add filter to mono sample
 - TODO add lfo to wavetable synth
        add freq mod curve
        add filter8      
@@ -43,6 +42,8 @@ valgrind --leak-check=full ./pixel.x86
 ## Pixel TODO
 
 - TODO mouse on raspi
+
+- TODO list value --> for sample browser, to have a list of file...
 
 - TODO drum rack
 
