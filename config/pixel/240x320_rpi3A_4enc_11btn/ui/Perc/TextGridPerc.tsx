@@ -17,7 +17,7 @@ import {
     btnShift,
     btnUp,
     ColorTrack5,
-    KeyInfoPosition
+    KeyInfoPosition,
 } from '../constants';
 
 export function TextGridPerc({ selected, viewName }: { selected: string; viewName: string }) {
@@ -28,7 +28,12 @@ export function TextGridPerc({ selected, viewName }: { selected: string; viewNam
             <TextGrid
                 bounds={KeyInfoPosition}
                 selectedBackground={ColorTrack5}
-                rows={['Main Fx Noise1 Noise2', 'Seq. Mod. &icon::musicNote::pixelated &icon::musicNote::pixelated']}
+                rows={[
+                    'Main Fx Noise1 Noise2',
+                    `Seq. Mod. &icon::musicNote::pixelated ${
+                        selected === 'Seq.' ? '___' : '&icon::musicNote::pixelated'
+                    }`,
+                ]}
                 keys={[
                     { key: btn1, action: 'setView:Perc' },
                     { key: btn2, action: 'setView:PercFx' },
@@ -38,7 +43,7 @@ export function TextGridPerc({ selected, viewName }: { selected: string; viewNam
                     { key: btn5, action: 'setView:PercSeq' },
                     { key: btn6, action: 'setView:PercMod' },
                     { key: btn7, action: 'noteOn:Perc:48' },
-                    { key: btn8, action: 'noteOn:Perc:60' },
+                    ...(selected === 'Seq.' ? [] : [{ key: btn8, action: `noteOn:Perc:60` }]),
 
                     { key: btnUp, action: 'contextToggle:253:1:0' }, // when not used, let's play noteOn...
                     { key: btnDown, action: 'contextToggleOnRelease:252:1:0' },

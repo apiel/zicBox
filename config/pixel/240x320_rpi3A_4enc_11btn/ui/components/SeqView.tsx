@@ -4,8 +4,8 @@ import { Sequencer } from '@/libs/nativeComponents/Sequencer';
 import { View } from '@/libs/nativeComponents/View';
 import { rgb } from '@/libs/ui';
 import {
+    btn8,
     btnShift,
-    btnUp,
     ScreenWidth
 } from '../constants';
 import { Common } from './Common';
@@ -26,7 +26,8 @@ export function SeqView({ name, track, synthName, color, textGrid }: Props) {
                 track={track}
                 audioPlugin="Sequencer"
                 keys={[
-                    { key: btnUp, action: '.toggleParam', multipleKeyHandler: true },
+                    { key: btn8, action: '.toggleParam' },
+                    // { key: btnUp, action: '.toggleParam', multipleKeyHandler: true },
                     { key: btnShift, action: '.shift', multipleKeyHandler: true },
                 ]}
                 selectedColor={rgb(196, 21, 152)}
