@@ -3,7 +3,6 @@ import * as React from '@/libs/react';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { Kick } from '../components/Common';
-import { SideInfo } from '../components/SideInfo';
 import { Title } from '../components/Title';
 import {
     btn1,
@@ -60,7 +59,6 @@ export function TextGridDrum23({
                 selected={selected}
                 contextValue={[0, 0, 0]}
             />
-            <SideInfo up="*" down="&icon::musicNote::pixelated" ctxValue={0} />
         </>
     );
 }

@@ -19,8 +19,7 @@ export const W6_8 = W1_8 * 6;
 export const W7_8 = W1_8 * 7;
 export const W8_8 = W1_8 * 8;
 
-export const KeyInfoPosition = [0, 296, ScreenWidth - 16];
-export const SideKeyInfoPosition = [ScreenWidth - 16, 296, 16];
+export const KeyInfoPosition = [0, 296, ScreenWidth];
 // export const KeyInfoPosition = [0, 296, ScreenWidth];
 // export const SideKeyInfoPosition = [ScreenWidth - 16, 270, 16, 26];
 
