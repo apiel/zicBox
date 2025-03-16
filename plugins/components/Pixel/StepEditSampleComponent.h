@@ -200,11 +200,12 @@ public:
         }
     }
 
-    void onKey(uint16_t id, int key, int8_t state, unsigned long now)
+    bool onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
         if (isActive) {
-            keypadLayout.onKey(id, key, state, now);
+            return keypadLayout.onKey(id, key, state, now);
         }
+        return false;
     }
 
     void onGroupChanged(int8_t index) override

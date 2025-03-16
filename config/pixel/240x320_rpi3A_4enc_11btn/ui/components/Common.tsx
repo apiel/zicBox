@@ -83,7 +83,7 @@ export function Common({
                 contextValue={1}
                 {...(selectedBackground && { selectedBackground })}
             />
-            {/* <TextGrid
+            <TextGrid
                 bounds={KeyInfoPosition}
                 rows={['A4 C5 D5 E5', 'C4 D4 E4 G4']}
                 keys={[
@@ -98,14 +98,14 @@ export function Common({
                     { key: btn8, action: `noteOn:${synthName}:67` },
 
                     { key: btnUp, action: `noteOn:${synthName}:60` },
-                    // { key: btnDown, action: 'contextToggle:253:1:0' },
-                    { key: btnDown, action: 'debug:yoyoyoyo' },
+                    { key: btnDown, action: 'contextToggle:253:1:0' },
+                    // { key: btnDown, action: 'debug:yoyoyoyo' },
                     { key: btnShift, action: 'contextToggle:254:1:0' },
                 ]}
                 selected={selected}
                 contextValue={0}
                 contextValue2={1}
-            /> */}
+            />
             <SideInfo up="*" down="&icon::play::filled" ctxValue={1} />
         </>
     );
