@@ -1206,8 +1206,11 @@
     {
       "name": "Sample1Wave",
       "components": [
-        {"audioPlugin":"Sample1","param":"PITCH","bounds":[120,60,118,100],"encoderId":1,"color":"tertiary","track":6,"componentName":"KnobValue"},
         {"bounds":[0,120,239,80],"audioPlugin":"Sample1","track":6,"componentName":"Sample"},
+        {"bounds":[0,90,118,22],"audioPlugin":"Sample1","param":"START","track":6,"fontLabel":"PoppinsLight_6","barHeight":1,"encoderId":0,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
+        {"bounds":[122,90,120,22],"audioPlugin":"Sample1","param":"END","track":6,"fontLabel":"PoppinsLight_6","barHeight":1,"encoderId":1,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
+        {"bounds":[0,210,118,22],"audioPlugin":"Sample1","param":"LOOP_POSITION","track":6,"fontLabel":"PoppinsLight_6","barHeight":1,"encoderId":2,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
+        {"bounds":[122,210,120,22],"audioPlugin":"Sample1","param":"LOOP_LENGTH","track":6,"fontLabel":"PoppinsLight_6","barHeight":1,"encoderId":3,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
         {"fontSize":24,"text":"Sample1","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[55,28,6,6],"color":"#377275","componentName":"Rect"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"q","action":"setView:Sample1"},{"key":"w","action":"setView:Sample1Wave"},{"key":"e","action":"setView:Sample1Env1"},{"key":"r","action":"setView:Sample1Env2"},{"key":"a","action":"setView:Sample1Seq"},{"key":"s","action":"setView:Sample1Fx"},{"key":"d","action":"setView:Sample1Lfo1"},{"key":"f","action":"setView:Sample1Lfo2"},{"key":"x","action":"noteOn:Sample1:58"},{"key":"altleft","action":"noteOn:Sample1:60"},{"key":"space","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
@@ -1276,8 +1279,11 @@
     {
       "name": "Sample2Wave",
       "components": [
-        {"audioPlugin":"Sample2","param":"PITCH","bounds":[120,60,118,100],"encoderId":1,"color":"tertiary","track":7,"componentName":"KnobValue"},
         {"bounds":[0,120,239,80],"audioPlugin":"Sample2","track":7,"componentName":"Sample"},
+        {"bounds":[0,90,118,22],"audioPlugin":"Sample2","param":"START","track":7,"fontLabel":"PoppinsLight_6","barHeight":1,"encoderId":0,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
+        {"bounds":[122,90,120,22],"audioPlugin":"Sample2","param":"END","track":7,"fontLabel":"PoppinsLight_6","barHeight":1,"encoderId":1,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
+        {"bounds":[0,210,118,22],"audioPlugin":"Sample2","param":"LOOP_POSITION","track":7,"fontLabel":"PoppinsLight_6","barHeight":1,"encoderId":2,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
+        {"bounds":[122,210,120,22],"audioPlugin":"Sample2","param":"LOOP_LENGTH","track":7,"fontLabel":"PoppinsLight_6","barHeight":1,"encoderId":3,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
         {"fontSize":24,"text":"Sample2","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[55,28,6,6],"color":"#624fb5","componentName":"Rect"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"q","action":"setView:Sample2"},{"key":"w","action":"setView:Sample2Wave"},{"key":"e","action":"setView:Sample2Env1"},{"key":"r","action":"setView:Sample2Env2"},{"key":"a","action":"setView:Sample2Seq"},{"key":"s","action":"setView:Sample2Fx"},{"key":"d","action":"setView:Sample2Lfo1"},{"key":"f","action":"setView:Sample2Lfo2"},{"key":"x","action":"noteOn:Sample2:58"},{"key":"altleft","action":"noteOn:Sample2:60"},{"key":"space","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
@@ -1346,8 +1352,11 @@
     {
       "name": "Sample3Wave",
       "components": [
-        {"audioPlugin":"Sample3","param":"PITCH","bounds":[120,60,118,100],"encoderId":1,"color":"tertiary","track":8,"componentName":"KnobValue"},
         {"bounds":[0,120,239,80],"audioPlugin":"Sample3","track":8,"componentName":"Sample"},
+        {"bounds":[0,90,118,22],"audioPlugin":"Sample3","param":"START","track":8,"fontLabel":"PoppinsLight_6","barHeight":1,"encoderId":0,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
+        {"bounds":[122,90,120,22],"audioPlugin":"Sample3","param":"END","track":8,"fontLabel":"PoppinsLight_6","barHeight":1,"encoderId":1,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
+        {"bounds":[0,210,118,22],"audioPlugin":"Sample3","param":"LOOP_POSITION","track":8,"fontLabel":"PoppinsLight_6","barHeight":1,"encoderId":2,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
+        {"bounds":[122,210,120,22],"audioPlugin":"Sample3","param":"LOOP_LENGTH","track":8,"fontLabel":"PoppinsLight_6","barHeight":1,"encoderId":3,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
         {"fontSize":24,"text":"Sample3","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[55,28,6,6],"color":"#4fa1b5","componentName":"Rect"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"q","action":"setView:Sample3"},{"key":"w","action":"setView:Sample3Wave"},{"key":"e","action":"setView:Sample3Env1"},{"key":"r","action":"setView:Sample3Env2"},{"key":"a","action":"setView:Sample3Seq"},{"key":"s","action":"setView:Sample3Fx"},{"key":"d","action":"setView:Sample3Lfo1"},{"key":"f","action":"setView:Sample3Lfo2"},{"key":"x","action":"noteOn:Sample3:58"},{"key":"altleft","action":"noteOn:Sample3:60"},{"key":"space","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},

@@ -1,13 +1,11 @@
 import * as React from '@/libs/react';
 
-import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Sample } from '@/libs/nativeComponents/Sample';
+import { Value } from '@/libs/nativeComponents/Value';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
-import {
-    encTopRight
-} from '../constants';
-import { graphCenterValues, topRightKnob } from '../constantsValue';
+import { encBottomLeft, encBottomRight, encTopLeft, encTopRight, ScreenWidth } from '../constants';
+import { graphCenterValues } from '../constantsValue';
 import { ViewSelector } from './ViewSelector';
 
 export type Props = {
@@ -20,42 +18,53 @@ export type Props = {
 export function WaveView({ name, track, synthName, color }: Props) {
     return (
         <View name={name}>
-            <KnobValue
+            <Sample bounds={graphCenterValues} audioPlugin={synthName} track={track} />
+
+            <Value
+                bounds={[0, 90, ScreenWidth / 2 - 2, 22]}
                 audioPlugin={synthName}
-                param="PITCH"
-                bounds={topRightKnob}
+                param="START"
+                track={track}
+                fontLabel="PoppinsLight_6"
+                barHeight={1}
+                encoderId={encTopLeft}
+                alignLeft
+                showLabelOverValue={0}
+            />
+            <Value
+                bounds={[ScreenWidth / 2 + 2, 90, ScreenWidth / 2, 22]}
+                audioPlugin={synthName}
+                param="END"
+                track={track}
+                fontLabel="PoppinsLight_6"
+                barHeight={1}
                 encoderId={encTopRight}
-                color="tertiary"
-                track={track}
+                alignLeft
+                showLabelOverValue={0}
             />
-            <Sample
-                bounds={graphCenterValues}
+
+            <Value
+                bounds={[0, 210, ScreenWidth / 2 - 2, 22]}
                 audioPlugin={synthName}
-                track={track}
-            />
-            {/* <Value
-                bounds={[0, 240, ScreenWidth / 2 - 2, 22]}
-                audioPlugin={synthName}
-                param="WAVE"
+                param="LOOP_POSITION"
                 track={track}
                 fontLabel="PoppinsLight_6"
                 barHeight={1}
                 encoderId={encBottomLeft}
                 alignLeft
                 showLabelOverValue={0}
-            /> */}
-
-            {/* <Value
-                bounds={[ScreenWidth / 2 + 2, 240, ScreenWidth / 2, 22]}
+            />
+            <Value
+                bounds={[ScreenWidth / 2 + 2, 210, ScreenWidth / 2, 22]}
                 audioPlugin={synthName}
-                param="WAVE_EDIT"
+                param="LOOP_LENGTH"
                 track={track}
                 fontLabel="PoppinsLight_6"
                 barHeight={1}
                 encoderId={encBottomRight}
                 alignLeft
                 showLabelOverValue={0}
-            /> */}
+            />
 
             <ViewSelector selected={'Wave'} viewName={name} synthName={synthName} color={color} />
             <Common track={track} selectedBackground={color} selected={synthName} />
