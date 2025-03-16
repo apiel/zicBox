@@ -13,7 +13,7 @@ import {
     ScreenWidth
 } from '../constants';
 import { graphBottomValues, topLeftKnob, topRightKnob } from '../constantsValue';
-import { TextGridSynth } from './TextGridSynth';
+import { ViewSelector } from './ViewSelector';
 
 export type Props = {
     name: string;
@@ -22,7 +22,7 @@ export type Props = {
     color: string;
 };
 
-export function SynthMainView({ name, track, synthName, color }: Props) {
+export function MainView({ name, track, synthName, color }: Props) {
     return (
         <View name={name}>
             <KnobValue
@@ -90,7 +90,7 @@ export function SynthMainView({ name, track, synthName, color }: Props) {
                 showLabelOverValue={0}
             />
 
-            <TextGridSynth selected={'Main'} viewName={name} synthName={synthName} color={color} />
+            <ViewSelector selected={'Main'} viewName={name} synthName={synthName} color={color} />
             <Common track={track} selectedBackground={color} selected={synthName} />
         </View>
     );

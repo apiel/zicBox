@@ -5,7 +5,7 @@ import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
 import { encTopLeft, encTopRight } from '../constants';
 import { topLeftKnob, topRightKnob } from '../constantsValue';
-import { TextGridSynth } from './TextGridSynth';
+import { ViewSelector } from './ViewSelector';
 
 export type Props = {
     name: string;
@@ -14,7 +14,7 @@ export type Props = {
     color: string;
 };
 
-export function SynthFxView({ name, track, synthName, color }: Props) {
+export function FxView({ name, track, synthName, color }: Props) {
     return (
         <View name={name}>
             <KnobValue
@@ -50,7 +50,7 @@ export function SynthFxView({ name, track, synthName, color }: Props) {
                 track={track}
             /> */}
 
-            <TextGridSynth selected={'Fx'} viewName={name} synthName={synthName} color={color} />
+            <ViewSelector selected={'Fx'} viewName={name} synthName={synthName} color={color} />
             <Common track={track} selectedBackground={color} selected={synthName} />
         </View>
     );

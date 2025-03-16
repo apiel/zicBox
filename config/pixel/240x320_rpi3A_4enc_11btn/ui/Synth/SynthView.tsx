@@ -1,11 +1,11 @@
 import * as React from '@/libs/react';
 import { SeqView } from '../components/SeqView';
-import { SynthEnv1View } from './Env1View';
-import { SynthEnv2View } from './Env2View';
-import { SynthFilterView } from './FilterView';
-import { SynthFxView } from './FxView';
-import { SynthMainView } from './Main';
-import { TextGridSynth } from './TextGridSynth';
+import { Env1View } from './Env1View';
+import { Env2View } from './Env2View';
+import { FilterView } from './FilterView';
+import { FxView } from './FxView';
+import { MainView } from './Main';
+import { ViewSelector } from './ViewSelector';
 
 export type Props = {
     track: number;
@@ -16,26 +16,26 @@ export type Props = {
 export function SynthView({ track, synthName, color }: Props) {
     return (
         <>
-            <SynthMainView name={synthName} track={track} synthName={synthName} color={color} />
-            <SynthFxView
+            <MainView name={synthName} track={track} synthName={synthName} color={color} />
+            <FxView
                 name={`${synthName}Fx`}
                 track={track}
                 synthName={synthName}
                 color={color}
             />
-            <SynthFilterView
+            <FilterView
                 name={`${synthName}Filter`}
                 track={track}
                 synthName={synthName}
                 color={color}
             />
-            <SynthEnv1View
+            <Env1View
                 name={`${synthName}Env1`}
                 track={track}
                 synthName={synthName}
                 color={color}
             />
-            <SynthEnv2View
+            <Env2View
                 name={`${synthName}Env2`}
                 track={track}
                 synthName={synthName}
@@ -47,7 +47,7 @@ export function SynthView({ track, synthName, color }: Props) {
                 synthName={synthName}
                 color={color}
                 textGrid={
-                    <TextGridSynth
+                    <ViewSelector
                         selected={'Seq.'}
                         viewName={`${synthName}Seq`}
                         color={color}
