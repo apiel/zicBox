@@ -4,12 +4,12 @@ import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
 import {
-    ColorTrack6,
+    ColorTrack5,
     encBottomLeft,
     encBottomRight,
     encTopLeft,
     encTopRight,
-    PercTrack,
+    PercTrack
 } from '../constants';
 import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
 import { TextGridPerc } from './TextGridPerc';
@@ -51,7 +51,7 @@ export function PercModView({ name }: Props) {
             />
 
             <TextGridPerc selected={'Mod.'} viewName={name} />
-            <Common selected={'Perc'} track={PercTrack} selectedBackground={ColorTrack6} />
+            <Common selected={'Perc'} track={PercTrack} selectedBackground={ColorTrack5} />
         </View>
     );
 }

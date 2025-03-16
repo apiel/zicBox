@@ -12,8 +12,7 @@ import {
     btn7,
     btnShift,
     btnUp,
-    ColorTrack3,
-    ColorTrack6,
+    ColorTrack5,
     KeyInfoPosition,
     PercTrack,
     ScreenWidth
@@ -31,8 +30,8 @@ export function PercSeqView({ name }: Props) {
                 track={PercTrack}
                 audioPlugin="Sequencer"
                 keys={[{ key: btnUp, action: '.toggleParam' }]}
-                selectedColor={rgb(196, 21, 152)}
-                stepColor={ColorTrack3}
+                selectedColor={rgb(230, 220, 253)}
+                stepColor={ColorTrack5}
             />
 
             <TextGrid
@@ -42,7 +41,7 @@ export function PercSeqView({ name }: Props) {
                     'Seq./Perc &icon::arrowDown::filled &icon::musicNote::pixelated',
                     // '!Seq/Bass &icon::arrowDown::filled &icon::musicNote::pixelated',
                 ]}
-                selectedBackground={ColorTrack3}
+                selectedBackground={ColorTrack5}
                 keys={[
                     { key: btn2, action: 'incGroup:-1' },
                     { key: btnShift, action: 'contextToggle:254:1:0' },
@@ -57,7 +56,7 @@ export function PercSeqView({ name }: Props) {
                 selected={'Perc'}
                 hideSequencer
                 track={PercTrack}
-                selectedBackground={ColorTrack6}
+                selectedBackground={ColorTrack5}
             />
         </View>
     );

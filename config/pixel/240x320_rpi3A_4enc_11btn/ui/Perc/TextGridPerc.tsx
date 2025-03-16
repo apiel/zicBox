@@ -17,18 +17,18 @@ import {
     btnDown,
     btnShift,
     btnUp,
-    ColorTrack6,
-    KeyInfoPosition,
+    ColorTrack5,
+    KeyInfoPosition
 } from '../constants';
 
 export function TextGridPerc({ selected, viewName }: { selected: string; viewName: string }) {
     return (
         <>
             <Title title={Perc} />
-            <Rect bounds={[70, 28, 6, 6]} color={ColorTrack6} />
+            <Rect bounds={[70, 28, 6, 6]} color={ColorTrack5} />
             <TextGrid
                 bounds={KeyInfoPosition}
-                selectedBackground={ColorTrack6}
+                selectedBackground={ColorTrack5}
                 rows={['Main Fx Env Noise1', 'Seq. Seq2 Mod. Noise2']}
                 keys={[
                     { key: btn1, action: 'setView:Perc' },

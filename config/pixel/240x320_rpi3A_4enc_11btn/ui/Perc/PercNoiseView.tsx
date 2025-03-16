@@ -3,7 +3,7 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
-import { ColorTrack6, encBottomLeft, encTopLeft, encTopRight, PercTrack } from '../constants';
+import { ColorTrack5, encBottomLeft, encTopLeft, encTopRight, PercTrack } from '../constants';
 import {
     bottomLeftKnob,
     topLeftKnob,
@@ -48,7 +48,7 @@ export function PercNoiseView({ name }: Props) {
             /> */}
 
             <TextGridPerc selected={'Noise1'} viewName={name} />
-            <Common selected={'Perc'} track={PercTrack} selectedBackground={ColorTrack6} />
+            <Common selected={'Perc'} track={PercTrack} selectedBackground={ColorTrack5} />
         </View>
     );
 }
