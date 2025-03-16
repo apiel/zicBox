@@ -40,8 +40,7 @@ export function TextGridDrum23({
                 selectedBackground={color}
                 rows={[
                     'Main Fx Wave Freq',
-                    'Seq. Amp Click &empty',
-                    // '&icon::musicNote::pixelated',
+                    'Seq. Amp Click &icon::musicNote::pixelated',
                 ]}
                 keys={[
                     { key: btn1, action: `setView:${synthName}` },

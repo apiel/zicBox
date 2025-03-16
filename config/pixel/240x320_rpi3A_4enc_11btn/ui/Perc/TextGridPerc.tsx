@@ -29,17 +29,17 @@ export function TextGridPerc({ selected, viewName }: { selected: string; viewNam
             <TextGrid
                 bounds={KeyInfoPosition}
                 selectedBackground={ColorTrack5}
-                rows={['Main Fx Env Noise1', 'Seq. Seq2 Mod. Noise2']}
+                rows={['Main Fx Noise1 Noise2', 'Seq. Mod. &icon::musicNote::pixelated &icon::musicNote::pixelated']}
                 keys={[
                     { key: btn1, action: 'setView:Perc' },
                     { key: btn2, action: 'setView:PercFx' },
-                    { key: btn3, action: 'setView:PercEnv' },
-                    { key: btn4, action: 'setView:PercNoise' },
+                    { key: btn3, action: 'setView:PercNoise' },
+                    { key: btn4, action: 'setView:PercNoise2' },
 
                     { key: btn5, action: 'setView:PercSeq' },
-                    { key: btn6, action: 'setView:PercSeq2' },
-                    { key: btn7, action: 'setView:PercMod' },
-                    { key: btn8, action: 'setView:PercNoise2' },
+                    { key: btn6, action: 'setView:PercMod' },
+                    { key: btn7, action: 'noteOn:Perc:48' },
+                    { key: btn8, action: 'noteOn:Perc:60' },
 
                     { key: btnUp, action: 'noteOn:Perc:60' }, // when not used, let's play noteOn...
                     { key: btnDown, action: 'noteOn:Perc:60' }, // <--- this should be the default noteOn!
