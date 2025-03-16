@@ -49,7 +49,7 @@ export function PercNoise2View({ name }: Props) {
             />
 
             <TextGridPerc selected={'Noise2'} viewName={name} />
-            <Common selected={'Perc'} track={PercTrack} selectedBackground={ColorTrack5} />
+            <Common selected={'Perc'} track={PercTrack} selectedBackground={ColorTrack5} synthName="Perc" />
         </View>
     );
 }

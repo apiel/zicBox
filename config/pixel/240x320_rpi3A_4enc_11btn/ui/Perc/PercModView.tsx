@@ -51,7 +51,7 @@ export function PercModView({ name }: Props) {
             />
 
             <TextGridPerc selected={'Mod.'} viewName={name} />
-            <Common selected={'Perc'} track={PercTrack} selectedBackground={ColorTrack5} />
+            <Common selected={'Perc'} track={PercTrack} selectedBackground={ColorTrack5}  synthName="Perc" />
         </View>
     );
 }

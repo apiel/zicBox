@@ -40,6 +40,7 @@ export function SeqView({ name, track, synthName, color, textGrid }: Props) {
                 hideSequencer
                 track={track}
                 selectedBackground={color}
+                synthName={synthName}
             />
         </View>
     );

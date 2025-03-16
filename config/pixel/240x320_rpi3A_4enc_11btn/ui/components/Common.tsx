@@ -16,7 +16,7 @@ import {
     btnShift,
     btnUp,
     KeyInfoPosition,
-    ScreenWidth,
+    ScreenWidth
 } from '../constants';
 import { SideInfo } from './SideInfo';
 
@@ -30,17 +30,18 @@ export const Sample1 = 'Sample1';
 export const Sample2 = 'Sample2';
 export const Sample3 = 'Sample3';
 
-
 export function Common({
     hideSequencer,
     track,
     selectedBackground,
     selected,
+    synthName,
 }: {
     hideSequencer?: boolean;
     track: number;
     selectedBackground?: string;
     selected: string;
+    synthName: string;
 }) {
     return (
         <>
@@ -59,7 +60,10 @@ export function Common({
 
             <TextGrid
                 bounds={KeyInfoPosition}
-                rows={[`${Kick} ${Synth1} ${Synth2} ${Synth3}`, `${Perc} ${Sample1} ${Sample2} ${Sample3}`]}
+                rows={[
+                    `${Kick} ${Synth1} ${Synth2} ${Synth3}`,
+                    `${Perc} ${Sample1} ${Sample2} ${Sample3}`,
+                ]}
                 keys={[
                     { key: btn1, action: 'setView:Kick' },
                     { key: btn2, action: 'setView:Synth1' },
@@ -79,6 +83,29 @@ export function Common({
                 contextValue={1}
                 {...(selectedBackground && { selectedBackground })}
             />
+            {/* <TextGrid
+                bounds={KeyInfoPosition}
+                rows={['A4 C5 D5 E5', 'C4 D4 E4 G4']}
+                keys={[
+                    { key: btn1, action: `noteOn:${synthName}:69` },
+                    { key: btn2, action: `noteOn:${synthName}:72` },
+                    { key: btn3, action: `noteOn:${synthName}:74` },
+                    { key: btn4, action: `noteOn:${synthName}:76` },
+
+                    { key: btn5, action: `noteOn:${synthName}:60` },
+                    { key: btn6, action: `noteOn:${synthName}:62` },
+                    { key: btn7, action: `noteOn:${synthName}:64` },
+                    { key: btn8, action: `noteOn:${synthName}:67` },
+
+                    { key: btnUp, action: `noteOn:${synthName}:60` },
+                    // { key: btnDown, action: 'contextToggle:253:1:0' },
+                    { key: btnDown, action: 'debug:yoyoyoyo' },
+                    { key: btnShift, action: 'contextToggle:254:1:0' },
+                ]}
+                selected={selected}
+                contextValue={0}
+                contextValue2={1}
+            /> */}
             <SideInfo up="*" down="&icon::play::filled" ctxValue={1} />
         </>
     );

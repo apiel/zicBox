@@ -11,6 +11,7 @@ export function TextGrid({
     rows,
     keys,
     contextValue,
+    contextValue2,
     selectedBackground,
     bgColor = 'background',
 }: {
@@ -19,6 +20,7 @@ export function TextGrid({
     rows: string[];
     keys?: { key: string; action: string; action2?: string }[];
     contextValue?: number;
+    contextValue2?: number;
     selectedBackground?: string;
     bgColor?: string;
 }) {
@@ -28,14 +30,31 @@ export function TextGrid({
         }
     }
 
+    const context: VisibilityContext[] = [];
+    if (contextValue !== undefined) {
+        context.push({
+            index: 254,
+            condition: 'SHOW_WHEN',
+            value: contextValue,
+        });
+    }
+
+    if (contextValue2 !== undefined) {
+        context.push({
+            index: 253,
+            condition: 'SHOW_WHEN',
+            value: contextValue2,
+        });
+    }
+
     return (
         <>
-            <HiddenValue visibilityContext={visibilityContext(contextValue)} keys={keys} />
+            <HiddenValue visibilityContext={context} keys={keys} />
             <TextGridRender
                 bounds={bounds}
                 rows={rows}
                 activeBgColor={selectedBackground}
-                contextValue={contextValue}
+                context={context}
                 bgColor={bgColor}
             />
         </>
@@ -48,14 +67,14 @@ function TextGridRender({
     bgColor = 'background',
     activeBgColor = 'primary',
     shiftedTextColor = rgb(80, 75, 75),
-    contextValue,
+    context,
     ...props
 }: ComponentProps<{
     rows: string[];
     bgColor?: string;
     activeBgColor?: string;
     shiftedTextColor?: string;
-    contextValue?: number;
+    context?: VisibilityContext[]
 }>) {
     const textColor = 'text';
     const h = 11;
@@ -88,7 +107,7 @@ function TextGridRender({
                     centered
                     bgColor={bg}
                     color={color}
-                    visibilityContext={visibilityContext(contextValue)}
+                    visibilityContext={context}
                     font="PoppinsLight_8"
                 />
             );
@@ -98,15 +117,4 @@ function TextGridRender({
     }
 
     return children;
-}
-
-function visibilityContext(contextValue?: number) {
-    if (contextValue !== undefined) {
-        const statement: VisibilityContext = {
-            index: 254,
-            condition: 'SHOW_WHEN',
-            value: contextValue,
-        };
-        return [statement];
-    }
 }
