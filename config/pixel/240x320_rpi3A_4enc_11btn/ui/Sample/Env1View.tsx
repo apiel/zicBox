@@ -3,47 +3,51 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
-import { ColorTrack3, encBottomLeft, encTopLeft, encTopRight, Fm1Track } from '../constants';
-import { bottomLeftKnob, topLeftKnob, topRightKnob } from '../constantsValue';
-import { TextGridFm1 } from './TextGridFm1';
+import { encTopLeft, encTopRight } from '../constants';
+import { topLeftKnob, topRightKnob } from '../constantsValue';
+import { ViewSelector } from './ViewSelector';
 
 export type Props = {
     name: string;
+    track: number;
+    synthName: string;
+    color: string;
 };
 
-export function Fm1FxView({ name }: Props) {
+export function Env1View({ name, track, synthName, color }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                audioPlugin="FmDrum" param="NOISE_LEVEL"
+                audioPlugin={synthName} param="ATTACK"
                 bounds={topLeftKnob}
                 encoderId={encTopLeft}
                 color="tertiary"
-                track={Fm1Track}
+                track={track}
             />
             <KnobValue
-                audioPlugin="FmDrum" param="DISTORTION"
+                audioPlugin={synthName} param="RELEASE"
                 bounds={topRightKnob}
                 encoderId={encTopRight}
                 color="primary"
-                track={Fm1Track}
+                track={track}
             />
-            <KnobValue
-                audioPlugin="FmDrum" param="REVERB"
+            {/* <KnobValue
+                audioPlugin={synthName} param="FREQUENCY_MOD"
                 bounds={bottomLeftKnob}
                 encoderId={encBottomLeft}
                 color="quaternary"
-                track={Fm1Track}
-            />
+                track={track}
+            /> */}
             {/* <KnobValue
-                audioPlugin="Distortion" param="BASS"
+                audioPlugin={synthName} param="OSC_MOD"
                 bounds={bottomRightKnob}
                 encoderId={encBottomRight}
                 color="secondary"
-                track={BassTrack}
+                track={track}
             /> */}
-            <TextGridFm1 selected={'Fx'} viewName={name} />
-            <Common selected={'Fm1'} track={Fm1Track} selectedBackground={ColorTrack3} />
+
+            <ViewSelector selected={'Env'} viewName={name} synthName={synthName} color={color} />
+            <Common track={track} selectedBackground={color} selected={synthName} />
         </View>
     );
 }

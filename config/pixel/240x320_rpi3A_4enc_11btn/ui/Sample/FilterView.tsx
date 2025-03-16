@@ -3,51 +3,55 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
-import { ColorTrack3, encTopLeft, encTopRight, Fm1Track } from '../constants';
+import { encBottomLeft, encTopLeft, encTopRight } from '../constants';
 import {
+    bottomLeftKnob,
     topLeftKnob,
     topRightKnob
 } from '../constantsValue';
-import { TextGridFm1 } from './TextGridFm1';
+import { ViewSelector } from './ViewSelector';
 
 export type Props = {
     name: string;
+    track: number;
+    synthName: string;
+    color: string;
 };
 
-export function Fm1EnvView({ name }: Props) {
+export function FilterView({ name, track, synthName, color }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                audioPlugin="FmDrum" param="ATTACK_TIME"
+                audioPlugin={synthName} param="FILTER_TYPE"
                 bounds={topLeftKnob}
                 encoderId={encTopLeft}
                 color="tertiary"
-                track={Fm1Track}
+                track={track}
             />
             <KnobValue
-                audioPlugin="FmDrum" param="DECAY_TIME"
+                audioPlugin={synthName} param="FILTER_CUTOFF"
                 bounds={topRightKnob}
                 encoderId={encTopRight}
                 color="primary"
-                track={Fm1Track}
+                track={track}
             />
-            {/* <KnobValue
-                audioPlugin="Bass" param="DECAY_TIME"
+            <KnobValue
+                audioPlugin={synthName} param="FILTER_RESONANCE"
                 bounds={bottomLeftKnob}
                 encoderId={encBottomLeft}
                 color="quaternary"
-                track={BassTrack}
-            /> */}
+                track={track}
+            />
             {/* <KnobValue
-                audioPlugin="Bass" param="REVERB"
+                audioPlugin={synthName} param="MOD_INDEX"
                 bounds={bottomRightKnob}
                 encoderId={encBottomRight}
                 color="secondary"
-                track={BassTrack}
+                track={track}
             /> */}
 
-            <TextGridFm1 selected={'Env'} viewName={name} />
-            <Common selected={'Fm1'} track={Fm1Track} selectedBackground={ColorTrack3} />
+            <ViewSelector selected={'Filter'} viewName={name} synthName={synthName} color={color} />
+            <Common track={track} selectedBackground={color} selected={synthName} />
         </View>
     );
 }
