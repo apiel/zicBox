@@ -58,8 +58,7 @@ export function TextGridDrum23({
                     { key: btnShift, action: 'contextToggle:254:1:0' },
                 ]}
                 selected={selected}
-                contextValue={0}
-                contextValue2={0}
+                contextValue={[0, 0]}
             />
             <SideInfo up="*" down="&icon::musicNote::pixelated" ctxValue={0} />
         </>

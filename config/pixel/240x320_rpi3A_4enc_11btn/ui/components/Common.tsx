@@ -80,7 +80,7 @@ export function Common({
                     { key: btnShift, action: 'contextToggle:254:1:0' },
                 ]}
                 selected={selected}
-                contextValue={1}
+                contextValue={[1]}
                 {...(selectedBackground && { selectedBackground })}
             />
             <TextGrid
@@ -124,8 +124,7 @@ export function Common({
                 ]}
 
                 selected={selected}
-                contextValue={0}
-                contextValue2={1}
+                contextValue={[0, 1]}
             />
             <SideInfo up="*" down="&icon::play::filled" ctxValue={1} />
         </>
