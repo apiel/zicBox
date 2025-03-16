@@ -6,7 +6,6 @@
 - TODO drum synth with multiple swappable engines
 - TODO clips with arbitrary selection
 - TODO save workspace
-- TODO toggle keyboard / view selection
 
 ## Framework improvement
 
