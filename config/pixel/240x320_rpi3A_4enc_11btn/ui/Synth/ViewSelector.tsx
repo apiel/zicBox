@@ -39,41 +39,41 @@ export function ViewSelector({
             <TextGrid
                 bounds={KeyInfoPosition}
                 selectedBackground={color}
-                rows={['Main Wave Env Mod.', 'Seq. Fx Lfo Mod']}
+                rows={['Main Env/Fx Lfo Wave', 'Seq. Mod. Mod &icon::musicNote::pixelated']}
                 keys={[
                     { key: btn1, action: `setView:${synthName}` },
-                    { key: btn2, action: `setView:${synthName}Wave` },
                     {
-                        key: btn3,
+                        key: btn2,
                         action:
                             viewName === `${synthName}Env1`
                                 ? `setView:${synthName}Env2`
                                 : `setView:${synthName}Env1`,
                     },
                     {
-                        key: btn4,
-                        action:
-                            viewName === `${synthName}Env2`
-                                ? `setView:${synthName}Env1`
-                                : `setView:${synthName}Env2`,
-                    },
-
-                    { key: btn5, action: `setView:${synthName}Seq` },
-                    { key: btn6, action: `setView:${synthName}Fx` },
-                    {
-                        key: btn7,
+                        key: btn3,
                         action:
                             viewName === `${synthName}Lfo1`
                                 ? `setView:${synthName}Lfo2`
                                 : `setView:${synthName}Lfo1`,
                     },
+                    { key: btn4, action: `setView:${synthName}Wave` },
+
+                    { key: btn5, action: `setView:${synthName}Seq` },
                     {
-                        key: btn8,
+                        key: btn6,
+                        action:
+                            viewName === `${synthName}Env2`
+                                ? `setView:${synthName}Env1`
+                                : `setView:${synthName}Env2`,
+                    },
+                    {
+                        key: btn7,
                         action:
                             viewName === `${synthName}Lfo2`
                                 ? `setView:${synthName}Lfo1`
                                 : `setView:${synthName}Lfo2`,
                     },
+                    { key: btn8, action: `noteOn:${synthName}:60` },
 
                     { key: btnUp, action: `noteOn:${synthName}:58` }, // when not used, let's play noteOn...
                     { key: btnDown, action: `noteOn:${synthName}:60` }, // <--- this should be the default noteOn!
