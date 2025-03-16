@@ -1,9 +1,4 @@
 import * as React from '@/libs/react';
-import { BassView } from './Bass/BassView';
-import { BassEnvView } from './Bass/EnvView';
-import { BassFxView } from './Bass/FxView';
-import { BassSeqView } from './Bass/SeqView';
-import { BassWaveformView } from './Bass/WaveformView';
 import { ClipsView } from './clipsView/ClipsView';
 import {
     ColorTrack1,
@@ -63,11 +58,7 @@ export const ui = {
             <PercNoise2View name="PercNoise2" />
             <PercModView name="PercMod" />
 
-            <BassView name="Bass" />
-            <BassFxView name="BassFx" />
-            <BassEnvView name="BassEnv" />
-            <BassSeqView name="BassSeq" />
-            <BassWaveformView name="BassWaveform" />
+
 
             <MenuView name="Menu" />
             <CreateWorkspaceView name="CreateWorkspace" />

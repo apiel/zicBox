@@ -19,7 +19,7 @@ import {
     KeyInfoPosition,
 } from '../constants';
 
-export function TextGridSynth({
+export function ViewSelector({
     selected,
     viewName,
     synthName,

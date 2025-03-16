@@ -9,7 +9,7 @@ import {
     topLeftKnob,
     topRightKnob
 } from '../constantsValue';
-import { TextGridSynth } from './TextGridSynth';
+import { ViewSelector } from './ViewSelector';
 
 export type Props = {
     name: string;
@@ -18,7 +18,7 @@ export type Props = {
     color: string;
 };
 
-export function SynthFilterView({ name, track, synthName, color }: Props) {
+export function FilterView({ name, track, synthName, color }: Props) {
     return (
         <View name={name}>
             <KnobValue
@@ -50,7 +50,7 @@ export function SynthFilterView({ name, track, synthName, color }: Props) {
                 track={track}
             /> */}
 
-            <TextGridSynth selected={'Filter'} viewName={name} synthName={synthName} color={color} />
+            <ViewSelector selected={'Filter'} viewName={name} synthName={synthName} color={color} />
             <Common track={track} selectedBackground={color} selected={synthName} />
         </View>
     );

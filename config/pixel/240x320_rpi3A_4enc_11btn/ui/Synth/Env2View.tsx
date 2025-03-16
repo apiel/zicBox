@@ -5,7 +5,7 @@ import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
 import { encBottomLeft, encTopLeft, encTopRight } from '../constants';
 import { bottomLeftKnob, topLeftKnob, topRightKnob } from '../constantsValue';
-import { TextGridSynth } from './TextGridSynth';
+import { ViewSelector } from './ViewSelector';
 
 export type Props = {
     name: string;
@@ -14,7 +14,7 @@ export type Props = {
     color: string;
 };
 
-export function SynthEnv2View({ name, track, synthName, color }: Props) {
+export function Env2View({ name, track, synthName, color }: Props) {
     return (
         <View name={name}>
             <KnobValue
@@ -49,7 +49,7 @@ export function SynthEnv2View({ name, track, synthName, color }: Props) {
                             track={track}
                         /> */}
 
-            <TextGridSynth selected={'Mod.'} viewName={name} synthName={synthName} color={color} />
+            <ViewSelector selected={'Mod.'} viewName={name} synthName={synthName} color={color} />
             <Common track={track} selectedBackground={color} selected={synthName} />
         </View>
     );
