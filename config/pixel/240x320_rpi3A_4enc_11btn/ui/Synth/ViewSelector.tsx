@@ -76,11 +76,12 @@ export function ViewSelector({
                     { key: btn8, action: `noteOn:${synthName}:60` },
 
                     { key: btnUp, action: `noteOn:${synthName}:58` }, // when not used, let's play noteOn...
-                    { key: btnDown, action: `noteOn:${synthName}:60` }, // <--- this should be the default noteOn!
+                    { key: btnDown, action: 'contextToggleOnRelease:253:1:0' },
                     { key: btnShift, action: 'contextToggle:254:1:0' },
                 ]}
                 selected={selected}
                 contextValue={0}
+                contextValue2={0}
             />
             <SideInfo up="*" down="&icon::musicNote::pixelated" ctxValue={0} />
         </>
