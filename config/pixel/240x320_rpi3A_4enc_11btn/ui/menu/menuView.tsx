@@ -14,7 +14,11 @@ export function MenuView({ name }: Props) {
         <View name={name}>
             <List
                 bounds={[0, 0, ScreenWidth, 280]}
-                items={['Tape', 'Workspaces', 'Shutdown']}
+                items={[
+                    // 'Tape', 
+                    'Workspaces', 
+                    'Shutdown'
+                ]}
                 keys={[
                     { key: btn1, action: '.setView' },
                     { key: btn2, action: '.up' },

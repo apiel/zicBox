@@ -33,8 +33,8 @@ export function WorkspacesView({ name }: Props) {
             />
             <TextGrid
                 bounds={KeyInfoPosition}
-                rows={['&empty &icon::arrowUp::filled ...', 'Use &icon::arrowDown::filled Exit']}
-                contextValue={0}
+                rows={['&empty &icon::arrowUp::filled ... &empty', 'Use &icon::arrowDown::filled Exit &empty']}
+                contextValue={[0]}
             />
 
             <HiddenValue
@@ -46,8 +46,8 @@ export function WorkspacesView({ name }: Props) {
             />
             <TextGrid
                 bounds={KeyInfoPosition}
-                rows={['New &empty ^...', '&empty &empty &icon::trash']}
-                contextValue={1}
+                rows={['New &empty ^... &empty', '&empty &empty &icon::trash &empty']}
+                contextValue={[1]}
             />
         </View>
     );
