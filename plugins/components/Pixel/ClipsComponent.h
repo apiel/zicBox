@@ -241,11 +241,12 @@ public:
         }
     }
 
-    void onKey(uint16_t id, int key, int8_t state, unsigned long now) override
+    bool onKey(uint16_t id, int key, int8_t state, unsigned long now) override
     {
         if (isActive || isGroupAll) {
-            Component::onKey(id, key, state, now);
+            return Component::onKey(id, key, state, now);
         }
+        return false;
     }
 
     void onGroupChanged(int8_t index) override

@@ -14,9 +14,10 @@ import {
     btn6,
     btn7,
     btn8,
+    btnDown,
     btnShift,
     btnUp,
-    KeyInfoPosition
+    KeyInfoPosition,
 } from '../constants';
 
 export function TextGridDrum23({
@@ -53,7 +54,7 @@ export function TextGridDrum23({
                     { key: btn8, action: `noteOn:${synthName}:60` }, // when not used, let's play noteOn...
 
                     { key: btnUp, action: `noteOn:${synthName}:60` }, // when not used, let's play noteOn...
-                    // { key: btnDown, action: 'contextToggleOnRelease:253:1:0' },
+                    { key: btnDown, action: 'contextToggleOnRelease:253:1:0' },
                     { key: btnShift, action: 'contextToggle:254:1:0' },
                 ]}
                 selected={selected}

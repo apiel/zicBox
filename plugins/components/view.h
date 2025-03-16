@@ -1,8 +1,8 @@
 #pragma once
 
 #include "./ViewInterface.h"
-#include "helpers/getTicks.h"
 #include "EventInterface.h"
+#include "helpers/getTicks.h"
 
 #include <mutex>
 #include <string>
@@ -79,9 +79,7 @@ public:
     void onContext(uint8_t index, float value)
     {
         for (auto& component : components) {
-            // if (component->isVisible()) {
-                component->onContext(index, value);                
-            // }
+            component->onContext(index, value);
         }
     }
 
@@ -120,7 +118,7 @@ public:
         draw.triggerRendering();
     }
 
-    // Might want to rework this 
+    // Might want to rework this
     bool isVisible(ComponentInterface* component)
     {
         return component->isVisible();
@@ -170,7 +168,9 @@ public:
         m2.lock();
         for (auto& component : components) {
             if (isVisible(component)) {
-                component->onKey(id, key, state, now);
+                if (component->onKey(id, key, state, now)) { // exit as soon as action happen, do not support multiple action for different component
+                    break;
+                }
             }
         }
         m2.unlock();

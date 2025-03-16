@@ -175,12 +175,13 @@ public:
     //     return false;
     // }
 
-    void onKey(uint16_t id, int key, int8_t state, unsigned long now)
+    bool onKey(uint16_t id, int key, int8_t state, unsigned long now)
     {
         // printf("keypad id %d key %d state %d mapping.size %ld\n", id, key, state, mapping.size());
         for (KeyMap& keyMap : mapping) {
             if (keyMap.controllerId == id && keyMap.key == key
                 && (!keyMap.useContext || component->view->contextVar[keyMap.contextId] == keyMap.contextValue)) {
+                bool actionDone = false;
                 if (state == 1) {
                     // keyMap.isLongPress = false;
                     // To know if the key is pressed, we set pressedTime to the current time
@@ -198,14 +199,17 @@ public:
                     // printf("--> call action keymap id %d key %d\n", keyMap.controllerId, keyMap.key);
                     keyMap.action(keyMap);
                     renderKeypadColor(keyMap);
+                    actionDone = true;
                 }
                 if (keyMap.action2) {
                     keyMap.action2(keyMap);
                     renderKeypadColor(keyMap);
+                    actionDone = true;
                 }
-                return;
+                return actionDone;
             }
         }
+        return false;
     }
 
     void renderKeypadColor()
