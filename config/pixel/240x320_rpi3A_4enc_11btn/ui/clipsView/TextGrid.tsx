@@ -16,7 +16,7 @@ export function TextGridClips() {
                 { key: btn5, action: 'incGroup:-1' },
                 { key: btn7, action: 'incGroup:+1' },
             ]}
-            contextValue={0}
+            contextValue={[0]}
         />
     );
 }
@@ -31,7 +31,7 @@ export function TextGridClipsShifted() {
                 { key: btnShift, action: 'contextToggle:254:1:0' },
                 { key: btn1, action: 'setView:Menu' },
             ]}
-            contextValue={1}
+            contextValue={[1]}
         />
     );
 }

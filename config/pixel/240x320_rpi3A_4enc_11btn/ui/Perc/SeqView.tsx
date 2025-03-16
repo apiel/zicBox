@@ -50,7 +50,7 @@ export function PercSeqView({ name }: Props) {
                     { key: btn6, action: 'incGroup:+1' },
                     { key: btn7, action: 'noteOn:Perc:60' },
                 ]}
-                contextValue={0}
+                contextValue={[0]}
             />
             <Common
                 selected={'Perc'}

@@ -130,7 +130,7 @@ public:
 
     virtual void renderItem(int y, int itemIndex)
     {
-        draw.text({ relativePosition.x + 8, y + 4 }, items[itemIndex].text, 8, { textColor });
+        draw.text({ relativePosition.x + 8, y }, items[itemIndex].text, 12, { textColor });
     }
 
     virtual void renderStart() { }

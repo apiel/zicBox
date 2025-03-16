@@ -10,7 +10,7 @@
 /*md
 ## Sample
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/pixel/Sample.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/plugins/components/Pixel/Sample.png" />
 
 Sample is used to display an audio sample, sustain position, and start/end position.
 The little green dot are the current playing positions of the sample.

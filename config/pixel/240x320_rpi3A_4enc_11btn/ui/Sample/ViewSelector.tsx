@@ -2,7 +2,6 @@ import * as React from '@/libs/react';
 
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
-import { SideInfo } from '../components/SideInfo';
 import { Title } from '../components/Title';
 import {
     btn1,
@@ -73,7 +72,6 @@ export function ViewSelector({
                 selected={selected}
                 contextValue={[0, 0, 0]}
             />
-            <SideInfo up="*" down="&icon::musicNote::pixelated" ctxValue={0} />
         </>
     );
 }

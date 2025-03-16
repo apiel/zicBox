@@ -101,6 +101,7 @@ function TextGridRender({
                     color={color}
                     visibilityContext={context}
                     font="PoppinsLight_8"
+                    fontSize={8}
                 />
             );
             marginLeft += width;

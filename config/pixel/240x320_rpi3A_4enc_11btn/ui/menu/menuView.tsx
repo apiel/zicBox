@@ -25,7 +25,10 @@ export function MenuView({ name }: Props) {
 
             <TextGrid
                 bounds={KeyInfoPosition}
-                rows={['  &icon::arrowUp::filled  ', 'Select &icon::arrowDown::filled Exit']}
+                rows={[
+                    '&empty &icon::arrowUp::filled &empty &empty',
+                    'Select &icon::arrowDown::filled Exit &empty',
+                ]}
                 keys={[{ key: btn7, action: 'setView:Clips' }]}
             />
         </View>

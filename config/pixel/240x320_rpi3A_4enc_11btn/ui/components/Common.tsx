@@ -18,7 +18,6 @@ import {
     KeyInfoPosition,
     ScreenWidth,
 } from '../constants';
-import { SideInfo } from './SideInfo';
 
 export const Kick = 'Kick';
 export const Synth1 = 'Synth1';
@@ -151,7 +150,6 @@ export function Common({
                 selected={selected}
                 contextValue={[0, 0, 1]}
             />
-            <SideInfo up="*" down="&icon::play::filled" ctxValue={1} />
         </>
     );
 }

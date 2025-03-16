@@ -23,7 +23,7 @@ class TextComponent : public Component {
 
     bool centered = false;
     bool rightAligned = false;
-    int fontSize = 8;
+    int fontSize = 12;
     int fontHeight = 0;
     void* font = NULL;
 
@@ -42,8 +42,8 @@ public:
         centered = config.value("centered", centered); //eg: true
         /// If true, the text will be right aligned. Default is false.
         rightAligned = config.value("right", rightAligned); //eg: true
-        /// The font size of the text. Default is 8.
-        fontSize = config.value("fontSize", 8); //eg: 8
+        /// The font size of the text.
+        fontSize = config.value("fontSize", fontSize); //eg: 8
         /// The font of the text. Default is null.
         if (config.contains("font")) {
             font = draw.getFont(config["font"].get<std::string>().c_str()); //eg: "Sinclair_S"
