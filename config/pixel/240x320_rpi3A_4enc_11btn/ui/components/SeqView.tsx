@@ -26,8 +26,8 @@ export function SeqView({ name, track, synthName, color, textGrid }: Props) {
                 track={track}
                 audioPlugin="Sequencer"
                 keys={[
-                    { key: btnUp, action: '.toggleParam' },
-                    { key: btnShift, action: '.shift' },
+                    { key: btnUp, action: '.toggleParam', multipleKeyHandler: true },
+                    { key: btnShift, action: '.shift', multipleKeyHandler: true },
                 ]}
                 selectedColor={rgb(196, 21, 152)}
                 stepColor={color}

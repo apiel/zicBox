@@ -14,7 +14,8 @@ export interface KeypadLayout {
     context? : {
         id: number;
         value: number
-    }
+    },
+    multipleKeyHandler?: boolean
 }
 
 export type ComponentProps<P = unknown> = {

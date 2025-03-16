@@ -25,6 +25,7 @@ public:
         bool useContext = false;
         uint8_t contextId = 0;
         float contextValue = 0.0f;
+        bool multipleKeyHandler = false;
         std::function<uint8_t(KeyMap& keymap)> getColor;
         bool isLongPress = false;
         unsigned long pressedTime = -1;
@@ -40,6 +41,7 @@ public:
         bool useContext;
         uint8_t contextId;
         float contextValue;
+        bool multipleKeyHandler;
     };
 
     ComponentInterface* component;
@@ -88,6 +90,7 @@ public:
             props.useContext,
             props.contextId,
             props.contextValue,
+            props.multipleKeyHandler,
         });
     };
 
@@ -143,6 +146,8 @@ public:
                     props.contextId = key["context"]["id"].get<uint8_t>();
                     props.contextValue = key["context"]["value"].get<float>();
                 }
+
+                props.multipleKeyHandler = key.value("multipleKeyHandler", false);
 
                 addKeyMap(props);
             }
@@ -206,7 +211,7 @@ public:
                     renderKeypadColor(keyMap);
                     actionDone = true;
                 }
-                return actionDone;
+                return !keyMap.multipleKeyHandler && actionDone;
             }
         }
         return false;
