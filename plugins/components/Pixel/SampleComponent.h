@@ -1,8 +1,6 @@
-#ifndef _UI_COMPONENT_PIXEL_SAMPLE_H_
-#define _UI_COMPONENT_PIXEL_SAMPLE_H_
+#pragma once
 
 #include "./utils/BaseWaveComponent.h"
-#include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
 #include "plugins/components/utils/inRect.h"
@@ -48,8 +46,6 @@ protected:
 
     int overlayYtop = 0;
     int overlayYbottom = 0;
-
-    KeypadLayout keypadLayout;
 
     void renderStartOverlay()
     {
@@ -107,7 +103,6 @@ public:
         , loopStartColor(styles.colors.white)
         , loopEndColor(styles.colors.white)
         , wave(props)
-        , keypadLayout(this)
     {
         jobRendering = [this](unsigned long now) {
             if (sampleIndex != NULL) {
@@ -119,6 +114,51 @@ public:
                 }
             }
         };
+
+        /*md md_config:Rect */
+        nlohmann::json& config = props.config;
+
+        /// The background color of the component
+        background = draw.getColor(config["bgColor"], background); //eg: "#000000"
+
+        /// The overlay color of the component
+        overlayColor = draw.getColor(config["overlayColor"], overlayColor); //eg: "#a2beb8"
+
+        /// The overlay edge color of the component
+        overlayEdgeColor = draw.getColor(config["overlayEdgeColor"], overlayEdgeColor); //eg: "#a2beb8"
+
+        /// The loop start color of the component
+        loopStartColor = draw.getColor(config["loopStartColor"], loopStartColor); //eg: "#548ebe"
+
+        /// The loop end color of the component
+        loopEndColor = draw.getColor(config["loopEndColor"], loopEndColor); //eg: "#548ebe"
+
+        /// The sample color of the component
+        sampleColor = draw.getColor(config["sampleColor"], sampleColor); //eg: "#548ebe"
+
+        /// Value keys
+        if (config.contains("valueKeys")) { //eg: {"browser": "BROWSER", "start": "START", "end": "END", "loopPosition": "LOOP_POSITION", "loopLength": "LOOP_LENGTH"}
+            valueKeys[0] = config["valueKeys"].value("browser", valueKeys[0]);
+            valueKeys[1] = config["valueKeys"].value("start", valueKeys[1]);
+            valueKeys[2] = config["valueKeys"].value("end", valueKeys[2]);
+            valueKeys[3] = config["valueKeys"].value("loopPosition", valueKeys[3]);
+            valueKeys[4] = config["valueKeys"].value("loopLength", valueKeys[4]);
+        }
+
+        /// The audio plugin to get control on.
+        AudioPlugin* plugin = getPluginPtr(config, "audioPlugin", track); //eg: "audio_plugin_name"
+        if (plugin != NULL) {
+            sampleBuffer = (struct SampleBuffer*)plugin->data(plugin->getDataId("SAMPLE_BUFFER"));
+            sampleIndex = (float*)plugin->data(plugin->getDataId("SAMPLE_INDEX"));
+
+            watch(plugin->getValue(valueKeys[0].c_str())); // watch for file change
+            startPosition = watch(plugin->getValue(valueKeys[1].c_str()));
+            endPosition = watch(plugin->getValue(valueKeys[2].c_str()));
+            sustainPosition = watch(plugin->getValue(valueKeys[3].c_str()));
+            sustainLength = watch(plugin->getValue(valueKeys[4].c_str()));
+        }
+
+        /*md md_config_end */
     }
 
     void render()
@@ -138,85 +178,4 @@ public:
             renderActiveSamples();
         }
     }
-
-    bool config(char* key, char* value)
-    {
-        /*md - `BACKGROUND_COLOR: #000000` set background color */
-        if (strcmp(key, "BACKGROUND_COLOR") == 0) {
-            background = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `OVERLAY_COLOR:#a2beb8` set overlay color */
-        if (strcmp(key, "OVERLAY_COLOR") == 0) {
-            overlayColor = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `OVERLAY_EDGE_COLOR:#a6b1ab` set overlay edge color */
-        if (strcmp(key, "OVERLAY_EDGE_COLOR") == 0) {
-            overlayEdgeColor = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `LOOP_START_COLOR:#548ebe` set loop start point color */
-        if (strcmp(key, "LOOP_START_COLOR") == 0) {
-            loopStartColor = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `LOOP_END_COLOR:#548ebe` set loop end point color */
-        if (strcmp(key, "LOOP_END_COLOR") == 0) {
-            loopEndColor = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `LOOP_POINTS_COLOR:#548ebe` set loop end and start point color */
-        if (strcmp(key, "LOOP_POINTS_COLOR") == 0) {
-            loopStartColor = draw.getColor(value);
-            loopEndColor = draw.getColor(value);
-            return true;
-        }
-
-        /*md - `KEYS: BROWSER START END SUSTAIN LENGTH` set the key parameter to use from plugin */
-        if (strcmp(key, "KEYS") == 0) {
-            valueKeys[0] = strtok(value, " ");
-            valueKeys[1] = strtok(NULL, " ");
-            valueKeys[2] = strtok(NULL, " ");
-            valueKeys[3] = strtok(NULL, " ");
-            valueKeys[4] = strtok(NULL, " ");
-            return true;
-        }
-
-        /*md - `PLUGIN: pluginName bufferDataId [sampleIndexDataId]` set the plugin to use from plugin */
-        if (strcmp(key, "PLUGIN") == 0) {
-            char* pluginName = strtok(value, " ");
-            plugin = &getPlugin(pluginName, track);
-            sampleBuffer = (struct SampleBuffer*)plugin->data(plugin->getDataId(strtok(NULL, " ")));
-            char* sampleIndexDataIdStr = strtok(NULL, " ");
-            if (sampleIndexDataIdStr != NULL) {
-                sampleIndex = (float*)plugin->data(plugin->getDataId(sampleIndexDataIdStr));
-            }
-
-            watch(plugin->getValue(valueKeys[0].c_str())); // watch for file change
-            startPosition = watch(plugin->getValue(valueKeys[1].c_str()));
-            endPosition = watch(plugin->getValue(valueKeys[2].c_str()));
-            sustainPosition = watch(plugin->getValue(valueKeys[3].c_str()));
-            sustainLength = watch(plugin->getValue(valueKeys[4].c_str()));
-            return true;
-        }
-
-        if (keypadLayout.config(key, value)) {
-            return true;
-        }
-
-        return wave.config(key, value);
-    }
-
-    void onKey(uint16_t id, int key, int8_t state, unsigned long now)
-    {
-        keypadLayout.onKey(id, key, state, now);
-    }
 };
-
-#endif

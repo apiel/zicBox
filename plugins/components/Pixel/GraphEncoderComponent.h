@@ -40,9 +40,6 @@ public:
         /// Set the color of the background.
         //md   bgColor="#000000"
 
-        /// If true, the title will be rendered on top of the graph. Default is true.
-        //md   renderValuesOnTop={false}
-
         /// The audio plugin to get control on.
         //md   plugin="audio_plugin_name"
 
