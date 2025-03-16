@@ -16,7 +16,7 @@ import {
     btnShift,
     btnUp,
     KeyInfoPosition,
-    ScreenWidth
+    ScreenWidth,
 } from '../constants';
 import { SideInfo } from './SideInfo';
 
@@ -83,6 +83,32 @@ export function Common({
                 contextValue={[1]}
                 {...(selectedBackground && { selectedBackground })}
             />
+
+            <TextGrid
+                bounds={KeyInfoPosition}
+                rows={[
+                    `Menu &empty &empty &empty`,
+                    `&icon::play::filled &empty &empty &empty`,
+                ]}
+                keys={[
+                    { key: btn1, action: 'setView:Menu' },
+                    // { key: btn2, action: 'setView:Synth1' },
+                    // { key: btn3, action: 'setView:Synth2' },
+                    // { key: btn4, action: 'setView:Synth3' },
+
+                    { key: btn5, action: `playPause` },
+                    // { key: btn6, action: `setView:Sample1` },
+                    // { key: btn7, action: `setView:Sample2` },
+                    // { key: btn8, action: `setView:Sample3` },
+
+                    { key: btnUp, action: 'contextToggle:253:1:0' },
+                    // { key: btnDown, action: 'playPause' },
+                    // { key: btnShift, action: 'contextToggle:254:1:0' },
+                ]}
+                selected={selected}
+                contextValue={[0, 1]}
+                {...(selectedBackground && { selectedBackground })}
+            />
             <TextGrid
                 bounds={KeyInfoPosition}
                 // C major pentatonic scale
@@ -117,14 +143,13 @@ export function Common({
                     { key: btn7, action: `noteOn:${synthName}:64` },
                     { key: btn8, action: `noteOn:${synthName}:65` },
 
-                    { key: btnUp, action: `noteOn:${synthName}:60` },
-                    { key: btnDown, action: 'contextToggle:253:1:0' },
+                    { key: btnUp, action: 'contextToggle:253:1:0' },
+                    { key: btnDown, action: 'contextToggle:252:1:0' },
                     // { key: btnDown, action: 'debug:yoyoyoyo' },
                     { key: btnShift, action: 'contextToggle:254:1:0' },
                 ]}
-
                 selected={selected}
-                contextValue={[0, 1]}
+                contextValue={[0, 0, 1]}
             />
             <SideInfo up="*" down="&icon::play::filled" ctxValue={1} />
         </>

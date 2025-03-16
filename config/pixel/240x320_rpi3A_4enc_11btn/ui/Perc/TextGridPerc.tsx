@@ -41,12 +41,12 @@ export function TextGridPerc({ selected, viewName }: { selected: string; viewNam
                     { key: btn7, action: 'noteOn:Perc:48' },
                     { key: btn8, action: 'noteOn:Perc:60' },
 
-                    { key: btnUp, action: 'noteOn:Perc:60' }, // when not used, let's play noteOn...
-                    { key: btnDown, action: 'contextToggleOnRelease:253:1:0' },
+                    { key: btnUp, action: 'contextToggle:253:1:0' }, // when not used, let's play noteOn...
+                    { key: btnDown, action: 'contextToggleOnRelease:252:1:0' },
                     { key: btnShift, action: 'contextToggle:254:1:0' },
                 ]}
                 selected={selected}
-                contextValue={[0, 0]}
+                contextValue={[0, 0, 0]}
             />
             <SideInfo up="*" down="&icon::musicNote::pixelated" ctxValue={0} />
         </>
