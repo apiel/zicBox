@@ -23,6 +23,7 @@ import { Drum23View } from './Drum23/Drum23View';
 import { CreateWorkspaceView } from './menu/CreateWorkspaceView';
 import { MenuView } from './menu/menuView';
 import { ShutdownView } from './menu/ShutdownView';
+import { WorkspacesView } from './menu/WorkspacesView';
 import { PercFxView } from './Perc/PercFxView';
 import { PercModView } from './Perc/PercModView';
 import { PercNoise2View } from './Perc/PercNoise2View';
@@ -71,6 +72,7 @@ export const ui = {
 
             <MenuView name="Menu" />
             <CreateWorkspaceView name="CreateWorkspace" />
+            <WorkspacesView name="Workspaces" />
             <ShutdownView name="Shutdown" />
 
             <ClipsView name="Clips" />
