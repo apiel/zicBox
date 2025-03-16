@@ -17,6 +17,7 @@ Styles styles = {
         .background =rgb(52, 50, 51),
         // .background =rgb(43, 41, 42),
         .white = rgb(255, 255, 255),
+        // .text =rgb(245, 238, 229),
         .text = rgb(255, 255, 255),
         .primary = rgb(173, 205, 255),
         .secondary = rgb(255, 141, 153),
