@@ -1,11 +1,22 @@
 import * as React from '@/libs/react';
 
-import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
 import { View } from '@/libs/nativeComponents/View';
 import { Workspaces } from '@/libs/nativeComponents/Workspaces';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
+import { rgb } from '@/libs/ui';
 import { workspaceFolder } from '../../audio';
-import { btn2, btn5, btn6, btn7, KeyInfoPosition, ScreenWidth } from '../constants';
+import {
+    btn1,
+    btn2,
+    btn3,
+    btn4,
+    btn5,
+    btn6,
+    btn7,
+    btn8,
+    KeyInfoPosition,
+    ScreenWidth,
+} from '../constants';
 
 export type Props = {
     name: string;
@@ -22,41 +33,40 @@ export function WorkspacesView({ name }: Props) {
                     { key: btn5, action: '.data:LOAD_WORKSPACE', context: { id: 254, value: 0 } },
                     { key: btn2, action: '.up', context: { id: 254, value: 0 } },
                     { key: btn6, action: '.down', context: { id: 254, value: 0 } },
-                    { key: btn7, action: '.delete', context: { id: 254, value: 1 } },
+
+                    { key: btn1, action: '.delete', context: { id: 254, value: 1 } },
+                    { key: btn5, action: '.delete', context: { id: 254, value: 1 } },
                 ]}
             />
 
-            <HiddenValue
-                visibilityContext={[{ index: 254, condition: 'SHOW_WHEN', value: 0 }]}
-                keys={[
-                    { key: 'd', action: 'setView:Clips' },
-                    { key: 'e', action: 'contextToggle:254:1:0' },
-                ]}
-            />
             <TextGrid
                 bounds={KeyInfoPosition}
                 rows={[
-                    '&empty &icon::arrowUp::filled ... &empty',
-                    'Use &icon::arrowDown::filled Exit &empty',
+                    '&empty &icon::arrowUp::filled &empty &icon::trash',
+                    'Use &icon::arrowDown::filled Exit New',
+                ]}
+                keys={[
+                    { key: btn3, action: 'setView:Clips' },
+                    { key: btn7, action: 'setView:Clips' },
+                    { key: btn4, action: 'contextToggle:254:1:0' },
+                    {
+                        key: btn8,
+                        action: 'setView:CreateWorkspace',
+                        action2: 'contextToggle:254:1:0',
+                    },
                 ]}
                 contextValue={[0]}
             />
 
-            <HiddenValue
-                visibilityContext={[{ index: 254, condition: 'SHOW_WHEN', value: 1 }]}
-                keys={[
-                    {
-                        key: 'q',
-                        action: 'setView:CreateWorkspace',
-                        action2: 'contextToggle:254:1:0',
-                    },
-                    { key: 'e', action: 'contextToggle:254:1:0' },
-                ]}
-            />
             <TextGrid
                 bounds={KeyInfoPosition}
-                rows={['New &empty ^... &empty', '&empty &empty &icon::trash &empty']}
+                selectedBackground={rgb(173, 99, 99)}
+                rows={['!Delete? &empty &empty ^&icon::trash', 'Yes No &empty &empty']}
                 contextValue={[1]}
+                keys={[
+                    { key: btn4, action: 'contextToggle:254:1:0' },
+                    { key: btn6, action: 'contextToggle:254:1:0' },
+                ]}
             />
         </View>
     );
