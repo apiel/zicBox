@@ -112,9 +112,9 @@ public:
     {
         if (error == Error::DELETE) {
             Point pos = { relativePosition.x + 20, relativePosition.y + 20 };
-            draw.filledRect(pos, { size.w - 40, 20 }, { errorColor });
+            draw.filledRect(pos, { size.w - 40, 30 }, { errorColor });
             draw.textCentered({ relativePosition.x + (int)(size.w / 2), pos.y + 2 }, "Cannot delete", 12, { textColor });
-            draw.textCentered({ relativePosition.x + (int)(size.w / 2), pos.y + 10 }, "active workspace.", 12, { textColor });
+            draw.textCentered({ relativePosition.x + (int)(size.w / 2), pos.y + 14 }, "active workspace.", 12, { textColor });
             error = Error::NONE;
         }
     }

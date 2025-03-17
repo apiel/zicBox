@@ -22,6 +22,7 @@ protected:
     Color itemBackground;
     Color selectionColor;
     Color textColor;
+    void* font = NULL;
 
     Size itemSize = { 20, 20 };
     Point textPos = { 0, 0 };
@@ -119,6 +120,16 @@ public:
                     }
                 };
             }
+            if (action == ".backspace")
+            {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        value = value.substr(0, value.size() - 1);
+                        renderNext();
+                    }
+                };
+            }
+            
 
             return func;
         })
@@ -128,6 +139,8 @@ public:
         , itemBackground(lighten(styles.colors.background, 0.5))
         , selectionColor(styles.colors.primary)
     {
+        font = draw.getFont("PoppinsLight_8");
+
         if (size.w / 9 < itemSize.w) {
             itemSize.w = size.w / 9;
         }
@@ -196,7 +209,7 @@ public:
         int x = relativePosition.x + ((size.w - (itemSize.w * 9)) * 0.5);
 
         draw.filledRect({ x, y }, { itemSize.w * 9, itemSize.h }, { itemBackground });
-        draw.text({ x + 8, y + textPos.y }, value, 8, { textColor });
+        draw.text({ x + 8, y + textPos.y }, value, 8, { textColor, .font = font });
 
         y += itemSize.h + 10;
 
@@ -208,13 +221,13 @@ public:
             draw.filledRect(pos, { itemSize.w - 2, itemSize.h - 2 }, { k == selection ? selectionColor : itemBackground });
             Point posText = { pos.x + textPos.x, pos.y + textPos.y };
             if (!icon.render(keys[k], posText, 6, { textColor }, Icon::CENTER)) {
-                draw.textCentered(posText, keys[k], 8, { textColor });
+                draw.textCentered(posText, keys[k], 8, { textColor, .font = font });
             }
         }
         draw.filledRect({ pos.x + itemSize.w, pos.y }, { (itemSize.w * 2) - 2, itemSize.h - 2 }, { keys.size() == selection ? selectionColor : itemBackground });
-        draw.textCentered({ pos.x + itemSize.w + ((itemSize.w * 2) - 2) / 2, pos.y + textPos.y }, "Back", 8, { textColor });
+        draw.textCentered({ pos.x + itemSize.w + ((itemSize.w * 2) - 2) / 2, pos.y + textPos.y }, "Back", 8, { textColor, .font = font });
 
         draw.filledRect({ pos.x + itemSize.w * 3, pos.y }, { (itemSize.w * 2) - 2, itemSize.h - 2 }, { keys.size() + 1 == selection ? selectionColor : itemBackground });
-        draw.textCentered({ pos.x + itemSize.w * 3 + ((itemSize.w * 2) - 2) / 2, pos.y + textPos.y }, "Done", 8, { textColor });
+        draw.textCentered({ pos.x + itemSize.w * 3 + ((itemSize.w * 2) - 2) / 2, pos.y + textPos.y }, "Done", 8, { textColor, .font = font });
     }
 };
