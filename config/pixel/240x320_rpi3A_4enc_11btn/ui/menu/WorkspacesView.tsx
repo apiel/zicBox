@@ -4,6 +4,7 @@ import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
 import { View } from '@/libs/nativeComponents/View';
 import { Workspaces } from '@/libs/nativeComponents/Workspaces';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
+import { workspaceFolder } from '../../audio';
 import { btn2, btn5, btn6, btn7, KeyInfoPosition, ScreenWidth } from '../constants';
 
 export type Props = {
@@ -14,6 +15,7 @@ export function WorkspacesView({ name }: Props) {
     return (
         <View name={name}>
             <Workspaces
+                workspaceFolder={workspaceFolder}
                 audioPlugin="SerializeTrack"
                 bounds={[0, 0, ScreenWidth, 280]}
                 keys={[
@@ -33,14 +35,21 @@ export function WorkspacesView({ name }: Props) {
             />
             <TextGrid
                 bounds={KeyInfoPosition}
-                rows={['&empty &icon::arrowUp::filled ... &empty', 'Use &icon::arrowDown::filled Exit &empty']}
+                rows={[
+                    '&empty &icon::arrowUp::filled ... &empty',
+                    'Use &icon::arrowDown::filled Exit &empty',
+                ]}
                 contextValue={[0]}
             />
 
             <HiddenValue
                 visibilityContext={[{ index: 254, condition: 'SHOW_WHEN', value: 1 }]}
                 keys={[
-                    { key: 'q', action: 'setView:CreateWorkspace', action2: 'contextToggle:254:1:0' },
+                    {
+                        key: 'q',
+                        action: 'setView:CreateWorkspace',
+                        action2: 'contextToggle:254:1:0',
+                    },
                     { key: 'e', action: 'contextToggle:254:1:0' },
                 ]}
             />

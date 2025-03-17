@@ -91,12 +91,12 @@ public:
 
     void renderItem(int y, int itemIndex) override
     {
-        draw.text({ relativePosition.x + 8, y + 4 }, items[itemIndex].text, 8, { textColor });
+        draw.text({ relativePosition.x + 8, y }, items[itemIndex].text, 12, { textColor });
         if (currentWorkspaceName != NULL && items[itemIndex].text == *currentWorkspaceName) {
             Point pos = { relativePosition.x + size.w - 70, y + 3 };
             draw.rect(pos, { 10, 10 }, { badgeColor });
             draw.filledRect({ pos.x + 2, pos.y + 2 }, { 6, 7 }, { badgeColor });
-            draw.text({ pos.x + 14, pos.y + 2 }, "active", 8, { badgeColor });
+            draw.text({ pos.x + 14, pos.y - 2 }, "active", 12, { badgeColor });
         }
     }
 
@@ -113,8 +113,8 @@ public:
         if (error == Error::DELETE) {
             Point pos = { relativePosition.x + 20, relativePosition.y + 20 };
             draw.filledRect(pos, { size.w - 40, 20 }, { errorColor });
-            draw.textCentered({ relativePosition.x + (int)(size.w / 2), pos.y + 2 }, "Cannot delete", 8, { textColor });
-            draw.textCentered({ relativePosition.x + (int)(size.w / 2), pos.y + 10 }, "active workspace.", 8, { textColor });
+            draw.textCentered({ relativePosition.x + (int)(size.w / 2), pos.y + 2 }, "Cannot delete", 12, { textColor });
+            draw.textCentered({ relativePosition.x + (int)(size.w / 2), pos.y + 10 }, "active workspace.", 12, { textColor });
             error = Error::NONE;
         }
     }
