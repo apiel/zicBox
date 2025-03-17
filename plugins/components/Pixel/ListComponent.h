@@ -45,6 +45,11 @@ public:
     ListComponent(ComponentInterface::Props props, std::function<std::function<void(KeypadLayout::KeyMap& keymap)>(std::string action)> keypadCustomAction = nullptr)
         : Component(props, [&](std::string action) {
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
+
+            if (keypadCustomAction) {
+                func = keypadCustomAction(action);
+            }
+            
             if (action == ".up") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
@@ -56,7 +61,6 @@ public:
                 };
             }
             if (action == ".down") {
-                printf("------------------------------------> down\n");
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         if (selection < items.size() - 1) {
@@ -68,9 +72,7 @@ public:
             }
 
             if (action.find(".data:") == 0) {
-                printf("------------------------------------> datatatata\n");
                 if (plugin) {
-                    printf("------------------------------------> datatatata plugin\n");
                     uint8_t dataId = plugin->getDataId(action.substr(6));
                     func = [this, dataId](KeypadLayout::KeyMap& keymap) {
                         printf("data (%d): %s\n", dataId, items[selection].text.c_str());
@@ -88,10 +90,6 @@ public:
                         view->setView(items[selection].text);
                     }
                 };
-            }
-
-            if (keypadCustomAction) {
-                func = keypadCustomAction(action);
             }
 
             return func;
