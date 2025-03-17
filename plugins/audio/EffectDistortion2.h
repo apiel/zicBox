@@ -19,11 +19,11 @@ public:
     /*md - `LEVEL` to set distortion mix level. */
     Val& level = val(100.0, "LEVEL", { "Dist. Level", .min = 0.0, .max = 100.0, .step = 1.0, .unit = "%" });
     /*md - `DRIVE` to set distortion drive. */
-    Val& drive = val(50.0, "DRIVE", { "Drive", .min = 0.0, .max = 100.0, .step = 1.0, .unit = "%" });
+    Val& drive = val(0.0, "DRIVE", { "Drive", .min = 0.0, .max = 100.0, .step = 1.0, .unit = "%" });
     /*md - `COMPRESS` to set distortion compression. */
-    Val& compress = val(50.0, "COMPRESS", { "Compression", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
+    Val& compress = val(0.0, "COMPRESS", { "Compression", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
     /*md - `BASS` to set bass boost. */
-    Val& bass = val(50.0, "BASS", { "Bass Boost", .min = 0.0, .max = 100.0, .step = 1.0, .unit = "%" });
+    Val& bass = val(0.0, "BASS", { "Bass Boost", .min = 0.0, .max = 100.0, .step = 1.0, .unit = "%" });
     /*md - `WAVESHAPE` to set waveshape. */
     Val& waveshape = val(0.0, "WAVESHAPE", { "Waveshape", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
 
