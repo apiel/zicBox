@@ -12,7 +12,7 @@ import {
 
 export const cutoffStringFormat = '%d%% %d%%';
 export const maxVariation = 16;
-const workspaceFolder = 'workspaces/rpi3A_4enc_11btn';
+export const workspaceFolder = 'workspaces/rpi3A_4enc_11btn';
 
 const drum23Track = {
     id: Drum23Track,

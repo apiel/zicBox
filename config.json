@@ -2275,7 +2275,7 @@
     {
       "name": "Workspaces",
       "components": [
-        {"audioPlugin":"SerializeTrack","bounds":[0,0,240,280],"keys":[{"key":"a","action":".data:LOAD_WORKSPACE","context":{"id":254,"value":0}},{"key":"w","action":".up","context":{"id":254,"value":0}},{"key":"s","action":".down","context":{"id":254,"value":0}},{"key":"d","action":".delete","context":{"id":254,"value":1}}],"componentName":"Workspaces"},
+        {"workspaceFolder":"workspaces/rpi3A_4enc_11btn","audioPlugin":"SerializeTrack","bounds":[0,0,240,280],"keys":[{"key":"a","action":".data:LOAD_WORKSPACE","context":{"id":254,"value":0}},{"key":"w","action":".up","context":{"id":254,"value":0}},{"key":"s","action":".down","context":{"id":254,"value":0}},{"key":"d","action":".delete","context":{"id":254,"value":1}}],"componentName":"Workspaces"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"d","action":"setView:Clips"},{"key":"e","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"text":"&empty","bounds":[0,296,60,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
