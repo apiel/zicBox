@@ -56,6 +56,7 @@ public:
                 };
             }
             if (action == ".down") {
+                printf("------------------------------------> down\n");
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         if (selection < items.size() - 1) {
@@ -67,9 +68,12 @@ public:
             }
 
             if (action.find(".data:") == 0) {
+                printf("------------------------------------> datatatata\n");
                 if (plugin) {
+                    printf("------------------------------------> datatatata plugin\n");
                     uint8_t dataId = plugin->getDataId(action.substr(6));
                     func = [this, dataId](KeypadLayout::KeyMap& keymap) {
+                        printf("data (%d): %s\n", dataId, items[selection].text.c_str());
                         if (KeypadLayout::isReleased(keymap)) {
                             plugin->data(dataId, &items[selection].text);
                             renderNext();
@@ -91,7 +95,7 @@ public:
             }
 
             return func;
-        })
+        }, true)
         , icon(props.view->draw)
         , bgColor(styles.colors.background)
         , textColor(styles.colors.text)
@@ -125,6 +129,7 @@ public:
         /// Set the color of the item background.
         itemBackground = draw.getColor(config["itemBackground"], itemBackground); //eg: "#ffffff"
 
+        keypadLayout.init(config);
         /*md md_config_end */
     }
 

@@ -1,7 +1,7 @@
 import * as React from '@/libs/react';
 
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
-import { btn1, btn5, btn7, btnShift, KeyInfoPosition } from '../constants';
+import { btn1, btn5, btn6, btn7, btnShift, KeyInfoPosition } from '../constants';
 
 export function TextGridClips() {
     return (
@@ -27,6 +27,7 @@ export function TextGridClipsShifted() {
             bounds={KeyInfoPosition}
             rows={['Menu Save ^...', '&icon::trash Back &icon::play::filled']}
             keys={[
+                { key: btn6, action: 'setView:Kick' },
                 { key: btn7, action: 'playPause' },
                 { key: btnShift, action: 'contextToggle:254:1:0' },
                 { key: btn1, action: 'setView:Menu' },

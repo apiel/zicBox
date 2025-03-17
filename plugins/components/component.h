@@ -20,7 +20,7 @@ public:
 
     Component(
         ComponentInterface::Props props,
-        std::function<std::function<void(KeypadLayout::KeyMap& keymap)>(std::string action)> keypadCustomAction = nullptr)
+        std::function<std::function<void(KeypadLayout::KeyMap& keymap)>(std::string action)> keypadCustomAction = nullptr, bool skipInitKeypad = false)
         : ComponentInterface(props)
         , keypadLayout(this, keypadCustomAction)
     {
@@ -28,7 +28,9 @@ public:
         track = config.value("track", track);
         group = config.value("group", group);
         visibilityContext.init(config);
-        keypadLayout.init(config);
+        if (!skipInitKeypad) {
+            keypadLayout.init(config);
+        }
     }
 
     ValueInterface* watch(ValueInterface* value)
