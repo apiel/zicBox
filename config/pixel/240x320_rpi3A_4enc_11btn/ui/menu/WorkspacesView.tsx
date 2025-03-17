@@ -49,11 +49,7 @@ export function WorkspacesView({ name }: Props) {
                     { key: btn3, action: 'setView:Clips' },
                     { key: btn7, action: 'setView:Clips' },
                     { key: btn4, action: 'contextToggle:254:1:0' },
-                    {
-                        key: btn8,
-                        action: 'setView:CreateWorkspace',
-                        action2: 'contextToggle:254:1:0',
-                    },
+                    { key: btn8, action: 'setView:CreateWorkspace' },
                 ]}
                 contextValue={[0]}
             />
