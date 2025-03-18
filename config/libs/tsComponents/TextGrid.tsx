@@ -13,6 +13,7 @@ export function TextGrid({
     contextValue,
     selectedBackground,
     bgColor = 'background',
+    textColor,
 }: {
     bounds: Bounds;
     selected?: string;
@@ -21,6 +22,7 @@ export function TextGrid({
     contextValue?: number[];
     selectedBackground?: string;
     bgColor?: string;
+    textColor?: string;
 }) {
     if (selected) {
         for (let i = 0; i < rows.length; i++) {
@@ -48,6 +50,7 @@ export function TextGrid({
                 activeBgColor={selectedBackground}
                 context={context}
                 bgColor={bgColor}
+                textColor={textColor}
             />
         </>
     );
@@ -60,15 +63,16 @@ function TextGridRender({
     activeBgColor = 'primary',
     shiftedTextColor = rgb(80, 75, 75),
     context,
+    textColor = 'text',
     ...props
 }: ComponentProps<{
     rows: string[];
     bgColor?: string;
     activeBgColor?: string;
     shiftedTextColor?: string;
-    context?: VisibilityContext[]
+    context?: VisibilityContext[];
+    textColor?: string;
 }>) {
-    const textColor = 'text';
     const h = 11;
     const [x, y, w] = getBounds(bounds);
     const textY = Number(y);
