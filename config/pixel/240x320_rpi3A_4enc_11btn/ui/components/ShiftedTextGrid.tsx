@@ -1,6 +1,8 @@
 import * as React from '@/libs/react';
 
+import { Rect } from '@/libs/nativeComponents/Rect';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
+import { rgb } from '@/libs/ui';
 import {
     btn1,
     btn2,
@@ -13,7 +15,8 @@ import {
     btnDown,
     btnShift,
     btnUp,
-    KeyInfoPosition
+    KeyInfoPosition,
+    KeyTopInfoPosition
 } from '../constants';
 
 export const Kick = 'Kick';
@@ -35,6 +38,24 @@ export function ShiftedTextGrid({
 }) {
     return (
         <>
+            <TextGrid
+                bounds={KeyTopInfoPosition}
+                rows={[`Clips`, `&icon::play::filled`]}
+                contextValue={[1]}
+                {...(selectedBackground && { selectedBackground })}
+                bgColor={rgb(77, 86, 88)}
+                // textColor={rgb(163, 163, 163)}
+                // textColor={rgb(207, 206, 206)}
+            />
+            <Rect
+                bounds={KeyTopInfoPosition}
+                color="background"
+                visibilityContext={[{
+                    index: 254,
+                    condition: 'SHOW_WHEN',
+                    value: 0,
+                }]}
+            />
             <TextGrid
                 bounds={KeyInfoPosition}
                 rows={[
@@ -63,10 +84,7 @@ export function ShiftedTextGrid({
 
             <TextGrid
                 bounds={KeyInfoPosition}
-                rows={[
-                    `Menu &empty &empty &empty`,
-                    `&icon::play::filled &empty &empty &empty`,
-                ]}
+                rows={[`Menu &empty &empty &empty`, `&icon::play::filled &empty &empty &empty`]}
                 keys={[
                     { key: btn1, action: 'setView:Menu' },
                     // { key: btn2, action: 'setView:Synth1' },
