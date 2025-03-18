@@ -52,7 +52,7 @@ export function TextGridDrum23({
                     { key: btn7, action: `setView:${synthName}Click` },
                     ...(selected === 'Seq.' ? [] : [{ key: btn8, action: `noteOn:${synthName}:60` }]),
 
-                    { key: btnUp, action: 'contextToggle:253:1:0' }, // when not used, let's play noteOn...
+                    { key: btnUp, action: 'contextToggle:253:1:0' },
                     { key: btnDown, action: 'contextToggleOnRelease:252:1:0' },
                     { key: btnShift, action: 'contextToggle:254:1:0' },
                 ]}
