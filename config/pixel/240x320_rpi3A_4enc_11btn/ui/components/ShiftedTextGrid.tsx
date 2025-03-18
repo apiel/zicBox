@@ -42,6 +42,7 @@ export function ShiftedTextGrid({
                 bounds={KeyTopInfoPosition}
                 rows={[`Clips`, `&icon::play::filled`]}
                 contextValue={[1]}
+                selected={selected}
                 {...(selectedBackground && { selectedBackground })}
                 bgColor={rgb(77, 86, 88)}
                 // textColor={rgb(163, 163, 163)}
