@@ -55,19 +55,19 @@ public:
             }
         } else if (layout == "rpi3A_4enc_11btn") {
             gpioKey.keys = {
-                { 27, getKeyCode("'x'") }, // pin 13 = gpio 27
-                { 4, getKeyCode("altleft") }, // pin 7 = gpio 4
-                { 14, getKeyCode("space") }, // pin 8 = gpio 14
+                { 27, getKeyCode("'F4'") }, // pin 13 = gpio 27
+                { 4, getKeyCode("'4'") }, // pin 7 = gpio 4
+                { 14, getKeyCode("'r'") }, // pin 8 = gpio 14
 
-                { 16, getKeyCode("'q'") }, // pin 36 = gpio 16
-                { 1, getKeyCode("'w'") }, // pin 28 = gpio 1
-                { 7, getKeyCode("'e'") }, // pin 26 = gpio 7
-                { 15, getKeyCode("'r'") }, // pin 10 = gpio 15
+                { 16, getKeyCode("'a'") }, // pin 36 = gpio 16
+                { 1, getKeyCode("'s'") }, // pin 28 = gpio 1
+                { 7, getKeyCode("'d'") }, // pin 26 = gpio 7
+                { 15, getKeyCode("'f'") }, // pin 10 = gpio 15
 
-                { 12, getKeyCode("'a'") }, // pin 32 = gpio 12
-                { 5, getKeyCode("'s'") }, // pin 29 = gpio 5
-                { 0, getKeyCode("'d'") }, // pin 27 = gpio 0
-                { 8, getKeyCode("'f'") }, // pin 24 = gpio 8
+                { 12, getKeyCode("'z'") }, // pin 32 = gpio 12
+                { 5, getKeyCode("'x'") }, // pin 29 = gpio 5
+                { 0, getKeyCode("'c'") }, // pin 27 = gpio 0
+                { 8, getKeyCode("'v'") }, // pin 24 = gpio 8
 
             };
             if (gpioKey.init() == 0) {

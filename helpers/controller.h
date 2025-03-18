@@ -20,6 +20,42 @@ uint8_t getKeyCode(std::string keyStr)
     if (keyStr == "altright") {
         return 230;
     }
+    if (keyStr == "F1") {
+        return 58;
+    }
+    if (keyStr == "F2") {
+        return 59;
+    }
+    if (keyStr == "F3") {
+        return 60;
+    }
+    if (keyStr == "F4") {
+        return 61;
+    }
+    if (keyStr == "F5") {
+        return 62;
+    }
+    if (keyStr == "F6") {
+        return 63;
+    }
+    if (keyStr == "F7") {
+        return 64;
+    }
+    if (keyStr == "F8") {
+        return 65;
+    }
+    if (keyStr == "F9") {
+        return 66;
+    }
+    if (keyStr == "F10") {
+        return 67;
+    }
+    if (keyStr == "F11") {
+        return 68;
+    }
+    if (keyStr == "F12") {
+        return 69;
+    }
     if (keyStr == "up") {
         return 82;
     }
