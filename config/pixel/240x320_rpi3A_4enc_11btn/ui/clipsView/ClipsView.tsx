@@ -31,14 +31,23 @@ export type Props = {
 export function ClipsView({ name }: Props) {
     return (
         <View name={name}>
-            <Clips color={ColorTrack1} track={Drum23Track} group={0} title="Kick" group_all={8} />
+            <Clips color={ColorTrack1} track={Drum23Track} group={0} title="T.1" group_all={8} />
+            <Clips color={ColorTrack2} track={Synth1Track} group={1} title="T.2" group_all={8} />
+            <Clips color={ColorTrack3} track={Synth2Track} group={2} title="T.3" group_all={8} />
+            <Clips color={ColorTrack4} track={Synth3Track} group={3} title="T.4" group_all={8} />
+            <Clips color={ColorTrack5} track={PercTrack} group={4} title="T.5" group_all={8} />
+            <Clips color={ColorTrack6} track={Sample1Track} group={5} title="T.6" group_all={8} />
+            <Clips color={ColorTrack7} track={Sample2Track} group={6} title="T.7" group_all={8} />
+            <Clips color={ColorTrack8} track={Sample3Track} group={7} title="T.8" group_all={8} />
+
+            {/* <Clips color={ColorTrack1} track={Drum23Track} group={0} title="Kick" group_all={8} />
             <Clips color={ColorTrack2} track={Synth1Track} group={1} title="Synth1" group_all={8} />
             <Clips color={ColorTrack3} track={Synth2Track} group={2} title="Synth2" group_all={8} />
             <Clips color={ColorTrack4} track={Synth3Track} group={3} title="Synth3" group_all={8} />
             <Clips color={ColorTrack5} track={PercTrack} group={4} title="Perc" group_all={8} />
             <Clips color={ColorTrack6} track={Sample1Track} group={5} title="Sample1" group_all={8} />
             <Clips color={ColorTrack7} track={Sample2Track} group={6} title="Sample2" group_all={8} />
-            <Clips color={ColorTrack8} track={Sample3Track} group={7} title="Sample3" group_all={8} />
+            <Clips color={ColorTrack8} track={Sample3Track} group={7} title="Sample3" group_all={8} /> */}
 
             {/* <Drum23Values group={0} track={Drum23Track} /> */}
             {/* <SampleValues group={1} track={SampleTrack} /> */}
