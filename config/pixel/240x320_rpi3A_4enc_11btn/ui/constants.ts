@@ -32,7 +32,7 @@ export const SecondaryBar = '#b54f5e';
 export const TertiaryBar = '#368a36';
 export const QuaternaryBar = '#94854b';
 
-export const ColorTrackMaster = rgb(114, 55, 111);
+export const ColorTrackMaster = rgb(73, 54, 72);
 export const ColorTrack1 = rgb(163, 201, 18);
 export const ColorTrack2 = rgb(253, 111, 14);
 export const ColorTrack3 = rgb(21, 165, 202);

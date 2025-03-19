@@ -7,12 +7,10 @@ import { btn1, btn2, btn5, btn6, ScreenWidth } from '../constants';
 export type Props = {
     color: string;
     track: number;
-    group: number;
     title: string;
-    group_all: number;
 };
 
-export function Clips({ color, track, group, title, group_all }: Props) {
+export function Clips({ color, track, title }: Props) {
     const w = ScreenWidth / 8;
     return (
         <>
@@ -21,14 +19,13 @@ export function Clips({ color, track, group, title, group_all }: Props) {
             <ClipsComponent
                 bounds={[(track - 1) * w, 15, w - 2, 100]}
                 track={track}
-                group={group}
                 color={color}
                 visibleCount={12}
-                groupAll={group_all}
+                groupAll={0}
                 keys={[
                     { key: btn1, action: '.toggle', context: {id: 254, value: 0} },
-                    { key: btn2, action: '.up', context: {id: 254, value: 0} },
-                    { key: btn6, action: '.down', context: {id: 254, value: 0} },
+                    { key: btn2, action: '.up', context: {id: 254, value: 0}},
+                    { key: btn6, action: '.down', context: {id: 254, value: 0}},
 
                     // { key: btn1, action: '.next', context: '254:1' },
                     { key: btn5, action: '.delete', context: {id: 254, value: 1} },
