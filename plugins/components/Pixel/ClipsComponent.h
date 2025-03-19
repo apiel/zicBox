@@ -23,10 +23,10 @@ protected:
     Color bgColor;
     Color foreground;
     Color textColor;
-    Color foreground2;
     Color barColor;
     Color playColor;
     Color playNextColor;
+    Color selectionColor;
 
     AudioPlugin* pluginSerialize = NULL;
     ValueInterface* valVariation = NULL;
@@ -36,6 +36,7 @@ protected:
     uint8_t deleteVariationDataId = -1;
     ValueInterface* valSeqStatus = NULL;
     int* nextVariationToPlay = NULL;
+    bool showSelectionRect = false;
 
     struct Variation {
         bool exists;
@@ -139,7 +140,7 @@ public:
         })
         , bgColor(styles.colors.background)
         , foreground(rgb(53, 53, 53))
-        , foreground2(lighten(foreground, 0.5))
+        , selectionColor(lighten(foreground, 0.3))
         , textColor(styles.colors.text)
         , barColor(styles.colors.primary)
         , playColor(rgb(35, 161, 35))
@@ -154,15 +155,17 @@ public:
         /// The background color of the text.
         bgColor = draw.getColor(config["bgColor"], bgColor); //eg: "#000000"
 
-        /// The foreground color of the text.
-        foreground = draw.getColor(config["foregroundColor"], foreground); //eg: "#ffffff"
-        foreground2 = lighten(foreground, 0.2);
+        /// Selection forground color.
+        selectionColor = draw.getColor(config["selectionColor"], selectionColor); //eg: "#ffffff"
 
         /// The color of the text
         textColor = draw.getColor(config["textColor"], textColor); //eg: "#ffffff"
 
         /// The identifier color of the component...
         barColor = draw.getColor(config["color"], barColor); //eg: "#ffffff"
+
+        /// Show rectangle around selected clip.
+        showSelectionRect = config.value("showSelectionRect", showSelectionRect); //eg: true
 
         /// The number of visible clips
         visibleCount = config.value("visibleCount", visibleCount); //eg: 10
@@ -209,8 +212,11 @@ public:
                 // int y = relativePosition.y + i * clipH;
                 int y = relativePosition.y + (i - start) * clipH;
 
+                bool selected = (isActive || isGroupAll) && i == selection;
+                draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { selected ? selectionColor : foreground });
+
                 if (variation.exists && (i == playingId || i == *nextVariationToPlay)) {
-                    draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { darken(barColor, 0.8) });
+                    // draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { darken(barColor, 0.8) });
                     draw.filledRect({ relativePosition.x, y }, { size.w, 2 }, { barColor });
 
                     if (i == *nextVariationToPlay) {
@@ -223,7 +229,7 @@ public:
                         }
                     }
                 } else {
-                    draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { foreground });
+                    // draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { foreground });
                     draw.filledRect({ relativePosition.x, y }, { size.w, 1 }, { darken(barColor, 0.3) });
                 }
 
@@ -231,7 +237,7 @@ public:
                     draw.textCentered({ relativePosition.x + (int)(size.w * 0.5), y + (int)((clipH - 12) * 0.5) }, std::to_string(i + 1), 12, { textColor, .maxWidth = size.w });
                 }
 
-                if ((isActive || isGroupAll) && i == selection) {
+                if (showSelectionRect && selected) {
                     draw.rect({ relativePosition.x, y }, { size.w, clipH - 2 }, { barColor });
                 }
             }
@@ -248,6 +254,7 @@ public:
 
     void onGroupChanged(int8_t index) override
     {
+        // printf("current group: %d inccoming group: %d\n", group, index);
         if (isActive) {
             renderNext();
         }
@@ -267,6 +274,13 @@ public:
         }
         if (shouldUpdateGroupAll != isGroupAll) {
             isGroupAll = shouldUpdateGroupAll;
+            renderNext();
+        }
+    }
+
+    void onContext(uint8_t index, float value) override
+    {
+        if (index == selectionBank && shouldDoAction()) {
             renderNext();
         }
     }
