@@ -49,8 +49,6 @@ protected:
 
     uint8_t selectionBank = 30;
 
-    KeypadLayout keypadLayout;
-
     bool shouldDoAction()
     {
         // Not all action should happen when it is in groupAll mode
@@ -64,15 +62,7 @@ protected:
 
 public:
     ClipsComponent(ComponentInterface::Props props)
-        : Component(props)
-        , bgColor(styles.colors.background)
-        , foreground(rgb(53, 53, 53))
-        , foreground2(lighten(foreground, 0.5))
-        , textColor(styles.colors.text)
-        , barColor(styles.colors.primary)
-        , playColor(rgb(35, 161, 35))
-        , playNextColor(rgb(253, 111, 14))
-        , keypadLayout(this, [&](std::string action) {
+        : Component(props, [&](std::string action) {
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
             if (action == ".up") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
@@ -147,6 +137,13 @@ public:
             }
             return func;
         })
+        , bgColor(styles.colors.background)
+        , foreground(rgb(53, 53, 53))
+        , foreground2(lighten(foreground, 0.5))
+        , textColor(styles.colors.text)
+        , barColor(styles.colors.primary)
+        , playColor(rgb(35, 161, 35))
+        , playNextColor(rgb(253, 111, 14))
     {
         /*md md_config:Clips */
         nlohmann::json& config = props.config;
@@ -231,7 +228,7 @@ public:
                 }
 
                 if (variation.exists) {
-                    draw.textCentered({ relativePosition.x + (int)(size.w * 0.5), y + (int)((clipH - 8) * 0.5) }, std::to_string(i + 1), 8, { textColor, .maxWidth = size.w });
+                    draw.textCentered({ relativePosition.x + (int)(size.w * 0.5), y + (int)((clipH - 12) * 0.5) }, std::to_string(i + 1), 12, { textColor, .maxWidth = size.w });
                 }
 
                 if ((isActive || isGroupAll) && i == selection) {
