@@ -45,7 +45,7 @@ export function TextGridPerc({ selected, viewName }: { selected: string; viewNam
                     { key: btn7, action: 'noteOn:Perc:48' },
                     ...(selected === 'Seq.' ? [] : [{ key: btn8, action: `noteOn:Perc:60` }]),
 
-                    { key: btnUp, action: 'contextToggle:253:1:0' }, // when not used, let's play noteOn...
+                    { key: btnUp, action: 'contextToggle:253:1:0' },
                     { key: btnDown, action: 'contextToggleOnRelease:252:1:0' },
                     { key: btnShift, action: 'contextToggle:254:1:0' },
                 ]}
