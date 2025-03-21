@@ -14,6 +14,7 @@ export function TextGrid({
     selectedBackground,
     bgColor = 'background',
     textColor,
+    shiftedTextColor,
 }: {
     bounds: Bounds;
     selected?: string;
@@ -23,6 +24,7 @@ export function TextGrid({
     selectedBackground?: string;
     bgColor?: string;
     textColor?: string;
+    shiftedTextColor?: string;
 }) {
     if (selected) {
         for (let i = 0; i < rows.length; i++) {
@@ -51,6 +53,7 @@ export function TextGrid({
                 context={context}
                 bgColor={bgColor}
                 textColor={textColor}
+                shiftedTextColor={shiftedTextColor}
             />
         </>
     );
