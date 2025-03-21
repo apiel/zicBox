@@ -4,6 +4,7 @@ import { VisibilityContext } from '@/libs/nativeComponents/component';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { Text } from '@/libs/nativeComponents/Text';
 import {
+    btnDown,
     btnShift,
     btnUp,
     ColorTrack1,
@@ -39,7 +40,7 @@ export function TextGridClips() {
                 {...props}
                 keys={[
                     { key: btnUp, action: 'contextToggle:253:1:0' },
-                    // { key: btnDown, action: 'contextToggleOnRelease:252:1:0' },
+                    { key: btnDown, action: 'contextToggle:251:1:0' }, // Should be 251 and not 252, else it will conflict with keyboard toggle
                     { key: btnShift, action: 'contextToggle:254:1:0' },
                 ]}
             />
