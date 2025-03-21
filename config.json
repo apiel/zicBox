@@ -2561,6 +2561,8 @@
         {"text":"T.8","bounds":[210,2,30,8],"centered":true,"color":"#b54fad","componentName":"Text"},
         {"bounds":[210,15,28,100],"track":8,"color":"#b54fad","visibleCount":12,"groupAll":0,"keys":[{"key":"v","action":".saveOrDelete","context":{"id":251,"value":1}},{"key":"v","action":".toggle","context":{"id":254,"value":0}}],"componentName":"Clips"},
         {"encoderId":0,"contextId":30,"min":0,"max":16,"inverted":true,"bounds":[0,0,0,0],"componentName":"HiddenContext"},
+        {"text":"Save / Delete","bounds":[140,284,100,12],"color":"#c0c0c0","visibilityContext":[{"index":251,"condition":"SHOW_WHEN","value":1}],"font":"PoppinsLight_8","fontSize":8,"centered":true,"componentName":"Text"},
+        {"bounds":[140,284,100,12],"color":"background","visibilityContext":[{"index":251,"condition":"SHOW_WHEN","value":0}],"componentName":"Rect"},
         {"text":"Kick","bounds":[0,296,60,12],"color":"#a3c912","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"font":"PoppinsLight_8","fontSize":8,"centered":true,"keys":[{"key":"F4","action":"contextToggle:253:1:0"},{"key":"4","action":"contextToggle:251:1:0"},{"key":"r","action":"contextToggle:254:1:0"}],"componentName":"Text"},
         {"bounds":[10,301,3,4],"color":"#a3c912","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"componentName":"Rect"},
         {"text":"Synth1","bounds":[60,296,60,12],"color":"#fd6f0e","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"font":"PoppinsLight_8","fontSize":8,"centered":true,"componentName":"Text"},
