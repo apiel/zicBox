@@ -1,5 +1,4 @@
-#ifndef _UI_COMPONENT_HIDDEN_VALUE_H_
-#define _UI_COMPONENT_HIDDEN_VALUE_H_
+#pragma once
 
 #include "plugins/components/component.h"
 
@@ -68,5 +67,3 @@ public:
         }
     }
 };
-
-#endif

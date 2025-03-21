@@ -3,6 +3,7 @@
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
+#include "helpers/range.h"
 
 #include <string>
 #include <vector>
@@ -37,6 +38,8 @@ protected:
     ValueInterface* valSeqStatus = NULL;
     int* nextVariationToPlay = NULL;
     bool showSelectionRect = false;
+
+    int encoderId = -1;
 
     struct Variation {
         bool exists;
@@ -85,19 +88,6 @@ public:
                     }
                 };
             }
-            if (action == ".save") {
-                func = [this](KeypadLayout::KeyMap& keymap) {
-                    if (KeypadLayout::isReleased(keymap)) {
-                        int16_t id = view->contextVar[selectionBank];
-                        if (pluginSerialize) {
-                            pluginSerialize->data(saveVariationDataId, (void*)&id);
-                            variations[id].exists = true;
-                            // valVariation->set(id);
-                            renderNext();
-                        }
-                    }
-                };
-            }
             if (action == ".toggle") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
@@ -124,6 +114,19 @@ public:
                     }
                 };
             }
+            if (action == ".save") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        int16_t id = view->contextVar[selectionBank];
+                        if (pluginSerialize) {
+                            pluginSerialize->data(saveVariationDataId, (void*)&id);
+                            variations[id].exists = true;
+                            // valVariation->set(id);
+                            renderNext();
+                        }
+                    }
+                };
+            }
             if (action == ".delete") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
@@ -131,6 +134,23 @@ public:
                         if (variations[id].exists) {
                             pluginSerialize->data(deleteVariationDataId, (void*)&id);
                             variations[id].exists = false;
+                            renderNext();
+                        }
+                    }
+                };
+            }
+            if (action == ".saveOrDelete") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        int16_t id = view->contextVar[selectionBank];
+                        if (variations[id].exists) {
+                            pluginSerialize->data(deleteVariationDataId, (void*)&id);
+                            variations[id].exists = false;
+                            renderNext();
+                        } else {
+                            pluginSerialize->data(saveVariationDataId, (void*)&id);
+                            variations[id].exists = true;
+                            // valVariation->set(id);
                             renderNext();
                         }
                     }
@@ -169,6 +189,9 @@ public:
 
         /// The number of visible clips
         visibleCount = config.value("visibleCount", visibleCount); //eg: 10
+
+        /// Id of the encoder to use in order to change selected row.
+        encoderId = config.value("encoderId", encoderId); //eg: 0
 
         /// The sequencer audio plugin.
         AudioPlugin* pluginSeq = &getPlugin(config.value("sequencerPlugin", "Sequencer"), track); //eg: "audio_plugin_name"
@@ -280,8 +303,19 @@ public:
 
     void onContext(uint8_t index, float value) override
     {
+        // printf("[ClipsComponent] onContext: %d %f\n", index, value);
         if (index == selectionBank && shouldDoAction()) {
+            // printf("[ClipsComponent] renderNext\n");
             renderNext();
+        }
+    }
+
+    void onEncoder(int id, int8_t direction) override
+    {
+        if (id == encoderId) {
+            if (shouldDoAction()) {
+                setContext(selectionBank, range(view->contextVar[selectionBank] + direction, 0, valVariation->props().max - 1));
+            }
         }
     }
 };

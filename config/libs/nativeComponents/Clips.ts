@@ -9,4 +9,5 @@ export const Clips = getJsonComponent<{
   visibleCount?: number;
   sequencerPlugin?: string;
   serializerPlugin?: string;
+  encoderId?: number;
 }>('Clips');
