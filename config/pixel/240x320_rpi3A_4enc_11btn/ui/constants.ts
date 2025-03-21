@@ -19,7 +19,7 @@ export const W6_8 = W1_8 * 6;
 export const W7_8 = W1_8 * 7;
 export const W8_8 = W1_8 * 8;
 
-export const KeyTopInfoPosition = [210, 268, 30, 24];
+export const KeyTopInfoPosition = [140, 284, 100, 12];
 
 export const KeyInfoPosition = [0, 296, ScreenWidth];
 // export const KeyInfoPosition = [0, 296, ScreenWidth];
@@ -32,7 +32,7 @@ export const SecondaryBar = '#b54f5e';
 export const TertiaryBar = '#368a36';
 export const QuaternaryBar = '#94854b';
 
-export const ColorTrackMaster = rgb(73, 54, 72);
+export const ColorTrackMaster = rgb(255, 74, 74);
 export const ColorTrack1 = rgb(163, 201, 18);
 export const ColorTrack2 = rgb(253, 111, 14);
 export const ColorTrack3 = rgb(21, 165, 202);

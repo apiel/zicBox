@@ -40,13 +40,14 @@ export function ShiftedTextGrid({
         <>
             <TextGrid
                 bounds={KeyTopInfoPosition}
-                rows={[`Clips`, `&icon::play::filled`]}
+                rows={[`Clips &icon::play::filled ^Tracks`]}
                 contextValue={[1]}
                 selected={selected}
                 {...(selectedBackground && { selectedBackground })}
                 bgColor={rgb(77, 86, 88)}
                 // textColor={rgb(163, 163, 163)}
                 // textColor={rgb(207, 206, 206)}
+                shiftedTextColor={rgb(134, 146, 148)}
             />
             <Rect
                 bounds={KeyTopInfoPosition}
