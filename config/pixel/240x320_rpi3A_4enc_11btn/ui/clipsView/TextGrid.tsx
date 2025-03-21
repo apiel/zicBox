@@ -18,7 +18,7 @@ import {
     ColorTrack8,
     KeyInfoPosition,
     KeyTopInfoPosition,
-    ScreenWidth,
+    ScreenWidth
 } from '../constants';
 
 export function TextGridClips() {
