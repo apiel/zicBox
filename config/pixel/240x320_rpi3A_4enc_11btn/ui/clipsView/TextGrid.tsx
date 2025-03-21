@@ -3,6 +3,7 @@ import * as React from '@/libs/react';
 import { VisibilityContext } from '@/libs/nativeComponents/component';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { Text } from '@/libs/nativeComponents/Text';
+import { rgb } from '@/libs/ui';
 import {
     btnDown,
     btnShift,
@@ -16,6 +17,7 @@ import {
     ColorTrack7,
     ColorTrack8,
     KeyInfoPosition,
+    KeyTopInfoPosition,
     ScreenWidth,
 } from '../constants';
 
@@ -33,6 +35,29 @@ export function TextGridClips() {
     return (
         <>
             <Text
+                text="Save / Delete"
+                bounds={KeyTopInfoPosition}
+                color={rgb(192, 192, 192)}
+                {...props}
+                visibilityContext={[
+                    {
+                        index: 251,
+                        condition: 'SHOW_WHEN',
+                        value: 1,
+                    },
+                ]}
+            />
+            <Rect
+                bounds={KeyTopInfoPosition}
+                color="background"
+                visibilityContext={[{
+                    index: 251,
+                    condition: 'SHOW_WHEN',
+                    value: 0,
+                }]}
+            />
+
+            <Text
                 text="Kick"
                 bounds={[0, KeyInfoPosition[1], w, 12]}
                 color={ColorTrack1}
@@ -44,7 +69,11 @@ export function TextGridClips() {
                     { key: btnShift, action: 'contextToggle:254:1:0' },
                 ]}
             />
-            <Rect bounds={[10, KeyInfoPosition[1] + 5, 3, 4]} color={ColorTrack1} visibilityContext={visibilityContext} /> 
+            <Rect
+                bounds={[10, KeyInfoPosition[1] + 5, 3, 4]}
+                color={ColorTrack1}
+                visibilityContext={visibilityContext}
+            />
             <Text
                 text="Synth1"
                 bounds={[w, KeyInfoPosition[1], w, 12]}
@@ -52,7 +81,11 @@ export function TextGridClips() {
                 // bgColor={ColorTrack2}
                 {...props}
             />
-            <Rect bounds={[w + 5, KeyInfoPosition[1] + 5, 3, 4]} color={ColorTrack2} visibilityContext={visibilityContext} />
+            <Rect
+                bounds={[w + 5, KeyInfoPosition[1] + 5, 3, 4]}
+                color={ColorTrack2}
+                visibilityContext={visibilityContext}
+            />
             <Text
                 text="Synth2"
                 bounds={[2 * w, KeyInfoPosition[1], w, 12]}
@@ -60,7 +93,11 @@ export function TextGridClips() {
                 // bgColor={ColorTrack3}
                 {...props}
             />
-            <Rect bounds={[2 * w + 5, KeyInfoPosition[1] + 5, 3, 4]} color={ColorTrack3} visibilityContext={visibilityContext} />
+            <Rect
+                bounds={[2 * w + 5, KeyInfoPosition[1] + 5, 3, 4]}
+                color={ColorTrack3}
+                visibilityContext={visibilityContext}
+            />
             <Text
                 text="Synth3"
                 bounds={[3 * w, KeyInfoPosition[1], w, 12]}
@@ -68,7 +105,11 @@ export function TextGridClips() {
                 // bgColor={ColorTrack4}
                 {...props}
             />
-            <Rect bounds={[3 * w + 5, KeyInfoPosition[1] + 5, 3, 4]} color={ColorTrack4} visibilityContext={visibilityContext} />
+            <Rect
+                bounds={[3 * w + 5, KeyInfoPosition[1] + 5, 3, 4]}
+                color={ColorTrack4}
+                visibilityContext={visibilityContext}
+            />
 
             <Text
                 text="Perc"
@@ -77,7 +118,11 @@ export function TextGridClips() {
                 // bgColor={ColorTrack5}
                 {...props}
             />
-            <Rect bounds={[10, KeyInfoPosition[1] + 17, 3, 4]} color={ColorTrack5} visibilityContext={visibilityContext} />
+            <Rect
+                bounds={[10, KeyInfoPosition[1] + 17, 3, 4]}
+                color={ColorTrack5}
+                visibilityContext={visibilityContext}
+            />
             <Text
                 text="Sample1"
                 bounds={[w, KeyInfoPosition[1] + 12, w, 12]}
@@ -85,7 +130,11 @@ export function TextGridClips() {
                 // bgColor={ColorTrack6}
                 {...props}
             />
-            <Rect bounds={[w + 5, KeyInfoPosition[1] + 17, 3, 4]} color={ColorTrack6} visibilityContext={visibilityContext} />
+            <Rect
+                bounds={[w + 5, KeyInfoPosition[1] + 17, 3, 4]}
+                color={ColorTrack6}
+                visibilityContext={visibilityContext}
+            />
             <Text
                 text="Sample2"
                 bounds={[2 * w, KeyInfoPosition[1] + 12, w, 12]}
@@ -93,7 +142,11 @@ export function TextGridClips() {
                 // bgColor={ColorTrack7}
                 {...props}
             />
-            <Rect bounds={[2 * w + 5, KeyInfoPosition[1] + 17, 3, 4]} color={ColorTrack7} visibilityContext={visibilityContext} />
+            <Rect
+                bounds={[2 * w + 5, KeyInfoPosition[1] + 17, 3, 4]}
+                color={ColorTrack7}
+                visibilityContext={visibilityContext}
+            />
             <Text
                 text="Sample3"
                 bounds={[3 * w, KeyInfoPosition[1] + 12, w, 12]}
@@ -101,7 +154,11 @@ export function TextGridClips() {
                 // bgColor={ColorTrack8}
                 {...props}
             />
-            <Rect bounds={[3 * w + 5, KeyInfoPosition[1] + 17, 3, 4]} color={ColorTrack8} visibilityContext={visibilityContext} />
+            <Rect
+                bounds={[3 * w + 5, KeyInfoPosition[1] + 17, 3, 4]}
+                color={ColorTrack8}
+                visibilityContext={visibilityContext}
+            />
         </>
     );
 }

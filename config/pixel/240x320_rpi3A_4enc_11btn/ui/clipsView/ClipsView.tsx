@@ -28,7 +28,7 @@ import {
     Sample3Track,
     Synth1Track,
     Synth2Track,
-    Synth3Track,
+    Synth3Track
 } from '../constants';
 import { Clips } from './Clips';
 import { TextGridClips } from './TextGrid';
