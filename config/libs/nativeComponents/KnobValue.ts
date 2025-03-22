@@ -16,4 +16,5 @@ export const KnobValue = getJsonComponent<{
     valueSize?: number;
     titleSize?: number;
     valueReplaceTitle?: boolean;
+    insideRadius?: number;
 }>('KnobValue');
