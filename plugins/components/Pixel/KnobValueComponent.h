@@ -304,6 +304,9 @@ public:
         /// Instead to show the value of the parameter in knob, show it under the knob. Can be useful for long string value.
         stringValueReplaceTitle = config.value("valueReplaceTitle", stringValueReplaceTitle); //eg: true
 
+        /// Set inside radius of the knob.
+        insideRadius = config.value("insideRadius", insideRadius); //eg: 15        
+
         /*md md_config_end */
     }
 
