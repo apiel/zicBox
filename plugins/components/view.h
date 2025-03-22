@@ -78,6 +78,7 @@ public:
 
     void onContext(uint8_t index, float value)
     {
+        // printf("on context %d to %f\n", index, value);
         for (auto& component : components) {
             component->onContext(index, value);
         }

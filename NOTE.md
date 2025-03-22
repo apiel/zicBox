@@ -4,7 +4,6 @@
        add freq mod curve
        add filter8      
 - TODO drum synth with multiple swappable engines
-- TODO clips with arbitrary selection
 
 ## Framework improvement
 
@@ -74,6 +73,8 @@ valgrind --leak-check=full ./pixel.x86
 - TODO data id, do something if the ID does not exist... and maybe not rely at all on numeric id anymore!
 
 - TODO clip scrollbar
+
+- TODO clips with arbitrary selection
 
 - NOTE should we move Ui in separate thread to have better understanding of CPU usage
 
@@ -311,6 +312,7 @@ Render Text (Bitmap or Vector)
 - TODO create separate asset folder > might put it in wiki...
 
 - TODO start thread in https://llllllll.co/
+-                      https://www.elektronauts.com/c/the-lounge/other-gear/23
 
 - TODO scatter/grid effect
     - when pressing a btn it would apply (only while button is pressed and then revert original setting):

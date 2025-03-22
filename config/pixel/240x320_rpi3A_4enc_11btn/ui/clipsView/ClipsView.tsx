@@ -40,6 +40,9 @@ export type Props = {
 export function ClipsView({ name }: Props) {
     return (
         <View name={name}>
+            {/* Put ShiftedTextGrid first, so it will overtake clip key actions */}
+            <ShiftedTextGrid selectedBackground={ColorTrackMaster} selected="Clips" />
+
             <Clips color={ColorTrack1} track={Drum23Track} title="T.1" key={btn1} />
             <Clips color={ColorTrack2} track={Synth1Track} title="T.2" key={btn2} />
             <Clips color={ColorTrack3} track={Synth2Track} title="T.3" key={btn3} />
@@ -51,7 +54,6 @@ export function ClipsView({ name }: Props) {
             <HiddenContext encoderId={0} contextId={30} min={0} max={16} inverted />
 
             <TextGridClips />
-            <ShiftedTextGrid selectedBackground={ColorTrackMaster} selected="Clips" />
         </View>
     );
 }

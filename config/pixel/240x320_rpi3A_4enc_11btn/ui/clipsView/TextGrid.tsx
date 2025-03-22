@@ -25,6 +25,7 @@ export function TextGridClips() {
     const w = ScreenWidth / 4;
     const visibilityContext: VisibilityContext[] = [
         { index: 254, condition: 'SHOW_WHEN', value: 0 },
+        { index: 253, condition: 'SHOW_WHEN', value: 0 },
     ];
     const props = {
         visibilityContext,
