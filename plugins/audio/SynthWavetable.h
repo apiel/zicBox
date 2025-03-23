@@ -130,7 +130,16 @@ public:
     });
 
     /*md - `LFO_FREQ_MOD` set the LFO depth for frequency modulation.*/
-    Val& lfoFreq = val(0.0f, "LFO_FREQ_MOD", { "Freq. Mod.", VALUE_CENTERED, .min = -100.0f });
+    Val& lfoFreq = val(0.0f, "LFO_FREQ_MOD", { "Freq. Mod.", VALUE_CENTERED, .min = -100.0f, .unit = "%" });
+
+    /*md - `LFO_AMPLITUDE_MOD` set the LFO depth for amplitude modulation.*/
+    Val& lfoAmplitude = val(0.0f, "LFO_AMPLITUDE_MOD", { "Amp. Mod.", .unit = "%" });
+
+    /*md - `LFO_CUTOFF_MOD` set the LFO depth for cutoff modulation.*/
+    Val& lfoCutoff = val(0.0f, "LFO_CUTOFF_MOD", { "Cutoff Mod.", VALUE_CENTERED, .min = -100.0f, .unit = "%" });
+
+    /*md - `LFO_RESONANCE_MOD` set the LFO depth for resonance modulation.*/
+    Val& lfoResonance = val(0.0f, "LFO_RESONANCE_MOD", { "Resonance Mod.", VALUE_CENTERED, .min = -100.0f, .unit = "%" });
 
     SynthWavetable(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config) // clang-format on
@@ -166,16 +175,38 @@ public:
             float out = wavetable.sample(&wavetable.sampleIndex, modulatedFreq);
 
             if (filterType.get() != SynthWavetable::FilterType::FILTER_OFF) {
-                if (lastInvEnv != invEnv && (cutoffMod.pct() != 0.5f || resonanceMod.pct() != 0.5f)) {
-                    filter.set(
-                        range(filterCutoff.pct() + invEnv * (cutoffMod.pct() - 0.5f), 0.0f, 1.0f),
-                        range(filterResonance.pct() + invEnv * (resonanceMod.pct() - 0.5f), 0.0f, 1.0f));
+                // if (lastInvEnv != invEnv && (cutoffMod.pct() != 0.5f || resonanceMod.pct() != 0.5f)) {
+                //     filter.set(
+                //         range(filterCutoff.pct() + invEnv * (cutoffMod.pct() - 0.5f), 0.0f, 1.0f),
+                //         range(filterResonance.pct() + invEnv * (resonanceMod.pct() - 0.5f), 0.0f, 1.0f));
+                // }
+                float cutoff = filterCutoff.pct();
+                float reso = filterResonance.pct();
+                if (lastInvEnv != invEnv) {
+                    if (cutoffMod.pct() != 0.5f) {
+                        cutoff += invEnv * (cutoffMod.pct() - 0.5f);
+                    }
+                    if (resonanceMod.pct() != 0.5f) {
+                        reso += invEnv * (resonanceMod.pct() - 0.5f);
+                    }
+                }
+                if (lfoCutoff.pct() != 0.5f) {
+                    cutoff += (lfoCutoff.pct() - 0.5f) * lfoValue;
+                }
+                if (lfoResonance.pct() != 0.5f) {
+                    reso += (lfoResonance.pct() - 0.5f) * lfoValue;
+                }
+                if (cutoff != filterCutoff.pct() || reso != filterResonance.pct()) {
+                    filter.set(range(cutoff, 0.0f, 1.0f), range(reso, 0.0f, 1.0f));
                 }
                 lastInvEnv = invEnv;
                 out = filter.process(out);
             }
 
             out = out * velocity * env;
+            if (lfoAmplitude.pct() != 0.0f) {
+                out = out * (1.0f - lfoAmplitude.pct()) + out * lfoAmplitude.pct() * lfoValue;
+            }
             buf[track] = out;
         }
     }
