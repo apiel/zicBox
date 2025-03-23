@@ -129,16 +129,24 @@ public:
     /*md - `LFO_WAVEFORM` set the LFO waveform.*/
     Val& lfoWaveform = val(0, "LFO_WAVEFORM", { "LFO Waveform", VALUE_STRING, .max = LFO::WAVEFORM_COUNT - 1 }, [&](auto p) {
         p.val.setFloat(p.value);
-        if ((int)p.val.get() == LFO::SQUARE) {
-            p.val.setString("Square");
-            lfo.setWaveform(LFO::SQUARE);
-        } else if ((int)p.val.get() == LFO::TRIANGLE) {
-            p.val.setString("Triangle");
-            lfo.setWaveform(LFO::TRIANGLE);
-        } else if ((int)p.val.get() == LFO::SAWTOOTH) {
-            p.val.setString("Sawtooth");
-            lfo.setWaveform(LFO::SAWTOOTH);
-        }
+        // if ((int)p.val.get() == LFO::SQUARE) {
+        //     p.val.setString("Square");
+        //     lfo.setWaveform(LFO::SQUARE);
+        // } else if ((int)p.val.get() == LFO::TRIANGLE) {
+        //     p.val.setString("Triangle");
+        //     lfo.setWaveform(LFO::TRIANGLE);
+        // } else if ((int)p.val.get() == LFO::SAWTOOTH) {
+        //     p.val.setString("Sawtooth");
+        //     lfo.setWaveform(LFO::SAWTOOTH);
+        // } else if ((int)p.val.get() == LFO::REVERSE_SAWTOOTH) {
+        //     p.val.setString("Ramp Down");
+        //     lfo.setWaveform(LFO::REVERSE_SAWTOOTH);
+        // } else if ((int)p.val.get() == LFO::NOISE) {
+        //     p.val.setString("Noise");
+        //     lfo.setWaveform(LFO::NOISE);
+        // }
+        lfo.setWaveform((int)p.val.get());
+        p.val.setString(lfo.toString());
     });
 
     SynthWavetable(AudioPlugin::Props& props, AudioPlugin::Config& config)
