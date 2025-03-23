@@ -49,7 +49,7 @@ export function Env2View({ name, track, synthName, color }: Props) {
                             track={track}
                         /> */}
 
-            <ViewSelector selected={'Mod.'} viewName={name} synthName={synthName} color={color} />
+            <ViewSelector selected={'Env.Mod'} viewName={name} synthName={synthName} color={color} />
             <Common track={track} selectedBackground={color} selected={synthName} synthName={synthName} />
         </View>
     );

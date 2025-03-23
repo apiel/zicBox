@@ -1,7 +1,7 @@
 #pragma once
 
+#include "./utils/FastWaveform.h"
 #include "./utils/Wavetable.h"
-#include "./utils/Lfo.h"
 #include "audioPlugin.h"
 #include "helpers/range.h"
 #include "mapping.h"
@@ -26,14 +26,13 @@ protected:
 
     Wavetable wavetable;
     EffectFilterData filter;
-    LFO lfo;
+    FastWaveform lfo;
 
     float attackStepInc = 0.0f;
     float releaseStepInc = 0.0f;
     float env = -1.0f;
     bool released = false;
     float freqMod = 1.0f;
-
 
 public:
     /*md **Values**: */
@@ -118,20 +117,20 @@ public:
     });
 
     /*md - `LFO_RATE` set the LFO rate.*/
-    Val& lfoRate = val(1.0f, "LFO_RATE", { "LFO Rate", .min = 0.1f, .max = 20.0f }, [&](auto p) {
+    Val& lfoRate = val(1.0f, "LFO_RATE", { "LFO Rate", .min = 0.1f, .max = 100.0f, .step = 0.1f, .floatingPoint = 1, .unit = "Hz" }, [&](auto p) {
         p.val.setFloat(p.value);
         lfo.setRate(p.val.get());
     });
 
-    /*md - `LFO_DEPTH` set the LFO depth.*/
-    Val& lfoDepth = val(0.5f, "LFO_DEPTH", { "LFO Depth", .min = 0.0f, .max = 1.0f });
-
     /*md - `LFO_WAVEFORM` set the LFO waveform.*/
-    Val& lfoWaveform = val(0, "LFO_WAVEFORM", { "LFO Waveform", VALUE_STRING, .max = LFO::WAVEFORM_COUNT - 1 }, [&](auto p) {
+    Val& lfoWaveform = val(0, "LFO_WAVEFORM", { "LFO", VALUE_STRING, .max = FastWaveform::TYPE_COUNT - 1 }, [&](auto p) {
         p.val.setFloat(p.value);
-        lfo.setWaveform((int)p.val.get());
+        lfo.setType((int)p.val.get());
         p.val.setString(lfo.toString());
     });
+
+    /*md - `LFO_FREQ` set the LFO depth for frequency modulation.*/
+    Val& lfoFreq = val(0.0f, "LFO_FREQ", { "LFO Freq.", VALUE_CENTERED, .min = -100.0f });
 
     SynthWavetable(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config) // clang-format on
@@ -153,13 +152,16 @@ public:
             }
             float modulatedFreq = freq;
             float invEnv = 1.0f - env;
-            // float lfoValue = lfo.process();
+            float lfoValue = lfo.process();
 
             if (frequencyMod.pct() != 0.5f) {
                 modulatedFreq += invEnv * (frequencyMod.pct() - 0.5f);
-                if (modulatedFreq < 0.0f) {
-                    modulatedFreq = 0.000001f;
-                }
+            }
+            if (lfoFreq.pct() != 0.5f) {
+                modulatedFreq += (lfoFreq.pct() - 0.5f) * lfoValue;
+            }
+            if (modulatedFreq < 0.0f) {
+                modulatedFreq = 0.000001f;
             }
             float out = wavetable.sample(&wavetable.sampleIndex, modulatedFreq);
 
