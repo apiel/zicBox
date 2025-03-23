@@ -129,8 +129,8 @@ public:
         p.val.setString(lfo.toString());
     });
 
-    /*md - `LFO_FREQ` set the LFO depth for frequency modulation.*/
-    Val& lfoFreq = val(0.0f, "LFO_FREQ", { "LFO Freq.", VALUE_CENTERED, .min = -100.0f });
+    /*md - `LFO_FREQ_MOD` set the LFO depth for frequency modulation.*/
+    Val& lfoFreq = val(0.0f, "LFO_FREQ_MOD", { "Freq. Mod.", VALUE_CENTERED, .min = -100.0f });
 
     SynthWavetable(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config) // clang-format on

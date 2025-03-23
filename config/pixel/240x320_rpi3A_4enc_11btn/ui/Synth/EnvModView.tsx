@@ -14,12 +14,12 @@ export type Props = {
     color: string;
 };
 
-export function Lfo1View({ name, track, synthName, color }: Props) {
+export function EnvModView({ name, track, synthName, color }: Props) {
     return (
         <View name={name}>
             <KnobValue
                 audioPlugin={synthName}
-                param="LFO_WAVEFORM"
+                param="CUTOFF_MOD"
                 bounds={topLeftKnob}
                 encoderId={encTopLeft}
                 color="tertiary"
@@ -27,7 +27,7 @@ export function Lfo1View({ name, track, synthName, color }: Props) {
             />
             <KnobValue
                 audioPlugin={synthName}
-                param="LFO_RATE"
+                param="RESONANCE_MOD"
                 bounds={topRightKnob}
                 encoderId={encTopRight}
                 color="primary"
@@ -35,22 +35,21 @@ export function Lfo1View({ name, track, synthName, color }: Props) {
             />
             <KnobValue
                 audioPlugin={synthName}
-                param="LFO_FREQ"
+                param="FREQUENCY_MOD"
                 bounds={bottomLeftKnob}
                 encoderId={encBottomLeft}
                 color="quaternary"
                 track={track}
             />
             {/* <KnobValue
-                audioPlugin="TrackFx"
-                param="FX_AMOUNT"
-                bounds={bottomRightKnob}
-                encoderId={encBottomRight}
-                color="secondary"
-                track={track}
-            /> */}
+                            audioPlugin={synthName} param="OSC_MOD"
+                            bounds={bottomRightKnob}
+                            encoderId={encBottomRight}
+                            color="secondary"
+                            track={track}
+                        /> */}
 
-            <ViewSelector selected={'Lfo'} viewName={name} synthName={synthName} color={color} />
+            <ViewSelector selected={'Env.Mod'} viewName={name} synthName={synthName} color={color} />
             <Common track={track} selectedBackground={color} selected={synthName} synthName={synthName} />
         </View>
     );

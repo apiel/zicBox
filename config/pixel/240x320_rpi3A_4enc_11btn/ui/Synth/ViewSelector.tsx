@@ -39,43 +39,23 @@ export function ViewSelector({
                 bounds={KeyInfoPosition}
                 selectedBackground={color}
                 rows={[
-                    'Main Env/Fx Lfo Wave',
-                    `Seq. Env.Mod Lfo.Mod ${selected === 'Seq.' ? '___' : '&icon::musicNote::pixelated'}`,
+                    'Main Fx Env/Lfo Wave',
+                    `Seq. Env.Mod Lfo.Mod ${
+                        selected === 'Seq.' ? '___' : '&icon::musicNote::pixelated'
+                    }`,
                 ]}
                 keys={[
                     { key: btn1, action: `setView:${synthName}` },
-                    {
-                        key: btn2,
-                        action:
-                            viewName === `${synthName}Env1`
-                                ? `setView:${synthName}Env2`
-                                : `setView:${synthName}Env1`,
-                    },
-                    {
-                        key: btn3,
-                        action:
-                            viewName === `${synthName}Lfo1`
-                                ? `setView:${synthName}Lfo2`
-                                : `setView:${synthName}Lfo1`,
-                    },
+                    { key: btn2, action: `setView:${synthName}Fx` },
+                    { key: btn3, action: `setView:${synthName}EnvLfo` },
                     { key: btn4, action: `setView:${synthName}Wave` },
 
                     { key: btn5, action: `setView:${synthName}Seq` },
-                    {
-                        key: btn6,
-                        action:
-                            viewName === `${synthName}Env2`
-                                ? `setView:${synthName}Env1`
-                                : `setView:${synthName}Env2`,
-                    },
-                    {
-                        key: btn7,
-                        action:
-                            viewName === `${synthName}Lfo2`
-                                ? `setView:${synthName}Lfo1`
-                                : `setView:${synthName}Lfo2`,
-                    },
-                    ...(selected === 'Seq.' ? [] : [{ key: btn8, action: `noteOn:${synthName}:60` }]),
+                    { key: btn6, action: `setView:${synthName}EnvMod` },
+                    { key: btn7, action: `setView:${synthName}LfoMod` },
+                    ...(selected === 'Seq.'
+                        ? []
+                        : [{ key: btn8, action: `noteOn:${synthName}:60` }]),
 
                     { key: btnUp, action: 'contextToggle:253:1:0' }, // when not used, let's play noteOn...
                     { key: btnDown, action: 'contextToggleOnRelease:252:1:0' },
