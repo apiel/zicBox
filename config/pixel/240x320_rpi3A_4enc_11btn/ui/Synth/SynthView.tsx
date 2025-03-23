@@ -1,9 +1,9 @@
 import * as React from '@/libs/react';
 import { SeqView } from '../components/SeqView';
-import { Env1View } from './Env1View';
-import { Env2View } from './Env2View';
+import { EnvLfoView } from './EnvLfoView';
+import { EnvModView } from './EnvModView';
 import { FxView } from './FxView';
-import { Lfo1View } from './Lfo1View';
+import { LfoModView } from './LfoModView';
 import { MainView } from './Main';
 import { ViewSelector } from './ViewSelector';
 import { WaveView } from './Wave';
@@ -20,9 +20,9 @@ export function SynthView({ track, synthName, color }: Props) {
             <MainView name={synthName} track={track} synthName={synthName} color={color} />
             <WaveView name={`${synthName}Wave`} track={track} synthName={synthName} color={color} />
             <FxView name={`${synthName}Fx`} track={track} synthName={synthName} color={color} />
-            <Env1View name={`${synthName}Env1`} track={track} synthName={synthName} color={color} />
-            <Env2View name={`${synthName}Env2`} track={track} synthName={synthName} color={color} />
-            <Lfo1View name={`${synthName}Lfo1`} track={track} synthName={synthName} color={color} />
+            <EnvLfoView name={`${synthName}EnvLfo`} track={track} synthName={synthName} color={color} />
+            <EnvModView name={`${synthName}EnvMod`} track={track} synthName={synthName} color={color} />
+            <LfoModView name={`${synthName}LfoMod`} track={track} synthName={synthName} color={color} />
             <SeqView
                 name={`${synthName}Seq`}
                 track={track}
