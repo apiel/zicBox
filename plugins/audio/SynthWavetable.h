@@ -138,6 +138,9 @@ public:
             float invEnv = 1.0f - env;
             if (frequencyMod.pct() != 0.5f) {
                 modulatedFreq += invEnv * (frequencyMod.pct() - 0.5f);
+                if (modulatedFreq < 0.0f) {
+                    modulatedFreq = 0.000001f;
+                }
             }
             float out = wavetable.sample(&wavetable.sampleIndex, modulatedFreq);
 
