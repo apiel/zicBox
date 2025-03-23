@@ -59,8 +59,9 @@ public:
         while ((*index) >= sampleCount) {
             (*index) -= sampleCount;
         }
-        // return bufferSamples[(uint16_t)(*index) + sampleStart];
-        int pos = range(sampleStart + lfo * bufferSampleCount, 0, bufferSampleCount - sampleCount);
+        // int pos = range(sampleStart + lfo * bufferSampleCount, 0, bufferSampleCount - sampleCount);
+        int p = ZIC_WAVETABLE_WAVEFORMS_COUNT * lfo;
+        int pos = range(sampleStart + p * sampleCount, 0, bufferSampleCount - sampleCount);;
         return linearInterpolationAbsolute(*index, sampleCount, bufferSamples + pos);
     }
 
