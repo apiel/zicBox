@@ -1,6 +1,5 @@
 #pragma once
 #include <cstdint>
-
 #include <cmath>
 #include <stdlib.h>
 
@@ -12,12 +11,14 @@ public:
         SAWTOOTH,
         REVERSE_SAWTOOTH,
         NOISE,
+        SAMPLE_AND_HOLD,
         TYPE_COUNT,
     };
 
     FastWaveform(float sampleRate, float rate = 1.0f, Type wave = TRIANGLE)
         : sampleRate(sampleRate)
         , phase(0.0f)
+        , sampleHoldValue(0.0f)
     {
         setType(wave);
         setRate(rate);
@@ -48,6 +49,9 @@ public:
         case NOISE:
             processFunc = &FastWaveform::processNoise;
             break;
+        case SAMPLE_AND_HOLD:
+            processFunc = &FastWaveform::processSampleAndHold;
+            break;
         }
     }
 
@@ -76,6 +80,8 @@ public:
             return "Ramp Down";
         case NOISE:
             return "Noise";
+        case SAMPLE_AND_HOLD:
+            return "Sample & Hold";
         }
         return "Unknown";
     }
@@ -85,6 +91,7 @@ private:
     float rate;
     Type type;
     float phase;
+    float sampleHoldValue;
     float phaseIncrement;
     float (FastWaveform::*processFunc)() = nullptr;
 
@@ -138,4 +145,14 @@ private:
     //     seed ^= seed << 5;
     //     return (seed / 4294967295.0f) * 2.0f - 1.0f;
     // }
+
+    float processSampleAndHold()
+    {
+        if (phase >= 1.0f) {
+            phase -= 1.0f;
+            sampleHoldValue = processNoise();
+        }
+        phase += phaseIncrement;
+        return sampleHoldValue;
+    }
 };
