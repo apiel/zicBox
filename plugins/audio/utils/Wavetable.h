@@ -53,6 +53,17 @@ public:
         return linearInterpolationAbsolute(*index, sampleCount, bufferSamples + sampleStart);
     }
 
+    float sample(float* index, float sampleInc, float lfo)
+    {
+        (*index) += sampleInc;
+        while ((*index) >= sampleCount) {
+            (*index) -= sampleCount;
+        }
+        // return bufferSamples[(uint16_t)(*index) + sampleStart];
+        int pos = range(sampleStart + lfo * bufferSampleCount, 0, bufferSampleCount - sampleCount);
+        return linearInterpolationAbsolute(*index, sampleCount, bufferSamples + pos);
+    }
+
     void close()
     {
         if (file) {

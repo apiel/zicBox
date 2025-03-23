@@ -736,7 +736,7 @@
       "name": "Synth1LfoMod",
       "components": [
         {"audioPlugin":"Synth1","param":"LFO_FREQ_MOD","bounds":[0,60,118,100],"encoderId":0,"color":"tertiary","track":2,"componentName":"KnobValue"},
-        {"audioPlugin":"Synth1","param":"LFO_AMPLITUDE_MOD","bounds":[120,60,118,100],"encoderId":1,"color":"primary","track":2,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth1","param":"LFO_WAVE_MOD","bounds":[120,60,118,100],"encoderId":1,"color":"primary","track":2,"componentName":"KnobValue"},
         {"audioPlugin":"Synth1","param":"LFO_CUTOFF_MOD","bounds":[0,160,118,100],"encoderId":2,"color":"quaternary","track":2,"componentName":"KnobValue"},
         {"audioPlugin":"Synth1","param":"LFO_RESONANCE_MOD","bounds":[120,160,118,100],"encoderId":3,"color":"secondary","track":2,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Synth1","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
@@ -1098,7 +1098,7 @@
       "name": "Synth2LfoMod",
       "components": [
         {"audioPlugin":"Synth2","param":"LFO_FREQ_MOD","bounds":[0,60,118,100],"encoderId":0,"color":"tertiary","track":3,"componentName":"KnobValue"},
-        {"audioPlugin":"Synth2","param":"LFO_AMPLITUDE_MOD","bounds":[120,60,118,100],"encoderId":1,"color":"primary","track":3,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth2","param":"LFO_WAVE_MOD","bounds":[120,60,118,100],"encoderId":1,"color":"primary","track":3,"componentName":"KnobValue"},
         {"audioPlugin":"Synth2","param":"LFO_CUTOFF_MOD","bounds":[0,160,118,100],"encoderId":2,"color":"quaternary","track":3,"componentName":"KnobValue"},
         {"audioPlugin":"Synth2","param":"LFO_RESONANCE_MOD","bounds":[120,160,118,100],"encoderId":3,"color":"secondary","track":3,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Synth2","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
@@ -1460,7 +1460,7 @@
       "name": "Synth3LfoMod",
       "components": [
         {"audioPlugin":"Synth3","param":"LFO_FREQ_MOD","bounds":[0,60,118,100],"encoderId":0,"color":"tertiary","track":4,"componentName":"KnobValue"},
-        {"audioPlugin":"Synth3","param":"LFO_AMPLITUDE_MOD","bounds":[120,60,118,100],"encoderId":1,"color":"primary","track":4,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth3","param":"LFO_WAVE_MOD","bounds":[120,60,118,100],"encoderId":1,"color":"primary","track":4,"componentName":"KnobValue"},
         {"audioPlugin":"Synth3","param":"LFO_CUTOFF_MOD","bounds":[0,160,118,100],"encoderId":2,"color":"quaternary","track":4,"componentName":"KnobValue"},
         {"audioPlugin":"Synth3","param":"LFO_RESONANCE_MOD","bounds":[120,160,118,100],"encoderId":3,"color":"secondary","track":4,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Synth3","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
