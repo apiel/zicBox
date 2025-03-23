@@ -3,9 +3,15 @@
 - TODO add lfo to wavetable synth
        add freq mod curve
        add filter8      
-- TODO drum synth with multiple swappable engines
+       
+- TODO fix seq
+
+- TODO synth with multiple swappable engines
+
 
 ## Framework improvement
+
+- TODO zicOs based on busybox
 
 - TODO drag and drop editor!! 
 
