@@ -3,7 +3,12 @@
 - TODO add lfo to wavetable synth
        add freq mod curve
        add filter8      
-       
+       IDEA extra waveform type based on FastWaveform
+            First param could select the waveform type
+            Second the detune
+            Third the mix
+            However, maybe there is too much param, but we might be able to combine first and second param in one param... 
+
 - TODO fix seq
 
 - TODO synth with multiple swappable engines

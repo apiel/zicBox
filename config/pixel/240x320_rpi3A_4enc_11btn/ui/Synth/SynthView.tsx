@@ -3,6 +3,7 @@ import { SeqView } from '../components/SeqView';
 import { Env1View } from './Env1View';
 import { Env2View } from './Env2View';
 import { FxView } from './FxView';
+import { Lfo1View } from './Lfo1View';
 import { MainView } from './Main';
 import { ViewSelector } from './ViewSelector';
 import { WaveView } from './Wave';
@@ -21,6 +22,7 @@ export function SynthView({ track, synthName, color }: Props) {
             <FxView name={`${synthName}Fx`} track={track} synthName={synthName} color={color} />
             <Env1View name={`${synthName}Env1`} track={track} synthName={synthName} color={color} />
             <Env2View name={`${synthName}Env2`} track={track} synthName={synthName} color={color} />
+            <Lfo1View name={`${synthName}Lfo1`} track={track} synthName={synthName} color={color} />
             <SeqView
                 name={`${synthName}Seq`}
                 track={track}

@@ -40,7 +40,7 @@ export function ViewSelector({
                 selectedBackground={color}
                 rows={[
                     'Main Env/Fx Lfo Wave',
-                    `Seq. Mod. Mod ${selected === 'Seq.' ? '___' : '&icon::musicNote::pixelated'}`,
+                    `Seq. Env.Mod Lfo.Mod ${selected === 'Seq.' ? '___' : '&icon::musicNote::pixelated'}`,
                 ]}
                 keys={[
                     { key: btn1, action: `setView:${synthName}` },

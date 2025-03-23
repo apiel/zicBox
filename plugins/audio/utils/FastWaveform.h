@@ -4,22 +4,22 @@
 #include <cmath>
 #include <stdlib.h>
 
-class LFO {
+class FastWaveform {
 public:
-    enum Waveform {
+    enum Type {
         TRIANGLE,
         SQUARE,
         SAWTOOTH,
         REVERSE_SAWTOOTH,
         NOISE,
-        WAVEFORM_COUNT,
+        TYPE_COUNT,
     };
 
-    LFO(float sampleRate, float rate = 1.0f, Waveform wave = TRIANGLE)
+    FastWaveform(float sampleRate, float rate = 1.0f, Type wave = TRIANGLE)
         : sampleRate(sampleRate)
         , phase(0.0f)
     {
-        setWaveform(wave);
+        setType(wave);
         setRate(rate);
     }
 
@@ -29,31 +29,32 @@ public:
         phaseIncrement = rate / sampleRate;
     }
 
-    void setWaveform(Waveform wave)
+    void setType(Type wave)
     {
-        waveform = wave;
+        type = wave;
         switch (wave) {
         case SQUARE:
-            processFunc = &LFO::processSquare;
+            processFunc = &FastWaveform::processSquare;
             break;
         case TRIANGLE:
-            processFunc = &LFO::processTriangle;
+            processFunc = &FastWaveform::processTriangle;
             break;
         case SAWTOOTH:
-            processFunc = &LFO::processSawtooth;
+            processFunc = &FastWaveform::processSawtooth;
             break;
         case REVERSE_SAWTOOTH:
-            processFunc = &LFO::processReverseSawtooth;
+            processFunc = &FastWaveform::processReverseSawtooth;
             break;
         case NOISE:
-            processFunc = &LFO::processNoise;
+            processFunc = &FastWaveform::processNoise;
             break;
         }
     }
 
-    void setWaveform(uint8_t wave) {
-        if (wave < WAVEFORM_COUNT) {
-            setWaveform(static_cast<Waveform>(wave));
+    void setType(uint8_t wave)
+    {
+        if (wave < TYPE_COUNT) {
+            setType(static_cast<Type>(wave));
         }
     }
 
@@ -62,8 +63,9 @@ public:
         return (this->*processFunc)(); // Call the selected function
     }
 
-    const char* toString() {
-        switch (waveform) {
+    const char* toString()
+    {
+        switch (type) {
         case SQUARE:
             return "Square";
         case TRIANGLE:
@@ -81,10 +83,10 @@ public:
 private:
     float sampleRate;
     float rate;
-    Waveform waveform;
+    Type type;
     float phase;
     float phaseIncrement;
-    float (LFO::*processFunc)() = nullptr;
+    float (FastWaveform::*processFunc)() = nullptr;
 
     float processSquare()
     {
@@ -97,7 +99,8 @@ private:
 
     float processTriangle()
     {
-        float value = 2.0f * fabs(2.0f * phase - 1.0f) - 1.0f;
+        // float value = 2.0f * fabs(2.0f * phase - 1.0f) - 1.0f;
+        float value = (phase < 0.5f) ? (4.0f * phase - 1.0f) : (3.0f - 4.0f * phase); // Alternate formula to fabs for efficiency
         phase += phaseIncrement;
         if (phase >= 1.0f)
             phase -= 1.0f;
