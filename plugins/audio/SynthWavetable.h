@@ -132,8 +132,11 @@ public:
     /*md - `LFO_FREQ_MOD` set the LFO depth for frequency modulation.*/
     Val& lfoFreq = val(0.0f, "LFO_FREQ_MOD", { "Freq. Mod.", VALUE_CENTERED, .min = -100.0f, .unit = "%" });
 
-    /*md - `LFO_AMPLITUDE_MOD` set the LFO depth for amplitude modulation.*/
-    Val& lfoAmplitude = val(0.0f, "LFO_AMPLITUDE_MOD", { "Amp. Mod.", .unit = "%" });
+    // / *md - `LFO_AMPLITUDE_MOD` set the LFO depth for amplitude modulation.*/
+    // Val& lfoAmplitude = val(0.0f, "LFO_AMPLITUDE_MOD", { "Amp. Mod.", .unit = "%" });
+
+    /*md - `LFO_WAVE_MOD` set the LFO depth for wave modulation.*/
+    Val& lfoWave = val(0.0f, "LFO_WAVE_MOD", { "Wave Mod.", VALUE_CENTERED, .min = -100.0f, .unit = "%" });
 
     /*md - `LFO_CUTOFF_MOD` set the LFO depth for cutoff modulation.*/
     Val& lfoCutoff = val(0.0f, "LFO_CUTOFF_MOD", { "Cutoff Mod.", VALUE_CENTERED, .min = -100.0f, .unit = "%" });
@@ -172,7 +175,10 @@ public:
             if (modulatedFreq < 0.0f) {
                 modulatedFreq = 0.000001f;
             }
-            float out = wavetable.sample(&wavetable.sampleIndex, modulatedFreq);
+            // float out = wavetable.sample(&wavetable.sampleIndex, modulatedFreq, (lfoValue - 0.5f) * 2);
+            float out = lfoWave.get() != 0.0f
+                ? wavetable.sample(&wavetable.sampleIndex, modulatedFreq, (lfoWave.pct() - 0.5f) * 2 * lfoValue)
+                : wavetable.sample(&wavetable.sampleIndex, modulatedFreq);
 
             if (filterType.get() != SynthWavetable::FilterType::FILTER_OFF) {
                 // if (lastInvEnv != invEnv && (cutoffMod.pct() != 0.5f || resonanceMod.pct() != 0.5f)) {
@@ -204,9 +210,9 @@ public:
             }
 
             out = out * velocity * env;
-            if (lfoAmplitude.pct() != 0.0f) {
-                out = out * (1.0f - lfoAmplitude.pct()) + out * lfoAmplitude.pct() * lfoValue;
-            }
+            // if (lfoAmplitude.pct() != 0.0f) {
+            //     out = out * (1.0f - lfoAmplitude.pct()) + out * lfoAmplitude.pct() * lfoValue;
+            // }
             buf[track] = out;
         }
     }

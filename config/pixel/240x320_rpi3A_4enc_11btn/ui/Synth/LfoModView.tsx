@@ -27,7 +27,7 @@ export function LfoModView({ name, track, synthName, color }: Props) {
             />
             <KnobValue
                 audioPlugin={synthName}
-                param="LFO_AMPLITUDE_MOD"
+                param="LFO_WAVE_MOD"
                 bounds={topRightKnob}
                 encoderId={encTopRight}
                 color="primary"
