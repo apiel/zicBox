@@ -6,7 +6,7 @@
 #include "mapping.h"
 #include "utils/EnvelopRelative.h"
 
-#include "./utils/Waveform.h"
+#include "./utils/WavetableGenerator.h"
 #include "./utils/Wavetable.h"
 
 #define ZIC_BASS_UI 1000
@@ -30,19 +30,19 @@ protected:
     unsigned int sampleIndex = 0;
     float velocity = 1.0f;
 
-    WaveformInterface* wave = nullptr;
-    Waveform waveform;
+    WavetableInterface* wave = nullptr;
+    WavetableGenerator waveform;
     Wavetable wavetable;
 #define BASS_WAVEFORMS_COUNT 4
     struct WaveformType {
         std::string name;
-        WaveformInterface* wave;
+        WavetableInterface* wave;
         uint8_t indexType = 0;
     } waveformTypes[BASS_WAVEFORMS_COUNT] = {
         { "Wavetable", &wavetable },
-        { "Sawtooth", &waveform, Waveform::Type::Sawtooth },
-        { "Square", &waveform, Waveform::Type::Square },
-        { "Pulse", &waveform, Waveform::Type::Pulse },
+        { "Sawtooth", &waveform, WavetableGenerator::Type::Sawtooth },
+        { "Square", &waveform, WavetableGenerator::Type::Square },
+        { "Pulse", &waveform, WavetableGenerator::Type::Pulse },
     };
 
     static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
@@ -148,7 +148,7 @@ public:
         p.val.setString(type.name);
         wave = type.wave;
         if (p.val.get() != 0.0f) {
-            waveform.setWaveformType((Waveform::Type)type.indexType);
+            waveform.setType((WavetableGenerator::Type)type.indexType);
             printf("Waveform type: %s shape: %f macro: %f\n", type.name.c_str(), waveform.shape * 100.0f, waveform.macro * 100.0f);
             shape.set(waveform.shape * 1000.0f);
             macro.set(waveform.macro * 100.0f);

@@ -1,17 +1,16 @@
-#ifndef _WAVETABLE_H_
-#define _WAVETABLE_H_
+#pragma once
 
 #include <sndfile.h>
 #include <string.h>
 #include <string>
 
 #include "plugins/audio/fileBrowser.h"
-#include "plugins/audio/utils/WaveformInterface.h"
+#include "plugins/audio/utils/WavetableInterface.h"
 #include "plugins/audio/utils/utils.h"
 
 #define ZIC_WAVETABLE_WAVEFORMS_COUNT 64
 
-class Wavetable : public WaveformInterface {
+class Wavetable : public WavetableInterface {
 protected:
     SF_INFO sfinfo;
     SNDFILE* file = NULL;
@@ -28,7 +27,7 @@ public:
     FileBrowser fileBrowser = FileBrowser("./wavetables");
 
     Wavetable()
-        : WaveformInterface(2048)
+        : WavetableInterface(2048)
     {
         memset(&sfinfo, 0, sizeof(sfinfo));
         open(0, true);
@@ -102,5 +101,3 @@ public:
 
     int getIndex() { return sampleStart / sampleCount; }
 };
-
-#endif
