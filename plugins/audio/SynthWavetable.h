@@ -1,13 +1,12 @@
 #pragma once
 
 #include "./utils/Wavetable.h"
+#include "./utils/Lfo.h"
 #include "audioPlugin.h"
 #include "helpers/range.h"
 #include "mapping.h"
 #include "plugins/audio/filter.h"
 // #include "plugins/audio/filter2.h"
-
-#include <functional>
 
 /*md
 ## SynthWavetable
@@ -27,6 +26,7 @@ protected:
 
     Wavetable wavetable;
     EffectFilterData filter;
+    LFO lfo;
 
     float attackStepInc = 0.0f;
     float releaseStepInc = 0.0f;
@@ -117,8 +117,33 @@ public:
         p.val.setString(std::to_string((int)p.val.get()) + "/" + std::to_string(ZIC_WAVETABLE_WAVEFORMS_COUNT));
     });
 
+    /*md - `LFO_RATE` set the LFO rate.*/
+    Val& lfoRate = val(1.0f, "LFO_RATE", { "LFO Rate", .min = 0.1f, .max = 20.0f }, [&](auto p) {
+        p.val.setFloat(p.value);
+        lfo.setRate(p.val.get());
+    });
+
+    /*md - `LFO_DEPTH` set the LFO depth.*/
+    Val& lfoDepth = val(0.5f, "LFO_DEPTH", { "LFO Depth", .min = 0.0f, .max = 1.0f });
+
+    /*md - `LFO_WAVEFORM` set the LFO waveform.*/
+    Val& lfoWaveform = val(0, "LFO_WAVEFORM", { "LFO Waveform", VALUE_STRING, .max = LFO::WAVEFORM_COUNT - 1 }, [&](auto p) {
+        p.val.setFloat(p.value);
+        if ((int)p.val.get() == LFO::SQUARE) {
+            p.val.setString("Square");
+            lfo.setWaveform(LFO::SQUARE);
+        } else if ((int)p.val.get() == LFO::TRIANGLE) {
+            p.val.setString("Triangle");
+            lfo.setWaveform(LFO::TRIANGLE);
+        } else if ((int)p.val.get() == LFO::SAWTOOTH) {
+            p.val.setString("Sawtooth");
+            lfo.setWaveform(LFO::SAWTOOTH);
+        }
+    });
+
     SynthWavetable(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config) // clang-format on
+        , lfo(props.sampleRate)
     // , filter2(props.sampleRate)
     {
         wave.props().max = wavetable.fileBrowser.count - 1;
@@ -136,6 +161,8 @@ public:
             }
             float modulatedFreq = freq;
             float invEnv = 1.0f - env;
+            // float lfoValue = lfo.process();
+
             if (frequencyMod.pct() != 0.5f) {
                 modulatedFreq += invEnv * (frequencyMod.pct() - 0.5f);
                 if (modulatedFreq < 0.0f) {
