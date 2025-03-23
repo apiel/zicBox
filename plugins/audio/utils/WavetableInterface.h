@@ -1,13 +1,12 @@
-#ifndef _WAVEFORM_INTERFACE_H_
-#define _WAVEFORM_INTERFACE_H_
+#pragma once
 
 #include <cstdint>
 
-class WaveformInterface {
+class WavetableInterface {
 public:
     uint64_t sampleCount;
 
-    WaveformInterface(uint64_t sampleCount)
+    WavetableInterface(uint64_t sampleCount)
         : sampleCount(sampleCount)
     {
     }
@@ -16,5 +15,3 @@ public:
     virtual float* sample(float* index) = 0;
     virtual float* samples() = 0;
 };
-
-#endif

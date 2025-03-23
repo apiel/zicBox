@@ -1,14 +1,13 @@
-#ifndef _WAVEFORM_H_
-#define _WAVEFORM_H_
+#pragma once
 
 #include "helpers/range.h"
 #include "plugins/audio/lookupTable.h"
-#include "plugins/audio/utils/WaveformInterface.h"
+#include "plugins/audio/utils/WavetableInterface.h"
 #include "plugins/audio/utils/utils.h"
 
 #include <cstdint>
 
-class Waveform : public WaveformInterface {
+class WavetableGenerator : public WavetableInterface {
 public:
     enum Type {
         Sine,
@@ -34,7 +33,7 @@ protected:
     {
         float maxAmplitude = 1.0f; // To track maximum amplitude for normalization
 
-        // First pass: Compute the waveform and track the maximum amplitude
+        // First pass: Compute the wavetableGenerator and track the maximum amplitude
         for (uint16_t i = 0; i < sampleCount; i++) {
             float phase = i / (float)sampleCount; // Normalized phase [0, 1)
             float baseSine = sharedLut->sine[i]; // Original sine wave value
@@ -87,7 +86,7 @@ protected:
             // Optional: Apply a staircase effect using the shape parameter
             if (shape > 0.5f) {
                 int steps = static_cast<int>(shape * 10.0f); // Number of steps based on shape
-                lut[i] = std::floor(lut[i] * steps) / steps; // Quantize the waveform
+                lut[i] = std::floor(lut[i] * steps) / steps; // Quantize the wavetableGenerator
             }
         }
     }
@@ -102,7 +101,7 @@ protected:
             if (phase < pulse) {
                 phase /= pulse; // Scale phase within the active pulse region
 
-                // Compute the waveform value based on the shape parameter
+                // Compute the wavetableGenerator value based on the shape parameter
                 float y = phase < shape
                     ? (1.0f / shape) * phase // Rising edge
                     : (1.0f - (1.0f / (1.0f - shape)) * (phase - shape)); // Falling edge
@@ -190,7 +189,7 @@ protected:
                 float modulation = shape * std::cos(modulatedPhase * M_PI * 2);
                 float modulated = square2 * modulation;
 
-                // Blend the base and frequency-modulated waveforms using the shape parameter
+                // Blend the base and frequency-modulated wavetableGenerators using the shape parameter
                 lut[i] = (1.0f - shape) * square1 + shape * (square1 - modulated) * 0.5f;
             }
         }
@@ -266,7 +265,7 @@ protected:
             // Apply FM modulation: the modulator modulates the carrier based on modulation depth
             float modulatedWave = carrier + modulationIndex * modulator;
 
-            // Normalize the waveform to fit within the [0, 1] range
+            // Normalize the wavetableGenerator to fit within the [0, 1] range
             modulatedWave /= maxAmplitude; // Normalize by the maximum amplitude from the first pass
 
             // Soft clip if necessary to avoid extreme clipping (optional)
@@ -278,12 +277,12 @@ public:
     float shape = 0.5f;
     float macro = 0.5f;
 
-    Waveform(LookupTable* sharedLut, uint64_t sampleRate)
-        : WaveformInterface(LOOKUP_TABLE_SIZE)
+    WavetableGenerator(LookupTable* sharedLut, uint64_t sampleRate)
+        : WavetableInterface(LOOKUP_TABLE_SIZE)
         , sharedLut(sharedLut)
         , sampleRate(sampleRate)
     {
-        setWaveformType(Type::Sine);
+        setType(Type::Sine);
     }
 
     float sample(float* index, float freq) override
@@ -309,10 +308,10 @@ public:
         return lut;
     }
 
-    void setWaveformType(Type waveformType, bool reset = true)
+    void setType(Type wavetableGeneratorType, bool reset = true)
     {
-        selectedType = waveformType;
-        switch (waveformType) {
+        selectedType = wavetableGeneratorType;
+        switch (wavetableGeneratorType) {
         case Type::Sine: {
             if (reset) {
                 shape = 0.0f;
@@ -376,14 +375,12 @@ public:
     void setShape(float value)
     {
         shape = range(value, 0.0f, 1.0f);
-        setWaveformType(selectedType, false);
+        setType(selectedType, false);
     }
 
     void setMacro(float value)
     {
         macro = range(value, 0.0f, 1.0f);
-        setWaveformType(selectedType, false);
+        setType(selectedType, false);
     }
 };
-
-#endif

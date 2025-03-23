@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "./utils/Waveform.h"
+#include "./utils/WavetableGenerator.h"
 #include "./utils/Wavetable.h"
 #include "audioPlugin.h"
 #include "filter.h"
@@ -19,8 +19,8 @@ protected:
     uint8_t baseNote = 60;
     uint64_t sampleRate;
 
-    WaveformInterface* wave = nullptr;
-    Waveform waveform;
+    WavetableInterface* wave = nullptr;
+    WavetableGenerator waveform;
     Wavetable wavetable;
 
     unsigned int sampleCountDuration = 0;
@@ -128,16 +128,16 @@ protected:
 #define DRUM23_WAVEFORMS_COUNT 7
     struct WaveformType {
         std::string name;
-        WaveformInterface* wave;
+        WavetableInterface* wave;
         uint8_t indexType = 0;
     } waveformTypes[DRUM23_WAVEFORMS_COUNT] = {
         { "Wavetable", &wavetable },
-        { "Sine", &waveform, Waveform::Type::Sine },
-        { "Triangle", &waveform, Waveform::Type::Triangle },
-        { "Square", &waveform, Waveform::Type::Square },
-        { "Pulse", &waveform, Waveform::Type::Pulse },
-        { "FM", &waveform, Waveform::Type::Fm },
-        { "FMsquare", &waveform, Waveform::Type::FmSquare },
+        { "Sine", &waveform, WavetableGenerator::Type::Sine },
+        { "Triangle", &waveform, WavetableGenerator::Type::Triangle },
+        { "Square", &waveform, WavetableGenerator::Type::Square },
+        { "Pulse", &waveform, WavetableGenerator::Type::Pulse },
+        { "FM", &waveform, WavetableGenerator::Type::Fm },
+        { "FMsquare", &waveform, WavetableGenerator::Type::FmSquare },
     };
 
 public:
@@ -153,7 +153,7 @@ public:
         p.val.setString(type.name);
         wave = type.wave;
         if (p.val.get() != 0.0f) {
-            waveform.setWaveformType((Waveform::Type)type.indexType);
+            waveform.setType((WavetableGenerator::Type)type.indexType);
             printf("Waveform type: %s shape: %f macro: %f\n", type.name.c_str(), waveform.shape * 100.0f, waveform.macro * 100.0f);
             shape.set(waveform.shape * 1000.0f);
             macro.set(waveform.macro * 100.0f);

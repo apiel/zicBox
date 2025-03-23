@@ -17,17 +17,16 @@ public:
 
     LFO(float sampleRate, float rate = 1.0f, Waveform wave = TRIANGLE)
         : sampleRate(sampleRate)
-        , rate(rate)
         , phase(0.0f)
     {
         setWaveform(wave);
-        updatePhaseIncrement();
+        setRate(rate);
     }
 
     void setRate(float r)
     {
         rate = r;
-        updatePhaseIncrement();
+        phaseIncrement = rate / sampleRate;
     }
 
     void setWaveform(Waveform wave)
@@ -86,11 +85,6 @@ private:
     float phase;
     float phaseIncrement;
     float (LFO::*processFunc)() = nullptr;
-
-    void updatePhaseIncrement()
-    {
-        phaseIncrement = rate / sampleRate;
-    }
 
     float processSquare()
     {
