@@ -16,9 +16,10 @@ export type Props = {
     synthName: string;
     color: string;
     textGrid: any;
+    maxStepLen?: number;
 };
 
-export function SeqView({ name, track, synthName, color, textGrid }: Props) {
+export function SeqView({ name, track, synthName, color, textGrid, maxStepLen }: Props) {
     return (
         <View name={name}>
             <Sequencer
@@ -32,7 +33,7 @@ export function SeqView({ name, track, synthName, color, textGrid }: Props) {
                 ]}
                 selectedColor={rgb(196, 21, 152)}
                 stepColor={color}
-                maxStepLen={1}
+                maxStepLen={maxStepLen}
             />
 
             {textGrid}

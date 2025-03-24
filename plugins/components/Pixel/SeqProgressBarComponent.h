@@ -135,7 +135,7 @@ public:
     Step* getStep(uint16_t position)
     {
         for (auto& step : *steps) {
-            if (step.position == position && step.enabled) {
+            if (step.position == position && step.enabled && step.len > 0) {
                 return &step;
             }
         }

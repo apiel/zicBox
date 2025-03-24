@@ -310,6 +310,7 @@ public:
         } else if (id == 2) {
             Step* step = getSelectedStep();
             if (step != nullptr) {
+                step->enabled = true;
                 step->len = range((step->len + direction), 0, maxStepLen);
                 // Use shift to delete the step
                 if (shift && step->len == 0) {
@@ -321,7 +322,7 @@ public:
                     }
                 }
                 // TODO check if len doesn't conflict with another step
-            } else {
+            } else if (direction > 0) {
                 // Create a step and push it to the end
                 Step newStep;
                 newStep.note = selectedNote;
