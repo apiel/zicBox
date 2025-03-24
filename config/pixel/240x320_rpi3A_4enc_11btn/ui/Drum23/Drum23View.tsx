@@ -54,6 +54,7 @@ export function Drum23View({ track, synthName, color }: Props) {
                 track={track}
                 synthName={synthName}
                 color={color}
+                maxStepLen={1}
                 textGrid={(<TextGridDrum23 selected={'Seq.'} color={color} synthName={synthName} hideTitle />)}
             />
         </>
