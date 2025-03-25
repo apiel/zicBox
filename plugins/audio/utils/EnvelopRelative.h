@@ -52,6 +52,8 @@ public:
         if (time >= data[indexRef + 1].time) {
             indexRef++;
         }
+        // TODO optimize: this could be precalculated using the duration of the envelop
+        // So we could calculate what is the step increment for the current time range.
         float timeOffset = data[indexRef + 1].time - data[indexRef].time;
         float timeRatio = (time - data[indexRef].time) / timeOffset;
         return (data[indexRef + 1].modulation - data[indexRef].modulation) * timeRatio + data[indexRef].modulation;

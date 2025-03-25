@@ -34,15 +34,15 @@ export function FxView({ name, track, synthName, color }: Props) {
                 track={track}
             />
             <KnobValue
-                audioPlugin={synthName}
-                param="PARAM"
+                audioPlugin="TrackFx"
+                param="FX_TYPE"
                 bounds={bottomLeftKnob}
                 encoderId={encBottomLeft}
                 track={track}
             />
             <KnobValue
-                audioPlugin={synthName}
-                param="PARAM"
+                audioPlugin="TrackFx"
+                param="FX_AMOUNT"
                 bounds={bottomRightKnob}
                 encoderId={encBottomRight}
                 color="secondary"
