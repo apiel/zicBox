@@ -132,6 +132,7 @@ public:
     void sample(float* buf) override
     {
         if (i < totalSamples) {
+            // TODO optimize this by precomputing time, see SynthDrum23
             float t = (float)i / totalSamples; // Time normalized to [0, 1]
             float env = 1.0f - t;
             float tone = 0.0f;
