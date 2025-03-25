@@ -24,7 +24,7 @@ export const Synth1 = 'Synth1';
 export const Synth2 = 'Synth2';
 export const Synth3 = 'Synth3';
 export const Clips = 'Clips';
-export const Perc = 'Perc';
+export const Drum1 = 'Drum1';
 export const Sample1 = 'Sample1';
 export const Sample2 = 'Sample2';
 export const Sample3 = 'Sample3';
@@ -62,7 +62,7 @@ export function ShiftedTextGrid({
                 bounds={KeyInfoPosition}
                 rows={[
                     `${Kick} ${Synth1} ${Synth2} ${Synth3}`,
-                    `${Perc} ${Sample1} ${Sample2} ${Sample3}`,
+                    `${Drum1} ${Sample1} ${Sample2} ${Sample3}`,
                 ]}
                 keys={[
                     { key: btn1, action: 'setView:Kick' },
@@ -70,7 +70,7 @@ export function ShiftedTextGrid({
                     { key: btn3, action: 'setView:Synth2' },
                     { key: btn4, action: 'setView:Synth3' },
 
-                    { key: btn5, action: `setView:Perc` },
+                    { key: btn5, action: `setView:Drum1` },
                     { key: btn6, action: `setView:Sample1` },
                     { key: btn7, action: `setView:Sample2` },
                     { key: btn8, action: `setView:Sample3` },

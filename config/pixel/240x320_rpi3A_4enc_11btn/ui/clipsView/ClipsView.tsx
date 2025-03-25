@@ -21,8 +21,8 @@ import {
     ColorTrack7,
     ColorTrack8,
     ColorTrackMaster,
+    Drum1Track,
     Drum23Track,
-    PercTrack,
     Sample1Track,
     Sample2Track,
     Sample3Track,
@@ -47,7 +47,7 @@ export function ClipsView({ name }: Props) {
             <Clips color={ColorTrack2} track={Synth1Track} title="T.2" key={btn2} />
             <Clips color={ColorTrack3} track={Synth2Track} title="T.3" key={btn3} />
             <Clips color={ColorTrack4} track={Synth3Track} title="T.4" key={btn4} />
-            <Clips color={ColorTrack5} track={PercTrack} title="T.5" key={btn5} />
+            <Clips color={ColorTrack5} track={Drum1Track} title="T.5" key={btn5} />
             <Clips color={ColorTrack6} track={Sample1Track} title="T.6" key={btn6} />
             <Clips color={ColorTrack7} track={Sample2Track} title="T.7" key={btn7} />
             <Clips color={ColorTrack8} track={Sample3Track} title="T.8" key={btn8} />

@@ -1,7 +1,7 @@
 import { audioPlugin } from '@/libs/audio';
 import {
+    Drum1Track,
     Drum23Track,
-    PercTrack,
     Sample1Track,
     Sample2Track,
     Sample3Track,
@@ -56,13 +56,14 @@ const synth3Track = {
     ],
 };
 
-const percTrack = {
-    id: PercTrack,
+const drum1Track = {
+    id: Drum1Track,
     plugins: [
-        audioPlugin('SynthMetalic', { alias: 'Perc' }),
+        audioPlugin('SynthDrum23', { alias: 'Drum1' }),
         audioPlugin('Sequencer'),
-        audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
-        audioPlugin('SerializeTrack', { filename: 'perc', maxVariation, workspaceFolder }),
+        audioPlugin('EffectFilter', { alias: 'Filter' }),
+        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
+        audioPlugin('SerializeTrack', { filename: 'drum1', maxVariation, workspaceFolder }),
     ],
 };
 
@@ -116,7 +117,7 @@ export const audio = {
         synth1Track,
         synth2Track,
         synth3Track,
-        percTrack,
+        drum1Track,
         sample1Track,
         sample2Track,
         sample3Track,

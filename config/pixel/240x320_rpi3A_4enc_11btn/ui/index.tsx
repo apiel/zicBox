@@ -5,9 +5,11 @@ import {
     ColorTrack2,
     ColorTrack3,
     ColorTrack4,
+    ColorTrack5,
     ColorTrack6,
     ColorTrack7,
     ColorTrack8,
+    Drum1Track,
     Drum23Track,
     Sample1Track,
     Sample2Track,
@@ -19,17 +21,12 @@ import {
     Synth3Track,
     W1_2
 } from './constants';
+import { DrumView } from './Drum/DrumView';
 import { Drum23View } from './Drum23/Drum23View';
 import { CreateWorkspaceView } from './menu/CreateWorkspaceView';
 import { MenuView } from './menu/menuView';
 import { ShutdownView } from './menu/ShutdownView';
 import { WorkspacesView } from './menu/WorkspacesView';
-import { PercFxView } from './Perc/PercFxView';
-import { PercModView } from './Perc/PercModView';
-import { PercNoise2View } from './Perc/PercNoise2View';
-import { PercNoiseView } from './Perc/PercNoiseView';
-import { PercView } from './Perc/PercView';
-import { PercSeqView } from './Perc/SeqView';
 import { SampleView } from './Sample/SampleView';
 import { SynthView } from './Synth/SynthView';
 
@@ -59,12 +56,7 @@ export const ui = {
             <SynthView track={Synth2Track} synthName="Synth2" color={ColorTrack3} />
             <SynthView track={Synth3Track} synthName="Synth3" color={ColorTrack4} />
 
-            <PercView name="Perc" />
-            <PercFxView name="PercFx" />
-            <PercSeqView name="PercSeq" />
-            <PercNoiseView name="PercNoise" />
-            <PercNoise2View name="PercNoise2" />
-            <PercModView name="PercMod" />
+            <DrumView track={Drum1Track} synthName="Drum1" color={ColorTrack5} />
 
             <SampleView track={Sample1Track} synthName="Sample1" color={ColorTrack6} />
             <SampleView track={Sample2Track} synthName="Sample2" color={ColorTrack7} />

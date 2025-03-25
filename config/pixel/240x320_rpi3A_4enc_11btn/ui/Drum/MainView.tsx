@@ -4,63 +4,59 @@ import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
 import {
-    ColorTrack5,
     encBottomLeft,
     encBottomRight,
     encTopLeft,
-    encTopRight,
-    PercTrack,
+    encTopRight
 } from '../constants';
 import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
-import { TextGridPerc } from './TextGridPerc';
+import { TextGridDrum } from './TextGridDrum';
 
 export type Props = {
     name: string;
+    track: number;
+    synthName: string;
+    color: string;
 };
 
-export function PercFxView({ name }: Props) {
+export function MainView({ name, track, synthName, color }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                audioPlugin="Perc"
-                param="BOOST"
+                audioPlugin="TrackFx"
+                param="VOLUME"
                 bounds={topLeftKnob}
                 encoderId={encTopLeft}
                 color="tertiary"
-                track={PercTrack}
+                track={track}
             />
             <KnobValue
-                audioPlugin="Perc"
-                param="REVERB"
+                audioPlugin="MMFilter"
+                param="CUTOFF"
                 bounds={topRightKnob}
                 encoderId={encTopRight}
-                color="primary"
-                track={PercTrack}
+                color="secondary"
+                type="STRING"
+                track={track}
             />
             <KnobValue
-                audioPlugin="Perc"
-                param="RESONATOR"
+                audioPlugin={synthName}
+                param="GAIN_CLIPPING"
                 bounds={bottomLeftKnob}
                 encoderId={encBottomLeft}
-                color="quaternary"
-                track={PercTrack}
+                track={track}
             />
             <KnobValue
-                audioPlugin="Perc"
-                param="TONE_DECAY"
+                audioPlugin="MMFilter"
+                param="RESONANCE"
                 bounds={bottomRightKnob}
                 encoderId={encBottomRight}
                 color="secondary"
-                track={PercTrack}
+                track={track}
             />
 
-            <TextGridPerc selected={'Fx'} viewName={name} />
-            <Common
-                selected={'Perc'}
-                track={PercTrack}
-                selectedBackground={ColorTrack5}
-                synthName="Perc"
-            />
+            <TextGridDrum selected={'Main'} color={color} synthName={synthName} />
+            <Common selected={synthName} track={track} selectedBackground={color} synthName={synthName} />
         </View>
     );
 }
