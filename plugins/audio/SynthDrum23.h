@@ -257,12 +257,13 @@ public:
         return input + highFreqComponent;
     }
 
-    float time = 0.0f;
-    float timeIncrement = 0.0f;
+    double time = 0.0f;
+    double timeIncrement = 0.0f;
     float scaledClipping = 0.0f;
     void sample(float* buf)
     {
         if (sampleDurationCounter < sampleCountDuration) {
+            // float time = (float)sampleDurationCounter / (float)sampleCountDuration;
             float envAmp = envelopAmp.next(time);
             float envFreq = envelopFreq.next(time);
 

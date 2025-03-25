@@ -16,6 +16,8 @@
 
 - TODO tempo editor...
 
+- TODO optimize SynthMetalic (can be postponed to later if not used right now)
+
 ## Framework improvement
 
 - TODO zicOs based on busybox
