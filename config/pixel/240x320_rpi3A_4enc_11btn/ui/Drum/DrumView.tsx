@@ -3,8 +3,8 @@ import * as React from '@/libs/react';
 import { SeqView } from '../components/SeqView';
 import { AmpView } from './AmpView';
 import { ClickView } from './ClickView';
-import { DistortionView } from './DistortionView';
 import { FrequencyView } from './FrequencyView';
+import { FxView } from './FxView';
 import { MainView } from './MainView';
 import { TextGridDrum } from './TextGridDrum';
 import { WaveformView } from './WaveformView';
@@ -19,7 +19,7 @@ export function DrumView({ track, synthName, color }: Props) {
     return (
         <>
             <MainView name={synthName} track={track} synthName={synthName} color={color} />
-            <DistortionView
+            <FxView
                 name={`${synthName}Distortion`}
                 track={track}
                 synthName={synthName}

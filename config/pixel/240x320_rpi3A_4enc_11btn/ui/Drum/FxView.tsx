@@ -14,39 +14,47 @@ export type Props = {
     color: string;
 };
 
-export function DistortionView({ name, track, synthName, color }: Props) {
+export function FxView({ name, track, synthName, color }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                audioPlugin="Distortion" param="WAVESHAPE"
+                audioPlugin={synthName}
+                param="GAIN_CLIPPING"
                 bounds={topLeftKnob}
                 encoderId={encTopLeft}
                 color="tertiary"
                 track={track}
             />
             <KnobValue
-                audioPlugin="Distortion" param="COMPRESS"
+                audioPlugin={synthName}
+                param="HIGH_FREQ_BOOST"
                 bounds={topRightKnob}
                 encoderId={encTopRight}
                 color="primary"
                 track={track}
             />
             <KnobValue
-                audioPlugin="Distortion" param="DRIVE"
+                audioPlugin={synthName}
+                param="PARAM"
                 bounds={bottomLeftKnob}
                 encoderId={encBottomLeft}
-                color="quaternary"
                 track={track}
             />
             <KnobValue
-                audioPlugin="Distortion" param="BASS"
+                audioPlugin={synthName}
+                param="PARAM"
                 bounds={bottomRightKnob}
                 encoderId={encBottomRight}
                 color="secondary"
                 track={track}
             />
             <TextGridDrum selected={'Fx'} color={color} synthName={synthName} />
-            <Common selected={synthName} track={track} selectedBackground={color} synthName={synthName} />
+            <Common
+                selected={synthName}
+                track={track}
+                selectedBackground={color}
+                synthName={synthName}
+            />
         </View>
     );
 }
