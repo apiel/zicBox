@@ -1,7 +1,7 @@
 import { audioPlugin } from '@/libs/audio';
 import {
     Drum1Track,
-    Drum23Track,
+    KickTrack,
     Sample1Track,
     Sample2Track,
     Sample3Track,
@@ -14,8 +14,8 @@ export const cutoffStringFormat = '%d%% %d%%';
 export const maxVariation = 16;
 export const workspaceFolder = 'workspaces/rpi3A_4enc_11btn';
 
-const drum23Track = {
-    id: Drum23Track,
+const kickTrack = {
+    id: KickTrack,
     plugins: [
         audioPlugin('SynthDrum23', { alias: 'Kick' }),
         audioPlugin('Sequencer'),
@@ -113,7 +113,7 @@ const masterTrack = {
 
 export const audio = {
     tracks: [
-        drum23Track,
+        kickTrack,
         synth1Track,
         synth2Track,
         synth3Track,

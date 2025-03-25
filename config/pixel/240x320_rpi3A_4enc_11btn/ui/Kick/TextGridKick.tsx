@@ -19,7 +19,7 @@ import {
     KeyInfoPosition,
 } from '../constants';
 
-export function TextGridDrum23({
+export function TextGridKick({
     selected,
     color,
     synthName,

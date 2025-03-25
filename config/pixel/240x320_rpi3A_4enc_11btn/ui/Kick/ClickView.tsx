@@ -4,8 +4,13 @@ import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
 import { encBottomLeft, encBottomRight, encTopLeft, encTopRight } from '../constants';
-import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
-import { TextGridDrum23 } from './TextGridDrum23';
+import {
+    bottomLeftKnob,
+    bottomRightKnob,
+    topLeftKnob,
+    topRightKnob
+} from '../constantsValue';
+import { TextGridKick } from './TextGridKick';
 
 export type Props = {
     name: string;
@@ -14,38 +19,39 @@ export type Props = {
     color: string;
 };
 
-export function DistortionView({ name, track, synthName, color }: Props) {
+export function ClickView({ name, track, synthName, color }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                audioPlugin="Distortion" param="WAVESHAPE"
+                audioPlugin={synthName} param="CLICK"
                 bounds={topLeftKnob}
                 encoderId={encTopLeft}
                 color="tertiary"
                 track={track}
             />
             <KnobValue
-                audioPlugin="Distortion" param="COMPRESS"
+                audioPlugin={synthName} param="CLICK_CUTOFF"
                 bounds={topRightKnob}
                 encoderId={encTopRight}
                 color="primary"
                 track={track}
             />
             <KnobValue
-                audioPlugin="Distortion" param="DRIVE"
+                audioPlugin={synthName} param="CLICK_DURATION"
                 bounds={bottomLeftKnob}
                 encoderId={encBottomLeft}
                 color="quaternary"
                 track={track}
             />
             <KnobValue
-                audioPlugin="Distortion" param="BASS"
+                audioPlugin={synthName} param="HIGH_FREQ_BOOST"
                 bounds={bottomRightKnob}
                 encoderId={encBottomRight}
                 color="secondary"
                 track={track}
             />
-            <TextGridDrum23 selected={'Fx'} color={color} synthName={synthName} />
+
+            <TextGridKick selected={'Click'} color={color} synthName={synthName} />
             <Common selected={synthName} track={track} selectedBackground={color} synthName={synthName} />
         </View>
     );
