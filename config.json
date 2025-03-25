@@ -42,7 +42,7 @@
       {
         "id": 5,
         "plugins": [
-          {"alias":"Perc","plugin":"SynthPerc"},
+          {"alias":"Perc","plugin":"SynthMetalic"},
           {"plugin":"Sequencer","alias":"Sequencer"},
           {"alias":"TrackFx","plugin":"EffectGainVolume"},
           {"filename":"perc","maxVariation":16,"workspaceFolder":"workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"}
