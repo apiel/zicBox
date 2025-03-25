@@ -3,53 +3,56 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
-import { ColorTrack5, encBottomLeft, encBottomRight, encTopLeft, encTopRight, PercTrack } from '../constants';
+import { encBottomLeft, encBottomRight, encTopLeft, encTopRight } from '../constants';
 import {
     bottomLeftKnob,
     bottomRightKnob,
     topLeftKnob,
     topRightKnob
 } from '../constantsValue';
-import { TextGridPerc } from './TextGridPerc';
+import { TextGridDrum } from './TextGridDrum';
 
 export type Props = {
     name: string;
+    track: number;
+    synthName: string;
+    color: string;
 };
 
-export function PercView({ name }: Props) {
+export function ClickView({ name, track, synthName, color }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                audioPlugin="TrackFx" param="VOLUME"
+                audioPlugin={synthName} param="CLICK"
                 bounds={topLeftKnob}
                 encoderId={encTopLeft}
                 color="tertiary"
-                track={PercTrack}
+                track={track}
             />
             <KnobValue
-                audioPlugin="Perc" param="DURATION"
+                audioPlugin={synthName} param="CLICK_CUTOFF"
                 bounds={topRightKnob}
                 encoderId={encTopRight}
                 color="primary"
-                track={PercTrack}
+                track={track}
             />
             <KnobValue
-                audioPlugin="Perc" param="BASE_FREQ"
+                audioPlugin={synthName} param="CLICK_DURATION"
                 bounds={bottomLeftKnob}
                 encoderId={encBottomLeft}
                 color="quaternary"
-                track={PercTrack}
+                track={track}
             />
             <KnobValue
-                audioPlugin="Perc" param="TIMBRE"
+                audioPlugin={synthName} param="HIGH_FREQ_BOOST"
                 bounds={bottomRightKnob}
                 encoderId={encBottomRight}
                 color="secondary"
-                track={PercTrack}
+                track={track}
             />
 
-            <TextGridPerc selected={'Main'} viewName={name} />
-            <Common selected={'Perc'} track={PercTrack} selectedBackground={ColorTrack5} synthName="Perc" />
+            <TextGridDrum selected={'Click'} color={color} synthName={synthName} />
+            <Common selected={synthName} track={track} selectedBackground={color} synthName={synthName} />
         </View>
     );
 }

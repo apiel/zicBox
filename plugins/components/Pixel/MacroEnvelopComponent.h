@@ -182,7 +182,7 @@ public:
         envPosition = { relativePosition.x, relativePosition.y + fontSize + 5 };
         draw.filledRect(relativePosition, size, { bgColor });
 
-        if (envData) {
+        if (envData && envData->size() > 0) {
             renderEnvelop();
             renderTitles();
 

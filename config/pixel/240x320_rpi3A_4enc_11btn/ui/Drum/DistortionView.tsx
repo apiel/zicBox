@@ -3,53 +3,50 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
-import { ColorTrack5, encBottomLeft, encBottomRight, encTopLeft, encTopRight, PercTrack } from '../constants';
-import {
-    bottomLeftKnob,
-    bottomRightKnob,
-    topLeftKnob,
-    topRightKnob
-} from '../constantsValue';
-import { TextGridPerc } from './TextGridPerc';
+import { encBottomLeft, encBottomRight, encTopLeft, encTopRight } from '../constants';
+import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
+import { TextGridDrum } from './TextGridDrum';
 
 export type Props = {
     name: string;
+    track: number;
+    synthName: string;
+    color: string;
 };
 
-export function PercNoise2View({ name }: Props) {
+export function DistortionView({ name, track, synthName, color }: Props) {
     return (
         <View name={name}>
             <KnobValue
-                audioPlugin="Perc" param="BAND_FREQ"
+                audioPlugin="Distortion" param="WAVESHAPE"
                 bounds={topLeftKnob}
                 encoderId={encTopLeft}
                 color="tertiary"
-                track={PercTrack}
+                track={track}
             />
             <KnobValue
-                audioPlugin="Perc" param="BAND_Q"
+                audioPlugin="Distortion" param="COMPRESS"
                 bounds={topRightKnob}
                 encoderId={encTopRight}
                 color="primary"
-                track={PercTrack}
+                track={track}
             />
             <KnobValue
-                audioPlugin="Perc" param="METALLIC_NOISE_MIX"
+                audioPlugin="Distortion" param="DRIVE"
                 bounds={bottomLeftKnob}
                 encoderId={encBottomLeft}
                 color="quaternary"
-                track={PercTrack}
+                track={track}
             />
             <KnobValue
-                audioPlugin="Perc" param="NOISE_BRIGHTNESS"
+                audioPlugin="Distortion" param="BASS"
                 bounds={bottomRightKnob}
                 encoderId={encBottomRight}
                 color="secondary"
-                track={PercTrack}
+                track={track}
             />
-
-            <TextGridPerc selected={'Noise2'} viewName={name} />
-            <Common selected={'Perc'} track={PercTrack} selectedBackground={ColorTrack5} synthName="Perc" />
+            <TextGridDrum selected={'Fx'} color={color} synthName={synthName} />
+            <Common selected={synthName} track={track} selectedBackground={color} synthName={synthName} />
         </View>
     );
 }
