@@ -9,7 +9,7 @@
           {"alias":"Distortion","plugin":"EffectDistortion2"},
           {"alias":"MMFilter","cutoffStringFormat":"%d%% %d%%","plugin":"EffectFilterMultiMode"},
           {"alias":"TrackFx","plugin":"EffectGainVolume"},
-          {"filename":"drum23","maxVariation":16,"workspaceFolder":"workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"filename":"kick","maxVariation":16,"workspaceFolder":"workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {

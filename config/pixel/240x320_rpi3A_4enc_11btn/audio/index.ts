@@ -22,7 +22,7 @@ const drum23Track = {
         audioPlugin('EffectDistortion2', { alias: 'Distortion' }),
         audioPlugin('EffectFilterMultiMode', { alias: 'MMFilter', cutoffStringFormat }),
         audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
-        audioPlugin('SerializeTrack', { filename: 'drum23', maxVariation, workspaceFolder }),
+        audioPlugin('SerializeTrack', { filename: 'kick', maxVariation, workspaceFolder }),
     ],
 };
 
