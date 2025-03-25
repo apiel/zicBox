@@ -59,7 +59,7 @@ const synth3Track = {
 const percTrack = {
     id: PercTrack,
     plugins: [
-        audioPlugin('SynthPerc', { alias: 'Perc' }),
+        audioPlugin('SynthMetalic', { alias: 'Perc' }),
         audioPlugin('Sequencer'),
         audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
         audioPlugin('SerializeTrack', { filename: 'perc', maxVariation, workspaceFolder }),

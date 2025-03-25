@@ -1,9 +1,9 @@
 # Pixel basic working one
 
-- TODO fix seq
-
 - TODO synth with multiple swappable engines
-- 
+  ----> actually could just try to improve drum23, by adding noise and so on... and only had the massive distortion combination on first track, but the rest should have reduce effect...
+  ---------> instead of noise give the possibility to have a second layer.
+  
 - TODO add freq mod curve
        add filter8      
        IDEA extra waveform type based on FastWaveform
