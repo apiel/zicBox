@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "./utils/WavetableGenerator.h"
 #include "./utils/Wavetable.h"
+#include "./utils/WavetableGenerator.h"
 #include "audioPlugin.h"
 #include "filter.h"
 #include "mapping.h"
@@ -201,7 +201,15 @@ public:
     /*md - `PITCH` Modulate the pitch.*/
     Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -36, .max = 36 });
     /*md - `DURATION` set the duration of the envelop.*/
-    Val& duration = val(100.0f, "DURATION", { "Duration", .min = 10.0, .max = 5000.0, .step = 10.0, .unit = "ms" }, [&](auto p) { setDuration(p.value); });
+    Val& duration = val(100.0f, "DURATION", { "Duration", .min = 10.0, .max = 5000.0, .step = 10.0, .unit = "ms" }, [&](auto p) { 
+        p.val.setFloat(p.value);
+        bool isOff = sampleCountDuration == sampleDurationCounter;
+        sampleCountDuration = p.val.get() * (sampleRate * 0.001f);
+        timeIncrement = 1.0f / (float)sampleCountDuration;
+        if (isOff) {
+            sampleDurationCounter = sampleCountDuration;
+        }
+    });
 
     /*md - `GAIN_CLIPPING` set the clipping level.*/
     Val& clipping = val(0.0, "GAIN_CLIPPING", { "Clipping", .unit = "%" }, [&](auto p) {
@@ -249,11 +257,12 @@ public:
         return input + highFreqComponent;
     }
 
+    float time = 0.0f;
+    float timeIncrement = 0.0f;
     float scaledClipping = 0.0f;
     void sample(float* buf)
     {
         if (sampleDurationCounter < sampleCountDuration) {
-            float time = (float)sampleDurationCounter / (float)sampleCountDuration;
             float envAmp = envelopAmp.next(time);
             float envFreq = envelopFreq.next(time);
 
@@ -265,22 +274,14 @@ public:
             buf[track] = out * velocity;
 
             sampleDurationCounter++;
+            time += timeIncrement;
             // printf("[%d] sample: %d of %d=%f\n", track, sampleDurationCounter, sampleCountDuration, buf[track]);
-        }
-    }
-
-    void setDuration(float value)
-    {
-        duration.setFloat(value);
-        bool isOff = sampleCountDuration == sampleDurationCounter;
-        sampleCountDuration = duration.get() * (sampleRate * 0.001f);
-        if (isOff) {
-            sampleDurationCounter = sampleCountDuration;
         }
     }
 
     void noteOn(uint8_t note, float _velocity) override
     {
+        time = 0.0f;
         wavetable.sampleIndex = 0;
         sampleDurationCounter = 0;
         envelopAmp.reset();

@@ -3,6 +3,8 @@
 - TODO synth with multiple swappable engines
   ----> actually could just try to improve drum23, by adding noise and so on... and only had the massive distortion combination on first track, but the rest should have reduce effect...
   ---------> instead of noise give the possibility to have a second layer.
+
+- TODO see if we can improve EnvelopRelative
   
 - TODO add freq mod curve
        add filter8      
