@@ -209,6 +209,9 @@ public:
         scaledClipping = p.val.pct() * p.val.pct() * 20;
     });
 
+    /*md - `HIGH_FREQ_BOOST` set the high boost level.*/
+    Val& highBoost = val(0.0, "HIGH_FREQ_BOOST", { "High boost", .min = 0.0, .max = 20.0, .step = 0.1, .floatingPoint = 1 });
+
     /*md - `CLICK` set the click level.*/
     Val& click = val(0, "CLICK", { "Click" });
 
@@ -224,8 +227,6 @@ public:
             clickFilter.setResonance(p.val.pct() - 0.3f);
         }
     });
-
-    Val& highBoost = val(0.0, "HIGH_FREQ_BOOST", { "High boost", .min = 0.0, .max = 20.0, .step = 0.1, .floatingPoint = 1 });
 
     SynthDrum23(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
@@ -260,8 +261,8 @@ public:
             float out = wave->sample(&wavetable.sampleIndex, freq) * envAmp;
             out = addClicking(time, out);
             out = highFreqBoost(out, time);
-            out = out + out * scaledClipping;
-            buf[track] = range(out, -1.0f, 1.0f) * velocity;
+            out = range(out + out * scaledClipping, -1.0f, 1.0f);
+            buf[track] = out * velocity;
 
             sampleDurationCounter++;
             // printf("[%d] sample: %d of %d=%f\n", track, sampleDurationCounter, sampleCountDuration, buf[track]);

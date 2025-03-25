@@ -31,27 +31,27 @@ export function MainView({ name, track, synthName, color }: Props) {
                 track={track}
             />
             <KnobValue
-                audioPlugin="MMFilter"
-                param="CUTOFF"
+                audioPlugin="Filter"
+                param="FILTER_TYPE"
                 bounds={topRightKnob}
                 encoderId={encTopRight}
                 color="secondary"
-                type="STRING"
                 track={track}
             />
             <KnobValue
-                audioPlugin={synthName}
-                param="GAIN_CLIPPING"
+                audioPlugin="Filter"
+                param="FILTER_CUTOFF"
                 bounds={bottomLeftKnob}
                 encoderId={encBottomLeft}
+                color="primary"
                 track={track}
             />
             <KnobValue
-                audioPlugin="MMFilter"
-                param="RESONANCE"
+                audioPlugin="Filter"
+                param="FILTER_RESONANCE"
                 bounds={bottomRightKnob}
                 encoderId={encBottomRight}
-                color="secondary"
+                color="primary"
                 track={track}
             />
 
