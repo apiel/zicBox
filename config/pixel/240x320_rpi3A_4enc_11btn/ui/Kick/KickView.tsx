@@ -5,8 +5,8 @@ import { AmpView } from './AmpView';
 import { ClickView } from './ClickView';
 import { DistortionView } from './DistortionView';
 import { FrequencyView } from './FrequencyView';
-import { Drum23MainView } from './MainView';
-import { TextGridDrum23 } from './TextGridDrum23';
+import { MainView } from './MainView';
+import { TextGridKick } from './TextGridKick';
 import { WaveformView } from './WaveformView';
 
 export type Props = {
@@ -15,10 +15,10 @@ export type Props = {
     color: string;
 };
 
-export function Drum23View({ track, synthName, color }: Props) {
+export function KickView({ track, synthName, color }: Props) {
     return (
         <>
-            <Drum23MainView name={synthName} track={track} synthName={synthName} color={color} />
+            <MainView name={synthName} track={track} synthName={synthName} color={color} />
             <DistortionView
                 name={`${synthName}Distortion`}
                 track={track}
@@ -55,7 +55,7 @@ export function Drum23View({ track, synthName, color }: Props) {
                 synthName={synthName}
                 color={color}
                 maxStepLen={1}
-                textGrid={(<TextGridDrum23 selected={'Seq.'} color={color} synthName={synthName} hideTitle />)}
+                textGrid={(<TextGridKick selected={'Seq.'} color={color} synthName={synthName} hideTitle />)}
             />
         </>
     );

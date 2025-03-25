@@ -22,7 +22,7 @@ import {
     ColorTrack8,
     ColorTrackMaster,
     Drum1Track,
-    Drum23Track,
+    KickTrack,
     Sample1Track,
     Sample2Track,
     Sample3Track,
@@ -43,7 +43,7 @@ export function ClipsView({ name }: Props) {
             {/* Put ShiftedTextGrid first, so it will overtake clip key actions */}
             <ShiftedTextGrid selectedBackground={ColorTrackMaster} selected="Clips" />
 
-            <Clips color={ColorTrack1} track={Drum23Track} title="T.1" key={btn1} />
+            <Clips color={ColorTrack1} track={KickTrack} title="T.1" key={btn1} />
             <Clips color={ColorTrack2} track={Synth1Track} title="T.2" key={btn2} />
             <Clips color={ColorTrack3} track={Synth2Track} title="T.3" key={btn3} />
             <Clips color={ColorTrack4} track={Synth3Track} title="T.4" key={btn4} />

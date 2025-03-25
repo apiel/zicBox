@@ -10,7 +10,7 @@ import {
     ColorTrack7,
     ColorTrack8,
     Drum1Track,
-    Drum23Track,
+    KickTrack,
     Sample1Track,
     Sample2Track,
     Sample3Track,
@@ -22,7 +22,7 @@ import {
     W1_2
 } from './constants';
 import { DrumView } from './Drum/DrumView';
-import { Drum23View } from './Drum23/Drum23View';
+import { KickView } from './Kick/KickView';
 import { CreateWorkspaceView } from './menu/CreateWorkspaceView';
 import { MenuView } from './menu/menuView';
 import { ShutdownView } from './menu/ShutdownView';
@@ -50,7 +50,7 @@ export const ui = {
     },
     views: (
         <>
-            <Drum23View track={Drum23Track} synthName="Kick" color={ColorTrack1} />
+            <KickView track={KickTrack} synthName="Kick" color={ColorTrack1} />
 
             <SynthView track={Synth1Track} synthName="Synth1" color={ColorTrack2} />
             <SynthView track={Synth2Track} synthName="Synth2" color={ColorTrack3} />

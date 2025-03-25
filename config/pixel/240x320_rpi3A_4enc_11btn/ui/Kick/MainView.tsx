@@ -10,7 +10,7 @@ import {
     encTopRight
 } from '../constants';
 import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
-import { TextGridDrum23 } from './TextGridDrum23';
+import { TextGridKick } from './TextGridKick';
 
 export type Props = {
     name: string;
@@ -19,7 +19,7 @@ export type Props = {
     color: string;
 };
 
-export function Drum23MainView({ name, track, synthName, color }: Props) {
+export function MainView({ name, track, synthName, color }: Props) {
     return (
         <View name={name}>
             <KnobValue
@@ -55,7 +55,7 @@ export function Drum23MainView({ name, track, synthName, color }: Props) {
                 track={track}
             />
 
-            <TextGridDrum23 selected={'Main'} color={color} synthName={synthName} />
+            <TextGridKick selected={'Main'} color={color} synthName={synthName} />
             <Common selected={synthName} track={track} selectedBackground={color} synthName={synthName} />
         </View>
     );
