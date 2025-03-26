@@ -44,7 +44,7 @@ export function ClickView({ name, track, synthName, color }: Props) {
                 track={track}
             />
             <KnobValue
-                audioPlugin={synthName} param="HIGH_FREQ_BOOST"
+                audioPlugin={synthName} param="OSC2"
                 bounds={bottomRightKnob}
                 encoderId={encBottomRight}
                 color="secondary"
