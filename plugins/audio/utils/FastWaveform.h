@@ -1,6 +1,6 @@
 #pragma once
-#include <cstdint>
 #include <cmath>
+#include <cstdint>
 #include <stdlib.h>
 
 class FastWaveform {
@@ -11,14 +11,14 @@ public:
         SAWTOOTH,
         REVERSE_SAWTOOTH,
         NOISE,
+        BROWN_NOISE,
+        // PINK_NOISE,
         SAMPLE_AND_HOLD,
         TYPE_COUNT,
     };
 
-    FastWaveform(float sampleRate, float rate = 1.0f, Type wave = TRIANGLE)
+    FastWaveform(float sampleRate, Type wave = TRIANGLE, float rate = 1.0f)
         : sampleRate(sampleRate)
-        , phase(0.0f)
-        , sampleHoldValue(0.0f)
     {
         setType(wave);
         setRate(rate);
@@ -49,6 +49,12 @@ public:
         case NOISE:
             processFunc = &FastWaveform::processNoise;
             break;
+        case BROWN_NOISE:
+            processFunc = &FastWaveform::processBrownNoise;
+            break;
+        // case PINK_NOISE:
+        //     processFunc = &FastWaveform::processPinkNoise;
+        //     break;
         case SAMPLE_AND_HOLD:
             processFunc = &FastWaveform::processSampleAndHold;
             break;
@@ -80,6 +86,10 @@ public:
             return "Ramp Down";
         case NOISE:
             return "Noise";
+        case BROWN_NOISE:
+            return "Brown Noise";
+        // case PINK_NOISE:
+        //     return "Pink Noise";
         case SAMPLE_AND_HOLD:
             return "Sample & Hold";
         }
@@ -90,8 +100,7 @@ private:
     float sampleRate;
     float rate;
     Type type;
-    float phase;
-    float sampleHoldValue;
+    float phase = 0.0f;
     float phaseIncrement;
     float (FastWaveform::*processFunc)() = nullptr;
 
@@ -146,6 +155,28 @@ private:
     //     return (seed / 4294967295.0f) * 2.0f - 1.0f;
     // }
 
+    float brown = 0.0f;
+    float processBrownNoise()
+    {
+        float white = processNoise();
+        // brown += white * 0.02f; // Adjust 0.02f to control the smoothness: 0.005f to 0.05f
+        // brown *= 0.98f; // Damping factor for stability and realism: 0.95f to 0.995f
+        brown += white * 0.04f;
+        brown *= 0.96f;
+        // brown += white * 0.01f;
+        // brown *= 0.99f;
+        return brown;
+    }
+
+    // float pink = 0.0f;
+    // float processPinkNoise()
+    // {
+    //     float white = processNoise();
+    //     pink = 0.95f * pink + 0.05f * white; // Simple low-pass filtering
+    //     return pink;
+    // }
+
+    float sampleHoldValue = 0.0f;
     float processSampleAndHold()
     {
         if (phase >= 1.0f) {

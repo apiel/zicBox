@@ -8,6 +8,7 @@
 #include "filter.h"
 #include "mapping.h"
 #include "utils/EnvelopRelative.h"
+#include "utils/FastWaveform.h"
 
 /*md
 ## SynthDrum23
@@ -22,6 +23,7 @@ protected:
     WavetableInterface* wave = nullptr;
     WavetableGenerator waveform;
     Wavetable wavetable;
+    FastWaveform fastWaveform;
 
     unsigned int sampleCountDuration = 0;
     unsigned int sampleDurationCounter = 0;
@@ -113,7 +115,7 @@ protected:
         float clickAmplitude = click.pct();
 
         if (clickAmplitude && time < duration && clickCutoff.pct() > 0.0f) {
-            float noise = props.lookupTable->getNoise(); // Get noise sample
+            float noise = fastWaveform.process();
             float clickEnv = 1.0f - (time / duration); // Linear fade-out for the click
 
             // Apply the envelope to the noise
@@ -121,6 +123,8 @@ protected:
 
             clickFilter.setSampleData(rawClick);
             out += clickFilter.lp;
+
+            // out += rawClick;
         }
         return out;
     }
@@ -220,6 +224,13 @@ public:
     /*md - `HIGH_FREQ_BOOST` set the high boost level.*/
     Val& highBoost = val(0.0, "HIGH_FREQ_BOOST", { "High boost", .min = 0.0, .max = 20.0, .step = 0.1, .floatingPoint = 1 });
 
+    /*md - `OSC2` second oscillator.*/
+    Val& lfoWaveform = val(0, "OSC2", { "Osc.2", VALUE_STRING, .max = FastWaveform::TYPE_COUNT - 1 }, [&](auto p) {
+        p.val.setFloat(p.value);
+        fastWaveform.setType((int)p.val.get());
+        p.val.setString(fastWaveform.toString());
+    });
+
     /*md - `CLICK` set the click level.*/
     Val& click = val(0, "CLICK", { "Click" });
 
@@ -240,6 +251,7 @@ public:
         : Mapping(props, config)
         , waveform(props.lookupTable, props.sampleRate)
         , sampleRate(props.sampleRate)
+        , fastWaveform(props.sampleRate, FastWaveform::Type::NOISE, 100.0f)
     {
         initValues();
 
