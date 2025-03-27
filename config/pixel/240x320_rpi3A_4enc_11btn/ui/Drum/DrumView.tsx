@@ -4,6 +4,7 @@ import { SeqView } from '../components/SeqView';
 import { AmpView } from './AmpView';
 import { FrequencyView } from './FrequencyView';
 import { FxView } from './FxView';
+import { Layer2_2View } from './Layer2_2View';
 import { Layer2View } from './Layer2View';
 import { MainView } from './MainView';
 import { ViewSelector } from './ViewSelector';
@@ -45,7 +46,13 @@ export function DrumView({ track, synthName, color }: Props) {
                 color={color}
             /> */}
             <Layer2View
-                name={`${synthName}Click`}
+                name={`${synthName}Layer2`}
+                track={track}
+                synthName={synthName}
+                color={color}
+            />
+            <Layer2_2View
+                name={`${synthName}Layer2_2`}
                 track={track}
                 synthName={synthName}
                 color={color}
