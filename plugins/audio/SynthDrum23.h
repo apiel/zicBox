@@ -263,6 +263,35 @@ public:
         }
     });
 
+    /*md - `LAYER2_FILTER_TYPE` Select filter type.*/
+    enum FilterType {
+        LP,
+        BP,
+        HP,
+        FILTER_COUNT
+    };
+    Val& layer2FilterType = val(1, "LAYER2_FILTER_TYPE", { "Filter", VALUE_STRING, .max = FilterType::FILTER_COUNT - 1 }, [&](auto p) {
+        p.val.setFloat(p.value);
+        if (p.val.get() == FilterType::LP) {
+            p.val.setString("LPF");
+            clickFilter.setType(EffectFilterData::Type::LP);
+        } else if (p.val.get() == FilterType::BP) {
+            p.val.setString("BPF");
+            clickFilter.setType(EffectFilterData::Type::BP);
+        } else if (p.val.get() == FilterType::HP) {
+            p.val.setString("HPF");
+            clickFilter.setType(EffectFilterData::Type::HP);
+        }
+        clickCutoff.set(clickCutoff.get());
+        layer2FilterResonance.set(layer2FilterResonance.get());
+    });
+
+    /*md - `LAYER2_FILTER_RESONANCE` set the filter resonance.*/
+    Val& layer2FilterResonance = val(0, "LAYER2_FILTER_RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        clickFilter.setResonance(p.val.pct());
+    });
+
     SynthDrum23(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
         , waveform(props.lookupTable, props.sampleRate)
