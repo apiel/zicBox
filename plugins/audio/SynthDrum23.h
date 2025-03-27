@@ -129,7 +129,7 @@ protected:
         return out;
     }
 
-    EnvelopRelative envelopAmpLayer2 = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.0f, 1.0f } }, 1);
+    EnvelopRelative envelopAmpLayer2 = EnvelopRelative({ { 0.0f, 0.0f }, { 0.0f, 0.01f }, { 0.0f, 1.0f } }, 1);
     // float addSecondLayer(float time, float out)
     // {
     //     float envAmp = envelopAmpLayer2.next(time);
@@ -214,7 +214,7 @@ public:
     /*md - `PITCH` Modulate the pitch.*/
     Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -36, .max = 36 });
     /*md - `DURATION` set the duration of the envelop.*/
-    Val& duration = val(100.0f, "DURATION", { "Duration", .min = 10.0, .max = 5000.0, .step = 10.0, .unit = "ms" }, [&](auto p) { 
+    Val& duration = val(100.0f, "DURATION", { "Duration", .min = 10.0, .max = 5000.0, .step = 10.0, .unit = "ms" }, [&](auto p) {
         p.val.setFloat(p.value);
         bool isOff = sampleCountDuration == sampleDurationCounter;
         sampleCountDuration = p.val.get() * (sampleRate * 0.001f);
@@ -319,6 +319,7 @@ public:
         Mapping::serialize(file, separator);
         envelopAmp.serialize(file, separator, "ENV_AMP");
         envelopFreq.serialize(file, separator, "ENV_FREQ");
+        envelopAmpLayer2.serialize(file, separator, "ENV_AMP_OSC2");
     }
 
     void hydrate(std::string value) override
@@ -331,6 +332,10 @@ public:
             envelopFreq.hydrate(value.substr(9));
             return;
         }
+        if (value.find("ENV_AMP_OSC2 ") != std::string::npos) {
+            envelopAmpLayer2.hydrate(value.substr(13));
+            return;
+        }
         Mapping::hydrate(value);
     }
 
@@ -339,154 +344,79 @@ protected:
     float fMsEnv = 0.0f;
 
 public:
-    enum DATA_ID {
-        ENV_AMP,
-        ENV_AMP_EDIT,
-        ENV_AMP_TIME,
-        ENV_AMP_MOD,
-        ENV_FREQ,
-        ENV_FREQ_EDIT,
-        ENV_FREQ_TIME,
-        ENV_FREQ_MOD,
-        ENV_FREQ2,
-        ENV_FREQ_MODE,
-        ENV_FREQ_IS_MACRO,
-        ENV_FREQ_MACRO1,
-        ENV_FREQ_MACRO2,
-        ENV_FREQ_MACRO3,
-        WAVEFORM,
-        ENV_AMP_OSC2,
-        ENV_AMP_OSC2_EDIT,
-        ENV_AMP_OSC2_TIME,
-        ENV_AMP_OSC2_MOD,
+    DataFn dataFunctions[19] = {
+        { "ENV_AMP", [this](void* userdata) {
+             return &envelopAmp.data;
+         } },
+        { "ENV_AMP_EDIT", [this](void* userdata) {
+             return envelopAmp.updateEditPhase((int8_t*)userdata);
+         } },
+        { "ENV_AMP_TIME", [this](void* userdata) {
+             float* timePct = envelopAmp.updatePhaseTime((int8_t*)userdata);
+             msEnv = (uint16_t)(*timePct * duration.get());
+             return &msEnv;
+         } },
+        { "ENV_AMP_MOD", [this](void* userdata) {
+             return envelopAmp.updatePhaseModulation((int8_t*)userdata);
+         } },
+        { "ENV_FREQ", [this](void* userdata) {
+             return &envelopFreq.data;
+         } },
+        { "ENV_FREQ_EDIT", [this](void* userdata) {
+             return envelopFreq.updateEditPhase((int8_t*)userdata);
+         } },
+        { "ENV_FREQ_TIME", [this](void* userdata) {
+             float* timePct = envelopFreq.updatePhaseTime((int8_t*)userdata);
+             msEnv = (uint16_t)(*timePct * duration.get());
+             return &msEnv;
+         } },
+        { "ENV_FREQ_MOD", [this](void* userdata) {
+             return envelopFreq.updatePhaseModulation((int8_t*)userdata);
+         } },
+        { "ENV_FREQ2", [this](void* userdata) {
+             return &envelopFreq.data;
+         } },
+        { "ENV_FREQ_MODE", [this](void* userdata) {
+             return envelopFreq.updateMode((int8_t*)userdata);
+         } },
+        { "ENV_FREQ_IS_MACRO", [this](void* userdata) {
+             return &envelopFreq.useMacro;
+         } },
+        { "ENV_FREQ_MACRO1", [this](void* userdata) {
+             return envelopFreq.updateMacro1((int8_t*)userdata);
+         } },
+        { "ENV_FREQ_MACRO2", [this](void* userdata) {
+             return envelopFreq.updateMacro2((int8_t*)userdata);
+         } },
+        { "ENV_FREQ_MACRO3", [this](void* userdata) {
+             float* macro3 = envelopFreq.updateMacro3((int8_t*)userdata);
+             if (!envelopFreq.useMacro) {
+                 fMsEnv = *macro3 * duration.get();
+                 return &fMsEnv;
+             }
+             return macro3;
+         } },
+        { "WAVEFORM", [this](void* userdata) {
+             if (!wave) {
+                 return (void*)NULL;
+             }
+             float* index = (float*)userdata;
+             return (void*)wave->sample(index);
+         } },
+        { "ENV_AMP_OSC2", [this](void* userdata) {
+             return &envelopAmpLayer2.data;
+         } },
+        { "ENV_AMP_OSC2_EDIT", [this](void* userdata) {
+             return envelopAmpLayer2.updateEditPhase((int8_t*)userdata);
+         } },
+        { "ENV_AMP_OSC2_TIME", [this](void* userdata) {
+             float* timePct = envelopAmpLayer2.updatePhaseTime((int8_t*)userdata);
+             msEnv = (uint16_t)(*timePct * duration.get());
+             return &msEnv;
+         } },
+        { "ENV_AMP_OSC2_MOD", [this](void* userdata) {
+             return envelopAmpLayer2.updatePhaseModulation((int8_t*)userdata);
+         } },
     };
-
-    /*md **Data ID**: */
-    uint8_t getDataId(std::string name) override
-    {
-        /*md - `ENV_AMP` update the amplitude for current step */
-        if (name == "ENV_AMP")
-            return ENV_AMP;
-        /*md - `ENV_AMP_EDIT` set/get the amplitude edit point for current step */
-        if (name == "ENV_AMP_EDIT")
-            return ENV_AMP_EDIT;
-        /*md - `ENV_AMP_TIME` update the amplitude time for current step */
-        if (name == "ENV_AMP_TIME")
-            return ENV_AMP_TIME;
-        /*md - `ENV_AMP_MOD` update the amplitude modulation value for current step */
-        if (name == "ENV_AMP_MOD")
-            return ENV_AMP_MOD;
-        /*md - `ENV_FREQ` get the frequency envelop */
-        if (name == "ENV_FREQ")
-            return ENV_FREQ;
-        /*md - `ENV_FREQ_EDIT` set/get the frequency edit point for current step */
-        if (name == "ENV_FREQ_EDIT")
-            return ENV_FREQ_EDIT;
-        /*md - `ENV_FREQ_TIME` update the frequency time for current step */
-        if (name == "ENV_FREQ_TIME")
-            return ENV_FREQ_TIME;
-        /*md - `ENV_FREQ_MOD` update the frequency modulation value for current step */
-        if (name == "ENV_FREQ_MOD")
-            return ENV_FREQ_MOD;
-        /*md - `ENV_FREQ2` get the frequency envelop */
-        if (name == "ENV_FREQ2")
-            return ENV_FREQ2;
-        /*md - `ENV_FREQ_MODE` update the envelop frequency mode */
-        if (name == "ENV_FREQ_MODE")
-            return ENV_FREQ_MODE;
-        /*md - `ENV_FREQ_IS_MACRO` get the envelop frequency edit mode */
-        if (name == "ENV_FREQ_IS_MACRO")
-            return ENV_FREQ_IS_MACRO;
-        /*md - `ENV_FREQ_MACRO1` set the macro 1 value for frequency envelop */
-        if (name == "ENV_FREQ_MACRO1")
-            return ENV_FREQ_MACRO1;
-        /*md - `ENV_FREQ_MACRO2` set the macro 2 value for frequency envelop */
-        if (name == "ENV_FREQ_MACRO2")
-            return ENV_FREQ_MACRO2;
-        /*md - `ENV_FREQ_MACRO3` set the macro 3 value for frequency envelop */
-        if (name == "ENV_FREQ_MACRO3")
-            return ENV_FREQ_MACRO3;
-        /*md - `WAVEFORM` return a representation of the selected waveform */
-        if (name == "WAVEFORM")
-            return WAVEFORM;
-        /*md - `ENV_AMP_OSC2` update the amplitude for current step */
-        if (name == "ENV_AMP_OSC2")
-            return ENV_AMP_OSC2;
-        /*md - `ENV_AMP_OSC2_EDIT` set/get the amplitude edit point for current step */
-        if (name == "ENV_AMP_OSC2_EDIT")
-            return ENV_AMP_OSC2_EDIT;
-        /*md - `ENV_AMP_OSC2_TIME` update the amplitude time for current step */
-        if (name == "ENV_AMP_OSC2_TIME")
-            return ENV_AMP_OSC2_TIME;
-        /*md - `ENV_AMP_OSC2_MOD` update the amplitude modulation value for current step */
-        if (name == "ENV_AMP_OSC2_MOD")
-            return ENV_AMP_OSC2_MOD;
-        return atoi(name.c_str());
-    }
-
-    void* data(int id, void* userdata = NULL) override
-    {
-        switch (id) {
-        case ENV_AMP:
-            return &envelopAmp.data;
-        case ENV_AMP_EDIT: // set & get current amp step edit point
-            return envelopAmp.updateEditPhase((int8_t*)userdata);
-        case ENV_AMP_TIME: { // update amp time for current step
-            float* timePct = envelopAmp.updatePhaseTime((int8_t*)userdata);
-            msEnv = (uint16_t)(*timePct * duration.get());
-            return &msEnv;
-        }
-        case ENV_AMP_MOD: // update amp modulation value for current step
-            return envelopAmp.updatePhaseModulation((int8_t*)userdata);
-        case ENV_FREQ:
-            return &envelopFreq.data;
-        case ENV_FREQ_EDIT: // set & get current freq step edit point
-            return envelopFreq.updateEditPhase((int8_t*)userdata);
-        case ENV_FREQ_TIME: { // update freq time for current step
-            float* timePct = envelopFreq.updatePhaseTime((int8_t*)userdata);
-            msEnv = (uint16_t)(*timePct * duration.get());
-            return &msEnv;
-        }
-        case ENV_FREQ_MOD: // update freq modulation value for current step
-            return envelopFreq.updatePhaseModulation((int8_t*)userdata);
-        case ENV_FREQ2:
-            return &envelopFreq.data;
-        case ENV_FREQ_MODE: {
-            return envelopFreq.updateMode((int8_t*)userdata);
-        }
-        case ENV_FREQ_IS_MACRO:
-            return &envelopFreq.useMacro;
-        case ENV_FREQ_MACRO1:
-            return envelopFreq.updateMacro1((int8_t*)userdata);
-        case ENV_FREQ_MACRO2:
-            return envelopFreq.updateMacro2((int8_t*)userdata);
-        case ENV_FREQ_MACRO3: {
-            float* macro3 = envelopFreq.updateMacro3((int8_t*)userdata);
-            if (!envelopFreq.useMacro) {
-                fMsEnv = *macro3 * duration.get();
-                return &fMsEnv;
-            }
-            return macro3;
-        }
-        case WAVEFORM: { // pointer to waveform sample
-            if (!wave) {
-                return NULL;
-            }
-            float* index = (float*)userdata;
-            return wave->sample(index);
-        }
-        case ENV_AMP_OSC2:
-            return &envelopAmpLayer2.data;
-        case ENV_AMP_OSC2_EDIT: // set & get current amp step edit point
-            return envelopAmpLayer2.updateEditPhase((int8_t*)userdata);
-        case ENV_AMP_OSC2_TIME: { // update amp time for current step
-            float* timePct = envelopAmpLayer2.updatePhaseTime((int8_t*)userdata);
-            msEnv = (uint16_t)(*timePct * duration.get());
-            return &msEnv;
-        }
-        case ENV_AMP_OSC2_MOD: // update amp modulation value for current step
-            return envelopAmpLayer2.updatePhaseModulation((int8_t*)userdata);
-        }
-        return NULL;
-    }
+    DEFINE_GETDATAID_AND_DATA
 };

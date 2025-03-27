@@ -2,9 +2,9 @@ import * as React from '@/libs/react';
 
 import { SeqView } from '../components/SeqView';
 import { AmpView } from './AmpView';
-import { ClickView } from './ClickView';
 import { FrequencyView } from './FrequencyView';
 import { FxView } from './FxView';
+import { Layer2View } from './Layer2View';
 import { MainView } from './MainView';
 import { ViewSelector } from './ViewSelector';
 import { WaveformView } from './WaveformView';
@@ -38,7 +38,13 @@ export function DrumView({ track, synthName, color }: Props) {
                 synthName={synthName}
                 color={color}
             />
-            <ClickView
+            {/* <ClickView
+                name={`${synthName}Click`}
+                track={track}
+                synthName={synthName}
+                color={color}
+            /> */}
+            <Layer2View
                 name={`${synthName}Click`}
                 track={track}
                 synthName={synthName}
