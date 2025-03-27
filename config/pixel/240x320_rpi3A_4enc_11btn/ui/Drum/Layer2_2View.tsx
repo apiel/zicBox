@@ -3,8 +3,8 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
-import { encTopLeft } from '../constants';
-import { topLeftKnob } from '../constantsValue';
+import { encTopLeft, encTopRight } from '../constants';
+import { topLeftKnob, topRightKnob } from '../constantsValue';
 import { ViewSelector } from './ViewSelector';
 
 export type Props = {
@@ -25,14 +25,14 @@ export function Layer2_2View({ name, track, synthName, color }: Props) {
                 color="tertiary"
                 track={track}
             />
-            {/* <KnobValue
+            <KnobValue
                 audioPlugin={synthName}
                 param="CLICK_CUTOFF"
                 bounds={topRightKnob}
                 encoderId={encTopRight}
-                color="primary"
+                color="tertiary"
                 track={track}
-            /> */}
+            />
             {/* <KnobValue
                 audioPlugin={synthName}
                 param="CLICK_DURATION"

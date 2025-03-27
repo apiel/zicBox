@@ -30,7 +30,7 @@ export function Layer2View({ name, track, synthName, color }: Props) {
             />
             {/* <KnobValue
                 audioPlugin={synthName}
-                param="CLICK"
+                param="CLICK_CUTOFF"
                 bounds={topLeftKnob}
                 encoderId={encTopLeft}
                 color="tertiary"

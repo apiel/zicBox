@@ -133,8 +133,12 @@ protected:
     float addSecondLayer(float time, float out)
     {
         float envAmp = envelopAmpLayer2.next(time);
-        float osc = fastWaveform.process();
-        out += osc * envAmp;
+        float out2 = fastWaveform.process() * envAmp;
+        if (clickCutoff.pct() > 0.0f) {
+            clickFilter.setSampleData(out2);
+            out2 = clickFilter.lp;
+        }
+        out += out2;
         return out;
     }
 
