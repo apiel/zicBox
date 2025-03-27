@@ -108,35 +108,35 @@ protected:
     });
 
     EffectFilterData clickFilter;
-    float addSecondLayer(float time, float out)
-    {
-        // Add a click at the beginning
-        float duration = clickDuration.pct(); // Duration of the click in seconds
-        float clickAmplitude = click.pct();
-
-        if (clickAmplitude && time < duration && clickCutoff.pct() > 0.0f) {
-            float noise = fastWaveform.process();
-            float clickEnv = 1.0f - (time / duration); // Linear fade-out for the click
-
-            // Apply the envelope to the noise
-            float rawClick = noise * clickAmplitude * clickEnv;
-
-            clickFilter.setSampleData(rawClick);
-            out += clickFilter.lp;
-
-            // out += rawClick;
-        }
-        return out;
-    }
-
-    EnvelopRelative envelopAmpLayer2 = EnvelopRelative({ { 0.0f, 0.0f }, { 0.0f, 0.01f }, { 0.0f, 1.0f } }, 1);
     // float addSecondLayer(float time, float out)
     // {
-    //     float envAmp = envelopAmpLayer2.next(time);
-    //     float osc = fastWaveform.process();
-    //     out += osc * envAmp;
+    //     // Add a click at the beginning
+    //     float duration = clickDuration.pct(); // Duration of the click in seconds
+    //     float clickAmplitude = click.pct();
+
+    //     if (clickAmplitude && time < duration && clickCutoff.pct() > 0.0f) {
+    //         float noise = fastWaveform.process();
+    //         float clickEnv = 1.0f - (time / duration); // Linear fade-out for the click
+
+    //         // Apply the envelope to the noise
+    //         float rawClick = noise * clickAmplitude * clickEnv;
+
+    //         clickFilter.setSampleData(rawClick);
+    //         out += clickFilter.lp;
+
+    //         // out += rawClick;
+    //     }
     //     return out;
     // }
+
+    EnvelopRelative envelopAmpLayer2 = EnvelopRelative({ { 0.0f, 0.0f }, { 0.0f, 0.01f }, { 0.0f, 1.0f } }, 1);
+    float addSecondLayer(float time, float out)
+    {
+        float envAmp = envelopAmpLayer2.next(time);
+        float osc = fastWaveform.process();
+        out += osc * envAmp;
+        return out;
+    }
 
 #define DRUM23_WAVEFORMS_COUNT 7
     struct WaveformType {
@@ -240,6 +240,9 @@ public:
         p.val.setString(fastWaveform.toString());
     });
 
+    /*md - `OSC2_FREQ` sets the base frequency of the percussive tone. */
+    Val& osc2Freq = val(220.0f, "OSC2_FREQ", { "Osc.2 Freq", .min = 10.0, .max = 2000.0, .step = 10.0, .unit = "Hz" });
+
     /*md - `CLICK` set the click level.*/
     Val& click = val(0, "CLICK", { "Click" });
 
@@ -312,6 +315,8 @@ public:
         velocity = range(_velocity, 0.0f, 1.0f);
 
         noteMult = pow(2, ((note - baseNote + pitch.get()) / 12.0));
+
+        fastWaveform.setRate(osc2Freq.get() * noteMult);
     }
 
     void serialize(FILE* file, std::string separator) override

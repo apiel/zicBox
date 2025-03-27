@@ -24,6 +24,7 @@ export function ViewSelector({
     color,
     synthName,
     hideTitle,
+    viewName,
 }: {
     selected: string;
     color: string;
@@ -50,7 +51,8 @@ export function ViewSelector({
 
                     { key: btn5, action: `setView:${synthName}Sequencer` },
                     { key: btn6, action: `setView:${synthName}Amplitude` },
-                    { key: btn7, action: `setView:${synthName}Click` },
+                    // { key: btn7, action: `setView:${synthName}Click` },
+                    { key: btn7, action: viewName === `${synthName}Layer2` ? `setView:${synthName}Layer2_2` : `setView:${synthName}Layer2` },
                     ...(selected === 'Seq.' ? [] : [{ key: btn8, action: `noteOn:${synthName}:60` }]),
 
                     { key: btnUp, action: 'contextToggle:253:1:0' },
