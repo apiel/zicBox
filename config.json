@@ -1871,9 +1871,7 @@
     {
       "name": "Drum1Click",
       "components": [
-        {"audioPlugin":"Drum1","param":"CLICK","bounds":[0,60,118,100],"encoderId":0,"color":"tertiary","track":5,"componentName":"KnobValue"},
-        {"audioPlugin":"Drum1","param":"CLICK_CUTOFF","bounds":[120,60,118,100],"encoderId":1,"color":"primary","track":5,"componentName":"KnobValue"},
-        {"audioPlugin":"Drum1","param":"CLICK_DURATION","bounds":[0,160,118,100],"encoderId":2,"color":"quaternary","track":5,"componentName":"KnobValue"},
+        {"bounds":[0,60,239,80],"audioPlugin":"Drum1","envelopDataId":"ENV_AMP_OSC2","renderValuesOnTop":false,"encoderTime":0,"encoderModulation":1,"encoderPhase":2,"track":5,"componentName":"DrumEnvelop"},
         {"audioPlugin":"Drum1","param":"OSC2","bounds":[120,160,118,100],"encoderId":3,"color":"secondary","track":5,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Kick","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[70,28,6,6],"color":"#b54f5e","componentName":"Rect"},
