@@ -19,7 +19,7 @@ import {
     KeyInfoPosition,
 } from '../constants';
 
-export function TextGridDrum({
+export function ViewSelector({
     selected,
     color,
     synthName,
@@ -28,6 +28,7 @@ export function TextGridDrum({
     selected: string;
     color: string;
     synthName: string;
+    viewName: string;
     hideTitle?: boolean;
 }) {
     return (
@@ -43,7 +44,7 @@ export function TextGridDrum({
                 ]}
                 keys={[
                     { key: btn1, action: `setView:${synthName}` },
-                    { key: btn2, action: `setView:${synthName}Distortion` },
+                    { key: btn2, action: `setView:${synthName}Fx` },
                     { key: btn3, action: `setView:${synthName}Waveform` },
                     { key: btn4, action: `setView:${synthName}Frequency` },
 

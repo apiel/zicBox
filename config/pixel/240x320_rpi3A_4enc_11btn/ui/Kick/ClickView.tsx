@@ -10,7 +10,7 @@ import {
     topLeftKnob,
     topRightKnob
 } from '../constantsValue';
-import { TextGridKick } from './TextGridKick';
+import { ViewSelector } from './ViewSelector';
 
 export type Props = {
     name: string;
@@ -51,7 +51,7 @@ export function ClickView({ name, track, synthName, color }: Props) {
                 track={track}
             />
 
-            <TextGridKick selected={'Click'} color={color} synthName={synthName} />
+            <ViewSelector selected={'Click'} color={color} synthName={synthName} viewName={name} />
             <Common selected={synthName} track={track} selectedBackground={color} synthName={synthName} />
         </View>
     );

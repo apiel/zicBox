@@ -19,15 +19,17 @@ import {
     KeyInfoPosition,
 } from '../constants';
 
-export function TextGridKick({
+export function ViewSelector({
     selected,
     color,
     synthName,
+    viewName,
     hideTitle,
 }: {
     selected: string;
     color: string;
     synthName: string;
+    viewName: string;
     hideTitle?: boolean;
 }) {
     return (
@@ -43,14 +45,22 @@ export function TextGridKick({
                 ]}
                 keys={[
                     { key: btn1, action: `setView:${synthName}` },
-                    { key: btn2, action: `setView:${synthName}Distortion` },
+                    {
+                        key: btn2,
+                        action:
+                            viewName === `${synthName}Fx`
+                                ? `setView:${synthName}Fx2`
+                                : `setView:${synthName}Fx`,
+                    },
                     { key: btn3, action: `setView:${synthName}Waveform` },
                     { key: btn4, action: `setView:${synthName}Frequency` },
 
                     { key: btn5, action: `setView:${synthName}Sequencer` },
                     { key: btn6, action: `setView:${synthName}Amplitude` },
                     { key: btn7, action: `setView:${synthName}Click` },
-                    ...(selected === 'Seq.' ? [] : [{ key: btn8, action: `noteOn:${synthName}:60` }]),
+                    ...(selected === 'Seq.'
+                        ? []
+                        : [{ key: btn8, action: `noteOn:${synthName}:60` }]),
 
                     { key: btnUp, action: 'contextToggle:253:1:0' },
                     { key: btnDown, action: 'contextToggleOnRelease:252:1:0' },

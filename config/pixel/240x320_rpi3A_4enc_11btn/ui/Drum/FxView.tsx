@@ -5,7 +5,7 @@ import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
 import { encBottomLeft, encBottomRight, encTopLeft, encTopRight } from '../constants';
 import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
-import { TextGridDrum } from './TextGridDrum';
+import { ViewSelector } from './ViewSelector';
 
 export type Props = {
     name: string;
@@ -48,7 +48,7 @@ export function FxView({ name, track, synthName, color }: Props) {
                 color="secondary"
                 track={track}
             />
-            <TextGridDrum selected={'Fx'} color={color} synthName={synthName} />
+            <ViewSelector selected={'Fx'} color={color} synthName={synthName} viewName={name} />
             <Common
                 selected={synthName}
                 track={track}
