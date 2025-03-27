@@ -135,8 +135,9 @@ protected:
         float envAmp = envelopAmpLayer2.next(time);
         float out2 = fastWaveform.process() * envAmp;
         if (clickCutoff.pct() > 0.0f) {
-            clickFilter.setSampleData(out2);
-            out2 = clickFilter.lp;
+            // clickFilter.setSampleData(out2);
+            // out2 = clickFilter.lp;
+            out2 = clickFilter.process(out2);
         }
         out += out2;
         return out;
@@ -214,7 +215,7 @@ public:
             p.val.setString(std::to_string((int)p.val.get()) + "/" + std::to_string(ZIC_WAVETABLE_WAVEFORMS_COUNT));
         }
     });
-
+    
     /*md - `PITCH` Modulate the pitch.*/
     Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -36, .max = 36 });
     /*md - `DURATION` set the duration of the envelop.*/
