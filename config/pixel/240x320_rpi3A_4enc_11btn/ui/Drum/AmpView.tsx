@@ -4,14 +4,9 @@ import { DrumEnvelop } from '@/libs/nativeComponents/DrumEnvelop';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
-import {
-    encBottomLeft,
-    encBottomRight,
-    encTopLeft,
-    encTopRight
-} from '../constants';
+import { encBottomLeft, encBottomRight, encTopLeft, encTopRight } from '../constants';
 import { bottomRightKnob, topValues } from '../constantsValue';
-import { TextGridDrum } from './TextGridDrum';
+import { ViewSelector } from './ViewSelector';
 
 export type Props = {
     name: string;
@@ -35,13 +30,19 @@ export function AmpView({ name, track, synthName, color }: Props) {
             />
             <KnobValue
                 bounds={bottomRightKnob}
-                audioPlugin={synthName} param="DURATION"
+                audioPlugin={synthName}
+                param="DURATION"
                 encoderId={encBottomRight}
                 color="quaternary"
                 track={track}
             />
-            <TextGridDrum selected={'Amp'} color={color} synthName={synthName} />
-            <Common selected={synthName} track={track} selectedBackground={color} synthName={synthName} />
+            <ViewSelector selected={'Amp'} color={color} synthName={synthName} viewName={name} />
+            <Common
+                selected={synthName}
+                track={track}
+                selectedBackground={color}
+                synthName={synthName}
+            />
         </View>
     );
 }

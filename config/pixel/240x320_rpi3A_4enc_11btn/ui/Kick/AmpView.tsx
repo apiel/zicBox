@@ -11,7 +11,7 @@ import {
     encTopRight
 } from '../constants';
 import { bottomRightKnob, topValues } from '../constantsValue';
-import { TextGridKick } from './TextGridKick';
+import { ViewSelector } from './ViewSelector';
 
 export type Props = {
     name: string;
@@ -40,7 +40,7 @@ export function AmpView({ name, track, synthName, color }: Props) {
                 color="quaternary"
                 track={track}
             />
-            <TextGridKick selected={'Amp'} color={color} synthName={synthName} />
+            <ViewSelector selected={'Amp'} color={color} synthName={synthName} viewName={name} />
             <Common selected={synthName} track={track} selectedBackground={color} synthName={synthName} />
         </View>
     );

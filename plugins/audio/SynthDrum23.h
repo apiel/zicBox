@@ -108,7 +108,7 @@ protected:
     });
 
     EffectFilterData clickFilter;
-    float addClicking(float time, float out)
+    float addSecondLayer(float time, float out)
     {
         // Add a click at the beginning
         float duration = clickDuration.pct(); // Duration of the click in seconds
@@ -128,6 +128,15 @@ protected:
         }
         return out;
     }
+
+    EnvelopRelative envelopAmpLayer2 = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.0f, 1.0f } }, 1);
+    // float addSecondLayer(float time, float out)
+    // {
+    //     float envAmp = envelopAmpLayer2.next(time);
+    //     float osc = fastWaveform.process();
+    //     out += osc * envAmp;
+    //     return out;
+    // }
 
 #define DRUM23_WAVEFORMS_COUNT 7
     struct WaveformType {
@@ -281,7 +290,7 @@ public:
 
             float freq = envFreq + noteMult;
             float out = wave->sample(&wavetable.sampleIndex, freq) * envAmp;
-            out = addClicking(time, out);
+            out = addSecondLayer(time, out);
             out = highFreqBoost(out, time);
             out = range(out + out * scaledClipping, -1.0f, 1.0f);
             buf[track] = out * velocity;
@@ -299,6 +308,7 @@ public:
         sampleDurationCounter = 0;
         envelopAmp.reset();
         envelopFreq.reset();
+        envelopAmpLayer2.reset();
         velocity = range(_velocity, 0.0f, 1.0f);
 
         noteMult = pow(2, ((note - baseNote + pitch.get()) / 12.0));
@@ -345,6 +355,10 @@ public:
         ENV_FREQ_MACRO2,
         ENV_FREQ_MACRO3,
         WAVEFORM,
+        ENV_AMP_OSC2,
+        ENV_AMP_OSC2_EDIT,
+        ENV_AMP_OSC2_TIME,
+        ENV_AMP_OSC2_MOD,
     };
 
     /*md **Data ID**: */
@@ -395,6 +409,18 @@ public:
         /*md - `WAVEFORM` return a representation of the selected waveform */
         if (name == "WAVEFORM")
             return WAVEFORM;
+        /*md - `ENV_AMP_OSC2` update the amplitude for current step */
+        if (name == "ENV_AMP_OSC2")
+            return ENV_AMP_OSC2;
+        /*md - `ENV_AMP_OSC2_EDIT` set/get the amplitude edit point for current step */
+        if (name == "ENV_AMP_OSC2_EDIT")
+            return ENV_AMP_OSC2_EDIT;
+        /*md - `ENV_AMP_OSC2_TIME` update the amplitude time for current step */
+        if (name == "ENV_AMP_OSC2_TIME")
+            return ENV_AMP_OSC2_TIME;
+        /*md - `ENV_AMP_OSC2_MOD` update the amplitude modulation value for current step */
+        if (name == "ENV_AMP_OSC2_MOD")
+            return ENV_AMP_OSC2_MOD;
         return atoi(name.c_str());
     }
 
@@ -449,6 +475,17 @@ public:
             float* index = (float*)userdata;
             return wave->sample(index);
         }
+        case ENV_AMP_OSC2:
+            return &envelopAmpLayer2.data;
+        case ENV_AMP_OSC2_EDIT: // set & get current amp step edit point
+            return envelopAmpLayer2.updateEditPhase((int8_t*)userdata);
+        case ENV_AMP_OSC2_TIME: { // update amp time for current step
+            float* timePct = envelopAmpLayer2.updatePhaseTime((int8_t*)userdata);
+            msEnv = (uint16_t)(*timePct * duration.get());
+            return &msEnv;
+        }
+        case ENV_AMP_OSC2_MOD: // update amp modulation value for current step
+            return envelopAmpLayer2.updatePhaseModulation((int8_t*)userdata);
         }
         return NULL;
     }

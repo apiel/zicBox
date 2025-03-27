@@ -10,7 +10,7 @@ import {
     encTopRight
 } from '../constants';
 import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
-import { TextGridDrum } from './TextGridDrum';
+import { ViewSelector } from './ViewSelector';
 
 export type Props = {
     name: string;
@@ -55,7 +55,7 @@ export function MainView({ name, track, synthName, color }: Props) {
                 track={track}
             />
 
-            <TextGridDrum selected={'Main'} color={color} synthName={synthName} />
+            <ViewSelector selected={'Main'} color={color} synthName={synthName} viewName={name} />
             <Common selected={synthName} track={track} selectedBackground={color} synthName={synthName} />
         </View>
     );

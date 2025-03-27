@@ -5,7 +5,7 @@ import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
 import { encBottomLeft, encBottomRight, encTopLeft, encTopRight } from '../constants';
 import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
-import { TextGridKick } from './TextGridKick';
+import { ViewSelector } from './ViewSelector';
 
 export type Props = {
     name: string;
@@ -14,7 +14,7 @@ export type Props = {
     color: string;
 };
 
-export function DistortionView({ name, track, synthName, color }: Props) {
+export function FxView({ name, track, synthName, color }: Props) {
     return (
         <View name={name}>
             <KnobValue
@@ -45,7 +45,7 @@ export function DistortionView({ name, track, synthName, color }: Props) {
                 color="secondary"
                 track={track}
             />
-            <TextGridKick selected={'Fx'} color={color} synthName={synthName} />
+            <ViewSelector selected={'Fx'} color={color} synthName={synthName} viewName={name} />
             <Common selected={synthName} track={track} selectedBackground={color} synthName={synthName} />
         </View>
     );

@@ -13,7 +13,7 @@ import {
     ScreenWidth
 } from '../constants';
 import { bottomRightKnob, graphTopValues } from '../constantsValue';
-import { TextGridKick } from './TextGridKick';
+import { ViewSelector } from './ViewSelector';
 
 export type Props = {
     name: string;
@@ -78,7 +78,7 @@ export function WaveformView({ name, track, synthName, color }: Props) {
                 color="secondary"
                 track={track}
             />
-            <TextGridKick selected={'Wave'} color={color} synthName={synthName} />
+            <ViewSelector selected={'Wave'} color={color} synthName={synthName} viewName={name} />
             <Common selected={synthName} track={track} selectedBackground={color} synthName={synthName} />
         </View>
     );
