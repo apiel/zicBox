@@ -46,7 +46,7 @@ export function ViewSelector({
                 selectedBackground={color}
                 rows={[
                     'Main Fx Wave Freq',
-                    `Seq. Amp Click ${selected === 'Seq.' ? '___' : '&icon::musicNote::pixelated'}`,
+                    `Seq. Amp Layer2 ${selected === 'Seq.' ? '___' : '&icon::musicNote::pixelated'}`,
                 ]}
                 keys={[
                     { key: btn1, action: `setView:${synthName}` },
