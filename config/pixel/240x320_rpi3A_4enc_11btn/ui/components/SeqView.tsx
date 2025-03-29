@@ -3,7 +3,7 @@ import * as React from '@/libs/react';
 import { Sequencer } from '@/libs/nativeComponents/Sequencer';
 import { View } from '@/libs/nativeComponents/View';
 import { rgb } from '@/libs/ui';
-import { btnShift, ScreenWidth } from '../constants';
+import { btn5, btn8, btnShift, ScreenWidth } from '../constants';
 import { Common } from './Common';
 
 export type Props = {
@@ -32,6 +32,8 @@ export function SeqView({
                 track={track}
                 audioPlugin="Sequencer"
                 keys={[
+                    { key: btn5, action: '.toggleParam' },
+                    { key: btn8, action: `noteOn:${synthName}:60` },
                     // { key: btn8, action: '.toggleParam' },
                     // { key: btnUp, action: '.toggleParam', multipleKeyHandler: true },
                     { key: btnShift, action: '.shift', multipleKeyHandler: true },
