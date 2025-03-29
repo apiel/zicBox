@@ -61,7 +61,14 @@ export function Layer2View({ name, track, synthName, color }: Props) {
                 track={track}
             />
 
-            <ViewSelector selected={'Click'} color={color} synthName={synthName} viewName={name} />
+            <ViewSelector
+                selected={'Click'}
+                color={color}
+                synthName={synthName}
+                viewName={name}
+                pageCount={2}
+                currentPage={1}
+            />
             <Common
                 selected={synthName}
                 track={track}

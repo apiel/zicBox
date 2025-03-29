@@ -25,7 +25,7 @@ export function Layer2_2View({ name, track, synthName, color }: Props) {
                 color="tertiary"
                 track={track}
             />
-              <KnobValue
+            <KnobValue
                 audioPlugin={synthName}
                 param="LAYER2_CUTOFF"
                 bounds={topRightKnob}
@@ -51,7 +51,14 @@ export function Layer2_2View({ name, track, synthName, color }: Props) {
                 track={track}
             />
 
-            <ViewSelector selected={'Click'} color={color} synthName={synthName} viewName={name} />
+            <ViewSelector
+                selected={'Click'}
+                color={color}
+                synthName={synthName}
+                viewName={name}
+                pageCount={2}
+                currentPage={2}
+            />
             <Common
                 selected={synthName}
                 track={track}
