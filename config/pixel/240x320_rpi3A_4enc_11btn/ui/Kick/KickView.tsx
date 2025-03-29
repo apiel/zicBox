@@ -2,10 +2,11 @@ import * as React from '@/libs/react';
 
 import { SeqView } from '../components/SeqView';
 import { AmpView } from './AmpView';
-import { ClickView } from './ClickView';
 import { FrequencyView } from './FrequencyView';
 import { FxView } from './Fx';
 import { Fx2View } from './Fx2';
+import { Layer2View } from './Layer2View';
+import { Layer2_2View } from './Layer2_2View';
 import { MainView } from './MainView';
 import { ViewSelector } from './ViewSelector';
 import { WaveformView } from './WaveformView';
@@ -40,8 +41,14 @@ export function KickView({ track, synthName, color }: Props) {
                 synthName={synthName}
                 color={color}
             />
-            <ClickView
-                name={`${synthName}Click`}
+            <Layer2View
+                name={`${synthName}Layer2`}
+                track={track}
+                synthName={synthName}
+                color={color}
+            />
+            <Layer2_2View
+                name={`${synthName}Layer2_2`}
                 track={track}
                 synthName={synthName}
                 color={color}

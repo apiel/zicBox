@@ -49,7 +49,7 @@ export function ViewSelector({
                 currentPage={currentPage}
                 rows={[
                     'Main Fx Wave Freq',
-                    `Seq. Amp Click ${selected === 'Seq.' ? '___' : '&icon::musicNote::pixelated'}`,
+                    `Seq. Amp Layer2 ${selected === 'Seq.' ? '___' : '&icon::musicNote::pixelated'}`,
                 ]}
                 keys={[
                     { key: btn1, action: `setView:${synthName}` },
@@ -65,7 +65,7 @@ export function ViewSelector({
 
                     { key: btn5, action: `setView:${synthName}Sequencer` },
                     { key: btn6, action: `setView:${synthName}Amplitude` },
-                    { key: btn7, action: `setView:${synthName}Click` },
+                    { key: btn7, action: viewName === `${synthName}Layer2` ? `setView:${synthName}Layer2_2` : `setView:${synthName}Layer2` },
                     ...(selected === 'Seq.'
                         ? []
                         : [{ key: btn8, action: `noteOn:${synthName}:60` }]),

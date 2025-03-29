@@ -52,7 +52,7 @@ export function Layer2_2View({ name, track, synthName, color }: Props) {
             />
 
             <ViewSelector
-                selected={'Click'}
+                selected={'Layer2'}
                 color={color}
                 synthName={synthName}
                 viewName={name}
