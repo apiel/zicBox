@@ -3,11 +3,7 @@ import * as React from '@/libs/react';
 import { Sequencer } from '@/libs/nativeComponents/Sequencer';
 import { View } from '@/libs/nativeComponents/View';
 import { rgb } from '@/libs/ui';
-import {
-    btn8,
-    btnShift,
-    ScreenWidth
-} from '../constants';
+import { btnShift, ScreenWidth } from '../constants';
 import { Common } from './Common';
 
 export type Props = {
@@ -17,9 +13,18 @@ export type Props = {
     color: string;
     textGrid: any;
     maxStepLen?: number;
+    parameterSelection?: number;
 };
 
-export function SeqView({ name, track, synthName, color, textGrid, maxStepLen }: Props) {
+export function SeqView({
+    name,
+    track,
+    synthName,
+    color,
+    textGrid,
+    maxStepLen,
+    parameterSelection,
+}: Props) {
     return (
         <View name={name}>
             <Sequencer
@@ -27,13 +32,14 @@ export function SeqView({ name, track, synthName, color, textGrid, maxStepLen }:
                 track={track}
                 audioPlugin="Sequencer"
                 keys={[
-                    { key: btn8, action: '.toggleParam' },
+                    // { key: btn8, action: '.toggleParam' },
                     // { key: btnUp, action: '.toggleParam', multipleKeyHandler: true },
                     { key: btnShift, action: '.shift', multipleKeyHandler: true },
                 ]}
                 selectedColor={rgb(196, 21, 152)}
                 stepColor={color}
                 maxStepLen={maxStepLen}
+                parameterSelection={parameterSelection}
             />
 
             {textGrid}

@@ -47,10 +47,7 @@ export function ViewSelector({
                 shiftedTextColor={lighten(color, 0.5)}
                 pageCount={pageCount}
                 currentPage={currentPage}
-                rows={[
-                    'Main Fx Wave Freq',
-                    `Seq. Amp Layer2 ${selected === 'Seq.' ? '___' : '&icon::musicNote::pixelated'}`,
-                ]}
+                rows={['Main Fx Wave Freq', `Seq. Amp Layer2 &icon::musicNote::pixelated`]}
                 keys={[
                     { key: btn1, action: `setView:${synthName}` },
                     {
@@ -63,12 +60,24 @@ export function ViewSelector({
                     { key: btn3, action: `setView:${synthName}Waveform` },
                     { key: btn4, action: `setView:${synthName}Frequency` },
 
-                    { key: btn5, action: `setView:${synthName}Sequencer` },
+                    {
+                        key: btn5,
+                        action:
+                            viewName === `${synthName}Sequencer_0`
+                                ? `setView:${synthName}Sequencer_1`
+                                : viewName === `${synthName}Sequencer_1`
+                                ? `setView:${synthName}Sequencer_2`
+                                : `setView:${synthName}Sequencer_0`,
+                    },
                     { key: btn6, action: `setView:${synthName}Amplitude` },
-                    { key: btn7, action: viewName === `${synthName}Layer2` ? `setView:${synthName}Layer2_2` : `setView:${synthName}Layer2` },
-                    ...(selected === 'Seq.'
-                        ? []
-                        : [{ key: btn8, action: `noteOn:${synthName}:60` }]),
+                    {
+                        key: btn7,
+                        action:
+                            viewName === `${synthName}Layer2`
+                                ? `setView:${synthName}Layer2_2`
+                                : `setView:${synthName}Layer2`,
+                    },
+                    { key: btn8, action: `noteOn:${synthName}:60` },
 
                     { key: btnUp, action: 'contextToggle:253:1:0' },
                     { key: btnDown, action: 'contextToggleOnRelease:252:1:0' },

@@ -53,22 +53,28 @@ export function KickView({ track, synthName, color }: Props) {
                 synthName={synthName}
                 color={color}
             />
-            <SeqView
-                name={`${synthName}Sequencer`}
-                track={track}
-                synthName={synthName}
-                color={color}
-                maxStepLen={1}
-                textGrid={
-                    <ViewSelector
-                        selected={'Seq.'}
-                        color={color}
-                        synthName={synthName}
-                        viewName={`${synthName}Sequencer`}
-                        hideTitle
-                    />
-                }
-            />
+
+            {[...Array(3)].map((x, i) => (
+                <SeqView
+                    name={`${synthName}Sequencer_${i}`}
+                    track={track}
+                    synthName={synthName}
+                    color={color}
+                    maxStepLen={1}
+                    parameterSelection={i}
+                    textGrid={
+                        <ViewSelector
+                            selected={'Seq.'}
+                            color={color}
+                            synthName={synthName}
+                            viewName={`${synthName}Sequencer_${i}`}
+                            hideTitle
+                            pageCount={3}
+                            currentPage={i + 1}
+                        />
+                    }
+                />
+            ))}
         </>
     );
 }
