@@ -4,6 +4,7 @@ import { ComponentProps, VisibilityContext } from '@/libs/nativeComponents/compo
 import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
 import { Text } from '@/libs/nativeComponents/Text';
 import { Bounds, getBounds, rgb } from '@/libs/ui';
+import { Rect } from '../nativeComponents/Rect';
 
 export function TextGrid({
     bounds,
@@ -15,6 +16,8 @@ export function TextGrid({
     bgColor = 'background',
     textColor,
     shiftedTextColor,
+    pageCount,
+    currentPage,
 }: {
     bounds: Bounds;
     selected?: string;
@@ -25,13 +28,9 @@ export function TextGrid({
     bgColor?: string;
     textColor?: string;
     shiftedTextColor?: string;
+    pageCount?: number;
+    currentPage?: number;
 }) {
-    if (selected) {
-        for (let i = 0; i < rows.length; i++) {
-            rows[i] = rows[i].replace(selected, `!${selected}`);
-        }
-    }
-
     const context: VisibilityContext[] = [];
     if (contextValue !== undefined) {
         for (let i = 0; i < contextValue.length; i++) {
@@ -39,7 +38,7 @@ export function TextGrid({
                 index: 254 - i,
                 condition: 'SHOW_WHEN',
                 value: contextValue[i],
-            });   
+            });
         }
     }
 
@@ -54,6 +53,9 @@ export function TextGrid({
                 bgColor={bgColor}
                 textColor={textColor}
                 shiftedTextColor={shiftedTextColor}
+                selected={selected}
+                pageCount={pageCount}
+                currentPage={currentPage}
             />
         </>
     );
@@ -67,6 +69,9 @@ function TextGridRender({
     shiftedTextColor = rgb(80, 75, 75),
     context,
     textColor = 'text',
+    selected,
+    pageCount,
+    currentPage,
     ...props
 }: ComponentProps<{
     rows: string[];
@@ -75,6 +80,9 @@ function TextGridRender({
     shiftedTextColor?: string;
     context?: VisibilityContext[];
     textColor?: string;
+    selected?: string;
+    pageCount?: number;
+    currentPage?: number;
 }>) {
     const h = 11;
     const [x, y, w] = getBounds(bounds);
@@ -86,11 +94,7 @@ function TextGridRender({
         const width = Number(w) / items.length;
         let marginLeft = 0;
         for (let item of items) {
-            let bg = bgColor;
-            if (item[0] === '!') {
-                item = item.substr(1);
-                bg = activeBgColor;
-            }
+            const bg = item === selected ? activeBgColor : bgColor;
 
             let color = textColor;
             if (item[0] === '^') {
@@ -111,6 +115,23 @@ function TextGridRender({
                     fontSize={8}
                 />
             );
+
+            if (pageCount !== undefined && item === selected) {
+                children.push(
+                    <Rect
+                        bounds={[Number(x) + marginLeft + 3, textY + marginTop + 2, 3, 3]}
+                        color={currentPage === 1 ? shiftedTextColor : color}
+                    />
+                );
+
+                children.push(
+                    <Rect
+                        bounds={[Number(x) + marginLeft + 3, textY + marginTop + 6, 3, 3]}
+                        color={currentPage === 2 ? shiftedTextColor : color}
+                    />
+                );
+            }
+
             marginLeft += width;
         }
         marginTop += h;

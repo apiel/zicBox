@@ -46,7 +46,14 @@ export function Fx2View({ name, track, synthName, color }: Props) {
                 color="secondary"
                 track={track}
             /> */}
-            <ViewSelector selected={'Fx'} color={color} synthName={synthName} viewName={name} />
+            <ViewSelector
+                selected={'Fx'}
+                color={color}
+                synthName={synthName}
+                viewName={name}
+                pageCount={2}
+                currentPage={2}
+            />
             <Common
                 selected={synthName}
                 track={track}

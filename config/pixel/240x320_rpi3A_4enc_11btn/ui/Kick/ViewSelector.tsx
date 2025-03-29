@@ -2,6 +2,7 @@ import * as React from '@/libs/react';
 
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
+import { lighten } from '@/libs/ui';
 import { Kick } from '../components/Common';
 import { Title } from '../components/Title';
 import {
@@ -25,12 +26,16 @@ export function ViewSelector({
     synthName,
     viewName,
     hideTitle,
+    pageCount,
+    currentPage,
 }: {
     selected: string;
     color: string;
     synthName: string;
     viewName: string;
     hideTitle?: boolean;
+    pageCount?: number;
+    currentPage?: number;
 }) {
     return (
         <>
@@ -39,6 +44,9 @@ export function ViewSelector({
             <TextGrid
                 bounds={KeyInfoPosition}
                 selectedBackground={color}
+                shiftedTextColor={lighten(color, 0.5)}
+                pageCount={pageCount}
+                currentPage={currentPage}
                 rows={[
                     'Main Fx Wave Freq',
                     `Seq. Amp Click ${selected === 'Seq.' ? '___' : '&icon::musicNote::pixelated'}`,

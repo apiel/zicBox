@@ -1,6 +1,8 @@
 # Pixel basic working one
 
-- TODO show when there is multiple page
+- TODO show when there is multiple page on the same button view
+
+- TODO when clicking several time one Seq. it change the selected items...
 
 - TODO make another filder that morph between lpf and hpf but only using one filter. So we coud put highboot one first page...
 
