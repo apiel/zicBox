@@ -3,8 +3,8 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
-import { encBottomLeft, encBottomRight, encTopLeft, encTopRight } from '../constants';
-import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
+import { encBottomRight, encTopLeft, encTopRight } from '../constants';
+import { bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
 import { ViewSelector } from './ViewSelector';
 
 export type Props = {
@@ -25,25 +25,42 @@ export function Layer2_2View({ name, track, synthName, color }: Props) {
                 color="tertiary"
                 track={track}
             />
-            <KnobValue
+              <KnobValue
+                audioPlugin={synthName}
+                param="LAYER2_CUTOFF"
+                bounds={topRightKnob}
+                encoderId={encTopRight}
+                color="secondary"
+                type="STRING"
+                track={track}
+            />
+            {/* <KnobValue
                 audioPlugin={synthName}
                 param="CLICK_CUTOFF"
                 bounds={topRightKnob}
                 encoderId={encTopRight}
                 color="tertiary"
                 track={track}
-            />
-            <KnobValue
+            /> */}
+            {/* <KnobValue
                 audioPlugin={synthName}
                 param="LAYER2_FILTER_TYPE"
                 bounds={bottomLeftKnob}
                 encoderId={encBottomLeft}
                 color="quaternary"
                 track={track}
-            />
-            <KnobValue
+            /> */}
+            {/* <KnobValue
                 audioPlugin={synthName}
                 param="LAYER2_FILTER_RESONANCE"
+                bounds={bottomRightKnob}
+                encoderId={encBottomRight}
+                color="tertiary"
+                track={track}
+            /> */}
+            <KnobValue
+                audioPlugin={synthName}
+                param="LAYER2_RESONANCE"
                 bounds={bottomRightKnob}
                 encoderId={encBottomRight}
                 color="secondary"
