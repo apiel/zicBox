@@ -24,12 +24,16 @@ export function ViewSelector({
     synthName,
     color,
     hideTitle,
+    pageCount,
+    currentPage,
 }: {
     selected: string;
     viewName: string;
     synthName: string;
     color: string;
     hideTitle?: boolean;
+    pageCount?: number;
+    currentPage?: number;
 }) {
     return (
         <>
@@ -38,12 +42,7 @@ export function ViewSelector({
             <TextGrid
                 bounds={KeyInfoPosition}
                 selectedBackground={color}
-                rows={[
-                    'Main Fx Env/Lfo Wave',
-                    `Seq. Env.Mod Lfo.Mod ${
-                        selected === 'Seq.' ? '___' : '&icon::musicNote::pixelated'
-                    }`,
-                ]}
+                rows={['Main Fx Env/Lfo Wave', `Seq. Env.Mod Lfo.Mod &icon::musicNote::pixelated`]}
                 keys={[
                     { key: btn1, action: `setView:${synthName}` },
                     { key: btn2, action: `setView:${synthName}Fx` },
@@ -63,6 +62,8 @@ export function ViewSelector({
                 ]}
                 selected={selected}
                 contextValue={[0, 0, 0]}
+                pageCount={pageCount}
+                currentPage={currentPage}
             />
         </>
     );

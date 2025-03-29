@@ -33,6 +33,7 @@ export function SampleView({ track, synthName, color }: Props) {
                         color={color}
                         synthName={synthName}
                         hideTitle
+                        pageCount={3}
                     />
                 }
             />

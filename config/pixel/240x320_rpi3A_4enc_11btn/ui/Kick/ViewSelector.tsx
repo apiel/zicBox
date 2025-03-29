@@ -59,16 +59,6 @@ export function ViewSelector({
                     },
                     { key: btn3, action: `setView:${synthName}Waveform` },
                     { key: btn4, action: `setView:${synthName}Frequency` },
-
-                    // {
-                    //     key: btn5,
-                    //     action:
-                    //         viewName === `${synthName}Sequencer_0`
-                    //             ? `setView:${synthName}Sequencer_1`
-                    //             : viewName === `${synthName}Sequencer_1`
-                    //             ? `setView:${synthName}Sequencer_2`
-                    //             : `setView:${synthName}Sequencer_0`,
-                    // },
                     ...(viewName === `${synthName}Sequencer`
                         ? []
                         : [{ key: btn5, action: `setView:${synthName}Sequencer` }]),

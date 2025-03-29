@@ -70,6 +70,7 @@ export function DrumView({ track, synthName, color }: Props) {
                         synthName={synthName}
                         viewName={`${synthName}Sequencer`}
                         hideTitle
+                        pageCount={3}
                     />
                 }
             />
