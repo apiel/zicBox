@@ -5,7 +5,7 @@
 #include "./utils/Wavetable.h"
 #include "./utils/WavetableGenerator.h"
 #include "audioPlugin.h"
-#include "filter.h"
+#include "utils/filter.h"
 #include "mapping.h"
 #include "utils/EnvelopRelative.h"
 #include "utils/FastWaveform.h"

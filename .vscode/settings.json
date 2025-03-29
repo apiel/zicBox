@@ -104,7 +104,8 @@
         "stack": "cpp",
         "__config": "cpp",
         "json.hpp": "c",
-        "regex": "cpp"
+        "regex": "cpp",
+        "valueinterface.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabled",
     "makefile.configureOnOpen": false,
