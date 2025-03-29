@@ -4,12 +4,11 @@ import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
 import {
-    encBottomLeft,
     encBottomRight,
     encTopLeft,
     encTopRight
 } from '../constants';
-import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
+import { bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
 import { ViewSelector } from './ViewSelector';
 
 export type Props = {
@@ -32,23 +31,25 @@ export function MainView({ name, track, synthName, color }: Props) {
             />
             <KnobValue
                 audioPlugin="Filter"
-                param="FILTER_TYPE"
+                param="CUTOFF"
                 bounds={topRightKnob}
                 encoderId={encTopRight}
-                color="secondary"
+                type="STRING"
+                color="primary"
                 track={track}
             />
-            <KnobValue
+            {/* <KnobValue
                 audioPlugin="Filter"
-                param="FILTER_CUTOFF"
+                param="CUTOFF"
+                type="STRING"
                 bounds={bottomLeftKnob}
                 encoderId={encBottomLeft}
                 color="primary"
                 track={track}
-            />
+            /> */}
             <KnobValue
                 audioPlugin="Filter"
-                param="FILTER_RESONANCE"
+                param="RESONANCE"
                 bounds={bottomRightKnob}
                 encoderId={encBottomRight}
                 color="primary"

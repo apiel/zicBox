@@ -44,7 +44,7 @@
         "plugins": [
           {"alias":"Drum1","plugin":"SynthDrum23"},
           {"plugin":"Sequencer","alias":"Sequencer"},
-          {"alias":"Filter","plugin":"EffectFilter"},
+          {"alias":"Filter","plugin":"EffectFilterMultiMode"},
           {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
           {"filename":"drum1","maxVariation":16,"workspaceFolder":"workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
@@ -54,7 +54,7 @@
         "plugins": [
           {"alias":"Sample1","plugin":"SynthMonoSample"},
           {"plugin":"Sequencer","alias":"Sequencer"},
-          {"alias":"Filter","plugin":"EffectFilter"},
+          {"alias":"Filter","plugin":"EffectFilterMultiMode"},
           {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
           {"filename":"sample1","maxVariation":16,"workspaceFolder":"workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
@@ -64,7 +64,7 @@
         "plugins": [
           {"alias":"Sample2","plugin":"SynthMonoSample"},
           {"plugin":"Sequencer","alias":"Sequencer"},
-          {"alias":"Filter","plugin":"EffectFilter"},
+          {"alias":"Filter","plugin":"EffectFilterMultiMode"},
           {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
           {"filename":"sample2","maxVariation":16,"workspaceFolder":"workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
@@ -74,7 +74,7 @@
         "plugins": [
           {"alias":"Sample3","plugin":"SynthMonoSample"},
           {"plugin":"Sequencer","alias":"Sequencer"},
-          {"alias":"Filter","plugin":"EffectFilter"},
+          {"alias":"Filter","plugin":"EffectFilterMultiMode"},
           {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
           {"filename":"sample3","maxVariation":16,"workspaceFolder":"workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
@@ -1611,9 +1611,8 @@
       "name": "Drum1",
       "components": [
         {"audioPlugin":"TrackFx","param":"VOLUME","bounds":[0,60,118,100],"encoderId":0,"color":"tertiary","track":5,"componentName":"KnobValue"},
-        {"audioPlugin":"Filter","param":"FILTER_TYPE","bounds":[120,60,118,100],"encoderId":1,"color":"secondary","track":5,"componentName":"KnobValue"},
-        {"audioPlugin":"Filter","param":"FILTER_CUTOFF","bounds":[0,160,118,100],"encoderId":2,"color":"primary","track":5,"componentName":"KnobValue"},
-        {"audioPlugin":"Filter","param":"FILTER_RESONANCE","bounds":[120,160,118,100],"encoderId":3,"color":"primary","track":5,"componentName":"KnobValue"},
+        {"audioPlugin":"Filter","param":"CUTOFF","bounds":[120,60,118,100],"encoderId":1,"type":"STRING","color":"primary","track":5,"componentName":"KnobValue"},
+        {"audioPlugin":"Filter","param":"RESONANCE","bounds":[120,160,118,100],"encoderId":3,"color":"primary","track":5,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Kick","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[70,28,6,6],"color":"#b54f5e","componentName":"Rect"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0},{"index":253,"condition":"SHOW_WHEN","value":0},{"index":252,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"a","action":"setView:Drum1"},{"key":"s","action":"setView:Drum1Fx"},{"key":"d","action":"setView:Drum1Waveform"},{"key":"f","action":"setView:Drum1Frequency"},{"key":"z","action":"setView:Drum1Sequencer"},{"key":"x","action":"setView:Drum1Amplitude"},{"key":"c","action":"setView:Drum1Layer2"},{"key":"v","action":"noteOn:Drum1:60"},{"key":"F4","action":"contextToggle:253:1:0"},{"key":"4","action":"contextToggleOnRelease:252:1:0"},{"key":"r","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
@@ -2023,9 +2022,8 @@
       "name": "Sample1",
       "components": [
         {"audioPlugin":"TrackFx","param":"VOLUME","bounds":[0,60,118,100],"encoderId":0,"color":"tertiary","track":6,"componentName":"KnobValue"},
-        {"audioPlugin":"Filter","param":"FILTER_TYPE","bounds":[120,60,118,100],"encoderId":1,"color":"secondary","track":6,"componentName":"KnobValue"},
-        {"audioPlugin":"Filter","param":"FILTER_CUTOFF","bounds":[0,160,118,100],"encoderId":2,"color":"primary","track":6,"componentName":"KnobValue"},
-        {"audioPlugin":"Filter","param":"FILTER_RESONANCE","bounds":[120,160,118,100],"encoderId":3,"color":"primary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"Filter","param":"CUTOFF","bounds":[120,60,118,100],"encoderId":1,"type":"STRING","color":"primary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"Filter","param":"RESONANCE","bounds":[120,160,118,100],"encoderId":3,"color":"primary","track":6,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Sample1","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[55,28,6,6],"color":"#377275","componentName":"Rect"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0},{"index":253,"condition":"SHOW_WHEN","value":0},{"index":252,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"a","action":"setView:Sample1"},{"key":"s","action":"setView:Sample1Fx"},{"key":"d","action":"setView:Sample1Wave"},{"key":"f","action":"setView:Sample1Browse"},{"key":"z","action":"setView:Sample1Seq"},{"key":"x","action":"noteOn:Sample1:72"},{"key":"c","action":"noteOn:Sample1:48"},{"key":"v","action":"noteOn:Sample1:60"},{"key":"F4","action":"contextToggle:253:1:0"},{"key":"4","action":"contextToggleOnRelease:252:1:0"},{"key":"r","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
@@ -2279,9 +2277,8 @@
       "name": "Sample2",
       "components": [
         {"audioPlugin":"TrackFx","param":"VOLUME","bounds":[0,60,118,100],"encoderId":0,"color":"tertiary","track":7,"componentName":"KnobValue"},
-        {"audioPlugin":"Filter","param":"FILTER_TYPE","bounds":[120,60,118,100],"encoderId":1,"color":"secondary","track":7,"componentName":"KnobValue"},
-        {"audioPlugin":"Filter","param":"FILTER_CUTOFF","bounds":[0,160,118,100],"encoderId":2,"color":"primary","track":7,"componentName":"KnobValue"},
-        {"audioPlugin":"Filter","param":"FILTER_RESONANCE","bounds":[120,160,118,100],"encoderId":3,"color":"primary","track":7,"componentName":"KnobValue"},
+        {"audioPlugin":"Filter","param":"CUTOFF","bounds":[120,60,118,100],"encoderId":1,"type":"STRING","color":"primary","track":7,"componentName":"KnobValue"},
+        {"audioPlugin":"Filter","param":"RESONANCE","bounds":[120,160,118,100],"encoderId":3,"color":"primary","track":7,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Sample2","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[55,28,6,6],"color":"#624fb5","componentName":"Rect"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0},{"index":253,"condition":"SHOW_WHEN","value":0},{"index":252,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"a","action":"setView:Sample2"},{"key":"s","action":"setView:Sample2Fx"},{"key":"d","action":"setView:Sample2Wave"},{"key":"f","action":"setView:Sample2Browse"},{"key":"z","action":"setView:Sample2Seq"},{"key":"x","action":"noteOn:Sample2:72"},{"key":"c","action":"noteOn:Sample2:48"},{"key":"v","action":"noteOn:Sample2:60"},{"key":"F4","action":"contextToggle:253:1:0"},{"key":"4","action":"contextToggleOnRelease:252:1:0"},{"key":"r","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
@@ -2535,9 +2532,8 @@
       "name": "Sample3",
       "components": [
         {"audioPlugin":"TrackFx","param":"VOLUME","bounds":[0,60,118,100],"encoderId":0,"color":"tertiary","track":8,"componentName":"KnobValue"},
-        {"audioPlugin":"Filter","param":"FILTER_TYPE","bounds":[120,60,118,100],"encoderId":1,"color":"secondary","track":8,"componentName":"KnobValue"},
-        {"audioPlugin":"Filter","param":"FILTER_CUTOFF","bounds":[0,160,118,100],"encoderId":2,"color":"primary","track":8,"componentName":"KnobValue"},
-        {"audioPlugin":"Filter","param":"FILTER_RESONANCE","bounds":[120,160,118,100],"encoderId":3,"color":"primary","track":8,"componentName":"KnobValue"},
+        {"audioPlugin":"Filter","param":"CUTOFF","bounds":[120,60,118,100],"encoderId":1,"type":"STRING","color":"primary","track":8,"componentName":"KnobValue"},
+        {"audioPlugin":"Filter","param":"RESONANCE","bounds":[120,160,118,100],"encoderId":3,"color":"primary","track":8,"componentName":"KnobValue"},
         {"fontSize":24,"text":"Sample3","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
         {"bounds":[55,28,6,6],"color":"#b54fad","componentName":"Rect"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0},{"index":253,"condition":"SHOW_WHEN","value":0},{"index":252,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"a","action":"setView:Sample3"},{"key":"s","action":"setView:Sample3Fx"},{"key":"d","action":"setView:Sample3Wave"},{"key":"f","action":"setView:Sample3Browse"},{"key":"z","action":"setView:Sample3Seq"},{"key":"x","action":"noteOn:Sample3:72"},{"key":"c","action":"noteOn:Sample3:48"},{"key":"v","action":"noteOn:Sample3:60"},{"key":"F4","action":"contextToggle:253:1:0"},{"key":"4","action":"contextToggleOnRelease:252:1:0"},{"key":"r","action":"contextToggle:254:1:0"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
