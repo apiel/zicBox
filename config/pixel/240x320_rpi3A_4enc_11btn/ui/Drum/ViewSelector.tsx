@@ -2,6 +2,7 @@ import * as React from '@/libs/react';
 
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
+import { lighten } from '@/libs/ui';
 import { Kick } from '../components/Common';
 import { Title } from '../components/Title';
 import {
@@ -25,12 +26,16 @@ export function ViewSelector({
     synthName,
     hideTitle,
     viewName,
+    pageCount,
+    currentPage,
 }: {
     selected: string;
     color: string;
     synthName: string;
     viewName: string;
     hideTitle?: boolean;
+    pageCount?: number;
+    currentPage?: number;
 }) {
     return (
         <>
@@ -61,6 +66,9 @@ export function ViewSelector({
                 ]}
                 selected={selected}
                 contextValue={[0, 0, 0]}
+                pageCount={pageCount}
+                currentPage={currentPage}
+                shiftedTextColor={lighten(color, 0.5)}
             />
         </>
     );
