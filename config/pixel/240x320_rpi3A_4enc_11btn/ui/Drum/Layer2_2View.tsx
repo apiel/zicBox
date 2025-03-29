@@ -36,26 +36,10 @@ export function Layer2_2View({ name, track, synthName, color }: Props) {
             />
             {/* <KnobValue
                 audioPlugin={synthName}
-                param="CLICK_CUTOFF"
-                bounds={topRightKnob}
-                encoderId={encTopRight}
-                color="tertiary"
-                track={track}
-            /> */}
-            {/* <KnobValue
-                audioPlugin={synthName}
                 param="LAYER2_FILTER_TYPE"
                 bounds={bottomLeftKnob}
                 encoderId={encBottomLeft}
                 color="quaternary"
-                track={track}
-            /> */}
-            {/* <KnobValue
-                audioPlugin={synthName}
-                param="LAYER2_FILTER_RESONANCE"
-                bounds={bottomRightKnob}
-                encoderId={encBottomRight}
-                color="tertiary"
                 track={track}
             /> */}
             <KnobValue

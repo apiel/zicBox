@@ -1,5 +1,7 @@
 # Pixel basic working one
 
+- TODO show when there is multiple page
+
 - TODO make another filder that morph between lpf and hpf but only using one filter. So we coud put highboot one first page...
 
 - TODO synth with multiple swappable engines

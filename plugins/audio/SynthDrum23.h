@@ -5,10 +5,10 @@
 #include "./utils/Wavetable.h"
 #include "./utils/WavetableGenerator.h"
 #include "audioPlugin.h"
-#include "utils/MMfilter.h"
 #include "mapping.h"
 #include "utils/EnvelopRelative.h"
 #include "utils/FastWaveform.h"
+#include "utils/MMfilter.h"
 
 /*md
 ## SynthDrum23
@@ -108,37 +108,12 @@ protected:
          } },
     });
 
-    EffectFilterData clickFilter;
-    // float addSecondLayer(float time, float out)
-    // {
-    //     // Add a click at the beginning
-    //     float duration = clickDuration.pct(); // Duration of the click in seconds
-    //     float clickAmplitude = click.pct();
-
-    //     if (clickAmplitude && time < duration && clickCutoff.pct() > 0.0f) {
-    //         float noise = fastWaveform.process();
-    //         float clickEnv = 1.0f - (time / duration); // Linear fade-out for the click
-
-    //         // Apply the envelope to the noise
-    //         float rawClick = noise * clickAmplitude * clickEnv;
-
-    //         clickFilter.setSampleData(rawClick);
-    //         out += clickFilter.lp;
-
-    //         // out += rawClick;
-    //     }
-    //     return out;
-    // }
-
     EnvelopRelative envelopAmpLayer2 = EnvelopRelative({ { 0.0f, 0.0f }, { 0.0f, 0.01f }, { 0.0f, 1.0f } }, 1);
     float addSecondLayer(float time, float out)
     {
         float envAmp = envelopAmpLayer2.next(time);
         float out2 = fastWaveform.process() * envAmp;
-        if (clickCutoff.pct() > 0.0f) {
-            // out2 = clickFilter.process(out2);
-            out2 = layer2Filter.process(out2);
-        }
+        out2 = layer2Filter.process(out2);
         out += out2;
         return out;
     }
@@ -215,7 +190,7 @@ public:
             p.val.setString(std::to_string((int)p.val.get()) + "/" + std::to_string(ZIC_WAVETABLE_WAVEFORMS_COUNT));
         }
     });
-    
+
     /*md - `PITCH` Modulate the pitch.*/
     Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -36, .max = 36 });
     /*md - `DURATION` set the duration of the envelop.*/
@@ -269,51 +244,6 @@ public:
         layer2Filter.setResonance(p.val.pct());
     });
 
-    /*md - `CLICK` set the click level.*/
-    Val& click = val(0, "CLICK", { "Click" });
-
-    /*md - `CLICK_DURATION` set the duration of the click.*/
-    Val& clickDuration = val(0.1f, "CLICK_DURATION", { "Click Dur.", .step = 0.1, .floatingPoint = 1, .unit = "%" });
-
-    /*md - `CLICK_CUTOFF` set the cutoff frequency of the click.*/
-    Val& clickCutoff = val(50.0f, "CLICK_CUTOFF", { "Click Cutoff", .unit = "%" }, [&](auto p) {
-        p.val.setFloat(p.value);
-        if (p.val.pct() < 0.3f) {
-            clickFilter.setRawCutoff(p.val.pct());
-        } else {
-            clickFilter.setResonance(p.val.pct() - 0.3f);
-        }
-    });
-
-    /*md - `LAYER2_FILTER_TYPE` Select filter type.*/
-    enum FilterType {
-        LP,
-        BP,
-        HP,
-        FILTER_COUNT
-    };
-    Val& layer2FilterType = val(1, "LAYER2_FILTER_TYPE", { "Filter", VALUE_STRING, .max = FilterType::FILTER_COUNT - 1 }, [&](auto p) {
-        p.val.setFloat(p.value);
-        if (p.val.get() == FilterType::LP) {
-            p.val.setString("LPF");
-            clickFilter.setType(EffectFilterData::Type::LP);
-        } else if (p.val.get() == FilterType::BP) {
-            p.val.setString("BPF");
-            clickFilter.setType(EffectFilterData::Type::BP);
-        } else if (p.val.get() == FilterType::HP) {
-            p.val.setString("HPF");
-            clickFilter.setType(EffectFilterData::Type::HP);
-        }
-        clickCutoff.set(clickCutoff.get());
-        layer2FilterResonance.set(layer2FilterResonance.get());
-    });
-
-    /*md - `LAYER2_FILTER_RESONANCE` set the filter resonance.*/
-    Val& layer2FilterResonance = val(0, "LAYER2_FILTER_RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
-        p.val.setFloat(p.value);
-        clickFilter.setResonance(p.val.pct());
-    });
-
     SynthDrum23(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
         , waveform(props.lookupTable, props.sampleRate)
@@ -321,9 +251,6 @@ public:
         , fastWaveform(props.sampleRate, FastWaveform::Type::NOISE, 100.0f)
     {
         initValues();
-
-        // clickFilter.setResonance(0.85);
-        // clickFilter.setRawCutoff(0.10);
     }
 
     float highFreqBoost(float input, float time)
