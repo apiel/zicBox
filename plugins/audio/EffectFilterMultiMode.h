@@ -1,8 +1,9 @@
 #pragma once
 
-#include "utils/filter.h"
+// #include "utils/filter.h"
 #include "helpers/range.h"
 #include "mapping.h"
+#include "utils/MMfilter.h"
 
 /*md
 ## EffectFilterMultiMode
@@ -12,8 +13,9 @@ Cutoff frequency will switch from low pass filter to high pass filter when reach
 */
 class EffectFilterMultiMode : public Mapping {
 protected:
-    EffectFilterData filter;
-    float mix = 0.0;
+    // EffectFilterData filter;
+    // float mix = 0.0;
+    MMfilter filter;
 
     std::string valueFmt = "%d%% LP|HP %d%%";
 
@@ -25,25 +27,30 @@ public:
         float amount = p.val.pct() * 2 - 1.0f;
 
         char strBuf[128];
-        if (p.val.get() > 0.0) {
-            filter.setType(EffectFilterData::Type::HP);
-            filter.setHp(amount, filter.resonance);
+        // if (p.val.get() > 0.0) {
+        //     filter.setType(EffectFilterData::Type::HP);
+        //     filter.setHp(amount, filter.resonance);
+        //     sprintf(strBuf, "HP %d%%", (int)(amount * 100));
+        //     if (p.val.get() < 50.0) {
+        //         mix = p.val.get() * 0.02f;
+        //     }
+        // } else {
+        //     filter.setType(EffectFilterData::Type::LP);
+        //     filter.setLp(-amount, filter.resonance);
+        //     sprintf(strBuf, "LP %d%%", (int)((-amount) * 100));
+        //     if (p.val.get() > -20.0) {
+        //         mix = -p.val.get() * 0.05f;
+        //     }
+        //     // if (p.val.get() > -10.0) {
+        //     //     mix = -p.val.get() * 0.1f;
+        //     // }
+        // }
+        filter.setCutoff(amount);
+        if (amount > 0.0) {
             sprintf(strBuf, "HP %d%%", (int)(amount * 100));
-            if (p.val.get() < 50.0) {
-                mix = p.val.get() * 0.02f;
-            }
         } else {
-            filter.setType(EffectFilterData::Type::LP);
-            filter.setLp(-amount, filter.resonance);
             sprintf(strBuf, "LP %d%%", (int)((-amount) * 100));
-            if (p.val.get() > -20.0) {
-                mix = -p.val.get() * 0.05f;
-            }
-            // if (p.val.get() > -10.0) {
-            //     mix = -p.val.get() * 0.1f;
-            // }
         }
-
         p.val.setString(strBuf);
     });
 
@@ -61,21 +68,22 @@ public:
         valueFmt = config.json.value("cutoffStringFormat", valueFmt);
     };
 
-    float sample(float inputValue)
-    {
-        if (inputValue == 0 || cutoff.get() == 0.0) {
-            return inputValue;
-        }
+    // float sample(float inputValue)
+    // {
+    //     if (inputValue == 0 || cutoff.get() == 0.0) {
+    //         return inputValue;
+    //     }
 
-        if (mix < 1.0) {
-            return inputValue * (1.0 - mix) + filter.process(inputValue) * mix;
-        }
+    //     if (mix < 1.0) {
+    //         return inputValue * (1.0 - mix) + filter.process(inputValue) * mix;
+    //     }
 
-        return filter.process(inputValue);
-    }
+    //     return filter.process(inputValue);
+    // }
 
     void sample(float* buf)
     {
-        buf[track] = sample(buf[track]);
+        // buf[track] = sample(buf[track]);
+        buf[track] = filter.process(buf[track]);
     }
 };
