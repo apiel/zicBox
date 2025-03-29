@@ -130,6 +130,15 @@ function TextGridRender({
                         color={currentPage === 2 ? shiftedTextColor : color}
                     />
                 );
+
+                if (pageCount > 2) {
+                    children.push(
+                        <Rect
+                            bounds={[Number(x) + marginLeft + 8, textY + marginTop + 2, 3, 3]}
+                            color={currentPage === 3 ? shiftedTextColor : color}
+                        />
+                    );
+                }
             }
 
             marginLeft += width;
