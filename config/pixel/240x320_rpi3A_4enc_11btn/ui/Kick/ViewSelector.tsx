@@ -60,15 +60,18 @@ export function ViewSelector({
                     { key: btn3, action: `setView:${synthName}Waveform` },
                     { key: btn4, action: `setView:${synthName}Frequency` },
 
-                    {
-                        key: btn5,
-                        action:
-                            viewName === `${synthName}Sequencer_0`
-                                ? `setView:${synthName}Sequencer_1`
-                                : viewName === `${synthName}Sequencer_1`
-                                ? `setView:${synthName}Sequencer_2`
-                                : `setView:${synthName}Sequencer_0`,
-                    },
+                    // {
+                    //     key: btn5,
+                    //     action:
+                    //         viewName === `${synthName}Sequencer_0`
+                    //             ? `setView:${synthName}Sequencer_1`
+                    //             : viewName === `${synthName}Sequencer_1`
+                    //             ? `setView:${synthName}Sequencer_2`
+                    //             : `setView:${synthName}Sequencer_0`,
+                    // },
+                    ...(viewName === `${synthName}Sequencer`
+                        ? []
+                        : [{ key: btn5, action: `setView:${synthName}Sequencer` }]),
                     { key: btn6, action: `setView:${synthName}Amplitude` },
                     {
                         key: btn7,
@@ -77,7 +80,9 @@ export function ViewSelector({
                                 ? `setView:${synthName}Layer2_2`
                                 : `setView:${synthName}Layer2`,
                     },
-                    { key: btn8, action: `noteOn:${synthName}:60` },
+                    ...(selected === 'Seq.'
+                        ? []
+                        : [{ key: btn8, action: `noteOn:${synthName}:60` }]),
 
                     { key: btnUp, action: 'contextToggle:253:1:0' },
                     { key: btnDown, action: 'contextToggleOnRelease:252:1:0' },

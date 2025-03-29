@@ -1,6 +1,6 @@
 # Pixel basic working one
 
-- TODO show when there is multiple page on the same button view
+- TODO sequencer, play note should play the selected note from the grid..
 
 - TODO when clicking several time one Seq. it change the selected items...
 
