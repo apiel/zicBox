@@ -5,12 +5,12 @@
 #include "mapping.h"
 
 /*md
-## EffectFilterMultiMode2
+## EffectFilterMultiMode
 
-EffectFilterMultiMode2 plugin is used to apply filter effect on audio buffer.
+EffectFilterMultiMode plugin is used to apply filter effect on audio buffer.
 Cutoff frequency will switch from low pass filter to high pass filter when reaching 50%.
 */
-class EffectFilterMultiMode2 : public Mapping {
+class EffectFilterMultiMode : public Mapping {
 protected:
     EffectFilterData filter;
     float mix = 0.0;
@@ -54,7 +54,7 @@ public:
         filter.setResonance(p.val.pct());
     });
 
-    EffectFilterMultiMode2(AudioPlugin::Props& props, AudioPlugin::Config& config)
+    EffectFilterMultiMode(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
     {
         initValues();
