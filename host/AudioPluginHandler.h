@@ -14,7 +14,7 @@ using namespace std;
 #include "log.h"
 #include "midiMapping.h"
 #include "plugins/audio/audioPlugin.h"
-#include "plugins/audio/lookupTable.h"
+#include "plugins/audio/utils/lookupTable.h"
 #include "helpers/range.h"
 
 /*#md

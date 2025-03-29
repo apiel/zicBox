@@ -4,7 +4,7 @@
 #include <string.h>
 #include <string>
 
-#include "plugins/audio/fileBrowser.h"
+#include "plugins/audio/utils/fileBrowser.h"
 #include "plugins/audio/utils/WavetableInterface.h"
 #include "plugins/audio/utils/utils.h"
 

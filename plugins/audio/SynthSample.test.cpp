@@ -1,7 +1,7 @@
 #include "plugins/audio/AudioOutputPulse.h"
 #include "plugins/audio/SynthSample.h"
 #include "plugins/audio/EffectDistortion2.h"
-#include "plugins/audio/lookupTable.h"
+#include "plugins/audio/utils/lookupTable.h"
 
 #include <string>
 #include <sstream>

@@ -5,7 +5,7 @@
 #include "audioPlugin.h"
 #include "helpers/range.h"
 #include "mapping.h"
-#include "plugins/audio/filter.h"
+#include "plugins/audio/utils/filter.h"
 // #include "plugins/audio/filter2.h"
 
 /*md

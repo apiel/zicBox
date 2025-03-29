@@ -1,6 +1,6 @@
 #include "plugins/audio/SampleSequencer.h"
 #include "plugins/audio/AudioOutputPulse.h"
-#include "plugins/audio/lookupTable.h"
+#include "plugins/audio/utils/lookupTable.h"
 
 #define MAX_TRACKS 16
 

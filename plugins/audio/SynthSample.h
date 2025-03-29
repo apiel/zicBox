@@ -5,7 +5,7 @@
 #include <time.h>
 
 #include "audioPlugin.h"
-#include "fileBrowser.h"
+#include "utils/fileBrowser.h"
 #include "mapping.h"
 
 #include "helpers/random.h"

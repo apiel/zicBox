@@ -6,7 +6,7 @@
 
 #include "Tempo.h"
 #include "audioPlugin.h"
-#include "fileBrowser.h"
+#include "utils/fileBrowser.h"
 #include "helpers/midiNote.h"
 #include "log.h"
 #include "mapping.h"
