@@ -10,7 +10,6 @@ import {
     Synth3Track,
 } from '../constants';
 
-export const cutoffStringFormat = '%d%% %d%%';
 export const maxVariation = 16;
 export const workspaceFolder = 'workspaces/rpi3A_4enc_11btn';
 
@@ -20,8 +19,8 @@ const kickTrack = {
         audioPlugin('SynthDrum23', { alias: 'Kick' }),
         audioPlugin('Sequencer'),
         audioPlugin('EffectDistortion2', { alias: 'Distortion' }),
-        audioPlugin('EffectFilterMultiMode2', { alias: 'MMFilter', cutoffStringFormat }),
-        // audioPlugin('EffectFilterMultiModeMix', { alias: 'MMFilter', cutoffStringFormat }),
+        audioPlugin('EffectFilterMultiMode', { alias: 'MMFilter' }),
+        // audioPlugin('EffectFilterMultiModeMix', { alias: 'MMFilter', cutoffStringFormat: '%d%% %d%%' }),
         audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
         audioPlugin('SerializeTrack', { filename: 'kick', maxVariation, workspaceFolder }),
     ],

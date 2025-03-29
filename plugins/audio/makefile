@@ -25,7 +25,7 @@ all:
 		Sequencer Tempo AudioSpectrogram\
 		Mixer2 Mixer4 Mixer5 Mixer6 Mixer8 Mixer12\
 		AudioInputPulse AudioOutputPulse AudioInputAlsa AudioOutputAlsa\
-		SerializeTrack TapeRecording  SampleSequencer EffectFilterMultiMode2
+		SerializeTrack TapeRecording  SampleSequencer EffectFilterMultiMode
 		
 
 # SynthSnare SynthHiHat SynthClap SynthFmDrum SynthHybrid SynthGranular SynthFM RamTapeRecording EffectDrum EffectFilterMultiMode2
