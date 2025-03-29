@@ -24,12 +24,16 @@ export function ViewSelector({
     synthName,
     color,
     hideTitle,
+    pageCount,
+    currentPage,
 }: {
     selected: string;
     viewName: string;
     synthName: string;
     color: string;
     hideTitle?: boolean;
+    pageCount?: number;
+    currentPage?: number;
 }) {
     return (
         <>
@@ -40,9 +44,7 @@ export function ViewSelector({
                 selectedBackground={color}
                 rows={[
                     'Main Fx Wave Browse',
-                    `Seq. &icon::musicNote::pixelated &icon::musicNote::pixelated ${
-                        selected === 'Seq.' ? '___' : '&icon::musicNote::pixelated'
-                    }`,
+                    `Seq. &icon::musicNote::pixelated &icon::musicNote::pixelated &icon::musicNote::pixelated`,
                 ]}
                 keys={[
                     { key: btn1, action: `setView:${synthName}` },
@@ -65,7 +67,9 @@ export function ViewSelector({
                     { key: btn5, action: `setView:${synthName}Seq` },
                     { key: btn6, action: `noteOn:${synthName}:72` },
                     { key: btn7, action: `noteOn:${synthName}:48` },
-                    ...(selected === 'Seq.' ? [] : [{ key: btn8, action: `noteOn:${synthName}:60` }]),
+                    ...(selected === 'Seq.'
+                        ? []
+                        : [{ key: btn8, action: `noteOn:${synthName}:60` }]),
 
                     { key: btnUp, action: 'contextToggle:253:1:0' }, // when not used, let's play noteOn...
                     { key: btnDown, action: 'contextToggleOnRelease:252:1:0' },
@@ -73,6 +77,8 @@ export function ViewSelector({
                 ]}
                 selected={selected}
                 contextValue={[0, 0, 0]}
+                pageCount={pageCount}
+                currentPage={currentPage}
             />
         </>
     );
