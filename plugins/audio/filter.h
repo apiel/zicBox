@@ -50,7 +50,7 @@ public:
     ProcessFnPtr processFn;
 
     float getLp(float _cutoff) { return 0.90 - (0.90 * _cutoff) + 0.1; }
-    float getHp(float _cutoff) { return (0.20 * _cutoff) + 0.00707; }
+    float getHp(float _cutoff) { return (0.80 * _cutoff) + 0.00707; }
     float getBp(float _cutoff) { return 0.95 * _cutoff + 0.1; }
     void setLp(float _cutoff, float _resonance) { setRawCutoff(getLp(_cutoff), _resonance); }
     void setHp(float _cutoff, float _resonance) { setRawCutoff(getHp(_cutoff), _resonance); }
