@@ -29,16 +29,19 @@ public:
             filter.setType(EffectFilterData::Type::HP);
             filter.setHp(amount, filter.resonance);
             sprintf(strBuf, "HP %d%%", (int)(amount * 100));
-            if (p.val.get() < 10.0) {
-                mix = p.val.get() * 0.1f;
+            if (p.val.get() < 50.0) {
+                mix = p.val.get() * 0.02f;
             }
         } else {
             filter.setType(EffectFilterData::Type::LP);
             filter.setLp(-amount, filter.resonance);
             sprintf(strBuf, "LP %d%%", (int)((-amount) * 100));
-            if (p.val.get() > -10.0) {
-                mix = -p.val.get() * 0.1f;
+            if (p.val.get() > -20.0) {
+                mix = -p.val.get() * 0.05f;
             }
+            // if (p.val.get() > -10.0) {
+            //     mix = -p.val.get() * 0.1f;
+            // }
         }
 
         p.val.setString(strBuf);

@@ -7,7 +7,7 @@
           {"alias":"Kick","plugin":"SynthDrum23"},
           {"plugin":"Sequencer","alias":"Sequencer"},
           {"alias":"Distortion","plugin":"EffectDistortion2"},
-          {"alias":"MMFilter","cutoffStringFormat":"%d%% %d%%","plugin":"EffectFilterMultiModeMix"},
+          {"alias":"MMFilter","cutoffStringFormat":"%d%% %d%%","plugin":"EffectFilterMultiMode2"},
           {"alias":"TrackFx","plugin":"EffectGainVolume"},
           {"filename":"kick","maxVariation":16,"workspaceFolder":"workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
