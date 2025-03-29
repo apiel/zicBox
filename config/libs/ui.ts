@@ -94,24 +94,43 @@ export function rgb(r: number, g: number, b: number) {
 export function darken(color: string, amount: number) {
     // Ensure the amount is between 0 and 1
     amount = Math.min(1, Math.max(0, amount));
-  
+
     // Extract the red, green, and blue components from the hex color
     const r = parseInt(color.slice(1, 3), 16);
     const g = parseInt(color.slice(3, 5), 16);
     const b = parseInt(color.slice(5, 7), 16);
-  
+
     // Calculate the darker color by reducing each component
     const darkenComponent = (component: number) => Math.round(component * (1 - amount));
-  
+
     const newR = darkenComponent(r);
     const newG = darkenComponent(g);
     const newB = darkenComponent(b);
-  
+
     // Convert back to hex and return the color
     return rgb(newR, newG, newB);
-  }
+}
 
-  
+export function lighten(color: string, amount: number) {
+    // Ensure the amount is between 0 and 1
+    amount = Math.min(1, Math.max(0, amount));
+
+    // Extract the red, green, and blue components from the hex color
+    const r = parseInt(color.slice(1, 3), 16);
+    const g = parseInt(color.slice(3, 5), 16);
+    const b = parseInt(color.slice(5, 7), 16);
+
+    // Calculate the lighter color by increasing each component
+    const lightenComponent = (component: number) =>
+        Math.round(component + (255 - component) * (1 - amount));
+
+    const newR = lightenComponent(r);
+    const newG = lightenComponent(g);
+    const newB = lightenComponent(b);
+
+    // Convert back to hex and return the color
+    return rgb(newR, newG, newB);
+}
 
 /**
  * Returns a string representing a color with an alpha channel in hexadecimal notation.
