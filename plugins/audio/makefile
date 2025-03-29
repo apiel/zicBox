@@ -18,7 +18,7 @@ TRACK_HEADER_FILES = -MMD -MF $(OBJ_DIR)/$*.d
 
 all:
 	make EffectGainVolume EffectSampleRateReducer EffectFilter EffectDistortion EffectDelay\
-		EffectFilter EffectFilterMultiMode EffectFilterMultiModeMoog EffectVolumeMultiFx\
+		EffectFilter EffectFilterMultiModeMix EffectFilterMultiModeMoog EffectVolumeMultiFx\
 		EffectGrain EffectDistortion2 EffectVolumeDrive EffectVolumeClipping \
 		SynthDrum23 SynthMetalic SynthBass SynthFM2 SynthWavetable\
 		SynthSample SynthDrumSample SynthMonoSample\
