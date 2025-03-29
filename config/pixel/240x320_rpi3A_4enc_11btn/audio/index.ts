@@ -21,7 +21,7 @@ const kickTrack = {
         audioPlugin('Sequencer'),
         audioPlugin('EffectDistortion2', { alias: 'Distortion' }),
         // audioPlugin('EffectFilterMultiMode2', { alias: 'MMFilter', cutoffStringFormat }),
-        audioPlugin('EffectFilterMultiMode', { alias: 'MMFilter', cutoffStringFormat }),
+        audioPlugin('EffectFilterMultiModeMix', { alias: 'MMFilter', cutoffStringFormat }),
         audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
         audioPlugin('SerializeTrack', { filename: 'kick', maxVariation, workspaceFolder }),
     ],
