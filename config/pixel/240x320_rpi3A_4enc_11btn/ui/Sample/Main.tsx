@@ -3,8 +3,8 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
 import { Common } from '../components/Common';
-import { encBottomLeft, encBottomRight, encTopLeft, encTopRight } from '../constants';
-import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
+import { encBottomRight, encTopLeft, encTopRight } from '../constants';
+import { bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
 import { ViewSelector } from './ViewSelector';
 
 export type Props = {
@@ -27,23 +27,24 @@ export function MainView({ name, track, synthName, color }: Props) {
             />
             <KnobValue
                 audioPlugin="Filter"
-                param="FILTER_TYPE"
+                param="CUTOFF"
                 bounds={topRightKnob}
                 encoderId={encTopRight}
-                color="secondary"
+                type="STRING"
+                color="primary"
                 track={track}
             />
-            <KnobValue
+            {/* <KnobValue
                 audioPlugin="Filter"
-                param="FILTER_CUTOFF"
+                param="CUTOFF"
                 bounds={bottomLeftKnob}
                 encoderId={encBottomLeft}
                 color="primary"
                 track={track}
-            />
+            /> */}
             <KnobValue
                 audioPlugin="Filter"
-                param="FILTER_RESONANCE"
+                param="RESONANCE"
                 bounds={bottomRightKnob}
                 encoderId={encBottomRight}
                 color="primary"
@@ -51,7 +52,12 @@ export function MainView({ name, track, synthName, color }: Props) {
             />
 
             <ViewSelector selected={'Main'} viewName={name} synthName={synthName} color={color} />
-            <Common track={track} selectedBackground={color} selected={synthName} synthName={synthName} />
+            <Common
+                track={track}
+                selectedBackground={color}
+                selected={synthName}
+                synthName={synthName}
+            />
         </View>
     );
 }
