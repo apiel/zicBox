@@ -5,7 +5,7 @@
 #include "./utils/Wavetable.h"
 #include "./utils/WavetableGenerator.h"
 #include "audioPlugin.h"
-#include "utils/filter.h"
+#include "utils/MMfilter.h"
 #include "mapping.h"
 #include "utils/EnvelopRelative.h"
 #include "utils/FastWaveform.h"
@@ -24,6 +24,7 @@ protected:
     WavetableGenerator waveform;
     Wavetable wavetable;
     FastWaveform fastWaveform;
+    MMfilter layer2Filter;
 
     unsigned int sampleCountDuration = 0;
     unsigned int sampleDurationCounter = 0;
@@ -135,9 +136,8 @@ protected:
         float envAmp = envelopAmpLayer2.next(time);
         float out2 = fastWaveform.process() * envAmp;
         if (clickCutoff.pct() > 0.0f) {
-            // clickFilter.setSampleData(out2);
-            // out2 = clickFilter.lp;
-            out2 = clickFilter.process(out2);
+            // out2 = clickFilter.process(out2);
+            out2 = layer2Filter.process(out2);
         }
         out += out2;
         return out;
@@ -248,6 +248,27 @@ public:
     /*md - `OSC2_FREQ` sets the base frequency of the percussive tone. */
     Val& osc2Freq = val(220.0f, "OSC2_FREQ", { "Osc.2 Freq", .min = 10.0, .max = 2000.0, .step = 10.0, .unit = "Hz" });
 
+    /*md - `LAYER2_CUTOFF` to set cutoff frequency and switch between low and high pass filter. */
+    Val& cutoff = val(0.0, "LAYER2_CUTOFF", { "LPF | HPF", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0 }, [&](auto p) {
+        p.val.setFloat(p.value);
+        float amount = p.val.pct() * 2 - 1.0f;
+
+        char strBuf[128];
+        layer2Filter.setCutoff(amount);
+        if (amount > 0.0) {
+            sprintf(strBuf, "HP %d%%", (int)(amount * 100));
+        } else {
+            sprintf(strBuf, "LP %d%%", (int)((-amount) * 100));
+        }
+        p.val.setString(strBuf);
+    });
+
+    /*md - `LAYER2_RESONANCE` to set resonance. */
+    Val& resonance = val(0.0, "LAYER2_RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        layer2Filter.setResonance(p.val.pct());
+    });
+
     /*md - `CLICK` set the click level.*/
     Val& click = val(0, "CLICK", { "Click" });
 
@@ -301,8 +322,8 @@ public:
     {
         initValues();
 
-        clickFilter.setResonance(0.85);
-        clickFilter.setRawCutoff(0.10);
+        // clickFilter.setResonance(0.85);
+        // clickFilter.setRawCutoff(0.10);
     }
 
     float highFreqBoost(float input, float time)
