@@ -1,16 +1,12 @@
 # Pixel basic working one
 
+- TODO see if we can improve EnvelopRelative
+
 - TODO sequencer, play note should play the selected note from the grid..
-
-- TODO when clicking several time one Seq. it change the selected items...
-
-- TODO make another filder that morph between lpf and hpf but only using one filter. So we coud put highboot one first page...
 
 - TODO synth with multiple swappable engines
   ----> actually could just try to improve drum23, by adding noise and so on... and only had the massive distortion combination on first track, but the rest should have reduce effect...
   ---------> instead of noise give the possibility to have a second layer.
-
-- TODO see if we can improve EnvelopRelative
   
 - TODO add freq mod curve
        add filter8      
