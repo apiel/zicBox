@@ -91,16 +91,28 @@ protected:
             if (step.counter) {
                 step.counter--;
                 if (step.counter == 0) {
-                    props.audioPluginHandler->noteOff(getNote(step), 0, { track, targetPlugin });
+                    // props.audioPluginHandler->noteOff(getNote(step), 0, { track, targetPlugin });
+                    seqNoteOff(getNote(step), 0);
                 }
             }
             // here might want to check for state == Status::ON
             if (state == Status::ON && step.enabled && step.len && stepCounter == step.position && conditionMet(step) && step.velocity > 0.0f) {
                 step.counter = step.len;
-                props.audioPluginHandler->noteOn(getNote(step), step.velocity, { track, targetPlugin });
+                // props.audioPluginHandler->noteOn(getNote(step), step.velocity, { track, targetPlugin });
+                seqNoteOn(getNote(step), step.velocity);
                 // printf("should trigger note on %d track %d len %d velocity %.2f\n", step.note, track, step.len, step.velocity);
             }
         }
+    }
+
+    void seqNoteOn(uint8_t note, float velocity)
+    {
+        props.audioPluginHandler->noteOn(note, velocity, { track, targetPlugin });
+    }
+
+    void seqNoteOff(uint8_t note, float velocity)
+    {
+        props.audioPluginHandler->noteOff(note, 0, { track, targetPlugin });
     }
 
 public:

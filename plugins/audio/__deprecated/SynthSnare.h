@@ -90,7 +90,7 @@ public:
         }
     }
 
-    void noteOn(uint8_t note, float _velocity) override
+    void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
     {
         // Generate a single snare drum sample buffer
         const float sampleRate = props.sampleRate; // Assumes standard sample rate

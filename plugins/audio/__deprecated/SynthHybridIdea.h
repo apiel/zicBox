@@ -113,13 +113,13 @@ public:
         buf[track] = oscOut;
     }
 
-    void noteOn(uint8_t note, float _velocity) override
+    void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
     {
         isNoteOn = true;
         freq1 = osc1Pitch.get() * powf(2.0f, (note - 69) / 12.0f); // Convert MIDI note to frequency
     }
 
-    void noteOff(uint8_t note, float _velocity) override
+    void noteOff(uint8_t note, float _velocity, void* userdata = NULL) override
     {
         isNoteOn = false;
     }

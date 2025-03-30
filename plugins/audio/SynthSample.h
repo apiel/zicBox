@@ -280,7 +280,7 @@ public:
         buf[track] = out;
     }
 
-    void noteOn(uint8_t note, float velocity) override
+    void noteOn(uint8_t note, float velocity, void* userdata = NULL) override
     {
         // logDebug("should play noteOn: %d %d\n", note, velocity);
         if (velocity == 0) {
@@ -296,7 +296,7 @@ public:
         logDebug("noteOn: %d %f\n", note, velocity);
     }
 
-    void noteOff(uint8_t note, float velocity) override
+    void noteOff(uint8_t note, float velocity, void* userdata = NULL) override
     {
         for (uint8_t v = 0; v < MAX_SAMPLE_VOICES; v++) {
             Voice& voice = voices[v];

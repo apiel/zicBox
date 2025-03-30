@@ -217,7 +217,7 @@ public:
         }
     }
 
-    void noteOn(uint8_t note, float _velocity) override
+    void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
     {
         env = 0.0f;
         released = false;
@@ -226,7 +226,7 @@ public:
         freq = pow(2, ((note - baseNote + pitch.get()) / 12.0));
     }
 
-    void noteOff(uint8_t note, float _velocity) override
+    void noteOff(uint8_t note, float _velocity, void* userdata = NULL) override
     {
         released = true;
     }
