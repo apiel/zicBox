@@ -117,7 +117,7 @@ public:
         outbufPos++;
     }
 
-    void noteOn(uint8_t note, float velocity) override
+    void noteOn(uint8_t note, float velocity, void* userdata = NULL) override
     {
         if (velocity == 0) {
             return noteOff(note, velocity);
@@ -127,7 +127,7 @@ public:
         libpd_noteon(0, note, velocity * 127);
     }
 
-    void noteOff(uint8_t note, float velocity) override
+    void noteOff(uint8_t note, float velocity, void* userdata = NULL) override
     {
         libpd_noteon(0, note, 0);
     }

@@ -180,7 +180,7 @@ public:
     uint8_t baseNote = 60;
     uint8_t currentNote = 0;
 
-    void noteOn(uint8_t note, float _velocity) override
+    void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
     {
         const float sampleRate = props.sampleRate;
         totalSamples = static_cast<int>(sampleRate * (duration.get() / 1000.0f));

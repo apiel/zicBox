@@ -106,7 +106,7 @@ public:
         buf[track] = out;
     }
 
-    void noteOn(uint8_t note, float _velocity) override
+    void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
     {
         // printf("[%d] drum sample noteOn: %d %f\n", track, note, _velocity);
         // logDebug("drum sample noteOn: %d %f", note, velocity);

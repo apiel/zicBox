@@ -230,7 +230,7 @@ public:
         }
     }
 
-    void noteOn(uint8_t note, float _velocity) override
+    void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
     {
         velocity = _velocity;
         // printf("bass noteOn: %d %f\n", note, velocity);

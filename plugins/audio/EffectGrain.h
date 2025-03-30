@@ -127,7 +127,7 @@ public:
         }
     }
 
-    void noteOn(uint8_t note, float _velocity) override
+    void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
     {
         if (_velocity == 0) {
             return noteOff(note, _velocity);
@@ -141,7 +141,7 @@ public:
         }
     }
 
-    void noteOff(uint8_t note, float _velocity) override
+    void noteOff(uint8_t note, float _velocity, void* userdata = NULL) override
     {
         if (note == playedNote) {
             env.release();

@@ -207,7 +207,7 @@ public:
     uint8_t currentNote = 0;
     double noteFactor = 0.0;
     float currentVelocity = 1.0f;
-    void noteOn(uint8_t note, float _velocity) override
+    void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
     {
         currentNote = note;
         currentVelocity = _velocity;
@@ -220,7 +220,7 @@ public:
         osc2.noteOn();
     }
 
-    void noteOff(uint8_t note, float _velocity) override
+    void noteOff(uint8_t note, float _velocity, void* userdata = NULL) override
     {
         osc1.noteOff();
         osc2.noteOff();

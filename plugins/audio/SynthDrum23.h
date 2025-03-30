@@ -286,7 +286,7 @@ public:
         }
     }
 
-    void noteOn(uint8_t note, float _velocity) override
+    void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
     {
         time = 0.0f;
         wavetable.sampleIndex = 0;

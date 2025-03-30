@@ -147,7 +147,7 @@ public:
     uint8_t currentNote = 0;
     float currentVelocity = 1.0f;
 
-    void noteOn(uint8_t note, float _velocity) override
+    void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
     {
         const float sampleRate = props.sampleRate;
         totalSamples = static_cast<int>((attackTime.get() + decayTime.get()) * sampleRate);

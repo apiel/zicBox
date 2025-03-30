@@ -34,12 +34,12 @@ public:
         // buf[track] = output;
     }
 
-    void noteOn(uint8_t note, float _velocity) override
+    void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
     {
         // You can access sample rate with props.sampleRate
     }
 
-    void noteOff(uint8_t note, float _velocity) override
+    void noteOff(uint8_t note, float _velocity, void* userdata = NULL) override
     {
     }
 };

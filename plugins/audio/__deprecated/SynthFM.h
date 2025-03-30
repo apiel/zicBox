@@ -202,7 +202,7 @@ public:
         buf[track] = out * velocity;
     }
 
-    void noteOn(uint8_t note, float _velocity) override
+    void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
     {
         velocity = _velocity;
         pitchRatio = pow(2.0f, (note - baseNote) / 12.0f);
@@ -214,7 +214,7 @@ public:
         }
     }
 
-    void noteOff(uint8_t note, float _velocity) override
+    void noteOff(uint8_t note, float _velocity, void* userdata = NULL) override
     {
         for (int i = 0; i < ZIC_FM_OPS_COUNT; i++) {
             operators[i].envelop.release();
