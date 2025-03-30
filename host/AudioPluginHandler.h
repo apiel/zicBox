@@ -346,11 +346,12 @@ public:
     void noteOn(uint8_t note, float velocity, NoteTarget target) override
     {
         if (target.plugin) {
-            target.plugin->noteOn(note, velocity);
+            target.plugin->noteOn(note, velocity, NULL);
         } else {
             for (AudioPlugin* plugin : plugins) {
                 if (target.track == -1 || target.track == plugin->track) {
-                    plugin->noteOn(note, velocity);
+                    // printf("pluginHandler noteOn %d %f %d\n", note, velocity, plugin->track);
+                    plugin->noteOn(note, velocity, NULL);
                 }
             }
         }
@@ -359,11 +360,11 @@ public:
     void noteOff(uint8_t note, float velocity, NoteTarget target) override
     {
         if (target.plugin) {
-            target.plugin->noteOff(note, velocity);
+            target.plugin->noteOff(note, velocity, NULL);
         } else {
             for (AudioPlugin* plugin : plugins) {
                 if (target.track == -1 || target.track == plugin->track) {
-                    plugin->noteOff(note, velocity);
+                    plugin->noteOff(note, velocity, NULL);
                 }
             }
         }
