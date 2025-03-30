@@ -33,7 +33,8 @@ export function SeqView({
                 audioPlugin="Sequencer"
                 keys={[
                     { key: btn5, action: '.toggleParam', context: { id: 254, value: 0 } },
-                    { key: btn8, action: `noteOn:${synthName}:60`, context: { id: 254, value: 0 } },
+                    // { key: btn8, action: `noteOn:${synthName}:60`, context: { id: 254, value: 0 } },
+                    { key: btn8, action: `.noteOn`, context: { id: 254, value: 0 } },
                     // { key: btn8, action: '.toggleParam' },
                     // { key: btnUp, action: '.toggleParam', multipleKeyHandler: true },
                     { key: btnShift, action: '.shift', multipleKeyHandler: true },

@@ -75,6 +75,18 @@ public:
                     }
                 };
             }
+            if (action == ".noteOn") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    bool userdata = true;
+                    if (KeypadLayout::isPressed(keymap)) {
+                        Step* step = getSelectedStep();
+                        float velo = step ? step->velocity : 1.0f;
+                        plugin->noteOn(selectedNote, velo, &userdata);
+                    } else if (KeypadLayout::isReleased(keymap)) {
+                        plugin->noteOff(selectedNote, 0.0f, &userdata);
+                    }
+                };
+            }
             return func;
         })
         , beatColor(lighten(styles.colors.background, 1.0))
