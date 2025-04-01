@@ -112,9 +112,11 @@ protected:
     float addSecondLayer(float time, float out)
     {
         float envAmp = envelopAmpLayer2.next(time);
-        float out2 = fastWaveform.process() * envAmp;
-        out2 = layer2Filter.process(out2);
-        out += out2;
+        if (envAmp > 0.0f) {
+            float out2 = fastWaveform.process() * envAmp;
+            out2 = layer2Filter.process(out2);
+            out += out2;
+        }
         return out;
     }
 
