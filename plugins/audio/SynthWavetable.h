@@ -217,8 +217,10 @@ public:
         }
     }
 
+    uint8_t playingNote = 0;
     void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
     {
+        playingNote = note;
         env = 0.0f;
         released = false;
         velocity = _velocity;
@@ -228,7 +230,9 @@ public:
 
     void noteOff(uint8_t note, float _velocity, void* userdata = NULL) override
     {
-        released = true;
+        if (note == playingNote) {
+            released = true;            
+        }
     }
 
     std::vector<float> waveformData;
