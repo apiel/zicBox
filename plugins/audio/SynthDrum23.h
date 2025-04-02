@@ -120,6 +120,11 @@ protected:
         return out;
     }
 
+    void updateBoostTimeInc()
+    {
+        boostTimeInc = (1.0f / (float)sampleCountDuration) * highBoost.get();
+    }
+
 #define DRUM23_WAVEFORMS_COUNT 7
     struct WaveformType {
         std::string name;
@@ -200,7 +205,7 @@ public:
         p.val.setFloat(p.value);
         bool isOff = sampleCountDuration == sampleDurationCounter;
         sampleCountDuration = p.val.get() * (sampleRate * 0.001f);
-        timeIncrement = 1.0f / (float)sampleCountDuration;
+        updateBoostTimeInc();
         if (isOff) {
             sampleDurationCounter = sampleCountDuration;
         }
@@ -213,7 +218,10 @@ public:
     });
 
     /*md - `HIGH_FREQ_BOOST` set the high boost level.*/
-    Val& highBoost = val(0.0, "HIGH_FREQ_BOOST", { "High boost", .min = 0.0, .max = 20.0, .step = 0.1, .floatingPoint = 1 });
+    Val& highBoost = val(0.0, "HIGH_FREQ_BOOST", { "High boost", .min = 0.0, .max = 20.0, .step = 0.1, .floatingPoint = 1 }, [&](auto p) {
+        p.val.setFloat(p.value);
+        updateBoostTimeInc();
+    });
 
     /*md - `OSC2` second oscillator.*/
     Val& lfoWaveform = val(0, "OSC2", { "Osc.2", VALUE_STRING, .max = FastWaveform::TYPE_COUNT - 1 }, [&](auto p) {
@@ -255,19 +263,21 @@ public:
         initValues();
     }
 
-    float highFreqBoost(float input, float time)
+    double boostTimeInc = 0.0f;
+    double boostTime = 0.0f;
+    float highFreqBoost(float input)
     {
         if (highBoost.get() == 0) {
             return input;
         }
         // Simple high-shelf boost logic
         // TODO optimize precalculate: highBoost.get() * time
-        float highFreqComponent = input * (highBoost.get() * time); // Emphasize high frequencies
+        // float highFreqComponent = input * (highBoost.get() * boostTime); // Emphasize high frequencies
+        float highFreqComponent = input * boostTime; // Emphasize high frequencies
+        boostTime += boostTimeInc;
         return input + highFreqComponent;
     }
 
-    double time = 0.0f;
-    double timeIncrement = 0.0f;
     float scaledClipping = 0.0f;
     void sample(float* buf)
     {
@@ -278,19 +288,18 @@ public:
             float freq = envFreq + noteMult;
             float out = wave->sample(&wavetable.sampleIndex, freq) * envAmp;
             out = addSecondLayer(out);
-            out = highFreqBoost(out, time);
+            out = highFreqBoost(out);
             out = range(out + out * scaledClipping, -1.0f, 1.0f);
             buf[track] = out * velocity;
 
             sampleDurationCounter++;
-            time += timeIncrement;
             // printf("[%d] sample: %d of %d=%f\n", track, sampleDurationCounter, sampleCountDuration, buf[track]);
         }
     }
 
     void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
     {
-        time = 0.0f;
+        boostTime = 0.0f;
         wavetable.sampleIndex = 0;
         sampleDurationCounter = 0;
         envelopAmp.reset(sampleCountDuration);
