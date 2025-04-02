@@ -3,16 +3,17 @@
 #include <sstream>
 #include <stdio.h>
 #include <vector>
+#include <functional>
+
+#include "helpers/range.h"
 
 class EnvelopRelative {
 public:
     unsigned int index = -1;
-    float currentModulation = 0.0f;
 
     struct Data {
         float modulation;
         float time;
-        float incRatio = 0.0f; // Precomputed increment ratio
     };
 
     std::vector<Data> data;
@@ -44,33 +45,35 @@ public:
         }
     }
 
-    float next()
+    float next(float time, unsigned int& indexRef)
     {
-        if (index > data.size() - 1) {
+        if (indexRef > data.size() - 1) {
             return 0.0f;
         }
 
-        currentModulation += data[index].incRatio;
-        if ((data[index].incRatio > 0 && currentModulation >= data[index + 1].modulation) || (data[index].incRatio < 0 && currentModulation <= data[index + 1].modulation)) {
-            index++;
-            currentModulation = data[index].modulation;
+        if (time >= data[indexRef + 1].time) {
+            indexRef++;
         }
-        return currentModulation;
+        // TODO optimize: this could be precalculated using the duration of the envelop
+        // So we could calculate what is the step increment for the current time range.
+        float timeOffset = data[indexRef + 1].time - data[indexRef].time;
+        float timeRatio = (time - data[indexRef].time) / timeOffset;
+        return (data[indexRef + 1].modulation - data[indexRef].modulation) * timeRatio + data[indexRef].modulation;
     }
 
-    void reset(float totalSamples)
+    float next(float time)
     {
-        index = 0;
-        currentModulation = 0.0f;
-        calculateIncrements(totalSamples);
+        return next(time, index);
     }
 
-    void calculateIncrements(float totalSamples)
+    void reset()
     {
-        for (size_t i = 0; i < data.size() - 1; ++i) {
-            float sampleCount = (data[i + 1].time - data[i].time) * totalSamples;
-            data[i].incRatio = (sampleCount > 0) ? (data[i + 1].modulation - data[i].modulation) / sampleCount : 0.0f;
-        }
+        reset(index);
+    }
+
+    void reset(unsigned int& indexRef)
+    {
+        indexRef = 0;
     }
 
 protected:

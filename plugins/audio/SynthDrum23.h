@@ -109,9 +109,9 @@ protected:
     });
 
     EnvelopRelative envelopAmpLayer2 = EnvelopRelative({ { 0.0f, 0.0f }, { 0.0f, 0.01f }, { 0.0f, 1.0f } }, 1);
-    float addSecondLayer(float time, float out)
+    float addSecondLayer(float out)
     {
-        float envAmp = envelopAmpLayer2.next(time);
+        float envAmp = envelopAmpLayer2.next();
         if (envAmp > 0.0f) {
             float out2 = fastWaveform.process() * envAmp;
             out2 = layer2Filter.process(out2);
@@ -261,6 +261,7 @@ public:
             return input;
         }
         // Simple high-shelf boost logic
+        // TODO optimize precalculate: highBoost.get() * time
         float highFreqComponent = input * (highBoost.get() * time); // Emphasize high frequencies
         return input + highFreqComponent;
     }
@@ -271,13 +272,12 @@ public:
     void sample(float* buf)
     {
         if (sampleDurationCounter < sampleCountDuration) {
-            // float time = (float)sampleDurationCounter / (float)sampleCountDuration;
-            float envAmp = envelopAmp.next(time);
-            float envFreq = envelopFreq.next(time);
+            float envAmp = envelopAmp.next();
+            float envFreq = envelopFreq.next();
 
             float freq = envFreq + noteMult;
             float out = wave->sample(&wavetable.sampleIndex, freq) * envAmp;
-            out = addSecondLayer(time, out);
+            out = addSecondLayer(out);
             out = highFreqBoost(out, time);
             out = range(out + out * scaledClipping, -1.0f, 1.0f);
             buf[track] = out * velocity;
@@ -293,9 +293,9 @@ public:
         time = 0.0f;
         wavetable.sampleIndex = 0;
         sampleDurationCounter = 0;
-        envelopAmp.reset();
-        envelopFreq.reset();
-        envelopAmpLayer2.reset();
+        envelopAmp.reset(sampleCountDuration);
+        envelopFreq.reset(sampleCountDuration);
+        envelopAmpLayer2.reset(sampleCountDuration);
         velocity = range(_velocity, 0.0f, 1.0f);
 
         noteMult = pow(2, ((note - baseNote + pitch.get()) / 12.0));
