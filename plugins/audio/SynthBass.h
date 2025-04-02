@@ -210,8 +210,7 @@ public:
     void sample(float* buf)
     {
         if (sampleIndex < sampleCountDuration) {
-            float time = (float)sampleIndex / (float)sampleCountDuration;
-            float env = envelop.next(time);
+            float env = envelop.next();
             float out = wave->sample(&wavetable.sampleIndex, freq);
             out = out * velocity * env;
 
@@ -236,7 +235,7 @@ public:
         // printf("bass noteOn: %d %f\n", note, velocity);
 
         sampleIndex = 0;
-        envelop.reset();
+        envelop.reset(sampleCountDuration);
         wavetable.sampleIndex = 0;
         freq = freqRatio.pct() * pow(2, ((note - baseNote + pitch.get()) / 12.0)) + 0.05;
         // printf("freq: %f\n", freq);

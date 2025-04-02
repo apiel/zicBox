@@ -42,7 +42,7 @@ protected:
         grain.index = 0;
         grain.position = buffer.index + densityIndex * grainDelay + grainDelay * getRand() * delayRandomize.pct();
         grain.positionIncrement = positionIncrement * direction.get() + positionIncrement * getRand() * pitchRandomize.pct();
-        grain.env.reset();
+        grain.env.reset(grainDuration);
     }
 
     float getRand()
@@ -118,7 +118,7 @@ public:
                 } else {
                     initGrain(i);
                 }
-                float grainEnv = grain.env.next(grain.index / (float)grainDuration);
+                float grainEnv = grain.env.next();
                 // printf("time %f env %f\n", grain.index / (float)grainDuration, env);
                 out += buffer.samples[(int)grain.position] * velocity * grainEnv;
             }
