@@ -67,7 +67,7 @@ push:
 	git add . && git commit -m "$(m)" && git push
 
 merge:
-	git checkout master
+	git checkout main
 	git merge dev
 	git push
 	git checkout dev
