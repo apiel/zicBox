@@ -1,3 +1,4 @@
+export const MasterTrack = 0;
 export const KickTrack = 1;
 export const Synth1Track = 2;
 export const Synth2Track = 3;

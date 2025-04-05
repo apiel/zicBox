@@ -16,7 +16,7 @@ import {
     btnShift,
     btnUp,
     KeyInfoPosition,
-    KeyTopInfoPosition
+    KeyTopInfoPosition,
 } from '../constants';
 
 export const Kick = 'Kick';
@@ -52,13 +52,15 @@ export function ShiftedTextGrid({
             <Rect
                 bounds={KeyTopInfoPosition}
                 color="background"
-                visibilityContext={[{
-                    index: 254,
-                    condition: 'SHOW_WHEN',
-                    value: 0,
-                }]}
+                visibilityContext={[
+                    {
+                        index: 254,
+                        condition: 'SHOW_WHEN',
+                        value: 0,
+                    },
+                ]}
             />
-            <TextGrid
+            {/* <TextGrid
                 bounds={KeyInfoPosition}
                 rows={[
                     `${Kick} ${Synth1} ${Synth2} ${Synth3}`,
@@ -82,14 +84,15 @@ export function ShiftedTextGrid({
                 selected={selected}
                 contextValue={[1]}
                 {...(selectedBackground && { selectedBackground })}
-            />
+            /> */}
+            <TracksTextGrid selectedBackground={selectedBackground} selected={selected} contextValue={1} />
 
             <TextGrid
                 bounds={KeyInfoPosition}
-                rows={[`Menu &empty &empty &empty`, `&icon::play::filled &empty &empty &empty`]}
+                rows={[`Menu Tempo &empty &empty`, `&icon::play::filled &empty &empty &empty`]}
                 keys={[
                     { key: btn1, action: 'setView:Menu' },
-                    // { key: btn2, action: 'setView:Synth1' },
+                    { key: btn2, action: 'setView:Tempo' },
                     // { key: btn3, action: 'setView:Synth2' },
                     // { key: btn4, action: 'setView:Synth3' },
 
@@ -107,5 +110,43 @@ export function ShiftedTextGrid({
                 {...(selectedBackground && { selectedBackground })}
             />
         </>
+    );
+}
+
+export function TracksTextGrid({
+    selectedBackground,
+    selected,
+    contextValue
+}: {
+    selectedBackground?: string;
+    selected: string;
+    contextValue: number;
+}) {
+    return (
+        <TextGrid
+            bounds={KeyInfoPosition}
+            rows={[
+                `${Kick} ${Synth1} ${Synth2} ${Synth3}`,
+                `${Drum1} ${Sample1} ${Sample2} ${Sample3}`,
+            ]}
+            keys={[
+                { key: btn1, action: 'setView:Kick' },
+                { key: btn2, action: 'setView:Synth1' },
+                { key: btn3, action: 'setView:Synth2' },
+                { key: btn4, action: 'setView:Synth3' },
+
+                { key: btn5, action: `setView:Drum1` },
+                { key: btn6, action: `setView:Sample1` },
+                { key: btn7, action: `setView:Sample2` },
+                { key: btn8, action: `setView:Sample3` },
+
+                { key: btnUp, action: 'setView:Clips' },
+                { key: btnDown, action: 'playPause' },
+                { key: btnShift, action: 'contextToggle:254:1:0' },
+            ]}
+            selected={selected}
+            contextValue={[contextValue]}
+            {...(selectedBackground && { selectedBackground })}
+        />
     );
 }
