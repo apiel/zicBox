@@ -1,5 +1,5 @@
 import * as React from '@/libs/react';
-import { ClipsView } from './clipsView/ClipsView';
+import { ClipsView } from './ClipsView/ClipsView';
 import {
     ColorTrack1,
     ColorTrack2,
@@ -29,6 +29,7 @@ import { ShutdownView } from './menu/ShutdownView';
 import { WorkspacesView } from './menu/WorkspacesView';
 import { SampleView } from './Sample/SampleView';
 import { SynthView } from './Synth/SynthView';
+import { TempoView } from './Tempo/TempoView';
 
 const halfHeight = ScreenHeight / 2;
 // addZoneEncoder([0, 0, W1_2, halfHeight]);
@@ -66,6 +67,7 @@ export const ui = {
             <CreateWorkspaceView name="CreateWorkspace" />
             <WorkspacesView name="Workspaces" />
             <ShutdownView name="Shutdown" />
+            <TempoView name="Tempo" />
 
             <ClipsView name="Clips" />
         </>

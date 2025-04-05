@@ -1,7 +1,5 @@
 # Pixel basic working one
   
-- TODO tempo editor...
-  
 - TODO share easyeda project
 
 - TODO add filter8      
@@ -27,8 +25,6 @@
 - TODO enable motion/mouse on desktop
   - when mouse over envelop, some point/circle appear to show what can be dragged...
 
-- TODO make all component access to group visibility
-
 ### component
 
 - TODO make native component more minimalistic, e.g macroEnvelop vs drumEnvelop
@@ -50,6 +46,8 @@ valgrind --leak-check=full ./pixel.x86
     <!-- … -->
   
 ## Pixel TODO
+
+- TODO capture, like on ableton move
 
 - TODO mouse on raspi
 
