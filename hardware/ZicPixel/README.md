@@ -2,7 +2,8 @@
 
 ## Zic Pixel
 
-<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel3A.png?raw=true' width='500'>
+<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel3A.png?raw=true' width='350'>
+<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel3A_2.png?raw=true' width='350'>
 
 <table>
 <tr>

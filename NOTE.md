@@ -1,22 +1,20 @@
 # Pixel basic working one
-
-- TODO see if we can improve EnvelopRelative
-
-- TODO synth with multiple swappable engines
-  ----> actually could just try to improve drum23, by adding noise and so on... and only had the massive distortion combination on first track, but the rest should have reduce effect...
-  ---------> instead of noise give the possibility to have a second layer.
   
-- TODO add freq mod curve
-       add filter8      
+- TODO tempo editor...
+  
+- TODO share easyeda project
+
+- TODO add filter8      
+       add freq mod curve
        IDEA extra waveform type based on FastWaveform
             First param could select the waveform type
             Second the detune
             Third the mix
             However, maybe there is too much param, but we might be able to combine first and second param in one param... 
 
-- TODO tempo editor...
-
 - TODO optimize SynthMetalic (can be postponed to later if not used right now)
+
+- TODO synth with multiple swappable engines
 
 ## Framework improvement
 
