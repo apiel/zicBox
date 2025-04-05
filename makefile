@@ -68,6 +68,6 @@ push:
 
 merge:
 	git checkout main
-	git merge dev
+	git merge develop
 	git push
-	git checkout dev
+	git checkout develop
