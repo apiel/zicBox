@@ -56,16 +56,18 @@
 </tr>
 </table>
 
-The PCB has been designed using EasyEDA. If you need to access or modify the project, you can do so by loading the provided JSON file:
+The PCB has been designed using EasyEDA. To access the project, use the following link:
 
-📁 **File**: [`st7789_240x320_rpi3A_REDRAGON_11btn_easyeda.json`](https://raw.githubusercontent.com/apiel/zicBox/refs/heads/main/hardware/ZicPixel/st7789_240x320_rpi3A_REDRAGON_11btn_easyeda.json)
+https://easyeda.com/editor#project_id=5847f0887b8b4aa5b121abb8e9b21bd7
 
-Simply import this file into EasyEDA to access the full schematic and layout of the board.
+If you need to modify the PCB, clone the project in your own account.
 
 **Ordering the PCB**
 To manufacture the PCB, you need to generate and submit the Gerber files to a PCB fabrication service. For this project, the Gerber files are already prepared and available as:
 
-📁 **File**: [`st7789_240x320_rpi3A_REDRAGON_11btn_Gerber.zip`](https://github.com/apiel/zicBox/raw/refs/heads/main/hardware/ZicPixel/st7789_240x320_rpi3A_REDRAGON_11btn_Gerber.zip)
+📁 **File**: [`Gerber_pixelKeycap_zicpixel_st7789_240x320_rpi3A_REDRAGON_11btn_v2_2025-04-05.zip`](https://github.com/apiel/zicBox/raw/refs/heads/main/hardware/Gerber_pixelKeycap_zicpixel_st7789_240x320_rpi3A_REDRAGON_11btn_v2_2025-04-05.zip)
+
+**However, I would highly recommend to download the Gerber file from the easyEDA project**, as the file in the github repo might be outdated.
 
 You can order the PCB from JLCPCB by following these steps:
 
