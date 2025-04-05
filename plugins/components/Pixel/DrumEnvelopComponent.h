@@ -18,7 +18,7 @@ protected:
     struct Data {
         float modulation;
         float time;
-        double incRatio;
+        float incRatio;
     };
 
     AudioPlugin* plugin = NULL;
