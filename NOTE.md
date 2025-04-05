@@ -1,6 +1,4 @@
 # Pixel basic working one
-  
-- TODO share easyeda project
 
 - TODO add filter8      
        add freq mod curve
