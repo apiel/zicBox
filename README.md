@@ -186,7 +186,7 @@ More [documentation here](https://github.com/apiel/zicBox/wiki).
         <tr>
         <td><img src='https://github.com/apiel/zicBox/blob/main/images/pixelUi.png?raw=true' width='480'></td>
         <td><img src='https://github.com/apiel/zicBox/blob/main/images/demo3.png?raw=true' width='480'></td>
-        <td><img src='https://github.com/apiel/zicBox/blob/main/images/proto2.jpg?raw=true' width='480'></td>
+        <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel3A_2.png?raw=true' width='480'></td>
     </tr>
 </table>
 
