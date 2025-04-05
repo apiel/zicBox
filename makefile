@@ -65,3 +65,9 @@ push:
 	node doc.js
 	cd wiki && git add . && git commit -m "wiki" || true && git push
 	git add . && git commit -m "$(m)" && git push
+
+merge:
+	git checkout master
+	git merge dev
+	git push
+	git checkout dev
