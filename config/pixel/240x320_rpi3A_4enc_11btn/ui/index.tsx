@@ -10,15 +10,15 @@ import {
     ColorTrack7,
     ColorTrack8,
     Drum1Track,
+    Drum2Track,
+    Drum3Track,
     KickTrack,
     Sample1Track,
     Sample2Track,
-    Sample3Track,
     ScreenHeight,
     ScreenWidth,
     Synth1Track,
     Synth2Track,
-    Synth3Track,
     W1_2
 } from './constants';
 import { DrumView } from './Drum/DrumView';
@@ -53,15 +53,15 @@ export const ui = {
         <>
             <KickView track={KickTrack} synthName="Kick" color={ColorTrack1} />
 
-            <SynthView track={Synth1Track} synthName="Synth1" color={ColorTrack2} />
-            <SynthView track={Synth2Track} synthName="Synth2" color={ColorTrack3} />
-            <SynthView track={Synth3Track} synthName="Synth3" color={ColorTrack4} />
+            <DrumView track={Drum1Track} synthName="Drum1" color={ColorTrack2} />
+            <DrumView track={Drum2Track} synthName="Drum2" color={ColorTrack3} />
+            <DrumView track={Drum3Track} synthName="Drum3" color={ColorTrack4} />
 
-            <DrumView track={Drum1Track} synthName="Drum1" color={ColorTrack5} />
+            <SynthView track={Synth1Track} synthName="Synth1" color={ColorTrack5} />
+            <SynthView track={Synth2Track} synthName="Synth2" color={ColorTrack6} />
 
-            <SampleView track={Sample1Track} synthName="Sample1" color={ColorTrack6} />
-            <SampleView track={Sample2Track} synthName="Sample2" color={ColorTrack7} />
-            <SampleView track={Sample3Track} synthName="Sample3" color={ColorTrack8} />
+            <SampleView track={Sample1Track} synthName="Sample1" color={ColorTrack7} />
+            <SampleView track={Sample2Track} synthName="Sample2" color={ColorTrack8} />
 
             <MenuView name="Menu" />
             <CreateWorkspaceView name="CreateWorkspace" />

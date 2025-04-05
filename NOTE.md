@@ -1,18 +1,11 @@
-# Pixel basic working one
+## Pixel TODO
+
+- FIXME when ENV_FREQ is empty, it is crashing...
 
 - TODO add filter8      
-       add freq mod curve
-       IDEA extra waveform type based on FastWaveform
-            First param could select the waveform type
-            Second the detune
-            Third the mix
-            However, maybe there is too much param, but we might be able to combine first and second param in one param... 
+       add freq mod curve?
 
-- TODO optimize SynthMetalic (can be postponed to later if not used right now)
-
-- TODO synth with multiple swappable engines
-
-## Framework improvement
+- TODO synth with multiple swappable engines!!
 
 - TODO zicOs based on busybox
 
@@ -23,29 +16,17 @@
 - TODO enable motion/mouse on desktop
   - when mouse over envelop, some point/circle appear to show what can be dragged...
 
-### component
-
-- TODO make native component more minimalistic, e.g macroEnvelop vs drumEnvelop
-      - also the label/value could be extracted...
-    - ---> then use typescript component to make more complex component
-
-- TODO load any font...
-
-### other
-
-- TODO Use Smart Pointers (std::unique_ptr or std::shared_ptr)
-   Use tools like Valgrind (Linux/macOS) or AddressSanitizer (Clang/GCC) to check for memory leaks:
-```sh
-valgrind --leak-check=full ./pixel.x86
-```
-
-- comment for doc order: 
-    [//]: # (This is a comment.)
-    <!-- … -->
-  
-## Pixel TODO
-
 - TODO capture, like on ableton move
+
+- TODO master track --> add effect: sample reducer, distortion, delay...? 
+    - --> instead of mixer drum and mixer synth, use sent effect to track fx1 and track fx2
+- TODO perform / grid effect / scatter effect: apply effect for some time, apply granular effect, pitch down
+
+- TODO instead of EffectGainVolume could use Mixer to set volume
+
+- TODO random patch
+
+- TODO wavetable generator
 
 - TODO mouse on raspi
 
@@ -53,29 +34,19 @@ valgrind --leak-check=full ./pixel.x86
 
 - TODO drum rack
 
-- TODO synth!!
+- TODO optimize SynthMetalic (can be postponed to later if not used right now)
 
-- TODO random patch
+- TODO synth!!
 
 - TODO equalizer!
 
-- TODO drum23 for click instead of noise... use transient samples...
-
-- TODO fix envelop when we release before to reach decay point...
+- FIXME fix envelop when we release before to reach decay point...
 
 - TODO view history, to be able to go back to previous view...
 
-- TODO sequencer could edit macro... lets give 3 or 4 macro that could be edited by sequencer...
-
 - TODO reuse clip view, but instead give a way to assign any track to a given spot, but also scatter/grid effect... and then 4 button to select them...
 
-- TODO envelop, instead to always calculate time ratio and do linear interpolation, could precalculate step value for each sample by using props.samplerRate to define incrementation steps...
-
-- TODO if step is not enable, if turning encoder step is enable. Todo for all seqs...
-
-- TODO more steps in sample seq and sequencer
-
-- TODO audio plugin do same as for component to load .so file
+- TODO more steps in sequencer
 
 - TODO use helpers/format.h fToString everywhere instead of custom precision formating
 
@@ -83,41 +54,9 @@ valgrind --leak-check=full ./pixel.x86
 
 - TODO clip scrollbar
 
-- TODO clips with arbitrary selection
-
-- NOTE should we move Ui in separate thread to have better understanding of CPU usage
-
-- IDEA load/unload instrument dynamically
-    - --> drum (or simple) only with 7 parameters (should it even allow to have something else than knob/values representation..?)
-        - sorting ofr the params, would define how they show in the UI
-        - show we allow noteOn to get note value? If yes, StepEditMono would need to allow semitone edition...
-    - --> synth 23 parameters.. but more complex because for sure we want to show waveform, envelop... also how to name the page of each parameters..
-
-- TODO need to rework the snare to have this clappy sound
-
-- TODO FM synth --> algo param to decide which kind of waveform to combine
-              - --> and if it does FM or substractive ...
-              - --> filter envelop
-
 - FIXME transition between wavetable and waveform is not so smooth...
 
-- TODO instead of EffectGainVolume could use Mixer to set volume
-
-- TODO reduce data id in SynthDrum23 and update DrumEnvelopComponent or simply remove it
-- TODO fix envelop step edit
-
-- TODO clips
-  - instead to play right away when clicking toggle button, maybe it should play at the next loop, and we need to play right away the would be a different combination key
-  - allow to start all the clip from the same row at once, maybe instead of the play button or else add a new column
-  - delete button should ask confirmation (as workspace is saving automatically cannot restore)
-  - clips allow more than 16 by adding a scrolling system
-  - give a way to make some extra color code to classify depending if it is used for playibg live or for generating sample?
-
 - TODO Filter... make an advance filter with muliple choice, basic LPF filter, HPF, MMfilter, moog filter, and more...
-
-- TODO master track --> add effect: sample reducer, distortion, delay...? 
-    - --> instead of mixer drum and mixer synth, use sent effect to track fx1 and track fx2
-- TODO perform / grid effect / scatter effect: apply effect for some time, apply granular effect, pitch down
 
 - TODO add color code in text char...
 - TODO paragraph --> multiline text component
@@ -196,6 +135,12 @@ valgrind --leak-check=full ./pixel.x86
   - cross compile for rpi directly on laptop
 
 - TODO cleanup draw text, need some refactoring there... a bit messy
+
+- TODO Use Smart Pointers (std::unique_ptr or std::shared_ptr)
+   Use tools like Valgrind (Linux/macOS) or AddressSanitizer (Clang/GCC) to check for memory leaks:
+```sh
+valgrind --leak-check=full ./pixel.x86
+```
 
 ## Improvement performance
 

@@ -1,13 +1,13 @@
 import { audioPlugin } from '@/libs/audio';
 import {
     Drum1Track,
+    Drum2Track,
+    Drum3Track,
     KickTrack,
     Sample1Track,
     Sample2Track,
-    Sample3Track,
     Synth1Track,
-    Synth2Track,
-    Synth3Track,
+    Synth2Track
 } from '../constants';
 
 export const maxVariation = 16;
@@ -23,6 +23,39 @@ const kickTrack = {
         // audioPlugin('EffectFilterMultiModeMix', { alias: 'MMFilter', cutoffStringFormat: '%d%% %d%%' }),
         audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
         audioPlugin('SerializeTrack', { filename: 'kick', maxVariation, workspaceFolder }),
+    ],
+};
+
+const drum1Track = {
+    id: Drum1Track,
+    plugins: [
+        audioPlugin('SynthDrum23', { alias: 'Drum1' }),
+        audioPlugin('Sequencer'),
+        audioPlugin('EffectFilterMultiMode', { alias: 'Filter' }),
+        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
+        audioPlugin('SerializeTrack', { filename: 'drum1', maxVariation, workspaceFolder }),
+    ],
+};
+
+const drum2Track = {
+    id: Drum2Track,
+    plugins: [
+        audioPlugin('SynthDrum23', { alias: 'Drum2' }),
+        audioPlugin('Sequencer'),
+        audioPlugin('EffectFilterMultiMode', { alias: 'Filter' }),
+        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
+        audioPlugin('SerializeTrack', { filename: 'drum2', maxVariation, workspaceFolder }),
+    ],
+};
+
+const drum3Track = {
+    id: Drum3Track,
+    plugins: [
+        audioPlugin('SynthDrum23', { alias: 'Drum3' }),
+        audioPlugin('Sequencer'),
+        audioPlugin('EffectFilterMultiMode', { alias: 'Filter' }),
+        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
+        audioPlugin('SerializeTrack', { filename: 'drum3', maxVariation, workspaceFolder }),
     ],
 };
 
@@ -43,27 +76,6 @@ const synth2Track = {
         audioPlugin('Sequencer'),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
         audioPlugin('SerializeTrack', { filename: 'synth2', maxVariation, workspaceFolder }),
-    ],
-};
-
-const synth3Track = {
-    id: Synth3Track,
-    plugins: [
-        audioPlugin('SynthWavetable', { alias: 'Synth3' }),
-        audioPlugin('Sequencer'),
-        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
-        audioPlugin('SerializeTrack', { filename: 'synth3', maxVariation, workspaceFolder }),
-    ],
-};
-
-const drum1Track = {
-    id: Drum1Track,
-    plugins: [
-        audioPlugin('SynthDrum23', { alias: 'Drum1' }),
-        audioPlugin('Sequencer'),
-        audioPlugin('EffectFilterMultiMode', { alias: 'Filter' }),
-        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
-        audioPlugin('SerializeTrack', { filename: 'drum1', maxVariation, workspaceFolder }),
     ],
 };
 
@@ -89,17 +101,6 @@ const sample2Track = {
     ],
 };
 
-const sample3Track = {
-    id: Sample3Track,
-    plugins: [
-        audioPlugin('SynthMonoSample', { alias: 'Sample3' }),
-        audioPlugin('Sequencer'),
-        audioPlugin('EffectFilterMultiMode', { alias: 'Filter' }),
-        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
-        audioPlugin('SerializeTrack', { filename: 'sample3', maxVariation, workspaceFolder }),
-    ],
-};
-
 const masterTrack = {
     id: 0,
     plugins: [
@@ -114,13 +115,13 @@ const masterTrack = {
 export const audio = {
     tracks: [
         kickTrack,
+        drum1Track,
+        drum2Track,
+        drum3Track,
         synth1Track,
         synth2Track,
-        synth3Track,
-        drum1Track,
         sample1Track,
         sample2Track,
-        sample3Track,
         masterTrack,
     ],
     autoSave: 500,
