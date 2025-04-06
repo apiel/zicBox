@@ -3,9 +3,11 @@
 #include <cstdint>
 #include <math.h>
 
-class EffectFilter2Data {
+
+// Another implmentation of a resonant filter
+class EffectFilterBisData {
 public:
-    EffectFilter2Data(uint64_t _sampleRate)
+    EffectFilterBisData(uint64_t _sampleRate)
         : sampleRate(_sampleRate)
     {
         updateCoefficients();

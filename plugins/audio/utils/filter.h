@@ -151,27 +151,32 @@ public:
 
     void setSampleData(float inputValue)
     {
-        hp = inputValue - buf;
-        bp = buf - lp;
-        buf = buf + cutoff * (hp + feedback * bp);
-        lp = lp + cutoff * (buf - lp);
+        setSampleData(inputValue, buf, hp, bp, lp);
+    }
+
+    void setSampleData(float inputValue, float& _buf, float& _hp, float& _bp, float& _lp)
+    {
+        _hp = inputValue - _buf;
+        _bp = _buf - _lp;
+        _buf = _buf + cutoff * (_hp + feedback * _bp);
+        _lp = _lp + cutoff * (_buf - _lp);
     }
 
     float processLp(float inputValue)
     {
-        setSampleData(inputValue);
+        setSampleData(inputValue, buf, hp, bp, lp);
         return lp;
     }
 
     float processHp(float inputValue)
     {
-        setSampleData(inputValue);
+        setSampleData(inputValue, buf, hp, bp, lp);
         return hp;
     }
 
     float processBp(float inputValue)
     {
-        setSampleData(inputValue);
+        setSampleData(inputValue, buf, hp, bp, lp);
         return bp;
     }
 };

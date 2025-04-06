@@ -7,9 +7,9 @@
 
 #include <math.h> // fabs
 
-class EffectFilter8Data {
+template <int SIZE>
+class EffectFilterArray {
 public:
-    const static int SIZE = 8;
     float cutoff = 0.0f;
     float feedback = 0.0f;
     float buf[SIZE] = { 0.0 };
