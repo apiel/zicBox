@@ -2,7 +2,7 @@
 
 #include "helpers/range.h"
 #include "audioPlugin.h"
-#include "utils/filter8.h"
+#include "utils/filterArray.h"
 #include "mapping.h"
 #include "utils/EnvelopRelative.h"
 
@@ -21,7 +21,7 @@ class SynthBass : public Mapping {
 protected:
     uint8_t baseNote = 60;
 
-    EffectFilter8Data filter8;
+    EffectFilterArray<2> filter;
 
     // Envelop might need a bit of curve??
     EnvelopRelative envelop = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.3f, 0.4f }, { 0.0f, 1.0f } });
@@ -119,14 +119,14 @@ public:
     Val& cutoff = val(50.0, "CUTOFF", { "Cutoff", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         float cutoffValue = 0.85 * p.val.pct() + 0.1;
-        filter8.setCutoff(cutoffValue);
+        filter.setCutoff(cutoffValue);
     });
     /*md - `RESONANCE` to set resonance. */
     Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         // float res = 0.95 * (1.0 - std::pow(1.0 - p.val.pct(), 3));
         float res = 0.95 * (1.0 - std::pow(1.0 - p.val.pct(), 2));
-        filter8.setResonance(res);
+        filter.setResonance(res);
     });
     /*md - `GAIN_CLIPPING` set the clipping level.*/
     Val& clipping = val(0.0, "GAIN_CLIPPING", { "Gain Clipping", .unit = "%" });
@@ -214,10 +214,10 @@ public:
             float out = wave->sample(&wavetable.sampleIndex, freq);
             out = out * velocity * env;
 
-            filter8.setCutoff(0.85 * cutoff.pct() * env + 0.1);
-            filter8.setSampleData(out, 0);
-            filter8.setSampleData(filter8.lp[0], 1);
-            out = filter8.lp[1];
+            filter.setCutoff(0.85 * cutoff.pct() * env + 0.1);
+            filter.setSampleData(out, 0);
+            filter.setSampleData(filter.lp[0], 1);
+            out = filter.lp[1];
 
             out = range(out + out * clipping.pct() * 8, -1.0f, 1.0f);
             out = applyReverb(out);
