@@ -5,8 +5,8 @@
 #include "audioPlugin.h"
 #include "helpers/range.h"
 #include "mapping.h"
-#include "plugins/audio/utils/filter.h"
-// #include "plugins/audio/filter2.h"
+// #include "plugins/audio/utils/filter.h"
+#include "plugins/audio/utils/filter3.h"
 
 /*md
 ## SynthWavetable
@@ -14,7 +14,6 @@
 A simple synth engine that can generate a wide range of sounds but still quiet simple to use and cpu efficient.
 
 */
-// TODO use filter8
 // TODO lfo modulation/fm/mix
 // TODO envlope curve!!
 
@@ -25,7 +24,9 @@ protected:
     float freq = 1.0f;
 
     Wavetable wavetable;
-    EffectFilterData filter;
+    // EffectFilterData filter;
+    // EffectFilter2 filter;
+    EffectFilter3 filter;
     FastWaveform lfo;
 
     float attackStepInc = 0.0f;
@@ -69,6 +70,12 @@ public:
         LP,
         BP,
         HP,
+        LP2,
+        BP2,
+        HP2,
+        LP3,
+        BP3,
+        HP3,
         FILTER_COUNT
     };
     Val& filterType = val(1, "FILTER_TYPE", { "Filter", VALUE_STRING, .max = SynthWavetable::FilterType::FILTER_COUNT - 1 }, [&](auto p) {
@@ -77,13 +84,40 @@ public:
             p.val.setString("OFF");
         } else if (p.val.get() == SynthWavetable::FilterType::LP) {
             p.val.setString("LPF");
-            filter.setType(EffectFilterData::Type::LP);
+            // filter.setType(EffectFilterData::Type::LP);
+            // filter.setType(EffectFilter2::Type::LP);
+            filter.setType(EffectFilter3::Type::LP);
         } else if (p.val.get() == SynthWavetable::FilterType::BP) {
             p.val.setString("BPF");
-            filter.setType(EffectFilterData::Type::BP);
+            // filter.setType(EffectFilterData::Type::BP);
+            // filter.setType(EffectFilter2::Type::BP);
+            filter.setType(EffectFilter3::Type::BP);
         } else if (p.val.get() == SynthWavetable::FilterType::HP) {
             p.val.setString("HPF");
-            filter.setType(EffectFilterData::Type::HP);
+            // filter.setType(EffectFilterData::Type::HP);
+            // filter.setType(EffectFilter2::Type::HP);
+            filter.setType(EffectFilter3::Type::HP);
+        } else if (p.val.get() == SynthWavetable::FilterType::LP2) {
+            p.val.setString("LPF2");
+            // filter.setType(EffectFilter2::Type::LP2);
+            filter.setType(EffectFilter3::Type::LP);
+        } else if (p.val.get() == SynthWavetable::FilterType::BP2) {
+            p.val.setString("BPF2");
+            // filter.setType(EffectFilter2::Type::BP2);
+            filter.setType(EffectFilter3::Type::BP);
+        } else if (p.val.get() == SynthWavetable::FilterType::HP2) {
+            p.val.setString("HPF2");
+            // filter.setType(EffectFilter2::Type::HP2);
+            filter.setType(EffectFilter3::Type::HP);
+        } else if (p.val.get() == SynthWavetable::FilterType::LP3) {
+            p.val.setString("LPF3");
+            filter.setType(EffectFilter3::Type::LP3);
+        } else if (p.val.get() == SynthWavetable::FilterType::BP3) {
+            p.val.setString("BPF3");
+            filter.setType(EffectFilter3::Type::BP3);
+        } else if (p.val.get() == SynthWavetable::FilterType::HP3) {
+            p.val.setString("HPF3");
+            filter.setType(EffectFilter3::Type::HP3);
         }
         filterCutoff.set(filterCutoff.get());
         filterResonance.set(filterResonance.get());
