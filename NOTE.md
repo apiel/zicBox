@@ -1,22 +1,19 @@
 ## Pixel TODO
 
-- FIXME when ENV_FREQ is empty, it is crashing...
+- TODO home screen
 
-- TODO add filter8      
-       add freq mod curve?
-
-- TODO synth with multiple swappable engines!!
+- TODO capture, like on ableton move
 
 - TODO zicOs based on busybox
-
-- TODO drag and drop editor!! 
-
-- TODO serialize in json format!
 
 - TODO enable motion/mouse on desktop
   - when mouse over envelop, some point/circle appear to show what can be dragged...
 
-- TODO capture, like on ableton move
+- TODO synth with multiple swappable engines!!
+
+- TODO drag and drop editor!! 
+
+- TODO serialize in json format!
 
 - TODO master track --> add effect: sample reducer, distortion, delay...? 
     - --> instead of mixer drum and mixer synth, use sent effect to track fx1 and track fx2
@@ -27,6 +24,8 @@
 - TODO random patch
 
 - TODO wavetable generator
+
+- TODO wavetable synth: add freq mod curve?
 
 - TODO mouse on raspi
 

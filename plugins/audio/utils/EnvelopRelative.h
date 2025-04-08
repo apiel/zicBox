@@ -254,6 +254,9 @@ public:
                     sscanf(token.c_str(), "%f:%f", &mod, &time);
                     data.push_back({ mod, time });
                 }
+                if (data.size() == 0) {
+                    setMode(mode);
+                }
             }
         }
     }
