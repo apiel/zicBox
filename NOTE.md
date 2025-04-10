@@ -1,17 +1,22 @@
 ## Pixel TODO
 
-- TODO home screen
-
 - TODO capture, like on ableton move
 
 - TODO zicOs based on busybox
+- TODO home screen
 
 - TODO enable motion/mouse on desktop
   - when mouse over envelop, some point/circle appear to show what can be dragged...
 
+- TODO advance sample player (with granular??)
+
+- TODO optimize SynthMetalic (can be postponed to later if not used right now)
+
 - TODO synth with multiple swappable engines!!
 
 - TODO drag and drop editor!! 
+
+- TODO drum rack
 
 - TODO serialize in json format!
 
@@ -30,10 +35,6 @@
 - TODO mouse on raspi
 
 - TODO list value --> for sample browser, to have a list of file...
-
-- TODO drum rack
-
-- TODO optimize SynthMetalic (can be postponed to later if not used right now)
 
 - TODO synth!!
 
