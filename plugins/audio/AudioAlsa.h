@@ -27,7 +27,7 @@ protected:
             char* name;
             snd_card_get_name(cardNum, &name);
             logDebug("- %s [DEVICE=hw:%d,0]\n", name, cardNum);
-            if (strcmp(name, deviceName) == 0) {
+            if (name == deviceName) {
                 sprintf(cardName, "hw:%d,0", cardNum);
                 deviceName = cardName;
             }
@@ -36,7 +36,7 @@ protected:
         snd_config_update_free_global();
     }
 
-    virtual snd_pcm_stream_t stream() = 0;
+    snd_pcm_stream_t stream;
 
     void open()
     {
@@ -44,12 +44,12 @@ protected:
             snd_pcm_close(handle);
         }
 
-        logDebug("AudioAlsa::open %s (rate %d, channels %d)\n", deviceName, props.sampleRate, props.channels);
+        logDebug("AudioAlsa::open %s (rate %d, channels %d)\n", deviceName.c_str(), props.sampleRate, props.channels);
 
         int err;
-        if ((err = snd_pcm_open(&handle, deviceName, stream(), 0)) < 0) {
-            logDebug("Playback open audio card \"%s\" error: %s.\nOpen default sound card\n", deviceName, snd_strerror(err));
-            if ((err = snd_pcm_open(&handle, "default", stream(), 0)) < 0) {
+        if ((err = snd_pcm_open(&handle, deviceName.c_str(), stream, 0)) < 0) {
+            logDebug("Playback open audio card \"%s\" error: %s.\nOpen default sound card\n", deviceName.c_str(), snd_strerror(err));
+            if ((err = snd_pcm_open(&handle, "default", stream, 0)) < 0) {
                 logDebug("Default playback audio card error: %s\n", snd_strerror(err));
             }
         }
@@ -64,11 +64,12 @@ protected:
     }
 
 public:
-    char* deviceName = (char*)"default";
+    std::string deviceName = "default";
 
-    AudioAlsa(AudioPlugin::Props& props, AudioPlugin::Config& config)
+    AudioAlsa(AudioPlugin::Props& props, AudioPlugin::Config& config, snd_pcm_stream_t stream)
         : AudioPlugin(props, config)
         , props(props)
+        , stream(stream)
     {
         for (uint32_t i = 0; i < audioChunk * ALSA_MAX_CHANNELS; i++) {
             buffer[i] = 0;
@@ -76,8 +77,8 @@ public:
 
         auto& json = config.json;
         if (json.contains("device")) {
-            deviceName = (char *)json["device"].get<std::string>().c_str();
-            logDebug("Load output device: %s\n", deviceName);
+            deviceName = json["device"].get<std::string>();
+            logDebug("Load output device: %s\n", deviceName.c_str());
             search();
             open();
         }

@@ -11,15 +11,9 @@ AudioInputAlsa plugin is used to read audio input from ALSA.
 - `DEVICE: name` to set input device name. If not defined, default device will be used.
 */
 class AudioInputAlsa : public AudioAlsa {
-protected:
-    snd_pcm_stream_t stream()
-    {
-        return SND_PCM_STREAM_CAPTURE;
-    }
-
 public:
     AudioInputAlsa(AudioPlugin::Props& props, AudioPlugin::Config& config)
-        : AudioAlsa(props, config)
+        : AudioAlsa(props, config, SND_PCM_STREAM_CAPTURE)
     {
         open();
     }
