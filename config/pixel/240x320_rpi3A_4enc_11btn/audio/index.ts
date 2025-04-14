@@ -107,6 +107,7 @@ const masterTrack = {
         audioPlugin('Mixer8', { alias: 'Mixer' }),
         audioPlugin('EffectGainVolume', { alias: 'Volume' }),
         audioPlugin('AudioOutputPulse', { alias: 'AudioOutput' }),
+        // audioPlugin('AudioOutputAlsa', { alias: 'AudioOutput' }),
         audioPlugin('SerializeTrack', { filename: 'master', maxVariation, workspaceFolder }),
         audioPlugin('Tempo'),
     ],
