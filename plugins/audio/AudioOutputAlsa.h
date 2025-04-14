@@ -11,20 +11,14 @@ AudioOutputAlsa plugin is used to write audio output to ALSA.
 - `DEVICE: name` to set output device name. If not defined, default device will be used.
 */
 class AudioOutputAlsa : public AudioAlsa {
-protected:
-    snd_pcm_stream_t stream()
-    {
-        return SND_PCM_STREAM_CAPTURE;
-    }
-
 public:
     AudioOutputAlsa(AudioPlugin::Props& props, AudioPlugin::Config& config)
-        : AudioAlsa(props, config)
+        : AudioAlsa(props, config, SND_PCM_STREAM_CAPTURE)
     {
         open();
     }
 
-    void sample(float* buf)
+    void sample(float* buf) override
     {
         // if (bufferIndex >= audioChunk * props.channels) { // ??
         if (bufferIndex >= audioChunk) {
