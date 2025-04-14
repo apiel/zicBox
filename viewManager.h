@@ -19,14 +19,8 @@
 #else
 #include "draw/ST7789/draw.h"
 #endif
-#elif def(DRAW_SSD1306)
-#ifdef USE_DRAW_WITH_SDL
-#include "draw/SSD1306/drawWithSDL.h"
 #else
-#include "draw/SSD1306/draw.h"
-#endif
-#else
-#include "draw/SDL/draw.h"
+throw std::runtime_error("No draw implementation");
 #endif
 
 class ViewManager {
