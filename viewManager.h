@@ -19,7 +19,7 @@
 #else
 #include "draw/ST7789/draw.h"
 #endif
-#elifdef DRAW_SSD1306
+#elif def(DRAW_SSD1306)
 #ifdef USE_DRAW_WITH_SDL
 #include "draw/SSD1306/drawWithSDL.h"
 #else

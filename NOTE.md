@@ -5,6 +5,8 @@
 - TODO zicOs based on busybox
 - TODO home screen
 
+- TODO fix alsa
+
 - TODO enable motion/mouse on desktop
   - when mouse over envelop, some point/circle appear to show what can be dragged...
 
