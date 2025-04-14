@@ -70,7 +70,7 @@ Update package lists and install required dependencies:
 
 ```sh
 apt-get update
-apt-get install build-essential librtmidi-dev libsndfile1-dev pulseaudio alsa-utils -y
+apt-get install build-essential librtmidi-dev libsndfile1-dev pulseaudio alsa-utils nlohmann-json3-dev libfreetype6-dev -y
 ```
 
 ### Additional Dependencies for Desktop
