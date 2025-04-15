@@ -20,16 +20,14 @@ public:
 
     void sample(float* buf)
     {
-        if (bufferIndex >= audioChunk) {
+        if (bufferIndex >= bufferSize) {
             bufferIndex = 0;
-            if (handle && snd_pcm_readi(handle, buffer, audioChunk) < 0) {
-                // int err;
-                // debug("Audio card read error: %s\n", snd_strerror(err));
-                // should throw and exit!!
+            int err;
+            if (handle && (err = snd_pcm_readi(handle, buffer, audioChunk)) < 0) {
+                logError("A problem occurred while reading from the audio card: %s\n", snd_strerror(err));
                 return;
             }
         }
-        // buf[track] = buffer[bufferIndex++] / 32767.0f;
         buf[track] = buffer[bufferIndex++];
     }
 };
