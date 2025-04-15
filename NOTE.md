@@ -2,12 +2,10 @@
 
 - TODO set wifi config
 
-- TODO capture, like on ableton move
-
 - TODO zicOs based on busybox
 - TODO home screen
 
-- TODO fix alsa
+- TODO capture, like on ableton move
 
 - TODO enable motion/mouse on desktop
   - when mouse over envelop, some point/circle appear to show what can be dragged...

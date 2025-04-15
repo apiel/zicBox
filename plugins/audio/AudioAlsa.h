@@ -56,15 +56,17 @@ protected:
             }
         }
 
+        unsigned int channels = props.channels > ALSA_MAX_CHANNELS ? ALSA_MAX_CHANNELS : props.channels;
         if ((err = snd_pcm_set_params(handle,
                  SND_PCM_FORMAT_FLOAT,
                  SND_PCM_ACCESS_RW_INTERLEAVED,
-                 props.channels > ALSA_MAX_CHANNELS ? ALSA_MAX_CHANNELS : props.channels,
+                 channels,
                  props.sampleRate, 1, 500000))
             < 0) {
             logError("Audio card params error: %s\n", snd_strerror(err));
             return;
         }
+        bufferSize = audioChunk * channels;
     }
 
 public:
