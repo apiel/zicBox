@@ -1,5 +1,7 @@
 ## Pixel TODO
 
+- TODO set wifi config
+
 - TODO capture, like on ableton move
 
 - TODO zicOs based on busybox
