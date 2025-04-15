@@ -13,21 +13,19 @@ AudioOutputAlsa plugin is used to write audio output to ALSA.
 class AudioOutputAlsa : public AudioAlsa {
 public:
     AudioOutputAlsa(AudioPlugin::Props& props, AudioPlugin::Config& config)
-        : AudioAlsa(props, config, SND_PCM_STREAM_CAPTURE)
+        : AudioAlsa(props, config, SND_PCM_STREAM_PLAYBACK)
     {
         open();
     }
 
     void sample(float* buf) override
     {
-        // if (bufferIndex >= audioChunk * props.channels) { // ??
-        if (bufferIndex >= audioChunk) {
+        if (bufferIndex >= bufferSize) {
             bufferIndex = 0;
             if (handle) {
                 snd_pcm_sframes_t count = snd_pcm_writei(handle, buffer, audioChunk);
-                // debug("write %ld (%d)(%d)\n", count, buffer[0], audioChunk);
             }
         }
-        buffer[bufferIndex++] = buf[track] * 2147483647.0f;
+        buffer[bufferIndex++] = buf[track];
     }
 };

@@ -12,7 +12,9 @@ protected:
     char cardName[20];
     static const uint32_t audioChunk = 128;
 
-    int32_t buffer[audioChunk * ALSA_MAX_CHANNELS];
+    // int32_t buffer[audioChunk];
+    float buffer[audioChunk * ALSA_MAX_CHANNELS];
+    uint32_t bufferSize = audioChunk * ALSA_MAX_CHANNELS;
 
     uint32_t bufferIndex = 0;
 
@@ -50,15 +52,17 @@ protected:
         if ((err = snd_pcm_open(&handle, deviceName.c_str(), stream, 0)) < 0) {
             logDebug("Playback open audio card \"%s\" error: %s.\nOpen default sound card\n", deviceName.c_str(), snd_strerror(err));
             if ((err = snd_pcm_open(&handle, "default", stream, 0)) < 0) {
-                logDebug("Default playback audio card error: %s\n", snd_strerror(err));
+                logError("Default playback audio card error: %s\n", snd_strerror(err));
             }
         }
 
-        snd_pcm_format_t format = SND_PCM_FORMAT_S16;
-        if ((err = snd_pcm_set_params(handle, format, SND_PCM_ACCESS_RW_INTERLEAVED,
-                 props.channels > ALSA_MAX_CHANNELS ? ALSA_MAX_CHANNELS : props.channels, props.sampleRate, 1, 500000))
+        if ((err = snd_pcm_set_params(handle,
+                 SND_PCM_FORMAT_FLOAT,
+                 SND_PCM_ACCESS_RW_INTERLEAVED,
+                 props.channels > ALSA_MAX_CHANNELS ? ALSA_MAX_CHANNELS : props.channels,
+                 props.sampleRate, 1, 500000))
             < 0) {
-            logDebug("Audio card params error: %s\n", snd_strerror(err));
+            logError("Audio card params error: %s\n", snd_strerror(err));
             return;
         }
     }
@@ -71,8 +75,8 @@ public:
         , props(props)
         , stream(stream)
     {
-        for (uint32_t i = 0; i < audioChunk * ALSA_MAX_CHANNELS; i++) {
-            buffer[i] = 0;
+        for (uint32_t i = 0; i < bufferSize; i++) {
+            buffer[i] = 0.0f;
         }
 
         auto& json = config.json;

@@ -29,6 +29,7 @@ public:
                 return;
             }
         }
-        buf[track] = buffer[bufferIndex++] / 2147483647.0f;
+        // buf[track] = buffer[bufferIndex++] / 32767.0f;
+        buf[track] = buffer[bufferIndex++];
     }
 };
