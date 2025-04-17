@@ -114,7 +114,7 @@ const masterTrack = {
 };
 
 export const audio = {
-    midiInput: 'Arduino Leonardo',
+    // midiInput: 'Arduino Leonardo',
     tracks: [
         kickTrack,
         drum1Track,

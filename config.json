@@ -1,6 +1,5 @@
 {
   "audio": {
-    "midiInput": "Arduino Leonardo",
     "tracks": [
       {
         "id": 1,
