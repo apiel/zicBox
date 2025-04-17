@@ -1,5 +1,4 @@
-#ifndef _AUDIO_PLUGIN_HANDLER_H_
-#define _AUDIO_PLUGIN_HANDLER_H_
+#pragma once
 
 using namespace std;
 
@@ -8,14 +7,17 @@ using namespace std;
 #include <string>
 #include <thread>
 
+#include <RtMidi.h> // should be deprecated in favour of asoundlib
+#include <alsa/asoundlib.h>
+
 #include "Track.h"
 #include "def.h"
+#include "helpers/range.h"
 #include "helpers/trim.h"
 #include "log.h"
 #include "midiMapping.h"
 #include "plugins/audio/audioPlugin.h"
 #include "plugins/audio/utils/lookupTable.h"
-#include "helpers/range.h"
 
 /*#md
 ## Global and generic config
@@ -49,7 +51,10 @@ protected:
     std::thread autoSaveThread;
 
     static AudioPluginHandler* instance;
-    AudioPluginHandler() { }
+    AudioPluginHandler()
+    {
+        listMidiDevices();
+    }
 
     std::vector<uint8_t> getTrackIds()
     {
@@ -397,7 +402,7 @@ public:
             midiMapping.push_back({ plugin, valueIndex, size, valuePosition, msg0Int, msg1Int });
             logInfo("Assign MIDI command %s to plugin %s value %s", cmd.c_str(), plugin->name, plugin->getValue(valueIndex)->key().c_str());
         } catch (...) {
-            logError("Invalid MIDI mapping "  + cmd);
+            logError("Invalid MIDI mapping " + cmd);
         }
     }
 
@@ -477,8 +482,6 @@ public:
         }
     }
 
-
-
     void startAutoSave(uint32_t msInterval)
     {
         if (msInterval < 50) {
@@ -538,6 +541,60 @@ public:
         }
     }
 
+    struct MidiDevice {
+        std::string name;
+        std::string id;
+    };
+    std::vector<MidiDevice> midiDevices;
+    void loadMidiDevices()
+    {
+        snd_ctl_t* handle;
+        snd_rawmidi_info_t* info;
+        int card = -1;
+
+        snd_rawmidi_info_alloca(&info);
+
+        midiDevices.clear();
+        while (snd_card_next(&card) >= 0 && card >= 0) {
+            char name[32];
+            sprintf(name, "hw:%d", card);
+
+            int err;
+            if ((err = snd_ctl_open(&handle, name, 0)) < 0) {
+                fprintf(stderr, "Control open error: %s\n", snd_strerror(err));
+                continue;
+            }
+
+            int device = -1;
+            while (snd_ctl_rawmidi_next_device(handle, &device) >= 0 && device >= 0) {
+                snd_rawmidi_info_set_device(info, device);
+                snd_rawmidi_info_set_subdevice(info, 0);
+                snd_rawmidi_info_set_stream(info, SND_RAWMIDI_STREAM_INPUT);
+                if (snd_ctl_rawmidi_info(handle, info) == 0) {
+                    string id = "hw:" + to_string(card) + "," + to_string(device);
+                    midiDevices.push_back({ std::string(snd_rawmidi_info_get_name(info)), id });
+
+                } else {
+                    snd_rawmidi_info_set_stream(info, SND_RAWMIDI_STREAM_OUTPUT);
+                    if (snd_ctl_rawmidi_info(handle, info) == 0) {
+                        string id = "hw:" + to_string(card) + "," + to_string(device);
+                        midiDevices.push_back({ std::string(snd_rawmidi_info_get_name(info)), id });
+                    }
+                }
+            }
+
+            snd_ctl_close(handle);
+        }
+    }
+    void listMidiDevices()
+    {
+        loadMidiDevices();
+        logInfo("Available MIDI devices:");
+        for (MidiDevice& device : midiDevices) {
+            logInfo("[%s] %s", device.id.c_str(), device.name.c_str());
+        }
+    }
+
     int getMidiDevice(RtMidi& midi, std::string portName)
     {
         unsigned int portCount = midi.getPortCount();
@@ -584,5 +641,3 @@ void midiControllerCb(double deltatime, std::vector<unsigned char>* message, voi
 {
     AudioPluginHandler::get().midiControllerCallback(deltatime, message, userData);
 }
-
-#endif

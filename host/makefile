@@ -1,4 +1,5 @@
 RTMIDI=`pkg-config --cflags --libs rtmidi`
+ALSA=`pkg-config --cflags --libs alsa`
 
 ifneq ($(shell uname -m),x86_64)
 RPI := -DIS_RPI=1
@@ -7,7 +8,7 @@ else
 BIN_PLATFORM := x86
 endif
 
-BUILD=-Wno-narrowing -ldl $(RTMIDI) 
+BUILD=-Wno-narrowing -ldl $(RTMIDI) $(ALSA)
 
 INC=-I../.
 
