@@ -1,5 +1,7 @@
 ## Pixel TODO
 
+- TODO get rid of RTmidi and use alsa directly
+
 - TODO set wifi config
 
 - TODO zicOs based on busybox

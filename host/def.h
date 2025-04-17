@@ -1,7 +1,5 @@
-#ifndef _DEF_H_
-#define _DEF_H_
+#pragma once
 
-#include <RtMidi.h>
 #include <math.h>
 #include <stdint.h>
 #include <string.h>
@@ -30,5 +28,3 @@ void quit()
 {
     isRunning = false;
 }
-
-#endif
