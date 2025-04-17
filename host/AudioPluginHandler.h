@@ -27,8 +27,6 @@ using namespace std;
 
 */
 
-void midiControllerCb(double deltatime, std::vector<unsigned char>* message, void* userData);
-
 class AudioPluginHandler : public AudioPluginHandlerInterface {
 protected:
     LookupTable lookupTable;
@@ -505,41 +503,8 @@ public:
         sendEvent(AudioEventType::AUTOSAVE);
     }
 
-    RtMidiIn midiController;
+    // RtMidiIn midiController;
     RtMidiOut midiOut;
-
-    void midiControllerCallback(double deltatime, std::vector<unsigned char>* message, void* userData = NULL)
-    {
-        if (message->at(0) == 0xf8) {
-            // FIXME
-            // clockTick();
-            printf("midi clock tick to be implemented\n");
-        } else if (message->at(0) == AudioEventType::START) {
-            sendEvent(AudioEventType::START); // Should we instead use midi number.. ?
-        } else if (message->at(0) == AudioEventType::PAUSE) {
-            sendEvent(AudioEventType::PAUSE);
-        } else if (message->at(0) == AudioEventType::STOP) {
-            sendEvent(AudioEventType::STOP);
-        } else if (message->at(0) == 0xfe) {
-            // ignore active sensing
-        } else if (message->at(0) >= 0x90 && message->at(0) < 0xa0) {
-            uint8_t channel = message->at(0) - 0x90;
-            midiNoteOn(channel, message->at(1), message->at(2) / 127.0);
-        } else if (message->at(0) >= 0x80 && message->at(0) < 0x90) {
-            uint8_t channel = message->at(0) - 0x80;
-            midiNoteOff(channel, message->at(1), message->at(2) / 127.0);
-        } else {
-            if (midi(message)) {
-                return;
-            }
-            logDebug("Midi controller message: ");
-            unsigned int nBytes = message->size();
-            for (unsigned int i = 0; i < nBytes; i++) {
-                logDebug("%02x ", (int)message->at(i));
-            }
-            logDebug("\n");
-        }
-    }
 
     struct MidiDevice {
         std::string name;
@@ -595,6 +560,76 @@ public:
         }
     }
 
+    MidiDevice* getMidiDevice(std::string name)
+    {
+        for (MidiDevice& device : midiDevices) {
+            if (name == device.name || name == device.id) {
+                return &device;
+            }
+        }
+        return nullptr;
+    }
+
+    std::thread midiInputThread;
+    bool loadMidiInput(std::string name)
+    {
+        MidiDevice* device = getMidiDevice(name);
+        if (device == nullptr) {
+            logWarn("Midi input " + name + " not found.");
+            return false;
+        }
+
+        snd_rawmidi_t* handle;
+        if (snd_rawmidi_open(&handle, NULL, device->id.c_str(), SND_RAWMIDI_NONBLOCK) < 0) {
+            logWarn("Error opening MIDI input device %s [%s]", device->name.c_str(), device->id.c_str());
+            return false;
+        }
+
+        midiInputThread = std::thread([this, handle] { midiIn(handle); });
+        pthread_setname_np(midiInputThread.native_handle(), ("midi_in " + device->name).c_str());
+
+        return true;
+    }
+
+    void midiIn(snd_rawmidi_t* handle)
+    {
+        while (1) {
+            unsigned char buffer[3];
+            int n = snd_rawmidi_read(handle, buffer, sizeof(buffer));
+            if (n > 0) {
+                if (buffer[0] == 0xf8) {
+                    // FIXME
+                    // clockTick();
+                    printf("midi clock tick to be implemented\n");
+                } else if (buffer[0] == AudioEventType::START) {
+                    sendEvent(AudioEventType::START); // Should we instead use midi number.. ?
+                } else if (buffer[0] == AudioEventType::PAUSE) {
+                    sendEvent(AudioEventType::PAUSE);
+                } else if (buffer[0] == AudioEventType::STOP) {
+                    sendEvent(AudioEventType::STOP);
+                } else if (buffer[0] == 0xfe) {
+                    // ignore active sensing
+                } else if (buffer[0] >= 0x90 && buffer[0] < 0xa0) {
+                    uint8_t channel = buffer[0] - 0x90;
+                    midiNoteOn(channel, buffer[1], buffer[2] / 127.0);
+                } else if (buffer[0] >= 0x80 && buffer[0] < 0x90) {
+                    uint8_t channel = buffer[0] - 0x80;
+                    midiNoteOff(channel, buffer[1], buffer[2] / 127.0);
+                } else {
+                    std::vector<unsigned char>* message = new std::vector<unsigned char>(buffer, buffer + n);
+                    if (!midi(message)) {
+                        logDebug("Midi input message: ");
+                        unsigned int nBytes = message->size();
+                        for (unsigned int i = 0; i < nBytes; i++) {
+                            logDebug("%02x ", (int)buffer[i]);
+                        }
+                    }
+                }
+            }
+        }
+        snd_rawmidi_close(handle);
+    }
+
     int getMidiDevice(RtMidi& midi, std::string portName)
     {
         unsigned int portCount = midi.getPortCount();
@@ -604,21 +639,6 @@ public:
             }
         }
         return -1;
-    }
-
-    bool loadMidiInput(std::string portName)
-    {
-        int port = getMidiDevice(midiController, portName);
-        if (port == -1) {
-            logInfo("Midi input " + portName + " not found");
-            return false;
-        }
-
-        midiController.openPort(port);
-        midiController.setCallback(midiControllerCb, NULL);
-        midiController.ignoreTypes(false, false, false);
-        logInfo("Midi input loaded: " + midiController.getPortName(port));
-        return true;
     }
 
     bool loadMidiOutput(std::string portName)
@@ -636,8 +656,3 @@ public:
 };
 
 AudioPluginHandler* AudioPluginHandler::instance = NULL;
-
-void midiControllerCb(double deltatime, std::vector<unsigned char>* message, void* userData = NULL)
-{
-    AudioPluginHandler::get().midiControllerCallback(deltatime, message, userData);
-}
