@@ -7,7 +7,7 @@ import {
     Sample1Track,
     Sample2Track,
     Synth1Track,
-    Synth2Track
+    Synth2Track,
 } from '../constants';
 
 export const maxVariation = 16;
@@ -114,6 +114,7 @@ const masterTrack = {
 };
 
 export const audio = {
+    midiInput: 'Arduino Leonardo',
     tracks: [
         kickTrack,
         drum1Track,
