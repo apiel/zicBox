@@ -7,7 +7,6 @@ using namespace std;
 #include <string>
 #include <thread>
 
-#include <RtMidi.h> // should be deprecated in favour of asoundlib
 #include <alsa/asoundlib.h>
 
 #include "Track.h"
@@ -503,9 +502,6 @@ public:
         sendEvent(AudioEventType::AUTOSAVE);
     }
 
-    // RtMidiIn midiController;
-    RtMidiOut midiOut;
-
     struct MidiDevice {
         std::string name;
         std::string id;
@@ -575,7 +571,7 @@ public:
     {
         MidiDevice* device = getMidiDevice(name);
         if (device == nullptr) {
-            logWarn("Midi input " + name + " not found.");
+            logWarn("Midi device " + name + " not found.");
             return false;
         }
 
@@ -585,13 +581,13 @@ public:
             return false;
         }
 
-        midiInputThread = std::thread([this, handle] { midiIn(handle); });
+        midiInputThread = std::thread([this, handle] { midiInHandler(handle); });
         pthread_setname_np(midiInputThread.native_handle(), ("midi_in " + device->name).c_str());
 
         return true;
     }
 
-    void midiIn(snd_rawmidi_t* handle)
+    void midiInHandler(snd_rawmidi_t* handle)
     {
         while (1) {
             unsigned char buffer[3];
@@ -630,28 +626,29 @@ public:
         snd_rawmidi_close(handle);
     }
 
-    int getMidiDevice(RtMidi& midi, std::string portName)
+    snd_rawmidi_t* midiOuthandle = NULL;
+    bool loadMidiOutput(std::string name)
     {
-        unsigned int portCount = midi.getPortCount();
-        for (unsigned int i = 0; i < portCount; i++) {
-            if (midi.getPortName(i).find(portName) != std::string::npos) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    bool loadMidiOutput(std::string portName)
-    {
-        int port = getMidiDevice(midiOut, portName);
-        if (port == -1) {
-            logInfo("Midi output " + portName + " not found");
+        MidiDevice* device = getMidiDevice(name);
+        if (device == nullptr) {
+            logWarn("Midi device " + name + " not found.");
             return false;
         }
 
-        midiOut.openPort(port);
-        logInfo("Midi output loaded: " + midiOut.getPortName(port));
+        if (snd_rawmidi_open(NULL, &midiOuthandle, device->id.c_str(), 0) < 0) {
+            logWarn("Error opening MIDI output device %s [%s]", device->name.c_str(), device->id.c_str());
+            return false;
+        }
+
         return true;
+    }
+
+    void sendMidi(std::vector<unsigned char>* message)
+    {
+        if (midiOuthandle) {
+            snd_rawmidi_write(midiOuthandle, message->data(), message->size());
+            snd_rawmidi_drain(midiOuthandle);
+        }
     }
 };
 

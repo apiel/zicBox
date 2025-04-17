@@ -1,6 +1,6 @@
 ## Pixel TODO
 
-- TODO get rid of RTmidi and use alsa directly
+- TODO main midi handler, could send midi to the active track
 
 - TODO set wifi config
 
