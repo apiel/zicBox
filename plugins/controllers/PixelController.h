@@ -55,7 +55,7 @@ public:
             }
         } else if (layout == "rpi3A_4enc_11btn") {
             gpioKey.keys = {
-                { 27, getKeyCode("'F4'") }, // pin 13 = gpio 27
+                { 27, getKeyCode("F4") }, // pin 13 = gpio 27
                 { 4, getKeyCode("'4'") }, // pin 7 = gpio 4
                 { 14, getKeyCode("'r'") }, // pin 8 = gpio 14
 
@@ -78,6 +78,35 @@ public:
                 { 1, 24, 23 }, // gpio 24, gpio 23
                 { 2, 20, 26 }, // gpio 20, gpio 26
                 { 3, 9, 25 }, // gpio 9, gpio 25
+            };
+            if (gpioEncoder.init() == 0) {
+                gpioEncoder.startThread(); // might want to use the same thread for encoder...
+            }
+        } else if (layout == "rpiCM4_4enc_11btn" || layout == "rpi3A_4enc_11btn_v3") {
+            gpioKey.keys = {
+                { 27, getKeyCode("F4") }, // pin 13 = gpio 27
+                { 4, getKeyCode("'4'") }, // pin 7 = gpio 4
+                { 14, getKeyCode("'r'") }, // pin 8 = gpio 14
+
+                { 16, getKeyCode("'a'") }, // pin 36 = gpio 16
+                { 1, getKeyCode("'s'") }, // pin 28 = gpio 1
+                { 7, getKeyCode("'d'") }, // pin 26 = gpio 7
+                { 15, getKeyCode("'f'") }, // pin 10 = gpio 15
+
+                { 12, getKeyCode("'z'") }, // pin 32 = gpio 12
+                { 5, getKeyCode("'x'") }, // pin 29 = gpio 5
+                { 0, getKeyCode("'c'") }, // pin 27 = gpio 0
+                { 8, getKeyCode("'v'") }, // pin 24 = gpio 8
+
+            };
+            if (gpioKey.init() == 0) {
+                gpioKey.startThread(); // might want to use the same thread for encoder...
+            }
+            gpioEncoder.encoders = {
+                { 0, 13, 6 }, // gpio 13, gpio 6
+                { 1, 24, 23 }, // gpio 24, gpio 23
+                { 2, 20, 26 }, // gpio 20, gpio 26
+                { 3, 25, 9 }, // gpio 9, gpio 25
             };
             if (gpioEncoder.init() == 0) {
                 gpioEncoder.startThread(); // might want to use the same thread for encoder...

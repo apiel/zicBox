@@ -1,6 +1,7 @@
 ## Pixel TODO
 
 - TODO main midi handler, could send midi to the active track
+- TODO automatically load first midi controller plugged...
 
 - TODO set wifi config
 
