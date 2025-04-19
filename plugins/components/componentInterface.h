@@ -20,7 +20,7 @@ public:
         Point position;
         Size size;
         AudioPlugin& (*getPlugin)(std::string name, int16_t track);
-        void (*sendAudioEvent)(AudioEventType event);
+        void (*sendAudioEvent)(AudioEventType event, int16_t track);
         ControllerInterface* (*getController)(const char* name);
         ViewInterface* view;
         std::function<void(uint8_t index, float value)> setContext;
@@ -34,7 +34,7 @@ public:
     ViewInterface* view;
     AudioPlugin& (*getPlugin)(std::string name, int16_t track);
     ControllerInterface* (*getController)(const char* name);
-    void (*sendAudioEvent)(AudioEventType event);
+    void (*sendAudioEvent)(AudioEventType event, int16_t track);
     std::function<void(uint8_t index, float value)> setContext;
     std::vector<ValueInterface*> values;
     Point position;
