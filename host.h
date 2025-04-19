@@ -29,9 +29,9 @@ void hostConfig(nlohmann::json& config)
     }
 }
 
-void sendAudioEvent(AudioEventType event)
+void sendAudioEvent(AudioEventType event, int16_t track = -1)
 {
-    host->audioPluginHandler->sendEvent(event);
+    host->audioPluginHandler->sendEvent(event, track);
 }
 
 void* hostThread(void* = NULL)

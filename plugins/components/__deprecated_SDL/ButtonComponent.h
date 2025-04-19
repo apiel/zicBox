@@ -297,7 +297,7 @@ protected:
         if (strcmp(action, "&AUDIO_EVENT") == 0) {
             AudioEventType id = getEventTypeFromName(strtok(NULL, " "));
             event = [&, id]() {
-                sendAudioEvent(id);
+                sendAudioEvent(id, -1);
             };
             return;
         }

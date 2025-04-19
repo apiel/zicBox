@@ -301,9 +301,18 @@ public:
         if (action == "playPause") {
             return [this](KeypadLayout::KeyMap& keymap) {
                 if (isReleased(keymap)) {
-                    component->sendAudioEvent(AudioEventType::TOGGLE_PLAY_PAUSE);
+                    component->sendAudioEvent(AudioEventType::TOGGLE_PLAY_PAUSE, -1);
                 }
                 // long press could trigger stop
+            };
+        }
+
+        if (action.rfind("setActiveTrack:")) {
+            int trackId = atoi(action.substr(15).c_str());
+            return [this, trackId](KeypadLayout::KeyMap& keymap) {
+                if (isReleased(keymap)) {
+                    component->sendAudioEvent(AudioEventType::SET_ACTIVE_TRACK, trackId);
+                }
             };
         }
 

@@ -649,10 +649,8 @@ public:
                 } else if (buffer[0] >= 0x90 && buffer[0] < 0xa0) {
                     uint8_t channel = buffer[0] - 0x90;
                     if (activeMidiTrack != NULL) {
-                        logDebug("Midi note on: %d %d", buffer[1], buffer[2]);
                         activeMidiTrack->noteOn(buffer[1], buffer[2] / 127.0);
                     } else {
-                        logDebug("xxxxxxxxMidi note on: %d %d", buffer[1], buffer[2]);
                         midiNoteOn(channel, buffer[1], buffer[2] / 127.0);
                     }
                 } else if (buffer[0] >= 0x80 && buffer[0] < 0x90) {
