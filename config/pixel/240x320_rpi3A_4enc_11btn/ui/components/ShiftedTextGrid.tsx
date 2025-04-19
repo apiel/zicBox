@@ -130,15 +130,15 @@ export function TracksTextGrid({
                 `${Synth1} ${Synth2} ${Sample1} ${Sample2}`,
             ]}
             keys={[
-                { key: btn1, action: 'setView:Kick' },
-                { key: btn2, action: 'setView:Drum1' },
-                { key: btn3, action: 'setView:Drum2' },
-                { key: btn4, action: 'setView:Drum3' },
+                { key: btn1, action: 'setView:Kick', action2: 'setActiveTrack:1' },
+                { key: btn2, action: 'setView:Drum1', action2: 'setActiveTrack:2' },
+                { key: btn3, action: 'setView:Drum2', action2: 'setActiveTrack:3' },
+                { key: btn4, action: 'setView:Drum3', action2: 'setActiveTrack:4' },
 
-                { key: btn5, action: `setView:Synth1` },
-                { key: btn6, action: `setView:Synth2` },
-                { key: btn7, action: `setView:Sample1` },
-                { key: btn8, action: `setView:Sample2` },
+                { key: btn5, action: `setView:Synth1`, action2: 'setActiveTrack:5' },
+                { key: btn6, action: `setView:Synth2`, action2: 'setActiveTrack:6' },
+                { key: btn7, action: `setView:Sample1`, action2: 'setActiveTrack:7' },
+                { key: btn8, action: `setView:Sample2`, action2: 'setActiveTrack:8' },
 
                 { key: btnUp, action: 'setView:Clips' },
                 { key: btnDown, action: 'playPause' },
