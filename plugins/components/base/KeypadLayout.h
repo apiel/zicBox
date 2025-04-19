@@ -307,7 +307,7 @@ public:
             };
         }
 
-        if (action.rfind("setActiveTrack:")) {
+        if (action.rfind("setActiveTrack:") == 0) {
             int trackId = atoi(action.substr(15).c_str());
             return [this, trackId](KeypadLayout::KeyMap& keymap) {
                 if (isReleased(keymap)) {
