@@ -1,5 +1,7 @@
 {
   "audio": {
+    "midiOnActiveMidiTrack": 1,
+    "autoLoadFirstMidiDevice": true,
     "tracks": [
       {
         "id": 1,

@@ -128,6 +128,20 @@ public:
         // plugins[6]->sample(buf);
         // plugins[7]->sample(buf);
     }
+
+    void noteOn(uint8_t note, float velocity)
+    {
+        for (AudioPlugin* plugin : plugins) {
+            plugin->noteOn(note, velocity, NULL);
+        }
+    }
+
+    void noteOff(uint8_t note, float velocity)
+    {
+        for (AudioPlugin* plugin : plugins) {
+            plugin->noteOff(note, velocity, NULL);
+        }
+    }
 };
 
 // Track 0 plugin 0 Drum23
