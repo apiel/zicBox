@@ -183,6 +183,7 @@ public:
         return *plugin;
     }
 
+    std::vector<Track*> tracks;
     void loop()
     {
         int bufferSize = 128 * TOTAL_TRACKS;
@@ -198,8 +199,13 @@ public:
         // For example, initializing the tempo plugin at the begining of the file, could just lead to not having sound
         // at all because track 0 would design at first position but also be used for audio output, meaning the that the
         // buffer would be cleaned up even before the audio output being consumed...
-        std::vector<Track*> tracks = sortTracksByDependencies(createTracks(buffer, masterCv));
+        tracks = sortTracksByDependencies(createTracks(buffer, masterCv));
         // std::vector<Track*> tracks = createTracks(buffer, masterCv);
+
+        if (midiOnActiveMidiTrack > -1) {
+            logDebug("Set active track to %d for midi input.", midiOnActiveMidiTrack);
+            setActiveMidiTrack(midiOnActiveMidiTrack, true);
+        }
 
         Track* threadTracks[TOTAL_TRACKS];
         Track* hostTracks[TOTAL_TRACKS];
@@ -317,6 +323,7 @@ public:
         plugins.push_back(instance);
     }
 
+    int8_t midiOnActiveMidiTrack = -1;
     AudioPluginHandler& config(nlohmann::json& config) override
     {
         if (config.contains("midiInput")) {
@@ -340,6 +347,22 @@ public:
             uint32_t msInterval = config["autoSave"].get<uint32_t>();
             if (msInterval > 0) {
                 startAutoSave(msInterval);
+            }
+        }
+
+        // Instead to use midi channel, use active track to send midi notes
+        // The value passed to `midiOnActiveMidiTrack`, should be the active track at initialization
+        midiOnActiveMidiTrack = config.value("midiOnActiveMidiTrack", midiOnActiveMidiTrack);
+
+        if (config.contains("autoLoadFirstMidiDevice")) {
+            if (config["autoLoadFirstMidiDevice"].get<bool>()) {
+                logInfo("Auto load first midi device");
+                loadMidiDevices();
+                if (midiDevices.size() > 0) {
+                    logDebug("Load first midi device: %s", midiDevices[0].name.c_str());
+                    loadMidiInput(midiDevices[0].name);
+                    loadMidiOutput(midiDevices[0].name);
+                }
             }
         }
         return *this;
@@ -449,6 +472,10 @@ public:
 
     void sendEvent(AudioEventType event, int16_t track = -1)
     {
+        if (event == AudioEventType::SET_ACTIVE_TRACK) {
+            setActiveMidiTrack(track);
+            return;
+        }
         if (track == -1) { // there is no point to check those events if it is a specific track event
             switch (event) {
             case AudioEventType::START:
@@ -475,6 +502,19 @@ public:
         for (AudioPlugin* plugin : plugins) {
             if (track == -1 || plugin->track == track) {
                 plugin->onEvent(event, playing);
+            }
+        }
+    }
+
+    Track* activeMidiTrack = NULL;
+    void setActiveMidiTrack(int16_t trackId, bool force = false)
+    {
+        if (trackId != -1 && (activeMidiTrack != NULL || force)) {
+            for (Track* track : tracks) {
+                if (track->id == trackId) {
+                    activeMidiTrack = track;
+                    break;
+                }
             }
         }
     }
@@ -581,6 +621,7 @@ public:
             return false;
         }
 
+        logInfo("MIDI input device %s [%s] opened", device->name.c_str(), device->id.c_str());
         midiInputThread = std::thread([this, handle] { midiInHandler(handle); });
         pthread_setname_np(midiInputThread.native_handle(), ("midi_in " + device->name).c_str());
 
@@ -607,10 +648,20 @@ public:
                     // ignore active sensing
                 } else if (buffer[0] >= 0x90 && buffer[0] < 0xa0) {
                     uint8_t channel = buffer[0] - 0x90;
-                    midiNoteOn(channel, buffer[1], buffer[2] / 127.0);
+                    if (activeMidiTrack != NULL) {
+                        logDebug("Midi note on: %d %d", buffer[1], buffer[2]);
+                        activeMidiTrack->noteOn(buffer[1], buffer[2] / 127.0);
+                    } else {
+                        logDebug("xxxxxxxxMidi note on: %d %d", buffer[1], buffer[2]);
+                        midiNoteOn(channel, buffer[1], buffer[2] / 127.0);
+                    }
                 } else if (buffer[0] >= 0x80 && buffer[0] < 0x90) {
                     uint8_t channel = buffer[0] - 0x80;
-                    midiNoteOff(channel, buffer[1], buffer[2] / 127.0);
+                    if (activeMidiTrack != NULL) {
+                        activeMidiTrack->noteOff(buffer[1], buffer[2] / 127.0);
+                    } else {
+                        midiNoteOff(channel, buffer[1], buffer[2] / 127.0);
+                    }
                 } else {
                     std::vector<unsigned char>* message = new std::vector<unsigned char>(buffer, buffer + n);
                     if (!midi(message)) {
@@ -639,6 +690,8 @@ public:
             logWarn("Error opening MIDI output device %s [%s]", device->name.c_str(), device->id.c_str());
             return false;
         }
+
+        logInfo("MIDI output device %s [%s] opened", device->name.c_str(), device->id.c_str());
 
         return true;
     }

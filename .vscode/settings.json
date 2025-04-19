@@ -105,7 +105,8 @@
         "__config": "cpp",
         "json.hpp": "c",
         "regex": "cpp",
-        "valueinterface.h": "c"
+        "valueinterface.h": "c",
+        "execution": "cpp"
     },
     "C_Cpp.errorSquiggles": "enabled",
     "makefile.configureOnOpen": false,

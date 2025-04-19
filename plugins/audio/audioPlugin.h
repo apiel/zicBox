@@ -17,6 +17,7 @@ enum AudioEventType {
     AUTOSAVE,
     RELOAD_WORKSPACE,
     SEQ_LOOP,
+    SET_ACTIVE_TRACK,
     START = 0xfa,
     PAUSE = 0xfb,
     STOP = 0xfc,
@@ -39,6 +40,8 @@ AudioEventType getEventTypeFromName(std::string name)
         return AudioEventType::RELOAD_WORKSPACE;
     } else if (name == "SEQ_LOOP") {
         return AudioEventType::SEQ_LOOP;
+    } else if (name == "SET_ACTIVE_TRACK") {
+        return AudioEventType::SET_ACTIVE_TRACK;
     }
     return AudioEventType::UNKNOWN;
 }

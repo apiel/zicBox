@@ -3,6 +3,8 @@
 - TODO main midi handler, could send midi to the active track
 - TODO automatically load first midi controller plugged...
 
+- TODO manage to get alsa working on rpi
+
 - TODO set wifi config
 
 - TODO zicOs based on busybox
