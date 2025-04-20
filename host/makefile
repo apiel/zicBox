@@ -1,6 +1,6 @@
-ALSA=`pkg-config --cflags --libs alsa`
-
 include ../make_common.mk
+
+ALSA=`pkg-config --cflags --libs alsa`
 
 BUILD=-Wno-narrowing -ldl $(ALSA)
 

@@ -1,4 +1,4 @@
-CC?=g++
+CC=g++
 
 ifeq ($(cc),arm)
 	MAKEFILE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))

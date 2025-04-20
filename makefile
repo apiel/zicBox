@@ -1,16 +1,16 @@
-RTMIDI=`pkg-config --cflags --libs rtmidi`
-# uncomment to enable to load ttf file as font with absolute path to ttf file
-# TTF=`pkg-config --cflags --libs freetype2`
-
-# SPI_DEV_MEM=`-lbcm2835 -lbcm_host -DUSE_SPI_DEV_MEM`
-
 include ./make_common.mk
 
 ifeq ($(TARGET_PLATFORM),x86)
 SDL2=`sdl2-config --cflags --libs`
 endif
 
-BUILD=-Wno-narrowing -ldl $(RTMIDI) 
+RTMIDI=`pkg-config --cflags --libs rtmidi`
+# uncomment to enable to load ttf file as font with absolute path to ttf file
+# TTF=`pkg-config --cflags --libs freetype2`
+
+# SPI_DEV_MEM=`-lbcm2835 -lbcm_host -DUSE_SPI_DEV_MEM`
+
+# BUILD=-Wno-narrowing -ldl $(RTMIDI) 
 
 INC=-I.
 
@@ -41,6 +41,7 @@ buildPixel:
 	make pixel.$(TARGET_PLATFORM)
 
 pixel.$(TARGET_PLATFORM):
+	@echo Build using $(CC)
 	$(CC) -g -fms-extensions -o pixel.$(TARGET_PLATFORM) zicPixel.cpp -ldl $(INC) $(RPI) $(TTF) $(RTMIDI) $(SDL2) $(SPI_DEV_MEM) $(TRACK_HEADER_FILES)
 
 # Safeguard: include only if .d files exist
@@ -53,7 +54,7 @@ runPixel:
 dev:
 	npm run dev
 
-push_wiki:
+push_wiki:BUILD
 	node doc.js
 	cd wiki && git add . && git commit -m "wiki" && git push
 	git add wiki && git commit -m "wiki" && git push
