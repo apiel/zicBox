@@ -1,5 +1,7 @@
 # MAKEFLAGS += -j$(shell nproc)
 
+CC=g++
+
 ifneq ($(shell uname -m),x86_64)
 SUB_DIR := arm
 else
@@ -34,8 +36,8 @@ MidiEncoderController:
 
 compile:
 	@mkdir -p $(OBJ_DIR)
-	g++ -g -c -o $(OBJ_DIR)/$(LIBNAME).o plugin.cpp $(INC) -fPIC -DPLUGIN_NAME=$(LIBNAME) -DPLUGIN_INCLUDE=\"$(LIBNAME).h\" $(EXTRA)
-	g++ -g -shared -o $(BUILD_DIR)/libzic_$(LIBNAME).so $(OBJ_DIR)/$(LIBNAME).o $(INC) $(EXTRA)
+	$(CC) -g -c -o $(OBJ_DIR)/$(LIBNAME).o plugin.cpp $(INC) -fPIC -DPLUGIN_NAME=$(LIBNAME) -DPLUGIN_INCLUDE=\"$(LIBNAME).h\" $(EXTRA)
+	$(CC) -g -shared -o $(BUILD_DIR)/libzic_$(LIBNAME).so $(OBJ_DIR)/$(LIBNAME).o $(INC) $(EXTRA)
 
 clean:
 	rm -rf $(BUILD_DIR)

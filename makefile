@@ -1,3 +1,4 @@
+CC=g++
 RTMIDI=`pkg-config --cflags --libs rtmidi`
 SDL2=`sdl2-config --cflags --libs`
 # uncomment to enable to load ttf file as font with absolute path to ttf file
@@ -44,7 +45,7 @@ buildPixel:
 	make pixel.$(BIN_PLATFORM)
 
 pixel.$(BIN_PLATFORM):
-	g++ -g -fms-extensions -o pixel.$(BIN_PLATFORM) zicPixel.cpp -ldl $(INC) $(RPI) $(TTF) $(RTMIDI) $(PIXEL_SDL) $(SPI_DEV_MEM) $(TRACK_HEADER_FILES)
+	$(CC) -g -fms-extensions -o pixel.$(BIN_PLATFORM) zicPixel.cpp -ldl $(INC) $(RPI) $(TTF) $(RTMIDI) $(PIXEL_SDL) $(SPI_DEV_MEM) $(TRACK_HEADER_FILES)
 
 # Safeguard: include only if .d files exist
 -include $(wildcard pixel.$(BIN_PLATFORM).d)

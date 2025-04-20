@@ -1,14 +1,15 @@
 ## Pixel TODO
 
-- TODO main midi handler, could send midi to the active track
-- TODO automatically load first midi controller plugged...
-
 - TODO manage to get alsa working on rpi
 
-- TODO set wifi config
+- TODO compile arm on x86 and then create a package for release...
 
 - TODO zicOs based on busybox
 - TODO home screen
+
+- TODO mute shortcut
+
+- TODO set wifi config
 
 - TODO capture, like on ableton move
 
