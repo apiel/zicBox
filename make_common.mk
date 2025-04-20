@@ -1,11 +1,15 @@
 CC?=g++
 
-BUILDROOT_DIR=../zicOs/buildroot/output
-
-
 ifeq ($(cc),arm)
-    CC := /host/bin/arm-buildroot-linux-gnueabihf-g++
+	MAKEFILE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+	BUILDROOT_DIR=$(MAKEFILE_DIR)../zicOs/buildroot/output
+
+    CC := $(BUILDROOT_DIR)/host/bin/aarch64-buildroot-linux-gnu-g++
 	TARGET_PLATFORM := arm
+	SYSROOT = $(BUILDROOT_DIR)/staging
+
+	CFLAGS += --sysroot=$(SYSROOT) -I$(SYSROOT)/usr/include
+	LDFLAGS += --sysroot=$(SYSROOT) -L$(SYSROOT)/usr/lib -L$(SYSROOT)/lib
 endif
 
 # if TARGET_PLATFORM is not set and uname -m is x86_64, then we are on x86
