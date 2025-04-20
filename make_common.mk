@@ -1,8 +1,17 @@
-CC=g++
+CC?=g++
 
-ifeq ($(shell uname -m),x86_64)
-TARGET_PLATFORM := x86
-else
-RPI := -DIS_RPI=1
-TARGET_PLATFORM := arm
+ifeq ($(cc),arm)
+    CC := arm-linux-gnueabihf-g++
+endif
+
+# if uname -m is x86_64 and CC is not arm-linux-gnueabihf-g++, then we are on x86
+TARGET_PLATFORM := $(shell \
+    if [ "$$(uname -m)" = "x86_64" ] && [ "$(CC)" != "arm-linux-gnueabihf-g++" ]; then \
+        echo x86; \
+    else \
+        echo arm; \
+    fi)
+
+ifeq ($(TARGET_PLATFORM),arm)
+    RPI := -DIS_RPI=1
 endif
