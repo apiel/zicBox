@@ -8,10 +8,10 @@ SDL2=`sdl2-config --cflags --libs`
 
 ifneq ($(shell uname -m),x86_64)
 RPI := -DIS_RPI=1
-BIN_PLATFORM := arm
+TARGET_PLATFORM := arm
 else
 PIXEL_SDL := $(SDL2)
-BIN_PLATFORM := x86
+TARGET_PLATFORM := x86
 endif
 
 BUILD=-Wno-narrowing -ldl $(RTMIDI) 
@@ -19,7 +19,7 @@ BUILD=-Wno-narrowing -ldl $(RTMIDI)
 INC=-I.
 
 # track header file to be sure that build is automatically trigger if any dependency changes
-TRACK_HEADER_FILES = -MMD -MF pixel.$(BIN_PLATFORM).d
+TRACK_HEADER_FILES = -MMD -MF pixel.$(TARGET_PLATFORM).d
 
 pixel: pixelLibs buildPixel runPixel
 rebuildPixel: pixelRebuild buildPixel runPixel
@@ -42,17 +42,17 @@ pixelRebuild:
 
 buildPixel:
 	@echo "\n------------------ build zicPixel ------------------\n"
-	make pixel.$(BIN_PLATFORM)
+	make pixel.$(TARGET_PLATFORM)
 
-pixel.$(BIN_PLATFORM):
-	$(CC) -g -fms-extensions -o pixel.$(BIN_PLATFORM) zicPixel.cpp -ldl $(INC) $(RPI) $(TTF) $(RTMIDI) $(PIXEL_SDL) $(SPI_DEV_MEM) $(TRACK_HEADER_FILES)
+pixel.$(TARGET_PLATFORM):
+	$(CC) -g -fms-extensions -o pixel.$(TARGET_PLATFORM) zicPixel.cpp -ldl $(INC) $(RPI) $(TTF) $(RTMIDI) $(PIXEL_SDL) $(SPI_DEV_MEM) $(TRACK_HEADER_FILES)
 
 # Safeguard: include only if .d files exist
--include $(wildcard pixel.$(BIN_PLATFORM).d)
+-include $(wildcard pixel.$(TARGET_PLATFORM).d)
 
 runPixel:
 	@echo "\n------------------ run zicPixel ------------------\n"
-	./pixel.$(BIN_PLATFORM)
+	./pixel.$(TARGET_PLATFORM)
 
 dev:
 	npm run dev

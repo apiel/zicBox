@@ -3,9 +3,9 @@ ALSA=`pkg-config --cflags --libs alsa`
 
 ifneq ($(shell uname -m),x86_64)
 RPI := -DIS_RPI=1
-BIN_PLATFORM := arm
+TARGET_PLATFORM := arm
 else
-BIN_PLATFORM := x86
+TARGET_PLATFORM := x86
 endif
 
 BUILD=-Wno-narrowing -ldl $(ALSA)
@@ -13,20 +13,20 @@ BUILD=-Wno-narrowing -ldl $(ALSA)
 INC=-I../.
 
 # track header file to be sure that build is automatically trigger if any dependency changes
-TRACK_HEADER_FILES = -MMD -MF libzicHost.$(BIN_PLATFORM).d
+TRACK_HEADER_FILES = -MMD -MF libzicHost.$(TARGET_PLATFORM).d
 
 main:
-	make libzicHost.$(BIN_PLATFORM).so
+	make libzicHost.$(TARGET_PLATFORM).so
 
-libzicHost.$(BIN_PLATFORM).so:
-	$(CC) -g -fPIC -shared -o libzicHost.$(BIN_PLATFORM).so zicHost.cpp -fopenmp $(BUILD) $(INC) $(TRACK_HEADER_FILES) $(RPI)
+libzicHost.$(TARGET_PLATFORM).so:
+	$(CC) -g -fPIC -shared -o libzicHost.$(TARGET_PLATFORM).so zicHost.cpp -fopenmp $(BUILD) $(INC) $(TRACK_HEADER_FILES) $(RPI)
 
 # Safeguard: include only if .d files exist
--include $(wildcard libzicHost.$(BIN_PLATFORM).d)
+-include $(wildcard libzicHost.$(TARGET_PLATFORM).d)
 
 rebuild:
-	rm libzicHost.$(BIN_PLATFORM).so
-	make libzicHost.$(BIN_PLATFORM).so
+	rm libzicHost.$(TARGET_PLATFORM).so
+	make libzicHost.$(TARGET_PLATFORM).so
 
 standalone: buildStandaloneHost runStandaloneHost
 

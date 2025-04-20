@@ -1,13 +1,10 @@
 # MAKEFLAGS += -j$(shell nproc)
 
-CC=g++
+# MAKEFILE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+# include $(MAKEFILE_DIR)../../../make_common.mk
+include ../../../make_common.mk
 
-ifneq ($(shell uname -m),x86_64)
-SUB_DIR := arm
-else
-SUB_DIR := x86
-endif
-BUILD_DIR ?= build/$(SUB_DIR)
+BUILD_DIR ?= build/$(TARGET_PLATFORM)
 OBJ_DIR ?= $(BUILD_DIR)/obj
 
 INC=-I../../..
