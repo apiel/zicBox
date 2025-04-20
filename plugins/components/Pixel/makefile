@@ -1,7 +1,5 @@
 # MAKEFLAGS += -j$(shell nproc)
 
-# MAKEFILE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-# include $(MAKEFILE_DIR)../../../make_common.mk
 include ../../../make_common.mk
 
 BUILD_DIR ?= build/$(TARGET_PLATFORM)

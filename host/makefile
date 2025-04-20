@@ -1,12 +1,6 @@
-CC=g++
 ALSA=`pkg-config --cflags --libs alsa`
 
-ifneq ($(shell uname -m),x86_64)
-RPI := -DIS_RPI=1
-TARGET_PLATFORM := arm
-else
-TARGET_PLATFORM := x86
-endif
+include ../make_common.mk
 
 BUILD=-Wno-narrowing -ldl $(ALSA)
 
