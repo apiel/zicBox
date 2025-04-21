@@ -20,7 +20,7 @@ protected:
 
     AudioPlugin::Props& props;
 
-    snd_pcm_t* handle;
+    snd_pcm_t* handle = nullptr;
 
     void search()
     {
@@ -53,6 +53,7 @@ protected:
             logDebug("Playback open audio card \"%s\" error: %s.\nOpen default sound card\n", deviceName.c_str(), snd_strerror(err));
             if ((err = snd_pcm_open(&handle, "default", stream, 0)) < 0) {
                 logError("Default playback audio card error: %s\n", snd_strerror(err));
+                return;
             }
         }
 
@@ -61,7 +62,7 @@ protected:
                  SND_PCM_FORMAT_FLOAT,
                  SND_PCM_ACCESS_RW_INTERLEAVED,
                  channels,
-                 props.sampleRate, 1, 500000))
+                 props.sampleRate, 1, 50000)) // 50ms // 100000
             < 0) {
             logError("Audio card params error: %s\n", snd_strerror(err));
             return;
