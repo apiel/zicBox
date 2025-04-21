@@ -1,6 +1,6 @@
 include ../make_common.mk
 
-ALSA=`pkg-config --cflags --libs alsa`
+ALSA=`$(PKG_CONFIG) --cflags --libs alsa`
 
 INC=-I../.
 

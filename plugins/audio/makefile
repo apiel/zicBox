@@ -21,9 +21,12 @@ all:
 		SynthSample SynthDrumSample SynthMonoSample\
 		Sequencer Tempo AudioSpectrogram\
 		Mixer2 Mixer4 Mixer5 Mixer6 Mixer8 Mixer12\
-		AudioInputPulse AudioOutputPulse AudioInputAlsa AudioOutputAlsa\
+		AudioInputAlsa AudioOutputAlsa\
 		SerializeTrack TapeRecording  SampleSequencer EffectFilterMultiMode
 		
+
+# Pulse was removed from zicOs
+# AudioInputPulse AudioOutputPulse 
 
 # SynthSnare SynthHiHat SynthClap SynthFmDrum SynthHybrid SynthGranular SynthFM RamTapeRecording EffectDrum EffectFilterMultiMode2
 
@@ -37,56 +40,56 @@ rebuild:
 # For some weird reason need to paste the path of libpd.so 
 # get libpd path `ldconfig -p | grep libpd`
 # SynthPd:
-# 	make compile LIBNAME=SynthPd EXTRA="$(shell pkg-config --cflags --libs pd) /lib/x86_64-linux-gnu/libpd.so"
+# 	make compile LIBNAME=SynthPd EXTRA="$(shell $(PKG_CONFIG) --cflags --libs pd) /lib/x86_64-linux-gnu/libpd.so"
 # 
 # FIXME: libpd is not available on RPi
 SynthPd:
-	make compile LIBNAME=SynthPd EXTRA="$(shell pkg-config --cflags --libs pd) $(shell ldconfig -p | grep libpd.so.0 | tr ' ' '\n' | grep /)"
+	make compile LIBNAME=SynthPd EXTRA="$(shell $(PKG_CONFIG) --cflags --libs pd) $(shell ldconfig -p | grep libpd.so.0 | tr ' ' '\n' | grep /)"
 
 SynthGranular:
-	make compile LIBNAME=SynthGranular EXTRA="$(shell pkg-config --cflags --libs sndfile)"
+	make compile LIBNAME=SynthGranular EXTRA="$(shell $(PKG_CONFIG) --cflags --libs sndfile)"
 
 SynthWavetable:
-	make compile LIBNAME=SynthWavetable EXTRA="$(shell pkg-config --cflags --libs sndfile)"
+	make compile LIBNAME=SynthWavetable EXTRA="$(shell $(PKG_CONFIG) --cflags --libs sndfile)"
 
 SynthDrum23:
-	make compile LIBNAME=SynthDrum23 EXTRA="$(shell pkg-config --cflags --libs sndfile)"
+	make compile LIBNAME=SynthDrum23 EXTRA="$(shell $(PKG_CONFIG) --cflags --libs sndfile)"
 
 SynthBass:
-	make compile LIBNAME=SynthBass EXTRA="$(shell pkg-config --cflags --libs sndfile)"
+	make compile LIBNAME=SynthBass EXTRA="$(shell $(PKG_CONFIG) --cflags --libs sndfile)"
 
 SynthHybrid:
-	make compile LIBNAME=SynthHybrid EXTRA="$(shell pkg-config --cflags --libs sndfile)"
+	make compile LIBNAME=SynthHybrid EXTRA="$(shell $(PKG_CONFIG) --cflags --libs sndfile)"
 
 SynthSample:
-	make compile LIBNAME=SynthSample EXTRA="$(shell pkg-config --cflags --libs sndfile)"
+	make compile LIBNAME=SynthSample EXTRA="$(shell $(PKG_CONFIG) --cflags --libs sndfile)"
 
 SynthDrumSample:
-	make compile LIBNAME=SynthDrumSample EXTRA="$(shell pkg-config --cflags --libs sndfile)"
+	make compile LIBNAME=SynthDrumSample EXTRA="$(shell $(PKG_CONFIG) --cflags --libs sndfile)"
 
 SynthMonoSample:
-	make compile LIBNAME=SynthMonoSample EXTRA="$(shell pkg-config --cflags --libs sndfile)"
+	make compile LIBNAME=SynthMonoSample EXTRA="$(shell $(PKG_CONFIG) --cflags --libs sndfile)"
 
 SampleSequencer:
-	make compile LIBNAME=SampleSequencer EXTRA="$(shell pkg-config --cflags --libs sndfile)"
+	make compile LIBNAME=SampleSequencer EXTRA="$(shell $(PKG_CONFIG) --cflags --libs sndfile)"
 
 TapeRecording:
-	make compile LIBNAME=TapeRecording EXTRA="$(shell pkg-config --cflags --libs sndfile)"
+	make compile LIBNAME=TapeRecording EXTRA="$(shell $(PKG_CONFIG) --cflags --libs sndfile)"
 
 RamTapeRecording:
-	make compile LIBNAME=RamTapeRecording EXTRA="$(shell pkg-config --cflags --libs sndfile)"
+	make compile LIBNAME=RamTapeRecording EXTRA="$(shell $(PKG_CONFIG) --cflags --libs sndfile)"
 
 AudioInputPulse:
-	make compile LIBNAME=AudioInputPulse EXTRA="$(shell pkg-config --cflags --libs libpulse-simple)"
+	make compile LIBNAME=AudioInputPulse EXTRA="$(shell $(PKG_CONFIG) --cflags --libs libpulse-simple)"
 
 AudioOutputPulse:
-	make compile LIBNAME=AudioOutputPulse EXTRA="$(shell pkg-config --cflags --libs libpulse-simple)"
+	make compile LIBNAME=AudioOutputPulse EXTRA="$(shell $(PKG_CONFIG) --cflags --libs libpulse-simple)"
 
 AudioInputAlsa:
-	make compile LIBNAME=AudioInputAlsa EXTRA="$(shell pkg-config --cflags --libs alsa)"
+	make compile LIBNAME=AudioInputAlsa EXTRA="$(shell $(PKG_CONFIG) --cflags --libs alsa)"
 
 AudioOutputAlsa:
-	make compile LIBNAME=AudioOutputAlsa EXTRA="$(shell pkg-config --cflags --libs alsa)"
+	make compile LIBNAME=AudioOutputAlsa EXTRA="$(shell $(PKG_CONFIG) --cflags --libs alsa)"
 
 %:
 	make compile LIBNAME=$@
