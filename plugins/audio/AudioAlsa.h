@@ -12,11 +12,10 @@ protected:
     char cardName[20];
     static const uint32_t audioChunk = 128;
 
-    // int32_t buffer[audioChunk];
     float buffer[audioChunk * ALSA_MAX_CHANNELS];
-    uint32_t bufferSize = audioChunk * ALSA_MAX_CHANNELS;
+    snd_pcm_uframes_t bufferSize = audioChunk * ALSA_MAX_CHANNELS;
 
-    uint32_t bufferIndex = 0;
+    snd_pcm_uframes_t bufferIndex = 0;
 
     AudioPlugin::Props& props;
 
@@ -58,16 +57,41 @@ protected:
         }
 
         unsigned int channels = props.channels > ALSA_MAX_CHANNELS ? ALSA_MAX_CHANNELS : props.channels;
+        snd_pcm_uframes_t periodSize = 50000; // 50ms // 100000
         if ((err = snd_pcm_set_params(handle,
                  SND_PCM_FORMAT_FLOAT,
                  SND_PCM_ACCESS_RW_INTERLEAVED,
                  channels,
-                 props.sampleRate, 1, 50000)) // 50ms // 100000
+                 props.sampleRate, 1, periodSize))
             < 0) {
             logError("Audio card params error: %s\n", snd_strerror(err));
             return;
         }
         bufferSize = audioChunk * channels;
+
+        // snd_pcm_uframes_t buffer_size = audioChunk; // Total buffer size
+        // unsigned int sample_rate = props.sampleRate;
+    
+        // snd_pcm_hw_params_t* hw_params;
+        // snd_pcm_hw_params_alloca(&hw_params);
+        // snd_pcm_hw_params_any(handle, hw_params);
+    
+        // snd_pcm_hw_params_set_access(handle, hw_params, SND_PCM_ACCESS_RW_INTERLEAVED);
+        // snd_pcm_hw_params_set_format(handle, hw_params, SND_PCM_FORMAT_FLOAT);
+        // snd_pcm_hw_params_set_channels(handle, hw_params, channels);
+        // snd_pcm_hw_params_set_rate_near(handle, hw_params, &sample_rate, nullptr);
+        // snd_pcm_hw_params_set_period_size_near(handle, hw_params, &periodSize, nullptr);
+        // snd_pcm_hw_params_set_buffer_size_near(handle, hw_params, &buffer_size);
+    
+        // if ((err = snd_pcm_hw_params(handle, hw_params)) < 0) {
+        //     logError("Audio card params error: %s\n", snd_strerror(err));
+        //     return;
+        // }
+    
+        snd_pcm_uframes_t buffer_size;
+        snd_pcm_hw_params_t* hw_params;
+        snd_pcm_hw_params_get_buffer_size(hw_params, &buffer_size);
+        logDebug("AudioAlsa::openned (buffer_size %d)\n", bufferSize);
     }
 
 public:
