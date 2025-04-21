@@ -69,20 +69,17 @@ protected:
         }
         bufferSize = audioChunk * channels;
 
-        // snd_pcm_uframes_t buffer_size = audioChunk; // Total buffer size
+        // snd_pcm_uframes_t buffer_size = audioChunk;
         // unsigned int sample_rate = props.sampleRate;
-    
         // snd_pcm_hw_params_t* hw_params;
         // snd_pcm_hw_params_alloca(&hw_params);
         // snd_pcm_hw_params_any(handle, hw_params);
-    
         // snd_pcm_hw_params_set_access(handle, hw_params, SND_PCM_ACCESS_RW_INTERLEAVED);
         // snd_pcm_hw_params_set_format(handle, hw_params, SND_PCM_FORMAT_FLOAT);
         // snd_pcm_hw_params_set_channels(handle, hw_params, channels);
         // snd_pcm_hw_params_set_rate_near(handle, hw_params, &sample_rate, nullptr);
         // snd_pcm_hw_params_set_period_size_near(handle, hw_params, &periodSize, nullptr);
         // snd_pcm_hw_params_set_buffer_size_near(handle, hw_params, &buffer_size);
-    
         // if ((err = snd_pcm_hw_params(handle, hw_params)) < 0) {
         //     logError("Audio card params error: %s\n", snd_strerror(err));
         //     return;
@@ -92,6 +89,9 @@ protected:
         snd_pcm_hw_params_t* hw_params;
         snd_pcm_hw_params_get_buffer_size(hw_params, &buffer_size);
         logDebug("AudioAlsa::openned (buffer_size %d)\n", bufferSize);
+        if (buffer_size != bufferSize) {
+            logWarn("AudioAlsa::openned (buffer_size %d, expected %d)\n", buffer_size, bufferSize);
+        }
     }
 
 public:
