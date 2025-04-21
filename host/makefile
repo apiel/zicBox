@@ -2,9 +2,9 @@ include ../make_common.mk
 
 ALSA=`pkg-config --cflags --libs alsa`
 
-BUILD=-Wno-narrowing -ldl $(ALSA)
-
 INC=-I../.
+
+PARAMS= -Wno-narrowing -ldl $(ALSA) $(INC) $(RPI) $(CFLAGS) $(LDFLAGS)
 
 # track header file to be sure that build is automatically trigger if any dependency changes
 TRACK_HEADER_FILES = -MMD -MF libzicHost.$(TARGET_PLATFORM).d
@@ -13,7 +13,7 @@ main:
 	make libzicHost.$(TARGET_PLATFORM).so
 
 libzicHost.$(TARGET_PLATFORM).so:
-	$(CC) -g -fPIC -shared -o libzicHost.$(TARGET_PLATFORM).so zicHost.cpp -fopenmp $(BUILD) $(INC) $(TRACK_HEADER_FILES) $(RPI)
+	$(CC) -g -fPIC -shared -o libzicHost.$(TARGET_PLATFORM).so zicHost.cpp $(TRACK_HEADER_FILES) $(PARAMS)
 
 # Safeguard: include only if .d files exist
 -include $(wildcard libzicHost.$(TARGET_PLATFORM).d)
@@ -25,7 +25,7 @@ rebuild:
 standalone: buildStandaloneHost runStandaloneHost
 
 buildStandaloneHost:
-	$(CC) -g -o zicHost -Wall zicHost.cpp -fopenmp $(BUILD) $(INC) $(RPI)
+	$(CC) -g -o zicHost -Wall zicHost.cpp $(PARAMS)
 
 runStandaloneHost:
 	./zicHost
