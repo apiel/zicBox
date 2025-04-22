@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
 
     lastPluginControllerInstance = new PixelController(controllerProps, 0);
 
-    loadJsonConfig(argc >= 2 ? argv[1] : "config.json");
+    loadJsonConfig(argc >= 2 ? argv[1] : "data/config.json");
 
     showLogLevel();
 

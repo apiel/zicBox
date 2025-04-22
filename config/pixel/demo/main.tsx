@@ -55,5 +55,5 @@ const output = JSON.stringify(
     2
 );
 
-writeFileSync('config.json', output);
+writeFileSync('data/config.json', output);
 console.log('done');

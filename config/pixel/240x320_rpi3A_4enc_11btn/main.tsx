@@ -11,7 +11,7 @@ import { ui } from './ui';
 // const output = stringifyWithLimitedIndentation({ audio, ...ui });
 const output = stringifyWithCompactedKeys({ audio, ...ui });
 
-writeFileSync('config.json', output);
+writeFileSync('data/config.json', output);
 
 console.log('done');
 
