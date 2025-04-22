@@ -7,3 +7,6 @@
 [submodule "wiki"]
 	path = wiki
 	url = https://github.com/apiel/zicBox.wiki.git
+[submodule "data/audio"]
+	path = data/audio
+	url = https://github.com/apiel/zicAudioFiles.git
