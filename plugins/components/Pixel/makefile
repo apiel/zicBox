@@ -21,8 +21,8 @@ all:
 
 TapeComponent:
 	@echo "-------- :$@: --------"
-	make $(OBJ_DIR)/$@.o EXTRA="$(shell pkg-config --cflags --libs sndfile)"
-	make $(BUILD_DIR)/libzic_$@.so EXTRA="$(shell pkg-config --cflags --libs sndfile)"
+	make $(OBJ_DIR)/$@.o EXTRA="$(shell $(PKG_CONFIG) --cflags --libs sndfile)"
+	make $(BUILD_DIR)/libzic_$@.so EXTRA="$(shell $(PKG_CONFIG) --cflags --libs sndfile)"
 
 %Component:
 	@echo "-------- :$@: --------"

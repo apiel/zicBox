@@ -1,5 +1,7 @@
 CC := g++
 
+PKG_CONFIG := pkg-config
+
 ifeq ($(cc),arm)
 	MAKEFILE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 	BUILDROOT_DIR=$(MAKEFILE_DIR)../zicOs/buildroot/output
@@ -10,9 +12,9 @@ ifeq ($(cc),arm)
 
 	CFLAGS += --sysroot=$(SYSROOT) -I$(SYSROOT)/usr/include
 	LDFLAGS += --sysroot=$(SYSROOT) -L$(SYSROOT)/usr/lib -L$(SYSROOT)/lib
-endif
 
-PKG_CONFIG = PKG_CONFIG_SYSROOT_DIR=$(SYSROOT) PKG_CONFIG_PATH=$(SYSROOT)/usr/lib/pkgconfig pkg-config
+	PKG_CONFIG := PKG_CONFIG_SYSROOT_DIR=$(SYSROOT) PKG_CONFIG_PATH=$(SYSROOT)/usr/lib/pkgconfig pkg-config
+endif
 
 # if TARGET_PLATFORM is not set and uname -m is x86_64, then we are on x86
 ifeq ($(TARGET_PLATFORM),)

@@ -6,7 +6,7 @@ BUILD_DIR ?= build/$(TARGET_PLATFORM)
 OBJ_DIR ?= $(BUILD_DIR)/obj
 DEP_DIR ?= $(OBJ_DIR)/deps  # Directory for dependency files
 # For raspberry std::filesystem is not found.
-PARAMS ?= --std=c++17 -lstdc++fs
+PARAMS ?= --std=c++17 -lstdc++fs $(RPI)
 
 INC=-I../..
 

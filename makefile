@@ -1,12 +1,14 @@
+MAKE := make cc=$(cc)
+
 include ./make_common.mk
 
 ifeq ($(TARGET_PLATFORM),x86)
 SDL2=`sdl2-config --cflags --libs`
 endif
 
-RTMIDI=`pkg-config --cflags --libs rtmidi`
+# RTMIDI=`$(PKG_CONFIG) --cflags --libs rtmidi`
 # uncomment to enable to load ttf file as font with absolute path to ttf file
-# TTF=`pkg-config --cflags --libs freetype2`
+# TTF=`$(PKG_CONFIG) --cflags --libs freetype2`
 
 # SPI_DEV_MEM=`-lbcm2835 -lbcm_host -DUSE_SPI_DEV_MEM`
 
@@ -22,23 +24,23 @@ rebuildPixel: pixelRebuild buildPixel runPixel
 
 sync:
 	bash sync.sh
-	make pixel
+	$(MAKE) pixel
 
 pixelLibs:
 	@echo "\n------------------ plugins ------------------\n"
-	make -C host
-	make -C plugins/audio
-	make -C plugins/components/Pixel
+	$(MAKE) -C host
+	$(MAKE) -C plugins/audio
+	$(MAKE) -C plugins/components/Pixel
 	@echo "\nbuild plugins done."
 
 pixelRebuild:
-	make -C host rebuild
-	make -C plugins/audio rebuild
-	make -C plugins/components/Pixel rebuild
+	$(MAKE) -C host rebuild
+	$(MAKE) -C plugins/audio rebuild
+	$(MAKE) -C plugins/components/Pixel rebuild
 
 buildPixel:
 	@echo "\n------------------ build zicPixel ------------------\n"
-	make pixel.$(TARGET_PLATFORM)
+	$(MAKE) pixel.$(TARGET_PLATFORM)
 
 pixel.$(TARGET_PLATFORM):
 	@echo Build using $(CC)
@@ -48,7 +50,7 @@ pixel.$(TARGET_PLATFORM):
 -include $(wildcard pixel.$(TARGET_PLATFORM).d)
 
 runPixel:
-	@echo "\n------------------ run zicPixel ------------------\n"
+	@echo "\n------------------ run zicPixel $(TARGET_PLATFORM) ------------------\n"
 	./pixel.$(TARGET_PLATFORM)
 
 dev:

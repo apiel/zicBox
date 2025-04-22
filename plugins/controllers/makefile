@@ -21,10 +21,10 @@ EncoderController:
 	make compile LIBNAME=EncoderController EXTRA="$(PIGPIO)"
 
 OscController:
-	make compile LIBNAME=OscController EXTRA="$(shell pkg-config --cflags --libs liblo)"
+	make compile LIBNAME=OscController EXTRA="$(shell $(PKG_CONFIG) --cflags --libs liblo)"
 
 MidiEncoderController:
-	make compile LIBNAME=MidiEncoderController EXTRA="$(shell pkg-config --cflags --libs rtmidi)"
+	make compile LIBNAME=MidiEncoderController EXTRA="$(shell $(PKG_CONFIG) --cflags --libs rtmidi)"
 
 %Controller:
 	make compile LIBNAME=$@

@@ -57,7 +57,11 @@ protected:
         }
 
         unsigned int channels = props.channels > ALSA_MAX_CHANNELS ? ALSA_MAX_CHANNELS : props.channels;
+#ifdef IS_RPI
+        snd_pcm_uframes_t periodSize = 150000;
+#else
         snd_pcm_uframes_t periodSize = 50000; // 50ms // 100000
+#endif
         if ((err = snd_pcm_set_params(handle,
                  SND_PCM_FORMAT_FLOAT,
                  SND_PCM_ACCESS_RW_INTERLEAVED,
@@ -84,11 +88,11 @@ protected:
         //     logError("Audio card params error: %s\n", snd_strerror(err));
         //     return;
         // }
-    
+
         snd_pcm_uframes_t buffer_size;
         snd_pcm_hw_params_t* hw_params;
         snd_pcm_hw_params_get_buffer_size(hw_params, &buffer_size);
-        logDebug("AudioAlsa::openned (buffer_size %d)\n", bufferSize);
+        logDebug("AudioAlsa::openned (periodSize %d, buffer_size %d)\n", periodSize, bufferSize);
         if (buffer_size != bufferSize) {
             logWarn("AudioAlsa::openned (buffer_size %d, expected %d)\n", buffer_size, bufferSize);
         }

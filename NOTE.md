@@ -1,7 +1,5 @@
 ## Pixel TODO
 
-- TODO manage to get alsa working on rpi
-
 - TODO compile arm on x86 and then create a package for release...
 
 - TODO zicOs based on busybox
@@ -18,15 +16,18 @@
 
 - TODO advance sample player (with granular??)
 
+- TODO drum rack (polyphonic?)
 - TODO optimize SynthMetalic (can be postponed to later if not used right now)
+- TODO record drums to play them in drum rack...
 
 - TODO synth with multiple swappable engines!!
 
 - TODO drag and drop editor!! 
-
-- TODO drum rack
+    ---> should this be a web interface, that show result in live on the hardware... The web interface just allow to drag some abstract element and let us configure them, but final rendering happen in the hardware..
 
 - TODO serialize in json format!
+
+- TODO alsa auto scale latency: Dynamic latency management
 
 - TODO master track --> add effect: sample reducer, distortion, delay...? 
     - --> instead of mixer drum and mixer synth, use sent effect to track fx1 and track fx2
