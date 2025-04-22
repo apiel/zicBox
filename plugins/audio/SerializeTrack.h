@@ -19,12 +19,12 @@ class SerializeTrack : public Mapping {
 protected:
     std::mutex m;
 
-    std::string workspaceFolder = "workspaces";
+    std::string workspaceFolder = "data/workspaces";
     std::string filename = "track";
     std::string currentWorkspaceName = "default";
 
-    std::string filepath = "workspaces/default/track.cfg";
-    std::string variationFolder = "workspaces/default/track";
+    std::string filepath = "data/workspaces/default/track.cfg";
+    std::string variationFolder = "data/workspaces/default/track";
     bool initialized = false;
 
     bool saveBeforeChangingVariation = false;
@@ -89,7 +89,7 @@ public:
             initFilepath();
         }
 
-        //md - `"workspaceFolder": "workspaces"` to set workspace folder. By default it is `workspaces`.
+        //md - `"workspaceFolder": "workspaces"` to set workspace folder. By default it is `data/workspaces`.
         if (json.contains("workspaceFolder")) {
             workspaceFolder = json["workspaceFolder"].get<std::string>();
             initFilepath();

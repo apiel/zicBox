@@ -11,7 +11,7 @@
           {"alias":"Distortion","plugin":"EffectDistortion2"},
           {"alias":"MMFilter","plugin":"EffectFilterMultiMode"},
           {"alias":"TrackFx","plugin":"EffectGainVolume"},
-          {"filename":"kick","maxVariation":16,"workspaceFolder":"workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"filename":"kick","maxVariation":16,"workspaceFolder":"data/workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -21,7 +21,7 @@
           {"plugin":"Sequencer","alias":"Sequencer"},
           {"alias":"Filter","plugin":"EffectFilterMultiMode"},
           {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
-          {"filename":"drum1","maxVariation":16,"workspaceFolder":"workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"filename":"drum1","maxVariation":16,"workspaceFolder":"data/workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -31,7 +31,7 @@
           {"plugin":"Sequencer","alias":"Sequencer"},
           {"alias":"Filter","plugin":"EffectFilterMultiMode"},
           {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
-          {"filename":"drum2","maxVariation":16,"workspaceFolder":"workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"filename":"drum2","maxVariation":16,"workspaceFolder":"data/workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -41,7 +41,7 @@
           {"plugin":"Sequencer","alias":"Sequencer"},
           {"alias":"Filter","plugin":"EffectFilterMultiMode"},
           {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
-          {"filename":"drum3","maxVariation":16,"workspaceFolder":"workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"filename":"drum3","maxVariation":16,"workspaceFolder":"data/workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -50,7 +50,7 @@
           {"alias":"Synth1","plugin":"SynthWavetable"},
           {"plugin":"Sequencer","alias":"Sequencer"},
           {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
-          {"filename":"synth1","maxVariation":16,"workspaceFolder":"workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"filename":"synth1","maxVariation":16,"workspaceFolder":"data/workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -59,7 +59,7 @@
           {"alias":"Synth2","plugin":"SynthWavetable"},
           {"plugin":"Sequencer","alias":"Sequencer"},
           {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
-          {"filename":"synth2","maxVariation":16,"workspaceFolder":"workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"filename":"synth2","maxVariation":16,"workspaceFolder":"data/workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -69,7 +69,7 @@
           {"plugin":"Sequencer","alias":"Sequencer"},
           {"alias":"Filter","plugin":"EffectFilterMultiMode"},
           {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
-          {"filename":"sample1","maxVariation":16,"workspaceFolder":"workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"filename":"sample1","maxVariation":16,"workspaceFolder":"data/workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -79,7 +79,7 @@
           {"plugin":"Sequencer","alias":"Sequencer"},
           {"alias":"Filter","plugin":"EffectFilterMultiMode"},
           {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
-          {"filename":"sample2","maxVariation":16,"workspaceFolder":"workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"filename":"sample2","maxVariation":16,"workspaceFolder":"data/workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -88,7 +88,7 @@
           {"alias":"Mixer","plugin":"Mixer8"},
           {"alias":"Volume","plugin":"EffectGainVolume"},
           {"alias":"AudioOutput","plugin":"AudioOutputAlsa"},
-          {"filename":"master","maxVariation":16,"workspaceFolder":"workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"},
+          {"filename":"master","maxVariation":16,"workspaceFolder":"data/workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"},
           {"plugin":"Tempo","alias":"Tempo"}
         ]
       }
@@ -3115,7 +3115,7 @@
     {
       "name": "Workspaces",
       "components": [
-        {"workspaceFolder":"workspaces/rpi3A_4enc_11btn","audioPlugin":"SerializeTrack","bounds":[0,0,240,280],"keys":[{"key":"z","action":".data:LOAD_WORKSPACE","context":{"id":254,"value":0}},{"key":"s","action":".up","context":{"id":254,"value":0}},{"key":"x","action":".down","context":{"id":254,"value":0}},{"key":"a","action":".delete","context":{"id":254,"value":1}},{"key":"z","action":".delete","context":{"id":254,"value":1}}],"componentName":"Workspaces"},
+        {"workspaceFolder":"data/workspaces/rpi3A_4enc_11btn","audioPlugin":"SerializeTrack","bounds":[0,0,240,280],"keys":[{"key":"z","action":".data:LOAD_WORKSPACE","context":{"id":254,"value":0}},{"key":"s","action":".up","context":{"id":254,"value":0}},{"key":"x","action":".down","context":{"id":254,"value":0}},{"key":"a","action":".delete","context":{"id":254,"value":1}},{"key":"z","action":".delete","context":{"id":254,"value":1}}],"componentName":"Workspaces"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[{"key":"d","action":"setView:Clips"},{"key":"c","action":"setView:Clips"},{"key":"f","action":"contextToggle:254:1:0"},{"key":"v","action":"setView:CreateWorkspace"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"text":"&empty","bounds":[0,296,60,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&icon::arrowUp::filled","bounds":[60,296,60,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},

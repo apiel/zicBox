@@ -11,7 +11,7 @@ import {
 } from '../constants';
 
 export const maxVariation = 16;
-export const workspaceFolder = 'workspaces/rpi3A_4enc_11btn';
+export const workspaceFolder = 'data/workspaces/rpi3A_4enc_11btn';
 
 const kickTrack = {
     id: KickTrack,

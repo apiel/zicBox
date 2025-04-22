@@ -15,7 +15,7 @@ Workspaces components show the list of available workspaces.
 
 class WorkspacesComponent : public ListComponent {
 public:
-    std::string workspaceFolder = "workspaces";
+    std::string workspaceFolder = "data/workspaces";
     std::string* currentWorkspaceName = NULL;
     int* refreshState = NULL;
     int currentRefreshState = 0;
