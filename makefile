@@ -76,3 +76,10 @@ merge:
 	git merge develop
 	git push
 	git checkout develop
+
+release:
+	@echo "Creating GitHub release..."
+	zip -r build/x86.zip build/x86
+	zip -r build/arm.zip build/arm
+	gh release delete latest -y
+	gh release create latest build/x86.zip build/arm.zip --title "Latest release" --notes "..."
