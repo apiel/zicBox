@@ -2,6 +2,8 @@
 
 - TODO compile arm on x86 and then create a package for release...
 
+- TODO clear git hitory from wav files
+
 - TODO zicOs based on busybox
 - TODO home screen
 
