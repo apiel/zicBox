@@ -16,8 +16,11 @@ endif
 
 INC=-I.
 
+BUILD_DIR := build/$(TARGET_PLATFORM)
+OBJ_DIR := build/obj/$(TARGET_PLATFORM)
+
 # track header file to be sure that build is automatically trigger if any dependency changes
-TRACK_HEADER_FILES = -MMD -MF pixel.$(TARGET_PLATFORM).d
+TRACK_HEADER_FILES = -MMD -MF $(OBJ_DIR)/pixel.d
 
 pixel: pixelLibs buildPixel runPixel
 rebuildPixel: pixelRebuild buildPixel runPixel
@@ -40,18 +43,20 @@ pixelRebuild:
 
 buildPixel:
 	@echo "\n------------------ build zicPixel ------------------\n"
-	$(MAKE) pixel.$(TARGET_PLATFORM)
+	@mkdir -p $(BUILD_DIR)
+	@mkdir -p $(OBJ_DIR)
+	$(MAKE) $(BUILD_DIR)/pixel
 
-pixel.$(TARGET_PLATFORM):
+$(BUILD_DIR)/pixel:
 	@echo Build using $(CC)
-	$(CC) -g -fms-extensions -o pixel.$(TARGET_PLATFORM) zicPixel.cpp -ldl $(INC) $(RPI) $(TTF) $(RTMIDI) $(SDL2) $(SPI_DEV_MEM) $(TRACK_HEADER_FILES)
+	$(CC) -g -fms-extensions -o $(BUILD_DIR)/pixel zicPixel.cpp -ldl $(INC) $(RPI) $(TTF) $(RTMIDI) $(SDL2) $(SPI_DEV_MEM) $(TRACK_HEADER_FILES)
 
 # Safeguard: include only if .d files exist
--include $(wildcard pixel.$(TARGET_PLATFORM).d)
+-include $(wildcard $(OBJ_DIR)/pixel.d)
 
 runPixel:
 	@echo "\n------------------ run zicPixel $(TARGET_PLATFORM) ------------------\n"
-	./pixel.$(TARGET_PLATFORM)
+	$(BUILD_DIR)/pixel
 
 dev:
 	npm run dev

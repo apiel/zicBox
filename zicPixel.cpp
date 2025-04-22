@@ -51,7 +51,7 @@ void* uiThread(void* = NULL)
 }
 
 int main(int argc, char* argv[])
-{
+{    
     loadHostPlugin();
 
     // styles.colors.primary = { 0x3a, 0x7d, 0x80 }; // #3a7d80

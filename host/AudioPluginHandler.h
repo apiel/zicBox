@@ -11,6 +11,7 @@ using namespace std;
 
 #include "Track.h"
 #include "def.h"
+#include "helpers/getExecutableDirectory.h"
 #include "helpers/range.h"
 #include "helpers/trim.h"
 #include "log.h"
@@ -294,11 +295,7 @@ public:
     {
         std::string path = config["plugin"]; // plugin name or path
         if (path.substr(path.length() - 3) != ".so") {
-#ifdef IS_RPI
-            path = "./plugins/audio/build/arm/libzic_" + path + ".so";
-#else
-            path = "./plugins/audio/build/x86/libzic_" + path + ".so";
-#endif
+            path = getExecutableDirectory() + "/libs/audio/libzic_" + path + ".so";
         }
 
         void* handle = dlopen(path.c_str(), RTLD_LAZY);

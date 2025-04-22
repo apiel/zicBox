@@ -2,25 +2,26 @@ include ../make_common.mk
 
 ALSA=`$(PKG_CONFIG) --cflags --libs alsa`
 
+BUILD_DIR := ../build/$(TARGET_PLATFORM)/libs
+OBJ_DIR := ../build/obj/$(TARGET_PLATFORM)/libs
+
 INC=-I../.
 
 PARAMS= -Wno-narrowing -ldl $(ALSA) $(INC) $(RPI) $(CFLAGS) $(LDFLAGS)
 
 # track header file to be sure that build is automatically trigger if any dependency changes
-TRACK_HEADER_FILES = -MMD -MF libzicHost.$(TARGET_PLATFORM).d
+TRACK_HEADER_FILES = -MMD -MF $(OBJ_DIR)/libzicHost.d
 
 main:
-	make libzicHost.$(TARGET_PLATFORM).so
+	@mkdir -p $(BUILD_DIR)
+	@mkdir -p $(OBJ_DIR)
+	make $(BUILD_DIR)/libzicHost.so
 
-libzicHost.$(TARGET_PLATFORM).so:
-	$(CC) -g -fPIC -shared -o libzicHost.$(TARGET_PLATFORM).so zicHost.cpp $(TRACK_HEADER_FILES) $(PARAMS)
+$(BUILD_DIR)/libzicHost.so:
+	$(CC) -g -fPIC -shared -o $(BUILD_DIR)/libzicHost.so zicHost.cpp $(TRACK_HEADER_FILES) $(PARAMS)
 
 # Safeguard: include only if .d files exist
--include $(wildcard libzicHost.$(TARGET_PLATFORM).d)
-
-rebuild:
-	rm libzicHost.$(TARGET_PLATFORM).so
-	make libzicHost.$(TARGET_PLATFORM).so
+-include $(wildcard $(OBJ_DIR)/libzicHost.d)
 
 standalone: buildStandaloneHost runStandaloneHost
 

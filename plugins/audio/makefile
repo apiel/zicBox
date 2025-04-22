@@ -2,11 +2,12 @@
 
 include ../../make_common.mk
 
-BUILD_DIR ?= build/$(TARGET_PLATFORM)
-OBJ_DIR ?= $(BUILD_DIR)/obj
-DEP_DIR ?= $(OBJ_DIR)/deps  # Directory for dependency files
+BUILD_DIR := ../../build/$(TARGET_PLATFORM)/libs/audio
+OBJ_DIR := ../../build/obj/$(TARGET_PLATFORM)/libs/audio
+DEP_DIR := $(OBJ_DIR)/deps  # Directory for dependency files
+
 # For raspberry std::filesystem is not found.
-PARAMS ?= --std=c++17 -lstdc++fs $(RPI)
+PARAMS := --std=c++17 -lstdc++fs $(RPI)
 
 INC=-I../..
 

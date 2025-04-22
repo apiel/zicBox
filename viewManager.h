@@ -12,6 +12,7 @@
 #include "plugins/components/componentInterface.h"
 #include "plugins/components/view.h"
 #include "styles.h"
+#include "helpers/getExecutableDirectory.h"
 
 #ifdef DRAW_ST7789
 #ifdef USE_DRAW_WITH_SDL
@@ -99,11 +100,7 @@ protected:
 
         Plugin plugin;
         plugin.name = name;
-#ifdef IS_RPI
-        std::string path = "./plugins/components/Pixel/build/arm/libzic_" + name + "Component.so";
-#else
-        std::string path = "./plugins/components/Pixel/build/x86/libzic_" + name + "Component.so";
-#endif
+        std::string path = getExecutableDirectory() + "/libs/components/libzic_" + name + "Component.so";
         if (config.contains("pluginPath")) {
             path = config["pluginPath"].get<std::string>();
         }

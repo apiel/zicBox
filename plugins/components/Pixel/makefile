@@ -2,8 +2,8 @@
 
 include ../../../make_common.mk
 
-BUILD_DIR ?= build/$(TARGET_PLATFORM)
-OBJ_DIR ?= $(BUILD_DIR)/obj
+BUILD_DIR := ../../../build/$(TARGET_PLATFORM)/libs/components
+OBJ_DIR := ../../../build/obj/$(TARGET_PLATFORM)/libs/components
 
 INC=-I../../..
 

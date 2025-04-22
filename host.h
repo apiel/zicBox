@@ -8,6 +8,7 @@
 
 #include "log.h"
 #include "plugins/audio/audioPlugin.h"
+#include "helpers/getExecutableDirectory.h"
 
 #define USE_HOST_SO
 #ifdef USE_HOST_SO
@@ -49,11 +50,7 @@ void loadHostPlugin()
         return;
     }
 
-#ifdef IS_RPI
-    void* handle = dlopen("host/libzicHost.arm.so", RTLD_LAZY);
-#else
-    void* handle = dlopen("host/libzicHost.x86.so", RTLD_LAZY);
-#endif
+    void* handle = dlopen((getExecutableDirectory() + "/libs/libzicHost.so").c_str(), RTLD_LAZY);
     if (!handle) {
         logError("Cannot open host library libzicHost: %s", dlerror());
         return;
