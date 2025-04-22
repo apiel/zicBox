@@ -36,7 +36,7 @@ protected:
         float* data;
     } sampleBuffer;
 
-    FileBrowser fileBrowser = FileBrowser("./samples");
+    FileBrowser fileBrowser = FileBrowser("./data/audio/samples");
     float index = 0;
     uint64_t indexStart = 0;
     uint64_t indexEnd = 0;

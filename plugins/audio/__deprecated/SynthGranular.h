@@ -25,7 +25,7 @@ protected:
     uint64_t bufferSampleCount = 0;
     float bufferSamples[bufferSize];
 
-    FileBrowser fileBrowser = FileBrowser("./samples");
+    FileBrowser fileBrowser = FileBrowser("./data/audio/samples");
     // FileBrowser fileBrowser;
 
     uint64_t voicePosition = 0;
