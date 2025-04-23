@@ -79,7 +79,13 @@ merge:
 
 release:
 	@echo "Creating GitHub release..."
-	zip -r build/x86.zip build/x86
-	zip -r build/arm.zip build/arm
-	gh release delete latest -y
-	gh release create latest build/x86.zip build/arm.zip --title "Latest release" --notes "..."
+	- rm build/x86.zip
+	- rm build/arm.zip
+	cd build/x86 && zip -r ../x86.zip .
+	cd build/arm && zip -r ../arm.zip .
+	cp build/x86.zip build/x86_full.zip
+	cp build/arm.zip build/arm_full.zip
+	zip -r build/x86_full.zip data
+	zip -r build/arm_full.zip data
+	- gh release delete latest -y
+	gh release create latest build/x86.zip build/arm.zip build/x86_full.zip build/arm_full.zip --title "Latest firmware release" --notes "This release contains the firmware for x86 and arm, with all the libs. Full version contains as well the data folder, with default configs, samples and weirds presets."

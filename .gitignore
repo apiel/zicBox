@@ -38,3 +38,4 @@ tape/tmp/*
 samples/tape_tmp/*.wav
 ttf2font
 matrix
+data.zip
