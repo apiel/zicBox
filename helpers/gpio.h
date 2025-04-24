@@ -19,6 +19,8 @@
 #include <string> // std::string
 #include <cstdlib> // system
 
+#include "log.h"
+
 #define BLOCK_SIZE (4 * 1024)
 
 #define GPIO_BASE 0x00200000 // 0_00200000
@@ -121,6 +123,7 @@ int initGpio()
 
 void gpioSetPullUp(uint8_t gpio)
 {
+    logDebug("gpioSetPullUp(%d), pullup should be already set in config.txt. Using pinctrl should be deprecated...\n", gpio);
     std::string cmd = "pinctrl set " + std::to_string(gpio) + " pu";
     system(cmd.c_str());
 }
