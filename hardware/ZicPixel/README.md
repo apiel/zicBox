@@ -5,6 +5,69 @@
 <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel3A.png?raw=true' height='350'>
 <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel3A_2.png?raw=true' height='350'>
 
+### RPi CM4 version
+
+<table>
+<tr>
+    <th>Image</th>
+    <th>Qty</th>
+    <th>Description</th>
+    <th>Price</th>
+<tr>
+<tr>
+    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/cm4.png?raw=true' width='100'></td>
+    <td>1</td>
+    <td>Raspberry Pi CM4 (CM4102000) Lite with wifi </td>
+    <td>42.90€ for 1 piece at <a href="https://www.berrybase.de/en/detail/019234a458d971c4b8caa031ee1849f7">Berrybase</a></td>
+</tr>
+<tr>
+    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/cm4-nano.png?raw=true' width='100'></td>
+    <td>1</td>
+    <td>CM4-NANO-A Nano Base Board</td>
+    <td>19.28€ for 1 piece at <a href="https://www.aliexpress.com/item/1005008111657527.html">Aliexpress</a></td>
+</tr>
+<tr>
+    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/encoderPEC12R.png?raw=true' width='100'></td>
+    <td>4</td>
+    <td>Encoder PEC12R-4025F-N0024</td>
+    <td>1.04€ per piece at <a href="https://eu.mouser.com/ProductDetail/Bourns/PEC12R-4025F-N0024?qs=Zq5ylnUbLm4HSBD7%2FFgU%2FA%3D%3D&countryCode=DE&currencyCode=EUR&_gl=1*1nd7s7x*_ga*Nzc0OTY5NDMwLjE2OTg1MDM2NzE.*_ga_15W4STQT4T*MTcwNTk0NTcwNi4xMi4wLjE3MDU5NDU3MDcuNTkuMC4w*_ga_1KQLCYKRX3*MTcwNTk0NTcwNi4yLjAuMTcwNTk0NTcwNy4wLjAuMA..">mouser</a></td>
+</tr>
+<tr>
+    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/keysRedragon.png?raw=true' width='100'></td>
+    <td>11</td>
+    <td>REDRAGON SMD RGB MX Low Profile 5.5 Switch 3Pin</td>
+    <td>4.17€ for 30 piece at <a href="https://www.aliexpress.com/item/1005005895774028.html">Aliexpress</a></td>
+</tr>
+<tr>
+    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/keycap.png?raw=true' width='100'></td>
+    <td>11</td>
+    <td>Key Caps for Mx Switch Mechanical Keyboard</td>
+    <td>4.66€ for 20 piece at <a href="https://www.aliexpress.com/item/1005008052800345.html">Aliexpress</a></td>
+</tr>
+<tr>
+    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/2inScreen.png?raw=true' width='100'></td>
+    <td>1</td>
+    <td>2.0 inch TFT Display OLED LCD Drive IC ST7789V</td>
+    <td>4.46€ for 1 piece at <a href="https://www.aliexpress.com/item/1005006423091182.html">Aliexpress</a></td>
+</tr>
+<tr>
+    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/rpiPinHeader.png?raw=true' width='100'></td>
+    <td>1</td>
+    <td>2x20 Pin Header for raspberry</td>
+    <td>1.47€ for 1 piece at <a href="https://www.aliexpress.com/item/32843300706.html">Aliexpress</a></td>
+</tr>
+<tr>
+    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/dac.png?raw=true' width='100'></td>
+    <td>1</td>
+    <td>PCM5102A DAC</td>
+    <td>2.73€ for 1 piece at <a href="https://www.aliexpress.com/item/1005006198619536.html">Aliexpress</a></td>
+</tr>
+</table>
+
+### RPi 3 Model A+ version
+
+I would recommend to go with the CM4 version because from now on, I will only iterate on CM4. However, Rpi 3 Model A+ would still work but some small tweak might be required.
+
 <table>
 <tr>
     <th>Image</th>
@@ -33,8 +96,8 @@
 <tr>
     <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/keycap.png?raw=true' width='100'></td>
     <td>11</td>
-    <td>XDA Keycaps that fit REDRAGON</td>
-    <td>?</td>
+    <td>Key Caps for Mx Switch Mechanical Keyboard</td>
+    <td>4.66€ for 20 piece at <a href="https://www.aliexpress.com/item/1005008052800345.html">Aliexpress</a></td>
 </tr>
 <tr>
     <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/2inScreen.png?raw=true' width='100'></td>
@@ -56,6 +119,8 @@
 </tr>
 </table>
 
+### PCB
+
 The PCB has been designed using EasyEDA. To access the project, use the following link:
 
 https://easyeda.com/editor#project_id=5847f0887b8b4aa5b121abb8e9b21bd7
@@ -65,7 +130,9 @@ If you need to modify the PCB, clone the project in your own account.
 **Ordering the PCB**
 To manufacture the PCB, you need to generate and submit the Gerber files to a PCB fabrication service. For this project, the Gerber files are already prepared and available as:
 
-📁 **File**: [`Gerber_pixelKeycap_zicpixel_st7789_240x320_rpi3A_REDRAGON_11btn_v3_2025-04-18.zip`](https://github.com/apiel/zicBox/raw/refs/heads/main/hardware/Gerber_pixelKeycap_zicpixel_st7789_240x320_rpi3A_REDRAGON_11btn_v3_2025-04-18.zip)
+📁 **File CM4**: [`Gerber_pixelKeycap_zicpixel_st7789_240x320_cm4_2025-04-03.zip`](Gerber_pixelKeycap_zicpixel_st7789_240x320_cm4_2025-04-03.zip)
+
+📁 **File Rpi3A+**: [`Gerber_pixelKeycap_zicpixel_st7789_240x320_rpi3A_REDRAGON_11btn_v3_2025-04-18.zip`](https://github.com/apiel/zicBox/raw/refs/heads/main/hardware/Gerber_pixelKeycap_zicpixel_st7789_240x320_rpi3A_REDRAGON_11btn_v3_2025-04-18.zip)
 
 **However, I would highly recommend to download the Gerber file from the easyEDA project**, as the file in the github repo might be outdated.
 
