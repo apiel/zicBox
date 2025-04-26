@@ -149,7 +149,6 @@ public:
         wave = type.wave;
         if (p.val.get() != 0.0f) {
             waveform.setType((WavetableGenerator::Type)type.indexType);
-            printf("Waveform type: %s shape: %f macro: %f\n", type.name.c_str(), waveform.shape * 100.0f, waveform.macro * 100.0f);
             shape.set(waveform.shape * 1000.0f);
             macro.set(waveform.macro * 100.0f);
         } else {

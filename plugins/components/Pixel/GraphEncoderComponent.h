@@ -69,7 +69,6 @@ public:
         std::vector<Point> points = {};
         if (dataId != -1) {
             float halfHeight = waveformHeight * 0.49;
-            printf("GraphEncoderComponent: halfHeight %f\n", halfHeight);
             points.push_back({ 0, (int)(halfHeight) });
 
             if (isArray) {

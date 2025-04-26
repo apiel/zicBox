@@ -316,7 +316,7 @@ public:
         std::string name = config["alias"];
         AudioPlugin::Config pluginConfig = { name, config, trackId };
         AudioPlugin* instance = ((AudioPlugin * (*)(AudioPlugin::Props & props, AudioPlugin::Config & config)) allocator)(pluginProps, pluginConfig);
-        logInfo("- audio plugin loaded: %s", instance->name.c_str());
+        logTrace("- audio plugin loaded: %s", instance->name.c_str());
         plugins.push_back(instance);
     }
 

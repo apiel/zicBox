@@ -109,7 +109,7 @@ public:
     void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
     {
         // printf("[%d] drum sample noteOn: %d %f\n", track, note, _velocity);
-        // logDebug("drum sample noteOn: %d %f", note, velocity);
+        logTrace("drum sample noteOn: %d %f", note, velocity);
         index = indexStart;
         stepIncrement = getSampleStep(note);
         velocity = _velocity;
@@ -123,7 +123,7 @@ public:
             logDebug("Error: could not open file %s [%s]\n", filename.c_str(), sf_strerror(file));
             return;
         }
-        // logDebug("Audio file %s sampleCount %ld sampleRate %d\n", filename, (long)sfinfo.frames, sfinfo.samplerate);
+        logTrace("Audio file %s sampleCount %ld sampleRate %d\n", filename, (long)sfinfo.frames, sfinfo.samplerate);
         // printf(".................Audio file chan %d vs prop chan %d\n", sfinfo.channels, props.channels);
 
         sampleBuffer.count = sf_read_float(file, sampleData, bufferSize);
@@ -151,7 +151,7 @@ public:
         if (force || position != fileBrowser.position) {
             browser.setString(fileBrowser.getFile(position));
             std::string filepath = fileBrowser.getFilePath(position);
-            // logDebug("SAMPLE_SELECTOR: %f %s\n", value, filepath);
+            logTrace("SAMPLE_SELECTOR: %f %s\n", value, filepath);
             open(filepath);
         }
     }

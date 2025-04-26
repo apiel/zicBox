@@ -4,6 +4,8 @@
 #include <string.h>
 #include <string>
 
+#include "log.h"
+
 #include "plugins/audio/utils/fileBrowser.h"
 #include "plugins/audio/utils/WavetableInterface.h"
 #include "plugins/audio/utils/utils.h"
@@ -77,9 +79,9 @@ public:
         close();
 
         if (!(file = sf_open(filename.c_str(), SFM_READ, &sfinfo))) {
-            printf("Error: could not open file %s\n", filename.c_str());
+            logError("Error: could not open file %s\n", filename.c_str());
         }
-        printf("Audio file %s sampleCount %ld sampleRate %d\n", filename.c_str(), (long)sfinfo.frames, sfinfo.samplerate);
+        logTrace("Audio file %s sampleCount %ld sampleRate %d\n", filename.c_str(), (long)sfinfo.frames, sfinfo.samplerate);
 
         bufferSampleCount = sf_read_float(file, bufferSamples, bufferSize);
         sampleCount = bufferSampleCount / (float)ZIC_WAVETABLE_WAVEFORMS_COUNT;
@@ -90,7 +92,7 @@ public:
     {
         if (force || position != fileBrowser.position) {
             std::string filepath = fileBrowser.getFilePath(position);
-            printf("KICK23_SAMPLE_SELECTOR: %d %s\n", position, filepath.c_str());
+            logTrace("KICK23_SAMPLE_SELECTOR: %d %s\n", position, filepath.c_str());
             open(filepath);
         }
     }

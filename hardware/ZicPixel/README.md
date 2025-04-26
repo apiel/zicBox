@@ -17,8 +17,8 @@
 <tr>
     <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/cm4.png?raw=true' width='100'></td>
     <td>1</td>
-    <td>Raspberry Pi CM4 (CM4102000) Lite with wifi </td>
-    <td>42.90€ for 1 piece at <a href="https://www.berrybase.de/en/detail/019234a458d971c4b8caa031ee1849f7">Berrybase</a></td>
+    <td>Raspberry Pi CM4 (CM4101000) Lite with wifi</td>
+    <td>38.90€ for 1 piece at <a href="https://www.berrybase.de/en/detail/019234a45898725c99b2c2a1fba7011b">Berrybase</a></td>
 </tr>
 <tr>
     <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/cm4-nano.png?raw=true' width='100'></td>

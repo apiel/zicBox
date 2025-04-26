@@ -282,7 +282,7 @@ public:
 
     void noteOn(uint8_t note, float velocity, void* userdata = NULL) override
     {
-        // logDebug("should play noteOn: %d %d\n", note, velocity);
+        logTrace("should play noteOn: %d %d\n", note, velocity);
         if (velocity == 0) {
             return noteOff(note, velocity);
         }
@@ -304,7 +304,7 @@ public:
                 voice.release = true;
                 voice.sustainReleaseLoopCount = 0;
                 // TODO release softly if release before end of file
-                // logDebug("noteOff set on to false: %d %d\n", note, velocity);
+                logTrace("noteOff set on to false: %d %d\n", note, velocity);
                 // return; // since multiple voice can have the same note do not return
             }
         }
@@ -330,7 +330,7 @@ public:
             logDebug("Error: could not open file %s [%s]\n", filename.c_str(), sf_strerror(file));
             return;
         }
-        // logDebug("Audio file %s sampleCount %ld sampleRate %d\n", filename, (long)sfinfo.frames, sfinfo.samplerate);
+        logTrace("Audio file %s sampleCount %ld sampleRate %d\n", filename, (long)sfinfo.frames, sfinfo.samplerate);
         // printf(".................Audio file chan %d vs prop chan %d\n", sfinfo.channels, props.channels);
 
         sampleBuffer.count = sf_read_float(file, sampleData, bufferSize);
@@ -361,7 +361,7 @@ public:
         if (force || position != fileBrowser.position) {
             browser.setString(fileBrowser.getFile(position));
             std::string filepath = fileBrowser.getFilePath(position);
-            // logDebug("SAMPLE_SELECTOR: %f %s\n", value, filepath);
+            logTrace("SAMPLE_SELECTOR: %f %s\n", value, filepath);
             open(filepath);
         }
     }

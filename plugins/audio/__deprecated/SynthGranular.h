@@ -97,7 +97,7 @@ protected:
         // delayInt = delay.get() * SAMPLE_RATE;
         grain.delay = delay.pct() > 0 ? (random.get() % (int)(delay.pct() * sampleRate)) : 0;
 
-        // logDebug("initGrain: grain.start %d grain.sampleCount %d grain.delay %d\n", grain.start, grain.sampleCount, grain.delay);
+        logTrace("initGrain: grain.start %d grain.sampleCount %d grain.delay %d\n", grain.start, grain.sampleCount, grain.delay);
     }
 
     float sample(Voice& voice)
@@ -343,7 +343,7 @@ public:
             Voice& voice = voices[v];
             if (voice.note == note) {
                 voice.envelop.release();
-                // logDebug("noteOff set on to false: %d %d\n", note, velocity);
+                logTrace("noteOff set on to false: %d %d\n", note, velocity);
                 return;
             }
         }

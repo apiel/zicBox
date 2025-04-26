@@ -71,7 +71,7 @@ public:
             bool sustainEq = p.val.get() == sustainPosition.get();
             p.val.setFloat(p.value);
             indexStart = p.val.pct() * sampleBuffer.count;
-            // logDebug("- START: %d", indexStart);
+            logTrace("- START: %d", indexStart);
             if (p.val.get() > sustainPosition.get() || sustainEq) {
                 sustainPosition.set(p.val.get());
             }
@@ -82,7 +82,7 @@ public:
         if (p.value > start.get()) {
             p.val.setFloat(p.value);
             indexEnd = p.val.pct() * sampleBuffer.count;
-            // logDebug("- END: %d", indexEnd);
+            logTrace("- END: %d", indexEnd);
             if (p.val.get() < sustainPosition.get() + sustainLength.get()) {
                 sustainPosition.set(p.val.get() - sustainLength.get());
             }
@@ -104,7 +104,7 @@ public:
             sustainLength.set(5);
         }
         loopStart = p.val.pct() * sampleBuffer.count;
-        // logDebug("- LOOP_POSITION: %d", loopStart);
+        logTrace("- LOOP_POSITION: %d", loopStart);
         sustainLength.set(sustainLength.get());
     });
     /*md - `LOOP_LENGTH` set the length of the sustain loop */
@@ -114,7 +114,7 @@ public:
         }
         sustainLength.setFloat(p.value);
         loopEnd = p.val.pct() * sampleBuffer.count + sustainPosition.pct() * sampleBuffer.count;
-        // logDebug("- LOOP_LENGTH: %d", loopEnd);
+        logTrace("- LOOP_LENGTH: %d", loopEnd);
         sustainRelease.set(sustainRelease.get());
         if (sustainLength.get() == 0) {
             sustainedNote = 0;
@@ -178,7 +178,7 @@ public:
     void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
     {
         // printf("[%d] drum sample noteOn: %d %f\n", track, note, _velocity);
-        // logDebug("drum sample noteOn: %d %f", note, velocity);
+        logTrace("drum sample noteOn: %d %f", note, velocity);
         index = indexStart;
         stepIncrement = getSampleStep(note);
         velocity = _velocity;
@@ -204,7 +204,7 @@ public:
             logDebug("Error: could not open file %s [%s]\n", filename.c_str(), sf_strerror(file));
             return;
         }
-        // logDebug("Audio file %s sampleCount %ld sampleRate %d\n", filename, (long)sfinfo.frames, sfinfo.samplerate);
+        logTrace("Audio file %s sampleCount %ld sampleRate %d\n", filename, (long)sfinfo.frames, sfinfo.samplerate);
         // printf(".................Audio file chan %d vs prop chan %d\n", sfinfo.channels, props.channels);
 
         sampleBuffer.count = sf_read_float(file, sampleData, bufferSize);
@@ -232,7 +232,7 @@ public:
         if (force || position != fileBrowser.position) {
             browser.setString(fileBrowser.getFile(position));
             std::string filepath = fileBrowser.getFilePath(position);
-            // logDebug("SAMPLE_SELECTOR: %f %s", value, filepath.c_str());
+            logTrace("SAMPLE_SELECTOR: %f %s", value, filepath.c_str());
             open(filepath);
             initValues();
         }
