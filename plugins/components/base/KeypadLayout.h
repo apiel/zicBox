@@ -244,10 +244,11 @@ public:
             };
         }
 
-        if (action == "shutdown") {
-            return [this](KeypadLayout::KeyMap& keymap) {
+        if (action.rfind("sh:") == 0) {
+            std::string* paramFn = new std::string(action.substr(3));
+            return [this, paramFn](KeypadLayout::KeyMap& keymap) {
                 if (isReleased(keymap)) {
-                    system("poweroff");
+                    system(paramFn->c_str());
                 }
             };
         }

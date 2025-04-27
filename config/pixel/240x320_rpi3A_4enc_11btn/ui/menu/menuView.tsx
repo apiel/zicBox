@@ -17,7 +17,8 @@ export function MenuView({ name }: Props) {
                 items={[
                     // 'Tape', 
                     'Workspaces', 
-                    'Shutdown'
+                    'Shutdown',
+                    'FileServer',
                 ]}
                 keys={[
                     { key: btn1, action: '.setView' },

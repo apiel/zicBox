@@ -23,13 +23,9 @@ import {
 } from './constants';
 import { DrumView } from './Drum/DrumView';
 import { KickView } from './Kick/KickView';
-import { CreateWorkspaceView } from './menu/CreateWorkspaceView';
-import { MenuView } from './menu/menuView';
-import { ShutdownView } from './menu/ShutdownView';
-import { WorkspacesView } from './menu/WorkspacesView';
+import { Menu } from './menu';
 import { SampleView } from './Sample/SampleView';
 import { SynthView } from './Synth/SynthView';
-import { TempoView } from './Tempo/TempoView';
 
 const halfHeight = ScreenHeight / 2;
 // addZoneEncoder([0, 0, W1_2, halfHeight]);
@@ -63,11 +59,7 @@ export const ui = {
             <SampleView track={Sample1Track} synthName="Sample1" color={ColorTrack7} />
             <SampleView track={Sample2Track} synthName="Sample2" color={ColorTrack8} />
 
-            <MenuView name="Menu" />
-            <CreateWorkspaceView name="CreateWorkspace" />
-            <WorkspacesView name="Workspaces" />
-            <ShutdownView name="Shutdown" />
-            <TempoView name="Tempo" />
+            <Menu />
 
             <ClipsView name="Clips" />
         </>

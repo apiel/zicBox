@@ -1,5 +1,7 @@
 ## Pixel TODO
 
+- TODO try to remove RES line... on display
+
 - TODO compile arm on x86 and then create a package for release...
 
 - TODO GIT: clear git hitory from wav files

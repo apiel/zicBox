@@ -18,8 +18,8 @@ export function ShutdownView({ name }: Props) {
                 color="#ffacac" //#ffacac
                 centered
                 keys={[
-                    { key: 'q', action: 'shutdown' },
-                    { key: 'a', action: 'shutdown' },
+                    { key: 'q', action: 'sh:halt -f' },
+                    { key: 'a', action: 'sh:halt -f' },
                     { key: 'd', action: 'setView:Clips' },
                     { key: 'e', action: 'setView:Clips' },
                 ]}
@@ -27,7 +27,7 @@ export function ShutdownView({ name }: Props) {
 
             <TextGrid
                 bounds={KeyInfoPosition}
-                rows={['&empty &empty &empty', 'Yes &empty No']}
+                rows={['&empty &empty &empty &empty', 'Yes &empty No &empty']}
             />
         </View>
     );

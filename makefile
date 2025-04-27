@@ -96,3 +96,15 @@ releaseOs:
 	zip -r build/zicOs_cm4.zip ../zicOs/buildroot/output/images/sdcard.img
 	- gh release delete zicOs -y
 	gh release create zicOs build/zicOs_cm4.zip --title "Latest zicOs release" --notes "This release contains the zicOs firmware for cm4."
+
+make pi:
+	make pixelLibs cc=arm
+	make buildPixel cc=arm
+	- sshpass -p "password" ssh root@zic.local "killall pixel"
+	- sshpass -p "password" ssh root@zic.local "rm -rf /opt/zicBox/libs"
+	- sshpass -p "password" ssh root@zic.local "rm /opt/zicBox/pixel"
+	- sshpass -p "password" ssh root@zic.local "rm /opt/zicBox/data/config.json"
+	sshpass -p "password" scp -v -r build/arm/* root@zic.local:/opt/zicBox/.
+	sshpass -p "password" scp -v data/config.json root@zic.local:/opt/zicBox/data/config.json
+	sshpass -p "password" ssh root@zic.local "chmod +x /opt/zicBox/pixel"
+	sshpass -p "password" ssh root@zic.local "cd /opt/zicBox && ./pixel"
