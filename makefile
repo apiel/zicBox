@@ -97,7 +97,20 @@ releaseOs:
 	- gh release delete zicOs -y
 	gh release create zicOs build/zicOs_cm4.zip --title "Latest zicOs release" --notes "This release contains the zicOs firmware for cm4."
 
+PI_TARGET = root@zic.local
+PI_PASSWORD = password
+PI_REMOTE_DIR = /opt/zicBox
 make pi:
+	make pixelLibs cc=arm
+	make buildPixel cc=arm
+	- sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "killall pixel"
+	rsync -avz --progress -e "sshpass -p '$(PI_PASSWORD)' ssh" build/arm/ "$(PI_TARGET):$(PI_REMOTE_DIR)/."
+	rsync -avz --progress -e "sshpass -p '$(PI_PASSWORD)' ssh" data/ "$(PI_TARGET):$(PI_REMOTE_DIR)/data"
+	sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "chmod +x $(PI_REMOTE_DIR)/pixel"
+	sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "cd $(PI_REMOTE_DIR) && ./pixel"
+
+# to remove
+make piOld:
 	make pixelLibs cc=arm
 	make buildPixel cc=arm
 	- sshpass -p "password" ssh root@zic.local "killall pixel"
