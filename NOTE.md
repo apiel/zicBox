@@ -2,10 +2,6 @@
 
 - TODO try to remove RES line... on display
 
-- TODO compile arm on x86 and then create a package for release...
-
-- TODO setup https://github.com/filebrowser/filebrowser
-
 - TODO mute shortcut
 
 - TODO set wifi config
@@ -15,9 +11,10 @@
 - TODO enable motion/mouse on desktop
   - when mouse over envelop, some point/circle appear to show what can be dragged...
 
+- TODO drum rack (polyphonic?)
+
 - TODO advance sample player (with granular??)
 
-- TODO drum rack (polyphonic?)
 - TODO optimize SynthMetalic (can be postponed to later if not used right now)
 - TODO record drums to play them in drum rack...
 
