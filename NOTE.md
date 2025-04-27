@@ -4,8 +4,6 @@
 
 - TODO compile arm on x86 and then create a package for release...
 
-- TODO GIT: clear git hitory from wav files
-
 - TODO setup https://github.com/filebrowser/filebrowser
 
 - TODO mute shortcut
