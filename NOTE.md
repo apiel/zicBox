@@ -2,10 +2,9 @@
 
 - TODO compile arm on x86 and then create a package for release...
 
-- TODO clear git hitory from wav files
+- TODO GIT: clear git hitory from wav files
 
-- TODO zicOs based on busybox
-- TODO home screen
+- TODO setup https://github.com/filebrowser/filebrowser
 
 - TODO mute shortcut
 
@@ -21,6 +20,8 @@
 - TODO drum rack (polyphonic?)
 - TODO optimize SynthMetalic (can be postponed to later if not used right now)
 - TODO record drums to play them in drum rack...
+
+- TODO see if zicOs can also work with rpi3a+
 
 - TODO synth with multiple swappable engines!!
 

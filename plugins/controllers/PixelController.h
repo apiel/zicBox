@@ -104,7 +104,7 @@ public:
             }
             gpioEncoder.encoders = {
                 { 0, 13, 6 }, // gpio 13, gpio 6
-                { 1, 24, 23 }, // gpio 24, gpio 23
+                { 1, 23, 24 }, // gpio 24, gpio 23
                 { 2, 20, 26 }, // gpio 20, gpio 26
                 { 3, 25, 9 }, // gpio 9, gpio 25
             };

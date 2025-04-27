@@ -90,7 +90,7 @@ release:
 	- gh release delete latest -y
 	gh release create latest build/x86.zip build/arm.zip build/x86_full.zip build/arm_full.zip --title "Latest firmware release" --notes "This release contains the firmware for x86 and arm, with all the libs. Full version contains as well the data folder, with default configs, samples and weirds presets."
 
-releaseImg:
+releaseOs:
 	@echo "Creating GitHub release of zicOs..."
 	- rm build/zicOs_cm4.zip
 	zip -r build/zicOs_cm4.zip ../zicOs/buildroot/output/images/sdcard.img

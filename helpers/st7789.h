@@ -134,22 +134,21 @@ public:
 
     void test()
     {
-        // // drawFillRect(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, 0); // clear screen
-        // srand(time(NULL));
-        // uint16_t randomColor = rand() % 0xFFFF;
-        // fillScreen(randomColor); // clear screen
-
         fillScreen(colorToU16({ 0x21, 0x25, 0x2b, 255 })); // #21252b
 
-        // drawFillRect(140, 140, 30, 30, 0xFF00);
+        // drawFillRect(40, 20, 30, 30, colorToU16({ 0xFF, 0x00, 0x00 })); // #FF0000
+        // drawFillRect(width - 40, height - 20, 10, 10, colorToU16({ 0x00, 0x00, 0xFF })); // #0000FF
 
-        drawFillRect(40, 20, 30, 30, colorToU16({ 0xFF, 0x00, 0x00 })); // #FF0000
-        drawFillRect(width - 40, height - 20, 10, 10, colorToU16({ 0x00, 0x00, 0xFF })); // #0000FF
+        // for (int i = 0; i < 100; i++) {
+        //     drawPixel(i, i * 2, 0xFFF0);
+        //     drawPixel(rand() % width, rand() % height, 0xFFFF);
+        // }
 
-        for (int i = 0; i < 100; i++) {
-            drawPixel(i, i * 2, 0xFFF0);
-            drawPixel(rand() % width, rand() % height, 0xFFFF);
-        }
+        drawFillRect(10, 30, 10, 10, colorToU16({ 212, 211, 211 })); //rgb(212, 211, 211)
+        drawFillRect(30, 30, 10, 10, colorToU16({ 170, 170, 170 })); //rgb(170, 170, 170)
+        drawFillRect(50, 30, 10, 10, colorToU16({ 127, 127, 127 })); //rgb(127, 127, 127)
+        drawFillRect(70, 30, 10, 10, colorToU16({ 85, 85, 85 })); //rgb(85, 85, 85)
+        drawFillRect(90, 30, 10, 10, colorToU16({ 42, 42, 42 })); //rgb(42, 42, 42)
     }
 
     uint16_t colorToU16(Color color)
