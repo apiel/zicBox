@@ -65,8 +65,10 @@ public:
         calculateIncrements(totalSamples);
     }
 
+    float lastTotalSamples = 1.0f;
     void calculateIncrements(float totalSamples)
     {
+        lastTotalSamples = totalSamples;
         for (size_t i = 0; i < data.size() - 1; ++i) {
             float sampleCount = (data[i + 1].time - data[i].time) * totalSamples;
             data[i].incRatio = (sampleCount > 0) ? (data[i + 1].modulation - data[i].modulation) / sampleCount : 0.0f;
@@ -194,6 +196,7 @@ public:
 
         if (mode >= 0 && mode < modes.size()) {
             modes[mode].func(this, init);
+            calculateIncrements(lastTotalSamples);
             return;
         }
 
