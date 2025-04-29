@@ -23,6 +23,7 @@ all:
 		Sequencer Tempo AudioSpectrogram\
 		Mixer2 Mixer4 Mixer5 Mixer6 Mixer8 Mixer12\
 		AudioInputAlsa AudioOutputAlsa\
+		AudioInputPulse AudioOutputPulse\
 		SerializeTrack TapeRecording  SampleSequencer EffectFilterMultiMode
 		
 
