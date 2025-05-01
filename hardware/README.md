@@ -1,10 +1,5 @@
 # 04 Hardware
 
-> [!TIP]
-> If you any idea or suggestion about the hardware, share them here: https://github.com/apiel/zicBox/discussions/2
->
-> If you need help for building, feel free to create a new discussion.
-
 <table>
     <tr>
         <td><a href="https://github.com/apiel/zicBox/wiki/07-Hardware#zicpad"><b>ZicPad</b></a></td>
@@ -15,6 +10,9 @@
         <td><img src="https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel3A_2.png" width='480' /></td>
     </tr>
 </table>
+
+> [!TIP]
+> Before to order pcb, I would recommend you to join the [discord channel](https://discord.gg/65HTx7z9qg) to have a chat on the current status of the project and see which version might be the most suited for you. This project is in constant evolution and new PCB versions are regularly designed.
 
 ## PCB
 

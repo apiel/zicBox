@@ -1,12 +1,9 @@
 # 04 Hardware
 
-> [!TIP]
-> Before to order pcb, I would recommend you to join the [discord channel](https://discord.gg/65HTx7z9qg) to have a chat on the current status of the project and see which version might be the most suited for you. This project is in constant evolution and new PCB versions are regularly designed.
-
 ## Zic Pixel plus
 
 > [!WARNING]
-> Work in progress
+> **Work in progress**: join the [discord channel](https://discord.gg/65HTx7z9qg) to discuss about the current status
 
 This is a new version of Zic Pixel called Zic Pixel Plus. This version, base on CM4, will have more buttons, thanks to an I2C IO expander. It's still a work in progress, and I'm in the middle of building and testing it.
 
