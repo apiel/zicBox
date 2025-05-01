@@ -1,33 +1,35 @@
 ## Pixel TODO
 
-- TODO try to remove RES line... on display
+- FIXME tempo issue between thread ^^
 
 - TODO mute shortcut
 
-- TODO set wifi config
-
-- TODO capture, like on ableton move
-
-- TODO enable motion/mouse on desktop
-  - when mouse over envelop, some point/circle appear to show what can be dragged...
-
-- TODO drum rack (polyphonic?)
-
-- TODO advance sample player (with granular??)
-
+- TODO optimize drum engine by caching them...
 - TODO optimize SynthMetalic (can be postponed to later if not used right now)
 - TODO record drums to play them in drum rack...
 
-- TODO see if zicOs can also work with rpi3a+
+- TODO capture, like on ableton move
 
-- TODO synth with multiple swappable engines!!
+- TODO see if zicOs can also work with rpi3a+
+- TODO system to differenciate hardware rpi3 vs cm4 vs rpi0
 
 - TODO drag and drop editor!! 
     ---> should this be a web interface, that show result in live on the hardware... The web interface just allow to drag some abstract element and let us configure them, but final rendering happen in the hardware..
 
+- TODO set wifi config
+
+- TODO advance sample player (with granular??)
+
 - TODO serialize in json format!
 
+- TODO enable motion/mouse on desktop
+  - when mouse over envelop, some point/circle appear to show what can be dragged...
+
 - TODO alsa auto scale latency: Dynamic latency management
+
+- TODO synth with multiple swappable engines!!
+
+- TODO drum rack (polyphonic?)
 
 - TODO master track --> add effect: sample reducer, distortion, delay...? 
     - --> instead of mixer drum and mixer synth, use sent effect to track fx1 and track fx2
