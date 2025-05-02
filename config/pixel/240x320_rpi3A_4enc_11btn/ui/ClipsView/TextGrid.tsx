@@ -76,7 +76,7 @@ export function TextGridClips() {
                 visibilityContext={visibilityContext}
             />
             <Text
-                text="Synth1"
+                text="Drum1"
                 bounds={[w, KeyInfoPosition[1], w, 12]}
                 color={ColorTrack2}
                 // bgColor={ColorTrack2}
@@ -88,7 +88,7 @@ export function TextGridClips() {
                 visibilityContext={visibilityContext}
             />
             <Text
-                text="Synth2"
+                text="Drum2"
                 bounds={[2 * w, KeyInfoPosition[1], w, 12]}
                 color={ColorTrack3}
                 // bgColor={ColorTrack3}
@@ -100,7 +100,7 @@ export function TextGridClips() {
                 visibilityContext={visibilityContext}
             />
             <Text
-                text="Synth3"
+                text="Drum3"
                 bounds={[3 * w, KeyInfoPosition[1], w, 12]}
                 color={ColorTrack4}
                 // bgColor={ColorTrack4}
@@ -113,7 +113,7 @@ export function TextGridClips() {
             />
 
             <Text
-                text="Perc"
+                text="Synth1"
                 bounds={[0, KeyInfoPosition[1] + 12, w, 12]}
                 color={ColorTrack5}
                 // bgColor={ColorTrack5}
@@ -125,7 +125,7 @@ export function TextGridClips() {
                 visibilityContext={visibilityContext}
             />
             <Text
-                text="Sample1"
+                text="Synth2"
                 bounds={[w, KeyInfoPosition[1] + 12, w, 12]}
                 color={ColorTrack6}
                 // bgColor={ColorTrack6}
@@ -137,7 +137,7 @@ export function TextGridClips() {
                 visibilityContext={visibilityContext}
             />
             <Text
-                text="Sample2"
+                text="Sample1"
                 bounds={[2 * w, KeyInfoPosition[1] + 12, w, 12]}
                 color={ColorTrack7}
                 // bgColor={ColorTrack7}
@@ -149,7 +149,7 @@ export function TextGridClips() {
                 visibilityContext={visibilityContext}
             />
             <Text
-                text="Sample3"
+                text="Sample2"
                 bounds={[3 * w, KeyInfoPosition[1] + 12, w, 12]}
                 color={ColorTrack8}
                 // bgColor={ColorTrack8}
