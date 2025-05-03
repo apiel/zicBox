@@ -1,5 +1,4 @@
-#ifndef _HELPER_I2C_H_
-#define _HELPER_I2C_H_
+#pragma once
 
 #include <string>
 #include <fcntl.h>
@@ -7,12 +6,7 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <cstdint>
-
-// i2c can also be used with pigpio
-//
-// #include <pigpio.h>
-// i2cOpen(1, address, 0);
-// i2cWriteByteData(i2c, MPR121_SOFTRESET, 0x63);
+#include <cstring>
 
 class I2c {
 public:
@@ -49,6 +43,33 @@ public:
         return 1;
     }
 
+    uint8_t writeReg(uint8_t reg, uint8_t value)
+    {
+        if (file == 0)
+            return 1;
+
+        uint8_t buf[2] = {reg, value};
+        if (write(file, buf, 2) != 2)
+            return 1;
+
+        return 0;
+    }
+
+    uint8_t readReg(uint8_t reg, uint8_t* value)
+    {
+        if (file == 0 || value == nullptr)
+            return 1;
+
+        if (write(file, &reg, 1) != 1)
+            return 1;
+
+        if (read(file, value, 1) != 1)
+            return 1;
+
+        return 0;
+    }
+
+    // For ssd1306, not used at the moment (might be deprecated at some point)
     uint8_t send(uint8_t* ptr, int16_t len)
     {
         if (file == 0 || ptr == 0 || len <= 0)
@@ -58,6 +79,7 @@ public:
         return 0;
     }
 
+    // For ssd1306 (might be deprecated at some point)
     uint8_t pull(uint8_t* ptr, int16_t len)
     {
         if (file == 0 || ptr == 0 || len <= 0)
@@ -67,6 +89,3 @@ public:
         return 0;
     }
 };
-
-
-#endif
