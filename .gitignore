@@ -39,3 +39,4 @@ samples/tape_tmp/*.wav
 ttf2font
 matrix
 data.zip
+mcp23017_read

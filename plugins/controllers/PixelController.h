@@ -1,5 +1,4 @@
-#ifndef _PIXEL_CONTROLLER_H_
-#define _PIXEL_CONTROLLER_H_
+#pragma once
 
 #include "controllerInterface.h"
 #include "helpers/GpioEncoder.h"
@@ -119,5 +118,3 @@ public:
         setLayout(config.value("pixelController", "rpi3A_4enc_11btn"));
     }
 };
-
-#endif

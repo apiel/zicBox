@@ -1,5 +1,4 @@
-#ifndef _HELPER_GPIO_ENCODER_H_
-#define _HELPER_GPIO_ENCODER_H_
+#pragma once
 
 #include "helpers/gpio.h"
 
@@ -107,5 +106,3 @@ public:
         }
     }
 };
-
-#endif
