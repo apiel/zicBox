@@ -1,10 +1,12 @@
 > [!TIP]
 > ### Help wanted
-> I am searching help for:
+> I am especially searching help for:
 > - 3d design for enclosure (3d printer or CNC machine)
 > - PCB design improvement
 >
-> Support with anything else, is also more than welcome ;-)
+> Support with anything else (C++, TypeScript, doc, design, testing, video...), is also more than welcome ;-)
+>
+> Have a look to our [contribution page](https://github.com/apiel/zicBox/wiki/40-Contribute).
 
 # ZicBox: A Modular Framework for Building Music Applications
 
