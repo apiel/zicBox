@@ -6,7 +6,7 @@
 >
 > Support with anything else (C++, TypeScript, doc, design, testing, video...), is also more than welcome ;-)
 >
-> Have a look to our [contribution page](https://github.com/apiel/zicBox/wiki/40-Contribute).
+> Have a look to our [contribution page](https://github.com/apiel/zicBox/wiki/40-Contribute-to-zicBox).
 
 # ZicBox: A Modular Framework for Building Music Applications
 
@@ -37,7 +37,7 @@ ZicBox efficiently manages system resources to ensure **low-latency audio perfor
 - Running each **audio track in a separate thread**, ensuring optimal real-time processing.
 - Handling **audio thread synchronization** to maintain precise timing and tempo accuracy.
 
-### **Scripting & UI Configuration with TypeScript-to-Lua & JSX**
+### **Scripting & UI Configuration with TypeScript & JSX**
 For configuring the framework, ZicBox use **JSON**. However, instead of writing pure JSON, developers can use **TypeScript** to generate the configuration file. This allows for a **strongly typed** configuration system while still benefiting from JSON lightweight runtime.
 
 Additionally, ZicBox leverages **JSX (React-style syntax)** for UI configuration, making it intuitive to define interface components. Unlike traditional React, there is no component state management involved, JSX is used purely for declarative UI structure.
