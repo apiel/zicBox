@@ -339,6 +339,7 @@ public:
                 Step newStep;
                 newStep.note = selectedNote;
                 newStep.position = selectedStep;
+                newStep.enabled = true;
                 steps->push_back(newStep);
             }
             renderNext();
