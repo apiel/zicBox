@@ -4,6 +4,7 @@
 #include "helpers/GpioEncoder.h"
 #include "helpers/GpioKey.h"
 #include "helpers/getTicks.h"
+#include "Mcp23017Controller.h"
 
 class PixelController : public ControllerInterface {
 protected:
@@ -22,6 +23,7 @@ protected:
 public:
     PixelController(Props& props, uint16_t id)
         : ControllerInterface(props, id)
+        , mcp23017Controller(props, id)
     {
     }
 
@@ -113,8 +115,38 @@ public:
         }
     }
 
+    Mcp23017Controller mcp23017Controller;
+    void setI2c(std::string type)
+    {
+        if (type == "pixel+_v1") {
+            nlohmann::json config;
+            config["A0"] = "'c'";
+            config["A1"] = "'x'";
+            config["A2"] = "'z'";
+            config["A3"] = "'s'";
+            config["A4"] = "'a'";
+            config["A5"] = "'q'";
+            config["A6"] = "'1'";
+            config["A7"] = "F1";
+            config["B0"] = "'v'";
+            config["B1"] = "'b'";
+            config["B2"] = "'g'";
+            config["B3"] = "'f'";
+            config["B4"] = "'d'";
+            config["B5"] = "'t'";
+            config["B6"] = "'5'";
+            config["B7"] = "F5";
+            mcp23017Controller.config(config);
+        }
+    }
+
     void config(nlohmann::json& config) override 
     {
         setLayout(config.value("pixelController", "rpi3A_4enc_11btn"));
+        if (config.contains("i2c") && config["i2c"].is_array()) {
+            for (auto& i2c : config["i2c"]) {
+                setI2c(i2c);
+            }
+        }
     }
 };

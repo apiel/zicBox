@@ -65,8 +65,11 @@
 int main() {
     Mcp23017 mcp;
 
+    mcp.init();
     mcp.setInputModeChannelA();
     mcp.setInputModeChannelB();
+    mcp.enablePullUpChannelA();
+    mcp.enablePullUpChannelB();
 
     uint8_t gpioA = mcp.readChannelA();
     uint8_t gpioB = mcp.readChannelB();
