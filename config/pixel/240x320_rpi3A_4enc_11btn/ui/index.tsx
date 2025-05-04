@@ -35,6 +35,7 @@ const halfHeight = ScreenHeight / 2;
 
 export const ui = {
     pixelController: 'rpiCM4_4enc_11btn', //  'rpi3A_4enc_11btn',
+    // i2c: ['pixel+_v1'],
     screen: {
         windowPosition: { x: 400, y: 500 },
         screenSize: { width: ScreenWidth, height: ScreenHeight },

@@ -22,30 +22,29 @@ protected:
         uint8_t lastState = 0;
     };
 
-    Key A0 = {-1, 0};
-    Key A1 = {-1, 0};
-    Key A2 = {-1, 0};
-    Key A3 = {-1, 0};
-    Key A4 = {-1, 0};
-    Key A5 = {-1, 0};
-    Key A6 = {-1, 0};
-    Key A7 = {-1, 0};
-    Key B0 = {-1, 0};
-    Key B1 = {-1, 0};
-    Key B2 = {-1, 0};
-    Key B3 = {-1, 0};
-    Key B4 = {-1, 0};
-    Key B5 = {-1, 0};
-    Key B6 = {-1, 0};
-    Key B7 = {-1, 0};
+    Key A0 = { -1, 0 };
+    Key A1 = { -1, 0 };
+    Key A2 = { -1, 0 };
+    Key A3 = { -1, 0 };
+    Key A4 = { -1, 0 };
+    Key A5 = { -1, 0 };
+    Key A6 = { -1, 0 };
+    Key A7 = { -1, 0 };
+    Key B0 = { -1, 0 };
+    Key B1 = { -1, 0 };
+    Key B2 = { -1, 0 };
+    Key B3 = { -1, 0 };
+    Key B4 = { -1, 0 };
+    Key B5 = { -1, 0 };
+    Key B6 = { -1, 0 };
+    Key B7 = { -1, 0 };
 
-    void setMapping(nlohmann::json& config, Key& key) {
-        if (config) {
-            if (config.is_number()) {
-                key.key = config;
-            } else if (config.is_string()) {
-                key.key = getKeyCode(config.get<std::string>().c_str());
-            }
+    void setMapping(nlohmann::json& config, Key& key)
+    {
+        if (config.is_number()) {
+            key.key = config;
+        } else if (config.is_string()) {
+            key.key = getKeyCode(config.get<std::string>().c_str());
         }
     }
 
@@ -110,7 +109,8 @@ public:
         }
     }
 
-    void checkState(Key& key, uint8_t channel, int8_t gpio) {
+    void checkState(Key& key, uint8_t channel, int8_t gpio)
+    {
         int8_t state = mcp.isChannelPinHigh(channel, gpio) ? 0 : 1; // Low is pressed
         if (key.lastState != state) {
             onKey(id, key.key, state);
