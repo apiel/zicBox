@@ -3,7 +3,6 @@ import * as React from '@/libs/react';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { lighten } from '@/libs/ui';
-import { Kick } from '../components/Common';
 import { Title } from '../components/Title';
 import {
     btn1,
@@ -39,7 +38,7 @@ export function ViewSelector({
 }) {
     return (
         <>
-            {!hideTitle && <Title title={Kick} />}
+            {!hideTitle && <Title title={synthName} />}
             {!hideTitle && <Rect bounds={[70, 28, 6, 6]} color={color} />}
             <TextGrid
                 bounds={KeyInfoPosition}

@@ -5,6 +5,8 @@
 - TODO optimize drum engine by caching them...
 - TODO optimize SynthMetalic (can be postponed to later if not used right now)
 
+- TODO need a way to have a list of preset
+
 - TODO cache tracks or bar into an audio buffer
 
 - TODO mute shortcut
