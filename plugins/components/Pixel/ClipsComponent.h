@@ -95,7 +95,7 @@ public:
                         if (variations[id].exists) {
                             if (isGroupAll) {
                                 pluginSerialize->data(loadVariationNextDataId, &id);
-                            } else if (valVariation->get() == id) {
+                            } else if ((int16_t)valVariation->get() == id) {
                                 if (valSeqStatus->get() == 1) {
                                     valSeqStatus->set(0);
                                 } else {

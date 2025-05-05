@@ -22,7 +22,6 @@ export function Clips({ color, track, title, key }: Props) {
                 track={track}
                 color={color}
                 visibleCount={12}
-                groupAll={0}
                 keys={[
                     { key, action: '.saveOrDelete', context: {id: 251, value: 1} },
                     { key, action: '.toggle', context: {id: 254, value: 0} },

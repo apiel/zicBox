@@ -5,9 +5,10 @@
 #include <iostream>
 #include <mutex>
 
-#include "helpers/trim.h"
 #include "audioPlugin.h"
+#include "helpers/trim.h"
 #include "mapping.h"
+#include "log.h"
 
 /*md
 ## SerializeTrack
@@ -121,6 +122,7 @@ public:
 
     void loadVariation(int16_t id)
     {
+        // printf("load variation %d\n", id);
         if (std::filesystem::exists(getVariationFilepath(id))) {
             std::filesystem::copy(getVariationFilepath(id), filepath, std::filesystem::copy_options::overwrite_existing);
             hydrate();
@@ -129,14 +131,12 @@ public:
 
     void setVariation(float value)
     {
-        printf("set variation %f\n", value);
+        logDebug("set variation %f\n", value);
         m.lock();
         int16_t currentVariation = variation.get();
         variation.setFloat((int16_t)value);
-        if (currentVariation != variation.get()) {
-            if (saveBeforeChangingVariation) {
-                saveVariation(currentVariation);
-            }
+        if (currentVariation != variation.get() && saveBeforeChangingVariation) {
+            saveVariation(currentVariation);
         }
         loadVariation((int16_t)variation.get());
         m.unlock();

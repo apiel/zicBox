@@ -2,12 +2,9 @@
 
 - FIXME tempo issue between thread ^^
 
-- TODO optimize drum engine by caching them...
-- TODO optimize SynthMetalic (can be postponed to later if not used right now)
+- FIXME clip selection
 
 - TODO need a way to have a list of preset
-
-- TODO cache tracks or bar into an audio buffer
 
 - TODO mute shortcut
 
@@ -24,6 +21,16 @@
 - TODO patch or pattern morphing between 2 kicks for example...
 
 - TODO set wifi config
+ 
+- TODO optimize drum engine by caching them... <-- the problem is that what use lot of resource are actually the effect, then caching become way more complicated!
+              - create a vector of note + buffer[48 * 5000] or 48k * 5 (5sec <--> 5000ms) --> it would use about 0.9155 MB of RAM per note
+              - when note on trigger, we look in the vector if note is already cached
+                  - --> if not, we generate the cache for it
+              - once we found the cached not, we assign his buffer to the main buffer reference to be played
+              - if a parameter change, we clear the vector, and the whole caching process start again
+- TODO optimize SynthMetalic
+
+- TODO cache tracks or bar into an audio buffer <-- this can only work if there if no step condition, no step motion, no sample and hold...
 
 - TODO advance sample player (with granular??)
 
