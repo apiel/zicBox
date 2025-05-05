@@ -1,9 +1,9 @@
 #pragma once
 
+#include "helpers/range.h"
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
-#include "helpers/range.h"
 
 #include <string>
 #include <vector>
@@ -35,7 +35,9 @@ protected:
     uint8_t loadVariationNextDataId = -1;
     uint8_t saveVariationDataId = -1;
     uint8_t deleteVariationDataId = -1;
+    AudioPlugin* pluginSeq = NULL;
     ValueInterface* valSeqStatus = NULL;
+    bool* isPlaying = NULL;
     int* nextVariationToPlay = NULL;
     bool showSelectionRect = false;
 
@@ -96,7 +98,9 @@ public:
                             if (isGroupAll) {
                                 pluginSerialize->data(loadVariationNextDataId, &id);
                             } else if ((int16_t)valVariation->get() == id) {
-                                if (valSeqStatus->get() == 1) {
+                                if (!*isPlaying) {
+                                    pluginSerialize->data(loadVariationDataId, &id);
+                                } else if (valSeqStatus->get() == 1) {
                                     valSeqStatus->set(0);
                                 } else {
                                     valSeqStatus->set(1);
@@ -105,7 +109,11 @@ public:
                                 // however, to do this, we would have to track another data id again: IS_PLAYING
                                 // for the moment let's stick to double press, it is fine...
                             } else if (nextVariationToPlay != NULL && *nextVariationToPlay == -1) {
-                                pluginSerialize->data(loadVariationNextDataId, &id);
+                                if (!*isPlaying) {
+                                    pluginSerialize->data(loadVariationDataId, &id);
+                                } else if (valSeqStatus->get() == 1) {
+                                    pluginSerialize->data(loadVariationNextDataId, &id);
+                                }
                             } else {
                                 pluginSerialize->data(loadVariationDataId, &id);
                             }
@@ -194,10 +202,11 @@ public:
         encoderId = config.value("encoderId", encoderId); //eg: 0
 
         /// The sequencer audio plugin.
-        AudioPlugin* pluginSeq = &getPlugin(config.value("sequencerPlugin", "Sequencer"), track); //eg: "audio_plugin_name"
+        pluginSeq = &getPlugin(config.value("sequencerPlugin", "Sequencer"), track); //eg: "audio_plugin_name"
         if (pluginSeq != NULL) {
             valSeqStatus = watch(pluginSeq->getValue("STATUS"));
         }
+        isPlaying = (bool*)pluginSeq->data(pluginSeq->getDataId("IS_PLAYING"));
 
         /// The audio plugin to get serialized data.
         pluginSerialize = &getPlugin(config.value("serializerPlugin", "SerializeTrack"), track); //eg: "audio_plugin_name"
