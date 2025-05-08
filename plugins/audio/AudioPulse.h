@@ -38,11 +38,11 @@ protected:
         };
 
         device = newDevice(streamFormat);
-
         if (!device) {
-            logError("ERROR: pa_simple_new() failed.");
+            logError("ERROR: pa_simple_new() failed: %s", pa_strerror(pa_context_errno(NULL)));
             return;
         }
+        logDebug("AudioPulse::open done");
     }
 
     void search()
@@ -52,14 +52,14 @@ protected:
         char* server = NULL;
 
         if (!(ml = pa_mainloop_new())) {
-            logError("pa_mainloop_new() failed.");
+            logError("pa_mainloop_new() failed: %s", pa_strerror(pa_context_errno(NULL)));
             return freeListDevice(ml, context, server);
         }
 
         paMainLoopApi = pa_mainloop_get_api(ml);
 
         if (!(context = pa_context_new_with_proplist(paMainLoopApi, NULL, NULL))) {
-            logError("pa_context_new() failed.");
+            logError("pa_context_new() failed: %s", pa_strerror(pa_context_errno(NULL)));
             return freeListDevice(ml, context, server);
         }
 
@@ -72,7 +72,7 @@ protected:
 
         int ret = 1;
         if (pa_mainloop_run(ml, &ret) < 0) {
-            logError("pa_mainloop_run() failed.");
+            logError("pa_mainloop_run() failed: %s", pa_strerror(pa_context_errno(context)));
         }
         freeListDevice(ml, context, server);
     }

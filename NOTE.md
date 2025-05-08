@@ -1,8 +1,10 @@
 ## Pixel TODO
 
-- FIXME tempo issue between thread ^^
+- TODO pulse audio on zicOs
 
-- FIXME clip selection
+- TODO dsi display
+
+- TODO when pressing mode button in seq view, usually use to show keyboard mode, we could show directional button...
 
 - TODO need a way to have a list of preset
 
@@ -21,7 +23,9 @@
 - TODO patch or pattern morphing between 2 kicks for example...
 
 - TODO set wifi config
- 
+
+- FIXME tempo issue between thread ^^ (need to figure out how to reproduce)
+
 - TODO optimize drum engine by caching them... <-- the problem is that what use lot of resource are actually the effect, then caching become way more complicated!
               - create a vector of note + buffer[48 * 5000] or 48k * 5 (5sec <--> 5000ms) --> it would use about 0.9155 MB of RAM per note
               - when note on trigger, we look in the vector if note is already cached
@@ -43,6 +47,8 @@
 
 - TODO record drums to play them in drum rack...
 - TODO drum rack (polyphonic?)
+
+- IDEA hardware could use the direction button...
 
 - TODO master track --> add effect: sample reducer, distortion, delay...? 
     - --> instead of mixer drum and mixer synth, use sent effect to track fx1 and track fx2

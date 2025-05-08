@@ -87,7 +87,7 @@
         "plugins": [
           {"alias":"Mixer","plugin":"Mixer8"},
           {"alias":"Volume","plugin":"EffectGainVolume"},
-          {"alias":"AudioOutput","plugin":"AudioOutputAlsa"},
+          {"alias":"AudioOutput","plugin":"AudioOutputPulse"},
           {"filename":"master","maxVariation":16,"workspaceFolder":"data/workspaces/rpi3A_4enc_11btn","plugin":"SerializeTrack","alias":"SerializeTrack"},
           {"plugin":"Tempo","alias":"Tempo"}
         ]
