@@ -1,5 +1,6 @@
 #define ZIC_LOG_LEVEL ZIC_LOG_DEBUG
-#define DRAW_ST7789
+// #define DRAW_ST7789
+#define DRAW_FB
 
 #ifndef IS_RPI
 #define DRAW_SDL

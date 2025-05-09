@@ -6,18 +6,20 @@
 #include <vector>
 
 #include "controllerList.h"
+#include "helpers/getExecutableDirectory.h"
 #include "helpers/getTicks.h"
 #include "host.h"
 #include "log.h"
 #include "plugins/components/componentInterface.h"
 #include "plugins/components/view.h"
 #include "styles.h"
-#include "helpers/getExecutableDirectory.h"
 
 #ifdef DRAW_SDL
 #include "draw/drawWithSDL.h"
+#elif defined(DRAW_FB)
+#include "draw/drawWithFB.h"
 #elif defined(DRAW_ST7789)
-#include "draw/draw.h"
+#include "draw/drawWithST7789.h"
 #else
 throw std::runtime_error("No draw implementation");
 #endif
@@ -159,6 +161,10 @@ protected:
 public:
 #ifdef DRAW_SDL
     DrawWithSDL draw;
+#elif defined(DRAW_FB)
+    DrawWithFB draw;
+#elif defined(DRAW_ST7789)
+    DrawWithST7789 draw;
 #else
     Draw draw;
 #endif

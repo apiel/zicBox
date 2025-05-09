@@ -24,7 +24,7 @@ public:
     {
     }
 
-    void quit()
+    void quit() override
     {
         int x, y;
         SDL_GetWindowPosition(window, &x, &y);
@@ -45,6 +45,7 @@ public:
 
     void init() override
     {
+        logDebug("Initializing SDL");
         if (SDL_Init(SDL_INIT_VIDEO) < 0) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not initialize SDL: %s", SDL_GetError());
             throw std::runtime_error("Could not initialize SDL.");

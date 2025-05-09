@@ -315,12 +315,9 @@ public:
     {
     }
 
-    void quit()
-    {
-    }
-
     void init() override
     {
+        logWarn("Initializing draw without Renderer");
     }
 
     void renderNext() override

@@ -56,6 +56,8 @@ public:
 
     void init() override
     {
+        logDebug("Initializing ST7789");
+
         initGpio();
         gpioSetMode(GPIO_TFT_DATA_CONTROL, 0x01); // Data/Control pin to output (0x01)
         spi.init();
@@ -94,6 +96,8 @@ public:
         spi.setSpeed(16000000); // 16 MHz
 #endif
         clear();
+
+        logDebug("ST7789 initialized.");
     }
 
     void render() override
