@@ -1,5 +1,7 @@
 ## Pixel TODO
 
+- FIXME pulse not working in zicOs!!
+
 - TODO dsi display
       - sudo sh -c 'setterm --cursor off --blank force --clear > /dev/tty1'
 

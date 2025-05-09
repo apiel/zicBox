@@ -1,5 +1,4 @@
-#ifndef _UI_DRAW_WITH_SDL_H_
-#define _UI_DRAW_WITH_SDL_H_
+#pragma once
 
 #include <SDL2/SDL.h>
 
@@ -105,5 +104,3 @@ public:
         SDL_SetRenderTarget(renderer, texture);
     }
 };
-
-#endif

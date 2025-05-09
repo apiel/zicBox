@@ -1,21 +1,5 @@
 #pragma once
 
-#include "helpers/gpio.h"
-#include "helpers/st7789.h"
-#include "plugins/components/utils/color.h"
-
-// #define USE_SPI_DEV_MEM
-#ifdef USE_SPI_DEV_MEM
-// sudo apt-get install libraspberradiusYpi-dev raspberradiusYpi-kernel-headers
-// sudo chown 0:0 test2
-// sudo chmod u+s test2
-// see:
-// https://raspberradiusYpi.stackexchange.com/questions/40105/access-gpio-pins-without-root-no-access-to-dev-mem-tradiusY-running-as-root
-#include "helpers/SpiDevMem.h"
-#else
-#include "helpers/SpiDevSpi.h"
-#endif
-
 #include "fonts/fonts.h"
 #include "helpers/range.h"
 #include "log.h"
@@ -27,26 +11,15 @@
 #include <string>
 
 // Let's make a buffer bigger than necessary so we are sure any screen size can fit
-#define ST7789_ROWS 1024
-#define ST7789_COLS 1024
-
-// res go to pin 15
-#define GPIO_TFT_RESET_PIN 22
-// DC go to pin 11
-#define GPIO_TFT_DATA_CONTROL 17
-// BLK go to pin 13 (should be optional or can be connected directly to 3.3v)
-#define GPIO_TFT_BACKLIGHT 27
+#define SCREEN_BUFFER_ROWS 1024
+#define SCREEN_BUFFER_COLS 1024
 
 class Draw : public DrawInterface {
 public:
-    Color screenBuffer[ST7789_ROWS][ST7789_COLS];
-    uint16_t cacheBuffer[ST7789_ROWS][ST7789_COLS];
+    Color screenBuffer[SCREEN_BUFFER_ROWS][SCREEN_BUFFER_COLS];
 
 protected:
     bool needRendering = false;
-
-    Spi spi = Spi(GPIO_TFT_DATA_CONTROL);
-    ST7789 st7789;
 
     void line1px(Point start, Point end, DrawOptions options = {})
     {
@@ -335,7 +308,6 @@ protected:
 public:
     Draw(Styles& styles)
         : DrawInterface(styles)
-        , st7789([&](uint8_t cmd, uint8_t* data, uint32_t len) { spi.sendCmd(cmd, data, len); })
     {
     }
 
@@ -349,44 +321,6 @@ public:
 
     void init() override
     {
-        initGpio();
-        gpioSetMode(GPIO_TFT_DATA_CONTROL, 0x01); // Data/Control pin to output (0x01)
-        spi.init();
-
-#ifdef USE_SPI_DEV_MEM
-        gpioSetMode(GPIO_TFT_RESET_PIN, 1);
-        gpioWrite(GPIO_TFT_RESET_PIN, 1);
-        usleep(120 * 1000);
-        gpioWrite(GPIO_TFT_RESET_PIN, 0);
-        usleep(120 * 1000);
-        gpioWrite(GPIO_TFT_RESET_PIN, 1);
-        usleep(120 * 1000);
-#else
-        // gpioSetMode(GPIO_TFT_RESET_PIN, GPIO_OUTPUT);
-        // gpioWrite(GPIO_TFT_RESET_PIN, 1);
-        // usleep(120 * 1000);
-        // gpioWrite(GPIO_TFT_RESET_PIN, 0);
-        // usleep(120 * 1000);
-        // gpioWrite(GPIO_TFT_RESET_PIN, 1);
-        // usleep(120 * 1000);
-#endif
-
-// Do the initialization with a veradiusY low SPI bus speed, so that it will succeed even if the bus speed chosen by the user is too high.
-#ifdef USE_SPI_DEV_MEM
-        spi.setSpeed(34);
-#else
-        spi.setSpeed(20000);
-#endif
-
-        st7789.init(styles.screen.w, styles.screen.h);
-        usleep(10 * 1000); // Delay a bit before restoring CLK, or otherwise this has been observed to cause the display not init if done back to back after the clear operation above.
-
-#ifdef USE_SPI_DEV_MEM
-        spi.setSpeed(20);
-#else
-        spi.setSpeed(16000000); // 16 MHz
-#endif
-        clear();
     }
 
     void renderNext() override
@@ -402,57 +336,18 @@ public:
         }
     }
 
-    bool fullRendering = false;
-    void fullRender()
-    {
-        uint16_t pixels[ST7789_COLS];
-        for (int i = 0; i < styles.screen.h; i++) {
-            for (int j = 0; j < styles.screen.w; j++) {
-                Color color = screenBuffer[i][j];
-                pixels[j] = st7789.colorToU16(color);
-            }
-            st7789.drawRow(0, i, styles.screen.w, pixels);
-        }
-        fullRendering = false;
-    }
-
     void render() override
     {
-        if (fullRendering) {
-            fullRender();
-            return;
-        }
-
-        uint16_t pixels[ST7789_COLS];
-        for (int i = 0; i < styles.screen.h; i++) {
-            // To not make uneccessaradiusY calls to the display
-            // only send the row of pixels that have changed
-            bool changed = false;
-            for (int j = 0; j < styles.screen.w; j++) {
-                Color color = screenBuffer[i][j];
-                uint16_t rgbU16 = st7789.colorToU16(color);
-                pixels[j] = rgbU16;
-                if (cacheBuffer[i][j] != rgbU16) {
-                    changed = true;
-                }
-                cacheBuffer[i][j] = rgbU16;
-            }
-            if (changed) {
-                st7789.drawRow(0, i, styles.screen.w, pixels);
-            }
-        }
     }
 
     void clear() override
     {
         // Init buffer with background color
-        for (int i = 0; i < ST7789_ROWS; i++) { // here we can do the whole buffer even if it is out of bound
-            for (int j = 0; j < ST7789_COLS; j++) {
+        for (int i = 0; i < SCREEN_BUFFER_ROWS; i++) { // here we can do the whole buffer even if it is out of bound
+            for (int j = 0; j < SCREEN_BUFFER_COLS; j++) {
                 screenBuffer[i][j] = styles.colors.background;
-                cacheBuffer[i][j] = st7789.colorToU16(styles.colors.background);
             }
         }
-        fullRendering = true;
     }
 
     void* getFont(std::string name = NULL, int size = -1) override
@@ -1102,10 +997,6 @@ public:
             if (config.contains("screenSize")) {
                 styles.screen.w = config["screenSize"]["width"].get<int>();
                 styles.screen.h = config["screenSize"]["height"].get<int>();
-            }
-            if (config.contains("st7789")) {
-                st7789.madctl = config["st7789"].value("madctl", st7789.madctl);
-                st7789.displayInverted = config["st7789"].value("inverted", st7789.displayInverted);
             }
         } catch (const std::exception& e) {
             logError("screen config: %s", e.what());

@@ -1,10 +1,10 @@
-#ifndef _UI_DRAW_H_
-#define _UI_DRAW_H_
+#pragma once
 
-#include "../../helpers/i2c.h"
-#include "../../log.h"
-#include "../../plugins/components/drawInterface.h"
-#include "fonts/fonts.h"
+#include "helpers/i2c.h"
+#include "log.h"
+#include "plugins/components/drawInterface.h"
+#include "./fonts/fonts.h"
+
 #include <cmath>
 #include <stdexcept>
 #include <string.h>
@@ -668,5 +668,3 @@ public:
         return false;
     }
 };
-
-#endif

@@ -2,11 +2,11 @@
 #define DRAW_ST7789
 
 #ifndef IS_RPI
-#define USE_DRAW_WITH_SDL
+#define DRAW_SDL
 #endif
 
 #include "config.h"
-#include "draw/ST7789/draw.h"
+#include "draw/draw.h"
 #include "helpers/getTicks.h"
 #include "host.h"
 #include "plugins/controllers/PixelController.h"
@@ -26,7 +26,7 @@ void* uiThread(void* = NULL)
 
     // int ms = 50;
     int ms = 80;
-#ifdef USE_DRAW_WITH_SDL
+#ifdef DRAW_SDL
     logInfo("Rendering with SDL.");
     unsigned long lastUpdate = getTicks();
     while (viewManager.draw.handleEvent(viewManager.view)) {

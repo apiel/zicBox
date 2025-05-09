@@ -14,12 +14,10 @@
 #include "styles.h"
 #include "helpers/getExecutableDirectory.h"
 
-#ifdef DRAW_ST7789
-#ifdef USE_DRAW_WITH_SDL
+#ifdef DRAW_SDL
 #include "draw/drawWithSDL.h"
-#else
+#elif defined(DRAW_ST7789)
 #include "draw/draw.h"
-#endif
 #else
 throw std::runtime_error("No draw implementation");
 #endif
@@ -159,7 +157,7 @@ protected:
     }
 
 public:
-#ifdef USE_DRAW_WITH_SDL
+#ifdef DRAW_SDL
     DrawWithSDL draw;
 #else
     Draw draw;

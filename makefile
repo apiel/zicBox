@@ -20,7 +20,7 @@ BUILD_DIR := build/$(TARGET_PLATFORM)
 OBJ_DIR := build/obj/$(TARGET_PLATFORM)
 
 # track header file to be sure that build is automatically trigger if any dependency changes
-TRACK_HEADER_FILES = -MMD -MF $(OBJ_DIR)/pixel.d
+TRACK_HEADER_FILES = -MMD -MP -MF $(OBJ_DIR)/pixel.d
 
 pixel: pixelLibs buildPixel runPixel
 rebuildPixel: pixelRebuild buildPixel runPixel
