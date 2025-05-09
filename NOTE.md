@@ -4,6 +4,7 @@
 
 - TODO dsi display
       - sudo sh -c 'setterm --cursor off --blank force --clear > /dev/tty1'
+- TODO renderer type selection...
 
 - TODO when pressing mode button in seq view, usually use to show keyboard mode, we could show directional button...
 
@@ -18,7 +19,7 @@
   - investigate if patchbox wouldn't be better or even raspi os lite...
 
 
-
+- TODO mouse on rpi
 
 - TODO need a way to have a list of preset
 

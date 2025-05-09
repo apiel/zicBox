@@ -31,15 +31,8 @@ void loadJsonConfig(std::string configPath)
 
                 // TODO to be implemented...
             }
-            // Should happen before views
-            if (config.contains("screen")) {
-                logInfo("----------- init screen / draw -------------");
-                ViewManager::get().draw.config(config["screen"]);
-            }
-            if (config.contains("views")) {
-                logInfo("----------- init views -------------");
-                ViewManager::get().config(config["views"]);
-            }
+
+            ViewManager::get().config(config);
         }
         logInfo("----------- config done -------------");
     } catch (const std::exception& e) {

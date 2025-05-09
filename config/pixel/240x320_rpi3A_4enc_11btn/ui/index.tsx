@@ -46,6 +46,7 @@ export const ui = {
             [W1_2, halfHeight, W1_2, halfHeight],
         ],
     },
+    // renderer: 'FB',
     views: (
         <>
             <KickView track={KickTrack} synthName="Kick" color={ColorTrack1} />

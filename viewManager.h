@@ -16,13 +16,10 @@
 
 #ifdef DRAW_SDL
 #include "draw/drawWithSDL.h"
-#elif defined(DRAW_FB)
-#include "draw/drawWithFB.h"
-#elif defined(DRAW_ST7789)
-#include "draw/drawWithST7789.h"
-#else
-throw std::runtime_error("No draw implementation");
 #endif
+
+#include "draw/drawWithFB.h"
+#include "draw/drawWithST7789.h"
 
 class ViewManager {
 public:
@@ -79,7 +76,15 @@ protected:
     static ViewManager* instance;
 
     ViewManager()
-        : draw(styles)
+        : drawFB(styles)
+        , drawST7789(styles)
+#ifdef DRAW_SDL
+        , drawSDL(styles)
+        , draw(&drawSDL)
+#else
+        // By default use ST7789
+        , draw(&drawST7789)
+#endif
     {
     }
 
@@ -160,14 +165,13 @@ protected:
 
 public:
 #ifdef DRAW_SDL
-    DrawWithSDL draw;
-#elif defined(DRAW_FB)
-    DrawWithFB draw;
-#elif defined(DRAW_ST7789)
-    DrawWithST7789 draw;
-#else
-    Draw draw;
+    DrawWithSDL drawSDL;
 #endif
+
+    DrawWithFB drawFB;
+    DrawWithST7789 drawST7789;
+
+    Draw* draw = NULL;
 
     float contextVar[256] = { 0 };
 
@@ -181,7 +185,10 @@ public:
 
     void init()
     {
-        draw.init();
+        if (draw == NULL) {
+            throw std::runtime_error("No renderer was initialized");
+        }
+        draw->init();
 
         view = views[0];
         setView(view->name, true);
@@ -198,7 +205,7 @@ public:
             return false;
         }
 
-        draw.clear();
+        draw->clear();
 
         if (lastView != NULL) {
             for (auto& component : lastView->components) {
@@ -226,21 +233,42 @@ public:
 
     void config(nlohmann::json& config)
     {
-        if (config.is_array()) {
-            for (auto& v : config) {
-                // TODO Might want to move all this in view!!!
-                if (v.contains("name") && v.contains("components") && v["components"].is_array()) {
-                    logTrace("Loading view %s", v["name"].get<std::string>().c_str());
-                    View* newView = new View(draw, [&](std::string name) { setView(name); }, contextVar);
-                    newView->name = v["name"];
-                    try {
-                        // TODO how to handle extra config?
-                        views.push_back(newView);
-                        for (auto& component : v["components"]) {
-                            addComponent(component, newView);
+#ifndef DRAW_SDL
+        if (config.contains("renderer")) {
+            std::string renderer = config["renderer"].get<std::string>();
+            if (renderer == "FB") {
+                draw = &drawFB;
+            } else if (renderer == "ST7789") {
+                draw = &drawST7789;
+            }
+        }
+#endif
+
+        // Should happen before views
+        if (config.contains("screen")) {
+            logInfo("----------- init screen / draw -------------");
+            draw->config(config["screen"]);
+        }
+
+        if (config.contains("views")) {
+            logInfo("----------- init views -------------");
+            nlohmann::json& viewsConfig = config["views"];
+            if (viewsConfig.is_array()) {
+                for (auto& v : viewsConfig) {
+                    // TODO Might want to move all this in view!!!
+                    if (v.contains("name") && v.contains("components") && v["components"].is_array()) {
+                        logTrace("Loading view %s", v["name"].get<std::string>().c_str());
+                        View* newView = new View(*draw, [&](std::string name) { setView(name); }, contextVar);
+                        newView->name = v["name"];
+                        try {
+                            // TODO how to handle extra config?
+                            views.push_back(newView);
+                            for (auto& component : v["components"]) {
+                                addComponent(component, newView);
+                            }
+                        } catch (const std::exception& e) {
+                            logError("view %s config: %s", newView->name.c_str(), e.what());
                         }
-                    } catch (const std::exception& e) {
-                        logError("view %s config: %s", newView->name.c_str(), e.what());
                     }
                 }
             }

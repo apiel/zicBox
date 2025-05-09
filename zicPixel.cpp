@@ -1,6 +1,4 @@
 #define ZIC_LOG_LEVEL ZIC_LOG_DEBUG
-// #define DRAW_ST7789
-#define DRAW_FB
 
 #ifndef IS_RPI
 #define DRAW_SDL
@@ -30,7 +28,7 @@ void* uiThread(void* = NULL)
 #ifdef DRAW_SDL
     logInfo("Rendering with SDL.");
     unsigned long lastUpdate = getTicks();
-    while (viewManager.draw.handleEvent(viewManager.view)) {
+    while (viewManager.draw->handleEvent(viewManager.view)) {
         unsigned long now = getTicks();
         if (now - lastUpdate > ms) {
             lastUpdate = now;
@@ -47,7 +45,7 @@ void* uiThread(void* = NULL)
     }
 #endif
 
-    viewManager.draw.quit();
+    viewManager.draw->quit();
     return NULL;
 }
 
