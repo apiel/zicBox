@@ -16,9 +16,9 @@
 
 #ifdef DRAW_ST7789
 #ifdef USE_DRAW_WITH_SDL
-#include "draw/ST7789/drawWithSDL.h"
+#include "draw/drawWithSDL.h"
 #else
-#include "draw/ST7789/draw.h"
+#include "draw/draw.h"
 #endif
 #else
 throw std::runtime_error("No draw implementation");
