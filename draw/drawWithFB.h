@@ -1,5 +1,8 @@
 #pragma once
 
+// to remove blinking cursor
+// sudo sh -c 'setterm --cursor off --blank force --clear > /dev/tty1'
+
 #include "./draw.h"
 
 #include <fcntl.h>
@@ -70,9 +73,9 @@ public:
 
     void render() override
     {
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                int location = x * finfo.line_length + y * (vinfo.bits_per_pixel / 8);
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int location = y * finfo.line_length + x * (vinfo.bits_per_pixel / 8);
 
                 Color color = screenBuffer[y][x];
                 uint16_t rgb565 = ((color.r & 0xF8) << 8) | ((color.g & 0xFC) << 3) | (color.b >> 3);
