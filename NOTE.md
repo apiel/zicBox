@@ -1,6 +1,6 @@
 ## Pixel TODO
 
-- FIXME pulse not working in zicOs!!
+- FIXME pulse not working in zicOs!! seems to work???
 
 - TODO dsi display
       - sudo sh -c 'setterm --cursor off --blank force --clear > /dev/tty1'
@@ -13,25 +13,28 @@
   - need to make zicOs work on rpi3 and rpi0
   - auto detect hardware?
 
-- FIXME zicOs slow to start, seems to be because of udhcpc
-  - so maybe the wifi connection should not be a priority and even start it on demand and not as a service
-  - also we have to look if alternatively, we could communicate over usb... but isnt the usb port only to power...
-  - investigate if patchbox wouldn't be better or even raspi os lite...
 
 
-- TODO mouse on rpi
-
-- TODO need a way to have a list of preset
-
-- TODO mute shortcut
-
-- TODO capture, like on ableton move
 
 - TODO see if zicOs can also work with rpi3a+
 - TODO system to differenciate hardware rpi3 vs cm4 vs rpi0
 
 - TODO drag and drop editor!! 
     ---> should this be a web interface, that show result in live on the hardware... The web interface just allow to drag some abstract element and let us configure them, but final rendering happen in the hardware..
+
+- TODO mouse on rpi
+
+- FIXME zicOs slow to start, seems to be because of udhcpc
+  - so maybe the wifi connection should not be a priority and even start it on demand and not as a service
+  - also we have to look if alternatively, we could communicate over usb... but isnt the usb port only to power...
+  - investigate if patchbox wouldn't be better or even raspi os lite...
+
+
+- TODO need a way to have a list of preset
+
+- TODO mute shortcut
+
+- TODO capture, like on ableton move
 
 - TODO serialize in json format!
 

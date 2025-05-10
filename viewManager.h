@@ -248,6 +248,7 @@ public:
         if (config.contains("screen")) {
             logInfo("----------- init screen / draw -------------");
             draw->config(config["screen"]);
+            logDebug("init screen / draw done.");
         }
 
         if (config.contains("views")) {
@@ -272,6 +273,7 @@ public:
                     }
                 }
             }
+            logDebug("init views done.");
         }
     }
 };
