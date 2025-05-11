@@ -1,7 +1,7 @@
 import * as React from '@/libs/react';
 
-import { CreateWorkspaceView } from '../menu/CreateWorkspaceView';
 import { TempoView } from '../Tempo/TempoView';
+import { CreateWorkspaceView } from './CreateWorkspaceView';
 import { FileServerView } from './FileServerView';
 import { MenuView } from './menuView';
 import { ShutdownView } from './ShutdownView';
