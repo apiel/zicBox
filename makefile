@@ -92,10 +92,10 @@ release:
 
 releaseOs:
 	@echo "Creating GitHub release of zicOs..."
-	- rm build/zicOs_cm4.zip
-	zip -r build/zicOs_cm4.zip ../zicOs/buildroot/output/images/sdcard.img
+	- rm build/zicOs.zip
+	zip -r build/zicOs.zip ../zicOs/buildroot/output/images/sdcard.img
 	- gh release delete zicOs -y
-	gh release create zicOs build/zicOs_cm4.zip --title "Latest zicOs release" --notes "This release contains the zicOs firmware for cm4."
+	gh release create zicOs build/zicOs.zip --title "Latest zicOs release" --notes "This release contains the zicOs (64 bit) for cm4, rpi4, rpi3 and rpi zero 2w."
 
 PI_TARGET = root@zic.local
 PI_PASSWORD = password

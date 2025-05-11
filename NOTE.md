@@ -1,33 +1,41 @@
 ## Pixel TODO
 
-- FIXME pulse not working in zicOs!! seems to work???
-
-- TODO dsi display
-      - sudo sh -c 'setterm --cursor off --blank force --clear > /dev/tty1'
-- TODO renderer type selection...
-
-- TODO when pressing mode button in seq view, usually use to show keyboard mode, we could show directional button...
-
 - TODO support hardware
   - need to find a way to organize project base on hardware, be able to keep multiple design run in parallel without to break things
-  - need to make zicOs work on rpi3 and rpi0
   - auto detect hardware?
+  - system to differenciate hardware rpi3 vs cm4 vs rpi0
+
+- TODO could make zicBox start pulse audio or restart it...
+  - maybe could also put starting pulse as part of S95zicbox but then difficult to restart pulse!!
 
 
 
 
-- TODO see if zicOs can also work with rpi3a+
-- TODO system to differenciate hardware rpi3 vs cm4 vs rpi0
 
 - TODO drag and drop editor!! 
     ---> should this be a web interface, that show result in live on the hardware... The web interface just allow to drag some abstract element and let us configure them, but final rendering happen in the hardware..
 
+- TODO when pressing mode button in seq view, usually use to show keyboard mode, we could show directional button...
+
+
+
+
+
+
 - TODO mouse on rpi
+- TODO enable motion/mouse on desktop
+  - when mouse over envelop, some point/circle appear to show what can be dragged...
+
+- TODO dsi display
+      - sudo sh -c 'setterm --cursor off --blank force --clear > /dev/tty1'
+
+- FIXME pulse not working in zicOs!! seems to work???
 
 - FIXME zicOs slow to start, seems to be because of udhcpc
   - so maybe the wifi connection should not be a priority and even start it on demand and not as a service
   - also we have to look if alternatively, we could communicate over usb... but isnt the usb port only to power...
   - investigate if patchbox wouldn't be better or even raspi os lite...
+  - remove useless service like cron
 
 
 - TODO need a way to have a list of preset
@@ -55,9 +63,6 @@
 - TODO cache tracks or bar into an audio buffer <-- this can only work if there if no step condition, no step motion, no sample and hold...
 
 - TODO advance sample player (with granular??)
-
-- TODO enable motion/mouse on desktop
-  - when mouse over envelop, some point/circle appear to show what can be dragged...
 
 - TODO alsa auto scale latency: Dynamic latency management
 

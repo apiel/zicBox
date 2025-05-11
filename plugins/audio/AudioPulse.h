@@ -22,6 +22,7 @@ protected:
 
     virtual pa_simple* newDevice(const pa_sample_spec streamFormat) = 0;
 
+    int retry = 0;
     void open()
     {
         logDebug("AudioPulse::open");
@@ -40,6 +41,12 @@ protected:
         device = newDevice(streamFormat);
         if (!device) {
             logError("ERROR: pa_simple_new() failed: %s", pa_strerror(pa_context_errno(NULL)));
+            if (retry < 2) {
+                retry++;
+                logInfo("AudioPulse::open retry (%d)", retry);
+                system("/etc/init.d/S94pulseaudio restart");
+                open();
+            }
             return;
         }
         logDebug("AudioPulse::open done");
