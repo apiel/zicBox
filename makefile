@@ -81,14 +81,22 @@ release:
 	@echo "Creating GitHub release..."
 	- rm build/x86.zip
 	- rm build/arm.zip
+	@echo "Build generic..."
 	cd build/x86 && zip -r ../x86.zip .
 	cd build/arm && zip -r ../arm.zip .
 	cp build/x86.zip build/x86_full.zip
 	cp build/arm.zip build/arm_full.zip
+	npm run build
 	zip -r build/x86_full.zip data
 	zip -r build/arm_full.zip data
+	@echo "Build rpi3..."
+	cp build/x86_full.zip build/x86_rpi3.zip
+	cp build/arm_full.zip build/arm_rpi3.zip
+	npm run build:rpi3
+	zip -r build/x86_rpi3.zip data/config.json
+	zip -r build/arm_rpi3.zip data/config.json
 	- gh release delete latest -y
-	gh release create latest build/x86.zip build/arm.zip build/x86_full.zip build/arm_full.zip --title "Latest firmware release" --notes "This release contains the firmware for x86 and arm, with all the libs. Full version contains as well the data folder, with default configs, samples and weirds presets."
+	gh release create latest build/x86.zip build/arm.zip build/x86_full.zip build/arm_full.zip build/x86_rpi3.zip build/arm_rpi3.zip --title "Latest firmware release" --notes "This release contains the firmware for x86 and arm, with all the libs. Full version contains as well the data folder, with default configs, samples and weirds presets."
 
 releaseOs:
 	@echo "Creating GitHub release of zicOs..."

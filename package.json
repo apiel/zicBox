@@ -1,13 +1,15 @@
 {
-  "scripts": {
-    "build": "ts-node config/pixel/v1/main.tsx",
-    "dev": "ts-node-dev --respawn config/pixel/v1/main.tsx"
-  },
-  "devDependencies": {
-    "@types/node": "^22.13.5",
-    "ts-node": "^10.9.2",
-    "ts-node-dev": "^2.0.0",
-    "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.7.2"
-  }
+    "scripts": {
+        "build": "ts-node config/pixel/rpi3/main.tsx",
+        "dev": "ts-node-dev --respawn config/pixel/rpi3/main.tsx",
+        "build:rpi3": "ts-node config/pixel/rpi3/main.tsx",
+        "dev:rpi3": "ts-node-dev --respawn config/pixel/rpi3/main.tsx"
+    },
+    "devDependencies": {
+        "@types/node": "^22.13.5",
+        "ts-node": "^10.9.2",
+        "ts-node-dev": "^2.0.0",
+        "tsconfig-paths": "^4.2.0",
+        "typescript": "^5.7.2"
+    }
 }

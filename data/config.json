@@ -95,7 +95,7 @@
     ],
     "autoSave": 500
   },
-  "pixelController": "rpiCM4_4enc_11btn",
+  "pixelController": "rpi3A_4enc_11btn",
   "screen": {
     "windowPosition": {
       "x": 400,

@@ -2,12 +2,8 @@
 
 - TODO support hardware
   - need to find a way to organize project base on hardware, be able to keep multiple design run in parallel without to break things
-  - auto detect hardware?
-  - system to differenciate hardware rpi3 vs cm4 vs rpi0
-
-- TODO could make zicBox start pulse audio or restart it...
-  - maybe could also put starting pulse as part of S95zicbox but then difficult to restart pulse!!
-
+    -----> let just release different versions
+    ----------> need to build the image base zicBox folder?
 
 
 
