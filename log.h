@@ -32,6 +32,7 @@ void logTrace(std::string message)
 {
 #if ZIC_LOG_LEVEL <= ZIC_LOG_TRACE
     printf("\033[35m[trace]\033[0m %s\n", message.c_str());
+    fflush(stdout);
 #endif
 }
 
@@ -44,6 +45,7 @@ void logTrace(const char* message, ...)
     vprintf(message, args);
     printf("\n");
     va_end(args);
+    fflush(stdout);
 #endif
 }
 
@@ -51,6 +53,7 @@ void logDebug(std::string message)
 {
 #if ZIC_LOG_LEVEL <= ZIC_LOG_DEBUG
     printf("\033[32m[debug]\033[0m %s\n", message.c_str());
+    fflush(stdout);
 #endif
 }
 
@@ -63,6 +66,7 @@ void logDebug(const char* message, ...)
     vprintf(message, args);
     printf("\n");
     va_end(args);
+    fflush(stdout);
 #endif
 }
 
@@ -70,6 +74,7 @@ void logInfo(std::string message)
 {
 #if ZIC_LOG_LEVEL <= ZIC_LOG_INFO
     printf("\033[34m[info]\033[0m %s\n", message.c_str());
+    fflush(stdout);
 #endif
 }
 
@@ -82,6 +87,7 @@ void logInfo(const char* message, ...)
     vprintf(message, args);
     printf("\n");
     va_end(args);
+    fflush(stdout);
 #endif
 }
 
@@ -89,6 +95,7 @@ void logWarn(std::string message)
 {
 #if ZIC_LOG_LEVEL <= ZIC_LOG_WARN
     printf("\033[33m[warn]\033[0m %s\n", message.c_str());
+    fflush(stdout);
 #endif
 }
 
@@ -101,6 +108,7 @@ void logWarn(const char* message, ...)
     vprintf(message, args);
     printf("\n");
     va_end(args);
+    fflush(stdout);
 #endif
 }
 
@@ -108,6 +116,7 @@ void logError(std::string message)
 {
 #if ZIC_LOG_LEVEL <= ZIC_LOG_ERROR
     printf("\033[31m[error]\033[0m %s\n", message.c_str());
+    fflush(stdout);
 #endif
 }
 
@@ -120,6 +129,7 @@ void logError(const char* message, ...)
     vprintf(message, args);
     printf("\n");
     va_end(args);
+    fflush(stdout);
 #endif
 }
 

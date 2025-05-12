@@ -97,7 +97,7 @@ releaseOs:
 	- gh release delete zicOs -y
 	gh release create zicOs build/zicOs.zip --title "Latest zicOs release" --notes "This release contains the zicOs (64 bit) for cm4, rpi4, rpi3 and rpi zero 2w."
 
-PI_TARGET = root@zic.local
+PI_TARGET ?= root@zic.local
 PI_PASSWORD = password
 PI_REMOTE_DIR = /opt/zicBox
 make pi:
