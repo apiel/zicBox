@@ -105,6 +105,15 @@ releaseOs:
 	- gh release delete zicOs -y
 	gh release create zicOs build/zicOs.zip --title "Latest zicOs release" --notes "This release contains the zicOs (64 bit) for cm4, rpi4, rpi3 and rpi zero 2w."
 
+releaseOsRpi3:
+	@echo "Creating GitHub release of zicOs for rpi3..."
+	npm run build:rpi3
+	cd ../zicOs/buildroot && ZICBOX_PATH=/home/alex/Music/zicBox make
+	- rm build/zicOsRpi3.zip
+	zip -r build/zicOsRpi3.zip ../zicOs/buildroot/output/images/sdcard.img
+	- gh release delete zicOsRpi3 -y
+	gh release create zicOsRpi3 build/zicOsRpi3.zip --title "zicOs zic Pixel Rpi3A+" --notes "This release contains the zicOs (64 bit) for zic Pixel rpi3A+ version."
+
 PI_TARGET ?= root@zic.local
 PI_PASSWORD = password
 PI_REMOTE_DIR = /opt/zicBox

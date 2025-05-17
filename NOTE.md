@@ -1,13 +1,5 @@
 ## Pixel TODO
 
-- TODO support hardware
-  - need to find a way to organize project base on hardware, be able to keep multiple design run in parallel without to break things
-    -----> let just release different versions
-    ----------> need to build the image base zicBox folder?
-
-
-
-
 - TODO drag and drop editor!! 
     ---> should this be a web interface, that show result in live on the hardware... The web interface just allow to drag some abstract element and let us configure them, but final rendering happen in the hardware..
 
