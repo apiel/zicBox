@@ -32,6 +32,8 @@
 
 - TODO capture, like on ableton move
 
+- TODO play sound dj style :p so next to live playing, could also play a full sound...
+
 - TODO serialize in json format!
 
 - TODO patch or pattern morphing between 2 kicks for example...
