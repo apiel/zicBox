@@ -1,11 +1,18 @@
 ## Pixel TODO
 
+- TODO pixel+ zero
+
 - TODO drag and drop editor!! 
     ---> should this be a web interface, that show result in live on the hardware... The web interface just allow to drag some abstract element and let us configure them, but final rendering happen in the hardware..
 
 - TODO when pressing mode button in seq view, usually use to show keyboard mode, we could show directional button...
 
 
+
+- TODO rpi0 drum machine
+  - master drum, that can then be recorded
+  - multi voice sample player (need to figure out how many sample could be played at once?)
+  - if we remove probability and randomness, could cache tracks and therefor could almost play as much samples as we want at once...
 
 
 
