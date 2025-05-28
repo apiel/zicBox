@@ -13,12 +13,20 @@
 #include "styles.h"
 #include "viewManager.h"
 
+#include <cstdlib>
+
 bool appRunning = true;
 
 void* uiThread(void* = NULL)
 {
     ViewManager& viewManager = ViewManager::get();
     viewManager.init();
+
+    if (getenv("START_VIEW") && getenv("START_VIEW")[0] != '\0') {
+        logInfo("Env variable starting view: %s", getenv("START_VIEW"));
+        viewManager.setView(getenv("START_VIEW"));
+    }
+
     if (!viewManager.render()) {
         printf("No view were initialized to be rendered.");
         return NULL;
@@ -37,6 +45,7 @@ void* uiThread(void* = NULL)
         }
         usleep(1);
     }
+    appRunning = false;
 #else
     int us = ms * 1000;
     while (appRunning) {
@@ -69,7 +78,11 @@ int main(int argc, char* argv[])
     std::string configFilepath = argc >= 2 ? argv[1] : "data/config.json";
     loadJsonConfig(configFilepath);
 
-    pthread_t watcherTid = configWatcher({ configFilepath, appRunning });
+    pthread_t watcherTid = configWatcher(configFilepath, &appRunning, []() {
+        ViewManager& viewManager = ViewManager::get();
+        printf("RESTART: %s\n", viewManager.view->name.c_str());
+        fflush(stdout);
+    });
 
     showLogLevel();
 

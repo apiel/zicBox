@@ -22,8 +22,7 @@ OBJ_DIR := build/obj/$(TARGET_PLATFORM)
 # track header file to be sure that build is automatically trigger if any dependency changes
 TRACK_HEADER_FILES = -MMD -MP -MF $(OBJ_DIR)/pixel.d
 
-pixel: pixelLibs buildPixel runPixel
-rebuildPixel: pixelRebuild buildPixel runPixel
+pixel: pixelLibs buildPixel watchPixel
 
 sync:
 	bash sync.sh
@@ -53,6 +52,10 @@ $(BUILD_DIR)/pixel:
 
 # Safeguard: include only if .d files exist
 -include $(wildcard $(OBJ_DIR)/pixel.d)
+
+watchPixel:
+	@echo "\n------------------ watch zicPixel ------------------\n"
+	./watch.sh
 
 runPixel:
 	@echo "\n------------------ run zicPixel $(TARGET_PLATFORM) ------------------\n"
