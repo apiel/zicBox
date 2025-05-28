@@ -6,13 +6,14 @@
 
 #include "config.h"
 #include "draw/draw.h"
+#include "helpers/configWatcher.h"
 #include "helpers/getTicks.h"
 #include "host.h"
 #include "plugins/controllers/PixelController.h"
 #include "styles.h"
 #include "viewManager.h"
 
-// Make from scratch UI
+bool appRunning = true;
 
 void* uiThread(void* = NULL)
 {
@@ -28,7 +29,7 @@ void* uiThread(void* = NULL)
 #ifdef DRAW_SDL
     logInfo("Rendering with SDL.");
     unsigned long lastUpdate = getTicks();
-    while (viewManager.draw->handleEvent(viewManager.view)) {
+    while (viewManager.draw->handleEvent(viewManager.view) && appRunning) {
         unsigned long now = getTicks();
         if (now - lastUpdate > ms) {
             lastUpdate = now;
@@ -38,7 +39,7 @@ void* uiThread(void* = NULL)
     }
 #else
     int us = ms * 1000;
-    while (true) {
+    while (appRunning) {
         unsigned long now = getTicks();
         viewManager.renderComponents(now);
         usleep(us);
@@ -50,7 +51,7 @@ void* uiThread(void* = NULL)
 }
 
 int main(int argc, char* argv[])
-{    
+{
     loadHostPlugin();
 
     // styles.colors.primary = { 0x3a, 0x7d, 0x80 }; // #3a7d80
@@ -65,7 +66,10 @@ int main(int argc, char* argv[])
 
     lastPluginControllerInstance = new PixelController(controllerProps, 0);
 
-    loadJsonConfig(argc >= 2 ? argv[1] : "data/config.json");
+    std::string configFilepath = argc >= 2 ? argv[1] : "data/config.json";
+    loadJsonConfig(configFilepath);
+
+    pthread_t watcherTid = configWatcher({ configFilepath, appRunning });
 
     showLogLevel();
 
@@ -77,6 +81,9 @@ int main(int argc, char* argv[])
 
     // wait for uiThread to finish
     pthread_join(ptid, NULL);
+    if (watcherTid != 0) {
+        pthread_join(watcherTid, NULL);
+    }
 
     return 0;
 }

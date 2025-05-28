@@ -1,7 +1,6 @@
 ## Pixel TODO
 
-- TODO pixel+ zero
-
+- TODO when config file change, restart app and bring back to the view
 - TODO drag and drop editor!! 
     ---> should this be a web interface, that show result in live on the hardware... The web interface just allow to drag some abstract element and let us configure them, but final rendering happen in the hardware..
 

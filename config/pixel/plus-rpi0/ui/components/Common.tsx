@@ -1,8 +1,6 @@
 import * as React from '@/libs/react';
 
-import { SeqProgressBar } from '@/libs/nativeComponents/SeqProgressBar';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
-import { rgb } from '@/libs/ui';
 import {
     btn1,
     btn2,
@@ -15,8 +13,7 @@ import {
     btnDown,
     btnShift,
     btnUp,
-    KeyInfoPosition,
-    ScreenWidth,
+    KeyInfoPosition
 } from '../constants';
 import { ShiftedTextGrid } from './ShiftedTextGrid';
 
@@ -31,56 +28,21 @@ export const Sample2 = 'Sample2';
 export const Sample3 = 'Sample3';
 
 export function Common({
-    hideSequencer,
-    track,
     selectedBackground,
     selected,
     synthName,
 }: {
-    hideSequencer?: boolean;
-    track: number;
+    track: number; // To be deprecated ??
     selectedBackground?: string;
     selected: string;
     synthName: string;
 }) {
     return (
         <>
-            {!hideSequencer && (
-                <SeqProgressBar
-                    bounds={[0, 0, ScreenWidth, 5]}
-                    audioPlugin="Sequencer"
-                    activeColor={rgb(35, 161, 35)}
-                    selectionColor={rgb(35, 161, 35)}
-                    fgColor={rgb(34, 110, 34)}
-                    volumePlugin={{ plugin: 'TrackFx', param: 'VOLUME' }}
-                    showSteps
-                    track={track}
-                />
-            )}
-
             <ShiftedTextGrid selectedBackground={selectedBackground} selected={selected} />
 
             <TextGrid
                 bounds={KeyInfoPosition}
-                // C major pentatonic scale
-                // rows={['A4 C5 D5 E5', 'C4 D4 E4 G4']}
-                // keys={[
-                //     { key: btn1, action: `noteOn:${synthName}:69` },
-                //     { key: btn2, action: `noteOn:${synthName}:72` },
-                //     { key: btn3, action: `noteOn:${synthName}:74` },
-                //     { key: btn4, action: `noteOn:${synthName}:76` },
-
-                //     { key: btn5, action: `noteOn:${synthName}:60` },
-                //     { key: btn6, action: `noteOn:${synthName}:62` },
-                //     { key: btn7, action: `noteOn:${synthName}:64` },
-                //     { key: btn8, action: `noteOn:${synthName}:67` },
-
-                //     { key: btnUp, action: `noteOn:${synthName}:60` },
-                //     { key: btnDown, action: 'contextToggle:253:1:0' },
-                //     // { key: btnDown, action: 'debug:yoyoyoyo' },
-                //     { key: btnShift, action: 'contextToggle:254:1:0' },
-                // ]}
-
                 // C Major scale
                 rows={['G4 A4 B4 C5', 'C4 D4 E4 F4']}
                 keys={[

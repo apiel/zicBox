@@ -48,7 +48,6 @@ export function SeqView({
             {textGrid}
             <Common
                 selected={synthName}
-                hideSequencer
                 track={track}
                 selectedBackground={color}
                 synthName={synthName}
