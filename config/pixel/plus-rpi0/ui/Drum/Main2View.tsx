@@ -55,6 +55,7 @@ export function Main2View({ name, track, synthName, color }: Props) {
                     <TracksSelector
                         selectedBackground={color}
                         selected={Drum1}
+                        trackName={Drum1}
                         viewName={name}
                         pageCount={2}
                         currentPage={2}

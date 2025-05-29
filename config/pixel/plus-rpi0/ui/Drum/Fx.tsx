@@ -1,7 +1,7 @@
 import * as React from '@/libs/react';
 
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
-import { TracksSelector } from '../components/Common';
+import { Drum1, TracksSelector } from '../components/Common';
 import { encBottomLeft, encBottomRight, encTopLeft, encTopRight } from '../constants';
 import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
 import { Layout } from './Layout';
@@ -61,7 +61,7 @@ export function FxView({ name, track, synthName, color }: Props) {
                         pageCount={2}
                         currentPage={1}
                     />
-                    <TracksSelector selectedBackground={color} viewName={name} />
+                    <TracksSelector selectedBackground={color} viewName={name} trackName={Drum1} />
                 </>
             }
         />

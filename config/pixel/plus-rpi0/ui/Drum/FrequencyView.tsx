@@ -1,7 +1,7 @@
 import * as React from '@/libs/react';
 
 import { MacroEnvelop } from '@/libs/nativeComponents/MacroEnvelop';
-import { TracksSelector } from '../components/Common';
+import { Drum1, TracksSelector } from '../components/Common';
 import { fullValues } from '../constantsValue';
 import { Layout } from './Layout';
 import { ViewSelector } from './ViewSelector';
@@ -32,7 +32,7 @@ export function FrequencyView({ name, track, synthName, color }: Props) {
                         synthName={synthName}
                         viewName={name}
                     />
-                    <TracksSelector selectedBackground={color} viewName={name} />
+                    <TracksSelector selectedBackground={color} viewName={name} trackName={Drum1} />
                 </>
             }
         />

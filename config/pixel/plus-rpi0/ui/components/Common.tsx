@@ -128,18 +128,18 @@ export function ShiftedTextGrid({
     );
 }
 
-export function TracksSelector({
+function TracksSelectorSub({
     selectedBackground,
     selected,
     viewName,
     pageCount,
     currentPage,
-    contextValue = 0,
+    contextValue,
 }: {
     selectedBackground?: string;
     selected?: string;
     viewName: string;
-    contextValue?: number;
+    contextValue: number;
     pageCount?: number;
     currentPage?: number;
 }) {
@@ -170,6 +170,43 @@ export function TracksSelector({
     );
 }
 
+export function TracksSelector({
+    selectedBackground,
+    selected,
+    trackName,
+    viewName,
+    pageCount,
+    currentPage,
+}: {
+    selectedBackground?: string;
+    selected?: string;
+    trackName: string;
+    viewName: string;
+    pageCount?: number;
+    currentPage?: number;
+}) {
+    return (
+        <>
+            <TracksSelectorSub
+                selectedBackground={selectedBackground}
+                selected={selected}
+                viewName={viewName}
+                pageCount={pageCount}
+                currentPage={currentPage}
+                contextValue={0}
+            />
+            <TracksSelectorSub
+                selectedBackground={selectedBackground}
+                selected={trackName}
+                viewName={viewName}
+                pageCount={pageCount}
+                currentPage={currentPage}
+                contextValue={1}
+            />
+        </>
+    );
+}
+
 export function MuteTracks() {
     return (
         <TextGrid
@@ -183,9 +220,11 @@ export function MuteTracks() {
 
 export function MainKeys() {
     return (
-        <HiddenValue keys={[
-            { key: left1, action: 'setView:Clips' },
-            { key: left2, action: 'contextToggleOnRelease:254:1:0' },
-        ]} />
+        <HiddenValue
+            keys={[
+                { key: left1, action: 'setView:Clips' },
+                { key: left2, action: 'contextToggleOnRelease:254:1:0' },
+            ]}
+        />
     );
 }

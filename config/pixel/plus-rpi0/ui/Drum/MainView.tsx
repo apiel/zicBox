@@ -58,6 +58,7 @@ export function MainView({ name, track, synthName, color }: Props) {
                         selectedBackground={color}
                         selected={Drum1}
                         viewName={name}
+                        trackName={Drum1}
                         pageCount={2}
                         currentPage={1}
                     />

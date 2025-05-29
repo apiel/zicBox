@@ -2,7 +2,7 @@ import * as React from '@/libs/react';
 
 import { GraphEncoder } from '@/libs/nativeComponents/GraphEncoder';
 import { Value } from '@/libs/nativeComponents/Value';
-import { TracksSelector } from '../components/Common';
+import { Drum1, TracksSelector } from '../components/Common';
 import { encBottomLeft, encBottomRight, encTopLeft, encTopRight, ScreenWidth } from '../constants';
 import { graphCenterValues } from '../constantsValue';
 import { Layout } from './Layout';
@@ -85,7 +85,7 @@ export function WaveformView({ name, track, synthName, color }: Props) {
                         synthName={synthName}
                         viewName={name}
                     />
-                    <TracksSelector selectedBackground={color} viewName={name} />
+                    <TracksSelector selectedBackground={color} viewName={name} trackName={Drum1} />
                 </>
             }
         />
