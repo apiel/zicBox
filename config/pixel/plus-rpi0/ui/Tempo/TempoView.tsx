@@ -1,7 +1,6 @@
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
 import * as React from '@/libs/react';
-import { ShiftedTextGrid, TracksTextGrid } from '../components/ShiftedTextGrid';
 import { Title } from '../components/Title';
 import { encTopLeft, MasterTrack } from '../constants';
 import { topLeftKnob } from '../constantsValue';
@@ -49,8 +48,8 @@ export function TempoView({ name }: Props) {
                 track={track}
             /> */}
 
-            <ShiftedTextGrid selected={name} />
-            <TracksTextGrid selected={name} contextValue={0} />
+            {/* <ShiftedTextGrid selected={name} />
+            <TracksTextGrid selected={name} contextValue={0} /> */}
         </View>
     );
 }

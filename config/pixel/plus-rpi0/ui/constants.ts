@@ -22,8 +22,8 @@ export const W8_8 = W1_8 * 8;
 export const KeyTopInfoPosition = [140, 284, 100, 12];
 
 export const KeyInfoPosition = [0, 296, ScreenWidth];
-// export const KeyInfoPosition = [0, 296, ScreenWidth];
-// export const SideKeyInfoPosition = [ScreenWidth - 16, 270, 16, 26];
+export const SelectorPosition = [0, 296, ScreenWidth];
+export const SelectorPosition2 = [0, 308, ScreenWidth];
 
 export const SideColor = rgb(58, 84, 92);
 
@@ -51,11 +51,13 @@ export const btn1 = 'a';
 export const btn2 = 's';
 export const btn3 = 'd';
 export const btn4 = 'f';
+export const btn5 = 'g';
 
-export const btn5 = 'z';
-export const btn6 = 'x';
-export const btn7 = 'c';
-export const btn8 = 'v';
+export const btn6 = 'z';
+export const btn7 = 'x';
+export const btn8 = 'c';
+export const btn9 = 'v';
+export const btn10 = 'b';
 
 export const btnUp = 'F4';
 export const btnDown = '4';

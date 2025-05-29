@@ -7,6 +7,7 @@ import { FxView } from './Fx';
 import { Fx2View } from './Fx2';
 import { Layer2View } from './Layer2View';
 import { Layer2_2View } from './Layer2_2View';
+import { Main2View } from './Main2View';
 import { MainView } from './MainView';
 import { ViewSelector } from './ViewSelector';
 import { WaveformView } from './WaveformView';
@@ -17,12 +18,13 @@ export type Props = {
     color: string;
 };
 
-export function KickView({ track, synthName, color }: Props) {
+export function DrumView({ track, synthName, color }: Props) {
     return (
         <>
             <MainView name={synthName} track={track} synthName={synthName} color={color} />
+            <Main2View name={`${synthName}:page2`} track={track} synthName={synthName} color={color} />
             <FxView name={`${synthName}Fx`} track={track} synthName={synthName} color={color} />
-            <Fx2View name={`${synthName}Fx2`} track={track} synthName={synthName} color={color} />
+            <Fx2View name={`${synthName}Fx:page2`} track={track} synthName={synthName} color={color} />
             <WaveformView
                 name={`${synthName}Waveform`}
                 track={track}
@@ -48,7 +50,7 @@ export function KickView({ track, synthName, color }: Props) {
                 color={color}
             />
             <Layer2_2View
-                name={`${synthName}Layer2_2`}
+                name={`${synthName}Layer2:page2`}
                 track={track}
                 synthName={synthName}
                 color={color}

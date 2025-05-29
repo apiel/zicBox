@@ -2,16 +2,20 @@ import * as React from '@/libs/react';
 import { ClipsView } from './ClipsView/ClipsView';
 import {
     ColorTrack1,
-    ColorTrack7,
-    ColorTrack8,
-    KickTrack,
-    Sample1Track,
-    Sample2Track,
+    ColorTrack2,
+    ColorTrack3,
+    ColorTrack4,
+    ColorTrack5,
+    Drum1Track,
+    Rack1Track,
+    Rack2Track,
+    Rack3Track,
+    Rack4Track,
     ScreenHeight,
     ScreenWidth,
     W1_2
 } from './constants';
-import { KickView } from './Kick/KickView';
+import { DrumView } from './Drum/DrumView';
 import { Menu } from './menu';
 import { SampleView } from './Sample/SampleView';
 
@@ -38,10 +42,12 @@ export const ui = {
     // renderer: 'FB',
     views: (
         <>
-            <KickView track={KickTrack} synthName="Kick" color={ColorTrack1} />
+            <DrumView track={Drum1Track} synthName="Drum1" color={ColorTrack1} />
 
-            <SampleView track={Sample1Track} synthName="Sample1" color={ColorTrack7} />
-            <SampleView track={Sample2Track} synthName="Sample2" color={ColorTrack8} />
+            <SampleView track={Rack1Track} synthName="Rack1" color={ColorTrack2} />
+            <SampleView track={Rack2Track} synthName="Rack2" color={ColorTrack3} />
+            <SampleView track={Rack3Track} synthName="Rack3" color={ColorTrack4} />
+            <SampleView track={Rack4Track} synthName="Rack4" color={ColorTrack5} />
 
             <Menu />
 
