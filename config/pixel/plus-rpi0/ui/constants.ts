@@ -62,3 +62,11 @@ export const btn10 = 'b';
 export const btnUp = 'F4';
 export const btnDown = '4';
 export const btnShift = 'r';
+
+export const left1 = 'F1';
+export const left2 = '1';
+export const left3 = 'q';
+
+export const right1 = 'F5';
+export const right2 = '5';
+export const right3 = 't';

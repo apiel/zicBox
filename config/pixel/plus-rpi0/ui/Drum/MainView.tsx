@@ -2,7 +2,7 @@ import * as React from '@/libs/react';
 
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
-import { Drum1, TracksSelector } from '../components/Common';
+import { Drum1, MainKeys, MuteTracks, TracksSelector } from '../components/Common';
 import { encBottomRight, encTopLeft, encTopRight } from '../constants';
 import { bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
 import { ViewSelector } from './ViewSelector';
@@ -50,6 +50,8 @@ export function MainView({ name, track, synthName, color }: Props) {
                 track={track}
             />
 
+            <MuteTracks />
+            <MainKeys />
             <ViewSelector color={color} synthName={synthName} viewName={name} />
             <TracksSelector
                 selectedBackground={color}

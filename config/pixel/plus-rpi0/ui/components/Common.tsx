@@ -1,5 +1,6 @@
 import * as React from '@/libs/react';
 
+import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { lighten, rgb } from '@/libs/ui';
@@ -15,6 +16,9 @@ import {
     btnUp,
     KeyInfoPosition,
     KeyTopInfoPosition,
+    left1,
+    left2,
+    SelectorPosition,
     SelectorPosition2,
 } from '../constants';
 
@@ -163,5 +167,25 @@ export function TracksSelector({
                 shiftedTextColor: lighten(selectedBackground, 0.5),
             })}
         />
+    );
+}
+
+export function MuteTracks() {
+    return (
+        <TextGrid
+            bounds={SelectorPosition}
+            rows={[`Mute Mute Mute Mute Mute`]}
+            keys={[]}
+            contextValue={[1]}
+        />
+    );
+}
+
+export function MainKeys() {
+    return (
+        <HiddenValue keys={[
+            { key: left1, action: 'setView:Clips' },
+            { key: left2, action: 'contextToggleOnRelease:254:1:0' },
+        ]} />
     );
 }
