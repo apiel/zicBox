@@ -1,10 +1,10 @@
 import * as React from '@/libs/react';
 
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
-import { View } from '@/libs/nativeComponents/View';
-import { Drum1, MainKeys, MuteTracks, TracksSelector } from '../components/Common';
+import { Drum1, TracksSelector } from '../components/Common';
 import { encBottomRight, encTopLeft, encTopRight } from '../constants';
 import { bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
+import { Layout } from './Layout';
 import { ViewSelector } from './ViewSelector';
 
 export type Props = {
@@ -16,50 +16,53 @@ export type Props = {
 
 export function MainView({ name, track, synthName, color }: Props) {
     return (
-        <View name={name}>
-            <KnobValue
-                audioPlugin="TrackFx"
-                param="VOLUME"
-                bounds={topLeftKnob}
-                encoderId={encTopLeft}
-                color="tertiary"
-                track={track}
-            />
-            <KnobValue
-                audioPlugin="MMFilter"
-                param="CUTOFF"
-                bounds={topRightKnob}
-                encoderId={encTopRight}
-                color="secondary"
-                type="STRING"
-                track={track}
-            />
-            {/* <KnobValue
+        <Layout
+            viewName={name}
+            color={color}
+            content={
+                <>
+                    <KnobValue
+                        audioPlugin="TrackFx"
+                        param="VOLUME"
+                        bounds={topLeftKnob}
+                        encoderId={encTopLeft}
+                        color="tertiary"
+                        track={track}
+                    />
+                    <KnobValue
+                        audioPlugin="MMFilter"
+                        param="CUTOFF"
+                        bounds={topRightKnob}
+                        encoderId={encTopRight}
+                        color="secondary"
+                        type="STRING"
+                        track={track}
+                    />
+                    {/* <KnobValue
                 audioPlugin={synthName}
                 param="GAIN_CLIPPING"
                 bounds={bottomLeftKnob}
                 encoderId={encBottomLeft}
                 track={track}
             /> */}
-            <KnobValue
-                audioPlugin="MMFilter"
-                param="RESONANCE"
-                bounds={bottomRightKnob}
-                encoderId={encBottomRight}
-                color="secondary"
-                track={track}
-            />
-
-            <MuteTracks />
-            <MainKeys />
-            <ViewSelector color={color} synthName={synthName} viewName={name} />
-            <TracksSelector
-                selectedBackground={color}
-                selected={Drum1}
-                viewName={name}
-                pageCount={2}
-                currentPage={1}
-            />
-        </View>
+                    <KnobValue
+                        audioPlugin="MMFilter"
+                        param="RESONANCE"
+                        bounds={bottomRightKnob}
+                        encoderId={encBottomRight}
+                        color="secondary"
+                        track={track}
+                    />
+                    <ViewSelector color={color} synthName={synthName} viewName={name} />
+                    <TracksSelector
+                        selectedBackground={color}
+                        selected={Drum1}
+                        viewName={name}
+                        pageCount={2}
+                        currentPage={1}
+                    />
+                </>
+            }
+        />
     );
 }

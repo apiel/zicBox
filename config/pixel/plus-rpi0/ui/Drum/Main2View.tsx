@@ -1,7 +1,7 @@
 import * as React from '@/libs/react';
 
-import { View } from '@/libs/nativeComponents/View';
 import { Drum1, TracksSelector } from '../components/Common';
+import { Layout } from './Layout';
 import { ViewSelector } from './ViewSelector';
 
 export type Props = {
@@ -13,8 +13,12 @@ export type Props = {
 
 export function Main2View({ name, track, synthName, color }: Props) {
     return (
-        <View name={name}>
-            {/* <KnobValue
+        <Layout
+            viewName={name}
+            color={color}
+            content={
+                <>
+                    {/* <KnobValue
                 audioPlugin="TrackFx"
                 param="VOLUME"
                 bounds={topLeftKnob}
@@ -22,7 +26,7 @@ export function Main2View({ name, track, synthName, color }: Props) {
                 color="tertiary"
                 track={track}
             /> */}
-            {/* <KnobValue
+                    {/* <KnobValue
                 audioPlugin="MMFilter"
                 param="CUTOFF"
                 bounds={topRightKnob}
@@ -31,14 +35,14 @@ export function Main2View({ name, track, synthName, color }: Props) {
                 type="STRING"
                 track={track}
             /> */}
-            {/* <KnobValue
+                    {/* <KnobValue
                 audioPlugin={synthName}
                 param="GAIN_CLIPPING"
                 bounds={bottomLeftKnob}
                 encoderId={encBottomLeft}
                 track={track}
             /> */}
-            {/* <KnobValue
+                    {/* <KnobValue
                 audioPlugin="MMFilter"
                 param="RESONANCE"
                 bounds={bottomRightKnob}
@@ -47,14 +51,16 @@ export function Main2View({ name, track, synthName, color }: Props) {
                 track={track}
             /> */}
 
-            <ViewSelector color={color} synthName={synthName} viewName={name} />
-            <TracksSelector
-                selectedBackground={color}
-                selected={Drum1}
-                viewName={name}
-                pageCount={2}
-                currentPage={2}
-            />
-        </View>
+                    <ViewSelector color={color} synthName={synthName} viewName={name} />
+                    <TracksSelector
+                        selectedBackground={color}
+                        selected={Drum1}
+                        viewName={name}
+                        pageCount={2}
+                        currentPage={2}
+                    />
+                </>
+            }
+        />
     );
 }
