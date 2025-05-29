@@ -3,7 +3,7 @@ import * as React from '@/libs/react';
 import { DrumEnvelop } from '@/libs/nativeComponents/DrumEnvelop';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
-import { Common } from '../components/Common';
+import { TracksSelector } from '../components/Common';
 import { encBottomLeft, encBottomRight, encTopLeft, encTopRight } from '../constants';
 import { bottomRightKnob, topValues } from '../constantsValue';
 import { ViewSelector } from './ViewSelector';
@@ -69,12 +69,7 @@ export function Layer2View({ name, track, synthName, color }: Props) {
                 pageCount={2}
                 currentPage={1}
             />
-            <Common
-                selected={synthName}
-                track={track}
-                selectedBackground={color}
-                synthName={synthName}
-            />
+            <TracksSelector selectedBackground={color} viewName={name}  />
         </View>
     );
 }

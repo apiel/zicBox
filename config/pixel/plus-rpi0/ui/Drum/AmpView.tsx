@@ -3,7 +3,7 @@ import * as React from '@/libs/react';
 import { DrumEnvelop } from '@/libs/nativeComponents/DrumEnvelop';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
-import { Common } from '../components/Common';
+import { TracksSelector } from '../components/Common';
 import {
     encBottomLeft,
     encBottomRight,
@@ -41,7 +41,7 @@ export function AmpView({ name, track, synthName, color }: Props) {
                 track={track}
             />
             <ViewSelector selected={'Amp'} color={color} synthName={synthName} viewName={name} />
-            <Common selected={synthName} track={track} selectedBackground={color} synthName={synthName} />
+            <TracksSelector selectedBackground={color} viewName={name}  />
         </View>
     );
 }

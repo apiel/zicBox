@@ -2,7 +2,7 @@ import * as React from '@/libs/react';
 
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
-import { Common } from '../components/Common';
+import { TracksSelector } from '../components/Common';
 import { encTopLeft, encTopRight } from '../constants';
 import { topLeftKnob, topRightKnob } from '../constantsValue';
 import { ViewSelector } from './ViewSelector';
@@ -55,12 +55,7 @@ export function Fx2View({ name, track, synthName, color }: Props) {
                 pageCount={2}
                 currentPage={2}
             />
-            <Common
-                selected={synthName}
-                track={track}
-                selectedBackground={color}
-                synthName={synthName}
-            />
+            <TracksSelector selectedBackground={color} viewName={name}  />
         </View>
     );
 }
