@@ -19,8 +19,9 @@ import {
     left1,
     left2,
     left3,
+    right1,
     SelectorPosition,
-    SelectorPosition2,
+    SelectorPosition2
 } from '../constants';
 
 export const Clips = 'Clips';
@@ -223,8 +224,10 @@ export function MainKeys({ synthName }: { synthName: string }) {
     return (
         <HiddenValue
             keys={[
-                { key: left1, action: 'setView:Clips' },
-                { key: left2, action: 'contextToggleOnRelease:254:1:0' },
+                { key: right1, action: 'setView:Clips' },
+
+                { key: left1, action: `setView:${synthName}Sequencer` },
+                { key: left2, action: 'contextToggleOnRelease:254:1:0', action2: `setView:${synthName}` },
                 { key: left3, action: `noteOn:${synthName}:60` },
             ]}
         />
