@@ -19,6 +19,7 @@ export function Fx2View({ name, track, synthName, color }: Props) {
         <Layout
             viewName={name}
             color={color}
+            synthName={synthName}
             content={
                 <>
                     <KnobValue

@@ -20,6 +20,7 @@ export function AmpView({ name, track, synthName, color }: Props) {
         <Layout
             viewName={name}
             color={color}
+            synthName={synthName}
             content={
                 <>
                     <DrumEnvelop

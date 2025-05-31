@@ -18,6 +18,7 @@ export function FrequencyView({ name, track, synthName, color }: Props) {
         <Layout
             viewName={name}
             color={color}
+            synthName={synthName}
             content={
                 <>
                     <MacroEnvelop

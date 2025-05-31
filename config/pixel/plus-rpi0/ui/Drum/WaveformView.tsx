@@ -20,6 +20,7 @@ export function WaveformView({ name, track, synthName, color }: Props) {
         <Layout
             viewName={name}
             color={color}
+            synthName={synthName}
             content={
                 <>
                     <GraphEncoder

@@ -18,6 +18,7 @@ import {
     KeyTopInfoPosition,
     left1,
     left2,
+    left3,
     SelectorPosition,
     SelectorPosition2,
 } from '../constants';
@@ -218,12 +219,13 @@ export function MuteTracks() {
     );
 }
 
-export function MainKeys() {
+export function MainKeys({ synthName }: { synthName: string }) {
     return (
         <HiddenValue
             keys={[
                 { key: left1, action: 'setView:Clips' },
                 { key: left2, action: 'contextToggleOnRelease:254:1:0' },
+                { key: left3, action: `noteOn:${synthName}:60` },
             ]}
         />
     );
