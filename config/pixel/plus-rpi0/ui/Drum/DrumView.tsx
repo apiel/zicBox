@@ -74,7 +74,7 @@ export function DrumView({ track, synthName, color }: Props) {
                 maxStepLen={1}
                 textGrid={
                     <>
-                        <MainKeys synthName={synthName} />
+                        <MainKeys synthName={synthName} forcePatchView />
                     </>
                 }
             />

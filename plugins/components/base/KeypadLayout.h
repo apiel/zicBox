@@ -273,6 +273,15 @@ public:
             };
         }
 
+        if (action.rfind("setContext:") == 0) {
+            const char* params = action.substr(11).c_str();
+            uint8_t* indexVar = new uint8_t(atoi(strtok((char*)params, ":")));
+            uint8_t* value = new uint8_t(atoi(strtok(NULL, ":")));
+            return [this, indexVar, value](KeypadLayout::KeyMap& keymap) {
+                component->setContext(*indexVar, *value);
+            };
+        }
+
         if (action.rfind("contextToggle:") == 0) {
             const char* params = action.substr(14).c_str();
             uint8_t* indexVar = new uint8_t(atoi(strtok((char*)params, ":")));

@@ -415,7 +415,7 @@
       "name": "Drum1Sequencer",
       "components": [
         {"bounds":[0,0,240,270],"track":1,"audioPlugin":"Sequencer","keys":[{"key":"g","action":".toggleParam","context":{"id":254,"value":0}},{"key":"c","action":".noteOn","context":{"id":254,"value":0}},{"key":"r","action":".shift","multipleKeyHandler":true}],"selectedColor":"#c41598","stepColor":"#a3c912","maxStepLen":1,"componentName":"Sequencer"},
-        {"keys":[{"key":"F5","action":"setView:Clips"},{"key":"F1","action":"setView:Drum1Sequencer"},{"key":"1","action":"contextToggleOnRelease:254:1:0","action2":"setView:Drum1"},{"key":"q","action":"noteOn:Drum1:60"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
+        {"keys":[{"key":"F5","action":"setView:Clips"},{"key":"F1","action":"setView:Drum1Sequencer"},{"key":"1","action":"setContext:254:0","action2":"setView:Drum1"},{"key":"q","action":"noteOn:Drum1:60"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
     },
     {

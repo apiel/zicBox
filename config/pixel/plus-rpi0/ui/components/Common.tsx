@@ -21,7 +21,7 @@ import {
     left3,
     right1,
     SelectorPosition,
-    SelectorPosition2
+    SelectorPosition2,
 } from '../constants';
 
 export const Clips = 'Clips';
@@ -220,14 +220,24 @@ export function MuteTracks() {
     );
 }
 
-export function MainKeys({ synthName }: { synthName: string }) {
+export function MainKeys({
+    synthName,
+    forcePatchView = false,
+}: {
+    synthName: string;
+    forcePatchView?: boolean;
+}) {
     return (
         <HiddenValue
             keys={[
                 { key: right1, action: 'setView:Clips' },
 
                 { key: left1, action: `setView:${synthName}Sequencer` },
-                { key: left2, action: 'contextToggleOnRelease:254:1:0', action2: `setView:${synthName}` },
+                {
+                    key: left2,
+                    action: forcePatchView ? `setContext:254:0` : 'contextToggleOnRelease:254:1:0',
+                    action2: `setView:${synthName}`,
+                },
                 { key: left3, action: `noteOn:${synthName}:60` },
             ]}
         />
