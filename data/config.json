@@ -899,7 +899,8 @@
         {"bounds":[90,15,28,100],"track":4,"color":"#ffcd04","visibleCount":12,"keys":[{"key":"f","action":".saveOrDelete","context":{"id":251,"value":1}},{"key":"f","action":".toggle","context":{"id":254,"value":0}}],"componentName":"Clips"},
         {"text":"T.5","bounds":[120,2,30,8],"centered":true,"color":"#b54f5e","componentName":"Text"},
         {"bounds":[120,15,28,100],"track":5,"color":"#b54f5e","visibleCount":12,"keys":[{"key":"g","action":".saveOrDelete","context":{"id":251,"value":1}},{"key":"g","action":".toggle","context":{"id":254,"value":0}}],"componentName":"Clips"},
-        {"encoderId":0,"contextId":30,"min":0,"max":16,"inverted":true,"bounds":[0,0,0,0],"componentName":"HiddenContext"}
+        {"encoderId":0,"contextId":30,"min":0,"max":16,"inverted":true,"bounds":[0,0,0,0],"componentName":"HiddenContext"},
+        {"keys":[{"key":"F5","action":"setView:Clips"},{"key":"F1","action":"setView:Drum1Sequencer"},{"key":"1","action":"setContext:254:0","action2":"setView:Drum1"},{"key":"q","action":"noteOn:Drum1:60"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
     }
   ]

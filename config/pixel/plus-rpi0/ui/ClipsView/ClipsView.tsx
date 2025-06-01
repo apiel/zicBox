@@ -2,6 +2,7 @@ import * as React from '@/libs/react';
 
 import { HiddenContext } from '@/libs/nativeComponents/HiddenContext';
 import { View } from '@/libs/nativeComponents/View';
+import { MainKeys } from '../components/Common';
 import {
     btn1,
     btn2,
@@ -38,7 +39,7 @@ export function ClipsView({ name }: Props) {
             <Clips color={ColorTrack5} track={Rack4Track} title="T.5" key={btn5} />
             <HiddenContext encoderId={0} contextId={30} min={0} max={16} inverted />
 
-            {/* <TextGridClips /> */}
+            <MainKeys synthName="Drum1" forcePatchView />
         </View>
     );
 }
