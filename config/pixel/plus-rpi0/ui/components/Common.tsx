@@ -8,6 +8,7 @@ import {
     btn1,
     btn10,
     btn2,
+    btn4,
     btn5,
     btn6,
     btn7,
@@ -20,6 +21,7 @@ import {
     left2,
     left3,
     right1,
+    right3,
     SelectorPosition,
     SelectorPosition2,
 } from '../constants';
@@ -228,18 +230,33 @@ export function MainKeys({
     forcePatchView?: boolean;
 }) {
     return (
-        <HiddenValue
-            keys={[
-                { key: right1, action: 'setView:Clips' },
+        <>
+            <HiddenValue
+                keys={[
+                    { key: right1, action: 'setView:Clips' },
+                    { key: right3, action: 'contextToggle:254:2:0' },
 
-                { key: left1, action: `setView:${synthName}Sequencer` },
-                {
-                    key: left2,
-                    action: forcePatchView ? `setContext:254:0` : 'contextToggleOnRelease:254:1:0',
-                    action2: `setView:${synthName}`,
-                },
-                { key: left3, action: `noteOn:${synthName}:60` },
-            ]}
-        />
+                    { key: left1, action: `setView:${synthName}Sequencer` },
+                    {
+                        key: left2,
+                        action: forcePatchView
+                            ? `setContext:254:0`
+                            : 'contextToggleOnRelease:254:1:0',
+                        action2: `setView:${synthName}`,
+                    },
+                    { key: left3, action: `noteOn:${synthName}:60` },
+                ]}
+            />
+            <Rect bounds={SelectorPosition} visibilityContext={[{ index: 254, value: 2, condition: 'SHOW_WHEN' }]} />
+            <TextGrid
+                bounds={SelectorPosition}
+                rows={[`&empty &empty &empty &icon::stop::filled &icon::play::filled`, `&empty &empty &empty &empty &empty`]}
+                keys={[
+                    { key: btn4, action: `stop` },
+                    { key: btn5, action: `playPause` },
+                ]}
+                contextValue={[2]}
+            />
+        </>
     );
 }

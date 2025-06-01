@@ -12,7 +12,7 @@ export type Props = {
 };
 
 export function Clips({ color, track, title, key }: Props) {
-    const w = ScreenWidth / 8;
+    const w = ScreenWidth / 5;
     return (
         <>
             <Text text={title} bounds={[(track - 1) * w, 2, w, 8]} centered color={color} />
