@@ -18,12 +18,14 @@ export function TextGrid({
     shiftedTextColor,
     pageCount,
     currentPage,
+    context,
 }: {
     bounds: Bounds;
     selected?: string;
     rows: string[];
     keys?: { key: string; action: string; action2?: string }[];
     contextValue?: number[];
+    context?: VisibilityContext[];
     selectedBackground?: string;
     bgColor?: string;
     textColor?: string;
@@ -31,8 +33,8 @@ export function TextGrid({
     pageCount?: number;
     currentPage?: number;
 }) {
-    const context: VisibilityContext[] = [];
-    if (contextValue !== undefined) {
+    if (!context && contextValue !== undefined) {
+        context = [];
         for (let i = 0; i < contextValue.length; i++) {
             context.push({
                 index: 254 - i,

@@ -87,6 +87,34 @@ public:
                     }
                 };
             }
+            if (action == ".selectNoteUp") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        selectNote(1);
+                    }
+                };
+            }
+            if (action == ".selectNoteDown") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        selectNote(-1);
+                    }
+                };
+            }
+            if (action == ".selectStepRight") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        selectStep(1);
+                    }
+                };
+            }
+            if (action == ".selectStepLeft") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        selectStep(-1);
+                    }
+                };
+            }
             return func;
         })
         , beatColor(lighten(styles.colors.background, 1.0))
@@ -305,20 +333,30 @@ public:
         return nullptr;
     }
 
+    void selectNote(int8_t direction)
+    {
+        selectedNote = range((selectedNote + direction), MIDI_NOTE_C0, MIDI_NOTE_C9);
+        if (selectedNote < midiStartNote) {
+            midiStartNote = selectedNote;
+        } else if (selectedNote >= midiStartNote + numNotes) {
+            midiStartNote = selectedNote - numNotes + 1;
+        }
+        renderNext();
+    }
+
+    void selectStep(int8_t direction)
+    {
+        selectedStep = range((selectedStep + direction), 0, numSteps - 1);
+        renderNext();
+    }
+
     void onEncoder(int id, int8_t direction) override
     {
         direction = direction > 0 ? 1 : -1;
         if (id == 0) {
-            selectedNote = range((selectedNote + direction), MIDI_NOTE_C0, MIDI_NOTE_C9);
-            if (selectedNote < midiStartNote) {
-                midiStartNote = selectedNote;
-            } else if (selectedNote >= midiStartNote + numNotes) {
-                midiStartNote = selectedNote - numNotes + 1;
-            }
-            renderNext();
+            selectNote(direction);
         } else if (id == 1) {
-            selectedStep = range((selectedStep + direction), 0, numSteps - 1);
-            renderNext();
+            selectStep(direction);
         } else if (id == 2) {
             Step* step = getSelectedStep();
             if (step != nullptr) {
