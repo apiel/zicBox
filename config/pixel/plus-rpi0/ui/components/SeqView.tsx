@@ -4,7 +4,7 @@ import { Sequencer } from '@/libs/nativeComponents/Sequencer';
 import { View } from '@/libs/nativeComponents/View';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { rgb } from '@/libs/ui';
-import { btn2, btn6, btn7, btn8, ScreenWidth, SelectorPosition } from '../constants';
+import { btn1, btn10, btn2, btn6, btn7, btn8, btn9, ScreenWidth, SelectorPosition } from '../constants';
 
 export type Props = {
     name: string;
@@ -39,10 +39,14 @@ export function SeqView({
                     // { key: btnUp, action: '.toggleParam', multipleKeyHandler: true },
                     // { key: btnShift, action: '.shift', multipleKeyHandler: true },
 
+                    { key: btn1, action: '.noteOn', context: { id: 254, value: 0 } },
                     { key: btn2, action: '.selectNoteUp', context: { id: 254, value: 0 } },
+
                     { key: btn6, action: '.selectStepLeft', context: { id: 254, value: 0 } },
                     { key: btn7, action: '.selectNoteDown', context: { id: 254, value: 0 } },
                     { key: btn8, action: '.selectStepRight', context: { id: 254, value: 0 } },
+                    { key: btn9, action: '.toggleStep', context: { id: 254, value: 0 } },
+                    { key: btn10, action: '.deleteStep', context: { id: 254, value: 0 } },
                 ]}
                 selectedColor={rgb(196, 21, 152)}
                 stepColor={color}
@@ -61,8 +65,8 @@ export function SeqView({
             <TextGrid
                 bounds={SelectorPosition}
                 rows={[
-                    `&empty &icon::arrowUp::filled &empty &empty &empty`,
-                    `&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled &empty &empty`,
+                    `&icon::musicNote::pixelated &icon::arrowUp::filled &empty &empty &empty`,
+                    `&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled &icon::toggle::rect &icon::trash`,
                 ]}
                 keys={
                     [

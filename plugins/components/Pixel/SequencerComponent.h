@@ -115,6 +115,23 @@ public:
                     }
                 };
             }
+            if (action == ".toggleStep") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        toggleStep();
+                    }
+                };
+            }
+            if (action == ".deleteStep") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        Step* step = getSelectedStep();
+                        if (step != nullptr) {
+                            deleteStep(step);
+                        }
+                    }
+                };
+            }
             return func;
         })
         , beatColor(lighten(styles.colors.background, 1.0))
@@ -350,6 +367,34 @@ public:
         renderNext();
     }
 
+    void deleteStep(Step* step)
+    {
+        for (int i = 0; i < steps->size(); i++) {
+            if (step == &steps->at(i)) {
+                steps->erase(steps->begin() + i);
+                break;
+            }
+        }
+        renderNext();
+    }
+
+    void toggleStep()
+    {
+        Step* step = getSelectedStep();
+        if (step != nullptr) {
+            step->enabled = !step->enabled;
+        } else {
+            // Create a step and push it to the end
+            Step newStep;
+            newStep.note = selectedNote;
+            newStep.position = selectedStep;
+            newStep.enabled = true;
+            newStep.len = 1;
+            steps->push_back(newStep);
+        }
+        renderNext();
+    }
+
     void onEncoder(int id, int8_t direction) override
     {
         direction = direction > 0 ? 1 : -1;
@@ -364,12 +409,8 @@ public:
                 step->len = range((step->len + direction), 0, maxStepLen);
                 // Use shift to delete the step
                 if (shift && step->len == 0) {
-                    for (int i = 0; i < steps->size(); i++) {
-                        if (step == &steps->at(i)) {
-                            steps->erase(steps->begin() + i);
-                            break;
-                        }
-                    }
+                    deleteStep(step);
+                    return;
                 }
                 // TODO check if len doesn't conflict with another step
             } else if (direction > 0) {
