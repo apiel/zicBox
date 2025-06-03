@@ -275,7 +275,7 @@ public:
         if (steps != NULL) {
             // Draw MIDI Notes
             for (const auto& step : *steps) {
-                if (step.len && step.note >= midiStartNote && step.note < midiStartNote + numNotes) {
+                if (step.len && step.enabled && step.note >= midiStartNote && step.note < midiStartNote + numNotes) {
                     int x = xStart + step.position * stepWidth + 1;
                     int y = (numNotes - (step.note - midiStartNote) - 1) * stepHeight;
 
