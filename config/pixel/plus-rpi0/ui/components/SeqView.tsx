@@ -4,7 +4,7 @@ import { Sequencer } from '@/libs/nativeComponents/Sequencer';
 import { View } from '@/libs/nativeComponents/View';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { rgb } from '@/libs/ui';
-import { btn1, btn10, btn2, btn6, btn7, btn8, btn9, ScreenWidth, SelectorPosition } from '../constants';
+import { btn1, btn10, btn2, btn3, btn6, btn7, btn8, btn9, ScreenWidth, SelectorPosition } from '../constants';
 
 export type Props = {
     name: string;
@@ -41,6 +41,7 @@ export function SeqView({
 
                     { key: btn1, action: '.noteOn', context: { id: 254, value: 0 } },
                     { key: btn2, action: '.selectNoteUp', context: { id: 254, value: 0 } },
+                    { key: btn3, action: '.toggleParam', context: { id: 254, value: 0 } },
 
                     { key: btn6, action: '.selectStepLeft', context: { id: 254, value: 0 } },
                     { key: btn7, action: '.selectNoteDown', context: { id: 254, value: 0 } },
@@ -65,7 +66,7 @@ export function SeqView({
             <TextGrid
                 bounds={SelectorPosition}
                 rows={[
-                    `&icon::musicNote::pixelated &icon::arrowUp::filled &empty &empty &empty`,
+                    `&icon::musicNote::pixelated &icon::arrowUp::filled --- &empty &empty`,
                     `&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled &icon::toggle::rect &icon::trash`,
                 ]}
                 keys={
