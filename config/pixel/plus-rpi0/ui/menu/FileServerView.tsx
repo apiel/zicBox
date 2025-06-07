@@ -4,7 +4,7 @@ import { Text } from '@/libs/nativeComponents/Text';
 import { View } from '@/libs/nativeComponents/View';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { rgb } from '@/libs/ui';
-import { btnUp, KeyInfoPosition, ScreenWidth } from '../constants';
+import { btn10, btn6, btn7, KeyInfoPosition, ScreenWidth } from '../constants';
 
 export type Props = {
     name: string;
@@ -18,12 +18,10 @@ export function FileServerView({ name }: Props) {
                 text="Web server for files..."
                 centered
                 keys={[
-                    { key: 'a', action: 'sh:filebrowser --port 80 -a 0.0.0.0 --noauth -r / &', action2: 'setView:Menu' },
-                    { key: 'z', action: 'sh:filebrowser --port 80 -a 0.0.0.0 --noauth -r / &', action2: 'setView:Menu' },
-                    { key: 'd', action: 'sh:killall filebrowser', action2: 'setView:Menu' },
-                    { key: 'c', action: 'sh:killall filebrowser', action2: 'setView:Menu' },
+                    { key: btn6, action: 'sh:filebrowser --port 80 -a 0.0.0.0 --noauth -r / &', action2: 'setView:Clips' },
+                    { key: btn7, action: 'sh:killall filebrowser', action2: 'setView:Clips' },
 
-                    { key: btnUp, action: 'setView:Menu' },
+                    { key: btn10, action: 'setView:Clips' },
                 ]}
             />
 
@@ -36,7 +34,7 @@ export function FileServerView({ name }: Props) {
 
             <TextGrid
                 bounds={KeyInfoPosition}
-                rows={['&empty &empty &empty &empty', 'Start &empty Kill &empty']}
+                rows={['&empty &empty &empty &empty &empty', 'Start Kill &empty &empty Exit']}
             />
         </View>
     );

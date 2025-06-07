@@ -3,7 +3,8 @@ import * as React from '@/libs/react';
 import { Text } from '@/libs/nativeComponents/Text';
 import { View } from '@/libs/nativeComponents/View';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
-import { KeyInfoPosition, ScreenWidth } from '../constants';
+import { rgb } from '@/libs/ui';
+import { btn6, btn7, ScreenWidth, SelectorPosition } from '../constants';
 
 export type Props = {
     name: string;
@@ -18,16 +19,17 @@ export function ShutdownView({ name }: Props) {
                 color="#ffacac" //#ffacac
                 centered
                 keys={[
-                    { key: 'q', action: 'sh:halt -f' },
-                    { key: 'a', action: 'sh:halt -f' },
-                    { key: 'd', action: 'setView:Clips' },
-                    { key: 'e', action: 'setView:Clips' },
+                    { key: btn6, action: 'sh:halt -f' },
+                    { key: btn7, action: 'setView:Clips' },
                 ]}
             />
 
+            {/* <MainKeys synthName="Drum1" forcePatchView /> */}
             <TextGrid
-                bounds={KeyInfoPosition}
-                rows={['&empty &empty &empty &empty', 'Yes &empty No &empty']}
+                bounds={SelectorPosition}
+                selected="Yes"
+                selectedBackground={rgb(173, 99, 99)}
+                rows={['&empty &empty &empty &empty &empty', 'Yes No &empty &empty &empty']}
             />
         </View>
     );

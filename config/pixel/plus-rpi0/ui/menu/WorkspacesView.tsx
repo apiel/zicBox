@@ -5,6 +5,7 @@ import { Workspaces } from '@/libs/nativeComponents/Workspaces';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { rgb } from '@/libs/ui';
 import { workspaceFolder } from '../../audio';
+import { MainKeys } from '../components/Common';
 import {
     btn10,
     btn2,
@@ -61,6 +62,8 @@ export function WorkspacesView({ name }: Props) {
                     { key: btn7, action: 'contextToggle:254:1:0' },
                 ]}
             />
+
+            <MainKeys synthName="Drum1" forcePatchView />
         </View>
     );
 }
