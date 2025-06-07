@@ -6,16 +6,14 @@ import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { rgb } from '@/libs/ui';
 import { workspaceFolder } from '../../audio';
 import {
-    btn1,
+    btn10,
     btn2,
-    btn3,
-    btn4,
-    btn5,
     btn6,
     btn7,
     btn8,
-    KeyInfoPosition,
+    btn9,
     ScreenWidth,
+    SelectorPosition
 } from '../constants';
 
 export type Props = {
@@ -30,38 +28,37 @@ export function WorkspacesView({ name }: Props) {
                 audioPlugin="SerializeTrack"
                 bounds={[0, 0, ScreenWidth, 280]}
                 keys={[
-                    { key: btn5, action: '.data:LOAD_WORKSPACE', context: { id: 254, value: 0 } },
+                    { key: btn6, action: '.data:LOAD_WORKSPACE', context: { id: 254, value: 0 } },
                     { key: btn2, action: '.up', context: { id: 254, value: 0 } },
-                    { key: btn6, action: '.down', context: { id: 254, value: 0 } },
+                    { key: btn7, action: '.down', context: { id: 254, value: 0 } },
 
-                    { key: btn1, action: '.delete', context: { id: 254, value: 1 } },
-                    { key: btn5, action: '.delete', context: { id: 254, value: 1 } },
+                    { key: btn10, action: '.delete', context: { id: 254, value: 1 } },
                 ]}
             />
 
             <TextGrid
-                bounds={KeyInfoPosition}
+                bounds={SelectorPosition}
                 rows={[
-                    '&empty &icon::arrowUp::filled &empty &icon::trash',
-                    'Use &icon::arrowDown::filled Exit New',
+                    '&empty &icon::arrowUp::filled &empty &empty &empty',
+                    'Use &icon::arrowDown::filled Exit New &icon::trash',
                 ]}
                 keys={[
-                    { key: btn3, action: 'setView:Clips' },
-                    { key: btn7, action: 'setView:Clips' },
-                    { key: btn4, action: 'contextToggle:254:1:0' },
-                    { key: btn8, action: 'setView:CreateWorkspace' },
+                    { key: btn8, action: 'setView:Clips' },
+                    { key: btn9, action: 'setView:CreateWorkspace' },
+                    { key: btn10, action: 'contextToggle:254:1:0' },
                 ]}
                 contextValue={[0]}
             />
 
             <TextGrid
-                bounds={KeyInfoPosition}
+                bounds={SelectorPosition}
+                selected="Delete?"
                 selectedBackground={rgb(173, 99, 99)}
-                rows={['!Delete? &empty &empty ^&icon::trash', 'Yes No &empty &empty']}
+                rows={['Delete? &empty &empty &empty &empty', 'Yes No &empty &empty ^&icon::trash']}
                 contextValue={[1]}
                 keys={[
-                    { key: btn4, action: 'contextToggle:254:1:0' },
                     { key: btn6, action: 'contextToggle:254:1:0' },
+                    { key: btn7, action: 'contextToggle:254:1:0' },
                 ]}
             />
         </View>

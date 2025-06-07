@@ -3,7 +3,7 @@ import * as React from '@/libs/react';
 import { Keyboard } from '@/libs/nativeComponents/Keyboard';
 import { View } from '@/libs/nativeComponents/View';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
-import { btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, KeyInfoPosition, ScreenWidth } from '../constants';
+import { btn10, btn2, btn4, btn5, btn6, btn7, btn8, btn9, KeyInfoPosition, ScreenWidth } from '../constants';
 
 export type Props = {
     name: string;
@@ -18,22 +18,22 @@ export function CreateWorkspaceView({ name }: Props) {
                 audioPlugin="SerializeTrack"
                 dataId="CREATE_WORKSPACE"
                 keys={[
-                    { key: btn1, action: '.type' },
                     { key: btn2, action: '.up' },
-                    { key: btn3, action: '.done' },
-                    { key: btn4, action: '.cancel' },
-                    { key: btn5, action: '.left' },
-                    { key: btn6, action: '.down' },
-                    { key: btn7, action: '.right' },
-                    { key: btn8, action: '.backspace' },
+                    { key: btn4, action: '.done' },
+                    { key: btn5, action: '.cancel' },
+                    { key: btn6, action: '.left' },
+                    { key: btn7, action: '.down' },
+                    { key: btn8, action: '.right' },
+                    { key: btn9, action: '.backspace' },
+                    { key: btn10, action: '.type' },
                 ]}
             />
 
             <TextGrid
                 bounds={KeyInfoPosition}
                 rows={[
-                    'Type &icon::arrowUp::filled Done Cancel',
-                    '&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled &icon::backspace::filled',
+                    '&empty &icon::arrowUp::filled &empty Done Cancel',
+                    '&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled &icon::backspace::filled Type',
                 ]}
             ></TextGrid>
         </View>
