@@ -2,7 +2,6 @@ import * as React from '@/libs/react';
 
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
-import { Common } from '../components/Common';
 import { encBottomLeft, encTopLeft, encTopRight } from '../constants';
 import { bottomLeftKnob, topLeftKnob, topRightKnob } from '../constantsValue';
 import { ViewSelector } from './ViewSelector';
@@ -50,7 +49,6 @@ export function Env2View({ name, track, synthName, color }: Props) {
                         /> */}
 
             <ViewSelector selected={'Mod.'} viewName={name} synthName={synthName} color={color} />
-            <Common track={track} selectedBackground={color} selected={synthName} synthName={synthName} />
         </View>
     );
 }

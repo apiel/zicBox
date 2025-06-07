@@ -2,7 +2,6 @@ import * as React from '@/libs/react';
 
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
-import { Common } from '../components/Common';
 import { encBottomRight, encTopLeft, encTopRight } from '../constants';
 import { bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
 import { ViewSelector } from './ViewSelector';
@@ -52,12 +51,6 @@ export function MainView({ name, track, synthName, color }: Props) {
             />
 
             <ViewSelector selected={'Main'} viewName={name} synthName={synthName} color={color} />
-            <Common
-                track={track}
-                selectedBackground={color}
-                selected={synthName}
-                synthName={synthName}
-            />
         </View>
     );
 }

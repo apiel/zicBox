@@ -2,7 +2,6 @@ import * as React from '@/libs/react';
 
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { View } from '@/libs/nativeComponents/View';
-import { Common } from '../components/Common';
 import { encTopLeft, encTopRight } from '../constants';
 import { topLeftKnob, topRightKnob } from '../constantsValue';
 import { ViewSelector } from './ViewSelector';
@@ -51,7 +50,6 @@ export function FxView({ name, track, synthName, color }: Props) {
             /> */}
 
             <ViewSelector selected={'Fx'} viewName={name} synthName={synthName} color={color} />
-            <Common track={track} selectedBackground={color} selected={synthName} synthName={synthName} />
         </View>
     );
 }

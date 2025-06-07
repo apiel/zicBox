@@ -7,7 +7,7 @@
 const uint8_t PoppinsLight_8_font_height = 8;
 
 const uint8_t PoppinsLight_8_char32[] = { // " "
-    0, // width: 0
+    2, // width: 2
     8, // margin-top: 8
     0, // rows: 0
     

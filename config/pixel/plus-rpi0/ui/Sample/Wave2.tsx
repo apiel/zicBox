@@ -3,7 +3,6 @@ import * as React from '@/libs/react';
 import { Sample } from '@/libs/nativeComponents/Sample';
 import { Value } from '@/libs/nativeComponents/Value';
 import { View } from '@/libs/nativeComponents/View';
-import { Common } from '../components/Common';
 import { encBottomLeft, ScreenWidth } from '../constants';
 import { graphCenterValues } from '../constantsValue';
 import { ViewSelector } from './ViewSelector';
@@ -68,7 +67,6 @@ export function Wave2View({ name, track, synthName, color }: Props) {
             /> */}
 
             <ViewSelector selected={'Browse'} viewName={name} synthName={synthName} color={color} />
-            <Common track={track} selectedBackground={color} selected={synthName} synthName={synthName} />
         </View>
     );
 }

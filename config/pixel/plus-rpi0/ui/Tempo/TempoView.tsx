@@ -1,8 +1,10 @@
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
+import { Rect } from '@/libs/nativeComponents/Rect';
 import { View } from '@/libs/nativeComponents/View';
 import * as React from '@/libs/react';
+import { MainKeys } from '../components/Common';
 import { Title } from '../components/Title';
-import { encTopLeft, MasterTrack } from '../constants';
+import { encTopLeft, MasterTrack, SelectorPosition } from '../constants';
 import { topLeftKnob } from '../constantsValue';
 
 export type Props = {
@@ -48,8 +50,8 @@ export function TempoView({ name }: Props) {
                 track={track}
             /> */}
 
-            {/* <ShiftedTextGrid selected={name} />
-            <TracksTextGrid selected={name} contextValue={0} /> */}
+            <MainKeys synthName={'Drum1'} forcePatchView />
+            <Rect bounds={SelectorPosition} visibilityContext={[{ index: 254, value: 2, condition: 'SHOW_WHEN_NOT' }]} />
         </View>
     );
 }

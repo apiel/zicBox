@@ -123,17 +123,17 @@
         {"text":"Mute","bounds":[192,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":1}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"keys":[{"key":"F5","action":"setView:Clips"},{"key":"t","action":"contextToggle:254:2:0"},{"key":"F1","action":"setView:Drum1Sequencer","action2":"setContext:254:0"},{"key":"1","action":"contextToggleOnRelease:254:1:0","action2":"setView:Drum1"},{"key":"q","action":"noteOn:Drum1:60"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"bounds":[0,296,240],"visibilityContext":[{"index":254,"value":2,"condition":"SHOW_WHEN"}],"componentName":"Rect"},
-        {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"keys":[{"key":"f","action":"stop"},{"key":"g","action":"playPause"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
-        {"text":"&empty","bounds":[0,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[48,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"keys":[{"key":"a","action":"setView:Workspaces"},{"key":"s","action":"setView:Shutdown"},{"key":"f","action":"stop"},{"key":"g","action":"playPause"},{"key":"z","action":"setView:FileServer"},{"key":"b","action":"setView:Tempo"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
+        {"text":"Project","bounds":[0,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"Shutdown","bounds":[48,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[96,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&icon::stop::filled","bounds":[144,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&icon::play::filled","bounds":[192,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[0,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"Server","bounds":[0,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[48,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[96,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[144,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[192,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"}
+        {"text":"BPM","bounds":[192,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"}
       ]
     },
     {
@@ -171,17 +171,17 @@
         {"text":"Mute","bounds":[192,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":1}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"keys":[{"key":"F5","action":"setView:Clips"},{"key":"t","action":"contextToggle:254:2:0"},{"key":"F1","action":"setView:Drum1Sequencer","action2":"setContext:254:0"},{"key":"1","action":"contextToggleOnRelease:254:1:0","action2":"setView:Drum1"},{"key":"q","action":"noteOn:Drum1:60"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"bounds":[0,296,240],"visibilityContext":[{"index":254,"value":2,"condition":"SHOW_WHEN"}],"componentName":"Rect"},
-        {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"keys":[{"key":"f","action":"stop"},{"key":"g","action":"playPause"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
-        {"text":"&empty","bounds":[0,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[48,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"keys":[{"key":"a","action":"setView:Workspaces"},{"key":"s","action":"setView:Shutdown"},{"key":"f","action":"stop"},{"key":"g","action":"playPause"},{"key":"z","action":"setView:FileServer"},{"key":"b","action":"setView:Tempo"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
+        {"text":"Project","bounds":[0,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"Shutdown","bounds":[48,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[96,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&icon::stop::filled","bounds":[144,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&icon::play::filled","bounds":[192,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[0,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"Server","bounds":[0,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[48,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[96,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[144,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[192,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"}
+        {"text":"BPM","bounds":[192,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"}
       ]
     },
     {
@@ -221,17 +221,17 @@
         {"text":"Mute","bounds":[192,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":1}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"keys":[{"key":"F5","action":"setView:Clips"},{"key":"t","action":"contextToggle:254:2:0"},{"key":"F1","action":"setView:Drum1Sequencer","action2":"setContext:254:0"},{"key":"1","action":"contextToggleOnRelease:254:1:0","action2":"setView:Drum1"},{"key":"q","action":"noteOn:Drum1:60"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"bounds":[0,296,240],"visibilityContext":[{"index":254,"value":2,"condition":"SHOW_WHEN"}],"componentName":"Rect"},
-        {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"keys":[{"key":"f","action":"stop"},{"key":"g","action":"playPause"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
-        {"text":"&empty","bounds":[0,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[48,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"keys":[{"key":"a","action":"setView:Workspaces"},{"key":"s","action":"setView:Shutdown"},{"key":"f","action":"stop"},{"key":"g","action":"playPause"},{"key":"z","action":"setView:FileServer"},{"key":"b","action":"setView:Tempo"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
+        {"text":"Project","bounds":[0,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"Shutdown","bounds":[48,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[96,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&icon::stop::filled","bounds":[144,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&icon::play::filled","bounds":[192,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[0,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"Server","bounds":[0,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[48,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[96,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[144,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[192,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"}
+        {"text":"BPM","bounds":[192,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"}
       ]
     },
     {
@@ -269,17 +269,17 @@
         {"text":"Mute","bounds":[192,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":1}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"keys":[{"key":"F5","action":"setView:Clips"},{"key":"t","action":"contextToggle:254:2:0"},{"key":"F1","action":"setView:Drum1Sequencer","action2":"setContext:254:0"},{"key":"1","action":"contextToggleOnRelease:254:1:0","action2":"setView:Drum1"},{"key":"q","action":"noteOn:Drum1:60"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"bounds":[0,296,240],"visibilityContext":[{"index":254,"value":2,"condition":"SHOW_WHEN"}],"componentName":"Rect"},
-        {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"keys":[{"key":"f","action":"stop"},{"key":"g","action":"playPause"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
-        {"text":"&empty","bounds":[0,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[48,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"keys":[{"key":"a","action":"setView:Workspaces"},{"key":"s","action":"setView:Shutdown"},{"key":"f","action":"stop"},{"key":"g","action":"playPause"},{"key":"z","action":"setView:FileServer"},{"key":"b","action":"setView:Tempo"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
+        {"text":"Project","bounds":[0,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"Shutdown","bounds":[48,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[96,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&icon::stop::filled","bounds":[144,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&icon::play::filled","bounds":[192,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[0,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"Server","bounds":[0,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[48,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[96,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[144,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[192,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"}
+        {"text":"BPM","bounds":[192,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"}
       ]
     },
     {
@@ -318,17 +318,17 @@
         {"text":"Mute","bounds":[192,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":1}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"keys":[{"key":"F5","action":"setView:Clips"},{"key":"t","action":"contextToggle:254:2:0"},{"key":"F1","action":"setView:Drum1Sequencer","action2":"setContext:254:0"},{"key":"1","action":"contextToggleOnRelease:254:1:0","action2":"setView:Drum1"},{"key":"q","action":"noteOn:Drum1:60"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"bounds":[0,296,240],"visibilityContext":[{"index":254,"value":2,"condition":"SHOW_WHEN"}],"componentName":"Rect"},
-        {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"keys":[{"key":"f","action":"stop"},{"key":"g","action":"playPause"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
-        {"text":"&empty","bounds":[0,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[48,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"keys":[{"key":"a","action":"setView:Workspaces"},{"key":"s","action":"setView:Shutdown"},{"key":"f","action":"stop"},{"key":"g","action":"playPause"},{"key":"z","action":"setView:FileServer"},{"key":"b","action":"setView:Tempo"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
+        {"text":"Project","bounds":[0,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"Shutdown","bounds":[48,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[96,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&icon::stop::filled","bounds":[144,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&icon::play::filled","bounds":[192,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[0,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"Server","bounds":[0,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[48,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[96,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[144,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[192,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"}
+        {"text":"BPM","bounds":[192,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"}
       ]
     },
     {
@@ -363,17 +363,17 @@
         {"text":"Mute","bounds":[192,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":1}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"keys":[{"key":"F5","action":"setView:Clips"},{"key":"t","action":"contextToggle:254:2:0"},{"key":"F1","action":"setView:Drum1Sequencer","action2":"setContext:254:0"},{"key":"1","action":"contextToggleOnRelease:254:1:0","action2":"setView:Drum1"},{"key":"q","action":"noteOn:Drum1:60"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"bounds":[0,296,240],"visibilityContext":[{"index":254,"value":2,"condition":"SHOW_WHEN"}],"componentName":"Rect"},
-        {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"keys":[{"key":"f","action":"stop"},{"key":"g","action":"playPause"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
-        {"text":"&empty","bounds":[0,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[48,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"keys":[{"key":"a","action":"setView:Workspaces"},{"key":"s","action":"setView:Shutdown"},{"key":"f","action":"stop"},{"key":"g","action":"playPause"},{"key":"z","action":"setView:FileServer"},{"key":"b","action":"setView:Tempo"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
+        {"text":"Project","bounds":[0,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"Shutdown","bounds":[48,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[96,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&icon::stop::filled","bounds":[144,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&icon::play::filled","bounds":[192,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[0,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"Server","bounds":[0,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[48,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[96,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[144,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[192,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"}
+        {"text":"BPM","bounds":[192,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"}
       ]
     },
     {
@@ -409,17 +409,17 @@
         {"text":"Mute","bounds":[192,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":1}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"keys":[{"key":"F5","action":"setView:Clips"},{"key":"t","action":"contextToggle:254:2:0"},{"key":"F1","action":"setView:Drum1Sequencer","action2":"setContext:254:0"},{"key":"1","action":"contextToggleOnRelease:254:1:0","action2":"setView:Drum1"},{"key":"q","action":"noteOn:Drum1:60"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"bounds":[0,296,240],"visibilityContext":[{"index":254,"value":2,"condition":"SHOW_WHEN"}],"componentName":"Rect"},
-        {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"keys":[{"key":"f","action":"stop"},{"key":"g","action":"playPause"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
-        {"text":"&empty","bounds":[0,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[48,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"keys":[{"key":"a","action":"setView:Workspaces"},{"key":"s","action":"setView:Shutdown"},{"key":"f","action":"stop"},{"key":"g","action":"playPause"},{"key":"z","action":"setView:FileServer"},{"key":"b","action":"setView:Tempo"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
+        {"text":"Project","bounds":[0,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"Shutdown","bounds":[48,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[96,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&icon::stop::filled","bounds":[144,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&icon::play::filled","bounds":[192,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[0,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"Server","bounds":[0,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[48,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[96,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[144,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[192,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"}
+        {"text":"BPM","bounds":[192,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"}
       ]
     },
     {
@@ -457,17 +457,17 @@
         {"text":"Mute","bounds":[192,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":1}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"keys":[{"key":"F5","action":"setView:Clips"},{"key":"t","action":"contextToggle:254:2:0"},{"key":"F1","action":"setView:Drum1Sequencer","action2":"setContext:254:0"},{"key":"1","action":"contextToggleOnRelease:254:1:0","action2":"setView:Drum1"},{"key":"q","action":"noteOn:Drum1:60"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"bounds":[0,296,240],"visibilityContext":[{"index":254,"value":2,"condition":"SHOW_WHEN"}],"componentName":"Rect"},
-        {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"keys":[{"key":"f","action":"stop"},{"key":"g","action":"playPause"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
-        {"text":"&empty","bounds":[0,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[48,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"keys":[{"key":"a","action":"setView:Workspaces"},{"key":"s","action":"setView:Shutdown"},{"key":"f","action":"stop"},{"key":"g","action":"playPause"},{"key":"z","action":"setView:FileServer"},{"key":"b","action":"setView:Tempo"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
+        {"text":"Project","bounds":[0,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"Shutdown","bounds":[48,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[96,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&icon::stop::filled","bounds":[144,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&icon::play::filled","bounds":[192,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[0,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"Server","bounds":[0,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[48,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[96,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[144,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[192,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"}
+        {"text":"BPM","bounds":[192,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"}
       ]
     },
     {
@@ -506,17 +506,17 @@
         {"text":"Mute","bounds":[192,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":1}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"keys":[{"key":"F5","action":"setView:Clips"},{"key":"t","action":"contextToggle:254:2:0"},{"key":"F1","action":"setView:Drum1Sequencer","action2":"setContext:254:0"},{"key":"1","action":"contextToggleOnRelease:254:1:0","action2":"setView:Drum1"},{"key":"q","action":"noteOn:Drum1:60"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"bounds":[0,296,240],"visibilityContext":[{"index":254,"value":2,"condition":"SHOW_WHEN"}],"componentName":"Rect"},
-        {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"keys":[{"key":"f","action":"stop"},{"key":"g","action":"playPause"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
-        {"text":"&empty","bounds":[0,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[48,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"keys":[{"key":"a","action":"setView:Workspaces"},{"key":"s","action":"setView:Shutdown"},{"key":"f","action":"stop"},{"key":"g","action":"playPause"},{"key":"z","action":"setView:FileServer"},{"key":"b","action":"setView:Tempo"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
+        {"text":"Project","bounds":[0,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"Shutdown","bounds":[48,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[96,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&icon::stop::filled","bounds":[144,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&icon::play::filled","bounds":[192,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[0,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"Server","bounds":[0,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[48,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[96,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[144,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[192,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"}
+        {"text":"BPM","bounds":[192,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"}
       ]
     },
     {
@@ -525,17 +525,17 @@
         {"bounds":[0,0,240,270],"track":1,"audioPlugin":"Sequencer","keys":[{"key":"a","action":".noteOn","context":{"id":254,"value":0}},{"key":"s","action":".selectNoteUp","context":{"id":254,"value":0}},{"key":"d","action":".toggleParam","context":{"id":254,"value":0}},{"key":"z","action":".selectStepLeft","context":{"id":254,"value":0}},{"key":"x","action":".selectNoteDown","context":{"id":254,"value":0}},{"key":"c","action":".selectStepRight","context":{"id":254,"value":0}},{"key":"v","action":".toggleStep","context":{"id":254,"value":0}},{"key":"b","action":".deleteStep","context":{"id":254,"value":0}}],"selectedColor":"#c41598","stepColor":"#a3c912","maxStepLen":1,"componentName":"Sequencer"},
         {"keys":[{"key":"F5","action":"setView:Clips"},{"key":"t","action":"contextToggle:254:2:0"},{"key":"F1","action":"setView:Drum1Sequencer","action2":"setContext:254:0"},{"key":"1","action":"setContext:254:0","action2":"setView:Drum1"},{"key":"q","action":"noteOn:Drum1:60"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"bounds":[0,296,240],"visibilityContext":[{"index":254,"value":2,"condition":"SHOW_WHEN"}],"componentName":"Rect"},
-        {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"keys":[{"key":"f","action":"stop"},{"key":"g","action":"playPause"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
-        {"text":"&empty","bounds":[0,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[48,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"keys":[{"key":"a","action":"setView:Workspaces"},{"key":"s","action":"setView:Shutdown"},{"key":"f","action":"stop"},{"key":"g","action":"playPause"},{"key":"z","action":"setView:FileServer"},{"key":"b","action":"setView:Tempo"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
+        {"text":"Project","bounds":[0,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"Shutdown","bounds":[48,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[96,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&icon::stop::filled","bounds":[144,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&icon::play::filled","bounds":[192,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[0,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"Server","bounds":[0,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[48,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[96,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[144,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[192,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"BPM","bounds":[192,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"keys":[],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"text":"&icon::musicNote::pixelated","bounds":[0,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&icon::arrowUp::filled","bounds":[48,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":0}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
@@ -970,21 +970,6 @@
       ]
     },
     {
-      "name": "Menu",
-      "components": [
-        {"bounds":[0,0,240,280],"items":["Workspaces","Shutdown","FileServer"],"keys":[{"key":"a","action":".setView"},{"key":"s","action":".up"},{"key":"g","action":".setView"},{"key":"z","action":".down"}],"componentName":"List"},
-        {"keys":[{"key":"x","action":"setView:Clips"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
-        {"text":"&empty","bounds":[0,296,60,11],"centered":true,"bgColor":"background","color":"text","font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&icon::arrowUp::filled","bounds":[60,296,60,11],"centered":true,"bgColor":"background","color":"text","font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[120,296,60,11],"centered":true,"bgColor":"background","color":"text","font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[180,296,60,11],"centered":true,"bgColor":"background","color":"text","font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"Select","bounds":[0,307,60,11],"centered":true,"bgColor":"background","color":"text","font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&icon::arrowDown::filled","bounds":[60,307,60,11],"centered":true,"bgColor":"background","color":"text","font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"Exit","bounds":[120,307,60,11],"centered":true,"bgColor":"background","color":"text","font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[180,307,60,11],"centered":true,"bgColor":"background","color":"text","font":"PoppinsLight_8","fontSize":8,"componentName":"Text"}
-      ]
-    },
-    {
       "name": "CreateWorkspace",
       "components": [
         {"bounds":[0,40,240,200],"redirectView":"Workspaces","audioPlugin":"SerializeTrack","dataId":"CREATE_WORKSPACE","keys":[{"key":"a","action":".type"},{"key":"s","action":".up"},{"key":"d","action":".done"},{"key":"f","action":".cancel"},{"key":"g","action":".left"},{"key":"z","action":".down"},{"key":"x","action":".right"},{"key":"c","action":".backspace"}],"componentName":"Keyboard"},
@@ -1042,7 +1027,21 @@
       "name": "Tempo",
       "components": [
         {"fontSize":24,"text":"Tempo","bounds":[0,20,240,16],"centered":true,"componentName":"Text"},
-        {"audioPlugin":"Tempo","param":"BPM","bounds":[0,60,118,100],"encoderId":0,"color":"tertiary","track":0,"componentName":"KnobValue"}
+        {"audioPlugin":"Tempo","param":"BPM","bounds":[0,60,118,100],"encoderId":0,"color":"tertiary","track":0,"componentName":"KnobValue"},
+        {"keys":[{"key":"F5","action":"setView:Clips"},{"key":"t","action":"contextToggle:254:2:0"},{"key":"F1","action":"setView:Drum1Sequencer","action2":"setContext:254:0"},{"key":"1","action":"setContext:254:0","action2":"setView:Drum1"},{"key":"q","action":"noteOn:Drum1:60"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
+        {"bounds":[0,296,240],"visibilityContext":[{"index":254,"value":2,"condition":"SHOW_WHEN"}],"componentName":"Rect"},
+        {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"keys":[{"key":"a","action":"setView:Workspaces"},{"key":"s","action":"setView:Shutdown"},{"key":"f","action":"stop"},{"key":"g","action":"playPause"},{"key":"z","action":"setView:FileServer"},{"key":"b","action":"setView:Tempo"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
+        {"text":"Project","bounds":[0,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"Shutdown","bounds":[48,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"&empty","bounds":[96,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"&icon::stop::filled","bounds":[144,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"&icon::play::filled","bounds":[192,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"Server","bounds":[0,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"&empty","bounds":[48,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"&empty","bounds":[96,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"&empty","bounds":[144,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"BPM","bounds":[192,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"bounds":[0,296,240],"visibilityContext":[{"index":254,"value":2,"condition":"SHOW_WHEN_NOT"}],"componentName":"Rect"}
       ]
     },
     {
@@ -1077,17 +1076,17 @@
         {"encoderId":0,"contextId":30,"min":0,"max":16,"inverted":true,"bounds":[0,0,0,0],"componentName":"HiddenContext"},
         {"keys":[{"key":"F5","action":"setView:Clips"},{"key":"t","action":"contextToggle:254:2:0"},{"key":"F1","action":"setView:Drum1Sequencer","action2":"setContext:254:0"},{"key":"1","action":"setContext:254:0","action2":"setView:Drum1"},{"key":"q","action":"noteOn:Drum1:60"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"bounds":[0,296,240],"visibilityContext":[{"index":254,"value":2,"condition":"SHOW_WHEN"}],"componentName":"Rect"},
-        {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"keys":[{"key":"f","action":"stop"},{"key":"g","action":"playPause"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
-        {"text":"&empty","bounds":[0,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[48,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"keys":[{"key":"a","action":"setView:Workspaces"},{"key":"s","action":"setView:Shutdown"},{"key":"f","action":"stop"},{"key":"g","action":"playPause"},{"key":"z","action":"setView:FileServer"},{"key":"b","action":"setView:Tempo"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
+        {"text":"Project","bounds":[0,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"Shutdown","bounds":[48,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[96,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&icon::stop::filled","bounds":[144,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&icon::play::filled","bounds":[192,296,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[0,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
+        {"text":"Server","bounds":[0,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[48,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[96,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&empty","bounds":[144,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
-        {"text":"&empty","bounds":[192,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"}
+        {"text":"BPM","bounds":[192,307,48,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":2}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"}
       ]
     }
   ]
