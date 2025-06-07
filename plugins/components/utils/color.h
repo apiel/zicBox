@@ -67,6 +67,16 @@ Color lighten(Color color, float amount)
     };
 }
 
+Color invert(Color color)
+{
+    return {
+        (uint8_t)(255 - color.r),
+        (uint8_t)(255 - color.g),
+        (uint8_t)(255 - color.b),
+        color.a
+    };
+}
+
 Color alpha(Color color, float amount)
 {
     return {

@@ -5,6 +5,7 @@
 #include <string>
 
 #include "../drawInterface.h"
+#include "plugins/components/utils/color.h"
 
 /*md
 ## Icons
@@ -188,9 +189,16 @@ public:
             };
         }
 
+        /*md - `&icon::shutdown` */
+        if (name == "&icon::shutdown") {
+            return [&](Point position, uint8_t size, Color color, Align align) {
+                shutdown(position, size, color, align);
+            };
+        }
+
         /*md - `&empty` */
         if (name == "&empty") {
-            return [&](Point position, uint8_t size, Color color, Align align) {};
+            return [&](Point position, uint8_t size, Color color, Align align) { };
         }
 
         // printf("Unknown icon: %s\n", name.c_str());
@@ -439,6 +447,18 @@ public:
         int edge = (int)(size * 0.3);
         draw.line({ x - edge, position.y + 1 }, { x + size + edge, position.y + 1 }, { color });
         draw.line({ (int)(x + size * 0.3), position.y }, { (int)(x + size * 0.7), position.y }, { color });
+    }
+
+    void shutdown(Point position, uint8_t size, Color color, Align align = LEFT)
+    {
+        int x = getX(position, size, align, size);
+        draw.filledCircle({ (int)(x + size * 0.5), (int)(position.y + size * 0.5) }, size * 0.7, { color });
+        color = invert(color);
+        draw.line({ (int)(x + size * 0.5), position.y }, { (int)(x + size * 0.5), (int)(position.y + size * 0.5) }, { color });
+        draw.line({ (int)(x + size * 0.5) + 1, position.y }, { (int)(x + size * 0.5) + 1, (int)(position.y + size * 0.5) }, { color });
+        draw.line({ (int)(x + size * 0.5) - 1, position.y }, { (int)(x + size * 0.5) - 1, (int)(position.y + size * 0.5) }, { color });
+
+        // draw.arc({ (int)(x + size * 0.5), (int)(position.y + size * 0.5) }, size * 0.7, 100, 80, { color });
     }
 
 protected:
