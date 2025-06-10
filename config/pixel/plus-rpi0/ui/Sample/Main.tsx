@@ -3,8 +3,9 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { TracksSelector } from '../components/Common';
 import { Layout } from '../components/Layout';
-import { encBottomRight, encTopLeft, encTopRight } from '../constants';
-import { bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
+import { encBottomLeft, encBottomRight, encTopLeft, encTopRight } from '../constants';
+import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
+import { ViewSelector } from './ViewSelector';
 
 export type Props = {
     name: string;
@@ -39,14 +40,14 @@ export function MainView({ name, track, synthName, color }: Props) {
                         color="primary"
                         track={track}
                     />
-                    {/* <KnobValue
-                audioPlugin="Filter"
-                param="CUTOFF"
-                bounds={bottomLeftKnob}
-                encoderId={encBottomLeft}
-                color="primary"
-                track={track}
-            /> */}
+                    <KnobValue
+                        audioPlugin="TrackFx"
+                        param="FX_AMOUNT"
+                        bounds={bottomLeftKnob}
+                        encoderId={encBottomLeft}
+                        color="secondary"
+                        track={track}
+                    />
                     <KnobValue
                         audioPlugin="Filter"
                         param="RESONANCE"
@@ -56,12 +57,7 @@ export function MainView({ name, track, synthName, color }: Props) {
                         track={track}
                     />
 
-                    {/* <ViewSelector
-                        selected={'Main'}
-                        viewName={name}
-                        synthName={synthName}
-                        color={color}
-                    /> */}
+                    <ViewSelector viewName={name} synthName={synthName} color={color} />
                     <TracksSelector
                         selectedBackground={color}
                         viewName={name}
