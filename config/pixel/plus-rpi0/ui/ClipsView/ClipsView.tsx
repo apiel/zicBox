@@ -15,10 +15,10 @@ import {
     ColorTrack4,
     ColorTrack5,
     Drum1Track,
-    Rack1Track,
-    Rack2Track,
-    Rack3Track,
-    Rack4Track
+    Sample1Track,
+    Sample2Track,
+    Sample3Track,
+    Sample4Track
 } from '../constants';
 import { Clips } from './Clips';
 
@@ -33,10 +33,10 @@ export function ClipsView({ name }: Props) {
             {/* <ShiftedTextGrid selectedBackground={ColorTrackMaster} selected="Clips" /> */}
 
             <Clips color={ColorTrack1} track={Drum1Track} title="T.1" key={btn1} />
-            <Clips color={ColorTrack2} track={Rack1Track} title="T.2" key={btn2} />
-            <Clips color={ColorTrack3} track={Rack2Track} title="T.3" key={btn3} />
-            <Clips color={ColorTrack4} track={Rack3Track} title="T.4" key={btn4} />
-            <Clips color={ColorTrack5} track={Rack4Track} title="T.5" key={btn5} />
+            <Clips color={ColorTrack2} track={Sample1Track} title="T.2" key={btn2} />
+            <Clips color={ColorTrack3} track={Sample2Track} title="T.3" key={btn3} />
+            <Clips color={ColorTrack4} track={Sample3Track} title="T.4" key={btn4} />
+            <Clips color={ColorTrack5} track={Sample4Track} title="T.5" key={btn5} />
             <HiddenContext encoderId={0} contextId={30} min={0} max={16} inverted />
 
             <MainKeys synthName="Drum1" forcePatchView />

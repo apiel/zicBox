@@ -5,7 +5,7 @@ import { Value } from '@/libs/nativeComponents/Value';
 import { Drum1, TracksSelector } from '../components/Common';
 import { encBottomLeft, encBottomRight, encTopLeft, encTopRight, ScreenWidth } from '../constants';
 import { graphCenterValues } from '../constantsValue';
-import { Layout } from './Layout';
+import { DrumLayout } from './Layout';
 import { ViewSelector } from './ViewSelector';
 
 export type Props = {
@@ -17,7 +17,7 @@ export type Props = {
 
 export function WaveformView({ name, track, synthName, color }: Props) {
     return (
-        <Layout
+        <DrumLayout
             viewName={name}
             color={color}
             synthName={synthName}

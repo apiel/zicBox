@@ -1,10 +1,10 @@
 import * as React from '@/libs/react';
 
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
-import { View } from '@/libs/nativeComponents/View';
+import { TracksSelector } from '../components/Common';
+import { Layout } from '../components/Layout';
 import { encBottomRight, encTopLeft, encTopRight } from '../constants';
 import { bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
-import { ViewSelector } from './ViewSelector';
 
 export type Props = {
     name: string;
@@ -15,25 +15,31 @@ export type Props = {
 
 export function MainView({ name, track, synthName, color }: Props) {
     return (
-        <View name={name}>
-            <KnobValue
-                audioPlugin="TrackFx"
-                param="VOLUME"
-                bounds={topLeftKnob}
-                encoderId={encTopLeft}
-                color="tertiary"
-                track={track}
-            />
-            <KnobValue
-                audioPlugin="Filter"
-                param="CUTOFF"
-                bounds={topRightKnob}
-                encoderId={encTopRight}
-                type="STRING"
-                color="primary"
-                track={track}
-            />
-            {/* <KnobValue
+        <Layout
+            viewName={name}
+            color={color}
+            synthName={synthName}
+            title={synthName}
+            content={
+                <>
+                    <KnobValue
+                        audioPlugin="TrackFx"
+                        param="VOLUME"
+                        bounds={topLeftKnob}
+                        encoderId={encTopLeft}
+                        color="tertiary"
+                        track={track}
+                    />
+                    <KnobValue
+                        audioPlugin="Filter"
+                        param="CUTOFF"
+                        bounds={topRightKnob}
+                        encoderId={encTopRight}
+                        type="STRING"
+                        color="primary"
+                        track={track}
+                    />
+                    {/* <KnobValue
                 audioPlugin="Filter"
                 param="CUTOFF"
                 bounds={bottomLeftKnob}
@@ -41,16 +47,29 @@ export function MainView({ name, track, synthName, color }: Props) {
                 color="primary"
                 track={track}
             /> */}
-            <KnobValue
-                audioPlugin="Filter"
-                param="RESONANCE"
-                bounds={bottomRightKnob}
-                encoderId={encBottomRight}
-                color="primary"
-                track={track}
-            />
+                    <KnobValue
+                        audioPlugin="Filter"
+                        param="RESONANCE"
+                        bounds={bottomRightKnob}
+                        encoderId={encBottomRight}
+                        color="primary"
+                        track={track}
+                    />
 
-            <ViewSelector selected={'Main'} viewName={name} synthName={synthName} color={color} />
-        </View>
+                    {/* <ViewSelector
+                        selected={'Main'}
+                        viewName={name}
+                        synthName={synthName}
+                        color={color}
+                    /> */}
+                    <TracksSelector
+                        selectedBackground={color}
+                        viewName={name}
+                        trackName={synthName}
+                        selected={synthName}
+                    />
+                </>
+            }
+        />
     );
 }

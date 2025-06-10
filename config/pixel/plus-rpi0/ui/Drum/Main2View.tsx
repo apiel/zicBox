@@ -1,7 +1,7 @@
 import * as React from '@/libs/react';
 
 import { Drum1, TracksSelector } from '../components/Common';
-import { Layout } from './Layout';
+import { DrumLayout } from './Layout';
 import { ViewSelector } from './ViewSelector';
 
 export type Props = {
@@ -13,7 +13,7 @@ export type Props = {
 
 export function Main2View({ name, track, synthName, color }: Props) {
     return (
-        <Layout
+        <DrumLayout
             viewName={name}
             color={color}
             synthName={synthName}

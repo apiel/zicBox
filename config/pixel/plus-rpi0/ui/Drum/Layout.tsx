@@ -1,9 +1,7 @@
 import * as React from '@/libs/react';
 
-import { Rect } from '@/libs/nativeComponents/Rect';
-import { View } from '@/libs/nativeComponents/View';
-import { Drum1, MainKeys, MuteTracks } from '../components/Common';
-import { Title } from '../components/Title';
+import { Drum1 } from '../components/Common';
+import { Layout } from '../components/Layout';
 
 export type Props = {
     viewName: string;
@@ -13,14 +11,14 @@ export type Props = {
     synthName: string;
 };
 
-export function Layout({ viewName, content, color, hideTitle, synthName }: Props) {
+export function DrumLayout({ viewName, content, color, hideTitle, synthName }: Props) {
     return (
-        <View name={viewName}>
-            {!hideTitle && <Title title={Drum1} />}
-            {!hideTitle && <Rect bounds={[60, 28, 6, 6]} color={color} />}
-            {content}
-            <MuteTracks />
-            <MainKeys synthName={synthName} />
-        </View>
+        <Layout
+            viewName={viewName}
+            content={content}
+            color={color}
+            title={hideTitle ? undefined : Drum1}
+            synthName={synthName}
+        />
     );
 }

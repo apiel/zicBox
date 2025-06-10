@@ -25,10 +25,10 @@ import {
 
 export const Clips = 'Clips';
 export const Drum1 = 'Drum23';
-export const Rack1 = 'Rack1';
-export const Rack2 = 'Rack2';
-export const Rack3 = 'Rack3';
-export const Rack4 = 'Rack4';
+export const Sample1 = 'Sample1';
+export const Sample2 = 'Sample2';
+export const Sample3 = 'Sample3';
+export const Sample4 = 'Sample4';
 
 function TracksSelectorSub({
     selectedBackground,
@@ -50,17 +50,17 @@ function TracksSelectorSub({
             pageCount={pageCount}
             currentPage={currentPage}
             bounds={SelectorPosition2}
-            rows={[`${Drum1} ${Rack1} ${Rack2} ${Rack3} ${Rack4}`]}
+            rows={[`${Drum1} ${Sample1} ${Sample2} ${Sample3} ${Sample4}`]}
             keys={[
                 {
                     key: btn6,
                     action: viewName === `Drum1` ? `setView:Drum1:page2` : `setView:Drum1`,
                     action2: 'setActiveTrack:1',
                 },
-                { key: btn7, action: 'setView:Rack1', action2: 'setActiveTrack:2' },
-                { key: btn8, action: 'setView:Rack2', action2: 'setActiveTrack:3' },
-                { key: btn9, action: 'setView:Rack3', action2: 'setActiveTrack:4' },
-                { key: btn10, action: `setView:Rack4`, action2: 'setActiveTrack:5' },
+                { key: btn7, action: 'setView:Sample1', action2: 'setActiveTrack:2' },
+                { key: btn8, action: 'setView:Sample2', action2: 'setActiveTrack:3' },
+                { key: btn9, action: 'setView:Sample3', action2: 'setActiveTrack:4' },
+                { key: btn10, action: `setView:Sample4`, action2: 'setActiveTrack:5' },
             ]}
             selected={selected}
             contextValue={[contextValue]}

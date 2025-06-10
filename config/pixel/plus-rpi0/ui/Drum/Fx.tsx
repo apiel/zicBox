@@ -4,7 +4,7 @@ import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Drum1, TracksSelector } from '../components/Common';
 import { encBottomLeft, encBottomRight, encTopLeft, encTopRight } from '../constants';
 import { bottomLeftKnob, bottomRightKnob, topLeftKnob, topRightKnob } from '../constantsValue';
-import { Layout } from './Layout';
+import { DrumLayout } from './Layout';
 import { ViewSelector } from './ViewSelector';
 
 export type Props = {
@@ -16,7 +16,7 @@ export type Props = {
 
 export function FxView({ name, track, synthName, color }: Props) {
     return (
-        <Layout
+        <DrumLayout
             viewName={name}
             color={color}
             synthName={synthName}

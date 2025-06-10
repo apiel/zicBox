@@ -7,13 +7,13 @@ import {
     ColorTrack4,
     ColorTrack5,
     Drum1Track,
-    Rack1Track,
-    Rack2Track,
-    Rack3Track,
-    Rack4Track,
+    Sample1Track,
+    Sample2Track,
+    Sample3Track,
+    Sample4Track,
     ScreenHeight,
     ScreenWidth,
-    W1_2
+    W1_2,
 } from './constants';
 import { DrumView } from './Drum/DrumView';
 import { Menu } from './menu';
@@ -26,7 +26,7 @@ const halfHeight = ScreenHeight / 2;
 // addZoneEncoder([W1_2, halfHeight, W1_2, halfHeight]);
 
 export const ui = {
-    // pixelController: 'rpiCM4_4enc_11btn',  
+    // pixelController: 'rpiCM4_4enc_11btn',
     pixelController: 'rpi3A_4enc_11btn',
     // i2c: ['pixel+_v1'],
     screen: {
@@ -44,10 +44,10 @@ export const ui = {
         <>
             <DrumView track={Drum1Track} synthName="Drum1" color={ColorTrack1} />
 
-            <SampleView track={Rack1Track} synthName="Rack1" color={ColorTrack2} />
-            <SampleView track={Rack2Track} synthName="Rack2" color={ColorTrack3} />
-            <SampleView track={Rack3Track} synthName="Rack3" color={ColorTrack4} />
-            <SampleView track={Rack4Track} synthName="Rack4" color={ColorTrack5} />
+            <SampleView track={Sample1Track} synthName="Sample1" color={ColorTrack2} />
+            <SampleView track={Sample2Track} synthName="Sample2" color={ColorTrack3} />
+            <SampleView track={Sample3Track} synthName="Sample3" color={ColorTrack4} />
+            <SampleView track={Sample4Track} synthName="Sample4" color={ColorTrack5} />
 
             <Menu />
 
