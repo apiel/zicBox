@@ -304,24 +304,37 @@ public:
         uint8_t count = getKeypadCount();
         std::cout << "Keys count: " << (int)count << std::endl;
         std::this_thread::sleep_for(std::chrono::microseconds(500));
-        // if (count > 0) {
-        //     if (polling) {
-        //         count = count + 2;
-        //     }
-        //     keyEventRaw e[count];
-        //     readKeypad(e, count);
-        //     for (int i = 0; i < count; i++) {
-        //         // call any callbacks associated with the key
-        //         e[i].bit.NUM = NEO_TRELLIS_SEESAW_KEY(e[i].bit.NUM);
-        //         // if (e[i].bit.NUM < NEO_TRELLIS_NUM_KEYS && _callbacks[e[i].bit.NUM] != NULL) {
-        //         //     keyEvent evt = { e[i].bit.EDGE, e[i].bit.NUM };
-        //         //     _callbacks[e[i].bit.NUM](evt);
-        //         // }
-        //         if (e[i].bit.NUM < NEO_TRELLIS_NUM_KEYS) {
-        //             std::cout << "Key " << (int)e[i].bit.NUM << " " << (int)e[i].bit.EDGE << std::endl;
-        //         }
-        //     }
-        // }
+        if (count > 0 && count < 255) {
+            // std::vector<uint8_t> data = read_register(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_FIFO, sizeof(keyEventRaw));
+            // keyEventRaw* e = (keyEventRaw*)data.data();
+            // std::cout << "Event: " << (int)e->bit.NUM << " " << (int)e->bit.EDGE << std::endl;
+
+            std::vector<uint8_t> data = read_register(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_FIFO, 3);
+            std::cout << "Event: " << (int)data[0] << " " << (int)data[1] << " " << (int)data[2] << std::endl;
+
+            // std::vector<uint8_t> data = read_register(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_FIFO, count + 2);
+            // for (int i = 0; i < count; i++) {
+            //     keyEventRaw e = { data[i] };
+            //     std::cout << i << ". Event: " << (int)e.bit.NUM << " " << (int)e.bit.EDGE << std::endl;
+            // }
+
+            // if (polling) {
+            //     count = count + 2;
+            // }
+            // keyEventRaw e[count];
+            // readKeypad(e, count);
+            // for (int i = 0; i < count; i++) {
+            //     // call any callbacks associated with the key
+            //     e[i].bit.NUM = NEO_TRELLIS_SEESAW_KEY(e[i].bit.NUM);
+            //     // if (e[i].bit.NUM < NEO_TRELLIS_NUM_KEYS && _callbacks[e[i].bit.NUM] != NULL) {
+            //     //     keyEvent evt = { e[i].bit.EDGE, e[i].bit.NUM };
+            //     //     _callbacks[e[i].bit.NUM](evt);
+            //     // }
+            //     if (e[i].bit.NUM < NEO_TRELLIS_NUM_KEYS) {
+            //         std::cout << "Key " << (int)e[i].bit.NUM << " " << (int)e[i].bit.EDGE << std::endl;
+            //     }
+            // }
+        }
     }
 
     bool readKeypad(keyEventRaw* buf, uint8_t count)
