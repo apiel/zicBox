@@ -15,8 +15,9 @@
 // This is crucial for the NeoTrellis to process commands reliably.
 #define I2C_TRANSACTION_DELAY_MS 20 // 20 milliseconds
 
-// Uncomment the line below to enable detailed I2C debugging logs
+// Enable detailed I2C debugging logs for troubleshooting
 // #define DEBUG_I2C
+#define DEBUG_KEYPAD
 
 class NeoTrellis {
 public:
@@ -38,6 +39,7 @@ private:
     
     // Seesaw function addresses (specific registers within a module)
     static const uint8_t SEESAW_STATUS_SWRST = 0x7F;           // Software reset command
+    static const uint8_t SEESAW_STATUS_HW_ID = 0x01;           // Hardware ID register
     static const uint8_t SEESAW_GPIO_DIRCLR_BULK = 0x02;       // Clear direction (set as input) for bulk GPIO
     static const uint8_t SEESAW_GPIO_PULLUP_ENSET_BULK = 0x0B; // Enable pull-up for bulk GPIO
     static const uint8_t SEESAW_NEOPIXEL_PIN = 0x01;           // Pin connected to NeoPixels
@@ -61,9 +63,6 @@ public:
     static const uint8_t NEO_TRELLIS_NUM_KEYS = 16; // Moved to public scope
     
     // Edge definitions for key events (these match Adafruit's Python library)
-    // Note: The raw event byte from Trellis has bits 6 and 7 indicating edge type,
-    // not directly mapping to these values using a mask like `& 0x03`.
-    // These are for internal use in our code/callbacks.
     static const uint8_t EDGE_HIGH = 0;    
     static const uint8_t EDGE_LOW = 1;     
     static const uint8_t EDGE_FALLING = 2; // Button release
@@ -121,10 +120,30 @@ public:
     }
     
     /**
+     * @brief Test basic I2C communication by reading hardware ID
+     */
+    bool test_communication() {
+        try {
+            std::cout << "Testing I2C communication..." << std::endl;
+            auto hw_id = read_register(SEESAW_STATUS_BASE, SEESAW_STATUS_HW_ID, 1);
+            std::cout << "Hardware ID: 0x" << std::hex << (int)hw_id[0] << std::dec << std::endl;
+            return hw_id[0] == 0x55; // Expected hardware ID for Seesaw
+        } catch (const std::exception& e) {
+            std::cerr << "Communication test failed: " << e.what() << std::endl;
+            return false;
+        }
+    }
+    
+    /**
      * @brief Initializes the NeoTrellis device, including software reset and NeoPixel setup.
      */
     void init() {
         std::cout << "Starting device initialization..." << std::endl;
+        
+        // Test basic communication first
+        if (!test_communication()) {
+            std::cerr << "Warning: Communication test failed, proceeding anyway..." << std::endl;
+        }
         
         // Perform a software reset on the Seesaw chip
         std::cout << "Sending software reset..." << std::endl;
@@ -285,12 +304,13 @@ public:
     void activate_key(uint8_t key, uint8_t edge) {
         if (key >= NEO_TRELLIS_NUM_KEYS) return;
         
-        // Command to enable/disable keypad interrupts/events is KEYPAD_INTENSET (0x02)
+        // Fixed: The activate_key command should use 0x01 (set interrupts) not 0x02
         // Data format: [key_number, edge_type]
-        // This tells the Seesaw to report events for this key on the specified edge.
-        write_register(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_INTENSET, {key, edge});
+        write_register(SEESAW_KEYPAD_BASE, 0x02, {key, edge}); // 0x02 is INTENSET
         
+        #ifdef DEBUG_KEYPAD
         std::cout << "Key " << (int)key << " activated for edge " << (int)edge << std::endl;
+        #endif
     }
     
     /**
@@ -305,36 +325,42 @@ public:
     }
     
     /**
+     * @brief Manual check of keypad count for debugging
+     */
+    void debug_keypad_status() {
+        try {
+            auto count_data = read_register(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_COUNT, 1);
+            std::cout << "Debug: Keypad event count = " << (int)count_data[0] << std::endl;
+        } catch (const std::exception& e) {
+            std::cout << "Debug: Failed to read keypad count: " << e.what() << std::endl;
+        }
+    }
+    
+    /**
      * @brief Synchronizes with the NeoTrellis to read and dispatch pending key events.
      * This should be called regularly in your main loop.
      */
     void sync() {
-        // Declare old_cerr here to ensure it's in scope for all conditional blocks
-        std::streambuf* old_cerr = nullptr; 
-
-        #ifndef DEBUG_I2C
-        // Temporarily suppress stderr for read_register calls within sync()
-        old_cerr = std::cerr.rdbuf();
-        std::cerr.rdbuf(nullptr); // Redirect cerr to null
-        #endif
-
         try {
             // Step 1: Read the number of pending key events from the FIFO
             std::vector<uint8_t> count_data;
             try {
                 count_data = read_register(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_COUNT, 1);
             } catch (const std::exception& e) {
-                #ifndef DEBUG_I2C
-                std::cerr.rdbuf(old_cerr); // Restore cerr before logging error
+                // Only log errors if debug is enabled
+                #ifdef DEBUG_KEYPAD
+                std::cerr << "Error reading keypad event count: " << e.what() << std::endl;
                 #endif
-                // It's possible to get an I/O error if the device isn't ready or there's bus noise.
-                // For sync(), we can often ignore these if the device is generally functioning.
-                // If errors persist, enabling DEBUG_I2C will show more.
-                // std::cerr << "Error reading keypad event count: " << e.what() << std::endl;
                 return; // Exit sync if count read fails
             }
             
             uint8_t count = count_data[0]; // The number of events in the FIFO
+
+            #ifdef DEBUG_KEYPAD
+            if (count > 0) {
+                std::cout << "Sync: Found " << (int)count << " pending events" << std::endl;
+            }
+            #endif
 
             // Step 2: If there are events, read them one by one and dispatch callbacks
             for (uint8_t i = 0; i < count; ++i) {
@@ -343,9 +369,6 @@ public:
                     // Read one event byte from the FIFO
                     event_bytes = read_register(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_EVENT, 1);
                 } catch (const std::exception& e) {
-                    #ifndef DEBUG_I2C
-                    std::cerr.rdbuf(old_cerr); // Restore cerr before logging error
-                    #endif
                     std::cerr << "Error reading event byte " << (int)i << ": " << e.what() << std::endl;
                     break; // Break the loop if reading an event fails
                 }
@@ -358,6 +381,7 @@ public:
                 uint8_t key_num = event_byte & 0x3F; // Key number is bits 0-5
                 uint8_t edge = 0; // Initialize edge
 
+                // Decode edge from bits 6 and 7
                 if (event_byte & 0x80) {
                     if (event_byte & 0x40) {
                         edge = EDGE_FALLING; // 11 in bits 6 and 7
@@ -372,6 +396,11 @@ public:
                     }
                 }
 
+                #ifdef DEBUG_KEYPAD
+                std::cout << "Raw event byte: 0x" << std::hex << (int)event_byte << std::dec 
+                          << " -> Key: " << (int)key_num << ", Edge: " << (int)edge << std::endl;
+                #endif
+
                 KeyEvent evt = { key_num, edge };
                 if (key_num < callbacks.size() && callbacks[key_num]) {
                     callbacks[key_num](evt); // Call the callback for this key
@@ -380,13 +409,6 @@ public:
         } catch (const std::exception& e) {
             std::cerr << "Exception in sync(): " << e.what() << std::endl;
         }
-
-        #ifndef DEBUG_I2C
-        // Restore cerr after suppressing
-        if (old_cerr) {
-            std::cerr.rdbuf(old_cerr);
-        }
-        #endif
     }
     
     /**
@@ -431,11 +453,11 @@ const NeoTrellis::Color NeoTrellis::PURPLE(180, 0, 255);
 // Global callback function (needs a reference to trellis to call its methods)
 void blink(NeoTrellis::KeyEvent event, NeoTrellis& trellis) {
     if (event.edge == NeoTrellis::EDGE_RISING) {
-        std::cout << "Detected event: Key " << (int)event.number << " pressed (Rising Edge)" << std::endl;
+        std::cout << "*** BUTTON PRESSED: Key " << (int)event.number << " ***" << std::endl;
         trellis.set_pixel_color(event.number, NeoTrellis::CYAN);
         trellis.show(); // Update LEDs
     } else if (event.edge == NeoTrellis::EDGE_FALLING) {
-        std::cout << "Detected event: Key " << (int)event.number << " released (Falling Edge)" << std::endl;
+        std::cout << "*** BUTTON RELEASED: Key " << (int)event.number << " ***" << std::endl;
         trellis.set_pixel_color(event.number, NeoTrellis::OFF);
         trellis.show(); // Update LEDs
     }
@@ -443,7 +465,7 @@ void blink(NeoTrellis::KeyEvent event, NeoTrellis& trellis) {
 
 int main() {
     try {
-        std::cout << "--- NeoTrellis C++ Example ---" << std::endl;
+        std::cout << "--- NeoTrellis C++ Debug Version ---" << std::endl;
         std::cout << "Verify NeoTrellis connection: run 'sudo i2cdetect -y 1' and look for 0x2E" << std::endl;
         
         // Create the NeoTrellis object
@@ -484,10 +506,23 @@ int main() {
         std::cout << "LED cycle complete." << std::endl;
         
         std::cout << "Ready! Press keys on the NeoTrellis to see lights and events." << std::endl;
+        std::cout << "Debug info will be shown. Press Ctrl+C to exit." << std::endl;
+        
+        // Debug: Check keypad status initially
+        trellis.debug_keypad_status();
+        
+        int loop_count = 0;
         
         // Main loop: Continuously check for and process key events
         while (true) {
             trellis.sync(); // This reads keypad events and triggers callbacks
+            
+            // Every 100 loops (about 2 seconds), show debug info
+            if (++loop_count % 100 == 0) {
+                std::cout << "Loop " << loop_count << " - Still monitoring for button presses..." << std::endl;
+                trellis.debug_keypad_status();
+            }
+            
             std::this_thread::sleep_for(std::chrono::milliseconds(20)); // Polling rate (20ms recommended by Adafruit)
         }
         
