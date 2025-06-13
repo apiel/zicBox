@@ -11,11 +11,21 @@
 #include <unistd.h>
 #include <vector>
 
+#define NEO_TRELLIS_KEY(x) (((x) / 4) * 8 + ((x) % 4))
+#define NEO_TRELLIS_SEESAW_KEY(x) (((x) / 8) * 4 + ((x) % 8))
+
 #define I2C_TRANSACTION_DELAY_MS 20 // 20 milliseconds
 
 // Enable detailed I2C debugging logs for troubleshooting
 // #define DEBUG_I2C
 #define DEBUG_KEYPAD
+
+enum {
+    SEESAW_KEYPAD_EDGE_HIGH = 0,
+    SEESAW_KEYPAD_EDGE_LOW,
+    SEESAW_KEYPAD_EDGE_FALLING,
+    SEESAW_KEYPAD_EDGE_RISING,
+};
 
 class NeoTrellis {
 public:
@@ -34,6 +44,7 @@ private:
     static const uint8_t SEESAW_GPIO_BASE = 0x01;
     static const uint8_t SEESAW_NEOPIXEL_BASE = 0x0E;
     static const uint8_t SEESAW_KEYPAD_BASE = 0x10;
+    static const uint8_t SEESAW_KEYPAD_FIFO = 0x10;
 
     // Seesaw function addresses (specific registers within a module)
     static const uint8_t SEESAW_STATUS_SWRST = 0x7F; // Software reset command
@@ -196,6 +207,130 @@ public:
         std::this_thread::sleep_for(std::chrono::milliseconds(I2C_TRANSACTION_DELAY_MS)); // Delay AFTER transaction
     }
 
+    union keyState {
+        struct {
+            uint8_t STATE : 1; ///< the current state of the key
+            uint8_t ACTIVE : 4; ///< the registered events for that key
+        } bit; ///< bitfield format
+        uint8_t reg; ///< register format
+    };
+
+    void activateKey(uint8_t key, uint8_t edge, bool enable = true)
+    {
+        setKeypadEvent(NEO_TRELLIS_KEY(key), edge, enable);
+
+        // key = NEO_TRELLIS_KEY(key);
+        // keyState ks;
+        // ks.bit.STATE = enable;
+        // ks.bit.ACTIVE = (1 << edge);
+        // write_register(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_EVENT, { key, ks.reg });
+    }
+
+    void setKeypadEvent(uint8_t key, uint8_t edge, bool enable)
+    {
+        keyState ks;
+        ks.bit.STATE = enable;
+        ks.bit.ACTIVE = (1 << edge);
+        write_register(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_EVENT, { key, ks.reg });
+    }
+
+    std::vector<uint8_t> read_register(uint8_t reg_high, uint8_t reg_low, size_t length)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(I2C_TRANSACTION_DELAY_MS)); // Delay BEFORE transaction
+
+        uint8_t reg_addr[2] = { reg_high, reg_low };
+        std::vector<uint8_t> data(length);
+
+        // Prepare two I2C messages: one for writing the command, one for reading the response.
+        struct i2c_msg msgs[2];
+
+        // Message 0: Write the command bytes
+        msgs[0].addr = address;
+        msgs[0].flags = 0; // 0 for write
+        msgs[0].len = 2; // Command is 2 bytes (reg_high, reg_low)
+        msgs[0].buf = reg_addr;
+
+        // Message 1: Read the specified number of bytes
+        msgs[1].addr = address;
+        msgs[1].flags = I2C_M_RD; // I2C_M_RD for read
+        msgs[1].len = length;
+        msgs[1].buf = data.data();
+
+        // Combine the messages into an i2c_rdwr_ioctl_data structure
+        struct i2c_rdwr_ioctl_data ioctl_data;
+        ioctl_data.msgs = msgs;
+        ioctl_data.nmsgs = 2; // We are sending two messages in one atomic transaction
+
+#ifdef DEBUG_I2C
+        std::cerr << "I2C Read (atomic): addr=0x" << std::hex << (int)address
+                  << ", reg=0x" << (int)reg_high << " 0x" << (int)reg_low << std::dec
+                  << ", read_len=" << length << std::endl;
+#endif
+
+        // Perform the combined write-then-read I2C transaction
+        if (ioctl(i2c_fd, I2C_RDWR, &ioctl_data) < 0) {
+            std::cerr << "Failed to perform I2C_RDWR (read transaction): " << strerror(errno) << " (errno " << errno << ")" << std::endl;
+            throw std::runtime_error("I2C read transaction failed");
+        }
+
+#ifdef DEBUG_I2C
+        // Debugging output for read data
+        std::cerr << "I2C Read Data: {";
+        for (uint8_t byte : data) {
+            std::cerr << "0x" << std::hex << std::setw(2) << std::setfill('0') << (int)byte << std::dec << " ";
+        }
+        std::cerr << "}" << std::endl;
+#endif
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(I2C_TRANSACTION_DELAY_MS)); // Delay AFTER transaction
+        return data;
+    }
+
+    uint8_t getKeypadCount()
+    {
+        return read_register(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_COUNT, 1)[0];
+    }
+
+    union keyEventRaw {
+        struct {
+            uint8_t EDGE : 2; ///< the edge that was triggered
+            uint8_t NUM : 6; ///< the event number
+        } bit; ///< bitfield format
+        uint8_t reg; ///< register format
+    };
+
+    void readKeys(bool polling = true)
+    {
+        uint8_t count = getKeypadCount();
+        std::cout << "Keys count: " << (int)count << std::endl;
+        std::this_thread::sleep_for(std::chrono::microseconds(500));
+        // if (count > 0) {
+        //     if (polling) {
+        //         count = count + 2;
+        //     }
+        //     keyEventRaw e[count];
+        //     readKeypad(e, count);
+        //     for (int i = 0; i < count; i++) {
+        //         // call any callbacks associated with the key
+        //         e[i].bit.NUM = NEO_TRELLIS_SEESAW_KEY(e[i].bit.NUM);
+        //         // if (e[i].bit.NUM < NEO_TRELLIS_NUM_KEYS && _callbacks[e[i].bit.NUM] != NULL) {
+        //         //     keyEvent evt = { e[i].bit.EDGE, e[i].bit.NUM };
+        //         //     _callbacks[e[i].bit.NUM](evt);
+        //         // }
+        //         if (e[i].bit.NUM < NEO_TRELLIS_NUM_KEYS) {
+        //             std::cout << "Key " << (int)e[i].bit.NUM << " " << (int)e[i].bit.EDGE << std::endl;
+        //         }
+        //     }
+        // }
+    }
+
+    bool readKeypad(keyEventRaw* buf, uint8_t count)
+    {
+        std::vector<uint8_t> data = read_register(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_FIFO, count * sizeof(keyEventRaw));
+        memcpy(buf, data.data(), count * sizeof(keyEventRaw));
+        return true;
+    }
+
     void set_pixel_color(uint8_t pixel, const Color& color)
     {
         if (pixel >= NEO_TRELLIS_NUM_KEYS)
@@ -260,6 +395,11 @@ int main()
 
         std::cout << "NeoTrellis object created and initialized successfully." << std::endl;
 
+        for (int i = 0; i < NeoTrellis::NEO_TRELLIS_NUM_KEYS; i++) {
+            trellis.activateKey(i, SEESAW_KEYPAD_EDGE_RISING);
+            trellis.activateKey(i, SEESAW_KEYPAD_EDGE_FALLING);
+        }
+
         // Set global brightness (equivalent to Python's trellis.brightness = 0.5)
         trellis.set_global_brightness(0.5f);
 
@@ -277,6 +417,13 @@ int main()
             std::this_thread::sleep_for(std::chrono::milliseconds(50));
         }
         std::cout << "LED cycle complete." << std::endl;
+
+        while (true) {
+            trellis.readKeys();
+
+            // std::this_thread::sleep_for(std::chrono::milliseconds(20)); // Polling rate (20ms recommended by Adafruit)
+            std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // Polling rate (20ms recommended by Adafruit)
+        }
 
     } catch (const std::exception& e) {
         std::cerr << "Application Error: " << e.what() << std::endl;
