@@ -196,7 +196,7 @@ public:
     int i2c_fd; // File descriptor for the I2C bus
     uint8_t address; // I2C address of the NeoTrellis
 
-    void begin(const char* i2c_device = "/dev/i2c-1", uint8_t addr = 0x2E, bool reset = true)
+    void begin(const char* i2c_device = "/dev/i2c-1", uint8_t addr = 0x2E)
     {
         address = addr;
 
@@ -215,8 +215,16 @@ public:
 
         std::cout << "Set I2C slave address to 0x" << std::hex << (int)address << std::endl;
 
-        if (reset) {
-            SWReset();
+        // Perform a software reset on the Seesaw chip
+        std::cout << "Sending software reset..." << std::endl;
+        try {
+            // Software reset command: write 0xFF to STATUS_SWRST register
+            // write_register(SEESAW_STATUS_BASE, SEESAW_STATUS_SWRST, { 0xFF });
+            this->write8(SEESAW_STATUS_BASE, SEESAW_STATUS_SWRST, 0xFF);
+            std::cout << "Software reset sent successfully." << std::endl;
+        } catch (const std::exception& e) {
+            std::cerr << "Failed to send software reset: " << e.what() << std::endl;
+            throw; // Re-throw to indicate critical failure
         }
     }
 
@@ -245,11 +253,6 @@ public:
         *mon = (vers >> 7) & 0xF;
         *day = (vers >> 11) & 0x1F;
         return true;
-    }
-
-    bool SWReset()
-    {
-        return this->write8(SEESAW_STATUS_BASE, SEESAW_STATUS_SWRST, 0xFF);
     }
 
     void setKeypadEvent(uint8_t key, uint8_t edge, bool enable = true)
@@ -287,7 +290,7 @@ public:
     //     return 1;
     // }
 
-    // virtual size_t write(const char* str)
+    // virtual size_t write(const char* str)address
     // {
     //     uint8_t buf[32];
     //     uint8_t len = 0;
@@ -314,58 +317,108 @@ protected:
         return ret;
     }
 
-    bool read(uint8_t regHigh, uint8_t regLow, uint8_t* buf, uint8_t length, uint16_t delay = 250)
+    // bool read(uint8_t regHigh, uint8_t regLow, uint8_t* buf, uint8_t length, uint16_t delay = 250)
+    // {
+    //     // uint8_t pos = 0;
+    //     // uint8_t prefix[2];
+    //     // prefix[0] = (uint8_t)regHigh;
+    //     // prefix[1] = (uint8_t)regLow;
+
+    //     // // on arduino we need to read in 32 byte chunks
+    //     // while (pos < num) {
+    //     //     uint8_t read_now = std::min(32, num - pos);
+
+    //     //     if (!_i2c_dev->write(prefix, 2)) {
+    //     //         return false;
+    //     //     }
+
+    //     //     std::this_thread::sleep_for(std::chrono::microseconds(delay));
+
+    //     //     if (!_i2c_dev->read(buf + pos, read_now)) {
+    //     //         return false;
+    //     //     }
+    //     //     pos += read_now;
+    //     // }
+    //     // return true;
+
+    //     uint8_t reg_addr[2] = { regHigh, regLow };
+    //     std::vector<uint8_t> data(length);
+    //     struct i2c_msg msgs[2];
+    //     msgs[0].addr = address;
+    //     msgs[0].flags = 0; // 0 for write
+    //     msgs[0].len = 2; // Command is 2 bytes (reg_high, reg_low)
+    //     msgs[0].buf = reg_addr;
+
+    //     // Message 1: Read the specified number of bytes
+    //     msgs[1].addr = address;
+    //     msgs[1].flags = I2C_M_RD; // I2C_M_RD for read
+    //     msgs[1].len = length;
+    //     msgs[1].buf = data.data();
+
+    //     // Combine the messages into an i2c_rdwr_ioctl_data structure
+    //     struct i2c_rdwr_ioctl_data ioctl_data;
+    //     ioctl_data.msgs = msgs;
+    //     ioctl_data.nmsgs = 2; // We are sending two messages in one atomic transaction
+
+    //     // Perform the combined write-then-read I2C transaction
+    //     if (ioctl(i2c_fd, I2C_RDWR, &ioctl_data) < 0) {
+    //         std::cerr << "Failed to perform I2C_RDWR (read transaction): " << strerror(errno) << " (errno " << errno << ")" << std::endl;
+    //         throw std::runtime_error("I2C read transaction failed");
+    //         return false;
+    //     }
+
+    //     // Copy the read data into the buffer
+    //     std::memcpy(buf, data.data(), length);
+    //     return true;
+    // }
+
+    bool read(uint8_t regHigh,
+        uint8_t regLow,
+        uint8_t* buf,
+        uint8_t length,
+        uint16_t delay_us = 250)
     {
-        // uint8_t pos = 0;
-        // uint8_t prefix[2];
-        // prefix[0] = (uint8_t)regHigh;
-        // prefix[1] = (uint8_t)regLow;
+        uint8_t prefix[2] = { regHigh, regLow };
+        size_t pos = 0;
 
-        // // on arduino we need to read in 32 byte chunks
-        // while (pos < num) {
-        //     uint8_t read_now = std::min(32, num - pos);
+        // Linux’ i2c‑dev normally allows up to 8192 bytes in one go,
+        // but we imitate Arduino’s 32‑byte Wire buffer limit so the
+        // logic stays identical and you won’t overflow small MCUs.
+        constexpr size_t CHUNK_SIZE = 32;
 
-        //     if (!_i2c_dev->write(prefix, 2)) {
-        //         return false;
-        //     }
+        while (pos < length) {
+            size_t to_read = std::min(CHUNK_SIZE, static_cast<size_t>(length - pos));
 
-        //     std::this_thread::sleep_for(std::chrono::microseconds(delay));
+            /* -------- First: write the 2‑byte register address -------- */
+            // This puts a STOP condition on the bus; that is *okay*
+            // for most sensors because they only need the register
+            // pointer set.  If yours *requires* a repeated‑start,
+            // stick with I2C_RDWR at the end of this answer.
+            if (::write(i2c_fd, prefix, sizeof(prefix)) != sizeof(prefix)) {
+                std::cerr << "I2C register‑select write failed: "
+                          << strerror(errno) << " (errno " << errno << ")\n";
+                return false;
+            }
 
-        //     if (!_i2c_dev->read(buf + pos, read_now)) {
-        //         return false;
-        //     }
-        //     pos += read_now;
-        // }
-        // return true;
+            /* Optional tiny settling delay, mirroring Arduino code */
+            std::this_thread::sleep_for(std::chrono::microseconds(delay_us));
 
-        uint8_t reg_addr[2] = { regHigh, regLow };
-        std::vector<uint8_t> data(length);
-        struct i2c_msg msgs[2];
-        msgs[0].addr = address;
-        msgs[0].flags = 0; // 0 for write
-        msgs[0].len = 2; // Command is 2 bytes (reg_high, reg_low)
-        msgs[0].buf = reg_addr;
+            /* -------- Second: read the data -------- */
+            ssize_t got = ::read(i2c_fd, buf + pos, to_read);
+            if (got != static_cast<ssize_t>(to_read)) {
+                std::cerr << "I2C read failed: "
+                          << strerror(errno) << " (errno " << errno << ")\n";
+                return false;
+            }
 
-        // Message 1: Read the specified number of bytes
-        msgs[1].addr = address;
-        msgs[1].flags = I2C_M_RD; // I2C_M_RD for read
-        msgs[1].len = length;
-        msgs[1].buf = data.data();
+            pos += to_read;
 
-        // Combine the messages into an i2c_rdwr_ioctl_data structure
-        struct i2c_rdwr_ioctl_data ioctl_data;
-        ioctl_data.msgs = msgs;
-        ioctl_data.nmsgs = 2; // We are sending two messages in one atomic transaction
-
-        // Perform the combined write-then-read I2C transaction
-        if (ioctl(i2c_fd, I2C_RDWR, &ioctl_data) < 0) {
-            std::cerr << "Failed to perform I2C_RDWR (read transaction): " << strerror(errno) << " (errno " << errno << ")" << std::endl;
-            // throw std::runtime_error("I2C read transaction failed");
-            return false;
+            /* For the *next* chunk we do NOT advance the register
+               pointer again – most sensors auto‑increment it after
+               each read.  Therefore we leave `prefix` untouched and
+               simply issue the next read immediately. */
         }
 
-        // Copy the read data into the buffer
-        std::memcpy(buf, data.data(), length);
         return true;
     }
 

@@ -98,15 +98,19 @@ public:
     void begin(const char* i2c_device = "/dev/i2c-1", uint8_t addr = 0x2E)
     {
         Adafruit_seesaw::begin(i2c_device, addr);
+
+        setPin(pin);
+        this->write8(SEESAW_NEOPIXEL_BASE, SEESAW_NEOPIXEL_SPEED, 0x01);
         // updateType(type);
         updateLength(numLEDs);
-        setPin(pin);
     }
 
     void updateLength(uint16_t n)
     {
         if (pixels)
             free(pixels); // Free existing data (if any)
+
+        std::cout << "Updating length to " << n << std::endl;
 
         // Allocate new data -- note: ALL PIXELS ARE CLEARED
         numBytes = n * ((wOffset == rOffset) ? 3 : 4);
@@ -119,6 +123,9 @@ public:
 
         uint8_t buf[] = { (uint8_t)(numBytes >> 8), (uint8_t)(numBytes & 0xFF) };
         writeReg(SEESAW_NEOPIXEL_BASE, SEESAW_NEOPIXEL_BUF_LENGTH, buf, 2);
+
+        // uint8_t buf2[] = { 0x00, 16 * 3 };
+        // writeReg(SEESAW_NEOPIXEL_BASE, SEESAW_NEOPIXEL_BUF_LENGTH, buf2, 2);
     }
 
     void show(void)
@@ -143,6 +150,7 @@ public:
 
     void setPin(uint8_t p)
     {
+        std::cout << "Setting pin to " << (int)p << std::endl;
         this->write8(SEESAW_NEOPIXEL_BASE, SEESAW_NEOPIXEL_PIN, p);
         pin = p;
     }

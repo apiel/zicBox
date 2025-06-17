@@ -27,7 +27,7 @@ class Adafruit_NeoTrellis : public Adafruit_seesaw {
 public:
     Adafruit_NeoTrellis()
         : Adafruit_seesaw()
-        , pixels(NEO_TRELLIS_NUM_KEYS, NEO_TRELLIS_NEOPIX_PIN, NEO_GRB + NEO_KHZ800)
+    // , pixels(NEO_TRELLIS_NUM_KEYS, NEO_TRELLIS_NEOPIX_PIN, NEO_GRB + NEO_KHZ800)
     {
         for (int i = 0; i < NEO_TRELLIS_NUM_KEYS; i++) {
             _callbacks[i] = NULL;
@@ -38,8 +38,8 @@ public:
 
     void begin(const char* i2c_device = "/dev/i2c-1", uint8_t addr = 0x2E)
     {
-        pixels.begin(i2c_device, addr);
-        // Adafruit_seesaw::begin(i2c_device, addr, false);
+        // pixels.begin(i2c_device, addr);
+        Adafruit_seesaw::begin(i2c_device, addr);
         enableKeypadInterrupt();
     }
 
@@ -64,22 +64,28 @@ public:
         // delayMicroseconds(500);
         std::this_thread::sleep_for(std::chrono::microseconds(500));
         if (count > 0) {
+            // std::cout << "Keys count: " << (int)count << std::endl;
             if (polling)
                 count = count + 2;
             keyEventRaw e[count];
             readKeypad(e, count);
+            // std::cout << "Keys count: " << (int)count << std::endl;
+            // std::cout << "Event: " << (int)e[0].bit.NUM << " " << (int)e[0].bit.EDGE << std::endl;
             for (int i = 0; i < count; i++) {
                 // call any callbacks associated with the key
                 e[i].bit.NUM = NEO_TRELLIS_SEESAW_KEY(e[i].bit.NUM);
-                if (e[i].bit.NUM < NEO_TRELLIS_NUM_KEYS && _callbacks[e[i].bit.NUM] != NULL) {
-                    keyEvent evt = { e[i].bit.EDGE, e[i].bit.NUM };
-                    _callbacks[e[i].bit.NUM](evt);
+                if (e[i].bit.NUM < NEO_TRELLIS_NUM_KEYS) {
+                    // std::cout << "Event: " << (int)e[i].bit.NUM << " " << (int)e[i].bit.EDGE << std::endl;
+                    if (_callbacks[e[i].bit.NUM] != NULL) {
+                        keyEvent evt = { e[i].bit.EDGE, e[i].bit.NUM };
+                        _callbacks[e[i].bit.NUM](evt);
+                    }
                 }
             }
         }
     }
 
-    Adafruit_neopixel pixels; ///< the onboard neopixel matrix
+    // Adafruit_neopixel pixels; ///< the onboard neopixel matrix
 
     friend class Adafruit_MultiTrellis; ///< for allowing use of protected methods
     ///< by aggregate class
