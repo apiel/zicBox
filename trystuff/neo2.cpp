@@ -195,16 +195,16 @@ union keyState {
 
 typedef void (*TrellisCallback)(keyEvent evt);
 
-class Adafruit_NeoTrellis {
+class NeoTrellis {
 public:
-    Adafruit_NeoTrellis()
+    NeoTrellis()
     {
         for (int i = 0; i < NEO_TRELLIS_NUM_KEYS; i++) {
             _callbacks[i] = NULL;
         }
     }
 
-    ~Adafruit_NeoTrellis() { };
+    ~NeoTrellis() { };
 
     int i2c_fd; // File descriptor for the I2C bus
     uint8_t address; // I2C address of the NeoTrellis
@@ -431,10 +431,51 @@ public:
         }
     }
 
-    // Adafruit_neopixel pixels; ///< the onboard neopixel matrix
+    struct Color {
+        uint8_t r, g, b;
+        Color(uint8_t red = 0, uint8_t green = 0, uint8_t blue = 0)
+            : r(red)
+            , g(green)
+            , b(blue)
+        {
+        }
+    };
+    static const Color OFF;
+    static const Color RED;
+    static const Color YELLOW;
+    static const Color GREEN;
+    static const Color CYAN;
+    static const Color BLUE;
+    static const Color PURPLE;
 
-    friend class Adafruit_MultiTrellis; ///< for allowing use of protected methods
-    ///< by aggregate class
+    void setPixelColor(uint8_t pixel, const Color& color)
+    {
+        if (pixel >= NEO_TRELLIS_NUM_KEYS)
+            return;
+
+        uint8_t writeBuf[6] = { 0x00, (uint8_t)(pixel * 3), color.g, color.r, color.b, 0x00 };
+        this->writeReg(SEESAW_NEOPIXEL_BASE, SEESAW_NEOPIXEL_BUF, writeBuf, 6);
+    }
+
+    void show(void)
+    {
+
+        // if (!pixels)
+        //     return;
+
+        // Data latch = 300+ microsecond pause in the output stream.  Rather than
+        // put a delay at the end of the function, the ending time is noted and
+        // the function will simply hold off (if needed) on issuing the
+        // subsequent round of data until the latch time has elapsed.  This
+        // allows the mainline code to start generating the next frame of data
+        // rather than stalling for the latch.
+        // while (!canShow())
+        //     ;
+
+        this->writeReg(SEESAW_NEOPIXEL_BASE, SEESAW_NEOPIXEL_SHOW, NULL, 0);
+
+        // endTime = micros(); // Save EOD time for latch on next call
+    }
 
 protected:
     uint8_t _addr; ///< the I2C address of this board
@@ -442,7 +483,7 @@ protected:
         keyEvent); ///< the array of callback functions
 };
 
-Adafruit_NeoTrellis trellis;
+NeoTrellis trellis;
 
 TrellisCallback blink(keyEvent evt)
 {
@@ -462,6 +503,15 @@ TrellisCallback blink(keyEvent evt)
     return 0;
 }
 
+// Static color definitions (initialized outside the class)
+const NeoTrellis::Color NeoTrellis::OFF(0, 0, 0);
+const NeoTrellis::Color NeoTrellis::RED(255, 0, 0);
+const NeoTrellis::Color NeoTrellis::YELLOW(255, 150, 0);
+const NeoTrellis::Color NeoTrellis::GREEN(0, 255, 0);
+const NeoTrellis::Color NeoTrellis::CYAN(0, 255, 255);
+const NeoTrellis::Color NeoTrellis::BLUE(0, 0, 255);
+const NeoTrellis::Color NeoTrellis::PURPLE(180, 0, 255);
+
 int main()
 {
     try {
@@ -475,19 +525,19 @@ int main()
             trellis.registerCallback(i, blink);
         }
 
-        // //do a little animation to show we're on
-        // for (uint16_t i = 0; i < trellis.pixels.numPixels(); i++) {
-        //     trellis.pixels.setPixelColor(i, 0x00FF00);
-        //     trellis.pixels.show();
-        //     // delay(50);
-        //     std::this_thread::sleep_for(std::chrono::milliseconds(50));
-        // }
-        // for (uint16_t i = 0; i < trellis.pixels.numPixels(); i++) {
-        //     trellis.pixels.setPixelColor(i, 0x000000);
-        //     trellis.pixels.show();
-        //     // delay(50);
-        //     std::this_thread::sleep_for(std::chrono::milliseconds(50));
-        // }
+        std::cout << "Starting LED cycle (Purple then Off)..." << std::endl;
+        for (int i = 0; i < NEO_TRELLIS_NUM_KEYS; i++) {
+            trellis.setPixelColor(i, NeoTrellis::PURPLE);
+            trellis.show(); // Latch the colors to the LEDs
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        }
+
+        for (int i = 0; i < NEO_TRELLIS_NUM_KEYS; i++) {
+            trellis.setPixelColor(i, NeoTrellis::OFF);
+            trellis.show(); // Latch the colors to the LEDs
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        }
+        std::cout << "LED cycle complete." << std::endl;
 
         while (true) {
             trellis.read(); // interrupt management does all the work! :)
