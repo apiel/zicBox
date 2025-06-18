@@ -195,112 +195,20 @@ union keyState {
 
 typedef void (*TrellisCallback)(keyEvent evt);
 
-class Adafruit_seesaw {
+class Adafruit_NeoTrellis {
 public:
-    // constructors
-    Adafruit_seesaw()
+    Adafruit_NeoTrellis()
     {
-        // if (i2c_bus == NULL) {
-        //     _i2cbus = &Wire;
-        // } else {
-        //     _i2cbus = i2c_bus;
-        // }
+        for (int i = 0; i < NEO_TRELLIS_NUM_KEYS; i++) {
+            _callbacks[i] = NULL;
+        }
     }
 
-    ~Adafruit_seesaw(void) { };
+    ~Adafruit_NeoTrellis() { };
 
     int i2c_fd; // File descriptor for the I2C bus
     uint8_t address; // I2C address of the NeoTrellis
 
-    void begin(const char* i2c_device = "/dev/i2c-1", uint8_t addr = 0x2E)
-    {
-        address = addr;
-
-        i2c_fd = open(i2c_device, O_RDWR);
-        if (i2c_fd < 0) {
-            std::cerr << "Failed to open I2C device '" << i2c_device << "': " << strerror(errno) << std::endl;
-            throw std::runtime_error("Failed to open I2C device");
-        }
-        std::cout << "Opened I2C device '" << i2c_device << "'" << std::endl;
-
-        if (ioctl(i2c_fd, I2C_SLAVE, address) < 0) {
-            std::cerr << "Failed to set I2C slave address to 0x" << std::hex << (int)address << ": " << strerror(errno) << std::endl;
-            close(i2c_fd);
-            throw std::runtime_error("Failed to set I2C slave address");
-        }
-
-        std::cout << "Set I2C slave address to 0x" << std::hex << (int)address << std::endl;
-
-        // Perform a software reset on the Seesaw chip
-        std::cout << "Sending software reset..." << std::endl;
-        try {
-            // Software reset command: write 0xFF to STATUS_SWRST register
-            // write_register(SEESAW_STATUS_BASE, SEESAW_STATUS_SWRST, { 0xFF });
-            this->write8(SEESAW_STATUS_BASE, SEESAW_STATUS_SWRST, 0xFF);
-            std::cout << "Software reset sent successfully." << std::endl;
-        } catch (const std::exception& e) {
-            std::cerr << "Failed to send software reset: " << e.what() << std::endl;
-            throw; // Re-throw to indicate critical failure
-        }
-    }
-
-    uint32_t getOptions()
-    {
-        uint8_t buf[4];
-        this->read(SEESAW_STATUS_BASE, SEESAW_STATUS_OPTIONS, buf, 4);
-        uint32_t ret = ((uint32_t)buf[0] << 24) | ((uint32_t)buf[1] << 16) | ((uint32_t)buf[2] << 8) | (uint32_t)buf[3];
-        return ret;
-    }
-
-    uint32_t getVersion()
-    {
-        uint8_t buf[4];
-        this->read(SEESAW_STATUS_BASE, SEESAW_STATUS_VERSION, buf, 4);
-        uint32_t ret = ((uint32_t)buf[0] << 24) | ((uint32_t)buf[1] << 16) | ((uint32_t)buf[2] << 8) | (uint32_t)buf[3];
-        return ret;
-    }
-
-    bool getProdDatecode(uint16_t* pid, uint8_t* year, uint8_t* mon, uint8_t* day)
-    {
-        uint32_t vers = getVersion();
-        *pid = vers >> 16;
-
-        *year = vers & 0x3F;
-        *mon = (vers >> 7) & 0xF;
-        *day = (vers >> 11) & 0x1F;
-        return true;
-    }
-
-    void setKeypadEvent(uint8_t key, uint8_t edge, bool enable = true)
-    {
-        keyState ks;
-        ks.bit.STATE = enable;
-        ks.bit.ACTIVE = (1 << edge);
-        uint8_t cmd[] = { key, ks.reg };
-        this->writeReg(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_EVENT, cmd, 2);
-    }
-
-    void enableKeypadInterrupt()
-    {
-        this->write8(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_INTENSET, 0x01);
-    }
-
-    void disableKeypadInterrupt()
-    {
-        this->write8(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_INTENCLR, 0x01);
-    }
-
-    uint8_t getKeypadCount()
-    {
-        return this->read8(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_COUNT, 500);
-    }
-
-    bool readKeypad(keyEventRaw* buf, uint8_t count)
-    {
-        return this->read(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_FIFO, (uint8_t*)buf, count, 1000);
-    }
-
-protected:
     bool write8(byte regHigh, byte regLow, byte value)
     {
         return this->writeReg(regHigh, regLow, &value, 1);
@@ -391,25 +299,94 @@ protected:
         uint8_t reg; ///< full register
     };
     sercom_inten _sercom_inten; ///< sercom interrupt enable register instance
-};
-
-class Adafruit_NeoTrellis : public Adafruit_seesaw {
-public:
-    Adafruit_NeoTrellis()
-        : Adafruit_seesaw()
-    {
-        for (int i = 0; i < NEO_TRELLIS_NUM_KEYS; i++) {
-            _callbacks[i] = NULL;
-        }
-    }
-
-    ~Adafruit_NeoTrellis() { };
 
     void begin(const char* i2c_device = "/dev/i2c-1", uint8_t addr = 0x2E)
     {
-        // pixels.begin(i2c_device, addr);
-        Adafruit_seesaw::begin(i2c_device, addr);
+        address = addr;
+
+        i2c_fd = open(i2c_device, O_RDWR);
+        if (i2c_fd < 0) {
+            std::cerr << "Failed to open I2C device '" << i2c_device << "': " << strerror(errno) << std::endl;
+            throw std::runtime_error("Failed to open I2C device");
+        }
+        std::cout << "Opened I2C device '" << i2c_device << "'" << std::endl;
+
+        if (ioctl(i2c_fd, I2C_SLAVE, address) < 0) {
+            std::cerr << "Failed to set I2C slave address to 0x" << std::hex << (int)address << ": " << strerror(errno) << std::endl;
+            close(i2c_fd);
+            throw std::runtime_error("Failed to set I2C slave address");
+        }
+
+        std::cout << "Set I2C slave address to 0x" << std::hex << (int)address << std::endl;
+
+        // Perform a software reset on the Seesaw chip
+        std::cout << "Sending software reset..." << std::endl;
+        try {
+            // Software reset command: write 0xFF to STATUS_SWRST register
+            // write_register(SEESAW_STATUS_BASE, SEESAW_STATUS_SWRST, { 0xFF });
+            this->write8(SEESAW_STATUS_BASE, SEESAW_STATUS_SWRST, 0xFF);
+            std::cout << "Software reset sent successfully." << std::endl;
+        } catch (const std::exception& e) {
+            std::cerr << "Failed to send software reset: " << e.what() << std::endl;
+            throw; // Re-throw to indicate critical failure
+        }
         enableKeypadInterrupt();
+    }
+
+    uint32_t getOptions()
+    {
+        uint8_t buf[4];
+        this->read(SEESAW_STATUS_BASE, SEESAW_STATUS_OPTIONS, buf, 4);
+        uint32_t ret = ((uint32_t)buf[0] << 24) | ((uint32_t)buf[1] << 16) | ((uint32_t)buf[2] << 8) | (uint32_t)buf[3];
+        return ret;
+    }
+
+    uint32_t getVersion()
+    {
+        uint8_t buf[4];
+        this->read(SEESAW_STATUS_BASE, SEESAW_STATUS_VERSION, buf, 4);
+        uint32_t ret = ((uint32_t)buf[0] << 24) | ((uint32_t)buf[1] << 16) | ((uint32_t)buf[2] << 8) | (uint32_t)buf[3];
+        return ret;
+    }
+
+    bool getProdDatecode(uint16_t* pid, uint8_t* year, uint8_t* mon, uint8_t* day)
+    {
+        uint32_t vers = getVersion();
+        *pid = vers >> 16;
+
+        *year = vers & 0x3F;
+        *mon = (vers >> 7) & 0xF;
+        *day = (vers >> 11) & 0x1F;
+        return true;
+    }
+
+    void setKeypadEvent(uint8_t key, uint8_t edge, bool enable = true)
+    {
+        keyState ks;
+        ks.bit.STATE = enable;
+        ks.bit.ACTIVE = (1 << edge);
+        uint8_t cmd[] = { key, ks.reg };
+        this->writeReg(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_EVENT, cmd, 2);
+    }
+
+    void enableKeypadInterrupt()
+    {
+        this->write8(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_INTENSET, 0x01);
+    }
+
+    void disableKeypadInterrupt()
+    {
+        this->write8(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_INTENCLR, 0x01);
+    }
+
+    uint8_t getKeypadCount()
+    {
+        return this->read8(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_COUNT, 500);
+    }
+
+    bool readKeypad(keyEventRaw* buf, uint8_t count)
+    {
+        return this->read(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_FIFO, (uint8_t*)buf, count, 1000);
     }
 
     void registerCallback(uint8_t key, TrellisCallback (*cb)(keyEvent))
