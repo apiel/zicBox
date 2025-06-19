@@ -22,11 +22,7 @@
 typedef uint8_t byte;
 
 #define NEO_TRELLIS_ADDR 0x2E
-
-#define NEO_TRELLIS_NUM_ROWS 4
-#define NEO_TRELLIS_NUM_COLS 4
-#define NEO_TRELLIS_NUM_KEYS (NEO_TRELLIS_NUM_ROWS * NEO_TRELLIS_NUM_COLS)
-
+#define NEO_TRELLIS_NUM_KEYS 16
 #define NEO_TRELLIS_KEY(x) (((x) / 4) * 8 + ((x) % 4))
 #define NEO_TRELLIS_SEESAW_KEY(x) (((x) / 8) * 4 + ((x) % 8))
 
@@ -183,18 +179,14 @@ public:
 
         std::cout << "Set I2C slave address to 0x" << std::hex << (int)address << std::endl;
 
-        // Perform a software reset on the Seesaw chip
-        std::cout << "Sending software reset..." << std::endl;
         try {
-            // Software reset command: write 0xFF to STATUS_SWRST register
-            // write_register(SEESAW_STATUS_BASE, SEESAW_STATUS_SWRST, { 0xFF });
             this->write8(SEESAW_STATUS_BASE, SEESAW_STATUS_SWRST, 0xFF);
             std::cout << "Software reset sent successfully." << std::endl;
         } catch (const std::exception& e) {
             std::cerr << "Failed to send software reset: " << e.what() << std::endl;
             throw; // Re-throw to indicate critical failure
         }
-        
+
         // Enable the keypad interrupt
         this->write8(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_INTENSET, 0x01);
     }
@@ -215,7 +207,8 @@ public:
 
     void read(bool polling = true)
     {
-        uint8_t count = this->read8(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_COUNT, 500);;
+        uint8_t count = this->read8(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_COUNT, 500);
+        ;
         std::this_thread::sleep_for(std::chrono::microseconds(500));
         if (count > 0) {
             if (polling)
@@ -268,9 +261,8 @@ public:
     }
 
 protected:
-    uint8_t _addr; ///< the I2C address of this board
-    TrellisCallback (*_callbacks[NEO_TRELLIS_NUM_KEYS])(
-        keyEvent); ///< the array of callback functions
+    uint8_t _addr;
+    TrellisCallback (*_callbacks[NEO_TRELLIS_NUM_KEYS])(keyEvent);
 };
 
 NeoTrellis trellis;
@@ -286,7 +278,6 @@ TrellisCallback blink(keyEvent evt)
     return 0;
 }
 
-// Static color definitions (initialized outside the class)
 const NeoTrellis::Color NeoTrellis::OFF(0, 0, 0);
 const NeoTrellis::Color NeoTrellis::RED(255, 0, 0);
 const NeoTrellis::Color NeoTrellis::YELLOW(255, 150, 0);
@@ -323,8 +314,8 @@ int main()
         std::cout << "LED cycle complete." << std::endl;
 
         while (true) {
-            trellis.read(); // interrupt management does all the work! :)
-            std::this_thread::sleep_for(std::chrono::milliseconds(20)); // Polling rate (20ms recommended by Adafruit)
+            trellis.read();
+            std::this_thread::sleep_for(std::chrono::milliseconds(20));
         }
 
     } catch (const std::exception& e) {
