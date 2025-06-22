@@ -54,6 +54,12 @@ enum {
     SEESAW_KEYPAD_EDGE_RISING = 3,
 };
 
+enum {
+    SEESAW_NEOPIXEL_PIN = 0x01, // Pin connected to NeoPixels
+    SEESAW_NEOPIXEL_SPEED = 0x02, // NeoPixel data rate
+    SEESAW_NEOPIXEL_BUF_LENGTH = 0x03, // Number of NeoPixels * 3 bytes (GRB)
+};
+
 union keyEventRaw {
     struct {
         uint8_t EDGE : 2; ///< the edge that was triggered
@@ -189,6 +195,11 @@ public:
 
         // Enable the keypad interrupt
         this->write8(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_INTENSET, 0x01);
+
+        this->write8(SEESAW_NEOPIXEL_BASE, 0x01, 0x03);
+        this->write8(SEESAW_NEOPIXEL_BASE, 0x02, 0x01);
+        uint8_t writeBuf[2] = { 0x00, (uint8_t)(NEO_TRELLIS_NUM_KEYS * 3) };
+        this->writeReg(SEESAW_NEOPIXEL_BASE, 0x03, writeBuf, 2);
     }
 
     void registerCallback(uint8_t key, TrellisCallback (*cb)(keyEvent))
@@ -260,6 +271,24 @@ public:
         this->writeReg(SEESAW_NEOPIXEL_BASE, SEESAW_NEOPIXEL_SHOW, NULL, 0);
     }
 
+    // void setGlobalBrightness(float brightness)
+    // {
+    //     if (brightness < 0.0f)
+    //         brightness = 0.0f;
+    //     if (brightness > 1.0f)
+    //         brightness = 1.0f;
+    //     uint8_t value = static_cast<uint8_t>(brightness * 255);
+
+    //     // NeoTrellis specific brightness command is 0x03 followed by the brightness byte
+    //     std::vector<uint8_t> buffer = { 0x03, value };
+
+    //     ssize_t written = write(i2c_fd, buffer.data(), buffer.size());
+    //     if (written != (ssize_t)buffer.size()) {
+    //         std::cerr << "Failed to set global brightness: wrote " << written << " bytes instead of " << buffer.size() << std::endl;
+    //         std::cerr << "Error: " << strerror(errno) << " (errno " << errno << ")" << std::endl;
+    //     }
+    // }
+
 protected:
     uint8_t _addr;
     TrellisCallback (*_callbacks[NEO_TRELLIS_NUM_KEYS])(keyEvent);
@@ -298,6 +327,8 @@ int main()
             trellis.activateKey(i, SEESAW_KEYPAD_EDGE_FALLING);
             trellis.registerCallback(i, blink);
         }
+
+        // trellis.setGlobalBrightness(0.5f);
 
         std::cout << "Starting LED cycle (Purple then Off)..." << std::endl;
         for (int i = 0; i < NEO_TRELLIS_NUM_KEYS; i++) {
