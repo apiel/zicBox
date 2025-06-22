@@ -196,10 +196,10 @@ public:
         // Enable the keypad interrupt
         this->write8(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_INTENSET, 0x01);
 
-        this->write8(SEESAW_NEOPIXEL_BASE, 0x01, 0x03);
-        this->write8(SEESAW_NEOPIXEL_BASE, 0x02, 0x01);
+        this->write8(SEESAW_NEOPIXEL_BASE, SEESAW_NEOPIXEL_PIN, 0x03); // The GPIO pin on ATSAMD09 connected to NeoPixels
+        this->write8(SEESAW_NEOPIXEL_BASE, SEESAW_NEOPIXEL_SPEED, 0x01);
         uint8_t writeBuf[2] = { 0x00, (uint8_t)(NEO_TRELLIS_NUM_KEYS * 3) };
-        this->writeReg(SEESAW_NEOPIXEL_BASE, 0x03, writeBuf, 2);
+        this->writeReg(SEESAW_NEOPIXEL_BASE, SEESAW_NEOPIXEL_BUF_LENGTH, writeBuf, 2);
     }
 
     void registerCallback(uint8_t key, TrellisCallback (*cb)(keyEvent))
