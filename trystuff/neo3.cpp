@@ -1,16 +1,8 @@
 
 
-#include <algorithm>
-#include <chrono>
-#include <cstdint>
-#include <linux/i2c-dev.h>
-#include <linux/i2c.h> // Required for i2c_msg and i2c_rdwr_ioctl_data structures
-#include <thread>
-
 #include <cstring> // For strerror
 #include <fcntl.h>
 #include <functional>
-#include <iomanip> // For std::hex, std::setw, std::setfill
 #include <iostream>
 #include <linux/i2c-dev.h>
 #include <linux/i2c.h> // Required for i2c_msg and i2c_rdwr_ioctl_data structures
