@@ -136,7 +136,7 @@ public:
         return true;
     }
 
-    void begin(const char* i2c_device = "/dev/i2c-1", uint8_t addr = 0x2E)
+    void begin(uint8_t addr = 0x2E, const char* i2c_device = "/dev/i2c-1")
     {
         address = addr;
 
