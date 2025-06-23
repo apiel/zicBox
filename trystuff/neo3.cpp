@@ -19,80 +19,51 @@
 #include <unistd.h>
 #include <vector>
 
-typedef uint8_t byte;
-
 #define NEO_TRELLIS_ADDR 0x2E
 #define NEO_TRELLIS_NUM_KEYS 16
 #define NEO_TRELLIS_KEY(x) (((x) / 4) * 8 + ((x) % 4))
 #define NEO_TRELLIS_SEESAW_KEY(x) (((x) / 8) * 4 + ((x) % 8))
 
-enum {
-    SEESAW_STATUS_BASE = 0x00,
-    SEESAW_NEOPIXEL_BASE = 0x0E,
-    SEESAW_KEYPAD_BASE = 0x10,
-};
-
-enum {
-    SEESAW_STATUS_SWRST = 0x7F,
-};
-
-enum {
-    SEESAW_NEOPIXEL_BUF = 0x04,
-    SEESAW_NEOPIXEL_SHOW = 0x05,
-};
-
-enum {
-    SEESAW_KEYPAD_EVENT = 0x01,
-    SEESAW_KEYPAD_INTENSET = 0x02,
-    SEESAW_KEYPAD_INTENCLR = 0x03,
-    SEESAW_KEYPAD_COUNT = 0x04,
-    SEESAW_KEYPAD_FIFO = 0x10,
-};
-
-enum {
-    SEESAW_KEYPAD_EDGE_FALLING = 2,
-    SEESAW_KEYPAD_EDGE_RISING = 3,
-};
-
-enum {
-    SEESAW_NEOPIXEL_PIN = 0x01, // Pin connected to NeoPixels
-    SEESAW_NEOPIXEL_SPEED = 0x02, // NeoPixel data rate
-    SEESAW_NEOPIXEL_BUF_LENGTH = 0x03, // Number of NeoPixels * 3 bytes (GRB)
-};
-
-union keyEventRaw {
-    struct {
-        uint8_t EDGE : 2; ///< the edge that was triggered
-        uint8_t NUM : 6; ///< the event number
-    } bit; ///< bitfield format
-    uint8_t reg; ///< register format
-};
-
-union keyEvent {
-    struct {
-        uint8_t EDGE : 2; ///< the edge that was triggered
-        uint16_t NUM : 14; ///< the event number
-    } bit; ///< bitfield format
-    uint16_t reg; ///< register format
-};
-
-union keyState {
-    struct {
-        uint8_t STATE : 1; ///< the current state of the key
-        uint8_t ACTIVE : 4; ///< the registered events for that key
-    } bit; ///< bitfield format
-    uint8_t reg; ///< register format
-};
-
-typedef void (*TrellisCallback)(keyEvent evt);
-
 class NeoTrellis {
+protected:
 public:
-    NeoTrellis()
+    enum {
+        SEESAW_STATUS_BASE = 0x00,
+        SEESAW_NEOPIXEL_BASE = 0x0E,
+        SEESAW_KEYPAD_BASE = 0x10,
+    };
+
+    enum {
+        SEESAW_STATUS_SWRST = 0x7F,
+    };
+
+    enum {
+        SEESAW_NEOPIXEL_BUF = 0x04,
+        SEESAW_NEOPIXEL_SHOW = 0x05,
+    };
+
+    enum {
+        SEESAW_KEYPAD_EVENT = 0x01,
+        SEESAW_KEYPAD_INTENSET = 0x02,
+        SEESAW_KEYPAD_INTENCLR = 0x03,
+        SEESAW_KEYPAD_COUNT = 0x04,
+        SEESAW_KEYPAD_FIFO = 0x10,
+    };
+
+    enum {
+        SEESAW_KEYPAD_EDGE_FALLING = 2,
+        SEESAW_KEYPAD_EDGE_RISING = 3,
+    };
+
+    enum {
+        SEESAW_NEOPIXEL_PIN = 0x01, // Pin connected to NeoPixels
+        SEESAW_NEOPIXEL_SPEED = 0x02, // NeoPixel data rate
+        SEESAW_NEOPIXEL_BUF_LENGTH = 0x03, // Number of NeoPixels * 3 uint8_ts (GRB)
+    };
+
+    NeoTrellis(std::function<void(uint8_t, bool)> callback)
+        : _callback(callback)
     {
-        for (int i = 0; i < NEO_TRELLIS_NUM_KEYS; i++) {
-            _callbacks[i] = NULL;
-        }
     }
 
     ~NeoTrellis() { };
@@ -100,12 +71,12 @@ public:
     int i2c_fd; // File descriptor for the I2C bus
     uint8_t address; // I2C address of the NeoTrellis
 
-    bool write8(byte regHigh, byte regLow, byte value)
+    bool write8(uint8_t regHigh, uint8_t regLow, uint8_t value)
     {
         return this->writeReg(regHigh, regLow, &value, 1);
     }
 
-    uint8_t read8(byte regHigh, byte regLow, uint16_t delay = 250)
+    uint8_t read8(uint8_t regHigh, uint8_t regLow, uint16_t delay = 250)
     {
         uint8_t ret;
         this->read(regHigh, regLow, &ret, 1, delay);
@@ -157,7 +128,7 @@ public:
 
         ssize_t written = write(i2c_fd, buffer.data(), buffer.size());
         if (written != (ssize_t)buffer.size()) {
-            std::cerr << "I2C write failed: wrote " << written << " bytes instead of " << buffer.size() << std::endl;
+            std::cerr << "I2C write failed: wrote " << written << " uint8_ts instead of " << buffer.size() << std::endl;
             std::cerr << "Error: " << strerror(errno) << " (errno " << errno << ")" << std::endl;
             // throw std::runtime_error("I2C write failed");
             return false;
@@ -202,10 +173,13 @@ public:
         this->writeReg(SEESAW_NEOPIXEL_BASE, SEESAW_NEOPIXEL_BUF_LENGTH, writeBuf, 2);
     }
 
-    void registerCallback(uint8_t key, TrellisCallback (*cb)(keyEvent))
-    {
-        _callbacks[key] = cb;
-    }
+    union keyState {
+        struct {
+            uint8_t STATE : 1; ///< the current state of the key
+            uint8_t ACTIVE : 4; ///< the registered events for that key
+        } bit; ///< bitfield format
+        uint8_t reg; ///< register format
+    };
 
     void activateKey(uint8_t key, uint8_t edge, bool enable = true)
     {
@@ -215,6 +189,14 @@ public:
         uint8_t cmd[] = { (uint8_t)NEO_TRELLIS_KEY(key), ks.reg };
         this->writeReg(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_EVENT, cmd, 2);
     }
+
+    union keyEventRaw {
+        struct {
+            uint8_t EDGE : 2; ///< the edge that was triggered
+            uint8_t NUM : 6; ///< the event number
+        } bit; ///< bitfield format
+        uint8_t reg; ///< register format
+    };
 
     void read(bool polling = true)
     {
@@ -227,13 +209,10 @@ public:
             keyEventRaw e[count];
             this->read(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_FIFO, (uint8_t*)e, count, 1000);
             for (int i = 0; i < count; i++) {
-                // call any callbacks associated with the key
                 e[i].bit.NUM = NEO_TRELLIS_SEESAW_KEY(e[i].bit.NUM);
                 if (e[i].bit.NUM < NEO_TRELLIS_NUM_KEYS) {
-                    // std::cout << "Event: " << (int)e[i].bit.NUM << " " << (int)e[i].bit.EDGE << std::endl;
-                    if (_callbacks[e[i].bit.NUM] != NULL) {
-                        keyEvent evt = { e[i].bit.EDGE, e[i].bit.NUM };
-                        _callbacks[e[i].bit.NUM](evt);
+                    if (_callback) {
+                        _callback(e[i].bit.NUM, e[i].bit.EDGE == SEESAW_KEYPAD_EDGE_RISING);
                     }
                 }
             }
@@ -271,41 +250,10 @@ public:
         this->writeReg(SEESAW_NEOPIXEL_BASE, SEESAW_NEOPIXEL_SHOW, NULL, 0);
     }
 
-    // void setGlobalBrightness(float brightness)
-    // {
-    //     if (brightness < 0.0f)
-    //         brightness = 0.0f;
-    //     if (brightness > 1.0f)
-    //         brightness = 1.0f;
-    //     uint8_t value = static_cast<uint8_t>(brightness * 255);
-
-    //     // NeoTrellis specific brightness command is 0x03 followed by the brightness byte
-    //     std::vector<uint8_t> buffer = { 0x03, value };
-
-    //     ssize_t written = write(i2c_fd, buffer.data(), buffer.size());
-    //     if (written != (ssize_t)buffer.size()) {
-    //         std::cerr << "Failed to set global brightness: wrote " << written << " bytes instead of " << buffer.size() << std::endl;
-    //         std::cerr << "Error: " << strerror(errno) << " (errno " << errno << ")" << std::endl;
-    //     }
-    // }
-
 protected:
     uint8_t _addr;
-    TrellisCallback (*_callbacks[NEO_TRELLIS_NUM_KEYS])(keyEvent);
+    std::function<void(uint8_t, bool)> _callback;
 };
-
-NeoTrellis trellis;
-
-TrellisCallback blink(keyEvent evt)
-{
-    if (evt.bit.EDGE == SEESAW_KEYPAD_EDGE_RISING) {
-        std::cout << "Pressed: " << (int)evt.bit.NUM << std::endl;
-    } else if (evt.bit.EDGE == SEESAW_KEYPAD_EDGE_FALLING) {
-        std::cout << "Released: " << (int)evt.bit.NUM << std::endl;
-    }
-
-    return 0;
-}
 
 const NeoTrellis::Color NeoTrellis::OFF(0, 0, 0);
 const NeoTrellis::Color NeoTrellis::RED(255, 0, 0);
@@ -318,14 +266,17 @@ const NeoTrellis::Color NeoTrellis::PURPLE(180, 0, 255);
 int main()
 {
     try {
+        NeoTrellis trellis([](uint8_t num, bool pressed) {
+            std::cout << (pressed ? "Pressed: " : "Released: ") << (int)num << std::endl;
+        });
 
         trellis.begin();
 
         //activate all keys and set callbacks
         for (int i = 0; i < NEO_TRELLIS_NUM_KEYS; i++) {
-            trellis.activateKey(i, SEESAW_KEYPAD_EDGE_RISING);
-            trellis.activateKey(i, SEESAW_KEYPAD_EDGE_FALLING);
-            trellis.registerCallback(i, blink);
+            trellis.activateKey(i, NeoTrellis::SEESAW_KEYPAD_EDGE_RISING);
+            trellis.activateKey(i, NeoTrellis::SEESAW_KEYPAD_EDGE_FALLING);
+            // trellis.registerCallback(i, blink);
         }
 
         // trellis.setGlobalBrightness(0.5f);
