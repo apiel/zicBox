@@ -19,7 +19,6 @@
 #include <unistd.h>
 #include <vector>
 
-#define NEO_TRELLIS_ADDR 0x2E
 #define NEO_TRELLIS_NUM_KEYS 16
 #define NEO_TRELLIS_KEY(x) (((x) / 4) * 8 + ((x) % 4))
 #define NEO_TRELLIS_SEESAW_KEY(x) (((x) / 8) * 4 + ((x) % 8))
@@ -164,7 +163,7 @@ public:
             throw; // Re-throw to indicate critical failure
         }
 
-        // Enable the keypad interrupt
+        // Enable the keypad interruptNEO_TRELLIS_SEESAW_KEY
         this->write8(SEESAW_KEYPAD_BASE, SEESAW_KEYPAD_INTENSET, 0x01);
 
         this->write8(SEESAW_NEOPIXEL_BASE, SEESAW_NEOPIXEL_PIN, 0x03); // The GPIO pin on ATSAMD09 connected to NeoPixels
@@ -228,13 +227,6 @@ public:
         {
         }
     };
-    static const Color OFF;
-    static const Color RED;
-    static const Color YELLOW;
-    static const Color GREEN;
-    static const Color CYAN;
-    static const Color BLUE;
-    static const Color PURPLE;
 
     void setPixelColor(uint8_t pixel, const Color& color)
     {
@@ -255,14 +247,6 @@ protected:
     std::function<void(uint8_t, bool)> _callback;
 };
 
-const NeoTrellis::Color NeoTrellis::OFF(0, 0, 0);
-const NeoTrellis::Color NeoTrellis::RED(255, 0, 0);
-const NeoTrellis::Color NeoTrellis::YELLOW(255, 150, 0);
-const NeoTrellis::Color NeoTrellis::GREEN(0, 255, 0);
-const NeoTrellis::Color NeoTrellis::CYAN(0, 255, 255);
-const NeoTrellis::Color NeoTrellis::BLUE(0, 0, 255);
-const NeoTrellis::Color NeoTrellis::PURPLE(180, 0, 255);
-
 int main()
 {
     try {
@@ -281,15 +265,18 @@ int main()
 
         // trellis.setGlobalBrightness(0.5f);
 
+        const NeoTrellis::Color OFF(0, 0, 0);
+        const NeoTrellis::Color PURPLE(180, 0, 255);
+
         std::cout << "Starting LED cycle (Purple then Off)..." << std::endl;
         for (int i = 0; i < NEO_TRELLIS_NUM_KEYS; i++) {
-            trellis.setPixelColor(i, NeoTrellis::PURPLE);
+            trellis.setPixelColor(i, PURPLE);
             trellis.show(); // Latch the colors to the LEDs
             std::this_thread::sleep_for(std::chrono::milliseconds(5));
         }
 
         for (int i = 0; i < NEO_TRELLIS_NUM_KEYS; i++) {
-            trellis.setPixelColor(i, NeoTrellis::OFF);
+            trellis.setPixelColor(i, OFF);
             trellis.show(); // Latch the colors to the LEDs
             std::this_thread::sleep_for(std::chrono::milliseconds(5));
         }
