@@ -2,12 +2,20 @@
 
 <table>
     <tr>
-        <td><a href="https://github.com/apiel/zicBox/wiki/07-Hardware#zicorion"><b>Zic Orion</b></a></td>
-        <td><a href="https://github.com/apiel/zicBox/wiki/07-Hardware#zicpixel"><b>Zic Pixel</b></a></td>
+        <td><a href="https://github.com/apiel/zicBox/wiki/07-Hardware#zic-orion"><b>Zic Orion</b></a></td>
+        <td><a href="https://github.com/apiel/zicBox/wiki/07-Hardware#zic-pixel"><b>Zic Pixel</b></a></td>
     </tr>
     <tr>
-        <td><a href="https://github.com/apiel/zicBox/wiki/07-Hardware#zicorion"><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPad/zicorion.png" /></a></td>
-        <td><img src="https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel3A_2.png" width='480' /></td>
+        <td>
+            <a href="https://github.com/apiel/zicBox/wiki/07-Hardware#zic-orion">
+                <img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicOrion/zicorion.png" />
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/apiel/zicBox/wiki/07-Hardware#zic-pixel">
+                <img src="https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel3A_2.png" width='480' />
+            </a>
+        </td>
     </tr>
 </table>
 
