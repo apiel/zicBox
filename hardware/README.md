@@ -2,13 +2,13 @@
 
 <table>
     <tr>
-        <td><a href="https://github.com/apiel/zicBox/wiki/04-Hardware#zic-orion"><b>Zic Orion</b></a></td>
+        <td><a href="https://github.com/apiel/zicBox/wiki/04-Hardware#zic-grid"><b>Zic Grid</b></a></td>
         <td><a href="https://github.com/apiel/zicBox/wiki/04-Hardware#zic-pixel"><b>Zic Pixel</b></a></td>
     </tr>
     <tr>
         <td>
-            <a href="https://github.com/apiel/zicBox/wiki/04-Hardware#zic-orion">
-                <img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicOrion/zicorion.png" />
+            <a href="https://github.com/apiel/zicBox/wiki/04-Hardware#zic-grid">
+                <img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicGrid/zicgrid.png" />
             </a>
         </td>
         <td>

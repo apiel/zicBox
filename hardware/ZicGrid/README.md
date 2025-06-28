@@ -1,10 +1,10 @@
 # 04 Hardware
 
-## Zic Orion
+## Zic Grid
 
-Zic Orion is an advance hardware version of ZicBox with a big touch screen, 12 encoders and a 4x12 RGB keypad.
+Zic Grid is an advance hardware version of ZicBox with a big touch screen, 12 encoders and a 4x12 RGB keypad.
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicOrion/zicorion.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicGrid/zicgrid.png" />
 
 Note that this design doesn't have DAC and this might be problematic for some of us. The built-in DAC from RPi4 did improve a little bit but is far from being optimal. When I made this design, I was building it with using USB as audio interface in mind, in my case using my Elektron Digitone or my Behringer Xenyx 302 USB mixer... This is the point, many device today support audio in/out over USB and this is why I prefered to had more encoder instead of using a DAC. Having a DAC would not be so hard, but would require some small change on the PCB to move the encoder on a separate ICs instead to connect them directly to the RPi GPIO.
 
@@ -32,22 +32,22 @@ The rest of the enclosure is hand made out of wood.
 
 <table>
     <tr>
-        <td><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicOrion/encoders/pcb.png" /></td>
-        <td><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicOrion/encoders/pcb2d.png" /></td>
+        <td><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicGrid/encoders/pcb.png" /></td>
+        <td><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicGrid/encoders/pcb2d.png" /></td>
     </tr>
 </table>
 
-The PCB has been created with [EasyEDA](https://easyeda.com/). You can load the copy of the PCB project using the json file [PCB_zicbox_encoders_2024-01-11.json](https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicOrion/PCB_zicbox_encoders_2024-01-11.json).
+The PCB has been created with [EasyEDA](https://easyeda.com/). You can load the copy of the PCB project using the json file [PCB_zicbox_encoders_2024-01-11.json](https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicGrid/PCB_zicbox_encoders_2024-01-11.json).
 
-To order the PCB, you need to send the Gerber file [Gerber_zicbox_encoders_2024-01-11.zip](https://github.com/apiel/zicBox/raw/main/hardware/ZicOrion/Gerber_zicbox_encoders_2024-01-11.zip) to https://jlcpcb.com/. With slow shipping (about 10 days), it cost around 4€. Just upload the file using the button `Add gerber file` and normally there should be nothing to change. You can eventually change the color from `green` to `black`, it should not impact the price. Finally `Save to cart` and proceed to the checkout.
+To order the PCB, you need to send the Gerber file [Gerber_zicbox_encoders_2024-01-11.zip](https://github.com/apiel/zicBox/raw/main/hardware/ZicGrid/Gerber_zicbox_encoders_2024-01-11.zip) to https://jlcpcb.com/. With slow shipping (about 10 days), it cost around 4€. Just upload the file using the button `Add gerber file` and normally there should be nothing to change. You can eventually change the color from `green` to `black`, it should not impact the price. Finally `Save to cart` and proceed to the checkout.
 
 The PCB assembly is quiet easy, it is just few encoder and pins headers to solder to the board.
 
 ### Front panel
 
-For the front panel, it is also possible to order it as a PCB. I haven't yet tried myself, as it is more expensive due to the size (around 30€). I am waiting for the graphic design before to order it. So far, I made the front panel using my laser engraver to cut wood and acrylic sheet. To do this, I was converting the gerber file of PCB outline to Gcode, using a small script. For more details about this process, see my [notes](https://github.com/apiel/zicBox/blob/main/hardware/ZicOrion/case/NOTE.md) in the case folder.
+For the front panel, it is also possible to order it as a PCB. I haven't yet tried myself, as it is more expensive due to the size (around 30€). I am waiting for the graphic design before to order it. So far, I made the front panel using my laser engraver to cut wood and acrylic sheet. To do this, I was converting the gerber file of PCB outline to Gcode, using a small script. For more details about this process, see my [notes](https://github.com/apiel/zicBox/blob/main/hardware/ZicGrid/case/NOTE.md) in the case folder.
 
-The EasyEDA file  and the gerber file for the front panel are available [here](https://github.com/apiel/zicBox/tree/main/hardware/ZicOrion/case/easyeda).
+The EasyEDA file  and the gerber file for the front panel are available [here](https://github.com/apiel/zicBox/tree/main/hardware/ZicGrid/case/easyeda).
 
 ### Case enclosure
 
@@ -55,8 +55,8 @@ The rest of the enclosure has been fully hand made out of wood, using a saw, dri
 
 <table>
     <tr>
-        <td><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicOrion/case/photo/build0.png" /></td>
-        <td><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicOrion/case/photo/build1.png" /></td>
-        <td><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicOrion/case/photo/build2.png" /></td>
+        <td><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicGrid/case/photo/build0.png" /></td>
+        <td><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicGrid/case/photo/build1.png" /></td>
+        <td><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicGrid/case/photo/build2.png" /></td>
     </tr>
 </table>
