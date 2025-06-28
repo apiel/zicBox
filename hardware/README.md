@@ -2,11 +2,11 @@
 
 <table>
     <tr>
-        <td><a href="https://github.com/apiel/zicBox/wiki/07-Hardware#zicpad"><b>ZicPad</b></a></td>
+        <td><a href="https://github.com/apiel/zicBox/wiki/07-Hardware#zicorion"><b>Zic Orion</b></a></td>
         <td><a href="https://github.com/apiel/zicBox/wiki/07-Hardware#zicpixel"><b>Zic Pixel</b></a></td>
     </tr>
     <tr>
-        <td><a href="https://github.com/apiel/zicBox/wiki/07-Hardware#zicpad"><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPad/zicpad.png" /></a></td>
+        <td><a href="https://github.com/apiel/zicBox/wiki/07-Hardware#zicorion"><img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicPad/zicorion.png" /></a></td>
         <td><img src="https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel3A_2.png" width='480' /></td>
     </tr>
 </table>

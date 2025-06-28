@@ -6,8 +6,6 @@
 
 - TODO when pressing mode button in seq view, usually use to show keyboard mode, we could show directional button...
 
-- TODO have a look at https://github.com/micknoise/Maximilian might use this...
-
 
 
 - TODO rpi0 drum machine
@@ -17,6 +15,7 @@
 
 
 
+- TODO have a look at https://github.com/micknoise/Maximilian might use this...
 
 - TODO mouse on rpi
 - TODO enable motion/mouse on desktop
