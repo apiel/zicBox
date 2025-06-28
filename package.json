@@ -1,7 +1,9 @@
 {
     "scripts": {
-        "build": "npm run build:plus-rpi0",
-        "dev": "npm run dev:plus-rpi0",
+        "build": "npm run build:grid",
+        "dev": "npm run dev:grid",
+        "build:grid": "ts-node config/grid/main.tsx",
+        "dev:grid": "ts-node-dev --respawn config/grid/main.tsx",
         "build:rpi3": "ts-node config/pixel/rpi3/main.tsx",
         "dev:rpi3": "ts-node-dev --respawn config/pixel/rpi3/main.tsx",
         "build:plus-rpi0": "ts-node config/pixel/plus-rpi0/main.tsx",
