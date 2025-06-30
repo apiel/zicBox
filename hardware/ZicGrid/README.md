@@ -6,7 +6,24 @@ Zic Grid is an advance hardware version of ZicBox with a big touch screen, 12 en
 
 <img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicGrid/zicgrid.png" />
 
-Note that this design doesn't have DAC and this might be problematic for some of us. The built-in DAC from RPi4 did improve a little bit but is far from being optimal. When I made this design, I was building it with using USB as audio interface in mind, in my case using my Elektron Digitone or my Behringer Xenyx 302 USB mixer... This is the point, many device today support audio in/out over USB and this is why I prefered to had more encoder instead of using a DAC. Having a DAC would not be so hard, but would require some small change on the PCB to move the encoder on a separate ICs instead to connect them directly to the RPi GPIO.
+**Audio Output Considerations**
+
+This design currently does not include a dedicated DAC, which may be a limitation for some users. While the built-in audio output on the Raspberry Pi 4 saw some improvement, it's still far from ideal for high-quality audio applications. When I initially put this build together, the idea was to rely on USB audio devices instead. In my setup, for example, I use either an Elektron Digitone or a Behringer Xenyx 302 USB mixer as the audio interface.
+
+The decision to leave out a DAC was intentional, to prioritize simplicity and interface usability, allowing for more encoders to be connected directly to the Pi's GPIO instead. Given that many modern devices support class-compliant USB audio in/out, this approach felt like a practical trade-off for a DIY groovebox.
+
+Adding a DAC is definitely possible and wouldn’t be particularly difficult, but it would require some PCB modifications. Specifically, the encoders would need to be moved to a separate controller IC and connected via I²C, rather than taking up direct GPIO pins on the Pi.
+
+**Next Steps: CM4-Based Design**
+
+The long-term goal is to transition from this prototype to a more compact and integrated version based on the Raspberry Pi Compute Module 4 (CM4). This would allow for a significant size reduction, potentially cutting the footprint by half, and offer more flexibility in hardware design.
+
+In this future version:
+- A built-in DAC would be included for higher-quality onboard audio.
+- A custom or existing CM4 carrier board would be required.
+- To free up GPIO for audio and other features, encoders would need to be driven by a GPIO expander (e.g., via I²C).
+
+This approach would make the system cleaner, more compact, and better suited for integration into a standalone unit, while improving audio quality and still maintaining good hands-on control.
 
 ### Material
 

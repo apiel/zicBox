@@ -1,89 +1,12 @@
 # 04 Hardware
 
-## Zic Pixel plus
-
-> [!WARNING]
-> **Work in progress**: join the [discord channel](https://discord.gg/65HTx7z9qg) to discuss about the current status
-
-This is a new version of Zic Pixel called Zic Pixel Plus. This version, base on CM4, will have more buttons, thanks to an I2C IO expander. It's still a work in progress, and I'm in the middle of building and testing it.
-
-I'll keep you posted as things move along. Stay tuned!
-
-<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel+pcb.png?raw=true' height='250'>
-<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel+pcb2.png?raw=true' height='250'>
-<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel+pcb3.png?raw=true' height='250'>
-
-📁 **File**: [`Gerber_zicPublic_zicpixel_plus_st7789_240x320_cm4_v1_2025-05-01.zip`](https://github.com/apiel/zicBox/raw/refs/heads/main/hardware/Gerber_zicPublic_zicpixel_plus_st7789_240x320_cm4_v1_2025-05-01.zip)
-
-<table>
-<tr>
-    <th>Image</th>
-    <th>Qty</th>
-    <th>Description</th>
-    <th>Price</th>
-<tr>
-<tr>
-    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/cm4.png?raw=true' width='100'></td>
-    <td>1</td>
-    <td>Raspberry Pi CM4 (CM4101000) Lite with wifi</td>
-    <td>38.90€ for 1 piece at <a href="https://www.berrybase.de/en/detail/019234a45898725c99b2c2a1fba7011b">Berrybase</a></td>
-</tr>
-<tr>
-    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/cm4-nano.png?raw=true' width='100'></td>
-    <td>1</td>
-    <td>CM4-NANO-A Nano Base Board</td>
-    <td>19.28€ for 1 piece at <a href="https://www.aliexpress.com/item/1005008111657527.html">Aliexpress</a></td>
-</tr>
-<tr>
-    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/MCP23017.png?raw=true' width='100'></td>
-    <td>1</td>
-    <td>MCP23017</td>
-    <td>2.57€ for 1 piece at <a href="https://www.aliexpress.com/item/32846321922.html">Aliexpress</a></td>
-</tr>
-<tr>
-    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/encoderPEC12R.png?raw=true' width='100'></td>
-    <td>4</td>
-    <td>Encoder PEC12R-4025F-N0024</td>
-    <td>1.04€ per piece at <a href="https://eu.mouser.com/ProductDetail/Bourns/PEC12R-4025F-N0024?qs=Zq5ylnUbLm4HSBD7%2FFgU%2FA%3D%3D&countryCode=DE&currencyCode=EUR&_gl=1*1nd7s7x*_ga*Nzc0OTY5NDMwLjE2OTg1MDM2NzE.*_ga_15W4STQT4T*MTcwNTk0NTcwNi4xMi4wLjE3MDU5NDU3MDcuNTkuMC4w*_ga_1KQLCYKRX3*MTcwNTk0NTcwNi4yLjAuMTcwNTk0NTcwNy4wLjAuMA..">mouser</a></td>
-</tr>
-<tr>
-    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/keysRedragon.png?raw=true' width='100'></td>
-    <td>16</td>
-    <td>REDRAGON SMD RGB MX Low Profile 5.5 Switch 3Pin</td>
-    <td>4.17€ for 30 piece at <a href="https://www.aliexpress.com/item/1005005895774028.html">Aliexpress</a></td>
-</tr>
-<tr>
-    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/keycap.png?raw=true' width='100'></td>
-    <td>16</td>
-    <td>Key Caps for Mx Switch Mechanical Keyboard</td>
-    <td>4.66€ for 20 piece at <a href="https://www.aliexpress.com/item/1005008052800345.html">Aliexpress</a></td>
-</tr>
-<tr>
-    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/2inScreen.png?raw=true' width='100'></td>
-    <td>1</td>
-    <td>2.0 inch TFT Display OLED LCD Drive IC ST7789V</td>
-    <td>4.46€ for 1 piece at <a href="https://www.aliexpress.com/item/1005006423091182.html">Aliexpress</a></td>
-</tr>
-<tr>
-    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/rpiPinHeader.png?raw=true' width='100'></td>
-    <td>1</td>
-    <td>2x20 Pin Header for raspberry</td>
-    <td>1.47€ for 1 piece at <a href="https://www.aliexpress.com/item/32843300706.html">Aliexpress</a></td>
-</tr>
-<tr>
-    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/dac.png?raw=true' width='100'></td>
-    <td>1</td>
-    <td>PCM5102A DAC</td>
-    <td>2.73€ for 1 piece at <a href="https://www.aliexpress.com/item/1005006198619536.html">Aliexpress</a></td>
-</tr>
-</table>
-
 ## Zic Pixel
 
 <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel3A.png?raw=true' height='350'>
 <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel3A_2.png?raw=true' height='350'>
 
-This option is slightly more cost-effective than the Zic Pixel Plus, as it utilizes a Raspberry Pi 3A+ instead of a Raspberry Pi Compute Module 4 (CM4). The CM4 configuration tends to be more expensive due to the need for both the CM4 module and its carrier board, which together exceed the cost of the more affordable Raspberry Pi 3A+. However, the Raspberry Pi 3A+ offers significantly less processing power, resulting in fewer tracks and more limited synthesis engine capabilities.
+> [!NOTE]
+> The original build was based on the Raspberry Pi 3 Model A+, but for the final version, the plan is to switch to the Raspberry Pi Zero 2 W. It’s a bit smaller and more affordable, which makes it a better fit for this kind of DIY groovebox/drum machine. Since this "pixel" version is meant to be a budget-friendly and lightweight setup, there's no need for a high-performance CPU. The focus should be on keeping the software as minimal and efficient as possible so it runs smoothly on the Zero 2 W. This change will also require updating the PCB design to match the Zero’s layout and connectors, but it should help simplify and lower the overall cost of the build.
 
 <table>
 <tr>
