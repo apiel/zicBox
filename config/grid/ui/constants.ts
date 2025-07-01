@@ -21,9 +21,9 @@ export const W8_8 = W1_8 * 8;
 
 export const KeyTopInfoPosition = [140, 284, 100, 12];
 
-export const KeyInfoPosition = [0, 296, ScreenWidth];
-export const SelectorPosition = [0, 296, ScreenWidth];
-export const SelectorPosition2 = [0, 308, ScreenWidth];
+export const KeyInfoPosition = [0, 296 + 320, ScreenWidth];
+export const SelectorPosition = [0, 296 + 320, ScreenWidth];
+export const SelectorPosition2 = [0, 308 + 320, ScreenWidth];
 
 export const SideColor = rgb(58, 84, 92);
 

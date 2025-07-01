@@ -217,7 +217,7 @@ public:
     });
 
     /*md - `HIGH_FREQ_BOOST` set the high boost level.*/
-    Val& highBoost = val(0.0, "HIGH_FREQ_BOOST", { "High boost", .min = 0.0, .max = 20.0, .step = 0.1, .floatingPoint = 1 }, [&](auto p) {
+    Val& highBoost = val(0.0, "HIGH_FREQ_BOOST", { "High Boost", .min = 0.0, .max = 20.0, .step = 0.1, .floatingPoint = 1 }, [&](auto p) {
         p.val.setFloat(p.value);
         updateBoostTimeInc();
     });

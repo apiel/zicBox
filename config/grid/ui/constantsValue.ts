@@ -1,4 +1,4 @@
-import { ScreenWidth, W2_4 } from './constants';
+import { ScreenWidth, W1_4, W2_4 } from './constants';
 
 const top = 60;
 export const fullValues = [0, top, ScreenWidth - 1, 180];
@@ -10,7 +10,36 @@ export const topRightKnob = [W2_4, top, W2_4 - 2, 100];
 export const bottomLeftKnob = [0, top + 100, W2_4 - 2, 100];
 export const bottomRightKnob = [W2_4, top + 100, W2_4 - 2, 100];
 
+export const bounds1 = [0, top, W1_4 - 2, 100];
+export const bounds2 = [W1_4, top, W1_4 - 2, 100];
+export const bounds3 = [W1_4 * 2, top, W1_4 - 2, 100];
+export const bounds4 = [W1_4 * 3, top, W1_4 - 2, 100];
+
+export const bounds5 = [0, top + 120, W1_4 - 2, 100];
+export const bounds6 = [W1_4, top + 120, W1_4 - 2, 100];
+export const bounds7 = [W1_4 * 2, top + 120, W1_4 - 2, 100];
+export const bounds8 = [W1_4 * 3, top + 120, W1_4 - 2, 100];
+
+export const bounds9 = [0, top + 240, W1_4 - 2, 100];
+export const bounds10 = [W1_4, top + 240, W1_4 - 2, 100];
+export const bounds11 = [W1_4 * 2, top + 240, W1_4 - 2, 100];
+export const bounds12 = [W1_4 * 3, top + 240, W1_4 - 2, 100];
+
+export const enc1 = { encoderId: 1, bounds: bounds1 };
+export const enc2 = { encoderId: 2, bounds: bounds2 };
+export const enc3 = { encoderId: 3, bounds: bounds3 };
+export const enc4 = { encoderId: 4, bounds: bounds4 };
+
+export const enc5 = { encoderId: 5, bounds: bounds5 };
+export const enc6 = { encoderId: 6, bounds: bounds6 };
+export const enc7 = { encoderId: 7, bounds: bounds7 };
+export const enc8 = { encoderId: 8, bounds: bounds8 };
+
+export const enc9 = { encoderId: 9, bounds: bounds9 };
+export const enc10 = { encoderId: 10, bounds: bounds10 };
+export const enc11 = { encoderId: 11, bounds: bounds11 };
+export const enc12 = { encoderId: 12, bounds: bounds12 };
+
 export const graphTopValues = [0, top + 20, ScreenWidth - 1, 60];
 export const graphCenterValues = [0, top + 60, ScreenWidth - 1, 80];
 export const graphBottomValues = [0, top + 120, ScreenWidth - 1, 60];
-

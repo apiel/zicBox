@@ -1,6 +1,11 @@
 ## Pixel TODO
 
-- TODO when config file change, restart app and bring back to the view
+- TODO Drum23 simplify amp envelop, keep duration, and enventually another parameter to morph between different shapes...
+
+- TODO generic drum, either like electribe ER-1 or other way to switch between multiple kind of engine
+
+
+
 - TODO drag and drop editor!! 
     ---> should this be a web interface, that show result in live on the hardware... The web interface just allow to drag some abstract element and let us configure them, but final rendering happen in the hardware..
 

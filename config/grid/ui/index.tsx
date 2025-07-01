@@ -30,7 +30,7 @@ export const ui = {
     pixelController: 'rpi3A_4enc_11btn',
     // i2c: ['pixel+_v1'],
     screen: {
-        windowPosition: { x: 400, y: 500 },
+        windowPosition: { x: 200, y: 300 },
         screenSize: { width: ScreenWidth, height: ScreenHeight },
         zonesEncoders: [
             [0, 0, W1_2, halfHeight],
