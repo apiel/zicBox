@@ -1,8 +1,9 @@
 import * as React from '@/libs/react';
 
+import { GraphEncoder } from '@/libs/nativeComponents/GraphEncoder';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Drum1, TracksSelector } from '../components/Common';
-import { enc1, enc2, enc3, enc4, enc5, enc6, enc7, enc8, enc9 } from '../constantsValue';
+import { bounds7, enc1, enc10, enc2, enc3, enc4, enc5, enc6, enc9, graphBounds } from '../constantsValue';
 import { DrumLayout } from './Layout';
 import { ViewSelector } from './ViewSelector';
 
@@ -21,17 +22,17 @@ export function MainView({ name, track, synthName, color }: Props) {
             synthName={synthName}
             content={
                 <>
-                    <KnobValue
+                    {/* <KnobValue
                         audioPlugin="TrackFx"
                         param="VOLUME"
                         {...enc1}
                         color="tertiary"
                         track={track}
-                    />
+                    /> */}
                     <KnobValue
                         audioPlugin="MMFilter"
                         param="CUTOFF"
-                        {...enc2}
+                        {...enc1}
                         color="secondary"
                         type="STRING"
                         track={track}
@@ -39,8 +40,15 @@ export function MainView({ name, track, synthName, color }: Props) {
                     <KnobValue
                         audioPlugin="MMFilter"
                         param="RESONANCE"
-                        {...enc3}
+                        {...enc2}
                         color="secondary"
+                        track={track}
+                    />
+                    <KnobValue
+                        audioPlugin={synthName}
+                        param="GAIN_CLIPPING"
+                        {...enc3}
+                        color="primary"
                         track={track}
                     />
                     <KnobValue
@@ -65,28 +73,31 @@ export function MainView({ name, track, synthName, color }: Props) {
                         color="quaternary"
                         track={track}
                     />
+
                     <KnobValue
                         audioPlugin="Distortion"
                         param="BASS"
-                        {...enc7}
+                        {...enc9}
                         color="secondary"
                         track={track}
                     />
                     <KnobValue
                         audioPlugin={synthName}
                         param="HIGH_FREQ_BOOST"
-                        {...enc8}
+                        {...enc10}
                         color="tertiary"
                         track={track}
                     />
 
-                    <KnobValue
+                    <GraphEncoder
+                        bounds={graphBounds(bounds7)}
                         audioPlugin={synthName}
-                        param="GAIN_CLIPPING"
-                        {...enc9}
-                        color="primary"
+                        dataId="WAVEFORM"
+                        renderValuesOnTop={false}
+                        values={['WAVEFORM_TYPE', 'SHAPE', 'MACRO']}
                         track={track}
                     />
+
                     <ViewSelector color={color} synthName={synthName} viewName={name} />
                     <TracksSelector
                         selectedBackground={color}
