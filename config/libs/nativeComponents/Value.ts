@@ -27,5 +27,4 @@ export const Value = getJsonComponent<{
     valueColor?: string;
     barColor?: string;
     unitColor?: string;
-
 }>('Value');

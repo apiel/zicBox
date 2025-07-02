@@ -45,5 +45,21 @@ export const graphCenterValues = [0, top + 60, ScreenWidth - 1, 80];
 export const graphBottomValues = [0, top + 120, ScreenWidth - 1, 60];
 
 export function graphBounds(topLeft: number[], cols: number = 2, rows: number = 2, margin: number = 60) {
-    return [topLeft[0], topLeft[1] + margin, ScreenWidth / cols,  120 * rows - margin * 2];
+    return [topLeft[0], topLeft[1] + margin - 10, ScreenWidth / cols,  120 * rows - margin * 2];
+}
+
+export function boundsOnTop(bounds: number[], height: number = 22, margin: number = 10) {
+    return [bounds[0], bounds[1] + margin, bounds[2], height];
+}
+
+export function boundsOnBottom(bounds: number[], height: number = 22) {
+    return [bounds[0], bounds[1] + bounds[3] - height, bounds[2], height];
+}
+
+export function encTopValue(enc: { encoderId: number; bounds: number[] }, height: number = 30, margin: number = 10) {
+    return { ...enc, bounds: boundsOnTop(enc.bounds, height, margin) };
+}
+
+export function encBottomValue(enc: { encoderId: number; bounds: number[] }, height: number = 30) {
+    return { ...enc, bounds: boundsOnBottom(enc.bounds, height) };
 }

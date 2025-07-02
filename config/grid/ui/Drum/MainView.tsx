@@ -2,8 +2,26 @@ import * as React from '@/libs/react';
 
 import { GraphEncoder } from '@/libs/nativeComponents/GraphEncoder';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
+import { Value } from '@/libs/nativeComponents/Value';
 import { Drum1, TracksSelector } from '../components/Common';
-import { bounds7, enc1, enc10, enc2, enc3, enc4, enc5, enc6, enc9, graphBounds } from '../constantsValue';
+import {
+    bounds7,
+    enc1,
+    enc10,
+    enc11,
+    enc12,
+    enc2,
+    enc3,
+    enc4,
+    enc5,
+    enc6,
+    enc7,
+    enc8,
+    enc9,
+    encBottomValue,
+    encTopValue,
+    graphBounds
+} from '../constantsValue';
 import { DrumLayout } from './Layout';
 import { ViewSelector } from './ViewSelector';
 
@@ -96,6 +114,46 @@ export function MainView({ name, track, synthName, color }: Props) {
                         renderValuesOnTop={false}
                         values={['WAVEFORM_TYPE', 'SHAPE', 'MACRO']}
                         track={track}
+                    />
+                    <Value
+                        {...encTopValue(enc7)}
+                        audioPlugin={synthName}
+                        param="WAVEFORM_TYPE"
+                        track={track}
+                        // fontLabel="PoppinsLight_6"
+                        barHeight={1}
+                        alignLeft
+                        showLabelOverValue={1}
+                    />
+                    <Value
+                        {...encTopValue(enc8)}
+                        audioPlugin={synthName}
+                        param="SHAPE"
+                        track={track}
+                        // fontLabel="PoppinsLight_6"
+                        barHeight={1}
+                        alignLeft
+                        showLabelOverValue={1}
+                    />
+                    <Value
+                        {...encBottomValue(enc11)}
+                        audioPlugin={synthName}
+                        param="MACRO"
+                        track={track}
+                        // fontLabel="PoppinsLight_6"
+                        barHeight={1}
+                        alignLeft
+                        showLabelOverValue={1}
+                    />
+                    <Value
+                        {...encBottomValue(enc12)}
+                        audioPlugin={synthName}
+                        param="PITCH"
+                        track={track}
+                        // fontLabel="PoppinsLight_6"
+                        barHeight={1}
+                        alignLeft
+                        showLabelOverValue={1}
                     />
 
                     <ViewSelector color={color} synthName={synthName} viewName={name} />
