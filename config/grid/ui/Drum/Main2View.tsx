@@ -1,6 +1,9 @@
 import * as React from '@/libs/react';
 
+import { KnobValue } from '@/libs/nativeComponents/KnobValue';
+import { MacroEnvelop } from '@/libs/nativeComponents/MacroEnvelop';
 import { Drum1, TracksSelector } from '../components/Common';
+import { bounds1, enc3, enc4, enc7, enc8, enc9, graphBounds } from '../constantsValue';
 import { DrumLayout } from './Layout';
 import { ViewSelector } from './ViewSelector';
 
@@ -19,38 +22,51 @@ export function Main2View({ name, track, synthName, color }: Props) {
             synthName={synthName}
             content={
                 <>
-                    {/* <KnobValue
-                audioPlugin="TrackFx"
-                param="VOLUME"
-                bounds={topLeftKnob}
-                encoderId={encTopLeft}
-                color="tertiary"
-                track={track}
-            /> */}
-                    {/* <KnobValue
-                audioPlugin="MMFilter"
-                param="CUTOFF"
-                bounds={topRightKnob}
-                encoderId={encTopRight}
-                color="secondary"
-                type="STRING"
-                track={track}
-            /> */}
-                    {/* <KnobValue
-                audioPlugin={synthName}
-                param="GAIN_CLIPPING"
-                bounds={bottomLeftKnob}
-                encoderId={encBottomLeft}
-                track={track}
-            /> */}
-                    {/* <KnobValue
-                audioPlugin="MMFilter"
-                param="RESONANCE"
-                bounds={bottomRightKnob}
-                encoderId={encBottomRight}
-                color="secondary"
-                track={track}
-            /> */}
+                    <MacroEnvelop
+                        bounds={graphBounds(bounds1, 15)}
+                        audioPlugin={synthName}
+                        envelopDataId="ENV_FREQ2"
+                        track={track}
+                    />
+                    <KnobValue
+                        {...enc9}
+                        audioPlugin={synthName}
+                        param="DURATION"
+                        color="quaternary"
+                        track={track}
+                    />
+
+                    <KnobValue
+                        audioPlugin={synthName}
+                        param="OSC2"
+                        {...enc3}
+                        color="secondary"
+                        track={track}
+                    />
+                    <KnobValue
+                        audioPlugin={synthName}
+                        param="OSC2_FREQ"
+                        {...enc4}
+                        color="tertiary"
+                        track={track}
+                    />
+                    <KnobValue
+                        audioPlugin={synthName}
+                        param="LAYER2_CUTOFF"
+                        {...enc7}
+                        color="primary"
+                        type="STRING"
+                        track={track}
+                        label='Osc 2 Filter'
+                    />
+                    <KnobValue
+                        audioPlugin={synthName}
+                        param="LAYER2_RESONANCE"
+                        {...enc8}
+                        color="primary"
+                        track={track}
+                        label='Osc 2 Reso.'
+                    />
 
                     <ViewSelector color={color} synthName={synthName} viewName={name} />
                     <TracksSelector

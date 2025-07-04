@@ -44,7 +44,7 @@ export const graphTopValues = [0, top + 20, ScreenWidth - 1, 60];
 export const graphCenterValues = [0, top + 60, ScreenWidth - 1, 80];
 export const graphBottomValues = [0, top + 120, ScreenWidth - 1, 60];
 
-export function graphBounds(topLeft: number[], cols: number = 2, rows: number = 2, margin: number = 60) {
+export function graphBounds(topLeft: number[], margin: number = 60, cols: number = 2, rows: number = 2) {
     return [topLeft[0], topLeft[1] + margin - 10, ScreenWidth / cols,  120 * rows - margin * 2];
 }
 

@@ -73,7 +73,7 @@ export function MainView({ name, track, synthName, color }: Props) {
                         audioPlugin="Distortion"
                         param="WAVESHAPE"
                         {...enc4}
-                        color="tertiary"
+                        color="quaternary"
                         track={track}
                     />
 
@@ -96,7 +96,7 @@ export function MainView({ name, track, synthName, color }: Props) {
                         audioPlugin="Distortion"
                         param="BASS"
                         {...enc9}
-                        color="secondary"
+                        color="tertiary"
                         track={track}
                     />
                     <KnobValue
