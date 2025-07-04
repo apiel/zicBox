@@ -13,17 +13,26 @@ import {
     Sample4Track,
     ScreenHeight,
     ScreenWidth,
-    W1_2,
 } from './constants';
+import {
+    bounds1,
+    bounds10,
+    bounds11,
+    bounds12,
+    bounds2,
+    bounds3,
+    bounds4,
+    bounds5,
+    bounds6,
+    bounds7,
+    bounds8,
+    bounds9,
+} from './constantsValue';
 import { DrumView } from './Drum/DrumView';
 import { Menu } from './menu';
 import { SampleView } from './Sample/SampleView';
 
-const halfHeight = ScreenHeight / 2;
-// addZoneEncoder([0, 0, W1_2, halfHeight]);
-// addZoneEncoder([W1_2, 0, W1_2, halfHeight]);
-// addZoneEncoder([0, halfHeight, W1_2, halfHeight]);
-// addZoneEncoder([W1_2, halfHeight, W1_2, halfHeight]);
+// const halfHeight = ScreenHeight / 2;
 
 export const ui = {
     // pixelController: 'rpiCM4_4enc_11btn',
@@ -33,10 +42,19 @@ export const ui = {
         windowPosition: { x: 200, y: 300 },
         screenSize: { width: ScreenWidth, height: ScreenHeight },
         zonesEncoders: [
-            [0, 0, W1_2, halfHeight],
-            [W1_2, 0, W1_2, halfHeight],
-            [0, halfHeight, W1_2, halfHeight],
-            [W1_2, halfHeight, W1_2, halfHeight],
+            [0, 0, 0, 0], // lets skip encoder id 0
+            bounds1,
+            bounds2,
+            bounds3,
+            bounds4,
+            bounds5,
+            bounds6,
+            bounds7,
+            bounds8,
+            bounds9,
+            bounds10,
+            bounds11,
+            bounds12,
         ],
     },
     renderer: 'FB',
