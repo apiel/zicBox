@@ -44,13 +44,6 @@ private:
         // Clamp t just to be safe
         t = std::clamp(t, 0.0f, 1.0f);
 
-        // // Envelope shapes
-        // float expCurve = std::pow(t, 6.0f); // Sharp exponential
-        // float expo = std::pow(t, 3.0f); // Exponential
-        // float linear = t; // Linear
-        // float logCurve = 1.0f - std::pow(1.0f - t, 2.0f); // Logarithmic
-        // float softCurve = std::sqrt(t); // Concave
-
         // Interpolation morphing
         float position = morphValue * 4.0f;
         int idx = static_cast<int>(position);
@@ -61,8 +54,6 @@ private:
 
         switch (idx) {
         case 0:
-            // a = expCurve;
-            // b = expo;
             a = expCurve(t);
             b = expo(t);
             break;
