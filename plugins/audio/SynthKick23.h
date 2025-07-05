@@ -211,7 +211,7 @@ public:
             sampleDurationCounter = sampleCountDuration;
         }
     });
-
+    /*md - `AMP_MORPH` morph on the shape of the envelop of the amplitude.*/
     Val& ampMorph = val(0.0f, "AMP_MORPH", { "Amp. Morph", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         envelopAmpBis.morph(p.val.pct());

@@ -44,12 +44,12 @@ private:
         // Clamp t just to be safe
         t = std::clamp(t, 0.0f, 1.0f);
 
-        // Envelope shapes
-        float expCurve = std::pow(t, 6.0f); // Sharp exponential
-        float expo = std::pow(t, 3.0f); // Exponential
-        float linear = t; // Linear
-        float logCurve = 1.0f - std::pow(1.0f - t, 2.0f); // Logarithmic
-        float softCurve = std::sqrt(t); // Concave
+        // // Envelope shapes
+        // float expCurve = std::pow(t, 6.0f); // Sharp exponential
+        // float expo = std::pow(t, 3.0f); // Exponential
+        // float linear = t; // Linear
+        // float logCurve = 1.0f - std::pow(1.0f - t, 2.0f); // Logarithmic
+        // float softCurve = std::sqrt(t); // Concave
 
         // Interpolation morphing
         float position = morphValue * 4.0f;
@@ -61,25 +61,52 @@ private:
 
         switch (idx) {
         case 0:
-            a = expCurve;
-            b = expo;
+            // a = expCurve;
+            // b = expo;
+            a = expCurve(t);
+            b = expo(t);
             break;
         case 1:
-            a = expo;
-            b = linear;
+            a = expo(t);
+            b = linear(t);
             break;
         case 2:
-            a = linear;
-            b = logCurve;
+            a = linear(t);
+            b = logCurve(t);
             break;
         case 3:
-            a = logCurve;
-            b = softCurve;
+            a = logCurve(t);
+            b = softCurve(t);
             break;
         default:
-            return softCurve; // edge case
+            return softCurve(t); // edge case
         }
 
         return a + (b - a) * frac;
+    }
+
+    float expCurve(float t)
+    {
+        return std::pow(t, 6.0f); // Sharp exponential
+    }
+
+    float expo(float t)
+    {
+        return std::pow(t, 3.0f); // Exponential
+    }
+
+    float linear(float t)
+    {
+        return t; // Linear
+    }
+
+    float logCurve(float t)
+    {
+        return 1.0f - std::pow(1.0f - t, 2.0f); // Logarithmic
+    }
+
+    float softCurve(float t)
+    {
+        return std::sqrt(t); // Concave
     }
 };
