@@ -44,36 +44,36 @@ private:
         // Clamp t just to be safe
         t = std::clamp(t, 0.0f, 1.0f);
 
-        // Interpolation morphing
-        float position = morphValue * 4.0f;
+        const int shapeCount = 7; // or however many shapes you have
+        float position = morphValue * (shapeCount - 1);
         int idx = static_cast<int>(position);
         float frac = position - idx;
 
-        float a = 0.0f;
-        float b = 0.0f;
-
-        switch (idx) {
-        case 0:
-            a = expCurve(t);
-            b = expo(t);
-            break;
-        case 1:
-            a = expo(t);
-            b = linear(t);
-            break;
-        case 2:
-            a = linear(t);
-            b = logCurve(t);
-            break;
-        case 3:
-            a = logCurve(t);
-            b = softCurve(t);
-            break;
-        default:
-            return softCurve(t); // edge case
-        }
-
+        float a = shapeFunction(idx, t);
+        float b = shapeFunction(idx + 1, t);
         return a + (b - a) * frac;
+    }
+
+    float shapeFunction(int index, float t)
+    {
+        switch (index) {
+        case 0:
+            return expCurve(t); // Sharp exponential
+        case 1:
+            return expo(t); // Exponential
+        case 2:
+            return linear(t); // Linear
+        case 3:
+            return logCurve(t); // Logarithmic
+        case 4:
+            return softCurve(t); // Concave
+        case 5:
+            return sineOut(t); // Sine
+        case 6:
+            return cubicEase(t); // Cubic ease
+        default:
+            return softCurve(t); // Fallback
+        }
     }
 
     float expCurve(float t)
@@ -99,5 +99,40 @@ private:
     float softCurve(float t)
     {
         return std::sqrt(t); // Concave
+    }
+
+    // float sineOut(float t)
+    // {
+    //     return std::sin(t * M_PI_2); // M_PI_2 = pi / 2
+    // }
+    // Approximate sin(x) over [0, pi/2]
+    // float fastSin(float x)
+    // {
+    //     // x in [0, pi/2]
+    //     float x2 = x * x;
+    //     // return x * (1.0f - x2 * (1.0f / 6.0f - x2 * (1.0f / 120.0f)));
+    //     return x * (1.0f - x2 * (0.1666666666f - x2 * 0.00833333333f));
+    // }
+    // Ultra fast sin approx
+    float fastSin(float x)
+    {
+        return (1.27323954f * x) - (0.405284735f * x * x);
+    }
+    float sineOut(float t)
+    {
+        return fastSin(t * 1.57079632679f); // pi/2
+    }
+
+    float cubicEase(float t)
+    {
+        float inv = 1.0f - t;
+        return 1.0f - inv * inv * inv;
+    }
+
+    float sigmoid(float t)
+    {
+        float tt = t * t;
+        float inv = (1.0f - t) * (1.0f - t);
+        return tt / (tt + inv);
     }
 };
