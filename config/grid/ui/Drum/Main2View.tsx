@@ -3,7 +3,7 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { MacroEnvelop } from '@/libs/nativeComponents/MacroEnvelop';
 import { Drum1, TracksSelector } from '../components/Common';
-import { bounds1, enc3, enc4, enc7, enc8, enc9, graphBounds } from '../constantsValue';
+import { bounds1, enc10, enc3, enc4, enc7, enc8, enc9, graphBounds } from '../constantsValue';
 import { DrumLayout } from './Layout';
 import { ViewSelector } from './ViewSelector';
 
@@ -35,7 +35,14 @@ export function Main2View({ name, track, synthName, color }: Props) {
                         color="quaternary"
                         track={track}
                     />
-
+                    <KnobValue
+                        {...enc10}
+                        audioPlugin={synthName}
+                        param="AMP_MORPH"
+                        color="quaternary"
+                        track={track}
+                    />
+                    
                     <KnobValue
                         audioPlugin={synthName}
                         param="OSC2"

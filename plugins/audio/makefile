@@ -18,7 +18,7 @@ all:
 	make EffectGainVolume EffectSampleRateReducer EffectFilter EffectDistortion EffectDelay\
 		EffectFilter EffectFilterMultiModeMix EffectFilterMultiModeMoog EffectVolumeMultiFx\
 		EffectGrain EffectDistortion2 EffectVolumeDrive EffectVolumeClipping \
-		SynthDrum23 SynthMetalic SynthBass SynthFM2 SynthWavetable\
+		SynthDrum23 SynthKick23 SynthMetalic SynthBass SynthFM2 SynthWavetable\
 		SynthSample SynthDrumSample SynthMonoSample\
 		Sequencer Tempo AudioSpectrogram\
 		Mixer2 Mixer4 Mixer5 Mixer6 Mixer8 Mixer12\
