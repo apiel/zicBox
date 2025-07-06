@@ -1,9 +1,24 @@
 import * as React from '@/libs/react';
 
+import { GraphEncoder } from '@/libs/nativeComponents/GraphEncoder';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { MacroEnvelop } from '@/libs/nativeComponents/MacroEnvelop';
+import { Value } from '@/libs/nativeComponents/Value';
+import { rgb } from '@/libs/ui';
 import { Drum1, TracksSelector } from '../components/Common';
-import { bounds1, enc10, enc3, enc4, enc7, enc8, enc9, graphBounds } from '../constantsValue';
+import {
+    bounds1,
+    bounds10,
+    boundsMarginTop,
+    enc10,
+    enc3,
+    enc4,
+    enc7,
+    enc8,
+    enc9,
+    encBottomValue,
+    graphBounds
+} from '../constantsValue';
 import { DrumLayout } from './Layout';
 import { ViewSelector } from './ViewSelector';
 
@@ -35,14 +50,26 @@ export function Main2View({ name, track, synthName, color }: Props) {
                         color="quaternary"
                         track={track}
                     />
-                    <KnobValue
-                        {...enc10}
+                    <GraphEncoder
+                        bounds={boundsMarginTop(bounds10)}
                         audioPlugin={synthName}
-                        param="AMP_MORPH"
-                        color="quaternary"
+                        dataId="ENV_AMP_FORM"
+                        values={['AMP_MORPH']}
+                        outlineColor="quaternary"
+                        fillColor={rgb(194, 175, 107)}
                         track={track}
                     />
-                    
+                    <Value
+                        {...encBottomValue(enc10)}
+                        audioPlugin={synthName}
+                        param="AMP_MORPH"
+                        track={track}
+                        barHeight={1}
+                        barColor="quaternary"
+                        alignLeft
+                        showLabelOverValue={1}
+                    />
+
                     <KnobValue
                         audioPlugin={synthName}
                         param="OSC2"
@@ -64,7 +91,7 @@ export function Main2View({ name, track, synthName, color }: Props) {
                         color="primary"
                         type="STRING"
                         track={track}
-                        label='Osc 2 Filter'
+                        label="Osc 2 Filter"
                     />
                     <KnobValue
                         audioPlugin={synthName}
@@ -72,7 +99,7 @@ export function Main2View({ name, track, synthName, color }: Props) {
                         {...enc8}
                         color="primary"
                         track={track}
-                        label='Osc 2 Reso.'
+                        label="Osc 2 Reso."
                     />
 
                     <ViewSelector color={color} synthName={synthName} viewName={name} />

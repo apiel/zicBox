@@ -63,3 +63,7 @@ export function encTopValue(enc: { encoderId: number; bounds: number[] }, height
 export function encBottomValue(enc: { encoderId: number; bounds: number[] }, height: number = 30) {
     return { ...enc, bounds: boundsOnBottom(enc.bounds, height) };
 }
+
+export function boundsMarginTop(bounds: number[], margin: number = 10) {
+    return [bounds[0], bounds[1] + margin, bounds[2], bounds[3]];
+}

@@ -6,8 +6,8 @@
 #include "./utils/WavetableGenerator.h"
 #include "audioPlugin.h"
 #include "mapping.h"
-#include "utils/EnvelopRelative.h"
 #include "utils/EnvelopDrumAmp.h"
+#include "utils/EnvelopRelative.h"
 #include "utils/FastWaveform.h"
 #include "utils/MMfilter.h"
 
@@ -350,7 +350,7 @@ protected:
     float fMsEnv = 0.0f;
 
 public:
-    DataFn dataFunctions[19] = {
+    DataFn dataFunctions[20] = {
         { "ENV_AMP", [this](void* userdata) {
              return &envelopAmp.data;
          } },
@@ -422,6 +422,10 @@ public:
          } },
         { "ENV_AMP_OSC2_MOD", [this](void* userdata) {
              return envelopAmpLayer2.updatePhaseModulation((int8_t*)userdata);
+         } },
+        { "ENV_AMP_FORM", [this](void* userdata) {
+             float* index = (float*)userdata;
+             return (void*)envelopAmpBis.getMorphShape(*index);
          } },
     };
     DEFINE_GETDATAID_AND_DATA

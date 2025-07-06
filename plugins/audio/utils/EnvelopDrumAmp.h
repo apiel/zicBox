@@ -34,10 +34,12 @@ public:
         return applyMorphShape(1.0f - phase);
     }
 
-private:
-    int sampleCount;
-    int currentSample;
-    float morphValue; // 0.0 = sharp exp, 0.5 = linear, 1.0 = soft curve
+    float dataPtr;
+    float * getMorphShape(float pct) 
+    {
+        dataPtr = - applyMorphShape(1 - pct);
+        return &dataPtr;
+    }
 
     float applyMorphShape(float t)
     {
@@ -53,6 +55,11 @@ private:
         float b = shapeFunction(idx + 1, t);
         return a + (b - a) * frac;
     }
+
+private:
+    int sampleCount;
+    int currentSample;
+    float morphValue; // 0.0 = sharp exp, 0.5 = linear, 1.0 = soft curve
 
     float shapeFunction(int index, float t)
     {

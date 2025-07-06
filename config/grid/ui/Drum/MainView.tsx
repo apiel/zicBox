@@ -120,8 +120,8 @@ export function MainView({ name, track, synthName, color }: Props) {
                         audioPlugin={synthName}
                         param="WAVEFORM_TYPE"
                         track={track}
-                        // fontLabel="PoppinsLight_6"
                         barHeight={1}
+                        // barColor="primary"
                         alignLeft
                         showLabelOverValue={1}
                     />
@@ -130,8 +130,8 @@ export function MainView({ name, track, synthName, color }: Props) {
                         audioPlugin={synthName}
                         param="SHAPE"
                         track={track}
-                        // fontLabel="PoppinsLight_6"
                         barHeight={1}
+                        // barColor="primary"
                         alignLeft
                         showLabelOverValue={1}
                     />
@@ -140,8 +140,8 @@ export function MainView({ name, track, synthName, color }: Props) {
                         audioPlugin={synthName}
                         param="MACRO"
                         track={track}
-                        // fontLabel="PoppinsLight_6"
                         barHeight={1}
+                        // barColor="primary"
                         alignLeft
                         showLabelOverValue={1}
                     />
@@ -150,8 +150,8 @@ export function MainView({ name, track, synthName, color }: Props) {
                         audioPlugin={synthName}
                         param="PITCH"
                         track={track}
-                        // fontLabel="PoppinsLight_6"
                         barHeight={1}
+                        // barColor="primary"
                         alignLeft
                         showLabelOverValue={1}
                     />
