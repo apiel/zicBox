@@ -34,7 +34,7 @@ protected:
     float noteMult = 1.0f;
 
     // https://codesandbox.io/p/sandbox/green-platform-tzl4pn?file=%2Fsrc%2Findex.js
-    EnvelopDrumAmp envelopAmpBis;
+    EnvelopDrumAmp envelopAmp;
     EnvelopRelative envelopFreq = EnvelopRelative({
         { "Kick", [](EnvelopRelative* env, bool init = true) {
             env->useMacro = false;
@@ -213,7 +213,7 @@ public:
     /*md - `AMP_MORPH` morph on the shape of the envelop of the amplitude.*/
     Val& ampMorph = val(0.0f, "AMP_MORPH", { "Amp. Morph", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
-        envelopAmpBis.morph(p.val.pct());
+        envelopAmp.morph(p.val.pct());
     });
 
     /*md - `GAIN_CLIPPING` set the clipping level.*/
@@ -287,8 +287,7 @@ public:
     void sample(float* buf)
     {
         if (sampleDurationCounter < sampleCountDuration) {
-            // float envAmp = envelopAmp.next();
-            float envAmp = envelopAmpBis.next();
+            float envAmp = envelopAmp.next();
             float envFreq = envelopFreq.next();
 
             float freq = envFreq + noteMult;
@@ -308,7 +307,7 @@ public:
         boostTime = 0.0f;
         wavetable.sampleIndex = 0;
         sampleDurationCounter = 0;
-        envelopAmpBis.reset(sampleCountDuration);
+        envelopAmp.reset(sampleCountDuration);
         envelopFreq.reset(sampleCountDuration);
         envelopAmpLayer2.reset(sampleCountDuration);
         velocity = range(_velocity, 0.0f, 1.0f);
@@ -404,7 +403,7 @@ public:
          } },
         { "ENV_AMP_FORM", [this](void* userdata) {
              float* index = (float*)userdata;
-             return (void*)envelopAmpBis.getMorphShape(*index);
+             return (void*)envelopAmp.getMorphShape(*index);
          } },
     };
     DEFINE_GETDATAID_AND_DATA
