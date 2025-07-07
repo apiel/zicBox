@@ -161,7 +161,7 @@
       "components": [
         {"fontSize":24,"text":"Drum23","bounds":[0,20,480,16],"centered":true,"componentName":"Text"},
         {"bounds":[55,28,6,6],"color":"#a3c912","componentName":"Rect"},
-        {"bounds":[0,65,240,210],"audioPlugin":"Drum1","envelopDataId":"ENV_FREQ2","track":1,"componentName":"MacroEnvelop"},
+        {"bounds":[0,65,240,210],"audioPlugin":"Drum1","envelopDataId":"ENV_FREQ2","track":1,"encoders":[1,2,5,6],"title":"Freq. Env.","componentName":"MacroEnvelop"},
         {"encoderId":9,"bounds":[0,300,118,100],"audioPlugin":"Drum1","param":"DURATION","color":"quaternary","track":1,"componentName":"KnobValue"},
         {"bounds":[120,310,118,100],"audioPlugin":"Drum1","dataId":"ENV_AMP_FORM","values":["AMP_MORPH"],"outlineColor":"quaternary","fillColor":"#c2af6b","track":1,"componentName":"GraphEncoder"},
         {"encoderId":10,"bounds":[120,370,118,30],"audioPlugin":"Drum1","param":"AMP_MORPH","track":1,"barHeight":1,"barColor":"quaternary","alignLeft":true,"showLabelOverValue":1,"componentName":"Value"},

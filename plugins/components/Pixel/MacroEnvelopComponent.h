@@ -45,7 +45,10 @@ protected:
     Color fillColor;
     Color outlineColor;
     Color textColor;
+    Color titleColor;
     Color cursorColor;
+
+    std::string title = "";
 
     int encoders[4] = { 0, 1, 2, 3 };
 
@@ -114,6 +117,10 @@ protected:
             draw.text({ x + 2, relativePosition.y + size.h - (fontSize + margin - 4)}, std::to_string((int)(macro2 * 100)) + "%", fontSize, { textColor });
             draw.textRight({ x + size.w - 2, relativePosition.y + size.h - (fontSize + margin - 4) }, std::to_string((int)macro3) + "ms", fontSize, { textColor });
         }
+
+        if (title != "") {
+            draw.textCentered({ x + size.w / 2, relativePosition.y + size.h - (fontSize + margin - 4) }, title, fontSize, { titleColor });
+        }
     }
 
 public:
@@ -121,6 +128,7 @@ public:
         : Component(props)
         , bgColor(styles.colors.background)
         , textColor(styles.colors.text)
+        , titleColor(alpha(styles.colors.text, 0.4))
         , cursorColor(styles.colors.text)
         , fillColor(styles.colors.primary)
         , outlineColor(lighten(styles.colors.primary, 0.5))
@@ -167,6 +175,9 @@ public:
         /// Set the color of the text.
         textColor = draw.getColor(config["textColor"], textColor); //eg: "#000000"
 
+        /// Set the color of the title.
+        titleColor = draw.getColor(config["titleColor"], titleColor); //eg: "#000000"
+
         /// Set the id of the encoder to change the envelop prarameters.
         if (config.contains("encoders") && config["encoders"].is_array()) { //eg: [0, 1, 2, 3]
             encoders[0] = config["encoders"][0].get<int>();
@@ -174,6 +185,9 @@ public:
             encoders[2] = config["encoders"][2].get<int>();
             encoders[3] = config["encoders"][3].get<int>();
         }
+
+        /// Set title to be displayed on bttom of the envelop.
+        title = config.value("title", title); //eg: "Macro Envelop"
 
         /*md md_config_end */
     }

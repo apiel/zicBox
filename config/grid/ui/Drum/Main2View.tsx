@@ -10,9 +10,13 @@ import {
     bounds1,
     bounds10,
     boundsMarginTop,
+    enc1,
     enc10,
+    enc2,
     enc3,
     enc4,
+    enc5,
+    enc6,
     enc7,
     enc8,
     enc9,
@@ -42,6 +46,8 @@ export function Main2View({ name, track, synthName, color }: Props) {
                         audioPlugin={synthName}
                         envelopDataId="ENV_FREQ2"
                         track={track}
+                        encoders={[enc1.encoderId, enc2.encoderId, enc5.encoderId, enc6.encoderId]}
+                        title='Freq. Env.'
                     />
                     <KnobValue
                         {...enc9}
