@@ -34,7 +34,6 @@ protected:
     float noteMult = 1.0f;
 
     // https://codesandbox.io/p/sandbox/green-platform-tzl4pn?file=%2Fsrc%2Findex.js
-    EnvelopRelative envelopAmp = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.01f }, { 0.0f, 1.0f } }, 1);
     EnvelopDrumAmp envelopAmpBis;
     EnvelopRelative envelopFreq = EnvelopRelative({
         { "Kick", [](EnvelopRelative* env, bool init = true) {
@@ -309,7 +308,6 @@ public:
         boostTime = 0.0f;
         wavetable.sampleIndex = 0;
         sampleDurationCounter = 0;
-        envelopAmp.reset(sampleCountDuration);
         envelopAmpBis.reset(sampleCountDuration);
         envelopFreq.reset(sampleCountDuration);
         envelopAmpLayer2.reset(sampleCountDuration);
@@ -323,17 +321,12 @@ public:
     void serialize(FILE* file, std::string separator) override
     {
         Mapping::serialize(file, separator);
-        envelopAmp.serialize(file, separator, "ENV_AMP");
         envelopFreq.serialize(file, separator, "ENV_FREQ");
         envelopAmpLayer2.serialize(file, separator, "ENV_AMP_OSC2");
     }
 
     void hydrate(std::string value) override
     {
-        if (value.find("ENV_AMP ") != std::string::npos) {
-            envelopAmp.hydrate(value.substr(8));
-            return;
-        }
         if (value.find("ENV_FREQ ") != std::string::npos) {
             envelopFreq.hydrate(value.substr(9));
             return;
@@ -350,21 +343,7 @@ protected:
     float fMsEnv = 0.0f;
 
 public:
-    DataFn dataFunctions[20] = {
-        { "ENV_AMP", [this](void* userdata) {
-             return &envelopAmp.data;
-         } },
-        { "ENV_AMP_EDIT", [this](void* userdata) {
-             return envelopAmp.updateEditPhase((int8_t*)userdata);
-         } },
-        { "ENV_AMP_TIME", [this](void* userdata) {
-             float* timePct = envelopAmp.updatePhaseTime((int8_t*)userdata);
-             msEnv = (uint16_t)(*timePct * duration.get());
-             return &msEnv;
-         } },
-        { "ENV_AMP_MOD", [this](void* userdata) {
-             return envelopAmp.updatePhaseModulation((int8_t*)userdata);
-         } },
+    DataFn dataFunctions[16] = {
         { "ENV_FREQ", [this](void* userdata) {
              return &envelopFreq.data;
          } },
