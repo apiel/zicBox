@@ -35,6 +35,7 @@ protected:
 
     // https://codesandbox.io/p/sandbox/green-platform-tzl4pn?file=%2Fsrc%2Findex.js
     EnvelopDrumAmp envelopAmp;
+    EnvelopDrumAmp envelopAmpLayer2;
     EnvelopRelative envelopFreq = EnvelopRelative({
         { "Kick", [](EnvelopRelative* env, bool init = true) {
             env->useMacro = false;
@@ -109,7 +110,6 @@ protected:
          } },
     });
 
-    EnvelopRelative envelopAmpLayer2 = EnvelopRelative({ { 0.0f, 0.0f }, { 0.0f, 0.01f }, { 0.0f, 1.0f } }, 1);
     float addSecondLayer(float out)
     {
         float envAmp = envelopAmpLayer2.next();
@@ -229,7 +229,7 @@ public:
     });
 
     /*md - `OSC2` second oscillator.*/
-    Val& lfoWaveform = val(0, "OSC2", { "Osc.2", VALUE_STRING, .max = FastWaveform::TYPE_COUNT - 1 }, [&](auto p) {
+    Val& osc2Waveform = val(0, "OSC2", { "Osc.2", VALUE_STRING, .max = FastWaveform::TYPE_COUNT - 1 }, [&](auto p) {
         p.val.setFloat(p.value);
         fastWaveform.setType((int)p.val.get());
         p.val.setString(fastWaveform.toString());
@@ -258,6 +258,17 @@ public:
         p.val.setFloat(p.value);
         layer2Filter.setResonance(p.val.pct());
     });
+
+    /*md - `LAYER2_AMP_MORPH` morph on the shape of the envelop of the amplitude from the second layer.*/
+    Val& layer2ampMorph = val(0.0f, "LAYER2_AMP_MORPH", { "Osc.2 Amp. Morph", .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        envelopAmpLayer2.morph(p.val.pct());
+    });
+
+    /*md - `LAYER2_DURATION` set the duration of the second layer. */
+    Val& layer2duration = val(0.0f, "LAYER2_DURATION", { "Osc.2 Duration", .unit = "%" });
+
+
 
     SynthKick23(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
@@ -309,7 +320,7 @@ public:
         sampleDurationCounter = 0;
         envelopAmp.reset(sampleCountDuration);
         envelopFreq.reset(sampleCountDuration);
-        envelopAmpLayer2.reset(sampleCountDuration);
+        envelopAmpLayer2.reset(sampleCountDuration * layer2duration.pct());
         velocity = range(_velocity, 0.0f, 1.0f);
 
         noteMult = pow(2, ((note - baseNote + pitch.get()) / 12.0));
@@ -321,17 +332,12 @@ public:
     {
         Mapping::serialize(file, separator);
         envelopFreq.serialize(file, separator, "ENV_FREQ");
-        envelopAmpLayer2.serialize(file, separator, "ENV_AMP_OSC2");
     }
 
     void hydrate(std::string value) override
     {
         if (value.find("ENV_FREQ ") != std::string::npos) {
             envelopFreq.hydrate(value.substr(9));
-            return;
-        }
-        if (value.find("ENV_AMP_OSC2 ") != std::string::npos) {
-            envelopAmpLayer2.hydrate(value.substr(13));
             return;
         }
         Mapping::hydrate(value);
@@ -342,7 +348,7 @@ protected:
     float fMsEnv = 0.0f;
 
 public:
-    DataFn dataFunctions[16] = {
+    DataFn dataFunctions[13] = {
         { "ENV_FREQ", [this](void* userdata) {
              return &envelopFreq.data;
          } },
@@ -387,23 +393,13 @@ public:
              float* index = (float*)userdata;
              return (void*)wave->sample(index);
          } },
-        { "ENV_AMP_OSC2", [this](void* userdata) {
-             return &envelopAmpLayer2.data;
-         } },
-        { "ENV_AMP_OSC2_EDIT", [this](void* userdata) {
-             return envelopAmpLayer2.updateEditPhase((int8_t*)userdata);
-         } },
-        { "ENV_AMP_OSC2_TIME", [this](void* userdata) {
-             float* timePct = envelopAmpLayer2.updatePhaseTime((int8_t*)userdata);
-             msEnv = (uint16_t)(*timePct * duration.get());
-             return &msEnv;
-         } },
-        { "ENV_AMP_OSC2_MOD", [this](void* userdata) {
-             return envelopAmpLayer2.updatePhaseModulation((int8_t*)userdata);
-         } },
         { "ENV_AMP_FORM", [this](void* userdata) {
              float* index = (float*)userdata;
              return (void*)envelopAmp.getMorphShape(*index);
+         } },
+        { "LAYER2_ENV_AMP_FORM", [this](void* userdata) {
+             float* index = (float*)userdata;
+             return (void*)envelopAmpLayer2.getMorphShape(*index);
          } },
     };
     DEFINE_GETDATAID_AND_DATA
