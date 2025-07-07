@@ -6,12 +6,17 @@ class MMfilter {
 protected:
     EffectFilterData filter;
     float mix = 0.0;
+    float cutoffAmount = 0.0;
 
 public:
-    void setResonance(float amount) { filter.resonance = amount; }
+    void setResonance(float amount) { 
+        filter.resonance = amount; 
+        setCutoff(cutoffAmount);
+    }
 
     void setCutoff(float amount)
     {
+        cutoffAmount = amount;
         if (amount > 0.0) {
             filter.setType(EffectFilterData::Type::HP);
             filter.setHp(amount, filter.resonance);
