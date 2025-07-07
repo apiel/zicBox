@@ -5,7 +5,7 @@ import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Value } from '@/libs/nativeComponents/Value';
 import { Drum1, TracksSelector } from '../components/Common';
 import {
-    bounds7,
+    bounds5,
     enc1,
     enc10,
     enc11,
@@ -73,21 +73,21 @@ export function MainView({ name, track, synthName, color }: Props) {
                         audioPlugin="Distortion"
                         param="WAVESHAPE"
                         {...enc4}
-                        color="quaternary"
+                        color="tertiary"
                         track={track}
                     />
 
                     <KnobValue
                         audioPlugin="Distortion"
                         param="COMPRESS"
-                        {...enc5}
-                        color="primary"
+                        {...enc7}
+                        color="secondary"
                         track={track}
                     />
                     <KnobValue
                         audioPlugin="Distortion"
                         param="DRIVE"
-                        {...enc6}
+                        {...enc8}
                         color="quaternary"
                         track={track}
                     />
@@ -95,20 +95,20 @@ export function MainView({ name, track, synthName, color }: Props) {
                     <KnobValue
                         audioPlugin="Distortion"
                         param="BASS"
-                        {...enc9}
+                        {...enc11}
                         color="tertiary"
                         track={track}
                     />
                     <KnobValue
                         audioPlugin={synthName}
                         param="HIGH_FREQ_BOOST"
-                        {...enc10}
+                        {...enc12}
                         color="tertiary"
                         track={track}
                     />
 
                     <GraphEncoder
-                        bounds={graphBounds(bounds7)}
+                        bounds={graphBounds(bounds5)}
                         audioPlugin={synthName}
                         dataId="WAVEFORM"
                         renderValuesOnTop={false}
@@ -116,7 +116,7 @@ export function MainView({ name, track, synthName, color }: Props) {
                         track={track}
                     />
                     <Value
-                        {...encTopValue(enc7)}
+                        {...encTopValue(enc5)}
                         audioPlugin={synthName}
                         param="WAVEFORM_TYPE"
                         track={track}
@@ -126,7 +126,7 @@ export function MainView({ name, track, synthName, color }: Props) {
                         showLabelOverValue={1}
                     />
                     <Value
-                        {...encTopValue(enc8)}
+                        {...encTopValue(enc6)}
                         audioPlugin={synthName}
                         param="SHAPE"
                         track={track}
@@ -136,7 +136,7 @@ export function MainView({ name, track, synthName, color }: Props) {
                         showLabelOverValue={1}
                     />
                     <Value
-                        {...encBottomValue(enc11)}
+                        {...encBottomValue(enc9)}
                         audioPlugin={synthName}
                         param="MACRO"
                         track={track}
@@ -146,7 +146,7 @@ export function MainView({ name, track, synthName, color }: Props) {
                         showLabelOverValue={1}
                     />
                     <Value
-                        {...encBottomValue(enc12)}
+                        {...encBottomValue(enc10)}
                         audioPlugin={synthName}
                         param="PITCH"
                         track={track}
