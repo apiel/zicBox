@@ -47,7 +47,7 @@ export function Main2View({ name, track, synthName, color }: Props) {
                         envelopDataId="ENV_FREQ2"
                         track={track}
                         encoders={[enc1.encoderId, enc2.encoderId, enc5.encoderId, enc6.encoderId]}
-                        title='Freq. Env.'
+                        title="Freq. Env."
                     />
                     <KnobValue
                         {...enc9}
@@ -87,14 +87,14 @@ export function Main2View({ name, track, synthName, color }: Props) {
                         audioPlugin={synthName}
                         param="OSC2_FREQ"
                         {...enc4}
-                        color="tertiary"
+                        color="quaternary"
                         track={track}
                     />
                     <KnobValue
                         audioPlugin={synthName}
                         param="LAYER2_CUTOFF"
                         {...enc7}
-                        color="primary"
+                        color="tertiary"
                         type="STRING"
                         track={track}
                         label="Osc 2 Filter"
@@ -103,10 +103,37 @@ export function Main2View({ name, track, synthName, color }: Props) {
                         audioPlugin={synthName}
                         param="LAYER2_RESONANCE"
                         {...enc8}
-                        color="primary"
+                        color="tertiary"
                         track={track}
                         label="Osc 2 Reso."
                     />
+
+                    {/* <KnobValue
+                        {...enc11}
+                        audioPlugin={synthName}
+                        param="LAYER2_DURATION"
+                        color="primary"
+                        track={track}
+                    />
+                    <GraphEncoder
+                        bounds={boundsMarginTop(bounds12)}
+                        audioPlugin={synthName}
+                        dataId="LAYER2_ENV_AMP_FORM"
+                        values={['LAYER2_AMP_MORPH']}
+                        // outlineColor="quaternary"
+                        // fillColor={rgb(194, 175, 107)}
+                        track={track}
+                    />
+                    <Value
+                        {...encBottomValue(enc12)}
+                        audioPlugin={synthName}
+                        param="LAYER2_AMP_MORPH"
+                        track={track}
+                        barHeight={1}
+                        barColor="primary"
+                        alignLeft
+                        showLabelOverValue={1}
+                    /> */}
 
                     <ViewSelector color={color} synthName={synthName} viewName={name} />
                     <TracksSelector

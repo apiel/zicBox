@@ -11,6 +11,14 @@
 #include "utils/FastWaveform.h"
 #include "utils/MMfilter.h"
 
+
+// NOTE layer2 need complex amp envelop!
+// to solve limited amount of params
+// TODO could get rid of resonance...
+// or filter could be part of OSC morph...
+// or resonance could be use only when osc2 is noise, instead of freq...
+
+
 /*md
 ## SynthKick23
 
@@ -229,7 +237,7 @@ public:
     });
 
     /*md - `OSC2` second oscillator.*/
-    Val& lfoWaveform = val(0, "OSC2", { "Osc.2", VALUE_STRING, .max = FastWaveform::TYPE_COUNT - 1 }, [&](auto p) {
+    Val& osc2Waveform = val(0, "OSC2", { "Osc.2", VALUE_STRING, .max = FastWaveform::TYPE_COUNT - 1 }, [&](auto p) {
         p.val.setFloat(p.value);
         fastWaveform.setType((int)p.val.get());
         p.val.setString(fastWaveform.toString());
@@ -239,7 +247,7 @@ public:
     Val& osc2Freq = val(220.0f, "OSC2_FREQ", { "Osc.2 Freq", .min = 10.0, .max = 2000.0, .step = 10.0, .unit = "Hz" });
 
     /*md - `LAYER2_CUTOFF` to set cutoff frequency and switch between low and high pass filter. */
-    Val& cutoff = val(0.0, "LAYER2_CUTOFF", { "LPF | HPF", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0 }, [&](auto p) {
+    Val& osc2Cutoff = val(0.0, "LAYER2_CUTOFF", { "LPF | HPF", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0 }, [&](auto p) {
         p.val.setFloat(p.value);
         float amount = p.val.pct() * 2 - 1.0f;
 
@@ -254,7 +262,7 @@ public:
     });
 
     /*md - `LAYER2_RESONANCE` to set resonance. */
-    Val& resonance = val(0.0, "LAYER2_RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
+    Val& Osc2Resonance = val(0.0, "LAYER2_RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         layer2Filter.setResonance(p.val.pct());
     });
