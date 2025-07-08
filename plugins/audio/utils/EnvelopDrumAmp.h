@@ -1,18 +1,14 @@
 #pragma once
 
 #include "./EnvelopMorph.h"
+#include "helpers/math.h"
 
 namespace EnvelopShapes {
 
-inline float exp6(float t) { return std::pow(t, 6.0f); }
-inline float exp3(float t) { return std::pow(t, 3.0f); }
 inline float linear(float t) { return t; }
-inline float logCurve(float t) { return 1.0f - std::pow(1.0f - t, 2.0f); }
-inline float sqrt(float t) { return std::sqrt(t); }
-inline float sine(float t)
-{
-    return (1.27323954f * t * 1.57079632679f) - (0.405284735f * t * t * 1.57079632679f);
-}
+inline float logCurve(float t) { float x = 1.0f - t; return 1.0f - (x * x); }
+inline float sqrt(float t) { return fastSqrtPoly(t); }
+inline float sine(float t) { return fastSin(t * 1.57079632679f); }
 inline float cubicEase(float t)
 {
     float inv = 1.0f - t;

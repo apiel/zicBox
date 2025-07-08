@@ -1,18 +1,22 @@
 #pragma once
+
 #include "EnvelopMorph.h"
+#include "helpers/math.h"
+
 #include <cmath>
 
 namespace EnvelopeShapes {
 
+inline float linear(float t) { return t; }
 inline float impulse(float t) { return (t < 0.05f) ? 1.0f - (t * 20.0f) : 0.0f; }
-inline float punchy(float t) { return std::pow(t, 0.2f) * (1.0f - t); }
+inline float punchy(float t) { return t * t * (1.0f - t); }
 inline float triangle(float t) { return 1.0f - std::abs(2.0f * t - 1.0f); }
-inline float overshoot(float t) { return std::sin(t * 3.1415f) * (1.0f - t); }
-inline float snareTail(float t) { return std::exp(-10.0f * t); }
-inline float sineBlip(float t) { return std::sin(t * 3.1415f); }
+inline float overshoot(float t) { return fastSin(t * 3.1415f) * (1.0f - t); }
+inline float snareTail(float t) { return fastExpNeg(10.0f * t); }
+inline float sineBlip(float t) { return fastSin(t * 3.1415f); }
 
-constexpr std::array<EnvelopeShapeFunc, 6> transientShapes = {
-    impulse, punchy, triangle, overshoot, snareTail, sineBlip
+constexpr std::array<EnvelopeShapeFunc, 9> transientShapes = {
+    exp6, exp3, linear, impulse, punchy, triangle, overshoot, snareTail, sineBlip
 };
 
 } // namespace EnvelopeShapes
