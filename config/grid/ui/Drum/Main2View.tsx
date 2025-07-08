@@ -9,9 +9,12 @@ import { Drum1, TracksSelector } from '../components/Common';
 import {
     bounds1,
     bounds10,
+    bounds12,
     boundsMarginTop,
     enc1,
     enc10,
+    enc11,
+    enc12,
     enc2,
     enc3,
     enc4,
@@ -21,7 +24,7 @@ import {
     enc8,
     enc9,
     encBottomValue,
-    graphBounds
+    graphBounds,
 } from '../constantsValue';
 import { DrumLayout } from './Layout';
 import { ViewSelector } from './ViewSelector';
@@ -108,7 +111,7 @@ export function Main2View({ name, track, synthName, color }: Props) {
                         label="Osc 2 Reso."
                     />
 
-                    {/* <KnobValue
+                    <KnobValue
                         {...enc11}
                         audioPlugin={synthName}
                         param="LAYER2_DURATION"
@@ -133,7 +136,7 @@ export function Main2View({ name, track, synthName, color }: Props) {
                         barColor="primary"
                         alignLeft
                         showLabelOverValue={1}
-                    /> */}
+                    />
 
                     <ViewSelector color={color} synthName={synthName} viewName={name} />
                     <TracksSelector
