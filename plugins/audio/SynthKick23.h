@@ -7,6 +7,7 @@
 #include "audioPlugin.h"
 #include "mapping.h"
 #include "utils/EnvelopDrumAmp.h"
+#include "utils/EnvelopDrumTransient.h"
 #include "utils/EnvelopRelative.h"
 #include "utils/FastWaveform.h"
 #include "utils/MMfilter.h"
@@ -35,7 +36,8 @@ protected:
 
     // https://codesandbox.io/p/sandbox/green-platform-tzl4pn?file=%2Fsrc%2Findex.js
     EnvelopDrumAmp envelopAmp;
-    EnvelopDrumAmp envelopAmpLayer2;
+    // EnvelopDrumAmp envelopAmpLayer2;
+    EnvelopDrumTransient envelopAmpLayer2;
     EnvelopRelative envelopFreq = EnvelopRelative({
         { "Kick", [](EnvelopRelative* env, bool init = true) {
             env->useMacro = false;
