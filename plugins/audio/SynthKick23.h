@@ -12,13 +12,11 @@
 #include "utils/FastWaveform.h"
 #include "utils/MMfilter.h"
 
-
 // NOTE layer2 need complex amp envelop!
 // to solve limited amount of params
 // TODO could get rid of resonance...
 // or filter could be part of OSC morph...
 // or resonance could be use only when osc2 is noise, instead of freq...
-
 
 /*md
 ## SynthKick23
@@ -122,11 +120,13 @@ protected:
 
     float addSecondLayer(float out)
     {
-        float envAmp = envelopAmpLayer2.next();
-        if (envAmp > 0.0f) {
-            float out2 = fastWaveform.process() * envAmp;
-            out2 = layer2Filter.process(out2);
-            out += out2;
+        if (layer2duration.get() > 0.0f) {
+            float envAmp = envelopAmpLayer2.next();
+            if (envAmp > 0.0f) {
+                float out2 = fastWaveform.process() * envAmp;
+                out2 = layer2Filter.process(out2);
+                out += out2;
+            }
         }
         return out;
     }
@@ -270,15 +270,13 @@ public:
     });
 
     /*md - `LAYER2_AMP_MORPH` morph on the shape of the envelop of the amplitude from the second layer.*/
-    Val& layer2ampMorph = val(0.0f, "LAYER2_AMP_MORPH", { "Osc.2 Amp. Morph", .unit = "%" }, [&](auto p) {
+    Val& layer2ampMorph = val(0.0f, "LAYER2_AMP_MORPH", { "Osc.2 Amp. Morph", .step = 0.1, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         envelopAmpLayer2.morph(p.val.pct());
     });
 
     /*md - `LAYER2_DURATION` set the duration of the second layer. */
     Val& layer2duration = val(0.0f, "LAYER2_DURATION", { "Osc.2 Duration", .unit = "%" });
-
-
 
     SynthKick23(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)

@@ -15,8 +15,19 @@ inline float overshoot(float t) { return fastSin(t * 3.1415f) * (1.0f - t); }
 inline float snareTail(float t) { return fastExpNeg(10.0f * t); }
 inline float sineBlip(float t) { return fastSin(t * 3.1415f); }
 
-constexpr std::array<EnvelopeShapeFunc, 9> transientShapes = {
-    exp6, exp3, linear, impulse, punchy, triangle, overshoot, snareTail, sineBlip
+inline float pulseTrain(float t)
+{
+    float decay = fastExpNeg(10.0f * t);
+    float pulse = (std::fmod(t * 20.0f, 1.0f) < 0.5f) ? 1.0f : 0.0f; // 10 pulses
+    return decay * pulse;
+}
+inline float pulseTrainDecay(float t)
+{
+    return pulseTrain(1.0f - t);
+}
+
+constexpr std::array<EnvelopeShapeFunc, 11> transientShapes = {
+    exp6, exp3, linear, impulse, punchy, triangle, overshoot, snareTail, sineBlip, pulseTrainDecay, pulseTrain
 };
 
 } // namespace EnvelopeShapes
