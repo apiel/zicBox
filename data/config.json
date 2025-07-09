@@ -8,7 +8,6 @@
         "plugins": [
           {"alias":"Drum1","plugin":"SynthKick23"},
           {"plugin":"Sequencer","alias":"Sequencer"},
-          {"alias":"Distortion","plugin":"EffectDistortion2"},
           {"alias":"MMFilter","plugin":"EffectFilterMultiMode"},
           {"alias":"TrackFx","plugin":"EffectGainVolume"},
           {"filename":"drum1","maxVariation":16,"workspaceFolder":"data/workspaces/plus_rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}
@@ -103,10 +102,10 @@
         {"audioPlugin":"MMFilter","param":"CUTOFF","encoderId":1,"bounds":[0,60,118,100],"color":"secondary","type":"STRING","track":1,"componentName":"KnobValue"},
         {"audioPlugin":"MMFilter","param":"RESONANCE","encoderId":2,"bounds":[120,60,118,100],"color":"secondary","track":1,"componentName":"KnobValue"},
         {"audioPlugin":"Drum1","param":"GAIN_CLIPPING","encoderId":3,"bounds":[240,60,118,100],"color":"primary","track":1,"componentName":"KnobValue"},
-        {"audioPlugin":"Distortion","param":"WAVESHAPE","encoderId":4,"bounds":[360,60,118,100],"color":"tertiary","track":1,"componentName":"KnobValue"},
-        {"audioPlugin":"Distortion","param":"COMPRESS","encoderId":7,"bounds":[240,180,118,100],"color":"secondary","track":1,"componentName":"KnobValue"},
-        {"audioPlugin":"Distortion","param":"DRIVE","encoderId":8,"bounds":[360,180,118,100],"color":"quaternary","track":1,"componentName":"KnobValue"},
-        {"audioPlugin":"Distortion","param":"BASS","encoderId":11,"bounds":[240,300,118,100],"color":"tertiary","track":1,"componentName":"KnobValue"},
+        {"audioPlugin":"Drum1","param":"WAVESHAPE","encoderId":4,"bounds":[360,60,118,100],"color":"tertiary","track":1,"componentName":"KnobValue"},
+        {"audioPlugin":"Drum1","param":"COMPRESS","encoderId":7,"bounds":[240,180,118,100],"color":"secondary","track":1,"componentName":"KnobValue"},
+        {"audioPlugin":"Drum1","param":"DRIVE","encoderId":8,"bounds":[360,180,118,100],"color":"quaternary","track":1,"componentName":"KnobValue"},
+        {"audioPlugin":"Drum1","param":"BASS","encoderId":11,"bounds":[240,300,118,100],"color":"tertiary","track":1,"componentName":"KnobValue"},
         {"audioPlugin":"Drum1","param":"HIGH_FREQ_BOOST","encoderId":12,"bounds":[360,300,118,100],"color":"tertiary","track":1,"componentName":"KnobValue"},
         {"bounds":[0,230,240,120],"audioPlugin":"Drum1","dataId":"WAVEFORM","renderValuesOnTop":false,"values":["WAVEFORM_TYPE","SHAPE","MACRO"],"track":1,"componentName":"GraphEncoder"},
         {"encoderId":5,"bounds":[0,190,118,30],"audioPlugin":"Drum1","param":"WAVEFORM_TYPE","track":1,"barHeight":1,"alignLeft":true,"showLabelOverValue":1,"componentName":"Value"},
