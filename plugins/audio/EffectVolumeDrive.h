@@ -2,6 +2,7 @@
 
 #include "audioPlugin.h"
 #include "mapping.h"
+#include "plugins/audio/utils/applyEffects.h"
 
 /*md
 ## EffectVolumeDrive
@@ -65,30 +66,7 @@ public:
     {
         float output = buf[track];
         output = applyCompression(output, compressAmount);
-        output = applyDrive(output, driveAmount);
+        output = applyDrive(output, driveAmount, props.lookupTable);
         buf[track] = output * volumeWithGain;
-    }
-
-    float applyCompression(float input, float compressAmount)
-    {
-        if (compressAmount == 0.0f) {
-            return input;
-        }
-        return std::pow(input, 1.0f - compressAmount * 0.8f);
-    }
-
-    float applyDrive(float input, float driveAmount)
-    {
-        if (driveAmount == 0.0f) {
-            return input;
-        }
-        return tanhLookup(input * (1.0f + driveAmount * 5.0f));
-    }
-
-    float tanhLookup(float x)
-    {
-        x = range(x, -1.0f, 1.0f);
-        int index = static_cast<int>((x + 1.0f) * 0.5f * (props.lookupTable->size - 1));
-        return props.lookupTable->tanh[index];
     }
 };

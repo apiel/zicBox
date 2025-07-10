@@ -1,13 +1,13 @@
 #pragma once
 
-#include "helpers/range.h"
 #include "audioPlugin.h"
-#include "utils/filterArray.h"
+#include "helpers/range.h"
 #include "mapping.h"
 #include "utils/EnvelopRelative.h"
-
-#include "./utils/WavetableGenerator.h"
-#include "./utils/Wavetable.h"
+#include "utils/Wavetable.h"
+#include "utils/WavetableGenerator.h"
+#include "utils/applyEffects.h"
+#include "utils/filterArray.h"
 
 #define ZIC_BASS_UI 1000
 
@@ -48,48 +48,23 @@ protected:
     static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
     float reverbBuffer[REVERB_BUFFER_SIZE] = { 0.0f };
     int reverbIndex = 0;
-    float applyReverb(float signal)
-    {
-        float reverbAmount = reverb.pct();
-        if (reverbAmount == 0.0f) {
-            return signal;
-        }
-        int reverbSamples = static_cast<int>((reverbAmount * 0.5f) * props.sampleRate); // Reverb duration scaled
-        float feedback = reverbAmount * 0.7f; // Feedback scaled proportionally
-        float mix = reverbAmount * 0.5f; // Mix scaled proportionally
-
-        if (reverbSamples > REVERB_BUFFER_SIZE) {
-            reverbSamples = REVERB_BUFFER_SIZE; // Cap the reverb duration to buffer size
-        }
-
-        float reverbSignal = reverbBuffer[reverbIndex];
-        reverbBuffer[reverbIndex] = signal + reverbSignal * feedback;
-        reverbIndex = (reverbIndex + 1) % reverbSamples;
-
-        return signal * (1.0f - mix) + reverbSignal * mix;
-    }
 
     float prevInput = 0.0f, prevOutput = 0.0f;
-    float applyBoost(float input)
+    float applyEffects(float input)
     {
+        float output = input;
+
+        output = applyReverb(output, reverb.pct(), reverbBuffer, reverbIndex, props.sampleRate, REVERB_BUFFER_SIZE);
+
         if (boost.pct() == 0.5f) {
-            return input;
+            return output;
         }
         if (boost.pct() > 0.5f) {
             float amount = boost.pct() * 2 - 1.0f;
-            if (input > 0.0f) {
-                return std::pow(input, 1.0f - amount * 0.8f);
-            }
-            return -std::pow(-input, 1.0f - amount * 0.8f);
+            return applyCompression(output, amount);
         }
         float amount = 1 - boost.pct() * 2;
-        float bassFreq = 0.2f + 0.8f * amount;
-        float bassBoosted = (1.0f - bassFreq) * prevOutput + bassFreq * (input + prevInput) * 0.5f;
-        prevInput = input;
-        prevOutput = bassBoosted;
-        bassBoosted *= 1.0f + amount * 2.0f;
-
-        return bassBoosted;
+        return applyBoost(output, amount, prevInput, prevOutput);
     }
 
 public:
@@ -219,12 +194,11 @@ public:
             out = filter.lp[1];
 
             out = range(out + out * clipping.pct() * 8, -1.0f, 1.0f);
-            out = applyReverb(out);
-            out = applyBoost(out);
+            out = applyEffects(out);
             buf[track] = out;
             sampleIndex++;
         } else {
-            buf[track] = applyReverb(buf[track]);
+            buf[track] = applyReverb(buf[track], reverb.pct(), reverbBuffer, reverbIndex, props.sampleRate, REVERB_BUFFER_SIZE);
         }
     }
 

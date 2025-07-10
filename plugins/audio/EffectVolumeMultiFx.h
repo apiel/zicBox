@@ -3,6 +3,7 @@
 #include "audioPlugin.h"
 #include "mapping.h"
 #include "plugins/audio/utils/utils.h"
+#include "plugins/audio/utils/applyEffects.h"
 
 /*md
 ## EffectVolumeMultiFx
@@ -96,50 +97,27 @@ protected:
     float prevOutput = 0;
     float fxBoost(float input)
     {
-        if (fxAmount.pct() == 0.0f) {
-            return input;
-        }
-        float bassFreq = 0.2f + 0.8f * fxAmount.pct();
-        float bassBoosted = (1.0f - bassFreq) * prevOutput + bassFreq * (input + prevInput) * 0.5f;
-        prevInput = input;
-        prevOutput = bassBoosted;
-        bassBoosted *= 1.0f + fxAmount.pct() * 2.0f;
-
-        return bassBoosted;
+        return applyBoost(input, fxAmount.pct(), prevInput, prevOutput);
     }
 
     float fxDrive(float input)
     {
-        if (fxAmount.pct() == 0.0f) {
-            return input;
-        }
-        return tanhLookup(input * (1.0f + fxAmount.pct() * 5.0f));
+        return applyDrive(input, fxAmount.pct(), props.lookupTable);
     }
 
     float fxCompressor(float input)
     {
-        if (fxAmount.pct() == 0.0f) {
-            return input;
-        }
-        return (input * (1 - fxAmount.pct())) + (range(std::pow(input, fxAmount.pct() * 0.8f), -1.0f, 1.0f) * fxAmount.pct());
+        return applyCompression(input, fxAmount.pct());
     }
 
     float fxWaveshaper(float input)
     {
-        if (fxAmount.pct() == 0.0f) {
-            return input;
-        }
-        float sineValue = sinf(input);
-        return input + fxAmount.pct() * sineValue * 2;
+        return applyWaveshape(input, fxAmount.pct());
     }
 
     float fxWaveshaper2(float input)
     {
-        if (fxAmount.pct() == 0.0f) {
-            return input;
-        }
-        float sineValue = sineLookupInterpolated(input);
-        return input + fxAmount.pct() * sineValue;
+        return applyWaveshapeLut(input, fxAmount.pct(), props.lookupTable);
     }
 
     float fxClipping(float input)

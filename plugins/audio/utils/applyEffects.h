@@ -24,16 +24,25 @@ float applySoftClipping(float input, LookupTable* lookupTable)
     return tanhLookup(input, lookupTable);
 }
 
+float applyWaveshape(float input, float waveshapeAmount)
+{
+    float sineValue = sinf(input);
+    return input + waveshapeAmount * sineValue * 2;
+}
+
+float applyWaveshapeLut(float input, float waveshapeAmount, LookupTable* lookupTable)
+{
+    float sineValue = sineLookupInterpolated(input, lookupTable);
+    return input + waveshapeAmount * sineValue * 2;
+}
+
 float applyWaveshape(float input, float waveshapeAmount, LookupTable* lookupTable)
 {
     if (waveshapeAmount > 0.0f) {
-        // float sineValue = sineLookupInterpolated(input);
-        float sineValue = sinf(input);
-        return input + waveshapeAmount * sineValue * 2;
+        return applyWaveshape(input, waveshapeAmount);
     }
     if (waveshapeAmount < 0.0f) {
-        float sineValue = sineLookupInterpolated(input, lookupTable);
-        return input + (-waveshapeAmount) * sineValue;
+        return applyWaveshapeLut(input, -waveshapeAmount, lookupTable);
     }
     return input;
 }
@@ -65,6 +74,8 @@ float applyCompression(float input, float compressAmount)
     if (compressAmount == 0.0f) {
         return input;
     }
+    // How about?
+    // return (input * (1 - compressAmount)) + (range(std::pow(input, compressAmount * 0.8f), -1.0f, 1.0f) * fxAmount.pct());
     if (input > 0.0f) {
         return std::pow(input, 1.0f - compressAmount * 0.8f);
     }
@@ -90,4 +101,24 @@ float applyHighFreqBoost(float input, double& boostTimeInc, double& boostTime)
     float highFreqComponent = input * boostTime; // Emphasize high frequencies
     boostTime += boostTimeInc;
     return input + highFreqComponent;
+}
+
+float applyReverb(float signal, float reverbAmount, float* reverbBuffer, int& reverbIndex, uint64_t sampleRate, int REVERB_BUFFER_SIZE)
+{
+    if (reverbAmount == 0.0f) {
+        return signal;
+    }
+    int reverbSamples = static_cast<int>((reverbAmount * 0.5f) * sampleRate); // Reverb duration scaled
+    float feedback = reverbAmount * 0.7f; // Feedback scaled proportionally
+    float mix = reverbAmount * 0.5f; // Mix scaled proportionally
+
+    if (reverbSamples > REVERB_BUFFER_SIZE) {
+        reverbSamples = REVERB_BUFFER_SIZE; // Cap the reverb duration to buffer size
+    }
+
+    float reverbSignal = reverbBuffer[reverbIndex];
+    reverbBuffer[reverbIndex] = signal + reverbSignal * feedback;
+    reverbIndex = (reverbIndex + 1) % reverbSamples;
+
+    return signal * (1.0f - mix) + reverbSignal * mix;
 }
