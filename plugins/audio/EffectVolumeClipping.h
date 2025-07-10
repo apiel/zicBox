@@ -3,6 +3,7 @@
 #include "audioPlugin.h"
 #include "mapping.h"
 #include "plugins/audio/utils/utils.h"
+#include "plugins/audio/utils/applyEffects.h"
 
 /*md
 ## EffectVolumeClipping
@@ -55,48 +56,10 @@ public:
     void sample(float* buf)
     {
         float output = buf[track];
-        output = applyWaveshape(output);
-        output = applyDrive(output);
-        output = applyClipping(output);
+        output = applyWaveshape(output, waveshapeAmount, props.lookupTable);
+        output = applyDrive(output, driveAmount, props.lookupTable);
+        output = applyClipping(output, scaledClipping);
 
         buf[track] = output * volume.pct();
-    }
-
-    float applyClipping(float input)
-    {
-        if (scaledClipping == 0.0f) {
-            return input;
-        }
-        return range(input + input * scaledClipping, -1.0f, 1.0f);
-    }
-
-    float sineLookupInterpolated(float x)
-    {
-        x -= std::floor(x);
-        return linearInterpolation(x, props.lookupTable->size, props.lookupTable->sine);
-    }
-
-    float applyWaveshape(float input)
-    {
-        if (waveshapeAmount > 0.0f) {
-            float sineValue = sineLookupInterpolated(input);
-            return input + waveshapeAmount * sineValue;
-        }
-        return input;
-    }
-
-    float applyDrive(float input)
-    {
-        if (driveAmount == 0.0f) {
-            return input;
-        }
-        return tanhLookup(input * (1.0f + driveAmount * 5.0f));
-    }
-
-    float tanhLookup(float x)
-    {
-        x = range(x, -1.0f, 1.0f);
-        int index = static_cast<int>((x + 1.0f) * 0.5f * (props.lookupTable->size - 1));
-        return props.lookupTable->tanh[index];
     }
 };

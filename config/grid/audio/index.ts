@@ -13,10 +13,8 @@ export const workspaceFolder = 'data/workspaces/plus_rpi0';
 const drum1Track = {
     id: Drum1Track,
     plugins: [
-        // audioPlugin('SynthDrum23', { alias: 'Drum1' }),
         audioPlugin('SynthKick23', { alias: 'Drum1' }),
         audioPlugin('Sequencer'),
-        // audioPlugin('EffectDistortion2', { alias: 'Distortion' }),
         audioPlugin('EffectFilterMultiMode', { alias: 'MMFilter' }),
         audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
         audioPlugin('SerializeTrack', { filename: 'drum1', maxVariation, workspaceFolder }),

@@ -11,12 +11,7 @@
 #include "utils/EnvelopRelative.h"
 #include "utils/FastWaveform.h"
 #include "utils/MMfilter.h"
-
-// NOTE layer2 need complex amp envelop!
-// to solve limited amount of params
-// TODO could get rid of resonance...
-// or filter could be part of OSC morph...
-// or resonance could be use only when osc2 is noise, instead of freq...
+#include "utils/applyEffects.h"
 
 /*md
 ## SynthKick23
@@ -281,11 +276,17 @@ public:
     /*md - `DRIVE` to set distortion drive. */
     Val& drive = val(0.0, "DRIVE", { "Drive", .min = 0.0, .max = 100.0, .step = 1.0, .unit = "%" });
     /*md - `COMPRESS` to set distortion compression. */
-    Val& compress = val(0.0, "COMPRESS", { "Compression", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
+    Val& compress = val(0.0, "COMPRESS", { "Compression", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        compressAmount = p.val.pct() * 2 - 1.0f;
+    });
     /*md - `BASS` to set bass boost. */
     Val& bass = val(0.0, "BASS", { "Bass Boost", .min = 0.0, .max = 100.0, .step = 1.0, .unit = "%" });
     /*md - `WAVESHAPE` to set waveshape. */
-    Val& waveshape = val(0.0, "WAVESHAPE", { "Waveshape", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
+    Val& waveshape = val(0.0, "WAVESHAPE", { "Waveshape", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        waveshapeAmount = p.val.pct() * 2 - 1.0f;
+    });
 
     SynthKick23(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
@@ -294,21 +295,6 @@ public:
         , fastWaveform(props.sampleRate, FastWaveform::Type::NOISE, 100.0f)
     {
         initValues();
-    }
-
-    double boostTimeInc = 0.0f;
-    double boostTime = 0.0f;
-    float highFreqBoost(float input)
-    {
-        if (highBoost.get() == 0) {
-            return input;
-        }
-        // Simple high-shelf boost logic
-        // TODO optimize precalculate: highBoost.get() * time
-        // float highFreqComponent = input * (highBoost.get() * boostTime); // Emphasize high frequencies
-        float highFreqComponent = input * boostTime; // Emphasize high frequencies
-        boostTime += boostTimeInc;
-        return input + highFreqComponent;
     }
 
     float scaledClipping = 0.0f;
@@ -321,8 +307,6 @@ public:
             float freq = envFreq + noteMult;
             float out = wave->sample(&wavetable.sampleIndex, freq) * envAmp;
             out = addSecondLayer(out);
-            out = highFreqBoost(out);
-            out = range(out + out * scaledClipping, -1.0f, 1.0f);
             out = applyEffects(out);
             buf[track] = out * velocity;
 
@@ -365,92 +349,27 @@ protected:
     uint16_t msEnv = 0;
     float fMsEnv = 0.0f;
 
+    float prevInput1 = 0.0f, prevOutput1 = 0.0f;
+    float compressAmount = 0.0f;
+    float waveshapeAmount = 0.0f;
+    double boostTimeInc = 0.0f;
+    double boostTime = 0.0f;
+
     float applyEffects(float input)
     {
         if (input != 0.0f) { // <--- could this be a problem?
-            // Get parameters
-            float driveAmount = drive.pct();
-            float compressAmount = compress.pct() * 2 - 1.0f;
-            float bassBoostAmount = bass.pct();
-            float waveshapeAmount = waveshape.pct() * 2 - 1.0f;
-
             float output = input;
-            output = applyBoost(output, bassBoostAmount, prevInput1, prevOutput1);
-            output = applyDrive(output, driveAmount);
+            output = applyHighFreqBoost(input, boostTimeInc, boostTime);
+            output = applyClipping(output, scaledClipping);
+            output = applyBoost(output, bass.pct(), prevInput1, prevOutput1);
+            output = applyDrive(output, drive.pct(), props.lookupTable);
             output = applyCompression(output, compressAmount);
-            output = applyWaveshape(output, waveshapeAmount);
-            output = applySoftClipping(output);
+            output = applyWaveshape(output, waveshapeAmount, props.lookupTable);
+            output = applySoftClipping(output, props.lookupTable);
 
             return range(output, -1.0f, 1.0f);
         }
         return 0.0f;
-    }
-
-    float prevInput1 = 0.0f, prevOutput1 = 0.0f;
-
-    float tanhLookup(float x)
-    {
-        x = range(x, -1.0f, 1.0f);
-        int index = static_cast<int>((x + 1.0f) * 0.5f * (props.lookupTable->size - 1));
-        return props.lookupTable->tanh[index];
-    }
-
-    float sineLookupInterpolated(float x)
-    {
-        x -= std::floor(x);
-        return linearInterpolation(x, props.lookupTable->size, props.lookupTable->sine);
-    }
-
-    float applySoftClipping(float input)
-    {
-        return tanhLookup(input);
-    }
-
-    float applyWaveshape(float input, float waveshapeAmount)
-    {
-        if (waveshapeAmount > 0.0f) {
-            // float sineValue = sineLookupInterpolated(input);
-            float sineValue = sinf(input);
-            return input + waveshapeAmount * sineValue * 2;
-        }
-        if (waveshapeAmount < 0.0f) {
-            float sineValue = sineLookupInterpolated(input);
-            return input + (-waveshapeAmount) * sineValue;
-        }
-        return input;
-    }
-
-    float applyBoost(float input, float bassBoostAmount, float& prevInput, float& prevOutput)
-    {
-        if (bassBoostAmount == 0.0f) {
-            return input;
-        }
-        float bassFreq = 0.2f + 0.8f * bassBoostAmount;
-        float bassBoosted = (1.0f - bassFreq) * prevOutput + bassFreq * (input + prevInput) * 0.5f;
-        prevInput = input;
-        prevOutput = bassBoosted;
-        bassBoosted *= 1.0f + bassBoostAmount * 2.0f;
-
-        return bassBoosted;
-    }
-
-    float applyDrive(float input, float driveAmount)
-    {
-        if (driveAmount == 0.0f) {
-            return input;
-        }
-        return tanhLookup(input * (1.0f + driveAmount * 5.0f));
-    }
-
-    float applyCompression(float input, float compressAmount)
-    {
-        if (compressAmount == 0.0f) {
-            return input;
-        }
-        if (input > 0.0f) {
-            return std::pow(input, 1.0f - compressAmount * 0.8f);
-        }
-        return -std::pow(-input, 1.0f - compressAmount * 0.8f);
     }
 
 public:
