@@ -8,7 +8,6 @@
         "plugins": [
           {"alias":"Drum1","plugin":"SynthKick23"},
           {"plugin":"Sequencer","alias":"Sequencer"},
-          {"alias":"MMFilter","plugin":"EffectFilterMultiMode"},
           {"alias":"TrackFx","plugin":"EffectGainVolume"},
           {"filename":"drum1","maxVariation":16,"workspaceFolder":"data/workspaces/plus_rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
