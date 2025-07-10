@@ -3,6 +3,7 @@
 #include "helpers/range.h"
 #include "mapping.h"
 #include "utils/MMfilter.h"
+#include "utils/val/valMMfilterCutoff.h"
 
 /*md
 ## EffectFilterMultiMode
@@ -18,17 +19,7 @@ public:
     /*md **Values**: */
     /*md - `CUTOFF` to set cutoff frequency and switch between low and high pass filter. */
     Val& cutoff = val(0.0, "CUTOFF", { "LPF | HPF", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0 }, [&](auto p) {
-        p.val.setFloat(p.value);
-        float amount = p.val.pct() * 2 - 1.0f;
-
-        char strBuf[128];
-        filter.setCutoff(amount);
-        if (amount > 0.0) {
-            sprintf(strBuf, "HP %d%%", (int)(amount * 100));
-        } else {
-            sprintf(strBuf, "LP %d%%", (int)((-amount) * 100));
-        }
-        p.val.setString(strBuf);
+        valMMfilterCutoff(p, filter);
     });
 
     /*md - `RESONANCE` to set resonance. */

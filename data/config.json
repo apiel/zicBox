@@ -18,7 +18,6 @@
         "plugins": [
           {"alias":"Sample1","plugin":"SynthMonoSample"},
           {"plugin":"Sequencer","alias":"Sequencer"},
-          {"alias":"Filter","plugin":"EffectFilterMultiMode"},
           {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
           {"filename":"sample1","maxVariation":16,"workspaceFolder":"data/workspaces/plus_rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
@@ -99,8 +98,8 @@
       "components": [
         {"fontSize":24,"text":"Drum23","bounds":[0,20,480,16],"centered":true,"componentName":"Text"},
         {"bounds":[55,28,6,6],"color":"#a3c912","componentName":"Rect"},
-        {"audioPlugin":"MMFilter","param":"CUTOFF","encoderId":1,"bounds":[0,60,118,100],"color":"secondary","type":"STRING","track":1,"componentName":"KnobValue"},
-        {"audioPlugin":"MMFilter","param":"RESONANCE","encoderId":2,"bounds":[120,60,118,100],"color":"secondary","track":1,"componentName":"KnobValue"},
+        {"audioPlugin":"Drum1","param":"CUTOFF","encoderId":1,"bounds":[0,60,118,100],"color":"secondary","type":"STRING","track":1,"componentName":"KnobValue"},
+        {"audioPlugin":"Drum1","param":"RESONANCE","encoderId":2,"bounds":[120,60,118,100],"color":"secondary","track":1,"componentName":"KnobValue"},
         {"audioPlugin":"Drum1","param":"GAIN_CLIPPING","encoderId":3,"bounds":[240,60,118,100],"color":"primary","track":1,"componentName":"KnobValue"},
         {"audioPlugin":"Drum1","param":"WAVESHAPE","encoderId":4,"bounds":[360,60,118,100],"color":"tertiary","track":1,"componentName":"KnobValue"},
         {"audioPlugin":"Drum1","param":"COMPRESS","encoderId":7,"bounds":[240,180,118,100],"color":"secondary","track":1,"componentName":"KnobValue"},
@@ -166,8 +165,8 @@
         {"encoderId":10,"bounds":[120,370,118,30],"audioPlugin":"Drum1","param":"AMP_MORPH","track":1,"barHeight":1,"barColor":"quaternary","alignLeft":true,"showLabelOverValue":1,"componentName":"Value"},
         {"audioPlugin":"Drum1","param":"OSC2","encoderId":3,"bounds":[240,60,118,100],"color":"secondary","track":1,"componentName":"KnobValue"},
         {"audioPlugin":"Drum1","param":"OSC2_FREQ","encoderId":4,"bounds":[360,60,118,100],"color":"quaternary","track":1,"componentName":"KnobValue"},
-        {"audioPlugin":"Drum1","param":"LAYER2_CUTOFF","encoderId":7,"bounds":[240,180,118,100],"color":"tertiary","type":"STRING","track":1,"label":"Osc 2 Filter","componentName":"KnobValue"},
-        {"audioPlugin":"Drum1","param":"LAYER2_RESONANCE","encoderId":8,"bounds":[360,180,118,100],"color":"tertiary","track":1,"label":"Osc 2 Reso.","componentName":"KnobValue"},
+        {"audioPlugin":"Drum1","param":"LAYER2_CUTOFF","encoderId":7,"bounds":[240,180,118,100],"color":"tertiary","type":"STRING","track":1,"componentName":"KnobValue"},
+        {"audioPlugin":"Drum1","param":"LAYER2_RESONANCE","encoderId":8,"bounds":[360,180,118,100],"color":"tertiary","track":1,"componentName":"KnobValue"},
         {"encoderId":11,"bounds":[240,300,118,100],"audioPlugin":"Drum1","param":"LAYER2_DURATION","color":"primary","track":1,"componentName":"KnobValue"},
         {"bounds":[360,310,118,100],"audioPlugin":"Drum1","dataId":"LAYER2_ENV_AMP_FORM","values":["LAYER2_AMP_MORPH"],"track":1,"componentName":"GraphEncoder"},
         {"encoderId":12,"bounds":[360,370,118,30],"audioPlugin":"Drum1","param":"LAYER2_AMP_MORPH","track":1,"barHeight":1,"barColor":"primary","alignLeft":true,"showLabelOverValue":1,"componentName":"Value"},

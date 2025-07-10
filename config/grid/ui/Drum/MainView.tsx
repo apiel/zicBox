@@ -48,7 +48,7 @@ export function MainView({ name, track, synthName, color }: Props) {
                         track={track}
                     /> */}
                     <KnobValue
-                        audioPlugin="MMFilter"
+                        audioPlugin={synthName}
                         param="CUTOFF"
                         {...enc1}
                         color="secondary"
@@ -56,7 +56,7 @@ export function MainView({ name, track, synthName, color }: Props) {
                         track={track}
                     />
                     <KnobValue
-                        audioPlugin="MMFilter"
+                        audioPlugin={synthName}
                         param="RESONANCE"
                         {...enc2}
                         color="secondary"

@@ -100,7 +100,6 @@ export function Main2View({ name, track, synthName, color }: Props) {
                         color="tertiary"
                         type="STRING"
                         track={track}
-                        label="Osc 2 Filter"
                     />
                     <KnobValue
                         audioPlugin={synthName}
@@ -108,7 +107,6 @@ export function Main2View({ name, track, synthName, color }: Props) {
                         {...enc8}
                         color="tertiary"
                         track={track}
-                        label="Osc 2 Reso."
                     />
 
                     <KnobValue

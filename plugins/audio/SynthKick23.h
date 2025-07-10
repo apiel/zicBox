@@ -18,6 +18,7 @@
 #include "utils/effects/applyWaveshape.h"
 #include "utils/effects/applySoftClipping.h"
 #include "utils/effects/applyCompression.h"
+#include "utils/val/valMMfilterCutoff.h"
 
 /*md
 ## SynthKick23
@@ -33,6 +34,7 @@ protected:
     WavetableGenerator waveform;
     Wavetable wavetable;
     FastWaveform fastWaveform;
+    MMfilter filter;
     MMfilter layer2Filter;
 
     unsigned int sampleCountDuration = 0;
@@ -227,6 +229,17 @@ public:
         envelopAmp.morph(p.val.pct());
     });
 
+    /*md - `CUTOFF` to set cutoff frequency and switch between low and high pass filter. */
+    Val& cutoff = val(0.0, "CUTOFF", { "LPF | HPF", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0 }, [&](auto p) {
+        valMMfilterCutoff(p, filter);
+    });
+
+    /*md - `RESONANCE` to set resonance. */
+    Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        filter.setResonance(p.val.pct());
+    });
+
     /*md - `GAIN_CLIPPING` set the clipping level.*/
     Val& clipping = val(0.0, "GAIN_CLIPPING", { "Clipping", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
@@ -250,22 +263,12 @@ public:
     Val& osc2Freq = val(220.0f, "OSC2_FREQ", { "Osc.2 Freq", .min = 10.0, .max = 2000.0, .step = 10.0, .unit = "Hz" });
 
     /*md - `LAYER2_CUTOFF` to set cutoff frequency and switch between low and high pass filter. */
-    Val& osc2Cutoff = val(0.0, "LAYER2_CUTOFF", { "LPF | HPF", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0 }, [&](auto p) {
-        p.val.setFloat(p.value);
-        float amount = p.val.pct() * 2 - 1.0f;
-
-        char strBuf[128];
-        layer2Filter.setCutoff(amount);
-        if (amount > 0.0) {
-            sprintf(strBuf, "HP %d%%", (int)(amount * 100));
-        } else {
-            sprintf(strBuf, "LP %d%%", (int)((-amount) * 100));
-        }
-        p.val.setString(strBuf);
+    Val& osc2Cutoff = val(0.0, "LAYER2_CUTOFF", { "Osc.2 Filter", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0 }, [&](auto p) {
+        valMMfilterCutoff(p, layer2Filter);
     });
 
     /*md - `LAYER2_RESONANCE` to set resonance. */
-    Val& Osc2Resonance = val(0.0, "LAYER2_RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
+    Val& Osc2Resonance = val(0.0, "LAYER2_RESONANCE", { "Osc.2 Resonance", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         layer2Filter.setResonance(p.val.pct());
     });
@@ -314,6 +317,7 @@ public:
             float out = wave->sample(&wavetable.sampleIndex, freq) * envAmp;
             out = addSecondLayer(out);
             out = applyEffects(out);
+            out = filter.process(out);
             buf[track] = out * velocity;
 
             sampleDurationCounter++;
