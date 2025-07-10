@@ -6,7 +6,9 @@
 #include "utils/EnvelopRelative.h"
 #include "utils/Wavetable.h"
 #include "utils/WavetableGenerator.h"
-#include "utils/applyEffects.h"
+#include "utils/effects/applyReverb.h"
+#include "utils/effects/applyBoost.h"
+#include "utils/effects/applyCompression.h"
 #include "utils/filterArray.h"
 
 #define ZIC_BASS_UI 1000
@@ -54,7 +56,7 @@ protected:
     {
         float output = input;
 
-        output = applyReverb(output, reverb.pct(), reverbBuffer, reverbIndex, props.sampleRate, REVERB_BUFFER_SIZE);
+        output = applyReverb(output, reverb.pct(), reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE);
 
         if (boost.pct() == 0.5f) {
             return output;

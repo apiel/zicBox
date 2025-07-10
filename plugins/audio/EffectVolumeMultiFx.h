@@ -3,7 +3,11 @@
 #include "audioPlugin.h"
 #include "mapping.h"
 #include "plugins/audio/utils/utils.h"
-#include "plugins/audio/utils/applyEffects.h"
+#include "utils/effects/applyBoost.h"
+#include "utils/effects/applyDrive.h"
+#include "utils/effects/applyWaveshape.h"
+#include "utils/effects/applyCompression.h"
+#include "utils/effects/applyReverb.h"
 
 /*md
 ## EffectVolumeMultiFx
@@ -23,20 +27,8 @@ protected:
     float fxReverb(float signal)
     {
         float reverbAmount = fxAmount.pct();
-        if (reverbAmount == 0.0f) {
-            return signal;
-        }
-
-        float reverbSignal = reverbBuffer[reverbIndex];
-
-        float feedback = reverbAmount * 0.7f; // Feedback scaled proportionally
-        reverbBuffer[reverbIndex] = signal + reverbSignal * feedback;
-
-        int reverbSamples = reverbAmount * REVERB_BUFFER_SIZE; // Reverb duration scaled
-        reverbIndex = (reverbIndex + 1) % reverbSamples;
-
-        float mix = reverbAmount * 0.5f; // Mix scaled proportionally
-        return signal * (1.0f - mix) + reverbSignal * mix;
+        // return applyReverb(signal, reverbAmount, reverbBuffer, reverbIndex, props.sampleRate, REVERB_BUFFER_SIZE);
+        return applyReverb(signal, reverbAmount, reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE);
     }
 
     static constexpr int ReverbVoiceCount = 4; // Reduced from 8 to 4 for efficiency

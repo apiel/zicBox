@@ -2,7 +2,8 @@
 
 #include "audioPlugin.h"
 #include "mapping.h"
-#include "plugins/audio/utils/applyEffects.h"
+#include "plugins/audio/utils/effects/applyDrive.h"
+#include "plugins/audio/utils/effects/applyCompression.h"
 
 /*md
 ## EffectVolumeDrive

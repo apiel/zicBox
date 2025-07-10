@@ -4,7 +4,11 @@
 #include "helpers/range.h"
 #include "mapping.h"
 #include "plugins/audio/utils/utils.h"
-#include "plugins/audio/utils/applyEffects.h"
+#include "utils/effects/applyBoost.h"
+#include "utils/effects/applyDrive.h"
+#include "utils/effects/applyWaveshape.h"
+#include "utils/effects/applySoftClipping.h"
+#include "utils/effects/applyCompression.h"
 
 #include <math.h>
 

@@ -11,7 +11,13 @@
 #include "utils/EnvelopRelative.h"
 #include "utils/FastWaveform.h"
 #include "utils/MMfilter.h"
-#include "utils/applyEffects.h"
+#include "utils/effects/applyBoost.h"
+#include "utils/effects/applyClipping.h"
+#include "utils/effects/applyDrive.h"
+#include "utils/effects/applyHighFreqBoost.h"
+#include "utils/effects/applyWaveshape.h"
+#include "utils/effects/applySoftClipping.h"
+#include "utils/effects/applyCompression.h"
 
 /*md
 ## SynthKick23

@@ -3,7 +3,9 @@
 #include "audioPlugin.h"
 #include "mapping.h"
 #include "plugins/audio/utils/utils.h"
-#include "plugins/audio/utils/applyEffects.h"
+#include "plugins/audio/utils/effects/applyClipping.h"
+#include "plugins/audio/utils/effects/applyDrive.h"
+#include "plugins/audio/utils/effects/applyWaveshape.h"
 
 /*md
 ## EffectVolumeClipping
