@@ -2,11 +2,11 @@
 
 ## Zic Grid
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicGrid/zicGridLogo.png" />
-
 Zic Grid is an advance hardware version of ZicBox with a big touch screen, 12 encoders and a 4x12 RGB keypad.
 
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicGrid/zicgrid.png" />
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicGrid/zicGridLogo.png" height=300 />
+
+<img src="https://raw.githubusercontent.com/apiel/zicBox/main/hardware/ZicGrid/zicgrid.png" height=300 />
 
 **Audio Output Considerations**
 
