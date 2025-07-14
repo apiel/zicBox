@@ -134,7 +134,8 @@ export function MainKeys({
                     { key: right1, action: 'setView:Clips' },
                     { key: right3, action: 'contextToggle:254:2:0' },
 
-                    { key: left1, action: `setView:${synthName}Sequencer`, action2: `setContext:254:0` },
+                    // { key: left1, action: `setView:${synthName}Sequencer`, action2: `setContext:254:0` },
+                    { key: left1, action: `setView:DrumSeq`, action2: `setContext:254:0` },
                     {
                         key: left2,
                         action: forcePatchView

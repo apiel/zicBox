@@ -5,9 +5,6 @@
 <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel3A.png?raw=true' height='350'>
 <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel3A_2.png?raw=true' height='350'>
 
-> [!NOTE]
-> The original build was based on the Raspberry Pi 3 Model A+, but for the final version, the plan is to switch to the Raspberry Pi Zero 2 W. It’s a bit smaller and more affordable, which makes it a better fit for this kind of DIY groovebox/drum machine. Since this "pixel" version is meant to be a budget-friendly and lightweight setup, there's no need for a high-performance CPU. The focus should be on keeping the software as minimal and efficient as possible so it runs smoothly on the Zero 2 W. This change will also require updating the PCB design to match the Zero’s layout and connectors, but it should help simplify and lower the overall cost of the build.
-
 <table>
 <tr>
     <th>Image</th>

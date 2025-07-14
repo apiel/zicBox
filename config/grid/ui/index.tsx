@@ -29,6 +29,7 @@ import {
     bounds9,
 } from './constantsValue';
 import { DrumView } from './Drum/DrumView';
+import { DrumSeqView } from './DrumSeqView';
 import { Menu } from './menu';
 import { SampleView } from './Sample/SampleView';
 
@@ -61,6 +62,8 @@ export const ui = {
     views: (
         <>
             <DrumView track={Drum1Track} synthName="Drum1" color={ColorTrack1} />
+
+            <DrumSeqView name="DrumSeq" />
 
             <SampleView track={Sample1Track} synthName="Sample1" color={ColorTrack2} />
             <SampleView track={Sample2Track} synthName="Sample2" color={ColorTrack3} />
