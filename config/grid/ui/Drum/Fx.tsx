@@ -1,6 +1,6 @@
 import * as React from '@/libs/react';
 
-import { StepEditSample } from '@/libs/nativeComponents/StepEditSample';
+import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
 import { DrumLayout } from './Layout';
 
 export type Props = {
@@ -18,10 +18,10 @@ export function FxView({ name, track, synthName, color }: Props) {
             synthName={synthName}
             content={
                 <>
-                    <StepEditSample
-                        audioPlugin="Distortion"
-                        stepIndex={0}
-                        bounds={[0, 0, 120, 10]}
+                    <SequencerCard
+                        bounds={[10, 80, 200, 100]}
+                        audioPlugin={`Sequencer`}
+                        track={track}
                     />
                 </>
             }

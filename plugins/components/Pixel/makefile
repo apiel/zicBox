@@ -17,7 +17,7 @@ all:
 				RectComponent ClipsComponent KeyboardComponent ListComponent\
 				WorkspacesComponent HiddenContextComponent\
 				MacroEnvelopComponent StepEditSampleComponent\
-				SequencerComponent SampleComponent
+				SequencerComponent SampleComponent SequencerCardComponent
 
 TapeComponent:
 	@echo "-------- :$@: --------"
