@@ -20,12 +20,14 @@ protected:
     Color background;
     Color activeStepColor;
     Color stepBackground;
+    Color inactiveStepColor;
 
     AudioPlugin* plugin;
     std::vector<Step>* steps = NULL;
 
     int stepPerRow = 8;
     int maxSteps = 64;
+    uint16_t* stepCount;
 
     int stepWidth = 0;
     int stepHeight = 0;
@@ -40,6 +42,7 @@ public:
         , background(styles.colors.background)
         , activeStepColor(styles.colors.primary)
         , stepBackground(alpha(styles.colors.primary, 0.2))
+        , inactiveStepColor(alpha(styles.colors.primary, 0.07))
     {
         /*md md_config:Sequencer */
         nlohmann::json& config = props.config;
@@ -49,6 +52,9 @@ public:
 
         /// The data id to get steps from audio plugin sequencer.
         steps = (std::vector<Step>*)plugin->data(plugin->getDataId(config.value("stepsDataId", "STEPS"))); //eg: "STEPS"
+
+        /// The data id to get steps count from audio plugin sequencer.
+        stepCount = (uint16_t*)plugin->data(plugin->getDataId(config.value("stepCountDataId", "STEP_COUNT"))); //eg: "STEP_COUNT"
 
         /// The number of steps per row.
         stepPerRow = config.value("stepPerRow", stepPerRow); //eg: 8
@@ -64,6 +70,9 @@ public:
 
         /// Color of the step background.
         stepBackground = draw.getColor(config["stepBackground"], stepBackground); //eg: "#000000"
+
+        /// Color of the inactive step.
+        inactiveStepColor = draw.getColor(config["inactiveStepColor"], inactiveStepColor); //eg: "#000000"
 
         /*md md_config_end */
 
@@ -85,7 +94,8 @@ public:
             int y = relativePosition.y + i * stepHeight;
             for (int j = 0; j < stepPerRow; j++) {
                 int x = relativePosition.x + j * stepWidth;
-                draw.filledRect({ x + 1, y + 1 }, { stepWidth - 2, stepHeight - 2 }, { stepBackground });
+                Color color = i * stepPerRow + j < *stepCount ? stepBackground : inactiveStepColor;
+                draw.filledRect({ x + 1, y + 1 }, { stepWidth - 2, stepHeight - 2 }, { color });
             }
         }
 
