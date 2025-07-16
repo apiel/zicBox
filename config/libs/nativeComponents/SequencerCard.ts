@@ -8,4 +8,9 @@ export const SequencerCard = getJsonComponent<{
     maxSteps?: number;
     activeStepColor?: string;
     stepBackground?: string;
+    inactiveStepColor?: string;
+    stepSelectedColor?: string;
+    rowsSelectionColor?: string;
+    rowsSelection?: number;
+    contextId?: number;
 }>('SequencerCard');

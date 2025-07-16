@@ -21,6 +21,8 @@ protected:
     Color activeStepColor;
     Color stepBackground;
     Color inactiveStepColor;
+    Color stepSelectedColor;
+    Color rowsSelectionColor;
 
     AudioPlugin* plugin;
     std::vector<Step>* steps = NULL;
@@ -33,6 +35,9 @@ protected:
     int stepHeight = 0;
     int rowCount = 0;
 
+    uint8_t contextId = 0;
+    uint8_t rowsSelection = 0;
+
 public:
     SequencerCardComponent(ComponentInterface::Props props)
         : Component(props, [&](std::string action) {
@@ -43,6 +48,8 @@ public:
         , activeStepColor(styles.colors.primary)
         , stepBackground(alpha(styles.colors.primary, 0.2))
         , inactiveStepColor(alpha(styles.colors.primary, 0.07))
+        , stepSelectedColor(styles.colors.white)
+        , rowsSelectionColor(lighten(styles.colors.background, 0.5))
     {
         /*md md_config:Sequencer */
         nlohmann::json& config = props.config;
@@ -74,6 +81,18 @@ public:
         /// Color of the inactive step.
         inactiveStepColor = draw.getColor(config["inactiveStepColor"], inactiveStepColor); //eg: "#000000"
 
+        /// Color of the selected step.
+        stepSelectedColor = draw.getColor(config["stepSelectedColor"], stepSelectedColor); //eg: "#000000"
+
+        /// Color of the rows selection.
+        rowsSelectionColor = draw.getColor(config["rowsSelectionColor"], rowsSelectionColor); //eg: "#000000"
+
+        /// Set how many rows are selected, for example to show which rows are currently displayed on the keypad grid.
+        rowsSelection = config.value("rowsSelection", rowsSelection); //eg: 2
+
+        /// Set context id shared between components to show selected step, must be different than 0.
+        contextId = config.value("contextId", contextId); //eg: 10
+
         /*md md_config_end */
 
         resize();
@@ -90,6 +109,18 @@ public:
     {
         draw.filledRect(relativePosition, size, { background });
 
+        if (contextId != 0 && rowsSelection > 0) {
+            int selectedStep = view->contextVar[contextId];
+
+            // Get which group of rows the selected step belongs to
+            int stepGroup = selectedStep / (stepPerRow * rowsSelection);
+            int baseRow = stepGroup * rowsSelection;
+
+            int y = relativePosition.y + baseRow * stepHeight;
+            // draw.filledRect({ relativePosition.x, y }, { size.w, stepHeight * rowsSelection }, { rowsSelectionColor });
+            draw.filledRect({ relativePosition.x + size.w + 1, y }, { 2, stepHeight * rowsSelection }, { rowsSelectionColor });
+        }
+
         for (int i = 0; i < rowCount; i++) {
             int y = relativePosition.y + i * stepHeight;
             for (int j = 0; j < stepPerRow; j++) {
@@ -101,13 +132,24 @@ public:
 
         if (steps != NULL) {
             for (const auto& step : *steps) {
-                if (step.len && step.enabled) {
+                if (step.len && step.enabled && step.position < *stepCount) {
                     int stepRow = step.position / stepPerRow;
                     int stepCol = step.position % stepPerRow;
                     int x = relativePosition.x + stepCol * stepWidth + 1;
                     int y = relativePosition.y + stepRow * stepHeight;
                     draw.filledRect({ x, y }, { stepWidth - 2, stepHeight - 2 }, { activeStepColor });
                 }
+            }
+        }
+
+        if (contextId != 0) {
+            int selectedStep = view->contextVar[contextId];
+            if (selectedStep < *stepCount) {
+                int stepRow = selectedStep / stepPerRow;
+                int stepCol = selectedStep % stepPerRow;
+                int x = relativePosition.x + stepCol * stepWidth + 1;
+                int y = relativePosition.y + stepRow * stepHeight;
+                draw.rect({ x, y }, { stepWidth - 2, stepHeight - 2 }, { stepSelectedColor });
             }
         }
     }

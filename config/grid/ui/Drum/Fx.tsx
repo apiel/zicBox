@@ -22,6 +22,8 @@ export function FxView({ name, track, synthName, color }: Props) {
                         bounds={[10, 80, 200, 100]}
                         audioPlugin={`Sequencer`}
                         track={track}
+                        contextId={50}
+                        rowsSelection={2}
                     />
                 </>
             }
