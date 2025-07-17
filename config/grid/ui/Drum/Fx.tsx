@@ -1,6 +1,8 @@
 import * as React from '@/libs/react';
 
 import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
+import { SequencerValue } from '@/libs/nativeComponents/SequencerValue';
+import { enc1 } from '../constantsValue';
 import { DrumLayout } from './Layout';
 
 export type Props = {
@@ -18,8 +20,16 @@ export function FxView({ name, track, synthName, color }: Props) {
             synthName={synthName}
             content={
                 <>
+                    <SequencerValue
+                        {...enc1}
+                        audioPlugin={`Sequencer`}
+                        track={track}
+                        contextId={50}
+                        fontValue={"PoppinsLight_24"}
+                        fontLabel={"PoppinsLight_12"}
+                    />
                     <SequencerCard
-                        bounds={[10, 80, 200, 100]}
+                        bounds={[130, 380, 200, 100]}
                         audioPlugin={`Sequencer`}
                         track={track}
                         contextId={50}

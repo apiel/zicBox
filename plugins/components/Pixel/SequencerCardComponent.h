@@ -1,7 +1,5 @@
 #pragma once
 
-// #include "helpers/midiNote.h"
-// #include "host/constants.h" // TODO instead load from plugin seq
 #include "plugins/audio/stepInterface.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
@@ -105,7 +103,7 @@ public:
         stepHeight = size.h / rowCount;
     }
 
-    void render()
+    void render() override
     {
         draw.filledRect(relativePosition, size, { background });
 
@@ -118,6 +116,8 @@ public:
 
             int y = relativePosition.y + baseRow * stepHeight;
             // draw.filledRect({ relativePosition.x, y }, { size.w, stepHeight * rowsSelection }, { rowsSelectionColor });
+
+            draw.filledRect({ relativePosition.x + size.w + 1, relativePosition.y }, { 2, size.h }, { background });
             draw.filledRect({ relativePosition.x + size.w + 1, y }, { 2, stepHeight * rowsSelection }, { rowsSelectionColor });
         }
 
@@ -151,6 +151,13 @@ public:
                 int y = relativePosition.y + stepRow * stepHeight;
                 draw.rect({ x, y }, { stepWidth - 2, stepHeight - 2 }, { stepSelectedColor });
             }
+        }
+    }
+
+    void onContext(uint8_t index, float value) override
+    {
+        if (index == contextId) {
+            renderNext();
         }
     }
 };
