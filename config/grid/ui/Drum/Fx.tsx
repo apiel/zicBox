@@ -74,6 +74,7 @@ export function FxView({ name, track, synthName, color }: Props) {
                         track={track}
                         contextId={50}
                         rowsSelection={2}
+                        // rowsSelectionColor={"#28595f"}
                     />
                 </>
             }

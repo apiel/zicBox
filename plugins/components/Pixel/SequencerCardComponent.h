@@ -47,7 +47,7 @@ public:
         , stepBackground(alpha(styles.colors.primary, 0.2))
         , inactiveStepColor(alpha(styles.colors.primary, 0.07))
         , stepSelectedColor(styles.colors.white)
-        , rowsSelectionColor(lighten(styles.colors.background, 0.5))
+        , rowsSelectionColor(lighten(styles.colors.background, 1.0))
     {
         /*md md_config:Sequencer */
         nlohmann::json& config = props.config;
