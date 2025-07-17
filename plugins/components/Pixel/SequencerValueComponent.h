@@ -100,10 +100,10 @@ public:
         std::string type = config.value("type", "STEP_SELECTION");
         if (type == "STEP_TOGGLE") {
             renderFn = std::bind(&SequencerValueComponent::renderStepToggle, this);
-            onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepToggle, this, std::placeholders::_1, std::placeholders::_2);
+            onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepToggle, this, std::placeholders::_1);
         } else {
             renderFn = std::bind(&SequencerValueComponent::renderSelectedStep, this);
-            onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepSelection, this, std::placeholders::_1, std::placeholders::_2);
+            onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepSelection, this, std::placeholders::_1);
         }
 
         /*md md_config_end */
@@ -119,7 +119,7 @@ public:
     {
         // printf("[track %d group %d][%d] SequencerValueComponent onEncoder: %d %d\n", track, group, encoderId, id, direction);
         if (id == encoderId) {
-            onEncoderFn(id, direction);
+            onEncoderFn(direction);
         }
     }
 
@@ -132,7 +132,7 @@ public:
 
 protected:
     std::function<void()> renderFn = std::bind(&SequencerValueComponent::renderSelectedStep, this);
-    std::function<void(int id, int8_t direction)> onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepSelection, this, std::placeholders::_1, std::placeholders::_2);
+    std::function<void(int8_t direction)> onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepSelection, this, std::placeholders::_1);
 
     void renderSelectedStep()
     {
@@ -148,7 +148,7 @@ protected:
         }
     }
 
-    void onEncoderStepSelection(int id, int8_t direction)
+    void onEncoderStepSelection(int8_t direction)
     {
         int selectedStep = view->contextVar[contextId];
         int newStep = selectedStep + direction;
@@ -182,8 +182,35 @@ protected:
         // draw.textCentered({ x, y }, isOn ? "ON" : "OFF", valueFontSize, { valueColor, .font = fontValue });
     }
 
-    void onEncoderStepToggle(int id, int8_t direction)
+    void onEncoderStepToggle(int8_t direction)
     {
+        Step* step = getSelectedStep();
+        if (direction < 0) {
+            if (step != nullptr) {
+                step->enabled = false;
+                renderNextAndSetContext();
+            }
+        } else {
+            if (step) {
+                step->enabled = true;
+                renderNextAndSetContext();
+            } else if (contextId != 0) {
+                // Create a step and push it to the end
+                Step newStep;
+                newStep.position = view->contextVar[contextId];
+                newStep.enabled = true;
+                newStep.len = 1;
+                steps->push_back(newStep);
+                renderNextAndSetContext();
+            }
+        }
+    }
+
+    // Set context to make other components render
+    void renderNextAndSetContext()
+    {
+        renderNext();
+        setContext(contextId, view->contextVar[contextId]);
     }
 
     Step* getSelectedStep()
