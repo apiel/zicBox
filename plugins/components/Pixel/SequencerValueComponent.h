@@ -107,10 +107,10 @@ public:
             onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepNote, this, std::placeholders::_1);
         } else if (type == "STEP_VELOCITY") {
             renderFn = std::bind(&SequencerValueComponent::renderStepVelocity, this);
-            onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepVelocity, this, std::placeholders::_1);            
+            onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepVelocity, this, std::placeholders::_1);
         } else if (type == "STEP_CONDITION") {
             renderFn = std::bind(&SequencerValueComponent::renderStepCondition, this);
-            onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepCondition, this, std::placeholders::_1);            
+            onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepCondition, this, std::placeholders::_1);
         } else {
             renderFn = std::bind(&SequencerValueComponent::renderSelectedStep, this);
             onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepSelection, this, std::placeholders::_1);
@@ -275,7 +275,10 @@ protected:
         int x = relativePosition.x + (size.w) * 0.5;
         int y = relativePosition.y;
         if (step) {
-            draw.textCentered({ x, y }, std::to_string(step->velocity) + "%", valueFontSize, { valueColor, .font = fontValue });
+            draw.filledRect({ relativePosition.x, y }, { size.w, 1 }, { darken(barColor, 0.4) });
+            draw.filledRect({ relativePosition.x, y }, { (int)(size.w * step->velocity), 3 }, { barColor });
+
+            draw.textCentered({ x, y }, std::to_string((int)(step->velocity * 100)) + "%", valueFontSize, { valueColor, .font = fontValue });
         } else {
             draw.textCentered({ x, y }, "---", valueFontSize, { labelColor, .font = fontValue });
         }
@@ -287,7 +290,7 @@ protected:
     {
         Step* step = getSelectedStep();
         if (step) {
-            step->setVelocity(step->velocity + direction);
+            step->setVelocity(step->velocity + direction * 0.01);
             renderNext();
         }
     }

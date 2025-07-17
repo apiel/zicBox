@@ -65,6 +65,7 @@ export function FxView({ name, track, synthName, color }: Props) {
                         fontValue={'PoppinsLight_24'}
                         fontLabel={'PoppinsLight_12'}
                         type={'STEP_VELOCITY'}
+                        barColor="primary"
                     />
                     <SequencerCard
                         bounds={[100, 380, 260, 160]}
