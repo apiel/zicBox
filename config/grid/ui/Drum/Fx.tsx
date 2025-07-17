@@ -73,7 +73,7 @@ export function FxView({ name, track, synthName, color }: Props) {
                         audioPlugin={`Sequencer`}
                         track={track}
                         contextId={50}
-                        rowsSelection={2}
+                        rowsSelection={4}
                         // rowsSelectionColor={"#28595f"}
                     />
                 </>
