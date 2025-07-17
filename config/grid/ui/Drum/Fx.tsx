@@ -2,7 +2,7 @@ import * as React from '@/libs/react';
 
 import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
 import { SequencerValue } from '@/libs/nativeComponents/SequencerValue';
-import { enc1, enc2, enc3, enc4 } from '../constantsValue';
+import { enc1, enc2, enc3, enc4, enc5 } from '../constantsValue';
 import { DrumLayout } from './Layout';
 
 export type Props = {
@@ -56,6 +56,15 @@ export function FxView({ name, track, synthName, color }: Props) {
                         fontValue={'PoppinsLight_24'}
                         fontLabel={'PoppinsLight_12'}
                         type={'STEP_CONDITION'}
+                    />
+                    <SequencerValue
+                        {...enc5}
+                        audioPlugin={`Sequencer`}
+                        track={track}
+                        contextId={50}
+                        fontValue={'PoppinsLight_24'}
+                        fontLabel={'PoppinsLight_12'}
+                        type={'STEP_VELOCITY'}
                     />
                     <SequencerCard
                         bounds={[100, 380, 260, 160]}
