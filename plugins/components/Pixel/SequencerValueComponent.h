@@ -1,5 +1,6 @@
 #pragma once
 
+#include "helpers/midiNote.h"
 #include "plugins/audio/stepInterface.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
@@ -96,11 +97,14 @@ public:
         /*md   encoderId={0} */
         encoderId = config.value("encoderId", encoderId);
 
-        /// Type: "STEP_SELECTION", "STEP_TOGGLE"
+        /// Type: "STEP_SELECTION", "STEP_TOGGLE", "STEP_NOTE"
         std::string type = config.value("type", "STEP_SELECTION");
         if (type == "STEP_TOGGLE") {
             renderFn = std::bind(&SequencerValueComponent::renderStepToggle, this);
             onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepToggle, this, std::placeholders::_1);
+        } else if (type == "STEP_NOTE") {
+            renderFn = std::bind(&SequencerValueComponent::renderStepNote, this);
+            onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepNote, this, std::placeholders::_1);
         } else {
             renderFn = std::bind(&SequencerValueComponent::renderSelectedStep, this);
             onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepSelection, this, std::placeholders::_1);
@@ -203,6 +207,34 @@ protected:
                 steps->push_back(newStep);
                 renderNextAndSetContext();
             }
+        }
+    }
+
+    void renderStepNote()
+    {
+        Step* step = getSelectedStep();
+        int x = relativePosition.x + (size.w) * 0.5;
+        if (step) {
+            int y = relativePosition.y + 4;
+            int note = step->note;
+            draw.textCentered({ x, y }, MIDI_NOTES_STR[note], valueFontSize, { valueColor, .font = fontValue });
+        } else {
+            int y = relativePosition.y + 4;
+            draw.textCentered({ x, y }, "---", valueFontSize, { labelColor, .font = fontValue });
+        }
+    }
+
+    void onEncoderStepNote(int8_t direction)
+    {
+        Step* step = getSelectedStep();
+        if (step) {
+            step->note += direction;
+            if (step->note > 250) { // when it goes -1 it becomes 255
+                step->note = 127;
+            } else if (step->note > 127) {
+                step->note = 0;
+            }
+            renderNext();
         }
     }
 
