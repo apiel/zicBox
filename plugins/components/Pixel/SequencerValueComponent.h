@@ -16,7 +16,7 @@ protected:
     Color background;
     Color labelColor;
     Color valueColor;
-    Color unitColor;
+    Color barColor;
 
     void* fontValue = NULL;
     void* fontLabel = NULL;
@@ -42,7 +42,7 @@ public:
         , background(styles.colors.background)
         , labelColor(alpha(styles.colors.white, 0.3))
         , valueColor(alpha(styles.colors.white, 0.6))
-        , unitColor(alpha(styles.colors.white, 0.5))
+        , barColor(lighten(styles.colors.background, 0.5))
     {
         /*md md_config:Sequencer */
         nlohmann::json& config = props.config;
@@ -68,8 +68,8 @@ public:
         /// The color of the value.
         valueColor = draw.getColor(config["valueColor"], valueColor); //eg: "#FFFFFF"
 
-        /// The color of the unit.
-        unitColor = draw.getColor(config["unitColor"], unitColor); //eg: "#FFFFFF"
+        /// Set the color of the bar.
+        barColor = draw.getColor(config["barColor"], barColor); //eg: "#FF0000"
 
         /// Set context id shared between components to show selected step, must be different than 0.
         contextId = config.value("contextId", contextId); //eg: 10
@@ -96,14 +96,47 @@ public:
         /*md   encoderId={0} */
         encoderId = config.value("encoderId", encoderId);
 
+        /// Type: "STEP_SELECTION", "STEP_TOGGLE"
+        std::string type = config.value("type", "STEP_SELECTION");
+        if (type == "STEP_TOGGLE") {
+            renderFn = std::bind(&SequencerValueComponent::renderStepToggle, this);
+            onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepToggle, this, std::placeholders::_1, std::placeholders::_2);
+        } else {
+            renderFn = std::bind(&SequencerValueComponent::renderSelectedStep, this);
+            onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepSelection, this, std::placeholders::_1, std::placeholders::_2);
+        }
+
         /*md md_config_end */
     }
 
     void render()
     {
         draw.filledRect(relativePosition, size, { background });
+        renderFn();
+    }
 
-        if (contextId != 0 && steps != NULL) {
+    void onEncoder(int id, int8_t direction) override
+    {
+        // printf("[track %d group %d][%d] SequencerValueComponent onEncoder: %d %d\n", track, group, encoderId, id, direction);
+        if (id == encoderId) {
+            onEncoderFn(id, direction);
+        }
+    }
+
+    void onContext(uint8_t index, float value) override
+    {
+        if (index == contextId) {
+            renderNext();
+        }
+    }
+
+protected:
+    std::function<void()> renderFn = std::bind(&SequencerValueComponent::renderSelectedStep, this);
+    std::function<void(int id, int8_t direction)> onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepSelection, this, std::placeholders::_1, std::placeholders::_2);
+
+    void renderSelectedStep()
+    {
+        if (contextId != 0) {
             int selectedStep = view->contextVar[contextId];
 
             int x = relativePosition.x + (size.w) * 0.5;
@@ -115,16 +148,54 @@ public:
         }
     }
 
-    void onEncoder(int id, int8_t direction) override
+    void onEncoderStepSelection(int id, int8_t direction)
     {
-        // printf("[track %d group %d][%d] SequencerValueComponent onEncoder: %d %d\n", track, group, encoderId, id, direction);
-        if (id == encoderId) {
+        int selectedStep = view->contextVar[contextId];
+        int newStep = selectedStep + direction;
+        if (newStep >= 0 && newStep < *stepCount) {
+            setContext(contextId, newStep);
+            renderNext();
+        }
+    }
+
+    void renderStepToggle()
+    {
+        Step* step = getSelectedStep();
+        bool isOn = step != nullptr && step->enabled;
+
+        int x = relativePosition.x + (size.w) * 0.5;
+        int y = relativePosition.y + 4;
+
+        Color bgBar = darken(barColor, 0.4);
+        draw.filledRect({ x - 10, y }, { 20, 20 }, { bgBar });
+        y = y + 10;
+        draw.filledCircle({ x + 10, y }, 10, { isOn ? barColor : bgBar });
+        draw.filledCircle({ x - 10, y }, 10, { isOn ? bgBar : barColor });
+        y = y + 12;
+        draw.textCentered({ x, y }, isOn ? "ON" : "OFF", labelFontSize, { labelColor, .font = fontLabel });
+
+        // draw.filledRect({ x - 5, y }, { 10, 10 }, { bgBar });
+        // y = y + 5;
+        // draw.filledCircle({ x + 5, y }, 5, { isOn ? barColor : bgBar });
+        // draw.filledCircle({ x - 5, y }, 5, { isOn ? bgBar : barColor });
+        // y = y + 5;
+        // draw.textCentered({ x, y }, isOn ? "ON" : "OFF", valueFontSize, { valueColor, .font = fontValue });
+    }
+
+    void onEncoderStepToggle(int id, int8_t direction)
+    {
+    }
+
+    Step* getSelectedStep()
+    {
+        if (contextId != 0 && steps != NULL) {
             int selectedStep = view->contextVar[contextId];
-            int newStep = selectedStep + direction;
-            if (newStep >= 0 && newStep < *stepCount) {
-                setContext(contextId, newStep);
-                renderNext();
+            for (auto& step : *steps) {
+                if (selectedStep == step.position || (selectedStep >= step.position && selectedStep < step.position + step.len)) {
+                    return &step;
+                }
             }
         }
+        return nullptr;
     }
 };

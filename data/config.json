@@ -217,7 +217,8 @@
       "components": [
         {"fontSize":24,"text":"Drum23","bounds":[0,20,480,16],"centered":true,"componentName":"Text"},
         {"bounds":[55,28,6,6],"color":"#a3c912","componentName":"Rect"},
-        {"encoderId":1,"bounds":[0,60,118,100],"audioPlugin":"Sequencer","track":1,"contextId":50,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","componentName":"SequencerValue"},
+        {"encoderId":1,"bounds":[0,60,118,100],"audioPlugin":"Sequencer","track":1,"contextId":50,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_SELECTION","componentName":"SequencerValue"},
+        {"encoderId":2,"bounds":[120,60,118,100],"audioPlugin":"Sequencer","track":1,"contextId":50,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_TOGGLE","barColor":"primary","componentName":"SequencerValue"},
         {"bounds":[130,380,200,100],"audioPlugin":"Sequencer","track":1,"contextId":50,"rowsSelection":2,"componentName":"SequencerCard"},
         {"visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":1}],"keys":[],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"text":"Mute","bounds":[0,616,96,11],"centered":true,"bgColor":"background","color":"text","visibilityContext":[{"index":254,"condition":"SHOW_WHEN","value":1}],"font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},

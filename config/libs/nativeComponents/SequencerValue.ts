@@ -7,11 +7,12 @@ export const SequencerValue = getJsonComponent<{
     maxSteps?: number;
     labelColor?: string;
     valueColor?: string;
-    unitColor?: string;
+    barColor?: string;
     contextId?: number;
     valueSize?: number;
     labelSize?: number;
     fontValue?: string;
     fontLabel?: string;
     encoderId?: number;
+    type: "STEP_SELECTION" | "STEP_TOGGLE"
 }>('SequencerValue');
