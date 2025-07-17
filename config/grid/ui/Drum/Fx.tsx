@@ -69,7 +69,7 @@ export function FxView({ name, track, synthName, color }: Props) {
                         barColor="primary"
                     />
                     <SequencerCard
-                        bounds={[100, 380, 260, 160]}
+                        bounds={[10, 310, 460, 320]}
                         audioPlugin={`Sequencer`}
                         track={track}
                         contextId={50}
