@@ -97,7 +97,7 @@ public:
         /*md   encoderId={0} */
         encoderId = config.value("encoderId", encoderId);
 
-        /// Type: "STEP_SELECTION", "STEP_TOGGLE", "STEP_NOTE"
+        /// Type: "STEP_SELECTION", "STEP_TOGGLE", "STEP_NOTE", "STEP_CONDITION"
         std::string type = config.value("type", "STEP_SELECTION");
         if (type == "STEP_TOGGLE") {
             renderFn = std::bind(&SequencerValueComponent::renderStepToggle, this);
@@ -105,6 +105,9 @@ public:
         } else if (type == "STEP_NOTE") {
             renderFn = std::bind(&SequencerValueComponent::renderStepNote, this);
             onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepNote, this, std::placeholders::_1);
+        } else if (type == "STEP_CONDITION") {
+            renderFn = std::bind(&SequencerValueComponent::renderStepCondition, this);
+            onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepCondition, this, std::placeholders::_1);            
         } else {
             renderFn = std::bind(&SequencerValueComponent::renderSelectedStep, this);
             onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepSelection, this, std::placeholders::_1);
@@ -234,6 +237,31 @@ protected:
             } else if (step->note > 127) {
                 step->note = 0;
             }
+            renderNext();
+        }
+    }
+
+    void renderStepCondition()
+    {
+        Step* step = getSelectedStep();
+        int x = relativePosition.x + (size.w) * 0.5;
+        int y = relativePosition.y;
+
+        std::string condition = step ? stepConditions[step->condition].name : "---";
+        if (condition == "---") {
+            draw.textCentered({ x, y }, "---", valueFontSize, { labelColor, .font = fontValue });
+        } else {
+            draw.textCentered({ x, y }, stepConditions[step->condition].name, valueFontSize, { valueColor, .font = fontValue });
+        }
+        y += valueFontSize + 2;
+        draw.textCentered({ x, y }, "Condition", labelFontSize, { labelColor, .font = fontLabel });
+    }
+
+    void onEncoderStepCondition(int8_t direction)
+    {
+        Step* step = getSelectedStep();
+        if (step) {
+            step->setCondition(step->condition + direction);
             renderNext();
         }
     }
