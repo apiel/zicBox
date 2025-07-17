@@ -59,6 +59,7 @@ export function FxView({ name, track, synthName, color }: Props) {
                     />
                     <SequencerValue
                         {...enc5}
+                        bounds={[enc5.bounds[0] + 10, enc5.bounds[1], enc5.bounds[2] - 20, enc5.bounds[3]]}
                         audioPlugin={`Sequencer`}
                         track={track}
                         contextId={50}
