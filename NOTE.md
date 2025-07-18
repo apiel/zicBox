@@ -2,8 +2,6 @@
 
 - TODO timeline samples arranger... / and bunch of effect on top of it like granular...
 - TODO generic drum, either like electribe ER-1 or other way to switch between multiple kind of engine
-- TODO make seq active playing step...
-
 
 
 - TODO drag and drop editor!! 

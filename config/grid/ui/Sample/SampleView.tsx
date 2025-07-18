@@ -31,7 +31,7 @@ export function SampleView({ track, synthName, color }: Props) {
                 color={color}
                 textGrid={
                     <>
-                        <MainKeys synthName={synthName} forcePatchView />
+                        <MainKeys synthName={synthName} forcePatchView viewName={`${synthName}Sequencer`} />
                     </>
                 }
             />

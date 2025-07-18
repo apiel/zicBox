@@ -72,15 +72,20 @@ protected:
         return step.note + motion(step);
     }
 
-    std::vector<std::function<void()>> stepCallbacks;
+    std::vector<std::function<void()>> eventCallbacks;
+
+    void callEventCallbacks()
+    {
+        for (auto& callback : eventCallbacks) {
+            callback();
+        }
+    }
 
     void onStep() override
     {
         stepCounter++;
 
-        for (auto& callback : stepCallbacks) {
-            callback();
-        }
+        callEventCallbacks();
 
         // printf("[%d] ------------------- seq stepCounter %d\n", track, stepCounter);
         uint8_t state = status.get();
@@ -171,8 +176,10 @@ public:
         if (event == AudioEventType::STOP) {
             logTrace("in sequencer event STOP\n");
             stepCounter = 0;
+            callEventCallbacks();
             allOff();
         } else if (event == AudioEventType::PAUSE) {
+            callEventCallbacks();
             allOff();
         }
     }
@@ -189,7 +196,7 @@ public:
         }
     }
 
-     DataFn dataFunctions[6] = {
+    DataFn dataFunctions[7] = {
         { "STEPS", [this](void* userdata) {
              return &steps;
          } },
@@ -211,6 +218,14 @@ public:
                  if (step.position == *position) {
                      return (void*)&step;
                  }
+             }
+             return (void*)NULL;
+         } },
+        { "REGISTER_CALLBACK", [this](void* userdata) {
+             // Cast userdata to the correct function pointer type
+             auto callback = static_cast<std::function<void()>*>(userdata);
+             if (callback) {
+                 eventCallbacks.push_back(*callback);
              }
              return (void*)NULL;
          } },

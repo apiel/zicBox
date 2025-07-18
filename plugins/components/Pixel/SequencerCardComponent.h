@@ -21,6 +21,7 @@ protected:
     Color inactiveStepColor;
     Color stepSelectedColor;
     Color rowsSelectionColor;
+    Color playingColor;
 
     AudioPlugin* plugin;
     std::vector<Step>* steps = NULL;
@@ -28,6 +29,8 @@ protected:
     int stepPerRow = 8;
     int maxSteps = 64;
     uint16_t* stepCount;
+    uint16_t* stepCounter;
+    bool* isPlaying;
 
     int stepWidth = 0;
     int stepHeight = 0;
@@ -35,6 +38,10 @@ protected:
 
     uint8_t contextId = 0;
     uint8_t rowsSelection = 0;
+
+    std::function<void()> onPlayStep = [this]() {
+        renderNext();
+    };
 
 public:
     SequencerCardComponent(ComponentInterface::Props props)
@@ -48,6 +55,7 @@ public:
         , inactiveStepColor(alpha(styles.colors.primary, 0.07))
         , stepSelectedColor(styles.colors.white)
         , rowsSelectionColor(lighten(styles.colors.background, 1.0))
+        , playingColor(styles.colors.white)
     {
         /*md md_config:Sequencer */
         nlohmann::json& config = props.config;
@@ -55,11 +63,22 @@ public:
         /// The audio plugin sequencer.
         plugin = getPluginPtr(config, "audioPlugin", track); //eq: "audio_plugin_name"
 
-        /// The data id to get steps from audio plugin sequencer.
-        steps = (std::vector<Step>*)plugin->data(plugin->getDataId(config.value("stepsDataId", "STEPS"))); //eg: "STEPS"
+        if (plugin) {
+            /// The data id to get steps from audio plugin sequencer.
+            steps = (std::vector<Step>*)plugin->data(plugin->getDataId(config.value("stepsDataId", "STEPS"))); //eg: "STEPS"
 
-        /// The data id to get steps count from audio plugin sequencer.
-        stepCount = (uint16_t*)plugin->data(plugin->getDataId(config.value("stepCountDataId", "STEP_COUNT"))); //eg: "STEP_COUNT"
+            /// The data id to get step counter (current playing step) from audio plugin sequencer.
+            stepCounter = (uint16_t*)plugin->data(plugin->getDataId(config.value("stepCounterDataId", "STEP_COUNTER"))); //eg: "STEP_COUNTER"
+
+            /// The data id to get is playing state from audio plugin sequencer.
+            isPlaying = (bool*)plugin->data(plugin->getDataId(config.value("isPlayingDataId", "IS_PLAYING"))); //eg: "IS_PLAYING"
+
+            /// Data id to register playing sequencer event callback.
+            plugin->data(plugin->getDataId(config.value("eventCallbackDataId", "REGISTER_CALLBACK")), &onPlayStep);
+
+            /// The data id to get steps count from audio plugin sequencer.
+            stepCount = (uint16_t*)plugin->data(plugin->getDataId(config.value("stepCountDataId", "STEP_COUNT"))); //eg: "STEP_COUNT"
+        }
 
         /// The number of steps per row.
         stepPerRow = config.value("stepPerRow", stepPerRow); //eg: 8
@@ -107,6 +126,7 @@ public:
     {
         draw.filledRect(relativePosition, size, { background });
 
+        // Render scrollbar..
         if (contextId != 0 && rowsSelection > 0) {
             int selectedStep = view->contextVar[contextId];
 
@@ -121,6 +141,7 @@ public:
             draw.filledRect({ relativePosition.x + size.w + 1, y }, { 2, stepHeight * rowsSelection }, { rowsSelectionColor });
         }
 
+        // Render steps background
         for (int i = 0; i < rowCount; i++) {
             int y = relativePosition.y + i * stepHeight;
             for (int j = 0; j < stepPerRow; j++) {
@@ -130,6 +151,7 @@ public:
             }
         }
 
+        // Render active steps
         if (steps != NULL) {
             for (const auto& step : *steps) {
                 if (step.len && step.enabled && step.position < *stepCount) {
@@ -142,6 +164,7 @@ public:
             }
         }
 
+        // Show selected step
         if (contextId != 0) {
             int selectedStep = view->contextVar[contextId];
             if (selectedStep < *stepCount) {
@@ -151,6 +174,15 @@ public:
                 int y = relativePosition.y + stepRow * stepHeight;
                 draw.rect({ x, y }, { stepWidth - 2, stepHeight - 2 }, { stepSelectedColor });
             }
+        }
+
+        // Show playing step
+        if (*isPlaying) {
+            int stepRow = (*stepCounter) / stepPerRow;
+            int stepCol = (*stepCounter) % stepPerRow;
+            int x = relativePosition.x + stepCol * stepWidth + 1;
+            int y = relativePosition.y + stepRow * stepHeight;
+            draw.filledCircle({ (int)(x + stepWidth * 0.5), (int)(y + stepHeight * 0.5) }, stepHeight * 0.25, { playingColor });
         }
     }
 

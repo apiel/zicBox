@@ -50,7 +50,7 @@ export function TempoView({ name }: Props) {
                 track={track}
             /> */}
 
-            <MainKeys synthName={'Drum1'} forcePatchView />
+            <MainKeys synthName={'Drum1'} forcePatchView viewName={name} />
             <Rect bounds={SelectorPosition} visibilityContext={[{ index: 254, value: 2, condition: 'SHOW_WHEN_NOT' }]} />
         </View>
     );

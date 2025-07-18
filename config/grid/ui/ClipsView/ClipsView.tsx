@@ -39,7 +39,7 @@ export function ClipsView({ name }: Props) {
             <Clips color={ColorTrack5} track={Sample4Track} title="T.5" key={btn5} />
             <HiddenContext encoderId={0} contextId={30} min={0} max={16} inverted />
 
-            <MainKeys synthName="Drum1" forcePatchView />
+            <MainKeys synthName="Drum1" forcePatchView viewName={name} />
         </View>
     );
 }

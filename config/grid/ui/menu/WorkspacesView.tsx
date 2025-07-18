@@ -63,7 +63,7 @@ export function WorkspacesView({ name }: Props) {
                 ]}
             />
 
-            <MainKeys synthName="Drum1" forcePatchView />
+            <MainKeys synthName="Drum1" forcePatchView viewName={name} />
         </View>
     );
 }
