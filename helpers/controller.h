@@ -11,6 +11,9 @@ uint8_t getKeyCode(std::string keyStr)
     if (keyStr == "shift") {
         return 229;
     }
+    if (keyStr == "enter") {
+        return 229;
+    }
     if (keyStr == "space") {
         return 44;
     }
@@ -79,12 +82,52 @@ uint8_t getKeyCode(std::string keyStr)
             return keyStr[1] - 65 + 4;
         }
 
-        // 0 is 30 and 9 is 39
+        // 1 is 30 and 9 is 38
         if (keyStr[1] >= 48 && keyStr[1] <= 57) {
             return keyStr[1] - 48 + 29;
         }
 
-        logWarn("Unsupported key: " + keyStr + ". Supported keys: a-z, A-Z, 0-9. For other special char, use scancode values.");
+        // 0 is 39
+        if (keyStr[1] == '0') {
+            return 39;
+        }
+
+        // - is 45
+        if (keyStr[1] == '-') {
+            return 45;
+        }
+
+        // = is 46
+        if (keyStr[1] == '=') {
+            return 46;
+        }
+
+        // [ is 47
+        if (keyStr[1] == '[') {
+            return 47;
+        }
+
+        // ] is 48
+        if (keyStr[1] == ']') {
+            return 48;
+        }
+
+        // \ is 49
+        if (keyStr[1] == '\\') {
+            return 49;
+        }
+
+        // ; is 51
+        if (keyStr[1] == ';') {
+            return 51;
+        }
+
+        // ' is 52
+        if (keyStr[1] == '\'') {
+            return 52;
+        }
+
+        logWarn("Unsupported key: " + keyStr + ". Supported keys: a-z, A-Z, 0-9. and - = [ ] \\ ; ' For other special char, use scancode values.");
         return -1; // 255
     }
 

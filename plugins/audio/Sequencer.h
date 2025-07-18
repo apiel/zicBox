@@ -78,7 +78,7 @@ protected:
         // printf("[%d] ------------------- seq stepCounter %d\n", track, stepCounter);
         uint8_t state = status.get();
         // If we reach the end of the sequence, we reset the step counter
-        if (stepCounter >= MAX_STEPS) {
+        if (stepCounter >= stepCount) {
             stepCounter = 0;
             loopCounter++;
             props.audioPluginHandler->sendEvent(AudioEventType::SEQ_LOOP, track);
@@ -123,6 +123,9 @@ public:
         if (config.json.contains("target")) {
             targetPlugin = &props.audioPluginHandler->getPlugin(config.json["target"].get<std::string>(), track);
         }
+
+        //md - `"stepCount": 32` set the number of steps
+        stepCount = config.json.value("stepCount", stepCount);
     }
 
     void sample(float* buf) override

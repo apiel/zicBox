@@ -2,6 +2,7 @@ import * as React from '@/libs/react';
 
 import { GraphEncoder } from '@/libs/nativeComponents/GraphEncoder';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
+import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
 import { Value } from '@/libs/nativeComponents/Value';
 import { Drum1 } from '../components/Common';
 import { Layout } from '../components/Layout';
@@ -21,7 +22,8 @@ import {
     enc9,
     encBottomValue,
     encTopValue,
-    graphBounds
+    graphBounds,
+    seqCardBounds_small
 } from '../constantsValue';
 import { KeysTracks } from './KeysTracks';
 
@@ -155,6 +157,13 @@ export function MainView({ name, track, synthName, color }: Props) {
                         // barColor="primary"
                         alignLeft
                         showLabelOverValue={1}
+                    />
+
+                    <SequencerCard
+                        bounds={seqCardBounds_small}
+                        audioPlugin={`Sequencer`}
+                        track={track}
+                        // contextId={seqContextDrum1}
                     />
 
                     <KeysTracks synthName={synthName} viewName={name} />

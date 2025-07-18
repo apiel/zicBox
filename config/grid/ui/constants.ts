@@ -121,4 +121,4 @@ export const D8 = 'k';
 export const D9 = 'l';
 export const D10 = ';';
 export const D11 = "'";
-export const D12 = "Enter";
+export const D12 = "enter";

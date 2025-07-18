@@ -2,8 +2,9 @@ import * as React from '@/libs/react';
 
 import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
 import { SequencerValue } from '@/libs/nativeComponents/SequencerValue';
-import { enc1, enc2, enc3, enc4, enc5 } from '../constantsValue';
-import { DrumLayout } from './Layout';
+import { Drum1 } from '../components/Common';
+import { Layout } from '../components/Layout';
+import { enc1, enc2, enc3, enc4, enc5, seqContextDrum1 } from '../constantsValue';
 
 export type Props = {
     name: string;
@@ -14,17 +15,18 @@ export type Props = {
 
 export function SeqView({ name, track, synthName, color }: Props) {
     return (
-        <DrumLayout
+        <Layout
             viewName={name}
             color={color}
             synthName={synthName}
+            title={Drum1}
             content={
                 <>
                     <SequencerValue
                         {...enc1}
                         audioPlugin={`Sequencer`}
                         track={track}
-                        contextId={50}
+                        contextId={seqContextDrum1}
                         fontValue={'PoppinsLight_24'}
                         fontLabel={'PoppinsLight_12'}
                         type={'STEP_SELECTION'}
@@ -33,7 +35,7 @@ export function SeqView({ name, track, synthName, color }: Props) {
                         {...enc2}
                         audioPlugin={`Sequencer`}
                         track={track}
-                        contextId={50}
+                        contextId={seqContextDrum1}
                         fontValue={'PoppinsLight_24'}
                         fontLabel={'PoppinsLight_12'}
                         type={'STEP_TOGGLE'}
@@ -43,7 +45,7 @@ export function SeqView({ name, track, synthName, color }: Props) {
                         {...enc3}
                         audioPlugin={`Sequencer`}
                         track={track}
-                        contextId={50}
+                        contextId={seqContextDrum1}
                         fontValue={'PoppinsLight_24'}
                         fontLabel={'PoppinsLight_12'}
                         type={'STEP_NOTE'}
@@ -52,7 +54,7 @@ export function SeqView({ name, track, synthName, color }: Props) {
                         {...enc4}
                         audioPlugin={`Sequencer`}
                         track={track}
-                        contextId={50}
+                        contextId={seqContextDrum1}
                         fontValue={'PoppinsLight_24'}
                         fontLabel={'PoppinsLight_12'}
                         type={'STEP_CONDITION'}
@@ -62,7 +64,7 @@ export function SeqView({ name, track, synthName, color }: Props) {
                         bounds={[enc5.bounds[0] + 10, enc5.bounds[1], enc5.bounds[2] - 20, enc5.bounds[3]]}
                         audioPlugin={`Sequencer`}
                         track={track}
-                        contextId={50}
+                        contextId={seqContextDrum1}
                         fontValue={'PoppinsLight_24'}
                         fontLabel={'PoppinsLight_12'}
                         type={'STEP_VELOCITY'}
@@ -72,7 +74,7 @@ export function SeqView({ name, track, synthName, color }: Props) {
                         bounds={[10, 310, 460, 320]}
                         audioPlugin={`Sequencer`}
                         track={track}
-                        contextId={50}
+                        contextId={seqContextDrum1}
                         rowsSelection={4}
                         // rowsSelectionColor={"#28595f"}
                     />

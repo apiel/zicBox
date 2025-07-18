@@ -67,3 +67,8 @@ export function encBottomValue(enc: { encoderId: number; bounds: number[] }, hei
 export function boundsMarginTop(bounds: number[], margin: number = 10) {
     return [bounds[0], bounds[1] + margin, bounds[2], bounds[3]];
 }
+
+// export const seqCardBounds_small = [100, 440, 280, 160];
+export const seqCardBounds_small = [120, 450, 240, 140];
+
+export const seqContextDrum1 = 50;

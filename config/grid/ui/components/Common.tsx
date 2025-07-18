@@ -5,6 +5,10 @@ import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { lighten } from '@/libs/ui';
 import {
     A11,
+    A12,
+    B10,
+    B12,
+    B9,
     btn10,
     btn6,
     btn7,
@@ -125,6 +129,12 @@ export function MainKeys({
             <HiddenValue
                 keys={[
                     { key: A11, action: viewName === `${synthName}Seq` ? `setView:${synthName}` : `setView:${synthName}Seq` },
+
+                    { key: 'p', action: `playPause` },
+                    { key: B9, action: `playPause` },
+                    { key: B10, action: `playPause` },
+                    { key: B12, action: `playPause` },
+                    { key: A12, action: `playPause` },
                 ]}
             />
             {/* <HiddenValue
