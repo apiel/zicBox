@@ -14,7 +14,7 @@ const drum1Track = {
     id: Drum1Track,
     plugins: [
         audioPlugin('SynthKick23', { alias: 'Drum1' }),
-        audioPlugin('Sequencer'),
+        audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
         audioPlugin('SerializeTrack', { filename: 'drum1', maxVariation, workspaceFolder }),
     ],
