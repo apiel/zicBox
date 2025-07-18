@@ -72,9 +72,16 @@ protected:
         return step.note + motion(step);
     }
 
+    std::vector<std::function<void()>> stepCallbacks;
+
     void onStep() override
     {
         stepCounter++;
+
+        for (auto& callback : stepCallbacks) {
+            callback();
+        }
+
         // printf("[%d] ------------------- seq stepCounter %d\n", track, stepCounter);
         uint8_t state = status.get();
         // If we reach the end of the sequence, we reset the step counter
@@ -182,69 +189,33 @@ public:
         }
     }
 
-    enum DATA_ID {
-        STEPS,
-        STEP_COUNTER,
-        IS_PLAYING,
-        CLOCK_COUNTER,
-        GET_STEP,
-        STEP_COUNT,
-        // STEP_TOGGLE,
+     DataFn dataFunctions[6] = {
+        { "STEPS", [this](void* userdata) {
+             return &steps;
+         } },
+        { "STEP_COUNTER", [this](void* userdata) {
+             return &stepCounter;
+         } },
+        { "IS_PLAYING", [this](void* userdata) {
+             return &isPlaying;
+         } },
+        { "CLOCK_COUNTER", [this](void* userdata) {
+             return &clockCounter;
+         } },
+        { "STEP_COUNT", [this](void* userdata) {
+             return &stepCount;
+         } },
+        { "GET_STEP", [this](void* userdata) {
+             uint16_t* position = (uint16_t*)userdata;
+             for (auto& step : steps) {
+                 if (step.position == *position) {
+                     return (void*)&step;
+                 }
+             }
+             return (void*)NULL;
+         } },
     };
-
-    /*md **Data ID**: */
-    uint8_t getDataId(std::string name) override
-    {
-        /*md - `STEPS` return steps */
-        if (name == "STEPS")
-            return DATA_ID::STEPS;
-        /*md - `STEP_COUNTER` return current played step */
-        if (name == "STEP_COUNTER")
-            return DATA_ID::STEP_COUNTER;
-        /*md - `IS_PLAYING` return is playing */
-        if (name == "IS_PLAYING")
-            return DATA_ID::IS_PLAYING;
-        /*md - `CLOCK_COUNTER` return clock counter */
-        if (name == "CLOCK_COUNTER")
-            return DATA_ID::CLOCK_COUNTER;
-        /*md - `GET_STEP` get step by index */
-        if (name == "GET_STEP")
-            return DATA_ID::GET_STEP;
-        /*md - `STEP_COUNT` return step count */
-        if (name == "STEP_COUNT")
-            return DATA_ID::STEP_COUNT;
-        // /*md - `STEP_TOGGLE` toggle selected step */
-        // if (name == "STEP_TOGGLE")
-        //     return DATA_ID::STEP_TOGGLE;
-        return atoi(name.c_str());
-    }
-
-    void* data(int id, void* userdata = NULL)
-    {
-        switch (id) {
-        case DATA_ID::STEPS: {
-            return &steps;
-        }
-        case DATA_ID::STEP_COUNTER:
-            return &stepCounter;
-        case DATA_ID::IS_PLAYING:
-            return &isPlaying;
-        case DATA_ID::CLOCK_COUNTER:
-            return &clockCounter;
-        case DATA_ID::STEP_COUNT:
-            return &stepCount;
-        case DATA_ID::GET_STEP: {
-            uint16_t* position = (uint16_t*)userdata;
-            for (auto& step : steps) {
-                if (step.position == *position) {
-                    return &step;
-                }
-            }
-            return NULL;
-        }
-        }
-        return NULL;
-    }
+    DEFINE_GETDATAID_AND_DATA
 
     void serialize(FILE* file, std::string separator) override
     {
