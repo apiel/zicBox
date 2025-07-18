@@ -1,6 +1,6 @@
 ## Pixel TODO
 
-- TODO Drum23 simplify amp envelop, keep duration, and enventually another parameter to morph between different shapes...
+- TODO timeline samples arranger... / and bunch of effect on top of it like granular...
 
 - TODO generic drum, either like electribe ER-1 or other way to switch between multiple kind of engine
 

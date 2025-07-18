@@ -12,7 +12,7 @@ export type Props = {
     color: string;
 };
 
-export function FxView({ name, track, synthName, color }: Props) {
+export function SeqView({ name, track, synthName, color }: Props) {
     return (
         <DrumLayout
             viewName={name}

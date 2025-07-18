@@ -28,14 +28,11 @@ export function ViewSelector({
             shiftedTextColor={lighten(color, 0.5)}
             pageCount={pageCount}
             currentPage={currentPage}
-            rows={['Fx Wave Freq Amp Layer2']}
+            rows={['Seq Wave Freq Amp Layer2']}
             keys={[
                 {
                     key: btn1,
-                    action:
-                        viewName === `${synthName}Fx`
-                            ? `setView:${synthName}Fx:page2`
-                            : `setView:${synthName}Fx`,
+                    action: `setView:${synthName}Seq`,
                 },
                 { key: btn2, action: `setView:${synthName}Waveform` },
                 { key: btn3, action: `setView:${synthName}Frequency` },

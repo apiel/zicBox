@@ -20,7 +20,7 @@ export function Layout({ viewName, content, color, title, synthName }: Props) {
             {title && <Rect bounds={[55, 28, 6, 6]} color={color} />}
             {content}
             <MuteTracks />
-            <MainKeys synthName={synthName} />
+            <MainKeys synthName={synthName} viewName={viewName} />
         </View>
     );
 }

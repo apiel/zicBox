@@ -1,24 +1,15 @@
 import * as React from '@/libs/react';
 
 import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
-import { Rect } from '@/libs/nativeComponents/Rect';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { lighten } from '@/libs/ui';
 import {
-    btn1,
+    A11,
     btn10,
-    btn2,
-    btn4,
-    btn5,
     btn6,
     btn7,
     btn8,
     btn9,
-    left1,
-    left2,
-    left3,
-    right1,
-    right3,
     SelectorPosition,
     SelectorPosition2
 } from '../constants';
@@ -122,19 +113,26 @@ export function MuteTracks() {
 
 export function MainKeys({
     synthName,
+    viewName,
     forcePatchView = false,
 }: {
     synthName: string;
+    viewName: string;
     forcePatchView?: boolean;
 }) {
     return (
         <>
             <HiddenValue
                 keys={[
+                    { key: A11, action: viewName === `${synthName}Seq` ? `setView:${synthName}` : `setView:${synthName}Seq` },
+                ]}
+            />
+            {/* <HiddenValue
+                keys={[
                     { key: right1, action: 'setView:Clips' },
                     { key: right3, action: 'contextToggle:254:2:0' },
 
-                    { key: left1, action: `setView:${synthName}Sequencer`, action2: `setContext:254:0` },
+                    // { key: left1, action: `setView:${synthName}Sequencer`, action2: `setContext:254:0` },
                     // { key: left1, action: `setView:DrumSeq`, action2: `setContext:254:0` },
                     {
                         key: left2,
@@ -160,7 +158,7 @@ export function MainKeys({
                     { key: btn10, action: `setView:Tempo` },
                 ]}
                 contextValue={[2]}
-            />
+            /> */}
         </>
     );
 }

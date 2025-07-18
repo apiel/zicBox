@@ -3,7 +3,8 @@ import * as React from '@/libs/react';
 import { GraphEncoder } from '@/libs/nativeComponents/GraphEncoder';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Value } from '@/libs/nativeComponents/Value';
-import { Drum1, TracksSelector } from '../components/Common';
+import { Drum1 } from '../components/Common';
+import { Layout } from '../components/Layout';
 import {
     bounds5,
     enc1,
@@ -22,8 +23,7 @@ import {
     encTopValue,
     graphBounds
 } from '../constantsValue';
-import { DrumLayout } from './Layout';
-import { ViewSelector } from './ViewSelector';
+import { KeysTracks } from './KeysTracks';
 
 export type Props = {
     name: string;
@@ -34,10 +34,11 @@ export type Props = {
 
 export function MainView({ name, track, synthName, color }: Props) {
     return (
-        <DrumLayout
+        <Layout
             viewName={name}
             color={color}
             synthName={synthName}
+            title={Drum1}
             content={
                 <>
                     {/* <KnobValue
@@ -156,15 +157,7 @@ export function MainView({ name, track, synthName, color }: Props) {
                         showLabelOverValue={1}
                     />
 
-                    <ViewSelector color={color} synthName={synthName} viewName={name} />
-                    <TracksSelector
-                        selectedBackground={color}
-                        selected={Drum1}
-                        viewName={name}
-                        trackName={Drum1}
-                        pageCount={2}
-                        currentPage={1}
-                    />
+                    <KeysTracks synthName={synthName} viewName={name} />
                 </>
             }
         />

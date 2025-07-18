@@ -5,7 +5,8 @@ import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { MacroEnvelop } from '@/libs/nativeComponents/MacroEnvelop';
 import { Value } from '@/libs/nativeComponents/Value';
 import { rgb } from '@/libs/ui';
-import { Drum1, TracksSelector } from '../components/Common';
+import { Drum1 } from '../components/Common';
+import { Layout } from '../components/Layout';
 import {
     bounds1,
     bounds10,
@@ -26,8 +27,7 @@ import {
     encBottomValue,
     graphBounds,
 } from '../constantsValue';
-import { DrumLayout } from './Layout';
-import { ViewSelector } from './ViewSelector';
+import { KeysTracks } from './KeysTracks';
 
 export type Props = {
     name: string;
@@ -38,10 +38,11 @@ export type Props = {
 
 export function Main2View({ name, track, synthName, color }: Props) {
     return (
-        <DrumLayout
+        <Layout
             viewName={name}
             color={color}
             synthName={synthName}
+            title={Drum1}
             content={
                 <>
                     <MacroEnvelop
@@ -136,15 +137,7 @@ export function Main2View({ name, track, synthName, color }: Props) {
                         showLabelOverValue={1}
                     />
 
-                    <ViewSelector color={color} synthName={synthName} viewName={name} />
-                    <TracksSelector
-                        selectedBackground={color}
-                        selected={Drum1}
-                        trackName={Drum1}
-                        viewName={name}
-                        pageCount={2}
-                        currentPage={2}
-                    />
+                    <KeysTracks synthName={synthName} viewName={name} />
                 </>
             }
         />
