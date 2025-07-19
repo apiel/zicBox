@@ -2,17 +2,15 @@ import * as React from '@/libs/react';
 import { ClipsView } from './ClipsView/ClipsView';
 import {
     ColorTrack1,
+    ColorTrack10,
     ColorTrack2,
-    ColorTrack3,
-    ColorTrack4,
-    ColorTrack5,
+    ColorTrack9,
     Drum1Track,
+    Drum2Track,
     Sample1Track,
     Sample2Track,
-    Sample3Track,
-    Sample4Track,
     ScreenHeight,
-    ScreenWidth,
+    ScreenWidth
 } from './constants';
 import {
     bounds1,
@@ -28,6 +26,7 @@ import {
     bounds8,
     bounds9,
 } from './constantsValue';
+import { DrumViews } from './Drum/DrumViews';
 import { DrumSeqView } from './DrumSeqView';
 import { KickViews } from './Kick/KickViews';
 import { Menu } from './menu';
@@ -62,13 +61,12 @@ export const ui = {
     views: (
         <>
             <KickViews track={Drum1Track} synthName="Drum1" color={ColorTrack1} />
+            <DrumViews track={Drum2Track} synthName="Drum2" color={ColorTrack2} />
 
             <DrumSeqView name="DrumSeq" />
 
-            <SampleView track={Sample1Track} synthName="Sample1" color={ColorTrack2} />
-            <SampleView track={Sample2Track} synthName="Sample2" color={ColorTrack3} />
-            <SampleView track={Sample3Track} synthName="Sample3" color={ColorTrack4} />
-            <SampleView track={Sample4Track} synthName="Sample4" color={ColorTrack5} />
+            <SampleView track={Sample1Track} synthName="Sample1" color={ColorTrack9} />
+            <SampleView track={Sample2Track} synthName="Sample2" color={ColorTrack10} />
 
             <Menu />
 

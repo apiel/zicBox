@@ -1,19 +1,17 @@
 import * as React from '@/libs/react';
 
 import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
-import { A1, B1 } from '../constants';
+import { A1, A2, B1 } from '../constants';
 
-export function KeysTracks({
-    synthName,
-    viewName,
-}: {
-    synthName: string;
-    viewName: string;
-}) {
+export function KeysTracks({ synthName, viewName }: { synthName: string; viewName: string }) {
     return (
-        <HiddenValue keys={[
-            { key: A1, action: viewName === `${synthName}` ? `setView:${synthName}:page2` : `setView:${synthName}` },
-            { key: B1, action: `noteOn:${synthName}:60` },
-        ]} />
+        <HiddenValue
+            keys={[
+                { key: A1, action: viewName === `Drum1` ? `setView:Drum1:page2` : `setView:Drum1` },
+                { key: B1, action: `noteOn:Drum1:60` },
+
+                { key: A2, action: `setView:Drum2` },
+            ]}
+        />
     );
 }

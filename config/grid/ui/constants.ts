@@ -41,6 +41,8 @@ export const ColorTrack5 = rgb(181, 79, 94);
 export const ColorTrack6 = rgb(55, 114, 117);
 export const ColorTrack7 =rgb(98, 79, 181);
 export const ColorTrack8 = rgb(181, 79, 173);
+export const ColorTrack9 = rgb(4, 196, 180);
+export const ColorTrack10 = rgb(245, 176, 239);
 
 export const encTopLeft = 0;
 export const encTopRight = 1;

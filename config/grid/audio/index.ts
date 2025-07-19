@@ -1,10 +1,9 @@
 import { audioPlugin } from '@/libs/audio';
 import {
     Drum1Track,
+    Drum2Track,
     Sample1Track,
     Sample2Track,
-    Sample3Track,
-    Sample4Track,
 } from '../constants';
 
 export const maxVariation = 16;
@@ -17,6 +16,18 @@ const drum1Track = {
         audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
         audioPlugin('SerializeTrack', { filename: 'drum1', maxVariation, workspaceFolder }),
+    ],
+};
+
+// SynthMultiDrum
+
+const drum2Track = {
+    id: Drum2Track,
+    plugins: [
+        audioPlugin('SynthMultiDrum', { alias: 'Drum2' }),
+        audioPlugin('Sequencer', { stepCount: 64 }),
+        audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
+        audioPlugin('SerializeTrack', { filename: 'drum2', maxVariation, workspaceFolder }),
     ],
 };
 
@@ -41,28 +52,6 @@ const sample2Track = {
     ],
 };
 
-const sample3Track = {
-    id: Sample3Track,
-    plugins: [
-        audioPlugin('SynthMonoSample', { alias: 'Sample3' }),
-        audioPlugin('Sequencer'),
-        audioPlugin('EffectFilterMultiMode', { alias: 'Filter' }),
-        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
-        audioPlugin('SerializeTrack', { filename: 'sample3', maxVariation, workspaceFolder }),
-    ],
-};
-
-const sample4Track = {
-    id: Sample4Track,
-    plugins: [
-        audioPlugin('SynthMonoSample', { alias: 'Sample4' }),
-        audioPlugin('Sequencer'),
-        audioPlugin('EffectFilterMultiMode', { alias: 'Filter' }),
-        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
-        audioPlugin('SerializeTrack', { filename: 'sample4', maxVariation, workspaceFolder }),
-    ],
-};
-
 const masterTrack = {
     id: 0,
     plugins: [
@@ -81,10 +70,9 @@ export const audio = {
     autoLoadFirstMidiDevice: true,
     tracks: [
         drum1Track,
+        drum2Track,
         sample1Track,
         sample2Track,
-        sample3Track,
-        sample4Track,
         masterTrack,
     ],
     autoSave: 500,

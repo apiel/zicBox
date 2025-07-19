@@ -18,11 +18,10 @@ import {
 } from '../constants';
 
 export const Clips = 'Clips';
-export const Drum1 = 'Drum23';
+export const Drum1 = 'Kick23';
+export const Drum2 = 'Drum2';
 export const Sample1 = 'Sample1';
 export const Sample2 = 'Sample2';
-export const Sample3 = 'Sample3';
-export const Sample4 = 'Sample4';
 
 function TracksSelectorSub({
     selectedBackground,
@@ -44,7 +43,7 @@ function TracksSelectorSub({
             pageCount={pageCount}
             currentPage={currentPage}
             bounds={SelectorPosition2}
-            rows={[`${Drum1} ${Sample1} ${Sample2} ${Sample3} ${Sample4}`]}
+            rows={[`${Drum1} ${Sample1} ${Sample2}`]}
             keys={[
                 {
                     key: btn6,

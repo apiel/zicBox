@@ -72,3 +72,6 @@ export function boundsMarginTop(bounds: number[], margin: number = 10) {
 export const seqCardBounds_small = [120, 450, 240, 140];
 
 export const seqContextDrum1 = 50;
+export const seqContextDrum2 = 51;
+export const seqContextDrum3 = 52;
+export const seqContextDrum4 = 53;
