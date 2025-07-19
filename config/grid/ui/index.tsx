@@ -29,7 +29,7 @@ import {
     bounds9,
 } from './constantsValue';
 import { DrumSeqView } from './DrumSeqView';
-import { KickView } from './Kick/KickView';
+import { KickViews } from './Kick/KickViews';
 import { Menu } from './menu';
 import { SampleView } from './Sample/SampleView';
 
@@ -61,7 +61,7 @@ export const ui = {
     renderer: 'FB',
     views: (
         <>
-            <KickView track={Drum1Track} synthName="Drum1" color={ColorTrack1} />
+            <KickViews track={Drum1Track} synthName="Drum1" color={ColorTrack1} />
 
             <DrumSeqView name="DrumSeq" />
 

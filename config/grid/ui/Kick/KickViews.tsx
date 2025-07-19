@@ -1,5 +1,6 @@
 import * as React from '@/libs/react';
 
+import { seqContextDrum1 } from '../constantsValue';
 import { Main2View } from './Main2View';
 import { MainView } from './MainView';
 import { SeqView } from './SeqView';
@@ -10,7 +11,7 @@ export type Props = {
     color: string;
 };
 
-export function KickView({ track, synthName, color }: Props) {
+export function KickViews({ track, synthName, color }: Props) {
     return (
         <>
             <MainView name={synthName} track={track} synthName={synthName} color={color} />
@@ -20,7 +21,13 @@ export function KickView({ track, synthName, color }: Props) {
                 synthName={synthName}
                 color={color}
             />
-            <SeqView name={`${synthName}Seq`} track={track} synthName={synthName} color={color} />
+            <SeqView
+                name={`${synthName}Seq`}
+                track={track}
+                synthName={synthName}
+                color={color}
+                contextId={seqContextDrum1}
+            />
         </>
     );
 }

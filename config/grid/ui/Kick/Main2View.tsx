@@ -7,6 +7,7 @@ import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
 import { Value } from '@/libs/nativeComponents/Value';
 import { rgb } from '@/libs/ui';
 import { Drum1 } from '../components/Common';
+import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
 import {
     bounds1,
@@ -29,7 +30,6 @@ import {
     graphBounds,
     seqCardBounds_small
 } from '../constantsValue';
-import { KeysTracks } from './KeysTracks';
 
 export type Props = {
     name: string;
