@@ -2,9 +2,9 @@ import * as React from '@/libs/react';
 
 import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
 import { SequencerValue } from '@/libs/nativeComponents/SequencerValue';
-import { Drum1 } from '../components/Common';
-import { Layout } from '../components/Layout';
 import { enc1, enc2, enc3, enc4, enc5 } from '../constantsValue';
+import { Drum1 } from './Common';
+import { Layout } from './Layout';
 
 export type Props = {
     name: string;
@@ -14,7 +14,7 @@ export type Props = {
     contextId: number;
 };
 
-export function SeqView({ name, track, synthName, color, contextId }: Props) {
+export function DrumSeqView({ name, track, synthName, color, contextId }: Props) {
     return (
         <Layout
             viewName={name}

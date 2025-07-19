@@ -1,9 +1,9 @@
 import * as React from '@/libs/react';
 
+import { DrumSeqView } from '../components/DrumSeqView';
 import { seqContextDrum1 } from '../constantsValue';
 import { Main2View } from './Main2View';
 import { MainView } from './MainView';
-import { SeqView } from './SeqView';
 
 export type Props = {
     track: number;
@@ -21,7 +21,7 @@ export function KickViews({ track, synthName, color }: Props) {
                 synthName={synthName}
                 color={color}
             />
-            <SeqView
+            <DrumSeqView
                 name={`${synthName}Seq`}
                 track={track}
                 synthName={synthName}
