@@ -21,8 +21,8 @@ protected:
 
     float fmModulation(float freq, float phase)
     {
-        float fmdAmplitude = fmdAmp.pct();
-        float modulator = fmdAmplitude > 0.0f ? sineWave(fmFreq.get(), phase) * fmdAmplitude * 10.0f : 0.0f;
+        float fmAmplitude = fmAmp.pct();
+        float modulator = fmAmplitude > 0.0f ? sineWave(fmFreq.get(), phase) * fmAmplitude * 10.0f : 0.0f;
         return sineWave(freq + modulator, phase);
 
         // return sineWave(freq, phase);
@@ -109,7 +109,7 @@ public:
     /*md - FM_FREQ sets the frequency of the modulator wave. */
     Val& fmFreq = val(50.0f, "FM_FREQ", { "Fm. Freq.", .min = 0.1, .max = 500.0, .step = 0.1, .floatingPoint = 1, .unit = "Hz" });
     /*md - FM_AMP controls the intensity of frequency modulation. */
-    Val& fmdAmp = val(0.0f, "FM_AMP", { "Fm. Amp.", .step = 0.1, .floatingPoint = 1, .unit = "%" });
+    Val& fmAmp = val(0.0f, "FM_AMP", { "Fm. Amp.", .step = 0.1, .floatingPoint = 1, .unit = "%" });
     /*md - ENV_MOD intensity of envelope modulation. */
     Val& envMod = val(0.0f, "ENV_MOD", { "Env. Mod.", .unit = "%" });
     /*md - ENV_SHAPE controls the shape of the envelope. */

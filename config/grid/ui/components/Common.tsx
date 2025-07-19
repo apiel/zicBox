@@ -5,6 +5,7 @@ import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { lighten } from '@/libs/ui';
 import {
     A11,
+    A12,
     B12,
     btn10,
     btn6,
@@ -12,7 +13,8 @@ import {
     btn8,
     btn9,
     SelectorPosition,
-    SelectorPosition2
+    SelectorPosition2,
+    shiftContext
 } from '../constants';
 
 export const Clips = 'Clips';
@@ -127,6 +129,7 @@ export function MainKeys({
                 keys={[
                     { key: A11, action: viewName === `${synthName}Seq` ? `setView:${synthName}` : `setView:${synthName}Seq` },
 
+                    { key: A12, action: `contextToggle:${shiftContext}:1:0`  },
                     { key: B12, action: `playPause` },
                 ]}
             />

@@ -73,6 +73,7 @@ public:
             /// The data id to get is playing state from audio plugin sequencer.
             isPlaying = (bool*)plugin->data(plugin->getDataId(config.value("isPlayingDataId", "IS_PLAYING"))); //eg: "IS_PLAYING"
 
+            // TODO should this be enable by default?
             /// Data id to register playing sequencer event callback.
             plugin->data(plugin->getDataId(config.value("eventCallbackDataId", "REGISTER_CALLBACK")), &onPlayStep);
 
