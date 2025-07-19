@@ -10,7 +10,7 @@ export type Props = {
     color: string;
 };
 
-export function DrumView({ track, synthName, color }: Props) {
+export function KickView({ track, synthName, color }: Props) {
     return (
         <>
             <MainView name={synthName} track={track} synthName={synthName} color={color} />
