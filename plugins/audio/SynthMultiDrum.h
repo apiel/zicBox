@@ -16,8 +16,11 @@ Synth engine to generate multiple kind of drum sounds.
 
 class DrumEngine : public Mapping {
 public:
-    DrumEngine(AudioPlugin::Props& props, AudioPlugin::Config& config)
+    std::string name = "Engine";
+
+    DrumEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, std::string name)
         : Mapping(props, config)
+        , name(name)
     {
     }
 
@@ -70,7 +73,7 @@ public:
     Val& envShape = val(0.5f, "ENV_SHAPE", { "Env. Shape", .min = 0.1, .max = 5.0, .step = 0.1, .floatingPoint = 1 });
 
     MetalicDrumEngine(AudioPlugin::Props& props, AudioPlugin::Config& config)
-        : DrumEngine(props, config)
+        : DrumEngine(props, config, "Metalic")
     {
         initValues();
         phaseIncrement = 1.0f / props.sampleRate;
@@ -152,9 +155,10 @@ public:
     /*md **Values**: */
 
     /*md - `ENGINE` select the drum engine. */
-    Val& engine = val(0, "ENGINE", { "Engine", .min = 0, .max = 1 }, [&](auto p) {
+    Val& engine = val(0, "ENGINE", { "Engine", VALUE_STRING, .min = 0, .max = 1 }, [&](auto p) {
         p.val.setFloat(p.value);
         drumEngine = drumEngines[(int)p.val.get()];
+        p.val.setString(drumEngine->name);
     });
     
     /*md - `DURATION` controls the duration of the envelope. */
