@@ -203,4 +203,12 @@ public:
         // noteFreq = baseFreq.get() * powf(2.0f, (note - baseNote) / 12.0f);
         i = 0;
     }
+
+     DataFn dataFunctions[1] = {
+        { "ENV_AMP_FORM", [this](void* userdata) {
+             float* index = (float*)userdata;
+             return (void*)envelopAmp.getMorphShape(*index);
+         } },
+    };
+    DEFINE_GETDATAID_AND_DATA
 };

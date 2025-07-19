@@ -1,4 +1,4 @@
-import { ScreenWidth, W1_4, W2_4 } from './constants';
+import { ScreenHeight, ScreenWidth, W1_4, W2_4 } from './constants';
 
 const top = 60;
 export const fullValues = [0, top, ScreenWidth - 1, 180];
@@ -9,6 +9,8 @@ export const topLeftKnob = [0, top, W2_4 - 2, 100];
 export const topRightKnob = [W2_4, top, W2_4 - 2, 100];
 export const bottomLeftKnob = [0, top + 100, W2_4 - 2, 100];
 export const bottomRightKnob = [W2_4, top + 100, W2_4 - 2, 100];
+
+export const backgroundBounds = [0, top, ScreenWidth, ScreenHeight - top];
 
 export const bounds1 = [0, top, W1_4 - 2, 100];
 export const bounds2 = [W1_4, top, W1_4 - 2, 100];
