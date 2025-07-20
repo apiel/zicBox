@@ -4,6 +4,7 @@ import { VisibilityContext } from '@/libs/nativeComponents/component';
 import { GraphEncoder } from '@/libs/nativeComponents/GraphEncoder';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Rect } from '@/libs/nativeComponents/Rect';
+import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
 import { Value } from '@/libs/nativeComponents/Value';
 import { rgb } from '@/libs/ui';
 import { Drum2 } from '../components/Common';
@@ -16,7 +17,9 @@ import {
     boundsMarginTop,
     enc1,
     enc2,
+    enc3,
     encBottomValue,
+    seqCardBounds_small,
 } from '../constantsValue';
 
 export type Props = {
@@ -90,21 +93,17 @@ export function MainView({ name, track, synthName, color }: Props) {
                         visibilityContext={[visibilityContext]}
                     />
 
-                    {/* 
                     <KnobValue
                         audioPlugin={synthName}
-                        param="RESONANCE"
-                        {...enc2}
-                        color="secondary"
-                        track={track}
-                    />
-                    <KnobValue
-                        audioPlugin={synthName}
-                        param="GAIN_CLIPPING"
+                        param="VAL_1"
                         {...enc3}
                         color="primary"
                         track={track}
+                        visibilityContext={[visibilityContext]}
                     />
+
+                    {/* 
+
                     <KnobValue
                         audioPlugin={synthName}
                         param="WAVESHAPE"
@@ -192,12 +191,14 @@ export function MainView({ name, track, synthName, color }: Props) {
                         showLabelOverValue={1}
                     />
 
-                    <SequencerCard
+                    */}
+
+                     <SequencerCard
                         bounds={seqCardBounds_small}
                         audioPlugin={`Sequencer`}
                         track={track}
-                        // contextId={seqContextDrum1}
-                    /> */}
+                        visibilityContext={[visibilityContext]}
+                    />
 
                     <KeysTracks synthName={synthName} viewName={name} />
                 </>

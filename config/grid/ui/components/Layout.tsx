@@ -2,7 +2,7 @@ import * as React from '@/libs/react';
 
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { View } from '@/libs/nativeComponents/View';
-import { MainKeys, MuteTracks } from '../components/Common';
+import { MainKeys } from '../components/Common';
 import { Title } from '../components/Title';
 
 export type Props = {
@@ -19,7 +19,6 @@ export function Layout({ viewName, content, color, title, synthName }: Props) {
             {title && <Title title={title} />}
             {title && <Rect bounds={[55, 28, 6, 6]} color={color} />}
             {content}
-            <MuteTracks />
             <MainKeys synthName={synthName} viewName={viewName} />
         </View>
     );

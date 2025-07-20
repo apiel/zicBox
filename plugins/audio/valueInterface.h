@@ -1,14 +1,14 @@
 #ifndef _MAPPING_INTERFACE_H_
 #define _MAPPING_INTERFACE_H_
 
+#include <functional>
 #include <stdint.h>
 #include <string>
-#include <functional>
 
 enum ValueType {
-    VALUE_BASIC    = 1 << 0, // 1
+    VALUE_BASIC = 1 << 0, // 1
     VALUE_CENTERED = 1 << 1, // 2
-    VALUE_STRING   = 1 << 2  // 4
+    VALUE_STRING = 1 << 2 // 4
 };
 
 enum ValueIncrementationType {
@@ -41,12 +41,15 @@ public:
     virtual void set(float value, void* data = NULL) = 0;
     virtual void setOnUpdateCallback(std::function<void(float, void*)> callback, void* data) = 0;
     virtual void checkForUpdate() = 0;
+    virtual void copy(ValueInterface* val) { };
 
-    bool hasType(ValueType type) {
+    bool hasType(ValueType type)
+    {
         return (props().type & type) != 0;
     }
 
-    bool hasAllTypes(uint8_t types) {
+    bool hasAllTypes(uint8_t types)
+    {
         return (props().type & types) == types;
     }
 };

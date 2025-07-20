@@ -8,6 +8,8 @@
 #include "plugins/audio/utils/effects/applyReverb.h"
 #include "plugins/audio/utils/utils.h"
 
+#include "log.h"
+
 /*md
 ## SynthMultiDrum
 
@@ -154,11 +156,38 @@ protected:
 public:
     /*md **Values**: */
 
+    Val* values[10] = {
+        &val(0.0f, "VAL_1"),
+        &val(0.0f, "VAL_2"),
+        &val(0.0f, "VAL_3"),
+        &val(0.0f, "VAL_4"),
+        &val(0.0f, "VAL_5"),
+        &val(0.0f, "VAL_6"),
+        &val(0.0f, "VAL_7"),
+        &val(0.0f, "VAL_8"),
+        &val(0.0f, "VAL_9"),
+        &val(0.0f, "VAL_10"),
+    };
+
     /*md - `ENGINE` select the drum engine. */
     Val& engine = val(0, "ENGINE", { "Engine", VALUE_STRING, .min = 0, .max = 1 }, [&](auto p) {
         p.val.setFloat(p.value);
         drumEngine = drumEngines[(int)p.val.get()];
         p.val.setString(drumEngine->name);
+
+        // logInfo("Switching to %s size %d\n", drumEngine->name.c_str(), drumEngine->mapping.size());
+        // loop through values and update their type
+        for (int i = 0; i < 10 && i < drumEngine->mapping.size(); i++) {
+            ValueInterface* val = drumEngine->mapping[i];
+            // logInfo("Mapping: %s label %s\n", val->key().c_str(), val->label().c_str());
+            values[i]->copy(val);
+            // values[i]->props().label = val->label();
+            // values[i]->props().unit = val->props().unit;
+            // values[i]->props().min = val->props().min;
+            // values[i]->props().max = val->props().max;
+            // values[i]->props().step = val->props().step;
+            // values[i]->props().type = val->props().type;
+        }
     });
     
     /*md - `DURATION` controls the duration of the envelope. */
@@ -187,9 +216,11 @@ public:
     {
         if (i < totalSamples) {
             float envAmp = envelopAmp.next();
+            drumEngine->sampleOn(buf, envAmp, i, totalSamples);
             i++;
         } else {
             // buf[track] = applyReverb(buf[track]);
+            drumEngine->sampleOff(buf);
         }
     }
 

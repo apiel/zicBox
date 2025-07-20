@@ -39,7 +39,7 @@ protected:
     float value_pct;
     std::string value_s;
 
-    std::function<void(float, void*)> onUpdateFn = [](float, void* data) {};
+    std::function<void(float, void*)> onUpdateFn = [](float, void* data) { };
     void* onUpdateData = NULL;
 
     ValueInterface::Props _props;
@@ -66,6 +66,14 @@ public:
             callback = [this](auto p) { setFloat(p.value); };
         }
         setFloat(initValue);
+    }
+
+    void copy(ValueInterface* val) override
+    {
+        value_f = val->get();
+        value_pct = val->pct();
+        value_s = val->string();
+        _props = val->props();
     }
 
     ValueInterface::Props& props()
@@ -153,9 +161,10 @@ public:
 };
 
 class Mapping : public AudioPlugin {
-protected:
+public:
     std::vector<ValueInterface*> mapping;
 
+protected:
     Val& val(float initValue, std::string _key, ValueInterface::Props props = {}, std::function<void(Val::CallbackProps)> _callback = NULL)
     {
         Val* v = new Val(initValue, _key, props, _callback);
