@@ -4,7 +4,8 @@
 #include "mapping.h"
 
 #include "plugins/audio/utils/EnvelopDrumAmp.h"
-#include "plugins/audio/utils/effects/applyWaveshape.h"
+#include "plugins/audio/utils/effects/applyBoost.h"
+#include "plugins/audio/utils/effects/applyDrive.h"
 #include "plugins/audio/utils/effects/applyReverb.h"
 #include "plugins/audio/utils/utils.h"
 
@@ -58,15 +59,11 @@ protected:
         return output;
     }
 
-    static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
-    float reverbBuffer[REVERB_BUFFER_SIZE] = { 0.0f };
-    int reverbIndex = 0;
-
 public:
     Val& baseFreq = val(100.0f, "BASE_FREQ", { "Base Freq", .min = 10.0, .max = 400.0, .step = 1.0, .unit = "Hz" });
     Val& bodyResonance = val(0.8f, "RESONATOR", { "Resonator", .min = 0.00f, .max = 1.5f, .step = 0.01f, .floatingPoint = 2 });
     Val& timbre = val(5.0f, "TIMBRE", { "Timbre", .unit = "%" });
-    Val& waveshape = val(0.0, "WAVESHAPE", { "Waveshape", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
+    Val& boost = val(0.0, "BOOST", { "Boost", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
     Val& toneDecay = val(0.02f, "TONE_DECAY", { "Tone Decay", .min = 0.005f, .max = 1.0f, .step = 0.005f, .floatingPoint = 2 });
     Val& reverb = val(0.3f, "REVERB", { "Reverb", .unit = "%" });
     Val& fmFreq = val(50.0f, "FM_FREQ", { "Fm. Freq.", .min = 0.1, .max = 500.0, .step = 0.1, .floatingPoint = 1, .unit = "Hz" });
@@ -121,12 +118,31 @@ public:
             tone *= (1.0f - timbre.pct()) + timbre.pct() * sinf(2.0f * M_PI * freq * 0.5f * t);
         }
 
-        float output = applyWaveshape(tone, waveshape.pct()) * envAmp;
-        output = applyReverb(output, reverb.pct(), reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE);
+        float output = tone * envAmp;
+        output = applyEffect(output);
         buf[track] = output;
 
         phase += phaseIncrement;
     }
+
+    static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
+    float reverbBuffer[REVERB_BUFFER_SIZE] = { 0.0f };
+    int reverbIndex = 0;
+    float prevInput = 0.0f;
+    float prevOutput = 0.0f;
+    float applyEffect(float input)
+    {
+        float output = input;
+        float amount = boost.pct() * 2 - 1.0f;
+        if (amount > 0.0f) {
+            output = applyBoost(input, amount, prevInput, prevOutput);
+        } else if (amount < 0.0f) {
+            output = applyDrive(input, -amount, props.lookupTable);
+        }
+        output = applyReverb(output, reverb.pct(), reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE);
+        return output;
+    }
+
     void sampleOff(float* buf) override
     {
         buf[track] = applyReverb(buf[track], reverb.pct(), reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE);
@@ -147,11 +163,11 @@ protected:
 
     MetalicDrumEngine metalDrumEngine;
 
-    DrumEngine *drumEngines[2] = {
+    DrumEngine* drumEngines[2] = {
         &metalDrumEngine,
         &metalDrumEngine,
     };
-    DrumEngine *drumEngine = drumEngines[0];
+    DrumEngine* drumEngine = drumEngines[0];
 
 public:
     /*md **Values**: */
@@ -181,7 +197,7 @@ public:
             values[i]->copy(val);
         }
     });
-    
+
     /*md - `DURATION` controls the duration of the envelope. */
     Val& duration = val(500.0f, "DURATION", { "Duration", .min = 50.0, .max = 3000.0, .step = 10.0, .unit = "ms" });
 
@@ -232,7 +248,7 @@ public:
         drumEngine->noteOn(note, _velocity);
     }
 
-     DataFn dataFunctions[1] = {
+    DataFn dataFunctions[1] = {
         { "ENV_AMP_FORM", [this](void* userdata) {
              float* index = (float*)userdata;
              return (void*)envelopAmp.getMorphShape(*index);
