@@ -2,6 +2,9 @@
 
 #include "plugins/audio/utils/EnvelopDrumAmp.h"
 #include "plugins/audio/MultiDrumEngine/MetalicDrumEngine.h"
+#include "plugins/audio/MultiDrumEngine/SnareDrumEngine.h"
+#include "plugins/audio/MultiDrumEngine/HiHatEngine.h"
+#include "plugins/audio/MultiDrumEngine/TomEngine.h"
 
 /*md
 ## SynthMultiDrum
@@ -14,10 +17,15 @@ protected:
     EnvelopDrumAmp envelopAmp;
 
     MetalicDrumEngine metalDrumEngine;
+    SnareDrumEngine snareDrumEngine;
+    HiHatEngine hiHatEngine;
+    TomEngine tomEngine;
 
-    DrumEngine* drumEngines[2] = {
+    DrumEngine* drumEngines[4] = {
         &metalDrumEngine,
-        &metalDrumEngine,
+        &snareDrumEngine,
+        &hiHatEngine,
+        &tomEngine
     };
     DrumEngine* drumEngine = drumEngines[0];
 
@@ -38,7 +46,7 @@ public:
     };
 
     /*md - `ENGINE` select the drum engine. */
-    Val& engine = val(0, "ENGINE", { "Engine", VALUE_STRING, .min = 0, .max = 1 }, [&](auto p) {
+    Val& engine = val(0, "ENGINE", { "Engine", VALUE_STRING, .min = 0, .max = 3 }, [&](auto p) {
         p.val.setFloat(p.value);
         drumEngine = drumEngines[(int)p.val.get()];
         p.val.setString(drumEngine->name);
@@ -62,6 +70,9 @@ public:
     SynthMultiDrum(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
         , metalDrumEngine(props, config)
+        , snareDrumEngine(props, config)
+        , hiHatEngine(props, config)
+        , tomEngine(props, config)
     {
         initValues();
     }
