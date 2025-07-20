@@ -3,7 +3,7 @@
 #include "plugins/audio/utils/EnvelopDrumAmp.h"
 #include "plugins/audio/MultiDrumEngine/MetalicDrumEngine.h"
 #include "plugins/audio/MultiDrumEngine/SnareDrumEngine.h"
-#include "plugins/audio/MultiDrumEngine/HiHatEngine.h"
+#include "plugins/audio/MultiDrumEngine/PercussionEngine.h"
 #include "plugins/audio/MultiDrumEngine/TomEngine.h"
 
 /*md
@@ -18,13 +18,13 @@ protected:
 
     MetalicDrumEngine metalDrumEngine;
     SnareDrumEngine snareDrumEngine;
-    HiHatEngine hiHatEngine;
+    PercussionEngine percEngine;
     TomEngine tomEngine;
 
     DrumEngine* drumEngines[4] = {
         &metalDrumEngine,
         &snareDrumEngine,
-        &hiHatEngine,
+        &percEngine,
         &tomEngine
     };
     DrumEngine* drumEngine = drumEngines[0];
@@ -71,7 +71,7 @@ public:
         : Mapping(props, config)
         , metalDrumEngine(props, config)
         , snareDrumEngine(props, config)
-        , hiHatEngine(props, config)
+        , percEngine(props, config)
         , tomEngine(props, config)
     {
         initValues();
