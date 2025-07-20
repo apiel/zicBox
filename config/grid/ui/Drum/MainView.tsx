@@ -106,7 +106,7 @@ export function MainView({ name, track, synthName, color }: Props) {
                         audioPlugin={synthName}
                         param="VAL_1"
                         {...enc3}
-                        color="primary"
+                        color="tertiary"
                         track={track}
                         visibilityContext={[visibilityContext]}
                     />
@@ -115,7 +115,7 @@ export function MainView({ name, track, synthName, color }: Props) {
                         audioPlugin={synthName}
                         param="VAL_2"
                         {...enc4}
-                        color="secondary"
+                        color="primary"
                         track={track}
                         visibilityContext={[visibilityContext]}
                     />
@@ -124,7 +124,7 @@ export function MainView({ name, track, synthName, color }: Props) {
                         audioPlugin={synthName}
                         param="VAL_3"
                         {...enc5}
-                        color="thertiary"
+                        color="secondary"
                         track={track}
                         visibilityContext={[visibilityContext]}
                     />
@@ -142,7 +142,7 @@ export function MainView({ name, track, synthName, color }: Props) {
                         audioPlugin={synthName}
                         param="VAL_5"
                         {...enc7}
-                        color="secondary"
+                        color="tertiary"
                         track={track}
                         visibilityContext={[visibilityContext]}
                     />
@@ -160,7 +160,7 @@ export function MainView({ name, track, synthName, color }: Props) {
                         audioPlugin={synthName}
                         param="VAL_7"
                         {...enc9}
-                        color="thertiary"
+                        color="secondary"
                         track={track}
                         visibilityContext={[visibilityContext]}
                     />
@@ -178,7 +178,7 @@ export function MainView({ name, track, synthName, color }: Props) {
                         audioPlugin={synthName}
                         param="VAL_9"
                         {...enc11}
-                        color="secondary"
+                        color="tertiary"
                         track={track}
                         visibilityContext={[visibilityContext]}
                     />
