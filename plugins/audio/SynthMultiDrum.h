@@ -175,18 +175,10 @@ public:
         drumEngine = drumEngines[(int)p.val.get()];
         p.val.setString(drumEngine->name);
 
-        // logInfo("Switching to %s size %d\n", drumEngine->name.c_str(), drumEngine->mapping.size());
         // loop through values and update their type
         for (int i = 0; i < 10 && i < drumEngine->mapping.size(); i++) {
             ValueInterface* val = drumEngine->mapping[i];
-            // logInfo("Mapping: %s label %s\n", val->key().c_str(), val->label().c_str());
             values[i]->copy(val);
-            // values[i]->props().label = val->label();
-            // values[i]->props().unit = val->props().unit;
-            // values[i]->props().min = val->props().min;
-            // values[i]->props().max = val->props().max;
-            // values[i]->props().step = val->props().step;
-            // values[i]->props().type = val->props().type;
         }
     });
     
@@ -237,6 +229,7 @@ public:
         // resonatorState = 0.0f;
         // noteFreq = baseFreq.get() * powf(2.0f, (note - baseNote) / 12.0f);
         i = 0;
+        drumEngine->noteOn(note, _velocity);
     }
 
      DataFn dataFunctions[1] = {

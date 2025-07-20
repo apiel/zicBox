@@ -16,8 +16,17 @@ import {
     bounds2,
     boundsMarginTop,
     enc1,
+    enc10,
+    enc11,
+    enc12,
     enc2,
     enc3,
+    enc4,
+    enc5,
+    enc6,
+    enc7,
+    enc8,
+    enc9,
     encBottomValue,
     seqCardBounds_small,
 } from '../constantsValue';
@@ -102,98 +111,88 @@ export function MainView({ name, track, synthName, color }: Props) {
                         visibilityContext={[visibilityContext]}
                     />
 
-                    {/* 
-
                     <KnobValue
                         audioPlugin={synthName}
-                        param="WAVESHAPE"
+                        param="VAL_2"
                         {...enc4}
-                        color="tertiary"
+                        color="secondary"
                         track={track}
+                        visibilityContext={[visibilityContext]}
                     />
 
                     <KnobValue
                         audioPlugin={synthName}
-                        param="COMPRESS"
+                        param="VAL_3"
+                        {...enc5}
+                        color="thertiary"
+                        track={track}
+                        visibilityContext={[visibilityContext]}
+                    />
+
+                    <KnobValue
+                        audioPlugin={synthName}
+                        param="VAL_4"
+                        {...enc6}
+                        color="quaternary"
+                        track={track}
+                        visibilityContext={[visibilityContext]}
+                    />
+
+                    <KnobValue
+                        audioPlugin={synthName}
+                        param="VAL_5"
                         {...enc7}
                         color="secondary"
                         track={track}
+                        visibilityContext={[visibilityContext]}
                     />
+
                     <KnobValue
                         audioPlugin={synthName}
-                        param="DRIVE"
+                        param="VAL_6"
                         {...enc8}
+                        color="primary"
+                        track={track}
+                        visibilityContext={[visibilityContext]}
+                    />
+
+                    <KnobValue
+                        audioPlugin={synthName}
+                        param="VAL_7"
+                        {...enc9}
+                        color="thertiary"
+                        track={track}
+                        visibilityContext={[visibilityContext]}
+                    />
+
+                    <KnobValue
+                        audioPlugin={synthName}
+                        param="VAL_8"
+                        {...enc10}
                         color="quaternary"
                         track={track}
+                        visibilityContext={[visibilityContext]}
                     />
 
                     <KnobValue
                         audioPlugin={synthName}
-                        param="BASS"
+                        param="VAL_9"
                         {...enc11}
-                        color="tertiary"
+                        color="secondary"
                         track={track}
+                        visibilityContext={[visibilityContext]}
                     />
+
                     <KnobValue
                         audioPlugin={synthName}
-                        param="HIGH_FREQ_BOOST"
+                        param="VAL_10"
                         {...enc12}
-                        color="tertiary"
+                        color="primary"
                         track={track}
+                        visibilityContext={[visibilityContext]}
                     />
 
-                    <GraphEncoder
-                        bounds={graphBounds(bounds5)}
-                        audioPlugin={synthName}
-                        dataId="WAVEFORM"
-                        renderValuesOnTop={false}
-                        values={['WAVEFORM_TYPE', 'SHAPE', 'MACRO']}
-                        track={track}
-                    />
-                    <Value
-                        {...encTopValue(enc5)}
-                        audioPlugin={synthName}
-                        param="WAVEFORM_TYPE"
-                        track={track}
-                        barHeight={1}
-                        // barColor="primary"
-                        alignLeft
-                        showLabelOverValue={1}
-                    />
-                    <Value
-                        {...encTopValue(enc6)}
-                        audioPlugin={synthName}
-                        param="SHAPE"
-                        track={track}
-                        barHeight={1}
-                        // barColor="primary"
-                        alignLeft
-                        showLabelOverValue={1}
-                    />
-                    <Value
-                        {...encBottomValue(enc9)}
-                        audioPlugin={synthName}
-                        param="MACRO"
-                        track={track}
-                        barHeight={1}
-                        // barColor="primary"
-                        alignLeft
-                        showLabelOverValue={1}
-                    />
-                    <Value
-                        {...encBottomValue(enc10)}
-                        audioPlugin={synthName}
-                        param="PITCH"
-                        track={track}
-                        barHeight={1}
-                        // barColor="primary"
-                        alignLeft
-                        showLabelOverValue={1}
-                    />
-
-                    */}
-
-                     <SequencerCard
+                    <SequencerCard
                         bounds={seqCardBounds_small}
                         audioPlugin={`Sequencer`}
                         track={track}
