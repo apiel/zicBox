@@ -28,6 +28,7 @@ public:
         uint8_t floatingPoint = 0;
         std::string unit = "";
         ValueIncrementationType incrementationType = VALUE_INCREMENTATION_BASIC;
+        bool skipJumpIncrements = false;
     };
 
     virtual std::string key() = 0;

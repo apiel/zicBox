@@ -4,6 +4,9 @@
 #include "plugins/audio/utils/effects/applyDrive.h"
 #include "plugins/audio/utils/effects/applyReverb.h"
 
+// TODO optimize this
+// might want to use fastSine
+
 class PercussionEngine : public DrumEngine {
 public:
 public:
@@ -12,7 +15,8 @@ public:
     Val& harmonics = val(0.3f, "HARMONICS", { "Harmonics", .unit = "%" });
 
     Val& snareTune = val(200.f, "NOISE_TUNE", { "Noise Tune", .min = 80.f, .max = 600.f, .step = 1.f, .unit = "Hz" });
-    Val& snareDecay = val(0.15f, "NOISE_DEC", { "Noise Dec", .min = 0.01f, .max = 1.f, .step = 0.01f });
+    Val& pinkNoiseAmount = val(0.0f, "PINK_NOISE", { "Pink Noise", .unit = "%" });
+    Val& snareDecay = val(0.15f, "NOISE_DEC", { "Noise Dec", .floatingPoint = 2, .unit = "%", .incrementationType = VALUE_INCREMENTATION_MULT, .skipJumpIncrements = true });
     Val& mix = val(0.5f, "MIX", { "Mix", .unit = "%" });
 
     Val& punch = val(0.6f, "PUNCH", { "Punch", .unit = "%" });
@@ -30,14 +34,12 @@ public:
     int rIdx = 0;
 
     float phase = 0.f;
-    // float memState[4] = {};
 
     float snareState = 0.f;
 
     void sampleOn(float* buf, float envAmp, int sc, int ts) override
     {
         const float t = float(sc) / ts;
-        // const float env = expf(-t * 4.f / decay.get());
         const float bendEnv = 1.f - bend.pct() * t;
         const float freq = pitch.get() * bendEnv;
 
@@ -50,8 +52,8 @@ public:
         phase += 2.f * M_PI * freq / props.sampleRate;
         out *= envAmp;
 
-        float noise = (whiteNoise() * 2.f - 1.f) * envAmp;
-        float snare = resonator(noise, snareTune.get(), snareDecay.get(), snareState);
+        float noise = (pinkNoise(whiteNoise()) * 2.f - 1.f) * envAmp;
+        float snare = resonator(noise, snareTune.get(), snareDecay.pct(), snareState);
         out = out * (1.f - mix.pct()) + snare * mix.pct();
 
         // --- Punch transient
@@ -71,11 +73,7 @@ public:
     void noteOn(uint8_t note, float, void* = nullptr) override
     {
         phase = 0.f;
-        // for (auto& s : memState) {
-        //     s = 0.f;
-        // }
         pitch.set(pitch.get() * powf(2.f, (note - 60) / 12.f));
-
         snareState = 0.f;
     }
 
@@ -85,16 +83,27 @@ private:
     float applyEffects(float x)
     {
         float d = drive.pct() * 2.f - 1.f;
-        if (d > 0.f)
+        if (d > 0.f) {
             x = applyDrive(x, d, props.lookupTable);
-        else
+        } else {
             x = applyBoost(x, -d, prevInput, prevOutput);
+        }
         return applyReverb(x, reverb.pct(), reverbBuf, rIdx, REVBUF);
     }
 
     float whiteNoise()
     {
         return props.lookupTable->getNoise();
+    }
+
+    // For Pink noise, make encoder for pink noise amount...
+    // Pink noise approximation (simple filter-based approach)
+    float pinkNoiseState = 0.0f;
+    float pinkNoise(float input)
+    {
+        // Low-pass filter approximation for pink noise
+        pinkNoiseState = pinkNoiseAmount.pct() * pinkNoiseState + (1.0f - pinkNoiseAmount.pct()) * input;
+        return pinkNoiseState;
     }
 
     float resonator(float in, float f, float d, float& s)

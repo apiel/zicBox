@@ -98,6 +98,9 @@ public:
 
     void increment(int8_t steps)
     {
+        if (_props.skipJumpIncrements) {
+            steps = steps > 0 ? 1 : -1;
+        }
         if (_props.incrementationType == VALUE_INCREMENTATION_EXP) {
             // use _props.step for base
             float base = _props.step == 1.0f ? 2.0f : _props.step;
