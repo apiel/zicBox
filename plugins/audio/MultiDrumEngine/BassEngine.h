@@ -8,6 +8,9 @@
 #include "plugins/audio/utils/effects/applyReverb.h"
 #include "plugins/audio/utils/filterArray.h"
 
+// TODO instead of wavetable, use a simpler waveform engine
+// Also, once we dont use wavetable, freq ratio is not necessary anymore.
+
 class BassEngine : public DrumEngine {
 protected:
     uint8_t baseNote = 60;
