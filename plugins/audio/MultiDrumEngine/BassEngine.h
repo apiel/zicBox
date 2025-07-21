@@ -57,6 +57,7 @@ protected:
 
 public:
     Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24 });
+    Val& bend = val(0.4f, "BEND", { "Bend", .unit = "%" });
     Val& cutoff = val(50.0, "CUTOFF", { "Cutoff", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         float cutoffValue = 0.85 * p.val.pct() + 0.1;
@@ -140,7 +141,12 @@ public:
 
     void sampleOn(float* buf, float envAmp, int sc, int ts) override
     {
-        float out = wave->sample(&wavetable.sampleIndex, freq);
+        // float out = wave->sample(&wavetable.sampleIndex, freq);
+
+        float t = float(sc) / ts;
+        float bendAmt = bend.pct();
+        float bendedFreq = freq * (1.f - bendAmt * t);
+        float out = wave->sample(&wavetable.sampleIndex, bendedFreq);
         out = out * velocity * envAmp;
 
         filter.setCutoff(0.85 * cutoff.pct() * envAmp + 0.1);
