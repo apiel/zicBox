@@ -3,6 +3,9 @@
 - TODO timeline samples arranger... / and bunch of effect on top of it like granular...
 - TODO generic drum, either like electribe ER-1 or other way to switch between multiple kind of engine
 
+- TODO add velocity to all drum engines
+- TODO optimize drum engines
+
 
 - TODO drag and drop editor!! 
     ---> should this be a web interface, that show result in live on the hardware... The web interface just allow to drag some abstract element and let us configure them, but final rendering happen in the hardware..

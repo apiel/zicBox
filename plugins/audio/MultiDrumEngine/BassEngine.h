@@ -13,8 +13,6 @@ protected:
 
     EffectFilterArray<2> filter;
 
-    unsigned int sampleCountDuration = 0;
-    unsigned int sampleIndex = 0;
     float velocity = 1.0f;
 
     WavetableInterface* wave = nullptr;
@@ -155,12 +153,12 @@ public:
         buf[track] = applyReverb(buf[track], reverb.pct(), reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE);
     }
 
-    void noteOn(uint8_t note, float, void* = nullptr) override
+    void noteOn(uint8_t note, float _velocity, void* = nullptr) override
     {
         // pitch.set(pitch.get() * powf(2.f, (note - 60) / 12.f));
         prevOutput = 0.f;
 
-        sampleIndex = 0;
+        velocity = _velocity;
         wavetable.sampleIndex = 0;
         freq = freqRatio.pct() * pow(2, ((note - baseNote + pitch.get()) / 12.0)) + 0.05;
         // printf("freq: %f\n", freq);
