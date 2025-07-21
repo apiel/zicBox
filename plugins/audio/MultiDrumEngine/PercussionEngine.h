@@ -10,7 +10,7 @@
 class PercussionEngine : public DrumEngine {
 public:
     Val& pitch = val(120.f, "PITCH", { "Pitch", .min = 40.f, .max = 400.f, .step = 1.f, .unit = "Hz" });
-    Val& bend = val(0.4f, "BEND", { "Bend", .unit = "%" });
+    Val& bend = val(0.4f, "BEND", { "Bend freq.", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
     Val& harmonics = val(0.3f, "HARMONICS", { "Harmonics", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
 
     Val& snareTune = val(200.f, "NOISE_TUNE", { "Noise Tune", .min = 80.f, .max = 600.f, .step = 1.f, .unit = "Hz" });
@@ -39,17 +39,22 @@ public:
     void sampleOn(float* buf, float envAmp, int sc, int ts) override
     {
         const float t = float(sc) / ts;
-        const float bendEnv = 1.f - bend.pct() * t;
+        // const float bendEnv = 1.f - bend.pct() * t;
+        float bendEnv = 1.f;
+        float bendAmt = bend.pct() * 2.f - 1.f;
+        if (bendAmt > 0.f) {
+            // Downward bend: start high, go low
+            bendEnv = 1.f - bendAmt * t;
+        } else if (bendAmt < 0.f) {
+            // Upward bend: start low, go high
+            bendEnv = 1.f + (-bendAmt) * t;
+        }
         const float freq = pitch.get() * bendEnv;
 
-        // --- Fundamental + 2 harmonics
         float out = 0.f;
         float harmonicsAmt = harmonics.pct() * 2.f - 1.f;
-        // for (int h = 1; h <= 3; ++h) {
-        // float amp = (h == 1) ? 1.f : (harmonics.pct() / h);
-        // out += amp * sinf(phase * h);
-        // }
         if (harmonicsAmt >= 0.f) {
+            // --- Fundamental + 2 harmonics
             for (int h = 1; h <= 3; ++h) {
                 float amp = (h == 1) ? 1.f : (harmonicsAmt / h);
                 out += amp * sinf(phase * h);
