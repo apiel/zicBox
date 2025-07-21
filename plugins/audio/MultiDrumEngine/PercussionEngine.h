@@ -7,14 +7,11 @@
 // TODO optimize this
 // might want to use fastSine
 
-#include "log.h"
-
 class PercussionEngine : public DrumEngine {
-public:
 public:
     Val& pitch = val(120.f, "PITCH", { "Pitch", .min = 40.f, .max = 400.f, .step = 1.f, .unit = "Hz" });
     Val& bend = val(0.4f, "BEND", { "Bend", .unit = "%" });
-    Val& harmonics = val(0.3f, "HARMONICS", { "Harmonics", .unit = "%" });
+    Val& harmonics = val(0.3f, "HARMONICS", { "Harmonics", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
 
     Val& snareTune = val(200.f, "NOISE_TUNE", { "Noise Tune", .min = 80.f, .max = 600.f, .step = 1.f, .unit = "Hz" });
     Val& noiseCharacter = val(0.0f, "NOISE_CHARACTER", { "Noise Character", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
@@ -47,9 +44,18 @@ public:
 
         // --- Fundamental + 2 harmonics
         float out = 0.f;
-        for (int h = 1; h <= 3; ++h) {
-            float amp = (h == 1) ? 1.f : (harmonics.pct() / h);
-            out += amp * sinf(phase * h);
+        float harmonicsAmt = harmonics.pct() * 2.f - 1.f;
+        // for (int h = 1; h <= 3; ++h) {
+        // float amp = (h == 1) ? 1.f : (harmonics.pct() / h);
+        // out += amp * sinf(phase * h);
+        // }
+        if (harmonicsAmt >= 0.f) {
+            for (int h = 1; h <= 3; ++h) {
+                float amp = (h == 1) ? 1.f : (harmonicsAmt / h);
+                out += amp * sinf(phase * h);
+            }
+        } else {
+            out = sinf(phase) + harmonicsAmt * sinf(phase * 3.f); // Folded
         }
         phase += 2.f * M_PI * freq / props.sampleRate;
         out *= envAmp;
@@ -137,11 +143,6 @@ private:
         return input;
     }
 
-    // float resonator(float in, float f, float d, float& s)
-    // {
-    //     s += f / props.sampleRate;
-    //     return in * expf(-d * s) * sinf(2.f * M_PI * f * s);
-    // }
     float resonator(float input, float frequency, float decay, float& time)
     {
         // Advance time in seconds
@@ -150,7 +151,7 @@ private:
         // Exponentially decaying sine wave, modulated by input
         float envelope = expf(-decay * time);
         float sineWave = sinf(2.f * M_PI * frequency * time);
-        
+
         return input * envelope * sineWave;
     }
 };
