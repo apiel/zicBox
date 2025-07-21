@@ -3,6 +3,7 @@
 #include "plugins/audio/utils/Wavetable.h"
 #include "plugins/audio/utils/WavetableGenerator.h"
 #include "plugins/audio/utils/effects/applyBoost.h"
+#include "plugins/audio/utils/effects/applyWaveshape.h"
 #include "plugins/audio/utils/effects/applyCompression.h"
 #include "plugins/audio/utils/effects/applyReverb.h"
 #include "plugins/audio/utils/filterArray.h"
@@ -49,8 +50,9 @@ protected:
             return applyCompression(output, amount);
         }
         float amount = 1 - boost.pct() * 2;
-        return applyBoost(output, amount, prevInput, prevOutput);
-        // TODO maybe instead of boost use drive?
+        // return applyBoost(output, amount, prevInput, prevOutput);
+        // TODO maybe instead of boost use applyWaveshapeLut?
+        return applyWaveshapeLut(output, amount, props.lookupTable);
     }
 
 public:
