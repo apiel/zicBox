@@ -4,7 +4,6 @@
 #include "plugins/audio/utils/WavetableGenerator.h"
 #include "plugins/audio/utils/effects/applyBoost.h"
 #include "plugins/audio/utils/effects/applyCompression.h"
-#include "plugins/audio/utils/effects/applyDrive.h"
 #include "plugins/audio/utils/effects/applyReverb.h"
 #include "plugins/audio/utils/filterArray.h"
 
@@ -53,10 +52,11 @@ protected:
         }
         float amount = 1 - boost.pct() * 2;
         return applyBoost(output, amount, prevInput, prevOutput);
+        // TODO maybe instead of boost use drive?
     }
 
 public:
-    Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24 });
+    Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24, .skipJumpIncrements = true });
     Val& bend = val(0.4f, "BEND", { "Bend", .unit = "%" });
     Val& cutoff = val(50.0, "CUTOFF", { "Cutoff", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
@@ -70,6 +70,7 @@ public:
         filter.setResonance(res);
     });
     Val& clipping = val(0.0, "GAIN_CLIPPING", { "Gain Clipping", .unit = "%" });
+    Val& boost = val(0.0f, "BOOST", { "Boost", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
     Val& reverb = val(0.3f, "REVERB", { "Reverb", .unit = "%" });
     Val& freqRatio = val(25.0f, "FREQ_RATIO", { "Freq. ratio", .step = 0.1, .floatingPoint = 1, .unit = "%" });
     Val& waveformType = val(1.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = BASS_WAVEFORMS_COUNT - 1 }, [&](auto p) {
@@ -118,7 +119,6 @@ public:
             p.val.setString(std::to_string((int)p.val.get()) + "/" + std::to_string(ZIC_WAVETABLE_WAVEFORMS_COUNT));
         }
     });
-    Val& boost = val(0.0f, "BOOST", { "Boost", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
 
     BassEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : DrumEngine(p, c, "Bass")
@@ -126,15 +126,6 @@ public:
     {
         initValues();
     }
-
-    // static constexpr int REVBUF = 48000;
-    // float reverbBuf[REVBUF] = {};
-    // int rIdx = 0;
-
-    // float phase = 0.f;
-    // float filterState = 0.f;
-    // float prevInput = 0.f;
-    // float prevOutput = 0.f;
 
     float scaledClipping = 0.0f;
     float freq = 1.0f;
@@ -161,15 +152,12 @@ public:
 
     void sampleOff(float* buf) override
     {
-        // buf[track] = applyReverb(buf[track], reverb.pct(), reverbBuf, rIdx, REVBUF);
         buf[track] = applyReverb(buf[track], reverb.pct(), reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE);
     }
 
     void noteOn(uint8_t note, float, void* = nullptr) override
     {
-        // phase = 0.f;
-        pitch.set(pitch.get() * powf(2.f, (note - 60) / 12.f));
-        // filterState = 0.f;
+        // pitch.set(pitch.get() * powf(2.f, (note - 60) / 12.f));
         prevOutput = 0.f;
 
         sampleIndex = 0;
@@ -177,33 +165,4 @@ public:
         freq = freqRatio.pct() * pow(2, ((note - baseNote + pitch.get()) / 12.0)) + 0.05;
         // printf("freq: %f\n", freq);
     }
-
-private:
-    // float applyEffects(float x)
-    // {
-    //     float d = drive.pct() * 2.f - 1.f;
-    //     if (d > 0.f) {
-    //         x = applyDrive(x, d, props.lookupTable);
-    //     } else {
-    //         x = applyBoost(x, -d, prevInput, prevOutput);
-    //     }
-    //     return applyReverb(x, reverb.pct(), reverbBuf, rIdx, REVBUF);
-    // }
-
-    // float applyEffects(float input)
-    // {
-    //     float output = input;
-
-    //     output = applyReverb(output, reverb.pct(), reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE);
-
-    //     if (boost.pct() == 0.5f) {
-    //         return output;
-    //     }
-    //     if (boost.pct() > 0.5f) {
-    //         float amount = boost.pct() * 2 - 1.0f;
-    //         return applyCompression(output, amount);
-    //     }
-    //     float amount = 1 - boost.pct() * 2;
-    //     return applyBoost(output, amount, prevInput, prevOutput);
-    // }
 };
