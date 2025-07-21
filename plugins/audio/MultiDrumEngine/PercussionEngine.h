@@ -7,6 +7,8 @@
 // TODO optimize this
 // might want to use fastSine
 
+#include "log.h"
+
 class PercussionEngine : public DrumEngine {
 public:
 public:
@@ -15,7 +17,7 @@ public:
     Val& harmonics = val(0.3f, "HARMONICS", { "Harmonics", .unit = "%" });
 
     Val& snareTune = val(200.f, "NOISE_TUNE", { "Noise Tune", .min = 80.f, .max = 600.f, .step = 1.f, .unit = "Hz" });
-    Val& pinkNoiseAmount = val(0.0f, "PINK_NOISE", { "Pink Noise", .unit = "%" });
+    Val& noiseCharacter = val(0.0f, "NOISE_CHARACTER", { "Noise Character", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
     Val& snareDecay = val(0.15f, "NOISE_DEC", { "Noise Dec", .floatingPoint = 2, .unit = "%", .incrementationType = VALUE_INCREMENTATION_MULT, .skipJumpIncrements = true });
     Val& mix = val(0.5f, "MIX", { "Mix", .unit = "%" });
 
@@ -52,7 +54,7 @@ public:
         phase += 2.f * M_PI * freq / props.sampleRate;
         out *= envAmp;
 
-        float noise = (pinkNoise(whiteNoise()) * 2.f - 1.f) * envAmp;
+        float noise = (customNoise(whiteNoise()) * 2.f - 1.f) * envAmp;
         float snare = resonator(noise, snareTune.get(), snareDecay.pct(), snareState);
         out = out * (1.f - mix.pct()) + snare * mix.pct();
 
@@ -99,11 +101,40 @@ private:
     // For Pink noise, make encoder for pink noise amount...
     // Pink noise approximation (simple filter-based approach)
     float pinkNoiseState = 0.0f;
-    float pinkNoise(float input)
+    float crushedNoise = 0.f;
+    int bitcrushCounter = 0;
+    float customNoise(float input)
     {
-        // Low-pass filter approximation for pink noise
-        pinkNoiseState = pinkNoiseAmount.pct() * pinkNoiseState + (1.0f - pinkNoiseAmount.pct()) * input;
-        return pinkNoiseState;
+        float amt = noiseCharacter.pct() * 2.f - 1.f; // [-1.0, 1.0]
+
+        if (amt < 0.f) {
+            // Pink noise (low-pass)
+            float blend = -amt;
+            pinkNoiseState = blend * pinkNoiseState + (1.f - blend) * input;
+            return pinkNoiseState;
+        } else if (amt > 0.f) {
+            // Bitcrusher
+
+            // Shape amt to be more aggressive earlier (e.g., use sqrt or curve)
+            float shapedAmt = sqrtf(amt); // More audible changes at low values
+
+            float depth = 1.f - shapedAmt; // Invert for resolution
+            int resolution = int(256 * depth);
+            if (resolution < 2)
+                resolution = 2;
+
+            int crushRate = int(8 + (1.f - depth) * 120); // 8 to 128 samples
+            if (++bitcrushCounter >= crushRate) {
+                bitcrushCounter = 0;
+                crushedNoise = roundf(input * resolution) / resolution;
+            }
+
+            // Mix more effect in sooner
+            float mix = shapedAmt; // 0 → 1 as amt → 1, but faster
+            return crushedNoise * mix + input * (1.f - mix);
+        }
+
+        return input;
     }
 
     float resonator(float in, float f, float d, float& s)
