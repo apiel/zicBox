@@ -137,9 +137,20 @@ private:
         return input;
     }
 
-    float resonator(float in, float f, float d, float& s)
+    // float resonator(float in, float f, float d, float& s)
+    // {
+    //     s += f / props.sampleRate;
+    //     return in * expf(-d * s) * sinf(2.f * M_PI * f * s);
+    // }
+    float resonator(float input, float frequency, float decay, float& time)
     {
-        s += f / props.sampleRate;
-        return in * expf(-d * s) * sinf(2.f * M_PI * f * s);
+        // Advance time in seconds
+        time += frequency / props.sampleRate;
+
+        // Exponentially decaying sine wave, modulated by input
+        float envelope = expf(-decay * time);
+        float sineWave = sinf(2.f * M_PI * frequency * time);
+        
+        return input * envelope * sineWave;
     }
 };
