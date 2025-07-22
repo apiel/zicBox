@@ -1,11 +1,11 @@
 #pragma once
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
 #include "plugins/audio/utils/Wavetable.h"
-#include "plugins/audio/utils/WavetableGenerator2.h"
+#include "plugins/audio/utils/WavetableGenerator.h"
 #include "plugins/audio/utils/effects/applyBoost.h"
+#include "plugins/audio/utils/effects/applyWaveshape.h"
 #include "plugins/audio/utils/effects/applyCompression.h"
 #include "plugins/audio/utils/effects/applyReverb.h"
-#include "plugins/audio/utils/effects/applyWaveshape.h"
 #include "plugins/audio/utils/filterArray.h"
 
 // TODO instead of wavetable, use a simpler waveform engine
@@ -22,15 +22,16 @@ protected:
     WavetableInterface* wave = nullptr;
     WavetableGenerator waveform;
     Wavetable wavetable;
-#define BASS_WAVEFORMS_COUNT 3
+#define BASS_WAVEFORMS_COUNT 4
     struct WaveformType {
         std::string name;
         WavetableInterface* wave;
         uint8_t indexType = 0;
     } waveformTypes[BASS_WAVEFORMS_COUNT] = {
-        { "Sawtooth", &waveform, (uint8_t)WavetableGenerator::Type::Saw },
-        { "Square", &waveform, (uint8_t)WavetableGenerator::Type::Square },
-        { "Pulse", &waveform, (uint8_t)WavetableGenerator::Type::Pulse },
+        { "Wavetable", &wavetable },
+        { "Sawtooth", &waveform, WavetableGenerator::Type::Sawtooth },
+        { "Square", &waveform, WavetableGenerator::Type::Square },
+        { "Pulse", &waveform, WavetableGenerator::Type::Pulse },
     };
 
     static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
@@ -84,12 +85,42 @@ public:
         WaveformType type = waveformTypes[(int)p.val.get()];
         p.val.setString(type.name);
         wave = type.wave;
-        waveform.setType((WavetableGenerator::Type)type.indexType);
-        // shape.set(waveform.modulation * 1000.0f);
+        if (p.val.get() != 0.0f) {
+            waveform.setType((WavetableGenerator::Type)type.indexType);
+            shape.set(waveform.shape * 1000.0f);
+            macro.set(waveform.macro * 100.0f);
+        } else {
+            shape.set(wavetable.fileBrowser.position);
+            macro.set(wavetable.getIndex());
+        }
     });
-    Val& shape = val(0.0f, "SHAPE", { "Shape", VALUE_BASIC, .unit = "%" }, [&](auto p) {
+    Val& shape = val(0.0f, "SHAPE", { "Shape", VALUE_STRING, .max = 1000 }, [&](auto p) {
+        if (waveformType.get() != 0.0f) {
+            int direction = p.value - p.val.get();
+            int value = p.val.get() + direction * 10;
+            p.val.setFloat(value);
+            waveform.setShape(p.val.pct());
+            p.val.setString(std::to_string((int)(p.val.get() * 0.1)) + "%");
+        } else {
+            int value = range(p.value, 1.0f, wavetable.fileBrowser.count);
+            p.val.setFloat(value);
+
+            int position = p.val.get();
+            wavetable.open(position, false);
+            p.val.setString(wavetable.fileBrowser.getFileWithoutExtension(position));
+        }
+    });
+    Val& macro = val(0.0f, "MACRO", { "Macro", VALUE_STRING }, [&](auto p) {
+        if (waveformType.get() != 0.0f) {
             p.val.setFloat(p.value);
-            waveform.setMorph(p.val.pct());       
+            waveform.setMacro(p.val.pct());
+            p.val.setString(std::to_string((int)p.val.get()) + "%");
+        } else {
+            float value = range(p.value, 1.0f, ZIC_WAVETABLE_WAVEFORMS_COUNT);
+            p.val.setFloat(value);
+            wavetable.morph((int)p.val.get() - 1);
+            p.val.setString(std::to_string((int)p.val.get()) + "/" + std::to_string(ZIC_WAVETABLE_WAVEFORMS_COUNT));
+        }
     });
 
     BassEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
