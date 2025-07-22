@@ -22,15 +22,17 @@ protected:
     WavetableInterface* wave = nullptr;
     WavetableGenerator waveform;
     Wavetable wavetable;
-#define BASS_WAVEFORMS_COUNT 3
+#define BASS_WAVEFORMS_COUNT 5
     struct WaveformType {
         std::string name;
         WavetableInterface* wave;
         uint8_t indexType = 0;
     } waveformTypes[BASS_WAVEFORMS_COUNT] = {
+        { "Sine", &waveform, (uint8_t)WavetableGenerator::Type::Sine },
         { "Sawtooth", &waveform, (uint8_t)WavetableGenerator::Type::Saw },
         { "Square", &waveform, (uint8_t)WavetableGenerator::Type::Square },
         { "Pulse", &waveform, (uint8_t)WavetableGenerator::Type::Pulse },
+        { "Triangle", &waveform, (uint8_t)WavetableGenerator::Type::Triangle },
     };
 
     static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz

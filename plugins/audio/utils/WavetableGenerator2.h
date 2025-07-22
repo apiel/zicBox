@@ -87,10 +87,80 @@ private:
         const float twopi = 2.0f * pi;
 
         switch (type) {
+            // case Type::Sine: {
+            //     float base = sinf(phase * 2.0f * M_PI);
+            //     float harmonic2 = 0.5f * sinf(phase * 2.0f * M_PI * 2.0f);
+            //     float harmonic3 = 0.25f * sinf(phase * 2.0f * M_PI * 3.0f);
+
+            //     return base + morph * (harmonic2 + harmonic3);
+            // }
+            // case Type::Sine: {
+            //     // base sine phase
+            //     float basePhase = phase * 2.0f * M_PI;
+
+            //     // modulator frequency (could be a fixed ratio or something you pass in)
+            //     float modFreq = 5.0f; // low-frequency modulator (5 Hz for subtle vibrato)
+
+            //     // morph controls modulation index from 0 (no FM) to 2 (strong FM)
+            //     float modIndex = morph * 2.0f;
+
+            //     // frequency modulation with modulator sine wave
+            //     float modulator = sinf(basePhase * modFreq);
+
+            //     // apply FM by modulating phase
+            //     float fmPhase = basePhase + modIndex * modulator;
+
+            //     // final waveform
+            //     return sinf(fmPhase);
+            // }
+
         case Type::Sine: {
-            int idx = static_cast<int>(phase * (LookupTable::size - 1));
-            return sharedLut->sine[idx];
+            // base sine phase
+            float basePhase = phase * 2.0f * M_PI;
+
+            // modulator frequency (fixed low-frequency modulator)
+            float modFreq = 5.0f;
+
+            // morph controls modulation index from 0 (no FM) to 2 (strong FM)
+            float modIndex = morph * 2.0f;
+
+            // frequency modulation with modulator sine wave
+            float modulator = sinf(basePhase * modFreq);
+
+            // frequency compensation: lower base frequency as morph increases
+            float compensatedPhase = basePhase * (1.0f - morph * 0.5f);
+
+            // apply FM by modulating the compensated phase
+            float fmPhase = compensatedPhase + modIndex * modulator;
+
+            // final waveform
+            return sinf(fmPhase);
         }
+
+            // case Type::Sine: {
+            //     // base sine phase
+            //     float basePhase = phase * 2.0f * M_PI;
+
+            //     // modulator frequency (fixed low-frequency modulator)
+            //     float modFreq = 5.0f;
+
+            //     // morph controls modulation index from 0 (no FM) to 2 (strong FM)
+            //     float modIndex = morph * 2.0f;
+
+            //     // frequency modulation with modulator sine wave
+            //     float modulator = sinf(basePhase * modFreq);
+
+            //     // nonlinear compensation: morph^2 curve for stronger drop
+            //     float freqScale = 1.0f - 0.85f * (morph * morph); // 0.85 = how low it can go
+
+            //     float compensatedPhase = basePhase * freqScale;
+
+            //     // apply FM by modulating the compensated phase
+            //     float fmPhase = compensatedPhase + modIndex * modulator;
+
+            //     // final waveform
+            //     return sinf(fmPhase);
+            // }
 
         case Type::Saw: {
             float x = 2.0f * (phase - 0.5f); // Clean saw in [-1, 1]
@@ -115,9 +185,15 @@ private:
         }
 
         case Type::Triangle: {
-            float skew = morph * 0.5f;
-            float t = std::fmod(phase + skew, 1.0f);
-            return 4.0f * std::abs(t - 0.5f) - 1.0f;
+            float t = fmodf(phase, 1.0f);
+            float skew = morph * 0.499f + 0.001f; // prevents division by 0
+
+            if (t < 0.5f) {
+                return (t < skew) ? t / skew : (1.0f - t) / (0.5f - skew);
+            } else {
+                float t2 = t - 0.5f;
+                return (t2 < skew) ? -t2 / skew : -(0.5f - t2) / (0.5f - skew);
+            }
         }
 
         case Type::Pulse: {
