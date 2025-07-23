@@ -24,11 +24,11 @@ public:
     Val& filterFreq = val(0, "FILTER_FREQ", { "Filter Freq", .unit = "%" }); // 1–4 kHz
     Val& filterReso = val(30, "FILTER_RESO", { "Filter Resonance", .unit = "%" });
 
-    Val& punch = val(100, "PUNCH", { "Punch", .unit = "%" });
-    Val& stereo = val(50, "STEREO", { "Stereo", .unit = "%" });
+    Val& punch = val(100, "PUNCH", { "Punch", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
+    Val& transient = val(0.0, "TRANSIENT", { "Transient", .unit = "%" });
+
     Val& boost = val(0.0f, "BOOST", { "Boost", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
     Val& reverb = val(20, "REVERB", { "Reverb", .unit = "%" });
-
 
     static constexpr int REVERB_SIZE = 48000;
     float reverbBuf[REVERB_SIZE] = {};
@@ -89,7 +89,8 @@ public:
             float noise = pink * (1.f - noiseColor.pct()) + white * noiseColor.pct();
 
             float burst = noise * env;
-            output += burst * (1.f + 0.5f * (props.lookupTable->getNoise() - 0.5f) * stereo.pct());
+            // output += burst * (1.f + 0.5f * (props.lookupTable->getNoise() - 0.5f));
+            output += burst;
 
             env *= expf(-1.f / (props.sampleRate * decayTime));
         } else if (burstIndex >= int(burstCount.get())) {
@@ -98,8 +99,22 @@ public:
 
         output = applyBandpass(output);
 
-        if (t < 0.02f) {
-            output *= 1.f + punch.pct() * 2.f;
+        if (punch.get() < 0) {
+            float amt = (0.5f - punch.pct()) * 2.f;
+            output = range(output + output * amt * 8, -1.0f, 1.0f);
+        } else if (t < 0.02f) {
+            float amt = (punch.pct() - 0.5f) * 2.f;
+            output *= 1.f + amt * 2.f;
+        }
+
+        if (t < 0.01f) {
+            float highpassed = output - lpState;
+            lpState += 0.01f * (output - lpState); // simple LPF
+            output += highpassed * transient.pct() * 2.0f;
+            if (t < 0.001f) {
+                float spike = (props.lookupTable->getNoise() - 0.5f) * 10.f;
+                output += spike * transient.pct();
+            }
         }
 
         output = applyBoostOrCompression(output);
