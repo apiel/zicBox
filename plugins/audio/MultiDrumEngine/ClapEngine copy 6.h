@@ -21,8 +21,9 @@ public:
     Val& burstSpacing = val(50, "SPACING", { "Spacing", .unit = "%" });
     Val& noiseColor = val(15, "NOISE_COLOR", { "Noise Color", .unit = "%" });
 
-    Val& filterFreq = val(50, "FILTER_FREQ", { "Filter Freq", .unit = "%" }); // 1–4 kHz
-    Val& filterReso = val(60, "FILTER_RESO", { "Filter Resonance", .unit = "%" });
+    Val& bodyTone = val(30, "BODY_TONE", { "Body Tone", .unit = "%" });
+    Val& bodyDecay = val(30, "BODY_DECAY", { "Body Decay", .unit = "%" });
+    Val& bodyFilter = val(50, "BODY_FILTER", { "Body Filter", .unit = "%" });
 
     Val& stereo = val(50, "STEREO", { "Stereo", .unit = "%" });
     Val& boost = val(0.0f, "BOOST", { "Boost", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
@@ -94,7 +95,34 @@ public:
             active = false;
         }
 
-        output = applyBandpass(output);
+        // Add tonal body
+        if (bodyEnv > 0.f) {
+            float decayTime = bodyDecay.pct() * 0.3f + 0.01f;
+            bodyFreq = 100.f + bodyTone.pct() * 100.f;
+
+            float phaseStep = 2.f * M_PI * bodyFreq / props.sampleRate;
+            // float tone = sinf(bodyPhase);
+            float sine = sinf(bodyPhase);
+            float tone = (sine > 0.f ?  0.6f : - 0.6f);
+
+            bodyPhase += phaseStep;
+
+            float cutoff = 80.f + bodyFilter.pct() * bodyEnv * 400.f;
+            float rc = 1.0f / (2.f * M_PI * cutoff);
+            float dt = 1.f / props.sampleRate;
+            float alpha = dt / (rc + dt); // smoother cutoff calc
+
+            // 1-pole LP & fake BP
+            float hp = tone - lpState;
+            lpState += alpha * hp;
+            bpState += alpha * (lpState - bpState);
+
+            float body = bpState * bodyEnv;
+
+            output += body * 0.5f; // Mix in softly
+
+            bodyEnv *= expf(-1.f / (props.sampleRate * decayTime));
+        }
 
         output = applyBoostOrCompression(output);
         output = applyReverb(output, reverb.pct(), reverbBuf, rIdx, REVERB_SIZE);
@@ -122,38 +150,5 @@ private:
             float amt = (0.5f - boost.pct()) * 2.f;
             return applyCompression(input, amt);
         }
-    }
-
-    // BPF states
-    float bp_x1 = 0.f, bp_x2 = 0.f;
-    float bp_y1 = 0.f, bp_y2 = 0.f;
-    float applyBandpass(float x)
-    {
-        // Biquad bandpass filter (cookbook formula)
-        float f0 = 1000.f + filterFreq.pct() * 3000.f; // 1kHz to 4kHz
-        float Q = 1.0f + filterReso.pct() * 3.0f; // Q: 1 to 4
-
-        float omega = 2.f * M_PI * f0 / props.sampleRate;
-        float alpha = sinf(omega) / (2.f * Q);
-
-        float b0 = alpha;
-        float b1 = 0.f;
-        float b2 = -alpha;
-        float a0 = 1.f + alpha;
-        float a1 = -2.f * cosf(omega);
-        float a2 = 1.f - alpha;
-
-        // Direct Form I
-        float y = (b0 / a0) * x + (b1 / a0) * bp_x1 + (b2 / a0) * bp_x2
-            - (a1 / a0) * bp_y1 - (a2 / a0) * bp_y2;
-
-        // Shift delay line
-        bp_x2 = bp_x1;
-        bp_x1 = x;
-        bp_y2 = bp_y1;
-        bp_y1 = y;
-
-        float gainComp = 1.f + Q;
-        return y * gainComp;
     }
 };

@@ -131,7 +131,7 @@ private:
     {
         // Biquad bandpass filter (cookbook formula)
         float f0 = 1000.f + filterFreq.pct() * 3000.f; // 1kHz to 4kHz
-        float Q = 1.0f + filterReso.pct() * 3.0f; // Q: 1 to 4
+        float Q = 1.0f + filterReso.pct() * 9.0f; // Q: 1 to 10
 
         float omega = 2.f * M_PI * f0 / props.sampleRate;
         float alpha = sinf(omega) / (2.f * Q);
@@ -153,7 +153,6 @@ private:
         bp_y2 = bp_y1;
         bp_y1 = y;
 
-        float gainComp = 1.f + Q;
-        return y * gainComp;
+        return y;
     }
 };
