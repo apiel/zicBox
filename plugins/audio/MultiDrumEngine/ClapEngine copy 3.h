@@ -1,11 +1,11 @@
 #pragma once
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
+#include "plugins/audio/utils/effects/applyReverb.h"
 #include "plugins/audio/utils/effects/applyBoost.h"
 #include "plugins/audio/utils/effects/applyCompression.h"
-#include "plugins/audio/utils/effects/applyReverb.h"
 #include "plugins/audio/utils/effects/applyWaveshape.h"
-#include <array>
 #include <cmath>
+#include <array>
 
 class ClapEngine : public DrumEngine {
 public:
@@ -16,18 +16,14 @@ public:
     }
 
     // --- Parameters (10 total) ---
-    Val& decay = val(25, "DECAY", { "Burst Decay", .unit = "%" });
-    Val& burstCount = val(5, "BURSTS", { "Bursts", .min = 1.f, .max = 10.f });
-    Val& burstSpacing = val(50, "SPACING", { "Spacing", .unit = "%" });
-    Val& noiseColor = val(15, "NOISE_COLOR", { "Noise Color", .unit = "%" });
-
-    Val& bodyTone = val(30, "BODY_TONE", { "Body Tone", .unit = "%" });
-    Val& bodyDecay = val(30, "BODY_DECAY", { "Body Decay", .unit = "%" });
-
-    Val& stereo = val(50, "STEREO", { "Stereo", .unit = "%" });
-    Val& boost = val(0.0f, "BOOST", { "Boost", .unit = "%" });
+    Val& decay = val(25, "DECAY", {"Burst Decay", .unit = "%"});
+    Val& burstCount = val(5, "BURSTS", {"Bursts", .min = 1.f, .max = 10.f});
+    Val& burstSpacing = val(50, "SPACING", {"Spacing", .unit = "%"});
+    Val& noiseColor = val(15, "NOISE_COLOR", {"Noise Color", .unit = "%"});
+    Val& stereo = val(50, "STEREO", {"Stereo", .unit = "%"});
+    Val& boost = val(0.0f, "BOOST", {"Boost", .unit = "%"});
     Val& compression = val(0.0f, "COMPRESSION", { "Compression", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
-    Val& reverb = val(30, "REVERB", { "Reverb", .unit = "%" });
+    Val& reverb = val(30, "REVERB", {"Reverb", .unit = "%"});
 
     static constexpr int REVERB_SIZE = 48000;
     float reverbBuf[REVERB_SIZE] = {};
@@ -40,27 +36,17 @@ public:
     float phase = 0.f;
     bool active = false;
 
-    float bodyEnv = 0.f;
-    float bodyPhase = 0.f;
-    float bodyFreq = 300.f;
-
-    void noteOn(uint8_t, float, void* = nullptr) override
-    {
+    void noteOn(uint8_t, float, void* = nullptr) override {
         burstTimer = 0.f;
         burstIndex = 0;
         env = 1.f;
         phase = 0.f;
         pink = 0.f;
         active = true;
-
-        bodyEnv = 1.f;
-        bodyPhase = 0.f;
     }
 
-    void sampleOn(float* buf, float envAmp, int sc, int ts) override
-    {
-        if (!active)
-            return;
+    void sampleOn(float* buf, float envAmp, int sc, int ts) override {
+        if (!active) return;
 
         float t = float(sc) / ts;
         float spacing = burstSpacing.pct() * 0.03f + 0.01f;
@@ -92,20 +78,6 @@ public:
             active = false;
         }
 
-        // Add tonal body
-        if (bodyEnv > 0.f) {
-            float decayTime = bodyDecay.pct() * 0.3f + 0.01f;
-            bodyFreq = 100.f + bodyTone.pct() * 100.f;
-
-            float phaseStep = 2.f * M_PI * bodyFreq / props.sampleRate;
-            float tone = sinf(bodyPhase) * bodyEnv;
-            bodyPhase += phaseStep;
-
-            output += tone * 0.3f; // Mix in softly
-
-            bodyEnv *= expf(-1.f / (props.sampleRate * decayTime));
-        }
-
         output = applyBoost(output, boost.pct(), prevInput, prevOutput);
         output = doCompression(output);
         output = applyReverb(output, reverb.pct(), reverbBuf, rIdx, REVERB_SIZE);
@@ -113,8 +85,7 @@ public:
         buf[track] = output * envAmp;
     }
 
-    void sampleOff(float* buf) override
-    {
+    void sampleOff(float* buf) override {
         buf[track] = applyReverb(buf[track], reverb.pct(), reverbBuf, rIdx, REVERB_SIZE);
     }
 
@@ -122,7 +93,7 @@ private:
     float prevInput = 0.f;
     float prevOutput = 0.f;
 
-    float doCompression(float input)
+        float doCompression(float input)
     {
         if (compression.pct() == 0.5f) {
             return input;

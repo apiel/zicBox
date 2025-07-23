@@ -3,9 +3,9 @@
 #include "plugins/audio/utils/Wavetable.h"
 #include "plugins/audio/utils/WavetableGenerator2.h"
 #include "plugins/audio/utils/effects/applyCompression.h"
+#include "plugins/audio/utils/effects/applyWaveshape.h"
 #include "plugins/audio/utils/effects/applyDrive.h"
 #include "plugins/audio/utils/effects/applyReverb.h"
-#include "plugins/audio/utils/effects/applyWaveshape.h"
 #include "plugins/audio/utils/filterArray.h"
 
 // TODO instead of wavetable, use a simpler waveform engine
