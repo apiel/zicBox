@@ -13,8 +13,6 @@
 
 class BassEngine : public DrumEngine {
 protected:
-    uint8_t baseNote = 60;
-
     EffectFilterArray<2> filter;
 
     float velocity = 1.0f;
@@ -76,7 +74,6 @@ public:
     Val& clipping = val(0.0, "GAIN_CLIPPING", { "Gain Clipping", .unit = "%" });
     Val& boost = val(0.0f, "BOOST", { "Boost", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
     Val& reverb = val(0.3f, "REVERB", { "Reverb", .unit = "%" });
-    Val& freqRatio = val(25.0f, "FREQ_RATIO", { "Freq. ratio", .step = 0.1, .floatingPoint = 1, .unit = "%" });
     Val& waveformType = val(1.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = BASS_WAVEFORMS_COUNT - 1 }, [&](auto p) {
         float current = p.val.get();
         p.val.setFloat(p.value);
@@ -129,14 +126,17 @@ public:
         buf[track] = applyReverb(buf[track], reverb.pct(), reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE);
     }
 
+    // Higher base note is, lower pitch will be
+    //
+    // Usualy our base note is 60
+    // but since we want a bass sound we want to remove one octave (12 semitones)
+    // So we send note 60, we will play note 48...
+    uint8_t baseNote = 60 + 12; 
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
     {
-        // pitch.set(pitch.get() * powf(2.f, (note - 60) / 12.f));
         prevOutput = 0.f;
-
         velocity = _velocity;
         wavetable.sampleIndex = 0;
-        freq = freqRatio.pct() * pow(2, ((note - baseNote + pitch.get()) / 12.0)) + 0.05;
-        // printf("freq: %f\n", freq);
+        freq = pow(2, ((note - baseNote + pitch.get()) / 12.0));
     }
 };
