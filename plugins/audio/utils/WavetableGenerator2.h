@@ -94,25 +94,6 @@ private:
 
             //     return base + morph * (harmonic2 + harmonic3);
             // }
-            // case Type::Sine: {
-            //     // base sine phase
-            //     float basePhase = phase * 2.0f * M_PI;
-
-            //     // modulator frequency (could be a fixed ratio or something you pass in)
-            //     float modFreq = 5.0f; // low-frequency modulator (5 Hz for subtle vibrato)
-
-            //     // morph controls modulation index from 0 (no FM) to 2 (strong FM)
-            //     float modIndex = morph * 2.0f;
-
-            //     // frequency modulation with modulator sine wave
-            //     float modulator = sinf(basePhase * modFreq);
-
-            //     // apply FM by modulating phase
-            //     float fmPhase = basePhase + modIndex * modulator;
-
-            //     // final waveform
-            //     return sinf(fmPhase);
-            // }
 
         case Type::Sine: {
             // base sine phase
@@ -136,31 +117,6 @@ private:
             // final waveform
             return sinf(fmPhase);
         }
-
-            // case Type::Sine: {
-            //     // base sine phase
-            //     float basePhase = phase * 2.0f * M_PI;
-
-            //     // modulator frequency (fixed low-frequency modulator)
-            //     float modFreq = 5.0f;
-
-            //     // morph controls modulation index from 0 (no FM) to 2 (strong FM)
-            //     float modIndex = morph * 2.0f;
-
-            //     // frequency modulation with modulator sine wave
-            //     float modulator = sinf(basePhase * modFreq);
-
-            //     // nonlinear compensation: morph^2 curve for stronger drop
-            //     float freqScale = 1.0f - 0.85f * (morph * morph); // 0.85 = how low it can go
-
-            //     float compensatedPhase = basePhase * freqScale;
-
-            //     // apply FM by modulating the compensated phase
-            //     float fmPhase = compensatedPhase + modIndex * modulator;
-
-            //     // final waveform
-            //     return sinf(fmPhase);
-            // }
 
         case Type::Saw: {
             float x = 2.0f * (phase - 0.5f); // Clean saw in [-1, 1]

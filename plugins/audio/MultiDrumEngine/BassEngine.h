@@ -20,7 +20,7 @@ protected:
     WavetableInterface* wave = nullptr;
     WavetableGenerator waveform;
     Wavetable wavetable;
-#define BASS_WAVEFORMS_COUNT 5
+#define BASS_WAVEFORMS_COUNT 6
     struct WaveformType {
         std::string name;
         WavetableInterface* wave;
@@ -31,6 +31,7 @@ protected:
         { "Square", &waveform, (uint8_t)WavetableGenerator::Type::Square },
         { "Pulse", &waveform, (uint8_t)WavetableGenerator::Type::Pulse },
         { "Triangle", &waveform, (uint8_t)WavetableGenerator::Type::Triangle },
+        { "FMSquare", &waveform, (uint8_t)WavetableGenerator::Type::FMSquare },
     };
 
     static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
