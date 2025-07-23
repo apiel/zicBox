@@ -21,12 +21,14 @@ public:
     Val& burstSpacing = val(50, "SPACING", { "Spacing", .unit = "%" });
     Val& noiseColor = val(15, "NOISE_COLOR", { "Noise Color", .unit = "%" });
 
-    Val& filterFreq = val(50, "FILTER_FREQ", { "Filter Freq", .unit = "%" }); // 1–4 kHz
-    Val& filterReso = val(60, "FILTER_RESO", { "Filter Resonance", .unit = "%" });
+    Val& filterFreq = val(0, "FILTER_FREQ", { "Filter Freq", .unit = "%" }); // 1–4 kHz
+    Val& filterReso = val(7, "FILTER_RESO", { "Filter Resonance", .unit = "%" });
 
+    Val& punch = val(100, "PUNCH", { "Punch", .unit = "%" });
     Val& stereo = val(50, "STEREO", { "Stereo", .unit = "%" });
     Val& boost = val(0.0f, "BOOST", { "Boost", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
     Val& reverb = val(30, "REVERB", { "Reverb", .unit = "%" });
+
 
     static constexpr int REVERB_SIZE = 48000;
     float reverbBuf[REVERB_SIZE] = {};
@@ -95,6 +97,10 @@ public:
         }
 
         output = applyBandpass(output);
+
+        if (t < 0.02f) {
+            output *= 1.f + punch.pct() * 2.f;
+        }
 
         output = applyBoostOrCompression(output);
         output = applyReverb(output, reverb.pct(), reverbBuf, rIdx, REVERB_SIZE);
