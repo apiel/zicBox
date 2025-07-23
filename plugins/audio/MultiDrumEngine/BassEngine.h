@@ -2,8 +2,8 @@
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
 #include "plugins/audio/utils/Wavetable.h"
 #include "plugins/audio/utils/WavetableGenerator2.h"
-#include "plugins/audio/utils/effects/applyBoost.h"
 #include "plugins/audio/utils/effects/applyCompression.h"
+#include "plugins/audio/utils/effects/applyDrive.h"
 #include "plugins/audio/utils/effects/applyReverb.h"
 #include "plugins/audio/utils/effects/applyWaveshape.h"
 #include "plugins/audio/utils/filterArray.h"
@@ -38,24 +38,27 @@ protected:
     float reverbBuffer[REVERB_BUFFER_SIZE] = { 0.0f };
     int reverbIndex = 0;
 
-    float prevInput = 0.0f, prevOutput = 0.0f;
     float applyEffects(float input)
     {
         float output = input;
 
         output = applyReverb(output, reverb.pct(), reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE);
+        output = doCompression(output);
+        output = applyDrive(output, drive.pct(), props.lookupTable);
+        return output;
+    }
 
-        if (boost.pct() == 0.5f) {
-            return output;
+    float doCompression(float input)
+    {
+        if (compression.pct() == 0.5f) {
+            return input;
         }
-        if (boost.pct() > 0.5f) {
-            float amount = boost.pct() * 2 - 1.0f;
-            return applyCompression(output, amount);
+        if (compression.pct() > 0.5f) {
+            float amount = compression.pct() * 2 - 1.0f;
+            return applyCompression(input, amount);
         }
-        float amount = 1 - boost.pct() * 2;
-        // return applyBoost(output, amount, prevInput, prevOutput);
-        // TODO maybe instead of boost use applyWaveshapeLut?
-        return applyWaveshapeLut(output, amount, props.lookupTable);
+        float amount = 1 - compression.pct() * 2;
+        return applyWaveshapeLut(input, amount, props.lookupTable);
     }
 
 public:
@@ -73,7 +76,8 @@ public:
         filter.setResonance(res);
     });
     Val& clipping = val(0.0, "GAIN_CLIPPING", { "Gain Clipping", .unit = "%" });
-    Val& boost = val(0.0f, "BOOST", { "Boost", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
+    Val& drive = val(0.0f, "DRIVE", { "Drive", .unit = "%" });
+    Val& compression = val(0.0f, "COMPRESSION", { "Compression", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
     Val& reverb = val(0.3f, "REVERB", { "Reverb", .unit = "%" });
     Val& waveformType = val(1.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = BASS_WAVEFORMS_COUNT - 1 }, [&](auto p) {
         float current = p.val.get();
@@ -88,8 +92,8 @@ public:
         // shape.set(waveform.modulation * 1000.0f);
     });
     Val& shape = val(0.0f, "SHAPE", { "Shape", VALUE_BASIC, .unit = "%" }, [&](auto p) {
-            p.val.setFloat(p.value);
-            waveform.setMorph(p.val.pct());       
+        p.val.setFloat(p.value);
+        waveform.setMorph(p.val.pct());
     });
 
     BassEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
@@ -102,11 +106,11 @@ public:
     float scaledClipping = 0.0f;
     float freq = 1.0f;
 
-    void sampleOn(float* buf, float envAmp, int sc, int ts) override
+    void sampleOn(float* buf, float envAmp, int sampleCounter, int totalSamples) override
     {
         // float out = wave->sample(&wavetable.sampleIndex, freq);
 
-        float t = float(sc) / ts;
+        float t = float(sampleCounter) / totalSamples;
         float bendAmt = bend.pct();
         float bendedFreq = freq * (1.f - bendAmt * t);
         float out = wave->sample(&wavetable.sampleIndex, bendedFreq);
@@ -132,10 +136,9 @@ public:
     // Usualy our base note is 60
     // but since we want a bass sound we want to remove one octave (12 semitones)
     // So we send note 60, we will play note 48...
-    uint8_t baseNote = 60 + 12; 
+    uint8_t baseNote = 60 + 12;
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
     {
-        prevOutput = 0.f;
         velocity = _velocity;
         wavetable.sampleIndex = 0;
         freq = pow(2, ((note - baseNote + pitch.get()) / 12.0));
