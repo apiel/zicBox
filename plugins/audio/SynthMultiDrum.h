@@ -5,6 +5,7 @@
 #include "plugins/audio/MultiDrumEngine/PercussionEngine.h"
 #include "plugins/audio/MultiDrumEngine/BassEngine.h"
 #include "plugins/audio/MultiDrumEngine/ClapEngine.h"
+#include "plugins/audio/MultiDrumEngine/KickEngine.h"
 
 /*md
 ## SynthMultiDrum
@@ -20,12 +21,14 @@ protected:
     PercussionEngine percEngine;
     BassEngine bassEngine;
     ClapEngine clapEngine;
+    KickEngine kickEngine;
 
-    DrumEngine* drumEngines[4] = {
+    DrumEngine* drumEngines[5] = {
         &metalDrumEngine,
         &percEngine,
         &bassEngine,
         &clapEngine,
+        &kickEngine
     };
     DrumEngine* drumEngine = drumEngines[0];
 
@@ -53,7 +56,7 @@ public:
     };
 
     /*md - `ENGINE` select the drum engine. */
-    Val& engine = val(0, "ENGINE", { "Engine", VALUE_STRING, .min = 0, .max = 3 }, [&](auto p) {
+    Val& engine = val(0, "ENGINE", { "Engine", VALUE_STRING, .min = 0, .max = 4 }, [&](auto p) {
         p.val.setFloat(p.value);
         drumEngine = drumEngines[(int)p.val.get()];
         p.val.setString(drumEngine->name);
@@ -80,6 +83,7 @@ public:
         , percEngine(props, config)
         , bassEngine(props, config)
         , clapEngine(props, config)
+        , kickEngine(props, config)
     {
         initValues();
     }

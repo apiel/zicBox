@@ -1,15 +1,11 @@
 #pragma once
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
-#include "plugins/audio/utils/Wavetable.h"
 #include "plugins/audio/utils/WavetableGenerator2.h"
 #include "plugins/audio/utils/effects/applyCompression.h"
 #include "plugins/audio/utils/effects/applyWaveshape.h"
 #include "plugins/audio/utils/effects/applyDrive.h"
 #include "plugins/audio/utils/effects/applyReverb.h"
 #include "plugins/audio/utils/filterArray.h"
-
-// TODO instead of wavetable, use a simpler waveform engine
-// Also, once we dont use wavetable, freq ratio is not necessary anymore.
 
 class BassEngine : public DrumEngine {
 protected:
@@ -19,7 +15,6 @@ protected:
 
     WavetableInterface* wave = nullptr;
     WavetableGenerator waveform;
-    Wavetable wavetable;
 #define BASS_WAVEFORMS_COUNT 6
     struct WaveformType {
         std::string name;
@@ -106,6 +101,7 @@ public:
     float scaledClipping = 0.0f;
     float freq = 1.0f;
 
+    float sampleIndex = 0.0f;
     void sampleOn(float* buf, float envAmp, int sampleCounter, int totalSamples) override
     {
         // float out = wave->sample(&wavetable.sampleIndex, freq);
@@ -113,7 +109,7 @@ public:
         float t = float(sampleCounter) / totalSamples;
         float bendAmt = bend.pct();
         float bendedFreq = freq * (1.f - bendAmt * t);
-        float out = wave->sample(&wavetable.sampleIndex, bendedFreq);
+        float out = wave->sample(&sampleIndex, bendedFreq);
         out = out * velocity * envAmp;
 
         filter.setCutoff(0.85 * cutoff.pct() * envAmp + 0.1);
@@ -140,7 +136,7 @@ public:
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
     {
         velocity = _velocity;
-        wavetable.sampleIndex = 0;
+        sampleIndex = 0;
         freq = pow(2, ((note - baseNote + pitch.get()) / 12.0));
     }
 };
