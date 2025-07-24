@@ -3,7 +3,6 @@
 #include "plugins/audio/utils/effects/applyBoost.h"
 #include "plugins/audio/utils/effects/applyCompression.h"
 #include "plugins/audio/utils/effects/applyReverb.h"
-#include "plugins/audio/utils/effects/applyWaveshape.h"
 #include <array>
 #include <cmath>
 

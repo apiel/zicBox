@@ -1,11 +1,18 @@
 #pragma once
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
 #include "plugins/audio/utils/EnvelopeTableGenerator.h"
+#include "plugins/audio/utils/MMfilter.h"
 #include "plugins/audio/utils/WavetableGenerator2.h"
+#include "plugins/audio/utils/val/valMMfilterCutoff.h"
+#include "plugins/audio/utils/effects/applyBoost.h"
+#include "plugins/audio/utils/effects/applyCompression.h"
+#include "plugins/audio/utils/effects/applyWaveshape.h"
 
 class KickEngine : public DrumEngine {
 protected:
     float velocity = 1.0f;
+
+    MMfilter filter;
 
     WavetableInterface* wave = nullptr;
     WavetableGenerator waveform;
@@ -50,6 +57,7 @@ protected:
 
 public:
     Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24, .skipJumpIncrements = true });
+    Val& transient = val(0.0, "TRANSIENT", { "Transient", .unit = "%" });
     Val& waveformType = val(1.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = WAVEFORMS_COUNT - 1 }, [&](auto p) {
         float current = p.val.get();
         p.val.setFloat(p.value);
@@ -82,6 +90,22 @@ public:
         envelope.setMorph(p.val.pct());
     });
 
+    Val& cutoff = val(0.0, "CUTOFF", { "LPF | HPF", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0 }, [&](auto p) {
+        valMMfilterCutoff(p, filter);
+    });
+    Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        filter.setResonance(p.val.pct());
+    });
+
+    float waveshapeAmount = 0.0f;
+    Val& boost = val(0.0f, "BOOST", { "Boost", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
+        Val& waveshape = val(0.0, "WAVESHAPE", { "Waveshape", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        waveshapeAmount = p.val.pct() * 2 - 1.0f;
+    });
+
+
     KickEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : DrumEngine(p, c, "Kick")
         , waveform(props.lookupTable, props.sampleRate)
@@ -94,6 +118,7 @@ public:
     float freq = 1.0f;
 
     float sampleIndex = 0.0f;
+    float lpState = 0.f;
     void sampleOn(float* buf, float envAmp, int sampleCounter, int totalSamples) override
     {
 
@@ -101,7 +126,22 @@ public:
         float envFreq = envelope.next(t);
         float modulatedFreq = freq + envFreq;
         float out = wave->sample(&sampleIndex, modulatedFreq) * envAmp;
-        buf[track] = out;
+
+        if (t < 0.01f) {
+            float highpassed = out - lpState;
+            lpState += 0.01f * (out - lpState); // simple LPF
+            out += highpassed * transient.pct() * 2.0f;
+            if (t < 0.001f) {
+                float spike = (props.lookupTable->getNoise() - 0.5f) * 10.f;
+                out += spike * transient.pct();
+            }
+        }
+
+        out = applyBoostOrCompression(out);
+        out = applyWaveshape(out, waveshapeAmount, props.lookupTable);
+        out = filter.process(out);
+
+        buf[track] = out * velocity;
     }
 
     // Higher base note is, lower pitch will be
@@ -114,11 +154,30 @@ public:
     {
         velocity = _velocity;
         sampleIndex = 0;
+        lpState = 0.f;
         freq = pow(2, ((note - baseNote + pitch.get()) / 12.0));
     }
 
-    float* getShape(float pct) override {
-        shapeValue = - envelope.next(pct);
+    float* getShape(float pct) override
+    {
+        shapeValue = -envelope.next(pct);
         return &shapeValue;
+    }
+
+protected:
+    float prevInput = 0.f;
+    float prevOutput = 0.f;
+
+    float applyBoostOrCompression(float input)
+    {
+        if (boost.pct() == 0.5f)
+            return input;
+        if (boost.pct() > 0.5f) {
+            float amt = (boost.pct() - 0.5f) * 2.f;
+            return applyBoost(input, amt, prevInput, prevOutput);
+        } else {
+            float amt = (0.5f - boost.pct()) * 2.f;
+            return applyCompression(input, amt);
+        }
     }
 };

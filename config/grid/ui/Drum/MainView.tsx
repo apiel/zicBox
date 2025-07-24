@@ -192,7 +192,7 @@ export function MainView({ name, track, synthName, color }: Props) {
                         visibilityContext={[visibilityContext]}
                     />
 
-                    <GraphEncoder
+                    {/* <GraphEncoder
                         bounds={[300, 10, 100, 80]}
                         audioPlugin={synthName}
                         dataId="ENGINE_SHAPE"
@@ -201,7 +201,7 @@ export function MainView({ name, track, synthName, color }: Props) {
                         fillColor={rgb(194, 175, 107)}
                         track={track}
                         visibilityContext={[visibilityContext]}
-                    />
+                    /> */}
 
                     <SequencerCard
                         bounds={seqCardBounds_small}
