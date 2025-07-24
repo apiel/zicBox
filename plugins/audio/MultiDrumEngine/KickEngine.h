@@ -77,9 +77,6 @@ public:
     Val& envelopeType = val(0.0f, "ENVELOPE_TYPE", { "Envelope", VALUE_STRING, .max = ENVELOP_COUNT - 1 }, [&](auto p) {
         float current = p.val.get();
         p.val.setFloat(p.value);
-        if (current == p.val.get()) {
-            return;
-        }
         WaveformType type = envelopeTypes[(int)p.val.get()];
         p.val.setString(type.name);
         envelope.setType((EnvelopeTableGenerator::Type)type.indexType);
