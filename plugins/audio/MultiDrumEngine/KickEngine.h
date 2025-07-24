@@ -12,7 +12,7 @@ protected:
     EnvelopeTableGenerator envelope;
 
 #define WAVEFORMS_COUNT 6
-#define ENVELOP_COUNT 4
+#define ENVELOP_COUNT 20
     struct WaveformType {
         std::string name;
         WavetableInterface* wave;
@@ -30,6 +30,22 @@ protected:
           { "DownHills", &envelope, (uint8_t)EnvelopeTableGenerator::Type::DownHills },
           { "MultiDecay", &envelope, (uint8_t)EnvelopeTableGenerator::Type::MultiDecay },
           { "SinPow", &envelope, (uint8_t)EnvelopeTableGenerator::Type::SinPow },
+          { "ShortPunch", &envelope, (uint8_t)EnvelopeTableGenerator::Type::ShortPunch },
+          { "LongBoom", &envelope, (uint8_t)EnvelopeTableGenerator::Type::LongBoom },
+          { "SnappyFall", &envelope, (uint8_t)EnvelopeTableGenerator::Type::SnappyFall },
+          { "SmoothSlope", &envelope, (uint8_t)EnvelopeTableGenerator::Type::SmoothSlope },
+          { "RubberDrop", &envelope, (uint8_t)EnvelopeTableGenerator::Type::RubberDrop },
+          { "TiltedArc", &envelope, (uint8_t)EnvelopeTableGenerator::Type::TiltedArc },
+          { "BassPluck", &envelope, (uint8_t)EnvelopeTableGenerator::Type::BassPluck },
+          { "BreakPoint", &envelope, (uint8_t)EnvelopeTableGenerator::Type::BreakPoint },
+          { "ClickSpike", &envelope, (uint8_t)EnvelopeTableGenerator::Type::ClickSpike },
+          { "InversePow", &envelope, (uint8_t)EnvelopeTableGenerator::Type::InversePow },
+          { "AnalogSnap", &envelope, (uint8_t)EnvelopeTableGenerator::Type::AnalogSnap },
+          { "CubicDrop", &envelope, (uint8_t)EnvelopeTableGenerator::Type::CubicDrop },
+          { "GlitchFall", &envelope, (uint8_t)EnvelopeTableGenerator::Type::GlitchFall },
+          { "HyperCurve", &envelope, (uint8_t)EnvelopeTableGenerator::Type::HyperCurve },
+          { "Foldback", &envelope, (uint8_t)EnvelopeTableGenerator::Type::Foldback },
+          { "GhostTail", &envelope, (uint8_t)EnvelopeTableGenerator::Type::GhostTail },
       };
 
 public:
@@ -51,7 +67,7 @@ public:
         waveform.setMorph(p.val.pct());
     });
 
-    Val& envelopeType = val(1.0f, "ENVELOPE_TYPE", { "Envelope", VALUE_STRING, .max = ENVELOP_COUNT - 1 }, [&](auto p) {
+    Val& envelopeType = val(0.0f, "ENVELOPE_TYPE", { "Envelope", VALUE_STRING, .max = ENVELOP_COUNT - 1 }, [&](auto p) {
         float current = p.val.get();
         p.val.setFloat(p.value);
         if (current == p.val.get()) {
@@ -99,5 +115,10 @@ public:
         velocity = _velocity;
         sampleIndex = 0;
         freq = pow(2, ((note - baseNote + pitch.get()) / 12.0));
+    }
+
+    float* getShape(float pct) override {
+        shapeValue = - envelope.next(pct);
+        return &shapeValue;
     }
 };

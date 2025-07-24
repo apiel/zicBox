@@ -19,4 +19,9 @@ public:
 
     virtual void sampleOn(float* buf, float envAmp, int sampleCounter, int totalSamples) = 0;
     virtual void sampleOff(float* buf) { }
+
+    float shapeValue = 0.0f;
+    virtual float* getShape(float pct) {
+        return &shapeValue;
+    }
 };

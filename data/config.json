@@ -159,6 +159,7 @@
         {"audioPlugin":"Drum2","param":"VAL_8","encoderId":10,"bounds":[120,300,118,100],"color":"quaternary","track":2,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"KnobValue"},
         {"audioPlugin":"Drum2","param":"VAL_9","encoderId":11,"bounds":[240,300,118,100],"color":"tertiary","track":2,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"KnobValue"},
         {"audioPlugin":"Drum2","param":"VAL_10","encoderId":12,"bounds":[360,300,118,100],"color":"primary","track":2,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"KnobValue"},
+        {"bounds":[300,10,100,80],"audioPlugin":"Drum2","dataId":"ENGINE_SHAPE","values":["VAL_4","VAL_5"],"outlineColor":"quaternary","fillColor":"#c2af6b","track":2,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"GraphEncoder"},
         {"bounds":[120,450,240,140],"audioPlugin":"Sequencer","track":2,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"SequencerCard"},
         {"keys":[{"key":"F1","action":"setView:Drum1"},{"key":"1","action":"noteOn:Drum1:60"},{"key":"F2","action":"setView:Drum2"},{"key":"2","action":"noteOn:Drum2:60"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"keys":[{"key":"F11","action":"setView:Drum2Seq"},{"key":"F12","action":"contextToggle:254:1:0"},{"key":"=","action":"playPause"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
