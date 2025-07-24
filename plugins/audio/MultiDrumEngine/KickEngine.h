@@ -3,10 +3,10 @@
 #include "plugins/audio/utils/EnvelopeTableGenerator.h"
 #include "plugins/audio/utils/MMfilter.h"
 #include "plugins/audio/utils/WavetableGenerator2.h"
-#include "plugins/audio/utils/val/valMMfilterCutoff.h"
 #include "plugins/audio/utils/effects/applyBoost.h"
 #include "plugins/audio/utils/effects/applyCompression.h"
 #include "plugins/audio/utils/effects/applyWaveshape.h"
+#include "plugins/audio/utils/val/valMMfilterCutoff.h"
 
 class KickEngine : public DrumEngine {
 protected:
@@ -57,7 +57,7 @@ protected:
 
 public:
     Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24, .skipJumpIncrements = true });
-    Val& transient = val(0.0, "TRANSIENT", { "Transient", .unit = "%" });
+    Val& transient = val(0.0, "TRANSIENT", { "Transient", VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
     Val& waveformType = val(1.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = WAVEFORMS_COUNT - 1 }, [&](auto p) {
         float current = p.val.get();
         p.val.setFloat(p.value);
@@ -68,7 +68,6 @@ public:
         p.val.setString(type.name);
         wave = type.wave;
         waveform.setType((WavetableGenerator::Type)type.indexType);
-        // shape.set(waveform.modulation * 1000.0f);
     });
     Val& shape = val(0.0f, "WAVEFORM_SHAPE", { "Waveform Shape", VALUE_BASIC, .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
@@ -100,11 +99,10 @@ public:
 
     float waveshapeAmount = 0.0f;
     Val& boost = val(0.0f, "BOOST", { "Boost", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
-        Val& waveshape = val(0.0, "WAVESHAPE", { "Waveshape", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" }, [&](auto p) {
+    Val& waveshape = val(0.0, "WAVESHAPE", { "Waveshape", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         waveshapeAmount = p.val.pct() * 2 - 1.0f;
     });
-
 
     KickEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : DrumEngine(p, c, "Kick")
@@ -128,12 +126,23 @@ public:
         float out = wave->sample(&sampleIndex, modulatedFreq) * envAmp;
 
         if (t < 0.01f) {
-            float highpassed = out - lpState;
-            lpState += 0.01f * (out - lpState); // simple LPF
-            out += highpassed * transient.pct() * 2.0f;
-            if (t < 0.001f) {
-                float spike = (props.lookupTable->getNoise() - 0.5f) * 10.f;
-                out += spike * transient.pct();
+            float amt = transient.pct(); // 0.0 to 1.0
+
+            if (amt < 0.5f) {
+                if (t < 0.005f) {
+                float weight = (0.5f - amt) * 2.0f;
+                float noise = (props.lookupTable->getNoise() - 0.5f) * 2.0f;
+                out += noise * weight * 6.0f;
+                }
+            } else if (amt > 0.5f) {
+                float weight = (amt - 0.5f) * 2.0f;
+                float highpassed = out - lpState;
+                lpState += 0.01f * (out - lpState); // simple LPF
+                out += highpassed * weight * 2.0f;
+                if (t < 0.001f) {
+                    float spike = (props.lookupTable->getNoise() - 0.5f) * 10.f;
+                    out += spike * weight;
+                }
             }
         }
 
