@@ -97,8 +97,8 @@ public:
         val = watch(audioPlugin->getValue(param));
         if (val != NULL) {
             floatPrecision = val->props().floatingPoint;
+            useStringValue = val->hasType(VALUE_STRING);
         }
-        useStringValue = val->hasType(VALUE_STRING);
 
         /// The encoder id that will interract with this component.
         encoderId = config.value("encoderId", encoderId); //eg: 0

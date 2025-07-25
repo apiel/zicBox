@@ -5,11 +5,10 @@
 - TODO timeline samples arranger... / and bunch of effect on top of it like granular...
 - TODO generic drum, either like electribe ER-1 or other way to switch between multiple kind of engine
 
-- TODO kick23 try new wave generator, to simplify things... and for wavetable it would just be once reached all basic waveform, then we have wavetables...
-
 - TODO linearInterpolation in generator class repeated. need to see if we can use the already existing one...
 - TODO add velocity to all drum engines
 - TODO optimize drum engines
+- TODO like it was done for transient, maybe we can combine into one parameter for EnvelopTable generator and WavetableGenrator 
 
 
 - TODO drag and drop editor!! 

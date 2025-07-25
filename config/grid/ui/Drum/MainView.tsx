@@ -5,6 +5,7 @@ import { GraphEncoder } from '@/libs/nativeComponents/GraphEncoder';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
+import { StringVal } from '@/libs/nativeComponents/StringVal';
 import { Value } from '@/libs/nativeComponents/Value';
 import { rgb } from '@/libs/ui';
 import { Drum2 } from '../components/Common';
@@ -69,6 +70,12 @@ export function MainView({ name, track, synthName, color }: Props) {
                         visibilityContext={[
                             { condition: 'SHOW_WHEN', index: shiftContext, value: 1 },
                         ]}
+                    />
+
+                    <StringVal
+                        audioPlugin={synthName}
+                        param="ENGINE"
+                        bounds={[280, 22, 100, 20]}
                     />
 
                     <KnobValue

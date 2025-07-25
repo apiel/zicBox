@@ -146,6 +146,7 @@
         {"bounds":[55,28,6,6],"color":"#fd6f0e","componentName":"Rect"},
         {"bounds":[0,60,480,580],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":1}],"componentName":"Rect"},
         {"audioPlugin":"Drum2","param":"ENGINE","encoderId":1,"bounds":[0,60,118,100],"color":"secondary","track":2,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":1}],"componentName":"KnobValue"},
+        {"audioPlugin":"Drum2","param":"ENGINE","bounds":[280,22,100,20],"componentName":"StringVal"},
         {"audioPlugin":"Drum2","param":"DURATION","encoderId":1,"bounds":[0,60,118,100],"color":"secondary","track":2,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"KnobValue"},
         {"bounds":[120,70,118,100],"audioPlugin":"Drum2","dataId":"ENV_AMP_FORM","values":["AMP_MORPH"],"outlineColor":"quaternary","fillColor":"#c2af6b","track":2,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"GraphEncoder"},
         {"encoderId":2,"bounds":[120,130,118,30],"audioPlugin":"Drum2","param":"AMP_MORPH","track":2,"barHeight":1,"barColor":"quaternary","alignLeft":true,"showLabelOverValue":1,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"Value"},
