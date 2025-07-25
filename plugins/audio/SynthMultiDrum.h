@@ -87,7 +87,7 @@ public:
         , clapEngine(props, config)
         , kickEngine(props, config)
     {
-        initValues();
+        initValues({ &engine });
     }
 
     int totalSamples = 0;

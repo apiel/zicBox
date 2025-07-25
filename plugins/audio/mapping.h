@@ -195,7 +195,19 @@ public:
         }
     }
 
-    int getValueIndex(std::string key)
+    void initValues(std::vector<ValueInterface *> skips)
+    {
+        for (ValueInterface* val : mapping) {
+            for (auto skip : skips) {
+                if (val->key() == skip->key()) {
+                    continue;
+                }
+            }
+            val->set(val->get());
+        }
+    }
+
+    int getValueIndex(std::string key) override
     {
         for (int i = 0; i < mapping.size(); i++) {
             if (mapping[i]->key() == key) {
@@ -205,7 +217,7 @@ public:
         return -1;
     }
 
-    int getValueCount()
+    int getValueCount() override
     {
         return mapping.size();
     }
@@ -217,7 +229,7 @@ public:
         return mapping[valueIndex];
     }
 
-    ValueInterface* getValue(std::string key)
+    ValueInterface* getValue(std::string key) override
     {
         for (int i = 0; i < mapping.size(); i++) {
             if (mapping[i]->key() == key) {
@@ -231,14 +243,14 @@ public:
         return NULL;
     }
 
-    void serialize(FILE* file, std::string separator)
+    void serialize(FILE* file, std::string separator) override
     {
         for (ValueInterface* val : mapping) {
             fprintf(file, "%s %f%s", val->key().c_str(), val->get(), separator.c_str());
         }
     }
 
-    void hydrate(std::string value)
+    void hydrate(std::string value) override
     {
         char* key = strtok((char*)value.c_str(), " ");
         float fValue = strtof(strtok(NULL, " "), NULL);
