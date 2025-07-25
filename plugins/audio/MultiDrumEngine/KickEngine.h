@@ -2,6 +2,7 @@
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
 #include "plugins/audio/utils/EnvelopeTableGenerator.h"
 #include "plugins/audio/utils/MMfilter.h"
+#include "plugins/audio/utils/TransientGenerator.h"
 #include "plugins/audio/utils/WavetableGenerator2.h"
 #include "plugins/audio/utils/effects/applyBoost.h"
 #include "plugins/audio/utils/effects/applyCompression.h"
@@ -17,6 +18,7 @@ protected:
     WavetableInterface* wave = nullptr;
     WavetableGenerator waveform;
     EnvelopeTableGenerator envelope;
+    TransientGenerator transient;
 
 #define WAVEFORMS_COUNT 6
 #define ENVELOP_COUNT 20
@@ -57,7 +59,10 @@ protected:
 
 public:
     Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24, .skipJumpIncrements = true });
-    Val& transient = val(0.0, "TRANSIENT", { "Transient", VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
+    Val& transientMorph = val(0.0, "TRANSIENT", { "Transient", VALUE_BASIC, .step = 0.1f, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        transient.morphType(p.val.pct());
+    });
     Val& waveformType = val(1.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = WAVEFORMS_COUNT - 1 }, [&](auto p) {
         float current = p.val.get();
         p.val.setFloat(p.value);
@@ -105,6 +110,7 @@ public:
         : DrumEngine(p, c, "Kick")
         , waveform(props.lookupTable, props.sampleRate)
         , envelope(props.lookupTable)
+        , transient(props.sampleRate, 50)
     {
         initValues();
     }
@@ -114,33 +120,38 @@ public:
 
     float sampleIndex = 0.0f;
     float lpState = 0.f;
+    float transientIndex = 0.0f;
     void sampleOn(float* buf, float envAmp, int sampleCounter, int totalSamples) override
     {
 
         float t = float(sampleCounter) / totalSamples;
         float envFreq = envelope.next(t);
         float modulatedFreq = freq + envFreq;
-        float out = wave->sample(&sampleIndex, modulatedFreq) * envAmp;
+        float out = wave->sample(&sampleIndex, modulatedFreq) * envAmp * 0.5f;
 
-        if (t < 0.01f) {
-            float amt = transient.pct(); // 0.0 to 1.0
+        // if (t < 0.01f) {
+        //     float amt = transient.pct(); // 0.0 to 1.0
 
-            if (amt < 0.5f) {
-                if (t < 0.005f) {
-                float weight = (0.5f - amt) * 2.0f;
-                float noise = (props.lookupTable->getNoise() - 0.5f) * 2.0f;
-                out += noise * weight * 6.0f;
-                }
-            } else if (amt > 0.5f) {
-                float weight = (amt - 0.5f) * 2.0f;
-                float highpassed = out - lpState;
-                lpState += 0.01f * (out - lpState); // simple LPF
-                out += highpassed * weight * 2.0f;
-                if (t < 0.001f) {
-                    float spike = (props.lookupTable->getNoise() - 0.5f) * 10.f;
-                    out += spike * weight;
-                }
-            }
+        //     if (amt < 0.5f) {
+        //         if (t < 0.005f) {
+        //         float weight = (0.5f - amt) * 2.0f;
+        //         float noise = (props.lookupTable->getNoise() - 0.5f) * 2.0f;
+        //         out += noise * weight * 6.0f;
+        //         }
+        //     } else if (amt > 0.5f) {
+        //         float weight = (amt - 0.5f) * 2.0f;
+        //         float highpassed = out - lpState;
+        //         lpState += 0.01f * (out - lpState); // simple LPF
+        //         out += highpassed * weight * 2.0f;
+        //         if (t < 0.001f) {
+        //             float spike = (props.lookupTable->getNoise() - 0.5f) * 10.f;
+        //             out += spike * weight;
+        //         }
+        //     }
+        // }
+
+        if (t < 0.01f && transientMorph.get() > 0.0f) {
+            out = out + transient.next(&transientIndex) * envAmp;
         }
 
         out = applyBoostOrCompression(out);
@@ -162,6 +173,7 @@ public:
         sampleIndex = 0;
         lpState = 0.f;
         freq = pow(2, ((note - baseNote + pitch.get()) / 12.0));
+        transientIndex = 0.0f;
     }
 
 protected:

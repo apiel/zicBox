@@ -7,6 +7,7 @@
 
 - TODO kick23 try new wave generator, to simplify things... and for wavetable it would just be once reached all basic waveform, then we have wavetables...
 
+- TODO linearInterpolation in generator class repeated. need to see if we can use the already existing one...
 - TODO add velocity to all drum engines
 - TODO optimize drum engines
 
