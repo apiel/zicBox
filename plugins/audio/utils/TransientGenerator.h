@@ -9,34 +9,46 @@
 class TransientGenerator : public WavetableInterface {
 public:
     enum class Type {
-        Click, //
+        Click,
         Thump,
-        Zap, // 
-        Snap, //
+        Zap,
+        Snap,
         Pop,
         Knock,
         ReverseClick,
-        PulsePop,
         Buzz,
+        PulsePop,
         None,
         COUNT,
     };
 
-    std::string getTypeName() { 
+    std::string getTypeName()
+    {
         switch (type) {
-            case Type::None: return "None";
-            case Type::Click: return "Click";
-            case Type::Thump: return "Thump";
-            case Type::Zap: return "Zap";
-            case Type::Snap: return "Snap";
-            case Type::Pop: return "Pop";
-            case Type::Knock: return "Knock";
-            case Type::ReverseClick: return "RevClick";
-            case Type::PulsePop: return "PulsePop";
-            case Type::Buzz: return "Buzz";
-            default: return "";
+        case Type::None:
+            return "None";
+        case Type::Click:
+            return "Click";
+        case Type::Thump:
+            return "Thump";
+        case Type::Zap:
+            return "Zap";
+        case Type::Snap:
+            return "Snap";
+        case Type::Pop:
+            return "Pop";
+        case Type::Knock:
+            return "Knock";
+        case Type::ReverseClick:
+            return "RevClick";
+        case Type::PulsePop:
+            return "PulsePop";
+        case Type::Buzz:
+            return "Buzz";
+        default:
+            return "";
         }
-     }
+    }
 
     TransientGenerator(uint64_t sampleRate, float durationMs = 200.0f)
         : WavetableInterface(static_cast<uint64_t>((sampleRate * durationMs) / 1000.0f))
@@ -144,31 +156,44 @@ private:
             return 0.0f;
 
         case Type::Click: {
-            float amp = exponentialDecay(x * 10.0f, 25.0f + 75.0f * shapeMorph); // ~1–10ms
-            float noise = whiteNoise();
-            return amp * noise;
+            // Short high-frequency burst using bandpass-like filtered noise
+            float t = x;
+            float freq = 8000.0f + shapeMorph * 8000.0f; // very high freq
+            float carrier = sinf(twopi * freq * t);
+            float click = carrier * (0.5f + 0.5f * whiteNoise()); // slight randomness
+
+            return click;
+        }
+
+            // case Type::Click: {
+            //     return 0.8f * (1.0f - x * 400.0f); // sharp linear fade
+            // }
+
+        case Type::Zap: {
+            // Add phase to sine so it's not starting at 0
+            float startFreq = 1000.0f;
+            float endFreq = 150.0f + shapeMorph * 200.0f;
+            float freq = startFreq + (endFreq - startFreq) * x;
+
+            float env = exponentialDecay(x, 10.0f); // slower decay
+            float phase = twopi * freq * x + shapeMorph * pi; // phase offset helps audibility
+
+            return env * sinf(phase);
+        }
+
+        case Type::Snap: {
+            // Add more "clicky" shaping, noise modulation
+            float centerFreq = 2500.0f + shapeMorph * 2500.0f;
+            float modulated = sinf(twopi * centerFreq * x + shapeMorph * pi / 2.0f);
+            float env = exponentialDecay(x, 15.0f);
+
+            return env * modulated * (1.0f + whiteNoise() * 0.3f); // tiny noise mod adds realism
         }
 
         case Type::Thump: {
             float env = exponentialDecay(x, 12.0f + shapeMorph * 40.0f);
             float sine = sinf(twopi * 80.0f * x * (1.0f + shapeMorph * 2.0f));
             return saturate(env * sine, 1.0f + shapeMorph * 4.0f);
-        }
-
-        case Type::Zap: {
-            float freqStart = 800.0f;
-            float freqEnd = 120.0f + shapeMorph * 100.0f;
-            float freq = freqStart + (freqEnd - freqStart) * x;
-            float env = exponentialDecay(x, 15.0f);
-            return env * sinf(twopi * freq * x);
-        }
-
-        case Type::Snap: {
-            float centerFreq = 1000.0f + shapeMorph * 3000.0f;
-            float bw = 1.0f - shapeMorph * 0.9f;
-            float filteredNoise = sinf(twopi * centerFreq * x) * whiteNoise() * bw;
-            float env = exponentialDecay(x, 20.0f);
-            return filteredNoise * env;
         }
 
         case Type::Pop: {

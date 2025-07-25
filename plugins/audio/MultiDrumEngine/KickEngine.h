@@ -131,27 +131,6 @@ public:
         float modulatedFreq = freq + envFreq;
         float out = wave->sample(&sampleIndex, modulatedFreq) * envAmp * 0.5f;
 
-        // if (t < 0.01f) {
-        //     float amt = transient.pct(); // 0.0 to 1.0
-
-        //     if (amt < 0.5f) {
-        //         if (t < 0.005f) {
-        //         float weight = (0.5f - amt) * 2.0f;
-        //         float noise = (props.lookupTable->getNoise() - 0.5f) * 2.0f;
-        //         out += noise * weight * 6.0f;
-        //         }
-        //     } else if (amt > 0.5f) {
-        //         float weight = (amt - 0.5f) * 2.0f;
-        //         float highpassed = out - lpState;
-        //         lpState += 0.01f * (out - lpState); // simple LPF
-        //         out += highpassed * weight * 2.0f;
-        //         if (t < 0.001f) {
-        //             float spike = (props.lookupTable->getNoise() - 0.5f) * 10.f;
-        //             out += spike * weight;
-        //         }
-        //     }
-        // }
-
         if (t < 0.01f && transientMorph.get() > 0.0f) {
             out = out + transient.next(&transientIndex) * envAmp;
         }
