@@ -164,12 +164,6 @@ public:
         freq = pow(2, ((note - baseNote + pitch.get()) / 12.0));
     }
 
-    float* getShape(float pct) override
-    {
-        shapeValue = -envelope.next(pct);
-        return &shapeValue;
-    }
-
 protected:
     float prevInput = 0.f;
     float prevOutput = 0.f;

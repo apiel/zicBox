@@ -21,7 +21,4 @@ public:
     virtual void sampleOff(float* buf) { }
 
     float shapeValue = 0.0f;
-    virtual float* getShape(float pct) {
-        return &shapeValue;
-    }
 };

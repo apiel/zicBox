@@ -115,14 +115,10 @@ public:
         drumEngine->noteOn(note, _velocity);
     }
 
-    DataFn dataFunctions[2] = {
+    DataFn dataFunctions[1] = {
         { "ENV_AMP_FORM", [this](void* userdata) {
              float* index = (float*)userdata;
              return (void*)envelopAmp.getMorphShape(*index);
-         } },
-         { "ENGINE_SHAPE", [this](void* userdata) {
-             float* index = (float*)userdata;
-             return (void*)drumEngine->getShape(*index);
          } },
     };
     DEFINE_GETDATAID_AND_DATA
