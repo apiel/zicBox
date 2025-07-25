@@ -20,6 +20,8 @@ import {
 export const Clips = 'Clips';
 export const Drum1 = 'Kick23';
 export const Drum2 = 'Drum2';
+export const Drum3 = 'Drum3';
+export const Drum4 = 'Drum4';
 export const Sample1 = 'Sample1';
 export const Sample2 = 'Sample2';
 

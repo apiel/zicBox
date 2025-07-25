@@ -8,7 +8,6 @@ import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
 import { StringVal } from '@/libs/nativeComponents/StringVal';
 import { Value } from '@/libs/nativeComponents/Value';
 import { rgb } from '@/libs/ui';
-import { Drum2 } from '../components/Common';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
 import { shiftContext } from '../constants';
@@ -37,9 +36,11 @@ export type Props = {
     track: number;
     synthName: string;
     color: string;
+    title: string;
+
 };
 
-export function MainView({ name, track, synthName, color }: Props) {
+export function MainView({ name, track, synthName, color, title }: Props) {
     const visibilityContext: VisibilityContext = {
         condition: 'SHOW_WHEN',
         index: shiftContext,
@@ -51,7 +52,7 @@ export function MainView({ name, track, synthName, color }: Props) {
             viewName={name}
             color={color}
             synthName={synthName}
-            title={Drum2}
+            title={title}
             content={
                 <>
                     <Rect

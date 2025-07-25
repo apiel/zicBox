@@ -1,9 +1,6 @@
 ## Pixel TODO
 
-- TODO multi drum kick engine: based on same concept as kick23, but less effect, use simple waveform generator and also use waveform generator to generate freqeuncy envelop with some specific waveform for kick frequency envelop. For the transient, instead to use a second layer, we might use samples (2 parameters), or maybe we even manage to generate a transient using 1 parameter...
-
 - TODO timeline samples arranger... / and bunch of effect on top of it like granular...
-- TODO generic drum, either like electribe ER-1 or other way to switch between multiple kind of engine
 
 - TODO linearInterpolation in generator class repeated. need to see if we can use the already existing one...
 - TODO add velocity to all drum engines

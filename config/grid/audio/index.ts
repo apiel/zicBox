@@ -2,6 +2,8 @@ import { audioPlugin } from '@/libs/audio';
 import {
     Drum1Track,
     Drum2Track,
+    Drum3Track,
+    Drum4Track,
     Sample1Track,
     Sample2Track,
 } from '../constants';
@@ -28,6 +30,26 @@ const drum2Track = {
         audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
         audioPlugin('SerializeTrack', { filename: 'drum2', maxVariation, workspaceFolder }),
+    ],
+};
+
+const drum3Track = {
+    id: Drum3Track,
+    plugins: [
+        audioPlugin('SynthMultiDrum', { alias: 'Drum3' }),
+        audioPlugin('Sequencer', { stepCount: 64 }),
+        audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
+        audioPlugin('SerializeTrack', { filename: 'drum3', maxVariation, workspaceFolder }),
+    ],
+};
+
+const drum4Track = {
+    id: Drum4Track,
+    plugins: [
+        audioPlugin('SynthMultiDrum', { alias: 'Drum4' }),
+        audioPlugin('Sequencer', { stepCount: 64 }),
+        audioPlugin('EffectGainVolume', { alias: 'TrackFx' }),
+        audioPlugin('SerializeTrack', { filename: 'drum4', maxVariation, workspaceFolder }),
     ],
 };
 
@@ -71,6 +93,8 @@ export const audio = {
     tracks: [
         drum1Track,
         drum2Track,
+        drum3Track,
+        drum4Track,
         sample1Track,
         sample2Track,
         masterTrack,

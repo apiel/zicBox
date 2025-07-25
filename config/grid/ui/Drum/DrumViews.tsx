@@ -1,27 +1,27 @@
 import * as React from '@/libs/react';
 
-import { Drum2 } from '../components/Common';
 import { DrumSeqView } from '../components/DrumSeqView';
-import { seqContextDrum2 } from '../constantsValue';
 import { MainView } from './MainView';
 
 export type Props = {
     track: number;
     synthName: string;
     color: string;
+    contextId: number;
+    title: string;
 };
 
-export function DrumViews({ track, synthName, color }: Props) {
+export function DrumViews({ track, synthName, color, contextId, title }: Props) {
     return (
         <>
-            <MainView name={synthName} track={track} synthName={synthName} color={color} />
+            <MainView name={synthName} track={track} synthName={synthName} color={color} title={title} />
             <DrumSeqView
                 name={`${synthName}Seq`}
                 track={track}
                 synthName={synthName}
                 color={color}
-                contextId={seqContextDrum2}
-                title={Drum2}
+                contextId={contextId}
+                title={title}
             />
         </>
     );
