@@ -59,9 +59,11 @@ protected:
 
 public:
     Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24, .skipJumpIncrements = true });
-    Val& transientMorph = val(0.0, "TRANSIENT", { "Transient", VALUE_BASIC, .step = 0.1f, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
+    Val& transientMorph = val(100.0, "TRANSIENT", { "Transient", VALUE_STRING, .step = 0.1f, .floatingPoint = 1 }, [&](auto p) {
         p.val.setFloat(p.value);
         transient.morphType(p.val.pct());
+        p.val.setString(std::to_string((int)(transient.getMorph() * 100)) + "%");
+        p.val.props().unit = transient.getTypeName();
     });
     Val& waveformType = val(1.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = WAVEFORMS_COUNT - 1 }, [&](auto p) {
         float current = p.val.get();

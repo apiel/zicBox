@@ -37,6 +37,8 @@ protected:
         ValueInterface* drumEngineVal = drumEngine->mapping[index];
         drumEngineVal->set(p.val.get());
         p.val.setString(drumEngineVal->string());
+        p.val.props().label = drumEngineVal->props().label;
+        p.val.props().unit = drumEngineVal->props().unit;
     }
 
 public:

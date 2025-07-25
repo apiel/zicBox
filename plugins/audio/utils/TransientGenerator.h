@@ -4,21 +4,39 @@
 #include "plugins/audio/utils/WavetableInterface.h"
 
 #include <cmath>
+#include <string>
 
 class TransientGenerator : public WavetableInterface {
 public:
     enum class Type {
-        Click,
+        Click, //
         Thump,
-        Zap,
-        Snap,
+        Zap, // 
+        Snap, //
         Pop,
         Knock,
         ReverseClick,
         PulsePop,
         Buzz,
+        None,
         COUNT,
     };
+
+    std::string getTypeName() { 
+        switch (type) {
+            case Type::None: return "None";
+            case Type::Click: return "Click";
+            case Type::Thump: return "Thump";
+            case Type::Zap: return "Zap";
+            case Type::Snap: return "Snap";
+            case Type::Pop: return "Pop";
+            case Type::Knock: return "Knock";
+            case Type::ReverseClick: return "RevClick";
+            case Type::PulsePop: return "PulsePop";
+            case Type::Buzz: return "Buzz";
+            default: return "";
+        }
+     }
 
     TransientGenerator(uint64_t sampleRate, float durationMs = 200.0f)
         : WavetableInterface(static_cast<uint64_t>((sampleRate * durationMs) / 1000.0f))
@@ -38,6 +56,8 @@ public:
         morph = range(m, 0.0f, 1.0f);
         updateTable();
     }
+
+    float getMorph() { return morph; }
 
     // New morphing between types using a single parameter t in [0, 1]
     void morphType(float t)
@@ -120,6 +140,9 @@ private:
         };
 
         switch (t) {
+        case Type::None:
+            return 0.0f;
+
         case Type::Click: {
             float amp = exponentialDecay(x * 10.0f, 25.0f + 75.0f * shapeMorph); // ~1–10ms
             float noise = whiteNoise();
