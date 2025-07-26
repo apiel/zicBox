@@ -58,6 +58,9 @@ SynthWavetable:
 SynthDrum23:
 	make compile LIBNAME=SynthDrum23 EXTRA="$(shell $(PKG_CONFIG) --cflags --libs sndfile)"
 
+SynthKick23:
+	make compile LIBNAME=SynthKick23 EXTRA="$(shell $(PKG_CONFIG) --cflags --libs sndfile)"
+
 SynthBass:
 	make compile LIBNAME=SynthBass EXTRA="$(shell $(PKG_CONFIG) --cflags --libs sndfile)"
 

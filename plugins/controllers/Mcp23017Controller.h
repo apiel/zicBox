@@ -4,6 +4,7 @@
 
 #include "controllerInterface.h"
 #include "helpers/Mcp23017.h"
+#include "helpers/controller.h"
 #include "log.h"
 // #include "helpers/getTicks.h"
 

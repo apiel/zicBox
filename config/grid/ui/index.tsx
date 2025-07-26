@@ -3,17 +3,13 @@ import { ClipsView } from './ClipsView/ClipsView';
 import { Drum2, Drum3, Drum4 } from './components/Common';
 import {
     ColorTrack1,
-    ColorTrack10,
     ColorTrack2,
     ColorTrack3,
     ColorTrack4,
-    ColorTrack9,
     Drum1Track,
     Drum2Track,
     Drum3Track,
     Drum4Track,
-    Sample1Track,
-    Sample2Track,
     ScreenHeight,
     ScreenWidth
 } from './constants';
@@ -38,13 +34,13 @@ import { DrumViews } from './Drum/DrumViews';
 import { DrumSeqView } from './DrumSeqView';
 import { KickViews } from './Kick/KickViews';
 import { Menu } from './menu';
-import { SampleView } from './Sample/SampleView';
 
 // const halfHeight = ScreenHeight / 2;
 
 export const ui = {
     // pixelController: 'rpiCM4_4enc_11btn',
-    pixelController: 'rpi3A_4enc_11btn',
+    // pixelController: 'rpi3A_4enc_11btn',
+    pixelController: 'grid',
     // i2c: ['pixel+_v1'],
     screen: {
         windowPosition: { x: 200, y: 300 },
@@ -75,8 +71,8 @@ export const ui = {
 
             <DrumSeqView name="DrumSeq" />
 
-            <SampleView track={Sample1Track} synthName="Sample1" color={ColorTrack9} />
-            <SampleView track={Sample2Track} synthName="Sample2" color={ColorTrack10} />
+            {/* <SampleView track={Sample1Track} synthName="Sample1" color={ColorTrack9} /> */}
+            {/* <SampleView track={Sample2Track} synthName="Sample2" color={ColorTrack10} /> */}
 
             <Menu />
 

@@ -1,10 +1,10 @@
 #pragma once
 
+#include "Mcp23017Controller.h"
 #include "controllerInterface.h"
 #include "helpers/GpioEncoder.h"
 #include "helpers/GpioKey.h"
 #include "helpers/getTicks.h"
-#include "Mcp23017Controller.h"
 
 class PixelController : public ControllerInterface {
 protected:
@@ -27,7 +27,8 @@ public:
     {
     }
 
-    void setLayout(std::string layout) {
+    void setLayout(std::string layout)
+    {
         if (layout == "rpi0_4enc_6btn") {
             gpioKey.keys = {
                 { 12, getKeyCode("'q'") }, // pin 32 = gpio 12
@@ -112,6 +113,26 @@ public:
             if (gpioEncoder.init() == 0) {
                 gpioEncoder.startThread(); // might want to use the same thread for encoder...
             }
+        } else if (layout == "grid") {
+            gpioEncoder.encoders = {
+                { 1, 20, 19 },
+                { 2, 13, 6 },
+                { 3, 5, 7 },
+                { 4, 8, 11 },
+
+                { 5, 21, 26 },
+                { 6, 9, 10 },
+                { 7, 27, 17 },
+                { 8, 22, 4 },
+
+                { 9, 16, 12 },
+                { 10, 25, 24 },
+                { 11, 23, 18 },
+                { 12, 15, 14 },
+            };
+            if (gpioEncoder.init() == 0) {
+                gpioEncoder.startThread(); // might want to use the same thread for encoder...
+            }
         }
     }
 
@@ -140,7 +161,7 @@ public:
         }
     }
 
-    void config(nlohmann::json& config) override 
+    void config(nlohmann::json& config) override
     {
         setLayout(config.value("pixelController", "rpi3A_4enc_11btn"));
         if (config.contains("i2c") && config["i2c"].is_array()) {
