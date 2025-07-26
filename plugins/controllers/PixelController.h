@@ -4,7 +4,9 @@
 #include "controllerInterface.h"
 #include "helpers/GpioEncoder.h"
 #include "helpers/GpioKey.h"
+#include "helpers/NeoTrellis.h"
 #include "helpers/getTicks.h"
+#include "log.h"
 
 class PixelController : public ControllerInterface {
 protected:
@@ -20,10 +22,16 @@ protected:
             encoder(enc.id, direction, getTicks());
         });
 
+    NeoTrellis trellis;
+
 public:
     PixelController(Props& props, uint16_t id)
         : ControllerInterface(props, id)
         , mcp23017Controller(props, id)
+        , trellis([](uint8_t num, bool pressed) {
+            // std::cout << (pressed ? "Pressed: " : "Released: ") << (int)num << std::endl;
+            logDebug("PixelController: %d %s", num, pressed ? "pressed" : "released");
+        })
     {
     }
 
@@ -132,6 +140,14 @@ public:
             };
             if (gpioEncoder.init() == 0) {
                 gpioEncoder.startThread(); // might want to use the same thread for encoder...
+            }
+
+            try {
+                trellis.begin();
+                trellis.startThread();
+            } catch (const std::exception& e) {
+                logError("Application Error: %s", e.what());
+                return;
             }
         }
     }

@@ -17,6 +17,9 @@
 
 class NeoTrellis {
 protected:
+    std::thread loopThread;
+    bool loopRunning = true;
+
 public:
     enum {
         SEESAW_STATUS_BASE = 0x00,
@@ -162,6 +165,27 @@ public:
         this->write8(SEESAW_NEOPIXEL_BASE, SEESAW_NEOPIXEL_SPEED, 0x01);
         uint8_t writeBuf[2] = { 0x00, (uint8_t)(NEO_TRELLIS_NUM_KEYS * 3) };
         this->writeReg(SEESAW_NEOPIXEL_BASE, SEESAW_NEOPIXEL_BUF_LENGTH, writeBuf, 2);
+    }
+
+    void startThread(std::string threadName = "neotrellis")
+    {
+        //activate all keys and set callbacks
+        for (int i = 0; i < NEO_TRELLIS_NUM_KEYS; i++) {
+            activateKey(i, NeoTrellis::SEESAW_KEYPAD_EDGE_RISING);
+            activateKey(i, NeoTrellis::SEESAW_KEYPAD_EDGE_FALLING);
+            // trellis.registerCallback(i, blink);
+        }
+
+        loopThread = std::thread(&NeoTrellis::loop, this);
+        pthread_setname_np(loopThread.native_handle(), threadName.c_str());
+    }
+
+    void loop()
+    {
+        while (loopRunning) {
+            read();
+            std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        }
     }
 
     union keyState {
