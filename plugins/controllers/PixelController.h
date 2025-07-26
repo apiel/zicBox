@@ -25,19 +25,25 @@ protected:
     NeoTrellis trellis1;
     NeoTrellis trellis2;
     NeoTrellis trellis3;
+    std::vector<int> trellisKeys1;
+    std::vector<int> trellisKeys2;
+    std::vector<int> trellisKeys3;
 
 public:
     PixelController(Props& props, uint16_t id)
         : ControllerInterface(props, id)
         , mcp23017Controller(props, id)
-        , trellis1([](uint8_t num, bool pressed) {
-            logDebug("Trellis1: %d %s", num, pressed ? "pressed" : "released");
+        , trellis1([this](uint8_t num, bool pressed) {
+            // logDebug("Trellis1: %d %s", num, pressed ? "pressed" : "released");
+            onKey(this->id, this->trellisKeys1.at(num), pressed);
         })
-        , trellis2([](uint8_t num, bool pressed) {
-            logDebug("Trellis2: %d %s", num, pressed ? "pressed" : "released");
+        , trellis2([this](uint8_t num, bool pressed) {
+            // logDebug("Trellis2: %d %s", num, pressed ? "pressed" : "released");
+            onKey(this->id, this->trellisKeys2.at(num), pressed);
         })
-        , trellis3([](uint8_t num, bool pressed) {
-            logDebug("Trellis3: %d %s", num, pressed ? "pressed" : "released");
+        , trellis3([this](uint8_t num, bool pressed) {
+            // logDebug("Trellis3: %d %s", num, pressed ? "pressed" : "released");
+            onKey(this->id, this->trellisKeys3.at(num), pressed);
         })
     {
     }
@@ -150,6 +156,70 @@ public:
             }
 
             try {
+                trellisKeys1 = {
+                    getKeyCode("'f'"),
+                    getKeyCode("'d'"),
+                    getKeyCode("'s'"),
+                    getKeyCode("'a'"),
+
+                    getKeyCode("'r'"),
+                    getKeyCode("'e'"),
+                    getKeyCode("'w'"),
+                    getKeyCode("'q'"),
+
+                    getKeyCode("'4'"),
+                    getKeyCode("'3'"),
+                    getKeyCode("'2'"),
+                    getKeyCode("'1'"),
+
+                    getKeyCode("F4"),
+                    getKeyCode("F3"),
+                    getKeyCode("F2"),
+                    getKeyCode("F1"),
+                };
+                trellisKeys2 = {
+                    getKeyCode("'k'"),
+                    getKeyCode("'j'"),
+                    getKeyCode("'h'"),
+                    getKeyCode("'g'"),
+
+                    getKeyCode("'t'"),
+                    getKeyCode("'y'"),
+                    getKeyCode("'u'"),
+                    getKeyCode("'i'"),
+
+                    getKeyCode("'8'"),
+                    getKeyCode("'7'"),
+                    getKeyCode("'6'"),
+                    getKeyCode("'5'"),
+
+                    getKeyCode("F8"),
+                    getKeyCode("F7"),
+                    getKeyCode("F6"),
+                    getKeyCode("F5"),
+                };
+                trellisKeys3 = {
+                    getKeyCode("'enter'"),
+                    getKeyCode("'\''"),
+                    getKeyCode("';'"),
+                    getKeyCode("'l'"),
+
+                    getKeyCode("'}'"),
+                    getKeyCode("'{'"),
+                    getKeyCode("'p'"),
+                    getKeyCode("'o'"),
+
+                    getKeyCode("'='"),
+                    getKeyCode("'-'"),
+                    getKeyCode("'0'"),
+                    getKeyCode("'9'"),
+
+                    getKeyCode("F12"),
+                    getKeyCode("F11"),
+                    getKeyCode("F10"),
+                    getKeyCode("F9"),
+                };
+
                 trellis1.begin();
                 trellis1.startThread("neotrellis1");
                 trellis2.begin(0x30);
