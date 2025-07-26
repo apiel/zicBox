@@ -22,15 +22,22 @@ protected:
             encoder(enc.id, direction, getTicks());
         });
 
-    NeoTrellis trellis;
+    NeoTrellis trellis1;
+    NeoTrellis trellis2;
+    NeoTrellis trellis3;
 
 public:
     PixelController(Props& props, uint16_t id)
         : ControllerInterface(props, id)
         , mcp23017Controller(props, id)
-        , trellis([](uint8_t num, bool pressed) {
-            // std::cout << (pressed ? "Pressed: " : "Released: ") << (int)num << std::endl;
-            logDebug("PixelController: %d %s", num, pressed ? "pressed" : "released");
+        , trellis1([](uint8_t num, bool pressed) {
+            logDebug("Trellis1: %d %s", num, pressed ? "pressed" : "released");
+        })
+        , trellis2([](uint8_t num, bool pressed) {
+            logDebug("Trellis2: %d %s", num, pressed ? "pressed" : "released");
+        })
+        , trellis3([](uint8_t num, bool pressed) {
+            logDebug("Trellis3: %d %s", num, pressed ? "pressed" : "released");
         })
     {
     }
@@ -143,8 +150,12 @@ public:
             }
 
             try {
-                trellis.begin();
-                trellis.startThread();
+                trellis1.begin();
+                trellis1.startThread("neotrellis1");
+                trellis2.begin(0x30);
+                trellis2.startThread("neotrellis2");
+                trellis3.begin(0x2F);
+                trellis3.startThread("neotrellis2");
             } catch (const std::exception& e) {
                 logError("Application Error: %s", e.what());
                 return;
