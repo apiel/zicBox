@@ -1,10 +1,12 @@
 #pragma once
 
+#include "libs/nlohmann/json.hpp"
+#include "plugins/components/baseInterface.h" // for Color
+
 #include <stdint.h>
 #include <string>
 #include <unistd.h>
 #include <vector>
-#include "libs/nlohmann/json.hpp"
 
 class ControllerInterface {
 public:
@@ -25,7 +27,10 @@ public:
 
     virtual void config(nlohmann::json& config)
     {
+    }
 
+    virtual void setColor(int id, Color color)
+    {
     }
 
     // virtual void* data(int id, void* userdata = NULL)

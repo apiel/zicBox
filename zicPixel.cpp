@@ -74,6 +74,7 @@ int main(int argc, char* argv[])
     styles.colors.quaternary = { 0xf7, 0xda, 0x6d }; // #f7da6d
 
     lastPluginControllerInstance = new PixelController(controllerProps, 0);
+    controllers.push_back({ "Pixel", lastPluginControllerInstance });
 
     std::string configFilepath = argc >= 2 ? argv[1] : "data/config.json";
     loadJsonConfig(configFilepath);

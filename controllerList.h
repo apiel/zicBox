@@ -1,5 +1,4 @@
-#ifndef _CONTROLLER_LIST_H_
-#define _CONTROLLER_LIST_H_
+#pragma once
 
 #include <vector>
 #include <string.h>
@@ -21,5 +20,3 @@ ControllerInterface* getController(const char* name)
     }
     return NULL;
 }
-
-#endif

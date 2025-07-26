@@ -226,11 +226,60 @@ public:
                 trellis2.startThread("neotrellis2");
                 trellis3.begin(0x2F);
                 trellis3.startThread("neotrellis2");
+                setColorCb = [this](int id, Color color) {
+                    if (id == -1) {
+                        trellis1.show();
+                        return;
+                    }
+                    if (id == -2) {
+                        trellis2.show();
+                        return;
+                    }
+                    if (id == -3) {
+                        trellis3.show();
+                        return;
+                    }
+                    // search in trellisKeys1 and get the index
+                    int index = std::find(trellisKeys1.begin(), trellisKeys1.end(), id) - trellisKeys1.begin();
+                    if (index < trellisKeys1.size()) {
+                        NeoTrellis::Color neoColor(color.r, color.g, color.b);
+                        trellis1.setPixelColor(index, neoColor);
+                        return;
+                    }
+                    // search in trellisKeys2 and get the index
+                    index = std::find(trellisKeys2.begin(), trellisKeys2.end(), id) - trellisKeys2.begin();
+                    if (index < trellisKeys2.size()) {
+                        NeoTrellis::Color neoColor(color.r, color.g, color.b);
+                        trellis2.setPixelColor(index, neoColor);
+                        return;
+                    }
+                    // search in trellisKeys3 and get the index
+                    index = std::find(trellisKeys3.begin(), trellisKeys3.end(), id) - trellisKeys3.begin();
+                    if (index < trellisKeys3.size()) {
+                        NeoTrellis::Color neoColor(color.r, color.g, color.b);
+                        trellis3.setPixelColor(index, neoColor);
+                        return;
+                    }
+                };
+                setColorCb(getKeyCode("'d'"), {255, 0, 0});
+                setColorCb(-1, {0, 0, 0});
+                setColorCb(getKeyCode("F7"), {255, 0, 0});
+                setColorCb(-2, {0, 0, 0});
+                setColorCb(getKeyCode("F12"), {255, 0, 0});
+                setColorCb(-3, {0, 0, 0});
+                
             } catch (const std::exception& e) {
                 logError("Application Error: %s", e.what());
                 return;
             }
         }
+    }
+
+    std::function<void(int id, Color color)> setColorCb = [](int id, Color color) { };
+
+    void setColor(int id, Color color) override
+    {
+        setColorCb(id, color);
     }
 
     Mcp23017Controller mcp23017Controller;
