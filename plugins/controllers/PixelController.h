@@ -28,6 +28,9 @@ protected:
     std::vector<int> trellisKeys1;
     std::vector<int> trellisKeys2;
     std::vector<int> trellisKeys3;
+    bool trellisUpdated1 = false;
+    bool trellisUpdated2 = false;
+    bool trellisUpdated3 = false;
 
 public:
     PixelController(Props& props, uint16_t id)
@@ -204,8 +207,8 @@ public:
                     getKeyCode("';'"),
                     getKeyCode("'l'"),
 
-                    getKeyCode("'}'"),
-                    getKeyCode("'{'"),
+                    getKeyCode("'['"),
+                    getKeyCode("']'"),
                     getKeyCode("'p'"),
                     getKeyCode("'o'"),
 
@@ -228,15 +231,19 @@ public:
                 trellis3.startThread("neotrellis2");
                 setColorCb = [this](int id, Color color) {
                     if (id == -1) {
-                        trellis1.show();
-                        return;
-                    }
-                    if (id == -2) {
-                        trellis2.show();
-                        return;
-                    }
-                    if (id == -3) {
-                        trellis3.show();
+                        if (trellisUpdated1) {
+                            trellis1.show();
+                            trellisUpdated1 = false;
+                        }
+                        if (trellisUpdated2) {
+                            trellis2.show();
+                            trellisUpdated2 = false;
+                        }
+                        if (trellisUpdated3) {
+                            trellis3.show();
+                            trellisUpdated3 = false;
+                        }
+
                         return;
                     }
                     // search in trellisKeys1 and get the index
@@ -244,6 +251,7 @@ public:
                     if (index < trellisKeys1.size()) {
                         NeoTrellis::Color neoColor(color.r, color.g, color.b);
                         trellis1.setPixelColor(index, neoColor);
+                        trellisUpdated1 = true;
                         return;
                     }
                     // search in trellisKeys2 and get the index
@@ -251,6 +259,7 @@ public:
                     if (index < trellisKeys2.size()) {
                         NeoTrellis::Color neoColor(color.r, color.g, color.b);
                         trellis2.setPixelColor(index, neoColor);
+                        trellisUpdated2 = true;
                         return;
                     }
                     // search in trellisKeys3 and get the index
@@ -258,16 +267,15 @@ public:
                     if (index < trellisKeys3.size()) {
                         NeoTrellis::Color neoColor(color.r, color.g, color.b);
                         trellis3.setPixelColor(index, neoColor);
+                        trellisUpdated3 = true;
                         return;
                     }
                 };
-                setColorCb(getKeyCode("'d'"), {255, 0, 0});
-                setColorCb(-1, {0, 0, 0});
-                setColorCb(getKeyCode("F7"), {255, 0, 0});
-                setColorCb(-2, {0, 0, 0});
-                setColorCb(getKeyCode("F12"), {255, 0, 0});
-                setColorCb(-3, {0, 0, 0});
-                
+                // setColorCb(getKeyCode("'d'"), { 255, 255, 0 });
+                // setColorCb(getKeyCode("F7"), { 255, 255, 0 });
+                // setColorCb(getKeyCode("F12"), { 255, 255, 0 });
+                // setColorCb(-1, { 0, 0, 0 });
+
             } catch (const std::exception& e) {
                 logError("Application Error: %s", e.what());
                 return;
