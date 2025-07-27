@@ -230,22 +230,6 @@ public:
                 trellis3.begin(0x2F);
                 trellis3.startThread("neotrellis2");
                 setColorCb = [this](int id, Color color) {
-                    if (id == -1) {
-                        if (trellisUpdated1) {
-                            trellis1.show();
-                            trellisUpdated1 = false;
-                        }
-                        if (trellisUpdated2) {
-                            trellis2.show();
-                            trellisUpdated2 = false;
-                        }
-                        if (trellisUpdated3) {
-                            trellis3.show();
-                            trellisUpdated3 = false;
-                        }
-
-                        return;
-                    }
                     // search in trellisKeys1 and get the index
                     int index = std::find(trellisKeys1.begin(), trellisKeys1.end(), id) - trellisKeys1.begin();
                     if (index < trellisKeys1.size()) {
@@ -271,11 +255,20 @@ public:
                         return;
                     }
                 };
-                // setColorCb(getKeyCode("'d'"), { 255, 255, 0 });
-                // setColorCb(getKeyCode("F7"), { 255, 255, 0 });
-                // setColorCb(getKeyCode("F12"), { 255, 255, 0 });
-                // setColorCb(-1, { 0, 0, 0 });
-
+                renderColorsCb = [this]() {
+                    if (trellisUpdated1) {
+                        trellis1.show();
+                        trellisUpdated1 = false;
+                    }
+                    if (trellisUpdated2) {
+                        trellis2.show();
+                        trellisUpdated2 = false;
+                    }
+                    if (trellisUpdated3) {
+                        trellis3.show();
+                        trellisUpdated3 = false;
+                    }
+                };
             } catch (const std::exception& e) {
                 logError("Application Error: %s", e.what());
                 return;
@@ -284,10 +277,15 @@ public:
     }
 
     std::function<void(int id, Color color)> setColorCb = [](int id, Color color) { };
-
     void setColor(int id, Color color) override
     {
         setColorCb(id, color);
+    }
+
+    std::function<void()> renderColorsCb = []() { };
+    virtual void renderColors() override
+    {
+        renderColorsCb();
     }
 
     Mcp23017Controller mcp23017Controller;

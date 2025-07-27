@@ -39,6 +39,7 @@ public:
         Color color;
     };
     std::vector<ControllerColors> controllerColors;
+    std::vector<ControllerInterface*> controllers;
 
     void addColors(std::string controllerId, nlohmann::json& colors)
     {
@@ -53,6 +54,7 @@ public:
             return;
         }
 
+        controllers.push_back(controller);
         for (auto& color : colors) {
             if (!color.contains("key") || !color.contains("color")) {
                 logWarn("Controller color config is missing mandatory 'key' or 'color' parameters.");
@@ -66,10 +68,11 @@ public:
 
     void render()
     {
-        logInfo("Call render Controller colors: %d", controllerColors.size());
         for (auto& controllerColor : controllerColors) {
-            logInfo("Controller color: %d r %d g %d b %d", controllerColor.key, controllerColor.color.r, controllerColor.color.g, controllerColor.color.b);
             controllerColor.controller->setColor(controllerColor.key, controllerColor.color);
+        }
+        for (auto& controller : controllers) {
+            controller->renderColors();
         }
     }
 };
