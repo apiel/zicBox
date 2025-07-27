@@ -1,5 +1,4 @@
-#ifndef _HELPER_CONTROLLER_H_
-#define _HELPER_CONTROLLER_H_
+#pragma once
 
 #include <cstdint>
 #include <string>
@@ -133,5 +132,3 @@ uint8_t getKeyCode(std::string keyStr)
 
     return atoi(keyStr.c_str());
 }
-
-#endif

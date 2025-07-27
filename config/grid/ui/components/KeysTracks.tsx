@@ -19,6 +19,11 @@ export function KeysTracks({ synthName, viewName }: { synthName: string; viewNam
                 { key: A4, action: `setView:Drum4` },
                 { key: B4, action: `noteOn:Drum4:60` },
             ]}
+            controllerColors={[{ controller: 'Default', colors:[
+                { key: A1, color: 'primary' },
+
+                { key: -1, color: 'white' }, // to show colors (neopixels need it...)
+            ] }]}
         />
     );
 }

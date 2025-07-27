@@ -1,14 +1,14 @@
 #pragma once
 
-#include "./ViewInterface.h"
 #include "./ComponentContainer.h"
+#include "./ViewInterface.h"
 #include "./drawInterface.h"
 #include "./motionInterface.h"
 #include "./valueInterface.h"
 #include "plugins/controllers/controllerInterface.h"
 
-#include <functional>
 #include "libs/nlohmann/json.hpp"
+#include <functional>
 #include <string.h>
 #include <vector>
 
@@ -26,11 +26,8 @@ public:
         std::function<void(uint8_t index, float value)> setContext;
     };
 
-protected:
     DrawInterface& draw;
     Styles& styles;
-
-public:
     ViewInterface* view;
     AudioPlugin& (*getPlugin)(std::string name, int16_t track);
     ControllerInterface* (*getController)(const char* name);

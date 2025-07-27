@@ -18,6 +18,14 @@ export interface KeypadLayout {
     multipleKeyHandler?: boolean
 }
 
+export interface ControllerColors {
+    controller: string;
+    colors: {
+        key: number | string;
+        color: string;
+    }[];
+}
+
 export type ComponentProps<P = unknown> = {
     bounds: Bounds;
     group?: number;
@@ -26,6 +34,7 @@ export type ComponentProps<P = unknown> = {
     visibilityGroup?: number; // TODO to be implemented
     keys?: KeypadLayout[];
     pluginPath?: string;
+    controllerColors?: ControllerColors[];
 } &
     (P extends {}
         ? P

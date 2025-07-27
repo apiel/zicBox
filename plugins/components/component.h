@@ -7,6 +7,7 @@
 #include "utils/VisibilityContext.h"
 // #include "utils/VisibilityGroup.h" // TODO
 #include "valueInterface.h"
+#include "plugins/components/base/ControllerColor.h"
 
 #include <stdlib.h>
 
@@ -17,12 +18,14 @@ protected:
 
 public:
     KeypadLayout keypadLayout;
+    ControllerColor controllerColor;
 
     Component(
         ComponentInterface::Props props,
         std::function<std::function<void(KeypadLayout::KeyMap& keymap)>(std::string action)> keypadCustomAction = nullptr, bool skipInitKeypad = false)
         : ComponentInterface(props)
         , keypadLayout(this, keypadCustomAction)
+        , controllerColor(this)
     {
         nlohmann::json& config = props.config;
         track = config.value("track", track);
@@ -31,6 +34,7 @@ public:
         if (!skipInitKeypad) {
             keypadLayout.init(config);
         }
+        controllerColor.init(config);
     }
 
     ValueInterface* watch(ValueInterface* value)
@@ -47,7 +51,9 @@ public:
     };
 
     virtual void render() override { }
-    virtual void initView(uint16_t counter) override { }
+    virtual void initView(uint16_t counter) override {
+        controllerColor.render();
+    }
 
     virtual void renderNext() override
     {
