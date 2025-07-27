@@ -12,9 +12,10 @@ import {
     btn7,
     btn8,
     btn9,
+    ColorButton,
     SelectorPosition,
     SelectorPosition2,
-    shiftContext
+    shiftContext,
 } from '../constants';
 
 export const Clips = 'Clips';
@@ -128,10 +129,26 @@ export function MainKeys({
         <>
             <HiddenValue
                 keys={[
-                    { key: A11, action: viewName === `${synthName}Seq` ? `setView:${synthName}` : `setView:${synthName}Seq` },
+                    {
+                        key: A11,
+                        action:
+                            viewName === `${synthName}Seq`
+                                ? `setView:${synthName}`
+                                : `setView:${synthName}Seq`,
+                    },
 
-                    { key: A12, action: `contextToggle:${shiftContext}:1:0`  },
+                    { key: A12, action: `contextToggle:${shiftContext}:1:0` },
                     { key: B12, action: `playPause` },
+                ]}
+                controllerColors={[
+                    {
+                        controller: 'Default',
+                        colors: [
+                            { key: A11, color: ColorButton },
+                            { key: A12, color: ColorButton },
+                            { key: B12, color: ColorButton },
+                        ],
+                    },
                 ]}
             />
             {/* <HiddenValue
