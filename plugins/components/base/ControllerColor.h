@@ -1,9 +1,9 @@
 #pragma once
 
+#include "helpers/controller.h"
 #include "libs/nlohmann/json.hpp"
 #include "log.h"
 #include "plugins/components/componentInterface.h"
-#include "helpers/controller.h"
 
 class ControllerColor {
 public:
@@ -60,7 +60,17 @@ public:
                 logWarn("Controller color config is missing mandatory 'key' or 'color' parameters.");
                 continue;
             }
-            int key = color["key"].is_string() ? getKeyCode(color["key"].get<std::string>().c_str()) : color["key"].get<int>();
+            int key = -1;
+            if (color["key"].is_number_integer()) {
+                key = color["key"].get<uint8_t>();
+            } else {
+                std::string keyStr = color["key"].get<std::string>();
+                if (keyStr.length() == 1) {
+                    keyStr = "'" + keyStr + "'";
+                }
+                key = getKeyCode(keyStr.c_str());
+            }
+
             Color colorValue = component->draw.getColor(color["color"], { 0, 0, 0 });
             controllerColors.push_back({ controller, key, colorValue });
         }
