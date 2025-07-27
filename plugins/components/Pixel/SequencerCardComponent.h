@@ -39,8 +39,20 @@ protected:
     uint8_t contextId = 0;
     uint8_t rowsSelection = 0;
 
-    std::function<void()> onPlayStep = [this]() {
-        renderNext();
+    bool renderPlayingStep = false;
+    int lastPlayingStep = 0;
+    std::function<void(bool)> onPlayStep = [this](bool isPlaying) {
+        // renderPlayingStep = true;
+        // renderNext();
+        if (isPlaying) {
+            jobRendering = [this](unsigned long now) {
+                renderPlayingStep = true;
+                renderNext();
+            };
+        } else {
+            renderNext();
+            jobRendering = [this](unsigned long now) { };
+        }
     };
 
 public:
@@ -57,6 +69,8 @@ public:
         , rowsSelectionColor(lighten(styles.colors.background, 1.0))
         , playingColor(styles.colors.white)
     {
+        jobRendering = [this](unsigned long now) { }; // Initialize with empty job to register callback
+
         /*md md_config:Sequencer */
         nlohmann::json& config = props.config;
 
@@ -125,6 +139,14 @@ public:
 
     void render() override
     {
+        if (renderPlayingStep) {
+            renderPlayingStep = false;
+            renderWhichStepIsPlaying(lastPlayingStep, true);
+            lastPlayingStep = (*stepCounter);
+            renderWhichStepIsPlaying(lastPlayingStep);
+            return;
+        }
+
         draw.filledRect(relativePosition, size, { background });
 
         // Render scrollbar..
@@ -158,9 +180,9 @@ public:
                 if (step.len && step.enabled && step.position < *stepCount) {
                     int stepRow = step.position / stepPerRow;
                     int stepCol = step.position % stepPerRow;
-                    int x = relativePosition.x + stepCol * stepWidth + 1;
+                    int x = relativePosition.x + stepCol * stepWidth;
                     int y = relativePosition.y + stepRow * stepHeight;
-                    draw.filledRect({ x, y }, { stepWidth - 2, stepHeight - 2 }, { activeStepColor });
+                    draw.filledRect({ x + 1, y + 1 }, { stepWidth - 2, stepHeight - 2 }, { activeStepColor });
                 }
             }
         }
@@ -171,20 +193,21 @@ public:
             if (selectedStep < *stepCount) {
                 int stepRow = selectedStep / stepPerRow;
                 int stepCol = selectedStep % stepPerRow;
-                int x = relativePosition.x + stepCol * stepWidth + 1;
+                int x = relativePosition.x + stepCol * stepWidth;
                 int y = relativePosition.y + stepRow * stepHeight;
-                draw.rect({ x, y }, { stepWidth - 2, stepHeight - 2 }, { stepSelectedColor });
+                draw.rect({ x + 1, y + 1 }, { stepWidth - 2, stepHeight - 3 /* should be 2 but for whatever reason it's 3, might be due to size */ }, { stepSelectedColor });
             }
         }
+    }
 
-        // Show playing step
-        if (*isPlaying) {
-            int stepRow = (*stepCounter) / stepPerRow;
-            int stepCol = (*stepCounter) % stepPerRow;
-            int x = relativePosition.x + stepCol * stepWidth + 1;
-            int y = relativePosition.y + stepRow * stepHeight;
-            draw.filledCircle({ (int)(x + stepWidth * 0.5), (int)(y + stepHeight * 0.5) }, stepHeight * 0.25, { playingColor });
-        }
+    void renderWhichStepIsPlaying(int stepPos, bool reset = false)
+    {
+        int stepRow = stepPos / stepPerRow;
+        int stepCol = stepPos % stepPerRow;
+        int x = relativePosition.x + stepCol * stepWidth;
+        int y = relativePosition.y + stepRow * stepHeight;
+        // draw.filledCircle({ (int)(x + stepWidth * 0.5), (int)(y + stepHeight * 0.5) }, stepHeight * 0.25, { playingColor });
+        draw.line({ x + 1, y + stepHeight - 1 }, { x + stepWidth - 2, y + stepHeight - 1 }, { reset ? background : playingColor });
     }
 
     void onContext(uint8_t index, float value) override

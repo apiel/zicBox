@@ -72,12 +72,12 @@ protected:
         return step.note + motion(step);
     }
 
-    std::vector<std::function<void()>> eventCallbacks;
+    std::vector<std::function<void(bool)>> eventCallbacks;
 
     void callEventCallbacks()
     {
         for (auto& callback : eventCallbacks) {
-            callback();
+            callback(isPlaying);
         }
     }
 
@@ -85,7 +85,7 @@ protected:
     {
         stepCounter++;
 
-        callEventCallbacks();
+        // callEventCallbacks();
 
         // printf("[%d] ------------------- seq stepCounter %d\n", track, stepCounter);
         uint8_t state = status.get();
@@ -181,6 +181,8 @@ public:
         } else if (event == AudioEventType::PAUSE) {
             callEventCallbacks();
             allOff();
+        }  else if (event == AudioEventType::TOGGLE_PLAY_PAUSE || event == AudioEventType::START) {
+            callEventCallbacks();
         }
     }
 
@@ -223,7 +225,7 @@ public:
          } },
         { "REGISTER_CALLBACK", [this](void* userdata) {
              // Cast userdata to the correct function pointer type
-             auto callback = static_cast<std::function<void()>*>(userdata);
+             auto callback = static_cast<std::function<void(bool)>*>(userdata);
              if (callback) {
                  eventCallbacks.push_back(*callback);
              }
