@@ -250,8 +250,28 @@ public:
             return;
 
         uint8_t writeBuf[6] = { 0x00, (uint8_t)(pixel * 3), color.g, color.r, color.b, 0x00 };
-        this->writeReg(SEESAW_NEOPIXEL_BASE, SEESAW_NEOPIXEL_BUF, writeBuf, 6);
+        this->writeReg(SEESAW_NEOPIXEL_BASE, SEESAW_NEOPIXEL_BUF, writeBuf, 5);
     }
+
+    // void setPixelColor(uint8_t pixel, const Color& color)
+    // {
+    //     if (pixel >= NEO_TRELLIS_NUM_KEYS)
+    //         return;
+
+    //     uint8_t p[3];
+    //     p[1] = color.r;
+    //     p[0] = color.g;
+    //     p[2] = color.b;
+
+    //     uint8_t writeBuf[6] = {
+    //         0x00,
+    //         (uint8_t)(pixel * 3),
+    //         p[0], p[1], p[2],
+    //         0x00
+    //     };
+
+    //     this->writeReg(SEESAW_NEOPIXEL_BASE, SEESAW_NEOPIXEL_BUF, writeBuf, 5);
+    // }
 
     void show(void)
     {

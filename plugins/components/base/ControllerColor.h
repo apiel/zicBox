@@ -60,7 +60,7 @@ public:
                 logWarn("Controller color config is missing mandatory 'key' or 'color' parameters.");
                 continue;
             }
-            int key = color["key"].is_number_integer() ? color["key"].get<int>() : getKeyCode(color["key"].get<std::string>().c_str());
+            int key = color["key"].is_string() ? getKeyCode(color["key"].get<std::string>().c_str()) : color["key"].get<int>();
             Color colorValue = component->draw.getColor(color["color"], { 0, 0, 0 });
             controllerColors.push_back({ controller, key, colorValue });
         }
