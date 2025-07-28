@@ -97,7 +97,7 @@ public:
         /*md   encoderId={0} */
         encoderId = config.value("encoderId", encoderId);
 
-        /// Type: "STEP_SELECTION", "STEP_TOGGLE", "STEP_NOTE", "STEP_VELOCITY", "STEP_CONDITION"
+        /// Type: "STEP_SELECTION", "STEP_TOGGLE", "STEP_NOTE", "STEP_VELOCITY", "STEP_CONDITION", "STEP_LENGTH"
         std::string type = config.value("type", "STEP_SELECTION");
         if (type == "STEP_TOGGLE") {
             renderFn = std::bind(&SequencerValueComponent::renderStepToggle, this);
@@ -111,6 +111,9 @@ public:
         } else if (type == "STEP_CONDITION") {
             renderFn = std::bind(&SequencerValueComponent::renderStepCondition, this);
             onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepCondition, this, std::placeholders::_1);
+        } else if (type == "STEP_LENGTH") {
+            renderFn = std::bind(&SequencerValueComponent::renderStepLength, this);
+            onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepLength, this, std::placeholders::_1);
         } else {
             renderFn = std::bind(&SequencerValueComponent::renderSelectedStep, this);
             onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepSelection, this, std::placeholders::_1);
@@ -265,6 +268,30 @@ protected:
         Step* step = getSelectedStep();
         if (step) {
             step->setCondition(step->condition + direction);
+            renderNext();
+        }
+    }
+
+    void renderStepLength()
+    {
+        Step* step = getSelectedStep();
+        int x = relativePosition.x + (size.w) * 0.5;
+        int y = relativePosition.y;
+
+        if (step) {
+            draw.textCentered({ x, y }, std::to_string(step->len), valueFontSize, { valueColor, .font = fontValue });
+        } else {
+            draw.textCentered({ x, y }, "---", valueFontSize, { labelColor, .font = fontValue });
+        }
+        y += valueFontSize + 2;
+        draw.textCentered({ x, y }, "Length", labelFontSize, { labelColor, .font = fontLabel });
+    }
+
+    void onEncoderStepLength(int8_t direction)
+    {
+        Step* step = getSelectedStep();
+        if (step) {
+            step->setLength(step->len + direction);
             renderNext();
         }
     }

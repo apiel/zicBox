@@ -36,6 +36,7 @@ export function SynthViews({ track, synthName, color, contextId, title }: Props)
                 color={color}
                 contextId={contextId}
                 title={title}
+                includeLength
             />
         </>
     );
