@@ -20,13 +20,13 @@ export function KeysTracks({ synthName, viewName }: { synthName: string; viewNam
                 { key: A4, action: `setView:Drum4` },
                 { key: B4, action: `noteOn:Drum4:60` },
 
-                { key: A5, action: `setView:Synth1` },
+                { key: A5, action: viewName === `Synth1` ? `setView:Synth1:page2` : `setView:Synth1` },
                 { key: B5, action: `noteOn:Synth1:60` },
 
-                { key: A6, action: `setView:Synth2` },
+                { key: A6, action: viewName === `Synth2` ? `setView:Synth2:page2` : `setView:Synth2` },
                 { key: B6, action: `noteOn:Synth2:60` },
 
-                { key: A7, action: `setView:Synth3` },
+                { key: A7, action: viewName === `Synth3` ? `setView:Synth3:page2` : `setView:Synth3` },
                 { key: B7, action: `noteOn:Synth3:60` },
             ]}
             controllerColors={[{ controller: 'Default', colors:[

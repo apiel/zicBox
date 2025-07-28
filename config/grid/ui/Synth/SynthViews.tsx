@@ -1,5 +1,7 @@
 import * as React from '@/libs/react';
 
+import { DrumSeqView } from '../components/DrumSeqView';
+import { Main2View } from './Main2View';
 import { MainView } from './MainView';
 
 export type Props = {
@@ -20,21 +22,21 @@ export function SynthViews({ track, synthName, color, contextId, title }: Props)
                 color={color}
                 title={title}
             />
-            {/* <Main2View
+            <Main2View
                 name={`${synthName}:page2`}
                 track={track}
                 synthName={synthName}
                 color={color}
                 title={title}
-            /> */}
-            {/* <DrumSeqView
+            />
+            <DrumSeqView
                 name={`${synthName}Seq`}
                 track={track}
                 synthName={synthName}
                 color={color}
                 contextId={contextId}
                 title={title}
-            /> */}
+            />
         </>
     );
 }

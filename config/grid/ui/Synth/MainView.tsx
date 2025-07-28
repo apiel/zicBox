@@ -10,8 +10,6 @@ import {
     bounds5,
     enc1,
     enc10,
-    enc11,
-    enc12,
     enc2,
     enc3,
     enc4,
@@ -22,7 +20,7 @@ import {
     enc9,
     encBottomValue,
     graphBounds,
-    seqCardBounds_small
+    seqCardBounds_small,
 } from '../constantsValue';
 
 export type Props = {
@@ -53,14 +51,14 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         audioPlugin={synthName}
                         param="FILTER_CUTOFF"
                         {...enc2}
-                        color="primary"
+                        color="secondary"
                         track={track}
                     />
                     <KnobValue
                         audioPlugin={synthName}
                         param="FILTER_RESONANCE"
                         {...enc3}
-                        color="primary"
+                        color="secondary"
                         track={track}
                     />
 
@@ -104,44 +102,30 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         audioPlugin="TrackFx"
                         param="FX_TYPE"
                         {...enc7}
-                        color="tertiary"
+                        color="quaternary"
                         track={track}
                     />
                     <KnobValue
                         audioPlugin="TrackFx"
                         param="FX_AMOUNT"
                         {...enc8}
-                        color="primary"
+                        color="quaternary"
                         track={track}
                         valueReplaceTitle
                     />
 
                     <KnobValue
                         audioPlugin={synthName}
-                        param="LFO_FREQ_MOD"
+                        param="ATTACK"
                         {...enc9}
                         color="tertiary"
                         track={track}
                     />
                     <KnobValue
                         audioPlugin={synthName}
-                        param="LFO_WAVE_MOD"
+                        param="RELEASE"
                         {...enc10}
-                        color="primary"
-                        track={track}
-                    />
-                    <KnobValue
-                        audioPlugin={synthName}
-                        param="LFO_CUTOFF_MOD"
-                        {...enc11}
-                        color="quaternary"
-                        track={track}
-                    />
-                    <KnobValue
-                        audioPlugin={synthName}
-                        param="LFO_RESONANCE_MOD"
-                        {...enc12}
-                        color="secondary"
+                        color="tertiary"
                         track={track}
                     />
 

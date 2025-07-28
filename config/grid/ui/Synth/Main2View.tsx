@@ -1,33 +1,22 @@
 import * as React from '@/libs/react';
 
-import { GraphEncoder } from '@/libs/nativeComponents/GraphEncoder';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
-import { MacroEnvelop } from '@/libs/nativeComponents/MacroEnvelop';
 import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
-import { Value } from '@/libs/nativeComponents/Value';
+import { Text } from '@/libs/nativeComponents/Text';
 import { rgb } from '@/libs/ui';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
 import {
-    bounds1,
-    bounds10,
-    bounds12,
-    boundsMarginTop,
     enc1,
     enc10,
     enc11,
-    enc12,
     enc2,
     enc3,
     enc4,
     enc5,
     enc6,
-    enc7,
-    enc8,
     enc9,
-    encBottomValue,
-    graphBounds,
-    seqCardBounds_small
+    seqCardBounds_small,
 } from '../constantsValue';
 
 export type Props = {
@@ -47,96 +36,81 @@ export function Main2View({ name, track, synthName, color, title }: Props) {
             title={title}
             content={
                 <>
-                    <MacroEnvelop
-                        bounds={graphBounds(bounds1, 15)}
-                        audioPlugin={synthName}
-                        envelopDataId="ENV_FREQ2"
-                        track={track}
-                        encoders={[enc1.encoderId, enc2.encoderId, enc5.encoderId, enc6.encoderId]}
-                        title="Freq. Env."
+                    <Text
+                        text="Envelope modulation"
+                        bounds={[0, 53, 480, 16]}
+                        centered={true}
+                        color={rgb(100, 100, 100)}
                     />
                     <KnobValue
-                        {...enc9}
                         audioPlugin={synthName}
-                        param="DURATION"
-                        color="quaternary"
+                        param="LFO_FREQ_MOD"
+                        {...enc1}
+                        color="secondary"
                         track={track}
                     />
-                    <GraphEncoder
-                        bounds={boundsMarginTop(bounds10)}
-                        audioPlugin={synthName}
-                        dataId="ENV_AMP_FORM"
-                        values={['AMP_MORPH']}
-                        outlineColor="quaternary"
-                        fillColor={rgb(194, 175, 107)}
-                        track={track}
-                    />
-                    <Value
-                        {...encBottomValue(enc10)}
-                        audioPlugin={synthName}
-                        param="AMP_MORPH"
-                        track={track}
-                        barHeight={1}
-                        barColor="quaternary"
-                        alignLeft
-                        showLabelOverValue={1}
-                    />
-
                     <KnobValue
                         audioPlugin={synthName}
-                        param="OSC2"
+                        param="LFO_WAVE_MOD"
+                        {...enc2}
+                        color="secondary"
+                        track={track}
+                    />
+                    <KnobValue
+                        audioPlugin={synthName}
+                        param="LFO_CUTOFF_MOD"
                         {...enc3}
                         color="secondary"
                         track={track}
                     />
                     <KnobValue
                         audioPlugin={synthName}
-                        param="OSC2_FREQ"
+                        param="LFO_RESONANCE_MOD"
                         {...enc4}
-                        color="quaternary"
+                        color="secondary"
                         track={track}
                     />
                     <KnobValue
                         audioPlugin={synthName}
-                        param="LAYER2_CUTOFF"
-                        {...enc7}
-                        color="tertiary"
-                        type="STRING"
+                        param="LFO_WAVEFORM"
+                        {...enc5}
+                        color="secondary"
                         track={track}
                     />
                     <KnobValue
                         audioPlugin={synthName}
-                        param="LAYER2_RESONANCE"
-                        {...enc8}
-                        color="tertiary"
+                        param="LFO_RATE"
+                        {...enc6}
+                        color="secondary"
                         track={track}
                     />
 
+                    <Text
+                        text="Envelope modulation"
+                        bounds={[0, 293, 480, 16]}
+                        centered={true}
+                        color={rgb(100, 100, 100)}
+                    />
                     <KnobValue
+                        audioPlugin={synthName}
+                        param="CUTOFF_MOD"
+                        {...enc9}
+                        color="tertiary"
+                        track={track}
+                    />
+                    <KnobValue
+                        audioPlugin={synthName}
+                        param="RESONANCE_MOD"
+                        {...enc10}
+                        color="tertiary"
+                        track={track}
+                    />
+                    <KnobValue
+                        audioPlugin={synthName}
+                        param="FREQUENCY_MOD"
                         {...enc11}
-                        audioPlugin={synthName}
-                        param="LAYER2_DURATION"
-                        color="primary"
+                        color="tertiary"
                         track={track}
-                    />
-                    <GraphEncoder
-                        bounds={boundsMarginTop(bounds12)}
-                        audioPlugin={synthName}
-                        dataId="LAYER2_ENV_AMP_FORM"
-                        values={['LAYER2_AMP_MORPH']}
-                        // outlineColor="quaternary"
-                        // fillColor={rgb(194, 175, 107)}
-                        track={track}
-                    />
-                    <Value
-                        {...encBottomValue(enc12)}
-                        audioPlugin={synthName}
-                        param="LAYER2_AMP_MORPH"
-                        track={track}
-                        barHeight={1}
-                        barColor="primary"
-                        alignLeft
-                        showLabelOverValue={1}
                     />
 
                     <SequencerCard
