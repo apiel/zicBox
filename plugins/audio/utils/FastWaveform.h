@@ -96,6 +96,11 @@ public:
         return "Unknown";
     }
 
+    void reset()
+    {
+        phase = 0.0f;
+    }
+
 private:
     float sampleRate;
     float rate;

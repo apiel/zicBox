@@ -6,6 +6,10 @@ import {
     Drum4Track,
     Sample1Track,
     Sample2Track,
+    Sample3Track,
+    Synth1Track,
+    Synth2Track,
+    Synth3Track,
 } from '../constants';
 
 export const maxVariation = 16;
@@ -53,6 +57,36 @@ const drum4Track = {
     ],
 };
 
+const synth1Track = {
+    id: Synth1Track,
+    plugins: [
+        audioPlugin('SynthWavetable', { alias: 'Synth1' }),
+        audioPlugin('Sequencer'),
+        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
+        audioPlugin('SerializeTrack', { filename: 'synth1', maxVariation, workspaceFolder }),
+    ],
+};
+
+const synth2Track = {
+    id: Synth2Track,
+    plugins: [
+        audioPlugin('SynthWavetable', { alias: 'Synth2' }),
+        audioPlugin('Sequencer'),
+        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
+        audioPlugin('SerializeTrack', { filename: 'synth2', maxVariation, workspaceFolder }),
+    ],
+};
+
+const synth3Track = {
+    id: Synth3Track,
+    plugins: [
+        audioPlugin('SynthWavetable', { alias: 'Synth3' }),
+        audioPlugin('Sequencer'),
+        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
+        audioPlugin('SerializeTrack', { filename: 'synth3', maxVariation, workspaceFolder }),
+    ],
+};
+
 const sample1Track = {
     id: Sample1Track,
     plugins: [
@@ -73,6 +107,17 @@ const sample2Track = {
         audioPlugin('SerializeTrack', { filename: 'sample2', maxVariation, workspaceFolder }),
     ],
 };
+
+const sample3Track = {
+    id: Sample3Track,
+    plugins: [
+        audioPlugin('SynthMonoSample', { alias: 'Sample3' }),
+        audioPlugin('Sequencer'),
+        audioPlugin('EffectFilterMultiMode', { alias: 'Filter' }),
+        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
+        audioPlugin('SerializeTrack', { filename: 'sample3', maxVariation, workspaceFolder }),
+    ],
+}
 
 const masterTrack = {
     id: 0,
@@ -95,8 +140,12 @@ export const audio = {
         drum2Track,
         drum3Track,
         drum4Track,
+        synth1Track,
+        synth2Track,
+        synth3Track,
         sample1Track,
         sample2Track,
+        sample3Track,
         masterTrack,
     ],
     autoSave: 500,

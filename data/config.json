@@ -40,7 +40,34 @@
         ]
       },
       {
-        "id": 9,
+        "id": 5,
+        "plugins": [
+          {"alias":"Synth1","plugin":"SynthWavetable"},
+          {"plugin":"Sequencer","alias":"Sequencer"},
+          {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
+          {"filename":"synth1","maxVariation":16,"workspaceFolder":"data/workspaces/plus_rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}
+        ]
+      },
+      {
+        "id": 6,
+        "plugins": [
+          {"alias":"Synth2","plugin":"SynthWavetable"},
+          {"plugin":"Sequencer","alias":"Sequencer"},
+          {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
+          {"filename":"synth2","maxVariation":16,"workspaceFolder":"data/workspaces/plus_rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}
+        ]
+      },
+      {
+        "id": 7,
+        "plugins": [
+          {"alias":"Synth3","plugin":"SynthWavetable"},
+          {"plugin":"Sequencer","alias":"Sequencer"},
+          {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
+          {"filename":"synth3","maxVariation":16,"workspaceFolder":"data/workspaces/plus_rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}
+        ]
+      },
+      {
+        "id": 8,
         "plugins": [
           {"alias":"Sample1","plugin":"SynthMonoSample"},
           {"plugin":"Sequencer","alias":"Sequencer"},
@@ -49,13 +76,23 @@
         ]
       },
       {
-        "id": 10,
+        "id": 9,
         "plugins": [
           {"alias":"Sample2","plugin":"SynthMonoSample"},
           {"plugin":"Sequencer","alias":"Sequencer"},
           {"alias":"Filter","plugin":"EffectFilterMultiMode"},
           {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
           {"filename":"sample2","maxVariation":16,"workspaceFolder":"data/workspaces/plus_rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}
+        ]
+      },
+      {
+        "id": 10,
+        "plugins": [
+          {"alias":"Sample3","plugin":"SynthMonoSample"},
+          {"plugin":"Sequencer","alias":"Sequencer"},
+          {"alias":"Filter","plugin":"EffectFilterMultiMode"},
+          {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
+          {"filename":"sample3","maxVariation":16,"workspaceFolder":"data/workspaces/plus_rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -118,7 +155,7 @@
         {"encoderId":9,"bounds":[0,370,118,30],"audioPlugin":"Drum1","param":"MACRO","track":1,"barHeight":1,"alignLeft":true,"showLabelOverValue":1,"componentName":"Value"},
         {"encoderId":10,"bounds":[120,370,118,30],"audioPlugin":"Drum1","param":"PITCH","track":1,"barHeight":1,"alignLeft":true,"showLabelOverValue":1,"componentName":"Value"},
         {"bounds":[120,450,240,140],"audioPlugin":"Sequencer","track":1,"componentName":"SequencerCard"},
-        {"keys":[{"key":"F1","action":"setView:Drum1:page2"},{"key":"1","action":"noteOn:Drum1:60"},{"key":"F2","action":"setView:Drum2"},{"key":"2","action":"noteOn:Drum2:60"},{"key":"F3","action":"setView:Drum3"},{"key":"3","action":"noteOn:Drum3:60"},{"key":"F4","action":"setView:Drum4"},{"key":"4","action":"noteOn:Drum4:60"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F1","color":"#a3c912"},{"key":"1","color":"#101402"},{"key":"F2","color":"#190b01"},{"key":"2","color":"#190b01"},{"key":"F3","color":"#021014"},{"key":"3","color":"#021014"},{"key":"F4","color":"#191400"},{"key":"4","color":"#191400"},{"key":"F5","color":"#120809"},{"key":"5","color":"#120809"},{"key":"F6","color":"#050b0c"},{"key":"6","color":"#050b0c"},{"key":"F7","color":"#0a0812"},{"key":"7","color":"#0a0812"},{"key":"F8","color":"#120811"},{"key":"8","color":"#120811"},{"key":"F9","color":"#001412"},{"key":"9","color":"#001412"},{"key":"F10","color":"#181218"},{"key":"0","color":"#181218"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
+        {"keys":[{"key":"F1","action":"setView:Drum1:page2"},{"key":"1","action":"noteOn:Drum1:60"},{"key":"F2","action":"setView:Drum2"},{"key":"2","action":"noteOn:Drum2:60"},{"key":"F3","action":"setView:Drum3"},{"key":"3","action":"noteOn:Drum3:60"},{"key":"F4","action":"setView:Drum4"},{"key":"4","action":"noteOn:Drum4:60"},{"key":"F5","action":"setView:Synth1"},{"key":"5","action":"noteOn:Synth1:60"},{"key":"F6","action":"setView:Synth2"},{"key":"6","action":"noteOn:Synth2:60"},{"key":"F7","action":"setView:Synth3"},{"key":"7","action":"noteOn:Synth3:60"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F1","color":"#a3c912"},{"key":"1","color":"#101402"},{"key":"F2","color":"#190b01"},{"key":"2","color":"#190b01"},{"key":"F3","color":"#021014"},{"key":"3","color":"#021014"},{"key":"F4","color":"#191400"},{"key":"4","color":"#191400"},{"key":"F5","color":"#120809"},{"key":"5","color":"#120809"},{"key":"F6","color":"#050b0c"},{"key":"6","color":"#050b0c"},{"key":"F7","color":"#0a0812"},{"key":"7","color":"#0a0812"},{"key":"F8","color":"#120811"},{"key":"8","color":"#120811"},{"key":"F9","color":"#001412"},{"key":"9","color":"#001412"},{"key":"F10","color":"#181218"},{"key":"0","color":"#181218"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"keys":[{"key":"F11","action":"setView:Drum1Seq"},{"key":"F12","action":"contextToggle:254:1:0"},{"key":"=","action":"playPause"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F11","color":"#323232"},{"key":"F12","color":"#323232"},{"key":"=","color":"#323232"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
     },
@@ -139,7 +176,7 @@
         {"bounds":[360,310,118,100],"audioPlugin":"Drum1","dataId":"LAYER2_ENV_AMP_FORM","values":["LAYER2_AMP_MORPH"],"track":1,"componentName":"GraphEncoder"},
         {"encoderId":12,"bounds":[360,370,118,30],"audioPlugin":"Drum1","param":"LAYER2_AMP_MORPH","track":1,"barHeight":1,"barColor":"primary","alignLeft":true,"showLabelOverValue":1,"componentName":"Value"},
         {"bounds":[120,450,240,140],"audioPlugin":"Sequencer","track":1,"componentName":"SequencerCard"},
-        {"keys":[{"key":"F1","action":"setView:Drum1"},{"key":"1","action":"noteOn:Drum1:60"},{"key":"F2","action":"setView:Drum2"},{"key":"2","action":"noteOn:Drum2:60"},{"key":"F3","action":"setView:Drum3"},{"key":"3","action":"noteOn:Drum3:60"},{"key":"F4","action":"setView:Drum4"},{"key":"4","action":"noteOn:Drum4:60"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F1","color":"#101402"},{"key":"1","color":"#101402"},{"key":"F2","color":"#190b01"},{"key":"2","color":"#190b01"},{"key":"F3","color":"#021014"},{"key":"3","color":"#021014"},{"key":"F4","color":"#191400"},{"key":"4","color":"#191400"},{"key":"F5","color":"#120809"},{"key":"5","color":"#120809"},{"key":"F6","color":"#050b0c"},{"key":"6","color":"#050b0c"},{"key":"F7","color":"#0a0812"},{"key":"7","color":"#0a0812"},{"key":"F8","color":"#120811"},{"key":"8","color":"#120811"},{"key":"F9","color":"#001412"},{"key":"9","color":"#001412"},{"key":"F10","color":"#181218"},{"key":"0","color":"#181218"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
+        {"keys":[{"key":"F1","action":"setView:Drum1"},{"key":"1","action":"noteOn:Drum1:60"},{"key":"F2","action":"setView:Drum2"},{"key":"2","action":"noteOn:Drum2:60"},{"key":"F3","action":"setView:Drum3"},{"key":"3","action":"noteOn:Drum3:60"},{"key":"F4","action":"setView:Drum4"},{"key":"4","action":"noteOn:Drum4:60"},{"key":"F5","action":"setView:Synth1"},{"key":"5","action":"noteOn:Synth1:60"},{"key":"F6","action":"setView:Synth2"},{"key":"6","action":"noteOn:Synth2:60"},{"key":"F7","action":"setView:Synth3"},{"key":"7","action":"noteOn:Synth3:60"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F1","color":"#101402"},{"key":"1","color":"#101402"},{"key":"F2","color":"#190b01"},{"key":"2","color":"#190b01"},{"key":"F3","color":"#021014"},{"key":"3","color":"#021014"},{"key":"F4","color":"#191400"},{"key":"4","color":"#191400"},{"key":"F5","color":"#120809"},{"key":"5","color":"#120809"},{"key":"F6","color":"#050b0c"},{"key":"6","color":"#050b0c"},{"key":"F7","color":"#0a0812"},{"key":"7","color":"#0a0812"},{"key":"F8","color":"#120811"},{"key":"8","color":"#120811"},{"key":"F9","color":"#001412"},{"key":"9","color":"#001412"},{"key":"F10","color":"#181218"},{"key":"0","color":"#181218"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"keys":[{"key":"F11","action":"setView:Drum1Seq"},{"key":"F12","action":"contextToggle:254:1:0"},{"key":"=","action":"playPause"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F11","color":"#323232"},{"key":"F12","color":"#323232"},{"key":"=","color":"#323232"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
     },
@@ -179,7 +216,7 @@
         {"audioPlugin":"Drum2","param":"VAL_9","encoderId":11,"bounds":[240,300,118,100],"color":"tertiary","track":2,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"KnobValue"},
         {"audioPlugin":"Drum2","param":"VAL_10","encoderId":12,"bounds":[360,300,118,100],"color":"primary","track":2,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"KnobValue"},
         {"bounds":[120,450,240,140],"audioPlugin":"Sequencer","track":2,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"SequencerCard"},
-        {"keys":[{"key":"F1","action":"setView:Drum1"},{"key":"1","action":"noteOn:Drum1:60"},{"key":"F2","action":"setView:Drum2"},{"key":"2","action":"noteOn:Drum2:60"},{"key":"F3","action":"setView:Drum3"},{"key":"3","action":"noteOn:Drum3:60"},{"key":"F4","action":"setView:Drum4"},{"key":"4","action":"noteOn:Drum4:60"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F1","color":"#101402"},{"key":"1","color":"#101402"},{"key":"F2","color":"#fd6f0e"},{"key":"2","color":"#190b01"},{"key":"F3","color":"#021014"},{"key":"3","color":"#021014"},{"key":"F4","color":"#191400"},{"key":"4","color":"#191400"},{"key":"F5","color":"#120809"},{"key":"5","color":"#120809"},{"key":"F6","color":"#050b0c"},{"key":"6","color":"#050b0c"},{"key":"F7","color":"#0a0812"},{"key":"7","color":"#0a0812"},{"key":"F8","color":"#120811"},{"key":"8","color":"#120811"},{"key":"F9","color":"#001412"},{"key":"9","color":"#001412"},{"key":"F10","color":"#181218"},{"key":"0","color":"#181218"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
+        {"keys":[{"key":"F1","action":"setView:Drum1"},{"key":"1","action":"noteOn:Drum1:60"},{"key":"F2","action":"setView:Drum2"},{"key":"2","action":"noteOn:Drum2:60"},{"key":"F3","action":"setView:Drum3"},{"key":"3","action":"noteOn:Drum3:60"},{"key":"F4","action":"setView:Drum4"},{"key":"4","action":"noteOn:Drum4:60"},{"key":"F5","action":"setView:Synth1"},{"key":"5","action":"noteOn:Synth1:60"},{"key":"F6","action":"setView:Synth2"},{"key":"6","action":"noteOn:Synth2:60"},{"key":"F7","action":"setView:Synth3"},{"key":"7","action":"noteOn:Synth3:60"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F1","color":"#101402"},{"key":"1","color":"#101402"},{"key":"F2","color":"#fd6f0e"},{"key":"2","color":"#190b01"},{"key":"F3","color":"#021014"},{"key":"3","color":"#021014"},{"key":"F4","color":"#191400"},{"key":"4","color":"#191400"},{"key":"F5","color":"#120809"},{"key":"5","color":"#120809"},{"key":"F6","color":"#050b0c"},{"key":"6","color":"#050b0c"},{"key":"F7","color":"#0a0812"},{"key":"7","color":"#0a0812"},{"key":"F8","color":"#120811"},{"key":"8","color":"#120811"},{"key":"F9","color":"#001412"},{"key":"9","color":"#001412"},{"key":"F10","color":"#181218"},{"key":"0","color":"#181218"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"keys":[{"key":"F11","action":"setView:Drum2Seq"},{"key":"F12","action":"contextToggle:254:1:0"},{"key":"=","action":"playPause"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F11","color":"#323232"},{"key":"F12","color":"#323232"},{"key":"=","color":"#323232"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
     },
@@ -219,7 +256,7 @@
         {"audioPlugin":"Drum3","param":"VAL_9","encoderId":11,"bounds":[240,300,118,100],"color":"tertiary","track":3,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"KnobValue"},
         {"audioPlugin":"Drum3","param":"VAL_10","encoderId":12,"bounds":[360,300,118,100],"color":"primary","track":3,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"KnobValue"},
         {"bounds":[120,450,240,140],"audioPlugin":"Sequencer","track":3,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"SequencerCard"},
-        {"keys":[{"key":"F1","action":"setView:Drum1"},{"key":"1","action":"noteOn:Drum1:60"},{"key":"F2","action":"setView:Drum2"},{"key":"2","action":"noteOn:Drum2:60"},{"key":"F3","action":"setView:Drum3"},{"key":"3","action":"noteOn:Drum3:60"},{"key":"F4","action":"setView:Drum4"},{"key":"4","action":"noteOn:Drum4:60"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F1","color":"#101402"},{"key":"1","color":"#101402"},{"key":"F2","color":"#190b01"},{"key":"2","color":"#190b01"},{"key":"F3","color":"#15a5ca"},{"key":"3","color":"#021014"},{"key":"F4","color":"#191400"},{"key":"4","color":"#191400"},{"key":"F5","color":"#120809"},{"key":"5","color":"#120809"},{"key":"F6","color":"#050b0c"},{"key":"6","color":"#050b0c"},{"key":"F7","color":"#0a0812"},{"key":"7","color":"#0a0812"},{"key":"F8","color":"#120811"},{"key":"8","color":"#120811"},{"key":"F9","color":"#001412"},{"key":"9","color":"#001412"},{"key":"F10","color":"#181218"},{"key":"0","color":"#181218"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
+        {"keys":[{"key":"F1","action":"setView:Drum1"},{"key":"1","action":"noteOn:Drum1:60"},{"key":"F2","action":"setView:Drum2"},{"key":"2","action":"noteOn:Drum2:60"},{"key":"F3","action":"setView:Drum3"},{"key":"3","action":"noteOn:Drum3:60"},{"key":"F4","action":"setView:Drum4"},{"key":"4","action":"noteOn:Drum4:60"},{"key":"F5","action":"setView:Synth1"},{"key":"5","action":"noteOn:Synth1:60"},{"key":"F6","action":"setView:Synth2"},{"key":"6","action":"noteOn:Synth2:60"},{"key":"F7","action":"setView:Synth3"},{"key":"7","action":"noteOn:Synth3:60"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F1","color":"#101402"},{"key":"1","color":"#101402"},{"key":"F2","color":"#190b01"},{"key":"2","color":"#190b01"},{"key":"F3","color":"#15a5ca"},{"key":"3","color":"#021014"},{"key":"F4","color":"#191400"},{"key":"4","color":"#191400"},{"key":"F5","color":"#120809"},{"key":"5","color":"#120809"},{"key":"F6","color":"#050b0c"},{"key":"6","color":"#050b0c"},{"key":"F7","color":"#0a0812"},{"key":"7","color":"#0a0812"},{"key":"F8","color":"#120811"},{"key":"8","color":"#120811"},{"key":"F9","color":"#001412"},{"key":"9","color":"#001412"},{"key":"F10","color":"#181218"},{"key":"0","color":"#181218"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"keys":[{"key":"F11","action":"setView:Drum3Seq"},{"key":"F12","action":"contextToggle:254:1:0"},{"key":"=","action":"playPause"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F11","color":"#323232"},{"key":"F12","color":"#323232"},{"key":"=","color":"#323232"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
     },
@@ -259,7 +296,7 @@
         {"audioPlugin":"Drum4","param":"VAL_9","encoderId":11,"bounds":[240,300,118,100],"color":"tertiary","track":4,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"KnobValue"},
         {"audioPlugin":"Drum4","param":"VAL_10","encoderId":12,"bounds":[360,300,118,100],"color":"primary","track":4,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"KnobValue"},
         {"bounds":[120,450,240,140],"audioPlugin":"Sequencer","track":4,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"SequencerCard"},
-        {"keys":[{"key":"F1","action":"setView:Drum1"},{"key":"1","action":"noteOn:Drum1:60"},{"key":"F2","action":"setView:Drum2"},{"key":"2","action":"noteOn:Drum2:60"},{"key":"F3","action":"setView:Drum3"},{"key":"3","action":"noteOn:Drum3:60"},{"key":"F4","action":"setView:Drum4"},{"key":"4","action":"noteOn:Drum4:60"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F1","color":"#101402"},{"key":"1","color":"#101402"},{"key":"F2","color":"#190b01"},{"key":"2","color":"#190b01"},{"key":"F3","color":"#021014"},{"key":"3","color":"#021014"},{"key":"F4","color":"#ffcd04"},{"key":"4","color":"#191400"},{"key":"F5","color":"#120809"},{"key":"5","color":"#120809"},{"key":"F6","color":"#050b0c"},{"key":"6","color":"#050b0c"},{"key":"F7","color":"#0a0812"},{"key":"7","color":"#0a0812"},{"key":"F8","color":"#120811"},{"key":"8","color":"#120811"},{"key":"F9","color":"#001412"},{"key":"9","color":"#001412"},{"key":"F10","color":"#181218"},{"key":"0","color":"#181218"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
+        {"keys":[{"key":"F1","action":"setView:Drum1"},{"key":"1","action":"noteOn:Drum1:60"},{"key":"F2","action":"setView:Drum2"},{"key":"2","action":"noteOn:Drum2:60"},{"key":"F3","action":"setView:Drum3"},{"key":"3","action":"noteOn:Drum3:60"},{"key":"F4","action":"setView:Drum4"},{"key":"4","action":"noteOn:Drum4:60"},{"key":"F5","action":"setView:Synth1"},{"key":"5","action":"noteOn:Synth1:60"},{"key":"F6","action":"setView:Synth2"},{"key":"6","action":"noteOn:Synth2:60"},{"key":"F7","action":"setView:Synth3"},{"key":"7","action":"noteOn:Synth3:60"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F1","color":"#101402"},{"key":"1","color":"#101402"},{"key":"F2","color":"#190b01"},{"key":"2","color":"#190b01"},{"key":"F3","color":"#021014"},{"key":"3","color":"#021014"},{"key":"F4","color":"#ffcd04"},{"key":"4","color":"#191400"},{"key":"F5","color":"#120809"},{"key":"5","color":"#120809"},{"key":"F6","color":"#050b0c"},{"key":"6","color":"#050b0c"},{"key":"F7","color":"#0a0812"},{"key":"7","color":"#0a0812"},{"key":"F8","color":"#120811"},{"key":"8","color":"#120811"},{"key":"F9","color":"#001412"},{"key":"9","color":"#001412"},{"key":"F10","color":"#181218"},{"key":"0","color":"#181218"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"keys":[{"key":"F11","action":"setView:Drum4Seq"},{"key":"F12","action":"contextToggle:254:1:0"},{"key":"=","action":"playPause"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F11","color":"#323232"},{"key":"F12","color":"#323232"},{"key":"=","color":"#323232"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
     },
@@ -275,6 +312,75 @@
         {"encoderId":5,"bounds":[10,180,98,100],"audioPlugin":"Sequencer","track":4,"contextId":53,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_VELOCITY","barColor":"primary","componentName":"SequencerValue"},
         {"bounds":[10,310,460,320],"audioPlugin":"Sequencer","track":4,"contextId":53,"rowsSelection":4,"componentName":"SequencerCard"},
         {"keys":[{"key":"F11","action":"setView:Drum4"},{"key":"F12","action":"contextToggle:254:1:0"},{"key":"=","action":"playPause"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F11","color":"#323232"},{"key":"F12","color":"#323232"},{"key":"=","color":"#323232"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
+      ]
+    },
+    {
+      "name": "Synth1",
+      "components": [
+        {"fontSize":24,"text":"Synth1","bounds":[0,20,480,16],"centered":true,"componentName":"Text"},
+        {"bounds":[175,28,6,6],"color":"#b54f5e","componentName":"Rect"},
+        {"audioPlugin":"Synth1","param":"FILTER_TYPE","encoderId":1,"bounds":[0,60,118,100],"color":"secondary","track":5,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth1","param":"FILTER_CUTOFF","encoderId":2,"bounds":[120,60,118,100],"color":"primary","track":5,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth1","param":"FILTER_RESONANCE","encoderId":3,"bounds":[240,60,118,100],"color":"primary","track":5,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth1","param":"PITCH","encoderId":4,"bounds":[360,60,118,100],"color":"tertiary","track":5,"componentName":"KnobValue"},
+        {"bounds":[0,190,240,56],"audioPlugin":"Synth1","dataId":"WAVEFORM","values":["WAVE","WAVE_EDIT"],"track":5,"componentName":"GraphEncoder"},
+        {"encoderId":5,"bounds":[0,250,118,30],"audioPlugin":"Synth1","param":"WAVE","track":5,"fontLabel":"PoppinsLight_6","barHeight":1,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
+        {"encoderId":6,"bounds":[120,250,118,30],"audioPlugin":"Synth1","param":"WAVE_EDIT","track":5,"fontLabel":"PoppinsLight_6","barHeight":1,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
+        {"audioPlugin":"TrackFx","param":"FX_TYPE","encoderId":7,"bounds":[240,180,118,100],"color":"tertiary","track":5,"componentName":"KnobValue"},
+        {"audioPlugin":"TrackFx","param":"FX_AMOUNT","encoderId":8,"bounds":[360,180,118,100],"color":"primary","track":5,"valueReplaceTitle":true,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth1","param":"LFO_FREQ_MOD","encoderId":9,"bounds":[0,300,118,100],"color":"tertiary","track":5,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth1","param":"LFO_WAVE_MOD","encoderId":10,"bounds":[120,300,118,100],"color":"primary","track":5,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth1","param":"LFO_CUTOFF_MOD","encoderId":11,"bounds":[240,300,118,100],"color":"quaternary","track":5,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth1","param":"LFO_RESONANCE_MOD","encoderId":12,"bounds":[360,300,118,100],"color":"secondary","track":5,"componentName":"KnobValue"},
+        {"bounds":[120,450,240,140],"audioPlugin":"Sequencer","track":5,"componentName":"SequencerCard"},
+        {"keys":[{"key":"F1","action":"setView:Drum1"},{"key":"1","action":"noteOn:Drum1:60"},{"key":"F2","action":"setView:Drum2"},{"key":"2","action":"noteOn:Drum2:60"},{"key":"F3","action":"setView:Drum3"},{"key":"3","action":"noteOn:Drum3:60"},{"key":"F4","action":"setView:Drum4"},{"key":"4","action":"noteOn:Drum4:60"},{"key":"F5","action":"setView:Synth1"},{"key":"5","action":"noteOn:Synth1:60"},{"key":"F6","action":"setView:Synth2"},{"key":"6","action":"noteOn:Synth2:60"},{"key":"F7","action":"setView:Synth3"},{"key":"7","action":"noteOn:Synth3:60"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F1","color":"#101402"},{"key":"1","color":"#101402"},{"key":"F2","color":"#190b01"},{"key":"2","color":"#190b01"},{"key":"F3","color":"#021014"},{"key":"3","color":"#021014"},{"key":"F4","color":"#191400"},{"key":"4","color":"#191400"},{"key":"F5","color":"#b54f5e"},{"key":"5","color":"#120809"},{"key":"F6","color":"#050b0c"},{"key":"6","color":"#050b0c"},{"key":"F7","color":"#0a0812"},{"key":"7","color":"#0a0812"},{"key":"F8","color":"#120811"},{"key":"8","color":"#120811"},{"key":"F9","color":"#001412"},{"key":"9","color":"#001412"},{"key":"F10","color":"#181218"},{"key":"0","color":"#181218"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
+        {"keys":[{"key":"F11","action":"setView:Synth1Seq"},{"key":"F12","action":"contextToggle:254:1:0"},{"key":"=","action":"playPause"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F11","color":"#323232"},{"key":"F12","color":"#323232"},{"key":"=","color":"#323232"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
+      ]
+    },
+    {
+      "name": "Synth2",
+      "components": [
+        {"fontSize":24,"text":"Synth2","bounds":[0,20,480,16],"centered":true,"componentName":"Text"},
+        {"bounds":[175,28,6,6],"color":"#377275","componentName":"Rect"},
+        {"audioPlugin":"Synth2","param":"FILTER_TYPE","encoderId":1,"bounds":[0,60,118,100],"color":"secondary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth2","param":"FILTER_CUTOFF","encoderId":2,"bounds":[120,60,118,100],"color":"primary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth2","param":"FILTER_RESONANCE","encoderId":3,"bounds":[240,60,118,100],"color":"primary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth2","param":"PITCH","encoderId":4,"bounds":[360,60,118,100],"color":"tertiary","track":6,"componentName":"KnobValue"},
+        {"bounds":[0,190,240,56],"audioPlugin":"Synth2","dataId":"WAVEFORM","values":["WAVE","WAVE_EDIT"],"track":6,"componentName":"GraphEncoder"},
+        {"encoderId":5,"bounds":[0,250,118,30],"audioPlugin":"Synth2","param":"WAVE","track":6,"fontLabel":"PoppinsLight_6","barHeight":1,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
+        {"encoderId":6,"bounds":[120,250,118,30],"audioPlugin":"Synth2","param":"WAVE_EDIT","track":6,"fontLabel":"PoppinsLight_6","barHeight":1,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
+        {"audioPlugin":"TrackFx","param":"FX_TYPE","encoderId":7,"bounds":[240,180,118,100],"color":"tertiary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"TrackFx","param":"FX_AMOUNT","encoderId":8,"bounds":[360,180,118,100],"color":"primary","track":6,"valueReplaceTitle":true,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth2","param":"LFO_FREQ_MOD","encoderId":9,"bounds":[0,300,118,100],"color":"tertiary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth2","param":"LFO_WAVE_MOD","encoderId":10,"bounds":[120,300,118,100],"color":"primary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth2","param":"LFO_CUTOFF_MOD","encoderId":11,"bounds":[240,300,118,100],"color":"quaternary","track":6,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth2","param":"LFO_RESONANCE_MOD","encoderId":12,"bounds":[360,300,118,100],"color":"secondary","track":6,"componentName":"KnobValue"},
+        {"bounds":[120,450,240,140],"audioPlugin":"Sequencer","track":6,"componentName":"SequencerCard"},
+        {"keys":[{"key":"F1","action":"setView:Drum1"},{"key":"1","action":"noteOn:Drum1:60"},{"key":"F2","action":"setView:Drum2"},{"key":"2","action":"noteOn:Drum2:60"},{"key":"F3","action":"setView:Drum3"},{"key":"3","action":"noteOn:Drum3:60"},{"key":"F4","action":"setView:Drum4"},{"key":"4","action":"noteOn:Drum4:60"},{"key":"F5","action":"setView:Synth1"},{"key":"5","action":"noteOn:Synth1:60"},{"key":"F6","action":"setView:Synth2"},{"key":"6","action":"noteOn:Synth2:60"},{"key":"F7","action":"setView:Synth3"},{"key":"7","action":"noteOn:Synth3:60"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F1","color":"#101402"},{"key":"1","color":"#101402"},{"key":"F2","color":"#190b01"},{"key":"2","color":"#190b01"},{"key":"F3","color":"#021014"},{"key":"3","color":"#021014"},{"key":"F4","color":"#191400"},{"key":"4","color":"#191400"},{"key":"F5","color":"#120809"},{"key":"5","color":"#120809"},{"key":"F6","color":"#377275"},{"key":"6","color":"#050b0c"},{"key":"F7","color":"#0a0812"},{"key":"7","color":"#0a0812"},{"key":"F8","color":"#120811"},{"key":"8","color":"#120811"},{"key":"F9","color":"#001412"},{"key":"9","color":"#001412"},{"key":"F10","color":"#181218"},{"key":"0","color":"#181218"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
+        {"keys":[{"key":"F11","action":"setView:Synth2Seq"},{"key":"F12","action":"contextToggle:254:1:0"},{"key":"=","action":"playPause"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F11","color":"#323232"},{"key":"F12","color":"#323232"},{"key":"=","color":"#323232"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
+      ]
+    },
+    {
+      "name": "Synth3",
+      "components": [
+        {"fontSize":24,"text":"Synth3","bounds":[0,20,480,16],"centered":true,"componentName":"Text"},
+        {"bounds":[175,28,6,6],"color":"#624fb5","componentName":"Rect"},
+        {"audioPlugin":"Synth3","param":"FILTER_TYPE","encoderId":1,"bounds":[0,60,118,100],"color":"secondary","track":7,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth3","param":"FILTER_CUTOFF","encoderId":2,"bounds":[120,60,118,100],"color":"primary","track":7,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth3","param":"FILTER_RESONANCE","encoderId":3,"bounds":[240,60,118,100],"color":"primary","track":7,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth3","param":"PITCH","encoderId":4,"bounds":[360,60,118,100],"color":"tertiary","track":7,"componentName":"KnobValue"},
+        {"bounds":[0,190,240,56],"audioPlugin":"Synth3","dataId":"WAVEFORM","values":["WAVE","WAVE_EDIT"],"track":7,"componentName":"GraphEncoder"},
+        {"encoderId":5,"bounds":[0,250,118,30],"audioPlugin":"Synth3","param":"WAVE","track":7,"fontLabel":"PoppinsLight_6","barHeight":1,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
+        {"encoderId":6,"bounds":[120,250,118,30],"audioPlugin":"Synth3","param":"WAVE_EDIT","track":7,"fontLabel":"PoppinsLight_6","barHeight":1,"alignLeft":true,"showLabelOverValue":0,"componentName":"Value"},
+        {"audioPlugin":"TrackFx","param":"FX_TYPE","encoderId":7,"bounds":[240,180,118,100],"color":"tertiary","track":7,"componentName":"KnobValue"},
+        {"audioPlugin":"TrackFx","param":"FX_AMOUNT","encoderId":8,"bounds":[360,180,118,100],"color":"primary","track":7,"valueReplaceTitle":true,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth3","param":"LFO_FREQ_MOD","encoderId":9,"bounds":[0,300,118,100],"color":"tertiary","track":7,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth3","param":"LFO_WAVE_MOD","encoderId":10,"bounds":[120,300,118,100],"color":"primary","track":7,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth3","param":"LFO_CUTOFF_MOD","encoderId":11,"bounds":[240,300,118,100],"color":"quaternary","track":7,"componentName":"KnobValue"},
+        {"audioPlugin":"Synth3","param":"LFO_RESONANCE_MOD","encoderId":12,"bounds":[360,300,118,100],"color":"secondary","track":7,"componentName":"KnobValue"},
+        {"bounds":[120,450,240,140],"audioPlugin":"Sequencer","track":7,"componentName":"SequencerCard"},
+        {"keys":[{"key":"F1","action":"setView:Drum1"},{"key":"1","action":"noteOn:Drum1:60"},{"key":"F2","action":"setView:Drum2"},{"key":"2","action":"noteOn:Drum2:60"},{"key":"F3","action":"setView:Drum3"},{"key":"3","action":"noteOn:Drum3:60"},{"key":"F4","action":"setView:Drum4"},{"key":"4","action":"noteOn:Drum4:60"},{"key":"F5","action":"setView:Synth1"},{"key":"5","action":"noteOn:Synth1:60"},{"key":"F6","action":"setView:Synth2"},{"key":"6","action":"noteOn:Synth2:60"},{"key":"F7","action":"setView:Synth3"},{"key":"7","action":"noteOn:Synth3:60"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F1","color":"#101402"},{"key":"1","color":"#101402"},{"key":"F2","color":"#190b01"},{"key":"2","color":"#190b01"},{"key":"F3","color":"#021014"},{"key":"3","color":"#021014"},{"key":"F4","color":"#191400"},{"key":"4","color":"#191400"},{"key":"F5","color":"#120809"},{"key":"5","color":"#120809"},{"key":"F6","color":"#050b0c"},{"key":"6","color":"#050b0c"},{"key":"F7","color":"#624fb5"},{"key":"7","color":"#0a0812"},{"key":"F8","color":"#120811"},{"key":"8","color":"#120811"},{"key":"F9","color":"#001412"},{"key":"9","color":"#001412"},{"key":"F10","color":"#181218"},{"key":"0","color":"#181218"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
+        {"keys":[{"key":"F11","action":"setView:Synth3Seq"},{"key":"F12","action":"contextToggle:254:1:0"},{"key":"=","action":"playPause"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F11","color":"#323232"},{"key":"F12","color":"#323232"},{"key":"=","color":"#323232"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
     },
     {
@@ -378,10 +484,10 @@
       "components": [
         {"text":"T.1","bounds":[0,2,96,8],"centered":true,"color":"#a3c912","componentName":"Text"},
         {"bounds":[0,15,94,100],"track":1,"color":"#a3c912","visibleCount":12,"keys":[{"key":"a","action":".saveOrDelete","context":{"id":251,"value":1}},{"key":"a","action":".toggle","context":{"id":254,"value":0}}],"componentName":"Clips"},
-        {"text":"T.2","bounds":[768,2,96,8],"centered":true,"color":"#fd6f0e","componentName":"Text"},
-        {"bounds":[768,15,94,100],"track":9,"color":"#fd6f0e","visibleCount":12,"keys":[{"key":"s","action":".saveOrDelete","context":{"id":251,"value":1}},{"key":"s","action":".toggle","context":{"id":254,"value":0}}],"componentName":"Clips"},
-        {"text":"T.3","bounds":[864,2,96,8],"centered":true,"color":"#15a5ca","componentName":"Text"},
-        {"bounds":[864,15,94,100],"track":10,"color":"#15a5ca","visibleCount":12,"keys":[{"key":"d","action":".saveOrDelete","context":{"id":251,"value":1}},{"key":"d","action":".toggle","context":{"id":254,"value":0}}],"componentName":"Clips"},
+        {"text":"T.2","bounds":[672,2,96,8],"centered":true,"color":"#fd6f0e","componentName":"Text"},
+        {"bounds":[672,15,94,100],"track":8,"color":"#fd6f0e","visibleCount":12,"keys":[{"key":"s","action":".saveOrDelete","context":{"id":251,"value":1}},{"key":"s","action":".toggle","context":{"id":254,"value":0}}],"componentName":"Clips"},
+        {"text":"T.3","bounds":[768,2,96,8],"centered":true,"color":"#15a5ca","componentName":"Text"},
+        {"bounds":[768,15,94,100],"track":9,"color":"#15a5ca","visibleCount":12,"keys":[{"key":"d","action":".saveOrDelete","context":{"id":251,"value":1}},{"key":"d","action":".toggle","context":{"id":254,"value":0}}],"componentName":"Clips"},
         {"encoderId":0,"contextId":30,"min":0,"max":16,"inverted":true,"bounds":[0,0,0,0],"componentName":"HiddenContext"},
         {"keys":[{"key":"F11","action":"setView:Drum1Seq"},{"key":"F12","action":"contextToggle:254:1:0"},{"key":"=","action":"playPause"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F11","color":"#323232"},{"key":"F12","color":"#323232"},{"key":"=","color":"#323232"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]

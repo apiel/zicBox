@@ -259,6 +259,7 @@ public:
         released = false;
         velocity = _velocity;
         wavetable.sampleIndex = 0;
+        lfo.reset();
         freq = pow(2, ((note - baseNote + pitch.get()) / 12.0));
     }
 
