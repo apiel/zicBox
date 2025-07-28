@@ -10,6 +10,8 @@ import {
     bounds5,
     enc1,
     enc10,
+    enc11,
+    enc12,
     enc2,
     enc3,
     enc4,
@@ -82,7 +84,6 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         audioPlugin={synthName}
                         param="WAVE"
                         track={track}
-                        fontLabel="PoppinsLight_6"
                         barHeight={1}
                         alignLeft
                         showLabelOverValue={0}
@@ -92,7 +93,6 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         audioPlugin={synthName}
                         param="WAVE_EDIT"
                         track={track}
-                        fontLabel="PoppinsLight_6"
                         barHeight={1}
                         alignLeft
                         showLabelOverValue={0}
@@ -127,6 +127,24 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         {...enc10}
                         color="tertiary"
                         track={track}
+                    />
+
+                    <KnobValue
+                        audioPlugin="TrackFx2"
+                        param="FX_TYPE"
+                        label="FX2 type"
+                        {...enc11}
+                        color="primary"
+                        track={track}
+                    />
+                    <KnobValue
+                        audioPlugin="TrackFx2"
+                        param="FX_AMOUNT"
+                        label="FX2 edit"
+                        {...enc12}
+                        color="primary"
+                        track={track}
+                        valueReplaceTitle
                     />
 
                     <SequencerCard

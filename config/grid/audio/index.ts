@@ -63,6 +63,7 @@ const synth1Track = {
         audioPlugin('SynthWavetable', { alias: 'Synth1' }),
         audioPlugin('Sequencer'),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
+        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx2' }),
         audioPlugin('SerializeTrack', { filename: 'synth1', maxVariation, workspaceFolder }),
     ],
 };
@@ -73,6 +74,7 @@ const synth2Track = {
         audioPlugin('SynthWavetable', { alias: 'Synth2' }),
         audioPlugin('Sequencer'),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
+        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx2' }),
         audioPlugin('SerializeTrack', { filename: 'synth2', maxVariation, workspaceFolder }),
     ],
 };
@@ -83,6 +85,7 @@ const synth3Track = {
         audioPlugin('SynthWavetable', { alias: 'Synth3' }),
         audioPlugin('Sequencer'),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
+        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx2' }),
         audioPlugin('SerializeTrack', { filename: 'synth3', maxVariation, workspaceFolder }),
     ],
 };

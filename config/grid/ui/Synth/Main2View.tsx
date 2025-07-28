@@ -84,7 +84,6 @@ export function Main2View({ name, track, synthName, color, title }: Props) {
                         color="secondary"
                         track={track}
                     />
-
                     <Text
                         text="Envelope modulation"
                         bounds={[0, 293, 480, 16]}
@@ -112,14 +111,13 @@ export function Main2View({ name, track, synthName, color, title }: Props) {
                         color="tertiary"
                         track={track}
                     />
-
+                    
                     <SequencerCard
                         bounds={seqCardBounds_small}
                         audioPlugin={`Sequencer`}
                         track={track}
                         // contextId={seqContextDrum1}
                     />
-
                     <KeysTracks synthName={synthName} viewName={name} />
                 </>
             }
