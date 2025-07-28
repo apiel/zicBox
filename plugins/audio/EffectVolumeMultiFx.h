@@ -21,11 +21,6 @@ protected:
 
     float fxOff(float input) { return input; }
 
-    float fxShimmerReverb(float input)
-    {
-        return applyShimmerReverb(input, fxAmount.pct(), reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE, ReverbVoiceCount, voices);
-    }
-
     static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
     float reverbBuffer[REVERB_BUFFER_SIZE] = { 0.0f };
     int reverbIndex = 0;
@@ -44,34 +39,20 @@ protected:
         { 960 * 2, 0.2f }, // Very late tail
     };
 
+    float fxShimmerReverb(float input)
+    {
+        return applyShimmerReverb(input, fxAmount.pct(), reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE, ReverbVoiceCount, voices);
+    }
+
+    int shimmerTime = 0;
+    float fxShimmer2Reverb(float input)
+    {
+        return applyShimmer2Reverb(input, fxAmount.pct(), reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE, ReverbVoiceCount, voices, shimmerTime);
+    }
+
     float fxReverb2(float signal)
     {
-        float reverbAmount = fxAmount.pct();
-        if (reverbAmount == 0.0f) {
-            return signal;
-        }
-
-        // Store input signal in buffer
-        reverbBuffer[reverbIndex] = signal;
-
-        float reverbOut = 0.0f;
-
-        // Process only 4 key delay taps
-        for (uint8_t i = 0; i < ReverbVoiceCount; i++) {
-            int readIndex = (reverbIndex + REVERB_BUFFER_SIZE - voices[i].delay) % REVERB_BUFFER_SIZE;
-            reverbOut += reverbBuffer[readIndex] * voices[i].gain;
-        }
-
-        // Apply global feedback (reduces CPU by avoiding per-voice feedback writes)
-        float globalFeedback = reverbAmount * 0.6f;
-        reverbBuffer[reverbIndex] = signal + reverbOut * globalFeedback;
-
-        // Advance buffer index
-        reverbIndex = (reverbIndex + 1) % REVERB_BUFFER_SIZE;
-
-        // Final wet/dry mix
-        float mix = reverbAmount * 0.8f;
-        return signal * (1.0f - mix) + reverbOut * mix;
+        return applyReverb2(signal, fxAmount.pct(), reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE, ReverbVoiceCount, voices);
     }
 
     float tanhLookup(float x)
@@ -266,6 +247,7 @@ public:
         TREMOLO,
         RING_MOD,
         FX_SHIMMER_REVERB,
+        FX_SHIMMER2_REVERB,
         FX_COUNT
     };
     Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = EffectVolumeMultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
@@ -315,6 +297,9 @@ public:
         } else if (p.val.get() == EffectVolumeMultiFx::FXType::FX_SHIMMER_REVERB) {
             p.val.setString("Shimmer");
             fxFn = &EffectVolumeMultiFx::fxShimmerReverb;
+        } else if (p.val.get() == EffectVolumeMultiFx::FXType::FX_SHIMMER2_REVERB) {
+            p.val.setString("Shimmer2");
+            fxFn = &EffectVolumeMultiFx::fxShimmer2Reverb;
         }
         // TODO: add fx sample reducer
     });

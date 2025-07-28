@@ -1,7 +1,7 @@
 #pragma once
 
-#include <cstdint>
 #include <cmath>
+#include <cstdint>
 
 float applyReverb(float signal, float reverbAmount, float* reverbBuffer, int& reverbIndex, uint64_t sampleRate, int REVERB_BUFFER_SIZE)
 {
@@ -77,4 +77,67 @@ float applyShimmerReverb(float input, float amount, float* reverbBuffer, int& re
     // Wet/dry mix
     float mix = amount * 0.8f;
     return input * (1.0f - mix) + reverbOut * mix;
+}
+
+float applyShimmer2Reverb(float input, float amount, float* reverbBuffer, int& reverbIndex, int REVERB_BUFFER_SIZE, int ReverbVoiceCount, ReverbVoice* voices, int& shimmerTime)
+{
+    if (amount == 0.0f)
+        return input;
+
+    reverbBuffer[reverbIndex] = input;
+
+    float reverbOut = 0.0f;
+
+    for (uint8_t i = 0; i < ReverbVoiceCount; i++) {
+        int readIndex = (reverbIndex + REVERB_BUFFER_SIZE - voices[i].delay) % REVERB_BUFFER_SIZE;
+        float delayedSample = reverbBuffer[readIndex];
+
+        // Use shimmerTime for modulation — phase moves smoothly
+        float mod = sinf(0.05f * shimmerTime + i); // speed and offset per voice
+
+        // Simple pitch modulation by amplitude mod
+        float modulatedSample = delayedSample * (0.7f + 0.3f * mod);
+
+        reverbOut += modulatedSample * voices[i].gain;
+    }
+
+    // Feedback to buffer
+    float feedback = amount * 0.5f;
+    reverbBuffer[reverbIndex] = input + reverbOut * feedback;
+
+    reverbIndex = (reverbIndex + 1) % REVERB_BUFFER_SIZE;
+    shimmerTime = (shimmerTime + 1) % 100000;
+
+    // Wet/dry mix
+    float mix = amount * 0.8f;
+    return input * (1.0f - mix) + reverbOut * mix;
+}
+
+float applyReverb2(float signal, float amount, float* reverbBuffer, int& reverbIndex, int REVERB_BUFFER_SIZE, int ReverbVoiceCount, ReverbVoice* voices)
+{
+    if (amount == 0.0f) {
+        return signal;
+    }
+
+    // Store input signal in buffer
+    reverbBuffer[reverbIndex] = signal;
+
+    float reverbOut = 0.0f;
+
+    // Process only 4 key delay taps
+    for (uint8_t i = 0; i < ReverbVoiceCount; i++) {
+        int readIndex = (reverbIndex + REVERB_BUFFER_SIZE - voices[i].delay) % REVERB_BUFFER_SIZE;
+        reverbOut += reverbBuffer[readIndex] * voices[i].gain;
+    }
+
+    // Apply global feedback (reduces CPU by avoiding per-voice feedback writes)
+    float globalFeedback = amount * 0.6f;
+    reverbBuffer[reverbIndex] = signal + reverbOut * globalFeedback;
+
+    // Advance buffer index
+    reverbIndex = (reverbIndex + 1) % REVERB_BUFFER_SIZE;
+
+    // Final wet/dry mix
+    float mix = amount * 0.8f;
+    return signal * (1.0f - mix) + reverbOut * mix;
 }
