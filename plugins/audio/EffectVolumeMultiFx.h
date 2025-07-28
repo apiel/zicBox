@@ -4,10 +4,10 @@
 #include "mapping.h"
 #include "plugins/audio/utils/utils.h"
 #include "utils/effects/applyBoost.h"
-#include "utils/effects/applyDrive.h"
-#include "utils/effects/applyWaveshape.h"
 #include "utils/effects/applyCompression.h"
+#include "utils/effects/applyDrive.h"
 #include "utils/effects/applyReverb.h"
+#include "utils/effects/applyWaveshape.h"
 
 /*md
 ## EffectVolumeMultiFx
@@ -21,6 +21,11 @@ protected:
 
     float fxOff(float input) { return input; }
 
+    float fxShimmerReverb(float input)
+    {
+        return applyShimmerReverb(input, fxAmount.pct(), reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE, ReverbVoiceCount, voices);
+    }
+
     static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
     float reverbBuffer[REVERB_BUFFER_SIZE] = { 0.0f };
     int reverbIndex = 0;
@@ -32,10 +37,7 @@ protected:
     }
 
     static constexpr int ReverbVoiceCount = 4; // Reduced from 8 to 4 for efficiency
-    struct ReverbVoice {
-        int delay; // Fixed delay offset
-        float gain;
-    } voices[ReverbVoiceCount] = {
+    ReverbVoice voices[ReverbVoiceCount] = {
         { 180 * 2, 0.6f }, // First early reflection
         { 420 * 2, 0.4f }, // Mid reflection
         { 690 * 2, 0.3f }, // Late reflection
@@ -263,6 +265,7 @@ public:
         INVERTER,
         TREMOLO,
         RING_MOD,
+        FX_SHIMMER_REVERB,
         FX_COUNT
     };
     Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = EffectVolumeMultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
@@ -309,6 +312,9 @@ public:
         } else if (p.val.get() == EffectVolumeMultiFx::FXType::RING_MOD) {
             p.val.setString("Ring mod.");
             fxFn = &EffectVolumeMultiFx::fxRingMod;
+        } else if (p.val.get() == EffectVolumeMultiFx::FXType::FX_SHIMMER_REVERB) {
+            p.val.setString("Shimmer");
+            fxFn = &EffectVolumeMultiFx::fxShimmerReverb;
         }
         // TODO: add fx sample reducer
     });
