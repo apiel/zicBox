@@ -15,7 +15,7 @@ export type Props = {
     includeLength?: boolean;
 };
 
-export function DrumSeqView({
+export function GridSeqView({
     name,
     track,
     synthName,

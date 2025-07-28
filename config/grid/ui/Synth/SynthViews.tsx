@@ -1,6 +1,6 @@
 import * as React from '@/libs/react';
 
-import { DrumSeqView } from '../components/DrumSeqView';
+import { GridSeqView } from '../components/GridSeqView';
 import { Main2View } from './Main2View';
 import { MainView } from './MainView';
 
@@ -29,7 +29,7 @@ export function SynthViews({ track, synthName, color, contextId, title }: Props)
                 color={color}
                 title={title}
             />
-            <DrumSeqView
+            <GridSeqView
                 name={`${synthName}Seq`}
                 track={track}
                 synthName={synthName}
