@@ -170,10 +170,13 @@ protected:
     {
         int selectedStep = view->contextVar[contextId];
         int newStep = selectedStep + direction;
-        if (newStep >= 0 && newStep < *stepCount) {
-            setContext(contextId, newStep);
-            renderNext();
+        if (newStep < 0) {
+            newStep = *stepCount - 1;
+        } else if (newStep >= *stepCount) {
+            newStep = 0;
         }
+        setContext(contextId, newStep);
+        renderNext();
     }
 
     void renderStepToggle()

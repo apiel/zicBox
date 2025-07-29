@@ -7,6 +7,7 @@ export const SequencerCard = getJsonComponent<{
     stepPerRow?: number;
     maxSteps?: number;
     activeStepColor?: string;
+    stepLengthColor?: string;
     stepBackground?: string;
     inactiveStepColor?: string;
     stepSelectedColor?: string;
