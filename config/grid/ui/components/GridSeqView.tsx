@@ -2,7 +2,7 @@ import * as React from '@/libs/react';
 
 import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
 import { SequencerValue } from '@/libs/nativeComponents/SequencerValue';
-import { enc1, enc2, enc3, enc4, enc5, enc6 } from '../constantsValue';
+import { enc1, enc2, enc3, enc4, enc5, enc6, enc7 } from '../constantsValue';
 import { Layout } from './Layout';
 
 export type Props = {
@@ -62,20 +62,11 @@ export function GridSeqView({
                     />
                     <SequencerValue
                         {...enc4}
-                        audioPlugin={`Sequencer`}
-                        track={track}
-                        contextId={contextId}
-                        fontValue={'PoppinsLight_24'}
-                        fontLabel={'PoppinsLight_12'}
-                        type={'STEP_CONDITION'}
-                    />
-                    <SequencerValue
-                        {...enc5}
                         bounds={[
-                            enc5.bounds[0] + 10,
-                            enc5.bounds[1],
-                            enc5.bounds[2] - 20,
-                            enc5.bounds[3],
+                            enc4.bounds[0] + 10,
+                            enc4.bounds[1],
+                            enc4.bounds[2] - 20,
+                            enc4.bounds[3],
                         ]}
                         audioPlugin={`Sequencer`}
                         track={track}
@@ -85,9 +76,27 @@ export function GridSeqView({
                         type={'STEP_VELOCITY'}
                         barColor="primary"
                     />
+                    <SequencerValue
+                        {...enc5}
+                        audioPlugin={`Sequencer`}
+                        track={track}
+                        contextId={contextId}
+                        fontValue={'PoppinsLight_24'}
+                        fontLabel={'PoppinsLight_12'}
+                        type={'STEP_CONDITION'}
+                    />
+                    <SequencerValue
+                        {...enc6}
+                        audioPlugin={`Sequencer`}
+                        track={track}
+                        contextId={contextId}
+                        fontValue={'PoppinsLight_24'}
+                        fontLabel={'PoppinsLight_12'}
+                        type={'STEP_MOTION'}
+                    />
                     {includeLength && (
                         <SequencerValue
-                            {...enc6}
+                            {...enc7}
                             audioPlugin={`Sequencer`}
                             track={track}
                             contextId={contextId}

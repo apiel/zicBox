@@ -191,8 +191,9 @@
         {"encoderId":1,"bounds":[0,70,118,100],"audioPlugin":"Sequencer","track":1,"contextId":50,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_SELECTION","componentName":"SequencerValue"},
         {"encoderId":2,"bounds":[120,70,118,100],"audioPlugin":"Sequencer","track":1,"contextId":50,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_TOGGLE","barColor":"primary","componentName":"SequencerValue"},
         {"encoderId":3,"bounds":[240,70,118,100],"audioPlugin":"Sequencer","track":1,"contextId":50,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_NOTE","componentName":"SequencerValue"},
-        {"encoderId":4,"bounds":[360,70,118,100],"audioPlugin":"Sequencer","track":1,"contextId":50,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_CONDITION","componentName":"SequencerValue"},
-        {"encoderId":5,"bounds":[10,190,98,100],"audioPlugin":"Sequencer","track":1,"contextId":50,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_VELOCITY","barColor":"primary","componentName":"SequencerValue"},
+        {"encoderId":4,"bounds":[370,70,98,100],"audioPlugin":"Sequencer","track":1,"contextId":50,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_VELOCITY","barColor":"primary","componentName":"SequencerValue"},
+        {"encoderId":5,"bounds":[0,190,118,100],"audioPlugin":"Sequencer","track":1,"contextId":50,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_CONDITION","componentName":"SequencerValue"},
+        {"encoderId":6,"bounds":[120,190,118,100],"audioPlugin":"Sequencer","track":1,"contextId":50,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_MOTION","componentName":"SequencerValue"},
         {"bounds":[10,310,460,320],"audioPlugin":"Sequencer","track":1,"contextId":50,"rowsSelection":4,"componentName":"SequencerCard"},
         {"keys":[{"key":"F11","action":"setView:Drum1"},{"key":"F12","action":"contextToggle:254:1:0"},{"key":"=","action":"playPause"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F11","color":"#323232"},{"key":"F12","color":"#323232"},{"key":"=","color":"#323232"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
@@ -231,8 +232,9 @@
         {"encoderId":1,"bounds":[0,70,118,100],"audioPlugin":"Sequencer","track":2,"contextId":51,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_SELECTION","componentName":"SequencerValue"},
         {"encoderId":2,"bounds":[120,70,118,100],"audioPlugin":"Sequencer","track":2,"contextId":51,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_TOGGLE","barColor":"primary","componentName":"SequencerValue"},
         {"encoderId":3,"bounds":[240,70,118,100],"audioPlugin":"Sequencer","track":2,"contextId":51,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_NOTE","componentName":"SequencerValue"},
-        {"encoderId":4,"bounds":[360,70,118,100],"audioPlugin":"Sequencer","track":2,"contextId":51,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_CONDITION","componentName":"SequencerValue"},
-        {"encoderId":5,"bounds":[10,190,98,100],"audioPlugin":"Sequencer","track":2,"contextId":51,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_VELOCITY","barColor":"primary","componentName":"SequencerValue"},
+        {"encoderId":4,"bounds":[370,70,98,100],"audioPlugin":"Sequencer","track":2,"contextId":51,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_VELOCITY","barColor":"primary","componentName":"SequencerValue"},
+        {"encoderId":5,"bounds":[0,190,118,100],"audioPlugin":"Sequencer","track":2,"contextId":51,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_CONDITION","componentName":"SequencerValue"},
+        {"encoderId":6,"bounds":[120,190,118,100],"audioPlugin":"Sequencer","track":2,"contextId":51,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_MOTION","componentName":"SequencerValue"},
         {"bounds":[10,310,460,320],"audioPlugin":"Sequencer","track":2,"contextId":51,"rowsSelection":4,"componentName":"SequencerCard"},
         {"keys":[{"key":"F11","action":"setView:Drum2"},{"key":"F12","action":"contextToggle:254:1:0"},{"key":"=","action":"playPause"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F11","color":"#323232"},{"key":"F12","color":"#323232"},{"key":"=","color":"#323232"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
@@ -271,8 +273,9 @@
         {"encoderId":1,"bounds":[0,70,118,100],"audioPlugin":"Sequencer","track":3,"contextId":52,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_SELECTION","componentName":"SequencerValue"},
         {"encoderId":2,"bounds":[120,70,118,100],"audioPlugin":"Sequencer","track":3,"contextId":52,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_TOGGLE","barColor":"primary","componentName":"SequencerValue"},
         {"encoderId":3,"bounds":[240,70,118,100],"audioPlugin":"Sequencer","track":3,"contextId":52,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_NOTE","componentName":"SequencerValue"},
-        {"encoderId":4,"bounds":[360,70,118,100],"audioPlugin":"Sequencer","track":3,"contextId":52,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_CONDITION","componentName":"SequencerValue"},
-        {"encoderId":5,"bounds":[10,190,98,100],"audioPlugin":"Sequencer","track":3,"contextId":52,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_VELOCITY","barColor":"primary","componentName":"SequencerValue"},
+        {"encoderId":4,"bounds":[370,70,98,100],"audioPlugin":"Sequencer","track":3,"contextId":52,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_VELOCITY","barColor":"primary","componentName":"SequencerValue"},
+        {"encoderId":5,"bounds":[0,190,118,100],"audioPlugin":"Sequencer","track":3,"contextId":52,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_CONDITION","componentName":"SequencerValue"},
+        {"encoderId":6,"bounds":[120,190,118,100],"audioPlugin":"Sequencer","track":3,"contextId":52,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_MOTION","componentName":"SequencerValue"},
         {"bounds":[10,310,460,320],"audioPlugin":"Sequencer","track":3,"contextId":52,"rowsSelection":4,"componentName":"SequencerCard"},
         {"keys":[{"key":"F11","action":"setView:Drum3"},{"key":"F12","action":"contextToggle:254:1:0"},{"key":"=","action":"playPause"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F11","color":"#323232"},{"key":"F12","color":"#323232"},{"key":"=","color":"#323232"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
@@ -311,8 +314,9 @@
         {"encoderId":1,"bounds":[0,70,118,100],"audioPlugin":"Sequencer","track":4,"contextId":53,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_SELECTION","componentName":"SequencerValue"},
         {"encoderId":2,"bounds":[120,70,118,100],"audioPlugin":"Sequencer","track":4,"contextId":53,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_TOGGLE","barColor":"primary","componentName":"SequencerValue"},
         {"encoderId":3,"bounds":[240,70,118,100],"audioPlugin":"Sequencer","track":4,"contextId":53,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_NOTE","componentName":"SequencerValue"},
-        {"encoderId":4,"bounds":[360,70,118,100],"audioPlugin":"Sequencer","track":4,"contextId":53,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_CONDITION","componentName":"SequencerValue"},
-        {"encoderId":5,"bounds":[10,190,98,100],"audioPlugin":"Sequencer","track":4,"contextId":53,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_VELOCITY","barColor":"primary","componentName":"SequencerValue"},
+        {"encoderId":4,"bounds":[370,70,98,100],"audioPlugin":"Sequencer","track":4,"contextId":53,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_VELOCITY","barColor":"primary","componentName":"SequencerValue"},
+        {"encoderId":5,"bounds":[0,190,118,100],"audioPlugin":"Sequencer","track":4,"contextId":53,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_CONDITION","componentName":"SequencerValue"},
+        {"encoderId":6,"bounds":[120,190,118,100],"audioPlugin":"Sequencer","track":4,"contextId":53,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_MOTION","componentName":"SequencerValue"},
         {"bounds":[10,310,460,320],"audioPlugin":"Sequencer","track":4,"contextId":53,"rowsSelection":4,"componentName":"SequencerCard"},
         {"keys":[{"key":"F11","action":"setView:Drum4"},{"key":"F12","action":"contextToggle:254:1:0"},{"key":"=","action":"playPause"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F11","color":"#323232"},{"key":"F12","color":"#323232"},{"key":"=","color":"#323232"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
@@ -369,9 +373,10 @@
         {"encoderId":1,"bounds":[0,70,118,100],"audioPlugin":"Sequencer","track":5,"contextId":54,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_SELECTION","componentName":"SequencerValue"},
         {"encoderId":2,"bounds":[120,70,118,100],"audioPlugin":"Sequencer","track":5,"contextId":54,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_TOGGLE","barColor":"primary","componentName":"SequencerValue"},
         {"encoderId":3,"bounds":[240,70,118,100],"audioPlugin":"Sequencer","track":5,"contextId":54,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_NOTE","componentName":"SequencerValue"},
-        {"encoderId":4,"bounds":[360,70,118,100],"audioPlugin":"Sequencer","track":5,"contextId":54,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_CONDITION","componentName":"SequencerValue"},
-        {"encoderId":5,"bounds":[10,190,98,100],"audioPlugin":"Sequencer","track":5,"contextId":54,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_VELOCITY","barColor":"primary","componentName":"SequencerValue"},
-        {"encoderId":6,"bounds":[120,190,118,100],"audioPlugin":"Sequencer","track":5,"contextId":54,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_LENGTH","barColor":"primary","componentName":"SequencerValue"},
+        {"encoderId":4,"bounds":[370,70,98,100],"audioPlugin":"Sequencer","track":5,"contextId":54,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_VELOCITY","barColor":"primary","componentName":"SequencerValue"},
+        {"encoderId":5,"bounds":[0,190,118,100],"audioPlugin":"Sequencer","track":5,"contextId":54,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_CONDITION","componentName":"SequencerValue"},
+        {"encoderId":6,"bounds":[120,190,118,100],"audioPlugin":"Sequencer","track":5,"contextId":54,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_MOTION","componentName":"SequencerValue"},
+        {"encoderId":7,"bounds":[240,190,118,100],"audioPlugin":"Sequencer","track":5,"contextId":54,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_LENGTH","barColor":"primary","componentName":"SequencerValue"},
         {"bounds":[10,310,460,320],"audioPlugin":"Sequencer","track":5,"contextId":54,"rowsSelection":4,"componentName":"SequencerCard"},
         {"keys":[{"key":"F11","action":"setView:Synth1"},{"key":"F12","action":"contextToggle:254:1:0"},{"key":"=","action":"playPause"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F11","color":"#323232"},{"key":"F12","color":"#323232"},{"key":"=","color":"#323232"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
@@ -428,9 +433,10 @@
         {"encoderId":1,"bounds":[0,70,118,100],"audioPlugin":"Sequencer","track":6,"contextId":55,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_SELECTION","componentName":"SequencerValue"},
         {"encoderId":2,"bounds":[120,70,118,100],"audioPlugin":"Sequencer","track":6,"contextId":55,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_TOGGLE","barColor":"primary","componentName":"SequencerValue"},
         {"encoderId":3,"bounds":[240,70,118,100],"audioPlugin":"Sequencer","track":6,"contextId":55,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_NOTE","componentName":"SequencerValue"},
-        {"encoderId":4,"bounds":[360,70,118,100],"audioPlugin":"Sequencer","track":6,"contextId":55,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_CONDITION","componentName":"SequencerValue"},
-        {"encoderId":5,"bounds":[10,190,98,100],"audioPlugin":"Sequencer","track":6,"contextId":55,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_VELOCITY","barColor":"primary","componentName":"SequencerValue"},
-        {"encoderId":6,"bounds":[120,190,118,100],"audioPlugin":"Sequencer","track":6,"contextId":55,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_LENGTH","barColor":"primary","componentName":"SequencerValue"},
+        {"encoderId":4,"bounds":[370,70,98,100],"audioPlugin":"Sequencer","track":6,"contextId":55,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_VELOCITY","barColor":"primary","componentName":"SequencerValue"},
+        {"encoderId":5,"bounds":[0,190,118,100],"audioPlugin":"Sequencer","track":6,"contextId":55,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_CONDITION","componentName":"SequencerValue"},
+        {"encoderId":6,"bounds":[120,190,118,100],"audioPlugin":"Sequencer","track":6,"contextId":55,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_MOTION","componentName":"SequencerValue"},
+        {"encoderId":7,"bounds":[240,190,118,100],"audioPlugin":"Sequencer","track":6,"contextId":55,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_LENGTH","barColor":"primary","componentName":"SequencerValue"},
         {"bounds":[10,310,460,320],"audioPlugin":"Sequencer","track":6,"contextId":55,"rowsSelection":4,"componentName":"SequencerCard"},
         {"keys":[{"key":"F11","action":"setView:Synth2"},{"key":"F12","action":"contextToggle:254:1:0"},{"key":"=","action":"playPause"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F11","color":"#323232"},{"key":"F12","color":"#323232"},{"key":"=","color":"#323232"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
@@ -487,9 +493,10 @@
         {"encoderId":1,"bounds":[0,70,118,100],"audioPlugin":"Sequencer","track":7,"contextId":56,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_SELECTION","componentName":"SequencerValue"},
         {"encoderId":2,"bounds":[120,70,118,100],"audioPlugin":"Sequencer","track":7,"contextId":56,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_TOGGLE","barColor":"primary","componentName":"SequencerValue"},
         {"encoderId":3,"bounds":[240,70,118,100],"audioPlugin":"Sequencer","track":7,"contextId":56,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_NOTE","componentName":"SequencerValue"},
-        {"encoderId":4,"bounds":[360,70,118,100],"audioPlugin":"Sequencer","track":7,"contextId":56,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_CONDITION","componentName":"SequencerValue"},
-        {"encoderId":5,"bounds":[10,190,98,100],"audioPlugin":"Sequencer","track":7,"contextId":56,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_VELOCITY","barColor":"primary","componentName":"SequencerValue"},
-        {"encoderId":6,"bounds":[120,190,118,100],"audioPlugin":"Sequencer","track":7,"contextId":56,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_LENGTH","barColor":"primary","componentName":"SequencerValue"},
+        {"encoderId":4,"bounds":[370,70,98,100],"audioPlugin":"Sequencer","track":7,"contextId":56,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_VELOCITY","barColor":"primary","componentName":"SequencerValue"},
+        {"encoderId":5,"bounds":[0,190,118,100],"audioPlugin":"Sequencer","track":7,"contextId":56,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_CONDITION","componentName":"SequencerValue"},
+        {"encoderId":6,"bounds":[120,190,118,100],"audioPlugin":"Sequencer","track":7,"contextId":56,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_MOTION","componentName":"SequencerValue"},
+        {"encoderId":7,"bounds":[240,190,118,100],"audioPlugin":"Sequencer","track":7,"contextId":56,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_LENGTH","barColor":"primary","componentName":"SequencerValue"},
         {"bounds":[10,310,460,320],"audioPlugin":"Sequencer","track":7,"contextId":56,"rowsSelection":4,"componentName":"SequencerCard"},
         {"keys":[{"key":"F11","action":"setView:Synth3"},{"key":"F12","action":"contextToggle:254:1:0"},{"key":"=","action":"playPause"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F11","color":"#323232"},{"key":"F12","color":"#323232"},{"key":"=","color":"#323232"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]

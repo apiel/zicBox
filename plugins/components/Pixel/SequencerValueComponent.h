@@ -116,6 +116,9 @@ public:
         } else if (type == "STEP_LENGTH") {
             renderFn = std::bind(&SequencerValueComponent::renderStepLength, this);
             onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepLength, this, std::placeholders::_1);
+        } else if (type == "STEP_MOTION") {
+            renderFn = std::bind(&SequencerValueComponent::renderStepMotion, this);
+            onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepMotion, this, std::placeholders::_1);
         } else {
             renderFn = std::bind(&SequencerValueComponent::renderSelectedStep, this);
             onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepSelection, this, std::placeholders::_1);
@@ -265,7 +268,7 @@ protected:
         if (condition == "---") {
             draw.textCentered({ x, y }, "---", valueFontSize, { labelColor, .font = fontValue });
         } else {
-            draw.textCentered({ x, y }, stepConditions[step->condition].name, valueFontSize, { valueColor, .font = fontValue });
+            draw.textCentered({ x, y }, condition, valueFontSize, { valueColor, .font = fontValue });
         }
         y += valueFontSize + 2;
         draw.textCentered({ x, y }, "Condition", labelFontSize, { labelColor, .font = fontLabel });
@@ -276,6 +279,31 @@ protected:
         Step* step = getSelectedStep();
         if (step) {
             step->setCondition(step->condition + direction);
+            renderNext();
+        }
+    }
+
+    void renderStepMotion()
+    {
+        Step* step = getSelectedStep();
+        int x = relativePosition.x + (size.w) * 0.5;
+        int y = relativePosition.y;
+
+        std::string motion = step ? stepMotions[step->motion].name : "---";
+        if (motion == "---") {
+            draw.textCentered({ x, y }, "---", valueFontSize, { labelColor, .font = fontValue });
+        } else {
+            draw.textCentered({ x, y }, motion, valueFontSize, { valueColor, .font = fontValue });
+        }
+        y += valueFontSize + 2;
+        draw.textCentered({ x, y }, "motion", labelFontSize, { labelColor, .font = fontLabel });
+    }
+
+    void onEncoderStepMotion(int8_t direction)
+    {
+        Step* step = getSelectedStep();
+        if (step) {
+            step->setMotion(step->motion + direction);
             renderNext();
         }
     }
