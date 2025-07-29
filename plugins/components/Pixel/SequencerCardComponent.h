@@ -40,6 +40,8 @@ protected:
     uint8_t contextId = 0;
     uint8_t rowsSelection = 0;
 
+    Size stepSize = { 0, 0 };
+
     bool renderPlayingStep = false;
     int lastPlayingStep = 0;
     std::function<void(bool)> onPlayStep = [this](bool isPlaying) {
@@ -140,6 +142,7 @@ public:
         stepWidth = size.w / stepPerRow;
         rowCount = maxSteps / stepPerRow;
         stepHeight = size.h / rowCount;
+        stepSize = { stepWidth - 2, stepHeight - 2 };
     }
 
     void renderStepAtPos(int pos, Color color)
@@ -148,7 +151,7 @@ public:
         int col = pos % stepPerRow;
         int x = relativePosition.x + col * stepWidth;
         int y = relativePosition.y + row * stepHeight;
-        draw.filledRect({ x + 1, y + 1 }, { stepWidth - 2, stepHeight - 2 }, { color });
+        draw.filledRect({ x + 1, y + 1 }, stepSize, { color });
     }
 
     void render() override
@@ -184,7 +187,7 @@ public:
             for (int j = 0; j < stepPerRow; j++) {
                 int x = relativePosition.x + j * stepWidth;
                 Color color = i * stepPerRow + j < *stepCount ? stepBackground : inactiveStepColor;
-                draw.filledRect({ x + 1, y + 1 }, { stepWidth - 2, stepHeight - 2 }, { color });
+                draw.filledRect({ x + 1, y + 1 }, stepSize, { color });
             }
         }
 
@@ -226,7 +229,7 @@ public:
                 int stepCol = selectedStep % stepPerRow;
                 int x = relativePosition.x + stepCol * stepWidth;
                 int y = relativePosition.y + stepRow * stepHeight;
-                draw.rect({ x + 1, y + 1 }, { stepWidth - 2, stepHeight - 3 /* should be 2 but for whatever reason it's 3, might be due to size */ }, { stepSelectedColor });
+                draw.rect({ x + 1, y + 1 }, { stepSize.w, stepSize.h - 1 /* need to substract 1 for whatever reason ^^, might be due to size */ }, { stepSelectedColor });
             }
         }
     }
