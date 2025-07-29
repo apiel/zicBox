@@ -145,13 +145,18 @@ public:
         stepSize = { stepWidth - 2, stepHeight - 2 };
     }
 
-    void renderStepAtPos(int pos, Color color)
+    Point getStepPosition(int pos)
     {
         int row = pos / stepPerRow;
         int col = pos % stepPerRow;
         int x = relativePosition.x + col * stepWidth;
         int y = relativePosition.y + row * stepHeight;
-        draw.filledRect({ x + 1, y + 1 }, stepSize, { color });
+        return { x + 1, y + 1 };
+    }
+
+    void renderStepAtPos(int pos, Color color)
+    {
+        draw.filledRect(getStepPosition(pos), stepSize, { color });
     }
 
     void render() override
@@ -225,11 +230,7 @@ public:
         if (contextId != 0) {
             int selectedStep = view->contextVar[contextId];
             if (selectedStep < *stepCount) {
-                int stepRow = selectedStep / stepPerRow;
-                int stepCol = selectedStep % stepPerRow;
-                int x = relativePosition.x + stepCol * stepWidth;
-                int y = relativePosition.y + stepRow * stepHeight;
-                draw.rect({ x + 1, y + 1 }, { stepSize.w, stepSize.h - 1 /* need to substract 1 for whatever reason ^^, might be due to size */ }, { stepSelectedColor });
+                draw.rect(getStepPosition(selectedStep), { stepSize.w, stepSize.h - 1 /* need to substract 1 for whatever reason ^^, might be due to size */ }, { stepSelectedColor });
             }
         }
     }
