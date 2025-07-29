@@ -17,6 +17,7 @@ class SequencerCardComponent : public Component {
 protected:
     Color background;
     Color activeStepColor;
+    Color stepLengthColor;
     Color stepBackground;
     Color inactiveStepColor;
     Color stepSelectedColor;
@@ -63,6 +64,7 @@ public:
             return func; })
         , background(styles.colors.background)
         , activeStepColor(styles.colors.primary)
+        , stepLengthColor(alpha(styles.colors.primary, 0.5))
         , stepBackground(alpha(styles.colors.primary, 0.2))
         , inactiveStepColor(alpha(styles.colors.primary, 0.07))
         , stepSelectedColor(styles.colors.white)
@@ -174,16 +176,104 @@ public:
             }
         }
 
-        // Render active steps
+        // // Render active steps
+        // if (steps != NULL) {
+        //     for (const auto& step : *steps) {
+        //         if (step.len && step.enabled && step.position < *stepCount) {
+        //             int stepRow = step.position / stepPerRow;
+        //             int stepCol = step.position % stepPerRow;
+        //             int x = relativePosition.x + stepCol * stepWidth;
+        //             int y = relativePosition.y + stepRow * stepHeight;
+        //             draw.filledRect({ x + 1, y + 1 }, { stepWidth - 2, stepHeight - 2 }, { activeStepColor });
+        //         }
+        //     }
+        // }
+
+        // // Render step lengths
+        // if (steps != NULL) {
+        //     std::vector<bool> occupied(*stepCount, false); // Track which positions have already been painted by a note
+
+        //     for (const auto& step : *steps) {
+        //         if (step.len && step.enabled && step.position < *stepCount) {
+        //             int startPos = step.position;
+        //             int endPos = std::min(startPos + step.len, (int)*stepCount);
+
+        //             // Paint step length background (excluding the first step, which will be rendered as active)
+        //             for (int pos = startPos + 1; pos < endPos; ++pos) {
+        //                 // If another note starts here, break
+        //                 bool overridden = false;
+        //                 for (const auto& otherStep : *steps) {
+        //                     if (otherStep.enabled && otherStep.len && otherStep.position == pos) {
+        //                         overridden = true;
+        //                         break;
+        //                     }
+        //                 }
+
+        //                 if (overridden)
+        //                     break;
+
+        //                 int row = pos / stepPerRow;
+        //                 int col = pos % stepPerRow;
+        //                 int x = relativePosition.x + col * stepWidth;
+        //                 int y = relativePosition.y + row * stepHeight;
+        //                 draw.filledRect({ x + 1, y + 1 }, { stepWidth - 2, stepHeight - 2 }, { stepLengthColor });
+
+        //                 occupied[pos] = true;
+        //             }
+        //         }
+        //     }
+
+        //     // Render active steps on top
+        //     for (const auto& step : *steps) {
+        //         if (step.len && step.enabled && step.position < *stepCount) {
+        //             int stepRow = step.position / stepPerRow;
+        //             int stepCol = step.position % stepPerRow;
+        //             int x = relativePosition.x + stepCol * stepWidth;
+        //             int y = relativePosition.y + stepRow * stepHeight;
+        //             draw.filledRect({ x + 1, y + 1 }, { stepWidth - 2, stepHeight - 2 }, { activeStepColor });
+        //         }
+        //     }
+        // }
+
         if (steps != NULL) {
-            for (const auto& step : *steps) {
-                if (step.len && step.enabled && step.position < *stepCount) {
-                    int stepRow = step.position / stepPerRow;
-                    int stepCol = step.position % stepPerRow;
-                    int x = relativePosition.x + stepCol * stepWidth;
-                    int y = relativePosition.y + stepRow * stepHeight;
-                    draw.filledRect({ x + 1, y + 1 }, { stepWidth - 2, stepHeight - 2 }, { activeStepColor });
+            for (size_t i = 0; i < steps->size(); ++i) {
+                const auto& step = (*steps)[i];
+                if (!step.enabled || step.len == 0 || step.position >= *stepCount)
+                    continue;
+
+                int startPos = step.position;
+
+                // Find the position of the next step (after startPos), accounting for wrapping
+                int nextStepOffset = *stepCount; // default if no step comes after
+                for (size_t j = 0; j < steps->size(); ++j) {
+                    const auto& next = (*steps)[j];
+                    if (!next.enabled || next.len == 0)
+                        continue;
+
+                    int delta = (next.position - startPos + *stepCount) % *stepCount;
+                    if (delta > 0 && delta < nextStepOffset) {
+                        nextStepOffset = delta;
+                    }
                 }
+
+                int effectiveLength = std::min<int>(step.len, nextStepOffset);
+
+                // Render length background (excluding the first step)
+                for (int l = 1; l < effectiveLength; ++l) {
+                    int pos = (startPos + l) % *stepCount;
+                    int row = pos / stepPerRow;
+                    int col = pos % stepPerRow;
+                    int x = relativePosition.x + col * stepWidth;
+                    int y = relativePosition.y + row * stepHeight;
+                    draw.filledRect({ x + 1, y + 1 }, { stepWidth - 2, stepHeight - 2 }, { stepLengthColor });
+                }
+
+                // Render the main (first) step
+                int stepRow = startPos / stepPerRow;
+                int stepCol = startPos % stepPerRow;
+                int x = relativePosition.x + stepCol * stepWidth;
+                int y = relativePosition.y + stepRow * stepHeight;
+                draw.filledRect({ x + 1, y + 1 }, { stepWidth - 2, stepHeight - 2 }, { activeStepColor });
             }
         }
 

@@ -43,7 +43,7 @@
         "id": 5,
         "plugins": [
           {"alias":"Synth1","plugin":"SynthWavetable"},
-          {"plugin":"Sequencer","alias":"Sequencer"},
+          {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
           {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
           {"alias":"TrackFx2","plugin":"EffectVolumeMultiFx"},
           {"filename":"synth1","maxVariation":16,"workspaceFolder":"data/workspaces/plus_rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}
@@ -53,7 +53,7 @@
         "id": 6,
         "plugins": [
           {"alias":"Synth2","plugin":"SynthWavetable"},
-          {"plugin":"Sequencer","alias":"Sequencer"},
+          {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
           {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
           {"alias":"TrackFx2","plugin":"EffectVolumeMultiFx"},
           {"filename":"synth2","maxVariation":16,"workspaceFolder":"data/workspaces/plus_rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}
@@ -63,7 +63,7 @@
         "id": 7,
         "plugins": [
           {"alias":"Synth3","plugin":"SynthWavetable"},
-          {"plugin":"Sequencer","alias":"Sequencer"},
+          {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
           {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
           {"alias":"TrackFx2","plugin":"EffectVolumeMultiFx"},
           {"filename":"synth3","maxVariation":16,"workspaceFolder":"data/workspaces/plus_rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}

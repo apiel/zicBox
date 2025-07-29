@@ -61,7 +61,7 @@ const synth1Track = {
     id: Synth1Track,
     plugins: [
         audioPlugin('SynthWavetable', { alias: 'Synth1' }),
-        audioPlugin('Sequencer'),
+        audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx2' }),
         audioPlugin('SerializeTrack', { filename: 'synth1', maxVariation, workspaceFolder }),
@@ -72,7 +72,7 @@ const synth2Track = {
     id: Synth2Track,
     plugins: [
         audioPlugin('SynthWavetable', { alias: 'Synth2' }),
-        audioPlugin('Sequencer'),
+        audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx2' }),
         audioPlugin('SerializeTrack', { filename: 'synth2', maxVariation, workspaceFolder }),
@@ -83,7 +83,7 @@ const synth3Track = {
     id: Synth3Track,
     plugins: [
         audioPlugin('SynthWavetable', { alias: 'Synth3' }),
-        audioPlugin('Sequencer'),
+        audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx2' }),
         audioPlugin('SerializeTrack', { filename: 'synth3', maxVariation, workspaceFolder }),

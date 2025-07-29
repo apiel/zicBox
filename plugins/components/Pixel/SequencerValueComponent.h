@@ -34,6 +34,8 @@ protected:
 
     int8_t encoderId = -1;
 
+    bool selectStepUsingLength = false;
+
 public:
     SequencerValueComponent(ComponentInterface::Props props)
         : Component(props, [&](std::string action) {
@@ -118,6 +120,9 @@ public:
             renderFn = std::bind(&SequencerValueComponent::renderSelectedStep, this);
             onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepSelection, this, std::placeholders::_1);
         }
+
+        /// Select step using as well the length, meaning the step will be selected not only from his starting position but also any following steps covered by his length.
+        selectStepUsingLength = config.value("selectStepUsingLength", selectStepUsingLength);
 
         /*md md_config_end */
     }
@@ -292,7 +297,8 @@ protected:
         Step* step = getSelectedStep();
         if (step) {
             step->setLength(step->len + direction);
-            renderNext();
+            // renderNext();
+            renderNextAndSetContext();
         }
     }
 
@@ -334,7 +340,9 @@ protected:
         if (contextId != 0 && steps != NULL) {
             int selectedStep = view->contextVar[contextId];
             for (auto& step : *steps) {
-                if (selectedStep == step.position || (selectedStep >= step.position && selectedStep < step.position + step.len)) {
+                if (selectedStep == step.position) {
+                    return &step;
+                } else if (selectStepUsingLength && selectedStep >= step.position && selectedStep < step.position + step.len) {
                     return &step;
                 }
             }
