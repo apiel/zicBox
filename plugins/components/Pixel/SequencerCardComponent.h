@@ -27,11 +27,11 @@ protected:
     AudioPlugin* plugin;
     std::vector<Step>* steps = NULL;
 
-    struct GridKey {
-        int key;
-        unsigned long pressedTime = 0;
-    };
-    std::vector<GridKey> gridKeys;
+    std::vector<int> gridKeys;
+    // Let's assume that only one key is pressed at a time
+    // If more keys are pressed, only the first one will be used
+    unsigned long pressedTime = 0;
+    int pressedKeyIndex = 0;
 
     int stepPerRow = 8;
     int maxSteps = 64;
@@ -56,13 +56,24 @@ protected:
         if (isPlaying) {
             jobRendering = [this](unsigned long now) {
                 renderPlayingStep = true;
+                jobLongpress(now);
                 renderNext();
             };
         } else {
             renderNext();
-            jobRendering = [this](unsigned long now) { };
+            jobRendering = [this](unsigned long now) { jobLongpress(now); };
         }
     };
+
+    void jobLongpress(unsigned long now)
+    {
+        if (pressedTime > 0 && now - pressedTime > 500) {
+            //might want to check that pressedKeyIndex is not out of bounds
+            pressedTime = 0;
+            setContext(contextId, pressedKeyIndex);
+            renderNext();
+        }
+    }
 
 public:
     SequencerCardComponent(ComponentInterface::Props props)
@@ -79,7 +90,8 @@ public:
         , rowsSelectionColor(lighten(styles.colors.background, 1.0))
         , playingColor(styles.colors.white)
     {
-        jobRendering = [this](unsigned long now) { }; // Initialize with empty job to register callback
+        // jobRendering = [this](unsigned long now) { }; // Initialize with empty job to register callback
+        onPlayStep(false); // Initialize job to register callback
 
         /*md md_config:Sequencer */
         nlohmann::json& config = props.config;
@@ -141,13 +153,13 @@ public:
         if (config.contains("gridKeys") && config["gridKeys"].is_array()) {
             for (auto& key : config["gridKeys"]) {
                 if (key.is_number_integer()) {
-                    gridKeys.push_back({ key.get<int>() });
+                    gridKeys.push_back(key.get<int>());
                 } else {
                     std::string keyStr = key.get<std::string>();
                     if (keyStr.length() == 1) {
                         keyStr = "'" + keyStr + "'";
                     }
-                    gridKeys.push_back({ getKeyCode(keyStr.c_str()) });
+                    gridKeys.push_back(getKeyCode(keyStr.c_str()));
                 }
             }
         }
@@ -278,17 +290,15 @@ public:
         if (isVisible()) {
             for (int i = 0; i < gridKeys.size() && steps->size(); i++) {
                 auto& gridKey = gridKeys[i];
-                if (gridKey.key == key) {
+                if (gridKey == key) {
                     if (state == 1) {
-                        gridKey.pressedTime = now;
-                    } else if (gridKey.pressedTime != 0) {
-                        // unsigned long elapsedMs = now - gridKey.pressedTime;
-                        gridKey.pressedTime = -1;
-                        // if (elapsedMs < 500) { // short press, might not even need this check!
+                        pressedTime = now;
+                        pressedKeyIndex = i;
+                    } else if (pressedTime != 0) {
+                        pressedTime = -1;
                         stepToggle(i);
                         setContext(contextId, i);
                         renderNext();
-                        // }
                     }
                     return true;
                 }
