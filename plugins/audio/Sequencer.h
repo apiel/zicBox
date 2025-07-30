@@ -181,7 +181,7 @@ public:
         } else if (event == AudioEventType::PAUSE) {
             callEventCallbacks();
             allOff();
-        }  else if (event == AudioEventType::TOGGLE_PLAY_PAUSE || event == AudioEventType::START) {
+        } else if (event == AudioEventType::TOGGLE_PLAY_PAUSE || event == AudioEventType::START) {
             callEventCallbacks();
         }
     }
@@ -249,9 +249,10 @@ public:
         char* key = strtok((char*)value.c_str(), " ");
         if (strcmp(key, "STEP") == 0) {
             Step step;
-            step.hydrate(strtok(NULL, ""));
-            // steps[step.position] = step;
-            steps.push_back(step);
+            if (step.hydrate(strtok(NULL, ""))) {
+                // steps[step.position] = step;
+                steps.push_back(step);
+            }
             return;
         }
         Mapping::hydrate(valCopy);

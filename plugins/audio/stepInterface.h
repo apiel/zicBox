@@ -176,7 +176,7 @@ public:
             + stepMotions[motion].name;
     }
 
-    void hydrate(std::string value)
+    bool hydrate(std::string value)
     {
         position = atoi(strtok((char*)value.c_str(), " "));
         len = atoi(strtok(NULL, " "));
@@ -197,6 +197,7 @@ public:
                 break;
             }
         }
-        
+
+        return enabled && len > 0;
     }
 };
