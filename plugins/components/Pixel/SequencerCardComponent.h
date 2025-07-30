@@ -27,6 +27,12 @@ protected:
     AudioPlugin* plugin;
     std::vector<Step>* steps = NULL;
 
+    struct GridKey {
+        int key;
+        unsigned long pressedTime = 0;
+    };
+    std::vector<GridKey> gridKeys;
+
     int stepPerRow = 8;
     int maxSteps = 64;
     uint16_t* stepCount;
@@ -131,6 +137,20 @@ public:
 
         /// Set context id shared between components to show selected step, must be different than 0.
         contextId = config.value("contextId", contextId); //eg: 10
+
+        if (config.contains("gridKeys") && config["gridKeys"].is_array()) {
+            for (auto& key : config["gridKeys"]) {
+                if (key.is_number_integer()) {
+                    gridKeys.push_back({ key.get<int>() });
+                } else {
+                    std::string keyStr = key.get<std::string>();
+                    if (keyStr.length() == 1) {
+                        keyStr = "'" + keyStr + "'";
+                    }
+                    gridKeys.push_back({ getKeyCode(keyStr.c_str()) });
+                }
+            }
+        }
 
         /*md md_config_end */
 
@@ -251,5 +271,56 @@ public:
             renderNext();
         }
         Component::onContext(index, value);
+    }
+
+    bool onKey(uint16_t id, int key, int8_t state, unsigned long now) override
+    {
+        if (isVisible()) {
+            for (int i = 0; i < gridKeys.size() && steps->size(); i++) {
+                auto& gridKey = gridKeys[i];
+                if (gridKey.key == key) {
+                    if (state == 1) {
+                        gridKey.pressedTime = now;
+                    } else if (gridKey.pressedTime != 0) {
+                        // unsigned long elapsedMs = now - gridKey.pressedTime;
+                        gridKey.pressedTime = -1;
+                        // if (elapsedMs < 500) { // short press, might not even need this check!
+                        stepToggle(i);
+                        setContext(contextId, i);
+                        renderNext();
+                        // }
+                    }
+                    return true;
+                }
+            }
+        }
+        return Component::onKey(id, key, state, now);
+    }
+
+    Step* getStepAtPos(int pos)
+    {
+        if (steps != NULL) {
+            for (auto& step : *steps) {
+                if (step.position == pos) {
+                    return &step;
+                }
+            }
+        }
+        return NULL;
+    }
+
+    void stepToggle(int position)
+    {
+        Step* step = getStepAtPos(position);
+        if (step) {
+            step->enabled = !step->enabled;
+        } else {
+            // Create a step and push it to the end
+            Step newStep;
+            newStep.position = position;
+            newStep.enabled = true;
+            newStep.len = 1;
+            steps->push_back(newStep);
+        }
     }
 };

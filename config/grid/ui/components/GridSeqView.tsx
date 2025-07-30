@@ -2,6 +2,7 @@ import * as React from '@/libs/react';
 
 import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
 import { SequencerValue } from '@/libs/nativeComponents/SequencerValue';
+import { A1, A2, A3, A4, A5, A6, A7, A8, B1, B2, B3, B4, B5, B6, B7, B8, C1, C2, C3, C4, C5, C6, C7, C8, D1, D2, D3, D4, D5, D6, D7, D8 } from '../constants';
 import { enc1, enc2, enc3, enc4, enc5, enc6, enc7 } from '../constantsValue';
 import { Layout } from './Layout';
 
@@ -113,6 +114,12 @@ export function GridSeqView({
                         contextId={contextId}
                         rowsSelection={4}
                         // rowsSelectionColor={"#28595f"}
+                        gridKeys={[
+                            A1, A2, A3, A4, A5, A6, A7, A8,
+                            B1, B2, B3, B4, B5, B6, B7, B8,
+                            C1, C2, C3, C4, C5, C6, C7, C8,
+                            D1, D2, D3, D4, D5, D6, D7, D8,
+                        ]}
                     />
                 </>
             }

@@ -14,4 +14,5 @@ export const SequencerCard = getJsonComponent<{
     rowsSelectionColor?: string;
     rowsSelection?: number;
     contextId?: number;
+    gridKeys?: (number | string)[];
 }>('SequencerCard');

@@ -28,7 +28,7 @@ public:
         bool multipleKeyHandler = false;
         std::function<uint8_t(KeyMap& keymap)> getColor;
         bool isLongPress = false;
-        unsigned long pressedTime = -1;
+        unsigned long pressedTime = 0;
     };
 
     struct AddKeyMapProps {
@@ -156,12 +156,12 @@ public:
 
     static bool isPressed(KeyMap& keyMap)
     {
-        return keyMap.pressedTime != -1;
+        return keyMap.pressedTime != 0;
     }
 
     static bool isReleased(KeyMap& keyMap)
     {
-        return keyMap.pressedTime == -1;
+        return keyMap.pressedTime == 0;
     }
 
     // To be used if longPress action is activated
@@ -193,8 +193,8 @@ public:
                     // It also allow us to calculate the duration of the key press for long press
                     keyMap.pressedTime = now;
                 } else {
-                    // To know if the key is not pressed anymore, we set pressedTime to -1
-                    keyMap.pressedTime = -1;
+                    // To know if the key is not pressed anymore, we set pressedTime to 0
+                    keyMap.pressedTime = 0;
                     // if (keyMap.isLongPress && keyMap.actionLongPress) {
                     //     keyMap.actionLongPress(keyMap);
                     //     renderKeypadColor(keyMap);
