@@ -55,8 +55,8 @@ protected:
         // renderNext();
         if (isPlaying) {
             jobRendering = [this](unsigned long now) {
-                renderPlayingStep = true;
                 jobLongpress(now);
+                renderPlayingStep = true;
                 renderNext();
             };
         } else {
