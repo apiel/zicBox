@@ -164,6 +164,9 @@ public:
             }
         }
 
+        std::string controllerId = config.value("controller", "Default");
+        controller = getController(controllerId.c_str());
+
         /*md md_config_end */
 
         resize();
@@ -175,6 +178,27 @@ public:
         rowCount = maxSteps / stepPerRow;
         stepHeight = size.h / rowCount;
         stepSize = { stepWidth - 2, stepHeight - 2 };
+    }
+
+    ControllerInterface* controller = NULL;
+    void initView(uint16_t counter) override
+    {
+        Component::initView(counter);
+        renderKeys();
+    }
+
+    void renderKeys()
+    {
+        if (controller) {
+            Color color = darken(stepLengthColor, 0.9);
+            Color activeColor = { 255, 0, 0, 0 };
+            // loop over all keys
+            for (int i = 0; i < gridKeys.size(); i++) {
+                int gridKey = gridKeys[i];
+                Step* step = getStepAtPos(i);
+                controller->setColor(gridKey, step != NULL && step->enabled && step->len ? activeColor : inactiveStepColor);
+            }
+        }
     }
 
     Point getStepPosition(int pos)
@@ -281,6 +305,7 @@ public:
     {
         if (index == contextId) {
             renderNext();
+            renderKeys();
         }
         Component::onContext(index, value);
     }

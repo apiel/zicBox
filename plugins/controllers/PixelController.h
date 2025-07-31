@@ -186,10 +186,10 @@ public:
                     getKeyCode("'h'"),
                     getKeyCode("'g'"),
 
-                    getKeyCode("'t'"),
-                    getKeyCode("'y'"),
-                    getKeyCode("'u'"),
                     getKeyCode("'i'"),
+                    getKeyCode("'u'"),
+                    getKeyCode("'y'"),
+                    getKeyCode("'t'"),
 
                     getKeyCode("'8'"),
                     getKeyCode("'7'"),
