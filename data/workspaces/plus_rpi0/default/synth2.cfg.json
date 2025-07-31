@@ -1,0 +1,126 @@
+{
+    "Sequencer": {
+        "STATUS": 1.0,
+        "STEPS": null
+    },
+    "SerializeTrack": {
+        "values": [
+            {
+                "key": "VARIATION",
+                "value": 0.0
+            }
+        ]
+    },
+    "Synth2": {
+        "values": [
+            {
+                "key": "PITCH",
+                "value": 0.0
+            },
+            {
+                "key": "ATTACK",
+                "value": 10.0
+            },
+            {
+                "key": "RELEASE",
+                "value": 100.0
+            },
+            {
+                "key": "FREQUENCY_MOD",
+                "value": 0.0
+            },
+            {
+                "key": "CUTOFF_MOD",
+                "value": 0.0
+            },
+            {
+                "key": "RESONANCE_MOD",
+                "value": 0.0
+            },
+            {
+                "key": "FILTER_TYPE",
+                "value": 1.0
+            },
+            {
+                "key": "FILTER_CUTOFF",
+                "value": 0.0
+            },
+            {
+                "key": "FILTER_RESONANCE",
+                "value": 0.0
+            },
+            {
+                "key": "WAVE",
+                "value": 0.0
+            },
+            {
+                "key": "WAVE_EDIT",
+                "value": 1.0
+            },
+            {
+                "key": "LFO_RATE",
+                "value": 1.0
+            },
+            {
+                "key": "LFO_WAVEFORM",
+                "value": 0.0
+            },
+            {
+                "key": "LFO_FREQ_MOD",
+                "value": 0.0
+            },
+            {
+                "key": "LFO_WAVE_MOD",
+                "value": 0.0
+            },
+            {
+                "key": "LFO_CUTOFF_MOD",
+                "value": 0.0
+            },
+            {
+                "key": "LFO_RESONANCE_MOD",
+                "value": 0.0
+            }
+        ]
+    },
+    "TrackFx": {
+        "values": [
+            {
+                "key": "VOLUME",
+                "value": 100.0
+            },
+            {
+                "key": "GAIN",
+                "value": 1.0
+            },
+            {
+                "key": "FX_TYPE",
+                "value": 14.0
+            },
+            {
+                "key": "FX_AMOUNT",
+                "value": 81.0
+            }
+        ]
+    },
+    "TrackFx2": {
+        "values": [
+            {
+                "key": "VOLUME",
+                "value": 100.0
+            },
+            {
+                "key": "GAIN",
+                "value": 1.0
+            },
+            {
+                "key": "FX_TYPE",
+                "value": 0.0
+            },
+            {
+                "key": "FX_AMOUNT",
+                "value": 0.0
+            }
+        ]
+    }
+}

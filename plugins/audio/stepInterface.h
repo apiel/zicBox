@@ -10,6 +10,9 @@
 // #include "helpers/midiNote.h"
 #include "helpers/format.h"
 #include "helpers/range.h"
+#include "log.h"
+
+#include "libs/nlohmann/json.hpp"
 
 int randCounter = 0;
 int getRand()
@@ -174,6 +177,47 @@ public:
             + fToString(velocity, 2) + " "
             + stepConditions[condition].name + " "
             + stepMotions[motion].name;
+    }
+
+    nlohmann::json json;
+    nlohmann::json& serializeJson()
+    {
+        json["position"] = position;
+        json["len"] = len;
+        json["enabled"] = enabled;
+        json["note"] = note;
+        json["velocity"] = velocity;
+        json["condition"] = stepConditions[condition].name;
+        json["motion"] = stepMotions[motion].name;
+        return json;
+    }
+
+    void hydrateJson(nlohmann::json& json)
+    {
+        try {
+            position = json["position"];
+            len = json["len"];
+            enabled = json["enabled"];
+            note = json["note"];
+            velocity = json["velocity"];
+            std::string conditionName = json["condition"];
+            for (int i = 0; i < STEP_CONDITIONS_COUNT; i++) {
+                if (stepConditions[i].name == conditionName) {
+                    condition = i;
+                    break;
+                }
+            }
+            std::string motionName = json["motion"];
+            for (int i = 0; i < STEP_MOTIONS_COUNT; i++) {
+                if (stepMotions[i].name == motionName) {
+                    motion = i;
+                    break;
+                }
+            }
+        } catch (const nlohmann::json::exception& e) {
+            std::string errorMessage = e.what();
+            logWarn("Failed to hydrate step: " + errorMessage);
+        }
     }
 
     bool hydrate(std::string value)

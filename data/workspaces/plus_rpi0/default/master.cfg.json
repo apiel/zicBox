@@ -1,0 +1,99 @@
+{
+    "AudioOutput": null,
+    "Mixer": {
+        "values": [
+            {
+                "key": "TRACK_1",
+                "value": 100.0
+            },
+            {
+                "key": "MUTE_1",
+                "value": 0.0
+            },
+            {
+                "key": "TRACK_2",
+                "value": 100.0
+            },
+            {
+                "key": "MUTE_2",
+                "value": 0.0
+            },
+            {
+                "key": "TRACK_3",
+                "value": 100.0
+            },
+            {
+                "key": "MUTE_3",
+                "value": 0.0
+            },
+            {
+                "key": "TRACK_4",
+                "value": 100.0
+            },
+            {
+                "key": "MUTE_4",
+                "value": 0.0
+            },
+            {
+                "key": "TRACK_5",
+                "value": 100.0
+            },
+            {
+                "key": "MUTE_5",
+                "value": 0.0
+            },
+            {
+                "key": "TRACK_6",
+                "value": 100.0
+            },
+            {
+                "key": "MUTE_6",
+                "value": 0.0
+            },
+            {
+                "key": "TRACK_7",
+                "value": 100.0
+            },
+            {
+                "key": "MUTE_7",
+                "value": 0.0
+            },
+            {
+                "key": "TRACK_8",
+                "value": 100.0
+            },
+            {
+                "key": "MUTE_8",
+                "value": 0.0
+            }
+        ]
+    },
+    "SerializeTrack": {
+        "values": [
+            {
+                "key": "VARIATION",
+                "value": 0.0
+            }
+        ]
+    },
+    "Tempo": {
+        "values": [
+            {
+                "key": "BPM",
+                "value": 180.0
+            }
+        ]
+    },
+    "Volume": {
+        "values": [
+            {
+                "key": "VOLUME",
+                "value": 100.0
+            },
+            {
+                "key": "GAIN",
+                "value": 1.0
+            }
+        ]
+    }
+}

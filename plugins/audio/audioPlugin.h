@@ -191,10 +191,18 @@ public:
     {
     }
 
+    virtual void serializeJson(nlohmann::json& json)
+    {
+    }
+
     /**
      * @brief Hydrate the plugin values from a serialized file
      */
     virtual void hydrate(std::string value)
+    {
+    }
+
+    virtual void hydrateJson(nlohmann::json& json)
     {
     }
 };

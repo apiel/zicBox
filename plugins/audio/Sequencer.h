@@ -243,6 +243,31 @@ public:
         fprintf(file, "STATUS %f%s", status.get(), separator.c_str());
     }
 
+    void serializeJson(nlohmann::json& json) override
+    {
+        json["STATUS"] = status.get();
+
+        nlohmann::json stepsJson;
+        for (auto& step : steps) {
+            stepsJson.push_back(step.serializeJson());
+        }
+        json["STEPS"] = stepsJson;
+    }
+
+    void hydrateJson(nlohmann::json& json) override
+    {
+        if (json.contains("STATUS")) {
+            status.setFloat(json["STATUS"]);
+        }
+        if (json.contains("STEPS")) {
+            for (nlohmann::json& stepJson : json["STEPS"]) {
+                Step step;
+                step.hydrateJson(stepJson);
+                steps.push_back(step);
+            }
+        }
+    }
+
     void hydrate(std::string value) override
     {
         std::string valCopy = value;

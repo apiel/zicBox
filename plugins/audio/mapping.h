@@ -5,9 +5,9 @@
 #include <stdint.h>
 #include <vector>
 
-#include "helpers/range.h"
-
 #include "audioPlugin.h"
+#include "helpers/range.h"
+#include "log.h"
 
 struct DataFn {
     std::string name;
@@ -195,7 +195,7 @@ public:
         }
     }
 
-    void initValues(std::vector<ValueInterface *> skips)
+    void initValues(std::vector<ValueInterface*> skips)
     {
         for (ValueInterface* val : mapping) {
             for (auto skip : skips) {
@@ -250,6 +250,16 @@ public:
         }
     }
 
+    void serializeJson(nlohmann::json& json) override
+    {
+        // Use array because order matter
+        nlohmann::json values = nlohmann::json::array();
+        for (ValueInterface* val : mapping) {
+            values.push_back({ { "key", val->key() }, { "value", val->get() } });
+        }
+        json["values"] = values;
+    }
+
     void hydrate(std::string value) override
     {
         char* key = strtok((char*)value.c_str(), " ");
@@ -257,6 +267,22 @@ public:
         ValueInterface* val = getValue(key);
         if (val) {
             val->set(fValue);
+        }
+    }
+
+    void hydrateJson(nlohmann::json& json) override
+    {
+        if (json.contains("values")) {
+            auto& values = json["values"];
+            for (int i = 0; i < values.size(); i++) {
+                std::string key = values[i]["key"];
+                ValueInterface* val = getValue(key);
+                if (val) {
+                    float value = values[i]["value"];
+                    logDebug("hydrate value %s %f", values[i]["key"].get<std::string>().c_str(), value);
+                    val->set(value);
+                }
+            }
         }
     }
 };

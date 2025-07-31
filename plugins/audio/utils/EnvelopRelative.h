@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <vector>
 
+#include "log.h"
+
 class EnvelopRelative {
 public:
     unsigned int index = -1;
@@ -227,6 +229,53 @@ public:
             }
         }
         fprintf(file, "%s", separator.c_str());
+    }
+
+    void serializeJson(nlohmann::json& json)
+    {
+        json["mode"] = mode;
+        if (useMacro) {
+            nlohmann::json m;
+            m["a"] = macro.a;
+            m["b"] = macro.b;
+            m["c"] = macro.c;
+            json["macro"] = m;
+        } else {
+            nlohmann::json phases;
+            for (EnvelopRelative::Data& phase : data) {
+                nlohmann::json p;
+                p["modulation"] = phase.modulation;
+                p["time"] = phase.time;
+                phases.push_back(p);
+            }
+            json["phases"] = phases;
+        }
+    }
+
+    void hydrateJson(nlohmann::json& json)
+    {
+        mode = json["mode"];
+        setMode(mode, false);
+        if (useMacro) {
+            if (json.contains("macro")) {
+                macro.a = json["macro"]["a"];
+                macro.b = json["macro"]["b"];
+                macro.c = json["macro"]["c"];
+            } else {
+                logWarn("Missing macro data in json");
+            }
+        } else {
+            data.clear();
+            if (json.contains("phases")) {
+                for (nlohmann::json& phase : json["phases"]) {
+                    data.push_back({ phase["modulation"], phase["time"] });
+                }
+            }
+            // If no phase data, initialize default
+            if (data.size() == 0) {
+                setMode(mode);
+            }
+        }
     }
 
     void hydrate(std::string value)

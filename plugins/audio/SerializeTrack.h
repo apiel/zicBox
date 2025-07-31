@@ -4,11 +4,12 @@
 #include <fstream>
 #include <iostream>
 #include <mutex>
+#include <sstream>
 
 #include "audioPlugin.h"
 #include "helpers/trim.h"
-#include "mapping.h"
 #include "log.h"
+#include "mapping.h"
 
 /*md
 ## SerializeTrack
@@ -175,14 +176,24 @@ public:
 
     void serialize()
     {
-        FILE* file = fopen(filepath.c_str(), "w");
+        // FILE* file = fopen(filepath.c_str(), "w");
+        // for (AudioPlugin* plugin : props.audioPluginHandler->plugins) {
+        //     if ((track == -1 || track == plugin->track) && plugin->serializable) {
+        //         fprintf(file, "# %s\n", plugin->name.c_str());
+        //         plugin->serialize(file, "\n");
+        //     }
+        // }
+        // fclose(file);
+
+        nlohmann::json json;
         for (AudioPlugin* plugin : props.audioPluginHandler->plugins) {
             if ((track == -1 || track == plugin->track) && plugin->serializable) {
-                fprintf(file, "# %s\n", plugin->name.c_str());
-                plugin->serialize(file, "\n");
+                plugin->serializeJson(json[plugin->name]);
             }
         }
-        fclose(file);
+        FILE* jsonFile = fopen((filepath + ".json").c_str(), "w");
+        fprintf(jsonFile, "%s", json.dump(4).c_str());
+        fclose(jsonFile);
     }
 
     void hydrate()
@@ -210,6 +221,41 @@ public:
             }
         }
         fclose(file);
+
+
+        // std::ifstream file(filepath + ".json");
+        // if (!file) {
+        //     logError("Hydration file not found: " + filepath + ".json");
+        //     return;
+        // }
+
+        // std::ostringstream ss;
+        // ss << file.rdbuf(); // Read entire buffer into stream
+        // std::string buffer = ss.str();
+        // // logWarn(buffer);
+
+        // try {
+        //     nlohmann::json json;
+        //     json = nlohmann::json::parse(buffer);
+
+        //     // loop through keys
+        //     for (auto it = json.begin(); it != json.end(); ++it) {
+        //         AudioPlugin* plugin = props.audioPluginHandler->getPluginPtr(it.key(), track);
+        //         if (plugin) {
+        //             if (plugin->serializable) {
+        //                 logDebug("Hydrating plugin: %s on track %d", plugin->name.c_str(), plugin->track);
+        //                 plugin->hydrateJson(it.value());
+        //             } else {
+        //                 logWarn("Cannot hydrate plugin: %s (not serializable)\n", plugin->name.c_str());
+        //             }
+        //         } else {
+        //             logWarn("Cannot hydrate plugin: %s (not found)\n", it.key().c_str());
+        //         }
+        //     }
+        // } catch (const std::exception& e) {
+        //     std::string errorMessage = "Error hydrating file " + filepath + ".json : " + std::string(e.what());
+        //     logError(errorMessage);
+        // }
     }
 
     void hydrate(std::string value)
@@ -219,6 +265,15 @@ public:
         // Set variation only on first hydration
         if (!initialized && value.find("VARIATION ") != std::string::npos) {
             variation.setFloat(std::stoi(value.substr(10)));
+        }
+    }
+
+    void hydrateJson(nlohmann::json& json) override
+    {
+        // Do not hydrate this plugin, else it would make a loop
+
+        if (!initialized && json.contains("VARIATION")) {
+            variation.setFloat(json["VARIATION"]);
         }
     }
 

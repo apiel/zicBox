@@ -1,0 +1,101 @@
+{
+    "Drum2": {
+        "values": [
+            {
+                "key": "VAL_1",
+                "value": 34.0
+            },
+            {
+                "key": "VAL_2",
+                "value": 0.4300000071525574
+            },
+            {
+                "key": "VAL_3",
+                "value": 79.0
+            },
+            {
+                "key": "VAL_4",
+                "value": 25.0
+            },
+            {
+                "key": "VAL_5",
+                "value": 0.17000000178813934
+            },
+            {
+                "key": "VAL_6",
+                "value": 53.0
+            },
+            {
+                "key": "VAL_7",
+                "value": 36.80000305175781
+            },
+            {
+                "key": "VAL_8",
+                "value": 29.000003814697266
+            },
+            {
+                "key": "VAL_9",
+                "value": 22.0
+            },
+            {
+                "key": "VAL_10",
+                "value": 1.100000023841858
+            },
+            {
+                "key": "ENGINE",
+                "value": 0.0
+            },
+            {
+                "key": "DURATION",
+                "value": 3000.0
+            },
+            {
+                "key": "AMP_MORPH",
+                "value": 100.0
+            }
+        ]
+    },
+    "Sequencer": {
+        "STATUS": 1.0,
+        "STEPS": [
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 0,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 32,
+                "velocity": 0.800000011920929
+            }
+        ]
+    },
+    "SerializeTrack": {
+        "values": [
+            {
+                "key": "VARIATION",
+                "value": 0.0
+            }
+        ]
+    },
+    "TrackFx": {
+        "values": [
+            {
+                "key": "VOLUME",
+                "value": 100.0
+            },
+            {
+                "key": "GAIN",
+                "value": 1.0
+            }
+        ]
+    }
+}

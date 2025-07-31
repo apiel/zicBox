@@ -319,6 +319,28 @@ public:
         envelopAmpLayer2.serialize(file, separator, "ENV_AMP_OSC2");
     }
 
+    void serializeJson(nlohmann::json& json) override
+    {
+        Mapping::serializeJson(json);
+        envelopAmp.serializeJson(json["ENV_AMP"]);
+        envelopFreq.serializeJson(json["ENV_FREQ"]);
+        envelopAmpLayer2.serializeJson(json["ENV_AMP_OSC2"]);
+    }
+
+    void hydrateJson(nlohmann::json& json) override
+    {
+        Mapping::hydrateJson(json);
+        if (json.contains("ENV_AMP")) {
+            envelopAmp.hydrateJson(json["ENV_AMP"]);
+        }
+        if (json.contains("ENV_FREQ")) {
+            envelopFreq.hydrateJson(json["ENV_FREQ"]);
+        }
+        if (json.contains("ENV_AMP_OSC2")) {
+            envelopAmpLayer2.hydrateJson(json["ENV_AMP_OSC2"]);
+        }
+    }
+
     void hydrate(std::string value) override
     {
         if (value.find("ENV_AMP ") != std::string::npos) {

@@ -6,12 +6,12 @@
 
 #include "Tempo.h"
 #include "audioPlugin.h"
-#include "utils/fileBrowser.h"
 #include "helpers/midiNote.h"
 #include "log.h"
 #include "mapping.h"
 #include "plugins/audio/SampleStep.h"
 #include "stepInterface.h"
+#include "utils/fileBrowser.h"
 
 class SampleSequencer : public Mapping, public UseClock {
 protected:
@@ -199,6 +199,29 @@ public:
             fprintf(file, "STEP %d %s %s", i, steps[i].serialize().c_str(), separator.c_str());
         }
         fprintf(file, "STATUS %f%s", status.get(), separator.c_str());
+    }
+
+    void serializeJson(nlohmann::json& json) override
+    {
+        json["STATUS"] = status.get();
+
+        nlohmann::json stepsJson;
+        for (auto& step : steps) {
+            stepsJson.push_back(step.serialize());
+        }
+        json["STEPS"] = stepsJson;
+    }
+
+    void hydrateJson(nlohmann::json& json) override
+    {
+        if (json.contains("STATUS")) {
+            status.setFloat(json["STATUS"]);
+        }
+        if (json.contains("STEPS")) {
+            for (size_t i = 0; i < json["STEPS"].size() && i < MAX_STEPS; i++) {
+                steps[i].hydrate(json["STEPS"][i], props.channels);
+            }
+        }
     }
 
     void hydrate(std::string value) override

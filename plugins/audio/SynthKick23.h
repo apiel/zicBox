@@ -13,11 +13,11 @@
 #include "utils/MMfilter.h"
 #include "utils/effects/applyBoost.h"
 #include "utils/effects/applyClipping.h"
+#include "utils/effects/applyCompression.h"
 #include "utils/effects/applyDrive.h"
 #include "utils/effects/applyHighFreqBoost.h"
-#include "utils/effects/applyWaveshape.h"
 #include "utils/effects/applySoftClipping.h"
-#include "utils/effects/applyCompression.h"
+#include "utils/effects/applyWaveshape.h"
 #include "utils/val/valMMfilterCutoff.h"
 
 /*md
@@ -344,6 +344,20 @@ public:
     {
         Mapping::serialize(file, separator);
         envelopFreq.serialize(file, separator, "ENV_FREQ");
+    }
+
+    void serializeJson(nlohmann::json& json) override
+    {
+        Mapping::serializeJson(json);
+        envelopFreq.serializeJson(json["ENV_FREQ"]);
+    }
+
+    void hydrateJson(nlohmann::json& json) override
+    {
+        Mapping::hydrateJson(json);
+        if (json.contains("ENV_FREQ")) {
+            envelopFreq.hydrateJson(json["ENV_FREQ"]);
+        }
     }
 
     void hydrate(std::string value) override
