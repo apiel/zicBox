@@ -234,15 +234,6 @@ public:
     };
     DEFINE_GETDATAID_AND_DATA
 
-    void serialize(FILE* file, std::string separator) override
-    {
-        for (auto& step : steps) {
-            fprintf(file, "STEP %s %s", step.serialize().c_str(), separator.c_str());
-        }
-
-        fprintf(file, "STATUS %f%s", status.get(), separator.c_str());
-    }
-
     void serializeJson(nlohmann::json& json) override
     {
         json["STATUS"] = status.get();
@@ -263,23 +254,12 @@ public:
             for (nlohmann::json& stepJson : json["STEPS"]) {
                 Step step;
                 step.hydrateJson(stepJson);
-                steps.push_back(step);
+                // Only hydrate steps that are enabled
+                // else get rid of them (remove garbage)
+                if (step.enabled && step.len > 0) {
+                    steps.push_back(step);
+                }
             }
         }
-    }
-
-    void hydrate(std::string value) override
-    {
-        std::string valCopy = value;
-        char* key = strtok((char*)value.c_str(), " ");
-        if (strcmp(key, "STEP") == 0) {
-            Step step;
-            if (step.hydrate(strtok(NULL, ""))) {
-                // steps[step.position] = step;
-                steps.push_back(step);
-            }
-            return;
-        }
-        Mapping::hydrate(valCopy);
     }
 };

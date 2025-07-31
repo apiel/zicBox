@@ -217,20 +217,6 @@ public:
         return "Default";
     }
 
-    void serialize(FILE* file, std::string separator, std::string name)
-    {
-        fprintf(file, "%s", name.c_str());
-        if (useMacro) {
-            fprintf(file, " %d %f %f %f", mode, macro.a, macro.b, macro.c);
-        } else {
-            fprintf(file, " %d", mode);
-            for (EnvelopRelative::Data& phase : data) {
-                fprintf(file, " %f:%f", phase.modulation, phase.time);
-            }
-        }
-        fprintf(file, "%s", separator.c_str());
-    }
-
     void serializeJson(nlohmann::json& json)
     {
         json["mode"] = mode;
@@ -274,41 +260,6 @@ public:
             // If no phase data, initialize default
             if (data.size() == 0) {
                 setMode(mode);
-            }
-        }
-    }
-
-    void hydrate(std::string value)
-    {
-        std::stringstream ss(value);
-        std::string token;
-
-        if (ss >> token) {
-            int mode = 0;
-            sscanf(token.c_str(), "%d", &mode);
-            setMode(mode, false);
-
-            if (useMacro) {
-                if (ss >> token) {
-                    sscanf(token.c_str(), "%f", &macro.a);
-                }
-                if (ss >> token) {
-                    sscanf(token.c_str(), "%f", &macro.b);
-                }
-                if (ss >> token) {
-                    sscanf(token.c_str(), "%f", &macro.c);
-                }
-                setMode(mode, false);
-            } else {
-                data.clear();
-                while (ss >> token) {
-                    float mod = 0, time = 0;
-                    sscanf(token.c_str(), "%f:%f", &mod, &time);
-                    data.push_back({ mod, time });
-                }
-                if (data.size() == 0) {
-                    setMode(mode);
-                }
             }
         }
     }

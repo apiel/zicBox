@@ -193,14 +193,6 @@ public:
         }
     }
 
-    void serialize(FILE* file, std::string separator) override
-    {
-        for (int i = 0; i < MAX_STEPS; i++) {
-            fprintf(file, "STEP %d %s %s", i, steps[i].serialize().c_str(), separator.c_str());
-        }
-        fprintf(file, "STATUS %f%s", status.get(), separator.c_str());
-    }
-
     void serializeJson(nlohmann::json& json) override
     {
         json["STATUS"] = status.get();
@@ -222,18 +214,6 @@ public:
                 steps[i].hydrate(json["STEPS"][i], props.channels);
             }
         }
-    }
-
-    void hydrate(std::string value) override
-    {
-        std::string valCopy = value;
-        char* key = strtok((char*)value.c_str(), " ");
-        if (strcmp(key, "STEP") == 0) {
-            int index = atoi(strtok(NULL, " "));
-            steps[index].hydrate(strtok(NULL, ""), props.channels);
-            return;
-        }
-        Mapping::hydrate(valCopy);
     }
 
     DataFn dataFunctions[4] = {

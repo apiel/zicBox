@@ -340,12 +340,6 @@ public:
         fastWaveform.setRate(osc2Freq.get() * noteMult);
     }
 
-    void serialize(FILE* file, std::string separator) override
-    {
-        Mapping::serialize(file, separator);
-        envelopFreq.serialize(file, separator, "ENV_FREQ");
-    }
-
     void serializeJson(nlohmann::json& json) override
     {
         Mapping::serializeJson(json);
@@ -358,15 +352,6 @@ public:
         if (json.contains("ENV_FREQ")) {
             envelopFreq.hydrateJson(json["ENV_FREQ"]);
         }
-    }
-
-    void hydrate(std::string value) override
-    {
-        if (value.find("ENV_FREQ ") != std::string::npos) {
-            envelopFreq.hydrate(value.substr(9));
-            return;
-        }
-        Mapping::hydrate(value);
     }
 
 protected:

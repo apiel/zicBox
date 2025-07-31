@@ -219,29 +219,4 @@ public:
             logWarn("Failed to hydrate step: " + errorMessage);
         }
     }
-
-    bool hydrate(std::string value)
-    {
-        position = atoi(strtok((char*)value.c_str(), " "));
-        len = atoi(strtok(NULL, " "));
-        enabled = strtok(NULL, " ")[0] == '1';
-        note = atoi(strtok(NULL, " "));
-        velocity = atof(strtok(NULL, " "));
-        char* conditionName = strtok(NULL, " ");
-        for (int i = 0; i < STEP_CONDITIONS_COUNT; i++) {
-            if (strcmp(stepConditions[i].name, conditionName) == 0) {
-                condition = i;
-                break;
-            }
-        }
-        char* motionName = strtok(NULL, " ");
-        for (int i = 0; i < STEP_MOTIONS_COUNT; i++) {
-            if (strcmp(stepMotions[i].name, motionName) == 0) {
-                motion = i;
-                break;
-            }
-        }
-
-        return enabled && len > 0;
-    }
 };

@@ -70,6 +70,7 @@ public:
         }
     }
 
+    // need to be changed to JSON!!
     std::string serialize()
     {
         return std::to_string(enabled) + " "
@@ -79,6 +80,7 @@ public:
             + filename;
     }
 
+    // need to be changed to JSON!!
     void hydrate(std::string value, uint8_t channels)
     {
         // printf("hydrate %s\n", value.c_str());

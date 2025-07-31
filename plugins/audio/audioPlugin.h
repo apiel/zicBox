@@ -181,24 +181,7 @@ public:
 
     virtual std::set<uint8_t> trackDependencies() { return {}; }
 
-    /**
-     * @brief Serialize the plugin values to a file
-     *
-     * @param file
-     * @param separator should be used as value separator
-     */
-    virtual void serialize(FILE* file, std::string separator)
-    {
-    }
-
     virtual void serializeJson(nlohmann::json& json)
-    {
-    }
-
-    /**
-     * @brief Hydrate the plugin values from a serialized file
-     */
-    virtual void hydrate(std::string value)
     {
     }
 

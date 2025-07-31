@@ -243,13 +243,6 @@ public:
         return NULL;
     }
 
-    void serialize(FILE* file, std::string separator) override
-    {
-        for (ValueInterface* val : mapping) {
-            fprintf(file, "%s %f%s", val->key().c_str(), val->get(), separator.c_str());
-        }
-    }
-
     void serializeJson(nlohmann::json& json) override
     {
         // Use array because order matter
@@ -258,16 +251,6 @@ public:
             values.push_back({ { "key", val->key() }, { "value", val->get() } });
         }
         json["values"] = values;
-    }
-
-    void hydrate(std::string value) override
-    {
-        char* key = strtok((char*)value.c_str(), " ");
-        float fValue = strtof(strtok(NULL, " "), NULL);
-        ValueInterface* val = getValue(key);
-        if (val) {
-            val->set(fValue);
-        }
     }
 
     void hydrateJson(nlohmann::json& json) override
