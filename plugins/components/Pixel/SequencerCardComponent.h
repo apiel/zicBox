@@ -191,7 +191,8 @@ public:
     {
         if (controller) {
             Color color = { 0xaa, 0xcd, 0xcf };
-            Color activeColor = { 0x00, 0x14, 0x12 };
+            Color activeColor = { 0x02, 0x10, 0x14 };
+            // Color activeColor = { 0x00, 0x14, 0x12 };
             for (int i = 0; i < gridKeys.size(); i++) {
                 int gridKey = gridKeys[i];
                 Step* step = getStepAtPos(i);
