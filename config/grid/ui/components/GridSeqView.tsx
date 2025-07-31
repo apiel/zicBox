@@ -129,8 +129,11 @@ export function GridSeqView({
                             { key: A10, color: "#0000000" },
                             { key: B10, color: "#0000000" },
                             { key: C10, color: "#0000000" },
-                            { key: D10, color: "#0000000" },
+                            { key: D10, color: "#021014" },
                         ] }]}
+                        keys={[
+                            { key: D10, action: '.scroll' },
+                        ]}
                     />
                 </>
             }

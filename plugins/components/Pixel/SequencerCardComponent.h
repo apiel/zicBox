@@ -75,12 +75,31 @@ protected:
         }
     }
 
+    int getScrollGroup()
+    {
+        int selectedStep = view->contextVar[contextId];
+        int scrollGroup = selectedStep / (stepPerRow * rowsSelection);
+        return scrollGroup;
+    }
+
 public:
     SequencerCardComponent(ComponentInterface::Props props)
         : Component(props, [&](std::string action) {
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
-            
-            return func; })
+            if (action == ".scroll") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (contextId != 0 && rowsSelection > 0 && KeypadLayout::isReleased(keymap)) {
+                        int scrollGroup = getScrollGroup();
+                        scrollGroup = (scrollGroup + 1) % (maxSteps / (stepPerRow * rowsSelection));
+                        pressedKeyIndex = scrollGroup * (stepPerRow * rowsSelection);
+                        setContext(contextId, pressedKeyIndex);
+                        renderNext();
+                        // renderKeys();
+                    }
+                };
+            }
+            return func;
+        })
         , background(styles.colors.background)
         , activeStepColor(styles.colors.primary)
         , stepLengthColor(alpha(styles.colors.primary, 0.3))
@@ -193,9 +212,10 @@ public:
             Color color = { 0xaa, 0xcd, 0xcf };
             Color activeColor = { 0x02, 0x10, 0x14 };
             // Color activeColor = { 0x00, 0x14, 0x12 };
+            int stepStart = getScrollGroup() * stepPerRow * rowsSelection;
             for (int i = 0; i < gridKeys.size(); i++) {
                 int gridKey = gridKeys[i];
-                Step* step = getStepAtPos(i);
+                Step* step = getStepAtPos(i + stepStart);
                 controller->setColor(gridKey, step != NULL && step->enabled && step->len ? activeColor : inactiveStepColor);
             }
         }
