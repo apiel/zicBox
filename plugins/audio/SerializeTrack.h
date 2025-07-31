@@ -25,7 +25,7 @@ protected:
     std::string filename = "track";
     std::string currentWorkspaceName = "default";
 
-    std::string filepath = "data/workspaces/default/track.cfg";
+    std::string filepath = "data/workspaces/default/track.json";
     std::string variationFolder = "data/workspaces/default/track";
     bool initialized = false;
 
@@ -69,7 +69,7 @@ protected:
         }
         std::string currentWorkspaceFolder = workspaceFolder + "/" + currentWorkspaceName;
         std::filesystem::create_directories(currentWorkspaceFolder);
-        filepath = currentWorkspaceFolder + "/" + filename + ".cfg";
+        filepath = currentWorkspaceFolder + "/" + filename + ".json";
         variationFolder = currentWorkspaceFolder + "/" + filename;
     }
 
@@ -112,7 +112,7 @@ public:
 
     std::string getVariationFilepath(int16_t id)
     {
-        return variationFolder + "/" + std::to_string(id) + ".cfg";
+        return variationFolder + "/" + std::to_string(id) + ".json";
     }
 
     void saveVariation(int16_t id)
@@ -182,16 +182,16 @@ public:
                 plugin->serializeJson(json[plugin->name]);
             }
         }
-        FILE* jsonFile = fopen((filepath + ".json").c_str(), "w");
+        FILE* jsonFile = fopen((filepath).c_str(), "w");
         fprintf(jsonFile, "%s", json.dump(4).c_str());
         fclose(jsonFile);
     }
 
     void hydrate()
     {
-        std::ifstream file(filepath + ".json");
+        std::ifstream file(filepath);
         if (!file) {
-            logError("Hydration file not found: " + filepath + ".json");
+            logError("Hydration file not found: " + filepath);
             return;
         }
 
@@ -223,7 +223,7 @@ public:
             logError(errorMessage);
         }
     }
-    
+
     void hydrateJson(nlohmann::json& json) override
     {
         // Do not hydrate this plugin, else it would make a loop
