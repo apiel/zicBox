@@ -81,8 +81,5 @@ public:
         for (auto& controllerColor : controllerColors) {
             controllerColor.controller->setColor(controllerColor.key, controllerColor.color);
         }
-        for (auto& controller : controllers) {
-            controller->renderColors();
-        }
     }
 };

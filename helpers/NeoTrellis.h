@@ -107,22 +107,15 @@ public:
 
             pos += to_read;
         }
-
         return true;
     }
 
-    std::vector<std::vector<uint8_t>> asyncBuffers;
-    bool writeReg(uint8_t regHigh, uint8_t regLow, uint8_t* buf, uint8_t num, bool async = false)
+    bool writeReg(uint8_t regHigh, uint8_t regLow, uint8_t* buf, uint8_t num)
     {
         std::vector<uint8_t> buffer;
         buffer.push_back(regHigh); // Seesaw module address
         buffer.push_back(regLow); // Seesaw function address
         buffer.insert(buffer.end(), buf, buf + num);
-
-        if (async) {
-            asyncBuffers.push_back(buffer);
-            return true;
-        }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
         return writeBuffer(buffer);
@@ -193,12 +186,19 @@ public:
     void loop()
     {
         while (loopRunning) {
-            if (asyncBuffers.size() > 0) {
-                for (auto& buffer : asyncBuffers) {
-                    writeBuffer(buffer);
+            // loop in color array
+            bool updated = false;
+            for (int i = 0; i < NEO_TRELLIS_NUM_KEYS; i++) {
+                if (colors[i].sendCount < 3) {
+                    colors[i].sendCount++;
+                    setPixelColor(i, colors[i].color);
+                    updated = true;
                 }
-                asyncBuffers.clear();
             }
+            if (updated) {
+                show();
+            }
+
             read();
             std::this_thread::sleep_for(std::chrono::milliseconds(20));
         }
@@ -260,20 +260,25 @@ public:
         }
     };
 
-    void setPixelColorAsync(uint8_t pixel, const Color& color) { setPixelColor(pixel, color, true); }
-    void setPixelColor(uint8_t pixel, const Color& color, bool async = false)
+    struct ColorGrid {
+        Color color;
+        uint8_t sendCount;
+    } colors[NEO_TRELLIS_NUM_KEYS] = { 0 };
+
+    void updateColorArray(uint8_t pixel, const Color& color) { colors[pixel] = { color, 0 }; }
+
+    void setPixelColor(uint8_t pixel, const Color& color)
     {
         if (pixel >= NEO_TRELLIS_NUM_KEYS)
             return;
 
         uint8_t writeBuf[6] = { 0x00, (uint8_t)(pixel * 3), color.g, color.r, color.b, 0x00 };
-        this->writeReg(SEESAW_NEOPIXEL_BASE, SEESAW_NEOPIXEL_BUF, writeBuf, 5, async);
+        this->writeReg(SEESAW_NEOPIXEL_BASE, SEESAW_NEOPIXEL_BUF, writeBuf, 5);
     }
 
-    void showAsync() { show(true); }
-    void show(bool async = false)
+    void show()
     {
-        this->writeReg(SEESAW_NEOPIXEL_BASE, SEESAW_NEOPIXEL_SHOW, NULL, 0, async);
+        this->writeReg(SEESAW_NEOPIXEL_BASE, SEESAW_NEOPIXEL_SHOW, NULL, 0);
     }
 
 protected:

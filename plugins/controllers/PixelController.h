@@ -28,9 +28,6 @@ protected:
     std::vector<int> trellisKeys1;
     std::vector<int> trellisKeys2;
     std::vector<int> trellisKeys3;
-    bool trellisUpdated1 = false;
-    bool trellisUpdated2 = false;
-    bool trellisUpdated3 = false;
 
 public:
     PixelController(Props& props, uint16_t id)
@@ -234,39 +231,22 @@ public:
                     int index = std::find(trellisKeys1.begin(), trellisKeys1.end(), id) - trellisKeys1.begin();
                     if (index < trellisKeys1.size()) {
                         NeoTrellis::Color neoColor(color.r, color.g, color.b);
-                        trellis1.setPixelColorAsync(index, neoColor);
-                        trellisUpdated1 = true;
+                        trellis1.updateColorArray(index, neoColor);
                         return;
                     }
                     // search in trellisKeys2 and get the index
                     index = std::find(trellisKeys2.begin(), trellisKeys2.end(), id) - trellisKeys2.begin();
                     if (index < trellisKeys2.size()) {
                         NeoTrellis::Color neoColor(color.r, color.g, color.b);
-                        trellis2.setPixelColorAsync(index, neoColor);
-                        trellisUpdated2 = true;
+                        trellis2.updateColorArray(index, neoColor);
                         return;
                     }
                     // search in trellisKeys3 and get the index
                     index = std::find(trellisKeys3.begin(), trellisKeys3.end(), id) - trellisKeys3.begin();
                     if (index < trellisKeys3.size()) {
                         NeoTrellis::Color neoColor(color.r, color.g, color.b);
-                        trellis3.setPixelColorAsync(index, neoColor);
-                        trellisUpdated3 = true;
+                        trellis3.updateColorArray(index, neoColor);
                         return;
-                    }
-                };
-                renderColorsCb = [this]() {
-                    if (trellisUpdated1) {
-                        trellis1.showAsync();
-                        trellisUpdated1 = false;
-                    }
-                    if (trellisUpdated2) {
-                        trellis2.showAsync();
-                        trellisUpdated2 = false;
-                    }
-                    if (trellisUpdated3) {
-                        trellis3.showAsync();
-                        trellisUpdated3 = false;
                     }
                 };
             } catch (const std::exception& e) {
@@ -280,12 +260,6 @@ public:
     void setColor(int id, Color color) override
     {
         setColorCb(id, color);
-    }
-
-    std::function<void()> renderColorsCb = []() { };
-    virtual void renderColors() override
-    {
-        renderColorsCb();
     }
 
     Mcp23017Controller mcp23017Controller;

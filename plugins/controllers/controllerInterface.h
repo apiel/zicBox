@@ -33,10 +33,6 @@ public:
     {
     }
 
-    virtual void renderColors()
-    {
-    }
-
     // virtual void* data(int id, void* userdata = NULL)
     // {
     //     return NULL;
