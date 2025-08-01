@@ -25,7 +25,7 @@ all:
 		AudioInputAlsa AudioOutputAlsa\
 		AudioInputPulse AudioOutputPulse\
 		SerializeTrack TapeRecording  SampleSequencer EffectFilterMultiMode\
-		SynthMultiDrum
+		SynthMultiDrum Tempo
 		
 
 # Pulse was removed from zicOs
