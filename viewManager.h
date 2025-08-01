@@ -258,7 +258,7 @@ public:
                 for (auto& v : viewsConfig) {
                     // TODO Might want to move all this in view!!!
                     if (v.contains("name") && v.contains("components") && v["components"].is_array()) {
-                        logTrace("Loading view %s", v["name"].get<std::string>().c_str());
+                        logDebug("Loading view %s", v["name"].get<std::string>().c_str());
                         View* newView = new View(*draw, [&](std::string name) { setView(name); }, contextVar);
                         newView->name = v["name"];
                         try {

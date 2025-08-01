@@ -77,6 +77,9 @@ protected:
 
     int getScrollGroup()
     {
+        if (stepPerRow == 0 || rowsSelection == 0) {
+            return 0; // to avoid dividing by 0
+        }
         int selectedStep = view->contextVar[contextId];
         int scrollGroup = selectedStep / (stepPerRow * rowsSelection);
         return scrollGroup;
