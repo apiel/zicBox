@@ -18,6 +18,7 @@ void loadJsonConfig(std::string configPath)
 {
     try {
         std::ifstream configFile(configPath);
+        logInfo("load json config: %s", configPath.c_str());
         if (configFile.is_open()) {
             nlohmann::json config = nlohmann::json::parse(configFile);
             configFile.close();
