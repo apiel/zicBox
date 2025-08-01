@@ -1,18 +1,24 @@
 import * as React from '@/libs/react';
 import { ClipsView } from './ClipsView/ClipsView';
-import { Drum2, Drum3, Drum4, Synth1, Synth2, Synth3 } from './components/Common';
+import { Drum2, Drum3, Drum4, Sample1, Sample2, Sample3, Synth1, Synth2, Synth3 } from './components/Common';
 import {
     ColorTrack1,
+    ColorTrack10,
     ColorTrack2,
     ColorTrack3,
     ColorTrack4,
     ColorTrack5,
     ColorTrack6,
     ColorTrack7,
+    ColorTrack8,
+    ColorTrack9,
     Drum1Track,
     Drum2Track,
     Drum3Track,
     Drum4Track,
+    Sample1Track,
+    Sample2Track,
+    Sample3Track,
     ScreenHeight,
     ScreenWidth,
     Synth1Track,
@@ -35,6 +41,9 @@ import {
     seqContextDrum2,
     seqContextDrum3,
     seqContextDrum4,
+    seqContextSample1,
+    seqContextSample2,
+    seqContextSample3,
     seqContextSynth1,
     seqContextSynth2,
     seqContextSynth3,
@@ -43,6 +52,7 @@ import { DrumViews } from './Drum/DrumViews';
 import { DrumSeqView } from './DrumSeqView';
 import { KickViews } from './Kick/KickViews';
 import { Menu } from './menu';
+import { SampleViews } from './Sample/SampleViews';
 import { SynthViews } from './Synth/SynthViews';
 
 // const halfHeight = ScreenHeight / 2;
@@ -83,10 +93,11 @@ export const ui = {
             <SynthViews track={Synth2Track} synthName="Synth2" color={ColorTrack6} title={Synth2} contextId={seqContextSynth2} />
             <SynthViews track={Synth3Track} synthName="Synth3" color={ColorTrack7} title={Synth3} contextId={seqContextSynth3} />
 
-            <DrumSeqView name="DrumSeq" />
+            <SampleViews track={Sample1Track} synthName="Sample1" color={ColorTrack8} title={Sample1} contextId={seqContextSample1} />
+            <SampleViews track={Sample2Track} synthName="Sample2" color={ColorTrack9} title={Sample2} contextId={seqContextSample2} />
+            <SampleViews track={Sample3Track} synthName="Sample3" color={ColorTrack10} title={Sample3} contextId={seqContextSample3} />
 
-            {/* <SampleView track={Sample1Track} synthName="Sample1" color={ColorTrack9} /> */}
-            {/* <SampleView track={Sample2Track} synthName="Sample2" color={ColorTrack10} /> */}
+            <DrumSeqView name="DrumSeq" />
 
             <Menu />
 

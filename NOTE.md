@@ -2,18 +2,30 @@
 
 - TODO timeline samples arranger... / and bunch of effect on top of it like granular...
 
+- TODO handle variations, when pressing shift can select bank, so it would be 10x10= 100 variations, more than enough :p
+        - 1 press on variation play it at next loop
+        - second press, will play it right away
+        - (extra) long press could let select how many loop to wait before to start (but maybe too complicated!)
+
+- TODO mute shortcut, make it part of the Volume plugin, it should save last state before to mute. (in grid, use shift to mute?)
+
+- TODO master view! mixer (should it show sound meter?), shift would let us select tempo
+
 - TODO linearInterpolation in generator class repeated. need to see if we can use the already existing one...
 - TODO add velocity to all drum engines
 - TODO optimize drum engines
 - TODO like it was done for transient, maybe we can combine into one parameter for EnvelopTable generator and WavetableGenrator 
 
+- TODO er-1 drum engine
+
+- TODO look at MiniDexed for bare metal OS https://github.com/probonopd/MiniDexed
+
+-----------------------------------
 
 - TODO drag and drop editor!! 
     ---> should this be a web interface, that show result in live on the hardware... The web interface just allow to drag some abstract element and let us configure them, but final rendering happen in the hardware..
 
-- TODO when pressing mode button in seq view, usually use to show keyboard mode, we could show directional button...
-
-
+-----------------------------------
 
 - TODO rpi0 drum machine
   - master drum, that can then be recorded
@@ -42,13 +54,11 @@
 
 - TODO need a way to have a list of preset
 
-- TODO mute shortcut
-
 - TODO capture, like on ableton move
 
 - TODO play sound dj style :p so next to live playing, could also play a full sound...
 
-- TODO serialize in json format!
+- TODO RPi3 version: when pressing mode button in seq view, usually use to show keyboard mode, we could show directional button...
 
 - TODO patch or pattern morphing between 2 kicks for example...
 
