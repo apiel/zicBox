@@ -97,6 +97,7 @@ const sample1Track = {
         audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('EffectFilterMultiMode', { alias: 'Filter' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
+        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx2' }),
         audioPlugin('SerializeTrack', { filename: 'sample1', maxVariation, workspaceFolder }),
     ],
 };
@@ -108,6 +109,7 @@ const sample2Track = {
         audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('EffectFilterMultiMode', { alias: 'Filter' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
+        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx2' }),
         audioPlugin('SerializeTrack', { filename: 'sample2', maxVariation, workspaceFolder }),
     ],
 };
@@ -119,6 +121,7 @@ const sample3Track = {
         audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('EffectFilterMultiMode', { alias: 'Filter' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
+        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx2' }),
         audioPlugin('SerializeTrack', { filename: 'sample3', maxVariation, workspaceFolder }),
     ],
 }

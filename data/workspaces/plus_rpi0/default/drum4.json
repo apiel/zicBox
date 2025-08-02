@@ -3,31 +3,31 @@
         "values": [
             {
                 "key": "VAL_1",
-                "value": 25.0
+                "value": 10.0
             },
             {
                 "key": "VAL_2",
-                "value": 5.0
-            },
-            {
-                "key": "VAL_3",
-                "value": 30.0
-            },
-            {
-                "key": "VAL_4",
-                "value": 70.0
-            },
-            {
-                "key": "VAL_5",
                 "value": 0.0
             },
             {
+                "key": "VAL_3",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_4",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_5",
+                "value": 0.004999999888241291
+            },
+            {
                 "key": "VAL_6",
-                "value": 30.0
+                "value": 0.0
             },
             {
                 "key": "VAL_7",
-                "value": 100.0
+                "value": 0.10000000149011612
             },
             {
                 "key": "VAL_8",
@@ -39,15 +39,15 @@
             },
             {
                 "key": "VAL_10",
-                "value": 20.0
+                "value": 0.10000000149011612
             },
             {
                 "key": "ENGINE",
-                "value": 3.0
+                "value": 0.0
             },
             {
                 "key": "DURATION",
-                "value": 320.0
+                "value": 500.0
             },
             {
                 "key": "AMP_MORPH",
@@ -57,89 +57,7 @@
     },
     "Sequencer": {
         "STATUS": 1.0,
-        "STEPS": [
-            {
-                "condition": "---",
-                "enabled": true,
-                "len": 1,
-                "motion": "---",
-                "note": 60,
-                "position": 4,
-                "velocity": 0.800000011920929
-            },
-            {
-                "condition": "---",
-                "enabled": true,
-                "len": 1,
-                "motion": "---",
-                "note": 60,
-                "position": 12,
-                "velocity": 0.800000011920929
-            },
-            {
-                "condition": "---",
-                "enabled": true,
-                "len": 1,
-                "motion": "---",
-                "note": 60,
-                "position": 20,
-                "velocity": 0.800000011920929
-            },
-            {
-                "condition": "---",
-                "enabled": true,
-                "len": 1,
-                "motion": "---",
-                "note": 60,
-                "position": 28,
-                "velocity": 0.800000011920929
-            },
-            {
-                "condition": "---",
-                "enabled": true,
-                "len": 1,
-                "motion": "---",
-                "note": 60,
-                "position": 36,
-                "velocity": 0.800000011920929
-            },
-            {
-                "condition": "---",
-                "enabled": true,
-                "len": 1,
-                "motion": "---",
-                "note": 60,
-                "position": 44,
-                "velocity": 0.800000011920929
-            },
-            {
-                "condition": "---",
-                "enabled": true,
-                "len": 1,
-                "motion": "---",
-                "note": 60,
-                "position": 52,
-                "velocity": 0.800000011920929
-            },
-            {
-                "condition": "---",
-                "enabled": true,
-                "len": 1,
-                "motion": "---",
-                "note": 60,
-                "position": 60,
-                "velocity": 0.800000011920929
-            },
-            {
-                "condition": "40%",
-                "enabled": true,
-                "len": 1,
-                "motion": "---",
-                "note": 60,
-                "position": 62,
-                "velocity": 0.800000011920929
-            }
-        ]
+        "STEPS": null
     },
     "SerializeTrack": {
         "values": [

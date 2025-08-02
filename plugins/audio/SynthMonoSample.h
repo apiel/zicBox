@@ -5,8 +5,8 @@
 #include <time.h>
 
 #include "audioPlugin.h"
-#include "utils/fileBrowser.h"
 #include "mapping.h"
+#include "utils/fileBrowser.h"
 
 #include "helpers/random.h"
 #include "log.h"
@@ -136,6 +136,10 @@ public:
         }
     });
 
+    // Doesn't bring much
+    //     md - `ENVELOPE` controls attack/release shape: 0% = none, 100% = full fade-in/out */
+    // Val& envelope = val(0.0f, "ENVELOPE", { "Envelope", .unit = "%" });
+
     SynthMonoSample(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
     {
@@ -158,8 +162,20 @@ public:
 
     void sample(float* buf) override
     {
+        // float envFactor = 1.0f;
+        // if (envelope.get() > 0.0f && index >= indexStart && index < indexEnd) {
+        //     float pct = (index - indexStart) / (float)(indexEnd - indexStart);
+        //     if (pct < 0.5f) {
+        //         envFactor = pct * 2.0f; // attack
+        //     } else {
+        //         envFactor = (1.0f - pct) * 2.0f; // release
+        //     }
+        //     envFactor = 1.0f - (1.0f - envFactor) * (envelope.pct());
+        // }
+
         float out = 0.0f;
         if (sustainedNote || nbOfLoopBeforeRelease > 0) {
+            // out = sampleBuffer.data[(int)index] * velocity * envFactor;
             out = sampleBuffer.data[(int)index] * velocity;
             index += stepIncrement;
             if (index >= loopEnd) {
@@ -167,6 +183,7 @@ public:
                 nbOfLoopBeforeRelease--;
             }
         } else if (index < indexEnd) {
+            // out = sampleBuffer.data[(int)index] * velocity * envFactor;
             out = sampleBuffer.data[(int)index] * velocity;
             index += stepIncrement;
         } else if (index != sampleBuffer.count) {

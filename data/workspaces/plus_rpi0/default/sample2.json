@@ -19,11 +19,11 @@
             },
             {
                 "key": "END",
-                "value": 100.0
+                "value": 19.700071334838867
             },
             {
                 "key": "BROWSER",
-                "value": 1.0
+                "value": 24.0
             },
             {
                 "key": "LOOP_POSITION",
@@ -63,11 +63,31 @@
             },
             {
                 "key": "FX_TYPE",
-                "value": 0.0
+                "value": 13.0
             },
             {
                 "key": "FX_AMOUNT",
-                "value": 0.0
+                "value": 100.0
+            }
+        ]
+    },
+    "TrackFx2": {
+        "values": [
+            {
+                "key": "VOLUME",
+                "value": 100.0
+            },
+            {
+                "key": "GAIN",
+                "value": 1.0
+            },
+            {
+                "key": "FX_TYPE",
+                "value": 1.0
+            },
+            {
+                "key": "FX_AMOUNT",
+                "value": 61.0
             }
         ]
     }

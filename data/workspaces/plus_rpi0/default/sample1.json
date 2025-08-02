@@ -41,17 +41,7 @@
     },
     "Sequencer": {
         "STATUS": 1.0,
-        "STEPS": [
-            {
-                "condition": "---",
-                "enabled": true,
-                "len": 1,
-                "motion": "---",
-                "note": 60,
-                "position": 0,
-                "velocity": 0.800000011920929
-            }
-        ]
+        "STEPS": null
     },
     "SerializeTrack": {
         "values": [
@@ -78,6 +68,26 @@
             {
                 "key": "FX_AMOUNT",
                 "value": 64.0
+            }
+        ]
+    },
+    "TrackFx2": {
+        "values": [
+            {
+                "key": "VOLUME",
+                "value": 100.0
+            },
+            {
+                "key": "GAIN",
+                "value": 1.0
+            },
+            {
+                "key": "FX_TYPE",
+                "value": 0.0
+            },
+            {
+                "key": "FX_AMOUNT",
+                "value": 0.0
             }
         ]
     }
