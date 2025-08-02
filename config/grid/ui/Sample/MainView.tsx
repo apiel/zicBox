@@ -1,7 +1,27 @@
 import * as React from '@/libs/react';
 
+import { KnobValue } from '@/libs/nativeComponents/KnobValue';
+import { Sample } from '@/libs/nativeComponents/Sample';
+import { Value } from '@/libs/nativeComponents/Value';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
+import { W1_2 } from '../constants';
+import {
+    bounds1,
+    enc1,
+    enc10,
+    enc11,
+    enc12,
+    enc2,
+    enc3,
+    enc5,
+    enc6,
+    enc7,
+    enc9,
+    encBottomValue,
+    encTopValue,
+    graphBounds,
+} from '../constantsValue';
 
 export type Props = {
     name: string;
@@ -9,10 +29,11 @@ export type Props = {
     synthName: string;
     color: string;
     title: string;
-
 };
 
 export function MainView({ name, track, synthName, color, title }: Props) {
+    const enc3Bounds = encTopValue(enc3);
+    enc3Bounds.bounds[2] = W1_2 - 2;
     return (
         <Layout
             viewName={name}
@@ -21,6 +42,102 @@ export function MainView({ name, track, synthName, color, title }: Props) {
             title={title}
             content={
                 <>
+                    <Value
+                        {...encTopValue(enc1)}
+                        audioPlugin={synthName}
+                        param="START"
+                        track={track}
+                        barHeight={1}
+                        // barColor="primary"
+                        alignLeft
+                        showLabelOverValue={1}
+                    />
+                    <Value
+                        {...encTopValue(enc2)}
+                        audioPlugin={synthName}
+                        param="END"
+                        track={track}
+                        barHeight={1}
+                        // barColor="primary"
+                        alignLeft
+                        showLabelOverValue={1}
+                    />
+                    <Value
+                        {...enc3Bounds}
+                        audioPlugin={synthName}
+                        param="BROWSER"
+                        track={track}
+                        barHeight={1}
+                        // barColor="primary"
+                        alignLeft
+                        showLabelOverValue={1}
+                    />
+                    <Sample
+                        bounds={graphBounds(bounds1, 60, 4)}
+                        audioPlugin={synthName}
+                        track={track}
+                    />
+                    <Value
+                        {...encBottomValue(enc5)}
+                        audioPlugin={synthName}
+                        param="LOOP_POSITION"
+                        track={track}
+                        barHeight={1}
+                        // barColor="primary"
+                        alignLeft
+                        showLabelOverValue={1}
+                    />
+                    <Value
+                        {...encBottomValue(enc6)}
+                        audioPlugin={synthName}
+                        param="LOOP_LENGTH"
+                        track={track}
+                        barHeight={1}
+                        // barColor="primary"
+                        alignLeft
+                        showLabelOverValue={1}
+                    />
+                    <Value
+                        {...encBottomValue(enc7)}
+                        audioPlugin={synthName}
+                        param="LOOP_RELEASE"
+                        track={track}
+                        barHeight={1}
+                        // barColor="primary"
+                        alignLeft
+                        showLabelOverValue={1}
+                    />
+
+                    <KnobValue
+                        audioPlugin="Filter"
+                        param="CUTOFF"
+                        {...enc9}
+                        color="secondary"
+                        track={track}
+                    />
+                    <KnobValue
+                        audioPlugin="Filter"
+                        param="RESONANCE"
+                        {...enc10}
+                        color="secondary"
+                        track={track}
+                    />
+                    <KnobValue
+                        audioPlugin="TrackFx"
+                        param="FX_TYPE"
+                        {...enc11}
+                        color="quaternary"
+                        track={track}
+                    />
+                    <KnobValue
+                        audioPlugin="TrackFx"
+                        param="FX_AMOUNT"
+                        {...enc12}
+                        color="quaternary"
+                        track={track}
+                        valueReplaceTitle
+                    />
+
                     <KeysTracks synthName={synthName} viewName={name} />
                 </>
             }

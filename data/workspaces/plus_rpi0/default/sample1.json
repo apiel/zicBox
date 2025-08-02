@@ -1,4 +1,16 @@
 {
+    "Filter": {
+        "values": [
+            {
+                "key": "CUTOFF",
+                "value": 0.0
+            },
+            {
+                "key": "RESONANCE",
+                "value": 0.0
+            }
+        ]
+    },
     "Sample1": {
         "values": [
             {
@@ -15,15 +27,15 @@
             },
             {
                 "key": "LOOP_POSITION",
-                "value": 0.0
+                "value": 16.10000228881836
             },
             {
                 "key": "LOOP_LENGTH",
-                "value": 0.0
+                "value": 5.0
             },
             {
                 "key": "LOOP_RELEASE",
-                "value": 0.0
+                "value": 350.0
             }
         ]
     },
@@ -51,11 +63,11 @@
             },
             {
                 "key": "FX_TYPE",
-                "value": 0.0
+                "value": 1.0
             },
             {
                 "key": "FX_AMOUNT",
-                "value": 0.0
+                "value": 64.0
             }
         ]
     }

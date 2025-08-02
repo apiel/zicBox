@@ -2,6 +2,8 @@
 
 - TODO sample player instead to save browser position, save sample path
 
+- TODO instead to name each synth with a different name stick to their orignal name and use track to distinct them, so no need of Drum1, Drum2, Drum3...
+
 - TODO handle variations, when pressing shift can select bank, so it would be 10x10= 100 variations, more than enough :p
         - 1 press on variation play it at next loop
         - second press, will play it right away

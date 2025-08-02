@@ -46,10 +46,11 @@ export const graphTopValues = [0, top + 20, ScreenWidth - 1, 60];
 export const graphCenterValues = [0, top + 60, ScreenWidth - 1, 80];
 export const graphBottomValues = [0, top + 120, ScreenWidth - 1, 60];
 
+const numberOfEncPerRow = 4;
 export function graphBounds(topLeft: number[], margin: number | [number, number] = 60, cols: number = 2, rows: number = 2) {
     const marginTop = typeof margin === 'number' ? margin : margin[0];
     const marginBottom = typeof margin === 'number' ? margin : margin[1];
-    return [topLeft[0], topLeft[1] + marginTop - 10, ScreenWidth / cols,  120 * rows - marginBottom * 2];
+    return [topLeft[0], topLeft[1] + marginTop - 10, ScreenWidth / numberOfEncPerRow * cols,  120 * rows - marginBottom * 2];
 }
 
 export function boundsOnTop(bounds: number[], height: number = 22, margin: number = 10) {
