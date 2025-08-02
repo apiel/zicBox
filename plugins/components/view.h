@@ -3,6 +3,7 @@
 #include "./ViewInterface.h"
 #include "EventInterface.h"
 #include "helpers/getTicks.h"
+#include "log.h"
 
 #include <mutex>
 #include <string>
@@ -164,7 +165,7 @@ public:
 
     void onKey(uint16_t id, int key, int8_t state) override
     {
-        // printf("onKey %d %d %d\n", id, key, state);
+        // logDebug("onKey id %d key %d state %d", id, key, state);
         unsigned long now = getTicks();
         m2.lock();
         for (auto& component : components) {

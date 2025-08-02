@@ -101,7 +101,7 @@
       {
         "id": 0,
         "plugins": [
-          {"alias":"Mixer","plugin":"Mixer8"},
+          {"alias":"Mixer","plugin":"Mixer10"},
           {"alias":"Volume","plugin":"EffectGainVolume"},
           {"alias":"AudioOutput","plugin":"AudioOutputPulse"},
           {"filename":"master","maxVariation":16,"workspaceFolder":"data/workspaces/plus_rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"},

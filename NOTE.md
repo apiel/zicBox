@@ -1,6 +1,6 @@
 ## Pixel TODO
 
-- TODO timeline samples arranger... / and bunch of effect on top of it like granular...
+- TODO sample player instead to save browser position, save sample path
 
 - TODO handle variations, when pressing shift can select bank, so it would be 10x10= 100 variations, more than enough :p
         - 1 press on variation play it at next loop
@@ -17,6 +17,7 @@
 - TODO like it was done for transient, maybe we can combine into one parameter for EnvelopTable generator and WavetableGenrator 
 
 - TODO er-1 drum engine
+    - use samples like pcm... also for square, saw, sine...
 
 - TODO look at MiniDexed for bare metal OS https://github.com/probonopd/MiniDexed
 
@@ -27,21 +28,16 @@
 
 -----------------------------------
 
-- TODO rpi0 drum machine
-  - master drum, that can then be recorded
-  - multi voice sample player (need to figure out how many sample could be played at once?)
-  - if we remove probability and randomness, could cache tracks and therefor could almost play as much samples as we want at once...
-
-
-
-- TODO have a look at https://github.com/micknoise/Maximilian might use this...
+- TODO dsi display
+      - sudo sh -c 'setterm --cursor off --blank force --clear > /dev/tty1'
 
 - TODO mouse on rpi
 - TODO enable motion/mouse on desktop
   - when mouse over envelop, some point/circle appear to show what can be dragged...
 
-- TODO dsi display
-      - sudo sh -c 'setterm --cursor off --blank force --clear > /dev/tty1'
+- TODO timeline samples arranger... / and bunch of effect on top of it like granular...
+
+- TODO have a look at https://github.com/micknoise/Maximilian might use this...
 
 - FIXME pulse not working in zicOs!! seems to work???
 

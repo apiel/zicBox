@@ -21,7 +21,7 @@ all:
 		SynthDrum23 SynthKick23 SynthMetalic SynthBass SynthFM2 SynthWavetable\
 		SynthSample SynthDrumSample SynthMonoSample\
 		Sequencer Tempo AudioSpectrogram\
-		Mixer2 Mixer4 Mixer5 Mixer6 Mixer8 Mixer12\
+		Mixer2 Mixer4 Mixer5 Mixer6 Mixer8 Mixer10 Mixer12\
 		AudioInputAlsa AudioOutputAlsa\
 		AudioInputPulse AudioOutputPulse\
 		SerializeTrack TapeRecording  SampleSequencer EffectFilterMultiMode\

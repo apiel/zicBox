@@ -130,6 +130,7 @@ public:
                         keyStr = "'" + keyStr + "'";
                     }
                     props.key = getKeyCode(keyStr.c_str());
+                    // logDebug("Keystr %s key %d", keyStr.c_str(), props.key);
                 }
 
                 props.action = key["action"].get<std::string>();
@@ -148,6 +149,8 @@ public:
                 }
 
                 props.multipleKeyHandler = key.value("multipleKeyHandler", false);
+
+                // logDebug("Adding keymap: controller %d key %d action %s", props.controllerId, props.key, props.action.c_str());
 
                 addKeyMap(props);
             }

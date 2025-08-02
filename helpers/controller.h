@@ -81,14 +81,13 @@ uint8_t getKeyCode(std::string keyStr)
             return keyStr[1] - 65 + 4;
         }
 
-        // 1 is 30 and 9 is 38
-        if (keyStr[1] >= 48 && keyStr[1] <= 57) {
-            return keyStr[1] - 48 + 29;
-        }
-
         // 0 is 39
         if (keyStr[1] == '0') {
             return 39;
+        }
+
+        if (keyStr[1] >= 49 && keyStr[1] <= 57) {
+            return keyStr[1] - 49 + 30;
         }
 
         // - is 45

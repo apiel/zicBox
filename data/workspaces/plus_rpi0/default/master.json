@@ -65,6 +65,22 @@
             {
                 "key": "MUTE_8",
                 "value": 0.0
+            },
+            {
+                "key": "TRACK_9",
+                "value": 100.0
+            },
+            {
+                "key": "MUTE_9",
+                "value": 0.0
+            },
+            {
+                "key": "TRACK_10",
+                "value": 100.0
+            },
+            {
+                "key": "MUTE_10",
+                "value": 0.0
             }
         ]
     },

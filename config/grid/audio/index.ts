@@ -125,7 +125,7 @@ const sample3Track = {
 const masterTrack = {
     id: 0,
     plugins: [
-        audioPlugin('Mixer8', { alias: 'Mixer' }),
+        audioPlugin('Mixer10', { alias: 'Mixer' }),
         audioPlugin('EffectGainVolume', { alias: 'Volume' }),
         audioPlugin('AudioOutputPulse', { alias: 'AudioOutput' }),
         // audioPlugin('AudioOutputAlsa', { alias: 'AudioOutput' }),
