@@ -94,7 +94,7 @@ const sample1Track = {
     id: Sample1Track,
     plugins: [
         audioPlugin('SynthMonoSample', { alias: 'Sample1' }),
-        audioPlugin('Sequencer'),
+        audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('EffectFilterMultiMode', { alias: 'Filter' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
         audioPlugin('SerializeTrack', { filename: 'sample1', maxVariation, workspaceFolder }),
@@ -105,7 +105,7 @@ const sample2Track = {
     id: Sample2Track,
     plugins: [
         audioPlugin('SynthMonoSample', { alias: 'Sample2' }),
-        audioPlugin('Sequencer'),
+        audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('EffectFilterMultiMode', { alias: 'Filter' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
         audioPlugin('SerializeTrack', { filename: 'sample2', maxVariation, workspaceFolder }),
@@ -116,7 +116,7 @@ const sample3Track = {
     id: Sample3Track,
     plugins: [
         audioPlugin('SynthMonoSample', { alias: 'Sample3' }),
-        audioPlugin('Sequencer'),
+        audioPlugin('Sequencer', { stepCount: 64 }),
         audioPlugin('EffectFilterMultiMode', { alias: 'Filter' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
         audioPlugin('SerializeTrack', { filename: 'sample3', maxVariation, workspaceFolder }),

@@ -2,6 +2,7 @@ import * as React from '@/libs/react';
 
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Sample } from '@/libs/nativeComponents/Sample';
+import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
 import { Value } from '@/libs/nativeComponents/Value';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
@@ -21,6 +22,7 @@ import {
     encBottomValue,
     encTopValue,
     graphBounds,
+    seqCardBounds_small,
 } from '../constantsValue';
 
 export type Props = {
@@ -136,6 +138,13 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         color="quaternary"
                         track={track}
                         valueReplaceTitle
+                    />
+
+                    <SequencerCard
+                        bounds={seqCardBounds_small}
+                        audioPlugin={`Sequencer`}
+                        track={track}
+                        // contextId={seqContextDrum1}
                     />
 
                     <KeysTracks synthName={synthName} viewName={name} />
