@@ -7,11 +7,11 @@
             },
             {
                 "key": "VAL_2",
-                "value": 100.0
+                "value": 0.0
             },
             {
                 "key": "VAL_3",
-                "value": 19.800003051757813
+                "value": 8.799999237060547
             },
             {
                 "key": "VAL_4",
@@ -19,7 +19,7 @@
             },
             {
                 "key": "VAL_5",
-                "value": 1.0
+                "value": 6.0
             },
             {
                 "key": "VAL_6",
@@ -47,11 +47,11 @@
             },
             {
                 "key": "DURATION",
-                "value": 1690.0
+                "value": 850.0
             },
             {
                 "key": "AMP_MORPH",
-                "value": 31.0
+                "value": 0.0
             }
         ]
     },

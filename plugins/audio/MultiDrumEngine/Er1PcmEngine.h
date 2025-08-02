@@ -26,7 +26,7 @@ class Er1PcmEngine : public DrumEngine {
     float stepMultiplier = 1.0;
 
 public:
-    Val& pitchVal = val(0.0f, "PITCH", { "Pitch", .min = -24.0f, .max = 24.0f, .unit = "st" }, [&](auto p) {
+    Val& pitchVal = val(0.0f, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24.0f, .max = 24.0f, .unit = "st" }, [&](auto p) {
         pitch = pow(2, p.value / 12.0f);
     });
 
