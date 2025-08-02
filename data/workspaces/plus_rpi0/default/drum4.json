@@ -3,15 +3,15 @@
         "values": [
             {
                 "key": "VAL_1",
-                "value": 10.0
+                "value": 0.0
             },
             {
                 "key": "VAL_2",
-                "value": 0.0
+                "value": 100.0
             },
             {
                 "key": "VAL_3",
-                "value": 0.0
+                "value": 19.800003051757813
             },
             {
                 "key": "VAL_4",
@@ -19,19 +19,19 @@
             },
             {
                 "key": "VAL_5",
-                "value": 0.004999999888241291
+                "value": 1.0
             },
             {
                 "key": "VAL_6",
-                "value": 0.0
+                "value": 9.0
             },
             {
                 "key": "VAL_7",
-                "value": 0.10000000149011612
+                "value": 13.0
             },
             {
                 "key": "VAL_8",
-                "value": 0.0
+                "value": 10.0
             },
             {
                 "key": "VAL_9",
@@ -43,15 +43,15 @@
             },
             {
                 "key": "ENGINE",
-                "value": 0.0
+                "value": 5.0
             },
             {
                 "key": "DURATION",
-                "value": 500.0
+                "value": 1690.0
             },
             {
                 "key": "AMP_MORPH",
-                "value": 0.0
+                "value": 31.0
             }
         ]
     },
