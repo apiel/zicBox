@@ -3,9 +3,9 @@
 #include <math.h>
 #include <sndfile.h>
 
-#include "plugins/audio/utils/utils.h"
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
 #include "plugins/audio/utils/fileBrowser.h"
+#include "plugins/audio/utils/utils.h"
 
 class Er1PcmEngine : public DrumEngine {
     static const uint64_t bufferSize = 48000 * 3; // max 3 seconds
@@ -25,6 +25,8 @@ class Er1PcmEngine : public DrumEngine {
     float step = 1.0f;
     float stepMultiplier = 1.0;
 
+    bool initialized = false;
+
 public:
     Val& pitchVal = val(0.0f, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24.0f, .max = 24.0f, .unit = "st" }, [&](auto p) {
         pitch = pow(2, p.value / 12.0f);
@@ -34,12 +36,18 @@ public:
     Val& modSpeed = val(1.0f, "MOD_SPEED", { "Mod Speed", .min = 0.1f, .max = 20.0f, .step = 0.1f });
     Val& modType = val(0.0f, "MOD_TYPE", { "Mod Type", VALUE_STRING });
 
-    Val& waveform = val(1.0f, "WAVEFORM", { "Waveform", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count }, [&](auto p) { open(p.value); });
+    Val& waveform = val(1.0f, "WAVEFORM", { "Waveform", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count }, [&](auto p) {
+        // logDebug("Waveform: %f", p.value);
+        // open(p.value, !initialized);
+        // initialized = true;
+        open(p.value);
+    });
 
     Er1PcmEngine(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : DrumEngine(props, config, "ER-1")
     {
-        open(waveform.get(), true);
+        // open(waveform.get(), true);
+        initValues();
     }
 
     void sampleOn(float* buf, float envAmp, int sampleCounter, int totalSamples) override
@@ -91,7 +99,6 @@ public:
             std::string filepath = fileBrowser.getFilePath(position);
             logTrace("SAMPLE_SELECTOR: %f %s", value, filepath.c_str());
             open(filepath);
-            initValues();
         }
     }
 

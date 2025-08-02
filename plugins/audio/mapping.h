@@ -262,7 +262,7 @@ public:
                 ValueInterface* val = getValue(key);
                 if (val) {
                     float value = values[i]["value"];
-                    logDebug("hydrate value %s %f", values[i]["key"].get<std::string>().c_str(), value);
+                    // logDebug("hydrate value %s %f", values[i]["key"].get<std::string>().c_str(), value);
                     val->set(value);
                 }
             }
