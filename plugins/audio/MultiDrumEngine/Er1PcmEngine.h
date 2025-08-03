@@ -149,6 +149,7 @@ public:
         // logDebug("Waveform: %f", p.value);
         // open(p.value, !initialized);
         // initialized = true;
+        
         open(p.value);
     });
 
