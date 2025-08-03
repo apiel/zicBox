@@ -418,6 +418,9 @@ Render Text (Bitmap or Vector)
 gdb zicBox
 ```
 
+then `run`
+
+
 then `bt`.
 
 # st7789 7wire

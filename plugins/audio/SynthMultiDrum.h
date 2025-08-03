@@ -42,23 +42,13 @@ protected:
         p.val.setString(drumEngineVal->string());
         p.val.props().label = drumEngineVal->props().label;
         p.val.props().unit = drumEngineVal->props().unit;
+        p.val.props().min = drumEngineVal->props().min;
+        p.val.props().max = drumEngineVal->props().max;
+        p.val.props().floatingPoint = drumEngineVal->props().floatingPoint;
     }
 
 public:
     /*md **Values**: */
-
-    Val* values[10] = {
-        &val(0.0f, "VAL_1", {}, [&](auto p) { setEngineVal(p, 0); }),
-        &val(0.0f, "VAL_2", {}, [&](auto p) { setEngineVal(p, 1); }),
-        &val(0.0f, "VAL_3", {}, [&](auto p) { setEngineVal(p, 2); }),
-        &val(0.0f, "VAL_4", {}, [&](auto p) { setEngineVal(p, 3); }),
-        &val(0.0f, "VAL_5", {}, [&](auto p) { setEngineVal(p, 4); }),
-        &val(0.0f, "VAL_6", {}, [&](auto p) { setEngineVal(p, 5); }),
-        &val(0.0f, "VAL_7", {}, [&](auto p) { setEngineVal(p, 6); }),
-        &val(0.0f, "VAL_8", {}, [&](auto p) { setEngineVal(p, 7); }),
-        &val(0.0f, "VAL_9", {}, [&](auto p) { setEngineVal(p, 8); }),
-        &val(0.0f, "VAL_10", {}, [&](auto p) { setEngineVal(p, 9); }),
-    };
 
     /*md - `ENGINE` select the drum engine. */
     Val& engine = val(0, "ENGINE", { "Engine", VALUE_STRING, .min = 0, .max = 5 }, [&](auto p) {
@@ -72,6 +62,19 @@ public:
             values[i]->copy(val);
         }
     });
+
+    Val* values[10] = {
+        &val(0.0f, "VAL_1", {}, [&](auto p) { setEngineVal(p, 0); }),
+        &val(0.0f, "VAL_2", {}, [&](auto p) { setEngineVal(p, 1); }),
+        &val(0.0f, "VAL_3", {}, [&](auto p) { setEngineVal(p, 2); }),
+        &val(0.0f, "VAL_4", {}, [&](auto p) { setEngineVal(p, 3); }),
+        &val(0.0f, "VAL_5", {}, [&](auto p) { setEngineVal(p, 4); }),
+        &val(0.0f, "VAL_6", {}, [&](auto p) { setEngineVal(p, 5); }),
+        &val(0.0f, "VAL_7", {}, [&](auto p) { setEngineVal(p, 6); }),
+        &val(0.0f, "VAL_8", {}, [&](auto p) { setEngineVal(p, 7); }),
+        &val(0.0f, "VAL_9", {}, [&](auto p) { setEngineVal(p, 8); }),
+        &val(0.0f, "VAL_10", {}, [&](auto p) { setEngineVal(p, 9); }),
+    };
 
     /*md - `DURATION` controls the duration of the envelope. */
     Val& duration = val(500.0f, "DURATION", { "Duration", .min = 50.0, .max = 3000.0, .step = 10.0, .unit = "ms" });

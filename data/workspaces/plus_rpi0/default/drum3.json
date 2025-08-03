@@ -2,6 +2,10 @@
     "Drum3": {
         "values": [
             {
+                "key": "ENGINE",
+                "value": 2.0
+            },
+            {
                 "key": "VAL_1",
                 "value": 0.0
             },
@@ -40,10 +44,6 @@
             {
                 "key": "VAL_10",
                 "value": 0.0
-            },
-            {
-                "key": "ENGINE",
-                "value": 2.0
             },
             {
                 "key": "DURATION",

@@ -2,32 +2,36 @@
     "Drum4": {
         "values": [
             {
+                "key": "ENGINE",
+                "value": 4.0
+            },
+            {
                 "key": "VAL_1",
-                "value": -24.0
+                "value": -10.0
             },
             {
                 "key": "VAL_2",
-                "value": 100.0
+                "value": 13.900039672851563
             },
             {
                 "key": "VAL_3",
-                "value": 5000.0
+                "value": 3.0
             },
             {
                 "key": "VAL_4",
-                "value": 8.0
+                "value": 37.0
             },
             {
                 "key": "VAL_5",
-                "value": 6.0
+                "value": 3.0
             },
             {
                 "key": "VAL_6",
-                "value": 0.0
+                "value": 60.0
             },
             {
                 "key": "VAL_7",
-                "value": 0.10000000149011612
+                "value": 0.0
             },
             {
                 "key": "VAL_8",
@@ -39,19 +43,15 @@
             },
             {
                 "key": "VAL_10",
-                "value": 0.10000000149011612
-            },
-            {
-                "key": "ENGINE",
-                "value": 5.0
+                "value": 0.0
             },
             {
                 "key": "DURATION",
-                "value": 2320.0
+                "value": 1500.0
             },
             {
                 "key": "AMP_MORPH",
-                "value": 100.0
+                "value": 23.0
             }
         ]
     },
