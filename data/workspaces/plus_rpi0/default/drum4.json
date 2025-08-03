@@ -3,7 +3,7 @@
         "values": [
             {
                 "key": "VAL_1",
-                "value": -15.0
+                "value": 0.0
             },
             {
                 "key": "VAL_2",
@@ -11,7 +11,7 @@
             },
             {
                 "key": "VAL_3",
-                "value": 3080.0
+                "value": 1680.0
             },
             {
                 "key": "VAL_4",

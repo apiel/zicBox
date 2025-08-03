@@ -29,6 +29,12 @@ class Er1PcmEngine : public DrumEngine {
     bool initialized = false;
 
     std::function<float(int, int)> getPitchMod;
+    int samplesPerHold = 0;
+    int lastHoldSample = -1;
+    float heldValue = 0.0f;
+    void setSamplePerHold() {
+        samplesPerHold = std::max(1, (int)(props.sampleRate / modSpeed.get()));
+    }
 
 public:
     Val& pitchVal = val(0.0f, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24.0f, .max = 24.0f, .unit = "st" }, [&](auto p) {
@@ -39,7 +45,10 @@ public:
         p.val.setFloat(p.value);
         modDepthAmount = p.val.pct() * 2.0f - 1.0f;
     });
-    Val& modSpeed = val(1.0f, "MOD_SPEED", { "Mod Speed", .min = 10.0f, .max = 5000.0f, .step = 10.0f, .unit = "Hz" });
+    Val& modSpeed = val(10.0f, "MOD_SPEED", { "Mod Speed", .min = 10.0f, .max = 5000.0f, .step = 10.0f, .unit = "Hz" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        setSamplePerHold();
+    });
     Val& modType = val(0.0f, "MOD_TYPE", { "Mod Type", VALUE_STRING, .min = 0.0f, .max = 6.0f, .skipJumpIncrements = true }, [&](auto p) {
         p.val.setFloat(p.value);
         if (p.val.get() == 0.0f) {
@@ -66,11 +75,9 @@ public:
             };
         } else if (p.val.get() == 4.0f) {
             p.val.setString("Sample & Hold"); // The pitch will change randomly.
-            int samplesPerHold = std::max(1, (int)(props.sampleRate / modSpeed.get()));
-            int lastHoldSample = -1;
-            float heldValue = props.lookupTable->getNoise();
-
-            getPitchMod = [&, samplesPerHold, lastHoldSample, heldValue](int sampleCounter, int totalSamples) mutable {
+            heldValue = props.lookupTable->getNoise();
+            setSamplePerHold();
+            getPitchMod = [&](int sampleCounter, int totalSamples) {
                 if (sampleCounter / samplesPerHold != lastHoldSample) {
                     heldValue = props.lookupTable->getNoise();
                     lastHoldSample = sampleCounter / samplesPerHold;
