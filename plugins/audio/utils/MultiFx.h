@@ -1,13 +1,13 @@
 #pragma once
 
 #include "plugins/audio/mapping.h"
-#include "plugins/audio/utils/utils.h"
 #include "plugins/audio/utils/effects/applyBoost.h"
 #include "plugins/audio/utils/effects/applyCompression.h"
 #include "plugins/audio/utils/effects/applyDrive.h"
 #include "plugins/audio/utils/effects/applyReverb.h"
 #include "plugins/audio/utils/effects/applyWaveshape.h"
 #include "plugins/audio/utils/lookupTable.h"
+#include "plugins/audio/utils/utils.h"
 
 class MultiFx {
 protected:
@@ -190,6 +190,31 @@ protected:
         return (1.0f - amount) * input + amount * modulated;
     }
 
+    float fxFeedback(float input, float amount)
+    {
+        if (amount == 0.0f) {
+            return input;
+        }
+
+        float decay = 0.98f + 0.01f * (1.0f - amount); // decay rate based on amount
+        float feedbackSample = reverbBuffer[reverbIndex]; // read from buffer
+
+        // Simple one-pole lowpass to emphasize bass
+        static float lowpassState = 0.0f;
+        float cutoff = 80.0f + 100.0f * amount; // Low-pass around 80-180 Hz
+        float alpha = cutoff / sampleRate;
+        lowpassState += alpha * (feedbackSample - lowpassState);
+
+        // Mix input with feedback and write to buffer
+        float out = input + lowpassState * amount;
+        reverbBuffer[reverbIndex] = out * decay;
+
+        // Increment circular buffer index
+        reverbIndex = (reverbIndex + 1) % REVERB_BUFFER_SIZE;
+
+        return tanhLookup(out); // Add soft saturation
+    }
+
 public:
     enum FXType {
         FX_OFF,
@@ -208,9 +233,9 @@ public:
         RING_MOD,
         FX_SHIMMER_REVERB,
         FX_SHIMMER2_REVERB,
+        FX_FEEDBACK,
         FX_COUNT
     };
-    // Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
     void setFxType(Val::CallbackProps& p)
     {
         p.val.setFloat(p.value);
@@ -262,6 +287,9 @@ public:
         } else if (p.val.get() == MultiFx::FXType::FX_SHIMMER2_REVERB) {
             p.val.setString("Shimmer2");
             fxFn = &MultiFx::fxShimmer2Reverb;
+        } else if (p.val.get() == MultiFx::FXType::FX_FEEDBACK) {
+            p.val.setString("Feedback");
+            fxFn = &MultiFx::fxFeedback;
         }
         // TODO: add fx sample reducer
     }

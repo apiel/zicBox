@@ -39,11 +39,11 @@
             },
             {
                 "key": "VAL_9",
-                "value": 4.0
+                "value": 5.0
             },
             {
                 "key": "VAL_10",
-                "value": 29.0
+                "value": 83.0
             },
             {
                 "key": "DURATION",
@@ -51,7 +51,7 @@
             },
             {
                 "key": "AMP_MORPH",
-                "value": 18.0
+                "value": 22.0
             }
         ]
     },
