@@ -1,12 +1,12 @@
 #pragma once
 
-#include "plugins/audio/utils/EnvelopDrumAmp.h"
-#include "plugins/audio/MultiDrumEngine/MetalicDrumEngine.h"
-#include "plugins/audio/MultiDrumEngine/PercussionEngine.h"
 #include "plugins/audio/MultiDrumEngine/BassEngine.h"
 #include "plugins/audio/MultiDrumEngine/ClapEngine.h"
-#include "plugins/audio/MultiDrumEngine/KickEngine.h"
 #include "plugins/audio/MultiDrumEngine/Er1PcmEngine.h"
+#include "plugins/audio/MultiDrumEngine/KickEngine.h"
+#include "plugins/audio/MultiDrumEngine/MetalicDrumEngine.h"
+#include "plugins/audio/MultiDrumEngine/PercussionEngine.h"
+#include "plugins/audio/utils/EnvelopDrumAmp.h"
 
 /*md
 ## SynthMultiDrum
@@ -35,9 +35,11 @@ protected:
     };
     DrumEngine* drumEngine = drumEngines[0];
 
-    void setEngineVal(Val::CallbackProps p, int index) {
+    void setEngineVal(Val::CallbackProps p, int index)
+    {
         p.val.setFloat(p.value);
-        if (index >= drumEngine->mapping.size()) return;
+        if (index >= drumEngine->mapping.size())
+            return;
         // logDebug("setEngineVal (%d) %s %f", index, p.val.key().c_str(), p.val.get());
         ValueInterface* drumEngineVal = drumEngine->mapping[index];
         drumEngineVal->set(p.val.get());
@@ -47,6 +49,13 @@ protected:
         p.val.props().min = drumEngineVal->props().min;
         p.val.props().max = drumEngineVal->props().max;
         p.val.props().floatingPoint = drumEngineVal->props().floatingPoint;
+    }
+
+    void copyValues() {
+        for (int i = 0; i < 10 && i < drumEngine->mapping.size(); i++) {
+            ValueInterface* val = drumEngine->mapping[i];
+            values[i]->copy(val);
+        }
     }
 
 public:
@@ -125,6 +134,24 @@ public:
         envelopAmp.reset(totalSamples);
         i = 0;
         drumEngine->noteOn(note, _velocity);
+    }
+
+    void serializeJson(nlohmann::json& json) override
+    {
+        Mapping::serializeJson(json);
+        drumEngine->serializeJson(json);
+    }
+
+    void hydrateJson(nlohmann::json& json) override
+    {
+        Mapping::hydrateJson(json);
+        drumEngine->hydrateJson(json);
+
+        // After hydration copy back value in case something changed
+        for (int i = 0; i < 10 && i < drumEngine->mapping.size(); i++) {
+            ValueInterface* val = drumEngine->mapping[i];
+            values[i]->copy(val);
+        }
     }
 
     DataFn dataFunctions[1] = {

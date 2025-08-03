@@ -1,5 +1,6 @@
 {
     "Drum4": {
+        "sampleFile": "kick_12.wav",
         "values": [
             {
                 "key": "ENGINE",
@@ -7,7 +8,7 @@
             },
             {
                 "key": "VAL_1",
-                "value": -12.0
+                "value": 0.0
             },
             {
                 "key": "VAL_2",
@@ -23,7 +24,7 @@
             },
             {
                 "key": "VAL_5",
-                "value": 23.0
+                "value": 21.0
             },
             {
                 "key": "VAL_6",
@@ -31,7 +32,7 @@
             },
             {
                 "key": "VAL_7",
-                "value": 8.0
+                "value": 4.0
             },
             {
                 "key": "VAL_8",

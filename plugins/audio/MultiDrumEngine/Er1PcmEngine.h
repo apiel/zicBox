@@ -276,4 +276,20 @@ public:
         index = sampleBuffer.count;
         applyGain(sampleBuffer.data, sampleBuffer.count);
     }
+
+    void serializeJson(nlohmann::json& json) override
+    {
+        json["sampleFile"] = fileBrowser.getFile(waveform.get());
+    }
+
+    void hydrateJson(nlohmann::json& json) override
+    {
+        if (json.contains("sampleFile")) {
+            int position = fileBrowser.find(json["sampleFile"]);
+            if (position != 0) {
+                // waveform.set(position);
+                open(position, true);
+            }
+        }
+    }
 };

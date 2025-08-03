@@ -19,4 +19,7 @@ public:
 
     virtual void sampleOn(float* buf, float envAmp, int sampleCounter, int totalSamples) = 0;
     virtual void sampleOff(float* buf) { }
+
+    virtual void serializeJson(nlohmann::json& json) { }
+    virtual void hydrateJson(nlohmann::json& json) { }
 };
