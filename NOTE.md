@@ -1,7 +1,5 @@
 ## Pixel TODO
 
-- TODO sample player instead to save browser position, save sample path
-
 - TODO instead to name each synth with a different name stick to their orignal name and use track to distinct them, so no need of Drum1, Drum2, Drum3...
 
 - TODO handle variations, when pressing shift can select bank, so it would be 10x10= 100 variations, more than enough :p
@@ -18,8 +16,8 @@
 - TODO optimize drum engines
 - TODO like it was done for transient, maybe we can combine into one parameter for EnvelopTable generator and WavetableGenrator 
 
-- TODO er-1 drum engine
-    - use samples like pcm... also for square, saw, sine...
+- TODO volca drum engine
+    - https://cdn.korg.com/us/support/download/files/c65c033ee08932b5bd69303ebf7f31b0.pdf
 
 - TODO look at MiniDexed for bare metal OS https://github.com/probonopd/MiniDexed
 

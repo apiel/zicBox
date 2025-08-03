@@ -255,6 +255,23 @@ public:
         }
     }
 
+    void serializeJson(nlohmann::json& json) override
+    {
+        Mapping::serializeJson(json);
+        json["sampleFile"] = fileBrowser.getFile(browser.get());
+    }
+
+    void hydrateJson(nlohmann::json& json) override
+    {
+        Mapping::hydrateJson(json);
+        if (json.contains("sampleFile")) {
+            int position = fileBrowser.find(json["sampleFile"]);
+            if (position != 0) {
+                browser.set(position);
+            }
+        }
+    }
+
     enum DATA_ID {
         SAMPLE_BUFFER,
         SAMPLE_INDEX,
