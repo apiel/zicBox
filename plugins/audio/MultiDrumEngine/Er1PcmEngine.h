@@ -32,8 +32,9 @@ class Er1PcmEngine : public DrumEngine {
     int samplesPerHold = 0;
     int lastHoldSample = -1;
     float heldValue = 0.0f;
-    void setSamplePerHold() {
-        samplesPerHold = std::max(1, (int)(props.sampleRate / modSpeed.get()));
+    void setSamplePerHold()
+    {
+        samplesPerHold = std::max(1, (int)(props.sampleRate / modSpeed.get() * 10.0f));
     }
 
 public:
@@ -49,7 +50,7 @@ public:
         p.val.setFloat(p.value);
         setSamplePerHold();
     });
-    Val& modType = val(0.0f, "MOD_TYPE", { "Mod Type", VALUE_STRING, .min = 0.0f, .max = 6.0f, .skipJumpIncrements = true }, [&](auto p) {
+    Val& modType = val(0.0f, "MOD_TYPE", { "Mod Type", VALUE_STRING, .min = 0.0f, .max = 8.0f, .skipJumpIncrements = true }, [&](auto p) {
         p.val.setFloat(p.value);
         if (p.val.get() == 0.0f) {
             p.val.setString("Sine");
@@ -90,15 +91,56 @@ public:
                 return 1.0f + props.lookupTable->getNoise() * modDepthAmount;
             };
         } else if (p.val.get() == 6.0f) {
-            p.val.setString("Envelope"); // An envelope will be applied to the pitch. This is effective when creating kick or tom sounds.
+            p.val.setString("Env. Expo."); // An envelope will be applied to the pitch. This is effective when creating kick or tom sounds.
             getPitchMod = [&](int sampleCounter, int totalSamples) {
-                if (totalSamples <= 0) {
-                    return 1.0f;
-                }
-                float envPos = (float)sampleCounter / (float)totalSamples;
-                envPos = envPos > 1.0f ? 1.0f : envPos;
-                float decay = 1.0f - envPos; // linear decay
+                float morph = modSpeed.pct(); // 0 = fast decay, 1 = slow decay
+                float amount = 1.0f - morph;
+                // Curve: higher `amount` = faster decay
+                float a = 10.0f + 100.0f * amount * amount * amount * amount;
+                float x = (float)sampleCounter / totalSamples; // time in seconds
+                float decay = expf(-a * x); // fast drop, then flatten out
                 return 1.0f + decay * modDepthAmount;
+            };
+        } else if (p.val.get() == 7.0f) {
+            p.val.setString("Env. Bounce");
+            getPitchMod = [&](int sampleCounter, int totalSamples) {
+                if (totalSamples <= 0)
+                    return 1.0f;
+
+                float x = (float)sampleCounter / totalSamples;
+                float morph = modSpeed.pct(); // 0 = bouncier, 1 = flatter
+                float freq = 2.0f + 10.0f * (1.0f - morph); // bounce rate
+                float decayRate = 4.0f + 8.0f * morph;
+
+                float bounce = fabs(sinf(3.1415f * x * freq)) * expf(-decayRate * x);
+                return 1.0f + bounce * modDepthAmount;
+            };
+        } else if (p.val.get() == 8.0f) {
+            p.val.setString("Env. Asym"); // Slow rise, fast drop. Great for reverse or tension FX.
+
+            getPitchMod = [&](int sampleCounter, int totalSamples) {
+                if (totalSamples <= 0)
+                    return 1.0f;
+
+                float x = (float)sampleCounter / totalSamples;
+                float morph = modSpeed.pct(); // 0 = more extreme, 1 = more subtle
+
+                // You can adjust curvature with morph
+                float riseCurve = 2.0f + 4.0f * (1.0f - morph); // 2 to 6
+                float dropCurve = 10.0f + 50.0f * (1.0f - morph); // 10 to 60
+
+                float value;
+                if (x < 0.5f) {
+                    // Logarithmic-style rise (gentle up)
+                    float t = x * 2.0f;
+                    value = powf(t, 1.0f / riseCurve); // slow rise
+                } else {
+                    // Fast exponential drop
+                    float t = (x - 0.5f) * 2.0f;
+                    value = 1.0f - expf(-dropCurve * t);
+                }
+
+                return 1.0f + value * modDepthAmount;
             };
         }
     });
