@@ -35,30 +35,57 @@ public:
     });
 
     Val& modDepth = val(0.0f, "MOD_DEPTH", { "Mod Depth", VALUE_CENTERED, .min = -100.0f, .unit = "%" });
-    Val& modSpeed = val(1.0f, "MOD_SPEED", { "Mod Speed", .min = 0.1f, .max = 100.0f, .step = 0.1f, .floatingPoint = 1, .unit = "Hz" });
-    Val& modType = val(0.0f, "MOD_TYPE", { "Mod Type", VALUE_STRING, .min = 0.0f, .max = 7.0f }, [&](auto p) {
+    Val& modSpeed = val(1.0f, "MOD_SPEED", { "Mod Speed", .min = 1.0f, .max = 5000.0f, .unit = "Hz" });
+    Val& modType = val(0.0f, "MOD_TYPE", { "Mod Type", VALUE_STRING, .min = 0.0f, .max = 6.0f, .skipJumpIncrements = true }, [&](auto p) {
         p.val.setFloat(p.value);
         if (p.val.get() == 0.0f) {
             p.val.setString("Sine");
             getPitchMod = [&]() { return 1.0f + sinf(modPhase) * modDepth.pct(); };
         } else if (p.val.get() == 1.0f) {
             p.val.setString("Saw Down"); //  The pitch will fall cyclically.
-            getPitchMod = [&]() { return 1.0f; }; // fix me
+            getPitchMod = [&]() {
+                float phase = fmodf(modPhase / (2.0f * M_PI), 1.0f); // 0..1
+                return 1.0f + (1.0f - phase * 2.0f) * modDepth.pct(); // 1..-1
+            };
         } else if (p.val.get() == 2.0f) {
             p.val.setString("Square"); // Two pitches will alternate cyclically.
-            getPitchMod = [&]() { return 1.0f; }; // fix me
+            getPitchMod = [&]() {
+                float sq = sinf(modPhase) >= 0.0f ? 1.0f : -1.0f;
+                return 1.0f + sq * modDepth.pct();
+            };
         } else if (p.val.get() == 3.0f) {
             p.val.setString("Triangle"); // The pitch will rise and fall cyclically.
-            getPitchMod = [&]() { return 1.0f; }; // fix me
+            getPitchMod = [&]() {
+                float phase = fmodf(modPhase / (2.0f * M_PI), 1.0f);
+                float tri = phase < 0.5f ? (phase * 4.0f - 1.0f) : (3.0f - phase * 4.0f);
+                return 1.0f + tri * modDepth.pct(); // tri goes -1 to 1
+            };
         } else if (p.val.get() == 4.0f) {
             p.val.setString("Sample & Hold"); // The pitch will change randomly.
-            getPitchMod = [&]() { return 1.0f; }; // fix me
+            float heldValue = props.lookupTable->getNoise();
+            float lastSampleTime = 0.0f;
+            getPitchMod = [&, heldValue]() mutable {
+                float t = modPhase;
+                if (t - lastSampleTime > 2.0f * M_PI) {
+                    lastSampleTime = t;
+                    heldValue = props.lookupTable->getNoise();
+                }
+                return 1.0f + heldValue * modDepth.pct();
+            };
         } else if (p.val.get() == 5.0f) {
             p.val.setString("Noise"); // A noise component will be cyclically added to the pitch. This is effective when creating snare drum sounds.
-            getPitchMod = [&]() { return props.lookupTable->getNoise(); }; // fix me --> "Mod Speed": This parameter determines how fast the random pitch changes are happening.
+            getPitchMod = [&]() {
+                return 1.0f + props.lookupTable->getNoise() * modDepth.pct();
+            };
         } else if (p.val.get() == 6.0f) {
             p.val.setString("Envelope"); // An envelope will be applied to the pitch. This is effective when creating kick or tom sounds.
-            getPitchMod = [&]() { return 1.0f; }; // fix me
+            getPitchMod = [&]() {
+                // Basic pitch envelope: quick decay from 1 + depth to 1.0
+                float envPos = modPhase / (2.0f * M_PI); // 0..1
+                float decay = 1.0f - envPos;
+                decay = decay < 0.0f ? 0.0f : decay;
+                return 1.0f + decay * modDepth.pct();
+            };
         }
     });
 
@@ -84,7 +111,7 @@ public:
         float mod = 1.0f;
         if (modDepth.get() > 0.0f) {
             mod = getPitchMod();
-            modPhase += modSpeed.get() * 0.001f;
+            modPhase += modSpeed.pct() * 0.001f;
             if (modPhase > 2.0f * M_PI) {
                 modPhase -= 2.0f * M_PI;
             }
