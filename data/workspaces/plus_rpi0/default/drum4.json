@@ -3,15 +3,15 @@
         "values": [
             {
                 "key": "VAL_1",
-                "value": 0.0
+                "value": -15.0
             },
             {
                 "key": "VAL_2",
-                "value": -100.0
+                "value": 100.0
             },
             {
                 "key": "VAL_3",
-                "value": 1200.0
+                "value": 3080.0
             },
             {
                 "key": "VAL_4",
@@ -47,11 +47,11 @@
             },
             {
                 "key": "DURATION",
-                "value": 3000.0
+                "value": 900.0
             },
             {
                 "key": "AMP_MORPH",
-                "value": 38.0
+                "value": 44.0
             }
         ]
     },

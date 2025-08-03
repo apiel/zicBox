@@ -28,7 +28,7 @@ class Er1PcmEngine : public DrumEngine {
 
     bool initialized = false;
 
-    std::function<float()> getPitchMod;
+    std::function<float(int, int)> getPitchMod;
 
 public:
     Val& pitchVal = val(0.0f, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24.0f, .max = 24.0f, .unit = "st" }, [&](auto p) {
@@ -44,50 +44,53 @@ public:
         p.val.setFloat(p.value);
         if (p.val.get() == 0.0f) {
             p.val.setString("Sine");
-            getPitchMod = [&]() { return 1.0f + sinf(modPhase) * modDepthAmount; };
+            getPitchMod = [&](int, int) { return 1.0f + sinf(modPhase) * modDepthAmount; };
         } else if (p.val.get() == 1.0f) {
             p.val.setString("Saw Down"); //  The pitch will fall cyclically.
-            getPitchMod = [&]() {
+            getPitchMod = [&](int, int) {
                 float phase = fmodf(modPhase / (2.0f * M_PI), 1.0f); // 0..1
                 return 1.0f + (1.0f - phase * 2.0f) * modDepthAmount; // 1..-1
             };
         } else if (p.val.get() == 2.0f) {
             p.val.setString("Square"); // Two pitches will alternate cyclically.
-            getPitchMod = [&]() {
+            getPitchMod = [&](int, int) {
                 float sq = sinf(modPhase) >= 0.0f ? 1.0f : -1.0f;
                 return 1.0f + sq * modDepthAmount;
             };
         } else if (p.val.get() == 3.0f) {
             p.val.setString("Triangle"); // The pitch will rise and fall cyclically.
-            getPitchMod = [&]() {
+            getPitchMod = [&](int, int) {
                 float phase = fmodf(modPhase / (2.0f * M_PI), 1.0f);
                 float tri = phase < 0.5f ? (phase * 4.0f - 1.0f) : (3.0f - phase * 4.0f);
                 return 1.0f + tri * modDepthAmount; // tri goes -1 to 1
             };
         } else if (p.val.get() == 4.0f) {
             p.val.setString("Sample & Hold"); // The pitch will change randomly.
+            int samplesPerHold = std::max(1, (int)(props.sampleRate / modSpeed.get()));
+            int lastHoldSample = -1;
             float heldValue = props.lookupTable->getNoise();
-            float lastSampleTime = 0.0f;
-            getPitchMod = [&, heldValue]() mutable {
-                float t = modPhase;
-                if (t - lastSampleTime > 2.0f * M_PI) {
-                    lastSampleTime = t;
+
+            getPitchMod = [&, samplesPerHold, lastHoldSample, heldValue](int sampleCounter, int totalSamples) mutable {
+                if (sampleCounter / samplesPerHold != lastHoldSample) {
                     heldValue = props.lookupTable->getNoise();
+                    lastHoldSample = sampleCounter / samplesPerHold;
                 }
                 return 1.0f + heldValue * modDepthAmount;
             };
         } else if (p.val.get() == 5.0f) {
             p.val.setString("Noise"); // A noise component will be cyclically added to the pitch. This is effective when creating snare drum sounds.
-            getPitchMod = [&]() {
+            getPitchMod = [&](int, int) {
                 return 1.0f + props.lookupTable->getNoise() * modDepthAmount;
             };
         } else if (p.val.get() == 6.0f) {
             p.val.setString("Envelope"); // An envelope will be applied to the pitch. This is effective when creating kick or tom sounds.
-            getPitchMod = [&]() {
-                // Basic pitch envelope: quick decay from 1 + depth to 1.0
-                float envPos = modPhase / (2.0f * M_PI); // 0..1
-                float decay = 1.0f - envPos;
-                decay = decay < 0.0f ? 0.0f : decay;
+            getPitchMod = [&](int sampleCounter, int totalSamples) {
+                if (totalSamples <= 0) {
+                    return 1.0f;
+                }
+                float envPos = (float)sampleCounter / (float)totalSamples;
+                envPos = envPos > 1.0f ? 1.0f : envPos;
+                float decay = 1.0f - envPos; // linear decay
                 return 1.0f + decay * modDepthAmount;
             };
         }
@@ -114,7 +117,7 @@ public:
 
         float mod = 1.0f;
         if (modDepth.get() != 0.0f) {
-            mod = getPitchMod();
+            mod = getPitchMod(sampleCounter, totalSamples);
             modPhase += modSpeed.pct() * 0.001f;
             if (modPhase > 2.0f * M_PI) {
                 modPhase -= 2.0f * M_PI;
