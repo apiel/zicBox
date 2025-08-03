@@ -4,6 +4,7 @@
 #include <sndfile.h>
 
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
+#include "plugins/audio/utils/MultiFx.h"
 #include "plugins/audio/utils/fileBrowser.h"
 #include "plugins/audio/utils/utils.h"
 
@@ -18,6 +19,9 @@ class Er1PcmEngine : public DrumEngine {
 
     float pitch = 1.0f;
     FileBrowser fileBrowser = FileBrowser("./data/audio/samples/er1");
+
+    MultiFx multiFx;
+    MultiFx multiFx2;
 
     float modPhase = 0.0f;
 
@@ -149,12 +153,30 @@ public:
         // logDebug("Waveform: %f", p.value);
         // open(p.value, !initialized);
         // initialized = true;
-        
+
         open(p.value);
     });
 
+    /*md - `FX_TYPE` select the effect.*/
+    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
+        multiFx.setFxType(p);
+    });
+
+    /*md - `FX_AMOUNT` set the effect amount.*/
+    Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
+
+    /*md - `FX_TYPE2` select the effect.*/
+    Val& fxType2 = val(0, "FX2_TYPE", { "FX2 type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
+        multiFx2.setFxType(p);
+    });
+
+    /*md - `FX_AMOUNT2` set the effect amount.*/
+    Val& fxAmount2 = val(0, "FX2_AMOUNT", { "FX2 edit", .unit = "%" });
+
     Er1PcmEngine(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : DrumEngine(props, config, "ER-1")
+        , multiFx(props.sampleRate, props.lookupTable)
+        , multiFx2(props.sampleRate, props.lookupTable)
     {
         // open(waveform.get(), true);
         initValues();
@@ -182,13 +204,17 @@ public:
             index += step * pitch;
         }
 
+        out = multiFx.apply(out, fxAmount.pct());
+        out = multiFx2.apply(out, fxAmount2.pct());
         buf[track] = out;
     }
 
     void sampleOff(float* buf) override
     {
-        // Not used for now (no reverb/tail)
-        buf[track] = 0.0f;
+        float out = buf[track];
+        out = multiFx.apply(out, fxAmount.pct());
+        out = multiFx2.apply(out, fxAmount2.pct());
+        buf[track] = out;
     }
 
     void noteOn(uint8_t note, float velocity, void* userdata = NULL) override
