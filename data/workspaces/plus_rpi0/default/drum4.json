@@ -11,15 +11,15 @@
             },
             {
                 "key": "VAL_2",
-                "value": 45.0
+                "value": 100.0
             },
             {
                 "key": "VAL_3",
-                "value": 50.0
+                "value": 4820.0
             },
             {
                 "key": "VAL_4",
-                "value": 5.0
+                "value": 6.0
             },
             {
                 "key": "VAL_5",
@@ -27,31 +27,31 @@
             },
             {
                 "key": "VAL_6",
-                "value": 1.0
+                "value": 85.49995422363281
             },
             {
                 "key": "VAL_7",
-                "value": 33.0
+                "value": 6.0
             },
             {
                 "key": "VAL_8",
-                "value": 4.0
+                "value": 54.0
             },
             {
                 "key": "VAL_9",
-                "value": 62.0
+                "value": 4.0
             },
             {
                 "key": "VAL_10",
-                "value": 5.0
+                "value": 29.0
             },
             {
                 "key": "DURATION",
-                "value": 80.0
+                "value": 290.0
             },
             {
                 "key": "AMP_MORPH",
-                "value": 96.0
+                "value": 18.0
             }
         ]
     },

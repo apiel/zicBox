@@ -5,6 +5,7 @@
 
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
 #include "plugins/audio/utils/MultiFx.h"
+#include "plugins/audio/utils/TransientGenerator.h"
 #include "plugins/audio/utils/fileBrowser.h"
 #include "plugins/audio/utils/utils.h"
 
@@ -22,6 +23,7 @@ class Er1PcmEngine : public DrumEngine {
 
     MultiFx multiFx;
     MultiFx multiFx2;
+    TransientGenerator transient;
 
     float modPhase = 0.0f;
 
@@ -157,30 +159,36 @@ public:
         open(p.value);
     });
 
-    /*md - `FX_TYPE` select the effect.*/
+    Val& transientMorph = val(100.0, "TRANSIENT", { "Transient", VALUE_STRING, .step = 0.1f, .floatingPoint = 1 }, [&](auto p) {
+        p.val.setFloat(p.value);
+        transient.morphType(p.val.pct());
+        p.val.setString(std::to_string((int)(transient.getMorph() * 100)) + "%");
+        p.val.props().unit = transient.getTypeName();
+    });
+
     Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
         multiFx.setFxType(p);
     });
 
-    /*md - `FX_AMOUNT` set the effect amount.*/
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
 
-    /*md - `FX_TYPE2` select the effect.*/
     Val& fxType2 = val(0, "FX2_TYPE", { "FX2 type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
         multiFx2.setFxType(p);
     });
 
-    /*md - `FX_AMOUNT2` set the effect amount.*/
     Val& fxAmount2 = val(0, "FX2_AMOUNT", { "FX2 edit", .unit = "%" });
 
     Er1PcmEngine(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : DrumEngine(props, config, "ER-1")
         , multiFx(props.sampleRate, props.lookupTable)
         , multiFx2(props.sampleRate, props.lookupTable)
+        , transient(props.sampleRate, 50)
     {
         // open(waveform.get(), true);
         initValues();
     }
+
+    float transientIndex = 0.0f;
 
     void sampleOn(float* buf, float envAmp, int sampleCounter, int totalSamples) override
     {
@@ -204,6 +212,11 @@ public:
             index += step * pitch;
         }
 
+        float t = (float)sampleCounter / totalSamples; // Time normalized to [0, 1]
+        if (t < 0.01f && transientMorph.get() > 0.0f) {
+            out = out + transient.next(&transientIndex) * envAmp;
+        }
+
         out = multiFx.apply(out, fxAmount.pct());
         out = multiFx2.apply(out, fxAmount2.pct());
         buf[track] = out;
@@ -221,6 +234,7 @@ public:
     {
         index = 0.0f;
         modPhase = 0.0f;
+        transientIndex = 0.0f;
     }
 
     void open(float value, bool force = false)
