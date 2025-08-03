@@ -27,14 +27,40 @@ class Er1PcmEngine : public DrumEngine {
 
     bool initialized = false;
 
+    std::function<float()> getPitchMod;
+
 public:
     Val& pitchVal = val(0.0f, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24.0f, .max = 24.0f, .unit = "st" }, [&](auto p) {
         pitch = pow(2, p.value / 12.0f);
     });
 
-    Val& modDepth = val(0.0f, "MOD_DEPTH", { "Mod Depth", .unit = "%" });
-    Val& modSpeed = val(1.0f, "MOD_SPEED", { "Mod Speed", .min = 0.1f, .max = 20.0f, .step = 0.1f });
-    Val& modType = val(0.0f, "MOD_TYPE", { "Mod Type", VALUE_STRING });
+    Val& modDepth = val(0.0f, "MOD_DEPTH", { "Mod Depth", VALUE_CENTERED, .min = -100.0f, .unit = "%" });
+    Val& modSpeed = val(1.0f, "MOD_SPEED", { "Mod Speed", .min = 0.1f, .max = 100.0f, .step = 0.1f, .floatingPoint = 1, .unit = "Hz" });
+    Val& modType = val(0.0f, "MOD_TYPE", { "Mod Type", VALUE_STRING, .min = 0.0f, .max = 7.0f }, [&](auto p) {
+        p.val.setFloat(p.value);
+        if (p.val.get() == 0.0f) {
+            p.val.setString("Sine");
+            getPitchMod = [&]() { return 1.0f + sinf(modPhase) * modDepth.pct(); };
+        } else if (p.val.get() == 1.0f) {
+            p.val.setString("Saw Down"); //  The pitch will fall cyclically.
+            getPitchMod = [&]() { return 1.0f; }; // fix me
+        } else if (p.val.get() == 2.0f) {
+            p.val.setString("Square"); // Two pitches will alternate cyclically.
+            getPitchMod = [&]() { return 1.0f; }; // fix me
+        } else if (p.val.get() == 3.0f) {
+            p.val.setString("Triangle"); // The pitch will rise and fall cyclically.
+            getPitchMod = [&]() { return 1.0f; }; // fix me
+        } else if (p.val.get() == 4.0f) {
+            p.val.setString("Sample & Hold"); // The pitch will change randomly.
+            getPitchMod = [&]() { return 1.0f; }; // fix me
+        } else if (p.val.get() == 5.0f) {
+            p.val.setString("Noise"); // A noise component will be cyclically added to the pitch. This is effective when creating snare drum sounds.
+            getPitchMod = [&]() { return props.lookupTable->getNoise(); }; // fix me --> "Mod Speed": This parameter determines how fast the random pitch changes are happening.
+        } else if (p.val.get() == 6.0f) {
+            p.val.setString("Envelope"); // An envelope will be applied to the pitch. This is effective when creating kick or tom sounds.
+            getPitchMod = [&]() { return 1.0f; }; // fix me
+        }
+    });
 
     Val& waveform = val(1.0f, "WAVEFORM", { "Waveform", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count }, [&](auto p) {
         // logDebug("Waveform: %f", p.value);
@@ -57,14 +83,11 @@ public:
 
         float mod = 1.0f;
         if (modDepth.get() > 0.0f) {
-            if (modType.get() == 0.0f) {
-                mod = 1.0f + sinf(modPhase) * modDepth.pct();
-            } else {
-                // mod = 1.0f + (randomFloat() * 2.0f - 1.0f) * modDepth.pct();
-            }
+            mod = getPitchMod();
             modPhase += modSpeed.get() * 0.001f;
-            if (modPhase > 2.0f * M_PI)
+            if (modPhase > 2.0f * M_PI) {
                 modPhase -= 2.0f * M_PI;
+            }
         }
 
         float out = 0.0f;
