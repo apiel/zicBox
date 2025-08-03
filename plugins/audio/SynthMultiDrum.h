@@ -51,7 +51,8 @@ protected:
         p.val.props().floatingPoint = drumEngineVal->props().floatingPoint;
     }
 
-    void copyValues() {
+    void copyValues()
+    {
         for (int i = 0; i < 10 && i < drumEngine->mapping.size(); i++) {
             ValueInterface* val = drumEngine->mapping[i];
             values[i]->copy(val);
@@ -69,10 +70,7 @@ public:
         p.val.setString(drumEngine->name);
 
         // loop through values and update their type
-        for (int i = 0; i < 10 && i < drumEngine->mapping.size(); i++) {
-            ValueInterface* val = drumEngine->mapping[i];
-            values[i]->copy(val);
-        }
+        copyValues();
     });
 
     Val* values[10] = {
@@ -148,10 +146,7 @@ public:
         drumEngine->hydrateJson(json);
 
         // After hydration copy back value in case something changed
-        for (int i = 0; i < 10 && i < drumEngine->mapping.size(); i++) {
-            ValueInterface* val = drumEngine->mapping[i];
-            values[i]->copy(val);
-        }
+        copyValues();
     }
 
     DataFn dataFunctions[1] = {
