@@ -4,6 +4,10 @@
         - 1 press on variation play it at next loop
         - second press, will play it right away
         - (extra) long press could let select how many loop to wait before to start (but maybe too complicated!)
+        - shift variation save the variation
+        - would need a way to save all variation at once
+        - would need a way to reload all variation at once
+        - would need a way to reload a single variation
 
 - TODO handle workspace, see if this concept still make sense...
         - also provide a way to save preset on github repo

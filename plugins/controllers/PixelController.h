@@ -199,13 +199,13 @@ public:
                     getKeyCode("F5"),
                 };
                 trellisKeys3 = {
-                    getKeyCode("'enter'"),
+                    getKeyCode("enter"),
                     getKeyCode("'\''"),
                     getKeyCode("';'"),
                     getKeyCode("'l'"),
 
-                    getKeyCode("'['"),
                     getKeyCode("']'"),
+                    getKeyCode("'['"),
                     getKeyCode("'p'"),
                     getKeyCode("'o'"),
 

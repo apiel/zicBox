@@ -13,12 +13,14 @@ import {
     btn7,
     btn8,
     btn9,
+    C12,
     ColorBtnOff,
     ColorButton,
     ColorTrackMaster,
+    D12,
     SelectorPosition,
     SelectorPosition2,
-    shiftContext,
+    shiftContext
 } from '../constants';
 
 export const Clips = 'Clips';
@@ -166,6 +168,8 @@ export function MainKeys({
                             { key: B11, color: synthName ? ColorButton : ColorBtnOff },
                             { key: A12, color: ColorButton },
                             { key: B12, color: ColorBtnOff },
+                            { key: C12, color: ColorBtnOff },
+                            { key: D12, color: ColorBtnOff },
                         ],
                     },
                 ]}
@@ -178,6 +182,8 @@ export function MainKeys({
 
                     { key: A12, action: `contextToggle:${shiftContext}:1:0` },
                     { key: B12, action: `playPause` },
+                    { key: C12, action: `setView:Workspaces` },
+                    { key: D12, action: `setView:Shutdown` },
                 ]}
                 controllerColors={[
                     {
@@ -187,6 +193,8 @@ export function MainKeys({
                             { key: B11, color: ColorButton },
                             { key: A12, color: ColorButton },
                             { key: B12, color: ColorButton },
+                            { key: C12, color: ColorButton },
+                            { key: D12, color: '#FF0000' },
                         ],
                     },
                 ]}
