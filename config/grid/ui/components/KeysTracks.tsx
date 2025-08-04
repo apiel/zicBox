@@ -2,7 +2,7 @@ import * as React from '@/libs/react';
 
 import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
 import { darken } from '@/libs/ui';
-import { A1, A10, A2, A3, A4, A5, A6, A7, A8, A9, B1, B10, B2, B3, B4, B5, B6, B7, B8, B9, C1, C10, C2, C3, C4, C5, C6, C7, C8, C9, ColorTrack1, ColorTrack10, ColorTrack2, ColorTrack3, ColorTrack4, ColorTrack5, ColorTrack6, ColorTrack7, ColorTrack8, ColorTrack9, D1, D10, D2, D3, D4, D5, D6, D7, D8, D9 } from '../constants';
+import { A1, A10, A2, A3, A4, A5, A6, A7, A8, A9, B1, B10, B2, B3, B4, B5, B6, B7, B8, B9, C1, C10, C2, C3, C4, C5, C6, C7, C8, C9, ColorBtnOff, ColorTrack1, ColorTrack10, ColorTrack2, ColorTrack3, ColorTrack4, ColorTrack5, ColorTrack6, ColorTrack7, ColorTrack8, ColorTrack9, D1, D10, D2, D3, D4, D5, D6, D7, D8, D9 } from '../constants';
 
 function getVariantColor(viewName: string) {
     if (viewName.startsWith(`Drum1`)) {
@@ -35,7 +35,7 @@ function getVariantColor(viewName: string) {
     if (viewName.startsWith(`Synth6`)) {
         return ColorTrack10;
     }
-    return "#000000";
+    return ColorBtnOff;
 }
 
 export function KeysTracks({ synthName, viewName }: { synthName?: string; viewName: string }) {
@@ -115,34 +115,34 @@ export function KeysTracks({ synthName, viewName }: { synthName?: string; viewNa
                 // { key: D10, color: darken(ColorTrack10, 0.9) },
 
                 // { key: C1, color: darken(variantColor, 0.9) },
-                { key: C1, color: "#000000" },
+                { key: C1, color: ColorBtnOff },
                 { key: D1, color: darken(variantColor, 0.9) },
                 // { key: C2, color: darken(variantColor, 0.9) },
-                { key: C2, color: "#000000" },
+                { key: C2, color: ColorBtnOff },
                 { key: D2, color: darken(variantColor, 0.9) },
                 // { key: C3, color: darken(variantColor, 0.9) },
-                { key: C3, color: "#000000" },
+                { key: C3, color: ColorBtnOff },
                 { key: D3, color: darken(variantColor, 0.9) },
                 // { key: C4, color: darken(variantColor, 0.9) },
-                { key: C4, color: "#000000" },
+                { key: C4, color: ColorBtnOff },
                 { key: D4, color: darken(variantColor, 0.9) },
                 // { key: C5, color: darken(variantColor, 0.9) },
-                { key: C5, color: "#000000" },
+                { key: C5, color: ColorBtnOff },
                 { key: D5, color: darken(variantColor, 0.9) },
                 // { key: C6, color: darken(variantColor, 0.9) },
-                { key: C6, color: "#000000" },
+                { key: C6, color: ColorBtnOff },
                 { key: D6, color: darken(variantColor, 0.9) },
                 // { key: C7, color: darken(variantColor, 0.9) },
-                { key: C7, color: "#000000" },
+                { key: C7, color: ColorBtnOff },
                 { key: D7, color: darken(variantColor, 0.9) },
                 // { key: C8, color: darken(variantColor, 0.9) },
-                { key: C8, color: "#000000" },
+                { key: C8, color: ColorBtnOff },
                 { key: D8, color: darken(variantColor, 0.9) },
                 // { key: C9, color: darken(variantColor, 0.9) },
-                { key: C9, color: "#000000" },
+                { key: C9, color: ColorBtnOff },
                 { key: D9, color: darken(variantColor, 0.9) },
                 // { key: C10, color: darken(variantColor, 0.9) },
-                { key: C10, color: "#000000" },
+                { key: C10, color: ColorBtnOff },
                 { key: D10, color: darken(variantColor, 0.9) },
             ] }]}
         />

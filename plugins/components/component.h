@@ -6,8 +6,8 @@
 #include "motionInterface.h"
 #include "utils/VisibilityContext.h"
 // #include "utils/VisibilityGroup.h" // TODO
-#include "valueInterface.h"
 #include "plugins/components/base/ControllerColor.h"
+#include "valueInterface.h"
 
 #include <stdlib.h>
 
@@ -51,8 +51,11 @@ public:
     };
 
     virtual void render() override { }
-    virtual void initView(uint16_t counter) override {
-        controllerColor.render();
+    virtual void initView(uint16_t counter) override
+    {
+        if (isVisible()) {
+            controllerColor.render();
+        }
     }
 
     virtual void renderNext() override
@@ -121,6 +124,9 @@ public:
     {
         if (visibilityContext.onContext(index, value)) {
             renderNext();
+            if (isVisible()) {
+                controllerColor.render();
+            }
         }
     }
 

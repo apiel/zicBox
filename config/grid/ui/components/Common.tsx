@@ -13,6 +13,7 @@ import {
     btn7,
     btn8,
     btn9,
+    ColorBtnOff,
     ColorButton,
     ColorTrackMaster,
     SelectorPosition,
@@ -139,7 +140,10 @@ export function MainKeys({
         <>
             <HiddenValue
                 keys={[
-                    { key: A11, action: viewName === 'Master' ? `setView:Master:page2` : `setView:Master` },
+                    {
+                        key: A11,
+                        action: viewName === 'Master' ? `setView:Master:page2` : `setView:Master`,
+                    },
                     ...ifDef(synthName, {
                         key: B11,
                         action:
@@ -148,38 +152,47 @@ export function MainKeys({
                                 : `setView:${synthName}Seq`,
                     }),
                     { key: A12, action: `contextToggle:${shiftContext}:1:0` },
+                ]}
+                controllerColors={[
+                    {
+                        controller: 'Default',
+                        colors: [
+                            {
+                                key: A11,
+                                color: viewName.startsWith(`Master`)
+                                    ? ColorTrackMaster
+                                    : darken(ColorTrackMaster, 0.9),
+                            },
+                            { key: B11, color: synthName ? ColorButton : ColorBtnOff },
+                            { key: A12, color: ColorButton },
+                            { key: B12, color: ColorBtnOff },
+                        ],
+                    },
+                ]}
+                visibilityContext={[{ index: shiftContext, value: 1, condition: 'SHOW_WHEN_NOT' }]}
+            />
+
+            <HiddenValue // When shifted
+                keys={[
+                    { key: B11, action: `stop` },
+
+                    { key: A12, action: `contextToggle:${shiftContext}:1:0` },
                     { key: B12, action: `playPause` },
                 ]}
                 controllerColors={[
                     {
                         controller: 'Default',
                         colors: [
-                            { key: A11, color: viewName.startsWith(`Master`) ? ColorTrackMaster : darken(ColorTrackMaster, 0.9)  },
-                            { key: B11, color: synthName ? ColorButton : '#000000' },
+                            { key: A11, color: ColorBtnOff },
+                            { key: B11, color: ColorButton },
                             { key: A12, color: ColorButton },
                             { key: B12, color: ColorButton },
                         ],
                     },
                 ]}
+                visibilityContext={[{ index: shiftContext, value: 1, condition: 'SHOW_WHEN' }]}
             />
-            {/* <HiddenValue
-                keys={[
-                    { key: right1, action: 'setView:Clips' },
-                    { key: right3, action: 'contextToggle:254:2:0' },
-
-                    // { key: left1, action: `setView:${synthName}Sequencer`, action2: `setContext:254:0` },
-                    // { key: left1, action: `setView:DrumSeq`, action2: `setContext:254:0` },
-                    {
-                        key: left2,
-                        action: forcePatchView
-                            ? `setContext:254:0`
-                            : 'contextToggleOnRelease:254:1:0',
-                        action2: `setView:${synthName}`,
-                    },
-                    { key: left3, action: `noteOn:${synthName}:60` },
-                ]}
-            />
-            <Rect bounds={SelectorPosition} visibilityContext={[{ index: 254, value: 2, condition: 'SHOW_WHEN' }]} />
+            {/* 
             <TextGrid
                 bounds={SelectorPosition}
                 rows={[`Project Shutdown &empty &icon::stop::filled &icon::play::filled`, `Server &empty &empty &empty BPM`]}

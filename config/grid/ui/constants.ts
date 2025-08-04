@@ -43,6 +43,7 @@ export const ColorTrack9 = rgb(4, 196, 180);
 export const ColorTrack10 = rgb(245, 176, 239);
 
 export const ColorButton = rgb(50, 50, 50);
+export const ColorBtnOff = rgb(0, 0, 0);
 
 export const encTopLeft = 0;
 export const encTopRight = 1;
