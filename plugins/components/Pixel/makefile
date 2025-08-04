@@ -14,7 +14,7 @@ all:
 	+make DrumEnvelopComponent KnobValueComponent GraphEncoderComponent\
 				HiddenValueComponent FmAlgoComponent AdsrComponent\
 				TextComponent SeqProgressBarComponent ValueComponent\
-				RectComponent ClipsComponent KeyboardComponent ListComponent\
+				RectComponent ClipsComponent KeyboardComponent Keyboard2Component ListComponent\
 				WorkspacesComponent HiddenContextComponent\
 				MacroEnvelopComponent StepEditSampleComponent\
 				SequencerComponent SampleComponent SequencerCardComponent\

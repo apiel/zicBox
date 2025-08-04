@@ -695,7 +695,7 @@
     {
       "name": "CreateWorkspace",
       "components": [
-        {"bounds":[0,40,480,200],"redirectView":"Workspaces","audioPlugin":"SerializeTrack","dataId":"CREATE_WORKSPACE","keys":[{"key":"s","action":".up"},{"key":"f","action":".done"},{"key":"g","action":".cancel"},{"key":"z","action":".left"},{"key":"x","action":".down"},{"key":"c","action":".right"},{"key":"v","action":".backspace"},{"key":"b","action":".type"}],"componentName":"Keyboard"},
+        {"bounds":[0,40,480,300],"font":"PoppinsLight_12","redirectView":"Workspaces","audioPlugin":"SerializeTrack","dataId":"CREATE_WORKSPACE","keys":[{"key":"s","action":".up"},{"key":"f","action":".done"},{"key":"g","action":".cancel"},{"key":"z","action":".left"},{"key":"x","action":".down"},{"key":"c","action":".right"},{"key":"v","action":".backspace"},{"key":"b","action":".type"}],"componentName":"Keyboard2"},
         {"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"text":"&empty","bounds":[0,616,96,11],"centered":true,"bgColor":"background","color":"text","font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},
         {"text":"&icon::arrowUp::filled","bounds":[96,616,96,11],"centered":true,"bgColor":"background","color":"text","font":"PoppinsLight_8","fontSize":8,"componentName":"Text"},

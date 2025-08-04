@@ -1,6 +1,6 @@
 import * as React from '@/libs/react';
 
-import { Keyboard } from '@/libs/nativeComponents/Keyboard';
+import { Keyboard2 } from '@/libs/nativeComponents/Keyboard2';
 import { View } from '@/libs/nativeComponents/View';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { btn10, btn2, btn4, btn5, btn6, btn7, btn8, btn9, KeyInfoPosition, ScreenWidth } from '../constants';
@@ -12,8 +12,9 @@ export type Props = {
 export function CreateWorkspaceView({ name }: Props) {
     return (
         <View name={name}>
-            <Keyboard
-                bounds={[0, 40, ScreenWidth, 200]}
+            <Keyboard2
+                bounds={[0, 40, ScreenWidth, 300]}
+                font="PoppinsLight_12"
                 redirectView="Workspaces"
                 audioPlugin="SerializeTrack"
                 dataId="CREATE_WORKSPACE"
