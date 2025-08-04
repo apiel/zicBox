@@ -1,5 +1,4 @@
 import * as React from '@/libs/react';
-import { ClipsView } from './ClipsView/ClipsView';
 import { Drum2, Drum3, Drum4, Sample1, Sample2, Sample3, Synth1, Synth2, Synth3 } from './components/Common';
 import {
     ColorTrack1,
@@ -100,9 +99,7 @@ export const ui = {
 
             <MasterViews />
 
-            {/* Not implemented... */}
             <Menu />
-            <ClipsView name="Clips" />
         </>
     ),
 };

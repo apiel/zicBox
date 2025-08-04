@@ -108,8 +108,7 @@ export function WorkspacesView({ name }: Props) {
                 keys={[{ key: D5, action: 'contextToggle:253:1:0' }]}
             />
 
-
-<HiddenValue
+            <HiddenValue
                 controllerColors={[
                     {
                         controller: 'Default',

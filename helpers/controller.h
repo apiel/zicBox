@@ -11,7 +11,7 @@ uint8_t getKeyCode(std::string keyStr)
         return 229;
     }
     if (keyStr == "enter") {
-        return 229;
+        return 40;
     }
     if (keyStr == "space") {
         return 44;
