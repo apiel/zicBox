@@ -2,7 +2,7 @@ import * as React from '@/libs/react';
 
 import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
-import { lighten } from '@/libs/ui';
+import { darken, lighten } from '@/libs/ui';
 import {
     A11,
     A12,
@@ -14,6 +14,7 @@ import {
     btn8,
     btn9,
     ColorButton,
+    ColorTrackMaster,
     SelectorPosition,
     SelectorPosition2,
     shiftContext,
@@ -138,7 +139,7 @@ export function MainKeys({
         <>
             <HiddenValue
                 keys={[
-                    { key: A11, action: viewName === 'Master' ? `setView:#track` : `setView:Master` },
+                    { key: A11, action: viewName === 'Master' ? `setView:Master:page2` : `setView:Master` },
                     ...ifDef(synthName, {
                         key: B11,
                         action:
@@ -153,7 +154,7 @@ export function MainKeys({
                     {
                         controller: 'Default',
                         colors: [
-                            { key: A11, color: ColorButton },
+                            { key: A11, color: viewName.startsWith(`Master`) ? ColorTrackMaster : darken(ColorTrackMaster, 0.9)  },
                             { key: B11, color: synthName ? ColorButton : '#000000' },
                             { key: A12, color: ColorButton },
                             { key: B12, color: ColorButton },

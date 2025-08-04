@@ -74,43 +74,43 @@ export function KeysTracks({ synthName, viewName }: { synthName?: string; viewNa
                 { key: B10, action: `noteOn:Sample3:60` },
             ]}
             controllerColors={[{ controller: 'Default', colors:[
-                { key: A1, color: viewName === `Drum1` ? ColorTrack1 : darken(ColorTrack1, 0.9) },
+                { key: A1, color: viewName.startsWith(`Drum1`) ? ColorTrack1 : darken(ColorTrack1, 0.9) },
                 { key: B1, color: darken(ColorTrack1, 0.9) },
                 // { key: D1, color: darken(ColorTrack1, 0.9) },
 
-                { key: A2, color: viewName === `Drum2` ? ColorTrack2 : darken(ColorTrack2, 0.9) },
+                { key: A2, color: viewName.startsWith(`Drum2`) ? ColorTrack2 : darken(ColorTrack2, 0.9) },
                 { key: B2, color: darken(ColorTrack2, 0.9) },
                 // { key: D2, color: darken(ColorTrack2, 0.9) },
 
-                { key: A3, color: viewName === `Drum3` ? ColorTrack3 : darken(ColorTrack3, 0.9) },
+                { key: A3, color: viewName.startsWith(`Drum3`) ? ColorTrack3 : darken(ColorTrack3, 0.9) },
                 { key: B3, color: darken(ColorTrack3, 0.9) },
                 // { key: D3, color: darken(ColorTrack3, 0.9) },
 
-                { key: A4, color: viewName === `Drum4` ? ColorTrack4 : darken(ColorTrack4, 0.9) },
+                { key: A4, color: viewName.startsWith(`Drum4`) ? ColorTrack4 : darken(ColorTrack4, 0.9) },
                 { key: B4, color: darken(ColorTrack4, 0.9) },
                 // { key: D4, color: darken(ColorTrack4, 0.9) },
 
-                { key: A5, color: viewName === `Synth1` ? ColorTrack5 : darken(ColorTrack5, 0.9) },
+                { key: A5, color: viewName.startsWith(`Synth1`) ? ColorTrack5 : darken(ColorTrack5, 0.9) },
                 { key: B5, color: darken(ColorTrack5, 0.9) },
                 // { key: D5, color: darken(ColorTrack5, 0.9) },
 
-                { key: A6, color: viewName === `Synth2` ? ColorTrack6 : darken(ColorTrack6, 0.9) },
+                { key: A6, color: viewName.startsWith(`Synth2`) ? ColorTrack6 : darken(ColorTrack6, 0.9) },
                 { key: B6, color: darken(ColorTrack6, 0.9) },
                 // { key: D6, color: darken(ColorTrack6, 0.9) },
 
-                { key: A7, color: viewName === `Synth3` ? ColorTrack7 : darken(ColorTrack7, 0.9) },
+                { key: A7, color: viewName.startsWith(`Synth3`) ? ColorTrack7 : darken(ColorTrack7, 0.9) },
                 { key: B7, color: darken(ColorTrack7, 0.9) },
                 // { key: D7, color: darken(ColorTrack7, 0.9) },
 
-                { key: A8, color: viewName === `Sample1` ? ColorTrack8 : darken(ColorTrack8, 0.9) },
+                { key: A8, color: viewName.startsWith(`Sample1`) ? ColorTrack8 : darken(ColorTrack8, 0.9) },
                 { key: B8, color: darken(ColorTrack8, 0.9) },
                 // { key: D8, color: darken(ColorTrack8, 0.9) },
 
-                { key: A9, color: viewName === `Sample2` ? ColorTrack9 : darken(ColorTrack9, 0.9) },
+                { key: A9, color: viewName.startsWith(`Sample2`) ? ColorTrack9 : darken(ColorTrack9, 0.9) },
                 { key: B9, color: darken(ColorTrack9, 0.9) },
                 // { key: D9, color: darken(ColorTrack9, 0.9) },
 
-                { key: A10, color: viewName === `Sample3` ? ColorTrack10 : darken(ColorTrack10, 0.9) },
+                { key: A10, color: viewName.startsWith(`Sample3`) ? ColorTrack10 : darken(ColorTrack10, 0.9) },
                 { key: B10, color: darken(ColorTrack10, 0.9) },
                 // { key: D10, color: darken(ColorTrack10, 0.9) },
 
