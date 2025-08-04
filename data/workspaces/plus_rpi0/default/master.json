@@ -1,5 +1,17 @@
 {
     "AudioOutput": null,
+    "Filter": {
+        "values": [
+            {
+                "key": "CUTOFF",
+                "value": 0.0
+            },
+            {
+                "key": "RESONANCE",
+                "value": 0.0
+            }
+        ]
+    },
     "Mixer": {
         "values": [
             {

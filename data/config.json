@@ -106,6 +106,7 @@
         "id": 0,
         "plugins": [
           {"alias":"Mixer","plugin":"Mixer10"},
+          {"alias":"Filter","plugin":"EffectFilterMultiMode"},
           {"alias":"Volume","plugin":"EffectGainVolume"},
           {"alias":"AudioOutput","plugin":"AudioOutputPulse"},
           {"filename":"master","maxVariation":16,"workspaceFolder":"data/workspaces/plus_rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"},
@@ -629,6 +630,7 @@
         {"bounds":[175,28,6,6],"color":"#ff4a4a","componentName":"Rect"},
         {"bounds":[0,70,480,570],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":1}],"componentName":"Rect"},
         {"audioPlugin":"Tempo","param":"BPM","encoderId":1,"bounds":[0,70,118,100],"color":"secondary","track":0,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":1}],"componentName":"KnobValue"},
+        {"audioPlugin":"Volume","param":"VOLUME","label":"Master volume","encoderId":2,"bounds":[120,70,118,100],"color":"primary","track":0,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":1}],"componentName":"KnobValue"},
         {"bounds":[0,70,480,570],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"Rect"},
         {"barHeight":4,"alignLeft":true,"showLabelOverValue":10,"valueSize":24,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"encoderId":1,"bounds":[0,100,118,70],"audioPlugin":"TrackFx","param":"VOLUME","label":"Mix Kick23","track":1,"barColor":"#a3c912","componentName":"Value"},
         {"barHeight":4,"alignLeft":true,"showLabelOverValue":10,"valueSize":24,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"encoderId":2,"bounds":[120,100,118,70],"audioPlugin":"TrackFx","param":"VOLUME","label":"Mix Drum2","track":2,"barColor":"#fd6f0e","componentName":"Value"},
@@ -640,6 +642,8 @@
         {"barHeight":4,"alignLeft":true,"showLabelOverValue":10,"valueSize":24,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"encoderId":8,"bounds":[360,220,118,70],"audioPlugin":"TrackFx2","param":"VOLUME","label":"Mix Sample1","track":8,"barColor":"#b54fad","componentName":"Value"},
         {"barHeight":4,"alignLeft":true,"showLabelOverValue":10,"valueSize":24,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"encoderId":9,"bounds":[0,340,118,70],"audioPlugin":"TrackFx2","param":"VOLUME","label":"Mix Sample2","track":9,"barColor":"#04c4b4","componentName":"Value"},
         {"barHeight":4,"alignLeft":true,"showLabelOverValue":10,"valueSize":24,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"encoderId":10,"bounds":[120,340,118,70],"audioPlugin":"TrackFx2","param":"VOLUME","label":"Mix Sample3","track":10,"barColor":"#f5b0ef","componentName":"Value"},
+        {"barHeight":4,"alignLeft":true,"showLabelOverValue":10,"valueSize":24,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"encoderId":11,"bounds":[240,340,118,70],"audioPlugin":"Filter","param":"CUTOFF","track":0,"componentName":"Value"},
+        {"barHeight":4,"alignLeft":true,"showLabelOverValue":10,"valueSize":24,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"encoderId":12,"bounds":[360,340,118,70],"audioPlugin":"Filter","param":"RESONANCE","track":0,"componentName":"Value"},
         {"keys":[{"key":"F11","action":"setView:#track"},{"key":"F12","action":"contextToggle:254:1:0"},{"key":"=","action":"playPause"}],"controllerColors":[{"controller":"Default","colors":[{"key":"F11","color":"#323232"},{"key":"-","color":"#000000"},{"key":"F12","color":"#323232"},{"key":"=","color":"#323232"}]}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
     },

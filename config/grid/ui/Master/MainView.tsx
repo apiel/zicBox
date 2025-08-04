@@ -46,6 +46,8 @@ import {
     backgroundBounds,
     enc1,
     enc10,
+    enc11,
+    enc12,
     enc2,
     enc3,
     enc4,
@@ -92,6 +94,18 @@ export function MainView({ name }: { name: string }) {
                         param="BPM"
                         {...enc1}
                         color="secondary"
+                        track={MasterTrack}
+                        visibilityContext={[
+                            { condition: 'SHOW_WHEN', index: shiftContext, value: 1 },
+                        ]}
+                    />
+
+                    <KnobValue
+                        audioPlugin="Volume"
+                        param="VOLUME"
+                        label="Master volume"
+                        {...enc2}
+                        color="primary"
                         track={MasterTrack}
                         visibilityContext={[
                             { condition: 'SHOW_WHEN', index: shiftContext, value: 1 },
@@ -192,6 +206,20 @@ export function MainView({ name }: { name: string }) {
                         label={`Mix ${Sample3}`}
                         track={Sample3Track}
                         barColor={ColorTrack10}
+                    />
+
+                    <Value
+                        {...valueParam(enc11)}
+                        audioPlugin="Filter"
+                        param="CUTOFF"
+                        track={MasterTrack}
+                    />
+
+                    <Value
+                        {...valueParam(enc12)}
+                        audioPlugin="Filter"
+                        param="RESONANCE"
+                        track={MasterTrack}
                     />
 
                     {/* <KeysTracks synthName={synthName} viewName={name} /> */}
