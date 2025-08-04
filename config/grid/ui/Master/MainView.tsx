@@ -53,7 +53,7 @@ import {
     enc6,
     enc7,
     enc8,
-    enc9
+    enc9,
 } from '../constantsValue';
 
 export function MainView({ name }: { name: string }) {
@@ -68,6 +68,7 @@ export function MainView({ name }: { name: string }) {
         alignLeft: true,
         showLabelOverValue: 10,
         valueSize: 24,
+        visibilityContext: [visibilityContext],
         ...enc,
         bounds: [enc.bounds[0], enc.bounds[1] + 30, enc.bounds[2], enc.bounds[3] - 30],
     });
@@ -97,15 +98,12 @@ export function MainView({ name }: { name: string }) {
                         ]}
                     />
 
-                    {/* <KnobValue
-                        audioPlugin="TrackFx"
-                        param="VOLUME"
-                        label={`Mix ${Drum1}`}
-                        {...enc1}
-                        color={ColorTrack1}
-                        track={Drum1Track}
+                    <Rect
+                        bounds={backgroundBounds}
+                        color="background"
                         visibilityContext={[visibilityContext]}
-                    /> */}
+                    />
+                  
                     <Value
                         {...valueParam(enc1)}
                         audioPlugin="TrackFx"
@@ -114,16 +112,7 @@ export function MainView({ name }: { name: string }) {
                         track={Drum1Track}
                         barColor={ColorTrack1}
                     />
-
-                    {/* <KnobValue
-                        audioPlugin="TrackFx"
-                        param="VOLUME"
-                        label={`Mix ${Drum2}`}
-                        {...enc2}
-                        color={ColorTrack2}
-                        track={Drum2Track}
-                        visibilityContext={[visibilityContext]}
-                    /> */}
+                
                     <Value
                         {...valueParam(enc2)}
                         audioPlugin="TrackFx"
@@ -133,15 +122,6 @@ export function MainView({ name }: { name: string }) {
                         barColor={ColorTrack2}
                     />
 
-                    {/* <KnobValue
-                        audioPlugin="TrackFx"
-                        param="VOLUME"
-                        label={`Mix ${Drum3}`}
-                        {...enc3}
-                        color={ColorTrack3}
-                        track={Drum3Track}
-                        visibilityContext={[visibilityContext]}
-                    /> */}
                     <Value
                         {...valueParam(enc3)}
                         audioPlugin="TrackFx"
@@ -151,15 +131,6 @@ export function MainView({ name }: { name: string }) {
                         barColor={ColorTrack3}
                     />
 
-                    {/* <KnobValue
-                        audioPlugin="TrackFx"
-                        param="VOLUME"
-                        label={`Mix ${Drum4}`}
-                        {...enc4}
-                        color={ColorTrack4}
-                        track={Drum4Track}
-                        visibilityContext={[visibilityContext]}
-                    /> */}
                     <Value
                         {...valueParam(enc4)}
                         audioPlugin="TrackFx"
@@ -169,15 +140,6 @@ export function MainView({ name }: { name: string }) {
                         barColor={ColorTrack4}
                     />
 
-                    {/* <KnobValue
-                        audioPlugin="TrackFx2"
-                        param="VOLUME"
-                        label={`Mix ${Synth1}`}
-                        {...enc5}
-                        color={ColorTrack5}
-                        track={Synth1Track}
-                        visibilityContext={[visibilityContext]}
-                    /> */}
                     <Value
                         {...valueParam(enc5)}
                         audioPlugin="TrackFx2"
@@ -187,15 +149,6 @@ export function MainView({ name }: { name: string }) {
                         barColor={ColorTrack5}
                     />
 
-                    {/* <KnobValue
-                        audioPlugin="TrackFx2"
-                        param="VOLUME"
-                        label={`Mix ${Synth2}`}
-                        {...enc6}
-                        color={ColorTrack6}
-                        track={Synth2Track}
-                        visibilityContext={[visibilityContext]}
-                    /> */}
                     <Value
                         {...valueParam(enc6)}
                         audioPlugin="TrackFx2"
@@ -205,15 +158,6 @@ export function MainView({ name }: { name: string }) {
                         barColor={ColorTrack6}
                     />
 
-                    {/* <KnobValue
-                        audioPlugin="TrackFx2"
-                        param="VOLUME"
-                        label={`Mix ${Synth3}`}
-                        {...enc7}
-                        color={ColorTrack7}
-                        track={Synth3Track}
-                        visibilityContext={[visibilityContext]}
-                    /> */}
                     <Value
                         {...valueParam(enc7)}
                         audioPlugin="TrackFx2"
@@ -223,15 +167,6 @@ export function MainView({ name }: { name: string }) {
                         barColor={ColorTrack7}
                     />
 
-                    {/* <KnobValue
-                        audioPlugin="TrackFx2"
-                        param="VOLUME"
-                        label={`Mix ${Sample1}`}
-                        {...enc8}
-                        color={ColorTrack8}
-                        track={Sample1Track}
-                        visibilityContext={[visibilityContext]}
-                    /> */}
                     <Value
                         {...valueParam(enc8)}
                         audioPlugin="TrackFx2"
@@ -241,15 +176,6 @@ export function MainView({ name }: { name: string }) {
                         barColor={ColorTrack8}
                     />
 
-                    {/* <KnobValue
-                        audioPlugin="TrackFx2"
-                        param="VOLUME"
-                        label={`Mix ${Sample2}`}
-                        {...enc9}
-                        color={ColorTrack9}
-                        track={Sample2Track}
-                        visibilityContext={[visibilityContext]}
-                    /> */}
                     <Value
                         {...valueParam(enc9)}
                         audioPlugin="TrackFx2"
@@ -259,15 +185,6 @@ export function MainView({ name }: { name: string }) {
                         barColor={ColorTrack9}
                     />
 
-                    {/* <KnobValue
-                        audioPlugin="TrackFx2"
-                        param="VOLUME"
-                        label={`Mix ${Sample3}`}
-                        {...enc10}
-                        color={ColorTrack10}
-                        track={Sample3Track}
-                        visibilityContext={[visibilityContext]}
-                    /> */}
                     <Value
                         {...valueParam(enc10)}
                         audioPlugin="TrackFx2"
