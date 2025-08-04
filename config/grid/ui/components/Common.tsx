@@ -6,6 +6,7 @@ import { lighten } from '@/libs/ui';
 import {
     A11,
     A12,
+    B11,
     B12,
     btn10,
     btn6,
@@ -120,12 +121,16 @@ export function MuteTracks() {
     );
 }
 
+function ifDef<T>(val: unknown | undefined, obj: T) {
+    return val === undefined ? [] : [obj];
+}
+
 export function MainKeys({
     synthName,
     viewName,
     forcePatchView = false,
 }: {
-    synthName: string;
+    synthName?: string;
     viewName: string;
     forcePatchView?: boolean;
 }) {
@@ -133,14 +138,14 @@ export function MainKeys({
         <>
             <HiddenValue
                 keys={[
-                    {
-                        key: A11,
+                    { key: A11, action: viewName === 'Master' ? `setView:#track` : `setView:Master` },
+                    ...ifDef(synthName, {
+                        key: B11,
                         action:
                             viewName === `${synthName}Seq`
                                 ? `setView:${synthName}`
                                 : `setView:${synthName}Seq`,
-                    },
-
+                    }),
                     { key: A12, action: `contextToggle:${shiftContext}:1:0` },
                     { key: B12, action: `playPause` },
                 ]}
@@ -149,6 +154,7 @@ export function MainKeys({
                         controller: 'Default',
                         colors: [
                             { key: A11, color: ColorButton },
+                            { key: B11, color: synthName ? ColorButton : '#000000' },
                             { key: A12, color: ColorButton },
                             { key: B12, color: ColorButton },
                         ],

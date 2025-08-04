@@ -49,8 +49,8 @@ import {
     seqContextSynth3,
 } from './constantsValue';
 import { DrumViews } from './Drum/DrumViews';
-import { DrumSeqView } from './DrumSeqView';
 import { KickViews } from './Kick/KickViews';
+import { MasterViews } from './Master/MasterViews';
 import { Menu } from './menu';
 import { SampleViews } from './Sample/SampleViews';
 import { SynthViews } from './Synth/SynthViews';
@@ -82,6 +82,7 @@ export const ui = {
         ],
     },
     renderer: 'FB',
+    taggedViews: { track: 'Drum1' },
     views: (
         <>
             <KickViews track={Drum1Track} synthName="Drum1" color={ColorTrack1} />
@@ -97,10 +98,10 @@ export const ui = {
             <SampleViews track={Sample2Track} synthName="Sample2" color={ColorTrack9} title={Sample2} contextId={seqContextSample2} />
             <SampleViews track={Sample3Track} synthName="Sample3" color={ColorTrack10} title={Sample3} contextId={seqContextSample3} />
 
-            <DrumSeqView name="DrumSeq" />
+            <MasterViews />
 
+            {/* Not implemented... */}
             <Menu />
-
             <ClipsView name="Clips" />
         </>
     ),

@@ -35,9 +35,11 @@ protected:
         ComponentInterface* component;
     };
 
-    View* lastView = NULL;
+    View* previousView = NULL;
 
     std::vector<View*> views;
+
+    std::unordered_map<std::string, std::string> taggedViews;
 
 public:
     View* view = NULL;
@@ -45,14 +47,39 @@ public:
     void setView(std::string value, bool force = false)
     {
         logTrace("set view string to %s\n", value.c_str());
-        if (value == "&previous") {
-            value = lastView->name;
+        if (value == "&previous" && previousView != NULL) {
+            value = previousView->name;
         }
+
+        // use # to save a view to a variable a re-use later
+        // e.g.: setView("viewName#viewNameVar");
+        //       setView("#viewNameVar"); <--- will then use the view stored value under "viewNameVar"
+        size_t hashPos = value.find('#');
+        if (hashPos != std::string::npos) {
+            std::string tagName = value.substr(hashPos + 1);
+            value = value.substr(0, hashPos);
+            if (!tagName.empty()) {
+                auto it = taggedViews.find(tagName);
+                if (it != taggedViews.end()) {
+                    if (hashPos == 0) {
+                        value = it->second;
+                    } else {
+                        it->second = value;
+                    }
+                } else if (hashPos != 0) {
+                    taggedViews[tagName] = value;
+                } else {
+                    logWarn("[%d] No view stored under tag: %s", hashPos, tagName.c_str());
+                    return;
+                }
+            }
+        }
+
         for (int i = 0; i < views.size(); i++) {
             if (views[i]->name == value) {
                 if (view != views[i] || force) {
-                    if (lastView != view) {
-                        lastView = view;
+                    if (previousView != view) {
+                        previousView = view;
                     }
                     view = views[i];
                     view->setGroup(view->resetGroupOnSetView ? 0 : view->activeGroup);
@@ -207,8 +234,8 @@ public:
 
         draw->clear();
 
-        if (lastView != NULL) {
-            for (auto& component : lastView->components) {
+        if (previousView != NULL) {
+            for (auto& component : previousView->components) {
                 for (auto* value : component->values) {
                     value->setOnUpdateCallback([](float, void* data) { }, NULL);
                 }
@@ -243,6 +270,10 @@ public:
             }
         }
 #endif
+
+        if (config.contains("taggedViews") && config["taggedViews"].is_object()) {
+            taggedViews = config["taggedViews"];
+        }
 
         // Should happen before views
         if (config.contains("screen")) {

@@ -1,11 +1,13 @@
 ## Pixel TODO
 
-- TODO instead to name each synth with a different name stick to their orignal name and use track to distinct them, so no need of Drum1, Drum2, Drum3...
-
 - TODO handle variations, when pressing shift can select bank, so it would be 10x10= 100 variations, more than enough :p
         - 1 press on variation play it at next loop
         - second press, will play it right away
         - (extra) long press could let select how many loop to wait before to start (but maybe too complicated!)
+
+- TODO handle workspace, see if this concept still make sense...
+        - also provide a way to save preset on github repo
+            - ---> see how to handle ssh or instead use token, but the idea would be to store as less as possible info on zicBox app side (if possible nothing) and delegate everything to the OS...
 
 - TODO mute shortcut, make it part of the Volume plugin, it should save last state before to mute. (in grid, use shift to mute?)
 
@@ -30,6 +32,8 @@
 
 - TODO dsi display
       - sudo sh -c 'setterm --cursor off --blank force --clear > /dev/tty1'
+
+- TODO instead to name each synth with a different name stick to their orignal name and use track to distinct them, so no need of Drum1, Drum2, Drum3...
 
 - TODO mouse on rpi
 - TODO enable motion/mouse on desktop

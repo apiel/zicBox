@@ -43,34 +43,34 @@ export function KeysTracks({ synthName, viewName }: { synthName: string; viewNam
     return (
         <HiddenValue
             keys={[
-                { key: A1, action: viewName === `Drum1` ? `setView:Drum1:page2` : `setView:Drum1` },
+                { key: A1, action: viewName === `Drum1` ? `setView:Drum1:page2#track` : `setView:Drum1#track` },
                 { key: B1, action: `noteOn:Drum1:60` },
 
-                { key: A2, action: `setView:Drum2` },
+                { key: A2, action: `setView:Drum2#track` },
                 { key: B2, action: `noteOn:Drum2:60` },
 
-                { key: A3, action: `setView:Drum3` },
+                { key: A3, action: `setView:Drum3#track` },
                 { key: B3, action: `noteOn:Drum3:60` },
 
-                { key: A4, action: `setView:Drum4` },
+                { key: A4, action: `setView:Drum4#track` },
                 { key: B4, action: `noteOn:Drum4:60` },
 
-                { key: A5, action: viewName === `Synth1` ? `setView:Synth1:page2` : `setView:Synth1` },
+                { key: A5, action: viewName === `Synth1` ? `setView:Synth1:page2#track` : `setView:Synth1#track` },
                 { key: B5, action: `noteOn:Synth1:60` },
 
-                { key: A6, action: viewName === `Synth2` ? `setView:Synth2:page2` : `setView:Synth2` },
+                { key: A6, action: viewName === `Synth2` ? `setView:Synth2:page2#track` : `setView:Synth2#track` },
                 { key: B6, action: `noteOn:Synth2:60` },
 
-                { key: A7, action: viewName === `Synth3` ? `setView:Synth3:page2` : `setView:Synth3` },
+                { key: A7, action: viewName === `Synth3` ? `setView:Synth3:page2#track` : `setView:Synth3#track` },
                 { key: B7, action: `noteOn:Synth3:60` },
 
-                { key: A8, action: `setView:Sample1` },
+                { key: A8, action: `setView:Sample1#track` },
                 { key: B8, action: `noteOn:Sample1:60` },
 
-                { key: A9, action: `setView:Sample2` },
+                { key: A9, action: `setView:Sample2#track` },
                 { key: B9, action: `noteOn:Sample2:60` },
 
-                { key: A10, action: `setView:Sample3` },
+                { key: A10, action: `setView:Sample3#track` },
                 { key: B10, action: `noteOn:Sample3:60` },
             ]}
             controllerColors={[{ controller: 'Default', colors:[

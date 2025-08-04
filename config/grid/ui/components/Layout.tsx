@@ -10,7 +10,7 @@ export type Props = {
     viewName: string;
     content: any;
     color: string;
-    synthName: string;
+    synthName?: string;
     title?: string;
 };
 
