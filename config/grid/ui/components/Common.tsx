@@ -183,7 +183,7 @@ export function MainKeys({
                     { key: A12, action: `contextToggle:${shiftContext}:1:0` },
                     { key: B12, action: `playPause` },
                     { key: C12, action: `setView:Workspaces` },
-                    { key: D12, action: `setView:Shutdown` },
+                    { key: D12, action: `setView:Shutdown`,  action2: `contextToggle:${shiftContext}:1:0`  }, // action2: `setContext:${shiftContext}:0`
                 ]}
                 controllerColors={[
                     {
