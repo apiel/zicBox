@@ -5,40 +5,40 @@ import { darken } from '@/libs/ui';
 import { A1, A10, A2, A3, A4, A5, A6, A7, A8, A9, B1, B10, B2, B3, B4, B5, B6, B7, B8, B9, C1, C10, C2, C3, C4, C5, C6, C7, C8, C9, ColorTrack1, ColorTrack10, ColorTrack2, ColorTrack3, ColorTrack4, ColorTrack5, ColorTrack6, ColorTrack7, ColorTrack8, ColorTrack9, D1, D10, D2, D3, D4, D5, D6, D7, D8, D9 } from '../constants';
 
 function getVariantColor(viewName: string) {
-    if (viewName === `Drum1`) {
+    if (viewName.startsWith(`Drum1`)) {
         return ColorTrack1;
     }
-    if (viewName === `Drum2`) {
+    if (viewName.startsWith(`Drum2`)) {
         return ColorTrack2;
     }
-    if (viewName === `Drum3`) {
+    if (viewName.startsWith(`Drum3`)) {
         return ColorTrack3;
     }
-    if (viewName === `Drum4`) {
+    if (viewName.startsWith(`Drum4`)) {
         return ColorTrack4;
     }
-    if (viewName === `Synth1`) {
+    if (viewName.startsWith(`Synth1`)) {
         return ColorTrack5;
     }
-    if (viewName === `Synth2`) {
+    if (viewName.startsWith(`Synth2`)) {
         return ColorTrack6;
     }
-    if (viewName === `Synth3`) {
+    if (viewName.startsWith(`Synth3`)) {
         return ColorTrack7;
     }
-    if (viewName === `Synth4`) {
+    if (viewName.startsWith(`Synth4`)) {
         return ColorTrack8;
     }
-    if (viewName === `Synth5`) {
+    if (viewName.startsWith(`Synth5`)) {
         return ColorTrack9;
     }
-    if (viewName === `Synth6`) {
+    if (viewName.startsWith(`Synth6`)) {
         return ColorTrack10;
     }
-    return ColorTrack1;
+    return "#000000";
 }
 
-export function KeysTracks({ synthName, viewName }: { synthName: string; viewName: string }) {
+export function KeysTracks({ synthName, viewName }: { synthName?: string; viewName: string }) {
     const variantColor = getVariantColor(viewName);
     return (
         <HiddenValue

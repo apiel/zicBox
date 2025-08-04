@@ -131,7 +131,8 @@ const masterTrack = {
     plugins: [
         audioPlugin('Mixer10', { alias: 'Mixer' }),
         audioPlugin('EffectFilterMultiMode', { alias: 'Filter' }),
-        audioPlugin('EffectGainVolume', { alias: 'Volume' }),
+        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
+        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx2' }),
         audioPlugin('AudioOutputPulse', { alias: 'AudioOutput' }),
         // audioPlugin('AudioOutputAlsa', { alias: 'AudioOutput' }),
         audioPlugin('SerializeTrack', { filename: 'master', maxVariation, workspaceFolder }),
