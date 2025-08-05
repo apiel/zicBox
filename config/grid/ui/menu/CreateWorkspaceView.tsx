@@ -2,9 +2,19 @@ import * as React from '@/libs/react';
 
 import { Keyboard2 } from '@/libs/nativeComponents/Keyboard2';
 import { View } from '@/libs/nativeComponents/View';
-import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { MainKeys } from '../components/Common';
-import { btn10, btn2, btn4, btn5, btn6, btn7, btn8, btn9, KeyInfoPosition, ScreenWidth, shiftContext } from '../constants';
+import {
+    btn10,
+    btn2,
+    btn4,
+    btn5,
+    btn6,
+    btn7,
+    btn8,
+    btn9,
+    ScreenWidth,
+    shiftContext
+} from '../constants';
 
 export type Props = {
     name: string;
@@ -30,15 +40,96 @@ export function CreateWorkspaceView({ name }: Props) {
                     { key: btn9, action: '.backspace' },
                     { key: btn10, action: '.type' },
                 ]}
+                keyLabels={[
+                    'a',
+                    'b',
+                    'c',
+                    'd',
+                    'e',
+                    'f',
+                    'g',
+                    'h',
+                    'i',
+                    'j',
+                    'k',
+                    'l',
+                    'm',
+                    'n',
+                    'o',
+                    'p',
+                    'q',
+                    'r',
+                    's',
+                    't',
+                    'u',
+                    'v',
+                    'w',
+                    'x',
+                    'y',
+                    'z',
+                    '1',
+                    '2',
+                    '3',
+                    '4',
+                    '5',
+                    '6',
+                    '7',
+                    '8',
+                    '9',
+                    '0',
+                    '&icon::backspace::filled',
+                    'Ok',
+                    'Exit',
+                    'Shift',
+                ]}
+                keyLabelsShifted={[
+                    'A',
+                    'B',
+                    'C',
+                    'D',
+                    'E',
+                    'F',
+                    'G',
+                    'H',
+                    'I',
+                    'J',
+                    'K',
+                    'L',
+                    'M',
+                    'N',
+                    'O',
+                    'P',
+                    'Q',
+                    'R',
+                    'S',
+                    'T',
+                    'U',
+                    'V',
+                    'W',
+                    'X',
+                    'Y',
+                    'Z',
+                    '-',
+                    '=',
+                    '_',
+                    '.',
+                    '!',
+                    '%',
+                    '&',
+                    ':',
+                    '$',
+                    '#',
+                    '&icon::backspace::filled',
+                    'Ok',
+                    'Exit',
+                    'Shift',
+                ]}
+
+                keyColors={[
+                    'primary'
+                ]}
             />
 
-            <TextGrid
-                bounds={KeyInfoPosition}
-                rows={[
-                    '&empty &icon::arrowUp::filled &empty Done Cancel',
-                    '&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled &icon::backspace::filled Type',
-                ]}
-            ></TextGrid>
             <MainKeys viewName={name} />
         </View>
     );

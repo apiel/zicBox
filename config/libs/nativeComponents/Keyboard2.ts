@@ -10,4 +10,7 @@ export const Keyboard2 = getJsonComponent<{
     itemBackground?: string;
     font?: string;
     shiftContextId?: number;
+    keyLabels: string[];
+    keyLabelsShifted: string[];
+    keyColors?: string[];
 }>('Keyboard2');

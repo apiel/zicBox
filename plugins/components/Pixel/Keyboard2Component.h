@@ -20,7 +20,6 @@ protected:
 
     Color bgColor;
     Color itemBackground;
-    Color selectionColor;
     Color textColor;
     void* font = NULL;
     int fontSize = 8;
@@ -39,6 +38,10 @@ protected:
 
     uint8_t shiftContextId = 0;
 
+    std::vector<std::string> keys;
+    std::vector<std::string> keysShifted;
+    std::vector<Color> keyColors;
+
 public:
     Keyboard2Component(ComponentInterface::Props props)
         : Component(props, [&](std::string action) {
@@ -50,7 +53,6 @@ public:
         , bgColor(styles.colors.background)
         , textColor(styles.colors.text)
         , itemBackground(lighten(styles.colors.background, 0.5))
-        , selectionColor(styles.colors.primary)
     {
         font = draw.getFont("PoppinsLight_8");
 
@@ -78,9 +80,6 @@ public:
         /// Set the color of the text.
         textColor = draw.getColor(config["textColor"], textColor); //eg: "#ffffff"
 
-        /// Set the color of the selection.
-        selectionColor = draw.getColor(config["selectionColor"], selectionColor); //eg: "#ffffff"
-
         /// Set the color of the item background.
         itemBackground = draw.getColor(config["itemBackground"], itemBackground); //eg: "#ffffff"
 
@@ -91,6 +90,23 @@ public:
         if (config.contains("font")) {
             font = draw.getFont(config["font"].get<std::string>().c_str()); //eg: "PoppinsLight_8"
             fontSize = draw.getDefaultFontSize(font);
+        }
+
+        /// Keys labels
+        if (config.contains("keyLabels") && config["keyLabels"].is_array()) {
+            keys = config["keyLabels"].get<std::vector<std::string>>(); //eg: ["a", "b", "c", ...]
+        }
+
+        /// Keys labels shifted
+        if (config.contains("keyLabelsShifted") && config["keyLabelsShifted"].is_array()) {
+            keysShifted = config["keyLabelsShifted"].get<std::vector<std::string>>(); //eg: ["A", "B", "C", ...]
+        }
+
+        // Keys colors
+        if (config.contains("keyColors") && config["keyColors"].is_array()) {
+            for (int i = 0; i < config["keyColors"].size(); i++) {
+                keyColors.push_back(draw.getColor(config["keyColors"][i].get<std::string>()));
+            }
         }
 
         /*md md_config_end */
@@ -114,84 +130,6 @@ public:
         }
     }
 
-    std::vector<std::string> keys = {
-        "a",
-        "b",
-        "c",
-        "d",
-        "e",
-        "f",
-        "g",
-        "h",
-        "i",
-        "j",
-        "k",
-        "l",
-        "m",
-        "n",
-        "o",
-        "p",
-        "q",
-        "r",
-        "s",
-        "t",
-        "u",
-        "v",
-        "w",
-        "x",
-        "y",
-        "z",
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "0",
-    };
-
-    std::vector<std::string> keysShifted = {
-        "A",
-        "B",
-        "C",
-        "D",
-        "E",
-        "F",
-        "G",
-        "H",
-        "I",
-        "J",
-        "K",
-        "L",
-        "M",
-        "N",
-        "O",
-        "P",
-        "Q",
-        "R",
-        "S",
-        "T",
-        "U",
-        "V",
-        "W",
-        "X",
-        "Y",
-        "Z",
-        "-",
-        "=",
-        "_",
-        ".",
-        "!",
-        "%",
-        "&",
-        ":",
-        "$",
-        "#",
-    };
-
     void render()
     {
         draw.filledRect(relativePosition, size, { bgColor });
@@ -206,31 +144,16 @@ public:
         Point pos;
         std::vector<std::string>& currentKeys = view->contextVar[shiftContextId] != 0 ? keysShifted : keys;
         for (int k = 0; k < currentKeys.size(); k++) {
-            int row = k / 9;
-            int col = k % 9;
+            int row = k / 10;
+            int col = k % 10;
             pos = { x + col * itemSize.w, y + row * itemSize.h };
-            draw.filledRect(pos, { itemSize.w - 2, itemSize.h - 2 }, { k == selection ? selectionColor : itemBackground });
+            Color color = k < keyColors.size() ? keyColors[k] : itemBackground;
+            draw.filledRect(pos, { itemSize.w - 2, itemSize.h - 2 }, { color });
             Point posText = { pos.x + textPos.x, pos.y + textPos.y };
-            // if (!icon.render(keys[k], posText, 6, { textColor }, Icon::CENTER)) {
-            draw.textCentered(posText, currentKeys[k], fontSize, { textColor, .font = font });
-            // }
+            if (!icon.render(currentKeys[k], posText, fontSize, { textColor }, Icon::CENTER)) {
+                draw.textCentered(posText, currentKeys[k], fontSize, { textColor, .font = font });
+            }
         }
-
-        pos = { x + 9 * itemSize.w, y };
-        draw.filledRect(pos, { itemSize.w - 2, itemSize.h - 2 }, { itemBackground });
-        icon.render("&icon::backspace::filled", { pos.x + textPos.x, pos.y + textPos.y }, fontSize, { textColor }, Icon::CENTER);
-
-        pos.y += itemSize.h;
-        draw.filledRect(pos, { itemSize.w - 2, itemSize.h - 2 }, { itemBackground });
-        draw.textCentered({ pos.x + textPos.x, pos.y + textPos.y }, "Ok", fontSize, { textColor, .font = font });
-
-        pos.y += itemSize.h;
-        draw.filledRect(pos, { itemSize.w - 2, itemSize.h - 2 }, { itemBackground });
-        draw.textCentered({ pos.x + textPos.x, pos.y + textPos.y }, "Exit", fontSize, { textColor, .font = font });
-
-        pos.y += itemSize.h;
-        draw.filledRect(pos, { itemSize.w - 2, itemSize.h - 2 }, { itemBackground });
-        draw.textCentered({ pos.x + textPos.x, pos.y + textPos.y }, "Shift", fontSize, { textColor, .font = font });
     }
 
     void onContext(uint8_t index, float value) override
