@@ -47,6 +47,38 @@ public:
         : Component(props, [&](std::string action) {
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
 
+            // start with .type:
+            if (action.rfind(".type:") == 0) {
+                func = [this, action](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        std::string key = action.substr(6);
+                        value += key;
+                        renderNext();
+                    }
+                };
+            }
+            if (action == ".ok") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        done();
+                    }
+                };
+            }
+            if (action == ".exit") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        view->setView(redirectView);
+                    }
+                };
+            }
+            if (action == ".backspace") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        value = value.substr(0, value.size() - 1);
+                        renderNext();
+                    }
+                };
+            }
             return func;
         })
         , icon(props.view->draw)
