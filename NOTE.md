@@ -9,22 +9,15 @@
         - would need a way to reload all variation at once
         - would need a way to reload a single variation
 
-- TODO handle workspace, see if this concept still make sense...
-        - also provide a way to save preset on github repo
-            - ---> see how to handle ssh or instead use token, but the idea would be to store as less as possible info on zicBox app side (if possible nothing) and delegate everything to the OS...
-        - like variation, make workspace switching easy (can still give a name to them) but at the end should not be the main feature...
-            - Could be 10x20? or 20x20
-            - and then there is the repo to even switch the full workspaces...
-        - on pixel, there would not even be workspace but just repo!!
-
 - TODO mute shortcut, make it part of the Volume plugin, it should save last state before to mute. (in grid, use shift to mute?)
-
-- TODO master view! mixer (should it show sound meter?), shift would let us select tempo
 
 - TODO linearInterpolation in generator class repeated. need to see if we can use the already existing one...
 - TODO add velocity to all drum engines
 - TODO optimize drum engines
 - TODO like it was done for transient, maybe we can combine into one parameter for EnvelopTable generator and WavetableGenrator 
+
+- TODO provide a way to save preset on github repo
+            - ---> see how to handle ssh or instead use token, but the idea would be to store as less as possible info on zicBox app side (if possible nothing) and delegate everything to the OS...
 
 - TODO volca drum engine
     - https://cdn.korg.com/us/support/download/files/c65c033ee08932b5bd69303ebf7f31b0.pdf

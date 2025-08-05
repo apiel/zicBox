@@ -47,7 +47,6 @@ public:
         : Component(props, [&](std::string action) {
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
 
-            // start with .type:
             if (action.rfind(".type:") == 0) {
                 func = [this, action](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
@@ -67,6 +66,7 @@ public:
             if (action == ".exit") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
+                        value = "";
                         view->setView(redirectView);
                     }
                 };
@@ -149,9 +149,9 @@ public:
     void resize() override
     {
         itemSize.w = size.w / 10;
-        itemSize.h = size.h / 8;
+        itemSize.h = (size.h-5) / 5;
         textPos.x = itemSize.w / 2;
-        textPos.y = (itemSize.h - 8) / 2;
+        textPos.y = (itemSize.h - fontSize) / 2;
     }
 
     void done()
@@ -171,7 +171,7 @@ public:
         draw.filledRect({ x, y }, { size.w, itemSize.h }, { itemBackground });
         draw.text({ x + 8, y + textPos.y }, value, fontSize, { textColor, .font = font });
 
-        y += itemSize.h + 10;
+        y += itemSize.h + 5;
 
         Point pos;
         std::vector<std::string>& currentKeys = view->contextVar[shiftContextId] != 0 ? keysShifted : keys;

@@ -58,6 +58,7 @@ import {
     D7,
     D8,
     D9,
+    ScreenHeight,
     ScreenWidth,
     SelectorPosition,
 } from '../constants';
@@ -72,7 +73,7 @@ export function WorkspacesView({ name }: Props) {
             <Workspaces
                 workspaceFolder={workspaceFolder}
                 audioPlugin="SerializeTrack"
-                bounds={[0, 0, ScreenWidth, 280]}
+                bounds={[0, 0, ScreenWidth, ScreenHeight - 20]}
                 keys={[
                     { key: D1, action: '.data:LOAD_WORKSPACE', context: { id: 253, value: 0 } },
                     { key: C2, action: '.up', context: { id: 253, value: 0 } },
