@@ -12,6 +12,10 @@
 - TODO handle workspace, see if this concept still make sense...
         - also provide a way to save preset on github repo
             - ---> see how to handle ssh or instead use token, but the idea would be to store as less as possible info on zicBox app side (if possible nothing) and delegate everything to the OS...
+        - like variation, make workspace switching easy (can still give a name to them) but at the end should not be the main feature...
+            - Could be 10x20? or 20x20
+            - and then there is the repo to even switch the full workspaces...
+        - on pixel, there would not even be workspace but just repo!!
 
 - TODO mute shortcut, make it part of the Volume plugin, it should save last state before to mute. (in grid, use shift to mute?)
 
@@ -33,6 +37,10 @@
     ---> should this be a web interface, that show result in live on the hardware... The web interface just allow to drag some abstract element and let us configure them, but final rendering happen in the hardware..
 
 -----------------------------------
+
+- TODO add granular track?
+    - should it just be a sample track
+    - or should it be a master effect track that can collect sound from multiple track and shape them in live, could be between scatter effect and sequencer....
 
 - TODO dsi display
       - sudo sh -c 'setterm --cursor off --blank force --clear > /dev/tty1'

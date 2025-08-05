@@ -37,6 +37,8 @@ protected:
     AudioPlugin* plugin = NULL;
     uint8_t dataId = 0;
 
+    uint8_t shiftContextId = 0;
+
 public:
     Keyboard2Component(ComponentInterface::Props props)
         : Component(props, [&](std::string action) {
@@ -82,6 +84,9 @@ public:
         /// Set the color of the item background.
         itemBackground = draw.getColor(config["itemBackground"], itemBackground); //eg: "#ffffff"
 
+        /// Set context id shared to define the shift.
+        shiftContextId = config.value("shiftContextId", shiftContextId); //eg: 10
+
         /// The font
         if (config.contains("font")) {
             font = draw.getFont(config["font"].get<std::string>().c_str()); //eg: "PoppinsLight_8"
@@ -110,32 +115,6 @@ public:
     }
 
     std::vector<std::string> keys = {
-        "A",
-        "B",
-        "C",
-        "D",
-        "E",
-        "F",
-        "G",
-        "H",
-        "I",
-        "J",
-        "K",
-        "L",
-        "M",
-        "N",
-        "O",
-        "P",
-        "Q",
-        "R",
-        "S",
-        "T",
-        "U",
-        "V",
-        "W",
-        "X",
-        "Y",
-        "Z",
         "a",
         "b",
         "c",
@@ -172,6 +151,35 @@ public:
         "8",
         "9",
         "0",
+    };
+
+    std::vector<std::string> keysShifted = {
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I",
+        "J",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "P",
+        "Q",
+        "R",
+        "S",
+        "T",
+        "U",
+        "V",
+        "W",
+        "X",
+        "Y",
+        "Z",
         "-",
         "=",
         "_",
@@ -196,21 +204,17 @@ public:
         y += itemSize.h + 10;
 
         Point pos;
-        for (int k = 0; k < keys.size(); k++) {
+        std::vector<std::string>& currentKeys = view->contextVar[shiftContextId] != 0 ? keysShifted : keys;
+        for (int k = 0; k < currentKeys.size(); k++) {
             int row = k / 9;
             int col = k % 9;
             pos = { x + col * itemSize.w, y + row * itemSize.h };
             draw.filledRect(pos, { itemSize.w - 2, itemSize.h - 2 }, { k == selection ? selectionColor : itemBackground });
             Point posText = { pos.x + textPos.x, pos.y + textPos.y };
             // if (!icon.render(keys[k], posText, 6, { textColor }, Icon::CENTER)) {
-            draw.textCentered(posText, keys[k], fontSize, { textColor, .font = font });
+            draw.textCentered(posText, currentKeys[k], fontSize, { textColor, .font = font });
             // }
         }
-        // draw.filledRect({ pos.x + itemSize.w, pos.y }, { (itemSize.w * 2) - 2, itemSize.h - 2 }, { keys.size() == selection ? selectionColor : itemBackground });
-        // draw.textCentered({ pos.x + itemSize.w + ((itemSize.w * 2) - 2) / 2, pos.y + textPos.y }, "Back", fontSize, { textColor, .font = font });
-
-        // draw.filledRect({ pos.x + itemSize.w * 3, pos.y }, { (itemSize.w * 2) - 2, itemSize.h - 2 }, { keys.size() + 1 == selection ? selectionColor : itemBackground });
-        // draw.textCentered({ pos.x + itemSize.w * 3 + ((itemSize.w * 2) - 2) / 2, pos.y + textPos.y }, "Done", fontSize, { textColor, .font = font });
 
         pos = { x + 9 * itemSize.w, y };
         draw.filledRect(pos, { itemSize.w - 2, itemSize.h - 2 }, { itemBackground });
@@ -227,5 +231,13 @@ public:
         pos.y += itemSize.h;
         draw.filledRect(pos, { itemSize.w - 2, itemSize.h - 2 }, { itemBackground });
         draw.textCentered({ pos.x + textPos.x, pos.y + textPos.y }, "Shift", fontSize, { textColor, .font = font });
+    }
+
+    void onContext(uint8_t index, float value) override
+    {
+        if (index == shiftContextId) {
+            renderNext();
+        }
+        Component::onContext(index, value);
     }
 };

@@ -3,7 +3,8 @@ import * as React from '@/libs/react';
 import { Keyboard2 } from '@/libs/nativeComponents/Keyboard2';
 import { View } from '@/libs/nativeComponents/View';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
-import { btn10, btn2, btn4, btn5, btn6, btn7, btn8, btn9, KeyInfoPosition, ScreenWidth } from '../constants';
+import { MainKeys } from '../components/Common';
+import { btn10, btn2, btn4, btn5, btn6, btn7, btn8, btn9, KeyInfoPosition, ScreenWidth, shiftContext } from '../constants';
 
 export type Props = {
     name: string;
@@ -18,6 +19,7 @@ export function CreateWorkspaceView({ name }: Props) {
                 redirectView="Workspaces"
                 audioPlugin="SerializeTrack"
                 dataId="CREATE_WORKSPACE"
+                shiftContextId={shiftContext}
                 keys={[
                     { key: btn2, action: '.up' },
                     { key: btn4, action: '.done' },
@@ -37,6 +39,7 @@ export function CreateWorkspaceView({ name }: Props) {
                     '&icon::arrowLeft::filled &icon::arrowDown::filled &icon::arrowRight::filled &icon::backspace::filled Type',
                 ]}
             ></TextGrid>
+            <MainKeys viewName={name} />
         </View>
     );
 }

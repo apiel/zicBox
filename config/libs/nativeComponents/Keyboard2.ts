@@ -9,4 +9,5 @@ export const Keyboard2 = getJsonComponent<{
     selectionColor?: string;
     itemBackground?: string;
     font?: string;
+    shiftContextId?: number;
 }>('Keyboard2');
