@@ -153,13 +153,15 @@ public:
         resize();
 
         jobRendering = [this](unsigned long now) {
-            if (lastIsPlaying != *isPlaying) {
+            if (lastIsPlaying != *isPlaying || (*isPlaying && lastPlayingId != valVariation->get())) {
                 lastIsPlaying = *isPlaying;
+                lastPlayingId = valVariation->get();
                 renderNext();
             }
         };
     }
     bool lastIsPlaying = false;
+    int lastPlayingId = -1;
 
     void resize() override
     {
