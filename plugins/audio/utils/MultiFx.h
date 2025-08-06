@@ -21,29 +21,28 @@ protected:
 
     static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
     static constexpr int DELAY_BUFFER_SIZE = REVERB_BUFFER_SIZE * 3; // 3 second
-    float reverbBuffer[DELAY_BUFFER_SIZE] = { 0.0f };
-    int reverbIndex = 0;
+    float buffer[DELAY_BUFFER_SIZE] = { 0.0f };
+    int bufferIndex = 0;
     float fxReverb(float signal, float amount)
     {
         float reverbAmount = amount;
-        // return applyReverb(signal, reverbAmount, reverbBuffer, reverbIndex, props.sampleRate, REVERB_BUFFER_SIZE);
-        return applyReverb(signal, reverbAmount, reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE);
+        return applyReverb(signal, reverbAmount, buffer, bufferIndex, REVERB_BUFFER_SIZE);
     }
 
     float fxShimmerReverb(float input, float amount)
     {
-        return applyShimmerReverb(input, amount, reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE);
+        return applyShimmerReverb(input, amount, buffer, bufferIndex, REVERB_BUFFER_SIZE);
     }
 
     int shimmerTime = 0;
     float fxShimmer2Reverb(float input, float amount)
     {
-        return applyShimmer2Reverb(input, amount, reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE, shimmerTime);
+        return applyShimmer2Reverb(input, amount, buffer, bufferIndex, REVERB_BUFFER_SIZE, shimmerTime);
     }
 
     float fxReverb2(float signal, float amount)
     {
-        return applyReverb2(signal, amount, reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE);
+        return applyReverb2(signal, amount, buffer, bufferIndex, REVERB_BUFFER_SIZE);
     }
 
     float tanhLookup(float x)
@@ -190,7 +189,7 @@ protected:
         }
 
         float decay = 0.98f + 0.01f * (1.0f - amount); // decay rate based on amount
-        float feedbackSample = reverbBuffer[reverbIndex]; // read from buffer
+        float feedbackSample = buffer[bufferIndex]; // read from buffer
 
         // Simple one-pole lowpass to emphasize bass
         static float lowpassState = 0.0f;
@@ -200,10 +199,10 @@ protected:
 
         // Mix input with feedback and write to buffer
         float out = input + lowpassState * amount;
-        reverbBuffer[reverbIndex] = out * decay;
+        buffer[bufferIndex] = out * decay;
 
         // Increment circular buffer index
-        reverbIndex = (reverbIndex + 1) % REVERB_BUFFER_SIZE;
+        bufferIndex = (bufferIndex + 1) % REVERB_BUFFER_SIZE;
 
         return tanhLookup(out); // Add soft saturation
     }
