@@ -38,82 +38,58 @@ protected:
 
     int clipW = 0;
     int visibleCount = 10;
+    int startIndex = 1;
 
 public:
     ClipsComponent(ComponentInterface::Props props)
         : Component(props, [&](std::string action) {
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
-            if (action == ".toggle") {
-                func = [this](KeypadLayout::KeyMap& keymap) {
+            if (action.rfind(".toggle:") == 0) {
+                int16_t id = std::stoi(action.substr(8));
+                func = [this, id](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
-                        // int16_t id = view->contextVar[selectionBank];
-                        // if (variations[id].exists) {
-                        //     if (isGroupAll) {
-                        //         pluginSerialize->data(loadVariationNextDataId, &id);
-                        //     } else if ((int16_t)valVariation->get() == id) {
-                        //         if (!*isPlaying) {
-                        //             pluginSerialize->data(loadVariationDataId, &id);
-                        //         } else if (valSeqStatus->get() == 1) {
-                        //             valSeqStatus->set(0);
-                        //         } else {
-                        //             valSeqStatus->set(1);
-                        //         }
-                        //         // Ultimately we could check if sequencer is playing so it only start next if it is...
-                        //         // however, to do this, we would have to track another data id again: IS_PLAYING
-                        //         // for the moment let's stick to double press, it is fine...
-                        //     } else if (nextVariationToPlay != NULL && *nextVariationToPlay == -1) {
-                        //         if (!*isPlaying) {
-                        //             pluginSerialize->data(loadVariationDataId, &id);
-                        //         } else if (valSeqStatus->get() == 1) {
-                        //             pluginSerialize->data(loadVariationNextDataId, &id);
-                        //         }
-                        //     } else {
-                        //         pluginSerialize->data(loadVariationDataId, &id);
-                        //     }
-                        //     renderNext();
-                        // }
+                        if ((int16_t)valVariation->get() == id) {
+                            if (!*isPlaying) {
+                                pluginSerialize->data(loadVariationDataId, (void*)&id);
+                            } else if (valSeqStatus->get() == 1) {
+                                valSeqStatus->set(0);
+                            } else {
+                                valSeqStatus->set(1);
+                            }
+                            // Ultimately we could check if sequencer is playing so it only start next if it is...
+                            // however, to do this, we would have to track another data id again: IS_PLAYING
+                            // for the moment let's stick to double press, it is fine...
+                        } else if (nextVariationToPlay != NULL && *nextVariationToPlay == -1) {
+                            if (!*isPlaying) {
+                                pluginSerialize->data(loadVariationDataId, (void*)&id);
+                            } else if (valSeqStatus->get() == 1) {
+                                pluginSerialize->data(loadVariationNextDataId, (void*)&id);
+                            }
+                        } else {
+                            pluginSerialize->data(loadVariationDataId, (void*)&id);
+                        }
+                        renderNext();
                     }
                 };
             }
-            if (action == ".save") {
-                func = [this](KeypadLayout::KeyMap& keymap) {
-                    // if (KeypadLayout::isReleased(keymap)) {
-                    //     int16_t id = view->contextVar[selectionBank];
-                    //     if (pluginSerialize) {
-                    //         pluginSerialize->data(saveVariationDataId, (void*)&id);
-                    //         variations[id].exists = true;
-                    //         // valVariation->set(id);
-                    //         renderNext();
-                    //     }
-                    // }
-                };
-            }
-            if (action == ".delete") {
-                func = [this](KeypadLayout::KeyMap& keymap) {
-                    // if (KeypadLayout::isReleased(keymap)) {
-                    //     int16_t id = view->contextVar[selectionBank];
-                    //     if (variations[id].exists) {
-                    //         pluginSerialize->data(deleteVariationDataId, (void*)&id);
-                    //         variations[id].exists = false;
-                    //         renderNext();
-                    //     }
-                    // }
-                };
-            }
-            if (action == ".saveOrDelete") {
-                func = [this](KeypadLayout::KeyMap& keymap) {
+            if (action.rfind(".save:") == 0) {
+                int16_t id = std::stoi(action.substr(6));
+                func = [this, id](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
-                        // int16_t id = view->contextVar[selectionBank];
-                        // if (variations[id].exists) {
-                        //     pluginSerialize->data(deleteVariationDataId, (void*)&id);
-                        //     variations[id].exists = false;
-                        //     renderNext();
-                        // } else {
-                        //     pluginSerialize->data(saveVariationDataId, (void*)&id);
-                        //     variations[id].exists = true;
-                        //     // valVariation->set(id);
-                        //     renderNext();
-                        // }
+                        if (pluginSerialize) {
+                            pluginSerialize->data(saveVariationDataId, (void*)&id);
+                            // valVariation->set(id);
+                            renderNext();
+                        }
+                    }
+                };
+            }
+            if (action.rfind(".delete:") == 0) {
+                int16_t id = std::stoi(action.substr(8));
+                func = [this, id](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        pluginSerialize->data(deleteVariationDataId, (void*)&id);
+                        renderNext();
                     }
                 };
             }
@@ -169,6 +145,9 @@ public:
         int nextVariation = -1;
         nextVariationToPlay = (int*)pluginSerialize->data(loadVariationNextDataId, &nextVariation);
 
+        // std::string controllerId = config.value("controller", "Default");
+        // controller = getController(controllerId.c_str());
+
         /*md md_config_end */
 
         resize();
@@ -187,6 +166,18 @@ public:
         clipW = size.w / visibleCount;
     }
 
+    // ControllerInterface* controller = NULL;
+    // void initView(uint16_t counter) override
+    // {
+    //     Component::initView(counter);
+    //     renderKeys();
+    // }
+    // void renderKeys()
+    // {
+    //     if (controller) {
+    //     }
+    // }
+
     void render()
     {
         draw.filledRect(relativePosition, size, { bgColor });
@@ -194,21 +185,22 @@ public:
 
         Point center = { (int)(clipW * 0.5), (int)((size.h - fontSize - 1) * 0.5) };
         for (int i = 0; i < visibleCount; i++) {
+            int id = i + startIndex;
             Point pos = { relativePosition.x + i * clipW, relativePosition.y };
-            draw.filledRect({ relativePosition.x + i * clipW, relativePosition.y }, { clipW - 2, size.h }, { i == playingId ? playingClipBgColor : clipBgColor });
+            draw.filledRect({ relativePosition.x + i * clipW, relativePosition.y }, { clipW - 2, size.h }, { id == playingId ? playingClipBgColor : clipBgColor });
             draw.textCentered({ pos.x + center.x, pos.y + center.y }, std::to_string(i + 1), fontSize, { textColor, .maxWidth = clipW });
 
             if (*isPlaying) {
-                if (i == *nextVariationToPlay) {
+                if (id == *nextVariationToPlay) {
                     draw.filledRect({ pos.x + 2, pos.y + 2 }, { 3, 3 }, { playNextColor });
-                } else if (valSeqStatus && i == playingId) {
+                } else if (valSeqStatus && id == playingId) {
                     if (valSeqStatus->get() == 1) {
                         draw.filledRect({ pos.x + 2, pos.y + 2 }, { 3, 3 }, { playColor });
                     } else if (valSeqStatus->get() == 2) {
                         draw.filledRect({ pos.x + 2, pos.y + 2 }, { 3, 3 }, { playNextColor });
                     }
                 }
-            }            
+            }
         }
     }
 };

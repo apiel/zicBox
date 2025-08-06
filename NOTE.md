@@ -9,8 +9,6 @@
         - would need a way to reload all variation at once
         - would need a way to reload a single variation
 
-- TODO delay 
-
 - TODO mute shortcut, make it part of the Volume plugin, it should save last state before to mute. (in grid, use shift to mute?)
 
 - TODO linearInterpolation in generator class repeated. need to see if we can use the already existing one...

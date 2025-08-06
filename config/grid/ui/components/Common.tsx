@@ -13,6 +13,7 @@ import {
     btn7,
     btn8,
     btn9,
+    C11,
     C12,
     ColorBtnOff,
     ColorButton,
@@ -147,7 +148,7 @@ export function MainKeys({
                         action: viewName === 'Master' ? `setView:Master:page2` : `setView:Master`,
                     },
                     ...ifDef(synthName, {
-                        key: B11,
+                        key: C11,
                         action:
                             viewName === `${synthName}Seq`
                                 ? `setView:${synthName}`
@@ -166,6 +167,7 @@ export function MainKeys({
                                     : darken(ColorTrackMaster, 0.9),
                             },
                             { key: B11, color: synthName ? ColorButton : ColorBtnOff },
+                            { key: C11, color: ColorButton },
                             { key: A12, color: ColorButton },
                             { key: B12, color: ColorBtnOff },
                             { key: C12, color: ColorBtnOff },
@@ -191,6 +193,7 @@ export function MainKeys({
                         colors: [
                             { key: A11, color: ColorBtnOff },
                             { key: B11, color: ColorButton },
+                            { key: C11, color: ColorBtnOff },
                             { key: A12, color: ColorButton },
                             { key: B12, color: ColorButton },
                             { key: C12, color: ColorButton },

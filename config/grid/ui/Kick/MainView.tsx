@@ -8,7 +8,7 @@ import { Value } from '@/libs/nativeComponents/Value';
 import { Drum1 } from '../components/Common';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
-import { ScreenWidth } from '../constants';
+import { B1, B10, B2, B3, B4, B5, B6, B7, B8, B9, ScreenWidth, shiftContext } from '../constants';
 import {
     bounds5,
     enc1,
@@ -173,6 +173,37 @@ export function MainView({ name, track, synthName, color }: Props) {
                         track={track}
                         color={color}
                         visibleCount={10}
+                        keys={[
+                            { key: B1, action: `.toggle:1`, context: { id: shiftContext, value: 0 } },
+                            { key: B1, action: `.save:1`, context: { id: shiftContext, value: 1 } },
+            
+                            { key: B2, action: `.toggle:2`, context: { id: shiftContext, value: 0 } },
+                            { key: B2, action: `.save:2`, context: { id: shiftContext, value: 1 } },
+            
+                            { key: B3, action: `.toggle:3`, context: { id: shiftContext, value: 0 } },
+                            { key: B3, action: `.save:3`, context: { id: shiftContext, value: 1 } },
+            
+                            { key: B4, action: `.toggle:4`, context: { id: shiftContext, value: 0 } },
+                            { key: B4, action: `.save:4`, context: { id: shiftContext, value: 1 } },
+            
+                            { key: B5, action: `.toggle:5`, context: { id: shiftContext, value: 0 } },
+                            { key: B5, action: `.save:5`, context: { id: shiftContext, value: 1 } },
+            
+                            { key: B6, action: `.toggle:6`, context: { id: shiftContext, value: 0 } },
+                            { key: B6, action: `.save:6`, context: { id: shiftContext, value: 1 } },
+            
+                            { key: B7, action: `.toggle:7`, context: { id: shiftContext, value: 0 } },
+                            { key: B7, action: `.save:7`, context: { id: shiftContext, value: 1 } },
+            
+                            { key: B8, action: `.toggle:8`, context: { id: shiftContext, value: 0 } },
+                            { key: B8, action: `.save:8`, context: { id: shiftContext, value: 1 } },
+            
+                            { key: B9, action: `.toggle:9`, context: { id: shiftContext, value: 0 } },
+                            { key: B9, action: `.save:9`, context: { id: shiftContext, value: 1 } },
+            
+                            { key: B10, action: `.toggle:10`, context: { id: shiftContext, value: 0 } },
+                            { key: B10, action: `.save:10`, context: { id: shiftContext, value: 1 } },
+                        ]}
                     />
 
                     <KeysTracks synthName={synthName} viewName={name} />
