@@ -8,7 +8,7 @@ import { Value } from '@/libs/nativeComponents/Value';
 import { Drum1 } from '../components/Common';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
-import { B1, B10, B2, B3, B4, B5, B6, B7, B8, B9, ScreenWidth, shiftContext } from '../constants';
+import { B1, B10, B11, B2, B3, B4, B5, B6, B7, B8, B9, ScreenWidth, shiftContext } from '../constants';
 import {
     bounds5,
     enc1,
@@ -203,6 +203,9 @@ export function MainView({ name, track, synthName, color }: Props) {
             
                             { key: B10, action: `.toggle:10`, context: { id: shiftContext, value: 0 } },
                             { key: B10, action: `.save:10`, context: { id: shiftContext, value: 1 } },
+
+                            { key: B11, action: `.bank`, context: { id: shiftContext, value: 0 } },
+                            { key: B11, action: `.reload`, context: { id: shiftContext, value: 1 } },
                         ]}
                     />
 

@@ -40,17 +40,31 @@ protected:
     int visibleCount = 10;
     int startIndex = 1;
 
+    bool allowToggleReload = false;
+
 public:
     ClipsComponent(ComponentInterface::Props props)
         : Component(props, [&](std::string action) {
             std::function<void(KeypadLayout::KeyMap&)> func = NULL;
+            if (action == ".reload") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        int16_t id = (int16_t)valVariation->get();
+                        // logDebug("reload variation %d", id);
+                        pluginSerialize->data(loadVariationDataId, (void*)&id);
+                    }
+                };
+            }
+
             if (action.rfind(".toggle:") == 0) {
                 int16_t id = std::stoi(action.substr(8));
                 func = [this, id](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         if ((int16_t)valVariation->get() == id) {
                             if (!*isPlaying) {
-                                pluginSerialize->data(loadVariationDataId, (void*)&id);
+                                if (allowToggleReload) {
+                                    pluginSerialize->data(loadVariationDataId, (void*)&id);
+                                } // else do nothing
                             } else if (valSeqStatus->get() == 1) {
                                 valSeqStatus->set(0);
                             } else {
@@ -144,6 +158,11 @@ public:
         loadVariationNextDataId = pluginSerialize->getDataId("LOAD_VARIATION_NEXT");
         int nextVariation = -1;
         nextVariationToPlay = (int*)pluginSerialize->data(loadVariationNextDataId, &nextVariation);
+
+        // Allow .toggle action to reload selected variation
+        if (config.contains("allowToggleReload")) {
+            allowToggleReload = config["allowToggleReload"];
+        }
 
         // std::string controllerId = config.value("controller", "Default");
         // controller = getController(controllerId.c_str());
