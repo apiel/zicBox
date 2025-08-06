@@ -251,6 +251,7 @@ public:
             status.setFloat(json["STATUS"]);
         }
         if (json.contains("STEPS")) {
+            steps.clear();
             for (nlohmann::json& stepJson : json["STEPS"]) {
                 Step step;
                 step.hydrateJson(stepJson);

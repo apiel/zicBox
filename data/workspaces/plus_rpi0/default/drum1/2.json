@@ -15,7 +15,7 @@
             },
             {
                 "key": "SHAPE",
-                "value": 0.0
+                "value": 30.0
             },
             {
                 "key": "MACRO",
@@ -43,7 +43,7 @@
             },
             {
                 "key": "GAIN_CLIPPING",
-                "value": 79.0
+                "value": 26.0
             },
             {
                 "key": "HIGH_FREQ_BOOST",
@@ -259,7 +259,7 @@
         ]
     },
     "SerializeTrack": {
-        "VARIATION": 1.0
+        "VARIATION": 2.0
     },
     "TrackFx": {
         "values": [
