@@ -1,13 +1,10 @@
 ## Pixel TODO
 
+- FIXME serialize waveform and loading issue
+
 - TODO handle variations, when pressing shift can select bank, so it would be 10x10= 100 variations, more than enough :p
-        - 1 press on variation play it at next loop
-        - second press, will play it right away
-        - (extra) long press could let select how many loop to wait before to start (but maybe too complicated!)
-        - shift variation save the variation
         - would need a way to save all variation at once
         - would need a way to reload all variation at once
-        - would need a way to reload a single variation
 
 - TODO mute shortcut, make it part of the Volume plugin, it should save last state before to mute. (in grid, use shift to mute?)
 
