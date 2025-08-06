@@ -61,12 +61,7 @@
         "STEPS": null
     },
     "SerializeTrack": {
-        "values": [
-            {
-                "key": "VARIATION",
-                "value": 0.0
-            }
-        ]
+        "VARIATION": 0.0
     },
     "TrackFx": {
         "values": [

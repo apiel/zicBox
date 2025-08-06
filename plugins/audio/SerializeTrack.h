@@ -227,11 +227,16 @@ public:
     void hydrateJson(nlohmann::json& json) override
     {
         // Do not hydrate this plugin, else it would make a loop
-
         if (!initialized && json.contains("VARIATION")) {
             variation.setFloat(json["VARIATION"]);
         }
     }
+
+    void serializeJson(nlohmann::json& json) override
+    {
+        json["VARIATION"] = variation.get();
+    }
+
 
     enum DATA_ID {
         SET_FILENAME,

@@ -59,12 +59,7 @@
         ]
     },
     "SerializeTrack": {
-        "values": [
-            {
-                "key": "VARIATION",
-                "value": 0.0
-            }
-        ]
+        "VARIATION": 0.0
     },
     "Synth1": {
         "values": [
