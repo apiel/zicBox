@@ -18,6 +18,7 @@ class ClipsComponent : public Component {
 protected:
     Color bgColor;
     Color textColor;
+    Color textMissingColor;
     Color playingClipBgColor;
     Color clipBgColor;
     Color playColor;
@@ -41,6 +42,15 @@ protected:
     int startIndex = 1;
 
     bool allowToggleReload = false;
+
+    std::vector<bool> exists;
+
+    void loadExists() {
+        for (int i = 0; i < visibleCount; i++) {
+            int16_t id = i + startIndex;
+            exists.push_back(pluginSerialize->data(pluginSerialize->getDataId("GET_VARIATION"), &id) != NULL);
+        }
+    }
 
 public:
     ClipsComponent(ComponentInterface::Props props)
@@ -92,6 +102,7 @@ public:
                     if (KeypadLayout::isReleased(keymap)) {
                         if (pluginSerialize) {
                             pluginSerialize->data(saveVariationDataId, (void*)&id);
+                            exists[id - startIndex] = true;
                             // valVariation->set(id);
                             renderNext();
                         }
@@ -103,6 +114,7 @@ public:
                 func = [this, id](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         pluginSerialize->data(deleteVariationDataId, (void*)&id);
+                        exists[id - startIndex] = false;
                         renderNext();
                     }
                 };
@@ -111,6 +123,7 @@ public:
         })
         , bgColor(styles.colors.background)
         , textColor(styles.colors.text)
+        , textMissingColor(alpha(styles.colors.text, 0.2))
         , playColor(rgb(35, 161, 35))
         , playNextColor(rgb(253, 111, 14))
         , clipBgColor(styles.colors.primary)
@@ -123,6 +136,7 @@ public:
 
         /// The color of the text
         textColor = draw.getColor(config["textColor"], textColor); //eg: "#ffffff"
+        textMissingColor = alpha(styles.colors.text, 0.2);
 
         /// The color of the text
         playColor = draw.getColor(config["playColor"], playColor); //eg: "#ffffff"
@@ -178,6 +192,8 @@ public:
                 renderNext();
             }
         };
+
+        loadExists();
     }
     bool lastIsPlaying = false;
     int lastPlayingId = -1;
@@ -191,6 +207,7 @@ public:
     // void initView(uint16_t counter) override
     // {
     //     Component::initView(counter);
+    //     // loadExists();
     //     renderKeys();
     // }
     // void renderKeys()
@@ -209,7 +226,8 @@ public:
             int id = i + startIndex;
             Point pos = { relativePosition.x + i * clipW, relativePosition.y };
             draw.filledRect({ relativePosition.x + i * clipW, relativePosition.y }, { clipW - 2, size.h }, { id == playingId ? playingClipBgColor : clipBgColor });
-            draw.textCentered({ pos.x + center.x, pos.y + center.y }, std::to_string(i + 1), fontSize, { textColor, .maxWidth = clipW });
+            Color& color = exists[i] ? textColor : textMissingColor;
+            draw.textCentered({ pos.x + center.x, pos.y + center.y }, std::to_string(i + 1), fontSize, { color, .maxWidth = clipW });
 
             if (*isPlaying) {
                 if (id == *nextVariationToPlay) {

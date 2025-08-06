@@ -132,7 +132,7 @@ public:
 
     void setVariation(float value)
     {
-        logDebug("set variation %f\n", value);
+        // logDebug("set variation %f", value);
         m.lock();
         int16_t currentVariation = variation.get();
         variation.setFloat((int16_t)value);
