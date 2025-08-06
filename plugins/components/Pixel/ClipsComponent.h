@@ -172,7 +172,15 @@ public:
         /*md md_config_end */
 
         resize();
+
+        jobRendering = [this](unsigned long now) {
+            if (lastIsPlaying != *isPlaying) {
+                lastIsPlaying = *isPlaying;
+                renderNext();
+            }
+        };
     }
+    bool lastIsPlaying = false;
 
     void resize() override
     {
@@ -190,15 +198,17 @@ public:
             draw.filledRect({ relativePosition.x + i * clipW, relativePosition.y }, { clipW - 2, size.h }, { i == playingId ? playingClipBgColor : clipBgColor });
             draw.textCentered({ pos.x + center.x, pos.y + center.y }, std::to_string(i + 1), fontSize, { textColor, .maxWidth = clipW });
 
-            if (i == *nextVariationToPlay) {
-                draw.filledRect({ pos.x + 2, pos.y + 2 }, { 3, 3 }, { playNextColor });
-            } else if (i == playingId && valSeqStatus) {
-                if (valSeqStatus->get() == 1) {
-                    draw.filledRect({ pos.x + 2, pos.y + 2 }, { 3, 3 }, { playColor });
-                } else if (valSeqStatus->get() == 2) {
+            if (*isPlaying) {
+                if (i == *nextVariationToPlay) {
                     draw.filledRect({ pos.x + 2, pos.y + 2 }, { 3, 3 }, { playNextColor });
+                } else if (valSeqStatus && i == playingId) {
+                    if (valSeqStatus->get() == 1) {
+                        draw.filledRect({ pos.x + 2, pos.y + 2 }, { 3, 3 }, { playColor });
+                    } else if (valSeqStatus->get() == 2) {
+                        draw.filledRect({ pos.x + 2, pos.y + 2 }, { 3, 3 }, { playNextColor });
+                    }
                 }
-            }
+            }            
         }
     }
 };
