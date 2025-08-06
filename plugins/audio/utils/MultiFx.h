@@ -45,6 +45,11 @@ protected:
         return applyReverb2(signal, amount, buffer, bufferIndex, REVERB_BUFFER_SIZE);
     }
 
+    float fxReverb3(float signal, float amount)
+    {
+        return applyReverb3(signal, amount, buffer, bufferIndex, REVERB_BUFFER_SIZE);
+    }
+
     float fxDelay(float input, float amount)
     {
         return applyDelay(input, amount, buffer, bufferIndex, DELAY_BUFFER_SIZE);
@@ -227,6 +232,7 @@ public:
         FX_OFF,
         REVERB,
         REVERB2,
+        REVERB3,
         DELAY,
         DELAY2,
         DELAY3,
@@ -258,6 +264,9 @@ public:
         } else if (p.val.get() == MultiFx::FXType::REVERB2) {
             p.val.setString("Reverb2");
             fxFn = &MultiFx::fxReverb2;
+        } else if (p.val.get() == MultiFx::FXType::REVERB3) {
+            p.val.setString("Reverb3");
+            fxFn = &MultiFx::fxReverb3;
         } else if (p.val.get() == MultiFx::FXType::DELAY) {
             p.val.setString("Delay");
             fxFn = &MultiFx::fxDelay;
