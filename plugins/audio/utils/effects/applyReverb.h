@@ -153,3 +153,16 @@ float applyReverb2(float signal, float amount, float* reverbBuffer, int& reverbI
 {
     return applyDelay(signal, amount, reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE, ReverbVoiceCount, reverbVoices);
 }
+
+static constexpr int DelayVoiceCount = 4; // Reduced from 8 to 4 for efficiency
+BufferVoice delay1Voices[DelayVoiceCount] = {
+    { (int)(48000 * 3 * 0.20f), 0.6f }, // First early reflection
+    { (int)(48000 * 3 * 0.40f), 0.4f }, // Mid reflection
+    { (int)(48000 * 3 * 0.60f), 0.3f }, // Late reflection
+    { (int)(48000 * 3 * 0.80f), 0.2f }, // Very late tail
+};
+
+float applyDelay(float signal, float amount, float* buffer, int& index, int BUFFER_SIZE)
+{
+    return applyDelay(signal, amount, buffer, index, BUFFER_SIZE, DelayVoiceCount, delay1Voices);
+}

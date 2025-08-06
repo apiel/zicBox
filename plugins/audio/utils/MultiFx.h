@@ -45,6 +45,11 @@ protected:
         return applyReverb2(signal, amount, buffer, bufferIndex, REVERB_BUFFER_SIZE);
     }
 
+    float fxDelay(float input, float amount)
+    {
+        return applyDelay(input, amount, buffer, bufferIndex, DELAY_BUFFER_SIZE);
+    }
+
     float tanhLookup(float x)
     {
         x = range(x, -1.0f, 1.0f);
@@ -212,6 +217,7 @@ public:
         FX_OFF,
         REVERB,
         REVERB2,
+        DELAY,
         BASS_BOOST,
         DRIVE,
         COMPRESSION,
@@ -240,6 +246,9 @@ public:
         } else if (p.val.get() == MultiFx::FXType::REVERB2) {
             p.val.setString("Reverb2");
             fxFn = &MultiFx::fxReverb2;
+        } else if (p.val.get() == MultiFx::FXType::DELAY) {
+            p.val.setString("Delay");
+            fxFn = &MultiFx::fxDelay;
         } else if (p.val.get() == MultiFx::FXType::BASS_BOOST) {
             p.val.setString("Bass boost");
             fxFn = &MultiFx::fxBoost;
