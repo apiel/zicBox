@@ -161,8 +161,27 @@ BufferVoice delay1Voices[DelayVoiceCount] = {
     { (int)(48000 * 3 * 0.60f), 0.3f }, // Late reflection
     { (int)(48000 * 3 * 0.80f), 0.2f }, // Very late tail
 };
-
 float applyDelay(float signal, float amount, float* buffer, int& index, int BUFFER_SIZE)
 {
     return applyDelay(signal, amount, buffer, index, BUFFER_SIZE, DelayVoiceCount, delay1Voices);
+}
+
+BufferVoice delay2Voices[DelayVoiceCount] = {
+    { (int)(48000 * 3 * 0.05f), 0.5f },
+    { (int)(48000 * 3 * 0.10f), 0.4f },
+    { (int)(48000 * 3 * 0.70f), 0.35f }, // very close to previous one = comb-like flutter
+    { (int)(48000 * 3 * 0.80f), 0.25f },
+};
+float applyDelay2(float signal, float amount, float* buffer, int& index, int BUFFER_SIZE)
+{
+    return applyDelay(signal, amount, buffer, index, BUFFER_SIZE, DelayVoiceCount, delay2Voices);
+}
+
+BufferVoice delay3Voices[2] = {
+    { (int)(48000 * 3 * 0.3f), 0.6f },
+    { (int)(48000 * 3 * 0.6f), 0.4f },
+};
+float applyDelay3(float signal, float amount, float* buffer, int& index, int BUFFER_SIZE)
+{
+    return applyDelay(signal, amount, buffer, index, BUFFER_SIZE, 2, delay3Voices);
 }
