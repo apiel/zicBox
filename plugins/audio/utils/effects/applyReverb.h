@@ -41,16 +41,16 @@ float applyReverb(float signal, float reverbAmount, float* reverbBuffer, int& re
     return signal * (1.0f - mix) + reverbSignal * mix;
 }
 
-struct ReverbVoice {
+struct BufferVoice {
     int delay; // Fixed delay offset
     float gain;
 };
 static constexpr int ReverbVoiceCount = 4; // Reduced from 8 to 4 for efficiency
-ReverbVoice voices[ReverbVoiceCount] = {
-    { 180 * 2, 0.6f }, // First early reflection
-    { 420 * 2, 0.4f }, // Mid reflection
-    { 690 * 2, 0.3f }, // Late reflection
-    { 960 * 2, 0.2f }, // Very late tail
+BufferVoice reverbVoices[ReverbVoiceCount] = {
+    { 1800 * 2, 0.6f }, // First early reflection
+    { 4200 * 2, 0.4f }, // Mid reflection
+    { 6900 * 2, 0.3f }, // Late reflection
+    { 9600 * 2, 0.2f }, // Very late tail
 };
 
 float applyShimmerReverb(float input, float amount, float* reverbBuffer, int& reverbIndex, int REVERB_BUFFER_SIZE)
@@ -65,13 +65,13 @@ float applyShimmerReverb(float input, float amount, float* reverbBuffer, int& re
     float reverbOut = 0.0f;
 
     for (uint8_t i = 0; i < ReverbVoiceCount; i++) {
-        int readIndex = (reverbIndex + REVERB_BUFFER_SIZE - voices[i].delay) % REVERB_BUFFER_SIZE;
+        int readIndex = (reverbIndex + REVERB_BUFFER_SIZE - reverbVoices[i].delay) % REVERB_BUFFER_SIZE;
         float delayedSample = reverbBuffer[readIndex];
 
         // Apply pitch shift (simple octave up using sine modulation)
         float pitchShifted = delayedSample * sin((float)readIndex * 0.01f); // crude pitch variation
 
-        reverbOut += pitchShifted * voices[i].gain;
+        reverbOut += pitchShifted * reverbVoices[i].gain;
     }
 
     // Global feedback
@@ -96,7 +96,7 @@ float applyShimmer2Reverb(float input, float amount, float* reverbBuffer, int& r
     float reverbOut = 0.0f;
 
     for (uint8_t i = 0; i < ReverbVoiceCount; i++) {
-        int readIndex = (reverbIndex + REVERB_BUFFER_SIZE - voices[i].delay) % REVERB_BUFFER_SIZE;
+        int readIndex = (reverbIndex + REVERB_BUFFER_SIZE - reverbVoices[i].delay) % REVERB_BUFFER_SIZE;
         float delayedSample = reverbBuffer[readIndex];
 
         // Use shimmerTime for modulation — phase moves smoothly
@@ -105,7 +105,7 @@ float applyShimmer2Reverb(float input, float amount, float* reverbBuffer, int& r
         // Simple pitch modulation by amplitude mod
         float modulatedSample = delayedSample * (0.7f + 0.3f * mod);
 
-        reverbOut += modulatedSample * voices[i].gain;
+        reverbOut += modulatedSample * reverbVoices[i].gain;
     }
 
     // Feedback to buffer
@@ -120,31 +120,36 @@ float applyShimmer2Reverb(float input, float amount, float* reverbBuffer, int& r
     return input * (1.0f - mix) + reverbOut * mix;
 }
 
-float applyReverb2(float signal, float amount, float* reverbBuffer, int& reverbIndex, int REVERB_BUFFER_SIZE)
+float applyDelay(float signal, float amount, float* buffer, int& index, int BUFFER_SIZE, int voiceCount, BufferVoice* voices)
 {
     if (amount == 0.0f) {
         return signal;
     }
 
     // Store input signal in buffer
-    reverbBuffer[reverbIndex] = signal;
+    buffer[index] = signal;
 
     float reverbOut = 0.0f;
 
     // Process only 4 key delay taps
-    for (uint8_t i = 0; i < ReverbVoiceCount; i++) {
-        int readIndex = (reverbIndex + REVERB_BUFFER_SIZE - voices[i].delay) % REVERB_BUFFER_SIZE;
-        reverbOut += reverbBuffer[readIndex] * voices[i].gain;
+    for (uint8_t i = 0; i < voiceCount; i++) {
+        int readIndex = (index + BUFFER_SIZE - voices[i].delay) % BUFFER_SIZE;
+        reverbOut += buffer[readIndex] * voices[i].gain;
     }
 
     // Apply global feedback (reduces CPU by avoiding per-voice feedback writes)
     float globalFeedback = amount * 0.6f;
-    reverbBuffer[reverbIndex] = signal + reverbOut * globalFeedback;
+    buffer[index] = signal + reverbOut * globalFeedback;
 
     // Advance buffer index
-    reverbIndex = (reverbIndex + 1) % REVERB_BUFFER_SIZE;
+    index = (index + 1) % BUFFER_SIZE;
 
     // Final wet/dry mix
     float mix = amount * 0.8f;
     return signal * (1.0f - mix) + reverbOut * mix;
+}
+
+float applyReverb2(float signal, float amount, float* reverbBuffer, int& reverbIndex, int REVERB_BUFFER_SIZE)
+{
+    return applyDelay(signal, amount, reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE, ReverbVoiceCount, reverbVoices);
 }
