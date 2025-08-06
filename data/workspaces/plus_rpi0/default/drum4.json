@@ -1,6 +1,6 @@
 {
     "Drum4": {
-        "sampleFile": "kick_12.wav",
+        "sampleFile": "kick_01.wav",
         "values": [
             {
                 "key": "ENGINE",
@@ -24,7 +24,7 @@
             },
             {
                 "key": "VAL_5",
-                "value": 21.0
+                "value": 10.0
             },
             {
                 "key": "VAL_6",
@@ -40,11 +40,11 @@
             },
             {
                 "key": "VAL_9",
-                "value": 5.0
+                "value": 1.0
             },
             {
                 "key": "VAL_10",
-                "value": 83.0
+                "value": 14.0
             },
             {
                 "key": "DURATION",
@@ -52,7 +52,7 @@
             },
             {
                 "key": "AMP_MORPH",
-                "value": 22.0
+                "value": 52.0
             }
         ]
     },

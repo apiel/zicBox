@@ -45,8 +45,15 @@ struct ReverbVoice {
     int delay; // Fixed delay offset
     float gain;
 };
+static constexpr int ReverbVoiceCount = 4; // Reduced from 8 to 4 for efficiency
+ReverbVoice voices[ReverbVoiceCount] = {
+    { 180 * 2, 0.6f }, // First early reflection
+    { 420 * 2, 0.4f }, // Mid reflection
+    { 690 * 2, 0.3f }, // Late reflection
+    { 960 * 2, 0.2f }, // Very late tail
+};
 
-float applyShimmerReverb(float input, float amount, float* reverbBuffer, int& reverbIndex, int REVERB_BUFFER_SIZE, int ReverbVoiceCount, ReverbVoice* voices)
+float applyShimmerReverb(float input, float amount, float* reverbBuffer, int& reverbIndex, int REVERB_BUFFER_SIZE)
 {
     if (amount == 0.0f) {
         return input;
@@ -79,7 +86,7 @@ float applyShimmerReverb(float input, float amount, float* reverbBuffer, int& re
     return input * (1.0f - mix) + reverbOut * mix;
 }
 
-float applyShimmer2Reverb(float input, float amount, float* reverbBuffer, int& reverbIndex, int REVERB_BUFFER_SIZE, int ReverbVoiceCount, ReverbVoice* voices, int& shimmerTime)
+float applyShimmer2Reverb(float input, float amount, float* reverbBuffer, int& reverbIndex, int REVERB_BUFFER_SIZE, int& shimmerTime)
 {
     if (amount == 0.0f)
         return input;
@@ -113,7 +120,7 @@ float applyShimmer2Reverb(float input, float amount, float* reverbBuffer, int& r
     return input * (1.0f - mix) + reverbOut * mix;
 }
 
-float applyReverb2(float signal, float amount, float* reverbBuffer, int& reverbIndex, int REVERB_BUFFER_SIZE, int ReverbVoiceCount, ReverbVoice* voices)
+float applyReverb2(float signal, float amount, float* reverbBuffer, int& reverbIndex, int REVERB_BUFFER_SIZE)
 {
     if (amount == 0.0f) {
         return signal;

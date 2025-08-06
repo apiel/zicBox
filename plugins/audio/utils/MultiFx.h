@@ -20,7 +20,8 @@ protected:
     float fxOff(float input, float) { return input; }
 
     static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
-    float reverbBuffer[REVERB_BUFFER_SIZE] = { 0.0f };
+    static constexpr int DELAY_BUFFER_SIZE = REVERB_BUFFER_SIZE * 3; // 3 second
+    float reverbBuffer[DELAY_BUFFER_SIZE] = { 0.0f };
     int reverbIndex = 0;
     float fxReverb(float signal, float amount)
     {
@@ -29,28 +30,20 @@ protected:
         return applyReverb(signal, reverbAmount, reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE);
     }
 
-    static constexpr int ReverbVoiceCount = 4; // Reduced from 8 to 4 for efficiency
-    ReverbVoice voices[ReverbVoiceCount] = {
-        { 180 * 2, 0.6f }, // First early reflection
-        { 420 * 2, 0.4f }, // Mid reflection
-        { 690 * 2, 0.3f }, // Late reflection
-        { 960 * 2, 0.2f }, // Very late tail
-    };
-
     float fxShimmerReverb(float input, float amount)
     {
-        return applyShimmerReverb(input, amount, reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE, ReverbVoiceCount, voices);
+        return applyShimmerReverb(input, amount, reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE);
     }
 
     int shimmerTime = 0;
     float fxShimmer2Reverb(float input, float amount)
     {
-        return applyShimmer2Reverb(input, amount, reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE, ReverbVoiceCount, voices, shimmerTime);
+        return applyShimmer2Reverb(input, amount, reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE, shimmerTime);
     }
 
     float fxReverb2(float signal, float amount)
     {
-        return applyReverb2(signal, amount, reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE, ReverbVoiceCount, voices);
+        return applyReverb2(signal, amount, reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE);
     }
 
     float tanhLookup(float x)
