@@ -1,5 +1,6 @@
 import * as React from '@/libs/react';
 
+import { Clips } from '@/libs/nativeComponents/Clips';
 import { GraphEncoder } from '@/libs/nativeComponents/GraphEncoder';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
@@ -7,6 +8,7 @@ import { Value } from '@/libs/nativeComponents/Value';
 import { Drum1 } from '../components/Common';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
+import { ScreenWidth } from '../constants';
 import {
     bounds5,
     enc1,
@@ -24,7 +26,7 @@ import {
     encBottomValue,
     encTopValue,
     graphBounds,
-    seqCardBounds_small
+    seqCardBounds_small,
 } from '../constantsValue';
 
 export type Props = {
@@ -164,6 +166,13 @@ export function MainView({ name, track, synthName, color }: Props) {
                         audioPlugin={`Sequencer`}
                         track={track}
                         // contextId={seqContextDrum1}
+                    />
+
+                    <Clips
+                        bounds={[40, 625, ScreenWidth - 80, 14]}
+                        track={track}
+                        color={color}
+                        visibleCount={10}
                     />
 
                     <KeysTracks synthName={synthName} viewName={name} />
