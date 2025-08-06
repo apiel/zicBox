@@ -354,9 +354,12 @@ public:
             }
             return NULL;
         }
-        case DATA_ID::LOAD_VARIATION_NEXT:
-            nextVariationToPlay = *(int16_t*)userdata;
+        case DATA_ID::LOAD_VARIATION_NEXT: {
+            if (userdata) {
+                nextVariationToPlay = *(int16_t*)userdata;
+            }
             return &nextVariationToPlay;
+        }
         case DATA_ID::DELETE_VARIATION: {
             if (userdata) {
                 int id = *(int16_t*)userdata;

@@ -18,6 +18,7 @@ class ClipsComponent : public Component {
 protected:
     Color bgColor;
     Color textColor;
+    Color playingClipBgColor;
     Color clipBgColor;
     Color playColor;
     Color playNextColor;
@@ -34,12 +35,6 @@ protected:
     ValueInterface* valSeqStatus = NULL;
     bool* isPlaying = NULL;
     int* nextVariationToPlay = NULL;
-
-    struct Variation {
-        bool exists;
-        // std::string filepath;
-    };
-    std::vector<Variation> variations;
 
     int clipW = 0;
     int visibleCount = 10;
@@ -146,17 +141,18 @@ public:
         playNextColor = draw.getColor(config["playNextColor"], playNextColor); //eg: "#ffffff"
 
         /// The color of the text
-        clipBgColor = draw.getColor(config["color"], clipBgColor); //eg: "#ffffff"
+        playingClipBgColor = draw.getColor(config["color"], playingClipBgColor); //eg: "#ffffff"
+        clipBgColor = alpha(playingClipBgColor, 0.5); //eg: "#ffffff"
 
         /// The number of visible clips
         visibleCount = config.value("visibleCount", visibleCount); //eg: 10
 
         /// The sequencer audio plugin.
         pluginSeq = &getPlugin(config.value("sequencerPlugin", "Sequencer"), track); //eg: "audio_plugin_name"
+        isPlaying = (bool*)pluginSeq->data(pluginSeq->getDataId("IS_PLAYING"));
         if (pluginSeq != NULL) {
             valSeqStatus = watch(pluginSeq->getValue("STATUS"));
         }
-        isPlaying = (bool*)pluginSeq->data(pluginSeq->getDataId("IS_PLAYING"));
 
         /// The audio plugin to get serialized data.
         pluginSerialize = &getPlugin(config.value("serializerPlugin", "SerializeTrack"), track); //eg: "audio_plugin_name"
@@ -172,11 +168,6 @@ public:
         loadVariationNextDataId = pluginSerialize->getDataId("LOAD_VARIATION_NEXT");
         int nextVariation = -1;
         nextVariationToPlay = (int*)pluginSerialize->data(loadVariationNextDataId, &nextVariation);
-
-        for (int i = 0; i < valVariation->props().max; i++) {
-            bool exists = pluginSerialize->data(pluginSerialize->getDataId("GET_VARIATION"), &i) != NULL;
-            variations.push_back({ exists });
-        }
 
         /*md md_config_end */
 
@@ -196,41 +187,18 @@ public:
         Point center = { (int)(clipW * 0.5), (int)((size.h - fontSize - 1) * 0.5) };
         for (int i = 0; i < visibleCount; i++) {
             Point pos = { relativePosition.x + i * clipW, relativePosition.y };
-            draw.filledRect({ relativePosition.x + i * clipW, relativePosition.y }, { clipW - 2, size.h }, { clipBgColor });
+            draw.filledRect({ relativePosition.x + i * clipW, relativePosition.y }, { clipW - 2, size.h }, { i == playingId ? playingClipBgColor : clipBgColor });
             draw.textCentered({ pos.x + center.x, pos.y + center.y }, std::to_string(i + 1), fontSize, { textColor, .maxWidth = clipW });
+
+            if (i == *nextVariationToPlay) {
+                draw.filledRect({ pos.x + 2, pos.y + 2 }, { 3, 3 }, { playNextColor });
+            } else if (i == playingId && valSeqStatus) {
+                if (valSeqStatus->get() == 1) {
+                    draw.filledRect({ pos.x + 2, pos.y + 2 }, { 3, 3 }, { playColor });
+                } else if (valSeqStatus->get() == 2) {
+                    draw.filledRect({ pos.x + 2, pos.y + 2 }, { 3, 3 }, { playNextColor });
+                }
+            }
         }
-
-        // int selection = view->contextVar[selectionBank];
-        // int start = selection >= visibleCount ? selection - visibleCount + 1 : 0;
-        // for (int i = start, v = 0; i < count && v < visibleCount; i++, v++) {
-        //     Variation& variation = variations[i];
-        //     // int y = relativePosition.y + i * clipH;
-        //     int y = relativePosition.y + (i - start) * clipH;
-
-        //     bool selected = (isActive || isGroupAll) && i == selection;
-        //     draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { selected ? selectionColor : foreground });
-
-        //     if (variation.exists && (i == playingId || i == *nextVariationToPlay)) {
-        //         // draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { darken(separatorColor, 0.8) });
-        //         // draw.filledRect({ relativePosition.x, y }, { size.w, 2 }, { separatorColor });
-
-        //         if (i == *nextVariationToPlay) {
-        //             draw.filledRect({ relativePosition.x + size.w - 5, y + 3 }, { 3, 3 }, { playNextColor });
-        //         } else if (valSeqStatus) {
-        //             if (valSeqStatus->get() == 1) {
-        //                 draw.filledRect({ relativePosition.x + size.w - 5, y + 3 }, { 3, 3 }, { playColor });
-        //             } else if (valSeqStatus->get() == 2) {
-        //                 draw.filledRect({ relativePosition.x + size.w - 5, y + 3 }, { 3, 3 }, { playNextColor });
-        //             }
-        //         }
-        //     } else {
-        //         // draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { foreground });
-        //         // draw.filledRect({ relativePosition.x, y }, { size.w, 1 }, { darken(separatorColor, 0.3) });
-        //     }
-
-        //     if (variation.exists) {
-        //         draw.textCentered({ relativePosition.x + (int)(size.w * 0.5), y + (int)((clipH - 12) * 0.5) }, std::to_string(i + 1), 12, { textColor, .maxWidth = size.w });
-        //     }
-        // }
     }
 };
