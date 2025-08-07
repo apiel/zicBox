@@ -32,6 +32,7 @@ protected:
     uint8_t loadVariationNextDataId = -1;
     uint8_t saveVariationDataId = -1;
     uint8_t deleteVariationDataId = -1;
+    uint8_t variationExistsDataId = -1;
     AudioPlugin* pluginSeq = NULL;
     ValueInterface* valSeqStatus = NULL;
     bool* isPlaying = NULL;
@@ -43,14 +44,7 @@ protected:
 
     bool allowToggleReload = false;
 
-    std::vector<bool> exists;
-
-    void loadExists() {
-        for (int i = 0; i < visibleCount; i++) {
-            int16_t id = i + startIndex;
-            exists.push_back(pluginSerialize->data(pluginSerialize->getDataId("VARIATION_EXISTS"), &id) != NULL);
-        }
-    }
+    bool variationExists(int id) { return pluginSerialize->data(variationExistsDataId, &id) != NULL; }
 
 public:
     ClipsComponent(ComponentInterface::Props props)
@@ -102,7 +96,6 @@ public:
                     if (KeypadLayout::isReleased(keymap)) {
                         if (pluginSerialize) {
                             pluginSerialize->data(saveVariationDataId, (void*)&id);
-                            exists[id - startIndex] = true;
                             // valVariation->set(id);
                             renderNext();
                         }
@@ -114,7 +107,6 @@ public:
                 func = [this, id](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         pluginSerialize->data(deleteVariationDataId, (void*)&id);
-                        exists[id - startIndex] = false;
                         renderNext();
                     }
                 };
@@ -170,6 +162,7 @@ public:
         deleteVariationDataId = pluginSerialize->getDataId("DELETE_VARIATION");
         loadVariationDataId = pluginSerialize->getDataId("LOAD_VARIATION");
         loadVariationNextDataId = pluginSerialize->getDataId("LOAD_VARIATION_NEXT");
+        variationExistsDataId = pluginSerialize->getDataId("VARIATION_EXISTS");
         int nextVariation = -1;
         nextVariationToPlay = (int*)pluginSerialize->data(loadVariationNextDataId, &nextVariation);
 
@@ -192,8 +185,6 @@ public:
                 renderNext();
             }
         };
-
-        loadExists();
     }
     bool lastIsPlaying = false;
     int lastPlayingId = -1;
@@ -226,7 +217,7 @@ public:
             int id = i + startIndex;
             Point pos = { relativePosition.x + i * clipW, relativePosition.y };
             draw.filledRect({ relativePosition.x + i * clipW, relativePosition.y }, { clipW - 2, size.h }, { id == playingId ? playingClipBgColor : clipBgColor });
-            Color& color = exists[i] ? textColor : textMissingColor;
+            Color& color = variationExists(id) ? textColor : textMissingColor;
             draw.textCentered({ pos.x + center.x, pos.y + center.y }, std::to_string(i + 1), fontSize, { color, .maxWidth = clipW });
 
             if (*isPlaying) {

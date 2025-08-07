@@ -35,6 +35,7 @@ protected:
     uint8_t loadVariationNextDataId = -1;
     uint8_t saveVariationDataId = -1;
     uint8_t deleteVariationDataId = -1;
+    uint8_t variationExistsDataId = -1;
     AudioPlugin* pluginSeq = NULL;
     ValueInterface* valSeqStatus = NULL;
     bool* isPlaying = NULL;
@@ -42,12 +43,6 @@ protected:
     bool showSelectionRect = false;
 
     int encoderId = -1;
-
-    struct Variation {
-        bool exists;
-        // std::string filepath;
-    };
-    std::vector<Variation> variations;
 
     int clipH = 17;
 
@@ -65,6 +60,8 @@ protected:
         }
         return false;
     }
+
+    bool variationExists(int id) { return pluginSerialize->data(variationExistsDataId, &id) != NULL; }
 
 public:
     ClipsComponent(ComponentInterface::Props props)
@@ -94,7 +91,7 @@ public:
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         int16_t id = view->contextVar[selectionBank];
-                        if (variations[id].exists) {
+                        if (variationExists(id)) {
                             if (isGroupAll) {
                                 pluginSerialize->data(loadVariationNextDataId, &id);
                             } else if ((int16_t)valVariation->get() == id) {
@@ -128,7 +125,6 @@ public:
                         int16_t id = view->contextVar[selectionBank];
                         if (pluginSerialize) {
                             pluginSerialize->data(saveVariationDataId, (void*)&id);
-                            variations[id].exists = true;
                             // valVariation->set(id);
                             renderNext();
                         }
@@ -139,9 +135,8 @@ public:
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         int16_t id = view->contextVar[selectionBank];
-                        if (variations[id].exists) {
+                        if (variationExists(id)) {
                             pluginSerialize->data(deleteVariationDataId, (void*)&id);
-                            variations[id].exists = false;
                             renderNext();
                         }
                     }
@@ -151,13 +146,11 @@ public:
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         int16_t id = view->contextVar[selectionBank];
-                        if (variations[id].exists) {
+                        if (variationExists(id)) {
                             pluginSerialize->data(deleteVariationDataId, (void*)&id);
-                            variations[id].exists = false;
                             renderNext();
                         } else {
                             pluginSerialize->data(saveVariationDataId, (void*)&id);
-                            variations[id].exists = true;
                             // valVariation->set(id);
                             renderNext();
                         }
@@ -220,13 +213,9 @@ public:
         deleteVariationDataId = pluginSerialize->getDataId("DELETE_VARIATION");
         loadVariationDataId = pluginSerialize->getDataId("LOAD_VARIATION");
         loadVariationNextDataId = pluginSerialize->getDataId("LOAD_VARIATION_NEXT");
+        variationExistsDataId = pluginSerialize->getDataId("VARIATION_EXISTS");
         int nextVariation = -1;
         nextVariationToPlay = (int*)pluginSerialize->data(loadVariationNextDataId, &nextVariation);
-
-        for (int i = 0; i < valVariation->props().max; i++) {
-            bool exists = pluginSerialize->data(pluginSerialize->getDataId("VARIATION_EXISTS"), &i) != NULL;
-            variations.push_back({ exists });
-        }
 
         /*md md_config_end */
     }
@@ -236,18 +225,17 @@ public:
         draw.filledRect(relativePosition, size, { bgColor });
         if (valVariation) {
             int playingId = valVariation->get();
-            int count = variations.size();
             int selection = view->contextVar[selectionBank];
             int start = selection >= visibleCount ? selection - visibleCount + 1 : 0;
-            for (int i = start, v = 0; i < count && v < visibleCount; i++, v++) {
-                Variation& variation = variations[i];
+            for (int i = start, v = 0; i < visibleCount && v < visibleCount; i++, v++) {
                 // int y = relativePosition.y + i * clipH;
                 int y = relativePosition.y + (i - start) * clipH;
 
                 bool selected = (isActive || isGroupAll) && i == selection;
                 draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { selected ? selectionColor : foreground });
 
-                if (variation.exists && (i == playingId || i == *nextVariationToPlay)) {
+                bool exists = variationExists(i);
+                if (exists && (i == playingId || i == *nextVariationToPlay)) {
                     // draw.filledRect({ relativePosition.x, y }, { size.w, clipH - 1 }, { darken(barColor, 0.8) });
                     draw.filledRect({ relativePosition.x, y }, { size.w, 2 }, { barColor });
 
@@ -265,7 +253,7 @@ public:
                     draw.filledRect({ relativePosition.x, y }, { size.w, 1 }, { darken(barColor, 0.3) });
                 }
 
-                if (variation.exists) {
+                if (exists) {
                     draw.textCentered({ relativePosition.x + (int)(size.w * 0.5), y + (int)((clipH - 12) * 0.5) }, std::to_string(i + 1), 12, { textColor, .maxWidth = size.w });
                 }
 

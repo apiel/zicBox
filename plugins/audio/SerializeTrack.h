@@ -237,6 +237,7 @@ public:
         json["VARIATION"] = variation.get();
     }
 
+    std::vector<int> variationExists = std::vector<int>(1000, -1);
     std::string dataStr;
     DataFn dataFunctions[13] = {
         { "SET_FILENAME", [this](void* userdata) {
@@ -263,8 +264,12 @@ public:
         { "VARIATION_EXISTS", [this](void* userdata) {
              if (userdata) {
                  int id = *(int16_t*)userdata;
-                 bool fileExists = std::filesystem::exists(getVariationFilepath(id));
-                 return (void*)(fileExists ? &fileExists : NULL);
+                 if (variationExists[id] == -1) {
+                     bool fileExists = std::filesystem::exists(getVariationFilepath(id));
+                     variationExists[id] = fileExists ? 1 : 0;
+                 }
+                //  return (void*)&variationExists[id];
+                return variationExists[id] == 1 ? (void*)true : (void*)NULL;
              }
              return (void*)NULL;
          } },
@@ -282,6 +287,7 @@ public:
                  m.lock();
                  saveVariation(id);
                  m.unlock();
+                 variationExists[id] = 1;
                  variation.setFloat(id);
              }
              return (void*)NULL;
@@ -307,6 +313,7 @@ public:
              if (userdata) {
                  int id = *(int16_t*)userdata;
                  std::filesystem::remove(getVariationFilepath(id));
+                 variationExists[id] = 0;
              }
              return (void*)NULL;
          } },
