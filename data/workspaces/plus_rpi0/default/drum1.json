@@ -19,7 +19,7 @@
             },
             {
                 "key": "MACRO",
-                "value": 94.0
+                "value": 30.0
             },
             {
                 "key": "PITCH",
@@ -259,7 +259,7 @@
         ]
     },
     "SerializeTrack": {
-        "VARIATION": 2.0
+        "VARIATION": 1.0
     },
     "TrackFx": {
         "values": [

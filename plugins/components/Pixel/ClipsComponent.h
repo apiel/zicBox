@@ -48,7 +48,7 @@ protected:
     void loadExists() {
         for (int i = 0; i < visibleCount; i++) {
             int16_t id = i + startIndex;
-            exists.push_back(pluginSerialize->data(pluginSerialize->getDataId("GET_VARIATION"), &id) != NULL);
+            exists.push_back(pluginSerialize->data(pluginSerialize->getDataId("VARIATION_EXISTS"), &id) != NULL);
         }
     }
 

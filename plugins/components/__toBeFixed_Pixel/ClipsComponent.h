@@ -224,7 +224,7 @@ public:
         nextVariationToPlay = (int*)pluginSerialize->data(loadVariationNextDataId, &nextVariation);
 
         for (int i = 0; i < valVariation->props().max; i++) {
-            bool exists = pluginSerialize->data(pluginSerialize->getDataId("GET_VARIATION"), &i) != NULL;
+            bool exists = pluginSerialize->data(pluginSerialize->getDataId("VARIATION_EXISTS"), &i) != NULL;
             variations.push_back({ exists });
         }
 

@@ -237,171 +237,110 @@ public:
         json["VARIATION"] = variation.get();
     }
 
-
-    enum DATA_ID {
-        SET_FILENAME,
-        SERIALIZE,
-        HYDRATE,
-        GET_VARIATION,
-        GET_VARIATION_PATH,
-        SAVE_VARIATION,
-        LOAD_VARIATION,
-        LOAD_VARIATION_NEXT,
-        DELETE_VARIATION,
-        CREATE_WORKSPACE,
-        LOAD_WORKSPACE,
-        CURRENT_WORKSPACE,
-        DELETE_WORKSPACE
+    std::string dataStr;
+    DataFn dataFunctions[13] = {
+        { "SET_FILENAME", [this](void* userdata) {
+             if (userdata) {
+                 filename = (char*)userdata;
+                 initFilepath();
+             }
+             return (void*)NULL;
+         } },
+        { "SERIALIZE", [this](void* userdata) {
+             data(0, userdata);
+             m.lock();
+             serialize();
+             m.unlock();
+             return (void*)NULL;
+         } },
+        { "HYDRATE", [this](void* userdata) {
+             data(0, userdata);
+             m.lock();
+             hydrate();
+             m.unlock();
+             return (void*)NULL;
+         } },
+        { "VARIATION_EXISTS", [this](void* userdata) {
+             if (userdata) {
+                 int id = *(int16_t*)userdata;
+                 bool fileExists = std::filesystem::exists(getVariationFilepath(id));
+                 return (void*)(fileExists ? &fileExists : NULL);
+             }
+             return (void*)NULL;
+         } },
+        { "GET_VARIATION_PATH", [this](void* userdata) {
+             if (userdata) {
+                 int id = *(int16_t*)userdata;
+                 dataStr = getVariationFilepath(id);
+                 return (void*)&dataStr;
+             }
+             return (void*)NULL;
+         } },
+        { "SAVE_VARIATION", [this](void* userdata) {
+             if (userdata) {
+                 int id = *(int16_t*)userdata;
+                 m.lock();
+                 saveVariation(id);
+                 m.unlock();
+                 variation.setFloat(id);
+             }
+             return (void*)NULL;
+         } },
+        { "LOAD_VARIATION", [this](void* userdata) {
+             if (userdata) {
+                 nextVariationToPlay = -1;
+                 int id = *(int16_t*)userdata;
+                 // m.lock();
+                 // loadVariation(id);
+                 // m.unlock();
+                 setVariation(id);
+             }
+             return (void*)NULL;
+         } },
+        { "LOAD_VARIATION_NEXT", [this](void* userdata) {
+             if (userdata) {
+                 nextVariationToPlay = *(int16_t*)userdata;
+             }
+             return (void*)&nextVariationToPlay;
+         } },
+        { "DELETE_VARIATION", [this](void* userdata) {
+             if (userdata) {
+                 int id = *(int16_t*)userdata;
+                 std::filesystem::remove(getVariationFilepath(id));
+             }
+             return (void*)NULL;
+         } },
+        { "CURRENT_WORKSPACE", [this](void* userdata) {
+             return (void*)&currentWorkspaceName;
+         } },
+        { "DELETE_WORKSPACE", [this](void* userdata) {
+             if (userdata) {
+                 std::string workspaceName = *(std::string*)userdata;
+                 logDebug("Delete workspace %s", workspaceName.c_str());
+                 deleteWorkspace(workspaceName);
+             }
+             return (void*)NULL;
+         } },
+        { "CREATE_WORKSPACE", [this](void* userdata) {
+             if (userdata) {
+                 std::string workspaceName = *(std::string*)userdata;
+                 logDebug("Create workspace %s", workspaceName.c_str());
+                 createWorkspace(workspaceName);
+             }
+             return (void*)&refreshState;
+         } },
+        { "LOAD_WORKSPACE", [this](void* userdata) {
+             if (userdata) {
+                 std::string workspaceName = *(std::string*)userdata;
+                 logDebug("Load workspace %s", workspaceName.c_str());
+                 if (workspaceName != currentWorkspaceName) {
+                     saveCurrentWorkspaceName(workspaceName);
+                     props.audioPluginHandler->sendEvent(AudioEventType::RELOAD_WORKSPACE);
+                 }
+             }
+             return (void*)NULL;
+         } },
     };
 
-    /*md **Data ID**: */
-    uint8_t getDataId(std::string name) override
-    {
-        /*md - `SET_FILENAME` set filename */
-        if (name == "SET_FILENAME")
-            return DATA_ID::SET_FILENAME;
-        /*md - `SERIALIZE` serialize */
-        if (name == "SERIALIZE")
-            return DATA_ID::SERIALIZE;
-        /*md - `HYDRATE` hydrate */
-        if (name == "HYDRATE")
-            return DATA_ID::HYDRATE;
-        /*md - `GET_VARIATION` get variation */
-        if (name == "GET_VARIATION")
-            return DATA_ID::GET_VARIATION;
-        /*md - `GET_VARIATION_PATH` get variation path */
-        if (name == "GET_VARIATION_PATH")
-            return DATA_ID::GET_VARIATION_PATH;
-        /*md - `SAVE_VARIATION` save variation */
-        if (name == "SAVE_VARIATION")
-            return DATA_ID::SAVE_VARIATION;
-        /*md - `LOAD_VARIATION` load variation */
-        if (name == "LOAD_VARIATION")
-            return DATA_ID::LOAD_VARIATION;
-        /*md - `LOAD_VARIATION_NEXT` load variation at the next sequencer loop */
-        if (name == "LOAD_VARIATION_NEXT")
-            return DATA_ID::LOAD_VARIATION_NEXT;
-        /*md - `DELETE_VARIATION` delete variation */
-        if (name == "DELETE_VARIATION")
-            return DATA_ID::DELETE_VARIATION;
-        /*md - `CREATE_WORKSPACE` create workspace */
-        if (name == "CREATE_WORKSPACE")
-            return DATA_ID::CREATE_WORKSPACE;
-        /*md - `LOAD_WORKSPACE` load workspace */
-        if (name == "LOAD_WORKSPACE")
-            return DATA_ID::LOAD_WORKSPACE;
-        /*md - `CURRENT_WORKSPACE` get current workspace */
-        if (name == "CURRENT_WORKSPACE")
-            return DATA_ID::CURRENT_WORKSPACE;
-        /*md - `DELETE_WORKSPACE` delete workspace */
-        if (name == "DELETE_WORKSPACE")
-            return DATA_ID::DELETE_WORKSPACE;
-        return atoi(name.c_str());
-    }
-
-    std::string dataStr;
-    void* data(int id, void* userdata = NULL)
-    {
-        switch (id) {
-        case DATA_ID::SET_FILENAME: {
-            if (userdata) {
-                filename = (char*)userdata;
-                initFilepath();
-            }
-            return NULL;
-        }
-        case DATA_ID::SERIALIZE:
-            data(0, userdata);
-            m.lock();
-            serialize();
-            m.unlock();
-            return NULL;
-        case DATA_ID::HYDRATE:
-            data(0, userdata);
-            m.lock();
-            hydrate();
-            m.unlock();
-            return NULL;
-        case DATA_ID::GET_VARIATION: {
-            if (userdata) {
-                int id = *(int16_t*)userdata;
-                bool fileExists = std::filesystem::exists(getVariationFilepath(id));
-                return fileExists ? &fileExists : NULL;
-            }
-            return NULL;
-        }
-        case DATA_ID::GET_VARIATION_PATH: {
-            if (userdata) {
-                int id = *(int16_t*)userdata;
-                dataStr = getVariationFilepath(id);
-                return &dataStr;
-            }
-            return NULL;
-        }
-        case DATA_ID::SAVE_VARIATION: {
-            if (userdata) {
-                int id = *(int16_t*)userdata;
-                m.lock();
-                saveVariation(id);
-                m.unlock();
-                variation.setFloat(id);
-            }
-            return NULL;
-        }
-        case DATA_ID::LOAD_VARIATION: {
-            if (userdata) {
-                nextVariationToPlay = -1;
-                int id = *(int16_t*)userdata;
-                // m.lock();
-                // loadVariation(id);
-                // m.unlock();
-                setVariation(id);
-            }
-            return NULL;
-        }
-        case DATA_ID::LOAD_VARIATION_NEXT: {
-            if (userdata) {
-                nextVariationToPlay = *(int16_t*)userdata;
-            }
-            return &nextVariationToPlay;
-        }
-        case DATA_ID::DELETE_VARIATION: {
-            if (userdata) {
-                int id = *(int16_t*)userdata;
-                std::filesystem::remove(getVariationFilepath(id));
-            }
-            return NULL;
-        }
-        case DATA_ID::CURRENT_WORKSPACE:
-            return &currentWorkspaceName;
-        case DATA_ID::DELETE_WORKSPACE: {
-            if (userdata) {
-                std::string workspaceName = *(std::string*)userdata;
-                printf("Delete workspace %s\n", workspaceName.c_str());
-                deleteWorkspace(workspaceName);
-            }
-            return NULL;
-        }
-        case DATA_ID::CREATE_WORKSPACE: {
-            if (userdata) {
-                std::string workspaceName = *(std::string*)userdata;
-                printf("Create workspace %s\n", workspaceName.c_str());
-                createWorkspace(workspaceName);
-            }
-            return &refreshState;
-        }
-        case DATA_ID::LOAD_WORKSPACE: {
-            if (userdata) {
-                std::string workspaceName = *(std::string*)userdata;
-                printf("Load workspace %s\n", workspaceName.c_str());
-                if (workspaceName != currentWorkspaceName) {
-                    saveCurrentWorkspaceName(workspaceName);
-                    props.audioPluginHandler->sendEvent(AudioEventType::RELOAD_WORKSPACE);
-                }
-            }
-            return NULL;
-        }
-        }
-        return NULL;
-    }
+    DEFINE_GETDATAID_AND_DATA
 };
