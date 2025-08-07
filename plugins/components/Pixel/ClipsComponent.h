@@ -41,10 +41,51 @@ protected:
     int clipW = 0;
     int visibleCount = 10;
     int startIndex = 1;
+    std::string bank = "A";
 
     bool allowToggleReload = false;
 
     bool variationExists(int id) { return pluginSerialize->data(variationExistsDataId, &id) != NULL; }
+
+    void toggleAction(KeypadLayout::KeyMap& keymap, int16_t id)
+    {
+        if (KeypadLayout::isReleased(keymap)) {
+            if ((int16_t)valVariation->get() == id) {
+                if (!*isPlaying) {
+                    if (allowToggleReload) {
+                        pluginSerialize->data(loadVariationDataId, (void*)&id);
+                    } // else do nothing
+                } else if (valSeqStatus->get() == 1) {
+                    valSeqStatus->set(0);
+                } else {
+                    valSeqStatus->set(1);
+                }
+                // Ultimately we could check if sequencer is playing so it only start next if it is...
+                // however, to do this, we would have to track another data id again: IS_PLAYING
+                // for the moment let's stick to double press, it is fine...
+            } else if (nextVariationToPlay != NULL && *nextVariationToPlay == -1) {
+                if (!*isPlaying) {
+                    pluginSerialize->data(loadVariationDataId, (void*)&id);
+                } else if (valSeqStatus->get() == 1) {
+                    pluginSerialize->data(loadVariationNextDataId, (void*)&id);
+                }
+            } else {
+                pluginSerialize->data(loadVariationDataId, (void*)&id);
+            }
+            renderNext();
+        }
+    }
+
+    void bankAction(KeypadLayout::KeyMap& keymap, char c)
+    {
+        if (KeypadLayout::isReleased(keymap)) {
+            bank = std::string(1, c);
+            startIndex = 1 + (c - 'A') * visibleCount;
+            renderNext();
+        }
+    }
+
+    bool bankToggle = false;
 
 public:
     ClipsComponent(ComponentInterface::Props props)
@@ -60,34 +101,36 @@ public:
                 };
             }
 
+            if (action.rfind(".bank:") == 0) {
+                char c = action[6];
+                func = [this, c](KeypadLayout::KeyMap& keymap) {
+                    bankAction(keymap, c);
+                };
+            }
+
+            if (action == ".bank") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    bankToggle = KeypadLayout::isPressed(keymap);
+                    renderNext();
+                };
+            }
+
+            if (action.rfind(".set:") == 0) {
+                int16_t id = std::stoi(action.substr(5));
+                func = [this, id](KeypadLayout::KeyMap& keymap) {
+                    if (bankToggle) {
+                        char c = 'A' + (id - 1);
+                        bankAction(keymap, c);
+                    } else {
+                        toggleAction(keymap, id);
+                    }
+                };
+            }
+
             if (action.rfind(".toggle:") == 0) {
                 int16_t id = std::stoi(action.substr(8));
                 func = [this, id](KeypadLayout::KeyMap& keymap) {
-                    if (KeypadLayout::isReleased(keymap)) {
-                        if ((int16_t)valVariation->get() == id) {
-                            if (!*isPlaying) {
-                                if (allowToggleReload) {
-                                    pluginSerialize->data(loadVariationDataId, (void*)&id);
-                                } // else do nothing
-                            } else if (valSeqStatus->get() == 1) {
-                                valSeqStatus->set(0);
-                            } else {
-                                valSeqStatus->set(1);
-                            }
-                            // Ultimately we could check if sequencer is playing so it only start next if it is...
-                            // however, to do this, we would have to track another data id again: IS_PLAYING
-                            // for the moment let's stick to double press, it is fine...
-                        } else if (nextVariationToPlay != NULL && *nextVariationToPlay == -1) {
-                            if (!*isPlaying) {
-                                pluginSerialize->data(loadVariationDataId, (void*)&id);
-                            } else if (valSeqStatus->get() == 1) {
-                                pluginSerialize->data(loadVariationNextDataId, (void*)&id);
-                            }
-                        } else {
-                            pluginSerialize->data(loadVariationDataId, (void*)&id);
-                        }
-                        renderNext();
-                    }
+                    toggleAction(keymap, id);
                 };
             }
             if (action.rfind(".save:") == 0) {
@@ -213,21 +256,30 @@ public:
         int playingId = valVariation ? valVariation->get() : -1;
 
         Point center = { (int)(clipW * 0.5), (int)((size.h - fontSize - 1) * 0.5) };
-        for (int i = 0; i < visibleCount; i++) {
-            int id = i + startIndex;
-            Point pos = { relativePosition.x + i * clipW, relativePosition.y };
-            draw.filledRect({ relativePosition.x + i * clipW, relativePosition.y }, { clipW - 2, size.h }, { id == playingId ? playingClipBgColor : clipBgColor });
-            Color& color = variationExists(id) ? textColor : textMissingColor;
-            draw.textCentered({ pos.x + center.x, pos.y + center.y }, std::to_string(i + 1), fontSize, { color, .maxWidth = clipW });
+        if (bankToggle) {
+            for (int i = 0; i < visibleCount; i++) {
+                Point pos = { relativePosition.x + i * clipW, relativePosition.y };
+                std::string bankItem = std::string(1, 'A' + i);
+                draw.filledRect({ relativePosition.x + i * clipW, relativePosition.y }, { clipW - 2, size.h }, { bankItem == bank ? playingClipBgColor : clipBgColor });
+                draw.textCentered({ pos.x + center.x, pos.y + center.y }, bankItem, fontSize, { textColor, .maxWidth = clipW });
+            }
+        } else {
+            for (int i = 0; i < visibleCount; i++) {
+                int id = i + startIndex;
+                Point pos = { relativePosition.x + i * clipW, relativePosition.y };
+                draw.filledRect({ relativePosition.x + i * clipW, relativePosition.y }, { clipW - 2, size.h }, { id == playingId ? playingClipBgColor : clipBgColor });
+                Color& color = variationExists(id) ? textColor : textMissingColor;
+                draw.textCentered({ pos.x + center.x, pos.y + center.y }, bank + std::to_string(i + 1), fontSize, { color, .maxWidth = clipW });
 
-            if (*isPlaying) {
-                if (id == *nextVariationToPlay) {
-                    draw.filledRect({ pos.x + 2, pos.y + 2 }, { 3, 3 }, { playNextColor });
-                } else if (valSeqStatus && id == playingId) {
-                    if (valSeqStatus->get() == 1) {
-                        draw.filledRect({ pos.x + 2, pos.y + 2 }, { 3, 3 }, { playColor });
-                    } else if (valSeqStatus->get() == 2) {
+                if (*isPlaying) {
+                    if (id == *nextVariationToPlay) {
                         draw.filledRect({ pos.x + 2, pos.y + 2 }, { 3, 3 }, { playNextColor });
+                    } else if (valSeqStatus && id == playingId) {
+                        if (valSeqStatus->get() == 1) {
+                            draw.filledRect({ pos.x + 2, pos.y + 2 }, { 3, 3 }, { playColor });
+                        } else if (valSeqStatus->get() == 2) {
+                            draw.filledRect({ pos.x + 2, pos.y + 2 }, { 3, 3 }, { playNextColor });
+                        }
                     }
                 }
             }
