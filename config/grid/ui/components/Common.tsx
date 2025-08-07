@@ -18,6 +18,7 @@ import {
     ColorBtnOff,
     ColorButton,
     ColorTrackMaster,
+    D11,
     D12,
     SelectorPosition,
     SelectorPosition2,
@@ -126,8 +127,8 @@ export function MuteTracks() {
     );
 }
 
-function ifDef<T>(val: unknown | undefined, obj: T) {
-    return val === undefined ? [] : [obj];
+function ifTrue<T>(cond: boolean, obj: T) {
+    return cond ? [obj]: [];
 }
 
 export function MainKeys({
@@ -147,7 +148,8 @@ export function MainKeys({
                         key: A11,
                         action: viewName === 'Master' ? `setView:Master:page2` : `setView:Master`,
                     },
-                    ...ifDef(synthName, {
+                    // B11 is used on track view for variation,
+                    ...ifTrue(!!synthName, {
                         key: C11,
                         action:
                             viewName === `${synthName}Seq`
@@ -166,12 +168,14 @@ export function MainKeys({
                                     ? ColorTrackMaster
                                     : darken(ColorTrackMaster, 0.9),
                             },
-                            { key: B11, color: synthName ? ColorButton : ColorBtnOff },
-                            { key: C11, color: ColorButton },
+                            ...ifTrue(viewName.startsWith(`Master`), { key: B11, color: ColorBtnOff }), // B11 is used on track view for variation
+                            { key: C11, color: synthName ? ColorButton : ColorBtnOff }, // Sequencer is only selectable on track view
+                            { key: D12, color: ColorBtnOff }, 
+
                             { key: A12, color: ColorButton },
                             { key: B12, color: ColorBtnOff },
                             { key: C12, color: ColorBtnOff },
-                            { key: D12, color: ColorBtnOff },
+                            { key: D12, color: ColorBtnOff }, 
                         ],
                     },
                 ]}
@@ -180,11 +184,14 @@ export function MainKeys({
 
             <HiddenValue // When shifted
                 keys={[
-                    { key: B11, action: `stop` },
+                    // A11 free
+                    // B11 is used on track view for variation.
+                    // C11 free
+                    { key: D11, action: `setView:Workspaces` },
 
                     { key: A12, action: `contextToggle:${shiftContext}:1:0` },
                     { key: B12, action: `playPause` },
-                    { key: C12, action: `setView:Workspaces` },
+                    { key: C12, action: `stop` },
                     { key: D12, action: `setView:Shutdown`,  action2: `contextToggle:${shiftContext}:1:0`  }, // action2: `setContext:${shiftContext}:0`
                 ]}
                 controllerColors={[
@@ -192,8 +199,10 @@ export function MainKeys({
                         controller: 'Default',
                         colors: [
                             { key: A11, color: ColorBtnOff },
-                            { key: B11, color: ColorButton },
+                            ...ifTrue(viewName.startsWith(`Master`), { key: B11, color: ColorBtnOff }), // B11 is used on track view for variation
                             { key: C11, color: ColorBtnOff },
+                            { key: C11, color: ColorButton },
+
                             { key: A12, color: ColorButton },
                             { key: B12, color: ColorButton },
                             { key: C12, color: ColorButton },
