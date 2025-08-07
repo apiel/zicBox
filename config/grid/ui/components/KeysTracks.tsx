@@ -26,13 +26,13 @@ function getVariantColor(viewName: string) {
     if (viewName.startsWith(`Synth3`)) {
         return ColorTrack7;
     }
-    if (viewName.startsWith(`Synth4`)) {
+    if (viewName.startsWith(`Sample1`)) {
         return ColorTrack8;
     }
-    if (viewName.startsWith(`Synth5`)) {
+    if (viewName.startsWith(`Sample2`)) {
         return ColorTrack9;
     }
-    if (viewName.startsWith(`Synth6`)) {
+    if (viewName.startsWith(`Sample3`)) {
         return ColorTrack10;
     }
     return ColorBtnOff;

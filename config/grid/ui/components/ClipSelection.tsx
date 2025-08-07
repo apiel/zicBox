@@ -13,6 +13,7 @@ import {
     B7,
     B8,
     B9,
+    ColorButton,
     ScreenWidth,
     shiftContext,
 } from '../constants';
@@ -62,6 +63,14 @@ export function ClipSelection({ track, color }: Props) {
 
                 { key: B11, action: `.bank`, context: { id: shiftContext, value: 0 } },
                 { key: B11, action: `.reload`, context: { id: shiftContext, value: 1 } },
+            ]}
+            controllerColors={[
+                {
+                    controller: 'Default',
+                    colors: [
+                        { key: B11, color: ColorButton },
+                    ],
+                },
             ]}
         />
     );
