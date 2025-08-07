@@ -168,26 +168,24 @@ public:
         wave = type.wave;
         if (p.val.get() != 0.0f) {
             waveform.setType((WavetableGenerator::Type)type.indexType);
+            shape.props().min = 0.0f;
+            shape.props().max = 100.0f;
             shape.set(waveform.shape * 1000.0f);
             macro.set(waveform.macro * 100.0f);
         } else {
+            shape.props().min = 1.0f;
+            shape.props().max = wavetable.fileBrowser.count;
             shape.set(wavetable.fileBrowser.position);
             macro.set(wavetable.getIndex());
         }
     });
     /*md - `SHAPE` Morhp over the waveform shape.*/
     Val& shape = val(0.0f, "SHAPE", { "Shape", VALUE_STRING, .max = 1000 }, [&](auto p) {
+        p.val.setFloat(p.value);
         if (waveformType.get() != 0.0f) {
-            int direction = p.value - p.val.get();
-            int value = p.val.get() + direction * 10;
-            // printf("val: %f, direction: %d, value: %d\n", p.value, direction, value);
-            p.val.setFloat(value);
             waveform.setShape(p.val.pct());
-            p.val.setString(std::to_string((int)(p.val.get() * 0.1)) + "%");
+            p.val.setString(std::to_string((int)(p.val.get())) + "%");
         } else {
-            int value = range(p.value, 1.0f, wavetable.fileBrowser.count);
-            p.val.setFloat(value);
-
             int position = p.val.get();
             wavetable.open(position, false);
             p.val.setString(wavetable.fileBrowser.getFileWithoutExtension(position));

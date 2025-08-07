@@ -1,58 +1,57 @@
 {
     "Drum4": {
-        "sampleFile": "kick_01.wav",
         "values": [
             {
                 "key": "ENGINE",
-                "value": 5.0
+                "value": 1.0
             },
             {
                 "key": "VAL_1",
-                "value": 0.0
+                "value": 69.0
             },
             {
                 "key": "VAL_2",
-                "value": 100.0
+                "value": 38.400001525878906
             },
             {
                 "key": "VAL_3",
-                "value": 4820.0
+                "value": -73.69999694824219
             },
             {
                 "key": "VAL_4",
-                "value": 6.0
+                "value": 465.0
             },
             {
                 "key": "VAL_5",
-                "value": 10.0
+                "value": 56.0
             },
             {
                 "key": "VAL_6",
-                "value": 28.500003814697266
+                "value": 5.209864139556885
             },
             {
                 "key": "VAL_7",
-                "value": 7.0
+                "value": 71.5
             },
             {
                 "key": "VAL_8",
-                "value": 49.0
+                "value": 68.0
             },
             {
                 "key": "VAL_9",
-                "value": 2.0
+                "value": 11.0
             },
             {
                 "key": "VAL_10",
-                "value": 75.0
+                "value": 23.200000762939453
             },
             {
                 "key": "DURATION",
-                "value": 290.0
+                "value": 860.0
             },
             {
                 "key": "AMP_MORPH",
-                "value": 52.0
+                "value": 0.0
             }
         ]
     },
