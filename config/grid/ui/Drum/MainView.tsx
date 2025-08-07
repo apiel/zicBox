@@ -8,6 +8,7 @@ import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
 import { StringVal } from '@/libs/nativeComponents/StringVal';
 import { Value } from '@/libs/nativeComponents/Value';
 import { rgb } from '@/libs/ui';
+import { ClipSelection } from '../components/ClipSelection';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
 import { shiftContext } from '../constants';
@@ -37,7 +38,6 @@ export type Props = {
     synthName: string;
     color: string;
     title: string;
-
 };
 
 export function MainView({ name, track, synthName, color, title }: Props) {
@@ -56,7 +56,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
             content={
                 <>
                     <Rect
-                        bounds={backgroundBounds}
+                        bounds={[backgroundBounds[0], backgroundBounds[1], backgroundBounds[2], backgroundBounds[3] - 30]}
                         color="background"
                         visibilityContext={[
                             { condition: 'SHOW_WHEN', index: shiftContext, value: 1 },
@@ -73,11 +73,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         ]}
                     />
 
-                    <StringVal
-                        audioPlugin={synthName}
-                        param="ENGINE"
-                        bounds={[280, 22, 100, 20]}
-                    />
+                    <StringVal audioPlugin={synthName} param="ENGINE" bounds={[280, 22, 100, 20]} />
 
                     <KnobValue
                         audioPlugin={synthName}
@@ -207,6 +203,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         visibilityContext={[visibilityContext]}
                     />
 
+                    <ClipSelection track={track} color={color} />
                     <KeysTracks synthName={synthName} viewName={name} />
                 </>
             }

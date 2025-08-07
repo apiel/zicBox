@@ -6,6 +6,7 @@ import { MacroEnvelop } from '@/libs/nativeComponents/MacroEnvelop';
 import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
 import { Value } from '@/libs/nativeComponents/Value';
 import { rgb } from '@/libs/ui';
+import { ClipSelection } from '../components/ClipSelection';
 import { Drum1 } from '../components/Common';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
@@ -28,7 +29,7 @@ import {
     enc9,
     encBottomValue,
     graphBounds,
-    seqCardBounds_small
+    seqCardBounds_small,
 } from '../constantsValue';
 
 export type Props = {
@@ -146,6 +147,7 @@ export function Main2View({ name, track, synthName, color }: Props) {
                         // contextId={seqContextDrum1}
                     />
 
+                    <ClipSelection track={track} color={color} />
                     <KeysTracks synthName={synthName} viewName={name} />
                 </>
             }

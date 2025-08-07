@@ -4,6 +4,7 @@ import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
 import { Text } from '@/libs/nativeComponents/Text';
 import { rgb } from '@/libs/ui';
+import { ClipSelection } from '../components/ClipSelection';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
 import {
@@ -118,6 +119,8 @@ export function Main2View({ name, track, synthName, color, title }: Props) {
                         track={track}
                         // contextId={seqContextDrum1}
                     />
+
+                    <ClipSelection track={track} color={color} />
                     <KeysTracks synthName={synthName} viewName={name} />
                 </>
             }
