@@ -29,25 +29,26 @@ public:
             out = fxBitcrusher(out, 0.25 * velocity);
         }
         if (effectActive[2]) {
-            out = fxTremolo(out, velocity);
+            out = fxDecimator(out, velocity);
         }
         if (effectActive[3]) {
-            out = fxRingMod(out, velocity);
+            out = fxTremolo(out, velocity);
         }
         if (effectActive[4]) {
-            out = fxLowPass(out, 0.5 * velocity);
+            out = fxRingMod(out, velocity);
         }
         if (effectActive[5]) {
-            out = fxHighPass(out, 0.5 * velocity);
+            out = fxLowPass(out, 0.5 * velocity);
         }
         if (effectActive[6]) {
-            out = fxWavefold(out, velocity);
+            out = fxHighPass(out, 0.5 * velocity);
         }
         if (effectActive[7]) {
-            out = fxOverdrive(out, velocity);
+            out = fxWavefold(out, velocity);
         }
         if (effectActive[8]) {
-            out = fxDecimator(out, velocity);
+            out = fxPhaser(out, velocity);
+            // out = fxReverseGate(out, velocity);
         }
         if (effectActive[9]) {
             out = fxSlapback(out, velocity);
@@ -136,14 +137,44 @@ protected:
         return input;
     }
 
-    float fxOverdrive(float input, float amount)
+    float phaserPhase = 0.0f;
+    float phaserBuf[96] = { 0 };
+    int phaserIndex = 0;
+    float fxPhaser(float input, float amount)
     {
-        // Scale amount to reasonable gain
-        float drive = 1.0f + amount * 20.0f;
-        float x = input * drive;
-        // Soft clip using tanh
-        return tanh(x) / tanh(drive);
+        // Moderate sweep speed & depth
+        phaserPhase += 0.02f * (0.5f + amount);
+        if (phaserPhase > 2.0f * M_PI)
+            phaserPhase -= 2.0f * M_PI;
+
+        float sweep = (sin(phaserPhase) + 1.0f) * 10.0f + 4.0f; // delay range 4–14 samples
+
+        // Read with swept delay
+        int readIndex = (phaserIndex - (int)sweep + 96) % 96;
+        float delayed = phaserBuf[readIndex];
+
+        // Gentle multi-stage feel
+        float wet = input + delayed * 0.6f;
+
+        // Store to buffer
+        phaserBuf[phaserIndex] = wet;
+        phaserIndex = (phaserIndex + 1) % 96;
+
+        // Wet/Dry balance — 60–80% wet
+        float mix = 0.6f + amount * 0.2f;
+        return input * (1.0f - mix) + wet * mix;
     }
+
+    // float revGateEnv = 0.0f;
+    // float fxReverseGate(float input, float amount)
+    // {
+    //     revGateEnv += 0.01f;
+    //     if (revGateEnv > 1.0f)
+    //         revGateEnv = 0.0f; // reset every short cycle
+
+    //     float env = powf(revGateEnv, 3.0f - amount * 2.0f); // fade-in shape
+    //     return input * env;
+    // }
 
     float decimHold = 0.0f;
     int decimCounter = 0;
