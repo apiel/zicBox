@@ -1,5 +1,7 @@
 ## Pixel TODO
 
+- FIXME metalic boost
+
 - TODO handle variations, when pressing shift can select bank, so it would be 10x10= 100 variations, more than enough :p
         - would need a way to save all variation at once
         - would need a way to reload all variation at once
