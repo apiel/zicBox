@@ -43,7 +43,15 @@ public:
         if (effectActive[6]) {
             out = fxWavefold(out, velocity);
         }
-
+        if (effectActive[7]) {
+            out = fxOverdrive(out, velocity);
+        }
+        if (effectActive[8]) {
+            out = fxDecimator(out, velocity);
+        }
+        if (effectActive[9]) {
+            out = fxSlapback(out, velocity);
+        }
         buf[track] = out;
     }
 
@@ -126,5 +134,42 @@ protected:
             input = threshold - fabs(input - threshold);
         }
         return input;
+    }
+
+    float fxOverdrive(float input, float amount)
+    {
+        // Scale amount to reasonable gain
+        float drive = 1.0f + amount * 20.0f;
+        float x = input * drive;
+        // Soft clip using tanh
+        return tanh(x) / tanh(drive);
+    }
+
+    float decimHold = 0.0f;
+    int decimCounter = 0;
+    float fxDecimator(float input, float amount)
+    {
+        int interval = 1 + (int)(amount * 30.0f); // Downsample ratio
+        if (decimCounter % interval == 0) {
+            decimHold = input;
+        }
+        decimCounter++;
+        return decimHold;
+    }
+
+    static const int delaySize = 1024;
+    float delayBuffer[delaySize] = { 0 };
+    int delayIndex = 0;
+
+    float fxSlapback(float input, float amount)
+    {
+        int delaySamples = 50 + (int)(amount * 400); // 50-450 samples
+        int readIndex = (delayIndex - delaySamples + delaySize) % delaySize;
+        float delayed = delayBuffer[readIndex];
+
+        delayBuffer[delayIndex] = input + delayed * 0.3f; // light feedback
+        delayIndex = (delayIndex + 1) % delaySize;
+
+        return input * 0.7f + delayed * 0.7f;
     }
 };
