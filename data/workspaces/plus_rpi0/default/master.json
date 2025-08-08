@@ -96,6 +96,9 @@
             }
         ]
     },
+    "Scatter": {
+        "values": []
+    },
     "SerializeTrack": {
         "VARIATION": 0.0
     },

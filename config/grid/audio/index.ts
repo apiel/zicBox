@@ -130,6 +130,7 @@ const masterTrack = {
     id: 0,
     plugins: [
         audioPlugin('Mixer10', { alias: 'Mixer' }),
+        audioPlugin('EffectScatter', { alias: 'Scatter' }),
         audioPlugin('EffectFilterMultiMode', { alias: 'Filter' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx2' }),

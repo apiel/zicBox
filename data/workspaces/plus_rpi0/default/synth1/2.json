@@ -65,7 +65,7 @@
         "values": [
             {
                 "key": "PITCH",
-                "value": -32.0
+                "value": -23.0
             },
             {
                 "key": "ATTACK",
@@ -93,11 +93,11 @@
             },
             {
                 "key": "FILTER_CUTOFF",
-                "value": 94.0
+                "value": 32.0
             },
             {
                 "key": "FILTER_RESONANCE",
-                "value": 45.0
+                "value": 46.0
             },
             {
                 "key": "WAVE",
@@ -149,7 +149,7 @@
             },
             {
                 "key": "FX_AMOUNT",
-                "value": 32.0
+                "value": 89.0
             }
         ]
     },
@@ -157,7 +157,7 @@
         "values": [
             {
                 "key": "VOLUME",
-                "value": 47.0
+                "value": 100.0
             },
             {
                 "key": "GAIN",
@@ -169,7 +169,7 @@
             },
             {
                 "key": "FX_AMOUNT",
-                "value": 4.0
+                "value": 94.0
             }
         ]
     }
