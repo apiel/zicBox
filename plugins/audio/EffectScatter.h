@@ -3,10 +3,9 @@
 #include "audioPlugin.h"
 #include "log.h"
 #include "mapping.h"
-#include "plugins/audio/utils/effects/applyReverb.h"
-#include "plugins/audio/utils/effects/applySampleReducer.h"
+#include "plugins/audio/utils/effects/applySample.h"
 
-#define MAX_SCATTER_EFFECTS 5
+#define MAX_SCATTER_EFFECTS 10
 
 class EffectScatter : public Mapping {
 protected:
@@ -27,29 +26,40 @@ public:
             out = fxSampleReducer(out, 0.5f * velocity);
         }
         if (effectActive[1]) {
-            out = fxReverb(out, velocity);
+            out = fxBitcrusher(out, 0.25 * velocity);
         }
         if (effectActive[2]) {
-            out = fxDelay(out, velocity);
+            out = fxTremolo(out, velocity);
         }
-        
+        if (effectActive[3]) {
+            out = fxRingMod(out, velocity);
+        }
+        if (effectActive[4]) {
+            out = fxLowPass(out, 0.5 * velocity);
+        }
+        if (effectActive[5]) {
+            out = fxHighPass(out, 0.5 * velocity);
+        }
+        if (effectActive[6]) {
+            out = fxWavefold(out, velocity);
+        }
 
         buf[track] = out;
     }
 
     void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
     {
-        if (_velocity == 0.0f){
+        if (_velocity == 0.0f) {
             return noteOff(note, _velocity);
         }
-        logDebug("EffectScatter noteOn: %d %f\n", note, _velocity);
+        // logDebug("EffectScatter noteOn: %d %f\n", note, _velocity);
         effectActive[note % MAX_SCATTER_EFFECTS] = true;
         velocity = _velocity;
     }
 
     void noteOff(uint8_t note, float _velocity, void* userdata = NULL) override
     {
-        logDebug("EffectScatter noteOff: %d %f\n", note, _velocity);
+        // logDebug("EffectScatter noteOff: %d %f\n", note, _velocity);
         effectActive[note % MAX_SCATTER_EFFECTS] = false;
     }
 
@@ -61,21 +71,60 @@ protected:
         return applySampleReducer(input, amount, sampleSqueeze, samplePosition);
     }
 
-    static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
-    float buffer[REVERB_BUFFER_SIZE] = { 0.0f };
-    int bufferIndex = 0;
-    float fxReverb(float signal, float amount)
+    float sampleHold = 0.0f;
+    int sampleCounter = 0;
+    float fxBitcrusher(float input, float amount)
     {
-        float reverbAmount = amount;
-        return applyReverb(signal, reverbAmount, buffer, bufferIndex, REVERB_BUFFER_SIZE);
+        return applyBitcrusher(input, amount, sampleHold, sampleCounter);
     }
 
-    static constexpr int DELAY_BUFFER_SIZE = REVERB_BUFFER_SIZE * 3; // 3 second
-    float buffer2[DELAY_BUFFER_SIZE] = { 0.0f };
-    int bufferIndex2 = 0;
-    float fxDelay(float input, float amount)
+    float tremoloPhase = 0.0f;
+    float fxTremolo(float input, float amount)
     {
-        return applyDelay(input, amount, buffer2, bufferIndex2, DELAY_BUFFER_SIZE);
+        return applyTremolo(input, amount, tremoloPhase);
     }
 
+    float ringPhase = 0.0f; // Phase for the sine wave oscillator
+    float fxRingMod(float input, float amount)
+    {
+        return applyRingMod(input, amount, ringPhase, props.sampleRate);
+    }
+
+    // Filter state
+    float fBuf = 0.0f;
+    float fHP = 0.0f;
+    float fBP = 0.0f;
+    float fLP = 0.0f;
+    // Parameter
+    float cutoff = 0.05f; // 0..1
+    inline void setSampleData(float inputValue, float& _buf, float& _hp, float& _bp, float& _lp)
+    {
+        _hp = inputValue - _buf;
+        _bp = _buf - _lp;
+        _buf = _buf + cutoff * _hp;
+        _lp = _lp + cutoff * (_buf - _lp);
+    }
+    // Low-pass FX
+    float fxLowPass(float input, float amount)
+    {
+        cutoff = amount * 0.25f; // map velocity/knob to cutoff speed
+        setSampleData(input, fBuf, fHP, fBP, fLP);
+        return fLP;
+    }
+    // High-pass FX
+    float fxHighPass(float input, float amount)
+    {
+        cutoff = amount * 0.25f;
+        setSampleData(input, fBuf, fHP, fBP, fLP);
+        return fHP;
+    }
+
+    float fxWavefold(float input, float amount)
+    {
+        float threshold = 1.0f - amount;
+        if (fabs(input) > threshold) {
+            input = threshold - fabs(input - threshold);
+        }
+        return input;
+    }
 };

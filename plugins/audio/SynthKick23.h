@@ -16,7 +16,7 @@
 #include "plugins/audio/utils/effects/applyCompression.h"
 #include "plugins/audio/utils/effects/applyDrive.h"
 #include "plugins/audio/utils/effects/applyHighFreqBoost.h"
-#include "plugins/audio/utils/effects/applySampleReducer.h"
+#include "plugins/audio/utils/effects/applySample.h"
 #include "plugins/audio/utils/effects/applySoftClipping.h"
 #include "plugins/audio/utils/effects/applyWaveshape.h"
 #include "plugins/audio/utils/val/valMMfilterCutoff.h"

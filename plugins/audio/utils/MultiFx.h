@@ -5,7 +5,7 @@
 #include "plugins/audio/utils/effects/applyCompression.h"
 #include "plugins/audio/utils/effects/applyDrive.h"
 #include "plugins/audio/utils/effects/applyReverb.h"
-#include "plugins/audio/utils/effects/applySampleReducer.h"
+#include "plugins/audio/utils/effects/applySample.h"
 #include "plugins/audio/utils/effects/applyWaveshape.h"
 #include "plugins/audio/utils/lookupTable.h"
 #include "plugins/audio/utils/utils.h"
@@ -140,36 +140,13 @@ protected:
     float tremoloPhase = 0.0f;
     float fxTremolo(float input, float amount)
     {
-        if (amount == 0.0f) {
-            return input;
-        }
-
-        float speed = 1.0f; // Tremolo speed in Hz
-        tremoloPhase += 0.05f * speed;
-        float mod = (sin(tremoloPhase) + 1.0f) / 2.0f; // Modulation between 0-1
-
-        return input * (1.0f - amount + amount * mod);
+        return applyTremolo(input, amount, tremoloPhase);
     }
 
     float ringPhase = 0.0f; // Phase for the sine wave oscillator
     float fxRingMod(float input, float amount)
     {
-        if (amount == 0.0f) {
-            return input;
-        }
-
-        float ringFreq = 200.0f + amount * 800.0f; // Modulation frequency (200Hz - 1000Hz)
-        ringPhase += 2.0f * M_PI * ringFreq / sampleRate;
-
-        // Keep phase in the [0, 2π] range
-        if (ringPhase > 2.0f * M_PI) {
-            ringPhase -= 2.0f * M_PI;
-        }
-
-        float modulator = sin(ringPhase); // Sine wave oscillator
-        float modulated = input * modulator; // Apply ring modulation
-
-        return (1.0f - amount) * input + amount * modulated;
+        return applyRingMod(input, amount, ringPhase, sampleRate);
     }
 
     float fxFeedback(float input, float amount)

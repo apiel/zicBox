@@ -41,3 +41,36 @@ float applyBitcrusher(float input, float amount, float& sampleHold, int& sampleC
 
     return sampleHold;
 }
+
+float applyTremolo(float input, float amount, float& tremoloPhase)
+{
+    if (amount == 0.0f) {
+        return input;
+    }
+
+    float speed = 1.0f; // Tremolo speed in Hz
+    tremoloPhase += 0.05f * speed;
+    float mod = (sin(tremoloPhase) + 1.0f) / 2.0f; // Modulation between 0-1
+
+    return input * (1.0f - amount + amount * mod);
+}
+
+float applyRingMod(float input, float amount, float& ringPhase, float sampleRate)
+{
+    if (amount == 0.0f) {
+        return input;
+    }
+
+    float ringFreq = 200.0f + amount * 800.0f; // Modulation frequency (200Hz - 1000Hz)
+    ringPhase += 2.0f * M_PI * ringFreq / sampleRate;
+
+    // Keep phase in the [0, 2π] range
+    if (ringPhase > 2.0f * M_PI) {
+        ringPhase -= 2.0f * M_PI;
+    }
+
+    float modulator = sin(ringPhase); // Sine wave oscillator
+    float modulated = input * modulator; // Apply ring modulation
+
+    return (1.0f - amount) * input + amount * modulated;
+}
