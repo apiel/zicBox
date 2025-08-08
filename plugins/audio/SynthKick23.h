@@ -6,19 +6,20 @@
 #include "./utils/WavetableGenerator.h"
 #include "audioPlugin.h"
 #include "mapping.h"
-#include "utils/EnvelopDrumAmp.h"
-#include "utils/EnvelopDrumTransient.h"
-#include "utils/EnvelopRelative.h"
-#include "utils/FastWaveform.h"
-#include "utils/MMfilter.h"
-#include "utils/effects/applyBoost.h"
-#include "utils/effects/applyClipping.h"
-#include "utils/effects/applyCompression.h"
-#include "utils/effects/applyDrive.h"
-#include "utils/effects/applyHighFreqBoost.h"
-#include "utils/effects/applySoftClipping.h"
-#include "utils/effects/applyWaveshape.h"
-#include "utils/val/valMMfilterCutoff.h"
+#include "plugins/audio/utils/EnvelopDrumAmp.h"
+#include "plugins/audio/utils/EnvelopDrumTransient.h"
+#include "plugins/audio/utils/EnvelopRelative.h"
+#include "plugins/audio/utils/FastWaveform.h"
+#include "plugins/audio/utils/MMfilter.h"
+#include "plugins/audio/utils/effects/applyBoost.h"
+#include "plugins/audio/utils/effects/applyClipping.h"
+#include "plugins/audio/utils/effects/applyCompression.h"
+#include "plugins/audio/utils/effects/applyDrive.h"
+#include "plugins/audio/utils/effects/applyHighFreqBoost.h"
+#include "plugins/audio/utils/effects/applySampleReducer.h"
+#include "plugins/audio/utils/effects/applySoftClipping.h"
+#include "plugins/audio/utils/effects/applyWaveshape.h"
+#include "plugins/audio/utils/val/valMMfilterCutoff.h"
 
 /*md
 ## SynthKick23
@@ -239,9 +240,16 @@ public:
     });
 
     /*md - `GAIN_CLIPPING` set the clipping level.*/
-    Val& clipping = val(0.0, "GAIN_CLIPPING", { "Clipping", .unit = "%" }, [&](auto p) {
+    float reducer = 0.0f;
+    float scaledClipping = 0.0f;
+    Val& clipping = val(0.0, "GAIN_CLIPPING", { "Clipping", .type = VALUE_CENTERED, .min = -100.0, .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
-        scaledClipping = p.val.pct() * p.val.pct() * 20;
+        float amount = p.val.pct() * 2 - 1.0f;
+        if (p.val.get() > 0.0) {
+            scaledClipping = amount * amount * 20;
+        } else {
+            reducer = -amount;
+        }
     });
 
     /*md - `HIGH_FREQ_BOOST` set the high boost level.*/
@@ -304,7 +312,6 @@ public:
         initValues();
     }
 
-    float scaledClipping = 0.0f;
     void sample(float* buf)
     {
         if (sampleDurationCounter < sampleCountDuration) {
@@ -361,13 +368,15 @@ protected:
     float waveshapeAmount = 0.0f;
     double boostTimeInc = 0.0f;
     double boostTime = 0.0f;
+    float sampleSqueeze;
+    int samplePosition = 0;
 
     float applyEffects(float input)
     {
         if (input != 0.0f) { // <--- could this be a problem?
             float output = input;
             output = applyHighFreqBoost(input, boostTimeInc, boostTime);
-            output = applyClipping(output, scaledClipping);
+            output = clipping.get() > 0.0f ? applyClipping(output, clipping.pct()) : applySampleReducer(output, reducer, sampleSqueeze, samplePosition);
             output = applyBoost(output, bass.pct(), prevInput1, prevOutput1);
             output = applyDrive(output, drive.pct(), props.lookupTable);
             output = applyCompression(output, compressAmount);

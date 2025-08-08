@@ -43,7 +43,7 @@
             },
             {
                 "key": "GAIN_CLIPPING",
-                "value": 79.0
+                "value": 0.0
             },
             {
                 "key": "HIGH_FREQ_BOOST",
@@ -83,11 +83,11 @@
             },
             {
                 "key": "BASS",
-                "value": 6.0
+                "value": 0.0
             },
             {
                 "key": "WAVESHAPE",
-                "value": 34.0
+                "value": 13.0
             }
         ]
     },
@@ -259,7 +259,7 @@
         ]
     },
     "SerializeTrack": {
-        "VARIATION": 8.0
+        "VARIATION": 1.0
     },
     "TrackFx": {
         "values": [
