@@ -4,8 +4,9 @@
 #include "audioPlugin.h"
 #include "log.h"
 #include "mapping.h"
+#include "plugins/audio/utils/effects/applySampleReducer.h"
 
-#define MAX_SCATTER_EFFECTS 6
+#define MAX_SCATTER_EFFECTS 5
 
 class EffectScatter : public Mapping {
 protected:
@@ -27,6 +28,13 @@ protected:
     float pitchIncrement = 1.0f; // For Pitch Change
     float pitchPos = 0.0f;
 
+    // static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
+    // static constexpr int DELAY_BUFFER_SIZE = REVERB_BUFFER_SIZE * 3; // 3 second
+    // float buffer[DELAY_BUFFER_SIZE] = { 0.0f };
+    // int bufferIndex = 0;
+
+    // bool effectActive[MAX_SCATTER_EFFECTS] = { false };
+
 public:
     EffectScatter(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
@@ -41,10 +49,10 @@ public:
         if (activeEffectIndex < MAX_SCATTER_EFFECTS) {
             switch (activeEffectIndex) {
             case 0:
-                processStutter(buf);
+                fxSampleReducer(buf, 0.5f);
                 break;
             case 1:
-                processReverse(buf);
+                processPitchChange(buf);
                 break;
             case 2:
                 processGate(buf);
@@ -54,9 +62,6 @@ public:
                 processBeatRepeat(buf);
                 break;
             case 4:
-                processPitchChange(buf);
-                break;
-            case 5:
                 processGranularSpray(buf);
                 break;
             }
@@ -71,20 +76,19 @@ public:
         activeEffectIndex = note % MAX_SCATTER_EFFECTS;
         playedNote = note;
         velocity = _velocity;
-        logDebug("Scatter noteOn: %d %f activeEffectIndex: %d\n", note, velocity, activeEffectIndex);
+        // logDebug("Scatter noteOn: %d %f activeEffectIndex: %d\n", note, velocity, activeEffectIndex);
         resetEffectState();
     }
 
     void noteOff(uint8_t note, float _velocity, void* userdata = NULL) override
     {
         if (note % MAX_SCATTER_EFFECTS == activeEffectIndex) {
-            logDebug("Scatter noteOff: %d %f activeEffectIndex: %d\n", note, velocity, activeEffectIndex);
+            // logDebug("Scatter noteOff: %d %f activeEffectIndex: %d\n", note, velocity, activeEffectIndex);
             activeEffectIndex = 255;
         }
     }
 
 protected:
-    // 1. Granular Spray
     void processGranularSpray(float* buf)
     {
         if (sprayCounter == 0) {
@@ -97,14 +101,13 @@ protected:
         sprayCounter--;
     }
 
-    // 2. Beat Repeat
     void processBeatRepeat(float* buf)
     {
         if (repeatPos == 0) {
             repeatStart = buffer.index;
         }
         uint64_t playIndex = (repeatStart + repeatPos) % buffer.size;
-        *buf = buffer.samples[playIndex] * velocity;
+        buf[track] = buffer.samples[playIndex] * velocity;
 
         repeatPos++;
         if (repeatPos >= repeatLength) {
@@ -112,42 +115,19 @@ protected:
         }
     }
 
-    // 3. Pitch Change
     void processPitchChange(float* buf)
     {
-        int idx = (int)pitchPos % buffer.size;
-        *buf = buffer.samples[idx] * velocity;
-        pitchPos += pitchIncrement;
-        if (pitchPos >= buffer.size)
-            pitchPos -= buffer.size;
-        if (pitchPos < 0)
-            pitchPos += buffer.size;
-    }
-
-    void processStutter(float* buf)
-    {
-        static uint64_t stutterLength = 48000;
-        static uint64_t idx = 0;
-        static float cachedSample = 0.0f;
-
-        if (idx % stutterLength == 0) {
-            cachedSample = buffer.samples[buffer.index % buffer.size];
+        float input = buf[track];
+        if (input > 0.10 || input < -0.10) {
+            buf[track] = -input;
         }
-        *buf = cachedSample * velocity;
-        idx++;
     }
 
-    void processReverse(float* buf)
+    float sampleSqueeze;
+    int samplePosition = 0;
+    void fxSampleReducer(float* buf, float amount)
     {
-        static int64_t windowSize = 48000;
-        static int64_t offset = 0;
-
-        int64_t reverseIndex = (int64_t)buffer.index - offset;
-        if (reverseIndex < 0)
-            reverseIndex += buffer.size;
-        *buf = buffer.samples[reverseIndex % buffer.size] * velocity;
-
-        offset = (offset + 1) % windowSize;
+        buf[track] = applySampleReducer(buf[track], amount, sampleSqueeze, samplePosition);
     }
 
     void processGate(float* buf)
@@ -160,7 +140,7 @@ protected:
             gateOpen = !gateOpen;
             counter = 0;
         }
-        *buf = gateOpen ? buffer.samples[buffer.index % buffer.size] * velocity : 0.0f;
+        buf[track] = gateOpen ? buffer.samples[buffer.index % buffer.size] * velocity : 0.0f;
     }
 
     void resetEffectState()
