@@ -174,6 +174,19 @@ protected:
         return tanhLookup(out); // Add soft saturation
     }
 
+    float revGateEnv = 0.0f;
+    float fxReverseGate(float input, float amount)
+    {
+        return applyReverseGate(input, amount, revGateEnv);
+    }
+
+    float decimHold = 0.0f;
+    int decimCounter = 0;
+    float fxDecimator(float input, float amount)
+    {
+        return applyDecimator(input, amount, decimHold, decimCounter);
+    }
+
 public:
     enum FXType {
         FX_OFF,
@@ -197,6 +210,7 @@ public:
         FX_SHIMMER_REVERB,
         FX_SHIMMER2_REVERB,
         FX_FEEDBACK,
+        DECIMATOR,
         FX_COUNT
     };
     void setFxType(Val::CallbackProps& p)
@@ -265,6 +279,9 @@ public:
         } else if (p.val.get() == MultiFx::FXType::FX_FEEDBACK) {
             p.val.setString("Feedback");
             fxFn = &MultiFx::fxFeedback;
+        } else if (p.val.get() == MultiFx::FXType::DECIMATOR) {
+            p.val.setString("Decimator");
+            fxFn = &MultiFx::fxDecimator;
         }
         // TODO: add fx sample reducer
     }

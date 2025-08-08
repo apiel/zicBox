@@ -168,24 +168,14 @@ protected:
     // float revGateEnv = 0.0f;
     // float fxReverseGate(float input, float amount)
     // {
-    //     revGateEnv += 0.01f;
-    //     if (revGateEnv > 1.0f)
-    //         revGateEnv = 0.0f; // reset every short cycle
-
-    //     float env = powf(revGateEnv, 3.0f - amount * 2.0f); // fade-in shape
-    //     return input * env;
+    //    return applyReverseGate(input, amount, revGateEnv);
     // }
 
     float decimHold = 0.0f;
     int decimCounter = 0;
     float fxDecimator(float input, float amount)
     {
-        int interval = 1 + (int)(amount * 30.0f); // Downsample ratio
-        if (decimCounter % interval == 0) {
-            decimHold = input;
-        }
-        decimCounter++;
-        return decimHold;
+        return applyDecimator(input, amount, decimHold, decimCounter);
     }
 
     static const int delaySize = 1024;

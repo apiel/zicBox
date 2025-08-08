@@ -42,6 +42,16 @@ float applyBitcrusher(float input, float amount, float& sampleHold, int& sampleC
     return sampleHold;
 }
 
+float applyDecimator(float input, float amount, float& decimHold, int& decimCounter)
+{
+    int interval = 1 + (int)(amount * 30.0f); // Downsample ratio
+    if (decimCounter % interval == 0) {
+        decimHold = input;
+    }
+    decimCounter++;
+    return decimHold;
+}
+
 float applyTremolo(float input, float amount, float& tremoloPhase)
 {
     if (amount == 0.0f) {
@@ -73,4 +83,15 @@ float applyRingMod(float input, float amount, float& ringPhase, float sampleRate
     float modulated = input * modulator; // Apply ring modulation
 
     return (1.0f - amount) * input + amount * modulated;
+}
+
+// Doesn't seems to do anything...
+float applyReverseGate(float input, float amount, float& revGateEnv)
+{
+    revGateEnv += 0.01f;
+    if (revGateEnv > 1.0f)
+        revGateEnv = 0.0f; // reset every short cycle
+
+    float env = powf(revGateEnv, 3.0f - amount * 2.0f); // fade-in shape
+    return input * env;
 }
