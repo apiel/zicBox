@@ -2,7 +2,11 @@
 
 - FIXME metalic boost
 
-- TODO send event tempo
+- TODO send event set tempo
+
+- TODO transpose
+        - might be necessary to put transpose within the synth engine itself, with sequencer would be too complicated... ---> if note off is trigger after transpose changed..
+        - OR SHOULD we even transpose??
 
 - TODO variation
         - -----> show pattern in variation <<-- NOTE 
@@ -18,6 +22,8 @@
 
 - TODO provide a way to save preset on github repo
             - ---> see how to handle ssh or instead use token, but the idea would be to store as less as possible info on zicBox app side (if possible nothing) and delegate everything to the OS...
+
+- TODO try EffectFilterBank
 
 - TODO volca drum engine
     - https://cdn.korg.com/us/support/download/files/c65c033ee08932b5bd69303ebf7f31b0.pdf
