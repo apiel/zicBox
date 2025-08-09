@@ -59,11 +59,11 @@
             },
             {
                 "key": "FX_TYPE",
-                "value": 13.0
+                "value": 5.0
             },
             {
                 "key": "FX_AMOUNT",
-                "value": 100.0
+                "value": 86.0
             }
         ]
     },
@@ -83,7 +83,7 @@
             },
             {
                 "key": "FX_AMOUNT",
-                "value": 68.0
+                "value": 37.0
             }
         ]
     }

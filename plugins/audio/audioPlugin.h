@@ -161,6 +161,14 @@ public:
     {
     }
 
+    virtual void noteRepeatOn(uint8_t note, uint8_t mode)
+    {
+    }
+
+    virtual void noteRepeatOff(uint8_t note)
+    {
+    }
+
     virtual void* data(int id, void* userdata = NULL)
     {
         return NULL;

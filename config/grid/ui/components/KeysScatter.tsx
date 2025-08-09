@@ -3,20 +3,20 @@ import * as React from '@/libs/react';
 import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
 import { D1, D10, D2, D3, D4, D5, D6, D7, D8, D9 } from '../constants';
 
-export function KeysScatter({track}: {track: number}) {
+export function KeysScatter({seqTrack, scatterTrack}: {seqTrack: number, scatterTrack: number}) {
     return (
         <HiddenValue
             keys={[
-                { key: D1, action: `noteOn:Scatter${track}:60` },
-                { key: D2, action: `noteOn:Scatter${track}:61` },
-                { key: D3, action: `noteOn:Scatter${track}:62` },
-                { key: D4, action: `noteOn:Scatter${track}:63` },
-                { key: D5, action: `noteOn:Scatter${track}:64` },
-                { key: D6, action: `noteOn:Scatter${track}:65` },
-                { key: D7, action: `noteOn:Scatter${track}:66` },
-                { key: D8, action: `noteOn:Scatter${track}:67` },
-                { key: D9, action: `noteOn:Scatter${track}:68` },
-                { key: D10, action: `noteOn:Scatter${track}:69` },
+                { key: D1, action: `noteRepeat:Sequencer:60:1:${seqTrack}` },
+                { key: D2, action: `noteOn:Scatter${scatterTrack}:61` },
+                { key: D3, action: `noteOn:Scatter${scatterTrack}:62` },
+                { key: D4, action: `noteOn:Scatter${scatterTrack}:63` },
+                { key: D5, action: `noteOn:Scatter${scatterTrack}:64` },
+                { key: D6, action: `noteOn:Scatter${scatterTrack}:65` },
+                { key: D7, action: `noteOn:Scatter${scatterTrack}:66` },
+                { key: D8, action: `noteOn:Scatter${scatterTrack}:67` },
+                { key: D9, action: `noteOn:Scatter${scatterTrack}:68` },
+                { key: D10, action: `noteOn:Scatter${scatterTrack}:69` },
             ]}
             controllerColors={[
                 {

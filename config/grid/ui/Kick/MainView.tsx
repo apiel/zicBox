@@ -170,7 +170,7 @@ export function MainView({ name, track, synthName, color }: Props) {
 
                     <ClipSelection track={track} color={color} />
                     <KeysTracks synthName={synthName} viewName={name} />
-                    <KeysScatter track={0} />
+                    <KeysScatter scatterTrack={0} seqTrack={track} />
                 </>
             }
         />

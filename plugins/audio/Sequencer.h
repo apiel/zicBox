@@ -81,6 +81,7 @@ protected:
         }
     }
 
+    int noteRepeat = -1;
     void onStep() override
     {
         stepCounter++;
@@ -107,11 +108,20 @@ protected:
                 }
             }
             // here might want to check for state == Status::ON
-            if (state == Status::ON && step.enabled && step.len && stepCounter == step.position && conditionMet(step) && step.velocity > 0.0f) {
+            if (state == Status::ON && step.enabled
+                && step.len && stepCounter == step.position
+                && conditionMet(step) && step.velocity > 0.0f && noteRepeat == -1) {
                 step.counter = step.len;
                 props.audioPluginHandler->noteOn(getNote(step), step.velocity, { track, targetPlugin });
                 // printf("should trigger note on %d track %d len %d velocity %.2f\n", step.note, track, step.len, step.velocity);
             }
+        }
+    }
+
+    void onClock() override
+    {
+        if (noteRepeat != -1) {
+            props.audioPluginHandler->noteOn(noteRepeat, 1.0f, { track, targetPlugin });
         }
     }
 
@@ -157,6 +167,17 @@ public:
         if (userdata) {
             props.audioPluginHandler->noteOff(note, 0, { track, targetPlugin });
         }
+    }
+
+    void noteRepeatOn(uint8_t note, uint8_t mode) override
+    {
+        noteRepeat = note;
+    }
+
+    void noteRepeatOff(uint8_t note) override
+    {
+        props.audioPluginHandler->noteOff(noteRepeat, 0, { track, targetPlugin });
+        noteRepeat = -1;
     }
 
     void allOff()

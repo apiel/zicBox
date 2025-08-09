@@ -347,13 +347,36 @@ public:
             char* noteStr = strtok(NULL, ":");
             char* trackStr = strtok(NULL, ":");
             AudioPlugin* plugin = &component->getPlugin(pluginName, trackStr != NULL ? atoi(trackStr) : component->track);
-            if (plugin) {
+            if (plugin && noteStr != NULL) {
                 uint8_t* note = new uint8_t(atoi(noteStr));
                 return [this, plugin, note](KeypadLayout::KeyMap& keymap) {
                     if (isPressed(keymap)) {
                         plugin->noteOn(*note, 1.0f);
                     } else {
                         plugin->noteOff(*note, 0.0f);
+                    }
+                };
+            }
+        }
+
+        if (action.rfind("noteRepeat:") == 0) {
+            std::string substring = action.substr(11);
+            std::vector<char> params(substring.begin(), substring.end());
+            params.push_back('\0');
+
+            char* pluginName = strtok(params.data(), ":");
+            char* noteStr = strtok(NULL, ":");
+            char* modeStr = strtok(NULL, ":");
+            char* trackStr = strtok(NULL, ":");
+            AudioPlugin* plugin = &component->getPlugin(pluginName, trackStr != NULL ? atoi(trackStr) : component->track);
+            if (plugin && modeStr != NULL && noteStr != NULL) {
+                uint8_t* note = new uint8_t(atoi(noteStr));
+                uint8_t* mode = new uint8_t(atoi(modeStr));
+                return [this, plugin, note, mode](KeypadLayout::KeyMap& keymap) {
+                    if (isPressed(keymap)) {
+                        plugin->noteRepeatOn(*note, *mode);
+                    } else {
+                        plugin->noteRepeatOff(*note);
                     }
                 };
             }
