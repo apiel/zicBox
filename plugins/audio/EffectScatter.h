@@ -10,7 +10,8 @@
 class EffectScatter : public Mapping {
 protected:
     float velocity = 0.0f;
-    bool effectActive[MAX_SCATTER_EFFECTS] = { false };
+    bool effectActive[MAX_SCATTER_EFFECTS] = { false, false, false, false, false, false, false, false, false, false };
+    int actives = 0;
 
 public:
     EffectScatter(AudioPlugin::Props& props, AudioPlugin::Config& config)
@@ -21,39 +22,41 @@ public:
 
     void sample(float* buf)
     {
-        float out = buf[track];
-        if (effectActive[0]) {
-            out = fxSampleReducer(out, 0.5f * velocity);
+        if (actives > 0) {
+            float out = buf[track];
+            if (effectActive[0]) {
+                out = fxSampleReducer(out, 0.5f * velocity);
+            }
+            if (effectActive[1]) {
+                out = fxBitcrusher(out, 0.25 * velocity);
+            }
+            if (effectActive[2]) {
+                out = fxDecimator(out, velocity);
+            }
+            if (effectActive[3]) {
+                out = fxTremolo(out, velocity);
+            }
+            if (effectActive[4]) {
+                out = fxRingMod(out, velocity);
+            }
+            if (effectActive[5]) {
+                out = fxLowPass(out, 0.5 * velocity);
+            }
+            if (effectActive[6]) {
+                out = fxHighPass(out, 0.5 * velocity);
+            }
+            if (effectActive[7]) {
+                out = fxWavefold(out, velocity);
+            }
+            if (effectActive[8]) {
+                out = fxPhaser(out, velocity);
+                // out = fxReverseGate(out, velocity);
+            }
+            if (effectActive[9]) {
+                out = fxSlapback(out, velocity);
+            }
+            buf[track] = out;
         }
-        if (effectActive[1]) {
-            out = fxBitcrusher(out, 0.25 * velocity);
-        }
-        if (effectActive[2]) {
-            out = fxDecimator(out, velocity);
-        }
-        if (effectActive[3]) {
-            out = fxTremolo(out, velocity);
-        }
-        if (effectActive[4]) {
-            out = fxRingMod(out, velocity);
-        }
-        if (effectActive[5]) {
-            out = fxLowPass(out, 0.5 * velocity);
-        }
-        if (effectActive[6]) {
-            out = fxHighPass(out, 0.5 * velocity);
-        }
-        if (effectActive[7]) {
-            out = fxWavefold(out, velocity);
-        }
-        if (effectActive[8]) {
-            out = fxPhaser(out, velocity);
-            // out = fxReverseGate(out, velocity);
-        }
-        if (effectActive[9]) {
-            out = fxSlapback(out, velocity);
-        }
-        buf[track] = out;
     }
 
     void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
@@ -62,14 +65,20 @@ public:
             return noteOff(note, _velocity);
         }
         // logDebug("EffectScatter noteOn: %d %f\n", note, _velocity);
-        effectActive[note % MAX_SCATTER_EFFECTS] = true;
+        if (!effectActive[note % MAX_SCATTER_EFFECTS]) {
+            effectActive[note % MAX_SCATTER_EFFECTS] = true;
+            actives++;
+        }
         velocity = _velocity;
     }
 
     void noteOff(uint8_t note, float _velocity, void* userdata = NULL) override
     {
         // logDebug("EffectScatter noteOff: %d %f\n", note, _velocity);
-        effectActive[note % MAX_SCATTER_EFFECTS] = false;
+        if (effectActive[note % MAX_SCATTER_EFFECTS]) {
+            actives--;
+            effectActive[note % MAX_SCATTER_EFFECTS] = false;
+        }
     }
 
 protected:

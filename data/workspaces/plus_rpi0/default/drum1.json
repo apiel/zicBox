@@ -91,6 +91,9 @@
             }
         ]
     },
+    "Scatter1": {
+        "values": []
+    },
     "Sequencer": {
         "STATUS": 1.0,
         "STEPS": [
@@ -259,7 +262,7 @@
         ]
     },
     "SerializeTrack": {
-        "VARIATION": 1.0
+        "VARIATION": 6.0
     },
     "TrackFx": {
         "values": [

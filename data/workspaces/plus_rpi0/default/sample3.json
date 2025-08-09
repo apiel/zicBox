@@ -40,6 +40,9 @@
             }
         ]
     },
+    "Scatter10": {
+        "values": []
+    },
     "Sequencer": {
         "STATUS": 1.0,
         "STEPS": null
