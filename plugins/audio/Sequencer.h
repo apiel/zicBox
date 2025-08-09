@@ -82,6 +82,8 @@ protected:
     }
 
     int noteRepeat = -1;
+    int repeatMode = 0;
+
     void onStep() override
     {
         stepCounter++;
@@ -121,6 +123,15 @@ protected:
     void onClock() override
     {
         if (noteRepeat != -1) {
+            if (repeatMode == 1 && clockCounter % 6 != 0) {
+                return;
+            }
+            if (repeatMode == 2 && clockCounter % 3 != 0) {
+                return;
+            }
+            if (repeatMode == 3 && clockCounter % 2 != 0) {
+                return;
+            }
             props.audioPluginHandler->noteOn(noteRepeat, 1.0f, { track, targetPlugin });
         }
     }
@@ -171,6 +182,7 @@ public:
 
     void noteRepeatOn(uint8_t note, uint8_t mode) override
     {
+        repeatMode = mode;
         noteRepeat = note;
     }
 
