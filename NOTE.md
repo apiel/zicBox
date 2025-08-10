@@ -1,5 +1,9 @@
 ## Pixel TODO
 
+- FIXME sequencer active step from grid on second page
+- FIXME variation grid colors
+- TODO add variation to all views
+
 - TODO send event set tempo
 
 - TODO transpose
