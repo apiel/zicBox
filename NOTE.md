@@ -1,7 +1,5 @@
 ## Pixel TODO
 
-- FIXME metalic boost
-
 - TODO send event set tempo
 
 - TODO transpose

@@ -21,13 +21,6 @@ protected:
         return sineWave(freq + modulator, phase);
     }
 
-    // float resonator(float input, float freq, float decay, float& state)
-    // {
-    //     state += freq / props.sampleRate;
-    //     float output = input * expf(-decay * state) * sinf(2.0f * M_PI * freq * state);
-    //     return output;
-    // }
-
     float resonator(float input, float freq, float decay, float& state)
     {
         state += 1.0f / props.sampleRate; // time in seconds
