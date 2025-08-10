@@ -1,9 +1,9 @@
 #pragma once
 
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
-#include "plugins/audio/utils/effects/applyBoost.h"
 #include "plugins/audio/utils/effects/applyDrive.h"
 #include "plugins/audio/utils/effects/applyReverb.h"
+#include "plugins/audio/utils/effects/applyCompression.h"
 
 class MetalicDrumEngine : public DrumEngine {
 protected:
@@ -33,7 +33,7 @@ public:
     Val& baseFreq = val(100.0f, "BASE_FREQ", { "Base Freq", .min = 10.0, .max = 400.0, .step = 1.0, .unit = "Hz" });
     Val& bodyResonance = val(0.8f, "RESONATOR", { "Resonator", .min = 0.00f, .max = 1.5f, .step = 0.01f, .floatingPoint = 2 });
     Val& timbre = val(5.0f, "TIMBRE", { "Timbre", .unit = "%" });
-    Val& boost = val(0.0, "BOOST", { "Boost", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
+    Val& drive = val(0.0, "DRIVE", { "Drive", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
     Val& toneDecay = val(0.02f, "TONE_DECAY", { "Tone Decay", .min = 0.005f, .max = 1.0f, .step = 0.005f, .floatingPoint = 2 });
     Val& reverb = val(0.3f, "REVERB", { "Reverb", .unit = "%" });
     Val& fmFreq = val(50.0f, "FM_FREQ", { "Fm. Freq.", .min = 0.1, .max = 500.0, .step = 0.1, .floatingPoint = 1, .unit = "Hz" });
@@ -103,9 +103,10 @@ public:
     float applyEffect(float input)
     {
         float output = input;
-        float amount = boost.pct() * 2 - 1.0f;
+        float amount = drive.pct() * 2 - 1.0f;
         if (amount > 0.0f) {
-            output = applyBoost(input, amount, prevInput, prevOutput);
+            // output = applyBoost(input, amount, prevInput, prevOutput);
+            output = applyCompression(input, amount);
         } else if (amount < 0.0f) {
             output = applyDrive(input, -amount, props.lookupTable);
         }
