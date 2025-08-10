@@ -1,9 +1,9 @@
 #pragma once
 
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
+#include "plugins/audio/utils/effects/applyCompression.h"
 #include "plugins/audio/utils/effects/applyDrive.h"
 #include "plugins/audio/utils/effects/applyReverb.h"
-#include "plugins/audio/utils/effects/applyCompression.h"
 
 class MetalicDrumEngine : public DrumEngine {
 protected:
@@ -21,11 +21,22 @@ protected:
         return sineWave(freq + modulator, phase);
     }
 
-    // Resonance simulation for body tone
+    // float resonator(float input, float freq, float decay, float& state)
+    // {
+    //     state += freq / props.sampleRate;
+    //     float output = input * expf(-decay * state) * sinf(2.0f * M_PI * freq * state);
+    //     return output;
+    // }
+
     float resonator(float input, float freq, float decay, float& state)
     {
-        state += freq / props.sampleRate;
+        state += 1.0f / props.sampleRate; // time in seconds
         float output = input * expf(-decay * state) * sinf(2.0f * M_PI * freq * state);
+
+        // Optional: loudness compensation
+        float compensation = sqrtf(220.0f / std::max(freq, 1.0f));
+        output *= compensation;
+
         return output;
     }
 
