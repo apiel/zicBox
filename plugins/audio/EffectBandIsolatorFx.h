@@ -2,34 +2,17 @@
 
 #include "audioPlugin.h"
 #include "mapping.h"
-#include "plugins/audio/utils/effects/applyClipping.h"
-#include "plugins/audio/utils/effects/applyDrive.h"
-#include "plugins/audio/utils/effects/applySoftClipping.h"
-#include "plugins/audio/utils/effects/applyWaveshape.h"
-#include "plugins/audio/utils/utils.h"
+#include "plugins/audio/utils/MultiFx.h"
+
+// #include "plugins/audio/utils/utils.h"
 
 /*md
 ## EffectBandIsolatorFx
 */
 
 class EffectBandIsolatorFx : public Mapping {
-public:
-    Val& centerFreq = val(1000.0f, "FREQ", { "Center Frequency", .min = 20.0f, .max = 20000.0f, .step = 10.0f, .unit = "Hz" }, [&](auto p) {
-        p.val.setFloat(p.value);
-        updateCoeffs();
-    });
-
-    Val& rangeHz = val(2000.0f, "RANGE", { "Range", .min = 50.0f, .max = 10000.0f, .step = 50.0f, .unit = "Hz" }, [&](auto p) {
-        p.val.setFloat(p.value);
-        updateCoeffs();
-    });
-
-    Val& drive = val(0.0f, "DRIVE", { "Drive", .unit = "%" });
-    Val& clipAmount = val(0.0f, "CLIP", { "Clipping", .unit = "%" }, [&](auto p) {
-        p.val.setFloat(p.value);
-        scaledClipping = p.val.pct() * p.val.pct() * 20.0f;
-    });
-    Val& mix = val(50.0f, "MIX", { "Mix", .unit = "%" });
+protected:
+    MultiFx multiFx;
 
     struct BQ {
         float b0 = 1, b1 = 0, b2 = 0, a1 = 0, a2 = 0;
@@ -44,15 +27,6 @@ public:
             return y;
         }
     } lowpass, highpass;
-
-    float scaledClipping = 0.0f;
-
-    EffectBandIsolatorFx(AudioPlugin::Props& props, AudioPlugin::Config& config)
-        : Mapping(props, config)
-    {
-        initValues();
-        updateCoeffs();
-    }
 
     void updateCoeffs()
     {
@@ -106,23 +80,46 @@ public:
         bq.a2 = a2n / a0n;
     }
 
+public:
+    /*md - `FREQ` set the center frequency of the effect.*/
+    Val& centerFreq = val(1000.0f, "FREQ", { "Center Frequency", .min = 20.0f, .max = 20000.0f, .step = 10.0f, .unit = "Hz" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        updateCoeffs();
+    });
+
+    /*md - `RANGE` set the range of the effect.*/
+    Val& rangeHz = val(2000.0f, "RANGE", { "Range", .min = 50.0f, .max = 10000.0f, .step = 50.0f, .unit = "Hz" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        updateCoeffs();
+    });
+
+    /*md - `FX_TYPE` select the effect.*/
+    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
+        multiFx.setFxType(p);
+    });
+
+    /*md - `FX_AMOUNT` set the effect amount.*/
+    Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
+
+    /*md - `MIX` set the effect mix vs the original signal.*/
+    Val& mix = val(50.0f, "MIX", { "Mix", .unit = "%" });
+
+    EffectBandIsolatorFx(AudioPlugin::Props& props, AudioPlugin::Config& config)
+        : Mapping(props, config)
+        , multiFx(props.sampleRate, props.lookupTable)
+    {
+        initValues();
+        updateCoeffs();
+    }
+
     void sample(float* buf)
     {
         float input = buf[track];
 
-        // Extract band
         float band = highpass.process(input);
         band = lowpass.process(band);
+        band = multiFx.apply(band, fxAmount.pct());
 
-        // Process the band
-        if (drive.pct() > 0.0f)
-            band = applyDrive(band, drive.pct(), props.lookupTable);
-
-        band = applyClipping(band, scaledClipping);
-
-        // Recombine
-        float out = input * (1.0f - mix.pct()) + band * mix.pct();
-
-        buf[track] = out;
+        buf[track] = input * (1.0f - mix.pct()) + band * mix.pct();
     }
 };

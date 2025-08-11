@@ -23,16 +23,16 @@
                 "value": 500.0
             },
             {
-                "key": "DRIVE",
-                "value": 44.0
+                "key": "FX_TYPE",
+                "value": 9.0
             },
             {
-                "key": "CLIP",
-                "value": 18.0
+                "key": "FX_AMOUNT",
+                "value": 45.0
             },
             {
                 "key": "MIX",
-                "value": 31.0
+                "value": 43.0
             }
         ]
     },
