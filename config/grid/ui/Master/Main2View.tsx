@@ -13,9 +13,17 @@ import {
 import {
     backgroundBounds,
     enc1,
+    enc10,
+    enc11,
+    enc12,
     enc2,
     enc3,
-    enc4
+    enc4,
+    enc5,
+    enc6,
+    enc7,
+    enc8,
+    enc9
 } from '../constantsValue';
 import { MasterCommon } from './Common';
 
@@ -41,7 +49,7 @@ export function Main2View({ name }: { name: string }) {
                         visibilityContext={[visibilityContext]}
                     />
 
-                    <KnobValue
+                    {/* <KnobValue
                         audioPlugin="TrackFx"
                         param="FX_TYPE"
                         {...enc1}
@@ -72,6 +80,114 @@ export function Main2View({ name }: { name: string }) {
                         label="FX2 edit"
                         {...enc4}
                         color="quaternary"
+                        track={MasterTrack}
+                        visibilityContext={[visibilityContext]}
+                    /> */}
+
+                    <KnobValue
+                        audioPlugin="FilterBank"
+                        param="CUTOFF1"
+                        {...enc1}
+                        color="secondary"
+                        track={MasterTrack}
+                        visibilityContext={[visibilityContext]}
+                    />
+
+                    <KnobValue
+                        audioPlugin="FilterBank"
+                        param="RES1"
+                        {...enc2}
+                        color="secondary"
+                        track={MasterTrack}
+                        visibilityContext={[visibilityContext]}
+                    />
+
+                    <KnobValue
+                        audioPlugin="FilterBank"
+                        param="MODE1"
+                        {...enc3}
+                        color="secondary"
+                        track={MasterTrack}
+                        visibilityContext={[visibilityContext]}
+                    />
+
+                    <KnobValue
+                        audioPlugin="FilterBank"
+                        param="CUTOFF2"
+                        {...enc4}
+                        color="secondary"
+                        track={MasterTrack}
+                        visibilityContext={[visibilityContext]}
+                    />
+
+                    <KnobValue
+                        audioPlugin="FilterBank"
+                        param="RES2"
+                        {...enc5}
+                        color="secondary"
+                        track={MasterTrack}
+                        visibilityContext={[visibilityContext]}
+                    />
+
+                    <KnobValue
+                        audioPlugin="FilterBank"
+                        param="MODE2"
+                        {...enc6}
+                        color="secondary"
+                        track={MasterTrack}
+                        visibilityContext={[visibilityContext]}
+                    />
+
+                    <KnobValue
+                        audioPlugin="FilterBank"
+                        param="DRIVE"
+                        {...enc7}
+                        color="secondary"
+                        track={MasterTrack}
+                        visibilityContext={[visibilityContext]}
+                    />
+
+                    <KnobValue
+                        audioPlugin="FilterBank"
+                        param="DRIVE_BETWEEN"
+                        {...enc8}
+                        color="secondary"
+                        track={MasterTrack}
+                        visibilityContext={[visibilityContext]}
+                    />
+
+                    <KnobValue
+                        audioPlugin="FilterBank"
+                        param="DRIVE_POST"
+                        {...enc9}
+                        color="secondary"
+                        track={MasterTrack}
+                        visibilityContext={[visibilityContext]}
+                    />
+
+                    <KnobValue
+                        audioPlugin="FilterBank"
+                        param="CLIP"
+                        {...enc10}
+                        color="secondary"
+                        track={MasterTrack}
+                        visibilityContext={[visibilityContext]}
+                    />
+
+                    <KnobValue
+                        audioPlugin="FilterBank"
+                        param="FEEDBACK"
+                        {...enc11}
+                        color="secondary"
+                        track={MasterTrack}
+                        visibilityContext={[visibilityContext]}
+                    />
+
+                    <KnobValue
+                        audioPlugin="FilterBank"
+                        param="MIX"
+                        {...enc12}
+                        color="secondary"
                         track={MasterTrack}
                         visibilityContext={[visibilityContext]}
                     />

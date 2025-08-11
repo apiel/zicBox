@@ -142,6 +142,7 @@ const masterTrack = {
         audioPlugin('Mixer10', { alias: 'Mixer' }),
         audioPlugin('EffectScatter', { alias: 'Scatter0' }),
         audioPlugin('EffectFilterMultiMode', { alias: 'Filter' }),
+        audioPlugin('EffectFilterBank', { alias: 'FilterBank' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx2' }),
         audioPlugin('AudioOutputPulse', { alias: 'AudioOutput' }),

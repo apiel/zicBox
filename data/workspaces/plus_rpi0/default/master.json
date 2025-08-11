@@ -12,6 +12,38 @@
             }
         ]
     },
+    "FilterBank": {
+        "values": [
+            {
+                "key": "CUTOFF1",
+                "value": 6180.0
+            },
+            {
+                "key": "RES1",
+                "value": 0.009999999776482582
+            },
+            {
+                "key": "MODE1",
+                "value": 0.0
+            },
+            {
+                "key": "DRIVE",
+                "value": 90.0
+            },
+            {
+                "key": "CLIP",
+                "value": 0.0
+            },
+            {
+                "key": "FEEDBACK",
+                "value": 0.0
+            },
+            {
+                "key": "MIX",
+                "value": 38.0
+            }
+        ]
+    },
     "Mixer": {
         "values": [
             {
@@ -106,7 +138,7 @@
         "values": [
             {
                 "key": "BPM",
-                "value": 120.0
+                "value": 160.0
             }
         ]
     },

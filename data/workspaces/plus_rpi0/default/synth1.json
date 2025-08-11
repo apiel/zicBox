@@ -1,62 +1,7 @@
 {
     "Sequencer": {
         "STATUS": 1.0,
-        "STEPS": [
-            {
-                "condition": "---",
-                "enabled": true,
-                "len": 3,
-                "motion": "---",
-                "note": 60,
-                "position": 0,
-                "velocity": 0.800000011920929
-            },
-            {
-                "condition": "---",
-                "enabled": true,
-                "len": 8,
-                "motion": "---",
-                "note": 58,
-                "position": 8,
-                "velocity": 0.800000011920929
-            },
-            {
-                "condition": "---",
-                "enabled": true,
-                "len": 2,
-                "motion": "---",
-                "note": 60,
-                "position": 12,
-                "velocity": 0.800000011920929
-            },
-            {
-                "condition": "---",
-                "enabled": true,
-                "len": 5,
-                "motion": "---",
-                "note": 65,
-                "position": 33,
-                "velocity": 0.800000011920929
-            },
-            {
-                "condition": "---",
-                "enabled": true,
-                "len": 3,
-                "motion": "---",
-                "note": 60,
-                "position": 44,
-                "velocity": 0.800000011920929
-            },
-            {
-                "condition": "---",
-                "enabled": true,
-                "len": 7,
-                "motion": "---",
-                "note": 81,
-                "position": 20,
-                "velocity": 0.800000011920929
-            }
-        ]
+        "STEPS": null
     },
     "SerializeTrack": {
         "VARIATION": 3.0
@@ -157,7 +102,7 @@
         "values": [
             {
                 "key": "VOLUME",
-                "value": 47.0
+                "value": 100.0
             },
             {
                 "key": "GAIN",
