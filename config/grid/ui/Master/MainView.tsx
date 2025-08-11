@@ -183,15 +183,15 @@ export function MainView({ name }: { name: string }) {
 
                     <Value
                         {...valueParam(enc11)}
-                        audioPlugin="Filter"
-                        param="CUTOFF"
+                        audioPlugin="TrackFx"
+                        param="FX_AMOUNT"
                         track={MasterTrack}
                     />
 
                     <Value
                         {...valueParam(enc12)}
-                        audioPlugin="Filter"
-                        param="RESONANCE"
+                        audioPlugin="TrackFx"
+                        param="FX_TYPE"
                         track={MasterTrack}
                     />
 

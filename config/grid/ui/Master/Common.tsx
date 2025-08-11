@@ -30,7 +30,7 @@ export function MasterCommon() {
             />
 
             <KnobValue
-                audioPlugin="TrackFx2"
+                audioPlugin="TrackFx"
                 param="VOLUME"
                 label="Master volume"
                 {...enc2}

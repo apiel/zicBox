@@ -143,7 +143,7 @@ const masterTrack = {
         audioPlugin('EffectScatter', { alias: 'Scatter0' }),
         audioPlugin('EffectFilteredMultiFx', { alias: 'FilteredFx' }),
         audioPlugin('EffectBandIsolatorFx', { alias: 'IsolatorFx' }),
-        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx2' }),
+        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
         audioPlugin('AudioOutputPulse', { alias: 'AudioOutput' }),
         // audioPlugin('AudioOutputAlsa', { alias: 'AudioOutput' }),
         audioPlugin('SerializeTrack', { filename: 'master', maxVariation, workspaceFolder }),

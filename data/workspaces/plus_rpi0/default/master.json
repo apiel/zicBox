@@ -150,7 +150,7 @@
             }
         ]
     },
-    "TrackFx2": {
+    "TrackFx": {
         "values": [
             {
                 "key": "VOLUME",
