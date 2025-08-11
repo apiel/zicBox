@@ -9,6 +9,7 @@ import { StringVal } from '@/libs/nativeComponents/StringVal';
 import { Value } from '@/libs/nativeComponents/Value';
 import { rgb } from '@/libs/ui';
 import { ClipSelection } from '../components/ClipSelection';
+import { KeysScatter } from '../components/KeysScatter';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
 import { shiftContext } from '../constants';
@@ -205,6 +206,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
 
                     <ClipSelection track={track} color={color} />
                     <KeysTracks synthName={synthName} viewName={name} />
+                    <KeysScatter scatterTrack={0} seqTrack={track} />
                 </>
             }
         />

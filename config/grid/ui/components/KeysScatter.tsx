@@ -1,9 +1,11 @@
 import * as React from '@/libs/react';
 
 import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
+import { rgba } from '@/libs/ui';
 import { D1, D10, D2, D3, D4, D5, D6, D7, D8, D9 } from '../constants';
 
 export function KeysScatter({seqTrack, scatterTrack}: {seqTrack: number, scatterTrack: number}) {
+    const color = rgba(27, 30, 41, 1);
     return (
         <HiddenValue
             keys={[
@@ -22,16 +24,16 @@ export function KeysScatter({seqTrack, scatterTrack}: {seqTrack: number, scatter
                 {
                     controller: 'Default',
                     colors: [
-                        { key: D1, color: 'primary' },
-                        { key: D2, color: 'primary' },
-                        { key: D3, color: 'primary' },
-                        { key: D4, color: 'primary' },
-                        { key: D5, color: 'primary' },
-                        { key: D6, color: 'primary' },
-                        { key: D7, color: 'primary' },
-                        { key: D8, color: 'primary' },
-                        { key: D9, color: 'primary' },
-                        { key: D10, color: 'primary' },
+                        { key: D1, color },
+                        { key: D2, color },
+                        { key: D3, color },
+                        { key: D4, color },
+                        { key: D5, color },
+                        { key: D6, color },
+                        { key: D7, color },
+                        { key: D8, color },
+                        { key: D9, color },
+                        { key: D10, color },
                     ],
                 },
             ]}

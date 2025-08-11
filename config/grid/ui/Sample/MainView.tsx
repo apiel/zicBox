@@ -5,6 +5,7 @@ import { Sample } from '@/libs/nativeComponents/Sample';
 import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
 import { Value } from '@/libs/nativeComponents/Value';
 import { ClipSelection } from '../components/ClipSelection';
+import { KeysScatter } from '../components/KeysScatter';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
 import {
@@ -199,6 +200,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
 
                     <ClipSelection track={track} color={color} />
                     <KeysTracks synthName={synthName} viewName={name} />
+                    <KeysScatter scatterTrack={0} seqTrack={track} />
                 </>
             }
         />

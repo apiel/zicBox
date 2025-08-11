@@ -8,6 +8,7 @@ import { Value } from '@/libs/nativeComponents/Value';
 import { rgb } from '@/libs/ui';
 import { ClipSelection } from '../components/ClipSelection';
 import { Drum1 } from '../components/Common';
+import { KeysScatter } from '../components/KeysScatter';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
 import {
@@ -149,6 +150,7 @@ export function Main2View({ name, track, synthName, color }: Props) {
 
                     <ClipSelection track={track} color={color} />
                     <KeysTracks synthName={synthName} viewName={name} />
+                    <KeysScatter scatterTrack={0} seqTrack={track} />
                 </>
             }
         />

@@ -70,7 +70,7 @@ protected:
         if (pressedTime > 0 && now - pressedTime > 500) {
             //might want to check that pressedKeyIndex is not out of bounds
             pressedTime = 0;
-            setContext(contextId, pressedKeyIndex);
+            setContext(contextId, getStepStart() +pressedKeyIndex);
             renderNext();
         }
     }
@@ -81,9 +81,13 @@ protected:
             return 0; // to avoid dividing by 0
         }
         int selectedStep = view->contextVar[contextId];
-        // logDebug("selectedStep %d", selectedStep);
         int scrollGroup = selectedStep / (stepPerRow * rowsSelection);
         return scrollGroup;
+    }
+
+    int getStepStart()
+    {
+        return getScrollGroup() * stepPerRow * rowsSelection;
     }
 
 public:
@@ -93,7 +97,6 @@ public:
             if (action == ".scroll") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (contextId != 0 && rowsSelection > 0 && KeypadLayout::isReleased(keymap)) {
-                        // logDebug("scroll");
                         int scrollGroup = getScrollGroup();
                         scrollGroup = (scrollGroup + 1) % (maxSteps / (stepPerRow * rowsSelection));
                         pressedKeyIndex = scrollGroup * (stepPerRow * rowsSelection);
@@ -216,8 +219,7 @@ public:
         if (controller) {
             Color color = { 0x02, 0x10, 0x14 };
             Color activeColor = { 0xaa, 0xcd, 0xcf };
-            // logDebug("renderKeys");
-            int stepStart = getScrollGroup() * stepPerRow * rowsSelection;
+            int stepStart = getStepStart();
             for (int i = 0; i < gridKeys.size(); i++) {
                 int gridKey = gridKeys[i];
                 Step* step = getStepAtPos(i + stepStart);
@@ -329,7 +331,6 @@ public:
     void onContext(uint8_t index, float value) override
     {
         if (index == contextId) {
-            // logDebug("onContext %f", value);
             renderNext();
             renderKeys();
         }
@@ -346,18 +347,16 @@ public:
                         pressedTime = now;
                         pressedKeyIndex = i;
                     } else if (pressedTime != 0) {
-                        pressedTime = -1;
-                        // logDebug("pressed key %d index %d", key, i);
-                        int stepStart = getScrollGroup() * stepPerRow * rowsSelection;
-                        stepToggle(i + stepStart);
-                        setContext(contextId, i + stepStart);
+                        pressedTime = 0;
+                        int stepPos = getStepStart() + i;
+                        stepToggle(stepPos);
+                        setContext(contextId, stepPos);
                         renderNext();
                     }
                     return true;
                 }
             }
         }
-        // logDebug("Component::onKey %d %d", key, state);
         return Component::onKey(id, key, state, now);
     }
 

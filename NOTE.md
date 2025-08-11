@@ -1,14 +1,6 @@
 ## Pixel TODO
 
-- FIXME sequencer active step from grid on second page
-- FIXME variation grid colors
-- TODO add variation to all views
-
-- TODO send event set tempo
-
-- TODO transpose
-        - might be necessary to put transpose within the synth engine itself, with sequencer would be too complicated... ---> if note off is trigger after transpose changed..
-        - OR SHOULD we even transpose??
+- TODO try EffectFilterBank
 
 - TODO variation
         - -----> show pattern in variation <<-- NOTE 
@@ -18,6 +10,12 @@
 
 - TODO mute shortcut, make it part of the Volume plugin, it should save last state before to mute. (in grid, use shift to mute?)
 
+- TODO send event set tempo
+
+- TODO transpose
+        - might be necessary to put transpose within the synth engine itself, with sequencer would be too complicated... ---> if note off is trigger after transpose changed..
+        - OR SHOULD we even transpose??
+
 - TODO linearInterpolation in generator class repeated. need to see if we can use the already existing one...
 - TODO add velocity to all drum engines
 - TODO optimize drum engines
@@ -25,8 +23,6 @@
 
 - TODO provide a way to save preset on github repo
             - ---> see how to handle ssh or instead use token, but the idea would be to store as less as possible info on zicBox app side (if possible nothing) and delegate everything to the OS...
-
-- TODO try EffectFilterBank
 
 - TODO volca drum engine
     - https://cdn.korg.com/us/support/download/files/c65c033ee08932b5bd69303ebf7f31b0.pdf
