@@ -15,28 +15,24 @@
     "FilterBank": {
         "values": [
             {
-                "key": "LOW_GAIN",
-                "value": -7.0
+                "key": "MIN_FREQ",
+                "value": 20.0
             },
             {
-                "key": "MID_GAIN",
-                "value": -7.0
-            },
-            {
-                "key": "HIGH_GAIN",
-                "value": -6.0
+                "key": "MAX_FREQ",
+                "value": 820.0
             },
             {
                 "key": "DRIVE",
-                "value": 52.0
+                "value": 100.0
             },
             {
                 "key": "CLIP",
-                "value": 26.0
+                "value": 0.0
             },
             {
                 "key": "MIX",
-                "value": 50.0
+                "value": 40.0
             }
         ]
     },

@@ -122,7 +122,7 @@ export function Main2View({ name }: { name: string }) {
 
                     <KnobValue
                         audioPlugin="FilterBank"
-                        param="MID_GAIN"
+                        param="MIN_FREQ"
                         {...enc5}
                         color="secondary"
                         track={MasterTrack}
@@ -131,7 +131,7 @@ export function Main2View({ name }: { name: string }) {
 
                     <KnobValue
                         audioPlugin="FilterBank"
-                        param="HIGH_GAIN"
+                        param="MAX_FREQ"
                         {...enc6}
                         color="secondary"
                         track={MasterTrack}
