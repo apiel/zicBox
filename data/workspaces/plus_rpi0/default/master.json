@@ -16,7 +16,7 @@
             },
             {
                 "key": "FX_AMOUNT",
-                "value": 48.0
+                "value": 36.0
             },
             {
                 "key": "FEEDBACK",
@@ -24,7 +24,7 @@
             },
             {
                 "key": "MIX",
-                "value": 0.0
+                "value": 51.0
             }
         ]
     },
@@ -40,19 +40,15 @@
             },
             {
                 "key": "FX_TYPE",
-                "value": 8.0
+                "value": 10.0
             },
             {
                 "key": "FX_AMOUNT",
-                "value": 68.0
+                "value": 22.0
             },
             {
                 "key": "MIX",
-                "value": 50.0
-            },
-            {
-                "key": "ENV_SENS",
-                "value": 22.0
+                "value": 28.0
             }
         ]
     },
