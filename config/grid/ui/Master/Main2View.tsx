@@ -11,6 +11,7 @@ import {
     enc1,
     enc10,
     enc11,
+    enc12,
     enc2,
     enc3,
     enc4,
@@ -144,14 +145,14 @@ export function Main2View({ name }: { name: string }) {
                         visibilityContext={[visibilityContext]}
                     />
 
-                    {/* <KnobValue
-                        audioPlugin="FilterBank"
-                        param="RANGE"
+                    <KnobValue
+                        audioPlugin="IsolatorFx"
+                        param="ENV_SENS"
                         {...enc12}
                         color="secondary"
                         track={MasterTrack}
                         visibilityContext={[visibilityContext]}
-                    /> */}
+                    />
 
                     <KeysTracks viewName={name} />
                 </>
