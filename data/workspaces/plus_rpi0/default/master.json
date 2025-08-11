@@ -1,38 +1,54 @@
 {
     "AudioOutput": null,
-    "Filter": {
+    "FilteredFx": {
         "values": [
             {
                 "key": "CUTOFF",
-                "value": 0.0
+                "value": -69.0
             },
             {
                 "key": "RESONANCE",
-                "value": 0.0
-            }
-        ]
-    },
-    "FilterBank": {
-        "values": [
-            {
-                "key": "FREQ",
-                "value": 310.0
-            },
-            {
-                "key": "RANGE",
-                "value": 500.0
+                "value": 40.0
             },
             {
                 "key": "FX_TYPE",
-                "value": 9.0
+                "value": 15.0
             },
             {
                 "key": "FX_AMOUNT",
-                "value": 45.0
+                "value": 48.0
+            },
+            {
+                "key": "FEEDBACK",
+                "value": 18.0
             },
             {
                 "key": "MIX",
-                "value": 43.0
+                "value": 25.0
+            }
+        ]
+    },
+    "IsolatorFx": {
+        "values": [
+            {
+                "key": "FREQ",
+                "value": 40.0
+            },
+            {
+                "key": "RANGE",
+                "value": 800.0
+            },
+            {
+                "key": "FX_TYPE",
+                "value": 8.0
+            },
+            {
+                "key": "FX_AMOUNT",
+                "value": 36.0
+            },
+            {
+                "key": "MIX",
+                "value": 53.0
             }
         ]
     },
@@ -131,26 +147,6 @@
             {
                 "key": "BPM",
                 "value": 160.0
-            }
-        ]
-    },
-    "TrackFx": {
-        "values": [
-            {
-                "key": "VOLUME",
-                "value": 100.0
-            },
-            {
-                "key": "GAIN",
-                "value": 1.0
-            },
-            {
-                "key": "FX_TYPE",
-                "value": 0.0
-            },
-            {
-                "key": "FX_AMOUNT",
-                "value": 0.0
             }
         ]
     },

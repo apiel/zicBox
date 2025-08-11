@@ -141,10 +141,8 @@ const masterTrack = {
     plugins: [
         audioPlugin('Mixer10', { alias: 'Mixer' }),
         audioPlugin('EffectScatter', { alias: 'Scatter0' }),
-        audioPlugin('EffectFilterMultiMode', { alias: 'Filter' }),
-        // audioPlugin('EffectFilterBank', { alias: 'FilterBank' }),
-        audioPlugin('EffectBandIsolatorFx', { alias: 'FilterBank' }),
-        audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx' }),
+        audioPlugin('EffectFilteredMultiFx', { alias: 'FilteredFx' }),
+        audioPlugin('EffectBandIsolatorFx', { alias: 'IsolatorFx' }),
         audioPlugin('EffectVolumeMultiFx', { alias: 'TrackFx2' }),
         audioPlugin('AudioOutputPulse', { alias: 'AudioOutput' }),
         // audioPlugin('AudioOutputAlsa', { alias: 'AudioOutput' }),

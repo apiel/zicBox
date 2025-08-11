@@ -2,21 +2,18 @@
 
 #include "audioPlugin.h"
 #include "mapping.h"
-#include "plugins/audio/utils/effects/applyClipping.h"
-#include "plugins/audio/utils/effects/applyDrive.h"
-#include "plugins/audio/utils/effects/applyWaveshape.h"
-#include "plugins/audio/utils/effects/applySoftClipping.h"
-#include "plugins/audio/utils/utils.h"
+#include "plugins/audio/utils/MultiFx.h"
 #include "plugins/audio/utils/MMfilter.h"
 #include "plugins/audio/utils/val/valMMfilterCutoff.h"
 
 /*md
-## EffectFilterBank
+## EffectFilteredMultiFx
 */
 
-class EffectFilterBank : public Mapping {
+class EffectFilteredMultiFx : public Mapping {
 protected:
     MMfilter filter;
+    MultiFx multiFx;
 
 public:
     /*md **Values**: */
@@ -32,21 +29,26 @@ public:
         filter.setResonance(p.val.pct());
     });
 
-    Val& drive = val(0.0f, "DRIVE", { "Drive", .unit = "%" });
-    Val& clipAmount = val(0.0f, "CLIP", { "Clipping", .unit = "%" }, [&](auto p) {
-        p.val.setFloat(p.value);
-        // scaled like original plugin
-        scaledClipping = p.val.pct() * p.val.pct() * 20.0f;
+    /*md - `FX_TYPE` select the effect.*/
+    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
+        multiFx.setFxType(p);
     });
 
-    Val& feedback = val(0.0f, "FEEDBACK", { "Routing.|Feedback", .unit = "%" });
+    /*md - `FX_AMOUNT` set the effect amount.*/
+    Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
+
+    /*md - `FEEDBACK` to set feedback. */
+    Val& feedback = val(0.0f, "FEEDBACK", { "Feedback", .unit = "%" });
+
+    /*md - `MIX` set the effect mix vs the original signal.*/
     Val& mix = val(50.0f, "MIX", { "Mix", .unit = "%" });
 
     // internal amounts
     float scaledClipping = 0.0f;
 
-    EffectFilterBank(AudioPlugin::Props& props, AudioPlugin::Config& config)
+    EffectFilteredMultiFx(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
+        , multiFx(props.sampleRate, props.lookupTable)
     {
         initValues();
     }
@@ -59,8 +61,7 @@ public:
         float filterOut = filter.process(buf[track]);
         float feedbackSignal = filterOut * feedback.pct();
 
-        if (drive.pct() > 0.0f) filterOut = applyDrive(filterOut, drive.pct(), props.lookupTable);
-        filterOut = applyClipping(filterOut, scaledClipping);
+        filterOut = multiFx.apply(filterOut, fxAmount.pct());
 
         float out = input * (1 - mix.pct()) + filterOut * mix.pct();
         out += feedbackSignal;

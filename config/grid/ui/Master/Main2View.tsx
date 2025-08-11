@@ -5,11 +5,7 @@ import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
-import {
-    ColorTrackMaster,
-    MasterTrack,
-    shiftContext
-} from '../constants';
+import { ColorTrackMaster, MasterTrack, shiftContext } from '../constants';
 import {
     backgroundBounds,
     enc1,
@@ -23,7 +19,7 @@ import {
     enc6,
     enc7,
     enc8,
-    enc9
+    enc9,
 } from '../constantsValue';
 import { MasterCommon } from './Common';
 
@@ -85,7 +81,7 @@ export function Main2View({ name }: { name: string }) {
                     /> */}
 
                     <KnobValue
-                        audioPlugin="FilterBank"
+                        audioPlugin="IsolatorFx"
                         param="FREQ"
                         {...enc1}
                         color="secondary"
@@ -94,7 +90,7 @@ export function Main2View({ name }: { name: string }) {
                     />
 
                     <KnobValue
-                        audioPlugin="FilterBank"
+                        audioPlugin="IsolatorFx"
                         param="RANGE"
                         {...enc2}
                         color="secondary"
@@ -103,7 +99,7 @@ export function Main2View({ name }: { name: string }) {
                     />
 
                     <KnobValue
-                        audioPlugin="FilterBank"
+                        audioPlugin="IsolatorFx"
                         param="FX_TYPE"
                         {...enc3}
                         color="secondary"
@@ -112,7 +108,7 @@ export function Main2View({ name }: { name: string }) {
                     />
 
                     <KnobValue
-                        audioPlugin="FilterBank"
+                        audioPlugin="IsolatorFx"
                         param="FX_AMOUNT"
                         {...enc4}
                         color="secondary"
@@ -121,8 +117,8 @@ export function Main2View({ name }: { name: string }) {
                     />
 
                     <KnobValue
-                        audioPlugin="FilterBank"
-                        param="FREQ"
+                        audioPlugin="IsolatorFx"
+                        param="MIX"
                         {...enc5}
                         color="secondary"
                         track={MasterTrack}
@@ -139,55 +135,55 @@ export function Main2View({ name }: { name: string }) {
                     />
 
                     <KnobValue
-                        audioPlugin="FilterBank"
-                        param="DRIVE"
-                        {...enc7}
-                        color="secondary"
-                        track={MasterTrack}
-                        visibilityContext={[visibilityContext]}
-                    />
-
-                    <KnobValue
-                        audioPlugin="FilterBank"
+                        audioPlugin="FilteredFx"
                         param="CUTOFF"
-                        {...enc8}
-                        color="secondary"
+                        {...enc7}
+                        color="primary"
                         track={MasterTrack}
                         visibilityContext={[visibilityContext]}
                     />
 
                     <KnobValue
-                        audioPlugin="FilterBank"
+                        audioPlugin="FilteredFx"
                         param="RESONANCE"
+                        {...enc8}
+                        color="primary"
+                        track={MasterTrack}
+                        visibilityContext={[visibilityContext]}
+                    />
+
+                    <KnobValue
+                        audioPlugin="FilteredFx"
+                        param="FX_TYPE"
                         {...enc9}
-                        color="secondary"
+                        color="primary"
                         track={MasterTrack}
                         visibilityContext={[visibilityContext]}
                     />
 
                     <KnobValue
-                        audioPlugin="FilterBank"
-                        param="CLIP"
+                        audioPlugin="FilteredFx"
+                        param="FX_AMOUNT"
                         {...enc10}
-                        color="secondary"
+                        color="primary"
                         track={MasterTrack}
                         visibilityContext={[visibilityContext]}
                     />
 
                     <KnobValue
-                        audioPlugin="FilterBank"
+                        audioPlugin="FilteredFx"
                         param="FEEDBACK"
                         {...enc11}
-                        color="secondary"
+                        color="primary"
                         track={MasterTrack}
                         visibilityContext={[visibilityContext]}
                     />
 
                     <KnobValue
-                        audioPlugin="FilterBank"
+                        audioPlugin="FilteredFx"
                         param="MIX"
                         {...enc12}
-                        color="secondary"
+                        color="primary"
                         track={MasterTrack}
                         visibilityContext={[visibilityContext]}
                     />

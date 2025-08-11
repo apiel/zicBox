@@ -25,7 +25,7 @@ all:
 		AudioInputAlsa AudioOutputAlsa\
 		AudioInputPulse AudioOutputPulse\
 		SerializeTrack TapeRecording  SampleSequencer EffectFilterMultiMode\
-		SynthMultiDrum EffectScatter EffectFilterBank EffectBandIsolatorFx
+		SynthMultiDrum EffectScatter EffectFilteredMultiFx EffectBandIsolatorFx
 		
 
 # Pulse was removed from zicOs

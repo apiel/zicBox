@@ -4,8 +4,6 @@
 #include "mapping.h"
 #include "plugins/audio/utils/MultiFx.h"
 
-// #include "plugins/audio/utils/utils.h"
-
 /*md
 ## EffectBandIsolatorFx
 */
