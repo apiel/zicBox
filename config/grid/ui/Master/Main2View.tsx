@@ -113,7 +113,7 @@ export function Main2View({ name }: { name: string }) {
 
                     <KnobValue
                         audioPlugin="FilterBank"
-                        param="CUTOFF2"
+                        param="LOW_GAIN"
                         {...enc4}
                         color="secondary"
                         track={MasterTrack}
@@ -122,7 +122,7 @@ export function Main2View({ name }: { name: string }) {
 
                     <KnobValue
                         audioPlugin="FilterBank"
-                        param="RES2"
+                        param="MID_GAIN"
                         {...enc5}
                         color="secondary"
                         track={MasterTrack}
@@ -131,7 +131,7 @@ export function Main2View({ name }: { name: string }) {
 
                     <KnobValue
                         audioPlugin="FilterBank"
-                        param="MODE2"
+                        param="HIGH_GAIN"
                         {...enc6}
                         color="secondary"
                         track={MasterTrack}

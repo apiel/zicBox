@@ -15,32 +15,28 @@
     "FilterBank": {
         "values": [
             {
-                "key": "CUTOFF1",
-                "value": 6180.0
+                "key": "LOW_GAIN",
+                "value": -7.0
             },
             {
-                "key": "RES1",
-                "value": 0.009999999776482582
+                "key": "MID_GAIN",
+                "value": -7.0
             },
             {
-                "key": "MODE1",
-                "value": 0.0
+                "key": "HIGH_GAIN",
+                "value": -6.0
             },
             {
                 "key": "DRIVE",
-                "value": 90.0
+                "value": 52.0
             },
             {
                 "key": "CLIP",
-                "value": 0.0
-            },
-            {
-                "key": "FEEDBACK",
-                "value": 0.0
+                "value": 26.0
             },
             {
                 "key": "MIX",
-                "value": 38.0
+                "value": 50.0
             }
         ]
     },
