@@ -15,12 +15,12 @@
     "FilterBank": {
         "values": [
             {
-                "key": "MIN_FREQ",
-                "value": 20.0
+                "key": "FREQ",
+                "value": 140.0
             },
             {
-                "key": "MAX_FREQ",
-                "value": 820.0
+                "key": "RANGE",
+                "value": 100.0
             },
             {
                 "key": "DRIVE",
@@ -28,11 +28,11 @@
             },
             {
                 "key": "CLIP",
-                "value": 0.0
+                "value": 24.0
             },
             {
                 "key": "MIX",
-                "value": 40.0
+                "value": 42.0
             }
         ]
     },
