@@ -15,24 +15,28 @@
     "FilterBank": {
         "values": [
             {
-                "key": "FREQ",
-                "value": 140.0
+                "key": "CUTOFF",
+                "value": -100.0
             },
             {
-                "key": "RANGE",
-                "value": 100.0
+                "key": "RESONANCE",
+                "value": 22.0
             },
             {
                 "key": "DRIVE",
-                "value": 100.0
+                "value": 52.0
             },
             {
                 "key": "CLIP",
-                "value": 24.0
+                "value": 28.0
+            },
+            {
+                "key": "FEEDBACK",
+                "value": 54.0
             },
             {
                 "key": "MIX",
-                "value": 42.0
+                "value": 12.0
             }
         ]
     },

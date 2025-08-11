@@ -149,7 +149,7 @@ export function Main2View({ name }: { name: string }) {
 
                     <KnobValue
                         audioPlugin="FilterBank"
-                        param="DRIVE_BETWEEN"
+                        param="CUTOFF"
                         {...enc8}
                         color="secondary"
                         track={MasterTrack}
@@ -158,7 +158,7 @@ export function Main2View({ name }: { name: string }) {
 
                     <KnobValue
                         audioPlugin="FilterBank"
-                        param="DRIVE_POST"
+                        param="RESONANCE"
                         {...enc9}
                         color="secondary"
                         track={MasterTrack}
