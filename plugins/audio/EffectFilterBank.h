@@ -12,9 +12,6 @@
 
 /*md
 ## EffectFilterBank
-
-A dual-filter "Sherman-like" filterbank: two multimode biquad filters, drives/clipping
-stages, feedback and routing (serial/parallel).
 */
 
 class EffectFilterBank : public Mapping {

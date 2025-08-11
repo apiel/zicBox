@@ -9,23 +9,11 @@
 #include "plugins/audio/utils/utils.h"
 
 /*md
-## EffectFilterBank
-
-A dual-filter "Sherman-like" filterbank: two multimode biquad filters, drives/clipping
-stages, feedback and routing (serial/parallel).
+## EffectBandIsolatorFx
 */
 
-class EffectFilterBank : public Mapping {
+class EffectBandIsolatorFx : public Mapping {
 public:
-    // Val& minFreq = val(200.0f, "MIN_FREQ", { "Min Freq", .min = 20.0f, .max = 20000.0f, .step = 20.0f, .unit = "Hz" }, [&](auto p) {
-    //     p.val.setFloat(p.value);
-    //     updateCoeffs();
-    // });
-    // Val& maxFreq = val(2000.0f, "MAX_FREQ", { "Max Freq", .min = 20.0f, .max = 20000.0f, .step = 20.0f, .unit = "Hz" }, [&](auto p) {
-    //     p.val.setFloat(p.value);
-    //     updateCoeffs();
-    // });
-
     Val& centerFreq = val(1000.0f, "FREQ", { "Center Frequency", .min = 20.0f, .max = 20000.0f, .step = 10.0f, .unit = "Hz" }, [&](auto p) {
         p.val.setFloat(p.value);
         updateCoeffs();
@@ -57,14 +45,11 @@ public:
         }
     } lowpass, highpass;
 
-    float sr = 48000.0f;
     float scaledClipping = 0.0f;
 
-    EffectFilterBank(AudioPlugin::Props& props, AudioPlugin::Config& config)
+    EffectBandIsolatorFx(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
     {
-        if (props.sampleRate > 0.0f)
-            sr = props.sampleRate;
         initValues();
         updateCoeffs();
     }
@@ -73,10 +58,10 @@ public:
     {
         // Compute min/max freq from centerFreq and rangeHz
         float minFreq = std::max(20.0f, centerFreq.get() - rangeHz.get() * 0.5f);
-        float maxFreq = std::min(sr * 0.5f, centerFreq.get() + rangeHz.get() * 0.5f);
+        float maxFreq = std::min(props.sampleRate * 0.5f, centerFreq.get() + rangeHz.get() * 0.5f);
 
-        setHighpass(highpass, minFreq, sr);
-        setLowpass(lowpass, maxFreq, sr);
+        setHighpass(highpass, minFreq, props.sampleRate);
+        setLowpass(lowpass, maxFreq, props.sampleRate);
     }
 
     void setLowpass(BQ& bq, float freq, float fs)

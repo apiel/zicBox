@@ -108,7 +108,7 @@
           {"alias":"Mixer","plugin":"Mixer10"},
           {"alias":"Scatter0","plugin":"EffectScatter"},
           {"alias":"Filter","plugin":"EffectFilterMultiMode"},
-          {"alias":"FilterBank","plugin":"EffectFilterBank"},
+          {"alias":"FilterBank","plugin":"EffectBandIsolatorFx"},
           {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
           {"alias":"TrackFx2","plugin":"EffectVolumeMultiFx"},
           {"alias":"AudioOutput","plugin":"AudioOutputPulse"},
