@@ -21,7 +21,7 @@ import {
     enc8,
     enc9
 } from '../constantsValue';
-import { MasterCommon } from './Common';
+import { Shift } from './Shift';
 
 export function Main2View({ name }: { name: string }) {
     const visibilityContext: VisibilityContext = {
@@ -37,7 +37,7 @@ export function Main2View({ name }: { name: string }) {
             title="Master"
             content={
                 <>
-                    <MasterCommon />
+                    <Shift />
 
                     <Rect
                         bounds={backgroundBounds}

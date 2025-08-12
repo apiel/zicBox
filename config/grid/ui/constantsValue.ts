@@ -1,4 +1,4 @@
-import { ScreenHeight, ScreenWidth, W1_4, W2_4 } from './constants';
+import { ScreenWidth, W1_4, W2_4 } from './constants';
 
 const top = 70;
 export const fullValues = [0, top, ScreenWidth - 1, 180];
@@ -9,8 +9,6 @@ export const topLeftKnob = [0, top, W2_4 - 2, 100];
 export const topRightKnob = [W2_4, top, W2_4 - 2, 100];
 export const bottomLeftKnob = [0, top + 100, W2_4 - 2, 100];
 export const bottomRightKnob = [W2_4, top + 100, W2_4 - 2, 100];
-
-export const backgroundBounds = [0, top, ScreenWidth, ScreenHeight - top];
 
 export const bounds1 = [0, top, W1_4 - 2, 100];
 export const bounds2 = [W1_4, top, W1_4 - 2, 100];
@@ -26,6 +24,8 @@ export const bounds9 = [0, top + 240, W1_4 - 2, 100];
 export const bounds10 = [W1_4, top + 240, W1_4 - 2, 100];
 export const bounds11 = [W1_4 * 2, top + 240, W1_4 - 2, 100];
 export const bounds12 = [W1_4 * 3, top + 240, W1_4 - 2, 100];
+
+export const backgroundBounds = [0, top, ScreenWidth, bounds12[1] + bounds12[3] - top];
 
 export const enc1 = { encoderId: 1, bounds: bounds1 };
 export const enc2 = { encoderId: 2, bounds: bounds2 };

@@ -57,7 +57,7 @@ import {
     enc8,
     enc9,
 } from '../constantsValue';
-import { MasterCommon } from './Common';
+import { Shift } from './Shift';
 
 export function MainView({ name }: { name: string }) {
     const visibilityContext: VisibilityContext = {
@@ -83,7 +83,7 @@ export function MainView({ name }: { name: string }) {
             title="Master"
             content={
                 <>
-                    <MasterCommon / >
+                    <Shift / >
 
                     <Rect
                         bounds={backgroundBounds}

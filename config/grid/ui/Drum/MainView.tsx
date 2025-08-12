@@ -1,9 +1,7 @@
 import * as React from '@/libs/react';
 
-import { VisibilityContext } from '@/libs/nativeComponents/component';
 import { GraphEncoder } from '@/libs/nativeComponents/GraphEncoder';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
-import { Rect } from '@/libs/nativeComponents/Rect';
 import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
 import { StringVal } from '@/libs/nativeComponents/StringVal';
 import { Value } from '@/libs/nativeComponents/Value';
@@ -12,9 +10,8 @@ import { ClipSelection } from '../components/ClipSelection';
 import { KeysScatter } from '../components/KeysScatter';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
-import { shiftContext } from '../constants';
+import { ShiftLayout, shiftVisibilityContext, unshiftVisibilityContext } from '../components/ShiftLayout';
 import {
-    backgroundBounds,
     bounds2,
     boundsMarginTop,
     enc1,
@@ -30,7 +27,7 @@ import {
     enc8,
     enc9,
     encBottomValue,
-    seqCardBounds_small,
+    seqCardBounds_small
 } from '../constantsValue';
 
 export type Props = {
@@ -42,12 +39,6 @@ export type Props = {
 };
 
 export function MainView({ name, track, synthName, color, title }: Props) {
-    const visibilityContext: VisibilityContext = {
-        condition: 'SHOW_WHEN',
-        index: shiftContext,
-        value: 0,
-    };
-
     return (
         <Layout
             viewName={name}
@@ -56,22 +47,18 @@ export function MainView({ name, track, synthName, color, title }: Props) {
             title={title}
             content={
                 <>
-                    <Rect
-                        bounds={[backgroundBounds[0], backgroundBounds[1], backgroundBounds[2], backgroundBounds[3] - 30]}
-                        color="background"
-                        visibilityContext={[
-                            { condition: 'SHOW_WHEN', index: shiftContext, value: 1 },
-                        ]}
-                    />
-                    <KnobValue
-                        audioPlugin={synthName}
-                        param="ENGINE"
-                        {...enc1}
-                        color="secondary"
+                    <ShiftLayout
                         track={track}
-                        visibilityContext={[
-                            { condition: 'SHOW_WHEN', index: shiftContext, value: 1 },
-                        ]}
+                        content={
+                            <KnobValue
+                                audioPlugin={synthName}
+                                param="ENGINE"
+                                {...enc2}
+                                color="secondary"
+                                track={track}
+                                visibilityContext={[shiftVisibilityContext]}
+                            />
+                        }
                     />
 
                     <StringVal audioPlugin={synthName} param="ENGINE" bounds={[280, 22, 100, 20]} />
@@ -82,7 +69,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         {...enc1}
                         color="secondary"
                         track={track}
-                        visibilityContext={[visibilityContext]}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
 
                     <GraphEncoder
@@ -93,7 +80,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         outlineColor="quaternary"
                         fillColor={rgb(194, 175, 107)}
                         track={track}
-                        visibilityContext={[visibilityContext]}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
                     <Value
                         {...encBottomValue(enc2)}
@@ -104,7 +91,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         barColor="quaternary"
                         alignLeft
                         showLabelOverValue={1}
-                        visibilityContext={[visibilityContext]}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
 
                     <KnobValue
@@ -113,7 +100,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         {...enc3}
                         color="tertiary"
                         track={track}
-                        visibilityContext={[visibilityContext]}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
 
                     <KnobValue
@@ -122,7 +109,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         {...enc4}
                         color="primary"
                         track={track}
-                        visibilityContext={[visibilityContext]}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
 
                     <KnobValue
@@ -131,7 +118,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         {...enc5}
                         color="secondary"
                         track={track}
-                        visibilityContext={[visibilityContext]}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
 
                     <KnobValue
@@ -140,7 +127,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         {...enc6}
                         color="quaternary"
                         track={track}
-                        visibilityContext={[visibilityContext]}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
 
                     <KnobValue
@@ -149,7 +136,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         {...enc7}
                         color="tertiary"
                         track={track}
-                        visibilityContext={[visibilityContext]}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
 
                     <KnobValue
@@ -158,7 +145,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         {...enc8}
                         color="primary"
                         track={track}
-                        visibilityContext={[visibilityContext]}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
 
                     <KnobValue
@@ -167,7 +154,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         {...enc9}
                         color="secondary"
                         track={track}
-                        visibilityContext={[visibilityContext]}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
 
                     <KnobValue
@@ -176,7 +163,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         {...enc10}
                         color="quaternary"
                         track={track}
-                        visibilityContext={[visibilityContext]}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
 
                     <KnobValue
@@ -185,7 +172,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         {...enc11}
                         color="tertiary"
                         track={track}
-                        visibilityContext={[visibilityContext]}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
 
                     <KnobValue
@@ -194,14 +181,14 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         {...enc12}
                         color="primary"
                         track={track}
-                        visibilityContext={[visibilityContext]}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
 
                     <SequencerCard
                         bounds={seqCardBounds_small}
                         audioPlugin={`Sequencer`}
                         track={track}
-                        visibilityContext={[visibilityContext]}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
 
                     <ClipSelection track={track} color={color} />

@@ -1,12 +1,12 @@
 ## Pixel TODO
 
-- TODO try EffectFilterBank
+- TODO shift volume
 
 - TODO variation
+        - show message when saved :p
         - -----> show pattern in variation <<-- NOTE 
         - would need a way to save all variation at once
         - would need a way to reload all variation at once
-        - show message when saved :p
 
 - TODO mute shortcut, make it part of the Volume plugin, it should save last state before to mute. (in grid, use shift to mute?)
 
