@@ -18,7 +18,7 @@ export const shiftVisibilityContext: VisibilityContext = {
     value: 1,
 };
 
-export function ShiftLayout({ content, track, label }: { content: any, track: number, label?: string }) {
+export function ShiftLayout({ content, track, label }: { content?: any, track: number, label?: string }) {
     return (
         <>
             <Rect

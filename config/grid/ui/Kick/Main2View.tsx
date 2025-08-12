@@ -11,6 +11,7 @@ import { Drum1 } from '../components/Common';
 import { KeysScatter } from '../components/KeysScatter';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
+import { unshiftVisibilityContext } from '../components/ShiftLayout';
 import {
     bounds1,
     bounds10,
@@ -32,6 +33,7 @@ import {
     graphBounds,
     seqCardBounds_small,
 } from '../constantsValue';
+import { Shift } from './Shift';
 
 export type Props = {
     name: string;
@@ -49,6 +51,7 @@ export function Main2View({ name, track, synthName, color }: Props) {
             title={Drum1}
             content={
                 <>
+                    <Shift />
                     <MacroEnvelop
                         bounds={graphBounds(bounds1, 15)}
                         audioPlugin={synthName}
@@ -56,6 +59,7 @@ export function Main2View({ name, track, synthName, color }: Props) {
                         track={track}
                         encoders={[enc1.encoderId, enc2.encoderId, enc5.encoderId, enc6.encoderId]}
                         title="Freq. Env."
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
                     <KnobValue
                         {...enc9}
@@ -63,6 +67,7 @@ export function Main2View({ name, track, synthName, color }: Props) {
                         param="DURATION"
                         color="quaternary"
                         track={track}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
                     <GraphEncoder
                         bounds={boundsMarginTop(bounds10)}
@@ -72,6 +77,7 @@ export function Main2View({ name, track, synthName, color }: Props) {
                         outlineColor="quaternary"
                         fillColor={rgb(194, 175, 107)}
                         track={track}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
                     <Value
                         {...encBottomValue(enc10)}
@@ -82,6 +88,7 @@ export function Main2View({ name, track, synthName, color }: Props) {
                         barColor="quaternary"
                         alignLeft
                         showLabelOverValue={1}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
 
                     <KnobValue
@@ -90,6 +97,7 @@ export function Main2View({ name, track, synthName, color }: Props) {
                         {...enc3}
                         color="secondary"
                         track={track}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
                     <KnobValue
                         audioPlugin={synthName}
@@ -97,6 +105,7 @@ export function Main2View({ name, track, synthName, color }: Props) {
                         {...enc4}
                         color="quaternary"
                         track={track}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
                     <KnobValue
                         audioPlugin={synthName}
@@ -105,6 +114,7 @@ export function Main2View({ name, track, synthName, color }: Props) {
                         color="tertiary"
                         type="STRING"
                         track={track}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
                     <KnobValue
                         audioPlugin={synthName}
@@ -112,6 +122,7 @@ export function Main2View({ name, track, synthName, color }: Props) {
                         {...enc8}
                         color="tertiary"
                         track={track}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
 
                     <KnobValue
@@ -120,6 +131,7 @@ export function Main2View({ name, track, synthName, color }: Props) {
                         param="LAYER2_DURATION"
                         color="primary"
                         track={track}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
                     <GraphEncoder
                         bounds={boundsMarginTop(bounds12)}
@@ -129,6 +141,7 @@ export function Main2View({ name, track, synthName, color }: Props) {
                         // outlineColor="quaternary"
                         // fillColor={rgb(194, 175, 107)}
                         track={track}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
                     <Value
                         {...encBottomValue(enc12)}
@@ -139,6 +152,7 @@ export function Main2View({ name, track, synthName, color }: Props) {
                         barColor="primary"
                         alignLeft
                         showLabelOverValue={1}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
 
                     <SequencerCard
