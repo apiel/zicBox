@@ -1,7 +1,6 @@
 ## Pixel TODO
 
 - TODO variation
-        - show message when saved :p
         - -----> show pattern in variation <<-- NOTE 
         - would need a way to save all variation at once
         - would need a way to reload all variation at once

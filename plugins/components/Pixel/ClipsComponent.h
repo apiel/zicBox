@@ -86,6 +86,7 @@ protected:
     }
 
     bool bankToggle = false;
+    int savedMessage = 0;
 
 public:
     ClipsComponent(ComponentInterface::Props props)
@@ -140,6 +141,7 @@ public:
                         if (pluginSerialize) {
                             pluginSerialize->data(saveVariationDataId, (void*)&id);
                             // valVariation->set(id);
+                            savedMessage = 10;
                             renderNext();
                         }
                     }
@@ -227,6 +229,12 @@ public:
                 lastPlayingId = valVariation->get();
                 renderNext();
             }
+            if (savedMessage > 0) {
+                savedMessage--;
+                if (savedMessage == 0) {
+                    renderNext();
+                }
+            }
         };
     }
     bool lastIsPlaying = false;
@@ -283,6 +291,11 @@ public:
                     }
                 }
             }
+        }
+
+        if (savedMessage > 0) {
+            draw.filledRect(relativePosition, { 100, size.h }, { playingClipBgColor });
+            draw.textCentered({ (int)(relativePosition.x + 50), relativePosition.y + center.y }, "Saved", fontSize, { textColor });
         }
     }
 };
