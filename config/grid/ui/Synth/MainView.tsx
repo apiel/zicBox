@@ -8,6 +8,7 @@ import { ClipSelection } from '../components/ClipSelection';
 import { KeysScatter } from '../components/KeysScatter';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
+import { ShiftLayout, unshiftVisibilityContext } from '../components/ShiftLayout';
 import {
     bounds5,
     enc1,
@@ -44,12 +45,14 @@ export function MainView({ name, track, synthName, color, title }: Props) {
             title={title}
             content={
                 <>
+                    <ShiftLayout track={track} />
                     <KnobValue
                         audioPlugin={synthName}
                         param="FILTER_TYPE"
                         {...enc1}
                         color="secondary"
                         track={track}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
                     <KnobValue
                         audioPlugin={synthName}
@@ -57,6 +60,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         {...enc2}
                         color="secondary"
                         track={track}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
                     <KnobValue
                         audioPlugin={synthName}
@@ -64,6 +68,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         {...enc3}
                         color="secondary"
                         track={track}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
 
                     <KnobValue
@@ -72,6 +77,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         {...enc4}
                         color="tertiary"
                         track={track}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
 
                     <GraphEncoder
@@ -80,6 +86,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         dataId="WAVEFORM"
                         values={['WAVE', 'WAVE_EDIT']}
                         track={track}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
                     <Value
                         {...encBottomValue(enc5)}
@@ -89,6 +96,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         barHeight={1}
                         alignLeft
                         showLabelOverValue={0}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
                     <Value
                         {...encBottomValue(enc6)}
@@ -98,6 +106,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         barHeight={1}
                         alignLeft
                         showLabelOverValue={0}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
 
                     <KnobValue
@@ -106,6 +115,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         {...enc7}
                         color="quaternary"
                         track={track}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
                     <KnobValue
                         audioPlugin="TrackFx"
@@ -114,6 +124,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         color="quaternary"
                         track={track}
                         valueReplaceTitle
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
 
                     <KnobValue
@@ -122,6 +133,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         {...enc9}
                         color="tertiary"
                         track={track}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
                     <KnobValue
                         audioPlugin={synthName}
@@ -129,6 +141,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         {...enc10}
                         color="tertiary"
                         track={track}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
 
                     <KnobValue
@@ -138,6 +151,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         {...enc11}
                         color="primary"
                         track={track}
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
                     <KnobValue
                         audioPlugin="TrackFx2"
@@ -147,6 +161,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         color="primary"
                         track={track}
                         valueReplaceTitle
+                        visibilityContext={[unshiftVisibilityContext]}
                     />
 
                     <SequencerCard

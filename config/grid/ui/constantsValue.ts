@@ -25,7 +25,7 @@ export const bounds10 = [W1_4, top + 240, W1_4 - 2, 100];
 export const bounds11 = [W1_4 * 2, top + 240, W1_4 - 2, 100];
 export const bounds12 = [W1_4 * 3, top + 240, W1_4 - 2, 100];
 
-export const backgroundBounds = [0, top, ScreenWidth, bounds12[1] + bounds12[3] - top];
+export const backgroundBounds = [0, top - 20, ScreenWidth, bounds12[1] + bounds12[3] - top + 20];
 
 export const enc1 = { encoderId: 1, bounds: bounds1 };
 export const enc2 = { encoderId: 2, bounds: bounds2 };
