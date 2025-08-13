@@ -3,6 +3,8 @@ import * as React from '@/libs/react';
 import { VisibilityContext } from '@/libs/nativeComponents/component';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Rect } from '@/libs/nativeComponents/Rect';
+import { Text } from '@/libs/nativeComponents/Text';
+import { rgb } from '@/libs/ui';
 import { shiftContext } from '../constants';
 import { backgroundBounds, enc1 } from '../constantsValue';
 
@@ -18,7 +20,17 @@ export const shiftVisibilityContext: VisibilityContext = {
     value: 1,
 };
 
-export function ShiftLayout({ content, track, label }: { content?: any, track: number, label?: string }) {
+export function ShiftLayout({
+    content,
+    track,
+    label,
+    info,
+}: {
+    content?: any;
+    track: number;
+    label?: string;
+    info?: string;
+}) {
     return (
         <>
             <Rect
@@ -36,6 +48,16 @@ export function ShiftLayout({ content, track, label }: { content?: any, track: n
                 track={track}
                 visibilityContext={[shiftVisibilityContext]}
             />
+
+            {info && (
+                <Text
+                    text={info}
+                    bounds={[0, backgroundBounds[1] + backgroundBounds[3] - 20, 480, 16]}
+                    centered={true}
+                    color={rgb(100, 100, 100)}
+                    visibilityContext={[shiftVisibilityContext]}
+                />
+            )}
 
             {content}
 

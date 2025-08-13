@@ -1,7 +1,5 @@
 ## Pixel TODO
 
-- TODO shift volume
-
 - TODO variation
         - show message when saved :p
         - -----> show pattern in variation <<-- NOTE 
