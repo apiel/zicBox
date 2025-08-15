@@ -16,7 +16,7 @@ import {
     enc2,
     enc3,
     enc4,
-    encBottomValue
+    encBottomValue,
 } from '../constantsValue';
 
 export type Props = {

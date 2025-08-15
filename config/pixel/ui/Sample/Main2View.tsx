@@ -23,7 +23,7 @@ export type Props = {
     title: string;
 };
 
-export function MainView({ name, track, synthName, color, title }: Props) {
+export function Main2View({ name, track, synthName, color, title }: Props) {
     // const enc3Bounds = encTopValue(enc3);
     // enc3Bounds.bounds[2] = W1_2 - 2;
     return (
@@ -35,10 +35,11 @@ export function MainView({ name, track, synthName, color, title }: Props) {
             content={
                 <>
                     <ShiftLayout track={track} />
+
                     <Value
                         {...encTopValue(enc1)}
                         audioPlugin={synthName}
-                        param="START"
+                        param="LOOP_POSITION"
                         track={track}
                         barHeight={1}
                         // barColor="primary"
@@ -49,7 +50,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                     <Value
                         {...encTopValue(enc2)}
                         audioPlugin={synthName}
-                        param="END"
+                        param="LOOP_LENGTH"
                         track={track}
                         barHeight={1}
                         // barColor="primary"
@@ -59,8 +60,8 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                     />
                     <Value
                         {...encTopValue(enc3)}
-                        audioPlugin="Filter"
-                        param="CUTOFF"
+                        audioPlugin={synthName}
+                        param="LOOP_RELEASE"
                         track={track}
                         barHeight={1}
                         // barColor="primary"
@@ -70,8 +71,9 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                     />
                     <Value
                         {...encTopValue(enc4)}
-                        audioPlugin="Filter"
-                        param="RESONANCE"
+                        audioPlugin={synthName}
+                        param="BROWSER"
+                        fontValue="PoppinsLight_8"
                         track={track}
                         barHeight={1}
                         // barColor="primary"
@@ -79,6 +81,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         showLabelOverValue={1}
                         visibilityContext={[unshiftVisibilityContext]}
                     />
+
                     <Sample
                         bounds={graphBounds}
                         audioPlugin={synthName}

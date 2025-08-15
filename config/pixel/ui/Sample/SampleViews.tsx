@@ -1,6 +1,8 @@
 import * as React from '@/libs/react';
 
 import { GridSeqView } from '../components/GridSeqView';
+import { Main2View } from './Main2View';
+import { Main3View } from './Main3View';
 import { MainView } from './MainView';
 
 export type Props = {
@@ -18,6 +20,22 @@ export function SampleViews({ track, synthName, color, contextId, title }: Props
         <>
             <MainView
                 name={synthName}
+                track={track}
+                synthName={synthName}
+                color={color}
+                title={title}
+            />
+
+            <Main2View
+                name={`${synthName}:page2`}
+                track={track}
+                synthName={synthName}
+                color={color}
+                title={title}
+            />
+
+            <Main3View
+                name={`${synthName}:page3`}
                 track={track}
                 synthName={synthName}
                 color={color}
