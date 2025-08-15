@@ -3,6 +3,10 @@
 - TODO variation
         - -----> show pattern in variation <<-- NOTE 
         - would need a way to save all variation at once
+              - ----> right now pressing shift + bank reload the current variation
+                    - instead if pressing bank with selecting the same bank would reload the current variation
+                    - then we could use shift to either save all variation to their current selected variation
+                      or use it to reload all variations.... (maybe save is more important) 
         - would need a way to reload all variation at once
 
 - TODO mute shortcut, make it part of the Volume plugin, it should save last state before to mute. (in grid, use shift to mute?)
