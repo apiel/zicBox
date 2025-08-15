@@ -81,10 +81,7 @@ export const seqContextDrum2 = 51;
 export const seqContextDrum3 = 52;
 export const seqContextDrum4 = 53;
 
-export const seqContextSynth1 = 54;
-export const seqContextSynth2 = 55;
-export const seqContextSynth3 = 56;
-
 export const seqContextSample1 = 57;
 export const seqContextSample2 = 58;
 export const seqContextSample3 = 59;
+export const seqContextSample4 = 60;

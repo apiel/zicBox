@@ -2,8 +2,8 @@ import { rgb } from '@/libs/ui';
 
 export * from '../constants';
 
-export const ScreenWidth = 480;
-export const ScreenHeight = 640;
+export const ScreenWidth = 320;
+export const ScreenHeight = 170;
 
 export const W1_4 = ScreenWidth / 4;
 export const W2_4 = W1_4 * 2;

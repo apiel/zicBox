@@ -1,57 +1,5 @@
 {
     "AudioOutput": null,
-    "FilteredFx": {
-        "values": [
-            {
-                "key": "CUTOFF",
-                "value": -69.0
-            },
-            {
-                "key": "RESONANCE",
-                "value": 40.0
-            },
-            {
-                "key": "FX_TYPE",
-                "value": 9.0
-            },
-            {
-                "key": "FX_AMOUNT",
-                "value": 36.0
-            },
-            {
-                "key": "FEEDBACK",
-                "value": 18.0
-            },
-            {
-                "key": "MIX",
-                "value": 51.0
-            }
-        ]
-    },
-    "IsolatorFx": {
-        "values": [
-            {
-                "key": "FREQ",
-                "value": 40.0
-            },
-            {
-                "key": "RANGE",
-                "value": 800.0
-            },
-            {
-                "key": "FX_TYPE",
-                "value": 10.0
-            },
-            {
-                "key": "FX_AMOUNT",
-                "value": 22.0
-            },
-            {
-                "key": "MIX",
-                "value": 28.0
-            }
-        ]
-    },
     "Mixer": {
         "values": [
             {
@@ -117,27 +65,8 @@
             {
                 "key": "MUTE_8",
                 "value": 0.0
-            },
-            {
-                "key": "TRACK_9",
-                "value": 100.0
-            },
-            {
-                "key": "MUTE_9",
-                "value": 0.0
-            },
-            {
-                "key": "TRACK_10",
-                "value": 100.0
-            },
-            {
-                "key": "MUTE_10",
-                "value": 0.0
             }
         ]
-    },
-    "Scatter0": {
-        "values": []
     },
     "SerializeTrack": {
         "VARIATION": 0.0
@@ -159,14 +88,6 @@
             {
                 "key": "GAIN",
                 "value": 1.0
-            },
-            {
-                "key": "FX_TYPE",
-                "value": 0.0
-            },
-            {
-                "key": "FX_AMOUNT",
-                "value": 0.0
             }
         ]
     }
