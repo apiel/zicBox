@@ -10,10 +10,10 @@ export const topRightKnob = [W2_4, top, W2_4 - 2, 100];
 export const bottomLeftKnob = [0, top + 100, W2_4 - 2, 100];
 export const bottomRightKnob = [W2_4, top + 100, W2_4 - 2, 100];
 
-export const bounds1 = [0, top, W1_4 - 2, 80];
-export const bounds2 = [W1_4, top, W1_4 - 2, 80];
-export const bounds3 = [W1_4 * 2, top, W1_4 - 2, 80];
-export const bounds4 = [W1_4 * 3, top, W1_4 - 2, 80];
+export const bounds1 = [0, top + 20, W1_4 - 2, 80];
+export const bounds2 = [W1_4, top + 20, W1_4 - 2, 80];
+export const bounds3 = [W1_4 * 2, top + 20, W1_4 - 2, 80];
+export const bounds4 = [W1_4 * 3, top + 20, W1_4 - 2, 80];
 
 export const backgroundBounds = [0, top, ScreenWidth, top + 100];
 
@@ -29,7 +29,7 @@ export const graphBottomValues = [0, top + 120, ScreenWidth - 1, 60];
 export const graphBounds = [0, top + 50, ScreenWidth - 1, 70];
 
 export function boundsOnTop(bounds: number[], height: number = 22, margin: number = 10) {
-    return [bounds[0], bounds[1] + margin, bounds[2], height];
+    return [bounds[0], bounds[1] + margin  - 20, bounds[2], height];
 }
 
 export function boundsOnBottom(bounds: number[], height: number = 22) {
