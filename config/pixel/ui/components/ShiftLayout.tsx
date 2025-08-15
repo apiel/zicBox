@@ -5,8 +5,8 @@ import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { Text } from '@/libs/nativeComponents/Text';
 import { rgb } from '@/libs/ui';
-import { shiftContext } from '../constants';
-import { backgroundBounds, enc1 } from '../constantsValue';
+import { MasterTrack, shiftContext } from '../constants';
+import { backgroundBounds, enc1, enc3, enc4 } from '../constantsValue';
 
 export const unshiftVisibilityContext: VisibilityContext = {
     condition: 'SHOW_WHEN',
@@ -60,6 +60,25 @@ export function ShiftLayout({
             )}
 
             {content}
+
+            <KnobValue
+                audioPlugin="TrackFx"
+                param="VOLUME"
+                label="Master"
+                {...enc3}
+                color="tertiary"
+                track={MasterTrack}
+                visibilityContext={[shiftVisibilityContext]}
+            />
+
+            <KnobValue
+                audioPlugin="Tempo"
+                param="BPM"
+                {...enc4}
+                color="tertiary"
+                track={MasterTrack}
+                visibilityContext={[shiftVisibilityContext]}
+            />
 
             <Rect
                 bounds={backgroundBounds}

@@ -1,23 +1,17 @@
 import * as React from '@/libs/react';
 
-import { GraphEncoder } from '@/libs/nativeComponents/GraphEncoder';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
 import { StringVal } from '@/libs/nativeComponents/StringVal';
-import { Value } from '@/libs/nativeComponents/Value';
-import { rgb } from '@/libs/ui';
 import { ClipSelection } from '../components/ClipSelection';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
 import { ShiftLayout, shiftVisibilityContext, unshiftVisibilityContext } from '../components/ShiftLayout';
 import {
-    bounds2,
-    boundsMarginTop,
     enc1,
     enc2,
     enc3,
     enc4,
-    encBottomValue,
     seqCardBounds_small
 } from '../constantsValue';
 
@@ -29,7 +23,7 @@ export type Props = {
     title: string;
 };
 
-export function MainView({ name, track, synthName, color, title }: Props) {
+export function Main3View({ name, track, synthName, color, title }: Props) {
     return (
         <Layout
             viewName={name}
@@ -56,38 +50,25 @@ export function MainView({ name, track, synthName, color, title }: Props) {
 
                     <KnobValue
                         audioPlugin={synthName}
-                        param="DURATION"
+                        param="VAL_7"
                         {...enc1}
                         color="secondary"
                         track={track}
                         visibilityContext={[unshiftVisibilityContext]}
                     />
 
-                    <GraphEncoder
-                        bounds={boundsMarginTop(bounds2)}
+                    <KnobValue
                         audioPlugin={synthName}
-                        dataId="ENV_AMP_FORM"
-                        values={['AMP_MORPH']}
-                        outlineColor="quaternary"
-                        fillColor={rgb(194, 175, 107)}
+                        param="VAL_8"
+                        {...enc2}
+                        color="quaternary"
                         track={track}
-                        visibilityContext={[unshiftVisibilityContext]}
-                    />
-                    <Value
-                        {...encBottomValue(enc2)}
-                        audioPlugin={synthName}
-                        param="AMP_MORPH"
-                        track={track}
-                        barHeight={1}
-                        barColor="quaternary"
-                        alignLeft
-                        showLabelOverValue={1}
                         visibilityContext={[unshiftVisibilityContext]}
                     />
 
                     <KnobValue
                         audioPlugin={synthName}
-                        param="VAL_1"
+                        param="VAL_9"
                         {...enc3}
                         color="tertiary"
                         track={track}
@@ -96,7 +77,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
 
                     <KnobValue
                         audioPlugin={synthName}
-                        param="VAL_2"
+                        param="VAL_10"
                         {...enc4}
                         color="primary"
                         track={track}

@@ -1,5 +1,10 @@
 ## Pixel TODO
 
+- TODO multi drum kick engine, combine waveform shape and waveform together, to give on more param for freq envelop
+      - and add multi fx instead of fixed fx
+      - should cutoff resonance goes away in favor of effect
+                            - --------> could create a basic filter in multi fx
+
 - TODO variation
         - -----> show pattern in variation <<-- NOTE 
         - would need a way to save all variation at once

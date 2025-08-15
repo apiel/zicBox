@@ -76,19 +76,19 @@ public:
         wave = type.wave;
         waveform.setType((WavetableGenerator::Type)type.indexType);
     });
-    Val& shape = val(0.0f, "WAVEFORM_SHAPE", { "Waveform Shape", VALUE_BASIC, .unit = "%" }, [&](auto p) {
+    Val& shape = val(0.0f, "WAVEFORM_SHAPE", { "Wave. Shape", VALUE_BASIC, .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         waveform.setMorph(p.val.pct());
     });
 
-    Val& envelopeType = val(0.0f, "ENVELOPE_TYPE", { "Envelope", VALUE_STRING, .max = ENVELOP_COUNT - 1 }, [&](auto p) {
+    Val& envelopeType = val(0.0f, "ENVELOPE_TYPE", { "Freq. Env.", VALUE_STRING, .max = ENVELOP_COUNT - 1 }, [&](auto p) {
         float current = p.val.get();
         p.val.setFloat(p.value);
         WaveformType type = envelopeTypes[(int)p.val.get()];
         p.val.setString(type.name);
         envelope.setType((EnvelopeTableGenerator::Type)type.indexType);
     });
-    Val& envelopeShape = val(0.0f, "ENVELOPE_SHAPE", { "Envelope Shape", VALUE_BASIC, .unit = "%" }, [&](auto p) {
+    Val& envelopeShape = val(0.0f, "ENVELOPE_SHAPE", { "Env. Shape", VALUE_BASIC, .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         envelope.setMorph(p.val.pct());
     });
