@@ -22,6 +22,25 @@ export const enc2 = { encoderId: 2, bounds: bounds2 };
 export const enc3 = { encoderId: 3, bounds: bounds3 };
 export const enc4 = { encoderId: 4, bounds: bounds4 };
 
+export const bounds1Seq = [0, top + 20, W1_4 - 2, 80];
+export const bounds2Seq = [W1_4 - 20, top + 20, W1_4 - 2, 80];
+export const bounds3Seq = [W1_4 * 2 - 40, top + 20, W1_4 - 2, 80];
+export const bounds4Seq = [W1_4 * 3 - 60, top + 20, W1_4 - 2, 80];
+
+export const bounds5Seq = [0, top + 20 + 80, W1_4 - 2, 80];
+export const bounds6Seq = [W1_4 - 20, top + 20 + 80, W1_4 - 2, 80];
+export const bounds7Seq = [W1_4 * 2 - 40, top + 20 + 80, W1_4 - 2, 80];
+export const bounds8Seq = [W1_4 * 3 - 60, top + 20 + 80, W1_4 - 2, 80];
+
+export const enc1Seq = { encoderId: 1, bounds: bounds1Seq };
+export const enc2Seq = { encoderId: 2, bounds: bounds2Seq };
+export const enc3Seq = { encoderId: 3, bounds: bounds3Seq };
+export const enc4Seq = { encoderId: 4, bounds: bounds4Seq };
+export const enc5Seq = { encoderId: 5, bounds: bounds5Seq };
+export const enc6Seq = { encoderId: 6, bounds: bounds6Seq };
+export const enc7Seq = { encoderId: 7, bounds: bounds7Seq };
+export const enc8Seq = { encoderId: 8, bounds: bounds8Seq };
+
 export const graphTopValues = [0, top + 20, ScreenWidth - 1, 60];
 export const graphCenterValues = [0, top + 60, ScreenWidth - 1, 80];
 export const graphBottomValues = [0, top + 120, ScreenWidth - 1, 60];
@@ -47,6 +66,7 @@ export function encBottomValue(enc: { encoderId: number; bounds: number[] }, hei
 export function boundsMarginTop(bounds: number[], margin: number = 10) {
     return [bounds[0], bounds[1] + margin, bounds[2], bounds[3]];
 }
+
 
 // export const seqCardBounds_small = [100, 440, 280, 160];
 export const seqCardBounds_small = [ScreenWidth - 130, 105, 120, 70];

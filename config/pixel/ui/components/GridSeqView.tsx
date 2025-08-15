@@ -1,7 +1,9 @@
 import * as React from '@/libs/react';
 
+import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
 import { SequencerValue } from '@/libs/nativeComponents/SequencerValue';
-import { enc1, enc2, enc3, enc4 } from '../constantsValue';
+import { A1, A2, A3, A4, A5, A6, A7, A8, D10, ScreenHeight, ScreenWidth } from '../constants';
+import { enc1Seq, enc2Seq, enc3Seq, enc4Seq, enc5Seq, enc6Seq, enc7Seq } from '../constantsValue';
 import { Layout } from './Layout';
 
 export type Props = {
@@ -32,7 +34,7 @@ export function GridSeqView({
             content={
                 <>
                     <SequencerValue
-                        {...enc1}
+                        {...enc1Seq}
                         audioPlugin={`Sequencer`}
                         track={track}
                         contextId={contextId}
@@ -41,7 +43,7 @@ export function GridSeqView({
                         type={'STEP_SELECTION'}
                     />
                     <SequencerValue
-                        {...enc2}
+                        {...enc2Seq}
                         audioPlugin={`Sequencer`}
                         track={track}
                         contextId={contextId}
@@ -51,7 +53,7 @@ export function GridSeqView({
                         barColor="primary"
                     />
                     <SequencerValue
-                        {...enc3}
+                        {...enc3Seq}
                         audioPlugin={`Sequencer`}
                         track={track}
                         contextId={contextId}
@@ -60,12 +62,12 @@ export function GridSeqView({
                         type={'STEP_NOTE'}
                     />
                     <SequencerValue
-                        {...enc4}
+                        {...enc4Seq}
                         bounds={[
-                            enc4.bounds[0] + 10,
-                            enc4.bounds[1],
-                            enc4.bounds[2] - 20,
-                            enc4.bounds[3],
+                            enc4Seq.bounds[0] + 10,
+                            enc4Seq.bounds[1],
+                            enc4Seq.bounds[2] - 20,
+                            enc4Seq.bounds[3],
                         ]}
                         audioPlugin={`Sequencer`}
                         track={track}
@@ -75,8 +77,8 @@ export function GridSeqView({
                         type={'STEP_VELOCITY'}
                         barColor="primary"
                     />
-                    {/* <SequencerValue
-                        {...enc5}
+                    <SequencerValue
+                        {...enc5Seq}
                         audioPlugin={`Sequencer`}
                         track={track}
                         contextId={contextId}
@@ -85,7 +87,7 @@ export function GridSeqView({
                         type={'STEP_CONDITION'}
                     />
                     <SequencerValue
-                        {...enc6}
+                        {...enc6Seq}
                         audioPlugin={`Sequencer`}
                         track={track}
                         contextId={contextId}
@@ -95,7 +97,7 @@ export function GridSeqView({
                     />
                     {includeLength && (
                         <SequencerValue
-                            {...enc7}
+                            {...enc7Seq}
                             audioPlugin={`Sequencer`}
                             track={track}
                             contextId={contextId}
@@ -105,34 +107,18 @@ export function GridSeqView({
                             barColor="primary"
                         />
                     )}
+                       
                     <SequencerCard
-                        bounds={[10, 310, 460, 320]}
+                        bounds={[ScreenWidth - 65, 5, 60, ScreenHeight]}
                         audioPlugin={`Sequencer`}
                         track={track}
                         contextId={contextId}
-                        rowsSelection={4}
+                        rowsSelection={2}
+                        stepPerRow={4}
                         // rowsSelectionColor={"#28595f"}
-                        gridKeys={[
-                            A1, A2, A3, A4, A5, A6, A7, A8,
-                            B1, B2, B3, B4, B5, B6, B7, B8,
-                            C1, C2, C3, C4, C5, C6, C7, C8,
-                            D1, D2, D3, D4, D5, D6, D7, D8,
-                        ]}
-                        controllerColors={[{ controller: 'Default', colors:[
-                            { key: A9, color: "#0000000" },
-                            { key: B9, color: "#0000000" },
-                            { key: C9, color: "#0000000" },
-                            { key: D9, color: "#0000000" },
-            
-                            { key: A10, color: "#0000000" },
-                            { key: B10, color: "#0000000" },
-                            { key: C10, color: "#0000000" },
-                            { key: D10, color: "#021014" },
-                        ] }]}
-                        keys={[
-                            { key: D10, action: '.scroll' },
-                        ]}
-                    /> */}
+                        gridKeys={[A1, A2, A3, A4, A5, A6, A7, A8]}
+                        keys={[{ key: D10, action: '.scroll' }]}
+                    />
                 </>
             }
         />
