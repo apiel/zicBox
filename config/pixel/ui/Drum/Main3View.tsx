@@ -1,7 +1,6 @@
 import * as React from '@/libs/react';
 
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
-import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
 import { StringVal } from '@/libs/nativeComponents/StringVal';
 import { ClipSelection } from '../components/ClipSelection';
 import { KeysTracks } from '../components/KeysTracks';
@@ -11,8 +10,7 @@ import {
     enc1,
     enc2,
     enc3,
-    enc4,
-    seqCardBounds_small
+    enc4
 } from '../constantsValue';
 
 export type Props = {
@@ -80,13 +78,6 @@ export function Main3View({ name, track, synthName, color, title }: Props) {
                         param="VAL_10"
                         {...enc4}
                         color="primary"
-                        track={track}
-                        visibilityContext={[unshiftVisibilityContext]}
-                    />
-
-                    <SequencerCard
-                        bounds={seqCardBounds_small}
-                        audioPlugin={`Sequencer`}
                         track={track}
                         visibilityContext={[unshiftVisibilityContext]}
                     />

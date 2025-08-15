@@ -2,7 +2,6 @@ import * as React from '@/libs/react';
 
 import { GraphEncoder } from '@/libs/nativeComponents/GraphEncoder';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
-import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
 import { StringVal } from '@/libs/nativeComponents/StringVal';
 import { Value } from '@/libs/nativeComponents/Value';
 import { rgb } from '@/libs/ui';
@@ -17,8 +16,7 @@ import {
     enc2,
     enc3,
     enc4,
-    encBottomValue,
-    seqCardBounds_small
+    encBottomValue
 } from '../constantsValue';
 
 export type Props = {
@@ -99,13 +97,6 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         param="VAL_2"
                         {...enc4}
                         color="primary"
-                        track={track}
-                        visibilityContext={[unshiftVisibilityContext]}
-                    />
-
-                    <SequencerCard
-                        bounds={seqCardBounds_small}
-                        audioPlugin={`Sequencer`}
                         track={track}
                         visibilityContext={[unshiftVisibilityContext]}
                     />

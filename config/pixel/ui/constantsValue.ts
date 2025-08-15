@@ -1,6 +1,6 @@
 import { ScreenWidth, W1_4, W2_4 } from './constants';
 
-const top = 30;
+const top = 20;
 export const fullValues = [0, top, ScreenWidth - 1, 180];
 export const halfFullValues = [0, top + fullValues[3] / 4, ScreenWidth - 1, fullValues[3] / 2];
 export const topValues = [0, top, ScreenWidth - 1, 80];
@@ -25,7 +25,7 @@ export const bounds10 = [W1_4, top + 240, W1_4 - 2, 100];
 export const bounds11 = [W1_4 * 2, top + 240, W1_4 - 2, 100];
 export const bounds12 = [W1_4 * 3, top + 240, W1_4 - 2, 100];
 
-export const backgroundBounds = [0, top, ScreenWidth, bounds12[1] + bounds12[3] - top];
+export const backgroundBounds = [0, top, ScreenWidth, bounds1[1] + bounds1[3] - top];
 
 export const enc1 = { encoderId: 1, bounds: bounds1 };
 export const enc2 = { encoderId: 2, bounds: bounds2 };
@@ -74,7 +74,7 @@ export function boundsMarginTop(bounds: number[], margin: number = 10) {
 }
 
 // export const seqCardBounds_small = [100, 440, 280, 160];
-export const seqCardBounds_small = [120, 460, 240, 140];
+export const seqCardBounds_small = [ScreenWidth - 130, 105, 120, 70];
 
 export const seqContextDrum1 = 50;
 export const seqContextDrum2 = 51;

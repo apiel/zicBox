@@ -17,6 +17,7 @@ import {
     B8,
     B9,
     ColorButton,
+    ScreenHeight,
     ScreenWidth,
     shiftContext,
 } from '../constants';
@@ -32,22 +33,22 @@ export function ClipSelection({ track, color }: Props) {
         <>
             <Text
                 text="Press variation to save preset."
-                bounds={[0, 605, 480, 16]}
+                bounds={[0, ScreenHeight - 34, ScreenWidth, 16]}
                 centered={true}
                 color={rgb(100, 100, 100)}
                 visibilityContext={[shiftVisibilityContext]}
             />
             <Rect
-                bounds={[0, 605, 480, 16]}
+                bounds={[0, ScreenHeight - 34, ScreenWidth, 16]}
                 color="background"
                 visibilityContext={[unshiftVisibilityContext]}
             />
 
             <Clips
-                bounds={[40, 625, ScreenWidth - 80, 14]}
+                bounds={[20, ScreenHeight - 18, ScreenWidth - 40, 14]}
                 track={track}
                 color={color}
-                visibleCount={10}
+                visibleCount={8}
                 keys={[
                     { key: B1, action: `.set:1`, context: { id: shiftContext, value: 0 } },
                     { key: B1, action: `.save:1`, context: { id: shiftContext, value: 1 } },
