@@ -382,6 +382,42 @@ public:
             }
         }
 
+        if (action.rfind("noteOnAndRepeat:") == 0) {
+            std::string substring = action.substr(16);
+            std::vector<char> params(substring.begin(), substring.end());
+            params.push_back('\0');
+
+            char* pluginName = strtok(params.data(), ":");
+            char* noteStr = strtok(NULL, ":");
+            char* modeStr = strtok(NULL, ":");
+            char* trackStr = strtok(NULL, ":");
+
+            // Hardcoded to sequencer for the moment
+            AudioPlugin* seqPlugin = &component->getPlugin("Sequencer", trackStr != NULL ? atoi(trackStr) : component->track);
+            AudioPlugin* synthPlugin = &component->getPlugin(pluginName, trackStr != NULL ? atoi(trackStr) : component->track);
+            if (synthPlugin && modeStr != NULL && noteStr != NULL) {
+                // Hardcoded as well
+                bool* seqPlayingPtr = (bool*)seqPlugin->data(seqPlugin->getDataId("IS_PLAYING"));
+                uint8_t* note = new uint8_t(atoi(noteStr));
+                uint8_t* mode = new uint8_t(atoi(modeStr));
+                return [this, seqPlugin, seqPlayingPtr, synthPlugin, note, mode](KeypadLayout::KeyMap& keymap) {
+                    if (seqPlugin && *seqPlayingPtr) {
+                        if (isPressed(keymap)) {
+                            seqPlugin->noteRepeatOn(*note, *mode);
+                        } else {
+                            seqPlugin->noteRepeatOff(*note);
+                        }
+                    } else {
+                        if (isPressed(keymap)) {
+                            synthPlugin->noteOn(*note, 1.0f);
+                        } else {
+                            synthPlugin->noteOff(*note, 0.0f);
+                        }
+                    }
+                };
+            }
+        }
+
         if (action.rfind("debug:") == 0) {
             std::string substring = action.substr(6);
             std::vector<char> text(substring.begin(), substring.end());

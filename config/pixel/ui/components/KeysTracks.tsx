@@ -1,7 +1,7 @@
 import * as React from '@/libs/react';
 
 import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
-import { A1, A2, A3, A4, B1, B2, B3, B4, C1 } from '../constants';
+import { A1, A2, A3, A4, B1, B2, B3, B4, C1, Drum4Track } from '../constants';
 
 function pages(viewName: string, baseName: string) {
     if (viewName === baseName) {
@@ -12,11 +12,26 @@ function pages(viewName: string, baseName: string) {
     return `setView:${baseName}#track`;
 }
 
-export function KeysTracks({ synthName, viewName }: { synthName?: string; viewName: string }) {
+export function KeysTracks({
+    synthName,
+    viewName,
+    track,
+}: {
+    synthName?: string;
+    viewName: string;
+    track: number;
+}) {
     return (
         <HiddenValue
             keys={[
-                { key: C1, action: `noteOn:${synthName}:60` },
+                // { key: C1, action: `noteOn:${synthName}:60` },
+                {
+                    key: C1,
+                    action:
+                        track <= Drum4Track
+                            ? `noteOnAndRepeat:${synthName}:60:1:${track}`
+                            : `noteOn:${synthName}:60`,
+                },
 
                 { key: A1, action: pages(viewName, `Drum1`) },
                 // { key: B1, action: `.toggle:1`, context: { id: shiftContext, value: 0 } },

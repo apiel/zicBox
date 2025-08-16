@@ -83,7 +83,7 @@ export function Main3View({ name, track, synthName, color, title }: Props) {
                     />
 
                     <ClipSelection track={track} color={color} />
-                    <KeysTracks synthName={synthName} viewName={name} />
+                    <KeysTracks synthName={synthName} viewName={name} track={track} />
                 </>
             }
         />
