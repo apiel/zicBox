@@ -50,7 +50,36 @@ public:
 
     void setLayout(std::string layout)
     {
-        if (layout == "rpi0_4enc_6btn") {
+        if (layout == "pixel_12btn") {
+            gpioKey.keys = {
+                { 20, getKeyCode("'q'") },
+                { 16, getKeyCode("'w'") },
+                { 25, getKeyCode("'e'") },
+                { 14, getKeyCode("'r'") },
+
+                { 12, getKeyCode("'a'") },
+                { 1, getKeyCode("'s'") },
+                { 24, getKeyCode("'d'") },
+                { 15, getKeyCode("'f'") },
+
+                { 7, getKeyCode("'z'") },
+                { 8, getKeyCode("'x'") },
+                { 23, getKeyCode("'c'") },
+                { 22, getKeyCode("'v'") },
+            };
+            if (gpioKey.init() == 0) {
+                gpioKey.startThread(); // might want to use the same thread for encoder...
+            }
+            gpioEncoder.encoders = {
+                { 0, 26, 13 },
+                { 1, 6, 5 },
+                { 2, 0, 9 },
+                { 3, 27, 4 },
+            };
+            if (gpioEncoder.init() == 0) {
+                gpioEncoder.startThread(); // might want to use the same thread for encoder...
+            }
+        } else if (layout == "rpi0_4enc_6btn") {
             gpioKey.keys = {
                 { 12, getKeyCode("'q'") }, // pin 32 = gpio 12
                 { 24, getKeyCode("'w'") }, // pin 18 = gpio 24

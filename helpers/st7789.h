@@ -11,6 +11,7 @@
 
 #include "../plugins/components/utils/color.h"
 
+// For 240x320 display
 #define DISPLAY_SET_CURSOR_X 0x2A
 #define DISPLAY_SET_CURSOR_Y 0x2B
 
@@ -18,6 +19,7 @@
 // #define DISPLAY_SET_CURSOR_X 0x23 // try 0x24 too
 // #define DISPLAY_SET_CURSOR_X 0x24
 // #define DISPLAY_SET_CURSOR_Y 0x00
+// #define DISPLAY_SET_CURSOR_Y 0x24
 
 #define DISPLAY_WRITE_PIXELS 0x2C
 
@@ -28,7 +30,8 @@
 class ST7789 {
 protected:
     uint16_t width = 320;
-    uint16_t height = 240;
+    uint16_t height = 170;
+    // uint16_t height = 240;
 
     std::function<void(uint8_t, uint8_t*, uint32_t)> sendSpiCmd;
 
@@ -79,12 +82,16 @@ public:
     // bool displayInverted = true;
 
     // 240x320 display portrait view
-    uint8_t madctl = 0x08;
-    bool displayInverted = true;
+    // uint8_t madctl = 0x08;
+    // bool displayInverted = true;
 
     // 240x240 display
     // uint8_t madctl = 0x08; // BGR
     // bool displayInverted = true;
+
+    // 170x320 landscape view, pin right
+    uint8_t madctl = 0x08 | 0x20 | 0x80;
+    bool displayInverted = true;
 
     ST7789(std::function<void(uint8_t, uint8_t*, uint32_t)> sendSpiCmd)
         : sendSpiCmd(sendSpiCmd)
@@ -103,7 +110,7 @@ public:
     void drawRow(uint16_t x, uint16_t y, uint16_t w, uint16_t* pixels)
     {
         sendAddr(DISPLAY_SET_CURSOR_X, x, x + w);
-        sendAddr(DISPLAY_SET_CURSOR_Y, y, y);
+        sendAddr(DISPLAY_SET_CURSOR_Y, y +35, y +35);
         sendCmd(DISPLAY_WRITE_PIXELS, (uint8_t*)pixels, w * BYTESPERPIXEL);
     }
 

@@ -41,9 +41,8 @@ import { SampleViews } from './Sample/SampleViews';
 // const halfHeight = ScreenHeight / 2;
 
 export const ui = {
-    // pixelController: 'rpiCM4_4enc_11btn',
-    // pixelController: 'rpi3A_4enc_11btn',
-    pixelController: 'grid',
+    pixelController: 'pixel_12btn',
+    // pixelController: 'grid',
     // i2c: ['pixel+_v1'],
     screen: {
         windowPosition: { x: 200, y: 300 },
@@ -56,7 +55,7 @@ export const ui = {
             bounds4,
         ],
     },
-    renderer: 'FB',
+    // renderer: 'FB',
     taggedViews: { track: 'Drum1' },
     views: (
         <>

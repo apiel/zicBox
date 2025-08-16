@@ -2,7 +2,7 @@ import * as React from '@/libs/react';
 
 import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
 import { SequencerValue } from '@/libs/nativeComponents/SequencerValue';
-import { A1, A2, A3, A4, A5, A6, A7, A8, D10, ScreenHeight, ScreenWidth } from '../constants';
+import { A1, A2, A3, A4, B1, B2, B3, B4, C1, ScreenHeight, ScreenWidth } from '../constants';
 import { enc1Seq, enc2Seq, enc3Seq, enc4Seq, enc5Seq, enc6Seq, enc7Seq } from '../constantsValue';
 import { Layout } from './Layout';
 
@@ -116,8 +116,8 @@ export function GridSeqView({
                         rowsSelection={2}
                         stepPerRow={4}
                         // rowsSelectionColor={"#28595f"}
-                        gridKeys={[A1, A2, A3, A4, A5, A6, A7, A8]}
-                        keys={[{ key: D10, action: '.scroll' }]}
+                        gridKeys={[A1, A2, A3, A4, B1, B2, B3, B4]}
+                        keys={[{ key: C1, action: '.scroll' }]}
                     />
                 </>
             }

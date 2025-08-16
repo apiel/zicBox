@@ -1,7 +1,7 @@
 import * as React from '@/libs/react';
 
 import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
-import { A1, A2, A3, A4, A5, A6, A7, A8, B1, B2, B3, B4, B5, B6, B7, B8, C1, C2, C3, C4, C5, C6, C7, C8, shiftContext } from '../constants';
+import { A1, A2, A3, A4, B1, B2, B3, B4, C1 } from '../constants';
 
 function pages(viewName: string, baseName: string) {
     if (viewName === baseName) {
@@ -17,44 +17,44 @@ export function KeysTracks({ synthName, viewName }: { synthName?: string; viewNa
         <HiddenValue
             keys={[
                 { key: A1, action: pages(viewName, `Drum1`) },
-                { key: B1, action: `.toggle:1`, context: { id: shiftContext, value: 0 } },
-                { key: B1, action: `.save:1`, context: { id: shiftContext, value: 1 } },
+                // { key: B1, action: `.toggle:1`, context: { id: shiftContext, value: 0 } },
+                // { key: B1, action: `.save:1`, context: { id: shiftContext, value: 1 } },
                 { key: C1, action: `noteOn:Drum1:60` },
 
                 { key: A2, action: `setView:Drum2#track` },
-                { key: B2, action: `.toggle:2`, context: { id: shiftContext, value: 0 } },
-                { key: B2, action: `.save:2`, context: { id: shiftContext, value: 1 } },
-                { key: C2, action: `noteOn:Drum2:60` },
+                // { key: B2, action: `.toggle:2`, context: { id: shiftContext, value: 0 } },
+                // { key: B2, action: `.save:2`, context: { id: shiftContext, value: 1 } },
+                // { key: C2, action: `noteOn:Drum2:60` },
 
                 { key: A3, action: `setView:Drum3#track` },
-                { key: B3, action: `.toggle:3`, context: { id: shiftContext, value: 0 } },
-                { key: B3, action: `.save:3`, context: { id: shiftContext, value: 1 } },
-                { key: C3, action: `noteOn:Drum3:60` },
+                // { key: B3, action: `.toggle:3`, context: { id: shiftContext, value: 0 } },
+                // { key: B3, action: `.save:3`, context: { id: shiftContext, value: 1 } },
+                // { key: C3, action: `noteOn:Drum3:60` },
 
                 { key: A4, action: `setView:Drum4#track` },
-                { key: B4, action: `.toggle:4`, context: { id: shiftContext, value: 0 } },
-                { key: B4, action: `.save:4`, context: { id: shiftContext, value: 1 } },
-                { key: C4, action: `noteOn:Drum4:60` },
+                // { key: B4, action: `.toggle:4`, context: { id: shiftContext, value: 0 } },
+                // { key: B4, action: `.save:4`, context: { id: shiftContext, value: 1 } },
+                // { key: C4, action: `noteOn:Drum4:60` },
 
-                { key: A5, action: pages(viewName, `Sample1`) },
-                { key: B5, action: `.toggle:5`, context: { id: shiftContext, value: 0 } },
-                { key: B5, action: `.save:5`, context: { id: shiftContext, value: 1 } },
-                { key: C5, action: `noteOn:Sample1:60` },
+                { key: B1, action: pages(viewName, `Sample1`) },
+                // { key: B5, action: `.toggle:5`, context: { id: shiftContext, value: 0 } },
+                // { key: B5, action: `.save:5`, context: { id: shiftContext, value: 1 } },
+                // { key: C5, action: `noteOn:Sample1:60` },
 
-                { key: A6, action: pages(viewName, `Sample2`) },
-                { key: B6, action: `.toggle:6`, context: { id: shiftContext, value: 0 } },
-                { key: B6, action: `.save:6`, context: { id: shiftContext, value: 1 } },
-                { key: C6, action: `noteOn:Sample2:60` },
+                { key: B2, action: pages(viewName, `Sample2`) },
+                // { key: B6, action: `.toggle:6`, context: { id: shiftContext, value: 0 } },
+                // { key: B6, action: `.save:6`, context: { id: shiftContext, value: 1 } },
+                // { key: C6, action: `noteOn:Sample2:60` },
 
-                { key: A7, action: pages(viewName, `Sample3`) },
-                { key: B7, action: `.toggle:7`, context: { id: shiftContext, value: 0 } },
-                { key: B7, action: `.save:7`, context: { id: shiftContext, value: 1 } },
-                { key: C7, action: `noteOn:Sample3:60` },
+                { key: B3, action: pages(viewName, `Sample3`) },
+                // { key: B7, action: `.toggle:7`, context: { id: shiftContext, value: 0 } },
+                // { key: B7, action: `.save:7`, context: { id: shiftContext, value: 1 } },
+                // { key: C7, action: `noteOn:Sample3:60` },
 
-                { key: A8, action: pages(viewName, `Sample4`) },
-                { key: B8, action: `.toggle:8`, context: { id: shiftContext, value: 0 } },
-                { key: B8, action: `.save:8`, context: { id: shiftContext, value: 1 } },
-                { key: C8, action: `noteOn:Sample4:60` },
+                { key: B4, action: pages(viewName, `Sample4`) },
+                // { key: B8, action: `.toggle:8`, context: { id: shiftContext, value: 0 } },
+                // { key: B8, action: `.save:8`, context: { id: shiftContext, value: 1 } },
+                // { key: C8, action: `noteOn:Sample4:60` },
             ]}
         />
     );

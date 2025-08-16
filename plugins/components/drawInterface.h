@@ -1,5 +1,4 @@
-#ifndef _UI_DRAW_INTERFACE_H_
-#define _UI_DRAW_INTERFACE_H_
+#pragma once
 
 #include <stdint.h>
 #include <stdio.h>
@@ -92,5 +91,3 @@ public:
 
     virtual bool handleEvent(EventInterface* view) { return true; }
 };
-
-#endif
