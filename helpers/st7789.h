@@ -76,22 +76,27 @@ public:
     // ILI9341 display (1)
     // uint8_t madctl = 0x20;
     // bool displayInverted = false;
+    // int yRamMargin = 0;
 
     // GMT024 display (2) 320x240 landscape view
     // uint8_t madctl = 0x08 | 0x20 | 0x40; // BGR + MV + MX
     // bool displayInverted = true;
+    // int yRamMargin = 0;
 
     // 240x320 display portrait view
     // uint8_t madctl = 0x08;
     // bool displayInverted = true;
+    // int yRamMargin = 0;
 
     // 240x240 display
     // uint8_t madctl = 0x08; // BGR
     // bool displayInverted = true;
+    // int yRamMargin = 0;
 
     // 170x320 landscape view, pin right
     uint8_t madctl = 0x08 | 0x20 | 0x80;
     bool displayInverted = true;
+    uint16_t yRamMargin = 35; // yoyoyoyoyoyoo
 
     ST7789(std::function<void(uint8_t, uint8_t*, uint32_t)> sendSpiCmd)
         : sendSpiCmd(sendSpiCmd)
@@ -101,7 +106,7 @@ public:
     void drawPixel(uint16_t x, uint16_t y, uint16_t color)
     {
         sendAddr(DISPLAY_SET_CURSOR_X, (uint16_t)x, (uint16_t)x);
-        sendAddr(DISPLAY_SET_CURSOR_Y, (uint16_t)y, (uint16_t)y);
+        sendAddr(DISPLAY_SET_CURSOR_Y, (uint16_t)y + yRamMargin, (uint16_t)y + yRamMargin);
 
         uint8_t pixel[BYTESPERPIXEL] = { U16_TO_U8(color) };
         sendCmd(DISPLAY_WRITE_PIXELS, pixel, 2);
@@ -110,7 +115,7 @@ public:
     void drawRow(uint16_t x, uint16_t y, uint16_t w, uint16_t* pixels)
     {
         sendAddr(DISPLAY_SET_CURSOR_X, x, x + w);
-        sendAddr(DISPLAY_SET_CURSOR_Y, y +35, y +35);
+        sendAddr(DISPLAY_SET_CURSOR_Y, y + yRamMargin, y + yRamMargin);
         sendCmd(DISPLAY_WRITE_PIXELS, (uint8_t*)pixels, w * BYTESPERPIXEL);
     }
 
@@ -130,6 +135,7 @@ public:
         uint8_t x[4] = { 0, 0, U16_TO_U8(width) };
         sendCmd(0x2A, x, 4); // Set Column Address
         uint8_t y[4] = { 0, 0, U16_TO_U8(height) }; // uint8_t y[4] = { 0, 0, 0x01, 0x3f }; // ystart = 0, yend = 320
+        // uint8_t y[4] = { U16_TO_U8(yRamMargin), U16_TO_U8(height + yRamMargin) }; // <--- doesn't seems to work, so let's do it directly in draw...
         sendCmd(0x2B, y, 4); // Set Row Address
         sendCmd(displayInverted ? 0x21 /*Display Inversion On*/ : 0x20 /*Display Inversion Off*/);
         usleep(10 * 1000);
