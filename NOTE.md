@@ -42,6 +42,8 @@
 
 -----------------------------------
 
+- TODO try those multi dac stuff: https://diyelectromusic.com/2024/05/27/rpi-5-quad-stereo-sound-with-pcm5102a/
+
 - TODO add granular track?
     - should it just be a sample track
     - or should it be a master effect track that can collect sound from multiple track and shape them in live, could be between scatter effect and sequencer....

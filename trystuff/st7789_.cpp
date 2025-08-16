@@ -20,7 +20,8 @@
 
 // res go to pin 15
 // #define PIN_RESET 22
-#define GPIO_TFT_RESET_PIN 22
+// #define GPIO_TFT_RESET_PIN 22
+#define GPIO_TFT_RESET_PIN 3
 // DC go to pin 11
 // #define PIN_DATA_CONTROL 17
 #define GPIO_TFT_DATA_CONTROL 17
