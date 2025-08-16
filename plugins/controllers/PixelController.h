@@ -71,10 +71,10 @@ public:
                 gpioKey.startThread(); // might want to use the same thread for encoder...
             }
             gpioEncoder.encoders = {
-                { 0, 26, 13 },
-                { 1, 6, 5 },
-                { 2, 0, 9 },
-                { 3, 27, 4 },
+                { 1, 26, 13 },
+                { 2, 6, 5 },
+                { 3, 0, 9 },
+                { 4, 27, 4 },
             };
             if (gpioEncoder.init() == 0) {
                 gpioEncoder.startThread(); // might want to use the same thread for encoder...

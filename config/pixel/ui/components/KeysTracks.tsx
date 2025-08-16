@@ -16,22 +16,23 @@ export function KeysTracks({ synthName, viewName }: { synthName?: string; viewNa
     return (
         <HiddenValue
             keys={[
+                { key: C1, action: `noteOn:${synthName}:60` },
+
                 { key: A1, action: pages(viewName, `Drum1`) },
                 // { key: B1, action: `.toggle:1`, context: { id: shiftContext, value: 0 } },
                 // { key: B1, action: `.save:1`, context: { id: shiftContext, value: 1 } },
-                { key: C1, action: `noteOn:Drum1:60` },
 
-                { key: A2, action: `setView:Drum2#track` },
+                { key: A2, action: pages(viewName, `Drum2`) },
                 // { key: B2, action: `.toggle:2`, context: { id: shiftContext, value: 0 } },
                 // { key: B2, action: `.save:2`, context: { id: shiftContext, value: 1 } },
                 // { key: C2, action: `noteOn:Drum2:60` },
 
-                { key: A3, action: `setView:Drum3#track` },
+                { key: A3, action: pages(viewName, `Drum3`) },
                 // { key: B3, action: `.toggle:3`, context: { id: shiftContext, value: 0 } },
                 // { key: B3, action: `.save:3`, context: { id: shiftContext, value: 1 } },
                 // { key: C3, action: `noteOn:Drum3:60` },
 
-                { key: A4, action: `setView:Drum4#track` },
+                { key: A4, action: pages(viewName, `Drum4`) },
                 // { key: B4, action: `.toggle:4`, context: { id: shiftContext, value: 0 } },
                 // { key: B4, action: `.save:4`, context: { id: shiftContext, value: 1 } },
                 // { key: C4, action: `noteOn:Drum4:60` },
