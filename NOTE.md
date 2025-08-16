@@ -4,6 +4,7 @@
       - and add multi fx instead of fixed fx
       - should cutoff resonance goes away in favor of effect
                             - --------> could create a basic filter in multi fx
+      - could even combine Freq Env... then either have multi effect or add extra macro for the freq
 
 - TODO variation
         - -----> show pattern in variation <<-- NOTE 

@@ -1,7 +1,7 @@
 import * as React from '@/libs/react';
 
 import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
-import { A1, A2, A3, A4, B1, B2, B3, B4, C1, Drum4Track } from '../constants';
+import { A1, A2, A3, A4, B1, B2, B3, B4, C1, Drum4Track, shiftContext } from '../constants';
 
 function pages(viewName: string, baseName: string) {
     if (viewName === baseName) {
@@ -31,6 +31,7 @@ export function KeysTracks({
                         track <= Drum4Track
                             ? `noteOnAndRepeat:${synthName}:60:1:${track}`
                             : `noteOn:${synthName}:60`,
+                    context: { id: shiftContext, value: 0 },
                 },
 
                 { key: A1, action: pages(viewName, `Drum1`) },

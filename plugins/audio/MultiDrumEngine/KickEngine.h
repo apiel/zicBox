@@ -65,16 +65,34 @@ public:
         p.val.setString(std::to_string((int)(transient.getMorph() * 100)) + "%");
         p.val.props().unit = transient.getTypeName();
     });
-    Val& waveformType = val(1.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = WAVEFORMS_COUNT - 1 }, [&](auto p) {
+    // Val& waveformType = val(1.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = WAVEFORMS_COUNT - 1 }, [&](auto p) {
+    //     float current = p.val.get();
+    //     p.val.setFloat(p.value);
+    //     if (wave && current == p.val.get()) {
+    //         return;
+    //     }
+    //     WaveformType type = waveformTypes[(int)p.val.get()];
+    //     p.val.setString(type.name);
+    //     wave = type.wave;
+    //     waveform.setType((WavetableGenerator::Type)type.indexType);
+    // });
+    Val& waveformType = val(1.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = WAVEFORMS_COUNT * 100 - 1 }, [&](auto p) {
         float current = p.val.get();
+        int currentWave = (int)p.val.get() / 100;
         p.val.setFloat(p.value);
-        if (wave && current == p.val.get()) {
-            return;
+        int newWave = (int)p.val.get() / 100;
+        logDebug("new wave %d", newWave);
+        if (!wave || currentWave != newWave) {
+            WaveformType type = waveformTypes[newWave];
+            // p.val.setString(type.name);
+            p.val.props().unit = type.name;
+            wave = type.wave;
+            waveform.setType((WavetableGenerator::Type)type.indexType);
         }
-        WaveformType type = waveformTypes[(int)p.val.get()];
-        p.val.setString(type.name);
-        wave = type.wave;
-        waveform.setType((WavetableGenerator::Type)type.indexType);
+        int morph = p.val.get() - currentWave * 100;
+        logDebug("wave %d Waveform morph: %d", newWave, morph);
+        waveform.setMorph(morph / 100.0f);
+        p.val.setString(std::to_string(morph) + "%");
     });
     Val& shape = val(0.0f, "WAVEFORM_SHAPE", { "Wave. Shape", VALUE_BASIC, .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
