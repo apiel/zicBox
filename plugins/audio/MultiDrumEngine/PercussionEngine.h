@@ -14,7 +14,7 @@ public:
     Val& harmonics = val(0.3f, "HARMONICS", { "Harmonics", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
 
     Val& snareTune = val(200.f, "NOISE_TUNE", { "Noise Tune", .min = 80.f, .max = 600.f, .step = 1.f, .unit = "Hz" });
-    Val& noiseCharacter = val(0.0f, "NOISE_CHARACTER", { "Noise Character", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
+    Val& noiseCharacter = val(0.0f, "NOISE_SHAPE", { "Noise Shape", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
     Val& snareDecay = val(0.15f, "NOISE_DEC", { "Noise Dec", .floatingPoint = 2, .unit = "%", .incrementationType = VALUE_INCREMENTATION_MULT, .skipJumpIncrements = true });
     Val& mix = val(0.5f, "MIX", { "Mix", .unit = "%" });
 

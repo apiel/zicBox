@@ -1,7 +1,6 @@
 ## Pixel TODO
 
-- TODO multi drum kick engine, combine waveform shape and waveform together, to give on more param for freq envelop
-      - and add multi fx instead of fixed fx
+- TODO multi drum kick engine
       - should cutoff resonance goes away in favor of effect
                             - --------> could create a basic filter in multi fx
       - could even combine Freq Env... then either have multi effect or add extra macro for the freq
