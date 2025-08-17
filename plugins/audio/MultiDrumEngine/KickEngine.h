@@ -2,11 +2,11 @@
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
 #include "plugins/audio/utils/EnvelopeTableGenerator.h"
 #include "plugins/audio/utils/MMfilter.h"
+#include "plugins/audio/utils/MultiFx.h"
 #include "plugins/audio/utils/TransientGenerator.h"
 #include "plugins/audio/utils/WavetableGenerator2.h"
 #include "plugins/audio/utils/effects/applyBoost.h"
 #include "plugins/audio/utils/effects/applyCompression.h"
-#include "plugins/audio/utils/effects/applyWaveshape.h"
 #include "plugins/audio/utils/val/valMMfilterCutoff.h"
 
 class KickEngine : public DrumEngine {
@@ -14,6 +14,7 @@ protected:
     float velocity = 1.0f;
 
     MMfilter filter;
+    MultiFx multiFx;
 
     WavetableInterface* wave = nullptr;
     WavetableGenerator waveform;
@@ -59,44 +60,22 @@ protected:
 
 public:
     Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24, .skipJumpIncrements = true });
-    Val& transientMorph = val(100.0, "TRANSIENT", { "Transient", VALUE_STRING, .step = 0.1f, .floatingPoint = 1 }, [&](auto p) {
-        p.val.setFloat(p.value);
-        transient.morphType(p.val.pct());
-        p.val.setString(std::to_string((int)(transient.getMorph() * 100)) + "%");
-        p.val.props().unit = transient.getTypeName();
-    });
-    // Val& waveformType = val(1.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = WAVEFORMS_COUNT - 1 }, [&](auto p) {
-    //     float current = p.val.get();
-    //     p.val.setFloat(p.value);
-    //     if (wave && current == p.val.get()) {
-    //         return;
-    //     }
-    //     WaveformType type = waveformTypes[(int)p.val.get()];
-    //     p.val.setString(type.name);
-    //     wave = type.wave;
-    //     waveform.setType((WavetableGenerator::Type)type.indexType);
-    // });
-    Val& waveformType = val(1.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = WAVEFORMS_COUNT * 100 - 1 }, [&](auto p) {
+
+    // Might need to move this logic in generator because something not working ...
+    Val& waveformType = val(250.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = WAVEFORMS_COUNT * 100 - 1 }, [&](auto p) {
         float current = p.val.get();
         int currentWave = (int)p.val.get() / 100;
         p.val.setFloat(p.value);
         int newWave = (int)p.val.get() / 100;
-        logDebug("new wave %d", newWave);
         if (!wave || currentWave != newWave) {
             WaveformType type = waveformTypes[newWave];
-            // p.val.setString(type.name);
             p.val.props().unit = type.name;
             wave = type.wave;
             waveform.setType((WavetableGenerator::Type)type.indexType);
         }
-        int morph = p.val.get() - currentWave * 100;
-        logDebug("wave %d Waveform morph: %d", newWave, morph);
+        int morph = p.val.get() - newWave * 100;
         waveform.setMorph(morph / 100.0f);
         p.val.setString(std::to_string(morph) + "%");
-    });
-    Val& shape = val(0.0f, "WAVEFORM_SHAPE", { "Wave. Shape", VALUE_BASIC, .unit = "%" }, [&](auto p) {
-        p.val.setFloat(p.value);
-        waveform.setMorph(p.val.pct());
     });
 
     Val& envelopeType = val(0.0f, "ENVELOPE_TYPE", { "Freq. Env.", VALUE_STRING, .max = ENVELOP_COUNT - 1 }, [&](auto p) {
@@ -111,7 +90,7 @@ public:
         envelope.setMorph(p.val.pct());
     });
 
-    Val& cutoff = val(0.0, "CUTOFF", { "LPF | HPF", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0 }, [&](auto p) {
+    Val& cutoff = val(0.0, "CUTOFF", { "LPF | HPF", VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
         valMMfilterCutoff(p, filter);
     });
     Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
@@ -119,16 +98,24 @@ public:
         filter.setResonance(p.val.pct());
     });
 
-    float waveshapeAmount = 0.0f;
-    Val& boost = val(0.0f, "BOOST", { "Boost", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
-    Val& waveshape = val(0.0, "WAVESHAPE", { "Waveshape", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" }, [&](auto p) {
+    Val& transientMorph = val(100.0, "TRANSIENT", { "Transient", VALUE_STRING, .step = 0.1f, .floatingPoint = 1 }, [&](auto p) {
         p.val.setFloat(p.value);
-        waveshapeAmount = p.val.pct() * 2 - 1.0f;
+        transient.morphType(p.val.pct());
+        p.val.setString(std::to_string((int)(transient.getMorph() * 100)) + "%");
+        p.val.props().unit = transient.getTypeName();
     });
+
+    Val& boost = val(0.0f, "BOOST", { "Boost", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
+
+    Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
+        multiFx.setFxType(p);
+    });
+    Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
 
     KickEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : DrumEngine(p, c, "Kick")
         , waveform(props.lookupTable, props.sampleRate)
+        , multiFx(props.sampleRate, props.lookupTable)
         , envelope(props.lookupTable)
         , transient(props.sampleRate, 50)
     {
@@ -154,10 +141,17 @@ public:
         }
 
         out = applyBoostOrCompression(out);
-        out = applyWaveshape(out, waveshapeAmount, props.lookupTable);
+        out = multiFx.apply(out, fxAmount.pct());
         out = filter.process(out);
 
         buf[track] = out * velocity;
+    }
+
+    void sampleOff(float* buf) override
+    {
+        float out = buf[track];
+        out = multiFx.apply(out, fxAmount.pct());
+        buf[track] = out;
     }
 
     // Higher base note is, lower pitch will be

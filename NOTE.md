@@ -1,5 +1,7 @@
 ## Pixel TODO
 
+- TODO add 3 squares next to title, to show position in the page
+
 - TODO multi drum kick engine, combine waveform shape and waveform together, to give on more param for freq envelop
       - and add multi fx instead of fixed fx
       - should cutoff resonance goes away in favor of effect
@@ -17,7 +19,7 @@
 
 - TODO mute shortcut, make it part of the Volume plugin, it should save last state before to mute. (in grid, use shift to mute?)
 
-- TODO send event set tempo
+- FIXME tempo issue
 
 - TODO transpose
         - might be necessary to put transpose within the synth engine itself, with sequencer would be too complicated... ---> if note off is trigger after transpose changed..
@@ -44,6 +46,8 @@
 -----------------------------------
 
 - TODO try those multi dac stuff: https://diyelectromusic.com/2024/05/27/rpi-5-quad-stereo-sound-with-pcm5102a/
+
+- TODO send event set tempo
 
 - TODO add granular track?
     - should it just be a sample track
