@@ -2,7 +2,7 @@ import * as React from '@/libs/react';
 
 import { Sample } from '@/libs/nativeComponents/Sample';
 import { Value } from '@/libs/nativeComponents/Value';
-import { ClipSelection } from '../components/ClipSelection';
+import { ClipBar } from '../components/ClipBar';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
 import { ShiftLayout, unshiftVisibilityContext } from '../components/ShiftLayout';
@@ -86,7 +86,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         visibilityContext={[unshiftVisibilityContext]}
                     />
 
-                    <ClipSelection track={track} color={color} />
+                    <ClipBar track={track} color={color} />
                     <KeysTracks synthName={synthName} viewName={name} track={track} />
                 </>
             }

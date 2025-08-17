@@ -7,6 +7,7 @@ export const Clips = getJsonComponent<{
   foregroundColor?: string;
   color?: string;
   visibleCount?: number;
+  addIndex?: number;
   sequencerPlugin?: string;
   serializerPlugin?: string;
   encoderId?: number;

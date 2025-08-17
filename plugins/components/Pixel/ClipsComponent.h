@@ -40,7 +40,8 @@ protected:
 
     int clipW = 0;
     int visibleCount = 10;
-    int startIndex = 1;
+    int startBankIndex = 1;
+    int addIndex = 0;
     std::string bank = "A";
 
     bool allowToggleReload = false;
@@ -80,7 +81,7 @@ protected:
     {
         if (KeypadLayout::isReleased(keymap)) {
             bank = std::string(1, c);
-            startIndex = 1 + (c - 'A') * visibleCount;
+            startBankIndex = 1 + (c - 'A') * visibleCount;
             renderNext();
         }
     }
@@ -175,6 +176,9 @@ public:
         textColor = draw.getColor(config["textColor"], textColor); //eg: "#ffffff"
         textMissingColor = alpha(styles.colors.text, 0.2);
 
+        /// Add extra index base on the current index and bank
+        addIndex = config.value("addIndex", addIndex);
+
         /// The color of the text
         playColor = draw.getColor(config["playColor"], playColor); //eg: "#ffffff"
 
@@ -245,19 +249,6 @@ public:
         clipW = size.w / visibleCount;
     }
 
-    // ControllerInterface* controller = NULL;
-    // void initView(uint16_t counter) override
-    // {
-    //     Component::initView(counter);
-    //     // loadExists();
-    //     renderKeys();
-    // }
-    // void renderKeys()
-    // {
-    //     if (controller) {
-    //     }
-    // }
-
     void render()
     {
         draw.filledRect(relativePosition, size, { bgColor });
@@ -267,17 +258,17 @@ public:
         if (bankToggle) {
             for (int i = 0; i < visibleCount; i++) {
                 Point pos = { relativePosition.x + i * clipW, relativePosition.y };
-                std::string bankItem = std::string(1, 'A' + i);
+                std::string bankItem = std::string(1, 'A' + i + addIndex);
                 draw.filledRect({ relativePosition.x + i * clipW, relativePosition.y }, { clipW - 2, size.h }, { bankItem == bank ? playingClipBgColor : clipBgColor });
                 draw.textCentered({ pos.x + center.x, pos.y + center.y }, bankItem, fontSize, { textColor, .maxWidth = clipW });
             }
         } else {
             for (int i = 0; i < visibleCount; i++) {
-                int id = i + startIndex;
+                int id = i + startBankIndex + addIndex;
                 Point pos = { relativePosition.x + i * clipW, relativePosition.y };
                 draw.filledRect({ relativePosition.x + i * clipW, relativePosition.y }, { clipW - 2, size.h }, { id == playingId ? playingClipBgColor : clipBgColor });
                 Color& color = variationExists(id) ? textColor : textMissingColor;
-                draw.textCentered({ pos.x + center.x, pos.y + center.y }, bank + std::to_string(i + 1), fontSize, { color, .maxWidth = clipW });
+                draw.textCentered({ pos.x + center.x, pos.y + center.y }, bank + std::to_string(i + 1 + addIndex), fontSize, { color, .maxWidth = clipW });
 
                 if (*isPlaying) {
                     if (id == *nextVariationToPlay) {

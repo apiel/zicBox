@@ -1,5 +1,6 @@
 import * as React from '@/libs/react';
 
+import { ClipView } from '../components/ClipView';
 import { GridSeqView } from '../components/GridSeqView';
 import { Main2View } from './Main2View';
 import { Main3View } from './Main3View';
@@ -27,6 +28,7 @@ export function DrumViews({ track, synthName, color, contextId, title }: Props) 
                 contextId={contextId}
                 title={title}
             />
+            <ClipView name={`${synthName}Clips`} track={track} synthName={synthName} color={color} title={title} />
         </>
     );
 }

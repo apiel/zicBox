@@ -1,13 +1,7 @@
 import * as React from '@/libs/react';
 
 import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
-import {
-    C1,
-    C2,
-    C3,
-    C4,
-    shiftContext
-} from '../constants';
+import { C1, C2, C3, C4, shiftContext } from '../constants';
 
 export const Clips = 'Clips';
 export const Drum1 = 'Drum1';
@@ -20,7 +14,7 @@ export const Sample3 = 'Sample3';
 export const Sample4 = 'Sample4';
 
 function ifTrue<T>(cond: boolean, obj: T) {
-    return cond ? [obj]: [];
+    return cond ? [obj] : [];
 }
 
 export function MainKeys({
@@ -43,7 +37,13 @@ export function MainKeys({
                                 ? `setView:${synthName}`
                                 : `setView:${synthName}Seq`,
                     }),
-                    { key: C3, action: `playPause` }, // <------------------ temp
+                    {
+                        key: C3,
+                        action:
+                            viewName === `${synthName}Clips`
+                                ? `setView:${synthName}`
+                                : `setView:${synthName}Clips`,
+                    },
                     { key: C4, action: `contextToggle:${shiftContext}:1:0` },
                 ]}
                 visibilityContext={[{ index: shiftContext, value: 1, condition: 'SHOW_WHEN_NOT' }]}

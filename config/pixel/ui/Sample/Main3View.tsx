@@ -1,7 +1,7 @@
 import * as React from '@/libs/react';
 
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
-import { ClipSelection } from '../components/ClipSelection';
+import { ClipBar } from '../components/ClipBar';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
 import { ShiftLayout, unshiftVisibilityContext } from '../components/ShiftLayout';
@@ -69,7 +69,7 @@ export function Main3View({ name, track, synthName, color, title }: Props) {
                         visibilityContext={[unshiftVisibilityContext]}
                     />
 
-                    <ClipSelection track={track} color={color} />
+                    <ClipBar track={track} color={color} />
                     <KeysTracks synthName={synthName} viewName={name} track={track} />
                 </>
             }
