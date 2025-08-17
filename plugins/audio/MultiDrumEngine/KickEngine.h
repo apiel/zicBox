@@ -61,7 +61,6 @@ protected:
 public:
     Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24, .skipJumpIncrements = true });
 
-    // Might need to move this logic in generator because something not working ...
     Val& waveformType = val(250.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = WAVEFORMS_COUNT * 100 - 1 }, [&](auto p) {
         float current = p.val.get();
         int currentWave = (int)p.val.get() / 100;

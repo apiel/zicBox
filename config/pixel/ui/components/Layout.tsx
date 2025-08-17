@@ -1,9 +1,10 @@
 import * as React from '@/libs/react';
 
 import { Rect } from '@/libs/nativeComponents/Rect';
+import { Text } from '@/libs/nativeComponents/Text';
 import { View } from '@/libs/nativeComponents/View';
+import { darken } from '@/libs/ui';
 import { MainKeys } from './Common';
-import { Title } from './Title';
 
 export type Props = {
     viewName: string;
@@ -14,10 +15,17 @@ export type Props = {
 };
 
 export function Layout({ viewName, content, color, title, synthName }: Props) {
+    const inactiveColor = darken(color, 0.5);
     return (
         <View name={viewName}>
-            {title && <Title title={title} />}
-            {title && <Rect bounds={[5, 6, 6, 6]} color={color} />}
+            {title && <Text fontSize={16} text={title} bounds={[37, 0, 100, 16]} font="PoppinsLight_8" />}
+            {title && (
+                <>
+                    <Rect bounds={[5, 6, 6, 6]} color={!viewName.includes(':page') ? color : inactiveColor} />
+                    <Rect bounds={[15, 6, 6, 6]} color={viewName.includes(':page2') ? color : inactiveColor} />
+                    <Rect bounds={[25, 6, 6, 6]} color={viewName.includes(':page3') ? color : inactiveColor} />
+                </>
+            )}
             {content}
             <MainKeys synthName={synthName} viewName={viewName} />
         </View>

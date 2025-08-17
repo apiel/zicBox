@@ -1,7 +1,5 @@
 ## Pixel TODO
 
-- TODO add 3 squares next to title, to show position in the page
-
 - TODO multi drum kick engine, combine waveform shape and waveform together, to give on more param for freq envelop
       - and add multi fx instead of fixed fx
       - should cutoff resonance goes away in favor of effect
