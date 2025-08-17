@@ -5,7 +5,7 @@
 #include "plugins/audio/utils/MMfilter.h"
 #include "plugins/audio/utils/MultiFx.h"
 #include "plugins/audio/utils/WavetableGenerator2.h"
-#include "plugins/audio/utils/effects/applyCompression.h"
+#include "plugins/audio/utils/effects/applyReverb.h"
 #include "plugins/audio/utils/effects/applyDrive.h"
 #include "plugins/audio/utils/val/valMMfilterCutoff.h"
 
@@ -43,13 +43,10 @@ protected:
 
         float render(float t, float mainEnvAmp)
         {
-            // Amplitude envelope
             float ampVal = 1.0f - envAmp.next(t);
-            // Pitch envelope morph applied
-            float pitchVal = envPitch.next(t);
-            float f = baseFreq * powf(2.0f, pitchVal * 2.0f); // ±2 oct modulation
-            // Oscillator
-            float s = wave ? wave->sample(&sampleIndex, f) : 0.0f;
+            float envFreq = envPitch.next(t);
+            float modulatedFreq = baseFreq + envFreq;
+            float s = wave ? wave->sample(&sampleIndex, modulatedFreq) : 0.0f;
             return s * ampVal * mainEnvAmp;
         }
     };
@@ -57,7 +54,6 @@ protected:
     Layer layerA;
     Layer layerB;
 
-    MMfilter filter;
     MultiFx multiFx;
 
     float velocity = 1.0f;
@@ -74,7 +70,7 @@ public:
 
     Val& fx = val(0.0f, "FX", { "FX Blend", VALUE_CENTERED, .min = -100.0f, .max = 100.0f, .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
-        fxAmount = p.val.pct(); // -1 to +1
+        fxAmount = p.val.pct() * 2 - 1; // -1 to +1
     });
 
     // --- Layer A ---
@@ -137,6 +133,10 @@ public:
         initValues();
     }
 
+    static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
+    float reverbBuffer[REVERB_BUFFER_SIZE] = { 0.0f };
+    int reverbIndex = 0;
+
     void sampleOn(float* buf, float envAmp, int sampleCounter, int totalSamples) override
     {
         float t = (float)sampleCounter / totalSamples;
@@ -151,14 +151,16 @@ public:
         if (fxAmount < 0.0f)
             fxOut = applyDrive(fxOut, -fxAmount * 2.0f, props.lookupTable); // stronger drive as it goes negative
         else if (fxAmount > 0.0f)
-            fxOut = applyCompression(fxOut, fxAmount * 2.0f);
+            fxOut = applyReverb(fxOut, fxAmount, reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE);
 
-        buf[track] = filter.process(fxOut) * velocity;
+        buf[track] = fxOut * velocity;
     }
 
     void sampleOff(float* buf) override
     {
-        buf[track] = filter.process(buf[track]);
+        if (fxAmount > 0.0f) {
+            buf[track] = applyReverb(buf[track], fxAmount, reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE);
+        }
     }
 
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
@@ -167,7 +169,8 @@ public:
         layerA.sampleIndex = 0.0f;
         layerB.sampleIndex = 0.0f;
 
-        layerA.baseFreq = 440.0f * powf(2.0f, (note - baseNote + layerAPitch.get()) / 12.0f);
-        layerB.baseFreq = 440.0f * powf(2.0f, (note - baseNote + layerBPitch.get()) / 12.0f);
+        // use 220 instead 440 to have a more percussive sound
+        layerA.baseFreq = 220.0f * powf(2.0f, (note - baseNote + layerAPitch.get()) / 12.0f);
+        layerB.baseFreq = 220.0f * powf(2.0f, (note - baseNote + layerBPitch.get()) / 12.0f);
     }
 };
