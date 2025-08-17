@@ -3,9 +3,10 @@ import * as React from '@/libs/react';
 import { Clips } from '@/libs/nativeComponents/Clips';
 import { Text } from '@/libs/nativeComponents/Text';
 import { rgb } from '@/libs/ui';
-import { C2, ScreenWidth, shiftContext } from '../constants';
+import { A1, A2, A3, A4, C2, ScreenHeight, ScreenWidth, shiftContext, W1_4, W2_4, W3_4 } from '../constants';
 import { top } from '../constantsValue';
 import { Layout } from './Layout';
+import { shiftVisibilityContext, unshiftVisibilityContext } from './ShiftLayout';
 
 export type Props = {
     name: string;
@@ -25,11 +26,18 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
             content={
                 <>
                     <Text
-                        text="Select clip preset."
-                        bounds={[0, top, ScreenWidth, 16]}
+                        text="Select clip preset to LOAD."
+                        bounds={[0, top, ScreenWidth, 18]}
                         centered={true}
                         color={rgb(100, 100, 100)}
-                        // visibilityContext={[shiftVisibilityContext]}
+                        visibilityContext={[unshiftVisibilityContext]}
+                    />
+                    <Text
+                        text="Select clip preset to SAVE."
+                        bounds={[0, top, ScreenWidth, 18]}
+                        centered={true}
+                        color={rgb(100, 100, 100)}
+                        visibilityContext={[shiftVisibilityContext]}
                     />
                     <Clips
                         bounds={[20, top + 20, ScreenWidth - 40, 40]}
@@ -37,6 +45,18 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                         color={color}
                         visibleCount={4}
                         keys={[
+                            { key: A1, action: `.set:1`, context: { id: shiftContext, value: 0 } },
+                            { key: A1, action: `.save:1`, context: { id: shiftContext, value: 1 } },
+
+                            { key: A2, action: `.set:2`, context: { id: shiftContext, value: 0 } },
+                            { key: A2, action: `.save:2`, context: { id: shiftContext, value: 1 } },
+
+                            { key: A3, action: `.set:3`, context: { id: shiftContext, value: 0 } },
+                            { key: A3, action: `.save:3`, context: { id: shiftContext, value: 1 } },
+
+                            { key: A4, action: `.set:4`, context: { id: shiftContext, value: 0 } },
+                            { key: A4, action: `.save:4`, context: { id: shiftContext, value: 1 } },
+
                             { key: C2, action: `.bank`, context: { id: shiftContext, value: 0 }, multipleKeyHandler: true },
                         ]}
                     />
@@ -83,6 +103,27 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                         //     { key: B11, action: `.bank`, context: { id: shiftContext, value: 0 } },
                         //     { key: B11, action: `.reload`, context: { id: shiftContext, value: 1 } },
                         // ]}
+                    />
+
+                    <Text
+                        text="Bank"
+                        bounds={[W1_4, ScreenHeight - 20, W1_4, 18]}
+                        centered={true}
+                        color={rgb(100, 100, 100)}
+                    />
+
+                    <Text
+                        text="Exit"
+                        bounds={[W2_4, ScreenHeight - 20, W1_4, 18]}
+                        centered={true}
+                        color={rgb(100, 100, 100)}
+                    />
+
+                    <Text
+                        text="Save"
+                        bounds={[W3_4, ScreenHeight - 20, W1_4, 18]}
+                        centered={true}
+                        color={rgb(100, 100, 100)}
                     />
                 </>
             }

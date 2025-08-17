@@ -216,9 +216,13 @@
         {"bounds":[5,6,6,6],"color":"#a3c912","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#526509","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#526509","componentName":"Rect"},
-        {"text":"Select clip preset.","bounds":[0,20,320,16],"centered":true,"color":"#646464","componentName":"Text"},
-        {"bounds":[20,40,280,40],"track":1,"color":"#a3c912","visibleCount":4,"keys":[{"key":"x","action":".bank","context":{"id":254,"value":0},"multipleKeyHandler":true}],"componentName":"Clips"},
+        {"text":"Select clip preset to LOAD.","bounds":[0,20,320,18],"centered":true,"color":"#646464","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"Text"},
+        {"text":"Select clip preset to SAVE.","bounds":[0,20,320,18],"centered":true,"color":"#646464","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":1}],"componentName":"Text"},
+        {"bounds":[20,40,280,40],"track":1,"color":"#a3c912","visibleCount":4,"keys":[{"key":"q","action":".set:1","context":{"id":254,"value":0}},{"key":"q","action":".save:1","context":{"id":254,"value":1}},{"key":"w","action":".set:2","context":{"id":254,"value":0}},{"key":"w","action":".save:2","context":{"id":254,"value":1}},{"key":"e","action":".set:3","context":{"id":254,"value":0}},{"key":"e","action":".save:3","context":{"id":254,"value":1}},{"key":"r","action":".set:4","context":{"id":254,"value":0}},{"key":"r","action":".save:4","context":{"id":254,"value":1}},{"key":"x","action":".bank","context":{"id":254,"value":0},"multipleKeyHandler":true}],"componentName":"Clips"},
         {"bounds":[20,82,280,40],"track":1,"addIndex":4,"color":"#a3c912","visibleCount":4,"keys":[{"key":"x","action":".bank","context":{"id":254,"value":0}}],"componentName":"Clips"},
+        {"text":"Bank","bounds":[80,150,80,18],"centered":true,"color":"#646464","componentName":"Text"},
+        {"text":"Exit","bounds":[160,150,80,18],"centered":true,"color":"#646464","componentName":"Text"},
+        {"text":"Save","bounds":[240,150,80,18],"centered":true,"color":"#646464","componentName":"Text"},
         {"keys":[{"key":"x","action":"setView:Drum1Seq"},{"key":"c","action":"setView:Drum1"},{"key":"v","action":"contextToggle:254:1:0"}],"visibilityContext":[{"index":254,"value":1,"condition":"SHOW_WHEN_NOT"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"keys":[{"key":"z","action":"playPause"},{"key":"v","action":"contextToggle:254:1:0"}],"visibilityContext":[{"index":254,"value":1,"condition":"SHOW_WHEN"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
@@ -321,9 +325,13 @@
         {"bounds":[5,6,6,6],"color":"#fd6f0e","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#7f3807","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#7f3807","componentName":"Rect"},
-        {"text":"Select clip preset.","bounds":[0,20,320,16],"centered":true,"color":"#646464","componentName":"Text"},
-        {"bounds":[20,40,280,40],"track":2,"color":"#fd6f0e","visibleCount":4,"keys":[{"key":"x","action":".bank","context":{"id":254,"value":0},"multipleKeyHandler":true}],"componentName":"Clips"},
+        {"text":"Select clip preset to LOAD.","bounds":[0,20,320,18],"centered":true,"color":"#646464","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"Text"},
+        {"text":"Select clip preset to SAVE.","bounds":[0,20,320,18],"centered":true,"color":"#646464","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":1}],"componentName":"Text"},
+        {"bounds":[20,40,280,40],"track":2,"color":"#fd6f0e","visibleCount":4,"keys":[{"key":"q","action":".set:1","context":{"id":254,"value":0}},{"key":"q","action":".save:1","context":{"id":254,"value":1}},{"key":"w","action":".set:2","context":{"id":254,"value":0}},{"key":"w","action":".save:2","context":{"id":254,"value":1}},{"key":"e","action":".set:3","context":{"id":254,"value":0}},{"key":"e","action":".save:3","context":{"id":254,"value":1}},{"key":"r","action":".set:4","context":{"id":254,"value":0}},{"key":"r","action":".save:4","context":{"id":254,"value":1}},{"key":"x","action":".bank","context":{"id":254,"value":0},"multipleKeyHandler":true}],"componentName":"Clips"},
         {"bounds":[20,82,280,40],"track":2,"addIndex":4,"color":"#fd6f0e","visibleCount":4,"keys":[{"key":"x","action":".bank","context":{"id":254,"value":0}}],"componentName":"Clips"},
+        {"text":"Bank","bounds":[80,150,80,18],"centered":true,"color":"#646464","componentName":"Text"},
+        {"text":"Exit","bounds":[160,150,80,18],"centered":true,"color":"#646464","componentName":"Text"},
+        {"text":"Save","bounds":[240,150,80,18],"centered":true,"color":"#646464","componentName":"Text"},
         {"keys":[{"key":"x","action":"setView:Drum2Seq"},{"key":"c","action":"setView:Drum2"},{"key":"v","action":"contextToggle:254:1:0"}],"visibilityContext":[{"index":254,"value":1,"condition":"SHOW_WHEN_NOT"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"keys":[{"key":"z","action":"playPause"},{"key":"v","action":"contextToggle:254:1:0"}],"visibilityContext":[{"index":254,"value":1,"condition":"SHOW_WHEN"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
@@ -426,9 +434,13 @@
         {"bounds":[5,6,6,6],"color":"#15a5ca","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#0b5365","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#0b5365","componentName":"Rect"},
-        {"text":"Select clip preset.","bounds":[0,20,320,16],"centered":true,"color":"#646464","componentName":"Text"},
-        {"bounds":[20,40,280,40],"track":3,"color":"#15a5ca","visibleCount":4,"keys":[{"key":"x","action":".bank","context":{"id":254,"value":0},"multipleKeyHandler":true}],"componentName":"Clips"},
+        {"text":"Select clip preset to LOAD.","bounds":[0,20,320,18],"centered":true,"color":"#646464","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"Text"},
+        {"text":"Select clip preset to SAVE.","bounds":[0,20,320,18],"centered":true,"color":"#646464","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":1}],"componentName":"Text"},
+        {"bounds":[20,40,280,40],"track":3,"color":"#15a5ca","visibleCount":4,"keys":[{"key":"q","action":".set:1","context":{"id":254,"value":0}},{"key":"q","action":".save:1","context":{"id":254,"value":1}},{"key":"w","action":".set:2","context":{"id":254,"value":0}},{"key":"w","action":".save:2","context":{"id":254,"value":1}},{"key":"e","action":".set:3","context":{"id":254,"value":0}},{"key":"e","action":".save:3","context":{"id":254,"value":1}},{"key":"r","action":".set:4","context":{"id":254,"value":0}},{"key":"r","action":".save:4","context":{"id":254,"value":1}},{"key":"x","action":".bank","context":{"id":254,"value":0},"multipleKeyHandler":true}],"componentName":"Clips"},
         {"bounds":[20,82,280,40],"track":3,"addIndex":4,"color":"#15a5ca","visibleCount":4,"keys":[{"key":"x","action":".bank","context":{"id":254,"value":0}}],"componentName":"Clips"},
+        {"text":"Bank","bounds":[80,150,80,18],"centered":true,"color":"#646464","componentName":"Text"},
+        {"text":"Exit","bounds":[160,150,80,18],"centered":true,"color":"#646464","componentName":"Text"},
+        {"text":"Save","bounds":[240,150,80,18],"centered":true,"color":"#646464","componentName":"Text"},
         {"keys":[{"key":"x","action":"setView:Drum3Seq"},{"key":"c","action":"setView:Drum3"},{"key":"v","action":"contextToggle:254:1:0"}],"visibilityContext":[{"index":254,"value":1,"condition":"SHOW_WHEN_NOT"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"keys":[{"key":"z","action":"playPause"},{"key":"v","action":"contextToggle:254:1:0"}],"visibilityContext":[{"index":254,"value":1,"condition":"SHOW_WHEN"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
@@ -531,9 +543,13 @@
         {"bounds":[5,6,6,6],"color":"#ffcd04","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#806702","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#806702","componentName":"Rect"},
-        {"text":"Select clip preset.","bounds":[0,20,320,16],"centered":true,"color":"#646464","componentName":"Text"},
-        {"bounds":[20,40,280,40],"track":4,"color":"#ffcd04","visibleCount":4,"keys":[{"key":"x","action":".bank","context":{"id":254,"value":0},"multipleKeyHandler":true}],"componentName":"Clips"},
+        {"text":"Select clip preset to LOAD.","bounds":[0,20,320,18],"centered":true,"color":"#646464","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"Text"},
+        {"text":"Select clip preset to SAVE.","bounds":[0,20,320,18],"centered":true,"color":"#646464","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":1}],"componentName":"Text"},
+        {"bounds":[20,40,280,40],"track":4,"color":"#ffcd04","visibleCount":4,"keys":[{"key":"q","action":".set:1","context":{"id":254,"value":0}},{"key":"q","action":".save:1","context":{"id":254,"value":1}},{"key":"w","action":".set:2","context":{"id":254,"value":0}},{"key":"w","action":".save:2","context":{"id":254,"value":1}},{"key":"e","action":".set:3","context":{"id":254,"value":0}},{"key":"e","action":".save:3","context":{"id":254,"value":1}},{"key":"r","action":".set:4","context":{"id":254,"value":0}},{"key":"r","action":".save:4","context":{"id":254,"value":1}},{"key":"x","action":".bank","context":{"id":254,"value":0},"multipleKeyHandler":true}],"componentName":"Clips"},
         {"bounds":[20,82,280,40],"track":4,"addIndex":4,"color":"#ffcd04","visibleCount":4,"keys":[{"key":"x","action":".bank","context":{"id":254,"value":0}}],"componentName":"Clips"},
+        {"text":"Bank","bounds":[80,150,80,18],"centered":true,"color":"#646464","componentName":"Text"},
+        {"text":"Exit","bounds":[160,150,80,18],"centered":true,"color":"#646464","componentName":"Text"},
+        {"text":"Save","bounds":[240,150,80,18],"centered":true,"color":"#646464","componentName":"Text"},
         {"keys":[{"key":"x","action":"setView:Drum4Seq"},{"key":"c","action":"setView:Drum4"},{"key":"v","action":"contextToggle:254:1:0"}],"visibilityContext":[{"index":254,"value":1,"condition":"SHOW_WHEN_NOT"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"keys":[{"key":"z","action":"playPause"},{"key":"v","action":"contextToggle:254:1:0"}],"visibilityContext":[{"index":254,"value":1,"condition":"SHOW_WHEN"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
