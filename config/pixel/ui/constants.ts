@@ -66,3 +66,4 @@ export const C3 = 'c';
 export const C4 = 'v';
 
 export const shiftContext = 254;
+export const clipRenderConext = 200;

@@ -44,6 +44,8 @@ protected:
     int addIndex = 0;
     std::string bank = "A";
 
+    uint8_t renderContextId = 0;
+
     bool allowToggleReload = false;
 
     bool variationExists(int id) { return pluginSerialize->data(variationExistsDataId, &id) != NULL; }
@@ -73,8 +75,16 @@ protected:
             } else {
                 pluginSerialize->data(loadVariationDataId, (void*)&id);
             }
-            renderNext();
+            renderNextAndContext();
         }
+    }
+
+    void renderNextAndContext()
+    {
+        if (renderContextId > 0) {
+            setContext(renderContextId, 0);
+        }
+        renderNext();
     }
 
     void bankAction(KeypadLayout::KeyMap& keymap, char c)
@@ -82,7 +92,7 @@ protected:
         if (KeypadLayout::isReleased(keymap)) {
             bank = std::string(1, c);
             startBankIndex = 1 + (c - 'A') * visibleCount;
-            renderNext();
+            renderNextAndContext();
         }
     }
 
@@ -113,7 +123,7 @@ public:
             if (action == ".bank") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     bankToggle = KeypadLayout::isPressed(keymap);
-                    renderNext();
+                    renderNextAndContext();
                 };
             }
 
@@ -143,7 +153,7 @@ public:
                             pluginSerialize->data(saveVariationDataId, (void*)&id);
                             // valVariation->set(id);
                             savedMessage = 10;
-                            renderNext();
+                            renderNextAndContext();
                         }
                     }
                 };
@@ -153,7 +163,7 @@ public:
                 func = [this, id](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         pluginSerialize->data(deleteVariationDataId, (void*)&id);
-                        renderNext();
+                        renderNextAndContext();
                     }
                 };
             }
@@ -191,6 +201,9 @@ public:
 
         /// The number of visible clips
         visibleCount = config.value("visibleCount", visibleCount); //eg: 10
+
+        /// Context id to trigger re-rendering if multiple instance of this component on the same view. (must be different to 0)
+        renderContextId = config.value("renderContextId", renderContextId);
 
         /// The sequencer audio plugin.
         pluginSeq = &getPlugin(config.value("sequencerPlugin", "Sequencer"), track); //eg: "audio_plugin_name"
@@ -285,8 +298,17 @@ public:
         }
 
         if (savedMessage > 0) {
-            draw.filledRect(relativePosition, { 100, size.h }, { playingClipBgColor });
-            draw.textCentered({ (int)(relativePosition.x + 50), relativePosition.y + center.y }, "Saved", fontSize, { textColor });
+            int h = fontSize < size.h ? fontSize : size.h;
+            draw.filledRect(relativePosition, { 100, h }, { playingClipBgColor });
+            draw.textCentered({ (int)(relativePosition.x + 50), relativePosition.y }, "Saved", fontSize, { textColor });
         }
+    }
+
+    void onContext(uint8_t index, float value) override
+    {
+        if (renderContextId > 0 && index == renderContextId) {
+            renderNext();
+        }
+        Component::onContext(index, value);
     }
 };

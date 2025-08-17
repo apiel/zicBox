@@ -1,29 +1,49 @@
 {
     "Drum1": {
-        "ENV_FREQ": {
-            "macro": {
-                "a": 0.8299999833106995,
-                "b": 0.5,
-                "c": 0.5
-            },
-            "mode": 3
-        },
         "values": [
             {
-                "key": "WAVEFORM_TYPE",
-                "value": 5.0
+                "key": "ENGINE",
+                "value": 4.0
             },
             {
-                "key": "SHAPE",
-                "value": 59.0
+                "key": "VAL_1",
+                "value": -11.0
             },
             {
-                "key": "MACRO",
-                "value": 94.0
+                "key": "VAL_2",
+                "value": 210.0
             },
             {
-                "key": "PITCH",
-                "value": -21.0
+                "key": "VAL_3",
+                "value": 19.0
+            },
+            {
+                "key": "VAL_4",
+                "value": 8.0
+            },
+            {
+                "key": "VAL_5",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_6",
+                "value": 13.0
+            },
+            {
+                "key": "VAL_7",
+                "value": 74.79995727539063
+            },
+            {
+                "key": "VAL_8",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_9",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_10",
+                "value": 0.0
             },
             {
                 "key": "DURATION",
@@ -32,62 +52,6 @@
             {
                 "key": "AMP_MORPH",
                 "value": 0.0
-            },
-            {
-                "key": "CUTOFF",
-                "value": 0.0
-            },
-            {
-                "key": "RESONANCE",
-                "value": 0.0
-            },
-            {
-                "key": "GAIN_CLIPPING",
-                "value": 79.0
-            },
-            {
-                "key": "HIGH_FREQ_BOOST",
-                "value": 2.7999980449676514
-            },
-            {
-                "key": "OSC2",
-                "value": 2.0
-            },
-            {
-                "key": "OSC2_FREQ",
-                "value": 110.0
-            },
-            {
-                "key": "LAYER2_CUTOFF",
-                "value": -87.0
-            },
-            {
-                "key": "LAYER2_RESONANCE",
-                "value": 49.0
-            },
-            {
-                "key": "LAYER2_AMP_MORPH",
-                "value": 70.39989471435547
-            },
-            {
-                "key": "LAYER2_DURATION",
-                "value": 0.0
-            },
-            {
-                "key": "DRIVE",
-                "value": 10.0
-            },
-            {
-                "key": "COMPRESS",
-                "value": 22.0
-            },
-            {
-                "key": "BASS",
-                "value": 6.0
-            },
-            {
-                "key": "WAVESHAPE",
-                "value": 34.0
             }
         ]
     },
@@ -259,7 +223,7 @@
         ]
     },
     "SerializeTrack": {
-        "VARIATION": 1.0
+        "VARIATION": 2.0
     },
     "TrackFx": {
         "values": [
