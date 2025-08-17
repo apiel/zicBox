@@ -54,8 +54,6 @@ protected:
     Layer layerA;
     Layer layerB;
 
-    MultiFx multiFx;
-
     float velocity = 1.0f;
     uint8_t baseNote = 60;
     float mixAB = 0.5f;
@@ -128,7 +126,6 @@ public:
         : DrumEngine(p, c, "Volcan")
         , layerA(props.lookupTable, props.sampleRate)
         , layerB(props.lookupTable, props.sampleRate)
-        , multiFx(props.sampleRate, props.lookupTable)
     {
         initValues();
     }

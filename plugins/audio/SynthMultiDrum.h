@@ -7,6 +7,7 @@
 #include "plugins/audio/MultiDrumEngine/MetalicDrumEngine.h"
 #include "plugins/audio/MultiDrumEngine/PercussionEngine.h"
 #include "plugins/audio/MultiDrumEngine/VolcanEngine.h"
+#include "plugins/audio/MultiDrumEngine/FmEngine.h"
 #include "plugins/audio/utils/EnvelopDrumAmp.h"
 
 /*md
@@ -26,8 +27,9 @@ protected:
     KickEngine kickEngine;
     Er1PcmEngine er1PcmEngine;
     VolcanEngine volcanEngine;
+    FmEngine fmEngine;
 
-    static const int ENGINES_COUNT = 7;
+    static const int ENGINES_COUNT = 8;
     DrumEngine* drumEngines[ENGINES_COUNT] = {
         &metalDrumEngine,
         &percEngine,
@@ -36,6 +38,7 @@ protected:
         &kickEngine,
         &er1PcmEngine,
         &volcanEngine,
+        &fmEngine,
     };
     DrumEngine* drumEngine = drumEngines[0];
 
@@ -108,6 +111,7 @@ public:
         , kickEngine(props, config)
         , er1PcmEngine(props, config)
         , volcanEngine(props, config)
+        , fmEngine(props, config)
     {
         initValues({ &engine });
     }
