@@ -6,6 +6,7 @@
 #include "plugins/audio/MultiDrumEngine/KickEngine.h"
 #include "plugins/audio/MultiDrumEngine/MetalicDrumEngine.h"
 #include "plugins/audio/MultiDrumEngine/PercussionEngine.h"
+#include "plugins/audio/MultiDrumEngine/VolcanEngine.h"
 #include "plugins/audio/utils/EnvelopDrumAmp.h"
 
 /*md
@@ -24,14 +25,17 @@ protected:
     ClapEngine clapEngine;
     KickEngine kickEngine;
     Er1PcmEngine er1PcmEngine;
+    VolcanEngine volcanEngine;
 
-    DrumEngine* drumEngines[6] = {
+    static const int ENGINES_COUNT = 7;
+    DrumEngine* drumEngines[ENGINES_COUNT] = {
         &metalDrumEngine,
         &percEngine,
         &bassEngine,
         &clapEngine,
         &kickEngine,
-        &er1PcmEngine
+        &er1PcmEngine,
+        &volcanEngine,
     };
     DrumEngine* drumEngine = drumEngines[0];
 
@@ -63,7 +67,7 @@ public:
     /*md **Values**: */
 
     /*md - `ENGINE` select the drum engine. */
-    Val& engine = val(0, "ENGINE", { "Engine", VALUE_STRING, .min = 0, .max = 5 }, [&](auto p) {
+    Val& engine = val(0, "ENGINE", { "Engine", VALUE_STRING, .min = 0, .max = ENGINES_COUNT - 1 }, [&](auto p) {
         p.val.setFloat(p.value);
         int index = (int)p.val.get();
         drumEngine = drumEngines[index];
@@ -103,6 +107,7 @@ public:
         , clapEngine(props, config)
         , kickEngine(props, config)
         , er1PcmEngine(props, config)
+        , volcanEngine(props, config)
     {
         initValues({ &engine });
     }

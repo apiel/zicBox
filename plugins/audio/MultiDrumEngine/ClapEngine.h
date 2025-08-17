@@ -20,8 +20,8 @@ public:
     Val& burstSpacing = val(30, "SPACING", { "Spacing", .unit = "%" });
     Val& noiseColor = val(70, "NOISE_COLOR", { "Noise Color", .unit = "%" });
 
-    Val& filterFreq = val(0, "FILTER_FREQ", { "Filter Freq", .unit = "%" }); // 1–4 kHz
-    Val& filterReso = val(30, "FILTER_RESO", { "Filter Resonance", .unit = "%" });
+    Val& filterFreq = val(0, "FILTER_FREQ", { "Cutoff", .unit = "%" }); // 1–4 kHz
+    Val& filterReso = val(30, "FILTER_RESO", { "Resonance", .unit = "%" });
 
     Val& punch = val(100, "PUNCH", { "Punch", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
     Val& transient = val(0.0, "TRANSIENT", { "Transient", .unit = "%" });

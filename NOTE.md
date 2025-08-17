@@ -1,31 +1,23 @@
 ## Pixel TODO
 
-- TODO multi drum kick engine
-      - should cutoff resonance goes away in favor of effect
-                            - --------> could create a basic filter in multi fx
-      - could even combine Freq Env... then either have multi effect or add extra macro for the freq
+- TODO pixel finish seq
 
-- TODO variation
-        - -----> show pattern in variation <<-- NOTE 
-        - would need a way to save all variation at once
-              - ----> right now pressing shift + bank reload the current variation
-                    - instead if pressing bank with selecting the same bank would reload the current variation
-                    - then we could use shift to either save all variation to their current selected variation
-                      or use it to reload all variations.... (maybe save is more important) 
-        - would need a way to reload all variation at once
+- TODO pixel variation
 
-- TODO mute shortcut, make it part of the Volume plugin, it should save last state before to mute. (in grid, use shift to mute?)
+- TODO pixel workspace (shift + variation bring to workspace)
+            - it should look pretty much the same as variation but on project level
+
+- TODO pixel update DOM and pic
+
+- TODO pixel should i had master fx filter bank?
+
+- TODO mute shortcut, make it part of the Volume plugin, it should save last state before to mute. (in grid & pixel, use shift to mute?)
 
 - FIXME tempo issue
-
-- TODO transpose
-        - might be necessary to put transpose within the synth engine itself, with sequencer would be too complicated... ---> if note off is trigger after transpose changed..
-        - OR SHOULD we even transpose??
 
 - TODO linearInterpolation in generator class repeated. need to see if we can use the already existing one...
 - TODO add velocity to all drum engines
 - TODO optimize drum engines
-- TODO like it was done for transient, maybe we can combine into one parameter for EnvelopTable generator and WavetableGenrator 
 
 - TODO provide a way to save preset on github repo
             - ---> see how to handle ssh or instead use token, but the idea would be to store as less as possible info on zicBox app side (if possible nothing) and delegate everything to the OS...
@@ -35,6 +27,17 @@
 
 - TODO look at MiniDexed for bare metal OS https://github.com/probonopd/MiniDexed
 
+- TODO multi drum kick engine: work on the frequency envelop (ask Michi :p)
+
+
+- TODO GRID variation
+        - -----> show pattern in variation <<-- NOTE 
+        - would need a way to save all variation at once
+              - ----> right now pressing shift + bank reload the current variation
+                    - instead if pressing bank with selecting the same bank would reload the current variation
+                    - then we could use shift to either save all variation to their current selected variation
+                      or use it to reload all variations.... (maybe save is more important) 
+        - would need a way to reload all variation at once
 -----------------------------------
 
 - TODO drag and drop editor!! 
@@ -45,6 +48,10 @@
 - TODO try those multi dac stuff: https://diyelectromusic.com/2024/05/27/rpi-5-quad-stereo-sound-with-pcm5102a/
 
 - TODO send event set tempo
+
+- TODO transpose
+        - might be necessary to put transpose within the synth engine itself, with sequencer would be too complicated... ---> if note off is trigger after transpose changed..
+        - OR SHOULD we even transpose??
 
 - TODO add granular track?
     - should it just be a sample track

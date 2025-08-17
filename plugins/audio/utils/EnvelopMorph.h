@@ -41,6 +41,10 @@ public:
         return scaleOutput(evaluateShape(transformTime(t)));
     }
 
+    float next(float t) {
+        return scaleOutput(evaluateShape(transformTime(t)));
+    }
+
 protected:
     int sampleCount;
     int currentSample;
