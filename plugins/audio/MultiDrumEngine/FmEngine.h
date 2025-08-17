@@ -11,7 +11,6 @@ class FmEngine : public DrumEngine {
 protected:
     WavetableGenerator carrier;
     WavetableGenerator mod;
-    EnvelopDrumAmp envAmp;
     EnvelopDrumAmp envPitch;
     MultiFx multiFx;
     MMfilter filter;
@@ -51,11 +50,6 @@ public:
         modIndex = p.val.pct() * 10.0f; // FM depth
     });
 
-    Val& decay = val(50.0f, "DECAY", { "Decay", .unit = "%" }, [&](auto p) {
-        p.val.setFloat(p.value);
-        envAmp.morph(p.val.pct());
-    });
-
     Val& pitchEnv = val(50.0f, "PITCH_ENV", { "PitchEnv", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         envPitch.morph(p.val.pct());
@@ -63,8 +57,12 @@ public:
 
     Val& noiseMix = val(50.0f, "NOISE", { "Noise", .unit = "%" });
 
-    Val& filterAmount = val(50.0f, "FILTER", { "Filter", VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
+    Val& cutoff = val(0.0, "CUTOFF", { "LPF | HPF", VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
         valMMfilterCutoff(p, filter);
+    });
+    Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        filter.setResonance(p.val.pct());
     });
 
     Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
@@ -88,7 +86,6 @@ public:
     {
         float t = (float)sampleCounter / totalSamples;
 
-        float ampEnv = 1.0f - envAmp.next(t);
         float pitchEnvVal = envPitch.next(t);
 
         // base + pitch envelope
@@ -108,7 +105,7 @@ public:
 
         out = filter.process(out);
         out = multiFx.apply(out, fxAmount.pct());
-        buf[track] = out * ampEnv * velocity;
+        buf[track] = out * envAmpVal * velocity;
     }
 
     void sampleOff(float* buf) override
