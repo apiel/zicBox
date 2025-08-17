@@ -3,7 +3,7 @@ import * as React from '@/libs/react';
 import { Clips } from '@/libs/nativeComponents/Clips';
 import { Text } from '@/libs/nativeComponents/Text';
 import { rgb } from '@/libs/ui';
-import { A1, A2, A3, A4, B1, B2, B3, B4, C1, C2, clipRenderConext, ScreenHeight, ScreenWidth, shiftContext, W1_4, W2_4, W3_4 } from '../constants';
+import { A1, A2, A3, A4, B1, B2, B3, B4, C1, C2, clipRenderContext, ScreenHeight, ScreenWidth, shiftContext, W1_4, W2_4, W3_4 } from '../constants';
 import { top } from '../constantsValue';
 import { Layout } from './Layout';
 import { shiftVisibilityContext, unshiftVisibilityContext } from './ShiftLayout';
@@ -44,7 +44,7 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                         track={track}
                         color={color}
                         visibleCount={4}
-                        renderContextId={clipRenderConext}
+                        renderContextId={clipRenderContext}
                         keys={[
                             { key: A1, action: `.set:1`, context: { id: shiftContext, value: 0 } },
                             { key: A1, action: `.save:1`, context: { id: shiftContext, value: 1 } },
@@ -72,7 +72,7 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                         addIndex={4}
                         color={color}
                         visibleCount={4}
-                        renderContextId={clipRenderConext}
+                        renderContextId={clipRenderContext}
                         keys={[
                             { key: C1, action: `.reload` }, // , context: { id: shiftContext, value: 0 }
                             { key: C2, action: `.bank` }, // , context: { id: shiftContext, value: 0 }

@@ -79,14 +79,6 @@ protected:
         }
     }
 
-    void renderNextAndContext()
-    {
-        if (renderContextId > 0) {
-            setContext(renderContextId, 0);
-        }
-        renderNext();
-    }
-
     void bankAction(KeypadLayout::KeyMap& keymap, char c)
     {
         if (KeypadLayout::isReleased(keymap)) {
@@ -94,6 +86,14 @@ protected:
             startBankIndex = 1 + (c - 'A') * visibleCount;
             renderNextAndContext();
         }
+    }
+
+    void renderNextAndContext()
+    {
+        if (renderContextId > 0) {
+            setContext(renderContextId, startBankIndex);
+        }
+        renderNext();
     }
 
     bool bankToggle = false;
@@ -123,7 +123,7 @@ public:
             if (action == ".bank") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     bankToggle = KeypadLayout::isPressed(keymap);
-                    renderNextAndContext();
+                    renderNext();
                 };
             }
 
@@ -307,6 +307,10 @@ public:
     void onContext(uint8_t index, float value) override
     {
         if (renderContextId > 0 && index == renderContextId) {
+            if ((int)value != startBankIndex) {
+                bank = std::string(1, 'A' + (int)(value / visibleCount));
+            }
+            startBankIndex = value;
             renderNext();
         }
         Component::onContext(index, value);
