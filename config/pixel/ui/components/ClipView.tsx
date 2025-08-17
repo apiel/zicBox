@@ -58,6 +58,11 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                             { key: A4, action: `.set:4`, context: { id: shiftContext, value: 0 } },
                             { key: A4, action: `.save:4`, context: { id: shiftContext, value: 1 } },
 
+                            { key: B1, action: `.save:5`, context: { id: shiftContext, value: 1 } },
+                            { key: B2, action: `.save:6`, context: { id: shiftContext, value: 1 } },
+                            { key: B3, action: `.save:7`, context: { id: shiftContext, value: 1 } },
+                            { key: B4, action: `.save:8`, context: { id: shiftContext, value: 1 } },
+
                             { key: C2, action: `.bank`, context: { id: shiftContext, value: 0 }, multipleKeyHandler: true },
                         ]}
                     />
@@ -72,16 +77,9 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                             { key: C2, action: `.bank`, context: { id: shiftContext, value: 0 } },
 
                             { key: B1, action: `.set:5`, context: { id: shiftContext, value: 0 } },
-                            { key: B1, action: `.save:5`, context: { id: shiftContext, value: 1 } },
-
                             { key: B2, action: `.set:6`, context: { id: shiftContext, value: 0 } },
-                            { key: B2, action: `.save:6`, context: { id: shiftContext, value: 1 } },
-
                             { key: B3, action: `.set:7`, context: { id: shiftContext, value: 0 } },
-                            { key: B3, action: `.save:7`, context: { id: shiftContext, value: 1 } },
-
                             { key: B4, action: `.set:8`, context: { id: shiftContext, value: 0 } },
-                            { key: B4, action: `.save:8`, context: { id: shiftContext, value: 1 } },
                         ]}
                     />
 
@@ -111,6 +109,14 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                         bounds={[W3_4, ScreenHeight - 20, W1_4, 18]}
                         centered={true}
                         color={rgb(100, 100, 100)}
+                        visibilityContext={[unshiftVisibilityContext]}
+                    />
+                    <Text
+                        text="Save"
+                        bounds={[W3_4, ScreenHeight - 20, W1_4, 18]}
+                        centered={true}
+                        // color={rgb(100, 100, 100)}
+                        visibilityContext={[shiftVisibilityContext]}
                     />
                 </>
             }
