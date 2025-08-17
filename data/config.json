@@ -649,6 +649,26 @@
       ]
     },
     {
+      "name": "Sample1Clips",
+      "components": [
+        {"fontSize":16,"text":"Sample1","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
+        {"bounds":[5,6,6,6],"color":"#b54f5e","componentName":"Rect"},
+        {"bounds":[15,6,6,6],"color":"#5b282f","componentName":"Rect"},
+        {"bounds":[25,6,6,6],"color":"#5b282f","componentName":"Rect"},
+        {"text":"Select clip preset to LOAD.","bounds":[0,20,320,18],"centered":true,"color":"#646464","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"Text"},
+        {"text":"Select clip preset to SAVE.","bounds":[0,20,320,18],"centered":true,"color":"#646464","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":1}],"componentName":"Text"},
+        {"bounds":[20,40,280,40],"track":5,"color":"#b54f5e","visibleCount":4,"renderContextId":200,"keys":[{"key":"q","action":".set:1","context":{"id":254,"value":0}},{"key":"q","action":".save:1","context":{"id":254,"value":1}},{"key":"w","action":".set:2","context":{"id":254,"value":0}},{"key":"w","action":".save:2","context":{"id":254,"value":1}},{"key":"e","action":".set:3","context":{"id":254,"value":0}},{"key":"e","action":".save:3","context":{"id":254,"value":1}},{"key":"r","action":".set:4","context":{"id":254,"value":0}},{"key":"r","action":".save:4","context":{"id":254,"value":1}},{"key":"a","action":".save:5","context":{"id":254,"value":1}},{"key":"s","action":".save:6","context":{"id":254,"value":1}},{"key":"d","action":".save:7","context":{"id":254,"value":1}},{"key":"f","action":".save:8","context":{"id":254,"value":1}},{"key":"x","action":".bank","multipleKeyHandler":true}],"componentName":"Clips"},
+        {"bounds":[20,82,280,40],"track":5,"addIndex":4,"color":"#b54f5e","visibleCount":4,"renderContextId":200,"keys":[{"key":"z","action":".reload"},{"key":"x","action":".bank"},{"key":"a","action":".set:5","context":{"id":254,"value":0}},{"key":"s","action":".set:6","context":{"id":254,"value":0}},{"key":"d","action":".set:7","context":{"id":254,"value":0}},{"key":"f","action":".set:8","context":{"id":254,"value":0}}],"componentName":"Clips"},
+        {"text":"Reload","bounds":[0,150,80,18],"centered":true,"color":"#646464","componentName":"Text"},
+        {"text":"Bank","bounds":[80,150,80,18],"centered":true,"color":"#646464","componentName":"Text"},
+        {"text":"Exit","bounds":[160,150,80,18],"centered":true,"color":"#646464","componentName":"Text"},
+        {"text":"Save","bounds":[240,150,80,18],"centered":true,"color":"#646464","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"Text"},
+        {"text":"Save","bounds":[240,150,80,18],"centered":true,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":1}],"componentName":"Text"},
+        {"keys":[{"key":"x","action":"setView:Sample1Seq"},{"key":"c","action":"setView:Sample1"},{"key":"v","action":"contextToggle:254:1:0"}],"visibilityContext":[{"index":254,"value":1,"condition":"SHOW_WHEN_NOT"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
+        {"keys":[{"key":"z","action":"playPause"},{"key":"v","action":"contextToggle:254:1:0"}],"visibilityContext":[{"index":254,"value":1,"condition":"SHOW_WHEN"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
+      ]
+    },
+    {
       "name": "Sample2",
       "components": [
         {"fontSize":16,"text":"Sample2","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
@@ -731,6 +751,26 @@
         {"encoderId":6,"bounds":[60,120,78,80],"audioPlugin":"Sequencer","track":6,"contextId":58,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_MOTION","componentName":"SequencerValue"},
         {"bounds":[255,5,60,170],"audioPlugin":"Sequencer","track":6,"contextId":58,"rowsSelection":2,"stepPerRow":4,"gridKeys":["q","w","e","r","a","s","d","f"],"keys":[{"key":"z","action":".scroll"}],"componentName":"SequencerCard"},
         {"keys":[{"key":"x","action":"setView:Sample2"},{"key":"c","action":"setView:Sample2Clips"},{"key":"v","action":"contextToggle:254:1:0"}],"visibilityContext":[{"index":254,"value":1,"condition":"SHOW_WHEN_NOT"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
+        {"keys":[{"key":"z","action":"playPause"},{"key":"v","action":"contextToggle:254:1:0"}],"visibilityContext":[{"index":254,"value":1,"condition":"SHOW_WHEN"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
+      ]
+    },
+    {
+      "name": "Sample2Clips",
+      "components": [
+        {"fontSize":16,"text":"Sample2","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
+        {"bounds":[5,6,6,6],"color":"#377275","componentName":"Rect"},
+        {"bounds":[15,6,6,6],"color":"#1c393b","componentName":"Rect"},
+        {"bounds":[25,6,6,6],"color":"#1c393b","componentName":"Rect"},
+        {"text":"Select clip preset to LOAD.","bounds":[0,20,320,18],"centered":true,"color":"#646464","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"Text"},
+        {"text":"Select clip preset to SAVE.","bounds":[0,20,320,18],"centered":true,"color":"#646464","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":1}],"componentName":"Text"},
+        {"bounds":[20,40,280,40],"track":6,"color":"#377275","visibleCount":4,"renderContextId":200,"keys":[{"key":"q","action":".set:1","context":{"id":254,"value":0}},{"key":"q","action":".save:1","context":{"id":254,"value":1}},{"key":"w","action":".set:2","context":{"id":254,"value":0}},{"key":"w","action":".save:2","context":{"id":254,"value":1}},{"key":"e","action":".set:3","context":{"id":254,"value":0}},{"key":"e","action":".save:3","context":{"id":254,"value":1}},{"key":"r","action":".set:4","context":{"id":254,"value":0}},{"key":"r","action":".save:4","context":{"id":254,"value":1}},{"key":"a","action":".save:5","context":{"id":254,"value":1}},{"key":"s","action":".save:6","context":{"id":254,"value":1}},{"key":"d","action":".save:7","context":{"id":254,"value":1}},{"key":"f","action":".save:8","context":{"id":254,"value":1}},{"key":"x","action":".bank","multipleKeyHandler":true}],"componentName":"Clips"},
+        {"bounds":[20,82,280,40],"track":6,"addIndex":4,"color":"#377275","visibleCount":4,"renderContextId":200,"keys":[{"key":"z","action":".reload"},{"key":"x","action":".bank"},{"key":"a","action":".set:5","context":{"id":254,"value":0}},{"key":"s","action":".set:6","context":{"id":254,"value":0}},{"key":"d","action":".set:7","context":{"id":254,"value":0}},{"key":"f","action":".set:8","context":{"id":254,"value":0}}],"componentName":"Clips"},
+        {"text":"Reload","bounds":[0,150,80,18],"centered":true,"color":"#646464","componentName":"Text"},
+        {"text":"Bank","bounds":[80,150,80,18],"centered":true,"color":"#646464","componentName":"Text"},
+        {"text":"Exit","bounds":[160,150,80,18],"centered":true,"color":"#646464","componentName":"Text"},
+        {"text":"Save","bounds":[240,150,80,18],"centered":true,"color":"#646464","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"Text"},
+        {"text":"Save","bounds":[240,150,80,18],"centered":true,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":1}],"componentName":"Text"},
+        {"keys":[{"key":"x","action":"setView:Sample2Seq"},{"key":"c","action":"setView:Sample2"},{"key":"v","action":"contextToggle:254:1:0"}],"visibilityContext":[{"index":254,"value":1,"condition":"SHOW_WHEN_NOT"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"keys":[{"key":"z","action":"playPause"},{"key":"v","action":"contextToggle:254:1:0"}],"visibilityContext":[{"index":254,"value":1,"condition":"SHOW_WHEN"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
     },
@@ -821,6 +861,26 @@
       ]
     },
     {
+      "name": "Sample3Clips",
+      "components": [
+        {"fontSize":16,"text":"Sample3","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
+        {"bounds":[5,6,6,6],"color":"#624fb5","componentName":"Rect"},
+        {"bounds":[15,6,6,6],"color":"#31285b","componentName":"Rect"},
+        {"bounds":[25,6,6,6],"color":"#31285b","componentName":"Rect"},
+        {"text":"Select clip preset to LOAD.","bounds":[0,20,320,18],"centered":true,"color":"#646464","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"Text"},
+        {"text":"Select clip preset to SAVE.","bounds":[0,20,320,18],"centered":true,"color":"#646464","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":1}],"componentName":"Text"},
+        {"bounds":[20,40,280,40],"track":7,"color":"#624fb5","visibleCount":4,"renderContextId":200,"keys":[{"key":"q","action":".set:1","context":{"id":254,"value":0}},{"key":"q","action":".save:1","context":{"id":254,"value":1}},{"key":"w","action":".set:2","context":{"id":254,"value":0}},{"key":"w","action":".save:2","context":{"id":254,"value":1}},{"key":"e","action":".set:3","context":{"id":254,"value":0}},{"key":"e","action":".save:3","context":{"id":254,"value":1}},{"key":"r","action":".set:4","context":{"id":254,"value":0}},{"key":"r","action":".save:4","context":{"id":254,"value":1}},{"key":"a","action":".save:5","context":{"id":254,"value":1}},{"key":"s","action":".save:6","context":{"id":254,"value":1}},{"key":"d","action":".save:7","context":{"id":254,"value":1}},{"key":"f","action":".save:8","context":{"id":254,"value":1}},{"key":"x","action":".bank","multipleKeyHandler":true}],"componentName":"Clips"},
+        {"bounds":[20,82,280,40],"track":7,"addIndex":4,"color":"#624fb5","visibleCount":4,"renderContextId":200,"keys":[{"key":"z","action":".reload"},{"key":"x","action":".bank"},{"key":"a","action":".set:5","context":{"id":254,"value":0}},{"key":"s","action":".set:6","context":{"id":254,"value":0}},{"key":"d","action":".set:7","context":{"id":254,"value":0}},{"key":"f","action":".set:8","context":{"id":254,"value":0}}],"componentName":"Clips"},
+        {"text":"Reload","bounds":[0,150,80,18],"centered":true,"color":"#646464","componentName":"Text"},
+        {"text":"Bank","bounds":[80,150,80,18],"centered":true,"color":"#646464","componentName":"Text"},
+        {"text":"Exit","bounds":[160,150,80,18],"centered":true,"color":"#646464","componentName":"Text"},
+        {"text":"Save","bounds":[240,150,80,18],"centered":true,"color":"#646464","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"Text"},
+        {"text":"Save","bounds":[240,150,80,18],"centered":true,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":1}],"componentName":"Text"},
+        {"keys":[{"key":"x","action":"setView:Sample3Seq"},{"key":"c","action":"setView:Sample3"},{"key":"v","action":"contextToggle:254:1:0"}],"visibilityContext":[{"index":254,"value":1,"condition":"SHOW_WHEN_NOT"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
+        {"keys":[{"key":"z","action":"playPause"},{"key":"v","action":"contextToggle:254:1:0"}],"visibilityContext":[{"index":254,"value":1,"condition":"SHOW_WHEN"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
+      ]
+    },
+    {
       "name": "Sample4",
       "components": [
         {"fontSize":16,"text":"Sample4","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
@@ -903,6 +963,26 @@
         {"encoderId":6,"bounds":[60,120,78,80],"audioPlugin":"Sequencer","track":8,"contextId":60,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_MOTION","componentName":"SequencerValue"},
         {"bounds":[255,5,60,170],"audioPlugin":"Sequencer","track":8,"contextId":60,"rowsSelection":2,"stepPerRow":4,"gridKeys":["q","w","e","r","a","s","d","f"],"keys":[{"key":"z","action":".scroll"}],"componentName":"SequencerCard"},
         {"keys":[{"key":"x","action":"setView:Sample4"},{"key":"c","action":"setView:Sample4Clips"},{"key":"v","action":"contextToggle:254:1:0"}],"visibilityContext":[{"index":254,"value":1,"condition":"SHOW_WHEN_NOT"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
+        {"keys":[{"key":"z","action":"playPause"},{"key":"v","action":"contextToggle:254:1:0"}],"visibilityContext":[{"index":254,"value":1,"condition":"SHOW_WHEN"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
+      ]
+    },
+    {
+      "name": "Sample4Clips",
+      "components": [
+        {"fontSize":16,"text":"Sample4","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
+        {"bounds":[5,6,6,6],"color":"#b54fad","componentName":"Rect"},
+        {"bounds":[15,6,6,6],"color":"#5b2857","componentName":"Rect"},
+        {"bounds":[25,6,6,6],"color":"#5b2857","componentName":"Rect"},
+        {"text":"Select clip preset to LOAD.","bounds":[0,20,320,18],"centered":true,"color":"#646464","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"Text"},
+        {"text":"Select clip preset to SAVE.","bounds":[0,20,320,18],"centered":true,"color":"#646464","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":1}],"componentName":"Text"},
+        {"bounds":[20,40,280,40],"track":8,"color":"#b54fad","visibleCount":4,"renderContextId":200,"keys":[{"key":"q","action":".set:1","context":{"id":254,"value":0}},{"key":"q","action":".save:1","context":{"id":254,"value":1}},{"key":"w","action":".set:2","context":{"id":254,"value":0}},{"key":"w","action":".save:2","context":{"id":254,"value":1}},{"key":"e","action":".set:3","context":{"id":254,"value":0}},{"key":"e","action":".save:3","context":{"id":254,"value":1}},{"key":"r","action":".set:4","context":{"id":254,"value":0}},{"key":"r","action":".save:4","context":{"id":254,"value":1}},{"key":"a","action":".save:5","context":{"id":254,"value":1}},{"key":"s","action":".save:6","context":{"id":254,"value":1}},{"key":"d","action":".save:7","context":{"id":254,"value":1}},{"key":"f","action":".save:8","context":{"id":254,"value":1}},{"key":"x","action":".bank","multipleKeyHandler":true}],"componentName":"Clips"},
+        {"bounds":[20,82,280,40],"track":8,"addIndex":4,"color":"#b54fad","visibleCount":4,"renderContextId":200,"keys":[{"key":"z","action":".reload"},{"key":"x","action":".bank"},{"key":"a","action":".set:5","context":{"id":254,"value":0}},{"key":"s","action":".set:6","context":{"id":254,"value":0}},{"key":"d","action":".set:7","context":{"id":254,"value":0}},{"key":"f","action":".set:8","context":{"id":254,"value":0}}],"componentName":"Clips"},
+        {"text":"Reload","bounds":[0,150,80,18],"centered":true,"color":"#646464","componentName":"Text"},
+        {"text":"Bank","bounds":[80,150,80,18],"centered":true,"color":"#646464","componentName":"Text"},
+        {"text":"Exit","bounds":[160,150,80,18],"centered":true,"color":"#646464","componentName":"Text"},
+        {"text":"Save","bounds":[240,150,80,18],"centered":true,"color":"#646464","visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":0}],"componentName":"Text"},
+        {"text":"Save","bounds":[240,150,80,18],"centered":true,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":1}],"componentName":"Text"},
+        {"keys":[{"key":"x","action":"setView:Sample4Seq"},{"key":"c","action":"setView:Sample4"},{"key":"v","action":"contextToggle:254:1:0"}],"visibilityContext":[{"index":254,"value":1,"condition":"SHOW_WHEN_NOT"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"keys":[{"key":"z","action":"playPause"},{"key":"v","action":"contextToggle:254:1:0"}],"visibilityContext":[{"index":254,"value":1,"condition":"SHOW_WHEN"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
     }

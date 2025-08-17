@@ -1,15 +1,13 @@
 ## Pixel TODO
 
-- TODO pixel finish seq
+- TODO pixel update DOM and pic
 
-- TODO pixel variation
+- TODO pixel finish seq
 
 - TODO pixel workspace (shift + variation bring to workspace)
             - it should look pretty much the same as variation but on project level
 
-- TODO pixel update DOM and pic
-
-- TODO pixel should i had master fx filter bank?
+- TODO pixel should i had on master the EffectBandIsolatorFx and EffectFilteredMultiFx? or simple multi fx or filter?
 
 - TODO mute shortcut, make it part of the Volume plugin, it should save last state before to mute. (in grid & pixel, use shift to mute?)
 
