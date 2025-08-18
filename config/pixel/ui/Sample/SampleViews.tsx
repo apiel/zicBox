@@ -2,9 +2,7 @@ import * as React from '@/libs/react';
 
 import { ClipView } from '../components/ClipView';
 import { GridSeqView } from '../components/GridSeqView';
-import { Main2View } from './Main2View';
-import { Main3View } from './Main3View';
-import { MainView } from './MainView';
+import { SampleLayout } from './SampleLayout';
 
 export type Props = {
     track: number;
@@ -19,7 +17,7 @@ export type Props = {
 export function SampleViews({ track, synthName, color, contextId, title }: Props) {
     return (
         <>
-            <MainView
+            <SampleLayout
                 name={synthName}
                 track={track}
                 synthName={synthName}
@@ -27,7 +25,7 @@ export function SampleViews({ track, synthName, color, contextId, title }: Props
                 title={title}
             />
 
-            <Main2View
+            <SampleLayout
                 name={`${synthName}:page2`}
                 track={track}
                 synthName={synthName}
@@ -35,7 +33,7 @@ export function SampleViews({ track, synthName, color, contextId, title }: Props
                 title={title}
             />
 
-            <Main3View
+            <SampleLayout
                 name={`${synthName}:page3`}
                 track={track}
                 synthName={synthName}
