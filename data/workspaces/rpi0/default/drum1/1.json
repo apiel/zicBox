@@ -11,7 +11,7 @@
             },
             {
                 "key": "VAL_2",
-                "value": 74.0
+                "value": 483.0
             },
             {
                 "key": "VAL_3",
@@ -19,15 +19,15 @@
             },
             {
                 "key": "VAL_4",
-                "value": 8.0
+                "value": 47.0
             },
             {
                 "key": "VAL_5",
-                "value": 0.0
+                "value": -71.0
             },
             {
                 "key": "VAL_6",
-                "value": 13.0
+                "value": 64.0
             },
             {
                 "key": "VAL_7",
@@ -35,7 +35,7 @@
             },
             {
                 "key": "VAL_8",
-                "value": 0.0
+                "value": 51.0
             },
             {
                 "key": "VAL_9",
@@ -51,7 +51,7 @@
             },
             {
                 "key": "AMP_MORPH",
-                "value": 0.0
+                "value": 53.0
             }
         ]
     },
@@ -223,7 +223,7 @@
         ]
     },
     "SerializeTrack": {
-        "VARIATION": 402.0
+        "VARIATION": 1.0
     },
     "TrackFx": {
         "values": [

@@ -124,8 +124,8 @@ public:
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         int16_t id = (int16_t)valVariation->get();
-                        // logDebug("reload variation %d", id);
                         pluginSerialize->data(loadVariationDataId, (void*)&id);
+                        redirect();
                     }
                 };
             }
@@ -172,7 +172,6 @@ public:
                             // valVariation->set(id);
                             savedMessage = 10;
                             renderNextAndContext();
-                            redirect();
                         }
                     }
                 };

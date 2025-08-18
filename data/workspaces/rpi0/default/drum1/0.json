@@ -11,7 +11,7 @@
             },
             {
                 "key": "VAL_2",
-                "value": 74.0
+                "value": 552.0
             },
             {
                 "key": "VAL_3",
@@ -51,7 +51,7 @@
             },
             {
                 "key": "AMP_MORPH",
-                "value": 0.0
+                "value": 53.0
             }
         ]
     },
@@ -223,7 +223,7 @@
         ]
     },
     "SerializeTrack": {
-        "VARIATION": 402.0
+        "VARIATION": 0.0
     },
     "TrackFx": {
         "values": [
