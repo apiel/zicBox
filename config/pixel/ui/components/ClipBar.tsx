@@ -2,6 +2,7 @@ import * as React from '@/libs/react';
 
 import { Clips } from '@/libs/nativeComponents/Clips';
 import {
+    clipRenderContext,
     ScreenHeight,
     ScreenWidth
 } from '../constants';
@@ -32,6 +33,7 @@ export function ClipBar({ track, color }: Props) {
                 track={track}
                 color={color}
                 visibleCount={8}
+                renderContextId={clipRenderContext}
             />
         </>
     );

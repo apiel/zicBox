@@ -44,6 +44,7 @@ protected:
     int addIndex = 0;
     std::string bank = "A";
     int bankSize = 100;
+    std::string redirectView = "";
 
     uint8_t renderContextId = 0;
 
@@ -51,13 +52,24 @@ protected:
 
     bool variationExists(int id) { return pluginSerialize->data(variationExistsDataId, &id) != NULL; }
 
+    void redirect()
+    {
+        logDebug("redirecting to " + redirectView);
+        if (redirectView != "") {
+            logDebug("redirect done");
+            view->setView(redirectView);
+        }
+    }
+
     void toggleAction(KeypadLayout::KeyMap& keymap, int16_t id)
     {
         if (KeypadLayout::isReleased(keymap)) {
-            if ((int16_t)valVariation->get() == id) {
+            int idAndBank = getIdWithBank(id);
+            if ((int16_t)valVariation->get() == idAndBank) {
                 if (!*isPlaying) {
                     if (allowToggleReload) {
-                        pluginSerialize->data(loadVariationDataId, (void*)&id);
+                        pluginSerialize->data(loadVariationDataId, (void*)&idAndBank);
+                        redirect();
                     } // else do nothing
                 } else if (valSeqStatus->get() == 1) {
                     valSeqStatus->set(0);
@@ -69,12 +81,14 @@ protected:
                 // for the moment let's stick to double press, it is fine...
             } else if (nextVariationToPlay != NULL && *nextVariationToPlay == -1) {
                 if (!*isPlaying) {
-                    pluginSerialize->data(loadVariationDataId, (void*)&id);
+                    pluginSerialize->data(loadVariationDataId, (void*)&idAndBank);
+                    redirect();
                 } else if (valSeqStatus->get() == 1) {
-                    pluginSerialize->data(loadVariationNextDataId, (void*)&id);
+                    pluginSerialize->data(loadVariationNextDataId, (void*)&idAndBank);
                 }
             } else {
-                pluginSerialize->data(loadVariationDataId, (void*)&id);
+                pluginSerialize->data(loadVariationDataId, (void*)&idAndBank);
+                redirect();
             }
             renderNextAndContext();
         }
@@ -96,6 +110,8 @@ protected:
         }
         renderNext();
     }
+
+    int getIdWithBank(int id) { return id + startBankIndex - 1; }
 
     bool bankToggle = false;
     int savedMessage = 0;
@@ -151,10 +167,12 @@ public:
                 func = [this, id](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
                         if (pluginSerialize) {
-                            pluginSerialize->data(saveVariationDataId, (void*)&id);
+                            int idAndBank = getIdWithBank(id);
+                            pluginSerialize->data(saveVariationDataId, (void*)&idAndBank);
                             // valVariation->set(id);
                             savedMessage = 10;
                             renderNextAndContext();
+                            redirect();
                         }
                     }
                 };
@@ -163,7 +181,8 @@ public:
                 int16_t id = std::stoi(action.substr(8));
                 func = [this, id](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
-                        pluginSerialize->data(deleteVariationDataId, (void*)&id);
+                        int idAndBank = getIdWithBank(id);
+                        pluginSerialize->data(deleteVariationDataId, (void*)&idAndBank);
                         renderNextAndContext();
                     }
                 };
@@ -235,6 +254,11 @@ public:
         // Allow .toggle action to reload selected variation
         if (config.contains("allowToggleReload")) {
             allowToggleReload = config["allowToggleReload"];
+        }
+
+        /// The view to redirect once variation saved or selected.
+        if (config.contains("redirectView")) {
+            redirectView = config["redirectView"].get<std::string>(); //eg: "view_name"
         }
 
         // std::string controllerId = config.value("controller", "Default");

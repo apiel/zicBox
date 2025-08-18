@@ -10,7 +10,7 @@ import {
     Sample4Track
 } from '../constants';
 
-export const maxVariation = 16;
+export const maxVariation = 1000;
 export const workspaceFolder = 'data/workspaces/rpi0';
 
 const drum1Track = {

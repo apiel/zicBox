@@ -76,7 +76,7 @@ protected:
 public:
     /*md **Values:** */
     /*md - `VARIATION` switch between different track serialization variations (clip). */
-    Val& variation = val(0.0f, "VARIATION", { "Variation", .max = 12.0f }, [&](auto p) { setVariation(p.value); });
+    Val& variation = val(0.0f, "VARIATION", { "Variation", .max = 1000.0f }, [&](auto p) { setVariation(p.value); });
 
     SerializeTrack(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)

@@ -13,4 +13,5 @@ export const Clips = getJsonComponent<{
   sequencerPlugin?: string;
   serializerPlugin?: string;
   encoderId?: number;
+  redirectView?: string;
 }>('Clips');
