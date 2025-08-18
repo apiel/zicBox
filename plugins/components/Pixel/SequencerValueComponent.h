@@ -149,6 +149,7 @@ public:
         if (index == contextId) {
             renderNext();
         }
+        Component::onContext(index, value);
     }
 
 protected:

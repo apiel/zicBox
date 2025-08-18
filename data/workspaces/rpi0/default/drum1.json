@@ -65,7 +65,7 @@
                 "motion": "---",
                 "note": 60,
                 "position": 0,
-                "velocity": 0.800000011920929
+                "velocity": 0.809999942779541
             },
             {
                 "condition": "---",
@@ -131,7 +131,7 @@
                 "velocity": 0.800000011920929
             },
             {
-                "condition": "40%",
+                "condition": "Impair",
                 "enabled": true,
                 "len": 1,
                 "motion": "---",
@@ -140,7 +140,7 @@
                 "velocity": 0.800000011920929
             },
             {
-                "condition": "30%",
+                "condition": "40%",
                 "enabled": true,
                 "len": 1,
                 "motion": "---",
@@ -158,7 +158,7 @@
                 "velocity": 0.800000011920929
             },
             {
-                "condition": "---",
+                "condition": "Pair",
                 "enabled": true,
                 "len": 1,
                 "motion": "---",

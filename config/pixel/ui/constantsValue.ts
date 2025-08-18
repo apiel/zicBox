@@ -22,15 +22,18 @@ export const enc2 = { encoderId: 2, bounds: bounds2 };
 export const enc3 = { encoderId: 3, bounds: bounds3 };
 export const enc4 = { encoderId: 4, bounds: bounds4 };
 
-export const bounds1Seq = [0, top + 20, W1_4 - 2, 80];
-export const bounds2Seq = [W1_4 - 20, top + 20, W1_4 - 2, 80];
-export const bounds3Seq = [W1_4 * 2 - 40, top + 20, W1_4 - 2, 80];
-export const bounds4Seq = [W1_4 * 3 - 60, top + 20, W1_4 - 2, 80];
+const seqmarginLeft = 3;
+export const seqTop = top + 20;
+export const seqWidth = W1_4 - 12;
+export const bounds1Seq = [seqmarginLeft + 0, seqTop, seqWidth, 80];
+export const bounds2Seq = [seqmarginLeft + seqWidth, seqTop, seqWidth, 80];
+export const bounds3Seq = [seqmarginLeft + seqWidth * 2, seqTop, seqWidth, 80];
+export const bounds4Seq = [seqmarginLeft + seqWidth * 3, seqTop, seqWidth, 80];
 
-export const bounds5Seq = [0, top + 20 + 80, W1_4 - 2, 80];
-export const bounds6Seq = [W1_4 - 20, top + 20 + 80, W1_4 - 2, 80];
-export const bounds7Seq = [W1_4 * 2 - 40, top + 20 + 80, W1_4 - 2, 80];
-export const bounds8Seq = [W1_4 * 3 - 60, top + 20 + 80, W1_4 - 2, 80];
+export const bounds5Seq = [seqmarginLeft + 0, seqTop + 80, seqWidth, 80];
+export const bounds6Seq = [seqmarginLeft + seqWidth, seqTop + 80, seqWidth, 80];
+export const bounds7Seq = [seqmarginLeft + seqWidth * 2, seqTop + 80, seqWidth, 80];
+export const bounds8Seq = [seqmarginLeft + seqWidth * 3, seqTop + 80, seqWidth, 80];
 
 export const enc1Seq = { encoderId: 1, bounds: bounds1Seq };
 export const enc2Seq = { encoderId: 2, bounds: bounds2Seq };
