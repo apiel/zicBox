@@ -2,8 +2,7 @@
 
 ## Zic Pixel
 
-<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel3A.png?raw=true' height='350'>
-<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel3A_2.png?raw=true' height='350'>
+<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel_12btn.png?raw=true' height='350'>
 
 <table>
 <tr>
@@ -13,10 +12,10 @@
     <th>Price</th>
 <tr>
 <tr>
-    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/rpi3A.png?raw=true' width='100'></td>
+    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/rpi0.png?raw=true' width='100'></td>
     <td>1</td>
-    <td>Raspberry Pi 3 Model A+</td>
-    <td>23.75€ for 1 piece at <a href="https://eu.mouser.com/ProductDetail/Raspberry-Pi/SC0130J?qs=T%252BzbugeAwjj2YfZ8CYb9iQ%3D%3D">Mouser</a></td>
+    <td>Raspberry Pi zero 2w</td>
+    <td>23.00€ for 1 piece at <a href="https://www.amazon.de/-/en/Raspberry-Pi-Zero-2-W-multi-coloured/dp/B09KLVX4RT">Amazon</a></td>
 </tr>
 <tr>
     <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/encoderPEC12R.png?raw=true' width='100'></td>
@@ -26,27 +25,33 @@
 </tr>
 <tr>
     <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/keysRedragon.png?raw=true' width='100'></td>
-    <td>11</td>
+    <td>12</td>
     <td>REDRAGON SMD RGB MX Low Profile 5.5 Switch 3Pin</td>
     <td>4.17€ for 30 piece at <a href="https://www.aliexpress.com/item/1005005895774028.html">Aliexpress</a></td>
 </tr>
 <tr>
     <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/keycap.png?raw=true' width='100'></td>
-    <td>11</td>
+    <td>12</td>
     <td>Key Caps for Mx Switch Mechanical Keyboard</td>
     <td>4.66€ for 20 piece at <a href="https://www.aliexpress.com/item/1005008052800345.html">Aliexpress</a></td>
 </tr>
 <tr>
-    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/2inScreen.png?raw=true' width='100'></td>
+    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/1.9screen.png?raw=true' width='100'></td>
     <td>1</td>
-    <td>2.0 inch TFT Display OLED LCD Drive IC ST7789V</td>
-    <td>4.46€ for 1 piece at <a href="https://www.aliexpress.com/item/1005006423091182.html">Aliexpress</a></td>
+    <td>1.9 inch Screen Color Display SPI 170x320 ST7789</td>
+    <td>3.50€ for 1 piece at <a href="https://www.aliexpress.com/item/1005007321299056.html">Aliexpress</a></td>
 </tr>
 <tr>
-    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/rpiPinHeader.png?raw=true' width='100'></td>
+    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/20x2female.png?raw=true' width='100'></td>
     <td>1</td>
-    <td>2x20 Pin Header for raspberry</td>
-    <td>1.47€ for 1 piece at <a href="https://www.aliexpress.com/item/32843300706.html">Aliexpress</a></td>
+    <td>2x20 Pin Header female</td>
+    <td>3.70€ for 10 piece at <a href="https://www.aliexpress.com/item/1005001340091287.html">Aliexpress</a></td>
+</tr>
+<tr>
+    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/20x2male.png?raw=true' width='100'></td>
+    <td>1</td>
+    <td>2x20 Pin Header male</td>
+    <td>2.60€ for 10 piece at <a href="https://www.aliexpress.com/item/32848774255.html">Aliexpress</a></td>
 </tr>
 <tr>
     <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/dac.png?raw=true' width='100'></td>
@@ -60,16 +65,12 @@
 
 The PCB has been designed using EasyEDA. To access the project, use the following link:
 
-https://easyeda.com/editor#project_id=5847f0887b8b4aa5b121abb8e9b21bd7
+https://easyeda.com/editor#id=2b889900f51446b1961688c786690d0a
 
 If you need to modify the PCB, clone the project in your own account.
 
 **Ordering the PCB**
-To manufacture the PCB, you need to generate and submit the Gerber files to a PCB fabrication service. For this project, the Gerber files are already prepared and available as:
-
-📁 **File**: [`Gerber_pixelKeycap_zicpixel_st7789_240x320_rpi3A_REDRAGON_11btn_v3_2025-04-18.zip`](https://github.com/apiel/zicBox/raw/refs/heads/main/hardware/Gerber_pixelKeycap_zicpixel_st7789_240x320_rpi3A_REDRAGON_11btn_v3_2025-04-18.zip)
-
-**However, I would highly recommend to download the Gerber file from the easyEDA project**, as the file in the github repo might be outdated.
+To manufacture the PCB, you need to generate and submit the Gerber files to a PCB fabrication service.
 
 You can order the PCB from JLCPCB by following these steps:
 
@@ -92,4 +93,14 @@ You can order the PCB from JLCPCB by following these steps:
 
 *Another old prototype of the Pixel*:
 
-<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel.png?raw=true' width='250'>
+<table>
+<tr>
+    <td>
+<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel.png?raw=true' height='220'>
+    </td><td>
+<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel3A.png?raw=true' height='220'>
+    </td><td>
+<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel3A_2.png?raw=true' height='220'>
+    </td>
+</tr>
+</table>
