@@ -9,7 +9,7 @@
 #include "plugins/audio/utils/effects/applyDrive.h"
 #include "plugins/audio/utils/val/valMMfilterCutoff.h"
 
-class VolcanEngine : public DrumEngine {
+class VolcEngine : public DrumEngine {
 protected:
 #define WAVEFORMS_COUNT 6
     struct WaveformType {
@@ -122,8 +122,8 @@ public:
     });
 
     // --- constructor ---
-    VolcanEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
-        : DrumEngine(p, c, "Volcan")
+    VolcEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
+        : DrumEngine(p, c, "Volc")
         , layerA(props.lookupTable, props.sampleRate)
         , layerB(props.lookupTable, props.sampleRate)
     {

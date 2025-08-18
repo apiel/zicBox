@@ -50,7 +50,7 @@ export function MainView({ name, track, synthName, color, title }: Props) {
                         }
                     />
 
-                    <StringVal audioPlugin={synthName} param="ENGINE" bounds={[260, 0, 100, 20]} />
+                    <StringVal audioPlugin={synthName} param="ENGINE" bounds={[90, 0, 60, 20]} />
 
                     <KnobValue
                         audioPlugin={synthName}

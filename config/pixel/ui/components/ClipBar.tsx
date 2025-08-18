@@ -2,9 +2,7 @@ import * as React from '@/libs/react';
 
 import { Clips } from '@/libs/nativeComponents/Clips';
 import {
-    clipRenderContext,
-    ScreenHeight,
-    ScreenWidth
+    clipRenderContext
 } from '../constants';
 
 export type Props = {
@@ -29,7 +27,7 @@ export function ClipBar({ track, color }: Props) {
             /> */}
 
             <Clips
-                bounds={[20, ScreenHeight - 18, ScreenWidth - 40, 14]}
+                bounds={[152, 2, 170, 14]}
                 track={track}
                 color={color}
                 visibleCount={8}

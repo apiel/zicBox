@@ -1,7 +1,5 @@
 ## Pixel TODO
 
-- TODO pixel finish seq
-
 - TODO pixel workspace (shift + variation bring to workspace)
             - it should look pretty much the same as variation but on project level
 
