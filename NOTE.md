@@ -1,7 +1,5 @@
 ## Pixel TODO
 
-- TODO pixel update DOM and pic
-
 - TODO pixel finish seq
 
 - TODO pixel workspace (shift + variation bring to workspace)
@@ -19,11 +17,12 @@
 - TODO add velocity to all drum engines
 - TODO optimize drum engines
 
+- TODO multi synth engine, like drum engine
+
+- TODO pattern generative for given style of music
+
 - TODO provide a way to save preset on github repo
             - ---> see how to handle ssh or instead use token, but the idea would be to store as less as possible info on zicBox app side (if possible nothing) and delegate everything to the OS...
-
-- TODO volca drum engine
-    - https://cdn.korg.com/us/support/download/files/c65c033ee08932b5bd69303ebf7f31b0.pdf
 
 - TODO look at MiniDexed for bare metal OS https://github.com/probonopd/MiniDexed
 
