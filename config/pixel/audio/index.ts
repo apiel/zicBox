@@ -11,7 +11,7 @@ import {
 } from '../constants';
 
 export const maxVariation = 16;
-export const workspaceFolder = 'data/workspaces/plus_rpi0';
+export const workspaceFolder = 'data/workspaces/rpi0';
 
 const drum1Track = {
     id: Drum1Track,

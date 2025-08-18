@@ -9,7 +9,7 @@
           {"alias":"Drum1","plugin":"SynthMultiDrum"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
           {"alias":"TrackFx","plugin":"EffectGainVolume"},
-          {"filename":"drum1","maxVariation":16,"workspaceFolder":"data/workspaces/plus_rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"filename":"drum1","maxVariation":16,"workspaceFolder":"data/workspaces/rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -18,7 +18,7 @@
           {"alias":"Drum2","plugin":"SynthMultiDrum"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
           {"alias":"TrackFx","plugin":"EffectGainVolume"},
-          {"filename":"drum2","maxVariation":16,"workspaceFolder":"data/workspaces/plus_rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"filename":"drum2","maxVariation":16,"workspaceFolder":"data/workspaces/rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -27,7 +27,7 @@
           {"alias":"Drum3","plugin":"SynthMultiDrum"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
           {"alias":"TrackFx","plugin":"EffectGainVolume"},
-          {"filename":"drum3","maxVariation":16,"workspaceFolder":"data/workspaces/plus_rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"filename":"drum3","maxVariation":16,"workspaceFolder":"data/workspaces/rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -36,7 +36,7 @@
           {"alias":"Drum4","plugin":"SynthMultiDrum"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
           {"alias":"TrackFx","plugin":"EffectGainVolume"},
-          {"filename":"drum4","maxVariation":16,"workspaceFolder":"data/workspaces/plus_rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"filename":"drum4","maxVariation":16,"workspaceFolder":"data/workspaces/rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -47,7 +47,7 @@
           {"alias":"Filter","plugin":"EffectFilterMultiMode"},
           {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
           {"alias":"TrackFx2","plugin":"EffectVolumeMultiFx"},
-          {"filename":"sample1","maxVariation":16,"workspaceFolder":"data/workspaces/plus_rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"filename":"sample1","maxVariation":16,"workspaceFolder":"data/workspaces/rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -58,7 +58,7 @@
           {"alias":"Filter","plugin":"EffectFilterMultiMode"},
           {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
           {"alias":"TrackFx2","plugin":"EffectVolumeMultiFx"},
-          {"filename":"sample2","maxVariation":16,"workspaceFolder":"data/workspaces/plus_rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"filename":"sample2","maxVariation":16,"workspaceFolder":"data/workspaces/rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -69,7 +69,7 @@
           {"alias":"Filter","plugin":"EffectFilterMultiMode"},
           {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
           {"alias":"TrackFx2","plugin":"EffectVolumeMultiFx"},
-          {"filename":"sample3","maxVariation":16,"workspaceFolder":"data/workspaces/plus_rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"filename":"sample3","maxVariation":16,"workspaceFolder":"data/workspaces/rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -80,7 +80,7 @@
           {"alias":"Filter","plugin":"EffectFilterMultiMode"},
           {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
           {"alias":"TrackFx2","plugin":"EffectVolumeMultiFx"},
-          {"filename":"sample4","maxVariation":16,"workspaceFolder":"data/workspaces/plus_rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"filename":"sample4","maxVariation":16,"workspaceFolder":"data/workspaces/rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -89,7 +89,7 @@
           {"alias":"Mixer","plugin":"Mixer8"},
           {"alias":"TrackFx","plugin":"EffectGainVolume"},
           {"alias":"AudioOutput","plugin":"AudioOutputPulse"},
-          {"filename":"master","maxVariation":16,"workspaceFolder":"data/workspaces/plus_rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"},
+          {"filename":"master","maxVariation":16,"workspaceFolder":"data/workspaces/rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"},
           {"plugin":"Tempo","alias":"Tempo"}
         ]
       }

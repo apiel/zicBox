@@ -1,0 +1,77 @@
+{
+    "Drum4": {
+        "values": [
+            {
+                "key": "ENGINE",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_1",
+                "value": 55.0
+            },
+            {
+                "key": "VAL_2",
+                "value": 0.16000042855739594
+            },
+            {
+                "key": "VAL_3",
+                "value": 9.0
+            },
+            {
+                "key": "VAL_4",
+                "value": 60.0
+            },
+            {
+                "key": "VAL_5",
+                "value": 0.06499999761581421
+            },
+            {
+                "key": "VAL_6",
+                "value": 85.0
+            },
+            {
+                "key": "VAL_7",
+                "value": 437.4007568359375
+            },
+            {
+                "key": "VAL_8",
+                "value": 24.199974060058594
+            },
+            {
+                "key": "VAL_9",
+                "value": 34.0
+            },
+            {
+                "key": "VAL_10",
+                "value": 4.500000476837158
+            },
+            {
+                "key": "DURATION",
+                "value": 1470.0
+            },
+            {
+                "key": "AMP_MORPH",
+                "value": 93.0
+            }
+        ]
+    },
+    "Sequencer": {
+        "STATUS": 1.0,
+        "STEPS": null
+    },
+    "SerializeTrack": {
+        "VARIATION": 4.0
+    },
+    "TrackFx": {
+        "values": [
+            {
+                "key": "VOLUME",
+                "value": 100.0
+            },
+            {
+                "key": "GAIN",
+                "value": 1.0
+            }
+        ]
+    }
+}

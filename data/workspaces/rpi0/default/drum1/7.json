@@ -1,0 +1,294 @@
+{
+    "Drum1": {
+        "ENV_FREQ": {
+            "macro": {
+                "a": 0.28999972343444824,
+                "b": 0.5,
+                "c": 0.6399999856948853
+            },
+            "mode": 3
+        },
+        "values": [
+            {
+                "key": "WAVEFORM_TYPE",
+                "value": 1.0
+            },
+            {
+                "key": "SHAPE",
+                "value": 0.0
+            },
+            {
+                "key": "MACRO",
+                "value": 0.0
+            },
+            {
+                "key": "PITCH",
+                "value": -21.0
+            },
+            {
+                "key": "DURATION",
+                "value": 1320.0
+            },
+            {
+                "key": "AMP_MORPH",
+                "value": 0.0
+            },
+            {
+                "key": "CUTOFF",
+                "value": 0.0
+            },
+            {
+                "key": "RESONANCE",
+                "value": 0.0
+            },
+            {
+                "key": "GAIN_CLIPPING",
+                "value": 79.0
+            },
+            {
+                "key": "HIGH_FREQ_BOOST",
+                "value": 2.7999980449676514
+            },
+            {
+                "key": "OSC2",
+                "value": 2.0
+            },
+            {
+                "key": "OSC2_FREQ",
+                "value": 110.0
+            },
+            {
+                "key": "LAYER2_CUTOFF",
+                "value": -87.0
+            },
+            {
+                "key": "LAYER2_RESONANCE",
+                "value": 49.0
+            },
+            {
+                "key": "LAYER2_AMP_MORPH",
+                "value": 70.39989471435547
+            },
+            {
+                "key": "LAYER2_DURATION",
+                "value": 0.0
+            },
+            {
+                "key": "DRIVE",
+                "value": 10.0
+            },
+            {
+                "key": "COMPRESS",
+                "value": 22.0
+            },
+            {
+                "key": "BASS",
+                "value": 6.0
+            },
+            {
+                "key": "WAVESHAPE",
+                "value": 34.0
+            }
+        ]
+    },
+    "Sequencer": {
+        "STATUS": 1.0,
+        "STEPS": [
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 0,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 4,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 8,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 12,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 16,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 20,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 24,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 57,
+                "position": 28,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "40%",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 30,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "30%",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 31,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "20%",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 29,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 32,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 36,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 40,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 62,
+                "position": 44,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 48,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 56,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "Pair",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 52,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 62,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 63,
+                "velocity": 0.800000011920929
+            }
+        ]
+    },
+    "SerializeTrack": {
+        "VARIATION": 6.0
+    },
+    "TrackFx": {
+        "values": [
+            {
+                "key": "VOLUME",
+                "value": 100.0
+            },
+            {
+                "key": "GAIN",
+                "value": 1.0
+            }
+        ]
+    }
+}

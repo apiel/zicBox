@@ -43,6 +43,7 @@ protected:
     int startBankIndex = 1;
     int addIndex = 0;
     std::string bank = "A";
+    int bankSize = 100;
 
     uint8_t renderContextId = 0;
 
@@ -83,7 +84,7 @@ protected:
     {
         if (KeypadLayout::isReleased(keymap)) {
             bank = std::string(1, c);
-            startBankIndex = 1 + (c - 'A') * visibleCount;
+            startBankIndex = 1 + (c - 'A') * bankSize;
             renderNextAndContext();
         }
     }
@@ -202,6 +203,9 @@ public:
         /// The number of visible clips
         visibleCount = config.value("visibleCount", visibleCount); //eg: 10
 
+        /// Size of bank
+        bankSize = config.value("bankSize", bankSize);
+
         /// Context id to trigger re-rendering if multiple instance of this component on the same view. (must be different to 0)
         renderContextId = config.value("renderContextId", renderContextId);
 
@@ -308,7 +312,7 @@ public:
     {
         if (renderContextId > 0 && index == renderContextId) {
             if ((int)value != startBankIndex) {
-                bank = std::string(1, 'A' + (int)(value / visibleCount));
+                bank = std::string(1, 'A' + (int)(value / bankSize));
             }
             startBankIndex = value;
             renderNext();
