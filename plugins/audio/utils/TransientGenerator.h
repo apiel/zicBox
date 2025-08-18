@@ -40,9 +40,9 @@ public:
         case Type::Knock:
             return "Knock";
         case Type::ReverseClick:
-            return "RevClick";
+            return "RevClik";
         case Type::PulsePop:
-            return "PulsePop";
+            return "PulsPop";
         case Type::Buzz:
             return "Buzz";
         default:
