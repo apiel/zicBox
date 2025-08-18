@@ -10,13 +10,13 @@ export const topRightKnob = [W2_4, top, W2_4 - 2, 100];
 export const bottomLeftKnob = [0, top + 100, W2_4 - 2, 100];
 export const bottomRightKnob = [W2_4, top + 100, W2_4 - 2, 100];
 
-export const bounds1 = [0, top + 20, W1_4 - 2, 80];
-export const bounds2 = [W1_4, top + 20, W1_4 - 2, 80];
-export const bounds3 = [W1_4 * 2, top + 20, W1_4 - 2, 80];
-export const bounds4 = [W1_4 * 3, top + 20, W1_4 - 2, 80];
+export const backgroundBounds = [0, top, ScreenWidth, top + 80];
 
-export const backgroundBounds = [0, top, ScreenWidth, top + 100];
-
+const topBounds = top + 10;
+export const bounds1 = [0, topBounds, W1_4 - 2, 80];
+export const bounds2 = [W1_4, topBounds, W1_4 - 2, 80];
+export const bounds3 = [W1_4 * 2, topBounds, W1_4 - 2, 80];
+export const bounds4 = [W1_4 * 3, topBounds, W1_4 - 2, 80];
 export const enc1 = { encoderId: 1, bounds: bounds1 };
 export const enc2 = { encoderId: 2, bounds: bounds2 };
 export const enc3 = { encoderId: 3, bounds: bounds3 };
