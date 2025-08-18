@@ -11,7 +11,7 @@
             },
             {
                 "key": "VAL_2",
-                "value": 74.0
+                "value": 210.0
             },
             {
                 "key": "VAL_3",
@@ -223,7 +223,7 @@
         ]
     },
     "SerializeTrack": {
-        "VARIATION": 8.0
+        "VARIATION": 6.0
     },
     "TrackFx": {
         "values": [
