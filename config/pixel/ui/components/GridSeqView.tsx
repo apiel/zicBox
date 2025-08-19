@@ -4,6 +4,7 @@ import { VisibilityContext } from '@/libs/nativeComponents/component';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { SequencerCard } from '@/libs/nativeComponents/SequencerCard';
 import { SequencerValue } from '@/libs/nativeComponents/SequencerValue';
+import { Text } from '@/libs/nativeComponents/Text';
 import { rgb } from '@/libs/ui';
 import {
     A1,
@@ -21,6 +22,8 @@ import {
     ScreenWidth,
     seqContext,
     shiftContext,
+    W1_4,
+    W2_4,
 } from '../constants';
 import {
     enc1Seq,
@@ -68,6 +71,7 @@ export function GridSeqView({
         },
     ];
     const colorOff = rgb(90, 90, 90);
+    const menuTextColor = rgb(75, 75, 75);
     return (
         <Layout
             viewName={name}
@@ -131,7 +135,7 @@ export function GridSeqView({
                     />
 
                     <Rect
-                        bounds={[0, seqTop + 68, 2, 60]}
+                        bounds={[0, seqTop + 48, 2, 60]}
                         color="background"
                         visibilityContext={row1}
                     />
@@ -245,7 +249,7 @@ export function GridSeqView({
                     />
 
                     <Rect
-                        bounds={[0, seqTop + 68, 2, 60]}
+                        bounds={[0, seqTop + 48, 2, 60]}
                         color={rgb(100, 100, 100)}
                         visibilityContext={row2}
                     />
@@ -285,6 +289,27 @@ export function GridSeqView({
                             visibilityContext={row2}
                         />
                     )}
+
+                    <Text
+                        text="Scroll"
+                        bounds={[0, ScreenHeight - 18, W1_4, 16]}
+                        centered={true}
+                        color={menuTextColor}
+                    />
+
+                    <Text
+                        text="Exit"
+                        bounds={[W1_4, ScreenHeight - 20, W1_4, 16]}
+                        centered={true}
+                        color={menuTextColor}
+                    />
+
+                    <Text
+                        text="Toggle knobs"
+                        bounds={[W2_4, ScreenHeight - 20, W1_4, 16]}
+                        centered={true}
+                        color={menuTextColor}
+                    />
 
                     <SequencerCard
                         bounds={[ScreenWidth - 45, 5, 40, ScreenHeight]}

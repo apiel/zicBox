@@ -57,6 +57,7 @@ export function MainKeys({
                     // { key: D11, action: `setView:Workspaces` },
 
                     { key: C1, action: `playPause` },
+                    { key: C2, action: `setView:Menu` },
                     { key: C4, action: `contextToggle:${shiftContext}:1:0` },
                     // { key: C12, action: `stop` },
                     // { key: D12, action: `setView:Shutdown`,  action2: `contextToggle:${shiftContext}:1:0`  }, // action2: `setContext:${shiftContext}:0`

@@ -5,7 +5,7 @@ import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { Text } from '@/libs/nativeComponents/Text';
 import { rgb } from '@/libs/ui';
-import { MasterTrack, shiftContext } from '../constants';
+import { MasterTrack, menuTextColor, ScreenHeight, shiftContext, W1_4, W2_4, W3_4 } from '../constants';
 import { backgroundBounds, enc1, enc3, enc4 } from '../constantsValue';
 
 export const unshiftVisibilityContext: VisibilityContext = {
@@ -24,12 +24,10 @@ export function ShiftLayout({
     content,
     track,
     label,
-    info,
 }: {
     content?: any;
     track: number;
     label?: string;
-    info?: string;
 }) {
     return (
         <>
@@ -48,16 +46,6 @@ export function ShiftLayout({
                 track={track}
                 visibilityContext={[shiftVisibilityContext]}
             />
-
-            {info && (
-                <Text
-                    text={info}
-                    bounds={[0, backgroundBounds[1] + backgroundBounds[3] - 20, 480, 16]}
-                    centered={true}
-                    color={rgb(100, 100, 100)}
-                    visibilityContext={[shiftVisibilityContext]}
-                />
-            )}
 
             {content}
 
@@ -78,6 +66,38 @@ export function ShiftLayout({
                 color="tertiary"
                 track={MasterTrack}
                 visibilityContext={[shiftVisibilityContext]}
+            />
+
+            <Text
+                text="&icon::play::filled"
+                bounds={[0, ScreenHeight - 18, W1_4, 16]}
+                centered={true}
+                visibilityContext={[shiftVisibilityContext]}
+                color={menuTextColor}
+            />
+
+            <Text
+                text="Menu"
+                bounds={[W1_4, ScreenHeight - 20, W1_4, 16]}
+                centered={true}
+                visibilityContext={[shiftVisibilityContext]}
+                color={menuTextColor}
+            />
+
+            <Text
+                text="Save All"
+                bounds={[W2_4, ScreenHeight - 20, W1_4, 16]}
+                centered={true}
+                visibilityContext={[shiftVisibilityContext]}
+                color={menuTextColor}
+            />
+
+            <Text
+                text="Shift"
+                bounds={[W3_4, ScreenHeight - 20, W1_4, 16]}
+                centered={true}
+                visibilityContext={[shiftVisibilityContext]}
+                color={rgb(80, 80, 80)}
             />
 
             <Rect

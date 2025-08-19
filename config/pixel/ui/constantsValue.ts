@@ -1,4 +1,4 @@
-import { ScreenWidth, W1_4, W2_4 } from './constants';
+import { ScreenHeight, ScreenWidth, W1_4, W2_4 } from './constants';
 
 export const top = 20;
 export const fullValues = [0, top, ScreenWidth - 1, 180];
@@ -10,9 +10,9 @@ export const topRightKnob = [W2_4, top, W2_4 - 2, 100];
 export const bottomLeftKnob = [0, top + 100, W2_4 - 2, 100];
 export const bottomRightKnob = [W2_4, top + 100, W2_4 - 2, 100];
 
-export const backgroundBounds = [0, top, ScreenWidth, top + 80];
+export const backgroundBounds = [0, top, ScreenWidth, ScreenHeight - top];
 
-const topBounds = top + 10;
+const topBounds = top + 20;
 export const bounds1 = [0, topBounds, W1_4 - 2, 80];
 export const bounds2 = [W1_4, topBounds, W1_4 - 2, 80];
 export const bounds3 = [W1_4 * 2, topBounds, W1_4 - 2, 80];
@@ -77,15 +77,15 @@ export const enc12smpl = { encoderId: 4, bounds: bounds12smpl };
 const seqmarginLeft = 3;
 export const seqTop = top + 20;
 export const seqWidth = W1_4 - 12;
-export const bounds1Seq = [seqmarginLeft + 0, seqTop, seqWidth, 80];
-export const bounds2Seq = [seqmarginLeft + seqWidth, seqTop, seqWidth, 80];
-export const bounds3Seq = [seqmarginLeft + seqWidth * 2, seqTop, seqWidth, 80];
-export const bounds4Seq = [seqmarginLeft + seqWidth * 3, seqTop, seqWidth, 80];
+export const bounds1Seq = [seqmarginLeft + 0, seqTop, seqWidth, 50];
+export const bounds2Seq = [seqmarginLeft + seqWidth, seqTop, seqWidth, 50];
+export const bounds3Seq = [seqmarginLeft + seqWidth * 2, seqTop, seqWidth, 50];
+export const bounds4Seq = [seqmarginLeft + seqWidth * 3, seqTop, seqWidth, 50];
 
-export const bounds5Seq = [seqmarginLeft + 0, seqTop + 80, seqWidth, 80];
-export const bounds6Seq = [seqmarginLeft + seqWidth, seqTop + 80, seqWidth, 80];
-export const bounds7Seq = [seqmarginLeft + seqWidth * 2, seqTop + 80, seqWidth, 80];
-export const bounds8Seq = [seqmarginLeft + seqWidth * 3, seqTop + 80, seqWidth, 80];
+export const bounds5Seq = [seqmarginLeft + 0, seqTop + 60, seqWidth, 50];
+export const bounds6Seq = [seqmarginLeft + seqWidth, seqTop + 60, seqWidth, 50];
+export const bounds7Seq = [seqmarginLeft + seqWidth * 2, seqTop + 60, seqWidth, 50];
+export const bounds8Seq = [seqmarginLeft + seqWidth * 3, seqTop + 60, seqWidth, 50];
 
 export const enc1Seq = { encoderId: 1, bounds: bounds1Seq };
 export const enc2Seq = { encoderId: 2, bounds: bounds2Seq };

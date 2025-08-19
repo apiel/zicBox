@@ -35,7 +35,7 @@ import {
     seqContextSample4
 } from './constantsValue';
 import { DrumViews } from './Drum/DrumViews';
-import { Menu } from './menu';
+import { MenuView } from './menu/MenuView';
 import { SampleViews } from './Sample/SampleViews';
 
 // const halfHeight = ScreenHeight / 2;
@@ -69,7 +69,7 @@ export const ui = {
             <SampleViews track={Sample3Track} synthName="Sample3" color={ColorTrack7} title={Sample3} contextId={seqContextSample3} />
             <SampleViews track={Sample4Track} synthName="Sample4" color={ColorTrack8} title={Sample4} contextId={seqContextSample4} />
 
-            <Menu />
+            <MenuView name="Menu" />
         </>
     ),
 };

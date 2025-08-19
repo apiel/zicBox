@@ -1,9 +1,9 @@
 ## Pixel TODO
 
+- TODO pixel seq, add knob to scroll
+
 - TODO pixel workspace (shift + variation bring to workspace)
             - it should look pretty much the same as variation but on project level
-
-- TODO pixel should i had on master the EffectBandIsolatorFx and EffectFilteredMultiFx? or simple multi fx or filter?
 
 - TODO mute shortcut, make it part of the Volume plugin, it should save last state before to mute. (in grid & pixel, use shift to mute?)
 
@@ -18,6 +18,8 @@
 - TODO multi synth engine, like drum engine
 
 - TODO pattern generative for given style of music
+
+- TODO pixel should i had on master the EffectBandIsolatorFx and EffectFilteredMultiFx? or simple multi fx or filter?
 
 - TODO provide a way to save preset on github repo
             - ---> see how to handle ssh or instead use token, but the idea would be to store as less as possible info on zicBox app side (if possible nothing) and delegate everything to the OS...
