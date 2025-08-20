@@ -3,6 +3,7 @@ import * as React from '@/libs/react';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { Text } from '@/libs/nativeComponents/Text';
+import { WorkspaceKnob } from '@/libs/nativeComponents/WorkspaceKnob';
 import { rgb } from '@/libs/ui';
 import { Layout } from '../components/Layout';
 import {
@@ -17,7 +18,7 @@ import {
     W2_4,
     W3_4,
 } from '../constants';
-import { enc3, enc4 } from '../constantsValue';
+import { enc1, enc3, enc4 } from '../constantsValue';
 
 export type Props = {
     name: string;
@@ -31,6 +32,7 @@ export function MenuView({ name }: Props) {
             title="Menu"
             content={
                 <>
+                    <WorkspaceKnob {...enc1} />
                     <KnobValue
                         audioPlugin="TrackFx"
                         param="VOLUME"
