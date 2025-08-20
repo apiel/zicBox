@@ -52,7 +52,7 @@ export function ShiftLayout({
             <KnobValue
                 audioPlugin="TrackFx"
                 param="VOLUME"
-                label="Master"
+                label="Master Vol."
                 {...enc3}
                 color="tertiary"
                 track={MasterTrack}
