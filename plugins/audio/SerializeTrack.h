@@ -34,6 +34,7 @@ protected:
     int refreshState = 0;
     void saveCurrentWorkspaceName(std::string workspaceName)
     {
+        createWorkspace(workspaceName);
         std::filesystem::create_directories(workspaceFolder);
         std::string currentWorkspaceFile = workspaceFolder + "/current.cfg";
         std::ofstream file(currentWorkspaceFile);

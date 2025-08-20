@@ -7,6 +7,7 @@ import { WorkspaceKnob } from '@/libs/nativeComponents/WorkspaceKnob';
 import { rgb } from '@/libs/ui';
 import { Layout } from '../components/Layout';
 import {
+    C1,
     C2,
     C3,
     C4,
@@ -32,7 +33,11 @@ export function MenuView({ name }: Props) {
             title="Menu"
             content={
                 <>
-                    <WorkspaceKnob {...enc1} />
+                    <WorkspaceKnob
+                        {...enc1}
+                        audioPlugin="SerializeTrack"
+                        keys={[{ key: C1, action: '.load' }]}
+                    />
                     <KnobValue
                         audioPlugin="TrackFx"
                         param="VOLUME"

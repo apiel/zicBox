@@ -9,4 +9,5 @@ export const WorkspaceKnob = getJsonComponent<{
     font?: string;
     labelFontSize?: number;
     labelFont?: string;
+    audioPlugin: string;
 }>('WorkspaceKnob');
