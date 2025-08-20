@@ -8,11 +8,13 @@ class WorkspaceKnobComponent : public Component {
     Color bgColor;
     Color color;
     Color labelColor;
+    Color badgeColor;
 
     int fontSize = 32;
     void* font = NULL;
     int labelfontSize = 12;
     void* labelfont = NULL;
+    void* activefont = NULL;
 
 public:
     WorkspaceKnobComponent(ComponentInterface::Props props)
@@ -20,8 +22,10 @@ public:
         , bgColor(styles.colors.background)
         , color(styles.colors.text)
         , labelColor(alpha(styles.colors.text, 0.4))
+        , badgeColor(rgb(39, 128, 39))
     {
         font = draw.getFont("PoppinsLight_16");
+        activefont = draw.getFont("PoppinsLight_8");
         /*md md_config:Text */
         nlohmann::json& config = props.config;
 
@@ -48,6 +52,9 @@ public:
         /// The color of the text
         labelColor = draw.getColor(config["labelColor"], labelColor); //eg: "#ffffff"
 
+        /// Color the active workspace badge.
+        badgeColor = draw.getColor(config["badgeColor"], badgeColor); //eg: "#23a123"
+
         /*md md_config_end */
     }
 
@@ -57,6 +64,12 @@ public:
         int x = relativePosition.x + (size.w) * 0.5;
         int y = relativePosition.y + size.h - labelfontSize - 4;
         draw.textCentered({ x, y }, "Workspace", labelfontSize, { labelColor, .font = labelfont, .maxWidth = size.w });
-        draw.textCentered({ x, y - fontSize - 10 }, "W01", fontSize, { color, .font = font, .maxWidth = size.w });
+        y = y - fontSize - 10;
+        draw.textCentered({ x, y }, "W01", fontSize, { color, .font = font, .maxWidth = size.w });
+        y = y - 10;
+        x = relativePosition.x + size.w - 40;
+        // draw.filledRect({ x, y }, { 35, 10 }, { badgeColor });
+        draw.filledRect({ x, y }, { 35, 10 }, 5, { badgeColor });
+        draw.text({ x + 3, y }, "active", 8, { .font = activefont });
     }
 };
