@@ -15,6 +15,7 @@ import {
     B4,
     C1,
     C2,
+    C3,
     clipRenderContext,
     menuTextColor,
     ScreenHeight,
@@ -145,6 +146,9 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                         centered={true}
                         color={menuTextColor}
                         visibilityContext={[shiftVisibilityContext]}
+                        keys={[
+                            { key: C3, action: `audioEvent:SAVE_VARIATION` },
+                        ]}
                     />
 
                     <Text

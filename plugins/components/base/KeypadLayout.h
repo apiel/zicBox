@@ -311,6 +311,19 @@ public:
             };
         }
 
+        if (action.rfind("audioEvent:") == 0) {
+            AudioEventType id = getEventTypeFromName(action.substr(11).c_str());
+            if (id == AudioEventType::UNKNOWN) {
+                logWarn("[Keypad] Unknown audio event: %s", action.substr(11).c_str());
+                return NULL;
+            }
+            return [this, id](KeypadLayout::KeyMap& keymap) {
+                if (isReleased(keymap)) {
+                    component->sendAudioEvent(id, -1);
+                }
+            };
+        }
+
         if (action == "playPause") {
             return [this](KeypadLayout::KeyMap& keymap) {
                 if (isReleased(keymap)) {

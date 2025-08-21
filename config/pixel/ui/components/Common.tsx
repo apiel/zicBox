@@ -51,16 +51,10 @@ export function MainKeys({
 
             <HiddenValue // When shifted
                 keys={[
-                    // A11 free
-                    // B11 is used on track view for variation.
-                    // C11 free
-                    // { key: D11, action: `setView:Workspaces` },
-
                     { key: C1, action: `playPause` },
                     { key: C2, action: `setView:Menu` },
+                    { key: C3, action: `audioEvent:RELOAD_VARIATION` },
                     { key: C4, action: `contextToggle:${shiftContext}:1:0` },
-                    // { key: C12, action: `stop` },
-                    // { key: D12, action: `setView:Shutdown`,  action2: `contextToggle:${shiftContext}:1:0`  }, // action2: `setContext:${shiftContext}:0`
                 ]}
                 visibilityContext={[{ index: shiftContext, value: 1, condition: 'SHOW_WHEN' }]}
             />

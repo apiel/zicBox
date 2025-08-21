@@ -168,9 +168,17 @@ public:
             }
         } else if (event == AudioEventType::RELOAD_WORKSPACE) {
             m.lock();
-            serialize();
-            initFilepath();
-            hydrate();
+            serialize();     // save current workspace before to switch
+            initFilepath();  // set new workspace
+            hydrate();       // load new workspace
+            m.unlock();
+        } else if (event == AudioEventType::RELOAD_VARIATION) {
+            m.lock();
+            loadVariation(variation.get());
+            m.unlock();
+        } else if (event == AudioEventType::SAVE_VARIATION) {
+            m.lock();
+            saveVariation(variation.get());
             m.unlock();
         }
     }
