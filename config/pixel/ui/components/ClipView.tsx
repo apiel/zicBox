@@ -1,9 +1,29 @@
 import * as React from '@/libs/react';
 
 import { Clips } from '@/libs/nativeComponents/Clips';
+import { Rect } from '@/libs/nativeComponents/Rect';
 import { Text } from '@/libs/nativeComponents/Text';
 import { rgb } from '@/libs/ui';
-import { A1, A2, A3, A4, B1, B2, B3, B4, C1, C2, clipRenderContext, menuTextColor, ScreenHeight, ScreenWidth, shiftContext, W1_4, W2_4, W3_4 } from '../constants';
+import {
+    A1,
+    A2,
+    A3,
+    A4,
+    B1,
+    B2,
+    B3,
+    B4,
+    C1,
+    C2,
+    clipRenderContext,
+    menuTextColor,
+    ScreenHeight,
+    ScreenWidth,
+    shiftContext,
+    W1_4,
+    W2_4,
+    W3_4,
+} from '../constants';
 import { top } from '../constantsValue';
 import { Layout } from './Layout';
 import { shiftVisibilityContext, unshiftVisibilityContext } from './ShiftLayout';
@@ -91,6 +111,12 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                         bounds={[0, ScreenHeight - 20, W1_4, 18]}
                         centered={true}
                         color={menuTextColor}
+                        visibilityContext={[unshiftVisibilityContext]}
+                    />
+                    <Rect
+                        bounds={[0, ScreenHeight - 20, W1_4, 18]}
+                        color="background"
+                        visibilityContext={[shiftVisibilityContext]}
                     />
 
                     <Text
@@ -98,6 +124,12 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                         bounds={[W1_4, ScreenHeight - 20, W1_4, 18]}
                         centered={true}
                         color={menuTextColor}
+                        visibilityContext={[unshiftVisibilityContext]}
+                    />
+                    <Rect
+                        bounds={[W1_4, ScreenHeight - 20, W1_4, 18]}
+                        color="background"
+                        visibilityContext={[shiftVisibilityContext]}
                     />
 
                     <Text
@@ -105,6 +137,14 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                         bounds={[W2_4, ScreenHeight - 20, W1_4, 18]}
                         centered={true}
                         color={menuTextColor}
+                        visibilityContext={[unshiftVisibilityContext]}
+                    />
+                    <Text
+                        text="All"
+                        bounds={[W2_4, ScreenHeight - 20, W1_4, 18]}
+                        centered={true}
+                        color={menuTextColor}
+                        visibilityContext={[shiftVisibilityContext]}
                     />
 
                     <Text

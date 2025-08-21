@@ -269,8 +269,8 @@ public:
                      bool fileExists = std::filesystem::exists(getVariationFilepath(id));
                      variationExists[id] = fileExists ? 1 : 0;
                  }
-                //  return (void*)&variationExists[id];
-                return variationExists[id] == 1 ? (void*)true : (void*)NULL;
+                 //  return (void*)&variationExists[id];
+                 return variationExists[id] == 1 ? (void*)true : (void*)NULL;
              }
              return (void*)NULL;
          } },
@@ -340,7 +340,6 @@ public:
         { "LOAD_WORKSPACE", [this](void* userdata) {
              if (userdata) {
                  std::string workspaceName = *(std::string*)userdata;
-                 logDebug("Load workspace %s", workspaceName.c_str());
                  if (workspaceName != currentWorkspaceName) {
                      saveCurrentWorkspaceName(workspaceName);
                      props.audioPluginHandler->sendEvent(AudioEventType::RELOAD_WORKSPACE);

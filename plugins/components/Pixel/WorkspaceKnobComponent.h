@@ -42,11 +42,12 @@ public:
             if (action == ".load") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
-                        logDebug("load workspace %s", getWorkspaceName().c_str());
                         if (currentWorkspaceName != NULL && getWorkspaceName() == *currentWorkspaceName) {
                             // reload
+                            logDebug("TODO Reloading workspace");
                             renderNext();
                         } else if (plugin) {
+                        // if (plugin) {
                             uint8_t dataId = plugin->getDataId("LOAD_WORKSPACE");
                             std::string workspaceName = getWorkspaceName();
                             plugin->data(dataId, &workspaceName);

@@ -2,6 +2,11 @@
 
 - TODO pixel seq, add knob to scroll
 
+- TODO reload workspace (should it be instead of shift + save all <-- what is more important: quickly reload all or save all. but then need a save..all)
+              - save all happen in variation view
+              - reload all is quick shortcut
+- TODO reload variations when switching workspace
+
 - TODO pixel workspace (shift + variation bring to workspace)
             - it should look pretty much the same as variation but on project level
 

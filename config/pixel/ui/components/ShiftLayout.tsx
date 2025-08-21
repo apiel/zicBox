@@ -85,7 +85,7 @@ export function ShiftLayout({
             />
 
             <Text
-                text="Save All"
+                text="Reload All"
                 bounds={[W2_4, ScreenHeight - 20, W1_4, 16]}
                 centered={true}
                 visibilityContext={[shiftVisibilityContext]}
