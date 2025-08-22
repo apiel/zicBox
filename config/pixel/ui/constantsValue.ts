@@ -126,12 +126,13 @@ export function boundsMarginTop(bounds: number[], margin: number = 10) {
 // export const seqCardBounds_small = [100, 440, 280, 160];
 export const seqCardBounds_small = [ScreenWidth - 130, 105, 120, 70];
 
-export const seqContextDrum1 = 50;
-export const seqContextDrum2 = 51;
-export const seqContextDrum3 = 52;
-export const seqContextDrum4 = 53;
+export const seqContextTrack1 = 50;
+export const seqContextTrack2 = 51;
+export const seqContextTrack3 = 52;
+export const seqContextTrack4 = 53;
 
-export const seqContextSample1 = 57;
-export const seqContextSample2 = 58;
-export const seqContextSample3 = 59;
-export const seqContextSample4 = 60;
+export const seqContextTrack5 = 57;
+export const seqContextTrack6 = 58;
+
+export const seqContextTrack7 = 59;
+export const seqContextTrack8 = 60;

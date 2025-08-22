@@ -1,5 +1,5 @@
 import * as React from '@/libs/react';
-import { Drum1, Drum2, Drum3, Drum4, Sample1, Sample2, Sample3, Sample4 } from './components/Common';
+import { Drum1, Drum2, Drum3, Drum4, Sample1, Sample2, Synth1, Synth2 } from './components/Common';
 import {
     ColorTrack1,
     ColorTrack2,
@@ -15,28 +15,29 @@ import {
     Drum4Track,
     Sample1Track,
     Sample2Track,
-    Sample3Track,
-    Sample4Track,
     ScreenHeight,
-    ScreenWidth
+    ScreenWidth,
+    Synth1Track,
+    Synth2Track
 } from './constants';
 import {
     bounds1,
     bounds2,
     bounds3,
     bounds4,
-    seqContextDrum1,
-    seqContextDrum2,
-    seqContextDrum3,
-    seqContextDrum4,
-    seqContextSample1,
-    seqContextSample2,
-    seqContextSample3,
-    seqContextSample4
+    seqContextTrack1,
+    seqContextTrack2,
+    seqContextTrack3,
+    seqContextTrack4,
+    seqContextTrack5,
+    seqContextTrack6,
+    seqContextTrack7,
+    seqContextTrack8
 } from './constantsValue';
 import { DrumViews } from './Drum/DrumViews';
 import { MenuView } from './menu/MenuView';
 import { SampleViews } from './Sample/SampleViews';
+import { SynthViews } from './Synth/SynthViews';
 
 // const halfHeight = ScreenHeight / 2;
 
@@ -59,15 +60,16 @@ export const ui = {
     taggedViews: { track: 'Drum1' },
     views: (
         <>
-            <DrumViews track={Drum1Track} synthName="Drum1" color={ColorTrack1} title={Drum1} contextId={seqContextDrum1} />
-            <DrumViews track={Drum2Track} synthName="Drum2" color={ColorTrack2} title={Drum2} contextId={seqContextDrum2} />
-            <DrumViews track={Drum3Track} synthName="Drum3" color={ColorTrack3} title={Drum3} contextId={seqContextDrum3} />
-            <DrumViews track={Drum4Track} synthName="Drum4" color={ColorTrack4} title={Drum4} contextId={seqContextDrum4} />
+            <DrumViews track={Drum1Track} synthName="Drum1" color={ColorTrack1} title={Drum1} contextId={seqContextTrack1} />
+            <DrumViews track={Drum2Track} synthName="Drum2" color={ColorTrack2} title={Drum2} contextId={seqContextTrack2} />
+            <DrumViews track={Drum3Track} synthName="Drum3" color={ColorTrack3} title={Drum3} contextId={seqContextTrack3} />
+            <DrumViews track={Drum4Track} synthName="Drum4" color={ColorTrack4} title={Drum4} contextId={seqContextTrack4} />
 
-            <SampleViews track={Sample1Track} synthName="Sample1" color={ColorTrack5} title={Sample1} contextId={seqContextSample1} />
-            <SampleViews track={Sample2Track} synthName="Sample2" color={ColorTrack6} title={Sample2} contextId={seqContextSample2} />
-            <SampleViews track={Sample3Track} synthName="Sample3" color={ColorTrack7} title={Sample3} contextId={seqContextSample3} />
-            <SampleViews track={Sample4Track} synthName="Sample4" color={ColorTrack8} title={Sample4} contextId={seqContextSample4} />
+            <SampleViews track={Sample1Track} synthName="Sample1" color={ColorTrack5} title={Sample1} contextId={seqContextTrack5} />
+            <SampleViews track={Sample2Track} synthName="Sample2" color={ColorTrack6} title={Sample2} contextId={seqContextTrack6} />
+
+            <SynthViews track={Synth1Track} synthName="Synth1" color={ColorTrack7} title={Synth1} contextId={seqContextTrack7} />
+            <SynthViews track={Synth2Track} synthName="Synth2" color={ColorTrack8} title={Synth2} contextId={seqContextTrack8} />
 
             <MenuView name="Menu" />
         </>

@@ -22,6 +22,8 @@
 
 - TODO pixel should i had on master the EffectBandIsolatorFx and EffectFilteredMultiFx? or simple multi fx or filter?
 
+- TODO try to make design as generic as possible, synth name vs track...
+
 - TODO provide a way to save preset on github repo
             - ---> see how to handle ssh or instead use token, but the idea would be to store as less as possible info on zicBox app side (if possible nothing) and delegate everything to the OS...
 

@@ -63,12 +63,12 @@ export function KeysTracks({
                 // { key: B6, action: `.save:6`, context: { id: shiftContext, value: 1 } },
                 // { key: C6, action: `noteOn:Sample2:60` },
 
-                { key: B3, action: pages(viewName, `Sample3`) },
+                { key: B3, action: pages(viewName, `Synth1`) },
                 // { key: B7, action: `.toggle:7`, context: { id: shiftContext, value: 0 } },
                 // { key: B7, action: `.save:7`, context: { id: shiftContext, value: 1 } },
                 // { key: C7, action: `noteOn:Sample3:60` },
 
-                { key: B4, action: pages(viewName, `Sample4`) },
+                { key: B4, action: pages(viewName, `Synth2`) },
                 // { key: B8, action: `.toggle:8`, context: { id: shiftContext, value: 0 } },
                 // { key: B8, action: `.save:8`, context: { id: shiftContext, value: 1 } },
                 // { key: C8, action: `noteOn:Sample4:60` },

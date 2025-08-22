@@ -6,5 +6,8 @@ export const Drum4Track = 4;
 
 export const Sample1Track = 5;
 export const Sample2Track = 6;
-export const Sample3Track = 7;
-export const Sample4Track = 8;
+// export const Sample3Track = 7;
+// export const Sample4Track = 8;
+
+export const Synth1Track = 7;
+export const Synth2Track = 8;
