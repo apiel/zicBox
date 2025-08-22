@@ -15,8 +15,6 @@ protected:
     float velocity = 1.0f;
     float harmonicDecay = 1.0f;
 
-    float noiseMix = 0.0f;
-
     float phases[MAX_PARTIALS] = { 0.0f };
 
     inline float fastSin(float x)
@@ -50,10 +48,7 @@ public:
         harmonicDecay = 0.2f + p.val.pct() * 2.0f; // rolloff
     });
 
-    Val& noise = val(0.0f, "NOISE", { "Noise", .unit = "%" }, [&](auto p) {
-        p.val.setFloat(p.value);
-        noiseMix = p.val.pct();
-    });
+    Val& glide = val(0.0f, "GLIDE", { "Glide", .max = 500.0f, .unit = "ms" });
 
     Val& cutoff = val(0.0, "CUTOFF", { "LPF | HPF", VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
         valMMfilterCutoff(p, filter);
@@ -72,7 +67,7 @@ public:
 
     // --- constructor ---
     AdditiveEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
-        : Engine(p, c, "Aditiv")
+        : Engine(p, c, "Additive")
         , multiFx(props.sampleRate, props.lookupTable)
     {
         initValues();
@@ -106,11 +101,6 @@ public:
         }
 
         float out = sampleSum / numPartials;
-
-        // noise
-        float n = props.lookupTable->getNoise();
-        out = out * (1.0f - noiseMix) + n * noiseMix;
-
         out = filter.process(out);
         out = multiFx.apply(out, fxAmount.pct());
         buf[track] = out * envAmpVal * velocity;

@@ -2,6 +2,7 @@
 
 #include "plugins/audio/MultiEngine/FmEngine.h"
 #include "plugins/audio/MultiEngine/AdditiveEngine.h"
+#include "plugins/audio/MultiEngine/Additive2Engine.h"
 #include "plugins/audio/utils/AsrEnvelop.h"
 #include "plugins/audio/utils/EnvelopDrumAmp.h"
 
@@ -19,11 +20,13 @@ protected:
 
     FmEngine fmEngine;
     AdditiveEngine additiveEngine;
+    Additive2Engine additive2Engine;
 
-    static const int ENGINES_COUNT = 2;
+    static const int ENGINES_COUNT = 3;
     Engine* engines[ENGINES_COUNT] = {
         &fmEngine,
-        &additiveEngine
+        &additiveEngine,
+        &additive2Engine,
     };
     Engine* selectedEngine = engines[0];
 
@@ -94,6 +97,7 @@ public:
         : Mapping(props, config)
         , fmEngine(props, config)
         , additiveEngine(props, config)
+        , additive2Engine(props, config)
     {
         initValues({ &engine });
     }
