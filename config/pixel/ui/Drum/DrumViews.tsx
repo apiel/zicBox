@@ -1,7 +1,7 @@
 import * as React from '@/libs/react';
 
 import { ClipView } from '../components/ClipView';
-import { GridSeqView } from '../components/GridSeqView';
+import { SeqView } from '../components/SeqView';
 import { DrumLayout } from './DrumLayout';
 
 export type Props = {
@@ -18,7 +18,7 @@ export function DrumViews({ track, synthName, color, contextId, title }: Props) 
             <DrumLayout name={synthName} track={track} synthName={synthName} color={color} title={title} />
             <DrumLayout name={`${synthName}:page2`} track={track} synthName={synthName} color={color} title={title} />
             <DrumLayout name={`${synthName}:page3`} track={track} synthName={synthName} color={color} title={title} />
-            <GridSeqView
+            <SeqView
                 name={`${synthName}Seq`}
                 track={track}
                 synthName={synthName}

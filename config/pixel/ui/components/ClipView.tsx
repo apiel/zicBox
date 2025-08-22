@@ -67,6 +67,7 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                         visibleCount={4}
                         renderContextId={clipRenderContext}
                         redirectView="&previous"
+                        allowToggleReload
                         keys={[
                             { key: A1, action: `.set:1`, context: { id: shiftContext, value: 0 } },
                             { key: A1, action: `.save:1`, context: { id: shiftContext, value: 1 } },
@@ -96,6 +97,7 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                         visibleCount={4}
                         renderContextId={clipRenderContext}
                         redirectView="&previous"
+                        allowToggleReload
                         keys={[
                             { key: C1, action: `.reload` }, // , context: { id: shiftContext, value: 0 }
                             { key: C2, action: `.bank` }, // , context: { id: shiftContext, value: 0 }
@@ -134,7 +136,7 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                     />
 
                     <Text
-                        text="Exit"
+                        text="Sequencer"
                         bounds={[W2_4, ScreenHeight - 20, W1_4, 18]}
                         centered={true}
                         color={menuTextColor}

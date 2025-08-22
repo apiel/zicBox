@@ -14,4 +14,5 @@ export const Clips = getJsonComponent<{
   serializerPlugin?: string;
   encoderId?: number;
   redirectView?: string;
+  allowToggleReload?: boolean;
 }>('Clips');

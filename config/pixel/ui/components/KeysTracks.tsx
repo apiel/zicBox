@@ -3,7 +3,7 @@ import * as React from '@/libs/react';
 import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
 import { A1, A2, A3, A4, B1, B2, B3, B4, C1, Drum4Track, shiftContext } from '../constants';
 
-function pages(viewName: string, baseName: string) {
+export function pages(viewName: string, baseName: string) {
     if (viewName === baseName) {
         return `setView:${baseName}:page2#track`;
     } else if (viewName === `${baseName}:page2`) {

@@ -16,14 +16,14 @@ import {
     B3,
     B4,
     C1,
-    C3,
+    C2,
     C4,
     ScreenHeight,
     ScreenWidth,
     seqContext,
     shiftContext,
     W1_4,
-    W2_4,
+    W2_4
 } from '../constants';
 import {
     enc1Seq,
@@ -47,7 +47,7 @@ export type Props = {
     includeLength?: boolean;
 };
 
-export function GridSeqView({
+export function SeqView({
     name,
     track,
     synthName,
@@ -298,14 +298,14 @@ export function GridSeqView({
                     />
 
                     <Text
-                        text="Exit"
+                        text="Toggle knobs"
                         bounds={[W1_4, ScreenHeight - 20, W1_4, 16]}
                         centered={true}
                         color={menuTextColor}
                     />
 
                     <Text
-                        text="Toggle knobs"
+                        text="Exit"
                         bounds={[W2_4, ScreenHeight - 20, W1_4, 16]}
                         centered={true}
                         color={menuTextColor}
@@ -322,7 +322,7 @@ export function GridSeqView({
                         gridKeys={[A1, A2, A3, A4, B1, B2, B3, B4]}
                         keys={[
                             { key: C1, action: '.scroll', context: { id: shiftContext, value: 0 } },
-                            { key: C3, action: `contextToggleOnRelease:${seqContext}:1:0` },
+                            { key: C2, action: `contextToggleOnRelease:${seqContext}:1:0` },
                             {
                                 key: C4,
                                 action: `contextToggleOnRelease:${seqContext}:1:0`,

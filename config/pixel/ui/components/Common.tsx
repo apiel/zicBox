@@ -2,6 +2,7 @@ import * as React from '@/libs/react';
 
 import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
 import { C1, C2, C3, C4, shiftContext } from '../constants';
+import { pages } from './KeysTracks';
 
 export const Clips = 'Clips';
 export const Drum1 = 'Drum1';
@@ -34,16 +35,14 @@ export function MainKeys({
                 keys={[
                     ...ifTrue(!!synthName, {
                         key: C2,
-                        action:
-                            viewName === `${synthName}Seq`
-                                ? `setView:${synthName}`
-                                : `setView:${synthName}Seq`,
+                        action: pages(viewName, synthName!)
                     }),
                     {
                         key: C3,
-                        action:
-                            viewName === `${synthName}Clips`
+                        action: viewName === `${synthName}Seq`
                                 ? `setView:${synthName}`
+                                : viewName === `${synthName}Clips`
+                                ? `setView:${synthName}Seq`
                                 : `setView:${synthName}Clips`,
                     },
                     { key: C4, action: `contextToggle:${shiftContext}:1:0` },
