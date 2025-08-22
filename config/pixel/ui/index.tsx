@@ -18,13 +18,12 @@ import {
     ScreenHeight,
     ScreenWidth,
     Synth1Track,
-    Synth2Track
+    Synth2Track,
+    W1_4,
+    W2_4,
+    W3_4
 } from './constants';
 import {
-    bounds1,
-    bounds2,
-    bounds3,
-    bounds4,
     seqContextTrack1,
     seqContextTrack2,
     seqContextTrack3,
@@ -50,10 +49,10 @@ export const ui = {
         screenSize: { width: ScreenWidth, height: ScreenHeight },
         zonesEncoders: [
             [0, 0, 0, 0], // lets skip encoder id 0
-            bounds1,
-            bounds2,
-            bounds3,
-            bounds4,
+            [0, 0, W1_4, ScreenHeight],
+            [W1_4, 0, W1_4, ScreenHeight],
+            [W2_4, 0, W1_4, ScreenHeight],
+            [W3_4, 0, W1_4, ScreenHeight],
         ],
     },
     // renderer: 'FB',

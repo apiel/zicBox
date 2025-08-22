@@ -104,10 +104,10 @@
     },
     "zonesEncoders": [
       [0,0,0,0],
-      [0,40,78,80],
-      [80,40,78,80],
-      [160,40,78,80],
-      [240,40,78,80]
+      [0,0,80,170],
+      [80,0,80,170],
+      [160,0,80,170],
+      [240,0,80,170]
     ]
   },
   "taggedViews": {
@@ -1215,6 +1215,7 @@
         {"bounds":[0,88,2,60],"color":"background","visibilityContext":[{"index":201,"value":0,"condition":"SHOW_WHEN"}],"componentName":"Rect"},
         {"encoderId":-1,"bounds":[3,100,68,50],"audioPlugin":"Sequencer","track":7,"contextId":59,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_CONDITION","labelColor":"#5a5a5a","valueColor":"#5a5a5a","visibilityContext":[{"index":201,"value":0,"condition":"SHOW_WHEN"}],"componentName":"SequencerValue"},
         {"encoderId":-1,"bounds":[71,100,68,50],"audioPlugin":"Sequencer","track":7,"contextId":59,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_MOTION","labelColor":"#5a5a5a","valueColor":"#5a5a5a","visibilityContext":[{"index":201,"value":0,"condition":"SHOW_WHEN"}],"componentName":"SequencerValue"},
+        {"encoderId":-1,"bounds":[139,100,68,50],"audioPlugin":"Sequencer","track":7,"contextId":59,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_LENGTH","barColor":"primary","labelColor":"#5a5a5a","valueColor":"#5a5a5a","visibilityContext":[{"index":201,"value":0,"condition":"SHOW_WHEN"}],"componentName":"SequencerValue"},
         {"bounds":[0,30,2,60],"color":"background","visibilityContext":[{"index":201,"value":1,"condition":"SHOW_WHEN"}],"componentName":"Rect"},
         {"encoderId":-1,"bounds":[3,40,68,50],"audioPlugin":"Sequencer","track":7,"contextId":59,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_SELECTION","visibilityContext":[{"index":201,"value":1,"condition":"SHOW_WHEN"}],"labelColor":"#5a5a5a","valueColor":"#5a5a5a","componentName":"SequencerValue"},
         {"encoderId":-1,"bounds":[71,40,68,50],"audioPlugin":"Sequencer","track":7,"contextId":59,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_TOGGLE","barColor":"#5a5a5a","visibilityContext":[{"index":201,"value":1,"condition":"SHOW_WHEN"}],"labelColor":"#5a5a5a","valueColor":"#5a5a5a","componentName":"SequencerValue"},
@@ -1223,6 +1224,7 @@
         {"bounds":[0,88,2,60],"color":"#646464","visibilityContext":[{"index":201,"value":1,"condition":"SHOW_WHEN"}],"componentName":"Rect"},
         {"encoderId":1,"bounds":[3,100,68,50],"audioPlugin":"Sequencer","track":7,"contextId":59,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_CONDITION","visibilityContext":[{"index":201,"value":1,"condition":"SHOW_WHEN"}],"componentName":"SequencerValue"},
         {"encoderId":2,"bounds":[71,100,68,50],"audioPlugin":"Sequencer","track":7,"contextId":59,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_MOTION","visibilityContext":[{"index":201,"value":1,"condition":"SHOW_WHEN"}],"componentName":"SequencerValue"},
+        {"encoderId":3,"bounds":[139,100,68,50],"audioPlugin":"Sequencer","track":7,"contextId":59,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_LENGTH","barColor":"primary","visibilityContext":[{"index":201,"value":1,"condition":"SHOW_WHEN"}],"componentName":"SequencerValue"},
         {"text":"Scroll","bounds":[0,152,80,16],"centered":true,"color":"#4b4b4b","componentName":"Text"},
         {"text":"Exit","bounds":[80,150,80,16],"centered":true,"color":"#4b4b4b","componentName":"Text"},
         {"text":"Toggle knobs","bounds":[160,150,80,16],"centered":true,"color":"#4b4b4b","componentName":"Text"},
@@ -1377,6 +1379,7 @@
         {"bounds":[0,88,2,60],"color":"background","visibilityContext":[{"index":201,"value":0,"condition":"SHOW_WHEN"}],"componentName":"Rect"},
         {"encoderId":-1,"bounds":[3,100,68,50],"audioPlugin":"Sequencer","track":8,"contextId":60,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_CONDITION","labelColor":"#5a5a5a","valueColor":"#5a5a5a","visibilityContext":[{"index":201,"value":0,"condition":"SHOW_WHEN"}],"componentName":"SequencerValue"},
         {"encoderId":-1,"bounds":[71,100,68,50],"audioPlugin":"Sequencer","track":8,"contextId":60,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_MOTION","labelColor":"#5a5a5a","valueColor":"#5a5a5a","visibilityContext":[{"index":201,"value":0,"condition":"SHOW_WHEN"}],"componentName":"SequencerValue"},
+        {"encoderId":-1,"bounds":[139,100,68,50],"audioPlugin":"Sequencer","track":8,"contextId":60,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_LENGTH","barColor":"primary","labelColor":"#5a5a5a","valueColor":"#5a5a5a","visibilityContext":[{"index":201,"value":0,"condition":"SHOW_WHEN"}],"componentName":"SequencerValue"},
         {"bounds":[0,30,2,60],"color":"background","visibilityContext":[{"index":201,"value":1,"condition":"SHOW_WHEN"}],"componentName":"Rect"},
         {"encoderId":-1,"bounds":[3,40,68,50],"audioPlugin":"Sequencer","track":8,"contextId":60,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_SELECTION","visibilityContext":[{"index":201,"value":1,"condition":"SHOW_WHEN"}],"labelColor":"#5a5a5a","valueColor":"#5a5a5a","componentName":"SequencerValue"},
         {"encoderId":-1,"bounds":[71,40,68,50],"audioPlugin":"Sequencer","track":8,"contextId":60,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_TOGGLE","barColor":"#5a5a5a","visibilityContext":[{"index":201,"value":1,"condition":"SHOW_WHEN"}],"labelColor":"#5a5a5a","valueColor":"#5a5a5a","componentName":"SequencerValue"},
@@ -1385,6 +1388,7 @@
         {"bounds":[0,88,2,60],"color":"#646464","visibilityContext":[{"index":201,"value":1,"condition":"SHOW_WHEN"}],"componentName":"Rect"},
         {"encoderId":1,"bounds":[3,100,68,50],"audioPlugin":"Sequencer","track":8,"contextId":60,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_CONDITION","visibilityContext":[{"index":201,"value":1,"condition":"SHOW_WHEN"}],"componentName":"SequencerValue"},
         {"encoderId":2,"bounds":[71,100,68,50],"audioPlugin":"Sequencer","track":8,"contextId":60,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_MOTION","visibilityContext":[{"index":201,"value":1,"condition":"SHOW_WHEN"}],"componentName":"SequencerValue"},
+        {"encoderId":3,"bounds":[139,100,68,50],"audioPlugin":"Sequencer","track":8,"contextId":60,"fontValue":"PoppinsLight_24","fontLabel":"PoppinsLight_12","type":"STEP_LENGTH","barColor":"primary","visibilityContext":[{"index":201,"value":1,"condition":"SHOW_WHEN"}],"componentName":"SequencerValue"},
         {"text":"Scroll","bounds":[0,152,80,16],"centered":true,"color":"#4b4b4b","componentName":"Text"},
         {"text":"Exit","bounds":[80,150,80,16],"centered":true,"color":"#4b4b4b","componentName":"Text"},
         {"text":"Toggle knobs","bounds":[160,150,80,16],"centered":true,"color":"#4b4b4b","componentName":"Text"},
