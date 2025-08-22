@@ -10,6 +10,7 @@ class SuperSawEngine : public Engine {
 protected:
     static constexpr int MAX_VOICES = 7; // number of saw layers
     MultiFx multiFx;
+    MultiFx multiFx2;
     MMfilter filter;
 
     float baseFreq = 100.0f;
@@ -28,10 +29,6 @@ public:
 
     Val& detune = val(10.0f, "DETUNE", { "Detune", .unit = "%" });
 
-    Val& stereoWidth = val(50.0f, "WIDTH", { "Stereo Width", .unit = "%" });
-
-    Val& harmonics = val(0.0f, "HARMONICS", { "Extra Harmonics", .unit = "%" });
-
     Val& noiseMix = val(0.0f, "NOISE", { "Noise", .unit = "%" });
 
     Val& filterCutoff = val(0.0f, "CUTOFF", { "LPF | HPF", VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
@@ -48,10 +45,17 @@ public:
 
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
 
+    Val& fx2Type = val(0, "FX2_TYPE", { "FX2 type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
+        multiFx2.setFxType(p);
+    });
+
+    Val& fx2Amount = val(0, "FX2_AMOUNT", { "FX2 edit", .unit = "%" });
+
     // --- constructor ---
     SuperSawEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : Engine(p, c, "SuperSaw")
         , multiFx(props.sampleRate, props.lookupTable)
+        , multiFx2(props.sampleRate, props.lookupTable)
     {
         initValues();
     }
@@ -67,7 +71,6 @@ public:
 
         int numVoices = voices.get();
         float detuneAmt = detune.pct() * 0.05f;
-        float widthAmt = stereoWidth.pct() * 0.5f;
 
         float sampleSum = 0.0f;
         for (int i = 0; i < numVoices; ++i) {
@@ -76,15 +79,13 @@ public:
 
             float phaseInc = 2.0f * M_PI * freq / props.sampleRate;
             phases[i] += phaseInc;
-            if (phases[i] > 2.0f * M_PI) phases[i] -= 2.0f * M_PI;
+            if (phases[i] > 2.0f * M_PI)
+                phases[i] -= 2.0f * M_PI;
 
             sampleSum += (2.0f * (phases[i] / (2.0f * M_PI)) - 1.0f); // saw wave approximation
         }
 
         float out = sampleSum / numVoices;
-
-        // add subtle harmonics
-        out += harmonics.pct() * (props.lookupTable->getNoise() * 0.1f);
 
         // noise
         float n = props.lookupTable->getNoise();
@@ -93,6 +94,7 @@ public:
         out = filter.process(out);
         out = out * envAmpVal * velocity;
         out = multiFx.apply(out, fxAmount.pct());
+        out = multiFx2.apply(out, fx2Amount.pct());
 
         buf[track] = out;
     }
