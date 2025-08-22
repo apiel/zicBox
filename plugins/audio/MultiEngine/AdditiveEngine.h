@@ -1,23 +1,24 @@
 #pragma once
 
 #include "plugins/audio/MultiEngine/Engine.h"
-#include "plugins/audio/utils/MMfilter.h"
 #include "plugins/audio/utils/MultiFx.h"
-#include "plugins/audio/utils/val/valMMfilterCutoff.h"
 
 class AdditiveEngine : public Engine {
 protected:
     static constexpr int MAX_PARTIALS = 8;
     MultiFx multiFx;
-    MMfilter filter;
 
     float baseFreq = 100.0f;
     float velocity = 1.0f;
     float harmonicDecay = 1.0f;
 
-    float noiseMix = 0.0f;
-
     float phases[MAX_PARTIALS] = { 0.0f };
+
+    // LFO state
+    float lfoPhase = 0.0f;
+
+    // odd/even bias
+    float oddEvenBias = 0.5f;
 
     inline float fastSin(float x)
     {
@@ -27,7 +28,7 @@ protected:
         else if (x > M_PI)
             x -= 2 * M_PI;
 
-        // Bhaskara approximation, quite cheap & accurate
+        // Bhaskara approximation
         float y = (16.0f * x * (M_PI - fabsf(x))) / (5.0f * M_PI * M_PI - 4.0f * fabsf(x) * (M_PI - fabsf(x)));
         return y;
     }
@@ -50,19 +51,14 @@ public:
         harmonicDecay = 0.2f + p.val.pct() * 2.0f; // rolloff
     });
 
-    Val& noise = val(0.0f, "NOISE", { "Noise", .unit = "%" }, [&](auto p) {
+    Val& oddEven = val(50.0f, "ODDEVEN", { "Odd/Even", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
-        noiseMix = p.val.pct();
+        oddEvenBias = p.val.pct(); // 0 = only even, 1 = only odd, 0.5 = neutral
     });
 
-    Val& cutoff = val(0.0, "CUTOFF", { "LPF | HPF", VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
-        valMMfilterCutoff(p, filter);
-    });
+    Val& lfoRate = val(0.0f, "LFO_RATE", { "LFO Rate", .min = 0.0f, .max = 100.0f, .step = 0.1, .floatingPoint = 1, .unit = "Hz" });
 
-    Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
-        p.val.setFloat(p.value);
-        filter.setResonance(p.val.pct());
-    });
+    Val& lfoDepth = val(0.0f, "LFO_DEPTH", { "LFO Depth", .unit = "%" });
 
     Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
         multiFx.setFxType(p);
@@ -101,17 +97,26 @@ public:
             if (phases[i] > 2.0f * M_PI)
                 phases[i] -= 2.0f * M_PI;
 
-            float amp = powf(1.0f / (i + 1), harmonicDecay);
+            // --- Odd/Even bias ---
+            bool isOdd = ((i + 1) % 2 == 1);
+            float biasAmp = isOdd ? oddEvenBias : (1.0f - oddEvenBias);
+
+            float amp = powf(1.0f / (i + 1), harmonicDecay) * biasAmp;
             sampleSum += fastSin(phases[i]) * amp;
         }
 
         float out = sampleSum / numPartials;
 
-        // noise
-        float n = props.lookupTable->getNoise();
-        out = out * (1.0f - noiseMix) + n * noiseMix;
+        // --- Apply LFO (tremolo) ---
+        if (lfoRate.get() > 0.0f) {
+            float lfoInc = 2.0f * M_PI * lfoRate.get() / props.sampleRate;
+            lfoPhase += lfoInc;
+            if (lfoPhase > 2.0f * M_PI)
+                lfoPhase -= 2.0f * M_PI;
+            float lfoVal = 0.5f * (1.0f + fastSin(lfoPhase)); // [0..1]
+            out *= (1.0f - lfoDepth.pct()) + lfoVal * lfoDepth.pct();
+        }
 
-        out = filter.process(out);
         out = out * envAmpVal * velocity;
         out = multiFx.apply(out, fxAmount.pct());
         buf[track] = out;
@@ -124,5 +129,6 @@ public:
         for (int i = 0; i < MAX_PARTIALS; i++) {
             phases[i] = 0.0f;
         }
+        lfoPhase = 0.0f;
     }
 };

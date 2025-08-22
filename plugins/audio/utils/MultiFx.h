@@ -244,13 +244,13 @@ public:
             p.val.setString("Drive");
             fxFn = &MultiFx::fxDrive;
         } else if (p.val.get() == MultiFx::FXType::COMPRESSION) {
-            p.val.setString("Compression");
+            p.val.setString("Compressor");
             fxFn = &MultiFx::fxCompressor;
         } else if (p.val.get() == MultiFx::FXType::WAVESHAPER) {
-            p.val.setString("Waveshaper");
+            p.val.setString("Waveshap.");
             fxFn = &MultiFx::fxWaveshaper;
         } else if (p.val.get() == MultiFx::FXType::WAVESHAPER2) {
-            p.val.setString("Waveshap.2");
+            p.val.setString("Waveshap2");
             fxFn = &MultiFx::fxWaveshaper2;
         } else if (p.val.get() == MultiFx::FXType::CLIPPING) {
             p.val.setString("Clipping");
