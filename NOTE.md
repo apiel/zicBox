@@ -1,6 +1,7 @@
 ## Pixel TODO
 
 - TODO multi synth engine
+        - FIXME pitch engine: additive, additive2, (...?)
         - LFO instead of noise
         - wavetable
 
