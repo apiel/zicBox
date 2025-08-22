@@ -4,8 +4,6 @@
         - LFO instead of noise
         - wavetable
 
-- TODO pixel seq, add knob to scroll
-
 - TODO reload variations when switching workspace
 
 - TODO mute shortcut, make it part of the Volume plugin, it should save last state before to mute. (in grid & pixel, use shift to mute?)

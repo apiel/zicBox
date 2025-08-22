@@ -1,0 +1,77 @@
+{
+    "Sequencer": {
+        "STATUS": 1.0,
+        "STEPS": null
+    },
+    "SerializeTrack": {
+        "VARIATION": 0.0
+    },
+    "Synth2": {
+        "values": [
+            {
+                "key": "ENGINE",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_1",
+                "value": -19.0
+            },
+            {
+                "key": "VAL_2",
+                "value": 46.0
+            },
+            {
+                "key": "VAL_3",
+                "value": 100.0
+            },
+            {
+                "key": "VAL_4",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_5",
+                "value": 50.0
+            },
+            {
+                "key": "VAL_6",
+                "value": 50.0
+            },
+            {
+                "key": "VAL_7",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_8",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_9",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_10",
+                "value": 0.0
+            },
+            {
+                "key": "ATTACK",
+                "value": 1460.0
+            },
+            {
+                "key": "RELEASE",
+                "value": 950.0
+            }
+        ]
+    },
+    "TrackFx": {
+        "values": [
+            {
+                "key": "VOLUME",
+                "value": 100.0
+            },
+            {
+                "key": "GAIN",
+                "value": 1.0
+            }
+        ]
+    }
+}

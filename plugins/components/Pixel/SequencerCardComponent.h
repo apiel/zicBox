@@ -48,6 +48,8 @@ protected:
 
     Size stepSize = { 0, 0 };
 
+    int8_t encoderId = -1;
+
     bool renderPlayingStep = false;
     int lastPlayingStep = 0;
     std::function<void(bool)> onPlayStep = [this](bool isPlaying) {
@@ -70,7 +72,7 @@ protected:
         if (pressedTime > 0 && now - pressedTime > 500) {
             //might want to check that pressedKeyIndex is not out of bounds
             pressedTime = 0;
-            setContext(contextId, getStepStart() +pressedKeyIndex);
+            setContext(contextId, getStepStart() + pressedKeyIndex);
             renderNext();
         }
     }
@@ -90,6 +92,16 @@ protected:
         return getScrollGroup() * stepPerRow * rowsSelection;
     }
 
+    void scroll(int direction)
+    {
+        int scrollGroup = getScrollGroup();
+        scrollGroup = (scrollGroup + direction) % (maxSteps / (stepPerRow * rowsSelection));
+        pressedKeyIndex = scrollGroup * (stepPerRow * rowsSelection);
+        setContext(contextId, pressedKeyIndex);
+        renderNext();
+        // renderKeys();
+    }
+
 public:
     SequencerCardComponent(ComponentInterface::Props props)
         : Component(props, [&](std::string action) {
@@ -97,12 +109,7 @@ public:
             if (action == ".scroll") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (contextId != 0 && rowsSelection > 0 && KeypadLayout::isReleased(keymap)) {
-                        int scrollGroup = getScrollGroup();
-                        scrollGroup = (scrollGroup + 1) % (maxSteps / (stepPerRow * rowsSelection));
-                        pressedKeyIndex = scrollGroup * (stepPerRow * rowsSelection);
-                        setContext(contextId, pressedKeyIndex);
-                        renderNext();
-                        // renderKeys();
+                        scroll(1);
                     }
                 };
             }
@@ -176,6 +183,9 @@ public:
 
         /// Set context id shared between components to show selected step, must be different than 0.
         contextId = config.value("contextId", contextId); //eg: 10
+
+        /// The encoder id to scroll.
+        encoderId = config.value("encoderId", encoderId); //eg: 0
 
         if (config.contains("gridKeys") && config["gridKeys"].is_array()) {
             for (auto& key : config["gridKeys"]) {
@@ -384,6 +394,13 @@ public:
             newStep.enabled = true;
             newStep.len = 1;
             steps->push_back(newStep);
+        }
+    }
+
+    void onEncoder(int id, int8_t direction) override
+    {
+        if (id == encoderId) {
+            scroll(direction > 0 ? 1 : -1);
         }
     }
 };

@@ -1,37 +1,38 @@
 {
-    "Drum1": {
+    "Drum4": {
+        "sampleFile": "hat_02.wav",
         "values": [
             {
                 "key": "ENGINE",
-                "value": 4.0
+                "value": 5.0
             },
             {
                 "key": "VAL_1",
-                "value": -11.0
-            },
-            {
-                "key": "VAL_2",
-                "value": 119.0
-            },
-            {
-                "key": "VAL_3",
-                "value": 19.0
-            },
-            {
-                "key": "VAL_4",
-                "value": 64.0
-            },
-            {
-                "key": "VAL_5",
                 "value": 0.0
             },
             {
+                "key": "VAL_2",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_3",
+                "value": 10.0
+            },
+            {
+                "key": "VAL_4",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_5",
+                "value": 8.0
+            },
+            {
                 "key": "VAL_6",
-                "value": 13.0
+                "value": 66.90003204345703
             },
             {
                 "key": "VAL_7",
-                "value": 96.00001525878906
+                "value": 0.0
             },
             {
                 "key": "VAL_8",
@@ -47,11 +48,11 @@
             },
             {
                 "key": "DURATION",
-                "value": 1580.0
+                "value": 720.0
             },
             {
                 "key": "AMP_MORPH",
-                "value": 22.0
+                "value": 12.0
             }
         ]
     },
@@ -65,15 +66,6 @@
                 "motion": "---",
                 "note": 60,
                 "position": 0,
-                "velocity": 0.809999942779541
-            },
-            {
-                "condition": "---",
-                "enabled": true,
-                "len": 1,
-                "motion": "---",
-                "note": 60,
-                "position": 4,
                 "velocity": 0.800000011920929
             },
             {
@@ -91,25 +83,7 @@
                 "len": 1,
                 "motion": "---",
                 "note": 60,
-                "position": 12,
-                "velocity": 0.800000011920929
-            },
-            {
-                "condition": "---",
-                "enabled": true,
-                "len": 1,
-                "motion": "---",
-                "note": 60,
                 "position": 16,
-                "velocity": 0.800000011920929
-            },
-            {
-                "condition": "---",
-                "enabled": true,
-                "len": 1,
-                "motion": "---",
-                "note": 60,
-                "position": 20,
                 "velocity": 0.800000011920929
             },
             {
@@ -127,11 +101,101 @@
                 "len": 1,
                 "motion": "---",
                 "note": 60,
+                "position": 2,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 4,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 6,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 10,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 12,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 14,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 18,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 20,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 22,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 26,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
                 "position": 28,
                 "velocity": 0.800000011920929
             },
             {
-                "condition": "Impair",
+                "condition": "---",
                 "enabled": true,
                 "len": 1,
                 "motion": "---",
@@ -140,30 +204,21 @@
                 "velocity": 0.800000011920929
             },
             {
-                "condition": "40%",
-                "enabled": true,
-                "len": 1,
-                "motion": "---",
-                "note": 60,
-                "position": 31,
-                "velocity": 0.800000011920929
-            },
-            {
-                "condition": "20%",
-                "enabled": true,
-                "len": 1,
-                "motion": "---",
-                "note": 60,
-                "position": 29,
-                "velocity": 0.800000011920929
-            },
-            {
-                "condition": "Pair",
+                "condition": "---",
                 "enabled": true,
                 "len": 1,
                 "motion": "---",
                 "note": 60,
                 "position": 32,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 34,
                 "velocity": 0.800000011920929
             },
             {
@@ -181,7 +236,25 @@
                 "len": 1,
                 "motion": "---",
                 "note": 60,
+                "position": 38,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
                 "position": 40,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 42,
                 "velocity": 0.800000011920929
             },
             {
@@ -199,7 +272,43 @@
                 "len": 1,
                 "motion": "---",
                 "note": 60,
+                "position": 46,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
                 "position": 48,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 50,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 52,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 54,
                 "velocity": 0.800000011920929
             },
             {
@@ -212,18 +321,36 @@
                 "velocity": 0.800000011920929
             },
             {
-                "condition": "Pair",
+                "condition": "---",
                 "enabled": true,
                 "len": 1,
                 "motion": "---",
                 "note": 60,
-                "position": 52,
+                "position": 58,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 60,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 62,
                 "velocity": 0.800000011920929
             }
         ]
     },
     "SerializeTrack": {
-        "VARIATION": 1.0
+        "VARIATION": 6.0
     },
     "TrackFx": {
         "values": [

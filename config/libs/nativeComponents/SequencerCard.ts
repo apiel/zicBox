@@ -15,4 +15,5 @@ export const SequencerCard = getJsonComponent<{
     rowsSelection?: number;
     contextId?: number;
     gridKeys?: (number | string)[];
+    encoderId?: number;
 }>('SequencerCard');
