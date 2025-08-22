@@ -1,6 +1,7 @@
 #pragma once
 
 #include "plugins/audio/MultiEngine/FmEngine.h"
+#include "plugins/audio/MultiEngine/AdditiveEngine.h"
 #include "plugins/audio/utils/AsrEnvelop.h"
 #include "plugins/audio/utils/EnvelopDrumAmp.h"
 
@@ -17,10 +18,12 @@ protected:
     AsrEnvelop envelopAmp = AsrEnvelop(&attackStep, &releaseStep);
 
     FmEngine fmEngine;
+    AdditiveEngine additiveEngine;
 
-    static const int ENGINES_COUNT = 1;
+    static const int ENGINES_COUNT = 2;
     Engine* engines[ENGINES_COUNT] = {
         &fmEngine,
+        &additiveEngine
     };
     Engine* selectedEngine = engines[0];
 
@@ -90,6 +93,7 @@ public:
     SynthMulti(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
         , fmEngine(props, config)
+        , additiveEngine(props, config)
     {
         initValues({ &engine });
     }

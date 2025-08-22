@@ -87,7 +87,7 @@ public:
         if (envAmpVal == 0.0f) {
             float out = buf[track];
             out = multiFx.apply(out, fxAmount.pct());
-            buf[track] = out;
+            buf[track] = out * velocity;
             return;
         }
         float pitchEnvVal = envAmpVal; // envPitch.next(t);

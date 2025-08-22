@@ -250,13 +250,13 @@ public:
             p.val.setString("Waveshaper");
             fxFn = &MultiFx::fxWaveshaper;
         } else if (p.val.get() == MultiFx::FXType::WAVESHAPER2) {
-            p.val.setString("Waveshaper2");
+            p.val.setString("Waveshap.2");
             fxFn = &MultiFx::fxWaveshaper2;
         } else if (p.val.get() == MultiFx::FXType::CLIPPING) {
             p.val.setString("Clipping");
             fxFn = &MultiFx::fxClipping;
         } else if (p.val.get() == MultiFx::FXType::SAMPLE_REDUCER) {
-            p.val.setString("Sample reducer");
+            p.val.setString("Sample red.");
             fxFn = &MultiFx::fxSampleReducer;
         } else if (p.val.get() == MultiFx::FXType::BITCRUSHER) {
             p.val.setString("Bitcrusher");

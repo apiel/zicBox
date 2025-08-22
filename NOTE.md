@@ -16,7 +16,8 @@
 - TODO add velocity to all drum engines
 - TODO optimize drum engines
 
-- TODO multi synth engine, like drum engine
+- TODO multi synth engine
+        - wavetable
 
 - TODO pattern generative for given style of music
 
