@@ -87,13 +87,13 @@ public:
     /*md - `ATTACK` controls the duration of the envelope. */
     Val& attack = val(10.0f, "ATTACK", { "Attack", .min = 10.0, .max = 3000.0, .step = 10.0, .unit = "ms" }, [&](auto p) {
         p.val.setFloat(p.value);
-        attackStep = p.val.get() * 0.001f / props.sampleRate;
+        attackStep = 1.0f / (p.val.get() * 0.001f * props.sampleRate);
     });
 
     /*md - `RELEASE` controls the duration of the envelope. */
     Val& release = val(100.0f, "RELEASE", { "Release", .min = 10.0, .max = 3000.0, .step = 10.0, .unit = "ms" }, [&](auto p) {
         p.val.setFloat(p.value);
-        releaseStep = p.val.get() * 0.001f / props.sampleRate;
+        releaseStep = 1.0f / (p.val.get() * 0.001f * props.sampleRate);
     });
 
     SynthMulti(AudioPlugin::Props& props, AudioPlugin::Config& config)
