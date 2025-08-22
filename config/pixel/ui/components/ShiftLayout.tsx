@@ -5,7 +5,16 @@ import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { Text } from '@/libs/nativeComponents/Text';
 import { rgb } from '@/libs/ui';
-import { MasterTrack, menuTextColor, ScreenHeight, shiftContext, W1_4, W2_4, W3_4 } from '../constants';
+import {
+    Drum4Track,
+    MasterTrack,
+    menuTextColor,
+    ScreenHeight,
+    shiftContext,
+    W1_4,
+    W2_4,
+    W3_4,
+} from '../constants';
 import { backgroundBounds, enc1, enc3, enc4 } from '../constantsValue';
 
 export const unshiftVisibilityContext: VisibilityContext = {
@@ -49,19 +58,21 @@ export function ShiftLayout({
 
             {content}
 
+            {track <= Drum4Track && (
+                <KnobValue
+                    audioPlugin="Sequencer"
+                    param="NOTE_REPEAT"
+                    {...enc3}
+                    color="tertiary"
+                    track={track}
+                    visibilityContext={[shiftVisibilityContext]}
+                />
+            )}
+
             <KnobValue
                 audioPlugin="TrackFx"
                 param="VOLUME"
                 label="Master Vol."
-                {...enc3}
-                color="tertiary"
-                track={MasterTrack}
-                visibilityContext={[shiftVisibilityContext]}
-            />
-
-            <KnobValue
-                audioPlugin="Tempo"
-                param="BPM"
                 {...enc4}
                 color="tertiary"
                 track={MasterTrack}

@@ -120,6 +120,7 @@ protected:
         }
     }
 
+    int repeatModeVal = 6;
     void onClock() override
     {
         // repeatMode: 12, 6, 3, 2
@@ -139,6 +140,38 @@ public:
     /*md - `STATUS` set status: off, on, next. Default: off
     Play/Stop will answer to global event. However, you may want to the sequencer to not listen to those events or to only start to play on the next sequence iteration. */
     Val& status = val(1.0f, "STATUS", { "Status", VALUE_STRING, .max = 2 }, [&](auto p) { setStatus(p.value); });
+
+    // in 4/4 time signature
+    // 92 tick = 1 note = 1 bar 
+    // 48 tick = 1 half note = 1/2 bar 
+    // 24 tick = 1 quarter note = 1/4 bar
+    // 12 tick = Eighth Note = 1/8 bar
+    // 6 tick = Sixteenth Note = 1/16 bar
+    // 3 tick = Thirty-Second Note = 1/32 bar
+    
+    /*md - `NOTE_REPEAT` set note repeat mode: 1/32 bar, 1/16 bar, 1/8 bar, 1/4 bar, 1/2 bar, 1 bar */
+    Val& noteRepeatVal = val(1.0f, "NOTE_REPEAT", { "Note Repeat", VALUE_STRING, .max = 5 }, [&](auto p) {
+        p.val.setFloat(p.value);
+        if (p.val.get() == 0.0f) {
+            repeatModeVal = 3;
+            p.val.setString("1/32 bar");
+        } else if (p.val.get() == 1.0f) {
+            repeatModeVal = 6;
+            p.val.setString("1/16 bar");
+        } else if (p.val.get() == 2.0f) {
+            repeatModeVal = 12;
+            p.val.setString("1/8 bar");
+        } else if (p.val.get() == 3.0f) {
+            repeatModeVal = 24;
+            p.val.setString("1/4 bar");
+        } else if (p.val.get() == 4.0f) {
+            repeatModeVal = 48;
+            p.val.setString("1/2 bar");
+        } else if (p.val.get() == 5.0f) {
+            repeatModeVal = 92;
+            p.val.setString("1 bar");
+        }
+    });
 
     Sequencer(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
@@ -177,7 +210,7 @@ public:
 
     void noteRepeatOn(uint8_t note, uint8_t mode) override
     {
-        repeatMode = mode;
+        repeatMode = mode == 0 ? repeatModeVal : mode;
         noteRepeat = note;
     }
 

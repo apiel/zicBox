@@ -412,7 +412,7 @@ public:
                 // Hardcoded as well
                 bool* seqPlayingPtr = (bool*)seqPlugin->data(seqPlugin->getDataId("IS_PLAYING"));
                 uint8_t* note = new uint8_t(atoi(noteStr));
-                uint8_t* mode = new uint8_t(atoi(modeStr));
+                uint8_t* mode = new uint8_t(modeStr == "val" ? 0 : atoi(modeStr));
                 return [this, seqPlugin, seqPlayingPtr, synthPlugin, note, mode](KeypadLayout::KeyMap& keymap) {
                     if (seqPlugin && *seqPlayingPtr) {
                         if (isPressed(keymap)) {

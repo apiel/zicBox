@@ -38,18 +38,19 @@ export function MenuView({ name }: Props) {
                         audioPlugin="SerializeTrack"
                         keys={[{ key: C1, action: '.load' }]}
                     />
+
                     <KnobValue
-                        audioPlugin="TrackFx"
-                        param="VOLUME"
-                        label="Master Vol."
+                        audioPlugin="Tempo"
+                        param="BPM"
                         {...enc3}
                         color="tertiary"
                         track={MasterTrack}
                     />
 
                     <KnobValue
-                        audioPlugin="Tempo"
-                        param="BPM"
+                        audioPlugin="TrackFx"
+                        param="VOLUME"
+                        label="Master Vol."
                         {...enc4}
                         color="tertiary"
                         track={MasterTrack}
