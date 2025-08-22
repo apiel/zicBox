@@ -47,6 +47,14 @@ public:
             floatPrecision = val->props().floatingPoint;
         }
 
+        if (config.contains("fontLabel")) {
+            fontLabel = draw.getFont(config["fontLabel"].get<std::string>().c_str()); //eg: "PoppinsLight_8"
+            int fontSize = draw.getDefaultFontSize(fontLabel);
+            if (fontSize > 0) {
+                labelFontSize = fontSize;
+            }
+        }
+
         labelFontSize = config.value("labelSize", labelFontSize); //eg: 6
 
         bgColor = draw.getColor(config["bgColor"], bgColor); //eg: "#000000"

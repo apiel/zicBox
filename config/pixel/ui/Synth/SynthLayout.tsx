@@ -60,7 +60,7 @@ export function SynthLayout({ name, track, synthName, color, title }: Props) {
                         }
                     />
 
-                    <StringVal audioPlugin={synthName} param="ENGINE" bounds={[90, 0, 60, 20]} />
+                    <StringVal audioPlugin={synthName} param="ENGINE" bounds={[92, 3, 60, 20]} fontLabel="PoppinsLight_12" />
 
                     <Val
                         {...enc1mini}

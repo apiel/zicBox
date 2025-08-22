@@ -3,6 +3,7 @@
 #include "plugins/audio/MultiEngine/FmEngine.h"
 #include "plugins/audio/MultiEngine/AdditiveEngine.h"
 #include "plugins/audio/MultiEngine/Additive2Engine.h"
+#include "plugins/audio/MultiEngine/SuperSawEngine.h"
 #include "plugins/audio/utils/AsrEnvelop.h"
 #include "plugins/audio/utils/EnvelopDrumAmp.h"
 
@@ -21,12 +22,14 @@ protected:
     FmEngine fmEngine;
     AdditiveEngine additiveEngine;
     Additive2Engine additive2Engine;
+    SuperSawEngine superSawEngine;
 
-    static const int ENGINES_COUNT = 3;
+    static const int ENGINES_COUNT = 4;
     Engine* engines[ENGINES_COUNT] = {
         &fmEngine,
         &additiveEngine,
         &additive2Engine,
+        &superSawEngine,
     };
     Engine* selectedEngine = engines[0];
 
@@ -98,6 +101,7 @@ public:
         , fmEngine(props, config)
         , additiveEngine(props, config)
         , additive2Engine(props, config)
+        , superSawEngine(props, config)
     {
         initValues({ &engine });
     }
