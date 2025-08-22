@@ -44,17 +44,16 @@ protected:
 public:
     uint8_t ptichNote = 60;
     // --- 10 parameters ---
-    // Val& basePitch = val(0.0f, "BASE_PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24 });
     Val& basePitch = val(0.0f, "BASE_PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24 }, [&](auto p) {
         p.val.setFloat(p.value);
-        baseFreq = 50.0f * powf(2.0f, (ptichNote - 60 + p.val.get()) / 12.0f);
-        glideTarget = 50.0f * powf(2.0f, glide.get() / 12.0f);
+        // update target frequency
+        glideTarget = 50.0f * powf(2.0f, (ptichNote - 60 + p.val.get()) / 12.0f);
     });
 
     Val& glide = val(50.0f, "GLIDE", { "Glide Speed", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
-        glideSpeed = 0.001f + p.val.pct();
-        glideTarget = 50.0f * powf(2.0f, p.val.get() / 12.0f);
+        // only change speed, not target
+        glideSpeed = 0.001f + p.val.pct() * 0.01f;
     });
 
     Val& detune = val(10.0f, "DETUNE", { "Detune", .unit = "%" }, [&](auto p) {
@@ -125,11 +124,13 @@ public:
     {
         ptichNote = note;
         velocity = _velocity;
-        baseFreq = 50.0f * powf(2.0f, (note - 60 + basePitch.get()) / 12.0f);
-        glideTarget = 50.0f * powf(2.0f, glide.get() / 12.0f);
-        glideCurrent = baseFreq;
+        // start glide at previous pitch or target
+        glideCurrent = glideTarget;
+        glideTarget = 50.0f * powf(2.0f, (note - 60 + basePitch.get()) / 12.0f);
+
         for (int i = 0; i < NUM_OSC; i++)
             oscPhases[i] = 0.0f;
+
         lfoPhase = 0.0f;
     }
 };
