@@ -6,21 +6,23 @@
 #include "plugins/audio/utils/MultiFx.h"
 #include "plugins/audio/utils/WavetableGenerator2.h"
 #include "plugins/audio/utils/val/valMMfilterCutoff.h"
+#include "helpers/math.h"
 
 class FmEngine : public Engine {
 protected:
     WavetableGenerator carrier;
     WavetableGenerator mod;
+
     EnvelopDrumAmp envPitch;
     MultiFx multiFx;
     MMfilter filter;
 
     float sampleIndexCar = 0.0f;
     float sampleIndexMod = 0.0f;
+    float sampleIndexLfo = 0.0f;
+
     float baseFreq = 100.0f;
     float velocity = 1.0f;
-
-    float noiseAmount = 0.0f;
 
     // params
     float bodyHz = 100.0f;
@@ -55,7 +57,8 @@ public:
         envPitch.morph(p.val.pct());
     });
 
-    Val& noiseMix = val(50.0f, "NOISE", { "Noise", .unit = "%" });
+    // LFO rate only, no mix → tremolo depth is implicit in envelope
+    Val& lfoRate = val(50.0f, "LFO_RATE", { "LFO Rate", .min = 0.0f, .max = 50.0f, .step = 0.1, .floatingPoint = 1, .unit = "Hz" });
 
     Val& cutoff = val(0.0, "CUTOFF", { "LPF | HPF", VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
         valMMfilterCutoff(p, filter);
@@ -90,18 +93,28 @@ public:
             buf[track] = out * velocity;
             return;
         }
-        float pitchEnvVal = envAmpVal; // envPitch.next(t);
+
+        float pitchEnvVal = envAmpVal; // envelope morph applied
 
         // base + pitch envelope
         float freq = bodyHz * toneRatio * powf(2.0f, pitchEnvVal * 2.0f);
         float modFreq = bodyHz * snapRatio;
 
         float modSignal = mod.sample(&sampleIndexMod, modFreq);
-
         float car = carrier.sample(&sampleIndexCar, freq + modSignal * modIndex * freq);
 
-        float noise = props.lookupTable->getNoise() * envAmpVal;
-        float out = (car * (1.0f - noiseMix.pct())) + (noise * noiseMix.pct());
+        // --- LFO tremolo ---
+        float lfoHz = lfoRate.get();
+        float lfoVal = 0.0f;
+        if (lfoHz > 0.0f) {
+            float phaseInc = (2.0f * M_PI * lfoHz) / props.sampleRate;
+            sampleIndexLfo += phaseInc;
+            if (sampleIndexLfo >= 2.0f * M_PI) sampleIndexLfo -= 2.0f * M_PI;
+            // lfoVal = (fastSin2(sampleIndexLfo) + 1.0f) * 0.5f; // map [-1,1] → [0,1]
+            lfoVal = (sinf(sampleIndexLfo) + 1.0f) * 0.5f; // map [-1,1] → [0,1]
+        }
+
+        float out = car * (1.0f - 0.5f * lfoVal); // depth fixed at 50% tremolo
 
         out = filter.process(out);
         out = out * envAmpVal * velocity;
@@ -114,6 +127,7 @@ public:
         velocity = _velocity;
         sampleIndexCar = 0.0f;
         sampleIndexMod = 0.0f;
+        sampleIndexLfo = 0.0f;
         baseFreq = bodyHz * powf(2.0f, (note - 60) / 12.0f);
     }
 };
