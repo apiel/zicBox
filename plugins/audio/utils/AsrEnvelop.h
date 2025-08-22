@@ -1,5 +1,4 @@
-#ifndef _ZIC_ASR_ENVELOP_H_
-#define _ZIC_ASR_ENVELOP_H_
+#pragma once
 
 #include <functional>
 
@@ -73,5 +72,3 @@ public:
         return nextFn == &AsrEnvelop::envelopRelease;
     }
 };
-
-#endif

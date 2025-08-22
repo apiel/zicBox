@@ -10,6 +10,8 @@
 
 - FIXME sample pitch
 
+- TODO improve multi drum:
+- TODO might not need sampleOn sampleOff ?? or maybe yes to keep the logic in one place... <--- subjective
 - TODO linearInterpolation in generator class repeated. need to see if we can use the already existing one...
 - TODO add velocity to all drum engines
 - TODO optimize drum engines
