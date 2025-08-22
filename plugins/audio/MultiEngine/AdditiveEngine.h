@@ -112,8 +112,9 @@ public:
         out = out * (1.0f - noiseMix) + n * noiseMix;
 
         out = filter.process(out);
+        out = out * envAmpVal * velocity;
         out = multiFx.apply(out, fxAmount.pct());
-        buf[track] = out * envAmpVal * velocity;
+        buf[track] = out;
     }
 
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
