@@ -24,13 +24,13 @@ public:
         baseFreq = 220.0f * powf(2.0f, p.val.get() / 12.0f);
     });
 
-    Val& voices = val(5.0f, "VOICES", { "Voices", .min = 1, .max = MAX_VOICES }, [&](auto p) {});
+    Val& voices = val(5.0f, "VOICES", { "Voices", .min = 1, .max = MAX_VOICES });
 
-    Val& detune = val(10.0f, "DETUNE", { "Detune", .unit = "%" }, [&](auto p) {});
+    Val& detune = val(10.0f, "DETUNE", { "Detune", .unit = "%" });
 
-    Val& stereoWidth = val(50.0f, "WIDTH", { "Stereo Width", .unit = "%" }, [&](auto p) {});
+    Val& stereoWidth = val(50.0f, "WIDTH", { "Stereo Width", .unit = "%" });
 
-    Val& harmonics = val(0.0f, "HARMONICS", { "Extra Harmonics", .unit = "%" }, [&](auto p) {});
+    Val& harmonics = val(0.0f, "HARMONICS", { "Extra Harmonics", .unit = "%" });
 
     Val& noiseMix = val(0.0f, "NOISE", { "Noise", .unit = "%" });
 
@@ -65,7 +65,7 @@ public:
             return;
         }
 
-        int numVoices = 1 + int(voices.pct() * (MAX_VOICES - 1));
+        int numVoices = voices.get();
         float detuneAmt = detune.pct() * 0.05f;
         float widthAmt = stereoWidth.pct() * 0.5f;
 
