@@ -14,10 +14,7 @@ protected:
     float velocity = 1.0f;
 
     float oscPhases[NUM_OSC] = { 0.0f };
-    float oscRatios[NUM_OSC] = { 1.0f, 1.5f, 2.2f };
-    float glideTarget = 50.0f;
-    float glideCurrent = 50.0f;
-    float glideSpeed = 0.01f;
+    float oscMorph[NUM_OSC] = { 0.0f }; // 0..1 morph between waveforms
 
     float lfoPhase = 0.0f;
     float lfoRateHz = 0.5f;
@@ -25,11 +22,28 @@ protected:
 
     inline float fastSin(float x)
     {
-        if (x < -M_PI)
-            x += 2 * M_PI;
-        else if (x > M_PI)
-            x -= 2 * M_PI;
+        if (x < -M_PI) x += 2.0f * M_PI;
+        else if (x > M_PI) x -= 2.0f * M_PI;
         return (16.0f * x * (M_PI - fabsf(x))) / (5.0f * M_PI * M_PI - 4.0f * fabsf(x) * (M_PI - fabsf(x)));
+    }
+
+    // waveform morph: 0=sine, 0.33=triangle, 0.66=saw, 1.0=square
+    float morphWave(float phase, float morph)
+    {
+        if (morph <= 0.33f) {
+            float t = morph / 0.33f;
+            return fastSin(phase) * (1.0f - t) + (2.0f / M_PI) * asin(sin(phase)) * t; // sine -> triangle
+        } else if (morph <= 0.66f) {
+            float t = (morph - 0.33f) / 0.33f;
+            float tri = (2.0f / M_PI) * asin(sin(phase));
+            float saw = 2.0f * (phase / (2.0f * M_PI)) - 1.0f;
+            return tri * (1.0f - t) + saw * t; // triangle -> saw
+        } else {
+            float t = (morph - 0.66f) / 0.34f;
+            float saw = 2.0f * (phase / (2.0f * M_PI)) - 1.0f;
+            float sq = (phase < M_PI) ? 1.0f : -1.0f;
+            return saw * (1.0f - t) + sq * t; // saw -> square
+        }
     }
 
     float sampleOsc(int idx, float freq)
@@ -38,32 +52,27 @@ protected:
         oscPhases[idx] += phaseInc;
         if (oscPhases[idx] > 2.0f * M_PI)
             oscPhases[idx] -= 2.0f * M_PI;
-        return fastSin(oscPhases[idx]);
-    }
 
-    inline float softClip(float x, float amount)
-    {
-        // amount: 0 = no clipping, 1 = full hard-ish clip
-        float k = amount * 5.0f + 0.1f; // scale factor for shaping
-        return x / (1.0f + k * fabsf(x));
+        return morphWave(oscPhases[idx], morphVal.pct());
     }
 
 public:
-    uint8_t ptichNote = 60;
+    uint8_t pitchNote = 60;
+
     // --- 10 parameters ---
     Val& basePitch = val(0.0f, "BASE_PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24 }, [&](auto p) {
         p.val.setFloat(p.value);
-        // update target frequency
-        glideTarget = 50.0f * powf(2.0f, (ptichNote - 60 + p.val.get()) / 12.0f);
+        baseFreq = 50.0f * powf(2.0f, (pitchNote - 60 + p.val.get()) / 12.0f);
     });
 
-    Val& shape = val(50.0f, "SHAPE", { "Saturation", .unit = "%" });
+    Val& morphVal = val(40.0f, "MORPH", { "Morph", .unit = "%" });
 
     Val& detune = val(10.0f, "DETUNE", { "Detune", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
-        oscRatios[0] = 1.0f - p.val.pct() * 0.5f;
-        oscRatios[1] = 1.5f;
-        oscRatios[2] = 2.2f + p.val.pct() * 0.5f;
+        float d = p.val.pct();
+        oscMorph[0] = d * 0.5f;
+        oscMorph[1] = 0.5f;
+        oscMorph[2] = 1.0f - d * 0.5f;
     });
 
     Val& oscMix1 = val(40.0f, "OSC1", { "Osc1 Level", .unit = "%" });
@@ -73,7 +82,7 @@ public:
     Val& lfoRate = val(0.5f, "LFO_RATE", { "LFO Rate", .min = 0.0f, .max = 10.0f, .step = 0.1f, .floatingPoint = 1, .unit = "Hz" });
     Val& lfoDepthVal = val(20.0f, "LFO_DEPTH", { "LFO Depth", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
-        lfoDepth = p.val.pct() * 0.05f;
+        lfoDepth = p.val.pct() * 0.2f; // morph modulation depth
     });
 
     Val& fxType = val(0, "FX_TYPE", { "FX Type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) { multiFx.setFxType(p); });
@@ -81,7 +90,7 @@ public:
 
     // --- constructor ---
     SpaceShipEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
-        : Engine(p, c, "Space")
+        : Engine(p, c, "SpaceShip")
         , multiFx(props.sampleRate, props.lookupTable)
     {
         initValues();
@@ -90,39 +99,32 @@ public:
     void sample(float* buf, float envAmpVal) override
     {
         if (envAmpVal == 0.0f) {
-            float out = buf[track];
-            out = multiFx.apply(out, fxAmount.pct());
-            buf[track] = out;
+            buf[track] = multiFx.apply(buf[track], fxAmount.pct());
             return;
         }
 
-        // glide
-        glideCurrent += (glideTarget - glideCurrent) * glideSpeed;
-
-        // LFO
+        // LFO modulates oscillator morph
         float lfoVal = 0.0f;
         if (lfoRate.get() > 0.0f) {
             float lfoInc = 2.0f * M_PI * lfoRate.get() / props.sampleRate;
             lfoPhase += lfoInc;
-            if (lfoPhase > 2.0f * M_PI)
-                lfoPhase -= 2.0f * M_PI;
-            lfoVal = fastSin(lfoPhase) * lfoDepth;
+            if (lfoPhase > 2.0f * M_PI) lfoPhase -= 2.0f * M_PI;
+            lfoVal = sinf(lfoPhase) * lfoDepth;
         }
 
         float sampleSum = 0.0f;
         float mixLevels[NUM_OSC] = { oscMix1.pct(), oscMix2.pct(), oscMix3.pct() };
 
         for (int i = 0; i < NUM_OSC; i++) {
-            float freq = glideCurrent * oscRatios[i] * (1.0f + lfoVal);
+            float morphVal = oscMorph[i] + lfoVal; // morph modulation
+            if (morphVal < 0.0f) morphVal = 0.0f;
+            if (morphVal > 1.0f) morphVal = 1.0f;
+
+            float freq = baseFreq * (1.0f + i * 0.1f); // small internal detune
             sampleSum += sampleOsc(i, freq) * mixLevels[i];
         }
 
-        // float out = sampleSum;
-        // out *= envAmpVal * velocity;
-        // out = multiFx.apply(out, fxAmount.pct());
-        // buf[track] = out;
         float out = sampleSum;
-        out = softClip(out, shape.pct());
         out *= envAmpVal * velocity;
         out = multiFx.apply(out, fxAmount.pct());
         buf[track] = out;
@@ -130,15 +132,10 @@ public:
 
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
     {
-        ptichNote = note;
+        pitchNote = note;
         velocity = _velocity;
-        // start glide at previous pitch or target
-        glideCurrent = glideTarget;
-        glideTarget = 50.0f * powf(2.0f, (note - 60 + basePitch.get()) / 12.0f);
-
-        for (int i = 0; i < NUM_OSC; i++)
-            oscPhases[i] = 0.0f;
-
+        baseFreq = 50.0f * powf(2.0f, (note - 60 + basePitch.get()) / 12.0f);
+        for (int i = 0; i < NUM_OSC; i++) oscPhases[i] = 0.0f;
         lfoPhase = 0.0f;
     }
 };

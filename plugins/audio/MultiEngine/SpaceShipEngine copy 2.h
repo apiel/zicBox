@@ -41,13 +41,6 @@ protected:
         return fastSin(oscPhases[idx]);
     }
 
-    inline float softClip(float x, float amount)
-    {
-        // amount: 0 = no clipping, 1 = full hard-ish clip
-        float k = amount * 5.0f + 0.1f; // scale factor for shaping
-        return x / (1.0f + k * fabsf(x));
-    }
-
 public:
     uint8_t ptichNote = 60;
     // --- 10 parameters ---
@@ -57,7 +50,11 @@ public:
         glideTarget = 50.0f * powf(2.0f, (ptichNote - 60 + p.val.get()) / 12.0f);
     });
 
-    Val& shape = val(50.0f, "SHAPE", { "Saturation", .unit = "%" });
+    Val& glide = val(50.0f, "GLIDE", { "Glide Speed", .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        // only change speed, not target
+        glideSpeed = 0.001f + p.val.pct() * 0.01f;
+    });
 
     Val& detune = val(10.0f, "DETUNE", { "Detune", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
@@ -117,12 +114,7 @@ public:
             sampleSum += sampleOsc(i, freq) * mixLevels[i];
         }
 
-        // float out = sampleSum;
-        // out *= envAmpVal * velocity;
-        // out = multiFx.apply(out, fxAmount.pct());
-        // buf[track] = out;
         float out = sampleSum;
-        out = softClip(out, shape.pct());
         out *= envAmpVal * velocity;
         out = multiFx.apply(out, fxAmount.pct());
         buf[track] = out;
