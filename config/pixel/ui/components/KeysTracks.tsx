@@ -29,7 +29,7 @@ export function KeysTracks({
                     key: C1,
                     action:
                         track <= Drum4Track
-                            ? `noteOnAndRepeat:${synthName}:60:1:${track}`
+                            ? `noteOnAndRepeat:${synthName}:60:12:${track}`
                             : `noteOn:${synthName}:60`,
                     context: { id: shiftContext, value: 0 },
                 },

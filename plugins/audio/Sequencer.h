@@ -122,14 +122,9 @@ protected:
 
     void onClock() override
     {
+        // repeatMode: 12, 6, 3, 2
         if (noteRepeat != -1) {
-            if (repeatMode == 1 && clockCounter % 6 != 0) {
-                return;
-            }
-            if (repeatMode == 2 && clockCounter % 3 != 0) {
-                return;
-            }
-            if (repeatMode == 3 && clockCounter % 2 != 0) {
+            if (clockCounter % repeatMode != 0) {
                 return;
             }
             props.audioPluginHandler->noteOn(noteRepeat, 1.0f, { track, targetPlugin });
