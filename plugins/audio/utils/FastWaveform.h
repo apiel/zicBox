@@ -91,7 +91,7 @@ public:
         // case PINK_NOISE:
         //     return "Pink Noise";
         case SAMPLE_AND_HOLD:
-            return "Sample & Hold";
+            return "S&H";
         }
         return "Unknown";
     }
