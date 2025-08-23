@@ -6,6 +6,7 @@
 #include "plugins/audio/MultiEngine/SuperSawEngine.h"
 #include "plugins/audio/MultiEngine/SpaceShipEngine.h"
 #include "plugins/audio/MultiEngine/WavetableEngine.h"
+#include "plugins/audio/MultiEngine/Wavetable2Engine.h"
 #include "plugins/audio/utils/AsrEnvelop.h"
 #include "plugins/audio/utils/EnvelopDrumAmp.h"
 
@@ -27,11 +28,13 @@ protected:
     SuperSawEngine superSawEngine;
     SpaceShipEngine spaceShipEngine;
     WavetableEngine wavetableEngine;
+    Wavetable2Engine wavetable2Engine;
 
-    static const int ENGINES_COUNT = 6;
+    static const int ENGINES_COUNT = 7;
     Engine* engines[ENGINES_COUNT] = {
         &fmEngine,
         &wavetableEngine,
+        &wavetable2Engine,
         &additiveEngine,
         &additive2Engine,
         &superSawEngine,
@@ -110,6 +113,7 @@ public:
         , superSawEngine(props, config)
         , spaceShipEngine(props, config)
         , wavetableEngine(props, config)
+        , wavetable2Engine(props, config)
     {
         initValues({ &engine });
     }

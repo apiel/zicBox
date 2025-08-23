@@ -8,7 +8,7 @@
 #include "plugins/audio/utils/Wavetable.h"
 #include "plugins/audio/utils/val/valMMfilterCutoff.h"
 
-class WavetableEngine : public Engine {
+class Wavetable2Engine : public Engine {
 protected:
     MultiFx multiFx;
     Wavetable wavetable;
@@ -36,7 +36,7 @@ public:
         p.val.setString(lfo.toString());
     });
 
-    Val& lfoFreq = val(0.0f, "LFO_FREQ_MOD", { "Freq. Mod.", VALUE_CENTERED, .min = -100.0f, .unit = "%" });
+    Val& lfoWave = val(0.0f, "LFO_WaVE_MOD", { "Wave. Mod.", VALUE_CENTERED, .min = -100.0f, .unit = "%" });
 
     Val& wave = val(0, "WAVE", { "Wave", VALUE_STRING }, [&](auto p) {
         p.val.setFloat(p.value);
@@ -67,8 +67,8 @@ public:
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
 
     // --- constructor ---
-    WavetableEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
-        : Engine(p, c, "Wavtabl")
+    Wavetable2Engine(AudioPlugin::Props& p, AudioPlugin::Config& c)
+        : Engine(p, c, "Wavtabl2")
         , multiFx(props.sampleRate, props.lookupTable)
         , lfo(props.sampleRate)
     {
@@ -84,14 +84,8 @@ public:
             return;
         }
 
-        float modulatedFreq = baseFreq;
-        if (lfoFreq.pct() != 0.5f) {
-            modulatedFreq += (lfoFreq.pct() - 0.5f) * lfo.process();
-            if (modulatedFreq < 0.0f) {
-                modulatedFreq = 0.000001f;
-            }
-        }
-        float out = wavetable.sample(&wavetable.sampleIndex, modulatedFreq);
+        float out = lfoWave.get() != 0.0f ? wavetable.sample(&wavetable.sampleIndex, baseFreq, lfo.process() * (lfoWave.pct() - 0.5f))
+                                         : wavetable.sample(&wavetable.sampleIndex, baseFreq);
         out = filter.process(out);
         out = out * envAmpVal * velocity;
         out = multiFx.apply(out, fxAmount.pct());
