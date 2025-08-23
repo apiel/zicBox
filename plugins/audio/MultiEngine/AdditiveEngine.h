@@ -127,6 +127,6 @@ public:
             note = baseFreqNote;
 
         baseFreqNote = note;
-        baseFreq = 220.0f * powf(2.0f, (baseFreqNote - 60 - body.get()) / 12.0f);
+        baseFreq = 220.0f * powf(2.0f, (baseFreqNote - 60 + body.get()) / 12.0f);
     }
 };

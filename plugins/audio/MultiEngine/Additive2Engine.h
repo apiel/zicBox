@@ -19,7 +19,6 @@ protected:
     float phase4 = 0.0f;
 
     // params
-    float bodyHz = 220.0f;
     float harm1Level = 0.0f;
     float harm2Level = 0.0f;
     float harm3Level = 0.0f;
@@ -30,7 +29,7 @@ public:
     // --- 10 parameters ---
     Val& body = val(0.0f, "BODY", { "Body", VALUE_CENTERED, .min = -24, .max = 24 }, [&](auto p) {
         p.val.setFloat(p.value);
-        bodyHz = 220.0f * powf(2.0f, p.val.get() / 12.0f);
+        setBaseFreq();
     });
 
     Val& harm1 = val(50.0f, "HARM1", { "Harm2", .unit = "%" }, [&](auto p) {
@@ -91,7 +90,7 @@ public:
         }
 
         // Base frequency
-        float freq = bodyHz;
+        float freq = baseFreq;
 
         // harmonic frequencies
         float f1 = freq;
@@ -119,9 +118,9 @@ public:
 
         // combine with levels
         float harmonicMix = s1 * (1.0f - brightness)
-                          + s2 * harm1Level
-                          + s3 * harm2Level
-                          + s4 * harm3Level * brightness;
+            + s2 * harm1Level
+            + s3 * harm2Level
+            + s4 * harm3Level * brightness;
 
         // noise
         float n = props.lookupTable->getNoise();
@@ -138,6 +137,16 @@ public:
     {
         velocity = _velocity;
         phase1 = phase2 = phase3 = phase4 = 0.0f;
-        baseFreq = bodyHz * powf(2.0f, (note - 60) / 12.0f);
+        setBaseFreq(note);
+    }
+
+    uint8_t baseFreqNote = 60;
+    void setBaseFreq(uint8_t note = 0)
+    {
+        if (note == 0)
+            note = baseFreqNote;
+
+        baseFreqNote = note;
+        baseFreq = 220.0f * powf(2.0f, (baseFreqNote - 60 + body.get()) / 12.0f);
     }
 };

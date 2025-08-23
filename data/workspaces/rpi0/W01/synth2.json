@@ -10,11 +10,11 @@
         "values": [
             {
                 "key": "ENGINE",
-                "value": 1.0
+                "value": 2.0
             },
             {
                 "key": "VAL_1",
-                "value": 10.0
+                "value": 3.0
             },
             {
                 "key": "VAL_2",
@@ -22,11 +22,11 @@
             },
             {
                 "key": "VAL_3",
-                "value": 0.0
+                "value": 50.0
             },
             {
                 "key": "VAL_4",
-                "value": 0.0
+                "value": 50.0
             },
             {
                 "key": "VAL_5",
@@ -34,7 +34,7 @@
             },
             {
                 "key": "VAL_6",
-                "value": 50.0
+                "value": 0.0
             },
             {
                 "key": "VAL_7",
