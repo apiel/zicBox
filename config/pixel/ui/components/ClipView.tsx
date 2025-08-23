@@ -67,7 +67,7 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                         visibleCount={4}
                         renderContextId={clipRenderContext}
                         redirectView="&previous"
-                        allowToggleReload
+                        // allowToggleReload // if allowed, by mistake, we might reload instead to save
                         keys={[
                             { key: A1, action: `.set:1`, context: { id: shiftContext, value: 0 } },
                             { key: A1, action: `.save:1`, context: { id: shiftContext, value: 1 } },
@@ -97,7 +97,7 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                         visibleCount={4}
                         renderContextId={clipRenderContext}
                         redirectView="&previous"
-                        allowToggleReload
+                        // allowToggleReload // if allowed, by mistake, we might reload instead to save
                         keys={[
                             { key: C1, action: `.reload` }, // , context: { id: shiftContext, value: 0 }
                             { key: C2, action: `.bank` }, // , context: { id: shiftContext, value: 0 }
