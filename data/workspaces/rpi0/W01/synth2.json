@@ -10,27 +10,27 @@
         "values": [
             {
                 "key": "ENGINE",
-                "value": 2.0
-            },
-            {
-                "key": "VAL_1",
                 "value": 3.0
             },
             {
+                "key": "VAL_1",
+                "value": 5.0
+            },
+            {
                 "key": "VAL_2",
-                "value": 50.0
+                "value": 5.0
             },
             {
                 "key": "VAL_3",
-                "value": 50.0
+                "value": 10.0
             },
             {
                 "key": "VAL_4",
-                "value": 50.0
+                "value": 0.0
             },
             {
                 "key": "VAL_5",
-                "value": 50.0
+                "value": 0.0
             },
             {
                 "key": "VAL_6",

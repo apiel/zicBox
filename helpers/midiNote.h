@@ -1,7 +1,7 @@
-#ifndef _MIDI_NOTE_H_
-#define _MIDI_NOTE_H_
+#pragma once
 
 #include <cstdint>
+#include <math.h>
 
 const char* MIDI_NOTES_STR[132] = {
     // clang-format off
@@ -43,4 +43,6 @@ bool isBlackKey(int midiNote) {
            noteInOctave == 8 || noteInOctave == 10;
 }
 
-#endif
+float getMidiNoteFrequency(int midiNote, float refFreq = 220.0f, float refNote = 57.0f) {
+    return refFreq * powf(2.0f, (midiNote - refNote) / 12.0f);
+}

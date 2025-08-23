@@ -13,7 +13,6 @@ protected:
     MultiFx multiFx2;
     MMfilter filter;
 
-    float baseFreq = 100.0f;
     float velocity = 1.0f;
 
     float phases[MAX_VOICES] = { 0.0f };
@@ -22,7 +21,7 @@ public:
     // --- 10 parameters ---
     Val& body = val(0.0f, "BODY", { "Body", VALUE_CENTERED, .min = -24, .max = 24 }, [&](auto p) {
         p.val.setFloat(p.value);
-        baseFreq = 220.0f * powf(2.0f, p.val.get() / 12.0f);
+        setBaseFreq(body.get());
     });
 
     Val& voices = val(5.0f, "VOICES", { "Voices", .min = 1, .max = MAX_VOICES });
@@ -102,7 +101,7 @@ public:
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
     {
         velocity = _velocity;
-        baseFreq = 220.0f * powf(2.0f, (note - 60) / 12.0f);
+        setBaseFreq(body.get(), note);
         for (int i = 0; i < MAX_VOICES; ++i)
             phases[i] = 0.0f;
     }

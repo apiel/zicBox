@@ -9,7 +9,6 @@ protected:
     static constexpr int MAX_PARTIALS = 8;
     MultiFx multiFx;
 
-    float baseFreq = 100.0f;
     float velocity = 1.0f;
     float harmonicDecay = 1.0f;
 
@@ -25,7 +24,7 @@ public:
     // --- 10 parameters ---
     Val& body = val(0.0f, "BODY", { "Body", VALUE_CENTERED, .min = -24, .max = 24 }, [&](auto p) {
         p.val.setFloat(p.value);
-        setBaseFreq();
+        setBaseFreq(p.val.get());
     });
 
     Val& harmonics = val(50.0f, "HARMONICS", { "Harmonics", .unit = "%" });
@@ -113,20 +112,10 @@ public:
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
     {
         velocity = _velocity;
-        setBaseFreq(note);
+        setBaseFreq(body.get(), note);
         for (int i = 0; i < MAX_PARTIALS; i++) {
             phases[i] = 0.0f;
         }
         lfoPhase = 0.0f;
-    }
-
-    uint8_t baseFreqNote = 60;
-    void setBaseFreq(uint8_t note = 0)
-    {
-        if (note == 0)
-            note = baseFreqNote;
-
-        baseFreqNote = note;
-        baseFreq = 220.0f * powf(2.0f, (baseFreqNote - 60 + body.get()) / 12.0f);
     }
 };

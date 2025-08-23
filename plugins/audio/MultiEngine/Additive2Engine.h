@@ -12,7 +12,6 @@ protected:
     MMfilter filter;
 
     float velocity = 1.0f;
-    float baseFreq = 220.0f;
     float phase1 = 0.0f;
     float phase2 = 0.0f;
     float phase3 = 0.0f;
@@ -29,7 +28,7 @@ public:
     // --- 10 parameters ---
     Val& body = val(0.0f, "BODY", { "Body", VALUE_CENTERED, .min = -24, .max = 24 }, [&](auto p) {
         p.val.setFloat(p.value);
-        setBaseFreq();
+        setBaseFreq(p.val.get());
     });
 
     Val& harm1 = val(50.0f, "HARM1", { "Harm2", .unit = "%" }, [&](auto p) {
@@ -137,16 +136,6 @@ public:
     {
         velocity = _velocity;
         phase1 = phase2 = phase3 = phase4 = 0.0f;
-        setBaseFreq(note);
-    }
-
-    uint8_t baseFreqNote = 60;
-    void setBaseFreq(uint8_t note = 0)
-    {
-        if (note == 0)
-            note = baseFreqNote;
-
-        baseFreqNote = note;
-        baseFreq = 220.0f * powf(2.0f, (baseFreqNote - 60 + body.get()) / 12.0f);
+        setBaseFreq(body.get(), note);
     }
 };
