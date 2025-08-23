@@ -1,10 +1,13 @@
 ## Pixel TODO
 
-- TODO pcb top
+- FIXME change engine, update val...
 
 - TODO multi synth engine
         - wavetable
+          - ---> maybe instead to have 2 effects, add env mod depth and lfo mod depth (or select waveform)
         - bass
+
+- TODO seq motion random note
 
 - TODO reload variations when switching workspace
 

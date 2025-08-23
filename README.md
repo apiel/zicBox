@@ -202,6 +202,8 @@ More [documentation here](https://github.com/apiel/zicBox/wiki).
 
 ## Video
 
+https://www.youtube.com/playlist?list=PLikTjJf4SwPpBYi4iVVPOwZ3j4N9gT0Sy
+
 https://github.com/apiel/zicBox/assets/5873198/ce7851f0-9692-4132-8f6f-98f3bc18849a
 
 https://github.com/apiel/zicBox/assets/5873198/230f3da5-50a4-4377-aa6f-c81a4099012f

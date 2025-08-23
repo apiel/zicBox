@@ -42,7 +42,17 @@
     },
     "Sequencer": {
         "STATUS": 1.0,
-        "STEPS": null
+        "STEPS": [
+            {
+                "condition": "30%",
+                "enabled": true,
+                "len": 1,
+                "motion": "0,4,8",
+                "note": 72,
+                "position": 0,
+                "velocity": 0.800000011920929
+            }
+        ]
     },
     "SerializeTrack": {
         "VARIATION": 0.0

@@ -74,6 +74,9 @@ SynthSample:
 SynthMultiDrum:
 	make compile LIBNAME=SynthMultiDrum EXTRA="$(shell $(PKG_CONFIG) --cflags --libs sndfile)"
 
+SynthMulti:
+	make compile LIBNAME=SynthMulti EXTRA="$(shell $(PKG_CONFIG) --cflags --libs sndfile)"
+
 SynthDrumSample:
 	make compile LIBNAME=SynthDrumSample EXTRA="$(shell $(PKG_CONFIG) --cflags --libs sndfile)"
 

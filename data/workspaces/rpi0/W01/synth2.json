@@ -10,47 +10,47 @@
         "values": [
             {
                 "key": "ENGINE",
-                "value": 0.0
-            },
-            {
-                "key": "VAL_1",
-                "value": 12.0
-            },
-            {
-                "key": "VAL_2",
-                "value": 39.0
-            },
-            {
-                "key": "VAL_3",
-                "value": 0.0
-            },
-            {
-                "key": "VAL_4",
-                "value": 10.70001220703125
-            },
-            {
-                "key": "VAL_5",
-                "value": 64.0
-            },
-            {
-                "key": "VAL_6",
-                "value": 6.299999237060547
-            },
-            {
-                "key": "VAL_7",
-                "value": -72.0
-            },
-            {
-                "key": "VAL_8",
-                "value": 0.0
-            },
-            {
-                "key": "VAL_9",
                 "value": 1.0
             },
             {
+                "key": "VAL_1",
+                "value": -15.0
+            },
+            {
+                "key": "VAL_2",
+                "value": 8.899999618530273
+            },
+            {
+                "key": "VAL_3",
+                "value": 13.0
+            },
+            {
+                "key": "VAL_4",
+                "value": 20.0
+            },
+            {
+                "key": "VAL_5",
+                "value": -75.0
+            },
+            {
+                "key": "VAL_6",
+                "value": 62.0
+            },
+            {
+                "key": "VAL_7",
+                "value": 1.0
+            },
+            {
+                "key": "VAL_8",
+                "value": 68.0
+            },
+            {
+                "key": "VAL_9",
+                "value": 0.0
+            },
+            {
                 "key": "VAL_10",
-                "value": 84.0
+                "value": 31.0
             },
             {
                 "key": "ATTACK",
@@ -58,7 +58,7 @@
             },
             {
                 "key": "RELEASE",
-                "value": 950.0
+                "value": 910.0
             }
         ]
     },
