@@ -4,6 +4,7 @@
         - FIXME pitch engine: additive, additive2, (...?)
         - LFO instead of noise
         - wavetable
+        - bass
 
 - TODO reload variations when switching workspace
 

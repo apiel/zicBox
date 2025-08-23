@@ -2,6 +2,8 @@
 
 #include "plugins/audio/MultiEngine/Engine.h"
 #include "plugins/audio/utils/MultiFx.h"
+#include "helpers/math.h"
+
 #include <cmath>
 
 class SpaceShipEngine : public Engine {
@@ -23,22 +25,13 @@ protected:
     float lfoRateHz = 0.5f;
     float lfoDepth = 0.0f;
 
-    inline float fastSin(float x)
-    {
-        if (x < -M_PI)
-            x += 2 * M_PI;
-        else if (x > M_PI)
-            x -= 2 * M_PI;
-        return (16.0f * x * (M_PI - fabsf(x))) / (5.0f * M_PI * M_PI - 4.0f * fabsf(x) * (M_PI - fabsf(x)));
-    }
-
     float sampleOsc(int idx, float freq)
     {
         float phaseInc = 2.0f * M_PI * freq / props.sampleRate;
         oscPhases[idx] += phaseInc;
         if (oscPhases[idx] > 2.0f * M_PI)
             oscPhases[idx] -= 2.0f * M_PI;
-        return fastSin(oscPhases[idx]);
+        return fastSin2(oscPhases[idx]);
     }
 
     inline float softClip(float x, float amount)
@@ -106,7 +99,7 @@ public:
             lfoPhase += lfoInc;
             if (lfoPhase > 2.0f * M_PI)
                 lfoPhase -= 2.0f * M_PI;
-            lfoVal = fastSin(lfoPhase) * lfoDepth;
+            lfoVal = fastSin2(lfoPhase) * lfoDepth;
         }
 
         float sampleSum = 0.0f;

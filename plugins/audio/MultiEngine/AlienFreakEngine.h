@@ -2,8 +2,11 @@
 
 #include "plugins/audio/MultiEngine/Engine.h"
 #include "plugins/audio/utils/MultiFx.h"
+#include "helpers/math.h"
 #include <cmath>
 #include <cstdlib>
+
+// FIXME
 
 class AlienFreakEngine : public Engine {
 protected:
@@ -28,19 +31,12 @@ protected:
     float detune = 0.0f;
     float glitchAmount = 0.0f;
 
-    inline float fastSin(float x) {
-        // Bhaskara sine approximation
-        if (x < -M_PI) x += 2 * M_PI;
-        else if (x > M_PI) x -= 2 * M_PI;
-        return (16.0f * x * (M_PI - fabsf(x))) / (5.0f * M_PI * M_PI - 4.0f * fabsf(x) * (M_PI - fabsf(x)));
-    }
-
     float sampleOsc(int idx, float freq) {
         float phaseInc = 2.0f * M_PI * freq / props.sampleRate;
         oscPhases[idx] += phaseInc;
         if (oscPhases[idx] > 2.0f * M_PI) oscPhases[idx] -= 2.0f * M_PI;
 
-        return fastSin(oscPhases[idx]);
+        return fastSin2(oscPhases[idx]);
     }
 
 public:
@@ -106,7 +102,7 @@ public:
         float lfoInc = 2.0f * M_PI * lfoRateHz / props.sampleRate;
         lfoPhase += lfoInc;
         if(lfoPhase > 2.0f * M_PI) lfoPhase -= 2.0f * M_PI;
-        float lfoVal = fastSin(lfoPhase) * lfoDepth; // ±LFO depth
+        float lfoVal = fastSin2(lfoPhase) * lfoDepth; // ±LFO depth
 
         float sampleSum = 0.0f;
         for(int i=0;i<NUM_OSC;i++){

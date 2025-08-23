@@ -21,11 +21,9 @@ protected:
     float sampleIndexMod = 0.0f;
     float sampleIndexLfo = 0.0f;
 
-    float baseFreq = 100.0f;
     float velocity = 1.0f;
 
     // params
-    float bodyHz = 100.0f;
     float toneRatio = 1.0f;
     float snapRatio = 2.0f;
     float modIndex = 0.0f;
@@ -34,7 +32,7 @@ public:
     // --- 10 parameters ---
     Val& body = val(0.0f, "BODY", { "Body", VALUE_CENTERED, .min = -24, .max = 24 }, [&](auto p) {
         p.val.setFloat(p.value);
-        bodyHz = 220.0f * powf(2.0f, p.val.get() / 12.0f);
+        setBaseFreq(body.get());
     });
 
     Val& tone = val(100.0f, "TONE", { "Tone", .min = 0, .max = 400 }, [&](auto p) {
@@ -97,8 +95,8 @@ public:
         float pitchEnvVal = envAmpVal; // envelope morph applied
 
         // base + pitch envelope
-        float freq = bodyHz * toneRatio * powf(2.0f, pitchEnvVal * 2.0f);
-        float modFreq = bodyHz * snapRatio;
+        float freq = baseFreq * toneRatio * powf(2.0f, pitchEnvVal * 2.0f);
+        float modFreq = baseFreq * snapRatio;
 
         float modSignal = mod.sample(&sampleIndexMod, modFreq);
         float car = carrier.sample(&sampleIndexCar, freq + modSignal * modIndex * freq);
@@ -128,6 +126,6 @@ public:
         sampleIndexCar = 0.0f;
         sampleIndexMod = 0.0f;
         sampleIndexLfo = 0.0f;
-        baseFreq = bodyHz * powf(2.0f, (note - 60) / 12.0f);
+        setBaseFreq(body.get(), note);
     }
 };
