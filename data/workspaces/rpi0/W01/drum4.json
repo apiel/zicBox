@@ -1,6 +1,6 @@
 {
     "Drum4": {
-        "sampleFile": "hat_02.wav",
+        "sampleFile": "hat_01.wav",
         "values": [
             {
                 "key": "ENGINE",
@@ -12,7 +12,7 @@
             },
             {
                 "key": "VAL_2",
-                "value": 0.0
+                "value": 7.0
             },
             {
                 "key": "VAL_3",
@@ -20,7 +20,7 @@
             },
             {
                 "key": "VAL_4",
-                "value": 0.0
+                "value": 10.0
             },
             {
                 "key": "VAL_5",
@@ -28,7 +28,7 @@
             },
             {
                 "key": "VAL_6",
-                "value": 66.90003204345703
+                "value": 8.0
             },
             {
                 "key": "VAL_7",
@@ -48,11 +48,11 @@
             },
             {
                 "key": "DURATION",
-                "value": 720.0
+                "value": 100.0
             },
             {
                 "key": "AMP_MORPH",
-                "value": 12.0
+                "value": 0.0
             }
         ]
     },

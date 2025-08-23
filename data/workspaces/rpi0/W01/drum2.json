@@ -1,9 +1,10 @@
 {
     "Drum2": {
+        "sampleFile": "bass_01.wav",
         "values": [
             {
                 "key": "ENGINE",
-                "value": 7.0
+                "value": 5.0
             },
             {
                 "key": "VAL_1",
@@ -11,23 +12,23 @@
             },
             {
                 "key": "VAL_2",
-                "value": 100.0
+                "value": 1.0
             },
             {
                 "key": "VAL_3",
-                "value": 100.0
+                "value": 10.0
             },
             {
                 "key": "VAL_4",
-                "value": 0.0
+                "value": 10.0
             },
             {
                 "key": "VAL_5",
-                "value": 50.0
+                "value": 8.0
             },
             {
                 "key": "VAL_6",
-                "value": 50.0
+                "value": 1.0
             },
             {
                 "key": "VAL_7",

@@ -1,8 +1,8 @@
 ## Pixel TODO
 
+- TODO pcb top
+
 - TODO multi synth engine
-        - FIXME pitch engine: additive, additive2, (...?)
-        - LFO instead of noise
         - wavetable
         - bass
 
@@ -32,6 +32,8 @@
             - ---> see how to handle ssh or instead use token, but the idea would be to store as less as possible info on zicBox app side (if possible nothing) and delegate everything to the OS...
 
 - TODO look at MiniDexed for bare metal OS https://github.com/probonopd/MiniDexed
+
+- TODO try the orange pi!!! we could then remove DAC... would just need audio in
 
 - TODO multi drum kick engine: work on the frequency envelop (ask Michi :p)
 

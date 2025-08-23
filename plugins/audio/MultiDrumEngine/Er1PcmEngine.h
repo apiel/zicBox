@@ -48,6 +48,14 @@ public:
         pitch = pow(2, p.value / 12.0f);
     });
 
+    Val& waveform = val(1.0f, "WAVEFORM", { "Waveform", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count }, [&](auto p) {
+        // logDebug("Waveform: %f", p.value);
+        // open(p.value, !initialized);
+        // initialized = true;
+
+        open(p.value);
+    });
+
     Val& modDepth = val(0.0f, "MOD_DEPTH", { "Mod Depth", VALUE_CENTERED, .min = -100.0f, .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         modDepthAmount = p.val.pct() * 2.0f - 1.0f;
@@ -149,14 +157,6 @@ public:
                 return 1.0f + value * modDepthAmount;
             };
         }
-    });
-
-    Val& waveform = val(1.0f, "WAVEFORM", { "Waveform", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count }, [&](auto p) {
-        // logDebug("Waveform: %f", p.value);
-        // open(p.value, !initialized);
-        // initialized = true;
-
-        open(p.value);
     });
 
     Val& transientMorph = val(100.0, "TRANSIENT", { "Transient", VALUE_STRING, .step = 0.1f, .floatingPoint = 1 }, [&](auto p) {
