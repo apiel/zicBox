@@ -1,7 +1,5 @@
 ## Pixel TODO
 
-- FIXME change engine, update val...
-
 - TODO multi synth engine
         - bass
 

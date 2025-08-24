@@ -34,14 +34,13 @@ protected:
 
     ValueInterface* val = NULL;
     int8_t encoderId = -1;
-    uint8_t floatPrecision = 0;
 
     bool showValue = true;
     bool showUnit = true;
     bool showLabel = true;
     int showLabelOverValue = -1;
     int labelOverValueX = -1;
-    bool useStringValue = false;
+    bool useNumberValue = false;
     bool verticalAlignCenter = false;
     bool alignLeft = false;
     std::string label;
@@ -66,10 +65,11 @@ protected:
 
     std::string getValStr()
     {
-        if (useStringValue) {
+        if (!useNumberValue && val->hasType(VALUE_STRING)) {
             return val->string();
         }
         std::string valStr = std::to_string(val->get());
+        float floatPrecision = val->props().floatingPoint;
         valStr = valStr.substr(0, valStr.find(".") + floatPrecision + (floatPrecision > 0 ? 1 : 0));
         return valStr;
     }
@@ -95,10 +95,6 @@ public:
         std::string param = getConfig(config, "param"); //eg: "parameter_name"
 
         val = watch(audioPlugin->getValue(param));
-        if (val != NULL) {
-            floatPrecision = val->props().floatingPoint;
-            useStringValue = val->hasType(VALUE_STRING);
-        }
 
         /// The encoder id that will interract with this component.
         encoderId = config.value("encoderId", encoderId); //eg: 0
@@ -108,11 +104,8 @@ public:
             label = config["label"].get<std::string>(); //eg: "custom_label"
         }
 
-        /// Set how many digits after the decimal point (by default none.
-        floatPrecision = config.value("floatPrecision", floatPrecision); //eg: 2
-
-        /// Use the string value instead of the floating point one (default: false).
-        useStringValue = config.value("useStringValue", useStringValue); //eg: true
+        /// Use the number value instead of string value (default: false).
+        useNumberValue = config.value("useNumberValue", useNumberValue); //eg: true
 
         /// Set the bar height (default: 2).
         barH = config.value("barHeight", barH); //eg: 2

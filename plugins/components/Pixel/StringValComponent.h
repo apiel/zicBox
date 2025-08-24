@@ -14,15 +14,13 @@ protected:
 
     ValueInterface* val = NULL;
 
-    bool useStringValue = false;
-    uint8_t floatPrecision = 0;
-
     std::string getValStr()
     {
-        if (useStringValue) {
+        if (val->hasType(VALUE_STRING)) {
             return val->string();
         }
         std::string valStr = std::to_string(val->get());
+        float floatPrecision = val->props().floatingPoint;
         valStr = valStr.substr(0, valStr.find(".") + floatPrecision + (floatPrecision > 0 ? 1 : 0));
         return valStr;
     }
@@ -42,10 +40,6 @@ public:
         std::string param = getConfig(config, "param"); //eg: "parameter_name"
 
         val = watch(audioPlugin->getValue(param));
-        if (val != NULL) {
-            useStringValue = val->hasType(VALUE_STRING);
-            floatPrecision = val->props().floatingPoint;
-        }
 
         if (config.contains("fontLabel")) {
             fontLabel = draw.getFont(config["fontLabel"].get<std::string>().c_str()); //eg: "PoppinsLight_8"

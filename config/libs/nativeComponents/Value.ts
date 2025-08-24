@@ -6,7 +6,7 @@ export const Value = getJsonComponent<{
     encoderId?: number;
     label?: string;
     floatPrecision?: number;
-    useStringValue?: boolean;
+    useNumberValue?: boolean;
     barHeight?: number;
     barBgHeight?: number;
     verticalAlignCenter?: boolean;
