@@ -32,7 +32,7 @@
             },
             {
                 "key": "LOOP_LENGTH",
-                "value": 5.0
+                "value": 0.0
             },
             {
                 "key": "LOOP_RELEASE",
@@ -44,10 +44,10 @@
         "STATUS": 1.0,
         "STEPS": [
             {
-                "condition": "30%",
+                "condition": "---",
                 "enabled": true,
                 "len": 1,
-                "motion": "0,4,8",
+                "motion": "rand0_12",
                 "note": 72,
                 "position": 0,
                 "velocity": 0.800000011920929

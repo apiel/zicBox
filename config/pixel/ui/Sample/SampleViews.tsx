@@ -48,6 +48,7 @@ export function SampleViews({ track, synthName, color, contextId, title }: Props
                 color={color}
                 contextId={contextId}
                 title={title}
+                includeLength
             />
 
             <ClipView name={`${synthName}Clips`} track={track} synthName={synthName} color={color} title={title} />

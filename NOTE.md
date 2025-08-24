@@ -3,20 +3,11 @@
 - TODO multi synth engine
         - bass
 
-- TODO seq motion random note
-            - rnd+10
-            - rnd+2
-            - rnd+1
-            - rnd+3
-            - ...
-
 - TODO reload variations when switching workspace
 
 - TODO mute shortcut, make it part of the Volume plugin, it should save last state before to mute. (in grid & pixel, use shift to mute?)
 
 - FIXME tempo issue
-
-- FIXME sample pitch
 
 - TODO ARP for synth, like note repeat, put a encoder to select ARP scale, from none to whatever... the when clicking trigger note, it would play the note or ARP, no matter if sequencer is playing or not.
 

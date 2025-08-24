@@ -144,7 +144,7 @@ export function SeqView({
                         audioPlugin={`Sequencer`}
                         track={track}
                         contextId={contextId}
-                        fontValue={'PoppinsLight_24'}
+                        fontValue={'PoppinsLight_16'}
                         fontLabel={'PoppinsLight_12'}
                         type={'STEP_CONDITION'}
                         labelColor={colorOff}
@@ -157,7 +157,7 @@ export function SeqView({
                         audioPlugin={`Sequencer`}
                         track={track}
                         contextId={contextId}
-                        fontValue={'PoppinsLight_24'}
+                        fontValue={'PoppinsLight_16'}
                         fontLabel={'PoppinsLight_12'}
                         type={'STEP_MOTION'}
                         labelColor={colorOff}
@@ -171,7 +171,7 @@ export function SeqView({
                             audioPlugin={`Sequencer`}
                             track={track}
                             contextId={contextId}
-                            fontValue={'PoppinsLight_24'}
+                            fontValue={'PoppinsLight_16'}
                             fontLabel={'PoppinsLight_12'}
                             type={'STEP_LENGTH'}
                             barColor="primary"
@@ -258,7 +258,7 @@ export function SeqView({
                         audioPlugin={`Sequencer`}
                         track={track}
                         contextId={contextId}
-                        fontValue={'PoppinsLight_24'}
+                        fontValue={'PoppinsLight_16'}
                         fontLabel={'PoppinsLight_12'}
                         type={'STEP_CONDITION'}
                         encoderId={enc1Seq.encoderId}
@@ -269,7 +269,7 @@ export function SeqView({
                         audioPlugin={`Sequencer`}
                         track={track}
                         contextId={contextId}
-                        fontValue={'PoppinsLight_24'}
+                        fontValue={'PoppinsLight_16'}
                         fontLabel={'PoppinsLight_12'}
                         type={'STEP_MOTION'}
                         encoderId={enc2Seq.encoderId}
@@ -281,7 +281,7 @@ export function SeqView({
                             audioPlugin={`Sequencer`}
                             track={track}
                             contextId={contextId}
-                            fontValue={'PoppinsLight_24'}
+                            fontValue={'PoppinsLight_16'}
                             fontLabel={'PoppinsLight_12'}
                             type={'STEP_LENGTH'}
                             barColor="primary"
