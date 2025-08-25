@@ -70,7 +70,7 @@ public:
         float res = 0.95 * (1.0 - std::pow(1.0 - p.val.pct(), 2));
         filter.setResonance(res);
     });
-    Val& clipping = val(0.0, "GAIN_CLIPPING", { "Gain Clipping", .unit = "%" });
+    Val& clipping = val(0.0, "GAIN_CLIPPING", { "Clipping", .unit = "%" });
     Val& drive = val(0.0f, "DRIVE", { "Drive", .unit = "%" });
     Val& compression = val(0.0f, "COMPRESSION", { "Compression", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
     Val& reverb = val(0.3f, "REVERB", { "Reverb", .unit = "%" });
