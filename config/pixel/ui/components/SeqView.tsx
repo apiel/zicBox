@@ -21,9 +21,9 @@ import {
     ScreenHeight,
     ScreenWidth,
     seqContext,
-    shiftContext,
     W1_4,
-    W2_4
+    W2_4,
+    W3_4
 } from '../constants';
 import {
     enc1Seq,
@@ -36,6 +36,7 @@ import {
     seqTop,
 } from '../constantsValue';
 import { Layout } from './Layout';
+import { shiftVisibilityContext, unshiftVisibilityContext } from './ShiftLayout';
 
 export type Props = {
     name: string;
@@ -47,29 +48,23 @@ export type Props = {
     includeLength?: boolean;
 };
 
-export function SeqView({
-    name,
-    track,
-    synthName,
-    color,
-    contextId,
-    title,
-    includeLength,
-}: Props) {
-    const row1: VisibilityContext[] = [
-        {
-            index: seqContext,
-            value: 0,
-            condition: 'SHOW_WHEN',
-        },
-    ];
-    const row2: VisibilityContext[] = [
-        {
-            index: seqContext,
-            value: 1,
-            condition: 'SHOW_WHEN',
-        },
-    ];
+export function SeqView({ name, track, synthName, color, contextId, title, includeLength }: Props) {
+    // const row1: VisibilityContext[] = [
+    //     {
+    //         index: seqContext,
+    //         value: 0,
+    //         condition: 'SHOW_WHEN',
+    //     },
+    // ];
+    // const row2: VisibilityContext[] = [
+    //     {
+    //         index: seqContext,
+    //         value: 1,
+    //         condition: 'SHOW_WHEN',
+    //     },
+    // ];
+    const row1: VisibilityContext[] = [unshiftVisibilityContext];
+    const row2: VisibilityContext[] = [shiftVisibilityContext];
     const colorOff = rgb(90, 90, 90);
     const menuTextColor = rgb(75, 75, 75);
     return (
@@ -290,23 +285,39 @@ export function SeqView({
                         />
                     )}
 
-                    <Text
+                    {/* <Text
                         text="Scroll"
-                        bounds={[0, ScreenHeight - 18, W1_4, 16]}
+                        bounds={[0, ScreenHeight - 20, W1_4, 16]}
                         centered={true}
                         color={menuTextColor}
                     />
-
                     <Text
                         text="Toggle knobs"
                         bounds={[W1_4, ScreenHeight - 20, W1_4, 16]}
                         centered={true}
                         color={menuTextColor}
+                    /> */}
+                    <Text
+                        text="&icon::arrowUp::filled"
+                        bounds={[0, ScreenHeight - 18, W1_4, 16]}
+                        centered={true}
+                        color={menuTextColor}
                     />
-
+                    <Text
+                        text="&icon::arrowDown::filled"
+                        bounds={[W1_4 - 10, ScreenHeight - 18, W1_4, 16]}
+                        centered={true}
+                        color={menuTextColor}
+                    />
                     <Text
                         text="Exit"
-                        bounds={[W2_4, ScreenHeight - 20, W1_4, 16]}
+                        bounds={[W2_4 - 20, ScreenHeight - 20, W1_4, 16]}
+                        centered={true}
+                        color={menuTextColor}
+                    />
+                    <Text
+                        text="Shift"
+                        bounds={[W3_4 - 30, ScreenHeight - 20, W1_4, 16]}
                         centered={true}
                         color={menuTextColor}
                     />
@@ -321,8 +332,10 @@ export function SeqView({
                         // rowsSelectionColor={"#28595f"}
                         gridKeys={[A1, A2, A3, A4, B1, B2, B3, B4]}
                         keys={[
-                            { key: C1, action: '.scroll', context: { id: shiftContext, value: 0 } },
-                            { key: C2, action: `contextToggleOnRelease:${seqContext}:1:0` },
+                            // { key: C1, action: '.scroll' }, // , context: { id: shiftContext, value: 0 }
+                            // { key: C2, action: `contextToggleOnRelease:${seqContext}:1:0` },
+                            { key: C1, action: '.scroll:-1' },
+                            { key: C2, action: '.scroll' },
                             {
                                 key: C4,
                                 action: `contextToggleOnRelease:${seqContext}:1:0`,

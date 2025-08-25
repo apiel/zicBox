@@ -5,8 +5,6 @@
 
 - TODO reload variations when switching workspace
 
-- TODO seq scroll up/down and use shift button to toggle btn <-------- or should we stick to the same button to toggle btn??
-
 - TODO mute shortcut, make it part of the Volume plugin, it should save last state before to mute. (in grid & pixel, use shift to mute?)
 
 - FIXME tempo issue
