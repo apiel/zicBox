@@ -431,6 +431,33 @@ public:
             }
         }
 
+        if (action.rfind("mute:") == 0) {
+            // std::string substring = action.substr(5);
+            // std::vector<char> params(substring.begin(), substring.end());
+            // params.push_back('\0');
+            // char* pluginName = strtok(params.data(), ":");
+            // char* trackStr = strtok(NULL, ":");
+            // AudioPlugin* seqPlugin = &component->getPlugin(pluginName, trackStr != NULL ? atoi(trackStr) : component->track);
+
+            std::string trackStr = action.substr(5);
+            int track = atoi(trackStr.c_str());
+            AudioPlugin* seqPlugin = &component->getPlugin("Sequencer", track);
+            if (seqPlugin) {
+                ValueInterface* valSeqStatus = seqPlugin->getValue("STATUS");
+                if (valSeqStatus) {
+                    return [this, valSeqStatus](KeypadLayout::KeyMap& keymap) {
+                        if (KeypadLayout::isReleased(keymap)) {
+                            if (valSeqStatus->get() == 1) {
+                                valSeqStatus->set(0);
+                            } else {
+                                valSeqStatus->set(1);
+                            }
+                        }
+                    };
+                }
+            }
+        }
+
         if (action.rfind("debug:") == 0) {
             std::string substring = action.substr(6);
             std::vector<char> text(substring.begin(), substring.end());

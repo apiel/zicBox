@@ -72,9 +72,11 @@ protected:
                         redirect();
                     } // else do nothing
                 } else if (valSeqStatus->get() == 1) {
-                    valSeqStatus->set(0);
+                    valSeqStatus->set(0); // Mute
+                } else if (valSeqStatus->get() == 0) {
+                    valSeqStatus->set(2); // Play next
                 } else {
-                    valSeqStatus->set(1);
+                    valSeqStatus->set(1); // Play right away
                 }
                 // Ultimately we could check if sequencer is playing so it only start next if it is...
                 // however, to do this, we would have to track another data id again: IS_PLAYING
@@ -183,6 +185,17 @@ public:
                         int idAndBank = getIdWithBank(id);
                         pluginSerialize->data(deleteVariationDataId, (void*)&idAndBank);
                         renderNextAndContext();
+                    }
+                };
+            }
+            if (action == ".mute") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        if (valSeqStatus->get() == 1) {
+                            valSeqStatus->set(0);
+                        } else {
+                            valSeqStatus->set(1);
+                        }
                     }
                 };
             }
