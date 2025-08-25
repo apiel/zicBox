@@ -8,15 +8,6 @@
 
 class BassEngine : public Engine {
 protected:
-    // Higher base note is, lower pitch will be
-    //
-    // Usualy our base note is 60
-    // but since we want a bass sound we want to remove one octave (12 semitones)
-    // So we send note 60, we will play note 48...
-    uint8_t baseNote = 60 + 12;
-    // uint8_t baseFreqNote = 60 + 12;
-    float freq = 0.0f;
-
     MultiFx multiFx;
     EffectFilterArray<2> filter;
 
@@ -61,6 +52,13 @@ protected:
         return applyWaveshapeLut(input, amount, props.lookupTable);
     }
 
+    // Higher base note is, lower pitch will be
+    //
+    // Usualy our base note is 60
+    // but since we want a bass sound we want to remove one octave (12 semitones)
+    // So we send note 60, we will play note 48...
+    uint8_t baseNote = 60 + 12;
+    float freq = 0.0f;
     uint8_t freqNote = 60;
     void setFreq(uint8_t note = 0)
     {
@@ -135,12 +133,8 @@ public:
             return;
         }
 
-        // float t = float(sampleCounter) / totalSamples;
-        // float bendAmt = bend.pct();
-        // float bendedFreq = baseFreq * (1.f - bendAmt * t);
+        // float bendedFreq = freq * (1.f - bend.pct() * envAmpVal);
         // float out = wave->sample(&sampleIndex, bendedFreq);
-
-        // float out = wave->sample(&sampleIndex, baseFreq);
         float out = wave->sample(&sampleIndex, freq);
         out = out * velocity * envAmpVal;
 
@@ -159,7 +153,6 @@ public:
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
     {
         velocity = _velocity;
-        // setBaseFreq(pitch.get(), note);
-        setFreq(note); // TODO see if we can somehow use setBaseFreq!!
+        setFreq(note);
     }
 };
