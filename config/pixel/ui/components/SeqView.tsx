@@ -97,7 +97,8 @@ export function SeqView({ name, track, synthName, color, contextId, title, inclu
                         contextId={contextId}
                         fontValue={'PoppinsLight_24'}
                         fontLabel={'PoppinsLight_12'}
-                        type={'STEP_TOGGLE'}
+                        type={'STEP_LENGTH_AND_TOGGLE'}
+                        maxSteps={includeLength ? 64 : 0} // we set 0 so it is either 0 or 1..
                         barColor="primary"
                         visibilityContext={row1}
                     />
@@ -160,22 +161,6 @@ export function SeqView({ name, track, synthName, color, contextId, title, inclu
                         encoderId={-1}
                         visibilityContext={row1}
                     />
-                    {includeLength && (
-                        <SequencerValue
-                            {...enc7Seq}
-                            audioPlugin={`Sequencer`}
-                            track={track}
-                            contextId={contextId}
-                            fontValue={'PoppinsLight_16'}
-                            fontLabel={'PoppinsLight_12'}
-                            type={'STEP_LENGTH'}
-                            barColor="primary"
-                            labelColor={colorOff}
-                            valueColor={colorOff}
-                            encoderId={-1}
-                            visibilityContext={row1}
-                        />
-                    )}
 
                     <Rect
                         bounds={[0, seqTop - 10, 2, 60]}

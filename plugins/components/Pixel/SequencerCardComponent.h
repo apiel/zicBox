@@ -396,6 +396,9 @@ public:
         Step* step = getStepAtPos(position);
         if (step) {
             step->enabled = !step->enabled;
+            if (step->enabled && step->len == 0) {
+                step->len = 1;
+            }
         } else {
             // Create a step and push it to the end
             Step newStep;

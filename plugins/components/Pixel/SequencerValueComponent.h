@@ -119,6 +119,9 @@ public:
         } else if (type == "STEP_MOTION") {
             renderFn = std::bind(&SequencerValueComponent::renderStepMotion, this);
             onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepMotion, this, std::placeholders::_1);
+        } else if (type == "STEP_LENGTH_AND_TOGGLE") {
+            renderFn = std::bind(&SequencerValueComponent::renderStepLengthAndToggle, this);
+            onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepLengthAndToggle, this, std::placeholders::_1);
         } else {
             renderFn = std::bind(&SequencerValueComponent::renderSelectedStep, this);
             onEncoderFn = std::bind(&SequencerValueComponent::onEncoderStepSelection, this, std::placeholders::_1);
@@ -181,54 +184,6 @@ protected:
         }
         setContext(contextId, newStep);
         renderNext();
-    }
-
-    void renderStepToggle()
-    {
-        Step* step = getSelectedStep();
-        bool isOn = step != nullptr && step->enabled;
-
-        int x = relativePosition.x + (size.w) * 0.5;
-        int y = relativePosition.y + 4;
-
-        Color bgBar = darken(barColor, 0.4);
-        draw.filledRect({ x - 10, y }, { 20, 20 }, { bgBar });
-        y = y + 10;
-        draw.filledCircle({ x + 10, y }, 10, { isOn ? barColor : bgBar });
-        draw.filledCircle({ x - 10, y }, 10, { isOn ? bgBar : barColor });
-        y = y + 12;
-        draw.textCentered({ x, y }, isOn ? "ON" : "OFF", labelFontSize, { labelColor, .font = fontLabel });
-
-        // draw.filledRect({ x - 5, y }, { 10, 10 }, { bgBar });
-        // y = y + 5;
-        // draw.filledCircle({ x + 5, y }, 5, { isOn ? barColor : bgBar });
-        // draw.filledCircle({ x - 5, y }, 5, { isOn ? bgBar : barColor });
-        // y = y + 5;
-        // draw.textCentered({ x, y }, isOn ? "ON" : "OFF", valueFontSize, { valueColor, .font = fontValue });
-    }
-
-    void onEncoderStepToggle(int8_t direction)
-    {
-        Step* step = getSelectedStep();
-        if (direction < 0) {
-            if (step != nullptr) {
-                step->enabled = false;
-                renderNextAndSetContext();
-            }
-        } else {
-            if (step) {
-                step->enabled = true;
-                renderNextAndSetContext();
-            } else if (contextId != 0) {
-                // Create a step and push it to the end
-                Step newStep;
-                newStep.position = view->contextVar[contextId];
-                newStep.enabled = true;
-                newStep.len = 1;
-                steps->push_back(newStep);
-                renderNextAndSetContext();
-            }
-        }
     }
 
     void renderStepNote()
@@ -332,6 +287,94 @@ protected:
             // renderNext();
             renderNextAndSetContext();
         }
+    }
+
+    void renderStepToggle()
+    {
+        Step* step = getSelectedStep();
+        bool isOn = step != nullptr && step->enabled;
+
+        int x = relativePosition.x + (size.w) * 0.5;
+        int y = relativePosition.y + 4;
+
+        Color bgBar = darken(barColor, 0.4);
+        draw.filledRect({ x - 10, y }, { 20, 20 }, { bgBar });
+        y = y + 10;
+        draw.filledCircle({ x + 10, y }, 10, { isOn ? barColor : bgBar });
+        draw.filledCircle({ x - 10, y }, 10, { isOn ? bgBar : barColor });
+        y = y + 12;
+        draw.textCentered({ x, y }, isOn ? "ON" : "OFF", labelFontSize, { labelColor, .font = fontLabel });
+
+        // draw.filledRect({ x - 5, y }, { 10, 10 }, { bgBar });
+        // y = y + 5;
+        // draw.filledCircle({ x + 5, y }, 5, { isOn ? barColor : bgBar });
+        // draw.filledCircle({ x - 5, y }, 5, { isOn ? bgBar : barColor });
+        // y = y + 5;
+        // draw.textCentered({ x, y }, isOn ? "ON" : "OFF", valueFontSize, { valueColor, .font = fontValue });
+    }
+
+    void onEncoderStepToggle(int8_t direction)
+    {
+        Step* step = getSelectedStep();
+        if (direction < 0) {
+            if (step != nullptr) {
+                step->enabled = false;
+                renderNextAndSetContext();
+            }
+        } else {
+            if (step) {
+                step->enabled = true;
+                renderNextAndSetContext();
+            } else if (contextId != 0) {
+                // Create a step and push it to the end
+                Step newStep;
+                newStep.position = view->contextVar[contextId];
+                newStep.enabled = true;
+                newStep.len = 1;
+                steps->push_back(newStep);
+                renderNextAndSetContext();
+            }
+        }
+    }
+
+    void renderStepLengthAndToggle()
+    {
+        Step* step = getSelectedStep();
+        bool isOn = step != nullptr && step->enabled;
+        int x = relativePosition.x + (size.w) * 0.5;
+        int y = relativePosition.y;
+
+        if (!isOn) {
+            draw.textCentered({ x, y }, "OFF", valueFontSize, { valueColor, .font = fontValue });
+        } else {
+            draw.textCentered({ x, y }, std::to_string(step->len), valueFontSize, { valueColor, .font = fontValue });
+        }
+        y += valueFontSize + 2;
+        draw.textCentered({ x, y }, "Length", labelFontSize, { labelColor, .font = fontLabel });
+    }
+
+    void onEncoderStepLengthAndToggle(int8_t direction)
+    {
+        Step* step = getSelectedStep();
+        if (step) {
+            step->setLength(step->len + direction);
+            if (step->len == 0) {
+                step->enabled = false;
+            } else {
+                if (step->len > maxSteps + 1) { // if we have 64 steps, we allows 65, so we can do a noteOn that never goes off.
+                    step->len = maxSteps + 1;
+                }
+                step->enabled = true;
+            }
+        } else if (direction > 0 && contextId != 0) {
+            // Create a step and push it to the end
+            Step newStep;
+            newStep.position = view->contextVar[contextId];
+            newStep.enabled = true;
+            newStep.len = 1;
+            steps->push_back(newStep);
+        }
+        renderNextAndSetContext();
     }
 
     void renderStepVelocity()

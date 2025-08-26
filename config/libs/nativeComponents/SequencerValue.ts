@@ -14,6 +14,14 @@ export const SequencerValue = getJsonComponent<{
     fontValue?: string;
     fontLabel?: string;
     encoderId?: number;
-    type: "STEP_SELECTION" | "STEP_TOGGLE" | "STEP_NOTE" | "STEP_CONDITION" | "STEP_VELOCITY" | "STEP_LENGTH" | "STEP_MOTION";
+    type:
+        | 'STEP_SELECTION'
+        | 'STEP_TOGGLE'
+        | 'STEP_NOTE'
+        | 'STEP_CONDITION'
+        | 'STEP_VELOCITY'
+        | 'STEP_LENGTH'
+        | 'STEP_MOTION'
+        | 'STEP_LENGTH_AND_TOGGLE';
     selectStepUsingLength?: boolean;
 }>('SequencerValue');
