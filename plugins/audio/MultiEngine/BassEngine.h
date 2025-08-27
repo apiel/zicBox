@@ -33,9 +33,8 @@ protected:
     float applyEffects(float input)
     {
         float output = input;
-
         output = doCompression(output);
-        output = applyDrive(output, drive.pct(), props.lookupTable);
+        output = doDrive(output);
         return output;
     }
 
@@ -50,6 +49,19 @@ protected:
         }
         float amount = 1 - compression.pct() * 2;
         return applyWaveshapeLut(input, amount, props.lookupTable);
+    }
+
+    float doDrive(float input)
+    {
+        if (drive.pct() == 0.5f) {
+            return input;
+        }
+        if (drive.pct() > 0.5f) {
+            float amount = drive.pct() * 2 - 1.0f;
+            return applyDrive(input, amount, props.lookupTable);
+        }
+        float amount = 1 - drive.pct() * 2;
+        return range(input + input * amount * 8, -1.0f, 1.0f);
     }
 
     // Higher base note is, lower pitch will be
@@ -74,8 +86,7 @@ public:
         p.val.setFloat(p.value);
         setFreq();
     });
-    // Val& bend = val(0.4f, "BEND", { "Bend", .unit = "%" });
-    Val& clipping = val(0.0, "GAIN_CLIPPING", { "Clipping", .unit = "%" });
+    Val& bend = val(0.4f, "BEND", { "Bend", .unit = "%" });
 
     Val& waveformType = val(1.0f, "WAVEFORM_TYPE", { "Waveform", VALUE_STRING, .max = BASS_WAVEFORMS_COUNT - 1 }, [&](auto p) {
         float current = p.val.get();
@@ -106,7 +117,7 @@ public:
         filter.setResonance(res);
     });
 
-    Val& drive = val(0.0f, "DRIVE", { "Drive", .unit = "%" });
+    Val& drive = val(0.0f, "DRIVE", { "Drive", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
     Val& compression = val(0.0f, "COMPRESSION", { "Compression", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
 
     Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
@@ -133,9 +144,8 @@ public:
             return;
         }
 
-        // float bendedFreq = freq * (1.f - bend.pct() * envAmpVal);
-        // float out = wave->sample(&sampleIndex, bendedFreq);
-        float out = wave->sample(&sampleIndex, freq);
+        float bendedFreq = freq * (1.f - bend.pct() * envAmpVal);
+        float out = wave->sample(&sampleIndex, bendedFreq);
         out = out * velocity * envAmpVal;
 
         filter.setCutoff(0.85 * cutoff.pct() * envAmpVal + 0.1);
@@ -143,9 +153,7 @@ public:
         filter.setSampleData(filter.lp[0], 1);
         out = filter.lp[1];
 
-        out = range(out + out * clipping.pct() * 8, -1.0f, 1.0f);
         out = applyEffects(out);
-
         out = multiFx.apply(out, fxAmount.pct());
         buf[track] = out;
     }

@@ -18,11 +18,11 @@
             },
             {
                 "key": "VAL_2",
-                "value": 71.0
+                "value": 41.0
             },
             {
                 "key": "VAL_3",
-                "value": 1.0
+                "value": 0.0
             },
             {
                 "key": "VAL_4",
@@ -42,7 +42,7 @@
             },
             {
                 "key": "VAL_8",
-                "value": 0.0
+                "value": -8.0
             },
             {
                 "key": "VAL_9",
@@ -54,11 +54,11 @@
             },
             {
                 "key": "ATTACK",
-                "value": 880.0
+                "value": 270.0
             },
             {
                 "key": "RELEASE",
-                "value": 820.0
+                "value": 620.0
             }
         ]
     },

@@ -1,14 +1,13 @@
 ## Pixel TODO
 
-- TODO multi synth engine
-        - bass ---> should it be bend instead of clipping or what ever other effect?
-
 - TODO reload variations when switching workspace
 
 - TODO sample, should we go into granular and multi-voice... either give the choice between FX1 AND FX2, vs using some granular
           - or maybe multi sample engine, like the multi synth... then should filter also be optional...??
 
 - FIXME tempo issue
+
+- NOTE in bass engine (multi synth), should we make have 2 multi fx instead of those
 
 - TODO ARP for synth, like note repeat, put a encoder to select ARP scale, from none to whatever... the when clicking trigger note, it would play the note or ARP, no matter if sequencer is playing or not.
 

@@ -64,6 +64,15 @@
                 "len": 1,
                 "motion": "---",
                 "note": 60,
+                "position": 0,
+                "velocity": 0.809999942779541
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
                 "position": 4,
                 "velocity": 0.800000011920929
             },
@@ -209,15 +218,6 @@
                 "motion": "---",
                 "note": 60,
                 "position": 52,
-                "velocity": 0.800000011920929
-            },
-            {
-                "condition": "---",
-                "enabled": true,
-                "len": 1,
-                "motion": "---",
-                "note": 60,
-                "position": 0,
                 "velocity": 0.800000011920929
             }
         ]

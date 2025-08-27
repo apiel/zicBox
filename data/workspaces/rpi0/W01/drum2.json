@@ -3,23 +3,23 @@
         "values": [
             {
                 "key": "ENGINE",
-                "value": 4.0
+                "value": 3.0
             },
             {
                 "key": "VAL_1",
-                "value": 0.0
+                "value": 25.0
             },
             {
                 "key": "VAL_2",
-                "value": 251.0
+                "value": 5.0
             },
             {
                 "key": "VAL_3",
-                "value": 0.0
+                "value": 30.0
             },
             {
                 "key": "VAL_4",
-                "value": 0.0
+                "value": 70.0
             },
             {
                 "key": "VAL_5",
@@ -27,7 +27,7 @@
             },
             {
                 "key": "VAL_6",
-                "value": 23.0
+                "value": 30.0
             },
             {
                 "key": "VAL_7",
@@ -43,7 +43,7 @@
             },
             {
                 "key": "VAL_10",
-                "value": 0.0
+                "value": 20.0
             },
             {
                 "key": "DURATION",
