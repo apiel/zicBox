@@ -27,10 +27,7 @@ protected:
     // Hardcoded to 48000, no matter the sample rate
     static const uint64_t bufferSize = 48000 * 30; // 30sec at 48000Hz, 32sec at 44100Hz...
     float sampleData[bufferSize];
-    struct SampleBuffer {
-        uint64_t count = 0;
-        float* data;
-    } sampleBuffer;
+    SampleEngine::SampleBuffer sampleBuffer;
 
     FileBrowser fileBrowser = FileBrowser("./data/audio/samples");
     float index = 0;
@@ -231,7 +228,6 @@ public:
     {
         float out = 0.0f;
         if (sustainedNote || nbOfLoopBeforeRelease > 0) {
-            // out = sampleBuffer.data[(int)index] * velocity * envFactor;
             out = sampleBuffer.data[(int)index] * velocity;
             index += stepIncrement;
             if (index >= loopEnd) {
@@ -239,7 +235,6 @@ public:
                 nbOfLoopBeforeRelease--;
             }
         } else if (index < indexEnd) {
-            // out = sampleBuffer.data[(int)index] * velocity * envFactor;
             out = sampleBuffer.data[(int)index] * velocity;
             index += stepIncrement;
         } else if (index != sampleBuffer.count) {

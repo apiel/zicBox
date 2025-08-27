@@ -48,11 +48,11 @@
             },
             {
                 "key": "LOOP_LENGTH",
-                "value": 0.0
+                "value": 8.50000286102295
             },
             {
                 "key": "LOOP_RELEASE",
-                "value": 350.0
+                "value": 550.0
             }
         ]
     },

@@ -5,6 +5,11 @@
 
 class SampleEngine : public Mapping {
 public:
+    struct SampleBuffer {
+        uint64_t count = 0;
+        float* data;
+    };
+
     std::string name = "Engine";
 
     SampleEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, std::string name)
