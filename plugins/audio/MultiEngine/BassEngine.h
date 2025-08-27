@@ -9,6 +9,7 @@
 class BassEngine : public Engine {
 protected:
     MultiFx multiFx;
+    MultiFx multiFx2;
     EffectFilterArray<2> filter;
 
     float velocity = 1.0f;
@@ -29,40 +30,6 @@ protected:
         { "Triangle", &waveform, (uint8_t)WavetableGenerator::Type::Triangle },
         { "FMSquare", &waveform, (uint8_t)WavetableGenerator::Type::FMSquare },
     };
-
-    float applyEffects(float input)
-    {
-        float output = input;
-        output = doCompression(output);
-        output = doDrive(output);
-        return output;
-    }
-
-    float doCompression(float input)
-    {
-        if (compression.pct() == 0.5f) {
-            return input;
-        }
-        if (compression.pct() > 0.5f) {
-            float amount = compression.pct() * 2 - 1.0f;
-            return applyCompression(input, amount);
-        }
-        float amount = 1 - compression.pct() * 2;
-        return applyWaveshapeLut(input, amount, props.lookupTable);
-    }
-
-    float doDrive(float input)
-    {
-        if (drive.pct() == 0.5f) {
-            return input;
-        }
-        if (drive.pct() > 0.5f) {
-            float amount = drive.pct() * 2 - 1.0f;
-            return applyDrive(input, amount, props.lookupTable);
-        }
-        float amount = 1 - drive.pct() * 2;
-        return range(input + input * amount * 8, -1.0f, 1.0f);
-    }
 
     // Higher base note is, lower pitch will be
     //
@@ -117,19 +84,23 @@ public:
         filter.setResonance(res);
     });
 
-    Val& drive = val(0.0f, "DRIVE", { "Drive", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
-    Val& compression = val(0.0f, "COMPRESSION", { "Compression", .type = VALUE_CENTERED, .min = -100.0, .max = 100.0, .step = 1.0, .unit = "%" });
-
     Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
         multiFx.setFxType(p);
     });
 
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
 
+    Val& fx2Type = val(0, "FX2_TYPE", { "FX2 type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
+        multiFx2.setFxType(p);
+    });
+
+    Val& fx2Amount = val(0, "FX2_AMOUNT", { "FX2 edit", .unit = "%" });
+
     // --- constructor ---
     BassEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : Engine(p, c, "Bass")
         , multiFx(props.sampleRate, props.lookupTable)
+        , multiFx2(props.sampleRate, props.lookupTable)
         , waveform(props.lookupTable, props.sampleRate)
     {
         initValues();
@@ -140,6 +111,7 @@ public:
         if (envAmpVal == 0.0f) {
             float out = buf[track];
             out = multiFx.apply(out, fxAmount.pct());
+            out = multiFx2.apply(out, fx2Amount.pct());
             buf[track] = out;
             return;
         }
@@ -153,8 +125,8 @@ public:
         filter.setSampleData(filter.lp[0], 1);
         out = filter.lp[1];
 
-        out = applyEffects(out);
         out = multiFx.apply(out, fxAmount.pct());
+        out = multiFx2.apply(out, fx2Amount.pct());
         buf[track] = out;
     }
 

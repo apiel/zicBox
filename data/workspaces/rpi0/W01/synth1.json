@@ -14,15 +14,15 @@
             },
             {
                 "key": "VAL_1",
-                "value": 4.0
+                "value": -5.0
             },
             {
                 "key": "VAL_2",
-                "value": 41.0
+                "value": 0.0
             },
             {
                 "key": "VAL_3",
-                "value": 0.0
+                "value": 1.0
             },
             {
                 "key": "VAL_4",
@@ -38,11 +38,11 @@
             },
             {
                 "key": "VAL_7",
-                "value": 0.0
+                "value": 1.0
             },
             {
                 "key": "VAL_8",
-                "value": -8.0
+                "value": 41.0
             },
             {
                 "key": "VAL_9",
