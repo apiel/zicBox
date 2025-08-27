@@ -15,6 +15,34 @@
         "sampleFile": "0_0_0__owly-bee__impossible-how-could-i-ghostly.wav",
         "values": [
             {
+                "key": "ENGINE",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_1",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_2",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_3",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_4",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_5",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_6",
+                "value": 0.0
+            },
+            {
                 "key": "START",
                 "value": 0.0
             },

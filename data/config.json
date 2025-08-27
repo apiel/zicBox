@@ -42,7 +42,7 @@
       {
         "id": 5,
         "plugins": [
-          {"alias":"Sample1","plugin":"SynthMonoSample"},
+          {"alias":"Sample1","plugin":"SynthMultiSample"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
           {"alias":"Filter","plugin":"EffectFilterMultiMode"},
           {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
@@ -53,7 +53,7 @@
       {
         "id": 6,
         "plugins": [
-          {"alias":"Sample2","plugin":"SynthMonoSample"},
+          {"alias":"Sample2","plugin":"SynthMultiSample"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
           {"alias":"Filter","plugin":"EffectFilterMultiMode"},
           {"alias":"TrackFx","plugin":"EffectVolumeMultiFx"},
