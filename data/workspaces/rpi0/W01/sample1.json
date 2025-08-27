@@ -1,16 +1,4 @@
 {
-    "Filter": {
-        "values": [
-            {
-                "key": "CUTOFF",
-                "value": 0.0
-            },
-            {
-                "key": "RESONANCE",
-                "value": 0.0
-            }
-        ]
-    },
     "Sample1": {
         "sampleFile": "0_0_0__owly-bee__impossible-how-could-i-ghostly.wav",
         "values": [
@@ -20,7 +8,7 @@
             },
             {
                 "key": "VAL_1",
-                "value": 0.0
+                "value": 1.0
             },
             {
                 "key": "VAL_2",
@@ -94,34 +82,6 @@
             {
                 "key": "GAIN",
                 "value": 1.0
-            },
-            {
-                "key": "FX_TYPE",
-                "value": 1.0
-            },
-            {
-                "key": "FX_AMOUNT",
-                "value": 64.0
-            }
-        ]
-    },
-    "TrackFx2": {
-        "values": [
-            {
-                "key": "VOLUME",
-                "value": 100.0
-            },
-            {
-                "key": "GAIN",
-                "value": 1.0
-            },
-            {
-                "key": "FX_TYPE",
-                "value": 0.0
-            },
-            {
-                "key": "FX_AMOUNT",
-                "value": 0.0
             }
         ]
     }

@@ -246,6 +246,7 @@ public:
             index = sampleBuffer.count;
         }
         buf[track] = out;
+        engine->sample(buf);
     }
 
     void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override

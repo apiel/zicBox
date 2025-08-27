@@ -140,8 +140,8 @@ public:
         }
 
         out = applyBoostOrCompression(out);
-        out = multiFx.apply(out, fxAmount.pct());
         out = filter.process(out);
+        out = multiFx.apply(out, fxAmount.pct());
 
         buf[track] = out * velocity;
     }

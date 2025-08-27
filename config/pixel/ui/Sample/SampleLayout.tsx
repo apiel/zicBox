@@ -60,15 +60,15 @@ export function SampleLayout({ name, track, synthName, color, title }: Props) {
                     />
                     <Val
                         {...enc3smpl}
-                        audioPlugin="Filter"
-                        param="CUTOFF"
+                        audioPlugin={synthName}
+                        param="VAL_1"
                         track={track}
                         color={isPage1 ? 'tertiary' : undefined}
                     />
                     <Val
                         {...enc4smpl}
-                        audioPlugin="Filter"
-                        param="RESONANCE"
+                        audioPlugin={synthName}
+                        param="VAL_2"
                         track={track}
                         color={isPage1 ? 'primary' : undefined}
                     />
@@ -112,31 +112,29 @@ export function SampleLayout({ name, track, synthName, color, title }: Props) {
 
                     <Val
                         {...enc9smpl}
-                        audioPlugin="TrackFx"
-                        param="FX_TYPE"
+                        audioPlugin={synthName}
+                        param="VAL_3"
                         track={track}
                         color={isPage3 ? 'secondary' : undefined}
                     />
                     <Val
                         {...enc10smpl}
-                        audioPlugin="TrackFx"
-                        param="FX_AMOUNT"
+                        audioPlugin={synthName}
+                        param="VAL_4"
                         track={track}
                         color={isPage3 ? 'quaternary' : undefined}
                     />
                     <Val
                         {...enc11smpl}
-                        audioPlugin="TrackFx2"
-                        param="FX_TYPE"
-                        label="FX2 type"
+                        audioPlugin={synthName}
+                        param="VAL_5"
                         track={track}
                         color={isPage3 ? 'tertiary' : undefined}
                     />
                     <Val
                         {...enc12smpl}
-                        audioPlugin="TrackFx2"
-                        param="FX_AMOUNT"
-                        label="FX2 edit"
+                        audioPlugin={synthName}
+                        param="VAL_6"
                         track={track}
                         color={isPage3 ? 'primary' : undefined}
                     />
