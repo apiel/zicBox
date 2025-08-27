@@ -1,0 +1,78 @@
+{
+    "Sample2": {
+        "sampleFile": "0_0_0__owly-bee__impossible-how-could-i-ghostly.wav",
+        "values": [
+            {
+                "key": "ENGINE",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_1",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_2",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_3",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_4",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_5",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_6",
+                "value": 0.0
+            },
+            {
+                "key": "START",
+                "value": 0.0
+            },
+            {
+                "key": "END",
+                "value": 100.0
+            },
+            {
+                "key": "BROWSER",
+                "value": 1.0
+            },
+            {
+                "key": "LOOP_POSITION",
+                "value": 0.0
+            },
+            {
+                "key": "LOOP_LENGTH",
+                "value": 0.0
+            },
+            {
+                "key": "LOOP_RELEASE",
+                "value": 0.0
+            }
+        ]
+    },
+    "Sequencer": {
+        "STATUS": 1.0,
+        "STEPS": null
+    },
+    "SerializeTrack": {
+        "VARIATION": 0.0
+    },
+    "TrackFx": {
+        "values": [
+            {
+                "key": "VOLUME",
+                "value": 100.0
+            },
+            {
+                "key": "GAIN",
+                "value": 1.0
+            }
+        ]
+    }
+}

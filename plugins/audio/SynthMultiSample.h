@@ -228,14 +228,14 @@ public:
     {
         float out = 0.0f;
         if (sustainedNote || nbOfLoopBeforeRelease > 0) {
-            out = sampleBuffer.data[(int)index] * velocity;
+            out = engine->getSample(sampleBuffer, index) * velocity;
             index += stepIncrement;
             if (index >= loopEnd) {
                 index = loopStart;
                 nbOfLoopBeforeRelease--;
             }
         } else if (index < indexEnd) {
-            out = sampleBuffer.data[(int)index] * velocity;
+            out = engine->getSample(sampleBuffer, index) * velocity;
             index += stepIncrement;
         } else if (index != sampleBuffer.count) {
             index = sampleBuffer.count;

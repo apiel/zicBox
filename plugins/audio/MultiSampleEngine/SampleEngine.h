@@ -18,6 +18,11 @@ public:
     {
     }
 
+    virtual float getSample(SampleBuffer& sampleBuffer, int index)
+    {
+        return sampleBuffer.data[index];
+    }
+
     virtual void serializeJson(nlohmann::json& json) { }
     virtual void hydrateJson(nlohmann::json& json) { }
 };
