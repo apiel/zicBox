@@ -1,8 +1,8 @@
 #pragma once
 
-#include "plugins/audio/MultiSampleEngine/SampleEngine.h"
-#include "plugins/audio/MultiSampleEngine/MonoEngine.h"
 #include "plugins/audio/MultiSampleEngine/GrainEngine.h"
+#include "plugins/audio/MultiSampleEngine/MonoEngine.h"
+#include "plugins/audio/MultiSampleEngine/SampleEngine.h"
 #include "plugins/audio/utils/EnvelopDrumAmp.h"
 #include "plugins/audio/utils/utils.h"
 #include "utils/fileBrowser.h"
@@ -101,11 +101,20 @@ protected:
         }
     }
 
+    static const int valCount = 7;
+
     void setEngineVal(Val::CallbackProps p, int index)
     {
         p.val.setFloat(p.value);
-        if (index >= engine->mapping.size())
+        if (index >= engine->mapping.size()) {
+            if (index == valCount - 1) {
+                // If VAL_EXTRA no assign then fallback on sustainRelease
+                sustainRelease.set(p.val.get());
+                p.val.props().unit = sustainRelease.props().unit;
+                // values[valCount - 1]->copy(&sustainRelease);
+            }
             return;
+        }
         // logDebug("setEngineVal (%d) %s %f", index, p.val.key().c_str(), p.val.get());
         ValueInterface* drumEngineVal = engine->mapping[index];
         drumEngineVal->set(p.val.get());
@@ -119,9 +128,13 @@ protected:
 
     void copyValues()
     {
-        for (int i = 0; i < 10 && i < engine->mapping.size(); i++) {
+        for (int i = 0; i < valCount && i < engine->mapping.size(); i++) {
             ValueInterface* val = engine->mapping[i];
             values[i]->copy(val);
+        }
+        // If VAL_EXTRA no assign then fallback on sustainRelease
+        if (engine->mapping.size() < valCount) {
+            values[valCount - 1]->copy(&sustainRelease);
         }
     }
 
@@ -139,13 +152,14 @@ public:
         copyValues();
     });
 
-    Val* values[6] = {
+    Val* values[valCount] = {
         &val(0.0f, "VAL_1", {}, [&](auto p) { setEngineVal(p, 0); }),
         &val(0.0f, "VAL_2", {}, [&](auto p) { setEngineVal(p, 1); }),
         &val(0.0f, "VAL_3", {}, [&](auto p) { setEngineVal(p, 2); }),
         &val(0.0f, "VAL_4", {}, [&](auto p) { setEngineVal(p, 3); }),
         &val(0.0f, "VAL_5", {}, [&](auto p) { setEngineVal(p, 4); }),
         &val(0.0f, "VAL_6", {}, [&](auto p) { setEngineVal(p, 5); }),
+        &val(0.0f, "VAL_EXTRA", {}, [&](auto p) { setEngineVal(p, 6); }),
     };
 
     /*md **Values**: */

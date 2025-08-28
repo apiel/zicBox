@@ -31,6 +31,10 @@
                 "value": 0.0
             },
             {
+                "key": "VAL_EXTRA",
+                "value": 450.0
+            },
+            {
                 "key": "START",
                 "value": 0.0
             },
@@ -52,7 +56,7 @@
             },
             {
                 "key": "LOOP_RELEASE",
-                "value": 600.0
+                "value": 450.0
             }
         ]
     },

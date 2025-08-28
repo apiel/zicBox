@@ -83,7 +83,7 @@ export function SampleLayout({ name, track, synthName, color, title }: Props) {
                     <Val
                         {...enc4smpl}
                         audioPlugin={synthName}
-                        param="LOOP_RELEASE"
+                        param="VAL_EXTRA"
                         track={track}
                         color={isPage1 ? 'tertiary' : undefined}
                     />
