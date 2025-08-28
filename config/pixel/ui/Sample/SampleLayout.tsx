@@ -47,26 +47,56 @@ export function SampleLayout({ name, track, synthName, color, title }: Props) {
                     <Val
                         {...enc1smpl}
                         audioPlugin={synthName}
+                        param="BROWSER"
+                        fontValue="PoppinsLight_8"
+                        track={track}
+                        color={isPage2 ? 'primary' : undefined}
+                    />
+                    <Val
+                        {...enc2smpl}
+                        audioPlugin={synthName}
+                        param="LOOP_POSITION"
+                        track={track}
+                        color={isPage2 ? 'secondary' : undefined}
+                    />
+                    <Val
+                        {...enc3smpl}
+                        audioPlugin={synthName}
+                        param="LOOP_LENGTH"
+                        track={track}
+                        color={isPage2 ? 'quaternary' : undefined}
+                    />
+                    <Val
+                        {...enc4smpl}
+                        audioPlugin={synthName}
+                        param="LOOP_RELEASE"
+                        track={track}
+                        color={isPage2 ? 'tertiary' : undefined}
+                    />
+
+                    <Val
+                        {...enc5smpl}
+                        audioPlugin={synthName}
                         param="START"
                         track={track}
                         color={isPage1 ? 'secondary' : undefined}
                     />
                     <Val
-                        {...enc2smpl}
+                        {...enc6smpl}
                         audioPlugin={synthName}
                         param="END"
                         track={track}
                         color={isPage1 ? 'quaternary' : undefined}
                     />
                     <Val
-                        {...enc3smpl}
+                        {...enc7smpl}
                         audioPlugin={synthName}
                         param="VAL_1"
                         track={track}
                         color={isPage1 ? 'tertiary' : undefined}
                     />
                     <Val
-                        {...enc4smpl}
+                        {...enc8smpl}
                         audioPlugin={synthName}
                         param="VAL_2"
                         track={track}
@@ -78,36 +108,6 @@ export function SampleLayout({ name, track, synthName, color, title }: Props) {
                         audioPlugin={synthName}
                         track={track}
                         visibilityContext={[unshiftVisibilityContext]}
-                    />
-
-                    <Val
-                        {...enc5smpl}
-                        audioPlugin={synthName}
-                        param="LOOP_POSITION"
-                        track={track}
-                        color={isPage2 ? 'secondary' : undefined}
-                    />
-                    <Val
-                        {...enc6smpl}
-                        audioPlugin={synthName}
-                        param="LOOP_LENGTH"
-                        track={track}
-                        color={isPage2 ? 'quaternary' : undefined}
-                    />
-                    <Val
-                        {...enc7smpl}
-                        audioPlugin={synthName}
-                        param="LOOP_RELEASE"
-                        track={track}
-                        color={isPage2 ? 'tertiary' : undefined}
-                    />
-                    <Val
-                        {...enc8smpl}
-                        audioPlugin={synthName}
-                        param="BROWSER"
-                        fontValue="PoppinsLight_8"
-                        track={track}
-                        color={isPage2 ? 'primary' : undefined}
                     />
 
                     <Val
