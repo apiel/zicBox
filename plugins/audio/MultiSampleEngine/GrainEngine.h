@@ -17,8 +17,6 @@ protected:
     float envSteps = 0.00001f;
     float densityDivider = 1.0f;
 
-    // AsrEnvelop env = { &envSteps, &envSteps, NULL };
-
     struct Grain {
         uint64_t index = 0;
         float position = 0.0f;
@@ -73,9 +71,7 @@ public:
     void sample(float* buf, int index) override
     {
         float out = buf[track];
-
         out = multiFx.apply(out, fxAmount.pct());
-
         buf[track] = out;
     }
 

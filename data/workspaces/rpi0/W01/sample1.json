@@ -4,23 +4,23 @@
         "values": [
             {
                 "key": "ENGINE",
-                "value": 1.0
+                "value": 2.0
             },
             {
                 "key": "VAL_1",
-                "value": 100.0
+                "value": 0.0
             },
             {
                 "key": "VAL_2",
-                "value": 139.0
+                "value": 4.5
             },
             {
                 "key": "VAL_3",
-                "value": 0.0
+                "value": 72.0
             },
             {
                 "key": "VAL_4",
-                "value": 0.0
+                "value": 24.0
             },
             {
                 "key": "VAL_5",
@@ -28,11 +28,11 @@
             },
             {
                 "key": "VAL_6",
-                "value": 69.0
+                "value": 0.0
             },
             {
                 "key": "VAL_EXTRA",
-                "value": 3.0
+                "value": 450.0
             },
             {
                 "key": "START",
@@ -52,7 +52,7 @@
             },
             {
                 "key": "LOOP_LENGTH",
-                "value": 8.50000286102295
+                "value": 8.500000953674316
             },
             {
                 "key": "LOOP_RELEASE",

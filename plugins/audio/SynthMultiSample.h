@@ -2,6 +2,7 @@
 
 #include "plugins/audio/MultiSampleEngine/GrainEngine.h"
 #include "plugins/audio/MultiSampleEngine/MonoEngine.h"
+#include "plugins/audio/MultiSampleEngine/FmAmEngine.h"
 #include "plugins/audio/MultiSampleEngine/SampleEngine.h"
 #include "plugins/audio/utils/EnvelopDrumAmp.h"
 #include "plugins/audio/utils/utils.h"
@@ -19,11 +20,13 @@ class SynthMultiSample : public Mapping {
 protected:
     MonoEngine monoEngine;
     GrainEngine grainEngine;
+    FmAmEngine fmEngine;
 
-    static const int ENGINES_COUNT = 2;
+    static const int ENGINES_COUNT = 3;
     SampleEngine* engines[ENGINES_COUNT] = {
         &monoEngine,
         &grainEngine,
+        &fmEngine,
     };
     SampleEngine* engine = engines[0];
 
@@ -238,6 +241,7 @@ public:
         : Mapping(props, config)
         , monoEngine(props, config, sampleBuffer)
         , grainEngine(props, config, sampleBuffer)
+        , fmEngine(props, config, sampleBuffer)
     {
         initValues({ &engineVal });
     }
