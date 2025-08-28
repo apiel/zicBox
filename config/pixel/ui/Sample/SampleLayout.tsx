@@ -2,6 +2,7 @@ import * as React from '@/libs/react';
 
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Sample } from '@/libs/nativeComponents/Sample';
+import { StringVal } from '@/libs/nativeComponents/StringVal';
 import { ClipBar } from '../components/ClipBar';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
@@ -58,6 +59,9 @@ export function SampleLayout({ name, track, synthName, color, title }: Props) {
                             />
                         }
                     />
+
+                    <StringVal audioPlugin={synthName} param="ENGINE" bounds={[105, 3, 60, 20]} fontLabel="PoppinsLight_12" />
+
                     <Val
                         {...enc1smpl}
                         audioPlugin={synthName}
