@@ -2,6 +2,7 @@
 
 #include "plugins/audio/MultiSampleEngine/SampleEngine.h"
 #include "plugins/audio/MultiSampleEngine/MonoEngine.h"
+#include "plugins/audio/MultiSampleEngine/GrainEngine.h"
 #include "plugins/audio/utils/EnvelopDrumAmp.h"
 #include "plugins/audio/utils/utils.h"
 #include "utils/fileBrowser.h"
@@ -17,10 +18,12 @@ Multiple engines to play with samples.
 class SynthMultiSample : public Mapping {
 protected:
     MonoEngine monoEngine;
+    GrainEngine grainEngine;
 
-    static const int ENGINES_COUNT = 1;
+    static const int ENGINES_COUNT = 2;
     SampleEngine* engines[ENGINES_COUNT] = {
         &monoEngine,
+        &grainEngine,
     };
     SampleEngine* engine = engines[0];
 
@@ -219,7 +222,8 @@ public:
 
     SynthMultiSample(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
-        , monoEngine(props, config)
+        , monoEngine(props, config, sampleBuffer)
+        , grainEngine(props, config, sampleBuffer)
     {
         initValues({ &engineVal });
     }
@@ -228,20 +232,20 @@ public:
     {
         float out = 0.0f;
         if (sustainedNote || nbOfLoopBeforeRelease > 0) {
-            out = engine->getSample(sampleBuffer, index) * velocity;
+            out = engine->getSample(index, stepIncrement) * velocity;
             index += stepIncrement;
             if (index >= loopEnd) {
                 index = loopStart;
                 nbOfLoopBeforeRelease--;
             }
         } else if (index < indexEnd) {
-            out = engine->getSample(sampleBuffer, index) * velocity;
+            out = engine->getSample(index, stepIncrement) * velocity;
             index += stepIncrement;
         } else if (index != sampleBuffer.count) {
             index = sampleBuffer.count;
         }
         buf[track] = out;
-        engine->sample(buf);
+        engine->sample(buf, index);
     }
 
     void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override

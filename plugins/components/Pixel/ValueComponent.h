@@ -232,7 +232,7 @@ public:
             }
 
             if (showValue) {
-                x = showLabel ? draw.text({ x, valueY }, getValStr(), valueFontSize, { valueColor, .font = fontValue, .fontHeight = fontHeightValue })
+                x = showLabel ? draw.text({ x, valueY }, getValStr(), valueFontSize, { valueColor, .font = fontValue, .maxWidth = size.w - 4, .fontHeight = fontHeightValue })
                               : draw.textCentered({ x, valueY }, getValStr(), valueFontSize, { valueColor, .font = fontValue, .maxWidth = size.w - 4, .fontHeight = fontHeightValue });
                 if (showUnit && val->props().unit.length() > 0) {
                     draw.text({ x + 2, unitY }, val->props().unit, unitFontSize, { unitColor });

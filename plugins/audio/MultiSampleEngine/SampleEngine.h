@@ -9,16 +9,22 @@ public:
         uint64_t count = 0;
         float* data;
     };
+    SampleBuffer& sampleBuffer;
 
     std::string name = "Engine";
 
-    SampleEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, std::string name)
+    SampleEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, std::string name)
         : Mapping(props, config)
+        , sampleBuffer(sampleBuffer)
         , name(name)
     {
     }
 
-    virtual float getSample(SampleBuffer& sampleBuffer, int index)
+    void sample(float* buf) override { }
+
+    virtual void sample(float* buf, int index) { }
+
+    virtual float getSample(int index, float stepIncrement)
     {
         return sampleBuffer.data[index];
     }

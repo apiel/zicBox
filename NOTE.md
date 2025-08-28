@@ -1,5 +1,8 @@
 ## Pixel TODO
 
+- TODO multi synth, when siwtching, string not loaded...
+      - might also want to copy the logic between...
+
 - TODO reload variations when switching workspace
 
 - TODO sample, should we go into granular and multi-voice... either give the choice between FX1 AND FX2, vs using some granular
