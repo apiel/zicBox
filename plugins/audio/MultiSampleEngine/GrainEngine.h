@@ -23,7 +23,6 @@ protected:
         uint64_t index = 0;
         float position = 0.0f;
         float positionIncrement = 1.0f;
-        EnvelopRelative env = EnvelopRelative({ { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 1.0f } });
     } grains[MAX_GRAINS];
 
     void initGrain(uint8_t densityIndex, uint64_t sampleIndex, float stepIncrement)
@@ -32,7 +31,6 @@ protected:
         grain.index = 0;
         grain.position = sampleIndex + densityIndex * grainDelay + grainDelay * getRand() * delayRandomize.pct();
         grain.positionIncrement = stepIncrement + stepIncrement * getRand() * pitchRandomize.pct();
-        grain.env.reset(grainDuration);
     }
 
     float getRand()
