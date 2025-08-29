@@ -101,12 +101,4 @@ public:
     }
 
     uint16_t getLoopCountRelease() override { return 0; }
-
-    void engineNoteOn(uint8_t note, float _velocity) override
-    {
-        // FIXME find a way to init value when changing engine!
-        densityDivider = 1.0f / valExtra.get();
-        grainDuration = props.sampleRate * length.get() * 0.001f;
-        grainDelay = props.sampleRate * densityDelay.get() * 0.001f;
-    }
 };

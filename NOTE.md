@@ -1,9 +1,5 @@
 ## Pixel TODO
 
-- TODO sample engine: release loop when not display could still be 8 loop even if not shown...
-      - either show the release loop on shift
-      - or diseable release loop in sample loop...
-
 - TODO convert StringStufflEngine to synth or drum engine
 
 - TODO multi synth, when siwtching, string not loaded...

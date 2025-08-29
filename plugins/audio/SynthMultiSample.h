@@ -104,6 +104,7 @@ public:
         int index = (int)p.val.get();
         engine = engines[index];
         p.val.setString(engine->name);
+        engine->initValues();
 
         // loop through values and update their type
         copyValues();

@@ -75,6 +75,7 @@ public:
         int index = (int)p.val.get();
         drumEngine = drumEngines[index];
         p.val.setString(drumEngine->name);
+        drumEngine->initValues();
 
         // loop through values and update their type
         copyValues();

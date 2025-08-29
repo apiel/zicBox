@@ -35,8 +35,6 @@ protected:
         setModStep();
     });
 
-    float sampleRate;
-
     float modPhase = 0.0f;
 
     // Helper: simple sine wave increment
@@ -50,7 +48,7 @@ protected:
     void setModStep()
     {
         float freq = midiToFreq(playedNote + pitchOffset.get());
-        modStep = 2.0f * (float)M_PI * freq * ratio.get() / sampleRate;
+        modStep = 2.0f * (float)M_PI * freq * ratio.get() / props.sampleRate;
     }
 
 public:
@@ -58,7 +56,6 @@ public:
         : LoopedEngine(props, config, sampleBuffer, index, stepMultiplier, "AM")
         , multiFx(props.sampleRate, props.lookupTable)
     {
-        sampleRate = props.sampleRate;
     }
 
     void engineNoteOn(uint8_t note, float velocity) override

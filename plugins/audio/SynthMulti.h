@@ -78,6 +78,7 @@ public:
         int index = (int)p.val.get();
         selectedEngine = engines[index];
         p.val.setString(selectedEngine->name);
+        selectedEngine->initValues();
 
         // loop through values and update their type
         copyValues();
