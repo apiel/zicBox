@@ -22,12 +22,15 @@ protected:
     float velocity = 1.0f;
     static constexpr uint32_t MAX_DELAY = 1 << 16; // 65536
 
-    inline float noteToFreq(int note) const {
+    inline float noteToFreq(int note) const
+    {
         return 440.0f * powf(2.0f, (note - 69) / 12.0f);
     }
 
-    float resonatorTick() {
-        if (delayLen == 0) return 0.0f;
+    float resonatorTick()
+    {
+        if (delayLen == 0)
+            return 0.0f;
 
         uint32_t rp = writePos % delayLen;
         uint32_t rp1 = (rp + 1) % delayLen;
@@ -67,6 +70,8 @@ public:
     });
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
 
+    Val& exciteType = val(0.0f, "EXCITE_TYPE", { "Excitation Type", .min = 0.0f, .max = 2.0f });
+
     // Constructor
     StringEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : DrumEngine(p, c, "String")
@@ -77,31 +82,50 @@ public:
         initValues();
     }
 
-    void sampleOn(float* buf, float envAmpVal, int, int) override {
+    void sampleOn(float* buf, float envAmpVal, int, int) override
+    {
         float out = resonatorTick() * velocity * envAmpVal;
         out = multiFx.apply(out, fxAmount.pct());
         buf[track] = out;
     }
 
-    void sampleOff(float* buf) override {
+    void sampleOff(float* buf) override
+    {
         float out = buf[track];
         out = multiFx.apply(out, fxAmount.pct());
         buf[track] = out;
     }
 
-    void noteOn(uint8_t note, float _velocity, void* = nullptr) override {
+    void noteOn(uint8_t note, float _velocity, void* = nullptr) override
+    {
         velocity = _velocity;
         float freq = noteToFreq(note + (int)pitch.get() - 24); // Let's remove 2 octaves
-        if (freq < 20.0f) freq = 20.0f;
-        if (freq > props.sampleRate * 0.45f) freq = props.sampleRate * 0.45f;
+        if (freq < 20.0f)
+            freq = 20.0f;
+        if (freq > props.sampleRate * 0.45f)
+            freq = props.sampleRate * 0.45f;
 
         delayLen = std::min<uint32_t>(MAX_DELAY, std::max<uint32_t>(2, (uint32_t)std::round(props.sampleRate / freq)));
         delayLine.assign(delayLen + 4, 0.0f);
 
-        // Excite buffer with noise
-        for (uint32_t i = 0; i < delayLen; ++i) {
-            float n = (rand() / (float)RAND_MAX) * 2.0f - 1.0f;
-            delayLine[i] = filter.process(n) * velocity * pluckNoise.pct();
+        if (exciteType.get() == 0.0f) {
+            // White noise
+            for (uint32_t i = 0; i < delayLen; ++i) {
+                float n = (rand() / (float)RAND_MAX) * 2.0f - 1.0f;
+                delayLine[i] = filter.process(n) * velocity * pluckNoise.pct();
+            }
+        } else if (exciteType.get() == 1.0f) {
+            // Square burst
+            for (uint32_t i = 0; i < delayLen; ++i) {
+                float n = sinf(2.0f * M_PI * i / delayLen) > 0.5f ? 1.0f : 0.0f;
+                delayLine[i] = filter.process(n) * velocity * pluckNoise.pct();
+            }
+        } else {
+            // Sine burst
+            for (uint32_t i = 0; i < delayLen; ++i) {
+                float n = sinf(2.0f * M_PI * i / delayLen);
+                delayLine[i] = filter.process(n) * velocity * pluckNoise.pct();
+            }
         }
 
         writePos = 0;
