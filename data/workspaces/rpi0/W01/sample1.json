@@ -8,11 +8,11 @@
             },
             {
                 "key": "VAL_1",
-                "value": 43.25
+                "value": 36.0
             },
             {
                 "key": "VAL_2",
-                "value": 16.0
+                "value": -20.0
             },
             {
                 "key": "VAL_3",
@@ -32,7 +32,7 @@
             },
             {
                 "key": "VAL_EXTRA",
-                "value": 6.0
+                "value": 4.0
             },
             {
                 "key": "START",
