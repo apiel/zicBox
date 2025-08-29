@@ -1,8 +1,8 @@
 #pragma once
 
+#include "plugins/audio/MultiSampleEngine/AmEngine.h"
 #include "plugins/audio/MultiSampleEngine/GrainEngine.h"
 #include "plugins/audio/MultiSampleEngine/MonoEngine.h"
-#include "plugins/audio/MultiSampleEngine/AmEngine.h"
 #include "plugins/audio/MultiSampleEngine/SampleEngine.h"
 #include "plugins/audio/utils/EnvelopDrumAmp.h"
 #include "plugins/audio/utils/utils.h"
@@ -91,19 +91,6 @@ protected:
         applyGain(sampleBuffer.data, sampleBuffer.count);
     }
 
-    void open(float value, bool force = false)
-    {
-        browser.setFloat(value);
-        int position = browser.get();
-        if (force || position != fileBrowser.position) {
-            browser.setString(fileBrowser.getFile(position));
-            std::string filepath = fileBrowser.getFilePath(position);
-            logTrace("SAMPLE_SELECTOR: %f %s", value, filepath.c_str());
-            open(filepath);
-            initValues();
-        }
-    }
-
     static const int valCount = 7;
 
     void setEngineVal(Val::CallbackProps p, int index)
@@ -190,7 +177,17 @@ public:
         }
     });
     /*md - `BROWSER` to browse between samples to play. */
-    Val& browser = val(1.0f, "BROWSER", { "Browser", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count }, [&](auto p) { open(p.value); });
+    Val& browser = val(1.0f, "BROWSER", { "Browser", VALUE_STRING, .min = 1.0f, .max = (float)fileBrowser.count }, [&](auto p) {
+        p.val.setFloat(p.value);
+        int position = p.val.get();
+        if (position != fileBrowser.position) {
+            p.val.setString(fileBrowser.getFile(position));
+            std::string filepath = fileBrowser.getFilePath(position);
+            logTrace("SAMPLE_SELECTOR: %f %s", p.value, filepath.c_str());
+            open(filepath);
+            initValues({ &browser });
+        }
+    });
 
     /*md - `LOOP_POSITION` set the position of the sustain loop */
     Val& sustainPosition = val(0.0f, "LOOP_POSITION", { "Loop position", .step = 0.1f, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
