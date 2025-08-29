@@ -7,7 +7,7 @@
             },
             {
                 "key": "VAL_1",
-                "value": 0.0
+                "value": -18.0
             },
             {
                 "key": "VAL_2",
@@ -15,31 +15,31 @@
             },
             {
                 "key": "VAL_3",
-                "value": 45.0
+                "value": 26.0
             },
             {
                 "key": "VAL_4",
-                "value": 43.0
+                "value": 37.0
             },
             {
                 "key": "VAL_5",
-                "value": 44.0
+                "value": -56.0
             },
             {
                 "key": "VAL_6",
-                "value": 0.0
+                "value": 65.0
             },
             {
                 "key": "VAL_7",
-                "value": 0.0
+                "value": 1.0
             },
             {
                 "key": "VAL_8",
-                "value": 0.0
+                "value": 38.0
             },
             {
                 "key": "VAL_9",
-                "value": 0.0
+                "value": 62.0
             },
             {
                 "key": "VAL_10",
@@ -47,11 +47,11 @@
             },
             {
                 "key": "DURATION",
-                "value": 2840.0
+                "value": 1740.0
             },
             {
                 "key": "AMP_MORPH",
-                "value": 99.0
+                "value": 25.0
             }
         ]
     },
@@ -81,7 +81,7 @@
                 "enabled": true,
                 "len": 1,
                 "motion": "---",
-                "note": 60,
+                "note": 62,
                 "position": 16,
                 "velocity": 0.800000011920929
             },
@@ -90,7 +90,7 @@
                 "enabled": true,
                 "len": 1,
                 "motion": "---",
-                "note": 60,
+                "note": 62,
                 "position": 24,
                 "velocity": 0.800000011920929
             },
@@ -117,7 +117,7 @@
                 "enabled": true,
                 "len": 1,
                 "motion": "---",
-                "note": 60,
+                "note": 62,
                 "position": 48,
                 "velocity": 0.800000011920929
             },
@@ -126,8 +126,80 @@
                 "enabled": true,
                 "len": 1,
                 "motion": "---",
-                "note": 60,
+                "note": 62,
                 "position": 56,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 2,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 10,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 62,
+                "position": 18,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 62,
+                "position": 26,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 34,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 42,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 62,
+                "position": 50,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 62,
+                "position": 58,
                 "velocity": 0.800000011920929
             }
         ]
