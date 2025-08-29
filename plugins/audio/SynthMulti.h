@@ -8,6 +8,7 @@
 #include "plugins/audio/MultiEngine/WavetableEngine.h"
 #include "plugins/audio/MultiEngine/Wavetable2Engine.h"
 #include "plugins/audio/MultiEngine/BassEngine.h"
+#include "plugins/audio/MultiEngine/StringEngine.h"
 #include "plugins/audio/utils/AsrEnvelop.h"
 #include "plugins/audio/utils/EnvelopDrumAmp.h"
 
@@ -31,8 +32,9 @@ protected:
     WavetableEngine wavetableEngine;
     Wavetable2Engine wavetable2Engine;
     BassEngine bassEngine;
+    StringEngine stringEngine;
 
-    static const int ENGINES_COUNT = 8;
+    static const int ENGINES_COUNT = 9;
     Engine* engines[ENGINES_COUNT] = {
         &fmEngine,
         &wavetableEngine,
@@ -42,6 +44,7 @@ protected:
         &superSawEngine,
         &spaceShipEngine,
         &bassEngine,
+        &stringEngine,
     };
     Engine* selectedEngine = engines[0];
 
@@ -119,6 +122,7 @@ public:
         , wavetableEngine(props, config)
         , wavetable2Engine(props, config)
         , bassEngine(props, config)
+        , stringEngine(props, config)
     {
         initValues({ &engine });
     }
