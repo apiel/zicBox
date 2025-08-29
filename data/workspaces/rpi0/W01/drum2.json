@@ -3,35 +3,35 @@
         "values": [
             {
                 "key": "ENGINE",
-                "value": 3.0
+                "value": 8.0
             },
             {
                 "key": "VAL_1",
-                "value": 25.0
-            },
-            {
-                "key": "VAL_2",
-                "value": 5.0
-            },
-            {
-                "key": "VAL_3",
-                "value": 30.0
-            },
-            {
-                "key": "VAL_4",
-                "value": 70.0
-            },
-            {
-                "key": "VAL_5",
                 "value": 0.0
             },
             {
+                "key": "VAL_2",
+                "value": 0.9900000095367432
+            },
+            {
+                "key": "VAL_3",
+                "value": 45.0
+            },
+            {
+                "key": "VAL_4",
+                "value": 43.0
+            },
+            {
+                "key": "VAL_5",
+                "value": 44.0
+            },
+            {
                 "key": "VAL_6",
-                "value": 30.0
+                "value": 0.0
             },
             {
                 "key": "VAL_7",
-                "value": 100.0
+                "value": 0.0
             },
             {
                 "key": "VAL_8",
@@ -39,25 +39,98 @@
             },
             {
                 "key": "VAL_9",
-                "value": 0.0
+                "value": 1.0
             },
             {
                 "key": "VAL_10",
-                "value": 20.0
+                "value": 65.0
             },
             {
                 "key": "DURATION",
-                "value": 780.0
+                "value": 1050.0
             },
             {
                 "key": "AMP_MORPH",
-                "value": 84.0
+                "value": 100.0
             }
         ]
     },
     "Sequencer": {
         "STATUS": 1.0,
-        "STEPS": null
+        "STEPS": [
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 0,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 8,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 16,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 24,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 32,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 40,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 48,
+                "velocity": 0.800000011920929
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 56,
+                "velocity": 0.800000011920929
+            }
+        ]
     },
     "SerializeTrack": {
         "VARIATION": 0.0

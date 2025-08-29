@@ -22,7 +22,6 @@ protected:
     float onePoleState = 0.0f;
     bool resonatorActive = false;
 
-    float sampleRate = 48000.0f;
     float velocity = 1.0f;
 
     // Vibrato
@@ -102,8 +101,7 @@ public:
         , multiFx(props.sampleRate, props.lookupTable)
         , multiFx2(props.sampleRate, props.lookupTable)
     {
-        sampleRate = props.sampleRate;
-        delayLen = (uint32_t)std::min<uint64_t>((uint64_t)(sampleRate * 0.02f), (uint64_t)MAX_DELAY);
+        delayLen = (uint32_t)std::min<uint64_t>((uint64_t)(props.sampleRate * 0.02f), (uint64_t)MAX_DELAY);
         delayLine.assign(delayLen + 4, 0.0f);
         initValues();
     }
@@ -117,10 +115,10 @@ public:
         float freq = baseFreq;
         if (freq < 20.0f)
             freq = 20.0f;
-        if (freq > sampleRate * 0.45f)
-            freq = sampleRate * 0.45f;
+        if (freq > props.sampleRate * 0.45f)
+            freq = props.sampleRate * 0.45f;
 
-        uint32_t len = (uint32_t)std::max<int>(2, (int)std::round(sampleRate / freq));
+        uint32_t len = (uint32_t)std::max<int>(2, (int)std::round(props.sampleRate / freq));
         len = std::min<uint32_t>(len, MAX_DELAY);
 
         if (len != delayLen) {
@@ -159,7 +157,7 @@ public:
         if (vibratoRate.get() > 0.0f && vibratoDepth.get() > 0.0f) {
             if (vibratoRate.get() < 2.0f) {
                 // vibrato LFO (pulse/square)
-                float phaseInc = vibratoRate.get() / sampleRate;
+                float phaseInc = vibratoRate.get() / props.sampleRate;
                 vibratoPhase += phaseInc;
                 if (vibratoPhase >= 1.0f)
                     vibratoPhase -= 1.0f;
@@ -171,7 +169,7 @@ public:
                 vibRatio = powf(2.0f, cents / 1200.0f);
             } else {
                 // vibrato LFO (sine)
-                float phaseInc = vibratoRate.get() / sampleRate;
+                float phaseInc = vibratoRate.get() / props.sampleRate;
                 vibratoPhase += phaseInc;
                 if (vibratoPhase >= 1.0f)
                     vibratoPhase -= 1.0f;

@@ -8,6 +8,7 @@
 #include "plugins/audio/MultiDrumEngine/PercussionEngine.h"
 #include "plugins/audio/MultiDrumEngine/VolcEngine.h"
 #include "plugins/audio/MultiDrumEngine/FmEngine.h"
+#include "plugins/audio/MultiDrumEngine/StringEngine.h"
 #include "plugins/audio/utils/EnvelopDrumAmp.h"
 
 /*md
@@ -28,8 +29,9 @@ protected:
     Er1PcmEngine er1PcmEngine;
     VolcEngine volcanEngine;
     FmEngine fmEngine;
+    StringEngine stringEngine;
 
-    static const int ENGINES_COUNT = 8;
+    static const int ENGINES_COUNT = 9;
     DrumEngine* drumEngines[ENGINES_COUNT] = {
         &metalDrumEngine,
         &percEngine,
@@ -39,6 +41,7 @@ protected:
         &er1PcmEngine,
         &volcanEngine,
         &fmEngine,
+        &stringEngine,
     };
     DrumEngine* drumEngine = drumEngines[0];
 
@@ -113,6 +116,7 @@ public:
         , er1PcmEngine(props, config)
         , volcanEngine(props, config)
         , fmEngine(props, config)
+        , stringEngine(props, config)
     {
         initValues({ &engine });
     }
