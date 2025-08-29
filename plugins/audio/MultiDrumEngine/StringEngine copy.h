@@ -20,30 +20,31 @@ protected:
     std::vector<float> delayLine;
     uint32_t delayLen = 0;
     uint32_t writePos = 0;
-    uint32_t readPos = 0;
+    float readPos = 0.0f; // make float for fractional read
     float onePoleState = 0.0f;
-    bool resonatorActive = false;
 
     float velocity = 1.0f;
 
     static constexpr uint32_t MAX_DELAY = 1 << 16; // 65536
 
-    inline float noteToFreq(int note) const
-    {
-        return 440.0f * powf(2.0f, (note - 69) / 12.0f);
+    // --- compute frequency ratio from pitch in semitones ---
+    inline float freqRatio() const {
+        return powf(2.0f, pitch.get() / 12.0f);
     }
 
-    // --- Resonator tick ---
     float resonatorTick()
     {
-        if (!resonatorActive || delayLen == 0)
+        if (delayLen == 0)
             return 0.0f;
 
-        uint32_t rp = readPos % delayLen;
-        uint32_t rp1 = (rp + 1) % delayLen;
-        float s0 = delayLine[rp];
-        float s1 = delayLine[rp1];
-        float out = 0.5f * (s0 + s1); // linear interp
+        // fractional read position for smooth pitch changes
+        uint32_t i0 = (uint32_t)readPos % delayLen;
+        uint32_t i1 = (i0 + 1) % delayLen;
+        float frac = readPos - (float)i0;
+
+        float s0 = delayLine[i0];
+        float s1 = delayLine[i1];
+        float out = s0 + frac * (s1 - s0); // linear interp
 
         // one-pole lowpass
         float cutoff = std::max(0.001f, tone.pct());
@@ -54,28 +55,25 @@ protected:
         float fb = decay.get();
         delayLine[writePos % delayLen] = filtered * fb;
 
-        // advance
+        // advance write pointer
         writePos = (writePos + 1) % delayLen;
-        readPos = (readPos + 1) % delayLen;
 
-        if (fabs(filtered) < 1e-6f) {
-            resonatorActive = false;
-        }
+        // advance read pointer with pitch applied
+        readPos += freqRatio();
+        if (readPos >= (float)delayLen)
+            readPos -= (float)delayLen;
 
         return filtered;
     }
 
 public:
-    // --- 10 parameters ---
-    // --- Parameters (exactly 10) ---
+    // --- Parameters ---
     Val& pitch = val(0.0f, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24 });
-
     Val& decay = val(0.98f, "DECAY", { "Decay", .min = 0.80f, .max = 0.99f, .step = 0.01f, .floatingPoint = 2 });
     Val& tone = val(50.0f, "TONE", { "Tone", .unit = "%" });
     Val& pluckNoise = val(50.0f, "PLUCK_NOISE", { "Pluck Noise", .unit = "%" });
     Val& damping = val(0.5f, "DAMPING", { "Damping", .unit = "%" });
     Val& stereo = val(0.0f, "STEREO", { "Stereo", .unit = "%" });
-
     Val& cutoff = val(0.0, "CUTOFF", { "LPF | HPF", VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
         valMMfilterCutoff(p, filter);
     });
@@ -83,11 +81,9 @@ public:
         p.val.setFloat(p.value);
         filter.setResonance(p.val.pct());
     });
-
     Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
         multiFx.setFxType(p);
     });
-
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
 
     // --- constructor ---
@@ -117,11 +113,9 @@ public:
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
     {
         velocity = _velocity;
-        float freq = powf(2.0f, (note - 60 + pitch.get()) / 12.0f);
-        if (freq < 20.0f)
-            freq = 20.0f;
-        if (freq > props.sampleRate * 0.45f)
-            freq = props.sampleRate * 0.45f;
+        float freq = powf(2.0f, (note - 60 + pitch.get()) / 12.0f); // base frequency
+        if (freq < 20.0f) freq = 20.0f;
+        if (freq > props.sampleRate * 0.45f) freq = props.sampleRate * 0.45f;
 
         uint32_t len = (uint32_t)std::max<int>(2, (int)std::round(props.sampleRate / freq));
         len = std::min<uint32_t>(len, MAX_DELAY);
@@ -139,8 +133,7 @@ public:
         }
 
         writePos = 0;
-        readPos = 0;
+        readPos = 0.0f; // fractional read position
         onePoleState = 0.0f;
-        resonatorActive = true;
     }
 };
