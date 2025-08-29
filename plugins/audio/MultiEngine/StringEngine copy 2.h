@@ -3,9 +3,6 @@
 #include "helpers/math.h"
 #include "plugins/audio/MultiEngine/Engine.h"
 #include "plugins/audio/utils/MultiFx.h"
-#include "plugins/audio/utils/MMfilter.h"
-#include "plugins/audio/utils/val/valMMfilterCutoff.h"
-
 #include <cmath>
 #include <vector>
 
@@ -13,7 +10,6 @@ class StringEngine : public Engine {
 protected:
     MultiFx multiFx;
     MultiFx multiFx2;
-    MMfilter filter;
 
     // Resonator
     std::vector<float> delayLine;
@@ -27,6 +23,11 @@ protected:
     float velocity = 1.0f;
 
     static constexpr uint32_t MAX_DELAY = 1 << 16; // 65536
+
+    inline float noteToFreq(int note) const
+    {
+        return 440.0f * powf(2.0f, (note - 69) / 12.0f);
+    }
 
     // --- Resonator tick ---
     float resonatorTick(float driver)
@@ -65,15 +66,9 @@ public:
 
     Val& decay = val(0.98f, "DECAY", { "Decay", .min = 0.80f, .max = 0.99f, .step = 0.01f, .floatingPoint = 2 });
     Val& tone = val(50.0f, "TONE", { "Tone", .unit = "%" });
+    Val& pluckNoise = val(50.0f, "PLUCK_NOISE", { "Pluck Noise", .unit = "%" });
     Val& sustainExcite = val(50.0f, "SUSTAIN_EXCITE", { "Sustain Excite", .unit = "%" });
-
-    Val& cutoff = val(0.0, "CUTOFF", { "LPF | HPF", VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
-        valMMfilterCutoff(p, filter);
-    });
-    Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
-        p.val.setFloat(p.value);
-        filter.setResonance(p.val.pct());
-    });
+    Val& sustainMix = val(50.0f, "SUSTAIN_MIX", { "Sustain Mix", .unit = "%" });
 
     Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
         multiFx.setFxType(p);
@@ -103,7 +98,7 @@ public:
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
     {
         velocity = _velocity;
-        setBaseFreq(pitch.get(), note - 24); // let's remote 2 octaves
+        setBaseFreq(pitch.get(), note);
 
         float freq = baseFreq;
         if (freq < 20.0f)
@@ -119,46 +114,33 @@ public:
             delayLine.assign(delayLen + 4, 0.0f);
         }
 
+        // Initial pluck with noise
+        for (uint32_t i = 0; i < delayLen; ++i) {
+            float n = (rand() / (float)RAND_MAX) * 2.0f - 1.0f;
+            delayLine[i] = n * velocity * pluckNoise.pct();
+        }
+
         writePos = 0;
         readPos = 0;
         onePoleState = 0.0f;
         resonatorActive = true;
-        driverEnv = 1.0f;
-        isNoteHeld = true;
-    }
-
-    void noteOff(uint8_t note, float _velocity, void* = nullptr) override
-    {
-        isNoteHeld = false;
     }
 
     // --- Sample ---
-    bool isNoteHeld = false;
-    float driverEnv = 0.0f;
     void sample(float* buf, float envAmpVal) override
     {
-        if (!isNoteHeld) {
-            // driver envelope smoothing (fast release if key up)
-            if (driverEnv > 0.0f) {
-                driverEnv -= 0.05f;
-            } else {
-                driverEnv = 0.0f;
-            }
-            driverEnv = std::min<float>(envAmpVal, driverEnv);
-        }
-
-        // Generate sustain driver with fast "bow" envelope
+        // Generate sustain driver
         float driver = 0.0f;
-        if (sustainExcite.pct() > 0.0f) {
+        if (envAmpVal > 0.0f && sustainExcite.pct() > 0.0f) {
+            // small noise component as bow/excite
             float n = (rand() / (float)RAND_MAX) * 2.0f - 1.0f;
-            float sustain = n * sustainExcite.pct() * velocity * driverEnv;
-            driver = sustain; // always injected while driverEnv > 0
+            float sustain = n * sustainExcite.pct() * velocity * envAmpVal;
+            driver = sustain * sustainMix.pct();
         }
 
         float out = resonatorTick(driver);
         out *= velocity * envAmpVal;
 
-        out = filter.process(out);
         out = multiFx.apply(out, fxAmount.pct());
         out = multiFx2.apply(out, fx2Amount.pct());
 

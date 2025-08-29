@@ -146,6 +146,7 @@ public:
         if (note == playingNote) {
             envelopAmp.release();
         }
+        selectedEngine->noteOff(note, _velocity);
     }
 
     void serializeJson(nlohmann::json& json) override
