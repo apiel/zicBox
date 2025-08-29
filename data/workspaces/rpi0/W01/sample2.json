@@ -24,39 +24,35 @@
             },
             {
                 "key": "VAL_5",
-                "value": 0.0
+                "value": 100.0
             },
             {
                 "key": "VAL_6",
                 "value": 0.0
             },
             {
-                "key": "VAL_EXTRA",
+                "key": "VAL_7",
                 "value": 0.0
             },
             {
-                "key": "START",
+                "key": "VAL_8",
                 "value": 0.0
             },
             {
-                "key": "END",
-                "value": 100.0
+                "key": "VAL_9",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_10",
+                "value": 0.0
+            },
+            {
+                "key": "VAL_11",
+                "value": 0.0
             },
             {
                 "key": "BROWSER",
                 "value": 1.0
-            },
-            {
-                "key": "LOOP_POSITION",
-                "value": 0.0
-            },
-            {
-                "key": "LOOP_LENGTH",
-                "value": 0.0
-            },
-            {
-                "key": "LOOP_RELEASE",
-                "value": 0.0
             }
         ]
     },

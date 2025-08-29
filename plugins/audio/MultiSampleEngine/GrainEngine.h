@@ -1,14 +1,13 @@
 #pragma once
 
-#include "plugins/audio/MultiSampleEngine/SampleEngine.h"
+#include "plugins/audio/MultiSampleEngine/LoopedEngine.h"
 #include "plugins/audio/mapping.h"
-// #include "plugins/audio/utils/AsrEnvelop.h"
 #include "plugins/audio/utils/EnvelopRelative.h"
 #include "plugins/audio/utils/MultiFx.h"
 
 #define MAX_GRAINS 16
 
-class GrainEngine : public SampleEngine {
+class GrainEngine : public LoopedEngine {
 protected:
     MultiFx multiFx;
 
@@ -36,6 +35,15 @@ protected:
         return props.lookupTable->getNoise();
     }
 
+    Val& getValExtra()
+    {
+        logDebug("-----------getValExtra density");
+        return val(10.0f, "DENSITY", { "Density", .min = 1.0, .max = MAX_GRAINS }, [&](auto p) {
+            p.val.setFloat(p.value);
+            densityDivider = 1.0f / p.val.get();
+        });
+    }
+
 public:
     Val& length = val(100.0f, "GRAIN_LENGTH", { "Grain Length", .min = 5.0, .max = 100.0, .unit = "ms" }, [&](auto p) {
         p.val.setFloat(p.value);
@@ -56,19 +64,18 @@ public:
     });
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
 
-    // VAL_EXTRA
-    Val& density = val(10.0f, "DENSITY", { "Density", .min = 1.0, .max = MAX_GRAINS }, [&](auto p) {
-        p.val.setFloat(p.value);
-        densityDivider = 1.0f / p.val.get();
-    });
+    struct GetValExtra {
+        GrainEngine* engine;
+        Val& operator()() { return engine->getValExtra(); }
+    };
 
-    GrainEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer)
-        : SampleEngine(props, config, sampleBuffer, "Grain")
+    GrainEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index)
+        : LoopedEngine(props, config, sampleBuffer, index, "Grain", GetValExtra { this })
         , multiFx(props.sampleRate, props.lookupTable)
     {
     }
 
-    void sample(float* buf, int index) override
+    void postProcess(float* buf, int index) override
     {
         float out = buf[track];
         out = multiFx.apply(out, fxAmount.pct());
@@ -78,7 +85,7 @@ public:
     float getSample(int index, float stepIncrement) override
     {
         float out = 0.0f;
-        for (uint8_t i = 0; i < density.get(); i++) {
+        for (uint8_t i = 0; i < valExtra.get(); i++) {
             Grain& grain = grains[i];
             if (grain.index++ < grainDuration) {
                 grain.position += grain.positionIncrement;

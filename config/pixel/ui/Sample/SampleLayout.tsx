@@ -6,7 +6,11 @@ import { StringVal } from '@/libs/nativeComponents/StringVal';
 import { ClipBar } from '../components/ClipBar';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
-import { ShiftLayout, shiftVisibilityContext, unshiftVisibilityContext } from '../components/ShiftLayout';
+import {
+    ShiftLayout,
+    shiftVisibilityContext,
+    unshiftVisibilityContext,
+} from '../components/ShiftLayout';
 import { Val } from '../components/Val';
 import { ScreenWidth } from '../constants';
 import {
@@ -60,7 +64,12 @@ export function SampleLayout({ name, track, synthName, color, title }: Props) {
                         }
                     />
 
-                    <StringVal audioPlugin={synthName} param="ENGINE" bounds={[105, 3, 60, 20]} fontLabel="PoppinsLight_12" />
+                    <StringVal
+                        audioPlugin={synthName}
+                        param="ENGINE"
+                        bounds={[105, 3, 50, 20]}
+                        fontLabel="PoppinsLight_12"
+                    />
 
                     <Val
                         {...enc1smpl}
@@ -73,21 +82,21 @@ export function SampleLayout({ name, track, synthName, color, title }: Props) {
                     <Val
                         {...enc2smpl}
                         audioPlugin={synthName}
-                        param="LOOP_POSITION"
+                        param="VAL_1"
                         track={track}
                         color={isPage1 ? 'secondary' : undefined}
                     />
                     <Val
                         {...enc3smpl}
                         audioPlugin={synthName}
-                        param="LOOP_LENGTH"
+                        param="VAL_2"
                         track={track}
                         color={isPage1 ? 'quaternary' : undefined}
                     />
                     <Val
                         {...enc4smpl}
                         audioPlugin={synthName}
-                        param="VAL_EXTRA"
+                        param="VAL_3"
                         track={track}
                         color={isPage1 ? 'tertiary' : undefined}
                     />
@@ -95,28 +104,28 @@ export function SampleLayout({ name, track, synthName, color, title }: Props) {
                     <Val
                         {...enc5smpl}
                         audioPlugin={synthName}
-                        param="START"
+                        param="VAL_4"
                         track={track}
                         color={isPage2 ? 'secondary' : undefined}
                     />
                     <Val
                         {...enc6smpl}
                         audioPlugin={synthName}
-                        param="END"
+                        param="VAL_5"
                         track={track}
                         color={isPage2 ? 'quaternary' : undefined}
                     />
                     <Val
                         {...enc7smpl}
                         audioPlugin={synthName}
-                        param="VAL_1"
+                        param="VAL_6"
                         track={track}
                         color={isPage2 ? 'tertiary' : undefined}
                     />
                     <Val
                         {...enc8smpl}
                         audioPlugin={synthName}
-                        param="VAL_2"
+                        param="VAL_7"
                         track={track}
                         color={isPage2 ? 'primary' : undefined}
                     />
@@ -126,33 +135,39 @@ export function SampleLayout({ name, track, synthName, color, title }: Props) {
                         audioPlugin={synthName}
                         track={track}
                         visibilityContext={[unshiftVisibilityContext]}
+                        valueKeys={{
+                            loopPosition: 'VAL_1',
+                            loopLength: 'VAL_2',
+                            start: 'VAL_4',
+                            end: 'VAL_5',
+                        }}
                     />
 
                     <Val
                         {...enc9smpl}
                         audioPlugin={synthName}
-                        param="VAL_3"
+                        param="VAL_8"
                         track={track}
                         color={isPage3 ? 'secondary' : undefined}
                     />
                     <Val
                         {...enc10smpl}
                         audioPlugin={synthName}
-                        param="VAL_4"
+                        param="VAL_9"
                         track={track}
                         color={isPage3 ? 'quaternary' : undefined}
                     />
                     <Val
                         {...enc11smpl}
                         audioPlugin={synthName}
-                        param="VAL_5"
+                        param="VAL_10"
                         track={track}
                         color={isPage3 ? 'tertiary' : undefined}
                     />
                     <Val
                         {...enc12smpl}
                         audioPlugin={synthName}
-                        param="VAL_6"
+                        param="VAL_11"
                         track={track}
                         color={isPage3 ? 'primary' : undefined}
                     />

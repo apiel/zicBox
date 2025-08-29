@@ -1,13 +1,13 @@
 #pragma once
 
-#include "plugins/audio/MultiSampleEngine/SampleEngine.h"
+#include "plugins/audio/MultiSampleEngine/LoopedEngine.h"
 #include "plugins/audio/utils/MMfilter.h"
 #include "plugins/audio/utils/MultiFx.h"
 #include "plugins/audio/utils/val/valMMfilterCutoff.h"
 
 #include <cmath>
 
-class AmEngine : public SampleEngine {
+class AmEngine : public LoopedEngine {
 protected:
     MultiFx multiFx;
     MMfilter filter;
@@ -55,14 +55,14 @@ protected:
     }
 
 public:
-    AmEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer)
-        : SampleEngine(props, config, sampleBuffer, "AM")
+    AmEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index)
+        : LoopedEngine(props, config, sampleBuffer, index, "AM")
         , multiFx(props.sampleRate, props.lookupTable)
     {
         sampleRate = props.sampleRate;
     }
 
-    void noteOn(uint8_t note, float velocity, void*) override
+    void engineNoteOn(uint8_t note, float velocity) override
     {
         playedNote = note;
         setModStep();
@@ -79,7 +79,7 @@ public:
 
         float out = 0.0f;
 
-        uint64_t i = (uint64_t)index;
+        uint64_t i = (uint64_t)index; // FIXME not necessary?
         if (i >= sampleBuffer.count)
             i = sampleBuffer.count - 1;
         out = sampleBuffer.data[i] * (1.0f + modValue * depthFactor) * 0.5f;
@@ -93,7 +93,7 @@ public:
         return out;
     }
 
-    void sample(float* buf, int index) override
+    void postProcess(float* buf, int index) override
     {
         float out = buf[track];
 

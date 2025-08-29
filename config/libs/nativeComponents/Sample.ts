@@ -8,7 +8,7 @@ export const Sample = getJsonComponent<{
     loopStartColor?: string;
     loopEndColor?: string;
     sampleColor?: string;
-    valuekeys?: {
+    valueKeys?: {
         browser?: string;
         start?: string;
         end?: string;

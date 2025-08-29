@@ -138,6 +138,7 @@ public:
 
         /// Value keys
         if (config.contains("valueKeys")) { //eg: {"browser": "BROWSER", "start": "START", "end": "END", "loopPosition": "LOOP_POSITION", "loopLength": "LOOP_LENGTH"}
+            // logDebug("valueKeys: %s", config["valueKeys"].dump().c_str());
             valueKeys[0] = config["valueKeys"].value("browser", valueKeys[0]);
             valueKeys[1] = config["valueKeys"].value("start", valueKeys[1]);
             valueKeys[2] = config["valueKeys"].value("end", valueKeys[2]);

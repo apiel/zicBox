@@ -1,12 +1,12 @@
 #pragma once
 
-#include "plugins/audio/MultiSampleEngine/SampleEngine.h"
+#include "plugins/audio/MultiSampleEngine/LoopedEngine.h"
 #include "plugins/audio/mapping.h"
 #include "plugins/audio/utils/MMfilter.h"
 #include "plugins/audio/utils/MultiFx.h"
 #include "plugins/audio/utils/val/valMMfilterCutoff.h"
 
-class MonoEngine : public SampleEngine {
+class MonoEngine : public LoopedEngine {
 protected:
     MMfilter filter;
     MultiFx multiFx;
@@ -31,14 +31,14 @@ public:
     });
     Val& fx2Amount = val(0, "FX2_AMOUNT", { "FX2 edit", .unit = "%" });
 
-    MonoEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer)
-        : SampleEngine(props, config, sampleBuffer, "Mono")
+    MonoEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index)
+        : LoopedEngine(props, config, sampleBuffer, index, "Mono")
         , multiFx(props.sampleRate, props.lookupTable)
         , multiFx2(props.sampleRate, props.lookupTable)
     {
     }
 
-    void sample(float* buf, int index) override
+    void postProcess(float* buf, int index) override
     {
         float out = buf[track];
 
