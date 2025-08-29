@@ -23,11 +23,11 @@
             },
             {
                 "key": "VAL_5",
-                "value": -2.0
+                "value": 0.0
             },
             {
                 "key": "VAL_6",
-                "value": 65.0
+                "value": 26.0
             },
             {
                 "key": "VAL_7",
@@ -51,7 +51,7 @@
             },
             {
                 "key": "AMP_MORPH",
-                "value": 25.0
+                "value": 28.0
             }
         ]
     },

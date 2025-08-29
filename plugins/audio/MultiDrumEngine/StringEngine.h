@@ -39,9 +39,6 @@ protected:
         float out = 0.5f * (s0 + s1);
 
         // one-pole lowpass
-        // float cutoff = std::max(0.001f, tone.pct());
-        // onePoleState += cutoff * (out - onePoleState);
-        // float filtered = onePoleState;
         float cutoff = std::max(0.001f, tone.pct() * (1.05f - damping.pct()));
         onePoleState += cutoff * (out - onePoleState);
         float filtered = onePoleState;
@@ -61,6 +58,9 @@ public:
     Val& tone = val(50.0f, "TONE", { "Tone", .unit = "%" });
     Val& pluckNoise = val(50.0f, "PLUCK_NOISE", { "Pluck Noise", .unit = "%" });
 
+    Val& exciteType = val(0.0f, "EXCITE_TYPE", { "Excitation Type", .min = 0.0f, .max = 2.0f });
+    Val& damping = val(0.5f, "DAMPING", { "Damping", .unit = "%" });
+
     Val& cutoff = val(0.0, "CUTOFF", { "LPF | HPF", VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
         valMMfilterCutoff(p, filter);
     });
@@ -72,10 +72,6 @@ public:
         multiFx.setFxType(p);
     });
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
-
-    Val& exciteType = val(0.0f, "EXCITE_TYPE", { "Excitation Type", .min = 0.0f, .max = 2.0f });
-
-    Val& damping = val(0.5f, "DAMPING", { "Damping", .unit = "%" });
 
     // Constructor
     StringEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
