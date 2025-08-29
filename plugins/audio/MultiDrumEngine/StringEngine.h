@@ -18,7 +18,6 @@ protected:
     uint32_t delayLen = 0;
     uint32_t writePos = 0;
     float onePoleState = 0.0f;
-    bool resonatorActive = false;
 
     float velocity = 1.0f;
     static constexpr uint32_t MAX_DELAY = 1 << 16; // 65536
@@ -28,7 +27,7 @@ protected:
     }
 
     float resonatorTick() {
-        if (!resonatorActive || delayLen == 0) return 0.0f;
+        if (delayLen == 0) return 0.0f;
 
         uint32_t rp = writePos % delayLen;
         uint32_t rp1 = (rp + 1) % delayLen;
@@ -107,6 +106,5 @@ public:
 
         writePos = 0;
         onePoleState = 0.0f;
-        resonatorActive = true;
     }
 };
