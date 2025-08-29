@@ -3,6 +3,7 @@
 #include "helpers/math.h"
 #include "plugins/audio/MultiEngine/Engine.h"
 #include "plugins/audio/utils/MultiFx.h"
+#include "plugins/audio/utils/MMfilter.h"
 #include "plugins/audio/utils/val/valMMfilterCutoff.h"
 
 #include <cmath>
@@ -12,37 +13,32 @@ class StringEngine : public Engine {
 protected:
     MultiFx multiFx;
     MultiFx multiFx2;
+    MMfilter filter;
 
     // Resonator
     std::vector<float> delayLine;
     uint32_t delayLen = 0;
     uint32_t writePos = 0;
+    uint32_t readPos = 0;
     float onePoleState = 0.0f;
     bool resonatorActive = false;
 
     float sampleRate = 48000.0f;
     float velocity = 1.0f;
 
-    // Vibrato
-    float vibratoPhase = 0.0f; // 0–1
-
     static constexpr uint32_t MAX_DELAY = 1 << 16; // 65536
 
-    // --- Resonator tick with vibrato ---
-    float resonatorTick(float driver, float vibRatio)
+    // --- Resonator tick ---
+    float resonatorTick(float driver)
     {
         if (!resonatorActive || delayLen == 0)
             return 0.0f;
 
-        // fractional read position with vibrato applied
-        float rp = fmodf((float)writePos * vibRatio, (float)delayLen);
-        uint32_t i0 = (uint32_t)rp;
-        uint32_t i1 = (i0 + 1) % delayLen;
-        float frac = rp - i0;
-
-        float s0 = delayLine[i0];
-        float s1 = delayLine[i1];
-        float out = s0 + frac * (s1 - s0); // linear interp
+        uint32_t rp = readPos % delayLen;
+        uint32_t rp1 = (rp + 1) % delayLen;
+        float s0 = delayLine[rp];
+        float s1 = delayLine[rp1];
+        float out = 0.5f * (s0 + s1); // linear interp
 
         // one-pole lowpass
         float cutoff = std::max(0.005f, tone.pct());
@@ -53,14 +49,15 @@ protected:
         float fb = decay.get();
         delayLine[writePos % delayLen] = filtered * fb + driver;
 
-        // advance write pointer
+        // advance
         writePos = (writePos + 1) % delayLen;
+        readPos = (readPos + 1) % delayLen;
 
         return filtered;
     }
 
 public:
-    // --- Parameters (exactly 12 now) ---
+    // --- Parameters (exactly 10) ---
     Val& pitch = val(0.0f, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24 }, [&](auto p) {
         p.val.setFloat(p.value);
         setBaseFreq((int)p.val.get());
@@ -70,9 +67,13 @@ public:
     Val& tone = val(50.0f, "TONE", { "Tone", .unit = "%" });
     Val& sustainExcite = val(50.0f, "SUSTAIN_EXCITE", { "Sustain Excite", .unit = "%" });
 
-    // Vibrato parameters
-    Val& vibratoRate = val(0.0f, "VIBRATO_RATE", { "Vibrato Rate", .min = 0.0f, .max = 30.0f, .step = 0.1f, .floatingPoint = 1, .unit = "Hz" });
-    Val& vibratoDepth = val(10.0f, "VIBRATO_DEPTH", { "Vibrato Depth", .min = 0.0f, .max = 100.0f, .unit = "cents" });
+    Val& cutoff = val(0.0, "CUTOFF", { "LPF | HPF", VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
+        valMMfilterCutoff(p, filter);
+    });
+    Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        filter.setResonance(p.val.pct());
+    });
 
     Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
         multiFx.setFxType(p);
@@ -102,7 +103,7 @@ public:
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
     {
         velocity = _velocity;
-        setBaseFreq(pitch.get(), note - 24); // remove 2 octaves
+        setBaseFreq(pitch.get(), note - 24); // let's remote 2 octaves
 
         float freq = baseFreq;
         if (freq < 20.0f)
@@ -119,6 +120,7 @@ public:
         }
 
         writePos = 0;
+        readPos = 0;
         onePoleState = 0.0f;
         resonatorActive = true;
         driverEnv = 1.0f;
@@ -133,59 +135,30 @@ public:
     // --- Sample ---
     bool isNoteHeld = false;
     float driverEnv = 0.0f;
-
     void sample(float* buf, float envAmpVal) override
     {
-        // driver env release
         if (!isNoteHeld) {
-            if (driverEnv > 0.0f)
+            // driver envelope smoothing (fast release if key up)
+            if (driverEnv > 0.0f) {
                 driverEnv -= 0.05f;
-            else
+            } else {
                 driverEnv = 0.0f;
+            }
             driverEnv = std::min<float>(envAmpVal, driverEnv);
         }
 
-        float vibRatio = 1.0f;
-        if (vibratoRate.get() > 0.0f && vibratoDepth.get() > 0.0f) {
-            if (vibratoRate.get() < 2.0f) {
-                // vibrato LFO (pulse/square)
-                float phaseInc = vibratoRate.get() / sampleRate;
-                vibratoPhase += phaseInc;
-                if (vibratoPhase >= 1.0f)
-                    vibratoPhase -= 1.0f;
-
-                // pulse: -1 for first half, +1 for second half
-                float pulse = (vibratoPhase < 0.1f) ? -1.0f : 1.0f;
-
-                float cents = pulse * vibratoDepth.get();
-                vibRatio = powf(2.0f, cents / 1200.0f);
-            } else {
-                // vibrato LFO (sine)
-                float phaseInc = vibratoRate.get() / sampleRate;
-                vibratoPhase += phaseInc;
-                if (vibratoPhase >= 1.0f)
-                    vibratoPhase -= 1.0f;
-
-                // sine wave between -1..1
-                float sine = sinf(2.0f * M_PI * vibratoPhase);
-
-                // depth in cents -> convert to frequency ratio
-                float cents = sine * vibratoDepth.get();
-                vibRatio = powf(2.0f, cents / 1200.0f);
-            }
-        }
-
-        // sustain driver (bow noise)
+        // Generate sustain driver with fast "bow" envelope
         float driver = 0.0f;
         if (sustainExcite.pct() > 0.0f) {
             float n = (rand() / (float)RAND_MAX) * 2.0f - 1.0f;
             float sustain = n * sustainExcite.pct() * velocity * driverEnv;
-            driver = sustain;
+            driver = sustain; // always injected while driverEnv > 0
         }
 
-        float out = resonatorTick(driver, vibRatio);
+        float out = resonatorTick(driver);
         out *= velocity * envAmpVal;
 
+        out = filter.process(out);
         out = multiFx.apply(out, fxAmount.pct());
         out = multiFx2.apply(out, fx2Amount.pct());
 

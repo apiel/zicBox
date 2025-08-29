@@ -14,7 +14,7 @@
             },
             {
                 "key": "VAL_1",
-                "value": 0.0
+                "value": -6.0
             },
             {
                 "key": "VAL_2",
@@ -30,7 +30,7 @@
             },
             {
                 "key": "VAL_5",
-                "value": -100.0
+                "value": 0.0
             },
             {
                 "key": "VAL_6",
@@ -38,11 +38,11 @@
             },
             {
                 "key": "VAL_7",
-                "value": 0.0
+                "value": 2.0
             },
             {
                 "key": "VAL_8",
-                "value": 12.0
+                "value": 22.0
             },
             {
                 "key": "VAL_9",
