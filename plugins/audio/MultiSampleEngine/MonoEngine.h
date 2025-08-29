@@ -38,7 +38,7 @@ public:
     {
     }
 
-    void postProcess(float* buf, int index) override
+    void postProcess(float* buf) override
     {
         float out = buf[track];
 

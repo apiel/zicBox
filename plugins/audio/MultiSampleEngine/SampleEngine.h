@@ -24,9 +24,9 @@ public:
     {
     }
 
-    virtual float getSample(int index, float stepIncrement)
+    virtual float getSample(float stepIncrement)
     {
-        return sampleBuffer.data[index];
+        return sampleBuffer.data[(int)index];
     }
 
     virtual void opened() { }

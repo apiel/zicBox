@@ -38,7 +38,6 @@ protected:
     float sampleRate;
 
     float modPhase = 0.0f;
-    float lastOutput = 0.0f;
 
     // Helper: simple sine wave increment
     float modStep = 0.0f;
@@ -69,7 +68,7 @@ public:
         modPhase = 0.0f;
     }
 
-    float getSample(int index, float stepIncrement) override
+    float getSample(float stepIncrement) override
     {
         if (sampleBuffer.count == 0)
             return 0.0f;
@@ -77,23 +76,14 @@ public:
         float modValue = sinf(modPhase);
         float depthFactor = depth.pct();
 
-        float out = 0.0f;
-
-        uint64_t i = (uint64_t)index; // FIXME not necessary?
-        if (i >= sampleBuffer.count)
-            i = sampleBuffer.count - 1;
-        out = sampleBuffer.data[i] * (1.0f + modValue * depthFactor) * 0.5f;
-
-        lastOutput = out;
-
         modPhase += modStep;
         if (modPhase > 2.0f * (float)M_PI)
             modPhase -= 2.0f * (float)M_PI;
 
-        return out;
+        return sampleBuffer.data[(int)index] * (1.0f + modValue * depthFactor) * 0.5f;
     }
 
-    void postProcess(float* buf, int index) override
+    void postProcess(float* buf) override
     {
         float out = buf[track];
 

@@ -31,7 +31,6 @@ protected:
     void opened() override
     {
         indexEnd = end.pct() * sampleBuffer.count;
-
         initValues();
     }
 
@@ -114,27 +113,28 @@ public:
     {
         float out = 0.0f;
         if (sustainedNote || nbOfLoopBeforeRelease > 0) {
-            out = getSample(index, stepIncrement) * velocity;
+            out = getSample(stepIncrement) * velocity;
             index += stepIncrement;
             if (index >= loopEnd) {
                 index = loopStart;
                 nbOfLoopBeforeRelease--;
             }
         } else if (index < indexEnd) {
-            out = getSample(index, stepIncrement) * velocity;
+            out = getSample(stepIncrement) * velocity;
             index += stepIncrement;
         } else if (index != sampleBuffer.count) {
             index = sampleBuffer.count;
         }
         buf[track] = out;
-        postProcess(buf, index);
+        postProcess(buf);
     }
 
-    virtual void postProcess(float* buf, int index) { }
+    virtual void postProcess(float* buf) { }
 
     void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
     {
         index = indexStart;
+        indexEnd = end.pct() * sampleBuffer.count;
         stepIncrement = getSampleStep(note);
         velocity = _velocity;
         if (sustainLength.get() > 0.0f) {
@@ -145,10 +145,12 @@ public:
 
     virtual void engineNoteOn(uint8_t note, float _velocity) { }
 
+    virtual uint16_t getLoopCountRelease() { return loopCountRelease; }
+
     void noteOff(uint8_t note, float velocity, void* userdata = NULL) override
     {
         if (note == sustainedNote) {
-            nbOfLoopBeforeRelease = loopCountRelease;
+            nbOfLoopBeforeRelease = getLoopCountRelease();
             sustainedNote = 0;
         }
         engineNoteOff(note, velocity);

@@ -37,7 +37,7 @@ protected:
 
     Val& getValExtra()
     {
-        return val(10.0f, "DENSITY", { "Density", .min = 1.0, .max = MAX_GRAINS }, [&](auto p) {
+        return val(4.0f, "DENSITY", { "Density", .min = 1.0, .max = MAX_GRAINS }, [&](auto p) {
             p.val.setFloat(p.value);
             densityDivider = 1.0f / p.val.get();
         });
@@ -49,7 +49,7 @@ public:
         grainDuration = props.sampleRate * length.get() * 0.001f;
     });
 
-    Val& densityDelay = val(10.0f, "GRAIN_DELAY", { "Grain Delay", .min = 1.0, .max = 1000, .unit = "ms" }, [&](auto p) {
+    Val& densityDelay = val(100.0f, "GRAIN_DELAY", { "Grain Delay", .min = 1.0, .max = 1000, .unit = "ms" }, [&](auto p) {
         densityDelay.setFloat(p.value);
         grainDelay = props.sampleRate * densityDelay.get() * 0.001f;
     });
@@ -74,14 +74,14 @@ public:
     {
     }
 
-    void postProcess(float* buf, int index) override
+    void postProcess(float* buf) override
     {
         float out = buf[track];
         out = multiFx.apply(out, fxAmount.pct());
         buf[track] = out;
     }
 
-    float getSample(int index, float stepIncrement) override
+    float getSample(float stepIncrement) override
     {
         float out = 0.0f;
         for (uint8_t i = 0; i < valExtra.get(); i++) {
@@ -98,5 +98,15 @@ public:
         }
         out = out * densityDivider;
         return out;
+    }
+
+    uint16_t getLoopCountRelease() override { return 0; }
+
+    void engineNoteOn(uint8_t note, float _velocity) override
+    {
+        // FIXME find a way to init value when changing engine!
+        densityDivider = 1.0f / valExtra.get();
+        grainDuration = props.sampleRate * length.get() * 0.001f;
+        grainDelay = props.sampleRate * densityDelay.get() * 0.001f;
     }
 };
