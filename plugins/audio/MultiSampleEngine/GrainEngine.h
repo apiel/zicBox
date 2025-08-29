@@ -37,7 +37,6 @@ protected:
 
     Val& getValExtra()
     {
-        logDebug("-----------getValExtra density");
         return val(10.0f, "DENSITY", { "Density", .min = 1.0, .max = MAX_GRAINS }, [&](auto p) {
             p.val.setFloat(p.value);
             densityDivider = 1.0f / p.val.get();
@@ -69,8 +68,8 @@ public:
         Val& operator()() { return engine->getValExtra(); }
     };
 
-    GrainEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index)
-        : LoopedEngine(props, config, sampleBuffer, index, "Grain", GetValExtra { this })
+    GrainEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier)
+        : LoopedEngine(props, config, sampleBuffer, index, stepMultiplier, "Grain", GetValExtra { this })
         , multiFx(props.sampleRate, props.lookupTable)
     {
     }

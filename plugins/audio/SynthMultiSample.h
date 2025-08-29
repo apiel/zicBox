@@ -34,6 +34,7 @@ protected:
     float sampleData[bufferSize];
     SampleEngine::SampleBuffer sampleBuffer;
     float index = 0.0f;
+    float stepMultiplier = 1.0;
 
     FileBrowser fileBrowser = FileBrowser("./data/audio/samples");
 
@@ -53,7 +54,6 @@ protected:
 
         sf_close(file);
 
-        float stepMultiplier = 1.0;
         if (sfinfo.channels < props.channels) {
             stepMultiplier = 0.5f;
         } else if (sfinfo.channels > props.channels) {
@@ -65,7 +65,7 @@ protected:
         index = sampleBuffer.count;
 
         applyGain(sampleBuffer.data, sampleBuffer.count);
-        engine->opened(stepMultiplier);
+        engine->opened();
     }
 
     static const int valCount = 11;
@@ -138,9 +138,9 @@ public:
 
     SynthMultiSample(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
-        , monoEngine(props, config, sampleBuffer, index)
-        , grainEngine(props, config, sampleBuffer, index)
-        , amEngine(props, config, sampleBuffer, index)
+        , monoEngine(props, config, sampleBuffer, index, stepMultiplier)
+        , grainEngine(props, config, sampleBuffer, index, stepMultiplier)
+        , amEngine(props, config, sampleBuffer, index, stepMultiplier)
     {
         initValues({ &engineVal });
     }

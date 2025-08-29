@@ -31,8 +31,8 @@ public:
     });
     Val& fx2Amount = val(0, "FX2_AMOUNT", { "FX2 edit", .unit = "%" });
 
-    MonoEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index)
-        : LoopedEngine(props, config, sampleBuffer, index, "Mono")
+    MonoEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier)
+        : LoopedEngine(props, config, sampleBuffer, index, stepMultiplier, "Mono")
         , multiFx(props.sampleRate, props.lookupTable)
         , multiFx2(props.sampleRate, props.lookupTable)
     {

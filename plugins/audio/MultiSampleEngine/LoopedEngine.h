@@ -11,7 +11,6 @@ protected:
     uint16_t loopCountRelease = 0;
     int16_t nbOfLoopBeforeRelease = 0;
     float stepIncrement = 1.0;
-    float stepMultiplier = 1.0;
 
     float velocity = 1.0;
     uint8_t sustainedNote = 0;
@@ -29,9 +28,8 @@ protected:
         return pow(2, ((note - baseNote) / 12.0)) * stepMultiplier;
     }
 
-    void opened(float _stepMultiplier) override
+    void opened() override
     {
-        stepMultiplier = _stepMultiplier;
         indexEnd = end.pct() * sampleBuffer.count;
 
         initValues();
@@ -39,7 +37,6 @@ protected:
 
     Val& getValExtra()
     {
-        logDebug("-----------getValExtra loop release");
         return val(0.0f, "VAL_EXTRA", { "Loop Release", .min = 0.0, .max = 5000.0, .step = 50.0, .unit = "ms" }, [&](auto p) {
             p.val.setFloat(p.value);
             if (p.val.get() > 0) {
@@ -59,8 +56,8 @@ public:
     Val& start;
     Val& end;
 
-    LoopedEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, std::string name, std::function<Val&()> getValExtraEngine = nullptr)
-        : SampleEngine(props, config, sampleBuffer, index, name)
+    LoopedEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier, std::string name, std::function<Val&()> getValExtraEngine = nullptr)
+        : SampleEngine(props, config, sampleBuffer, index, stepMultiplier, name)
         , sustainPosition(val(0.0f, "LOOP_POSITION", { "Loop position", .step = 0.1f, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
             if (p.value < start.get()) {
                 p.value = start.get();
@@ -158,6 +155,4 @@ public:
     }
 
     virtual void engineNoteOff(uint8_t note, float _velocity) { }
-
-    float* getIndex() override { return &index; }
 };

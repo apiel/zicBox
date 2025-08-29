@@ -55,8 +55,8 @@ protected:
     }
 
 public:
-    AmEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index)
-        : LoopedEngine(props, config, sampleBuffer, index, "AM")
+    AmEngine(AudioPlugin::Props& props, AudioPlugin::Config& config, SampleBuffer& sampleBuffer, float& index, float& stepMultiplier)
+        : LoopedEngine(props, config, sampleBuffer, index, stepMultiplier, "AM")
         , multiFx(props.sampleRate, props.lookupTable)
     {
         sampleRate = props.sampleRate;
