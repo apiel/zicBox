@@ -2,10 +2,8 @@
 
 #include "helpers/math.h"
 #include "plugins/audio/MultiDrumEngine/DrumEngine.h"
-#include "plugins/audio/utils/EnvelopDrumAmp.h"
 #include "plugins/audio/utils/MMfilter.h"
 #include "plugins/audio/utils/MultiFx.h"
-#include "plugins/audio/utils/WavetableGenerator2.h"
 #include "plugins/audio/utils/val/valMMfilterCutoff.h"
 
 #include <cmath>
@@ -16,35 +14,27 @@ protected:
     MMfilter filter;
     MultiFx multiFx;
 
-    // Resonator
     std::vector<float> delayLine;
     uint32_t delayLen = 0;
     uint32_t writePos = 0;
-    float readPos = 0.0f; // make float for fractional read
     float onePoleState = 0.0f;
+    bool resonatorActive = false;
 
     float velocity = 1.0f;
-
     static constexpr uint32_t MAX_DELAY = 1 << 16; // 65536
 
-    // --- compute frequency ratio from pitch in semitones ---
-    inline float freqRatio() const {
-        return powf(2.0f, pitch.get() / 12.0f);
+    inline float noteToFreq(int note) const {
+        return 440.0f * powf(2.0f, (note - 69) / 12.0f);
     }
 
-    float resonatorTick()
-    {
-        if (delayLen == 0)
-            return 0.0f;
+    float resonatorTick() {
+        if (!resonatorActive || delayLen == 0) return 0.0f;
 
-        // fractional read position for smooth pitch changes
-        uint32_t i0 = (uint32_t)readPos % delayLen;
-        uint32_t i1 = (i0 + 1) % delayLen;
-        float frac = readPos - (float)i0;
-
-        float s0 = delayLine[i0];
-        float s1 = delayLine[i1];
-        float out = s0 + frac * (s1 - s0); // linear interp
+        uint32_t rp = writePos % delayLen;
+        uint32_t rp1 = (rp + 1) % delayLen;
+        float s0 = delayLine[rp];
+        float s1 = delayLine[rp1];
+        float out = 0.5f * (s0 + s1);
 
         // one-pole lowpass
         float cutoff = std::max(0.001f, tone.pct());
@@ -55,25 +45,17 @@ protected:
         float fb = decay.get();
         delayLine[writePos % delayLen] = filtered * fb;
 
-        // advance write pointer
         writePos = (writePos + 1) % delayLen;
-
-        // advance read pointer with pitch applied
-        readPos += freqRatio();
-        if (readPos >= (float)delayLen)
-            readPos -= (float)delayLen;
-
         return filtered;
     }
 
 public:
-    // --- Parameters ---
+    // Parameters
     Val& pitch = val(0.0f, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24 });
     Val& decay = val(0.98f, "DECAY", { "Decay", .min = 0.80f, .max = 0.99f, .step = 0.01f, .floatingPoint = 2 });
     Val& tone = val(50.0f, "TONE", { "Tone", .unit = "%" });
     Val& pluckNoise = val(50.0f, "PLUCK_NOISE", { "Pluck Noise", .unit = "%" });
-    Val& damping = val(0.5f, "DAMPING", { "Damping", .unit = "%" });
-    Val& stereo = val(0.0f, "STEREO", { "Stereo", .unit = "%" });
+
     Val& cutoff = val(0.0, "CUTOFF", { "LPF | HPF", VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
         valMMfilterCutoff(p, filter);
     });
@@ -86,7 +68,7 @@ public:
     });
     Val& fxAmount = val(0, "FX_AMOUNT", { "FX edit", .unit = "%" });
 
-    // --- constructor ---
+    // Constructor
     StringEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
         : DrumEngine(p, c, "String")
         , multiFx(props.sampleRate, props.lookupTable)
@@ -96,44 +78,35 @@ public:
         initValues();
     }
 
-    void sampleOn(float* buf, float envAmpVal, int sampleCounter, int totalSamples) override
-    {
+    void sampleOn(float* buf, float envAmpVal, int, int) override {
         float out = resonatorTick() * velocity * envAmpVal;
         out = multiFx.apply(out, fxAmount.pct());
         buf[track] = out;
     }
 
-    void sampleOff(float* buf) override
-    {
+    void sampleOff(float* buf) override {
         float out = buf[track];
         out = multiFx.apply(out, fxAmount.pct());
         buf[track] = out;
     }
 
-    void noteOn(uint8_t note, float _velocity, void* = nullptr) override
-    {
+    void noteOn(uint8_t note, float _velocity, void* = nullptr) override {
         velocity = _velocity;
-        float freq = powf(2.0f, (note - 60 + pitch.get()) / 12.0f); // base frequency
+        float freq = noteToFreq(note + (int)pitch.get() - 24); // Let's remove 2 octaves
         if (freq < 20.0f) freq = 20.0f;
         if (freq > props.sampleRate * 0.45f) freq = props.sampleRate * 0.45f;
 
-        uint32_t len = (uint32_t)std::max<int>(2, (int)std::round(props.sampleRate / freq));
-        len = std::min<uint32_t>(len, MAX_DELAY);
-
-        if (len != delayLen) {
-            delayLen = len;
-            delayLine.assign(delayLen + 4, 0.0f);
-        }
+        delayLen = std::min<uint32_t>(MAX_DELAY, std::max<uint32_t>(2, (uint32_t)std::round(props.sampleRate / freq)));
+        delayLine.assign(delayLen + 4, 0.0f);
 
         // Excite buffer with noise
         for (uint32_t i = 0; i < delayLen; ++i) {
             float n = (rand() / (float)RAND_MAX) * 2.0f - 1.0f;
-            n = filter.process(n);
-            delayLine[i] = n * velocity * pluckNoise.pct();
+            delayLine[i] = filter.process(n) * velocity * pluckNoise.pct();
         }
 
         writePos = 0;
-        readPos = 0.0f; // fractional read position
         onePoleState = 0.0f;
+        resonatorActive = true;
     }
 };
