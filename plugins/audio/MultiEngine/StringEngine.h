@@ -4,6 +4,7 @@
 #include "plugins/audio/MultiEngine/Engine.h"
 #include "plugins/audio/utils/MultiFx.h"
 #include "plugins/audio/utils/val/valMMfilterCutoff.h"
+#include "plugins/audio/utils/MMfilter.h"
 
 #include <cmath>
 #include <vector>
@@ -12,6 +13,7 @@ class StringEngine : public Engine {
 protected:
     MultiFx multiFx;
     MultiFx multiFx2;
+    MMfilter filter;
 
     // Resonator
     std::vector<float> delayLine;
@@ -73,6 +75,14 @@ public:
     // Vibrato parameters
     Val& vibratoRate = val(0.0f, "VIBRATO_RATE", { "Vibrato Rate", .min = 0.0f, .max = 30.0f, .step = 0.1f, .floatingPoint = 1, .unit = "Hz" });
     Val& vibratoDepth = val(10.0f, "VIBRATO_DEPTH", { "Vibrato Depth", .min = 0.0f, .max = 100.0f, .unit = "cents" });
+
+    Val& cutoff = val(0.0, "CUTOFF", { "LPF | HPF", VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
+        valMMfilterCutoff(p, filter);
+    });
+    Val& resonance = val(0.0, "RESONANCE", { "Resonance", .unit = "%" }, [&](auto p) {
+        p.val.setFloat(p.value);
+        filter.setResonance(p.val.pct());
+    });
 
     Val& fxType = val(0, "FX_TYPE", { "FX type", VALUE_STRING, .max = MultiFx::FXType::FX_COUNT - 1 }, [&](auto p) {
         multiFx.setFxType(p);
@@ -179,8 +189,8 @@ public:
         float driver = 0.0f;
         if (sustainExcite.pct() > 0.0f) {
             float n = (rand() / (float)RAND_MAX) * 2.0f - 1.0f;
-            float sustain = n * sustainExcite.pct() * velocity * driverEnv;
-            driver = sustain;
+            n = filter.process(n);
+            driver = n * sustainExcite.pct() * velocity * driverEnv;
         }
 
         float out = resonatorTick(driver, vibRatio);
