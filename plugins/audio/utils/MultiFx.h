@@ -190,32 +190,9 @@ protected:
     //////////
     // Filters
     //--------
+
     float lp_z1 = 0.0f; // 1-pole lowpass state
     float hp_z1 = 0.0f; // 1-pole highpass state
-
-    // Map "amount" into cutoff/resonance ranges
-    void cutoffResonance(float amount, float& cutoffHz, float& resonance)
-    {
-        // cutoff: map 0..1 → 200 Hz .. Nyquist (sampleRate/2)
-        cutoffHz = 200.0f + (sampleRate * 0.48f - 200.0f) * amount;
-
-        // resonance: map 0..1 → Q factor 0.7 .. 10
-        resonance = 0.7f + 9.3f * amount;
-    }
-
-    float fxLowPass2(float input, float amount)
-    {
-        if (amount <= 0.0f)
-            return input;
-
-        amount = 1.0f - amount;
-
-        float cutoff = 200.0f + (sampleRate * 0.48f - 200.0f) * amount;
-        float alpha = cutoff / (cutoff + sampleRate);
-        lp_z1 = lp_z1 + alpha * (input - lp_z1);
-        return lp_z1;
-    }
-
     float fxHighPassFilterDistorted(float input, float amount)
     {
         if (amount <= 0.0f)
@@ -290,7 +267,6 @@ public:
         DECIMATOR,
         LPF,
         HPF,
-        LPF2,
         HPF_DIST,
         FX_COUNT
     };
@@ -369,9 +345,6 @@ public:
         } else if (p.val.get() == HPF) {
             p.val.setString("HPF");
             fxFn = &MultiFx::fxHighPass;
-        } else if (p.val.get() == LPF2) {
-            p.val.setString("LPF2");
-            fxFn = &MultiFx::fxLowPass2;
         } else if (p.val.get() == HPF_DIST) {
             p.val.setString("HPF dist.");
             fxFn = &MultiFx::fxHighPassFilterDistorted;
