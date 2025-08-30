@@ -1,11 +1,6 @@
 ## Pixel TODO
 
-- TODO multi effect filter / reso
-
 - TODO reload variations when switching workspace
-
-- TODO sample, should we go into granular and multi-voice... either give the choice between FX1 AND FX2, vs using some granular
-          - or maybe multi sample engine, like the multi synth... then should filter also be optional...??
 
 - FIXME tempo issue
 

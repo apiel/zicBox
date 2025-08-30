@@ -24,11 +24,6 @@ public:
     {
     }
 
-    virtual float getSample(float stepIncrement)
-    {
-        return sampleBuffer.data[(int)index];
-    }
-
     virtual void opened() { }
 
     virtual void serializeJson(nlohmann::json& json) { }

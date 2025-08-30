@@ -109,6 +109,11 @@ public:
     {
     }
 
+    virtual float getSample(float stepIncrement)
+    {
+        return sampleBuffer.data[(int)index];
+    }
+
     void sample(float* buf) override
     {
         float out = 0.0f;
