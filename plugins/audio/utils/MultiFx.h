@@ -187,6 +187,51 @@ protected:
         return applyDecimator(input, amount, decimHold, decimCounter);
     }
 
+    //////////
+    // Filters
+    //--------
+    float lp_z1 = 0.0f; // 1-pole lowpass state
+    float hp_z1 = 0.0f; // 1-pole highpass state
+
+    float res_lp_z1 = 0.0f, res_lp_z2 = 0.0f; // 2-pole resonant LPF
+    float res_hp_z1 = 0.0f, res_hp_z2 = 0.0f; // 2-pole resonant HPF
+
+    // Map "amount" into cutoff/resonance ranges
+    void cutoffResonance(float amount, float& cutoffHz, float& resonance)
+    {
+        // cutoff: map 0..1 → 200 Hz .. Nyquist (sampleRate/2)
+        cutoffHz = 200.0f + (sampleRate * 0.48f - 200.0f) * amount;
+
+        // resonance: map 0..1 → Q factor 0.7 .. 10
+        resonance = 0.7f + 9.3f * amount;
+    }
+
+    float fxLowPass(float input, float amount)
+    {
+        if (amount <= 0.0f)
+            return input;
+
+        amount = 1.0f - amount;
+
+        float cutoff = 200.0f + (sampleRate * 0.48f - 200.0f) * amount;
+        float alpha = cutoff / (cutoff + sampleRate);
+        lp_z1 = lp_z1 + alpha * (input - lp_z1);
+        return lp_z1;
+    }
+
+    float fxHighPassFilterDistorted(float input, float amount)
+    {
+        if (amount <= 0.0f)
+            return input;
+
+        amount = 1.0f - powf(amount, 0.25f);
+
+        float cutoff = 200.0f + (sampleRate * 0.48f - 200.0f) * amount;
+        float alpha = sampleRate / (cutoff + sampleRate);
+        hp_z1 = alpha * (hp_z1 + input - (lp_z1 = lp_z1 + (cutoff / (cutoff + sampleRate)) * (input - lp_z1)));
+        return hp_z1;
+    }
+
 public:
     enum FXType {
         FX_OFF,
@@ -211,6 +256,9 @@ public:
         FX_SHIMMER2_REVERB,
         FX_FEEDBACK,
         DECIMATOR,
+        // NEW FILTERS
+        LPF,
+        HPF_DIST,
         FX_COUNT
     };
     void setFxType(Val::CallbackProps& p)
@@ -282,6 +330,12 @@ public:
         } else if (p.val.get() == MultiFx::FXType::DECIMATOR) {
             p.val.setString("Decimator");
             fxFn = &MultiFx::fxDecimator;
+        } else if (p.val.get() == LPF) {
+            p.val.setString("LPF");
+            fxFn = &MultiFx::fxLowPass;
+        } else if (p.val.get() == HPF_DIST) {
+            p.val.setString("HPF dist.");
+            fxFn = &MultiFx::fxHighPassFilterDistorted;
         }
         // TODO: add fx sample reducer
     }

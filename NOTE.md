@@ -1,10 +1,5 @@
 ## Pixel TODO
 
-- TODO convert StringStufflEngine to synth or drum engine
-
-- TODO multi synth, when siwtching, string not loaded...
-      - might also want to copy the logic between...
-
 - TODO multi effect filter / reso
 
 - TODO reload variations when switching workspace
