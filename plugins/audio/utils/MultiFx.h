@@ -193,9 +193,6 @@ protected:
     float lp_z1 = 0.0f; // 1-pole lowpass state
     float hp_z1 = 0.0f; // 1-pole highpass state
 
-    float res_lp_z1 = 0.0f, res_lp_z2 = 0.0f; // 2-pole resonant LPF
-    float res_hp_z1 = 0.0f, res_hp_z2 = 0.0f; // 2-pole resonant HPF
-
     // Map "amount" into cutoff/resonance ranges
     void cutoffResonance(float amount, float& cutoffHz, float& resonance)
     {
@@ -206,7 +203,7 @@ protected:
         resonance = 0.7f + 9.3f * amount;
     }
 
-    float fxLowPass(float input, float amount)
+    float fxLowPass2(float input, float amount)
     {
         if (amount <= 0.0f)
             return input;
@@ -230,6 +227,41 @@ protected:
         float alpha = sampleRate / (cutoff + sampleRate);
         hp_z1 = alpha * (hp_z1 + input - (lp_z1 = lp_z1 + (cutoff / (cutoff + sampleRate)) * (input - lp_z1)));
         return hp_z1;
+    }
+
+    // Filter 2
+    float filterBuf = 0.0;
+    float lp = 0.0;
+    float hp = 0.0;
+    float bp = 0.0;
+    void setSampleData(float inputValue, float cutoff, float& _buf, float& _hp, float& _bp, float& _lp)
+    {
+        _hp = inputValue - _buf;
+        _bp = _buf - _lp;
+        _buf = _buf + cutoff * _hp;
+        _lp = _lp + cutoff * (_buf - _lp);
+    }
+
+    float fxLowPass(float input, float amount)
+    {
+        if (amount <= 0.0f)
+            return input;
+
+        amount = (1.0f - amount * 0.95f) + 0.05f;
+
+        setSampleData(input, amount, filterBuf, hp, bp, lp);
+        return lp;
+    }
+
+    float fxHighPass(float input, float amount)
+    {
+        if (amount <= 0.0f)
+            return input;
+
+        amount = amount * 0.95f;
+
+        setSampleData(input, amount, filterBuf, hp, bp, lp);
+        return hp;
     }
 
 public:
@@ -256,8 +288,9 @@ public:
         FX_SHIMMER2_REVERB,
         FX_FEEDBACK,
         DECIMATOR,
-        // NEW FILTERS
         LPF,
+        HPF,
+        LPF2,
         HPF_DIST,
         FX_COUNT
     };
@@ -333,6 +366,12 @@ public:
         } else if (p.val.get() == LPF) {
             p.val.setString("LPF");
             fxFn = &MultiFx::fxLowPass;
+        } else if (p.val.get() == HPF) {
+            p.val.setString("HPF");
+            fxFn = &MultiFx::fxHighPass;
+        } else if (p.val.get() == LPF2) {
+            p.val.setString("LPF2");
+            fxFn = &MultiFx::fxLowPass2;
         } else if (p.val.get() == HPF_DIST) {
             p.val.setString("HPF dist.");
             fxFn = &MultiFx::fxHighPassFilterDistorted;
