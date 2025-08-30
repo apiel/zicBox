@@ -339,13 +339,13 @@ public:
         } else if (p.val.get() == MultiFx::FXType::DECIMATOR) {
             p.val.setString("Decimator");
             fxFn = &MultiFx::fxDecimator;
-        } else if (p.val.get() == LPF) {
+        } else if (p.val.get() == MultiFx::FXType::LPF) {
             p.val.setString("LPF");
             fxFn = &MultiFx::fxLowPass;
-        } else if (p.val.get() == HPF) {
+        } else if (p.val.get() == MultiFx::FXType::HPF) {
             p.val.setString("HPF");
             fxFn = &MultiFx::fxHighPass;
-        } else if (p.val.get() == HPF_DIST) {
+        } else if (p.val.get() == MultiFx::FXType::HPF_DIST) {
             p.val.setString("HPF dist.");
             fxFn = &MultiFx::fxHighPassFilterDistorted;
         }
