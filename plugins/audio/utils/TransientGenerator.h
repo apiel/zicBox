@@ -2,6 +2,7 @@
 
 #include "helpers/range.h"
 #include "plugins/audio/utils/WavetableInterface.h"
+#include "plugins/audio/utils/utils.h"
 
 #include <cmath>
 #include <string>
@@ -112,14 +113,14 @@ private:
     float morph = 0.0f;
     float* lut = new float[sampleCount]; // you might prefer static allocation
 
-    static float linearInterpolation(float index, uint64_t size, const float* table)
-    {
-        float fIndex = index * size;
-        int i0 = static_cast<int>(fIndex) % size;
-        int i1 = (i0 + 1) % size;
-        float frac = fIndex - static_cast<float>(i0);
-        return table[i0] * (1.0f - frac) + table[i1] * frac;
-    }
+    // static float linearInterpolation(float index, uint64_t size, const float* table)
+    // {
+    //     float fIndex = index * size;
+    //     int i0 = static_cast<int>(fIndex) % size;
+    //     int i1 = (i0 + 1) % size;
+    //     float frac = fIndex - static_cast<float>(i0);
+    //     return table[i0] * (1.0f - frac) + table[i1] * frac;
+    // }
 
     void updateTable()
     {

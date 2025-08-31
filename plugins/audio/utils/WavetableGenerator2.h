@@ -5,6 +5,8 @@
 
 #include "plugins/audio/utils/WavetableInterface.h"
 #include "plugins/audio/utils/lookupTable.h"
+#include "plugins/audio/utils/utils.h"
+
 class WavetableGenerator : public WavetableInterface {
 public:
     enum class Type {
@@ -64,14 +66,14 @@ private:
     float morph = 0.0f;
     float lut[LOOKUP_TABLE_SIZE];
 
-    static float linearInterpolation(float index, uint64_t size, const float* table)
-    {
-        float fIndex = index * size;
-        int i0 = static_cast<int>(fIndex) % size;
-        int i1 = (i0 + 1) % size;
-        float frac = fIndex - static_cast<float>(i0);
-        return table[i0] * (1.0f - frac) + table[i1] * frac;
-    }
+    // static float linearInterpolation(float index, uint64_t size, const float* table)
+    // {
+    //     float fIndex = index * size;
+    //     int i0 = static_cast<int>(fIndex) % size;
+    //     int i1 = (i0 + 1) % size;
+    //     float frac = fIndex - static_cast<float>(i0);
+    //     return table[i0] * (1.0f - frac) + table[i1] * frac;
+    // }
 
     void updateTable()
     {

@@ -1,6 +1,6 @@
 ## Pixel TODO
 
-- TODO screen shot...
+- TODO write user manual
 
 - TODO improve multi drum:
 - TODO might not need sampleOn sampleOff ?? or maybe yes to keep the logic in one place... <--- subjective
