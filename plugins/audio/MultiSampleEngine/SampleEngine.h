@@ -5,6 +5,8 @@
 
 class SampleEngine : public Mapping {
 public:
+    bool needCopyValues = false;
+
     float& index;
     float& stepMultiplier;
     struct SampleBuffer {

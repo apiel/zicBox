@@ -4,19 +4,19 @@
         "values": [
             {
                 "key": "ENGINE",
-                "value": 3.0
+                "value": 1.0
             },
             {
                 "key": "VAL_1",
-                "value": 7.900000095367432
+                "value": 0.0
             },
             {
                 "key": "VAL_2",
-                "value": 5.599999904632568
+                "value": 0.0
             },
             {
                 "key": "VAL_3",
-                "value": 0.0
+                "value": 4.0
             },
             {
                 "key": "VAL_4",
@@ -28,19 +28,19 @@
             },
             {
                 "key": "VAL_6",
-                "value": 2.0
+                "value": 59.0
             },
             {
                 "key": "VAL_7",
-                "value": 283.0
+                "value": 159.0
             },
             {
                 "key": "VAL_8",
-                "value": -60.0
+                "value": 18.0
             },
             {
                 "key": "VAL_9",
-                "value": 0.0
+                "value": 16.0
             },
             {
                 "key": "VAL_10",

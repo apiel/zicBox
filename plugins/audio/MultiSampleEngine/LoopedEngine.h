@@ -71,6 +71,7 @@ public:
             loopStart = p.val.pct() * sampleBuffer.count;
             logTrace("- LOOP_POSITION: %d", loopStart);
             sustainLength.set(sustainLength.get());
+            needCopyValues = true;
         }))
         , sustainLength(val(0.0f, "LOOP_LENGTH", { "Loop length", .step = 0.1f, .floatingPoint = 1, .unit = "%" }, [&](auto p) {
             if (p.value + sustainPosition.get() > end.get()) {
@@ -93,6 +94,7 @@ public:
                 logTrace("- START: %d", indexStart);
                 if (p.val.get() > sustainPosition.get() || sustainEq) {
                     sustainPosition.set(p.val.get());
+                    needCopyValues = true;
                 }
             }
         }))
@@ -103,6 +105,7 @@ public:
                 logTrace("- END: %d", indexEnd);
                 if (p.val.get() < sustainPosition.get() + sustainLength.get()) {
                     sustainPosition.set(p.val.get() - sustainLength.get());
+                    needCopyValues = true;
                 }
             }
         }))

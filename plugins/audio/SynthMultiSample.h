@@ -88,6 +88,11 @@ protected:
         p.val.props().min = drumEngineVal->props().min;
         p.val.props().max = drumEngineVal->props().max;
         p.val.props().floatingPoint = drumEngineVal->props().floatingPoint;
+
+        if (engine->needCopyValues) {
+            engine->needCopyValues = false;
+            copyValues();
+        }
     }
 
     void copyValues()
