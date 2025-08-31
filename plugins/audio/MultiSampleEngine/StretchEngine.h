@@ -149,6 +149,7 @@ public:
 
             if (index >= loopEnd && (sustainedNote || nbOfLoopBeforeRelease > 0)) {
                 index = loopStart;
+                grainStart = loopStart;
                 nbOfLoopBeforeRelease--;
             }
             out = filter.process(out);
