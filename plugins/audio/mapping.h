@@ -98,10 +98,30 @@ public:
 
     void increment(int8_t steps)
     {
-        if (_props.incType & INC_ONE_BY_ONE != 0) {
+        if (_props.incType & INC_SCALED) {
+            int magnitude = get();
+            if (magnitude >= 10000) {
+                set(get() + (steps > 0 ? 1000 : -1000));
+            } else if (magnitude >= 1000) {
+                set(get() + (steps > 0 ? 100 : -100));
+            } else if (magnitude >= 100) {
+                set(get() + (steps > 0 ? 10 : -10));
+            } else if (magnitude <= -10000) {
+                set(get() - (steps > 0 ? 1000 : -1000));
+            } else if (magnitude <= -1000) {
+                set(get() - (steps > 0 ? 100 : -100));
+            } else if (magnitude <= -100) {
+                set(get() - (steps > 0 ? 10 : -10));
+            } else {
+                set(get() + steps);
+            }
+            return;
+        }
+
+        if (_props.incType & INC_ONE_BY_ONE) {
             steps = steps > 0 ? 1 : -1;
         }
-        if (_props.incType & INC_EXP != 0) {
+        if (_props.incType & INC_EXP) {
             // use _props.step for base
             float base = _props.step == 1.0f ? 2.0f : _props.step;
             float incVal = log(get()) / log(base);
@@ -109,7 +129,7 @@ public:
             set(pow(base, incVal));
             return;
         }
-        if (_props.incType & INC_MULT != 0) {
+        if (_props.incType & INC_MULT) {
             float mult = (_props.step == 1.0f ? 1.1f : _props.step) * abs(steps);
             if (steps < 0) {
                 set(get() / mult);

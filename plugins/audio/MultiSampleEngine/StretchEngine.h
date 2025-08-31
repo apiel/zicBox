@@ -11,7 +11,7 @@ protected:
     MultiFx multiFx;
 
     Val& stretch = val(1.0f, "STRETCH", { "Stretch", .min = 1.0f, .max = 20.0f, .incType = INC_ONE_BY_ONE });
-    Val& grainSize = val(100.0f, "GRAIN_SIZE", { "Grain Size", .min = 1.0f, .max = 5000.0f, .incType = INC_MULT });
+    Val& grainSize = val(100.0f, "GRAIN_SIZE", { "Grain Size", .min = 1.0f, .max = 5000.0f, .incType = INC_SCALED });
 
     Val& cutoff = val(0.0, "CUTOFF", { "LPF | HPF", VALUE_CENTERED | VALUE_STRING, .min = -100.0, .max = 100.0 }, [&](auto p) {
         valMMfilterCutoff(p, filter);

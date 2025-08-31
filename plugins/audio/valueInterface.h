@@ -16,6 +16,7 @@ enum ValueIncrementationType {
     INC_EXP = 1 << 1, // 2
     INC_MULT = 1 << 2, // 4
     INC_ONE_BY_ONE = 1 << 3, // 8
+    INC_SCALED = 1 << 4, // 16
 };
 
 class ValueInterface {
