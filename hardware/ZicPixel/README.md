@@ -105,6 +105,8 @@ Now place the DAC pin header in the same way as you did for the display pin head
 
 Place the four encoders and solder them in position. Then place the Raspberry Pi female pin header and solder it as well.
 
+Don’t forget to trim the pins step by step as you place and solder each component. This will help keep the board neat and ensure that everything fits together correctly.
+
 <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_04.png?raw=true' width='700'>
 
 Place the DAC onto the pins and solder it in place. Then solder the jumper on the DAC as [described at the top of this page](https://github.com/apiel/zicBox/wiki/04-Hardware#audio-dac).
