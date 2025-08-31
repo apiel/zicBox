@@ -95,7 +95,7 @@ Place the pin header of the display onto the board, noting its unusual orientati
 
 <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_01.png?raw=true' width='700'>
 
-On the back side, you should see the final result, the pins do not come through the board:
+On the back side, you should see the final result, the pins do not come through the board.
 
 <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_02.png?raw=true'>
 
