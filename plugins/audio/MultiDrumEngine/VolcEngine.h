@@ -72,7 +72,7 @@ public:
     });
 
     // --- Layer A ---
-    Val& layerAPitch = val(0, "LAYER_A_PITCH", { "A Pitch", VALUE_CENTERED, .min = -24, .max = 24, .skipJumpIncrements = true });
+    Val& layerAPitch = val(0, "LAYER_A_PITCH", { "A Pitch", VALUE_CENTERED, .min = -24, .max = 24, .incType = INC_ONE_BY_ONE });
     Val& layerADecay = val(0.0f, "LAYER_A_DECAY", { "A Decay", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         layerA.envAmp.morph(p.val.pct());
@@ -97,7 +97,7 @@ public:
     });
 
     // --- Layer B ---
-    Val& layerBPitch = val(0, "LAYER_B_PITCH", { "B Pitch", VALUE_CENTERED, .min = -24, .max = 24, .skipJumpIncrements = true });
+    Val& layerBPitch = val(0, "LAYER_B_PITCH", { "B Pitch", VALUE_CENTERED, .min = -24, .max = 24, .incType = INC_ONE_BY_ONE });
     Val& layerBDecay = val(0.0f, "LAYER_B_DECAY", { "B Decay", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);
         layerB.envAmp.morph(p.val.pct());

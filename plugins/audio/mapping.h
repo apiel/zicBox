@@ -98,10 +98,10 @@ public:
 
     void increment(int8_t steps)
     {
-        if (_props.skipJumpIncrements) {
+        if (_props.incType & INC_ONE_BY_ONE != 0) {
             steps = steps > 0 ? 1 : -1;
         }
-        if (_props.incrementationType == VALUE_INCREMENTATION_EXP) {
+        if (_props.incType & INC_EXP != 0) {
             // use _props.step for base
             float base = _props.step == 1.0f ? 2.0f : _props.step;
             float incVal = log(get()) / log(base);
@@ -109,7 +109,7 @@ public:
             set(pow(base, incVal));
             return;
         }
-        if (_props.incrementationType == VALUE_INCREMENTATION_MULT) {
+        if (_props.incType & INC_MULT != 0) {
             float mult = (_props.step == 1.0f ? 1.1f : _props.step) * abs(steps);
             if (steps < 0) {
                 set(get() / mult);

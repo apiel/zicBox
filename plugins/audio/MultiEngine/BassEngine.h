@@ -49,7 +49,7 @@ protected:
     }
 
 public:
-    Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24, .skipJumpIncrements = true }, [&](auto p) {
+    Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24, .incType = INC_ONE_BY_ONE }, [&](auto p) {
         p.val.setFloat(p.value);
         setFreq();
     });

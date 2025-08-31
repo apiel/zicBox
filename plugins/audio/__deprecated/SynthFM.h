@@ -35,7 +35,7 @@ protected:
             { 20.0f, "DECAY_0", { "Decay 1", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setDecay(p.value, 0); } },
             { 0.8f, "SUSTAIN_0", { "Sustain 1", .unit = "%" }, [&](auto p) { setSustain(p.value, 0); } },
             { 50.0f, "RELEASE_0", { "Release 1", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setRelease(p.value, 0); } },
-            { 440.0f, "FREQUENCY_0", { "Frequency 1", .min = 0.01, .max = 9000.0, .step = 1.05, .unit = "Hz", .incrementationType = VALUE_INCREMENTATION_EXP }, [&](auto p) { setFrequency(p.value, 0); } },
+            { 440.0f, "FREQUENCY_0", { "Frequency 1", .min = 0.01, .max = 9000.0, .step = 1.05, .unit = "Hz", .incType = INC_EXP }, [&](auto p) { setFrequency(p.value, 0); } },
             { 0.0f, "FEEDBACK_0", { "Feedback 1", .unit = "%" } },
         },
         {
@@ -43,7 +43,7 @@ protected:
             { 20.0f, "DECAY_1", { "Decay 2", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setDecay(p.value, 1); } },
             { 0.8f, "SUSTAIN_1", { "Sustain 2", .unit = "%" }, [&](auto p) { setSustain(p.value, 1); } },
             { 50.0f, "RELEASE_1", { "Release 2", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setRelease(p.value, 1); } },
-            { 440.0f, "FREQUENCY_1", { "Frequency 2", .min = 0.01, .max = 9000.0, .step = 1.05, .unit = "Hz", .incrementationType = VALUE_INCREMENTATION_EXP }, [&](auto p) { setFrequency(p.value, 1); } },
+            { 440.0f, "FREQUENCY_1", { "Frequency 2", .min = 0.01, .max = 9000.0, .step = 1.05, .unit = "Hz", .incType = INC_EXP }, [&](auto p) { setFrequency(p.value, 1); } },
             { 0.0f, "FEEDBACK_1", { "Feedback 2", .unit = "%" } },
         },
         {
@@ -51,7 +51,7 @@ protected:
             { 20.0f, "DECAY_2", { "Decay 3", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setDecay(p.value, 2); } },
             { 0.8f, "SUSTAIN_2", { "Sustain 3", .unit = "%" }, [&](auto p) { setSustain(p.value, 2); } },
             { 50.0f, "RELEASE_2", { "Release 3", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setRelease(p.value, 2); } },
-            { 440.0f, "FREQUENCY_2", { "Frequency 3", .min = 0.01, .max = 9000.0, .step = 1.05, .unit = "Hz", .incrementationType = VALUE_INCREMENTATION_EXP }, [&](auto p) { setFrequency(p.value, 2); } },
+            { 440.0f, "FREQUENCY_2", { "Frequency 3", .min = 0.01, .max = 9000.0, .step = 1.05, .unit = "Hz", .incType = INC_EXP }, [&](auto p) { setFrequency(p.value, 2); } },
             { 0.0f, "FEEDBACK_2", { "Feedback 3", .unit = "%" } },
         },
         {
@@ -59,7 +59,7 @@ protected:
             { 20.0f, "DECAY_3", { "Decay 4", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setDecay(p.value, 3); } },
             { 0.8f, "SUSTAIN_3", { "Sustain 4", .unit = "%" }, [&](auto p) { setSustain(p.value, 3); } },
             { 50.0f, "RELEASE_3", { "Release 4", .min = 1.0, .max = 5000.0, .step = 20, .unit = "ms" }, [&](auto p) { setRelease(p.value, 3); } },
-            { 440.0f, "FREQUENCY_3", { "Frequency 4", .min = 0.01, .max = 9000.0, .step = 1.05, .unit = "Hz", .incrementationType = VALUE_INCREMENTATION_EXP }, [&](auto p) { setFrequency(p.value, 3); } },
+            { 440.0f, "FREQUENCY_3", { "Frequency 4", .min = 0.01, .max = 9000.0, .step = 1.05, .unit = "Hz", .incType = INC_EXP }, [&](auto p) { setFrequency(p.value, 3); } },
             { 0.0f, "FEEDBACK_3", { "Feedback 4", .unit = "%" } },
         }
     };

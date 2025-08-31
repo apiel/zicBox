@@ -57,7 +57,7 @@ protected:
     }
 
 public:
-    Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24, .skipJumpIncrements = true });
+    Val& pitch = val(0, "PITCH", { "Pitch", VALUE_CENTERED, .min = -24, .max = 24, .incType = INC_ONE_BY_ONE });
     Val& bend = val(0.4f, "BEND", { "Bend", .unit = "%" });
     Val& cutoff = val(50.0, "CUTOFF", { "Cutoff", .unit = "%" }, [&](auto p) {
         p.val.setFloat(p.value);

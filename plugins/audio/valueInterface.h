@@ -12,9 +12,10 @@ enum ValueType {
 };
 
 enum ValueIncrementationType {
-    VALUE_INCREMENTATION_BASIC,
-    VALUE_INCREMENTATION_EXP,
-    VALUE_INCREMENTATION_MULT,
+    INC_BASIC = 1 << 0, // 1
+    INC_EXP = 1 << 1, // 2
+    INC_MULT = 1 << 2, // 4
+    INC_ONE_BY_ONE = 1 << 3, // 8
 };
 
 class ValueInterface {
@@ -27,8 +28,7 @@ public:
         float step = 1.00f;
         uint8_t floatingPoint = 0;
         std::string unit = "";
-        ValueIncrementationType incrementationType = VALUE_INCREMENTATION_BASIC;
-        bool skipJumpIncrements = false;
+        uint8_t incType = INC_BASIC;
     };
 
     virtual std::string key() = 0;

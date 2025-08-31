@@ -64,7 +64,7 @@ public:
         p.val.setFloat(p.value);
         setSamplePerHold();
     });
-    Val& modType = val(0.0f, "MOD_TYPE", { "Mod Type", VALUE_STRING, .min = 0.0f, .max = 8.0f, .skipJumpIncrements = true }, [&](auto p) {
+    Val& modType = val(0.0f, "MOD_TYPE", { "Mod Type", VALUE_STRING, .min = 0.0f, .max = 8.0f, .incType = INC_ONE_BY_ONE }, [&](auto p) {
         p.val.setFloat(p.value);
         if (p.val.get() == 0.0f) {
             p.val.setString("Sine");
