@@ -1,16 +1,18 @@
 ## Pixel TODO
 
-- TODO reload variations when switching workspace
-
-- FIXME tempo issue
-
-- TODO ARP for synth, like note repeat, put a encoder to select ARP scale, from none to whatever... the when clicking trigger note, it would play the note or ARP, no matter if sequencer is playing or not.
+- TODO screen shot...
 
 - TODO improve multi drum:
 - TODO might not need sampleOn sampleOff ?? or maybe yes to keep the logic in one place... <--- subjective
 - TODO linearInterpolation in generator class repeated. need to see if we can use the already existing one...
 - TODO add velocity to all drum engines
 - TODO optimize drum engines
+
+- TODO reload variations when switching workspace
+
+- FIXME tempo issue
+
+- TODO ARP for synth, like note repeat, put a encoder to select ARP scale, from none to whatever... the when clicking trigger note, it would play the note or ARP, no matter if sequencer is playing or not.
 
 - TODO pattern generative for given style of music
 
