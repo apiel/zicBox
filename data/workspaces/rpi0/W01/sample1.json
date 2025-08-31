@@ -1,42 +1,42 @@
 {
     "Sample1": {
-        "sampleFile": "0_0_0__owly-bee__impossible-how-could-i-ghostly.wav",
+        "sampleFile": "0_0_1_1_623667__13744718__bell-loop.wav",
         "values": [
             {
                 "key": "ENGINE",
-                "value": 2.0
+                "value": 3.0
             },
             {
                 "key": "VAL_1",
-                "value": 0.0
+                "value": 21.40000343322754
             },
             {
                 "key": "VAL_2",
-                "value": 0.0
+                "value": 15.799997329711914
             },
             {
                 "key": "VAL_3",
-                "value": 0.0
+                "value": 57.0
             },
             {
                 "key": "VAL_4",
-                "value": 0.0
+                "value": 2.200002670288086
             },
             {
                 "key": "VAL_5",
-                "value": 100.0
+                "value": 97.5
             },
             {
                 "key": "VAL_6",
-                "value": 50.0
+                "value": 2.0
             },
             {
                 "key": "VAL_7",
-                "value": 0.0
+                "value": 175.0
             },
             {
                 "key": "VAL_8",
-                "value": 0.0
+                "value": -100.0
             },
             {
                 "key": "VAL_9",
@@ -44,15 +44,15 @@
             },
             {
                 "key": "VAL_10",
-                "value": 0.0
+                "value": 1.0
             },
             {
                 "key": "VAL_11",
-                "value": 0.0
+                "value": 90.0
             },
             {
                 "key": "BROWSER",
-                "value": 1.0
+                "value": 2.0
             }
         ]
     },

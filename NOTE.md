@@ -1,5 +1,7 @@
 ## Pixel TODO
 
+- TODO sample start end update, should trigger to update VAL_ ...
+
 - TODO reload variations when switching workspace
 
 - FIXME tempo issue

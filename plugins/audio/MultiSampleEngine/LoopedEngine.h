@@ -117,16 +117,13 @@ public:
     void sample(float* buf) override
     {
         float out = 0.0f;
-        if (sustainedNote || nbOfLoopBeforeRelease > 0) {
+        if (index < indexEnd) {
             out = getSample(stepIncrement) * velocity;
             index += stepIncrement;
-            if (index >= loopEnd) {
+            if (index >= loopEnd && (sustainedNote || nbOfLoopBeforeRelease > 0)) {
                 index = loopStart;
                 nbOfLoopBeforeRelease--;
             }
-        } else if (index < indexEnd) {
-            out = getSample(stepIncrement) * velocity;
-            index += stepIncrement;
         } else if (index != sampleBuffer.count) {
             index = sampleBuffer.count;
         }
