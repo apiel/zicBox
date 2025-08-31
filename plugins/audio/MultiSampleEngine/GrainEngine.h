@@ -100,5 +100,12 @@ public:
         return out;
     }
 
+    // Actually one or the other should be enough...
     uint16_t getLoopCountRelease() override { return 0; }
+    void postIncrement() override
+    {
+        if (index >= loopEnd && sustainedNote) {
+            index = loopStart;
+        }
+    }
 };

@@ -4,39 +4,39 @@
         "values": [
             {
                 "key": "ENGINE",
-                "value": 3.0
+                "value": 1.0
             },
             {
                 "key": "VAL_1",
-                "value": 21.40000343322754
+                "value": 3.1999998092651367
             },
             {
                 "key": "VAL_2",
-                "value": 15.799997329711914
+                "value": 3.6999998092651367
             },
             {
                 "key": "VAL_3",
-                "value": 57.0
+                "value": 4.0
             },
             {
                 "key": "VAL_4",
-                "value": 1.7000027894973755
+                "value": 0.0
             },
             {
                 "key": "VAL_5",
-                "value": 97.5
+                "value": 100.0
             },
             {
                 "key": "VAL_6",
-                "value": 2.0
+                "value": 100.0
             },
             {
                 "key": "VAL_7",
-                "value": 424.0
+                "value": 100.0
             },
             {
                 "key": "VAL_8",
-                "value": -1.0
+                "value": 0.0
             },
             {
                 "key": "VAL_9",
@@ -48,7 +48,7 @@
             },
             {
                 "key": "VAL_11",
-                "value": 90.0
+                "value": 0.0
             },
             {
                 "key": "BROWSER",
