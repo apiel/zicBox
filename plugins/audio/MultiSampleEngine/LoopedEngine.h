@@ -120,15 +120,20 @@ public:
         if (index < indexEnd) {
             out = getSample(stepIncrement) * velocity;
             index += stepIncrement;
-            if (index >= loopEnd && (sustainedNote || nbOfLoopBeforeRelease > 0)) {
-                index = loopStart;
-                nbOfLoopBeforeRelease--;
-            }
+            postIncrement();
         } else if (index != sampleBuffer.count) {
             index = sampleBuffer.count;
         }
         buf[track] = out;
         postProcess(buf);
+    }
+
+    virtual void postIncrement()
+    {
+        if (index >= loopEnd && (sustainedNote || nbOfLoopBeforeRelease > 0)) {
+            index = loopStart;
+            nbOfLoopBeforeRelease--;
+        }
     }
 
     virtual void postProcess(float* buf) { }
