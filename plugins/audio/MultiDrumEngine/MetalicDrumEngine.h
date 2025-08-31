@@ -7,6 +7,8 @@
 
 class MetalicDrumEngine : public DrumEngine {
 protected:
+    float velocity = 1.0f;
+
     // Sine wave oscillator
     float sineWave(float frequency, float phase)
     {
@@ -92,7 +94,7 @@ public:
             tone *= (1.0f - timbre.pct()) + timbre.pct() * sinf(2.0f * M_PI * freq * 0.5f * t);
         }
 
-        float output = tone * envAmp;
+        float output = tone * envAmp * velocity;
         output = applyEffect(output);
         buf[track] = output;
 
@@ -126,6 +128,7 @@ public:
     uint8_t baseNote = 60;
     void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
     {
+        velocity = _velocity;
         phase = 0.0f;
         resonatorState = 0.0f;
         noteFreq = baseFreq.get() * powf(2.0f, (note - baseNote) / 12.0f);

@@ -8,6 +8,9 @@
 // might want to use fastSine
 
 class PercussionEngine : public DrumEngine {
+protected:
+    float velocity = 1.0f;
+
 public:
     Val& pitch = val(120.f, "PITCH", { "Pitch", .min = 40.f, .max = 400.f, .step = 1.f, .unit = "Hz" });
     Val& bend = val(0.4f, "BEND", { "Bend freq.", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
@@ -74,6 +77,7 @@ public:
             out *= 1.f + punch.pct() * 2.f;
         }
 
+        out = out * velocity;
         out = applyEffects(out);
         buf[track] = out;
     }
@@ -83,8 +87,9 @@ public:
         buf[track] = applyReverb(buf[track], reverb.pct(), reverbBuf, rIdx, REVBUF);
     }
 
-    void noteOn(uint8_t note, float, void* = nullptr) override
+    void noteOn(uint8_t note, float _velocity, void* = nullptr) override
     {
+        velocity = _velocity;
         phase = 0.f;
         pitch.set(pitch.get() * powf(2.f, (note - 60) / 12.f));
         snareState = 0.f;

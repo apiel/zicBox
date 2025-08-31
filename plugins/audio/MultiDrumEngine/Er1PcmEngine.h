@@ -10,6 +10,8 @@
 #include "plugins/audio/utils/utils.h"
 
 class Er1PcmEngine : public DrumEngine {
+    float velocity = 1.0f;
+
     static const uint64_t bufferSize = 48000 * 3; // max 3 seconds
     float sampleData[bufferSize];
 
@@ -217,6 +219,7 @@ public:
             out = out + transient.next(&transientIndex) * envAmp;
         }
 
+        out = out * velocity;
         out = multiFx.apply(out, fxAmount.pct());
         out = multiFx2.apply(out, fxAmount2.pct());
         buf[track] = out;
@@ -230,8 +233,9 @@ public:
         buf[track] = out;
     }
 
-    void noteOn(uint8_t note, float velocity, void* userdata = NULL) override
+    void noteOn(uint8_t note, float _velocity, void* userdata = NULL) override
     {
+        velocity = _velocity;
         index = 0.0f;
         modPhase = 0.0f;
         transientIndex = 0.0f;

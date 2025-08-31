@@ -7,27 +7,8 @@
 #include <cmath>
 
 class ClapEngine : public DrumEngine {
-public:
-    ClapEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
-        : DrumEngine(p, c, "Clap")
-    {
-        initValues();
-    }
-
-    // --- Parameters (10 total) ---
-    Val& decay = val(25, "DECAY", { "Burst Decay", .unit = "%" });
-    Val& burstCount = val(5, "BURSTS", { "Bursts", .min = 1.f, .max = 10.f });
-    Val& burstSpacing = val(30, "SPACING", { "Spacing", .unit = "%" });
-    Val& noiseColor = val(70, "NOISE_COLOR", { "Noise Color", .unit = "%" });
-
-    Val& filterFreq = val(0, "FILTER_FREQ", { "Cutoff", .unit = "%" }); // 1–4 kHz
-    Val& filterReso = val(30, "FILTER_RESO", { "Resonance", .unit = "%" });
-
-    Val& punch = val(100, "PUNCH", { "Punch", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
-    Val& transient = val(0.0, "TRANSIENT", { "Transient", .unit = "%" });
-
-    Val& boost = val(0.0f, "BOOST", { "Boost", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
-    Val& reverb = val(20, "REVERB", { "Reverb", .unit = "%" });
+protected:
+    float velocity = 1.0f;
 
     static constexpr int REVERB_SIZE = 48000;
     float reverbBuf[REVERB_SIZE] = {};
@@ -45,8 +26,31 @@ public:
     float bodyFreq = 300.f;
     float lpState = 0.f, bpState = 0.f;
 
-    void noteOn(uint8_t, float, void* = nullptr) override
+    // --- Parameters (10 total) ---
+    Val& decay = val(25, "DECAY", { "Burst Decay", .unit = "%" });
+    Val& burstCount = val(5, "BURSTS", { "Bursts", .min = 1.f, .max = 10.f });
+    Val& burstSpacing = val(30, "SPACING", { "Spacing", .unit = "%" });
+    Val& noiseColor = val(70, "NOISE_COLOR", { "Noise Color", .unit = "%" });
+
+    Val& filterFreq = val(0, "FILTER_FREQ", { "Cutoff", .unit = "%" }); // 1–4 kHz
+    Val& filterReso = val(30, "FILTER_RESO", { "Resonance", .unit = "%" });
+
+    Val& punch = val(100, "PUNCH", { "Punch", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
+    Val& transient = val(0.0, "TRANSIENT", { "Transient", .unit = "%" });
+
+    Val& boost = val(0.0f, "BOOST", { "Boost", .type = VALUE_CENTERED, .min = -100.f, .max = 100.f, .unit = "%" });
+    Val& reverb = val(20, "REVERB", { "Reverb", .unit = "%" });
+
+public:
+    ClapEngine(AudioPlugin::Props& p, AudioPlugin::Config& c)
+        : DrumEngine(p, c, "Clap")
     {
+        initValues();
+    }
+
+    void noteOn(uint8_t, float _velocity, void* = nullptr) override
+    {
+        velocity = _velocity;
         burstTimer = 0.f;
         burstIndex = 0;
         env = 1.f;
@@ -119,7 +123,7 @@ public:
         output = applyBoostOrCompression(output);
         output = applyReverb(output, reverb.pct(), reverbBuf, rIdx, REVERB_SIZE);
 
-        buf[track] = output * envAmp;
+        buf[track] = output * envAmp * velocity;
     }
 
     void sampleOff(float* buf) override
