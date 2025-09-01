@@ -91,6 +91,8 @@ You can order the PCB from JLCPCB by following these steps:
 
 ### Assembly
 
+<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_00.jpg?raw=true' width='700'>
+
 Place the pin header of the display onto the board, noting its unusual orientation. The pins must be soldered **only from the top side**, ensuring that they do not protrude through to the underside. This is important because additional components will be mounted on the opposite side, and the space must remain free of obstructions.
 
 <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_01.png?raw=true' width='700'>
@@ -117,9 +119,13 @@ Place the display onto the pins and solder it in place. Make sure it is aligned 
 
 <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_06.png?raw=true' width='700'>
 
-Finally, solder the Raspberry Pi male pin header onto the Raspberry Pi. Once soldered, connect the Raspberry Pi to the board.
+Finally, solder the Raspberry Pi male pin header onto the Raspberry Pi.
 
-<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_07.png?raw=true' width='700'>
+<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_07.jpg?raw=true' width='700'>
+
+Once soldered, connect the Raspberry Pi to the board.
+
+<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_08.jpg?raw=true' width='700'>
 
 ---
 
