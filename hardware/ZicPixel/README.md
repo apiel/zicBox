@@ -91,7 +91,7 @@ You can order the PCB from JLCPCB by following these steps:
 
 ### Assembly
 
-<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_00.jpg?raw=true' width='700'>
+<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_00.png?raw=true' width='700'>
 
 Place the pin header of the display onto the board, noting its unusual orientation. The pins must be soldered **only from the top side**, ensuring that they do not protrude through to the underside. This is important because additional components will be mounted on the opposite side, and the space must remain free of obstructions.
 
@@ -113,7 +113,12 @@ Don’t forget to trim the pins step by step as you place and solder each compon
 
 Place the DAC onto the pins and solder it in place. Then solder the jumper on the DAC as [described at the top of this page](https://github.com/apiel/zicBox/wiki/04-Hardware#audio-dac).
 
-<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_05.png?raw=true' width='700'>
+<table>
+<tr>
+    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_05.png?raw=true' width='400'></td>
+    <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_05_bis.png?raw=true' width='400'></td>
+</tr>
+</table>
 
 Place the display onto the pins and solder it in place. Make sure it is aligned straight and positioned as low as possible, otherwise it may interfere with the keyboard button.
 
@@ -121,11 +126,11 @@ Place the display onto the pins and solder it in place. Make sure it is aligned 
 
 Finally, solder the Raspberry Pi male pin header onto the Raspberry Pi.
 
-<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_07.jpg?raw=true' width='700'>
+<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_07.png?raw=true' width='700'>
 
 Once soldered, connect the Raspberry Pi to the board.
 
-<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_08.jpg?raw=true' width='700'>
+<img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_08.png?raw=true' width='700'>
 
 ---
 
