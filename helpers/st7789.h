@@ -157,11 +157,11 @@ public:
         //     drawPixel(rand() % width, rand() % height, 0xFFFF);
         // }
 
-        drawFillRect(10, 140, 10, 10, colorToU16({ 212, 211, 211 })); //rgb(212, 211, 211)
-        drawFillRect(30, 140, 10, 10, colorToU16({ 170, 170, 170 })); //rgb(170, 170, 170)
-        drawFillRect(50, 140, 10, 10, colorToU16({ 127, 127, 127 })); //rgb(127, 127, 127)
-        drawFillRect(70, 140, 10, 10, colorToU16({ 85, 85, 85 })); //rgb(85, 85, 85)
-        drawFillRect(90, 140, 10, 10, colorToU16({ 42, 42, 42 })); //rgb(42, 42, 42)
+        drawFillRect(10 + 160, 110, 10, 10, colorToU16({ 212, 211, 211 })); //rgb(212, 211, 211)
+        drawFillRect(30 + 160, 110, 10, 10, colorToU16({ 170, 170, 170 })); //rgb(170, 170, 170)
+        drawFillRect(50 + 160, 110, 10, 10, colorToU16({ 127, 127, 127 })); //rgb(127, 127, 127)
+        drawFillRect(70 + 160, 110, 10, 10, colorToU16({ 85, 85, 85 })); //rgb(85, 85, 85)
+        drawFillRect(90 + 160, 110, 10, 10, colorToU16({ 42, 42, 42 })); //rgb(42, 42, 42)
 
         // P
         drawFillRect(10, 60, 10, 60, colorToU16({ 212, 211, 211 }));
