@@ -157,11 +157,36 @@ public:
         //     drawPixel(rand() % width, rand() % height, 0xFFFF);
         // }
 
-        drawFillRect(10, 30, 10, 10, colorToU16({ 212, 211, 211 })); //rgb(212, 211, 211)
-        drawFillRect(30, 30, 10, 10, colorToU16({ 170, 170, 170 })); //rgb(170, 170, 170)
-        drawFillRect(50, 30, 10, 10, colorToU16({ 127, 127, 127 })); //rgb(127, 127, 127)
-        drawFillRect(70, 30, 10, 10, colorToU16({ 85, 85, 85 })); //rgb(85, 85, 85)
-        drawFillRect(90, 30, 10, 10, colorToU16({ 42, 42, 42 })); //rgb(42, 42, 42)
+        drawFillRect(10, 140, 10, 10, colorToU16({ 212, 211, 211 })); //rgb(212, 211, 211)
+        drawFillRect(30, 140, 10, 10, colorToU16({ 170, 170, 170 })); //rgb(170, 170, 170)
+        drawFillRect(50, 140, 10, 10, colorToU16({ 127, 127, 127 })); //rgb(127, 127, 127)
+        drawFillRect(70, 140, 10, 10, colorToU16({ 85, 85, 85 })); //rgb(85, 85, 85)
+        drawFillRect(90, 140, 10, 10, colorToU16({ 42, 42, 42 })); //rgb(42, 42, 42)
+
+        // P
+        drawFillRect(10, 60, 10, 60, colorToU16({ 212, 211, 211 }));
+        drawFillRect(10, 60, 30, 30, colorToU16({ 212, 211, 211 }));
+        drawFillRect(20, 70, 10, 10, colorToU16({ 42, 42, 42 }));
+
+        // I
+        drawFillRect(50, 60, 10, 60, colorToU16({ 212, 211, 211 }));
+
+        // X
+        drawFillRect(70, 60, 10, 20, colorToU16({ 212, 211, 211 }));
+        drawFillRect(90, 60, 10, 20, colorToU16({ 212, 211, 211 }));
+        drawFillRect(80, 80, 10, 20, colorToU16({ 212, 211, 211 }));
+        drawFillRect(70, 100, 10, 20, colorToU16({ 212, 211, 211 }));
+        drawFillRect(90, 100, 10, 20, colorToU16({ 212, 211, 211 }));
+
+        // E
+        drawFillRect(110, 60, 10, 60, colorToU16({ 212, 211, 211 }));
+        drawFillRect(110, 60, 30, 10, colorToU16({ 212, 211, 211 }));
+        drawFillRect(110, 85, 20, 10, colorToU16({ 212, 211, 211 }));
+        drawFillRect(110, 110, 30, 10, colorToU16({ 212, 211, 211 }));
+
+        // L
+        drawFillRect(150, 60, 10, 60, colorToU16({ 212, 211, 211 }));
+        drawFillRect(150, 110, 30, 10, colorToU16({ 212, 211, 211 }));
     }
 
     uint16_t colorToU16(Color color)

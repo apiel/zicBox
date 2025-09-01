@@ -1,5 +1,4 @@
-#ifndef _LIB_SPI_H_
-#define _LIB_SPI_H_
+#pragma once
 
 // Can be use without to be root,
 // but GPIO_TFT_RESET_PIN make it bugs...
@@ -134,5 +133,3 @@ public:
         return 0;
     }
 };
-
-#endif

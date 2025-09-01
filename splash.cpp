@@ -1,7 +1,7 @@
 #include "helpers/gpio.h"
 #include "helpers/st7789.h"
 
-// #define USE_SPI_DEV_MEM
+#define USE_SPI_DEV_MEM
 #ifdef USE_SPI_DEV_MEM
 // sudo apt-get install libbcm2835-dev
 // sudo apt-get install libraspberrypi-dev raspberrypi-kernel-headers
@@ -19,13 +19,14 @@
 
 // res go to pin 15
 // #define PIN_RESET 22
-#define GPIO_TFT_RESET_PIN 22
+// #define GPIO_TFT_RESET_PIN 22
+#define GPIO_TFT_RESET_PIN 2
 // DC go to pin 11
 // #define PIN_DATA_CONTROL 17
 #define GPIO_TFT_DATA_CONTROL 17
 // BLK go to pin 13 (should be optional or can be connected directly to 3.3v)
 // #define PIN_BACKLIGHT 27
-#define GPIO_TFT_BACKLIGHT 27
+#define GPIO_TFT_BACKLIGHT 3
 
 // RPi BOARD (Physical not BCM) Pin #23 (SCLK) -> Display SCL
 // RPi BOARD (Physical not BCM) Pin #19 (MOSI) -> Display SDA
@@ -41,8 +42,14 @@ int main(int argc, char* argv[])
     Spi spi = Spi(GPIO_TFT_DATA_CONTROL);
     spi.init();
 
-#ifdef USE_SPI_DEV_MEM
-    printf("Resetting display at reset GPIO pin %d\n", GPIO_TFT_RESET_PIN);
+    logDebug("Off/On backlight on GPIO pin %d\n", GPIO_TFT_BACKLIGHT);
+    gpioSetMode(GPIO_TFT_BACKLIGHT, 1);
+    gpioWrite(GPIO_TFT_BACKLIGHT, 0);
+    usleep(120 * 1000);
+    gpioWrite(GPIO_TFT_BACKLIGHT, 1);
+
+// #ifdef USE_SPI_DEV_MEM
+    logDebug("Resetting display at reset GPIO pin %d\n", GPIO_TFT_RESET_PIN);
     gpioSetMode(GPIO_TFT_RESET_PIN, 1);
     gpioWrite(GPIO_TFT_RESET_PIN, 1);
     usleep(120 * 1000);
@@ -50,7 +57,7 @@ int main(int argc, char* argv[])
     usleep(120 * 1000);
     gpioWrite(GPIO_TFT_RESET_PIN, 1);
     usleep(120 * 1000);
-#endif
+// #endif
 
     printf("Initializing SPI bus\n");
 
@@ -76,7 +83,9 @@ int main(int argc, char* argv[])
     // st7789.displayInverted = true;
     // st7789.init(240, 240);
 
-    st7789.init(240, 320);
+    // st7789.init(240, 320);
+
+    st7789.init(320, 170);
 
     usleep(10 * 1000); // Delay a bit before restoring CLK, or otherwise this has been observed to cause the display not init if done back to back after the clear operation above.
 

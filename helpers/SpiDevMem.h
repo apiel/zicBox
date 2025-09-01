@@ -1,5 +1,4 @@
-#ifndef _LIB_SPI_H_
-#define _LIB_SPI_H_
+#pragma once
 
 // // sudo apt-get install libbcm2835-dev
 
@@ -147,5 +146,3 @@ public:
         // __sync_synchronize();
     }
 };
-
-#endif

@@ -61,6 +61,19 @@ runPixel:
 	@echo "\n------------------ run zicPixel $(TARGET_PLATFORM) ------------------\n"
 	$(BUILD_DIR)/pixel
 
+splash:
+	@echo "\n------------------ build splash ------------------\n"
+	@mkdir -p $(BUILD_DIR)
+	@mkdir -p $(OBJ_DIR)
+	$(MAKE) $(BUILD_DIR)/splash
+
+$(BUILD_DIR)/splash:
+	@echo Build using $(CC)
+	$(CC) -g -fms-extensions -o $(BUILD_DIR)/splash splash.cpp -lbcm2835 -fpermissive -lbcm_host $(INC)
+
+# ../zicOs/buildroot/output/host/bin/aarch64-buildroot-linux-gnu-g++ -g -fms-extensions -o build/arm/splash splash.cpp  -lbcm2835 -fpermissive -lbcm_host -I.
+# ../zicOs/buildroot/output/host/bin/aarch64-buildroot-linux-gnu-g++ -g -fms-extensions -o build/arm/splash splash.cpp -fpermissive -I.
+
 dev:
 	npm run dev
 
@@ -116,6 +129,15 @@ releaseOsRpi3:
 	zip -r build/zicOsRpi3.zip ../zicOs/buildroot/output/images/sdcard.img
 	- gh release delete zicOsRpi3 -y
 	gh release create zicOsRpi3 build/zicOsRpi3.zip --title "zicOs zic Pixel Rpi3A+" --notes "This release contains the zicOs (64 bit) for zic Pixel rpi3A+ version."
+
+releaseOsPixel:
+	@echo "Creating GitHub release of zicOs for Zic Pixel on rpi zero..."
+	npm run build:pixel
+	cd ../zicOs/buildroot && ZICBOX_PATH=/home/alex/Music/zicBox make
+	- rm build/zicOsPixel.zip
+	zip -r build/zicOsPixel.zip ../zicOs/buildroot/output/images/sdcard.img
+	- gh release delete zicOsPixel -y
+	gh release create zicOsPixel build/zicOsPixel.zip --title "zicOs zic Pixel Rpi zero" --notes "This release contains the zicOs (64 bit) for zic Pixel (rpi0)."
 
 PI_TARGET ?= root@zic.local
 PI_PASSWORD = password
