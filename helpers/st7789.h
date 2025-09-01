@@ -1,5 +1,4 @@
-#ifndef _LIB_ST7789_H_
-#define _LIB_ST7789_H_
+#pragma once
 
 #include <functional>
 
@@ -202,5 +201,3 @@ public:
         // return rgb;
     }
 };
-
-#endif

@@ -79,7 +79,8 @@ public:
             return -1;
         }
 
-        mode = 0;
+        // mode = 0;
+        mode = SPI_MODE_3;
         ret = ioctl(fd, SPI_IOC_WR_MODE, &mode);
         if (ret == -1) {
             printf("Can't set SPI write mode");
