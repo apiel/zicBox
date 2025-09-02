@@ -1,6 +1,7 @@
 # MAKEFLAGS += -j$(shell nproc)
 
 include ../../../make_common.mk
+include ../../../makeconf/component.mk
 
 BUILD_DIR := ../../../build/$(TARGET_PLATFORM)/libs/components
 OBJ_DIR := ../../../build/obj/$(TARGET_PLATFORM)/libs/components

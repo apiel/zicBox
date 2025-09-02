@@ -2,9 +2,6 @@
 
 - TODO write user manual
 
-- TODO try to backlight screen connected to reset pins...
-- TODO even questioning to which extend we need the reset pin. Might try again on old design
-
 - TODO improve multi drum:
 - TODO might not need sampleOn sampleOff ?? or maybe yes to keep the logic in one place... <--- subjective
 - TODO optimize drum engines
@@ -30,6 +27,8 @@
 
 - TODO multi drum kick engine: work on the frequency envelop (ask Michi :p)
 
+- TODO try to backlight screen connected to reset pins...
+- TODO even questioning to which extend we need the reset pin. Might try again on old design
 
 - TODO GRID variation
         - -----> show pattern in variation <<-- NOTE 

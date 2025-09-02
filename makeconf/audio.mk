@@ -1,0 +1,2 @@
+customBuild:
+	make SynthMultiDrum Sequencer EffectGainVolume SerializeTrack SynthMultiSample SynthMulti Mixer8 AudioOutputPulse Tempo

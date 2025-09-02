@@ -1,5 +1,8 @@
+import { writeFileSync } from 'fs';
 import { applyZic, ZicValue } from './core';
 import { ComponentProps } from './nativeComponents/component';
+
+const componentPluginList = new Set();
 
 export type Bounds = string | string[] | number[];
 
@@ -12,8 +15,17 @@ export function getBounds(pos: Bounds) {
     return Array.isArray(pos) ? pos : pos.split(' ');
 }
 
+export function generateComponentMakefile(dest: string) {
+    const content = `customBuild:
+	make ${[...componentPluginList].map(p => `${p}Component`).join(' ')}
+`;
+
+    writeFileSync(dest, content);
+}
+
 export function getJsonComponent<P>(componentName: string) {
     return function (this: any, props: ComponentProps<P>) {
+        componentPluginList.add(componentName);
         const component = {
             ...props,
             componentName,

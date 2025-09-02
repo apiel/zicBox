@@ -1,0 +1,2 @@
+customBuild:
+	make KnobValueComponent RectComponent TextComponent StringValComponent ValueComponent GraphEncoderComponent ClipsComponent HiddenValueComponent SequencerValueComponent SequencerCardComponent SampleComponent WorkspaceKnobComponent
