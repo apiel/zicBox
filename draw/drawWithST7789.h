@@ -18,18 +18,16 @@
 
 #include "draw.h"
 
-// res go to pin 15
-#define GPIO_TFT_RESET_PIN 22
-// DC go to pin 11
 #define GPIO_TFT_DATA_CONTROL 17
 // BLK go to pin 13 (should be optional or can be connected directly to 3.3v)
-#define GPIO_TFT_BACKLIGHT 27
+// #define GPIO_TFT_BACKLIGHT 27
 
 class DrawWithST7789 : public Draw {
 public:
     uint16_t cacheBuffer[SCREEN_BUFFER_ROWS][SCREEN_BUFFER_COLS];
 
 protected:
+    int8_t resetPin = -1;
     Spi spi = Spi(GPIO_TFT_DATA_CONTROL);
     ST7789 st7789;
 
@@ -62,23 +60,17 @@ public:
         gpioSetMode(GPIO_TFT_DATA_CONTROL, 0x01); // Data/Control pin to output (0x01)
         spi.init();
 
-#ifdef USE_SPI_DEV_MEM
-        gpioSetMode(GPIO_TFT_RESET_PIN, 1);
-        gpioWrite(GPIO_TFT_RESET_PIN, 1);
-        usleep(120 * 1000);
-        gpioWrite(GPIO_TFT_RESET_PIN, 0);
-        usleep(120 * 1000);
-        gpioWrite(GPIO_TFT_RESET_PIN, 1);
-        usleep(120 * 1000);
-#else
-        // gpioSetMode(GPIO_TFT_RESET_PIN, GPIO_OUTPUT);
-        // gpioWrite(GPIO_TFT_RESET_PIN, 1);
-        // usleep(120 * 1000);
-        // gpioWrite(GPIO_TFT_RESET_PIN, 0);
-        // usleep(120 * 1000);
-        // gpioWrite(GPIO_TFT_RESET_PIN, 1);
-        // usleep(120 * 1000);
-#endif
+        if (resetPin != -1) {
+            // resetPin = 2;
+            logDebug("Resetting ST7789 on pin %d", resetPin);
+            gpioSetMode(resetPin, 1);
+            gpioWrite(resetPin, 1);
+            usleep(120 * 1000);
+            gpioWrite(resetPin, 0);
+            usleep(120 * 1000);
+            gpioWrite(resetPin, 1);
+            usleep(120 * 1000);
+        }
 
 // Do the initialization with a veradiusY low SPI bus speed, so that it will succeed even if the bus speed chosen by the user is too high.
 #ifdef USE_SPI_DEV_MEM
@@ -145,6 +137,7 @@ public:
             if (config.contains("st7789")) {
                 st7789.madctl = config["st7789"].value("madctl", st7789.madctl);
                 st7789.displayInverted = config["st7789"].value("inverted", st7789.displayInverted);
+                resetPin = config["st7789"].value("resetPin", resetPin);
             }
             Draw::config(config);
         } catch (const std::exception& e) {

@@ -21,7 +21,7 @@ import {
     Synth2Track,
     W1_4,
     W2_4,
-    W3_4
+    W3_4,
 } from './constants';
 import {
     seqContextTrack1,
@@ -31,7 +31,7 @@ import {
     seqContextTrack5,
     seqContextTrack6,
     seqContextTrack7,
-    seqContextTrack8
+    seqContextTrack8,
 } from './constantsValue';
 import { DrumViews } from './Drum/DrumViews';
 import { MenuView } from './menu/MenuView';
@@ -54,21 +54,72 @@ export const ui = {
             [W2_4, 0, W1_4, ScreenHeight],
             [W3_4, 0, W1_4, ScreenHeight],
         ],
+        st7789: {
+            resetPin: 2,
+        },
     },
     // renderer: 'FB',
     taggedViews: { track: 'Drum1' },
     views: (
         <>
-            <DrumViews track={Drum1Track} synthName="Drum1" color={ColorTrack1} title={Drum1} contextId={seqContextTrack1} />
-            <DrumViews track={Drum2Track} synthName="Drum2" color={ColorTrack2} title={Drum2} contextId={seqContextTrack2} />
-            <DrumViews track={Drum3Track} synthName="Drum3" color={ColorTrack3} title={Drum3} contextId={seqContextTrack3} />
-            <DrumViews track={Drum4Track} synthName="Drum4" color={ColorTrack4} title={Drum4} contextId={seqContextTrack4} />
+            <DrumViews
+                track={Drum1Track}
+                synthName="Drum1"
+                color={ColorTrack1}
+                title={Drum1}
+                contextId={seqContextTrack1}
+            />
+            <DrumViews
+                track={Drum2Track}
+                synthName="Drum2"
+                color={ColorTrack2}
+                title={Drum2}
+                contextId={seqContextTrack2}
+            />
+            <DrumViews
+                track={Drum3Track}
+                synthName="Drum3"
+                color={ColorTrack3}
+                title={Drum3}
+                contextId={seqContextTrack3}
+            />
+            <DrumViews
+                track={Drum4Track}
+                synthName="Drum4"
+                color={ColorTrack4}
+                title={Drum4}
+                contextId={seqContextTrack4}
+            />
 
-            <SampleViews track={Sample1Track} synthName="Sample1" color={ColorTrack5} title={Sample1} contextId={seqContextTrack5} />
-            <SampleViews track={Sample2Track} synthName="Sample2" color={ColorTrack6} title={Sample2} contextId={seqContextTrack6} />
+            <SampleViews
+                track={Sample1Track}
+                synthName="Sample1"
+                color={ColorTrack5}
+                title={Sample1}
+                contextId={seqContextTrack5}
+            />
+            <SampleViews
+                track={Sample2Track}
+                synthName="Sample2"
+                color={ColorTrack6}
+                title={Sample2}
+                contextId={seqContextTrack6}
+            />
 
-            <SynthViews track={Synth1Track} synthName="Synth1" color={ColorTrack7} title={Synth1} contextId={seqContextTrack7} />
-            <SynthViews track={Synth2Track} synthName="Synth2" color={ColorTrack8} title={Synth2} contextId={seqContextTrack8} />
+            <SynthViews
+                track={Synth1Track}
+                synthName="Synth1"
+                color={ColorTrack7}
+                title={Synth1}
+                contextId={seqContextTrack7}
+            />
+            <SynthViews
+                track={Synth2Track}
+                synthName="Synth2"
+                color={ColorTrack8}
+                title={Synth2}
+                contextId={seqContextTrack8}
+            />
 
             <MenuView name="Menu" />
         </>

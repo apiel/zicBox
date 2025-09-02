@@ -44,7 +44,7 @@ protected:
             if (retry < 2) {
                 retry++;
                 logInfo("AudioPulse::open retry (%d)", retry);
-                system("/etc/init.d/S94pulseaudio restart");
+                system("/etc/init.d/S33pulseaudio restart");
                 open();
             }
             return;
