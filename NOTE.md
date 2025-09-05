@@ -1,5 +1,7 @@
 ## Pixel TODO
 
+- TODO might need to have build with arm for zero2w but also for rpi4, not necerssarly the same ...
+
 - TODO write user manual
 
 - TODO improve multi drum:

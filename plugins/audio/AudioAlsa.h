@@ -39,7 +39,7 @@ protected:
 
     snd_pcm_stream_t stream;
 
-    void open()
+    void open(snd_pcm_format_t format = SND_PCM_FORMAT_FLOAT)
     {
         if (handle) {
             snd_pcm_close(handle);
@@ -63,7 +63,7 @@ protected:
         snd_pcm_uframes_t periodSize = 50000; // 50ms // 100000
 #endif
         if ((err = snd_pcm_set_params(handle,
-                 SND_PCM_FORMAT_FLOAT,
+                 format,
                  SND_PCM_ACCESS_RW_INTERLEAVED,
                  channels,
                  props.sampleRate, 1, periodSize))

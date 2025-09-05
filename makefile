@@ -78,6 +78,8 @@ runPixel:
 screenOff:
 	../zicOs/buildroot/output/host/bin/aarch64-buildroot-linux-gnu-g++ -g -fms-extensions -o build/arm/screenOff screenOff.cpp -fpermissive -I.
 
+#arm-buildroot-linux-gnueabihf-g++ -g -fms-extensions -o build/arm/screenOff screenOff.cpp -fpermissive -I.
+
 dev:
 	npm run dev
 
@@ -143,6 +145,15 @@ PI_REMOTE_DIR = /opt/zicBox
 make pi:
 	make pixelLibs cc=arm
 	make buildPixel cc=arm
+	- sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "killall pixel"
+	rsync -avz --progress -e "sshpass -p '$(PI_PASSWORD)' ssh" build/arm/ "$(PI_TARGET):$(PI_REMOTE_DIR)/."
+	rsync -avz --progress -e "sshpass -p '$(PI_PASSWORD)' ssh" data/ "$(PI_TARGET):$(PI_REMOTE_DIR)/data"
+	sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "chmod +x $(PI_REMOTE_DIR)/pixel"
+	sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "cd $(PI_REMOTE_DIR) && ./pixel"
+
+make pi64:
+	make pixelLibs cc=arm64
+	make buildPixel cc=arm64
 	- sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "killall pixel"
 	rsync -avz --progress -e "sshpass -p '$(PI_PASSWORD)' ssh" build/arm/ "$(PI_TARGET):$(PI_REMOTE_DIR)/."
 	rsync -avz --progress -e "sshpass -p '$(PI_PASSWORD)' ssh" data/ "$(PI_TARGET):$(PI_REMOTE_DIR)/data"

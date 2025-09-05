@@ -23,7 +23,7 @@ all:
 		SynthSample SynthDrumSample SynthMonoSample\
 		Sequencer Tempo AudioSpectrogram\
 		Mixer2 Mixer4 Mixer5 Mixer6 Mixer8 Mixer10 Mixer12\
-		AudioInputAlsa AudioOutputAlsa\
+		AudioInputAlsa AudioOutputAlsa AudioOutputAlsa_int16\
 		AudioInputPulse AudioOutputPulse\
 		SerializeTrack TapeRecording  SampleSequencer EffectFilterMultiMode\
 		EffectScatter EffectFilteredMultiFx EffectBandIsolatorFx\
@@ -107,6 +107,9 @@ AudioInputAlsa:
 
 AudioOutputAlsa:
 	make compile LIBNAME=AudioOutputAlsa EXTRA="$(shell $(PKG_CONFIG) --cflags --libs alsa)"
+
+AudioOutputAlsa_int16:
+	make compile LIBNAME=AudioOutputAlsa_int16 EXTRA="$(shell $(PKG_CONFIG) --cflags --libs alsa)"
 
 %:
 	make compile LIBNAME=$@

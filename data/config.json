@@ -80,7 +80,7 @@
         "plugins": [
           {"alias":"Mixer","plugin":"Mixer8"},
           {"alias":"TrackFx","plugin":"EffectGainVolume"},
-          {"alias":"AudioOutput","plugin":"AudioOutputPulse"},
+          {"alias":"AudioOutput","plugin":"AudioOutputAlsa_int16"},
           {"filename":"master","maxVariation":1000,"workspaceFolder":"data/workspaces/rpi0","plugin":"SerializeTrack","alias":"SerializeTrack"},
           {"plugin":"Tempo","alias":"Tempo"}
         ]
