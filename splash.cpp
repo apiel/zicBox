@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
     usleep(120 * 1000);
     gpioWrite(GPIO_TFT_BACKLIGHT, 1);
 
-// #ifdef USE_SPI_DEV_MEM
+    // #ifdef USE_SPI_DEV_MEM
     logDebug("Resetting display at reset GPIO pin %d\n", GPIO_TFT_RESET_PIN);
     gpioSetMode(GPIO_TFT_RESET_PIN, 1);
     gpioWrite(GPIO_TFT_RESET_PIN, 1);
@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
     usleep(120 * 1000);
     gpioWrite(GPIO_TFT_RESET_PIN, 1);
     usleep(120 * 1000);
-// #endif
+    // #endif
 
     printf("Initializing SPI bus\n");
 
@@ -95,6 +95,46 @@ int main(int argc, char* argv[])
     spi.setSpeed(16000000); // 16 MHz
 #endif
 
-    st7789.test();
+    st7789.fillScreen(st7789.colorToU16({ 0x21, 0x25, 0x2b, 255 })); // #21252b
+
+    // draw some random pixels
+    for (int i = 0; i < 100; i++) {
+        st7789.drawPixel(rand() % st7789.width, rand() % st7789.height, 0xFFFF);
+    }
+
+    // if parameter passed, show the logo
+    if (argc > 1) {
+        st7789.drawFillRect(10 + 160, 110, 10, 10, st7789.colorToU16({ 212, 211, 211 })); //rgb(212, 211, 211)
+        st7789.drawFillRect(30 + 160, 110, 10, 10, st7789.colorToU16({ 170, 170, 170 })); //rgb(170, 170, 170)
+        st7789.drawFillRect(50 + 160, 110, 10, 10, st7789.colorToU16({ 127, 127, 127 })); //rgb(127, 127, 127)
+        st7789.drawFillRect(70 + 160, 110, 10, 10, st7789.colorToU16({ 85, 85, 85 })); //rgb(85, 85, 85)
+        st7789.drawFillRect(90 + 160, 110, 10, 10, st7789.colorToU16({ 42, 42, 42 })); //rgb(42, 42, 42)
+
+        // P
+        st7789.drawFillRect(10, 60, 10, 60, st7789.colorToU16({ 212, 211, 211 }));
+        st7789.drawFillRect(10, 60, 30, 30, st7789.colorToU16({ 212, 211, 211 }));
+        st7789.drawFillRect(20, 70, 10, 10, st7789.colorToU16({ 42, 42, 42 }));
+
+        // I
+        st7789.drawFillRect(50, 60, 10, 60, st7789.colorToU16({ 212, 211, 211 }));
+
+        // X
+        st7789.drawFillRect(70, 60, 10, 20, st7789.colorToU16({ 212, 211, 211 }));
+        st7789.drawFillRect(90, 60, 10, 20, st7789.colorToU16({ 212, 211, 211 }));
+        st7789.drawFillRect(80, 80, 10, 20, st7789.colorToU16({ 212, 211, 211 }));
+        st7789.drawFillRect(70, 100, 10, 20, st7789.colorToU16({ 212, 211, 211 }));
+        st7789.drawFillRect(90, 100, 10, 20, st7789.colorToU16({ 212, 211, 211 }));
+
+        // E
+        st7789.drawFillRect(110, 60, 10, 60, st7789.colorToU16({ 212, 211, 211 }));
+        st7789.drawFillRect(110, 60, 30, 10, st7789.colorToU16({ 212, 211, 211 }));
+        st7789.drawFillRect(110, 85, 20, 10, st7789.colorToU16({ 212, 211, 211 }));
+        st7789.drawFillRect(110, 110, 30, 10, st7789.colorToU16({ 212, 211, 211 }));
+
+        // L
+        st7789.drawFillRect(150, 60, 10, 60, st7789.colorToU16({ 212, 211, 211 }));
+        st7789.drawFillRect(150, 110, 30, 10, st7789.colorToU16({ 212, 211, 211 }));
+    }
+
     return 0;
 }

@@ -1,5 +1,7 @@
 ## Pixel TODO
 
+- TODO splash screen off, put random pixel on background...
+
 - TODO might need to have build with arm for zero2w but also for rpi4, not necerssarly the same ...
 
 - TODO write user manual
@@ -10,7 +12,15 @@
 
 - TODO reload variations when switching workspace
 
+- TODO conditional plugin loading:
+      - Use bash command / script to make a condition...
+      - Should it be inline plugin A or B: audioPlugin(['AudioOutputPulse', 'AudioOutputAlsa', 'sh exist pulse'], { alias: 'AudioOutput' }),
+      - Or have a check for each ...: audioPlugin('AudioOutputPulse', { alias: 'AudioOutput', condition: 'sh exist pulse' }), <--- seems better to me
+      - Should it have a check if plugin name is already used for given track, if it has been used (because previous condition was true) do not load...
+
 - FIXME tempo issue
+
+- TODO DESKTOP :-) version, using pixel design but all in one screen
 
 - TODO ARP for synth, like note repeat, put a encoder to select ARP scale, from none to whatever... the when clicking trigger note, it would play the note or ARP, no matter if sequencer is playing or not.
 

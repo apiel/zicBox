@@ -28,9 +28,6 @@
 
 class ST7789 {
 protected:
-    uint16_t width = 320;
-    uint16_t height = 170;
-    // uint16_t height = 240;
 
     std::function<void(uint8_t, uint8_t*, uint32_t)> sendSpiCmd;
 
@@ -55,23 +52,11 @@ protected:
         sendCmd(cmd, addr, 4);
     }
 
-    void fillScreen(uint16_t color) // just for testing
-    {
-        drawFillRect(0, 0, width, height, color);
-    }
-
-    void drawFillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color) // just for testing
-    {
-        uint16_t pixels[w];
-        for (uint16_t i = 0; i < w; ++i) {
-            pixels[i] = color;
-        }
-        for (uint16_t i = 0; i < h; ++i) {
-            drawRow(x, y + i, w, pixels);
-        }
-    }
-
 public:
+    uint16_t width = 320;
+    uint16_t height = 170;
+    // uint16_t height = 240;
+    
     // ILI9341 display (1)
     // uint8_t madctl = 0x20;
     // bool displayInverted = false;
@@ -100,6 +85,22 @@ public:
     ST7789(std::function<void(uint8_t, uint8_t*, uint32_t)> sendSpiCmd)
         : sendSpiCmd(sendSpiCmd)
     {
+    }
+
+    void fillScreen(uint16_t color) // just for testing
+    {
+        drawFillRect(0, 0, width, height, color);
+    }
+
+    void drawFillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color) // just for testing
+    {
+        uint16_t pixels[w];
+        for (uint16_t i = 0; i < w; ++i) {
+            pixels[i] = color;
+        }
+        for (uint16_t i = 0; i < h; ++i) {
+            drawRow(x, y + i, w, pixels);
+        }
     }
 
     void drawPixel(uint16_t x, uint16_t y, uint16_t color)
@@ -151,10 +152,10 @@ public:
         // drawFillRect(40, 20, 30, 30, colorToU16({ 0xFF, 0x00, 0x00 })); // #FF0000
         // drawFillRect(width - 40, height - 20, 10, 10, colorToU16({ 0x00, 0x00, 0xFF })); // #0000FF
 
-        // for (int i = 0; i < 100; i++) {
-        //     drawPixel(i, i * 2, 0xFFF0);
-        //     drawPixel(rand() % width, rand() % height, 0xFFFF);
-        // }
+        for (int i = 0; i < 100; i++) {
+            drawPixel(i, i * 2, 0xFFF0);
+            drawPixel(rand() % width, rand() % height, 0xFFFF);
+        }
 
         drawFillRect(10 + 160, 110, 10, 10, colorToU16({ 212, 211, 211 })); //rgb(212, 211, 211)
         drawFillRect(30 + 160, 110, 10, 10, colorToU16({ 170, 170, 170 })); //rgb(170, 170, 170)

@@ -61,25 +61,6 @@ runPixel:
 	@echo "\n------------------ run zicPixel $(TARGET_PLATFORM) ------------------\n"
 	$(BUILD_DIR)/pixel
 
-#splash:
-#	@echo "\n------------------ build splash ------------------\n"
-#
-#	@mkdir -p $(BUILD_DIR)
-#	@mkdir -p $(OBJ_DIR)
-#	$(MAKE) $(BUILD_DIR)/splash
-#
-#$(BUILD_DIR)/splash:
-#	@echo Build using $(CC)
-#	$(CC) -g -fms-extensions -o $(BUILD_DIR)/splash splash.cpp -lbcm2835 -fpermissive -lbcm_host $(INC)
-
-# ../zicOs/buildroot/output/host/bin/aarch64-buildroot-linux-gnu-g++ -g -fms-extensions -o build/arm/splash splash.cpp  -lbcm2835 -fpermissive -lbcm_host -I.
-# ../zicOs/buildroot/output/host/bin/aarch64-buildroot-linux-gnu-g++ -g -fms-extensions -o build/arm/splash splash.cpp -fpermissive -I.
-
-screenOff:
-	../zicOs/buildroot/output/host/bin/aarch64-buildroot-linux-gnu-g++ -g -fms-extensions -o build/arm/screenOff screenOff.cpp -fpermissive -I.
-
-#arm-buildroot-linux-gnueabihf-g++ -g -fms-extensions -o build/arm/screenOff screenOff.cpp -fpermissive -I.
-
 dev:
 	npm run dev
 
@@ -172,3 +153,12 @@ make piOld:
 	sshpass -p "password" scp -v data/config.json root@zic.local:/opt/zicBox/data/config.json
 	sshpass -p "password" ssh root@zic.local "chmod +x /opt/zicBox/pixel"
 	sshpass -p "password" ssh root@zic.local "cd /opt/zicBox && ./pixel"
+
+
+splash:
+	../zicOs/zero2w64/output/host/bin/aarch64-linux-g++ -g -fms-extensions -o build/arm/splash splash.cpp -fpermissive -I.
+	sshpass -p "$(PI_PASSWORD)" scp -v build/arm/splash $(PI_TARGET):$(PI_REMOTE_DIR)/splash
+
+screenOff:
+	../zicOs/zero2w64/output/host/bin/aarch64-linux-g++ -g -fms-extensions -o build/arm/screenOff screenOff.cpp -fpermissive -I.
+	sshpass -p "$(PI_PASSWORD)" scp -v build/arm/screenOff $(PI_TARGET):$(PI_REMOTE_DIR)/screenOff
