@@ -42,24 +42,30 @@ int main(int argc, char* argv[])
     Spi spi = Spi(GPIO_TFT_DATA_CONTROL);
     spi.init();
 
-    logDebug("Off/On backlight on GPIO pin %d\n", GPIO_TFT_BACKLIGHT);
-    gpioSetMode(GPIO_TFT_BACKLIGHT, 1);
-    gpioWrite(GPIO_TFT_BACKLIGHT, 0);
-    usleep(120 * 1000);
-    gpioWrite(GPIO_TFT_BACKLIGHT, 1);
+    bool startup = argc > 1;
 
-    // #ifdef USE_SPI_DEV_MEM
-    logDebug("Resetting display at reset GPIO pin %d\n", GPIO_TFT_RESET_PIN);
-    gpioSetMode(GPIO_TFT_RESET_PIN, 1);
-    gpioWrite(GPIO_TFT_RESET_PIN, 1);
-    usleep(120 * 1000);
-    gpioWrite(GPIO_TFT_RESET_PIN, 0);
-    usleep(120 * 1000);
-    gpioWrite(GPIO_TFT_RESET_PIN, 1);
-    usleep(120 * 1000);
-    // #endif
+    if (startup) {
+        logDebug("Off/On backlight on GPIO pin %d\n", GPIO_TFT_BACKLIGHT);
+        gpioSetMode(GPIO_TFT_BACKLIGHT, 1);
+        gpioWrite(GPIO_TFT_BACKLIGHT, 0);
+        usleep(120 * 1000);
+        gpioWrite(GPIO_TFT_BACKLIGHT, 1);
 
-    printf("Initializing SPI bus\n");
+        // #ifdef USE_SPI_DEV_MEM
+        logDebug("Resetting display at reset GPIO pin %d\n", GPIO_TFT_RESET_PIN);
+        gpioSetMode(GPIO_TFT_RESET_PIN, 1);
+        gpioWrite(GPIO_TFT_RESET_PIN, 1);
+        usleep(120 * 1000);
+        gpioWrite(GPIO_TFT_RESET_PIN, 0);
+        usleep(120 * 1000);
+        gpioWrite(GPIO_TFT_RESET_PIN, 1);
+        usleep(120 * 1000);
+        // #endif
+    } else {
+        logDebug("Skipping reset of display.");
+    }
+
+    logDebug("Initializing SPI bus.");
 
 // Do the initialization with a very low SPI bus speed, so that it will succeed even if the bus speed chosen by the user is too high.
 #ifdef USE_SPI_DEV_MEM
@@ -103,7 +109,7 @@ int main(int argc, char* argv[])
     }
 
     // if parameter passed, show the logo
-    if (argc > 1) {
+    if (startup) {
         st7789.drawFillRect(10 + 160, 110, 10, 10, st7789.colorToU16({ 212, 211, 211 })); //rgb(212, 211, 211)
         st7789.drawFillRect(30 + 160, 110, 10, 10, st7789.colorToU16({ 170, 170, 170 })); //rgb(170, 170, 170)
         st7789.drawFillRect(50 + 160, 110, 10, 10, st7789.colorToU16({ 127, 127, 127 })); //rgb(127, 127, 127)
@@ -134,6 +140,17 @@ int main(int argc, char* argv[])
         // L
         st7789.drawFillRect(150, 60, 10, 60, st7789.colorToU16({ 212, 211, 211 }));
         st7789.drawFillRect(150, 110, 30, 10, st7789.colorToU16({ 212, 211, 211 }));
+    } else {
+        while (true) {
+            // sleep(1);
+            usleep(250);
+            st7789.fillScreen(st7789.colorToU16({ 0x21, 0x25, 0x2b, 255 })); // #21252b
+
+            // draw some random pixels
+            for (int i = 0; i < 100; i++) {
+                st7789.drawPixel(rand() % st7789.width, rand() % st7789.height, 0xFFFF);
+            }
+        }
     }
 
     return 0;

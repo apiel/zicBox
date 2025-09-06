@@ -22,6 +22,8 @@
 
 - TODO DESKTOP :-) version, using pixel design but all in one screen
 
+- TODO if keep backlight, might need to wire it to GPIO 17, 27, or 22 in order to switch it off once rpi is off
+
 - TODO ARP for synth, like note repeat, put a encoder to select ARP scale, from none to whatever... the when clicking trigger note, it would play the note or ARP, no matter if sequencer is playing or not.
 
 - TODO pattern generative for given style of music
