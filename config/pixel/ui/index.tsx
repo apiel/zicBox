@@ -35,6 +35,7 @@ import {
 } from './constantsValue';
 import { DrumViews } from './Drum/DrumViews';
 import { MenuView } from './menu/MenuView';
+import { ShuttingDown } from './menu/ShuttingDown';
 import { SampleViews } from './Sample/SampleViews';
 import { SynthViews } from './Synth/SynthViews';
 
@@ -122,6 +123,7 @@ export const ui = {
             />
 
             <MenuView name="Menu" />
+            <ShuttingDown name="ShuttingDown" />
         </>
     ),
 };

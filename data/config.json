@@ -1441,9 +1441,16 @@
         {"text":"Exit","bounds":[80,150,80,16],"centered":true,"color":"#6e6e6e","keys":[{"key":"x","action":"setView:&previous"}],"componentName":"Text"},
         {"text":"Shutdown","bounds":[160,150,80,16],"centered":true,"color":"#6e6e6e","keys":[{"key":"c","action":"contextToggle:202:1:0"}],"componentName":"Text"},
         {"bounds":[240,150,80,16],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":202,"value":0}],"componentName":"Rect"},
-        {"text":"YES","bounds":[240,150,80,16],"centered":true,"bgColor":"#ffacac","visibilityContext":[{"condition":"SHOW_WHEN","index":202,"value":1}],"keys":[{"key":"v","action":"sh:halt -f"}],"componentName":"Text"},
+        {"text":"YES","bounds":[240,150,80,16],"centered":true,"bgColor":"#ffacac","visibilityContext":[{"condition":"SHOW_WHEN","index":202,"value":1}],"keys":[{"key":"v","action":"setView:ShuttingDown","action2":"sh:halt"}],"componentName":"Text"},
         {"keys":[{"key":"c","action":"setView:undefinedClips"},{"key":"v","action":"contextToggle:254:1:0"}],"visibilityContext":[{"index":254,"value":1,"condition":"SHOW_WHEN_NOT"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"keys":[{"key":"z","action":"playPause"},{"key":"x","action":"setView:Menu"},{"key":"c","action":"audioEvent:RELOAD_VARIATION"},{"key":"v","action":"contextToggle:254:1:0"}],"visibilityContext":[{"index":254,"value":1,"condition":"SHOW_WHEN"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
+      ]
+    },
+    {
+      "name": "ShuttingDown",
+      "components": [
+        {"bounds":[0,0,320,170],"componentName":"Pixels"},
+        {"fontSize":16,"text":"Bye!","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"}
       ]
     }
   ]

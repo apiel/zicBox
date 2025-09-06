@@ -100,7 +100,7 @@ export function MenuView({ name }: Props) {
                                 value: 1,
                             },
                         ]}
-                        keys={[{ key: C4, action: `sh:halt -f` }]}
+                        keys={[{ key: C4, action: 'setView:ShuttingDown', action2: `sh:halt` }]}
                     />
                 </>
             }

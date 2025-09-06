@@ -1,6 +1,8 @@
 ## Pixel TODO
 
-- TODO splash screen off, put random pixel on background...
+- TODO shutdown view
+
+- TODO seems like reset pin is not necessary, so let try to init the display in one shot without...
 
 - TODO might need to have build with arm for zero2w but also for rpi4, not necerssarly the same ...
 
@@ -23,6 +25,8 @@
 - TODO DESKTOP :-) version, using pixel design but all in one screen
 
 - TODO if keep backlight, might need to wire it to GPIO 17, 27, or 22 in order to switch it off once rpi is off
+- TODO try to backlight screen connected to reset pins...
+- TODO even questioning to which extend we need the reset pin. Might try again on old design
 
 - TODO ARP for synth, like note repeat, put a encoder to select ARP scale, from none to whatever... the when clicking trigger note, it would play the note or ARP, no matter if sequencer is playing or not.
 
@@ -40,9 +44,6 @@
 - TODO try the orange pi!!! we could then remove DAC... would just need audio in
 
 - TODO multi drum kick engine: work on the frequency envelop (ask Michi :p)
-
-- TODO try to backlight screen connected to reset pins...
-- TODO even questioning to which extend we need the reset pin. Might try again on old design
 
 - TODO GRID variation
         - -----> show pattern in variation <<-- NOTE 

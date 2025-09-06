@@ -114,11 +114,11 @@ releaseOsRpi3:
 releaseOsPixel:
 	@echo "Creating GitHub release of zicOs for Zic Pixel on rpi zero..."
 	npm run build:pixel
-	cd ../zicOs/buildroot && ZICBOX_PATH=/home/alex/Music/zicBox make
+	cd ../zicOs/zero2w64 && ZICBOX_PATH=/home/alex/Music/zicBox make
 	- rm build/zicOsPixel.zip
-	zip -r build/zicOsPixel.zip ../zicOs/buildroot/output/images/sdcard.img
+	zip -r build/zicOsPixel.zip ../zicOs/zero2w64/output/images/sdcard.img
 	- gh release delete zicOsPixel -y
-	gh release create zicOsPixel build/zicOsPixel.zip --title "zicOs zic Pixel Rpi zero" --notes "This release contains the zicOs (64 bit) for zic Pixel (rpi0)."
+	gh release create zicOsPixel build/zicOsPixel.zip --title "zicOs Pixel Rpi zero2w" --notes "This release contains the zicOs for zic Pixel (rpi zero2w)."
 
 PI_TARGET ?= root@zic.local
 PI_PASSWORD = password
@@ -162,3 +162,6 @@ splash:
 screenOff:
 	../zicOs/zero2w64/output/host/bin/aarch64-linux-g++ -g -fms-extensions -o build/arm/screenOff screenOff.cpp -fpermissive -I.
 	sshpass -p "$(PI_PASSWORD)" scp -v build/arm/screenOff $(PI_TARGET):$(PI_REMOTE_DIR)/screenOff
+
+sendConfig:
+	sshpass -p "$(PI_PASSWORD)" scp -v data/config.json $(PI_TARGET):$(PI_REMOTE_DIR)/data/config.json
