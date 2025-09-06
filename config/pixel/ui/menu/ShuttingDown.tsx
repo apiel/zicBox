@@ -12,8 +12,8 @@ export type Props = {
 export function ShuttingDown({ name }: Props) {
     return (
         <View name={name}>
-            <Pixels bounds={[0, 0, ScreenWidth, ScreenHeight]} />
-            <Text fontSize={16} text="Bye!" bounds={[37, 0, 100, 16]} font="PoppinsLight_8" />
+            <Pixels bounds={[0, 0, ScreenWidth, ScreenHeight]} color='#999999' />
+            <Text fontSize={32} text="Bye!" bounds={[40, 60, 100, 16]} font="PoppinsLight_16" />
         </View>
     );
 }

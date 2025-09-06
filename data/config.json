@@ -1449,8 +1449,8 @@
     {
       "name": "ShuttingDown",
       "components": [
-        {"bounds":[0,0,320,170],"componentName":"Pixels"},
-        {"fontSize":16,"text":"Bye!","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"}
+        {"bounds":[0,0,320,170],"color":"#999999","componentName":"Pixels"},
+        {"fontSize":32,"text":"Bye!","bounds":[40,60,100,16],"font":"PoppinsLight_16","componentName":"Text"}
       ]
     }
   ]
