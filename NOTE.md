@@ -16,10 +16,14 @@
 
 ## Pixel TODO
 
+- TODO pipeline
+    - fix makefile
+  
 - TODO rename pixel to zic!!
 
 - TODO pressing select track button of already active track to access menu to capture and other stuff related to track...
 - maybe even enter piano mode... ---> one button to exit and one but to switch encoders
+- record from 0 to 64 step?
 
 - TODO in menu could use knob or a button to navigate between multiple options...
 
