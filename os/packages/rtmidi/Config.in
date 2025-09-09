@@ -1,0 +1,4 @@
+config BR2_PACKAGE_RTMIDI
+    bool "rtmidi"
+    help
+      RtMidi - a set of C++ classes for realtime MIDI I/O
