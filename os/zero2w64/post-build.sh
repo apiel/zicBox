@@ -8,13 +8,17 @@ mkdir -p ${TARGET_DIR}/boot
 echo "/dev/mmcblk0p1 /boot vfat defaults 0 2" >> ${TARGET_DIR}/etc/fstab
 
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
-ZICBOX_DIR=${TARGET_DIR}/../..
+ZICBOX_DIR=${SCRIPT_DIR}/../..
 
+echo "Building ZicBox ${ZICBOX_DIR}"
 cd ${ZICBOX_DIR}
+pwd
 npm run build:pixel
 make pixelLibs cc=pixel_arm64
 make buildPixel cc=pixel_arm64
-make splash cc=pixel_arm64
+
+# FIXME in makefile
+# make splash cc=pixel_arm64
 
 rm -rf ${TARGET_DIR}/opt/zicBox || true
 mkdir -p ${TARGET_DIR}/opt/zicBox
