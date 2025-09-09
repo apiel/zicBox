@@ -12,7 +12,7 @@ endif
 INC=-I../..
 
 all:
-	make OscController MidiEncoderController NeotrellisController Mpr121Controller EncoderController
+	make OscController NeotrellisController Mpr121Controller EncoderController
 
 Mpr121Controller:
 	make compile LIBNAME=Mpr121Controller EXTRA="$(PIGPIO)"
@@ -23,8 +23,8 @@ EncoderController:
 OscController:
 	make compile LIBNAME=OscController EXTRA="$(shell $(PKG_CONFIG) --cflags --libs liblo)"
 
-MidiEncoderController:
-	make compile LIBNAME=MidiEncoderController EXTRA="$(shell $(PKG_CONFIG) --cflags --libs rtmidi)"
+#MidiEncoderController:
+#	make compile LIBNAME=MidiEncoderController EXTRA="$(shell $(PKG_CONFIG) --cflags --libs rtmidi)"
 
 %Controller:
 	make compile LIBNAME=$@

@@ -18,6 +18,7 @@ const ignore = [
     'wiki',
     'plugins/config',
     'libs',
+    'os/',
 ];
 const extensions = ['.c', '.h', '.cpp'];
 
