@@ -23,7 +23,7 @@
 
 - TODO in menu could use knob or a button to navigate between multiple options...
 
-- TODO boot screen (not splash) while config load.
+- TODO boot screen (not splash) while config load. (is it even necessary??)
 
 - TODO might need to have build with arm for zero2w but also for rpi4, not necerssarly the same ...
 - rething build / folder
