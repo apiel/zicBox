@@ -20,7 +20,8 @@
 // res go to pin 15
 // #define PIN_RESET 22
 // #define GPIO_TFT_RESET_PIN 22
-#define GPIO_TFT_RESET_PIN 2
+// #define GPIO_TFT_RESET_PIN 2
+#define GPIO_TFT_RESET_PIN 17
 // DC go to pin 11
 // #define PIN_DATA_CONTROL 17
 // #define GPIO_TFT_DATA_CONTROL 17
@@ -28,7 +29,7 @@
 // BLK go to pin 13 (should be optional or can be connected directly to 3.3v)
 // #define PIN_BACKLIGHT 27
 // #define GPIO_TFT_BACKLIGHT 3
-#define GPIO_TFT_BACKLIGHT 17
+// #define GPIO_TFT_BACKLIGHT 17
 
 // RPi BOARD (Physical not BCM) Pin #23 (SCLK) -> Display SCL
 // RPi BOARD (Physical not BCM) Pin #19 (MOSI) -> Display SDA
@@ -47,11 +48,13 @@ int main(int argc, char* argv[])
     bool startup = argc > 1;
 
     if (startup) {
+#ifdef GPIO_TFT_BACKLIGHT
         logDebug("Off/On backlight on GPIO pin %d\n", GPIO_TFT_BACKLIGHT);
         gpioSetMode(GPIO_TFT_BACKLIGHT, 1);
         gpioWrite(GPIO_TFT_BACKLIGHT, 0);
         usleep(120 * 1000);
         gpioWrite(GPIO_TFT_BACKLIGHT, 1);
+#endif
 
         // #ifdef USE_SPI_DEV_MEM
         logDebug("Resetting display at reset GPIO pin %d\n", GPIO_TFT_RESET_PIN);

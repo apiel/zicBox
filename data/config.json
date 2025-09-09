@@ -106,7 +106,7 @@
       [240,0,80,170]
     ],
     "st7789": {
-      "resetPin": 2
+      "resetPin": 17
     }
   },
   "taggedViews": {

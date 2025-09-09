@@ -56,7 +56,7 @@ export const ui = {
             [W3_4, 0, W1_4, ScreenHeight],
         ],
         st7789: {
-            resetPin: 2,
+            resetPin: 17,
         },
     },
     // renderer: 'FB',
