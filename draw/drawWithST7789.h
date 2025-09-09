@@ -18,7 +18,11 @@
 
 #include "draw.h"
 
-#define GPIO_TFT_DATA_CONTROL 17
+// Old one
+// #define GPIO_TFT_DATA_CONTROL 17
+// new one
+#define GPIO_TFT_DATA_CONTROL 3
+
 // BLK go to pin 13 (should be optional or can be connected directly to 3.3v)
 // #define GPIO_TFT_BACKLIGHT 27
 

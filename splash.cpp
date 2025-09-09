@@ -23,10 +23,12 @@
 #define GPIO_TFT_RESET_PIN 2
 // DC go to pin 11
 // #define PIN_DATA_CONTROL 17
-#define GPIO_TFT_DATA_CONTROL 17
+// #define GPIO_TFT_DATA_CONTROL 17
+#define GPIO_TFT_DATA_CONTROL 3
 // BLK go to pin 13 (should be optional or can be connected directly to 3.3v)
 // #define PIN_BACKLIGHT 27
-#define GPIO_TFT_BACKLIGHT 3
+// #define GPIO_TFT_BACKLIGHT 3
+#define GPIO_TFT_BACKLIGHT 17
 
 // RPi BOARD (Physical not BCM) Pin #23 (SCLK) -> Display SCL
 // RPi BOARD (Physical not BCM) Pin #19 (MOSI) -> Display SDA

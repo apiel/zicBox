@@ -159,9 +159,9 @@ splash:
 	../zicOs/zero2w64/output/host/bin/aarch64-linux-g++ -g -fms-extensions -o build/arm/splash splash.cpp -fpermissive -I.
 	sshpass -p "$(PI_PASSWORD)" scp -v build/arm/splash $(PI_TARGET):$(PI_REMOTE_DIR)/splash
 
-screenOff:
-	../zicOs/zero2w64/output/host/bin/aarch64-linux-g++ -g -fms-extensions -o build/arm/screenOff screenOff.cpp -fpermissive -I.
-	sshpass -p "$(PI_PASSWORD)" scp -v build/arm/screenOff $(PI_TARGET):$(PI_REMOTE_DIR)/screenOff
+gpio:
+	../zicOs/zero2w64/output/host/bin/aarch64-linux-g++ -g -fms-extensions -o build/arm/gpio gpio.cpp -fpermissive -I.
+	sshpass -p "$(PI_PASSWORD)" scp -v build/arm/gpio $(PI_TARGET):$(PI_REMOTE_DIR)/gpio
 
 sendConfig:
 	sshpass -p "$(PI_PASSWORD)" scp -v data/config.json $(PI_TARGET):$(PI_REMOTE_DIR)/data/config.json

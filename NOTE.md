@@ -1,10 +1,34 @@
+## PCB
+
+- TODO we could try to connect backlight and reset pin together, for us doesnt matter if backlight goes off when we do the reset and once the rpi goes down, we put everything to low...
+- TODO ---------^
+
+- TODO add usb-c pin on board for power... <--- depends if we use battery hat or module or nothings...
+
+- TODO try battery modules
+
+- TODO try to make the led on RPi more visible
+
+- TODO on st7789 170x320: seems like reset pin is not necessary --> on old pcb where RST pin was not connect, if I run the splash bin several time, at some point it turn out to work
+            - so let try to init the display with running the init process in loop??
+
+- TODO pixel working with orange PI ----> use built-in output as second audio interface?
+
 ## Pixel TODO
 
-- TODO shutdown view
+- TODO rename pixel to zic!!
 
-- TODO seems like reset pin is not necessary, so let try to init the display in one shot without...
+- TODO pressing select track button of already active track to access menu to capture and other stuff related to track...
+- maybe even enter piano mode... ---> one button to exit and one but to switch encoders
+
+- TODO in menu could use knob or a button to navigate between multiple options...
+
+- TODO boot screen (not splash) while config load.
 
 - TODO might need to have build with arm for zero2w but also for rpi4, not necerssarly the same ...
+- rething build / folder
+- pixel.json (when we build we should say what should be the name of the config file) + config.json as fallback
+- makefile
 
 - TODO write user manual
 
@@ -23,10 +47,6 @@
 - FIXME tempo issue
 
 - TODO DESKTOP :-) version, using pixel design but all in one screen
-
-- TODO if keep backlight, might need to wire it to GPIO 17, 27, or 22 in order to switch it off once rpi is off
-- TODO try to backlight screen connected to reset pins...
-- TODO even questioning to which extend we need the reset pin. Might try again on old design
 
 - TODO ARP for synth, like note repeat, put a encoder to select ARP scale, from none to whatever... the when clicking trigger note, it would play the note or ARP, no matter if sequencer is playing or not.
 
@@ -85,7 +105,7 @@
 
 - TODO have a look at https://github.com/micknoise/Maximilian might use this...
 
-- FIXME pulse not working in zicOs!! seems to work???
+- TODO orange pi version: builtin DAC free up a bunch of gpio, also more powerful, 24 small pin header might provide even 2 more gpio?
 
 - FIXME zicOs slow to start, seems to be because of udhcpc
   - so maybe the wifi connection should not be a priority and even start it on demand and not as a service
