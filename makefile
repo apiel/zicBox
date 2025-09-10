@@ -96,7 +96,7 @@ make pi:
 	make pixelLibs cc=pixel_arm64
 	make buildPixel cc=pixel_arm64
 	- sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "killall zic"
-	rsync -avz --progress -e "sshpass -p '$(PI_PASSWORD)' ssh" build/arm/ "$(PI_TARGET):$(PI_REMOTE_DIR)/."
+	rsync -avz --progress -e "sshpass -p '$(PI_PASSWORD)' ssh" build/pixel_arm64/ "$(PI_TARGET):$(PI_REMOTE_DIR)/."
 	rsync -avz --progress -e "sshpass -p '$(PI_PASSWORD)' ssh" data/ "$(PI_TARGET):$(PI_REMOTE_DIR)/data"
 	sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "chmod +x $(PI_REMOTE_DIR)/zic"
 	sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "cd $(PI_REMOTE_DIR) && ./zic"
@@ -106,11 +106,11 @@ buildSplash:
 
 splash:
 	make buildSplash cc=pixel_arm64
-	sshpass -p "$(PI_PASSWORD)" scp -v build/arm/splash $(PI_TARGET):$(PI_REMOTE_DIR)/splash
+	sshpass -p "$(PI_PASSWORD)" scp -v build/pixel_arm64/splash $(PI_TARGET):$(PI_REMOTE_DIR)/splash
 
 gpio:
-	$(CC_ZERO2W64) -g -fms-extensions -o build/arm/gpio gpio.cpp -fpermissive -I.
-	sshpass -p "$(PI_PASSWORD)" scp -v build/arm/gpio $(PI_TARGET):$(PI_REMOTE_DIR)/gpio
+	$(CC_ZERO2W64) -g -fms-extensions -o build/pixel_arm64/gpio gpio.cpp -fpermissive -I.
+	sshpass -p "$(PI_PASSWORD)" scp -v build/pixel_arm64/gpio $(PI_TARGET):$(PI_REMOTE_DIR)/gpio
 
 sendConfig:
 	sshpass -p "$(PI_PASSWORD)" scp -v data/config.json $(PI_TARGET):$(PI_REMOTE_DIR)/data/config.json
