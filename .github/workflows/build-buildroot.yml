@@ -1,0 +1,54 @@
+name: Build zicOs Buildroot image (Zero2W 64)
+
+on:
+  workflow_dispatch:
+#  push:
+#    paths:
+#      - 'zero2w64/**'
+#      - 'buildroot/**'
+#      - '.github/workflows/build-buildroot.yml'
+#
+#    ^------- run manually till account payment has been fixed ^^
+
+concurrency:
+  group: buildroot-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Cache Buildroot downloads (dl)
+        uses: actions/cache@v4
+        with:
+          path: buildroot/dl
+          key: buildroot-dl-${{ runner.os }}-${{ hashFiles('os/zero2w64/defconfig.conf') }}
+          restore-keys: |
+            buildroot-dl-${{ runner.os }}-
+
+      - name: Install Buildroot dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            sed make binutils build-essential gcc g++ bash patch gzip bzip2 perl tar cpio unzip rsync file bc wget python3 \
+            libncurses5-dev libssl-dev flex bison gperf
+
+      - name: Build image
+        working-directory: os/zero2w64
+        run: |
+          make initConfig
+          make -j"$(nproc)"
+
+      - name: Upload image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zicOs-zero2w64-sdcard
+          path: os/zero2w64/output/images/sdcard.img
+          if-no-files-found: error
+
+
