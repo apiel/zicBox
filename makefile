@@ -102,15 +102,14 @@ make pi:
 	sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "cd $(PI_REMOTE_DIR) && ./zic"
 
 buildSplash:
-	$(CC_ZERO2W64) -g -fms-extensions -o build/arm/splash splash.cpp -fpermissive -I.
+	$(CC) -g -fms-extensions -o build/arm/splash splash.cpp -fpermissive -I.
 
 splash:
-	make buildSplash
+	make buildSplash cc=pixel_arm64
 	sshpass -p "$(PI_PASSWORD)" scp -v build/arm/splash $(PI_TARGET):$(PI_REMOTE_DIR)/splash
 
-# FIXME
 gpio:
-	../zicOs/zero2w64/output/host/bin/aarch64-linux-g++ -g -fms-extensions -o build/arm/gpio gpio.cpp -fpermissive -I.
+	$(CC_ZERO2W64) -g -fms-extensions -o build/arm/gpio gpio.cpp -fpermissive -I.
 	sshpass -p "$(PI_PASSWORD)" scp -v build/arm/gpio $(PI_TARGET):$(PI_REMOTE_DIR)/gpio
 
 sendConfig:
