@@ -16,9 +16,7 @@ pwd
 npm run build:pixel
 make pixelLibs cc=pixel_arm64
 make buildPixel cc=pixel_arm64
-
-# FIXME in makefile
-# make splash cc=pixel_arm64
+make buildSplash cc=pixel_arm64
 
 rm -rf ${TARGET_DIR}/opt/zicBox || true
 mkdir -p ${TARGET_DIR}/opt/zicBox

@@ -44,14 +44,14 @@ buildPixel:
 	@echo "\n------------------ build zicPixel ------------------\n"
 	@mkdir -p $(BUILD_DIR)
 	@mkdir -p $(OBJ_DIR)
-	$(MAKE) $(BUILD_DIR)/pixel
+	$(MAKE) $(BUILD_DIR)/zic
 
-$(BUILD_DIR)/pixel:
+$(BUILD_DIR)/zic:
 	@echo Build using $(CC)
-	$(CC) -g -fms-extensions -o $(BUILD_DIR)/pixel zicPixel.cpp -ldl $(INC) $(RPI) $(TTF) $(RTMIDI) $(SDL2) $(SPI_DEV_MEM) $(TRACK_HEADER_FILES)
+	$(CC) -g -fms-extensions -o $(BUILD_DIR)/zic zic.cpp -ldl $(INC) $(RPI) $(TTF) $(RTMIDI) $(SDL2) $(SPI_DEV_MEM) $(TRACK_HEADER_FILES)
 
 # Safeguard: include only if .d files exist
--include $(wildcard $(OBJ_DIR)/pixel.d)
+-include $(wildcard $(OBJ_DIR)/zic.d)
 
 watchPixel:
 	@echo "\n------------------ watch zicPixel ------------------\n"
@@ -59,7 +59,7 @@ watchPixel:
 
 runPixel:
 	@echo "\n------------------ run zicPixel $(TARGET_PLATFORM) ------------------\n"
-	$(BUILD_DIR)/pixel
+	$(BUILD_DIR)/zic
 
 dev:
 	npm run dev
@@ -80,13 +80,11 @@ merge:
 	git push
 	git checkout develop
 
-# FIXME
 releaseOsPixel:
 	@echo "Creating GitHub release of zicOs for Zic Pixel on rpi zero..."
-	npm run build:pixel
-	cd ../zicOs/zero2w64 && ZICBOX_PATH=/home/alex/Music/zicBox make
+	cd os/zero2w64 && make
 	- rm build/zicOsPixel.zip
-	zip -r build/zicOsPixel.zip ../zicOs/zero2w64/output/images/sdcard.img
+	zip -r build/zicOsPixel.zip os/zero2w64/output/images/sdcard.img
 	- gh release delete zicOsPixel -y
 	gh release create zicOsPixel build/zicOsPixel.zip --title "zicOs Pixel Rpi zero2w" --notes "This release contains the zicOs for zic Pixel (rpi zero2w)."
 
@@ -94,19 +92,20 @@ PI_TARGET ?= root@zic.local
 PI_PASSWORD = password
 PI_REMOTE_DIR = /opt/zicBox
 
-# FIXME
-make pi64:
-	make pixelLibs cc=arm64
-	make buildPixel cc=arm64
-	- sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "killall pixel"
+make pi:
+	make pixelLibs cc=pixel_arm64
+	make buildPixel cc=pixel_arm64
+	- sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "killall zic"
 	rsync -avz --progress -e "sshpass -p '$(PI_PASSWORD)' ssh" build/arm/ "$(PI_TARGET):$(PI_REMOTE_DIR)/."
 	rsync -avz --progress -e "sshpass -p '$(PI_PASSWORD)' ssh" data/ "$(PI_TARGET):$(PI_REMOTE_DIR)/data"
-	sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "chmod +x $(PI_REMOTE_DIR)/pixel"
-	sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "cd $(PI_REMOTE_DIR) && ./pixel"
+	sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "chmod +x $(PI_REMOTE_DIR)/zic"
+	sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "cd $(PI_REMOTE_DIR) && ./zic"
 
-# FIXME to use cc=pixel_arm64
+buildSplash:
+	$(CC_ZERO2W64) -g -fms-extensions -o build/arm/splash splash.cpp -fpermissive -I.
+
 splash:
-	../zicOs/zero2w64/output/host/bin/aarch64-linux-g++ -g -fms-extensions -o build/arm/splash splash.cpp -fpermissive -I.
+	make buildSplash
 	sshpass -p "$(PI_PASSWORD)" scp -v build/arm/splash $(PI_TARGET):$(PI_REMOTE_DIR)/splash
 
 # FIXME
