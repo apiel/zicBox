@@ -1,7 +1,6 @@
-## PCB
+TODO search for SBC with zero format having audio in and out
 
-- TODO we could try to connect backlight and reset pin together, for us doesnt matter if backlight goes off when we do the reset and once the rpi goes down, we put everything to low...
-- TODO ---------^
+## PCB
 
 - TODO add usb-c pin on board for power... <--- depends if we use battery hat or module or nothings...
 
@@ -9,21 +8,18 @@
 
 - TODO try to make the led on RPi more visible
 
-- TODO on st7789 170x320: seems like reset pin is not necessary --> on old pcb where RST pin was not connect, if I run the splash bin several time, at some point it turn out to work
-            - so let try to init the display with running the init process in loop??
-
 - TODO pixel working with orange PI ----> use built-in output as second audio interface?
 
 ## Pixel TODO
 
-- TODO pipeline
-    - fix makefile
-  
-- TODO rename pixel to zic!!
-
 - TODO pressing select track button of already active track to access menu to capture and other stuff related to track...
-- maybe even enter piano mode... ---> one button to exit and one but to switch encoders
+- maybe even enter piano mode... ---> one button to exit and one but to switch encoders, and capture button?
 - record from 0 to 64 step?
+------> instead of capture, there could be a record button that bring into keyboard mode, with only an exit button
+        - knob used to change octave
+        - knob used to select the recorded loop to playback and keep when we exit
+        - everytime loop restart to 0 on step 1 but we can come back with knob, see previous point
+        - gonna need to fix button connection... maybe just solder them...
 
 - TODO in menu could use knob or a button to navigate between multiple options...
 
@@ -39,6 +35,8 @@
 - TODO improve multi drum:
 - TODO might not need sampleOn sampleOff ?? or maybe yes to keep the logic in one place... <--- subjective
 - TODO optimize drum engines
+
+- TODO multi sample for pitch..
 
 - TODO reload variations when switching workspace
 

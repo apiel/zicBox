@@ -84,9 +84,9 @@ releaseOsPixel:
 	@echo "Creating GitHub release of zicOs for Zic Pixel on rpi zero..."
 	cd os/zero2w64 && make
 	- rm build/zicOsPixel.zip
-	zip -r build/zicOsPixel.zip os/zero2w64/output/images/sdcard.img
+	cd os/zero2w64/output/images/ && zip -r sdcard.img
 	- gh release delete zicOsPixel -y
-	gh release create zicOsPixel build/zicOsPixel.zip --title "zicOs Pixel Rpi zero2w" --notes "This release contains the zicOs for zic Pixel (rpi zero2w)."
+	gh release create zicOsPixel os/zero2w64/output/images/zicOsPixel.zip --title "zicOs Pixel Rpi zero2w" --notes "This release contains the zicOs for zic Pixel (rpi zero2w)."
 
 PI_TARGET ?= root@zic.local
 PI_PASSWORD = password
