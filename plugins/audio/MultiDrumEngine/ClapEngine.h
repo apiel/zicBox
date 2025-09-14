@@ -10,8 +10,7 @@ class ClapEngine : public DrumEngine {
 protected:
     float velocity = 1.0f;
 
-    static constexpr int REVERB_SIZE = 48000;
-    float reverbBuf[REVERB_SIZE] = {};
+    REVERB_BUFFER
     int rIdx = 0;
 
     float burstTimer = 0.f;
@@ -121,14 +120,14 @@ public:
         }
 
         output = applyBoostOrCompression(output);
-        output = applyReverb(output, reverb.pct(), reverbBuf, rIdx, props.sampleRate, REVERB_SIZE);
+        output = applyReverb(output, reverb.pct(), buffer, rIdx);
 
         buf[track] = output * envAmp * velocity;
     }
 
     void sampleOff(float* buf) override
     {
-        buf[track] = applyReverb(buf[track], reverb.pct(), reverbBuf, rIdx, props.sampleRate, REVERB_SIZE);
+        buf[track] = applyReverb(buf[track], reverb.pct(), buffer, rIdx);
     }
 
 private:

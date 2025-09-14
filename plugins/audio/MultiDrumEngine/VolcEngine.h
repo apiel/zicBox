@@ -130,8 +130,7 @@ public:
         initValues();
     }
 
-    static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
-    float reverbBuffer[REVERB_BUFFER_SIZE] = { 0.0f };
+    REVERB_BUFFER
     int reverbIndex = 0;
 
     void sampleOn(float* buf, float envAmp, int sampleCounter, int totalSamples) override
@@ -148,7 +147,7 @@ public:
         if (fxAmount < 0.0f)
             fxOut = applyDrive(fxOut, -fxAmount * 2.0f, props.lookupTable); // stronger drive as it goes negative
         else if (fxAmount > 0.0f)
-            fxOut = applyReverb(fxOut, fxAmount, reverbBuffer, reverbIndex, props.sampleRate, REVERB_BUFFER_SIZE);
+            fxOut = applyReverb(fxOut, fxAmount, buffer, reverbIndex);
 
         buf[track] = fxOut * velocity;
     }
@@ -156,7 +155,7 @@ public:
     void sampleOff(float* buf) override
     {
         if (fxAmount > 0.0f) {
-            buf[track] = applyReverb(buf[track], fxAmount, reverbBuffer, reverbIndex, props.sampleRate, REVERB_BUFFER_SIZE);
+            buf[track] = applyReverb(buf[track], fxAmount, buffer, reverbIndex);
         }
     }
 

@@ -31,8 +31,7 @@ public:
         initValues();
     }
 
-    static constexpr int REVBUF = 48000;
-    float reverbBuf[REVBUF] = {};
+    REVERB_BUFFER
     int rIdx = 0;
 
     float phase = 0.f;
@@ -84,7 +83,7 @@ public:
 
     void sampleOff(float* buf) override
     {
-        buf[track] = applyReverb(buf[track], reverb.pct(), reverbBuf, rIdx, props.sampleRate, REVBUF);
+        buf[track] = applyReverb(buf[track], reverb.pct(), buffer, rIdx);
     }
 
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
@@ -106,7 +105,7 @@ private:
         } else {
             x = applyBoost(x, -d, prevInput, prevOutput);
         }
-        return applyReverb(x, reverb.pct(), reverbBuf, rIdx, props.sampleRate, REVBUF);
+        return applyReverb(x, reverb.pct(), buffer, rIdx);
     }
 
     float whiteNoise()

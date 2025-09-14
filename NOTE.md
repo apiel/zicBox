@@ -10,7 +10,6 @@
 
 ## Pixel TODO
 
-- FIXME move buffer size in reverb? fix buffer?
 - FIXME investigate ALSA issue. Add log if something goes wrong.
 
 - TODO pressing select track button of already active track to access menu to capture and other stuff related to track...

@@ -29,15 +29,14 @@ protected:
         { "FMSquare", &waveform, (uint8_t)WavetableGenerator::Type::FMSquare },
     };
 
-    static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
-    float reverbBuffer[REVERB_BUFFER_SIZE] = { 0.0f };
+    REVERB_BUFFER
     int reverbIndex = 0;
 
     float applyEffects(float input)
     {
         float output = input;
 
-        output = applyReverb(output, reverb.pct(), reverbBuffer, reverbIndex, props.sampleRate, REVERB_BUFFER_SIZE);
+        output = applyReverb(output, reverb.pct(), buffer, reverbIndex);
         output = doCompression(output);
         output = applyDrive(output, drive.pct(), props.lookupTable);
         return output;
@@ -124,7 +123,7 @@ public:
 
     void sampleOff(float* buf) override
     {
-        buf[track] = applyReverb(buf[track], reverb.pct(), reverbBuffer, reverbIndex, props.sampleRate, REVERB_BUFFER_SIZE);
+        buf[track] = applyReverb(buf[track], reverb.pct(), buffer, reverbIndex);
     }
 
     // Higher base note is, lower pitch will be

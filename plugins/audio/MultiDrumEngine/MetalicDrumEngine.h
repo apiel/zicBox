@@ -101,8 +101,7 @@ public:
         phase += phaseIncrement;
     }
 
-    static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
-    float reverbBuffer[REVERB_BUFFER_SIZE] = { 0.0f };
+    REVERB_BUFFER
     int reverbIndex = 0;
     float prevInput = 0.0f;
     float prevOutput = 0.0f;
@@ -116,13 +115,13 @@ public:
         } else if (amount < 0.0f) {
             output = applyDrive(input, -amount, props.lookupTable);
         }
-        output = applyReverb(output, reverb.pct(), reverbBuffer, reverbIndex, props.sampleRate, REVERB_BUFFER_SIZE);
+        output = applyReverb(output, reverb.pct(), buffer, reverbIndex);
         return output;
     }
 
     void sampleOff(float* buf) override
     {
-        buf[track] = applyReverb(buf[track], reverb.pct(), reverbBuffer, reverbIndex, props.sampleRate, REVERB_BUFFER_SIZE);
+        buf[track] = applyReverb(buf[track], reverb.pct(), buffer, reverbIndex);
     }
 
     uint8_t baseNote = 60;

@@ -47,8 +47,7 @@ protected:
         { "Pulse", &waveform, WavetableGenerator::Type::Pulse },
     };
 
-    static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
-    float reverbBuffer[REVERB_BUFFER_SIZE] = { 0.0f };
+    REVERB_BUFFER
     int reverbIndex = 0;
 
     float prevInput = 0.0f, prevOutput = 0.0f;
@@ -56,7 +55,7 @@ protected:
     {
         float output = input;
 
-        output = applyReverb(output, reverb.pct(), reverbBuffer, reverbIndex, props.sampleRate, REVERB_BUFFER_SIZE);
+        output = applyReverb(output, reverb.pct(), buffer, reverbIndex);
 
         if (boost.pct() == 0.5f) {
             return output;
@@ -200,7 +199,7 @@ public:
             buf[track] = out;
             sampleIndex++;
         } else {
-            buf[track] = applyReverb(buf[track], reverb.pct(), reverbBuffer, reverbIndex, props.sampleRate, REVERB_BUFFER_SIZE);
+            buf[track] = applyReverb(buf[track], reverb.pct(), buffer, reverbIndex);
         }
     }
 

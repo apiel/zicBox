@@ -6,27 +6,8 @@
 constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
 constexpr int DELAY_BUFFER_SIZE = REVERB_BUFFER_SIZE * 3; // 3 second
 
+#define REVERB_BUFFER float buffer[REVERB_BUFFER_SIZE] = { 0.0f };
 #define DELAY_BUFFER float buffer[DELAY_BUFFER_SIZE] = { 0.0f };
-
-float applyReverb(float signal, float reverbAmount, float* reverbBuffer, int& reverbIndex, uint64_t sampleRate, int bufferSize)
-{
-    if (reverbAmount == 0.0f) {
-        return signal;
-    }
-    int reverbSamples = static_cast<int>((reverbAmount * 0.5f) * sampleRate); // Reverb duration scaled
-    float feedback = reverbAmount * 0.7f; // Feedback scaled proportionally
-    float mix = reverbAmount * 0.5f; // Mix scaled proportionally
-
-    if (reverbSamples > bufferSize) {
-        reverbSamples = bufferSize; // Cap the reverb duration to buffer size
-    }
-
-    float reverbSignal = reverbBuffer[reverbIndex];
-    reverbBuffer[reverbIndex] = signal + reverbSignal * feedback;
-    reverbIndex = (reverbIndex + 1) % reverbSamples;
-
-    return signal * (1.0f - mix) + reverbSignal * mix;
-}
 
 float applyReverb(float signal, float reverbAmount, float* reverbBuffer, int& reverbIndex)
 {
