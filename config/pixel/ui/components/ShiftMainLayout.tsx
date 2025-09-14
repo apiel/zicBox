@@ -29,6 +29,12 @@ export const shiftVisibilityContext: VisibilityContext = {
     value: 1,
 };
 
+export const notUnshiftVisibilityContext: VisibilityContext = {
+    condition: 'SHOW_WHEN_NOT',
+    index: shiftContext,
+    value: 0,
+};
+
 export function ShiftMainLayout({
     content,
     track,

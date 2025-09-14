@@ -3,7 +3,7 @@ import * as React from '@/libs/react';
 import { ShiftMainLayout } from './ShiftMainLayout';
 import { ShiftTrackLayout } from './ShiftTrackLayout';
 
-export { shiftVisibilityContext, unshiftVisibilityContext } from './ShiftMainLayout';
+export { notUnshiftVisibilityContext, shiftVisibilityContext, unshiftVisibilityContext } from './ShiftMainLayout';
 export { shiftTrackVisibilityContext } from './ShiftTrackLayout';
 
 export function ShiftLayout({

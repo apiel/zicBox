@@ -7,9 +7,9 @@ import { ClipBar } from '../components/ClipBar';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
 import {
+    notUnshiftVisibilityContext,
     ShiftLayout,
-    shiftVisibilityContext,
-    unshiftVisibilityContext,
+    unshiftVisibilityContext
 } from '../components/ShiftLayout';
 import { Val } from '../components/Val';
 import { ScreenWidth } from '../constants';
@@ -59,7 +59,7 @@ export function SampleLayout({ name, track, synthName, color, title }: Props) {
                                 {...enc2}
                                 color="secondary"
                                 track={track}
-                                visibilityContext={[shiftVisibilityContext]}
+                                visibilityContext={[notUnshiftVisibilityContext]}
                             />
                         }
                     />
