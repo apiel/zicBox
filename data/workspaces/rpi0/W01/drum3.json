@@ -56,7 +56,7 @@
         ]
     },
     "Sequencer": {
-        "STATUS": 0.0,
+        "STATUS": 1.0,
         "STEPS": [
             {
                 "condition": "---",
