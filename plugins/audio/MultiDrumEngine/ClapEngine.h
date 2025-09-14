@@ -121,14 +121,14 @@ public:
         }
 
         output = applyBoostOrCompression(output);
-        output = applyReverb(output, reverb.pct(), reverbBuf, rIdx, REVERB_SIZE);
+        output = applyReverb(output, reverb.pct(), reverbBuf, rIdx, props.sampleRate, REVERB_SIZE);
 
         buf[track] = output * envAmp * velocity;
     }
 
     void sampleOff(float* buf) override
     {
-        buf[track] = applyReverb(buf[track], reverb.pct(), reverbBuf, rIdx, REVERB_SIZE);
+        buf[track] = applyReverb(buf[track], reverb.pct(), reverbBuf, rIdx, props.sampleRate, REVERB_SIZE);
     }
 
 private:

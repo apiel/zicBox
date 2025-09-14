@@ -148,7 +148,7 @@ public:
         if (fxAmount < 0.0f)
             fxOut = applyDrive(fxOut, -fxAmount * 2.0f, props.lookupTable); // stronger drive as it goes negative
         else if (fxAmount > 0.0f)
-            fxOut = applyReverb(fxOut, fxAmount, reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE);
+            fxOut = applyReverb(fxOut, fxAmount, reverbBuffer, reverbIndex, props.sampleRate, REVERB_BUFFER_SIZE);
 
         buf[track] = fxOut * velocity;
     }
@@ -156,7 +156,7 @@ public:
     void sampleOff(float* buf) override
     {
         if (fxAmount > 0.0f) {
-            buf[track] = applyReverb(buf[track], fxAmount, reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE);
+            buf[track] = applyReverb(buf[track], fxAmount, reverbBuffer, reverbIndex, props.sampleRate, REVERB_BUFFER_SIZE);
         }
     }
 

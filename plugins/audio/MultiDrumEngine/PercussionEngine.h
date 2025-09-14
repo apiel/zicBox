@@ -84,7 +84,7 @@ public:
 
     void sampleOff(float* buf) override
     {
-        buf[track] = applyReverb(buf[track], reverb.pct(), reverbBuf, rIdx, REVBUF);
+        buf[track] = applyReverb(buf[track], reverb.pct(), reverbBuf, rIdx, props.sampleRate, REVBUF);
     }
 
     void noteOn(uint8_t note, float _velocity, void* = nullptr) override
@@ -106,7 +106,7 @@ private:
         } else {
             x = applyBoost(x, -d, prevInput, prevOutput);
         }
-        return applyReverb(x, reverb.pct(), reverbBuf, rIdx, REVBUF);
+        return applyReverb(x, reverb.pct(), reverbBuf, rIdx, props.sampleRate, REVBUF);
     }
 
     float whiteNoise()

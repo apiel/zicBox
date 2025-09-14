@@ -56,7 +56,7 @@ protected:
     {
         float output = input;
 
-        output = applyReverb(output, reverb.pct(), reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE);
+        output = applyReverb(output, reverb.pct(), reverbBuffer, reverbIndex, props.sampleRate, REVERB_BUFFER_SIZE);
 
         if (boost.pct() == 0.5f) {
             return output;

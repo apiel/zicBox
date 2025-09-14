@@ -116,13 +116,13 @@ public:
         } else if (amount < 0.0f) {
             output = applyDrive(input, -amount, props.lookupTable);
         }
-        output = applyReverb(output, reverb.pct(), reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE);
+        output = applyReverb(output, reverb.pct(), reverbBuffer, reverbIndex, props.sampleRate, REVERB_BUFFER_SIZE);
         return output;
     }
 
     void sampleOff(float* buf) override
     {
-        buf[track] = applyReverb(buf[track], reverb.pct(), reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE);
+        buf[track] = applyReverb(buf[track], reverb.pct(), reverbBuffer, reverbIndex, props.sampleRate, REVERB_BUFFER_SIZE);
     }
 
     uint8_t baseNote = 60;

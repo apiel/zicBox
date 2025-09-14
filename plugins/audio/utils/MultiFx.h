@@ -20,50 +20,49 @@ protected:
 
     float fxOff(float input, float) { return input; }
 
-    static constexpr int REVERB_BUFFER_SIZE = 48000; // 1 second buffer at 48kHz
-    static constexpr int DELAY_BUFFER_SIZE = REVERB_BUFFER_SIZE * 3; // 3 second
-    float buffer[DELAY_BUFFER_SIZE] = { 0.0f };
+    DELAY_BUFFER
+
     int bufferIndex = 0;
     float fxReverb(float signal, float amount)
     {
         float reverbAmount = amount;
-        return applyReverb(signal, reverbAmount, buffer, bufferIndex, REVERB_BUFFER_SIZE);
+        return applyReverb(signal, reverbAmount, buffer, bufferIndex);
     }
 
     float fxShimmerReverb(float input, float amount)
     {
-        return applyShimmerReverb(input, amount, buffer, bufferIndex, REVERB_BUFFER_SIZE);
+        return applyShimmerReverb(input, amount, buffer, bufferIndex);
     }
 
     int shimmerTime = 0;
     float fxShimmer2Reverb(float input, float amount)
     {
-        return applyShimmer2Reverb(input, amount, buffer, bufferIndex, REVERB_BUFFER_SIZE, shimmerTime);
+        return applyShimmer2Reverb(input, amount, buffer, bufferIndex, shimmerTime);
     }
 
     float fxReverb2(float signal, float amount)
     {
-        return applyReverb2(signal, amount, buffer, bufferIndex, REVERB_BUFFER_SIZE);
+        return applyReverb2(signal, amount, buffer, bufferIndex);
     }
 
     float fxReverb3(float signal, float amount)
     {
-        return applyReverb3(signal, amount, buffer, bufferIndex, REVERB_BUFFER_SIZE);
+        return applyReverb3(signal, amount, buffer, bufferIndex);
     }
 
     float fxDelay(float input, float amount)
     {
-        return applyDelay(input, amount, buffer, bufferIndex, DELAY_BUFFER_SIZE);
+        return applyDelay(input, amount, buffer, bufferIndex);
     }
 
     float fxDelay2(float input, float amount)
     {
-        return applyDelay2(input, amount, buffer, bufferIndex, DELAY_BUFFER_SIZE);
+        return applyDelay2(input, amount, buffer, bufferIndex);
     }
 
     float fxDelay3(float input, float amount)
     {
-        return applyDelay3(input, amount, buffer, bufferIndex, DELAY_BUFFER_SIZE);
+        return applyDelay3(input, amount, buffer, bufferIndex);
     }
 
     float tanhLookup(float x)

@@ -10,7 +10,6 @@
 
 ## Pixel TODO
 
-- FIXME remove EffectGainVolume and use mixer volume instead!
 - FIXME move buffer size in reverb? fix buffer?
 - FIXME investigate ALSA issue. Add log if something goes wrong.
 

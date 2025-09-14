@@ -37,7 +37,7 @@ protected:
     {
         float output = input;
 
-        output = applyReverb(output, reverb.pct(), reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE);
+        output = applyReverb(output, reverb.pct(), reverbBuffer, reverbIndex, props.sampleRate, REVERB_BUFFER_SIZE);
         output = doCompression(output);
         output = applyDrive(output, drive.pct(), props.lookupTable);
         return output;
@@ -124,7 +124,7 @@ public:
 
     void sampleOff(float* buf) override
     {
-        buf[track] = applyReverb(buf[track], reverb.pct(), reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE);
+        buf[track] = applyReverb(buf[track], reverb.pct(), reverbBuffer, reverbIndex, props.sampleRate, REVERB_BUFFER_SIZE);
     }
 
     // Higher base note is, lower pitch will be
