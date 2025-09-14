@@ -1,126 +1,149 @@
 #pragma once
 
+#include <algorithm>
 #include <alsa/asoundlib.h>
+#include <cstring>
+#include <string>
+#include <vector>
 
 #include "audioPlugin.h"
 #include "log.h"
 
 #define ALSA_MAX_CHANNELS 2
+static constexpr uint32_t AUDIO_CHUNK_FRAMES = 128; // frames per ALSA write
 
 class AudioAlsa : public AudioPlugin {
 protected:
-    char cardName[20];
-    static const uint32_t audioChunk = 128;
-
-    float buffer[audioChunk * ALSA_MAX_CHANNELS];
-    snd_pcm_uframes_t bufferSize = audioChunk * ALSA_MAX_CHANNELS;
-
-    snd_pcm_uframes_t bufferIndex = 0;
-
     AudioPlugin::Props& props;
-
     snd_pcm_t* handle = nullptr;
-
-    void search()
-    {
-        int cardNum = -1;
-        while (snd_card_next(&cardNum) > -1 && cardNum > -1) {
-            char* name;
-            snd_card_get_name(cardNum, &name);
-            logDebug("- %s [DEVICE=hw:%d,0]\n", name, cardNum);
-            if (name == deviceName) {
-                sprintf(cardName, "hw:%d,0", cardNum);
-                deviceName = cardName;
-            }
-        }
-
-        snd_config_update_free_global();
-    }
-
     snd_pcm_stream_t stream;
 
-    void open(snd_pcm_format_t format = SND_PCM_FORMAT_FLOAT)
-    {
-        if (handle) {
-            snd_pcm_close(handle);
-        }
+    std::string deviceName = "default";
+    unsigned int channels = 1;
+    unsigned int sampleRate = 48000;
 
-        logDebug("AudioAlsa::open %s (rate %d, channels %d)\n", deviceName.c_str(), props.sampleRate, props.channels);
+    const snd_pcm_uframes_t chunkFrames = AUDIO_CHUNK_FRAMES;
+    uint32_t sampleIndex = 0; // index into interleaved buffer (in samples)
 
-        int err;
-        if ((err = snd_pcm_open(&handle, deviceName.c_str(), stream, 0)) < 0) {
-            logDebug("Playback open audio card \"%s\" error: %s.\nOpen default sound card\n", deviceName.c_str(), snd_strerror(err));
-            if ((err = snd_pcm_open(&handle, "default", stream, 0)) < 0) {
-                logError("Default playback audio card error: %s\n", snd_strerror(err));
-                return;
-            }
-        }
-
-        unsigned int channels = props.channels > ALSA_MAX_CHANNELS ? ALSA_MAX_CHANNELS : props.channels;
-#ifdef IS_RPI
-        snd_pcm_uframes_t periodSize = 150000;
-#else
-        snd_pcm_uframes_t periodSize = 50000; // 50ms // 100000
-#endif
-        if ((err = snd_pcm_set_params(handle,
-                 format,
-                 SND_PCM_ACCESS_RW_INTERLEAVED,
-                 channels,
-                 props.sampleRate, 1, periodSize))
-            < 0) {
-            logError("Audio card params error: %s\n", snd_strerror(err));
-            return;
-        }
-        bufferSize = audioChunk * channels;
-
-        // snd_pcm_uframes_t buffer_size = audioChunk;
-        // unsigned int sample_rate = props.sampleRate;
-        // snd_pcm_hw_params_t* hw_params;
-        // snd_pcm_hw_params_alloca(&hw_params);
-        // snd_pcm_hw_params_any(handle, hw_params);
-        // snd_pcm_hw_params_set_access(handle, hw_params, SND_PCM_ACCESS_RW_INTERLEAVED);
-        // snd_pcm_hw_params_set_format(handle, hw_params, SND_PCM_FORMAT_FLOAT);
-        // snd_pcm_hw_params_set_channels(handle, hw_params, channels);
-        // snd_pcm_hw_params_set_rate_near(handle, hw_params, &sample_rate, nullptr);
-        // snd_pcm_hw_params_set_period_size_near(handle, hw_params, &periodSize, nullptr);
-        // snd_pcm_hw_params_set_buffer_size_near(handle, hw_params, &buffer_size);
-        // if ((err = snd_pcm_hw_params(handle, hw_params)) < 0) {
-        //     logError("Audio card params error: %s\n", snd_strerror(err));
-        //     return;
-        // }
-
-        snd_pcm_uframes_t buffer_size;
-        snd_pcm_hw_params_t* hw_params;
-        snd_pcm_hw_params_get_buffer_size(hw_params, &buffer_size);
-        logDebug("AudioAlsa::openned (periodSize %d, buffer_size %d)\n", periodSize, bufferSize);
-        if (buffer_size != bufferSize) {
-            logWarn("AudioAlsa::openned (buffer_size %d, expected %d)\n", buffer_size, bufferSize);
-        }
-    }
+    // interleaved buffer (samples = frames * channels)
+    std::vector<char> buffer; // actual type set by subclass
 
 public:
-    std::string deviceName = "default";
-
     AudioAlsa(AudioPlugin::Props& props, AudioPlugin::Config& config, snd_pcm_stream_t stream)
         : AudioPlugin(props, config)
         , props(props)
         , stream(stream)
     {
-        for (uint32_t i = 0; i < bufferSize; i++) {
-            buffer[i] = 0.0f;
-        }
-
         auto& json = config.json;
         if (json.contains("device")) {
             deviceName = json["device"].get<std::string>();
             logDebug("Load output device: %s\n", deviceName.c_str());
-            search();
-            open();
         }
     }
 
-    virtual bool isSink()
+    virtual ~AudioAlsa()
     {
-        return true;
+        if (handle) {
+            snd_pcm_close(handle);
+        }
+    }
+
+    virtual bool isSink() { return true; }
+
+protected:
+    void open(snd_pcm_format_t format = SND_PCM_FORMAT_FLOAT, unsigned int latencyUs = 50000)
+    {
+        if (handle) {
+            snd_pcm_close(handle);
+            handle = nullptr;
+        }
+
+        channels = std::min<unsigned int>(props.channels, ALSA_MAX_CHANNELS);
+        sampleRate = props.sampleRate;
+
+        logDebug("AudioAlsa::open %s (rate %u, channels %u)\n",
+            deviceName.c_str(), sampleRate, channels);
+
+        int err = snd_pcm_open(&handle, deviceName.c_str(), stream, 0);
+        if (err < 0) {
+            logWarn("snd_pcm_open(%s) failed: %s — trying 'default'\n",
+                deviceName.c_str(), snd_strerror(err));
+            if ((err = snd_pcm_open(&handle, "default", stream, 0)) < 0) {
+                logError("Default ALSA open failed: %s\n", snd_strerror(err));
+                handle = nullptr;
+                return;
+            }
+        }
+
+        if ((err = snd_pcm_set_params(handle,
+                 format,
+                 SND_PCM_ACCESS_RW_INTERLEAVED,
+                 channels,
+                 sampleRate,
+                 1, // soft_resample
+                 latencyUs))
+            < 0) {
+            logError("snd_pcm_set_params failed: %s\n", snd_strerror(err));
+            snd_pcm_close(handle);
+            handle = nullptr;
+            return;
+        }
+
+        // Query actual buffer/period sizes
+        snd_pcm_uframes_t bufFrames, periodFrames;
+        if ((err = snd_pcm_get_params(handle, &bufFrames, &periodFrames)) < 0) {
+            logWarn("snd_pcm_get_params failed: %s\n", snd_strerror(err));
+        } else {
+            logDebug("ALSA actual buffer_frames=%lu, period_frames=%lu\n",
+                (unsigned long)bufFrames, (unsigned long)periodFrames);
+        }
+
+        sampleIndex = 0;
+        resizeBuffer();
+    }
+
+    // must be implemented by derived class to set buffer type/size
+    virtual void resizeBuffer() = 0;
+
+    // Called by derived classes when buffer is full
+    void flushBuffer(void* rawBuf, size_t frameCount)
+    {
+        if (!handle)
+            return;
+
+        snd_pcm_sframes_t ret = snd_pcm_writei(handle, rawBuf, frameCount);
+        if (ret < 0) {
+            int rc = snd_pcm_recover(handle, static_cast<int>(ret), 0);
+            if (rc < 0) {
+                logError("snd_pcm_recover failed: %s\n", snd_strerror(rc));
+                sampleIndex = 0;
+                return;
+            } else {
+                logDebug("Recovered from XRUN/suspend\n");
+                sampleIndex = 0;
+                return;
+            }
+        } else if (ret != (snd_pcm_sframes_t)frameCount) {
+            // partial write
+            size_t framesWritten = (size_t)ret;
+            size_t samplesWritten = framesWritten * channels;
+            size_t samplesTotal = frameCount * channels;
+            size_t samplesLeft = samplesTotal - samplesWritten;
+
+            if (samplesLeft > 0) {
+                // move leftover samples to front of buffer
+                size_t sampleSize = buffer.size() / (chunkFrames * channels);
+                memmove(buffer.data(),
+                    (char*)buffer.data() + samplesWritten * sampleSize,
+                    samplesLeft * sampleSize);
+                sampleIndex = samplesLeft;
+            } else {
+                sampleIndex = 0;
+            }
+            logWarn("Partial ALSA write: wrote %zu/%zu frames\n",
+                framesWritten, frameCount);
+        } else {
+            sampleIndex = 0; // all good
+        }
     }
 };

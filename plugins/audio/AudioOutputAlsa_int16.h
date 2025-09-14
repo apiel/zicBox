@@ -1,5 +1,4 @@
 #pragma once
-
 #include "AudioAlsa.h"
 
 class AudioOutputAlsa_int16 : public AudioAlsa {
@@ -10,16 +9,29 @@ public:
         open(SND_PCM_FORMAT_S16_LE);
     }
 
-    int16_t bufferInt16[audioChunk * ALSA_MAX_CHANNELS];
     void sample(float* buf) override
     {
-        if (bufferIndex >= bufferSize) {
-            bufferIndex = 0;
-            if (handle) {
-                snd_pcm_sframes_t count = snd_pcm_writei(handle, bufferInt16, audioChunk);
-            }
+        if (!handle)
+            return;
+
+        // clamp and convert float → int16
+        float v = *buf;
+        if (v > 1.0f)
+            v = 1.0f;
+        else if (v < -1.0f)
+            v = -1.0f;
+
+        reinterpret_cast<int16_t*>(buffer.data())[sampleIndex++] = static_cast<int16_t>(v * 32767.0f);
+
+        const uint32_t samplesPerChunk = chunkFrames * channels;
+        if (sampleIndex >= samplesPerChunk) {
+            flushBuffer(buffer.data(), chunkFrames);
         }
-        // Convert the single float sample to a 16-bit integer
-        bufferInt16[bufferIndex++] = static_cast<int16_t>(buf[track] * 32767.0f);
+    }
+
+protected:
+    void resizeBuffer() override
+    {
+        buffer.resize(chunkFrames * channels * sizeof(int16_t));
     }
 };

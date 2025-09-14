@@ -1,31 +1,32 @@
 #pragma once
-
 #include "AudioAlsa.h"
 
-/*md
-## AudioOutputAlsa
-
-AudioOutputAlsa plugin is used to write audio output to ALSA.
-
-**Value**:
-- `DEVICE: name` to set output device name. If not defined, default device will be used.
-*/
 class AudioOutputAlsa : public AudioAlsa {
 public:
     AudioOutputAlsa(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : AudioAlsa(props, config, SND_PCM_STREAM_PLAYBACK)
     {
-        open();
+        open(SND_PCM_FORMAT_FLOAT);
     }
 
     void sample(float* buf) override
     {
-        if (bufferIndex >= bufferSize) {
-            bufferIndex = 0;
-            if (handle) {
-                snd_pcm_sframes_t count = snd_pcm_writei(handle, buffer, audioChunk);
-            }
+        if (!handle)
+            return;
+
+        // append one sample
+        float v = *buf;
+        reinterpret_cast<float*>(buffer.data())[sampleIndex++] = v;
+
+        const uint32_t samplesPerChunk = chunkFrames * channels;
+        if (sampleIndex >= samplesPerChunk) {
+            flushBuffer(buffer.data(), chunkFrames);
         }
-        buffer[bufferIndex++] = buf[track];
+    }
+
+protected:
+    void resizeBuffer() override
+    {
+        buffer.resize(chunkFrames * channels * sizeof(float));
     }
 };
