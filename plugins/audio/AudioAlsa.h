@@ -28,6 +28,9 @@ protected:
     // interleaved buffer (samples = frames * channels)
     std::vector<char> buffer; // actual type set by subclass
 
+    // unsigned int latencyUs = 150000;
+    unsigned int latencyUs = 200000;
+
 public:
     AudioAlsa(AudioPlugin::Props& props, AudioPlugin::Config& config, snd_pcm_stream_t stream)
         : AudioPlugin(props, config)
@@ -38,7 +41,10 @@ public:
         if (json.contains("device")) {
             deviceName = json["device"].get<std::string>();
             logDebug("Load output device: %s\n", deviceName.c_str());
+            search();
         }
+
+        latencyUs = json.value("latency", latencyUs);
     }
 
     virtual ~AudioAlsa()
@@ -51,7 +57,7 @@ public:
     virtual bool isSink() { return true; }
 
 protected:
-    void open(snd_pcm_format_t format = SND_PCM_FORMAT_FLOAT, unsigned int latencyUs = 50000)
+    void open(snd_pcm_format_t format = SND_PCM_FORMAT_FLOAT)
     {
         if (handle) {
             snd_pcm_close(handle);
@@ -61,13 +67,11 @@ protected:
         channels = std::min<unsigned int>(props.channels, ALSA_MAX_CHANNELS);
         sampleRate = props.sampleRate;
 
-        logDebug("AudioAlsa::open %s (rate %u, channels %u)\n",
-            deviceName.c_str(), sampleRate, channels);
+        logDebug("AudioAlsa::open %s (rate %u, channels %u)\n", deviceName.c_str(), sampleRate, channels);
 
         int err = snd_pcm_open(&handle, deviceName.c_str(), stream, 0);
         if (err < 0) {
-            logWarn("snd_pcm_open(%s) failed: %s — trying 'default'\n",
-                deviceName.c_str(), snd_strerror(err));
+            logWarn("snd_pcm_open(%s) failed: %s — trying 'default'\n", deviceName.c_str(), snd_strerror(err));
             if ((err = snd_pcm_open(&handle, "default", stream, 0)) < 0) {
                 logError("Default ALSA open failed: %s\n", snd_strerror(err));
                 handle = nullptr;
@@ -140,10 +144,26 @@ protected:
             } else {
                 sampleIndex = 0;
             }
-            logWarn("Partial ALSA write: wrote %zu/%zu frames\n",
-                framesWritten, frameCount);
+            logWarn("Partial ALSA write: wrote %zu/%zu frames\n", framesWritten, frameCount);
         } else {
             sampleIndex = 0; // all good
         }
+    }
+
+    void search()
+    {
+        char cardName[20];
+        int cardNum = -1;
+        while (snd_card_next(&cardNum) > -1 && cardNum > -1) {
+            char* name;
+            snd_card_get_name(cardNum, &name);
+            logDebug("- %s [DEVICE=hw:%d,0]\n", name, cardNum);
+            if (name == deviceName) {
+                sprintf(cardName, "hw:%d,0", cardNum);
+                deviceName = cardName;
+            }
+        }
+
+        snd_config_update_free_global();
     }
 };
