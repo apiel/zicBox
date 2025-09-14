@@ -120,7 +120,7 @@ float applyShimmer2Reverb(float input, float amount, float* reverbBuffer, int& r
     return input * (1.0f - mix) + reverbOut * mix;
 }
 
-float applyDelay(float signal, float amount, float* buffer, int& index, int BUFFER_SIZE, int voiceCount, BufferVoice* voices)
+float processDelayAndReverb(float signal, float amount, float* buffer, int& index, int BUFFER_SIZE, int voiceCount, BufferVoice* voices)
 {
     if (amount == 0.0f) {
         return signal;
@@ -151,7 +151,7 @@ float applyDelay(float signal, float amount, float* buffer, int& index, int BUFF
 
 float applyReverb2(float signal, float amount, float* reverbBuffer, int& reverbIndex, int REVERB_BUFFER_SIZE)
 {
-    return applyDelay(signal, amount, reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE, ReverbVoiceCount, reverbVoices);
+    return processDelayAndReverb(signal, amount, reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE, ReverbVoiceCount, reverbVoices);
 }
 
 BufferVoice reverb3Voices[4] = {
@@ -162,7 +162,7 @@ BufferVoice reverb3Voices[4] = {
 };
 float applyReverb3(float signal, float amount, float* reverbBuffer, int& reverbIndex, int REVERB_BUFFER_SIZE)
 {
-    return applyDelay(signal, amount, reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE, 4, reverb3Voices);
+    return processDelayAndReverb(signal, amount, reverbBuffer, reverbIndex, REVERB_BUFFER_SIZE, 4, reverb3Voices);
 }
 
 static constexpr int DelayVoiceCount = 4; // Reduced from 8 to 4 for efficiency
@@ -174,7 +174,7 @@ BufferVoice delay1Voices[DelayVoiceCount] = {
 };
 float applyDelay(float signal, float amount, float* buffer, int& index, int BUFFER_SIZE)
 {
-    return applyDelay(signal, amount, buffer, index, BUFFER_SIZE, DelayVoiceCount, delay1Voices);
+    return processDelayAndReverb(signal, amount, buffer, index, BUFFER_SIZE, DelayVoiceCount, delay1Voices);
 }
 
 BufferVoice delay2Voices[DelayVoiceCount] = {
@@ -185,7 +185,7 @@ BufferVoice delay2Voices[DelayVoiceCount] = {
 };
 float applyDelay2(float signal, float amount, float* buffer, int& index, int BUFFER_SIZE)
 {
-    return applyDelay(signal, amount, buffer, index, BUFFER_SIZE, DelayVoiceCount, delay2Voices);
+    return processDelayAndReverb(signal, amount, buffer, index, BUFFER_SIZE, DelayVoiceCount, delay2Voices);
 }
 
 BufferVoice delay3Voices[2] = {
@@ -194,5 +194,5 @@ BufferVoice delay3Voices[2] = {
 };
 float applyDelay3(float signal, float amount, float* buffer, int& index, int BUFFER_SIZE)
 {
-    return applyDelay(signal, amount, buffer, index, BUFFER_SIZE, 2, delay3Voices);
+    return processDelayAndReverb(signal, amount, buffer, index, BUFFER_SIZE, 2, delay3Voices);
 }
