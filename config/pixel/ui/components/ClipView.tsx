@@ -136,7 +136,7 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                     />
 
                     <Text
-                        text="Sequencer"
+                        text="Exit"
                         bounds={[W2_4, ScreenHeight - 20, W1_4, 18]}
                         centered={true}
                         color={menuTextColor}

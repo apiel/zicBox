@@ -35,14 +35,13 @@ export function MainKeys({
                 keys={[
                     ...ifTrue(!!synthName, {
                         key: C2,
-                        action: pages(viewName, synthName!)
+                        action: pages(viewName, synthName!),
                     }),
                     {
                         key: C3,
-                        action: viewName === `${synthName}Seq`
+                        action:
+                            viewName === `${synthName}Clips`
                                 ? `setView:${synthName}`
-                                : viewName === `${synthName}Clips`
-                                ? `setView:${synthName}Seq`
                                 : `setView:${synthName}Clips`,
                     },
                     { key: C4, action: `contextToggle:${shiftContext}:1:0` },

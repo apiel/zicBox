@@ -3,10 +3,14 @@ import * as React from '@/libs/react';
 import { VisibilityContext } from '@/libs/nativeComponents/component';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Rect } from '@/libs/nativeComponents/Rect';
+import { Text } from '@/libs/nativeComponents/Text';
 import {
     Drum4Track,
     MasterTrack,
-    shiftContext
+    menuTextColor,
+    ScreenHeight,
+    shiftContext,
+    W1_4
 } from '../constants';
 import { backgroundBounds, enc1, enc3 } from '../constantsValue';
 
@@ -66,13 +70,13 @@ export function ShiftTrackLayout({
                 visibilityContext={[shiftTrackVisibilityContext]}
             /> */}
 
-            {/* <Text
-                text="&icon::play::filled"
+            <Text
+                text="Sequencer"
                 bounds={[0, ScreenHeight - 18, W1_4, 16]}
                 centered={true}
                 visibilityContext={[shiftTrackVisibilityContext]}
                 color={menuTextColor}
-            /> */}
+            />
 
             {/* <Text
                 text="Menu"

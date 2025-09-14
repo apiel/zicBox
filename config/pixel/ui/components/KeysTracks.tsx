@@ -45,6 +45,13 @@ export function KeysTracks({
                             : `noteOn:${synthName}:60`,
                     context: { id: shiftContext, value: 0 },
                 },
+                {
+                    key: C1, 
+                    action: `contextToggle:${shiftContext}:2:0`,
+                    action2: `setView:${synthName}Seq`, 
+                    context: { id: shiftContext, value: 2 } 
+                },
+
 
                 ...getKeys(A1, Drum1Track, viewName, `Drum1`),
                 ...getKeys(A2, Drum2Track, viewName, `Drum2`),
