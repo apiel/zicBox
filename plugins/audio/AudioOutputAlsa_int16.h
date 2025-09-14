@@ -1,5 +1,6 @@
 #pragma once
 #include "AudioAlsa.h"
+#include "helpers/range.h"
 
 class AudioOutputAlsa_int16 : public AudioAlsa {
 public:
@@ -15,12 +16,7 @@ public:
             return;
 
         // clamp and convert float → int16
-        float v = *buf;
-        if (v > 1.0f)
-            v = 1.0f;
-        else if (v < -1.0f)
-            v = -1.0f;
-
+        float v = CLAMP(*buf, -1.0f, 1.0f);
         reinterpret_cast<int16_t*>(buffer.data())[sampleIndex++] = static_cast<int16_t>(v * 32767.0f);
 
         const uint32_t samplesPerChunk = chunkFrames * channels;
