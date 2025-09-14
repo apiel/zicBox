@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-#include "helpers/range.h"
+#include "helpers/clamp.h"
 #include "plugins/audio/utils/WavetableInterface.h"
 #include "plugins/audio/utils/lookupTable.h"
 

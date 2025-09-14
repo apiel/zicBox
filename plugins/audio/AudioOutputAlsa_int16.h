@@ -1,6 +1,6 @@
 #pragma once
 #include "AudioAlsa.h"
-#include "helpers/range.h"
+#include "helpers/clamp.h"
 
 class AudioOutputAlsa_int16 : public AudioAlsa {
 public:

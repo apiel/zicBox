@@ -1,6 +1,6 @@
 #pragma once
 
-#include "helpers/range.h"
+#include "helpers/clamp.h"
 #include "plugins/audio/utils/lookupTable.h"
 
 float tanhLookup(float x, LookupTable* lookupTable)

@@ -5,7 +5,7 @@
 #include <sndfile.h>
 #include <string.h>
 
-#include "helpers/range.h"
+#include "helpers/clamp.h"
 #include "helpers/format.h"
 #include "log.h"
 

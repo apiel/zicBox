@@ -1,7 +1,7 @@
 #pragma once
 
 #include "fonts/fonts.h"
-#include "helpers/range.h"
+#include "helpers/clamp.h"
 #include "log.h"
 #include "plugins/components/drawInterface.h"
 
@@ -253,7 +253,7 @@ protected:
             for (int col = 0; col < width; col++) {
                 uint8_t a = charPtr[col + row * width];
                 if (a) { // Only draw non-zero pixels
-                    color.a = (uint8_t)(range(a * 2 * alpha, 0, 255));
+                    color.a = (uint8_t)(CLAMP(a * 2 * alpha, 0, 255));
                     pixel({ (int)(pos.x + col * scale), (int)(pos.y + row * scale + marginTop) }, { color });
                 }
             }

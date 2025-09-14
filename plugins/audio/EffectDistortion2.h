@@ -1,7 +1,7 @@
 #pragma once
 
 #include "audioPlugin.h"
-#include "helpers/range.h"
+#include "helpers/clamp.h"
 #include "mapping.h"
 #include "plugins/audio/utils/utils.h"
 #include "utils/effects/applyBoost.h"

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "audioPlugin.h"
-#include "helpers/range.h"
+#include "helpers/clamp.h"
 #include "mapping.h"
 #include "utils/AdsrEnvelop.h"
 

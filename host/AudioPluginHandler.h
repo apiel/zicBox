@@ -12,7 +12,7 @@ using namespace std;
 #include "Track.h"
 #include "def.h"
 #include "helpers/getExecutableDirectory.h"
-#include "helpers/range.h"
+#include "helpers/clamp.h"
 #include "helpers/trim.h"
 #include "log.h"
 #include "midiMapping.h"

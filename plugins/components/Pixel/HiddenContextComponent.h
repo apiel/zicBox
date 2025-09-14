@@ -1,7 +1,7 @@
 #pragma once
 
 #include "plugins/components/component.h"
-#include "helpers/range.h"
+#include "helpers/clamp.h"
 
 #include <string>
 

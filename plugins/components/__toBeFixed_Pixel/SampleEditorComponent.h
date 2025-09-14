@@ -2,7 +2,7 @@
 #define _UI_PIXEL_COMPONENT_SAMPLE_EDITOR_H_
 
 #include "helpers/format.h"
-#include "helpers/range.h"
+#include "helpers/clamp.h"
 #include "plugins/components/base/KeypadLayout.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"

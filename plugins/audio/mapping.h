@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "audioPlugin.h"
-#include "helpers/range.h"
+#include "helpers/clamp.h"
 #include "log.h"
 
 struct DataFn {

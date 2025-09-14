@@ -3,7 +3,7 @@
 #include "./utils/FastWaveform.h"
 #include "./utils/Wavetable.h"
 #include "audioPlugin.h"
-#include "helpers/range.h"
+#include "helpers/clamp.h"
 #include "mapping.h"
 // #include "plugins/audio/utils/filter.h"
 #include "plugins/audio/utils/filter3.h"

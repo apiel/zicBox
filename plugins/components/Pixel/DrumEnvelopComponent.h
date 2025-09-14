@@ -1,6 +1,6 @@
 #pragma once
 
-#include "helpers/range.h"
+#include "helpers/clamp.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
 #include <stdexcept>

@@ -5,7 +5,7 @@
 #include <vector>
 #include <functional>
 
-#include "helpers/range.h"
+#include "helpers/clamp.h"
 
 class EnvelopRelative {
 public:
