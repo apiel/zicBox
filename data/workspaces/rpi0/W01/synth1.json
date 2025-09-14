@@ -61,17 +61,5 @@
                 "value": 1710.0
             }
         ]
-    },
-    "TrackFx": {
-        "values": [
-            {
-                "key": "VOLUME",
-                "value": 100.0
-            },
-            {
-                "key": "GAIN",
-                "value": 1.0
-            }
-        ]
     }
 }

@@ -25,10 +25,20 @@ public:
     Mixer(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
     {
+        uint16_t trackStart = 1;
+
+        //md **Config**:
+        auto& json = config.json;
+        //md - `"trackStart": 7` to set track 7 as first track, then 8, 9, ...
+        trackStart = json.value("trackStart", trackStart);
+
+        //md  - `"divider": 0.5` to set a custom divider. By default, divider equals 1 divided by the number of tracks.
+        divider = json.value("divider", divider);
+
         /*md And input tracks start at 1, then 2, 3, ....*/
         for (uint8_t i = 0; i < TRACK_COUNT; i++) {
             // Start tracks at 1 and leave 0 for master track (trackTarget)
-            tracks[i] = i + 1;
+            tracks[i] = i + trackStart;
             /*md **Value**: */
             /*md - `TRACK_1` to set volume on track 1, min = 0.0, max = 100.*/
             /*md - `TRACK_2` to set volume on track 2.*/
@@ -40,19 +50,6 @@ public:
             /*md - ...*/
             mutes[i] = &val(0.0f, "MUTE_" + std::to_string(i + 1), { "Mute " + std::to_string(i + 1), .max = 1.0f });
         }
-
-        //md **Config**:
-        auto& json = config.json;
-        //md - `"trackStart": 7` to set track 7 as first track, then 8, 9, ...
-        if (json.contains("trackStart")) {
-            uint16_t trackStart = json["trackStart"].get<uint16_t>();
-            for (uint16_t i = 0; i < TRACK_COUNT; i++) {
-                tracks[i] = trackStart + i;
-            }
-        }
-
-        //md  - `"divider": 0.5` to set a custom divider. By default, divider equals 1 divided by the number of tracks.
-        divider = json.value("divider", divider);
     }
 
     std::set<uint8_t> trackDependencies() override

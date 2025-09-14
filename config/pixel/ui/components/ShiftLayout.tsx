@@ -47,12 +47,12 @@ export function ShiftLayout({
             />
 
             <KnobValue
-                audioPlugin="TrackFx"
-                param="VOLUME"
+                audioPlugin="Mixer"
+                param={`TRACK_${track}`}
                 label={label}
                 {...enc1}
                 color="primary"
-                track={track}
+                track={MasterTrack}
                 visibilityContext={[shiftVisibilityContext]}
             />
 
