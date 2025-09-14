@@ -46,7 +46,7 @@ public:
 
     void setMorph(float m)
     {
-        morph = range(m, 0.0f, 1.0f);
+        morph = CLAMP(m, 0.0f, 1.0f);
         updateTable();
     }
 
@@ -111,7 +111,7 @@ private:
             float a = 20.f * morph + 5.f;
             float b = morph;
             float c = 2.f * morph + 1.f;
-            return range(std::exp(-a * x) + b * std::sin(x) - std::pow(x, c), 0.0f, 1.0f);
+            return CLAMP(std::exp(-a * x) + b * std::sin(x) - std::pow(x, c), 0.0f, 1.0f);
         }
 
         case Type::MultiDecay: {
@@ -119,7 +119,7 @@ private:
             float decay = 0.7f * std::exp(-30.0f * (amount + 0.05f) * x);
             float tail = 0.2f * std::exp(-5.0f * amount * x);
             float release = tail - tail * std::pow(x, amount + 0.1f);
-            return range(decay + release, 0.0f, 1.0f);
+            return CLAMP(decay + release, 0.0f, 1.0f);
         }
 
         case Type::SinPow: {
@@ -127,7 +127,7 @@ private:
             int b = morph * 10;
             b = b * 2 + 4;
             float c = 0.1 * morph;
-            return range(-a * sin(-1 + x) + pow(-1 + x, b) + c * acos(x), 0.0f, 1.0f);
+            return CLAMP(-a * sin(-1 + x) + pow(-1 + x, b) + c * acos(x), 0.0f, 1.0f);
             ;
         }
 
@@ -190,7 +190,7 @@ private:
         case Type::AnalogSnap: {
             float strength = 1.0f + 4.0f * morph;
             float shape = std::tanh((1.0f - x) * strength);
-            return range(shape, 0.0f, 1.0f);
+            return CLAMP(shape, 0.0f, 1.0f);
         }
 
         case Type::CubicDrop: {
@@ -200,7 +200,7 @@ private:
         case Type::GlitchFall: {
             float glitch = std::sin(20.0f * x * morph) * 0.1f;
             float base = std::exp(-10.0f * x);
-            return range(base + glitch, 0.0f, 1.0f);
+            return CLAMP(base + glitch, 0.0f, 1.0f);
         }
 
         case Type::HyperCurve: {
@@ -217,7 +217,7 @@ private:
             float b = 3.0f + 10.0f * morph;
             float sharp = std::exp(-a * x);
             float longTail = std::exp(-b * x);
-            return range(sharp + 0.3f * longTail, 0.0f, 1.0f);
+            return CLAMP(sharp + 0.3f * longTail, 0.0f, 1.0f);
         }
 
         default:

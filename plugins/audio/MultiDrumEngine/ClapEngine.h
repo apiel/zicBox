@@ -104,7 +104,7 @@ public:
 
         if (punch.get() < 0) {
             float amt = (0.5f - punch.pct()) * 2.f;
-            output = range(output + output * amt * 8, -1.0f, 1.0f);
+            output = CLAMP(output + output * amt * 8, -1.0f, 1.0f);
         } else if (t < 0.02f) {
             float amt = (punch.pct() - 0.5f) * 2.f;
             output *= 1.f + amt * 2.f;

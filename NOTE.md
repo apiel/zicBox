@@ -13,7 +13,6 @@
 - FIXME serialize multi engine
 - FIXME remove EffectGainVolume and use mixer volume instead!
 - FIXME move buffer size in reverb? fix buffer?
-- TODO change range to clamp
 
 - TODO pressing select track button of already active track to access menu to capture and other stuff related to track...
 - maybe even enter piano mode... ---> one button to exit and one but to switch encoders, and capture button?

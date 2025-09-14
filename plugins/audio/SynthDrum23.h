@@ -53,7 +53,7 @@ protected:
                  float a = 100 * env->macro.a + 5;
                  float b = env->macro.b;
                  float c = 100 * env->macro.c;
-                 float y = range(1 * exp(-a * x) + b * sin(x) - pow(x, c), 0.0f, 1.0f);
+                 float y = CLAMP(1 * exp(-a * x) + b * sin(x) - pow(x, c), 0.0f, 1.0f);
                  env->data.push_back({ y, x });
              }
          } },
@@ -68,7 +68,7 @@ protected:
                  float a = 70 * env->macro.a;
                  float b = 0.5 * env->macro.b;
                  float c = 100 * env->macro.c;
-                 float y = range(1 * exp(-a * x) + (b - b * pow(x, c)), 0.0f, 1.0f);
+                 float y = CLAMP(1 * exp(-a * x) + (b - b * pow(x, c)), 0.0f, 1.0f);
                  env->data.push_back({ y, x });
              }
          } },
@@ -85,7 +85,7 @@ protected:
                  float tail = 0.2f * exp(-5.0f * env->macro.b * x);
                  float release = tail - tail * pow(x, env->macro.c);
 
-                 float y = range(decay + release, 0.0f, 1.0f);
+                 float y = CLAMP(decay + release, 0.0f, 1.0f);
                  env->data.push_back({ y, x });
              }
          } },
@@ -102,7 +102,7 @@ protected:
                  b = b * 2 + 4;
                  float c = 0.5 * env->macro.c;
 
-                 float y = range(-a * sin(-1 + x) + pow(-1 + x, b) + c * acos(x), 0.0f, 1.0f);
+                 float y = CLAMP(-a * sin(-1 + x) + pow(-1 + x, b) + c * acos(x), 0.0f, 1.0f);
                  env->data.push_back({ y, x });
              }
          } },
@@ -171,7 +171,7 @@ public:
             waveform.setShape(p.val.pct());
             p.val.setString(std::to_string((int)(p.val.get() * 0.1)) + "%");
         } else {
-            int value = range(p.value, 1.0f, wavetable.fileBrowser.count);
+            int value = CLAMP(p.value, 1.0f, wavetable.fileBrowser.count);
             p.val.setFloat(value);
 
             int position = p.val.get();
@@ -190,7 +190,7 @@ public:
             waveform.setMacro(p.val.pct());
             p.val.setString(std::to_string((int)p.val.get()) + "%");
         } else {
-            float value = range(p.value, 1.0f, ZIC_WAVETABLE_WAVEFORMS_COUNT);
+            float value = CLAMP(p.value, 1.0f, ZIC_WAVETABLE_WAVEFORMS_COUNT);
             p.val.setFloat(value);
             wavetable.morph((int)p.val.get() - 1);
             p.val.setString(std::to_string((int)p.val.get()) + "/" + std::to_string(ZIC_WAVETABLE_WAVEFORMS_COUNT));
@@ -288,7 +288,7 @@ public:
             float out = wave->sample(&wavetable.sampleIndex, freq) * envAmp;
             out = addSecondLayer(out);
             out = highFreqBoost(out);
-            out = range(out + out * scaledClipping, -1.0f, 1.0f);
+            out = CLAMP(out + out * scaledClipping, -1.0f, 1.0f);
             buf[track] = out * velocity;
 
             sampleDurationCounter++;
@@ -304,7 +304,7 @@ public:
         envelopAmp.reset(sampleCountDuration);
         envelopFreq.reset(sampleCountDuration);
         envelopAmpLayer2.reset(sampleCountDuration);
-        velocity = range(_velocity, 0.0f, 1.0f);
+        velocity = CLAMP(_velocity, 0.0f, 1.0f);
 
         noteMult = pow(2, ((note - baseNote + pitch.get()) / 12.0));
 

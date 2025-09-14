@@ -110,7 +110,7 @@ public:
                 return &data[currentEditPhase].time;
             }
 
-            data[currentEditPhase].time = range(value, 0.0f, 1.0f);
+            data[currentEditPhase].time = CLAMP(value, 0.0f, 1.0f);
         }
         return &data[currentEditPhase].time;
     }
@@ -119,7 +119,7 @@ public:
     {
         if (direction && currentEditPhase >= minEditablePhase) {
             float value = data[currentEditPhase].modulation + (*direction * 0.01f);
-            data[currentEditPhase].modulation = range(value, 0.0f, 1.0f);
+            data[currentEditPhase].modulation = CLAMP(value, 0.0f, 1.0f);
         }
         return &data[currentEditPhase].modulation;
     }
@@ -153,7 +153,7 @@ public:
             }
             if (direction != NULL) {
                 macro.a += *direction * 0.01f;
-                macro.a = range(macro.a, 0.0f, 1.0f);
+                macro.a = CLAMP(macro.a, 0.0f, 1.0f);
                 setMode(mode, false);
             }
         }
@@ -168,7 +168,7 @@ public:
             }
             if (direction != NULL) {
                 macro.b += *direction * 0.01f;
-                macro.b = range(macro.b, 0.0f, 1.0f);
+                macro.b = CLAMP(macro.b, 0.0f, 1.0f);
                 setMode(mode, false);
             }
         }
@@ -183,7 +183,7 @@ public:
             }
             if (direction != NULL) {
                 macro.c += *direction * 0.01f;
-                macro.c = range(macro.c, 0.0f, 1.0f);
+                macro.c = CLAMP(macro.c, 0.0f, 1.0f);
                 setMode(mode, false);
             }
         }
@@ -192,7 +192,7 @@ public:
 
     void setMode(int _mode, bool init = true)
     {
-        mode = range(_mode, 0, (int)modes.size());
+        mode = CLAMP(_mode, 0, (int)modes.size());
         data.clear();
 
         if (mode >= 0 && mode < modes.size()) {

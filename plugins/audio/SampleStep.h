@@ -24,19 +24,19 @@ public:
 
     void setVelocity(float velocity)
     {
-        this->velocity = range(velocity, 0.0, 1.0);
+        this->velocity = CLAMP(velocity, 0.0, 1.0);
     }
 
     void setEnd(float value)
     {
-        fEnd = range(value, fStart, 100.0);
+        fEnd = CLAMP(value, fStart, 100.0);
         end = fEnd * sampleCount;
     }
 
     void setStart(float value)
     {
-        // this->start = range(start, 0, sampleCount);
-        fStart = range(value, 0.0, fEnd);
+        // this->start = CLAMP(start, 0, sampleCount);
+        fStart = CLAMP(value, 0.0, fEnd);
         start = fStart * sampleCount;
     }
 

@@ -58,7 +58,7 @@ public:
                 direction = -direction;
             }
             // printf("[HiddenContextComponent] before %f\n", view->contextVar[contextId]);
-            setContext(contextId, range(view->contextVar[contextId] + direction * stepIncrementation, min, max));
+            setContext(contextId, CLAMP(view->contextVar[contextId] + direction * stepIncrementation, min, max));
             // printf("[HiddenContextComponent] after %f\n", view->contextVar[contextId]);
         }
     }

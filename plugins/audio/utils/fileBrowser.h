@@ -10,7 +10,7 @@ protected:
 
     std::filesystem::path get(uint16_t pos)
     {
-        position = range(pos, 1, files.size());
+        position = CLAMP(pos, 1, files.size());
         return files.at(position - 1);
     }
 

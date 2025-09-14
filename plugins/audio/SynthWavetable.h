@@ -217,8 +217,8 @@ public:
             if (filterType.get() != SynthWavetable::FilterType::FILTER_OFF) {
                 // if (lastInvEnv != invEnv && (cutoffMod.pct() != 0.5f || resonanceMod.pct() != 0.5f)) {
                 //     filter.set(
-                //         range(filterCutoff.pct() + invEnv * (cutoffMod.pct() - 0.5f), 0.0f, 1.0f),
-                //         range(filterResonance.pct() + invEnv * (resonanceMod.pct() - 0.5f), 0.0f, 1.0f));
+                //         CLAMP(filterCutoff.pct() + invEnv * (cutoffMod.pct() - 0.5f), 0.0f, 1.0f),
+                //         CLAMP(filterResonance.pct() + invEnv * (resonanceMod.pct() - 0.5f), 0.0f, 1.0f));
                 // }
                 float cutoff = filterCutoff.pct();
                 float reso = filterResonance.pct();
@@ -237,7 +237,7 @@ public:
                     reso += (lfoResonance.pct() - 0.5f) * lfoValue;
                 }
                 if (cutoff != filterCutoff.pct() || reso != filterResonance.pct()) {
-                    filter.set(range(cutoff, 0.0f, 1.0f), range(reso, 0.0f, 1.0f));
+                    filter.set(range(cutoff, 0.0f, 1.0f), CLAMP(reso, 0.0f, 1.0f));
                 }
                 lastInvEnv = invEnv;
                 out = filter.process(out);

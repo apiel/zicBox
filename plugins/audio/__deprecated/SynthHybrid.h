@@ -102,7 +102,7 @@ class SynthHybrid : public Mapping {
 
     float tanhLookup(float x)
     {
-        x = range(x, -1.0f, 1.0f);
+        x = CLAMP(x, -1.0f, 1.0f);
         int index = static_cast<int>((x + 1.0f) * 0.5f * (props.lookupTable->size - 1));
         return props.lookupTable->tanh[index];
     }

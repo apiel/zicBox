@@ -117,7 +117,7 @@ public:
         filter.setSampleData(filter.lp[0], 1);
         out = filter.lp[1];
 
-        out = range(out + out * clipping.pct() * 8, -1.0f, 1.0f);
+        out = CLAMP(out + out * clipping.pct() * 8, -1.0f, 1.0f);
         out = applyEffects(out);
         buf[track] = out;
     }

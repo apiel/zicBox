@@ -60,7 +60,7 @@ public:
             output = blend(input, output, levelAmount);
             output = applySoftClipping(output, props.lookupTable);
 
-            buf[track] = range(output, -1.0f, 1.0f);
+            buf[track] = CLAMP(output, -1.0f, 1.0f);
         }
     }
 

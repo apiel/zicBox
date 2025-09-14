@@ -93,7 +93,7 @@ protected:
 
     void loadTriangleType()
     {
-        float pulse = range(macro, 0.05f, 1.0f);
+        float pulse = CLAMP(macro, 0.05f, 1.0f);
         for (uint16_t i = 0; i < sampleCount; i++) {
             float phase = i / (float)sampleCount; // Normalized phase [0, 1)
 
@@ -117,7 +117,7 @@ protected:
 
     void loadPulseType()
     {
-        float pulse = range(macro, 0.1f, 0.9f);
+        float pulse = CLAMP(macro, 0.1f, 0.9f);
         for (uint16_t i = 0; i < sampleCount; i++) {
             float phase = i / (float)sampleCount; // Normalized phase [0, 1)
             float dutyCycle = pulse; // Pulse width directly set by `pulse` parameter
@@ -220,7 +220,7 @@ protected:
             modulatedWave = 0.5f * (modulatedWave + 1.0f); // Shift from [-1, 1] to [0, 1]
 
             // Store the result in the lookup table
-            lut[i] = range(modulatedWave, -1.0f, 1.0f); // Ensure value is within bounds
+            lut[i] = CLAMP(modulatedWave, -1.0f, 1.0f); // Ensure value is within bounds
         }
     }
 
@@ -269,7 +269,7 @@ protected:
             modulatedWave /= maxAmplitude; // Normalize by the maximum amplitude from the first pass
 
             // Soft clip if necessary to avoid extreme clipping (optional)
-            lut[i] = range(modulatedWave, -1.0f, 1.0f);
+            lut[i] = CLAMP(modulatedWave, -1.0f, 1.0f);
         }
     }
 
@@ -374,13 +374,13 @@ public:
 
     void setShape(float value)
     {
-        shape = range(value, 0.0f, 1.0f);
+        shape = CLAMP(value, 0.0f, 1.0f);
         setType(selectedType, false);
     }
 
     void setMacro(float value)
     {
-        macro = range(value, 0.0f, 1.0f);
+        macro = CLAMP(value, 0.0f, 1.0f);
         setType(selectedType, false);
     }
 };

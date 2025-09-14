@@ -256,12 +256,12 @@ public:
     //         }
     //     } else if (id == startEncoderId) {
     //         beatStart += direction * 0.25f;
-    //         beatStart = range(beatStart, 0.0f, beatEnd);
+    //         beatStart = CLAMP(beatStart, 0.0f, beatEnd);
     //         syncData();
     //         renderNext();
     //     } else if (id == endEncoderId) {
     //         beatEnd += direction * 0.25f;
-    //         beatEnd = range(beatEnd, beatStart, totalBeat);
+    //         beatEnd = CLAMP(beatEnd, beatStart, totalBeat);
     //         syncData();
     //         renderNext();
     //     }
@@ -270,7 +270,7 @@ public:
     void incCurrentBeat(int8_t direction)
     {
         currentBeat += direction;
-        currentBeat = range(currentBeat, 0, totalBeat - 1);
+        currentBeat = CLAMP(currentBeat, 0, totalBeat - 1);
         // loadAudioFile();
         renderNext();
     }

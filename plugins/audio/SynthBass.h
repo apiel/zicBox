@@ -143,7 +143,7 @@ public:
             waveform.setShape(p.val.pct());
             p.val.setString(std::to_string((int)(p.val.get() * 0.1)) + "%");
         } else {
-            int value = range(p.value, 1.0f, wavetable.fileBrowser.count);
+            int value = CLAMP(p.value, 1.0f, wavetable.fileBrowser.count);
             p.val.setFloat(value);
 
             int position = p.val.get();
@@ -162,7 +162,7 @@ public:
             waveform.setMacro(p.val.pct());
             p.val.setString(std::to_string((int)p.val.get()) + "%");
         } else {
-            float value = range(p.value, 1.0f, ZIC_WAVETABLE_WAVEFORMS_COUNT);
+            float value = CLAMP(p.value, 1.0f, ZIC_WAVETABLE_WAVEFORMS_COUNT);
             p.val.setFloat(value);
             wavetable.morph((int)p.val.get() - 1);
             p.val.setString(std::to_string((int)p.val.get()) + "/" + std::to_string(ZIC_WAVETABLE_WAVEFORMS_COUNT));
@@ -195,7 +195,7 @@ public:
             filter.setSampleData(filter.lp[0], 1);
             out = filter.lp[1];
 
-            out = range(out + out * clipping.pct() * 8, -1.0f, 1.0f);
+            out = CLAMP(out + out * clipping.pct() * 8, -1.0f, 1.0f);
             out = applyEffects(out);
             buf[track] = out;
             sampleIndex++;

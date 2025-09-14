@@ -214,7 +214,7 @@ public:
         if (steps != NULL && steps->size() > 0) {
             Step& step = (*steps)[0];
             selectedNote = step.note;
-            midiStartNote = range((selectedNote - numNotes / 2), MIDI_NOTE_C0, MIDI_NOTE_C9 - numNotes);
+            midiStartNote = CLAMP((selectedNote - numNotes / 2), MIDI_NOTE_C0, MIDI_NOTE_C9 - numNotes);
         }
 
         resize();
@@ -352,7 +352,7 @@ public:
 
     void selectNote(int8_t direction)
     {
-        selectedNote = range((selectedNote + direction), MIDI_NOTE_C0, MIDI_NOTE_C9);
+        selectedNote = CLAMP((selectedNote + direction), MIDI_NOTE_C0, MIDI_NOTE_C9);
         if (selectedNote < midiStartNote) {
             midiStartNote = selectedNote;
         } else if (selectedNote >= midiStartNote + numNotes) {
@@ -363,7 +363,7 @@ public:
 
     void selectStep(int8_t direction)
     {
-        selectedStep = range((selectedStep + direction), 0, numSteps - 1);
+        selectedStep = CLAMP((selectedStep + direction), 0, numSteps - 1);
         renderNext();
     }
 
@@ -406,7 +406,7 @@ public:
             Step* step = getSelectedStep();
             if (step != nullptr) {
                 step->enabled = true;
-                step->len = range((step->len + direction), 0, maxStepLen);
+                step->len = CLAMP((step->len + direction), 0, maxStepLen);
                 // Use shift to delete the step
                 if (shift && step->len == 0) {
                     deleteStep(step);

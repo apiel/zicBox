@@ -66,7 +66,7 @@ public:
 
     void setMorph(float m)
     {
-        morph = range(m, 0.0f, 1.0f);
+        morph = CLAMP(m, 0.0f, 1.0f);
         updateTable();
     }
 
@@ -75,7 +75,7 @@ public:
     // New morphing between types using a single parameter t in [0, 1]
     void morphType(float t)
     {
-        float normalized = range(t, 0.0f, 1.0f);
+        float normalized = CLAMP(t, 0.0f, 1.0f);
         float scaled = normalized * (static_cast<int>(Type::COUNT) - 1); // e.g., 0.0 → Click, 1.0 → Reverse
         int typeIndex = static_cast<int>(scaled);
         type = static_cast<Type>(typeIndex);

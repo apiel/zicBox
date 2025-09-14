@@ -35,7 +35,7 @@ protected:
 
     float tanhLookup(float x)
     {
-        x = range(x, -1.0f, 1.0f);
+        x = CLAMP(x, -1.0f, 1.0f);
         int index = static_cast<int>((x + 1.0f) * 0.5f * (props.lookupTable->size - 1));
         return props.lookupTable->tanh[index];
     }
@@ -248,7 +248,7 @@ public:
                 if (i < transientSamples && transientIntensity.get() > 0.0f) {
                     // metallicNoise += transientIntensity.pct() * 5 * whiteNoise() * (1.0f - ((float)(i) / transientSamples));
                     metallicNoise += transientIntensity.get() * whiteNoise(); // * (1.0f - ((float)(i) / transientSamples));
-                    // metallicNoise = range(metallicNoise, -1.0f, 1.0f);
+                    // metallicNoise = CLAMP(metallicNoise, -1.0f, 1.0f);
                 }
 
                 noise = (metallicNoiseMix.pct() * metallicNoise) + ((1.0f - metallicNoiseMix.pct()) * rawNoise);
@@ -256,7 +256,7 @@ public:
                 // // Transient component
                 // if (i < transientSamples && transientIntensity.pct() > 0.0f) {
                 //     noise += transientIntensity.pct() * 5 * whiteNoise() * (1.0f - ((float)(i) / transientSamples));
-                //     noise = range(noise, -1.0f, 1.0f);
+                //     noise = CLAMP(noise, -1.0f, 1.0f);
                 // }
                 noise = lowPassFilter(noise);
             }

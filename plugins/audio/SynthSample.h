@@ -489,7 +489,7 @@ public:
                     for (uint8_t d = 0; d < densityUint8; d++) {
                         SampleState sampleState;
                         sampleState.index = v * densityUint8 + d;
-                        sampleState.position = range(voice.sub[d].position / sampleProps.end, 0.0f, 1.0f);
+                        sampleState.position = CLAMP(voice.sub[d].position / sampleProps.end, 0.0f, 1.0f);
                         sampleState.release = voice.release ? 1 - voice.sub[d].position / sampleProps.end : 1.0f;
                         sampleStates.push_back(sampleState);
                     }

@@ -311,7 +311,7 @@ public:
     {
         if (id == encoderId) {
             if (shouldDoAction()) {
-                setContext(selectionBank, range(view->contextVar[selectionBank] + direction, 0, valVariation->props().max - 1));
+                setContext(selectionBank, CLAMP(view->contextVar[selectionBank] + direction, 0, valVariation->props().max - 1));
             }
         }
     }

@@ -43,9 +43,9 @@ protected:
         buf *= 1 + drive.pct() * 5;
 
         int index = std::floor(buf * DIST_STEPS) + DIST_STEPS;
-        index = range(index, 0, 2 * DIST_STEPS - 1);
+        index = CLAMP(index, 0, 2 * DIST_STEPS - 1);
         double xOffset = ((1 + buf) * DIST_STEPS) - index;
-        xOffset = range(xOffset, 0.0, 1.0);
+        xOffset = CLAMP(xOffset, 0.0, 1.0);
 
         float out = shapeTable[index] + (shapeTable[index + 1] - shapeTable[index]) * xOffset;
 

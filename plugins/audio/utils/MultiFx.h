@@ -68,7 +68,7 @@ protected:
 
     float tanhLookup(float x)
     {
-        x = range(x, -1.0f, 1.0f);
+        x = CLAMP(x, -1.0f, 1.0f);
         int index = static_cast<int>((x + 1.0f) * 0.5f * (lookupTable->size - 1));
         return lookupTable->tanh[index];
     }
@@ -112,7 +112,7 @@ protected:
             return input;
         }
         float scaledClipping = amount * amount * 20;
-        return range(input + input * scaledClipping, -1.0f, 1.0f);
+        return CLAMP(input + input * scaledClipping, -1.0f, 1.0f);
     }
 
     float sampleSqueeze;

@@ -163,32 +163,32 @@ public:
 
     void setCondition(int condition)
     {
-        this->condition = range(condition, 0, STEP_CONDITIONS_COUNT - 1);
+        this->condition = CLAMP(condition, 0, STEP_CONDITIONS_COUNT - 1);
     }
 
     void setMotion(int motion)
     {
-        this->motion = range(motion, 0, STEP_MOTIONS_COUNT - 1);
+        this->motion = CLAMP(motion, 0, STEP_MOTIONS_COUNT - 1);
     }
 
     void setNote(int note)
     {
-        this->note = range(note, 0, 127);
+        this->note = CLAMP(note, 0, 127);
     }
 
     void setVelocity(float velocity)
     {
-        this->velocity = range(velocity, 0.0, 1.0);
+        this->velocity = CLAMP(velocity, 0.0, 1.0);
     }
 
     void setLength(int len)
     {
-        this->len = range(len, 0, 4096);
+        this->len = CLAMP(len, 0, 4096);
     }
 
     void setPosition(int position)
     {
-        this->position = range(position, 0, 4096);
+        this->position = CLAMP(position, 0, 4096);
     }
 
     std::string serialize()

@@ -153,7 +153,7 @@ public:
 
     void setFloat(float value)
     {
-        value_f = range(value, _props.min, _props.max);
+        value_f = CLAMP(value, _props.min, _props.max);
         value_pct = (value_f - _props.min) / (_props.max - _props.min);
     }
 
@@ -165,7 +165,7 @@ public:
 
     void setPct(float pct)
     {
-        float value = range(pct * (_props.max - _props.min) + _props.min, _props.min, _props.max);
+        float value = CLAMP(pct * (_props.max - _props.min) + _props.min, _props.min, _props.max);
         set(value);
     }
 

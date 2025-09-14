@@ -128,7 +128,7 @@ public:
     void onEncoder(int id, int8_t direction) override
     {
         if (id == encoderId) {
-            workspace = range(workspace + direction, 1, 99);
+            workspace = CLAMP(workspace + direction, 1, 99);
             renderNext();
         }
     }

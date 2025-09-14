@@ -331,7 +331,7 @@ public:
         }
         if (config.contains("tracks") && config["tracks"].is_array()) {
             for (nlohmann::json& track : config["tracks"]) {
-                uint8_t trackId = range(track["id"].get<uint8_t>(), 0, MAX_TRACKS - 1);
+                uint8_t trackId = CLAMP(track["id"].get<uint8_t>(), 0, MAX_TRACKS - 1);
                 logInfo("*** Init plugins for track %d", trackId);
                 if (track.contains("plugins") && track["plugins"].is_array()) {
                     for (nlohmann::json& plugin : track["plugins"]) {
