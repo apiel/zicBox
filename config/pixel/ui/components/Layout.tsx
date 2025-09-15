@@ -12,22 +12,41 @@ export type Props = {
     color: string;
     synthName?: string;
     title?: string;
+    skipMainKeys?: boolean;
 };
 
-export function Layout({ viewName, content, color, title, synthName }: Props) {
+export function Layout({
+    viewName,
+    content,
+    color,
+    title,
+    synthName,
+    skipMainKeys,
+}: Props) {
     const inactiveColor = darken(color, 0.5);
     return (
         <View name={viewName}>
-            {title && <Text fontSize={16} text={title} bounds={[37, 0, 100, 16]} font="PoppinsLight_8" />}
+            {title && (
+                <Text fontSize={16} text={title} bounds={[37, 0, 100, 16]} font="PoppinsLight_8" />
+            )}
             {title && (
                 <>
-                    <Rect bounds={[5, 6, 6, 6]} color={!viewName.includes(':page') ? color : inactiveColor} />
-                    <Rect bounds={[15, 6, 6, 6]} color={viewName.includes(':page2') ? color : inactiveColor} />
-                    <Rect bounds={[25, 6, 6, 6]} color={viewName.includes(':page3') ? color : inactiveColor} />
+                    <Rect
+                        bounds={[5, 6, 6, 6]}
+                        color={!viewName.includes(':page') ? color : inactiveColor}
+                    />
+                    <Rect
+                        bounds={[15, 6, 6, 6]}
+                        color={viewName.includes(':page2') ? color : inactiveColor}
+                    />
+                    <Rect
+                        bounds={[25, 6, 6, 6]}
+                        color={viewName.includes(':page3') ? color : inactiveColor}
+                    />
                 </>
             )}
             {content}
-            <MainKeys synthName={synthName} viewName={viewName} />
+            {!skipMainKeys && <MainKeys synthName={synthName} viewName={viewName} />}
         </View>
     );
 }

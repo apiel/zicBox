@@ -5,10 +5,7 @@ import { StringVal } from '@/libs/nativeComponents/StringVal';
 import { ClipBar } from '../components/ClipBar';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
-import {
-    notUnshiftVisibilityContext,
-    ShiftLayout
-} from '../components/ShiftLayout';
+import { notUnshiftVisibilityContext, ShiftLayout } from '../components/ShiftLayout';
 import { Val } from '../components/Val';
 import {
     enc10mini,
@@ -23,7 +20,7 @@ import {
     enc6mini,
     enc7mini,
     enc8mini,
-    enc9mini
+    enc9mini,
 } from '../constantsValue';
 
 export type Props = {
@@ -47,6 +44,7 @@ export function SynthLayout({ name, track, synthName, color, title }: Props) {
             content={
                 <>
                     <ShiftLayout
+                        synthName={synthName}
                         track={track}
                         content={
                             <KnobValue
@@ -60,35 +58,40 @@ export function SynthLayout({ name, track, synthName, color, title }: Props) {
                         }
                     />
 
-                    <StringVal audioPlugin={synthName} param="ENGINE" bounds={[92, 3, 60, 20]} fontLabel="PoppinsLight_12" />
+                    <StringVal
+                        audioPlugin={synthName}
+                        param="ENGINE"
+                        bounds={[92, 3, 60, 20]}
+                        fontLabel="PoppinsLight_12"
+                    />
 
                     <Val
                         {...enc1mini}
                         audioPlugin={synthName}
                         param="ATTACK"
                         track={track}
-                        color={isPage1 ? 'secondary' : undefined }
+                        color={isPage1 ? 'secondary' : undefined}
                     />
                     <Val
                         {...enc2mini}
                         audioPlugin={synthName}
                         param="RELEASE"
                         track={track}
-                        color={isPage1 ? 'quaternary' : undefined }
+                        color={isPage1 ? 'quaternary' : undefined}
                     />
                     <Val
                         {...enc3mini}
                         audioPlugin={synthName}
                         param="VAL_1"
                         track={track}
-                        color={isPage1 ? 'tertiary' : undefined }
+                        color={isPage1 ? 'tertiary' : undefined}
                     />
                     <Val
                         {...enc4mini}
                         audioPlugin={synthName}
                         param="VAL_2"
                         track={track}
-                        color={isPage1 ? 'primary' : undefined }
+                        color={isPage1 ? 'primary' : undefined}
                     />
 
                     <Val
@@ -97,28 +100,28 @@ export function SynthLayout({ name, track, synthName, color, title }: Props) {
                         param="VAL_3"
                         track={track}
                         // color="secondary"
-                        color={isPage2 ? 'secondary' : undefined }
+                        color={isPage2 ? 'secondary' : undefined}
                     />
                     <Val
                         {...enc6mini}
                         audioPlugin={synthName}
                         param="VAL_4"
                         track={track}
-                        color={isPage2 ? 'quaternary' : undefined }
+                        color={isPage2 ? 'quaternary' : undefined}
                     />
                     <Val
                         {...enc7mini}
                         audioPlugin={synthName}
                         param="VAL_5"
                         track={track}
-                        color={isPage2 ? 'tertiary' : undefined }
+                        color={isPage2 ? 'tertiary' : undefined}
                     />
                     <Val
                         {...enc8mini}
                         audioPlugin={synthName}
                         param="VAL_6"
                         track={track}
-                        color={isPage2 ? 'primary' : undefined }
+                        color={isPage2 ? 'primary' : undefined}
                     />
 
                     <Val
@@ -126,28 +129,28 @@ export function SynthLayout({ name, track, synthName, color, title }: Props) {
                         audioPlugin={synthName}
                         param="VAL_7"
                         track={track}
-                        color={isPage3 ? 'secondary' : undefined }
+                        color={isPage3 ? 'secondary' : undefined}
                     />
                     <Val
                         {...enc10mini}
                         audioPlugin={synthName}
                         param="VAL_8"
                         track={track}
-                        color={isPage3 ? 'quaternary' : undefined }
+                        color={isPage3 ? 'quaternary' : undefined}
                     />
                     <Val
                         {...enc11mini}
                         audioPlugin={synthName}
                         param="VAL_9"
                         track={track}
-                        color={isPage3 ? 'tertiary' : undefined }
+                        color={isPage3 ? 'tertiary' : undefined}
                     />
                     <Val
                         {...enc12mini}
                         audioPlugin={synthName}
                         param="VAL_10"
                         track={track}
-                        color={isPage3 ? 'primary' : undefined }
+                        color={isPage3 ? 'primary' : undefined}
                     />
 
                     <ClipBar track={track} color={color} />

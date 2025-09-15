@@ -5,12 +5,14 @@ import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { Text } from '@/libs/nativeComponents/Text';
 import {
+    C1,
+    C2,
     Drum4Track,
     MasterTrack,
     menuTextColor,
     ScreenHeight,
     shiftContext,
-    W1_4
+    W1_4,
 } from '../constants';
 import { backgroundBounds, enc1, enc3 } from '../constantsValue';
 
@@ -24,10 +26,12 @@ export function ShiftTrackLayout({
     content,
     track,
     label,
+    synthName,
 }: {
     content?: any;
     track: number;
     label?: string;
+    synthName: string;
 }) {
     return (
         <>
@@ -35,6 +39,20 @@ export function ShiftTrackLayout({
                 bounds={backgroundBounds}
                 color="background"
                 visibilityContext={[shiftTrackVisibilityContext]}
+                keys={[
+                    {
+                        key: C1,
+                        action: `contextToggle:${shiftContext}:2:0`,
+                        action2: `setView:${synthName}Seq`,
+                        context: { id: shiftContext, value: 2 },
+                    },
+                    {
+                        key: C2,
+                        action: `contextToggle:${shiftContext}:2:0`,
+                        action2: `setView:${synthName}Keyboard`,
+                        context: { id: shiftContext, value: 2 },
+                    },
+                ]}
             />
 
             <KnobValue
@@ -78,13 +96,13 @@ export function ShiftTrackLayout({
                 color={menuTextColor}
             />
 
-            {/* <Text
-                text="Menu"
+            <Text
+                text="Keyboard"
                 bounds={[W1_4, ScreenHeight - 20, W1_4, 16]}
                 centered={true}
                 visibilityContext={[shiftTrackVisibilityContext]}
                 color={menuTextColor}
-            /> */}
+            />
 
             {/* <Text
                 text="Reload All"

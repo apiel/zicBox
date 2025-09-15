@@ -51,6 +51,7 @@ export function SampleLayout({ name, track, synthName, color, title }: Props) {
             content={
                 <>
                     <ShiftLayout
+                        synthName={synthName}
                         track={track}
                         content={
                             <KnobValue

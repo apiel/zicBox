@@ -53,6 +53,7 @@ export function DrumLayout({ name, track, synthName, color, title }: Props) {
                 <>
                     <ShiftLayout
                         track={track}
+                        synthName={synthName}
                         content={
                             <KnobValue
                                 audioPlugin={synthName}
