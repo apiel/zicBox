@@ -17,13 +17,14 @@ import {
     B4,
     C1,
     C2,
+    C3,
     C4,
     ScreenHeight,
     ScreenWidth,
     seqContext,
     W1_4,
     W2_4,
-    W3_4
+    W3_4,
 } from '../constants';
 import {
     enc1Seq,
@@ -321,6 +322,7 @@ export function SeqView({ name, track, synthName, color, contextId, title, inclu
                             // { key: C2, action: `contextToggleOnRelease:${seqContext}:1:0` },
                             { key: C1, action: '.scroll:-1' },
                             { key: C2, action: '.scroll' },
+                            { key: C3, action: `setView:${synthName}` },
                             {
                                 key: C4,
                                 action: `contextToggleOnRelease:${seqContext}:1:0`,

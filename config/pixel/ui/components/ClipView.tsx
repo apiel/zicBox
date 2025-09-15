@@ -101,6 +101,7 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                         keys={[
                             { key: C1, action: `.reload` }, // , context: { id: shiftContext, value: 0 }
                             { key: C2, action: `.bank` }, // , context: { id: shiftContext, value: 0 }
+                            { key: C3, action: `setView:${synthName}` },
 
                             { key: B1, action: `.set:5`, context: { id: shiftContext, value: 0 } },
                             { key: B2, action: `.set:6`, context: { id: shiftContext, value: 0 } },

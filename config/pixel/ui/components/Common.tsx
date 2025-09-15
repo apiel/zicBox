@@ -37,13 +37,7 @@ export function MainKeys({
                         key: C2,
                         action: pages(viewName, synthName!),
                     }),
-                    {
-                        key: C3,
-                        action:
-                            viewName === `${synthName}Clips`
-                                ? `setView:${synthName}`
-                                : `setView:${synthName}Clips`,
-                    },
+                    { key: C3, action: `setView:${synthName}Clips` },
                     { key: C4, action: `contextToggle:${shiftContext}:1:0` },
                 ]}
                 visibilityContext={[{ index: shiftContext, value: 1, condition: 'SHOW_WHEN_NOT' }]}
