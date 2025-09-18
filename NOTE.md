@@ -1,5 +1,7 @@
 ## PCB
 
+- TODO make a small gap for sd card
+
 - TODO add usb-c pin on board for power... <--- depends if we use battery hat or module or nothings...
 
 - TODO try battery modules
@@ -12,6 +14,8 @@
 
 - FIXME file browsing on aditiv2 synth trigger a crash.
 
+- TODO help section
+
 - TODO pressing select track button of already active track to access menu to capture and other stuff related to track...
 - maybe even enter piano mode... ---> one button to exit and one but to switch encoders, and capture button?
 - record from 0 to 64 step?
@@ -20,6 +24,10 @@
         - knob used to select the recorded loop to playback and keep when we exit
         - everytime loop restart to 0 on step 1 but we can come back with knob, see previous point
         - gonna need to fix button connection... maybe just solder them...
+- knob for octave
+- knob for scale
+- knob to select recorded sequence... <---- when selecting recorded sequence, it can provide menu to save or exit...
+- 
 
 - TODO in menu could use knob or a button to navigate between multiple options...
 
