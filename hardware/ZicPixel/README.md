@@ -1,6 +1,4 @@
-# 04 Hardware
-
-## Zic Pixel
+# 15 Zic Pixel
 
 <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel_12btn.png?raw=true' height='350'>
 
@@ -67,7 +65,7 @@
 </tr>
 </table>
 
-### PCB
+## PCB
 
 The PCB has been designed using EasyEDA. To access the project, use the following link:
 
@@ -97,7 +95,7 @@ You can order the PCB from JLCPCB by following these steps:
 </tr>
 </table>
 
-### Assembly
+## Assembly
 
 Since PCB is constantly evolving, this tutorial might be outdated.
 
