@@ -59,6 +59,12 @@
     <td>PCM5102A DAC</td>
     <td>2.73€ for 1 piece at <a href="https://www.aliexpress.com/item/1005006198619536.html">Aliexpress</a></td>
 </tr>
+<tr>
+    <td></td>
+    <td>1</td>
+    <td>Resistor 660 ohms</td>
+    <td></td>
+</tr>
 </table>
 
 ### PCB
