@@ -186,7 +186,7 @@ protected:
         return applyDecimator(input, amount, decimHold, decimCounter);
     }
 
-    //////////
+    //--------
     // Filters
     //--------
 
