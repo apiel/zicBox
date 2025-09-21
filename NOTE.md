@@ -12,9 +12,9 @@
 
 ## Pixel TODO
 
-- FIXME file browsing on aditiv2 synth trigger a crash.
+- TODO DOC DOC
 
-- TODO help section
+- TODO help section?
 
 - TODO pressing select track button of already active track to access menu to capture and other stuff related to track...
 - maybe even enter piano mode... ---> one button to exit and one but to switch encoders, and capture button?
@@ -27,7 +27,10 @@
 - knob for octave
 - knob for scale
 - knob to select recorded sequence... <---- when selecting recorded sequence, it can provide menu to save or exit...
-- 
+
+- TODO update system
+
+- TODO drone engine
 
 - TODO in menu could use knob or a button to navigate between multiple options...
 

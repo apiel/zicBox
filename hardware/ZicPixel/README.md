@@ -65,7 +65,9 @@
 
 The PCB has been designed using EasyEDA. To access the project, use the following link:
 
-https://easyeda.com/editor#id=2b889900f51446b1961688c786690d0a
+https://easyeda.com/editor#id=5cd71bb61a6c49ae8e3dccd67d79cbfc (wip)
+
+To get files to send to Jlcpcb, click on "Generate PCB Fabrication File (Gerber)"
 
 If you need to modify the PCB, clone the project in your own account.
 
@@ -90,6 +92,8 @@ You can order the PCB from JLCPCB by following these steps:
 </table>
 
 ### Assembly
+
+Since PCB is constantly evolving, this tutorial might be outdated.
 
 <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_00.png?raw=true' width='700'>
 
