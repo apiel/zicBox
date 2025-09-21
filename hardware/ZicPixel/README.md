@@ -140,6 +140,35 @@ Once soldered, connect the Raspberry Pi to the board.
 
 <img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/assembly/pcb_08.png?raw=true' width='700'>
 
+## User Manual
+
+<table>
+<tr>
+<td>Drum1</td><td>Drum2</td><td>Drum3</td><td>Drum4</td>
+</tr>
+<tr>
+<td>Sample1</td><td>Sample2</td><td>Synth1</td><td>Synth2</td>
+</tr>
+<tr>
+<td>Trigger Note</td><td>Page</td><td>Clips</td><td>Shift</td>
+</tr>
+</table>
+
+When shift is pressed:
+<table>
+<tr>
+<td>Mute</td><td>Mute</td><td>Mute</td><td>Mute</td>
+</tr>
+<tr>
+<td>Mute</td><td>Mute</td><td>Mute</td><td>Mute</td>
+</tr>
+<tr>
+<td>Play</td><td>Menu</td><td>Reload all</td><td>Shift</td>
+</tr>
+</table>
+
+Then let assume Drum1 is selected, pressing again Drum1 button will open a sub-menu specific to the track, to go in the sequencer and as well in keyboard mode, ...
+
 ---
 
 *Another old prototype of the Pixel*:
