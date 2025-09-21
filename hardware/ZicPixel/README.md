@@ -142,6 +142,8 @@ Once soldered, connect the Raspberry Pi to the board.
 
 ## User Manual
 
+Key layout:
+
 <table>
 <tr>
 <td>Drum1</td><td>Drum2</td><td>Drum3</td><td>Drum4</td>
