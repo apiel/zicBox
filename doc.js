@@ -19,6 +19,7 @@ const ignore = [
     'plugins/config',
     'libs',
     'os/',
+    'plugins/audio/',
 ];
 const extensions = ['.c', '.h', '.cpp'];
 
