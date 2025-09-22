@@ -10,6 +10,7 @@ import {
     MasterTrack,
     menuTextColor,
     ScreenHeight,
+    ScreenWidth,
     shiftContext,
     W1_4,
     W2_4,
@@ -83,6 +84,14 @@ export function ShiftMainLayout({
                 color="tertiary"
                 track={MasterTrack}
                 visibilityContext={[shiftVisibilityContext]}
+            />
+
+            <Text
+                text="Press a track to mute or unmute"
+                bounds={[0, ScreenHeight - 42, ScreenWidth, 16]}
+                centered={true}
+                visibilityContext={[shiftVisibilityContext]}
+                color={menuTextColor}
             />
 
             <Text

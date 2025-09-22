@@ -142,6 +142,8 @@ Once soldered, connect the Raspberry Pi to the board.
 
 ## User Manual
 
+TODO...
+
 Key layout:
 
 <table>

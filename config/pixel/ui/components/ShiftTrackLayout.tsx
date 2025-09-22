@@ -7,12 +7,14 @@ import { Text } from '@/libs/nativeComponents/Text';
 import {
     C1,
     C2,
+    C4,
     Drum4Track,
     MasterTrack,
     menuTextColor,
     ScreenHeight,
     shiftContext,
     W1_4,
+    W3_4,
 } from '../constants';
 import { backgroundBounds, enc1, enc3 } from '../constantsValue';
 
@@ -52,6 +54,7 @@ export function ShiftTrackLayout({
                         action2: `setView:${synthName}Keyboard`,
                         context: { id: shiftContext, value: 2 },
                     },
+                    { key: C4, action: `mute:${track}`, context: { id: shiftContext, value: 2 } },
                 ]}
             />
 
@@ -90,7 +93,7 @@ export function ShiftTrackLayout({
 
             <Text
                 text="Sequencer"
-                bounds={[0, ScreenHeight - 18, W1_4, 16]}
+                bounds={[0, ScreenHeight - 20, W1_4, 16]}
                 centered={true}
                 visibilityContext={[shiftTrackVisibilityContext]}
                 color={menuTextColor}
@@ -112,13 +115,13 @@ export function ShiftTrackLayout({
                 color={menuTextColor}
             /> */}
 
-            {/* <Text
-                text="Shift"
+            <Text
+                text="Mute"
                 bounds={[W3_4, ScreenHeight - 20, W1_4, 16]}
                 centered={true}
                 visibilityContext={[shiftTrackVisibilityContext]}
-                color={rgb(80, 80, 80)}
-            /> */}
+                color={menuTextColor}
+            />
 
             {/* <Rect
                 bounds={backgroundBounds}
