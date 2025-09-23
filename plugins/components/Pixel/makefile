@@ -16,7 +16,7 @@ all:
 				HiddenValueComponent FmAlgoComponent AdsrComponent\
 				TextComponent SeqProgressBarComponent ValueComponent\
 				RectComponent ClipsComponent KeyboardComponent Keyboard2Component ListComponent\
-				WorkspacesComponent HiddenContextComponent\
+				WorkspacesComponent HiddenContextComponent KnobActionComponent\
 				MacroEnvelopComponent StepEditSampleComponent\
 				SequencerComponent SampleComponent SequencerCardComponent\
 				SequencerValueComponent StringValComponent WorkspaceKnobComponent

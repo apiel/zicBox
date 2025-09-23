@@ -1,7 +1,9 @@
 import * as React from '@/libs/react';
 
 import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
+import { KnobAction } from '@/libs/nativeComponents/KnobAction';
 import { A1, A2, A3, A4, B1, B2, B3, B4, C1, C2, C3, C4 } from '../constants';
+import { enc4 } from '../constantsValue';
 import { Layout } from './Layout';
 
 export type Props = {
@@ -22,22 +24,25 @@ export function Keyboard({ name, track, synthName, color, title }: Props) {
             skipMainKeys
             content={
                 <>
-                    <HiddenValue keys={[{ key: A1, action: `noteOn:${synthName}:67` }]} />
-                    <HiddenValue keys={[{ key: A2, action: `noteOn:${synthName}:69` }]} />
-                    <HiddenValue keys={[{ key: A3, action: `noteOn:${synthName}:71` }]} />
-                    <HiddenValue keys={[{ key: A4, action: `noteOn:${synthName}:72` }]} />
+                    <KnobAction action={`setView:${synthName}`} encoderId={enc4.encoderId} />
 
-                    <HiddenValue keys={[{ key: B1, action: `noteOn:${synthName}:60` }]} />
-                    <HiddenValue keys={[{ key: B2, action: `noteOn:${synthName}:62` }]} />
-                    <HiddenValue keys={[{ key: B3, action: `noteOn:${synthName}:64` }]} />
-                    <HiddenValue keys={[{ key: B4, action: `noteOn:${synthName}:65` }]} />
+                    <HiddenValue keys={[
+                        { key: A1, action: `noteOn:${synthName}:67` },
+                        { key: A2, action: `noteOn:${synthName}:69` },
+                        { key: A3, action: `noteOn:${synthName}:71` },
+                        { key: A4, action: `noteOn:${synthName}:72` },
 
-                    <HiddenValue keys={[{ key: C1, action: `noteOn:${synthName}:55` }]} />
-                    <HiddenValue keys={[{ key: C2, action: `noteOn:${synthName}:56` }]} />
-                    <HiddenValue keys={[{ key: C3, action: `noteOn:${synthName}:58` }]} />
+                        { key: B1, action: `noteOn:${synthName}:60` },
+                        { key: B2, action: `noteOn:${synthName}:62` },
+                        { key: B3, action: `noteOn:${synthName}:64` },
+                        { key: B4, action: `noteOn:${synthName}:65` },
 
-                    {/* // Should be shift but exit for now */}
-                    <HiddenValue keys={[{ key: C4, action: `setView:${synthName}#track` }]} />
+                        { key: C1, action: `noteOn:${synthName}:55` },
+                        { key: C2, action: `noteOn:${synthName}:56` },
+                        { key: C3, action: `noteOn:${synthName}:58` },
+
+                        { key: C4, action: `setView:${synthName}#track` },
+                    ]} />
                 </>
             }
         />

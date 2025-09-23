@@ -107,7 +107,9 @@
         "regex": "cpp",
         "valueinterface.h": "c",
         "execution": "cpp",
-        "clamp.h": "c"
+        "clamp.h": "c",
+        "keypadlayout.h": "c",
+        "componentinterface.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabled",
     "makefile.configureOnOpen": false,
