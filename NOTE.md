@@ -30,6 +30,9 @@
 
 - TODO update system
 
+- TODO rethink way to save, can we reduce the number of time we write file...
+- TODO see if we can make OS read only and data on separate partition to reduce chance of corruption
+
 - TODO drone engine
 
 - TODO in menu could use knob or a button to navigate between multiple options...
