@@ -109,7 +109,9 @@
         "execution": "cpp",
         "clamp.h": "c",
         "keypadlayout.h": "c",
-        "componentinterface.h": "c"
+        "componentinterface.h": "c",
+        "drawwithfb.h": "c",
+        "*.inc": "cpp"
     },
     "C_Cpp.errorSquiggles": "enabled",
     "makefile.configureOnOpen": false,

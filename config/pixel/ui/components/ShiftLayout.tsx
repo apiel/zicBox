@@ -7,12 +7,10 @@ export { notUnshiftVisibilityContext, shiftVisibilityContext, unshiftVisibilityC
 export { shiftTrackVisibilityContext } from './ShiftTrackLayout';
 
 export function ShiftLayout({
-    content,
     track,
     label,
     synthName,
 }: {
-    content?: any;
     track: number;
     label?: string;
     synthName: string;
@@ -20,8 +18,8 @@ export function ShiftLayout({
     return (
         <>
             {/* ShiftTrackLayout must be before ShiftMainLayout */}
-            <ShiftTrackLayout content={content} track={track} label={label} synthName={synthName} />
-            <ShiftMainLayout content={content} track={track} label={label} />
+            <ShiftTrackLayout track={track} label={label} synthName={synthName} />
+            <ShiftMainLayout synthName={synthName} track={track} label={label} />
         </>
     );
 }

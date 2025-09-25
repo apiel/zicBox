@@ -107,7 +107,7 @@ public:
     /*md **Values**: */
 
     /*md - `ENGINE` select the drum engine. */
-    Val& engineVal = val(0, "ENGINE", { "Engine", VALUE_STRING, .min = 0, .max = ENGINES_COUNT - 1 }, [&](auto p) {
+    Val& engineVal = val(0, "ENGINE", { "Engine", VALUE_STRING, .min = 0, .max = SynthMultiSample::ENGINES_COUNT - 1, .incType = INC_ONE_BY_ONE }, [&](auto p) {
         p.val.setFloat(p.value);
         int index = (int)p.val.get();
         engine = engines[index];

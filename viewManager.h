@@ -46,7 +46,7 @@ public:
 
     void setView(std::string value, bool force = false)
     {
-        logTrace("set view string to %s\n", value.c_str());
+        logTrace("set view string to %s", value.c_str());
         if (value == "&previous" && previousView != NULL) {
             value = previousView->name;
         }
@@ -91,7 +91,7 @@ public:
                 return;
             }
         }
-        logWarn("Unknown view: %s\n", value.c_str());
+        logWarn("Unknown view: %s", value.c_str());
     }
 
 protected:

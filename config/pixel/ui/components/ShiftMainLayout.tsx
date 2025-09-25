@@ -16,7 +16,7 @@ import {
     W2_4,
     W3_4,
 } from '../constants';
-import { backgroundBounds, enc1, enc3, enc4 } from '../constantsValue';
+import { backgroundBounds, enc1, enc2, enc3, enc4 } from '../constantsValue';
 
 export const unshiftVisibilityContext: VisibilityContext = {
     condition: 'SHOW_WHEN',
@@ -37,11 +37,11 @@ export const notUnshiftVisibilityContext: VisibilityContext = {
 };
 
 export function ShiftMainLayout({
-    content,
     track,
     label,
+    synthName,
 }: {
-    content?: any;
+    synthName: string,
     track: number;
     label?: string;
 }) {
@@ -63,7 +63,14 @@ export function ShiftMainLayout({
                 visibilityContext={[shiftVisibilityContext]}
             />
 
-            {content}
+            <KnobValue
+                audioPlugin={synthName}
+                param="ENGINE"
+                {...enc2}
+                color="secondary"
+                track={track}
+                visibilityContext={[shiftVisibilityContext]}
+            />
 
             {track <= Drum4Track && (
                 <KnobValue

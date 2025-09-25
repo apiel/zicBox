@@ -1,18 +1,16 @@
 import * as React from '@/libs/react';
 
-import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { StringVal } from '@/libs/nativeComponents/StringVal';
 import { ClipBar } from '../components/ClipBar';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
-import { notUnshiftVisibilityContext, ShiftLayout } from '../components/ShiftLayout';
+import { ShiftLayout } from '../components/ShiftLayout';
 import { Val } from '../components/Val';
 import {
     enc10mini,
     enc11mini,
     enc12mini,
     enc1mini,
-    enc2,
     enc2mini,
     enc3mini,
     enc4mini,
@@ -20,7 +18,7 @@ import {
     enc6mini,
     enc7mini,
     enc8mini,
-    enc9mini,
+    enc9mini
 } from '../constantsValue';
 
 export type Props = {
@@ -43,20 +41,7 @@ export function SynthLayout({ name, track, synthName, color, title }: Props) {
             title={title}
             content={
                 <>
-                    <ShiftLayout
-                        synthName={synthName}
-                        track={track}
-                        content={
-                            <KnobValue
-                                audioPlugin={synthName}
-                                param="ENGINE"
-                                {...enc2}
-                                color="secondary"
-                                track={track}
-                                visibilityContext={[notUnshiftVisibilityContext]}
-                            />
-                        }
-                    />
+                    <ShiftLayout synthName={synthName} track={track} />
 
                     <StringVal
                         audioPlugin={synthName}
