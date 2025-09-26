@@ -199,6 +199,9 @@ public:
         if (userdata) {
             props.audioPluginHandler->noteOn(note, velocity, { track, targetPlugin });
         }
+        // else
+        // save note in a list
+        // and send it to the plugin
     }
 
     void noteOff(uint8_t note, float velocity, void* userdata = NULL) override

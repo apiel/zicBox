@@ -302,8 +302,9 @@
         {"bounds":[5,6,6,6],"color":"#a3c912","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#526509","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#526509","componentName":"Rect"},
+        {"fontSize":32,"text":"Exit","bounds":[240,40,78,80],"font":"PoppinsLight_16","componentName":"Text"},
         {"action":"setView:Drum1","encoderId":4,"bounds":[0,0,0,0],"componentName":"KnobAction"},
-        {"keys":[{"key":"q","action":"noteOn:Drum1:67"},{"key":"w","action":"noteOn:Drum1:69"},{"key":"e","action":"noteOn:Drum1:71"},{"key":"r","action":"noteOn:Drum1:72"},{"key":"a","action":"noteOn:Drum1:60"},{"key":"s","action":"noteOn:Drum1:62"},{"key":"d","action":"noteOn:Drum1:64"},{"key":"f","action":"noteOn:Drum1:65"},{"key":"z","action":"noteOn:Drum1:55"},{"key":"x","action":"noteOn:Drum1:56"},{"key":"c","action":"noteOn:Drum1:58"},{"key":"v","action":"setView:Drum1#track"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
+        {"keys":[{"key":"q","action":"noteOn:Drum1:67"},{"key":"w","action":"noteOn:Drum1:69"},{"key":"e","action":"noteOn:Drum1:71"},{"key":"r","action":"noteOn:Drum1:72"},{"key":"a","action":"noteOn:Drum1:60"},{"key":"s","action":"noteOn:Drum1:62"},{"key":"d","action":"noteOn:Drum1:64"},{"key":"f","action":"noteOn:Drum1:65"},{"key":"z","action":"noteOn:Drum1:53"},{"key":"x","action":"noteOn:Drum1:55"},{"key":"c","action":"noteOn:Drum1:56"},{"key":"v","action":"noteOn:Drum1:58"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
     },
     {
@@ -503,8 +504,9 @@
         {"bounds":[5,6,6,6],"color":"#fd6f0e","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#7f3807","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#7f3807","componentName":"Rect"},
+        {"fontSize":32,"text":"Exit","bounds":[240,40,78,80],"font":"PoppinsLight_16","componentName":"Text"},
         {"action":"setView:Drum2","encoderId":4,"bounds":[0,0,0,0],"componentName":"KnobAction"},
-        {"keys":[{"key":"q","action":"noteOn:Drum2:67"},{"key":"w","action":"noteOn:Drum2:69"},{"key":"e","action":"noteOn:Drum2:71"},{"key":"r","action":"noteOn:Drum2:72"},{"key":"a","action":"noteOn:Drum2:60"},{"key":"s","action":"noteOn:Drum2:62"},{"key":"d","action":"noteOn:Drum2:64"},{"key":"f","action":"noteOn:Drum2:65"},{"key":"z","action":"noteOn:Drum2:55"},{"key":"x","action":"noteOn:Drum2:56"},{"key":"c","action":"noteOn:Drum2:58"},{"key":"v","action":"setView:Drum2#track"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
+        {"keys":[{"key":"q","action":"noteOn:Drum2:67"},{"key":"w","action":"noteOn:Drum2:69"},{"key":"e","action":"noteOn:Drum2:71"},{"key":"r","action":"noteOn:Drum2:72"},{"key":"a","action":"noteOn:Drum2:60"},{"key":"s","action":"noteOn:Drum2:62"},{"key":"d","action":"noteOn:Drum2:64"},{"key":"f","action":"noteOn:Drum2:65"},{"key":"z","action":"noteOn:Drum2:53"},{"key":"x","action":"noteOn:Drum2:55"},{"key":"c","action":"noteOn:Drum2:56"},{"key":"v","action":"noteOn:Drum2:58"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
     },
     {
@@ -704,8 +706,9 @@
         {"bounds":[5,6,6,6],"color":"#15a5ca","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#0b5365","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#0b5365","componentName":"Rect"},
+        {"fontSize":32,"text":"Exit","bounds":[240,40,78,80],"font":"PoppinsLight_16","componentName":"Text"},
         {"action":"setView:Drum3","encoderId":4,"bounds":[0,0,0,0],"componentName":"KnobAction"},
-        {"keys":[{"key":"q","action":"noteOn:Drum3:67"},{"key":"w","action":"noteOn:Drum3:69"},{"key":"e","action":"noteOn:Drum3:71"},{"key":"r","action":"noteOn:Drum3:72"},{"key":"a","action":"noteOn:Drum3:60"},{"key":"s","action":"noteOn:Drum3:62"},{"key":"d","action":"noteOn:Drum3:64"},{"key":"f","action":"noteOn:Drum3:65"},{"key":"z","action":"noteOn:Drum3:55"},{"key":"x","action":"noteOn:Drum3:56"},{"key":"c","action":"noteOn:Drum3:58"},{"key":"v","action":"setView:Drum3#track"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
+        {"keys":[{"key":"q","action":"noteOn:Drum3:67"},{"key":"w","action":"noteOn:Drum3:69"},{"key":"e","action":"noteOn:Drum3:71"},{"key":"r","action":"noteOn:Drum3:72"},{"key":"a","action":"noteOn:Drum3:60"},{"key":"s","action":"noteOn:Drum3:62"},{"key":"d","action":"noteOn:Drum3:64"},{"key":"f","action":"noteOn:Drum3:65"},{"key":"z","action":"noteOn:Drum3:53"},{"key":"x","action":"noteOn:Drum3:55"},{"key":"c","action":"noteOn:Drum3:56"},{"key":"v","action":"noteOn:Drum3:58"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
     },
     {
@@ -905,8 +908,9 @@
         {"bounds":[5,6,6,6],"color":"#ffcd04","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#806702","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#806702","componentName":"Rect"},
+        {"fontSize":32,"text":"Exit","bounds":[240,40,78,80],"font":"PoppinsLight_16","componentName":"Text"},
         {"action":"setView:Drum4","encoderId":4,"bounds":[0,0,0,0],"componentName":"KnobAction"},
-        {"keys":[{"key":"q","action":"noteOn:Drum4:67"},{"key":"w","action":"noteOn:Drum4:69"},{"key":"e","action":"noteOn:Drum4:71"},{"key":"r","action":"noteOn:Drum4:72"},{"key":"a","action":"noteOn:Drum4:60"},{"key":"s","action":"noteOn:Drum4:62"},{"key":"d","action":"noteOn:Drum4:64"},{"key":"f","action":"noteOn:Drum4:65"},{"key":"z","action":"noteOn:Drum4:55"},{"key":"x","action":"noteOn:Drum4:56"},{"key":"c","action":"noteOn:Drum4:58"},{"key":"v","action":"setView:Drum4#track"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
+        {"keys":[{"key":"q","action":"noteOn:Drum4:67"},{"key":"w","action":"noteOn:Drum4:69"},{"key":"e","action":"noteOn:Drum4:71"},{"key":"r","action":"noteOn:Drum4:72"},{"key":"a","action":"noteOn:Drum4:60"},{"key":"s","action":"noteOn:Drum4:62"},{"key":"d","action":"noteOn:Drum4:64"},{"key":"f","action":"noteOn:Drum4:65"},{"key":"z","action":"noteOn:Drum4:53"},{"key":"x","action":"noteOn:Drum4:55"},{"key":"c","action":"noteOn:Drum4:56"},{"key":"v","action":"noteOn:Drum4:58"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
     },
     {
