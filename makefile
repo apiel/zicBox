@@ -80,21 +80,35 @@ merge:
 	git push
 	git checkout develop
 
-releaseOsPixel:
+releasePixel:
 	@echo "Creating GitHub release of zicOs for Zic Pixel on rpi zero..."
 	cd os/zero2w64 && make
-	- rm build/zicOsPixel.zip
-	cd os/zero2w64/output/images/ && zip -r sdcard.img
+	- rm os/zero2w64/output/images/zicOsPixel.zip
+	cd os/zero2w64/output/images/ && zip zicOsPixel.zip sdcard.img 
 	- gh release delete zicOsPixel -y
 	gh release create zicOsPixel os/zero2w64/output/images/zicOsPixel.zip --title "zicOs Pixel Rpi zero2w" --notes "This release contains the zicOs for zic Pixel (rpi zero2w)."
+	make releasePixelFirmware
+
+releasePixelFirmware:
+	mkdir -p build/pixel_arm64/data
+	cp data/config.json build/pixel_arm64/data/config.json
+	- rm build/pixel_arm64/zicPixel.zip
+	cd build/pixel_arm64/ && zip -r zicPixel.zip *
+	rm -rf build/pixel_arm64/data
+	- gh release delete zicPixel -y
+	gh release create zicPixel build/pixel_arm64/zicPixel.zip --title "zicPixel firmware" --notes "This contains the zicPixel firmware, compiled for rpi zero2w."
+	- rm build/pixel_arm64/zicPixel.zip
 
 PI_TARGET ?= root@zic.local
 PI_PASSWORD = password
 PI_REMOTE_DIR = /opt/zicBox
 
-make pi:
+buildPi:
 	make pixelLibs cc=pixel_arm64
 	make buildPixel cc=pixel_arm64
+
+pi:
+	make buildPi
 	- sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "killall zic"
 	rsync -avz --progress -e "sshpass -p '$(PI_PASSWORD)' ssh" build/pixel_arm64/ "$(PI_TARGET):$(PI_REMOTE_DIR)/."
 	rsync -avz --progress -e "sshpass -p '$(PI_PASSWORD)' ssh" data/ "$(PI_TARGET):$(PI_REMOTE_DIR)/data"
@@ -102,7 +116,7 @@ make pi:
 	sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "cd $(PI_REMOTE_DIR) && ./zic"
 
 buildSplash:
-	$(CC) -g -fms-extensions -o build/arm/splash splash.cpp -fpermissive -I.
+	$(CC) -g -fms-extensions -o build/pixel_arm64/splash splash.cpp -fpermissive -I.
 
 splash:
 	make buildSplash cc=pixel_arm64

@@ -20,7 +20,7 @@ make buildSplash cc=pixel_arm64
 
 rm -rf ${TARGET_DIR}/opt/zicBox || true
 mkdir -p ${TARGET_DIR}/opt/zicBox
-cp -r ${ZICBOX_DIR}/build/arm/* ${TARGET_DIR}/opt/zicBox/.
+cp -r ${ZICBOX_DIR}/build/pixel_arm64/* ${TARGET_DIR}/opt/zicBox/.
 cp -r ${ZICBOX_DIR}/data ${TARGET_DIR}/opt/zicBox/.
 
 mv ${TARGET_DIR}/etc/init.d/S10mdev ${TARGET_DIR}/etc/init.d/S000mdev || true

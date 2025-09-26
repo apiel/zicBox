@@ -1,7 +1,6 @@
 import * as React from '@/libs/react';
 
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
-import { Rect } from '@/libs/nativeComponents/Rect';
 import { Text } from '@/libs/nativeComponents/Text';
 import { WorkspaceKnob } from '@/libs/nativeComponents/WorkspaceKnob';
 import { rgb } from '@/libs/ui';
@@ -15,6 +14,7 @@ import {
     menuTextColor,
     ScreenHeight,
     shutdownContext,
+    updateContext,
     W1_4,
     W2_4,
     W3_4,
@@ -75,8 +75,15 @@ export function MenuView({ name }: Props) {
                         centered={true}
                         color={menuTextColor}
                         keys={[{ key: C3, action: `contextToggle:${shutdownContext}:1:0` }]}
+                        visibilityContext={[
+                            {
+                                condition: 'SHOW_WHEN',
+                                index: updateContext,
+                                value: 0,
+                            },
+                        ]}
                     />
-                    <Rect
+                    {/* <Rect
                         bounds={[W3_4, ScreenHeight - 20, W1_4, 16]}
                         color="background"
                         visibilityContext={[
@@ -86,7 +93,22 @@ export function MenuView({ name }: Props) {
                                 value: 0,
                             },
                         ]}
+                    /> */}
+                    <Text
+                        text="Update"
+                        bounds={[W3_4, ScreenHeight - 20, W1_4, 16]}
+                        centered={true}
+                        color={menuTextColor}
+                        keys={[{ key: C4, action: `contextToggle:${updateContext}:1:0` }]}
+                        visibilityContext={[
+                            {
+                                condition: 'SHOW_WHEN',
+                                index: shutdownContext,
+                                value: 0,
+                            },
+                        ]}
                     />
+
                     <Text
                         text="YES"
                         bounds={[W3_4, ScreenHeight - 20, W1_4, 16]}
@@ -101,6 +123,22 @@ export function MenuView({ name }: Props) {
                             },
                         ]}
                         keys={[{ key: C4, action: 'setView:ShuttingDown', action2: `sh:halt` }]}
+                    />
+
+                    <Text
+                        text="YES"
+                        bounds={[W2_4, ScreenHeight - 20, W1_4, 16]}
+                        centered={true}
+                        // color={menuTextColor}
+                        bgColor="#4cb663ff"
+                        visibilityContext={[
+                            {
+                                condition: 'SHOW_WHEN',
+                                index: updateContext,
+                                value: 1,
+                            },
+                        ]}
+                        keys={[{ key: C3, action: 'setView:Updating', action2: `sh:/opt/scripts/update.sh &` }]}
                     />
                 </>
             }
