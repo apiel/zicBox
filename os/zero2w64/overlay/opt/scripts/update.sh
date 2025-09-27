@@ -8,7 +8,7 @@ mkdir -p /opt/zicBox_backup
 rsync -a --exclude 'data' /opt/zicBox/ /opt/zicBox_backup/
 
 # Download the firmware
-wget -O /tmp/zicPixel.zip https://github.com/apiel/zicBox/releases/download/zicPixel/zicPixel.zip
+wget -O /tmp/zicPixel.zip https://github.com/apiel/zicBox/releases/download/zicPixel/zicPixel.zip --no-check-certificate
 
 # Unzip the firmware
 unzip -o /tmp/zicPixel.zip -d /opt/zicBox

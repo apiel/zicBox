@@ -5,7 +5,7 @@ DEVICE="/dev/sda"
 BOOT_PART="${DEVICE}1"
 ROOT_PART="${DEVICE}2"
 BOOT_MOUNT="/media/alex/boot"
-ROOT_MOUNT="/media/alex/rootfs"
+ROOT_MOUNT="/media/alex/rootfs1"
 
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 

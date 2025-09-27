@@ -5,6 +5,11 @@
 #include <mutex>
 #include <vector>
 
+#include <cstdio> // for std::remove
+#include <fstream> // for std::ifstream
+#include <string>
+#include <unistd.h> // for access()
+
 #include "controllerList.h"
 #include "helpers/getExecutableDirectory.h"
 #include "helpers/getTicks.h"
@@ -248,7 +253,38 @@ public:
 
         renderComponents();
 
+        drawMessage();
+
         return true;
+    }
+
+    void drawMessage()
+    {
+        if (access("message.txt", F_OK) != 0) {
+            return;
+        }
+
+        std::ifstream infile("message.txt");
+        std::string text;
+        if (infile) {
+            text.assign((std::istreambuf_iterator<char>(infile)),
+                std::istreambuf_iterator<char>());
+        }
+        infile.close();
+        if (std::remove("message.txt") != 0) {
+            perror("Failed to delete message.txt");
+        }
+
+        if (text.empty()) {
+            return;
+        }
+
+        Color color = styles.colors.white;
+        color.a = 220;
+        void* font = draw->getFont("PoppinsLight_8");
+        draw->filledRect({ 0, 0 }, { (int)(styles.screen.w * 0.5), 10 }, { .color = color });
+        draw->text({ 4, 1 }, text, 8, { .color = { 0, 0, 0 }, .font = font });
+        draw->render();
     }
 
     void renderComponents(unsigned long now = getTicks())
