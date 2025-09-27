@@ -8,7 +8,8 @@
                 "/usr/include/rtmidi",
                 "/usr/include/pd",
                 "/usr/include/lua5.4",
-                "/usr/include/freetype2"
+                "/usr/include/freetype2",
+                "${workspaceFolder}/pico-sdk/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
