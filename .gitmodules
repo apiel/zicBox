@@ -7,3 +7,6 @@
 [submodule "os/buildroot"]
 	path = os/buildroot
 	url = https://github.com/buildroot/buildroot.git
+[submodule "pico-sdk"]
+	path = pico-sdk
+	url = https://github.com/raspberrypi/pico-sdk.git
