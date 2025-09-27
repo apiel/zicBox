@@ -1680,6 +1680,15 @@
         {"bounds":[0,0,320,170],"color":"#999999","componentName":"Pixels"},
         {"fontSize":32,"text":"Updating!","bounds":[40,60,200,16],"font":"PoppinsLight_16","componentName":"Text"}
       ]
+    },
+    {
+      "name": "UpdateAvailable",
+      "components": [
+        {"bounds":[0,0,320,170],"color":"#999999","componentName":"Pixels"},
+        {"fontSize":24,"text":"Update Available","bounds":[0,60,320,16],"centered":true,"font":"PoppinsLight_12","componentName":"Text"},
+        {"text":"Exit","bounds":[80,150,80,16],"centered":true,"color":"#6e6e6e","keys":[{"key":"x","action":"setView:&previous"}],"componentName":"Text"},
+        {"text":"Update","bounds":[160,150,80,16],"centered":true,"bgColor":"#4cb663ff","keys":[{"key":"c","action":"setView:Updating","action2":"sh:/opt/scripts/update.sh &"}],"componentName":"Text"}
+      ]
     }
   ]
 }

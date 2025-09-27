@@ -36,6 +36,7 @@ import {
 import { DrumViews } from './Drum/DrumViews';
 import { MenuView } from './menu/MenuView';
 import { ShuttingDown } from './menu/ShuttingDown';
+import { UpdateAvailable } from './menu/UpdateAvailable';
 import { Updating } from './menu/Updating';
 import { SampleViews } from './Sample/SampleViews';
 import { SynthViews } from './Synth/SynthViews';
@@ -126,6 +127,7 @@ export const ui = {
             <MenuView name="Menu" />
             <ShuttingDown name="ShuttingDown" />
             <Updating name="Updating" />
+            <UpdateAvailable name="UpdateAvailable" />
         </>
     ),
 };

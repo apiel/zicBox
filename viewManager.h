@@ -279,6 +279,12 @@ public:
             return;
         }
 
+        if (text.rfind("setView:") == 0) {
+            std::string viewName = text.substr(8);
+            setView(viewName);
+            return;
+        }
+
         Color color = styles.colors.white;
         color.a = 220;
         void* font = draw->getFont("PoppinsLight_8");
