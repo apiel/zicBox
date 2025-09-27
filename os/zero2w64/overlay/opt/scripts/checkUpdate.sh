@@ -31,7 +31,6 @@ STORED=$(cat "$STATE_FILE")
 if [ "$LATEST" != "$STORED" ]; then
     echo "Update available $STORED -> $LATEST."
     echo "setView:UpdateAvailable" > "/opt/zicBox/message.txt"
-    echo "$LATEST" > "$STATE_FILE"
 else
     echo "No update available."
 fi

@@ -267,8 +267,7 @@ public:
         std::ifstream infile("message.txt");
         std::string text;
         if (infile) {
-            text.assign((std::istreambuf_iterator<char>(infile)),
-                std::istreambuf_iterator<char>());
+            std::getline(infile, text); // reads a single line, no '\n'
         }
         infile.close();
         if (std::remove("message.txt") != 0) {
