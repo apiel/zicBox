@@ -14,7 +14,7 @@ The RP2040 offers several advantages making it versatile for multiple types of i
 | SCK     | GND    |
 | DIN     | GP9    |
 | BCK     | GP10   |
-| LRCK    | CP11   |
+| LRCK    | GP11   |
 | GND     | GND    |
 | VIN     | Vout   |
 
