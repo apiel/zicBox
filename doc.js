@@ -20,6 +20,8 @@ const ignore = [
     'libs',
     'os/',
     'plugins/audio/',
+    'pico/pico-',
+    'build',
 ];
 const extensions = ['.c', '.h', '.cpp'];
 
@@ -75,7 +77,10 @@ const reg2 = /\/\/md\s(.*)/g; //--> //md content
 const reg3 = /"(\w+)".*\/\/eg:\s*(.*)/g; //--> textColor = draw.getColor(config["textColor"], textColor); //eg: "#ffffff"
 const reg4 = /\/\/\/\s(.*)/g; //--> /// description
 
-const reg = new RegExp(reg1.source + '|' + reg2.source + '|' + reg3.source + '|' + reg4.source, 'g');
+const reg = new RegExp(
+    reg1.source + '|' + reg2.source + '|' + reg3.source + '|' + reg4.source,
+    'g'
+);
 
 function extractMdComment(content) {
     const result = [];
@@ -130,28 +135,33 @@ function docs(folder) {
     const contents = [];
     const files = readdirSync(folder);
     for (const file of files) {
-        const filepath = path.join(folder, file);
-        if (isIgnored(filepath)) {
-            continue;
-        }
-        if (lstatSync(filepath).isDirectory()) {
-            docs(filepath);
-        } else if (filepath.toLowerCase().endsWith('readme.md')) {
-            // Ignore root readme
-            if (filepath.toLowerCase() === 'readme.md') {
+        try {
+            const filepath = path.join(folder, file);
+            if (isIgnored(filepath)) {
                 continue;
             }
-            const content = readFileSync(filepath, 'utf8');
-            contents.unshift(content);
-        } else if (filepath.endsWith('.md')) {
-            const content = readFileSync(filepath, 'utf8');
-            contents.push(content);
-        } else if (isAllowedExtension(filepath)) {
-            const content = readFileSync(filepath, 'utf8');
-            const md = extractMdComment(content);
-            if (md) {
-                contents.push(md);
+            if (lstatSync(filepath).isDirectory()) {
+                docs(filepath);
+            } else if (filepath.toLowerCase().endsWith('readme.md')) {
+                // Ignore root readme
+                if (filepath.toLowerCase() === 'readme.md') {
+                    continue;
+                }
+                const content = readFileSync(filepath, 'utf8');
+                contents.unshift(content);
+            } else if (filepath.endsWith('.md')) {
+                const content = readFileSync(filepath, 'utf8');
+                contents.push(content);
+            } else if (isAllowedExtension(filepath)) {
+                const content = readFileSync(filepath, 'utf8');
+                const md = extractMdComment(content);
+                if (md) {
+                    contents.push(md);
+                }
             }
+        } catch (error) {
+            console.error(`Error in file ${folder}/${file}`);
+            throw error;
         }
     }
     if (contents.length) {

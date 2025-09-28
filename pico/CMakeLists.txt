@@ -1,10 +1,14 @@
 cmake_minimum_required(VERSION 3.13)
 
-# Set path to the pico-sdk
-set(PICO_SDK_PATH ${CMAKE_CURRENT_LIST_DIR}/../pico-sdk)
+# Set paths
+set(PICO_SDK_PATH ${CMAKE_CURRENT_LIST_DIR}/pico-sdk)
+set(PICO_EXTRAS_PATH ${CMAKE_CURRENT_LIST_DIR}/pico-extras)
 
-# Initialize the SDK
+# Import pico-sdk
 include(${PICO_SDK_PATH}/external/pico_sdk_import.cmake)
+
+# Import pico-extras (for audio, etc.)
+include(${PICO_EXTRAS_PATH}/external/pico_extras_import.cmake)
 
 project(zic)
 
@@ -14,10 +18,16 @@ add_executable(zic
     main.cpp
 )
 
-target_link_libraries(zic pico_stdlib)
-# If your board has the CYW43 Wi-Fi chip (like Raspberry Pi Pico W), link the Wi-Fi driver.
+# Link with stdlib + I2S audio from pico-extras
+target_link_libraries(zic
+    pico_stdlib
+    pico_audio_i2s
+)
+
+# If your board has Wi-Fi (Pico W), also link the Wi-Fi driver
 if (PICO_CYW43_SUPPORTED)
     target_link_libraries(zic pico_cyw43_arch_none)
 endif()
 
+# Create UF2 / bin / etc.
 pico_add_extra_outputs(zic)

@@ -1,53 +1,65 @@
-/**
- * Copyright (c) 2020 Raspberry Pi (Trading) Ltd.
- *
- * SPDX-License-Identifier: BSD-3-Clause
- */
+#include <stdio.h>
+#include <cmath>
+#include <math.h>
 
 #include "pico/stdlib.h"
+#include "pico/audio_i2s.h"
 
-// Pico W devices use a GPIO on the WIFI chip for the LED,
-// so when building for Pico W, CYW43_WL_GPIO_LED_PIN will be defined
-#ifdef CYW43_WL_GPIO_LED_PIN
-#include "pico/cyw43_arch.h"
-#endif
+// Configure pins
+#define I2S_DATA_PIN 9
+#define I2S_BCLK_PIN 10
+#define I2S_LRCK_PIN 11
 
-#ifndef LED_DELAY_MS
-#define LED_DELAY_MS 500
-#endif
+// Audio config: stereo, 44.1kHz, 16-bit
+audio_format_t audio_format = {
+    .sample_freq = 44100,
+    .format = AUDIO_BUFFER_FORMAT_PCM_S16,
+    .channel_count = 2
+};
 
-// Perform initialisation
-int pico_led_init(void) {
-#if defined(PICO_DEFAULT_LED_PIN)
-    // A device like Pico that uses a GPIO for the LED will define PICO_DEFAULT_LED_PIN
-    // so we can use normal GPIO functionality to turn the led on and off
-    gpio_init(PICO_DEFAULT_LED_PIN);
-    gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
-    return PICO_OK;
-#elif defined(CYW43_WL_GPIO_LED_PIN)
-    // For Pico W devices we need to initialise the driver etc
-    return cyw43_arch_init();
-#endif
-}
+audio_buffer_format_t producer_format = {
+    .format = &audio_format,
+    .sample_stride = 4 // 16-bit * 2 channels
+};
 
-// Turn the led on or off
-void pico_set_led(bool led_on) {
-#if defined(PICO_DEFAULT_LED_PIN)
-    // Just set the GPIO on or off
-    gpio_put(PICO_DEFAULT_LED_PIN, led_on);
-#elif defined(CYW43_WL_GPIO_LED_PIN)
-    // Ask the wifi "driver" to set the GPIO on or off
-    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, led_on);
-#endif
-}
+struct audio_i2s_config i2s_config = {
+    .data_pin = I2S_DATA_PIN,
+    .clock_pin_base = I2S_BCLK_PIN, // BCK=10, LRCK=11
+    .dma_channel = 0,
+    .pio_sm = 0
+};
+
+static audio_buffer_pool_t *pool;
 
 int main() {
-    int rc = pico_led_init();
-    hard_assert(rc == PICO_OK);
+    stdio_init_all();
+
+    // Initialize I2S
+    pool = audio_new_producer_pool(&producer_format, 3, 256); // 3 buffers, 256 samples each
+    bool ok = audio_i2s_setup(&audio_format, &i2s_config);
+    if (!ok) {
+        printf("I2S setup failed!\n");
+        while (1);
+    }
+    audio_i2s_connect(pool);
+    audio_i2s_set_enabled(true);
+
+    // Generate test tone
+    const float freq = 440.0f; // A4
+    const float phase_inc = 2.0f * (float)M_PI * freq / audio_format.sample_freq;
+    float phase = 0.0f;
+
     while (true) {
-        pico_set_led(true);
-        sleep_ms(LED_DELAY_MS);
-        pico_set_led(false);
-        sleep_ms(LED_DELAY_MS);
+        audio_buffer_t *buffer = take_audio_buffer(pool, true);
+        int16_t *samples = (int16_t *)buffer->buffer->bytes;
+        for (int i = 0; i < buffer->max_sample_count; i++) {
+            int16_t sample = (int16_t)(32767 * sinf(phase));
+            samples[2 * i + 0] = sample; // Left
+            samples[2 * i + 1] = sample; // Right
+            phase += phase_inc;
+            if (phase >= 2.0f * (float)M_PI) phase -= 2.0f * (float)M_PI;
+        }
+        buffer->sample_count = buffer->max_sample_count;
+        give_audio_buffer(pool, buffer);
     }
 }

@@ -9,7 +9,8 @@
                 "/usr/include/pd",
                 "/usr/include/lua5.4",
                 "/usr/include/freetype2",
-                "${workspaceFolder}/pico-sdk/**"
+                "${workspaceFolder}/pico/pico-sdk/**",
+                "${workspaceFolder}/pico/pico-extras/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
