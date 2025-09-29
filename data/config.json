@@ -302,9 +302,10 @@
         {"bounds":[5,6,6,6],"color":"#a3c912","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#526509","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#526509","componentName":"Rect"},
+        {"audioPlugin":"Sequencer","param":"PLAYING_LOOPS","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":1,"componentName":"KnobValue"},
         {"fontSize":32,"text":"Exit","bounds":[240,40,78,80],"font":"PoppinsLight_16","componentName":"Text"},
-        {"action":"setView:Drum1","encoderId":4,"bounds":[0,0,0,0],"componentName":"KnobAction"},
-        {"keys":[{"key":"q","action":"noteOn:Drum1:67"},{"key":"w","action":"noteOn:Drum1:69"},{"key":"e","action":"noteOn:Drum1:71"},{"key":"r","action":"noteOn:Drum1:72"},{"key":"a","action":"noteOn:Drum1:60"},{"key":"s","action":"noteOn:Drum1:62"},{"key":"d","action":"noteOn:Drum1:64"},{"key":"f","action":"noteOn:Drum1:65"},{"key":"z","action":"noteOn:Drum1:53"},{"key":"x","action":"noteOn:Drum1:55"},{"key":"c","action":"noteOn:Drum1:56"},{"key":"v","action":"noteOn:Drum1:58"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
+        {"action":"setView:&previous","encoderId":4,"bounds":[0,0,0,0],"componentName":"KnobAction"},
+        {"keys":[{"key":"q","action":"record:Sequencer:67:1"},{"key":"w","action":"record:Sequencer:69:1"},{"key":"e","action":"record:Sequencer:71:1"},{"key":"r","action":"record:Sequencer:72:1"},{"key":"a","action":"record:Sequencer:60:1"},{"key":"s","action":"record:Sequencer:62:1"},{"key":"d","action":"record:Sequencer:64:1"},{"key":"f","action":"record:Sequencer:65:1"},{"key":"z","action":"record:Sequencer:53:1"},{"key":"x","action":"record:Sequencer:55:1"},{"key":"c","action":"record:Sequencer:56:1"},{"key":"v","action":"record:Sequencer:58:1"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
     },
     {
@@ -504,9 +505,10 @@
         {"bounds":[5,6,6,6],"color":"#fd6f0e","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#7f3807","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#7f3807","componentName":"Rect"},
+        {"audioPlugin":"Sequencer","param":"PLAYING_LOOPS","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":2,"componentName":"KnobValue"},
         {"fontSize":32,"text":"Exit","bounds":[240,40,78,80],"font":"PoppinsLight_16","componentName":"Text"},
-        {"action":"setView:Drum2","encoderId":4,"bounds":[0,0,0,0],"componentName":"KnobAction"},
-        {"keys":[{"key":"q","action":"noteOn:Drum2:67"},{"key":"w","action":"noteOn:Drum2:69"},{"key":"e","action":"noteOn:Drum2:71"},{"key":"r","action":"noteOn:Drum2:72"},{"key":"a","action":"noteOn:Drum2:60"},{"key":"s","action":"noteOn:Drum2:62"},{"key":"d","action":"noteOn:Drum2:64"},{"key":"f","action":"noteOn:Drum2:65"},{"key":"z","action":"noteOn:Drum2:53"},{"key":"x","action":"noteOn:Drum2:55"},{"key":"c","action":"noteOn:Drum2:56"},{"key":"v","action":"noteOn:Drum2:58"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
+        {"action":"setView:&previous","encoderId":4,"bounds":[0,0,0,0],"componentName":"KnobAction"},
+        {"keys":[{"key":"q","action":"record:Sequencer:67:2"},{"key":"w","action":"record:Sequencer:69:2"},{"key":"e","action":"record:Sequencer:71:2"},{"key":"r","action":"record:Sequencer:72:2"},{"key":"a","action":"record:Sequencer:60:2"},{"key":"s","action":"record:Sequencer:62:2"},{"key":"d","action":"record:Sequencer:64:2"},{"key":"f","action":"record:Sequencer:65:2"},{"key":"z","action":"record:Sequencer:53:2"},{"key":"x","action":"record:Sequencer:55:2"},{"key":"c","action":"record:Sequencer:56:2"},{"key":"v","action":"record:Sequencer:58:2"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
     },
     {
@@ -706,9 +708,10 @@
         {"bounds":[5,6,6,6],"color":"#15a5ca","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#0b5365","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#0b5365","componentName":"Rect"},
+        {"audioPlugin":"Sequencer","param":"PLAYING_LOOPS","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":3,"componentName":"KnobValue"},
         {"fontSize":32,"text":"Exit","bounds":[240,40,78,80],"font":"PoppinsLight_16","componentName":"Text"},
-        {"action":"setView:Drum3","encoderId":4,"bounds":[0,0,0,0],"componentName":"KnobAction"},
-        {"keys":[{"key":"q","action":"noteOn:Drum3:67"},{"key":"w","action":"noteOn:Drum3:69"},{"key":"e","action":"noteOn:Drum3:71"},{"key":"r","action":"noteOn:Drum3:72"},{"key":"a","action":"noteOn:Drum3:60"},{"key":"s","action":"noteOn:Drum3:62"},{"key":"d","action":"noteOn:Drum3:64"},{"key":"f","action":"noteOn:Drum3:65"},{"key":"z","action":"noteOn:Drum3:53"},{"key":"x","action":"noteOn:Drum3:55"},{"key":"c","action":"noteOn:Drum3:56"},{"key":"v","action":"noteOn:Drum3:58"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
+        {"action":"setView:&previous","encoderId":4,"bounds":[0,0,0,0],"componentName":"KnobAction"},
+        {"keys":[{"key":"q","action":"record:Sequencer:67:3"},{"key":"w","action":"record:Sequencer:69:3"},{"key":"e","action":"record:Sequencer:71:3"},{"key":"r","action":"record:Sequencer:72:3"},{"key":"a","action":"record:Sequencer:60:3"},{"key":"s","action":"record:Sequencer:62:3"},{"key":"d","action":"record:Sequencer:64:3"},{"key":"f","action":"record:Sequencer:65:3"},{"key":"z","action":"record:Sequencer:53:3"},{"key":"x","action":"record:Sequencer:55:3"},{"key":"c","action":"record:Sequencer:56:3"},{"key":"v","action":"record:Sequencer:58:3"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
     },
     {
@@ -908,9 +911,10 @@
         {"bounds":[5,6,6,6],"color":"#ffcd04","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#806702","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#806702","componentName":"Rect"},
+        {"audioPlugin":"Sequencer","param":"PLAYING_LOOPS","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":4,"componentName":"KnobValue"},
         {"fontSize":32,"text":"Exit","bounds":[240,40,78,80],"font":"PoppinsLight_16","componentName":"Text"},
-        {"action":"setView:Drum4","encoderId":4,"bounds":[0,0,0,0],"componentName":"KnobAction"},
-        {"keys":[{"key":"q","action":"noteOn:Drum4:67"},{"key":"w","action":"noteOn:Drum4:69"},{"key":"e","action":"noteOn:Drum4:71"},{"key":"r","action":"noteOn:Drum4:72"},{"key":"a","action":"noteOn:Drum4:60"},{"key":"s","action":"noteOn:Drum4:62"},{"key":"d","action":"noteOn:Drum4:64"},{"key":"f","action":"noteOn:Drum4:65"},{"key":"z","action":"noteOn:Drum4:53"},{"key":"x","action":"noteOn:Drum4:55"},{"key":"c","action":"noteOn:Drum4:56"},{"key":"v","action":"noteOn:Drum4:58"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
+        {"action":"setView:&previous","encoderId":4,"bounds":[0,0,0,0],"componentName":"KnobAction"},
+        {"keys":[{"key":"q","action":"record:Sequencer:67:4"},{"key":"w","action":"record:Sequencer:69:4"},{"key":"e","action":"record:Sequencer:71:4"},{"key":"r","action":"record:Sequencer:72:4"},{"key":"a","action":"record:Sequencer:60:4"},{"key":"s","action":"record:Sequencer:62:4"},{"key":"d","action":"record:Sequencer:64:4"},{"key":"f","action":"record:Sequencer:65:4"},{"key":"z","action":"record:Sequencer:53:4"},{"key":"x","action":"record:Sequencer:55:4"},{"key":"c","action":"record:Sequencer:56:4"},{"key":"v","action":"record:Sequencer:58:4"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
       ]
     },
     {

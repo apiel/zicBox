@@ -48,7 +48,7 @@ protected:
     uint16_t stepCount = MAX_STEPS;
     std::vector<Step> steps;
     std::vector<Step> stepsPreview;
-    std::vector<Step>& playingSteps = steps;
+    std::vector<Step>* playingSteps = &steps;
 
     uint16_t stepCounter = 0;
     bool isPlaying = false;
@@ -104,7 +104,7 @@ protected:
             }
         }
 
-        for (auto& step : playingSteps) {
+        for (auto& step : *playingSteps) {
             if (step.counter) {
                 step.counter--;
                 if (step.counter == 0) {
@@ -180,7 +180,7 @@ public:
         allOff();
         if (p.val.get() == 0.0f) {
             p.val.setString("Saved");
-            playingSteps = steps;
+            playingSteps = &steps;
         } else {
             p.val.setString("Rec " + std::to_string((int)p.val.get()));
             stepsPreview.clear();
@@ -197,8 +197,9 @@ public:
                     });
                 }
             }
-            playingSteps = stepsPreview;
+            playingSteps = &stepsPreview;
         }
+        p.val.props().unit = playingSteps->size() > 0 ? std::to_string((int)playingSteps->size()) + " steps" : "Empty";
     });
 
     Sequencer(AudioPlugin::Props& props, AudioPlugin::Config& config)
@@ -333,6 +334,8 @@ public:
 
                 loopToPush->push_back({ an.startLoop, an.note, an.startStep, len, an.velocity });
 
+                logDebug("Record step: loop %d, note %d, startStep %d, len %d", an.startLoop, an.note, an.startStep, len);
+
                 activeNotes.erase(it);
             }
         }
@@ -352,7 +355,7 @@ public:
 
     void allOff()
     {
-        for (auto& step : playingSteps) {
+        for (auto& step : *playingSteps) {
             if (step.counter) {
                 props.audioPluginHandler->noteOff(getNote(step), 0, { track, targetPlugin });
             }

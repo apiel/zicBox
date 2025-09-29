@@ -351,7 +351,7 @@ public:
             };
         }
 
-        if (action.rfind("noteOn:") == 0) {
+        if (action.rfind("noteOn:") == 0 || action.rfind("record:") == 0) {
             std::string substring = action.substr(7);
             std::vector<char> params(substring.begin(), substring.end());
             params.push_back('\0');
@@ -360,13 +360,16 @@ public:
             char* noteStr = strtok(NULL, ":");
             char* trackStr = strtok(NULL, ":");
             AudioPlugin* plugin = &component->getPlugin(pluginName, trackStr != NULL ? atoi(trackStr) : component->track);
+
+            bool recordValue = action.rfind("record:") == 0;
+            void* record = recordValue ? &recordValue : nullptr;
             if (plugin && noteStr != NULL) {
                 uint8_t* note = new uint8_t(atoi(noteStr));
-                return [this, plugin, note](KeypadLayout::KeyMap& keymap) {
+                return [this, plugin, note, record](KeypadLayout::KeyMap& keymap) {
                     if (isPressed(keymap)) {
-                        plugin->noteOn(*note, 1.0f);
+                        plugin->noteOn(*note, 1.0f, record);
                     } else {
-                        plugin->noteOff(*note, 0.0f);
+                        plugin->noteOff(*note, 0.0f, record);
                     }
                 };
             }
