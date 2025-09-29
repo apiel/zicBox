@@ -175,6 +175,31 @@ public:
         }
     });
 
+    Val& playingLoops = val(0.0f, "PLAYING_LOOPS", { "Loop", VALUE_STRING, 0.0f, .max = 10.0f, .incType = INC_ONE_BY_ONE }, [&](auto p) {
+        p.val.setFloat(p.value);
+        if (p.val.get() == 0.0f) {
+            p.val.setString("Saved");
+            playingSteps = steps;
+        } else {
+            p.val.setString("Rec " + std::to_string((int)p.val.get()));
+            stepsPreview.clear();
+            int index = (int)p.val.get() - 1;
+            if (index < recordedLoops.size()) {
+                std::vector<RecordedNote>& loop = recordedLoops[index];
+                for (auto& step : loop) {
+                    stepsPreview.push_back({
+                        .enabled = true,
+                        .velocity = step.velocity,
+                        .position = step.startStep,
+                        .len = step.len,
+                        .note = step.note,
+                    });
+                }
+            }
+            playingSteps = stepsPreview;
+        }
+    });
+
     Sequencer(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
         , props(props)
@@ -195,6 +220,7 @@ public:
 
         //md - `"maxRecordLoops": 10` maximum number of loops to record
         maxRecordLoops = config.json.value("maxRecordLoops", maxRecordLoops);
+        playingLoops.props().max = maxRecordLoops;
     }
 
     void sample(float* buf) override

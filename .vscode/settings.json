@@ -111,7 +111,9 @@
         "keypadlayout.h": "c",
         "componentinterface.h": "c",
         "drawwithfb.h": "c",
-        "*.inc": "cpp"
+        "*.inc": "cpp",
+        "barrier": "cpp",
+        "latch": "cpp"
     },
     "C_Cpp.errorSquiggles": "enabled",
     "makefile.configureOnOpen": false,
