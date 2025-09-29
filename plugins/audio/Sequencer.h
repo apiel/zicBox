@@ -47,6 +47,8 @@ protected:
 
     uint16_t stepCount = MAX_STEPS;
     std::vector<Step> steps;
+    std::vector<Step> stepsPreview;
+    std::vector<Step>& playingSteps = steps;
 
     uint16_t stepCounter = 0;
     bool isPlaying = false;
@@ -102,7 +104,7 @@ protected:
             }
         }
 
-        for (auto& step : steps) {
+        for (auto& step : playingSteps) {
             if (step.counter) {
                 step.counter--;
                 if (step.counter == 0) {
