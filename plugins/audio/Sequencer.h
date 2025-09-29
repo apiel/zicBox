@@ -177,6 +177,7 @@ public:
 
     Val& playingLoops = val(0.0f, "PLAYING_LOOPS", { "Loop", VALUE_STRING, 0.0f, .max = 10.0f, .incType = INC_ONE_BY_ONE }, [&](auto p) {
         p.val.setFloat(p.value);
+        allOff();
         if (p.val.get() == 0.0f) {
             p.val.setString("Saved");
             playingSteps = steps;
@@ -351,7 +352,7 @@ public:
 
     void allOff()
     {
-        for (auto& step : steps) {
+        for (auto& step : playingSteps) {
             if (step.counter) {
                 props.audioPluginHandler->noteOff(getNote(step), 0, { track, targetPlugin });
             }
