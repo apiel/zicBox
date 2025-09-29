@@ -18,6 +18,9 @@ add_executable(zic
     main.cpp
 )
 
+pico_enable_stdio_usb(zic 1)
+pico_enable_stdio_uart(zic 0)
+
 # Link with stdlib + I2S audio from pico-extras
 target_link_libraries(zic
     pico_stdlib

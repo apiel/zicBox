@@ -10,6 +10,15 @@
 
 - TODO pixel working with orange PI ----> use built-in output as second audio interface?
 
+# Pico
+
+Knobs:
+Volume MasterFxValue1 MasterFxValue2  <------ so there would be a master FX that doesnt change if patch change. This master FX has 2 values similar to mc101 master fx
+Enc1 Enc2 Enc3 Enc4
+Enc5 Enc6 Enc7
+
+All encoder are to edit patches, however Enc4 is push button so, should it edit the patch or used for menu navigation only?
+
 ## Pixel TODO
 
 - TODO DOC DOC
