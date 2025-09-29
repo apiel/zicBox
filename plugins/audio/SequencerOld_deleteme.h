@@ -1,9 +1,6 @@
 #pragma once
 
-#include <algorithm>
-#include <map>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "Tempo.h"
@@ -91,6 +88,9 @@ protected:
     {
         stepCounter++;
 
+        // callEventCallbacks();
+
+        // printf("[%d] ------------------- seq stepCounter %d\n", track, stepCounter);
         uint8_t state = status.get();
         // If we reach the end of the sequence, we reset the step counter
         if (stepCounter >= stepCount) {
@@ -142,13 +142,13 @@ public:
     Val& status = val(1.0f, "STATUS", { "Status", VALUE_STRING, .max = 2 }, [&](auto p) { setStatus(p.value); });
 
     // in 4/4 time signature
-    // 92 tick = 1 note = 1 bar
-    // 48 tick = 1 half note = 1/2 bar
+    // 92 tick = 1 note = 1 bar 
+    // 48 tick = 1 half note = 1/2 bar 
     // 24 tick = 1 quarter note = 1/4 bar
     // 12 tick = Eighth Note = 1/8 bar
     // 6 tick = Sixteenth Note = 1/16 bar
     // 3 tick = Thirty-Second Note = 1/32 bar
-
+    
     /*md - `NOTE_REPEAT` set note repeat mode: 1/32 bar, 1/16 bar, 1/8 bar, 1/4 bar, 1/2 bar, 1 bar */
     Val& noteRepeatVal = val(1.0f, "NOTE_REPEAT", { "Note Repeat", VALUE_STRING, .max = 5 }, [&](auto p) {
         p.val.setFloat(p.value);
@@ -187,12 +187,6 @@ public:
 
         //md - `"stepCount": 32` set the number of steps
         stepCount = config.json.value("stepCount", stepCount);
-
-        //md - `"recordingEnabled": true` if true, noteOn/noteOff will be recorded
-        recordingEnabled = config.json.value("recordingEnabled", recordingEnabled);
-
-        //md - `"maxRecordLoops": 10` maximum number of loops to record
-        maxRecordLoops = config.json.value("maxRecordLoops", maxRecordLoops);
     }
 
     void sample(float* buf) override
@@ -200,112 +194,25 @@ public:
         UseClock::sample(buf);
     }
 
-    // -----------------------
-    // RECORDING DATA STRUCTS
-    // -----------------------
-    struct RecordedNote {
-        uint16_t loop; // loop index
-        uint8_t note; // MIDI note
-        uint16_t startStep; // step position within the loop [0, stepCount-1]
-        uint16_t len; // length in steps (>=1)
-        float velocity;
-    };
-
-    struct ActiveNote {
-        uint8_t note;
-        uint16_t startLoop; // absolute loopCounter when note started
-        uint16_t startStep; // stepCounter when note started (0..stepCount-1)
-        float velocity;
-    };
-
-    bool recordingEnabled = true; // if true, noteOn/noteOff without userdata will be recorded
-    uint16_t maxRecordLoops = 10; // maximum number of loops to record (circular buffer)
-
-    // recordedLoops[i] = notes recorded for loop index (loopCounter % maxRecordLoops == i)
-    std::vector<std::vector<RecordedNote>> recordedLoops;
-
-    // Active notes keyed by MIDI note number (only for recording path)
-    std::unordered_map<uint8_t, ActiveNote> activeNotes;
-
-    // -----------------------
-    // End recording structs
-    // -----------------------
-
     void noteOn(uint8_t note, float velocity, void* userdata) override
     {
-        if (userdata != NULL) {
+        // user data is only used to detect that the note the UI sequencer editor, 
+        // to trigger note without to record them.
+        // see SequencerComponent .noteOn
+        //
+        // The content of the userdata can be anything, as long as it is not NULL
+        if (userdata) {
             props.audioPluginHandler->noteOn(note, velocity, { track, targetPlugin });
-
-            if (!recordingEnabled)
-                return;
-
-            bool record = (bool)userdata;
-            if (record) {
-                // Avoid duplicate active note entry (re-trigger) — if already active, we return.
-                auto it = activeNotes.find(note);
-                if (it != activeNotes.end()) {
-                    return;
-                }
-
-                // store active note with current absolute loop and step
-                ActiveNote an;
-                an.note = note;
-                an.startLoop = loopCounter;
-                an.startStep = stepCounter;
-                an.velocity = velocity;
-                activeNotes[note] = an;
-            }
         }
+        // else
+        // save note in a list
+        // and send it to the plugin
     }
 
     void noteOff(uint8_t note, float velocity, void* userdata = NULL) override
     {
-        if (userdata != NULL) {
+        if (userdata) {
             props.audioPluginHandler->noteOff(note, 0, { track, targetPlugin });
-
-            if (!recordingEnabled)
-                return;
-
-            bool record = (bool)userdata;
-            if (record) {
-                auto it = activeNotes.find(note);
-                if (it == activeNotes.end())
-                    return;
-
-                ActiveNote& an = it->second;
-
-                // Determine duration in steps.
-                uint16_t len = 1;
-                if (loopCounter == an.startLoop) {
-                    len = stepCounter - an.startStep;
-                } else if (loopCounter > an.startLoop) {
-                    len = stepCount - an.startStep;
-                    len += stepCounter;
-                }
-                // Max length is stepCount + 1, so if a note is on more than a full loop,
-                // the note will play for ever
-                len = std::clamp(len, (uint16_t)1, (uint16_t)(stepCount + 1));
-
-                std::vector<RecordedNote>* loopToPush = nullptr;
-                for (auto& loop : recordedLoops) {
-                    if (loop[0].loop == an.startLoop) {
-                        loopToPush = &loop;
-                        break;
-                    }
-                }
-
-                if (loopToPush == nullptr) {
-                    loopToPush = &recordedLoops.emplace_back();
-                    // if we exceed the max number of loops, remove the first one
-                    if (recordedLoops.size() > maxRecordLoops) {
-                        recordedLoops.erase(recordedLoops.begin());
-                    }
-                }
-
-                loopToPush->push_back({ an.startLoop, an.note, an.startStep, len, an.velocity });
-
-                activeNotes.erase(it);
-            }
         }
     }
 
@@ -329,11 +236,6 @@ public:
             }
             step.counter = 0;
         }
-        // Also all off for recording active notes
-        for (auto& kv : activeNotes) {
-            props.audioPluginHandler->noteOff(kv.first, 0, { track, targetPlugin });
-        }
-        activeNotes.clear();
     }
 
     void onEvent(AudioEventType event, bool playing) override

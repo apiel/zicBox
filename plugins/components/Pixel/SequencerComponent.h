@@ -77,13 +77,13 @@ public:
             }
             if (action == ".noteOn") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
-                    bool userdata = true;
+                    bool record = false;
                     if (KeypadLayout::isPressed(keymap)) {
                         Step* step = getSelectedStep();
                         float velo = step ? step->velocity : 1.0f;
-                        plugin->noteOn(selectedNote, velo, &userdata);
+                        plugin->noteOn(selectedNote, velo, &record);
                     } else if (KeypadLayout::isReleased(keymap)) {
-                        plugin->noteOff(selectedNote, 0.0f, &userdata);
+                        plugin->noteOff(selectedNote, 0.0f, &record);
                     }
                 };
             }
