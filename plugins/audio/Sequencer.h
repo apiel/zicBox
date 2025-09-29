@@ -184,11 +184,18 @@ public:
         } else {
             p.val.setString("Rec " + std::to_string((int)p.val.get()));
             stepsPreview.clear();
-            copyRecordedSteps(p.val.get() - 1);
+            copyRecordedSteps(getRecordIndex());
             playingSteps = &stepsPreview;
         }
         p.val.props().unit = playingSteps->size() > 0 ? std::to_string((int)playingSteps->size()) + " steps" : "Empty";
     });
+
+    // int getRecordIndex() { return (int)playingLoops.get() - 1; } // oldest in first position
+    int getRecordIndex() // newest in first position
+    {
+        int idx = (int)playingLoops.get() - 1; // playingLoops.get() == 1 → newest loop
+        return (recordedLoops.size() - 1) - idx;
+    }
 
     Sequencer(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
@@ -343,9 +350,9 @@ public:
 
                 activeNotes.erase(it);
 
-                if (indexToPush == playingLoops.get() - 1) {
-                    copyRecordedSteps(indexToPush);
-                }
+                // if (indexToPush == getRecordIndex()) {
+                //     copyRecordedSteps(indexToPush);
+                // }
             }
         }
     }
