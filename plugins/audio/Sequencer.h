@@ -184,19 +184,7 @@ public:
         } else {
             p.val.setString("Rec " + std::to_string((int)p.val.get()));
             stepsPreview.clear();
-            int index = (int)p.val.get() - 1;
-            if (index < recordedLoops.size()) {
-                std::vector<RecordedNote>& loop = recordedLoops[index];
-                for (auto& step : loop) {
-                    stepsPreview.push_back({
-                        .enabled = true,
-                        .velocity = step.velocity,
-                        .position = step.startStep,
-                        .len = step.len,
-                        .note = step.note,
-                    });
-                }
-            }
+            copyRecordedSteps(p.val.get() - 1);
             playingSteps = &stepsPreview;
         }
         p.val.props().unit = playingSteps->size() > 0 ? std::to_string((int)playingSteps->size()) + " steps" : "Empty";
@@ -257,6 +245,22 @@ public:
     // Active notes keyed by MIDI note number (only for recording path)
     std::unordered_map<uint8_t, ActiveNote> activeNotes;
 
+    void copyRecordedSteps(int index)
+    {
+        if (index < recordedLoops.size()) {
+            std::vector<RecordedNote>& loop = recordedLoops[index];
+            for (auto& step : loop) {
+                stepsPreview.push_back({
+                    .enabled = true,
+                    .velocity = step.velocity,
+                    .position = step.startStep,
+                    .len = step.len,
+                    .note = step.note,
+                });
+            }
+        }
+    }
+
     // -----------------------
     // End recording structs
     // -----------------------
@@ -316,27 +320,32 @@ public:
                 // the note will play for ever
                 len = std::clamp(len, (uint16_t)1, (uint16_t)(stepCount + 1));
 
-                std::vector<RecordedNote>* loopToPush = nullptr;
-                for (auto& loop : recordedLoops) {
-                    if (loop[0].loop == an.startLoop) {
-                        loopToPush = &loop;
+                int indexToPush = -1;
+                for (int i = 0; i < recordedLoops.size(); i++) {
+                    if (recordedLoops[i][0].loop == an.startLoop) {
+                        indexToPush = i;
                         break;
                     }
                 }
 
-                if (loopToPush == nullptr) {
-                    loopToPush = &recordedLoops.emplace_back();
+                if (indexToPush == -1) {
+                    recordedLoops.emplace_back();
                     // if we exceed the max number of loops, remove the first one
                     if (recordedLoops.size() > maxRecordLoops) {
                         recordedLoops.erase(recordedLoops.begin());
                     }
+                    indexToPush = recordedLoops.size() - 1;
                 }
 
-                loopToPush->push_back({ an.startLoop, an.note, an.startStep, len, an.velocity });
+                recordedLoops[indexToPush].push_back({ an.startLoop, an.note, an.startStep, len, an.velocity });
 
-                logDebug("Record step: loop %d, note %d, startStep %d, len %d", an.startLoop, an.note, an.startStep, len);
+                // logDebug("Record step: loop %d, note %d, startStep %d, len %d", an.startLoop, an.note, an.startStep, len);
 
                 activeNotes.erase(it);
+
+                if (indexToPush == playingLoops.get() - 1) {
+                    copyRecordedSteps(indexToPush);
+                }
             }
         }
     }
@@ -438,7 +447,7 @@ public:
         json["STATUS"] = status.get();
 
         nlohmann::json stepsJson;
-        for (auto& step : steps) {
+        for (auto& step : *playingSteps) {
             stepsJson.push_back(step.serializeJson());
         }
         json["STEPS"] = stepsJson;

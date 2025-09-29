@@ -21,6 +21,8 @@ All encoder are to edit patches, however Enc4 is push button so, should it edit 
 
 ## Pixel TODO
 
+- TODO when loading empty clip, it should empty seq
+
 - TODO DOC DOC
 
 - TODO help section?
