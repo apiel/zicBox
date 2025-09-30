@@ -17,7 +17,7 @@ all:
 				TextComponent SeqProgressBarComponent ValueComponent\
 				RectComponent ClipsComponent KeyboardComponent Keyboard2Component ListComponent\
 				WorkspacesComponent HiddenContextComponent KnobActionComponent\
-				MacroEnvelopComponent StepEditSampleComponent\
+				MacroEnvelopComponent StepEditSampleComponent NoteGridComponent\
 				SequencerComponent SampleComponent SequencerCardComponent\
 				SequencerValueComponent StringValComponent WorkspaceKnobComponent
 

@@ -302,12 +302,12 @@
         {"bounds":[5,6,6,6],"color":"#a3c912","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#526509","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#526509","componentName":"Rect"},
-        {"audioPlugin":"Sequencer","param":"PLAYING_LOOPS","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":1,"componentName":"KnobValue"},
+        {"audioPlugin":"Sequencer","track":1,"bounds":[0,40,158,80],"encScale":1,"encOctave":2,"keys":[{"key":"q","action":".key:0"},{"key":"w","action":".key:1"},{"key":"e","action":".key:2"},{"key":"r","action":".key:3"},{"key":"a","action":".key:4"},{"key":"s","action":".key:5"},{"key":"d","action":".key:6"},{"key":"f","action":".key:7"},{"key":"z","action":".key:8"},{"key":"x","action":".key:9"},{"key":"c","action":".key:10"},{"key":"v","action":".key:11"}],"componentName":"NoteGrid"},
+        {"audioPlugin":"Sequencer","param":"PLAYING_LOOPS","encoderId":3,"bounds":[160,40,78,80],"color":"primary","track":1,"componentName":"KnobValue"},
         {"fontSize":12,"text":"Turn right knob to exit and save.","bounds":[120,4,320,16],"font":"PoppinsLight_12","color":"#8f8f8fff","componentName":"Text"},
         {"fontSize":12,"text":"&icon::arrowDown::filled","bounds":[270,25,16,16],"font":"PoppinsLight_12","color":"#8f8f8fff","componentName":"Text"},
         {"fontSize":32,"text":"OK","bounds":[240,40,78,80],"font":"PoppinsLight_16","centered":true,"componentName":"Text"},
-        {"action":"data:Sequencer:1:SAVE_RECORD","action2":"setView:&previous","encoderId":4,"bounds":[0,0,0,0],"componentName":"KnobAction"},
-        {"keys":[{"key":"q","action":"record:Sequencer:67:1"},{"key":"w","action":"record:Sequencer:69:1"},{"key":"e","action":"record:Sequencer:71:1"},{"key":"r","action":"record:Sequencer:72:1"},{"key":"a","action":"record:Sequencer:60:1"},{"key":"s","action":"record:Sequencer:62:1"},{"key":"d","action":"record:Sequencer:64:1"},{"key":"f","action":"record:Sequencer:65:1"},{"key":"z","action":"record:Sequencer:53:1"},{"key":"x","action":"record:Sequencer:55:1"},{"key":"c","action":"record:Sequencer:56:1"},{"key":"v","action":"record:Sequencer:58:1"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
+        {"action":"data:Sequencer:1:SAVE_RECORD","action2":"setView:&previous","encoderId":4,"bounds":[0,0,0,0],"componentName":"KnobAction"}
       ]
     },
     {
@@ -507,12 +507,12 @@
         {"bounds":[5,6,6,6],"color":"#fd6f0e","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#7f3807","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#7f3807","componentName":"Rect"},
-        {"audioPlugin":"Sequencer","param":"PLAYING_LOOPS","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":2,"componentName":"KnobValue"},
+        {"audioPlugin":"Sequencer","track":2,"bounds":[0,40,158,80],"encScale":1,"encOctave":2,"keys":[{"key":"q","action":".key:0"},{"key":"w","action":".key:1"},{"key":"e","action":".key:2"},{"key":"r","action":".key:3"},{"key":"a","action":".key:4"},{"key":"s","action":".key:5"},{"key":"d","action":".key:6"},{"key":"f","action":".key:7"},{"key":"z","action":".key:8"},{"key":"x","action":".key:9"},{"key":"c","action":".key:10"},{"key":"v","action":".key:11"}],"componentName":"NoteGrid"},
+        {"audioPlugin":"Sequencer","param":"PLAYING_LOOPS","encoderId":3,"bounds":[160,40,78,80],"color":"primary","track":2,"componentName":"KnobValue"},
         {"fontSize":12,"text":"Turn right knob to exit and save.","bounds":[120,4,320,16],"font":"PoppinsLight_12","color":"#8f8f8fff","componentName":"Text"},
         {"fontSize":12,"text":"&icon::arrowDown::filled","bounds":[270,25,16,16],"font":"PoppinsLight_12","color":"#8f8f8fff","componentName":"Text"},
         {"fontSize":32,"text":"OK","bounds":[240,40,78,80],"font":"PoppinsLight_16","centered":true,"componentName":"Text"},
-        {"action":"data:Sequencer:2:SAVE_RECORD","action2":"setView:&previous","encoderId":4,"bounds":[0,0,0,0],"componentName":"KnobAction"},
-        {"keys":[{"key":"q","action":"record:Sequencer:67:2"},{"key":"w","action":"record:Sequencer:69:2"},{"key":"e","action":"record:Sequencer:71:2"},{"key":"r","action":"record:Sequencer:72:2"},{"key":"a","action":"record:Sequencer:60:2"},{"key":"s","action":"record:Sequencer:62:2"},{"key":"d","action":"record:Sequencer:64:2"},{"key":"f","action":"record:Sequencer:65:2"},{"key":"z","action":"record:Sequencer:53:2"},{"key":"x","action":"record:Sequencer:55:2"},{"key":"c","action":"record:Sequencer:56:2"},{"key":"v","action":"record:Sequencer:58:2"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
+        {"action":"data:Sequencer:2:SAVE_RECORD","action2":"setView:&previous","encoderId":4,"bounds":[0,0,0,0],"componentName":"KnobAction"}
       ]
     },
     {
@@ -712,12 +712,12 @@
         {"bounds":[5,6,6,6],"color":"#15a5ca","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#0b5365","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#0b5365","componentName":"Rect"},
-        {"audioPlugin":"Sequencer","param":"PLAYING_LOOPS","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":3,"componentName":"KnobValue"},
+        {"audioPlugin":"Sequencer","track":3,"bounds":[0,40,158,80],"encScale":1,"encOctave":2,"keys":[{"key":"q","action":".key:0"},{"key":"w","action":".key:1"},{"key":"e","action":".key:2"},{"key":"r","action":".key:3"},{"key":"a","action":".key:4"},{"key":"s","action":".key:5"},{"key":"d","action":".key:6"},{"key":"f","action":".key:7"},{"key":"z","action":".key:8"},{"key":"x","action":".key:9"},{"key":"c","action":".key:10"},{"key":"v","action":".key:11"}],"componentName":"NoteGrid"},
+        {"audioPlugin":"Sequencer","param":"PLAYING_LOOPS","encoderId":3,"bounds":[160,40,78,80],"color":"primary","track":3,"componentName":"KnobValue"},
         {"fontSize":12,"text":"Turn right knob to exit and save.","bounds":[120,4,320,16],"font":"PoppinsLight_12","color":"#8f8f8fff","componentName":"Text"},
         {"fontSize":12,"text":"&icon::arrowDown::filled","bounds":[270,25,16,16],"font":"PoppinsLight_12","color":"#8f8f8fff","componentName":"Text"},
         {"fontSize":32,"text":"OK","bounds":[240,40,78,80],"font":"PoppinsLight_16","centered":true,"componentName":"Text"},
-        {"action":"data:Sequencer:3:SAVE_RECORD","action2":"setView:&previous","encoderId":4,"bounds":[0,0,0,0],"componentName":"KnobAction"},
-        {"keys":[{"key":"q","action":"record:Sequencer:67:3"},{"key":"w","action":"record:Sequencer:69:3"},{"key":"e","action":"record:Sequencer:71:3"},{"key":"r","action":"record:Sequencer:72:3"},{"key":"a","action":"record:Sequencer:60:3"},{"key":"s","action":"record:Sequencer:62:3"},{"key":"d","action":"record:Sequencer:64:3"},{"key":"f","action":"record:Sequencer:65:3"},{"key":"z","action":"record:Sequencer:53:3"},{"key":"x","action":"record:Sequencer:55:3"},{"key":"c","action":"record:Sequencer:56:3"},{"key":"v","action":"record:Sequencer:58:3"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
+        {"action":"data:Sequencer:3:SAVE_RECORD","action2":"setView:&previous","encoderId":4,"bounds":[0,0,0,0],"componentName":"KnobAction"}
       ]
     },
     {
@@ -917,12 +917,12 @@
         {"bounds":[5,6,6,6],"color":"#ffcd04","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#806702","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#806702","componentName":"Rect"},
-        {"audioPlugin":"Sequencer","param":"PLAYING_LOOPS","encoderId":1,"bounds":[0,40,78,80],"color":"primary","track":4,"componentName":"KnobValue"},
+        {"audioPlugin":"Sequencer","track":4,"bounds":[0,40,158,80],"encScale":1,"encOctave":2,"keys":[{"key":"q","action":".key:0"},{"key":"w","action":".key:1"},{"key":"e","action":".key:2"},{"key":"r","action":".key:3"},{"key":"a","action":".key:4"},{"key":"s","action":".key:5"},{"key":"d","action":".key:6"},{"key":"f","action":".key:7"},{"key":"z","action":".key:8"},{"key":"x","action":".key:9"},{"key":"c","action":".key:10"},{"key":"v","action":".key:11"}],"componentName":"NoteGrid"},
+        {"audioPlugin":"Sequencer","param":"PLAYING_LOOPS","encoderId":3,"bounds":[160,40,78,80],"color":"primary","track":4,"componentName":"KnobValue"},
         {"fontSize":12,"text":"Turn right knob to exit and save.","bounds":[120,4,320,16],"font":"PoppinsLight_12","color":"#8f8f8fff","componentName":"Text"},
         {"fontSize":12,"text":"&icon::arrowDown::filled","bounds":[270,25,16,16],"font":"PoppinsLight_12","color":"#8f8f8fff","componentName":"Text"},
         {"fontSize":32,"text":"OK","bounds":[240,40,78,80],"font":"PoppinsLight_16","centered":true,"componentName":"Text"},
-        {"action":"data:Sequencer:4:SAVE_RECORD","action2":"setView:&previous","encoderId":4,"bounds":[0,0,0,0],"componentName":"KnobAction"},
-        {"keys":[{"key":"q","action":"record:Sequencer:67:4"},{"key":"w","action":"record:Sequencer:69:4"},{"key":"e","action":"record:Sequencer:71:4"},{"key":"r","action":"record:Sequencer:72:4"},{"key":"a","action":"record:Sequencer:60:4"},{"key":"s","action":"record:Sequencer:62:4"},{"key":"d","action":"record:Sequencer:64:4"},{"key":"f","action":"record:Sequencer:65:4"},{"key":"z","action":"record:Sequencer:53:4"},{"key":"x","action":"record:Sequencer:55:4"},{"key":"c","action":"record:Sequencer:56:4"},{"key":"v","action":"record:Sequencer:58:4"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
+        {"action":"data:Sequencer:4:SAVE_RECORD","action2":"setView:&previous","encoderId":4,"bounds":[0,0,0,0],"componentName":"KnobAction"}
       ]
     },
     {
