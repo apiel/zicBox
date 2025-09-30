@@ -65,6 +65,11 @@ protected:
     {
         if (KeypadLayout::isReleased(keymap)) {
             int idAndBank = getIdWithBank(id);
+            if (!variationExists(idAndBank)) {
+                showPopupMessage("Empty");
+                renderNext();
+                return;
+            }
             if ((int16_t)valVariation->get() == idAndBank) {
                 if (!*isPlaying) {
                     if (allowToggleReload) {
@@ -116,7 +121,13 @@ protected:
     int getIdWithBank(int id) { return id + startBankIndex - 1; }
 
     bool bankToggle = false;
-    int savedMessage = 0;
+    int popupMessage = 0;
+    std::string popupMessageText = "";
+
+    void showPopupMessage(const std::string& text, int duration = 10) {
+        popupMessage = duration;
+        popupMessageText = text;
+    }
 
 public:
     ClipsComponent(ComponentInterface::Props props)
@@ -172,7 +183,8 @@ public:
                             int idAndBank = getIdWithBank(id);
                             pluginSerialize->data(saveVariationDataId, (void*)&idAndBank);
                             // valVariation->set(id);
-                            savedMessage = 10;
+                            // popupMessage = 10;
+                            showPopupMessage("Saved");
                             renderNextAndContext();
                         }
                     }
@@ -286,9 +298,9 @@ public:
                 lastPlayingId = valVariation->get();
                 renderNext();
             }
-            if (savedMessage > 0) {
-                savedMessage--;
-                if (savedMessage == 0) {
+            if (popupMessage > 0) {
+                popupMessage--;
+                if (popupMessage == 0) {
                     renderNext();
                 }
             }
@@ -337,10 +349,15 @@ public:
             }
         }
 
-        if (savedMessage > 0) {
-            int h = fontSize < size.h ? fontSize : size.h;
+        if (popupMessage > 0) {
+            // int h = fontSize < size.h ? fontSize : size.h;
+            int h = fontSize + 2;
+            if (h > size.h) {
+                h = size.h;
+            }
             draw.filledRect(relativePosition, { 100, h }, { playingClipBgColor });
-            draw.textCentered({ (int)(relativePosition.x + 50), relativePosition.y }, "Saved", fontSize, { textColor });
+            draw.rect(relativePosition, { 100, h }, { textColor });
+            draw.textCentered({ (int)(relativePosition.x + 50), relativePosition.y }, popupMessageText, fontSize, { textColor });
         }
     }
 
