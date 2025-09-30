@@ -186,6 +186,20 @@ public:
             // int index = playingLoops.get() - 1; // oldest in first position
             int index = (recordedLoops.size() - 1) - (playingLoops.get() - 1); // newest in first position 
             if (index < recordedLoops.size()) {
+                // Copy original
+                for (auto& step : steps) {
+                    stepsPreview.push_back({
+                        .enabled = step.enabled,
+                        .velocity = step.velocity,
+                        .condition = step.condition,
+                        .position = step.position,
+                        .len = step.len,
+                        .note = step.note,
+                        .motion = step.motion
+                    });
+                }
+
+                // Copy new recorded loop
                 std::vector<RecordedNote>& loop = recordedLoops[index];
                 for (auto& step : loop) {
                     stepsPreview.push_back({

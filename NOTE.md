@@ -22,7 +22,6 @@ All encoder are to edit patches, however Enc4 is push button so, should it edit 
 ## Pixel TODO
 
 - TODO seq rec
-      - should record on top of currently saved one
       - Exit should be OK or Done or Save, and when exit, it should save to std::vector<Step> steps if playingLoops.get() != 0
       - UI should show current record, next loop it show empty bar, as soon as not is added we show recorded note (but what do we do with currently saved one....)
 - TODO when loading empty clip, it should empty seq
