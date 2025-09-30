@@ -57,7 +57,107 @@
     },
     "Sequencer": {
         "STATUS": 1.0,
-        "STEPS": null
+        "STEPS": [
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 2,
+                "motion": "---",
+                "note": 60,
+                "position": 3,
+                "velocity": 1.0
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 7,
+                "velocity": 1.0
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 12,
+                "velocity": 1.0
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 17,
+                "velocity": 1.0
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 22,
+                "velocity": 1.0
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 3,
+                "motion": "---",
+                "note": 60,
+                "position": 26,
+                "velocity": 1.0
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 60,
+                "position": 32,
+                "velocity": 1.0
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 2,
+                "motion": "---",
+                "note": 72,
+                "position": 44,
+                "velocity": 1.0
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 2,
+                "motion": "---",
+                "note": 72,
+                "position": 49,
+                "velocity": 1.0
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "---",
+                "note": 72,
+                "position": 54,
+                "velocity": 1.0
+            },
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 2,
+                "motion": "---",
+                "note": 72,
+                "position": 59,
+                "velocity": 1.0
+            }
+        ]
     },
     "SerializeTrack": {
         "VARIATION": 1.0

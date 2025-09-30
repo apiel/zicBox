@@ -113,7 +113,13 @@
         "drawwithfb.h": "c",
         "*.inc": "cpp",
         "barrier": "cpp",
-        "latch": "cpp"
+        "latch": "cpp",
+        "componentcontainer.h": "c",
+        "rope": "c",
+        "slist": "c",
+        "generator": "c",
+        "stacktrace": "c",
+        "text_encoding": "c"
     },
     "C_Cpp.errorSquiggles": "enabled",
     "makefile.configureOnOpen": false,

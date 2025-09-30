@@ -473,6 +473,23 @@ public:
             };
         }
 
+        if (action.rfind("data:") == 0) {
+            std::string substring = action.substr(5);
+            std::vector<char> params(substring.begin(), substring.end());
+            params.push_back('\0');
+
+            char* pluginName = strtok(params.data(), ":");
+            char* trackStr = strtok(NULL, ":");
+            char* dataKey = strtok(NULL, ":");
+            AudioPlugin* plugin = &component->getPlugin(pluginName, atoi(trackStr));
+            uint8_t dataId = plugin->getDataId(dataKey);
+            return [this, plugin, dataId](KeypadLayout::KeyMap& keymap) {
+                if (isReleased(keymap)) {
+                    plugin->data(dataId);
+                }
+            };
+        }
+
         return NULL;
     }
 

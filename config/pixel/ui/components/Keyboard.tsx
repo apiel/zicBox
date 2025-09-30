@@ -4,7 +4,7 @@ import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
 import { KnobAction } from '@/libs/nativeComponents/KnobAction';
 import { KnobValue } from '@/libs/nativeComponents/KnobValue';
 import { Text } from '@/libs/nativeComponents/Text';
-import { A1, A2, A3, A4, B1, B2, B3, B4, C1, C2, C3, C4 } from '../constants';
+import { A1, A2, A3, A4, B1, B2, B3, B4, C1, C2, C3, C4, ScreenWidth } from '../constants';
 import { enc1, enc4 } from '../constantsValue';
 import { Layout } from './Layout';
 
@@ -34,8 +34,11 @@ export function Keyboard({ name, track, synthName, color, title }: Props) {
                         track={track}
                     />
 
-                    <Text fontSize={32} text="Exit" bounds={enc4.bounds} font="PoppinsLight_16" />
-                    <KnobAction action={`setView:&previous`} encoderId={enc4.encoderId} />
+                    <Text fontSize={12} text="Turn right knob to exit and save." bounds={[120, 4, ScreenWidth, 16]} font="PoppinsLight_12" color={'#8f8f8fff'} />
+                    <Text fontSize={12} text="&icon::arrowDown::filled" bounds={[270, 25, 16, 16]} font="PoppinsLight_12" color={'#8f8f8fff'} />
+
+                    <Text fontSize={32} text="OK" bounds={enc4.bounds} font="PoppinsLight_16" centered />
+                    <KnobAction action={`data:Sequencer:${track}:SAVE_RECORD`} action2={`setView:&previous`} encoderId={enc4.encoderId} />
 
                     <HiddenValue
                         keys={[

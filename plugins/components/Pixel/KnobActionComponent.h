@@ -41,12 +41,20 @@ public:
         } else {
             logWarn("KnobActionComponent is missing mandatory parameter");
         }
+
+        if (config.contains("action2")) {
+            std::string action2Str = config["action2"].get<std::string>();
+            fakeKeymap.action2 = keypadLayout.getAction(action2Str);
+        }
     }
 
     void onEncoder(int id, int8_t direction)
     {
         if (isVisible() && id == encoderId && fakeKeymap.action != nullptr) {
             fakeKeymap.action(fakeKeymap);
+            if (fakeKeymap.action2 != nullptr) {
+                fakeKeymap.action2(fakeKeymap);
+            }
         }
     }
 };

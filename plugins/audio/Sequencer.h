@@ -134,6 +134,12 @@ protected:
         }
     }
 
+    void copySteps(std::vector<Step>& from, std::vector<Step>& to)
+    {
+        to.resize(from.size());
+        std::copy(from.begin(), from.end(), to.begin());
+    }
+
 public:
     /*md **Values**: */
     /*md - `DETUNE` detuning all playing step notes by semitones */
@@ -179,25 +185,14 @@ public:
         p.val.setFloat(p.value);
         allOff();
         if (p.val.get() == 0.0f) {
-            p.val.setString("Saved");
+            p.val.setString("Current");
             playingSteps = &steps;
         } else {
             stepsPreview.clear();
             // int index = playingLoops.get() - 1; // oldest in first position
-            int index = (recordedLoops.size() - 1) - (playingLoops.get() - 1); // newest in first position 
+            int index = (recordedLoops.size() - 1) - (playingLoops.get() - 1); // newest in first position
             if (index < recordedLoops.size()) {
-                // Copy original
-                for (auto& step : steps) {
-                    stepsPreview.push_back({
-                        .enabled = step.enabled,
-                        .velocity = step.velocity,
-                        .condition = step.condition,
-                        .position = step.position,
-                        .len = step.len,
-                        .note = step.note,
-                        .motion = step.motion
-                    });
-                }
+                copySteps(steps, stepsPreview);
 
                 // Copy new recorded loop
                 std::vector<RecordedNote>& loop = recordedLoops[index];
@@ -413,7 +408,7 @@ public:
         }
     }
 
-    DataFn dataFunctions[7] = {
+    DataFn dataFunctions[8] = {
         { "STEPS", [this](void* userdata) {
              return &steps;
          } },
@@ -443,6 +438,13 @@ public:
              auto callback = static_cast<std::function<void(bool)>*>(userdata);
              if (callback) {
                  eventCallbacks.push_back(*callback);
+             }
+             return (void*)NULL;
+         } },
+        { "SAVE_RECORD", [this](void* userdata) {
+             if (playingLoops.get() > 0) {
+                 copySteps(stepsPreview, steps);
+                 playingLoops.set(0);
              }
              return (void*)NULL;
          } },
