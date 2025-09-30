@@ -26,18 +26,20 @@ protected:
 
     int numCols = 4;
     int numRows = 3;
-    int octave = 4; // default octave
+    int octave = 4;
     int scaleIndex = 0;
     int encScale = 0;
     int encOctave = 1;
 
+    bool inverted = false;
+
     Color background;
+    Color cellColor;
+    Color cellSharpColor;
+    Color borderColor;
     Color textColor;
     void* font = nullptr;
 
-    bool inverted = false;
-
-    // Some example scales (intervals in semitones)
     std::vector<std::vector<int>> scales = {
         { 0, 2, 4, 5, 7, 9, 11 }, // Major
         { 0, 2, 3, 5, 7, 8, 10 }, // Minor
@@ -46,7 +48,7 @@ protected:
     };
     std::vector<std::string> scaleNames = { "Major", "Minor", "MajPent", "MinPent" };
 
-    std::vector<uint8_t> notes; // dynamic grid notes
+    std::vector<uint8_t> notes;
 
     void updateNotes()
     {
@@ -56,16 +58,17 @@ protected:
         int totalKeys = numCols * numRows;
 
         if (inverted) {
-             for (int i = 0; i < totalKeys; i++) {
+            for (int i = 0; i < totalKeys; i++) {
                 int degree = i % scale.size();
                 int octaveOffset = i / scale.size();
-                uint8_t note = CLAMP(baseNote + scale[degree] + octaveOffset * 12, MIDI_NOTE_C0, MIDI_NOTE_C9);
+                uint8_t note = CLAMP(baseNote + scale[degree] + octaveOffset * 12,
+                    MIDI_NOTE_C0, MIDI_NOTE_C9);
                 notes.push_back(note);
             }
         } else {
-           for (int r = numRows - 1; r >= 0; r--) { // bottom row first
+            for (int r = numRows - 1; r >= 0; r--) {
                 for (int c = 0; c < numCols; c++) {
-                    int i = r * numCols + c; // grid index
+                    int i = r * numCols + c;
                     int degree = i % scale.size();
                     int octaveOffset = i / scale.size();
                     uint8_t note = CLAMP(baseNote + scale[degree] + octaveOffset * 12,
@@ -98,23 +101,29 @@ public:
             return func;
         })
         , background(styles.colors.background)
-        , textColor(styles.colors.white)
+        , cellColor(lighten(styles.colors.background, 0.5))
+        , cellSharpColor(lighten(styles.colors.background, 0.2))
+        , borderColor(lighten(styles.colors.background, 1.0))
+        , textColor(alpha(styles.colors.text, 0.4))
     {
         font = draw.getFont("PoppinsLight_8");
 
         nlohmann::json& config = props.config;
-
         plugin = getPluginPtr(config, "audioPlugin", track);
 
         numCols = config.value("cols", numCols);
         numRows = config.value("rows", numRows);
         octave = config.value("octave", octave);
         scaleIndex = config.value("scaleIndex", scaleIndex);
-
         encScale = config.value("encScale", encScale);
         encOctave = config.value("encOctave", encOctave);
-
         inverted = config.value("inverted", inverted);
+
+        background = draw.getColor(config["bgColor"], background);
+        cellColor = draw.getColor(config["cellColor"], cellColor);
+        cellSharpColor = draw.getColor(config["cellSharpColor"], cellSharpColor);
+        borderColor = draw.getColor(config["borderColor"], borderColor);
+        textColor = draw.getColor(config["textColor"], textColor);
 
         updateNotes();
     }
@@ -122,11 +131,11 @@ public:
     void onEncoder(int id, int8_t direction) override
     {
         direction = direction > 0 ? 1 : -1;
-        if (id == encScale) { // scale select
+        if (id == encScale) {
             scaleIndex = (scaleIndex + direction + scales.size()) % scales.size();
             updateNotes();
             renderNext();
-        } else if (id == encOctave) { // octave shift
+        } else if (id == encOctave) {
             octave = CLAMP(octave + direction, 0, 9);
             updateNotes();
             renderNext();
@@ -150,13 +159,15 @@ public:
                 int x = relativePosition.x + c * cellW;
                 int y = relativePosition.y + r * cellH;
 
-                draw.rect({ x, y }, { cellW, cellH }, { textColor });
+                draw.filledRect({ x, y }, { cellW, cellH }, { isBlackKey(notes[idx]) ? cellSharpColor : cellColor });
+                draw.rect({ x, y }, { cellW, cellH }, { borderColor });
                 draw.textCentered({ x + cellW / 2, y + cellH / 2 }, MIDI_NOTES_STR[notes[idx]], 8, { textColor, .font = font });
             }
         }
 
-        // Draw scale/octave info at bottom
-        draw.text({ relativePosition.x + 2, relativePosition.y + size.h - 10 }, scaleNames[scaleIndex], 8, { textColor, .font = font });
-        draw.text({ (int)(relativePosition.x + size.w * 0.5), relativePosition.y + size.h - 10 }, "Oct:" + std::to_string(octave), 8, { textColor, .font = font });
+        draw.text({ relativePosition.x + 2, relativePosition.y + size.h - 10 },
+            scaleNames[scaleIndex], 8, { textColor, .font = font });
+        draw.text({ (int)(relativePosition.x + size.w * 0.5), relativePosition.y + size.h - 10 },
+            "Oct:" + std::to_string(octave), 8, { textColor, .font = font });
     }
 };
