@@ -408,7 +408,7 @@ public:
         }
     }
 
-    DataFn dataFunctions[8] = {
+    DataFn dataFunctions[9] = {
         { "STEPS", [this](void* userdata) {
              return &steps;
          } },
@@ -448,6 +448,11 @@ public:
              }
              return (void*)NULL;
          } },
+        { "CLEAR_STEPS", [this](void* userdata) {
+             steps.clear();
+             logDebug("Cleared steps");
+             return (void*)NULL;
+         } }
     };
     DEFINE_GETDATAID_AND_DATA
 

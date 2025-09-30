@@ -21,10 +21,10 @@ import {
     C4,
     ScreenHeight,
     ScreenWidth,
-    seqContext,
+    shiftContext,
     W1_4,
     W2_4,
-    W3_4,
+    W3_4
 } from '../constants';
 import {
     enc1Seq,
@@ -288,19 +288,31 @@ export function SeqView({ name, track, synthName, color, contextId, title, inclu
                         bounds={[0, ScreenHeight - 18, W1_4, 16]}
                         centered={true}
                         color={menuTextColor}
+                        visibilityContext={row1}
+                    />
+                    <Text
+                        text="Clear"
+                        bounds={[0, ScreenHeight - 18, W1_4, 16]}
+                        centered={true}
+                        color={menuTextColor}
+                        visibilityContext={row2}
                     />
                     <Text
                         text="&icon::arrowDown::filled"
                         bounds={[W1_4 - 10, ScreenHeight - 18, W1_4, 16]}
                         centered={true}
                         color={menuTextColor}
+                        visibilityContext={row1}
                     />
+                    <Rect bounds={[W1_4 - 10, ScreenHeight - 18, W1_4, 16]} color="background" visibilityContext={row2} />
                     <Text
                         text="Exit"
                         bounds={[W2_4 - 20, ScreenHeight - 20, W1_4, 16]}
                         centered={true}
                         color={menuTextColor}
+                        visibilityContext={row1}
                     />
+                    <Rect bounds={[W2_4 - 20, ScreenHeight - 20, W1_4, 16]} color="background" visibilityContext={row2} />
                     <Text
                         text="Shift"
                         bounds={[W3_4 - 30, ScreenHeight - 20, W1_4, 16]}
@@ -320,12 +332,13 @@ export function SeqView({ name, track, synthName, color, contextId, title, inclu
                         keys={[
                             // { key: C1, action: '.scroll' }, // , context: { id: shiftContext, value: 0 }
                             // { key: C2, action: `contextToggleOnRelease:${seqContext}:1:0` },
-                            { key: C1, action: '.scroll:-1' },
-                            { key: C2, action: '.scroll' },
-                            { key: C3, action: `setView:${synthName}` },
+                            { key: C1, action: '.scroll:-1', context: { id: shiftContext, value: 0 } },
+                            { key: C1, action: `data:Sequencer:${track}:CLEAR_STEPS`, context: { id: shiftContext, value: 1 } , action2: '.scroll:0' },
+                            { key: C2, action: '.scroll', context: { id: shiftContext, value: 0 } },
+                            { key: C3, action: `setView:${synthName}`, context: { id: shiftContext, value: 0 } },
                             {
                                 key: C4,
-                                action: `contextToggleOnRelease:${seqContext}:1:0`,
+                                action: `contextToggleOnRelease:${shiftContext}:1:0`,
                                 multipleKeyHandler: true,
                             },
                         ]}
