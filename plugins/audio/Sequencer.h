@@ -182,20 +182,26 @@ public:
             p.val.setString("Saved");
             playingSteps = &steps;
         } else {
-            p.val.setString("Rec " + std::to_string((int)p.val.get()));
             stepsPreview.clear();
-            copyRecordedSteps(getRecordIndex());
+            // int index = playingLoops.get() - 1; // oldest in first position
+            int index = (recordedLoops.size() - 1) - (playingLoops.get() - 1); // newest in first position 
+            if (index < recordedLoops.size()) {
+                std::vector<RecordedNote>& loop = recordedLoops[index];
+                for (auto& step : loop) {
+                    stepsPreview.push_back({
+                        .enabled = true,
+                        .velocity = step.velocity,
+                        .position = step.startStep,
+                        .len = step.len,
+                        .note = step.note,
+                    });
+                }
+            }
             playingSteps = &stepsPreview;
+            p.val.setString(playingSteps->size() > 0 ? "Rec " + std::to_string((int)p.val.get()) : "Empty");
         }
-        p.val.props().unit = playingSteps->size() > 0 ? std::to_string((int)playingSteps->size()) + " steps" : "Empty";
+        p.val.props().unit = playingSteps->size() > 0 ? std::to_string((int)playingSteps->size()) + " steps" : "";
     });
-
-    // int getRecordIndex() { return (int)playingLoops.get() - 1; } // oldest in first position
-    int getRecordIndex() // newest in first position
-    {
-        int idx = (int)playingLoops.get() - 1; // playingLoops.get() == 1 → newest loop
-        return (recordedLoops.size() - 1) - idx;
-    }
 
     Sequencer(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
@@ -252,22 +258,6 @@ public:
     // Active notes keyed by MIDI note number (only for recording path)
     std::unordered_map<uint8_t, ActiveNote> activeNotes;
 
-    void copyRecordedSteps(int index)
-    {
-        if (index < recordedLoops.size()) {
-            std::vector<RecordedNote>& loop = recordedLoops[index];
-            for (auto& step : loop) {
-                stepsPreview.push_back({
-                    .enabled = true,
-                    .velocity = step.velocity,
-                    .position = step.startStep,
-                    .len = step.len,
-                    .note = step.note,
-                });
-            }
-        }
-    }
-
     // -----------------------
     // End recording structs
     // -----------------------
@@ -277,7 +267,7 @@ public:
         if (userdata != NULL) {
             props.audioPluginHandler->noteOn(note, velocity, { track, targetPlugin });
 
-            if (!recordingEnabled)
+            if (!isPlaying || !recordingEnabled)
                 return;
 
             bool record = (bool)userdata;
@@ -304,7 +294,7 @@ public:
         if (userdata != NULL) {
             props.audioPluginHandler->noteOff(note, 0, { track, targetPlugin });
 
-            if (!recordingEnabled)
+            if (!isPlaying || !recordingEnabled)
                 return;
 
             bool record = (bool)userdata;
@@ -349,10 +339,6 @@ public:
                 // logDebug("Record step: loop %d, note %d, startStep %d, len %d", an.startLoop, an.note, an.startStep, len);
 
                 activeNotes.erase(it);
-
-                // if (indexToPush == getRecordIndex()) {
-                //     copyRecordedSteps(indexToPush);
-                // }
             }
         }
     }
