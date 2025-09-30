@@ -8,4 +8,5 @@ export const NoteGrid = getJsonComponent<{
     octave?: number;
     encScale?: number;
     encOctave?: number;
+    inverted?: boolean;
 }>('NoteGrid');

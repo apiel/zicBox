@@ -35,6 +35,8 @@ protected:
     Color textColor;
     void* font = nullptr;
 
+    bool inverted = false;
+
     // Some example scales (intervals in semitones)
     std::vector<std::vector<int>> scales = {
         { 0, 2, 4, 5, 7, 9, 11 }, // Major
@@ -52,11 +54,25 @@ protected:
         const auto& scale = scales[scaleIndex];
         int baseNote = octave * 12;
         int totalKeys = numCols * numRows;
-        for (int i = 0; i < totalKeys; i++) {
-            int degree = i % scale.size();
-            int octaveOffset = i / scale.size();
-            uint8_t note = CLAMP(baseNote + scale[degree] + octaveOffset * 12, MIDI_NOTE_C0, MIDI_NOTE_C9);
-            notes.push_back(note);
+
+        if (inverted) {
+             for (int i = 0; i < totalKeys; i++) {
+                int degree = i % scale.size();
+                int octaveOffset = i / scale.size();
+                uint8_t note = CLAMP(baseNote + scale[degree] + octaveOffset * 12, MIDI_NOTE_C0, MIDI_NOTE_C9);
+                notes.push_back(note);
+            }
+        } else {
+           for (int r = numRows - 1; r >= 0; r--) { // bottom row first
+                for (int c = 0; c < numCols; c++) {
+                    int i = r * numCols + c; // grid index
+                    int degree = i % scale.size();
+                    int octaveOffset = i / scale.size();
+                    uint8_t note = CLAMP(baseNote + scale[degree] + octaveOffset * 12,
+                        MIDI_NOTE_C0, MIDI_NOTE_C9);
+                    notes.push_back(note);
+                }
+            }
         }
     }
 
@@ -69,11 +85,12 @@ public:
                 if (keyIndex >= 0) {
                     bool record = true;
                     func = [this, keyIndex, record](KeypadLayout::KeyMap& keymap) {
-                        if (keyIndex >= notes.size()) return;
+                        if (keyIndex >= notes.size())
+                            return;
                         if (KeypadLayout::isPressed(keymap)) {
-                            plugin->noteOn(notes[keyIndex], 1.0f, (void *)&record);
+                            plugin->noteOn(notes[keyIndex], 1.0f, (void*)&record);
                         } else if (KeypadLayout::isReleased(keymap)) {
-                            plugin->noteOff(notes[keyIndex], 0.0f, (void *)&record);
+                            plugin->noteOff(notes[keyIndex], 0.0f, (void*)&record);
                         }
                     };
                 }
@@ -96,6 +113,8 @@ public:
 
         encScale = config.value("encScale", encScale);
         encOctave = config.value("encOctave", encOctave);
+
+        inverted = config.value("inverted", inverted);
 
         updateNotes();
     }
