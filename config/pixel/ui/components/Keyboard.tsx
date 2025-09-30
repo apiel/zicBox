@@ -36,21 +36,6 @@ export function Keyboard({ name, track, synthName, color, title }: Props) {
                         encScale={enc1.encoderId}
                         encOctave={enc2.encoderId}
                         keys={[
-                            // { key: A1, action: `record:Sequencer:67:${track}` },
-                            // { key: A2, action: `record:Sequencer:69:${track}` },
-                            // { key: A3, action: `record:Sequencer:71:${track}` },
-                            // { key: A4, action: `record:Sequencer:72:${track}` },
-
-                            // { key: B1, action: `record:Sequencer:60:${track}` },
-                            // { key: B2, action: `record:Sequencer:62:${track}` },
-                            // { key: B3, action: `record:Sequencer:64:${track}` },
-                            // { key: B4, action: `record:Sequencer:65:${track}` },
-
-                            // { key: C1, action: `record:Sequencer:53:${track}` },
-                            // { key: C2, action: `record:Sequencer:55:${track}` },
-                            // { key: C3, action: `record:Sequencer:56:${track}` },
-                            // { key: C4, action: `record:Sequencer:58:${track}` },
-
                             { key: A1, action: `.key:${keyIndex++}` },
                             { key: A2, action: `.key:${keyIndex++}` },
                             { key: A3, action: `.key:${keyIndex++}` },

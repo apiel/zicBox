@@ -1,6 +1,7 @@
 import * as React from '@/libs/react';
 
 import { ClipView } from '../components/ClipView';
+import { Keyboard } from '../components/Keyboard';
 import { SeqView } from '../components/SeqView';
 import { SampleLayout } from './SampleLayout';
 
@@ -52,6 +53,7 @@ export function SampleViews({ track, synthName, color, contextId, title }: Props
             />
 
             <ClipView name={`${synthName}Clips`} track={track} synthName={synthName} color={color} title={title} />
+            <Keyboard name={`${synthName}Keyboard`} track={track} synthName={synthName} color={color} title={title} />
         </>
     );
 }

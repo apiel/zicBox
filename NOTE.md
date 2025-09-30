@@ -21,29 +21,14 @@ All encoder are to edit patches, however Enc4 is push button so, should it edit 
 
 ## Pixel TODO
 
-- TODO seq rec
-      - UI should show current record, next loop it show empty bar, as soon as not is added we show recorded note (but what do we do with currently saved one....)
-      - ---> 1 knob change octave, the other one change scale
 - TODO when loading empty clip, it should empty seq
   - should there be a button to empty pattern in seq view
 
 - TODO DOC DOC
 
-- TODO help section?
+- TODO provide a way to save preset on github repo
+            - ---> see how to handle ssh or instead use token, but the idea would be to store as less as possible info on zicBox app side (if possible nothing) and delegate everything to the OS...
 
-- TODO pressing select track button of already active track to access menu to capture and other stuff related to track...
-- maybe even enter piano mode... ---> one button to exit and one but to switch encoders, and capture button?
-- record from 0 to 64 step?
-------> instead of capture, there could be a record button that bring into keyboard mode, with only an exit button
-        - knob used to change octave
-        - knob used to select the recorded loop to playback and keep when we exit
-        - everytime loop restart to 0 on step 1 but we can come back with knob, see previous point
-        - gonna need to fix button connection... maybe just solder them...
-- knob for octave
-- knob for scale
-- knob to select recorded sequence... <---- when selecting recorded sequence, it can provide menu to save or exit...
-
-- TODO update system
 
 - TODO rethink way to save, can we reduce the number of time we write file...
 - TODO see if we can make OS read only and data on separate partition to reduce chance of corruption
@@ -86,9 +71,6 @@ All encoder are to edit patches, however Enc4 is push button so, should it edit 
 - TODO pixel should i had on master the EffectBandIsolatorFx and EffectFilteredMultiFx? or simple multi fx or filter?
 
 - TODO try to make design as generic as possible, synth name vs track...
-
-- TODO provide a way to save preset on github repo
-            - ---> see how to handle ssh or instead use token, but the idea would be to store as less as possible info on zicBox app side (if possible nothing) and delegate everything to the OS...
 
 - TODO look at MiniDexed for bare metal OS https://github.com/probonopd/MiniDexed
 

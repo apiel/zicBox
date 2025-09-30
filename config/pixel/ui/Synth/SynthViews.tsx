@@ -1,6 +1,7 @@
 import * as React from '@/libs/react';
 
 import { ClipView } from '../components/ClipView';
+import { Keyboard } from '../components/Keyboard';
 import { SeqView } from '../components/SeqView';
 import { SynthLayout } from './SynthLayout';
 
@@ -28,6 +29,7 @@ export function SynthViews({ track, synthName, color, contextId, title }: Props)
                 includeLength
             />
             <ClipView name={`${synthName}Clips`} track={track} synthName={synthName} color={color} title={title} />
+            <Keyboard name={`${synthName}Keyboard`} track={track} synthName={synthName} color={color} title={title} />
         </>
     );
 }

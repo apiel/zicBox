@@ -1111,6 +1111,21 @@
       ]
     },
     {
+      "name": "Sample1Keyboard",
+      "components": [
+        {"fontSize":16,"text":"Sample1","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
+        {"bounds":[5,6,6,6],"color":"#b54f5e","componentName":"Rect"},
+        {"bounds":[15,6,6,6],"color":"#5b282f","componentName":"Rect"},
+        {"bounds":[25,6,6,6],"color":"#5b282f","componentName":"Rect"},
+        {"audioPlugin":"Sequencer","track":5,"bounds":[0,40,158,80],"encScale":1,"encOctave":2,"keys":[{"key":"q","action":".key:0"},{"key":"w","action":".key:1"},{"key":"e","action":".key:2"},{"key":"r","action":".key:3"},{"key":"a","action":".key:4"},{"key":"s","action":".key:5"},{"key":"d","action":".key:6"},{"key":"f","action":".key:7"},{"key":"z","action":".key:8"},{"key":"x","action":".key:9"},{"key":"c","action":".key:10"},{"key":"v","action":".key:11"}],"componentName":"NoteGrid"},
+        {"audioPlugin":"Sequencer","param":"PLAYING_LOOPS","encoderId":3,"bounds":[160,40,78,80],"color":"primary","track":5,"componentName":"KnobValue"},
+        {"fontSize":12,"text":"Turn right knob to exit and save.","bounds":[120,4,320,16],"font":"PoppinsLight_12","color":"#8f8f8fff","componentName":"Text"},
+        {"fontSize":12,"text":"&icon::arrowDown::filled","bounds":[270,25,16,16],"font":"PoppinsLight_12","color":"#8f8f8fff","componentName":"Text"},
+        {"fontSize":32,"text":"OK","bounds":[240,40,78,80],"font":"PoppinsLight_16","centered":true,"componentName":"Text"},
+        {"action":"data:Sequencer:5:SAVE_RECORD","action2":"setView:&previous","encoderId":4,"bounds":[0,0,0,0],"componentName":"KnobAction"}
+      ]
+    },
+    {
       "name": "Sample2",
       "components": [
         {"fontSize":16,"text":"Sample2","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
@@ -1296,6 +1311,21 @@
       ]
     },
     {
+      "name": "Sample2Keyboard",
+      "components": [
+        {"fontSize":16,"text":"Sample2","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
+        {"bounds":[5,6,6,6],"color":"#377275","componentName":"Rect"},
+        {"bounds":[15,6,6,6],"color":"#1c393b","componentName":"Rect"},
+        {"bounds":[25,6,6,6],"color":"#1c393b","componentName":"Rect"},
+        {"audioPlugin":"Sequencer","track":6,"bounds":[0,40,158,80],"encScale":1,"encOctave":2,"keys":[{"key":"q","action":".key:0"},{"key":"w","action":".key:1"},{"key":"e","action":".key:2"},{"key":"r","action":".key:3"},{"key":"a","action":".key:4"},{"key":"s","action":".key:5"},{"key":"d","action":".key:6"},{"key":"f","action":".key:7"},{"key":"z","action":".key:8"},{"key":"x","action":".key:9"},{"key":"c","action":".key:10"},{"key":"v","action":".key:11"}],"componentName":"NoteGrid"},
+        {"audioPlugin":"Sequencer","param":"PLAYING_LOOPS","encoderId":3,"bounds":[160,40,78,80],"color":"primary","track":6,"componentName":"KnobValue"},
+        {"fontSize":12,"text":"Turn right knob to exit and save.","bounds":[120,4,320,16],"font":"PoppinsLight_12","color":"#8f8f8fff","componentName":"Text"},
+        {"fontSize":12,"text":"&icon::arrowDown::filled","bounds":[270,25,16,16],"font":"PoppinsLight_12","color":"#8f8f8fff","componentName":"Text"},
+        {"fontSize":32,"text":"OK","bounds":[240,40,78,80],"font":"PoppinsLight_16","centered":true,"componentName":"Text"},
+        {"action":"data:Sequencer:6:SAVE_RECORD","action2":"setView:&previous","encoderId":4,"bounds":[0,0,0,0],"componentName":"KnobAction"}
+      ]
+    },
+    {
       "name": "Synth1",
       "components": [
         {"fontSize":16,"text":"Synth1","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
@@ -1478,6 +1508,21 @@
       ]
     },
     {
+      "name": "Synth1Keyboard",
+      "components": [
+        {"fontSize":16,"text":"Synth1","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
+        {"bounds":[5,6,6,6],"color":"#624fb5","componentName":"Rect"},
+        {"bounds":[15,6,6,6],"color":"#31285b","componentName":"Rect"},
+        {"bounds":[25,6,6,6],"color":"#31285b","componentName":"Rect"},
+        {"audioPlugin":"Sequencer","track":7,"bounds":[0,40,158,80],"encScale":1,"encOctave":2,"keys":[{"key":"q","action":".key:0"},{"key":"w","action":".key:1"},{"key":"e","action":".key:2"},{"key":"r","action":".key:3"},{"key":"a","action":".key:4"},{"key":"s","action":".key:5"},{"key":"d","action":".key:6"},{"key":"f","action":".key:7"},{"key":"z","action":".key:8"},{"key":"x","action":".key:9"},{"key":"c","action":".key:10"},{"key":"v","action":".key:11"}],"componentName":"NoteGrid"},
+        {"audioPlugin":"Sequencer","param":"PLAYING_LOOPS","encoderId":3,"bounds":[160,40,78,80],"color":"primary","track":7,"componentName":"KnobValue"},
+        {"fontSize":12,"text":"Turn right knob to exit and save.","bounds":[120,4,320,16],"font":"PoppinsLight_12","color":"#8f8f8fff","componentName":"Text"},
+        {"fontSize":12,"text":"&icon::arrowDown::filled","bounds":[270,25,16,16],"font":"PoppinsLight_12","color":"#8f8f8fff","componentName":"Text"},
+        {"fontSize":32,"text":"OK","bounds":[240,40,78,80],"font":"PoppinsLight_16","centered":true,"componentName":"Text"},
+        {"action":"data:Sequencer:7:SAVE_RECORD","action2":"setView:&previous","encoderId":4,"bounds":[0,0,0,0],"componentName":"KnobAction"}
+      ]
+    },
+    {
       "name": "Synth2",
       "components": [
         {"fontSize":16,"text":"Synth2","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
@@ -1657,6 +1702,21 @@
         {"text":"Save","bounds":[240,150,80,18],"centered":true,"visibilityContext":[{"condition":"SHOW_WHEN","index":254,"value":1}],"componentName":"Text"},
         {"keys":[{"key":"x","action":"setView:Synth2#track"},{"key":"c","action":"setView:Synth2Clips"},{"key":"v","action":"contextToggle:254:1:0"}],"visibilityContext":[{"index":254,"value":1,"condition":"SHOW_WHEN_NOT"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"},
         {"keys":[{"key":"z","action":"playPause"},{"key":"x","action":"setView:Menu"},{"key":"c","action":"audioEvent:RELOAD_VARIATION"},{"key":"v","action":"contextToggle:254:1:0"}],"visibilityContext":[{"index":254,"value":1,"condition":"SHOW_WHEN"}],"bounds":[0,0,0,0],"componentName":"HiddenValue"}
+      ]
+    },
+    {
+      "name": "Synth2Keyboard",
+      "components": [
+        {"fontSize":16,"text":"Synth2","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
+        {"bounds":[5,6,6,6],"color":"#b54fad","componentName":"Rect"},
+        {"bounds":[15,6,6,6],"color":"#5b2857","componentName":"Rect"},
+        {"bounds":[25,6,6,6],"color":"#5b2857","componentName":"Rect"},
+        {"audioPlugin":"Sequencer","track":8,"bounds":[0,40,158,80],"encScale":1,"encOctave":2,"keys":[{"key":"q","action":".key:0"},{"key":"w","action":".key:1"},{"key":"e","action":".key:2"},{"key":"r","action":".key:3"},{"key":"a","action":".key:4"},{"key":"s","action":".key:5"},{"key":"d","action":".key:6"},{"key":"f","action":".key:7"},{"key":"z","action":".key:8"},{"key":"x","action":".key:9"},{"key":"c","action":".key:10"},{"key":"v","action":".key:11"}],"componentName":"NoteGrid"},
+        {"audioPlugin":"Sequencer","param":"PLAYING_LOOPS","encoderId":3,"bounds":[160,40,78,80],"color":"primary","track":8,"componentName":"KnobValue"},
+        {"fontSize":12,"text":"Turn right knob to exit and save.","bounds":[120,4,320,16],"font":"PoppinsLight_12","color":"#8f8f8fff","componentName":"Text"},
+        {"fontSize":12,"text":"&icon::arrowDown::filled","bounds":[270,25,16,16],"font":"PoppinsLight_12","color":"#8f8f8fff","componentName":"Text"},
+        {"fontSize":32,"text":"OK","bounds":[240,40,78,80],"font":"PoppinsLight_16","centered":true,"componentName":"Text"},
+        {"action":"data:Sequencer:8:SAVE_RECORD","action2":"setView:&previous","encoderId":4,"bounds":[0,0,0,0],"componentName":"KnobAction"}
       ]
     },
     {
