@@ -19,6 +19,10 @@ Enc5 Enc6 Enc7
 
 All encoder are to edit patches, however Enc4 is push button so, should it edit the patch or used for menu navigation only?
 
+# zic fiterbank
+
+add passive mixer 5 stereo input :-)
+
 ## Pixel TODO
 
 - TODO DOC DOC
@@ -28,8 +32,9 @@ All encoder are to edit patches, however Enc4 is push button so, should it edit 
 
 - TODO provide a way to save preset on github repo
             - ---> see how to handle ssh or instead use token, but the idea would be to store as less as possible info on zicBox app side (if possible nothing) and delegate everything to the OS...
-- TODO rethink way to save, can we reduce the number of time we write file...
-
+            - -> need a web interface for this
+                - if repo is changed, should we restart pixel?
+            - -> server is activated manually? auth happen by authorising from the pixel with a popup message?
 
 - TODO see if we can make OS read only and data on separate partition to reduce chance of corruption
 
