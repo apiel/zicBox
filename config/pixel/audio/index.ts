@@ -107,7 +107,7 @@ const masterTrack = {
 };
 
 export const audio = {
-    // midiInput: 'Arduino Leonardo',
+    midiInput: 'MPK mini',
     midiOnActiveMidiTrack: 1,
     autoLoadFirstMidiDevice: true,
     tracks: [

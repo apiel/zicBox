@@ -1,5 +1,6 @@
 {
   "audio": {
+    "midiInput": "MPK mini",
     "midiOnActiveMidiTrack": 1,
     "autoLoadFirstMidiDevice": true,
     "tracks": [

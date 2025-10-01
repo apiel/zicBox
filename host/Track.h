@@ -1,5 +1,4 @@
-#ifndef _AUDIO_TRACK_H_
-#define _AUDIO_TRACK_H_
+#pragma once
 
 #include <atomic>
 #include <condition_variable>
@@ -152,5 +151,3 @@ public:
 // Track 0 plugin 5 AudioOutput
 // Track 0 plugin 6 SerializeTrack
 // Track 0 plugin 7 Tempo
-
-#endif

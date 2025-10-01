@@ -120,7 +120,8 @@
         "generator": "c",
         "stacktrace": "c",
         "text_encoding": "c",
-        "expected": "cpp"
+        "expected": "cpp",
+        "track.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabled",
     "makefile.configureOnOpen": false,
