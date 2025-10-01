@@ -14,6 +14,8 @@ endif
 
 # BUILD=-Wno-narrowing -ldl $(RTMIDI) 
 
+# HTTPS_SERVER=-lssl -lcrypto
+
 INC=-I.
 
 BUILD_DIR := build/$(TARGET_PLATFORM)
@@ -48,7 +50,7 @@ buildPixel:
 
 $(BUILD_DIR)/zic:
 	@echo Build using $(CC)
-	$(CC) -g -fms-extensions -o $(BUILD_DIR)/zic zic.cpp -ldl $(INC) $(RPI) $(TTF) $(RTMIDI) $(SDL2) $(SPI_DEV_MEM) $(TRACK_HEADER_FILES)
+	$(CC) -g -fms-extensions -o $(BUILD_DIR)/zic zic.cpp -ldl $(INC) $(RPI) $(TTF) $(RTMIDI) $(SDL2) $(SPI_DEV_MEM) $(TRACK_HEADER_FILES) $(HTTPS_SERVER)
 
 # Safeguard: include only if .d files exist
 -include $(wildcard $(OBJ_DIR)/zic.d)

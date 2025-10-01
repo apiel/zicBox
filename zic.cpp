@@ -12,6 +12,7 @@
 #include "plugins/controllers/PixelController.h"
 #include "styles.h"
 #include "viewManager.h"
+#include "httpServer.h"
 
 #include <cstdlib>
 
@@ -92,6 +93,8 @@ int main(int argc, char* argv[])
     pthread_t ptid;
     pthread_create(&ptid, NULL, &uiThread, NULL);
     pthread_setname_np(ptid, "ui");
+
+    startHttpServer();
 
     // wait for uiThread to finish
     pthread_join(ptid, NULL);
