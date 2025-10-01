@@ -329,6 +329,7 @@ public:
         if (config.contains("midiOutput")) {
             loadMidiOutput(config["midiOutput"].get<std::string>());
         }
+        debugMidi = config.value("debugMidi", debugMidi);
         if (config.contains("tracks") && config["tracks"].is_array()) {
             for (nlohmann::json& track : config["tracks"]) {
                 uint8_t trackId = CLAMP(track["id"].get<uint8_t>(), 0, MAX_TRACKS - 1);
@@ -629,6 +630,7 @@ public:
         return true;
     }
 
+    bool debugMidi = false;
     void midiInHandler(snd_rawmidi_t* handle)
     {
         while (1) {
@@ -663,7 +665,7 @@ public:
                     }
                 } else {
                     std::vector<unsigned char>* message = new std::vector<unsigned char>(buffer, buffer + n);
-                    if (!midi(message)) {
+                    if (!midi(message) && debugMidi) {
                         logDebug("Midi input message: ");
                         unsigned int nBytes = message->size();
                         for (unsigned int i = 0; i < nBytes; i++) {

@@ -23,6 +23,9 @@ All encoder are to edit patches, however Enc4 is push button so, should it edit 
 
 - TODO DOC DOC
 
+- TODO live recording midi keyboard
+- TODO test midi keyboard on pixel
+
 - TODO provide a way to save preset on github repo
             - ---> see how to handle ssh or instead use token, but the idea would be to store as less as possible info on zicBox app side (if possible nothing) and delegate everything to the OS...
 - TODO rethink way to save, can we reduce the number of time we write file...

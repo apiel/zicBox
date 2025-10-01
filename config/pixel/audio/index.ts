@@ -110,6 +110,7 @@ export const audio = {
     // midiInput: 'MPK mini',
     initActiveMidiTrack: 1,
     autoLoadFirstMidiDevice: true,
+    // debugMidi: true, // Will print midi messages that are not used...
     tracks: [
         drum1Track,
         drum2Track,
