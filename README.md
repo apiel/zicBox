@@ -1,10 +1,6 @@
 > [!TIP]
 > ### Help wanted
-> I am especially searching help for:
-> - 3d design for enclosure (3d printer or CNC machine)
-> - PCB design improvement
->
-> Support with anything else (C++, TypeScript, doc, design, testing, video...), is also more than welcome ;-)
+> Any support is also more than welcome ;-) (C++, TypeScript, doc, design, testing, video...)
 >
 > Have a look to our [contribution page](https://github.com/apiel/zicBox/wiki/40-Contribute-to-zicBox).
 
@@ -29,12 +25,11 @@ ZicBox is built around a highly modular system that ensures flexibility and exte
 
 This modular design allows developers to extend ZicBox effortlessly by adding new modules without altering the framework’s core logic.
 
-### **Real-Time Performance & Multi-Threading**
-ZicBox efficiently manages system resources to ensure **low-latency audio performance**. It achieves this by:
-
+### **Performance & Multi-Threading**
+ZicBox efficiently manages system resources:
 - Running the **UI in a dedicated thread** to ensure smooth rendering and interaction.
 - **Routing all control data** between the UI and the audio engine efficiently.
-- Running each **audio track in a separate thread**, ensuring optimal real-time processing.
+- Running each **audio track in a separate thread**, ensuring optimal processing.
 - Handling **audio thread synchronization** to maintain precise timing and tempo accuracy.
 
 ### **Scripting & UI Configuration with TypeScript & JSX**
@@ -56,7 +51,41 @@ ZicBox is an ideal solution for developers looking to build **custom music appli
 
 ## 📥 Get Started
 
-Clone the repo and start building with **ZicBox**! 🎵
+The fastest way to dive into **zicBox** is to start with one of the existing builds.
+
+### ZicPixel – The Most Accessible Build
+
+<img width="500" alt="image" src="https://github.com/user-attachments/assets/679664b5-7d3b-4592-9c9b-cd8171b85a40" />
+
+If you want to try zicBox with minimal effort, zicPixel is the best entry point:
+
+- **Simple & Affordable** – Only a handful of componen-ts to solder onto the PCBs.
+- **Pre-Built OS** – A ready-to-flash system image is available in the Releases.
+- **Enclosures** – Multiple 3D-printable cases exist.
+- **Plug & Play** – Just assemble the hardware, flash the OS, and you’ll be making music in no time.
+
+ZicPixel is the most polished and finished version of zicBox, designed to give you a clear idea of what the framework can already do today.
+
+### ZicGrid – More Advanced, More Powerful
+
+<img src='https://github.com/apiel/zicBox/blob/main/images/zicpad.png?raw=true' width='480'>
+
+For those looking for something bigger, **ZicGrid** takes things further:
+- **RGB Grid Pad** to improve the workflow.
+- **Large Screen** for a richer UI experience.
+- **12 Encoders** to speed up tweaking of the sound engines.
+
+While ZicGrid already has a strong base and working firmware, it’s more complex and expensive to build. Development is ongoing, but most efforts are currently focused on ZicPixel, so expect some rough edges.
+
+### 🛠️ Build Your Own
+
+Feeling adventurous? ZicBox is modular by design, so you can create your own hardware and custom UI layouts:
+- Clone the repo and explore the different modules (UI, audio, hardware).
+- Define your own layout and track arrangement in JSON/TypeScript.
+- Build a completely custom groovebox or drum machine suited to your needs.
+
+This option gives you maximum flexibility, but keep in mind that interest has been lower in this area, so documentation and ready-made examples is limited.
+
 
 ```sh
 git clone --recurse-submodules https://github.com/apiel/zicBox.git
@@ -68,118 +97,8 @@ cd zicBox
 > ```sh
 > git submodule update --init
 > ```
->
-> For SSH submodules, use:
->
-> ```sh
-> git submodule update --init .gitmodules_ssh
-> ```
 
-### Install Dependencies
-Update package lists and install required dependencies:
-
-```sh
-apt-get update
-apt-get install build-essential librtmidi-dev libsndfile1-dev pulseaudio alsa-utils nlohmann-json3-dev libfreetype6-dev -y
-```
-
-### Additional Dependencies for Desktop
-If you are setting up on a desktop, install SDL2 development libraries:
-
-```sh
-sudo apt-get install libsdl2-dev
-```
-
-### Setup for Raspberry Pi
-For Raspberry Pi, a setup script is available. Run the following commands:
-
-```sh
-cd hardware/rpi
-sudo ./setup.sh
-```
-
-[View the setup script here](https://github.com/apiel/zicBox/blob/main/hardware/rpi/setup.sh)
-
-## Run the Demo Project
-Once everything is set up, you can run the demo project using:
-
-```sh
-make pixel
-```
-
-Now you should get something like:
-
-<img src="https://raw.githubusercontent.com/apiel/zicBox/main/demo.png" />
-
-**Yes, I know, it sounds boring!** But before we complicate things, let's take a moment to understand how everything works. First, let's take a look at the code:
-
-```tsx
-import * as React from '@/libs/react';
-
-import { writeFileSync } from 'fs';
-import 'tsconfig-paths/register'; // To solve imported alias
-
-import { audioPlugin } from '@/libs/audio';
-import { Keyboard } from '@/libs/nativeComponents/Keyboard';
-import { KnobValue } from '@/libs/nativeComponents/KnobValue';
-import { List } from '@/libs/nativeComponents/List';
-import { Rect } from '@/libs/nativeComponents/Rect';
-import { Text } from '@/libs/nativeComponents/Text';
-import { Value } from '@/libs/nativeComponents/Value';
-import { View } from '@/libs/nativeComponents/View';
-
-const ScreenWidth = 240;
-const ScreenHeight = 320;
-
-const demoView = (
-    <View name="Demo">
-        <Text fontSize={16} text="title" bounds={[0, 0, ScreenWidth, 16]} centered />
-
-        <Rect color="tertiary" filled={false} bounds={[10, 30, 100, 50]} />
-        <Rect color="primary" bounds={[120, 30, 110, 20]} />
-
-        <Value
-            audioPlugin="Tempo"
-            param="BPM"
-            bounds={[120, 60, 110, 20]}
-            encoderId={0}
-            barColor="quaternary"
-        />
-
-        <KnobValue
-            audioPlugin="Tempo"
-            param="BPM"
-            bounds={[10, 90, 70, 70]}
-            encoderId={1}
-            color="secondary"
-        />
-
-        <List items={['item1', 'item2', 'item3']} bounds={[120, 100, 110, 60]} />
-
-        <Keyboard bounds={[0, 175, ScreenWidth, 120]} />
-    </View>
-);
-
-const output = JSON.stringify(
-    {
-        audio: { tracks: [{ id: 0, plugins: [audioPlugin('Tempo')] }] },
-        pixelController: 'rpi3A_4enc_11btn',
-        screen: { screenSize: { width: ScreenWidth, height: ScreenHeight } },
-        views: [demoView],
-    },
-    null,
-    2
-);
-
-writeFileSync('config.json', output);
-console.log('done');
-```
-
-If you prefer not to use TypeScript for the configuration file, you directly edit the JSON file or use any scripting language, Lua, Python, or even define everything directly in C++. However, I personally find TypeScript/JSX to be the most convenient option due to its strong typing, ease of use, and developer-friendly tooling (and maybe also because I am orginally web developer ^^).
-
-Now, you might be wondering about performance, don’t worry! The configuration process is purely declarative, meaning TypeScript is only used to define settings and structure. Once the JSON configurations are initialized, the actual execution happens entirely in C++, ensuring optimal performance.
-
-In short, you get the best of both worlds, TypeScript for a clean and manageable configuration setup, and C++ for high-performance execution.
+👉 Whichever path you choose, ZicBox gives you a strong foundation to build music applications – from easy-to-assemble hardware to fully custom instruments.
 
 More [documentation here](https://github.com/apiel/zicBox/wiki).
 
@@ -187,16 +106,12 @@ More [documentation here](https://github.com/apiel/zicBox/wiki).
 
 🎧 Built for musicians & developers
 
+**Example of old prototype:**
 <table>
     <tr>
-        <td><img src='https://github.com/apiel/zicBox/blob/main/images/zicpad.png?raw=true' width='480'></td>
+        <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel3A_2.png?raw=true' width='480'></td>
         <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel3A.png?raw=true' width='480'></td>
         <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel.png?raw=true' width='480'></td>
-    </tr>
-        <tr>
-        <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel_12btn.png?raw=true' height='480'></td>
-        <td><img src='https://github.com/apiel/zicBox/blob/main/images/demo3.png?raw=true' width='480'></td>
-        <td><img src='https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel3A_2.png?raw=true' width='480'></td>
     </tr>
 </table>
 
