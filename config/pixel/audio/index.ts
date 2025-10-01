@@ -107,8 +107,8 @@ const masterTrack = {
 };
 
 export const audio = {
-    midiInput: 'MPK mini',
-    midiOnActiveMidiTrack: 1,
+    // midiInput: 'MPK mini',
+    initActiveMidiTrack: 1,
     autoLoadFirstMidiDevice: true,
     tracks: [
         drum1Track,

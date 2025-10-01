@@ -19,7 +19,7 @@ function getKeys(key: string, track: number, viewName: string, baseName: string)
         { key, action: `contextToggle:${shiftContext}:2:0`, context: { id: shiftContext, value: 0 } },
         { key, action: `mute:${track}`, context: { id: shiftContext, value: 1 } },
     ] : [
-        { key, action: `setView:${baseName}#track`, context: { id: shiftContext, value: 0 } },
+        { key, action: `setView:${baseName}#track`, action2: `setActiveTrack:${track}`, context: { id: shiftContext, value: 0 } },
         { key, action: `mute:${track}`, context: { id: shiftContext, value: 1 } },
     ];
 }

@@ -203,9 +203,9 @@ public:
         tracks = sortTracksByDependencies(createTracks(buffer, masterCv));
         // std::vector<Track*> tracks = createTracks(buffer, masterCv);
 
-        if (midiOnActiveMidiTrack > -1) {
-            logDebug("Set active track to %d for midi input.", midiOnActiveMidiTrack);
-            setActiveMidiTrack(midiOnActiveMidiTrack, true);
+        if (initActiveMidiTrack > -1) {
+            logDebug("Set active track to %d for midi input.", initActiveMidiTrack);
+            setActiveMidiTrack(initActiveMidiTrack, true);
         }
 
         Track* threadTracks[TOTAL_TRACKS];
@@ -320,7 +320,7 @@ public:
         plugins.push_back(instance);
     }
 
-    int8_t midiOnActiveMidiTrack = -1;
+    int8_t initActiveMidiTrack = -1;
     AudioPluginHandler& config(nlohmann::json& config) override
     {
         if (config.contains("midiInput")) {
@@ -351,8 +351,8 @@ public:
         }
 
         // Instead to use midi channel, use active track to send midi notes
-        // The value passed to `midiOnActiveMidiTrack`, should be the active track at initialization
-        midiOnActiveMidiTrack = config.value("midiOnActiveMidiTrack", midiOnActiveMidiTrack);
+        // The value passed to `initActiveMidiTrack`, should be the active track at initialization
+        initActiveMidiTrack = config.value("initActiveMidiTrack", initActiveMidiTrack);
 
         if (config.contains("autoLoadFirstMidiDevice")) {
             if (config["autoLoadFirstMidiDevice"].get<bool>()) {
@@ -509,6 +509,7 @@ public:
     Track* activeMidiTrack = NULL;
     void setActiveMidiTrack(int16_t trackId, bool force = false)
     {
+        // logDebug("setActiveMidiTrack %d", trackId);
         if (trackId != -1 && (activeMidiTrack != NULL || force)) {
             for (Track* track : tracks) {
                 if (track->id == trackId) {
