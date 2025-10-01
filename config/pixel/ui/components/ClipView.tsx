@@ -86,7 +86,10 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                             { key: B3, action: `.save:7`, context: { id: shiftContext, value: 1 } },
                             { key: B4, action: `.save:8`, context: { id: shiftContext, value: 1 } },
 
-                            { key: C2, action: `.bank`, multipleKeyHandler: true }, // , context: { id: shiftContext, value: 0 }
+                            { key: C1, action: `.reload`, context: { id: shiftContext, value: 0 } },
+                            { key: C2, action: `.bank`, context: { id: shiftContext, value: 0 }, multipleKeyHandler: true },
+                            { key: C3, action: `setView:${synthName}`, context: { id: shiftContext, value: 0 } },
+                            { key: C3, action: `audioEvent:SAVE_VARIATION`, action2: `.message:All saved`, context: { id: shiftContext, value: 1 } },
                         ]}
                     />
                     <Clips
@@ -99,9 +102,7 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                         redirectView="&previous"
                         // allowToggleReload // if allowed, by mistake, we might reload instead to save
                         keys={[
-                            { key: C1, action: `.reload` }, // , context: { id: shiftContext, value: 0 }
-                            { key: C2, action: `.bank` }, // , context: { id: shiftContext, value: 0 }
-                            { key: C3, action: `setView:${synthName}` },
+                            { key: C2, action: `.bank`, context: { id: shiftContext, value: 0 } }, // Need to be in both...
 
                             { key: B1, action: `.set:5`, context: { id: shiftContext, value: 0 } },
                             { key: B2, action: `.set:6`, context: { id: shiftContext, value: 0 } },
@@ -149,9 +150,6 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                         centered={true}
                         color={menuTextColor}
                         visibilityContext={[shiftVisibilityContext]}
-                        keys={[
-                            { key: C3, action: `audioEvent:SAVE_VARIATION` },
-                        ]}
                     />
 
                     <Text

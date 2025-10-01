@@ -1,10 +1,10 @@
 {
-    "Sample2": {
+    "Sample1": {
         "sampleFile": "0_0_0__owly-bee__impossible-how-could-i-ghostly.wav",
         "values": [
             {
                 "key": "ENGINE",
-                "value": 0.0
+                "value": 1.0
             },
             {
                 "key": "VAL_1",
@@ -16,7 +16,7 @@
             },
             {
                 "key": "VAL_3",
-                "value": 0.0
+                "value": 4.0
             },
             {
                 "key": "VAL_4",
@@ -28,19 +28,19 @@
             },
             {
                 "key": "VAL_6",
-                "value": 0.0
+                "value": 59.0
             },
             {
                 "key": "VAL_7",
-                "value": 0.0
+                "value": 159.0
             },
             {
                 "key": "VAL_8",
-                "value": 0.0
+                "value": 18.0
             },
             {
                 "key": "VAL_9",
-                "value": 0.0
+                "value": 16.0
             },
             {
                 "key": "VAL_10",
@@ -58,9 +58,19 @@
     },
     "Sequencer": {
         "STATUS": 1.0,
-        "STEPS": null
+        "STEPS": [
+            {
+                "condition": "---",
+                "enabled": true,
+                "len": 1,
+                "motion": "rand0_12",
+                "note": 72,
+                "position": 0,
+                "velocity": 0.800000011920929
+            }
+        ]
     },
     "SerializeTrack": {
-        "VARIATION": 0.0
+        "VARIATION": 6.0
     }
 }

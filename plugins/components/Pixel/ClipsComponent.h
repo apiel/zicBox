@@ -211,6 +211,15 @@ public:
                     }
                 };
             }
+            if (action.rfind(".message:") == 0) {
+                std::string text = action.substr(9);
+                func = [this, text](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        showPopupMessage(text);
+                        renderNext();
+                    }
+                };
+            }
             return func;
         })
         , bgColor(styles.colors.background)
