@@ -25,16 +25,14 @@ All encoder are to edit patches, however Enc4 is push button so, should it edit 
 
 - TODO provide a way to save preset on github repo
             - ---> see how to handle ssh or instead use token, but the idea would be to store as less as possible info on zicBox app side (if possible nothing) and delegate everything to the OS...
-
-
 - TODO rethink way to save, can we reduce the number of time we write file...
+
+
 - TODO see if we can make OS read only and data on separate partition to reduce chance of corruption
 
 - TODO drone engine
 
 - TODO in menu could use knob or a button to navigate between multiple options...
-
-- TODO boot screen (not splash) while config load. (is it even necessary??)
 
 - TODO might need to have build with arm for zero2w but also for rpi4, not necerssarly the same ...
 - rething build / folder
