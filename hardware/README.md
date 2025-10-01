@@ -13,7 +13,7 @@
         </td>
         <td>
             <a href="https://github.com/apiel/zicBox/wiki/15-Zic-Pixel">
-                <img src="https://github.com/apiel/zicBox/blob/main/hardware/ZicPixel/pixel_12btn.png" width='480' />
+                <img width="480" alt="image" src="https://github.com/user-attachments/assets/679664b5-7d3b-4592-9c9b-cd8171b85a40" />
             </a>
         </td>
     </tr>

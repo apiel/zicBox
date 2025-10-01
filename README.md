@@ -117,6 +117,8 @@ More [documentation here](https://github.com/apiel/zicBox/wiki).
 
 ## Video
 
+https://www.youtube.com/watch?v=WyLNWE1CIYA&list=PLikTjJf4SwPpBYi4iVVPOwZ3j4N9gT0Sy
+
 https://www.youtube.com/playlist?list=PLikTjJf4SwPpBYi4iVVPOwZ3j4N9gT0Sy
 
 https://github.com/apiel/zicBox/assets/5873198/ce7851f0-9692-4132-8f6f-98f3bc18849a
