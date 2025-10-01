@@ -11,7 +11,7 @@
             },
             {
                 "key": "VAL_2",
-                "value": 119.0
+                "value": 197.0
             },
             {
                 "key": "VAL_3",
@@ -31,7 +31,7 @@
             },
             {
                 "key": "VAL_7",
-                "value": 96.00001525878906
+                "value": 75.90003967285156
             },
             {
                 "key": "VAL_8",
@@ -223,6 +223,18 @@
         ]
     },
     "SerializeTrack": {
-        "VARIATION": 1.0
+        "VARIATION": 402.0
+    },
+    "TrackFx": {
+        "values": [
+            {
+                "key": "VOLUME",
+                "value": 100.0
+            },
+            {
+                "key": "GAIN",
+                "value": 1.0
+            }
+        ]
     }
 }

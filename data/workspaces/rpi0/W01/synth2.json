@@ -10,39 +10,39 @@
         "values": [
             {
                 "key": "ENGINE",
-                "value": 4.0
+                "value": 2.0
             },
             {
                 "key": "VAL_1",
-                "value": 18.0
+                "value": -21.0
             },
             {
                 "key": "VAL_2",
-                "value": 17.0
+                "value": 4.799995422363281
             },
             {
                 "key": "VAL_3",
-                "value": 63.0
+                "value": 0.0
             },
             {
                 "key": "VAL_4",
-                "value": 96.0
+                "value": 19.0
             },
             {
                 "key": "VAL_5",
-                "value": 83.0
+                "value": 32.0
             },
             {
                 "key": "VAL_6",
-                "value": 92.0
+                "value": 31.0
             },
             {
                 "key": "VAL_7",
-                "value": 1.3999981880187988
+                "value": 88.0
             },
             {
                 "key": "VAL_8",
-                "value": 83.0
+                "value": 0.0
             },
             {
                 "key": "VAL_9",
@@ -50,15 +50,15 @@
             },
             {
                 "key": "VAL_10",
-                "value": 78.0
+                "value": 62.0
             },
             {
                 "key": "ATTACK",
-                "value": 510.0
+                "value": 1460.0
             },
             {
                 "key": "RELEASE",
-                "value": 320.0
+                "value": 910.0
             }
         ]
     }

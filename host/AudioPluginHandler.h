@@ -345,6 +345,9 @@ public:
             if (msInterval > 0) {
                 startAutoSave(msInterval);
             }
+        } else {
+            // We call AUTOSAVE only once but don't start a thread to regular interval.
+            sendEvent(AudioEventType::AUTOSAVE);
         }
 
         // Instead to use midi channel, use active track to send midi notes

@@ -118,6 +118,7 @@ public:
 
     void saveVariation(int16_t id)
     {
+        serialize();
         std::filesystem::create_directories(variationFolder);
         std::filesystem::copy(filepath, getVariationFilepath(id), std::filesystem::copy_options::overwrite_existing);
     }
