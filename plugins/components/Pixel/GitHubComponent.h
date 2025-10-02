@@ -55,19 +55,19 @@ public:
 
     void resize() override
     {
-        boxWidth = size.w / 7;
+        boxWidth = size.w / 9;
     }
 
     void render()
     {
         draw.filledRect(relativePosition, size, { bgColor });
 
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 9; i++) {
             Point pos = { relativePosition.x + i * boxWidth, relativePosition.y };
             Size boxSize = { boxWidth - 2, size.h };
             int textX = pos.x + boxSize.w * 0.5;
             int textY = pos.y + (boxSize.h - fontSize) * 0.5;
-            if (i == 3) {
+            if (i == 4) {
                 draw.textCentered({ textX, textY }, "-", fontSize, { textColor, .font = font });
                 continue;
             }
