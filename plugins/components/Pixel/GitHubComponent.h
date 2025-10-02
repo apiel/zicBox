@@ -36,7 +36,7 @@ protected:
             return; // avoid multiple concurrent fetches
         fetching = true;
 
-        userCode == "--------";
+        userCode = "--------";
         std::thread([this]() {
             try {
                 // Simple blocking HTTP (replace with your HTTP client)
@@ -64,7 +64,27 @@ protected:
 
 public:
     GitHubComponent(ComponentInterface::Props props)
-        : Component(props)
+        : Component(props, [&](std::string action) {
+            std::function<void(KeypadLayout::KeyMap&)> func = NULL;
+            if (action == ".refresh") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        fetching = false;
+                        fetchCodeAsync();
+                        renderNext();
+                    }
+                };
+            }
+            if (action == ".next") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        // here should fetch the token
+                        // and save to a file
+                    }
+                };
+            }
+            return func;
+        })
         , bgColor(styles.colors.background)
         , textColor(styles.colors.text)
         , foregroundColor(lighten(styles.colors.background, 0.5))
