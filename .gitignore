@@ -45,3 +45,4 @@ test_pulse.cpp
 trystuff/neotrellis
 .wpa_supplicant.conf
 output
+.github_token

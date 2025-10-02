@@ -35,7 +35,7 @@ protected:
     std::atomic<bool> fetching = false;
 
     std::string deviceCode;
-    std::string tokenFile = "~/.github_token";
+    std::string tokenFile = "../.github_token";
     std::string accessToken;
     enum class State { WaitingCode,
         LoadingToken,
