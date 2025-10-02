@@ -8,6 +8,8 @@ OBJ_DIR := ../../../build/obj/$(TARGET_PLATFORM)/libs/components
 
 INC=-I../../..
 
+CURL=-lcurl
+
 # track header file to be sure that build is automatically trigger if any dependency changes
 TRACK_HEADER_FILES = -MMD -MF $(OBJ_DIR)/$*.d
 
@@ -21,6 +23,11 @@ all:
 				SequencerComponent SampleComponent SequencerCardComponent\
 				SequencerValueComponent StringValComponent WorkspaceKnobComponent\
 				GitHubComponent
+
+GitHubComponent:
+	@echo "-------- :$@: --------"
+	make $(OBJ_DIR)/$@.o EXTRA="$(CURL)"
+	make $(BUILD_DIR)/libzic_$@.so EXTRA="$(CURL)"
 
 TapeComponent:
 	@echo "-------- :$@: --------"

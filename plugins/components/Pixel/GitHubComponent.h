@@ -1,7 +1,13 @@
 #pragma once
 
+#include "helpers/http.h"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
+
+#include <atomic>
+#include <chrono>
+#include <future>
+#include <nlohmann/json.hpp>
 
 /*md
 ## GitHub
@@ -18,7 +24,43 @@ protected:
     int fontSize = 12;
     void* font = NULL;
 
-    int boxWidth = 50;
+    int boxWidth = 20;
+
+    std::string userCode = "--------"; // fallback until fetched
+    std::chrono::steady_clock::time_point expiryTime;
+    std::atomic<bool> fetching = false;
+
+    void fetchCodeAsync()
+    {
+        if (fetching)
+            return; // avoid multiple concurrent fetches
+        fetching = true;
+
+        userCode == "--------";
+        std::thread([this]() {
+            try {
+                // Simple blocking HTTP (replace with your HTTP client)
+                std::string response = httpPost("https://github.com/login/device/code", "client_id=Ov23liVWLp79r3lJpFK2&scope=repo", 2000);
+
+                auto json = nlohmann::json::parse(response);
+
+                this->userCode = json.value("user_code", "--------");
+                int expiresIn = json.value("expires_in", 900); // seconds
+                this->expiryTime = std::chrono::steady_clock::now() + std::chrono::seconds(expiresIn);
+
+                // logDebug("GitHub: code=%s, expires in %d seconds", userCode.c_str(), expiresIn);
+                renderNext();
+            } catch (...) {
+                // on error, keep old code
+            }
+            fetching = false;
+        }).detach();
+    }
+
+    bool isExpired()
+    {
+        return std::chrono::steady_clock::now() >= expiryTime;
+    }
 
 public:
     GitHubComponent(ComponentInterface::Props props)
@@ -60,6 +102,10 @@ public:
 
     void render()
     {
+        if (userCode == "--------" || isExpired()) {
+            fetchCodeAsync();
+        }
+
         draw.filledRect(relativePosition, size, { bgColor });
 
         for (int i = 0; i < 9; i++) {
@@ -73,7 +119,9 @@ public:
             }
 
             draw.filledRect(pos, boxSize, { foregroundColor });
-            draw.textCentered({ textX, textY }, "X", fontSize, { textColor, .font = font });
+
+            std::string letter(1, userCode.size() > i ? userCode[i] : '-');
+            draw.textCentered({ textX, textY }, letter, fontSize, { textColor, .font = font });
         }
     }
 };
