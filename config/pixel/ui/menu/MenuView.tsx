@@ -6,6 +6,7 @@ import { WorkspaceKnob } from '@/libs/nativeComponents/WorkspaceKnob';
 import { rgb } from '@/libs/ui';
 import { Layout } from '../components/Layout';
 import {
+    B4,
     C1,
     C2,
     C3,
@@ -17,7 +18,7 @@ import {
     updateContext,
     W1_4,
     W2_4,
-    W3_4,
+    W3_4
 } from '../constants';
 import { enc1, enc3, enc4 } from '../constantsValue';
 
@@ -54,6 +55,14 @@ export function MenuView({ name }: Props) {
                         {...enc4}
                         color="tertiary"
                         track={MasterTrack}
+                    />
+
+                    <Text
+                        text="GitHub"
+                        bounds={[W3_4, ScreenHeight - 40, W1_4, 16]}
+                        centered={true}
+                        color={menuTextColor}
+                        keys={[{ key: B4, action: 'setView:Github' }]}
                     />
 
                     <Text

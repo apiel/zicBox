@@ -19,7 +19,8 @@ all:
 				WorkspacesComponent HiddenContextComponent KnobActionComponent\
 				MacroEnvelopComponent StepEditSampleComponent NoteGridComponent\
 				SequencerComponent SampleComponent SequencerCardComponent\
-				SequencerValueComponent StringValComponent WorkspaceKnobComponent
+				SequencerValueComponent StringValComponent WorkspaceKnobComponent\
+				GitHubComponent
 
 TapeComponent:
 	@echo "-------- :$@: --------"

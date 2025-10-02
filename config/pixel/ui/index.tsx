@@ -1,5 +1,6 @@
 import * as React from '@/libs/react';
 import { Drum1, Drum2, Drum3, Drum4, Sample1, Sample2, Synth1, Synth2 } from './components/Common';
+import { Github } from './components/Github';
 import {
     ColorTrack1,
     ColorTrack2,
@@ -128,6 +129,7 @@ export const ui = {
             <ShuttingDown name="ShuttingDown" />
             <Updating name="Updating" />
             <UpdateAvailable name="UpdateAvailable" />
+            <Github name="Github" />
         </>
     ),
 };

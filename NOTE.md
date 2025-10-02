@@ -30,6 +30,7 @@ add passive mixer 5 stereo input :-)
 - TODO live recording midi keyboard
 - TODO test midi keyboard on pixel
 
+- TODO load pixel has mass storage
 - TODO provide a way to save preset on github repo
             - ---> see how to handle ssh or instead use token, but the idea would be to store as less as possible info on zicBox app side (if possible nothing) and delegate everything to the OS...
             - -> need a web interface for this

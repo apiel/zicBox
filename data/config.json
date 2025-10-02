@@ -1752,6 +1752,7 @@
         {"encoderId":1,"bounds":[0,40,78,80],"audioPlugin":"SerializeTrack","keys":[{"key":"z","action":".load"}],"componentName":"WorkspaceKnob"},
         {"audioPlugin":"Tempo","param":"BPM","encoderId":3,"bounds":[160,40,78,80],"color":"tertiary","track":0,"componentName":"KnobValue"},
         {"audioPlugin":"TrackFx","param":"VOLUME","label":"Master Vol.","encoderId":4,"bounds":[240,40,78,80],"color":"tertiary","track":0,"componentName":"KnobValue"},
+        {"text":"GitHub","bounds":[240,130,80,16],"centered":true,"color":"#6e6e6e","keys":[{"key":"f","action":"setView:Github"}],"componentName":"Text"},
         {"text":"Load","bounds":[0,150,80,16],"centered":true,"color":"#6e6e6e","componentName":"Text"},
         {"text":"Exit","bounds":[80,150,80,16],"centered":true,"color":"#6e6e6e","keys":[{"key":"x","action":"setView:&previous"}],"componentName":"Text"},
         {"text":"Shutdown","bounds":[160,150,80,16],"centered":true,"color":"#6e6e6e","keys":[{"key":"c","action":"contextToggle:202:1:0"}],"visibilityContext":[{"condition":"SHOW_WHEN","index":203,"value":0}],"componentName":"Text"},
@@ -1783,6 +1784,17 @@
         {"fontSize":24,"text":"Update Available","bounds":[0,60,320,16],"centered":true,"font":"PoppinsLight_12","componentName":"Text"},
         {"text":"Exit","bounds":[80,150,80,16],"centered":true,"color":"#6e6e6e","keys":[{"key":"x","action":"setView:&previous"}],"componentName":"Text"},
         {"text":"Update","bounds":[160,150,80,16],"centered":true,"bgColor":"#4cb663ff","keys":[{"key":"c","action":"setView:Updating","action2":"sh:/opt/scripts/update.sh &"}],"componentName":"Text"}
+      ]
+    },
+    {
+      "name": "Github",
+      "components": [
+        {"fontSize":16,"text":"GitHub","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
+        {"bounds":[5,6,6,6],"color":"#aaaaaa","componentName":"Rect"},
+        {"bounds":[15,6,6,6],"color":"#555555","componentName":"Rect"},
+        {"bounds":[25,6,6,6],"color":"#555555","componentName":"Rect"},
+        {"bounds":[20,70,280,30],"componentName":"GitHub"},
+        {"text":"Exit","bounds":[160,150,80,18],"centered":true,"color":"#6e6e6e","keys":[{"key":"c","action":"setView:&previous"}],"componentName":"Text"}
       ]
     }
   ]
