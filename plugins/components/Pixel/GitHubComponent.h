@@ -152,7 +152,6 @@ protected:
         if (accessToken.empty() || reposLoaded)
             return;
         state = State::LoadingRepos;
-        renderNext();
 
         std::thread([this]() {
             try {
@@ -166,21 +165,31 @@ protected:
                     { "Accept", "application/vnd.github+json" }
                 };
 
-                auto res = cli.Get("/user/repos", headers);
-
-                if (!res || res->status != 200) {
-                    throw std::runtime_error("GitHub repos fetch failed");
-                }
-
-                auto json = nlohmann::json::parse(res->body);
                 repos.clear();
-                for (auto& repo : json) {
-                    if (repo.contains("full_name")) {
-                        repos.push_back(repo["full_name"]);
+                int page = 1;
+                for (int i = 0; i < 20; i++) { // max 20 pages = 2000 repos
+                    std::string path = "/user/repos?per_page=100&page=" + std::to_string(page);
+                    auto res = cli.Get(path.c_str(), headers);
+                    if (!res || res->status != 200) {
+                        throw std::runtime_error("GitHub repos fetch failed");
                     }
+
+                    auto json = nlohmann::json::parse(res->body);
+                    if (json.empty())
+                        break;
+
+                    for (auto& repo : json) {
+                        if (repo.contains("full_name")) {
+                            repos.push_back(repo["full_name"]);
+                        }
+                    }
+
+                    if ((int)json.size() < 100)
+                        break; // last page
+                    page++;
                 }
 
-                logDebug("GitHub: %d repos", repos.size());
+                logDebug("GitHub: %d repos", (int)repos.size());
 
                 if (!repos.empty()) {
                     reposLoaded = true;
