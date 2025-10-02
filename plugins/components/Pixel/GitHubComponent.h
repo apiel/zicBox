@@ -10,8 +10,8 @@
 
 #include <atomic>
 #include <chrono>
-#include <future>
 #include <fstream>
+#include <future>
 
 /*md
 ## GitHub
@@ -28,6 +28,8 @@ protected:
     int fontSize = 12;
     void* font = NULL;
 
+    int8_t encoderId = -1;
+
     int boxWidth = 20;
 
     std::string userCode = "--------"; // fallback until fetched
@@ -37,10 +39,17 @@ protected:
     std::string deviceCode;
     std::string tokenFile = "../.github_token";
     std::string accessToken;
-    enum class State { WaitingCode,
+    enum class State {
+        WaitingCode,
         LoadingToken,
-        Authenticated };
+        LoadingRepos,
+        Authenticated,
+    };
     std::atomic<State> state = State::WaitingCode;
+
+    std::vector<std::string> repos;
+    int currentRepoIndex = 0;
+    bool reposLoaded = false;
 
     void fetchCodeAsync()
     {
@@ -124,6 +133,8 @@ protected:
                         std::ofstream out(tokenFile);
                         out << accessToken;
                         out.close();
+
+                        fetchReposAsync();
                         state = State::Authenticated;
                         renderNext();
                     }
@@ -136,6 +147,52 @@ protected:
         }).detach();
     }
 
+    void fetchReposAsync()
+    {
+        if (accessToken.empty() || reposLoaded)
+            return;
+        state = State::LoadingRepos;
+        renderNext();
+
+        std::thread([this]() {
+            try {
+                httplib::Client cli("https://api.github.com");
+                cli.set_connection_timeout(5, 0);
+                cli.set_read_timeout(5, 0);
+
+                httplib::Headers headers = {
+                    { "Authorization", "token " + accessToken },
+                    { "User-Agent", "zicbox-client" },
+                    { "Accept", "application/vnd.github+json" }
+                };
+
+                auto res = cli.Get("/user/repos", headers);
+
+                if (!res || res->status != 200) {
+                    throw std::runtime_error("GitHub repos fetch failed");
+                }
+
+                auto json = nlohmann::json::parse(res->body);
+                repos.clear();
+                for (auto& repo : json) {
+                    if (repo.contains("full_name")) {
+                        repos.push_back(repo["full_name"]);
+                    }
+                }
+
+                if (!repos.empty()) {
+                    reposLoaded = true;
+                    currentRepoIndex = 0;
+                    state = State::Authenticated;
+                    renderNext();
+                }
+            } catch (const std::exception& ex) {
+                logError("GitHub repos fetch failed: %s", ex.what());
+                state = State::Authenticated; // fallback
+            }
+        }).detach();
+    }
+
     bool isExpired()
     {
         return std::chrono::steady_clock::now() >= expiryTime;
@@ -143,13 +200,16 @@ protected:
 
     bool isAuthenticated()
     {
-        if (state == State::Authenticated)
+        if (state == State::Authenticated && !accessToken.empty())
             return true;
 
         std::ifstream in(tokenFile);
         if (in) {
             std::getline(in, accessToken);
             if (!accessToken.empty()) {
+                if (!reposLoaded) {
+                    fetchReposAsync();
+                }
                 state = State::Authenticated;
                 return true;
             }
@@ -207,6 +267,10 @@ public:
         /// The font size of the text.
         fontSize = config.value("fontSize", fontSize); //eg: 8
 
+        /// The encoder id that will interract with this component.
+        /*md   encoderId={0} */
+        encoderId = config.value("encoderId", encoderId);
+
         /*md md_config_end */
 
         resize();
@@ -221,15 +285,25 @@ public:
     {
         draw.filledRect(relativePosition, size, { bgColor });
 
+        int textY = relativePosition.y + (size.h - fontSize) * 0.5;
+
         if (isAuthenticated()) {
-            draw.textCentered({ relativePosition.x + size.w / 2, relativePosition.y + size.h / 2 },
-                "Authenticated", fontSize, { textColor, .font = font });
+            if (!reposLoaded && state == State::LoadingRepos) {
+                draw.textCentered({ relativePosition.x + size.w / 2, textY }, "Loading repos...", fontSize, { textColor, .font = font });
+                return;
+            }
+            if (reposLoaded && !repos.empty()) {
+                draw.filledRect(relativePosition, size, { foregroundColor });
+                std::string repoName = repos[currentRepoIndex];
+                draw.text({ relativePosition.x + 4, textY }, repoName, fontSize, { textColor, .font = font });
+                return;
+            }
+            draw.textCentered({ relativePosition.x + size.w / 2, textY }, "Authenticated", fontSize, { textColor, .font = font });
             return;
         }
 
         if (state == State::LoadingToken) {
-            draw.textCentered({ relativePosition.x + size.w / 2, relativePosition.y + size.h / 2 },
-                "Loading token...", fontSize, { textColor, .font = font });
+            draw.textCentered({ relativePosition.x + size.w / 2, textY }, "Loading token...", fontSize, { textColor, .font = font });
             return;
         }
 
@@ -241,7 +315,6 @@ public:
             Point pos = { relativePosition.x + i * boxWidth, relativePosition.y };
             Size boxSize = { boxWidth - 2, size.h };
             int textX = pos.x + boxSize.w * 0.5;
-            int textY = pos.y + (boxSize.h - fontSize) * 0.5;
             if (i == 4) {
                 draw.textCentered({ textX, textY }, "-", fontSize, { textColor, .font = font });
                 continue;
@@ -251,6 +324,18 @@ public:
 
             std::string letter(1, userCode.size() > i ? userCode[i] : '-');
             draw.textCentered({ textX, textY }, letter, fontSize, { textColor, .font = font });
+        }
+    }
+
+    void onEncoder(int id, int8_t direction)
+    {
+        if (id == encoderId && reposLoaded && !repos.empty()) {
+            currentRepoIndex += direction;
+            if (currentRepoIndex < 0)
+                currentRepoIndex = 0;
+            if (currentRepoIndex >= (int)repos.size())
+                currentRepoIndex = repos.size() - 1;
+            renderNext();
         }
     }
 };

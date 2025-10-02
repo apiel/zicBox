@@ -4,6 +4,7 @@ import { GitHub } from '@/libs/nativeComponents/GitHub';
 import { Text } from '@/libs/nativeComponents/Text';
 import { rgb } from '@/libs/ui';
 import { C1, C3, C4, menuTextColor, ScreenHeight, ScreenWidth, W1_4, W2_4, W3_4 } from '../constants';
+import { enc1 } from '../constantsValue';
 import { Layout } from './Layout';
 
 export type Props = {
@@ -33,6 +34,7 @@ export function Github({ name }: Props) {
                     <GitHub
                         bounds={[20, 70, ScreenWidth - 40, 30]}
                         keys={[{ key: C3, action: `.refresh` }, { key: C1, action: `.next` }]}
+                        encoderId={enc1.encoderId}
                     />
                     <Text
                         text="Once you enter the code, press next."
