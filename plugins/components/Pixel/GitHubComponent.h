@@ -180,6 +180,8 @@ protected:
                     }
                 }
 
+                logDebug("GitHub: %d repos", repos.size());
+
                 if (!repos.empty()) {
                     reposLoaded = true;
                     currentRepoIndex = 0;
