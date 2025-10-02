@@ -72,3 +72,4 @@ export const clipRenderContext = 200;
 export const seqContext = 201;
 export const shutdownContext = 202;
 export const updateContext = 203;
+export const githubContext = 204;

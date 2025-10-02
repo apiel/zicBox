@@ -7,4 +7,5 @@ export const GitHub = getJsonComponent<{
     fontSize?: number;
     font?: string;
     encoderId?: number;
+    contextId?: number;
 }>('GitHub');

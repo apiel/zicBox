@@ -29,6 +29,7 @@ protected:
     void* font = NULL;
 
     int8_t encoderId = -1;
+    uint8_t contextId = 0;
 
     int boxWidth = 20;
 
@@ -42,7 +43,6 @@ protected:
     enum class State {
         WaitingCode,
         LoadingToken,
-        LoadingRepos,
         Authenticated,
     };
     std::atomic<State> state = State::WaitingCode;
@@ -51,6 +51,13 @@ protected:
     int currentRepoIndex = 0;
     bool reposLoaded = false;
 
+    void setState(State newState)
+    {
+        setContext(contextId, (float)newState);
+        state = newState;
+        renderNext();
+    }
+
     void fetchCodeAsync()
     {
         if (fetching)
@@ -58,6 +65,8 @@ protected:
         fetching = true;
 
         userCode = "--------";
+
+        setState(State::WaitingCode);
 
         std::thread([this]() {
             try {
@@ -94,7 +103,8 @@ protected:
     {
         if (deviceCode.empty())
             return;
-        state = State::LoadingToken;
+        // state = State::LoadingToken;
+        setState(State::LoadingToken);
 
         std::thread([this]() {
             try {
@@ -135,14 +145,17 @@ protected:
                         out.close();
 
                         fetchReposAsync();
-                        state = State::Authenticated;
-                        renderNext();
+                        // state = State::Authenticated;
+                        // renderNext();
+                        setState(State::Authenticated);
                     }
                     break;
                 }
             } catch (const std::exception& ex) {
                 logError("GitHub token fetch failed: %s", ex.what());
-                state = State::WaitingCode;
+                // state = State::WaitingCode;
+                // renderNext();
+                setState(State::WaitingCode);
             }
         }).detach();
     }
@@ -151,7 +164,6 @@ protected:
     {
         if (accessToken.empty() || reposLoaded)
             return;
-        state = State::LoadingRepos;
 
         std::thread([this]() {
             try {
@@ -194,12 +206,10 @@ protected:
                 if (!repos.empty()) {
                     reposLoaded = true;
                     currentRepoIndex = 0;
-                    state = State::Authenticated;
                     renderNext();
                 }
             } catch (const std::exception& ex) {
                 logError("GitHub repos fetch failed: %s", ex.what());
-                state = State::Authenticated; // fallback
             }
         }).detach();
     }
@@ -221,7 +231,7 @@ protected:
                 if (!reposLoaded) {
                     fetchReposAsync();
                 }
-                state = State::Authenticated;
+                setState(State::Authenticated);
                 return true;
             }
         }
@@ -235,9 +245,11 @@ public:
             if (action == ".refresh") {
                 func = [this](KeypadLayout::KeyMap& keymap) {
                     if (KeypadLayout::isReleased(keymap)) {
-                        fetching = false;
-                        fetchCodeAsync();
-                        renderNext();
+                        if (state != State::Authenticated) {
+                            fetching = false;
+                            fetchCodeAsync();
+                            renderNext();
+                        }
                     }
                 };
             }
@@ -282,6 +294,9 @@ public:
         /*md   encoderId={0} */
         encoderId = config.value("encoderId", encoderId);
 
+        /// Set context id shared with other components to share the state.
+        contextId = config.value("contextId", contextId); //eg: 10
+
         /*md md_config_end */
 
         resize();
@@ -299,17 +314,13 @@ public:
         int textY = relativePosition.y + (size.h - fontSize) * 0.5;
 
         if (isAuthenticated()) {
-            if (!reposLoaded && state == State::LoadingRepos) {
-                draw.textCentered({ relativePosition.x + size.w / 2, textY }, "Loading repos...", fontSize, { textColor, .font = font });
-                return;
-            }
             if (reposLoaded && !repos.empty()) {
                 draw.filledRect(relativePosition, size, { foregroundColor });
                 std::string repoName = repos[currentRepoIndex];
                 draw.text({ relativePosition.x + 4, textY }, repoName, fontSize, { textColor, .font = font });
                 return;
             }
-            draw.textCentered({ relativePosition.x + size.w / 2, textY }, "Authenticated", fontSize, { textColor, .font = font });
+            draw.textCentered({ relativePosition.x + size.w / 2, textY }, "Loading repos...", fontSize, { textColor, .font = font });
             return;
         }
 
