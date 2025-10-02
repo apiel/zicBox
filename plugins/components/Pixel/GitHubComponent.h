@@ -24,6 +24,7 @@ protected:
     Color bgColor;
     Color textColor;
     Color foregroundColor;
+    Color scrollColor;
 
     int fontSize = 12;
     void* font = NULL;
@@ -268,6 +269,7 @@ public:
         , bgColor(styles.colors.background)
         , textColor(styles.colors.text)
         , foregroundColor(lighten(styles.colors.background, 0.5))
+        , scrollColor(lighten(styles.colors.background, 1.0))
     {
         /*md md_config:Rect */
         nlohmann::json& config = props.config;
@@ -280,6 +282,9 @@ public:
 
         /// The foreground color.
         foregroundColor = draw.getColor(config["foregroundColor"], foregroundColor); //eg: "#000000"
+
+        /// The scroll color.
+        scrollColor = draw.getColor(config["scrollColor"], scrollColor); //eg: "#000000"
 
         /// The font of the text. Default is null.
         if (config.contains("font")) {
@@ -316,6 +321,8 @@ public:
         if (isAuthenticated()) {
             if (reposLoaded && !repos.empty()) {
                 draw.filledRect(relativePosition, size, { foregroundColor });
+                int scrollW = size.w * ((float)currentRepoIndex / (float)repos.size());
+                draw.filledRect(relativePosition, { scrollW, 2 }, { scrollColor });
                 std::string repoName = repos[currentRepoIndex];
                 draw.text({ relativePosition.x + 4, textY }, repoName, fontSize, { textColor, .font = font });
                 return;
