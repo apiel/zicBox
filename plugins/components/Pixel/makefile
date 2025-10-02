@@ -8,7 +8,8 @@ OBJ_DIR := ../../../build/obj/$(TARGET_PLATFORM)/libs/components
 
 INC=-I../../..
 
-CURL=-lcurl
+# HTTP=-lcurl
+HTTP=-lssl -lcrypto
 
 # track header file to be sure that build is automatically trigger if any dependency changes
 TRACK_HEADER_FILES = -MMD -MF $(OBJ_DIR)/$*.d
@@ -26,8 +27,8 @@ all:
 
 GitHubComponent:
 	@echo "-------- :$@: --------"
-	make $(OBJ_DIR)/$@.o EXTRA="$(CURL)"
-	make $(BUILD_DIR)/libzic_$@.so EXTRA="$(CURL)"
+	make $(OBJ_DIR)/$@.o EXTRA="$(HTTP)"
+	make $(BUILD_DIR)/libzic_$@.so EXTRA="$(HTTP)"
 
 TapeComponent:
 	@echo "-------- :$@: --------"

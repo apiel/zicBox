@@ -1,13 +1,16 @@
 #pragma once
 
+#define CPPHTTPLIB_OPENSSL_SUPPORT
+
 #include "helpers/http.h"
+#include "libs/httplib/httplib.h"
+// #include "libs/nlohmann/json.hpp"
 #include "plugins/components/component.h"
 #include "plugins/components/utils/color.h"
 
 #include <atomic>
 #include <chrono>
 #include <future>
-#include <nlohmann/json.hpp>
 
 /*md
 ## GitHub
@@ -33,25 +36,36 @@ protected:
     void fetchCodeAsync()
     {
         if (fetching)
-            return; // avoid multiple concurrent fetches
+            return;
         fetching = true;
 
         userCode = "--------";
+
         std::thread([this]() {
             try {
-                // Simple blocking HTTP (replace with your HTTP client)
-                std::string response = httpPost("https://github.com/login/device/code", "client_id=Ov23liVWLp79r3lJpFK2&scope=repo", 2000);
+                httplib::Client cli("https://github.com");
+                cli.set_connection_timeout(5, 0); // 5s
+                cli.set_read_timeout(5, 0); // 5s
 
-                auto json = nlohmann::json::parse(response);
+                auto res = cli.Post("/login/device/code",
+                    { { "Content-Type", "application/x-www-form-urlencoded" } },
+                    "client_id=Ov23liVWLp79r3lJpFK2&scope=repo",
+                    "application/x-www-form-urlencoded");
 
-                this->userCode = json.value("user_code", "--------");
-                int expiresIn = json.value("expires_in", 900); // seconds
+                if (!res || res->status != 200) {
+                    throw std::runtime_error("GitHub request failed");
+                }
+
+                auto kv = parseFormUrlEncoded(res->body);
+
+                this->userCode = kv["user_code"];
+                int expiresIn = std::stoi(kv["expires_in"]);
                 this->expiryTime = std::chrono::steady_clock::now() + std::chrono::seconds(expiresIn);
 
                 // logDebug("GitHub: code=%s, expires in %d seconds", userCode.c_str(), expiresIn);
                 renderNext();
-            } catch (...) {
-                // on error, keep old code
+            } catch (const std::exception& ex) {
+                logError("GitHub request failed: %s", ex.what());
             }
             fetching = false;
         }).detach();
