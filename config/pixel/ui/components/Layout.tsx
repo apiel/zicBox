@@ -13,6 +13,7 @@ export type Props = {
     synthName?: string;
     title?: string;
     skipMainKeys?: boolean;
+    noPrevious?: boolean;
 };
 
 export function Layout({
@@ -22,10 +23,11 @@ export function Layout({
     title,
     synthName,
     skipMainKeys,
+    noPrevious,
 }: Props) {
     const inactiveColor = darken(color, 0.5);
     return (
-        <View name={viewName}>
+        <View name={viewName} {...noPrevious && { noPrevious: true }}>
             {title && (
                 <Text fontSize={16} text={title} bounds={[37, 0, 100, 16]} font="PoppinsLight_8" />
             )}

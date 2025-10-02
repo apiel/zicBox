@@ -17,6 +17,7 @@ export function Github({ name }: Props) {
             color={rgb(170, 170, 170)}
             title="GitHub"
             skipMainKeys
+            noPrevious
             content={
                 <>
                     <Text

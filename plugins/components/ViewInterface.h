@@ -13,6 +13,7 @@ public:
     float *contextVar;
     int8_t activeGroup = 0;
     int8_t track = -1;
+    bool saveForPrevious = true;
 
     ViewInterface(DrawInterface& draw, std::function<void(std::string name)> setView, float *contextVar)
         : draw(draw)

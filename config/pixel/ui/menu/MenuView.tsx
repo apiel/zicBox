@@ -32,6 +32,7 @@ export function MenuView({ name }: Props) {
             viewName={name}
             color={rgb(170, 170, 170)}
             title="Menu"
+            noPrevious
             content={
                 <>
                     <WorkspaceKnob

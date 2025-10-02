@@ -83,7 +83,7 @@ public:
         for (int i = 0; i < views.size(); i++) {
             if (views[i]->name == value) {
                 if (view != views[i] || force) {
-                    if (previousView != view) {
+                    if (view->saveForPrevious && previousView != view) {
                         previousView = view;
                     }
                     view = views[i];
@@ -333,6 +333,11 @@ public:
                         logDebug("Loading view %s", v["name"].get<std::string>().c_str());
                         View* newView = new View(*draw, [&](std::string name) { setView(name); }, contextVar);
                         newView->name = v["name"];
+                        if (v.contains("noPrevious")) {
+                            logDebug("view %s noPrevious", newView->name.c_str());
+                            newView->saveForPrevious = !v["noPrevious"];
+                        }
+                        // logDebug(">>>> %s", v.dump().c_str());
                         try {
                             // TODO how to handle extra config?
                             views.push_back(newView);

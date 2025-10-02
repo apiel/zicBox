@@ -1744,6 +1744,7 @@
     },
     {
       "name": "Menu",
+      "noPrevious": true,
       "components": [
         {"fontSize":16,"text":"Menu","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
         {"bounds":[5,6,6,6],"color":"#aaaaaa","componentName":"Rect"},
@@ -1788,6 +1789,7 @@
     },
     {
       "name": "Github",
+      "noPrevious": true,
       "components": [
         {"fontSize":16,"text":"GitHub","bounds":[37,0,100,16],"font":"PoppinsLight_8","componentName":"Text"},
         {"bounds":[5,6,6,6],"color":"#aaaaaa","componentName":"Rect"},
