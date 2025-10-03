@@ -78,7 +78,10 @@
         ]
       }
     ],
-    "dataRepository": "data/repositories/default_pixel"
+    "repository": {
+      "folder": "data/repositories",
+      "default": "default_pixel"
+    }
   },
   "pixelController": "pixel_12btn",
   "screen": {
