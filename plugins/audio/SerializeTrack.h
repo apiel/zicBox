@@ -82,20 +82,16 @@ public:
     SerializeTrack(AudioPlugin::Props& props, AudioPlugin::Config& config)
         : Mapping(props, config)
     {
-        initFilepath();
-
         //md **Config**:
         auto& json = config.json;
         //md - `"filename": "track"` to set filename. By default it is `track`.
         if (json.contains("filename")) {
             filename = json["filename"].get<std::string>();
-            initFilepath();
         }
 
         //md - `"workspaceFolder": "workspaces"` to set workspace folder. By default it is `data/workspaces`.
         if (json.contains("workspaceFolder")) {
             workspaceFolder = json["workspaceFolder"].get<std::string>();
-            initFilepath();
         }
 
         //md - `"maxVariation": 12` to set max variation. By default it is `12`.
@@ -105,6 +101,8 @@ public:
 
         //md - `"saveBeforeChangingVariation": true` toggle to enable variation edit mode. If set to false variation will be read only. If set to true, every changes will be save before to switch to the next variation. Default is false`.
         saveBeforeChangingVariation = json.value("saveBeforeChangingVariation", saveBeforeChangingVariation);
+
+        initFilepath();
     }
 
     void sample(float* buf)
