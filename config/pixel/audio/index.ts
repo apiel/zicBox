@@ -11,7 +11,7 @@ import {
 } from '../constants';
 
 export const maxVariation = 1000;
-export const workspaceFolder = 'data/repo/default_pixel/workspaces';
+export const workspaceFolder = 'data/repositories/default_pixel/workspaces';
 
 const drum1Track = {
     id: Drum1Track,

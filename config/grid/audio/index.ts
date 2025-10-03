@@ -13,7 +13,7 @@ import {
 } from '../constants';
 
 export const maxVariation = 16;
-export const workspaceFolder = 'data/repo/default_grid/workspaces';
+export const workspaceFolder = 'data/repositories/default_grid/workspaces';
 
 const drum1Track = {
     id: Drum1Track,
