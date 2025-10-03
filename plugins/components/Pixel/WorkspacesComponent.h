@@ -17,7 +17,6 @@ class WorkspacesComponent : public ListComponent {
 public:
     std::string workspaceFolder = "workspaces";
     std::string* currentWorkspaceName = NULL;
-    std::string* repositoryFolder = NULL;
     int* refreshState = NULL;
     int currentRefreshState = 0;
 
@@ -32,7 +31,7 @@ public:
 
     std::string getFolder()
     {
-        return *repositoryFolder + "/" + workspaceFolder;
+        return *view->dataRepository + "/" + workspaceFolder;
     }
 
     void initItems()
@@ -74,7 +73,6 @@ public:
         plugin = getPluginPtr(config, "audioPlugin", track); //eg: "audio_plugin_name"
 
         currentWorkspaceName = (std::string*)plugin->data(plugin->getDataId(config.value("currentWorkspaceDataId", "CURRENT_WORKSPACE"))); //eg: "CURRENT_WORKSPACE"
-        repositoryFolder = (std::string*)plugin->data(plugin->getDataId(config.value("repositoryFolderDataId", "REPOSITORY_FOLDER"))); //eg: "REPOSITORY_FOLDER"
 
         refreshState = (int*)plugin->data(plugin->getDataId(config.value("refreshStateDataId", "CREATE_WORKSPACE"))); //eg: "CREATE_WORKSPACE"
         currentRefreshState = *refreshState;

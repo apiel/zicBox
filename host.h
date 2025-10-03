@@ -1,5 +1,4 @@
-#ifndef _HOST_H_
-#define _HOST_H_
+#pragma once
 
 #include <dlfcn.h>
 #include <pthread.h>
@@ -41,6 +40,11 @@ void* hostThread(void* = NULL)
         host->audioPluginHandler->loop();
     }
     return NULL;
+}
+
+AudioPluginHandlerInterface* getAudioPluginHandler()
+{
+    return host->audioPluginHandler;
 }
 
 void loadHostPlugin()
@@ -100,5 +104,3 @@ void startHostThread()
     pthread_create(&ptid, NULL, &hostThread, NULL);
     pthread_setname_np(ptid, "host");
 }
-
-#endif

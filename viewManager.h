@@ -337,6 +337,7 @@ public:
                             logDebug("view %s noPrevious", newView->name.c_str());
                             newView->saveForPrevious = !v["noPrevious"];
                         }
+                        newView->dataRepository = &getAudioPluginHandler()->dataRepository;
                         // logDebug(">>>> %s", v.dump().c_str());
                         try {
                             // TODO how to handle extra config?
