@@ -7,8 +7,8 @@ export const Workspaces = getJsonComponent<{
     selectionColor?: string;
     itemBackground?: string;
     currentWorkspaceDataId?: string;
+    repositoryFolderDataId?: string;
     refreshStateDataId?: string;
-    workspaceFolder?: string;
     badgeColor?: string;
     errorColor?: string;
 }>('Workspaces');

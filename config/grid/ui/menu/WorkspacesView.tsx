@@ -5,7 +5,6 @@ import { View } from '@/libs/nativeComponents/View';
 import { Workspaces } from '@/libs/nativeComponents/Workspaces';
 import { TextGrid } from '@/libs/tsComponents/TextGrid';
 import { rgb } from '@/libs/ui';
-import { workspaceFolder } from '../../audio';
 import { MainKeys } from '../components/Common';
 import {
     A1,
@@ -71,7 +70,6 @@ export function WorkspacesView({ name }: Props) {
     return (
         <View name={name}>
             <Workspaces
-                workspaceFolder={workspaceFolder}
                 audioPlugin="SerializeTrack"
                 bounds={[0, 0, ScreenWidth, ScreenHeight - 20]}
                 keys={[

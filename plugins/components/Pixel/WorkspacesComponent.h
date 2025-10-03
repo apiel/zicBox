@@ -15,8 +15,9 @@ Workspaces components show the list of available workspaces.
 
 class WorkspacesComponent : public ListComponent {
 public:
-    std::string workspaceFolder = "data/workspaces";
+    std::string workspaceFolder = "workspaces";
     std::string* currentWorkspaceName = NULL;
+    std::string* repositoryFolder = NULL;
     int* refreshState = NULL;
     int currentRefreshState = 0;
 
@@ -29,10 +30,15 @@ public:
     };
     uint8_t error = Error::NONE;
 
+    std::string getFolder()
+    {
+        return *repositoryFolder + "/" + workspaceFolder;
+    }
+
     void initItems()
     {
         items.clear();
-        std::vector<std::filesystem::path> list = getDirectoryList(workspaceFolder, { .skipFiles = true });
+        std::vector<std::filesystem::path> list = getDirectoryList(getFolder(), { .skipFiles = true });
         for (std::filesystem::path path : list) {
             items.push_back({ path.filename().string() });
         }
@@ -68,14 +74,10 @@ public:
         plugin = getPluginPtr(config, "audioPlugin", track); //eg: "audio_plugin_name"
 
         currentWorkspaceName = (std::string*)plugin->data(plugin->getDataId(config.value("currentWorkspaceDataId", "CURRENT_WORKSPACE"))); //eg: "CURRENT_WORKSPACE"
+        repositoryFolder = (std::string*)plugin->data(plugin->getDataId(config.value("repositoryFolderDataId", "REPOSITORY_FOLDER"))); //eg: "REPOSITORY_FOLDER"
 
         refreshState = (int*)plugin->data(plugin->getDataId(config.value("refreshStateDataId", "CREATE_WORKSPACE"))); //eg: "CREATE_WORKSPACE"
         currentRefreshState = *refreshState;
-
-        if (config.contains("workspaceFolder")) {
-            workspaceFolder = config["workspaceFolder"].get<std::string>(); //eg: "workspaces"
-            initItems();
-        }
 
         /// The background color of the text.
         bgColor = draw.getColor(config["bgColor"], bgColor); //eg: "#000000"
@@ -87,6 +89,8 @@ public:
         errorColor = draw.getColor(config["errorColor"], errorColor); //eg: "#ab6363"
 
         /*md md_config_end */
+
+        initItems();
     }
 
     void renderItem(int y, int itemIndex) override

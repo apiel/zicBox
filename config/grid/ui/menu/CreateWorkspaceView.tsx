@@ -1,6 +1,5 @@
 import * as React from '@/libs/react';
 
-import { workspaceFolder } from '@/grid/audio';
 import { View } from '@/libs/nativeComponents/View';
 import { Workspaces } from '@/libs/nativeComponents/Workspaces';
 import { MainKeys } from '../components/Common';
@@ -15,7 +14,6 @@ export function CreateWorkspaceView({ name }: Props) {
     return (
         <View name={name}>
             <Workspaces
-                workspaceFolder={workspaceFolder}
                 audioPlugin="SerializeTrack"
                 bounds={[0, 0, ScreenWidth, ScreenHeight - 310]}
             />

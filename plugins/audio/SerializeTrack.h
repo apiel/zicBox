@@ -254,7 +254,7 @@ public:
 
     std::vector<int> variationExists = std::vector<int>(1000, -1);
     std::string dataStr;
-    DataFn dataFunctions[13] = {
+    DataFn dataFunctions[14] = {
         { "SET_FILENAME", [this](void* userdata) {
              if (userdata) {
                  filename = (char*)userdata;
@@ -361,6 +361,9 @@ public:
              }
              return (void*)NULL;
          } },
+        { "REPOSITORY_FOLDER", [this](void* userdata) {
+             return (void*)&props.audioPluginHandler->dataRepository;
+         } }
     };
 
     DEFINE_GETDATAID_AND_DATA
