@@ -169,4 +169,5 @@ export const audio = {
         masterTrack,
     ],
     autoSave: 500,
+    dataRepository: 'data/repositories/default_grid',
 };

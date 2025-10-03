@@ -121,7 +121,9 @@
         "stacktrace": "c",
         "text_encoding": "c",
         "expected": "cpp",
-        "track.h": "c"
+        "track.h": "c",
+        "lookuptable.h": "c",
+        "keypadinterface.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabled",
     "makefile.configureOnOpen": false,

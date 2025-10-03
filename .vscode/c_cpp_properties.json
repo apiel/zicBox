@@ -4,19 +4,31 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                ".",
-                "/usr/include/rtmidi",
-                "/usr/include/pd",
-                "/usr/include/lua5.4",
-                "/usr/include/freetype2",
-                "${workspaceFolder}/pico/pico-sdk/**",
-                "${workspaceFolder}/pico/pico-extras/**"
+                "/usr/lib/gcc/x86_64-linux-gnu/13/include",
+                "/usr/local/include",
+                "/usr/include/x86_64-linux-gnu",
+                "/usr/include",
+                "."
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "c17",
             "cppStandard": "gnu++17",
             "intelliSenseMode": "linux-gcc-x64"
+        },
+        {
+            "name": "Pico",
+            "includePath": [
+                "${workspaceFolder}/pico/pico-sdk/**",
+                "${workspaceFolder}/pico/pico-extras/**"
+            ],
+            "defines": [
+                "PICO_ON_DEVICE"
+            ],
+            "compilerPath": "/usr/bin/arm-none-eabi-gcc",
+            "cStandard": "c17",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "gcc-arm"
         }
     ],
     "version": 4

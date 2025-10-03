@@ -21,44 +21,92 @@ class SerializeTrack : public Mapping {
 protected:
     std::mutex m;
 
-    std::string workspaceFolder = "data/workspaces";
+    std::string workspaceFolder = "workspaces";
     std::string filename = "track";
     std::string currentWorkspaceName = "default";
 
-    std::string filepath = "data/workspaces/default/track.json";
-    std::string variationFolder = "data/workspaces/default/track";
     bool initialized = false;
-
     bool saveBeforeChangingVariation = false;
-
     int refreshState = 0;
+
     void saveCurrentWorkspaceName(std::string workspaceName)
     {
         createWorkspace(workspaceName);
-        std::filesystem::create_directories(workspaceFolder);
-        std::string currentWorkspaceFile = workspaceFolder + "/current.cfg";
+        std::string folder = getFolder();
+        std::filesystem::create_directories(folder);
+        std::string currentWorkspaceFile = folder + "/current.cfg";
         std::ofstream file(currentWorkspaceFile);
         file << workspaceName;
         file.close();
     }
 
+    std::string getFolder()
+    {
+        return props.audioPluginHandler->dataRepository + "/" + workspaceFolder;
+    }
+
+    std::string getFilepath()
+    {
+        return getFolder() + "/" + currentWorkspaceName + "/" + filename + ".json";
+    }
+
+    std::string getVariationFolder()
+    {
+        return getFolder() + "/" + currentWorkspaceName + "/" + filename;
+    }
+
+    std::string getVariationFilepath(int16_t id)
+    {
+        return getVariationFolder() + "/" + std::to_string(id) + ".json";
+    }
+
+    void saveVariation(int16_t id)
+    {
+        serialize();
+        std::filesystem::create_directories(getVariationFolder());
+        std::filesystem::copy(getFilepath(), getVariationFilepath(id), std::filesystem::copy_options::overwrite_existing);
+    }
+
+    void loadVariation(int16_t id)
+    {
+        // printf("load variation %d\n", id);
+        if (std::filesystem::exists(getVariationFilepath(id))) {
+            std::filesystem::copy(getVariationFilepath(id), getFilepath(), std::filesystem::copy_options::overwrite_existing);
+            hydrate();
+        }
+    }
+
+    void setVariation(float value)
+    {
+        // logDebug("set variation %f", value);
+        m.lock();
+        int16_t currentVariation = variation.get();
+        variation.setFloat((int16_t)value);
+        if (currentVariation != variation.get() && saveBeforeChangingVariation) {
+            saveVariation(currentVariation);
+        }
+        loadVariation((int16_t)variation.get());
+        m.unlock();
+    }
+
     void deleteWorkspace(std::string workspaceName)
     {
-        std::filesystem::remove_all(workspaceFolder + "/" + workspaceName);
+        std::filesystem::remove_all(getFolder() + "/" + workspaceName);
     }
 
     void createWorkspace(std::string workspaceName)
     {
         if (!workspaceName.empty()) {
-            std::filesystem::create_directories(workspaceFolder + "/" + workspaceName);
+            std::filesystem::create_directories(getFolder() + "/" + workspaceName);
             refreshState++;
         }
     }
 
     void initFilepath()
     {
-        std::filesystem::create_directories(workspaceFolder);
-        std::string currentWorkspaceFile = workspaceFolder + "/current.cfg";
+        std::string folder = getFolder();
+        std::filesystem::create_directories(folder);
+        std::string currentWorkspaceFile = folder + "/current.cfg";
         if (std::filesystem::exists(currentWorkspaceFile)) {
             std::ifstream file(currentWorkspaceFile);
             std::string line;
@@ -68,10 +116,7 @@ protected:
                 currentWorkspaceName = line;
             }
         }
-        std::string currentWorkspaceFolder = workspaceFolder + "/" + currentWorkspaceName;
-        std::filesystem::create_directories(currentWorkspaceFolder);
-        filepath = currentWorkspaceFolder + "/" + filename + ".json";
-        variationFolder = currentWorkspaceFolder + "/" + filename;
+        std::filesystem::create_directories(folder + "/" + currentWorkspaceName);
     }
 
 public:
@@ -89,11 +134,6 @@ public:
             filename = json["filename"].get<std::string>();
         }
 
-        //md - `"workspaceFolder": "workspaces"` to set workspace folder. By default it is `data/workspaces`.
-        if (json.contains("workspaceFolder")) {
-            workspaceFolder = json["workspaceFolder"].get<std::string>();
-        }
-
         //md - `"maxVariation": 12` to set max variation. By default it is `12`.
         if (json.contains("maxVariation")) {
             variation.props().max = json["maxVariation"].get<int>();
@@ -107,40 +147,6 @@ public:
 
     void sample(float* buf)
     {
-    }
-
-    std::string getVariationFilepath(int16_t id)
-    {
-        return variationFolder + "/" + std::to_string(id) + ".json";
-    }
-
-    void saveVariation(int16_t id)
-    {
-        serialize();
-        std::filesystem::create_directories(variationFolder);
-        std::filesystem::copy(filepath, getVariationFilepath(id), std::filesystem::copy_options::overwrite_existing);
-    }
-
-    void loadVariation(int16_t id)
-    {
-        // printf("load variation %d\n", id);
-        if (std::filesystem::exists(getVariationFilepath(id))) {
-            std::filesystem::copy(getVariationFilepath(id), filepath, std::filesystem::copy_options::overwrite_existing);
-            hydrate();
-        }
-    }
-
-    void setVariation(float value)
-    {
-        // logDebug("set variation %f", value);
-        m.lock();
-        int16_t currentVariation = variation.get();
-        variation.setFloat((int16_t)value);
-        if (currentVariation != variation.get() && saveBeforeChangingVariation) {
-            saveVariation(currentVariation);
-        }
-        loadVariation((int16_t)variation.get());
-        m.unlock();
     }
 
     int nextVariationToPlay = -1;
@@ -167,9 +173,9 @@ public:
             }
         } else if (event == AudioEventType::RELOAD_WORKSPACE) {
             m.lock();
-            serialize();     // save current workspace before to switch
-            initFilepath();  // set new workspace
-            hydrate();       // load new workspace
+            serialize(); // save current workspace before to switch
+            initFilepath(); // set new workspace
+            hydrate(); // load new workspace
             m.unlock();
         } else if (event == AudioEventType::RELOAD_VARIATION) {
             m.lock();
@@ -190,13 +196,14 @@ public:
                 plugin->serializeJson(json[plugin->name]);
             }
         }
-        FILE* jsonFile = fopen((filepath).c_str(), "w");
+        FILE* jsonFile = fopen((getFilepath()).c_str(), "w");
         fprintf(jsonFile, "%s", json.dump(4).c_str());
         fclose(jsonFile);
     }
 
     void hydrate()
     {
+        std::string filepath = getFilepath();
         std::ifstream file(filepath);
         if (!file) {
             logError("Hydration file not found: " + filepath);

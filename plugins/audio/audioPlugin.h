@@ -55,6 +55,7 @@ AudioEventType getEventTypeFromName(std::string name)
 class AudioPluginHandlerInterface {
 public:
     std::vector<AudioPlugin*> plugins;
+    std::string dataRepository = "data/repositories/default/";
 
     virtual AudioPlugin* getPluginPtr(std::string name, int16_t track = -1) = 0;
     virtual AudioPlugin& getPlugin(std::string name, int16_t track = -1) = 0;

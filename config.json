@@ -77,7 +77,8 @@
           {"plugin":"Tempo","alias":"Tempo"}
         ]
       }
-    ]
+    ],
+    "dataRepository": "data/repositories/default_pixel"
   },
   "pixelController": "pixel_12btn",
   "screen": {

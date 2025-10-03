@@ -323,6 +323,8 @@ public:
     int8_t initActiveMidiTrack = -1;
     AudioPluginHandler& config(nlohmann::json& config) override
     {
+        dataRepository = config.value("dataRepository", dataRepository);
+
         if (config.contains("midiInput")) {
             loadMidiInput(config["midiInput"].get<std::string>());
         }
@@ -366,6 +368,7 @@ public:
                 }
             }
         }
+
         return *this;
     }
 
