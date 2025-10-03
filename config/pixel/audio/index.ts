@@ -97,6 +97,8 @@ const masterTrack = {
     ],
 };
 
+export const repositoriesFolder = 'data/repositories';
+
 export const audio = {
     // midiInput: 'MPK mini',
     initActiveMidiTrack: 1,
@@ -114,5 +116,5 @@ export const audio = {
         masterTrack,
     ],
     // autoSave: 500,
-    dataRepository: 'data/repositories/default_pixel',
+    dataRepository: `${repositoriesFolder}/default_pixel`,
 };
