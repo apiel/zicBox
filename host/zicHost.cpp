@@ -13,9 +13,9 @@ extern "C" AudioPluginHandlerInterface* load()
 
 int main() {
     // Open and read the config.json file
-    std::ifstream file("data/config.json");
+    std::ifstream file("config.json");
     if (!file) {
-        std::cerr << "Error: Unable to open data/config.json\n";
+        std::cerr << "Error: Unable to open config.json\n";
         return 1;
     }
 

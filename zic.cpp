@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
     lastPluginControllerInstance = new PixelController(controllerProps, 0);
     controllers.push_back({ "Default", lastPluginControllerInstance });
 
-    std::string configFilepath = argc >= 2 ? argv[1] : "data/config.json";
+    std::string configFilepath = argc >= 2 ? argv[1] : "config.json";
     loadJsonConfig(configFilepath);
 
     pthread_t watcherTid = configWatcher(configFilepath, &appRunning, []() {

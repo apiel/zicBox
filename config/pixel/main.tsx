@@ -13,7 +13,7 @@ import { ui } from './ui';
 // const output = stringifyWithLimitedIndentation({ audio, ...ui });
 const output = stringifyWithCompactedKeys({ audio, ...ui });
 
-writeFileSync('data/config.json', output);
+writeFileSync('config.json', output);
 generateAudioMakefile('makeconf/audio.mk');
 generateComponentMakefile('makeconf/component.mk');
 console.log('done');

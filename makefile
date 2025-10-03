@@ -90,11 +90,11 @@ releasePixel:
 	make releasePixelFirmware
 
 releasePixelFirmware:
-	mkdir -p build/pixel_arm64/data
-	cp data/config.json build/pixel_arm64/data/config.json
+	mkdir -p build/pixel_arm64
+	cp config.json build/pixel_arm64/config.json
 	- rm build/pixel_arm64/zicPixel.zip
 	cd build/pixel_arm64/ && zip -r zicPixel.zip *
-	rm -rf build/pixel_arm64/data
+	rm -rf build/pixel_arm64/config.json
 	- gh release delete zicPixel -y
 	gh release create zicPixel build/pixel_arm64/zicPixel.zip --title "zicPixel firmware" --notes "This contains the zicPixel firmware, compiled for rpi zero2w."
 	- rm build/pixel_arm64/zicPixel.zip
@@ -112,8 +112,12 @@ pi:
 	- sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "killall zic"
 	rsync -avz --progress -e "sshpass -p '$(PI_PASSWORD)' ssh" build/pixel_arm64/ "$(PI_TARGET):$(PI_REMOTE_DIR)/."
 	rsync -avz --progress -e "sshpass -p '$(PI_PASSWORD)' ssh" data/ "$(PI_TARGET):$(PI_REMOTE_DIR)/data"
+	make sendConfig
 	sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "chmod +x $(PI_REMOTE_DIR)/zic"
 	sshpass -p "$(PI_PASSWORD)" ssh "$(PI_TARGET)" "cd $(PI_REMOTE_DIR) && ./zic"
+
+sendConfig:
+	sshpass -p "$(PI_PASSWORD)" scp -v config.json $(PI_TARGET):$(PI_REMOTE_DIR)/config.json
 
 buildSplash:
 	$(CC) -g -fms-extensions -o build/pixel_arm64/splash splash.cpp -fpermissive -I.
@@ -125,6 +129,3 @@ splash:
 gpio:
 	$(CC_ZERO2W64) -g -fms-extensions -o build/pixel_arm64/gpio gpio.cpp -fpermissive -I.
 	sshpass -p "$(PI_PASSWORD)" scp -v build/pixel_arm64/gpio $(PI_TARGET):$(PI_REMOTE_DIR)/gpio
-
-sendConfig:
-	sshpass -p "$(PI_PASSWORD)" scp -v data/config.json $(PI_TARGET):$(PI_REMOTE_DIR)/data/config.json

@@ -22,6 +22,7 @@ rm -rf ${TARGET_DIR}/opt/zicBox || true
 mkdir -p ${TARGET_DIR}/opt/zicBox
 cp -r ${ZICBOX_DIR}/build/pixel_arm64/* ${TARGET_DIR}/opt/zicBox/.
 cp -r ${ZICBOX_DIR}/data ${TARGET_DIR}/opt/zicBox/.
+cp ${ZICBOX_DIR}/config.json ${TARGET_DIR}/opt/zicBox/.
 
 mv ${TARGET_DIR}/etc/init.d/S10mdev ${TARGET_DIR}/etc/init.d/S000mdev || true
 mv ${TARGET_DIR}/etc/init.d/S05avahi-setup.sh ${TARGET_DIR}/etc/init.d/S35avahi-setup.sh || true
