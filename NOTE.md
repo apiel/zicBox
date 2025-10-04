@@ -39,6 +39,8 @@ add passive mixer 5 stereo input :-)
 
 - TODO see if we can make OS read only and data on separate partition to reduce chance of corruption
 
+- TODO ER-1 if duration longer than sample, then stretch sample
+
 - TODO drone engine
 
 - TODO in menu could use knob or a button to navigate between multiple options...
