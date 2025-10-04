@@ -41,6 +41,7 @@ export function Github({ name }: Props) {
                         keys={[{ key: C3, action: `.refresh` }, { key: C1, action: `.next`, context: { id: githubContext, value: 0 } }]}
                         encoderId={enc1.encoderId}
                         contextId={githubContext}
+                        default="default_pixel"
                     />
                     <Text
                         text="Once you enter the code, press next."

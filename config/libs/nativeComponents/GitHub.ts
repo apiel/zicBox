@@ -8,4 +8,5 @@ export const GitHub = getJsonComponent<{
     font?: string;
     encoderId?: number;
     contextId?: number;
+    default?: string;
 }>('GitHub');

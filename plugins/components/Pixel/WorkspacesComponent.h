@@ -3,6 +3,7 @@
 #include "./ListComponent.h"
 
 #include "helpers/fs/directoryList.h"
+#include "host/def.h"
 
 #include <string>
 #include <vector>
@@ -15,7 +16,7 @@ Workspaces components show the list of available workspaces.
 
 class WorkspacesComponent : public ListComponent {
 public:
-    std::string workspaceFolder = "workspaces";
+    std::string workspaceFolder = CURRENT_REPO_FOLDER + "/workspaces";
     std::string* currentWorkspaceName = NULL;
     int* refreshState = NULL;
     int currentRefreshState = 0;
@@ -29,15 +30,10 @@ public:
     };
     uint8_t error = Error::NONE;
 
-    std::string getFolder()
-    {
-        return *view->dataRepository + "/" + workspaceFolder;
-    }
-
     void initItems()
     {
         items.clear();
-        std::vector<std::filesystem::path> list = getDirectoryList(getFolder(), { .skipFiles = true });
+        std::vector<std::filesystem::path> list = getDirectoryList(workspaceFolder, { .skipFiles = true });
         for (std::filesystem::path path : list) {
             items.push_back({ path.filename().string() });
         }

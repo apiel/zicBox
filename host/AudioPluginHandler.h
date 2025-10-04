@@ -323,33 +323,8 @@ public:
 
     int8_t initActiveMidiTrack = -1;
 
-    std::string repositoriesFolder = "data/repositories";
-    std::string defaultRepository = "default_pixel";
-
-    void loadCurrentRepository()
-    {
-        std::string path = repositoriesFolder + "/current.cfg";
-        if (std::filesystem::exists(path)) {
-            std::ifstream file(path);
-            std::string line;
-            std::getline(file, line);
-            file.close();
-            if (line.length() > 0) {
-                defaultRepository = repositoriesFolder + "/" + line;
-            }
-        }
-    }
-
     AudioPluginHandler& config(nlohmann::json& config) override
     {
-        if (config.contains("repository")) {
-            nlohmann::json& repo = config["repository"];
-            repo.value("repository", repositoriesFolder);
-            repo.value("default", defaultRepository);
-        }
-        dataRepository = repositoriesFolder + "/" + defaultRepository;
-        loadCurrentRepository();
-
         if (config.contains("midiInput")) {
             loadMidiInput(config["midiInput"].get<std::string>());
         }
