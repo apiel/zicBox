@@ -42,7 +42,7 @@ class Sequencer : public Mapping, public UseClock {
 protected:
     AudioPlugin::Props& props;
 
-    uint16_t stepCount = MAX_STEPS;
+    uint16_t stepCount = DEFAULT_MAX_STEPS;
     std::vector<Step> steps;
 
     uint16_t stepCounter = 0;

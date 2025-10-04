@@ -23,8 +23,8 @@ protected:
     int toolboxHeight = 20;
     int stepWidth = 0;
     int stepHeight = 10;
-    int numSteps = MAX_STEPS; // TODO instead load from plugin seq
-    int maxStepLen = MAX_STEPS;
+    int numSteps = DEFAULT_MAX_STEPS; // TODO instead load from plugin seq
+    int maxStepLen = DEFAULT_MAX_STEPS;
     int numNotes = 25;
     bool drawNoteStr = true;
 

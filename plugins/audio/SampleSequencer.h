@@ -17,7 +17,7 @@ class SampleSequencer : public Mapping, public UseClock {
 protected:
     AudioPlugin::Props& props;
 
-    SampleStep steps[MAX_STEPS];
+    SampleStep steps[DEFAULT_MAX_STEPS];
     SampleStep* activeStep = NULL;
     SampleStep* selectedStepPtr = &steps[0];
 
@@ -41,7 +41,7 @@ protected:
         stepCounter++;
         uint8_t state = status.get();
         // If we reach the end of the sequence, we reset the step counter
-        if (stepCounter >= MAX_STEPS) {
+        if (stepCounter >= DEFAULT_MAX_STEPS) {
             stepCounter = 0;
             loopCounter++;
             if (props.audioPluginHandler) {
@@ -106,7 +106,7 @@ public:
     });
 
     /*md - `SELECTED_STEP` select the step to edit */
-    Val& selectedStep = val(0.0f, "SELECTED_STEP", { "Step", .min = 1.0f, .max = MAX_STEPS }, [&](auto p) {
+    Val& selectedStep = val(0.0f, "SELECTED_STEP", { "Step", .min = 1.0f, .max = DEFAULT_MAX_STEPS }, [&](auto p) {
         selectedStep.setFloat(p.value);
         uint8_t index = selectedStep.get() - 1;
         selectedStepPtr = &steps[index];
@@ -210,7 +210,7 @@ public:
             status.setFloat(json["STATUS"]);
         }
         if (json.contains("STEPS")) {
-            for (size_t i = 0; i < json["STEPS"].size() && i < MAX_STEPS; i++) {
+            for (size_t i = 0; i < json["STEPS"].size() && i < DEFAULT_MAX_STEPS; i++) {
                 steps[i].hydrate(json["STEPS"][i], props.channels);
             }
         }
@@ -219,25 +219,25 @@ public:
     DataFn dataFunctions[4] = {
         { "GET_STEP", [this](void* userdata) {
              uint8_t* index = (uint8_t*)userdata;
-             return &steps[*index >= MAX_STEPS ? 0 : *index];
+             return &steps[*index >= DEFAULT_MAX_STEPS ? 0 : *index];
          } },
         { "NEXT_FILE", [this](void* userdata) {
              uint8_t* index = (uint8_t*)userdata;
-             SampleStep* step = &steps[*index >= MAX_STEPS ? 0 : *index];
+             SampleStep* step = &steps[*index >= DEFAULT_MAX_STEPS ? 0 : *index];
              uint16_t pos = fileBrowser.next(step->filename);
              step->setFilename(fileBrowser.getFilePath(pos), props.channels);
              return (void*)NULL;
          } },
         { "PREVIOUS_FILE", [this](void* userdata) {
              uint8_t* index = (uint8_t*)userdata;
-             SampleStep* step = &steps[*index >= MAX_STEPS ? 0 : *index];
+             SampleStep* step = &steps[*index >= DEFAULT_MAX_STEPS ? 0 : *index];
              uint16_t pos = fileBrowser.next(step->filename, -1);
              step->setFilename(fileBrowser.getFilePath(pos), props.channels);
              return (void*)NULL;
          } },
         { "PLAY_STEP", [this](void* userdata) {
              uint8_t* index = (uint8_t*)userdata;
-             SampleStep* step = &steps[*index >= MAX_STEPS ? 0 : *index];
+             SampleStep* step = &steps[*index >= DEFAULT_MAX_STEPS ? 0 : *index];
              setActiveStep(step);
              return (void*)NULL;
          } },

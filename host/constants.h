@@ -10,18 +10,6 @@
 // #define APP_CHANNELS 1
 #endif
 
-#ifndef APP_AUDIO_CHUNK
-#define APP_AUDIO_CHUNK 128
-#endif
-
-#ifndef APP_PRINT
-#define APP_PRINT printf
-#endif
-
-#ifndef APP_INFO
-#define APP_INFO APP_PRINT
-#endif
-
 #ifndef MAX_TRACKS
 #define MAX_TRACKS 32
 #endif
@@ -34,6 +22,7 @@
 #define TOTAL_TRACKS MAX_TRACKS+1
 #endif
 
-#ifndef MAX_STEPS
-#define MAX_STEPS 32
+// To be deprecated?
+#ifndef DEFAULT_MAX_STEPS
+#define DEFAULT_MAX_STEPS 32
 #endif
