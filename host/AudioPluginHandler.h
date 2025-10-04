@@ -2,6 +2,7 @@
 
 using namespace std;
 
+#include <fstream>
 #include <functional>
 #include <stdexcept>
 #include <string>
@@ -11,8 +12,8 @@ using namespace std;
 
 #include "Track.h"
 #include "def.h"
-#include "helpers/getExecutableDirectory.h"
 #include "helpers/clamp.h"
+#include "helpers/getExecutableDirectory.h"
 #include "helpers/trim.h"
 #include "log.h"
 #include "midiMapping.h"
@@ -325,6 +326,20 @@ public:
     std::string repositoriesFolder = "data/repositories";
     std::string defaultRepository = "default_pixel";
 
+    void loadCurrentRepository()
+    {
+        std::string path = repositoriesFolder + "/current.cfg";
+        if (std::filesystem::exists(path)) {
+            std::ifstream file(path);
+            std::string line;
+            std::getline(file, line);
+            file.close();
+            if (line.length() > 0) {
+                defaultRepository = repositoriesFolder + "/" + line;
+            }
+        }
+    }
+
     AudioPluginHandler& config(nlohmann::json& config) override
     {
         if (config.contains("repository")) {
@@ -333,6 +348,7 @@ public:
             repo.value("default", defaultRepository);
         }
         dataRepository = repositoriesFolder + "/" + defaultRepository;
+        loadCurrentRepository();
 
         if (config.contains("midiInput")) {
             loadMidiInput(config["midiInput"].get<std::string>());
