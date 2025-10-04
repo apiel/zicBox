@@ -305,22 +305,9 @@ public:
         /*md md_config_end */
 
         resize();
-        initAsync();
-    }
-
-    void initAsync()
-    {
-        // Wait to set context, else it crashes
-        std::thread([this]() {
-            try {
-                std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-                if (isAuthenticated()) {
-                    setContext(contextId, (float)State::Authenticated);
-                }
-            } catch (const std::exception& ex) {
-                logError("GitHub init failed: %s", ex.what());
-            }
-        }).detach();
+        if (isAuthenticated()) {
+            setState(State::Authenticated);
+        }
     }
 
     void resize() override

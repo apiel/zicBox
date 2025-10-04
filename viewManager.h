@@ -122,9 +122,10 @@ protected:
 
     void setContext(uint8_t index, float value)
     {
-        // printf("set context %d to %f\n", index, value);
         contextVar[index] = value;
-        view->onContext(index, value);
+        if (view != NULL) {
+            view->onContext(index, value);
+        }
     }
 
     Plugin& loadPlugin(std::string name, nlohmann::json& config)
