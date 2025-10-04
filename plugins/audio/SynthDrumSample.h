@@ -12,6 +12,7 @@
 #include "log.h"
 #include "utils/ValSerializeSndFile.h"
 #include "utils/utils.h"
+#include "host/constants.h"
 
 #ifndef MAX_SAMPLE_VOICES
 #define MAX_SAMPLE_VOICES 4
@@ -36,7 +37,7 @@ protected:
         float* data;
     } sampleBuffer;
 
-    FileBrowser fileBrowser = FileBrowser("./data/audio/samples");
+    FileBrowser fileBrowser = FileBrowser(CURRENT_REPO_FOLDER + "/audio/samples");
     float index = 0;
     uint64_t indexStart = 0;
     uint64_t indexEnd = 0;

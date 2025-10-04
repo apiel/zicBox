@@ -11,6 +11,7 @@
 #include "helpers/random.h"
 #include "log.h"
 #include "utils/ValSerializeSndFile.h"
+#include "host/constants.h"
 
 #ifndef MAX_SAMPLE_VOICES
 #define MAX_SAMPLE_VOICES 4
@@ -35,7 +36,7 @@ protected:
         float* data;
     } sampleBuffer;
 
-    FileBrowser fileBrowser = FileBrowser("./data/audio/samples");
+    FileBrowser fileBrowser = FileBrowser(CURRENT_REPO_FOLDER + "/audio/samples");
 
     // Use to restore sustain in case it was move by another parameter
     float sustainPositionOrigin = 0.0f;

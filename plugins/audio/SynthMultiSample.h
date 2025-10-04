@@ -7,6 +7,7 @@
 #include "plugins/audio/utils/EnvelopDrumAmp.h"
 #include "plugins/audio/utils/utils.h"
 #include "utils/fileBrowser.h"
+#include "host/constants.h"
 
 #include <sndfile.h>
 
@@ -39,7 +40,7 @@ protected:
     float index = 0.0f;
     float stepMultiplier = 1.0;
 
-    FileBrowser fileBrowser = FileBrowser("./data/audio/samples");
+    FileBrowser fileBrowser = FileBrowser(CURRENT_REPO_FOLDER + "/audio/samples");
 
     void open(std::string filename)
     {

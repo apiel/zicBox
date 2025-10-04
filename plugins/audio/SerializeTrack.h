@@ -8,7 +8,7 @@
 
 #include "audioPlugin.h"
 #include "helpers/trim.h"
-#include "host/def.h"
+#include "host/constants.h"
 #include "log.h"
 #include "mapping.h"
 

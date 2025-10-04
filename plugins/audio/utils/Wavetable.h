@@ -9,6 +9,7 @@
 #include "plugins/audio/utils/fileBrowser.h"
 #include "plugins/audio/utils/WavetableInterface.h"
 #include "plugins/audio/utils/utils.h"
+#include "host/constants.h"
 
 #define ZIC_WAVETABLE_WAVEFORMS_COUNT 64
 
@@ -26,7 +27,7 @@ protected:
 
 public:
     float sampleIndex = 0.0f;
-    FileBrowser fileBrowser = FileBrowser("./data/audio/wavetables");
+    FileBrowser fileBrowser = FileBrowser(CURRENT_REPO_FOLDER + "/audio/samples");
 
     Wavetable()
         : WavetableInterface(2048)

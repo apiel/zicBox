@@ -8,6 +8,7 @@
 #include "plugins/audio/utils/TransientGenerator.h"
 #include "plugins/audio/utils/fileBrowser.h"
 #include "plugins/audio/utils/utils.h"
+#include "host/constants.h"
 
 class Er1PcmEngine : public DrumEngine {
     float velocity = 1.0f;
