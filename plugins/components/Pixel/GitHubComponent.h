@@ -3,6 +3,7 @@
 #define CPPHTTPLIB_OPENSSL_SUPPORT
 
 #include "helpers/http.h"
+#include "host/constants.h"
 #include "libs/httplib/httplib.h"
 #include "libs/nlohmann/json.hpp"
 #include "plugins/components/component.h"
@@ -10,8 +11,10 @@
 
 #include <atomic>
 #include <chrono>
+#include <filesystem>
 #include <fstream>
 #include <future>
+#include <string>
 
 /*md
 ## GitHub
@@ -25,12 +28,15 @@ protected:
     Color textColor;
     Color foregroundColor;
     Color scrollColor;
+    Color activeColor;
 
     int fontSize = 12;
     void* font = NULL;
 
     int8_t encoderId = -1;
     uint8_t contextId = 0;
+
+    std::string localeName = "default";
 
     int boxWidth = 20;
 
@@ -168,6 +174,9 @@ protected:
 
         std::thread([this]() {
             try {
+                repos.clear();
+                repos.push_back("Locale");
+
                 httplib::Client cli("https://api.github.com");
                 cli.set_connection_timeout(5, 0);
                 cli.set_read_timeout(5, 0);
@@ -178,7 +187,6 @@ protected:
                     { "Accept", "application/vnd.github+json" }
                 };
 
-                repos.clear();
                 int page = 1;
                 for (int i = 0; i < 20; i++) { // max 20 pages = 2000 repos
                     std::string path = "/user/repos?per_page=100&page=" + std::to_string(page);
@@ -204,8 +212,9 @@ protected:
 
                 // logDebug("GitHub: %d repos", (int)repos.size());
 
-                if (!repos.empty()) {
+                if (repos.size() > 0) {
                     reposLoaded = true;
+                    // should try to find the active one
                     currentRepoIndex = 0;
                     renderNext();
                 }
@@ -213,6 +222,19 @@ protected:
                 logError("GitHub repos fetch failed: %s", ex.what());
             }
         }).detach();
+    }
+
+    std::string getActiveRepo()
+    {
+        namespace fs = std::filesystem;
+
+        try {
+            fs::path target = fs::read_symlink(CURRENT_REPO_FOLDER);
+            return target.string();
+        } catch (const fs::filesystem_error& e) {
+            // handle errors, e.g., symlink doesn’t exist
+            return localeName;
+        }
     }
 
     bool isExpired()
@@ -270,6 +292,7 @@ public:
         , textColor(styles.colors.text)
         , foregroundColor(lighten(styles.colors.background, 0.5))
         , scrollColor(lighten(styles.colors.background, 1.0))
+        , activeColor(rgba(24, 141, 59, 1))
     {
         /*md md_config:Rect */
         nlohmann::json& config = props.config;
@@ -286,6 +309,9 @@ public:
         /// The scroll color.
         scrollColor = draw.getColor(config["scrollColor"], scrollColor); //eg: "#000000"
 
+        /// The active color.
+        activeColor = draw.getColor(config["activeColor"], activeColor); //eg: "#000000"
+
         /// The font of the text. Default is null.
         if (config.contains("font")) {
             font = draw.getFont(config["font"].get<std::string>().c_str()); //eg: "Sinclair_S"
@@ -301,6 +327,9 @@ public:
 
         /// Set context id shared with other components to share the state.
         contextId = config.value("contextId", contextId); //eg: 10
+
+        /// Name of the default locale repo.
+        localeName = config.value("default", localeName);
 
         /*md md_config_end */
 
@@ -322,12 +351,19 @@ public:
         int textY = relativePosition.y + (size.h - fontSize) * 0.5;
 
         if (isAuthenticated()) {
-            if (reposLoaded && !repos.empty()) {
+            if (reposLoaded) {
                 draw.filledRect(relativePosition, size, { foregroundColor });
                 int scrollW = size.w * ((float)currentRepoIndex / (float)repos.size());
                 draw.filledRect(relativePosition, { scrollW, 2 }, { scrollColor });
                 std::string repoName = repos[currentRepoIndex];
                 draw.text({ relativePosition.x + 4, textY }, repoName, fontSize, { textColor, .font = font });
+
+                std::string currentRepo = getActiveRepo();
+                // if repoName finish with currentRepo or (currentRepo == default and repoName == Locale)
+                if ((repoName.size() >= currentRepo.size() && repoName.compare(repoName.size() - currentRepo.size(), currentRepo.size(), currentRepo) == 0)
+                    || (currentRepo == localeName && repoName == "Locale")) {
+                    draw.textRight({ relativePosition.x + size.w - 4, textY }, "Active", fontSize, { activeColor, .font = font });
+                }
                 return;
             }
             draw.textCentered({ relativePosition.x + size.w / 2, textY }, "Loading repos...", fontSize, { textColor, .font = font });
