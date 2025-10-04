@@ -26,3 +26,7 @@
 #ifndef DEFAULT_MAX_STEPS
 #define DEFAULT_MAX_STEPS 32
 #endif
+
+#ifndef CURRENT_REPO_FOLDER
+#define CURRENT_REPO_FOLDER std::string("data/repositories/current")
+#endif

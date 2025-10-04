@@ -8,6 +8,7 @@
 
 #include "audioPlugin.h"
 #include "helpers/trim.h"
+#include "host/def.h"
 #include "log.h"
 #include "mapping.h"
 
@@ -21,9 +22,12 @@ class SerializeTrack : public Mapping {
 protected:
     std::mutex m;
 
-    std::string workspaceFolder = "workspaces";
-    std::string filename = "track";
+    std::string workspaceFolder = CURRENT_REPO_FOLDER + "/workspaces";
+    std::string currentCfg = workspaceFolder + "/current.cfg";
     std::string currentWorkspaceName = "default";
+    std::string serializePath = workspaceFolder + "/" + currentWorkspaceName + "/track";
+    std::string serializeFilename = serializePath + ".json";
+    std::string filename = "track";
 
     bool initialized = false;
     bool saveBeforeChangingVariation = false;
@@ -32,46 +36,29 @@ protected:
     void saveCurrentWorkspaceName(std::string workspaceName)
     {
         createWorkspace(workspaceName);
-        std::string folder = getFolder();
-        std::filesystem::create_directories(folder);
-        std::string currentWorkspaceFile = folder + "/current.cfg";
-        std::ofstream file(currentWorkspaceFile);
+        std::filesystem::create_directories(workspaceFolder);
+        std::ofstream file(currentCfg);
         file << workspaceName;
         file.close();
     }
 
-    std::string getFolder()
-    {
-        return props.audioPluginHandler->dataRepository + "/" + workspaceFolder;
-    }
-
-    std::string getFilepath()
-    {
-        return getFolder() + "/" + currentWorkspaceName + "/" + filename + ".json";
-    }
-
-    std::string getVariationFolder()
-    {
-        return getFolder() + "/" + currentWorkspaceName + "/" + filename;
-    }
-
     std::string getVariationFilepath(int16_t id)
     {
-        return getVariationFolder() + "/" + std::to_string(id) + ".json";
+        return serializePath + "/" + std::to_string(id) + ".json";
     }
 
     void saveVariation(int16_t id)
     {
         serialize();
-        std::filesystem::create_directories(getVariationFolder());
-        std::filesystem::copy(getFilepath(), getVariationFilepath(id), std::filesystem::copy_options::overwrite_existing);
+        std::filesystem::create_directories(serializePath);
+        std::filesystem::copy(serializeFilename, getVariationFilepath(id), std::filesystem::copy_options::overwrite_existing);
     }
 
     void loadVariation(int16_t id)
     {
         // printf("load variation %d\n", id);
         if (std::filesystem::exists(getVariationFilepath(id))) {
-            std::filesystem::copy(getVariationFilepath(id), getFilepath(), std::filesystem::copy_options::overwrite_existing);
+            std::filesystem::copy(getVariationFilepath(id), serializeFilename, std::filesystem::copy_options::overwrite_existing);
             hydrate();
         }
     }
@@ -91,24 +78,22 @@ protected:
 
     void deleteWorkspace(std::string workspaceName)
     {
-        std::filesystem::remove_all(getFolder() + "/" + workspaceName);
+        std::filesystem::remove_all(workspaceFolder + "/" + workspaceName);
     }
 
     void createWorkspace(std::string workspaceName)
     {
         if (!workspaceName.empty()) {
-            std::filesystem::create_directories(getFolder() + "/" + workspaceName);
+            std::filesystem::create_directories(workspaceFolder + "/" + workspaceName);
             refreshState++;
         }
     }
 
     void initFilepath()
     {
-        std::string folder = getFolder();
-        std::filesystem::create_directories(folder);
-        std::string currentWorkspaceFile = folder + "/current.cfg";
-        if (std::filesystem::exists(currentWorkspaceFile)) {
-            std::ifstream file(currentWorkspaceFile);
+        std::filesystem::create_directories(workspaceFolder);
+        if (std::filesystem::exists(currentCfg)) {
+            std::ifstream file(currentCfg);
             std::string line;
             std::getline(file, line);
             file.close();
@@ -116,7 +101,9 @@ protected:
                 currentWorkspaceName = line;
             }
         }
-        std::filesystem::create_directories(folder + "/" + currentWorkspaceName);
+        std::filesystem::create_directories(workspaceFolder + "/" + currentWorkspaceName);
+        serializePath = workspaceFolder + "/" + currentWorkspaceName + "/" + filename;
+        serializeFilename = serializePath + ".json";
     }
 
 public:
@@ -129,10 +116,6 @@ public:
     {
         //md **Config**:
         auto& json = config.json;
-        //md - `"filename": "track"` to set filename. By default it is `track`.
-        if (json.contains("filename")) {
-            filename = json["filename"].get<std::string>();
-        }
 
         //md - `"maxVariation": 12` to set max variation. By default it is `12`.
         if (json.contains("maxVariation")) {
@@ -141,6 +124,9 @@ public:
 
         //md - `"saveBeforeChangingVariation": true` toggle to enable variation edit mode. If set to false variation will be read only. If set to true, every changes will be save before to switch to the next variation. Default is false`.
         saveBeforeChangingVariation = json.value("saveBeforeChangingVariation", saveBeforeChangingVariation);
+
+        //md - `"filename": "track"` to set filename. By default it is `track`.
+        filename = json.value("filename", filename);
 
         initFilepath();
     }
@@ -196,14 +182,14 @@ public:
                 plugin->serializeJson(json[plugin->name]);
             }
         }
-        FILE* jsonFile = fopen((getFilepath()).c_str(), "w");
+        FILE* jsonFile = fopen((serializeFilename).c_str(), "w");
         fprintf(jsonFile, "%s", json.dump(4).c_str());
         fclose(jsonFile);
     }
 
     void hydrate()
     {
-        std::string filepath = getFilepath();
+        std::string filepath = serializeFilename;
         std::ifstream file(filepath);
         if (!file) {
             logError("Hydration file not found: " + filepath);
@@ -254,14 +240,7 @@ public:
 
     std::vector<int> variationExists = std::vector<int>(1000, -1);
     std::string dataStr;
-    DataFn dataFunctions[13] = {
-        { "SET_FILENAME", [this](void* userdata) {
-             if (userdata) {
-                 filename = (char*)userdata;
-                 initFilepath();
-             }
-             return (void*)NULL;
-         } },
+    DataFn dataFunctions[12] = {
         { "SERIALIZE", [this](void* userdata) {
              data(0, userdata);
              m.lock();
