@@ -224,6 +224,93 @@ protected:
         }).detach();
     }
 
+    // --- Helper to execute a shell command and capture stdout/stderr ---
+    static std::string execCmd(const std::string& cmd)
+    {
+        std::array<char, 256> buffer;
+        std::string result;
+        FILE* pipe = popen((cmd + " 2>&1").c_str(), "r");
+        if (!pipe)
+            return "";
+        while (fgets(buffer.data(), buffer.size(), pipe) != nullptr)
+            result += buffer.data();
+        pclose(pipe);
+        return result;
+    }
+
+    std::string lastMessage;
+    void showMessage(const std::string& msg, int durationMs = 1000)
+    {
+        lastMessage = msg;
+        renderNext(); // show message immediately
+
+        std::thread([this, durationMs]() {
+            std::this_thread::sleep_for(std::chrono::milliseconds(durationMs));
+            lastMessage = "";
+            renderNext(); // trigger re-render when duration is over
+        }).detach();
+    }
+
+    void pushToRepoAsync()
+    {
+        if (!isAuthenticated()) {
+            showMessage("Not authenticated");
+            return;
+        }
+
+        std::thread([this]() {
+            try {
+                namespace fs = std::filesystem;
+                fs::path repoPath = "data";
+
+                // Check if it's a git repo
+                if (!fs::exists(repoPath / ".git")) {
+                    showMessage("No git repo found");
+                    return;
+                }
+
+                // Get current remote URL
+                std::string remoteUrl = execCmd("git -C data remote get-url origin");
+                remoteUrl.erase(remoteUrl.find_last_not_of(" \n\r\t") + 1); // trim whitespace/newline
+
+                if (remoteUrl.empty()) {
+                    showMessage("No remote URL");
+                    return;
+                }
+
+                // Convert SSH or HTTPS URL to HTTPS with token
+                if (remoteUrl.rfind("git@", 0) == 0) {
+                    // git@github.com:user/repo.git -> https://github.com/user/repo.git
+                    size_t colon = remoteUrl.find(':');
+                    if (colon == std::string::npos)
+                        throw std::runtime_error("Invalid remote URL");
+                    remoteUrl = "https://github.com/" + remoteUrl.substr(colon + 1);
+                }
+
+                // TODO skip base url
+                showMessage("Saving to " + remoteUrl);
+
+                // Inject token
+                std::string pushUrl = "https://x-access-token:" + accessToken + "@" + remoteUrl.substr(8); // skip https://
+
+                // Run add, commit, push
+                std::string cmd = "cd data && git add . && git commit -m 'Sync' --allow-empty && git push " + pushUrl + " HEAD 2>&1";
+                std::string output = execCmd(cmd);
+
+                if (output.find("denied") != std::string::npos || output.find("error") != std::string::npos || output.find("fatal") != std::string::npos) {
+                    logError("Git push failed: %s", output.c_str());
+                    showMessage("Permission denied.");
+                } else {
+                    showMessage("Pushed successfully");
+                }
+
+            } catch (const std::exception& ex) {
+                logError("Push failed: %s", ex.what());
+                showMessage("Push failed");
+            }
+        }).detach();
+    }
+
     std::string getActiveRepo()
     {
         namespace fs = std::filesystem;
@@ -233,7 +320,7 @@ protected:
         //     return target.string();
         // } catch (const fs::filesystem_error& e) {
         //     // handle errors, e.g., symlink doesn’t exist
-            return localeName;
+        return localeName;
         // }
     }
 
@@ -283,6 +370,13 @@ public:
                             fetchTokenAsync();
                             renderNext();
                         }
+                    }
+                };
+            }
+            if (action == ".save") {
+                func = [this](KeypadLayout::KeyMap& keymap) {
+                    if (KeypadLayout::isReleased(keymap)) {
+                        pushToRepoAsync();
                     }
                 };
             }
@@ -349,6 +443,11 @@ public:
         draw.filledRect(relativePosition, size, { bgColor });
 
         int textY = relativePosition.y + (size.h - fontSize) * 0.5;
+
+        if (!lastMessage.empty()) {
+            draw.textCentered({ relativePosition.x + size.w / 2, textY }, lastMessage, fontSize, { textColor, .font = font });
+            return;
+        }
 
         if (isAuthenticated()) {
             if (reposLoaded) {

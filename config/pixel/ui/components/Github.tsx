@@ -6,7 +6,18 @@ import { GitHub } from '@/libs/nativeComponents/GitHub';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { Text } from '@/libs/nativeComponents/Text';
 import { rgb } from '@/libs/ui';
-import { C1, C3, C4, githubContext, menuTextColor, ScreenHeight, ScreenWidth, W1_4, W2_4, W3_4 } from '../constants';
+import {
+    C1,
+    C3,
+    C4,
+    githubContext,
+    menuTextColor,
+    ScreenHeight,
+    ScreenWidth,
+    W1_4,
+    W2_4,
+    W3_4,
+} from '../constants';
 import { enc1 } from '../constantsValue';
 import { Layout } from './Layout';
 
@@ -14,8 +25,16 @@ export type Props = {
     name: string;
 };
 
-const enterCodeContext: VisibilityContext = { condition: 'SHOW_WHEN', index: githubContext, value: 0 }
-const authenticatedContext: VisibilityContext = { condition: 'SHOW_WHEN', index: githubContext, value: 2 }
+const enterCodeContext: VisibilityContext = {
+    condition: 'SHOW_WHEN',
+    index: githubContext,
+    value: 0,
+};
+const authenticatedContext: VisibilityContext = {
+    condition: 'SHOW_WHEN',
+    index: githubContext,
+    value: 2,
+};
 
 export function Github({ name }: Props) {
     return (
@@ -29,7 +48,11 @@ export function Github({ name }: Props) {
                 <>
                     <GhRepo bounds={[110, 2, ScreenWidth - 110, 20]} color={rgb(204, 203, 203)} />
 
-                    <Rect bounds={[20, 30, ScreenWidth - 40, 10]} color="background" visibilityContext={[authenticatedContext]} />
+                    <Rect
+                        bounds={[20, 30, ScreenWidth - 40, 10]}
+                        color="background"
+                        visibilityContext={[authenticatedContext]}
+                    />
                     <Text
                         text="Go to https://github.com/login/device"
                         bounds={[20, 30, ScreenWidth - 40, 10]}
@@ -37,7 +60,11 @@ export function Github({ name }: Props) {
                         visibilityContext={[enterCodeContext]}
                     />
 
-                    <Rect bounds={[20, 50, ScreenWidth - 40, 10]} color="background" visibilityContext={[authenticatedContext]} />
+                    <Rect
+                        bounds={[20, 50, ScreenWidth - 40, 10]}
+                        color="background"
+                        visibilityContext={[authenticatedContext]}
+                    />
                     <Text
                         text="And enter following code:"
                         bounds={[20, 50, ScreenWidth - 40, 10]}
@@ -47,13 +74,21 @@ export function Github({ name }: Props) {
 
                     <GitHub
                         bounds={[20, 70, ScreenWidth - 40, 30]}
-                        keys={[{ key: C3, action: `.refresh` }, { key: C1, action: `.next`, context: { id: githubContext, value: 0 } }]}
+                        keys={[
+                            { key: C1, action: `.next`, context: { id: githubContext, value: 0 } },
+                            { key: C3, action: `.refresh`, context: { id: githubContext, value: 0 } },
+                            { key: C3, action: `.save`, context: { id: githubContext, value: 2 } },
+                        ]}
                         encoderId={enc1.encoderId}
                         contextId={githubContext}
                         default="default_pixel"
                     />
 
-                    <Rect bounds={[20, 120, ScreenWidth - 40, 10]} color="background" visibilityContext={[authenticatedContext]} />
+                    <Rect
+                        bounds={[20, 120, ScreenWidth - 40, 10]}
+                        color="background"
+                        visibilityContext={[authenticatedContext]}
+                    />
                     <Text
                         text="Once you enter the code, press next."
                         bounds={[20, 120, ScreenWidth - 40, 10]}
@@ -70,6 +105,13 @@ export function Github({ name }: Props) {
                         visibilityContext={[enterCodeContext]}
                     />
 
+                    <Text
+                        text="Save"
+                        bounds={[W2_4, ScreenHeight - 20, W1_4, 18]}
+                        centered={true}
+                        color={menuTextColor}
+                        visibilityContext={[authenticatedContext]}
+                    />
                     <Text
                         text="Refresh"
                         bounds={[W2_4, ScreenHeight - 20, W1_4, 18]}
