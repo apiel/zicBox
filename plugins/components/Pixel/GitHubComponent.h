@@ -287,8 +287,7 @@ protected:
                     remoteUrl = "https://github.com/" + remoteUrl.substr(colon + 1);
                 }
 
-                // TODO skip base url
-                showMessage("Saving to " + remoteUrl);
+                showMessage("Saving to " + remoteUrl.substr(19));
 
                 // Inject token
                 std::string pushUrl = "https://x-access-token:" + accessToken + "@" + remoteUrl.substr(8); // skip https://
