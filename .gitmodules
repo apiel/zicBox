@@ -1,9 +1,6 @@
 [submodule "wiki"]
 	path = wiki
 	url = https://github.com/apiel/zicBox.wiki.git
-[submodule "data/audio"]
-	path = data/audio
-	url = https://github.com/apiel/zicAudioFiles.git
 [submodule "os/buildroot"]
 	path = os/buildroot
 	url = https://github.com/buildroot/buildroot.git
