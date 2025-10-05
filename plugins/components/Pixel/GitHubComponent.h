@@ -187,6 +187,8 @@ protected:
                     { "Accept", "application/vnd.github+json" }
                 };
 
+                currentRepoIndex = 0;
+                std::string activeRepo = getActiveRepo();
                 int page = 1;
                 for (int i = 0; i < 20; i++) { // max 20 pages = 2000 repos
                     std::string path = "/user/repos?per_page=100&page=" + std::to_string(page);
@@ -202,6 +204,8 @@ protected:
                     for (auto& repo : json) {
                         if (repo.contains("full_name")) {
                             repos.push_back(repo["full_name"]);
+                            if (repo["full_name"] == activeRepo)
+                                currentRepoIndex = repos.size() - 1;
                         }
                     }
 
@@ -215,7 +219,6 @@ protected:
                 if (repos.size() > 0) {
                     reposLoaded = true;
                     // should try to find the active one
-                    currentRepoIndex = 0;
                     renderNext();
                 }
             } catch (const std::exception& ex) {
@@ -251,6 +254,7 @@ protected:
         }).detach();
     }
 
+    std::filesystem::path repoPath = "data";
     void pushToRepoAsync()
     {
         if (!isAuthenticated()) {
@@ -261,8 +265,6 @@ protected:
         std::thread([this]() {
             try {
                 namespace fs = std::filesystem;
-                fs::path repoPath = "data";
-
                 // Check if it's a git repo
                 if (!fs::exists(repoPath / ".git")) {
                     showMessage("No git repo found");
@@ -313,14 +315,29 @@ protected:
     std::string getActiveRepo()
     {
         namespace fs = std::filesystem;
+        if (!fs::exists(repoPath / ".git")) {
+            return "";
+        }
 
-        // try {
-        //     fs::path target = fs::read_symlink(CURRENT_REPO_FOLDER);
-        //     return target.string();
-        // } catch (const fs::filesystem_error& e) {
-        //     // handle errors, e.g., symlink doesn’t exist
-        return localeName;
-        // }
+        // Get current remote URL
+        std::string remoteUrl = execCmd("git -C data remote get-url origin");
+        remoteUrl.erase(remoteUrl.find_last_not_of(" \n\r\t") + 1); // trim whitespace/newline
+
+        if (remoteUrl.empty()) {
+            return "";
+        }
+
+        if (remoteUrl.rfind("git@", 0) == 0) {
+            // git@github.com:user/repo.git -> user/repo.git
+            size_t colon = remoteUrl.find(':');
+            if (colon == std::string::npos)
+                return "";
+            remoteUrl = remoteUrl.substr(colon + 1);
+        } else {
+            remoteUrl = remoteUrl.substr(19);
+        }
+
+        return remoteUrl.substr(0, remoteUrl.size() - 4); // - .git
     }
 
     bool isExpired()
@@ -457,9 +474,9 @@ public:
                 draw.text({ relativePosition.x + 4, textY }, repoName, fontSize, { textColor, .font = font });
 
                 std::string currentRepo = getActiveRepo();
+                logDebug("currentRepo: %s vs repoName: %s", currentRepo.c_str(), repoName.c_str());
                 // if repoName finish with currentRepo or (currentRepo == default and repoName == Local)
-                if ((repoName.size() >= currentRepo.size() && repoName.compare(repoName.size() - currentRepo.size(), currentRepo.size(), currentRepo) == 0)
-                    || (currentRepo == localeName && repoName == "Local")) {
+                if ((repoName == currentRepo) || (currentRepo == localeName && repoName == "Local")) {
                     draw.textRight({ relativePosition.x + size.w - 4, textY }, "Active", fontSize, { activeColor, .font = font });
                 }
                 return;
