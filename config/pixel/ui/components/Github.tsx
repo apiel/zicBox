@@ -11,6 +11,7 @@ import {
     C3,
     C4,
     githubContext,
+    githubContext2,
     menuTextColor,
     ScreenHeight,
     ScreenWidth,
@@ -76,7 +77,17 @@ export function Github({ name }: Props) {
                         bounds={[20, 70, ScreenWidth - 40, 30]}
                         keys={[
                             { key: C1, action: `.next`, context: { id: githubContext, value: 0 } },
-                            { key: C3, action: `.refresh`, context: { id: githubContext, value: 0 } },
+                            {
+                                key: C1,
+                                action: `contextToggle:${githubContext2}:1:0`,
+                                context: { id: githubContext, value: 2 },
+                            },
+
+                            {
+                                key: C3,
+                                action: `.refresh`,
+                                context: { id: githubContext, value: 0 },
+                            },
                             { key: C3, action: `.save`, context: { id: githubContext, value: 2 } },
                         ]}
                         encoderId={enc1.encoderId}
@@ -85,17 +96,35 @@ export function Github({ name }: Props) {
                     />
 
                     <Rect
-                        bounds={[20, 120, ScreenWidth - 40, 10]}
+                        bounds={[20, 120, ScreenWidth - 40, 20]}
                         color="background"
                         visibilityContext={[authenticatedContext]}
                     />
                     <Text
                         text="Once you enter the code, press next."
-                        bounds={[20, 120, ScreenWidth - 40, 10]}
+                        bounds={[20, 120, ScreenWidth - 40, 16]}
                         centered
                         visibilityContext={[enterCodeContext]}
                     />
+                    <Rect
+                        bounds={[0, 120, ScreenWidth, 20]}
+                        color="background"
+                        visibilityContext={[{ index: githubContext2, value: 0, condition: 'SHOW_WHEN' },]}
+                    />
+                    <Text
+                        text="Loading repo, will replace existing preset. Save first..."
+                        bounds={[0, 120, ScreenWidth, 16]}
+                        centered
+                        visibilityContext={[{ index: githubContext2, value: 1, condition: 'SHOW_WHEN' },]}
+                    />
 
+                    <Text
+                        text="Load"
+                        bounds={[0, ScreenHeight - 20, W1_4, 18]}
+                        centered={true}
+                        color={menuTextColor}
+                        visibilityContext={[authenticatedContext]}
+                    />
                     <Text
                         text="Next"
                         bounds={[0, ScreenHeight - 20, W1_4, 18]}
@@ -103,6 +132,23 @@ export function Github({ name }: Props) {
                         color={menuTextColor}
                         keys={[{ key: C4, action: `setView:&previous` }]}
                         visibilityContext={[enterCodeContext]}
+                    />
+
+                    <Rect
+                        bounds={[W1_4, ScreenHeight - 20, W1_4, 18]}
+                        color="background"
+                        visibilityContext={[
+                            { index: githubContext2, value: 0, condition: 'SHOW_WHEN' },
+                        ]}
+                    />
+                    <Text
+                        text="Continue"
+                        bounds={[W1_4, ScreenHeight - 20, W1_4, 18]}
+                        centered={true}
+                        bgColor="#4cb663ff"
+                        visibilityContext={[
+                            { index: githubContext2, value: 1, condition: 'SHOW_WHEN' },
+                        ]}
                     />
 
                     <Text
