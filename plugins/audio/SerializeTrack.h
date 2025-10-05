@@ -22,7 +22,7 @@ class SerializeTrack : public Mapping {
 protected:
     std::mutex m;
 
-    std::string workspaceFolder = CURRENT_REPO_FOLDER + "/workspaces";
+    std::string workspaceFolder = WORKSPACE_FOLDER;
     std::string currentCfg = workspaceFolder + "/current.cfg";
     std::string currentWorkspaceName = "default";
     std::string serializePath = workspaceFolder + "/" + currentWorkspaceName + "/track";
@@ -92,6 +92,7 @@ protected:
     void initFilepath()
     {
         std::filesystem::create_directories(workspaceFolder);
+        currentCfg = workspaceFolder + "/current.cfg";
         if (std::filesystem::exists(currentCfg)) {
             std::ifstream file(currentCfg);
             std::string line;
@@ -101,6 +102,7 @@ protected:
                 currentWorkspaceName = line;
             }
         }
+        // logDebug("------------------------------> current workspace: %s [%s][%s]", currentWorkspaceName.c_str(), workspaceFolder.c_str(), currentCfg.c_str());
         std::filesystem::create_directories(workspaceFolder + "/" + currentWorkspaceName);
         serializePath = workspaceFolder + "/" + currentWorkspaceName + "/" + filename;
         serializeFilename = serializePath + ".json";
@@ -127,6 +129,9 @@ public:
 
         //md - `"filename": "track"` to set filename. By default it is `track`.
         filename = json.value("filename", filename);
+
+        //md - `"workspaceFolder": "data/workspaces"` to set workspace folder.
+        workspaceFolder = json.value("workspaceFolder", workspaceFolder);
 
         initFilepath();
     }
@@ -240,7 +245,7 @@ public:
 
     std::vector<int> variationExists = std::vector<int>(1000, -1);
     std::string dataStr;
-    DataFn dataFunctions[12] = {
+    DataFn dataFunctions[13] = {
         { "SERIALIZE", [this](void* userdata) {
              data(0, userdata);
              m.lock();
@@ -339,7 +344,10 @@ public:
                  }
              }
              return (void*)NULL;
-         } }
+         } },
+        { "WORKSPACE_FOLDER", [this](void* userdata) {
+             return (void*)&workspaceFolder;
+         } },
     };
 
     DEFINE_GETDATAID_AND_DATA

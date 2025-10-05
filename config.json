@@ -8,7 +8,7 @@
         "plugins": [
           {"alias":"Drum1","plugin":"SynthMultiDrum"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
-          {"filename":"drum1","maxVariation":1000,"plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"filename":"drum1","maxVariation":1000,"workspaceFolder":"data/workspaces/pixel","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -16,7 +16,7 @@
         "plugins": [
           {"alias":"Drum2","plugin":"SynthMultiDrum"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
-          {"filename":"drum2","maxVariation":1000,"plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"filename":"drum2","maxVariation":1000,"workspaceFolder":"data/workspaces/pixel","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -24,7 +24,7 @@
         "plugins": [
           {"alias":"Drum3","plugin":"SynthMultiDrum"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
-          {"filename":"drum3","maxVariation":1000,"plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"filename":"drum3","maxVariation":1000,"workspaceFolder":"data/workspaces/pixel","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -32,7 +32,7 @@
         "plugins": [
           {"alias":"Drum4","plugin":"SynthMultiDrum"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
-          {"filename":"drum4","maxVariation":1000,"plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"filename":"drum4","maxVariation":1000,"workspaceFolder":"data/workspaces/pixel","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -40,7 +40,7 @@
         "plugins": [
           {"alias":"Sample1","plugin":"SynthMultiSample"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
-          {"filename":"sample1","maxVariation":1000,"plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"filename":"sample1","maxVariation":1000,"workspaceFolder":"data/workspaces/pixel","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -48,7 +48,7 @@
         "plugins": [
           {"alias":"Sample2","plugin":"SynthMultiSample"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
-          {"filename":"sample2","maxVariation":1000,"plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"filename":"sample2","maxVariation":1000,"workspaceFolder":"data/workspaces/pixel","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -56,7 +56,7 @@
         "plugins": [
           {"alias":"Synth1","plugin":"SynthMulti"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
-          {"filename":"synth1","maxVariation":1000,"plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"filename":"synth1","maxVariation":1000,"workspaceFolder":"data/workspaces/pixel","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -64,7 +64,7 @@
         "plugins": [
           {"alias":"Synth2","plugin":"SynthMulti"},
           {"stepCount":64,"plugin":"Sequencer","alias":"Sequencer"},
-          {"filename":"synth2","maxVariation":1000,"plugin":"SerializeTrack","alias":"SerializeTrack"}
+          {"filename":"synth2","maxVariation":1000,"workspaceFolder":"data/workspaces/pixel","plugin":"SerializeTrack","alias":"SerializeTrack"}
         ]
       },
       {
@@ -73,7 +73,7 @@
           {"alias":"Mixer","plugin":"Mixer8"},
           {"alias":"TrackFx","plugin":"EffectGainVolume"},
           {"alias":"AudioOutput","plugin":"AudioOutputAlsa_int16"},
-          {"filename":"master","maxVariation":1000,"plugin":"SerializeTrack","alias":"SerializeTrack"},
+          {"filename":"master","maxVariation":1000,"workspaceFolder":"data/workspaces/pixel","plugin":"SerializeTrack","alias":"SerializeTrack"},
           {"plugin":"Tempo","alias":"Tempo"}
         ]
       }

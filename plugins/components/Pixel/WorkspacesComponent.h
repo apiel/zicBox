@@ -3,7 +3,6 @@
 #include "./ListComponent.h"
 
 #include "helpers/fs/directoryList.h"
-#include "host/def.h"
 
 #include <string>
 #include <vector>
@@ -16,7 +15,7 @@ Workspaces components show the list of available workspaces.
 
 class WorkspacesComponent : public ListComponent {
 public:
-    std::string workspaceFolder = CURRENT_REPO_FOLDER + "/workspaces";
+    std::string* workspaceFolder = NULL;
     std::string* currentWorkspaceName = NULL;
     int* refreshState = NULL;
     int currentRefreshState = 0;
@@ -32,10 +31,12 @@ public:
 
     void initItems()
     {
-        items.clear();
-        std::vector<std::filesystem::path> list = getDirectoryList(workspaceFolder, { .skipFiles = true });
-        for (std::filesystem::path path : list) {
-            items.push_back({ path.filename().string() });
+        if (workspaceFolder != NULL) {
+            items.clear();
+            std::vector<std::filesystem::path> list = getDirectoryList(*workspaceFolder, { .skipFiles = true });
+            for (std::filesystem::path path : list) {
+                items.push_back({ path.filename().string() });
+            }
         }
     }
 
@@ -68,6 +69,7 @@ public:
         /// The audio plugin to load serialized data.
         plugin = getPluginPtr(config, "audioPlugin", track); //eg: "audio_plugin_name"
 
+        workspaceFolder = (std::string*)plugin->data(plugin->getDataId(config.value("workspaceFolderDataId", "WORKSPACE_FOLDER")));
         currentWorkspaceName = (std::string*)plugin->data(plugin->getDataId(config.value("currentWorkspaceDataId", "CURRENT_WORKSPACE"))); //eg: "CURRENT_WORKSPACE"
 
         refreshState = (int*)plugin->data(plugin->getDataId(config.value("refreshStateDataId", "CREATE_WORKSPACE"))); //eg: "CREATE_WORKSPACE"

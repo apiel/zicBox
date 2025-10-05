@@ -228,13 +228,13 @@ protected:
     {
         namespace fs = std::filesystem;
 
-        try {
-            fs::path target = fs::read_symlink(CURRENT_REPO_FOLDER);
-            return target.string();
-        } catch (const fs::filesystem_error& e) {
-            // handle errors, e.g., symlink doesn’t exist
+        // try {
+        //     fs::path target = fs::read_symlink(CURRENT_REPO_FOLDER);
+        //     return target.string();
+        // } catch (const fs::filesystem_error& e) {
+        //     // handle errors, e.g., symlink doesn’t exist
             return localeName;
-        }
+        // }
     }
 
     bool isExpired()
