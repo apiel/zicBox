@@ -30,3 +30,7 @@
 #ifndef CURRENT_REPO_FOLDER
 #define CURRENT_REPO_FOLDER std::string("data/repositories/current")
 #endif
+
+#ifndef AUDIO_FOLDER
+#define AUDIO_FOLDER std::string("data/audio")
+#endif

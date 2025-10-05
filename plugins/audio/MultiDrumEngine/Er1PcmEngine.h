@@ -22,7 +22,7 @@ class Er1PcmEngine : public DrumEngine {
     } sampleBuffer;
 
     float pitch = 1.0f;
-    FileBrowser fileBrowser = FileBrowser(CURRENT_REPO_FOLDER + "/audio/er1");
+    FileBrowser fileBrowser = FileBrowser(AUDIO_FOLDER + "/er1");
 
     MultiFx multiFx;
     MultiFx multiFx2;

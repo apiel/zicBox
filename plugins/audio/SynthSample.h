@@ -36,7 +36,7 @@ protected:
         float* data;
     } sampleBuffer;
 
-    FileBrowser fileBrowser = FileBrowser(CURRENT_REPO_FOLDER + "/audio/samples");
+    FileBrowser fileBrowser = FileBrowser(AUDIO_FOLDER + "/samples");
 
     // Use to restore sustain in case it was move by another parameter
     float sustainPositionOrigin = 0.0f;

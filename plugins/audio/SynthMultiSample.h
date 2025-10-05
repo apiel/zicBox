@@ -40,7 +40,7 @@ protected:
     float index = 0.0f;
     float stepMultiplier = 1.0;
 
-    FileBrowser fileBrowser = FileBrowser(CURRENT_REPO_FOLDER + "/audio/samples");
+    FileBrowser fileBrowser = FileBrowser(AUDIO_FOLDER + "/samples");
 
     void open(std::string filename)
     {
