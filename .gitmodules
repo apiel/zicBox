@@ -10,3 +10,6 @@
 [submodule "pico/pico-extras"]
 	path = pico/pico-extras
 	url = https://github.com/raspberrypi/pico-extras.git
+[submodule "data"]
+	path = data
+	url = https://github.com/apiel/zicData.git
