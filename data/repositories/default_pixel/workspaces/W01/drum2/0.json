@@ -47,7 +47,7 @@
             },
             {
                 "key": "DURATION",
-                "value": 780.0
+                "value": 2460.0
             },
             {
                 "key": "AMP_MORPH",
@@ -61,17 +61,5 @@
     },
     "SerializeTrack": {
         "VARIATION": 0.0
-    },
-    "TrackFx": {
-        "values": [
-            {
-                "key": "VOLUME",
-                "value": 100.0
-            },
-            {
-                "key": "GAIN",
-                "value": 1.0
-            }
-        ]
     }
 }

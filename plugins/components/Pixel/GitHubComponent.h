@@ -175,7 +175,7 @@ protected:
         std::thread([this]() {
             try {
                 repos.clear();
-                repos.push_back("Locale");
+                repos.push_back("Local");
 
                 httplib::Client cli("https://api.github.com");
                 cli.set_connection_timeout(5, 0);
@@ -359,9 +359,9 @@ public:
                 draw.text({ relativePosition.x + 4, textY }, repoName, fontSize, { textColor, .font = font });
 
                 std::string currentRepo = getActiveRepo();
-                // if repoName finish with currentRepo or (currentRepo == default and repoName == Locale)
+                // if repoName finish with currentRepo or (currentRepo == default and repoName == Local)
                 if ((repoName.size() >= currentRepo.size() && repoName.compare(repoName.size() - currentRepo.size(), currentRepo.size(), currentRepo) == 0)
-                    || (currentRepo == localeName && repoName == "Locale")) {
+                    || (currentRepo == localeName && repoName == "Local")) {
                     draw.textRight({ relativePosition.x + size.w - 4, textY }, "Active", fontSize, { activeColor, .font = font });
                 }
                 return;

@@ -30,6 +30,11 @@ add passive mixer 5 stereo input :-)
 - TODO live recording midi keyboard
 - TODO test midi keyboard on pixel
 
+- TODO kick improve frequency env generator and improve transient!xx
+- TODO save all instead of reload all. Reload all, should be under clips view by pressing the button reload, giving the possbility to reload either all or current clip
+- TODO ER-1 if duration longer than sample, then stretch sample
+- TODO drone engine
+
 - TODO load pixel has mass storage
 - TODO provide a way to save preset on github repo
             - ---> see how to handle ssh or instead use token, but the idea would be to store as less as possible info on zicBox app side (if possible nothing) and delegate everything to the OS...
@@ -39,9 +44,6 @@ add passive mixer 5 stereo input :-)
 
 - TODO see if we can make OS read only and data on separate partition to reduce chance of corruption
 
-- TODO ER-1 if duration longer than sample, then stretch sample
-
-- TODO drone engine
 
 - TODO in menu could use knob or a button to navigate between multiple options...
 
