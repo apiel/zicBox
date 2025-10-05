@@ -23,7 +23,7 @@ all:
 				MacroEnvelopComponent StepEditSampleComponent NoteGridComponent\
 				SequencerComponent SampleComponent SequencerCardComponent\
 				SequencerValueComponent StringValComponent WorkspaceKnobComponent\
-				GitHubComponent
+				GitHubComponent GhRepoComponent
 
 GitHubComponent:
 	@echo "-------- :$@: --------"

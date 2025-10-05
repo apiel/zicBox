@@ -1799,6 +1799,7 @@
         {"bounds":[5,6,6,6],"color":"#aaaaaa","componentName":"Rect"},
         {"bounds":[15,6,6,6],"color":"#555555","componentName":"Rect"},
         {"bounds":[25,6,6,6],"color":"#555555","componentName":"Rect"},
+        {"bounds":[110,2,210,20],"color":"#cccbcb","componentName":"GhRepo"},
         {"bounds":[20,30,280,10],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":204,"value":2}],"componentName":"Rect"},
         {"text":"Go to https://github.com/login/device","bounds":[20,30,280,10],"centered":true,"visibilityContext":[{"condition":"SHOW_WHEN","index":204,"value":0}],"componentName":"Text"},
         {"bounds":[20,50,280,10],"color":"background","visibilityContext":[{"condition":"SHOW_WHEN","index":204,"value":2}],"componentName":"Rect"},

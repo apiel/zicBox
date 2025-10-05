@@ -1,6 +1,7 @@
 import * as React from '@/libs/react';
 
 import { VisibilityContext } from '@/libs/nativeComponents/component';
+import { GhRepo } from '@/libs/nativeComponents/GhRepo';
 import { GitHub } from '@/libs/nativeComponents/GitHub';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { Text } from '@/libs/nativeComponents/Text';
@@ -26,6 +27,8 @@ export function Github({ name }: Props) {
             noPrevious
             content={
                 <>
+                    <GhRepo bounds={[110, 2, ScreenWidth - 110, 20]} color={rgb(204, 203, 203)} />
+
                     <Rect bounds={[20, 30, ScreenWidth - 40, 10]} color="background" visibilityContext={[authenticatedContext]} />
                     <Text
                         text="Go to https://github.com/login/device"
