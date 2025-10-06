@@ -138,7 +138,9 @@ public:
                     if (KeypadLayout::isReleased(keymap)) {
                         int16_t id = (int16_t)valVariation->get();
                         pluginSerialize->data(loadVariationDataId, (void*)&id);
-                        redirect();
+                        // redirect();
+                        showPopupMessage("Reloaded");
+                        renderNext();
                     }
                 };
             }

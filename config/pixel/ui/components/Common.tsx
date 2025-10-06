@@ -47,7 +47,8 @@ export function MainKeys({
                 keys={[
                     { key: C1, action: `playPause` },
                     { key: C2, action: `setView:Menu` },
-                    { key: C3, action: `audioEvent:RELOAD_VARIATION` },
+                    // { key: C3, action: `audioEvent:RELOAD_VARIATION` },
+                    { key: C3, action: `audioEvent:SAVE_VARIATION` },
                     { key: C4, action: `contextToggle:${shiftContext}:1:0` },
                 ]}
                 visibilityContext={[{ index: shiftContext, value: 1, condition: 'SHOW_WHEN' }]}

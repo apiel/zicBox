@@ -1,6 +1,7 @@
 import * as React from '@/libs/react';
 
 import { Clips } from '@/libs/nativeComponents/Clips';
+import { VisibilityContext } from '@/libs/nativeComponents/component';
 import { Rect } from '@/libs/nativeComponents/Rect';
 import { Text } from '@/libs/nativeComponents/Text';
 import { rgb } from '@/libs/ui';
@@ -28,6 +29,12 @@ import {
 import { top } from '../constantsValue';
 import { Layout } from './Layout';
 import { shiftVisibilityContext, unshiftVisibilityContext } from './ShiftLayout';
+
+const reloadContext: VisibilityContext = {
+    condition: 'SHOW_WHEN',
+    index: shiftContext,
+    value: 2,
+};
 
 export type Props = {
     name: string;
@@ -86,10 +93,41 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                             { key: B3, action: `.save:7`, context: { id: shiftContext, value: 1 } },
                             { key: B4, action: `.save:8`, context: { id: shiftContext, value: 1 } },
 
-                            { key: C1, action: `.reload`, context: { id: shiftContext, value: 0 } },
-                            { key: C2, action: `.bank`, context: { id: shiftContext, value: 0 }, multipleKeyHandler: true },
-                            { key: C3, action: `setView:${synthName}`, context: { id: shiftContext, value: 0 } },
-                            { key: C3, action: `audioEvent:SAVE_VARIATION`, action2: `.message:All saved`, context: { id: shiftContext, value: 1 } },
+                            {
+                                key: C1,
+                                action: `contextToggle:${shiftContext}:2:0`,
+                                context: { id: shiftContext, value: 0 },
+                            },
+                            {
+                                key: C1,
+                                action: `contextToggle:${shiftContext}:2:0`,
+                                context: { id: shiftContext, value: 2 },
+                            },
+                            { key: C2, action: `.reload`, context: { id: shiftContext, value: 2 } },
+                            {
+                                key: C3,
+                                action: `audioEvent:RELOAD_VARIATION`,
+                                action2: `.message:All clips reloaded`,
+                                context: { id: shiftContext, value: 2 },
+                            },
+
+                            {
+                                key: C2,
+                                action: `.bank`,
+                                context: { id: shiftContext, value: 0 },
+                                multipleKeyHandler: true,
+                            },
+                            {
+                                key: C3,
+                                action: `setView:${synthName}`,
+                                context: { id: shiftContext, value: 0 },
+                            },
+                            {
+                                key: C3,
+                                action: `audioEvent:SAVE_VARIATION`,
+                                action2: `.message:All saved`,
+                                context: { id: shiftContext, value: 1 },
+                            },
                         ]}
                     />
                     <Clips
@@ -131,6 +169,13 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                         color={menuTextColor}
                         visibilityContext={[unshiftVisibilityContext]}
                     />
+                    <Text
+                        text="Current"
+                        bounds={[W1_4, ScreenHeight - 20, W1_4, 18]}
+                        centered={true}
+                        color={menuTextColor}
+                        visibilityContext={[reloadContext]}
+                    />
                     <Rect
                         bounds={[W1_4, ScreenHeight - 20, W1_4, 18]}
                         color="background"
@@ -151,6 +196,13 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                         color={menuTextColor}
                         visibilityContext={[shiftVisibilityContext]}
                     />
+                    <Text
+                        text="All"
+                        bounds={[W2_4, ScreenHeight - 20, W1_4, 18]}
+                        centered={true}
+                        color={menuTextColor}
+                        visibilityContext={[reloadContext]}
+                    />
 
                     <Text
                         text="Save"
@@ -165,6 +217,11 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                         centered={true}
                         // color={menuTextColor}
                         visibilityContext={[shiftVisibilityContext]}
+                    />
+                    <Rect
+                        bounds={[W3_4, ScreenHeight - 20, W1_4, 18]}
+                        color="background"
+                        visibilityContext={[reloadContext]}
                     />
                 </>
             }
