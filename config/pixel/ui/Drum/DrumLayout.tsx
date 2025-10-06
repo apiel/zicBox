@@ -4,7 +4,6 @@ import { GraphEncoder } from '@/libs/nativeComponents/GraphEncoder';
 import { StringVal } from '@/libs/nativeComponents/StringVal';
 import { rgb } from '@/libs/ui';
 import { ClipBar } from '../components/ClipBar';
-import { MainKeys } from '../components/Common';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
 import {
@@ -158,7 +157,6 @@ export function DrumLayout({ name, track, synthName, color, title }: Props) {
 
                     <ClipBar track={track} color={color} />
                     <KeysTracks synthName={synthName} viewName={name} track={track} />
-                    <MainKeys synthName={synthName} viewName={name} />
                 </>
             }
         />

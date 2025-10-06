@@ -1,5 +1,4 @@
 import * as React from '@/libs/react';
-import { Drum1, Drum2, Drum3, Drum4, Sample1, Sample2, Synth1, Synth2 } from './components/Common';
 import { Github } from './components/Github';
 import { GithubHelp } from './components/GithubHelp';
 import {
@@ -43,8 +42,6 @@ import { Updating } from './menu/Updating';
 import { SampleViews } from './Sample/SampleViews';
 import { SynthViews } from './Synth/SynthViews';
 
-// const halfHeight = ScreenHeight / 2;
-
 export const ui = {
     pixelController: 'pixel_12btn',
     // pixelController: 'grid',
@@ -71,28 +68,28 @@ export const ui = {
                 track={Drum1Track}
                 synthName="Drum1"
                 color={ColorTrack1}
-                title={Drum1}
+                title="Drum1"
                 contextId={seqContextTrack1}
             />
             <DrumViews
                 track={Drum2Track}
                 synthName="Drum2"
                 color={ColorTrack2}
-                title={Drum2}
+                title="Drum2"
                 contextId={seqContextTrack2}
             />
             <DrumViews
                 track={Drum3Track}
                 synthName="Drum3"
                 color={ColorTrack3}
-                title={Drum3}
+                title="Drum3"
                 contextId={seqContextTrack3}
             />
             <DrumViews
                 track={Drum4Track}
                 synthName="Drum4"
                 color={ColorTrack4}
-                title={Drum4}
+                title="Drum4"
                 contextId={seqContextTrack4}
             />
 
@@ -100,14 +97,14 @@ export const ui = {
                 track={Sample1Track}
                 synthName="Sample1"
                 color={ColorTrack5}
-                title={Sample1}
+                title="Sample1"
                 contextId={seqContextTrack5}
             />
             <SampleViews
                 track={Sample2Track}
                 synthName="Sample2"
                 color={ColorTrack6}
-                title={Sample2}
+                title="Sample2"
                 contextId={seqContextTrack6}
             />
 
@@ -115,14 +112,14 @@ export const ui = {
                 track={Synth1Track}
                 synthName="Synth1"
                 color={ColorTrack7}
-                title={Synth1}
+                title="Synth1"
                 contextId={seqContextTrack7}
             />
             <SynthViews
                 track={Synth2Track}
                 synthName="Synth2"
                 color={ColorTrack8}
-                title={Synth2}
+                title="Synth2"
                 contextId={seqContextTrack8}
             />
 

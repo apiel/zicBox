@@ -2,7 +2,6 @@ import * as React from '@/libs/react';
 
 import { StringVal } from '@/libs/nativeComponents/StringVal';
 import { ClipBar } from '../components/ClipBar';
-import { MainKeys } from '../components/Common';
 import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
 import { ShiftLayout } from '../components/ShiftLayout';
@@ -141,7 +140,6 @@ export function SynthLayout({ name, track, synthName, color, title }: Props) {
 
                     <ClipBar track={track} color={color} />
                     <KeysTracks synthName={synthName} viewName={name} track={track} />
-                    <MainKeys synthName={synthName} viewName={name} />
                 </>
             }
         />
