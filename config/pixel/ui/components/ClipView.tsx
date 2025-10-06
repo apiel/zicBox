@@ -17,6 +17,7 @@ import {
     C1,
     C2,
     C3,
+    C4,
     clipRenderContext,
     menuTextColor,
     ScreenHeight,
@@ -128,6 +129,7 @@ export function ClipView({ name, track, synthName, color, title }: Props) {
                                 action2: `.message:All saved`,
                                 context: { id: shiftContext, value: 1 },
                             },
+                            { key: C4, action: `contextToggle:${shiftContext}:1:0` },
                         ]}
                     />
                     <Clips

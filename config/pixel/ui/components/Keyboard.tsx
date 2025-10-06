@@ -26,7 +26,6 @@ export function Keyboard({ name, track, synthName, color, title }: Props) {
             color={color}
             synthName={synthName}
             title={title}
-            skipMainKeys
             content={
                 <>
                     <NoteGrid

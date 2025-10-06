@@ -44,7 +44,6 @@ export function Github({ name }: Props) {
             viewName={name}
             color={rgb(170, 170, 170)}
             title="GitHub"
-            skipMainKeys
             noPrevious
             content={
                 <>

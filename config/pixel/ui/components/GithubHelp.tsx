@@ -15,7 +15,6 @@ export function GithubHelp({ name }: Props) {
             viewName={name}
             color={rgb(170, 170, 170)}
             title="GitHub help"
-            skipMainKeys
             noPrevious
             content={
                 <>

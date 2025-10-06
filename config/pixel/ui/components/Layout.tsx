@@ -4,7 +4,6 @@ import { Rect } from '@/libs/nativeComponents/Rect';
 import { Text } from '@/libs/nativeComponents/Text';
 import { View } from '@/libs/nativeComponents/View';
 import { darken } from '@/libs/ui';
-import { MainKeys } from './Common';
 
 export type Props = {
     viewName: string;
@@ -12,7 +11,6 @@ export type Props = {
     color: string;
     synthName?: string;
     title?: string;
-    skipMainKeys?: boolean;
     noPrevious?: boolean;
 };
 
@@ -22,7 +20,6 @@ export function Layout({
     color,
     title,
     synthName,
-    skipMainKeys,
     noPrevious,
 }: Props) {
     const inactiveColor = darken(color, 0.5);
@@ -48,7 +45,6 @@ export function Layout({
                 </>
             )}
             {content}
-            {!skipMainKeys && <MainKeys synthName={synthName} viewName={viewName} />}
         </View>
     );
 }

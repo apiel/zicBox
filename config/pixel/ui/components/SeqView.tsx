@@ -358,7 +358,7 @@ export function SeqView({ name, track, synthName, color, contextId, title, inclu
 
                             {
                                 key: C4,
-                                action: `contextToggleOnRelease:${shiftContext}:1:0`,
+                                action: `contextToggle:${shiftContext}:1:0`,
                                 multipleKeyHandler: true,
                             },
                         ]}
