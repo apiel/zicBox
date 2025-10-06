@@ -1,10 +1,9 @@
 import * as React from '@/libs/react';
 
 import { StringVal } from '@/libs/nativeComponents/StringVal';
-import { ClipBar } from '../components/ClipBar';
-import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
 import { ShiftLayout } from '../components/ShiftLayout';
+import { Track } from '../components/Track';
 import { Val } from '../components/Val';
 import {
     enc10mini,
@@ -138,8 +137,7 @@ export function SynthLayout({ name, track, synthName, color, title }: Props) {
                         color={isPage3 ? 'primary' : undefined}
                     />
 
-                    <ClipBar track={track} color={color} />
-                    <KeysTracks synthName={synthName} viewName={name} track={track} />
+                    <Track synthName={synthName} viewName={name} track={track} color={color} />
                 </>
             }
         />

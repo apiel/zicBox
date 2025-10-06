@@ -3,13 +3,12 @@ import * as React from '@/libs/react';
 import { GraphEncoder } from '@/libs/nativeComponents/GraphEncoder';
 import { StringVal } from '@/libs/nativeComponents/StringVal';
 import { rgb } from '@/libs/ui';
-import { ClipBar } from '../components/ClipBar';
-import { KeysTracks } from '../components/KeysTracks';
 import { Layout } from '../components/Layout';
 import {
     ShiftLayout,
     unshiftVisibilityContext
 } from '../components/ShiftLayout';
+import { Track } from '../components/Track';
 import { Val } from '../components/Val';
 import { W1_4 } from '../constants';
 import {
@@ -155,8 +154,7 @@ export function DrumLayout({ name, track, synthName, color, title }: Props) {
                         color={isPage3 ? 'primary' : undefined}
                     />
 
-                    <ClipBar track={track} color={color} />
-                    <KeysTracks synthName={synthName} viewName={name} track={track} />
+                    <Track synthName={synthName} viewName={name} track={track} color={color} />
                 </>
             }
         />

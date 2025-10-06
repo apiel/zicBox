@@ -27,7 +27,6 @@ add passive mixer 5 stereo input :-)
 
 - TODO DOC DOC
 
-- TODO save all instead of reload all. Reload all, should be under clips view by pressing the button reload, giving the possbility to reload either all or current clip
 - TODO kick improve frequency env generator and improve transient!xx
 - TODO ER-1 if duration longer than sample, then stretch sample
 - TODO drone engine

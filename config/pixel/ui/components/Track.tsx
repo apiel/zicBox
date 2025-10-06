@@ -1,5 +1,6 @@
 import * as React from '@/libs/react';
 
+import { Clips } from '@/libs/nativeComponents/Clips';
 import { HiddenValue } from '@/libs/nativeComponents/HiddenValue';
 import {
     A1,
@@ -14,6 +15,7 @@ import {
     C2,
     C3,
     C4,
+    clipRenderContext,
     Drum1Track,
     Drum2Track,
     Drum3Track,
@@ -61,17 +63,34 @@ function getKeys(key: string, track: number, viewName: string, baseName: string)
           ];
 }
 
-export function KeysTracks({
+export function Track({
     synthName,
     viewName,
     track,
+    color,
 }: {
-    synthName?: string;
+    synthName: string;
     viewName: string;
     track: number;
+    color: string;
 }) {
     return (
         <>
+            <Clips
+                bounds={[152, 2, 170, 15]}
+                track={track}
+                color={color}
+                visibleCount={8}
+                renderContextId={clipRenderContext}
+                keys={[
+                    {
+                        key: C3,
+                        action: `audioEvent:SAVE_VARIATION`,
+                        action2: `.message:All clips saved`,
+                        context: { id: shiftContext, value: 1 },
+                    },
+                ]}
+            />
             <HiddenValue
                 keys={[
                     // { key: C1, action: `noteOn:${synthName}:60` },
@@ -114,7 +133,6 @@ export function KeysTracks({
                     },
                     // { key: C2, action: `setContext:${shiftContext}:0`, action2: `setView:Menu` },
                     // { key: C3, action: `audioEvent:RELOAD_VARIATION` },
-                    { key: C3, action: `audioEvent:SAVE_VARIATION` },
                     { key: C4, action: `contextToggle:${shiftContext}:1:0` },
                 ]}
                 visibilityContext={[{ index: shiftContext, value: 1, condition: 'SHOW_WHEN' }]}
